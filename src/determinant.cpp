@@ -59,10 +59,13 @@ namespace tu {
   {
     typedef unsigned long long int bitset_type;
 
-    bitset_type row_max = 1 << matrix.size1 ();
-    bitset_type column_max = 1 << matrix.size2 ();
+    if ((matrix.size1 () >= std::numeric_limits <bitset_type>::digits - 1) || (matrix.size2 () >= std::numeric_limits <bitset_type>::digits - 1))
+      throw std::runtime_error ("Cannot test such a large matrix for total unimodularity via determinants!");
 
-    // collect all choices for column range with the cardinality as key
+    bitset_type row_max = ((bitset_type) 1) << (bitset_type) matrix.size1 ();
+    bitset_type column_max = ((bitset_type) 1) << (bitset_type) matrix.size2 ();
+
+    /// Collect all choices for column range with the cardinality as key
     std::map <size_t, std::vector <bitset_type> > column_bitsets;
     for (bitset_type choice = 1; choice < column_max; ++choice)
     {
@@ -80,7 +83,7 @@ namespace tu {
       size_t cardinality = 0;
       for (size_t i = 0; i < matrix.size2 (); ++i)
       {
-        if ((row_choice & (1 << i)) != 0)
+        if ((row_choice & (((bitset_type) 1) << i)) != 0)
           cardinality++;
       }
       const std::vector <bitset_type>& column_choices = column_bitsets[cardinality];
@@ -93,14 +96,14 @@ namespace tu {
         size_t current = 0;
         for (size_t i = 0; i < matrix.size1 (); ++i)
         {
-          if ((row_choice & (1 << i)) != 0)
+          if ((row_choice & (((bitset_type) 1) << i)) != 0)
             indirect_array[current++] = i;
         }
         sub.rows = submatrix_indices::indirect_array_type (cardinality, indirect_array);
         current = 0;
         for (size_t i = 0; i < matrix.size2 (); ++i)
         {
-          if ((column_choice & (1 << i)) != 0)
+          if ((column_choice & (((bitset_type) 1) << i)) != 0)
             indirect_array[current++] = i;
         }
         sub.columns = submatrix_indices::indirect_array_type (cardinality, indirect_array);
