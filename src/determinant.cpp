@@ -18,11 +18,10 @@ namespace tu {
 
   /// Calculates a subdeterminant of the given matrix.
 
-  int determinant_submatrix (const boost::numeric::ublas::matrix <int>& input_matrix,
-      const submatrix_indices& submatrix)
+  int determinant_submatrix (const boost::numeric::ublas::matrix <int>& input_matrix, const submatrix_indices& submatrix)
   {
-    const boost::numeric::ublas::matrix_indirect <const boost::numeric::ublas::matrix <int>,
-        submatrix_indices::indirect_array_type> indirect_matrix (input_matrix, submatrix.rows, submatrix.columns);
+    const boost::numeric::ublas::matrix_indirect <const boost::numeric::ublas::matrix <int>, submatrix_indices::indirect_array_type> indirect_matrix (
+        input_matrix, submatrix.rows, submatrix.columns);
 
     boost::numeric::ublas::matrix <float> matrix (indirect_matrix);
     boost::numeric::ublas::permutation_matrix <size_t> permutation_matrix (matrix.size1 ());
@@ -56,8 +55,7 @@ namespace tu {
   /// Returns true, iff the given matrix is totally unimodular by checking all subdeterminants.
   /// If this is not the case, violator describes a violating submatrix.
 
-  bool determinant_is_totally_unimodular (const boost::numeric::ublas::matrix <int>& matrix,
-      submatrix_indices& violator)
+  bool determinant_is_totally_unimodular (const boost::numeric::ublas::matrix <int>& matrix, submatrix_indices& violator)
   {
     typedef unsigned long long int bitset_type;
 

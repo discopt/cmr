@@ -15,8 +15,7 @@ namespace tu {
   /// Returns true, iff the given matrix contains only values {-1, 0, 1}.
   /// If not, position will contain the position of the wrong entry. 
 
-  bool is_zero_plus_minus_one_matrix (const boost::numeric::ublas::matrix <int>& matrix,
-      std::pair <size_t, size_t>& position)
+  bool is_zero_plus_minus_one_matrix (const boost::numeric::ublas::matrix <int>& matrix, std::pair <size_t, size_t>& position)
   {
     for (size_t row = 0; row < matrix.size1 (); ++row)
     {

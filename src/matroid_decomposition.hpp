@@ -18,10 +18,12 @@
 
 namespace tu {
 
+  typedef std::set <int> matroid_element_set;
+
   class decomposed_matroid
   {
   public:
-    explicit decomposed_matroid (const std::set <int>& elements);
+    explicit decomposed_matroid (const matroid_element_set& elements, const matroid_element_set& extra_elements);
     virtual ~decomposed_matroid ();
 
     virtual bool is_leaf () const = 0;
@@ -39,13 +41,19 @@ namespace tu {
       return is_graphic () && is_cographic ();
     }
 
-    inline const std::set <int>& elements () const
+    inline const matroid_element_set& elements () const
     {
       return _elements;
     }
 
+    inline const matroid_element_set& extra_elements () const
+    {
+      return _extra_elements;
+    }
+
   private:
-    std::set <int> _elements;
+    matroid_element_set _elements;
+    matroid_element_set _extra_elements;
   };
 
   /// Class for 3-connected component
@@ -54,8 +62,8 @@ namespace tu {
   {
   public:
 
-    explicit decomposed_matroid_leaf (matroid_graph* graph, matroid_graph* cograph, bool is_R10,
-        const std::set <int>& elements);
+    explicit decomposed_matroid_leaf (matroid_graph* graph, matroid_graph* cograph, bool is_R10, const std::set <int>& elements,
+        const matroid_element_set& extra_elements);
     virtual ~decomposed_matroid_leaf ();
 
     virtual bool is_leaf () const
@@ -104,7 +112,8 @@ namespace tu {
   class decomposed_matroid_separator: public decomposed_matroid
   {
   public:
-    explicit decomposed_matroid_separator (decomposed_matroid* first, decomposed_matroid* second, int type, const std::set<int>& elements);
+    explicit decomposed_matroid_separator (decomposed_matroid* first, decomposed_matroid* second, int type, const std::set <int>& elements,
+        const matroid_element_set& extra_elements);
     virtual ~decomposed_matroid_separator ();
 
     static const int ONE_SEPARATION = 1;
@@ -151,11 +160,6 @@ namespace tu {
     decomposed_matroid* _second;
     int _type;
   };
-
-  /// Returns a decomposition of a given binary matroid into a k-sum-decomposition (k=1,2,3)
-  /// in graphic, cographic, R10 and maybe irregular components. 
-
-  decomposed_matroid* decompose_binary_matroid (const boost::numeric::ublas::matrix <int>& matrix);
 
 }
 

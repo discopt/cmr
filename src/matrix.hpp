@@ -33,8 +33,7 @@ namespace tu {
   }
 
   template <typename MatrixType>
-  inline void matrix_set_value (const MatrixType& matrix, size_t row, size_t column,
-      typename MatrixType::value_type value)
+  inline void matrix_set_value (const MatrixType& matrix, size_t row, size_t column, typename MatrixType::value_type value)
   {
     // This routine should not be called, but must exist for compilation.
     assert (false);
@@ -98,8 +97,8 @@ namespace tu {
   }
 
   template <typename MatrixType, typename PropertyCheck>
-  inline size_t matrix_count_property_row_series (const MatrixType& matrix, size_t row_first, size_t row_beyond,
-      size_t column_first, size_t column_beyond, PropertyCheck check)
+  inline size_t matrix_count_property_row_series (const MatrixType& matrix, size_t row_first, size_t row_beyond, size_t column_first,
+      size_t column_beyond, PropertyCheck check)
   {
     for (size_t row = row_first; row < row_beyond; ++row)
     {
@@ -112,8 +111,8 @@ namespace tu {
   }
 
   template <typename MatrixType, typename PropertyCheck>
-  inline size_t matrix_count_property_column_series (const MatrixType& matrix, size_t row_first, size_t row_beyond,
-      size_t column_first, size_t column_beyond, PropertyCheck check)
+  inline size_t matrix_count_property_column_series (const MatrixType& matrix, size_t row_first, size_t row_beyond, size_t column_first,
+      size_t column_beyond, PropertyCheck check)
   {
     matrix_transposed <const MatrixType> transposed (matrix);
     return matrix_count_property_row_series (transposed, column_first, column_beyond, row_first, row_beyond, check);

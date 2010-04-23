@@ -88,8 +88,7 @@ namespace tu {
     static const index_type END0 = 3;
     static const index_type END1 = 4;
 
-    elaborate_extension_matrix_modifier (const std::vector <index_type>& row_types,
-        const std::vector <index_type>& column_types) :
+    elaborate_extension_matrix_modifier (const std::vector <index_type>& row_types, const std::vector <index_type>& column_types) :
       row_types_ (row_types), column_types_ (column_types)
     {
 
@@ -129,9 +128,9 @@ namespace tu {
 
   template <typename MatroidType, typename MatrixType, typename NestedMinorSequenceType, typename RowThreeConnectivity,
       typename ColumnThreeConnectivity>
-  separation find_elaborate_extension (MatroidType& matroid, MatrixType& matrix,
-      NestedMinorSequenceType& nested_minors, RowThreeConnectivity& row_three_connectivity,
-      ColumnThreeConnectivity& column_three_connectivity, size_t index)
+  separation find_elaborate_extension (MatroidType& matroid, MatrixType& matrix, NestedMinorSequenceType& nested_minors,
+      RowThreeConnectivity& row_three_connectivity, ColumnThreeConnectivity& column_three_connectivity, size_t index,
+      matroid_element_set& extra_elements)
   {
     //    std::cout << "find_elaborate_extension on matroid with already found sequence of size " << nested_minors.height ()
     //            << "," << nested_minors.width () << " on index " << index << "\n" << std::endl;
@@ -178,8 +177,7 @@ namespace tu {
         column_types[column] = elaborate_extension_matrix_modifier::ZERO;
       else
       {
-        column_types[column] = matrix (index, column) == 1 ? elaborate_extension_matrix_modifier::END1
-            : elaborate_extension_matrix_modifier::END0;
+        column_types[column] = matrix (index, column) == 1 ? elaborate_extension_matrix_modifier::END1 : elaborate_extension_matrix_modifier::END0;
         end_nodes.push_back (dim.column_to_index (column));
       }
 
@@ -209,8 +207,7 @@ namespace tu {
     if (found_path)
     {
       size_t nearest_end = 0;
-      for (std::vector <bipartite_graph_dimensions::index_type>::const_iterator iter = end_nodes.begin (); iter
-          != end_nodes.end (); ++iter)
+      for (std::vector <bipartite_graph_dimensions::index_type>::const_iterator iter = end_nodes.begin (); iter != end_nodes.end (); ++iter)
       {
         if (bfs_result[*iter].is_reachable ())
           nearest_end = *iter;
@@ -247,6 +244,8 @@ namespace tu {
           if (count % 2 == 0)
           {
             matroid_binary_pivot (matroid, matrix, coords.first, coords.second);
+            extra_elements.insert (matroid.name1 (coords.first));
+            extra_elements.insert (matroid.name2 (coords.second));
             nearest_distance -= 2;
           }
           count++;
@@ -370,13 +369,12 @@ namespace tu {
   }
 
   template <typename MatroidType, typename MatrixType>
-  separation find_minor_sequence (MatroidType& matroid, MatrixType& matrix, nested_minor_sequence& nested_minors)
+  separation find_minor_sequence (MatroidType& matroid, MatrixType& matrix, nested_minor_sequence& nested_minors, matroid_element_set& extra_elements)
   {
     //    std::cout << "Constructing a sequence of nested minors..." << std::flush;
 
     vector_three_connectivity <MatrixType> column_three_connectivity (matrix, 3, 3);
-    vector_three_connectivity <matrix_transposed <MatrixType> > row_three_connectivity (
-        view_matrix_transposed (matrix), 3, 3);
+    vector_three_connectivity <matrix_transposed <MatrixType> > row_three_connectivity (view_matrix_transposed (matrix), 3, 3);
 
     matroid_transposed <MatroidType> transposed_matroid (matroid);
     matrix_transposed <MatrixType> transposed_matrix (matrix);
@@ -392,8 +390,8 @@ namespace tu {
       }
 
       // Simple row extension
-      if (find_simple_row_extension (transposed_matroid, transposed_matrix, transposed_nested_minors,
-          column_three_connectivity, row_three_connectivity))
+      if (find_simple_row_extension (transposed_matroid, transposed_matrix, transposed_nested_minors, column_three_connectivity,
+          row_three_connectivity))
       {
         //        std::cout << "Found a non-parallel non-unit/zero-vector column" << std::endl;
         continue;
@@ -404,8 +402,7 @@ namespace tu {
       //        matroid_print (matroid, matrix);
 
       size_t the_index = 0;
-      char type = find_parallel_or_unit_vector (matroid, matrix, nested_minors, row_three_connectivity,
-          column_three_connectivity, the_index);
+      char type = find_parallel_or_unit_vector (matroid, matrix, nested_minors, row_three_connectivity, column_three_connectivity, the_index);
       if (type == 0)
       {
         //        std::cout << " found a 1-separation instead." << std::endl;
@@ -415,8 +412,8 @@ namespace tu {
       {
         //            std::cout << "Working on real matroid " << std::endl;
 
-        separation sep = find_elaborate_extension (matroid, matrix, nested_minors, row_three_connectivity,
-            column_three_connectivity, the_index);
+        separation sep = find_elaborate_extension (matroid, matrix, nested_minors, row_three_connectivity, column_three_connectivity, the_index,
+            extra_elements);
         if (sep.is_valid ())
         {
           return sep;
@@ -428,8 +425,8 @@ namespace tu {
 
         //            std::cout << "Working on transposed matroid " << std::endl;
 
-        separation sep = find_elaborate_extension (transposed_matroid, transposed_matrix, transposed_nested_minors,
-            column_three_connectivity, row_three_connectivity, the_index);
+        separation sep = find_elaborate_extension (transposed_matroid, transposed_matrix, transposed_nested_minors, column_three_connectivity,
+            row_three_connectivity, the_index, extra_elements);
         if (sep.is_valid ())
           return sep.transposed ();
       }

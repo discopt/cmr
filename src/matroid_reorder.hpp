@@ -35,8 +35,8 @@ namespace tu {
   }
 
   template <typename MatroidType, typename MatrixType, typename ElementLess>
-  inline void matroid_reorder_rows (MatroidType& matroid, MatrixType& matrix, size_t row_first, size_t row_beyond,
-      size_t column_first, size_t column_beyond, ElementLess element_less)
+  inline void matroid_reorder_rows (MatroidType& matroid, MatrixType& matrix, size_t row_first, size_t row_beyond, size_t column_first,
+      size_t column_beyond, ElementLess element_less)
   {
     permutation perm;
     matrix_reorder_rows (matrix, row_first, row_beyond, column_first, column_beyond, element_less, perm);
@@ -47,13 +47,12 @@ namespace tu {
   }
 
   template <typename MatroidType, typename MatrixType, typename ElementLess>
-  inline void matroid_reorder_columns (MatroidType& matroid, MatrixType& matrix, size_t row_first, size_t row_beyond,
-      size_t column_first, size_t column_beyond, ElementLess element_less)
+  inline void matroid_reorder_columns (MatroidType& matroid, MatrixType& matrix, size_t row_first, size_t row_beyond, size_t column_first,
+      size_t column_beyond, ElementLess element_less)
   {
     matroid_transposed <MatroidType> transposed_matroid (matroid);
     matrix_transposed <MatrixType> transposed_matrix (matrix);
-    matroid_reorder_rows (transposed_matroid, transposed_matrix, column_first, column_beyond, row_first, row_beyond,
-        element_less);
+    matroid_reorder_rows (transposed_matroid, transposed_matrix, column_first, column_beyond, row_first, row_beyond, element_less);
   }
 
 }

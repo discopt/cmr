@@ -26,11 +26,10 @@ namespace tu {
       matrix_print (input_matrix);
 
       std::cout << "\nCurrent matrix:\n";
-      boost::numeric::ublas::matrix_indirect <const MatrixType, IndirectArrayType> indirect_matrix (input_matrix,
-          row_indices, column_indices);
+      boost::numeric::ublas::matrix_indirect <const MatrixType, IndirectArrayType> indirect_matrix (input_matrix, row_indices, column_indices);
       matrix_print (indirect_matrix);
-      
-     // row_indices.
+
+      // row_indices.
     }
 
     /**
@@ -42,22 +41,24 @@ namespace tu {
 
     inline void search_violator (const integer_matrix& input_matrix, submatrix_indices& violator)
     {
-      violator.rows = submatrix_indices::indirect_array_type (input_matrix.size1 ());
-      violator.columns = submatrix_indices::indirect_array_type (input_matrix.size2 ());
-
-      for (size_t row = 0; row < violator.rows.size (); ++row)
-      {
-        violator.rows[row] = row;
-      }
-
-      for (size_t column = 0; column < violator.columns.size (); ++column)
-      {
-        violator .columns[column] = column;
-      }
-
-      shrink_rows (input_matrix, violator.rows, violator.columns);
-
-      shrink_rows (view_matrix_transposed (input_matrix), violator.columns, violator.rows);
+      
+      
+//      violator.rows = submatrix_indices::indirect_array_type (input_matrix.size1 ());
+//      violator.columns = submatrix_indices::indirect_array_type (input_matrix.size2 ());
+//
+//      for (size_t row = 0; row < violator.rows.size (); ++row)
+//      {
+//        violator.rows[row] = row;
+//      }
+//
+//      for (size_t column = 0; column < violator.columns.size (); ++column)
+//      {
+//        violator .columns[column] = column;
+//      }
+//
+//      shrink_rows (input_matrix, violator.rows, violator.columns);
+//
+//      shrink_rows (view_matrix_transposed (input_matrix), violator.columns, violator.rows);
 
       throw std::runtime_error ("Search for violator is not yet implemented.");
     }

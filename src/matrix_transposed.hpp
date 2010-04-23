@@ -43,14 +43,11 @@ namespace tu {
     typedef typename M::difference_type difference_type;
     typedef typename M::value_type value_type;
     typedef typename M::const_reference const_reference;
-    typedef typename boost::mpl::if_ <boost::is_const <M>, typename M::const_reference, typename M::reference>::type
-        reference;
-    typedef typename boost::mpl::if_ <boost::is_const <M>, typename M::const_closure_type, typename M::closure_type>::type
-        matrix_closure_type;
+    typedef typename boost::mpl::if_ <boost::is_const <M>, typename M::const_reference, typename M::reference>::type reference;
+    typedef typename boost::mpl::if_ <boost::is_const <M>, typename M::const_closure_type, typename M::closure_type>::type matrix_closure_type;
     typedef const self_type const_closure_type;
     typedef self_type closure_type;
-    typedef typename detail::transpose_orientation <typename M::orientation_category>::orientation_category
-        orientation_category;
+    typedef typename detail::transpose_orientation <typename M::orientation_category>::orientation_category orientation_category;
     typedef typename M::storage_category storage_category;
 
   private:
@@ -91,14 +88,12 @@ namespace tu {
       return _data (j, i);
     }
 
-    typedef boost::numeric::ublas::detail::indexed_iterator1 <self_type,
-        typename matrix_type::iterator2::iterator_category> iterator1;
-    typedef boost::numeric::ublas::detail::indexed_iterator2 <self_type,
-        typename matrix_type::iterator1::iterator_category> iterator2;
-    typedef boost::numeric::ublas::detail::indexed_const_iterator1 <self_type,
-        typename matrix_type::const_iterator2::iterator_category> const_iterator1;
-    typedef boost::numeric::ublas::detail::indexed_const_iterator2 <self_type,
-        typename matrix_type::const_iterator1::iterator_category> const_iterator2;
+    typedef boost::numeric::ublas::detail::indexed_iterator1 <self_type, typename matrix_type::iterator2::iterator_category> iterator1;
+    typedef boost::numeric::ublas::detail::indexed_iterator2 <self_type, typename matrix_type::iterator1::iterator_category> iterator2;
+    typedef boost::numeric::ublas::detail::indexed_const_iterator1 <self_type, typename matrix_type::const_iterator2::iterator_category>
+        const_iterator1;
+    typedef boost::numeric::ublas::detail::indexed_const_iterator2 <self_type, typename matrix_type::const_iterator1::iterator_category>
+        const_iterator2;
   };
 
   template <typename MatrixType>
@@ -108,15 +103,13 @@ namespace tu {
   }
 
   template <typename MatrixType>
-  inline void matrix_set_value (matrix_transposed <MatrixType>& matrix, size_t row, size_t column,
-      typename MatrixType::value_type value)
+  inline void matrix_set_value (matrix_transposed <MatrixType>& matrix, size_t row, size_t column, typename MatrixType::value_type value)
   {
     matrix (row, column) = value;
   }
 
   template <typename MatrixType>
-  inline void matrix_set_value (matrix_transposed <const MatrixType>& matrix, size_t row, size_t column,
-      typename MatrixType::value_type value)
+  inline void matrix_set_value (matrix_transposed <const MatrixType>& matrix, size_t row, size_t column, typename MatrixType::value_type value)
   {
 
   }

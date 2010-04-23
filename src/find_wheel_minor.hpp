@@ -46,17 +46,15 @@ namespace tu {
   };
 
   template <typename MatroidType, typename MatrixType>
-  separation find_wheel_minor (matroid_permuted <MatroidType>& permuted_matroid,
-      matrix_permuted <MatrixType>& permuted_matrix)
+  separation find_wheel_minor (matroid_permuted <MatroidType>& permuted_matroid, matrix_permuted <MatrixType>& permuted_matrix,
+      matroid_element_set& extra_elements)
   {
     assert (permuted_matrix.size1() >= 3 && permuted_matroid.size2() >= 3);
 
     //    matroid_print (permuted_matroid, permuted_matrix);
 
-    matroid_reorder_columns (permuted_matroid, permuted_matrix, 0, 1, 0, permuted_matroid.size2 (),
-        std::greater <int> ());
-    size_t count_first_row_ones = matrix_count_property_column_series (permuted_matrix, 0, 1, 0,
-        permuted_matrix.size2 (), is_non_zero ());
+    matroid_reorder_columns (permuted_matroid, permuted_matrix, 0, 1, 0, permuted_matroid.size2 (), std::greater <int> ());
+    size_t count_first_row_ones = matrix_count_property_column_series (permuted_matrix, 0, 1, 0, permuted_matrix.size2 (), is_non_zero ());
 
     if (count_first_row_ones == 0) // 1-separation
     {
@@ -65,8 +63,7 @@ namespace tu {
     }
 
     matroid_reorder_rows (permuted_matroid, permuted_matrix, 1, permuted_matroid.size1 (), 0, 1, std::greater <int> ());
-    size_t count_first_column_ones = matrix_count_property_row_series (permuted_matrix, 0, permuted_matroid.size1 (),
-        0, 1, is_non_zero ());
+    size_t count_first_column_ones = matrix_count_property_row_series (permuted_matrix, 0, permuted_matroid.size1 (), 0, 1, is_non_zero ());
 
     if (count_first_row_ones == 1) // first row is 1 0 0 ...
     {
@@ -94,31 +91,29 @@ namespace tu {
     if (permuted_matrix (1, 1) != 1)
     {
       matroid_binary_pivot (permuted_matroid, permuted_matrix, 0, 0);
+      extra_elements.insert (permuted_matroid.name1 (0));
+      extra_elements.insert (permuted_matroid.name2 (0));
     }
 
     assert ((permuted_matrix(0,0) == 1) && (permuted_matrix(1,0) == 1) && (permuted_matrix(0,1) == 1) && (permuted_matrix(1,1) == 1));
 
     // Grow the block to a set-maximal one.
 
-    matroid_reorder_columns (permuted_matroid, permuted_matrix, 0, 2, 2, permuted_matroid.size2 (),
-        std::greater <int> ());
-    size_t block_width = 2 + matrix_count_property_column_series (permuted_matrix, 0, 2, 2, permuted_matrix.size2 (),
-        is_all_ones ());
+    matroid_reorder_columns (permuted_matroid, permuted_matrix, 0, 2, 2, permuted_matroid.size2 (), std::greater <int> ());
+    size_t block_width = 2 + matrix_count_property_column_series (permuted_matrix, 0, 2, 2, permuted_matrix.size2 (), is_all_ones ());
 
     //    std::cout << "Before sorting of rows:\n" << std::endl;
 
     //    matroid_print (permuted_matroid, permuted_matrix);
     //    matrix_print (permuted_matrix.data ());
 
-    matroid_reorder_rows (permuted_matroid, permuted_matrix, 2, permuted_matroid.size1 (), 0, block_width,
-        std::greater <int> ());
+    matroid_reorder_rows (permuted_matroid, permuted_matrix, 2, permuted_matroid.size1 (), 0, block_width, std::greater <int> ());
 
     //    std::cout << "After sorting rows [2, " << permuted_matroid.size1 () << ") via greater on columns [0, "
     //            << block_width << ")" << std::endl;
     //    matroid_print (permuted_matroid, permuted_matrix);
 
-    size_t block_height = 2 + matrix_count_property_row_series (permuted_matrix, 2, permuted_matrix.size1 (), 0,
-        block_width, is_all_ones ());
+    size_t block_height = 2 + matrix_count_property_row_series (permuted_matrix, 2, permuted_matrix.size1 (), 0, block_width, is_all_ones ());
 
     //    std::cout << "Block of ones is " << block_width << " x " << block_height << std::endl;
     //    matroid_print (permuted_matroid, permuted_matrix);
@@ -126,8 +121,7 @@ namespace tu {
     // Search for a path in BFS graph
 
     zero_block_matrix_modifier modifier (block_height, block_width);
-    matrix_modified <matrix_permuted <MatrixType> , zero_block_matrix_modifier> modified_matrix (permuted_matrix,
-        modifier);
+    matrix_modified <matrix_permuted <MatrixType> , zero_block_matrix_modifier> modified_matrix (permuted_matrix, modifier);
     bipartite_graph_dimensions dim (permuted_matrix.size1 (), permuted_matrix.size2 ());
     std::vector <bipartite_graph_dimensions::index_type> start_nodes (block_height);
     for (size_t i = 0; i < block_height; i++)
@@ -195,8 +189,7 @@ namespace tu {
 
     bipartite_graph_dimensions::index_type nearest_end = 0;
 
-    for (std::vector <bipartite_graph_dimensions::index_type>::const_iterator iter = end_nodes.begin (); iter
-        != end_nodes.end (); ++iter)
+    for (std::vector <bipartite_graph_dimensions::index_type>::const_iterator iter = end_nodes.begin (); iter != end_nodes.end (); ++iter)
     {
       if (bfs_result[*iter].is_reachable ())
         nearest_end = *iter;
@@ -230,10 +223,12 @@ namespace tu {
     {
       std::pair <size_t, size_t> coords = dim.indexes_to_coordinates (current_index, last_index);
 
-      if ((bfs_result[current_index].distance % 2 == 0) && (bfs_result[current_index].distance >= 2)
-          && (bfs_result[current_index].distance + 2 < (int) nearest_distance))
+      if ((bfs_result[current_index].distance % 2 == 0) && (bfs_result[current_index].distance >= 2) && (bfs_result[current_index].distance + 2
+          < (int) nearest_distance))
       {
         matroid_binary_pivot (permuted_matroid, permuted_matrix, coords.first, coords.second);
+        extra_elements.insert (permuted_matroid.name1 (coords.first));
+        extra_elements.insert (permuted_matroid.name2 (coords.second));
       }
 
       if (bfs_result[current_index].distance == 1)

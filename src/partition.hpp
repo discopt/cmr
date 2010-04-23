@@ -22,8 +22,7 @@ namespace tu {
   namespace detail {
 
     template <typename MatrixType, typename VectorType>
-    inline void copy_partial_row (const MatrixType& matrix, VectorType& vector, size_t row, size_t first_column,
-        size_t beyond_column)
+    inline void copy_partial_row (const MatrixType& matrix, VectorType& vector, size_t row, size_t first_column, size_t beyond_column)
     {
       size_t j = 0;
       for (size_t i = first_column; i < beyond_column; ++i, ++j)
@@ -33,8 +32,7 @@ namespace tu {
     }
 
     template <typename MatrixType, typename VectorType>
-    inline void copy_partial_column (const MatrixType& matrix, VectorType& vector, size_t column, size_t first_row,
-        size_t beyond_row)
+    inline void copy_partial_column (const MatrixType& matrix, VectorType& vector, size_t column, size_t first_row, size_t beyond_row)
     {
       copy_partial_row (matrix_transposed <const MatrixType> (matrix), vector, column, first_row, beyond_row);
     }
@@ -46,8 +44,8 @@ namespace tu {
   };
 
   template <typename MatrixType>
-  inline rank_distribution partition (matrix_permuted <const MatrixType>& matrix, size_t& top_left_height,
-      size_t& top_left_width, size_t& bottom_right_height, size_t& bottom_right_width)
+  inline rank_distribution partition (matrix_permuted <const MatrixType>& matrix, size_t& top_left_height, size_t& top_left_width,
+      size_t& bottom_right_height, size_t& bottom_right_width)
   {
     const size_t height = matrix.size1 ();
     size_t free_rows_first = top_left_height;
@@ -77,7 +75,7 @@ namespace tu {
         bottom_left_row_space.insert_checked (bottom_left_row);
       }
 
-//      std::cout << "bottom left row rank = " << bottom_left_row_space.dimension () << std::endl;
+      //      std::cout << "bottom left row rank = " << bottom_left_row_space.dimension () << std::endl;
 
       /// Setup top right rows
       binary_linear_space top_right_row_space (bottom_right_width);
@@ -89,7 +87,7 @@ namespace tu {
         top_right_row_space.insert_checked (top_right_row);
       }
 
-//      std::cout << "top right row rank = " << top_right_row_space.dimension () << std::endl;
+      //      std::cout << "top right row rank = " << top_right_row_space.dimension () << std::endl;
 
       /// Check we have rank sum of 2
       if (bottom_left_row_space.dimension () + top_right_row_space.dimension () != 2)

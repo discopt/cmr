@@ -20,8 +20,8 @@ namespace tu {
     typedef MatroidType matroid_type;
     typedef typename MatroidType::size_type size_type;
     typedef typename MatroidType::name_type name_type;
-    typedef typename boost::mpl::if_ <boost::is_const <MatroidType>, typename MatroidType::const_reference_type,
-        typename MatroidType::reference_type>::type reference_type;
+    typedef typename boost::mpl::if_ <boost::is_const <MatroidType>, typename MatroidType::const_reference_type, typename MatroidType::reference_type>::type
+        reference_type;
     typedef const name_type& const_reference_type;
     typedef matroid_transposed <name_type> self_type;
     typedef permutation permutation_type;

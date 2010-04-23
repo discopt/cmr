@@ -24,18 +24,17 @@ void print_matroid_graph (const tu::matroid_graph& graph, const std::string& ind
     for (boost::tie (edge_iter, edge_end) = boost::out_edges (*vertex_iter, graph); edge_iter != edge_end; ++edge_iter)
     {
       int matroid_element = boost::get (tu::edge_matroid_element, graph, *edge_iter);
-      std::cout << ' ' << boost::target (*edge_iter, graph) << " (" << (matroid_element < 0 ? "row " : "column ")
-          << (matroid_element - 1) << ") ";
+      std::cout << ' ' << boost::target (*edge_iter, graph) << " (" << (matroid_element < 0 ? "row " : "column ") << (matroid_element - 1) << ") ";
     }
   }
   std::cout << '\n';
 }
 
-void print_decomposition (const tu::decomposed_matroid* matroid, std::string indent = "")
+void print_decomposition (const tu::decomposed_matroid* decomposition, std::string indent = "")
 {
-  if (matroid->is_leaf ())
+  if (decomposition->is_leaf ())
   {
-    tu::decomposed_matroid_leaf* leaf = (tu::decomposed_matroid_leaf*) (matroid);
+    tu::decomposed_matroid_leaf* leaf = (tu::decomposed_matroid_leaf*) (decomposition);
 
     if (leaf->is_R10 ())
       std::cout << indent << "R10\n";
@@ -69,7 +68,7 @@ void print_decomposition (const tu::decomposed_matroid* matroid, std::string ind
   }
   else
   {
-    tu::decomposed_matroid_separator* separator = (tu::decomposed_matroid_separator*) (matroid);
+    tu::decomposed_matroid_separator* separator = (tu::decomposed_matroid_separator*) (decomposition);
 
     if (separator->separation_type () == tu::decomposed_matroid_separator::ONE_SEPARATION)
     {
@@ -97,8 +96,7 @@ void print_decomposition (const tu::decomposed_matroid* matroid, std::string ind
 
 void print_violator (const tu::integer_matrix& matrix, const tu::submatrix_indices& violator)
 {
-  typedef boost::numeric::ublas::matrix_indirect <const tu::integer_matrix, tu::submatrix_indices::indirect_array_type>
-      indirect_matrix_t;
+  typedef boost::numeric::ublas::matrix_indirect <const tu::integer_matrix, tu::submatrix_indices::indirect_array_type> indirect_matrix_t;
 
   const indirect_matrix_t indirect_matrix (matrix, violator.rows, violator.columns);
 
@@ -176,8 +174,7 @@ int run (const std::string& file_name, bool show_certificates)
     else
     {
       std::cout << "Matrix is not totally unimodular." << std::endl;
-      std::cout << "\nThe violating submatrix is " << violator.rows.size () << " x " << violator.columns.size ()
-          << ":\n\n";
+      std::cout << "\nThe violating submatrix is " << violator.rows.size () << " x " << violator.columns.size () << ":\n\n";
       print_violator (matrix, violator);
     }
   }
@@ -200,8 +197,7 @@ int main (int argc, char **argv)
 {
   po::options_description options_desc ("Allowed options");
   options_desc.add_options () ("help,h", "Shows a help message.") ("matrix,m", po::value <std::string> (),
-      "Input matrix to test for total unimodularity.") (
-      "certs,c",
+      "Input matrix to test for total unimodularity.") ("certs,c",
       "Prints certificates: A matroid decomposition, if the matrix is totally unimodular and a violating submatrix otherwise.");
   po::positional_options_description positional_options_desc;
   positional_options_desc.add ("matrix", -1);
@@ -209,8 +205,7 @@ int main (int argc, char **argv)
 
   try
   {
-    po::store (po::command_line_parser (argc, argv).options (options_desc).positional (positional_options_desc).run (),
-        variables);
+    po::store (po::command_line_parser (argc, argv).options (options_desc).positional (positional_options_desc).run (), variables);
   }
   catch (po::error e)
   {

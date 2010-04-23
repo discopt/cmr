@@ -18,34 +18,29 @@ namespace tu {
 
     template <typename Graph>
     void reconnect_edge_target (Graph& graph, typename boost::graph_traits <Graph>::edge_descriptor edge,
-        typename boost::graph_traits <Graph>::vertex_descriptor old_vertex,
-        typename boost::graph_traits <Graph>::vertex_descriptor new_vertex)
+        typename boost::graph_traits <Graph>::vertex_descriptor old_vertex, typename boost::graph_traits <Graph>::vertex_descriptor new_vertex)
     {
       if (old_vertex != new_vertex)
       {
-        boost::add_edge (boost::source (edge, graph), new_vertex,
-            *((typename Graph::edge_property_type*) edge.get_property ()), graph);
+        boost::add_edge (boost::source (edge, graph), new_vertex, *((typename Graph::edge_property_type*) edge.get_property ()), graph);
         boost::remove_edge (edge, graph);
       }
     }
 
     template <typename Graph>
     void reconnect_edge_source (Graph& graph, typename boost::graph_traits <Graph>::edge_descriptor edge,
-        typename boost::graph_traits <Graph>::vertex_descriptor old_vertex,
-        typename boost::graph_traits <Graph>::vertex_descriptor new_vertex)
+        typename boost::graph_traits <Graph>::vertex_descriptor old_vertex, typename boost::graph_traits <Graph>::vertex_descriptor new_vertex)
     {
       if (old_vertex != new_vertex)
       {
-        boost::add_edge (boost::target (edge, graph), new_vertex,
-            *((typename Graph::edge_property_type*) edge.get_property ()), graph);
+        boost::add_edge (boost::target (edge, graph), new_vertex, *((typename Graph::edge_property_type*) edge.get_property ()), graph);
         boost::remove_edge (edge, graph);
       }
     }
 
     template <typename Graph>
     void reconnect_edge (Graph& g, typename boost::graph_traits <Graph>::edge_descriptor edge,
-        typename boost::graph_traits <Graph>::vertex_descriptor old_vertex,
-        typename boost::graph_traits <Graph>::vertex_descriptor new_vertex)
+        typename boost::graph_traits <Graph>::vertex_descriptor old_vertex, typename boost::graph_traits <Graph>::vertex_descriptor new_vertex)
     {
       if (boost::source (edge, g) == old_vertex)
         reconnect_edge_source (g, edge, old_vertex, new_vertex);
@@ -112,8 +107,8 @@ namespace tu {
 
       size_t size_before = path.size ();
 
-      boost::breadth_first_search (g, start, boost::vertex_index_map (index_map).visitor (boost::make_bfs_visitor (
-          detail::write_vertex (std::back_inserter (path), boost::on_discover_vertex ()))));
+      boost::breadth_first_search (g, start, boost::vertex_index_map (index_map).visitor (boost::make_bfs_visitor (detail::write_vertex (
+          std::back_inserter (path), boost::on_discover_vertex ()))));
 
       return path.size () - size_before == path_length;
     }

@@ -97,8 +97,8 @@ namespace tu {
   }
 
   separation::separation (const separation& other) :
-    split_ (other.split_), witnesses_ (other.witnesses_), upper_right_rank_ (other.upper_right_rank_),
-        lower_left_rank_ (other.lower_left_rank_), special_swap_ (other.special_swap_)
+    split_ (other.split_), witnesses_ (other.witnesses_), upper_right_rank_ (other.upper_right_rank_), lower_left_rank_ (other.lower_left_rank_),
+        special_swap_ (other.special_swap_)
   {
 
   }

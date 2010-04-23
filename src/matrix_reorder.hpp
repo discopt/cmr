@@ -73,8 +73,8 @@ namespace tu {
   };
 
   template <typename MatrixType, typename ElementLess>
-  inline void matrix_reorder_rows (const MatrixType& matrix, size_t row_first, size_t row_beyond, size_t column_first,
-      size_t column_beyond, ElementLess element_less, permutation& result_permutation)
+  inline void matrix_reorder_rows (const MatrixType& matrix, size_t row_first, size_t row_beyond, size_t column_first, size_t column_beyond,
+      ElementLess element_less, permutation& result_permutation)
   {
     //    std::cout << "matrix_reorder_rows (with permutation)" << std::endl;
     result_permutation.reset (matrix.size1 ());
@@ -88,17 +88,16 @@ namespace tu {
   }
 
   template <typename MatrixType, typename ElementLess>
-  inline void matrix_reorder_columns (const MatrixType& matrix, size_t row_first, size_t row_beyond,
-      size_t column_first, size_t column_beyond, ElementLess element_less, permutation& result_permutation)
+  inline void matrix_reorder_columns (const MatrixType& matrix, size_t row_first, size_t row_beyond, size_t column_first, size_t column_beyond,
+      ElementLess element_less, permutation& result_permutation)
   {
     const matrix_transposed <MatrixType> transposed (matrix);
-    matrix_reorder_rows (transposed, column_first, column_beyond, row_first, row_beyond, element_less,
-        result_permutation);
+    matrix_reorder_rows (transposed, column_first, column_beyond, row_first, row_beyond, element_less, result_permutation);
   }
 
   template <typename MatrixType, typename ElementLess>
-  inline void matrix_reorder_rows (MatrixType& matrix, size_t row_first, size_t row_beyond, size_t column_first,
-      size_t column_beyond, ElementLess element_less)
+  inline void matrix_reorder_rows (MatrixType& matrix, size_t row_first, size_t row_beyond, size_t column_first, size_t column_beyond,
+      ElementLess element_less)
   {
     permutation perm;
     //    std::cout << "matrix_reorder_rows" << std::endl;
@@ -112,8 +111,8 @@ namespace tu {
   }
 
   template <typename MatrixType, typename ElementLess>
-  inline void matrix_reorder_columns (MatrixType& matrix, size_t row_first, size_t row_beyond, size_t column_first,
-      size_t column_beyond, ElementLess element_less)
+  inline void matrix_reorder_columns (MatrixType& matrix, size_t row_first, size_t row_beyond, size_t column_first, size_t column_beyond,
+      ElementLess element_less)
   {
     matrix_transposed <MatrixType> transposed (matrix);
     matrix_reorder_rows (matrix, column_first, column_beyond, row_first, row_beyond, element_less);

@@ -32,8 +32,7 @@ namespace tu {
    */
 
   template <typename MatrixType>
-  bool find_nonzero_column (MatrixType& matrix, size_t column_first, size_t column_beyond, size_t row_first,
-      size_t row_beyond, size_t target_column)
+  bool find_nonzero_column (MatrixType& matrix, size_t column_first, size_t column_beyond, size_t row_first, size_t row_beyond, size_t target_column)
   {
     for (size_t column = column_first; column < column_beyond; ++column)
     {
@@ -63,9 +62,8 @@ namespace tu {
    */
 
   template <typename MatrixType>
-  void check_sign (const MatrixType& matrix, const std::vector <bipartite_graph_bfs_node>& spanning_tree,
-      const bipartite_graph_dimensions& dim, const std::set <size_t>& nodes, size_t current_index, size_t column,
-      std::map <size_t, bool>& changes)
+  void check_sign (const MatrixType& matrix, const std::vector <bipartite_graph_bfs_node>& spanning_tree, const bipartite_graph_dimensions& dim,
+      const std::set <size_t>& nodes, size_t current_index, size_t column, std::map <size_t, bool>& changes)
   {
     // Root does not change.
     if (spanning_tree[current_index].predecessor == current_index)
@@ -246,8 +244,7 @@ namespace tu {
           }
         }
 
-        matrix_reorder_rows (permuted, handled_rows, permuted.size1 (), handled_columns, permuted.size2 (),
-            abs_greater <int> ());
+        matrix_reorder_rows (permuted, handled_rows, permuted.size1 (), handled_columns, permuted.size2 (), abs_greater <int> ());
 
         //            std::cout << "handled rows is increased from " << handled_rows;
 
@@ -285,8 +282,7 @@ namespace tu {
             //                    std::cout << "reordering for disconnected case starting at " << handled_rows << ","
             //                            << handled_columns << std::endl;
 
-            matrix_reorder_rows (permuted, handled_rows, permuted.size1 (), handled_columns, permuted.size2 (),
-                abs_greater <int> ());
+            matrix_reorder_rows (permuted, handled_rows, permuted.size1 (), handled_columns, permuted.size2 (), abs_greater <int> ());
 
             while (handled_rows < permuted.size1 ())
             {

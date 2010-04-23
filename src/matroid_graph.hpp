@@ -20,8 +20,7 @@ namespace tu {
   };
 
   typedef boost::property <tu::edge_matroid_element_t, int> matroid_element_property;
-  typedef boost::adjacency_list <boost::vecS, boost::vecS, boost::undirectedS, boost::no_property,
-      matroid_element_property> matroid_graph;
+  typedef boost::adjacency_list <boost::vecS, boost::vecS, boost::undirectedS, boost::no_property, matroid_element_property> matroid_graph;
 
 }
 

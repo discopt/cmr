@@ -26,10 +26,14 @@ namespace tu {
   };
 
   typedef boost::numeric::ublas::matrix <int> integer_matrix;
-  typedef boost::numeric::ublas::matrix_indirect <const integer_matrix, submatrix_indices::indirect_array_type>
-      integer_submatrix;
+  typedef boost::numeric::ublas::matrix_indirect <const integer_matrix, submatrix_indices::indirect_array_type> integer_submatrix;
 
   class decomposed_matroid;
+
+  /// Returns a decomposition of a given binary matroid into a k-sum-decomposition (k=1,2,3)
+  /// in graphic, cographic, R10 and maybe irregular components. 
+
+  decomposed_matroid* decompose_binary_matroid (const boost::numeric::ublas::matrix <int>& matrix);
 
   /// Returns true, iff the given matrix is totally unimodular.
 
@@ -48,8 +52,7 @@ namespace tu {
   /// Returns true, iff the given matrix is totally unimodular.
   /// decomposition points to a k-sum-decomposition (k=1,2,3) in graphic, cographic, R10 and maybe irregular components.
 
-  bool is_totally_unimodular (const integer_matrix& matrix, decomposed_matroid*& decomposition,
-      submatrix_indices& violator);
+  bool is_totally_unimodular (const integer_matrix& matrix, decomposed_matroid*& decomposition, submatrix_indices& violator);
 
   /// Returns true, iff the given matrix contains only values {-1, 0, 1}.
 

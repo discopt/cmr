@@ -24,8 +24,8 @@
 namespace tu {
 
   template <typename MatroidType, typename MatrixType>
-  int find_parallel_to_row (const MatroidType& matroid, const MatrixType& matrix, const size_t minor_height,
-      const size_t minor_width, const size_t row)
+  int find_parallel_to_row (const MatroidType& matroid, const MatrixType& matrix, const size_t minor_height, const size_t minor_width,
+      const size_t row)
   {
     /// Look for unit vector
     size_t last = 0;
@@ -74,8 +74,7 @@ namespace tu {
     {
     }
 
-    articulation_edge_filter (const Graph* graph, const vertex_descriptor* articulation_vertex,
-        const edge_set* evil_edges) :
+    articulation_edge_filter (const Graph* graph, const vertex_descriptor* articulation_vertex, const edge_set* evil_edges) :
       graph_ (graph), articulation_vertex_ (articulation_vertex), evil_edges_ (evil_edges)
     {
     }
@@ -102,39 +101,39 @@ namespace tu {
   };
 
   template <typename Graph, typename Vertex, typename EdgeSet>
-  inline struct articulation_edge_filter <Graph> make_articulation_edge_filter (const Graph* graph,
-      const Vertex* articulation_vertex, const EdgeSet* evil_edges)
+  inline struct articulation_edge_filter <Graph> make_articulation_edge_filter (const Graph* graph, const Vertex* articulation_vertex,
+      const EdgeSet* evil_edges)
   {
     return articulation_edge_filter <Graph> (graph, articulation_vertex, evil_edges);
   }
 
   template <typename MatroidType, typename MatrixType>
-  bool extend_graph (matroid_graph& graph, const MatroidType& matroid, const MatrixType& matrix,
-      const size_t minor_height, const size_t minor_width, const nested_minor_sequence::extension_type extension_type)
+  bool extend_graph (matroid_graph& graph, const MatroidType& matroid, const MatrixType& matrix, const size_t minor_height, const size_t minor_width,
+      const nested_minor_sequence::extension_type extension_type)
   {
-//    std::cout << "Extending the following graph with an extension of ";
-//    switch (extension_type)
-//    {
-//    case nested_minor_sequence::ONE_ROW:
-//      std::cout << "1-row-type";
-//    break;
-//    case nested_minor_sequence::ONE_ROW_TWO_COLUMNS:
-//      std::cout << "1-row-2-columns-type";
-//    break;
-//    case nested_minor_sequence::ONE_ROW_ONE_COLUMN:
-//      std::cout << "1-row-1-column-type";
-//    break;
-//    case nested_minor_sequence::TWO_ROWS_ONE_COLUMN:
-//      std::cout << "2-rows-1-column-type";
-//    break;
-//    case nested_minor_sequence::ONE_COLUMN:
-//      std::cout << "1-column-type";
-//    break;
-//    default:
-//      std::cout << "<unknown>";
-//    break;
-//    }
-//    std::cout << " and current minor: " << minor_height << " x " << minor_width << std::endl;
+    //    std::cout << "Extending the following graph with an extension of ";
+    //    switch (extension_type)
+    //    {
+    //    case nested_minor_sequence::ONE_ROW:
+    //      std::cout << "1-row-type";
+    //    break;
+    //    case nested_minor_sequence::ONE_ROW_TWO_COLUMNS:
+    //      std::cout << "1-row-2-columns-type";
+    //    break;
+    //    case nested_minor_sequence::ONE_ROW_ONE_COLUMN:
+    //      std::cout << "1-row-1-column-type";
+    //    break;
+    //    case nested_minor_sequence::TWO_ROWS_ONE_COLUMN:
+    //      std::cout << "2-rows-1-column-type";
+    //    break;
+    //    case nested_minor_sequence::ONE_COLUMN:
+    //      std::cout << "1-column-type";
+    //    break;
+    //    default:
+    //      std::cout << "<unknown>";
+    //    break;
+    //    }
+    //    std::cout << " and current minor: " << minor_height << " x " << minor_width << std::endl;
     //        std::cout << graph << std::endl;
 
     typedef boost::graph_traits <matroid_graph> traits;
@@ -197,10 +196,10 @@ namespace tu {
     break;
     case nested_minor_sequence::ONE_ROW_TWO_COLUMNS:
     {
-      int first_edge_element = find_parallel_to_row (view_matroid_transposed (matroid),
-          view_matrix_transposed (matrix), minor_width, minor_height, minor_width);
-      int second_edge_element = find_parallel_to_row (view_matroid_transposed (matroid),
-          view_matrix_transposed (matrix), minor_width, minor_height, minor_width + 1);
+      int first_edge_element = find_parallel_to_row (view_matroid_transposed (matroid), view_matrix_transposed (matrix), minor_width, minor_height,
+          minor_width);
+      int second_edge_element = find_parallel_to_row (view_matroid_transposed (matroid), view_matrix_transposed (matrix), minor_width, minor_height,
+          minor_width + 1);
 
       /// Find vertices of corresponding edges
 
@@ -237,8 +236,8 @@ namespace tu {
     case nested_minor_sequence::ONE_ROW_ONE_COLUMN:
     {
       int row_edge_element = find_parallel_to_row (matroid, matrix, minor_height, minor_width, minor_height);
-      int column_edge_element = find_parallel_to_row (view_matroid_transposed (matroid),
-          view_matrix_transposed (matrix), minor_width, minor_height, minor_width);
+      int column_edge_element = find_parallel_to_row (view_matroid_transposed (matroid), view_matrix_transposed (matrix), minor_width, minor_height,
+          minor_width);
 
       /// Find vertices of corresponding edges
 
@@ -329,8 +328,7 @@ namespace tu {
       }
 
       traits::vertex_descriptor the_vertex = traits::null_vertex ();
-      if (tu::util::find_star_vertex (boost::make_filtered_graph (graph, boost::is_in_subset <edge_set> (one_edges)),
-          the_vertex))
+      if (tu::util::find_star_vertex (boost::make_filtered_graph (graph, boost::is_in_subset <edge_set> (one_edges)), the_vertex))
       {
         //        std::cout << "More simple case on vertex " << the_vertex << std::endl;
 
@@ -382,20 +380,20 @@ namespace tu {
       /// Find articulation points for the graph without 1-edges
 
       vertex_vector_t articulation_points;
-      boost::articulation_points (boost::make_filtered_graph (graph, boost::is_not_in_subset <edge_set> (one_edges)),
-          std::back_inserter (articulation_points));
+      boost::articulation_points (boost::make_filtered_graph (graph, boost::is_not_in_subset <edge_set> (one_edges)), std::back_inserter (
+          articulation_points));
 
       the_vertex = traits::null_vertex ();
       for (vertex_vector_t::const_iterator iter = articulation_points.begin (); iter != articulation_points.end (); ++iter)
       {
         if (common_vertex_count[boost::get (index_map, *iter)] == one_edges.size ())
         {
-//          std::cout << "candidate vertex (AP and common to 1-edges): " << *iter << std::endl;
+          //          std::cout << "candidate vertex (AP and common to 1-edges): " << *iter << std::endl;
           if (the_vertex == traits::null_vertex ())
             the_vertex = *iter;
           else
           {
-//            std::cout << "Found 2 articulation points" << std::endl;
+            //            std::cout << "Found 2 articulation points" << std::endl;
             return false;
           }
         }
@@ -410,9 +408,9 @@ namespace tu {
       articulation_set.insert (the_vertex);
       std::vector <size_t> component_vector (boost::num_vertices (graph));
 
-      size_t num_components = boost::connected_components (boost::make_filtered_graph (graph,
-          make_articulation_edge_filter (&graph, &the_vertex, &one_edges), boost::is_not_in_subset <vertex_set> (
-              articulation_set)), boost::make_iterator_property_map (component_vector.begin (), index_map));
+      size_t num_components = boost::connected_components (boost::make_filtered_graph (graph, make_articulation_edge_filter (&graph, &the_vertex,
+          &one_edges), boost::is_not_in_subset <vertex_set> (articulation_set)), boost::make_iterator_property_map (component_vector.begin (),
+          index_map));
 
       /// We should really have articulation point + 2 further components
       assert (num_components >= 2);
@@ -432,12 +430,11 @@ namespace tu {
         size_t target_component = component_vector[boost::get (index_map, target)];
 
         assert (source_component != target_component);
-        boost::add_edge (boost::vertex (source_component, component_graph), boost::vertex (target_component,
-            component_graph), component_graph);
+        boost::add_edge (boost::vertex (source_component, component_graph), boost::vertex (target_component, component_graph), component_graph);
       }
 
-      boost::one_bit_color_map <boost::vec_adj_list_vertex_id_map <boost::no_property, unsigned int> > bipartition (
-          num_components, boost::get (boost::vertex_index, component_graph));
+      boost::one_bit_color_map <boost::vec_adj_list_vertex_id_map <boost::no_property, unsigned int> > bipartition (num_components, boost::get (
+          boost::vertex_index, component_graph));
 
       if (!boost::is_bipartite (component_graph, boost::get (boost::vertex_index, component_graph), bipartition))
       {
@@ -465,8 +462,7 @@ namespace tu {
 
       edge_vector_t reconnect_edges;
       typename traits::out_edge_iterator out_edge_iter, out_edge_end;
-      for (boost::tie (out_edge_iter, out_edge_end) = boost::incident_edges (the_vertex, graph); out_edge_iter
-          != out_edge_end; ++out_edge_iter)
+      for (boost::tie (out_edge_iter, out_edge_end) = boost::incident_edges (the_vertex, graph); out_edge_iter != out_edge_end; ++out_edge_iter)
       {
         //        std::cout << "\nChecking edge " << *out_edge_iter << std::endl;
 
@@ -474,8 +470,8 @@ namespace tu {
 
         //        std::cout << "incident vertex = " << incident_vertex << std::endl;
 
-        bool reconnect = boost::get (bipartition, boost::vertex (component_vector[boost::get (index_map,
-            incident_vertex)], component_graph)) != boost::one_bit_white;
+        bool reconnect = boost::get (bipartition, boost::vertex (component_vector[boost::get (index_map, incident_vertex)], component_graph))
+            != boost::one_bit_white;
 
         //        std::cout << "is " << (reconnect ? "white" : "black") << std::endl;
 
@@ -509,10 +505,9 @@ namespace tu {
   }
 
   template <typename MatroidType, typename MatrixType, typename NestedMinorSequenceType>
-  matroid_graph* construct_matroid_graph (const MatroidType& matroid, const MatrixType& matrix,
-      const NestedMinorSequenceType& nested_minors)
+  matroid_graph* construct_matroid_graph (const MatroidType& matroid, const MatrixType& matrix, const NestedMinorSequenceType& nested_minors)
   {
-//    std::cout << "  [GRAPHICNESS TEST]\n";
+    //    std::cout << "  [GRAPHICNESS TEST]\n";
     //    matroid_print (matroid, matrix);
 
     typedef boost::graph_traits <matroid_graph>::vertex_descriptor vertex_descriptor;
@@ -541,7 +536,7 @@ namespace tu {
     {
       if (!extend_graph (*g, matroid, matrix, minor_height, minor_width, nested_minors.get_extension (i)))
       {
-//        std::cout << "Test failed: not (co)graphic :-(" << std::endl;
+        //        std::cout << "Test failed: not (co)graphic :-(" << std::endl;
 
         delete g;
         return NULL;
@@ -558,7 +553,7 @@ namespace tu {
 
   inline void unittest_graphicness ()
   {
-//    std::cout << "Testing graphicness routine" << std::endl;
+    //    std::cout << "Testing graphicness routine" << std::endl;
 
     matroid_graph graph;
     boost::graph_traits <matroid_graph>::vertex_descriptor V[11];
@@ -632,8 +627,8 @@ namespace tu {
 
     integer_matroid matroid (11, 9);
 
-//    matroid_print (matroid, matrix);
-//    std::cout << graph << std::endl;
+    //    matroid_print (matroid, matrix);
+    //    std::cout << graph << std::endl;
 
     extend_graph (graph, matroid, matrix, 10, 9, (nested_minor_sequence::extension_type) -2);
   }
