@@ -397,7 +397,7 @@ namespace tu {
       {
         if (common_vertex_count[boost::get (index_map, *iter)] == one_edges.size ())
         {
-          std::cout << "candidate vertex (AP and common to 1-edges): " << *iter << std::endl;
+//          std::cout << "candidate vertex (AP and common to 1-edges): " << *iter << std::endl;
           if (the_vertex == traits::null_vertex ())
             the_vertex = *iter;
           else

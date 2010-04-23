@@ -31,6 +31,14 @@ namespace tu {
       reset (dimension, base);
     }
 
+    vector_three_connectivity (const vector_three_connectivity <MatrixType>& other) :
+      matrix_ (other.matrix_)
+    {
+      dimension_ = other.dimension_;
+      base_ = other.base_;
+      data_ = other.data_;
+    }
+
     void reset (size_t dimension, size_t base)
     {
       dimension_ = dimension;
@@ -73,6 +81,16 @@ namespace tu {
     ~vector_three_connectivity ()
     {
 
+    }
+
+    inline size_t base () const
+    {
+      return base_;
+    }
+
+    inline size_t dimension () const
+    {
+      return dimension_;
     }
 
     bool is_parallel (size_t index) const
@@ -129,6 +147,7 @@ namespace tu {
     {
       while (amount--)
       {
+        data_[base_] = std::make_pair (PARALLEL, base_);
         for (size_t column = base_ + 1; column < matrix_.size2 (); ++column)
         {
           if (are_equal (0, dimension_, column, base_))
@@ -205,6 +224,30 @@ namespace tu {
       //            }
       //            std::cout << " ) has data = " << data_[c] << std::endl;
       //        }
+    }
+
+    bool operator== (const vector_three_connectivity <MatrixType>& other)
+    {
+      if (other.base_ != base_)
+        return false;
+      if (other.dimension_ != dimension_)
+        return false;
+      for (size_t i = 0; i < data_.size (); ++i)
+      {
+        if (data_[i] != other.data_[i])
+          return false;
+      }
+      return true;
+    }
+
+    std::ostream& print (std::ostream& stream)
+    {
+      stream << "base = " << base_ << ", dim = " << dimension_ << "\n";
+      for (size_t i = 0; i < data_.size (); ++i)
+      {
+        stream << "data[" << i << "] = " << ((int) data_[i].first) << ", " << data_[i].second << std::endl;
+      }
+      return stream;
     }
 
   private:

@@ -33,22 +33,36 @@ namespace tu {
     std::cout << "Searching for sequence of nested minors in " << permuted_matroid.size1 () << " x " << permuted_matroid.size2 () << " matroid... "
         << std::flush;
 
+    //    {
+    //      integer_matrix copy = permuted_matrix;
+    //      sign_matrix (copy);
+    //      bool copy_result = ghouila_houri_is_totally_unimodular (copy);
+    //      std::cout << "  [The matroid is " << (copy_result ? "" : "NOT ") << "regular.]  ";
+    //    }
+
     separation sep = find_minor_sequence (permuted_matroid, permuted_matrix, nested_minors, extra_elements);
     if (sep.is_valid ())
     {
       std::cout << "found a " << (sep.rank () + 1) << "-separation instead." << std::endl;
 
-      //        std::cout << "find_minor_sequence returned a separation of rank " << sep.rank () << std::endl;
-      //        std::cout << "split is at " << sep.split ().first << "," << sep.split ().second << std::endl;
-      //        std::cout << "witness is at " << sep.witness ().first << "," << sep.witness ().second << std::endl;
-      //        if (sep.has_special_swap ())
-      //        {
-      //            if (sep.has_special_row_swap ())
-      //                std::cout << "special row swap at " << sep.get_special_swap_index () << std::endl;
-      //            else
-      //                std::cout << "special column swap at " << sep.get_special_swap_index () << std::endl;
-      //        }
-      //        matroid_print (permuted_matroid, permuted_matrix);
+      //      std::cout << "find_minor_sequence returned a separation of rank " << sep.rank () << std::endl;
+      //      std::cout << "split is at " << sep.split ().first << "," << sep.split ().second << std::endl;
+      ////      std::cout << "witness is at " << sep.witness ().first << "," << sep.witness ().second << std::endl;
+      //      if (sep.has_special_swap ())
+      //      {
+      //        if (sep.has_special_row_swap ())
+      //          std::cout << "special row swap at " << sep.get_special_swap_index () << std::endl;
+      //        else
+      //          std::cout << "special column swap at " << sep.get_special_swap_index () << std::endl;
+      //      }
+      //      matroid_print (permuted_matroid, permuted_matrix);
+
+      //      {
+      //        integer_matrix copy = permuted_matrix;
+      //        sign_matrix (copy);
+      //        bool copy_result = ghouila_houri_is_totally_unimodular (copy);
+      //        std::cout << "The matroid is " << (copy_result ? "" : "NOT ") << "regular.\n";
+      //      }
 
       integer_matroid upper_left_matroid;
       integer_matrix upper_left_matrix;
@@ -56,6 +70,20 @@ namespace tu {
       integer_matrix lower_right_matrix;
 
       sep.create_components (permuted_matroid, permuted_matrix, upper_left_matroid, upper_left_matrix, lower_right_matroid, lower_right_matrix);
+
+      //      {
+      //        integer_matrix copy = upper_left_matrix;
+      //        sign_matrix (copy);
+      //        bool copy_result = ghouila_houri_is_totally_unimodular (copy);
+      //        std::cout << "The upper left matroid is " << (copy_result ? "" : "NOT ") << "regular.\n";
+      //      }
+      //
+      //      {
+      //        integer_matrix copy = lower_right_matrix;
+      //        sign_matrix (copy);
+      //        bool copy_result = ghouila_houri_is_totally_unimodular (copy);
+      //        std::cout << "The lower right matroid is " << (copy_result ? "" : "NOT ") << "regular.\n";
+      //      }
 
       // TODO: if rank == 0, filter some extra_elements!
       //      matroid_element_set upper_left_elements;
@@ -184,7 +212,14 @@ namespace tu {
     if (sep.is_valid ())
     {
       std::cout << "Decomposing a (3|4)-separation." << std::endl;
-      //      matroid_print (permuted_matroid, permuted_matrix);
+      matroid_print (permuted_matroid, permuted_matrix);
+
+      //      {
+      //        integer_matrix copy = permuted_matrix;
+      //        sign_matrix (copy);
+      //        bool copy_result = ghouila_houri_is_totally_unimodular (copy);
+      //        std::cout << "The matroid is " << (copy_result ? "" : "NOT ") << "regular." << std::endl;
+      //      }
 
       integer_matroid upper_left_matroid;
       integer_matrix upper_left_matrix;
@@ -192,6 +227,20 @@ namespace tu {
       integer_matrix lower_right_matrix;
 
       sep.create_components (permuted_matroid, permuted_matrix, upper_left_matroid, upper_left_matrix, lower_right_matroid, lower_right_matrix);
+
+      //      {
+      //        integer_matrix copy = upper_left_matrix;
+      //        sign_matrix (copy);
+      //        bool copy_result = ghouila_houri_is_totally_unimodular (copy);
+      //        std::cout << "The upper left matroid is " << (copy_result ? "" : "NOT ") << "regular." << std::endl;
+      //      }
+      //
+      //      {
+      //        integer_matrix copy = lower_right_matrix;
+      //        sign_matrix (copy);
+      //        bool copy_result = ghouila_houri_is_totally_unimodular (copy);
+      //        std::cout << "The lower right matroid is " << (copy_result ? "" : "NOT ") << "regular." << std::endl;
+      //      }
 
       matroid_permuted <integer_matroid> permuted_upper_left_matroid (upper_left_matroid);
       matrix_permuted <integer_matrix> permuted_upper_left_matrix (upper_left_matrix);
@@ -364,6 +413,13 @@ namespace tu {
     //    std::cout << "Starting decomposition of binary matroid.\n";
     //    matroid_print (matroid, matrix);
 
+    //    {
+    //      integer_matrix copy = matrix;
+    //      sign_matrix (copy);
+    //      bool copy_result = ghouila_houri_is_totally_unimodular (copy);
+    //      std::cout << "The matroid is " << (copy_result ? "" : "NOT ") << "regular." << std::endl;
+    //    }
+
     if (matroid.size1 () <= 2 || matroid.size2 () <= 2)
     {
       if (construct_decomposition)
@@ -389,7 +445,22 @@ namespace tu {
 
     // Identifies a W_3 minor in the upper left corner or finds a separation
     std::cout << "Searching for W3 minor in " << permuted_matroid.size1 () << " x " << permuted_matroid.size2 () << " matroid... " << std::flush;
+
+    //    {
+    //      integer_matrix copy = permuted_matrix;
+    //      sign_matrix (copy);
+    //      bool copy_result = ghouila_houri_is_totally_unimodular (copy);
+    //      std::cout << "  [The matroid is " << (copy_result ? "" : "NOT ") << "regular.]  ";
+    //    }
+
     separation sep = find_wheel_minor (permuted_matroid, permuted_matrix, extra_elements);
+
+    //    {
+    //      integer_matrix copy = permuted_matrix;
+    //      sign_matrix (copy);
+    //      bool copy_result = ghouila_houri_is_totally_unimodular (copy);
+    //      std::cout << "  [The matroid is " << (copy_result ? "" : "NOT ") << "regular.]  ";
+    //    }
 
     if (sep.is_valid ()) // separation
 
