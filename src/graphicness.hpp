@@ -111,6 +111,7 @@ namespace tu {
   bool extend_graph (matroid_graph& graph, const MatroidType& matroid, const MatrixType& matrix, const size_t minor_height, const size_t minor_width,
       const nested_minor_sequence::extension_type extension_type)
   {
+    //    matroid_print (matroid, matrix);
     //    std::cout << "Extending the following graph with an extension of ";
     //    switch (extension_type)
     //    {
@@ -134,7 +135,7 @@ namespace tu {
     //    break;
     //    }
     //    std::cout << " and current minor: " << minor_height << " x " << minor_width << std::endl;
-    //        std::cout << graph << std::endl;
+    //    std::cout << graph << std::endl;
 
     typedef boost::graph_traits <matroid_graph> traits;
 
@@ -379,9 +380,17 @@ namespace tu {
 
       /// Find articulation points for the graph without 1-edges
 
+      //      std::cout << "1-edges: ";
+      //      std::copy (one_edges.begin (), one_edges.end (), std::ostream_iterator <edge_t> (std::cout, " "));
+      //      std::cout << std::endl;
+
       vertex_vector_t articulation_points;
       boost::articulation_points (boost::make_filtered_graph (graph, boost::is_not_in_subset <edge_set> (one_edges)), std::back_inserter (
           articulation_points));
+
+      //      std::cout << "APs: ";
+      //      std::copy (articulation_points.begin (), articulation_points.end (), std::ostream_iterator <vertex_t> (std::cout, " "));
+      //      std::cout << std::endl;
 
       the_vertex = traits::null_vertex ();
       for (vertex_vector_t::const_iterator iter = articulation_points.begin (); iter != articulation_points.end (); ++iter)
@@ -393,7 +402,7 @@ namespace tu {
             the_vertex = *iter;
           else
           {
-            //            std::cout << "Found 2 articulation points" << std::endl;
+            //                        std::cout << "Found 2 articulation points" << std::endl;
             return false;
           }
         }
@@ -492,6 +501,8 @@ namespace tu {
       {
         util::reconnect_edge (graph, *iter, the_vertex, new_vertex);
       }
+
+      boost::add_edge (the_vertex, new_vertex, matroid.name1 (minor_height), graph);
 
       //      std::cout << "Resulting graph:\n" << graph << std::endl;
 
