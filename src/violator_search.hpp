@@ -13,23 +13,84 @@
 #ifndef VIOLATOR_SEARCH_HPP_
 #define VIOLATOR_SEARCH_HPP_
 
+#include <boost/numeric/ublas/matrix_proxy.hpp>
+
 #include "algorithm.hpp"
-#include <boost/numeric/ublas/matrix_proxy.hpp> 
+#include "matroid.hpp"
 
 namespace tu {
   namespace detail {
 
-    template <typename MatrixType, typename IndirectArrayType>
-    void shrink_rows (const MatrixType& input_matrix, IndirectArrayType& row_indices, IndirectArrayType& column_indices)
+    inline matroid_element_set find_smallest_irregular_minor (const decomposed_matroid* decomposition, bool collect_extra_elements = true)
     {
-      std::cout << "Shrinking rows of input matrix:\n";
-      matrix_print (input_matrix);
+      if (decomposition->is_leaf ())
+      {
+        const decomposed_matroid_leaf* leaf = (decomposed_matroid_leaf*) decomposition;
 
-      std::cout << "\nCurrent matrix:\n";
-      boost::numeric::ublas::matrix_indirect <const MatrixType, IndirectArrayType> indirect_matrix (input_matrix, row_indices, column_indices);
-      matrix_print (indirect_matrix);
+        if (leaf->is_regular ())
+          return matroid_element_set ();
 
-      // row_indices.
+        matroid_element_set result;
+        std::copy (leaf->elements ().begin (), leaf->elements ().end (), std::inserter (result, result.end ()));
+        if (collect_extra_elements)
+          std::copy (leaf->extra_elements ().begin (), leaf->extra_elements ().end (), std::inserter (result, result.end ()));
+        return result;
+      }
+      else
+      {
+        const decomposed_matroid_separator* separator = (decomposed_matroid_separator*) decomposition;
+
+        matroid_element_set first_elements = find_smallest_irregular_minor (separator->first (), collect_extra_elements);
+        matroid_element_set second_elements = find_smallest_irregular_minor (separator->second (), collect_extra_elements);
+        if (first_elements.empty ())
+          return second_elements;
+        else if (second_elements.empty ())
+          return first_elements;
+        else
+          return (first_elements.size () < second_elements.size ()) ? first_elements : second_elements;
+      }
+    }
+
+    template <typename InputIterator, typename OutputIterator1, typename OutputIterator2>
+    std::pair <OutputIterator1, OutputIterator2> split_elements (InputIterator first, InputIterator beyond, OutputIterator1 rows,
+        OutputIterator2 columns)
+    {
+      for (; first != beyond; ++first)
+      {
+        if (*first > 0)
+          *columns++ = *first;
+        else
+          *rows++ = *first;
+      }
+      return std::make_pair (rows, columns);
+    }
+
+    template <typename MatrixType>
+    void create_indirect_matroid (const MatrixType& input_matrix, const matroid_element_set& row_elements,
+        const matroid_element_set& column_elements, integer_matroid& sub_matroid, submatrix_indices& sub_indices)
+    {
+      sub_matroid.resize (row_elements.size (), column_elements.size ());
+      submatrix_indices::vector_type row_vector (row_elements.size ());
+      submatrix_indices::vector_type column_vector (column_elements.size ());
+
+      size_t index = row_elements.size () - 1;
+      for (matroid_element_set::const_iterator iter = row_elements.begin (); iter != row_elements.end (); ++iter)
+      {
+        sub_matroid.name1 (index) = *iter;
+        row_vector[index] = -1 - *iter;
+        --index;
+      }
+
+      index = 0;
+      for (matroid_element_set::const_iterator iter = column_elements.begin (); iter != column_elements.end (); ++iter)
+      {
+        sub_matroid.name2 (index) = *iter;
+        column_vector[index] = -1 + *iter;
+        ++index;
+      }
+
+      sub_indices.rows = submatrix_indices::indirect_array_type (row_vector.size (), row_vector);
+      sub_indices.columns = submatrix_indices::indirect_array_type (column_vector.size (), column_vector);
     }
 
     /**
@@ -39,26 +100,35 @@ namespace tu {
      * @param violator Output parameter to put the violating submatrix into.
      */
 
-    inline void search_violator (const integer_matrix& input_matrix, submatrix_indices& violator)
+    inline void search_violator (const integer_matrix& input_matrix, const matroid_element_set& row_elements,
+        const matroid_element_set& column_elements, submatrix_indices& violator)
     {
-      
-      
-//      violator.rows = submatrix_indices::indirect_array_type (input_matrix.size1 ());
-//      violator.columns = submatrix_indices::indirect_array_type (input_matrix.size2 ());
-//
-//      for (size_t row = 0; row < violator.rows.size (); ++row)
-//      {
-//        violator.rows[row] = row;
-//      }
-//
-//      for (size_t column = 0; column < violator.columns.size (); ++column)
-//      {
-//        violator .columns[column] = column;
-//      }
-//
-//      shrink_rows (input_matrix, violator.rows, violator.columns);
-//
-//      shrink_rows (view_matrix_transposed (input_matrix), violator.columns, violator.rows);
+      integer_matroid sub_matroid;
+      submatrix_indices sub_indices;
+
+      create_indirect_matroid (input_matrix, row_elements, column_elements, sub_matroid, sub_indices);
+
+      boost::numeric::ublas::matrix_indirect <const integer_matrix, submatrix_indices::indirect_array_type> sub_matrix (input_matrix,
+          sub_indices.rows, sub_indices.columns);
+
+      matroid_print (sub_matroid, sub_matrix);
+
+      //      violator.rows = submatrix_indices::indirect_array_type (input_matrix.size1 ());
+      //      violator.columns = submatrix_indices::indirect_array_type (input_matrix.size2 ());
+      //
+      //      for (size_t row = 0; row < violator.rows.size (); ++row)
+      //      {
+      //        violator.rows[row] = row;
+      //      }
+      //
+      //      for (size_t column = 0; column < violator.columns.size (); ++column)
+      //      {
+      //        violator .columns[column] = column;
+      //      }
+      //
+      //      shrink_rows (input_matrix, violator.rows, violator.columns);
+      //
+      //      shrink_rows (view_matrix_transposed (input_matrix), violator.columns, violator.rows);
 
       throw std::runtime_error ("Search for violator is not yet implemented.");
     }

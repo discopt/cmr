@@ -211,9 +211,7 @@ namespace tu {
 
     /// Signing test
     if (!is_signed_matrix (input_matrix, violator))
-    {
       return false;
-    }
 
     integer_matroid matroid (input_matrix.size1 (), input_matrix.size2 ());
     integer_matrix matrix (input_matrix);
@@ -222,16 +220,15 @@ namespace tu {
     support_matrix (matrix);
 
     /// Matroid decomposition
-    std::pair <bool, decomposed_matroid*> result = decompose_binary_matroid (matroid, matrix, matroid_element_set (), true);
-    decomposition = result.second;
-    if (result.first)
-    {
+    bool is_tu;
+    boost::tie (is_tu, decomposition) = decompose_binary_matroid (matroid, matrix, matroid_element_set (), true);
+    if (is_tu)
       return true;
-    }
 
-    print_decomposition (result.second, "");
+    matroid_element_set rows, columns, elements = detail::find_smallest_irregular_minor (decomposition);
+    detail::split_elements (elements.begin (), elements.end (), std::inserter (rows, rows.end ()), std::inserter (columns, columns.end ()));
 
-    detail::search_violator (input_matrix, violator);
+    detail::search_violator (input_matrix, rows, columns, violator);
     return false;
   }
 
@@ -240,11 +237,9 @@ namespace tu {
 
   bool is_totally_unimodular (const integer_matrix& matrix, submatrix_indices& violator)
   {
-    if (is_totally_unimodular (matrix))
-      return true;
+    decomposed_matroid* decomposition;
 
-    detail::search_violator (matrix, violator);
-    return false;
+    return is_totally_unimodular (matrix, decomposition, violator);
   }
 
 }
