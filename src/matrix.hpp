@@ -35,7 +35,7 @@ namespace tu {
   template <typename MatrixType>
   inline void matrix_set_value (const MatrixType& matrix, size_t row, size_t column, typename MatrixType::value_type value)
   {
-    // This routine should not be called, but must exist for compilation.
+    // This routine should not be called, but must exist to compile.
     assert (false);
   }
 

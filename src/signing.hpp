@@ -5,7 +5,6 @@
  *      Author: xammy
  */
 
-
 #ifndef SIGNING_HPP_
 #define SIGNING_HPP_
 
@@ -138,6 +137,10 @@ namespace tu {
   template <typename M>
   bool sign_matrix (M& matrix, submatrix_indices* violator)
   {
+    //    std::cout << "SIGNING PROCEDURE" << std::endl;
+    //    matrix_print (matrix);
+
+    bool result = true;
     matrix_permuted <M> permuted (matrix);
     size_t handled_rows = 0;
     for (size_t handled_columns = 0; handled_columns < permuted.size2 (); ++handled_columns)
@@ -198,7 +201,7 @@ namespace tu {
 
           if (boost::is_const <M>::value)
           {
-            //                    std::cout << "Found a violation at (permuted) current column " << handled_columns << std::endl;
+            //            std::cout << "Found a violation at (permuted) current column " << handled_columns << std::endl;
 
             if (violator)
             {
@@ -233,8 +236,7 @@ namespace tu {
           }
           else
           {
-            //                    std::cout << "Really changing at " << (dim.index_to_row (iter->first)) << "," << handled_columns
-            //                            << std::endl;
+            //            std::cout << "Really changing at " << (dim.index_to_row (iter->first)) << "," << handled_columns << std::endl;
             //                    matrix_print (permuted);
 
             // We are not just testing, so swap the sign on a one.
@@ -245,6 +247,7 @@ namespace tu {
 
             //                    std::cout << "Original after change is\n";
             //                    matrix_print (permuted.data ());
+            result = false;
           }
         }
 
@@ -304,7 +307,7 @@ namespace tu {
       }
     }
 
-    return true;
+    return result;
   }
 
 }

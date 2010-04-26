@@ -233,7 +233,12 @@ namespace tu {
     matroid_element_set rows, columns, elements = detail::find_smallest_irregular_minor (decomposition);
     detail::split_elements (elements.begin (), elements.end (), std::inserter (rows, rows.end ()), std::inserter (columns, columns.end ()));
 
-    detail::search_violator (input_matrix, rows, columns, violator);
+    detail::violator_strategy* strategy = new detail::single_violator_strategy (input_matrix, rows, columns);
+
+    strategy->search ();
+    strategy->create_matrix (violator);
+
+    delete strategy;
 
     assert (violator.rows.size() == violator.columns.size());
 
@@ -247,7 +252,11 @@ namespace tu {
   {
     decomposed_matroid* decomposition;
 
-    return is_totally_unimodular (matrix, decomposition, violator);
+    bool is_tu = is_totally_unimodular (matrix, decomposition, violator);
+
+    delete decomposition;
+
+    return is_tu;
   }
 
   /// Returns true, iff the given matrix is already a signed version of its support matrix.
@@ -257,7 +266,7 @@ namespace tu {
   {
     if (matrix.size2 () > matrix.size1 ())
     {
-      matrix_transposed <const boost::numeric::ublas::matrix <int> > transposed (matrix);
+      const matrix_transposed <const boost::numeric::ublas::matrix <int> > transposed (matrix);
       return sign_matrix (transposed, NULL);
     }
     else
@@ -274,7 +283,7 @@ namespace tu {
   {
     if (matrix.size2 () > matrix.size1 ())
     {
-      matrix_transposed <const boost::numeric::ublas::matrix <int> > transposed (matrix);
+      const matrix_transposed <const boost::numeric::ublas::matrix <int> > transposed (matrix);
       return sign_matrix (transposed, &violator);
     }
     else

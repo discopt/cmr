@@ -169,7 +169,6 @@ int run (const std::string& file_name, bool show_certificates)
       std::cout << "Matrix is totally unimodular.\n" << std::endl;
 
       print_decomposition (decomposition);
-      delete decomposition;
     }
     else
     {
@@ -178,6 +177,7 @@ int run (const std::string& file_name, bool show_certificates)
       std::cout << "\nThe violating submatrix (det = " << det << ") is " << violator.rows.size () << " x " << violator.columns.size () << ":\n\n";
       print_violator (matrix, violator);
     }
+    delete decomposition;
   }
   else
   {
