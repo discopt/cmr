@@ -1,14 +1,8 @@
-/**
- *
- * Copyright (c) 2010 Matthias Walter (xammy@xammy.homelinux.net)
- *
- * Authors: Matthias Walter
- *
- * Distributed under the Boost Software License, Version 1.0. (See
- * accompanying file LICENSE_1_0.txt or copy at
- * http://www.boost.org/LICENSE_1_0.txt)
- *
- */
+
+//          Copyright Matthias Walter 2010.
+// Distributed under the Boost Software License, Version 1.0.
+//    (See accompanying file LICENSE_1_0.txt or copy at
+//          http://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef VIOLATOR_SEARCH_HPP_
 #define VIOLATOR_SEARCH_HPP_

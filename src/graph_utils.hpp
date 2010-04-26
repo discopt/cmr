@@ -1,9 +1,8 @@
-/*
- * graph_utils.hpp
- *
- *  Created on: Mar 10, 2010
- *      Author: xammy
- */
+
+//          Copyright Matthias Walter 2010.
+// Distributed under the Boost Software License, Version 1.0.
+//    (See accompanying file LICENSE_1_0.txt or copy at
+//          http://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef GRAPH_UTILS_HPP_
 #define GRAPH_UTILS_HPP_

@@ -1,9 +1,8 @@
-/*
- * bipartite_graph_bfs.hpp
- *
- *  Created on: Dec 17, 2009
- *      Author: xammy
- */
+
+//          Copyright Matthias Walter 2010.
+// Distributed under the Boost Software License, Version 1.0.
+//    (See accompanying file LICENSE_1_0.txt or copy at
+//          http://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef BIPARTITE_GRAPH_BFS_HPP_
 #define BIPARTITE_GRAPH_BFS_HPP_

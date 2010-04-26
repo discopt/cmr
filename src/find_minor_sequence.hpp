@@ -1,9 +1,8 @@
-/*
- * find_minor_sequence.hpp
- *
- *  Created on: Jan 16, 2010
- *      Author: xammy
- */
+
+//          Copyright Matthias Walter 2010.
+// Distributed under the Boost Software License, Version 1.0.
+//    (See accompanying file LICENSE_1_0.txt or copy at
+//          http://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef FIND_MINOR_SEQUENCE_HPP_
 #define FIND_MINOR_SEQUENCE_HPP_

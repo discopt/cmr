@@ -1,9 +1,8 @@
-/*
- * permutation.hpp
- *
- *  Created on: Dec 5, 2008
- *      Author: Matthias Walter
- */
+
+//          Copyright Matthias Walter 2010.
+// Distributed under the Boost Software License, Version 1.0.
+//    (See accompanying file LICENSE_1_0.txt or copy at
+//          http://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef PERMUTATION_HPP_
 #define PERMUTATION_HPP_
