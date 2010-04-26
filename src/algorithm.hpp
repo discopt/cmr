@@ -72,6 +72,12 @@ namespace tu {
 
       sep.create_components (permuted_matroid, permuted_matrix, upper_left_matroid, upper_left_matrix, lower_right_matroid, lower_right_matrix);
 
+      //      std::cout << "Decomposed into\n";
+      //      matroid_print (upper_left_matroid, upper_left_matrix);
+      //      std::cout << "\nand\n";
+      //      matroid_print (lower_right_matroid, lower_right_matrix);
+      //      std::cout << std::endl;
+
       //      {
       //        integer_matrix copy = upper_left_matrix;
       //        sign_matrix (copy);
@@ -111,8 +117,8 @@ namespace tu {
           matroid_permute2 (permuted_upper_left_matroid, permuted_upper_left_matrix, upper_left_matroid.size2 () - 1, sep.get_special_swap_index ());
         }
 
-        //            std::cout << "Upper left after special swap" << std::endl;
-        //            matroid_print (permuted_upper_left_matroid, permuted_upper_left_matrix);
+        //        std::cout << "Upper left after special swap" << std::endl;
+        //        matroid_print (permuted_upper_left_matroid, permuted_upper_left_matrix);
       }
 
       std::pair <bool, decomposed_matroid*> upper_left_result = decompose_minor_sequence (permuted_upper_left_matroid, permuted_upper_left_matrix,
@@ -122,8 +128,8 @@ namespace tu {
       if (!construct_decomposition && !upper_left_result.first)
         return std::pair <bool, decomposed_matroid*> (false, NULL);
 
-      //        std::cout << "\n               Looking at part 2\n" << std::endl;
-      //        matroid_print (lower_right_matroid, lower_right_matrix);
+      //      std::cout << "\n               Looking at part 2\n" << std::endl;
+      //      matroid_print (lower_right_matroid, lower_right_matrix);
 
       std::pair <bool, decomposed_matroid*> lower_right_result = decompose_binary_matroid (lower_right_matroid, lower_right_matrix, extra_elements,
           construct_decomposition);
@@ -305,7 +311,21 @@ namespace tu {
 
     matroid_graph* graph = new matroid_graph (matroid.size1 () + 1);
 
-    if (matroid.size1 () >= 3 && matroid.size2 () == 1)
+    if (matroid.size1 () == 0)
+    {
+      for (size_t column = 0; column < matroid.size2 (); ++column)
+      {
+        boost::add_edge (boost::vertex (0, *graph), boost::vertex (0, *graph), matroid.name2 (0), *graph);
+      }
+    }
+    else if (matroid.size2 () == 0)
+    {
+      for (size_t row = 0; row < matroid.size1 (); ++row)
+      {
+        boost::add_edge (boost::vertex (row, *graph), boost::vertex (row + 1, *graph), matroid.name1 (row), *graph);
+      }
+    }
+    else if (matroid.size1 () >= 3 && matroid.size2 () == 1)
     {
       size_t current_edge_vertex = 0;
       size_t current_free_vertex = matroid.size1 ();
@@ -411,7 +431,7 @@ namespace tu {
   std::pair <bool, decomposed_matroid*> decompose_binary_matroid (MatroidType& matroid, MatrixType& matrix, matroid_element_set extra_elements,
       bool construct_decomposition)
   {
-    std::cout << "Starting decomposition of binary matroid.\n";
+    std::cout << "Starting decomposition of binary matroid of size " << matrix.size1 () << " x " << matrix.size2 () << std::endl;
     //    matroid_print (matroid, matrix);
 
     //    {
@@ -486,8 +506,8 @@ namespace tu {
 
       sep.create_components (permuted_matroid, permuted_matrix, upper_left_matroid, upper_left_matrix, lower_right_matroid, lower_right_matrix);
 
-      //        std::cout << "separation successful. Looking at part 1\n" << std::endl;
-      //        matroid_print (upper_left_matroid, upper_left_matrix);
+      //      std::cout << "separation successful. Looking at part 1\n" << std::endl;
+      //      matroid_print (upper_left_matroid, upper_left_matrix);
 
       std::pair <bool, decomposed_matroid*> upper_left_result = decompose_binary_matroid (upper_left_matroid, upper_left_matrix, extra_elements,
           construct_decomposition);
@@ -495,8 +515,8 @@ namespace tu {
       if (!construct_decomposition && !upper_left_result.first)
         return std::pair <bool, decomposed_matroid*> (false, NULL);
 
-      //        std::cout << "\nLooking at part2\n" << std::endl;
-      //        matroid_print (lower_right_matroid, lower_right_matrix);
+      //      std::cout << "\nLooking at part2\n" << std::endl;
+      //      matroid_print (lower_right_matroid, lower_right_matrix);
 
       std::pair <bool, decomposed_matroid*> lower_right_result = decompose_binary_matroid (lower_right_matroid, lower_right_matrix, extra_elements,
           construct_decomposition);

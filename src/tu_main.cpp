@@ -108,10 +108,10 @@ void print_violator (const tu::integer_matrix& matrix, const tu::submatrix_indic
     }
     std::cout << '\n';
   }
-  std::cout << "\n0-indexed rows:";
+  std::cout << "\nrow indices:";
   for (size_t row = 0; row < violator.rows.size (); ++row)
     std::cout << ' ' << violator.rows[row];
-  std::cout << "\n0-indexed columns:";
+  std::cout << "\ncolumn indices:";
   for (size_t column = 0; column < violator.columns.size (); ++column)
     std::cout << ' ' << violator.columns[column];
   std::cout << std::endl;
@@ -173,8 +173,10 @@ int run (const std::string& file_name, bool show_certificates)
     else
     {
       std::cout << "Matrix is not totally unimodular." << std::endl;
+      assert (violator.rows.size() == violator.columns.size());
       int det = tu::determinant_submatrix (matrix, violator);
-      std::cout << "\nThe violating submatrix (det = " << det << ") is " << violator.rows.size () << " x " << violator.columns.size () << ":\n\n";
+      std::cout << "\nThe violating submatrix (det = " << det << ") is " << violator.rows.size () << " x " << violator.columns.size () << ":\n\n"
+          << std::flush;
       print_violator (matrix, violator);
     }
     delete decomposition;

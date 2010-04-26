@@ -14,14 +14,20 @@
 #include <map>
 #include <vector>
 
+// TODO: Debug
+#include "matrix.hpp"
+
 namespace tu {
 
   /// Calculates a subdeterminant of the given matrix.
 
-  int determinant_submatrix (const boost::numeric::ublas::matrix <int>& input_matrix, const submatrix_indices& submatrix)
+  int determinant_submatrix (const integer_matrix& input_matrix, const submatrix_indices& submatrix)
   {
-    const boost::numeric::ublas::matrix_indirect <const boost::numeric::ublas::matrix <int>, submatrix_indices::indirect_array_type> indirect_matrix (
-        input_matrix, submatrix.rows, submatrix.columns);
+    typedef boost::numeric::ublas::matrix_indirect <const integer_matrix, submatrix_indices::indirect_array_type> indirect_matrix_t;
+
+    assert (submatrix.rows.size() == submatrix.columns.size());
+
+    const indirect_matrix_t indirect_matrix (input_matrix, submatrix.rows, submatrix.columns);
 
     boost::numeric::ublas::matrix <float> matrix (indirect_matrix);
     boost::numeric::ublas::permutation_matrix <size_t> permutation_matrix (matrix.size1 ());

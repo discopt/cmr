@@ -92,6 +92,13 @@ namespace tu {
 
       sub_indices.rows = submatrix_indices::indirect_array_type (row_vector.size (), row_vector);
       sub_indices.columns = submatrix_indices::indirect_array_type (column_vector.size (), column_vector);
+
+      //      std::cout << "create submatrix [";
+      //      std::copy (sub_indices.rows.begin (), sub_indices.rows.end (), std::ostream_iterator <int> (std::cout, " "));
+      //      std::cout << "] [";
+      //      std::copy (sub_indices.columns.begin (), sub_indices.columns.end (), std::ostream_iterator <int> (std::cout, " "));
+      //      std::cout << "]" << std::endl;
+      //      matrix_print (input_matrix);
     }
 
     class violator_strategy
@@ -197,8 +204,15 @@ namespace tu {
         //                std::cout << "calling shrink" << std::endl;
 
         // TODO: Should use decomposition rows/columns here.
-        shrink (row_elements, column_elements);
-        //        shrink (rows, columns);
+
+        //        std::cout << "ordinary: " << row_elements.size () << " x " << column_elements.size () << std::endl;
+        //        std::cout << "decomposition-based: " << rows.size () << " x " << columns.size () << std::endl;
+
+        //        assert (row_elements.size() == rows.size());
+        //        assert (column_elements.size() == columns.size());
+
+        //        shrink (row_elements, column_elements);
+        shrink (rows, columns);
 
         //        std::cout << "shrink done." << std::endl;
 
@@ -229,6 +243,9 @@ namespace tu {
 
         for (std::vector <int>::const_iterator iter = all_elements.begin (); iter != all_elements.end (); ++iter)
         {
+          std::cout << "\nSearching for violating submatrix in " << _row_elements.size () << " x " << _column_elements.size () << " matrix."
+              << std::endl;
+
           //          std::cout << "\n\nTrying to remove " << *iter << " from current matrix:" << std::endl;
           //          {
           //            typedef boost::numeric::ublas::matrix_indirect <const integer_matrix, submatrix_indices::indirect_array_type> indirect_matrix_t;

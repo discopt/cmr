@@ -284,7 +284,9 @@ namespace tu {
     if (matrix.size2 () > matrix.size1 ())
     {
       const matrix_transposed <const boost::numeric::ublas::matrix <int> > transposed (matrix);
-      return sign_matrix (transposed, &violator);
+      bool result = sign_matrix (transposed, &violator);
+      std::swap (violator.rows, violator.columns);
+      return result;
     }
     else
     {
