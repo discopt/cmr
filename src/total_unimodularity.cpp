@@ -10,6 +10,7 @@
 #include "total_unimodularity.hpp"
 #include "matroid.hpp"
 #include "violator_search.hpp"
+#include "signing.hpp"
 
 #include <boost/numeric/ublas/io.hpp>
 
@@ -211,7 +212,11 @@ namespace tu {
 
     /// Signing test
     if (!is_signed_matrix (input_matrix, violator))
+    {
+      decomposition = NULL;
+      assert (violator.rows.size() == violator.columns.size());
       return false;
+    }
 
     integer_matroid matroid (input_matrix.size1 (), input_matrix.size2 ());
     integer_matrix matrix (input_matrix);
@@ -229,6 +234,9 @@ namespace tu {
     detail::split_elements (elements.begin (), elements.end (), std::inserter (rows, rows.end ()), std::inserter (columns, columns.end ()));
 
     detail::search_violator (input_matrix, rows, columns, violator);
+
+    assert (violator.rows.size() == violator.columns.size());
+
     return false;
   }
 
@@ -240,6 +248,73 @@ namespace tu {
     decomposed_matroid* decomposition;
 
     return is_totally_unimodular (matrix, decomposition, violator);
+  }
+
+  /// Returns true, iff the given matrix is already a signed version of its support matrix.
+  /// Running time: O(height * width * min (height, width) )
+
+  bool is_signed_matrix (const boost::numeric::ublas::matrix <int>& matrix)
+  {
+    if (matrix.size2 () > matrix.size1 ())
+    {
+      matrix_transposed <const boost::numeric::ublas::matrix <int> > transposed (matrix);
+      return sign_matrix (transposed, NULL);
+    }
+    else
+    {
+      return sign_matrix (matrix, NULL);
+    }
+  }
+
+  /// Returns true, iff the given matrix is already a signed version of its support matrix.
+  /// If not, violator describes a violating submatrix.
+  /// Running time: O(height * width * min (height, width) )
+
+  bool is_signed_matrix (const boost::numeric::ublas::matrix <int>& matrix, submatrix_indices& violator)
+  {
+    if (matrix.size2 () > matrix.size1 ())
+    {
+      matrix_transposed <const boost::numeric::ublas::matrix <int> > transposed (matrix);
+      return sign_matrix (transposed, &violator);
+    }
+    else
+    {
+      return sign_matrix (matrix, &violator);
+    }
+  }
+
+  /// Returns true, iff the given matrix is already a signed version of its support matrix.
+  /// If not, the given matrix is changed to be such a signed version.
+  /// Running time: O(height * width * min (height, width) )
+
+  bool sign_matrix (boost::numeric::ublas::matrix <int>& matrix)
+  {
+    if (matrix.size2 () > matrix.size1 ())
+    {
+      matrix_transposed <boost::numeric::ublas::matrix <int> > transposed (matrix);
+      return sign_matrix (transposed, NULL);
+    }
+    else
+    {
+      return sign_matrix (matrix, NULL);
+    }
+  }
+
+  /// Drops all signs in the given matrix.
+
+  void support_matrix (boost::numeric::ublas::matrix <int>& matrix)
+  {
+    for (size_t i = 0; i < matrix.size1 (); ++i)
+    {
+      for (size_t j = 0; j < matrix.size2 (); ++j)
+      {
+        const int value = matrix (i, j);
+        if (value != 0)
+        {
+          matrix (i, j) = 1;
+        }
+      }
+    }
   }
 
 }

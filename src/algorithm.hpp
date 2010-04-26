@@ -47,7 +47,7 @@ namespace tu {
 
       //      std::cout << "find_minor_sequence returned a separation of rank " << sep.rank () << std::endl;
       //      std::cout << "split is at " << sep.split ().first << "," << sep.split ().second << std::endl;
-      ////      std::cout << "witness is at " << sep.witness ().first << "," << sep.witness ().second << std::endl;
+      //      std::cout << "witness is at " << sep.witness ().first << "," << sep.witness ().second << std::endl;
       //      if (sep.has_special_swap ())
       //      {
       //        if (sep.has_special_row_swap ())
@@ -55,6 +55,7 @@ namespace tu {
       //        else
       //          std::cout << "special column swap at " << sep.get_special_swap_index () << std::endl;
       //      }
+
       //      matroid_print (permuted_matroid, permuted_matrix);
 
       //      {
@@ -211,8 +212,8 @@ namespace tu {
     sep = enumerate_separations (permuted_matroid, permuted_matrix, nested_minors, extra_elements);
     if (sep.is_valid ())
     {
-      std::cout << "Decomposing a (3|4)-separation." << std::endl;
-      matroid_print (permuted_matroid, permuted_matrix);
+      //      std::cout << "Decomposing a (3|4)-separation. at split " << sep.split ().first << " x " << sep.split ().second << std::endl;
+      //      matroid_print (permuted_matroid, permuted_matrix);
 
       //      {
       //        integer_matrix copy = permuted_matrix;
@@ -410,7 +411,7 @@ namespace tu {
   std::pair <bool, decomposed_matroid*> decompose_binary_matroid (MatroidType& matroid, MatrixType& matrix, matroid_element_set extra_elements,
       bool construct_decomposition)
   {
-    //    std::cout << "Starting decomposition of binary matroid.\n";
+    std::cout << "Starting decomposition of binary matroid.\n";
     //    matroid_print (matroid, matrix);
 
     //    {
@@ -422,6 +423,7 @@ namespace tu {
 
     if (matroid.size1 () <= 2 || matroid.size2 () <= 2)
     {
+      //      std::cout << "Very small matroid." << std::endl;
       if (construct_decomposition)
       {
         matroid_transposed <MatroidType> transposed_matroid (matroid);

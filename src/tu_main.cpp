@@ -174,7 +174,8 @@ int run (const std::string& file_name, bool show_certificates)
     else
     {
       std::cout << "Matrix is not totally unimodular." << std::endl;
-      std::cout << "\nThe violating submatrix is " << violator.rows.size () << " x " << violator.columns.size () << ":\n\n";
+      int det = tu::determinant_submatrix (matrix, violator);
+      std::cout << "\nThe violating submatrix (det = " << det << ") is " << violator.rows.size () << " x " << violator.columns.size () << ":\n\n";
       print_violator (matrix, violator);
     }
   }

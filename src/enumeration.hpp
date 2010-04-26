@@ -75,6 +75,7 @@ namespace tu {
         copy_partial_column (matrix, vector, column, split.first, matrix.size1 ());
         vector_space.insert_checked (vector);
         size_t type = vector_space.get_span_index (vector);
+//        std::cout << "column " << column << " has type " << type << std::endl;
         assert (type < 4);
         types[type].insert (dimensions.column_to_index (column));
       }
@@ -83,59 +84,123 @@ namespace tu {
       size_t starting_column = 0;
       size_t connecting_row = 0;
 
+      /// Try to find path from type 1 to the 2 and 3.
+
       std::vector <bipartite_graph_bfs_node> nodes;
-      for (size_t t = 0; t < 3; t++)
+      column_set_t start_nodes = types[1];
+      column_set_t end_nodes = types[2];
+      std::copy (types[3].begin (), types[3].end (), std::inserter (end_nodes, end_nodes.end ()));
+
+      if (bipartite_graph_bfs (modified_matrix, dimensions, start_nodes, end_nodes, false, nodes))
       {
-        size_t start_type = t == 2 ? 2 : 1;
-        size_t end_type = t == 1 ? 2 : 3;
-        if (bipartite_graph_bfs (modified_matrix, dimensions, types[start_type], types[end_type], false, nodes))
+        //        std::cout << "found a path from " << start_type << " to " << end_type << std::endl;
+        //        for (size_t i = 0; i < nodes.size (); ++i)
+        //        {
+        //          std::cout << "nodes[" << i << "]: dist = " << nodes[i].distance << ", pred = " << nodes[i].predecessor << ", matroid element = "
+        //              << (dimensions.is_column (i) ? matroid.name2 (dimensions.index_to_column (i)) : matroid.name1 (dimensions.index_to_row (i)))
+        //              << std::endl;
+        //        }
+
+        /// Find reached node
+        size_t reached_node = 0;
+        for (column_set_t::const_iterator iter = end_nodes.begin (); iter != end_nodes.end (); ++iter)
         {
-          //          std::cout << "found a path from " << start_type << " to " << end_type << std::endl;
-          for (size_t i = 0; i < nodes.size (); ++i)
+          if (nodes[*iter].is_reachable ())
           {
-            //            std::cout << "nodes[" << i << "]: dist = " << nodes[i].distance << ", pred = " << nodes[i].predecessor
-            //                << ", matroid element = " << (dimensions.is_column (i) ? matroid.name2 (dimensions.index_to_column (i))
-            //                : matroid.name1 (dimensions.index_to_row (i))) << std::endl;
-
-            /// Find reached node
-            size_t reached_node = 0;
-            for (column_set_t::const_iterator iter = types[end_type].begin (); iter != types[end_type].end (); ++iter)
-            {
-              if (nodes[*iter].is_reachable ())
-              {
-                reached_node = *iter;
-                break;
-              }
-            }
-
-            reached_column = dimensions.index_to_column (reached_node);
-            for (size_t current_node = nodes[reached_node].predecessor; nodes[current_node].distance > 0; current_node
-                = nodes[current_node].predecessor)
-            {
-              size_t next_node = nodes[current_node].predecessor;
-              if (nodes[current_node].distance > 1 && dimensions.is_row (current_node))
-              {
-                assert (dimensions.is_column(next_node));
-                matroid_binary_pivot (matroid, matrix, dimensions.index_to_row (current_node), dimensions.index_to_column (next_node));
-                extra_elements.insert (matroid.name1 (dimensions.index_to_row (current_node)));
-                extra_elements.insert (matroid.name2 (dimensions.index_to_column (next_node)));
-              }
-              else if (nodes[current_node].distance == 1)
-              {
-                connecting_row = dimensions.index_to_row (current_node);
-                starting_column = dimensions.index_to_column (next_node);
-              }
-            }
-
+            reached_node = *iter;
+            break;
           }
-
-          matroid_permute1 (matroid, matrix, connecting_row, split.first - 1);
-          if (starting_column > reached_column)
-            std::swap (starting_column, reached_column);
-          matroid_permute2 (matroid, matrix, reached_column, split.second - 1);
-          matroid_permute2 (matroid, matrix, starting_column, split.second - 2);
-          return;
         }
+
+        reached_column = dimensions.index_to_column (reached_node);
+
+//        std::cout << "reached column = " << reached_column << std::endl;
+
+        for (size_t current_node = nodes[reached_node].predecessor; nodes[current_node].distance > 0; current_node = nodes[current_node].predecessor)
+        {
+          size_t next_node = nodes[current_node].predecessor;
+          if (nodes[current_node].distance > 1 && dimensions.is_row (current_node))
+          {
+            assert (dimensions.is_column(next_node));
+
+//            std::cout << "pivot at " << dimensions.index_to_row (current_node) << "," << dimensions.index_to_column (next_node) << std::endl;
+
+            matroid_binary_pivot (matroid, matrix, dimensions.index_to_row (current_node), dimensions.index_to_column (next_node));
+            extra_elements.insert (matroid.name1 (dimensions.index_to_row (current_node)));
+            extra_elements.insert (matroid.name2 (dimensions.index_to_column (next_node)));
+          }
+          else if (nodes[current_node].distance == 1)
+          {
+            connecting_row = dimensions.index_to_row (current_node);
+            starting_column = dimensions.index_to_column (next_node);
+          }
+        }
+
+//        std::cout << "starting column = " << starting_column << std::endl;
+
+        matroid_permute1 (matroid, matrix, connecting_row, split.first - 1);
+        if (starting_column > reached_column)
+          std::swap (starting_column, reached_column);
+        matroid_permute2 (matroid, matrix, reached_column, split.second - 1);
+        matroid_permute2 (matroid, matrix, starting_column, split.second - 2);
+        return;
+      }
+
+      /// If no path found, try 2 to 3.
+
+      if (bipartite_graph_bfs (modified_matrix, dimensions, types[2], types[3], false, nodes))
+      {
+        //        std::cout << "found a path from " << start_type << " to " << end_type << std::endl;
+        //        for (size_t i = 0; i < nodes.size (); ++i)
+        //        {
+        //          std::cout << "nodes[" << i << "]: dist = " << nodes[i].distance << ", pred = " << nodes[i].predecessor << ", matroid element = "
+        //              << (dimensions.is_column (i) ? matroid.name2 (dimensions.index_to_column (i)) : matroid.name1 (dimensions.index_to_row (i)))
+        //              << std::endl;
+        //        }
+
+        /// Find reached node
+        size_t reached_node = 0;
+        for (column_set_t::const_iterator iter = types[3].begin (); iter != types[3].end (); ++iter)
+        {
+          if (nodes[*iter].is_reachable ())
+          {
+            reached_node = *iter;
+            break;
+          }
+        }
+
+        reached_column = dimensions.index_to_column (reached_node);
+
+//        std::cout << "reached column = " << reached_column << std::endl;
+
+        for (size_t current_node = nodes[reached_node].predecessor; nodes[current_node].distance > 0; current_node = nodes[current_node].predecessor)
+        {
+          size_t next_node = nodes[current_node].predecessor;
+          if (nodes[current_node].distance > 1 && dimensions.is_row (current_node))
+          {
+            assert (dimensions.is_column(next_node));
+
+//            std::cout << "pivot at " << dimensions.index_to_row (current_node) << "," << dimensions.index_to_column (next_node) << std::endl;
+
+            matroid_binary_pivot (matroid, matrix, dimensions.index_to_row (current_node), dimensions.index_to_column (next_node));
+            extra_elements.insert (matroid.name1 (dimensions.index_to_row (current_node)));
+            extra_elements.insert (matroid.name2 (dimensions.index_to_column (next_node)));
+          }
+          else if (nodes[current_node].distance == 1)
+          {
+            connecting_row = dimensions.index_to_row (current_node);
+            starting_column = dimensions.index_to_column (next_node);
+          }
+        }
+
+//        std::cout << "starting column = " << starting_column << std::endl;
+
+        matroid_permute1 (matroid, matrix, connecting_row, split.first - 1);
+        if (starting_column > reached_column)
+          std::swap (starting_column, reached_column);
+        matroid_permute2 (matroid, matrix, reached_column, split.second - 1);
+        matroid_permute2 (matroid, matrix, starting_column, split.second - 2);
+        return;
       }
 
       throw std::logic_error ("find_column_witness failed to find path between different column types.");
@@ -158,8 +223,8 @@ namespace tu {
       binary_linear_space::vector_type vector (split.second);
       std::vector <size_t> type (matroid.size1 () - split.first);
 
-      typedef std::set <size_t> column_set_t;
-      column_set_t types[4];
+      typedef std::set <size_t> row_set_t;
+      row_set_t types[4];
 
       /// Set up matrix for BFS
       empty_bottom_left_modifier modifier (split);
@@ -179,59 +244,121 @@ namespace tu {
       size_t starting_row = 0;
       size_t connecting_column = 0;
 
+      /// Try to find path from type 1 to the 2 and 3.
+
       std::vector <bipartite_graph_bfs_node> nodes;
-      for (size_t t = 0; t < 3; t++)
+      row_set_t start_nodes = types[1];
+      row_set_t end_nodes = types[2];
+      std::copy (types[3].begin (), types[3].end (), std::inserter (end_nodes, end_nodes.end ()));
+
+      if (bipartite_graph_bfs (modified_matrix, dimensions, start_nodes, end_nodes, false, nodes))
       {
-        size_t start_type = t == 2 ? 2 : 1;
-        size_t end_type = t == 1 ? 2 : 3;
-        if (bipartite_graph_bfs (modified_matrix, dimensions, types[start_type], types[end_type], false, nodes))
+        //        std::cout << "found a path from " << start_type << " to " << end_type << std::endl;
+        //        for (size_t i = 0; i < nodes.size (); ++i)
+        //        {
+        //          std::cout << "nodes[" << i << "]: dist = " << nodes[i].distance << ", pred = " << nodes[i].predecessor << ", matroid element = "
+        //              << (dimensions.is_column (i) ? matroid.name2 (dimensions.index_to_column (i)) : matroid.name1 (dimensions.index_to_row (i)))
+        //              << std::endl;
+        //        }
+
+        /// Find reached node
+        size_t reached_node = 0;
+        for (row_set_t::const_iterator iter = end_nodes.begin (); iter != end_nodes.end (); ++iter)
         {
-          //          std::cout << "found a path from " << start_type << " to " << end_type << std::endl;
-          for (size_t i = 0; i < nodes.size (); ++i)
+          if (nodes[*iter].is_reachable ())
           {
-            //            std::cout << "nodes[" << i << "]: dist = " << nodes[i].distance << ", pred = " << nodes[i].predecessor
-            //                << ", matroid element = " << (dimensions.is_column (i) ? matroid.name2 (dimensions.index_to_column (i))
-            //                : matroid.name1 (dimensions.index_to_row (i))) << std::endl;
-
-            /// Find reached node
-            size_t reached_node = 0;
-            for (column_set_t::const_iterator iter = types[end_type].begin (); iter != types[end_type].end (); ++iter)
-            {
-              if (nodes[*iter].is_reachable ())
-              {
-                reached_node = *iter;
-                break;
-              }
-            }
-
-            reached_row = dimensions.index_to_row (reached_node);
-            for (size_t current_node = nodes[reached_node].predecessor; nodes[current_node].distance > 0; current_node
-                = nodes[current_node].predecessor)
-            {
-              size_t next_node = nodes[current_node].predecessor;
-              if (nodes[current_node].distance > 1 && dimensions.is_column (current_node))
-              {
-                assert (dimensions.is_row(next_node));
-                matroid_binary_pivot (matroid, matrix, dimensions.index_to_row (next_node), dimensions.index_to_column (current_node));
-                extra_elements.insert (matroid.name1 (dimensions.index_to_row (next_node)));
-                extra_elements.insert (matroid.name2 (dimensions.index_to_column (current_node)));
-              }
-              else if (nodes[current_node].distance == 1)
-              {
-                connecting_column = dimensions.index_to_column (current_node);
-                starting_row = dimensions.index_to_row (next_node);
-              }
-            }
-
+            reached_node = *iter;
+            break;
           }
-
-          matroid_permute1 (matroid, matrix, connecting_column, split.second);
-          if (starting_row < reached_row)
-            std::swap (starting_row, reached_row);
-          matroid_permute1 (matroid, matrix, reached_row, split.first);
-          matroid_permute1 (matroid, matrix, starting_row, split.first + 1);
-          return;
         }
+
+        reached_row = dimensions.index_to_row (reached_node);
+        for (size_t current_node = nodes[reached_node].predecessor; nodes[current_node].distance > 0; current_node = nodes[current_node].predecessor)
+        {
+          size_t next_node = nodes[current_node].predecessor;
+          if (nodes[current_node].distance > 1 && dimensions.is_column (current_node))
+          {
+            assert (dimensions.is_row(next_node));
+
+//            std::cout << "pivot at " << dimensions.index_to_row (next_node) << "," << dimensions.index_to_column (current_node) << std::endl;
+
+            matroid_binary_pivot (matroid, matrix, dimensions.index_to_row (next_node), dimensions.index_to_column (current_node));
+            extra_elements.insert (matroid.name1 (dimensions.index_to_row (next_node)));
+            extra_elements.insert (matroid.name2 (dimensions.index_to_column (current_node)));
+          }
+          else if (nodes[current_node].distance == 1)
+          {
+            connecting_column = dimensions.index_to_column (current_node);
+            starting_row = dimensions.index_to_row (next_node);
+          }
+        }
+
+//        std::cout << "column = " << connecting_column << std::endl;
+//        std::cout << "row 1 = " << starting_row << std::endl;
+//        std::cout << "row 2 = " << reached_row << std::endl;
+
+        matroid_permute2 (matroid, matrix, connecting_column, split.second);
+        if (starting_row < reached_row)
+          std::swap (starting_row, reached_row);
+        matroid_permute1 (matroid, matrix, reached_row, split.first);
+        matroid_permute1 (matroid, matrix, starting_row, split.first + 1);
+        return;
+      }
+
+      /// If not, try to find a path from 2 to 3
+
+      if (bipartite_graph_bfs (modified_matrix, dimensions, types[2], types[3], false, nodes))
+      {
+        //        std::cout << "found a path from " << start_type << " to " << end_type << std::endl;
+        //        for (size_t i = 0; i < nodes.size (); ++i)
+        //        {
+        //          std::cout << "nodes[" << i << "]: dist = " << nodes[i].distance << ", pred = " << nodes[i].predecessor << ", matroid element = "
+        //              << (dimensions.is_column (i) ? matroid.name2 (dimensions.index_to_column (i)) : matroid.name1 (dimensions.index_to_row (i)))
+        //              << std::endl;
+        //        }
+
+        /// Find reached node
+        size_t reached_node = 0;
+        for (row_set_t::const_iterator iter = types[3].begin (); iter != types[3].end (); ++iter)
+        {
+          if (nodes[*iter].is_reachable ())
+          {
+            reached_node = *iter;
+            break;
+          }
+        }
+
+        reached_row = dimensions.index_to_row (reached_node);
+        for (size_t current_node = nodes[reached_node].predecessor; nodes[current_node].distance > 0; current_node = nodes[current_node].predecessor)
+        {
+          size_t next_node = nodes[current_node].predecessor;
+          if (nodes[current_node].distance > 1 && dimensions.is_column (current_node))
+          {
+            assert (dimensions.is_row(next_node));
+
+//            std::cout << "pivot at " << dimensions.index_to_row (next_node) << "," << dimensions.index_to_column (current_node) << std::endl;
+
+            matroid_binary_pivot (matroid, matrix, dimensions.index_to_row (next_node), dimensions.index_to_column (current_node));
+            extra_elements.insert (matroid.name1 (dimensions.index_to_row (next_node)));
+            extra_elements.insert (matroid.name2 (dimensions.index_to_column (current_node)));
+          }
+          else if (nodes[current_node].distance == 1)
+          {
+            connecting_column = dimensions.index_to_column (current_node);
+            starting_row = dimensions.index_to_row (next_node);
+          }
+        }
+
+//        std::cout << "column = " << connecting_column << std::endl;
+//        std::cout << "row 1 = " << starting_row << std::endl;
+//        std::cout << "row 2 = " << reached_row << std::endl;
+
+        matroid_permute2 (matroid, matrix, connecting_column, split.second);
+        if (starting_row < reached_row)
+          std::swap (starting_row, reached_row);
+        matroid_permute1 (matroid, matrix, reached_row, split.first);
+        matroid_permute1 (matroid, matrix, starting_row, split.first + 1);
+        return;
       }
 
       throw std::logic_error ("find_row_witness failed to find path between different row types.");
@@ -249,18 +376,22 @@ namespace tu {
     template <typename MatroidType, typename MatrixType>
     inline separation find_witnesses (MatroidType& matroid, MatrixType& matrix, size_pair_t split, matroid_element_set& extra_elements)
     {
-      //      std::cout << "find_witnesses (top-left = " << split.first << " x " << split.second << ", bottom-right = "
-      //          << (matroid.size1 () - split.first) << " x " << (matroid.size2 () - split.second) << ":\n";
-      //      matroid_print (matroid, matrix);
-      //      std::cout << "top-left = " << split.first << " x " << split.second << std::endl;
-      //      std::cout << "bottom-right = " << (matroid.size1 () - split.first) << " x " << (matroid.size2 () - split.second)
-      //          << std::endl;
-      //      matroid_print (matroid, matrix);
+//      std::cout << "find_witnesses (top-left = " << split.first << " x " << split.second << ", bottom-right = " << (matroid.size1 () - split.first)
+//          << " x " << (matroid.size2 () - split.second) << ":\n";
+//      matroid_print (matroid, matrix);
+//      std::cout << "top-left = " << split.first << " x " << split.second << std::endl;
+//      std::cout << "bottom-right = " << (matroid.size1 () - split.first) << " x " << (matroid.size2 () - split.second) << std::endl;
+//      matroid_print (matroid, matrix);
 
       find_column_witnesses (matroid, matrix, split, extra_elements);
-      //      std::cout << "Columns should be fine now." << std::endl;
+      
+//      std::cout << "Columns should be fine now." << std::endl;
+//      matroid_print (matroid, matrix);
+      
       find_row_witnesses (matroid, matrix, split, extra_elements);
-      //      std::cout << "Rows should be fine now." << std::endl;
+      
+//      std::cout << "Rows should be fine now." << std::endl;
+//      matroid_print (matroid, matrix);
 
       if (matrix (split.first, split.second - 2) == 0 || matrix (split.first + 1, split.second - 1) == 0)
         matroid_permute1 (matroid, matrix, split.first, split.first + 1);
@@ -408,27 +539,27 @@ namespace tu {
 
       //      std::cout << "matrix.perm1 = " << matrix.perm1 () << std::endl;
 
-      //      std::cout << "Modified original matroid:\n";
-      //      matroid_print (matroid, matrix);
-      //      std::cout << "Blocks are " << top_left_size.first << " x " << top_left_size.second << " and "
-      //          << bottom_right_size.first << " x " << bottom_right_size.second << std::endl;
+//      std::cout << "Modified original matroid:\n";
+//      matroid_print (matroid, matrix);
+//      std::cout << "Blocks are " << top_left_size.first << " x " << top_left_size.second << " and " << bottom_right_size.first << " x "
+//          << bottom_right_size.second << std::endl;
 
       assert (matrix_equals(matrix, worker_matrix));
 
       /// Normalize it
 
       normalize_3_4_separation (matroid, matrix, top_left_size, ranks, extra_elements);
-      //      std::cout << "Normalized modified original matroid:\n";
-      //      matroid_print (matroid, matrix);
-      //      std::cout << "Blocks are " << top_left_size.first << " x " << top_left_size.second << " and " << (matrix.size1 ()
-      //          - top_left_size.first) << " x " << (matrix.size2 () - top_left_size.second) << std::endl;
+//      std::cout << "Normalized modified original matroid:\n";
+//      matroid_print (matroid, matrix);
+//      std::cout << "Blocks are " << top_left_size.first << " x " << top_left_size.second << " and " << (matrix.size1 () - top_left_size.first)
+//          << " x " << (matrix.size2 () - top_left_size.second) << std::endl;
 
       /// Make the witnesses visible.
 
       separation = find_witnesses (matroid, matrix, top_left_size, extra_elements);
 
-      //      std::cout << "After find_witnesses:\n";
-      //      matroid_print (matroid, matrix);
+//      std::cout << "After find_witnesses:\n";
+//      matroid_print (matroid, matrix);
 
       return true;
     }

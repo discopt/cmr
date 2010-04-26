@@ -200,7 +200,7 @@ namespace tu {
 
         lower_right_matroid.resize (matroid.size1 () - split_.first + 1, matroid.size2 () - split_.second + 2);
         for (size_t row = 0; row < lower_right_matroid.size1 (); ++row)
-          lower_right_matroid.name1 (row) = matroid.name1 (split_.first + row - 2);
+          lower_right_matroid.name1 (row) = matroid.name1 (split_.first + row - 1);
         for (size_t column = 0; column < lower_right_matroid.size2 (); ++column)
           lower_right_matroid.name2 (column) = matroid.name2 (split_.second + column - 2);
 

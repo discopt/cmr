@@ -17,6 +17,7 @@
 
 #include "algorithm.hpp"
 #include "matroid.hpp"
+#include "signing.hpp"
 
 namespace tu {
   namespace detail {
@@ -93,6 +94,174 @@ namespace tu {
       sub_indices.columns = submatrix_indices::indirect_array_type (column_vector.size (), column_vector);
     }
 
+    class violator_strategy
+    {
+    public:
+      violator_strategy (const integer_matrix& input_matrix, const matroid_element_set& row_elements, const matroid_element_set& column_elements) :
+        _input_matrix (input_matrix), _row_elements (row_elements), _column_elements (column_elements)
+      {
+
+      }
+
+      virtual void search () = 0;
+
+      inline void create_matrix (submatrix_indices& indices) const
+      {
+        integer_matroid sub_matroid;
+        create_indirect_matroid (_input_matrix, _row_elements, _column_elements, sub_matroid, indices);
+
+        //        std::cout << "matrix created" << std::endl;
+      }
+
+    protected:
+
+      virtual void shrink (const matroid_element_set& row_elements, const matroid_element_set& column_elements)
+      {
+        _row_elements = row_elements;
+        _column_elements = column_elements;
+      }
+
+      inline bool test (const matroid_element_set& row_elements, const matroid_element_set& column_elements)
+      {
+        std::cout << "\n\n\n[[[TESTING " << row_elements.size () << " x " << column_elements.size () << " SUBMATRIX]]]\n\n" << std::endl;
+
+        typedef boost::numeric::ublas::matrix_indirect <const integer_matrix, submatrix_indices::indirect_array_type> indirect_matrix_t;
+
+        integer_matroid matroid;
+        submatrix_indices sub_indices;
+
+        create_indirect_matroid (_input_matrix, row_elements, column_elements, matroid, sub_indices);
+        indirect_matrix_t sub_matrix (_input_matrix, sub_indices.rows, sub_indices.columns);
+
+        /// Signing test
+
+        decomposed_matroid* decomposition;
+        integer_matrix matrix (sub_matrix);
+
+        std::cout << "Copy to work on:\n" << std::flush;
+        matroid_print (matroid, matrix);
+
+        if (!is_signed_matrix (matrix))
+        {
+          std::cout << "Matrix failed the signing test!!!" << std::endl;
+          shrink (row_elements, column_elements);
+          return false;
+        }
+
+        if (row_elements.size () < 15 || column_elements.size () < 15)
+        {
+          bool gh_is_tu;
+          {
+            integer_matrix copy = matrix;
+            std::cout << (int) sign_matrix (copy) << std::endl;
+            gh_is_tu = ghouila_houri_is_totally_unimodular_enum_rows (copy);
+            std::cout << "row ghouila-houri said: " << (gh_is_tu ? "matrix is TU" : "matrix is NOT TU") << std::endl;
+            gh_is_tu = ghouila_houri_is_totally_unimodular_enum_columns (copy);
+            std::cout << "column ghouila-houri said: " << (gh_is_tu ? "matrix is TU" : "matrix is NOT TU") << std::endl;
+          }
+        }
+
+        /// Remove sign from matrix
+        support_matrix (matrix);
+
+        /// Matroid decomposition
+        bool is_tu;
+        boost::tie (is_tu, decomposition) = decompose_binary_matroid (matroid, matrix, matroid_element_set (), true);
+
+        //        assert (is_tu == gh_is_tu);
+        //        
+        //        std::cout << "decompose returned " << ((int) (is_tu)) << std::endl;
+        //        matrix_print (matrix);
+        //        if (!is_tu && gh_is_tu)
+        //        {
+        //          std::cout << "TU matrix recognized as non-TU!!!" << std::endl;
+        //          assert (false);
+        //        }
+        //        else if (is_tu && !gh_is_tu)
+        //        {
+        //          std::cout << "non-TU matrix recognized as TU!!!" << std::endl;
+        //          assert (false);
+        //        }
+
+        if (is_tu)
+        {
+          delete decomposition;
+          return true;
+        }
+
+        matroid_element_set rows, columns, elements = detail::find_smallest_irregular_minor (decomposition);
+        delete decomposition;
+
+        std::cout << "found smallest irregular minor." << std::endl;
+
+        detail::split_elements (elements.begin (), elements.end (), std::inserter (rows, rows.end ()), std::inserter (columns, columns.end ()));
+
+        std::cout << "calling shrink" << std::endl;
+
+        // TODO: Should use decomposition rows/columns here.
+        shrink (row_elements, column_elements);
+
+        std::cout << "shrink done." << std::endl;
+
+        return false;
+      }
+
+    protected:
+      const integer_matrix& _input_matrix;
+      matroid_element_set _row_elements;
+      matroid_element_set _column_elements;
+    };
+
+    class single_violator_strategy: public violator_strategy
+    {
+    public:
+      single_violator_strategy (const integer_matrix& input_matrix, const matroid_element_set& row_elements,
+          const matroid_element_set& column_elements) :
+        violator_strategy (input_matrix, row_elements, column_elements)
+      {
+        _last_element = 0;
+      }
+
+      virtual void search ()
+      {
+        std::vector <int> all_elements;
+        std::copy (_row_elements.begin (), _row_elements.end (), std::back_inserter (all_elements));
+        std::copy (_column_elements.begin (), _column_elements.end (), std::back_inserter (all_elements));
+
+        for (std::vector <int>::const_iterator iter = all_elements.begin (); iter != all_elements.end (); ++iter)
+        {
+          std::cout << "\n\nTrying to remove " << *iter << " from current matrix:" << std::endl;
+          {
+            typedef boost::numeric::ublas::matrix_indirect <const integer_matrix, submatrix_indices::indirect_array_type> indirect_matrix_t;
+
+            integer_matroid sub_matroid;
+            submatrix_indices sub_indices;
+
+            create_indirect_matroid (_input_matrix, _row_elements, _column_elements, sub_matroid, sub_indices);
+            indirect_matrix_t sub_matrix (_input_matrix, sub_indices.rows, sub_indices.columns);
+
+            matroid_print (sub_matroid, sub_matrix);
+          }
+
+          if (_row_elements.find (*iter) == _row_elements.end () && _column_elements.find (*iter) == _column_elements.end ())
+            continue;
+
+          matroid_element_set rows (_row_elements);
+          matroid_element_set columns (_column_elements);
+          rows.erase (*iter);
+          columns.erase (*iter);
+          bool result = test (rows, columns);
+
+          std::cout << "test result =  " << result << std::endl;
+        }
+
+        std::cout << "search done." << std::endl;
+      }
+
+    protected:
+      int _last_element;
+    };
+
     /**
      * Identifies a violator in a given matrix, which is known to be not totally unimodular. 
      * 
@@ -103,34 +272,12 @@ namespace tu {
     inline void search_violator (const integer_matrix& input_matrix, const matroid_element_set& row_elements,
         const matroid_element_set& column_elements, submatrix_indices& violator)
     {
-      integer_matroid sub_matroid;
-      submatrix_indices sub_indices;
+      violator_strategy* strategy = new single_violator_strategy (input_matrix, row_elements, column_elements);
 
-      create_indirect_matroid (input_matrix, row_elements, column_elements, sub_matroid, sub_indices);
+      strategy->search ();
+      strategy->create_matrix (violator);
 
-      boost::numeric::ublas::matrix_indirect <const integer_matrix, submatrix_indices::indirect_array_type> sub_matrix (input_matrix,
-          sub_indices.rows, sub_indices.columns);
-
-      matroid_print (sub_matroid, sub_matrix);
-
-      //      violator.rows = submatrix_indices::indirect_array_type (input_matrix.size1 ());
-      //      violator.columns = submatrix_indices::indirect_array_type (input_matrix.size2 ());
-      //
-      //      for (size_t row = 0; row < violator.rows.size (); ++row)
-      //      {
-      //        violator.rows[row] = row;
-      //      }
-      //
-      //      for (size_t column = 0; column < violator.columns.size (); ++column)
-      //      {
-      //        violator .columns[column] = column;
-      //      }
-      //
-      //      shrink_rows (input_matrix, violator.rows, violator.columns);
-      //
-      //      shrink_rows (view_matrix_transposed (input_matrix), violator.columns, violator.rows);
-
-      throw std::runtime_error ("Search for violator is not yet implemented.");
+      delete strategy;
     }
 
   }

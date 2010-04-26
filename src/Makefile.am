@@ -26,6 +26,7 @@ noinst_headers = \
 	matroid_separate.hpp \
 	matroid_transposed.hpp \
 	nested_minor_sequence.hpp \
+	signing.cpp \
 	partition.hpp \
 	permutations.hpp \
 	r10.hpp \
@@ -44,7 +45,6 @@ libtotalunimodularity_a_SOURCES = \
 	determinant.cpp \
 	ghouila_houri.cpp \
 	zero_plus_minus_one.cpp \
-	signing.cpp \
 	separation.cpp \
 	nested_minor_sequence.cpp \
 	total_unimodularity.cpp \
