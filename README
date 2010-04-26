@@ -1,0 +1,11 @@
+To compile this library, just type
+
+./autogen.sh
+./configure
+make
+
+If you like to install the headers and the library, type
+
+make install
+
+If you only want to use the executable, you can copy it from src/tu.
