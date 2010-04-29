@@ -1,4 +1,3 @@
-
 //          Copyright Matthias Walter 2010.
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
@@ -17,20 +16,22 @@
 #include "graphicness.hpp"
 #include "r10.hpp"
 #include "enumeration.hpp"
+#include "logger.hpp"
 
 namespace tu {
 
   template <typename MatroidType, typename MatrixType>
   std::pair <bool, decomposed_matroid*> decompose_binary_matroid (MatroidType& matroid, MatrixType& matrix, matroid_element_set extra_elements,
-      bool construct_decomposition);
+      bool construct_decomposition, logger& log);
 
   template <typename MatroidType, typename MatrixType>
   std::pair <bool, decomposed_matroid*> decompose_minor_sequence (matroid_permuted <MatroidType>& permuted_matroid,
       matrix_permuted <MatrixType>& permuted_matrix, nested_minor_sequence& nested_minors, matroid_element_set extra_elements,
-      bool construct_decomposition)
+      bool construct_decomposition, logger& log)
   {
-    std::cout << "Searching for sequence of nested minors in " << permuted_matroid.size1 () << " x " << permuted_matroid.size2 () << " matroid... "
-        << std::flush;
+
+    //    std::cout << "Searching for sequence of nested minors in " << permuted_matroid.size1 () << " x " << permuted_matroid.size2 () << " matroid... "
+    //        << std::flush;
 
     //    {
     //      integer_matrix copy = permuted_matrix;
@@ -39,10 +40,15 @@ namespace tu {
     //      std::cout << "  [The matroid is " << (copy_result ? "" : "NOT ") << "regular.]  ";
     //    }
 
-    separation sep = find_minor_sequence (permuted_matroid, permuted_matrix, nested_minors, extra_elements);
+    separation sep = find_minor_sequence (permuted_matroid, permuted_matrix, nested_minors, extra_elements, log);
     if (sep.is_valid ())
     {
-      std::cout << "found a " << (sep.rank () + 1) << "-separation instead." << std::endl;
+      log.line () << " --> " << (sep.rank () + 1) << "-SEP";
+      std::cout << log << std::endl;
+      log.clear ();
+      log.indent ();
+
+      //      std::cout << "found a " << (sep.rank () + 1) << "-separation instead." << std::endl;
 
       //      std::cout << "find_minor_sequence returned a separation of rank " << sep.rank () << std::endl;
       //      std::cout << "split is at " << sep.split ().first << "," << sep.split ().second << std::endl;
@@ -120,18 +126,26 @@ namespace tu {
         //        matroid_print (permuted_upper_left_matroid, permuted_upper_left_matrix);
       }
 
+      log.line () << "(" << upper_left_matrix.size1 () << " x " << upper_left_matrix.size2 () << ") W3";
+      std::cout << log;
+
       std::pair <bool, decomposed_matroid*> upper_left_result = decompose_minor_sequence (permuted_upper_left_matroid, permuted_upper_left_matrix,
-          nested_minors, extra_elements, construct_decomposition);
+          nested_minors, extra_elements, construct_decomposition, log);
       //        decompose_binary_matroid (upper_left_matroid, upper_left_matrix, construct_decomposition);
 
       if (!construct_decomposition && !upper_left_result.first)
+      {
+        log.unindent ();
         return std::pair <bool, decomposed_matroid*> (false, NULL);
+      }
 
       //      std::cout << "\n               Looking at part 2\n" << std::endl;
       //      matroid_print (lower_right_matroid, lower_right_matrix);
 
       std::pair <bool, decomposed_matroid*> lower_right_result = decompose_binary_matroid (lower_right_matroid, lower_right_matrix, extra_elements,
-          construct_decomposition);
+          construct_decomposition, log);
+
+      log.unindent ();
 
       if (construct_decomposition)
       {
@@ -147,7 +161,7 @@ namespace tu {
         return std::pair <bool, decomposed_matroid*> (lower_right_result.first, NULL);
     }
 
-    std::cout << "done (W3 and " << nested_minors.size () << " extensions)." << std::endl;
+    //    std::cout << "done (W3 and " << nested_minors.size () << " extensions)." << std::endl;
 
     //    for (size_t i = 0; i < nested_minors.size (); i++)
     //    {
@@ -162,14 +176,17 @@ namespace tu {
     //      std::cout << "Omitting matrix of size " << permuted_matroid.size1 () << "," << permuted_matroid.size2 ()
     //          << std::endl;
 
-    std::cout << "Checking for graphicness... " << std::flush;
+    //    std::cout << "Checking for graphicness... " << std::flush;
 
     matroid_graph* graph = construct_matroid_graph (permuted_matroid, permuted_matrix, nested_minors);
 
-    std::cout << (graph == NULL ? "not graphic." : "graphic.") << std::endl;
+    log.line () << (graph == NULL ? ", NON-GRAPHIC" : ", GRAPHIC");
+    std::cout << log;
 
     if (!construct_decomposition && graph)
     {
+      log.clear ();
+      std::cout << " --> REGULAR" << std::endl;
       //      std::cout << "Matroid is graphic, thus we omit cographicness check!" << std::endl;
 
       //      std::cout << *graph << std::endl;
@@ -178,15 +195,17 @@ namespace tu {
       return std::make_pair (true, (decomposed_matroid*) NULL);
     }
 
-    std::cout << "Checking for cographicness... " << std::flush;
-
     matroid_graph* cograph = construct_matroid_graph (view_matroid_transposed (permuted_matroid), view_matrix_transposed (permuted_matrix),
         view_nested_minor_sequence_transposed (nested_minors));
 
-    std::cout << (cograph == NULL ? "not cographic." : "cographic.") << std::endl;
+    log.line () << (cograph == NULL ? ", NON-COGRAPHIC" : ", COGRAPHIC");
+    std::cout << log;
 
     if (!construct_decomposition && cograph)
     {
+      log.clear ();
+      std::cout << " --> REGULAR" << std::endl;
+
       //      std::cout << "Matroid is cographic" << std::endl;
       delete cograph;
       return std::make_pair (true, (decomposed_matroid*) NULL);
@@ -194,14 +213,16 @@ namespace tu {
 
     if (construct_decomposition && (graph || cograph))
     {
+      log.clear ();
+      std::cout << std::endl;
       return std::make_pair (true, new decomposed_matroid_leaf (graph, cograph, false, matroid_elements (permuted_matroid), extra_elements));
     }
 
-    std::cout << "Checking for being R10... " << std::flush;
-
     if (is_r10 (permuted_matrix))
     {
-      std::cout << "successful." << std::endl;
+      log.line () << ", R10 --> REGULAR";
+      std::cout << log << std::endl;
+      log.clear ();
       if (construct_decomposition)
       {
         return std::make_pair (true, new decomposed_matroid_leaf (NULL, NULL, true, matroid_elements (permuted_matroid), extra_elements));
@@ -211,12 +232,18 @@ namespace tu {
     }
     else
     {
-      std::cout << "failed." << std::endl;
+      log.line () << ", NOT R10";
+      std::cout << log;
     }
 
-    sep = enumerate_separations (permuted_matroid, permuted_matrix, nested_minors, extra_elements);
+    sep = enumerate_separations (permuted_matroid, permuted_matrix, nested_minors, extra_elements, log);
     if (sep.is_valid ())
     {
+      log.line () << " --> " << (sep.rank () + 1) << "-SEP";
+      std::cout << log << std::endl;
+      log.clear ();
+      log.indent ();
+
       //      std::cout << "Decomposing a (3|4)-separation. at split " << sep.split ().first << " x " << sep.split ().second << std::endl;
       //      matroid_print (permuted_matroid, permuted_matrix);
 
@@ -258,16 +285,21 @@ namespace tu {
       //      std::cout << std::endl;
 
       std::pair <bool, decomposed_matroid*> upper_left_result = decompose_binary_matroid (permuted_upper_left_matroid, permuted_upper_left_matrix,
-          extra_elements, construct_decomposition);
+          extra_elements, construct_decomposition, log);
 
       if (!construct_decomposition && !upper_left_result.first)
+      {
+        log.unindent ();
         return std::pair <bool, decomposed_matroid*> (false, NULL);
+      }
       //
       //      //        std::cout << "\n               Looking at part 2\n" << std::endl;
       //      //        matroid_print (lower_right_matroid, lower_right_matrix);
       //
       std::pair <bool, decomposed_matroid*> lower_right_result = decompose_binary_matroid (lower_right_matroid, lower_right_matrix, extra_elements,
-          construct_decomposition);
+          construct_decomposition, log);
+
+      log.unindent ();
 
       if (construct_decomposition)
       {
@@ -428,9 +460,13 @@ namespace tu {
 
   template <typename MatroidType, typename MatrixType>
   std::pair <bool, decomposed_matroid*> decompose_binary_matroid (MatroidType& matroid, MatrixType& matrix, matroid_element_set extra_elements,
-      bool construct_decomposition)
+      bool construct_decomposition, logger& log)
   {
-    std::cout << "Starting decomposition of binary matroid of size " << matrix.size1 () << " x " << matrix.size2 () << std::endl;
+    log.clear ();
+    log.line () << "(" << matrix.size1 () << " x " << matrix.size2 () << ")";
+    std::cout << log;
+
+    //    std::cout << "Starting decomposition of binary matroid of size " << matrix.size1 () << " x " << matrix.size2 () << std::endl;
     //    matroid_print (matroid, matrix);
 
     //    {
@@ -442,6 +478,10 @@ namespace tu {
 
     if (matroid.size1 () <= 2 || matroid.size2 () <= 2)
     {
+      log.line () << " TRIVIAL --> REGULAR";
+      std::cout << log << std::endl;
+      log.clear ();
+
       //      std::cout << "Very small matroid." << std::endl;
       if (construct_decomposition)
       {
@@ -465,7 +505,10 @@ namespace tu {
     permuted_marix_type permuted_matrix (matrix);
 
     // Identifies a W_3 minor in the upper left corner or finds a separation
-    std::cout << "Searching for W3 minor in " << permuted_matroid.size1 () << " x " << permuted_matroid.size2 () << " matroid... " << std::flush;
+    //    std::cout << "Searching for W3 minor in " << permuted_matroid.size1 () << " x " << permuted_matroid.size2 () << " matroid... " << std::flush;
+
+    log.line () << " W3";
+    std::cout << log;
 
     //    {
     //      integer_matrix copy = permuted_matrix;
@@ -484,9 +527,13 @@ namespace tu {
     //    }
 
     if (sep.is_valid ()) // separation
-
     {
-      std::cout << "found a " << (sep.rank () + 1) << "-separation instead." << std::endl;
+      log.line () << " --> " << (sep.rank () + 1) << "-separation";
+      std::cout << log << std::endl;
+      log.clear ();
+      log.indent ();
+
+      //      std::cout << "found a " << (sep.rank () + 1) << "-separation instead." << std::endl;
 
       //        std::cout << "find_wheel_minor found a separation" << std::endl;
       //        std::cout << "upper-left is " << sep.split ().first << " x " << sep.split ().second << std::endl;
@@ -509,16 +556,21 @@ namespace tu {
       //      matroid_print (upper_left_matroid, upper_left_matrix);
 
       std::pair <bool, decomposed_matroid*> upper_left_result = decompose_binary_matroid (upper_left_matroid, upper_left_matrix, extra_elements,
-          construct_decomposition);
+          construct_decomposition, log);
 
       if (!construct_decomposition && !upper_left_result.first)
+      {
+        log.unindent ();
         return std::pair <bool, decomposed_matroid*> (false, NULL);
+      }
 
       //      std::cout << "\nLooking at part2\n" << std::endl;
       //      matroid_print (lower_right_matroid, lower_right_matrix);
 
       std::pair <bool, decomposed_matroid*> lower_right_result = decompose_binary_matroid (lower_right_matroid, lower_right_matrix, extra_elements,
-          construct_decomposition);
+          construct_decomposition, log);
+
+      log.unindent ();
 
       if (construct_decomposition)
       {
@@ -534,14 +586,12 @@ namespace tu {
         return std::pair <bool, decomposed_matroid*> (lower_right_result.first && upper_left_result.first, NULL);
     }
 
-    std::cout << "done." << std::endl;
-
     //    std::cout << "W3-minor should now be visible.\n";
     //    matroid_print (permuted_matroid, permuted_matrix);
 
     nested_minor_sequence nested_minors;
 
-    return decompose_minor_sequence (permuted_matroid, permuted_matrix, nested_minors, extra_elements, construct_decomposition);
+    return decompose_minor_sequence (permuted_matroid, permuted_matrix, nested_minors, extra_elements, construct_decomposition, log);
   }
 
 }

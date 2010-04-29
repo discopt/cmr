@@ -1,4 +1,3 @@
-
 //          Copyright Matthias Walter 2010.
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
@@ -16,6 +15,7 @@
 #include "matrix_modified.hpp"
 #include "bipartite_graph_bfs.hpp"
 #include "comparators.hpp"
+#include "logger.hpp"
 
 namespace tu {
 
@@ -137,9 +137,9 @@ namespace tu {
       RowThreeConnectivity& row_three_connectivity, ColumnThreeConnectivity& column_three_connectivity, size_t index,
       matroid_element_set& extra_elements)
   {
-//    std::cout << "find_elaborate_extension on matroid with already found sequence of size " << nested_minors.height () << ","
-//        << nested_minors.width () << " on index " << index << "\n" << std::endl;
-//    matroid_print (matroid, matrix);
+    //    std::cout << "find_elaborate_extension on matroid with already found sequence of size " << nested_minors.height () << ","
+    //        << nested_minors.width () << " on index " << index << "\n" << std::endl;
+    //    matroid_print (matroid, matrix);
 
     // initialize bfs
     bipartite_graph_dimensions dim (matroid.size1 (), matroid.size2 ());
@@ -197,16 +197,16 @@ namespace tu {
     std::vector <bipartite_graph_bfs_node> bfs_result;
     bool found_path = bipartite_graph_bfs (modified_matrix, dim, start_nodes, end_nodes, false, bfs_result);
 
-//    for (size_t i = 0; i < bfs_result.size (); ++i)
-//    {
-//      std::cout << "node " << i << " is ";
-//      if (dim.is_row (i))
-//        std::cout << "row " << dim.index_to_row (i);
-//      else
-//        std::cout << "column " << dim.index_to_column (i);
-//      std::cout << " with distance " << bfs_result[i].distance << " and pred " << bfs_result[i].predecessor << std::endl;
-//    }
-//    std::cout << "found_path = " << int(found_path) << std::endl;
+    //    for (size_t i = 0; i < bfs_result.size (); ++i)
+    //    {
+    //      std::cout << "node " << i << " is ";
+    //      if (dim.is_row (i))
+    //        std::cout << "row " << dim.index_to_row (i);
+    //      else
+    //        std::cout << "column " << dim.index_to_column (i);
+    //      std::cout << " with distance " << bfs_result[i].distance << " and pred " << bfs_result[i].predecessor << std::endl;
+    //    }
+    //    std::cout << "found_path = " << int(found_path) << std::endl;
 
     if (found_path)
     {
@@ -373,8 +373,11 @@ namespace tu {
   }
 
   template <typename MatroidType, typename MatrixType>
-  separation find_minor_sequence (MatroidType& matroid, MatrixType& matrix, nested_minor_sequence& nested_minors, matroid_element_set& extra_elements)
+  separation find_minor_sequence (MatroidType& matroid, MatrixType& matrix, nested_minor_sequence& nested_minors,
+      matroid_element_set& extra_elements, logger& log)
   {
+    size_t cut = log.size ();
+
     //    std::cout << "Constructing a sequence of nested minors..." << std::flush;
 
     vector_three_connectivity <MatrixType> column_three_connectivity (matrix, nested_minors.height (), nested_minors.width ());
@@ -387,7 +390,11 @@ namespace tu {
 
     while (nested_minors.height () < matroid.size1 () || nested_minors.width () != matroid.size2 ())
     {
-      //      std::cout << "\nNew extension round... " << nested_minors.height () << " x " << nested_minors.width () << std::endl;
+      log.erase (cut);
+      log.line() << " + " << nested_minors.size () << " EXT";
+      std::cout << log;
+
+      //      std::cout << "\nNew ext ension round... " << nested_minors.height () << " x " << nested_minors.width () << std::endl;
 
       assert (nested_minors.height() == row_three_connectivity.base());
       assert (nested_minors.height() == column_three_connectivity.dimension());
@@ -462,6 +469,10 @@ namespace tu {
       row_three_connectivity.reset (nested_minors.width (), nested_minors.height ());
       column_three_connectivity.reset (nested_minors.height (), nested_minors.width ());
     }
+
+    log.erase (cut);
+    log.line() << " + " << nested_minors.size () << " EXT";
+    std::cout << log;
 
     return separation ();
   }

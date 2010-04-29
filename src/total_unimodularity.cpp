@@ -1,4 +1,3 @@
-
 //          Copyright Matthias Walter 2010.
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
@@ -10,6 +9,7 @@
 #include "matroid.hpp"
 #include "violator_search.hpp"
 #include "signing.hpp"
+#include "logger.hpp"
 
 #include <boost/numeric/ublas/io.hpp>
 
@@ -107,63 +107,69 @@ namespace tu {
   /// Returns a decomposition of a given binary matroid into a k-sum-decomposition (k=1,2,3)
   /// in graphic, cographic, R10 and maybe irregular components. 
 
-  decomposed_matroid* decompose_binary_matroid (const boost::numeric::ublas::matrix <int>& input_matrix)
+  decomposed_matroid* decompose_binary_matroid (const integer_matrix& input_matrix, bool verbose)
   {
+    logger log (verbose ? logger::VERBOSE : logger::QUIET);
+
     if (!is_zero_one_matrix (input_matrix))
       return NULL;
 
     integer_matrix matrix (input_matrix);
     integer_matroid matroid (matrix.size1 (), matrix.size2 ());
 
-    return decompose_binary_matroid (matroid, matrix, matroid_element_set (), true).second;
+    return decompose_binary_matroid (matroid, matrix, matroid_element_set (), true, log).second;
   }
 
   /// Returns true, iff the given matrix is totally unimodular.
 
-  bool is_totally_unimodular (const integer_matrix& input_matrix)
+  bool is_totally_unimodular (const integer_matrix& input_matrix, bool verbose)
   {
-    std::cout << "Checking for a -1/0/1 matrix" << std::endl;
+    logger log (verbose ? logger::VERBOSE : logger::QUIET);
+
+    if (log.is_verbose ())
+    {
+      log.line () << "(" << input_matrix.size1 () << " x " << input_matrix.size2 () << ")";
+      std::cout << log;
+    }
 
     if (!is_zero_plus_minus_one_matrix (input_matrix))
     {
+      if (log.is_verbose ())
+      {
+        log.line () << " NOT -1/0/+1";
+        std::cout << log << std::endl;
+      }
       return false;
     }
 
-    std::cout << "Checking for signedness" << std::endl;
+    if (log.is_verbose ())
+    {
+      log.line () << " -1/0/+1 OK";
+      std::cout << log;
+    }
 
     if (!is_signed_matrix (input_matrix))
     {
-      //        submatrix_indices submatrix;
-      //        is_signed_matrix (input_matrix, submatrix);
-      //
-      //        for (size_t col = 0; col < submatrix.columns.size (); col++)
-      //        {
-      //            std::cout << "column " << col << " = " << submatrix.columns[col] << std::endl;
-      //        }
-      //        for (size_t row = 0; row < submatrix.rows.size (); row++)
-      //        {
-      //            std::cout << "row " << row << " = " << submatrix.rows[row] << std::endl;
-      //        }
-      //
-      //        const boost::numeric::ublas::matrix_indirect<const boost::numeric::ublas::matrix<int>,
-      //                submatrix_indices::indirect_array_type> indirect_matrix (input_matrix, submatrix.rows,
-      //                submatrix.columns);
-      //
-      //        boost::numeric::ublas::matrix<float> matrix (indirect_matrix);
-      //        
-      //        std::cout << matrix << std::endl;
-
+      if (log.is_verbose ())
+      {
+        log.line () << ", SIGNING FAILED\n";
+        std::cout << log << std::endl;
+      }
       return false;
     }
 
-    std::cout << "Copying matrix and creating matroid" << std::endl;
+    if (log.is_verbose ())
+    {
+      log.clear ();
+      std::cout << ", SIGNING OK" << std::endl;
+    }
 
     integer_matrix matrix (input_matrix);
     integer_matroid matroid (matrix.size1 (), matrix.size2 ());
 
     support_matrix (matrix);
 
-    std::pair <bool, decomposed_matroid*> result = decompose_binary_matroid (matroid, matrix, matroid_element_set (), false);
+    std::pair <bool, decomposed_matroid*> result = decompose_binary_matroid (matroid, matrix, matroid_element_set (), false, log);
 
     assert (result.second == NULL);
 
@@ -173,12 +179,48 @@ namespace tu {
   /// Returns true, iff the given matrix is totally unimodular.
   /// decomposition points to a k-sum-decomposition (k=1,2,3) in graphic, cographic, R10 and maybe irregular components.
 
-  bool is_totally_unimodular (const integer_matrix& input_matrix, decomposed_matroid*& decomposition)
+  bool is_totally_unimodular (const integer_matrix& input_matrix, decomposed_matroid*& decomposition, bool verbose)
   {
-    if (!is_zero_plus_minus_one_matrix (input_matrix) || !is_signed_matrix (input_matrix))
+    logger log (verbose ? logger::VERBOSE : logger::QUIET);
+
+    if (log.is_verbose ())
     {
+      log.line () << "(" << input_matrix.size1 () << " x " << input_matrix.size2 () << ")";
+      std::cout << log;
+    }
+
+    if (!is_zero_plus_minus_one_matrix (input_matrix))
+    {
+      if (log.is_verbose ())
+      {
+        log.line () << " NOT -1/0/+1";
+        std::cout << log << std::endl;
+      }
       decomposition = NULL;
       return false;
+    }
+
+    if (log.is_verbose ())
+    {
+      log.line () << " -1/0/+1 OK";
+      std::cout << log;
+    }
+
+    if (!is_signed_matrix (input_matrix))
+    {
+      if (log.is_verbose ())
+      {
+        log.line () << ", SIGNING FAILED\n";
+        std::cout << log << std::endl;
+      }
+      decomposition = NULL;
+      return false;
+    }
+
+    if (log.is_verbose ())
+    {
+      log.clear ();
+      std::cout << ", SIGNING OK" << std::endl;
     }
 
     integer_matrix matrix (input_matrix);
@@ -186,7 +228,7 @@ namespace tu {
 
     support_matrix (matrix);
 
-    std::pair <bool, decomposed_matroid*> result = decompose_binary_matroid (matroid, matrix, matroid_element_set (), true);
+    std::pair <bool, decomposed_matroid*> result = decompose_binary_matroid (matroid, matrix, matroid_element_set (), true, log);
     decomposition = result.second;
 
     return result.first;
@@ -195,12 +237,26 @@ namespace tu {
   /// Returns true, iff the given matrix is totally unimodular.
   /// decomposition points to a k-sum-decomposition (k=1,2,3) in graphic, cographic, R10 and maybe irregular components.
 
-  bool is_totally_unimodular (const integer_matrix& input_matrix, decomposed_matroid*& decomposition, submatrix_indices& violator)
+  bool is_totally_unimodular (const integer_matrix& input_matrix, decomposed_matroid*& decomposition, submatrix_indices& violator, bool verbose)
   {
+    logger log (verbose ? logger::VERBOSE : logger::QUIET);
+
+    if (log.is_verbose ())
+    {
+      log.line () << "(" << input_matrix.size1 () << " x " << input_matrix.size2 () << ")";
+      std::cout << log;
+    }
+
     /// Check each entry 
     std::pair <unsigned int, unsigned int> entry;
     if (!is_zero_plus_minus_one_matrix (input_matrix, entry))
     {
+      if (log.is_verbose ())
+      {
+        log.line () << " NOT -1/0/+1";
+        std::cout << log << std::endl;
+      }
+
       violator.rows = submatrix_indices::indirect_array_type (1);
       violator.rows[0] = entry.first;
       violator.columns = submatrix_indices::indirect_array_type (1);
@@ -209,12 +265,29 @@ namespace tu {
       return false;
     }
 
+    if (log.is_verbose ())
+    {
+      log.line () << " -1/0/+1 OK";
+      std::cout << log;
+    }
+
     /// Signing test
     if (!is_signed_matrix (input_matrix, violator))
     {
+      if (log.is_verbose ())
+      {
+        log.line () << ", SIGNING FAILED\n";
+        std::cout << log << std::endl;
+      }
       decomposition = NULL;
       assert (violator.rows.size() == violator.columns.size());
       return false;
+    }
+
+    if (log.is_verbose ())
+    {
+      log.clear ();
+      std::cout << ", SIGNING OK" << std::endl;
     }
 
     integer_matroid matroid (input_matrix.size1 (), input_matrix.size2 ());
@@ -225,14 +298,14 @@ namespace tu {
 
     /// Matroid decomposition
     bool is_tu;
-    boost::tie (is_tu, decomposition) = decompose_binary_matroid (matroid, matrix, matroid_element_set (), true);
+    boost::tie (is_tu, decomposition) = decompose_binary_matroid (matroid, matrix, matroid_element_set (), true, log);
     if (is_tu)
       return true;
 
     matroid_element_set rows, columns, elements = detail::find_smallest_irregular_minor (decomposition);
     detail::split_elements (elements.begin (), elements.end (), std::inserter (rows, rows.end ()), std::inserter (columns, columns.end ()));
 
-    detail::violator_strategy* strategy = new detail::single_violator_strategy (input_matrix, rows, columns);
+    detail::violator_strategy* strategy = new detail::single_violator_strategy (input_matrix, rows, columns, log);
 
     strategy->search ();
     strategy->create_matrix (violator);
@@ -247,7 +320,7 @@ namespace tu {
   /// Returns true, iff the given matrix is totally unimodular.
   /// If this is not the case, violator describes a violating submatrix.  
 
-  bool is_totally_unimodular (const integer_matrix& matrix, submatrix_indices& violator)
+  bool is_totally_unimodular (const integer_matrix& matrix, submatrix_indices& violator, bool verbose)
   {
     decomposed_matroid* decomposition;
 

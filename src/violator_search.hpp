@@ -1,4 +1,3 @@
-
 //          Copyright Matthias Walter 2010.
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
@@ -12,6 +11,7 @@
 #include "algorithm.hpp"
 #include "matroid.hpp"
 #include "signing.hpp"
+#include "logger.hpp"
 
 namespace tu {
   namespace detail {
@@ -98,10 +98,12 @@ namespace tu {
     class violator_strategy
     {
     public:
-      violator_strategy (const integer_matrix& input_matrix, const matroid_element_set& row_elements, const matroid_element_set& column_elements) :
-        _input_matrix (input_matrix), _row_elements (row_elements), _column_elements (column_elements)
+      violator_strategy (const integer_matrix& input_matrix, const matroid_element_set& row_elements, const matroid_element_set& column_elements,
+          logger& log) :
+        _input_matrix (input_matrix), _row_elements (row_elements), _column_elements (column_elements), _log (log)
       {
-
+        log.clear ();
+        std::cout << "\nMatrix is NOT totally unimodular. Searching the violating submatrix...\n" << std::endl;
       }
 
       virtual void search () = 0;
@@ -155,7 +157,7 @@ namespace tu {
 
         if (!is_signed_matrix (matrix))
         {
-          //          std::cout << "Matrix failed the signing test!!!" << std::endl;
+          std::cout << "\nSubmatrix did not pass the signing test. It is NOT totally unimodular.\n" << std::endl;
           shrink (row_elements, column_elements);
           return false;
         }
@@ -165,7 +167,7 @@ namespace tu {
 
         /// Matroid decomposition
         bool is_tu;
-        boost::tie (is_tu, decomposition) = decompose_binary_matroid (matroid, matrix, matroid_element_set (), true);
+        boost::tie (is_tu, decomposition) = decompose_binary_matroid (matroid, matrix, matroid_element_set (), true, _log);
 
         //        assert (is_tu == gh_is_tu);
         //        
@@ -184,6 +186,7 @@ namespace tu {
 
         if (is_tu)
         {
+          std::cout << "\nSubmatrix is totally unimodular.\n" << std::endl;
           delete decomposition;
           return true;
         }
@@ -205,6 +208,16 @@ namespace tu {
         //        assert (row_elements.size() == rows.size());
         //        assert (column_elements.size() == columns.size());
 
+        if (rows.size () < row_elements.size () || columns.size () < column_elements.size ())
+        {
+          std::cout << "\nSubmatrix is NOT totally unimodular. A " << rows.size () << " x " << columns.size () << " submatrix was identified, too.\n"
+              << std::endl;
+        }
+        else
+        {
+          std::cout << "\nSubmatrix is NOT totally unimodular.\n" << std::endl;
+        }
+
         //        shrink (row_elements, column_elements);
         shrink (rows, columns);
 
@@ -217,14 +230,15 @@ namespace tu {
       const integer_matrix& _input_matrix;
       matroid_element_set _row_elements;
       matroid_element_set _column_elements;
+      logger& _log;
     };
 
     class single_violator_strategy: public violator_strategy
     {
     public:
       single_violator_strategy (const integer_matrix& input_matrix, const matroid_element_set& row_elements,
-          const matroid_element_set& column_elements) :
-        violator_strategy (input_matrix, row_elements, column_elements)
+          const matroid_element_set& column_elements, logger& log) :
+        violator_strategy (input_matrix, row_elements, column_elements, log)
       {
         _last_element = 0;
       }
@@ -237,8 +251,8 @@ namespace tu {
 
         for (std::vector <int>::const_iterator iter = all_elements.begin (); iter != all_elements.end (); ++iter)
         {
-          std::cout << "\nSearching for violating submatrix in " << _row_elements.size () << " x " << _column_elements.size () << " matrix."
-              << std::endl;
+          //          std::cout << "\nSearching for violating submatrix in " << _row_elements.size () << " x " << _column_elements.size () << " matrix."
+          //              << std::endl;
 
           //          std::cout << "\n\nTrying to remove " << *iter << " from current matrix:" << std::endl;
           //          {

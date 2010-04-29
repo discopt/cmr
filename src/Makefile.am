@@ -7,7 +7,7 @@ noinst_headers = \
   algorithm.hpp \
 	binary_linear_space.hpp \
 	bipartite_graph_bfs.hpp \
-	box.hpp \
+	logger.hpp \
 	comparators.hpp \
 	enumeration.hpp \
 	find_minor_sequence.hpp \
@@ -46,6 +46,7 @@ libtotalunimodularity_a_SOURCES = \
 	ghouila_houri.cpp \
 	zero_plus_minus_one.cpp \
 	separation.cpp \
+	logger.cpp \
 	nested_minor_sequence.cpp \
 	total_unimodularity.cpp \
 	matroid_graph.cpp \
