@@ -605,7 +605,8 @@ namespace tu {
     template <typename MatroidType, typename MatrixType, typename MappingValue>
     inline bool enumerate_extension (MatroidType& matroid, MatrixType& matrix, matrix_permuted <const integer_matrix>& worker_matrix, std::vector <
         MappingValue>& row_mapping, std::vector <MappingValue>& column_mapping, size_pair_t minor_size, size_t ext_height, size_t ext_width,
-        separation& separation, unsigned long long& enumeration, matroid_element_set& extra_elements)
+        separation& separation, matroid_element_set& extra_elements, unsigned long long& enumeration, unsigned long long& next_enumeration,
+        unsigned long long max_enumerations, unsigned int& next_percent, logger& log, size_t cut)
     {
       const size_t minor_length = minor_size.first + minor_size.second;
       const size_t ext_length = ext_height + ext_width;
@@ -668,9 +669,14 @@ namespace tu {
           //          std::cout << "worker's column permutation after applying is: " << worker_matrix.perm2 () << std::endl;
 
           ++enumeration;
-          if (enumeration % 1000 == 0)
+
+          if (enumeration == next_enumeration)
           {
-            //            std::cout << " * " << enumeration << std::endl;
+            log.erase (cut);
+            log.line () << next_percent << "%";
+            std::cout << log;
+            next_percent++;
+            next_enumeration = (max_enumerations * next_percent) / 100;
           }
 
           if (detail::extend_to_3_4_separation (matroid, matrix, worker_matrix, size_pair_t (heights.first, widths.first), size_pair_t (
@@ -690,15 +696,14 @@ namespace tu {
   inline separation enumerate_separations (MatroidType& input_matroid, MatrixType& input_matrix, const NestedMinorSequence& nested_minors,
       matroid_element_set& extra_elements, logger& log)
   {
-    // TODO: Try signed char for optimization
-    typedef int mapping_value_t;
+    typedef signed char mapping_value_t;
 
     if (input_matrix.size1 () + input_matrix.size2 () < 12)
     {
       log.line () << ", TOO SMALL --> IRREGULAR";
       std::cout << log << std::endl;
       log.clear ();
-      
+
       return separation ();
     }
 
@@ -730,9 +735,33 @@ namespace tu {
     std::vector <mapping_value_t> column_mapping (matrix.size2 (), 0);
     separation result;
 
-    size_t matrix_length = matrix.size1 () + matrix.size2 ();
-    unsigned long long max_enumerations = matrix_length * (matrix_length - 1) / 2 + 228;
     unsigned long long enumeration = 0;
+
+    /// Calculate number of enumerations
+    unsigned long long max_enumerations = 1L << (minor_size.first + minor_size.second);
+    size_t h = minor_size.first;
+    size_t w = minor_size.second;
+    for (size_t i = minor_index; i < nested_minors.size (); ++i)
+    {
+      switch (nested_minors.get_extension (i))
+      {
+      case nested_minor_sequence::ONE_COLUMN:
+      case nested_minor_sequence::ONE_ROW:
+        max_enumerations += h + w;
+      break;
+      case nested_minor_sequence::ONE_ROW_ONE_COLUMN:
+        max_enumerations += 3 * (h + w) + 1;
+      break;
+      case nested_minor_sequence::ONE_ROW_TWO_COLUMNS:
+      case nested_minor_sequence::TWO_ROWS_ONE_COLUMN:
+        max_enumerations += 7 * (h + w) + 4;
+      break;
+      default:
+        assert (false);
+      }
+      h += nested_minors.get_extension_height (i);
+      w += nested_minors.get_extension_width (i);
+    }
 
     size_t full_cut = log.size ();
     log.line () << ", ENUMERATING " << max_enumerations << " PARTITIONS: ";
@@ -792,7 +821,7 @@ namespace tu {
         return result;
       }
 
-      if (enumeration >= next_enumeration)
+      if (enumeration == next_enumeration)
       {
         log.erase (cut);
         log.line () << next_percent << '%';
@@ -804,6 +833,7 @@ namespace tu {
     }
 
     //    std::cout << "\n\n\n\n\n" << std::endl;
+    //    std::cout << enumeration << "\n";
 
     /// Clever enumeration along the sequence
     for (size_t i = minor_index; i < nested_minors.size (); ++i)
@@ -811,7 +841,7 @@ namespace tu {
       size_t extension_height = nested_minors.get_extension_height (i);
       size_t extension_width = nested_minors.get_extension_width (i);
       if (detail::enumerate_extension (input_matroid, input_matrix, worker_matrix, row_mapping, column_mapping, minor_size, extension_height,
-          extension_width, result, enumeration, extra_elements))
+          extension_width, result, extra_elements, enumeration, next_enumeration, max_enumerations, next_percent, log, cut))
       {
         //        std::cout << "sequence enum succeeded:\n";
         //        matroid_print (input_matroid, input_matrix);
@@ -819,21 +849,14 @@ namespace tu {
       }
       minor_size.first += extension_height;
       minor_size.second += extension_width;
-
-      if (enumeration >= next_enumeration)
-      {
-        log.erase (cut);
-        log.line () << next_percent << '%';
-        std::cout << log;
-        next_percent++;
-        next_enumeration = (max_enumerations * next_percent) / 100;
-      }
     }
 
     log.erase (full_cut);
-    log.line () << ", ENUMERATED " << max_enumerations << " PARTITIONS --> IRREGULAR";
+    log.line () << ", ENUMERATED " << enumeration << " PARTITIONS --> IRREGULAR";
     std::cout << log << std::endl;
     log.clear ();
+
+    assert (enumeration == max_enumerations);
 
     //    std::cout << "Enumeration done. No (3|4)-separation possible." << std::endl;
 
