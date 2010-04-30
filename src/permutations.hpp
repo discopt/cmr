@@ -196,26 +196,6 @@ namespace tu {
 
   };
 
-  // TODO: sth more efficient ;-)
-  template <typename T>
-  permutation generate_sort_permutation (const std::vector <T>& data)
-  {
-    permutation result (data.size ());
-
-    for (permutation::size_type i = 0; i < result.size (); i++)
-    {
-      int min = i;
-      for (permutation::size_type j = i + 1; j < result.size (); j++)
-      {
-        if (data[result.get (j)] < data[result.get (min)])
-          min = j;
-      }
-      result.swap (i, min);
-    }
-
-    return result;
-  }
-
   class permutation_enumerator
   {
   public:
