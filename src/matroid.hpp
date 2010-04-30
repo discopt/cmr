@@ -1,4 +1,3 @@
-
 //          Copyright Matthias Walter 2010.
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
@@ -81,6 +80,16 @@ namespace tu {
     inline const name_type& name2 (size_t index) const
     {
       return _names2[index];
+    }
+
+    inline std::set <NameType> get_elements () const
+    {
+      std::set <NameType> result;
+
+      std::copy (_names1.begin (), _names1.end (), std::inserter (result, result.end ()));
+      std::copy (_names2.begin (), _names2.end (), std::inserter (result, result.end ()));
+
+      return result;
     }
 
   private:
