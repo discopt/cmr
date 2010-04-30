@@ -97,9 +97,24 @@ namespace tu {
       //        std::cout << "The lower right matroid is " << (copy_result ? "" : "NOT ") << "regular.\n";
       //      }
 
-      // TODO: if rank == 0, filter some extra_elements!
-      //      matroid_element_set upper_left_elements;
-      //      matroid_element_set lower_right_elements;
+
+      /// Filter or copy extra_elements depending on type of separation 
+      matroid_element_set upper_left_extra_elements, lower_right_extra_elements;
+      if (sep.rank () == 0)
+      {
+        matroid_element_set upper_left_elements = upper_left_matroid.get_elements ();
+        matroid_element_set lower_right_elements = lower_right_matroid.get_elements ();
+
+        std::set_intersection (upper_left_elements.begin (), upper_left_elements.end (), extra_elements.begin (), extra_elements.end (),
+            std::inserter (upper_left_extra_elements, upper_left_extra_elements.end ()));
+        std::set_intersection (lower_right_elements.begin (), lower_right_elements.end (), extra_elements.begin (), extra_elements.end (),
+            std::inserter (lower_right_extra_elements, lower_right_extra_elements.end ()));
+      }
+      else
+      {
+        std::copy (extra_elements.begin (), extra_elements.end (), std::inserter (upper_left_extra_elements, upper_left_extra_elements.end ()));
+        std::copy (extra_elements.begin (), extra_elements.end (), std::inserter (lower_right_extra_elements, lower_right_extra_elements.end ()));
+      }
 
       matroid_permuted <integer_matroid> permuted_upper_left_matroid (upper_left_matroid);
       matrix_permuted <integer_matrix> permuted_upper_left_matrix (upper_left_matrix);
@@ -130,7 +145,7 @@ namespace tu {
       std::cout << log;
 
       std::pair <bool, decomposed_matroid*> upper_left_result = decompose_minor_sequence (permuted_upper_left_matroid, permuted_upper_left_matrix,
-          nested_minors, extra_elements, construct_decomposition, log);
+          nested_minors, upper_left_extra_elements, construct_decomposition, log);
       //        decompose_binary_matroid (upper_left_matroid, upper_left_matrix, construct_decomposition);
 
       if (!construct_decomposition && !upper_left_result.first)
@@ -142,8 +157,8 @@ namespace tu {
       //      std::cout << "\n               Looking at part 2\n" << std::endl;
       //      matroid_print (lower_right_matroid, lower_right_matrix);
 
-      std::pair <bool, decomposed_matroid*> lower_right_result = decompose_binary_matroid (lower_right_matroid, lower_right_matrix, extra_elements,
-          construct_decomposition, log);
+      std::pair <bool, decomposed_matroid*> lower_right_result = decompose_binary_matroid (lower_right_matroid, lower_right_matrix,
+          lower_right_extra_elements, construct_decomposition, log);
 
       log.unindent ();
 
@@ -527,6 +542,7 @@ namespace tu {
     //    }
 
     if (sep.is_valid ()) // separation
+
     {
       log.line () << " --> " << (sep.rank () + 1) << "-separation";
       std::cout << log << std::endl;
@@ -552,11 +568,29 @@ namespace tu {
 
       sep.create_components (permuted_matroid, permuted_matrix, upper_left_matroid, upper_left_matrix, lower_right_matroid, lower_right_matrix);
 
+      /// Filter or copy extra_elements depending on type of separation 
+      matroid_element_set upper_left_extra_elements, lower_right_extra_elements;
+      if (sep.rank () == 0)
+      {
+        matroid_element_set upper_left_elements = upper_left_matroid.get_elements ();
+        matroid_element_set lower_right_elements = lower_right_matroid.get_elements ();
+
+        std::set_intersection (upper_left_elements.begin (), upper_left_elements.end (), extra_elements.begin (), extra_elements.end (),
+            std::inserter (upper_left_extra_elements, upper_left_extra_elements.end ()));
+        std::set_intersection (lower_right_elements.begin (), lower_right_elements.end (), extra_elements.begin (), extra_elements.end (),
+            std::inserter (lower_right_extra_elements, lower_right_extra_elements.end ()));
+      }
+      else
+      {
+        std::copy (extra_elements.begin (), extra_elements.end (), std::inserter (upper_left_extra_elements, upper_left_extra_elements.end ()));
+        std::copy (extra_elements.begin (), extra_elements.end (), std::inserter (lower_right_extra_elements, lower_right_extra_elements.end ()));
+      }
+
       //      std::cout << "separation successful. Looking at part 1\n" << std::endl;
       //      matroid_print (upper_left_matroid, upper_left_matrix);
 
-      std::pair <bool, decomposed_matroid*> upper_left_result = decompose_binary_matroid (upper_left_matroid, upper_left_matrix, extra_elements,
-          construct_decomposition, log);
+      std::pair <bool, decomposed_matroid*> upper_left_result = decompose_binary_matroid (upper_left_matroid, upper_left_matrix,
+          upper_left_extra_elements, construct_decomposition, log);
 
       if (!construct_decomposition && !upper_left_result.first)
       {
@@ -567,8 +601,8 @@ namespace tu {
       //      std::cout << "\nLooking at part2\n" << std::endl;
       //      matroid_print (lower_right_matroid, lower_right_matrix);
 
-      std::pair <bool, decomposed_matroid*> lower_right_result = decompose_binary_matroid (lower_right_matroid, lower_right_matrix, extra_elements,
-          construct_decomposition, log);
+      std::pair <bool, decomposed_matroid*> lower_right_result = decompose_binary_matroid (lower_right_matroid, lower_right_matrix,
+          lower_right_extra_elements, construct_decomposition, log);
 
       log.unindent ();
 
