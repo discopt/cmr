@@ -107,9 +107,9 @@ namespace tu {
   /// Returns a decomposition of a given binary matroid into a k-sum-decomposition (k=1,2,3)
   /// in graphic, cographic, R10 and maybe irregular components. 
 
-  decomposed_matroid* decompose_binary_matroid (const integer_matrix& input_matrix, bool verbose)
+  decomposed_matroid* decompose_binary_matroid (const integer_matrix& input_matrix, log_level level)
   {
-    logger log (verbose ? logger::VERBOSE : logger::QUIET);
+    logger log (level);
 
     if (!is_zero_one_matrix (input_matrix))
       return NULL;
@@ -122,11 +122,11 @@ namespace tu {
 
   /// Returns true, iff the given matrix is totally unimodular.
 
-  bool is_totally_unimodular (const integer_matrix& input_matrix, bool verbose)
+  bool is_totally_unimodular (const integer_matrix& input_matrix, log_level level)
   {
-    logger log (verbose ? logger::VERBOSE : logger::QUIET);
+    logger log (level);
 
-    if (log.is_verbose ())
+    if (log.is_updating ())
     {
       log.line () << "(" << input_matrix.size1 () << " x " << input_matrix.size2 () << ")";
       std::cout << log;
@@ -134,34 +134,53 @@ namespace tu {
 
     if (!is_zero_plus_minus_one_matrix (input_matrix))
     {
-      if (log.is_verbose ())
+      if (log.is_updating ())
       {
         log.line () << " NOT -1/0/+1";
         std::cout << log << std::endl;
       }
+      else if (log.is_verbose ())
+      {
+        std::cout << "Given " << input_matrix.size1 () << " x " << input_matrix.size2 () << " matrix does not contain only -1,0 and +1 entries."
+            << std::endl;
+      }
+
       return false;
     }
 
-    if (log.is_verbose ())
+    if (log.is_updating ())
     {
       log.line () << " -1/0/+1 OK";
       std::cout << log;
     }
+    else if (log.is_verbose ())
+    {
+      std::cout << "Given " << input_matrix.size1 () << " x " << input_matrix.size2 () << " matrix contains only -1,0 and +1 entries." << std::endl;
+    }
 
     if (!is_signed_matrix (input_matrix))
     {
-      if (log.is_verbose ())
+      if (log.is_updating ())
       {
         log.line () << ", SIGNING FAILED\n";
         std::cout << log << std::endl;
       }
+      else if (log.is_verbose ())
+      {
+        std::cout << "The matrix is not its signed version." << std::endl;
+      }
+
       return false;
     }
 
-    if (log.is_verbose ())
+    if (log.is_updating ())
     {
       log.clear ();
       std::cout << ", SIGNING OK" << std::endl;
+    }
+    else if (log.is_verbose ())
+    {
+      std::cout << "The matrix is its signed version." << std::endl;
     }
 
     integer_matrix matrix (input_matrix);
@@ -179,11 +198,11 @@ namespace tu {
   /// Returns true, iff the given matrix is totally unimodular.
   /// decomposition points to a k-sum-decomposition (k=1,2,3) in graphic, cographic, R10 and maybe irregular components.
 
-  bool is_totally_unimodular (const integer_matrix& input_matrix, decomposed_matroid*& decomposition, bool verbose)
+  bool is_totally_unimodular (const integer_matrix& input_matrix, decomposed_matroid*& decomposition, log_level level)
   {
-    logger log (verbose ? logger::VERBOSE : logger::QUIET);
+    logger log (level);
 
-    if (log.is_verbose ())
+    if (log.is_updating ())
     {
       log.line () << "(" << input_matrix.size1 () << " x " << input_matrix.size2 () << ")";
       std::cout << log;
@@ -191,36 +210,55 @@ namespace tu {
 
     if (!is_zero_plus_minus_one_matrix (input_matrix))
     {
-      if (log.is_verbose ())
+      if (log.is_updating ())
       {
         log.line () << " NOT -1/0/+1";
         std::cout << log << std::endl;
       }
+      else if (log.is_verbose ())
+      {
+        std::cout << "Given " << input_matrix.size1 () << " x " << input_matrix.size2 () << " matrix does not contain only -1,0 and +1 entries."
+            << std::endl;
+      }
+
       decomposition = NULL;
       return false;
     }
 
-    if (log.is_verbose ())
+    if (log.is_updating ())
     {
       log.line () << " -1/0/+1 OK";
       std::cout << log;
     }
+    else if (log.is_verbose ())
+    {
+      std::cout << "Given " << input_matrix.size1 () << " x " << input_matrix.size2 () << " matrix contains only -1,0 and +1 entries." << std::endl;
+    }
 
     if (!is_signed_matrix (input_matrix))
     {
-      if (log.is_verbose ())
+      if (log.is_updating ())
       {
         log.line () << ", SIGNING FAILED\n";
         std::cout << log << std::endl;
       }
+      else if (log.is_verbose ())
+      {
+        std::cout << "The matrix is not its signed version." << std::endl;
+      }
+
       decomposition = NULL;
       return false;
     }
 
-    if (log.is_verbose ())
+    if (log.is_updating ())
     {
       log.clear ();
       std::cout << ", SIGNING OK" << std::endl;
+    }
+    else if (log.is_verbose ())
+    {
+      std::cout << "The matrix is its signed version.\n" << std::endl;
     }
 
     integer_matrix matrix (input_matrix);
@@ -237,11 +275,11 @@ namespace tu {
   /// Returns true, iff the given matrix is totally unimodular.
   /// decomposition points to a k-sum-decomposition (k=1,2,3) in graphic, cographic, R10 and maybe irregular components.
 
-  bool is_totally_unimodular (const integer_matrix& input_matrix, decomposed_matroid*& decomposition, submatrix_indices& violator, bool verbose)
+  bool is_totally_unimodular (const integer_matrix& input_matrix, decomposed_matroid*& decomposition, submatrix_indices& violator, log_level level)
   {
-    logger log (verbose ? logger::VERBOSE : logger::QUIET);
+    logger log (level);
 
-    if (log.is_verbose ())
+    if (log.is_updating ())
     {
       log.line () << "(" << input_matrix.size1 () << " x " << input_matrix.size2 () << ")";
       std::cout << log;
@@ -251,10 +289,15 @@ namespace tu {
     std::pair <unsigned int, unsigned int> entry;
     if (!is_zero_plus_minus_one_matrix (input_matrix, entry))
     {
-      if (log.is_verbose ())
+      if (log.is_updating ())
       {
         log.line () << " NOT -1/0/+1";
         std::cout << log << std::endl;
+      }
+      else if (log.is_verbose ())
+      {
+        std::cout << "Given " << input_matrix.size1 () << " x " << input_matrix.size2 () << " matrix does not contain only -1,0 and +1 entries."
+            << std::endl;
       }
 
       violator.rows = submatrix_indices::indirect_array_type (1);
@@ -265,29 +308,42 @@ namespace tu {
       return false;
     }
 
-    if (log.is_verbose ())
+    if (log.is_updating ())
     {
       log.line () << " -1/0/+1 OK";
       std::cout << log;
+    }
+    else if (log.is_verbose ())
+    {
+      std::cout << "Given " << input_matrix.size1 () << " x " << input_matrix.size2 () << " matrix contains only -1,0 and +1 entries." << std::endl;
     }
 
     /// Signing test
     if (!is_signed_matrix (input_matrix, violator))
     {
-      if (log.is_verbose ())
+      if (log.is_updating ())
       {
         log.line () << ", SIGNING FAILED\n";
         std::cout << log << std::endl;
       }
+      else if (log.is_verbose ())
+      {
+        std::cout << "The matrix is not its signed version." << std::endl;
+      }
+
       decomposition = NULL;
       assert (violator.rows.size() == violator.columns.size());
       return false;
     }
 
-    if (log.is_verbose ())
+    if (log.is_updating ())
     {
       log.clear ();
       std::cout << ", SIGNING OK" << std::endl;
+    }
+    else if (log.is_verbose ())
+    {
+      std::cout << "The matrix is its signed version." << std::endl;
     }
 
     integer_matroid matroid (input_matrix.size1 (), input_matrix.size2 ());
@@ -320,11 +376,11 @@ namespace tu {
   /// Returns true, iff the given matrix is totally unimodular.
   /// If this is not the case, violator describes a violating submatrix.  
 
-  bool is_totally_unimodular (const integer_matrix& matrix, submatrix_indices& violator, bool verbose)
+  bool is_totally_unimodular (const integer_matrix& matrix, submatrix_indices& violator, log_level level)
   {
     decomposed_matroid* decomposition;
 
-    bool is_tu = is_totally_unimodular (matrix, decomposition, violator);
+    bool is_tu = is_totally_unimodular (matrix, decomposition, violator, level);
 
     delete decomposition;
 

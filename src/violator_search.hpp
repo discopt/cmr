@@ -91,8 +91,8 @@ namespace tu {
       //      std::copy (sub_indices.rows.begin (), sub_indices.rows.end (), std::ostream_iterator <int> (std::cout, " "));
       //      std::cout << "] [";
       //      std::copy (sub_indices.columns.begin (), sub_indices.columns.end (), std::ostream_iterator <int> (std::cout, " "));
-      //      std::cout << "]" << std::endl;
       //      matrix_print (input_matrix);
+      //      std::cout << "]" << std::endl;
     }
 
     class violator_strategy
@@ -102,8 +102,10 @@ namespace tu {
           logger& log) :
         _input_matrix (input_matrix), _row_elements (row_elements), _column_elements (column_elements), _log (log)
       {
-        log.clear ();
-        std::cout << "\nMatrix is NOT totally unimodular. Searching the violating submatrix...\n" << std::endl;
+        if (log.is_updating () || _log.is_verbose ())
+        {
+          std::cout << "\nMatrix is NOT totally unimodular. Searching the violating submatrix...\n" << std::endl;
+        }
       }
 
       virtual void search () = 0;
@@ -157,7 +159,10 @@ namespace tu {
 
         if (!is_signed_matrix (matrix))
         {
-          std::cout << "Submatrix did not pass the signing test. It is NOT totally unimodular.\n" << std::endl;
+          if (_log.is_updating () || _log.is_verbose ())
+          {
+            std::cout << "Submatrix did not pass the signing test. It is NOT totally unimodular.\n" << std::endl;
+          }
           shrink (row_elements, column_elements);
           return false;
         }
@@ -186,7 +191,10 @@ namespace tu {
 
         if (is_tu)
         {
-          std::cout << "\nSubmatrix is totally unimodular.\n" << std::endl;
+          if (_log.is_updating () || _log.is_verbose ())
+          {
+            std::cout << "\nSubmatrix is totally unimodular.\n" << std::endl;
+          }
           delete decomposition;
           return true;
         }
@@ -206,14 +214,17 @@ namespace tu {
         //        assert (row_elements.size() == rows.size());
         //        assert (column_elements.size() == columns.size());
 
-        if (rows.size () < row_elements.size () || columns.size () < column_elements.size ())
+        if (_log.is_updating () || _log.is_verbose ())
         {
-          std::cout << "\nSubmatrix is NOT totally unimodular. A " << rows.size () << " x " << columns.size () << " non-totally unimodular submatrix was identified, too.\n"
-              << std::endl;
-        }
-        else
-        {
-          std::cout << "\nSubmatrix is NOT totally unimodular.\n" << std::endl;
+          if (rows.size () < row_elements.size () || columns.size () < column_elements.size ())
+          {
+            std::cout << "\nSubmatrix is NOT totally unimodular. A " << rows.size () << " x " << columns.size ()
+                << " non-totally unimodular submatrix was identified, too.\n" << std::endl;
+          }
+          else
+          {
+            std::cout << "\nSubmatrix is NOT totally unimodular.\n" << std::endl;
+          }
         }
 
         //        shrink (row_elements, column_elements);

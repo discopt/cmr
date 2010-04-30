@@ -7,7 +7,7 @@
 
 namespace tu {
 
-  logger::logger (level_t level) :
+  logger::logger (log_level level) :
     _indent (0), _level (level)
   {
     _line = new std::stringstream ();

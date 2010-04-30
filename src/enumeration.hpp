@@ -670,7 +670,7 @@ namespace tu {
 
           ++enumeration;
 
-          if (enumeration == next_enumeration)
+          if (log.is_updating () && enumeration == next_enumeration)
           {
             log.erase (cut);
             log.line () << next_percent << "%";
@@ -700,9 +700,16 @@ namespace tu {
 
     if (input_matrix.size1 () + input_matrix.size2 () < 12)
     {
-      log.line () << ", TOO SMALL --> IRREGULAR";
-      std::cout << log << std::endl;
-      log.clear ();
+      if (log.is_updating ())
+      {
+        log.line () << ", TOO SMALL --> IRREGULAR";
+        std::cout << log << std::endl;
+        log.clear ();
+      }
+      else if (log.is_verbose ())
+      {
+        std::cout << "Matroid is too small to contain a (3|4)-separation and must be irregular." << std::endl;
+      }
 
       return separation ();
     }
@@ -738,36 +745,49 @@ namespace tu {
     unsigned long long enumeration = 0;
 
     /// Calculate number of enumerations
-    unsigned long long max_enumerations = 1L << (minor_size.first + minor_size.second);
-    size_t h = minor_size.first;
-    size_t w = minor_size.second;
-    for (size_t i = minor_index; i < nested_minors.size (); ++i)
-    {
-      switch (nested_minors.get_extension (i))
-      {
-      case nested_minor_sequence::ONE_COLUMN:
-      case nested_minor_sequence::ONE_ROW:
-        max_enumerations += h + w;
-      break;
-      case nested_minor_sequence::ONE_ROW_ONE_COLUMN:
-        max_enumerations += 3 * (h + w) + 1;
-      break;
-      case nested_minor_sequence::ONE_ROW_TWO_COLUMNS:
-      case nested_minor_sequence::TWO_ROWS_ONE_COLUMN:
-        max_enumerations += 7 * (h + w) + 4;
-      break;
-      default:
-        assert (false);
-      }
-      h += nested_minors.get_extension_height (i);
-      w += nested_minors.get_extension_width (i);
-    }
+    size_t cut = 0, full_cut = 0;
+    unsigned long long max_enumerations = 0;
 
-    size_t full_cut = log.size ();
-    log.line () << ", ENUMERATING " << max_enumerations << " PARTITIONS: ";
-    size_t cut = log.size ();
-    log.line () << "0%";
-    std::cout << log;
+    if (log.is_updating () || log.is_verbose ())
+    {
+      max_enumerations = 1L << (minor_size.first + minor_size.second);
+      size_t h = minor_size.first;
+      size_t w = minor_size.second;
+      for (size_t i = minor_index; i < nested_minors.size (); ++i)
+      {
+        switch (nested_minors.get_extension (i))
+        {
+        case nested_minor_sequence::ONE_COLUMN:
+        case nested_minor_sequence::ONE_ROW:
+          max_enumerations += h + w;
+        break;
+        case nested_minor_sequence::ONE_ROW_ONE_COLUMN:
+          max_enumerations += 3 * (h + w) + 1;
+        break;
+        case nested_minor_sequence::ONE_ROW_TWO_COLUMNS:
+        case nested_minor_sequence::TWO_ROWS_ONE_COLUMN:
+          max_enumerations += 7 * (h + w) + 4;
+        break;
+        default:
+          assert (false);
+        }
+        h += nested_minors.get_extension_height (i);
+        w += nested_minors.get_extension_width (i);
+      }
+
+      if (log.is_updating ())
+      {
+        full_cut = log.size ();
+        log.line () << ", ENUMERATING " << max_enumerations << " PARTITIONS: ";
+        cut = log.size ();
+        log.line () << "0%";
+        std::cout << log;
+      }
+      else if (log.is_verbose ())
+      {
+        std::cout << "Enumerating " << max_enumerations << " partitions along the sequence." << std::endl;
+      }
+    }
 
     unsigned long long next_enumeration = max_enumerations / 100;
     unsigned int next_percent = 1;
@@ -821,7 +841,7 @@ namespace tu {
         return result;
       }
 
-      if (enumeration == next_enumeration)
+      if (log.is_updating () && enumeration == next_enumeration)
       {
         log.erase (cut);
         log.line () << next_percent << '%';
@@ -829,7 +849,11 @@ namespace tu {
         next_percent++;
         next_enumeration = (max_enumerations * next_percent) / 100;
       }
+    }
 
+    if (log.is_verbose ())
+    {
+      std::cout << "Complete enumeration of " << (minor_index + 1) << " minors done." << std::endl;
     }
 
     //    std::cout << "\n\n\n\n\n" << std::endl;
@@ -849,16 +873,25 @@ namespace tu {
       }
       minor_size.first += extension_height;
       minor_size.second += extension_width;
+
+      if (log.is_verbose ())
+      {
+        std::cout << "Clever enumeration done for nested minor " << (i + 2) << "." << std::endl;
+      }
     }
 
-    log.erase (full_cut);
-    log.line () << ", ENUMERATED " << enumeration << " PARTITIONS --> IRREGULAR";
-    std::cout << log << std::endl;
-    log.clear ();
+    if (log.is_updating ())
+    {
+      log.erase (full_cut);
+      log.line () << ", ENUMERATED " << enumeration << " PARTITIONS --> IRREGULAR";
+      std::cout << log << std::endl;
+      log.clear ();
+    }
 
-    assert (enumeration == max_enumerations);
-
-    //    std::cout << "Enumeration done. No (3|4)-separation possible." << std::endl;
+    if (log.is_verbose ())
+    {
+      std::cout << "Matroid does not contain a (3|4)-separation and must be irregular." << std::endl;
+    }
 
     return separation ();
   }

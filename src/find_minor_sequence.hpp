@@ -390,9 +390,12 @@ namespace tu {
 
     while (nested_minors.height () < matroid.size1 () || nested_minors.width () != matroid.size2 ())
     {
-      log.erase (cut);
-      log.line() << " + " << nested_minors.size () << " EXT";
-      std::cout << log;
+      if (log.is_updating ())
+      {
+        log.erase (cut);
+        log.line () << " + " << nested_minors.size () << " EXT";
+        std::cout << log;
+      }
 
       //      std::cout << "\nNew ext ension round... " << nested_minors.height () << " x " << nested_minors.width () << std::endl;
 
@@ -454,9 +457,12 @@ namespace tu {
       column_three_connectivity.reset (nested_minors.height (), nested_minors.width ());
     }
 
-    log.erase (cut);
-    log.line() << " + " << nested_minors.size () << " EXT";
-    std::cout << log;
+    if (log.is_updating ())
+    {
+      log.erase (cut);
+      log.line () << " + " << nested_minors.size () << " EXT";
+      std::cout << log;
+    }
 
     return separation ();
   }

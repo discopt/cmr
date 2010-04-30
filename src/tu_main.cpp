@@ -39,7 +39,12 @@ void print_decomposition (const tu::decomposed_matroid* decomposition, std::stri
     tu::decomposed_matroid_leaf* leaf = (tu::decomposed_matroid_leaf*) (decomposition);
 
     if (leaf->is_R10 ())
-      std::cout << indent << "R10\n";
+    {
+      std::cout << indent << "R10:";
+      for (tu::matroid_element_set::const_iterator iter = leaf->elements ().begin (); iter != leaf->elements ().end (); ++iter)
+        std::cout << " " << *iter;
+      std::cout << "\n";
+    }
     else if (leaf->is_planar ())
     {
       std::cout << indent << "planar binary matroid.\n";
@@ -110,18 +115,18 @@ void print_violator (const tu::integer_matrix& matrix, const tu::submatrix_indic
     }
     std::cout << '\n';
   }
-  std::cout << "\nrow indices:";
+  std::cout << "\nRow indices in range [0," << (matrix.size1 () - 1) << "]:\n";
   for (size_t row = 0; row < violator.rows.size (); ++row)
-    std::cout << ' ' << violator.rows[row];
-  std::cout << "\ncolumn indices:";
+    std::cout << (row == 0 ? "" : " ") << violator.rows[row];
+  std::cout << "\n\nColumn indices in range [0," << (matrix.size2 () - 1) << "]:\n";
   for (size_t column = 0; column < violator.columns.size (); ++column)
-    std::cout << ' ' << violator.columns[column];
+    std::cout << (column == 0 ? "" : " ") << violator.columns[column] << ' ';
   std::cout << std::endl;
 }
 
 namespace po = boost::program_options;
 
-int run (const std::string& file_name, bool show_certificates)
+int run (const std::string& file_name, bool show_certificates, tu::log_level level)
 {
   /// Open the file
 
@@ -166,15 +171,15 @@ int run (const std::string& file_name, bool show_certificates)
     tu::submatrix_indices violator;
     tu::decomposed_matroid* decomposition;
 
-    if (tu::is_totally_unimodular (matrix, decomposition, violator))
+    if (tu::is_totally_unimodular (matrix, decomposition, violator, level))
     {
-      std::cout << "Matrix is totally unimodular.\n" << std::endl;
+      std::cout << "\nThe " << matrix.size1 () << " x " << matrix.size2 () << " matrix is totally unimodular.\n" << std::endl;
 
       print_decomposition (decomposition);
     }
     else
     {
-      std::cout << "Matrix is not totally unimodular." << std::endl;
+      std::cout << "\nThe " << matrix.size1 () << " x " << matrix.size2 () << " matrix is not totally unimodular." << std::endl;
       assert (violator.rows.size() == violator.columns.size());
       int det = tu::determinant_submatrix (matrix, violator);
       std::cout << "\nThe violating submatrix (det = " << det << ") is " << violator.rows.size () << " x " << violator.columns.size () << ":\n\n"
@@ -185,13 +190,13 @@ int run (const std::string& file_name, bool show_certificates)
   }
   else
   {
-    if (tu::is_totally_unimodular (matrix, true))
+    if (tu::is_totally_unimodular (matrix, level))
     {
-      std::cout << "Matrix is totally unimodular." << std::endl;
+      std::cout << "\nThe " << matrix.size1 () << " x " << matrix.size2 () << " matrix is totally unimodular." << std::endl;
     }
     else
     {
-      std::cout << "Matrix is not totally unimodular." << std::endl;
+      std::cout << "\nThe " << matrix.size1 () << " x " << matrix.size2 () << " matrix is not totally unimodular." << std::endl;
     }
   }
 
@@ -203,7 +208,8 @@ int main (int argc, char **argv)
   po::options_description options_desc ("Allowed options");
   options_desc.add_options () ("help,h", "Shows a help message.") ("matrix,m", po::value <std::string> (),
       "Input matrix to test for total unimodularity.") ("certs,c",
-      "Prints certificates: A matroid decomposition, if the matrix is totally unimodular and a violating submatrix otherwise.");
+      "Prints certificates: A matroid decomposition, if the matrix is totally unimodular and a violating submatrix otherwise.") ("dynamic,d",
+      "Dynamic logging (default).") ("verbose,v", "Verbose logging.") ("quiet,q", "No logging at all.");
   po::positional_options_description positional_options_desc;
   positional_options_desc.add ("matrix", -1);
   po::variables_map variables;
@@ -231,5 +237,17 @@ int main (int argc, char **argv)
     return EXIT_FAILURE;
   }
 
-  return run (variables["matrix"].as <std::string> (), variables.count ("certs"));
+  if ((variables.count ("dynamic") ? 1 : 0) + (variables.count ("verbose") ? 1 : 0) + (variables.count ("quiet") ? 1 : 0) >= 2)
+  {
+    std::cout << "Error: you can specify at most one log level. Please use --help for usage." << std::endl;
+    return EXIT_FAILURE;
+  }
+
+  tu::log_level level = tu::LOG_UPDATING;
+  if (variables.count ("verbose"))
+    level = tu::LOG_VERBOSE;
+  else if (variables.count ("quiet"))
+    level = tu::LOG_QUIET;
+
+  return run (variables["matrix"].as <std::string> (), variables.count ("certs"), level);
 }

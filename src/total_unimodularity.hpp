@@ -28,29 +28,35 @@ namespace tu {
 
   class decomposed_matroid;
 
+  enum log_level
+  {
+    LOG_QUIET, LOG_UPDATING, LOG_VERBOSE
+  };
+
   /// Returns a decomposition of a given binary matroid into a k-sum-decomposition (k=1,2,3)
   /// in graphic, cographic, R10 and maybe irregular components. 
 
-  decomposed_matroid* decompose_binary_matroid (const boost::numeric::ublas::matrix <int>& matrix, bool verbose = false);
+  decomposed_matroid* decompose_binary_matroid (const boost::numeric::ublas::matrix <int>& matrix, log_level level = LOG_QUIET);
 
   /// Returns true, iff the given matrix is totally unimodular.
 
-  bool is_totally_unimodular (const integer_matrix& matrix, bool verbose = false);
+  bool is_totally_unimodular (const integer_matrix& matrix, log_level level = LOG_QUIET);
 
   /// Returns true, iff the given matrix is totally unimodular.
   /// decomposition points to a k-sum-decomposition (k=1,2,3) in graphic, cographic, R10 and maybe irregular components.
 
-  bool is_totally_unimodular (const integer_matrix& matrix, decomposed_matroid*& decomposition, bool verbose = false);
+  bool is_totally_unimodular (const integer_matrix& matrix, decomposed_matroid*& decomposition, log_level level = LOG_QUIET);
 
   /// Returns true, iff the given matrix is totally unimodular.
   /// If this is not the case, violator describes a violating submatrix.  
 
-  bool is_totally_unimodular (const integer_matrix& matrix, submatrix_indices& violator, bool verbose = false);
+  bool is_totally_unimodular (const integer_matrix& matrix, submatrix_indices& violator, log_level level = LOG_QUIET);
 
   /// Returns true, iff the given matrix is totally unimodular.
   /// decomposition points to a k-sum-decomposition (k=1,2,3) in graphic, cographic, R10 and maybe irregular components.
 
-  bool is_totally_unimodular (const integer_matrix& matrix, decomposed_matroid*& decomposition, submatrix_indices& violator, bool verbose = false);
+  bool is_totally_unimodular (const integer_matrix& matrix, decomposed_matroid*& decomposition, submatrix_indices& violator, log_level level =
+      LOG_QUIET);
 
   /// Returns true, iff the given matrix contains only values {-1, 0, 1}.
 

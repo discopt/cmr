@@ -9,28 +9,36 @@
 #include <sstream>
 #include <iostream>
 
+#include "total_unimodularity.hpp"
+
 namespace tu {
 
   class logger
   {
   public:
-    enum level_t
-    {
-      QUIET, VERBOSE
-    };
 
   public:
-    logger (level_t level);
+    logger (log_level level);
     virtual ~logger ();
 
-    inline level_t level () const
+    inline log_level level () const
     {
       return _level;
     }
 
+    inline bool is_quiet () const
+    {
+      return _level == LOG_QUIET;
+    }
+
     inline bool is_verbose () const
     {
-      return _level == VERBOSE;
+      return _level == LOG_VERBOSE;
+    }
+
+    inline bool is_updating () const
+    {
+      return _level == LOG_UPDATING;
     }
 
     inline void indent (size_t amount = 2)
@@ -76,7 +84,7 @@ namespace tu {
 
   private:
     size_t _indent;
-    level_t _level;
+    log_level _level;
     std::stringstream* _line;
 
   };
