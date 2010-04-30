@@ -157,7 +157,7 @@ namespace tu {
 
         if (!is_signed_matrix (matrix))
         {
-          std::cout << "\nSubmatrix did not pass the signing test. It is NOT totally unimodular.\n" << std::endl;
+          std::cout << "Submatrix did not pass the signing test. It is NOT totally unimodular.\n" << std::endl;
           shrink (row_elements, column_elements);
           return false;
         }
@@ -200,8 +200,6 @@ namespace tu {
 
         //                std::cout << "calling shrink" << std::endl;
 
-        // TODO: Should use decomposition rows/columns here.
-
         //        std::cout << "ordinary: " << row_elements.size () << " x " << column_elements.size () << std::endl;
         //        std::cout << "decomposition-based: " << rows.size () << " x " << columns.size () << std::endl;
 
@@ -210,7 +208,7 @@ namespace tu {
 
         if (rows.size () < row_elements.size () || columns.size () < column_elements.size ())
         {
-          std::cout << "\nSubmatrix is NOT totally unimodular. A " << rows.size () << " x " << columns.size () << " submatrix was identified, too.\n"
+          std::cout << "\nSubmatrix is NOT totally unimodular. A " << rows.size () << " x " << columns.size () << " non-totally unimodular submatrix was identified, too.\n"
               << std::endl;
         }
         else

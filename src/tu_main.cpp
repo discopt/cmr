@@ -12,9 +12,6 @@
 #include "total_unimodularity.hpp"
 #include "matroid_decomposition.hpp"
 
-// TODO: Debug
-#include <boost/numeric/ublas/io.hpp>
-
 void print_matroid_graph (const tu::matroid_graph& graph, const std::string& indent = "")
 {
   std::cout << boost::num_vertices (graph) << " nodes and " << boost::num_edges (graph) << " edges:";

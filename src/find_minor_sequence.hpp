@@ -401,22 +401,6 @@ namespace tu {
       assert (nested_minors.width() == row_three_connectivity.dimension());
       assert (nested_minors.width() == column_three_connectivity.base());
 
-      // TODO: This resetting should not be necessary!
-
-      //      vector_three_connectivity <matrix_transposed <MatrixType> > other (row_three_connectivity);
-
-      //      column_three_connectivity.reset (nested_minors.height (), nested_minors.width ());
-      //      row_three_connectivity.reset (nested_minors.width (), nested_minors.height ());
-
-      //      if (!(other == row_three_connectivity))
-      //      {
-      //        matrix_print (matrix);
-      //
-      //        other.print (std::cout) << std::endl;
-      //
-      //        throw std::runtime_error ("FOO");
-      //      }
-
       // Simple row extension
       if (find_simple_row_extension (matroid, matrix, nested_minors, row_three_connectivity, column_three_connectivity))
       {

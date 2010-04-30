@@ -13,9 +13,6 @@
 #include <map>
 #include <vector>
 
-// TODO: Debug
-#include "matrix.hpp"
-
 namespace tu {
 
   /// Calculates a subdeterminant of the given matrix.
