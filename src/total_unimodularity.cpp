@@ -361,7 +361,7 @@ namespace tu {
     matroid_element_set rows, columns, elements = detail::find_smallest_irregular_minor (decomposition);
     detail::split_elements (elements.begin (), elements.end (), std::inserter (rows, rows.end ()), std::inserter (columns, columns.end ()));
 
-    detail::violator_strategy* strategy = new detail::single_violator_strategy (input_matrix, rows, columns, log);
+    detail::violator_strategy* strategy = new detail::greedy_violator_strategy (input_matrix, rows, columns, log);
 
     strategy->search ();
     strategy->create_matrix (violator);

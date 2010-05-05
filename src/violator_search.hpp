@@ -122,13 +122,34 @@ namespace tu {
 
       virtual void shrink (const matroid_element_set& row_elements, const matroid_element_set& column_elements)
       {
+        //        std::cout << "shrinking to " << row_elements.size () << " x " << column_elements.size () << std::endl;
+
+#ifndef NDEBUG
+        typedef boost::numeric::ublas::matrix_indirect <const integer_matrix, submatrix_indices::indirect_array_type> indirect_matrix_t;
+
+        integer_matroid matroid;
+        submatrix_indices sub_indices;
+
+        create_indirect_matroid (_input_matrix, row_elements, column_elements, matroid, sub_indices);
+        indirect_matrix_t sub_matrix (_input_matrix, sub_indices.rows, sub_indices.columns);
+
+        if (is_totally_unimodular (sub_matrix))
+        {
+          std::cout << "submatrix is t.u., but should not:" << std::endl;
+          matrix_print (sub_matrix);
+
+          assert (false);
+        }
+#endif
+
         _row_elements = row_elements;
         _column_elements = column_elements;
+
       }
 
       inline bool test (const matroid_element_set& row_elements, const matroid_element_set& column_elements)
       {
-        //        std::cout << "\n\n\n[[[TESTING " << row_elements.size () << " x " << column_elements.size () << " SUBMATRIX]]]\n\n" << std::endl;
+        //        std::cout << "[[[TESTING " << row_elements.size () << " x " << column_elements.size () << " SUBMATRIX]]]" << std::endl;
 
         typedef boost::numeric::ublas::matrix_indirect <const integer_matrix, submatrix_indices::indirect_array_type> indirect_matrix_t;
 
@@ -145,7 +166,7 @@ namespace tu {
 
         //        std::cout << "Copy to work on:\n" << std::flush;
         //        matroid_print (matroid, matrix);
-        //
+
         //        {
         //          bool gh_is_tu;
         //          {
@@ -235,6 +256,28 @@ namespace tu {
         return false;
       }
 
+      inline bool test_forbidden (const matroid_element_set& forbidden_elements)
+      {
+        /// Setup rows and columns
+        matroid_element_set rows, columns;
+        for (matroid_element_set::const_iterator iter = _row_elements.begin (); iter != _row_elements.end (); ++iter)
+        {
+          if (forbidden_elements.find (*iter) == forbidden_elements.end ())
+          {
+            rows.insert (*iter);
+          }
+        }
+        for (matroid_element_set::const_iterator iter = _column_elements.begin (); iter != _column_elements.end (); ++iter)
+        {
+          if (forbidden_elements.find (*iter) == forbidden_elements.end ())
+          {
+            columns.insert (*iter);
+          }
+        }
+
+        return test (rows, columns);
+      }
+
     protected:
       const integer_matrix& _input_matrix;
       matroid_element_set _row_elements;
@@ -249,7 +292,7 @@ namespace tu {
           const matroid_element_set& column_elements, logger& log) :
         violator_strategy (input_matrix, row_elements, column_elements, log)
       {
-        _last_element = 0;
+
       }
 
       virtual void search ()
@@ -291,9 +334,101 @@ namespace tu {
 
         //        std::cout << "search done." << std::endl;
       }
+    };
 
-    protected:
-      int _last_element;
+    class greedy_violator_strategy: public violator_strategy
+    {
+    public:
+      greedy_violator_strategy (const integer_matrix& input_matrix, const matroid_element_set& row_elements,
+          const matroid_element_set& column_elements, logger& log) :
+        violator_strategy (input_matrix, row_elements, column_elements, log)
+      {
+
+      }
+
+      /**
+       * Tests minors given in a vector of sets.
+       * 
+       * @param bundles Vector of Sets containing the removed elements.
+       * @return true iff a test failed, i.e. the submatrix was not totally unimodular.
+       */
+
+      bool test_bundles (const std::vector <matroid_element_set>& bundles, bool abort_on_shrink)
+      {
+        bool success = false;
+        for (std::vector <matroid_element_set>::const_iterator bundle_iter = bundles.begin (); bundle_iter != bundles.end (); ++bundle_iter)
+        {
+          //          std::cout << "size = " << _row_elements.size () << " x " << _column_elements.size () << std::endl;
+          if (!test_forbidden (*bundle_iter))
+          {
+            if (abort_on_shrink)
+              return true;
+            success = true;
+          }
+        }
+
+        return success;
+      }
+
+      virtual void search ()
+      {
+        for (float rate = 0.8f; rate > 0.02f; rate *= 0.5f)
+        {
+          size_t row_amount, column_amount;
+          bool abort_on_shrink;
+          if (rate > 0.04f)
+          {
+            row_amount = int(_row_elements.size () * rate);
+            column_amount = int(_column_elements.size () * rate);
+            abort_on_shrink = true;
+            if (row_amount == 0 || column_amount == 0)
+            {
+              row_amount = 1;
+              column_amount = 1;
+              abort_on_shrink = false;
+              rate = 0.0f;
+            }
+          }
+          else
+          {
+            row_amount = 1;
+            column_amount = 1;
+            abort_on_shrink = false;
+          }
+
+          //          std::cout << "amounts = " << row_amount << ", " << column_amount << std::endl;
+
+          typedef std::vector <matroid_element_set::value_type> matroid_element_vector;
+          matroid_element_vector shuffled_rows, shuffled_columns;
+          std::copy (_row_elements.begin (), _row_elements.end (), std::back_inserter (shuffled_rows));
+          std::copy (_column_elements.begin (), _column_elements.end (), std::back_inserter (shuffled_columns));
+
+          std::random_shuffle (shuffled_rows.begin (), shuffled_rows.end ());
+          std::random_shuffle (shuffled_columns.begin (), shuffled_columns.end ());
+
+          std::vector <matroid_element_set> bundles;
+
+          for (matroid_element_vector::const_iterator iter = shuffled_rows.begin (); iter + row_amount <= shuffled_rows.end (); iter += row_amount)
+          {
+            bundles.push_back (matroid_element_set ());
+            std::copy (iter, iter + row_amount, std::inserter (bundles.back (), bundles.back ().end ()));
+          }
+
+          for (matroid_element_vector::const_iterator iter = shuffled_columns.begin (); iter + column_amount <= shuffled_columns.end (); iter
+              += column_amount)
+          {
+            bundles.push_back (matroid_element_set ());
+            std::copy (iter, iter + column_amount, std::inserter (bundles.back (), bundles.back ().end ()));
+          }
+
+          //          std::cout << "Having " << bundles.size () << " bundles at rate " << rate << std::endl;
+
+          if (test_bundles (bundles, abort_on_shrink))
+          {
+            rate *= 2.0f;
+          }
+        }
+      }
     };
 
   }
