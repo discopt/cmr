@@ -107,10 +107,10 @@ namespace tu {
         matroid_element_set upper_left_elements = upper_left_matroid.get_elements ();
         matroid_element_set lower_right_elements = lower_right_matroid.get_elements ();
 
-        std::set_intersection (upper_left_elements.begin (), upper_left_elements.end (), extra_elements.begin (), extra_elements.end (),
+        std::set_difference (extra_elements.begin (), extra_elements.end (), lower_right_elements.begin (), lower_right_elements.end (),
             std::inserter (upper_left_extra_elements, upper_left_extra_elements.end ()));
-        std::set_intersection (lower_right_elements.begin (), lower_right_elements.end (), extra_elements.begin (), extra_elements.end (),
-            std::inserter (lower_right_extra_elements, lower_right_extra_elements.end ()));
+        std::set_difference (extra_elements.begin (), extra_elements.end (), upper_left_elements.begin (), upper_left_elements.end (), std::inserter (
+            lower_right_extra_elements, lower_right_extra_elements.end ()));
       }
       else
       {
@@ -220,7 +220,7 @@ namespace tu {
     }
     else if (log.is_verbose ())
     {
-      std::cout << "Matroid is " << (graph == NULL ? "not" : "") << " graphic." << std::endl;
+      std::cout << "Matroid is " << (graph == NULL ? "not " : "") << "graphic." << std::endl;
     }
 
     if (!construct_decomposition && graph)
@@ -252,7 +252,7 @@ namespace tu {
     }
     else if (log.is_verbose ())
     {
-      std::cout << "Matroid is " << (graph == NULL ? "not" : "") << " cographic." << std::endl;
+      std::cout << "Matroid is " << (graph == NULL ? "not " : "") << "cographic." << std::endl;
     }
 
     if (!construct_decomposition && cograph)
@@ -348,8 +348,8 @@ namespace tu {
       //        integer_matrix copy = permuted_matrix;
       //        sign_matrix (copy);
       //        bool copy_result = ghouila_houri_is_totally_unimodular (copy);
-      //        std::cout << "The matroid is " << (copy_result ? "" : "NOT ") << "regular." << std::endl;
       //      }
+      //        std::cout << "The matroid is " << (copy_result ? "" : "NOT ") << "regular." << std::endl;
 
       integer_matroid upper_left_matroid;
       integer_matrix upper_left_matrix;
@@ -692,15 +692,15 @@ namespace tu {
 
       /// Filter or copy extra_elements depending on type of separation 
       matroid_element_set upper_left_extra_elements, lower_right_extra_elements;
-      if (sep.rank () == 0)
+      if (sep.rank () == 0 && false)
       {
         matroid_element_set upper_left_elements = upper_left_matroid.get_elements ();
         matroid_element_set lower_right_elements = lower_right_matroid.get_elements ();
 
-        std::set_intersection (upper_left_elements.begin (), upper_left_elements.end (), extra_elements.begin (), extra_elements.end (),
+        std::set_difference (extra_elements.begin (), extra_elements.end (), lower_right_elements.begin (), lower_right_elements.end (),
             std::inserter (upper_left_extra_elements, upper_left_extra_elements.end ()));
-        std::set_intersection (lower_right_elements.begin (), lower_right_elements.end (), extra_elements.begin (), extra_elements.end (),
-            std::inserter (lower_right_extra_elements, lower_right_extra_elements.end ()));
+        std::set_difference (extra_elements.begin (), extra_elements.end (), upper_left_elements.begin (), upper_left_elements.end (), std::inserter (
+            lower_right_extra_elements, lower_right_extra_elements.end ()));
       }
       else
       {
