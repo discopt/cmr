@@ -1,8 +1,9 @@
-
-//          Copyright Matthias Walter 2010.
-// Distributed under the Boost Software License, Version 1.0.
-//    (See accompanying file LICENSE_1_0.txt or copy at
-//          http://www.boost.org/LICENSE_1_0.txt)
+/**
+ *          Copyright Matthias Walter 2010.
+ * Distributed under the Boost Software License, Version 1.0.
+ *    (See accompanying file LICENSE_1_0.txt or copy at
+ *          http://www.boost.org/LICENSE_1_0.txt)
+ **/
 
 #ifndef R10_HPP_
 #define R10_HPP_
@@ -21,20 +22,20 @@ namespace tu {
     {
       typedef std::pair <int, int> E;
 
-      E g1_edges[] = { E (0, 5), E (0, 8), E (0, 9), E (1, 5), E (1, 6), E (1, 9), E (2, 6), E (2, 7), E (2, 9), E (3, 7), E (3, 8), E (3, 9), E (4,
-          5), E (4, 6), E (4, 7), E (4, 8), E (4, 9) };
-      g1 = graph_t (&g1_edges[0], &g1_edges[0] + sizeof(g1_edges) / sizeof(E), 10);
+      E g1_edges[] = { E(0, 5), E(0, 8), E(0, 9), E(1, 5), E(1, 6), E(1, 9), E(2, 6), E(2, 7), E(2, 9), E(3, 7), E(3, 8), E(3, 9), E(4, 5), E(4, 6),
+          E(4, 7), E(4, 8), E(4, 9) };
+      g1 = graph_t(&g1_edges[0], &g1_edges[0] + sizeof(g1_edges) / sizeof(E), 10);
 
-      E g2_edges[] = { E (0, 5), E (0, 8), E (0, 9), E (1, 5), E (1, 6), E (1, 8), E (2, 6), E (2, 7), E (2, 9), E (3, 7), E (3, 8), E (3, 9), E (4,
-          5), E (4, 6), E (4, 7) };
-      g2 = graph_t (&g2_edges[0], &g2_edges[0] + sizeof(g2_edges) / sizeof(E), 10);
+      E g2_edges[] = { E(0, 5), E(0, 8), E(0, 9), E(1, 5), E(1, 6), E(1, 8), E(2, 6), E(2, 7), E(2, 9), E(3, 7), E(3, 8), E(3, 9), E(4, 5), E(4, 6),
+          E(4, 7) };
+      g2 = graph_t(&g2_edges[0], &g2_edges[0] + sizeof(g2_edges) / sizeof(E), 10);
     }
 
     static bipartite_r10_graphs& instance ()
     {
       static bipartite_r10_graphs* instance = NULL;
       if (instance == NULL)
-        instance = new bipartite_r10_graphs ();
+        instance = new bipartite_r10_graphs();
       return *instance;
     }
 
@@ -42,7 +43,7 @@ namespace tu {
     template <typename Graph>
     static bool is_r10_graph (const Graph& g)
     {
-      return boost::isomorphism (g, instance ().g1) || boost::isomorphism (g, instance ().g2);
+      return boost::isomorphism(g, instance().g1) || boost::isomorphism(g, instance().g2);
     }
 
   private:
@@ -52,25 +53,25 @@ namespace tu {
   template <typename MatrixType>
   inline bool is_r10 (MatrixType matrix)
   {
-    if (matrix.size1 () != 5 || matrix.size2 () != 5)
+    if (matrix.size1() != 5 || matrix.size2() != 5)
       return false;
 
-    std::cout << "Checking 5x5 matrix for R10" << std::endl;
+    //    std::cout << "Checking 5x5 matrix for R10" << std::endl;
 
-    bipartite_r10_graphs::graph_t graph (10);
+    bipartite_r10_graphs::graph_t graph(10);
 
     for (size_t row = 0; row < 5; ++row)
     {
       for (size_t column = 0; column < 5; ++column)
       {
-        if (matrix (row, column))
+        if (matrix(row, column))
         {
-          boost::add_edge (boost::vertex (row, graph), boost::vertex (5 + column, graph), graph);
+          boost::add_edge(boost::vertex(row, graph), boost::vertex(5 + column, graph), graph);
         }
       }
     }
 
-    return bipartite_r10_graphs::is_r10_graph (graph);
+    return bipartite_r10_graphs::is_r10_graph(graph);
   }
 }
 

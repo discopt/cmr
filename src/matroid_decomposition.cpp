@@ -1,8 +1,9 @@
-
-//          Copyright Matthias Walter 2010.
-// Distributed under the Boost Software License, Version 1.0.
-//    (See accompanying file LICENSE_1_0.txt or copy at
-//          http://www.boost.org/LICENSE_1_0.txt)
+/**
+ *          Copyright Matthias Walter 2010.
+ * Distributed under the Boost Software License, Version 1.0.
+ *    (See accompanying file LICENSE_1_0.txt or copy at
+ *          http://www.boost.org/LICENSE_1_0.txt)
+ **/
 
 #include "../config.h"
 #include "matroid_decomposition.hpp"
@@ -10,10 +11,10 @@
 namespace tu {
 
   decomposed_matroid::decomposed_matroid (const matroid_element_set& elements, const matroid_element_set& extra_elements) :
-    _elements (elements)
+    _elements(elements)
   {
-    std::set_difference (extra_elements.begin (), extra_elements.end (), elements.begin (), elements.end (), std::inserter (_extra_elements,
-        _extra_elements.end ()));
+    std::set_difference(extra_elements.begin(), extra_elements.end(), elements.begin(), elements.end(), std::inserter(_extra_elements,
+        _extra_elements.end()));
   }
 
   decomposed_matroid::~decomposed_matroid ()
@@ -23,7 +24,7 @@ namespace tu {
 
   decomposed_matroid_leaf::decomposed_matroid_leaf (matroid_graph* graph, matroid_graph* cograph, bool is_R10, const matroid_element_set& elements,
       const matroid_element_set& extra_elements) :
-    decomposed_matroid (elements, extra_elements), _graph (graph), _cograph (cograph), _is_R10 (is_R10)
+    decomposed_matroid(elements, extra_elements), _graph(graph), _cograph(cograph), _is_R10(is_R10)
   {
 
   }
@@ -38,7 +39,7 @@ namespace tu {
 
   decomposed_matroid_separator::decomposed_matroid_separator (decomposed_matroid* first, decomposed_matroid* second, int type,
       const matroid_element_set& elements, const matroid_element_set& extra_elements) :
-    decomposed_matroid (elements, extra_elements), _first (first), _second (second), _type (type)
+    decomposed_matroid(elements, extra_elements), _first(first), _second(second), _type(type)
   {
 
   }

@@ -1,8 +1,9 @@
-
-//          Copyright Matthias Walter 2010.
-// Distributed under the Boost Software License, Version 1.0.
-//    (See accompanying file LICENSE_1_0.txt or copy at
-//          http://www.boost.org/LICENSE_1_0.txt)
+/**
+ *          Copyright Matthias Walter 2010.
+ * Distributed under the Boost Software License, Version 1.0.
+ *    (See accompanying file LICENSE_1_0.txt or copy at
+ *          http://www.boost.org/LICENSE_1_0.txt)
+ **/
 
 #ifndef MATRIX_TRANSPOSED_HPP_
 #define MATRIX_TRANSPOSED_HPP_
@@ -55,7 +56,7 @@ namespace tu {
   public:
 
     matrix_transposed (M& matrix) :
-      _data (matrix)
+      _data(matrix)
     {
 
     }
@@ -63,12 +64,12 @@ namespace tu {
     // Accessors
     inline size_type size1 () const
     {
-      return _data.size2 ();
+      return _data.size2();
     }
 
     inline size_type size2 () const
     {
-      return _data.size1 ();
+      return _data.size1();
     }
 
     inline M& data ()
@@ -79,12 +80,12 @@ namespace tu {
     // Element access
     inline const_reference operator () (size_type i, size_type j) const
     {
-      return _data (j, i);
+      return _data(j, i);
     }
 
     inline reference operator () (size_type i, size_type j)
     {
-      return _data (j, i);
+      return _data(j, i);
     }
 
     typedef boost::numeric::ublas::detail::indexed_iterator1 <self_type, typename matrix_type::iterator2::iterator_category> iterator1;
@@ -104,7 +105,7 @@ namespace tu {
   template <typename MatrixType>
   inline void matrix_set_value (matrix_transposed <MatrixType>& matrix, size_t row, size_t column, typename MatrixType::value_type value)
   {
-    matrix (row, column) = value;
+    matrix(row, column) = value;
   }
 
   template <typename MatrixType>
@@ -116,19 +117,19 @@ namespace tu {
   template <typename MatrixType>
   inline void matrix_permute1 (matrix_transposed <MatrixType>& matrix, size_t index1, size_t index2)
   {
-    matrix_permute2 (matrix.data (), index1, index2);
+    matrix_permute2(matrix.data(), index1, index2);
   }
 
   template <typename MatrixType>
   inline void matrix_permute2 (matrix_transposed <MatrixType>& matrix, size_t index1, size_t index2)
   {
-    matrix_permute1 (matrix.data (), index1, index2);
+    matrix_permute1(matrix.data(), index1, index2);
   }
 
   template <typename MatrixType>
   inline void matrix_binary_pivot (matrix_transposed <MatrixType>& matrix, size_t i, size_t j)
   {
-    matrix_binary_pivot (matrix.data (), j, i);
+    matrix_binary_pivot(matrix.data(), j, i);
   }
 
 }

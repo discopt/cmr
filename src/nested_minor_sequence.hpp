@@ -1,8 +1,9 @@
-
-//          Copyright Matthias Walter 2010.
-// Distributed under the Boost Software License, Version 1.0.
-//    (See accompanying file LICENSE_1_0.txt or copy at
-//          http://www.boost.org/LICENSE_1_0.txt)
+/**
+ *          Copyright Matthias Walter 2010.
+ * Distributed under the Boost Software License, Version 1.0.
+ *    (See accompanying file LICENSE_1_0.txt or copy at
+ *          http://www.boost.org/LICENSE_1_0.txt)
+ **/
 
 #ifndef NESTED_MINOR_SEQUENCE_HPP_
 #define NESTED_MINOR_SEQUENCE_HPP_
@@ -42,12 +43,12 @@ namespace tu {
 
     size_t get_extension_height (size_t index) const
     {
-      return get_extension_height (get_extension (index));
+      return get_extension_height(get_extension(index));
     }
 
     size_t get_extension_width (size_t index) const
     {
-      return get_extension_width (get_extension (index));
+      return get_extension_width(get_extension(index));
     }
 
     size_t height () const
@@ -62,7 +63,7 @@ namespace tu {
 
     size_t size () const
     {
-      return extensions_.size ();
+      return extensions_.size();
     }
 
   private:
@@ -76,13 +77,13 @@ namespace tu {
   {
   public:
     nested_minor_sequence_transposed (nested_minor_sequence& sequence) :
-      sequence_ (sequence)
+      sequence_(sequence)
     {
 
     }
 
     nested_minor_sequence_transposed (const nested_minor_sequence_transposed& other) :
-      sequence_ (other.sequence_)
+      sequence_(other.sequence_)
     {
 
     }
@@ -94,37 +95,37 @@ namespace tu {
 
     void push (nested_minor_sequence::extension_type type)
     {
-      sequence_.push (nested_minor_sequence::extension_type (-int(type)));
+      sequence_.push(nested_minor_sequence::extension_type(-int(type)));
     }
 
     nested_minor_sequence::extension_type get_extension (size_t index) const
     {
-      return nested_minor_sequence::extension_type (-int(sequence_.get_extension (index)));
+      return nested_minor_sequence::extension_type(-int(sequence_.get_extension(index)));
     }
 
     size_t get_extension_height (size_t index) const
     {
-      return sequence_.get_extension_width (index);
+      return sequence_.get_extension_width(index);
     }
 
     size_t get_extension_width (size_t index) const
     {
-      return sequence_.get_extension_height (index);
+      return sequence_.get_extension_height(index);
     }
 
     size_t height () const
     {
-      return sequence_.width ();
+      return sequence_.width();
     }
 
     size_t width () const
     {
-      return sequence_.height ();
+      return sequence_.height();
     }
 
     size_t size () const
     {
-      return sequence_.size ();
+      return sequence_.size();
     }
 
   private:
@@ -133,7 +134,7 @@ namespace tu {
 
   inline nested_minor_sequence_transposed view_nested_minor_sequence_transposed (nested_minor_sequence& sequence)
   {
-    return nested_minor_sequence_transposed (sequence);
+    return nested_minor_sequence_transposed(sequence);
   }
 
 }

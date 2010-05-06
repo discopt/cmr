@@ -1,8 +1,9 @@
-
-//          Copyright Matthias Walter 2010.
-// Distributed under the Boost Software License, Version 1.0.
-//    (See accompanying file LICENSE_1_0.txt or copy at
-//          http://www.boost.org/LICENSE_1_0.txt)
+/**
+ *          Copyright Matthias Walter 2010.
+ * Distributed under the Boost Software License, Version 1.0.
+ *    (See accompanying file LICENSE_1_0.txt or copy at
+ *          http://www.boost.org/LICENSE_1_0.txt)
+ **/
 
 #ifndef MATRIX_PERMUTED_HPP_
 #define MATRIX_PERMUTED_HPP_
@@ -41,7 +42,7 @@ namespace tu {
   public:
 
     matrix_permuted (M& matrix) :
-      _data (matrix), _perm1 (matrix.size1 ()), _perm2 (matrix.size2 ())
+      _data(matrix), _perm1(matrix.size1()), _perm2(matrix.size2())
     {
 
     }
@@ -49,12 +50,12 @@ namespace tu {
     // Accessors
     inline size_type size1 () const
     {
-      return _perm1.size ();
+      return _perm1.size();
     }
 
     inline size_type size2 () const
     {
-      return _perm2.size ();
+      return _perm2.size();
     }
 
     inline const permutation_type& perm1 () const
@@ -80,12 +81,12 @@ namespace tu {
     // Element access
     inline const_reference operator () (size_type i, size_type j) const
     {
-      return _data (_perm1 (i), _perm2 (j));
+      return _data(_perm1(i), _perm2(j));
     }
 
     inline reference operator () (size_type i, size_type j)
     {
-      return _data (_perm1 (i), _perm2 (j));
+      return _data(_perm1(i), _perm2(j));
     }
 
     inline matrix_type& data ()
@@ -109,7 +110,7 @@ namespace tu {
   template <typename MatrixType>
   inline void matrix_set_value (matrix_permuted <MatrixType>& matrix, size_t row, size_t column, typename MatrixType::value_type value)
   {
-    matrix (row, column) = value;
+    matrix(row, column) = value;
   }
 
   template <typename MatrixType>
@@ -121,19 +122,19 @@ namespace tu {
   template <typename MatrixType>
   inline void matrix_permute1 (matrix_permuted <MatrixType>& matrix, size_t index1, size_t index2)
   {
-    matrix.perm1 ().swap (index1, index2);
+    matrix.perm1().swap(index1, index2);
   }
 
   template <typename MatrixType>
   inline void matrix_permute2 (matrix_permuted <MatrixType>& matrix, size_t index1, size_t index2)
   {
-    matrix.perm2 ().swap (index1, index2);
+    matrix.perm2().swap(index1, index2);
   }
 
   template <typename MatrixType>
   inline void matrix_binary_pivot (matrix_permuted <MatrixType>& matrix, size_t i, size_t j)
   {
-    matrix_binary_pivot (matrix.data (), matrix.perm1 () (i), matrix.perm2 () (j));
+    matrix_binary_pivot(matrix.data(), matrix.perm1()(i), matrix.perm2()(j));
   }
 
 }

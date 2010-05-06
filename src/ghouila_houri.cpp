@@ -1,8 +1,9 @@
-
-//          Copyright Matthias Walter 2010.
-// Distributed under the Boost Software License, Version 1.0.
-//    (See accompanying file LICENSE_1_0.txt or copy at
-//          http://www.boost.org/LICENSE_1_0.txt)
+/**
+ *          Copyright Matthias Walter 2010.
+ * Distributed under the Boost Software License, Version 1.0.
+ *    (See accompanying file LICENSE_1_0.txt or copy at
+ *          http://www.boost.org/LICENSE_1_0.txt)
+ **/
 
 #include <boost/numeric/ublas/matrix.hpp>
 
@@ -21,10 +22,10 @@ namespace tu {
     const matrix_type& _matrix;
   public:
     ghouila_houri_enumerator (const matrix_type& matrix) :
-      _matrix (matrix)
+      _matrix(matrix)
     {
-      _choice.resize (_matrix.size1 ());
-      for (choice_vector_type::iterator iter = _choice.begin (); iter != _choice.end (); ++iter)
+      _choice.resize(_matrix.size1());
+      for (choice_vector_type::iterator iter = _choice.begin(); iter != _choice.end(); ++iter)
       {
         *iter = 0;
       }
@@ -32,12 +33,12 @@ namespace tu {
 
     bool check_sum ()
     {
-      for (size_t column = 0; column < _matrix.size2 (); ++column)
+      for (size_t column = 0; column < _matrix.size2(); ++column)
       {
         int sum = 0;
-        for (size_t row = 0; row < _matrix.size1 (); ++row)
+        for (size_t row = 0; row < _matrix.size1(); ++row)
         {
-          sum += _choice[row] * _matrix (row, column);
+          sum += _choice[row] * _matrix(row, column);
         }
         if (sum < -1 || sum > +1)
           return false;
@@ -47,43 +48,43 @@ namespace tu {
 
     bool choose_partition (size_t row = 0)
     {
-      while (row < _choice.size ())
+      while (row < _choice.size())
       {
         if (_choice[row])
         {
           _choice[row] = -1;
-          if (choose_partition (row + 1))
+          if (choose_partition(row + 1))
             return true;
           _choice[row] = 1;
-          if (choose_partition (row + 1))
+          if (choose_partition(row + 1))
             return true;
           return false;
         }
         else
           ++row;
       }
-      return check_sum ();
+      return check_sum();
     }
 
     bool choose_subset (size_t row = 0)
     {
-      if (row < _choice.size ())
+      if (row < _choice.size())
       {
         _choice[row] = 0;
-        if (!choose_subset (row + 1))
+        if (!choose_subset(row + 1))
           return false;
         _choice[row] = 1;
-        if (!choose_subset (row + 1))
+        if (!choose_subset(row + 1))
           return false;
         return true;
       }
 
-      return choose_partition ();
+      return choose_partition();
     }
 
     inline bool check ()
     {
-      return choose_subset ();
+      return choose_subset();
     }
   };
 
@@ -91,17 +92,17 @@ namespace tu {
 
   bool ghouila_houri_is_totally_unimodular_enum_rows (const boost::numeric::ublas::matrix <int>& matrix)
   {
-    ghouila_houri_enumerator enumerator (matrix);
-    return enumerator.check ();
+    ghouila_houri_enumerator enumerator(matrix);
+    return enumerator.check();
   }
 
   /// Returns true, iff the given matrix is totally unimodular via ghouila-houri's criterion by enumeration of column subsets.
 
   bool ghouila_houri_is_totally_unimodular_enum_columns (const boost::numeric::ublas::matrix <int>& matrix)
   {
-    const boost::numeric::ublas::matrix <int> transposed = boost::numeric::ublas::trans (matrix);
+    const boost::numeric::ublas::matrix <int> transposed = boost::numeric::ublas::trans(matrix);
 
-    return ghouila_houri_is_totally_unimodular_enum_rows (transposed);
+    return ghouila_houri_is_totally_unimodular_enum_rows(transposed);
   }
 
   /// Returns true, iff the given matrix is totally unimodular via ghouila-houri's criterion.
@@ -109,13 +110,13 @@ namespace tu {
 
   bool ghouila_houri_is_totally_unimodular (const boost::numeric::ublas::matrix <int>& matrix)
   {
-    if (matrix.size1 () > matrix.size2 ())
+    if (matrix.size1() > matrix.size2())
     {
-      return ghouila_houri_is_totally_unimodular_enum_columns (matrix);
+      return ghouila_houri_is_totally_unimodular_enum_columns(matrix);
     }
     else
     {
-      return ghouila_houri_is_totally_unimodular_enum_rows (matrix);
+      return ghouila_houri_is_totally_unimodular_enum_rows(matrix);
     }
   }
 

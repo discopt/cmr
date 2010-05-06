@@ -1,7 +1,9 @@
-//          Copyright Matthias Walter 2010.
-// Distributed under the Boost Software License, Version 1.0.
-//    (See accompanying file LICENSE_1_0.txt or copy at
-//          http://www.boost.org/LICENSE_1_0.txt)
+/**
+ *          Copyright Matthias Walter 2010.
+ * Distributed under the Boost Software License, Version 1.0.
+ *    (See accompanying file LICENSE_1_0.txt or copy at
+ *          http://www.boost.org/LICENSE_1_0.txt)
+ **/
 
 #ifndef LOGGER_HPP_
 #define LOGGER_HPP_
@@ -54,20 +56,20 @@ namespace tu {
     inline void clear ()
     {
       delete _line;
-      _line = new std::stringstream ();
+      _line = new std::stringstream();
     }
 
     inline size_t size () const
     {
-      return line ().str ().size ();
+      return line().str().size();
     }
 
     inline void erase (size_t position)
     {
-      std::string data = line ().str ();
-      data.erase (position);
-      clear ();
-      line () << data;
+      std::string data = line().str();
+      data.erase(position);
+      clear();
+      line() << data;
     }
 
     inline std::stringstream& line ()

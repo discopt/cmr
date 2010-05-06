@@ -1,8 +1,9 @@
-
-//          Copyright Matthias Walter 2010.
-// Distributed under the Boost Software License, Version 1.0.
-//    (See accompanying file LICENSE_1_0.txt or copy at
-//          http://www.boost.org/LICENSE_1_0.txt)
+/**
+ *          Copyright Matthias Walter 2010.
+ * Distributed under the Boost Software License, Version 1.0.
+ *    (See accompanying file LICENSE_1_0.txt or copy at
+ *          http://www.boost.org/LICENSE_1_0.txt)
+ **/
 
 #ifndef MATROID_DECOMPOSITION_HPP_
 #define MATROID_DECOMPOSITION_HPP_
@@ -32,12 +33,12 @@ namespace tu {
 
     bool is_network () const
     {
-      return is_graphic () || is_cographic ();
+      return is_graphic() || is_cographic();
     }
 
     bool is_planar () const
     {
-      return is_graphic () && is_cographic ();
+      return is_graphic() && is_cographic();
     }
 
     inline const matroid_element_set& elements () const
@@ -87,17 +88,17 @@ namespace tu {
 
     virtual bool is_graphic () const
     {
-      return graph () != NULL;
+      return graph() != NULL;
     }
 
     virtual bool is_cographic () const
     {
-      return cograph () != NULL;
+      return cograph() != NULL;
     }
 
     virtual bool is_regular () const
     {
-      return is_network () || is_R10 ();
+      return is_network() || is_R10();
     }
 
   protected:
@@ -141,17 +142,17 @@ namespace tu {
 
     virtual bool is_graphic () const
     {
-      return _first->is_graphic () && _second->is_graphic ();
+      return _first->is_graphic() && _second->is_graphic();
     }
 
     virtual bool is_cographic () const
     {
-      return _first->is_cographic () && _second->is_cographic ();
+      return _first->is_cographic() && _second->is_cographic();
     }
 
     virtual bool is_regular () const
     {
-      return _first->is_regular () && _second->is_regular ();
+      return _first->is_regular() && _second->is_regular();
     }
 
   protected:

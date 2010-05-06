@@ -1,8 +1,9 @@
-
-//          Copyright Matthias Walter 2010.
-// Distributed under the Boost Software License, Version 1.0.
-//    (See accompanying file LICENSE_1_0.txt or copy at
-//          http://www.boost.org/LICENSE_1_0.txt)
+/**
+ *          Copyright Matthias Walter 2010.
+ * Distributed under the Boost Software License, Version 1.0.
+ *    (See accompanying file LICENSE_1_0.txt or copy at
+ *          http://www.boost.org/LICENSE_1_0.txt)
+ **/
 
 #ifndef SIGNING_HPP_
 #define SIGNING_HPP_
@@ -40,9 +41,9 @@ namespace tu {
     {
       for (size_t row = row_first; row < row_beyond; ++row)
       {
-        if (matrix (row, column) != 0)
+        if (matrix(row, column) != 0)
         {
-          matrix_permute2 (matrix, target_column, column);
+          matrix_permute2(matrix, target_column, column);
           return true;
         }
 
@@ -71,37 +72,37 @@ namespace tu {
     if (spanning_tree[current_index].predecessor == current_index)
     {
       //        std::cout << "root at " << dim.index_to_row (current_index) << " does not change" << std::endl;
-      changes[dim.index_to_row (current_index)] = false;
+      changes[dim.index_to_row(current_index)] = false;
       return;
     }
 
     //    std::cout << "current_index = " << current_index << std::endl;
 
     // Search for ancestors until reaching one of the given nodes.
-    int value = matrix (dim.index_to_row (current_index), column);
+    int value = matrix(dim.index_to_row(current_index), column);
     //    std::cout << "value at current_index = " << value << std::endl;
     size_t last, index = current_index;
     do
     {
       last = index;
       index = spanning_tree[index].predecessor;
-      std::pair <size_t, size_t> coords = dim.indexes_to_coordinates (index, last);
-      value += matrix (coords.first, coords.second);
+      std::pair <size_t, size_t> coords = dim.indexes_to_coordinates(index, last);
+      value += matrix(coords.first, coords.second);
 
       //        std::cout << "adding value from " << coords.first << ", " << coords.second << std::endl;
     }
-    while (nodes.find (index) == nodes.end ());
+    while (nodes.find(index) == nodes.end());
 
     // Ancestor not yet processed
-    if (changes.find (dim.index_to_row (index)) == changes.end ())
+    if (changes.find(dim.index_to_row(index)) == changes.end())
     {
-      check_sign (matrix, spanning_tree, dim, nodes, index, column, changes);
+      check_sign(matrix, spanning_tree, dim, nodes, index, column, changes);
     }
 
     //    std::cout << "adding value at " << dim.index_to_row (index) << std::endl;
 
-    value += matrix (dim.index_to_row (index), column);
-    if (changes[dim.index_to_row (index)])
+    value += matrix(dim.index_to_row(index), column);
+    if (changes[dim.index_to_row(index)])
     {
       //        std::cout << "adding 2" << std::endl;
       value += 2;
@@ -111,11 +112,11 @@ namespace tu {
 
     value = (value >= 0 ? value : -value) % 4;
     // If sum (modulo 4) is not 0, we'd like to change the current one
-    changes[dim.index_to_row (current_index)] = (value == 2);
+    changes[dim.index_to_row(current_index)] = (value == 2);
 
     if (value != 0 && value != 2)
     {
-      throw std::logic_error ("Signing procedure: modulo-sum of cycle was neither 0, nor 2!");
+      throw std::logic_error("Signing procedure: modulo-sum of cycle was neither 0, nor 2!");
     }
   }
 
@@ -140,9 +141,9 @@ namespace tu {
     //    matrix_print (matrix);
 
     bool result = true;
-    matrix_permuted <M> permuted (matrix);
+    matrix_permuted <M> permuted(matrix);
     size_t handled_rows = 0;
-    for (size_t handled_columns = 0; handled_columns < permuted.size2 (); ++handled_columns)
+    for (size_t handled_columns = 0; handled_columns < permuted.size2(); ++handled_columns)
     {
       //        std::cout << "handled upper-left = " << handled_rows << " x " << handled_columns << std::endl;
       //        matrix_print (permuted);
@@ -150,7 +151,7 @@ namespace tu {
       //        std::cout << "Original is:\n";
       //        matrix_print (permuted.data ());
 
-      if (find_nonzero_column (permuted, handled_columns, permuted.size2 (), 0, handled_rows, handled_columns))
+      if (find_nonzero_column(permuted, handled_columns, permuted.size2(), 0, handled_rows, handled_columns))
       {
         // There is a non-zero column right of the already-handled submatrix. 
 
@@ -158,31 +159,31 @@ namespace tu {
         std::set <size_t> end_nodes;
         std::set <size_t> all_nodes;
 
-        bipartite_graph_dimensions dim (handled_rows, handled_columns);
+        bipartite_graph_dimensions dim(handled_rows, handled_columns);
         for (size_t row = 0; row < handled_rows; ++row)
         {
-          if (permuted (row, handled_columns) != 0)
+          if (permuted(row, handled_columns) != 0)
           {
-            size_t index = dim.row_to_index (row);
-            if (start_nodes.empty ())
-              start_nodes.insert (index);
+            size_t index = dim.row_to_index(row);
+            if (start_nodes.empty())
+              start_nodes.insert(index);
             else
-              end_nodes.insert (index);
-            all_nodes.insert (index);
+              end_nodes.insert(index);
+            all_nodes.insert(index);
           }
         }
 
         // Start a BFS on BFS(submatrix), look for shortest paths from first one to all others
 
         std::vector <bipartite_graph_bfs_node> bfs_result;
-        if (!bipartite_graph_bfs (permuted, dim, start_nodes, end_nodes, true, bfs_result))
-          throw std::logic_error ("Signing procedure: Did not reach all nodes via bfs!");
+        if (!bipartite_graph_bfs(permuted, dim, start_nodes, end_nodes, true, bfs_result))
+          throw std::logic_error("Signing procedure: Did not reach all nodes via bfs!");
 
         // Evaluate matrix-entries on the shortest paths
         std::map <size_t, bool> changes;
-        for (typename std::set <size_t>::const_iterator iter = end_nodes.begin (); iter != end_nodes.end (); ++iter)
+        for (typename std::set <size_t>::const_iterator iter = end_nodes.begin(); iter != end_nodes.end(); ++iter)
         {
-          check_sign (permuted, bfs_result, dim, all_nodes, *iter, handled_columns, changes);
+          check_sign(permuted, bfs_result, dim, all_nodes, *iter, handled_columns, changes);
         }
 
         //            std::cout << "Real columns are";
@@ -193,7 +194,7 @@ namespace tu {
         //            std::cout << std::endl;
 
         // Checking changes
-        for (std::map <size_t, bool>::iterator iter = changes.begin (); iter != changes.end (); ++iter)
+        for (std::map <size_t, bool>::iterator iter = changes.begin(); iter != changes.end(); ++iter)
         {
           if (!iter->second)
             continue;
@@ -210,25 +211,25 @@ namespace tu {
               size_t index = iter->first;
               do
               {
-                if (dim.is_row (index))
-                  violator_rows.insert (permuted.perm1 () (dim.index_to_row (index)));
+                if (dim.is_row(index))
+                  violator_rows.insert(permuted.perm1()(dim.index_to_row(index)));
                 else
-                  violator_columns.insert (permuted.perm2 () (dim.index_to_column (index)));
+                  violator_columns.insert(permuted.perm2()(dim.index_to_column(index)));
 
                 index = bfs_result[index].predecessor;
               }
-              while (all_nodes.find (index) == all_nodes.end ());
-              violator_rows.insert (permuted.perm1 () (dim.index_to_row (index)));
-              violator_columns.insert (permuted.perm2 () (handled_columns));
+              while (all_nodes.find(index) == all_nodes.end());
+              violator_rows.insert(permuted.perm1()(dim.index_to_row(index)));
+              violator_columns.insert(permuted.perm2()(handled_columns));
 
               // Fill violator data
-              violator->rows = submatrix_indices::indirect_array_type (violator_rows.size ());
-              violator->columns = submatrix_indices::indirect_array_type (violator_columns.size ());
+              violator->rows = submatrix_indices::indirect_array_type(violator_rows.size());
+              violator->columns = submatrix_indices::indirect_array_type(violator_columns.size());
               size_t i = 0;
-              for (std::set <size_t>::const_iterator iter = violator_rows.begin (); iter != violator_rows.end (); ++iter)
+              for (std::set <size_t>::const_iterator iter = violator_rows.begin(); iter != violator_rows.end(); ++iter)
                 violator->rows[i++] = *iter;
               i = 0;
-              for (std::set <size_t>::const_iterator iter = violator_columns.begin (); iter != violator_columns.end (); ++iter)
+              for (std::set <size_t>::const_iterator iter = violator_columns.begin(); iter != violator_columns.end(); ++iter)
                 violator->columns[i++] = *iter;
             }
             return false;
@@ -240,9 +241,9 @@ namespace tu {
 
             // We are not just testing, so swap the sign on a one.
 
-            size_t real_row = permuted.perm1 () (dim.index_to_row (iter->first));
-            size_t real_column = permuted.perm2 () (handled_columns);
-            matrix_set_value (matrix, real_row, real_column, -matrix (real_row, real_column));
+            size_t real_row = permuted.perm1()(dim.index_to_row(iter->first));
+            size_t real_column = permuted.perm2()(handled_columns);
+            matrix_set_value(matrix, real_row, real_column, -matrix(real_row, real_column));
 
             //                    std::cout << "Original after change is\n";
             //                    matrix_print (permuted.data ());
@@ -250,13 +251,13 @@ namespace tu {
           }
         }
 
-        matrix_reorder_rows (permuted, handled_rows, permuted.size1 (), handled_columns, permuted.size2 (), abs_greater <int> ());
+        matrix_reorder_rows(permuted, handled_rows, permuted.size1(), handled_columns, permuted.size2(), abs_greater <int> ());
 
         //            std::cout << "handled rows is increased from " << handled_rows;
 
-        while (handled_rows < permuted.size1 ())
+        while (handled_rows < permuted.size1())
         {
-          if (permuted (handled_rows, handled_columns) == 0)
+          if (permuted(handled_rows, handled_columns) == 0)
             break;
           else
             ++handled_rows;
@@ -270,12 +271,12 @@ namespace tu {
 
         // Handled upper-left submatrix and lower-right submatrix are disconnected 
 
-        for (size_t column = handled_columns; column < permuted.size2 (); ++column)
+        for (size_t column = handled_columns; column < permuted.size2(); ++column)
         {
           size_t count = 0;
-          for (size_t row = handled_rows; row < permuted.size1 (); ++row)
+          for (size_t row = handled_rows; row < permuted.size1(); ++row)
           {
-            if (permuted (row, column) != 0)
+            if (permuted(row, column) != 0)
               ++count;
           }
 
@@ -288,11 +289,11 @@ namespace tu {
             //                    std::cout << "reordering for disconnected case starting at " << handled_rows << ","
             //                            << handled_columns << std::endl;
 
-            matrix_reorder_rows (permuted, handled_rows, permuted.size1 (), handled_columns, permuted.size2 (), abs_greater <int> ());
+            matrix_reorder_rows(permuted, handled_rows, permuted.size1(), handled_columns, permuted.size2(), abs_greater <int> ());
 
-            while (handled_rows < permuted.size1 ())
+            while (handled_rows < permuted.size1())
             {
-              if (permuted (handled_rows, handled_columns) == 0)
+              if (permuted(handled_rows, handled_columns) == 0)
                 break;
               else
                 ++handled_rows;

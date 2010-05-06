@@ -1,8 +1,9 @@
-
-//          Copyright Matthias Walter 2010.
-// Distributed under the Boost Software License, Version 1.0.
-//    (See accompanying file LICENSE_1_0.txt or copy at
-//          http://www.boost.org/LICENSE_1_0.txt)
+/**
+ *          Copyright Matthias Walter 2010.
+ * Distributed under the Boost Software License, Version 1.0.
+ *    (See accompanying file LICENSE_1_0.txt or copy at
+ *          http://www.boost.org/LICENSE_1_0.txt)
+ **/
 
 #ifndef MATROID_PERMUTED_HPP_
 #define MATROID_PERMUTED_HPP_
@@ -26,7 +27,7 @@ namespace tu {
     typedef permutation permutation_type;
 
     matroid_permuted (MatroidType& data) :
-      _data (data), _perm1 (data.size1 ()), _perm2 (data.size2 ())
+      _data(data), _perm1(data.size1()), _perm2(data.size2())
     {
 
     }
@@ -34,12 +35,12 @@ namespace tu {
     // Accessors
     inline size_type size1 () const
     {
-      return _perm1.size ();
+      return _perm1.size();
     }
 
     inline size_type size2 () const
     {
-      return _perm2.size ();
+      return _perm2.size();
     }
 
     inline const permutation_type& perm1 () const
@@ -65,22 +66,22 @@ namespace tu {
     // Element access
     inline reference_type name1 (size_type index)
     {
-      return _data.name1 (_perm1 (index));
+      return _data.name1(_perm1(index));
     }
 
     inline const_reference_type name1 (size_type index) const
     {
-      return _data.name1 (_perm1 (index));
+      return _data.name1(_perm1(index));
     }
 
     inline reference_type name2 (size_type index)
     {
-      return _data.name2 (_perm2 (index));
+      return _data.name2(_perm2(index));
     }
 
     inline const_reference_type name2 (size_type index) const
     {
-      return _data.name2 (_perm2 (index));
+      return _data.name2(_perm2(index));
     }
 
     inline matroid_type& data ()
@@ -98,19 +99,19 @@ namespace tu {
   template <typename MatroidType>
   inline void matroid_permute1 (matroid_permuted <MatroidType>& matroid, size_t index1, size_t index2)
   {
-    matroid.perm1 ().swap (index1, index2);
+    matroid.perm1().swap(index1, index2);
   }
 
   template <typename MatroidType>
   inline void matroid_permute2 (matroid_permuted <MatroidType>& matroid, size_t index1, size_t index2)
   {
-    matroid.perm2 ().swap (index1, index2);
+    matroid.perm2().swap(index1, index2);
   }
 
   template <typename MatroidType>
   void matroid_binary_pivot (matroid_permuted <MatroidType>& matroid, size_t i, size_t j)
   {
-    matroid_binary_pivot (matroid.data (), matroid.perm1 () (i), matroid.perm2 () (j));
+    matroid_binary_pivot(matroid.data(), matroid.perm1()(i), matroid.perm2()(j));
   }
 
 //template<typename MatroidType, typename MatrixType, typename ElementLess>

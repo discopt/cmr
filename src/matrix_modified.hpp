@@ -1,8 +1,9 @@
-
-//          Copyright Matthias Walter 2010.
-// Distributed under the Boost Software License, Version 1.0.
-//    (See accompanying file LICENSE_1_0.txt or copy at
-//          http://www.boost.org/LICENSE_1_0.txt)
+/**
+ *          Copyright Matthias Walter 2010.
+ * Distributed under the Boost Software License, Version 1.0.
+ *    (See accompanying file LICENSE_1_0.txt or copy at
+ *          http://www.boost.org/LICENSE_1_0.txt)
+ **/
 
 #ifndef MATRIX_MODIFIED_HPP_
 #define MATRIX_MODIFIED_HPP_
@@ -35,7 +36,7 @@ private:
 public:
 
   matrix_modified (const MatrixType& matrix, modifier_type& modifier) :
-    _data (matrix), _modifier (modifier)
+    _data(matrix), _modifier(modifier)
   {
 
   }
@@ -43,12 +44,12 @@ public:
   // Accessors
   inline size_type size1 () const
   {
-    return _data.size1 ();
+    return _data.size1();
   }
 
   inline size_type size2 () const
   {
-    return _data.size2 ();
+    return _data.size2();
   }
 
   inline MatrixType& data ()
@@ -64,7 +65,7 @@ public:
   // Element access
   inline value_type operator () (size_type i, size_type j) const
   {
-    return _modifier (i, j, _data (i, j));
+    return _modifier(i, j, _data(i, j));
   }
 
 };

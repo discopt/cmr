@@ -1,8 +1,9 @@
-
-//          Copyright Matthias Walter 2010.
-// Distributed under the Boost Software License, Version 1.0.
-//    (See accompanying file LICENSE_1_0.txt or copy at
-//          http://www.boost.org/LICENSE_1_0.txt)
+/**
+ *          Copyright Matthias Walter 2010.
+ * Distributed under the Boost Software License, Version 1.0.
+ *    (See accompanying file LICENSE_1_0.txt or copy at
+ *          http://www.boost.org/LICENSE_1_0.txt)
+ **/
 
 #include "nested_minor_sequence.hpp"
 
@@ -11,7 +12,7 @@
 namespace tu {
 
   nested_minor_sequence::nested_minor_sequence () :
-    height_ (3), width_ (3)
+    height_(3), width_(3)
   {
 
   }
@@ -37,9 +38,9 @@ namespace tu {
 
   void nested_minor_sequence::push (extension_type ext)
   {
-    extensions_.push_back (ext);
-    width_ += get_extension_width (ext);
-    height_ += get_extension_height (ext);
+    extensions_.push_back(ext);
+    width_ += get_extension_width(ext);
+    height_ += get_extension_height(ext);
   }
 
 }
