@@ -31,11 +31,11 @@ namespace tu {
 
     const indirect_matrix_t indirect_matrix(matrix, submatrix.rows, submatrix.columns);
 
-    boost::numeric::ublas::matrix <float> matrix(indirect_matrix);
+    boost::numeric::ublas::matrix <float> float_matrix(indirect_matrix);
     boost::numeric::ublas::permutation_matrix <size_t> permutation_matrix(matrix.size1());
 
     /// LU-factorize
-    int result = boost::numeric::ublas::lu_factorize(matrix, permutation_matrix);
+    int result = boost::numeric::ublas::lu_factorize(float_matrix, permutation_matrix);
     if (result != 0)
     {
       return 0;
@@ -45,7 +45,7 @@ namespace tu {
     float det = 1.0f;
     for (size_t i = 0; i < matrix.size1(); ++i)
     {
-      det *= matrix(i, i);
+      det *= float_matrix(i, i);
       if (i != permutation_matrix(i))
         det = -det;
     }
@@ -109,7 +109,7 @@ namespace tu {
           cardinality++;
       }
       const std::vector <bitset_type>& column_choices = column_bitsets[cardinality];
-      
+
       /// Enumerate columns with appropriate size
       for (std::vector <bitset_type>::const_iterator iter = column_choices.begin(); iter != column_choices.end(); ++iter)
       {
