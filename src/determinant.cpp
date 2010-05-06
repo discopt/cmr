@@ -32,18 +32,16 @@ namespace tu {
     const indirect_matrix_t indirect_matrix(matrix, submatrix.rows, submatrix.columns);
 
     boost::numeric::ublas::matrix <float> float_matrix(indirect_matrix);
-    boost::numeric::ublas::permutation_matrix <size_t> permutation_matrix(matrix.size1());
+    boost::numeric::ublas::permutation_matrix <size_t> permutation_matrix(float_matrix.size1());
 
     /// LU-factorize
     int result = boost::numeric::ublas::lu_factorize(float_matrix, permutation_matrix);
     if (result != 0)
-    {
       return 0;
-    }
 
     /// Calculate the determinant as a product of the diagonal entries, taking the permutation matrix into account.
     float det = 1.0f;
-    for (size_t i = 0; i < matrix.size1(); ++i)
+    for (size_t i = 0; i < float_matrix.size1(); ++i)
     {
       det *= float_matrix(i, i);
       if (i != permutation_matrix(i))
