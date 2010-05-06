@@ -1,7 +1,9 @@
-//          Copyright Matthias Walter 2010.
-// Distributed under the Boost Software License, Version 1.0.
-//    (See accompanying file LICENSE_1_0.txt or copy at
-//          http://www.boost.org/LICENSE_1_0.txt)
+/**
+ *          Copyright Matthias Walter 2010.
+ * Distributed under the Boost Software License, Version 1.0.
+ *    (See accompanying file LICENSE_1_0.txt or copy at
+ *          http://www.boost.org/LICENSE_1_0.txt)
+ **/
 
 #ifndef TOTAL_UNIMODULARITY_HPP_
 #define TOTAL_UNIMODULARITY_HPP_
@@ -99,16 +101,33 @@ namespace tu {
 
   void support_matrix (integer_matrix& matrix);
 
-  /// Calculates a subdeterminant of the given matrix.
+  /**
+   * Calculates a subdeterminant of the given matrix.
+   * 
+   * @param matrix A given integer matrix
+   * @param submatrix Matrix-indices describing a submatrix
+   * @return The submatrix' determinant
+   */
 
   int determinant_submatrix (const integer_matrix& matrix, const submatrix_indices& submatrix);
 
-  /// Returns true, iff the given matrix is totally unimodular by checking all subdeterminants.
+  /**
+   * Checks all subdeterminants to test a given matrix for total unimodularity.
+   * 
+   * @param matrix The given matrix
+   * @return true if and only if this matrix is totally unimdular
+   */
 
   bool determinant_is_totally_unimodular (const integer_matrix& matrix);
 
-  /// Returns true, iff the given matrix is totally unimodular by checking all subdeterminants.
-  /// If this is not the case, violator describes a violating submatrix.
+  /**
+   * Checks all subdeterminants to test a given matrix for total unimodularity.
+   * If this is not the case, violator describes a violating submatrix.
+   * 
+   * @param matrix The given matrix
+   * @param violator The violating submatrix, if the result is false
+   * @return true if and only if the this matrix is totally unimodular
+   */
 
   bool determinant_is_totally_unimodular (const integer_matrix& matrix, submatrix_indices& violator);
 
