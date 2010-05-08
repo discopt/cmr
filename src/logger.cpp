@@ -9,16 +9,34 @@
 
 namespace tu {
 
+  /**
+   * Creates a logger object.
+   * 
+   * @param level The log level to work with
+   */
+
   logger::logger (log_level level) :
     _indent(0), _level(level)
   {
     _line = new std::stringstream();
   }
 
+  /**
+   * Destructor
+   */
+
   logger::~logger ()
   {
     delete _line;
   }
+
+  /**
+   * Streams a line of a logger object and flushes the output stream.
+   * 
+   * @param Output stream
+   * @param Logger object
+   * @return Output stream
+   */
 
   std::ostream& operator<< (std::ostream& stream, logger& log)
   {
