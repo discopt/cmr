@@ -12,12 +12,21 @@
 
 namespace tu {
 
+  /**
+   * Singleton class to test a bipartite graph to be ismorphic to the graphs representing R10.
+   */
+
   class bipartite_r10_graphs
   {
   public:
     typedef boost::adjacency_list <boost::vecS, boost::vecS, boost::undirectedS> graph_t;
 
   private:
+
+    /**
+     * Constructs the R10 graph class.
+     */
+
     bipartite_r10_graphs ()
     {
       typedef std::pair <int, int> E;
@@ -31,6 +40,12 @@ namespace tu {
       g2 = graph_t(&g2_edges[0], &g2_edges[0] + sizeof(g2_edges) / sizeof(E), 10);
     }
 
+    /**
+     * Singleton instance function.
+     *
+     * @return The unique instance
+     */
+
     static bipartite_r10_graphs& instance ()
     {
       static bipartite_r10_graphs* instance = NULL;
@@ -40,23 +55,37 @@ namespace tu {
     }
 
   public:
+
+    /**
+     * Checks a given graph to be isomorphic to the ones stored.
+     *
+     * @param graph Given graph
+     * @return true if and only if it is isomorphic to any of the two stored ones.
+     */
+
     template <typename Graph>
-    static bool is_r10_graph (const Graph& g)
+    static bool is_r10_graph (const Graph& graph)
     {
-      return boost::isomorphism(g, instance().g1) || boost::isomorphism(g, instance().g2);
+      return boost::isomorphism(graph, instance().g1) || boost::isomorphism(g, instance().g2);
     }
 
   private:
     graph_t g1, g2;
   };
 
+  /**
+   * Tests a given matrix to be matrix-isomorphic to one of the R10-representing matrices
+   * by examining the corresponding bipartite graphs.
+   *
+   * @param matrix A given matrix
+   * @return true if and only if this matrix is a represenation matrix for R10
+   */
+
   template <typename MatrixType>
   inline bool is_r10 (MatrixType matrix)
   {
     if (matrix.size1() != 5 || matrix.size2() != 5)
       return false;
-
-    //    std::cout << "Checking 5x5 matrix for R10" << std::endl;
 
     bipartite_r10_graphs::graph_t graph(10);
 
