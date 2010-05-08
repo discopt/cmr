@@ -66,7 +66,7 @@ namespace tu {
     template <typename Graph>
     static bool is_r10_graph (const Graph& graph)
     {
-      return boost::isomorphism(graph, instance().g1) || boost::isomorphism(g, instance().g2);
+      return boost::isomorphism(graph, instance().g1) || boost::isomorphism(graph, instance().g2);
     }
 
   private:
