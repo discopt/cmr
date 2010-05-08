@@ -33,7 +33,7 @@ namespace tu {
 
       /**
        * Constructs the modifier.
-       * 
+       *
        * @param split A given split point for this modifier
        */
 
@@ -45,7 +45,7 @@ namespace tu {
 
       /**
        * Semantic of this functor: Make the bottom left part zero.
-       * 
+       *
        * @param i A row
        * @param j A column
        * @param value The value of the corresponding entry.
@@ -68,10 +68,10 @@ namespace tu {
     /**
      * Finds paths in the top-left BFS graph between two bottom-left independet columns,
      * shortens them and swaps rows and columns such that the columns and the connecting
-     * row are near the split point. 
-     * 
+     * row are near the split point.
+     *
      * @param matroid Given matroid
-     * @param matrix Given matrix
+     * @param matrix A representation matrix for the matroid
      * @param split Split of a given (3|4)-separation.
      */
 
@@ -205,10 +205,10 @@ namespace tu {
     /**
      * Finds paths in the bottom-right BFS graph between two bottom-left independet rows,
      * shortens them and swaps rows and columns such that the rows and the connecting
-     * column are near the split point. 
-     * 
+     * column are near the split point.
+     *
      * @param matroid Given matroid
-     * @param matrix Given matrix
+     * @param matrix A representation matrix for the matroid
      * @param split Split of a given (3|4)-separation.
      */
 
@@ -249,14 +249,6 @@ namespace tu {
 
       if (bipartite_graph_bfs(modified_matrix, dimensions, start_nodes, end_nodes, false, nodes))
       {
-        //        std::cout << "found a path from " << start_type << " to " << end_type << std::endl;
-        //        for (size_t i = 0; i < nodes.size (); ++i)
-        //        {
-        //          std::cout << "nodes[" << i << "]: dist = " << nodes[i].distance << ", pred = " << nodes[i].predecessor << ", matroid element = "
-        //              << (dimensions.is_column (i) ? matroid.name2 (dimensions.index_to_column (i)) : matroid.name1 (dimensions.index_to_row (i)))
-        //              << std::endl;
-        //        }
-
         /// Find reached node
         size_t reached_node = 0;
         for (row_set_t::const_iterator iter = end_nodes.begin(); iter != end_nodes.end(); ++iter)
@@ -276,8 +268,6 @@ namespace tu {
           {
             assert (dimensions.is_row(next_node));
 
-            //            std::cout << "pivot at " << dimensions.index_to_row (next_node) << "," << dimensions.index_to_column (current_node) << std::endl;
-
             matroid_binary_pivot(matroid, matrix, dimensions.index_to_row(next_node), dimensions.index_to_column(current_node));
             extra_elements.insert(matroid.name1(dimensions.index_to_row(next_node)));
             extra_elements.insert(matroid.name2(dimensions.index_to_column(current_node)));
@@ -288,10 +278,6 @@ namespace tu {
             starting_row = dimensions.index_to_row(next_node);
           }
         }
-
-        //        std::cout << "column = " << connecting_column << std::endl;
-        //        std::cout << "row 1 = " << starting_row << std::endl;
-        //        std::cout << "row 2 = " << reached_row << std::endl;
 
         matroid_permute2(matroid, matrix, connecting_column, split.second);
         if (starting_row < reached_row)
@@ -305,14 +291,6 @@ namespace tu {
 
       if (bipartite_graph_bfs(modified_matrix, dimensions, types[2], types[3], false, nodes))
       {
-        //        std::cout << "found a path from " << start_type << " to " << end_type << std::endl;
-        //        for (size_t i = 0; i < nodes.size (); ++i)
-        //        {
-        //          std::cout << "nodes[" << i << "]: dist = " << nodes[i].distance << ", pred = " << nodes[i].predecessor << ", matroid element = "
-        //              << (dimensions.is_column (i) ? matroid.name2 (dimensions.index_to_column (i)) : matroid.name1 (dimensions.index_to_row (i)))
-        //              << std::endl;
-        //        }
-
         /// Find reached node
         size_t reached_node = 0;
         for (row_set_t::const_iterator iter = types[3].begin(); iter != types[3].end(); ++iter)
@@ -332,8 +310,6 @@ namespace tu {
           {
             assert (dimensions.is_row(next_node));
 
-            //            std::cout << "pivot at " << dimensions.index_to_row (next_node) << "," << dimensions.index_to_column (current_node) << std::endl;
-
             matroid_binary_pivot(matroid, matrix, dimensions.index_to_row(next_node), dimensions.index_to_column(current_node));
             extra_elements.insert(matroid.name1(dimensions.index_to_row(next_node)));
             extra_elements.insert(matroid.name2(dimensions.index_to_column(current_node)));
@@ -344,10 +320,6 @@ namespace tu {
             starting_row = dimensions.index_to_row(next_node);
           }
         }
-
-        //        std::cout << "column = " << connecting_column << std::endl;
-        //        std::cout << "row 1 = " << starting_row << std::endl;
-        //        std::cout << "row 2 = " << reached_row << std::endl;
 
         matroid_permute2(matroid, matrix, connecting_column, split.second);
         if (starting_row < reached_row)
@@ -362,32 +334,19 @@ namespace tu {
 
     /**
      * Finds witnesses for a 3-separation.
-     * 
-     * @param matroid
-     * @param matrix
-     * @param split
-     * @return
+     *
+     * @param matroid A given matroid
+     * @param matrix A representation matrix for the matroid
+     * @param split Split of the 3-separation
+     * @param extra_elements Set of matroid elements to be filled with pivot-elements
+     * @return The final separation
      */
 
     template <typename MatroidType, typename MatrixType>
     inline separation find_witnesses (MatroidType& matroid, MatrixType& matrix, size_pair_t split, matroid_element_set& extra_elements)
     {
-      //      std::cout << "find_witnesses (top-left = " << split.first << " x " << split.second << ", bottom-right = " << (matroid.size1 () - split.first)
-      //          << " x " << (matroid.size2 () - split.second) << ":\n";
-      //      matroid_print (matroid, matrix);
-      //      std::cout << "top-left = " << split.first << " x " << split.second << std::endl;
-      //      std::cout << "bottom-right = " << (matroid.size1 () - split.first) << " x " << (matroid.size2 () - split.second) << std::endl;
-      //      matroid_print (matroid, matrix);
-
       find_column_witnesses(matroid, matrix, split, extra_elements);
-
-      //      std::cout << "Columns should be fine now." << std::endl;
-      //      matroid_print (matroid, matrix);
-
       find_row_witnesses(matroid, matrix, split, extra_elements);
-
-      //      std::cout << "Rows should be fine now." << std::endl;
-      //      matroid_print (matroid, matrix);
 
       if (matrix(split.first, split.second - 2) == 0 || matrix(split.first + 1, split.second - 1) == 0)
         matroid_permute1(matroid, matrix, split.first, split.first + 1);
@@ -397,9 +356,9 @@ namespace tu {
 
     /**
      * Does a pivot in top-right part of a given (3|4)-separation to shift the rank.
-     * 
+     *
      * @param matroid Given matroid
-     * @param matrix Given matrix
+     * @param matrix Represenation matrix of the given matroid
      * @param split Split of a given (3|4)-separation
      */
 
@@ -427,9 +386,9 @@ namespace tu {
 
     /**
      * Does a pivot in bottom-left part of a given (3|4)-separation to shift the rank.
-     * 
+     *
      * @param matroid Given matroid
-     * @param matrix Given matrix
+     * @param matrix A representation matrix for the matroid
      * @param split Split of a given (3|4)-separation
      */
 
@@ -458,9 +417,9 @@ namespace tu {
     /**
      * Modifies a (3|4)-separation to have rank 2 in bottom-left area and top-right
      * non-degenerate.
-     * 
+     *
      * @param matroid Given matroid
-     * @param matrix Given matrix
+     * @param matrix A representation matrix for the matroid
      * @param split Split of a given (3|4)-separation
      * @param ranks Rank distribution of the given separation
      */
@@ -474,10 +433,6 @@ namespace tu {
       else if (ranks == RANK_BL_0_TR_2)
         pivot_top_right(matroid, matrix, split, extra_elements);
 
-      //      std::cout << "After distributing ranks:\n";
-      //      matrix_print (matrix);
-      //      std::cout << "Split is " << split.first << " x " << split.second << std::endl;
-
       /// If top-right has few rows, mirror the matrix, swapping bottom-left with top-right
       if (2 * split.first < matroid.size1())
       {
@@ -488,13 +443,22 @@ namespace tu {
         split = size_pair_t(matroid.size1() - split.first, matroid.size2() - split.second);
       }
 
-      //      std::cout << "After possible reordering:\n";
-      //      matrix_print (matrix);
-      //      std::cout << "Split is " << split.first << " x " << split.second << std::endl;
-
-      /// Now as top-right has enough rows, we can pivot without degenerating it. 
+      /// Now as top-right has enough rows, we can pivot without degenerating it.
       pivot_top_right(matroid, matrix, split, extra_elements);
     }
+
+    /**
+     * Calls the partition algorithm to extend a given separation of a minor to the whole matroid.
+     *
+     * @param matroid The original matrix
+     * @param matrix A representation matrix for the original matroid
+     * @param worker_matrix Matrix for the partition algorithm to work on
+     * @param top_left_size Size of the first part of the minor-separation
+     * @param bottom_right_size Size of the second part of the minor-separation
+     * @param separation Separation to return
+     * @param extra_elements Set of matroid elements to be filled with pivot-elements
+     * @return true if and only if The partitioning was successful
+     */
 
     template <typename MatroidType, typename MatrixType>
     inline bool extend_to_3_4_separation (MatroidType& matroid, MatrixType& matrix, matrix_permuted <const integer_matrix>& worker_matrix,
@@ -507,22 +471,10 @@ namespace tu {
 
       if (top_left_size.first + top_left_size.second < 4 || bottom_right_size.first + bottom_right_size.second < 4)
       {
-        //        std::cout << "Must drop 3-separation, as it's no 3|4-separation!" << std::endl;
         return false;
       }
 
-      //      std::cout << "Found a (3|4)-separation." << std::endl;
-
       /// Now we really found a separation. We apply the worker-matrix-permutation to the orginal matrix.
-
-      //      std::cout << "parent of worker matrix:\n";
-      //      matrix_print (worker_matrix.data ());
-
-      //      std::cout << "Worker matrix:\n";
-      //      matrix_print (worker_matrix);
-
-      //      std::cout << "matrix.perm1 = " << matrix.perm1 () << std::endl;
-      //      std::cout << "worker_matrix.perm1 = " << worker_matrix.perm1 () << std::endl;
 
       permutation row_permutation = matrix.perm1() * worker_matrix.perm1();
       permutation column_permutation = matrix.perm2() * worker_matrix.perm2();
@@ -532,32 +484,27 @@ namespace tu {
       matroid.perm2() = column_permutation;
       matrix.perm2() = column_permutation;
 
-      //      std::cout << "matrix.perm1 = " << matrix.perm1 () << std::endl;
-
-      //      std::cout << "Modified original matroid:\n";
-      //      matroid_print (matroid, matrix);
-      //      std::cout << "Blocks are " << top_left_size.first << " x " << top_left_size.second << " and " << bottom_right_size.first << " x "
-      //          << bottom_right_size.second << std::endl;
-
       assert (matrix_equals(matrix, worker_matrix));
 
       /// Normalize it
 
       normalize_3_4_separation(matroid, matrix, top_left_size, ranks, extra_elements);
-      //      std::cout << "Normalized modified original matroid:\n";
-      //      matroid_print (matroid, matrix);
-      //      std::cout << "Blocks are " << top_left_size.first << " x " << top_left_size.second << " and " << (matrix.size1 () - top_left_size.first)
-      //          << " x " << (matrix.size2 () - top_left_size.second) << std::endl;
 
       /// Make the witnesses visible.
 
       separation = find_witnesses(matroid, matrix, top_left_size, extra_elements);
 
-      //      std::cout << "After find_witnesses:\n";
-      //      matroid_print (matroid, matrix);
-
       return true;
     }
+
+    /**
+     * Creates a permutation which sorts a given vector. It further counts the
+     * number of positive and negativ values.
+     *
+     * @param permutation Permutation to return
+     * @param mapping The given vector
+     * @return (positive entries, negativ entries)
+     */
 
     template <typename MappingValue>
     inline size_pair_t apply_mapping (permutation& permutation, std::vector <MappingValue>& mapping)
@@ -575,6 +522,14 @@ namespace tu {
 
       return std::make_pair(negative, positive);
     }
+
+    /**
+     * Finds the index of the first minor in a given sequence of nested minors which has at least 8 elements.
+     *
+     * @param nested_minors Given sequence of nested minors
+     * @param minor_size Size of the minor found
+     * @return Index of the minor found
+     */
 
     template <typename NestedMinorSequence>
     inline size_t find_first_8_element_minor (const NestedMinorSequence& nested_minors, size_pair_t& minor_size)
@@ -598,6 +553,31 @@ namespace tu {
       return nested_minors.size();
     }
 
+    /**
+     * Enumerates all necessary partitions for a fixed extension inside a sequence of nested minors.
+     * It works on a separate matrix with mapping vectors. Those contain either entries +1 and -1
+     * to show to which part of the minor-separation a row or column belongs and a 0 to designate
+     * a row or column to be unspecified.
+     *
+     * @param matroid The given matroid
+     * @param matrix Representation matrix for the given matroid
+     * @param worker_matrix Matrix to work on with the right permutation
+     * @param row_mapping Mapping vector for rows
+     * @param column_mapping Mapping vector for columns
+     * @param minor_size Size of the current minor in the sequence of nested minors
+     * @param ext_height Height of the extension
+     * @param ext_width Width of the extension
+     * @param separation Separation to be returned
+     * @param extra_elements Set of matroid-elements to be filled with pivot-elements
+     * @param enumeration Iteration step in the whole enumeration.
+     * @param next_enumeration Next enumeration
+     * @param max_enumerations Total number of enumerations
+     * @param next_percent Next percent value for a percent-jump
+     * @param log Logger
+     * @param cut Length of the line to cut off the progress-part
+     * @return true if and only if the partitioning algorithm was successful
+     */
+
     template <typename MatroidType, typename MatrixType, typename MappingValue>
     inline bool enumerate_extension (MatroidType& matroid, MatrixType& matrix, matrix_permuted <const integer_matrix>& worker_matrix, std::vector <
         MappingValue>& row_mapping, std::vector <MappingValue>& column_mapping, size_pair_t minor_size, size_t ext_height, size_t ext_width,
@@ -606,9 +586,6 @@ namespace tu {
     {
       const size_t minor_length = minor_size.first + minor_size.second;
       const size_t ext_length = ext_height + ext_width;
-
-      //      std::cout << "enumerating extension of size " << ext_height << " x " << ext_width << " on " << minor_size.first
-      //          << "x" << minor_size.second << " minor." << std::endl;
 
       for (size_t minor_enum_iter = 0; minor_enum_iter <= minor_length; ++minor_enum_iter)
       {
@@ -650,19 +627,9 @@ namespace tu {
           if (num_enumerated < 2)
             continue;
 
-          //          std::cout << "\nminor_enum_iter = " << minor_enum_iter << ", bits = " << bits << std::endl;
-          //          std::cout << "\nrows: ";
-          //          std::copy (row_mapping.begin (), row_mapping.end (), std::ostream_iterator <MappingValue> (std::cout, " "));
-          //          std::cout << "\ncols: ";
-          //          std::copy (column_mapping.begin (), column_mapping.end (), std::ostream_iterator <MappingValue> (std::cout,
-          //              " "));
-          //          std::cout << std::endl;
-
           /// Transform the mappings into row/column permutations.
           size_pair_t heights = detail::apply_mapping(worker_matrix.perm1(), row_mapping);
           size_pair_t widths = detail::apply_mapping(worker_matrix.perm2(), column_mapping);
-
-          //          std::cout << "worker's column permutation after applying is: " << worker_matrix.perm2 () << std::endl;
 
           ++enumeration;
 
@@ -688,13 +655,26 @@ namespace tu {
 
   }
 
+  /**
+   * Enumerates the partitions along the sequence of nested minors.
+   *
+   * @param matroid Given matroid
+   * @param matrix Representation matrix of the given matroid
+   * @param nested_minors Sequence of nested minors
+   * @param extra_elements Set of matroid-elements to be filled with pivot-elements
+   * @param log Logger
+   * @return true if and only if the partition algorithm was successful
+   */
+
   template <typename MatroidType, typename MatrixType, typename NestedMinorSequence>
-  inline separation enumerate_separations (MatroidType& input_matroid, MatrixType& input_matrix, const NestedMinorSequence& nested_minors,
+  inline separation enumerate_separations (MatroidType& matroid, MatrixType& matrix, const NestedMinorSequence& nested_minors,
       matroid_element_set& extra_elements, logger& log)
   {
     typedef signed char mapping_value_t;
 
-    if (input_matrix.size1() + input_matrix.size2() < 12)
+    /// Every regular 3-connected matroid which is non-graphic, non-cographic and not isomorphic to R10 must contain R12
+
+    if (matrix.size1() + matrix.size2() < 12)
     {
       if (log.is_updating())
       {
@@ -710,32 +690,18 @@ namespace tu {
       return separation();
     }
 
-    //    std::cout << "\n\n\n\nenumerating on matrix:\n";
-    //    matroid_print (input_matroid, input_matrix);
-    //    std::cout << "which has a permutation on the matrix:\n";
-    //    matrix_print (input_matrix.data ());
-    //    std::cout << "with row permuation: " << input_matrix.perm1 ();
-    //    std::cout << "\nand column permutation: " << input_matrix.perm2 () << std::endl;
-
     /// The first minors must be enumerated fully until we have one with at least 8 elements.
     size_pair_t minor_size;
     size_t minor_index = detail::find_first_8_element_minor(nested_minors, minor_size);
     assert (minor_size.first + minor_size.second >= 8);
     assert (minor_size.first + minor_size.second <= 10);
 
-    //    std::cout << "First minor is " << minor_index << " with size " << minor_size.first << " x " << minor_size.second
-    //        << std::endl;
-
     /// preparations
-    const integer_matrix matrix(input_matrix);
+    const integer_matrix worker_matrix_base(matrix);
 
-    //    std::cout << "THE INTERMEDIATE MATRIX:\n";
-    //    matrix_print (matrix);
-    //    std::cout << std::endl;
-
-    matrix_permuted <const integer_matrix> worker_matrix(matrix);
-    std::vector <mapping_value_t> row_mapping(matrix.size1(), 0);
-    std::vector <mapping_value_t> column_mapping(matrix.size2(), 0);
+    matrix_permuted <const integer_matrix> worker_matrix(worker_matrix_base);
+    std::vector <mapping_value_t> row_mapping(worker_matrix_base.size1(), 0);
+    std::vector <mapping_value_t> column_mapping(worker_matrix_base.size2(), 0);
     separation result;
 
     unsigned long long enumeration = 0;
@@ -788,18 +754,11 @@ namespace tu {
     unsigned long long next_enumeration = max_enumerations / 100;
     unsigned int next_percent = 1;
 
-    //    std::cout << "Enumerating " << max_enumerations << " partitions that could induce a (3|4)-separation.";
-    //    char buffer[80];
-    //    sprintf (buffer, "\rEnumerating...");
-    //    printf (buffer);
-
     /// Full enumeration
     size_t limit = (1 << (minor_size.first + minor_size.second));
     for (size_t bits = 0; bits < limit; ++bits)
     {
       ++enumeration;
-      //      std::cout << "\n\nbits = " << bits << std::endl;
-      //      matrix_print (matrix);
 
       for (size_t row = 0; row < minor_size.first; ++row)
       {
@@ -812,28 +771,12 @@ namespace tu {
 
       /// Transform the mappings into row/column permutations.
 
-      //      worker_matrix.perm2 () = permutation (worker_matrix.size2 ());
-      //      std::cout << "Before this, the matrix looks as follows:\n";
-      //      matrix_print (worker_matrix);
-      //            std::cout << std::endl;
-      //            std::cout << "The referenced looks as follows:\n";
-      //            matrix_print (matrix);
-
       size_pair_t widths = detail::apply_mapping(worker_matrix.perm2(), column_mapping);
-
-      //      std::cout << "worker's column permutation after applying is: " << worker_matrix.perm2 () << std::endl;
-      ////      worker_matrix.perm1 () = permutation (worker_matrix.size1 ());
-      //      std::cout << "After this, the matrix looks as follows:\n";
-      //      matrix_print (worker_matrix);
-      //      std::cout << std::endl;
-
       size_pair_t heights = detail::apply_mapping(worker_matrix.perm1(), row_mapping);
 
-      if (detail::extend_to_3_4_separation(input_matroid, input_matrix, worker_matrix, size_pair_t(heights.first, widths.first), size_pair_t(
-          heights.second, widths.second), result, extra_elements))
+      if (detail::extend_to_3_4_separation(matroid, matrix, worker_matrix, size_pair_t(heights.first, widths.first), size_pair_t(heights.second,
+          widths.second), result, extra_elements))
       {
-        //        std::cout << "first part enum succeeded:\n";
-        //        matroid_print (input_matroid, input_matrix);
         return result;
       }
 
@@ -852,19 +795,14 @@ namespace tu {
       std::cout << "Complete enumeration of " << (minor_index + 1) << " minors done." << std::endl;
     }
 
-    //    std::cout << "\n\n\n\n\n" << std::endl;
-    //    std::cout << enumeration << "\n";
-
     /// Clever enumeration along the sequence
     for (size_t i = minor_index; i < nested_minors.size(); ++i)
     {
       size_t extension_height = nested_minors.get_extension_height(i);
       size_t extension_width = nested_minors.get_extension_width(i);
-      if (detail::enumerate_extension(input_matroid, input_matrix, worker_matrix, row_mapping, column_mapping, minor_size, extension_height,
-          extension_width, result, extra_elements, enumeration, next_enumeration, max_enumerations, next_percent, log, cut))
+      if (detail::enumerate_extension(matroid, matrix, worker_matrix, row_mapping, column_mapping, minor_size, extension_height, extension_width,
+          result, extra_elements, enumeration, next_enumeration, max_enumerations, next_percent, log, cut))
       {
-        //        std::cout << "sequence enum succeeded:\n";
-        //        matroid_print (input_matroid, input_matrix);
         return result;
       }
       minor_size.first += extension_height;
