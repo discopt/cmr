@@ -5,23 +5,30 @@
  *          http://www.boost.org/LICENSE_1_0.txt)
  **/
 
-#include <boost/numeric/ublas/matrix.hpp>
+#include <vector>
 
-#include "../config.h"
+#include "total_unimodularity.hpp"
 
 namespace tu {
 
+  /**
+   * Class to enumerate subset-2-partitions for a ghouila-houri test
+   */
+
   class ghouila_houri_enumerator
   {
-  private:
+  public:
+
     typedef signed char choice_type;
     typedef std::vector <choice_type> choice_vector_type;
-    typedef boost::numeric::ublas::matrix <int> matrix_type;
 
-    choice_vector_type _choice;
-    const matrix_type& _matrix;
-  public:
-    ghouila_houri_enumerator (const matrix_type& matrix) :
+    /**
+     * Constructs an enumerator.
+     *
+     * @param matrix The matrix to be tested
+     */
+
+    ghouila_houri_enumerator (const integer_matrix& matrix) :
       _matrix(matrix)
     {
       _choice.resize(_matrix.size1());
@@ -30,6 +37,12 @@ namespace tu {
         *iter = 0;
       }
     }
+
+    /**
+     * Tests a sum induced by a 2-partition of the selected rows
+     *
+     * @return true if and only if the sum along each column is valid
+     */
 
     bool check_sum ()
     {
@@ -45,6 +58,13 @@ namespace tu {
       }
       return true;
     }
+
+    /**
+     * Recursively enumerates both possible choices for a given row.
+     *
+     * @param row The given row
+     * @return true if and only if one of the enumerations succeeded
+     */
 
     bool choose_partition (size_t row = 0)
     {
@@ -66,6 +86,14 @@ namespace tu {
       return check_sum();
     }
 
+    /**
+     * Recursively enumerates all subset-choices for a given row.
+     * Finally it starts the enumeration of all the partitions of this subset.
+     *
+     * @param row The given row
+     * @return true if and only if the further enumerations succeeded all.
+     */
+
     bool choose_subset (size_t row = 0)
     {
       if (row < _choice.size())
@@ -82,13 +110,29 @@ namespace tu {
       return choose_partition();
     }
 
+    /**
+     * Tests the given matrix for total unimodularity using rows.
+     *
+     * @return true if and only if it is totally unimodular
+     */
+
     inline bool check ()
     {
       return choose_subset();
     }
+
+  private:
+
+    choice_vector_type _choice;
+    const integer_matrix& _matrix;
   };
 
-  /// Returns true, iff the given matrix is totally unimodular via ghouila-houri's criterion by enumeration of row subsets.
+  /**
+   * Tests a given matrix to be totally unimodular using ghouila-houri's criterion by enumeration of row subsets.
+   *
+   * @param matrix The given matrix
+   * @return true if and only if this matrix is totally unimodular
+   */
 
   bool ghouila_houri_is_totally_unimodular_enum_rows (const boost::numeric::ublas::matrix <int>& matrix)
   {
@@ -96,7 +140,12 @@ namespace tu {
     return enumerator.check();
   }
 
-  /// Returns true, iff the given matrix is totally unimodular via ghouila-houri's criterion by enumeration of column subsets.
+  /**
+   * Tests a given matrix to be totally unimodular using ghouila-houri's criterion by enumeration of column subsets.
+   *
+   * @param matrix The given matrix
+   * @return true if and only if this matrix is totally unimodular
+   */
 
   bool ghouila_houri_is_totally_unimodular_enum_columns (const boost::numeric::ublas::matrix <int>& matrix)
   {
@@ -105,8 +154,13 @@ namespace tu {
     return ghouila_houri_is_totally_unimodular_enum_rows(transposed);
   }
 
-  /// Returns true, iff the given matrix is totally unimodular via ghouila-houri's criterion.
-  /// Calls either the row or column version, depending on the dimensions of the matrix.
+  /**
+   * Tests a given matrix to be totally unimodular using ghouila-houri's criterion by enumeration of either
+   * row or column subsets by choosing the one which induces fewer enumerations.
+   *
+   * @param matrix The given matrix
+   * @return true if and only if this matrix is totally unimodular
+   */
 
   bool ghouila_houri_is_totally_unimodular (const boost::numeric::ublas::matrix <int>& matrix)
   {

@@ -36,7 +36,7 @@ namespace tu {
   };
 
   /// Returns a decomposition of a given binary matroid into a k-sum-decomposition (k=1,2,3)
-  /// in graphic, cographic, R10 and maybe irregular components. 
+  /// in graphic, cographic, R10 and maybe irregular components.
 
   decomposed_matroid* decompose_binary_matroid (const boost::numeric::ublas::matrix <int>& matrix, log_level level = LOG_QUIET);
 
@@ -50,7 +50,7 @@ namespace tu {
   bool is_totally_unimodular (const integer_matrix& matrix, decomposed_matroid*& decomposition, log_level level = LOG_QUIET);
 
   /// Returns true, iff the given matrix is totally unimodular.
-  /// If this is not the case, violator describes a violating submatrix.  
+  /// If this is not the case, violator describes a violating submatrix.
 
   bool is_totally_unimodular (const integer_matrix& matrix, submatrix_indices& violator, log_level level = LOG_QUIET);
 
@@ -66,7 +66,7 @@ namespace tu {
 
   /// Returns true, iff the given matrix contains only values {-1, 0, 1}.
   /// If not, position will contain the position of the wrong entry.
-  /// Running time: O(height * width) 
+  /// Running time: O(height * width)
 
   bool is_zero_plus_minus_one_matrix (const integer_matrix& matrix, std::pair <size_t, size_t>& position);
 
@@ -76,7 +76,7 @@ namespace tu {
 
   /// Returns true, iff the given matrix contains only values {0, 1}.
   /// If not, position will contain the position of the wrong entry.
-  /// Running time: O(height * width) 
+  /// Running time: O(height * width)
 
   bool is_zero_one_matrix (const integer_matrix& matrix, std::pair <size_t, size_t>& position);
 
@@ -103,7 +103,7 @@ namespace tu {
 
   /**
    * Calculates a subdeterminant of the given matrix.
-   * 
+   *
    * @param matrix A given integer matrix
    * @param submatrix Matrix-indices describing a submatrix
    * @return The submatrix' determinant
@@ -113,7 +113,7 @@ namespace tu {
 
   /**
    * Checks all subdeterminants to test a given matrix for total unimodularity.
-   * 
+   *
    * @param matrix The given matrix
    * @return true if and only if this matrix is totally unimdular
    */
@@ -123,7 +123,7 @@ namespace tu {
   /**
    * Checks all subdeterminants to test a given matrix for total unimodularity.
    * If this is not the case, violator describes a violating submatrix.
-   * 
+   *
    * @param matrix The given matrix
    * @param violator The violating submatrix, if the result is false
    * @return true if and only if the this matrix is totally unimodular
@@ -131,16 +131,31 @@ namespace tu {
 
   bool determinant_is_totally_unimodular (const integer_matrix& matrix, submatrix_indices& violator);
 
-  /// Returns true, iff the given matrix is totally unimodular via ghouila-houri's criterion by enumeration of row subsets.
+  /**
+   * Tests a given matrix to be totally unimodular using ghouila-houri's criterion by enumeration of row subsets.
+   *
+   * @param matrix The given matrix
+   * @return true if and only if this matrix is totally unimodular
+   */
 
   bool ghouila_houri_is_totally_unimodular_enum_rows (const integer_matrix& matrix);
 
-  /// Returns true, iff the given matrix is totally unimodular via ghouila-houri's criterion by enumeration of column subsets.
+  /**
+   * Tests a given matrix to be totally unimodular using ghouila-houri's criterion by enumeration of column subsets.
+   *
+   * @param matrix The given matrix
+   * @return true if and only if this matrix is totally unimodular
+   */
 
   bool ghouila_houri_is_totally_unimodular_enum_columns (const integer_matrix& matrix);
 
-  /// Returns true, iff the given matrix is totally unimodular via ghouila-houri's criterion.
-  /// Calls either the row or column version, depending on the dimensions of the matrix.
+  /**
+   * Tests a given matrix to be totally unimodular using ghouila-houri's criterion by enumeration of either
+   * row or column subsets by choosing the one which induces fewer enumerations.
+   *
+   * @param matrix The given matrix
+   * @return true if and only if this matrix is totally unimodular
+   */
 
   bool ghouila_houri_is_totally_unimodular (const integer_matrix& matrix);
 
