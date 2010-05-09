@@ -8,6 +8,10 @@
 #ifndef PARTITION_HPP_
 #define PARTITION_HPP_
 
+#include <vector>
+
+#include "matrix_transposed.hpp"
+#include "matrix_permuted.hpp"
 #include "binary_linear_space.hpp"
 
 namespace tu {
@@ -15,6 +19,16 @@ namespace tu {
   typedef std::pair <size_t, size_t> size_pair_t;
 
   namespace detail {
+
+    /**
+     * Copies a partial row of a matrix into a vector.
+     *
+     * @param matrix A given matrix
+     * @param vector Vector to be filled
+     * @param row Index of the row
+     * @param first_column Index of the first column
+     * @param beyond_column Index of the column beyond the partial row
+     */
 
     template <typename MatrixType, typename VectorType>
     inline void copy_partial_row (const MatrixType& matrix, VectorType& vector, size_t row, size_t first_column, size_t beyond_column)
@@ -26,6 +40,16 @@ namespace tu {
       }
     }
 
+    /**
+     * Copies a partial column of a matrix into a vector.
+     *
+     * @param matrix A given matrix
+     * @param vector Vector to be filled
+     * @param column Index of the column
+     * @param first_row Index of the first row
+     * @param beyond_row Index of the row beyond the partial column
+     */
+
     template <typename MatrixType, typename VectorType>
     inline void copy_partial_column (const MatrixType& matrix, VectorType& vector, size_t column, size_t first_row, size_t beyond_row)
     {
@@ -33,10 +57,26 @@ namespace tu {
     }
   }
 
+  /**
+   * Types of distributions of the rank 2
+   */
+
   enum rank_distribution
   {
     RANK_TOO_HIGH = 0, RANK_BL_1_TR_1 = 1, RANK_BL_2_TR_0 = 2, RANK_BL_0_TR_2 = 3
   };
+
+  /**
+   * Partitioning routine. Takes a 3-separation of a minor and tries to enlarge it
+   * to a 3-separation of the whole matroid.
+   *
+   * @param matrix Representation matrix of the matroid
+   * @param top_left_height Number of rows in the top-left separation part
+   * @param top_left_width Number of columns in the top-left separation part
+   * @param bottom_right_height Number of rows in the bottom-right separation part
+   * @param bottom_right_width Number of columns in the bottom-right separation part
+   * @return A rank distribution, if enlarging was possible or RANK_TOO_HIGH if not
+   */
 
   template <typename MatrixType>
   inline rank_distribution partition (matrix_permuted <const MatrixType>& matrix, size_t& top_left_height, size_t& top_left_width,
@@ -50,13 +90,9 @@ namespace tu {
     size_t free_columns_first = top_left_width;
     size_t free_columns_beyond = width - bottom_right_width;
 
-    //    std::cout << "Partition check on matrix:\n";
-    //    matrix_print (matrix);
-    //    std::cout << "Blocks are " << top_left_height << " x " << top_left_width << " and " << bottom_right_height << " x " << bottom_right_width
-    //        << std::endl;
-
     rank_distribution result;
 
+    /// Repeat until no rows/columns can be shifted.
     bool changed = true;
     while (changed)
     {
@@ -70,8 +106,6 @@ namespace tu {
         bottom_left_row_space.insert_checked(bottom_left_row);
       }
 
-      //      std::cout << "bottom left row rank = " << bottom_left_row_space.dimension () << std::endl;
-
       /// Setup top right rows
       binary_linear_space top_right_row_space(bottom_right_width);
       std::vector <bool> top_right_row(bottom_right_width);
@@ -81,8 +115,6 @@ namespace tu {
         detail::copy_partial_row(matrix, top_right_row, row, free_columns_beyond, width);
         top_right_row_space.insert_checked(top_right_row);
       }
-
-      //      std::cout << "top right row rank = " << top_right_row_space.dimension () << std::endl;
 
       /// Check we have rank sum of 2
       if (bottom_left_row_space.dimension() + top_right_row_space.dimension() != 2)
@@ -100,21 +132,12 @@ namespace tu {
           if (!bottom_left_row_space.is_spanned(bottom_left_row))
             return RANK_TOO_HIGH;
 
-          //          std::cout << "Row " << row << " is spanned by bottom-left." << std::endl;
-
           ++bottom_right_height;
           --free_rows_beyond;
           matrix_permute1(matrix, row, free_rows_beyond);
           --row;
           changed = true;
-
-          //          std::cout << "Row " << (row + 1) << " was swapped with " << free_rows_beyond << std::endl;
-          //          matrix_print (matrix);
         }
-        //        else
-        //        {
-        //          std::cout << "Row " << row << " is spanned by top-right." << std::endl;
-        //        }
       }
 
       /// Setup top right columns
@@ -127,9 +150,7 @@ namespace tu {
         top_right_column_space.insert_checked(top_right_column);
       }
 
-      //      std::cout << "top right column rank = " << top_right_column_space.dimension () << std::endl;
-
-      /// Setup bottom left columns 
+      /// Setup bottom left columns
       binary_linear_space bottom_left_column_space(bottom_right_height);
       std::vector <bool> bottom_left_column(bottom_right_height);
 
@@ -139,47 +160,25 @@ namespace tu {
         bottom_left_column_space.insert_checked(bottom_left_column);
       }
 
-      //      std::cout << "bottom left column space:\n" << bottom_left_column_space << std::endl;
-
-      //      std::cout << "bottom left column rank = " << bottom_left_column_space.dimension () << std::endl;
-
       /// Assert we have rank sum of 2
       assert (bottom_left_row_space.dimension () + top_right_row_space.dimension () == 2);
 
       /// Check all other columns
-      //      changed = false;
       for (size_t column = free_columns_first; column < free_columns_beyond; ++column)
       {
-        //        std::cout << "column = " << column << ", free_columns_beyond = " << free_columns_beyond << ", height = "
-        //            << height << std::endl;
-
         detail::copy_partial_column(matrix, bottom_left_column, column, free_rows_beyond, height);
         if (!bottom_left_column_space.is_spanned(bottom_left_column))
         {
-          //          std::cout << "Column " << column << " is not spanned by bottom-left." << std::endl;
           detail::copy_partial_column(matrix, top_right_column, column, 0, top_left_height);
           if (!top_right_column_space.is_spanned(top_right_column))
             return RANK_TOO_HIGH;
 
-          //          std::cout << "Column " << column << " is spanned by top-right." << std::endl;
-
           ++bottom_right_width;
           --free_columns_beyond;
-          //          std::cout << "swapping columns " << column << " with " << free_columns_beyond << std::endl;
           matrix_permute2(matrix, column, free_columns_beyond);
           --column;
           changed = true;
-
-          //          std::cout << "Column " << (column + 1) << " was swapped with " << free_columns_beyond << std::endl;
-          //          matrix_print (matrix);
         }
-        //        else
-        //        {
-        //          std::cout << "Column " << column << " is spanned by bottom-left." << std::endl;
-        //          std::cout << "space:\n" << bottom_left_column_space << std::endl;
-        //          std::copy (bottom_left_column.begin (), bottom_left_column.end (), std::ostream_iterator <bool> (std::cout,
-        //              " "));
-        //        }
       }
 
       switch (bottom_left_column_space.dimension())
@@ -196,20 +195,10 @@ namespace tu {
       default:
         assert (false);
       }
-
-      //      std::cout << "Repeating? changed = " << changed << std::endl;
     }
-
-    //    std::cout << "Pre-final blocks are " << top_left_height << " x " << top_left_width << " and "
-    //        << bottom_right_height << " x " << bottom_right_width << std::endl;
 
     top_left_height = height - bottom_right_height;
     top_left_width = width - bottom_right_width;
-
-    //    std::cout << "After partition check on matrix:\n";
-    //    matrix_print (matrix);
-    //    std::cout << "Blocks are " << top_left_height << " x " << top_left_width << " and " << bottom_right_height << " x "
-    //        << bottom_right_width << std::endl;
 
     return result;
   }
