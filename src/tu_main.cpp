@@ -13,6 +13,7 @@
 
 #include "total_unimodularity.hpp"
 #include "matroid_decomposition.hpp"
+#include "config.h"
 
 void print_matroid_graph (const tu::matroid_graph& graph, const std::string& indent = "")
 {
@@ -210,8 +211,8 @@ int main (int argc, char **argv)
   po::options_description options_desc("Allowed options");
   options_desc.add_options()("help,h", "Shows a help message.")("matrix,m", po::value <std::string>(),
       "Input matrix to test for total unimodularity.")("certs,c",
-      "Prints certificates: A matroid decomposition, if the matrix is totally unimodular and a violating submatrix otherwise.")("dynamic,d",
-      "Dynamic logging (default).")("verbose,v", "Verbose logging.")("quiet,q", "No logging at all.");
+      "Prints certificates: A matroid decomposition if the matrix is totally unimodular and a violating submatrix otherwise.")("dynamic,d",
+      "Dynamic logging (default).")("verbose,v", "Verbose logging.")("quiet,q", "No logging at all.")("version,V", "Prints the version and exits.");
   po::positional_options_description positional_options_desc;
   positional_options_desc.add("matrix", -1);
   po::variables_map variables;
@@ -226,6 +227,12 @@ int main (int argc, char **argv)
     return EXIT_FAILURE;
   }
   po::notify(variables);
+
+  if (variables.count("version"))
+  {
+    std::cout << PACKAGE_STRING << std::endl;
+    return EXIT_SUCCESS;
+  }
 
   if (variables.count("help"))
   {

@@ -1,8 +1,6 @@
 AC_PREREQ(2.59)
 
-define([svnversion], esyscmd([sh -c "svnversion|tr -d '\n'"]))dnl
-AC_INIT([Total Unimodularity Library], [0.1.r-svnversion], [walter@mail.math.uni-magdeburg.de])
-AC_DEFINE(SVN_REVISION, "svnversion", [SVN Revision])
+AC_INIT([Total Unimodularity Library], [1.0], [xammy@xammy.homelinux.net])
 
 AM_INIT_AUTOMAKE
 
