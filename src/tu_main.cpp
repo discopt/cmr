@@ -47,7 +47,7 @@ void print_decomposition (const tu::decomposed_matroid* decomposition, std::stri
         std::cout << " " << *iter;
       std::cout << "\n";
     }
-    else if (leaf->is_planar())
+    else if (leaf->is_graphic() && leaf->is_cographic())
     {
       std::cout << indent << "planar binary matroid.\n";
       std::cout << indent << "graph:\n" << indent << "{ ";

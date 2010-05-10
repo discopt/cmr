@@ -45,7 +45,7 @@ namespace tu {
 
       if (leaf->is_R10())
         std::cout << indent << "R10\n";
-      else if (leaf->is_planar())
+      else if (leaf->is_graphic() && leaf->is_cographic())
       {
         std::cout << indent << "planar binary matroid.\n";
         std::cout << indent << "graph:\n" << indent << "{ ";
@@ -107,7 +107,7 @@ namespace tu {
   }
 
   /// Returns a decomposition of a given binary matroid into a k-sum-decomposition (k=1,2,3)
-  /// in graphic, cographic, R10 and maybe irregular components. 
+  /// in graphic, cographic, R10 and maybe irregular components.
 
   decomposed_matroid* decompose_binary_matroid (const integer_matrix& input_matrix, log_level level)
   {
@@ -287,7 +287,7 @@ namespace tu {
       std::cout << log;
     }
 
-    /// Check each entry 
+    /// Check each entry
     std::pair <unsigned int, unsigned int> entry;
     if (!is_zero_plus_minus_one_matrix(input_matrix, entry))
     {
@@ -376,7 +376,7 @@ namespace tu {
   }
 
   /// Returns true, iff the given matrix is totally unimodular.
-  /// If this is not the case, violator describes a violating submatrix.  
+  /// If this is not the case, violator describes a violating submatrix.
 
   bool is_totally_unimodular (const integer_matrix& matrix, submatrix_indices& violator, log_level level)
   {
