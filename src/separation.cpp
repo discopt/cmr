@@ -9,11 +9,14 @@
 
 #include <cassert>
 
-#include "../config.h"
 #include "total_unimodularity.hpp"
 #include "matroid.hpp"
 
 namespace tu {
+
+  /**
+   * Constructs a separation which is none.
+   */
 
   separation::separation () :
     split_(0, 0), upper_right_rank_(-1), lower_left_rank_(-1), special_swap_(0, 0)
@@ -21,11 +24,24 @@ namespace tu {
 
   }
 
+  /**
+   * Constructs a 1-separation.
+   *
+   * @param split Size of the first component, which must be at upper-left
+   */
+
   separation::separation (split_type split) :
     split_(split), upper_right_rank_(0), lower_left_rank_(0), special_swap_(0, 0)
   {
 
   }
+
+  /**
+   * Constructs a 2-separation.
+   *
+   * @param split Size of the first component, which must be at upper-left
+   * @param witness1 A witnessing one in the rank 1 part
+   */
 
   separation::separation (split_type split, witness_type witness1) :
     split_(split), special_swap_(0, 0)
@@ -46,6 +62,14 @@ namespace tu {
       upper_right_rank_ = 1;
     }
   }
+
+  /**
+   * Constructs a 3-separation.
+   *
+   * @param split Size of the first component, which must be at upper-left
+   * @param witness1 First witnessing one in the rank 2 part
+   * @param witness2 Second witnessing one in the rank 2 part
+   */
 
   separation::separation (split_type split, witness_type witness1, witness_type witness2) :
     split_(split), special_swap_(0, 0)
@@ -96,12 +120,25 @@ namespace tu {
     }
   }
 
+  /**
+   * Copy constructor
+   *
+   * @param other Another separation
+   */
+
   separation::separation (const separation& other) :
     split_(other.split_), witnesses_(other.witnesses_), upper_right_rank_(other.upper_right_rank_), lower_left_rank_(other.lower_left_rank_),
         special_swap_(other.special_swap_)
   {
 
   }
+
+  /**
+   * Assignment operator
+   *
+   * @param other Another separation
+   * @return This separation
+   */
 
   separation& separation::operator= (const separation& other)
   {
@@ -114,10 +151,18 @@ namespace tu {
     return *this;
   }
 
+  /**
+   * Destructor
+   */
+
   separation::~separation ()
   {
 
   }
+
+  /**
+   * @return A separation with the transposed details
+   */
 
   separation separation::transposed ()
   {
