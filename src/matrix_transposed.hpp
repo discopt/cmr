@@ -8,17 +8,21 @@
 #ifndef MATRIX_TRANSPOSED_HPP_
 #define MATRIX_TRANSPOSED_HPP_
 
-#include "../config.h"
 #include <boost/numeric/ublas/matrix_expression.hpp>
 
 namespace tu {
 
   namespace detail {
+
+    /// Helper struct to manage orientation tags
+
     template <typename OrientationCategory>
     struct transpose_orientation
     {
       typedef boost::numeric::ublas::unknown_orientation_tag orientation_category;
     };
+
+    /// Helper struct to manage orientation tags
 
     template <>
     struct transpose_orientation <boost::numeric::ublas::row_major_tag>
@@ -26,12 +30,18 @@ namespace tu {
       typedef boost::numeric::ublas::column_major_tag orientation_category;
     };
 
+    /// Helper struct to manage orientation tags
+
     template <>
     struct transpose_orientation <boost::numeric::ublas::column_major_tag>
     {
       typedef boost::numeric::ublas::row_major_tag orientation_category;
     };
   }
+
+  /**
+   * A matrix proxy which exchanges the meaning of rows and columns.
+   */
 
   template <typename M>
   class matrix_transposed: public boost::numeric::ublas::matrix_expression <matrix_transposed <M> >
@@ -55,33 +65,66 @@ namespace tu {
 
   public:
 
-    matrix_transposed (M& matrix) :
+    /**
+     * Constructs the matrix proxy.
+     *
+     * @param matrix The original matrix
+     * @return
+     */
+
+    matrix_transposed (matrix_type& matrix) :
       _data(matrix)
     {
 
     }
 
-    // Accessors
+    /**
+     * @return Height of the matrix
+     */
+
     inline size_type size1 () const
     {
       return _data.size2();
     }
+
+    /**
+     * @return Width of the matrix
+     */
 
     inline size_type size2 () const
     {
       return _data.size1();
     }
 
-    inline M& data ()
+    /**
+     * @return Reference to the original matrix
+     */
+
+    inline matrix_type& data ()
     {
       return _data;
     }
 
-    // Element access
+    /**
+     * Read-only access operator
+     *
+     * @param i Row index
+     * @param j Column index
+     * @return original(column, row)
+     */
+
     inline const_reference operator () (size_type i, size_type j) const
     {
       return _data(j, i);
     }
+
+    /**
+     * Access operator
+     *
+     * @param i Row index
+     * @param j Column index
+     * @return original(column, row)
+     */
 
     inline reference operator () (size_type i, size_type j)
     {
@@ -96,11 +139,27 @@ namespace tu {
         const_iterator2;
   };
 
+  /**
+   * Creates a transpose proxy of a given matrix.
+   *
+   * @param matrix The original matrix
+   * @return A matrix_transposed proxy
+   */
+
   template <typename MatrixType>
-  inline matrix_transposed <MatrixType> view_matrix_transposed (MatrixType& matrix)
+  inline matrix_transposed <MatrixType> make_transposed_matrix (MatrixType& matrix)
   {
     return matrix_transposed <MatrixType> (matrix);
   }
+
+  /**
+   * Free function to set a matrix value of a permuted matrix.
+   *
+   * @param matrix The transposed matrix
+   * @param row Row index
+   * @param column Column index
+   * @param value New value
+   */
 
   template <typename MatrixType>
   inline void matrix_set_value (matrix_transposed <MatrixType>& matrix, size_t row, size_t column, typename MatrixType::value_type value)
@@ -108,11 +167,23 @@ namespace tu {
     matrix(row, column) = value;
   }
 
+  /**
+   * Dummy function for the version with writable orignal matrix.
+   */
+
   template <typename MatrixType>
   inline void matrix_set_value (matrix_transposed <const MatrixType>& matrix, size_t row, size_t column, typename MatrixType::value_type value)
   {
 
   }
+
+  /**
+   * Free function to permute two rows of a transposed matrix.
+   *
+   * @param matrix The transposed matrix
+   * @param index1 First index
+   * @param index2 Second index
+   */
 
   template <typename MatrixType>
   inline void matrix_permute1 (matrix_transposed <MatrixType>& matrix, size_t index1, size_t index2)
@@ -120,11 +191,27 @@ namespace tu {
     matrix_permute2(matrix.data(), index1, index2);
   }
 
+  /**
+   * Free function to permute two columns of a transposed matrix.
+   *
+   * @param matrix The transposed matrix
+   * @param index1 First index
+   * @param index2 Second index
+   */
+
   template <typename MatrixType>
   inline void matrix_permute2 (matrix_transposed <MatrixType>& matrix, size_t index1, size_t index2)
   {
     matrix_permute1(matrix.data(), index1, index2);
   }
+
+  /**
+   * Free function to perform a pivot on a transposed matrix.
+   *
+   * @param matrix The transposed matrix
+   * @param i Row index
+   * @param j Column index
+   */
 
   template <typename MatrixType>
   inline void matrix_binary_pivot (matrix_transposed <MatrixType>& matrix, size_t i, size_t j)

@@ -102,7 +102,7 @@ namespace tu {
       //      }
 
 
-      /// Filter or copy extra_elements depending on type of separation 
+      /// Filter or copy extra_elements depending on type of separation
       matroid_element_set upper_left_extra_elements, lower_right_extra_elements;
       if (sep.rank() == 0)
       {
@@ -244,7 +244,7 @@ namespace tu {
       return std::make_pair(true, (decomposed_matroid*) NULL);
     }
 
-    matroid_graph* cograph = construct_matroid_graph(view_matroid_transposed(permuted_matroid), view_matrix_transposed(permuted_matrix),
+    matroid_graph* cograph = construct_matroid_graph(view_matroid_transposed(permuted_matroid), make_transposed_matrix(permuted_matrix),
         make_transposed_nested_minor_sequence(nested_minors));
 
     if (log.is_updating())
@@ -438,7 +438,7 @@ namespace tu {
 
   /**
    * Create the graph for 2 x w or h x 2 matrices.
-   * 
+   *
    * @param matroid
    * @param matrix
    * @return
@@ -561,8 +561,8 @@ namespace tu {
   }
 
   /**
-   * 
-   * 
+   *
+   *
    * @param matroid
    * @param matrix
    * @param construct_decomposition
@@ -692,7 +692,7 @@ namespace tu {
 
       sep.create_components(permuted_matroid, permuted_matrix, upper_left_matroid, upper_left_matrix, lower_right_matroid, lower_right_matrix);
 
-      /// Filter or copy extra_elements depending on type of separation 
+      /// Filter or copy extra_elements depending on type of separation
       matroid_element_set upper_left_extra_elements, lower_right_extra_elements;
       if (sep.rank() == 0 && false)
       {

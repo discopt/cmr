@@ -409,7 +409,7 @@ namespace tu {
     size_t cut = log.size();
 
     vector_three_connectivity <MatrixType> column_three_connectivity(matrix, nested_minors.height(), nested_minors.width());
-    vector_three_connectivity <matrix_transposed <MatrixType> > row_three_connectivity(view_matrix_transposed(matrix), nested_minors.width(),
+    vector_three_connectivity <matrix_transposed <MatrixType> > row_three_connectivity(make_transposed_matrix(matrix), nested_minors.width(),
         nested_minors.height());
 
     /// To searching for parallel-columns we search for parallel rows in the transpose.
