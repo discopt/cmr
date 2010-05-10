@@ -245,7 +245,7 @@ namespace tu {
     }
 
     matroid_graph* cograph = construct_matroid_graph(view_matroid_transposed(permuted_matroid), view_matrix_transposed(permuted_matrix),
-        view_nested_minor_sequence_transposed(nested_minors));
+        make_transposed_nested_minor_sequence(nested_minors));
 
     if (log.is_updating())
     {
