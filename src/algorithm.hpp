@@ -244,7 +244,7 @@ namespace tu {
       return std::make_pair(true, (decomposed_matroid*) NULL);
     }
 
-    matroid_graph* cograph = construct_matroid_graph(view_matroid_transposed(permuted_matroid), make_transposed_matrix(permuted_matrix),
+    matroid_graph* cograph = construct_matroid_graph(make_transposed_matroid(permuted_matroid), make_transposed_matrix(permuted_matrix),
         make_transposed_nested_minor_sequence(nested_minors));
 
     if (log.is_updating())

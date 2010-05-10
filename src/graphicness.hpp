@@ -229,9 +229,9 @@ namespace tu {
     break;
     case nested_minor_sequence::ONE_ROW_TWO_COLUMNS:
     {
-      int first_edge_element = find_parallel_to_row(view_matroid_transposed(matroid), make_transposed_matrix(matrix), minor_width, minor_height,
+      int first_edge_element = find_parallel_to_row(make_transposed_matroid(matroid), make_transposed_matrix(matrix), minor_width, minor_height,
           minor_width);
-      int second_edge_element = find_parallel_to_row(view_matroid_transposed(matroid), make_transposed_matrix(matrix), minor_width, minor_height,
+      int second_edge_element = find_parallel_to_row(make_transposed_matroid(matroid), make_transposed_matrix(matrix), minor_width, minor_height,
           minor_width + 1);
 
       /// Find vertices of corresponding edges
@@ -269,7 +269,7 @@ namespace tu {
     case nested_minor_sequence::ONE_ROW_ONE_COLUMN:
     {
       int row_edge_element = find_parallel_to_row(matroid, matrix, minor_height, minor_width, minor_height);
-      int column_edge_element = find_parallel_to_row(view_matroid_transposed(matroid), make_transposed_matrix(matrix), minor_width, minor_height,
+      int column_edge_element = find_parallel_to_row(make_transposed_matroid(matroid), make_transposed_matrix(matrix), minor_width, minor_height,
           minor_width);
 
       /// Find vertices of corresponding edges
