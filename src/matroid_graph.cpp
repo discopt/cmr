@@ -12,6 +12,14 @@
 
 namespace tu {
 
+  /**
+   * Output operator for a matroid graph
+   *
+   * @param stream Output stream
+   * @param graph The given matroid graph
+   * @return The output stream after writing to it
+   */
+
   std::ostream& operator<< (std::ostream& stream, const tu::matroid_graph& graph)
   {
     typedef boost::graph_traits <tu::matroid_graph> traits;

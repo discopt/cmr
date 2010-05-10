@@ -8,11 +8,16 @@
 #ifndef MATROID_GRAPH_HPP_
 #define MATROID_GRAPH_HPP_
 
-#include <boost/graph/adjacency_list.hpp>
-#include <boost/graph/properties.hpp>
 #include <iostream>
 
+#include <boost/graph/adjacency_list.hpp>
+#include <boost/graph/properties.hpp>
+
 namespace tu {
+
+  /**
+   * Matroid element property
+   */
 
   enum edge_matroid_element_t
   {
@@ -26,6 +31,10 @@ namespace tu {
 
 namespace boost {
 
+  /**
+   * Matroid element property tag
+   */
+
   template <>
   struct property_kind <tu::edge_matroid_element_t>
   {
@@ -38,6 +47,14 @@ namespace tu {
 
   typedef boost::property_map <matroid_graph, edge_matroid_element_t>::const_type const_matroid_element_map;
   typedef boost::property_map <matroid_graph, edge_matroid_element_t>::type matroid_element_map;
+
+  /**
+   * Output operator for a matroid graph
+   *
+   * @param stream Output stream
+   * @param graph The given matroid graph
+   * @return The output stream after writing to it
+   */
 
   std::ostream& operator<< (std::ostream& stream, const tu::matroid_graph& graph);
 
