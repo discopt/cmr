@@ -8,11 +8,15 @@
 #ifndef MATRIX_HPP_
 #define MATRIX_HPP_
 
-#include "../config.h"
 #include <boost/numeric/ublas/matrix.hpp>
+
 #include "matrix_transposed.hpp"
 
 namespace tu {
+
+  /**
+   * Exception to indicate a pivot on a zero element.
+   */
 
   class matrix_binary_pivot_exception: public std::exception
   {
@@ -21,23 +25,40 @@ namespace tu {
     {
       return "Cannot pivot on a zero entry!";
     }
-
   };
+
+  /**
+   * Free function to set a matrix value of a permuted matrix.
+   *
+   * @param matrix The permuted matrix
+   * @param row Row index
+   * @param column Column index
+   * @param value New value
+   */
 
   template <typename MatrixType>
   inline void matrix_set_value (MatrixType& matrix, size_t row, size_t column, typename MatrixType::value_type value)
   {
-    //    std::cout << "Changing matrix value at " << row << "," << column << std::endl;
-
     matrix(row, column) = value;
   }
+
+  /**
+   * Dummy function for the version with writable orignal matrix.
+   */
 
   template <typename MatrixType>
   inline void matrix_set_value (const MatrixType& matrix, size_t row, size_t column, typename MatrixType::value_type value)
   {
-    // This routine should not be called, but must exist to compile.
     assert (false);
   }
+
+  /**
+   * Free function to permute two rows of a permuted matrix.
+   *
+   * @param matrix The permuted matrix
+   * @param index1 First index
+   * @param index2 Second index
+   */
 
   template <typename MatrixType>
   inline void matrix_permute1 (MatrixType& matrix, size_t index1, size_t index2)
@@ -48,6 +69,14 @@ namespace tu {
     }
   }
 
+  /**
+   * Free function to permute two columns of a permuted matrix.
+   *
+   * @param matrix The permuted matrix
+   * @param index1 First index
+   * @param index2 Second index
+   */
+
   template <typename MatrixType>
   inline void matrix_permute2 (MatrixType& matrix, size_t index1, size_t index2)
   {
@@ -56,6 +85,14 @@ namespace tu {
       std::swap(matrix(index, index1), matrix(index, index2));
     }
   }
+
+  /**
+   * Free function to perform a pivot on a permuted matrix.
+   *
+   * @param matrix The matrix
+   * @param i Row index
+   * @param j Column index
+   */
 
   template <typename MatrixType>
   void matrix_binary_pivot (MatrixType& matrix, size_t i, size_t j)
@@ -96,6 +133,18 @@ namespace tu {
     }
   }
 
+  /**
+   * Counts how many of the rows in the specified range have a property.
+   *
+   * @param matrix The given matrix
+   * @param row_first First row in range
+   * @param row_beyond Beyond row in range
+   * @param column_first First column for property check
+   * @param column_beyond Beyond column for property check
+   * @param check Property checking routine
+   * @return Number of rows with the property
+   */
+
   template <typename MatrixType, typename PropertyCheck>
   inline size_t matrix_count_property_row_series (const MatrixType& matrix, size_t row_first, size_t row_beyond, size_t column_first,
       size_t column_beyond, PropertyCheck check)
@@ -110,6 +159,18 @@ namespace tu {
     return row_beyond - row_first;
   }
 
+  /**
+   * Counts how many of the columns in the specified range have a property.
+   *
+   * @param matrix The given matrix
+   * @param row_first First column for property check
+   * @param row_beyond Beyond column for property check
+   * @param column_first First row in range
+   * @param column_beyond Beyond row in range
+   * @param check Property checking routine
+   * @return Number of rows with the property
+   */
+
   template <typename MatrixType, typename PropertyCheck>
   inline size_t matrix_count_property_column_series (const MatrixType& matrix, size_t row_first, size_t row_beyond, size_t column_first,
       size_t column_beyond, PropertyCheck check)
@@ -117,6 +178,12 @@ namespace tu {
     matrix_transposed <const MatrixType> transposed(matrix);
     return matrix_count_property_row_series(transposed, column_first, column_beyond, row_first, row_beyond, check);
   }
+
+  /**
+   * Prints a matrix
+   *
+   * @param matrix The matrix to be printed
+   */
 
   template <typename MatrixType>
   inline void matrix_print (const MatrixType& matrix)
@@ -131,6 +198,14 @@ namespace tu {
     }
     std::cout << std::flush;
   }
+
+  /**
+   * Tests two matrices for exact equality.
+   *
+   * @param matrix1 First matrix
+   * @param matrix2 Second matrix
+   * @return true if and only if all entries match
+   */
 
   template <typename MatrixType1, typename MatrixType2>
   inline bool matrix_equals (const MatrixType1& matrix1, const MatrixType2& matrix2)
