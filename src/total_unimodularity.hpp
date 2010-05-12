@@ -14,7 +14,9 @@
 
 namespace tu {
 
-  /// Represents subsets of row/column index sets
+  /**
+   * Represents subsets of row and column index sets
+   */
 
   struct submatrix_indices
   {
@@ -25,8 +27,19 @@ namespace tu {
     indirect_array_type columns;
   };
 
+  /**
+   * Integer matrix
+   */
+
   typedef boost::numeric::ublas::matrix <int> integer_matrix;
+
+  /**
+   * Indirect integer matrix
+   */
+
   typedef boost::numeric::ublas::matrix_indirect <const integer_matrix, submatrix_indices::indirect_array_type> integer_submatrix;
+
+  /// Node of a decomposition tree
 
   class decomposed_matroid;
 
@@ -35,69 +48,145 @@ namespace tu {
     LOG_QUIET, LOG_UPDATING, LOG_VERBOSE
   };
 
-  /// Returns a decomposition of a given binary matroid into a k-sum-decomposition (k=1,2,3)
-  /// in graphic, cographic, R10 and maybe irregular components.
+  /**
+   * Returns a decomposition of a given binary matroid into a k-sum-decomposition (k=1,2,3)
+   * in graphic, cographic, R10 and maybe irregular components.
+   *
+   * @param matrix Representation matrix of a binary matroid
+   * @param level Log level
+   * @return Root of decomposition tree
+   */
 
-  decomposed_matroid* decompose_binary_matroid (const boost::numeric::ublas::matrix <int>& matrix, log_level level = LOG_QUIET);
+  decomposed_matroid* decompose_binary_matroid (const integer_matrix& matrix, log_level level = LOG_QUIET);
 
-  /// Returns true, iff the given matrix is totally unimodular.
+  /**
+   * Tests for total unimodularity without certificates.
+   *
+   * @param matrix The matrix to be tested
+   * @param level Log level
+   * @return true if and only if the matrix is totally unimodular
+   */
 
   bool is_totally_unimodular (const integer_matrix& matrix, log_level level = LOG_QUIET);
 
-  /// Returns true, iff the given matrix is totally unimodular.
-  /// decomposition points to a k-sum-decomposition (k=1,2,3) in graphic, cographic, R10 and maybe irregular components.
+  /**
+   * Tests for total unimodularity, returning a decomposition of a given binary matroid
+   * into a k-sum-decomposition (k=1,2,3) in graphic, cographic, R10 and maybe irregular
+   * components if the matrix is totally unimodular.
+   *
+   * @param matrix The matrix to be tested
+   * @param decomposition Returns root of decomposition tree
+   * @param level Log level
+   * @return true if and only if the matrix is totally unimodular
+   */
 
   bool is_totally_unimodular (const integer_matrix& matrix, decomposed_matroid*& decomposition, log_level level = LOG_QUIET);
 
-  /// Returns true, iff the given matrix is totally unimodular.
-  /// If this is not the case, violator describes a violating submatrix.
+  /**
+   * Tests for total unimodularity, returning a decomposition of a given binary matroid
+   * into a k-sum-decomposition (k=1,2,3) in graphic, cographic, R10 and maybe irregular
+   * components if the matrix is totally unimodular and the indices of a violating submatrix
+   * otherwise.
+   *
+   * @param matrix The matrix to be tested
+   * @param decomposition Returns root of decomposition tree
+   * @param violator Returns violator indices
+   * @param level Log level
+   * @return true if and only if the matrix is totally unimodular
+   */
 
   bool is_totally_unimodular (const integer_matrix& matrix, submatrix_indices& violator, log_level level = LOG_QUIET);
 
-  /// Returns true, iff the given matrix is totally unimodular.
-  /// decomposition points to a k-sum-decomposition (k=1,2,3) in graphic, cographic, R10 and maybe irregular components.
+  /**
+   * Tests for total unimodularity, returning the indices of a violating submatrix
+   * if the matrix is not totally unimodular.
+   *
+   * @param matrix The matrix to be tested
+   * @param violator Returns violator indices
+   * @param level Log level
+   * @return true if and only if the matrix is totally unimodular
+   */
 
   bool is_totally_unimodular (const integer_matrix& matrix, decomposed_matroid*& decomposition, submatrix_indices& violator, log_level level =
       LOG_QUIET);
 
-  /// Returns true, iff the given matrix contains only values {-1, 0, 1}.
+  /**
+   * Tests if the given matrix contains only -1,0,+1 entries.
+   *
+   * @param matrix The given matrix
+   * @return true if and only if it is a -1,0,+1 matrix
+   */
 
   bool is_zero_plus_minus_one_matrix (const integer_matrix& matrix);
 
-  /// Returns true, iff the given matrix contains only values {-1, 0, 1}.
-  /// If not, position will contain the position of the wrong entry.
-  /// Running time: O(height * width)
+  /**
+   * Tests if the given matrix contains only -1,0,+1 entries,
+   * returning the violating position if this is not the case.
+   *
+   * @param matrix The given matrix
+   * @param position Returns a violating entry
+   * @return true if and only if it is a -1,0,+1 matrix
+   */
 
   bool is_zero_plus_minus_one_matrix (const integer_matrix& matrix, std::pair <size_t, size_t>& position);
 
-  /// Returns true, iff the given matrix contains only values {0, 1}.
+  /**
+   * Tests if the given matrix contains only 0 or 1 entries.
+   *
+   * @param matrix The given matrix
+   * @return true if and only if it is a 0-1 matrix
+   */
 
   bool is_zero_one_matrix (const integer_matrix& matrix);
 
-  /// Returns true, iff the given matrix contains only values {0, 1}.
-  /// If not, position will contain the position of the wrong entry.
-  /// Running time: O(height * width)
+  /**
+   * Tests if the given matrix contains only 0 or 1 entries,
+   * returning the violating position if this is not the case.
+   *
+   * @param matrix The given matrix
+   * @param position Returns a violating entry
+   * @return true if and only if it is a 0-1 matrix
+   */
 
   bool is_zero_one_matrix (const integer_matrix& matrix, std::pair <size_t, size_t>& position);
 
-  /// Returns true, iff the given matrix is already a signed version of its support matrix.
-  /// Running time: O(height * width * min (height, width) )
+  /**
+   * Tests if a given matrix is a signed version of its support matrix already.
+   * Running time: O(height * width * min(height, width))
+   *
+   * @param matrix The matrix to be tested
+   * @return true if and only if the support matrix can be signed to the orignal
+   */
 
   bool is_signed_matrix (const integer_matrix& matrix);
 
-  /// Returns true, iff the given matrix is already a signed version of its support matrix.
-  /// If not, violator describes a violating submatrix.
-  /// Running time: O(height * width * min (height, width) )
+  /**
+   * Tests if a given matrix is a signed version of its support matrix already,
+   * returning the indices of a violating submatrix if this is not the case.
+   * Running time: O(height * width * min(height, width))
+   *
+   * @param matrix The matrix to be tested
+   * @param violator Returns violator indices
+   * @return true if and only if the support matrix can be signed to the original
+   */
 
   bool is_signed_matrix (const integer_matrix& matrix, submatrix_indices& violator);
 
-  /// Returns true, iff the given matrix is already a signed version of its support matrix.
-  /// If not, the given matrix is changed to be such a signed version.
-  /// Running time: O(height * width * min (height, width) )
+  /**
+   * Signes a given matrix to be a signed version of its support matrix.
+   * Running time: O(height * width * min(height, width))
+   *
+   * @param matrix The matrix to be signed
+   * @return true if and only if any change was necessary
+   */
 
   bool sign_matrix (integer_matrix& matrix);
 
-  /// Drops all signs in the given matrix.
+  /**
+   * Makes the matrix its own support matrix.
+   *
+   * @param matrix The given matrix
+   */
 
   void support_matrix (integer_matrix& matrix);
 

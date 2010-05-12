@@ -5,136 +5,58 @@
  *          http://www.boost.org/LICENSE_1_0.txt)
  **/
 
-#include "../config.h"
-#include "algorithm.hpp"
 #include "total_unimodularity.hpp"
+
+#include "algorithm.hpp"
 #include "matroid.hpp"
 #include "violator_search.hpp"
 #include "signing.hpp"
 #include "logger.hpp"
 
-#include <boost/numeric/ublas/io.hpp>
-
 namespace tu {
 
-  void print_matroid_graph (const tu::matroid_graph& graph, const std::string& indent = "")
-  {
-    std::cout << boost::num_vertices(graph) << " nodes and " << boost::num_edges(graph) << " edges:";
+  /**
+   * Returns a decomposition of a given binary matroid into a k-sum-decomposition (k=1,2,3)
+   * in graphic, cographic, R10 and maybe irregular components.
+   *
+   * @param matrix Representation matrix of a binary matroid
+   * @param level Log level
+   * @return Root of decomposition tree
+   */
 
-    typedef boost::graph_traits <tu::matroid_graph> traits;
-    traits::vertex_iterator vertex_iter, vertex_end;
-    traits::out_edge_iterator edge_iter, edge_end;
-
-    for (boost::tie(vertex_iter, vertex_end) = boost::vertices(graph); vertex_iter != vertex_end; ++vertex_iter)
-    {
-      std::cout << '\n' << indent << *vertex_iter << ':';
-      for (boost::tie(edge_iter, edge_end) = boost::out_edges(*vertex_iter, graph); edge_iter != edge_end; ++edge_iter)
-      {
-        int matroid_element = boost::get(tu::edge_matroid_element, graph, *edge_iter);
-        std::cout << ' ' << boost::target(*edge_iter, graph) << " (" << (matroid_element < 0 ? "row " : "column ") << (matroid_element - 1) << ") ";
-      }
-    }
-    std::cout << '\n';
-  }
-
-  void print_decomposition (const tu::decomposed_matroid* decomposition, std::string indent = "")
-  {
-    if (decomposition->is_leaf())
-    {
-      tu::decomposed_matroid_leaf* leaf = (tu::decomposed_matroid_leaf*) (decomposition);
-
-      if (leaf->is_R10())
-        std::cout << indent << "R10\n";
-      else if (leaf->is_graphic() && leaf->is_cographic())
-      {
-        std::cout << indent << "planar binary matroid.\n";
-        std::cout << indent << "graph:\n" << indent << "{ ";
-        print_matroid_graph(*leaf->graph(), indent + "  ");
-        std::cout << indent << "}\n" << indent << "cograph:\n" << indent << "{ ";
-        print_matroid_graph(*leaf->cograph(), indent + "  ");
-        std::cout << indent << "}\n";
-      }
-      else if (leaf->is_graphic())
-      {
-        std::cout << indent << "graphic binary matroid.\n";
-        std::cout << indent << "graph:\n" << indent << "{ ";
-        print_matroid_graph(*leaf->graph(), indent + "  ");
-        std::cout << indent << "}\n";
-      }
-      else if (leaf->is_cographic())
-      {
-        std::cout << indent << "cographic binary matroid.\n";
-        std::cout << indent << "cograph:\n" << indent << "{ ";
-        print_matroid_graph(*leaf->cograph(), indent + "  ");
-        std::cout << indent << "}\n";
-      }
-      else
-      {
-        std::cout << indent << "irregular matroid.\n";
-        std::cout << indent << "  matroid elements: ";
-        std::copy(leaf->elements().begin(), leaf->elements().end(), std::ostream_iterator <int>(std::cout, " "));
-        std::cout << "\n" << indent << "  extra elements: ";
-        std::copy(leaf->extra_elements().begin(), leaf->extra_elements().end(), std::ostream_iterator <int>(std::cout, " "));
-        std::cout << "\n";
-      }
-    }
-    else
-    {
-      tu::decomposed_matroid_separator* separator = (tu::decomposed_matroid_separator*) (decomposition);
-
-      if (separator->separation_type() == tu::decomposed_matroid_separator::ONE_SEPARATION)
-      {
-        std::cout << indent << "1-separation:\n";
-
-      }
-      else if (separator->separation_type() == tu::decomposed_matroid_separator::TWO_SEPARATION)
-      {
-        std::cout << indent << "2-separation:\n";
-      }
-      else if (separator->separation_type() == tu::decomposed_matroid_separator::THREE_SEPARATION)
-      {
-        std::cout << indent << "3-separation:\n";
-      }
-      else
-      {
-        std::cout << indent << "invalid separation:\n";
-      }
-      std::cout << indent << "{\n";
-      print_decomposition(separator->first(), indent + "  ");
-      print_decomposition(separator->second(), indent + "  ");
-      std::cout << indent << "}\n";
-    }
-  }
-
-  /// Returns a decomposition of a given binary matroid into a k-sum-decomposition (k=1,2,3)
-  /// in graphic, cographic, R10 and maybe irregular components.
-
-  decomposed_matroid* decompose_binary_matroid (const integer_matrix& input_matrix, log_level level)
+  decomposed_matroid* decompose_binary_matroid (const integer_matrix& matrix, log_level level)
   {
     logger log(level);
 
-    if (!is_zero_one_matrix(input_matrix))
+    if (!is_zero_one_matrix(matrix))
       return NULL;
 
-    integer_matrix matrix(input_matrix);
-    integer_matroid matroid(matrix.size1(), matrix.size2());
+    integer_matrix worker_matrix(matrix);
+    integer_matroid worker_matroid(worker_matrix.size1(), worker_matrix.size2());
 
-    return decompose_binary_matroid(matroid, matrix, matroid_element_set(), true, log).second;
+    return decompose_binary_matroid(worker_matroid, worker_matrix, matroid_element_set(), true, log).second;
   }
 
-  /// Returns true, iff the given matrix is totally unimodular.
+  /**
+   * Tests for total unimodularity without certificates.
+   *
+   * @param matrix The matrix to be tested
+   * @param level Log level
+   * @return true if and only if the matrix is totally unimodular
+   */
 
-  bool is_totally_unimodular (const integer_matrix& input_matrix, log_level level)
+  bool is_totally_unimodular (const integer_matrix& matrix, log_level level)
   {
     logger log(level);
 
     if (log.is_updating())
     {
-      log.line() << "(" << input_matrix.size1() << " x " << input_matrix.size2() << ")";
+      log.line() << "(" << matrix.size1() << " x " << matrix.size2() << ")";
       std::cout << log;
     }
 
-    if (!is_zero_plus_minus_one_matrix(input_matrix))
+    /// Test for being a -1,0,+1 matrix
+    if (!is_zero_plus_minus_one_matrix(matrix))
     {
       if (log.is_updating())
       {
@@ -143,8 +65,7 @@ namespace tu {
       }
       else if (log.is_verbose())
       {
-        std::cout << "Given " << input_matrix.size1() << " x " << input_matrix.size2() << " matrix does not contain only -1,0 and +1 entries."
-            << std::endl;
+        std::cout << "Given " << matrix.size1() << " x " << matrix.size2() << " matrix does not contain only -1,0 and +1 entries." << std::endl;
       }
 
       return false;
@@ -157,10 +78,11 @@ namespace tu {
     }
     else if (log.is_verbose())
     {
-      std::cout << "Given " << input_matrix.size1() << " x " << input_matrix.size2() << " matrix contains only -1,0 and +1 entries." << std::endl;
+      std::cout << "Given " << matrix.size1() << " x " << matrix.size2() << " matrix contains only -1,0 and +1 entries." << std::endl;
     }
 
-    if (!is_signed_matrix(input_matrix))
+    /// Signing test
+    if (!is_signed_matrix(matrix))
     {
       if (log.is_updating())
       {
@@ -185,32 +107,41 @@ namespace tu {
       std::cout << "The matrix is its signed version." << std::endl;
     }
 
-    integer_matrix matrix(input_matrix);
-    integer_matroid matroid(matrix.size1(), matrix.size2());
+    /// Decomposition of matroid represented by support matrix
+    integer_matrix worker_matrix(matrix);
+    integer_matroid worker_matroid(worker_matrix.size1(), worker_matrix.size2());
+    support_matrix(worker_matrix);
 
-    support_matrix(matrix);
-
-    std::pair <bool, decomposed_matroid*> result = decompose_binary_matroid(matroid, matrix, matroid_element_set(), false, log);
+    std::pair <bool, decomposed_matroid*> result = decompose_binary_matroid(worker_matroid, worker_matrix, matroid_element_set(), false, log);
 
     assert (result.second == NULL);
 
     return result.first;
   }
 
-  /// Returns true, iff the given matrix is totally unimodular.
-  /// decomposition points to a k-sum-decomposition (k=1,2,3) in graphic, cographic, R10 and maybe irregular components.
+  /**
+   * Tests for total unimodularity, returning a decomposition of a given binary matroid
+   * into a k-sum-decomposition (k=1,2,3) in graphic, cographic, R10 and maybe irregular
+   * components if the matrix is totally unimodular.
+   *
+   * @param matrix The matrix to be tested
+   * @param decomposition Returns root of decomposition tree
+   * @param level Log level
+   * @return true if and only if the matrix is totally unimodular
+   */
 
-  bool is_totally_unimodular (const integer_matrix& input_matrix, decomposed_matroid*& decomposition, log_level level)
+  bool is_totally_unimodular (const integer_matrix& matrix, decomposed_matroid*& decomposition, log_level level)
   {
     logger log(level);
 
     if (log.is_updating())
     {
-      log.line() << "(" << input_matrix.size1() << " x " << input_matrix.size2() << ")";
+      log.line() << "(" << matrix.size1() << " x " << matrix.size2() << ")";
       std::cout << log;
     }
 
-    if (!is_zero_plus_minus_one_matrix(input_matrix))
+    /// Test for being a -1,0,+1 matrix
+    if (!is_zero_plus_minus_one_matrix(matrix))
     {
       if (log.is_updating())
       {
@@ -219,8 +150,7 @@ namespace tu {
       }
       else if (log.is_verbose())
       {
-        std::cout << "Given " << input_matrix.size1() << " x " << input_matrix.size2() << " matrix does not contain only -1,0 and +1 entries."
-            << std::endl;
+        std::cout << "Given " << matrix.size1() << " x " << matrix.size2() << " matrix does not contain only -1,0 and +1 entries." << std::endl;
       }
 
       decomposition = NULL;
@@ -234,10 +164,11 @@ namespace tu {
     }
     else if (log.is_verbose())
     {
-      std::cout << "Given " << input_matrix.size1() << " x " << input_matrix.size2() << " matrix contains only -1,0 and +1 entries." << std::endl;
+      std::cout << "Given " << matrix.size1() << " x " << matrix.size2() << " matrix contains only -1,0 and +1 entries." << std::endl;
     }
 
-    if (!is_signed_matrix(input_matrix))
+    /// Signing test
+    if (!is_signed_matrix(matrix))
     {
       if (log.is_updating())
       {
@@ -263,33 +194,43 @@ namespace tu {
       std::cout << "The matrix is its signed version.\n" << std::endl;
     }
 
-    integer_matrix matrix(input_matrix);
-    integer_matroid matroid(matrix.size1(), matrix.size2());
+    /// Decomposition of matroid represented by support matrix
+    integer_matrix worker_matrix(matrix);
+    integer_matroid worker_matroid(worker_matrix.size1(), worker_matrix.size2());
+    support_matrix(worker_matrix);
 
-    support_matrix(matrix);
-
-    std::pair <bool, decomposed_matroid*> result = decompose_binary_matroid(matroid, matrix, matroid_element_set(), true, log);
+    std::pair <bool, decomposed_matroid*> result = decompose_binary_matroid(worker_matroid, worker_matrix, matroid_element_set(), true, log);
     decomposition = result.second;
 
     return result.first;
   }
 
-  /// Returns true, iff the given matrix is totally unimodular.
-  /// decomposition points to a k-sum-decomposition (k=1,2,3) in graphic, cographic, R10 and maybe irregular components.
+  /**
+   * Tests for total unimodularity, returning a decomposition of a given binary matroid
+   * into a k-sum-decomposition (k=1,2,3) in graphic, cographic, R10 and maybe irregular
+   * components if the matrix is totally unimodular and the indices of a violating submatrix
+   * otherwise.
+   *
+   * @param matrix The matrix to be tested
+   * @param decomposition Returns root of decomposition tree
+   * @param violator Returns violator indices
+   * @param level Log level
+   * @return true if and only if the matrix is totally unimodular
+   */
 
-  bool is_totally_unimodular (const integer_matrix& input_matrix, decomposed_matroid*& decomposition, submatrix_indices& violator, log_level level)
+  bool is_totally_unimodular (const integer_matrix& matrix, decomposed_matroid*& decomposition, submatrix_indices& violator, log_level level)
   {
     logger log(level);
 
     if (log.is_updating())
     {
-      log.line() << "(" << input_matrix.size1() << " x " << input_matrix.size2() << ")";
+      log.line() << "(" << matrix.size1() << " x " << matrix.size2() << ")";
       std::cout << log;
     }
 
-    /// Check each entry
+    /// Test for being a -1,0,+1 matrix
     std::pair <unsigned int, unsigned int> entry;
-    if (!is_zero_plus_minus_one_matrix(input_matrix, entry))
+    if (!is_zero_plus_minus_one_matrix(matrix, entry))
     {
       if (log.is_updating())
       {
@@ -298,8 +239,7 @@ namespace tu {
       }
       else if (log.is_verbose())
       {
-        std::cout << "Given " << input_matrix.size1() << " x " << input_matrix.size2() << " matrix does not contain only -1,0 and +1 entries."
-            << std::endl;
+        std::cout << "Given " << matrix.size1() << " x " << matrix.size2() << " matrix does not contain only -1,0 and +1 entries." << std::endl;
       }
 
       violator.rows = submatrix_indices::indirect_array_type(1);
@@ -317,11 +257,11 @@ namespace tu {
     }
     else if (log.is_verbose())
     {
-      std::cout << "Given " << input_matrix.size1() << " x " << input_matrix.size2() << " matrix contains only -1,0 and +1 entries." << std::endl;
+      std::cout << "Given " << matrix.size1() << " x " << matrix.size2() << " matrix contains only -1,0 and +1 entries." << std::endl;
     }
 
     /// Signing test
-    if (!is_signed_matrix(input_matrix, violator))
+    if (!is_signed_matrix(matrix, violator))
     {
       if (log.is_updating())
       {
@@ -348,22 +288,19 @@ namespace tu {
       std::cout << "The matrix is its signed version." << std::endl;
     }
 
-    integer_matroid matroid(input_matrix.size1(), input_matrix.size2());
-    integer_matrix matrix(input_matrix);
-
-    /// Remove sign from matrix
-    support_matrix(matrix);
-
-    /// Matroid decomposition
+    /// Decomposition of matroid represented by support matrix
+    integer_matrix worker_matrix(matrix);
+    integer_matroid worker_matroid(matrix.size1(), matrix.size2());
+    support_matrix(worker_matrix);
     bool is_tu;
-    boost::tie(is_tu, decomposition) = decompose_binary_matroid(matroid, matrix, matroid_element_set(), true, log);
+    boost::tie(is_tu, decomposition) = decompose_binary_matroid(worker_matroid, worker_matrix, matroid_element_set(), true, log);
     if (is_tu)
       return true;
 
     matroid_element_set rows, columns, elements = detail::find_smallest_irregular_minor(decomposition);
     detail::split_elements(elements.begin(), elements.end(), std::inserter(rows, rows.end()), std::inserter(columns, columns.end()));
 
-    detail::violator_strategy* strategy = new detail::greedy_violator_strategy(input_matrix, rows, columns, log);
+    detail::violator_strategy* strategy = new detail::greedy_violator_strategy(matrix, rows, columns, log);
 
     strategy->search();
     strategy->create_matrix(violator);
@@ -375,8 +312,15 @@ namespace tu {
     return false;
   }
 
-  /// Returns true, iff the given matrix is totally unimodular.
-  /// If this is not the case, violator describes a violating submatrix.
+  /**
+   * Tests for total unimodularity, returning the indices of a violating submatrix
+   * if the matrix is not totally unimodular.
+   *
+   * @param matrix The matrix to be tested
+   * @param violator Returns violator indices
+   * @param level Log level
+   * @return true if and only if the matrix is totally unimodular
+   */
 
   bool is_totally_unimodular (const integer_matrix& matrix, submatrix_indices& violator, log_level level)
   {
@@ -389,14 +333,19 @@ namespace tu {
     return is_tu;
   }
 
-  /// Returns true, iff the given matrix is already a signed version of its support matrix.
-  /// Running time: O(height * width * min (height, width) )
+  /**
+   * Tests if a given matrix is a signed version of its support matrix already.
+   * Running time: O(height * width * min(height, width))
+   *
+   * @param matrix The matrix to be tested
+   * @return true if and only if the support matrix can be signed to the orignal
+   */
 
-  bool is_signed_matrix (const boost::numeric::ublas::matrix <int>& matrix)
+  bool is_signed_matrix (const integer_matrix& matrix)
   {
     if (matrix.size2() > matrix.size1())
     {
-      const matrix_transposed <const boost::numeric::ublas::matrix <int> > transposed(matrix);
+      const matrix_transposed <const integer_matrix> transposed(matrix);
       return sign_matrix(transposed, NULL);
     }
     else
@@ -405,15 +354,21 @@ namespace tu {
     }
   }
 
-  /// Returns true, iff the given matrix is already a signed version of its support matrix.
-  /// If not, violator describes a violating submatrix.
-  /// Running time: O(height * width * min (height, width) )
+  /**
+   * Tests if a given matrix is a signed version of its support matrix already,
+   * returning the indices of a violating submatrix if this is not the case.
+   * Running time: O(height * width * min(height, width))
+   *
+   * @param matrix The matrix to be tested
+   * @param violator Returns violator indices
+   * @return true if and only if the support matrix can be signed to the original
+   */
 
-  bool is_signed_matrix (const boost::numeric::ublas::matrix <int>& matrix, submatrix_indices& violator)
+  bool is_signed_matrix (const integer_matrix& matrix, submatrix_indices& violator)
   {
     if (matrix.size2() > matrix.size1())
     {
-      const matrix_transposed <const boost::numeric::ublas::matrix <int> > transposed(matrix);
+      const matrix_transposed <const integer_matrix> transposed(matrix);
       bool result = sign_matrix(transposed, &violator);
       std::swap(violator.rows, violator.columns);
       return result;
@@ -424,15 +379,19 @@ namespace tu {
     }
   }
 
-  /// Returns true, iff the given matrix is already a signed version of its support matrix.
-  /// If not, the given matrix is changed to be such a signed version.
-  /// Running time: O(height * width * min (height, width) )
+  /**
+   * Signes a given matrix to be a signed version of its support matrix.
+   * Running time: O(height * width * min(height, width))
+   *
+   * @param matrix The matrix to be signed
+   * @return true if and only if any change was necessary
+   */
 
-  bool sign_matrix (boost::numeric::ublas::matrix <int>& matrix)
+  bool sign_matrix (integer_matrix& matrix)
   {
     if (matrix.size2() > matrix.size1())
     {
-      matrix_transposed <boost::numeric::ublas::matrix <int> > transposed(matrix);
+      matrix_transposed <integer_matrix> transposed(matrix);
       return sign_matrix(transposed, NULL);
     }
     else
@@ -441,9 +400,13 @@ namespace tu {
     }
   }
 
-  /// Drops all signs in the given matrix.
+  /**
+   * Makes the matrix its own support matrix.
+   *
+   * @param matrix The given matrix
+   */
 
-  void support_matrix (boost::numeric::ublas::matrix <int>& matrix)
+  void support_matrix (integer_matrix& matrix)
   {
     for (size_t i = 0; i < matrix.size1(); ++i)
     {
