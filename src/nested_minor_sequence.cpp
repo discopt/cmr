@@ -30,7 +30,7 @@ namespace tu {
 
   /**
    * Returns the number of rows in an extension of a given type.
-   * 
+   *
    * @param ext Extension type
    * @return Number of rows
    */
@@ -44,7 +44,7 @@ namespace tu {
 
   /**
    * Returns the number of columns in an extension of a given type.
-   * 
+   *
    * @param ext Extension type
    * @return Number of columns
    */
@@ -58,7 +58,7 @@ namespace tu {
 
   /**
    * Augments the sequence with a minor of the specified extension type.
-   * 
+   *
    * @param type The extension type of the biggest minor
    */
 

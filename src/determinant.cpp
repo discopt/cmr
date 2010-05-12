@@ -17,7 +17,7 @@ namespace tu {
 
   /**
    * Calculates a subdeterminant of the given matrix.
-   * 
+   *
    * @param matrix A given integer matrix
    * @param submatrix Matrix-indices describing a submatrix
    * @return The submatrix' determinant
@@ -53,7 +53,7 @@ namespace tu {
 
   /**
    * Checks all subdeterminants to test a given matrix for total unimodularity.
-   * 
+   *
    * @param matrix The given matrix
    * @return true if and only if this matrix is totally unimdular
    */
@@ -68,7 +68,7 @@ namespace tu {
   /**
    * Checks all subdeterminants to test a given matrix for total unimodularity.
    * If this is not the case, violator describes a violating submatrix.
-   * 
+   *
    * @param matrix The given matrix
    * @param violator The violating submatrix, if the result is false
    * @return true if and only if the this matrix is totally unimodular

@@ -134,7 +134,7 @@ namespace tu {
    * @return true if and only if this matrix is totally unimodular
    */
 
-  bool ghouila_houri_is_totally_unimodular_enum_rows (const boost::numeric::ublas::matrix <int>& matrix)
+  bool ghouila_houri_is_totally_unimodular_enum_rows (const integer_matrix& matrix)
   {
     ghouila_houri_enumerator enumerator(matrix);
     return enumerator.check();
@@ -147,7 +147,7 @@ namespace tu {
    * @return true if and only if this matrix is totally unimodular
    */
 
-  bool ghouila_houri_is_totally_unimodular_enum_columns (const boost::numeric::ublas::matrix <int>& matrix)
+  bool ghouila_houri_is_totally_unimodular_enum_columns (const integer_matrix& matrix)
   {
     const boost::numeric::ublas::matrix <int> transposed = boost::numeric::ublas::trans(matrix);
 
@@ -162,7 +162,7 @@ namespace tu {
    * @return true if and only if this matrix is totally unimodular
    */
 
-  bool ghouila_houri_is_totally_unimodular (const boost::numeric::ublas::matrix <int>& matrix)
+  bool ghouila_houri_is_totally_unimodular (const integer_matrix& matrix)
   {
     if (matrix.size1() > matrix.size2())
     {

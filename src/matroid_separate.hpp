@@ -8,8 +8,6 @@
 #ifndef MATROID_SEPARATE_HPP_
 #define MATROID_SEPARATE_HPP_
 
-#include "../config.h"
-
 namespace tu {
 
   template <typename MatroidType, typename MatrixType>

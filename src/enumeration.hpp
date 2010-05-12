@@ -104,8 +104,7 @@ namespace tu {
       size_t starting_column = 0;
       size_t connecting_row = 0;
 
-      /// Try to find path from type 1 to the 2 and 3.
-
+      /// Try to find path from type 1 to the 2 and 3. If no path is found, try between 2 and 3.
       size_t reached_node;
       std::vector <bipartite_graph_bfs_node> nodes;
       column_set_t start_nodes = types[1];
@@ -210,8 +209,7 @@ namespace tu {
       size_t starting_row = 0;
       size_t connecting_column = 0;
 
-      /// Try to find path from type 1 to the 2 and 3.
-
+      /// Try to find path from type 1 to the 2 and 3. If no path is found, try between 2 and 3.
       std::vector <bipartite_graph_bfs_node> nodes;
       row_set_t start_nodes = types[1];
       row_set_t end_nodes = types[2];
@@ -418,7 +416,6 @@ namespace tu {
       }
 
       /// Now we really found a separation. We apply the worker-matrix-permutation to the orginal matrix.
-
       permutation row_permutation = matrix.perm1() * worker_matrix.perm1();
       permutation column_permutation = matrix.perm2() * worker_matrix.perm2();
 
@@ -430,11 +427,9 @@ namespace tu {
       assert (matrix_equals(matrix, worker_matrix));
 
       /// Normalize it
-
       normalize_3_4_separation(matroid, matrix, top_left_size, ranks, extra_elements);
 
       /// Make the witnesses visible.
-
       separation = find_witnesses(matroid, matrix, top_left_size, extra_elements);
 
       return true;
@@ -616,7 +611,6 @@ namespace tu {
     typedef signed char mapping_value_t;
 
     /// Every regular 3-connected matroid which is non-graphic, non-cographic and not isomorphic to R10 must contain R12
-
     if (matrix.size1() + matrix.size2() < 12)
     {
       if (log.is_updating())
@@ -713,7 +707,6 @@ namespace tu {
       }
 
       /// Transform the mappings into row/column permutations.
-
       size_pair_t widths = detail::apply_mapping(worker_matrix.perm2(), column_mapping);
       size_pair_t heights = detail::apply_mapping(worker_matrix.perm1(), row_mapping);
 

@@ -50,7 +50,7 @@ namespace tu {
 
     /**
      * Augments the sequence with a minor of the specified extension type.
-     * 
+     *
      * @param type The extension type of the biggest minor
      */
 
@@ -58,7 +58,7 @@ namespace tu {
 
     /**
      * Returns the number of rows in an extension of a given type.
-     * 
+     *
      * @param type Extension type
      * @return Number of rows
      */
@@ -67,7 +67,7 @@ namespace tu {
 
     /**
      * Returns the number of columns in an extension of a given type.
-     * 
+     *
      * @param type Extension type
      * @return Number of columns
      */
@@ -75,8 +75,8 @@ namespace tu {
     static size_t get_extension_width (extension_type type);
 
     /**
-     * Returns the extension type of a specific minor. 
-     * 
+     * Returns the extension type of a specific minor.
+     *
      * @param index Index of the extension. 0 means the extension from W3 to the next
      * @return Extension type
      */
@@ -88,7 +88,7 @@ namespace tu {
 
     /**
      * Returns the number of rows in a specific extension
-     * 
+     *
      * @param index Index of the extension. 0 means the extension from W3 to the next
      * @return Number of rows
      */
@@ -100,7 +100,7 @@ namespace tu {
 
     /**
      * Returns the number of columns in a specific extension
-     * 
+     *
      * @param index Index of the extension. 0 means the extension from W3 to the next
      * @return Number of columns
      */
@@ -153,7 +153,7 @@ namespace tu {
   public:
     /**
      * Constructs the proxy.
-     *  
+     *
      * @param sequence Orinal sequence
      */
 
@@ -165,7 +165,7 @@ namespace tu {
 
     /**
      * Copy constructor
-     *  
+     *
      * @param other Another transpose-proxy of a nested minor sequence.
      */
 
@@ -186,7 +186,7 @@ namespace tu {
 
     /**
      * Augments the sequence with a minor of the specified extension type.
-     * 
+     *
      * @param type The extension type of the biggest minor
      */
 
@@ -196,8 +196,8 @@ namespace tu {
     }
 
     /**
-     * Returns the extension type of a specific minor. 
-     * 
+     * Returns the extension type of a specific minor.
+     *
      * @param index Index of the extension. 0 means the extension from W3 to the next
      * @return Extension type
      */
@@ -209,7 +209,7 @@ namespace tu {
 
     /**
      * Returns the number of rows in a specific extension
-     * 
+     *
      * @param index Index of the extension. 0 means the extension from W3 to the next
      * @return Number of rows
      */
@@ -221,7 +221,7 @@ namespace tu {
 
     /**
      * Returns the number of columns in a specific extension
-     * 
+     *
      * @param index Index of the extension. 0 means the extension from W3 to the next
      * @return Number of columns
      */
@@ -264,7 +264,7 @@ namespace tu {
 
   /**
    * Creates a transpose proxy of a given nested minor sequence.
-   * 
+   *
    * @param sequence Given sequence
    * @return The transpose proxy
    */

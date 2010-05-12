@@ -12,6 +12,10 @@
 
 namespace tu {
 
+  /**
+   * A matroid proxy with permuted rows and columns.
+   */
+
   template <typename MatroidType>
   class matroid_permuted
   {

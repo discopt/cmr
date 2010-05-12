@@ -8,7 +8,6 @@
 #ifndef PERMUTATION_HPP_
 #define PERMUTATION_HPP_
 
-#include "../config.h"
 #include <utility>
 #include <iostream>
 #include <vector>

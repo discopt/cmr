@@ -12,14 +12,14 @@ namespace tu {
 
   /**
    * This functor can be used to test a vector for being non-zero.
-   * Repeated calls with parameter determine the result which 
-   * can be obtained by a call without a parameter.  
+   * Repeated calls with parameter determine the result which
+   * can be obtained by a call without a parameter.
    */
 
   struct is_non_zero
   {
     /**
-     * Constructs the functor. 
+     * Constructs the functor.
      */
 
     is_non_zero () :
@@ -30,7 +30,7 @@ namespace tu {
 
     /**
      * Each call tests one entry of the vector.
-     * 
+     *
      * @param value A value to be tested
      */
 
@@ -42,7 +42,7 @@ namespace tu {
 
     /**
      * Resets the result to an empty vector.
-     * 
+     *
      * @return The result of the tests from the last call to this.
      */
 
@@ -59,14 +59,14 @@ namespace tu {
 
   /**
    * This functor can be used to test a vector to contain only non-zeros.
-   * Repeated calls with parameter determine the result which 
-   * can be obtained by a call without a parameter.  
+   * Repeated calls with parameter determine the result which
+   * can be obtained by a call without a parameter.
    */
 
   struct is_all_ones
   {
     /**
-     * Constructs the functor. 
+     * Constructs the functor.
      */
 
     is_all_ones () :
@@ -77,7 +77,7 @@ namespace tu {
 
     /**
      * Each call tests one entry of the vector.
-     * 
+     *
      * @param value A value to be tested
      */
 
@@ -89,7 +89,7 @@ namespace tu {
 
     /**
      * Resets the result to an empty vector.
-     * 
+     *
      * @return The result of the tests from the last call to this.
      */
 
@@ -107,7 +107,7 @@ namespace tu {
   /**
    * A wrapper for an element-comparator which can be used
    * to sort an indirection vector according to the data
-   * it points to. 
+   * it points to.
    */
 
   template <typename T, typename Less = std::less <T> >
@@ -115,7 +115,7 @@ namespace tu {
   {
     /**
      * Constructs the comparator.
-     * 
+     *
      * @param data The vector
      * @param less An optional element-comparator
      */
@@ -128,7 +128,7 @@ namespace tu {
 
     /**
      * Compares two indices by comparing their elements.
-     * 
+     *
      * @param i First index
      * @param j Second index
      * @return true if and only if the element at the first index is smaller than the element at the second index

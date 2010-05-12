@@ -69,7 +69,6 @@ namespace tu {
      * Constructs the matrix proxy.
      *
      * @param matrix The original matrix
-     * @return
      */
 
     matrix_transposed (matrix_type& matrix) :

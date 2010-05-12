@@ -198,7 +198,6 @@ namespace tu {
         boost::tie(is_tu, decomposition) = decompose_binary_matroid(matroid, matrix, matroid_element_set(), true, _log);
 
         //        assert (is_tu == gh_is_tu);
-        //        
         //        std::cout << "decompose returned " << ((int) (is_tu)) << std::endl;
         //        matrix_print (matrix);
         //        if (!is_tu && gh_is_tu)
@@ -328,7 +327,7 @@ namespace tu {
           matroid_element_set columns(_column_elements);
           rows.erase(*iter);
           columns.erase(*iter);
-          //          bool result = 
+          //          bool result =
           test(rows, columns);
 
           //          std::cout << "test result =  " << result << std::endl;
@@ -350,7 +349,7 @@ namespace tu {
 
       /**
        * Tests minors given in a vector of sets.
-       * 
+       *
        * @param bundles Vector of Sets containing the removed elements.
        * @return true iff a test failed, i.e. the submatrix was not totally unimodular.
        */

@@ -8,7 +8,6 @@
 #ifndef VECTOR_THREE_CONNECTIVITY_HPP_
 #define VECTOR_THREE_CONNECTIVITY_HPP_
 
-#include "../config.h"
 #include <vector>
 
 namespace tu {

@@ -39,7 +39,7 @@ namespace tu {
   /**
    * A helper struct for breadth first search on
    * bipartite graphs to map row- and column-indices
-   * into on index-range. 
+   * into on index-range.
    */
 
   struct bipartite_graph_dimensions
@@ -49,7 +49,7 @@ namespace tu {
     /**
      * Constructs the helper object with the given
      * number of rows and columns.
-     *  
+     *
      * @param height Number of rows
      * @param width Number of columns
      */
@@ -150,10 +150,10 @@ namespace tu {
     }
 
     /**
-     * Maps two node-indices at once and puts the resulting 
+     * Maps two node-indices at once and puts the resulting
      * row and column and indices in this fixed ording into
-     * the resulting pair. 
-     * 
+     * the resulting pair.
+     *
      * @param first A first node-index
      * @param second A second node-index
      * @return A pair consisting of the corresponding column-index and row-index.
@@ -175,7 +175,7 @@ namespace tu {
   /**
    * Does a breadth-first-search on the bipartite graph defined by a submatrix of a given matrix.
    * Running time: O(height * width)
-   * 
+   *
    * @param matrix Given matrix
    * @param dimensions Object for row/column-to-index calculations
    * @param start_nodes Set of starting nodes for search

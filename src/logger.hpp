@@ -25,10 +25,10 @@ namespace tu {
   class logger
   {
   public:
-    
+
     /**
      * Creates a logger object.
-     * 
+     *
      * @param level The log level to work with
      */
 
@@ -50,7 +50,7 @@ namespace tu {
     }
 
     /**
-     * @return true if and only if log level is quiet 
+     * @return true if and only if log level is quiet
      */
 
     inline bool is_quiet () const
@@ -77,8 +77,8 @@ namespace tu {
     }
 
     /**
-     * Increases the indent of current and further lines. 
-     * 
+     * Increases the indent of current and further lines.
+     *
      * @param amount Number of spaces to increase
      */
 
@@ -89,7 +89,7 @@ namespace tu {
 
     /**
      * Decreases the indent of current and further lines.
-     * 
+     *
      * @param amount Number of space to decrease
      */
 
@@ -119,7 +119,7 @@ namespace tu {
 
     /**
      * Erases a portion from the current line.
-     * 
+     *
      * @param position Position from which to erase
      */
 
@@ -132,7 +132,7 @@ namespace tu {
     }
 
     /**
-     * @return The string stream holding the current line 
+     * @return The string stream holding the current line
      */
 
     inline std::stringstream& line ()
@@ -162,7 +162,7 @@ namespace tu {
 
   /**
    * Streams a line of a logger object and flushes the output stream.
-   * 
+   *
    * @param Output stream
    * @param Logger object
    * @return Output stream

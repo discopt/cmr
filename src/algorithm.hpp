@@ -573,6 +573,8 @@ namespace tu {
   std::pair <bool, decomposed_matroid*> decompose_binary_matroid (MatroidType& matroid, MatrixType& matrix, matroid_element_set extra_elements,
       bool construct_decomposition, logger& log)
   {
+    assert (is_zero_one_matrix(matrix));
+
     if (log.is_updating())
     {
       log.clear();

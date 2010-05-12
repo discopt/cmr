@@ -11,7 +11,7 @@ namespace tu {
 
   /**
    * Creates a logger object.
-   * 
+   *
    * @param level The log level to work with
    */
 
@@ -32,7 +32,7 @@ namespace tu {
 
   /**
    * Streams a line of a logger object and flushes the output stream.
-   * 
+   *
    * @param Output stream
    * @param Logger object
    * @return Output stream

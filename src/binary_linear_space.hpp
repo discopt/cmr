@@ -28,7 +28,7 @@ namespace tu {
     /**
      * Contructs a binary linear vector space containing
      * vectors of the given length.
-     * 
+     *
      * @param length Length of each vector in the space.
      */
 
@@ -41,7 +41,7 @@ namespace tu {
 
     /**
      * Copy constructor which copies all vectors.
-     * 
+     *
      * @param other Instance of another binary linear vector space.
      */
 
@@ -56,7 +56,7 @@ namespace tu {
 
     /**
      * Read-only access to the vectors in this vector space.
-     * 
+     *
      * @param index Index in range [0, vectors() )
      */
 
@@ -66,7 +66,7 @@ namespace tu {
     }
 
     /**
-     * @return Length of each of the vectors 
+     * @return Length of each of the vectors
      */
 
     inline size_t length () const
@@ -95,7 +95,7 @@ namespace tu {
     /**
      * Inserts a given vector into the vector space if it is not contained already.
      * Its size() must match the result of length().
-     * 
+     *
      * @param vector A given vector of appropriate size
      * @return true if and only if the vector was inserted
      */
@@ -113,8 +113,8 @@ namespace tu {
 
     /**
      * Inserts a given vector into the vector space without checking whether it exists.
-     * Its size() must match the result of length(). 
-     * 
+     * Its size() must match the result of length().
+     *
      * @param vector A given vector of appropriate size
      */
 
@@ -132,7 +132,7 @@ namespace tu {
 
     /**
      * Searches a given vector in this vector space.
-     * 
+     *
      * @param vector Given vector of appropriate size
      * @return Index of the given vector or -1 if it is not spanned.
      */
@@ -161,7 +161,7 @@ namespace tu {
 
     /**
      * Tests whether a given vector is spanned by this vector space.
-     * 
+     *
      * @param vector A given vector of appropriate size
      * @return
      */
@@ -176,9 +176,9 @@ namespace tu {
   protected:
 
     /**
-     * Calculates the sum of two binary vectors and stores 
+     * Calculates the sum of two binary vectors and stores
      * it in a third one. All must have the same size.
-     * 
+     *
      * @param first First summand vector
      * @param second Second summand vector
      * @param result Vector containing the result
@@ -203,7 +203,7 @@ namespace tu {
 
   /**
    * Streams a binary linear vector space.
-   * 
+   *
    * @param stream Output stream
    * @param space The given vector space
    * @return The output stream after processing
