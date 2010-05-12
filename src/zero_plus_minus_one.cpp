@@ -6,16 +6,23 @@
  **/
 
 #include <utility>
+
 #include <boost/numeric/ublas/matrix.hpp>
 
-#include "../config.h"
+#include "total_unimodularity.hpp"
 
 namespace tu {
 
-  /// Returns true, iff the given matrix contains only values {-1, 0, 1}.
-  /// If not, position will contain the position of the wrong entry. 
+  /**
+   * Tests if the given matrix contains only -1,0,+1 entries,
+   * returning the violating position if this is not the case.
+   *
+   * @param matrix The given matrix
+   * @param position Returns a violating entry
+   * @return true if and only if it is a -1,0,+1 matrix
+   */
 
-  bool is_zero_plus_minus_one_matrix (const boost::numeric::ublas::matrix <int>& matrix, std::pair <size_t, size_t>& position)
+  bool is_zero_plus_minus_one_matrix (const integer_matrix& matrix, std::pair <size_t, size_t>& position)
   {
     for (size_t row = 0; row < matrix.size1(); ++row)
     {
@@ -34,19 +41,30 @@ namespace tu {
     return true;
   }
 
-  /// Returns true, iff the given matrix contains only values {-1, 0, 1}. 
+  /**
+   * Tests if the given matrix contains only -1,0,+1 entries.
+   *
+   * @param matrix The given matrix
+   * @return true if and only if it is a -1,0,+1 matrix
+   */
 
-  bool is_zero_plus_minus_one_matrix (const boost::numeric::ublas::matrix <int>& matrix)
+  bool is_zero_plus_minus_one_matrix (const integer_matrix& matrix)
   {
     std::pair <size_t, size_t> result;
 
     return is_zero_plus_minus_one_matrix(matrix, result);
   }
 
-  /// Returns true, iff the given matrix contains only values {0, 1}.
-  /// If not, position will contain the position of the wrong entry. 
+  /**
+   * Tests if the given matrix contains only 0 or 1 entries,
+   * returning the violating position if this is not the case.
+   *
+   * @param matrix The given matrix
+   * @param position Returns a violating entry
+   * @return true if and only if it is a 0-1 matrix
+   */
 
-  bool is_zero_one_matrix (const boost::numeric::ublas::matrix <int>& matrix, std::pair <size_t, size_t>& position)
+  bool is_zero_one_matrix (const integer_matrix& matrix, std::pair <size_t, size_t>& position)
   {
     for (size_t i = 0; i < matrix.size1(); ++i)
     {
@@ -65,9 +83,14 @@ namespace tu {
     return true;
   }
 
-  /// Returns true, iff the given matrix contains only values {0, 1}. 
+  /**
+   * Tests if the given matrix contains only 0 or 1 entries.
+   *
+   * @param matrix The given matrix
+   * @return true if and only if it is a 0-1 matrix
+   */
 
-  bool is_zero_one_matrix (const boost::numeric::ublas::matrix <int>& matrix)
+  bool is_zero_one_matrix (const integer_matrix& matrix)
   {
     std::pair <size_t, size_t> result;
 
