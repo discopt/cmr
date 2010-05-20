@@ -114,7 +114,7 @@ namespace tu {
        * Destructor
        */
 
-      ~violator_strategy ()
+      virtual ~violator_strategy ()
       {
 
       }
@@ -309,7 +309,7 @@ namespace tu {
        * Destructor
        */
 
-      ~single_violator_strategy ()
+      virtual ~single_violator_strategy ()
       {
 
       }
@@ -369,7 +369,7 @@ namespace tu {
        * Destructor
        */
 
-      ~greedy_violator_strategy ()
+      virtual ~greedy_violator_strategy ()
       {
 
       }
