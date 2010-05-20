@@ -1,6 +1,5 @@
 June 2010:
 
- * First release. Functionality includes tests via determinants,
-   ghouila-houri-criterion and matroids with an emphasis on the latter one.
+ * First release. Functionality includes tests via matroid-decomposition.
 	 There are certifying versions, yielding a matroid decomposition and/or a
 	 violating submatrix.
