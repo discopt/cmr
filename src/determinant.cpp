@@ -48,7 +48,7 @@ namespace tu {
         det = -det;
     }
 
-    return det;
+    return (int) det;
   }
 
   /**

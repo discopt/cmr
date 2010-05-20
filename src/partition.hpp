@@ -90,7 +90,7 @@ namespace tu {
     size_t free_columns_first = top_left_width;
     size_t free_columns_beyond = width - bottom_right_width;
 
-    rank_distribution result;
+    rank_distribution result = RANK_TOO_HIGH;
 
     /// Repeat until no rows/columns can be shifted.
     bool changed = true;
