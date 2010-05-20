@@ -58,6 +58,3 @@ tu_SOURCES = \
 tu_LDADD = \
   libtotalunimodularity.a
 
-tu_LDFLAGS = \
-  -lboost_program_options
-

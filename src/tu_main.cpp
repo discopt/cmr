@@ -8,9 +8,6 @@
 #include <fstream>
 #include <iomanip>
 
-#include <boost/program_options.hpp>
-#include <boost/program_options/parsers.hpp>
-
 #include "total_unimodularity.hpp"
 #include "matroid_decomposition.hpp"
 #include "config.h"
@@ -127,8 +124,6 @@ void print_violator (const tu::integer_matrix& matrix, const tu::submatrix_indic
   std::cout << std::endl;
 }
 
-namespace po = boost::program_options;
-
 int run (const std::string& file_name, bool show_certificates, tu::log_level level)
 {
   /// Open the file
@@ -206,57 +201,84 @@ int run (const std::string& file_name, bool show_certificates, tu::log_level lev
   return EXIT_SUCCESS;
 }
 
+bool extract_option (char c, bool& certs, tu::log_level& level, bool& help)
+{
+  if (c == 'h')
+    help = true;
+  else if (c == 'c')
+    certs = true;
+  else if (c == 'q')
+    level = tu::LOG_QUIET;
+  else if (c == 'u')
+    level = tu::LOG_UPDATING;
+  else if (c == 'v')
+    level = tu::LOG_VERBOSE;
+  else
+    return false;
+
+  return true;
+}
+
 int main (int argc, char **argv)
 {
-  po::options_description options_desc("Allowed options");
-  options_desc.add_options()("help,h", "Shows a help message.")("matrix,m", po::value <std::string>(),
-      "Input matrix to test for total unimodularity.")("certs,c",
-      "Prints certificates: A matroid decomposition if the matrix is totally unimodular and a violating submatrix otherwise.")("dynamic,d",
-      "Dynamic logging (default).")("verbose,v", "Verbose logging.")("quiet,q", "No logging at all.")("version,V", "Prints the version and exits.");
-  po::positional_options_description positional_options_desc;
-  positional_options_desc.add("matrix", -1);
-  po::variables_map variables;
-
-  try
-  {
-    po::store(po::command_line_parser(argc, argv).options(options_desc).positional(positional_options_desc).run(), variables);
-  }
-  catch (po::error e)
-  {
-    std::cout << "Error: " << e.what() << ". Please use --help for usage." << std::endl;
-    return EXIT_FAILURE;
-  }
-  po::notify(variables);
-
-  if (variables.count("version"))
-  {
-    std::cout << PACKAGE_STRING << std::endl;
-    return EXIT_SUCCESS;
-  }
-
-  if (variables.count("help"))
-  {
-    std::cout << options_desc << "\n";
-    return EXIT_SUCCESS;
-  }
-
-  if (!variables.count("matrix"))
-  {
-    std::cout << "Error: you need to specify a matrix to test. Please use --help for usage." << std::endl;
-    return EXIT_FAILURE;
-  }
-
-  if ((variables.count("dynamic") ? 1 : 0) + (variables.count("verbose") ? 1 : 0) + (variables.count("quiet") ? 1 : 0) >= 2)
-  {
-    std::cout << "Error: you can specify at most one log level. Please use --help for usage." << std::endl;
-    return EXIT_FAILURE;
-  }
-
+  /// Possible parameters
+  std::string matrix_file_name = "";
+  bool certs = false;
   tu::log_level level = tu::LOG_UPDATING;
-  if (variables.count("verbose"))
-    level = tu::LOG_VERBOSE;
-  else if (variables.count("quiet"))
-    level = tu::LOG_QUIET;
+  bool help = false;
 
-  return run(variables["matrix"].as <std::string> (), variables.count("certs"), level);
+  bool options_done = false;
+  for (int a = 1; a < argc; ++a)
+  {
+    const std::string current = argv[a];
+
+    if (!options_done)
+    {
+      if (current == std::string("--"))
+      {
+        options_done = true;
+        continue;
+      }
+      else if (current != "" && current[0] == '-')
+      {
+        for (size_t i = 1; i < current.size(); ++i)
+        {
+          if (!extract_option(current[i], certs, level, help))
+          {
+            std::cout << "Unknown option: -" << current[i] << "\nSee " << argv[0] << " -h for usage." << std::endl;
+            return EXIT_FAILURE;
+          }
+        }
+        continue;
+      }
+    }
+
+    if (matrix_file_name != "")
+    {
+      std::cout << "Matrix file was given twice!\nSee " << argv[0] << " -h for usage." << std::endl;
+      return EXIT_FAILURE;
+    }
+    matrix_file_name = current;
+  }
+
+  if (help)
+  {
+    std::cout << "Usage: " << argv[0] << " [OPTIONS] [--] MATRIX_FILE\n";
+    std::cout << "Options:\n";
+    std::cout << " -h Shows a help message.\n";
+    std::cout << " -c Prints certificates: A matroid decomposition if the matrix is totally unimodular and a violating submatrix otherwise.\n";
+    std::cout << " -u Updating logging (default).\n";
+    std::cout << " -v Verbose logging.\n";
+    std::cout << " -q No logging at all.\n";
+    std::cout << std::flush;
+    return EXIT_SUCCESS;
+  }
+
+  if (matrix_file_name == "")
+  {
+    std::cout << "No matrix file was given!\nSee " << argv[0] << " -h for usage." << std::endl;
+    return EXIT_FAILURE;
+  }
+
+  return run(matrix_file_name, certs, level);
 }
