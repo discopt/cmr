@@ -27,12 +27,6 @@ AX_CXXFLAGS_WARN_ALL
 
 AC_PROG_LIBTOOL
 
-AX_BOOST_BASE(1.33.1)
-if test "x$want_boost" != "xyes"; then
-	AC_MSG_ERROR([Sorry, but building without boost is not possible!])
-fi
-
-
 # Checks for typedefs, structures, and compiler characteristics.
 
 # Checks for library functions.

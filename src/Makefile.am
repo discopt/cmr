@@ -1,7 +1,6 @@
 ACLOCAL_AMFLAGS = -I m4
 
 bin_PROGRAMS = tu
-lib_LIBRARIES = libtotalunimodularity.a
 
 noinst_headers = \
   algorithm.hpp \
@@ -32,16 +31,13 @@ noinst_headers = \
 	r10.hpp \
 	row_column_index.hpp \
 	separation.hpp \
-	vector_three_connectivity.hpp
-
-libtotalunimodularity_includedir = $(includedir)/tu/
-
-libtotalunimodularity_include_HEADERS = \
+	vector_three_connectivity.hpp \
 	matroid_graph.hpp \
 	total_unimodularity.hpp \
 	matroid_decomposition.hpp
 
-libtotalunimodularity_a_SOURCES = \
+tu_SOURCES = \
+	tu_main.cpp \
 	determinant.cpp \
 	ghouila_houri.cpp \
 	zero_plus_minus_one.cpp \
@@ -51,10 +47,4 @@ libtotalunimodularity_a_SOURCES = \
 	total_unimodularity.cpp \
 	matroid_graph.cpp \
 	matroid_decomposition.cpp
-
-tu_SOURCES = \
-	tu_main.cpp
-
-tu_LDADD = \
-  libtotalunimodularity.a
 
