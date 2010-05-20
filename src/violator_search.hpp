@@ -110,6 +110,15 @@ namespace tu {
         }
       }
 
+      /**
+       * Destructor
+       */
+
+      ~violator_strategy ()
+      {
+
+      }
+
       virtual void search () = 0;
 
       inline void create_matrix (submatrix_indices& indices) const
@@ -296,6 +305,15 @@ namespace tu {
 
       }
 
+      /**
+       * Destructor
+       */
+
+      ~single_violator_strategy ()
+      {
+
+      }
+
       virtual void search ()
       {
         std::vector <int> all_elements;
@@ -343,6 +361,15 @@ namespace tu {
       greedy_violator_strategy (const integer_matrix& input_matrix, const matroid_element_set& row_elements,
           const matroid_element_set& column_elements, logger& log) :
         violator_strategy(input_matrix, row_elements, column_elements, log)
+      {
+
+      }
+
+      /**
+       * Destructor
+       */
+
+      ~greedy_violator_strategy ()
       {
 
       }
