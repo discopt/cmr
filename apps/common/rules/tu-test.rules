@@ -1,0 +1,9 @@
+
+
+# topic: credit/tu-test
+# tu-test is a library to test an integer matrix for total unimodularity, i.e. having
+# only -1, +1 and 0 subdeterminants.
+# written by Matthias Walter
+# http://github.com/xammy/tu-test
+
+label tu-test
