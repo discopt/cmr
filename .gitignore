@@ -23,3 +23,5 @@ src/.deps/
 stamp-h1
 src/tu
 data
+build*/
+apps/common/src/perl/
