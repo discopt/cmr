@@ -8,12 +8,12 @@
 #ifndef GRAPHICNESS_HPP_
 #define GRAPHICNESS_HPP_
 
+#include "boost/graph/bipartite.hpp"
 #include <boost/graph/detail/set_adaptor.hpp>
 #include <boost/graph/filtered_graph.hpp>
 #include <boost/graph/connected_components.hpp>
 #include <boost/graph/biconnected_components.hpp>
 #include <boost/property_map/property_map.hpp>
-#include "boost/graph/bipartite.hpp"
 #include <vector>
 
 #include "matroid_graph.hpp"
