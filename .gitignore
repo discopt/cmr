@@ -24,3 +24,5 @@ stamp-h1
 src/tu
 data
 src/boost
+apps
+build*
