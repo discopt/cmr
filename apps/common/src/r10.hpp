@@ -8,7 +8,7 @@
 #ifndef R10_HPP_
 #define R10_HPP_
 
-#include <boost/graph/isomorphism.hpp>
+#include "boost/graph/isomorphism.hpp"
 
 namespace tu {
 
