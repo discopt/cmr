@@ -22,7 +22,7 @@ libtool
 src/.deps/
 stamp-h1
 src/tu
-data
-src/boost
+data/
+src/boost/
 apps/
 build*
