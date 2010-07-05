@@ -22,6 +22,6 @@ libtool
 src/.deps/
 stamp-h1
 src/tu
-data/
 apps/common/src/perl/
+data
 build*
