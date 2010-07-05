@@ -229,7 +229,7 @@ namespace tu {
     }
 
     /// Test for being a -1,0,+1 matrix
-    std::pair <unsigned int, unsigned int> entry;
+    std::pair <integer_matrix::size_type, integer_matrix::size_type> entry;
     if (!is_zero_plus_minus_one_matrix(matrix, entry))
     {
       if (log.is_updating())
