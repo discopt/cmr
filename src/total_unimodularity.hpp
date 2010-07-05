@@ -148,7 +148,7 @@ namespace tu {
    * @return true if and only if it is a 0-1 matrix
    */
 
-  bool is_zero_one_matrix (const integer_matrix& matrix, std::pair <size_t, size_t>& position);
+  bool is_zero_one_matrix (const integer_matrix& matrix, std::pair <integer_matrix::size_type, integer_matrix::size_type>& position);
 
   /**
    * Tests if a given matrix is a signed version of its support matrix already.
