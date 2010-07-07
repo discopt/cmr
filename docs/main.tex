@@ -1,0 +1,573 @@
+\documentclass[12pt]{article}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage[utf8]{inputenc}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{natbib}
+
+% layout
+\oddsidemargin 5mm
+\textwidth 150mm
+
+\topmargin 0mm
+\textheight 20cm
+
+%\evensidemargin -0.2cm
+%\parindent0cm
+%\parskip=1ex plus .25ex minus .25ex
+
+%\definecolor{red}{rgb}{1,0,0}
+%\definecolor{blue}{rgb}{0,0,1}
+
+% listings
+%\usepackage{listings}
+%\lstset{language=C}
+
+\newcommand{\R}{\ensuremath{\mathbb{R}}}
+\newcommand{\Z}{\ensuremath{\mathbb{Z}}}
+\newcommand{\BG}[1]{\ensuremath{\mathrm{BG}(#1)}}
+\newcommand{\M}[1]{\ensuremath{\mathrm{M}(#1)}}
+\newcommand{\G}[1]{\ensuremath{\mathrm{G}(#1)}}
+\newcommand{\Cpp}{{\em C++ }}
+\newcommand{\Polymake}{{\em polymake }}
+
+\begin{document}
+\topmargin 20mm
+\pagestyle{empty}
+
+
+\title{\huge \bf Testing Total Unimodularity }
+
+\date{July 2010}
+\author{Matthias Walter\\ Institute for Mathematical Optimization, \\ University of Magdeburg}
+
+\maketitle
+
+\begin{abstract}
+A real matrix $A \in \R^{m \times n}$ is called totally unimodular, if any square submatrix
+has a determinant of either $0$, $-1$ or $+1$. By submatrices we mean any matrix that can be obtained from
+the original by a sequence of row/column deletions. In particular, the $1 \times 1$ submatrices
+are required to satisfy the property, restricting the ground set to $A \in \{-1, 0, 1\}^{m \times n}$.
+
+The importance of total unimodularity comes from the fact, that if a solution of
+a linear equation $A x = b$ for $b \in \Z^m$ exists, there also exists an integral one due to Cramer's rule. As any vertex
+of a polyhedron $P = \{ x : Ax \leq b \}$ is a solution to a subsystem of linear equations,
+$P$ is known to be integral, if $A$ is totally unimodular and $b$ integral.
+
+This document introduces a toolkit to test matrices for total unimodularity in different ways,
+the main one being a variant of the polynomial-time algorithm proposed in \cite{Truemper90V}.
+We explain usage of a \Cpp library, a \Polymake extension and show benchmark results for the implemented methods.
+
+\end{abstract}
+
+\bigskip
+
+\section*{Overview}
+
+The toolkit is mostly about an efficient implementation of a matroid-based algorithm for testing total unimodularity.
+As the algorithm certifies the binary answer via matroids, one might want to understand some basic concepts beforehand.
+
+In the first section we introduce the relevant definitions. Sections 2 and 3 are dedicated to the \Cpp library
+and the \Polymake extension, while the 4th section shows benchmark results for different types of matrices.
+
+\newpage
+
+\topmargin 0mm
+\pagestyle{plain}
+\parindent 5mm
+
+\section{Important concepts}
+
+Throughout the whole document, we talk about integer matrices. By submatrices we mean parts of matrices
+that are induced by any subset of the row indicies and any subset of the column indices. A matroid
+$(E, \mathcal{I})$ is a groundset with a connected set of {\em independent} subsets $I \in \mathcal{I}$
+having the following properties:
+\begin{enumerate}
+\item[(i)]
+  $\emptyset \in \mathcal{I}$
+\item[(ii)]
+  $A \in \mathcal{I} ~~\Rightarrow~~ \forall B \subseteq A : B \in \mathcal{I}$
+\item[(iii)]
+  Let $A,B \in \mathcal{I}$ with $|A| < |B|$, then $\exists e \in B \setminus A : A \cup \{e\} \in \mathcal{I}$
+\end{enumerate}
+
+The most prominent example for a matroid is the set of vectors in a vector space, where those sets of vectors are independent
+that are linearly independent. For us, the so called {\em graphic matroids} are interesting. They are defined as the edge sets
+of an undirected graph, where such a set is independent if and only if it forms a forest.
+
+Some matroids can be {\em represented} over a field $\mathcal{F}$, meaning that there exists some vector matroid over $\mathcal{F}$
+with exactly the same matroid structure.
+As the maximal independent sets in each matroid (which are called {\em bases}) all have the same size $m$, a matroid with $|E| = n$ that is representable over $\mathcal{F}$
+can be represented via an $m \times n$ matrix over $\mathcal{F}$, where the $n$ columns correspond to the elements and the rank of a submatrix decides whether
+the columns inducing it are (linearly) independent. Via Gaussian elemination, one can always arrange the matrix
+such that it has an $m \times m$ identity submatrix, which can be truncated, as it does not contain information anymore.
+In this way, a vector matroid is represented by an $(n-m) \times n$ matrix having a basis $X \subset E$ as row indices and
+$Y := E \setminus X$ as column elements.
+
+{\em Regular} matroid are those that are representable over every field.
+It turns out that the regular matroids are exactly the ones whose binary representation matrix
+can be signed (i.e. some $1$ entries substituted by $-1$ entries) to be totally unimodular.
+
+The last concepts necessary for understanding the certificate for total unimodularity are about
+composition and decomposition of matroids. A $k$-separation of a matroid
+represented by the matrix $B$ with row indices $X$ and column indices $Y$ is a partition
+of $X$ and $Y$ into $X = X_1 \cup X_2$ and $Y = Y_1 \cup Y_2$ with the following properties:
+\begin{enumerate}
+\item[(i)]
+  $|X_i \cup Y_i| \geq k$ for $i = 1,2$
+\item[(ii)]
+  $\mathrm{rk}_2 (B_{X_1, Y_2}) + \mathrm{rk}_2 (B_{X_2, Y_1}) = k-1$ with $\mathrm{rk}_2$ being the rank function on $\mathrm{GF}(2)$
+\end{enumerate}
+A matroid is $k$-connected if and only if it does not have a $k'$-separation for $1 \leq k' < k$. A $k$-composition
+is way of glueing two matroids together by putting $k$ elements of both together, such that the
+representation matrix has a $k$-separation with the two original representation matrices
+as the partitioning submatrices. A decomposition is the reversed process of composition.
+
+According to Seymours decomposition theorem for regular matroids every 3-connected
+regular matroid must be graphic, cographic ($B^t$ represents a graphic matroid), is isomorphic to a special matroid $R_{10}$
+elements or has a 3-separation of a certain kind. Because $k$-composition ($k=1,2,3$) maintains
+regularity, a decomposition approach yields a polynomial-time algorithm:
+It establishes it's result by dropping the signs of the given matrix
+and interpreting it as a binary matroid which is then decomposed into simpler components.
+
+If the matroid is not regular, we end up with a 3-connected part that has no $3$-separation
+which could be used to decompose it further. The algorithm must perform a signing prodedure to ensure that
+the binary matrix can be signed appropriately to result in the original matrix.
+
+If the algorithm asserts that a given matrix is totally unimodular, it can thus return a decomposition-tree,
+whose inner nodes represent $k$-separations and whose leafs are graphic, cographic or $R_{10}$ matroids. In the other case,
+it will remove sets of rows/columns such that the resulting matrix is still not totally unimodular, 
+until each removal of a single row or column results in a totally unimodular matrix. Obviously the matrix itself must have
+the wrong determinant and can be returned as a violator.
+
+\section{The \Cpp library}
+
+The \Cpp library is the heart of the implementation.
+The frontend program attached to it simply uses it, as well as the \Polymake extension does.
+The interface depends on {\tt boost::numeric::ublas::matrix} which is a matrix template from the \cite{Boost}.
+The interface belonging to the main algorithm has variants for the certified versions. In face you can test matrix
+for total unimodularity with or without positive and/or negative certificates. To use it, you just need to include one header.
+
+\subsection{Installing}
+
+To install the \Cpp library, either take a look at the most recent version at the download page at
+\url{http://github.com/xammy/tu-test/downloads} or use Git to clone the repository:
+
+{\tiny
+\lstset{language=Bash,basicstyle=\small\ttfamily,emph={\$}, emphstyle=\color{blue},emph={[2]\#include,\#define,\#ifdef,\#endif}, emphstyle={[2]\color{blue}}}
+\begin{lstlisting}
+$ git clone git@github.com:xammy/tu-test.git
+\end{lstlisting}}
+
+\parindent 0mm
+After unzipping (if necessary) and going into the freshly created directory, do the following to setup and compile the library:
+
+{\tiny
+\lstset{language=Bash,basicstyle=\small\ttfamily,emph={\$}, emphstyle=\color{blue}}
+\begin{lstlisting}
+$ ./autogen.sh
+...
+$ ./configure
+...
+$ make
+...
+$ ./src/tu  -h
+Usage: ./src/tu [OPTIONS] [--] MATRIX_FILE
+Options:
+ -h Shows a help message.
+ -c Prints certificates: A matroid decomposition if the matrix is totally unimodular and a violating submatrix otherwise.
+ -u Updating logging (default).
+ -v Verbose logging.
+ -q No logging at all.
+$ su
+Password: 
+(root) $ make install
+...
+\end{lstlisting}}
+
+Before becoming root, everything should be compiled, which is tested via the console tool.
+The library depends on the \cite{Boost}, which must be installed on your system. If you cannot get it to work and
+only need the console tool, you can download the ``noboost''-package or checkout the ``noboost'' branch in the Git repository.
+
+\subsection{Important types}
+
+The following types are of interest as they are used as parameter types for the routines.
+
+\subsubsection{tu::integer\_matrix}
+
+This {\em typedef} is a shortcut for {\tt boost::numeric::ublas::matrix} for integral values and is used
+to represent the matrices to be tested for total unimodularity.
+
+\subsubsection{tu::submatrix\_indices}
+
+This {\em struct} is just a pair of {\tt indirect\_array} objects, which represent row and
+column indices of a submatrix.
+
+\subsubsection{tu::integer\_submatrix}
+
+This {\em typedef} is a shortcut for {\tt boost::numeric::ublas::matrix\_indirect} and is used
+to represent a submatrix of a {\tt tu::integer\_matrix} indexed by {\tt tu::submatrix\_indices}.
+
+\subsubsection{tu::decomposed\_matroid}
+
+This {\em abstract class} represents a node in the decomposition tree.
+
+\subsubsection{tu::decomposed\_matroid\_leaf}
+
+If the result of the method {\tt tu::decomposed\_matroid::is\_leaf()} is {\tt true} for an object, it can be cast
+to this type to find out the type of the leaf. If the represented matroid is (co)graphic, it's (co)graph
+can also be inspected.
+
+\subsubsection{tu::decomposed\_matroid\_separator}
+
+If the result of the method {\tt tu::decomposed\_matroid::is\_leaf()} is {\tt false} for an object, it can be cast
+to this type to find out the type of the separation and the minors it is separated into.
+
+\subsubsection{tu::log\_level}
+
+This {\em enum} can be used to make the routines more or less verbose. It's values are:
+\begin{itemize}
+\item[LOG\_QUIET]
+  Does not print anything
+\item[LOG\_UPDATING]
+  Prints the current status and history of decomposition in an updating manner, which is pretty in a terminal. Do not use this when logging to a file.
+\item[LOG\_VERBOSE]
+  Prints the decomposition history line by line.
+\end{itemize}
+
+\subsection{API}
+
+The list of important routines follows:
+
+\subsubsection{is\_totally\_unimodular}
+
+{\bf Synopsis} 
+
+{\tiny
+\lstset{language=C++,basicstyle=\small\ttfamily,keywordstyle=\color{Maroon},commentstyle=\color{Blue},stringstyle=\color{Green},showstringspaces=false,emph={bool,int,unsigned,char,true,false,void}, emphstyle=\color{blue},emph={[2]\#include,\#define,\#ifdef,\#endif}, emphstyle={[2]\color{blue}}}
+\begin{lstlisting}
+bool is_totally_unimodular (
+    const integer_matrix& matrix,
+    log_level level = LOG_QUIET);
+
+bool is_totally_unimodular (
+    const integer_matrix& matrix,
+    decomposed_matroid*& decomposition,
+    log_level level = LOG_QUIET);
+
+bool is_totally_unimodular (
+    const integer_matrix& matrix,
+    submatrix_indices& violator,
+    log_level level = LOG_QUIET);
+
+bool is_totally_unimodular (
+    const integer_matrix& matrix,
+    decomposed_matroid*& decomposition,
+    submatrix_indices& violator,
+    log_level level = LOG_QUIET);
+\end{lstlisting}}
+
+{\bf Description}
+
+\vspace{2mm}
+Takes an integer matrix, tests it for being a totally unimodular, returning the result as a {\em bool}.
+It also possibly computes certificates for the correctness of the answer. Namely a matroid decomposition is set up,
+if the given matrix is totally unimodular. If not, 2 versions will find a violating submatrix. This search requires
+some extra work and can take more time.
+
+\subsubsection{decompose\_binary\_matroid}
+
+{\bf Synopsis} 
+
+{\tiny
+\lstset{language=C++,basicstyle=\small\ttfamily,keywordstyle=\color{Maroon},commentstyle=\color{Blue},stringstyle=\color{Green},showstringspaces=false,emph={bool,int,unsigned,char,true,false,void}, emphstyle=\color{CornflowerBlue},emph={[2]\#include,\#define,\#ifdef,\#endif}, emphstyle={[2]\color{blue}}}
+\begin{lstlisting}
+decomposed_matroid* decompose_binary_matroid (
+    const integer_matrix& matrix,
+    log_level level = LOG_QUIET);
+\end{lstlisting}}
+
+{\bf Description}
+
+\vspace{2mm}
+Takes an integer matrix, tests it for being a 0-1-matrix and constructs a matroid-decomposition
+of the binary matroid represented by it. Returns a decomposition tree or {\em NULL}, if it is no
+0-1-matrix.
+
+\subsubsection{determinant\_is\_totally\_unimodular}
+
+{\bf Synopsis} 
+
+{\tiny
+\lstset{language=C++,basicstyle=\small\ttfamily,keywordstyle=\color{Maroon},commentstyle=\color{Blue},stringstyle=\color{Green},showstringspaces=false,emph={bool,int,unsigned,char,true,false,void}, emphstyle=\color{blue},emph={[2]\#include,\#define,\#ifdef,\#endif}, emphstyle={[2]\color{blue}}}
+\begin{lstlisting}
+bool determinant_is_totally_unimodular (
+    const integer_matrix& matrix);
+
+bool determinant_is_totally_unimodular (
+    const integer_matrix& matrix, submatrix_indices& violator);
+\end{lstlisting}}
+
+{\bf Description}
+
+\vspace{2mm}
+Takes an integer matrix, tests it for being a totally unimodular by examining all subdeterminants, returning the result as a {\em bool}.
+It also possibly computes a certificate for the correctness of the ``no''-answer. This routine is very inefficient and
+should not be used for matrices bigger than $10 \times 10$.
+
+\subsubsection{ghouila\_houri\_is\_totally\_unimodular}
+
+{\bf Synopsis} 
+
+{\tiny
+\lstset{language=C++,basicstyle=\small\ttfamily,keywordstyle=\color{Maroon},commentstyle=\color{Blue},stringstyle=\color{Green},showstringspaces=false,emph={bool,int,unsigned,char,true,false,void}, emphstyle=\color{blue},emph={[2]\#include,\#define,\#ifdef,\#endif}, emphstyle={[2]\color{blue}}}
+\begin{lstlisting}
+bool ghouila_houri_is_totally_unimodular (
+    const integer_matrix& matrix);
+\end{lstlisting}}
+
+{\bf Description}
+
+\vspace{2mm}
+Takes an integer matrix, tests it for being a totally unimodular via the criterion of Ghouila \& Houri, returning the result as a {\em bool}.
+This routine is inefficient and should not be used for matrices bigger than $25 \times 25$.
+
+\subsection{Using the library}
+
+The following example illustrates the usage of the \Cpp library.
+
+{\tiny
+\lstset{language=C++,basicstyle=\small\ttfamily,keywordstyle=\color{Maroon},commentstyle=\color{Blue},stringstyle=\color{Green},showstringspaces=false,emph={bool,int,unsigned,char,true,false,void}, emphstyle=\color{blue},emph={[2]\#include,\#define,\#ifdef,\#endif}, emphstyle={[2]\color{blue}}}
+\begin{lstlisting}
+#include <iostream>
+#include "total_unimodularity.hpp"
+
+int main(int argc, char* argv[])
+{
+  // Create a 2 x 3 matrix:
+  // 1  1 -1
+  // 1  0  1
+  tu::integer_matrix matrix (2, 3);
+  matrix(0,0) = 1; // Make this a -1 to have it t.u.
+  matrix(0,1) = 1;
+  matrix(0,2) = -1;
+  matrix(1,0) = 1;
+  matrix(1,1) = 0;
+  matrix(1,2) = 1;
+
+  tu::submatrix_indices indices;
+  bool result = tu::is_totally_unimodular (matrix, indices);
+
+  if (result)
+    std::cout << "Matrix is t.u." << std::endl;
+  else
+  {
+    std::cout << "Matrix is NOT t.u." << std::endl;
+    std::cout << "Rows:";
+    for (size_t i = 0; i < indices.rows.size(); ++i)
+      std::cout << " " << indices.rows[i];
+    std::cout << "\nColumns:";
+    for (size_t i = 0; i < indices.columns.size(); ++i)
+      std::cout << " " << indices.columns[i];
+    std::cout << std::endl;
+  }
+
+  return 0;
+}
+\end{lstlisting}}
+
+\subsection{The console tool}
+
+Together with the library, a small tool will be compiled. It can be used to read a single matrix from a file and test it for total unimodularity.
+The file format is as follows.
+
+\begin{table}[h]
+\centering\begin{tabular}{|ccc|}
+\hline
+2 & 3 & \\
+&& \\
+1 & 1 & -1 \\
+1 & 0 & 1 \\\hline
+\end{tabular}
+\caption{An example file to encode a $2 \times 3$ matrix.}
+\end{table}
+
+When having the matrix in such a format, it is straightforward to test it for total unimodularity.
+
+{\tiny
+\lstset{language=Bash,basicstyle=\small\ttfamily,emph={\$}, emphstyle=\color{blue},emph={[2]\#include,\#define,\#ifdef,\#endif}, emphstyle={[2]\color{blue}}}
+\begin{lstlisting}
+$ cat example.mat 
+2 3
+
+1 1 -1
+1 0  1
+$ ./src/tu -c example.mat 
+(2 x 3) -1/0/+1 OK, SIGNING FAILED
+
+
+The 2 x 3 matrix is not totally unimodular.
+
+The violating submatrix (det = 2) is 2 x 2:
+
+   1  -1
+   1   1
+
+Row indices in range [0,1]:
+0 1
+
+Column indices in range [0,2]:
+0  2 
+
+\end{lstlisting}}
+
+\section{The \Polymake extension }
+
+There is also an extension to the \Polymake system (see \citeauthor{Polymake}) which can be used to test matrices in \Polymake
+for total unimodularity, possibly giving a violating submatrix. As the effort to add objects for
+the matroid decomposition tree to \Polymake is too big, there is no way to obtain a certificate for
+an affirmative answer.
+
+\subsection{Installing}
+
+As for the \Cpp library, one can either download the \Polymake extension from 
+\url{http://github.com/xammy/tu-test/downloads} or use Git to clone the repository:
+
+{\tiny
+\lstset{language=Bash,basicstyle=\small\ttfamily,emph={\$}, emphstyle=\color{blue},emph={[2]\#include,\#define,\#ifdef,\#endif}, emphstyle={[2]\color{blue}}}
+\begin{lstlisting}
+$ git clone git@github.com:xammy/tu-test.git -b polymake
+\end{lstlisting}}
+
+After that, start \Polymake and import the extension:
+
+{\tiny
+\lstset{language=Bash,basicstyle=\small\ttfamily,emph={\$}, emphstyle=\color{blue},emph={[2]\#include,\#define,\#ifdef,\#endif}, emphstyle={[2]\color{blue}}}
+\begin{lstlisting}
+$ polymake 
+...
+polytope > import_extension ("~/tu-test/");
+polymake:  WARNING: Recompiling shared module for application common,
+ please be patient...
+
+polytope > help "is_totally_unimodular";
+functions/is_totally_unimodular:
+is_totally_unimodular(matrix) -> Bool
+
+ Tests a given matrix for total unimodularity, without certificates.
+
+Arguments:
+  Matrix<int> matrix 
+
+Returns Bool 
+
+-----
+is_totally_unimodular(matrix, row_indices, column_indices) -> Bool
+
+ Tests a given matrix for total unimodularity, setting row/column
+ indices to a violating submatrix if the result is negative.
+
+Arguments:
+  Matrix<int> matrix 
+  Vector<int> row_indices of violating submatrix.
+  Vector<int> column_indices of violating submatrix.
+
+Returns Bool 
+
+
+polytope > exit;
+$
+\end{lstlisting}}
+
+The library depends on the \cite{Boost}, which must be installed on your system.
+Unlike the console tool, there is no way around it, except installing it.
+
+\section{Benchmark results}
+
+There are different types of matrices for which the different methods achieve different running times. We present results for the Ghouila-Houri method {\em GH}, the
+determinant-based method {\em D} and the matroid-based algorithm {\em M}. All measurements were on a Core 2 Duo, 2.5 GHz each CPU.
+
+
+%The most trivial matrices are those with many small
+%violating submatrices, for which {\em GH} and {\em D} need nearly no effort to find the answer. Depending on wether the support matrix can be signed to the original, {\em M}
+%might already take some time to figure this out, because it has to do a matroid decomposition with an enumerative part. 
+%A bit more interesting are network matrices, which represent graphic and cographic matroids. While {\em GH} already reveals its exponential running time, {\em D} cannot be run at all,
+%as the running time explodes. {\em M} is very quick. Although it has to do a matroid decomposition, the enumerative part is not necessary, when all the 3-connected matroids
+%are graphic or cographic.
+%The toughest matrices are those deduced from complementary totally unimodular matrices. Those have a special property. They can be transformed into matrices that are not totally unimodular, but
+%only have one huge violating submatrix. It's clear that {\em GH} and {\em D} don't have any chance to find this violation quickly.
+
+\subsection{Random matrices}
+
+\subsection{Network matrices}
+
+\subsection{Complementary totally unimodular matrices}
+
+\subsection{Matrices deduced from almost regular matroids}
+
+
+%Table \ref{results} contains running times for matroid-based ({\it matroid}) and ghouila-houri-based ({\it gh}) tests on a Core 2 Duo, 2.5 GHz each CPU.
+%The examples are {\it complementary total unimodular} (ctu\_*) matrices, matrices originating from {\it almost regular matroids} (ar\_*), network matrices (net\_*)
+%and randomly generated matrices (rnd\_*). The ones obtained from {\it almost regular matroids} are hard to solve for naive algorithms, as they only contain
+%one violating submatrix.
+%We only included almost square matrices, because the {\it ghouila-houri-based} algorithm enumerates column subsets and is thus not symmetric regarding to row and column dimensions.
+
+
+%net\_12x12.mat   & $12 \times 12$   & yes & 0&02 s                 & 0&01 s   \\\hline
+%net\_18x18.mat   & $18 \times 18$   & yes & 2&01 s                 & 0&02 s   \\\hline
+%net\_24x24.mat   & $24 \times 24$   & yes & 294&9 s                & 0&03 s   \\\hline
+%net\_30x30.mat   & $30 \times 30$   & yes & 4232&0 s               & 0&04 s   \\\hline
+%\hline
+%ctu\_15x15.mat   & $15 \times 15$   & yes & 0&55 s                 & 0&01 s \\\hline
+%ctu\_22x22.mat   & $22 \times 22$   & yes & 1767&0 s               & 0&04 s \\\hline
+%ctu\_27x27.mat   & $27 \times 27$   & yes & x&y s                  & 0&03 s \\\hline
+%ctu\_64x65.mat   & $64 \times 65$   & yes & \multicolumn{2}{c|}{-} & 0&47 s \\\hline
+%\hline
+%rnd\_64x65.mat   & $64 \times 65$   & no  & \multicolumn{2}{c|}{-} & 2&54 s \\\hline
+%rnd\_100x100.mat & $100 \times 100$ & no  & \multicolumn{2}{c|}{-} & 11&53 s \\\hline
+%rnd\_200x200.mat & $200 \times 200$ & no  & \multicolumn{2}{c|}{-} & 147&15 s \\\hline
+%rnd\_400x400.mat & $400 \times 400$ & no  & \multicolumn{2}{c|}{-} & 2184&78 s \\\hline
+
+%\begin{table}[h]
+%	\begin{center}
+%		\begin{tabular}{|l|c|c|r|r|}
+%			\hline
+%			\bfseries Instance & \bfseries Dimensions & \bfseries totally unimodular & \bfseries gh & \bfseries matroid \\\hline
+%net\_12x12.mat   & $12 \times 12$   & yes & $< 1s$    & $< 1s$   \\\hline
+%net\_18x18.mat   & $18 \times 18$   & yes & $2s$      & $< 1s$   \\\hline
+%net\_24x24.mat   & $24 \times 24$   & yes & $295s$    & $< 1s$   \\\hline
+%net\_30x30.mat   & $30 \times 30$   & yes & $> 10^4s$ & $< 1s$   \\\hline
+%\hline
+%ctu\_15x15.mat   & $15 \times 15$   & yes & $< 1s$    & $< 1s$ \\\hline
+%ctu\_22x22.mat   & $22 \times 22$   & yes & $1767s$   & $< 1s$ \\\hline
+%ctu\_27x27.mat   & $27 \times 27$   & yes & $> 10^4s$ & $< 1s$ \\\hline
+%ctu\_64x65.mat   & $64 \times 65$   & yes & $> 10^4s$ & $< 1s$ \\\hline
+%\hline
+%ar\_22x22.mat    & $22 \times 22$   & no  & $94s$      & $< 1s$ \\\hline
+%ar\_25x25.mat    & $25 \times 25$   & no  & $6965s$    & $< 1s$ \\\hline
+%ar\_28x28.mat    & $28 \times 28$   & no  & $> 10^4s$  & $< 1s$ \\\hline
+%\hline
+%rnd\_20x20.mat   & $20 \times 20$   & no  & $< 1s$    & $< 1s$ \\\hline
+%rnd\_64x65.mat   & $64 \times 65$   & no  & $< 1s$    & $3s$ \\\hline
+%rnd\_100x100.mat & $100 \times 100$ & no  & $< 1s$    & $12s$ \\\hline
+%rnd\_200x200.mat & $200 \times 200$ & no  & $< 1s$    & $148s$ \\\hline
+%rnd\_400x400.mat & $400 \times 400$ & no  & $< 1s$    & $2185s$ \\\hline
+%		\end{tabular}
+%	\end{center}
+%	\caption{Running times for some example matrices}\label{results}
+%\end{table}
+
+%For a totally unimodular matrix, the ghouila-houri-based test really needs exponential time, as all enumerations must be carried out, while for
+%non-totally unimodular matrices, depending on the amount of violating submatrices, it might be very fast. Contrary to this, the matroid-based
+%test's running time seems to not depend on the structure of the matrix too much and is the winner, at least if there is a chance for
+%the matrix being totally unimodular.
+
+%\newpage
+
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+\end{document}
