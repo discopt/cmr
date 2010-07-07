@@ -5,6 +5,7 @@
  *          http://www.boost.org/LICENSE_1_0.txt)
  **/
 
+#include "../config.h"
 #include <map>
 #include <vector>
 

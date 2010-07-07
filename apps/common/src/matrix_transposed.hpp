@@ -12,6 +12,9 @@
 
 namespace tu {
 
+  template <typename MatrixType>
+  void matrix_binary_pivot (MatrixType& matrix, size_t i, size_t j);
+
   namespace detail {
 
     /// Helper struct to manage orientation tags

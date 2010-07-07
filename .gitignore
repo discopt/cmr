@@ -27,3 +27,10 @@ src/boost/
 apps/
 build*
 apps/common/src/perl/
+docs/main.aux
+docs/main.bbl
+docs/main.blg
+docs/main.dvi
+docs/main.log
+docs/main.out
+docs/main.pdf

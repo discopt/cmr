@@ -193,6 +193,30 @@ namespace tu {
     matroid_binary_pivot(matroid.data(), matroid.perm1()(i), matroid.perm2()(j));
   }
 
+  template <typename MatroidType>
+  inline void matroid_set_perm1 (matroid_permuted <MatroidType>& matroid, const permutation& permutation)
+  {
+    matroid.perm1() = permutation;
+  }
+
+  template <typename MatroidType>
+  inline void matroid_set_perm2 (matroid_permuted <MatroidType>& matroid, const permutation& permutation)
+  {
+    matroid.perm2() = permutation;
+  }
+
+  template <typename MatroidType>
+  inline void matroid_set_perm1 (matroid_transposed <MatroidType>& matroid, const permutation& permutation)
+  {
+    matroid_set_perm2(matroid.data(), permutation);
+  }
+
+  template <typename MatroidType>
+  inline void matroid_set_perm2 (matroid_transposed <MatroidType>& matroid, const permutation& permutation)
+  {
+    matroid_set_perm1(matroid.data(), permutation);
+  }
+
 }
 
 #endif /* MATROID_PERMUTED_HPP_ */
