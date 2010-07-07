@@ -415,7 +415,7 @@ namespace tu {
     /// To searching for parallel-columns we search for parallel rows in the transpose.
     matroid_transposed <MatroidType> transposed_matroid(matroid);
     matrix_transposed <MatrixType> transposed_matrix(matrix);
-    nested_minor_sequence_transposed transposed_nested_minors(nested_minors);
+    nested_minor_sequence_transposed <nested_minor_sequence> transposed_nested_minors(nested_minors);
 
     while (nested_minors.height() < matroid.size1() || nested_minors.width() != matroid.size2())
     {

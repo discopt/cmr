@@ -229,6 +229,53 @@ namespace tu {
     matrix_binary_pivot(matrix.data(), matrix.perm1()(i), matrix.perm2()(j));
   }
 
+  template <typename MatrixType>
+  inline permutation matrix_get_perm1 (matrix_permuted <MatrixType>& matrix)
+  {
+    return matrix.perm1();
+  }
+
+  template <typename MatrixType>
+  inline permutation matrix_get_perm2 (matrix_permuted <MatrixType>& matrix)
+  {
+    return matrix.perm2();
+  }
+
+  template <typename MatrixType>
+  inline permutation matrix_get_perm1 (matrix_transposed <MatrixType>& matrix)
+  {
+    return matrix_get_perm2(matrix.data());
+  }
+
+  template <typename MatrixType>
+  inline permutation matrix_get_perm2 (matrix_transposed <MatrixType>& matrix)
+  {
+    return matrix_get_perm1(matrix.data());
+  }
+
+  template <typename MatrixType>
+  inline void matrix_set_perm1 (matrix_permuted <MatrixType>& matrix, const permutation& permutation)
+  {
+    matrix.perm1() = permutation;
+  }
+
+  template <typename MatrixType>
+  inline void matrix_set_perm2 (matrix_permuted <MatrixType>& matrix, const permutation& permutation)
+  {
+    matrix.perm2() = permutation;
+  }
+
+  template <typename MatrixType>
+  inline void matrix_set_perm1 (matrix_transposed <MatrixType>& matrix, const permutation& permutation)
+  {
+    matrix_set_perm2(matrix.data(), permutation);
+  }
+
+  template <typename MatrixType>
+  inline void matrix_set_perm2 (matrix_transposed <MatrixType>& matrix, const permutation& permutation)
+  {
+    matrix_set_perm1(matrix.data(), permutation);
+  }
 }
 
 #endif /* MATRIX_PERMUTED_HPP_ */

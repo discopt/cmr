@@ -5,6 +5,7 @@
  *          http://www.boost.org/LICENSE_1_0.txt)
  **/
 
+#include "../config.h"
 #include "total_unimodularity.hpp"
 
 #include "algorithm.hpp"
@@ -108,7 +109,12 @@ namespace tu {
     }
 
     /// Decomposition of matroid represented by support matrix
-    integer_matrix worker_matrix(matrix);
+    integer_matrix worker_matrix;
+    if (matrix.size1() < matrix.size2())
+      worker_matrix = matrix;
+    else
+      worker_matrix = make_transposed_matrix(matrix);
+
     integer_matroid worker_matroid(worker_matrix.size1(), worker_matrix.size2());
     support_matrix(worker_matrix);
 
@@ -195,7 +201,12 @@ namespace tu {
     }
 
     /// Decomposition of matroid represented by support matrix
-    integer_matrix worker_matrix(matrix);
+    integer_matrix worker_matrix;
+    if (matrix.size1() < matrix.size2())
+      worker_matrix = matrix;
+    else
+      worker_matrix = make_transposed_matrix(matrix);
+
     integer_matroid worker_matroid(worker_matrix.size1(), worker_matrix.size2());
     support_matrix(worker_matrix);
 
@@ -289,8 +300,13 @@ namespace tu {
     }
 
     /// Decomposition of matroid represented by support matrix
-    integer_matrix worker_matrix(matrix);
-    integer_matroid worker_matroid(matrix.size1(), matrix.size2());
+    integer_matrix worker_matrix;
+    if (matrix.size1() < matrix.size2())
+      worker_matrix = matrix;
+    else
+      worker_matrix = make_transposed_matrix(matrix);
+
+    integer_matroid worker_matroid(worker_matrix.size1(), worker_matrix.size2());
     support_matrix(worker_matrix);
     bool is_tu;
     boost::tie(is_tu, decomposition) = decompose_binary_matroid(worker_matroid, worker_matrix, matroid_element_set(), true, log);
@@ -300,7 +316,18 @@ namespace tu {
     matroid_element_set rows, columns, elements = detail::find_smallest_irregular_minor(decomposition);
     detail::split_elements(elements.begin(), elements.end(), std::inserter(rows, rows.end()), std::inserter(columns, columns.end()));
 
-    detail::violator_strategy* strategy = new detail::greedy_violator_strategy(matrix, rows, columns, log);
+    detail::violator_strategy* strategy;
+    if (matrix.size1() < matrix.size2())
+      strategy = new detail::greedy_violator_strategy(matrix, rows, columns, log);
+    else
+    {
+      matroid_element_set new_rows, new_columns;
+      for (matroid_element_set::const_iterator iter = columns.begin(); iter != columns.end(); ++iter)
+        new_rows.insert(-*iter);
+      for (matroid_element_set::const_iterator iter = rows.begin(); iter != rows.end(); ++iter)
+        new_columns.insert(-*iter);
+      strategy = new detail::greedy_violator_strategy(matrix, new_rows, new_columns, log);
+    }
 
     strategy->search();
     strategy->create_matrix(violator);
