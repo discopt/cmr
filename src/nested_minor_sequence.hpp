@@ -148,6 +148,7 @@ namespace tu {
    * Transpose-proxy of a nested minor sequence
    */
 
+  template <typename NestedMinorSequenceType>
   class nested_minor_sequence_transposed
   {
   public:
@@ -157,7 +158,7 @@ namespace tu {
      * @param sequence Orinal sequence
      */
 
-    nested_minor_sequence_transposed (nested_minor_sequence& sequence) :
+    nested_minor_sequence_transposed (NestedMinorSequenceType& sequence) :
       sequence_(sequence)
     {
 
@@ -169,7 +170,7 @@ namespace tu {
      * @param other Another transpose-proxy of a nested minor sequence.
      */
 
-    nested_minor_sequence_transposed (const nested_minor_sequence_transposed& other) :
+    nested_minor_sequence_transposed (const nested_minor_sequence_transposed <NestedMinorSequenceType>& other) :
       sequence_(other.sequence_)
     {
 
@@ -259,7 +260,7 @@ namespace tu {
     }
 
   private:
-    nested_minor_sequence& sequence_;
+    NestedMinorSequenceType& sequence_;
   };
 
   /**
@@ -269,9 +270,10 @@ namespace tu {
    * @return The transpose proxy
    */
 
-  inline nested_minor_sequence_transposed make_transposed_nested_minor_sequence (nested_minor_sequence& sequence)
+  template <typename NestedMinorSequenceType>
+  inline nested_minor_sequence_transposed <NestedMinorSequenceType> make_transposed_nested_minor_sequence (NestedMinorSequenceType& sequence)
   {
-    return nested_minor_sequence_transposed(sequence);
+    return nested_minor_sequence_transposed <NestedMinorSequenceType> (sequence);
   }
 
 }

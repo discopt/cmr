@@ -416,13 +416,15 @@ namespace tu {
       }
 
       /// Now we really found a separation. We apply the worker-matrix-permutation to the orginal matrix.
-      permutation row_permutation = matrix.perm1() * worker_matrix.perm1();
-      permutation column_permutation = matrix.perm2() * worker_matrix.perm2();
+      permutation perm1 = matrix_get_perm1(matrix);
+      permutation perm2 = matrix_get_perm2(matrix);
+      permutation row_permutation = perm1 * worker_matrix.perm1();
+      permutation column_permutation = perm2 * worker_matrix.perm2();
 
-      matroid.perm1() = row_permutation;
-      matrix.perm1() = row_permutation;
-      matroid.perm2() = column_permutation;
-      matrix.perm2() = column_permutation;
+      matrix_set_perm1(matrix, row_permutation);
+      matrix_set_perm2(matrix, column_permutation);
+      matroid_set_perm1(matroid, row_permutation);
+      matroid_set_perm2(matroid, column_permutation);
 
       assert (matrix_equals(matrix, worker_matrix));
 
@@ -608,6 +610,8 @@ namespace tu {
   inline separation enumerate_separations (MatroidType& matroid, MatrixType& matrix, const NestedMinorSequence& nested_minors,
       matroid_element_set& extra_elements, logger& log)
   {
+    //    std::cout << "\nenumerate_separations works on a " << matroid.size1() << " x " << matroid.size2() << " matrix.\n";
+
     typedef signed char mapping_value_t;
 
     /// Every regular 3-connected matroid which is non-graphic, non-cographic and not isomorphic to R10 must contain R12
@@ -765,6 +769,18 @@ namespace tu {
 
     return separation();
   }
+
+  /**
+   * Enumerates the partitions along the sequence of nested minors, possibly by
+   * transposing the matrix to optimize the enumeration.
+   *
+   * @param matroid Given matroid
+   * @param matrix Representation matrix of the given matroid
+   * @param nested_minors Sequence of nested minors
+   * @param extra_elements Set of matroid-elements to be filled with pivot-elements
+   * @param log Logger
+   * @return true if and only if the partition algorithm was successful
+   */
 
 }
 
