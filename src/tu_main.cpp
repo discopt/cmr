@@ -125,7 +125,7 @@ void print_violator (const tu::integer_matrix& matrix, const tu::submatrix_indic
   std::cout << std::endl;
 }
 
-int run (const std::string& file_name, bool show_certificates, tu::log_level level)
+int run_matroid (const std::string& file_name, bool show_certificates, tu::log_level level)
 {
   /// Open the file
 
@@ -281,5 +281,5 @@ int main (int argc, char **argv)
     return EXIT_FAILURE;
   }
 
-  return run(matrix_file_name, certs, level);
+  return run_matroid(matrix_file_name, certs, level);
 }
