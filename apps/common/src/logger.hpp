@@ -82,7 +82,7 @@ namespace tu {
      * @param amount Number of spaces to increase
      */
 
-    inline void indent (size_t amount = 2)
+    inline void indent (size_t amount = 1)
     {
       _indent += amount;
     }
@@ -93,7 +93,7 @@ namespace tu {
      * @param amount Number of space to decrease
      */
 
-    inline void unindent (size_t amount = 2)
+    inline void unindent (size_t amount = 1)
     {
       _indent -= amount;
     }
