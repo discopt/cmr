@@ -6,6 +6,9 @@
 \usepackage{listings}
 \usepackage{hyperref}
 \usepackage{natbib}
+\usepackage{pgfplots}
+\usepackage{colortbl}
+\usepackage{booktabs}
 
 % layout
 \oddsidemargin 5mm
@@ -14,17 +17,6 @@
 \topmargin 0mm
 \textheight 20cm
 
-%\evensidemargin -0.2cm
-%\parindent0cm
-%\parskip=1ex plus .25ex minus .25ex
-
-%\definecolor{red}{rgb}{1,0,0}
-%\definecolor{blue}{rgb}{0,0,1}
-
-% listings
-%\usepackage{listings}
-%\lstset{language=C}
-
 \newcommand{\R}{\ensuremath{\mathbb{R}}}
 \newcommand{\Z}{\ensuremath{\mathbb{Z}}}
 \newcommand{\BG}[1]{\ensuremath{\mathrm{BG}(#1)}}
@@ -32,16 +24,19 @@
 \newcommand{\G}[1]{\ensuremath{\mathrm{G}(#1)}}
 \newcommand{\Cpp}{{\em C++ }}
 \newcommand{\Polymake}{{\em polymake }}
+\newcommand{\Boost}{{\em Boost C++ Libraries}}
+
+\pgfkeys{/pgf/number format/.cd,fixed,precision=2,zerofill=true}
 
 \begin{document}
 \topmargin 20mm
 \pagestyle{empty}
 
 
-\title{\huge \bf Testing Total Unimodularity }
+\title{\huge \bf Testing Total Unimodularity}
 
 \date{July 2010}
-\author{Matthias Walter\\ Institute for Mathematical Optimization, \\ University of Magdeburg}
+\author{Matthias Walter\\ Department of Mathematics/IMO, \\ University of Magdeburg}
 
 \maketitle
 
@@ -146,7 +141,7 @@ the wrong determinant and can be returned as a violator.
 
 The \Cpp library is the heart of the implementation.
 The frontend program attached to it simply uses it, as well as the \Polymake extension does.
-The interface depends on {\tt boost::numeric::ublas::matrix} which is a matrix template from the \cite{Boost}.
+The interface depends on {\tt boost::numeric::ublas::matrix} which is a matrix template from the \Boost \cite{Boost}.
 The interface belonging to the main algorithm has variants for the certified versions. In face you can test matrix
 for total unimodularity with or without positive and/or negative certificates. To use it, you just need to include one header.
 
@@ -188,7 +183,7 @@ Password:
 \end{lstlisting}}
 
 Before becoming root, everything should be compiled, which is tested via the console tool.
-The library depends on the \cite{Boost}, which must be installed on your system. If you cannot get it to work and
+The library depends on the \Boost \cite{Boost}, which must be installed on your system. If you cannot get it to work and
 only need the console tool, you can download the ``noboost''-package or checkout the ``noboost'' branch in the Git repository.
 
 \subsection{Important types}
@@ -236,6 +231,8 @@ This {\em enum} can be used to make the routines more or less verbose. It's valu
 \item[LOG\_VERBOSE]
   Prints the decomposition history line by line.
 \end{itemize}
+
+\newpage
 
 \subsection{API}
 
@@ -425,7 +422,7 @@ Column indices in range [0,2]:
 
 \section{The \Polymake extension }
 
-There is also an extension to the \Polymake system (see \citeauthor{Polymake}) which can be used to test matrices in \Polymake
+There is also an extension to the \Polymake \cite{Polymake} system which can be used to test matrices in \Polymake
 for total unimodularity, possibly giving a violating submatrix. As the effort to add objects for
 the matroid decomposition tree to \Polymake is too big, there is no way to obtain a certificate for
 an affirmative answer.
@@ -484,90 +481,98 @@ $
 The library depends on the \cite{Boost}, which must be installed on your system.
 Unlike the console tool, there is no way around it, except installing it.
 
+\newpage
+
 \section{Benchmark results}
 
 There are different types of matrices for which the different methods achieve different running times. We present results for the Ghouila-Houri method {\em GH}, the
-determinant-based method {\em D} and the matroid-based algorithm {\em M}. All measurements were on a Core 2 Duo, 2.5 GHz each CPU.
-
-
-%The most trivial matrices are those with many small
-%violating submatrices, for which {\em GH} and {\em D} need nearly no effort to find the answer. Depending on wether the support matrix can be signed to the original, {\em M}
-%might already take some time to figure this out, because it has to do a matroid decomposition with an enumerative part. 
-%A bit more interesting are network matrices, which represent graphic and cographic matroids. While {\em GH} already reveals its exponential running time, {\em D} cannot be run at all,
-%as the running time explodes. {\em M} is very quick. Although it has to do a matroid decomposition, the enumerative part is not necessary, when all the 3-connected matroids
-%are graphic or cographic.
-%The toughest matrices are those deduced from complementary totally unimodular matrices. Those have a special property. They can be transformed into matrices that are not totally unimodular, but
-%only have one huge violating submatrix. It's clear that {\em GH} and {\em D} don't have any chance to find this violation quickly.
+determinant-based method {\em D} and the matroid-based algorithm {\em M}. All measurements were on an Intel Core i5 M 520, running on 2.4 GHz.
 
 \subsection{Random matrices}
 
+The simplest type of $-1,0,+1$-matrix is a random one.
+Our algorithm starts by testing whether the support matrix of the input matrix can be signed in a specific way back to the original matrix.
+As those random matrices are almost always not t.u., we modify them such that they have this sign-property.
+Testing for signedness takes nearly no time compared to the main algorithm and we are interested in how good the latter performs on these.
+
+\begin{table}[h]
+  \begin{center}
+  \pgfplotstabletypeset[
+columns/height/.style={column name={\footnotesize Height}},
+columns/width/.style={column name={\footnotesize Width}},
+columns/matroid/.style={column name={\footnotesize Matroid ($s$)}},
+columns/matroid+cert/.style={column name={\footnotesize Matroid w/cert. ($s$)}},
+columns/gh/.style={column name={\footnotesize Ghouila-Houri ($s$)}},
+columns/det/.style={column name={\footnotesize Determinant ($s$)}},
+every even row/.style={before row={\rowcolor[gray]{0.9}}},
+every head row/.style={before row=\toprule,after row=\midrule},
+every last row/.style={after row=\bottomrule},
+columns/matroid/.style={empty cells with={$> 3600$}},
+columns/matroid+cert/.style={empty cells with={$> 3600$}},
+columns/height/.append style={precision=0},
+columns/width/.append style={precision=0},
+columns/det/.style={empty cells with={N/A}},
+]{rnd.dat}
+  \end{center}
+  \caption{Performance for random matrices}
+\end{table}
+
+The determinant-based implementation uses {\em int}-based bitsets as a datastructure
+and hence does not work for matrices with more rows/columns than the bit-size of the architecture.
+The N/A entries indicate that the implementation is not capable of handling these matrices.
+But we hope that the results in the next section convince the reader that improving the implementation
+is probably a waste of time.
+
+\newpage
+
 \subsection{Network matrices}
+
+To have test instances matrices that are totally unimodular,
+we implemented a generator for random network matrices.
+It generates a directed graph of a certain size, finds a spanning tree and derives the corresponding network matrix from these two.
+
+\begin{table}[h]
+  \begin{center}
+  \pgfplotstabletypeset[
+columns/height/.style={column name={\footnotesize Height}},
+columns/width/.style={column name={\footnotesize Width}},
+columns/matroid/.style={column name={\footnotesize Matroid ($s$)}},
+columns/matroid+cert/.style={column name={\footnotesize Matroid w/cert. ($s$)}},
+columns/gh/.style={column name={\footnotesize Ghouila-Houri ($s$)}},
+columns/det/.style={column name={\footnotesize Determinant ($s$)}},
+every even row/.style={before row={\rowcolor[gray]{0.9}}},
+every head row/.style={before row=\toprule,after row=\midrule},
+every last row/.style={after row=\bottomrule},
+empty cells with={$> 3600$},
+columns/height/.append style={precision=0},
+columns/width/.append style={precision=0},
+]{net.dat}
+  \end{center}
+  \caption{Performance for network matrices}
+\end{table}
 
 \subsection{Complementary totally unimodular matrices}
 
-\subsection{Matrices deduced from almost regular matroids}
+In \cite{Truemper98} complementary totally unimodular matrices are introduced. They have some interesting properties, although we only want to mention that they are t.u. and
+can be made non-t.u. be adding a single row and a single column. Furthermore this augmented matrix has exactly one violating submatrix (an single entry having absolute value of 2),
+which can be ``hidden'' by pivoting. Those are considered very tough examples, as finding the single violator is impossible by any enumeration-based scheme, even if that uses heuristics.
 
+Unfortunately we were only able to generate c.t.u. matrices of small size. (less than $50 \times 50$) Those were still tested in some milliseconds and not included in our benchmark results.
 
-%Table \ref{results} contains running times for matroid-based ({\it matroid}) and ghouila-houri-based ({\it gh}) tests on a Core 2 Duo, 2.5 GHz each CPU.
-%The examples are {\it complementary total unimodular} (ctu\_*) matrices, matrices originating from {\it almost regular matroids} (ar\_*), network matrices (net\_*)
-%and randomly generated matrices (rnd\_*). The ones obtained from {\it almost regular matroids} are hard to solve for naive algorithms, as they only contain
-%one violating submatrix.
-%We only included almost square matrices, because the {\it ghouila-houri-based} algorithm enumerates column subsets and is thus not symmetric regarding to row and column dimensions.
+\section{Conclusions}
 
+The first obvious result is that the matroid-based implementation superseedes the determinant-based implementation for random and for network matrices,
+as well as the Ghouila-Houri-based for network matrices only.
+The latter performs so well on random matrices because there are many violators.
+This can be verified by computing certificates for many such matrices, which almost always yields a $3 \times 3$ or $4 \times 4$ violator.
 
-%net\_12x12.mat   & $12 \times 12$   & yes & 0&02 s                 & 0&01 s   \\\hline
-%net\_18x18.mat   & $18 \times 18$   & yes & 2&01 s                 & 0&02 s   \\\hline
-%net\_24x24.mat   & $24 \times 24$   & yes & 294&9 s                & 0&03 s   \\\hline
-%net\_30x30.mat   & $30 \times 30$   & yes & 4232&0 s               & 0&04 s   \\\hline
-%\hline
-%ctu\_15x15.mat   & $15 \times 15$   & yes & 0&55 s                 & 0&01 s \\\hline
-%ctu\_22x22.mat   & $22 \times 22$   & yes & 1767&0 s               & 0&04 s \\\hline
-%ctu\_27x27.mat   & $27 \times 27$   & yes & x&y s                  & 0&03 s \\\hline
-%ctu\_64x65.mat   & $64 \times 65$   & yes & \multicolumn{2}{c|}{-} & 0&47 s \\\hline
-%\hline
-%rnd\_64x65.mat   & $64 \times 65$   & no  & \multicolumn{2}{c|}{-} & 2&54 s \\\hline
-%rnd\_100x100.mat & $100 \times 100$ & no  & \multicolumn{2}{c|}{-} & 11&53 s \\\hline
-%rnd\_200x200.mat & $200 \times 200$ & no  & \multicolumn{2}{c|}{-} & 147&15 s \\\hline
-%rnd\_400x400.mat & $400 \times 400$ & no  & \multicolumn{2}{c|}{-} & 2184&78 s \\\hline
+The determinant-based algorithm is basically useless for any practical purpose, while the Ghouila-Houri-based algorithm reveals its exponential running-time behaviors slighty later.
+Our implementation is not only efficient in theory. The experiments show that it can be effectively used for matrices up to $100 \times 100$ and makes testing of $1000 \times 1000$ matrices
+possible in running times less than a day.
 
-%\begin{table}[h]
-%	\begin{center}
-%		\begin{tabular}{|l|c|c|r|r|}
-%			\hline
-%			\bfseries Instance & \bfseries Dimensions & \bfseries totally unimodular & \bfseries gh & \bfseries matroid \\\hline
-%net\_12x12.mat   & $12 \times 12$   & yes & $< 1s$    & $< 1s$   \\\hline
-%net\_18x18.mat   & $18 \times 18$   & yes & $2s$      & $< 1s$   \\\hline
-%net\_24x24.mat   & $24 \times 24$   & yes & $295s$    & $< 1s$   \\\hline
-%net\_30x30.mat   & $30 \times 30$   & yes & $> 10^4s$ & $< 1s$   \\\hline
-%\hline
-%ctu\_15x15.mat   & $15 \times 15$   & yes & $< 1s$    & $< 1s$ \\\hline
-%ctu\_22x22.mat   & $22 \times 22$   & yes & $1767s$   & $< 1s$ \\\hline
-%ctu\_27x27.mat   & $27 \times 27$   & yes & $> 10^4s$ & $< 1s$ \\\hline
-%ctu\_64x65.mat   & $64 \times 65$   & yes & $> 10^4s$ & $< 1s$ \\\hline
-%\hline
-%ar\_22x22.mat    & $22 \times 22$   & no  & $94s$      & $< 1s$ \\\hline
-%ar\_25x25.mat    & $25 \times 25$   & no  & $6965s$    & $< 1s$ \\\hline
-%ar\_28x28.mat    & $28 \times 28$   & no  & $> 10^4s$  & $< 1s$ \\\hline
-%\hline
-%rnd\_20x20.mat   & $20 \times 20$   & no  & $< 1s$    & $< 1s$ \\\hline
-%rnd\_64x65.mat   & $64 \times 65$   & no  & $< 1s$    & $3s$ \\\hline
-%rnd\_100x100.mat & $100 \times 100$ & no  & $< 1s$    & $12s$ \\\hline
-%rnd\_200x200.mat & $200 \times 200$ & no  & $< 1s$    & $148s$ \\\hline
-%rnd\_400x400.mat & $400 \times 400$ & no  & $< 1s$    & $2185s$ \\\hline
-%		\end{tabular}
-%	\end{center}
-%	\caption{Running times for some example matrices}\label{results}
-%\end{table}
+In addition, it is much more complete as it can print certificates that prove the result. This property lets the library user verify the results without the need to read lots of source code.
 
-%For a totally unimodular matrix, the ghouila-houri-based test really needs exponential time, as all enumerations must be carried out, while for
-%non-totally unimodular matrices, depending on the amount of violating submatrices, it might be very fast. Contrary to this, the matroid-based
-%test's running time seems to not depend on the structure of the matrix too much and is the winner, at least if there is a chance for
-%the matrix being totally unimodular.
-
-%\newpage
-
-
-\bibliographystyle{plainnat}
+\bibliographystyle{plain}
 \bibliography{references}
 
 \end{document}
