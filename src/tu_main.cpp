@@ -125,7 +125,7 @@ void print_violator (const tu::integer_matrix& matrix, const tu::submatrix_indic
   std::cout << std::endl;
 }
 
-int run (const std::string& file_name, bool show_certificates, tu::log_level level)
+int run_matroid (const std::string& file_name, bool show_certificates, tu::log_level level)
 {
   /// Open the file
 
@@ -202,9 +202,115 @@ int run (const std::string& file_name, bool show_certificates, tu::log_level lev
   return EXIT_SUCCESS;
 }
 
-bool extract_option (char c, bool& certs, tu::log_level& level, bool& help)
+int run_ghouila_houri (const std::string& file_name)
 {
-  if (c == 'h')
+  /// Open the file
+
+  std::ifstream file(file_name.c_str());
+  if (!file.good())
+  {
+    std::cout << "Error: cannot open file \"" << file_name << "\"." << std::endl;
+    return EXIT_FAILURE;
+  }
+
+  /// Read height and width
+
+  size_t height, width;
+  file >> height >> width;
+  if (!file.good())
+  {
+    std::cout << "Error: cannot read height and width from input file." << std::endl;
+    return EXIT_FAILURE;
+  }
+
+  /// Read matrix entries
+
+  tu::integer_matrix matrix(height, width);
+  for (size_t row = 0; row < height; ++row)
+  {
+    for (size_t column = 0; column < width; ++column)
+    {
+      if (!file.good())
+      {
+        std::cout << "Error: cannot read matrix data." << std::endl;
+      }
+      int value;
+      file >> value;
+      matrix(row, column) = value;
+    }
+  }
+
+  file.close();
+
+  if (tu::ghouila_houri_is_totally_unimodular(matrix))
+  {
+    std::cout << "The " << matrix.size1() << " x " << matrix.size2() << " matrix is totally unimodular." << std::endl;
+  }
+  else
+  {
+    std::cout << "The " << matrix.size1() << " x " << matrix.size2() << " matrix is not totally unimodular." << std::endl;
+  }
+
+  return EXIT_SUCCESS;
+}
+
+int run_determinants (const std::string& file_name)
+{
+  /// Open the file
+
+  std::ifstream file(file_name.c_str());
+  if (!file.good())
+  {
+    std::cout << "Error: cannot open file \"" << file_name << "\"." << std::endl;
+    return EXIT_FAILURE;
+  }
+
+  /// Read height and width
+
+  size_t height, width;
+  file >> height >> width;
+  if (!file.good())
+  {
+    std::cout << "Error: cannot read height and width from input file." << std::endl;
+    return EXIT_FAILURE;
+  }
+
+  /// Read matrix entries
+
+  tu::integer_matrix matrix(height, width);
+  for (size_t row = 0; row < height; ++row)
+  {
+    for (size_t column = 0; column < width; ++column)
+    {
+      if (!file.good())
+      {
+        std::cout << "Error: cannot read matrix data." << std::endl;
+      }
+      int value;
+      file >> value;
+      matrix(row, column) = value;
+    }
+  }
+
+  file.close();
+
+  if (tu::determinant_is_totally_unimodular(matrix))
+  {
+    std::cout << "The " << matrix.size1() << " x " << matrix.size2() << " matrix is totally unimodular." << std::endl;
+  }
+  else
+  {
+    std::cout << "The " << matrix.size1() << " x " << matrix.size2() << " matrix is not totally unimodular." << std::endl;
+  }
+
+  return EXIT_SUCCESS;
+}
+
+bool extract_option (char c, char& algorithm, bool& certs, tu::log_level& level, bool& help)
+{
+  if (c == 'm' || c == 'd' || c == 'g')
+    algorithm = c;
+  else if (c == 'h')
     help = true;
   else if (c == 'c')
     certs = true;
@@ -227,6 +333,7 @@ int main (int argc, char **argv)
   bool certs = false;
   tu::log_level level = tu::LOG_UPDATING;
   bool help = false;
+  char algorithm = 'm';
 
   bool options_done = false;
   for (int a = 1; a < argc; ++a)
@@ -244,7 +351,7 @@ int main (int argc, char **argv)
       {
         for (size_t i = 1; i < current.size(); ++i)
         {
-          if (!extract_option(current[i], certs, level, help))
+          if (!extract_option(current[i], algorithm, certs, level, help))
           {
             std::cout << "Unknown option: -" << current[i] << "\nSee " << argv[0] << " -h for usage." << std::endl;
             return EXIT_FAILURE;
@@ -267,10 +374,14 @@ int main (int argc, char **argv)
     std::cout << "Usage: " << argv[0] << " [OPTIONS] [--] MATRIX_FILE\n";
     std::cout << "Options:\n";
     std::cout << " -h Shows a help message.\n";
-    std::cout << " -c Prints certificates: A matroid decomposition if the matrix is totally unimodular and a violating submatrix otherwise.\n";
-    std::cout << " -u Updating logging (default).\n";
-    std::cout << " -v Verbose logging.\n";
-    std::cout << " -q No logging at all.\n";
+    std::cout << " -m Test via matroid-based algorithm (default).\n";
+    std::cout << " -g Test via criterion of ghouli-houri (slow).\n";
+    std::cout << " -d Test via enumeration of all subdeterminants (very slow!).\n";
+    std::cout
+        << " -c Prints certificates: A matroid decomposition if the matrix is totally unimodular and a violating submatrix otherwise. (only matroid-based algorithm)\n";
+    std::cout << " -u Updating logging (default, affects only -m).\n";
+    std::cout << " -v Verbose logging. (affects only -m)\n";
+    std::cout << " -q No logging at all. (affects only -m)\n";
     std::cout << std::flush;
     return EXIT_SUCCESS;
   }
@@ -281,5 +392,25 @@ int main (int argc, char **argv)
     return EXIT_FAILURE;
   }
 
-  return run(matrix_file_name, certs, level);
+  if (algorithm != 'm' && certs)
+  {
+    std::cout << "Certificates are only available for matroid-based algorithm!\nSee " << argv[0] << " -h for usage." << std::endl;
+    return EXIT_FAILURE;
+  }
+  if (algorithm != 'm' && level != tu::LOG_UPDATING)
+  {
+    std::cout << "Logging options only have an affect on matroid-based algorithm!" << std::endl;
+  }
+
+  if (algorithm == 'm')
+    return run_matroid(matrix_file_name, certs, level);
+  else if (algorithm == 'g')
+    return run_ghouila_houri(matrix_file_name);
+  else if (algorithm == 'd')
+    return run_determinants(matrix_file_name);
+  else
+  {
+    std::cerr << "Fatal error: Invalid algorithm selected." << std::endl;
+    return EXIT_FAILURE;
+  }
 }
