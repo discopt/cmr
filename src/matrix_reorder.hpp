@@ -12,7 +12,8 @@
 #include "matroid_transposed.hpp"
 #include "matrix.hpp"
 
-namespace tu {
+namespace tu
+{
 
   /**
    * Applies a row permutation to a given matrix, i.e. performs the
@@ -23,7 +24,7 @@ namespace tu {
    */
 
   template <typename MatrixType>
-  inline void matrix_apply_row_permutation (MatrixType& matrix, const permutation& perm)
+  inline void matrix_apply_row_permutation(MatrixType& matrix, const permutation& perm)
   {
     permutation p = perm;
     for (size_t row = 0; row < matrix.size1(); ++row)
@@ -43,7 +44,7 @@ namespace tu {
    */
 
   template <typename MatrixType>
-  inline void matrix_apply_column_permutation (MatrixType& matrix, const permutation& perm)
+  inline void matrix_apply_column_permutation(MatrixType& matrix, const permutation& perm)
   {
     matroid_transposed <MatrixType> transposed(matrix);
     matrix_apply_row_permutation(transposed, perm);
@@ -65,7 +66,7 @@ namespace tu {
      * @param less Used functor to compare elements
      */
 
-    matrix_reorder_row_less (const MatrixType& matrix, size_t column_first, size_t column_beyond, Less less) :
+    matrix_reorder_row_less(const MatrixType& matrix, size_t column_first, size_t column_beyond, Less less) :
       matrix_(matrix), column_first_(column_first), column_beyond_(column_beyond), less_(less)
     {
 
@@ -79,7 +80,7 @@ namespace tu {
      * @return false if and only if the first row is lexicographically greater than the second.
      */
 
-    bool operator() (size_t a, size_t b)
+    bool operator()(size_t a, size_t b)
     {
       for (size_t column = column_first_; column < column_beyond_; ++column)
       {
@@ -114,7 +115,7 @@ namespace tu {
    */
 
   template <typename MatrixType, typename ElementLess>
-  inline void matrix_reorder_rows (const MatrixType& matrix, size_t row_first, size_t row_beyond, size_t column_first, size_t column_beyond,
+  inline void matrix_reorder_rows(const MatrixType& matrix, size_t row_first, size_t row_beyond, size_t column_first, size_t column_beyond,
       ElementLess element_less, permutation& result_permutation)
   {
     result_permutation.reset(matrix.size1());
@@ -135,7 +136,7 @@ namespace tu {
    */
 
   template <typename MatrixType, typename ElementLess>
-  inline void matrix_reorder_columns (const MatrixType& matrix, size_t row_first, size_t row_beyond, size_t column_first, size_t column_beyond,
+  inline void matrix_reorder_columns(const MatrixType& matrix, size_t row_first, size_t row_beyond, size_t column_first, size_t column_beyond,
       ElementLess element_less, permutation& result_permutation)
   {
     const matrix_transposed <MatrixType> transposed(matrix);
@@ -154,7 +155,7 @@ namespace tu {
    */
 
   template <typename MatrixType, typename ElementLess>
-  inline void matrix_reorder_rows (MatrixType& matrix, size_t row_first, size_t row_beyond, size_t column_first, size_t column_beyond,
+  inline void matrix_reorder_rows(MatrixType& matrix, size_t row_first, size_t row_beyond, size_t column_first, size_t column_beyond,
       ElementLess element_less)
   {
     permutation perm;
@@ -174,7 +175,7 @@ namespace tu {
    */
 
   template <typename MatrixType, typename ElementLess>
-  inline void matrix_reorder_columns (MatrixType& matrix, size_t row_first, size_t row_beyond, size_t column_first, size_t column_beyond,
+  inline void matrix_reorder_columns(MatrixType& matrix, size_t row_first, size_t row_beyond, size_t column_first, size_t column_beyond,
       ElementLess element_less)
   {
     matrix_transposed <MatrixType> transposed(matrix);

@@ -10,7 +10,8 @@
 
 #include <vector>
 
-namespace tu {
+namespace tu
+{
 
   template <typename MatrixType>
   class vector_three_connectivity
@@ -24,13 +25,13 @@ namespace tu {
     static const unsigned char PARALLEL = 2;
     static const unsigned char OTHER = 3;
 
-    vector_three_connectivity (const matrix_type& matrix, size_t dimension, size_t base) :
+    vector_three_connectivity(const matrix_type& matrix, size_t dimension, size_t base) :
       matrix_(matrix), data_(matrix.size2())
     {
       reset(dimension, base);
     }
 
-    vector_three_connectivity (const vector_three_connectivity <MatrixType>& other) :
+    vector_three_connectivity(const vector_three_connectivity <MatrixType>& other) :
       matrix_(other.matrix_)
     {
       dimension_ = other.dimension_;
@@ -38,7 +39,7 @@ namespace tu {
       data_ = other.data_;
     }
 
-    void reset (size_t dimension, size_t base)
+    void reset(size_t dimension, size_t base)
     {
       dimension_ = dimension;
       base_ = base;
@@ -77,47 +78,47 @@ namespace tu {
       }
     }
 
-    ~vector_three_connectivity ()
+    ~vector_three_connectivity()
     {
 
     }
 
-    inline size_t base () const
+    inline size_t base() const
     {
       return base_;
     }
 
-    inline size_t dimension () const
+    inline size_t dimension() const
     {
       return dimension_;
     }
 
-    bool is_parallel (size_t index) const
+    bool is_parallel(size_t index) const
     {
       return data_[index].first == PARALLEL;
     }
 
-    bool is_zero (size_t index) const
+    bool is_zero(size_t index) const
     {
       return data_[index].first == ZERO_VECTOR;
     }
 
-    bool is_unit (size_t index) const
+    bool is_unit(size_t index) const
     {
       return data_[index].first == UNIT_VECTOR;
     }
 
-    bool is_other (size_t index) const
+    bool is_other(size_t index) const
     {
       return data_[index].first == OTHER;
     }
 
-    size_t get_referred (size_t index) const
+    size_t get_referred(size_t index) const
     {
       return data_[index].second;
     }
 
-    void swap_cross (size_t index1, size_t index2)
+    void swap_cross(size_t index1, size_t index2)
     {
       assert(index1 < dimension_);
       assert(index2 < dimension_);
@@ -134,7 +135,7 @@ namespace tu {
       }
     }
 
-    void swap_vectors (size_t index1, size_t index2)
+    void swap_vectors(size_t index1, size_t index2)
     {
       assert(index1 >= base_);
       assert(index2 >= base_);
@@ -142,7 +143,7 @@ namespace tu {
       std::swap(data_[index1], data_[index2]);
     }
 
-    void enlarge_base (size_t amount = 1)
+    void enlarge_base(size_t amount = 1)
     {
       while (amount--)
       {
@@ -158,7 +159,7 @@ namespace tu {
       }
     }
 
-    void enlarge_dimension (size_t amount = 1)
+    void enlarge_dimension(size_t amount = 1)
     {
       //        std::cout << "Before:" << std::endl;
       //        for (size_t c = 0; c < 10; ++c)
@@ -225,7 +226,7 @@ namespace tu {
       //        }
     }
 
-    bool operator== (const vector_three_connectivity <MatrixType>& other)
+    bool operator==(const vector_three_connectivity <MatrixType>& other)
     {
       if (other.base_ != base_)
         return false;
@@ -239,7 +240,7 @@ namespace tu {
       return true;
     }
 
-    std::ostream& print (std::ostream& stream)
+    std::ostream& print(std::ostream& stream)
     {
       stream << "base = " << base_ << ", dim = " << dimension_ << "\n";
       for (size_t i = 0; i < data_.size(); ++i)
@@ -251,7 +252,7 @@ namespace tu {
 
   private:
 
-    bool are_equal (size_t row_first, size_t row_beyond, size_t column1, size_t column2)
+    bool are_equal(size_t row_first, size_t row_beyond, size_t column1, size_t column2)
     {
       for (size_t row = row_first; row < row_beyond; ++row)
       {

@@ -12,7 +12,7 @@
 #include "total_unimodularity.hpp"
 #include "matroid_decomposition.hpp"
 
-void print_matroid_graph (const tu::matroid_graph& graph, const std::string& indent = "")
+void print_matroid_graph(const tu::matroid_graph& graph, const std::string& indent = "")
 {
   std::cout << boost::num_vertices(graph) << " nodes and " << boost::num_edges(graph) << " edges:";
 
@@ -32,7 +32,7 @@ void print_matroid_graph (const tu::matroid_graph& graph, const std::string& ind
   std::cout << '\n';
 }
 
-void print_decomposition (const tu::decomposed_matroid* decomposition, std::string indent = "")
+void print_decomposition(const tu::decomposed_matroid* decomposition, std::string indent = "")
 {
   if (decomposition->is_leaf())
   {
@@ -101,7 +101,7 @@ void print_decomposition (const tu::decomposed_matroid* decomposition, std::stri
   }
 }
 
-void print_violator (const tu::integer_matrix& matrix, const tu::submatrix_indices& violator)
+void print_violator(const tu::integer_matrix& matrix, const tu::submatrix_indices& violator)
 {
   typedef boost::numeric::ublas::matrix_indirect <const tu::integer_matrix, tu::submatrix_indices::indirect_array_type> indirect_matrix_t;
 
@@ -124,7 +124,7 @@ void print_violator (const tu::integer_matrix& matrix, const tu::submatrix_indic
   std::cout << std::endl;
 }
 
-int run_matroid (const std::string& file_name, bool show_certificates, tu::log_level level)
+int run_matroid(const std::string& file_name, bool show_certificates, tu::log_level level)
 {
   /// Open the file
 
@@ -196,24 +196,24 @@ int run_matroid (const std::string& file_name, bool show_certificates, tu::log_l
     {
       std::cout << "The " << matrix.size1() << " x " << matrix.size2() << " matrix is not totally unimodular." << std::endl;
 
-//      tu::integer_matrix foo (matrix);
-//      tu::sign_matrix(foo);
-//
-//      for (size_t r = 0; r < foo.size1(); ++r)
-//      {
-//        for (size_t c = 0; c < foo.size2(); ++c)
-//        {
-//          std::cout << " " << foo(r,c);
-//        }
-//        std::cout << std::endl;
-//      }
+      //      tu::integer_matrix foo (matrix);
+      //      tu::sign_matrix(foo);
+      //
+      //      for (size_t r = 0; r < foo.size1(); ++r)
+      //      {
+      //        for (size_t c = 0; c < foo.size2(); ++c)
+      //        {
+      //          std::cout << " " << foo(r,c);
+      //        }
+      //        std::cout << std::endl;
+      //      }
     }
   }
 
   return EXIT_SUCCESS;
 }
 
-int run_ghouila_houri (const std::string& file_name)
+int run_ghouila_houri(const std::string& file_name)
 {
   /// Open the file
 
@@ -265,7 +265,7 @@ int run_ghouila_houri (const std::string& file_name)
   return EXIT_SUCCESS;
 }
 
-int run_determinants (const std::string& file_name)
+int run_determinants(const std::string& file_name)
 {
   /// Open the file
 
@@ -317,7 +317,7 @@ int run_determinants (const std::string& file_name)
   return EXIT_SUCCESS;
 }
 
-bool extract_option (char c, char& algorithm, bool& certs, tu::log_level& level, bool& help)
+bool extract_option(char c, char& algorithm, bool& certs, tu::log_level& level, bool& help)
 {
   if (c == 'm' || c == 'd' || c == 'g')
     algorithm = c;
@@ -337,7 +337,7 @@ bool extract_option (char c, char& algorithm, bool& certs, tu::log_level& level,
   return true;
 }
 
-int main (int argc, char **argv)
+int main(int argc, char **argv)
 {
   /// Possible parameters
   std::string matrix_file_name = "";

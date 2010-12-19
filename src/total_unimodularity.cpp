@@ -14,7 +14,8 @@
 #include "signing.hpp"
 #include "logger.hpp"
 
-namespace tu {
+namespace tu
+{
 
   /**
    * Returns a decomposition of a given binary matroid into a k-sum-decomposition (k=1,2,3)
@@ -25,7 +26,7 @@ namespace tu {
    * @return Root of decomposition tree
    */
 
-  decomposed_matroid* decompose_binary_matroid (const integer_matrix& matrix, log_level level)
+  decomposed_matroid* decompose_binary_matroid(const integer_matrix& matrix, log_level level)
   {
     logger log(level);
 
@@ -46,7 +47,7 @@ namespace tu {
    * @return true if and only if the matrix is totally unimodular
    */
 
-  bool is_totally_unimodular (const integer_matrix& matrix, log_level level)
+  bool is_totally_unimodular(const integer_matrix& matrix, log_level level)
   {
     logger log(level);
 
@@ -136,7 +137,7 @@ namespace tu {
    * @return true if and only if the matrix is totally unimodular
    */
 
-  bool is_totally_unimodular (const integer_matrix& matrix, decomposed_matroid*& decomposition, log_level level)
+  bool is_totally_unimodular(const integer_matrix& matrix, decomposed_matroid*& decomposition, log_level level)
   {
     logger log(level);
 
@@ -229,7 +230,7 @@ namespace tu {
    * @return true if and only if the matrix is totally unimodular
    */
 
-  bool is_totally_unimodular (const integer_matrix& matrix, decomposed_matroid*& decomposition, submatrix_indices& violator, log_level level)
+  bool is_totally_unimodular(const integer_matrix& matrix, decomposed_matroid*& decomposition, submatrix_indices& violator, log_level level)
   {
     logger log(level);
 
@@ -349,7 +350,7 @@ namespace tu {
    * @return true if and only if the matrix is totally unimodular
    */
 
-  bool is_totally_unimodular (const integer_matrix& matrix, submatrix_indices& violator, log_level level)
+  bool is_totally_unimodular(const integer_matrix& matrix, submatrix_indices& violator, log_level level)
   {
     decomposed_matroid* decomposition;
 
@@ -368,7 +369,7 @@ namespace tu {
    * @return true if and only if the support matrix can be signed to the orignal
    */
 
-  bool is_signed_matrix (const integer_matrix& matrix)
+  bool is_signed_matrix(const integer_matrix& matrix)
   {
     if (matrix.size2() > matrix.size1())
     {
@@ -391,7 +392,7 @@ namespace tu {
    * @return true if and only if the support matrix can be signed to the original
    */
 
-  bool is_signed_matrix (const integer_matrix& matrix, submatrix_indices& violator)
+  bool is_signed_matrix(const integer_matrix& matrix, submatrix_indices& violator)
   {
     if (matrix.size2() > matrix.size1())
     {
@@ -414,7 +415,7 @@ namespace tu {
    * @return true if and only if any change was necessary
    */
 
-  bool sign_matrix (integer_matrix& matrix)
+  bool sign_matrix(integer_matrix& matrix)
   {
     if (matrix.size2() > matrix.size1())
     {
@@ -433,7 +434,7 @@ namespace tu {
    * @param matrix The given matrix
    */
 
-  void support_matrix (integer_matrix& matrix)
+  void support_matrix(integer_matrix& matrix)
   {
     for (size_t i = 0; i < matrix.size1(); ++i)
     {

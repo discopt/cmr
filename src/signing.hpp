@@ -20,7 +20,8 @@
 #include "matrix.hpp"
 #include "bipartite_graph_bfs.hpp"
 
-namespace tu {
+namespace tu
+{
 
   /**
    * Generic function to find a non-zero column and swap it to a given position.
@@ -35,7 +36,7 @@ namespace tu {
    */
 
   template <typename MatrixType>
-  bool find_nonzero_column (MatrixType& matrix, size_t column_first, size_t column_beyond, size_t row_first, size_t row_beyond, size_t target_column)
+  bool find_nonzero_column(MatrixType& matrix, size_t column_first, size_t column_beyond, size_t row_first, size_t row_beyond, size_t target_column)
   {
     for (size_t column = column_first; column < column_beyond; ++column)
     {
@@ -65,7 +66,7 @@ namespace tu {
    */
 
   template <typename MatrixType>
-  void check_sign (const MatrixType& matrix, const std::vector <bipartite_graph_bfs_node>& spanning_tree, const bipartite_graph_dimensions& dim,
+  void check_sign(const MatrixType& matrix, const std::vector <bipartite_graph_bfs_node>& spanning_tree, const bipartite_graph_dimensions& dim,
       const std::set <size_t>& nodes, size_t current_index, size_t column, std::map <size_t, bool>& changes)
   {
     /// Root does never change.
@@ -124,7 +125,7 @@ namespace tu {
      * @return true if and only if the |first| > |second|
      */
 
-    bool operator() (const T& first, const T& second)
+    bool operator()(const T& first, const T& second)
     {
       T abs_first = first >= 0 ? first : -first;
       T abs_second = second >= 0 ? second : -second;
@@ -142,7 +143,7 @@ namespace tu {
    */
 
   template <typename M>
-  bool sign_matrix (M& matrix, submatrix_indices* violator)
+  bool sign_matrix(M& matrix, submatrix_indices* violator)
   {
     bool result = true;
     matrix_permuted <M> permuted(matrix);

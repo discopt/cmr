@@ -10,7 +10,8 @@
 
 #include <vector>
 
-namespace tu {
+namespace tu
+{
 
   /**
    * Models a sequence of nested matroid-minors by storing each nesting-step
@@ -40,13 +41,13 @@ namespace tu {
      * Constructs a sequence which only consists of a W3-minor.
      */
 
-    nested_minor_sequence ();
+    nested_minor_sequence();
 
     /**
      * Destructor
      */
 
-    virtual ~nested_minor_sequence ();
+    virtual ~nested_minor_sequence();
 
     /**
      * Augments the sequence with a minor of the specified extension type.
@@ -54,7 +55,7 @@ namespace tu {
      * @param type The extension type of the biggest minor
      */
 
-    void push (extension_type type);
+    void push(extension_type type);
 
     /**
      * Returns the number of rows in an extension of a given type.
@@ -63,7 +64,7 @@ namespace tu {
      * @return Number of rows
      */
 
-    static size_t get_extension_height (extension_type type);
+    static size_t get_extension_height(extension_type type);
 
     /**
      * Returns the number of columns in an extension of a given type.
@@ -72,7 +73,7 @@ namespace tu {
      * @return Number of columns
      */
 
-    static size_t get_extension_width (extension_type type);
+    static size_t get_extension_width(extension_type type);
 
     /**
      * Returns the extension type of a specific minor.
@@ -81,7 +82,7 @@ namespace tu {
      * @return Extension type
      */
 
-    extension_type get_extension (size_t index) const
+    extension_type get_extension(size_t index) const
     {
       return extensions_[index];
     }
@@ -93,7 +94,7 @@ namespace tu {
      * @return Number of rows
      */
 
-    size_t get_extension_height (size_t index) const
+    size_t get_extension_height(size_t index) const
     {
       return get_extension_height(get_extension(index));
     }
@@ -105,7 +106,7 @@ namespace tu {
      * @return Number of columns
      */
 
-    size_t get_extension_width (size_t index) const
+    size_t get_extension_width(size_t index) const
     {
       return get_extension_width(get_extension(index));
     }
@@ -114,7 +115,7 @@ namespace tu {
      * @return Number of rows in the biggest minor
      */
 
-    size_t height () const
+    size_t height() const
     {
       return height_;
     }
@@ -123,7 +124,7 @@ namespace tu {
      * @return Number of columns in the biggest minor
      */
 
-    size_t width () const
+    size_t width() const
     {
       return width_;
     }
@@ -132,7 +133,7 @@ namespace tu {
      * @return Number of extensions
      */
 
-    size_t size () const
+    size_t size() const
     {
       return extensions_.size();
     }
@@ -158,7 +159,7 @@ namespace tu {
      * @param sequence Orinal sequence
      */
 
-    nested_minor_sequence_transposed (NestedMinorSequenceType& sequence) :
+    nested_minor_sequence_transposed(NestedMinorSequenceType& sequence) :
       sequence_(sequence)
     {
 
@@ -170,7 +171,7 @@ namespace tu {
      * @param other Another transpose-proxy of a nested minor sequence.
      */
 
-    nested_minor_sequence_transposed (const nested_minor_sequence_transposed <NestedMinorSequenceType>& other) :
+    nested_minor_sequence_transposed(const nested_minor_sequence_transposed <NestedMinorSequenceType>& other) :
       sequence_(other.sequence_)
     {
 
@@ -180,7 +181,7 @@ namespace tu {
      * Destructor
      */
 
-    virtual ~nested_minor_sequence_transposed ()
+    virtual ~nested_minor_sequence_transposed()
     {
 
     }
@@ -191,7 +192,7 @@ namespace tu {
      * @param type The extension type of the biggest minor
      */
 
-    void push (nested_minor_sequence::extension_type type)
+    void push(nested_minor_sequence::extension_type type)
     {
       sequence_.push(nested_minor_sequence::extension_type(-int(type)));
     }
@@ -203,7 +204,7 @@ namespace tu {
      * @return Extension type
      */
 
-    nested_minor_sequence::extension_type get_extension (size_t index) const
+    nested_minor_sequence::extension_type get_extension(size_t index) const
     {
       return nested_minor_sequence::extension_type(-int(sequence_.get_extension(index)));
     }
@@ -215,7 +216,7 @@ namespace tu {
      * @return Number of rows
      */
 
-    size_t get_extension_height (size_t index) const
+    size_t get_extension_height(size_t index) const
     {
       return sequence_.get_extension_width(index);
     }
@@ -227,7 +228,7 @@ namespace tu {
      * @return Number of columns
      */
 
-    size_t get_extension_width (size_t index) const
+    size_t get_extension_width(size_t index) const
     {
       return sequence_.get_extension_height(index);
     }
@@ -236,7 +237,7 @@ namespace tu {
      * @return Number of rows in the biggest minor
      */
 
-    size_t height () const
+    size_t height() const
     {
       return sequence_.width();
     }
@@ -245,7 +246,7 @@ namespace tu {
      * @return Number of columns in the biggest minor
      */
 
-    size_t width () const
+    size_t width() const
     {
       return sequence_.height();
     }
@@ -254,7 +255,7 @@ namespace tu {
      * @return Number of extensions
      */
 
-    size_t size () const
+    size_t size() const
     {
       return sequence_.size();
     }
@@ -271,7 +272,7 @@ namespace tu {
    */
 
   template <typename NestedMinorSequenceType>
-  inline nested_minor_sequence_transposed <NestedMinorSequenceType> make_transposed_nested_minor_sequence (NestedMinorSequenceType& sequence)
+  inline nested_minor_sequence_transposed <NestedMinorSequenceType> make_transposed_nested_minor_sequence(NestedMinorSequenceType& sequence)
   {
     return nested_minor_sequence_transposed <NestedMinorSequenceType> (sequence);
   }

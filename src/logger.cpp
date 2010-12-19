@@ -8,7 +8,8 @@
 #include "../config.h"
 #include "logger.hpp"
 
-namespace tu {
+namespace tu
+{
 
   /**
    * Creates a logger object.
@@ -16,7 +17,7 @@ namespace tu {
    * @param level The log level to work with
    */
 
-  logger::logger (log_level level) :
+  logger::logger(log_level level) :
     _indent(0), _level(level)
   {
     _line = new std::stringstream();
@@ -26,7 +27,7 @@ namespace tu {
    * Destructor
    */
 
-  logger::~logger ()
+  logger::~logger()
   {
     delete _line;
   }
@@ -39,7 +40,7 @@ namespace tu {
    * @return Output stream
    */
 
-  std::ostream& operator<< (std::ostream& stream, logger& log)
+  std::ostream& operator<<(std::ostream& stream, logger& log)
   {
     stream << "\r";
     for (size_t i = 0; i < log._indent; ++i)
