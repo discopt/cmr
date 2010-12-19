@@ -22,6 +22,7 @@ libtool
 src/.deps/
 stamp-h1
 src/tu
+src/tu-gen
 data/
 src/boost/
 apps/

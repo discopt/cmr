@@ -11,7 +11,6 @@
 
 #include "total_unimodularity.hpp"
 #include "matroid_decomposition.hpp"
-#include "config.h"
 
 void print_matroid_graph (const tu::matroid_graph& graph, const std::string& indent = "")
 {
@@ -196,6 +195,18 @@ int run_matroid (const std::string& file_name, bool show_certificates, tu::log_l
     else
     {
       std::cout << "The " << matrix.size1() << " x " << matrix.size2() << " matrix is not totally unimodular." << std::endl;
+
+//      tu::integer_matrix foo (matrix);
+//      tu::sign_matrix(foo);
+//
+//      for (size_t r = 0; r < foo.size1(); ++r)
+//      {
+//        for (size_t c = 0; c < foo.size2(); ++c)
+//        {
+//          std::cout << " " << foo(r,c);
+//        }
+//        std::cout << std::endl;
+//      }
     }
   }
 
@@ -353,7 +364,7 @@ int main (int argc, char **argv)
         {
           if (!extract_option(current[i], algorithm, certs, level, help))
           {
-            std::cout << "Unknown option: -" << current[i] << "\nSee " << argv[0] << " -h for usage." << std::endl;
+            std::cerr << "Unknown option: -" << current[i] << "\nSee " << argv[0] << " -h for usage." << std::endl;
             return EXIT_FAILURE;
           }
         }
@@ -363,7 +374,7 @@ int main (int argc, char **argv)
 
     if (matrix_file_name != "")
     {
-      std::cout << "Matrix file was given twice!\nSee " << argv[0] << " -h for usage." << std::endl;
+      std::cerr << "Matrix file was given twice!\nSee " << argv[0] << " -h for usage." << std::endl;
       return EXIT_FAILURE;
     }
     matrix_file_name = current;
@@ -371,24 +382,24 @@ int main (int argc, char **argv)
 
   if (help)
   {
-    std::cout << "Usage: " << argv[0] << " [OPTIONS] [--] MATRIX_FILE\n";
-    std::cout << "Options:\n";
-    std::cout << " -h Shows a help message.\n";
-    std::cout << " -m Test via matroid-based algorithm (default).\n";
-    std::cout << " -g Test via criterion of ghouli-houri (slow).\n";
-    std::cout << " -d Test via enumeration of all subdeterminants (very slow!).\n";
-    std::cout
+    std::cerr << "Usage: " << argv[0] << " [OPTIONS] [--] MATRIX_FILE\n";
+    std::cerr << "Options:\n";
+    std::cerr << " -h Shows a help message.\n";
+    std::cerr << " -m Test via matroid-based algorithm (default).\n";
+    std::cerr << " -g Test via criterion of ghouli-houri (slow).\n";
+    std::cerr << " -d Test via enumeration of all subdeterminants (very slow!).\n";
+    std::cerr
         << " -c Prints certificates: A matroid decomposition if the matrix is totally unimodular and a violating submatrix otherwise. (only matroid-based algorithm)\n";
-    std::cout << " -u Updating logging (default, affects only -m).\n";
-    std::cout << " -v Verbose logging. (affects only -m)\n";
-    std::cout << " -q No logging at all. (affects only -m)\n";
-    std::cout << std::flush;
+    std::cerr << " -u Updating logging (default, affects only -m).\n";
+    std::cerr << " -v Verbose logging. (affects only -m)\n";
+    std::cerr << " -q No logging at all. (affects only -m)\n";
+    std::cerr << std::flush;
     return EXIT_SUCCESS;
   }
 
   if (matrix_file_name == "")
   {
-    std::cout << "No matrix file was given!\nSee " << argv[0] << " -h for usage." << std::endl;
+    std::cerr << "No matrix file was given!\nSee " << argv[0] << " -h for usage." << std::endl;
     return EXIT_FAILURE;
   }
 

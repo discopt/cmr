@@ -1,6 +1,6 @@
 ACLOCAL_AMFLAGS = -I m4
 
-bin_PROGRAMS = tu
+bin_PROGRAMS = tu tu-gen
 lib_LIBRARIES = libtotalunimodularity.a
 
 noinst_headers = \
@@ -32,7 +32,10 @@ noinst_headers = \
 	r10.hpp \
 	row_column_index.hpp \
 	separation.hpp \
-	vector_three_connectivity.hpp
+	vector_three_connectivity.hpp \
+  gen_random.cpp \
+  gen_network.cpp \
+  gen_cycle_violator.cpp
 
 libtotalunimodularity_includedir = $(includedir)/tu/
 
@@ -58,3 +61,8 @@ tu_SOURCES = \
 tu_LDADD = \
   libtotalunimodularity.a
 
+tu_gen_SOURCES = \
+  gen_main.cpp
+
+tu_gen_LDADD = \
+  libtotalunimodularity.a

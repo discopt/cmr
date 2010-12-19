@@ -14,8 +14,10 @@
 #include <map>
 #include <exception>
 #include <cassert>
+#include <boost/random/uniform_int.hpp>
 
-namespace tu {
+namespace tu
+{
 
   /**
    * Exception to indicate that the size of a permutation could not be be reduced.
@@ -66,9 +68,24 @@ namespace tu {
      * @param size Optional size of the permutation
      */
 
-    permutation (size_type size = 0)
+    permutation(size_type size = 0)
     {
       reset(size);
+    }
+
+    /**
+     * Constructs a permutation of a given size,
+     * initializing to a random permutation.
+     *
+     * @param size Optional size of the permutation
+     * @param rng Random number generator.
+     */
+
+    template <typename RandomNumberGenerator>
+    permutation(size_type size, RandomNumberGenerator& rng)
+    {
+      reset(size);
+      shuffle(rng);
     }
 
     /**
@@ -77,7 +94,7 @@ namespace tu {
      * @param other Another permutation
      */
 
-    permutation (const permutation& other)
+    permutation(const permutation& other)
     {
       _data.resize(other.size());
       for (size_type i = 0; i < _data.size(); ++i)
@@ -112,16 +129,33 @@ namespace tu {
      * Resets the permutation to identity.
      */
 
-    inline void reset ()
+    inline void reset()
     {
       reset(_data.size());
+    }
+
+    /**
+     * Shuffles a permutation.
+     *
+     * @param rng Random number generator.
+     */
+
+    template <typename RandomNumberGenerator>
+    void shuffle(RandomNumberGenerator& rng)
+    {
+      for (size_t i = 0; i < _data.size(); ++i)
+      {
+        boost::uniform_int <int> dist(i, _data.size() - 1);
+        size_t j = dist(rng);
+        swap(i, j);
+      }
     }
 
     /**
      * @return The current size of the permutation
      */
 
-    inline size_type size () const
+    inline size_type size() const
     {
       return _data.size();
     }

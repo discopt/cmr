@@ -10,6 +10,7 @@
 
 #include "permutations.hpp"
 #include "matroid_transposed.hpp"
+#include "matrix.hpp"
 
 namespace tu {
 

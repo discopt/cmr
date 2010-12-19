@@ -134,6 +134,58 @@ namespace tu {
   }
 
   /**
+   * Free function to perform a ternary pivot on a matrix.
+   *
+   * @param matrix The matrix
+   * @param i Row index
+   * @param j Column index
+   */
+
+  template <typename MatrixType>
+  void matrix_ternary_pivot(MatrixType& matrix, size_t i, size_t j)
+  {
+    typedef typename MatrixType::value_type value_type;
+    const value_type& base_value = matrix(i, j);
+
+    if (base_value == 0)
+    {
+      throw matrix_binary_pivot_exception();
+    }
+
+    for (size_t row = 0; row < matrix.size1(); ++row)
+    {
+      if (row == i)
+      {
+        continue;
+      }
+      const value_type& first = matrix(row, j);
+      if (first == 0)
+      {
+        continue;
+      }
+
+      for (size_t column = 0; column < matrix.size2(); ++column)
+      {
+        if (column == j)
+        {
+          continue;
+        }
+        const value_type& second = matrix(i, column);
+        if (second == 0)
+        {
+          continue;
+        }
+        value_type value = matrix(row, column) - first * second / base_value;
+        while (value > 1)
+          value -= 3;
+        while (value < -1)
+          value += 3;
+        matrix(row, column) = value;
+      }
+    }
+  }
+
+  /**
    * Counts how many of the rows in the specified range have a property.
    *
    * @param matrix The given matrix
