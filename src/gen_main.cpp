@@ -114,12 +114,6 @@ int main(int argc, char** argv)
     non_option++;
   }
 
-  if (height == std::numeric_limits <size_t>::max())
-  {
-    std::cerr << "Size of matrix not given!\nSee " << argv[0] << " -h for usage." << std::endl;
-    return EXIT_FAILURE;
-  }
-
   if (help)
   {
     std::cerr << "Usage: " << argv[0] << " [OPTIONS] [--] TYPE HEIGHT [WIDTH]\n";
@@ -135,6 +129,12 @@ int main(int argc, char** argv)
     std::cerr << "Omitting the WIDTH parameter sets the width equal to the height.\n";
     std::cerr << std::flush;
     return EXIT_SUCCESS;
+  }
+
+  if (height == std::numeric_limits <size_t>::max())
+  {
+    std::cerr << "Size of matrix not given!\nSee " << argv[0] << " -h for usage." << std::endl;
+    return EXIT_FAILURE;
   }
 
   matrix_generator* generator = NULL;
