@@ -120,7 +120,7 @@ int main(int argc, char** argv)
     std::cerr << "Types:\n";
     std::cerr << "  r Generates a matrix with a random entry at each position (prob. not t.u.).\n";
     std::cerr << "  n Generates a network matrix (t.u.).\n";
-    std::cerr << "  v Generates a cycle-based violator matrix (only height=width in 2Z + 1).\n";
+    std::cerr << "  c Generates a cycle-based violator matrix (only height=width in 2Z + 1).\n";
     std::cerr << "Options:\n";
     std::cerr << " -p Use pivots (to hide violator or randomize).\n";
     std::cerr << " -h Shows a help message.\n";
