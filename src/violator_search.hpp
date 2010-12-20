@@ -201,16 +201,20 @@ namespace tu
         {
           if (rows.size() < row_elements.size() || columns.size() < column_elements.size())
           {
-            std::cout << "\nSubmatrix is NOT totally unimodular. A " << rows.size() << " x " << columns.size()
-                << " non-totally unimodular submatrix was identified, too.\n" << std::endl;
+            std::cout << "\nThe " << row_elements.size() << " x " << column_elements.size() << " submatrix is NOT totally unimodular. A "
+                << rows.size() << " x " << columns.size() << " non-totally unimodular submatrix was identified, too.\n" << std::endl;
           }
           else
           {
-            std::cout << "\nSubmatrix is NOT totally unimodular.\n" << std::endl;
+            std::cout << "\nThe " << row_elements.size() << " x " << column_elements.size() << " submatrix is NOT totally unimodular.\n" << std::endl;
+
           }
         }
 
-        shrink(rows, columns);
+        if (rows.size() < row_elements.size() || columns.size() < column_elements.size())
+          shrink(rows, columns);
+        else
+          shrink(row_elements, column_elements);
 
         return false;
       }
@@ -309,20 +313,16 @@ namespace tu
        * @return true iff a test failed, i.e. the submatrix was not totally unimodular.
        */
 
-      bool test_bundles(const std::vector <matroid_element_set>& bundles, bool abort_on_shrink)
+      bool test_bundles(const std::vector <matroid_element_set>& bundles)
       {
-        bool success = false;
         for (std::vector <matroid_element_set>::const_iterator bundle_iter = bundles.begin(); bundle_iter != bundles.end(); ++bundle_iter)
         {
           if (!test_forbidden(*bundle_iter))
           {
-            if (abort_on_shrink)
-              return true;
-            success = true;
+            return true;
           }
         }
-
-        return success;
+        return false;
       }
 
       virtual void search()
@@ -330,17 +330,14 @@ namespace tu
         for (float rate = 0.8f; rate > 0.02f; rate *= 0.5f)
         {
           size_t row_amount, column_amount;
-          bool abort_on_shrink;
           if (rate > 0.04f)
           {
             row_amount = int(_row_elements.size() * rate);
             column_amount = int(_column_elements.size() * rate);
-            abort_on_shrink = true;
             if (row_amount == 0 || column_amount == 0)
             {
               row_amount = 1;
               column_amount = 1;
-              abort_on_shrink = false;
               rate = 0.0f;
             }
           }
@@ -348,8 +345,9 @@ namespace tu
           {
             row_amount = 1;
             column_amount = 1;
-            abort_on_shrink = false;
           }
+
+          std::cout << "\nGreedy loop starting, forbidden sets will have size " << row_amount << " and " << column_amount << std::endl;
 
           typedef std::vector <matroid_element_set::value_type> matroid_element_vector;
           matroid_element_vector shuffled_rows, shuffled_columns;
@@ -374,7 +372,7 @@ namespace tu
             std::copy(iter, iter + column_amount, std::inserter(bundles.back(), bundles.back().end()));
           }
 
-          if (test_bundles(bundles, abort_on_shrink))
+          if (test_bundles(bundles))
           {
             rate *= 2.0f;
           }
