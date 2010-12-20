@@ -8,7 +8,8 @@
 #ifndef COMPARATORS_HPP_
 #define COMPARATORS_HPP_
 
-namespace tu {
+namespace tu
+{
 
   /**
    * This functor can be used to test a vector for being non-zero.
@@ -22,7 +23,7 @@ namespace tu {
      * Constructs the functor.
      */
 
-    is_non_zero () :
+    is_non_zero() :
       _valid(false)
     {
 
@@ -34,7 +35,7 @@ namespace tu {
      * @param value A value to be tested
      */
 
-    void operator() (int value)
+    void operator()(int value)
     {
       if (value != 0)
         _valid = true;
@@ -46,7 +47,7 @@ namespace tu {
      * @return The result of the tests from the last call to this.
      */
 
-    bool operator() ()
+    bool operator()()
     {
       bool result = _valid;
       _valid = false;
@@ -69,7 +70,7 @@ namespace tu {
      * Constructs the functor.
      */
 
-    is_all_ones () :
+    is_all_ones() :
       _valid(true)
     {
 
@@ -81,7 +82,7 @@ namespace tu {
      * @param value A value to be tested
      */
 
-    void operator() (int value)
+    void operator()(int value)
     {
       if (value == 0)
         _valid = false;
@@ -93,7 +94,7 @@ namespace tu {
      * @return The result of the tests from the last call to this.
      */
 
-    bool operator() ()
+    bool operator()()
     {
       bool result = _valid;
       _valid = true;
@@ -120,7 +121,7 @@ namespace tu {
      * @param less An optional element-comparator
      */
 
-    vector_less (const std::vector <T>& data, Less less = Less()) :
+    vector_less(const std::vector <T>& data, Less less = Less()) :
       _less(less), data_(data)
     {
 
@@ -134,7 +135,7 @@ namespace tu {
      * @return true if and only if the element at the first index is smaller than the element at the second index
      */
 
-    bool operator () (size_t i, size_t j)
+    bool operator ()(size_t i, size_t j)
     {
       return _less(data_[i], data_[j]);
     }

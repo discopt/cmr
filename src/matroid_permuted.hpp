@@ -10,7 +10,8 @@
 
 #include "matroid.hpp"
 
-namespace tu {
+namespace tu
+{
 
   /**
    * A matroid proxy with permuted rows and columns.
@@ -35,7 +36,7 @@ namespace tu {
      * @param matroid Original matroid
      */
 
-    matroid_permuted (MatroidType& matroid) :
+    matroid_permuted(MatroidType& matroid) :
       _matroid(matroid), _perm1(matroid.size1()), _perm2(matroid.size2())
     {
 
@@ -45,7 +46,7 @@ namespace tu {
      * @return Height, i.e. size of each base
      */
 
-    inline size_type size1 () const
+    inline size_type size1() const
     {
       return _perm1.size();
     }
@@ -54,7 +55,7 @@ namespace tu {
      * @return Width, i.e. size of each cobase
      */
 
-    inline size_type size2 () const
+    inline size_type size2() const
     {
       return _perm2.size();
     }
@@ -63,7 +64,7 @@ namespace tu {
      * @return Reference to the row permutation
      */
 
-    inline const permutation_type& perm1 () const
+    inline const permutation_type& perm1() const
     {
       return _perm1;
     }
@@ -72,7 +73,7 @@ namespace tu {
      * @return Reference to the row permutation
      */
 
-    inline permutation_type& perm1 ()
+    inline permutation_type& perm1()
     {
       return _perm1;
     }
@@ -81,7 +82,7 @@ namespace tu {
      * @return Reference to the column permutation
      */
 
-    inline const permutation_type& perm2 () const
+    inline const permutation_type& perm2() const
     {
       return _perm2;
     }
@@ -90,7 +91,7 @@ namespace tu {
      * @return Reference to the column permutation
      */
 
-    inline permutation_type& perm2 ()
+    inline permutation_type& perm2()
     {
       return _perm2;
     }
@@ -100,7 +101,7 @@ namespace tu {
      * @return The corresponding matroid element
      */
 
-    inline reference_type name1 (size_type index)
+    inline reference_type name1(size_type index)
     {
       return _matroid.name1(_perm1(index));
     }
@@ -110,7 +111,7 @@ namespace tu {
      * @return The corresponding matroid element
      */
 
-    inline const_reference_type name1 (size_type index) const
+    inline const_reference_type name1(size_type index) const
     {
       return _matroid.name1(_perm1(index));
     }
@@ -120,7 +121,7 @@ namespace tu {
      * @return The corresponding matroid element
      */
 
-    inline reference_type name2 (size_type index)
+    inline reference_type name2(size_type index)
     {
       return _matroid.name2(_perm2(index));
     }
@@ -130,7 +131,7 @@ namespace tu {
      * @return The corresponding matroid element
      */
 
-    inline const_reference_type name2 (size_type index) const
+    inline const_reference_type name2(size_type index) const
     {
       return _matroid.name2(_perm2(index));
     }
@@ -139,7 +140,7 @@ namespace tu {
      * @return Reference to the orginal matroid
      */
 
-    inline matroid_type& data ()
+    inline matroid_type& data()
     {
       return _matroid;
     }
@@ -160,7 +161,7 @@ namespace tu {
    */
 
   template <typename MatroidType>
-  inline void matroid_permute1 (matroid_permuted <MatroidType>& matroid, size_t index1, size_t index2)
+  inline void matroid_permute1(matroid_permuted <MatroidType>& matroid, size_t index1, size_t index2)
   {
     matroid.perm1().swap(index1, index2);
   }
@@ -174,7 +175,7 @@ namespace tu {
    */
 
   template <typename MatroidType>
-  inline void matroid_permute2 (matroid_permuted <MatroidType>& matroid, size_t index1, size_t index2)
+  inline void matroid_permute2(matroid_permuted <MatroidType>& matroid, size_t index1, size_t index2)
   {
     matroid.perm2().swap(index1, index2);
   }
@@ -188,31 +189,31 @@ namespace tu {
    */
 
   template <typename MatroidType>
-  void matroid_binary_pivot (matroid_permuted <MatroidType>& matroid, size_t i, size_t j)
+  void matroid_binary_pivot(matroid_permuted <MatroidType>& matroid, size_t i, size_t j)
   {
     matroid_binary_pivot(matroid.data(), matroid.perm1()(i), matroid.perm2()(j));
   }
 
   template <typename MatroidType>
-  inline void matroid_set_perm1 (matroid_permuted <MatroidType>& matroid, const permutation& permutation)
+  inline void matroid_set_perm1(matroid_permuted <MatroidType>& matroid, const permutation& permutation)
   {
     matroid.perm1() = permutation;
   }
 
   template <typename MatroidType>
-  inline void matroid_set_perm2 (matroid_permuted <MatroidType>& matroid, const permutation& permutation)
+  inline void matroid_set_perm2(matroid_permuted <MatroidType>& matroid, const permutation& permutation)
   {
     matroid.perm2() = permutation;
   }
 
   template <typename MatroidType>
-  inline void matroid_set_perm1 (matroid_transposed <MatroidType>& matroid, const permutation& permutation)
+  inline void matroid_set_perm1(matroid_transposed <MatroidType>& matroid, const permutation& permutation)
   {
     matroid_set_perm2(matroid.data(), permutation);
   }
 
   template <typename MatroidType>
-  inline void matroid_set_perm2 (matroid_transposed <MatroidType>& matroid, const permutation& permutation)
+  inline void matroid_set_perm2(matroid_transposed <MatroidType>& matroid, const permutation& permutation)
   {
     matroid_set_perm1(matroid.data(), permutation);
   }

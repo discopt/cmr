@@ -1,6 +1,7 @@
 ACLOCAL_AMFLAGS = -I m4
 
 bin_PROGRAMS = tu
+bin_PROGRAMS = tu tu-gen
 
 noinst_headers = \
   algorithm.hpp \
@@ -32,6 +33,9 @@ noinst_headers = \
 	row_column_index.hpp \
 	separation.hpp \
 	vector_three_connectivity.hpp \
+  gen_random.cpp \
+  gen_network.cpp \
+  gen_cycle_violator.cpp \
 	matroid_graph.hpp \
 	total_unimodularity.hpp \
 	matroid_decomposition.hpp
@@ -48,3 +52,14 @@ tu_SOURCES = \
 	matroid_graph.cpp \
 	matroid_decomposition.cpp
 
+tu_gen_SOURCES = \
+  gen_main.cpp \
+	determinant.cpp \
+	ghouila_houri.cpp \
+	zero_plus_minus_one.cpp \
+	separation.cpp \
+	logger.cpp \
+	nested_minor_sequence.cpp \
+	total_unimodularity.cpp \
+	matroid_graph.cpp \
+	matroid_decomposition.cpp

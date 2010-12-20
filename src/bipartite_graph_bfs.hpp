@@ -11,7 +11,8 @@
 #include <vector>
 #include <list>
 
-namespace tu {
+namespace tu
+{
 
   /**
    * A node for a breadth first search on
@@ -30,7 +31,7 @@ namespace tu {
      * @return true if and only if this node is reachable
      */
 
-    inline bool is_reachable () const
+    inline bool is_reachable() const
     {
       return distance >= 0;
     }
@@ -54,7 +55,7 @@ namespace tu {
      * @param width Number of columns
      */
 
-    bipartite_graph_dimensions (size_t height, size_t width) :
+    bipartite_graph_dimensions(size_t height, size_t width) :
       _height(height), _width(width)
     {
 
@@ -64,7 +65,7 @@ namespace tu {
      * @return Number of rows
      */
 
-    inline size_t height () const
+    inline size_t height() const
     {
       return _height;
     }
@@ -73,7 +74,7 @@ namespace tu {
      * @return Number of columns
      */
 
-    inline size_t width () const
+    inline size_t width() const
     {
       return _width;
     }
@@ -82,7 +83,7 @@ namespace tu {
      * @return Number of all node-indices
      */
 
-    inline size_t size () const
+    inline size_t size() const
     {
       return _width + _height;
     }
@@ -92,7 +93,7 @@ namespace tu {
      * @return true if it indexes a row
      */
 
-    inline bool is_row (index_type index) const
+    inline bool is_row(index_type index) const
     {
       return index < _height;
     }
@@ -102,7 +103,7 @@ namespace tu {
      * @return true if it indexes a column
      */
 
-    inline bool is_column (index_type index) const
+    inline bool is_column(index_type index) const
     {
       return index >= _height;
     }
@@ -112,7 +113,7 @@ namespace tu {
      * @return Corresponding row index
      */
 
-    inline size_t index_to_row (index_type index) const
+    inline size_t index_to_row(index_type index) const
     {
       assert(is_row(index));
       return index;
@@ -123,7 +124,7 @@ namespace tu {
      * @return Corresponding column index
      */
 
-    inline size_t index_to_column (index_type index) const
+    inline size_t index_to_column(index_type index) const
     {
       assert(is_column(index));
       return index - _height;
@@ -134,7 +135,7 @@ namespace tu {
      * @return Correspoding node-index
      */
 
-    inline index_type row_to_index (size_t row) const
+    inline index_type row_to_index(size_t row) const
     {
       return row;
     }
@@ -144,7 +145,7 @@ namespace tu {
      * @return Corresponding node-index
      */
 
-    inline index_type column_to_index (size_t column) const
+    inline index_type column_to_index(size_t column) const
     {
       return column + _height;
     }
@@ -159,7 +160,7 @@ namespace tu {
      * @return A pair consisting of the corresponding column-index and row-index.
      */
 
-    inline std::pair <size_t, size_t> indexes_to_coordinates (index_type first, index_type second) const
+    inline std::pair <size_t, size_t> indexes_to_coordinates(index_type first, index_type second) const
     {
       if (first < _height)
         return std::make_pair(first, second - _height);
@@ -186,9 +187,8 @@ namespace tu {
    */
 
   template <typename MatrixType, typename StartNodesContainerType, typename EndNodesContainerType>
-  inline bool bipartite_graph_bfs (const MatrixType& matrix, const bipartite_graph_dimensions& dimensions,
-      const StartNodesContainerType& start_nodes, const EndNodesContainerType& end_nodes, bool reach_all,
-      std::vector <bipartite_graph_bfs_node>& result)
+  inline bool bipartite_graph_bfs(const MatrixType& matrix, const bipartite_graph_dimensions& dimensions, const StartNodesContainerType& start_nodes,
+      const EndNodesContainerType& end_nodes, bool reach_all, std::vector <bipartite_graph_bfs_node>& result)
   {
     typedef MatrixType matrix_type;
     typedef std::vector <bipartite_graph_bfs_node> node_vector_type;

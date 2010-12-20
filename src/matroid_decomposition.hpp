@@ -16,7 +16,8 @@
 
 #include "matroid_graph.hpp"
 
-namespace tu {
+namespace tu
+{
 
   /**
    * A set of matroid elements. Here, the original row elements are numbered -1, ..., -h
@@ -39,31 +40,31 @@ namespace tu {
      * @param extra_elements Set of extra elements, i.e. those that pivots were made upon
      */
 
-    explicit decomposed_matroid (const matroid_element_set& elements, const matroid_element_set& extra_elements);
+    explicit decomposed_matroid(const matroid_element_set& elements, const matroid_element_set& extra_elements);
 
     /**
      * Destructor
      */
 
-    virtual ~decomposed_matroid ();
+    virtual ~decomposed_matroid();
 
     /**
      * @return true if and only if this node is a leaf
      */
 
-    virtual bool is_leaf () const = 0;
+    virtual bool is_leaf() const = 0;
 
     /**
      * @return true if and only if the matroid is graphic
      */
 
-    virtual bool is_regular () const = 0;
+    virtual bool is_regular() const = 0;
 
     /**
      * @return A read-only reference to the elements
      */
 
-    inline const matroid_element_set& elements () const
+    inline const matroid_element_set& elements() const
     {
       return _elements;
     }
@@ -72,7 +73,7 @@ namespace tu {
      * @return A read-only reference to the extra elements
      */
 
-    inline const matroid_element_set& extra_elements () const
+    inline const matroid_element_set& extra_elements() const
     {
       return _extra_elements;
     }
@@ -100,20 +101,20 @@ namespace tu {
      * @param extra_elements Set of extra elements
      */
 
-    explicit decomposed_matroid_leaf (matroid_graph* graph, matroid_graph* cograph, bool is_R10, const std::set <int>& elements,
+    explicit decomposed_matroid_leaf(matroid_graph* graph, matroid_graph* cograph, bool is_R10, const std::set <int>& elements,
         const matroid_element_set& extra_elements);
 
     /**
      * Destructor
      */
 
-    virtual ~decomposed_matroid_leaf ();
+    virtual ~decomposed_matroid_leaf();
 
     /**
      * @return true
      */
 
-    virtual bool is_leaf () const
+    virtual bool is_leaf() const
     {
       return true;
     }
@@ -122,7 +123,7 @@ namespace tu {
      * @return A corresponding graph or NULL if the matroid is not graphic
      */
 
-    const matroid_graph* graph () const
+    const matroid_graph* graph() const
     {
       return _graph;
     }
@@ -131,7 +132,7 @@ namespace tu {
      * @returnA corresponding cograph or NULL if the matroid is not cographic
      */
 
-    const matroid_graph* cograph () const
+    const matroid_graph* cograph() const
     {
       return _cograph;
     }
@@ -140,7 +141,7 @@ namespace tu {
      * @return true if and only if the matroid is isomorphic to R10
      */
 
-    bool is_R10 () const
+    bool is_R10() const
     {
       return _is_R10;
     }
@@ -149,7 +150,7 @@ namespace tu {
      * @return true if and only if the matroid is graphic
      */
 
-    bool is_graphic () const
+    bool is_graphic() const
     {
       return graph() != NULL;
     }
@@ -158,7 +159,7 @@ namespace tu {
      * @return true if and only if the matroid is cographic
      */
 
-    bool is_cographic () const
+    bool is_cographic() const
     {
       return cograph() != NULL;
     }
@@ -167,7 +168,7 @@ namespace tu {
      * @return true if and only if the matroid is regular
      */
 
-    virtual bool is_regular () const
+    virtual bool is_regular() const
     {
       return is_graphic() || is_cographic() || is_R10();
     }
@@ -197,14 +198,14 @@ namespace tu {
      * @return
      */
 
-    explicit decomposed_matroid_separator (decomposed_matroid* first, decomposed_matroid* second, int type, const std::set <int>& elements,
+    explicit decomposed_matroid_separator(decomposed_matroid* first, decomposed_matroid* second, int type, const std::set <int>& elements,
         const matroid_element_set& extra_elements);
 
     /**
      * Destructor
      */
 
-    virtual ~decomposed_matroid_separator ();
+    virtual ~decomposed_matroid_separator();
 
     static const int ONE_SEPARATION = 1;
     static const int TWO_SEPARATION = 2;
@@ -214,7 +215,7 @@ namespace tu {
      * @return Type of the separation
      */
 
-    inline int separation_type () const
+    inline int separation_type() const
     {
       return _type;
     }
@@ -223,7 +224,7 @@ namespace tu {
      * @return First component
      */
 
-    inline decomposed_matroid* first () const
+    inline decomposed_matroid* first() const
     {
       return _first;
     }
@@ -232,7 +233,7 @@ namespace tu {
      * @return Second component
      */
 
-    inline decomposed_matroid* second () const
+    inline decomposed_matroid* second() const
     {
       return _second;
     }
@@ -241,7 +242,7 @@ namespace tu {
      * @return false
      */
 
-    virtual bool is_leaf () const
+    virtual bool is_leaf() const
     {
       return false;
     }
@@ -250,7 +251,7 @@ namespace tu {
      * @return true if and only both components are regular
      */
 
-    virtual bool is_regular () const
+    virtual bool is_regular() const
     {
       return _first->is_regular() && _second->is_regular();
     }

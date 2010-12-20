@@ -14,7 +14,8 @@
 
 #include "total_unimodularity.hpp"
 
-namespace tu {
+namespace tu
+{
 
   /**
    * Calculates a subdeterminant of the given matrix.
@@ -24,7 +25,7 @@ namespace tu {
    * @return The submatrix' determinant
    */
 
-  int determinant_submatrix (const integer_matrix& matrix, const submatrix_indices& submatrix)
+  int determinant_submatrix(const integer_matrix& matrix, const submatrix_indices& submatrix)
   {
     typedef boost::numeric::ublas::matrix_indirect <const integer_matrix, submatrix_indices::indirect_array_type> indirect_matrix_t;
 
@@ -59,7 +60,7 @@ namespace tu {
    * @return true if and only if this matrix is totally unimdular
    */
 
-  bool determinant_is_totally_unimodular (const integer_matrix& matrix)
+  bool determinant_is_totally_unimodular(const integer_matrix& matrix)
   {
     submatrix_indices indices;
 
@@ -75,7 +76,7 @@ namespace tu {
    * @return true if and only if the this matrix is totally unimodular
    */
 
-  bool determinant_is_totally_unimodular (const integer_matrix& matrix, submatrix_indices& violator)
+  bool determinant_is_totally_unimodular(const integer_matrix& matrix, submatrix_indices& violator)
   {
     typedef unsigned long long int bitset_type;
 

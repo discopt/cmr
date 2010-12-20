@@ -21,7 +21,8 @@
 
 #include <boost/graph/adjacency_list_io.hpp>
 
-namespace tu {
+namespace tu
+{
 
   /**
    * Finds a matroid element which is parallel to a row element in minor of a given matroid or
@@ -36,7 +37,7 @@ namespace tu {
    */
 
   template <typename MatroidType, typename MatrixType>
-  int find_parallel_to_row (const MatroidType& matroid, const MatrixType& matrix, const size_t minor_height, const size_t minor_width,
+  int find_parallel_to_row(const MatroidType& matroid, const MatrixType& matrix, const size_t minor_height, const size_t minor_width,
       const size_t row)
   {
     /// Look for unit vector
@@ -89,7 +90,7 @@ namespace tu {
      * Constructs the filter.
      */
 
-    articulation_edge_filter () :
+    articulation_edge_filter() :
       graph_(NULL), articulation_vertex_(NULL), evil_edges_(NULL)
     {
     }
@@ -102,7 +103,7 @@ namespace tu {
      * @param evil_edges The set of excluded edges
      */
 
-    articulation_edge_filter (const Graph* graph, const vertex_descriptor* articulation_vertex, const edge_set* evil_edges) :
+    articulation_edge_filter(const Graph* graph, const vertex_descriptor* articulation_vertex, const edge_set* evil_edges) :
       graph_(graph), articulation_vertex_(articulation_vertex), evil_edges_(evil_edges)
     {
     }
@@ -115,7 +116,7 @@ namespace tu {
      */
 
     template <typename Edge>
-    bool operator() (const Edge& e) const
+    bool operator()(const Edge& e) const
     {
       if (evil_edges_->find(e) != evil_edges_->end())
         return false;
@@ -145,7 +146,7 @@ namespace tu {
    */
 
   template <typename Graph, typename Vertex, typename EdgeSet>
-  inline struct articulation_edge_filter <Graph> make_articulation_edge_filter (const Graph* graph, const Vertex* articulation_vertex,
+  inline struct articulation_edge_filter <Graph> make_articulation_edge_filter(const Graph* graph, const Vertex* articulation_vertex,
       const EdgeSet* evil_edges)
   {
     return articulation_edge_filter <Graph> (graph, articulation_vertex, evil_edges);
@@ -165,7 +166,7 @@ namespace tu {
    */
 
   template <typename MatroidType, typename MatrixType>
-  bool extend_graph (matroid_graph& graph, const MatroidType& matroid, const MatrixType& matrix, const size_t minor_height, const size_t minor_width,
+  bool extend_graph(matroid_graph& graph, const MatroidType& matroid, const MatrixType& matrix, const size_t minor_height, const size_t minor_width,
       const nested_minor_sequence::extension_type extension_type)
   {
     typedef boost::graph_traits <matroid_graph> traits;
@@ -519,7 +520,7 @@ namespace tu {
    */
 
   template <typename MatroidType, typename MatrixType, typename NestedMinorSequenceType>
-  matroid_graph* construct_matroid_graph (const MatroidType& matroid, const MatrixType& matrix, const NestedMinorSequenceType& nested_minors)
+  matroid_graph* construct_matroid_graph(const MatroidType& matroid, const MatrixType& matrix, const NestedMinorSequenceType& nested_minors)
   {
     typedef boost::graph_traits <matroid_graph>::vertex_descriptor vertex_descriptor;
     typedef boost::graph_traits <matroid_graph>::edge_descriptor edge_descriptor;

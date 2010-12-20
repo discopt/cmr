@@ -8,10 +8,11 @@
 #ifndef MATROID_SEPARATE_HPP_
 #define MATROID_SEPARATE_HPP_
 
-namespace tu {
+namespace tu
+{
 
   template <typename MatroidType, typename MatrixType>
-  void matroid_separate (MatroidType& matroid, MatrixType& matrix, const int type, const std::pair <size_t, size_t>& split,
+  void matroid_separate(MatroidType& matroid, MatrixType& matrix, const int type, const std::pair <size_t, size_t>& split,
       integer_matroid& upper_left_matroid, integer_matrix& upper_left_matrix, integer_matroid& lower_right_matroid,
       integer_matrix& lower_right_matrix)
   {

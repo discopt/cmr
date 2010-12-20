@@ -14,11 +14,13 @@
 #include "matrix_permuted.hpp"
 #include "binary_linear_space.hpp"
 
-namespace tu {
+namespace tu
+{
 
   typedef std::pair <size_t, size_t> size_pair_t;
 
-  namespace detail {
+  namespace detail
+  {
 
     /**
      * Copies a partial row of a matrix into a vector.
@@ -31,7 +33,7 @@ namespace tu {
      */
 
     template <typename MatrixType, typename VectorType>
-    inline void copy_partial_row (const MatrixType& matrix, VectorType& vector, size_t row, size_t first_column, size_t beyond_column)
+    inline void copy_partial_row(const MatrixType& matrix, VectorType& vector, size_t row, size_t first_column, size_t beyond_column)
     {
       size_t j = 0;
       for (size_t i = first_column; i < beyond_column; ++i, ++j)
@@ -51,7 +53,7 @@ namespace tu {
      */
 
     template <typename MatrixType, typename VectorType>
-    inline void copy_partial_column (const MatrixType& matrix, VectorType& vector, size_t column, size_t first_row, size_t beyond_row)
+    inline void copy_partial_column(const MatrixType& matrix, VectorType& vector, size_t column, size_t first_row, size_t beyond_row)
     {
       copy_partial_row(matrix_transposed <const MatrixType> (matrix), vector, column, first_row, beyond_row);
     }
@@ -79,7 +81,7 @@ namespace tu {
    */
 
   template <typename MatrixType>
-  inline rank_distribution partition (matrix_permuted <const MatrixType>& matrix, size_t& top_left_height, size_t& top_left_width,
+  inline rank_distribution partition(matrix_permuted <const MatrixType>& matrix, size_t& top_left_height, size_t& top_left_width,
       size_t& bottom_right_height, size_t& bottom_right_width)
   {
     const size_t height = matrix.size1();

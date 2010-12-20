@@ -8,13 +8,14 @@
 #include "../config.h"
 #include "nested_minor_sequence.hpp"
 
-namespace tu {
+namespace tu
+{
 
   /**
    * Constructs a sequence which only consists of a W3-minor.
    */
 
-  nested_minor_sequence::nested_minor_sequence () :
+  nested_minor_sequence::nested_minor_sequence() :
     height_(3), width_(3)
   {
 
@@ -24,7 +25,7 @@ namespace tu {
    * Destructor
    */
 
-  nested_minor_sequence::~nested_minor_sequence ()
+  nested_minor_sequence::~nested_minor_sequence()
   {
 
   }
@@ -36,9 +37,10 @@ namespace tu {
    * @return Number of rows
    */
 
-  size_t nested_minor_sequence::get_extension_height (extension_type type)
+  size_t nested_minor_sequence::get_extension_height(extension_type type)
   {
-    static int ext_height[] = { 1, 1, 1, 2, 0 };
+    static int ext_height[] =
+    { 1, 1, 1, 2, 0 };
 
     return ext_height[type - FIRST_EXTENSION_TYPE];
   }
@@ -50,9 +52,10 @@ namespace tu {
    * @return Number of columns
    */
 
-  size_t nested_minor_sequence::get_extension_width (extension_type type)
+  size_t nested_minor_sequence::get_extension_width(extension_type type)
   {
-    static int ext_width[] = { 0, 2, 1, 1, 1 };
+    static int ext_width[] =
+    { 0, 2, 1, 1, 1 };
 
     return ext_width[type - FIRST_EXTENSION_TYPE];
   }
@@ -63,7 +66,7 @@ namespace tu {
    * @param type The extension type of the biggest minor
    */
 
-  void nested_minor_sequence::push (extension_type type)
+  void nested_minor_sequence::push(extension_type type)
   {
     extensions_.push_back(type);
     width_ += get_extension_width(type);

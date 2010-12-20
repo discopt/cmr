@@ -12,7 +12,8 @@
 #include <boost/numeric/ublas/storage.hpp>
 #include <boost/numeric/ublas/matrix_proxy.hpp>
 
-namespace tu {
+namespace tu
+{
 
   /**
    * Represents subsets of row and column index sets
@@ -57,7 +58,7 @@ namespace tu {
    * @return Root of decomposition tree
    */
 
-  decomposed_matroid* decompose_binary_matroid (const integer_matrix& matrix, log_level level = LOG_QUIET);
+  decomposed_matroid* decompose_binary_matroid(const integer_matrix& matrix, log_level level = LOG_QUIET);
 
   /**
    * Tests for total unimodularity without certificates.
@@ -67,7 +68,7 @@ namespace tu {
    * @return true if and only if the matrix is totally unimodular
    */
 
-  bool is_totally_unimodular (const integer_matrix& matrix, log_level level = LOG_QUIET);
+  bool is_totally_unimodular(const integer_matrix& matrix, log_level level = LOG_QUIET);
 
   /**
    * Tests for total unimodularity, returning a decomposition of a given binary matroid
@@ -80,7 +81,7 @@ namespace tu {
    * @return true if and only if the matrix is totally unimodular
    */
 
-  bool is_totally_unimodular (const integer_matrix& matrix, decomposed_matroid*& decomposition, log_level level = LOG_QUIET);
+  bool is_totally_unimodular(const integer_matrix& matrix, decomposed_matroid*& decomposition, log_level level = LOG_QUIET);
 
   /**
    * Tests for total unimodularity, returning a decomposition of a given binary matroid
@@ -95,7 +96,7 @@ namespace tu {
    * @return true if and only if the matrix is totally unimodular
    */
 
-  bool is_totally_unimodular (const integer_matrix& matrix, submatrix_indices& violator, log_level level = LOG_QUIET);
+  bool is_totally_unimodular(const integer_matrix& matrix, submatrix_indices& violator, log_level level = LOG_QUIET);
 
   /**
    * Tests for total unimodularity, returning the indices of a violating submatrix
@@ -107,7 +108,7 @@ namespace tu {
    * @return true if and only if the matrix is totally unimodular
    */
 
-  bool is_totally_unimodular (const integer_matrix& matrix, decomposed_matroid*& decomposition, submatrix_indices& violator, log_level level =
+  bool is_totally_unimodular(const integer_matrix& matrix, decomposed_matroid*& decomposition, submatrix_indices& violator, log_level level =
       LOG_QUIET);
 
   /**
@@ -117,7 +118,7 @@ namespace tu {
    * @return true if and only if it is a -1,0,+1 matrix
    */
 
-  bool is_zero_plus_minus_one_matrix (const integer_matrix& matrix);
+  bool is_zero_plus_minus_one_matrix(const integer_matrix& matrix);
 
   /**
    * Tests if the given matrix contains only -1,0,+1 entries,
@@ -128,7 +129,7 @@ namespace tu {
    * @return true if and only if it is a -1,0,+1 matrix
    */
 
-  bool is_zero_plus_minus_one_matrix (const integer_matrix& matrix, std::pair <integer_matrix::size_type, integer_matrix::size_type>& position);
+  bool is_zero_plus_minus_one_matrix(const integer_matrix& matrix, std::pair <integer_matrix::size_type, integer_matrix::size_type>& position);
 
   /**
    * Tests if the given matrix contains only 0 or 1 entries.
@@ -137,7 +138,7 @@ namespace tu {
    * @return true if and only if it is a 0-1 matrix
    */
 
-  bool is_zero_one_matrix (const integer_matrix& matrix);
+  bool is_zero_one_matrix(const integer_matrix& matrix);
 
   /**
    * Tests if the given matrix contains only 0 or 1 entries,
@@ -148,7 +149,7 @@ namespace tu {
    * @return true if and only if it is a 0-1 matrix
    */
 
-  bool is_zero_one_matrix (const integer_matrix& matrix, std::pair <integer_matrix::size_type, integer_matrix::size_type>& position);
+  bool is_zero_one_matrix(const integer_matrix& matrix, std::pair <integer_matrix::size_type, integer_matrix::size_type>& position);
 
   /**
    * Tests if a given matrix is a signed version of its support matrix already.
@@ -158,7 +159,7 @@ namespace tu {
    * @return true if and only if the support matrix can be signed to the orignal
    */
 
-  bool is_signed_matrix (const integer_matrix& matrix);
+  bool is_signed_matrix(const integer_matrix& matrix);
 
   /**
    * Tests if a given matrix is a signed version of its support matrix already,
@@ -170,7 +171,7 @@ namespace tu {
    * @return true if and only if the support matrix can be signed to the original
    */
 
-  bool is_signed_matrix (const integer_matrix& matrix, submatrix_indices& violator);
+  bool is_signed_matrix(const integer_matrix& matrix, submatrix_indices& violator);
 
   /**
    * Signes a given matrix to be a signed version of its support matrix.
@@ -180,7 +181,7 @@ namespace tu {
    * @return true if and only if any change was necessary
    */
 
-  bool sign_matrix (integer_matrix& matrix);
+  bool sign_matrix(integer_matrix& matrix);
 
   /**
    * Makes the matrix its own support matrix.
@@ -188,7 +189,7 @@ namespace tu {
    * @param matrix The given matrix
    */
 
-  void support_matrix (integer_matrix& matrix);
+  void support_matrix(integer_matrix& matrix);
 
   /**
    * Calculates a subdeterminant of the given matrix.
@@ -198,7 +199,7 @@ namespace tu {
    * @return The submatrix' determinant
    */
 
-  int determinant_submatrix (const integer_matrix& matrix, const submatrix_indices& submatrix);
+  int determinant_submatrix(const integer_matrix& matrix, const submatrix_indices& submatrix);
 
   /**
    * Checks all subdeterminants to test a given matrix for total unimodularity.
@@ -207,7 +208,7 @@ namespace tu {
    * @return true if and only if this matrix is totally unimdular
    */
 
-  bool determinant_is_totally_unimodular (const integer_matrix& matrix);
+  bool determinant_is_totally_unimodular(const integer_matrix& matrix);
 
   /**
    * Checks all subdeterminants to test a given matrix for total unimodularity.
@@ -218,7 +219,7 @@ namespace tu {
    * @return true if and only if the this matrix is totally unimodular
    */
 
-  bool determinant_is_totally_unimodular (const integer_matrix& matrix, submatrix_indices& violator);
+  bool determinant_is_totally_unimodular(const integer_matrix& matrix, submatrix_indices& violator);
 
   /**
    * Tests a given matrix to be totally unimodular using ghouila-houri's criterion by enumeration of row subsets.
@@ -227,7 +228,7 @@ namespace tu {
    * @return true if and only if this matrix is totally unimodular
    */
 
-  bool ghouila_houri_is_totally_unimodular_enum_rows (const integer_matrix& matrix);
+  bool ghouila_houri_is_totally_unimodular_enum_rows(const integer_matrix& matrix);
 
   /**
    * Tests a given matrix to be totally unimodular using ghouila-houri's criterion by enumeration of column subsets.
@@ -236,7 +237,7 @@ namespace tu {
    * @return true if and only if this matrix is totally unimodular
    */
 
-  bool ghouila_houri_is_totally_unimodular_enum_columns (const integer_matrix& matrix);
+  bool ghouila_houri_is_totally_unimodular_enum_columns(const integer_matrix& matrix);
 
   /**
    * Tests a given matrix to be totally unimodular using ghouila-houri's criterion by enumeration of either
@@ -246,7 +247,7 @@ namespace tu {
    * @return true if and only if this matrix is totally unimodular
    */
 
-  bool ghouila_houri_is_totally_unimodular (const integer_matrix& matrix);
+  bool ghouila_houri_is_totally_unimodular(const integer_matrix& matrix);
 
 }
 
