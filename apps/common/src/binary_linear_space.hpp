@@ -12,7 +12,8 @@
 
 #include "permutations.hpp"
 
-namespace tu {
+namespace tu
+{
 
   /**
    * Models a binary linear vector space by storing all vectors contained in the vector space to quickly
@@ -32,7 +33,7 @@ namespace tu {
      * @param length Length of each vector in the space.
      */
 
-    explicit binary_linear_space (size_t length)
+    explicit binary_linear_space(size_t length)
     {
       _length = length;
       _dimension = 0;
@@ -45,7 +46,7 @@ namespace tu {
      * @param other Instance of another binary linear vector space.
      */
 
-    binary_linear_space (const binary_linear_space& other)
+    binary_linear_space(const binary_linear_space& other)
     {
       _length = other._length;
       _dimension = other._dimension;
@@ -60,7 +61,7 @@ namespace tu {
      * @param index Index in range [0, vectors() )
      */
 
-    const vector_type& operator[] (size_t index) const
+    const vector_type& operator[](size_t index) const
     {
       return _vectors[index];
     }
@@ -69,7 +70,7 @@ namespace tu {
      * @return Length of each of the vectors
      */
 
-    inline size_t length () const
+    inline size_t length() const
     {
       return _length;
     }
@@ -78,7 +79,7 @@ namespace tu {
      * @return Number of vectors in this vector space
      */
 
-    inline size_t vectors () const
+    inline size_t vectors() const
     {
       return _vectors.size();
     }
@@ -87,7 +88,7 @@ namespace tu {
      * @return Dimension of this vector space
      */
 
-    inline size_t dimension () const
+    inline size_t dimension() const
     {
       return _dimension;
     }
@@ -100,7 +101,7 @@ namespace tu {
      * @return true if and only if the vector was inserted
      */
 
-    inline bool insert_checked (const vector_type& vector)
+    inline bool insert_checked(const vector_type& vector)
     {
       assert (vector.size() == length());
 
@@ -118,7 +119,7 @@ namespace tu {
      * @param vector A given vector of appropriate size
      */
 
-    void insert (const vector_type& vector)
+    void insert(const vector_type& vector)
     {
       assert (vector.size() == length());
 
@@ -137,7 +138,7 @@ namespace tu {
      * @return Index of the given vector or -1 if it is not spanned.
      */
 
-    int find (const vector_type& vector) const
+    int find(const vector_type& vector) const
     {
       assert (vector.size() == length());
 
@@ -166,7 +167,7 @@ namespace tu {
      * @return
      */
 
-    inline bool is_spanned (const vector_type& vector) const
+    inline bool is_spanned(const vector_type& vector) const
     {
       assert (vector.size() == length());
 
@@ -184,7 +185,7 @@ namespace tu {
      * @param result Vector containing the result
      */
 
-    static void vector_sum (const vector_type& first, const vector_type& second, vector_type& result)
+    static void vector_sum(const vector_type& first, const vector_type& second, vector_type& result)
     {
       assert (first.size() == second.size());
       assert (first.size() == result.size());
@@ -209,7 +210,7 @@ namespace tu {
    * @return The output stream after processing
    */
 
-  inline std::ostream& operator<< (std::ostream& stream, const binary_linear_space& space)
+  inline std::ostream& operator<<(std::ostream& stream, const binary_linear_space& space)
   {
     for (size_t i = 0; i < space.vectors(); ++i)
     {

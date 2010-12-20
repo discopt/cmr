@@ -14,8 +14,10 @@
 #include <map>
 #include <exception>
 #include <cassert>
+#include <boost/random/uniform_int.hpp>
 
-namespace tu {
+namespace tu
+{
 
   /**
    * Exception to indicate that the size of a permutation could not be be reduced.
@@ -24,17 +26,17 @@ namespace tu {
   class permutation_shrink_exception: std::exception
   {
   public:
-    permutation_shrink_exception ()
+    permutation_shrink_exception()
     {
 
     }
 
-    virtual ~permutation_shrink_exception () throw ()
+    virtual ~permutation_shrink_exception() throw ()
     {
 
     }
 
-    virtual const char* what () const throw ()
+    virtual const char* what() const throw ()
     {
       return "Cannot shrink permutation";
     }
@@ -66,9 +68,24 @@ namespace tu {
      * @param size Optional size of the permutation
      */
 
-    permutation (size_type size = 0)
+    permutation(size_type size = 0)
     {
       reset(size);
+    }
+
+    /**
+     * Constructs a permutation of a given size,
+     * initializing to a random permutation.
+     *
+     * @param size Optional size of the permutation
+     * @param rng Random number generator.
+     */
+
+    template <typename RandomNumberGenerator>
+    permutation(size_type size, RandomNumberGenerator& rng)
+    {
+      reset(size);
+      shuffle(rng);
     }
 
     /**
@@ -77,7 +94,7 @@ namespace tu {
      * @param other Another permutation
      */
 
-    permutation (const permutation& other)
+    permutation(const permutation& other)
     {
       _data.resize(other.size());
       for (size_type i = 0; i < _data.size(); ++i)
@@ -88,7 +105,7 @@ namespace tu {
      * Destructor
      */
 
-    virtual ~permutation ()
+    virtual ~permutation()
     {
 
     }
@@ -99,7 +116,7 @@ namespace tu {
      * @param new_size New size
      */
 
-    void reset (size_t new_size)
+    void reset(size_t new_size)
     {
       _data.resize(new_size);
       for (size_type i = 0; i < new_size; ++i)
@@ -112,16 +129,33 @@ namespace tu {
      * Resets the permutation to identity.
      */
 
-    inline void reset ()
+    inline void reset()
     {
       reset(_data.size());
+    }
+
+    /**
+     * Shuffles a permutation.
+     *
+     * @param rng Random number generator.
+     */
+
+    template <typename RandomNumberGenerator>
+    void shuffle(RandomNumberGenerator& rng)
+    {
+      for (size_t i = 0; i < _data.size(); ++i)
+      {
+        boost::uniform_int <int> dist(i, _data.size() - 1);
+        size_t j = dist(rng);
+        swap(i, j);
+      }
     }
 
     /**
      * @return The current size of the permutation
      */
 
-    inline size_type size () const
+    inline size_type size() const
     {
       return _data.size();
     }
@@ -133,7 +167,7 @@ namespace tu {
      * @return The integers image
      */
 
-    inline value_type operator() (value_type index) const
+    inline value_type operator()(value_type index) const
     {
       return get(index);
     }
@@ -144,7 +178,7 @@ namespace tu {
      * @return The integers image
      */
 
-    inline value_type get (value_type index) const
+    inline value_type get(value_type index) const
     {
       assert (index < _data.size());
 
@@ -158,7 +192,7 @@ namespace tu {
      * @param b Second integer
      */
 
-    inline void swap (value_type a, value_type b)
+    inline void swap(value_type a, value_type b)
     {
       std::swap(_data[a], _data[b]);
     }
@@ -170,7 +204,7 @@ namespace tu {
      * @param b Second integer
      */
 
-    void rswap (value_type a, value_type b)
+    void rswap(value_type a, value_type b)
     {
       value_type tmp, pa = a, pb = b;
       while ((tmp = get(pa)) != a)
@@ -184,7 +218,7 @@ namespace tu {
      * Makes this permutation its own inverse.
      */
 
-    void revert ()
+    void revert()
     {
       /// Create a temporary copy
       value_type* temp = new value_type[size()];
@@ -200,7 +234,7 @@ namespace tu {
      * @return The inverse permutation of this permutation
      */
 
-    permutation reverse () const
+    permutation reverse() const
     {
       permutation result(size());
       for (size_type i = 0; i < size(); ++i)
@@ -215,7 +249,7 @@ namespace tu {
      * @return A reference to this permutation
      */
 
-    permutation& operator= (const permutation& other)
+    permutation& operator=(const permutation& other)
     {
       _data.resize(other.size());
       for (size_type i = 0; i < _data.size(); ++i)
@@ -232,7 +266,7 @@ namespace tu {
      * @return The resulting permutation
      */
 
-    permutation operator* (const permutation& rhs) const
+    permutation operator*(const permutation& rhs) const
     {
       assert (size() == rhs.size());
 
@@ -251,7 +285,7 @@ namespace tu {
      * @param new_size New size of the permutation
      */
 
-    void resize (size_type new_size)
+    void resize(size_type new_size)
     {
       size_type old_size = size();
       for (size_type i = new_size; i < old_size; ++i)
@@ -271,7 +305,7 @@ namespace tu {
      * @param by Number of elements to increase the size by
      */
 
-    inline void grow (difference_type by)
+    inline void grow(difference_type by)
     {
       resize(size() + by);
     }
@@ -282,7 +316,7 @@ namespace tu {
      * @param by Number of elements to decrease the size by
      */
 
-    inline void shrink (difference_type by)
+    inline void shrink(difference_type by)
     {
       resize(size() - by);
     }
@@ -296,7 +330,7 @@ namespace tu {
     /// Class to setup a permutation which can be put before a vector.
 
     template <class Less>
-    friend void sort (permutation& permutation, size_t first, size_t beyond, Less& less);
+    friend void sort(permutation& permutation, size_t first, size_t beyond, Less& less);
 
     /**
      * Sets a specific value without checking validity.
@@ -305,7 +339,7 @@ namespace tu {
      * @param value New value
      */
 
-    void _set (value_type index, value_type value)
+    void _set(value_type index, value_type value)
     {
       _data[index] = value;
     }
@@ -314,7 +348,7 @@ namespace tu {
      * @return A reference to the data vector
      */
 
-    inline data_type& get_data ()
+    inline data_type& get_data()
     {
       return _data;
     }
@@ -349,7 +383,7 @@ namespace tu {
      * @param size Size of the permutations
      */
 
-    permutation_enumerator (permutation::size_type size) :
+    permutation_enumerator(permutation::size_type size) :
       _permutation(size)
     {
       if (size)
@@ -371,7 +405,7 @@ namespace tu {
      * @param groups Vector of groups
      */
 
-    permutation_enumerator (const std::vector <permutation::value_type>& groups) :
+    permutation_enumerator(const std::vector <permutation::value_type>& groups) :
       _permutation(groups.size())
     {
       _size = groups.size();
@@ -399,7 +433,7 @@ namespace tu {
      * Destructor.
      */
 
-    virtual ~permutation_enumerator ()
+    virtual ~permutation_enumerator()
     {
       for (state_type::iterator iter = _state.begin(); iter != _state.end(); ++iter)
       {
@@ -412,7 +446,7 @@ namespace tu {
      * @return true if and only if the size of each permutation is zero
      */
 
-    inline bool empty ()
+    inline bool empty()
     {
       return _size == 0;
     }
@@ -424,7 +458,7 @@ namespace tu {
      * @return true if and only if all visitors returned true
      */
 
-    virtual bool enumerate ()
+    virtual bool enumerate()
     {
       if (empty())
         return true;
@@ -442,7 +476,7 @@ namespace tu {
      * @return false to abort enumeration
      */
 
-    virtual bool visitor (const permutation& perm) = 0;
+    virtual bool visitor(const permutation& perm) = 0;
 
   private:
 
@@ -454,7 +488,7 @@ namespace tu {
      * @return false to abort enumeration
      */
 
-    bool enumerate_group (state_type::iterator state, permutation::size_type index)
+    bool enumerate_group(state_type::iterator state, permutation::size_type index)
     {
       /// Nothing to enumerate - just call the visitor.
       if (state == _state.end())
@@ -511,7 +545,7 @@ namespace tu {
    * @return true if and only if the permutations are the same
    */
 
-  inline bool operator== (const permutation& p, const permutation& q)
+  inline bool operator==(const permutation& p, const permutation& q)
   {
     if (p.size() != q.size())
       return false;
@@ -532,7 +566,7 @@ namespace tu {
    * @return The stream after writing the permutation
    */
 
-  inline std::ostream& operator<< (std::ostream& stream, const permutation& p)
+  inline std::ostream& operator<<(std::ostream& stream, const permutation& p)
   {
     if (p.size() > 0)
     {
@@ -554,7 +588,7 @@ namespace tu {
    */
 
   template <class Less>
-  inline void sort (permutation& permutation, size_t first, size_t beyond, Less& less)
+  inline void sort(permutation& permutation, size_t first, size_t beyond, Less& less)
   {
     permutation::data_type& data = permutation.get_data();
     std::sort(data.begin() + first, data.begin() + beyond, less);
@@ -569,7 +603,7 @@ namespace tu {
    */
 
   template <class Less>
-  inline void sort (permutation& permutation, Less& less)
+  inline void sort(permutation& permutation, Less& less)
   {
     sort(permutation, 0, permutation.size(), less);
   }

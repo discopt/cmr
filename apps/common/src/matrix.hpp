@@ -12,7 +12,8 @@
 
 #include "matrix_transposed.hpp"
 
-namespace tu {
+namespace tu
+{
 
   /**
    * Exception to indicate a pivot on a zero element.
@@ -21,7 +22,7 @@ namespace tu {
   class matrix_binary_pivot_exception: public std::exception
   {
   public:
-    const char* what () const throw ()
+    const char* what() const throw ()
     {
       return "Cannot pivot on a zero entry!";
     }
@@ -37,7 +38,7 @@ namespace tu {
    */
 
   template <typename MatrixType>
-  inline void matrix_set_value (MatrixType& matrix, size_t row, size_t column, typename MatrixType::value_type value)
+  inline void matrix_set_value(MatrixType& matrix, size_t row, size_t column, typename MatrixType::value_type value)
   {
     matrix(row, column) = value;
   }
@@ -47,7 +48,7 @@ namespace tu {
    */
 
   template <typename MatrixType>
-  inline void matrix_set_value (const MatrixType& matrix, size_t row, size_t column, typename MatrixType::value_type value)
+  inline void matrix_set_value(const MatrixType& matrix, size_t row, size_t column, typename MatrixType::value_type value)
   {
     assert (false);
   }
@@ -61,7 +62,7 @@ namespace tu {
    */
 
   template <typename MatrixType>
-  inline void matrix_permute1 (MatrixType& matrix, size_t index1, size_t index2)
+  inline void matrix_permute1(MatrixType& matrix, size_t index1, size_t index2)
   {
     for (size_t index = 0; index < matrix.size2(); ++index)
     {
@@ -78,7 +79,7 @@ namespace tu {
    */
 
   template <typename MatrixType>
-  inline void matrix_permute2 (MatrixType& matrix, size_t index1, size_t index2)
+  inline void matrix_permute2(MatrixType& matrix, size_t index1, size_t index2)
   {
     for (size_t index = 0; index < matrix.size1(); ++index)
     {
@@ -87,7 +88,7 @@ namespace tu {
   }
 
   /**
-   * Free function to perform a pivot on a permuted matrix.
+   * Free function to perform a binary pivot on a matrix.
    *
    * @param matrix The matrix
    * @param i Row index
@@ -95,7 +96,7 @@ namespace tu {
    */
 
   template <typename MatrixType>
-  void matrix_binary_pivot (MatrixType& matrix, size_t i, size_t j)
+  void matrix_binary_pivot(MatrixType& matrix, size_t i, size_t j)
   {
     typedef typename MatrixType::value_type value_type;
     const value_type& base_value = matrix(i, j);
@@ -134,6 +135,58 @@ namespace tu {
   }
 
   /**
+   * Free function to perform a ternary pivot on a matrix.
+   *
+   * @param matrix The matrix
+   * @param i Row index
+   * @param j Column index
+   */
+
+  template <typename MatrixType>
+  void matrix_ternary_pivot(MatrixType& matrix, size_t i, size_t j)
+  {
+    typedef typename MatrixType::value_type value_type;
+    const value_type& base_value = matrix(i, j);
+
+    if (base_value == 0)
+    {
+      throw matrix_binary_pivot_exception();
+    }
+
+    for (size_t row = 0; row < matrix.size1(); ++row)
+    {
+      if (row == i)
+      {
+        continue;
+      }
+      const value_type& first = matrix(row, j);
+      if (first == 0)
+      {
+        continue;
+      }
+
+      for (size_t column = 0; column < matrix.size2(); ++column)
+      {
+        if (column == j)
+        {
+          continue;
+        }
+        const value_type& second = matrix(i, column);
+        if (second == 0)
+        {
+          continue;
+        }
+        value_type value = matrix(row, column) - first * second / base_value;
+        while (value > 1)
+          value -= 3;
+        while (value < -1)
+          value += 3;
+        matrix(row, column) = value;
+      }
+    }
+  }
+
+  /**
    * Counts how many of the rows in the specified range have a property.
    *
    * @param matrix The given matrix
@@ -146,7 +199,7 @@ namespace tu {
    */
 
   template <typename MatrixType, typename PropertyCheck>
-  inline size_t matrix_count_property_row_series (const MatrixType& matrix, size_t row_first, size_t row_beyond, size_t column_first,
+  inline size_t matrix_count_property_row_series(const MatrixType& matrix, size_t row_first, size_t row_beyond, size_t column_first,
       size_t column_beyond, PropertyCheck check)
   {
     for (size_t row = row_first; row < row_beyond; ++row)
@@ -172,7 +225,7 @@ namespace tu {
    */
 
   template <typename MatrixType, typename PropertyCheck>
-  inline size_t matrix_count_property_column_series (const MatrixType& matrix, size_t row_first, size_t row_beyond, size_t column_first,
+  inline size_t matrix_count_property_column_series(const MatrixType& matrix, size_t row_first, size_t row_beyond, size_t column_first,
       size_t column_beyond, PropertyCheck check)
   {
     matrix_transposed <const MatrixType> transposed(matrix);
@@ -186,7 +239,7 @@ namespace tu {
    */
 
   template <typename MatrixType>
-  inline void matrix_print (const MatrixType& matrix)
+  inline void matrix_print(const MatrixType& matrix)
   {
     for (size_t row = 0; row < matrix.size1(); ++row)
     {
@@ -208,7 +261,7 @@ namespace tu {
    */
 
   template <typename MatrixType1, typename MatrixType2>
-  inline bool matrix_equals (const MatrixType1& matrix1, const MatrixType2& matrix2)
+  inline bool matrix_equals(const MatrixType1& matrix1, const MatrixType2& matrix2)
   {
     if (matrix1.size1() != matrix2.size1())
       return false;

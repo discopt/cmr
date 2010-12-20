@@ -13,7 +13,8 @@
 
 #include "permutations.hpp"
 
-namespace tu {
+namespace tu
+{
 
   /**
    * A matrix proxy with permuted rows and columns.
@@ -50,7 +51,7 @@ namespace tu {
      * @param matrix The original matrix
      */
 
-    matrix_permuted (matrix_type& matrix) :
+    matrix_permuted(matrix_type& matrix) :
       _data(matrix), _perm1(matrix.size1()), _perm2(matrix.size2())
     {
 
@@ -60,7 +61,7 @@ namespace tu {
      * @return Height of the matrix
      */
 
-    inline size_type size1 () const
+    inline size_type size1() const
     {
       return _perm1.size();
     }
@@ -69,7 +70,7 @@ namespace tu {
      * @return Width of the matrix
      */
 
-    inline size_type size2 () const
+    inline size_type size2() const
     {
       return _perm2.size();
     }
@@ -78,7 +79,7 @@ namespace tu {
      * @return Reference to the row permutation
      */
 
-    inline const permutation_type& perm1 () const
+    inline const permutation_type& perm1() const
     {
       return _perm1;
     }
@@ -87,7 +88,7 @@ namespace tu {
      * @return Reference to the row permutation
      */
 
-    inline permutation_type& perm1 ()
+    inline permutation_type& perm1()
     {
       return _perm1;
     }
@@ -96,7 +97,7 @@ namespace tu {
      * @return Reference to the column permutation
      */
 
-    inline const permutation_type& perm2 () const
+    inline const permutation_type& perm2() const
     {
       return _perm2;
     }
@@ -105,7 +106,7 @@ namespace tu {
      * @return Reference to the column permutation
      */
 
-    inline permutation_type& perm2 ()
+    inline permutation_type& perm2()
     {
       return _perm2;
     }
@@ -118,7 +119,7 @@ namespace tu {
      * @return original(row-permutation(row), column-permutation(column))
      */
 
-    inline const_reference operator () (size_type i, size_type j) const
+    inline const_reference operator ()(size_type i, size_type j) const
     {
       return _data(_perm1(i), _perm2(j));
     }
@@ -131,7 +132,7 @@ namespace tu {
      * @return original(row-permutation(row), column-permutation(column))
      */
 
-    inline reference operator () (size_type i, size_type j)
+    inline reference operator ()(size_type i, size_type j)
     {
       return _data(_perm1(i), _perm2(j));
     }
@@ -140,7 +141,7 @@ namespace tu {
      * @return Reference to original matrix
      */
 
-    inline matrix_type& data ()
+    inline matrix_type& data()
     {
       return _data;
     }
@@ -149,7 +150,7 @@ namespace tu {
      * @return Read-only reference to original matrix
      */
 
-    inline const matrix_type& data () const
+    inline const matrix_type& data() const
     {
       return _data;
     }
@@ -172,7 +173,7 @@ namespace tu {
    */
 
   template <typename MatrixType>
-  inline void matrix_set_value (matrix_permuted <MatrixType>& matrix, size_t row, size_t column, typename MatrixType::value_type value)
+  inline void matrix_set_value(matrix_permuted <MatrixType>& matrix, size_t row, size_t column, typename MatrixType::value_type value)
   {
     matrix(row, column) = value;
   }
@@ -182,7 +183,7 @@ namespace tu {
    */
 
   template <typename MatrixType>
-  inline void matrix_set_value (matrix_permuted <const MatrixType>& matrix, size_t row, size_t column, typename MatrixType::value_type value)
+  inline void matrix_set_value(matrix_permuted <const MatrixType>& matrix, size_t row, size_t column, typename MatrixType::value_type value)
   {
     assert (false);
   }
@@ -196,7 +197,7 @@ namespace tu {
    */
 
   template <typename MatrixType>
-  inline void matrix_permute1 (matrix_permuted <MatrixType>& matrix, size_t index1, size_t index2)
+  inline void matrix_permute1(matrix_permuted <MatrixType>& matrix, size_t index1, size_t index2)
   {
     matrix.perm1().swap(index1, index2);
   }
@@ -210,7 +211,7 @@ namespace tu {
    */
 
   template <typename MatrixType>
-  inline void matrix_permute2 (matrix_permuted <MatrixType>& matrix, size_t index1, size_t index2)
+  inline void matrix_permute2(matrix_permuted <MatrixType>& matrix, size_t index1, size_t index2)
   {
     matrix.perm2().swap(index1, index2);
   }
@@ -224,55 +225,55 @@ namespace tu {
    */
 
   template <typename MatrixType>
-  inline void matrix_binary_pivot (matrix_permuted <MatrixType>& matrix, size_t i, size_t j)
+  inline void matrix_binary_pivot(matrix_permuted <MatrixType>& matrix, size_t i, size_t j)
   {
     matrix_binary_pivot(matrix.data(), matrix.perm1()(i), matrix.perm2()(j));
   }
 
   template <typename MatrixType>
-  inline permutation matrix_get_perm1 (matrix_permuted <MatrixType>& matrix)
+  inline permutation matrix_get_perm1(matrix_permuted <MatrixType>& matrix)
   {
     return matrix.perm1();
   }
 
   template <typename MatrixType>
-  inline permutation matrix_get_perm2 (matrix_permuted <MatrixType>& matrix)
+  inline permutation matrix_get_perm2(matrix_permuted <MatrixType>& matrix)
   {
     return matrix.perm2();
   }
 
   template <typename MatrixType>
-  inline permutation matrix_get_perm1 (matrix_transposed <MatrixType>& matrix)
+  inline permutation matrix_get_perm1(matrix_transposed <MatrixType>& matrix)
   {
     return matrix_get_perm2(matrix.data());
   }
 
   template <typename MatrixType>
-  inline permutation matrix_get_perm2 (matrix_transposed <MatrixType>& matrix)
+  inline permutation matrix_get_perm2(matrix_transposed <MatrixType>& matrix)
   {
     return matrix_get_perm1(matrix.data());
   }
 
   template <typename MatrixType>
-  inline void matrix_set_perm1 (matrix_permuted <MatrixType>& matrix, const permutation& permutation)
+  inline void matrix_set_perm1(matrix_permuted <MatrixType>& matrix, const permutation& permutation)
   {
     matrix.perm1() = permutation;
   }
 
   template <typename MatrixType>
-  inline void matrix_set_perm2 (matrix_permuted <MatrixType>& matrix, const permutation& permutation)
+  inline void matrix_set_perm2(matrix_permuted <MatrixType>& matrix, const permutation& permutation)
   {
     matrix.perm2() = permutation;
   }
 
   template <typename MatrixType>
-  inline void matrix_set_perm1 (matrix_transposed <MatrixType>& matrix, const permutation& permutation)
+  inline void matrix_set_perm1(matrix_transposed <MatrixType>& matrix, const permutation& permutation)
   {
     matrix_set_perm2(matrix.data(), permutation);
   }
 
   template <typename MatrixType>
-  inline void matrix_set_perm2 (matrix_transposed <MatrixType>& matrix, const permutation& permutation)
+  inline void matrix_set_perm2(matrix_transposed <MatrixType>& matrix, const permutation& permutation)
   {
     matrix_set_perm1(matrix.data(), permutation);
   }

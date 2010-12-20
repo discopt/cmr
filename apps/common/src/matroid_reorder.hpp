@@ -10,7 +10,8 @@
 
 #include "matrix_reorder.hpp"
 
-namespace tu {
+namespace tu
+{
 
   /**
    * Applies a row permutation to a given matroid and its representation matrix, i.e. performs the
@@ -22,7 +23,7 @@ namespace tu {
    */
 
   template <typename MatroidType, typename MatrixType>
-  inline void matroid_apply_row_permutation (MatroidType& matroid, MatrixType& matrix, const permutation& perm)
+  inline void matroid_apply_row_permutation(MatroidType& matroid, MatrixType& matrix, const permutation& perm)
   {
     permutation p = perm;
     for (size_t row = 0; row < matroid.size1(); ++row)
@@ -44,7 +45,7 @@ namespace tu {
    */
 
   template <typename MatroidType, typename MatrixType>
-  inline void matroid_apply_column_permutation (MatroidType& matroid, MatrixType& matrix, const permutation& perm)
+  inline void matroid_apply_column_permutation(MatroidType& matroid, MatrixType& matrix, const permutation& perm)
   {
     matroid_transposed <MatroidType> transposed_matroid(matroid);
     matrix_transposed <MatrixType> transposed_matrix(matrix);
@@ -64,7 +65,7 @@ namespace tu {
    */
 
   template <typename MatroidType, typename MatrixType, typename ElementLess>
-  inline void matroid_reorder_rows (MatroidType& matroid, MatrixType& matrix, size_t row_first, size_t row_beyond, size_t column_first,
+  inline void matroid_reorder_rows(MatroidType& matroid, MatrixType& matrix, size_t row_first, size_t row_beyond, size_t column_first,
       size_t column_beyond, ElementLess element_less)
   {
     permutation perm;
@@ -85,7 +86,7 @@ namespace tu {
    */
 
   template <typename MatroidType, typename MatrixType, typename ElementLess>
-  inline void matroid_reorder_columns (MatroidType& matroid, MatrixType& matrix, size_t row_first, size_t row_beyond, size_t column_first,
+  inline void matroid_reorder_columns(MatroidType& matroid, MatrixType& matrix, size_t row_first, size_t row_beyond, size_t column_first,
       size_t column_beyond, ElementLess element_less)
   {
     matroid_transposed <MatroidType> transposed_matroid(matroid);

@@ -18,16 +18,17 @@
 #include "enumeration.hpp"
 #include "logger.hpp"
 
-namespace tu {
+namespace tu
+{
 
   /// Forward declaration
 
   template <typename MatroidType, typename MatrixType>
-  std::pair <bool, decomposed_matroid*> decompose_binary_matroid (MatroidType& matroid, MatrixType& matrix, matroid_element_set extra_elements,
+  std::pair <bool, decomposed_matroid*> decompose_binary_matroid(MatroidType& matroid, MatrixType& matrix, matroid_element_set extra_elements,
       bool construct_decomposition, logger& log);
 
   template <typename MatroidType, typename MatrixType>
-  std::pair <bool, decomposed_matroid*> decompose_minor_sequence (matroid_permuted <MatroidType>& permuted_matroid,
+  std::pair <bool, decomposed_matroid*> decompose_minor_sequence(matroid_permuted <MatroidType>& permuted_matroid,
       matrix_permuted <MatrixType>& permuted_matrix, nested_minor_sequence& nested_minors, matroid_element_set extra_elements,
       bool construct_decomposition, logger& log)
   {
@@ -445,7 +446,7 @@ namespace tu {
    */
 
   template <typename MatroidType, typename MatrixType>
-  matroid_graph* construct_small_matroid_graph (MatroidType& matroid, MatrixType& matrix)
+  matroid_graph* construct_small_matroid_graph(MatroidType& matroid, MatrixType& matrix)
   {
     assert (matroid.size1() <= 2 || matroid.size2() <= 2);
 
@@ -492,7 +493,8 @@ namespace tu {
     }
     else if (matroid.size1() >= 3 && matroid.size2() == 2)
     {
-      size_t count[4] = { 0, 0, 0, 0 };
+      size_t count[4] =
+      { 0, 0, 0, 0 };
       for (size_t row = 0; row < matroid.size1(); ++row)
       {
         count[((matrix(row, 0) != 0) ? 2 : 0) + ((matrix(row, 1) != 0) ? 1 : 0)]++;
@@ -570,7 +572,7 @@ namespace tu {
    */
 
   template <typename MatroidType, typename MatrixType>
-  std::pair <bool, decomposed_matroid*> decompose_binary_matroid (MatroidType& matroid, MatrixType& matrix, matroid_element_set extra_elements,
+  std::pair <bool, decomposed_matroid*> decompose_binary_matroid(MatroidType& matroid, MatrixType& matrix, matroid_element_set extra_elements,
       bool construct_decomposition, logger& log)
   {
     assert (is_zero_one_matrix(matrix));

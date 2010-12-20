@@ -13,7 +13,8 @@
 
 #include "total_unimodularity.hpp"
 
-namespace tu {
+namespace tu
+{
 
   /**
    * This class manages the logging behaviour of the library. There are three level:
@@ -32,19 +33,19 @@ namespace tu {
      * @param level The log level to work with
      */
 
-    logger (log_level level);
+    logger(log_level level);
 
     /**
      * Destructor
      */
 
-    virtual ~logger ();
+    virtual ~logger();
 
     /**
      * @return The current log level
      */
 
-    inline log_level level () const
+    inline log_level level() const
     {
       return _level;
     }
@@ -53,7 +54,7 @@ namespace tu {
      * @return true if and only if log level is quiet
      */
 
-    inline bool is_quiet () const
+    inline bool is_quiet() const
     {
       return _level == LOG_QUIET;
     }
@@ -62,7 +63,7 @@ namespace tu {
      * @return true if and only if log level is verbose
      */
 
-    inline bool is_verbose () const
+    inline bool is_verbose() const
     {
       return _level == LOG_VERBOSE;
     }
@@ -71,7 +72,7 @@ namespace tu {
      * @return true if and only if log level is updating
      */
 
-    inline bool is_updating () const
+    inline bool is_updating() const
     {
       return _level == LOG_UPDATING;
     }
@@ -82,7 +83,7 @@ namespace tu {
      * @param amount Number of spaces to increase
      */
 
-    inline void indent (size_t amount = 1)
+    inline void indent(size_t amount = 1)
     {
       _indent += amount;
     }
@@ -93,7 +94,7 @@ namespace tu {
      * @param amount Number of space to decrease
      */
 
-    inline void unindent (size_t amount = 1)
+    inline void unindent(size_t amount = 1)
     {
       _indent -= amount;
     }
@@ -102,7 +103,7 @@ namespace tu {
      * Clears the current line.
      */
 
-    inline void clear ()
+    inline void clear()
     {
       delete _line;
       _line = new std::stringstream();
@@ -112,7 +113,7 @@ namespace tu {
      * @return Number of characters in the current line
      */
 
-    inline size_t size () const
+    inline size_t size() const
     {
       return line().str().size();
     }
@@ -123,7 +124,7 @@ namespace tu {
      * @param position Position from which to erase
      */
 
-    inline void erase (size_t position)
+    inline void erase(size_t position)
     {
       std::string data = line().str();
       data.erase(position);
@@ -135,7 +136,7 @@ namespace tu {
      * @return The string stream holding the current line
      */
 
-    inline std::stringstream& line ()
+    inline std::stringstream& line()
     {
       return *_line;
     }
@@ -144,14 +145,14 @@ namespace tu {
      * @return The string stream holding the current line
      */
 
-    inline const std::stringstream& line () const
+    inline const std::stringstream& line() const
     {
       return *_line;
     }
 
     /// Stream operator
 
-    friend std::ostream& operator<< (std::ostream&, logger&);
+    friend std::ostream& operator<<(std::ostream&, logger&);
 
   private:
     size_t _indent;
@@ -168,7 +169,7 @@ namespace tu {
    * @return Output stream
    */
 
-  std::ostream& operator<< (std::ostream&, logger&);
+  std::ostream& operator<<(std::ostream&, logger&);
 }
 
 #endif /* LOGGER_HPP_ */

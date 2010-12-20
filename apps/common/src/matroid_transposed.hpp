@@ -10,7 +10,8 @@
 
 #include "matroid.hpp"
 
-namespace tu {
+namespace tu
+{
 
   /**
    * A matroid proxy which exchanges the meaning of bases and cobases.
@@ -35,7 +36,7 @@ namespace tu {
      * @param matroid The original matroid
      */
 
-    matroid_transposed (MatroidType& matroid) :
+    matroid_transposed(MatroidType& matroid) :
       _matroid(matroid)
     {
 
@@ -45,7 +46,7 @@ namespace tu {
      * @return Height, i.e. size of each base
      */
 
-    inline size_type size1 () const
+    inline size_type size1() const
     {
       return _matroid.size2();
     }
@@ -54,7 +55,7 @@ namespace tu {
      * @return Width, i.e. size of each cobase
      */
 
-    inline size_type size2 () const
+    inline size_type size2() const
     {
       return _matroid.size1();
     }
@@ -64,7 +65,7 @@ namespace tu {
      * @return The corresponding matroid element
      */
 
-    inline reference_type name1 (size_type index)
+    inline reference_type name1(size_type index)
     {
       return _matroid.name2(index);
     }
@@ -74,7 +75,7 @@ namespace tu {
      * @return The corresponding matroid element
      */
 
-    inline const_reference_type name1 (size_type index) const
+    inline const_reference_type name1(size_type index) const
     {
       return _matroid.name2(index);
     }
@@ -84,7 +85,7 @@ namespace tu {
      * @return The corresponding matroid element
      */
 
-    inline reference_type name2 (size_type index)
+    inline reference_type name2(size_type index)
     {
       return _matroid.name1(index);
     }
@@ -94,7 +95,7 @@ namespace tu {
      * @return The corresponding matroid element
      */
 
-    inline const_reference_type name2 (size_type index) const
+    inline const_reference_type name2(size_type index) const
     {
       return _matroid.name1(index);
     }
@@ -103,7 +104,7 @@ namespace tu {
      * @return Reference to the orginal matroid
      */
 
-    inline matroid_type& data ()
+    inline matroid_type& data()
     {
       return _matroid;
     }
@@ -121,7 +122,7 @@ namespace tu {
    */
 
   template <typename MatroidType>
-  inline matroid_transposed <MatroidType> make_transposed_matroid (MatroidType& matroid)
+  inline matroid_transposed <MatroidType> make_transposed_matroid(MatroidType& matroid)
   {
     return matroid_transposed <MatroidType> (matroid);
   }
@@ -135,7 +136,7 @@ namespace tu {
    */
 
   template <typename MatroidType>
-  inline void matroid_permute1 (matroid_transposed <MatroidType>& matroid, size_t index1, size_t index2)
+  inline void matroid_permute1(matroid_transposed <MatroidType>& matroid, size_t index1, size_t index2)
   {
     matroid_permute2(matroid.data(), index1, index2);
   }
@@ -149,7 +150,7 @@ namespace tu {
    */
 
   template <typename MatroidType>
-  inline void matroid_permute2 (matroid_transposed <MatroidType>& matroid, size_t index1, size_t index2)
+  inline void matroid_permute2(matroid_transposed <MatroidType>& matroid, size_t index1, size_t index2)
   {
     matroid_permute1(matroid.data(), index1, index2);
   }
@@ -163,7 +164,7 @@ namespace tu {
    */
 
   template <typename MatroidType>
-  void matroid_binary_pivot (matroid_transposed <MatroidType>& matroid, size_t i, size_t j)
+  void matroid_binary_pivot(matroid_transposed <MatroidType>& matroid, size_t i, size_t j)
   {
     matroid_binary_pivot(matroid.data(), j, i);
   }

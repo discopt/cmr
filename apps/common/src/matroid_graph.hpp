@@ -13,7 +13,8 @@
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/properties.hpp>
 
-namespace tu {
+namespace tu
+{
 
   /**
    * Matroid element property
@@ -29,7 +30,8 @@ namespace tu {
 
 }
 
-namespace boost {
+namespace boost
+{
 
   /**
    * Matroid element property tag
@@ -43,7 +45,8 @@ namespace boost {
 
 }
 
-namespace tu {
+namespace tu
+{
 
   typedef boost::property_map <matroid_graph, edge_matroid_element_t>::const_type const_matroid_element_map;
   typedef boost::property_map <matroid_graph, edge_matroid_element_t>::type matroid_element_map;
@@ -56,7 +59,7 @@ namespace tu {
    * @return The output stream after writing to it
    */
 
-  std::ostream& operator<< (std::ostream& stream, const tu::matroid_graph& graph);
+  std::ostream& operator<<(std::ostream& stream, const tu::matroid_graph& graph);
 
 }
 

@@ -19,8 +19,10 @@
 #include "matrix_modified.hpp"
 #include "logger.hpp"
 
-namespace tu {
-  namespace detail {
+namespace tu
+{
+  namespace detail
+  {
 
     /**
      * This functor is a modifier for a modified matrix. It takes a split point.
@@ -37,7 +39,7 @@ namespace tu {
        * @param split A given split point for this modifier
        */
 
-      empty_bottom_left_modifier (size_pair_t split) :
+      empty_bottom_left_modifier(size_pair_t split) :
         _split(split)
       {
 
@@ -52,7 +54,7 @@ namespace tu {
        * @return The filtered value
        */
 
-      value_type operator() (size_t i, size_t j, value_type value)
+      value_type operator()(size_t i, size_t j, value_type value)
       {
         if (i < _split.first || j >= _split.second)
           return value;
@@ -76,7 +78,7 @@ namespace tu {
      */
 
     template <typename MatroidType, typename MatrixType>
-    inline void find_column_witnesses (MatroidType& matroid, MatrixType& matrix, size_pair_t split, matroid_element_set& extra_elements)
+    inline void find_column_witnesses(MatroidType& matroid, MatrixType& matrix, size_pair_t split, matroid_element_set& extra_elements)
     {
       binary_linear_space vector_space(matroid.size1() - split.first);
       binary_linear_space::vector_type vector(matroid.size1() - split.first);
@@ -181,7 +183,7 @@ namespace tu {
      */
 
     template <typename MatroidType, typename MatrixType>
-    inline void find_row_witnesses (MatroidType& matroid, MatrixType& matrix, size_pair_t split, matroid_element_set& extra_elements)
+    inline void find_row_witnesses(MatroidType& matroid, MatrixType& matrix, size_pair_t split, matroid_element_set& extra_elements)
     {
       binary_linear_space vector_space(split.second);
       binary_linear_space::vector_type vector(split.second);
@@ -284,7 +286,7 @@ namespace tu {
      */
 
     template <typename MatroidType, typename MatrixType>
-    inline separation find_witnesses (MatroidType& matroid, MatrixType& matrix, size_pair_t split, matroid_element_set& extra_elements)
+    inline separation find_witnesses(MatroidType& matroid, MatrixType& matrix, size_pair_t split, matroid_element_set& extra_elements)
     {
       find_column_witnesses(matroid, matrix, split, extra_elements);
       find_row_witnesses(matroid, matrix, split, extra_elements);
@@ -304,7 +306,7 @@ namespace tu {
      */
 
     template <typename MatroidType, typename MatrixType>
-    inline void pivot_top_right (MatroidType& matroid, MatrixType& matrix, size_pair_t& split, matroid_element_set& extra_elements)
+    inline void pivot_top_right(MatroidType& matroid, MatrixType& matrix, size_pair_t& split, matroid_element_set& extra_elements)
     {
       for (size_t row = 0; row < split.first; ++row)
       {
@@ -334,7 +336,7 @@ namespace tu {
      */
 
     template <typename MatroidType, typename MatrixType>
-    inline void pivot_bottom_left (MatroidType& matroid, MatrixType& matrix, size_pair_t& split, matroid_element_set& extra_elements)
+    inline void pivot_bottom_left(MatroidType& matroid, MatrixType& matrix, size_pair_t& split, matroid_element_set& extra_elements)
     {
       for (size_t row = split.first; row < matrix.size1(); ++row)
       {
@@ -366,7 +368,7 @@ namespace tu {
      */
 
     template <typename MatroidType, typename MatrixType>
-    inline void normalize_3_4_separation (MatroidType& matroid, MatrixType& matrix, size_pair_t& split, rank_distribution ranks,
+    inline void normalize_3_4_separation(MatroidType& matroid, MatrixType& matrix, size_pair_t& split, rank_distribution ranks,
         matroid_element_set& extra_elements)
     {
       if (ranks == RANK_BL_2_TR_0)
@@ -402,7 +404,7 @@ namespace tu {
      */
 
     template <typename MatroidType, typename MatrixType>
-    inline bool extend_to_3_4_separation (MatroidType& matroid, MatrixType& matrix, matrix_permuted <const integer_matrix>& worker_matrix,
+    inline bool extend_to_3_4_separation(MatroidType& matroid, MatrixType& matrix, matrix_permuted <const integer_matrix>& worker_matrix,
         size_pair_t top_left_size, size_pair_t bottom_right_size, separation& separation, matroid_element_set& extra_elements)
     {
       rank_distribution ranks =
@@ -447,7 +449,7 @@ namespace tu {
      */
 
     template <typename MappingValue>
-    inline size_pair_t apply_mapping (permutation& permutation, std::vector <MappingValue>& mapping)
+    inline size_pair_t apply_mapping(permutation& permutation, std::vector <MappingValue>& mapping)
     {
       vector_less <MappingValue> less(mapping);
       sort(permutation, less);
@@ -472,7 +474,7 @@ namespace tu {
      */
 
     template <typename NestedMinorSequence>
-    inline size_t find_first_8_element_minor (const NestedMinorSequence& nested_minors, size_pair_t& minor_size)
+    inline size_t find_first_8_element_minor(const NestedMinorSequence& nested_minors, size_pair_t& minor_size)
     {
       size_t current_height = 3;
       size_t current_width = 3;
@@ -519,7 +521,7 @@ namespace tu {
      */
 
     template <typename MatroidType, typename MatrixType, typename MappingValue>
-    inline bool enumerate_extension (MatroidType& matroid, MatrixType& matrix, matrix_permuted <const integer_matrix>& worker_matrix, std::vector <
+    inline bool enumerate_extension(MatroidType& matroid, MatrixType& matrix, matrix_permuted <const integer_matrix>& worker_matrix, std::vector <
         MappingValue>& row_mapping, std::vector <MappingValue>& column_mapping, size_pair_t minor_size, size_t ext_height, size_t ext_width,
         separation& separation, matroid_element_set& extra_elements, unsigned long long& enumeration, unsigned long long& next_enumeration,
         unsigned long long max_enumerations, unsigned int& next_percent, logger& log, size_t cut)
@@ -607,7 +609,7 @@ namespace tu {
    */
 
   template <typename MatroidType, typename MatrixType, typename NestedMinorSequence>
-  inline separation enumerate_separations (MatroidType& matroid, MatrixType& matrix, const NestedMinorSequence& nested_minors,
+  inline separation enumerate_separations(MatroidType& matroid, MatrixType& matrix, const NestedMinorSequence& nested_minors,
       matroid_element_set& extra_elements, logger& log)
   {
     //    std::cout << "\nenumerate_separations works on a " << matroid.size1() << " x " << matroid.size2() << " matrix.\n";
@@ -770,17 +772,17 @@ namespace tu {
     return separation();
   }
 
-  /**
-   * Enumerates the partitions along the sequence of nested minors, possibly by
-   * transposing the matrix to optimize the enumeration.
-   *
-   * @param matroid Given matroid
-   * @param matrix Representation matrix of the given matroid
-   * @param nested_minors Sequence of nested minors
-   * @param extra_elements Set of matroid-elements to be filled with pivot-elements
-   * @param log Logger
-   * @return true if and only if the partition algorithm was successful
-   */
+/**
+ * Enumerates the partitions along the sequence of nested minors, possibly by
+ * transposing the matrix to optimize the enumeration.
+ *
+ * @param matroid Given matroid
+ * @param matrix Representation matrix of the given matroid
+ * @param nested_minors Sequence of nested minors
+ * @param extra_elements Set of matroid-elements to be filled with pivot-elements
+ * @param log Logger
+ * @return true if and only if the partition algorithm was successful
+ */
 
 }
 

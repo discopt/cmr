@@ -19,7 +19,8 @@
 #include "bipartite_graph_bfs.hpp"
 #include "comparators.hpp"
 
-namespace tu {
+namespace tu
+{
 
   /**
    * A matrix proxy which makes an upper-left part zero.
@@ -36,7 +37,7 @@ namespace tu {
      * @param width Number of columns in the zero-part
      */
 
-    zero_block_matrix_modifier (size_t height, size_t width) :
+    zero_block_matrix_modifier(size_t height, size_t width) :
       height_(height), width_(width)
     {
 
@@ -51,7 +52,7 @@ namespace tu {
      * @return Modified value
      */
 
-    int operator () (size_t i, size_t j, int value)
+    int operator ()(size_t i, size_t j, int value)
     {
       if (i < height_ && j < width_)
         return 0;
@@ -75,7 +76,7 @@ namespace tu {
    */
 
   template <typename MatroidType, typename MatrixType>
-  separation find_wheel_minor (matroid_permuted <MatroidType>& permuted_matroid, matrix_permuted <MatrixType>& permuted_matrix,
+  separation find_wheel_minor(matroid_permuted <MatroidType>& permuted_matroid, matrix_permuted <MatrixType>& permuted_matrix,
       matroid_element_set& extra_elements)
   {
     assert (permuted_matrix.size1() >= 3 && permuted_matroid.size2() >= 3);

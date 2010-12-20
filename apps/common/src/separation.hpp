@@ -15,7 +15,8 @@
 #include "matroid.hpp"
 #include "total_unimodularity.hpp"
 
-namespace tu {
+namespace tu
+{
 
   /**
    * Models different types of matroid separations.
@@ -31,7 +32,7 @@ namespace tu {
      * Constructs a separation which is none.
      */
 
-    separation ();
+    separation();
 
     /**
      * Constructs a 1-separation.
@@ -39,7 +40,7 @@ namespace tu {
      * @param split Size of the first component, which must be at upper-left
      */
 
-    separation (split_type split);
+    separation(split_type split);
 
     /**
      * Constructs a 2-separation.
@@ -48,7 +49,7 @@ namespace tu {
      * @param witness1 A witnessing one in the rank 1 part
      */
 
-    separation (split_type split, witness_type witness1);
+    separation(split_type split, witness_type witness1);
 
     /**
      * Constructs a 3-separation.
@@ -58,7 +59,7 @@ namespace tu {
      * @param witness2 Second witnessing one in the rank 2 part
      */
 
-    separation (split_type split, witness_type witness1, witness_type witness2);
+    separation(split_type split, witness_type witness1, witness_type witness2);
 
     /**
      * Copy constructor
@@ -66,7 +67,7 @@ namespace tu {
      * @param other Another separation
      */
 
-    separation (const separation& other);
+    separation(const separation& other);
 
     /**
      * Assignment operator
@@ -75,25 +76,25 @@ namespace tu {
      * @return This separation
      */
 
-    separation& operator= (const separation& other);
+    separation& operator=(const separation& other);
 
     /**
      * Destructor
      */
 
-    ~separation ();
+    ~separation();
 
     /**
      * @return A separation with the transposed details
      */
 
-    separation transposed ();
+    separation transposed();
 
     /**
      * @return Rank in the upper right part
      */
 
-    int upper_right_rank () const
+    int upper_right_rank() const
     {
       return upper_right_rank_;
     }
@@ -102,7 +103,7 @@ namespace tu {
      * @return Rank in the lower left part
      */
 
-    int lower_left_rank () const
+    int lower_left_rank() const
     {
       return lower_left_rank_;
     }
@@ -111,7 +112,7 @@ namespace tu {
      * @return Total rank in lower left and upper right parts
      */
 
-    int rank () const
+    int rank() const
     {
       return lower_left_rank() + upper_right_rank();
     }
@@ -120,7 +121,7 @@ namespace tu {
      * @return The split
      */
 
-    const std::pair <size_t, size_t>& split () const
+    const std::pair <size_t, size_t>& split() const
     {
       return split_;
     }
@@ -129,7 +130,7 @@ namespace tu {
      * @return true if and only if it is a real separation
      */
 
-    bool is_valid () const
+    bool is_valid() const
     {
       return split_.first > 0 || split_.second > 0;
     }
@@ -141,7 +142,7 @@ namespace tu {
      * @return The position of the witnessing one entry
      */
 
-    const witness_type& witness (size_t index = 0) const
+    const witness_type& witness(size_t index = 0) const
     {
       return witnesses_[index];
     }
@@ -153,7 +154,7 @@ namespace tu {
      * @param index Row or column index of the swap
      */
 
-    void set_special_swap (char type, size_t index)
+    void set_special_swap(char type, size_t index)
     {
       special_swap_ = std::make_pair(type, index);
     }
@@ -162,7 +163,7 @@ namespace tu {
      * @return true if and only if this separation has a special swap
      */
 
-    bool has_special_swap () const
+    bool has_special_swap() const
     {
       return special_swap_.first != 0;
     }
@@ -171,7 +172,7 @@ namespace tu {
      * @return true if and only if this separation hsa a special row swap
      */
 
-    bool has_special_row_swap () const
+    bool has_special_row_swap() const
     {
       return special_swap_.first == 'r';
     }
@@ -180,7 +181,7 @@ namespace tu {
      * @return The row / column index of a special swap
      */
 
-    size_t get_special_swap_index () const
+    size_t get_special_swap_index() const
     {
       return special_swap_.second;
     }
@@ -197,7 +198,7 @@ namespace tu {
      */
 
     template <typename MatroidType, typename MatrixType>
-    void create_components (const MatroidType& matroid, const MatrixType& matrix, integer_matroid& upper_left_matroid,
+    void create_components(const MatroidType& matroid, const MatrixType& matrix, integer_matroid& upper_left_matroid,
         integer_matrix& upper_left_matrix, integer_matroid& lower_right_matroid, integer_matrix& lower_right_matrix) const
     {
       assert (is_valid());

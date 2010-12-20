@@ -18,7 +18,8 @@
 #include "comparators.hpp"
 #include "logger.hpp"
 
-namespace tu {
+namespace tu
+{
 
   /**
    * Searches for an extension of a sequence of nested minors of a given matroid, consisting of
@@ -34,7 +35,7 @@ namespace tu {
 
   template <typename MatroidType, typename MatrixType, typename NestedMinorSequenceType, typename RowThreeConnectivity,
       typename ColumnThreeConnectivity>
-  bool find_simple_row_extension (MatroidType& matroid, MatrixType& matrix, NestedMinorSequenceType& nested_minors,
+  bool find_simple_row_extension(MatroidType& matroid, MatrixType& matrix, NestedMinorSequenceType& nested_minors,
       RowThreeConnectivity& row_three_connectivity, ColumnThreeConnectivity& column_three_connectivity)
   {
     for (size_t row = nested_minors.height(); row < matroid.size1(); ++row)
@@ -70,7 +71,7 @@ namespace tu {
 
   template <typename MatroidType, typename MatrixType, typename NestedMinorSequenceType, typename RowThreeConnectivity,
       typename ColumnThreeConnectivity>
-  char find_parallel_or_unit_vector (MatroidType& matroid, MatrixType& matrix, NestedMinorSequenceType& nested_minors,
+  char find_parallel_or_unit_vector(MatroidType& matroid, MatrixType& matrix, NestedMinorSequenceType& nested_minors,
       RowThreeConnectivity& row_three_connectivity, ColumnThreeConnectivity& column_three_connectivity, size_t& index)
   {
     bool found_column = false;
@@ -129,7 +130,7 @@ namespace tu {
      * @return
      */
 
-    elaborate_extension_matrix_modifier (const std::vector <index_type>& row_types, const std::vector <index_type>& column_types) :
+    elaborate_extension_matrix_modifier(const std::vector <index_type>& row_types, const std::vector <index_type>& column_types) :
       row_types_(row_types), column_types_(column_types)
     {
 
@@ -144,7 +145,7 @@ namespace tu {
      * @return Modified value
      */
 
-    int operator () (size_t i, size_t j, int value)
+    int operator ()(size_t i, size_t j, int value)
     {
       switch (5 * row_types_[i] + column_types_[j])
       {
@@ -192,7 +193,7 @@ namespace tu {
 
   template <typename MatroidType, typename MatrixType, typename NestedMinorSequenceType, typename RowThreeConnectivity,
       typename ColumnThreeConnectivity>
-  separation find_elaborate_extension (MatroidType& matroid, MatrixType& matrix, NestedMinorSequenceType& nested_minors,
+  separation find_elaborate_extension(MatroidType& matroid, MatrixType& matrix, NestedMinorSequenceType& nested_minors,
       RowThreeConnectivity& row_three_connectivity, ColumnThreeConnectivity& column_three_connectivity, size_t index,
       matroid_element_set& extra_elements)
   {
@@ -403,8 +404,8 @@ namespace tu {
    */
 
   template <typename MatroidType, typename MatrixType>
-  separation find_minor_sequence (MatroidType& matroid, MatrixType& matrix, nested_minor_sequence& nested_minors,
-      matroid_element_set& extra_elements, logger& log)
+  separation find_minor_sequence(MatroidType& matroid, MatrixType& matrix, nested_minor_sequence& nested_minors, matroid_element_set& extra_elements,
+      logger& log)
   {
     size_t cut = log.size();
 

@@ -10,12 +10,14 @@
 
 #include <boost/numeric/ublas/matrix_expression.hpp>
 
-namespace tu {
+namespace tu
+{
 
   template <typename MatrixType>
-  void matrix_binary_pivot (MatrixType& matrix, size_t i, size_t j);
+  void matrix_binary_pivot(MatrixType& matrix, size_t i, size_t j);
 
-  namespace detail {
+  namespace detail
+  {
 
     /// Helper struct to manage orientation tags
 
@@ -74,7 +76,7 @@ namespace tu {
      * @param matrix The original matrix
      */
 
-    matrix_transposed (matrix_type& matrix) :
+    matrix_transposed(matrix_type& matrix) :
       _data(matrix)
     {
 
@@ -84,7 +86,7 @@ namespace tu {
      * @return Height of the matrix
      */
 
-    inline size_type size1 () const
+    inline size_type size1() const
     {
       return _data.size2();
     }
@@ -93,7 +95,7 @@ namespace tu {
      * @return Width of the matrix
      */
 
-    inline size_type size2 () const
+    inline size_type size2() const
     {
       return _data.size1();
     }
@@ -102,7 +104,7 @@ namespace tu {
      * @return Reference to the original matrix
      */
 
-    inline matrix_type& data ()
+    inline matrix_type& data()
     {
       return _data;
     }
@@ -115,7 +117,7 @@ namespace tu {
      * @return original(column, row)
      */
 
-    inline const_reference operator () (size_type i, size_type j) const
+    inline const_reference operator ()(size_type i, size_type j) const
     {
       return _data(j, i);
     }
@@ -128,7 +130,7 @@ namespace tu {
      * @return original(column, row)
      */
 
-    inline reference operator () (size_type i, size_type j)
+    inline reference operator ()(size_type i, size_type j)
     {
       return _data(j, i);
     }
@@ -149,7 +151,7 @@ namespace tu {
    */
 
   template <typename MatrixType>
-  inline matrix_transposed <MatrixType> make_transposed_matrix (MatrixType& matrix)
+  inline matrix_transposed <MatrixType> make_transposed_matrix(MatrixType& matrix)
   {
     return matrix_transposed <MatrixType> (matrix);
   }
@@ -164,7 +166,7 @@ namespace tu {
    */
 
   template <typename MatrixType>
-  inline void matrix_set_value (matrix_transposed <MatrixType>& matrix, size_t row, size_t column, typename MatrixType::value_type value)
+  inline void matrix_set_value(matrix_transposed <MatrixType>& matrix, size_t row, size_t column, typename MatrixType::value_type value)
   {
     matrix(row, column) = value;
   }
@@ -174,7 +176,7 @@ namespace tu {
    */
 
   template <typename MatrixType>
-  inline void matrix_set_value (matrix_transposed <const MatrixType>& matrix, size_t row, size_t column, typename MatrixType::value_type value)
+  inline void matrix_set_value(matrix_transposed <const MatrixType>& matrix, size_t row, size_t column, typename MatrixType::value_type value)
   {
 
   }
@@ -188,7 +190,7 @@ namespace tu {
    */
 
   template <typename MatrixType>
-  inline void matrix_permute1 (matrix_transposed <MatrixType>& matrix, size_t index1, size_t index2)
+  inline void matrix_permute1(matrix_transposed <MatrixType>& matrix, size_t index1, size_t index2)
   {
     matrix_permute2(matrix.data(), index1, index2);
   }
@@ -202,7 +204,7 @@ namespace tu {
    */
 
   template <typename MatrixType>
-  inline void matrix_permute2 (matrix_transposed <MatrixType>& matrix, size_t index1, size_t index2)
+  inline void matrix_permute2(matrix_transposed <MatrixType>& matrix, size_t index1, size_t index2)
   {
     matrix_permute1(matrix.data(), index1, index2);
   }
@@ -216,7 +218,7 @@ namespace tu {
    */
 
   template <typename MatrixType>
-  inline void matrix_binary_pivot (matrix_transposed <MatrixType>& matrix, size_t i, size_t j)
+  inline void matrix_binary_pivot(matrix_transposed <MatrixType>& matrix, size_t i, size_t j)
   {
     matrix_binary_pivot(matrix.data(), j, i);
   }

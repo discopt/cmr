@@ -8,7 +8,8 @@
 #include "../config.h"
 #include "matroid_decomposition.hpp"
 
-namespace tu {
+namespace tu
+{
 
   /**
    * Constructs the tree node
@@ -17,7 +18,7 @@ namespace tu {
    * @param extra_elements Set of extra elements, i.e. those that pivots were made upon
    */
 
-  decomposed_matroid::decomposed_matroid (const matroid_element_set& elements, const matroid_element_set& extra_elements) :
+  decomposed_matroid::decomposed_matroid(const matroid_element_set& elements, const matroid_element_set& extra_elements) :
     _elements(elements)
   {
     std::set_difference(extra_elements.begin(), extra_elements.end(), elements.begin(), elements.end(), std::inserter(_extra_elements,
@@ -28,7 +29,7 @@ namespace tu {
    * Destructor
    */
 
-  decomposed_matroid::~decomposed_matroid ()
+  decomposed_matroid::~decomposed_matroid()
   {
 
   }
@@ -43,7 +44,7 @@ namespace tu {
    * @param extra_elements Set of extra elements
    */
 
-  decomposed_matroid_leaf::decomposed_matroid_leaf (matroid_graph* graph, matroid_graph* cograph, bool is_R10, const matroid_element_set& elements,
+  decomposed_matroid_leaf::decomposed_matroid_leaf(matroid_graph* graph, matroid_graph* cograph, bool is_R10, const matroid_element_set& elements,
       const matroid_element_set& extra_elements) :
     decomposed_matroid(elements, extra_elements), _graph(graph), _cograph(cograph), _is_R10(is_R10)
   {
@@ -54,7 +55,7 @@ namespace tu {
    * Destructor
    */
 
-  decomposed_matroid_leaf::~decomposed_matroid_leaf ()
+  decomposed_matroid_leaf::~decomposed_matroid_leaf()
   {
     if (_graph)
       delete _graph;
@@ -73,7 +74,7 @@ namespace tu {
    * @return
    */
 
-  decomposed_matroid_separator::decomposed_matroid_separator (decomposed_matroid* first, decomposed_matroid* second, int type,
+  decomposed_matroid_separator::decomposed_matroid_separator(decomposed_matroid* first, decomposed_matroid* second, int type,
       const matroid_element_set& elements, const matroid_element_set& extra_elements) :
     decomposed_matroid(elements, extra_elements), _first(first), _second(second), _type(type)
   {
@@ -84,7 +85,7 @@ namespace tu {
    * Destructor
    */
 
-  decomposed_matroid_separator::~decomposed_matroid_separator ()
+  decomposed_matroid_separator::~decomposed_matroid_separator()
   {
     delete _first;
     delete _second;

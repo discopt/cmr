@@ -17,7 +17,8 @@
 
 #include "permutations.hpp"
 
-namespace tu {
+namespace tu
+{
 
   /**
    * A matroid class which maintains the index-to-element relation.
@@ -42,7 +43,7 @@ namespace tu {
      * @param names2 Column names
      */
 
-    matroid (const name_vector_type& names1, const name_vector_type& names2) :
+    matroid(const name_vector_type& names1, const name_vector_type& names2) :
       _names1(names1), _names2(names2)
     {
 
@@ -55,7 +56,7 @@ namespace tu {
      * @param size2 Size of a cobase
      */
 
-    matroid (size_t size1 = 0, size_t size2 = 0)
+    matroid(size_t size1 = 0, size_t size2 = 0)
     {
       resize(size1, size2);
     }
@@ -67,7 +68,7 @@ namespace tu {
      * @param size2 New width, i.e. size of each cobase
      */
 
-    void resize (size_t size1, size_t size2)
+    void resize(size_t size1, size_t size2)
     {
       _names1.resize(size1);
       for (size_t i = 0; i < size1; ++i)
@@ -81,7 +82,7 @@ namespace tu {
      * @return Height, i.e. size of each base
      */
 
-    inline size_t size1 () const
+    inline size_t size1() const
     {
       return _names1.size();
     }
@@ -90,7 +91,7 @@ namespace tu {
      * @return Width, i.e. size of each cobase
      */
 
-    inline size_t size2 () const
+    inline size_t size2() const
     {
       return _names2.size();
     }
@@ -100,7 +101,7 @@ namespace tu {
      * @return The corresponding matroid element
      */
 
-    inline name_type& name1 (size_t index)
+    inline name_type& name1(size_t index)
     {
       return _names1[index];
     }
@@ -110,7 +111,7 @@ namespace tu {
      * @return The corresponding matroid element
      */
 
-    inline const name_type& name1 (size_t index) const
+    inline const name_type& name1(size_t index) const
     {
       return _names1[index];
     }
@@ -120,7 +121,7 @@ namespace tu {
      * @return The corresponding matroid element
      */
 
-    inline name_type& name2 (size_t index)
+    inline name_type& name2(size_t index)
     {
       return _names2[index];
     }
@@ -130,7 +131,7 @@ namespace tu {
      * @return The corresponding matroid element
      */
 
-    inline const name_type& name2 (size_t index) const
+    inline const name_type& name2(size_t index) const
     {
       return _names2[index];
     }
@@ -139,7 +140,7 @@ namespace tu {
      * @return A set of all matroid elements
      */
 
-    inline std::set <NameType> get_elements () const
+    inline std::set <NameType> get_elements() const
     {
       std::set <NameType> result;
 
@@ -166,7 +167,7 @@ namespace tu {
    */
 
   template <typename NameType>
-  inline void matroid_permute1 (matroid <NameType>& matroid, size_t index1, size_t index2)
+  inline void matroid_permute1(matroid <NameType>& matroid, size_t index1, size_t index2)
   {
     std::swap(matroid.name1(index1), matroid.name1(index2));
   }
@@ -181,7 +182,7 @@ namespace tu {
    */
 
   template <typename MatroidType, typename MatrixType>
-  inline void matroid_permute1 (MatroidType& matroid, MatrixType& matrix, size_t index1, size_t index2)
+  inline void matroid_permute1(MatroidType& matroid, MatrixType& matrix, size_t index1, size_t index2)
   {
     matroid_permute1(matroid, index1, index2);
     matrix_permute1(matrix, index1, index2);
@@ -196,7 +197,7 @@ namespace tu {
    */
 
   template <typename NameType>
-  inline void matroid_permute2 (matroid <NameType>& matroid, size_t index1, size_t index2)
+  inline void matroid_permute2(matroid <NameType>& matroid, size_t index1, size_t index2)
   {
     std::swap(matroid.name2(index1), matroid.name2(index2));
   }
@@ -211,7 +212,7 @@ namespace tu {
    */
 
   template <typename MatroidType, typename MatrixType>
-  inline void matroid_permute2 (MatroidType& matroid, MatrixType& matrix, size_t index1, size_t index2)
+  inline void matroid_permute2(MatroidType& matroid, MatrixType& matrix, size_t index1, size_t index2)
   {
     matroid_permute2(matroid, index1, index2);
     matrix_permute2(matrix, index1, index2);
@@ -226,7 +227,7 @@ namespace tu {
    */
 
   template <typename NameType>
-  void matroid_binary_pivot (matroid <NameType>& matroid, size_t i, size_t j)
+  void matroid_binary_pivot(matroid <NameType>& matroid, size_t i, size_t j)
   {
     std::swap(matroid.name1(i), matroid.name2(j));
   }
@@ -241,7 +242,7 @@ namespace tu {
    */
 
   template <typename MatroidType, typename MatrixType>
-  void matroid_binary_pivot (MatroidType& matroid, MatrixType& matrix, size_t i, size_t j)
+  void matroid_binary_pivot(MatroidType& matroid, MatrixType& matrix, size_t i, size_t j)
   {
     matroid_binary_pivot(matroid, i, j);
     matrix_binary_pivot(matrix, i, j);
@@ -255,7 +256,7 @@ namespace tu {
    */
 
   template <typename MatroidType, typename MatrixType>
-  void matroid_print (const MatroidType& matroid, const MatrixType& matrix)
+  void matroid_print(const MatroidType& matroid, const MatrixType& matrix)
   {
     assert (matroid.size1() == matrix.size1());
     assert (matroid.size2() == matrix.size2());
@@ -291,7 +292,7 @@ namespace tu {
    */
 
   template <typename MatroidType, typename MatrixType>
-  void matroid_print_minor (const MatroidType& matroid, const MatrixType& matrix, size_t height, size_t width)
+  void matroid_print_minor(const MatroidType& matroid, const MatrixType& matrix, size_t height, size_t width)
   {
     assert (matroid.size1() == matrix.size1());
     assert (matroid.size2() == matrix.size2());
@@ -325,7 +326,7 @@ namespace tu {
    */
 
   template <typename MatroidType>
-  std::set <int> matroid_elements (const MatroidType& matroid)
+  std::set <int> matroid_elements(const MatroidType& matroid)
   {
     std::set <int> elements;
     for (size_t row = 0; row < matroid.size1(); ++row)

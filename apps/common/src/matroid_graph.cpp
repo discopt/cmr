@@ -11,7 +11,8 @@
 #include <string>
 #include <iomanip>
 
-namespace tu {
+namespace tu
+{
 
   /**
    * Output operator for a matroid graph
@@ -21,7 +22,7 @@ namespace tu {
    * @return The output stream after writing to it
    */
 
-  std::ostream& operator<< (std::ostream& stream, const tu::matroid_graph& graph)
+  std::ostream& operator<<(std::ostream& stream, const tu::matroid_graph& graph)
   {
     typedef boost::graph_traits <tu::matroid_graph> traits;
 

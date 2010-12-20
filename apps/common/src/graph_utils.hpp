@@ -12,9 +12,11 @@
 #include <boost/graph/filtered_graph.hpp>
 #include <boost/graph/adjacency_list.hpp>
 
-namespace tu {
+namespace tu
+{
 
-  namespace util {
+  namespace util
+  {
 
     /**
      * Reconnects an edge in a graph, retaining the edge property, by replacing the target vertex.
@@ -26,7 +28,7 @@ namespace tu {
      */
 
     template <typename Graph>
-    void reconnect_edge_target (Graph& graph, typename boost::graph_traits <Graph>::edge_descriptor edge,
+    void reconnect_edge_target(Graph& graph, typename boost::graph_traits <Graph>::edge_descriptor edge,
         typename boost::graph_traits <Graph>::vertex_descriptor old_vertex, typename boost::graph_traits <Graph>::vertex_descriptor new_vertex)
     {
       if (old_vertex != new_vertex)
@@ -46,7 +48,7 @@ namespace tu {
      */
 
     template <typename Graph>
-    void reconnect_edge_source (Graph& graph, typename boost::graph_traits <Graph>::edge_descriptor edge,
+    void reconnect_edge_source(Graph& graph, typename boost::graph_traits <Graph>::edge_descriptor edge,
         typename boost::graph_traits <Graph>::vertex_descriptor old_vertex, typename boost::graph_traits <Graph>::vertex_descriptor new_vertex)
     {
       if (old_vertex != new_vertex)
@@ -66,7 +68,7 @@ namespace tu {
      */
 
     template <typename Graph>
-    void reconnect_edge (Graph& graph, typename boost::graph_traits <Graph>::edge_descriptor edge,
+    void reconnect_edge(Graph& graph, typename boost::graph_traits <Graph>::edge_descriptor edge,
         typename boost::graph_traits <Graph>::vertex_descriptor old_vertex, typename boost::graph_traits <Graph>::vertex_descriptor new_vertex)
     {
       if (boost::source(edge, graph) == old_vertex)
@@ -75,7 +77,8 @@ namespace tu {
         reconnect_edge_target(graph, edge, old_vertex, new_vertex);
     }
 
-    namespace detail {
+    namespace detail
+    {
 
       /**
        * BFS / DFS event filter to write vertices to an OutputIterator
@@ -92,7 +95,7 @@ namespace tu {
          * @param iterator Iterator to write vertices to
          */
 
-        vertex_writer (OutputIterator iterator) :
+        vertex_writer(OutputIterator iterator) :
           _iterator(iterator)
         {
 
@@ -106,7 +109,7 @@ namespace tu {
          */
 
         template <typename Vertex, typename Graph>
-        void operator() (Vertex vertex, const Graph& graph)
+        void operator()(Vertex vertex, const Graph& graph)
         {
           *_iterator++ = vertex;
         }
@@ -115,7 +118,7 @@ namespace tu {
          * @return The current iterator
          */
 
-        OutputIterator iterator () const
+        OutputIterator iterator() const
         {
           return _iterator;
         }
@@ -133,7 +136,7 @@ namespace tu {
        */
 
       template <typename OutputIterator, typename EventTag>
-      inline vertex_writer <OutputIterator, EventTag> write_vertex (OutputIterator iterator, EventTag tag)
+      inline vertex_writer <OutputIterator, EventTag> write_vertex(OutputIterator iterator, EventTag tag)
       {
         return vertex_writer <OutputIterator, EventTag> (iterator);
       }
@@ -149,7 +152,7 @@ namespace tu {
      */
 
     template <typename Graph, typename IndexMap, typename VertexSequence>
-    bool is_path (const Graph& graph, const IndexMap index_map, VertexSequence& path)
+    bool is_path(const Graph& graph, const IndexMap index_map, VertexSequence& path)
     {
       typedef boost::graph_traits <Graph> traits;
       typename traits::vertex_iterator vertex_iter, vertex_end;
@@ -188,7 +191,7 @@ namespace tu {
      */
 
     template <typename Graph, typename IndexMap>
-    bool is_path (const Graph& graph, const IndexMap index_map)
+    bool is_path(const Graph& graph, const IndexMap index_map)
     {
       std::vector <typename boost::graph_traits <Graph>::vertex_descriptor> path;
       path.reserve(boost::num_vertices(graph));
@@ -203,7 +206,7 @@ namespace tu {
      */
 
     template <typename Graph>
-    bool is_path (const Graph& g)
+    bool is_path(const Graph& g)
     {
       return is_path(g, boost::get(boost::vertex_index, g));
     }
@@ -218,7 +221,7 @@ namespace tu {
      */
 
     template <typename Graph, typename IndexMap, typename Vertex>
-    bool find_star_vertex (const Graph& graph, const IndexMap index_map, Vertex& vertex)
+    bool find_star_vertex(const Graph& graph, const IndexMap index_map, Vertex& vertex)
     {
       typedef boost::graph_traits <Graph> traits;
       typename traits::vertex_iterator vertex_iter, vertex_end;
@@ -251,7 +254,7 @@ namespace tu {
      */
 
     template <typename Graph, typename Vertex>
-    bool find_star_vertex (const Graph& graph, Vertex& vertex)
+    bool find_star_vertex(const Graph& graph, Vertex& vertex)
     {
       return find_star_vertex(graph, boost::get(boost::vertex_index, graph), vertex);
     }
@@ -265,7 +268,7 @@ namespace tu {
      */
 
     template <typename Graph, typename IndexMap>
-    bool is_star (const Graph& graph, const IndexMap index_map)
+    bool is_star(const Graph& graph, const IndexMap index_map)
     {
       typename boost::graph_traits <Graph>::vertex_descriptor vertex;
       return find_star_vertex(graph, index_map, vertex);
@@ -279,7 +282,7 @@ namespace tu {
      */
 
     template <typename Graph>
-    bool is_star (const Graph& graph)
+    bool is_star(const Graph& graph)
     {
       return is_star(graph, boost::get(boost::vertex_index, graph));
     }
@@ -292,7 +295,7 @@ namespace tu {
      */
 
     template <typename Graph, typename VertexSet>
-    void used_vertices (const Graph& graph, VertexSet& vertex_set)
+    void used_vertices(const Graph& graph, VertexSet& vertex_set)
     {
       typedef boost::graph_traits <Graph> traits;
       typename traits::edge_iterator edge_iter, edge_end;

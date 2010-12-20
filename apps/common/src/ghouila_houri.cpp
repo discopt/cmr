@@ -10,7 +10,8 @@
 
 #include "total_unimodularity.hpp"
 
-namespace tu {
+namespace tu
+{
 
   /**
    * Class to enumerate subset-2-partitions for a ghouila-houri test
@@ -29,7 +30,7 @@ namespace tu {
      * @param matrix The matrix to be tested
      */
 
-    ghouila_houri_enumerator (const integer_matrix& matrix) :
+    ghouila_houri_enumerator(const integer_matrix& matrix) :
       _matrix(matrix)
     {
       _choice.resize(_matrix.size1());
@@ -45,7 +46,7 @@ namespace tu {
      * @return true if and only if the sum along each column is valid
      */
 
-    bool check_sum ()
+    bool check_sum()
     {
       for (size_t column = 0; column < _matrix.size2(); ++column)
       {
@@ -67,7 +68,7 @@ namespace tu {
      * @return true if and only if one of the enumerations succeeded
      */
 
-    bool choose_partition (size_t row = 0)
+    bool choose_partition(size_t row = 0)
     {
       while (row < _choice.size())
       {
@@ -95,7 +96,7 @@ namespace tu {
      * @return true if and only if the further enumerations succeeded all.
      */
 
-    bool choose_subset (size_t row = 0)
+    bool choose_subset(size_t row = 0)
     {
       if (row < _choice.size())
       {
@@ -117,7 +118,7 @@ namespace tu {
      * @return true if and only if it is totally unimodular
      */
 
-    inline bool check ()
+    inline bool check()
     {
       return choose_subset();
     }
@@ -135,7 +136,7 @@ namespace tu {
    * @return true if and only if this matrix is totally unimodular
    */
 
-  bool ghouila_houri_is_totally_unimodular_enum_rows (const integer_matrix& matrix)
+  bool ghouila_houri_is_totally_unimodular_enum_rows(const integer_matrix& matrix)
   {
     ghouila_houri_enumerator enumerator(matrix);
     return enumerator.check();
@@ -148,7 +149,7 @@ namespace tu {
    * @return true if and only if this matrix is totally unimodular
    */
 
-  bool ghouila_houri_is_totally_unimodular_enum_columns (const integer_matrix& matrix)
+  bool ghouila_houri_is_totally_unimodular_enum_columns(const integer_matrix& matrix)
   {
     const boost::numeric::ublas::matrix <int> transposed = boost::numeric::ublas::trans(matrix);
 
@@ -163,7 +164,7 @@ namespace tu {
    * @return true if and only if this matrix is totally unimodular
    */
 
-  bool ghouila_houri_is_totally_unimodular (const integer_matrix& matrix)
+  bool ghouila_houri_is_totally_unimodular(const integer_matrix& matrix)
   {
     if (matrix.size1() > matrix.size2())
     {
