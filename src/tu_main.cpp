@@ -195,18 +195,6 @@ int run_matroid(const std::string& file_name, bool show_certificates, tu::log_le
     else
     {
       std::cout << "The " << matrix.size1() << " x " << matrix.size2() << " matrix is not totally unimodular." << std::endl;
-
-      //      tu::integer_matrix foo (matrix);
-      //      tu::sign_matrix(foo);
-      //
-      //      for (size_t r = 0; r < foo.size1(); ++r)
-      //      {
-      //        for (size_t c = 0; c < foo.size2(); ++c)
-      //        {
-      //          std::cout << " " << foo(r,c);
-      //        }
-      //        std::cout << std::endl;
-      //      }
     }
   }
 
