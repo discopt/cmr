@@ -118,13 +118,13 @@ int main(int argc, char** argv)
   {
     std::cerr << "Usage: " << argv[0] << " [OPTIONS] [--] TYPE HEIGHT [WIDTH]\n";
     std::cerr << "Types:\n";
-    std::cerr << "  r Generates a matrix with a random entry at each position (prob. not t.u.).\n";
-    std::cerr << "  n Generates a network matrix (t.u.).\n";
-    std::cerr << "  c Generates a cycle-based violator matrix (only height=width in 2Z + 1).\n";
+    std::cerr << "  r Generates a matrix with a random entry at each position.\n";
+    std::cerr << "  n Generates a network matrix.\n";
+    std::cerr << "  c Generates a cycle-based violator matrix (only square with odd size).\n";
     std::cerr << "Options:\n";
-    std::cerr << " -p Use pivots (to hide violator or randomize).\n";
+    std::cerr << " -r Randomize matrices to hide structure.\n";
     std::cerr << " -h Shows a help message.\n";
-    std::cerr << " -v Prints information while generating the matrix (default).\n";
+    std::cerr << " -v Prints information to stderr while generating the matrix (default).\n";
     std::cerr << " -q Prints nothing except the matrix.\n";
     std::cerr << "Omitting the WIDTH parameter sets the width equal to the height.\n";
     std::cerr << std::flush;
