@@ -18,7 +18,7 @@ namespace tu
   {
     if (type == 1)
     {
-      // Upper left
+      /// Upper left
       upper_left_matroid.resize(split.first, split.second);
       upper_left_matrix.resize(split.first, split.second, false);
       for (size_t row = 0; row < split.first; ++row)
@@ -31,7 +31,7 @@ namespace tu
           upper_left_matrix(row, column) = matrix(row, column);
       }
 
-      // Lower right
+      /// Lower right
       lower_right_matroid.resize(matroid.size1() - split.first, matroid.size2() - split.second);
       lower_right_matrix.resize(matrix.size1() - split.first, matrix.size2() - split.second);
       for (size_t row = 0; row < lower_right_matroid.size1(); ++row)

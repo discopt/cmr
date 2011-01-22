@@ -46,11 +46,11 @@ public:
     }
     log_generate_end();
 
-    // Hide violator
+    /// Hide violator
     if (_level != tu::LOG_QUIET)
       std::cerr << "Hiding the violator..." << std::flush;
 
-    // Random size
+    /// Random size
     if (_violator_size == 0)
     {
       boost::uniform_int <int> dist(3, _height);

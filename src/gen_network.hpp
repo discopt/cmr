@@ -27,7 +27,7 @@ OutputIterator find_path(Graph graph, IndexMap index_map, Vertex s, Vertex t, Ou
   typedef boost::graph_traits <Graph> graph_traits_t;
   typedef typename graph_traits_t::vertex_descriptor vertex_t;
 
-  // Define a color map for DFS
+  /// Define a color map for DFS
   typedef boost::two_bit_color_map <> color_map_t;
   color_map_t color_map(boost::num_vertices(graph));
 
@@ -104,7 +104,7 @@ public:
 
     for (size_t column = 0; column < _matrix.size2(); ++column)
     {
-      // Choose an edge not in the tree
+      /// Choose an edge not in the tree
       boost::uniform_int <int> dist(0, nodes - 1);
       tree_traits_t::vertex_descriptor u, v;
       do

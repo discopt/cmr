@@ -612,8 +612,6 @@ namespace tu
   inline separation enumerate_separations(MatroidType& matroid, MatrixType& matrix, const NestedMinorSequence& nested_minors,
       matroid_element_set& extra_elements, logger& log)
   {
-    //    std::cout << "\nenumerate_separations works on a " << matroid.size1() << " x " << matroid.size2() << " matrix.\n";
-
     typedef signed char mapping_value_t;
 
     /// Every regular 3-connected matroid which is non-graphic, non-cographic and not isomorphic to R10 must contain R12

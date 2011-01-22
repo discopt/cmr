@@ -81,6 +81,7 @@ namespace tu
   {
     assert (permuted_matrix.size1() >= 3 && permuted_matroid.size2() >= 3);
 
+    /// Permute 1's in first row to the left.
     matroid_reorder_columns(permuted_matroid, permuted_matrix, 0, 1, 0, permuted_matroid.size2(), std::greater <int>());
     size_t count_first_row_ones = matrix_count_property_column_series(permuted_matrix, 0, 1, 0, permuted_matrix.size2(), is_non_zero());
 
