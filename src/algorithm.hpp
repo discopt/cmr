@@ -28,7 +28,7 @@ namespace tu
       bool construct_decomposition, logger& log);
 
   template <typename MatroidType, typename MatrixType>
-  std::pair <bool, decomposed_matroid*> decompose_minor_sequence(matroid_permuted <MatroidType>& permuted_matroid,
+  std::pair <bool, decomposed_matroid*> decompose_with_minor_sequence(matroid_permuted <MatroidType>& permuted_matroid,
       matrix_permuted <MatrixType>& permuted_matrix, nested_minor_sequence& nested_minors, matroid_element_set extra_elements,
       bool construct_decomposition, logger& log)
   {
@@ -157,8 +157,8 @@ namespace tu
             << permuted_upper_left_matrix.size2() << " matroid." << std::endl;
       }
 
-      std::pair <bool, decomposed_matroid*> upper_left_result = decompose_minor_sequence(permuted_upper_left_matroid, permuted_upper_left_matrix,
-          nested_minors, upper_left_extra_elements, construct_decomposition, log);
+      std::pair <bool, decomposed_matroid*> upper_left_result = decompose_with_minor_sequence(permuted_upper_left_matroid,
+          permuted_upper_left_matrix, nested_minors, upper_left_extra_elements, construct_decomposition, log);
       //        decompose_binary_matroid (upper_left_matroid, upper_left_matrix, construct_decomposition);
 
       if (!construct_decomposition && !upper_left_result.first)
@@ -771,7 +771,7 @@ namespace tu
 
     nested_minor_sequence nested_minors;
 
-    return decompose_minor_sequence(permuted_matroid, permuted_matrix, nested_minors, extra_elements, construct_decomposition, log);
+    return decompose_with_minor_sequence(permuted_matroid, permuted_matrix, nested_minors, extra_elements, construct_decomposition, log);
   }
 
 }
