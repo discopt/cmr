@@ -33,16 +33,19 @@ noinst_headers = \
 	row_column_index.hpp \
 	separation.hpp \
 	vector_three_connectivity.hpp \
-  gen_random.cpp \
-  gen_network.cpp \
-  gen_cycle_violator.cpp
+	gen_generic.hpp \
+  gen_random.hpp \
+  gen_network.hpp \
+  gen_cycle_violator.hpp
 
 libtotalunimodularity_includedir = $(includedir)/tu/
 
 libtotalunimodularity_include_HEADERS = \
+	common.hpp \
 	matroid_graph.hpp \
 	total_unimodularity.hpp \
-	matroid_decomposition.hpp
+	matroid_decomposition.hpp \
+	unimodularity.hpp
 
 libtotalunimodularity_a_SOURCES = \
 	determinant.cpp \
@@ -53,7 +56,8 @@ libtotalunimodularity_a_SOURCES = \
 	nested_minor_sequence.cpp \
 	total_unimodularity.cpp \
 	matroid_graph.cpp \
-	matroid_decomposition.cpp
+	matroid_decomposition.cpp \
+	unimodularity.cpp
 
 tu_SOURCES = \
 	tu_main.cpp

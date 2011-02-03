@@ -8,7 +8,7 @@
 #include "../config.h"
 #include "logger.hpp"
 
-namespace tu
+namespace unimod
 {
 
   /**

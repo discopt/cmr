@@ -8,7 +8,7 @@
 #ifndef MATROID_SEPARATE_HPP_
 #define MATROID_SEPARATE_HPP_
 
-namespace tu
+namespace unimod
 {
 
   template <typename MatroidType, typename MatrixType>

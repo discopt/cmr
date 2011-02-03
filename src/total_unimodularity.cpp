@@ -14,7 +14,7 @@
 #include "signing.hpp"
 #include "logger.hpp"
 
-namespace tu
+namespace unimod
 {
 
   /**
@@ -41,6 +41,8 @@ namespace tu
 
   /**
    * Tests for total unimodularity without certificates.
+   * A matrix is totally unimodular if and only if every square submatrix
+   * has a determinant of -1, 0 or +1.
    *
    * @param matrix The matrix to be tested
    * @param level Log level
@@ -127,12 +129,15 @@ namespace tu
   }
 
   /**
-   * Tests for total unimodularity, returning a decomposition of a given binary matroid
-   * into a k-sum-decomposition (k=1,2,3) in graphic, cographic, R10 and maybe irregular
-   * components if the matrix is totally unimodular.
+   * Tests for total unimodularity with a positive certificate.
+   * A matrix is totally unimodular if and only if every square submatrix
+   * has a determinant of -1, 0 or +1.
+   * If the matrix has this property, the routine returns a decomposition of
+   * the underlying binary matroid into a k-sum-decomposition (k=1,2,3)
+   * in graphic, cographic, R10 and maybe irregular components.
    *
    * @param matrix The matrix to be tested
-   * @param decomposition Returns root of decomposition tree
+   * @param decomposition Returns the root of the decomposition tree
    * @param level Log level
    * @return true if and only if the matrix is totally unimodular
    */
@@ -218,13 +223,17 @@ namespace tu
   }
 
   /**
-   * Tests for total unimodularity, returning a decomposition of a given binary matroid
-   * into a k-sum-decomposition (k=1,2,3) in graphic, cographic, R10 and maybe irregular
-   * components if the matrix is totally unimodular and the indices of a violating submatrix
-   * otherwise.
+   * Tests for total unimodularity with certificates.
+   * A matrix is totally unimodular if and only if every square submatrix
+   * has a determinant of -1, 0 or +1.
+   * If the matrix has this property, the routine returns a decomposition of
+   * the underlying binary matroid into a k-sum-decomposition (k=1,2,3)
+   * in graphic, cographic, R10 and maybe irregular components.
+   * If the matrix does not have this property,the routine returns the indices
+   * of a violating submatrix.
    *
    * @param matrix The matrix to be tested
-   * @param decomposition Returns root of decomposition tree
+   * @param decomposition Returns the root of the decomposition tree.
    * @param violator Returns violator indices
    * @param level Log level
    * @return true if and only if the matrix is totally unimodular
@@ -341,8 +350,11 @@ namespace tu
   }
 
   /**
-   * Tests for total unimodularity, returning the indices of a violating submatrix
-   * if the matrix is not totally unimodular.
+   * Tests for total unimodularity with a negative certificate.
+   * A matrix is totally unimodular if and only if every square submatrix
+   * has a determinant of -1, 0 or +1.
+   * If the matrix does not have this property,the routine returns the indices
+   * of a violating submatrix.
    *
    * @param matrix The matrix to be tested
    * @param violator Returns violator indices

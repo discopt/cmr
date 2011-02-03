@@ -8,7 +8,7 @@
 #ifndef COMPARATORS_HPP_
 #define COMPARATORS_HPP_
 
-namespace tu
+namespace unimod
 {
 
   /**

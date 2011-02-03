@@ -12,7 +12,7 @@
 
 #include "total_unimodularity.hpp"
 
-namespace tu
+namespace unimod
 {
 
   /**

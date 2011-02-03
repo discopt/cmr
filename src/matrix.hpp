@@ -12,7 +12,7 @@
 
 #include "matrix_transposed.hpp"
 
-namespace tu
+namespace unimod
 {
 
   /**

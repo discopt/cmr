@@ -10,7 +10,7 @@
 
 #include <vector>
 
-namespace tu
+namespace unimod
 {
 
   /**

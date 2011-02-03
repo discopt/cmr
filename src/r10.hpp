@@ -10,7 +10,7 @@
 
 #include <boost/graph/isomorphism.hpp>
 
-namespace tu
+namespace unimod
 {
 
   /**

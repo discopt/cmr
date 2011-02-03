@@ -17,7 +17,7 @@
 #include "gen_network.hpp"
 #include "gen_random.hpp"
 
-bool extract_option(char c, bool& randomize, bool& sign, tu::log_level& level, bool& help)
+bool extract_option(char c, bool& randomize, bool& sign, unimod::log_level& level, bool& help)
 {
   if (c == 's')
     sign = true;
@@ -26,9 +26,9 @@ bool extract_option(char c, bool& randomize, bool& sign, tu::log_level& level, b
   else if (c == 'h')
     help = true;
   else if (c == 'q')
-    level = tu::LOG_QUIET;
+    level = unimod::LOG_QUIET;
   else if (c == 'v')
-    level = tu::LOG_VERBOSE;
+    level = unimod::LOG_VERBOSE;
   else
     return false;
 
@@ -39,7 +39,7 @@ int main(int argc, char** argv)
 {
   /// Possible parameters
   size_t non_option = 0;
-  tu::log_level level = tu::LOG_VERBOSE;
+  unimod::log_level level = unimod::LOG_VERBOSE;
   bool randomize = false;
   bool help = false;
   bool sign = false;
@@ -173,18 +173,18 @@ int main(int argc, char** argv)
 
   if (randomize)
   {
-    if (level != tu::LOG_QUIET)
+    if (level != unimod::LOG_QUIET)
       std::cerr << "Randomizing the resulting matrix..." << std::flush;
     generator->randomize();
-    if (level != tu::LOG_QUIET)
+    if (level != unimod::LOG_QUIET)
       std::cerr << " done." << std::endl;
   }
   if (sign)
   {
-    if (level != tu::LOG_QUIET)
+    if (level != unimod::LOG_QUIET)
       std::cerr << "Making the resulting matrix signed..." << std::flush;
     generator->sign();
-    if (level != tu::LOG_QUIET)
+    if (level != unimod::LOG_QUIET)
       std::cerr << " done." << std::endl;
   }
 

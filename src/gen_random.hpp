@@ -14,7 +14,7 @@
 class random_matrix_generator: public matrix_generator
 {
 public:
-  random_matrix_generator(size_t height, size_t width, tu::log_level level) :
+  random_matrix_generator(size_t height, size_t width, unimod::log_level level) :
     matrix_generator("random", height, width, level)
   {
 
@@ -42,7 +42,7 @@ public:
 
   virtual bool do_pivot(size_t row, size_t column)
   {
-    tu::matrix_ternary_pivot(_matrix, row, column);
+    unimod::matrix_ternary_pivot(_matrix, row, column);
     return true;
   }
 };
