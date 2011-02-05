@@ -1,7 +1,7 @@
 ACLOCAL_AMFLAGS = -I m4
 
-bin_PROGRAMS = tu tu-gen
-lib_LIBRARIES = libtotalunimodularity.a
+bin_PROGRAMS = unimodularity-test matrix-gen
+lib_LIBRARIES = libunimodularity.a
 
 noinst_headers = \
   algorithm.hpp \
@@ -36,18 +36,19 @@ noinst_headers = \
 	gen_generic.hpp \
   gen_random.hpp \
   gen_network.hpp \
-  gen_cycle_violator.hpp
+  gen_cycle_violator.hpp \
+  smith_normal_form.hpp
 
-libtotalunimodularity_includedir = $(includedir)/tu/
+libunimodularity_includedir = $(includedir)/tu/
 
-libtotalunimodularity_include_HEADERS = \
+libunimodularity_include_HEADERS = \
 	common.hpp \
 	matroid_graph.hpp \
 	total_unimodularity.hpp \
 	matroid_decomposition.hpp \
 	unimodularity.hpp
 
-libtotalunimodularity_a_SOURCES = \
+libunimodularity_a_SOURCES = \
 	determinant.cpp \
 	ghouila_houri.cpp \
 	zero_plus_minus_one.cpp \
@@ -57,16 +58,17 @@ libtotalunimodularity_a_SOURCES = \
 	total_unimodularity.cpp \
 	matroid_graph.cpp \
 	matroid_decomposition.cpp \
-	unimodularity.cpp
+	unimodularity.cpp \
+  smith_normal_form.cpp
 
-tu_SOURCES = \
-	tu_main.cpp
+unimodularity_test_SOURCES = \
+	unimodularity_test_main.cpp
 
-tu_LDADD = \
-  libtotalunimodularity.a
+unimodularity_test_LDADD = \
+  libunimodularity.a
 
-tu_gen_SOURCES = \
-  gen_main.cpp
+matrix_gen_SOURCES = \
+  matrix_gen_main.cpp
 
-tu_gen_LDADD = \
-  libtotalunimodularity.a
+matrix_gen_LDADD = \
+  libunimodularity.a

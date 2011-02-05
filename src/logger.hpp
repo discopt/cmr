@@ -11,7 +11,7 @@
 #include <sstream>
 #include <iostream>
 
-#include "total_unimodularity.hpp"
+#include "common.hpp"
 
 namespace unimod
 {

@@ -11,6 +11,8 @@
 
 #include "total_unimodularity.hpp"
 #include "matroid_decomposition.hpp"
+#include "unimodularity.hpp"
+#include "smith_normal_form.hpp"
 
 void print_matroid_graph(const unimod::matroid_graph& graph, const std::string& indent = "")
 {
@@ -163,6 +165,9 @@ int run_matroid(const std::string& file_name, bool show_certificates, unimod::lo
   }
 
   file.close();
+
+  std::vector<int> diag;
+  unimod::smith_normal_form(matrix, diag);
 
   if (show_certificates)
   {
