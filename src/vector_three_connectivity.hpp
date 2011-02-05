@@ -10,7 +10,7 @@
 
 #include <vector>
 
-namespace tu
+namespace unimod
 {
 
   template <typename MatrixType>
@@ -161,17 +161,6 @@ namespace tu
 
     void enlarge_dimension(size_t amount = 1)
     {
-      //        std::cout << "Before:" << std::endl;
-      //        for (size_t c = 0; c < 10; ++c)
-      //        {
-      //            std::cout << "Vector " << c << "(";
-      //            for (size_t r = 0; r < dimension_; ++r)
-      //            {
-      //                std::cout << " " << matrix_ (r, c);
-      //            }
-      //            std::cout << " ) has data = " << data_[c] << std::endl;
-      //        }
-
       for (size_t column = base_; column < matrix_.size2(); ++column)
       {
         if (data_[column].first == OTHER)
@@ -213,17 +202,6 @@ namespace tu
       }
 
       dimension_ += amount;
-
-      //        std::cout << "After:" << std::endl;
-      //        for (size_t c = 0; c < 10; ++c)
-      //        {
-      //            std::cout << "Vector " << c << "(";
-      //            for (size_t r = 0; r < dimension_; ++r)
-      //            {
-      //                std::cout << " " << matrix_ (r, c);
-      //            }
-      //            std::cout << " ) has data = " << data_[c] << std::endl;
-      //        }
     }
 
     bool operator==(const vector_three_connectivity <MatrixType>& other)

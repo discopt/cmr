@@ -1,6 +1,6 @@
 AC_PREREQ(2.59)
 
-AC_INIT([Total Unimodularity Library], [1.0], [xammy@xammy.homelinux.net])
+AC_INIT([Unimodularity Library], [1.0], [https://github.com/xammy/unimodularity-test/wiki])
 
 AM_INIT_AUTOMAKE
 

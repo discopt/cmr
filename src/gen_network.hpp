@@ -27,7 +27,7 @@ OutputIterator find_path(Graph graph, IndexMap index_map, Vertex s, Vertex t, Ou
   typedef boost::graph_traits <Graph> graph_traits_t;
   typedef typename graph_traits_t::vertex_descriptor vertex_t;
 
-  // Define a color map for DFS
+  /// Define a color map for DFS
   typedef boost::two_bit_color_map <> color_map_t;
   color_map_t color_map(boost::num_vertices(graph));
 
@@ -60,7 +60,7 @@ OutputIterator find_path(Graph graph, IndexMap index_map, Vertex s, Vertex t, Ou
 class network_matrix_generator: public matrix_generator
 {
 public:
-  network_matrix_generator(size_t height, size_t width, tu::log_level level) :
+  network_matrix_generator(size_t height, size_t width, unimod::log_level level) :
     matrix_generator("network", height, width, level)
   {
 
@@ -76,7 +76,7 @@ public:
   {
     size_t nodes = matrix.size1() + 1;
 
-    if (_level != tu::LOG_QUIET)
+    if (_level != unimod::LOG_QUIET)
       std::cerr << "Creating a spanning tree with " << nodes << " nodes..." << std::flush;
 
     /// Create a spanning tree
@@ -99,12 +99,12 @@ public:
       used_vertices.push_back(*vertex_iter);
     }
 
-    if (_level != tu::LOG_QUIET)
+    if (_level != unimod::LOG_QUIET)
       std::cerr << " done.\nAdding edges and filling matrix..." << std::flush;
 
     for (size_t column = 0; column < _matrix.size2(); ++column)
     {
-      // Choose an edge not in the tree
+      /// Choose an edge not in the tree
       boost::uniform_int <int> dist(0, nodes - 1);
       tree_traits_t::vertex_descriptor u, v;
       do
@@ -130,10 +130,10 @@ public:
       }
     }
 
-    if (_level != tu::LOG_QUIET)
+    if (_level != unimod::LOG_QUIET)
       std::cerr << " done.\nCorrecting the signs..." << std::flush;
     sign();
-    if (_level != tu::LOG_QUIET)
+    if (_level != unimod::LOG_QUIET)
       std::cerr << " done." << std::endl;
   }
 
@@ -145,7 +145,7 @@ public:
     }
     else
     {
-      tu::matrix_transposed <tu::integer_matrix> transposed(_matrix);
+      unimod::matrix_transposed <unimod::integer_matrix> transposed(_matrix);
       generate(transposed);
     }
   }

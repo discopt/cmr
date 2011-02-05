@@ -18,7 +18,7 @@
 #include "comparators.hpp"
 #include "logger.hpp"
 
-namespace tu
+namespace unimod
 {
 
   /**
@@ -392,7 +392,7 @@ namespace tu
 
   /**
    * Constructs a either a sequence of nested minors, either up to the whole matroid
-   * (which is then 3-connected) or until we find a 2-separation. At first, we search
+   * (which is then 3-connected) or until we find a 1- or 2-separation. At first, we search
    * for simple row / column extensions. If there are no, we try elaborate extensions.
    *
    * @param matroid A given matroid
@@ -413,7 +413,7 @@ namespace tu
     vector_three_connectivity <matrix_transposed <MatrixType> > row_three_connectivity(make_transposed_matrix(matrix), nested_minors.width(),
         nested_minors.height());
 
-    /// To searching for parallel-columns we search for parallel rows in the transpose.
+    /// To search for parallel-columns we search for parallel rows in the transpose.
     matroid_transposed <MatroidType> transposed_matroid(matroid);
     matrix_transposed <MatrixType> transposed_matrix(matrix);
     nested_minor_sequence_transposed <nested_minor_sequence> transposed_nested_minors(nested_minors);

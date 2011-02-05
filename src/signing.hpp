@@ -20,7 +20,7 @@
 #include "matrix.hpp"
 #include "bipartite_graph_bfs.hpp"
 
-namespace tu
+namespace unimod
 {
 
   /**

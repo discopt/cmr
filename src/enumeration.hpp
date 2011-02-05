@@ -19,7 +19,7 @@
 #include "matrix_modified.hpp"
 #include "logger.hpp"
 
-namespace tu
+namespace unimod
 {
   namespace detail
   {
@@ -466,7 +466,7 @@ namespace tu
     }
 
     /**
-     * Finds the index of the first minor in a given sequence of nested minors which has at least 8 elements.
+     * Finds the index of the first minor in a given sequence of nested minors which has at least 7 elements.
      *
      * @param nested_minors Given sequence of nested minors
      * @param minor_size Size of the minor found
@@ -474,13 +474,13 @@ namespace tu
      */
 
     template <typename NestedMinorSequence>
-    inline size_t find_first_8_element_minor(const NestedMinorSequence& nested_minors, size_pair_t& minor_size)
+    inline size_t find_first_7_element_minor(const NestedMinorSequence& nested_minors, size_pair_t& minor_size)
     {
       size_t current_height = 3;
       size_t current_width = 3;
       for (size_t i = 0; i < nested_minors.size(); ++i)
       {
-        if (current_height + current_width >= 8)
+        if (current_height + current_width >= 7)
         {
           minor_size = std::make_pair(current_height, current_width);
           return i;
@@ -612,8 +612,6 @@ namespace tu
   inline separation enumerate_separations(MatroidType& matroid, MatrixType& matrix, const NestedMinorSequence& nested_minors,
       matroid_element_set& extra_elements, logger& log)
   {
-    //    std::cout << "\nenumerate_separations works on a " << matroid.size1() << " x " << matroid.size2() << " matrix.\n";
-
     typedef signed char mapping_value_t;
 
     /// Every regular 3-connected matroid which is non-graphic, non-cographic and not isomorphic to R10 must contain R12
@@ -633,11 +631,11 @@ namespace tu
       return separation();
     }
 
-    /// The first minors must be enumerated fully until we have one with at least 8 elements.
+    /// The first minors must be enumerated fully until we have one with at least 7 elements.
     size_pair_t minor_size;
-    size_t minor_index = detail::find_first_8_element_minor(nested_minors, minor_size);
-    assert (minor_size.first + minor_size.second >= 8);
-    assert (minor_size.first + minor_size.second <= 10);
+    size_t minor_index = detail::find_first_7_element_minor(nested_minors, minor_size);
+    assert (minor_size.first + minor_size.second >= 7);
+    assert (minor_size.first + minor_size.second <= 9);
 
     /// preparations
     const integer_matrix worker_matrix_base(matrix);

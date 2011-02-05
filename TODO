@@ -1,0 +1,12 @@
+=== Finding a violated submatrix ===
+
+Improvement of minor-backtracking. By now we just collect the pivot rows and columns
+and take a union with the index set of the irregular matroid. It might be correct
+to *replace* elements according to the pivot series instead of just collecting.
+
+=== Full enumeration ===
+
+By now we do a full enumeration of the first minor with >= 7 elements.
+But it is sufficient to consider only those with |T_1| <= |T_2|.
+
+

@@ -15,7 +15,7 @@
 #include "signing.hpp"
 #include "logger.hpp"
 
-namespace tu
+namespace unimod
 {
   namespace detail
   {

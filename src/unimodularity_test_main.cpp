@@ -11,12 +11,14 @@
 
 #include "total_unimodularity.hpp"
 #include "matroid_decomposition.hpp"
+#include "unimodularity.hpp"
+#include "smith_normal_form.hpp"
 
-void print_matroid_graph(const tu::matroid_graph& graph, const std::string& indent = "")
+void print_matroid_graph(const unimod::matroid_graph& graph, const std::string& indent = "")
 {
   std::cout << boost::num_vertices(graph) << " nodes and " << boost::num_edges(graph) << " edges:";
 
-  typedef boost::graph_traits <tu::matroid_graph> traits;
+  typedef boost::graph_traits <unimod::matroid_graph> traits;
   traits::vertex_iterator vertex_iter, vertex_end;
   traits::out_edge_iterator edge_iter, edge_end;
 
@@ -25,23 +27,23 @@ void print_matroid_graph(const tu::matroid_graph& graph, const std::string& inde
     std::cout << '\n' << indent << *vertex_iter << ':';
     for (boost::tie(edge_iter, edge_end) = boost::out_edges(*vertex_iter, graph); edge_iter != edge_end; ++edge_iter)
     {
-      int matroid_element = boost::get(tu::edge_matroid_element, graph, *edge_iter);
+      int matroid_element = boost::get(unimod::edge_matroid_element, graph, *edge_iter);
       std::cout << ' ' << boost::target(*edge_iter, graph) << " (" << (matroid_element < 0 ? "row " : "column ") << matroid_element << ") ";
     }
   }
   std::cout << '\n';
 }
 
-void print_decomposition(const tu::decomposed_matroid* decomposition, std::string indent = "")
+void print_decomposition(const unimod::decomposed_matroid* decomposition, std::string indent = "")
 {
   if (decomposition->is_leaf())
   {
-    tu::decomposed_matroid_leaf* leaf = (tu::decomposed_matroid_leaf*) (decomposition);
+    unimod::decomposed_matroid_leaf* leaf = (unimod::decomposed_matroid_leaf*) (decomposition);
 
     if (leaf->is_R10())
     {
       std::cout << indent << "R10:";
-      for (tu::matroid_element_set::const_iterator iter = leaf->elements().begin(); iter != leaf->elements().end(); ++iter)
+      for (unimod::matroid_element_set::const_iterator iter = leaf->elements().begin(); iter != leaf->elements().end(); ++iter)
         std::cout << " " << *iter;
       std::cout << "\n";
     }
@@ -75,18 +77,18 @@ void print_decomposition(const tu::decomposed_matroid* decomposition, std::strin
   }
   else
   {
-    tu::decomposed_matroid_separator* separator = (tu::decomposed_matroid_separator*) (decomposition);
+    unimod::decomposed_matroid_separator* separator = (unimod::decomposed_matroid_separator*) (decomposition);
 
-    if (separator->separation_type() == tu::decomposed_matroid_separator::ONE_SEPARATION)
+    if (separator->separation_type() == unimod::decomposed_matroid_separator::ONE_SEPARATION)
     {
       std::cout << indent << "1-separation:\n";
 
     }
-    else if (separator->separation_type() == tu::decomposed_matroid_separator::TWO_SEPARATION)
+    else if (separator->separation_type() == unimod::decomposed_matroid_separator::TWO_SEPARATION)
     {
       std::cout << indent << "2-separation:\n";
     }
-    else if (separator->separation_type() == tu::decomposed_matroid_separator::THREE_SEPARATION)
+    else if (separator->separation_type() == unimod::decomposed_matroid_separator::THREE_SEPARATION)
     {
       std::cout << indent << "3-separation:\n";
     }
@@ -101,9 +103,9 @@ void print_decomposition(const tu::decomposed_matroid* decomposition, std::strin
   }
 }
 
-void print_violator(const tu::integer_matrix& matrix, const tu::submatrix_indices& violator)
+void print_violator(const unimod::integer_matrix& matrix, const unimod::submatrix_indices& violator)
 {
-  typedef boost::numeric::ublas::matrix_indirect <const tu::integer_matrix, tu::submatrix_indices::indirect_array_type> indirect_matrix_t;
+  typedef boost::numeric::ublas::matrix_indirect <const unimod::integer_matrix, unimod::submatrix_indices::indirect_array_type> indirect_matrix_t;
 
   const indirect_matrix_t indirect_matrix(matrix, violator.rows, violator.columns);
 
@@ -124,7 +126,7 @@ void print_violator(const tu::integer_matrix& matrix, const tu::submatrix_indice
   std::cout << std::endl;
 }
 
-int run_matroid(const std::string& file_name, bool show_certificates, tu::log_level level)
+int run_matroid(const std::string& file_name, bool show_certificates, unimod::log_level level)
 {
   /// Open the file
 
@@ -147,7 +149,7 @@ int run_matroid(const std::string& file_name, bool show_certificates, tu::log_le
 
   /// Read matrix entries
 
-  tu::integer_matrix matrix(height, width);
+  unimod::integer_matrix matrix(height, width);
   for (size_t row = 0; row < height; ++row)
   {
     for (size_t column = 0; column < width; ++column)
@@ -164,12 +166,15 @@ int run_matroid(const std::string& file_name, bool show_certificates, tu::log_le
 
   file.close();
 
+  std::vector<int> diag;
+  unimod::smith_normal_form(matrix, diag);
+
   if (show_certificates)
   {
-    tu::submatrix_indices violator;
-    tu::decomposed_matroid* decomposition;
+    unimod::submatrix_indices violator;
+    unimod::decomposed_matroid* decomposition;
 
-    if (tu::is_totally_unimodular(matrix, decomposition, violator, level))
+    if (unimod::is_totally_unimodular(matrix, decomposition, violator, level))
     {
       std::cout << "\nThe " << matrix.size1() << " x " << matrix.size2() << " matrix is totally unimodular.\n" << std::endl;
 
@@ -179,7 +184,7 @@ int run_matroid(const std::string& file_name, bool show_certificates, tu::log_le
     {
       std::cout << "\nThe " << matrix.size1() << " x " << matrix.size2() << " matrix is not totally unimodular." << std::endl;
       assert (violator.rows.size() == violator.columns.size());
-      int det = tu::determinant_submatrix(matrix, violator);
+      int det = unimod::determinant_submatrix(matrix, violator);
       std::cout << "\nThe violating submatrix (det = " << det << ") is " << violator.rows.size() << " x " << violator.columns.size() << ":\n\n"
           << std::flush;
       print_violator(matrix, violator);
@@ -188,7 +193,7 @@ int run_matroid(const std::string& file_name, bool show_certificates, tu::log_le
   }
   else
   {
-    if (tu::is_totally_unimodular(matrix, level))
+    if (unimod::is_totally_unimodular(matrix, level))
     {
       std::cout << "The " << matrix.size1() << " x " << matrix.size2() << " matrix is totally unimodular." << std::endl;
     }
@@ -224,7 +229,7 @@ int run_ghouila_houri(const std::string& file_name)
 
   /// Read matrix entries
 
-  tu::integer_matrix matrix(height, width);
+  unimod::integer_matrix matrix(height, width);
   for (size_t row = 0; row < height; ++row)
   {
     for (size_t column = 0; column < width; ++column)
@@ -241,7 +246,7 @@ int run_ghouila_houri(const std::string& file_name)
 
   file.close();
 
-  if (tu::ghouila_houri_is_totally_unimodular(matrix))
+  if (unimod::ghouila_houri_is_totally_unimodular(matrix))
   {
     std::cout << "The " << matrix.size1() << " x " << matrix.size2() << " matrix is totally unimodular." << std::endl;
   }
@@ -276,7 +281,7 @@ int run_determinants(const std::string& file_name)
 
   /// Read matrix entries
 
-  tu::integer_matrix matrix(height, width);
+  unimod::integer_matrix matrix(height, width);
   for (size_t row = 0; row < height; ++row)
   {
     for (size_t column = 0; column < width; ++column)
@@ -293,7 +298,7 @@ int run_determinants(const std::string& file_name)
 
   file.close();
 
-  if (tu::determinant_is_totally_unimodular(matrix))
+  if (unimod::determinant_is_totally_unimodular(matrix))
   {
     std::cout << "The " << matrix.size1() << " x " << matrix.size2() << " matrix is totally unimodular." << std::endl;
   }
@@ -305,7 +310,7 @@ int run_determinants(const std::string& file_name)
   return EXIT_SUCCESS;
 }
 
-bool extract_option(char c, char& algorithm, bool& certs, tu::log_level& level, bool& help)
+bool extract_option(char c, char& algorithm, bool& certs, unimod::log_level& level, bool& help)
 {
   if (c == 'm' || c == 'd' || c == 'g')
     algorithm = c;
@@ -314,11 +319,11 @@ bool extract_option(char c, char& algorithm, bool& certs, tu::log_level& level, 
   else if (c == 'c')
     certs = true;
   else if (c == 'q')
-    level = tu::LOG_QUIET;
+    level = unimod::LOG_QUIET;
   else if (c == 'u')
-    level = tu::LOG_UPDATING;
+    level = unimod::LOG_UPDATING;
   else if (c == 'v')
-    level = tu::LOG_VERBOSE;
+    level = unimod::LOG_VERBOSE;
   else
     return false;
 
@@ -330,7 +335,7 @@ int main(int argc, char **argv)
   /// Possible parameters
   std::string matrix_file_name = "";
   bool certs = false;
-  tu::log_level level = tu::LOG_UPDATING;
+  unimod::log_level level = unimod::LOG_UPDATING;
   bool help = false;
   char algorithm = 'm';
 
@@ -396,7 +401,7 @@ int main(int argc, char **argv)
     std::cout << "Certificates are only available for matroid-based algorithm!\nSee " << argv[0] << " -h for usage." << std::endl;
     return EXIT_FAILURE;
   }
-  if (algorithm != 'm' && level != tu::LOG_UPDATING)
+  if (algorithm != 'm' && level != unimod::LOG_UPDATING)
   {
     std::cout << "Logging options only have an affect on matroid-based algorithm!" << std::endl;
   }
