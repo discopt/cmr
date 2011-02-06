@@ -25,5 +25,6 @@ src/Makefile.in
 src/.deps/
 src/unimodularity-test
 src/matrix-gen
+src/boost
 
 build*
