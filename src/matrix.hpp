@@ -294,6 +294,33 @@ namespace unimod
     return matrix_row_zero(make_transposed_matrix(matrix), column, row_first, row_beyond);
   }
 
+  template <typename Matrix>
+  bool find_smallest_nonzero_matrix_entry(const Matrix& matrix, size_t row_first, size_t row_beyond, size_t column_first, size_t column_beyond,
+      size_t& row, size_t& column)
+  {
+    bool result = false;
+    int current_value = 0;
+    for (size_t r = row_first; r != row_beyond; ++r)
+    {
+      for (size_t c = column_first; c != column_beyond; ++c)
+      {
+        int value = matrix(r, c);
+        if (value == 0)
+          continue;
+
+        value = value >= 0 ? value : -value;
+
+        if (!result || value < current_value)
+        {
+          result = true;
+          row = r;
+          column = c;
+          current_value = value;
+        }
+      }
+    }
+    return result;
+  }
 }
 
 #endif /* MATRIX_HPP_ */

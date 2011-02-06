@@ -166,8 +166,10 @@ int run_matroid(const std::string& file_name, bool show_certificates, unimod::lo
 
   file.close();
 
-  std::vector<int> diag;
+  std::vector <int> diag;
   unimod::smith_normal_form_diagonal(matrix, diag);
+  std::copy(diag.begin(), diag.end(), std::ostream_iterator <int>(std::cout, " "));
+  std::cout << " (rank = " << diag.size() << ")\n";
 
   if (show_certificates)
   {

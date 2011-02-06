@@ -59,8 +59,7 @@ libunimodularity_a_SOURCES = \
 	total_unimodularity.cpp \
 	matroid_graph.cpp \
 	matroid_decomposition.cpp \
-	unimodularity.cpp \
-  smith_normal_form.cpp
+	unimodularity.cpp
 
 unimodularity_test_SOURCES = \
 	unimodularity_test_main.cpp

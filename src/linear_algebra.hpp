@@ -9,6 +9,7 @@
 #define LINEAR_ALGEBRA_HPP_
 
 #include "gcd.hpp"
+#include "matrix_transposed.hpp"
 
 namespace unimod
 {
