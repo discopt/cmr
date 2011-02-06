@@ -7,6 +7,7 @@ aclocal.m4
 autom4te.cache/
 config.guess
 config.h.in
+config.h.in~
 config.sub
 configure
 depcomp
@@ -21,12 +22,12 @@ config.status
 libtool
 src/.deps/
 stamp-h1
-src/tu
-src/tu-gen
+src/unimodularity-test
+src/matrix-gen
 data/
 src/boost/
-apps/
 build*
+apps/polytope
 apps/common/src/perl/
 docs/main.aux
 docs/main.bbl

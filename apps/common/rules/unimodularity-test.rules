@@ -1,0 +1,11 @@
+
+
+# topic: credit/unimodularity-test
+# unimodularity-test is a library to test an integer matrix for several 
+# matrix properties: unimodularity, strong unimodularity, total unimodularity
+# and the Dantzig property.
+# algorithm by Klaus Truemper
+# implemented by Matthias Walter
+# http://github.com/xammy/unimodularity-test
+
+label unimodularity-test

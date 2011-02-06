@@ -10,7 +10,7 @@
 
 #include "matrix_reorder.hpp"
 
-namespace tu
+namespace unimod
 {
 
   /**

@@ -15,7 +15,7 @@
 #include "signing.hpp"
 #include "logger.hpp"
 
-namespace tu
+namespace unimod
 {
   namespace detail
   {
@@ -346,8 +346,6 @@ namespace tu
             row_amount = 1;
             column_amount = 1;
           }
-
-          std::cout << "\nGreedy loop starting, forbidden sets will have size " << row_amount << " and " << column_amount << std::endl;
 
           typedef std::vector <matroid_element_set::value_type> matroid_element_vector;
           matroid_element_vector shuffled_rows, shuffled_columns;

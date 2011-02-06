@@ -16,7 +16,7 @@
 #include <cassert>
 #include <boost/random/uniform_int.hpp>
 
-namespace tu
+namespace unimod
 {
 
   /**

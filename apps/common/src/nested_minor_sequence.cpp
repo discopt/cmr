@@ -8,7 +8,7 @@
 #include "../config.h"
 #include "nested_minor_sequence.hpp"
 
-namespace tu
+namespace unimod
 {
 
   /**

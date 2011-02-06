@@ -14,7 +14,7 @@
 #include "matrix_permuted.hpp"
 #include "binary_linear_space.hpp"
 
-namespace tu
+namespace unimod
 {
 
   typedef std::pair <size_t, size_t> size_pair_t;
@@ -129,7 +129,6 @@ namespace tu
         detail::copy_partial_row(matrix, top_right_row, row, free_columns_beyond, width);
         if (!top_right_row_space.is_spanned(top_right_row))
         {
-          //          std::cout << "Row " << row << " is not spanned by top-right." << std::endl;
           detail::copy_partial_row(matrix, bottom_left_row, row, 0, top_left_width);
           if (!bottom_left_row_space.is_spanned(bottom_left_row))
             return RANK_TOO_HIGH;

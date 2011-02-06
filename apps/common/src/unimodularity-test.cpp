@@ -8,7 +8,7 @@
 namespace polymake { namespace common {
 
   bool is_totally_unimodular_plain(const Matrix<Integer>& matrix) {
-    tu::integer_matrix input_matrix (matrix.rows(), matrix.cols());
+    unimod::integer_matrix input_matrix (matrix.rows(), matrix.cols());
     for (size_t r = 0; r < input_matrix.size1(); ++r)
     {
       for (size_t c = 0; c < input_matrix.size2(); ++c)
@@ -17,20 +17,20 @@ namespace polymake { namespace common {
       }
     }
 
-    return tu::is_totally_unimodular (input_matrix);
+    return unimod::is_totally_unimodular (input_matrix);
   }
   
   bool is_totally_unimodular_violator(const Matrix<Integer>& matrix, Vector<Integer>& rows, Vector<Integer>& columns) {
-    tu::integer_matrix input_matrix (matrix.rows(), matrix.cols());
+    unimod::integer_matrix input_matrix (matrix.rows(), matrix.cols());
     for (size_t r = 0; r < input_matrix.size1(); ++r)
     {
       for (size_t c = 0; c < input_matrix.size2(); ++c)
         input_matrix(r, c) = matrix(r, c);
     }
 
-    tu::submatrix_indices indices;
+    unimod::submatrix_indices indices;
 
-    bool result = tu::is_totally_unimodular (input_matrix, indices);
+    bool result = unimod::is_totally_unimodular (input_matrix, indices);
     if (!result)
     {
       rows.resize (indices.rows.size ());

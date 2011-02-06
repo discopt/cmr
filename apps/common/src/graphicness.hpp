@@ -21,7 +21,7 @@
 
 #include <boost/graph/adjacency_list_io.hpp>
 
-namespace tu
+namespace unimod
 {
 
   /**
@@ -326,7 +326,7 @@ namespace tu
       std::vector <traits::vertex_descriptor> path;
 
       edge_subset_graph_t edge_subset_graph(graph, boost::is_in_subset <edge_set_t>(edge_set));
-      if (!tu::util::is_path(edge_subset_graph, boost::get(boost::vertex_index, edge_subset_graph), path))
+      if (!unimod::util::is_path(edge_subset_graph, boost::get(boost::vertex_index, edge_subset_graph), path))
       {
         return false;
       }
@@ -357,7 +357,7 @@ namespace tu
       }
 
       traits::vertex_descriptor the_vertex = traits::null_vertex();
-      if (tu::util::find_star_vertex(boost::make_filtered_graph(graph, boost::is_in_subset <edge_set>(one_edges)), the_vertex))
+      if (unimod::util::find_star_vertex(boost::make_filtered_graph(graph, boost::is_in_subset <edge_set>(one_edges)), the_vertex))
       {
         /// Create the new vertex and connect it with the_vertex.
 
@@ -396,7 +396,7 @@ namespace tu
         }
 
         vertex_set vertices;
-        tu::util::used_vertices(boost::make_filtered_graph(graph, boost::is_in_subset <edge_set>(edges)), vertices);
+        unimod::util::used_vertices(boost::make_filtered_graph(graph, boost::is_in_subset <edge_set>(edges)), vertices);
 
         for (typename vertex_set::const_iterator iter = vertices.begin(); iter != vertices.end(); ++iter)
         {

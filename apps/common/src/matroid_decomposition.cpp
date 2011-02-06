@@ -8,7 +8,7 @@
 #include "../config.h"
 #include "matroid_decomposition.hpp"
 
-namespace tu
+namespace unimod
 {
 
   /**

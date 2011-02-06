@@ -12,7 +12,7 @@
 
 #include "permutations.hpp"
 
-namespace tu
+namespace unimod
 {
 
   /**
