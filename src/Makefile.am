@@ -37,7 +37,8 @@ noinst_headers = \
   gen_random.hpp \
   gen_network.hpp \
   gen_cycle_violator.hpp \
-  smith_normal_form.hpp
+  smith_normal_form.hpp \
+  linear_algebra.hpp
 
 libunimodularity_includedir = $(includedir)/tu/
 

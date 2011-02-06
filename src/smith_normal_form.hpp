@@ -14,7 +14,7 @@ namespace unimod
 {
   int gcd(int a, int b, int& s, int& t);
 
-  void smith_normal_form(const integer_matrix& matrix, std::vector<int>& diagonal);
+  void smith_normal_form_diagonal(const integer_matrix& matrix, std::vector <int>& diagonal);
 }
 
 #endif /* SMITH_NORMAL_FORM_HPP_ */

@@ -279,6 +279,21 @@ namespace unimod
     return true;
   }
 
+  template <typename Matrix>
+  bool matrix_row_zero(const Matrix& matrix, size_t row, size_t column_first, size_t column_beyond)
+  {
+    for (size_t c = column_first; c != column_beyond; ++c)
+      if (matrix(row, c) != 0)
+        return false;
+    return true;
+  }
+
+  template <typename Matrix>
+  bool matrix_column_zero(const Matrix& matrix, size_t column, size_t row_first, size_t row_beyond)
+  {
+    return matrix_row_zero(make_transposed_matrix(matrix), column, row_first, row_beyond);
+  }
+
 }
 
 #endif /* MATRIX_HPP_ */
