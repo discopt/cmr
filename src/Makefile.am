@@ -1,9 +1,10 @@
 ACLOCAL_AMFLAGS = -I m4
 
-bin_PROGRAMS = unimodularity-test matrix-gen
+bin_PROGRAMS = unimodularity-test
 lib_LIBRARIES = libunimodularity.a
+check_PROGRAMS = tu-compare matrix-gen
 
-noinst_headers = \
+noinst_HEADERS = \
   algorithm.hpp \
 	binary_linear_space.hpp \
 	bipartite_graph_bfs.hpp \
@@ -12,7 +13,6 @@ noinst_headers = \
 	enumeration.hpp \
 	find_minor_sequence.hpp \
 	find_wheel_minor.hpp \
-	generator_options.hpp \
 	graphicness.hpp \
 	graph_utils.hpp \
 	matrix.hpp \
@@ -26,11 +26,10 @@ noinst_headers = \
 	matroid_separate.hpp \
 	matroid_transposed.hpp \
 	nested_minor_sequence.hpp \
-	signing.cpp \
+	signing.hpp \
 	partition.hpp \
 	permutations.hpp \
 	r10.hpp \
-	row_column_index.hpp \
 	separation.hpp \
 	vector_three_connectivity.hpp \
 	gen_generic.hpp \
@@ -38,7 +37,15 @@ noinst_headers = \
   gen_network.hpp \
   gen_cycle_violator.hpp \
   smith_normal_form.hpp \
-  linear_algebra.hpp
+  linear_algebra.hpp \
+  violator_search.hpp \
+  gcd.hpp \
+  boost/graph/one_bit_color_map.hpp \
+  boost/graph/properties.hpp \
+  boost/graph/visitors.hpp \
+  boost/graph/bipartite.hpp
+
+
 
 libunimodularity_includedir = $(includedir)/tu/
 
@@ -72,3 +79,10 @@ matrix_gen_SOURCES = \
 
 matrix_gen_LDADD = \
   libunimodularity.a
+
+tu_compare_SOURCES = \
+	tu_compare_main.cpp
+
+tu_compare_LDADD = \
+  libunimodularity.a
+

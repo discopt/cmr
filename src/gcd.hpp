@@ -10,7 +10,8 @@
 
 namespace unimod
 {
-  int gcd_impl(int a, int b, int& s, int& t)
+  template <typename T>
+  T gcd_impl(T a, T b, T& s, T& t)
   {
     assert(a >= 0 && b >= 0 && a >= b);
 
@@ -21,14 +22,15 @@ namespace unimod
       return a;
     }
 
-    int q = a / b;
-    int r = a % b;
-    int result = gcd_impl(b, r, t, s);
+    T q = a / b;
+    T r = a % b;
+    T result = gcd_impl(b, r, t, s);
     t -= q * s;
     return result;
   }
 
-  int gcd(int a, int b, int& s, int& t)
+  template <typename T>
+  T gcd(T a, T b, T& s, T& t)
   {
     if (a >= 0 && b >= 0)
     {
@@ -43,7 +45,7 @@ namespace unimod
       bool b_neg = b < 0;
       a = a >= 0 ? a : -a;
       b = b >= 0 ? b : -b;
-      int result;
+      T result;
       if (a >= b)
         result = gcd_impl(a, b, s, t);
       else
@@ -56,9 +58,10 @@ namespace unimod
     }
   }
 
-  int gcd(int a, int b)
+  template <typename T>
+  T gcd(T a, T b)
   {
-    int s, t;
+    T s, t;
     return gcd(a, b, s, t);
   }
 }

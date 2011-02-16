@@ -27,3 +27,4 @@ src/unimodularity-test
 src/matrix-gen
 
 build*
+unimodularity-library*tar.gz

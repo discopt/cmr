@@ -11,6 +11,7 @@
 #include <boost/numeric/ublas/matrix.hpp>
 
 #include "matrix_transposed.hpp"
+#include <iomanip>
 
 namespace unimod
 {
@@ -245,7 +246,7 @@ namespace unimod
     {
       for (size_t column = 0; column < matrix.size2(); ++column)
       {
-        std::cout << " " << matrix(row, column);
+        std::cout << " " << std::setw(2) << matrix(row, column);
       }
       std::cout << "\n";
     }
@@ -320,6 +321,24 @@ namespace unimod
       }
     }
     return result;
+  }
+
+  template <typename Matrix1, typename Matrix2>
+  bool equals(const Matrix1& first, const Matrix2& second)
+  {
+    if (first.size1() != second.size1())
+      return false;
+    if (first.size2() != second.size2())
+      return false;
+    for (size_t r = 0; r < first.size1(); ++r)
+    {
+      for (size_t c = 0; c < first.size2(); ++c)
+      {
+        if (first(r, c) != second(r, c))
+          return false;
+      }
+    }
+    return true;
   }
 }
 
