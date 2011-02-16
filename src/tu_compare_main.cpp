@@ -37,7 +37,7 @@ void print_violator(const unimod::integer_matrix& matrix, const unimod::submatri
   std::cout << std::endl;
 }
 
-int run_matroid(const std::string& file_name, bool show_certificates, unimod::log_level level)
+int run_decomposition(const std::string& file_name, bool show_certificates, unimod::log_level level)
 {
   /// Open the file
 
@@ -114,7 +114,7 @@ int run_matroid(const std::string& file_name, bool show_certificates, unimod::lo
   return EXIT_SUCCESS;
 }
 
-int run_ghouila_houri(const std::string& file_name)
+int run_column_enumeration(const std::string& file_name)
 {
   /// Open the file
 
@@ -166,7 +166,7 @@ int run_ghouila_houri(const std::string& file_name)
   return EXIT_SUCCESS;
 }
 
-int run_determinants(const std::string& file_name)
+int run_submatrix(const std::string& file_name)
 {
   /// Open the file
 
@@ -220,7 +220,7 @@ int run_determinants(const std::string& file_name)
 
 bool extract_option(char c, char& algorithm, bool& certs, unimod::log_level& level, bool& help)
 {
-  if (c == 'm' || c == 'd' || c == 'g')
+  if (c == 'D' || c == 'C' || c == 'S')
     algorithm = c;
   else if (c == 'h')
     help = true;
@@ -228,8 +228,8 @@ bool extract_option(char c, char& algorithm, bool& certs, unimod::log_level& lev
     certs = true;
   else if (c == 'q')
     level = unimod::LOG_QUIET;
-  else if (c == 'u')
-    level = unimod::LOG_UPDATING;
+  else if (c == 'p')
+    level = unimod::LOG_PROGRESSIVE;
   else if (c == 'v')
     level = unimod::LOG_VERBOSE;
   else
@@ -243,7 +243,7 @@ int main(int argc, char **argv)
   /// Possible parameters
   std::string matrix_file_name = "";
   bool certs = false;
-  unimod::log_level level = unimod::LOG_UPDATING;
+  unimod::log_level level = unimod::LOG_PROGRESSIVE;
   bool help = false;
   char algorithm = 'm';
 
@@ -286,12 +286,11 @@ int main(int argc, char **argv)
     std::cerr << "Usage: " << argv[0] << " [OPTIONS] [--] MATRIX_FILE\n";
     std::cerr << "Options:\n";
     std::cerr << " -h Shows a help message.\n";
-    std::cerr << " -m Test total unimodularity via matroid decomposition algorithm (default).\n";
-    std::cerr << " -g Test total unimodularity via column enumeration algorithm (slow).\n";
-    std::cerr << " -d Test total unimodularity via submatrix enumeration algorithm (very slow!).\n";
-    std::cerr
-        << " -c Calculates a violating submatrix if one exists. (only decomposition algorithm)\n";
-    std::cerr << " -u Updating logging (default, affects only -m).\n";
+    std::cerr << " -D Test total unimodularity via matroid decomposition algorithm (default).\n";
+    std::cerr << " -C Test total unimodularity via column enumeration algorithm (slow).\n";
+    std::cerr << " -S Test total unimodularity via submatrix enumeration algorithm (very slow!).\n";
+    std::cerr << " -c Calculates a violating submatrix if one exists. (only decomposition algorithm)\n";
+    std::cerr << " -p Progressive logging (default, affects only decomposition algorithm).\n";
     std::cerr << " -v Verbose logging. (only decomposition algorithm)\n";
     std::cerr << " -q No logging at all. (only decomposition algorithm)\n";
     std::cerr << std::flush;
@@ -304,22 +303,22 @@ int main(int argc, char **argv)
     return EXIT_FAILURE;
   }
 
-  if (algorithm != 'm' && certs)
+  if (algorithm != 'D' && certs)
   {
     std::cout << "Certificates are only available for decomposition algorithm!\nSee " << argv[0] << " -h for usage." << std::endl;
     return EXIT_FAILURE;
   }
-  if (algorithm != 'm' && level != unimod::LOG_UPDATING)
+  if (algorithm != 'D' && level != unimod::LOG_PROGRESSIVE)
   {
     std::cout << "Logging options only have an affect on decomposition algorithm!" << std::endl;
   }
 
-  if (algorithm == 'm')
-    return run_matroid(matrix_file_name, certs, level);
-  else if (algorithm == 'g')
-    return run_ghouila_houri(matrix_file_name);
-  else if (algorithm == 'd')
-    return run_determinants(matrix_file_name);
+  if (algorithm == 'D')
+    return run_decomposition(matrix_file_name, certs, level);
+  else if (algorithm == 'C')
+    return run_column_enumeration(matrix_file_name);
+  else if (algorithm == 'S')
+    return run_submatrix(matrix_file_name);
   else
   {
     std::cerr << "Fatal error: Invalid algorithm selected." << std::endl;

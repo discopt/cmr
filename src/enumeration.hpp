@@ -575,7 +575,7 @@ namespace unimod
 
           ++enumeration;
 
-          if (log.is_updating() && enumeration == next_enumeration)
+          if (log.is_progressive() && enumeration == next_enumeration)
           {
             log.erase(cut);
             log.line() << next_percent << "%";
@@ -617,7 +617,7 @@ namespace unimod
     /// Every regular 3-connected matroid which is non-graphic, non-cographic and not isomorphic to R10 must contain R12
     if (matrix.size1() + matrix.size2() < 12)
     {
-      if (log.is_updating())
+      if (log.is_progressive())
       {
         log.line() << ", TOO SMALL --> IRREGULAR";
         std::cout << log << std::endl;
@@ -651,7 +651,7 @@ namespace unimod
     size_t cut = 0, full_cut = 0;
     unsigned long long max_enumerations = 0;
 
-    if (log.is_updating() || log.is_verbose())
+    if (log.is_progressive() || log.is_verbose())
     {
       max_enumerations = 1L << (minor_size.first + minor_size.second);
       size_t h = minor_size.first;
@@ -678,7 +678,7 @@ namespace unimod
         w += nested_minors.get_extension_width(i);
       }
 
-      if (log.is_updating())
+      if (log.is_progressive())
       {
         full_cut = log.size();
         log.line() << ", ENUMERATING " << max_enumerations << " PARTITIONS: ";
@@ -720,7 +720,7 @@ namespace unimod
         return result;
       }
 
-      if (log.is_updating() && enumeration == next_enumeration)
+      if (log.is_progressive() && enumeration == next_enumeration)
       {
         log.erase(cut);
         log.line() << next_percent << '%';
@@ -754,7 +754,7 @@ namespace unimod
       }
     }
 
-    if (log.is_updating())
+    if (log.is_progressive())
     {
       log.erase(full_cut);
       log.line() << ", ENUMERATED " << enumeration << " PARTITIONS --> IRREGULAR";

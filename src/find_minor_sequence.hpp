@@ -420,7 +420,7 @@ namespace unimod
 
     while (nested_minors.height() < matroid.size1() || nested_minors.width() != matroid.size2())
     {
-      if (log.is_updating())
+      if (log.is_progressive())
       {
         log.erase(cut);
         log.line() << " + " << nested_minors.size() << " EXT";
@@ -478,7 +478,7 @@ namespace unimod
       column_three_connectivity.reset(nested_minors.height(), nested_minors.width());
     }
 
-    if (log.is_updating())
+    if (log.is_progressive())
     {
       log.erase(cut);
       log.line() << " + " << nested_minors.size() << " EXT";
