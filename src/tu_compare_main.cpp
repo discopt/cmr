@@ -14,95 +14,6 @@
 #include "unimodularity.hpp"
 #include "smith_normal_form.hpp"
 
-void print_matroid_graph(const unimod::matroid_graph& graph, const std::string& indent = "")
-{
-  std::cout << boost::num_vertices(graph) << " nodes and " << boost::num_edges(graph) << " edges:";
-
-  typedef boost::graph_traits <unimod::matroid_graph> traits;
-  traits::vertex_iterator vertex_iter, vertex_end;
-  traits::out_edge_iterator edge_iter, edge_end;
-
-  for (boost::tie(vertex_iter, vertex_end) = boost::vertices(graph); vertex_iter != vertex_end; ++vertex_iter)
-  {
-    std::cout << '\n' << indent << *vertex_iter << ':';
-    for (boost::tie(edge_iter, edge_end) = boost::out_edges(*vertex_iter, graph); edge_iter != edge_end; ++edge_iter)
-    {
-      int matroid_element = boost::get(unimod::edge_matroid_element, graph, *edge_iter);
-      std::cout << ' ' << boost::target(*edge_iter, graph) << " (" << (matroid_element < 0 ? "row " : "column ") << matroid_element << ") ";
-    }
-  }
-  std::cout << '\n';
-}
-
-void print_decomposition(const unimod::decomposed_matroid* decomposition, std::string indent = "")
-{
-  if (decomposition->is_leaf())
-  {
-    unimod::decomposed_matroid_leaf* leaf = (unimod::decomposed_matroid_leaf*) (decomposition);
-
-    if (leaf->is_R10())
-    {
-      std::cout << indent << "R10:";
-      for (unimod::matroid_element_set::const_iterator iter = leaf->elements().begin(); iter != leaf->elements().end(); ++iter)
-        std::cout << " " << *iter;
-      std::cout << "\n";
-    }
-    else if (leaf->is_graphic() && leaf->is_cographic())
-    {
-      std::cout << indent << "planar binary matroid.\n";
-      std::cout << indent << "graph:\n" << indent << "{ ";
-      print_matroid_graph(*leaf->graph(), indent + "  ");
-      std::cout << indent << "}\n" << indent << "cograph:\n" << indent << "{ ";
-      print_matroid_graph(*leaf->cograph(), indent + "  ");
-      std::cout << indent << "}\n";
-    }
-    else if (leaf->is_graphic())
-    {
-      std::cout << indent << "graphic binary matroid.\n";
-      std::cout << indent << "graph:\n" << indent << "{ ";
-      print_matroid_graph(*leaf->graph(), indent + "  ");
-      std::cout << indent << "}\n";
-    }
-    else if (leaf->is_cographic())
-    {
-      std::cout << indent << "cographic binary matroid.\n";
-      std::cout << indent << "cograph:\n" << indent << "{ ";
-      print_matroid_graph(*leaf->cograph(), indent + "  ");
-      std::cout << indent << "}\n";
-    }
-    else
-    {
-      std::cout << indent << "irregular matroid.\n";
-    }
-  }
-  else
-  {
-    unimod::decomposed_matroid_separator* separator = (unimod::decomposed_matroid_separator*) (decomposition);
-
-    if (separator->separation_type() == unimod::decomposed_matroid_separator::ONE_SEPARATION)
-    {
-      std::cout << indent << "1-separation:\n";
-
-    }
-    else if (separator->separation_type() == unimod::decomposed_matroid_separator::TWO_SEPARATION)
-    {
-      std::cout << indent << "2-separation:\n";
-    }
-    else if (separator->separation_type() == unimod::decomposed_matroid_separator::THREE_SEPARATION)
-    {
-      std::cout << indent << "3-separation:\n";
-    }
-    else
-    {
-      std::cout << indent << "invalid separation:\n";
-    }
-    std::cout << indent << "{\n";
-    print_decomposition(separator->first(), indent + "  ");
-    print_decomposition(separator->second(), indent + "  ");
-    std::cout << indent << "}\n";
-  }
-}
-
 void print_violator(const unimod::integer_matrix& matrix, const unimod::submatrix_indices& violator)
 {
   typedef boost::numeric::ublas::matrix_indirect <const unimod::integer_matrix, unimod::submatrix_indices::indirect_array_type> indirect_matrix_t;
@@ -176,8 +87,6 @@ int run_matroid(const std::string& file_name, bool show_certificates, unimod::lo
     if (unimod::is_totally_unimodular(matrix, decomposition, violator, level))
     {
       std::cout << "\nThe " << matrix.size1() << " x " << matrix.size2() << " matrix is totally unimodular.\n" << std::endl;
-
-      print_decomposition(decomposition);
     }
     else
     {
@@ -377,14 +286,14 @@ int main(int argc, char **argv)
     std::cerr << "Usage: " << argv[0] << " [OPTIONS] [--] MATRIX_FILE\n";
     std::cerr << "Options:\n";
     std::cerr << " -h Shows a help message.\n";
-    std::cerr << " -m Test total unimodularity via matroid-based algorithm (default).\n";
-    std::cerr << " -g Test total unimodularity via criterion of ghouli-houri (slow).\n";
-    std::cerr << " -d Test total unimodularity via enumeration of all subdeterminants (very slow!).\n";
+    std::cerr << " -m Test total unimodularity via matroid decomposition algorithm (default).\n";
+    std::cerr << " -g Test total unimodularity via column enumeration algorithm (slow).\n";
+    std::cerr << " -d Test total unimodularity via submatrix enumeration algorithm (very slow!).\n";
     std::cerr
-        << " -c Prints certificates: A matroid decomposition if the matrix is totally unimodular and a violating submatrix otherwise. (only matroid-based algorithm)\n";
+        << " -c Calculates a violating submatrix if one exists. (only decomposition algorithm)\n";
     std::cerr << " -u Updating logging (default, affects only -m).\n";
-    std::cerr << " -v Verbose logging. (affects only -m)\n";
-    std::cerr << " -q No logging at all. (affects only -m)\n";
+    std::cerr << " -v Verbose logging. (only decomposition algorithm)\n";
+    std::cerr << " -q No logging at all. (only decomposition algorithm)\n";
     std::cerr << std::flush;
     return EXIT_SUCCESS;
   }
@@ -397,12 +306,12 @@ int main(int argc, char **argv)
 
   if (algorithm != 'm' && certs)
   {
-    std::cout << "Certificates are only available for matroid-based algorithm!\nSee " << argv[0] << " -h for usage." << std::endl;
+    std::cout << "Certificates are only available for decomposition algorithm!\nSee " << argv[0] << " -h for usage." << std::endl;
     return EXIT_FAILURE;
   }
   if (algorithm != 'm' && level != unimod::LOG_UPDATING)
   {
-    std::cout << "Logging options only have an affect on matroid-based algorithm!" << std::endl;
+    std::cout << "Logging options only have an affect on decomposition algorithm!" << std::endl;
   }
 
   if (algorithm == 'm')

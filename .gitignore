@@ -25,6 +25,7 @@ src/Makefile.in
 src/.deps/
 src/unimodularity-test
 src/matrix-gen
+src/tu-compare
 
 build*
 unimodularity-library*tar.gz
