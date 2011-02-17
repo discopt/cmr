@@ -8,11 +8,20 @@
 #include "../config.h"
 #include <fstream>
 #include <iomanip>
+#include <map>
+
+#include <boost/logic/tribool.hpp>
 
 #include "total_unimodularity.hpp"
 #include "matroid_decomposition.hpp"
 #include "unimodularity.hpp"
 #include "smith_normal_form.hpp"
+
+template <typename Set, typename Element>
+bool contains(const Set& set, const Element& element)
+{
+  return set.find(element) != set.end();
+}
 
 void print_matroid_graph(const unimod::matroid_graph& graph, const std::string& indent = "")
 {
@@ -126,7 +135,55 @@ void print_violator(const unimod::integer_matrix& matrix, const unimod::submatri
   std::cout << std::endl;
 }
 
-int run_decomposition(const std::string& file_name, bool show_certificates, unimod::log_level level)
+void print_result(std::ostream& stream, const std::string& name, boost::logic::tribool result)
+{
+  stream << std::setw(20) << name << ": ";
+
+  if (result)
+    stream << "yes\n";
+  else if (!result)
+    stream << "no\n";
+  else
+    stream << "not determined\n";
+}
+
+bool test_total_unimodularity(unimod::integer_matrix& matrix, bool show_certificates, unimod::log_level level)
+{
+  bool result;
+
+  if (show_certificates)
+  {
+    unimod::submatrix_indices violator;
+    unimod::decomposed_matroid* decomposition;
+
+    result = unimod::is_totally_unimodular(matrix, decomposition, violator, level);
+
+    if (result)
+    {
+      std::cout << "\nThe matrix is totally unimodular due to the following decomposition:\n" << std::endl;
+
+      print_decomposition(decomposition);
+    }
+    else
+    {
+      int det = unimod::submatrix_determinant(matrix, violator);
+      assert (violator.rows.size() == violator.columns.size());
+      std::cout << "\nThe matrix is not totally unimodular due to the following " << violator.rows.size() << " x " << violator.columns.size()
+          << " submatrix with determinant " << det << "." << std::endl;
+      print_violator(matrix, violator);
+    }
+    delete decomposition;
+  }
+  else
+  {
+    result = unimod::is_totally_unimodular(matrix, level);
+    std::cout << "The matrix is " << (result ? "" : "not ") << "totally unimodular." << std::endl;
+  }
+
+  return result;
+}
+
+int run(const std::string& file_name, const std::set <char>& tests, bool show_certificates, unimod::log_level level)
 {
   /// Open the file
 
@@ -143,7 +200,7 @@ int run_decomposition(const std::string& file_name, bool show_certificates, unim
   file >> height >> width;
   if (!file.good())
   {
-    std::cout << "Error: cannot read height and width from input file." << std::endl;
+    std::cout << "Error: cannot read matrix size from input file." << std::endl;
     return EXIT_FAILURE;
   }
 
@@ -165,52 +222,76 @@ int run_decomposition(const std::string& file_name, bool show_certificates, unim
   }
 
   file.close();
+  std::cout << "Read a " << matrix.size1() << " x " << matrix.size2() << " matrix.\n" << std::endl;
 
-  unimod::is_unimodular(matrix, level);
+  std::map <char, boost::logic::tribool> results;
+  for (size_t i = 0; i < 5; ++i)
+    results["tUuMm"[i]] = boost::logic::indeterminate;
+  size_t rank = 0;
+  unsigned int k = 0;
 
-  if (show_certificates)
+  if (contains(tests, 't'))
   {
-    unimod::submatrix_indices violator;
-    unimod::decomposed_matroid* decomposition;
+    /// Let's test for total unimodularity.
 
-    if (unimod::is_totally_unimodular(matrix, decomposition, violator, level))
-    {
-      std::cout << "\nThe " << matrix.size1() << " x " << matrix.size2() << " matrix is totally unimodular.\n" << std::endl;
+    results['t'] = test_total_unimodularity(matrix, show_certificates, level);
+    k = 1;
+  }
 
-      print_decomposition(decomposition);
-    }
-    else
+  if (results['t'])
+  {
+    for (size_t i = 0; i < 4; ++i)
     {
-      std::cout << "\nThe " << matrix.size1() << " x " << matrix.size2() << " matrix is not totally unimodular." << std::endl;
-      assert (violator.rows.size() == violator.columns.size());
-      int det = unimod::determinant_submatrix(matrix, violator);
-      std::cout << "\nThe violating submatrix (det = " << det << ") is " << violator.rows.size() << " x " << violator.columns.size() << ":\n\n"
-          << std::flush;
-      print_violator(matrix, violator);
+      results["uUmM"[i]] = true;
     }
-    delete decomposition;
   }
   else
   {
-    if (unimod::is_totally_unimodular(matrix, level))
+    if (contains(tests, 'm') || contains(tests, 'M'))
     {
-      std::cout << "The " << matrix.size1() << " x " << matrix.size2() << " matrix is totally unimodular." << std::endl;
+      results['m'] = unimod::is_k_modular(matrix, rank, k, level);
+      results['u'] = (results['m'] && k == 1);
     }
-    else
+    else if (contains(tests, 'u') || contains(tests, 'U'))
     {
-      std::cout << "The " << matrix.size1() << " x " << matrix.size2() << " matrix is not totally unimodular." << std::endl;
+      results['u'] = unimod::is_unimodular(matrix, rank, level);
+      if (results['u'])
+        results['m'] = true;
     }
   }
+
+  /// Print a summary
+
+  if (!results['t'] && (contains(tests, 'u') || contains(tests, 'U') || contains(tests, 'm') || contains(tests, 'M')))
+    std::cout << "\nSummary of rank " << rank << " matrix:\n\n";
+  else
+    std::cout << "\nSummary:\n\n";
+
+  print_result(std::cout, "Totally unimodular", results['t']);
+  print_result(std::cout, "Strongly unimodular", results['U']);
+  print_result(std::cout, "Unimodular", results['u']);
+  print_result(std::cout, "Strongly k-modular", results['M']);
+  print_result(std::cout, "k-modular", results['m']);
+  if (results['m'])
+    std::cout << "                  k = " << k << "\n";
+
+  std::cout << std::flush;
 
   return EXIT_SUCCESS;
 }
 
-bool extract_option(char c, std::string& tests, bool& certs, unimod::log_level& level, bool& help)
+bool extract_option(char c, std::set <char>& tests, bool& certs, unimod::log_level& level, bool& help)
 {
   if (c == 't' || c == 'u' || c == 'm' || c == 'U' || c == 'M')
-    tests.append(1, c);
+    tests.insert(c);
   else if (c == 'a')
-    tests.append("tumUM");
+  {
+    tests.insert('t');
+    tests.insert('u');
+    tests.insert('U');
+    tests.insert('m');
+    tests.insert('M');
+  }
   else if (c == 'h')
     help = true;
   else if (c == 'c')
@@ -234,13 +315,12 @@ int main(int argc, char **argv)
   bool certs = false;
   unimod::log_level level = unimod::LOG_PROGRESSIVE;
   bool help = false;
-  std::string tests = "";
+  std::set <char> tests;
 
   bool options_done = false;
   for (int a = 1; a < argc; ++a)
   {
     const std::string current = argv[a];
-
     if (!options_done)
     {
       if (current == std::string("--"))
@@ -270,9 +350,13 @@ int main(int argc, char **argv)
     matrix_file_name = current;
   }
 
-  if (tests == "")
+  if (tests.empty())
   {
-    tests = "tuUmM";
+    tests.insert('t');
+    tests.insert('u');
+    tests.insert('U');
+    tests.insert('m');
+    tests.insert('M');
   }
 
   if (help)
@@ -300,5 +384,5 @@ int main(int argc, char **argv)
     return EXIT_FAILURE;
   }
 
-  return run_decomposition(matrix_file_name, certs, level);
+  return run(matrix_file_name, tests, certs, level);
 }

@@ -328,7 +328,9 @@ namespace unimod
 
     detail::violator_strategy* strategy;
     if (matrix.size1() < matrix.size2())
+    {
       strategy = new detail::greedy_violator_strategy(matrix, rows, columns, log);
+    }
     else
     {
       matroid_element_set new_rows, new_columns;

@@ -92,7 +92,7 @@ int run_decomposition(const std::string& file_name, bool show_certificates, unim
     {
       std::cout << "\nThe " << matrix.size1() << " x " << matrix.size2() << " matrix is not totally unimodular." << std::endl;
       assert (violator.rows.size() == violator.columns.size());
-      int det = unimod::determinant_submatrix(matrix, violator);
+      int det = unimod::submatrix_determinant(matrix, violator);
       std::cout << "\nThe violating submatrix (det = " << det << ") is " << violator.rows.size() << " x " << violator.columns.size() << ":\n\n"
           << std::flush;
       print_violator(matrix, violator);
