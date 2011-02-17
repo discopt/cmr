@@ -338,7 +338,7 @@ namespace unimod
             {
               row_amount = 1;
               column_amount = 1;
-              rate = 0.0f;
+              rate = 0.03f;
             }
           }
           else
