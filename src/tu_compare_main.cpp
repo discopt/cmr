@@ -77,8 +77,6 @@ int run_decomposition(const std::string& file_name, bool show_certificates, unim
 
   file.close();
 
-  unimod::is_unimodular(matrix, level);
-
   if (show_certificates)
   {
     unimod::submatrix_indices violator;
