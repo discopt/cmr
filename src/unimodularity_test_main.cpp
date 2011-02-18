@@ -228,6 +228,7 @@ int run(const std::string& file_name, const std::set <char>& tests, bool show_ce
   for (size_t i = 0; i < 5; ++i)
     results["tUuMm"[i]] = boost::logic::indeterminate;
   size_t rank = 0;
+  bool know_rank = false;
   unsigned int k = 0;
 
   if (contains(tests, 't'))
@@ -249,20 +250,73 @@ int run(const std::string& file_name, const std::set <char>& tests, bool show_ce
   {
     if (contains(tests, 'm') || contains(tests, 'M'))
     {
-      results['m'] = unimod::is_k_modular(matrix, rank, k, level);
+      if (level != unimod::LOG_QUIET)
+        std::cout << "Testing matrix for k-modularity... " << std::flush;
+      results['m'] = unimod::is_k_modular(matrix, rank, k, unimod::LOG_PROGRESSIVE);
+      std::cout << "The matrix is " << (results['m'] ? "" : "not ") << "k-modular.\n" << std::flush;
+
       results['u'] = (results['m'] && k == 1);
+      if (results['m'])
+        std::cout << "The matrix is " << (results['u'] ? "" : "not ") << "unimodular.\n" << std::flush;
+
+      if (!results['m'])
+        results['M'] = false;
+      if (!results['u'])
+      {
+        results['U'] = false;
+        results['t'] = false;
+      }
+      know_rank = true;
     }
     else if (contains(tests, 'u') || contains(tests, 'U'))
     {
-      results['u'] = unimod::is_unimodular(matrix, rank, level);
+      if (level != unimod::LOG_QUIET)
+        std::cout << "Testing matrix for unimodularity... " << std::flush;
+      results['u'] = unimod::is_unimodular(matrix, rank, unimod::LOG_QUIET);
+      std::cout << "The matrix is " << (results['u'] ? "" : "not ") << "unimodular.\n" << std::flush;
+
       if (results['u'])
         results['m'] = true;
+      if (!results['u'])
+      {
+        results['U'] = false;
+        results['t'] = false;
+      }
+      know_rank = true;
+    }
+    if (contains(tests, 'M') && boost::logic::indeterminate(results['M']))
+    {
+      if (level != unimod::LOG_QUIET)
+        std::cout << "Testing transpose of matrix for k-modularity... " << std::flush;
+      unimod::matrix_transposed <unimod::integer_matrix> transposed(matrix);
+      results['M'] = unimod::is_k_modular(transposed, rank, k, unimod::LOG_QUIET);
+      std::cout << "The transpose is " << (results['M'] ? "" : "not ") << "k-modular.\n" << std::flush;
+
+      results['U'] = (results['M'] && k == 1);
+      if (results['M'])
+        std::cout << "The transpose is " << (results['U'] ? "" : "not ") << "unimodular.\n" << std::flush;
+
+      if (!results['U'])
+        results['t'] = false;
+      know_rank = true;
+    }
+    else if (contains(tests, 'U') && boost::logic::indeterminate(results['U']))
+    {
+      if (level != unimod::LOG_QUIET)
+        std::cout << "Testing transpose of matrix for unimodularity... " << std::flush;
+      unimod::matrix_transposed <unimod::integer_matrix> transposed(matrix);
+      results['U'] = unimod::is_unimodular(transposed, rank, unimod::LOG_QUIET);
+      std::cout << "The transpose is " << (results['U'] ? "" : "not ") << "unimodular.\n" << std::flush;
+
+      if (!results['U'])
+        results['t'] = false;
+      know_rank = true;
     }
   }
 
   /// Print a summary
 
-  if (!results['t'] && (contains(tests, 'u') || contains(tests, 'U') || contains(tests, 'm') || contains(tests, 'M')))
+  if (know_rank)
     std::cout << "\nSummary of rank " << rank << " matrix:\n\n";
   else
     std::cout << "\nSummary:\n\n";
