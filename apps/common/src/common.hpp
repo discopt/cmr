@@ -42,7 +42,7 @@ namespace unimod
 
   enum log_level
   {
-    LOG_QUIET, LOG_UPDATING, LOG_VERBOSE
+    LOG_QUIET, LOG_PROGRESSIVE, LOG_VERBOSE
   };
 
 }

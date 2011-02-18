@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include "total_unimodularity.hpp"
+#include "unimodularity.hpp"
 
 namespace polymake { namespace common {
 

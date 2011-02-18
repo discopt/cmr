@@ -25,7 +25,7 @@ namespace unimod
    * @return The submatrix' determinant
    */
 
-  int determinant_submatrix(const integer_matrix& matrix, const submatrix_indices& submatrix)
+  int submatrix_determinant(const integer_matrix& matrix, const submatrix_indices& submatrix)
   {
     typedef boost::numeric::ublas::matrix_indirect <const integer_matrix, submatrix_indices::indirect_array_type> indirect_matrix_t;
 
@@ -133,7 +133,7 @@ namespace unimod
         sub.columns = submatrix_indices::indirect_array_type(cardinality, indirect_array);
 
         /// Examine the determinant
-        int det = determinant_submatrix(matrix, sub);
+        int det = submatrix_determinant(matrix, sub);
         if (det < -1 || det > 1)
         {
           violator = sub;

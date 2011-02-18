@@ -53,7 +53,7 @@ namespace unimod
   {
     logger log(level);
 
-    if (log.is_updating())
+    if (log.is_progressive())
     {
       log.line() << "(" << matrix.size1() << " x " << matrix.size2() << ")";
       std::cout << log;
@@ -62,7 +62,7 @@ namespace unimod
     /// Test for being a -1,0,+1 matrix
     if (!is_zero_plus_minus_one_matrix(matrix))
     {
-      if (log.is_updating())
+      if (log.is_progressive())
       {
         log.line() << " NOT -1/0/+1";
         std::cout << log << std::endl;
@@ -75,7 +75,7 @@ namespace unimod
       return false;
     }
 
-    if (log.is_updating())
+    if (log.is_progressive())
     {
       log.line() << " -1/0/+1 OK";
       std::cout << log;
@@ -88,7 +88,7 @@ namespace unimod
     /// Signing test
     if (!is_signed_matrix(matrix))
     {
-      if (log.is_updating())
+      if (log.is_progressive())
       {
         log.line() << ", SIGNING FAILED\n";
         std::cout << log << std::endl;
@@ -101,7 +101,7 @@ namespace unimod
       return false;
     }
 
-    if (log.is_updating())
+    if (log.is_progressive())
     {
       log.clear();
       std::cout << ", SIGNING OK" << std::endl;
@@ -146,7 +146,7 @@ namespace unimod
   {
     logger log(level);
 
-    if (log.is_updating())
+    if (log.is_progressive())
     {
       log.line() << "(" << matrix.size1() << " x " << matrix.size2() << ")";
       std::cout << log;
@@ -155,7 +155,7 @@ namespace unimod
     /// Test for being a -1,0,+1 matrix
     if (!is_zero_plus_minus_one_matrix(matrix))
     {
-      if (log.is_updating())
+      if (log.is_progressive())
       {
         log.line() << " NOT -1/0/+1";
         std::cout << log << std::endl;
@@ -169,7 +169,7 @@ namespace unimod
       return false;
     }
 
-    if (log.is_updating())
+    if (log.is_progressive())
     {
       log.line() << " -1/0/+1 OK";
       std::cout << log;
@@ -182,7 +182,7 @@ namespace unimod
     /// Signing test
     if (!is_signed_matrix(matrix))
     {
-      if (log.is_updating())
+      if (log.is_progressive())
       {
         log.line() << ", SIGNING FAILED\n";
         std::cout << log << std::endl;
@@ -196,7 +196,7 @@ namespace unimod
       return false;
     }
 
-    if (log.is_updating())
+    if (log.is_progressive())
     {
       log.clear();
       std::cout << ", SIGNING OK" << std::endl;
@@ -243,7 +243,7 @@ namespace unimod
   {
     logger log(level);
 
-    if (log.is_updating())
+    if (log.is_progressive())
     {
       log.line() << "(" << matrix.size1() << " x " << matrix.size2() << ")";
       std::cout << log;
@@ -253,7 +253,7 @@ namespace unimod
     std::pair <integer_matrix::size_type, integer_matrix::size_type> entry;
     if (!is_zero_plus_minus_one_matrix(matrix, entry))
     {
-      if (log.is_updating())
+      if (log.is_progressive())
       {
         log.line() << " NOT -1/0/+1";
         std::cout << log << std::endl;
@@ -271,7 +271,7 @@ namespace unimod
       return false;
     }
 
-    if (log.is_updating())
+    if (log.is_progressive())
     {
       log.line() << " -1/0/+1 OK";
       std::cout << log;
@@ -284,7 +284,7 @@ namespace unimod
     /// Signing test
     if (!is_signed_matrix(matrix, violator))
     {
-      if (log.is_updating())
+      if (log.is_progressive())
       {
         log.line() << ", SIGNING FAILED\n";
         std::cout << log << std::endl;
@@ -299,7 +299,7 @@ namespace unimod
       return false;
     }
 
-    if (log.is_updating())
+    if (log.is_progressive())
     {
       log.clear();
       std::cout << ", SIGNING OK" << std::endl;
@@ -328,7 +328,9 @@ namespace unimod
 
     detail::violator_strategy* strategy;
     if (matrix.size1() < matrix.size2())
+    {
       strategy = new detail::greedy_violator_strategy(matrix, rows, columns, log);
+    }
     else
     {
       matroid_element_set new_rows, new_columns;

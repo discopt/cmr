@@ -178,7 +178,7 @@ namespace unimod
    * @return The submatrix' determinant
    */
 
-  int determinant_submatrix(const integer_matrix& matrix, const submatrix_indices& submatrix);
+  int submatrix_determinant(const integer_matrix& matrix, const submatrix_indices& submatrix);
 
   /**
    * Checks all subdeterminants to test a given matrix for total unimodularity.
