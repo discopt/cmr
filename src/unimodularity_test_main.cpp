@@ -328,6 +328,8 @@ int run(const std::string& file_name, const std::set <char>& tests, bool show_ce
   print_result(std::cout, "k-modular", results['m']);
   if (results['m'])
     std::cout << "                  k = " << k << "\n";
+  if (know_rank)
+    print_result(std::cout, "Dantzig property", results['m'] && rank == matrix.size1());
 
   std::cout << std::flush;
 
