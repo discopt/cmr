@@ -1,5 +1,7 @@
 *.o
 *.a
+.project
+.cproject
 apps/polytope
 apps/common/src/perl/
 Makefile
