@@ -11,6 +11,7 @@
 #include <boost/numeric/ublas/matrix.hpp>
 
 #include "matrix_transposed.hpp"
+#include <iomanip>
 
 namespace unimod
 {
@@ -245,7 +246,7 @@ namespace unimod
     {
       for (size_t column = 0; column < matrix.size2(); ++column)
       {
-        std::cout << " " << matrix(row, column);
+        std::cout << " " << std::setw(2) << matrix(row, column);
       }
       std::cout << "\n";
     }
@@ -279,6 +280,66 @@ namespace unimod
     return true;
   }
 
+  template <typename Matrix>
+  bool matrix_row_zero(const Matrix& matrix, size_t row, size_t column_first, size_t column_beyond)
+  {
+    for (size_t c = column_first; c != column_beyond; ++c)
+      if (matrix(row, c) != 0)
+        return false;
+    return true;
+  }
+
+  template <typename Matrix>
+  bool matrix_column_zero(const Matrix& matrix, size_t column, size_t row_first, size_t row_beyond)
+  {
+    return matrix_row_zero(make_transposed_matrix(matrix), column, row_first, row_beyond);
+  }
+
+  template <typename Matrix>
+  bool find_smallest_nonzero_matrix_entry(const Matrix& matrix, size_t row_first, size_t row_beyond, size_t column_first, size_t column_beyond,
+      size_t& row, size_t& column)
+  {
+    bool result = false;
+    int current_value = 0;
+    for (size_t r = row_first; r != row_beyond; ++r)
+    {
+      for (size_t c = column_first; c != column_beyond; ++c)
+      {
+        int value = matrix(r, c);
+        if (value == 0)
+          continue;
+
+        value = value >= 0 ? value : -value;
+
+        if (!result || value < current_value)
+        {
+          result = true;
+          row = r;
+          column = c;
+          current_value = value;
+        }
+      }
+    }
+    return result;
+  }
+
+  template <typename Matrix1, typename Matrix2>
+  bool equals(const Matrix1& first, const Matrix2& second)
+  {
+    if (first.size1() != second.size1())
+      return false;
+    if (first.size2() != second.size2())
+      return false;
+    for (size_t r = 0; r < first.size1(); ++r)
+    {
+      for (size_t c = 0; c < first.size2(); ++c)
+      {
+        if (first(r, c) != second(r, c))
+          return false;
+      }
+    }
+    return true;
+  }
 }
 
 #endif /* MATRIX_HPP_ */

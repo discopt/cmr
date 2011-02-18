@@ -100,7 +100,7 @@ namespace unimod
           logger& log) :
         _input_matrix(input_matrix), _row_elements(row_elements), _column_elements(column_elements), _log(log)
       {
-        if (log.is_updating() || _log.is_verbose())
+        if (log.is_progressive() || _log.is_verbose())
         {
           std::cout << "\nMatrix is NOT totally unimodular. Searching the violating submatrix...\n" << std::endl;
         }
@@ -167,7 +167,7 @@ namespace unimod
 
         if (!is_signed_matrix(matrix))
         {
-          if (_log.is_updating() || _log.is_verbose())
+          if (_log.is_progressive() || _log.is_verbose())
           {
             std::cout << "Submatrix did not pass the signing test. It is NOT totally unimodular.\n" << std::endl;
           }
@@ -184,7 +184,7 @@ namespace unimod
 
         if (is_tu)
         {
-          if (_log.is_updating() || _log.is_verbose())
+          if (_log.is_progressive() || _log.is_verbose())
           {
             std::cout << "\nSubmatrix is totally unimodular.\n" << std::endl;
           }
@@ -197,7 +197,7 @@ namespace unimod
 
         detail::split_elements(elements.begin(), elements.end(), std::inserter(rows, rows.end()), std::inserter(columns, columns.end()));
 
-        if (_log.is_updating() || _log.is_verbose())
+        if (_log.is_progressive() || _log.is_verbose())
         {
           if (rows.size() < row_elements.size() || columns.size() < column_elements.size())
           {
@@ -338,7 +338,7 @@ namespace unimod
             {
               row_amount = 1;
               column_amount = 1;
-              rate = 0.0f;
+              rate = 0.03f;
             }
           }
           else

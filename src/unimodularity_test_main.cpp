@@ -8,11 +8,20 @@
 #include "../config.h"
 #include <fstream>
 #include <iomanip>
+#include <map>
+
+#include <boost/logic/tribool.hpp>
 
 #include "total_unimodularity.hpp"
 #include "matroid_decomposition.hpp"
 #include "unimodularity.hpp"
 #include "smith_normal_form.hpp"
+
+template <typename Set, typename Element>
+bool contains(const Set& set, const Element& element)
+{
+  return set.find(element) != set.end();
+}
 
 void print_matroid_graph(const unimod::matroid_graph& graph, const std::string& indent = "")
 {
@@ -126,87 +135,55 @@ void print_violator(const unimod::integer_matrix& matrix, const unimod::submatri
   std::cout << std::endl;
 }
 
-int run_matroid(const std::string& file_name, bool show_certificates, unimod::log_level level)
+void print_result(std::ostream& stream, const std::string& name, boost::logic::tribool result)
 {
-  /// Open the file
+  stream << std::setw(20) << name << ": ";
 
-  std::ifstream file(file_name.c_str());
-  if (!file.good())
-  {
-    std::cout << "Error: cannot open file \"" << file_name << "\"." << std::endl;
-    return EXIT_FAILURE;
-  }
+  if (result)
+    stream << "yes\n";
+  else if (!result)
+    stream << "no\n";
+  else
+    stream << "not determined\n";
+}
 
-  /// Read height and width
-
-  size_t height, width;
-  file >> height >> width;
-  if (!file.good())
-  {
-    std::cout << "Error: cannot read height and width from input file." << std::endl;
-    return EXIT_FAILURE;
-  }
-
-  /// Read matrix entries
-
-  unimod::integer_matrix matrix(height, width);
-  for (size_t row = 0; row < height; ++row)
-  {
-    for (size_t column = 0; column < width; ++column)
-    {
-      if (!file.good())
-      {
-        std::cout << "Error: cannot read matrix data." << std::endl;
-      }
-      int value;
-      file >> value;
-      matrix(row, column) = value;
-    }
-  }
-
-  file.close();
-
-  std::vector<int> diag;
-  unimod::smith_normal_form(matrix, diag);
+bool test_total_unimodularity(unimod::integer_matrix& matrix, bool show_certificates, unimod::log_level level)
+{
+  bool result;
 
   if (show_certificates)
   {
     unimod::submatrix_indices violator;
     unimod::decomposed_matroid* decomposition;
 
-    if (unimod::is_totally_unimodular(matrix, decomposition, violator, level))
+    result = unimod::is_totally_unimodular(matrix, decomposition, violator, level);
+
+    if (result)
     {
-      std::cout << "\nThe " << matrix.size1() << " x " << matrix.size2() << " matrix is totally unimodular.\n" << std::endl;
+      std::cout << "\nThe matrix is totally unimodular due to the following decomposition:\n" << std::endl;
 
       print_decomposition(decomposition);
     }
     else
     {
-      std::cout << "\nThe " << matrix.size1() << " x " << matrix.size2() << " matrix is not totally unimodular." << std::endl;
+      int det = unimod::submatrix_determinant(matrix, violator);
       assert (violator.rows.size() == violator.columns.size());
-      int det = unimod::determinant_submatrix(matrix, violator);
-      std::cout << "\nThe violating submatrix (det = " << det << ") is " << violator.rows.size() << " x " << violator.columns.size() << ":\n\n"
-          << std::flush;
+      std::cout << "\nThe matrix is not totally unimodular due to the following " << violator.rows.size() << " x " << violator.columns.size()
+          << " submatrix with determinant " << det << "." << std::endl;
       print_violator(matrix, violator);
     }
     delete decomposition;
   }
   else
   {
-    if (unimod::is_totally_unimodular(matrix, level))
-    {
-      std::cout << "The " << matrix.size1() << " x " << matrix.size2() << " matrix is totally unimodular." << std::endl;
-    }
-    else
-    {
-      std::cout << "The " << matrix.size1() << " x " << matrix.size2() << " matrix is not totally unimodular." << std::endl;
-    }
+    result = unimod::is_totally_unimodular(matrix, level);
+    std::cout << "The matrix is " << (result ? "" : "not ") << "totally unimodular." << std::endl;
   }
 
-  return EXIT_SUCCESS;
+  return result;
 }
 
-int run_ghouila_houri(const std::string& file_name)
+int run(const std::string& file_name, const std::set <char>& tests, bool show_certificates, unimod::log_level level)
 {
   /// Open the file
 
@@ -223,7 +200,7 @@ int run_ghouila_houri(const std::string& file_name)
   file >> height >> width;
   if (!file.good())
   {
-    std::cout << "Error: cannot read height and width from input file." << std::endl;
+    std::cout << "Error: cannot read matrix size from input file." << std::endl;
     return EXIT_FAILURE;
   }
 
@@ -245,83 +222,140 @@ int run_ghouila_houri(const std::string& file_name)
   }
 
   file.close();
+  std::cout << "Read a " << matrix.size1() << " x " << matrix.size2() << " matrix.\n" << std::endl;
 
-  if (unimod::ghouila_houri_is_totally_unimodular(matrix))
+  std::map <char, boost::logic::tribool> results;
+  for (size_t i = 0; i < 5; ++i)
+    results["tUuMm"[i]] = boost::logic::indeterminate;
+  size_t rank = 0;
+  bool know_rank = false;
+  unsigned int k = 0;
+
+  if (contains(tests, 't'))
   {
-    std::cout << "The " << matrix.size1() << " x " << matrix.size2() << " matrix is totally unimodular." << std::endl;
+    /// Let's test for total unimodularity.
+
+    results['t'] = test_total_unimodularity(matrix, show_certificates, level);
+    k = 1;
+  }
+
+  if (results['t'])
+  {
+    for (size_t i = 0; i < 4; ++i)
+    {
+      results["uUmM"[i]] = true;
+    }
   }
   else
   {
-    std::cout << "The " << matrix.size1() << " x " << matrix.size2() << " matrix is not totally unimodular." << std::endl;
-  }
-
-  return EXIT_SUCCESS;
-}
-
-int run_determinants(const std::string& file_name)
-{
-  /// Open the file
-
-  std::ifstream file(file_name.c_str());
-  if (!file.good())
-  {
-    std::cout << "Error: cannot open file \"" << file_name << "\"." << std::endl;
-    return EXIT_FAILURE;
-  }
-
-  /// Read height and width
-
-  size_t height, width;
-  file >> height >> width;
-  if (!file.good())
-  {
-    std::cout << "Error: cannot read height and width from input file." << std::endl;
-    return EXIT_FAILURE;
-  }
-
-  /// Read matrix entries
-
-  unimod::integer_matrix matrix(height, width);
-  for (size_t row = 0; row < height; ++row)
-  {
-    for (size_t column = 0; column < width; ++column)
+    if (contains(tests, 'm') || contains(tests, 'M'))
     {
-      if (!file.good())
+      if (level != unimod::LOG_QUIET)
+        std::cout << "Testing matrix for k-modularity... " << std::flush;
+      results['m'] = unimod::is_k_modular(matrix, rank, k, unimod::LOG_PROGRESSIVE);
+      std::cout << "The matrix is " << (results['m'] ? "" : "not ") << "k-modular.\n" << std::flush;
+
+      results['u'] = (results['m'] && k == 1);
+      if (results['m'])
+        std::cout << "The matrix is " << (results['u'] ? "" : "not ") << "unimodular.\n" << std::flush;
+
+      if (!results['m'])
+        results['M'] = false;
+      if (!results['u'])
       {
-        std::cout << "Error: cannot read matrix data." << std::endl;
+        results['U'] = false;
+        results['t'] = false;
       }
-      int value;
-      file >> value;
-      matrix(row, column) = value;
+      know_rank = true;
+    }
+    else if (contains(tests, 'u') || contains(tests, 'U'))
+    {
+      if (level != unimod::LOG_QUIET)
+        std::cout << "Testing matrix for unimodularity... " << std::flush;
+      results['u'] = unimod::is_unimodular(matrix, rank, unimod::LOG_QUIET);
+      std::cout << "The matrix is " << (results['u'] ? "" : "not ") << "unimodular.\n" << std::flush;
+
+      if (results['u'])
+        results['m'] = true;
+      if (!results['u'])
+      {
+        results['U'] = false;
+        results['t'] = false;
+      }
+      know_rank = true;
+    }
+    if (contains(tests, 'M') && boost::logic::indeterminate(results['M']))
+    {
+      if (level != unimod::LOG_QUIET)
+        std::cout << "Testing transpose of matrix for k-modularity... " << std::flush;
+      unimod::matrix_transposed <unimod::integer_matrix> transposed(matrix);
+      results['M'] = unimod::is_k_modular(transposed, rank, k, unimod::LOG_QUIET);
+      std::cout << "The transpose is " << (results['M'] ? "" : "not ") << "k-modular.\n" << std::flush;
+
+      results['U'] = (results['M'] && k == 1);
+      if (results['M'])
+        std::cout << "The transpose is " << (results['U'] ? "" : "not ") << "unimodular.\n" << std::flush;
+
+      if (!results['U'])
+        results['t'] = false;
+      know_rank = true;
+    }
+    else if (contains(tests, 'U') && boost::logic::indeterminate(results['U']))
+    {
+      if (level != unimod::LOG_QUIET)
+        std::cout << "Testing transpose of matrix for unimodularity... " << std::flush;
+      unimod::matrix_transposed <unimod::integer_matrix> transposed(matrix);
+      results['U'] = unimod::is_unimodular(transposed, rank, unimod::LOG_QUIET);
+      std::cout << "The transpose is " << (results['U'] ? "" : "not ") << "unimodular.\n" << std::flush;
+
+      if (!results['U'])
+        results['t'] = false;
+      know_rank = true;
     }
   }
 
-  file.close();
+  /// Print a summary
 
-  if (unimod::determinant_is_totally_unimodular(matrix))
-  {
-    std::cout << "The " << matrix.size1() << " x " << matrix.size2() << " matrix is totally unimodular." << std::endl;
-  }
+  if (know_rank)
+    std::cout << "\nSummary of rank " << rank << " matrix:\n\n";
   else
-  {
-    std::cout << "The " << matrix.size1() << " x " << matrix.size2() << " matrix is not totally unimodular." << std::endl;
-  }
+    std::cout << "\nSummary:\n\n";
+
+  print_result(std::cout, "Totally unimodular", results['t']);
+  print_result(std::cout, "Strongly unimodular", results['U']);
+  print_result(std::cout, "Unimodular", results['u']);
+  print_result(std::cout, "Strongly k-modular", results['M']);
+  print_result(std::cout, "k-modular", results['m']);
+  if (results['m'])
+    std::cout << "                  k = " << k << "\n";
+  if (know_rank)
+    print_result(std::cout, "Dantzig property", results['m'] && rank == matrix.size1());
+
+  std::cout << std::flush;
 
   return EXIT_SUCCESS;
 }
 
-bool extract_option(char c, char& algorithm, bool& certs, unimod::log_level& level, bool& help)
+bool extract_option(char c, std::set <char>& tests, bool& certs, unimod::log_level& level, bool& help)
 {
-  if (c == 'm' || c == 'd' || c == 'g')
-    algorithm = c;
+  if (c == 't' || c == 'u' || c == 'm' || c == 'U' || c == 'M')
+    tests.insert(c);
+  else if (c == 'a')
+  {
+    tests.insert('t');
+    tests.insert('u');
+    tests.insert('U');
+    tests.insert('m');
+    tests.insert('M');
+  }
   else if (c == 'h')
     help = true;
   else if (c == 'c')
     certs = true;
   else if (c == 'q')
     level = unimod::LOG_QUIET;
-  else if (c == 'u')
-    level = unimod::LOG_UPDATING;
+  else if (c == 'p')
+    level = unimod::LOG_PROGRESSIVE;
   else if (c == 'v')
     level = unimod::LOG_VERBOSE;
   else
@@ -335,15 +369,14 @@ int main(int argc, char **argv)
   /// Possible parameters
   std::string matrix_file_name = "";
   bool certs = false;
-  unimod::log_level level = unimod::LOG_UPDATING;
+  unimod::log_level level = unimod::LOG_PROGRESSIVE;
   bool help = false;
-  char algorithm = 'm';
+  std::set <char> tests;
 
   bool options_done = false;
   for (int a = 1; a < argc; ++a)
   {
     const std::string current = argv[a];
-
     if (!options_done)
     {
       if (current == std::string("--"))
@@ -355,7 +388,7 @@ int main(int argc, char **argv)
       {
         for (size_t i = 1; i < current.size(); ++i)
         {
-          if (!extract_option(current[i], algorithm, certs, level, help))
+          if (!extract_option(current[i], tests, certs, level, help))
           {
             std::cerr << "Unknown option: -" << current[i] << "\nSee " << argv[0] << " -h for usage." << std::endl;
             return EXIT_FAILURE;
@@ -373,19 +406,30 @@ int main(int argc, char **argv)
     matrix_file_name = current;
   }
 
+  if (tests.empty())
+  {
+    tests.insert('t');
+    tests.insert('u');
+    tests.insert('U');
+    tests.insert('m');
+    tests.insert('M');
+  }
+
   if (help)
   {
     std::cerr << "Usage: " << argv[0] << " [OPTIONS] [--] MATRIX_FILE\n";
     std::cerr << "Options:\n";
     std::cerr << " -h Shows a help message.\n";
-    std::cerr << " -m Test via matroid-based algorithm (default).\n";
-    std::cerr << " -g Test via criterion of ghouli-houri (slow).\n";
-    std::cerr << " -d Test via enumeration of all subdeterminants (very slow!).\n";
-    std::cerr
-        << " -c Prints certificates: A matroid decomposition if the matrix is totally unimodular and a violating submatrix otherwise. (only matroid-based algorithm)\n";
-    std::cerr << " -u Updating logging (default, affects only -m).\n";
-    std::cerr << " -v Verbose logging. (affects only -m)\n";
-    std::cerr << " -q No logging at all. (affects only -m)\n";
+    std::cerr << " -a Test for everything possible (default).\n";
+    std::cerr << " -t Test for total unimodularity.\n";
+    std::cerr << " -U Test for strong unimodularity.\n";
+    std::cerr << " -u Test for unimodularity.\n";
+    std::cerr << " -M Test for strong k-modularity.\n";
+    std::cerr << " -m Test for k-modularity.\n";
+    std::cerr << " -c Prints certificates: Try to find certificates for the results.\n";
+    std::cerr << " -p Progressive logging (default).\n";
+    std::cerr << " -v Verbose logging.\n";
+    std::cerr << " -q No logging at all.\n";
     std::cerr << std::flush;
     return EXIT_SUCCESS;
   }
@@ -396,25 +440,5 @@ int main(int argc, char **argv)
     return EXIT_FAILURE;
   }
 
-  if (algorithm != 'm' && certs)
-  {
-    std::cout << "Certificates are only available for matroid-based algorithm!\nSee " << argv[0] << " -h for usage." << std::endl;
-    return EXIT_FAILURE;
-  }
-  if (algorithm != 'm' && level != unimod::LOG_UPDATING)
-  {
-    std::cout << "Logging options only have an affect on matroid-based algorithm!" << std::endl;
-  }
-
-  if (algorithm == 'm')
-    return run_matroid(matrix_file_name, certs, level);
-  else if (algorithm == 'g')
-    return run_ghouila_houri(matrix_file_name);
-  else if (algorithm == 'd')
-    return run_determinants(matrix_file_name);
-  else
-  {
-    std::cerr << "Fatal error: Invalid algorithm selected." << std::endl;
-    return EXIT_FAILURE;
-  }
+  return run(matrix_file_name, tests, certs, level);
 }

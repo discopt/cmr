@@ -72,9 +72,9 @@ namespace unimod
      * @return true if and only if log level is updating
      */
 
-    inline bool is_updating() const
+    inline bool is_progressive() const
     {
-      return _level == LOG_UPDATING;
+      return _level == LOG_PROGRESSIVE;
     }
 
     /**

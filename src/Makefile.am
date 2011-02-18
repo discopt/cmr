@@ -1,8 +1,9 @@
 ACLOCAL_AMFLAGS = -I m4
 
-bin_PROGRAMS = unimodularity-test matrix-gen
+bin_PROGRAMS = unimodularity-test
+check_PROGRAMS = tu-compare matrix-gen
 
-noinst_headers = \
+noinst_HEADERS = \
   algorithm.hpp \
 	binary_linear_space.hpp \
 	bipartite_graph_bfs.hpp \
@@ -11,7 +12,6 @@ noinst_headers = \
 	enumeration.hpp \
 	find_minor_sequence.hpp \
 	find_wheel_minor.hpp \
-	generator_options.hpp \
 	graphicness.hpp \
 	graph_utils.hpp \
 	matrix.hpp \
@@ -25,18 +25,25 @@ noinst_headers = \
 	matroid_separate.hpp \
 	matroid_transposed.hpp \
 	nested_minor_sequence.hpp \
-	signing.cpp \
+	signing.hpp \
 	partition.hpp \
 	permutations.hpp \
 	r10.hpp \
-	row_column_index.hpp \
 	separation.hpp \
 	vector_three_connectivity.hpp \
 	gen_generic.hpp \
   gen_random.hpp \
   gen_network.hpp \
   gen_cycle_violator.hpp \
-  smith_normal_form.hpp
+  smith_normal_form.hpp \
+  linear_algebra.hpp \
+  violator_search.hpp \
+  gcd.hpp \
+  boost/graph/one_bit_color_map.hpp \
+  boost/graph/properties.hpp \
+  boost/graph/visitors.hpp \
+  boost/graph/bipartite.hpp \
+  common.hpp \
 	matroid_graph.hpp \
 	total_unimodularity.hpp \
 	matroid_decomposition.hpp \
@@ -53,7 +60,6 @@ unimodularity_test_SOURCES = \
 	matroid_graph.cpp \
 	matroid_decomposition.cpp \
 	unimodularity.cpp \
-  smith_normal_form.cpp \
 	unimodularity_test_main.cpp
 
 matrix_gen_SOURCES = \
@@ -67,5 +73,17 @@ matrix_gen_SOURCES = \
 	matroid_graph.cpp \
 	matroid_decomposition.cpp \
 	unimodularity.cpp \
-  smith_normal_form.cpp \
   matrix_gen_main.cpp
+
+tu_compare_SOURCES = \
+	determinant.cpp \
+	ghouila_houri.cpp \
+	zero_plus_minus_one.cpp \
+	separation.cpp \
+	logger.cpp \
+	nested_minor_sequence.cpp \
+	total_unimodularity.cpp \
+	matroid_graph.cpp \
+	matroid_decomposition.cpp \
+	unimodularity.cpp \
+	tu_compare_main.cpp

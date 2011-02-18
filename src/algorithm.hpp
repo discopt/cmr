@@ -35,7 +35,7 @@ namespace unimod
     separation sep = find_minor_sequence(permuted_matroid, permuted_matrix, nested_minors, extra_elements, log);
     if (sep.is_valid())
     {
-      if (log.is_updating())
+      if (log.is_progressive())
       {
         log.line() << " --> " << (sep.rank() + 1) << "-SEP";
         std::cout << log << std::endl;
@@ -89,7 +89,7 @@ namespace unimod
           matroid_permute2(permuted_upper_left_matroid, permuted_upper_left_matrix, upper_left_matroid.size2() - 1, sep.get_special_swap_index());
       }
 
-      if (log.is_updating())
+      if (log.is_progressive())
       {
         log.line() << "(" << upper_left_matrix.size1() << " x " << upper_left_matrix.size2() << ") W3";
         std::cout << log;
@@ -112,7 +112,7 @@ namespace unimod
       std::pair <bool, decomposed_matroid*> lower_right_result = decompose_binary_matroid(lower_right_matroid, lower_right_matrix,
           lower_right_extra_elements, construct_decomposition, log);
 
-      if (log.is_updating())
+      if (log.is_progressive())
       {
         log.unindent();
       }
@@ -135,7 +135,7 @@ namespace unimod
 
     matroid_graph* graph = construct_matroid_graph(permuted_matroid, permuted_matrix, nested_minors);
 
-    if (log.is_updating())
+    if (log.is_progressive())
     {
       log.line() << (graph == NULL ? ", NON-GRAPHIC" : ", GRAPHIC");
       std::cout << log;
@@ -145,7 +145,7 @@ namespace unimod
 
     if (!construct_decomposition && graph)
     {
-      if (log.is_updating())
+      if (log.is_progressive())
       {
         log.clear();
         std::cout << " --> REGULAR" << std::endl;
@@ -162,7 +162,7 @@ namespace unimod
     matroid_graph* cograph = construct_matroid_graph(make_transposed_matroid(permuted_matroid), make_transposed_matrix(permuted_matrix),
         make_transposed_nested_minor_sequence(nested_minors));
 
-    if (log.is_updating())
+    if (log.is_progressive())
     {
       log.line() << (cograph == NULL ? ", NON-COGRAPHIC" : ", COGRAPHIC");
       std::cout << log;
@@ -174,7 +174,7 @@ namespace unimod
 
     if (!construct_decomposition && cograph)
     {
-      if (log.is_updating())
+      if (log.is_progressive())
       {
         log.clear();
         std::cout << " --> REGULAR" << std::endl;
@@ -190,7 +190,7 @@ namespace unimod
 
     if (construct_decomposition && (graph || cograph))
     {
-      if (log.is_updating())
+      if (log.is_progressive())
       {
         log.clear();
         std::cout << std::endl;
@@ -211,7 +211,7 @@ namespace unimod
 
     if (is_r10(permuted_matrix))
     {
-      if (log.is_updating())
+      if (log.is_progressive())
       {
         log.line() << ", R10 --> REGULAR";
         std::cout << log << std::endl;
@@ -231,7 +231,7 @@ namespace unimod
     }
     else
     {
-      if (log.is_updating())
+      if (log.is_progressive())
       {
         log.line() << ", NOT R10";
         std::cout << log;
@@ -243,7 +243,7 @@ namespace unimod
     sep = enumerate_separations(permuted_matroid, permuted_matrix, nested_minors, extra_elements, log);
     if (sep.is_valid())
     {
-      if (log.is_updating())
+      if (log.is_progressive())
       {
         log.line() << " --> " << (sep.rank() + 1) << "-SEP";
         std::cout << log << std::endl;
@@ -276,7 +276,7 @@ namespace unimod
 
       if (!construct_decomposition && !upper_left_result.first)
       {
-        if (log.is_updating())
+        if (log.is_progressive())
         {
           log.unindent();
         }
@@ -286,7 +286,7 @@ namespace unimod
       std::pair <bool, decomposed_matroid*> lower_right_result = decompose_binary_matroid(lower_right_matroid, lower_right_matrix, extra_elements,
           construct_decomposition, log);
 
-      if (log.is_updating())
+      if (log.is_progressive())
       {
         log.unindent();
       }
@@ -443,7 +443,7 @@ namespace unimod
   {
     assert(is_zero_one_matrix(matrix));
 
-    if (log.is_updating())
+    if (log.is_progressive())
     {
       log.clear();
       log.line() << "(" << matrix.size1() << " x " << matrix.size2() << ")";
@@ -456,7 +456,7 @@ namespace unimod
 
     if (matroid.size1() <= 2 || matroid.size2() <= 2)
     {
-      if (log.is_updating())
+      if (log.is_progressive())
       {
         log.line() << " TRIVIAL --> REGULAR";
         std::cout << log << std::endl;
@@ -488,7 +488,7 @@ namespace unimod
     permuted_matroid_type permuted_matroid(matroid);
     permuted_marix_type permuted_matrix(matrix);
 
-    if (log.is_updating())
+    if (log.is_progressive())
     {
       log.line() << " W3";
       std::cout << log;
@@ -505,7 +505,7 @@ namespace unimod
     if (sep.is_valid())
     {
       /// Separation case
-      if (log.is_updating())
+      if (log.is_progressive())
       {
         log.line() << " --> " << (sep.rank() + 1) << "-separation";
         std::cout << log << std::endl;
@@ -553,7 +553,7 @@ namespace unimod
 
       if (!construct_decomposition && !upper_left_result.first)
       {
-        if (log.is_updating())
+        if (log.is_progressive())
         {
           log.unindent();
         }
@@ -563,7 +563,7 @@ namespace unimod
       std::pair <bool, decomposed_matroid*> lower_right_result = decompose_binary_matroid(lower_right_matroid, lower_right_matrix,
           lower_right_extra_elements, construct_decomposition, log);
 
-      if (log.is_updating())
+      if (log.is_progressive())
       {
         log.unindent();
       }
