@@ -2,3 +2,5 @@
 *.a
 apps/polytope
 apps/common/src/perl/
+Makefile
+build.*
