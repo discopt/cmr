@@ -83,21 +83,20 @@ namespace unimod
     submatrix_indices nonbasis_matrix_indices =
     { submatrix_indices::indirect_array_type(rank), submatrix_indices::indirect_array_type(transformed.size2() - rank) };
 
-    size_t i = 0;
     size_t c = 0;
     for (size_t j = 0; j < transformed.size2(); ++j)
     {
-      if (basis[i] == j)
-        i++;
-      else
-        nonbasis_matrix_indices.columns[c++] = basis[i];
+      if (std::find(basis.begin(), basis.end(), j) == basis.end())
+      {
+        nonbasis_matrix_indices.columns[c++] = j;
+      }
     }
     for (size_t r = 0; r < rank; ++r)
       nonbasis_matrix_indices.rows[r] = r;
 
     const indirect_matrix_t nonbasis_transformed(transformed, nonbasis_matrix_indices.rows, nonbasis_matrix_indices.columns);
 
-    return is_totally_unimodular(nonbasis_transformed, level);
+    return is_totally_unimodular(nonbasis_transformed, LOG_QUIET);
   }
 
   /**
