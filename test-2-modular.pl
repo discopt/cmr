@@ -35,8 +35,8 @@ else
 {
   print "The matrix is NOT strongly unimodular.\n";
 }
-declare $k = -1;
-if (is_k_modular($matrix, $k))
+declare $k = is_k_modular($matrix);
+if ($k)
 {
   print "The matrix is $k-modular.\n";
 }
@@ -44,9 +44,9 @@ else
 {
   print "The matrix is NOT k-modular.\n";
 }
-if (is_strongly_k_modular($matrix))
+if ($k = is_strongly_k_modular($matrix))
 {
-  print "The matrix is strongly k-modular.\n";
+  print "The matrix is strongly $k-modular.\n";
 }
 else
 {

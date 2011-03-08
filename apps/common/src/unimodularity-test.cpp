@@ -1,6 +1,7 @@
 #include <Integer.h>
 #include <Matrix.h>
 #include <iostream>
+#include <polymake.h>
 
 #include "total_unimodularity.hpp"
 #include "unimodularity.hpp"
@@ -78,26 +79,10 @@ namespace polymake
       return unimod::is_strongly_unimodular(input_matrix, rank);
     }
 
-    bool is_k_modular_plain(const Matrix <Integer>& matrix)
-    {
-      size_t rank;
-      unimod::integer_matrix input_matrix(matrix.rows(), matrix.cols());
-      for (size_t r = 0; r < input_matrix.size1(); ++r)
-      {
-        for (size_t c = 0; c < input_matrix.size2(); ++c)
-        {
-          input_matrix(r, c) = matrix(r, c);
-        }
-      }
-
-      return unimod::is_k_modular(input_matrix, rank);
-    }
-
-    bool is_k_modular_compute(const Matrix <Integer>& matrix, int& ko)
+    perl::ListReturn is_k_modular_compute(const Matrix <Integer>& matrix)
     {
       size_t rank;
       unsigned int k;
-      bool result;
       unimod::integer_matrix input_matrix(matrix.rows(), matrix.cols());
       for (size_t r = 0; r < input_matrix.size1(); ++r)
       {
@@ -107,14 +92,16 @@ namespace polymake
         }
       }
 
-      result = unimod::is_k_modular(input_matrix, rank, k);
-      ko = (int) k;
+      perl::ListReturn result;
+      if (unimod::is_k_modular(input_matrix, rank, k))
+        result << (int) k;
       return result;
     }
 
-    bool is_strongly_k_modular_plain(const Matrix <Integer>& matrix)
+    perl::ListReturn is_strongly_k_modular_compute(const Matrix <Integer>& matrix)
     {
       size_t rank;
+      unsigned int k;
       unimod::integer_matrix input_matrix(matrix.rows(), matrix.cols());
       for (size_t r = 0; r < input_matrix.size1(); ++r)
       {
@@ -124,39 +111,58 @@ namespace polymake
         }
       }
 
-      return unimod::is_strongly_k_modular(input_matrix, rank);
+      if (unimod::is_strongly_k_modular(input_matrix, rank, k))
+      {
+
+      }
+      perl::ListReturn result;
+      if (unimod::is_strongly_k_modular(input_matrix, rank, k))
+        result << (int) k;
+      return result;
     }
 
-  UserFunction4perl("# Tests a given //matrix// for total unimodularity, without certificates."
+  /// total unimodularity
+
+  UserFunction4perl  ("# Tests a given //matrix// for total unimodularity, without certificates."
       "# @param Matrix<int> matrix"
       "# @return Bool",
       &is_totally_unimodular_plain,"is_totally_unimodular(Matrix<Integer>)");
+
+  /// total unimodularity with violator
+
   UserFunction4perl("# Tests a given //matrix// for total unimodularity, setting row/column indices to a violating submatrix if the result is negative."
       "# @param Matrix<int> matrix"
       "# @param Vector<int> row_indices of violating submatrix."
       "# @param Vector<int> column_indices of violating submatrix."
       "# @return Bool",
       &is_totally_unimodular_violator,"is_totally_unimodular(Matrix<Integer>,Vector<Integer>,Vector<Integer>)");
+
+  /// unimodularity
+
   UserFunction4perl("# Tests a given //matrix// for unimodularity, without certificates."
       "# @param Matrix<int> matrix"
       "# @return Bool",
       &is_unimodular_plain,"is_unimodular(Matrix<Integer>)");
+
+  /// strong unimodularity
+
   UserFunction4perl("# Tests a given //matrix// for strong unimodularity, without certificates."
       "# @param Matrix<int> matrix"
       "# @return Bool",
       &is_strongly_unimodular_plain,"is_strongly_unimodular(Matrix<Integer>)");
-  UserFunction4perl("# Tests a given //matrix// for k-modularity, without certificates."
+
+  /// k-modularity
+
+  UserFunction4perl("# Tests a given //matrix// for k-modularity, without certificates. It also computes k."
       "# @param Matrix<int> matrix"
-      "# @return Bool",
-      &is_k_modular_plain,"is_k_modular(Matrix<Integer>)");
-  UserFunction4perl("# Tests a given //matrix// for k-modularity, without certificates."
-      "# @param Matrix<int> matrix"
-      "# @param int& k"
-      "# @return Bool",
-      &is_k_modular_compute,"is_k_modular(Matrix<Integer>, $)");
+      "# @return ListReturn k or undefined",
+      &is_k_modular_compute,"is_k_modular(Matrix<Integer>)");
+
+  /// strong k-modularity
+
   UserFunction4perl("# Tests a given //matrix// for strong k-modularity, without certificates."
       "# @param Matrix<int> matrix"
-      "# @return Bool",
-      &is_strongly_k_modular_plain,"is_strongly_k_modular(Matrix<Integer>)");
+      "# @return ListReturn k or undefined",
+      &is_strongly_k_modular_compute,"is_strongly_k_modular(Matrix<Integer>)");
 }}
 
