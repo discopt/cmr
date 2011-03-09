@@ -1,11 +1,8 @@
-To compile this library, just type
+To use this Polymake extension, just open Polymake and call
 
-./autogen.sh
-./configure
-make
+import_extension("/this/directory/");
 
-If you like to install the headers and the library, type
+The methods are then available. To run the examples, try
 
-make install
+polymake --script examples/<any>
 
-If you only want to use the executable, you can copy it from src/unimodularity-test.
