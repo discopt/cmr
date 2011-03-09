@@ -3,3 +3,7 @@ June 2010:
  * First release. Functionality includes tests via matroid-decomposition.
 	 There are certifying versions, yielding a matroid decomposition and/or a
 	 violating submatrix.
+
+March 2011:
+ * Second release, version 0.9. Functionality includes testing for
+   (strong) unimodularity and (strong) k-modularity also.
