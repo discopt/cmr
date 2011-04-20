@@ -169,7 +169,7 @@ namespace unimod
     }
     else if (log.is_verbose())
     {
-      std::cout << "Matroid is " << (graph == NULL ? "not " : "") << "cographic." << std::endl;
+      std::cout << "Matroid is " << (cograph == NULL ? "not " : "") << "cographic." << std::endl;
     }
 
     if (!construct_decomposition && cograph)

@@ -126,6 +126,7 @@ int main(int argc, char** argv)
     std::cerr << " -h Shows a help message.\n";
     std::cerr << " -v Prints information to stderr while generating the matrix (default).\n";
     std::cerr << " -q Prints nothing except the matrix.\n";
+    std::cerr << " -s Sign the matrix after generation.\n";
     std::cerr << "Omitting the WIDTH parameter sets the width equal to the height.\n";
     std::cerr << std::flush;
     return EXIT_SUCCESS;
