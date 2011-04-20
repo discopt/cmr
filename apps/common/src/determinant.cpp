@@ -80,57 +80,54 @@ namespace unimod
   {
     typedef unsigned long long int bitset_type;
 
-    if ((matrix.size1() >= std::numeric_limits <bitset_type>::digits - 1) || (matrix.size2() >= std::numeric_limits <bitset_type>::digits - 1))
+    if (matrix.size1() > 8 * sizeof(bitset_type) || matrix.size2() > 8 * sizeof(bitset_type))
+    {
       throw std::runtime_error("Cannot test such a large matrix for total unimodularity via determinants!");
+    }
 
     bitset_type row_max = ((bitset_type) 1) << (bitset_type) matrix.size1();
     bitset_type column_max = ((bitset_type) 1) << (bitset_type) matrix.size2();
 
-    /// Collect all choices for column range with the cardinality as key
-    std::map <size_t, std::vector <bitset_type> > column_bitsets;
-    for (bitset_type choice = 1; choice < column_max; ++choice)
-    {
-      size_t cardinality = 0;
-      for (size_t i = 0; i < matrix.size2(); ++i)
-      {
-        if ((choice & (1 << i)) != 0)
-          cardinality++;
-      }
-      column_bitsets[cardinality].push_back(choice);
-    }
-
     /// Enumerate rows
     for (bitset_type row_choice = 1; row_choice < row_max; ++row_choice)
     {
-      size_t cardinality = 0;
-      for (size_t i = 0; i < matrix.size2(); ++i)
+      size_t row_cardinality = 0;
+      for (size_t i = 0; i < matrix.size1(); ++i)
       {
         if ((row_choice & (((bitset_type) 1) << i)) != 0)
-          cardinality++;
+          row_cardinality++;
       }
-      const std::vector <bitset_type>& column_choices = column_bitsets[cardinality];
 
-      /// Enumerate columns with appropriate size
-      for (std::vector <bitset_type>::const_iterator iter = column_choices.begin(); iter != column_choices.end(); ++iter)
+      for (bitset_type column_choice = 1; column_choice < column_max; ++column_choice)
       {
-        const bitset_type column_choice = *iter;
+        size_t column_cardinality = 0;
+        for (size_t i = 0; i < matrix.size2(); ++i)
+        {
+          if ((column_choice & (((bitset_type) 1) << i)) != 0)
+            column_cardinality++;
+        }
+
+        if (column_cardinality != row_cardinality)
+          continue;
 
         submatrix_indices sub;
-        submatrix_indices::vector_type indirect_array(cardinality);
+        submatrix_indices::vector_type indirect_array(row_cardinality);
         size_t current = 0;
         for (size_t i = 0; i < matrix.size1(); ++i)
         {
           if ((row_choice & (((bitset_type) 1) << i)) != 0)
             indirect_array[current++] = i;
         }
-        sub.rows = submatrix_indices::indirect_array_type(cardinality, indirect_array);
+        sub.rows = submatrix_indices::indirect_array_type(row_cardinality, indirect_array);
+
         current = 0;
         for (size_t i = 0; i < matrix.size2(); ++i)
         {
           if ((column_choice & (((bitset_type) 1) << i)) != 0)
             indirect_array[current++] = i;
         }
-        sub.columns = submatrix_indices::indirect_array_type(cardinality, indirect_array);
+
+        sub.columns = submatrix_indices::indirect_array_type(column_cardinality, indirect_array);
 
         /// Examine the determinant
         int det = submatrix_determinant(matrix, sub);

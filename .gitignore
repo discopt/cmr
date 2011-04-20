@@ -2,6 +2,7 @@
 *.a
 .project
 .cproject
+.settings
 apps/polytope
 apps/common/src/perl/
 build.*
