@@ -13,6 +13,7 @@
 #include <boost/dynamic_bitset.hpp>
 
 #include "total_unimodularity.hpp"
+#include "combinations.hpp"
 
 namespace unimod
 {
@@ -78,67 +79,42 @@ namespace unimod
 
   bool determinant_is_totally_unimodular(const integer_matrix& matrix, submatrix_indices& violator)
   {
-    typedef unsigned long long int bitset_type;
-
-    if (matrix.size1() > 8 * sizeof(bitset_type) || matrix.size2() > 8 * sizeof(bitset_type))
+    for (size_t size = 1; size <= matrix.size1(); ++size)
     {
-      throw std::runtime_error("Cannot test such a large matrix for total unimodularity via determinants!");
-    }
-
-    bitset_type row_max = ((bitset_type) 1) << (bitset_type) matrix.size1();
-    bitset_type column_max = ((bitset_type) 1) << (bitset_type) matrix.size2();
-
-    /// Enumerate rows
-    for (bitset_type row_choice = 1; row_choice < row_max; ++row_choice)
-    {
-      size_t row_cardinality = 0;
-      for (size_t i = 0; i < matrix.size1(); ++i)
+      combination row_combination(matrix.size1(), size);
+      while (true)
       {
-        if ((row_choice & (((bitset_type) 1) << i)) != 0)
-          row_cardinality++;
-      }
-
-      for (bitset_type column_choice = 1; column_choice < column_max; ++column_choice)
-      {
-        size_t column_cardinality = 0;
-        for (size_t i = 0; i < matrix.size2(); ++i)
+        combination column_combination(matrix.size2(), size);
+        while (true)
         {
-          if ((column_choice & (((bitset_type) 1) << i)) != 0)
-            column_cardinality++;
+          submatrix_indices sub;
+          submatrix_indices::vector_type indirect_array(size);
+          for (size_t i = 0; i < size; ++i)
+            indirect_array[i] = row_combination[i];
+          sub.rows = submatrix_indices::indirect_array_type(size, indirect_array);
+          for (size_t i = 0; i < size; ++i)
+          {
+            indirect_array[i] = column_combination[i];
+          }
+          sub.columns = submatrix_indices::indirect_array_type(size, indirect_array);
+
+          /// Examine the determinant
+          int det = submatrix_determinant(matrix, sub);
+          if (det < -1 || det > 1)
+          {
+            violator = sub;
+            return false;
+          }
+
+          if (column_combination.is_last())
+            break;
+          column_combination.next();
         }
-
-        if (column_cardinality != row_cardinality)
-          continue;
-
-        submatrix_indices sub;
-        submatrix_indices::vector_type indirect_array(row_cardinality);
-        size_t current = 0;
-        for (size_t i = 0; i < matrix.size1(); ++i)
-        {
-          if ((row_choice & (((bitset_type) 1) << i)) != 0)
-            indirect_array[current++] = i;
-        }
-        sub.rows = submatrix_indices::indirect_array_type(row_cardinality, indirect_array);
-
-        current = 0;
-        for (size_t i = 0; i < matrix.size2(); ++i)
-        {
-          if ((column_choice & (((bitset_type) 1) << i)) != 0)
-            indirect_array[current++] = i;
-        }
-
-        sub.columns = submatrix_indices::indirect_array_type(column_cardinality, indirect_array);
-
-        /// Examine the determinant
-        int det = submatrix_determinant(matrix, sub);
-        if (det < -1 || det > 1)
-        {
-          violator = sub;
-          return false;
-        }
+        if (row_combination.is_last())
+          break;
+        row_combination.next();
       }
     }
-
     return true;
   }
 
