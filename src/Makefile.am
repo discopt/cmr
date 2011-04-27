@@ -36,6 +36,7 @@ noinst_HEADERS = \
   gen_random.hpp \
   gen_network.hpp \
   gen_cycle_violator.hpp \
+  combinations.hpp \
   smith_normal_form.hpp \
   linear_algebra.hpp \
   violator_search.hpp \
