@@ -8,7 +8,7 @@ AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_SRCDIR([src/])
 AC_CONFIG_HEADER([config.h])
 
-#AC_DEFINE([NDEBUG],[],[No-debug Mode])
+AC_DEFINE([NDEBUG],[],[No-debug Mode])
 
 # Checks for programs.
 AC_PROG_CXX
