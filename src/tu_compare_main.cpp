@@ -204,13 +204,15 @@ int run_submatrix(const std::string& file_name)
 
   file.close();
 
-  if (unimod::determinant_is_totally_unimodular(matrix))
+  unimod::submatrix_indices violator_indices;
+  if (unimod::determinant_is_totally_unimodular(matrix, violator_indices))
   {
     std::cout << "The " << matrix.size1() << " x " << matrix.size2() << " matrix is totally unimodular." << std::endl;
   }
   else
   {
-    std::cout << "The " << matrix.size1() << " x " << matrix.size2() << " matrix is not totally unimodular." << std::endl;
+    std::cout << "The " << matrix.size1() << " x " << matrix.size2() << " matrix is not totally unimodular with violator of size "
+        << violator_indices.rows.size() << "." << std::endl;
   }
 
   return EXIT_SUCCESS;
