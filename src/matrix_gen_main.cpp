@@ -44,6 +44,7 @@ int main(int argc, char** argv)
   bool help = false;
   bool sign = false;
   char type = 0;
+  double probability = -1.0;
   size_t width = 0;
   size_t height = std::numeric_limits <size_t>::max();
 
@@ -84,6 +85,17 @@ int main(int argc, char** argv)
       else
         type = ' ';
     }
+    else if (non_option == 1 && type == 'r' && probability < 0.0)
+    {
+      std::stringstream ss(current);
+      ss >> probability;
+      if (ss.fail() || ss.good() || probability < 0.0 || probability > 1.0)
+      {
+        std::cerr << "Unable to parse probability \"" << current << "\"! See " << argv[0] << " -h for usage." << std::endl;
+        return EXIT_FAILURE;
+      }
+      non_option--;
+    }
     else if (non_option == 1)
     {
       std::stringstream ss(current);
@@ -116,17 +128,17 @@ int main(int argc, char** argv)
 
   if (help)
   {
-    std::cerr << "Usage: " << argv[0] << " [OPTIONS] [--] TYPE HEIGHT [WIDTH]\n";
+    std::cerr << "Usage: " << argv[0] << " [OPTIONS] [--] TYPE (PARAM) HEIGHT [WIDTH]\n";
     std::cerr << "Types:\n";
-    std::cerr << "  r Generates a matrix with a random entry at each position.\n";
-    std::cerr << "  n Generates a network matrix.\n";
-    std::cerr << "  c Generates a cycle-based violator matrix (only square with odd size).\n";
+    std::cerr << "  r p Generates a matrix with a nonzero entry with probability p at each position.\n";
+    std::cerr << "  n   Generates a network matrix.\n";
+    std::cerr << "  c   Generates a cycle-based violator matrix (only square with odd size).\n";
     std::cerr << "Options:\n";
-    std::cerr << " -r Randomize matrices to hide structure.\n";
-    std::cerr << " -h Shows a help message.\n";
-    std::cerr << " -v Prints information to stderr while generating the matrix (default).\n";
-    std::cerr << " -q Prints nothing except the matrix.\n";
-    std::cerr << " -s Sign the matrix after generation.\n";
+    std::cerr << " -r   Randomize matrices to hide structure.\n";
+    std::cerr << " -h   Shows a help message.\n";
+    std::cerr << " -v   Prints information to stderr while generating the matrix (default).\n";
+    std::cerr << " -q   Prints nothing except the matrix.\n";
+    std::cerr << " -s   Sign the matrix after generation.\n";
     std::cerr << "Omitting the WIDTH parameter sets the width equal to the height.\n";
     std::cerr << std::flush;
     return EXIT_SUCCESS;
@@ -141,7 +153,7 @@ int main(int argc, char** argv)
   matrix_generator* generator = NULL;
   if (type == 'r')
   {
-    generator = new random_matrix_generator(height, width, level);
+    generator = new random_matrix_generator(height, width, probability, level);
   }
   else if (type == 'n')
   {
