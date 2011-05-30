@@ -55,6 +55,50 @@ namespace unimod
   }
 
   /**
+   * Checks Camion's criterion for total unimodularity.
+   *
+   * @param matrix A given integer matrix
+   * @param submatrix Matrix-indices describing a submatrix B of A
+   * @return true iff B is not Eulerian or 1^T * B * 1 = 0 (mod 4)
+   */
+
+  bool submatrix_camion(const integer_matrix& matrix, const submatrix_indices& submatrix)
+  {
+    typedef boost::numeric::ublas::matrix_indirect <const integer_matrix, submatrix_indices::indirect_array_type> indirect_matrix_t;
+
+    assert (submatrix.rows.size() == submatrix.columns.size());
+
+    const indirect_matrix_t indirect_matrix(matrix, submatrix.rows, submatrix.columns);
+
+    // Test whether submatrix is eulerian.
+    for (size_t row = 0; row < indirect_matrix.size1(); ++row)
+    {
+      size_t count = 0;
+      for (size_t column = 0; column < indirect_matrix.size2(); ++column)
+        count += indirect_matrix(row, column);
+      if (count % 2 == 1)
+        return true;
+    }
+    for (size_t column = 0; column < indirect_matrix.size2(); ++column)
+    {
+      size_t count = 0;
+      for (size_t row = 0; row < indirect_matrix.size1(); ++row)
+        count += indirect_matrix(row, column);
+      if (count % 2 == 1)
+        return true;
+    }
+
+    // Matrix is eulerian.
+    size_t count = 0;
+    for (size_t row = 0; row < indirect_matrix.size1(); ++row)
+    {
+      for (size_t column = 0; column < indirect_matrix.size2(); ++column)
+        count += indirect_matrix(row, column);
+    }
+    return (count % 4 == 0);
+  }
+
+  /**
    * Checks all subdeterminants to test a given matrix for total unimodularity.
    *
    * @param matrix The given matrix
@@ -99,8 +143,15 @@ namespace unimod
           sub.columns = submatrix_indices::indirect_array_type(size, indirect_array);
 
           /// Examine the determinant
+          bool camion = submatrix_camion(matrix, sub);
+
+#ifndef NDEBUG
           int det = submatrix_determinant(matrix, sub);
-          if (det < -1 || det > 1)
+          bool is_violator = det < -1 || det > +1;
+          assert((is_violator && !camion) || (!is_violator && camion));
+#pragma message("\n\n\nWARNING: Submatrix Test uses subdeterminants for verification and is much slower!\n\n ")
+#endif
+          if (!camion)
           {
             violator = sub;
             return false;
