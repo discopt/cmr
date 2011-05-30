@@ -1,7 +1,7 @@
 #!/bin/bash
 
 VERSION=1.0
-NAME=unimodularity-library-polymake-${VERSION}
+NAME=unimodularity-library-Polymake-${VERSION}
 
 rm -rf ${NAME}
 mkdir ${NAME}
