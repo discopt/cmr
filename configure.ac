@@ -2,7 +2,7 @@ AC_PREREQ(2.59)
 
 AC_INIT([Unimodularity Library NoBoost], [1.0], [https://github.com/xammy/unimodularity-test/wiki])
 
-AM_INIT_AUTOMAKE
+AM_INIT_AUTOMAKE([1.9 tar-pax])
 
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_SRCDIR([src/])
