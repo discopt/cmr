@@ -37,8 +37,8 @@ namespace unimod
    */
 
   template <typename MatroidType, typename MatrixType>
-  int find_parallel_to_row(const MatroidType& matroid, const MatrixType& matrix, const size_t minor_height, const size_t minor_width,
-      const size_t row)
+  int find_parallel_to_row(const MatroidType& matroid, const MatrixType& matrix, const size_t minor_height,
+      const size_t minor_width, const size_t row)
   {
     /// Look for unit vector
     size_t last = 0;
@@ -82,9 +82,9 @@ namespace unimod
   template <typename Graph>
   struct articulation_edge_filter
   {
-    typedef typename boost::graph_traits <Graph>::vertex_descriptor vertex_descriptor;
-    typedef typename boost::graph_traits <Graph>::edge_descriptor edge_descriptor;
-    typedef std::set <edge_descriptor> edge_set;
+    typedef typename boost::graph_traits<Graph>::vertex_descriptor vertex_descriptor;
+    typedef typename boost::graph_traits<Graph>::edge_descriptor edge_descriptor;
+    typedef std::set<edge_descriptor> edge_set;
 
     /**
      * Constructs the filter.
@@ -103,7 +103,8 @@ namespace unimod
      * @param evil_edges The set of excluded edges
      */
 
-    articulation_edge_filter(const Graph* graph, const vertex_descriptor* articulation_vertex, const edge_set* evil_edges) :
+    articulation_edge_filter(const Graph* graph, const vertex_descriptor* articulation_vertex,
+        const edge_set* evil_edges) :
       graph_(graph), articulation_vertex_(articulation_vertex), evil_edges_(evil_edges)
     {
     }
@@ -146,10 +147,10 @@ namespace unimod
    */
 
   template <typename Graph, typename Vertex, typename EdgeSet>
-  inline struct articulation_edge_filter <Graph> make_articulation_edge_filter(const Graph* graph, const Vertex* articulation_vertex,
-      const EdgeSet* evil_edges)
+  inline struct articulation_edge_filter<Graph> make_articulation_edge_filter(const Graph* graph,
+      const Vertex* articulation_vertex, const EdgeSet* evil_edges)
   {
-    return articulation_edge_filter <Graph> (graph, articulation_vertex, evil_edges);
+    return articulation_edge_filter<Graph> (graph, articulation_vertex, evil_edges);
   }
 
   /**
@@ -166,13 +167,13 @@ namespace unimod
    */
 
   template <typename MatroidType, typename MatrixType>
-  bool extend_graph(matroid_graph& graph, const MatroidType& matroid, const MatrixType& matrix, const size_t minor_height, const size_t minor_width,
-      const nested_minor_sequence::extension_type extension_type)
+  bool extend_graph(matroid_graph& graph, const MatroidType& matroid, const MatrixType& matrix,
+      const size_t minor_height, const size_t minor_width, const nested_minor_sequence::extension_type extension_type)
   {
-    typedef boost::graph_traits <matroid_graph> traits;
+    typedef boost::graph_traits<matroid_graph> traits;
 
     matroid_element_map element_map = boost::get(edge_matroid_element, graph);
-    std::map <int, traits::edge_descriptor> reverse_element_map;
+    std::map<int, traits::edge_descriptor> reverse_element_map;
 
     typename traits::edge_iterator edge_iter, edge_end;
     for (boost::tie(edge_iter, edge_end) = boost::edges(graph); edge_iter != edge_end; ++edge_iter)
@@ -230,10 +231,10 @@ namespace unimod
     break;
     case nested_minor_sequence::ONE_ROW_TWO_COLUMNS:
     {
-      int first_edge_element = find_parallel_to_row(make_transposed_matroid(matroid), make_transposed_matrix(matrix), minor_width, minor_height,
-          minor_width);
-      int second_edge_element = find_parallel_to_row(make_transposed_matroid(matroid), make_transposed_matrix(matrix), minor_width, minor_height,
-          minor_width + 1);
+      int first_edge_element = find_parallel_to_row(make_transposed_matroid(matroid), make_transposed_matrix(matrix),
+          minor_width, minor_height, minor_width);
+      int second_edge_element = find_parallel_to_row(make_transposed_matroid(matroid), make_transposed_matrix(matrix),
+          minor_width, minor_height, minor_width + 1);
 
       /// Find vertices of corresponding edges
 
@@ -270,8 +271,8 @@ namespace unimod
     case nested_minor_sequence::ONE_ROW_ONE_COLUMN:
     {
       int row_edge_element = find_parallel_to_row(matroid, matrix, minor_height, minor_width, minor_height);
-      int column_edge_element = find_parallel_to_row(make_transposed_matroid(matroid), make_transposed_matrix(matrix), minor_width, minor_height,
-          minor_width);
+      int column_edge_element = find_parallel_to_row(make_transposed_matroid(matroid), make_transposed_matrix(matrix),
+          minor_width, minor_height, minor_width);
 
       /// Find vertices of corresponding edges
 
@@ -311,8 +312,8 @@ namespace unimod
     break;
     case nested_minor_sequence::ONE_COLUMN:
     {
-      typedef std::set <traits::edge_descriptor> edge_set_t;
-      typedef boost::filtered_graph <matroid_graph, boost::is_in_subset <edge_set_t> > edge_subset_graph_t;
+      typedef std::set<traits::edge_descriptor> edge_set_t;
+      typedef boost::filtered_graph<matroid_graph, boost::is_in_subset<edge_set_t> > edge_subset_graph_t;
 
       edge_set_t edge_set;
 
@@ -323,9 +324,9 @@ namespace unimod
       }
 
       /// Check if edges form a path
-      std::vector <traits::vertex_descriptor> path;
+      std::vector<traits::vertex_descriptor> path;
 
-      edge_subset_graph_t edge_subset_graph(graph, boost::is_in_subset <edge_set_t>(edge_set));
+      edge_subset_graph_t edge_subset_graph(graph, boost::is_in_subset<edge_set_t>(edge_set));
       if (!unimod::util::is_path(edge_subset_graph, boost::get(boost::vertex_index, edge_subset_graph), path))
       {
         return false;
@@ -339,12 +340,12 @@ namespace unimod
     {
       typedef traits::edge_descriptor edge_t;
       typedef traits::vertex_descriptor vertex_t;
-      typedef std::set <vertex_t> vertex_set;
-      typedef std::set <edge_t> edge_set;
-      typedef std::vector <vertex_t> vertex_vector_t;
-      typedef std::vector <edge_t> edge_vector_t;
+      typedef std::set<vertex_t> vertex_set;
+      typedef std::set<edge_t> edge_set;
+      typedef std::vector<vertex_t> vertex_vector_t;
+      typedef std::vector<edge_t> edge_vector_t;
 
-      typedef boost::vec_adj_list_vertex_id_map <boost::no_property, unsigned int> IndexMap;
+      typedef boost::vec_adj_list_vertex_id_map<boost::no_property, unsigned int> IndexMap;
       IndexMap index_map = boost::get(boost::vertex_index, graph);
 
       /// Collect all 1-edges
@@ -357,7 +358,8 @@ namespace unimod
       }
 
       traits::vertex_descriptor the_vertex = traits::null_vertex();
-      if (unimod::util::find_star_vertex(boost::make_filtered_graph(graph, boost::is_in_subset <edge_set>(one_edges)), the_vertex))
+      if (unimod::util::find_star_vertex(boost::make_filtered_graph(graph, boost::is_in_subset<edge_set>(one_edges)),
+          the_vertex))
       {
         /// Create the new vertex and connect it with the_vertex.
 
@@ -382,7 +384,7 @@ namespace unimod
 
       /// Count for each vertex the number of paths that use it
 
-      std::vector <size_t> common_vertex_count(boost::num_vertices(graph), 0);
+      std::vector<size_t> common_vertex_count(boost::num_vertices(graph), 0);
       for (size_t c = 0; c < minor_width; ++c)
       {
         if (matrix(minor_height, c) == 0)
@@ -396,7 +398,7 @@ namespace unimod
         }
 
         vertex_set vertices;
-        unimod::util::used_vertices(boost::make_filtered_graph(graph, boost::is_in_subset <edge_set>(edges)), vertices);
+        unimod::util::used_vertices(boost::make_filtered_graph(graph, boost::is_in_subset<edge_set>(edges)), vertices);
 
         for (typename vertex_set::const_iterator iter = vertices.begin(); iter != vertices.end(); ++iter)
         {
@@ -407,8 +409,8 @@ namespace unimod
       /// Find articulation points for the graph without 1-edges
 
       vertex_vector_t articulation_points;
-      boost::articulation_points(boost::make_filtered_graph(graph, boost::is_not_in_subset <edge_set>(one_edges)), std::back_inserter(
-          articulation_points));
+      boost::articulation_points(boost::make_filtered_graph(graph, boost::is_not_in_subset<edge_set>(one_edges)),
+          std::back_inserter(articulation_points));
 
       the_vertex = traits::null_vertex();
       for (vertex_vector_t::const_iterator iter = articulation_points.begin(); iter != articulation_points.end(); ++iter)
@@ -429,21 +431,21 @@ namespace unimod
 
       vertex_set articulation_set;
       articulation_set.insert(the_vertex);
-      std::vector <size_t> component_vector(boost::num_vertices(graph));
+      std::vector<size_t> component_vector(boost::num_vertices(graph));
 
-      size_t num_components = boost::connected_components(boost::make_filtered_graph(graph, make_articulation_edge_filter(&graph, &the_vertex,
-          &one_edges), boost::is_not_in_subset <vertex_set>(articulation_set)),
-          boost::make_iterator_property_map(component_vector.begin(), index_map));
+      size_t num_components = boost::connected_components(boost::make_filtered_graph(graph,
+          make_articulation_edge_filter(&graph, &the_vertex, &one_edges), boost::is_not_in_subset<vertex_set>(
+              articulation_set)), boost::make_iterator_property_map(component_vector.begin(), index_map));
 
       /// We should really have articulation point + 2 further components
       assert (num_components >= 2);
 
-      typedef boost::adjacency_list <boost::vecS, boost::vecS, boost::undirectedS> component_graph_t;
+      typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS> component_graph_t;
       component_graph_t component_graph(num_components);
 
       for (typename edge_set::const_iterator iter = one_edges.begin(); iter != one_edges.end(); ++iter)
       {
-        typename boost::graph_traits <component_graph_t>::vertex_descriptor source, target;
+        typename boost::graph_traits<component_graph_t>::vertex_descriptor source, target;
         source = boost::source(*iter, graph);
         target = boost::target(*iter, graph);
         if (source == the_vertex || target == the_vertex)
@@ -458,11 +460,12 @@ namespace unimod
           return false;
         }
 
-        boost::add_edge(boost::vertex(source_component, component_graph), boost::vertex(target_component, component_graph), component_graph);
+        boost::add_edge(boost::vertex(source_component, component_graph), boost::vertex(target_component,
+            component_graph), component_graph);
       }
 
-      boost::one_bit_color_map <boost::vec_adj_list_vertex_id_map <boost::no_property, unsigned int> > bipartition(num_components, boost::get(
-          boost::vertex_index, component_graph));
+      boost::one_bit_color_map<boost::vec_adj_list_vertex_id_map<boost::no_property, unsigned int> > bipartition(
+          num_components, boost::get(boost::vertex_index, component_graph));
 
       if (!boost::is_bipartite(component_graph, boost::get(boost::vertex_index, component_graph), bipartition))
       {
@@ -479,12 +482,13 @@ namespace unimod
 
       edge_vector_t reconnect_edges;
       typename traits::out_edge_iterator out_edge_iter, out_edge_end;
-      for (boost::tie(out_edge_iter, out_edge_end) = boost::incident_edges(the_vertex, graph); out_edge_iter != out_edge_end; ++out_edge_iter)
+      for (boost::tie(out_edge_iter, out_edge_end) = boost::incident_edges(the_vertex, graph); out_edge_iter
+          != out_edge_end; ++out_edge_iter)
       {
         vertex_t incident_vertex = boost::target(*out_edge_iter, graph);
 
-        bool reconnect = boost::get(bipartition, boost::vertex(component_vector[boost::get(index_map, incident_vertex)], component_graph))
-            != boost::one_bit_white;
+        bool reconnect = boost::get(bipartition, boost::vertex(
+            component_vector[boost::get(index_map, incident_vertex)], component_graph)) != boost::one_bit_white;
 
         if (one_edges.find(*out_edge_iter) != one_edges.end())
           reconnect = !reconnect;
@@ -520,13 +524,15 @@ namespace unimod
    */
 
   template <typename MatroidType, typename MatrixType, typename NestedMinorSequenceType>
-  matroid_graph* construct_matroid_graph(const MatroidType& matroid, const MatrixType& matrix, const NestedMinorSequenceType& nested_minors)
+  matroid_graph* construct_matroid_graph(const MatroidType& matroid, const MatrixType& matrix,
+      const NestedMinorSequenceType& nested_minors, size_t& largest_graphic_minor)
   {
-    typedef boost::graph_traits <matroid_graph>::vertex_descriptor vertex_descriptor;
-    typedef boost::graph_traits <matroid_graph>::edge_descriptor edge_descriptor;
+    typedef boost::graph_traits<matroid_graph>::vertex_descriptor vertex_descriptor;
+    typedef boost::graph_traits<matroid_graph>::edge_descriptor edge_descriptor;
 
     /// Initialize W3
 
+    largest_graphic_minor = 0;
     matroid_graph* graph = new matroid_graph(4);
 
     vertex_descriptor center_vertex = boost::vertex(0, *graph);
@@ -554,6 +560,7 @@ namespace unimod
 
       minor_height += nested_minors.get_extension_height(i);
       minor_width += nested_minors.get_extension_width(i);
+      largest_graphic_minor++;
     }
 
     return graph;
