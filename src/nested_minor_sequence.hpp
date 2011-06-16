@@ -9,6 +9,7 @@
 #define NESTED_MINOR_SEQUENCE_HPP_
 
 #include <vector>
+#include <cassert>
 
 namespace unimod
 {
@@ -138,9 +139,15 @@ namespace unimod
       return extensions_.size();
     }
 
+    void resize(size_t new_size)
+    {
+      assert(new_size <= extensions_.size() && new_size > 0);
+      extensions_.resize(new_size);
+    }
+
   private:
 
-    std::vector <extension_type> extensions_;
+    std::vector<extension_type> extensions_;
     size_t height_;
     size_t width_;
   };
@@ -171,7 +178,7 @@ namespace unimod
      * @param other Another transpose-proxy of a nested minor sequence.
      */
 
-    nested_minor_sequence_transposed(const nested_minor_sequence_transposed <NestedMinorSequenceType>& other) :
+    nested_minor_sequence_transposed(const nested_minor_sequence_transposed<NestedMinorSequenceType>& other) :
       sequence_(other.sequence_)
     {
 
@@ -272,9 +279,10 @@ namespace unimod
    */
 
   template <typename NestedMinorSequenceType>
-  inline nested_minor_sequence_transposed <NestedMinorSequenceType> make_transposed_nested_minor_sequence(NestedMinorSequenceType& sequence)
+  inline nested_minor_sequence_transposed<NestedMinorSequenceType> make_transposed_nested_minor_sequence(
+      NestedMinorSequenceType& sequence)
   {
-    return nested_minor_sequence_transposed <NestedMinorSequenceType> (sequence);
+    return nested_minor_sequence_transposed<NestedMinorSequenceType> (sequence);
   }
 
 }

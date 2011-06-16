@@ -9,3 +9,22 @@ After finding that row 0 leads to t.u.,
 do not try to remove row 0 in next iteration (i.e. after removing something else)
 
 Try to achieve square matrices to be able to calculate determinant for short cut.
+
+=== Parallel implementation ===
+
+Where to parallelize:
+* Decomposed parts
+* Signing procedure in parallel to matroid decomposition
+* Enumeration of (3|4)-separations.
+
+=== Extension of sequence of nested minors ===
+
+At the moment, the sequence is constructed for the whole matrix
+and tested for (co)graphicness afterwards. This is not necessary,
+since we only need the sequence until a minor is not cographic
+and not graphic anymore.
+
+Furthermore we can apply heuristics for the extension:
+Always choose an extension which is non-graphic.
+For single-row-extensions this is relatively hard but
+all others should be easy.
