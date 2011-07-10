@@ -347,7 +347,8 @@ namespace unimod
             column_amount = 1;
           }
 
-          std::cout << "\nGreedy loop starting, forbidden sets will have size " << row_amount << " and " << column_amount << std::endl;
+          if (_log.is_progressive() || _log.is_verbose())
+            std::cout << "\nGreedy loop starting, forbidden sets will have size " << row_amount << " and " << column_amount << std::endl;
 
           typedef std::vector <matroid_element_set::value_type> matroid_element_vector;
           matroid_element_vector shuffled_rows, shuffled_columns;
