@@ -165,6 +165,11 @@ namespace unimod
         decomposed_matroid* decomposition;
         integer_matrix matrix(sub_matrix);
 
+        if (_log.is_progressive() || _log.is_verbose())
+        {
+          std::cout << "Testing a " << row_elements.size() << " x " << column_elements.size() << " submatrix." << std::endl;
+        }
+
         if (!is_signed_matrix(matrix))
         {
           if (_log.is_progressive() || _log.is_verbose())

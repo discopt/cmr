@@ -412,100 +412,114 @@ namespace unimod
       boost::articulation_points(boost::make_filtered_graph(graph, boost::is_not_in_subset<edge_set>(one_edges)),
           std::back_inserter(articulation_points));
 
+      std::vector<traits::vertex_descriptor> the_vertex_candidates;
       the_vertex = traits::null_vertex();
-      for (vertex_vector_t::const_iterator iter = articulation_points.begin(); iter != articulation_points.end(); ++iter)
+      for (vertex_vector_t::const_iterator iter = articulation_points.begin(); iter != articulation_points.end();
+          ++iter)
       {
         if (common_vertex_count[boost::get(index_map, *iter)] == one_edges.size())
         {
-          if (the_vertex == traits::null_vertex())
-            the_vertex = *iter;
-          else
-            return false;
+          the_vertex_candidates.push_back(*iter);
         }
       }
 
-      if (the_vertex == traits::null_vertex())
+      if (the_vertex_candidates.empty() || the_vertex_candidates.size() > 2)
         return false;
 
-      /// Filter the unique articulation point and the one-edges and check the remaining graph
-
-      vertex_set articulation_set;
-      articulation_set.insert(the_vertex);
-      std::vector<size_t> component_vector(boost::num_vertices(graph));
-
-      size_t num_components = boost::connected_components(boost::make_filtered_graph(graph,
-          make_articulation_edge_filter(&graph, &the_vertex, &one_edges), boost::is_not_in_subset<vertex_set>(
-              articulation_set)), boost::make_iterator_property_map(component_vector.begin(), index_map));
-
-      /// We should really have articulation point + 2 further components
-      assert (num_components >= 2);
-
-      typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS> component_graph_t;
-      component_graph_t component_graph(num_components);
-
-      for (typename edge_set::const_iterator iter = one_edges.begin(); iter != one_edges.end(); ++iter)
+      for (vertex_vector_t::const_iterator iter = the_vertex_candidates.begin(); iter != the_vertex_candidates.end();
+          ++iter)
       {
-        typename boost::graph_traits<component_graph_t>::vertex_descriptor source, target;
-        source = boost::source(*iter, graph);
-        target = boost::target(*iter, graph);
-        if (source == the_vertex || target == the_vertex)
-          continue;
+        the_vertex = *iter;
 
-        size_t source_component = component_vector[boost::get(index_map, source)];
-        size_t target_component = component_vector[boost::get(index_map, target)];
+        /// Filter the chosen articulation point and the one-edges and check the remaining graph
 
-        if (source_component == target_component)
+        vertex_set articulation_set;
+        articulation_set.insert(the_vertex);
+        std::vector<size_t> component_vector(boost::num_vertices(graph));
+
+        size_t num_components = boost::connected_components(
+            boost::make_filtered_graph(graph, make_articulation_edge_filter(&graph, &the_vertex, &one_edges),
+                boost::is_not_in_subset<vertex_set>(articulation_set)),
+            boost::make_iterator_property_map(component_vector.begin(), index_map));
+
+        /// We should really have articulation point + 2 further components
+        assert(num_components >= 2);
+
+        typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::undirectedS> component_graph_t;
+        component_graph_t component_graph(num_components);
+
+        bool abort = false;
+        for (typename edge_set::const_iterator iter = one_edges.begin(); iter != one_edges.end(); ++iter)
         {
-          /// There cannot be a 1-edge inside one component.
-          return false;
+          typename boost::graph_traits<component_graph_t>::vertex_descriptor source, target;
+          source = boost::source(*iter, graph);
+          target = boost::target(*iter, graph);
+          if (source == the_vertex || target == the_vertex)
+            continue;
+
+          size_t source_component = component_vector[boost::get(index_map, source)];
+          size_t target_component = component_vector[boost::get(index_map, target)];
+
+          if (source_component == target_component)
+          {
+            /// There cannot be a 1-edge inside one component.
+            abort = true;
+            break;
+          }
+
+          boost::add_edge(boost::vertex(source_component, component_graph),
+              boost::vertex(target_component, component_graph), component_graph);
         }
 
-        boost::add_edge(boost::vertex(source_component, component_graph), boost::vertex(target_component,
-            component_graph), component_graph);
-      }
-
-      boost::one_bit_color_map<boost::vec_adj_list_vertex_id_map<boost::no_property, unsigned int> > bipartition(
-          num_components, boost::get(boost::vertex_index, component_graph));
-
-      if (!boost::is_bipartite(component_graph, boost::get(boost::vertex_index, component_graph), bipartition))
-      {
-        return false;
-      }
-
-      for (size_t i = 0; i < component_vector.size(); ++i)
-      {
-        if (boost::vertex(i, graph) == the_vertex)
+        if (abort)
           continue;
+
+        boost::one_bit_color_map<boost::vec_adj_list_vertex_id_map<boost::no_property, unsigned int> > bipartition(
+            num_components, boost::get(boost::vertex_index, component_graph));
+
+        if (!boost::is_bipartite(component_graph, boost::get(boost::vertex_index, component_graph), bipartition))
+        {
+          continue;
+        }
+
+        for (size_t i = 0; i < component_vector.size(); ++i)
+        {
+          if (boost::vertex(i, graph) == the_vertex)
+            continue;
+        }
+
+        vertex_t new_vertex = boost::add_vertex(graph);
+
+        edge_vector_t reconnect_edges;
+        typename traits::out_edge_iterator out_edge_iter, out_edge_end;
+        for (boost::tie(out_edge_iter, out_edge_end) = boost::incident_edges(the_vertex, graph);
+            out_edge_iter != out_edge_end; ++out_edge_iter)
+        {
+          vertex_t incident_vertex = boost::target(*out_edge_iter, graph);
+
+          bool reconnect = boost::get(bipartition,
+              boost::vertex(component_vector[boost::get(index_map, incident_vertex)], component_graph))
+              != boost::one_bit_white;
+
+          if (one_edges.find(*out_edge_iter) != one_edges.end())
+            reconnect = !reconnect;
+
+          if (reconnect)
+            reconnect_edges.push_back(*out_edge_iter);
+        }
+
+        for (typename edge_vector_t::const_iterator iter = reconnect_edges.begin(); iter != reconnect_edges.end();
+            ++iter)
+        {
+          util::reconnect_edge(graph, *iter, the_vertex, new_vertex);
+        }
+
+        boost::add_edge(the_vertex, new_vertex, matroid.name1(minor_height), graph);
+
+        return true;
       }
 
-      vertex_t new_vertex = boost::add_vertex(graph);
-
-      edge_vector_t reconnect_edges;
-      typename traits::out_edge_iterator out_edge_iter, out_edge_end;
-      for (boost::tie(out_edge_iter, out_edge_end) = boost::incident_edges(the_vertex, graph); out_edge_iter
-          != out_edge_end; ++out_edge_iter)
-      {
-        vertex_t incident_vertex = boost::target(*out_edge_iter, graph);
-
-        bool reconnect = boost::get(bipartition, boost::vertex(
-            component_vector[boost::get(index_map, incident_vertex)], component_graph)) != boost::one_bit_white;
-
-        if (one_edges.find(*out_edge_iter) != one_edges.end())
-          reconnect = !reconnect;
-
-        if (reconnect)
-          reconnect_edges.push_back(*out_edge_iter);
-      }
-
-      for (typename edge_vector_t::const_iterator iter = reconnect_edges.begin(); iter != reconnect_edges.end(); ++iter)
-      {
-        util::reconnect_edge(graph, *iter, the_vertex, new_vertex);
-      }
-
-      boost::add_edge(the_vertex, new_vertex, matroid.name1(minor_height), graph);
-
-      return true;
-
+      return false;
     }
     break;
     default:
