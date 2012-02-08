@@ -8,7 +8,7 @@
 #ifndef GRAPHICNESS_HPP_
 #define GRAPHICNESS_HPP_
 
-#include "boost/graph/bipartite.hpp"
+#include <boost/graph/bipartite.hpp>
 #include <boost/graph/detail/set_adaptor.hpp>
 #include <boost/graph/filtered_graph.hpp>
 #include <boost/graph/connected_components.hpp>
@@ -554,12 +554,12 @@ namespace unimod
     vertex_descriptor border_vertex2 = boost::vertex(2, *graph);
     vertex_descriptor border_vertex3 = boost::vertex(3, *graph);
 
-    edge_descriptor spoke1 = boost::add_edge(center_vertex, border_vertex1, matroid.name1(0), *graph).first;
-    edge_descriptor spoke2 = boost::add_edge(center_vertex, border_vertex2, matroid.name1(1), *graph).first;
-    edge_descriptor spoke3 = boost::add_edge(center_vertex, border_vertex3, matroid.name2(2), *graph).first;
-    edge_descriptor rim12 = boost::add_edge(border_vertex1, border_vertex2, matroid.name2(0), *graph).first;
-    edge_descriptor rim13 = boost::add_edge(border_vertex1, border_vertex3, matroid.name2(1), *graph).first;
-    edge_descriptor rim23 = boost::add_edge(border_vertex2, border_vertex3, matroid.name1(2), *graph).first;
+    boost::add_edge(center_vertex, border_vertex1, matroid.name1(0), *graph).first;
+    boost::add_edge(center_vertex, border_vertex2, matroid.name1(1), *graph).first;
+    boost::add_edge(center_vertex, border_vertex3, matroid.name2(2), *graph).first;
+    boost::add_edge(border_vertex1, border_vertex2, matroid.name2(0), *graph).first;
+    boost::add_edge(border_vertex1, border_vertex3, matroid.name2(1), *graph).first;
+    boost::add_edge(border_vertex2, border_vertex3, matroid.name1(2), *graph).first;
 
     size_t minor_height = 3;
     size_t minor_width = 3;

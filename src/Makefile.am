@@ -40,13 +40,7 @@ noinst_HEADERS = \
   smith_normal_form.hpp \
   linear_algebra.hpp \
   violator_search.hpp \
-  gcd.hpp \
-  boost/graph/one_bit_color_map.hpp \
-  boost/graph/properties.hpp \
-  boost/graph/visitors.hpp \
-  boost/graph/bipartite.hpp
-
-
+  gcd.hpp
 
 libunimodularity_includedir = $(includedir)/tu/
 

@@ -28,7 +28,7 @@ AC_HEADER_ASSERT
 
 AC_PROG_LIBTOOL
 
-AX_BOOST_BASE(1.33.1)
+AX_BOOST_BASE(1.43.0)
 if test "x$want_boost" != "xyes"; then
 	AC_MSG_ERROR([Sorry, but building without boost is not possible!])
 fi

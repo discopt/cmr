@@ -10,8 +10,8 @@
 
 #include <iostream>
 
-#include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/properties.hpp>
+#include <boost/graph/adjacency_list.hpp>
 
 namespace unimod
 {
