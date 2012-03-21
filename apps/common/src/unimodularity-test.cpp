@@ -19,7 +19,7 @@ namespace polymake
       {
         for (size_t c = 0; c < input_matrix.size2(); ++c)
         {
-          input_matrix(r, c) = matrix(r, c);
+          input_matrix(r, c) = matrix(r, c).to_int();
         }
       }
 
@@ -32,7 +32,7 @@ namespace polymake
       for (size_t r = 0; r < input_matrix.size1(); ++r)
       {
         for (size_t c = 0; c < input_matrix.size2(); ++c)
-          input_matrix(r, c) = matrix(r, c);
+          input_matrix(r, c) = matrix(r, c).to_int();
       }
 
       unimod::submatrix_indices indices;
@@ -58,7 +58,7 @@ namespace polymake
       {
         for (size_t c = 0; c < input_matrix.size2(); ++c)
         {
-          input_matrix(r, c) = matrix(r, c);
+          input_matrix(r, c) = matrix(r, c).to_int();
         }
       }
 
@@ -73,7 +73,7 @@ namespace polymake
       {
         for (size_t c = 0; c < input_matrix.size2(); ++c)
         {
-          input_matrix(r, c) = matrix(r, c);
+          input_matrix(r, c) = matrix(r, c).to_int();
         }
       }
 
@@ -89,7 +89,7 @@ namespace polymake
       {
         for (size_t c = 0; c < input_matrix.size2(); ++c)
         {
-          input_matrix(r, c) = matrix(r, c);
+          input_matrix(r, c) = matrix(r, c).to_int();
         }
       }
 
@@ -108,7 +108,7 @@ namespace polymake
       {
         for (size_t c = 0; c < input_matrix.size2(); ++c)
         {
-          input_matrix(r, c) = matrix(r, c);
+          input_matrix(r, c) = matrix(r, c).to_int();
         }
       }
 
