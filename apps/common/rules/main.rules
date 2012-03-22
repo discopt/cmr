@@ -1,4 +1,6 @@
+CREDIT unimodularity
+  Testing matrices for (total) unimodularity.
+  Copyright by Matthias Walter.
+  http://github.com/xammy/unimodularity-test
 
-
-INCLUDE
-  unimodularity-test.rules
+label unimodularity
