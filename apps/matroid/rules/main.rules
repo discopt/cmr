@@ -1,7 +1,10 @@
+# Copyright: Matthias Walter, 2012
+# BOOST SOFTWARE LICENSE
+
 CREDIT unimodularity
   Testing matrices for (total) unimodularity.
   Copyright by Matthias Walter.
-  http://github.com/xammy/unimodularity-test
+  http://github.com/xammy/unimodularity-test/
 
 label unimodularity
 
@@ -41,8 +44,8 @@ declare object MatroidDecompositionLeaf : MatroidDecompositionNode {
 
   property R10 : Bool;
   
-  rule LEAF {
-    $this->LEAF = 1;
+  rule LEAF : {
+    $this->LEAF = True;
   }
   weight 1.0;
 }
@@ -55,7 +58,7 @@ declare object MatroidDecompositionSeparation : MatroidDecompositionNode {
 
   property SECOND_CHILD : MatroidDecompositionNode;
   
-  rule LEAF {
+  rule LEAF : {
     $this->LEAF = 0;
   }
   weight 1.0;
