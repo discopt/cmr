@@ -239,8 +239,6 @@ namespace polymake
   
   /// Method to convert matroid elemtents to row or column indices.
   
-  Function4perl(&elements_to_indices, "elements_to_indices");
-
   Set<int> elements_to_indices(const Set<int> set, int sign)
   {
     Set<int> result;
@@ -254,6 +252,7 @@ namespace polymake
     return result;
   }
 
+  Function4perl(&elements_to_indices, "elements_to_indices");
   
 }}
 
