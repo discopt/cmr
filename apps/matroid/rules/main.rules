@@ -1,0 +1,62 @@
+CREDIT unimodularity
+  Testing matrices for (total) unimodularity.
+  Copyright by Matthias Walter.
+  http://github.com/xammy/unimodularity-test
+
+label unimodularity
+
+
+declare object MatroidDecompositionNode {
+
+  property REGULAR : Bool;
+
+  property ELEMENTS : Set<Int>;
+
+  property ROW_INDICES : Set<Int>;
+  
+  rule ROW_INDICES : ELEMENTS {
+    $this->ROW_INDICES = elements_to_indices($this->ELEMENTS, -1);
+  }
+  weight 1.0;
+  
+  property COL_INDICES : Set<Int>;
+
+  rule COL_INDICES : ELEMENTS {
+    $this->COL_INDICES = elements_to_indices($this->ELEMENTS, +1);
+  }
+  weight 1.0;
+
+  property LEAF : Bool;
+}
+
+declare object MatroidDecompositionLeaf : MatroidDecompositionNode {
+  
+  property GRAPHIC : Bool;
+
+  property GRAPH : graph::Graph<Undirected>;
+  
+  property COGRAPHIC : Bool;
+  
+  property COGRAPH : graph::Graph<Undirected>;
+
+  property R10 : Bool;
+  
+  rule LEAF {
+    $this->LEAF = 1;
+  }
+  weight 1.0;
+}
+
+declare object MatroidDecompositionSeparation : MatroidDecompositionNode {
+
+  property SEPARATION_TYPE : Int;
+
+  property FIRST_CHILD : MatroidDecompositionNode;
+
+  property SECOND_CHILD : MatroidDecompositionNode;
+  
+  rule LEAF {
+    $this->LEAF = 0;
+  }
+  weight 1.0;
+}

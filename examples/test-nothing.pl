@@ -1,6 +1,6 @@
 # Call `polymake --script example.pl` after loading the extension, to run this example.
 
-use application "common";
+use application "matroid";
 declare $matrix = new Matrix<Integer> (<<".");
  0 1 1 1 1 1
  1 1 0 0 1 1
