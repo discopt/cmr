@@ -1,8 +1,36 @@
-To use this Polymake extension, just open Polymake and call
 
-import_extension("/this/directory/");
+=== DIFFERENT VERSIONS ===
 
-The methods are then available. To run the examples, try
 
-polymake --script examples/<any>
+There are three versions of the library:
+
+ * The default version requires the Boost C++ Libraries 1.43.
+ * There is a "noboost" version. Since all the necessary
+   Boost headers are incorporated the static library is not
+   built. Hence, only the binaries can be used.
+ * There is a third version "polymake" which is an extension
+   for the Polymake system.
+
+
+
+=== INSTALLING ===
+
+To compile the default or noboost version of the TU test, just type:
+
+./configure
+make
+
+If you like to install the headers and the library, type:
+
+make install
+
+If you only want to use the executable, you can copy it from src/unimodularity-test.
+
+
+
+=== INSTALLING THE POLYMAKE EXTENSION ===
+
+From the Polymake shell, simply type:
+
+import_extension ("/unpacked/directory/");
 
