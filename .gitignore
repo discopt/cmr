@@ -21,6 +21,7 @@ config.log
 config.status
 libtool
 stamp-h1
+INSTALL
 
 src/Makefile.in
 src/.deps/
