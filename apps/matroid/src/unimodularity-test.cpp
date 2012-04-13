@@ -31,12 +31,7 @@ namespace polymake
         g.edge((int)s, (int)t);
       }
 
-      //EdgeMap<Undirected,int> edge_elements(g);
-      //for (typename Entire< Edges< Graph<Undirected> > >::const_iterator e_it=entire(edges(g)); !e_it.at_end(); ++e_it)
-      //{
-      //  edge_elements[*e_it] = 0;
-      //  boost::edge(boost::vertex(e_it.from_node(), *graph), boost::vertex(e_it.to_node(), *graph));
-      //}
+      // Bug: The graph does not posses index information and does not allow parallel edges!
 
       perl::Object result("graph::Graph<Undirected>");
       result.take("ADJACENCY") << g;
