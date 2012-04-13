@@ -10,3 +10,12 @@ March 2011:
 
 June 2011:
  * Third release, version 1.0. Experiments for article are improved and carried out.
+
+February 2012:
+ * Bugfix for bug by Paulo Seijas
+ * Compatibility fix for recent polymake version.
+
+April 2012:
+ * Updates of polymake code after polymake workshop
+ * Small changes regarding technical report of MPC.
+
