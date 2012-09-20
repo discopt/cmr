@@ -427,6 +427,7 @@ namespace unimod
           assert(matrix(row, 0) == 0 && matrix(row, 1) == 0);
           boost::add_edge(boost::vertex(vertex[3], *graph), boost::vertex(vertex[3] + 1, *graph), element, *graph);
           ++vertex[3];
+          break;
         }
       }
     }
