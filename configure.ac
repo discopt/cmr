@@ -1,6 +1,6 @@
 AC_PREREQ(2.59)
 
-AC_INIT([Unimodularity Library NoBoost], [1.2], [https://github.com/xammy/unimodularity-test/wiki])
+AC_INIT([Unimodularity Library NoBoost], [1.2b], [https://github.com/xammy/unimodularity-test/wiki])
 
 AM_INIT_AUTOMAKE([1.9 tar-pax])
 

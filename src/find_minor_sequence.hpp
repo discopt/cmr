@@ -116,11 +116,11 @@ namespace unimod
     typedef int value_type;
     typedef unsigned char index_type;
 
-    static const index_type BLOCK = 0;
-    static const index_type ZERO = 1;
-    static const index_type START = 2;
-    static const index_type END0 = 3;
-    static const index_type END1 = 4;
+    enum { BLOCK = 0 };
+    enum { ZERO = 1 };
+    enum { START = 2 };
+    enum { END0 = 3 };
+    enum { END1 = 4 };
 
     /**
      * Constructs the modifier.
@@ -238,7 +238,9 @@ namespace unimod
         column_types[column] = elaborate_extension_matrix_modifier::ZERO;
       else
       {
-        column_types[column] = matrix(index, column) == 1 ? elaborate_extension_matrix_modifier::END1 : elaborate_extension_matrix_modifier::END0;
+        column_types[column] = matrix(index, column) == 1 
+          ? static_cast<elaborate_extension_matrix_modifier::index_type>(elaborate_extension_matrix_modifier::END1) 
+          : static_cast<elaborate_extension_matrix_modifier::index_type>(elaborate_extension_matrix_modifier::END0);
         end_nodes.push_back(dim.column_to_index(column));
       }
     }
