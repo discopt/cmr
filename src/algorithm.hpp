@@ -126,8 +126,8 @@ namespace unimod
 
       if (construct_decomposition)
       {
-        int type = sep.rank() == 0 ? decomposed_matroid_separator::ONE_SEPARATION
-            : decomposed_matroid_separator::TWO_SEPARATION;
+        int type = sep.rank() == 0 ? static_cast<int>(decomposed_matroid_separator::ONE_SEPARATION)
+            : static_cast<int>(decomposed_matroid_separator::TWO_SEPARATION);
 
         return std::pair<bool, decomposed_matroid*>(lower_right_result.first && upper_left_result.first,
             new decomposed_matroid_separator(upper_left_result.second, lower_right_result.second, type,
@@ -606,8 +606,8 @@ namespace unimod
 
       if (construct_decomposition)
       {
-        int type = sep.rank() == 0 ? decomposed_matroid_separator::ONE_SEPARATION
-            : decomposed_matroid_separator::TWO_SEPARATION;
+        int type = sep.rank() == 0 ? static_cast<int>(decomposed_matroid_separator::ONE_SEPARATION)
+            : static_cast<int>(decomposed_matroid_separator::TWO_SEPARATION);
 
         return std::pair<bool, decomposed_matroid*>(lower_right_result.first && upper_left_result.first,
             new decomposed_matroid_separator(upper_left_result.second, lower_right_result.second, type,

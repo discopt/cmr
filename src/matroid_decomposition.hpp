@@ -207,9 +207,9 @@ namespace unimod
 
     virtual ~decomposed_matroid_separator();
 
-    static const int ONE_SEPARATION = 1;
-    static const int TWO_SEPARATION = 2;
-    static const int THREE_SEPARATION = 3;
+    enum { ONE_SEPARATION = 1 };
+    enum { TWO_SEPARATION = 2 };
+    enum { THREE_SEPARATION = 3 };
 
     /**
      * @return Type of the separation
