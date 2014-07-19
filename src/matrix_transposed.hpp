@@ -182,34 +182,6 @@ namespace unimod
   }
 
   /**
-   * Free function to permute two rows of a transposed matrix.
-   *
-   * @param matrix The transposed matrix
-   * @param index1 First index
-   * @param index2 Second index
-   */
-
-  template <typename MatrixType>
-  inline void matrix_permute1(matrix_transposed <MatrixType>& matrix, size_t index1, size_t index2)
-  {
-    matrix_permute2(matrix.data(), index1, index2);
-  }
-
-  /**
-   * Free function to permute two columns of a transposed matrix.
-   *
-   * @param matrix The transposed matrix
-   * @param index1 First index
-   * @param index2 Second index
-   */
-
-  template <typename MatrixType>
-  inline void matrix_permute2(matrix_transposed <MatrixType>& matrix, size_t index1, size_t index2)
-  {
-    matrix_permute1(matrix.data(), index1, index2);
-  }
-
-  /**
    * Free function to perform a pivot on a transposed matrix.
    *
    * @param matrix The transposed matrix

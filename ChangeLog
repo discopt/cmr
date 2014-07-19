@@ -25,3 +25,7 @@ October 2012:
  * Bugfix for compilation error on Mac OS
  * Version 1.2b
 
+July 2014:
+ * Bugfix for compilation error on more recent boost versions
+ * Version 1.2c
+

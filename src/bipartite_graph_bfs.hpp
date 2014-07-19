@@ -190,7 +190,6 @@ namespace unimod
   inline bool bipartite_graph_bfs(const MatrixType& matrix, const bipartite_graph_dimensions& dimensions, const StartNodesContainerType& start_nodes,
       const EndNodesContainerType& end_nodes, bool reach_all, std::vector <bipartite_graph_bfs_node>& result)
   {
-    typedef MatrixType matrix_type;
     typedef std::vector <bipartite_graph_bfs_node> node_vector_type;
     typedef std::list <size_t> node_list_type;
 
