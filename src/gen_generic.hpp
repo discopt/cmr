@@ -13,6 +13,7 @@
 #include "matrix_transposed.hpp"
 #include "matrix_reorder.hpp"
 #include "permutations.hpp"
+#include "matrix_transposed_permuted.hpp"
 
 class matrix_generator
 {

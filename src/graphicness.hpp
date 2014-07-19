@@ -345,7 +345,7 @@ namespace unimod
       typedef std::vector<vertex_t> vertex_vector_t;
       typedef std::vector<edge_t> edge_vector_t;
 
-      typedef boost::vec_adj_list_vertex_id_map<boost::no_property, unsigned int> IndexMap;
+      typedef boost::vec_adj_list_vertex_id_map<boost::no_property, traits::vertices_size_type> IndexMap;
       IndexMap index_map = boost::get(boost::vertex_index, graph);
 
       /// Collect all 1-edges
@@ -474,7 +474,7 @@ namespace unimod
         if (abort)
           continue;
 
-        boost::one_bit_color_map<boost::vec_adj_list_vertex_id_map<boost::no_property, unsigned int> > bipartition(
+        boost::one_bit_color_map<boost::vec_adj_list_vertex_id_map<boost::no_property, traits::vertices_size_type> > bipartition(
             num_components, boost::get(boost::vertex_index, component_graph));
 
         if (!boost::is_bipartite(component_graph, boost::get(boost::vertex_index, component_graph), bipartition))
@@ -542,7 +542,6 @@ namespace unimod
       const NestedMinorSequenceType& nested_minors, size_t& largest_graphic_minor)
   {
     typedef boost::graph_traits<matroid_graph>::vertex_descriptor vertex_descriptor;
-    typedef boost::graph_traits<matroid_graph>::edge_descriptor edge_descriptor;
 
     /// Initialize W3
 

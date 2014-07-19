@@ -20,6 +20,7 @@ noinst_HEADERS = \
 	matrix_permuted.hpp \
 	matrix_reorder.hpp \
 	matrix_transposed.hpp \
+	matrix_transposed_permuted.hpp \
 	matroid.hpp \
 	matroid_permuted.hpp \
 	matroid_reorder.hpp \

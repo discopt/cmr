@@ -34,7 +34,6 @@ OutputIterator find_path(Graph graph, IndexMap index_map, Vertex s, Vertex t, Ou
   /// Declare predecessor map
   typedef std::vector <vertex_t> predecessors_t;
   typedef boost::iterator_property_map <typename predecessors_t::iterator, IndexMap> predecessor_map_t;
-  typedef boost::predecessor_recorder <predecessor_map_t, IndexMap> predecessor_recorder_t;
 
   predecessors_t predecessors(boost::num_vertices(graph), graph_traits_t::null_vertex());
   predecessor_map_t predecessor_map(predecessors.begin(), index_map);
