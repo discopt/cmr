@@ -91,15 +91,11 @@ namespace polymake
         unimod::submatrix_indices violator;
         answer = unimod::is_totally_unimodular(input_matrix, tree, violator);
         result << answer;
-        if (tree)
+        if (answer)
         {
           result << construct_decomposition_tree(tree);
           delete tree;
         }
-        else
-          result << 0;
-        if (answer)
-          result << 0;
         else
         {
           std::pair<Set<int>, Set<int> > indices;
@@ -119,7 +115,6 @@ namespace polymake
         }
         else
           result << 0;
-        delete tree;
       }
 
       return result;
@@ -129,8 +124,9 @@ namespace polymake
 
     UserFunction4perl("# Tests a given //matrix// for total unimodularity."
       "# @param Matrix matrix"
-      "# @return Bool",
-      &is_totally_unimodular, "is_totally_unimodular(Matrix { violator => 1 })");
+      "# @option Bool violator whether to compute a violating submatrix"
+      "# @return perl::ListReturn (yes/no, violator/decomposition-tree)",
+      &is_totally_unimodular, "is_totally_unimodular(Matrix { violator => 0 })");
 
     bool is_unimodular_plain(const Matrix <Integer>& matrix)
     {
