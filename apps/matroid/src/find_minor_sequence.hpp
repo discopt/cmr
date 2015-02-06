@@ -410,14 +410,15 @@ namespace unimod
       logger& log)
   {
     size_t cut = log.size();
+    
+    matroid_transposed <MatroidType> transposed_matroid(matroid);
+    matrix_transposed <MatrixType> transposed_matrix(matrix);
 
     vector_three_connectivity <MatrixType> column_three_connectivity(matrix, nested_minors.height(), nested_minors.width());
-    vector_three_connectivity <matrix_transposed <MatrixType> > row_three_connectivity(make_transposed_matrix(matrix), nested_minors.width(),
+    vector_three_connectivity <matrix_transposed <MatrixType> > row_three_connectivity(transposed_matrix, nested_minors.width(),
         nested_minors.height());
 
     /// To search for parallel-columns we search for parallel rows in the transpose.
-    matroid_transposed <MatroidType> transposed_matroid(matroid);
-    matrix_transposed <MatrixType> transposed_matrix(matrix);
     nested_minor_sequence_transposed <nested_minor_sequence> transposed_nested_minors(nested_minors);
 
     while (nested_minors.height() < matroid.size1() || nested_minors.width() != matroid.size2())
