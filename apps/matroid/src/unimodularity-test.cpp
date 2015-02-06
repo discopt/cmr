@@ -243,7 +243,8 @@ namespace polymake
     return result;
   }
 
-  Function4perl(&elements_to_indices, "elements_to_indices");
+// Polymake compiler complains here.
+//  Function4perl(&elements_to_indices, "elements_to_indices");
   
 }}
 
