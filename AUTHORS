@@ -5,5 +5,5 @@ Thanks to:
  * Klaus Truemper who developed the original algorithm and explained everything to me.
  * Volker Kaibel for being my advisor during the work.
  * Marc Pfetsch for a polymake-related bugfix
- * David Haws, Nicolas Bonifas, Paulo Seijas for reported bugs.
+ * David Haws, Nicolas Bonifas, Paulo Seijas, Tobias Windisch for reported bugs.
  * Volker Braun for fixed for later boost versions.

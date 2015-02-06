@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION=1.2c
+VERSION=1.2d
 NAME=unimodularity-library-Polymake-${VERSION}
 
 rm -rf ${NAME}
