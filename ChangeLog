@@ -29,3 +29,6 @@ July 2014:
  * Bugfix for compilation error on more recent boost versions
  * Version 1.2c
 
+February 2015:
+ * Bugfix for segfault bug reported by Tobias Windisch.
+ * Version 1.2d
