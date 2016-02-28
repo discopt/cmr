@@ -32,3 +32,7 @@ July 2014:
 February 2015:
  * Bugfix for segfault bug reported by Tobias Windisch.
  * Version 1.2d
+
+February 2016:
+ * Bugfix for wrong certificate reported by Bala Krishnamoorthy.
+ * Version 1.2e
