@@ -14,6 +14,7 @@
 #include "matroid.hpp"
 #include "signing.hpp"
 #include "logger.hpp"
+#include "total_unimodularity.hpp"
 
 namespace unimod
 {
@@ -100,6 +101,12 @@ namespace unimod
           logger& log) :
         _input_matrix(input_matrix), _row_elements(row_elements), _column_elements(column_elements), _log(log)
       {
+//        std::cout << "Searching for violator in " << _input_matrix.size1() << " x " << _input_matrix.size2() << " matrix." << std::endl;
+//        for (matroid_element_set::const_iterator iter = _row_elements.begin(); iter != _row_elements.end(); ++iter)
+//          std::cout << "Row " << *iter << std::endl;
+//        for (matroid_element_set::const_iterator iter = _column_elements.begin(); iter != _column_elements.end(); ++iter)
+//          std::cout << "Column " << *iter << std::endl;
+
         if (log.is_progressive() || _log.is_verbose())
         {
           std::cout << "\nMatrix is NOT totally unimodular. Searching the violating submatrix...\n" << std::endl;
@@ -168,6 +175,9 @@ namespace unimod
         if (_log.is_progressive() || _log.is_verbose())
         {
           std::cout << "Testing a " << row_elements.size() << " x " << column_elements.size() << " submatrix." << std::endl;
+//          integer_matrix M = sub_matrix;
+//          bool result = ghouila_houri_is_totally_unimodular(M);
+//          std::cout << "GH: " << result << std::endl;
         }
 
         if (!is_signed_matrix(matrix))
@@ -197,28 +207,30 @@ namespace unimod
           return true;
         }
 
-        matroid_element_set rows, columns, elements = detail::find_smallest_irregular_minor(decomposition);
-        delete decomposition;
+        /// The following part is commented because it seems to be incorrect.
 
-        detail::split_elements(elements.begin(), elements.end(), std::inserter(rows, rows.end()), std::inserter(columns, columns.end()));
+        
+        // matroid_element_set rows, columns, elements = detail::find_smallest_irregular_minor(decomposition);
+        delete decomposition;
+ 
+        // detail::split_elements(elements.begin(), elements.end(), std::inserter(rows, rows.end()), std::inserter(columns, columns.end()));
 
         if (_log.is_progressive() || _log.is_verbose())
         {
-          if (rows.size() < row_elements.size() || columns.size() < column_elements.size())
-          {
-            std::cout << "\nThe " << row_elements.size() << " x " << column_elements.size() << " submatrix is NOT totally unimodular. A "
-                << rows.size() << " x " << columns.size() << " non-totally unimodular submatrix was identified, too.\n" << std::endl;
-          }
-          else
-          {
+          // if (rows.size() < row_elements.size() || columns.size() < column_elements.size())
+          // {
+          //   std::cout << "\nThe " << row_elements.size() << " x " << column_elements.size() << " submatrix is NOT totally unimodular. A "
+          //       << rows.size() << " x " << columns.size() << " non-totally unimodular submatrix was identified, too.\n" << std::endl;
+          // }
+          // else
+          // {
             std::cout << "\nThe " << row_elements.size() << " x " << column_elements.size() << " submatrix is NOT totally unimodular.\n" << std::endl;
-
-          }
+          // }
         }
 
-        if (rows.size() < row_elements.size() || columns.size() < column_elements.size())
-          shrink(rows, columns);
-        else
+        //if (rows.size() < row_elements.size() || columns.size() < column_elements.size())
+        //  shrink(rows, columns);
+        //else
           shrink(row_elements, column_elements);
 
         return false;
