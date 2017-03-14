@@ -32,7 +32,7 @@ namespace unimod
    * Integer matrix
    */
 
-  typedef boost::numeric::ublas::matrix <int> integer_matrix;
+  typedef boost::numeric::ublas::matrix <long long> integer_matrix;
 
   /**
    * Indirect integer matrix
