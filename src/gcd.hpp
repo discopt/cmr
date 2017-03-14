@@ -8,12 +8,16 @@
 #ifndef GCD_HPP_
 #define GCD_HPP_
 
+#include <iostream>
+
 namespace unimod
 {
   template <typename T>
   T gcd_impl(T a, T b, T& s, T& t)
   {
-    assert(a >= 0 && b >= 0 && a >= b);
+    assert(a >= 0);
+    assert(b >= 0);
+    assert(a >= b);
 
     if (b == 0)
     {
@@ -43,8 +47,10 @@ namespace unimod
     {
       bool a_neg = a < 0;
       bool b_neg = b < 0;
-      a = a >= 0 ? a : -a;
-      b = b >= 0 ? b : -b;
+      a = a_neg ? -a : a;
+      b = b_neg ? -b : b;
+      assert(a >= 0);
+      assert(b >= 0);
       T result;
       if (a >= b)
         result = gcd_impl(a, b, s, t);
@@ -54,6 +60,7 @@ namespace unimod
         s = -s;
       if (b_neg)
         t = -t;
+      assert(result >= 0);
       return result;
     }
   }

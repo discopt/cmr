@@ -16,13 +16,18 @@
 namespace unimod
 {
   template <typename Matrix>
-  void matrix_row_combine(Matrix& matrix, size_t row1, size_t row2, int ul, int ur, int ll, int lr)
+  void matrix_row_combine(Matrix& matrix, size_t row1, size_t row2, long long ul, long long ur, long long ll, long long lr)
   {
     assert(abs(ul * lr - ll * ur) == 1);
     for (size_t c = 0; c < matrix.size2(); ++c)
     {
-      int x = matrix(row1, c);
-      int y = matrix(row2, c);
+      long long x = matrix(row1, c);
+      long long y = matrix(row2, c);
+      if ((abs(x) > (1L << 31)) || (abs(y) > (1L << 31))
+       || (abs(ul) > (1L << 31)) || (abs(ur) > (1L << 31)))
+      {
+        throw std::runtime_error("Numbers too large.");
+      }
       matrix(row1, c) = ul * x + ur * y;
       matrix(row2, c) = ll * x + lr * y;
     }
@@ -34,10 +39,14 @@ namespace unimod
     if (matrix(row2, column) == 0)
       return false;
 
-    int x = matrix(row1, column);
-    int y = matrix(row2, column);
-    int s, t;
-    int g = gcd(x, y, s, t);
+    long long x = matrix(row1, column);
+    long long y = matrix(row2, column);
+    if (x > (1L << 31) || x < -1 * (1L << 32) || y > (1L << 31) || y < -1 * (1L << 32))
+    {
+      throw std::runtime_error("Numbers too large.");
+    }
+    long long s, t;
+    long long g = gcd(x, y, s, t);
     if (s == 0)
     {
       /// Special case: If both are |.| = g then s should not be zero.
@@ -101,9 +110,9 @@ namespace unimod
 
     for (size_t p = rank; p > 0; --p)
     {
-      int entry = permuted_matrix(p - 1, p - 1);
+      long long entry = permuted_matrix(p - 1, p - 1);
       assert(entry != 0);
-      int g = entry;
+      long long g = entry;
       for (size_t c = p; c < permuted_matrix.size2(); ++c)
         g = gcd(g, permuted_matrix(p - 1, c));
       if (entry * g < 0)
@@ -124,7 +133,7 @@ namespace unimod
       /// Reduce column above entry
       for (size_t r = 0; r < p - 1; ++r)
       {
-        int factor = permuted_matrix(r, p - 1) / entry;
+        long long factor = permuted_matrix(r, p - 1) / entry;
         for (size_t c = p - 1; c < permuted_matrix.size2(); ++c)
         {
           permuted_matrix(r, c) -= factor * permuted_matrix(p - 1, c);
