@@ -36,3 +36,7 @@ February 2015:
 February 2016:
  * Bugfix for wrong certificate reported by Bala Krishnamoorthy.
  * Version 1.2e
+
+March 2017:
+ * Correct error reporting and workaround for huge numbers occuring during k-modularity-test. Bug reported by Filippo Quondam.
+ * Version 1.2f

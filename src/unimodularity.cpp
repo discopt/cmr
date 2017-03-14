@@ -161,7 +161,16 @@ namespace unimod
 
   bool is_k_modular(const integer_matrix& matrix, size_t& rank, log_level level)
   {
-    return test_k_modularity(matrix, rank, NULL, false, level);
+    try
+    {
+      bool result = test_k_modularity(matrix, rank, NULL, false, level);
+      return result;
+    }
+    catch (std::runtime_error &e)
+    {
+      std::cerr << "[Error: " << e.what() << " - Check for k-modularity failed.]\n" << std::flush;
+      return false;
+    }
   }
 
   /**
@@ -181,7 +190,18 @@ namespace unimod
 
   bool is_k_modular(const integer_matrix& matrix, size_t& rank, unsigned int& k, log_level level)
   {
-    bool result = test_k_modularity(matrix, rank, &k, false, level);
+    bool result;
+    try
+    {
+      result = test_k_modularity(matrix, rank, &k, false, level);
+      return result;
+    }
+    catch (std::runtime_error &e)
+    {
+      std::cerr << "[Error: " << e.what() << " - Check for k-modularity failed.]\n" << std::flush;
+      result = false;
+      k = 0;
+    }
     if (!result)
       k = 0;
     return result;

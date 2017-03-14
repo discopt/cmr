@@ -222,6 +222,10 @@ int run(const std::string& file_name, const std::set <char>& tests, bool show_ce
   }
 
   file.close();
+
+  std::cerr << "Unimodularity test version " << PACKAGE_VERSION << " by Matthias Walter and Klaus Truemper.\n";
+  std::cerr << "See http://matthiaswalter.org/TUtest/ for references and citation.\n\n" << std::flush;
+
   std::cout << "Read a " << matrix.size1() << " x " << matrix.size2() << " matrix.\n" << std::endl;
 
   std::map <char, boost::logic::tribool> results;
