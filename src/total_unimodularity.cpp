@@ -108,7 +108,7 @@ namespace unimod
     }
     else if (log.is_verbose())
     {
-      std::cout << "The matrix is its signed version." << std::endl;
+      std::cout << "The matrix is its signed version.\n" << std::endl;
     }
 
     /// Decomposition of matroid represented by support matrix
@@ -116,7 +116,13 @@ namespace unimod
     if (matrix.size1() < matrix.size2())
       worker_matrix = matrix;
     else
+    {
+      if (log.is_verbose())
+      {
+        std::cout << "Working on transposed matrix. Graphs and cographs are interchanged!\n" << std::endl;
+      }
       worker_matrix = make_transposed_matrix(matrix);
+    }
 
     integer_matroid worker_matroid(worker_matrix.size1(), worker_matrix.size2());
     support_matrix(worker_matrix);
@@ -211,7 +217,13 @@ namespace unimod
     if (matrix.size1() < matrix.size2())
       worker_matrix = matrix;
     else
+    {
+      if (log.is_verbose())
+      {
+        std::cout << "Working on transposed matrix. Graphs and cographs are interchanged!\n" << std::endl;
+      }
       worker_matrix = make_transposed_matrix(matrix);
+    }
 
     integer_matroid worker_matroid(worker_matrix.size1(), worker_matrix.size2());
     support_matrix(worker_matrix);
@@ -306,7 +318,7 @@ namespace unimod
     }
     else if (log.is_verbose())
     {
-      std::cout << "The matrix is its signed version." << std::endl;
+      std::cout << "The matrix is its signed version.\n" << std::endl;
     }
 
     /// Decomposition of matroid represented by support matrix
@@ -314,7 +326,13 @@ namespace unimod
     if (matrix.size1() < matrix.size2())
       worker_matrix = matrix;
     else
+    {
+      if (log.is_verbose())
+      {
+        std::cout << "Working on transposed matrix. Graphs and cographs are interchanged!\n" << std::endl;
+      }
       worker_matrix = make_transposed_matrix(matrix);
+    }
 
     integer_matroid worker_matroid(worker_matrix.size1(), worker_matrix.size2());
     support_matrix(worker_matrix);
