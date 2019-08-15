@@ -123,6 +123,16 @@ namespace unimod
    */
 
   bool is_k_modular_integral(const integer_matrix& matrix, const integer_matrix& rhs);
+
+  /**
+   * Tests if a matrix A is complement totally unimodular.
+   *
+   * @param matrix The matrix A, having the Dantzig property.
+   * @param level log_level
+   * @return true if and only if the matrix is ctu.
+   */
+
+  bool is_complement_total_unimodular(const integer_matrix& matrix, log_level level = LOG_QUIET);
 }
 
 #endif /* UNIMODULARITY_HPP_ */

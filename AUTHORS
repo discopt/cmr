@@ -1,8 +1,8 @@
-Main author: 
- * Matthias Walter
+Authors:
+ * Matthias Walter <m.walter@utwente.nl>
+ * Klaus Truemper <klaus@utdallas.edu>
 
 Thanks to:
- * Klaus Truemper who developed the original algorithm and explained everything to me.
  * Volker Kaibel for useful comments.
  * Marc Pfetsch for a polymake-related bugfix
  * David Haws, Nicolas Bonifas, Paulo Seijas, Tobias Windisch, and Bala Krishnamoorthy for reported bugs.

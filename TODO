@@ -1,3 +1,7 @@
+=== Exact Arithmetic ===
+
+The k-modularity check has integer overflows.
+
 === Enumeration ===
 
 By now we do a full enumeration of the first minor with >= 7 elements.

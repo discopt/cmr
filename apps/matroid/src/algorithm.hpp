@@ -213,9 +213,9 @@ namespace unimod
         if (graph && cograph)
           std::cout << "Planar matroids are always regular." << std::endl;
         else if (graph && cograph == NULL)
-          std::cout << "Planar matroids are always regular." << std::endl;
+          std::cout << "Graphic matroids are always regular." << std::endl;
         else if (graph == NULL && cograph)
-          std::cout << "Planar matroids are always regular." << std::endl;
+          std::cout << "Cographic matroids are always regular." << std::endl;
 
       }
 
