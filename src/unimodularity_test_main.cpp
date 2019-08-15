@@ -137,7 +137,7 @@ void print_violator(const unimod::integer_matrix& matrix, const unimod::submatri
 
 void print_result(std::ostream& stream, const std::string& name, boost::logic::tribool result)
 {
-  stream << std::setw(20) << name << ": ";
+  stream << std::setw(30) << name << ": ";
 
   if (result)
     stream << "yes\n";
@@ -230,7 +230,7 @@ int run(const std::string& file_name, const std::set <char>& tests, bool show_ce
 
   std::map <char, boost::logic::tribool> results;
   for (size_t i = 0; i < 5; ++i)
-    results["tUuMm"[i]] = boost::logic::indeterminate;
+    results["tUuMmC"[i]] = boost::logic::indeterminate;
   size_t rank = 0;
   bool know_rank = false;
   unsigned int k = 0;
@@ -249,9 +249,17 @@ int run(const std::string& file_name, const std::set <char>& tests, bool show_ce
     {
       results["uUmM"[i]] = true;
     }
+    if (contains(tests, 'C'))
+    {
+       /// Test for complement total unimodularity.
+
+      results['C'] = unimod::is_complement_total_unimodular(matrix, unimod::LOG_QUIET);
+    }
   }
   else
   {
+    results['C'] = false;
+
     if (contains(tests, 'm') || contains(tests, 'M'))
     {
       if (level != unimod::LOG_QUIET)
@@ -327,6 +335,7 @@ int run(const std::string& file_name, const std::set <char>& tests, bool show_ce
 
   print_result(std::cout, "Totally unimodular", results['t']);
   print_result(std::cout, "Strongly unimodular", results['U']);
+  print_result(std::cout, "Complement total unimodularity", results['C']);
   print_result(std::cout, "Unimodular", results['u']);
   print_result(std::cout, "Strongly k-modular", results['M']);
   print_result(std::cout, "k-modular", results['m']);
@@ -344,11 +353,17 @@ bool extract_option(char c, std::set <char>& tests, bool& certs, unimod::log_lev
 {
   if (c == 't' || c == 'u' || c == 'm' || c == 'U' || c == 'M')
     tests.insert(c);
+  else if (c == 'C')
+  {
+    tests.insert('t');
+    tests.insert('C');
+  }
   else if (c == 'a')
   {
     tests.insert('t');
     tests.insert('u');
     tests.insert('U');
+    tests.insert('C');
     tests.insert('m');
     tests.insert('M');
   }
@@ -415,6 +430,7 @@ int main(int argc, char **argv)
     tests.insert('t');
     tests.insert('u');
     tests.insert('U');
+    tests.insert('C');
     tests.insert('m');
     tests.insert('M');
   }
@@ -427,6 +443,7 @@ int main(int argc, char **argv)
     std::cerr << " -a Test for everything possible (default).\n";
     std::cerr << " -t Test for total unimodularity.\n";
     std::cerr << " -U Test for strong unimodularity.\n";
+    std::cerr << " -C Test for complement total unimodularity.\n";
     std::cerr << " -u Test for unimodularity.\n";
     std::cerr << " -M Test for strong k-modularity.\n";
     std::cerr << " -m Test for k-modularity.\n";

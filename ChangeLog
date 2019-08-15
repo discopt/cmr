@@ -40,3 +40,7 @@ February 2016:
 March 2017:
  * Correct error reporting and workaround for huge numbers occuring during k-modularity-test. Bug reported by Filippo Quondam.
  * Version 1.2f
+
+August 2019:
+ * Added complement total unimodularity test.
+ * Version 1.2g
