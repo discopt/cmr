@@ -121,6 +121,11 @@ namespace unimod
       {
         std::cout << "Working on transposed matrix. Graphs and cographs are interchanged!\n" << std::endl;
       }
+      else if (log.is_progressive())
+      {
+         log.line() << "(" << matrix.size1() << " x " << matrix.size2() << ") TRANSPOSING (graphs <-> cographs)" << std::endl;
+         std::cout << log;
+      }
       worker_matrix = make_transposed_matrix(matrix);
     }
 
