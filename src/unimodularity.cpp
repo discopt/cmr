@@ -297,4 +297,59 @@ namespace unimod
   {
     return get_k_modular_integrality(matrix, rhs) == 1;
   }
+
+  bool is_complement_total_unimodular(const integer_matrix& matrix, log_level level)
+  {
+    integer_matrix row_complemented(matrix.size1(), matrix.size2());
+    integer_matrix column_complemented(matrix.size1(), matrix.size2());
+    std::pair <integer_matrix::size_type, integer_matrix::size_type> position;
+    if (!is_zero_one_matrix(matrix, position))
+      return false;
+
+    for (std::size_t crow = 0; crow <= matrix.size1(); ++crow)
+    {
+      if (crow != matrix.size1())
+      {
+        // Complement crow.
+
+        for (std::size_t r = 0; r < matrix.size1(); ++r)
+        {
+          for (std::size_t c = 0; c < matrix.size2(); ++c)
+          {
+            if (r != crow && matrix(crow,c) != 0)
+              row_complemented(r,c) = 1 - matrix(r,c);
+            else
+              row_complemented(r,c) = matrix(r,c);
+          }
+        }
+      }
+
+      for (std::size_t ccolumn = 0; ccolumn <= matrix.size2(); ++ccolumn)
+      {
+        if (ccolumn != matrix.size2())
+        {
+          // Complement ccolumn.
+
+          for (std::size_t r = 0; r < matrix.size1(); ++r)
+          {
+            for (std::size_t c = 0; c < matrix.size2(); ++c)
+            {
+              if (c != ccolumn && row_complemented(r,ccolumn) != 0)
+                column_complemented(r,c) = 1 - row_complemented(r,c);
+              else
+                column_complemented(r,c) = row_complemented(r,c);
+            }
+          }
+        }
+
+        if (crow == matrix.size1() && ccolumn == matrix.size2())
+          continue;
+
+        if (!is_totally_unimodular(column_complemented))
+          return false;
+      }
+    }
+
+    return true;
+  }
 }
