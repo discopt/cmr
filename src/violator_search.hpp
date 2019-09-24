@@ -101,11 +101,7 @@ namespace unimod
           logger& log) :
         _input_matrix(input_matrix), _row_elements(row_elements), _column_elements(column_elements), _log(log)
       {
-//        std::cout << "Searching for violator in " << _input_matrix.size1() << " x " << _input_matrix.size2() << " matrix." << std::endl;
-//        for (matroid_element_set::const_iterator iter = _row_elements.begin(); iter != _row_elements.end(); ++iter)
-//          std::cout << "Row " << *iter << std::endl;
-//        for (matroid_element_set::const_iterator iter = _column_elements.begin(); iter != _column_elements.end(); ++iter)
-//          std::cout << "Column " << *iter << std::endl;
+        //std::cout << "Searching for violator in " << _input_matrix.size1() << " x " << _input_matrix.size2() << " matrix." << std::endl;
 
         if (log.is_progressive() || _log.is_verbose())
         {
@@ -134,7 +130,6 @@ namespace unimod
 
       virtual void shrink(const matroid_element_set& row_elements, const matroid_element_set& column_elements)
       {
-#ifndef NDEBUG
         typedef boost::numeric::ublas::matrix_indirect <const integer_matrix, submatrix_indices::indirect_array_type> indirect_matrix_t;
 
         integer_matroid matroid;
@@ -150,7 +145,6 @@ namespace unimod
 
           assert (false);
         }
-#endif
 
         _row_elements = row_elements;
         _column_elements = column_elements;
@@ -172,13 +166,13 @@ namespace unimod
         decomposed_matroid* decomposition;
         integer_matrix matrix(sub_matrix);
 
-        if (_log.is_progressive() || _log.is_verbose())
-        {
-          std::cout << "Testing a " << row_elements.size() << " x " << column_elements.size() << " submatrix." << std::endl;
-//          integer_matrix M = sub_matrix;
-//          bool result = ghouila_houri_is_totally_unimodular(M);
-//          std::cout << "GH: " << result << std::endl;
-        }
+        //if (_log.is_progressive() || _log.is_verbose())
+        //{
+        //  std::cout << "Testing a " << row_elements.size() << " x " << column_elements.size() << " submatrix." << std::endl;
+        //  integer_matrix M = sub_matrix;
+        //  bool result = ghouila_houri_is_totally_unimodular(M);
+        //  std::cout << "GH: " << (result ? "TU" : "non-TU" ) << std::endl;
+        //}
 
         if (!is_signed_matrix(matrix))
         {
