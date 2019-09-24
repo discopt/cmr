@@ -346,23 +346,13 @@ namespace unimod
     if (is_tu)
       return true;
 
-    matroid_element_set rows, columns, elements = detail::find_smallest_irregular_minor(decomposition);
-    detail::split_elements(elements.begin(), elements.end(), std::inserter(rows, rows.end()), std::inserter(columns, columns.end()));
+    matroid_element_set rows, columns;
+    for (std::size_t r = 0; r < matrix.size1(); ++r)
+      rows.insert(-1 - r);
+    for (std::size_t c = 0; c < matrix.size2(); ++c)
+      columns.insert(1 + c);
 
-    detail::violator_strategy* strategy;
-    if (matrix.size1() < matrix.size2())
-    {
-      strategy = new detail::greedy_violator_strategy(matrix, rows, columns, log);
-    }
-    else
-    {
-      matroid_element_set new_rows, new_columns;
-      for (matroid_element_set::const_iterator iter = columns.begin(); iter != columns.end(); ++iter)
-        new_rows.insert(-*iter);
-      for (matroid_element_set::const_iterator iter = rows.begin(); iter != rows.end(); ++iter)
-        new_columns.insert(-*iter);
-      strategy = new detail::greedy_violator_strategy(matrix, new_rows, new_columns, log);
-    }
+    detail::violator_strategy* strategy = new detail::greedy_violator_strategy(matrix, rows, columns, log);
 
     strategy->search();
     strategy->create_matrix(violator);

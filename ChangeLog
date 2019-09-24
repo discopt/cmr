@@ -44,3 +44,7 @@ March 2017:
 August 2019:
  * Added complement total unimodularity test.
  * Version 1.2g
+
+September 2019:
+ * Bugfix for violator search.
+ * Version 1.2h
