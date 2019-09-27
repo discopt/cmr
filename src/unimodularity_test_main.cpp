@@ -183,6 +183,18 @@ bool test_total_unimodularity(unimod::integer_matrix& matrix, bool show_certific
   return result;
 }
 
+bool test_regularity(unimod::integer_matrix& matrix, unimod::log_level level)
+{
+  bool result;
+
+  unimod::integer_matrix copy = matrix;
+  unimod::sign_matrix(copy);
+  result = unimod::is_totally_unimodular(copy, level);
+  std::cout << "The underlying binary matroid is " << (result ? "" : "not ") << "regular." << std::endl;
+
+  return result;
+}
+
 int run(const std::string& file_name, const std::set <char>& tests, bool show_certificates, unimod::log_level level)
 {
   /// Open the file
@@ -229,11 +241,16 @@ int run(const std::string& file_name, const std::set <char>& tests, bool show_ce
   std::cout << "Read a " << matrix.size1() << " x " << matrix.size2() << " matrix.\n" << std::endl;
 
   std::map <char, boost::logic::tribool> results;
-  for (size_t i = 0; i < 5; ++i)
-    results["tUuMmC"[i]] = boost::logic::indeterminate;
+  for (size_t i = 0; i < 7; ++i)
+    results["tUuMmCr"[i]] = boost::logic::indeterminate;
   size_t rank = 0;
   bool know_rank = false;
   unsigned int k = 0;
+
+  if (contains(tests, 'r'))
+  {
+    results['r'] = test_regularity(matrix, level);
+  }
 
   if (contains(tests, 't'))
   {
@@ -245,9 +262,9 @@ int run(const std::string& file_name, const std::set <char>& tests, bool show_ce
 
   if (results['t'])
   {
-    for (size_t i = 0; i < 4; ++i)
+    for (size_t i = 0; i < 5; ++i)
     {
-      results["uUmM"[i]] = true;
+      results["uUmMr"[i]] = true;
     }
     if (contains(tests, 'C'))
     {
@@ -258,7 +275,8 @@ int run(const std::string& file_name, const std::set <char>& tests, bool show_ce
   }
   else
   {
-    results['C'] = false;
+    if (!results['t'])
+      results['C'] = false;
 
     if (contains(tests, 'm') || contains(tests, 'M'))
     {
@@ -333,6 +351,7 @@ int run(const std::string& file_name, const std::set <char>& tests, bool show_ce
   else
     std::cout << "\nSummary:\n\n";
 
+  print_result(std::cout, "Regular matroid", results['r']);
   print_result(std::cout, "Totally unimodular", results['t']);
   print_result(std::cout, "Strongly unimodular", results['U']);
   print_result(std::cout, "Complement total unimodularity", results['C']);
@@ -351,7 +370,7 @@ int run(const std::string& file_name, const std::set <char>& tests, bool show_ce
 
 bool extract_option(char c, std::set <char>& tests, bool& certs, unimod::log_level& level, bool& help)
 {
-  if (c == 't' || c == 'u' || c == 'm' || c == 'U' || c == 'M')
+  if (c == 't' || c == 'u' || c == 'm' || c == 'U' || c == 'M' || c == 'r')
     tests.insert(c);
   else if (c == 'C')
   {
@@ -447,6 +466,7 @@ int main(int argc, char **argv)
     std::cerr << " -u Test for unimodularity.\n";
     std::cerr << " -M Test for strong k-modularity.\n";
     std::cerr << " -m Test for k-modularity.\n";
+    std::cerr << " -r Test for regularity of a binary matroid.\n";
     std::cerr << " -c Prints certificates: Try to find certificates for the results.\n";
     std::cerr << " -p Progressive logging (default).\n";
     std::cerr << " -v Verbose logging.\n";
