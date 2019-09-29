@@ -247,9 +247,19 @@ int run(const std::string& file_name, const std::set <char>& tests, bool show_ce
   bool know_rank = false;
   unsigned int k = 0;
 
-  if (contains(tests, 'r'))
+  if (contains(tests, 's'))
   {
-    results['r'] = test_regularity(matrix, level);
+    unimod::sign_matrix(matrix);
+
+    std::cout << "Signed version of input matrix is the following.\n\n";
+    std::cout << matrix.size1() << " " << matrix.size2() << "\n";
+    for (std::size_t r = 0; r < matrix.size1(); ++r)
+    {
+      for (std::size_t c = 0; c < matrix.size2(); ++c)
+        std::cout << ' ' << std::setw(2) << matrix(r,c);
+      std::cout << "\n";
+    }
+    std::cout << std::endl;
   }
 
   if (contains(tests, 't'))
@@ -351,7 +361,6 @@ int run(const std::string& file_name, const std::set <char>& tests, bool show_ce
   else
     std::cout << "\nSummary:\n\n";
 
-  print_result(std::cout, "Regular matroid", results['r']);
   print_result(std::cout, "Totally unimodular", results['t']);
   print_result(std::cout, "Strongly unimodular", results['U']);
   print_result(std::cout, "Complement total unimodularity", results['C']);
@@ -370,7 +379,7 @@ int run(const std::string& file_name, const std::set <char>& tests, bool show_ce
 
 bool extract_option(char c, std::set <char>& tests, bool& certs, unimod::log_level& level, bool& help)
 {
-  if (c == 't' || c == 'u' || c == 'm' || c == 'U' || c == 'M' || c == 'r')
+  if (c == 't' || c == 'u' || c == 'm' || c == 'U' || c == 'M' || c == 's')
     tests.insert(c);
   else if (c == 'C')
   {
@@ -459,6 +468,7 @@ int main(int argc, char **argv)
     std::cerr << "Usage: " << argv[0] << " [OPTIONS] [--] MATRIX_FILE\n";
     std::cerr << "Options:\n";
     std::cerr << " -h Shows a help message.\n";
+    std::cerr << " -s Signs the matrix beforehand.\n";
     std::cerr << " -a Test for everything possible (default).\n";
     std::cerr << " -t Test for total unimodularity.\n";
     std::cerr << " -U Test for strong unimodularity.\n";
@@ -466,7 +476,6 @@ int main(int argc, char **argv)
     std::cerr << " -u Test for unimodularity.\n";
     std::cerr << " -M Test for strong k-modularity.\n";
     std::cerr << " -m Test for k-modularity.\n";
-    std::cerr << " -r Test for regularity of a binary matroid.\n";
     std::cerr << " -c Prints certificates: Try to find certificates for the results.\n";
     std::cerr << " -p Progressive logging (default).\n";
     std::cerr << " -v Verbose logging.\n";
