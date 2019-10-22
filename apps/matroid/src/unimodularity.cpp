@@ -298,13 +298,17 @@ namespace unimod
     return get_k_modular_integrality(matrix, rhs) == 1;
   }
 
-  bool is_complement_total_unimodular(const integer_matrix& matrix, log_level level)
+  bool is_complement_total_unimodular(const integer_matrix& matrix, std::size_t& complementedRow, std::size_t& complementedColumn, log_level level)
   {
     integer_matrix row_complemented(matrix.size1(), matrix.size2());
     integer_matrix column_complemented(matrix.size1(), matrix.size2());
     std::pair <integer_matrix::size_type, integer_matrix::size_type> position;
     if (!is_zero_one_matrix(matrix, position))
+    {
+      complementedRow = matrix.size1();
+      complementedColumn = matrix.size2();
       return false;
+    }
 
     for (std::size_t crow = 0; crow <= matrix.size1(); ++crow)
     {
@@ -346,10 +350,16 @@ namespace unimod
           continue;
 
         if (!is_totally_unimodular(column_complemented))
+        {
+          complementedRow = crow;
+          complementedColumn = ccolumn;
           return false;
+        }
       }
     }
 
+    complementedRow = matrix.size1();
+    complementedColumn = matrix.size2();
     return true;
   }
 }
