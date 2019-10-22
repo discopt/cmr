@@ -280,7 +280,22 @@ int run(const std::string& file_name, const std::set <char>& tests, bool show_ce
     {
        /// Test for complement total unimodularity.
 
-      results['C'] = unimod::is_complement_total_unimodular(matrix, unimod::LOG_QUIET);
+      std::size_t complementedRow, complementedColumn;
+      results['C'] = unimod::is_complement_total_unimodular(matrix, complementedRow, complementedColumn, unimod::LOG_QUIET);
+      if (!results['C'] && show_certificates)
+      {
+        std::cout << "The matrix obtained by complementing ";
+        if (complementedRow < matrix.size1())
+          std::cout << "row " << complementedRow;
+        else
+          std::cout << "no row";
+        std::cout << " and complementing ";
+        if (complementedColumn < matrix.size2())
+          std::cout << "column " << complementedColumn;
+        else
+          std::cout << "no column";
+        std::cout << " is not totally unimodular." << std::endl;
+      }
     }
   }
   else
