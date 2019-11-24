@@ -1,50 +1,50 @@
-June 2010:
-
- * First release. Functionality includes tests via matroid-decomposition.
-	 There are certifying versions, yielding a matroid decomposition and/or a
-	 violating submatrix.
-
-March 2011:
- * Second release, version 0.9. Functionality includes testing for
-   (strong) unimodularity and (strong) k-modularity also.
-
-June 2011:
- * Third release, version 1.0. Experiments for article are improved and carried out.
-
-February 2012:
- * Bugfix for bug by Paulo Seijas
- * Compatibility fix for recent polymake version.
- * Version 1.1
-
-April 2012:
- * Updates of polymake code after polymake workshop
- * Small changes regarding technical report of MPC.
- * Version 1.2
-
-October 2012:
- * Bugfix for compilation error on Mac OS
- * Version 1.2b
-
-July 2014:
- * Bugfix for compilation error on more recent boost versions
- * Version 1.2c
-
-February 2015:
- * Bugfix for segfault bug reported by Tobias Windisch.
- * Version 1.2d
-
-February 2016:
- * Bugfix for wrong certificate reported by Bala Krishnamoorthy.
- * Version 1.2e
-
-March 2017:
- * Correct error reporting and workaround for huge numbers occuring during k-modularity-test. Bug reported by Filippo Quondam.
- * Version 1.2f
+September 2019:
+ * Bugfix for violator search.
+ * Version 1.2h
 
 August 2019:
  * Added complement total unimodularity test.
  * Version 1.2g
 
-September 2019:
- * Bugfix for violator search.
- * Version 1.2h
+March 2017:
+ * Correct error reporting and workaround for huge numbers occuring during k-modularity-test. Bug reported by Filippo Quondam.
+ * Version 1.2f
+
+February 2016:
+ * Bugfix for wrong certificate reported by Bala Krishnamoorthy.
+ * Version 1.2e
+
+February 2015:
+ * Bugfix for segfault bug reported by Tobias Windisch.
+ * Version 1.2d
+
+July 2014:
+ * Bugfix for compilation error on more recent boost versions
+ * Version 1.2c
+
+October 2012:
+ * Bugfix for compilation error on Mac OS
+ * Version 1.2b
+
+April 2012:
+ * Updates of polymake code after polymake workshop
+ * Small changes regarding technical report of MPC.
+ * Version 1.2
+ 
+February 2012:
+ * Bugfix for bug by Paulo Seijas
+ * Compatibility fix for recent polymake version.
+ * Version 1.1
+ 
+June 2011:
+ * Third release, version 1.0. Experiments for article are improved and carried out.
+ 
+MMarch 2011:
+ * Second release, version 0.9. Functionality includes testing for
+   (strong) unimodularity and (strong) k-modularity also.
+
+June 2010:
+
+ * First release. Functionality includes tests via matroid-decomposition.
+	 There are certifying versions, yielding a matroid decomposition and/or a
+	 violating submatrix.

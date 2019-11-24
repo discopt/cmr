@@ -1,36 +1,26 @@
+=== INSTALLATION ===
 
-=== DIFFERENT VERSIONS ===
+1. Create a build directory:
 
+mkdir build
 
-There are three versions of the library:
+2. Go to the build directory:
 
- * The default version requires the Boost C++ Libraries 1.43.
- * There is a "noboost" version. Since all the necessary
-   Boost headers are incorporated the static library is not
-   built. Hence, only the binaries can be used.
- * There is a third version "polymake" which is an extension
-   for the Polymake system.
+cd build/
 
+3. Configure the build:
 
+cmake ..
 
-=== INSTALLING ===
+4. Compile:
 
-To compile the default or noboost version of the TU test, just type:
-
-./configure
 make
 
-If you like to install the headers and the library, type:
+5a. Use the binary:
 
-make install
+./src/tu-test
 
-If you only want to use the executable, you can copy it from src/unimodularity-test.
+5b. Install the binary and the library:
 
-
-
-=== INSTALLING THE POLYMAKE EXTENSION ===
-
-From the Polymake shell, simply type:
-
-import_extension ("/unpacked/directory/");
+sudo make install
 

@@ -20,10 +20,10 @@ namespace unimod
     typedef MatrixType matrix_type;
     typedef std::pair <unsigned char, size_t> vector_data;
 
-    static const unsigned char ZERO_VECTOR = 0;
-    static const unsigned char UNIT_VECTOR = 1;
-    static const unsigned char PARALLEL = 2;
-    static const unsigned char OTHER = 3;
+    const unsigned char ZERO_VECTOR = 0;
+    const unsigned char UNIT_VECTOR = 1;
+    const unsigned char PARALLEL = 2;
+    const unsigned char OTHER = 3;
 
     vector_three_connectivity(const matrix_type& matrix, size_t dimension, size_t base) :
       matrix_(matrix), data_(matrix.size2())

@@ -5,8 +5,7 @@
  *          http://www.boost.org/LICENSE_1_0.txt)
  **/
 
-#include "../config.h"
-#include "matroid_decomposition.hpp"
+#include <tu/matroid_decomposition.hpp>
 
 namespace unimod
 {

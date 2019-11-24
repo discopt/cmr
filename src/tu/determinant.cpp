@@ -5,14 +5,13 @@
  *          http://www.boost.org/LICENSE_1_0.txt)
  **/
 
-#include "../config.h"
 #include <map>
 #include <vector>
 
 #include <boost/numeric/ublas/lu.hpp>
 #include <boost/dynamic_bitset.hpp>
 
-#include "total_unimodularity.hpp"
+#include <tu/total_unimodularity.hpp>
 #include "combinations.hpp"
 
 namespace unimod
@@ -145,12 +144,6 @@ namespace unimod
           /// Examine the determinant
           bool camion = submatrix_camion(matrix, sub);
 
-#ifndef NDEBUG
-          int det = submatrix_determinant(matrix, sub);
-          bool is_violator = det < -1 || det > +1;
-          assert((is_violator && !camion) || (!is_violator && camion));
-#pragma message("\n\n\nWARNING: Submatrix Test uses subdeterminants for verification and is much slower!\n\n ")
-#endif
           if (!camion)
           {
             violator = sub;

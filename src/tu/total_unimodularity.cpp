@@ -5,8 +5,7 @@
  *          http://www.boost.org/LICENSE_1_0.txt)
  **/
 
-#include "../config.h"
-#include "total_unimodularity.hpp"
+#include <tu/total_unimodularity.hpp>
 
 #include "algorithm.hpp"
 #include "matroid.hpp"

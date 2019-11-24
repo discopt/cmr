@@ -9,7 +9,7 @@
 #define GEN_GENERIC_HPP_
 
 #include <boost/random.hpp>
-#include "total_unimodularity.hpp"
+#include <tu/total_unimodularity.hpp>
 #include "matrix_transposed.hpp"
 #include "matrix_reorder.hpp"
 #include "permutations.hpp"

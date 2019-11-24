@@ -8,6 +8,9 @@
 #ifndef UNIMODULARITY_HPP_
 #define UNIMODULARITY_HPP_
 
+#include <tu/config.h>
+#include <tu/export.h>
+
 #include "common.hpp"
 
 namespace unimod
@@ -24,6 +27,7 @@ namespace unimod
    * @return true if and only if the matrix is unimodular
    */
 
+  TU_EXPORT
   bool is_unimodular(const integer_matrix& matrix, size_t& rank, log_level level = LOG_QUIET);
 
   /**
@@ -37,6 +41,7 @@ namespace unimod
    * @return true if and only if the matrix is strongly unimodular
    */
 
+  TU_EXPORT
   bool is_strongly_unimodular(const integer_matrix& matrix, size_t& rank, log_level level = LOG_QUIET);
 
   /**
@@ -52,6 +57,7 @@ namespace unimod
    * @return true if and only if the matrix is k-modular
    */
 
+  TU_EXPORT
   bool is_k_modular(const integer_matrix& matrix, size_t& rank, log_level level = LOG_QUIET);
 
   /**
@@ -69,6 +75,7 @@ namespace unimod
    * @return true if and only if the matrix is k-modular
    */
 
+  TU_EXPORT
   bool is_k_modular(const integer_matrix& matrix, size_t& rank, unsigned int& k, log_level level = LOG_QUIET);
 
   /**
@@ -82,6 +89,7 @@ namespace unimod
    * @return true if and only if the matrix is k-modular
    */
 
+  TU_EXPORT
   bool is_strongly_k_modular(const integer_matrix& matrix, size_t& rank, log_level level = LOG_QUIET);
 
   /**
@@ -97,6 +105,7 @@ namespace unimod
    * @return true if and only if the matrix is k-modular
    */
 
+  TU_EXPORT
   bool is_strongly_k_modular(const integer_matrix& matrix, size_t& rank, unsigned int& k, log_level level = LOG_QUIET);
 
   /**
@@ -110,6 +119,7 @@ namespace unimod
    * @return Minimal q as defined above
    */
 
+  TU_EXPORT
   unsigned int get_k_modular_integrality(const integer_matrix& matrix, const integer_matrix& rhs);
 
   /**
@@ -122,6 +132,7 @@ namespace unimod
    * @return true if and only if the polyhedron is integral
    */
 
+  TU_EXPORT
   bool is_k_modular_integral(const integer_matrix& matrix, const integer_matrix& rhs);
 
   /**
@@ -134,6 +145,7 @@ namespace unimod
    * @return true if and only if the matrix is ctu.
    */
 
+  TU_EXPORT
   bool is_complement_total_unimodular(const integer_matrix& matrix, std::size_t& complementedRow, std::size_t& complementedColumn, log_level level = LOG_QUIET);
 }
 

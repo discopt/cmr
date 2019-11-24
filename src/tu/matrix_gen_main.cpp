@@ -5,12 +5,11 @@
  *          http://www.boost.org/LICENSE_1_0.txt)
  **/
 
-#include "../config.h"
 #include <fstream>
 #include <iomanip>
 
-#include "total_unimodularity.hpp"
-#include "matroid_decomposition.hpp"
+#include <tu/total_unimodularity.hpp>
+#include <tu/matroid_decomposition.hpp>
 
 #include "gen_generic.hpp"
 #include "gen_cycle_violator.hpp"

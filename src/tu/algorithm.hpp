@@ -8,7 +8,7 @@
 #ifndef ALGORITHM_HPP_
 #define ALGORITHM_HPP_
 
-#include "matroid_decomposition.hpp"
+#include <tu/matroid_decomposition.hpp>
 #include "find_wheel_minor.hpp"
 #include "matroid_separate.hpp"
 #include "nested_minor_sequence.hpp"

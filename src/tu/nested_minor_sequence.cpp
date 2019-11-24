@@ -5,7 +5,6 @@
  *          http://www.boost.org/LICENSE_1_0.txt)
  **/
 
-#include "../config.h"
 #include "nested_minor_sequence.hpp"
 
 namespace unimod

@@ -14,7 +14,7 @@
 #include "matroid.hpp"
 #include "signing.hpp"
 #include "logger.hpp"
-#include "total_unimodularity.hpp"
+#include <tu/total_unimodularity.hpp>
 
 namespace unimod
 {

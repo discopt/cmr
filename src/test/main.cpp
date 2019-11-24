@@ -5,17 +5,18 @@
  *          http://www.boost.org/LICENSE_1_0.txt)
  **/
 
-#include "../config.h"
 #include <fstream>
 #include <iomanip>
 #include <map>
 
+#include <tu/config.h>
+
 #include <boost/logic/tribool.hpp>
 
-#include "total_unimodularity.hpp"
-#include "matroid_decomposition.hpp"
-#include "unimodularity.hpp"
-#include "smith_normal_form.hpp"
+#include <tu/total_unimodularity.hpp>
+#include <tu/matroid_decomposition.hpp>
+#include <tu/unimodularity.hpp>
+#include <tu/smith_normal_form.hpp>
 
 template <typename Set, typename Element>
 bool contains(const Set& set, const Element& element)
@@ -235,7 +236,7 @@ int run(const std::string& file_name, const std::set <char>& tests, bool show_ce
 
   file.close();
 
-  std::cerr << "Unimodularity test version " << PACKAGE_VERSION << " by Matthias Walter and Klaus Truemper.\n";
+  std::cerr << "Unimodularity test version " << TU_VERSION_MAJOR << "." << TU_VERSION_MINOR << TU_VERSION_PATCH << " by Matthias Walter and Klaus Truemper.\n";
   std::cerr << "See http://matthiaswalter.org/TUtest/ for references and citation.\n\n" << std::flush;
 
   std::cout << "Read a " << matrix.size1() << " x " << matrix.size2() << " matrix.\n" << std::endl;

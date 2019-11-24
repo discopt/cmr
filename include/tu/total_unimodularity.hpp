@@ -8,6 +8,9 @@
 #ifndef TOTAL_UNIMODULARITY_HPP_
 #define TOTAL_UNIMODULARITY_HPP_
 
+#include <tu/config.h>
+#include <tu/export.h>
+
 #include "common.hpp"
 
 namespace unimod
@@ -25,6 +28,7 @@ namespace unimod
    * @return Root of decomposition tree
    */
 
+  TU_EXPORT
   decomposed_matroid* decompose_binary_matroid(const integer_matrix& matrix, log_level level = LOG_QUIET);
 
   /**
@@ -37,6 +41,7 @@ namespace unimod
    * @return true if and only if the matrix is totally unimodular
    */
 
+  TU_EXPORT
   bool is_totally_unimodular(const integer_matrix& matrix, log_level level = LOG_QUIET);
 
   /**
@@ -53,6 +58,7 @@ namespace unimod
    * @return true if and only if the matrix is totally unimodular
    */
 
+  TU_EXPORT
   bool is_totally_unimodular(const integer_matrix& matrix, decomposed_matroid*& decomposition, log_level level = LOG_QUIET);
 
   /**
@@ -68,6 +74,7 @@ namespace unimod
    * @return true if and only if the matrix is totally unimodular
    */
 
+  TU_EXPORT
   bool is_totally_unimodular(const integer_matrix& matrix, submatrix_indices& violator, log_level level = LOG_QUIET);
 
   /**
@@ -87,6 +94,7 @@ namespace unimod
    * @return true if and only if the matrix is totally unimodular
    */
 
+  TU_EXPORT
   bool is_totally_unimodular(const integer_matrix& matrix, decomposed_matroid*& decomposition, submatrix_indices& violator, log_level level =
       LOG_QUIET);
 
@@ -97,6 +105,7 @@ namespace unimod
    * @return true if and only if it is a -1,0,+1 matrix
    */
 
+  TU_EXPORT
   bool is_zero_plus_minus_one_matrix(const integer_matrix& matrix);
 
   /**
@@ -108,6 +117,7 @@ namespace unimod
    * @return true if and only if it is a -1,0,+1 matrix
    */
 
+  TU_EXPORT
   bool is_zero_plus_minus_one_matrix(const integer_matrix& matrix, std::pair <integer_matrix::size_type, integer_matrix::size_type>& position);
 
   /**
@@ -117,6 +127,7 @@ namespace unimod
    * @return true if and only if it is a 0-1 matrix
    */
 
+  TU_EXPORT
   bool is_zero_one_matrix(const integer_matrix& matrix);
 
   /**
@@ -128,6 +139,7 @@ namespace unimod
    * @return true if and only if it is a 0-1 matrix
    */
 
+  TU_EXPORT
   bool is_zero_one_matrix(const integer_matrix& matrix, std::pair <integer_matrix::size_type, integer_matrix::size_type>& position);
 
   /**
@@ -138,6 +150,7 @@ namespace unimod
    * @return true if and only if the support matrix can be signed to the orignal
    */
 
+  TU_EXPORT
   bool is_signed_matrix(const integer_matrix& matrix);
 
   /**
@@ -150,6 +163,7 @@ namespace unimod
    * @return true if and only if the support matrix can be signed to the original
    */
 
+  TU_EXPORT
   bool is_signed_matrix(const integer_matrix& matrix, submatrix_indices& violator);
 
   /**
@@ -160,6 +174,7 @@ namespace unimod
    * @return true if and only if any change was necessary
    */
 
+  TU_EXPORT
   bool sign_matrix(integer_matrix& matrix);
 
   /**
@@ -168,6 +183,7 @@ namespace unimod
    * @param matrix The given matrix
    */
 
+  TU_EXPORT
   void support_matrix(integer_matrix& matrix);
 
   /**
@@ -178,6 +194,7 @@ namespace unimod
    * @return The submatrix' determinant
    */
 
+  TU_EXPORT
   int submatrix_determinant(const integer_matrix& matrix, const submatrix_indices& submatrix);
 
   /**
@@ -187,6 +204,7 @@ namespace unimod
    * @return true if and only if this matrix is totally unimdular
    */
 
+  TU_EXPORT
   bool determinant_is_totally_unimodular(const integer_matrix& matrix);
 
   /**
@@ -198,6 +216,7 @@ namespace unimod
    * @return true if and only if the this matrix is totally unimodular
    */
 
+  TU_EXPORT
   bool determinant_is_totally_unimodular(const integer_matrix& matrix, submatrix_indices& violator);
 
   /**
@@ -207,6 +226,7 @@ namespace unimod
    * @return true if and only if this matrix is totally unimodular
    */
 
+  TU_EXPORT
   bool ghouila_houri_is_totally_unimodular_enum_rows(const integer_matrix& matrix);
 
   /**
@@ -216,6 +236,7 @@ namespace unimod
    * @return true if and only if this matrix is totally unimodular
    */
 
+  TU_EXPORT
   bool ghouila_houri_is_totally_unimodular_enum_columns(const integer_matrix& matrix);
 
   /**
@@ -226,6 +247,7 @@ namespace unimod
    * @return true if and only if this matrix is totally unimodular
    */
 
+  TU_EXPORT
   bool ghouila_houri_is_totally_unimodular(const integer_matrix& matrix);
 
 }

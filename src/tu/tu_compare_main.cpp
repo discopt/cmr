@@ -5,14 +5,13 @@
  *          http://www.boost.org/LICENSE_1_0.txt)
  **/
 
-#include "../config.h"
 #include <fstream>
 #include <iomanip>
 
-#include "total_unimodularity.hpp"
-#include "matroid_decomposition.hpp"
-#include "unimodularity.hpp"
-#include "smith_normal_form.hpp"
+#include <tu/total_unimodularity.hpp>
+#include <tu/matroid_decomposition.hpp>
+#include <tu/unimodularity.hpp>
+#include <tu/smith_normal_form.hpp>
 
 void print_violator(const unimod::integer_matrix& matrix, const unimod::submatrix_indices& violator)
 {

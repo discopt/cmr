@@ -13,7 +13,7 @@
 #include <vector>
 #include "nested_minor_sequence.hpp"
 #include "matroid.hpp"
-#include "total_unimodularity.hpp"
+#include <tu/total_unimodularity.hpp>
 
 namespace unimod
 {
