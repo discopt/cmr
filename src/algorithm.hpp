@@ -264,6 +264,18 @@ namespace unimod
     else if (log.is_verbose())
       std::cout << "Sequence is (co)graphic until N_" << new_size << "." << std::endl;
 
+    if (new_size == 0)
+    {
+      ++new_size;
+      if (log.is_progressive())
+      {
+        log.line() << ", EXTENDING BY 1";
+        std::cout << log;
+      }
+      else if (log.is_verbose())
+        std::cout << "Sequence extended by to N_" << new_size << " to achieve minimum size." << std::endl;
+    }
+
     nested_minors.resize(new_size);
 
     sep = enumerate_separations(permuted_matroid, permuted_matrix, nested_minors, extra_elements, log);
