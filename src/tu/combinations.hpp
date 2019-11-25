@@ -1,12 +1,4 @@
-/*
- * combinations.hpp
- *
- *  Created on: Apr 27, 2011
- *      Author: xammy
- */
-
-#ifndef COMBINATIONS_HPP_
-#define COMBINATIONS_HPP_
+#pragma once
 
 #include <vector>
 
@@ -138,6 +130,4 @@ namespace tu
     return stream;
   }
 
-}
-
-#endif /* COMBINATIONS_HPP_ */
+} /* namespace tu */

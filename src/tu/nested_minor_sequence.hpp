@@ -1,12 +1,4 @@
-/**
- *          Copyright Matthias Walter 2010.
- * Distributed under the Boost Software License, Version 1.0.
- *    (See accompanying file LICENSE_1_0.txt or copy at
- *          http://www.boost.org/LICENSE_1_0.txt)
- **/
-
-#ifndef NESTED_MINOR_SEQUENCE_HPP_
-#define NESTED_MINOR_SEQUENCE_HPP_
+#pragma once
 
 #include <vector>
 #include <cassert>
@@ -286,6 +278,4 @@ namespace tu
     return nested_minor_sequence_transposed<NestedMinorSequenceType> (sequence);
   }
 
-}
-
-#endif /* NESTED_MINOR_SEQUENCE_HPP_ */
+} /* namespace tu */

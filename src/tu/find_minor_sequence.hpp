@@ -1,12 +1,4 @@
-/**
- *          Copyright Matthias Walter 2010.
- * Distributed under the Boost Software License, Version 1.0.
- *    (See accompanying file LICENSE_1_0.txt or copy at
- *          http://www.boost.org/LICENSE_1_0.txt)
- **/
-
-#ifndef FIND_MINOR_SEQUENCE_HPP_
-#define FIND_MINOR_SEQUENCE_HPP_
+#pragma once
 
 #include "nested_minor_sequence.hpp"
 #include "vector_three_connectivity.hpp"
@@ -491,6 +483,4 @@ namespace tu
     return separation();
   }
 
-}
-
-#endif /* FIND_MINOR_SEQUENCE_HPP_ */
+} /* namespace tu */

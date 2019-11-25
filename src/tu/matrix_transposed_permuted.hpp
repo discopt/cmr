@@ -1,12 +1,4 @@
-/**
- *          Copyright Matthias Walter 2010.
- * Distributed under the Boost Software License, Version 1.0.
- *    (See accompanying file LICENSE_1_0.txt or copy at
- *          http://www.boost.org/LICENSE_1_0.txt)
- **/
-
-#ifndef MATRIX_TRANSPOSED_PERMUTED_HPP_
-#define MATRIX_TRANSPOSED_PERMUTED_HPP_
+#pragma once
 
 // Inline functions that refer to transposition and permutation need
 // to be declared after both transposition and permutation alone,
@@ -43,7 +35,4 @@ namespace tu
     matrix_permute1(matrix.data(), index1, index2);
   }
 
-}
-
-
-#endif
+} /* namespace tu */

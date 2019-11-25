@@ -1,12 +1,4 @@
-/**
- *          Copyright Matthias Walter 2010.
- * Distributed under the Boost Software License, Version 1.0.
- *    (See accompanying file LICENSE_1_0.txt or copy at
- *          http://www.boost.org/LICENSE_1_0.txt)
- **/
-
-#ifndef MATRIX_REORDER_HPP_
-#define MATRIX_REORDER_HPP_
+#pragma once
 
 #include <tu/permutations.hpp>
 #include "matroid_transposed.hpp"
@@ -182,6 +174,4 @@ namespace tu
     matrix_reorder_rows(matrix, column_first, column_beyond, row_first, row_beyond, element_less);
   }
 
-}
-
-#endif /* MATRIX_REORDER_HPP_ */
+} /* namespace tu */

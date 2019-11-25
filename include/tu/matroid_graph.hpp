@@ -1,12 +1,4 @@
-/**
- *          Copyright Matthias Walter 2010.
- * Distributed under the Boost Software License, Version 1.0.
- *    (See accompanying file LICENSE_1_0.txt or copy at
- *          http://www.boost.org/LICENSE_1_0.txt)
- **/
-
-#ifndef MATROID_GRAPH_HPP_
-#define MATROID_GRAPH_HPP_
+#pragma once
 
 #include <iostream>
 
@@ -28,7 +20,7 @@ namespace tu
   typedef boost::property <tu::edge_matroid_element_t, int> matroid_element_property;
   typedef boost::adjacency_list <boost::vecS, boost::vecS, boost::undirectedS, boost::no_property, matroid_element_property> matroid_graph;
 
-}
+} /* namespace tu */
 
 namespace boost
 {
@@ -43,7 +35,8 @@ namespace boost
     typedef edge_property_tag type;
   };
 
-}
+} /* namespace boost */
+ 
 
 namespace tu
 {
@@ -61,6 +54,4 @@ namespace tu
 
   std::ostream& operator<<(std::ostream& stream, const tu::matroid_graph& graph);
 
-}
-
-#endif /* MATROID_GRAPH_HPP_ */
+} /* namespace tu */

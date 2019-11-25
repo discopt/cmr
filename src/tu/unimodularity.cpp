@@ -1,10 +1,3 @@
-/*
- * unimodularity.cpp
- *
- *  Created on: Feb 3, 2011
- *      Author: xammy
- */
-
 #include <tu/unimodularity.hpp>
 
 #include <tu/common.hpp>

@@ -1,12 +1,4 @@
-/*
- * linear_algebra.hpp
- *
- *  Created on: Feb 5, 2011
- *      Author: xammy
- */
-
-#ifndef LINEAR_ALGEBRA_HPP_
-#define LINEAR_ALGEBRA_HPP_
+#pragma once
 
 #include "gcd.hpp"
 #include "matrix_transposed.hpp"
@@ -148,6 +140,5 @@ namespace tu
 
     return rank;
   }
-}
 
-#endif /* LINEAR_ALGEBRA_HPP_ */
+} /* namespace tu */

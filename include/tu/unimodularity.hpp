@@ -1,12 +1,4 @@
-/**
- *          Copyright Matthias Walter 2010.
- * Distributed under the Boost Software License, Version 1.0.
- *    (See accompanying file LICENSE_1_0.txt or copy at
- *          http://www.boost.org/LICENSE_1_0.txt)
- **/
-
-#ifndef UNIMODULARITY_HPP_
-#define UNIMODULARITY_HPP_
+#pragma once
 
 #include <tu/config.h>
 #include <tu/export.h>
@@ -147,6 +139,5 @@ namespace tu
 
   TU_EXPORT
   bool is_complement_total_unimodular(const integer_matrix& matrix, std::size_t& complementedRow, std::size_t& complementedColumn, log_level level = LOG_QUIET);
-}
 
-#endif /* UNIMODULARITY_HPP_ */
+} /* namespace tu */

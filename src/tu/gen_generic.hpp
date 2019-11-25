@@ -1,12 +1,4 @@
-/**
- *          Copyright Matthias Walter 2010.
- * Distributed under the Boost Software License, Version 1.0.
- *    (See accompanying file LICENSE_1_0.txt or copy at
- *          http://www.boost.org/LICENSE_1_0.txt)
- **/
-
-#ifndef GEN_GENERIC_HPP_
-#define GEN_GENERIC_HPP_
+#pragma once
 
 #include <boost/random.hpp>
 #include <tu/total_unimodularity.hpp>
@@ -98,5 +90,3 @@ public:
     std::cout << std::flush;
   }
 };
-
-#endif

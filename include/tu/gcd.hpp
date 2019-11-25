@@ -1,12 +1,4 @@
-/*
- * gcd.hpp
- *
- *  Created on: Feb 5, 2011
- *      Author: xammy
- */
-
-#ifndef GCD_HPP_
-#define GCD_HPP_
+#pragma once
 
 #include <iostream>
 
@@ -71,6 +63,4 @@ namespace tu
     T s, t;
     return gcd(a, b, s, t);
   }
-}
-
-#endif /* GCD_HPP_ */
+} /* namespace tu */

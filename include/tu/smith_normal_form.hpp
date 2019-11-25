@@ -1,12 +1,4 @@
-/*
- * smith_normal_form.hpp
- *
- *  Created on: Feb 3, 2011
- *      Author: xammy
- */
-
-#ifndef SMITH_NORMAL_FORM_HPP_
-#define SMITH_NORMAL_FORM_HPP_
+#pragma once
 
 #include "common.hpp"
 #include "gcd.hpp"
@@ -105,6 +97,5 @@ namespace tu
     }
 
   }
-}
 
-#endif /* SMITH_NORMAL_FORM_HPP_ */
+} /* namespace tu */

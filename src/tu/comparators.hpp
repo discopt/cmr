@@ -1,12 +1,4 @@
-/**
- *          Copyright Matthias Walter 2010.
- * Distributed under the Boost Software License, Version 1.0.
- *    (See accompanying file LICENSE_1_0.txt or copy at
- *          http://www.boost.org/LICENSE_1_0.txt)
- **/
-
-#ifndef COMPARATORS_HPP_
-#define COMPARATORS_HPP_
+#pragma once
 
 namespace tu
 {
@@ -145,6 +137,4 @@ namespace tu
     const std::vector <T>& data_;
   };
 
-}
-
-#endif /* COMPARATORS_HPP_ */
+} /* namespace tu */
