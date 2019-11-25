@@ -14,10 +14,10 @@
 
 #include <boost/type_traits/is_const.hpp>
 
-#include "matrix_transposed.hpp"
-#include "matrix_permuted.hpp"
+#include <tu/matrix_transposed.hpp>
+#include <tu/matrix_permuted.hpp>
 #include "matrix_reorder.hpp"
-#include "matrix.hpp"
+#include <tu/matrix.hpp>
 #include "bipartite_graph_bfs.hpp"
 
 namespace unimod

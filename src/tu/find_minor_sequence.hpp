@@ -12,7 +12,7 @@
 #include "vector_three_connectivity.hpp"
 #include "separation.hpp"
 #include "matroid_transposed.hpp"
-#include "matrix_transposed.hpp"
+#include <tu/matrix_transposed.hpp>
 #include "matrix_modified.hpp"
 #include "bipartite_graph_bfs.hpp"
 #include "comparators.hpp"

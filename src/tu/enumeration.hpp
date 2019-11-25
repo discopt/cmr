@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "separation.hpp"
-#include "permutations.hpp"
+#include <tu/permutations.hpp>
 #include "comparators.hpp"
 #include "partition.hpp"
 #include "binary_linear_space.hpp"

@@ -8,9 +8,9 @@
 #ifndef MATRIX_REORDER_HPP_
 #define MATRIX_REORDER_HPP_
 
-#include "permutations.hpp"
+#include <tu/permutations.hpp>
 #include "matroid_transposed.hpp"
-#include "matrix.hpp"
+#include <tu/matrix.hpp>
 
 namespace unimod
 {

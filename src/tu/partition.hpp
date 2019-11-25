@@ -10,8 +10,8 @@
 
 #include <vector>
 
-#include "matrix_transposed.hpp"
-#include "matrix_permuted.hpp"
+#include <tu/matrix_transposed.hpp>
+#include <tu/matrix_permuted.hpp>
 #include "binary_linear_space.hpp"
 
 namespace unimod

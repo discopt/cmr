@@ -15,7 +15,7 @@
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/matrix_proxy.hpp>
 
-#include "permutations.hpp"
+#include <tu/permutations.hpp>
 
 namespace unimod
 {

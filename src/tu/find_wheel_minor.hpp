@@ -8,8 +8,8 @@
 #ifndef FIND_WHEEL_MINOR_HPP_
 #define FIND_WHEEL_MINOR_HPP_
 
-#include "matrix.hpp"
-#include "matrix_permuted.hpp"
+#include <tu/matrix.hpp>
+#include <tu/matrix_permuted.hpp>
 #include "matrix_reorder.hpp"
 #include "matroid.hpp"
 #include "matroid_permuted.hpp"

@@ -10,7 +10,7 @@
 
 #include <vector>
 
-#include "permutations.hpp"
+#include <tu/permutations.hpp>
 
 namespace unimod
 {
