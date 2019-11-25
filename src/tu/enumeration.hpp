@@ -480,7 +480,7 @@ namespace unimod
       size_t current_width = 3;
       for (size_t i = 0; i < nested_minors.size(); ++i)
       {
-        if (current_height + current_width >= 7)
+        if (current_height + current_width >= 8)
         {
           minor_size = std::make_pair(current_height, current_width);
           return i;
@@ -634,8 +634,8 @@ namespace unimod
     /// The first minors must be enumerated fully until we have one with at least 7 elements.
     size_pair_t minor_size;
     size_t minor_index = detail::find_first_7_element_minor(nested_minors, minor_size);
-    assert (minor_size.first + minor_size.second >= 7);
-    assert (minor_size.first + minor_size.second <= 9);
+    assert(minor_size.first + minor_size.second >= 8);
+    assert(minor_size.first + minor_size.second <= 10);
 
     /// preparations
     const integer_matrix worker_matrix_base(matrix);
