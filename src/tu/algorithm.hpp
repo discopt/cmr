@@ -264,12 +264,19 @@ namespace unimod
     else if (log.is_verbose())
       std::cout << "Sequence is (co)graphic until N_" << new_size << "." << std::endl;
 
-    if (new_size == 0)
+    std::size_t minSize = 0;
+    std::size_t numElements = 6;
+    for (minSize = 0; minSize < nested_minors.size() && numElements < 8; ++minSize)
     {
-      ++new_size;
+      numElements += nested_minors.get_extension_height(minSize) + nested_minors.get_extension_width(minSize);
+    }
+
+    if (new_size < minSize)
+    {
+      new_size = minSize;
       if (log.is_progressive())
       {
-        log.line() << ", EXTENDING BY 1";
+        log.line() << ", EXTENDING TO " << new_size;
         std::cout << log;
       }
       else if (log.is_verbose())
