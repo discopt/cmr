@@ -11,7 +11,7 @@
 
 #include <tu/total_unimodularity.hpp>
 
-namespace unimod
+namespace tu
 {
 
   /**

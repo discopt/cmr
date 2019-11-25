@@ -12,7 +12,7 @@
 #include <boost/graph/filtered_graph.hpp>
 #include <boost/graph/adjacency_list.hpp>
 
-namespace unimod
+namespace tu
 {
 
   namespace util

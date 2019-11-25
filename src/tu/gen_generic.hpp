@@ -20,13 +20,13 @@ class matrix_generator
 protected:
   size_t _height;
   size_t _width;
-  unimod::integer_matrix _matrix;
+  tu::integer_matrix _matrix;
   boost::mt19937 _rng;
-  unimod::log_level _level;
+  tu::log_level _level;
   const char* _name;
 
 public:
-  matrix_generator(const char* name, size_t height, size_t width, unimod::log_level level) :
+  matrix_generator(const char* name, size_t height, size_t width, tu::log_level level) :
     _height(height), _width(width), _matrix(height, width), _rng(time(NULL)), _level(level), _name(name)
   {
   }
@@ -40,13 +40,13 @@ public:
 
   void log_generate_start()
   {
-    if (_level != unimod::LOG_QUIET)
+    if (_level != tu::LOG_QUIET)
       std::cerr << "Generating " << _height << " x " << _width << " " << _name << " matrix..." << std::flush;
   }
 
   void log_generate_end()
   {
-    if (_level != unimod::LOG_QUIET)
+    if (_level != tu::LOG_QUIET)
       std::cerr << " done." << std::endl;
   }
 
@@ -58,8 +58,8 @@ public:
   template <typename MatrixType>
   void permute_rows(MatrixType& matrix)
   {
-    unimod::permutation perm(matrix.size1(), _rng);
-    unimod::matrix_apply_row_permutation(matrix, perm);
+    tu::permutation perm(matrix.size1(), _rng);
+    tu::matrix_apply_row_permutation(matrix, perm);
   }
 
   void permute_rows()
@@ -69,7 +69,7 @@ public:
 
   void permute_columns()
   {
-    unimod::matrix_transposed <unimod::integer_matrix> transposed(_matrix);
+    tu::matrix_transposed <tu::integer_matrix> transposed(_matrix);
     permute_rows(transposed);
   }
 
@@ -81,7 +81,7 @@ public:
 
   virtual void sign()
   {
-    unimod::sign_matrix(_matrix);
+    tu::sign_matrix(_matrix);
   }
 
   virtual void print()

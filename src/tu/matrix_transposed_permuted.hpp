@@ -12,7 +12,7 @@
 // to be declared after both transposition and permutation alone,
 // hence the need for a separate header file
 
-namespace unimod
+namespace tu
 {
 
   /**

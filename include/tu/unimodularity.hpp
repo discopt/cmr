@@ -13,7 +13,7 @@
 
 #include "common.hpp"
 
-namespace unimod
+namespace tu
 {
   /**
    * Tests for unimodularity without certificates.

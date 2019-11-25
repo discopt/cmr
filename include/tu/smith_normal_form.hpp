@@ -15,7 +15,7 @@
 #include "matrix_permuted.hpp"
 #include "matrix_transposed.hpp"
 
-namespace unimod
+namespace tu
 {
   template <typename Matrix>
   void smith_normal_form_diagonal(Matrix& input_matrix, std::vector <int>& diagonal)

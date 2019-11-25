@@ -13,7 +13,7 @@
 
 #include <tu/common.hpp>
 
-namespace unimod
+namespace tu
 {
 
   /**

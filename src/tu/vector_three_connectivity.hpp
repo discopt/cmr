@@ -10,7 +10,7 @@
 
 #include <vector>
 
-namespace unimod
+namespace tu
 {
 
   template <typename MatrixType>

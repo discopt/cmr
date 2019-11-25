@@ -12,7 +12,7 @@
 #include "matroid_transposed.hpp"
 #include <tu/matrix.hpp>
 
-namespace unimod
+namespace tu
 {
 
   /**

@@ -7,7 +7,7 @@
 
 #include <tu/matroid_decomposition.hpp>
 
-namespace unimod
+namespace tu
 {
 
   /**

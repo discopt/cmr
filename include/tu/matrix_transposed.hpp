@@ -10,7 +10,7 @@
 
 #include <boost/numeric/ublas/matrix_expression.hpp>
 
-namespace unimod
+namespace tu
 {
 
   template <typename MatrixType>

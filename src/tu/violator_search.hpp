@@ -16,7 +16,7 @@
 #include "logger.hpp"
 #include <tu/total_unimodularity.hpp>
 
-namespace unimod
+namespace tu
 {
   namespace detail
   {

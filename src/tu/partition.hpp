@@ -14,7 +14,7 @@
 #include <tu/matrix_permuted.hpp>
 #include "binary_linear_space.hpp"
 
-namespace unimod
+namespace tu
 {
 
   typedef std::pair <size_t, size_t> size_pair_t;

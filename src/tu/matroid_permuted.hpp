@@ -10,7 +10,7 @@
 
 #include "matroid.hpp"
 
-namespace unimod
+namespace tu
 {
 
   /**

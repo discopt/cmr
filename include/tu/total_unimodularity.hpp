@@ -13,7 +13,7 @@
 
 #include "common.hpp"
 
-namespace unimod
+namespace tu
 {
   /// Node of a decomposition tree
 

@@ -12,7 +12,7 @@
 #include <cassert>
 #include <cstring>
 
-namespace unimod
+namespace tu
 {
 
   /**

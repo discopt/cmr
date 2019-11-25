@@ -13,7 +13,7 @@
 #include "matrix_permuted.hpp"
 #include "matrix.hpp"
 
-namespace unimod
+namespace tu
 {
   template <typename Matrix>
   void matrix_row_combine(Matrix& matrix, size_t row1, size_t row2, long long ul, long long ur, long long ll, long long lr)

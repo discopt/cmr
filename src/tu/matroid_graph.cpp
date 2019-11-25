@@ -10,7 +10,7 @@
 #include <string>
 #include <iomanip>
 
-namespace unimod
+namespace tu
 {
 
   /**
@@ -21,9 +21,9 @@ namespace unimod
    * @return The output stream after writing to it
    */
 
-  std::ostream& operator<<(std::ostream& stream, const unimod::matroid_graph& graph)
+  std::ostream& operator<<(std::ostream& stream, const tu::matroid_graph& graph)
   {
-    typedef boost::graph_traits <unimod::matroid_graph> traits;
+    typedef boost::graph_traits <tu::matroid_graph> traits;
 
     std::map <size_t, std::string> names;
 
@@ -54,7 +54,7 @@ namespace unimod
     }
     stream << '\n';
 
-    unimod::const_matroid_element_map element_map = boost::get(unimod::edge_matroid_element, graph);
+    tu::const_matroid_element_map element_map = boost::get(tu::edge_matroid_element, graph);
     traits::edge_iterator edge_iter, edge_end;
     for (boost::tie(edge_iter, edge_end) = boost::edges(graph); edge_iter != edge_end; ++edge_iter)
     {

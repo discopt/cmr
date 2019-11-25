@@ -13,9 +13,9 @@
 #include <tu/unimodularity.hpp>
 #include <tu/smith_normal_form.hpp>
 
-void print_violator(const unimod::integer_matrix& matrix, const unimod::submatrix_indices& violator)
+void print_violator(const tu::integer_matrix& matrix, const tu::submatrix_indices& violator)
 {
-  typedef boost::numeric::ublas::matrix_indirect <const unimod::integer_matrix, unimod::submatrix_indices::indirect_array_type> indirect_matrix_t;
+  typedef boost::numeric::ublas::matrix_indirect <const tu::integer_matrix, tu::submatrix_indices::indirect_array_type> indirect_matrix_t;
 
   const indirect_matrix_t indirect_matrix(matrix, violator.rows, violator.columns);
 
@@ -36,7 +36,7 @@ void print_violator(const unimod::integer_matrix& matrix, const unimod::submatri
   std::cout << std::endl;
 }
 
-int run_decomposition(const std::string& file_name, bool show_certificates, unimod::log_level level)
+int run_decomposition(const std::string& file_name, bool show_certificates, tu::log_level level)
 {
   /// Open the file
 
@@ -59,7 +59,7 @@ int run_decomposition(const std::string& file_name, bool show_certificates, unim
 
   /// Read matrix entries
 
-  unimod::integer_matrix matrix(height, width);
+  tu::integer_matrix matrix(height, width);
   for (size_t row = 0; row < height; ++row)
   {
     for (size_t column = 0; column < width; ++column)
@@ -78,10 +78,10 @@ int run_decomposition(const std::string& file_name, bool show_certificates, unim
 
   if (show_certificates)
   {
-    unimod::submatrix_indices violator;
-    unimod::decomposed_matroid* decomposition;
+    tu::submatrix_indices violator;
+    tu::decomposed_matroid* decomposition;
 
-    if (unimod::is_totally_unimodular(matrix, decomposition, violator, level))
+    if (tu::is_totally_unimodular(matrix, decomposition, violator, level))
     {
       std::cout << "\nThe " << matrix.size1() << " x " << matrix.size2() << " matrix is totally unimodular.\n" << std::endl;
     }
@@ -89,7 +89,7 @@ int run_decomposition(const std::string& file_name, bool show_certificates, unim
     {
       std::cout << "\nThe " << matrix.size1() << " x " << matrix.size2() << " matrix is not totally unimodular." << std::endl;
       assert (violator.rows.size() == violator.columns.size());
-      int det = unimod::submatrix_determinant(matrix, violator);
+      int det = tu::submatrix_determinant(matrix, violator);
       std::cout << "\nThe violating submatrix (det = " << det << ") is " << violator.rows.size() << " x " << violator.columns.size() << ":\n\n"
           << std::flush;
       print_violator(matrix, violator);
@@ -98,7 +98,7 @@ int run_decomposition(const std::string& file_name, bool show_certificates, unim
   }
   else
   {
-    if (unimod::is_totally_unimodular(matrix, level))
+    if (tu::is_totally_unimodular(matrix, level))
     {
       std::cout << "The " << matrix.size1() << " x " << matrix.size2() << " matrix is totally unimodular." << std::endl;
     }
@@ -134,7 +134,7 @@ int run_column_enumeration(const std::string& file_name)
 
   /// Read matrix entries
 
-  unimod::integer_matrix matrix(height, width);
+  tu::integer_matrix matrix(height, width);
   for (size_t row = 0; row < height; ++row)
   {
     for (size_t column = 0; column < width; ++column)
@@ -151,7 +151,7 @@ int run_column_enumeration(const std::string& file_name)
 
   file.close();
 
-  if (unimod::ghouila_houri_is_totally_unimodular(matrix))
+  if (tu::ghouila_houri_is_totally_unimodular(matrix))
   {
     std::cout << "The " << matrix.size1() << " x " << matrix.size2() << " matrix is totally unimodular." << std::endl;
   }
@@ -186,7 +186,7 @@ int run_submatrix(const std::string& file_name)
 
   /// Read matrix entries
 
-  unimod::integer_matrix matrix(height, width);
+  tu::integer_matrix matrix(height, width);
   for (size_t row = 0; row < height; ++row)
   {
     for (size_t column = 0; column < width; ++column)
@@ -203,8 +203,8 @@ int run_submatrix(const std::string& file_name)
 
   file.close();
 
-  unimod::submatrix_indices violator_indices;
-  if (unimod::determinant_is_totally_unimodular(matrix, violator_indices))
+  tu::submatrix_indices violator_indices;
+  if (tu::determinant_is_totally_unimodular(matrix, violator_indices))
   {
     std::cout << "The " << matrix.size1() << " x " << matrix.size2() << " matrix is totally unimodular." << std::endl;
   }
@@ -217,7 +217,7 @@ int run_submatrix(const std::string& file_name)
   return EXIT_SUCCESS;
 }
 
-bool extract_option(char c, char& algorithm, bool& certs, unimod::log_level& level, bool& help)
+bool extract_option(char c, char& algorithm, bool& certs, tu::log_level& level, bool& help)
 {
   if (c == 'D' || c == 'C' || c == 'S')
     algorithm = c;
@@ -226,11 +226,11 @@ bool extract_option(char c, char& algorithm, bool& certs, unimod::log_level& lev
   else if (c == 'c')
     certs = true;
   else if (c == 'q')
-    level = unimod::LOG_QUIET;
+    level = tu::LOG_QUIET;
   else if (c == 'p')
-    level = unimod::LOG_PROGRESSIVE;
+    level = tu::LOG_PROGRESSIVE;
   else if (c == 'v')
-    level = unimod::LOG_VERBOSE;
+    level = tu::LOG_VERBOSE;
   else
     return false;
 
@@ -242,7 +242,7 @@ int main(int argc, char **argv)
   /// Possible parameters
   std::string matrix_file_name = "";
   bool certs = false;
-  unimod::log_level level = unimod::LOG_PROGRESSIVE;
+  tu::log_level level = tu::LOG_PROGRESSIVE;
   bool help = false;
   char algorithm = 'm';
 
@@ -307,7 +307,7 @@ int main(int argc, char **argv)
     std::cout << "Certificates are only available for decomposition algorithm!\nSee " << argv[0] << " -h for usage." << std::endl;
     return EXIT_FAILURE;
   }
-  if (algorithm != 'D' && level != unimod::LOG_PROGRESSIVE)
+  if (algorithm != 'D' && level != tu::LOG_PROGRESSIVE)
   {
     std::cout << "Logging options only have an affect on decomposition algorithm!" << std::endl;
   }

@@ -18,7 +18,7 @@
 #include "enumeration.hpp"
 #include "logger.hpp"
 
-namespace unimod
+namespace tu
 {
 
   /// Forward declaration

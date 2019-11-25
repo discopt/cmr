@@ -19,7 +19,7 @@
 #include "matrix_modified.hpp"
 #include "logger.hpp"
 
-namespace unimod
+namespace tu
 {
   namespace detail
   {

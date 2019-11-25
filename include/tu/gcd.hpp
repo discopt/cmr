@@ -10,7 +10,7 @@
 
 #include <iostream>
 
-namespace unimod
+namespace tu
 {
   template <typename T>
   T gcd_impl(T a, T b, T& s, T& t)

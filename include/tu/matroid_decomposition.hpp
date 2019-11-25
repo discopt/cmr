@@ -16,7 +16,7 @@
 
 #include "matroid_graph.hpp"
 
-namespace unimod
+namespace tu
 {
 
   /**

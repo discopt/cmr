@@ -18,7 +18,7 @@ private:
   double _nonzero_probability;
 
 public:
-  random_matrix_generator(size_t height, size_t width, double nonzero_probability, unimod::log_level level) :
+  random_matrix_generator(size_t height, size_t width, double nonzero_probability, tu::log_level level) :
     matrix_generator("random", height, width, level), _nonzero_probability(nonzero_probability)
   {
 
@@ -47,7 +47,7 @@ public:
 
   virtual bool do_pivot(size_t row, size_t column)
   {
-    unimod::matrix_ternary_pivot(_matrix, row, column);
+    tu::matrix_ternary_pivot(_matrix, row, column);
     return true;
   }
 };

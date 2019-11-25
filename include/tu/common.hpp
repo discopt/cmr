@@ -12,7 +12,7 @@
 #include <boost/numeric/ublas/storage.hpp>
 #include <boost/numeric/ublas/matrix_proxy.hpp>
 
-namespace unimod
+namespace tu
 {
 
   /**

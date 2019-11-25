@@ -13,7 +13,7 @@
 #include <boost/graph/properties.hpp>
 #include <boost/graph/adjacency_list.hpp>
 
-namespace unimod
+namespace tu
 {
 
   /**
@@ -25,7 +25,7 @@ namespace unimod
     edge_matroid_element
   };
 
-  typedef boost::property <unimod::edge_matroid_element_t, int> matroid_element_property;
+  typedef boost::property <tu::edge_matroid_element_t, int> matroid_element_property;
   typedef boost::adjacency_list <boost::vecS, boost::vecS, boost::undirectedS, boost::no_property, matroid_element_property> matroid_graph;
 
 }
@@ -38,14 +38,14 @@ namespace boost
    */
 
   template <>
-  struct property_kind <unimod::edge_matroid_element_t>
+  struct property_kind <tu::edge_matroid_element_t>
   {
     typedef edge_property_tag type;
   };
 
 }
 
-namespace unimod
+namespace tu
 {
 
   typedef boost::property_map <matroid_graph, edge_matroid_element_t>::const_type const_matroid_element_map;
@@ -59,7 +59,7 @@ namespace unimod
    * @return The output stream after writing to it
    */
 
-  std::ostream& operator<<(std::ostream& stream, const unimod::matroid_graph& graph);
+  std::ostream& operator<<(std::ostream& stream, const tu::matroid_graph& graph);
 
 }
 

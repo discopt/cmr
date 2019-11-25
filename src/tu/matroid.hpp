@@ -17,7 +17,7 @@
 
 #include <tu/permutations.hpp>
 
-namespace unimod
+namespace tu
 {
 
   /**

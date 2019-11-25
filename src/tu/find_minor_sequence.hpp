@@ -18,7 +18,7 @@
 #include "comparators.hpp"
 #include "logger.hpp"
 
-namespace unimod
+namespace tu
 {
 
   /**

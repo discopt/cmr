@@ -12,7 +12,7 @@
 #include <tu/total_unimodularity.hpp>
 #include "matroid.hpp"
 
-namespace unimod
+namespace tu
 {
 
   /**

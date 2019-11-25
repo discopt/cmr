@@ -7,7 +7,7 @@
 
 #include "nested_minor_sequence.hpp"
 
-namespace unimod
+namespace tu
 {
 
   /**

@@ -12,7 +12,7 @@
 #include <tu/smith_normal_form.hpp>
 #include <tu/total_unimodularity.hpp>
 
-namespace unimod
+namespace tu
 {
 
   template <typename Matrix>

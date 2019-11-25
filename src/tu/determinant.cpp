@@ -14,7 +14,7 @@
 #include <tu/total_unimodularity.hpp>
 #include "combinations.hpp"
 
-namespace unimod
+namespace tu
 {
 
   /**

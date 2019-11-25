@@ -19,7 +19,7 @@
 #include "bipartite_graph_bfs.hpp"
 #include "comparators.hpp"
 
-namespace unimod
+namespace tu
 {
 
   /**

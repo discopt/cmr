@@ -24,11 +24,11 @@ bool contains(const Set& set, const Element& element)
   return set.find(element) != set.end();
 }
 
-void print_matroid_graph(const unimod::matroid_graph& graph, const std::string& indent = "")
+void print_matroid_graph(const tu::matroid_graph& graph, const std::string& indent = "")
 {
   std::cout << boost::num_vertices(graph) << " nodes and " << boost::num_edges(graph) << " edges:";
 
-  typedef boost::graph_traits <unimod::matroid_graph> traits;
+  typedef boost::graph_traits <tu::matroid_graph> traits;
   traits::vertex_iterator vertex_iter, vertex_end;
   traits::out_edge_iterator edge_iter, edge_end;
 
@@ -37,23 +37,23 @@ void print_matroid_graph(const unimod::matroid_graph& graph, const std::string& 
     std::cout << '\n' << indent << *vertex_iter << ':';
     for (boost::tie(edge_iter, edge_end) = boost::out_edges(*vertex_iter, graph); edge_iter != edge_end; ++edge_iter)
     {
-      int matroid_element = boost::get(unimod::edge_matroid_element, graph, *edge_iter);
+      int matroid_element = boost::get(tu::edge_matroid_element, graph, *edge_iter);
       std::cout << ' ' << boost::target(*edge_iter, graph) << " (" << (matroid_element < 0 ? "row " : "column ") << matroid_element << ") ";
     }
   }
   std::cout << '\n';
 }
 
-void print_decomposition(const unimod::decomposed_matroid* decomposition, std::string indent = "")
+void print_decomposition(const tu::decomposed_matroid* decomposition, std::string indent = "")
 {
   if (decomposition->is_leaf())
   {
-    unimod::decomposed_matroid_leaf* leaf = (unimod::decomposed_matroid_leaf*) (decomposition);
+    tu::decomposed_matroid_leaf* leaf = (tu::decomposed_matroid_leaf*) (decomposition);
 
     if (leaf->is_R10())
     {
       std::cout << indent << "R10:";
-      for (unimod::matroid_element_set::const_iterator iter = leaf->elements().begin(); iter != leaf->elements().end(); ++iter)
+      for (tu::matroid_element_set::const_iterator iter = leaf->elements().begin(); iter != leaf->elements().end(); ++iter)
         std::cout << " " << *iter;
       std::cout << "\n";
     }
@@ -87,18 +87,18 @@ void print_decomposition(const unimod::decomposed_matroid* decomposition, std::s
   }
   else
   {
-    unimod::decomposed_matroid_separator* separator = (unimod::decomposed_matroid_separator*) (decomposition);
+    tu::decomposed_matroid_separator* separator = (tu::decomposed_matroid_separator*) (decomposition);
 
-    if (separator->separation_type() == unimod::decomposed_matroid_separator::ONE_SEPARATION)
+    if (separator->separation_type() == tu::decomposed_matroid_separator::ONE_SEPARATION)
     {
       std::cout << indent << "1-separation:\n";
 
     }
-    else if (separator->separation_type() == unimod::decomposed_matroid_separator::TWO_SEPARATION)
+    else if (separator->separation_type() == tu::decomposed_matroid_separator::TWO_SEPARATION)
     {
       std::cout << indent << "2-separation:\n";
     }
-    else if (separator->separation_type() == unimod::decomposed_matroid_separator::THREE_SEPARATION)
+    else if (separator->separation_type() == tu::decomposed_matroid_separator::THREE_SEPARATION)
     {
       std::cout << indent << "3-separation:\n";
     }
@@ -113,9 +113,9 @@ void print_decomposition(const unimod::decomposed_matroid* decomposition, std::s
   }
 }
 
-void print_violator(const unimod::integer_matrix& matrix, const unimod::submatrix_indices& violator)
+void print_violator(const tu::integer_matrix& matrix, const tu::submatrix_indices& violator)
 {
-  typedef boost::numeric::ublas::matrix_indirect <const unimod::integer_matrix, unimod::submatrix_indices::indirect_array_type> indirect_matrix_t;
+  typedef boost::numeric::ublas::matrix_indirect <const tu::integer_matrix, tu::submatrix_indices::indirect_array_type> indirect_matrix_t;
 
   const indirect_matrix_t indirect_matrix(matrix, violator.rows, violator.columns);
 
@@ -148,16 +148,16 @@ void print_result(std::ostream& stream, const std::string& name, boost::logic::t
     stream << "not determined\n";
 }
 
-bool test_total_unimodularity(unimod::integer_matrix& matrix, bool show_certificates, unimod::log_level level)
+bool test_total_unimodularity(tu::integer_matrix& matrix, bool show_certificates, tu::log_level level)
 {
   bool result;
 
   if (show_certificates)
   {
-    unimod::submatrix_indices violator;
-    unimod::decomposed_matroid* decomposition;
+    tu::submatrix_indices violator;
+    tu::decomposed_matroid* decomposition;
 
-    result = unimod::is_totally_unimodular(matrix, decomposition, violator, level);
+    result = tu::is_totally_unimodular(matrix, decomposition, violator, level);
 
     if (result)
     {
@@ -167,7 +167,7 @@ bool test_total_unimodularity(unimod::integer_matrix& matrix, bool show_certific
     }
     else
     {
-      int det = unimod::submatrix_determinant(matrix, violator);
+      int det = tu::submatrix_determinant(matrix, violator);
       assert (violator.rows.size() == violator.columns.size());
       std::cout << "\nThe matrix is not totally unimodular due to the following " << violator.rows.size() << " x " << violator.columns.size()
           << " submatrix with determinant " << det << "." << std::endl;
@@ -177,26 +177,26 @@ bool test_total_unimodularity(unimod::integer_matrix& matrix, bool show_certific
   }
   else
   {
-    result = unimod::is_totally_unimodular(matrix, level);
+    result = tu::is_totally_unimodular(matrix, level);
     std::cout << "The matrix is " << (result ? "" : "not ") << "totally unimodular." << std::endl;
   }
 
   return result;
 }
 
-bool test_regularity(unimod::integer_matrix& matrix, unimod::log_level level)
+bool test_regularity(tu::integer_matrix& matrix, tu::log_level level)
 {
   bool result;
 
-  unimod::integer_matrix copy = matrix;
-  unimod::sign_matrix(copy);
-  result = unimod::is_totally_unimodular(copy, level);
+  tu::integer_matrix copy = matrix;
+  tu::sign_matrix(copy);
+  result = tu::is_totally_unimodular(copy, level);
   std::cout << "The underlying binary matroid is " << (result ? "" : "not ") << "regular." << std::endl;
 
   return result;
 }
 
-int run(const std::string& file_name, const std::set <char>& tests, bool show_certificates, unimod::log_level level)
+int run(const std::string& file_name, const std::set <char>& tests, bool show_certificates, tu::log_level level)
 {
   /// Open the file
 
@@ -219,7 +219,7 @@ int run(const std::string& file_name, const std::set <char>& tests, bool show_ce
 
   /// Read matrix entries
 
-  unimod::integer_matrix matrix(height, width);
+  tu::integer_matrix matrix(height, width);
   for (size_t row = 0; row < height; ++row)
   {
     for (size_t column = 0; column < width; ++column)
@@ -250,7 +250,7 @@ int run(const std::string& file_name, const std::set <char>& tests, bool show_ce
 
   if (contains(tests, 's'))
   {
-    unimod::sign_matrix(matrix);
+    tu::sign_matrix(matrix);
 
     std::cout << "Signed version of input matrix is the following.\n\n";
     std::cout << matrix.size1() << " " << matrix.size2() << "\n";
@@ -282,7 +282,7 @@ int run(const std::string& file_name, const std::set <char>& tests, bool show_ce
        /// Test for complement total unimodularity.
 
       std::size_t complementedRow, complementedColumn;
-      results['C'] = unimod::is_complement_total_unimodular(matrix, complementedRow, complementedColumn, unimod::LOG_QUIET);
+      results['C'] = tu::is_complement_total_unimodular(matrix, complementedRow, complementedColumn, tu::LOG_QUIET);
       if (!results['C'] && show_certificates)
       {
         std::cout << "The matrix obtained by complementing ";
@@ -306,9 +306,9 @@ int run(const std::string& file_name, const std::set <char>& tests, bool show_ce
 
     if (contains(tests, 'm') || contains(tests, 'M'))
     {
-      if (level != unimod::LOG_QUIET)
+      if (level != tu::LOG_QUIET)
         std::cout << "Testing matrix for k-modularity... " << std::flush;
-      results['m'] = unimod::is_k_modular(matrix, rank, k, unimod::LOG_PROGRESSIVE);
+      results['m'] = tu::is_k_modular(matrix, rank, k, tu::LOG_PROGRESSIVE);
       std::cout << "The matrix is " << (results['m'] ? "" : "not ") << "k-modular.\n" << std::flush;
 
       results['u'] = (results['m'] && k == 1);
@@ -326,9 +326,9 @@ int run(const std::string& file_name, const std::set <char>& tests, bool show_ce
     }
     else if (contains(tests, 'u') || contains(tests, 'U'))
     {
-      if (level != unimod::LOG_QUIET)
+      if (level != tu::LOG_QUIET)
         std::cout << "Testing matrix for unimodularity... " << std::flush;
-      results['u'] = unimod::is_unimodular(matrix, rank, unimod::LOG_QUIET);
+      results['u'] = tu::is_unimodular(matrix, rank, tu::LOG_QUIET);
       std::cout << "The matrix is " << (results['u'] ? "" : "not ") << "unimodular.\n" << std::flush;
 
       if (results['u'])
@@ -342,10 +342,10 @@ int run(const std::string& file_name, const std::set <char>& tests, bool show_ce
     }
     if (contains(tests, 'M') && boost::logic::indeterminate(results['M']))
     {
-      if (level != unimod::LOG_QUIET)
+      if (level != tu::LOG_QUIET)
         std::cout << "Testing transpose of matrix for k-modularity... " << std::flush;
-      unimod::matrix_transposed <unimod::integer_matrix> transposed(matrix);
-      results['M'] = unimod::is_k_modular(transposed, rank, k, unimod::LOG_QUIET);
+      tu::matrix_transposed <tu::integer_matrix> transposed(matrix);
+      results['M'] = tu::is_k_modular(transposed, rank, k, tu::LOG_QUIET);
       std::cout << "The transpose is " << (results['M'] ? "" : "not ") << "k-modular.\n" << std::flush;
 
       results['U'] = (results['M'] && k == 1);
@@ -358,10 +358,10 @@ int run(const std::string& file_name, const std::set <char>& tests, bool show_ce
     }
     else if (contains(tests, 'U') && boost::logic::indeterminate(results['U']))
     {
-      if (level != unimod::LOG_QUIET)
+      if (level != tu::LOG_QUIET)
         std::cout << "Testing transpose of matrix for unimodularity... " << std::flush;
-      unimod::matrix_transposed <unimod::integer_matrix> transposed(matrix);
-      results['U'] = unimod::is_unimodular(transposed, rank, unimod::LOG_QUIET);
+      tu::matrix_transposed <tu::integer_matrix> transposed(matrix);
+      results['U'] = tu::is_unimodular(transposed, rank, tu::LOG_QUIET);
       std::cout << "The transpose is " << (results['U'] ? "" : "not ") << "unimodular.\n" << std::flush;
 
       if (!results['U'])
@@ -393,7 +393,7 @@ int run(const std::string& file_name, const std::set <char>& tests, bool show_ce
   return EXIT_SUCCESS;
 }
 
-bool extract_option(char c, std::set <char>& tests, bool& certs, unimod::log_level& level, bool& help)
+bool extract_option(char c, std::set <char>& tests, bool& certs, tu::log_level& level, bool& help)
 {
   if (c == 't' || c == 'u' || c == 'm' || c == 'U' || c == 'M' || c == 's')
     tests.insert(c);
@@ -416,11 +416,11 @@ bool extract_option(char c, std::set <char>& tests, bool& certs, unimod::log_lev
   else if (c == 'c')
     certs = true;
   else if (c == 'q')
-    level = unimod::LOG_QUIET;
+    level = tu::LOG_QUIET;
   else if (c == 'p')
-    level = unimod::LOG_PROGRESSIVE;
+    level = tu::LOG_PROGRESSIVE;
   else if (c == 'v')
-    level = unimod::LOG_VERBOSE;
+    level = tu::LOG_VERBOSE;
   else
     return false;
 
@@ -432,7 +432,7 @@ int main(int argc, char **argv)
   /// Possible parameters
   std::string matrix_file_name = "";
   bool certs = false;
-  unimod::log_level level = unimod::LOG_PROGRESSIVE;
+  tu::log_level level = tu::LOG_PROGRESSIVE;
   bool help = false;
   std::set <char> tests;
 
