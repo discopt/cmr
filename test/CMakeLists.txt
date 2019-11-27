@@ -10,7 +10,7 @@ endif()
 add_executable(tu_gtest
   common.cpp
 #  test_incidence.cpp
-#  test_matrix.cpp
+  test_matrix.cpp
 #  test_preprocessing.cpp
   test_main.cpp)
 

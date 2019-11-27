@@ -7,6 +7,420 @@
 
 namespace tu
 {
+  template <typename Iterator>
+  class Range
+  {
+  public:
+    Range(Iterator begin, Iterator end)
+      : _begin(begin), _end(end)
+    {
+
+    }
+
+    Range(const Range<Iterator>& other)
+      : _begin(other._begin), _end(other._end)
+    {
+
+    }
+
+    Iterator begin()
+    {
+      return _begin;
+    }
+
+    Iterator end()
+    {
+      return _end;
+    }
+
+  private:
+    Iterator _begin;
+    Iterator _end;
+  };
+
+  /**
+   * \brief Base class for matrices whose entries have type \p V.
+   */
+
+  template <typename V>
+  class Matrix
+  {
+  public:
+    typedef V Value; /// Type of entries
+    typedef std::size_t Index; /// Row/column index type
+
+    struct Nonzero
+    {
+      Index row;
+      Index column;
+      Value value;
+
+      Nonzero(Index r, Index c, Value v)
+        : row(r), column(c), value(v)
+      {
+
+      }
+    };
+  };
+
+  template <typename V>
+  class DenseMatrix : public Matrix<V>
+  {
+  public:
+    typedef typename Matrix<V>::Value Value;
+    typedef typename Matrix<V>::Index Index;
+    typedef typename Matrix<V>::Nonzero Nonzero;
+
+    template <bool Row>
+    class NonzeroIterator
+    {
+    public:
+      NonzeroIterator(const DenseMatrix<V>& matrix, Index major)
+        : _matrix(matrix), _major(major), _minor(0)
+      {
+        if (Row)
+        {
+          while (_minor < _matrix.numColumns() && _matrix.get(_major, _minor) == 0)
+            ++_minor;
+        }
+        else
+        {
+          while (_minor < _matrix.numRows() && _matrix.get(_minor, _major) == 0)
+            ++_minor;
+        }
+      }
+
+      NonzeroIterator(const DenseMatrix<V>& matrix, Index major, int dummy)
+        : _matrix(matrix), _major(major)
+      {
+        if (Row)
+          _minor = _matrix.numColumns();
+        else
+          _minor = _matrix.numRows();
+      }
+
+      NonzeroIterator<Row>& operator++()
+      {
+        ++_minor;
+        if (Row)
+        {
+          while (_minor < _matrix.numColumns() && _matrix.get(_major, _minor) == 0)
+            ++_minor;
+        }
+        else
+        {
+          while (_minor < _matrix.numRows() && _matrix.get(_minor, _major) == 0)
+            ++_minor;
+        }
+      }
+
+      Nonzero operator*() const
+      {
+        if (Row)
+        {
+          assert(_major < _matrix.numRows());
+          assert(_minor < _matrix.numColumns());
+          return Nonzero(_major, _minor, _matrix.get(_major, _minor));
+        }
+        else
+        {
+          assert(_minor < _matrix.numRows());
+          assert(_major < _matrix.numColumns());
+          return Nonzero(_minor, _major, _matrix.get(_minor, _major));
+        }
+      }
+
+      bool operator!=(const NonzeroIterator<Row>& other) const
+      {
+        assert(&_matrix == &other._matrix);
+        assert(_major == other._major);
+        return _minor != other._minor;
+      }
+
+    private:
+      const DenseMatrix<V>& _matrix;
+      std::size_t _major, _minor;
+    };
+
+    typedef Range<NonzeroIterator<true>> NonzeroRowRange;
+    typedef Range<NonzeroIterator<false>> NonzeroColumnRange;
+    
+    /**
+     * \brief Default constructor for 0x0 matrix.
+     */
+
+    DenseMatrix()
+      : _data(nullptr), _numRows(0), _numColumns(0)
+    {
+
+    }
+
+    /**
+     * \brief Move constructor that steals the data from \p other.
+     */
+
+    DenseMatrix(DenseMatrix<V>&& other)
+      : _data(other._data), _numRows(other._numRows), _numColumns(other._numColumns)
+    {
+      other._data = nullptr;
+      other._numRows = 0;
+      other._numColumns = 0;
+    }
+
+    /**
+     * \brief Copy constructor.
+     */
+
+    template <typename V2>
+    DenseMatrix(const DenseMatrix<V2>& other)
+      : _numRows(other._numRows), _numColumns(other._numColumns)
+    {
+      std::size_t size = other._numRows * other._numColumns;
+      _data = new Value[size];
+      for (std::size_t i = 0; i < size; ++i)
+        _data[i] = other._data[i];
+    }
+
+    /**
+     * \brief Move assignment operator that steals the data from \p other.
+     */
+
+    DenseMatrix<V>& operator=(DenseMatrix<V>&& other)
+    {
+      _data = other._data;
+      _numRows = other._numRows;
+      _numColumns = other._numColumns;
+      other._data = nullptr;
+      other._numRows = 0;
+      other._numColumns = 0;
+      return *this;
+    }
+
+    /**
+     * \brief Assignment operator.
+     */
+
+    template <typename V2>
+    DenseMatrix<V>& operator=(const DenseMatrix<V2>& other)
+    {
+      _numRows = other._numRows;
+      _numColumns = other._numColumns;
+      std::size_t size = other._numRows * other._numColumns;
+      _data = new Value[size];
+      for (std::size_t i = 0; i < size; ++i)
+        _data[i] = other._data[i];
+      return *this;
+    }
+
+    /**
+     * \brief Destructor.
+     */
+
+    ~DenseMatrix()
+    {
+      if (_data != nullptr)
+        delete[] _data;
+    }
+
+    /**
+     * \brief Constructs zero matrix of given size.
+     */
+
+    DenseMatrix(Index numRows, Index numColumns)
+      : _numRows(numRows), _numColumns(numColumns)
+    {
+      std::size_t size = numRows * numColumns;
+      _data = new Value[size];
+      for (std::size_t i = 0; i < size; ++i)
+        _data[i] = 0;
+    }
+
+    /**
+     * \brief Returns the number of rows.
+     */
+
+    Index numRows() const
+    {
+      return _numRows;
+    }
+
+    /**
+     * \brief Returns the number of columns.
+     */
+
+    Index numColumns() const
+    {
+      return _numColumns;
+    }
+
+    /**
+     * \brief Returns entry at \p row, \p column.
+     */
+
+    const Value& get(Index row, Index column) const
+    {
+      assert(row < _numRows);
+      assert(column < _numColumns);
+      return _data[_numColumns * row + column]; 
+    }
+
+    /**
+     * \brief Sets entry at \p row, \p column to copy of \p value.
+     */
+
+    template <typename V2>
+    void set(Index row, Index column, const V2& value)
+    {
+      assert(row < _numRows);
+      assert(column < _numColumns);
+      _data[_numColumns * row + column] = value;
+    }
+
+    /**
+     * \brief Returns the number of nonzeros in \p row.
+     */
+
+    std::size_t countRowNonzeros(Index row) const
+    {
+      std::size_t begin = _numColumns * row;
+      std::size_t end = _numColumns * (row + 1);
+      std::size_t count = 0;
+      for (std::size_t i = begin; i < end; ++i)
+      {
+        if (_data[i] != 0)
+          ++count;
+      }
+      return count;
+    }
+
+    /**
+     * \brief Returns the number of nonzeros in \p column.
+     */
+
+    std::size_t countColumnNonzeros(Index column) const
+    {
+      std::size_t begin = column;
+      std::size_t end = _numRows * _numColumns;
+      std::size_t count = 0;
+      for (std::size_t i = begin; i < end; i += _numColumns)
+      {
+        if (_data[i] != 0)
+          ++count;
+      }
+      return count;
+    }
+
+    /**
+     * \brief Returns a range for iterating over the nonzeros of \p row.
+     */
+
+    NonzeroRowRange iterateRowNonzeros(Index row) const
+    {
+      return NonzeroRowRange(NonzeroIterator<true>(*this, row),
+        NonzeroIterator<true>(*this, row, 0));
+    }
+
+    /**
+     * \brief Returns a range for iterating over the nonzeros of \p column.
+     */
+
+    NonzeroColumnRange iterateColumnNonzeros(Index column) const
+    {
+      return NonzeroColumnRange(NonzeroIterator<false>(*this, column),
+        NonzeroIterator<false>(*this, column, 0));
+    }
+
+    /**
+     * \brief Performs a binary pivot at \p row, \p column.
+     *
+     * Performs a binary pivot at \p row, \p column. This means
+     * \f[ M_{i,j} = M_{i,j} - \frac{ M_{i, \text{\texttt{column}}} \cdot
+     * M_{\text{\texttt{row}}, j} }{ M_{\text{\texttt{row}}, \text{\texttt{column}}} } \f].
+     *
+     * The implementation only ensures correctness for binary matrices. It flips all entries at i,j
+     * for which i is different from \p row, j is different from \p column, and for which the
+     * entries at i, \p column and \p row, j are nonzero. Flipping means to subtract the old value
+     * from 1.
+     */
+
+    void pivot2(Index row, Index column)
+    {
+      assert(get(row, column) != 0);
+
+      for (Index i = 0; i < numRows(); ++i)
+      {
+        if (i == row)
+          continue;
+
+        const Value& first = get(i, column);
+        if (first == 0)
+          continue;
+
+        for (Index j = 0; j < numColumns(); ++j)
+        {
+          if (j == column)
+            continue;
+
+          const Value& second = get(row, j);
+          if (second == 0)
+            continue;
+
+          set(i, j, 1 - get(i, j));
+        }
+      }
+    }
+
+    /**
+     * \brief Performs a ternary pivot at \p row, \p column.
+     *
+     * Performs a ternary pivot at \p row, \p column. This means
+     * \f[ M_{i,j} = M_{i,j} - \frac{ M_{i, \text{\texttt{column}}} \cdot
+     * M_{\text{\texttt{row}}, j} }{ M_{\text{\texttt{row}}, \text{\texttt{column}}} } \f].
+     *
+     * The implementation only ensures correctness for ternary matrices. It computes the resulting
+     * values only based on the signs of the entries.
+     */
+
+    void pivot3(Index row, Index column)
+    {
+      const Value& base = get(row, column);
+      assert(base != 0);
+      signed char denominator = base > 0 ? 1 : -1;
+
+      for (Index i = 0; i < numRows(); ++i)
+      {
+        if (i == row)
+          continue;
+
+        const Value& first = get(i, column);
+        if (first == 0)
+          continue;
+        signed char firstInt = first > 0 ? 1 : -1;
+
+        for (Index j = 0; j < numColumns(); ++j)
+        {
+          if (j == column)
+            continue;
+
+          const Value& second = get(row, j);
+          if (second == 0)
+            continue;
+          signed char numerator = firstInt * (second > 0 ? 1 : -1);
+
+          const Value& value = get(i, j);
+          signed char result = (int(get(i,j)) - numerator / denominator + 4) % 3 - 1;
+          assert(result >= -1 && result <= 1);
+          set(i, j,  result);
+        }
+      }
+    }
+
+  protected:
+    Value* _data; /// Matrix entries with row-major ordering.
+    Index _numRows; /// Number of rows.
+    Index _numColumns; /// Number of columns.
+  };
+
 
   /**
    * Exception to indicate a pivot on a zero element.
