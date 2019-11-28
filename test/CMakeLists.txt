@@ -8,7 +8,6 @@ endif()
 
 # Target for the googletest.
 add_executable(tu_gtest
-  common.cpp
 #  test_incidence.cpp
   test_matrix.cpp
 #  test_preprocessing.cpp

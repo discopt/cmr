@@ -4,18 +4,16 @@
 
 #include "common.hpp"
 
-TEST(DenseMatrix, Basic)
+template<typename M>
+void testMatrixBasic(const M& matrix)
 {
   std::size_t i;
-  auto matrix = stringToDenseMatrix<int>("2 3 "
-    "4 0 5 "
-    "0 -6 0 ");
 
   ASSERT_EQ(matrix.numRows(), 2);
   ASSERT_EQ(matrix.numColumns(), 3);
 
   // Test entry-wise.
-  
+
   ASSERT_EQ(matrix.get(0, 0), 4);
   ASSERT_EQ(matrix.get(0, 1), 0);
   ASSERT_EQ(matrix.get(0, 2), 5);
@@ -33,7 +31,20 @@ TEST(DenseMatrix, Basic)
 
   // Test row iteration.
 
-  tu::Matrix<int>::Nonzero row0[2] = { tu::Matrix<int>::Nonzero(0, 0, 4), tu::Matrix<int>::Nonzero(0, 2, 5) };
+  struct NZ
+  {
+    std::size_t row;
+    std::size_t column;
+    int value;
+
+    NZ(std::size_t r, std::size_t c, int v)
+      : row(r), column(c), value(v)
+    {
+
+    }
+  };
+
+  NZ row0[2] = { NZ(0, 0, 4), NZ(0, 2, 5) };
   i = 0;
   for (auto nz : matrix.iterateRowNonzeros(0))
   {
@@ -43,7 +54,7 @@ TEST(DenseMatrix, Basic)
     ++i;
   }
 
-  tu::Matrix<int>::Nonzero row1[1] = { tu::Matrix<int>::Nonzero(1, 1, -6) };
+  NZ row1[1] = { NZ(1, 1, -6) };
   i = 0;
   for (auto nz : matrix.iterateRowNonzeros(1))
   {
@@ -55,7 +66,7 @@ TEST(DenseMatrix, Basic)
 
   // Test column iteration.
 
-  tu::Matrix<int>::Nonzero column0[1] = { tu::Matrix<int>::Nonzero(0, 0, 4) };
+  NZ column0[1] = { NZ(0, 0, 4) };
   i = 0;
   for (auto nz : matrix.iterateColumnNonzeros(0))
   {
@@ -65,7 +76,7 @@ TEST(DenseMatrix, Basic)
     ++i;
   }
 
-  tu::Matrix<int>::Nonzero column1[1] = { tu::Matrix<int>::Nonzero(1, 1, -6) };
+  NZ column1[1] = { NZ(1, 1, -6) };
   i = 0;
   for (auto nz : matrix.iterateColumnNonzeros(1))
   {
@@ -74,8 +85,8 @@ TEST(DenseMatrix, Basic)
     ASSERT_EQ(nz.value, column1[i].value);
     ++i;
   }
-  
-  tu::Matrix<int>::Nonzero column2[1] = { tu::Matrix<int>::Nonzero(0, 2, 5) };
+
+  NZ column2[1] = { NZ(0, 2, 5) };
   i = 0;
   for (auto nz : matrix.iterateColumnNonzeros(2))
   {
@@ -84,4 +95,19 @@ TEST(DenseMatrix, Basic)
     ASSERT_EQ(nz.value, column2[i].value);
     ++i;
   }
+}
+
+TEST(DenseMatrix, Basic)
+{
+  testMatrixBasic(stringToDenseMatrix<int>("2 3 "
+    "4 0 5 "
+    "0 -6 0 "));
+}
+
+
+TEST(SparseMatrix, Basic)
+{
+  testMatrixBasic(stringToSparseMatrix<int>("2 3 "
+    "4 0 5 "
+    "0 -6 0 "));
 }

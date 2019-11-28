@@ -1,5 +1,8 @@
 #pragma once
 
+#include <tu/config.h>
+#include <tu/export.h>
+
 #include <boost/numeric/ublas/matrix.hpp>
 
 #include "matrix_transposed.hpp"
@@ -53,15 +56,19 @@ namespace tu
     {
       Index row;
       Index column;
-      Value value;
+      const Value& value;
 
-      Nonzero(Index r, Index c, Value v)
+      Nonzero(Index r, Index c, const Value& v)
         : row(r), column(c), value(v)
       {
 
       }
     };
   };
+
+  /**
+   * \brief Dense matrix with entries of type \p V.
+   */
 
   template <typename V>
   class DenseMatrix : public Matrix<V>
@@ -144,7 +151,7 @@ namespace tu
 
     typedef Range<NonzeroIterator<true>> NonzeroRowRange;
     typedef Range<NonzeroIterator<false>> NonzeroColumnRange;
-    
+
     /**
      * \brief Default constructor for 0x0 matrix.
      */
@@ -261,7 +268,7 @@ namespace tu
     {
       assert(row < _numRows);
       assert(column < _numColumns);
-      return _data[_numColumns * row + column]; 
+      return _data[_numColumns * row + column];
     }
 
     /**
@@ -421,6 +428,806 @@ namespace tu
     Index _numColumns; /// Number of columns.
   };
 
+  /**
+   * \brief Sparse matrix with entries of type \p V.
+   */
+
+  template<typename V>
+  class SparseMatrix : public Matrix<V>
+  {
+  public:
+    typedef typename Matrix<V>::Value Value;
+    typedef typename Matrix<V>::Index Index;
+    typedef typename Matrix<V>::Nonzero Nonzero;
+
+    /**
+     * \brief Matrix data, row-wise or column-wise.
+     *
+     * Matrix data, row-wise or column-wise. The term major refers to the rows if it is a row-wise
+     * view and to columns otherwise. The term minor refers to the opposite.
+     */
+
+    struct Data
+    {
+      /// Array that maps a major to its nonzero range specified by first and beyond entries.
+      std::vector<std::pair<Index, Index>> range;
+      /// Array that maps the nonzero indices to pairs of minor index and value.
+      std::vector<std::pair<Index, Value>> entries;
+
+      /**
+       * \brief Default constructor.
+       */
+
+      Data() = default;
+
+      /**
+       * \brief Move constructor.
+       */
+
+      Data(Data&& other)
+        : range(std::move(other.range)), entries(std::move(other.entries))
+      {
+
+      }
+
+      /**
+       * \brief Copy constructor.
+       */
+
+      Data(const Data& other)
+        : range(other.range), entries(other.entries)
+      {
+
+      }
+
+      /**
+       * \brief Move operator.
+       */
+
+      Data& operator=(Data&& other)
+      {
+        range = std::move(other.range);
+        entries = std::move(other.entries);
+        return *this;
+      }
+
+      /**
+       * \brief Assignment operator.
+       */
+
+      Data& operator=(const Data& other)
+      {
+        range = other.range;
+        entries = other.entries;
+        return *this;
+      }
+
+      /**
+       * \brief Destructor.
+       */
+
+      ~Data() = default;
+
+      /**
+       * \brief Computes the transpose version of \p data. \p numMinor is the new number of minor
+       * indices.
+       */
+
+      void constructFromTransposed(const Data& transposedData, Index numMinor)
+      {
+        // Iterate over entries and count how many in each major.
+        range.resize(numMinor);
+        for (auto& r : range)
+          r.second = 0;
+
+        for (Index i = 0; i < Index(transposedData.range.size()); ++i)
+        {
+          for (Index j = transposedData.range[i].first; j < transposedData.range[i].second; ++j)
+          {
+            ++range[transposedData.entries[j].first].second;
+          }
+        }
+
+        // Initialize start of each major. This will be incremented when copying.
+        range[0].first = 0;
+        for (Index i = 1; i < Index(range.size()); ++i)
+        {
+          range[i].first = range[i-1].first + range[i-1].second;
+          range[i-1].second = range[i].first;
+        }
+        range.back().second = transposedData.entries.size();
+
+        // Copy entries major-wise into slots indicated by first[i], incrementing the latter.
+        entries.resize(transposedData.entries.size());
+        for (Index transposedMajor = 0; transposedMajor < Index(transposedData.range.size());
+          ++transposedMajor)
+        {
+          for (Index j = transposedData.range[transposedMajor].first;
+            j < transposedData.range[transposedMajor].second; ++j)
+          {
+            auto transposedEntry = transposedData.entries[j];
+            entries[range[transposedEntry.first].first] = std::make_pair(transposedMajor,
+              transposedEntry.second);
+            ++range[transposedEntry.first].first;
+          }
+        }
+
+        // Re-initialize start of each major.
+        range[0].first = 0;
+        for (Index i = 1; i < Index(range.size()); ++i)
+          range[i].first = range[i-1].second;
+      }
+
+      /**
+       * \brief Checks representation for consistency, raising a \c std::runtime_error if
+       * inconsistent.
+       */
+
+      void ensureConsistency(Index numMinor = std::numeric_limits<Index>::max()) const
+      {
+        for (Index i = 0; i < Index(range.size()); ++i)
+        {
+          if (range[i].first > entries.size())
+            throw std::runtime_error(
+                "Inconsistent SparseMatrix::Data: range.first contains index out of range.");
+          if (range[i].second > entries.size())
+            throw std::runtime_error(
+                "Inconsistent SparseMatrix::Data: range.second contains index out of range.");
+          if (range[i].first > range[i].second)
+            throw std::runtime_error(
+                "Inconsistent SparseMatrix::Data: range.first > range.beyond.");
+        }
+        for (Index i = 0; i < Index(entries.size()); ++i)
+        {
+          if (entries[i].first >= numMinor)
+            throw std::runtime_error("Inconsistent SparseMatrix::Data: minor entry exceeds bound.");
+          if (entries[i].second == 0)
+            throw std::runtime_error("Inconsistent SparseMatrix::Data: zero entry found.");
+        }
+        for (Index i = 0; i < Index(range.size()); ++i)
+        {
+          for (Index j = range[i].first + 1; j < range[i].second; ++j)
+          {
+            if (entries[j-1].first > entries[j].first)
+            {
+              std::stringstream ss;
+              ss << "Inconsistent SparseMatrix::Data: minor entries of row " << i
+                << " are not sorted for indices " << (j-1) << "->" << entries[j-1].first << " and "
+                << j << "->" << entries[j].first << ".";
+              throw std::runtime_error(ss.str());
+            }
+            else if (entries[j-1].first == entries[j].first)
+            {
+              std::stringstream ss;
+              ss << "Inconsistent SparseMatrix::Data: minor entries of row " << i
+                << " contain duplicate indices " << (j-1) << "->" << entries[j-1].first << " and "
+                << j << "->" << entries[j].first << ".";
+              throw std::runtime_error(ss.str());
+            }
+          }
+        }
+      }
+
+      /**
+       * \brief Swaps data with \p other.
+       */
+
+      void swap(Data& other)
+      {
+        range.swap(other.range);
+        entries.swap(other.entries);
+      }
+    };
+
+    /**
+     * \brief Iterator for row- or column-wise iteration over the entries.
+     */
+
+    template <bool Row>
+    struct NonzeroIterator
+    {
+    public:
+      NonzeroIterator(const Data& data, Index major)
+        : _data(data), _major(major), _index(data.range[major].first)
+      {
+
+      }
+
+      NonzeroIterator(const Data& data, Index major, int dummy)
+        : _data(data), _major(major), _index(data.range[major].second)
+      {
+
+      }
+
+      /**
+       * \brief Copy constructor.
+       */
+
+      NonzeroIterator(const NonzeroIterator& other)
+        : _data(other._data), _major(other._major), _index(other._index)
+      {
+
+      }
+
+      /**
+       * \brief Returns the current entry.
+       */
+
+      inline const Nonzero operator*() const
+      {
+        // Statically known, so one branch will be optimized away.
+        if (Row)
+          return Nonzero(_major, _data.entries[_index].first, _data.entries[_index].second);
+        else
+          return Nonzero(_data.entries[_index].first, _major, _data.entries[_index].second);
+      }
+
+      /**
+       * \brief Advances to the next entry in the same major.
+       */
+
+      inline void operator++()
+      {
+        ++_index;
+        assert(_index <= _data.range[_major].second);
+      }
+
+      /**
+       * \brief Compares two iterators for being not equal.
+       */
+
+      inline bool operator!=(const NonzeroIterator<Row>& other)
+      {
+        assert(&_data == &other._data);
+        return _major != other._major || _index != other._index;
+      }
+
+      private:
+        /// Reference to the matrix data.
+        const Data& _data;
+        /// Major index.
+        Index _major;
+        /// Index of the entry relative to this major.
+        Value _index;
+    };
+
+    typedef Range<NonzeroIterator<true>> NonzeroRowRange;
+    typedef Range<NonzeroIterator<false>> NonzeroColumnRange;
+
+    /**
+     * \brief Constructs a 0x0 matrix.
+     */
+
+    SparseMatrix()
+      : _zero(0)
+    {
+
+    }
+
+    /**
+     * \brief Move constructor.
+     */
+
+    SparseMatrix(SparseMatrix&& other)
+      : _rowData(std::move(other._rowData)), _columnData(std::move(other._columnData)), _zero(0)
+    {
+
+    }
+
+    /**
+     * \brief Move assignment operator.
+     */
+
+    SparseMatrix& operator=(SparseMatrix&& other)
+    {
+      _rowData = std::move(other._rowData);
+      _columnData = std::move(other._columnData);
+      return *this;
+    }
+
+    /**
+     * \brief Constructs a matrix.
+     *
+     * Constructs a matrix. Given entries may contain zeros, but they are filtered.
+     *
+     * \param majorRow Indicates if data is row-wise.
+     * \param numMajor Number of rows (resp. columns) of the matrix.
+     * \param numMinor Number of columns (resp. rows) of the matrix.
+     * \param numEntries Number of provided entries.
+     * \param first Array of size \p numMajor with first index of each row (resp. column).
+     * \param beyond Array of size \p numMajor with beyond index of each row (resp. column).
+     *   May be \c NULL in which case the first-entry of the next major is considered, i.e.,
+     *   the rows (resp. columns) need to be given in an ordered way.
+     * \param entryMinors Array of size \p numEntries with column (resp. row) of each entry.
+     * \param entryValues Array of size \p numEntries with value of each entry.
+     * \param filterZeros Whether zero entries shall be skipped.
+     * \param isSorted Whether the entries of each row (resp. column) are already sorted.
+     */
+
+    SparseMatrix(bool majorRow, Index numMajor, Index numMinor, Index numEntries, Index* first,
+      Index* beyond, Index* entryMinors, Value* entryValues, bool filterZeros = true,
+      bool isSorted = false)
+      : _zero(0)
+    {
+      set(majorRow, numMajor, numMinor, numEntries, first, beyond, entryMinors, entryValues,
+        filterZeros, isSorted);
+    }
+
+    /**
+     * \brief Constructs a matrix.
+     *
+     * Constructs a matrix from a prepared data structure.
+     *
+     * \param majorRow Indicates if data is row-wise.
+     * \param data Matrix data.
+     */
+
+    SparseMatrix(bool majorRow, const Data& data, Index numMinor)
+      : _zero(0)
+    {
+      set(majorRow, data, numMinor);
+    }
+
+    /**
+     * \brief Constructs a matrix.
+     *
+     * Constructs a matrix from a prepared data structure.
+     *
+     * \param majorRow Indicates if data is row-wise.
+     * \param data Matrix data.
+     * \param moveData Indicates if \p data shall be moved to the internal row data.
+     */
+
+    SparseMatrix(bool majorRow, Data& data, Index numMinor, bool moveData = false)
+      : _zero(0)
+    {
+      set(majorRow, data, numMinor, moveData);
+    }
+
+    /**
+     * \brief Constructs a matrix.
+     *
+     * Constructs a matrix from a two prepared data structures.
+     *
+     * \param rowData Matrix row data.
+     * \param columnData Matrix column data.
+     */
+
+    SparseMatrix(const Data& rowData, const Data& columnData)
+      : _zero(0)
+    {
+      set(rowData, columnData);
+    }
+
+    /**
+     * \brief Constructs a matrix.
+     *
+     * Constructs a matrix from a two prepared data structures.
+     *
+     * \param rowData Matrix row data.
+     * \param columnData Matrix column data.
+     * \param moveData Indicates \p rowData and \p columnData shall be moved to the internal data.
+     */
+
+    SparseMatrix(Data& rowData, Data& columnData, bool moveData = false)
+      : _zero(0)
+    {
+      set(rowData, columnData, moveData);
+    }
+
+    /**
+     * \brief Sets the contents of the matrix.
+     *
+     * Sets the contents of the matrix. Given entries may contain zeros, but they are filtered.
+     *
+     * \param majorRow Indicates if data is row-wise.
+     * \param numMajor Number of rows (resp. columns) of the matrix.
+     * \param numMinor Number of columns (resp. rows) of the matrix.
+     * \param numEntries Number of provided entries.
+     * \param first Array of size \p numMajor with first index of each row (resp. column).
+     * \param beyond Array of size \p numMajor with beyond index of each row (resp. column).
+     *   May be \c nullptr in which case the first-entry of the next major is considered, i.e.,
+     *   the rows (resp. columns) need to be ordered.
+     * \param entryMinors Array of size \p numEntries with column (resp. row) of each entry.
+     * \param entryValues Array of size \p numEntries with value of each entry.
+     * \param filterZeros Whether zero entries shall be skipped.
+     * \param isSorted Whether the entries of each row (resp. column) are already sorted.
+     */
+
+    void set(bool majorRow, Index numMajor, Index numMinor, Index numEntries, const Index* first,
+      const Index* beyond, const Index* entryMinors, const Value* entryValues,
+      bool filterZeros = true, bool isSorted = false)
+    {
+      if (filterZeros)
+      {
+        // Use first run over entries to count nonzeros in each row (resp. column).
+        _rowData.range.resize(numMajor);
+        for (auto& range : _rowData.range)
+          range.first = 0;
+        Index current = 0;
+        for (Index i = 0; i < numMajor; ++i)
+        {
+          _rowData.range[i].first = current;
+          Index b;
+          if (beyond != nullptr)
+            b = beyond[i];
+          else if (i + 1 < numMajor)
+            b = first[i+1];
+          else
+            b = numEntries;
+          for (Index j = first[i]; j < b; ++j)
+          {
+            if (entryValues[j] != 0)
+              ++current;
+          }
+          _rowData.range[i].second = current;
+        }
+
+        // Use second run to copy the nonzeros.
+        _rowData.entries.resize(current);
+        current = 0;
+        for (Index i = 0; i < numMajor; ++i)
+        {
+          Index b;
+          if (beyond != nullptr)
+            b = beyond[i];
+          else if (i + 1 < numMajor)
+            b = first[i+1];
+          else
+            b = numEntries;
+          for (Index j = first[i]; j < b; ++j)
+          {
+            if (entryValues[j] != 0)
+            {
+              _rowData.entries[current] = std::make_pair(entryMinors[j], entryValues[j]);
+              ++current;
+            }
+          }
+        }
+      }
+      else
+      {
+        // If we can trust the input then we can copy directly.
+        _rowData.range.resize(numMajor);
+        if (beyond != nullptr)
+        {
+          for (Index i = 0; i < numMajor; ++i)
+            _rowData.range[i] = std::make_pair(first[i], beyond[i]);
+        }
+        else
+        {
+          for (Index i = 0; i + 1 < numMajor; ++i)
+            _rowData.range[i] = std::make_pair(first[i], first[i+1]);
+          _rowData.range.back() = std::make_pair(first[numMajor - 1], Index(numEntries));
+        }
+        _rowData.entries.resize(numEntries);
+        for (Index i = 0; i < numEntries; ++i)
+          _rowData.entries[i] = std::make_pair(entryMinors[i], entryValues[i]);
+      }
+
+      if (!isSorted)
+      {
+        // We have to sort each row in the row-wise representation.
+        for (Index row = 0; row < Index(_rowData.range.size()); ++row)
+        {
+          auto compare = [] (const std::pair<Index, Value>& a,
+            const std::pair<Index, Value>& b)
+            {
+              return a.first < b.first;
+            };
+
+          std::sort(_rowData.entries.begin() + _rowData.range[row].first,
+            _rowData.entries.begin() + _rowData.range[row].second, compare);
+        }
+      }
+
+      // Construct column-wise (resp. row-wise) representation.
+      _columnData.constructFromTransposed(_rowData, numMinor);
+
+      if (!majorRow)
+        _rowData.swap(_columnData);
+
+  #if !defined(NDEBUG)
+      ensureConsistency();
+  #endif /* !NDEBUG */
+    }
+
+    /**
+     * \brief Sets the contents of the matrix.
+     *
+     * Sets the contents of the matrix from a prepared data structure.
+     *
+     * \param majorRow Indicates if data is row-wise.
+     * \param data Matrix data.
+     * \param numMinor Number of columns (resp. rows).
+     */
+
+    void set(bool majorRow, const Data& data, Index numMinor)
+    {
+      // We can trust the input and thus we can copy directly.
+      _rowData.range = data.range;
+      _rowData.entries = data.entries;
+
+      // Construct column-wise (resp. row-wise) representation.
+      _columnData.constructFromTransposed(_rowData, numMinor);
+
+      if (!majorRow)
+        _rowData.swap(_columnData);
+
+  #if !defined(NDEBUG)
+      ensureConsistency();
+  #endif /* !NDEBUG */
+    }
+
+    /**
+     * \brief Sets the contents of the matrix.
+     *
+     * Sets the contents of the matrix from a prepared data structure.
+     *
+     * \param majorRow Indicates if data is row-wise.
+     * \param data Matrix data.
+     * \param numMinor Number of columns (resp. rows).
+     * \param moveData Indicates \p data shall be moved to the internal data.
+     */
+
+    void set(bool majorRow, Data& data, Index numMinor, bool moveData = false)
+    {
+      if (moveData)
+      {
+        if (majorRow)
+        {
+          _rowData = std::move(data);
+          _columnData.constructFromTransposed(_rowData, numMinor);
+        }
+        else
+        {
+          _columnData = std::move(data);
+          _rowData.constructFromTransposed(_columnData, numMinor);
+        }
+  #if !defined(NDEBUG)
+        ensureConsistency();
+  #endif /* !NDEBUG */
+      }
+      else
+      {
+        set(majorRow, static_cast<const Data&>(data), numMinor);
+      }
+    }
+
+    /**
+     * \brief Sets the contents of the matrix.
+     *
+     * Sets the contents of the matrix from a prepared data structure.
+     *
+     * \param rowData Matrix row data.
+     * \param columnData Matrix column data.
+     */
+
+    void set(const Data& rowData, const Data& columnData)
+    {
+      _rowData.range = rowData.range;
+      _rowData.entries = rowData.entries;
+      _columnData.range = columnData.range;
+      _columnData.entries = columnData.entries;
+      _rowData.ensureConsistency();
+      _columnData.ensureConsistency();
+  #if !defined(NDEBUG)
+      ensureConsistency();
+  #endif /* !NDEBUG */
+    }
+
+    /**
+     * \brief Sets the contents of the matrix.
+     *
+     * Sets the contents of the matrix from a prepared data structure.
+     *
+     * \param rowData Matrix row data.
+     * \param columnData Matrix column data.
+     * \param moveData Indicates if \p rowData and \p columnData shall be moved to the internal
+     *   data.
+     */
+
+    void set(Data& rowData, Data& columnData, bool moveData = false)
+    {
+      if (moveData)
+      {
+        _rowData = std::move(rowData);
+        _columnData = std::move(columnData);
+  #if !defined(NDEBUG)
+        ensureConsistency();
+  #endif /* !NDEBUG */
+      }
+      else
+      {
+        set(static_cast<const Data&>(rowData),
+        static_cast<const Data&>(columnData));
+      }
+    }
+
+    /**
+     * \brief Destructor.
+     */
+
+    ~SparseMatrix() = default;
+
+    /**
+     * \brief Returns the number of rows.
+     */
+
+    std::size_t numRows() const
+    {
+      return _rowData.range.size();
+    }
+
+    /**
+     * \brief Returns the number of columns.
+     */
+
+    std::size_t numColumns() const
+    {
+      return _columnData.range.size();
+    }
+
+    /**
+     * \brief Returns entry at \p row, \p column.
+     */
+
+    const Value& get(Index row, Index column) const
+    {
+      assert(row < numRows());
+      assert(column < numColumns());
+      for (const Nonzero nz : iterateRowNonzeros(row))
+      {
+        assert(nz.row == row);
+        if (nz.column == column)
+          return nz.value;
+      }
+      return _zero;
+    }
+
+    /**
+     * \brief Returns the number of nonzeros.
+     */
+
+    std::size_t numNonzeros() const
+    {
+      return _rowData.entries.size();
+    }
+
+    /**
+     * \brief Returns the number of nonzeros in \p row.
+     */
+
+    std::size_t countRowNonzeros(Index row) const
+    {
+      return _rowData.range[row].second - _rowData.range[row].first;
+    }
+
+    /**
+     * \brief Returns the number of nonzeros in \p column.
+     */
+
+    std::size_t countColumnNonzeros(Index column) const
+    {
+      return _columnData.range[column].second - _columnData.range[column].first;
+    }
+
+    /**
+     * \brief Returns a range for iterating over the nonzeros of \p row.
+     */
+
+    NonzeroRowRange iterateRowNonzeros(Index row) const
+    {
+      return NonzeroRowRange(NonzeroIterator<true>(_rowData, row),
+        NonzeroIterator<true>(_rowData, row, 0));
+    }
+
+    /**
+     * \brief Returns a range for iterating over the nonzeros of \p column.
+     */
+
+    NonzeroColumnRange iterateColumnNonzeros(Index column) const
+    {
+      return NonzeroColumnRange(NonzeroIterator<false>(_columnData, column),
+        NonzeroIterator<false>(_columnData, column, 0));
+    }
+
+    /**
+     * \brief Transposes the matrix.
+     *
+     * Transposes the matrix in constant time.
+     */
+
+    void transpose()
+    {
+      _rowData.swap(_columnData);
+    }
+
+    /**
+     * \brief Transposes the matrix.
+     *
+     * Transposes the matrix in constant time.
+     */
+
+    SparseMatrix transposed() const
+    {
+      return SparseMatrix(_columnData, _rowData);
+    }
+
+    /**
+     * \brief Consistency check.
+     *
+     * Checks consistency of row- and column-data, which includes that all entries are nonzeros
+     * and that entries are sorted within each row/column.
+     */
+
+    void ensureConsistency() const
+    {
+      // First ensure individual consistency of row and column data.
+      _rowData.ensureConsistency();
+      _columnData.ensureConsistency();
+
+      // Copy of a nonzero.
+      struct NZ
+      {
+        Index row;
+        Index column;
+        Value value;
+      };
+
+      // Comparison for entries.
+      auto compare = [](const NZ& a, const NZ& b)
+      {
+        if (a.row != b.row)
+          return a.row < b.row;
+        if (a.column != b.column)
+          return a.column < b.column;
+        return a.value < b.value;
+      };
+
+      // Construct sorted vector of entries from row data.
+      std::vector<NZ> rowNonzeros;
+      for (Index i = 0; i < Index(_rowData.range.size()); ++i)
+      {
+        for (Index j = _rowData.range[i].first; j < _rowData.range[i].second; ++j)
+        {
+          NZ nz = { i, _rowData.entries[j].first, _rowData.entries[j].second };
+          rowNonzeros.push_back(nz);
+        }
+      }
+      std::sort(rowNonzeros.begin(), rowNonzeros.end(), compare);
+
+      // Construct sorted vector of entries from column data.
+      std::vector<NZ> columnNonzeros;
+      for (Index i = 0; i < Index(_columnData.range.size()); ++i)
+      {
+        for (Index j = _columnData.range[i].first; j < _columnData.range[i].second; ++j)
+        {
+          NZ nz = { _columnData.entries[j].first, i, _columnData.entries[j].second };
+          columnNonzeros.push_back(nz);
+        }
+      }
+      std::sort(columnNonzeros.begin(), columnNonzeros.end(), compare);
+
+      for (std::size_t i = 0; i < rowNonzeros.size(); ++i)
+      {
+        if (rowNonzeros[i].row != columnNonzeros[i].row
+          || rowNonzeros[i].column != columnNonzeros[i].column
+          || rowNonzeros[i].value != columnNonzeros[i].value)
+        {
+          throw std::runtime_error("Inconsistent Matrix: row and column data differ.");
+        }
+      }
+    }
+
+  private:
+    /// Data for row-wise access.
+    Data _rowData;
+    /// Data for column-wise access.
+    Data _columnData;
+    /// Zero value.
+    Value _zero;
+  };
 
   /**
    * Exception to indicate a pivot on a zero element.
