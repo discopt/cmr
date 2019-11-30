@@ -453,19 +453,25 @@ namespace tu
       std::vector<std::pair<Index, Index>> range;
       /// Array that maps the nonzero indices to pairs of minor index and value.
       std::vector<std::pair<Index, Value>> entries;
+      /// Whether the data is sorted by minor.
+      bool isSorted;
 
       /**
        * \brief Default constructor.
        */
 
-      Data() = default;
+      Data()
+        : isSorted(true)
+      {
+
+      }
 
       /**
        * \brief Move constructor.
        */
 
       Data(Data&& other)
-        : range(std::move(other.range)), entries(std::move(other.entries))
+        : range(std::move(other.range)), entries(std::move(other.entries)), isSorted(other.isSorted)
       {
 
       }
@@ -475,7 +481,7 @@ namespace tu
        */
 
       Data(const Data& other)
-        : range(other.range), entries(other.entries)
+        : range(other.range), entries(other.entries), isSorted(other.isSorted)
       {
 
       }
@@ -488,6 +494,7 @@ namespace tu
       {
         range = std::move(other.range);
         entries = std::move(other.entries);
+        isSorted = other.isSorted;
         return *this;
       }
 
@@ -499,6 +506,7 @@ namespace tu
       {
         range = other.range;
         entries = other.entries;
+        isSorted = other.isSorted;
         return *this;
       }
 
@@ -556,6 +564,8 @@ namespace tu
         range[0].first = 0;
         for (Index i = 1; i < Index(range.size()); ++i)
           range[i].first = range[i-1].second;
+
+        isSorted = true;
       }
 
       /**
@@ -588,19 +598,19 @@ namespace tu
         {
           for (Index j = range[i].first + 1; j < range[i].second; ++j)
           {
-            if (entries[j-1].first > entries[j].first)
+            if (entries[j-1].first == entries[j].first)
             {
               std::stringstream ss;
-              ss << "Inconsistent SparseMatrix::Data: minor entries of row " << i
-                << " are not sorted for indices " << (j-1) << "->" << entries[j-1].first << " and "
+              ss << "Inconsistent SparseMatrix::Data: minor entries of major " << i
+                << " contain duplicate indices " << (j-1) << "->" << entries[j-1].first << " and "
                 << j << "->" << entries[j].first << ".";
               throw std::runtime_error(ss.str());
             }
-            else if (entries[j-1].first == entries[j].first)
+            else if (entries[j-1].first > entries[j].first && isSorted)
             {
               std::stringstream ss;
-              ss << "Inconsistent SparseMatrix::Data: minor entries of row " << i
-                << " contain duplicate indices " << (j-1) << "->" << entries[j-1].first << " and "
+              ss << "Inconsistent SparseMatrix::Data: minor entries of major " << i
+                << " are not sorted for indices " << (j-1) << "->" << entries[j-1].first << " and "
                 << j << "->" << entries[j].first << ".";
               throw std::runtime_error(ss.str());
             }
@@ -616,6 +626,48 @@ namespace tu
       {
         range.swap(other.range);
         entries.swap(other.entries);
+        std::swap(isSorted, other.isSorted);
+      }
+
+      /**
+       * \brief Finds entry \p major,\p minor.
+       * 
+       * Find entry \p major,\p minor. If it exists, the index of the entry is returned, and
+       * \c std::numeric_limits<std::size_t>::max() otherwise.
+       */
+
+      std::size_t find(Index major, Index minor) const
+      {
+        if (isSorted)
+        {
+          // Binary search on interval [lower, upper)
+
+          std::size_t lower = range[major].first;
+          std::size_t upper = range[major].second;
+          std::size_t mid;
+          while (lower < upper)
+          {
+            mid = (lower + upper) / 2;
+            if (entries[i].first < minor)
+              lower = mid;
+            else if (entries[i].first > minor)
+              upper = mid;
+            else
+              return i;
+          }
+        }
+        else
+        {
+          // Linear scan.
+
+          for (std::size_t i = range[major].first; i < range[major].second; ++i)
+          {
+            if (entries[i].first == minor)
+              return i;
+          }
+        }
+
+        return std::numeric_limits<std::size_t>::max();
       }
     };
 
@@ -740,17 +792,33 @@ namespace tu
      *   the rows (resp. columns) need to be given in an ordered way.
      * \param entryMinors Array of size \p numEntries with column (resp. row) of each entry.
      * \param entryValues Array of size \p numEntries with value of each entry.
-     * \param filterZeros Whether zero entries shall be skipped.
+     * \param mayContainZeros Whether we have to check for zero entries.
      * \param isSorted Whether the entries of each row (resp. column) are already sorted.
      */
 
     SparseMatrix(bool majorRow, Index numMajor, Index numMinor, Index numEntries, Index* first,
-      Index* beyond, Index* entryMinors, Value* entryValues, bool filterZeros = true,
+      Index* beyond, Index* entryMinors, Value* entryValues, bool mayContainZeros = true,
       bool isSorted = false)
       : _zero(0)
     {
       set(majorRow, numMajor, numMinor, numEntries, first, beyond, entryMinors, entryValues,
-        filterZeros, isSorted);
+        mayContainZeros, isSorted);
+    }
+
+    /**
+     * \brief Constructs a matrix.
+     *
+     * Constructs a matrix from a prepared data structure.
+     *
+     * \param majorRow Indicates if data is row-wise.
+     * \param majorIsSorted Whether the data of each major is sorted by minor.
+     * \param data Matrix data.
+     */
+
+    SparseMatrix(bool majorRow, const Data& data, Index numMinor, bool majorIsSorted = false)
+      : _zero(0)
+    {
+      set(majorRow, data, numMinor, majorIsSorted);
     }
 
     /**
@@ -762,7 +830,7 @@ namespace tu
      * \param data Matrix data.
      */
 
-    SparseMatrix(bool majorRow, const Data& data, Index numMinor)
+    SparseMatrix(bool majorRow, Data&& data, Index numMinor)
       : _zero(0)
     {
       set(majorRow, data, numMinor);
@@ -771,23 +839,7 @@ namespace tu
     /**
      * \brief Constructs a matrix.
      *
-     * Constructs a matrix from a prepared data structure.
-     *
-     * \param majorRow Indicates if data is row-wise.
-     * \param data Matrix data.
-     * \param moveData Indicates if \p data shall be moved to the internal row data.
-     */
-
-    SparseMatrix(bool majorRow, Data& data, Index numMinor, bool moveData = false)
-      : _zero(0)
-    {
-      set(majorRow, data, numMinor, moveData);
-    }
-
-    /**
-     * \brief Constructs a matrix.
-     *
-     * Constructs a matrix from a two prepared data structures.
+     * Constructs a matrix from two prepared data structures.
      *
      * \param rowData Matrix row data.
      * \param columnData Matrix column data.
@@ -806,13 +858,12 @@ namespace tu
      *
      * \param rowData Matrix row data.
      * \param columnData Matrix column data.
-     * \param moveData Indicates \p rowData and \p columnData shall be moved to the internal data.
      */
 
-    SparseMatrix(Data& rowData, Data& columnData, bool moveData = false)
+    SparseMatrix(Data&& rowData, Data&& columnData)
       : _zero(0)
     {
-      set(rowData, columnData, moveData);
+      set(std::move(rowData), std::move(columnData));
     }
 
     /**
@@ -830,15 +881,15 @@ namespace tu
      *   the rows (resp. columns) need to be ordered.
      * \param entryMinors Array of size \p numEntries with column (resp. row) of each entry.
      * \param entryValues Array of size \p numEntries with value of each entry.
-     * \param filterZeros Whether zero entries shall be skipped.
-     * \param isSorted Whether the entries of each row (resp. column) are already sorted.
+     * \param mayContainZeros Whether zero entries shall be skipped.
+     * \param isSorted Whether the entries of each major are sorted by minor.
      */
 
     void set(bool majorRow, Index numMajor, Index numMinor, Index numEntries, const Index* first,
       const Index* beyond, const Index* entryMinors, const Value* entryValues,
-      bool filterZeros = true, bool isSorted = false)
+      bool mayContainZeros = true, bool isSorted = false)
     {
-      if (filterZeros)
+      if (mayContainZeros)
       {
         // Use first run over entries to count nonzeros in each row (resp. column).
         _rowData.range.resize(numMajor);
@@ -905,21 +956,24 @@ namespace tu
           _rowData.entries[i] = std::make_pair(entryMinors[i], entryValues[i]);
       }
 
-      if (!isSorted)
-      {
-        // We have to sort each row in the row-wise representation.
-        for (Index row = 0; row < Index(_rowData.range.size()); ++row)
-        {
-          auto compare = [] (const std::pair<Index, Value>& a,
-            const std::pair<Index, Value>& b)
-            {
-              return a.first < b.first;
-            };
+      _rowData.isSorted = isSorted;
 
-          std::sort(_rowData.entries.begin() + _rowData.range[row].first,
-            _rowData.entries.begin() + _rowData.range[row].second, compare);
-        }
-      }
+// TODO: remove
+//       if (!isSorted)
+//       {
+//         // We have to sort each row in the row-wise representation.
+//         for (Index row = 0; row < Index(_rowData.range.size()); ++row)
+//         {
+//           auto compare = [] (const std::pair<Index, Value>& a,
+//             const std::pair<Index, Value>& b)
+//             {
+//               return a.first < b.first;
+//             };
+// 
+//           std::sort(_rowData.entries.begin() + _rowData.range[row].first,
+//             _rowData.entries.begin() + _rowData.range[row].second, compare);
+//         }
+//       }
 
       // Construct column-wise (resp. row-wise) representation.
       _columnData.constructFromTransposed(_rowData, numMinor);
@@ -947,6 +1001,7 @@ namespace tu
       // We can trust the input and thus we can copy directly.
       _rowData.range = data.range;
       _rowData.entries = data.entries;
+      _rowData.isSorted = data.isSorted;
 
       // Construct column-wise (resp. row-wise) representation.
       _columnData.constructFromTransposed(_rowData, numMinor);
@@ -967,31 +1022,18 @@ namespace tu
      * \param majorRow Indicates if data is row-wise.
      * \param data Matrix data.
      * \param numMinor Number of columns (resp. rows).
-     * \param moveData Indicates \p data shall be moved to the internal data.
      */
 
-    void set(bool majorRow, Data& data, Index numMinor, bool moveData = false)
+    void set(bool majorRow, Data&& data, Index numMinor)
     {
-      if (moveData)
-      {
-        if (majorRow)
-        {
-          _rowData = std::move(data);
-          _columnData.constructFromTransposed(_rowData, numMinor);
-        }
-        else
-        {
-          _columnData = std::move(data);
-          _rowData.constructFromTransposed(_columnData, numMinor);
-        }
-  #if !defined(NDEBUG)
-        ensureConsistency();
-  #endif /* !NDEBUG */
-      }
-      else
-      {
-        set(majorRow, static_cast<const Data&>(data), numMinor);
-      }
+      _rowData = std::move(data);
+      _columnData.constructFromTransposed(_rowData, numMinor);
+      if (!majorRow)
+        _rowData.swap(_columnData);
+
+#if !defined(NDEBUG)
+      ensureConsistency();
+#endif /* !NDEBUG */
     }
 
     /**
@@ -1007,13 +1049,17 @@ namespace tu
     {
       _rowData.range = rowData.range;
       _rowData.entries = rowData.entries;
+      _rowData.isSorted = rowData.isSorted;
+      _rowData.ensureConsistency();
+
       _columnData.range = columnData.range;
       _columnData.entries = columnData.entries;
-      _rowData.ensureConsistency();
+      _columnData.isSorted = columnData.isSorted;
       _columnData.ensureConsistency();
-  #if !defined(NDEBUG)
+
+#if !defined(NDEBUG)
       ensureConsistency();
-  #endif /* !NDEBUG */
+#endif /* !NDEBUG */
     }
 
     /**
@@ -1023,25 +1069,15 @@ namespace tu
      *
      * \param rowData Matrix row data.
      * \param columnData Matrix column data.
-     * \param moveData Indicates if \p rowData and \p columnData shall be moved to the internal
-     *   data.
      */
 
-    void set(Data& rowData, Data& columnData, bool moveData = false)
+    void set(Data&& rowData, Data&& columnData)
     {
-      if (moveData)
-      {
-        _rowData = std::move(rowData);
-        _columnData = std::move(columnData);
-  #if !defined(NDEBUG)
-        ensureConsistency();
-  #endif /* !NDEBUG */
-      }
-      else
-      {
-        set(static_cast<const Data&>(rowData),
-        static_cast<const Data&>(columnData));
-      }
+      _rowData = std::move(rowData);
+      _columnData = std::move(columnData);
+#if !defined(NDEBUG)
+      ensureConsistency();
+#endif /* !NDEBUG */
     }
 
     /**
@@ -1069,19 +1105,48 @@ namespace tu
     }
 
     /**
+     * \brief Indicates if the row data is sorted by column.
+     */
+
+    bool hasSortedRows() const
+    {
+      return _rowData.isSorted;
+    }
+
+    /**
+     * \brief Indicates if the column data is sorted by row.
+     */
+
+    bool hasSortedColumns() const
+    {
+      return _columnData.isSorted;
+    }
+
+    /**
      * \brief Returns entry at \p row, \p column.
+     * 
+     * Returns entry at \p row, \p column. If the row or column data is sorted (resp. not sorted)
+     * then the time is logarithmic (resp. linear) in the number of nonzeros of the row or column.
      */
 
     const Value& get(Index row, Index column) const
     {
       assert(row < numRows());
       assert(column < numColumns());
-      for (const Nonzero nz : iterateRowNonzeros(row))
+
+      if (_rowData.isSorted)
       {
-        assert(nz.row == row);
-        if (nz.column == column)
-          return nz.value;
+        std::size_t columnIndex = _rowData.find(row, column);
+        if (columnIndex < std::numeric_limits<std::size_t>::max())
+          return _rowData.entries[columnIndex].value;
       }
+      else
+      {
+        std::size_t rowIndex = _columnData.find(column, row);
+        if (rowIndex < std::numeric_limits<std::size_t>::max())
+          return _columnData.entries[rowIndex].value;
+      }
+
       return _zero;
     }
 
@@ -1227,7 +1292,11 @@ namespace tu
     Data _columnData;
     /// Zero value.
     Value _zero;
+    /// Whether the row and column data is sorted (by columns and rows, respectively).
+    bool _isSorted;
   };
+
+  
 
   /**
    * Exception to indicate a pivot on a zero element.
