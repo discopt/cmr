@@ -1,0 +1,25 @@
+sudo: false
+
+branches:
+  only:
+    - develop
+
+addons:
+  apt:
+    packages:
+      - cmake
+      - doxygen
+
+script:
+  - mkdir build
+  - cd build
+  - cmake ..
+  - make doc
+
+deploy:
+  provider: pages
+  skip_cleanup: true
+  local_dir: doc/html
+  github_token: $GH_REPO_TOKEN
+  on:
+    branch: develop
