@@ -648,12 +648,12 @@ namespace tu
           while (lower < upper)
           {
             mid = (lower + upper) / 2;
-            if (entries[i].first < minor)
-              lower = mid;
-            else if (entries[i].first > minor)
+            if (entries[mid].first < minor)
+              lower = mid + 1;
+            else if (entries[mid].first > minor)
               upper = mid;
             else
-              return i;
+              return mid;
           }
         }
         else
@@ -1138,13 +1138,13 @@ namespace tu
       {
         std::size_t columnIndex = _rowData.find(row, column);
         if (columnIndex < std::numeric_limits<std::size_t>::max())
-          return _rowData.entries[columnIndex].value;
+          return _rowData.entries[columnIndex].second;
       }
       else
       {
         std::size_t rowIndex = _columnData.find(column, row);
         if (rowIndex < std::numeric_limits<std::size_t>::max())
-          return _columnData.entries[rowIndex].value;
+          return _columnData.entries[rowIndex].second;
       }
 
       return _zero;
