@@ -43,6 +43,7 @@ namespace tu
       Iterator _begin;
       Iterator _end;
     };
+
   } /* namespace tu::detail */
 
   /**
@@ -424,6 +425,17 @@ namespace tu
           set(i, j,  result);
         }
       }
+    }
+
+    /**
+     * \brief Consistency check.
+     *
+     * Checks consistency.
+     */
+
+    void ensureConsistency() const
+    {
+
     }
 
   protected:
@@ -1391,7 +1403,7 @@ namespace tu
 
     typedef detail::Range<NonzeroIterator<true>> NonzeroRowRange;
     typedef detail::Range<NonzeroIterator<false>> NonzeroColumnRange;
-    
+
     /**
      * \brief Constructs from a matrix of type \p M.
      */
