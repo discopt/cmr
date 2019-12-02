@@ -10,36 +10,40 @@
 
 namespace tu
 {
-  template <typename Iterator>
-  class Range
+  namespace detail
   {
-  public:
-    Range(Iterator begin, Iterator end)
-      : _begin(begin), _end(end)
+
+    template <typename Iterator>
+    class Range
     {
+    public:
+      Range(Iterator begin, Iterator end)
+        : _begin(begin), _end(end)
+      {
 
-    }
+      }
 
-    Range(const Range<Iterator>& other)
-      : _begin(other._begin), _end(other._end)
-    {
+      Range(const Range<Iterator>& other)
+        : _begin(other._begin), _end(other._end)
+      {
 
-    }
+      }
 
-    Iterator begin()
-    {
-      return _begin;
-    }
+      Iterator begin()
+      {
+        return _begin;
+      }
 
-    Iterator end()
-    {
-      return _end;
-    }
+      Iterator end()
+      {
+        return _end;
+      }
 
-  private:
-    Iterator _begin;
-    Iterator _end;
-  };
+    private:
+      Iterator _begin;
+      Iterator _end;
+    };
+  } /* namespace tu::detail */
 
   /**
    * \brief Base class for matrices whose entries have type \p V.
@@ -149,8 +153,8 @@ namespace tu
       std::size_t _major, _minor;
     };
 
-    typedef Range<NonzeroIterator<true>> NonzeroRowRange;
-    typedef Range<NonzeroIterator<false>> NonzeroColumnRange;
+    typedef detail::Range<NonzeroIterator<true>> NonzeroRowRange;
+    typedef detail::Range<NonzeroIterator<false>> NonzeroColumnRange;
 
     /**
      * \brief Default constructor for 0x0 matrix.
@@ -743,8 +747,8 @@ namespace tu
         Value _index;
     };
 
-    typedef Range<NonzeroIterator<true>> NonzeroRowRange;
-    typedef Range<NonzeroIterator<false>> NonzeroColumnRange;
+    typedef detail::Range<NonzeroIterator<true>> NonzeroRowRange;
+    typedef detail::Range<NonzeroIterator<false>> NonzeroColumnRange;
 
     /**
      * \brief Constructs a 0x0 matrix.
