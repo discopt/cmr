@@ -97,7 +97,7 @@ void testMatrixBasic(const M& matrix)
   }
 }
 
-TEST(DenseMatrix, Basic)
+TEST(Matrix, DenseMatrix)
 {
   testMatrixBasic(stringToDenseMatrix<int>("2 3 "
     "4 0 5 "
@@ -105,7 +105,7 @@ TEST(DenseMatrix, Basic)
 }
 
 
-TEST(SparseMatrix, Basic)
+TEST(Matrix, SparseMatrix)
 {
   testMatrixBasic(stringToSparseMatrix<int>("2 3 "
     "4 0 5 "
@@ -113,7 +113,7 @@ TEST(SparseMatrix, Basic)
 }
 
 
-TEST(TransposedMatrix, Basic)
+TEST(Matrix, TransposedMatrix)
 {
   auto dense = stringToDenseMatrix<int>("3 2 "
     "4 0 "
