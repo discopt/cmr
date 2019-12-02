@@ -673,6 +673,29 @@ namespace tu
 
         return std::numeric_limits<std::size_t>::max();
       }
+
+      /**
+       * \brief Sort data by minor.
+       */
+
+      void sort()
+      {
+        if (!isSorted)
+          return;
+
+        for (std::size_t i = 0; i < entries.size(); ++i)
+        {
+          auto compare = [] (const std::pair<Index, Value>& a,
+            const std::pair<Index, Value>& b)
+            {
+              return a.first < b.first;
+            };
+
+          std::sort(entries.begin() + range[i].first, entries.begin() + range[i].second, compare);
+        }
+
+        isSorted = true;
+      }
     };
 
     /**
@@ -962,23 +985,6 @@ namespace tu
 
       _rowData.isSorted = isSorted;
 
-// TODO: remove
-//       if (!isSorted)
-//       {
-//         // We have to sort each row in the row-wise representation.
-//         for (Index row = 0; row < Index(_rowData.range.size()); ++row)
-//         {
-//           auto compare = [] (const std::pair<Index, Value>& a,
-//             const std::pair<Index, Value>& b)
-//             {
-//               return a.first < b.first;
-//             };
-// 
-//           std::sort(_rowData.entries.begin() + _rowData.range[row].first,
-//             _rowData.entries.begin() + _rowData.range[row].second, compare);
-//         }
-//       }
-
       // Construct column-wise (resp. row-wise) representation.
       _columnData.constructFromTransposed(_rowData, numMinor);
 
@@ -1221,6 +1227,34 @@ namespace tu
     SparseMatrix transposed() const
     {
       return SparseMatrix(_columnData, _rowData);
+    }
+
+    /**
+     * \brief Sort row data (by column).
+     */
+
+    void sortRows()
+    {
+      _rowData.sort();
+    }
+
+    /**
+     * \brief Sort column data (by row).
+     */
+
+    void sortColumns()
+    {
+      _columnData.sort();
+    }
+
+    /**
+     * \brief Sort row and column data (by column and row, respectively).
+     */
+
+    void sort()
+    {
+      sortRows();
+      sortColumns();
     }
 
     /**
