@@ -111,3 +111,19 @@ TEST(SparseMatrix, Basic)
     "4 0 5 "
     "0 -6 0 "));
 }
+
+
+TEST(TransposedMatrix, Basic)
+{
+  auto dense = stringToDenseMatrix<int>("3 2 "
+    "4 0 "
+    "0 -6 "
+    "5 0 ");
+  testMatrixBasic(tu::transposedMatrix(dense));
+
+  auto sparse = stringToSparseMatrix<int>("3 2 "
+    "4 0 "
+    "0 -6 "
+    "5 0 ");
+  testMatrixBasic(tu::transposedMatrix(sparse));
+}

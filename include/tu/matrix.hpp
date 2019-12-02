@@ -706,14 +706,16 @@ namespace tu
     struct NonzeroIterator
     {
     public:
-      NonzeroIterator(const Data& data, Index major)
-        : _data(data), _major(major), _index(data.range[major].first)
+      NonzeroIterator(const SparseMatrix<V>& matrix, Index major)
+        : _data(Row ? matrix._rowData : matrix._columnData), _major(major),
+        _index(_data.range[major].first)
       {
 
       }
 
-      NonzeroIterator(const Data& data, Index major, int dummy)
-        : _data(data), _major(major), _index(data.range[major].second)
+      NonzeroIterator(const SparseMatrix<V>& matrix, Index major, int dummy)
+        : _data(Row ? matrix._rowData : matrix._columnData), _major(major),
+        _index(_data.range[major].second)
       {
 
       }
@@ -755,7 +757,7 @@ namespace tu
        * \brief Compares two iterators for being not equal.
        */
 
-      inline bool operator!=(const NonzeroIterator<Row>& other)
+      inline bool operator!=(const NonzeroIterator<Row>& other) const 
       {
         assert(&_data == &other._data);
         return _major != other._major || _index != other._index;
@@ -1193,8 +1195,8 @@ namespace tu
 
     NonzeroRowRange iterateRowNonzeros(Index row) const
     {
-      return NonzeroRowRange(NonzeroIterator<true>(_rowData, row),
-        NonzeroIterator<true>(_rowData, row, 0));
+      return NonzeroRowRange(NonzeroIterator<true>(*this, row),
+        NonzeroIterator<true>(*this, row, 0));
     }
 
     /**
@@ -1203,58 +1205,17 @@ namespace tu
 
     NonzeroColumnRange iterateColumnNonzeros(Index column) const
     {
-      return NonzeroColumnRange(NonzeroIterator<false>(_columnData, column),
-        NonzeroIterator<false>(_columnData, column, 0));
+      return NonzeroColumnRange(NonzeroIterator<false>(*this, column),
+        NonzeroIterator<false>(*this, column, 0));
     }
 
     /**
-     * \brief Transposes the matrix.
-     *
-     * Transposes the matrix in constant time.
-     */
-
-    void transpose()
-    {
-      _rowData.swap(_columnData);
-    }
-
-    /**
-     * \brief Transposes the matrix.
-     *
-     * Transposes the matrix in constant time.
+     * \brief Returns a copy of the matrix' transpose.
      */
 
     SparseMatrix transposed() const
     {
       return SparseMatrix(_columnData, _rowData);
-    }
-
-    /**
-     * \brief Sort row data (by column).
-     */
-
-    void sortRows()
-    {
-      _rowData.sort();
-    }
-
-    /**
-     * \brief Sort column data (by row).
-     */
-
-    void sortColumns()
-    {
-      _columnData.sort();
-    }
-
-    /**
-     * \brief Sort row and column data (by column and row, respectively).
-     */
-
-    void sort()
-    {
-      sortRows();
-      sortColumns();
     }
 
     /**
@@ -1323,6 +1284,46 @@ namespace tu
       }
     }
 
+    /**
+     * \brief Transposes the matrix.
+     *
+     * Transposes the matrix in constant time.
+     */
+
+    void transpose()
+    {
+      _rowData.swap(_columnData);
+    }
+
+    
+    /**
+     * \brief Sort row data (by column).
+     */
+
+    void sortRows()
+    {
+      _rowData.sort();
+    }
+
+    /**
+     * \brief Sort column data (by row).
+     */
+
+    void sortColumns()
+    {
+      _columnData.sort();
+    }
+
+    /**
+     * \brief Sort row and column data (by column and row, respectively).
+     */
+
+    void sort()
+    {
+      sortRows();
+      sortColumns();
+    }
+
   private:
     /// Data for row-wise access.
     Data _rowData;
@@ -1334,7 +1335,206 @@ namespace tu
     bool _isSorted;
   };
 
-  
+  /**
+   * \brief Matrix proxy for the transpose of a matrix.
+   * 
+   * Matrix proxy for the transpose of a matrix. It references another matrix and does not maintain
+   * matrix data by itself.
+   */
+
+  template <typename M>
+  class TransposedMatrix : public Matrix<typename M::Value>
+  {
+  public:
+    typedef typename M::Value Value;
+    typedef typename M::Index Index;
+    typedef typename M::Nonzero Nonzero;
+
+    template <bool Row>
+    class NonzeroIterator
+    {
+    public:
+      NonzeroIterator(const TransposedMatrix<M>& matrix, Index major)
+        : _matrix(matrix._matrix), _iterator(typename M::template NonzeroIterator<!Row>(matrix._matrix, major))
+      {
+
+      }
+
+      NonzeroIterator(const TransposedMatrix<M>& matrix, Index major, int dummy)
+        : _matrix(matrix._matrix), _iterator(typename M::template NonzeroIterator<!Row>(matrix._matrix, major, 0))
+      {
+
+      }
+
+      NonzeroIterator<Row>& operator++()
+      {
+        ++_iterator;
+      }
+
+      Nonzero operator*() const
+      {
+        Nonzero nz = *_iterator;
+        std::swap(nz.row, nz.column);
+        return nz;
+      }
+
+      bool operator!=(const NonzeroIterator<Row>& other) const
+      {
+        assert(&_matrix == &other._matrix);
+        return _iterator != other._iterator;
+      }
+
+    private:
+      const M& _matrix;
+      typename M::template NonzeroIterator<!Row> _iterator;
+    };
+
+    typedef detail::Range<NonzeroIterator<true>> NonzeroRowRange;
+    typedef detail::Range<NonzeroIterator<false>> NonzeroColumnRange;
+    
+    /**
+     * \brief Constructs from a matrix of type \p M.
+     */
+
+    TransposedMatrix(M& matrix)
+      : _matrix(matrix)
+    {
+
+    }
+
+    /**
+     * \brief Move constructor.
+     */
+
+    TransposedMatrix(TransposedMatrix&& other)
+      : _matrix(other._matrix)
+    {
+
+    }
+
+    /**
+     * \brief Returns the number of rows.
+     */
+
+    std::size_t numRows() const
+    {
+      return _matrix.numColumns();
+    }
+
+    /**
+     * \brief Returns the number of columns.
+     */
+
+    std::size_t numColumns() const
+    {
+      return _matrix.numRows();
+    }
+
+    /**
+     * \brief Indicates if the row data is sorted by column.
+     */
+
+    bool hasSortedRows() const
+    {
+      return _matrix.hasSortedColumns();
+    }
+
+    /**
+     * \brief Indicates if the column data is sorted by row.
+     */
+
+    bool hasSortedColumns() const
+    {
+      return _matrix.hasSortedRows();
+    }
+
+    /**
+     * \brief Returns entry at \p row, \p column.
+     * 
+     * Returns entry at \p row, \p column. If the row or column data is sorted (resp. not sorted)
+     * then the time is logarithmic (resp. linear) in the number of nonzeros of the row or column.
+     */
+
+    const Value& get(Index row, Index column) const
+    {
+      assert(row < numRows());
+      assert(column < numColumns());
+
+      return _matrix.get(column, row);
+    }
+
+    /**
+     * \brief Returns the number of nonzeros.
+     */
+
+    std::size_t numNonzeros() const
+    {
+      return _matrix.numNonzeros();
+    }
+
+    /**
+     * \brief Returns the number of nonzeros in \p row.
+     */
+
+    std::size_t countRowNonzeros(Index row) const
+    {
+      return _matrix.countColumnNonzeros(row);
+    }
+
+    /**
+     * \brief Returns the number of nonzeros in \p column.
+     */
+
+    std::size_t countColumnNonzeros(Index column) const
+    {
+      return _matrix.countRowNonzeros(column);
+    }
+
+    /**
+     * \brief Returns a range for iterating over the nonzeros of \p row.
+     */
+
+    NonzeroRowRange iterateRowNonzeros(Index row) const
+    {
+      return NonzeroRowRange(NonzeroIterator<true>(_matrix, row),
+        NonzeroIterator<true>(_matrix, row, 0));
+    }
+
+    /**
+     * \brief Returns a range for iterating over the nonzeros of \p column.
+     */
+
+    NonzeroColumnRange iterateColumnNonzeros(Index column) const
+    {
+      return NonzeroColumnRange(NonzeroIterator<false>(_matrix, column),
+        NonzeroIterator<false>(_matrix, column, 0));
+    }
+
+    /**
+     * \brief Consistency check.
+     *
+     * Checks consistency of row- and column-data, which includes that all entries are nonzeros
+     * and that entries are sorted within each row/column.
+     */
+
+    void ensureConsistency() const
+    {
+      _matrix.ensureConsistency();
+    }
+    
+  protected:
+    M& _matrix;
+  };
+
+  /**
+   * \brief Returns a \ref TransposedMatrix for \p matrix.
+   */
+
+  template <typename M>
+  TransposedMatrix<M> transposedMatrix(M& matrix)
+  {
+    return TransposedMatrix<M>(matrix);
+  }
 
   /**
    * Exception to indicate a pivot on a zero element.
