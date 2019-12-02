@@ -37,6 +37,7 @@ add_library(tu
   src/tu/determinant.cpp
   src/tu/ghouila_houri.cpp
   src/tu/logger.cpp
+  src/tu/matrix.cpp
   src/tu/matroid_decomposition.cpp
   src/tu/matroid_graph.cpp
   src/tu/nested_minor_sequence.cpp

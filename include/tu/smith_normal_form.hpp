@@ -2,10 +2,10 @@
 
 #include "common.hpp"
 #include "gcd.hpp"
-#include "linear_algebra.hpp"
-#include "matrix.hpp"
-#include "matrix_permuted.hpp"
-#include "matrix_transposed.hpp"
+#include <tu/linear_algebra.hpp>
+#include <tu/matrix.hpp>
+#include <tu/matrix_permuted.hpp>
+#include <tu/matrix_transposed.hpp>
 
 namespace tu
 {

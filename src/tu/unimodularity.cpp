@@ -1,9 +1,9 @@
 #include <tu/unimodularity.hpp>
 
 #include <tu/common.hpp>
-#include <tu/linear_algebra.hpp>
 #include <tu/smith_normal_form.hpp>
 #include <tu/total_unimodularity.hpp>
+#include <tu/linear_algebra.hpp>
 
 namespace tu
 {
