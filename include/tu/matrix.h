@@ -13,7 +13,7 @@ extern "C" {
  * \brief Row-wise representation of sparse double matrix
  */
 
-struct _TU_SPARSE_DOUBLE
+typedef struct
 {
   /**
    * \brief Number of rows
@@ -44,9 +44,7 @@ struct _TU_SPARSE_DOUBLE
    * \brief Array mapping each entry to its value
    */
   double* entryValues;
-};
-
-typedef struct _TU_SPARSE_DOUBLE TU_SPARSE_DOUBLE;
+} TU_SPARSE_DOUBLE;
 
 /**
  * \brief Clears the arrays in a sparse int matrix.
@@ -61,7 +59,7 @@ void TUclearSparseDouble(
  * \brief Row-wise representation of sparse int matrix
  */
 
-struct _TU_SPARSE_INT
+typedef struct
 {
   /**
    * \brief Number of rows
@@ -92,9 +90,7 @@ struct _TU_SPARSE_INT
    * \brief Array mapping each entry to its value
    */
   int* entryValues;
-};
-
-typedef struct _TU_SPARSE_INT TU_SPARSE_INT;
+} TU_SPARSE_INT;
 
 /**
  * \brief Clears the arrays in a sparse int matrix.
@@ -110,7 +106,7 @@ void TUclearSparseInt(
  * \brief Row-wise representation of sparse char matrix
  */
 
-struct _TU_SPARSE_CHAR
+typedef struct
 {
   /**
    * \brief Number of rows
@@ -141,9 +137,7 @@ struct _TU_SPARSE_CHAR
    * \brief Array mapping each entry to its value
    */
   char* entryValues;
-};
-
-typedef struct _TU_SPARSE_CHAR TU_SPARSE_CHAR;
+} TU_SPARSE_CHAR;
 
 /**
  * \brief Clears the arrays in a sparse char matrix.

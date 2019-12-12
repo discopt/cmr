@@ -12,7 +12,7 @@ extern "C" {
  * 
  * Does not contain information about the matrix it refers to.
  */
-struct TU_Submatrix
+typedef struct
 {
   /**
    * \brief Number of rows
@@ -30,8 +30,7 @@ struct TU_Submatrix
    * \brief Array with column indices
    */
   int* columns;
-};
-typedef struct TU_Submatrix TU_SUBMATRIX;
+} TU_SUBMATRIX;
 
 /**
  * \brief Creates a submatrix of given size.
