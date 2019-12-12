@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.5)
 
 project(TU
    VERSION 2.0.0
-   LANGUAGES CXX)
+   LANGUAGES C CXX)
 
 option(SHARED "Build shared libraries" ON)
 set(BUILD_SHARED_LIBS ${SHARED})
@@ -34,6 +34,12 @@ endif()
 
 # Target for the TU library.
 add_library(tu
+  src/tu/env.c
+  src/tu/matrix.c
+  src/tu/matroid.c
+  src/tu/one_sum.c
+  src/tu/sign.c
+  src/tu/tu.c
   src/tu/determinant.cpp
   src/tu/ghouila_houri.cpp
   src/tu/logger.cpp

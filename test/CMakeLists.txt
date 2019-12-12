@@ -8,8 +8,8 @@ endif()
 
 # Target for the googletest.
 add_executable(tu_gtest
+  common.c
 #  test_incidence.cpp
-  test_matrix.cpp
 #  test_preprocessing.cpp
   test_main.cpp)
 
@@ -17,7 +17,7 @@ add_executable(tu_gtest
 if(NOT SHARED)
   target_sources(tu_gtest
     PRIVATE
-    test_tasks.cpp)
+    test_one_sum.cpp)
   target_include_directories(tu_gtest
     PRIVATE
       $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src> # contains private headers.

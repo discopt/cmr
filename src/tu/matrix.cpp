@@ -1,5 +1,5 @@
 #include <tu/matrix.hpp>
-#include "matrix.h"
+#include "matrix_internal.h"
 
 namespace tu
 {

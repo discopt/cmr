@@ -2,7 +2,7 @@
 
 #include <boost/numeric/ublas/matrix_proxy.hpp>
 
-#include "matrix.h"
+#include "matrix_internal.h"
 #include "algorithm.hpp"
 #include "matroid.hpp"
 #include "signing.hpp"
