@@ -33,12 +33,12 @@ typedef struct
   /**
    * \brief Array mapping each row to its first entry
    */
-  int* majorStarts;
+  int* rowStarts;
 
   /**
    * \brief Array mapping each entry to its column
    */
-  int* entryMinors;
+  int* entryColumns;
 
   /**
    * \brief Array mapping each entry to its value
@@ -126,12 +126,12 @@ typedef struct
   /**
    * \brief Array mapping each row to its first entry
    */
-  int* majorStarts;
+  int* rowStarts;
 
   /**
    * \brief Array mapping each entry to its column
    */
-  int* entryMinors;
+  int* entryColumns;
 
   /**
    * \brief Array mapping each entry to its value

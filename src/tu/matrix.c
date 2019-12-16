@@ -11,11 +11,11 @@ void TUclearSparseDouble(TU_SPARSE_DOUBLE* sparse)
   sparse->numColumns = 0;
   sparse->numNonzeros = 0;
 
-  free(sparse->majorStarts);
-  sparse->majorStarts = NULL;
+  free(sparse->rowStarts);
+  sparse->rowStarts = NULL;
 
-  free(sparse->entryMinors);
-  sparse->entryMinors = NULL;
+  free(sparse->entryColumns);
+  sparse->entryColumns = NULL;
 
   free(sparse->entryValues);
   sparse->entryValues = NULL;
@@ -47,11 +47,11 @@ void TUclearSparseChar(TU_SPARSE_CHAR* sparse)
   sparse->numColumns = 0;
   sparse->numNonzeros = 0;
 
-  free(sparse->majorStarts);
-  sparse->majorStarts = NULL;
+  free(sparse->rowStarts);
+  sparse->rowStarts = NULL;
 
-  free(sparse->entryMinors);
-  sparse->entryMinors = NULL;
+  free(sparse->entryColumns);
+  sparse->entryColumns = NULL;
 
   free(sparse->entryValues);
   sparse->entryValues = NULL;
@@ -78,10 +78,10 @@ void TUprintSparseAsDenseDouble(FILE* stream, TU_SPARSE_DOUBLE* sparse, char zer
   {
     if (header)
       fprintf(stream, "%d| ", row % 10);
-    int start = sparse->majorStarts[row];
-    int end = row + 1 < sparse->numRows ? sparse->majorStarts[row + 1] : sparse->numNonzeros;
+    int start = sparse->rowStarts[row];
+    int end = row + 1 < sparse->numRows ? sparse->rowStarts[row + 1] : sparse->numNonzeros;
     for (int i = start; i < end; ++i)
-      rowEntries[sparse->entryMinors[i]] = sparse->entryValues[i];
+      rowEntries[sparse->entryColumns[i]] = sparse->entryValues[i];
     for (int column = 0; column < sparse->numColumns; ++column)
     {
       double x = rowEntries[column];
@@ -91,7 +91,7 @@ void TUprintSparseAsDenseDouble(FILE* stream, TU_SPARSE_DOUBLE* sparse, char zer
         fprintf(stream, "%f ", x);
     }
     for (int i = start; i < end; ++i)
-      rowEntries[sparse->entryMinors[i]] = 0.0;
+      rowEntries[sparse->entryColumns[i]] = 0.0;
     fputc('\n', stream);
   }
 
@@ -160,10 +160,10 @@ void TUprintSparseAsDenseChar(FILE* stream, TU_SPARSE_CHAR* sparse, char zeroCha
   {
     if (header)
       fprintf(stream, "%d| ", row % 10);
-    int start = sparse->majorStarts[row];
-    int end = row + 1 < sparse->numRows ? sparse->majorStarts[row + 1] : sparse->numNonzeros;
+    int start = sparse->rowStarts[row];
+    int end = row + 1 < sparse->numRows ? sparse->rowStarts[row + 1] : sparse->numNonzeros;
     for (int i = start; i < end; ++i)
-      rowEntries[sparse->entryMinors[i]] = sparse->entryValues[i];
+      rowEntries[sparse->entryColumns[i]] = sparse->entryValues[i];
     for (int column = 0; column < sparse->numColumns; ++column)
     {
       char x = rowEntries[column];
@@ -173,7 +173,7 @@ void TUprintSparseAsDenseChar(FILE* stream, TU_SPARSE_CHAR* sparse, char zeroCha
         fprintf(stream, "%d ", x);
     }
     for (int i = start; i < end; ++i)
-      rowEntries[sparse->entryMinors[i]] = 0.0;
+      rowEntries[sparse->entryColumns[i]] = 0.0;
     fputc('\n', stream);
   }
 
@@ -194,18 +194,18 @@ bool TUcheckSparseEqualDouble(TU_SPARSE_DOUBLE* matrix1, TU_SPARSE_DOUBLE* matri
 
   for (int row = 0; row < matrix1->numRows; ++row)
   {
-    int start1 = matrix1->majorStarts[row];
-    int start2 = matrix2->majorStarts[row];
+    int start1 = matrix1->rowStarts[row];
+    int start2 = matrix2->rowStarts[row];
     if (start1 != start2)
       return false;
-    int end1 = row + 1 < matrix1->numRows ? matrix1->majorStarts[row] : matrix1->numNonzeros;
-    int end2 = row + 1 < matrix2->numRows ? matrix2->majorStarts[row] : matrix2->numNonzeros;
+    int end1 = row + 1 < matrix1->numRows ? matrix1->rowStarts[row] : matrix1->numNonzeros;
+    int end2 = row + 1 < matrix2->numRows ? matrix2->rowStarts[row] : matrix2->numNonzeros;
     if (end1 != end2)
       return false;
 
     for (int i = start1; i < end1; ++i)
     {
-      if (matrix1->entryMinors[i] != matrix2->entryMinors[i])
+      if (matrix1->entryColumns[i] != matrix2->entryColumns[i])
         return false;
       if (matrix1->entryValues[i] != matrix2->entryValues[i])
         return false;
@@ -264,18 +264,18 @@ bool TUcheckSparseEqualChar(TU_SPARSE_CHAR* matrix1, TU_SPARSE_CHAR* matrix2)
 
   for (int row = 0; row < matrix1->numRows; ++row)
   {
-    int start1 = matrix1->majorStarts[row];
-    int start2 = matrix2->majorStarts[row];
+    int start1 = matrix1->rowStarts[row];
+    int start2 = matrix2->rowStarts[row];
     if (start1 != start2)
       return false;
-    int end1 = row + 1 < matrix1->numRows ? matrix1->majorStarts[row] : matrix1->numNonzeros;
-    int end2 = row + 1 < matrix2->numRows ? matrix2->majorStarts[row] : matrix2->numNonzeros;
+    int end1 = row + 1 < matrix1->numRows ? matrix1->rowStarts[row] : matrix1->numNonzeros;
+    int end2 = row + 1 < matrix2->numRows ? matrix2->rowStarts[row] : matrix2->numNonzeros;
     if (end1 != end2)
       return false;
 
     for (int i = start1; i < end1; ++i)
     {
-      if (matrix1->entryMinors[i] != matrix2->entryMinors[i])
+      if (matrix1->entryColumns[i] != matrix2->entryColumns[i])
         return false;
       if (matrix1->entryValues[i] != matrix2->entryValues[i])
         return false;
@@ -292,11 +292,11 @@ bool TUcheckSparseSortedDouble(TU_SPARSE_DOUBLE* sparse)
 
   for (int row = 0; row < sparse->numRows; ++row)
   {
-    int start = sparse->majorStarts[row];
-    int end = row + 1 < sparse->numRows ? sparse->majorStarts[row+1] : sparse->numNonzeros;
+    int start = sparse->rowStarts[row];
+    int end = row + 1 < sparse->numRows ? sparse->rowStarts[row+1] : sparse->numNonzeros;
     for (int i = start + 1; i < end; ++i)
     {
-      if (sparse->entryMinors[i-1] > sparse->entryMinors[i])
+      if (sparse->entryColumns[i-1] > sparse->entryColumns[i])
         return false;
     }
   }

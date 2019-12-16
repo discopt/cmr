@@ -19,14 +19,14 @@ TU_SPARSE_DOUBLE stringToSparseDouble(const char* string)
   assert(end > string);
   string = end;
 
-  matrix.majorStarts = (int*) malloc(matrix.numRows * sizeof(int));
+  matrix.rowStarts = (int*) malloc(matrix.numRows * sizeof(int));
   matrix.numNonzeros = 0;
-  matrix.entryMinors = (int*) malloc(maxNonzeros * sizeof(int));
+  matrix.entryColumns = (int*) malloc(maxNonzeros * sizeof(int));
   matrix.entryValues = (double*) malloc(maxNonzeros * sizeof(double));
 
   for (int row = 0; row < matrix.numRows; ++row)
   {
-    matrix.majorStarts[row] = matrix.numNonzeros;
+    matrix.rowStarts[row] = matrix.numNonzeros;
     for (int column = 0; column < matrix.numColumns; ++column)
     {
       double x = strtod(string, &end);
@@ -39,11 +39,11 @@ TU_SPARSE_DOUBLE stringToSparseDouble(const char* string)
         if (matrix.numNonzeros == maxNonzeros)
         {
           maxNonzeros *= 2;
-          matrix.entryMinors = (int*) realloc(matrix.entryMinors, maxNonzeros * sizeof(int));
+          matrix.entryColumns = (int*) realloc(matrix.entryColumns, maxNonzeros * sizeof(int));
           matrix.entryValues = (double*) realloc(matrix.entryValues, maxNonzeros * sizeof(double));
         }
 
-        matrix.entryMinors[matrix.numNonzeros] = column;
+        matrix.entryColumns[matrix.numNonzeros] = column;
         matrix.entryValues[matrix.numNonzeros] = x;
         matrix.numNonzeros++;
       }
@@ -115,14 +115,14 @@ TU_SPARSE_CHAR stringToSparseChar(const char* string)
   assert(end > string);
   string = end;
 
-  matrix.majorStarts = (int*) malloc(matrix.numRows * sizeof(int));
+  matrix.rowStarts = (int*) malloc(matrix.numRows * sizeof(int));
   matrix.numNonzeros = 0;
-  matrix.entryMinors = (int*) malloc(maxNonzeros * sizeof(int));
+  matrix.entryColumns = (int*) malloc(maxNonzeros * sizeof(int));
   matrix.entryValues = (char*) malloc(maxNonzeros * sizeof(char));
 
   for (int row = 0; row < matrix.numRows; ++row)
   {
-    matrix.majorStarts[row] = matrix.numNonzeros;
+    matrix.rowStarts[row] = matrix.numNonzeros;
     for (int column = 0; column < matrix.numColumns; ++column)
     {
       char x = strtol(string, &end, 10);
@@ -135,11 +135,11 @@ TU_SPARSE_CHAR stringToSparseChar(const char* string)
         if (matrix.numNonzeros == maxNonzeros)
         {
           maxNonzeros *= 2;
-          matrix.entryMinors = (int*) realloc(matrix.entryMinors, maxNonzeros * sizeof(int));
+          matrix.entryColumns = (int*) realloc(matrix.entryColumns, maxNonzeros * sizeof(int));
           matrix.entryValues = (char*) realloc(matrix.entryValues, maxNonzeros * sizeof(char));
         }
 
-        matrix.entryMinors[matrix.numNonzeros] = column;
+        matrix.entryColumns[matrix.numNonzeros] = column;
         matrix.entryValues[matrix.numNonzeros] = x;
         matrix.numNonzeros++;
       }
