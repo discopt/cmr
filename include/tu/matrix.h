@@ -194,7 +194,6 @@ bool TUcheckSparseEqualDouble(
   TU_SPARSE_DOUBLE* matrix2 /**< Second matrix */
 );
 
-
 /**
  * \brief Checks whether two sparse int matrices are equal.
  */
@@ -216,6 +215,37 @@ bool TUcheckSparseEqualChar(
   TU_SPARSE_CHAR* matrix2 /**< Second matrix */
 );
 
+/**
+ * \brief Checks whether two sparse double matrices are transposes of each other.
+ */
+
+TU_EXPORT
+bool TUcheckSparseTransposeDouble(
+  TU_SPARSE_DOUBLE* matrix1, /**< First matrix */
+  TU_SPARSE_DOUBLE* matrix2 /**< Second matrix */
+);
+
+
+/**
+ * \brief Checks whether two sparse int matrices are transposes of each other.
+ */
+
+TU_EXPORT
+bool TUcheckSparseTransposeInt(
+  TU_SPARSE_INT* matrix1, /**< First matrix */
+  TU_SPARSE_INT* matrix2 /**< Second matrix */
+);
+
+
+/**
+ * \brief Checks whether two sparse char matrices are transposes of each other.
+ */
+
+TU_EXPORT
+bool TUcheckSparseTransposeChar(
+  TU_SPARSE_CHAR* matrix1, /**< First matrix */
+  TU_SPARSE_CHAR* matrix2 /**< Second matrix */
+);
 
 /**
  * \brief Checks whether sparse double matrix has each row sorted by minor.
@@ -244,6 +274,34 @@ bool TUcheckSparseSortedChar(
   TU_SPARSE_CHAR* sparse /** Sparse char matrix */
 );
 
+/**
+ * \brief Checks if sparse double matrix has only entries in {-1, 0, +1} with absolute error
+ * tolerance \p epsilon.
+ */
+
+TU_EXPORT
+bool TUisTernaryDouble(
+  TU_SPARSE_CHAR* sparse, /**< Sparse char matrix */
+  double epsilon          /**< Absolute error tolerance */
+);
+
+/**
+ * \brief Checks if sparse int matrix has only entries in {-1, 0, +1}.
+ */
+
+TU_EXPORT
+bool TUisTernaryInt(
+  TU_SPARSE_INT* sparse /**< Sparse char matrix */
+);
+
+/**
+ * \brief Checks if sparse char matrix has only entries in {-1, 0, +1}.
+ */
+
+TU_EXPORT
+bool TUisTernaryChar(
+  TU_SPARSE_CHAR* sparse /**< Sparse char matrix */
+);
 
 #ifdef __cplusplus
 }

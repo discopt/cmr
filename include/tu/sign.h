@@ -5,55 +5,35 @@
 extern "C" {
 #endif
 
-#include <tu/env.h>
+#include <tu/matrix.h>
 
 /**
  * \brief Tests if signs of matrix nonzeros qualify for being TU.
  *
- * The matrix is assumed to be ternary.
- *
- * The dimensions of the matrix are \p numRows by \p numColumns. The arrays \p indexColumns and 
- * \p indexEntries of length \p numNonzeros contain column and value information, respectively, of
- * the nonzeros in row-wise order. The array \p rowStarts of length \p numRows contains the index of
- * the first entry of each row.
- *
+ * The \p matrix is assumed to be ternary.
+ * 
  * The function returns \c true if and only if the signs are correct.
  */
 
 TU_EXPORT
-bool TUtestSign(
+bool TUtestSignChar(
   TU* tu, /**< TU environment */
-  int numRows, /**< Number of matrix rows */
-  int numColumns, /**< Number of matrix columns */
-  int numNonzeros, /**< Number of matrix nonzeros */
-  int* rowStarts, /**< Array with indices of first entries of each row. */
-  int* indexColumns, /**< Array with columns for each index */
-  char* indexEntries /**< Array with matrix entry for each index */
+  TU_SPARSE_CHAR* matrix /**< Sparse matrix */
 );
 
 
 /**
  * \brief Modifies signs of matrix nonzeros to qualify for being TU.
  *
- * The matrix is assumed to be ternary.
- *
- * The dimensions of the matrix are \p numRows by \p numColumns. The arrays \p indexColumns and 
- * \p indexEntries of length \p numNonzeros contain column and value information, respectively, of
- * the nonzeros in row-wise order. The array \p rowStarts of length \p numRows contains the index of
- * the first entry of each row.
+ * The \p matrix is assumed to be ternary.
  *
  * The function returns \c true if and only if the signs were already correct.
  */
 
 TU_EXPORT
-bool TUcorrectSign(
+bool TUcorrectSignChar(
   TU* tu, /**< TU environment */
-  int numRows, /**< Number of matrix rows */
-  int numColumns, /**< Number of matrix columns */
-  int numNonzeros, /**< Number of matrix nonzeros */
-  int* rowStarts, /**< Array with indices of first entries of each row. */
-  int* indexColumns, /**< Array with columns for each index */
-  char* indexEntries /**< Array with matrix entry for each index */
+  TU_SPARSE_CHAR* matrix /**< Sparse matrix */
 );
 
 #ifdef __cplusplus
