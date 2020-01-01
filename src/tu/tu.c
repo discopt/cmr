@@ -6,8 +6,8 @@
 #include <stdlib.h>
 #include <assert.h>
 
-bool TUtestTotalUnimodularityDouble(TU* tu, TU_SPARSE_DOUBLE* matrix, TU_DEC** decomposition,
-  TU_SUBMATRIX** submatrix)
+bool TUtestTotalUnimodularityDouble(TU* tu, TU_SPARSE_DOUBLE* matrix, double epsilon,
+  TU_DEC** decomposition, TU_SUBMATRIX** submatrix)
 {
   
 }

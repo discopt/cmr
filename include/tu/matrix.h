@@ -350,7 +350,7 @@ void TUfilterSubmatrixChar(
 
 TU_EXPORT
 bool TUisTernaryDouble(
-  TU_SPARSE_CHAR* sparse,   /**< Sparse char matrix */
+  TU_SPARSE_DOUBLE* sparse, /**< Sparse char matrix */
   double epsilon,           /**< Absolute error tolerance */
   TU_SUBMATRIX** submatrix  /**< If not \c NULL, a non-ternary entry is stored in \c *submatrix. */
 );

@@ -426,7 +426,7 @@ bool TUcheckSparseSortedChar(TU_SPARSE_CHAR* sparse)
   return TUcheckSparseSortedDouble((TU_SPARSE_DOUBLE*) sparse);
 }
 
-bool TUisTernaryDouble(TU_SPARSE_CHAR* sparse, double epsilon, TU_SUBMATRIX** submatrix)
+bool TUisTernaryDouble(TU_SPARSE_DOUBLE* sparse, double epsilon, TU_SUBMATRIX** submatrix)
 {
   assert(sparse != NULL);
 

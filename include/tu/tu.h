@@ -10,7 +10,8 @@ extern "C" {
 #include <tu/matrix.h>
 
 /**
- * \brief Tests a sparse double matrix for total total unimodularity.
+ * \brief Tests a sparse double matrix for total total unimodularity with absolute error
+ * tolerance \p epsilon.
  * 
  * Returns \c true if and only if \p matrix is TU.
  *
@@ -28,6 +29,7 @@ TU_EXPORT
 bool TUtestTotalUnimodularityDouble(
   TU* tu, /**< TU environment */
   TU_SPARSE_DOUBLE* matrix, /**< Sparse double matrix */
+  double epsilon,           /**< Absolute error tolerance */
   TU_DEC** decomposition, /**< If not \c NULL, the decomposition tree is stored. */
   TU_SUBMATRIX** submatrix /**< If not \c NULL, a submatrix with bad determinant is stored. */
 );

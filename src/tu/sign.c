@@ -6,7 +6,9 @@
 #include <assert.h>
 #include <stdlib.h>
 
-// TODO: merge wasVisited and isTarget into one structure.
+/**
+ * \brief Graph node for BFS in signing algorithm.
+ */
 
 typedef struct
 {
@@ -258,14 +260,296 @@ char signSequentiallyConnected(
 }
 
 /**
- * \brief Signs a given ternary matrix.
+ * \brief Signs a given ternary double matrix.
  * 
  * Returns \c true if and only if the signs were already correct.
  */
 
-bool sign(
+bool signDouble(
   TU* tu,                   /**< TU environment. */
-  TU_SPARSE_CHAR* matrix,   /**< Sparse matrix. */
+  TU_SPARSE_DOUBLE* matrix, /**< Sparse double matrix. */
+  bool change,              /**< Whether the signs of \p matrix shall be modified. */
+  TU_SUBMATRIX** submatrix  /**< If not \c NULL, a submatrix with bad determinant is stored. */
+)
+{
+  bool wasCorrect = true;
+  int numComponents;
+  TU_ONESUM_COMPONENT_CHAR* components;
+
+  assert(TUisTernaryDouble(matrix, 0.1, NULL));
+
+#ifdef DEBUG_SIGN
+  printf("sign:\n");
+  TUprintSparseAsDenseDouble(stdout, matrix, ' ', true);
+#endif
+
+  /* Decompose into 1-connected components. */
+
+  decomposeOneSumDoubleToChar(tu, matrix, &numComponents, &components, NULL, NULL, NULL, NULL);
+
+  for (int comp = 0; comp < numComponents; ++comp)
+  {
+    TU_SUBMATRIX* compSubmatrix = NULL;
+
+#ifdef DEBUG_SIGN
+    printf("-> Component %d of size %dx%d\n", comp, components[comp].matrix.numRows,
+      components[comp].matrix.numColumns);
+#endif
+    char modified = signSequentiallyConnected(tu, &components[comp].matrix,
+      &components[comp].transpose, change, (submatrix && !*submatrix) ? &compSubmatrix : NULL);
+#ifdef DEBUG_SIGN
+    printf("-> Component %d yields: %c\n", comp, modified ? modified : '0');
+#endif
+    if (modified == 0)
+    {
+      assert(compSubmatrix == NULL);
+      continue;
+    }
+
+    wasCorrect = false;
+
+    /* If we found a submatrix for the first time: */
+    if (compSubmatrix)
+    {
+      assert(submatrix && !*submatrix);
+      /* Translate component indices to indices of whole matrix and sort them again. */
+      for (int r = 0; r < compSubmatrix->numRows; ++r)
+        compSubmatrix->rows[r] = components[comp].rowsToOriginal[compSubmatrix->rows[r]];
+      for (int c = 0; c < compSubmatrix->numColumns; ++c)
+        compSubmatrix->columns[c] = components[comp].columnsToOriginal[compSubmatrix->columns[c]];
+      TUsortSubmatrix(compSubmatrix);
+      *submatrix = compSubmatrix;
+    }
+
+    /* As we don't modify, we can abort early. */
+    if (!change)
+      break;
+
+    assert(modified == 'm' || modified == 't');
+    bool copyTranspose = modified == 't';
+
+    /* Either the matrix or its transposed was modified. */
+    TU_SPARSE_CHAR* sourceMatrix = 
+      copyTranspose ? &components[comp].transpose : &components[comp].matrix;
+
+    /* We have to copy the changes back to the original matrix. */
+    for (int sourceRow = 0; sourceRow < sourceMatrix->numRows; ++sourceRow)
+    {
+      int sourceBegin = sourceMatrix->rowStarts[sourceRow];
+      int sourceEnd = sourceMatrix->rowStarts[sourceRow + 1];
+      for (int sourceEntry = sourceBegin; sourceEntry < sourceEnd; ++sourceEntry)
+      {
+        int sourceColumn = sourceMatrix->entryColumns[sourceEntry];
+        int compRow = copyTranspose ? sourceColumn : sourceRow;
+        int compColumn = copyTranspose ? sourceRow : sourceColumn;
+        int row = components[comp].rowsToOriginal[compRow];
+        int column = components[comp].columnsToOriginal[compColumn];
+
+        /* Perform binary search in row of original matrix to find the column. */
+
+        int lower = matrix->rowStarts[row];
+        int upper = row + 1 < matrix->numRows ? matrix->rowStarts[row + 1] : matrix->numNonzeros;
+        while (lower < upper)
+        {
+          int entry = (lower + upper) / 2;
+          int searchColumn = matrix->entryColumns[entry];
+          if (column < searchColumn)
+            upper = entry;
+          else if (column > searchColumn)
+            lower = entry + 1;
+          else
+          {
+            matrix->entryValues[entry] = sourceMatrix->entryValues[sourceEntry];
+            break;
+          }
+        }
+        assert(lower < upper);
+      }
+    }
+  }
+
+#ifdef DEBUG_SIGN
+  if (!wasCorrect && change)
+  {
+    printf("Modified original matrix:\n");
+    TUprintSparseAsDenseChar(stdout, matrix, ' ', true);
+  }
+#endif
+
+  /* Clean-up */
+
+  for (int c = 0; c < numComponents; ++c)
+  {
+    TUclearSparseChar(&components[c].matrix);
+    TUclearSparseChar(&components[c].transpose);
+    free(components[c].rowsToOriginal);
+    free(components[c].columnsToOriginal);
+  }
+  free(components);
+
+  return wasCorrect;
+}
+
+bool TUtestSignDouble(TU* tu, TU_SPARSE_DOUBLE* matrix, TU_SUBMATRIX** submatrix)
+{
+  return signDouble(tu, matrix, false, submatrix);
+}
+
+bool TUcorrectSignDouble(TU* tu, TU_SPARSE_DOUBLE* matrix, TU_SUBMATRIX** submatrix)
+{
+  return signDouble(tu, matrix, true, submatrix);
+}
+
+/**
+ * \brief Signs a given ternary int matrix.
+ * 
+ * Returns \c true if and only if the signs were already correct.
+ */
+
+bool signInt(
+  TU* tu,                   /**< TU environment. */
+  TU_SPARSE_INT* matrix,    /**< Sparse int matrix. */
+  bool change,              /**< Whether the signs of \p matrix shall be modified. */
+  TU_SUBMATRIX** submatrix  /**< If not \c NULL, a submatrix with bad determinant is stored. */
+)
+{
+  bool wasCorrect = true;
+  int numComponents;
+  TU_ONESUM_COMPONENT_CHAR* components;
+
+  assert(TUisTernaryInt(matrix, NULL));
+
+#ifdef DEBUG_SIGN
+  printf("sign:\n");
+  TUprintSparseAsDenseInt(stdout, matrix, ' ', true);
+#endif
+
+  /* Decompose into 1-connected components. */
+
+  decomposeOneSumIntToChar(tu, matrix, &numComponents, &components, NULL, NULL, NULL, NULL);
+
+  for (int comp = 0; comp < numComponents; ++comp)
+  {
+    TU_SUBMATRIX* compSubmatrix = NULL;
+
+#ifdef DEBUG_SIGN
+    printf("-> Component %d of size %dx%d\n", comp, components[comp].matrix.numRows,
+      components[comp].matrix.numColumns);
+#endif
+    char modified = signSequentiallyConnected(tu, &components[comp].matrix,
+      &components[comp].transpose, change, (submatrix && !*submatrix) ? &compSubmatrix : NULL);
+#ifdef DEBUG_SIGN
+    printf("-> Component %d yields: %c\n", comp, modified ? modified : '0');
+#endif
+    if (modified == 0)
+    {
+      assert(compSubmatrix == NULL);
+      continue;
+    }
+
+    wasCorrect = false;
+
+    /* If we found a submatrix for the first time: */
+    if (compSubmatrix)
+    {
+      assert(submatrix && !*submatrix);
+      /* Translate component indices to indices of whole matrix and sort them again. */
+      for (int r = 0; r < compSubmatrix->numRows; ++r)
+        compSubmatrix->rows[r] = components[comp].rowsToOriginal[compSubmatrix->rows[r]];
+      for (int c = 0; c < compSubmatrix->numColumns; ++c)
+        compSubmatrix->columns[c] = components[comp].columnsToOriginal[compSubmatrix->columns[c]];
+      TUsortSubmatrix(compSubmatrix);
+      *submatrix = compSubmatrix;
+    }
+
+    /* As we don't modify, we can abort early. */
+    if (!change)
+      break;
+
+    assert(modified == 'm' || modified == 't');
+    bool copyTranspose = modified == 't';
+
+    /* Either the matrix or its transposed was modified. */
+    TU_SPARSE_CHAR* sourceMatrix = 
+      copyTranspose ? &components[comp].transpose : &components[comp].matrix;
+
+    /* We have to copy the changes back to the original matrix. */
+    for (int sourceRow = 0; sourceRow < sourceMatrix->numRows; ++sourceRow)
+    {
+      int sourceBegin = sourceMatrix->rowStarts[sourceRow];
+      int sourceEnd = sourceMatrix->rowStarts[sourceRow + 1];
+      for (int sourceEntry = sourceBegin; sourceEntry < sourceEnd; ++sourceEntry)
+      {
+        int sourceColumn = sourceMatrix->entryColumns[sourceEntry];
+        int compRow = copyTranspose ? sourceColumn : sourceRow;
+        int compColumn = copyTranspose ? sourceRow : sourceColumn;
+        int row = components[comp].rowsToOriginal[compRow];
+        int column = components[comp].columnsToOriginal[compColumn];
+
+        /* Perform binary search in row of original matrix to find the column. */
+
+        int lower = matrix->rowStarts[row];
+        int upper = row + 1 < matrix->numRows ? matrix->rowStarts[row + 1] : matrix->numNonzeros;
+        while (lower < upper)
+        {
+          int entry = (lower + upper) / 2;
+          int searchColumn = matrix->entryColumns[entry];
+          if (column < searchColumn)
+            upper = entry;
+          else if (column > searchColumn)
+            lower = entry + 1;
+          else
+          {
+            matrix->entryValues[entry] = sourceMatrix->entryValues[sourceEntry];
+            break;
+          }
+        }
+        assert(lower < upper);
+      }
+    }
+  }
+
+#ifdef DEBUG_SIGN
+  if (!wasCorrect && change)
+  {
+    printf("Modified original matrix:\n");
+    TUprintSparseAsDenseInt(stdout, matrix, ' ', true);
+  }
+#endif
+
+  /* Clean-up */
+
+  for (int c = 0; c < numComponents; ++c)
+  {
+    TUclearSparseChar(&components[c].matrix);
+    TUclearSparseChar(&components[c].transpose);
+    free(components[c].rowsToOriginal);
+    free(components[c].columnsToOriginal);
+  }
+  free(components);
+
+  return wasCorrect;
+}
+
+bool TUtestSignInt(TU* tu, TU_SPARSE_INT* matrix, TU_SUBMATRIX** submatrix)
+{
+  return signInt(tu, matrix, false, submatrix);
+}
+
+bool TUcorrectSignInt(TU* tu, TU_SPARSE_INT* matrix, TU_SUBMATRIX** submatrix)
+{
+  return signInt(tu, matrix, true, submatrix);
+}
+
+/**
+ * \brief Signs a given ternary char matrix.
+ * 
+ * Returns \c true if and only if the signs were already correct.
+ */
+
+bool signChar(
+  TU* tu,                   /**< TU environment. */
+  TU_SPARSE_CHAR* matrix,   /**< Sparse char matrix. */
   bool change,              /**< Whether the signs of \p matrix shall be modified. */
   TU_SUBMATRIX** submatrix  /**< If not \c NULL, a submatrix with bad determinant is stored. */
 )
@@ -390,10 +674,10 @@ bool sign(
 
 bool TUtestSignChar(TU* tu, TU_SPARSE_CHAR* matrix, TU_SUBMATRIX** submatrix)
 {
-  return sign(tu, matrix, false, submatrix);
+  return signChar(tu, matrix, false, submatrix);
 }
 
 bool TUcorrectSignChar(TU* tu, TU_SPARSE_CHAR* matrix, TU_SUBMATRIX** submatrix)
 {
-  return sign(tu, matrix, true, submatrix);
+  return signChar(tu, matrix, true, submatrix);
 }

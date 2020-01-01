@@ -9,7 +9,7 @@ extern "C" {
 #endif
 
 /**
- * \brief Ensures that signs of sequentially connected matrix nonzeros qualify for being TU.
+ * \brief Ensures that signs of sequentially connected char matrix nonzeros qualify for being TU.
  *
  * The \p matrix is assumed to be ternary. If sign changes are necessary, only \p matrix is
  * modified. In particular, \p transpose is remain unchanged. Expects \p matrix to have the

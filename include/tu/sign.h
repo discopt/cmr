@@ -8,6 +8,67 @@ extern "C" {
 #include <tu/matrix.h>
 
 /**
+ * \brief Tests if signs of double matrix nonzeros qualify for being TU.
+ *
+ * The \p matrix is assumed to be ternary.
+ * 
+ * Returns \c true if and only if the signs are correct.
+ */
+
+TU_EXPORT
+bool TUtestSignDouble(
+  TU* tu,                   /**< TU environment. */
+  TU_SPARSE_DOUBLE* matrix, /**< Sparse double matrix. */
+  TU_SUBMATRIX** submatrix  /**< If not \c NULL, a submatrix with bad determinant is stored. */
+);
+
+/**
+ * \brief Modifies signs of double matrix nonzeros to qualify for being TU.
+ *
+ * The \p matrix is assumed to be ternary.
+ *
+ * Returns \c true if and only if the signs were already correct.
+ */
+
+TU_EXPORT
+bool TUcorrectSignDouble(
+  TU* tu,                   /**< TU environment */
+  TU_SPARSE_DOUBLE* matrix, /**< Sparse double matrix */
+  TU_SUBMATRIX** submatrix  /**< If not \c NULL, a submatrix with bad determinant is stored. */
+);
+
+/**
+ * \brief Tests if signs of int matrix nonzeros qualify for being TU.
+ *
+ * The \p matrix is assumed to be ternary.
+ * 
+ * Returns \c true if and only if the signs are correct.
+ */
+
+TU_EXPORT
+bool TUtestSignInt(
+  TU* tu,                   /**< TU environment */
+  TU_SPARSE_INT* matrix,    /**< Sparse int matrix */
+  TU_SUBMATRIX** submatrix  /**< If not \c NULL, a submatrix with bad determinant is stored. */
+);
+
+/**
+ * \brief Modifies signs of double matrix nonzeros to qualify for being TU.
+ *
+ * The \p matrix is assumed to be ternary.
+ *
+ * Returns \c true if and only if the signs were already correct.
+ */
+
+TU_EXPORT
+bool TUcorrectSignInt(
+  TU* tu,                   /**< TU environment */
+  TU_SPARSE_INT* matrix,    /**< Sparse int matrix */
+  TU_SUBMATRIX** submatrix  /**< If not \c NULL, a submatrix with bad determinant is stored. */
+);
+
+
+/**
  * \brief Tests if signs of char matrix nonzeros qualify for being TU.
  *
  * The \p matrix is assumed to be ternary.
@@ -17,9 +78,9 @@ extern "C" {
 
 TU_EXPORT
 bool TUtestSignChar(
-  TU* tu, /**< TU environment */
-  TU_SPARSE_CHAR* matrix, /**< Sparse char matrix */
-  TU_SUBMATRIX** submatrix /**< If not \c NULL, a submatrix with bad determinant is stored. */
+  TU* tu,                   /**< TU environment */
+  TU_SPARSE_CHAR* matrix,   /**< Sparse char matrix */
+  TU_SUBMATRIX** submatrix  /**< If not \c NULL, a submatrix with bad determinant is stored. */
 );
 
 
@@ -33,9 +94,9 @@ bool TUtestSignChar(
 
 TU_EXPORT
 bool TUcorrectSignChar(
-  TU* tu, /**< TU environment */
-  TU_SPARSE_CHAR* matrix, /**< Sparse char matrix */
-  TU_SUBMATRIX** submatrix /**< If not \c NULL, a submatrix with bad determinant is stored. */
+  TU* tu,                   /**< TU environment */
+  TU_SPARSE_CHAR* matrix,   /**< Sparse char matrix */
+  TU_SUBMATRIX** submatrix  /**< If not \c NULL, a submatrix with bad determinant is stored. */
 );
 
 #ifdef __cplusplus
