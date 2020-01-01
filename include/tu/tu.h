@@ -10,7 +10,7 @@ extern "C" {
 #include <tu/matrix.h>
 
 /**
- * \brief Tests a sparse double matrix for total total unimodularity with absolute error
+ * \brief Tests a sparse double matrix for total unimodularity with absolute error
  * tolerance \p epsilon.
  * 
  * Returns \c true if and only if \p matrix is TU.
@@ -35,7 +35,7 @@ bool TUtestTotalUnimodularityDouble(
 );
 
 /**
- * \brief Tests a sparse int matrix for total total unimodularity.
+ * \brief Tests a sparse int matrix for total unimodularity.
  * 
  * Returns \c true if and only if \p matrix is TU.
  *
@@ -58,7 +58,7 @@ bool TUtestTotalUnimodularityInt(
 );
 
 /**
- * \brief Tests a sparse char matrix for total total unimodularity.
+ * \brief Tests a sparse char matrix for total unimodularity.
  * 
  * Returns \c true if and only if \p matrix is TU.
  *
