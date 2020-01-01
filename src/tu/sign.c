@@ -27,7 +27,7 @@ char signSequentiallyConnected(
   bool matrixChanged = false;
   
   assert(TUcheckSparseTransposeChar(matrix, transpose));
-  assert(TUisTernaryChar(matrix));
+  assert(TUisTernaryChar(matrix, NULL));
 
   /* If we have more rows than columns, we work with the transpose. */
   if (matrix->numRows > matrix->numColumns)
@@ -274,7 +274,7 @@ bool sign(
   int numComponents;
   TU_ONESUM_COMPONENT_CHAR* components;
 
-  assert(TUisTernaryChar(matrix));
+  assert(TUisTernaryChar(matrix, NULL));
 
 #ifdef DEBUG_SIGN
   printf("sign:\n");

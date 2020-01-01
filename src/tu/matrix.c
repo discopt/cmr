@@ -426,44 +426,71 @@ bool TUcheckSparseSortedChar(TU_SPARSE_CHAR* sparse)
   return TUcheckSparseSortedDouble((TU_SPARSE_DOUBLE*) sparse);
 }
 
-bool TUisTernaryDouble(TU_SPARSE_CHAR* sparse, double epsilon)
+bool TUisTernaryDouble(TU_SPARSE_CHAR* sparse, double epsilon, TU_SUBMATRIX** submatrix)
 {
   assert(sparse != NULL);
 
-  for (int entry = 0; entry < sparse->numNonzeros; ++entry)
+  for (int row = 0; row < sparse->numRows; ++row)
   {
-    double value = sparse->entryValues[entry];
-    int rounded = (int)(value + 0.5);
-    if (rounded < -1 || rounded > +1 || fabs(value - rounded) > epsilon)
-      return false;
+    int begin = sparse->rowStarts[row];
+    int end = row + 1 < sparse->numRows ? sparse->rowStarts[row + 1] : sparse->numNonzeros;
+    for (int entry = begin; entry < end; ++entry)
+    {
+      double value = sparse->entryValues[entry];
+      int rounded = (int)(value + 0.5);
+      if (rounded < -1 || rounded > +1 || fabs(value - rounded) > epsilon)
+      {
+        if (submatrix)
+          TUcreateSubmatrix1x1(submatrix, row, sparse->entryColumns[entry]);
+        return false;
+      }
+    }
   }
 
   return true;
 }
 
-bool TUisTernaryInt(TU_SPARSE_INT* sparse)
+bool TUisTernaryInt(TU_SPARSE_INT* sparse, TU_SUBMATRIX** submatrix)
 {
   assert(sparse != NULL);
 
-  for (int entry = 0; entry < sparse->numNonzeros; ++entry)
+  for (int row = 0; row < sparse->numRows; ++row)
   {
-    int value = sparse->entryValues[entry];
-    if (value < -1 || value > +1)
-      return false;
+    int begin = sparse->rowStarts[row];
+    int end = row + 1 < sparse->numRows ? sparse->rowStarts[row + 1] : sparse->numNonzeros;
+    for (int entry = begin; entry < end; ++entry)
+    {
+      int value = sparse->entryValues[entry];
+      if (value < -1 || value > +1)
+      {
+        if (submatrix)
+          TUcreateSubmatrix1x1(submatrix, row, sparse->entryColumns[entry]);
+        return false;
+      }
+    }
   }
 
   return true;
 }
 
-bool TUisTernaryChar(TU_SPARSE_CHAR* sparse)
+bool TUisTernaryChar(TU_SPARSE_CHAR* sparse, TU_SUBMATRIX** submatrix)
 {
   assert(sparse != NULL);
 
-  for (int entry = 0; entry < sparse->numNonzeros; ++entry)
+  for (int row = 0; row < sparse->numRows; ++row)
   {
-    char value = sparse->entryValues[entry];
-    if (value < -1 || value > +1)
-      return false;
+    int begin = sparse->rowStarts[row];
+    int end = row + 1 < sparse->numRows ? sparse->rowStarts[row + 1] : sparse->numNonzeros;
+    for (int entry = begin; entry < end; ++entry)
+    {
+      char value = sparse->entryValues[entry];
+      if (value < -1 || value > +1)
+      {
+        if (submatrix)
+          TUcreateSubmatrix1x1(submatrix, row, sparse->entryColumns[entry]);
+        return false;
+      }
+    }
   }
 
   return true;

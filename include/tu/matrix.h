@@ -274,35 +274,6 @@ bool TUcheckSparseSortedChar(
   TU_SPARSE_CHAR* sparse /** Sparse char matrix */
 );
 
-/**
- * \brief Checks if sparse double matrix has only entries in {-1, 0, +1} with absolute error
- * tolerance \p epsilon.
- */
-
-TU_EXPORT
-bool TUisTernaryDouble(
-  TU_SPARSE_CHAR* sparse, /**< Sparse char matrix */
-  double epsilon          /**< Absolute error tolerance */
-);
-
-/**
- * \brief Checks if sparse int matrix has only entries in {-1, 0, +1}.
- */
-
-TU_EXPORT
-bool TUisTernaryInt(
-  TU_SPARSE_INT* sparse /**< Sparse char matrix */
-);
-
-/**
- * \brief Checks if sparse char matrix has only entries in {-1, 0, +1}.
- */
-
-TU_EXPORT
-bool TUisTernaryChar(
-  TU_SPARSE_CHAR* sparse /**< Sparse char matrix */
-);
-
 
 /**
  * \brief Row and column indices for a submatrix
@@ -370,6 +341,38 @@ void TUfilterSubmatrixChar(
   TU_SPARSE_CHAR* matrix,   /**< Given matrix */
   TU_SUBMATRIX* submatrix,  /**< Specified submatrix */
   TU_SPARSE_CHAR* result    /**< Resulting submatrix as a sparse char matrix. */
+);
+
+/**
+ * \brief Checks if sparse double matrix has only entries in {-1, 0, +1} with absolute error
+ * tolerance \p epsilon.
+ */
+
+TU_EXPORT
+bool TUisTernaryDouble(
+  TU_SPARSE_CHAR* sparse,   /**< Sparse char matrix */
+  double epsilon,           /**< Absolute error tolerance */
+  TU_SUBMATRIX** submatrix  /**< If not \c NULL, a non-ternary entry is stored in \c *submatrix. */
+);
+
+/**
+ * \brief Checks if sparse int matrix has only entries in {-1, 0, +1}.
+ */
+
+TU_EXPORT
+bool TUisTernaryInt(
+  TU_SPARSE_INT* sparse,    /**< Sparse char matrix */
+  TU_SUBMATRIX** submatrix  /**< If not \c NULL, a non-ternary entry is stored in \c *submatrix. */
+);
+
+/**
+ * \brief Checks if sparse char matrix has only entries in {-1, 0, +1}.
+ */
+
+TU_EXPORT
+bool TUisTernaryChar(
+  TU_SPARSE_CHAR* sparse,   /**< Sparse char matrix */
+  TU_SUBMATRIX** submatrix  /**< If not \c NULL, a non-ternary entry is stored in \c *submatrix. */
 );
 
 #ifdef __cplusplus
