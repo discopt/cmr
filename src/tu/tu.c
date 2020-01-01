@@ -1,64 +1,42 @@
 #include <tu/tu.h>
 
+#include "one_sum.h"
+#include "sign_internal.h"
+
 #include <assert.h>
-#include <stdlib.h>
-#include <stdbool.h>
 
-bool TUtestTU(
-  TU* tu,
-  int numRows,
-  int numColumns,
-  int numNonzeros,
-  int* rowStarts,
-  int* indexColumns,
-  char* indexEntries
-  )
+bool TUtestTotalUnimodularityDouble(TU* tu, TU_SPARSE_DOUBLE* matrix, TU_DEC** decomposition,
+  TU_SUBMATRIX** submatrix)
 {
-  return TUtestTUwithDecSubmatrix(tu, numRows, numColumns, numNonzeros, rowStarts, indexColumns,
-    indexEntries, NULL, NULL);
+  
 }
 
-bool TUtestTUwithDec(
-  TU* tu,
-  int numRows,
-  int numColumns,
-  int numNonzeros,
-  int* rowStarts,
-  int* indexColumns,
-  char* indexEntries,
-  TU_DEC** decomposition
-  )
+bool TUtestTotalUnimodularityInt(TU* tu, TU_SPARSE_INT* matrix, TU_DEC** decomposition,
+  TU_SUBMATRIX** submatrix)
 {
-  return TUtestTUwithDecSubmatrix(tu, numRows, numColumns, numNonzeros, rowStarts, indexColumns,
-    indexEntries, decomposition, NULL);
+  
 }
 
-bool TUtestTUwithSubmatrix(
-  TU* tu,
-  int numRows,
-  int numColumns,
-  int numNonzeros,
-  int* rowStarts,
-  int* indexColumns,
-  char* indexEntries,
-  TU_SUBMATRIX** violator
-  )
+bool TUtestTotalUnimodularityChar(TU* tu, TU_SPARSE_CHAR* matrix, TU_DEC** decomposition,
+  TU_SUBMATRIX** submatrix)
 {
-  return TUtestTUwithDecSubmatrix(tu, numRows, numColumns, numNonzeros, rowStarts, indexColumns,
-    indexEntries, NULL, violator);
-}
+  int numComponents;
+  TU_ONESUM_COMPONENT_CHAR* components;
 
-bool TUtestTUwithDecSubmatrix(
-  TU* tu,
-  int numRows,
-  int numColumns,
-  int numNonzeros,
-  int* rowStarts,
-  int* indexColumns,
-  char* indexEntries,
-  TU_DEC** decomposition,
-  TU_SUBMATRIX** violator
-  )
-{
-  assert(false);
+  assert(tu);
+  assert(matrix);
+
+  decomposeOneSumCharToChar(tu, matrix, &numComponents, &components, NULL, NULL, NULL, NULL);
+
+  for (int comp = 0; comp < numComponents; ++comp)
+  {
+    TU_SUBMATRIX* componentSubmatrix;
+    char signFailed = signSequentiallyConnected(tu, &components[comp].matrix,
+      &components[comp].transpose, false, submatrix != NULL ? componentSubmatrix : NULL);
+
+    if (signFailed != 0)
+    {
+      
+    }
+  }
 }

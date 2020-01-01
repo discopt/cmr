@@ -48,13 +48,16 @@ void TUclearSparseChar(TU_SPARSE_CHAR* sparse)
   sparse->numColumns = 0;
   sparse->numNonzeros = 0;
 
-  free(sparse->rowStarts);
+  if (sparse->rowStarts)
+    free(sparse->rowStarts);
   sparse->rowStarts = NULL;
 
-  free(sparse->entryColumns);
+  if (sparse->entryColumns)
+    free(sparse->entryColumns);
   sparse->entryColumns = NULL;
 
-  free(sparse->entryValues);
+  if (sparse->entryValues)
+    free(sparse->entryValues);
   sparse->entryValues = NULL;
 }
 
@@ -466,3 +469,119 @@ bool TUisTernaryChar(TU_SPARSE_CHAR* sparse)
   return true;
 }
 
+
+void TUcreateSubmatrix(
+  TU_SUBMATRIX** submatrix,
+  int numRows,
+  int numColumns
+  )
+{
+  assert(submatrix != NULL);
+  *submatrix = (TU_SUBMATRIX*) malloc(sizeof(TU_SUBMATRIX));
+  (*submatrix)->numRows = numRows;
+  (*submatrix)->rows = (int*) malloc(numRows * sizeof(int));
+  (*submatrix)->numColumns = numColumns;
+  (*submatrix)->columns = (int*) malloc(numColumns * sizeof(int));
+}
+
+void TUcreateSubmatrix1x1(
+  TU_SUBMATRIX** submatrix, /**< Pointer to submatrix */
+  int row, /**< Row of entry */
+  int column /**< Column of entry */
+  )
+{
+  TUcreateSubmatrix(submatrix, 1, 1);
+  (*submatrix)->rows[0] = row;
+  (*submatrix)->columns[0] = column;
+}
+
+void TUfreeSubmatrix(TU_SUBMATRIX** submatrix)
+{
+  assert(submatrix);
+
+  if ((*submatrix)->rows)
+    free((*submatrix)->rows);
+  if ((*submatrix)->columns)
+    free((*submatrix)->columns);
+  free(*submatrix);
+  *submatrix = NULL;
+}
+
+static int TUsortSubmatrixCompare(const void* p1, const void* p2)
+{
+  return *(int*)p1 - *(int*)p2;
+}
+
+void TUsortSubmatrix(TU_SUBMATRIX* submatrix)
+{
+  assert(submatrix);
+
+  qsort(submatrix->rows, submatrix->numRows, sizeof(int), TUsortSubmatrixCompare);
+  qsort(submatrix->columns, submatrix->numColumns, sizeof(int), TUsortSubmatrixCompare);
+}
+
+void TUfilterSubmatrixChar(TU_SPARSE_CHAR* matrix, TU_SUBMATRIX* submatrix, TU_SPARSE_CHAR* result)
+{
+  assert(matrix);
+  assert(submatrix);
+  assert(result);
+
+  int* columnMap = (int*) malloc(matrix->numColumns * sizeof(int));
+  for (int c = 0; c < matrix->numColumns; ++c)
+    columnMap[c] = -1;
+  for (int j = 0; j < submatrix->numColumns; ++j)
+  {
+    assert(submatrix->columns[j] < matrix->numColumns);
+    columnMap[submatrix->columns[j]] = j;
+  }
+
+  result->numRows = submatrix->numRows;
+  result->numColumns = submatrix->numColumns;
+  result->numNonzeros = 0;
+  result->rowStarts = (int*) malloc((submatrix->numRows + 1) * sizeof(int));
+
+  /* Count nonzeros. */
+  int numNonzeros = 0;
+  for (int i = 0; i < submatrix->numRows; ++i)
+  {
+    int r = submatrix->rows[i];
+    assert(r < matrix->numRows);
+
+    int begin = matrix->rowStarts[r];
+    int end = r + 1 < matrix->numRows ? matrix->rowStarts[r+1] : matrix->numNonzeros;
+    for (int e = begin; e < end; ++e)
+    {
+      int c = matrix->entryColumns[e];
+      if (columnMap[c] >= 0)
+        ++numNonzeros;
+    }
+  }
+  
+  result->entryColumns = (int*) malloc( numNonzeros * sizeof(int) );
+  result->entryValues = (char*) malloc( numNonzeros * sizeof(char) );
+
+  /* Copy nonzeros. */
+  for (int i = 0; i < submatrix->numRows; ++i)
+  {
+    result->rowStarts[i] = result->numNonzeros;
+    int r = submatrix->rows[i];
+    assert(r < matrix->numRows);
+
+    int begin = matrix->rowStarts[r];
+    int end = r + 1 < matrix->numRows ? matrix->rowStarts[r+1] : matrix->numNonzeros;
+    for (int e = begin; e < end; ++e)
+    {
+      int c = matrix->entryColumns[e];
+      if (columnMap[c] >= 0)
+      {
+        result->entryColumns[result->numNonzeros] = columnMap[c];
+        result->entryValues[result->numNonzeros] = matrix->entryValues[e];
+        result->numNonzeros++;
+      }
+    }
+  }
+  result->rowStarts[result->numRows] = result->numNonzeros;
+
+  if (columnMap)
+    free(columnMap);
+}

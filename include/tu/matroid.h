@@ -5,66 +5,10 @@
 extern "C" {
 #endif
 
-#include <tu/env.h>
+#include <tu/matrix.h>
+#include <tu/graph.h>
 
-/**
- * \brief Row and column indices for a submatrix
- * 
- * Does not contain information about the matrix it refers to.
- */
-typedef struct
-{
-  /**
-   * \brief Number of rows
-   */
-  int numRows;
-  /**
-   * \brief Array with row indices
-   */
-  int* rows;
-  /**
-   * \brief Number of columns
-   */
-  int numColumns;
-  /**
-   * \brief Array with column indices
-   */
-  int* columns;
-} TU_SUBMATRIX;
-
-/**
- * \brief Creates a submatrix of given size.
- * 
- * Only allocates the memory. Use \ref TUgetSubmatrixRows and \ref TUgetSubmatrixColumns to modify
- * the row and column indices, respectively.
- */
-TU_EXPORT
-void TUcreateSubmatrix(
-  TU_SUBMATRIX** submatrix, /** Pointer to submatrix */
-  int numRows, /**< Number of rows */
-  int numColumns /**< Number of columns */
-);
-
-/**
- * \brief Creates a 1x1 submatrix.
- */
-
-TU_EXPORT
-void TUcreateSubmatrix1x1(
-  TU_SUBMATRIX** submatrix, /**< Pointer to submatrix */
-  int row, /**< Row of entry */
-  int column /**< Column of entry */
-);
-
-/**
- * \brief Frees a submatrix.
- */
-TU_EXPORT
-void TUfreeSubmatrix(
-  TU_SUBMATRIX** submatrix /**< Pointer to submatrix */
-);
-  
-enum TU_Dec_Type
+typedef enum
 {
   TU_DEC_IRREGULAR = 0,
   TU_DEC_GRAPHIC = 1,
@@ -73,10 +17,11 @@ enum TU_Dec_Type
   TU_DEC_ONE_SUM = 4,
   TU_DEC_TWO_SUM = 5,
   TU_DEC_THREE_SUM = 6
-};
-typedef enum TU_Dec_Type TU_DEC_TYPE;
-  
-typedef struct TU_Dec TU_DEC;
+} TU_DEC_TYPE;
+
+struct TU_DEC_;
+
+typedef struct TU_DEC_ TU_DEC;
 
 /**
  * \brief Frees a decomposition tree.
@@ -84,6 +29,14 @@ typedef struct TU_Dec TU_DEC;
 TU_EXPORT
 void TUfreeDec(
   TU_DEC** dec /**< Pointer to decomposition */
+);
+
+/**
+ * \brief Returns the type of the root of the decomposition tree.
+ */
+TU_EXPORT
+TU_DEC_TYPE TUgetDecType(
+  TU_DEC* dec /**< Decomposition tree */
 );
 
 /**
@@ -103,33 +56,73 @@ int TUgetDecNumColumns(
 );
 
 /**
- * \brief Returns the matrix rows associated to this decomposition tree.
- * 
- * The row indices are returned in the array \p rows which must have memory for at least \p size
- * indices. The method stores at most \p size indices even if there are more. The true number of
- * indices is returned, but can also be queried via \ref TUgetDecNumRows.
+ * \brief Returns the sparse matrix associated to this decomposition tree.
  */
 TU_EXPORT
-int TUgetDecRows(
+int TUgetDecMatrix(
   TU_DEC* dec, /**< Decomposition tree */
-  int* rows, /**< Array for indices */
-  int size /**< Length of \p rows array. */
+  TU_SPARSE_CHAR* matrix /**< Matrix */
 );
 
 /**
- * \brief Returns the matrix columns associated to this decomposition tree.
- * 
- * The column indices are returned in the array \p columns which must have memory for at least
- * \p size indices. The method stores at most \p size indices even if there are more. The true
- * number of indices is returned, but can also be queried via \ref TUgetDecNumColumns.
+ * \brief Returns the transpose of the matrix associated to this decomposition tree.
  */
 TU_EXPORT
-int TUgetDecColumns(
+int TUgetDecTranspose(
   TU_DEC* dec, /**< Decomposition tree */
-  int* columns, /**< Array for column indices */
-  int size /**< Length of \p rows array. */
+  TU_SPARSE_CHAR* transpose /**< Transpose of matrix */
 );
 
+/**
+ * \brief Returns the number of child nodes of the root of this decomposition tree.
+ */
+TU_EXPORT
+int TUgetDecNumChildren(
+  TU_DEC* dec /**< Decomposition tree */
+);
+
+/**
+ * \brief Returns a child of the root of this decomposition tree.
+ * 
+ * \p child must be in [0, \ref TUgetDecNumChildren).
+ */
+TU_EXPORT
+int TUgetDecChild(
+  TU_DEC* dec, /**< Decomposition tree */
+  int child /**< Index of child. */
+);
+
+/**
+ * \brief Returns the row labels of the matrix of this decomposition tree.
+ */
+TU_EXPORT
+int* TUgetDecRowLabels(
+  TU_DEC* dec /**< Decomposition tree */
+);
+
+/**
+ * \brief Returns the column labels of the matrix of this decomposition tree.
+ */
+TU_EXPORT
+int* TUgetDecColumnLabels(
+  TU_DEC* dec /**< Decomposition tree */
+);
+
+/**
+ * \brief Returns the rank of the lower-left submatrix of the root of this decomposition tree.
+ */
+TU_EXPORT
+int TUgetDecRankLowerLeft(
+  TU_DEC* dec /**< Decomposition tree */
+);
+
+/**
+ * \brief Returns the rank of the top-right submatrix of the root of this decomposition tree.
+ */
+TU_EXPORT
+int TUgetDecRankTopRight(
+  TU_DEC* dec /**< Decomposition tree */
+);
 
 #ifdef __cplusplus
 }

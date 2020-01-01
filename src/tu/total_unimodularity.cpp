@@ -5,6 +5,9 @@
 #include "violator_search.hpp"
 #include "signing.hpp"
 #include "logger.hpp"
+#include <tu/sign.h>
+
+#include <chrono>
 
 namespace tu
 {
@@ -78,7 +81,8 @@ namespace tu
     }
 
     /// Signing test
-    if (!is_signed_matrix(matrix))
+    bool signResult = is_signed_matrix(matrix);
+    if (!signResult)
     {
       if (log.is_progressive())
       {
@@ -183,7 +187,8 @@ namespace tu
     }
 
     /// Signing test
-    if (!is_signed_matrix(matrix))
+    bool signResult = is_signed_matrix(matrix);
+    if (!signResult)
     {
       if (log.is_progressive())
       {
@@ -291,7 +296,8 @@ namespace tu
     }
 
     /// Signing test
-    if (!is_signed_matrix(matrix, violator))
+    bool signResult = is_signed_matrix(matrix, violator);
+    if (!signResult)
     {
       if (log.is_progressive())
       {

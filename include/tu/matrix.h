@@ -303,6 +303,75 @@ bool TUisTernaryChar(
   TU_SPARSE_CHAR* sparse /**< Sparse char matrix */
 );
 
+
+/**
+ * \brief Row and column indices for a submatrix
+ * 
+ * Does not contain information about the matrix it refers to.
+ */
+typedef struct
+{
+  /**
+   * \brief Number of rows
+   */
+  int numRows;
+  /**
+   * \brief Array with row indices
+   */
+  int* rows;
+  /**
+   * \brief Number of columns
+   */
+  int numColumns;
+  /**
+   * \brief Array with column indices
+   */
+  int* columns;
+} TU_SUBMATRIX;
+
+/**
+ * \brief Creates a submatrix of given size.
+ * 
+ * Only allocates the memory. Use \ref TUgetSubmatrixRows and \ref TUgetSubmatrixColumns to modify
+ * the row and column indices, respectively.
+ */
+TU_EXPORT
+void TUcreateSubmatrix(
+  TU_SUBMATRIX** submatrix, /** Pointer to submatrix */
+  int numRows, /**< Number of rows */
+  int numColumns /**< Number of columns */
+);
+
+/**
+ * \brief Creates a 1x1 submatrix.
+ */
+
+TU_EXPORT
+void TUcreateSubmatrix1x1(
+  TU_SUBMATRIX** submatrix, /**< Pointer to submatrix */
+  int row, /**< Row of entry */
+  int column /**< Column of entry */
+);
+
+/**
+ * \brief Frees a submatrix.
+ */
+TU_EXPORT
+void TUfreeSubmatrix(
+  TU_SUBMATRIX** submatrix /**< Pointer to submatrix */
+);
+
+
+/**
+ * \brief Creates a submatrix of a sparse char matrix explicitly.
+ */
+TU_EXPORT
+void TUfilterSubmatrixChar(
+  TU_SPARSE_CHAR* matrix,   /**< Given matrix */
+  TU_SUBMATRIX* submatrix,  /**< Specified submatrix */
+  TU_SPARSE_CHAR* result    /**< Resulting submatrix as a sparse char matrix. */
+);
+
 #ifdef __cplusplus
 }
 #endif

@@ -7,104 +7,75 @@ extern "C" {
 
 #include <tu/env.h>
 #include <tu/matroid.h>
+#include <tu/matrix.h>
 
 /**
- * \brief Tests if matrix is TU.
+ * \brief Tests a sparse double matrix for total total unimodularity.
  * 
- * The dimensions of the matrix are \p numRows by \p numColumns. The arrays \p indexColumns and 
- * \p indexEntries of length \p numNonzeros contain column and value information, respectively, of
- * the nonzeros in row-wise order. The array \p rowStarts of length \p numRows contains the index of
- * the first entry of each row. The function returns \c true if and only if the matrix is TU.
+ * Returns \c true if and only if \p matrix is TU.
+ *
+ * If \p decomposition is not \c NULL and the algorithm has to test regularity of the support
+ * matrix, then \c *decomposition will point to a decomposition tree for which the caller must use
+ * \ref TUfreeDec to free memory. It is set to \c NULL otherwise.
+ *
+ * If \p submatrix is not \c NULL and the matrix is not TU, then a submatrix with an absolute
+ * determinant larger than 1 will be searched, which may cause extra computational effort. In this
+ * case, \c *submatrix will point to this submatrix for which the caller must use 
+ * \ref TUfreeSubmatrix to free memory. It is set to \c NULL otherwise.
  */
 
 TU_EXPORT
-bool TUtestTU(
+bool TUtestTotalUnimodularityDouble(
   TU* tu, /**< TU environment */
-  int numRows, /**< Number of matrix rows */
-  int numColumns, /**< Number of matrix columns */
-  int numNonzeros, /**< Number of matrix nonzeros */
-  int* rowStarts, /**< Array with indices of first entries of each row. */
-  int* indexColumns, /**< Array with columns for each index */
-  char* indexEntries /**< Array with matrix entry for each index */
+  TU_SPARSE_DOUBLE* matrix, /**< Sparse double matrix */
+  TU_DEC** decomposition, /**< If not \c NULL, the decomposition tree is stored. */
+  TU_SUBMATRIX** submatrix /**< If not \c NULL, a submatrix with bad determinant is stored. */
 );
 
 /**
- * \brief Tests if matrix is TU, returning a decomposition tree if applicable.
+ * \brief Tests a sparse int matrix for total total unimodularity.
  * 
- * The dimensions of the matrix are \p numRows by \p numColumns. The arrays \p indexColumns and 
- * \p indexEntries of length \p numNonzeros contain column and value information, respectively, of
- * the nonzeros in row-wise order. The array \p rowStarts of length \p numRows contains the index of
- * the first entry of each row. The function returns \c true if and only if the matrix is TU.
- * 
- * If the algorithm has to test regularity of the support matrix, \p decomposition will point to a
- * decomposition tree, and is set to \c NULL otherwise.
+ * Returns \c true if and only if \p matrix is TU.
+ *
+ * If \p decomposition is not \c NULL and the algorithm has to test regularity of the support
+ * matrix, then \c *decomposition will point to a decomposition tree for which the caller must use
+ * \ref TUfreeDec to free memory. It is set to \c NULL otherwise.
+ *
+ * If \p submatrix is not \c NULL and the matrix is not TU, then a submatrix with an absolute
+ * determinant larger than 1 will be searched, which may cause extra computational effort. In this
+ * case, \c *submatrix will point to this submatrix for which the caller must use 
+ * \ref TUfreeSubmatrix to free memory. It is set to \c NULL otherwise.
  */
 
 TU_EXPORT
-bool TUtestTUwithDec(
+bool TUtestTotalUnimodularityInt(
   TU* tu, /**< TU environment */
-  int numRows, /**< Number of matrix rows */
-  int numColumns, /**< Number of matrix columns */
-  int numNonzeros, /**< Number of matrix nonzeros */
-  int* rowStarts, /**< Array with indices of first entries of each row. */
-  int* indexColumns, /**< Array with columns for each index */
-  char* indexEntries, /**< Array with matrix entry for each index */
-  TU_DEC** decomposition /**< Decomposition tree */
+  TU_SPARSE_INT* matrix, /**< Sparse int matrix */
+  TU_DEC** decomposition, /**< If not \c NULL, the decomposition tree is stored. */
+  TU_SUBMATRIX** submatrix /**< If not \c NULL, a submatrix with bad determinant is stored. */
 );
 
 /**
- * \brief Tests if matrix is TU, returning a violator if applicable.
+ * \brief Tests a sparse char matrix for total total unimodularity.
  * 
- * The dimensions of the matrix are \p numRows by \p numColumns. The arrays \p indexColumns and 
- * \p indexEntries of length \p numNonzeros contain column and value information, respectively, of
- * the nonzeros in row-wise order. The array \p rowStarts of length \p numRows contains the index of
- * the first entry of each row. The function returns \c true if and only if the matrix is TU.
- * 
- * If the matrix is not TU, a violator, i.e., a submatrix with determinant -2 or 2 will be searched.
- * Note that this may cause extra computational effort. In this case, \p violator will point to this
- * submatrix, and is set to \c NULL otherwise.
+ * Returns \c true if and only if \p matrix is TU.
+ *
+ * If \p decomposition is not \c NULL and the algorithm has to test regularity of the support
+ * matrix, then \c *decomposition will point to a decomposition tree for which the caller must use
+ * \ref TUfreeDec to free memory. It is set to \c NULL otherwise.
+ *
+ * If \p submatrix is not \c NULL and the matrix is not TU, then a submatrix with an absolute
+ * determinant larger than 1 will be searched, which may cause extra computational effort. In this
+ * case, \c *submatrix will point to this submatrix for which the caller must use 
+ * \ref TUfreeSubmatrix to free memory. It is set to \c NULL otherwise.
  */
 
 TU_EXPORT
-bool TUtestTUwithSubmatrix(
+bool TUtestTotalUnimodularityChar(
   TU* tu, /**< TU environment */
-  int numRows, /**< Number of matrix rows */
-  int numColumns, /**< Number of matrix columns */
-  int numNonzeros, /**< Number of matrix nonzeros */
-  int* rowStarts, /**< Array with indices of first entries of each row. */
-  int* indexColumns, /**< Array with columns for each index */
-  char* indexEntries, /**< Array with matrix entry for each index */
-  TU_SUBMATRIX** violator /**< Pointer to submatrix with determinant -2 or 2 */
-);
-
-/**
- * \brief Tests if matrix is TU, returning a decomposition tree or a violator if applicable.
- * 
- * The dimensions of the matrix are \p numRows by \p numColumns. The arrays \p indexColumns and 
- * \p indexEntries of length \p numNonzeros contain column and value information, respectively, of
- * the nonzeros in row-wise order. The array \p rowStarts of length \p numRows contains the index of
- * the first entry of each row. The function returns \c true if and only if the matrix is TU.
- * 
- * If \p decomposition is not \c NULL and if the algorithm has to test regularity of the support
- * matrix, then \p decomposition will point to a decomposition tree, and is set to \c NULL
- * otherwise.
- * 
- * If \p violator is not \c NULL and if the matrix is not TU, then a violator, i.e., a submatrix
- * with determinant -2 or 2 will be searched. Note that this may cause extra computational effort.
- * In this case, \p violator will point to this submatrix, and is set to \c NULL otherwise.
- */
-
-TU_EXPORT
-bool TUtestTUwithDecSubmatrix(
-  TU* tu, /**< TU environment */
-  int numRows, /**< Number of matrix rows */
-  int numColumns, /**< Number of matrix columns */
-  int numNonzeros, /**< Number of matrix nonzeros */
-  int* rowStarts, /**< Array with indices of first entries of each row. */
-  int* indexColumns, /**< Array with columns for each index */
-  char* indexEntries, /**< Array with matrix entry for each index */
-  TU_DEC** decomposition, /**< Decomposition tree */
-  TU_SUBMATRIX** violator /**< Pointer to submatrix with determinant -2 or 2 */
+  TU_SPARSE_CHAR* matrix, /**< Sparse char matrix */
+  TU_DEC** decomposition, /**< If not \c NULL, the decomposition tree is stored. */
+  TU_SUBMATRIX** submatrix /**< If not \c NULL, a submatrix with bad determinant is stored. */
 );
 
 #ifdef __cplusplus

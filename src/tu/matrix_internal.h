@@ -1,8 +1,26 @@
-#pragma once
+#ifndef TU_MATRIX_INTERNAL_H
+#define TU_MATRIX_INTERNAL_H
 
-#include <tu/matrix.hpp>
+#include <tu/matrix.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/**
+ * \brief Sorts the row and column indices of \p submatrix.
+ */
+
+void TUsortSubmatrix(
+  TU_SUBMATRIX* submatrix /**< The submatrix. */
+);
+
+#ifdef __cplusplus
+}
+#endif
 
 
+#ifdef __cplusplus
 
 namespace tu
 {
@@ -240,3 +258,7 @@ namespace tu
   }
 
 } /* namespace tu */
+
+#endif /* __cplusplus */
+
+#endif /* TU_MATRIX_INTERNAL_H */

@@ -1,5 +1,6 @@
 #include <tu/sign.h>
 #include "sign_internal.h"
+#include "matrix_internal.h"
 #include "one_sum.h"
 
 #include <assert.h>
@@ -19,17 +20,27 @@ char signSequentiallyConnected(
   TU* tu,
   TU_SPARSE_CHAR* matrix,
   TU_SPARSE_CHAR* transpose,
-  bool change
-)
+  bool change,
+  TU_SUBMATRIX** submatrix
+  )
 {
+  bool matrixChanged = false;
+  
   assert(TUcheckSparseTransposeChar(matrix, transpose));
   assert(TUisTernaryChar(matrix));
 
   /* If we have more rows than columns, we work with the transpose. */
   if (matrix->numRows > matrix->numColumns)
   {
-    char modified = signSequentiallyConnected(tu, transpose, matrix, change);
+    char modified = signSequentiallyConnected(tu, transpose, matrix, change, submatrix);
     assert(modified == 0 || modified == 'm');
+    if (submatrix && *submatrix)
+    {
+      assert((*submatrix)->numRows == (*submatrix)->numColumns);
+      int* tmp = (*submatrix)->rows;
+      (*submatrix)->rows = (*submatrix)->columns;
+      (*submatrix)->columns = tmp;
+    }
     return modified == 0 ? 0 : 't';
   }
 
@@ -48,7 +59,7 @@ char signSequentiallyConnected(
   for (int row = 1; row < matrix->numRows; ++row)
   {
 #ifdef DEBUG_SIGN
-    printf("Before processing row %d:\n", row);
+    printf("  Before processing row %d:\n", row);
     TUprintSparseAsDenseChar(stdout, matrix, ' ', true);
 #endif
 
@@ -65,7 +76,7 @@ char signSequentiallyConnected(
     if (begin == end)
     {
 #ifdef DEBUG_SIGN
-      printf("Empty row.\n");
+      printf("  Empty row.\n");
 #endif
       continue;
     }
@@ -91,7 +102,7 @@ char signSequentiallyConnected(
       {
         int r = currentNode - firstRowNode;
 #ifdef DEBUG_SIGN
-        printf("Current node is %d (row %d), queue length is %d\n", currentNode, r,
+        printf("    Current node is %d (row %d), queue length is %d\n", currentNode, r,
           bfsQueueEnd - bfsQueueBegin);
 #endif
 
@@ -111,24 +122,58 @@ char signSequentiallyConnected(
                node (which might be the starting node). */
             if (graphNodes[c].targetValue != 0)
             {
+              int length = 2;
               int sum = graphNodes[c].targetValue;
               int pathNode = c;
               do
               {
                 sum += graphNodes[pathNode].predecessorValue;
                 pathNode = graphNodes[pathNode].predecessorNode;
+                ++length;
               }
               while (graphNodes[pathNode].targetValue == 0);
               sum += graphNodes[pathNode].targetValue;
 #ifdef DEBUG_SIGN
-              printf("Found a chordless cycle between %d and %d with sum %d\n", c, pathNode, sum);
+              printf("      Found a chordless cycle between %d and %d with sum %d of length %d\n",
+                c, pathNode, sum, length);
 #endif
               if (sum % 4 != 0)
               {
                 assert(sum % 4 == -2 || sum % 4 == 2);
+
+                /* If we didn't find a submatrix yet: */
+                if (submatrix && *submatrix == NULL)
+                {
+                  int i = 1;
+                  int j = 1;
+                  TUcreateSubmatrix(submatrix, length/2, length/2);
+                  pathNode = c;
+                  (*submatrix)->columns[0] = c;
+                  (*submatrix)->rows[0] = row;
+                  do
+                  {
+                    pathNode = graphNodes[pathNode].predecessorNode;
+                    if (pathNode >= firstRowNode)
+                      (*submatrix)->rows[i++] = pathNode - firstRowNode;
+                    else
+                      (*submatrix)->columns[j++] = pathNode;
+                  }
+                  while (graphNodes[pathNode].targetValue == 0);
+                  TUsortSubmatrix(*submatrix);
+                  
+#ifdef DEBUG_SIGN
+                  printf("      Submatrix filled with %d rows and %d columns.\n", i, j);
+#endif
+                }
+#ifdef DEBUG_SIGN
+                printf("      Sign change required.\n");
+#endif
                 graphNodes[c].targetValue *= -1;
                 if (change)
+                {
                   rowChanged = true;
+                  matrixChanged = true;
+                }
                 else
                 {
                   free(bfsQueue);
@@ -144,7 +189,7 @@ char signSequentiallyConnected(
       {
         int c = currentNode;
 #ifdef DEBUG_SIGN
-        printf("Current node is %d (column %d), queue length is %d\n", currentNode, c,
+        printf("    Current node is %d (column %d), queue length is %d\n", currentNode, c,
           bfsQueueEnd - bfsQueueBegin);
 #endif
 
@@ -172,10 +217,12 @@ char signSequentiallyConnected(
     for (int v = 0; v < matrix->numColumns + row; ++v)
     {
       if (v == startNode)
-        printf("Source ");
-      if (graphNodes[v].targetValue != 0)
-        printf("Target ");
-      printf("Node %d is %s%d and has predecessor %d.\n", v, v >= firstRowNode ? "row ": "column ",
+        printf("    Source node ");
+      else if (graphNodes[v].targetValue != 0)
+        printf("    Target node ");
+      else
+        printf("    Node ");
+      printf("%d is %s%d and has predecessor %d.\n", v, v >= firstRowNode ? "row ": "column ",
         v >= firstRowNode ? v-firstRowNode : v, graphNodes[v].predecessorNode);
     }
 #endif
@@ -189,7 +236,7 @@ char signSequentiallyConnected(
         int column = matrix->entryColumns[e];
 #ifdef DEBUG_SIGN
         if (matrix->entryValues[e] != graphNodes[column].targetValue)
-          printf("Sign change at %d,%d.\n", row, column);
+          printf("  Sign change at %d,%d.\n", row, column);
 #endif
         matrix->entryValues[e] = graphNodes[column].targetValue;
       }
@@ -199,7 +246,7 @@ char signSequentiallyConnected(
 #ifdef DEBUG_SIGN
   if (change)
   {
-    printf("After signing:\n");
+    printf("  After signing:\n");
     TUprintSparseAsDenseChar(stdout, matrix, ' ', true);
   }
 #endif
@@ -207,17 +254,20 @@ char signSequentiallyConnected(
   free(bfsQueue);
   free(graphNodes);
 
-  return 'm'; // Or 0?
+  return matrixChanged ? 'm' : 0;
 }
 
 /**
  * \brief Signs a given ternary matrix.
+ * 
+ * Returns \c true if and only if the signs were already correct.
  */
 
 bool sign(
-  TU* tu,                 /**< TU environment. */
-  TU_SPARSE_CHAR* matrix, /**< Sparse matrix. */
-  bool change             /**< Whether the signs of \p matrix shall be modified. */
+  TU* tu,                   /**< TU environment. */
+  TU_SPARSE_CHAR* matrix,   /**< Sparse matrix. */
+  bool change,              /**< Whether the signs of \p matrix shall be modified. */
+  TU_SUBMATRIX** submatrix  /**< If not \c NULL, a submatrix with bad determinant is stored. */
 )
 {
   bool wasCorrect = true;
@@ -237,16 +287,37 @@ bool sign(
 
   for (int comp = 0; comp < numComponents; ++comp)
   {
+    TU_SUBMATRIX* compSubmatrix = NULL;
+
 #ifdef DEBUG_SIGN
     printf("-> Component %d of size %dx%d\n", comp, components[comp].matrix.numRows,
       components[comp].matrix.numColumns);
 #endif
     char modified = signSequentiallyConnected(tu, &components[comp].matrix,
-      &components[comp].transpose, change);
+      &components[comp].transpose, change, (submatrix && !*submatrix) ? &compSubmatrix : NULL);
+#ifdef DEBUG_SIGN
+    printf("-> Component %d yields: %c\n", comp, modified ? modified : '0');
+#endif
     if (modified == 0)
+    {
+      assert(compSubmatrix == NULL);
       continue;
+    }
 
     wasCorrect = false;
+
+    /* If we found a submatrix for the first time: */
+    if (compSubmatrix)
+    {
+      assert(submatrix && !*submatrix);
+      /* Translate component indices to indices of whole matrix and sort them again. */
+      for (int r = 0; r < compSubmatrix->numRows; ++r)
+        compSubmatrix->rows[r] = components[comp].rowsToOriginal[compSubmatrix->rows[r]];
+      for (int c = 0; c < compSubmatrix->numColumns; ++c)
+        compSubmatrix->columns[c] = components[comp].columnsToOriginal[compSubmatrix->columns[c]];
+      TUsortSubmatrix(compSubmatrix);
+      *submatrix = compSubmatrix;
+    }
 
     /* As we don't modify, we can abort early. */
     if (!change)
@@ -309,18 +380,20 @@ bool sign(
   {
     TUclearSparseChar(&components[c].matrix);
     TUclearSparseChar(&components[c].transpose);
+    free(components[c].rowsToOriginal);
+    free(components[c].columnsToOriginal);
   }
   free(components);
 
   return wasCorrect;
 }
 
-bool TUtestSignChar(TU* tu, TU_SPARSE_CHAR* matrix)
+bool TUtestSignChar(TU* tu, TU_SPARSE_CHAR* matrix, TU_SUBMATRIX** submatrix)
 {
-  return sign(tu, matrix, false);
+  return sign(tu, matrix, false, submatrix);
 }
 
-bool TUcorrectSignChar(TU* tu, TU_SPARSE_CHAR* matrix)
+bool TUcorrectSignChar(TU* tu, TU_SPARSE_CHAR* matrix, TU_SUBMATRIX** submatrix)
 {
-  return sign(tu, matrix, true);
+  return sign(tu, matrix, true, submatrix);
 }
