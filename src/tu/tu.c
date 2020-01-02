@@ -29,6 +29,14 @@ static bool testTotalUnimodularityOneSum(TU* tu, int numComponents,
   assert(numComponents >= 0);
   assert(components);
 
+  /* Sort components by number of nonzeros. */
+
+  /* Check each component for base cases first. If enabled, ask for forbidden minors. */
+  
+  /* Check non-base cases by decomposing, using information about minors. If enabled, ask for
+     rows/columns that cause irregularity. */
+
+  /* If not regular and submatrix is required, start search in smallest non-regular component. */
 
   assert(false);
 
