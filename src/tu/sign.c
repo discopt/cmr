@@ -274,7 +274,7 @@ bool signDouble(
 {
   bool wasCorrect = true;
   int numComponents;
-  TU_ONESUM_COMPONENT_CHAR* components;
+  TU_ONESUM_COMPONENT* components;
 
   assert(TUisTernaryDouble(matrix, 0.1, NULL));
 
@@ -285,7 +285,8 @@ bool signDouble(
 
   /* Decompose into 1-connected components. */
 
-  decomposeOneSumDoubleToChar(tu, matrix, &numComponents, &components, NULL, NULL, NULL, NULL);
+  decomposeOneSum(tu, (TU_MATRIX*) matrix, sizeof(double), sizeof(char), &numComponents, &components, NULL, NULL,
+    NULL, NULL);
 
   for (int comp = 0; comp < numComponents; ++comp)
   {
@@ -295,8 +296,8 @@ bool signDouble(
     printf("-> Component %d of size %dx%d\n", comp, components[comp].matrix.numRows,
       components[comp].matrix.numColumns);
 #endif
-    char modified = signSequentiallyConnected(tu, &components[comp].matrix,
-      &components[comp].transpose, change, (submatrix && !*submatrix) ? &compSubmatrix : NULL);
+    char modified = signSequentiallyConnected(tu, (TU_MATRIX_CHAR*) &components[comp].matrix,
+      (TU_MATRIX_CHAR*) &components[comp].transpose, change, (submatrix && !*submatrix) ? &compSubmatrix : NULL);
 #ifdef DEBUG_SIGN
     printf("-> Component %d yields: %c\n", comp, modified ? modified : '0');
 #endif
@@ -329,8 +330,9 @@ bool signDouble(
     bool copyTranspose = modified == 't';
 
     /* Either the matrix or its transposed was modified. */
-    TU_MATRIX_CHAR* sourceMatrix = 
-      copyTranspose ? &components[comp].transpose : &components[comp].matrix;
+    TU_MATRIX_CHAR* sourceMatrix = copyTranspose ?
+      (TU_MATRIX_CHAR*) &components[comp].transpose :
+      (TU_MATRIX_CHAR*) &components[comp].matrix;
 
     /* We have to copy the changes back to the original matrix. */
     for (int sourceRow = 0; sourceRow < sourceMatrix->numRows; ++sourceRow)
@@ -380,8 +382,8 @@ bool signDouble(
 
   for (int c = 0; c < numComponents; ++c)
   {
-    TUclearMatrixChar(&components[c].matrix);
-    TUclearMatrixChar(&components[c].transpose);
+    TUclearMatrixChar((TU_MATRIX_CHAR*) &components[c].matrix);
+    TUclearMatrixChar((TU_MATRIX_CHAR*) &components[c].transpose);
     free(components[c].rowsToOriginal);
     free(components[c].columnsToOriginal);
   }
@@ -415,7 +417,7 @@ bool signInt(
 {
   bool wasCorrect = true;
   int numComponents;
-  TU_ONESUM_COMPONENT_CHAR* components;
+  TU_ONESUM_COMPONENT* components;
 
   assert(TUisTernaryInt(matrix, NULL));
 
@@ -426,7 +428,8 @@ bool signInt(
 
   /* Decompose into 1-connected components. */
 
-  decomposeOneSumIntToChar(tu, matrix, &numComponents, &components, NULL, NULL, NULL, NULL);
+  decomposeOneSum(tu, (TU_MATRIX*) matrix, sizeof(int), sizeof(char), &numComponents, &components,
+    NULL, NULL, NULL, NULL);
 
   for (int comp = 0; comp < numComponents; ++comp)
   {
@@ -436,8 +439,9 @@ bool signInt(
     printf("-> Component %d of size %dx%d\n", comp, components[comp].matrix.numRows,
       components[comp].matrix.numColumns);
 #endif
-    char modified = signSequentiallyConnected(tu, &components[comp].matrix,
-      &components[comp].transpose, change, (submatrix && !*submatrix) ? &compSubmatrix : NULL);
+    char modified = signSequentiallyConnected(tu, (TU_MATRIX_CHAR*) &components[comp].matrix,
+      (TU_MATRIX_CHAR*) &components[comp].transpose, change, (submatrix &&
+      !*submatrix) ? &compSubmatrix : NULL);
 #ifdef DEBUG_SIGN
     printf("-> Component %d yields: %c\n", comp, modified ? modified : '0');
 #endif
@@ -470,8 +474,9 @@ bool signInt(
     bool copyTranspose = modified == 't';
 
     /* Either the matrix or its transposed was modified. */
-    TU_MATRIX_CHAR* sourceMatrix = 
-      copyTranspose ? &components[comp].transpose : &components[comp].matrix;
+    TU_MATRIX_CHAR* sourceMatrix = copyTranspose ?
+      (TU_MATRIX_CHAR*) &components[comp].transpose :
+      (TU_MATRIX_CHAR*) &components[comp].matrix;
 
     /* We have to copy the changes back to the original matrix. */
     for (int sourceRow = 0; sourceRow < sourceMatrix->numRows; ++sourceRow)
@@ -521,8 +526,8 @@ bool signInt(
 
   for (int c = 0; c < numComponents; ++c)
   {
-    TUclearMatrixChar(&components[c].matrix);
-    TUclearMatrixChar(&components[c].transpose);
+    TUclearMatrixChar((TU_MATRIX_CHAR*) &components[c].matrix);
+    TUclearMatrixChar((TU_MATRIX_CHAR*) &components[c].transpose);
     free(components[c].rowsToOriginal);
     free(components[c].columnsToOriginal);
   }
@@ -556,7 +561,7 @@ bool signChar(
 {
   bool wasCorrect = true;
   int numComponents;
-  TU_ONESUM_COMPONENT_CHAR* components;
+  TU_ONESUM_COMPONENT* components;
 
   assert(TUisTernaryChar(matrix, NULL));
 
@@ -567,7 +572,8 @@ bool signChar(
 
   /* Decompose into 1-connected components. */
 
-  decomposeOneSumCharToChar(tu, matrix, &numComponents, &components, NULL, NULL, NULL, NULL);
+  decomposeOneSum(tu, (TU_MATRIX*) matrix, sizeof(char), sizeof(char), &numComponents, &components,
+    NULL, NULL, NULL, NULL);
 
   for (int comp = 0; comp < numComponents; ++comp)
   {
@@ -577,8 +583,8 @@ bool signChar(
     printf("-> Component %d of size %dx%d\n", comp, components[comp].matrix.numRows,
       components[comp].matrix.numColumns);
 #endif
-    char modified = signSequentiallyConnected(tu, &components[comp].matrix,
-      &components[comp].transpose, change, (submatrix && !*submatrix) ? &compSubmatrix : NULL);
+    char modified = signSequentiallyConnected(tu, (TU_MATRIX_CHAR*) &components[comp].matrix,
+      (TU_MATRIX_CHAR*) &components[comp].transpose, change, (submatrix && !*submatrix) ? &compSubmatrix : NULL);
 #ifdef DEBUG_SIGN
     printf("-> Component %d yields: %c\n", comp, modified ? modified : '0');
 #endif
@@ -611,8 +617,9 @@ bool signChar(
     bool copyTranspose = modified == 't';
 
     /* Either the matrix or its transposed was modified. */
-    TU_MATRIX_CHAR* sourceMatrix = 
-      copyTranspose ? &components[comp].transpose : &components[comp].matrix;
+    TU_MATRIX_CHAR* sourceMatrix = copyTranspose ?
+      (TU_MATRIX_CHAR*) &components[comp].transpose :
+      (TU_MATRIX_CHAR*) &components[comp].matrix;
 
     /* We have to copy the changes back to the original matrix. */
     for (int sourceRow = 0; sourceRow < sourceMatrix->numRows; ++sourceRow)
@@ -662,8 +669,8 @@ bool signChar(
 
   for (int c = 0; c < numComponents; ++c)
   {
-    TUclearMatrixChar(&components[c].matrix);
-    TUclearMatrixChar(&components[c].transpose);
+    TUclearMatrixChar((TU_MATRIX_CHAR*) &components[c].matrix);
+    TUclearMatrixChar((TU_MATRIX_CHAR*) &components[c].transpose);
     free(components[c].rowsToOriginal);
     free(components[c].columnsToOriginal);
   }

@@ -24,7 +24,7 @@
  */
 
 static bool testTotalUnimodularityOneSum(TU* tu, int numComponents,
-  TU_ONESUM_COMPONENT_CHAR* components, TU_DEC** decomposition, TU_SUBMATRIX** submatrix)
+  TU_ONESUM_COMPONENT* components, TU_DEC** decomposition, TU_SUBMATRIX** submatrix)
 {
   assert(numComponents >= 0);
   assert(components);
@@ -42,8 +42,8 @@ static bool testTotalUnimodularityOneSum(TU* tu, int numComponents,
 
   for (int c = 0; c < numComponents; ++c)
   {
-    TUclearSparseChar(&components[c].matrix);
-    TUclearSparseChar(&components[c].transpose);
+    TUclearMatrixChar((TU_MATRIX_CHAR*) &components[c].matrix);
+    TUclearMatrixChar((TU_MATRIX_CHAR*) &components[c].transpose);
     free(components[c].rowsToOriginal);
     free(components[c].columnsToOriginal);
   }
@@ -55,7 +55,7 @@ bool TUtestTotalUnimodularityDouble(TU* tu, TU_MATRIX_DOUBLE* matrix, double eps
   TU_DEC** decomposition, TU_SUBMATRIX** submatrix)
 {
   int numComponents;
-  TU_ONESUM_COMPONENT_CHAR* components;
+  TU_ONESUM_COMPONENT* components;
 
   assert(tu);
   assert(matrix);
@@ -67,15 +67,16 @@ bool TUtestTotalUnimodularityDouble(TU* tu, TU_MATRIX_DOUBLE* matrix, double eps
 
   /* Perform 1-sum decomposition. */
 
-  decomposeOneSumDoubleToChar(tu, matrix, &numComponents, &components, NULL, NULL, NULL, NULL);
+  decomposeOneSum(tu, (TU_MATRIX*) matrix, sizeof(double), sizeof(char), &numComponents, &components, NULL, NULL,
+    NULL, NULL);
 
   /* Check correct signing for each component. */
 
   for (int comp = 0; comp < numComponents; ++comp)
   {
     TU_SUBMATRIX* compSubmatrix;
-    char signFailed = signSequentiallyConnected(tu, &components[comp].matrix,
-      &components[comp].transpose, false, submatrix ? &compSubmatrix : NULL);
+    char signFailed = signSequentiallyConnected(tu, (TU_MATRIX_CHAR*) &components[comp].matrix,
+      (TU_MATRIX_CHAR*) &components[comp].transpose, false, submatrix ? &compSubmatrix : NULL);
 
     if (signFailed)
     {
@@ -92,8 +93,8 @@ bool TUtestTotalUnimodularityDouble(TU* tu, TU_MATRIX_DOUBLE* matrix, double eps
 
       for (int c = 0; c < numComponents; ++c)
       {
-        TUclearSparseChar(&components[c].matrix);
-        TUclearSparseChar(&components[c].transpose);
+        TUclearMatrixChar((TU_MATRIX_CHAR*) &components[c].matrix);
+        TUclearMatrixChar((TU_MATRIX_CHAR*) &components[c].transpose);
         free(components[c].rowsToOriginal);
         free(components[c].columnsToOriginal);
       }
@@ -109,7 +110,7 @@ bool TUtestTotalUnimodularityInt(TU* tu, TU_MATRIX_INT* matrix, TU_DEC** decompo
   TU_SUBMATRIX** submatrix)
 {
   int numComponents;
-  TU_ONESUM_COMPONENT_CHAR* components;
+  TU_ONESUM_COMPONENT* components;
 
   assert(tu);
   assert(matrix);
@@ -121,15 +122,16 @@ bool TUtestTotalUnimodularityInt(TU* tu, TU_MATRIX_INT* matrix, TU_DEC** decompo
 
   /* Perform 1-sum decomposition. */
 
-  decomposeOneSumIntToChar(tu, matrix, &numComponents, &components, NULL, NULL, NULL, NULL);
+  decomposeOneSum(tu, (TU_MATRIX*) matrix, sizeof(int), sizeof(char), &numComponents, &components,
+    NULL, NULL, NULL, NULL);
 
   /* Check correct signing for each component. */
 
   for (int comp = 0; comp < numComponents; ++comp)
   {
     TU_SUBMATRIX* compSubmatrix;
-    char signFailed = signSequentiallyConnected(tu, &components[comp].matrix,
-      &components[comp].transpose, false, submatrix ? &compSubmatrix : NULL);
+    char signFailed = signSequentiallyConnected(tu, (TU_MATRIX_CHAR*) &components[comp].matrix,
+      (TU_MATRIX_CHAR*) &components[comp].transpose, false, submatrix ? &compSubmatrix : NULL);
 
     if (signFailed)
     {
@@ -146,8 +148,8 @@ bool TUtestTotalUnimodularityInt(TU* tu, TU_MATRIX_INT* matrix, TU_DEC** decompo
 
       for (int c = 0; c < numComponents; ++c)
       {
-        TUclearSparseChar(&components[c].matrix);
-        TUclearSparseChar(&components[c].transpose);
+        TUclearMatrixChar((TU_MATRIX_CHAR*) &components[c].matrix);
+        TUclearMatrixChar((TU_MATRIX_CHAR*) &components[c].transpose);
         free(components[c].rowsToOriginal);
         free(components[c].columnsToOriginal);
       }
@@ -163,7 +165,7 @@ bool TUtestTotalUnimodularityChar(TU* tu, TU_MATRIX_CHAR* matrix, TU_DEC** decom
   TU_SUBMATRIX** submatrix)
 {
   int numComponents;
-  TU_ONESUM_COMPONENT_CHAR* components;
+  TU_ONESUM_COMPONENT* components;
 
   assert(tu);
   assert(matrix);
@@ -175,15 +177,15 @@ bool TUtestTotalUnimodularityChar(TU* tu, TU_MATRIX_CHAR* matrix, TU_DEC** decom
 
   /* Perform 1-sum decomposition. */
 
-  decomposeOneSumCharToChar(tu, matrix, &numComponents, &components, NULL, NULL, NULL, NULL);
+  decomposeOneSum(tu, (TU_MATRIX*) matrix, sizeof(char), sizeof(char), &numComponents, &components, NULL, NULL, NULL, NULL);
 
   /* Check correct signing for each component. */
 
   for (int comp = 0; comp < numComponents; ++comp)
   {
     TU_SUBMATRIX* compSubmatrix;
-    char signFailed = signSequentiallyConnected(tu, &components[comp].matrix,
-      &components[comp].transpose, false, submatrix ? &compSubmatrix : NULL);
+    char signFailed = signSequentiallyConnected(tu, (TU_MATRIX_CHAR*) &components[comp].matrix,
+      (TU_MATRIX_CHAR*) &components[comp].transpose, false, submatrix ? &compSubmatrix : NULL);
 
     if (signFailed)
     {
@@ -200,8 +202,8 @@ bool TUtestTotalUnimodularityChar(TU* tu, TU_MATRIX_CHAR* matrix, TU_DEC** decom
 
       for (int c = 0; c < numComponents; ++c)
       {
-        TUclearSparseChar(&components[c].matrix);
-        TUclearSparseChar(&components[c].transpose);
+        TUclearMatrixChar((TU_MATRIX_CHAR*) &components[c].matrix);
+        TUclearMatrixChar((TU_MATRIX_CHAR*) &components[c].transpose);
         free(components[c].rowsToOriginal);
         free(components[c].columnsToOriginal);
       }

@@ -127,11 +127,11 @@ namespace tu
       return _data(j, i);
     }
 
-    typedef boost::numeric::ublas::detail::indexed_iterator1 <self_type, typename matrix_type::iterator2::iterator_category> iterator1;
-    typedef boost::numeric::ublas::detail::indexed_iterator2 <self_type, typename matrix_type::iterator1::iterator_category> iterator2;
-    typedef boost::numeric::ublas::detail::indexed_const_iterator1 <self_type, typename matrix_type::const_iterator2::iterator_category>
+    typedef boost::numeric::ublas::indexed_iterator1 <self_type, typename matrix_type::iterator2::iterator_category> iterator1;
+    typedef boost::numeric::ublas::indexed_iterator2 <self_type, typename matrix_type::iterator1::iterator_category> iterator2;
+    typedef boost::numeric::ublas::indexed_const_iterator1 <self_type, typename matrix_type::const_iterator2::iterator_category>
         const_iterator1;
-    typedef boost::numeric::ublas::detail::indexed_const_iterator2 <self_type, typename matrix_type::const_iterator1::iterator_category>
+    typedef boost::numeric::ublas::indexed_const_iterator2 <self_type, typename matrix_type::const_iterator1::iterator_category>
         const_iterator2;
   };
 

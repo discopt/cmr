@@ -8,6 +8,43 @@ extern "C" {
 #endif
 
 /**
+ * \brief Abstract struct for row-wise representations of sparse matrices.
+ */
+
+typedef struct
+{
+  /**
+   * \brief Number of rows
+   */
+  int numRows;
+
+  /**
+   * \brief Number of columns
+   */
+  int numColumns;
+
+  /**
+   * \brief Number of nonzeros
+   */
+  int numNonzeros;
+
+  /**
+   * \brief Array mapping each row to its first entry
+   */
+  int* rowStarts;
+
+  /**
+   * \brief Array mapping each entry to its column
+   */
+  int* entryColumns;
+
+  /**
+   * \brief Array mapping each entry to its value
+   */
+  void* entryValues;
+} TU_MATRIX;
+
+/**
  * \brief Sorts the row and column indices of \p submatrix.
  */
 
@@ -21,6 +58,8 @@ void TUsortSubmatrix(
 
 
 #ifdef __cplusplus
+
+#include <tu/matrix_transposed.hpp>
 
 namespace tu
 {
