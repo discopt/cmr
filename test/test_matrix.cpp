@@ -6,7 +6,7 @@
 TEST(Matrix, Submatrix)
 {
   TU* tu;
-  TU_SPARSE_CHAR matrix = stringToSparseChar("10 10 "
+  TU_MATRIX_CHAR matrix = stringToMatrixChar("10 10 "
     "+1 -1  0  0  0  0  0  0  0  0 "
     "-1 +1  0  0  0  0  0  0  0  0 "
     "0   0 +1  0  0  0  0 -1  0  0 "
@@ -28,18 +28,18 @@ TEST(Matrix, Submatrix)
   submatrix->columns[1] = 4;
   submatrix->columns[2] = 6;
 
-  TU_SPARSE_CHAR result;
+  TU_MATRIX_CHAR result;
   TUfilterSubmatrixChar(&matrix, submatrix, &result);
 
-  TU_SPARSE_CHAR check = stringToSparseChar("3 3 "
+  TU_MATRIX_CHAR check = stringToMatrixChar("3 3 "
     "+1  0   0"
     " 0 -1  +1"
     " 0  0  -1"
   );
-  ASSERT_TRUE(TUcheckSparseEqualChar(&result, &check));
-  TUclearSparseChar(&check);
+  ASSERT_TRUE(TUcheckMatrixEqualChar(&result, &check));
+  TUclearMatrixChar(&check);
 
-  TUclearSparseChar(&result);
+  TUclearMatrixChar(&result);
   TUfreeSubmatrix(&submatrix);
-  TUclearSparseChar(&matrix);
+  TUclearMatrixChar(&matrix);
 }

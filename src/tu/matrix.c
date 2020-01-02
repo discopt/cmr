@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-void TUclearSparseDouble(TU_SPARSE_DOUBLE* sparse)
+void TUclearMatrixDouble(TU_MATRIX_DOUBLE* sparse)
 {
   assert(sparse);
 
@@ -22,7 +22,7 @@ void TUclearSparseDouble(TU_SPARSE_DOUBLE* sparse)
   sparse->entryValues = NULL;
 }
 
-void TUclearSparseInt(TU_SPARSE_INT* sparse)
+void TUclearMatrixInt(TU_MATRIX_INT* sparse)
 {
   assert(sparse);
 
@@ -40,7 +40,7 @@ void TUclearSparseInt(TU_SPARSE_INT* sparse)
   sparse->entryValues = NULL;
 }
 
-void TUclearSparseChar(TU_SPARSE_CHAR* sparse)
+void TUclearMatrixChar(TU_MATRIX_CHAR* sparse)
 {
   assert(sparse);
 
@@ -61,7 +61,7 @@ void TUclearSparseChar(TU_SPARSE_CHAR* sparse)
   sparse->entryValues = NULL;
 }
 
-void TUprintSparseAsDenseDouble(FILE* stream, TU_SPARSE_DOUBLE* sparse, char zeroChar, bool header)
+void TUprintMatrixDenseDouble(FILE* stream, TU_MATRIX_DOUBLE* sparse, char zeroChar, bool header)
 {
   assert(stream != NULL);
   assert(sparse != NULL);
@@ -102,7 +102,7 @@ void TUprintSparseAsDenseDouble(FILE* stream, TU_SPARSE_DOUBLE* sparse, char zer
   free(rowEntries);
 }
 
-void TUprintSparseAsDenseInt(FILE* stream, TU_SPARSE_INT* sparse, char zeroChar, bool header)
+void TUprintMatrixDenseInt(FILE* stream, TU_MATRIX_INT* sparse, char zeroChar, bool header)
 {
   assert(stream != NULL);
   assert(sparse != NULL);
@@ -143,7 +143,7 @@ void TUprintSparseAsDenseInt(FILE* stream, TU_SPARSE_INT* sparse, char zeroChar,
   free(rowEntries);
 }
 
-void TUprintSparseAsDenseChar(FILE* stream, TU_SPARSE_CHAR* sparse, char zeroChar, bool header)
+void TUprintMatrixDenseChar(FILE* stream, TU_MATRIX_CHAR* sparse, char zeroChar, bool header)
 {
   assert(stream != NULL);
   assert(sparse != NULL);
@@ -184,10 +184,10 @@ void TUprintSparseAsDenseChar(FILE* stream, TU_SPARSE_CHAR* sparse, char zeroCha
   free(rowEntries);
 }
 
-bool TUcheckSparseEqualDouble(TU_SPARSE_DOUBLE* matrix1, TU_SPARSE_DOUBLE* matrix2)
+bool TUcheckMatrixEqualDouble(TU_MATRIX_DOUBLE* matrix1, TU_MATRIX_DOUBLE* matrix2)
 {
-  assert(TUcheckSparseSortedDouble(matrix1));
-  assert(TUcheckSparseSortedDouble(matrix2));
+  assert(TUcheckMatrixSortedDouble(matrix1));
+  assert(TUcheckMatrixSortedDouble(matrix2));
 
   if (matrix1->numRows != matrix2->numRows)
     return false;
@@ -219,10 +219,10 @@ bool TUcheckSparseEqualDouble(TU_SPARSE_DOUBLE* matrix1, TU_SPARSE_DOUBLE* matri
   return true;
 }
 
-bool TUcheckSparseEqualInt(TU_SPARSE_INT* matrix1, TU_SPARSE_INT* matrix2)
+bool TUcheckMatrixEqualInt(TU_MATRIX_INT* matrix1, TU_MATRIX_INT* matrix2)
 {
-  assert(TUcheckSparseSortedInt(matrix1));
-  assert(TUcheckSparseSortedInt(matrix2));
+  assert(TUcheckMatrixSortedInt(matrix1));
+  assert(TUcheckMatrixSortedInt(matrix2));
 
   if (matrix1->numRows != matrix2->numRows)
     return false;
@@ -254,10 +254,10 @@ bool TUcheckSparseEqualInt(TU_SPARSE_INT* matrix1, TU_SPARSE_INT* matrix2)
   return true;
 }
 
-bool TUcheckSparseEqualChar(TU_SPARSE_CHAR* matrix1, TU_SPARSE_CHAR* matrix2)
+bool TUcheckMatrixEqualChar(TU_MATRIX_CHAR* matrix1, TU_MATRIX_CHAR* matrix2)
 {
-  assert(TUcheckSparseSortedChar(matrix1));
-  assert(TUcheckSparseSortedChar(matrix2));
+  assert(TUcheckMatrixSortedChar(matrix1));
+  assert(TUcheckMatrixSortedChar(matrix2));
 
   if (matrix1->numRows != matrix2->numRows)
     return false;
@@ -289,7 +289,7 @@ bool TUcheckSparseEqualChar(TU_SPARSE_CHAR* matrix1, TU_SPARSE_CHAR* matrix2)
   return true;
 }
 
-bool TUcheckSparseTransposeDouble(TU_SPARSE_DOUBLE* matrix1, TU_SPARSE_DOUBLE* matrix2)
+bool TUcheckMatrixTransposeDouble(TU_MATRIX_DOUBLE* matrix1, TU_MATRIX_DOUBLE* matrix2)
 {
   assert(matrix1 != NULL);
   assert(matrix2 != NULL);
@@ -325,7 +325,7 @@ bool TUcheckSparseTransposeDouble(TU_SPARSE_DOUBLE* matrix1, TU_SPARSE_DOUBLE* m
   return true;
 }
 
-bool TUcheckSparseTransposeInt(TU_SPARSE_INT* matrix1, TU_SPARSE_INT* matrix2)
+bool TUcheckMatrixTransposeInt(TU_MATRIX_INT* matrix1, TU_MATRIX_INT* matrix2)
 {
   assert(matrix1 != NULL);
   assert(matrix2 != NULL);
@@ -361,7 +361,7 @@ bool TUcheckSparseTransposeInt(TU_SPARSE_INT* matrix1, TU_SPARSE_INT* matrix2)
   return true;
 }
 
-bool TUcheckSparseTransposeChar(TU_SPARSE_CHAR* matrix1, TU_SPARSE_CHAR* matrix2)
+bool TUcheckMatrixTransposeChar(TU_MATRIX_CHAR* matrix1, TU_MATRIX_CHAR* matrix2)
 {
   assert(matrix1 != NULL);
   assert(matrix2 != NULL);
@@ -398,7 +398,7 @@ bool TUcheckSparseTransposeChar(TU_SPARSE_CHAR* matrix1, TU_SPARSE_CHAR* matrix2
   return true;
 }
 
-bool TUcheckSparseSortedDouble(TU_SPARSE_DOUBLE* sparse)
+bool TUcheckMatrixSortedDouble(TU_MATRIX_DOUBLE* sparse)
 {
   assert(sparse != NULL);
 
@@ -416,17 +416,17 @@ bool TUcheckSparseSortedDouble(TU_SPARSE_DOUBLE* sparse)
   return true;
 }
 
-bool TUcheckSparseSortedInt(TU_SPARSE_INT* sparse)
+bool TUcheckMatrixSortedInt(TU_MATRIX_INT* sparse)
 {
-  return TUcheckSparseSortedDouble((TU_SPARSE_DOUBLE*) sparse);
+  return TUcheckMatrixSortedDouble((TU_MATRIX_DOUBLE*) sparse);
 }
 
-bool TUcheckSparseSortedChar(TU_SPARSE_CHAR* sparse)
+bool TUcheckMatrixSortedChar(TU_MATRIX_CHAR* sparse)
 {
-  return TUcheckSparseSortedDouble((TU_SPARSE_DOUBLE*) sparse);
+  return TUcheckMatrixSortedDouble((TU_MATRIX_DOUBLE*) sparse);
 }
 
-bool TUisTernaryDouble(TU_SPARSE_DOUBLE* sparse, double epsilon, TU_SUBMATRIX** submatrix)
+bool TUisTernaryDouble(TU_MATRIX_DOUBLE* sparse, double epsilon, TU_SUBMATRIX** submatrix)
 {
   assert(sparse != NULL);
 
@@ -450,7 +450,7 @@ bool TUisTernaryDouble(TU_SPARSE_DOUBLE* sparse, double epsilon, TU_SUBMATRIX** 
   return true;
 }
 
-bool TUisTernaryInt(TU_SPARSE_INT* sparse, TU_SUBMATRIX** submatrix)
+bool TUisTernaryInt(TU_MATRIX_INT* sparse, TU_SUBMATRIX** submatrix)
 {
   assert(sparse != NULL);
 
@@ -473,7 +473,7 @@ bool TUisTernaryInt(TU_SPARSE_INT* sparse, TU_SUBMATRIX** submatrix)
   return true;
 }
 
-bool TUisTernaryChar(TU_SPARSE_CHAR* sparse, TU_SUBMATRIX** submatrix)
+bool TUisTernaryChar(TU_MATRIX_CHAR* sparse, TU_SUBMATRIX** submatrix)
 {
   assert(sparse != NULL);
 
@@ -547,7 +547,7 @@ void TUsortSubmatrix(TU_SUBMATRIX* submatrix)
   qsort(submatrix->columns, submatrix->numColumns, sizeof(int), TUsortSubmatrixCompare);
 }
 
-void TUfilterSubmatrixChar(TU_SPARSE_CHAR* matrix, TU_SUBMATRIX* submatrix, TU_SPARSE_CHAR* result)
+void TUfilterSubmatrixChar(TU_MATRIX_CHAR* matrix, TU_SUBMATRIX* submatrix, TU_MATRIX_CHAR* result)
 {
   assert(matrix);
   assert(submatrix);

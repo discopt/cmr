@@ -14,8 +14,8 @@ extern "C" {
 
 typedef struct
 {
-  TU_SPARSE_INT matrix;     /**< Sparse int matrix. */
-  TU_SPARSE_INT transpose;  /**< Sparse transposed int matrix. */
+  TU_MATRIX_INT matrix;     /**< Sparse int matrix. */
+  TU_MATRIX_INT transpose;  /**< Sparse transposed int matrix. */
   int* rowsToOriginal;      /**< Maps component rows to original matrix rows. */
   int* columnsToOriginal;   /**< Maps component columns to original matrix columns. */
 } TU_ONESUM_COMPONENT_INT;
@@ -26,7 +26,7 @@ typedef struct
 
 void decomposeOneSumIntToInt(
   TU* tu,                               /**< TU environment */
-  TU_SPARSE_INT* matrix,                /**< Sparse int matrix */
+  TU_MATRIX_INT* matrix,                /**< Sparse int matrix */
   int* numComponents,                   /**< Number of components */
   TU_ONESUM_COMPONENT_INT** components, /**< Component information */
   int* rowsToComponents,                /**< Mapping of rows of \p matrix to components. Can be \c NULL. */
@@ -41,8 +41,8 @@ void decomposeOneSumIntToInt(
 
 typedef struct
 {
-  TU_SPARSE_CHAR matrix;    /**< Sparse char matrix. */
-  TU_SPARSE_CHAR transpose; /**< Sparse transposed char matrix. */
+  TU_MATRIX_CHAR matrix;    /**< Sparse char matrix. */
+  TU_MATRIX_CHAR transpose; /**< Sparse transposed char matrix. */
   int* rowsToOriginal;      /**< Maps component rows to original matrix rows. */
   int* columnsToOriginal;   /**< Maps component columns to original matrix columns. */
 } TU_ONESUM_COMPONENT_CHAR;
@@ -53,7 +53,7 @@ typedef struct
 
 void decomposeOneSumDoubleToChar(
   TU* tu,                                 /**< TU environment */
-  TU_SPARSE_DOUBLE* matrix,               /**< Sparse double matrix */
+  TU_MATRIX_DOUBLE* matrix,               /**< Sparse double matrix */
   int* numComponents,                     /**< Number of components */
   TU_ONESUM_COMPONENT_CHAR** components,  /**< Component information */
   int* rowsToComponents,                  /**< Mapping of rows of \p matrix to components. Can be \c NULL. */
@@ -68,7 +68,7 @@ void decomposeOneSumDoubleToChar(
 
 void decomposeOneSumIntToChar(
   TU* tu,                                 /**< TU environment */
-  TU_SPARSE_INT* matrix,                  /**< Sparse int matrix */
+  TU_MATRIX_INT* matrix,                  /**< Sparse int matrix */
   int* numComponents,                     /**< Number of components */
   TU_ONESUM_COMPONENT_CHAR** components,  /**< Component information */
   int* rowsToComponents,                  /**< Mapping of rows of \p matrix to components. Can be \c NULL. */
@@ -84,7 +84,7 @@ void decomposeOneSumIntToChar(
 
 void decomposeOneSumCharToChar(
   TU* tu,                                 /**< TU environment */
-  TU_SPARSE_CHAR* matrix,                 /**< Sparse char matrix */
+  TU_MATRIX_CHAR* matrix,                 /**< Sparse char matrix */
   int* numComponents,                     /**< Number of components */
   TU_ONESUM_COMPONENT_CHAR** components,  /**< Component information */
   int* rowsToComponents,                  /**< Mapping of rows of \p matrix to components. Can be \c NULL. */

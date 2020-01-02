@@ -44,19 +44,19 @@ typedef struct
    * \brief Array mapping each entry to its value
    */
   double* entryValues;
-} TU_SPARSE_DOUBLE;
+} TU_MATRIX_DOUBLE;
 
 /**
- * \brief Clears the arrays in a sparse int matrix.
+ * \brief Clears the arrays in an int matrix.
  */
 
 TU_EXPORT
-void TUclearSparseDouble(
-  TU_SPARSE_DOUBLE* sparse /**< Sparse double matrix */
+void TUclearMatrixDouble(
+  TU_MATRIX_DOUBLE* matrix /**< Double matrix */
 );
   
 /**
- * \brief Row-wise representation of sparse int matrix
+ * \brief Row-wise representation of sparse int matrix.
  */
 
 typedef struct
@@ -90,17 +90,16 @@ typedef struct
    * \brief Array mapping each entry to its value
    */
   int* entryValues;
-} TU_SPARSE_INT;
+} TU_MATRIX_INT;
 
 /**
- * \brief Clears the arrays in a sparse int matrix.
+ * \brief Clears the arrays in an int matrix.
  */
 
 TU_EXPORT
-void TUclearSparseInt(
-  TU_SPARSE_INT* sparse /**< Sparse int matrix */
+void TUclearMatrixInt(
+  TU_MATRIX_INT* matrix /**< Int matrix */
 );
-
 
 /**
  * \brief Row-wise representation of sparse char matrix
@@ -137,141 +136,141 @@ typedef struct
    * \brief Array mapping each entry to its value
    */
   char* entryValues;
-} TU_SPARSE_CHAR;
+} TU_MATRIX_CHAR;
 
 /**
- * \brief Clears the arrays in a sparse char matrix.
+ * \brief Clears the arrays in a char matrix.
  */
 
 TU_EXPORT
-void TUclearSparseChar(
-  TU_SPARSE_CHAR* sparse /**< Sparse char matrix */
+void TUclearMatrixChar(
+  TU_MATRIX_CHAR* matrix /**< Char matrix */
 );
 
 /**
- * \brief Prints a sparse double matrix.
+ * \brief Prints a double matrix.
  */
 
 TU_EXPORT
-void TUprintSparseAsDenseDouble(
-  FILE* stream, /**< File stream to print to */
-  TU_SPARSE_DOUBLE* sparse, /**< Sparse double matrix */
-  char zeroChar, /**< Character to print for a zero */
-  bool header /**< Whether to print row and column indices */
+void TUprintMatrixDenseDouble(
+  FILE* stream,             /**< File stream to print to */
+  TU_MATRIX_DOUBLE* matrix, /**< Double matrix */
+  char zeroChar,            /**< Character to print for a zero */
+  bool header               /**< Whether to print row and column indices */
 );
 
 /**
- * \brief Prints a sparse int matrix.
+ * \brief Prints an int matrix.
  */
 
 TU_EXPORT
-void TUprintSparseAsDenseInt(
-  FILE* stream, /**< File stream to print to */
-  TU_SPARSE_INT* sparse, /**< Sparse int matrix */
-  char zeroChar, /**< Character to print for a zero */
-  bool header /**< Whether to print row and column indices */
+void TUprintMatrixDenseInt(
+  FILE* stream,           /**< File stream to print to */
+  TU_MATRIX_INT* matrix,  /**< Int matrix */
+  char zeroChar,          /**< Character to print for a zero */
+  bool header             /**< Whether to print row and column indices */
 );
 
 /**
- * \brief Prints a sparse char matrix.
+ * \brief Prints a char matrix.
  */
 
 TU_EXPORT
-void TUprintSparseAsDenseChar(
-  FILE* stream, /**< File stream to print to */
-  TU_SPARSE_CHAR* sparse, /**< Sparse char matrix */
-  char zeroChar, /**< Character to print for a zero */
-  bool header /**< Whether to print row and column indices */
+void TUprintMatrixDenseChar(
+  FILE* stream,           /**< File stream to print to */
+  TU_MATRIX_CHAR* matrix, /**< Char matrix */
+  char zeroChar,          /**< Character to print for a zero */
+  bool header             /**< Whether to print row and column indices */
 );
 
 /**
- * \brief Checks whether two sparse double matrices are equal.
+ * \brief Checks whether two double matrices are equal.
  */
 
 TU_EXPORT
-bool TUcheckSparseEqualDouble(
-  TU_SPARSE_DOUBLE* matrix1, /**< First matrix */
-  TU_SPARSE_DOUBLE* matrix2 /**< Second matrix */
+bool TUcheckMatrixEqualDouble(
+  TU_MATRIX_DOUBLE* matrix1,  /**< First matrix */
+  TU_MATRIX_DOUBLE* matrix2   /**< Second matrix */
 );
 
 /**
- * \brief Checks whether two sparse int matrices are equal.
+ * \brief Checks whether two int matrices are equal.
  */
 
 TU_EXPORT
-bool TUcheckSparseEqualInt(
-  TU_SPARSE_INT* matrix1, /**< First matrix */
-  TU_SPARSE_INT* matrix2 /**< Second matrix */
-);
-
-
-/**
- * \brief Checks whether two sparse char matrices are equal.
- */
-
-TU_EXPORT
-bool TUcheckSparseEqualChar(
-  TU_SPARSE_CHAR* matrix1, /**< First matrix */
-  TU_SPARSE_CHAR* matrix2 /**< Second matrix */
-);
-
-/**
- * \brief Checks whether two sparse double matrices are transposes of each other.
- */
-
-TU_EXPORT
-bool TUcheckSparseTransposeDouble(
-  TU_SPARSE_DOUBLE* matrix1, /**< First matrix */
-  TU_SPARSE_DOUBLE* matrix2 /**< Second matrix */
+bool TUcheckMatrixEqualInt(
+  TU_MATRIX_INT* matrix1, /**< First matrix */
+  TU_MATRIX_INT* matrix2  /**< Second matrix */
 );
 
 
 /**
- * \brief Checks whether two sparse int matrices are transposes of each other.
+ * \brief Checks whether two char matrices are equal.
  */
 
 TU_EXPORT
-bool TUcheckSparseTransposeInt(
-  TU_SPARSE_INT* matrix1, /**< First matrix */
-  TU_SPARSE_INT* matrix2 /**< Second matrix */
+bool TUcheckMatrixEqualChar(
+  TU_MATRIX_CHAR* matrix1,  /**< First matrix */
+  TU_MATRIX_CHAR* matrix2   /**< Second matrix */
+);
+
+/**
+ * \brief Checks whether two double matrices are transposes of each other.
+ */
+
+TU_EXPORT
+bool TUcheckMatrixTransposeDouble(
+  TU_MATRIX_DOUBLE* matrix1, /**< First matrix */
+  TU_MATRIX_DOUBLE* matrix2 /**< Second matrix */
 );
 
 
 /**
- * \brief Checks whether two sparse char matrices are transposes of each other.
+ * \brief Checks whether two int matrices are transposes of each other.
  */
 
 TU_EXPORT
-bool TUcheckSparseTransposeChar(
-  TU_SPARSE_CHAR* matrix1, /**< First matrix */
-  TU_SPARSE_CHAR* matrix2 /**< Second matrix */
+bool TUcheckMatrixTransposeInt(
+  TU_MATRIX_INT* matrix1, /**< First matrix */
+  TU_MATRIX_INT* matrix2 /**< Second matrix */
+);
+
+
+/**
+ * \brief Checks whether two char matrices are transposes of each other.
+ */
+
+TU_EXPORT
+bool TUcheckMatrixTransposeChar(
+  TU_MATRIX_CHAR* matrix1, /**< First matrix */
+  TU_MATRIX_CHAR* matrix2 /**< Second matrix */
 );
 
 /**
- * \brief Checks whether sparse double matrix has each row sorted by minor.
+ * \brief Checks whether double matrix has each row sorted by minor.
  */
 
 TU_EXPORT
-bool TUcheckSparseSortedDouble(
-  TU_SPARSE_DOUBLE* sparse /** Sparse double matrix */
+bool TUcheckMatrixSortedDouble(
+  TU_MATRIX_DOUBLE* matrix /** Double matrix */
 );
 
 /**
- * \brief Checks whether sparse int matrix has each row sorted by minor.
+ * \brief Checks whether int matrix has each row sorted by minor.
  */
 
 TU_EXPORT
-bool TUcheckSparseSortedInt(
-  TU_SPARSE_INT* sparse /** Sparse int matrix */
+bool TUcheckMatrixSortedInt(
+  TU_MATRIX_INT* matrix /** Int matrix */
 );
 
 /**
- * \brief Checks whether sparse char matrix has each row sorted by minor.
+ * \brief Checks whether char matrix has each row sorted by minor.
  */
 
 TU_EXPORT
-bool TUcheckSparseSortedChar(
-  TU_SPARSE_CHAR* sparse /** Sparse char matrix */
+bool TUcheckMatrixSortedChar(
+  TU_MATRIX_CHAR* matrix /** Char matrix */
 );
 
 
@@ -334,44 +333,44 @@ void TUfreeSubmatrix(
 
 
 /**
- * \brief Creates a submatrix of a sparse char matrix explicitly.
+ * \brief Creates a submatrix of a char matrix explicitly.
  */
 TU_EXPORT
 void TUfilterSubmatrixChar(
-  TU_SPARSE_CHAR* matrix,   /**< Given matrix */
+  TU_MATRIX_CHAR* matrix,   /**< Given matrix */
   TU_SUBMATRIX* submatrix,  /**< Specified submatrix */
-  TU_SPARSE_CHAR* result    /**< Resulting submatrix as a sparse char matrix. */
+  TU_MATRIX_CHAR* result    /**< Resulting submatrix as a char matrix. */
 );
 
 /**
- * \brief Checks if sparse double matrix has only entries in {-1, 0, +1} with absolute error
+ * \brief Checks if double matrix has only entries in {-1, 0, +1} with absolute error
  * tolerance \p epsilon.
  */
 
 TU_EXPORT
 bool TUisTernaryDouble(
-  TU_SPARSE_DOUBLE* sparse, /**< Sparse char matrix */
+  TU_MATRIX_DOUBLE* matrix, /**< Char matrix */
   double epsilon,           /**< Absolute error tolerance */
   TU_SUBMATRIX** submatrix  /**< If not \c NULL, a non-ternary entry is stored in \c *submatrix. */
 );
 
 /**
- * \brief Checks if sparse int matrix has only entries in {-1, 0, +1}.
+ * \brief Checks if int matrix has only entries in {-1, 0, +1}.
  */
 
 TU_EXPORT
 bool TUisTernaryInt(
-  TU_SPARSE_INT* sparse,    /**< Sparse char matrix */
+  TU_MATRIX_INT* matrix,    /**< Char matrix */
   TU_SUBMATRIX** submatrix  /**< If not \c NULL, a non-ternary entry is stored in \c *submatrix. */
 );
 
 /**
- * \brief Checks if sparse char matrix has only entries in {-1, 0, +1}.
+ * \brief Checks if char matrix has only entries in {-1, 0, +1}.
  */
 
 TU_EXPORT
 bool TUisTernaryChar(
-  TU_SPARSE_CHAR* sparse,   /**< Sparse char matrix */
+  TU_MATRIX_CHAR* matrix,   /**< Char matrix */
   TU_SUBMATRIX** submatrix  /**< If not \c NULL, a non-ternary entry is stored in \c *submatrix. */
 );
 

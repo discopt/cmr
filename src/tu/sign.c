@@ -20,15 +20,15 @@ typedef struct
 
 char signSequentiallyConnected(
   TU* tu,
-  TU_SPARSE_CHAR* matrix,
-  TU_SPARSE_CHAR* transpose,
+  TU_MATRIX_CHAR* matrix,
+  TU_MATRIX_CHAR* transpose,
   bool change,
   TU_SUBMATRIX** submatrix
   )
 {
   bool matrixChanged = false;
   
-  assert(TUcheckSparseTransposeChar(matrix, transpose));
+  assert(TUcheckMatrixTransposeChar(matrix, transpose));
   assert(TUisTernaryChar(matrix, NULL));
 
   /* If we have more rows than columns, we work with the transpose. */
@@ -267,7 +267,7 @@ char signSequentiallyConnected(
 
 bool signDouble(
   TU* tu,                   /**< TU environment. */
-  TU_SPARSE_DOUBLE* matrix, /**< Sparse double matrix. */
+  TU_MATRIX_DOUBLE* matrix, /**< Sparse double matrix. */
   bool change,              /**< Whether the signs of \p matrix shall be modified. */
   TU_SUBMATRIX** submatrix  /**< If not \c NULL, a submatrix with bad determinant is stored. */
 )
@@ -329,7 +329,7 @@ bool signDouble(
     bool copyTranspose = modified == 't';
 
     /* Either the matrix or its transposed was modified. */
-    TU_SPARSE_CHAR* sourceMatrix = 
+    TU_MATRIX_CHAR* sourceMatrix = 
       copyTranspose ? &components[comp].transpose : &components[comp].matrix;
 
     /* We have to copy the changes back to the original matrix. */
@@ -380,8 +380,8 @@ bool signDouble(
 
   for (int c = 0; c < numComponents; ++c)
   {
-    TUclearSparseChar(&components[c].matrix);
-    TUclearSparseChar(&components[c].transpose);
+    TUclearMatrixChar(&components[c].matrix);
+    TUclearMatrixChar(&components[c].transpose);
     free(components[c].rowsToOriginal);
     free(components[c].columnsToOriginal);
   }
@@ -390,12 +390,12 @@ bool signDouble(
   return wasCorrect;
 }
 
-bool TUtestSignDouble(TU* tu, TU_SPARSE_DOUBLE* matrix, TU_SUBMATRIX** submatrix)
+bool TUtestSignDouble(TU* tu, TU_MATRIX_DOUBLE* matrix, TU_SUBMATRIX** submatrix)
 {
   return signDouble(tu, matrix, false, submatrix);
 }
 
-bool TUcorrectSignDouble(TU* tu, TU_SPARSE_DOUBLE* matrix, TU_SUBMATRIX** submatrix)
+bool TUcorrectSignDouble(TU* tu, TU_MATRIX_DOUBLE* matrix, TU_SUBMATRIX** submatrix)
 {
   return signDouble(tu, matrix, true, submatrix);
 }
@@ -408,7 +408,7 @@ bool TUcorrectSignDouble(TU* tu, TU_SPARSE_DOUBLE* matrix, TU_SUBMATRIX** submat
 
 bool signInt(
   TU* tu,                   /**< TU environment. */
-  TU_SPARSE_INT* matrix,    /**< Sparse int matrix. */
+  TU_MATRIX_INT* matrix,    /**< Sparse int matrix. */
   bool change,              /**< Whether the signs of \p matrix shall be modified. */
   TU_SUBMATRIX** submatrix  /**< If not \c NULL, a submatrix with bad determinant is stored. */
 )
@@ -470,7 +470,7 @@ bool signInt(
     bool copyTranspose = modified == 't';
 
     /* Either the matrix or its transposed was modified. */
-    TU_SPARSE_CHAR* sourceMatrix = 
+    TU_MATRIX_CHAR* sourceMatrix = 
       copyTranspose ? &components[comp].transpose : &components[comp].matrix;
 
     /* We have to copy the changes back to the original matrix. */
@@ -521,8 +521,8 @@ bool signInt(
 
   for (int c = 0; c < numComponents; ++c)
   {
-    TUclearSparseChar(&components[c].matrix);
-    TUclearSparseChar(&components[c].transpose);
+    TUclearMatrixChar(&components[c].matrix);
+    TUclearMatrixChar(&components[c].transpose);
     free(components[c].rowsToOriginal);
     free(components[c].columnsToOriginal);
   }
@@ -531,12 +531,12 @@ bool signInt(
   return wasCorrect;
 }
 
-bool TUtestSignInt(TU* tu, TU_SPARSE_INT* matrix, TU_SUBMATRIX** submatrix)
+bool TUtestSignInt(TU* tu, TU_MATRIX_INT* matrix, TU_SUBMATRIX** submatrix)
 {
   return signInt(tu, matrix, false, submatrix);
 }
 
-bool TUcorrectSignInt(TU* tu, TU_SPARSE_INT* matrix, TU_SUBMATRIX** submatrix)
+bool TUcorrectSignInt(TU* tu, TU_MATRIX_INT* matrix, TU_SUBMATRIX** submatrix)
 {
   return signInt(tu, matrix, true, submatrix);
 }
@@ -549,7 +549,7 @@ bool TUcorrectSignInt(TU* tu, TU_SPARSE_INT* matrix, TU_SUBMATRIX** submatrix)
 
 bool signChar(
   TU* tu,                   /**< TU environment. */
-  TU_SPARSE_CHAR* matrix,   /**< Sparse char matrix. */
+  TU_MATRIX_CHAR* matrix,   /**< Sparse char matrix. */
   bool change,              /**< Whether the signs of \p matrix shall be modified. */
   TU_SUBMATRIX** submatrix  /**< If not \c NULL, a submatrix with bad determinant is stored. */
 )
@@ -611,7 +611,7 @@ bool signChar(
     bool copyTranspose = modified == 't';
 
     /* Either the matrix or its transposed was modified. */
-    TU_SPARSE_CHAR* sourceMatrix = 
+    TU_MATRIX_CHAR* sourceMatrix = 
       copyTranspose ? &components[comp].transpose : &components[comp].matrix;
 
     /* We have to copy the changes back to the original matrix. */
@@ -662,8 +662,8 @@ bool signChar(
 
   for (int c = 0; c < numComponents; ++c)
   {
-    TUclearSparseChar(&components[c].matrix);
-    TUclearSparseChar(&components[c].transpose);
+    TUclearMatrixChar(&components[c].matrix);
+    TUclearMatrixChar(&components[c].transpose);
     free(components[c].rowsToOriginal);
     free(components[c].columnsToOriginal);
   }
@@ -672,12 +672,12 @@ bool signChar(
   return wasCorrect;
 }
 
-bool TUtestSignChar(TU* tu, TU_SPARSE_CHAR* matrix, TU_SUBMATRIX** submatrix)
+bool TUtestSignChar(TU* tu, TU_MATRIX_CHAR* matrix, TU_SUBMATRIX** submatrix)
 {
   return signChar(tu, matrix, false, submatrix);
 }
 
-bool TUcorrectSignChar(TU* tu, TU_SPARSE_CHAR* matrix, TU_SUBMATRIX** submatrix)
+bool TUcorrectSignChar(TU* tu, TU_MATRIX_CHAR* matrix, TU_SUBMATRIX** submatrix)
 {
   return signChar(tu, matrix, true, submatrix);
 }

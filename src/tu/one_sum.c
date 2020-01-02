@@ -14,7 +14,7 @@ struct GraphNode
 };
 typedef struct GraphNode GRAPH_NODE;
 
-void decomposeOneSumIntToInt(TU* tu, TU_SPARSE_INT* matrix, int* numComponents,
+void decomposeOneSumIntToInt(TU* tu, TU_MATRIX_INT* matrix, int* numComponents,
   TU_ONESUM_COMPONENT_INT** components, int* rowsToComponents, int* columnsToComponents,
   int* rowsToComponentRows, int* columnsToComponentColumns)
 {
@@ -148,7 +148,7 @@ void decomposeOneSumIntToInt(TU* tu, TU_SPARSE_INT* matrix, int* numComponents,
   /* Compute sizes. */
   for (int component = 0; component < countComponents; ++component)
   {
-    TU_SPARSE_INT* compMatrix = &(*components)[component].matrix;
+    TU_MATRIX_INT* compMatrix = &(*components)[component].matrix;
     compMatrix->numRows = 0;
     compMatrix->numColumns = 0;
     compMatrix->numNonzeros = 0;
@@ -171,8 +171,8 @@ void decomposeOneSumIntToInt(TU* tu, TU_SPARSE_INT* matrix, int* numComponents,
   /* Allocate memory */
   for (int component = 0; component < countComponents; ++component)
   {
-    TU_SPARSE_INT* compMatrix = &(*components)[component].matrix;
-    TU_SPARSE_INT* compTranspose = &(*components)[component].transpose;
+    TU_MATRIX_INT* compMatrix = &(*components)[component].matrix;
+    TU_MATRIX_INT* compTranspose = &(*components)[component].transpose;
 
     (*components)[component].rowsToOriginal = (int*) malloc(compMatrix->numRows*sizeof(int));
     (*components)[component].columnsToOriginal = (int*) malloc(compMatrix->numColumns*sizeof(int));
@@ -203,7 +203,7 @@ void decomposeOneSumIntToInt(TU* tu, TU_SPARSE_INT* matrix, int* numComponents,
   /* We can now fill the matrices of each component. */
   for (int component = 0; component < countComponents; ++component)
   {
-    TU_SPARSE_INT* compTranspose = &(*components)[component].transpose;
+    TU_MATRIX_INT* compTranspose = &(*components)[component].transpose;
 
     /* Compute the slices in the transposed component matrix from the graph. */
     int countNonzeros = 0;
@@ -248,8 +248,8 @@ void decomposeOneSumIntToInt(TU* tu, TU_SPARSE_INT* matrix, int* numComponents,
   /* We now create the row-wise representation from the column-wise one. */
   for (int component = 0; component < countComponents; ++component)
   {
-    TU_SPARSE_INT* compMatrix = &(*components)[component].matrix;
-    TU_SPARSE_INT* compTranspose = &(*components)[component].transpose;
+    TU_MATRIX_INT* compMatrix = &(*components)[component].matrix;
+    TU_MATRIX_INT* compTranspose = &(*components)[component].transpose;
 
     /* Compute the slices in the component matrix from the graph. */
     int countNonzeros = 0;
@@ -312,7 +312,7 @@ void decomposeOneSumIntToInt(TU* tu, TU_SPARSE_INT* matrix, int* numComponents,
   free(graphNodes);
 }
 
-void decomposeOneSumDoubleToChar(TU* tu, TU_SPARSE_DOUBLE* matrix, int* numComponents,
+void decomposeOneSumDoubleToChar(TU* tu, TU_MATRIX_DOUBLE* matrix, int* numComponents,
   TU_ONESUM_COMPONENT_CHAR** components, int* rowsToComponents, int* columnsToComponents,
   int* rowsToComponentRows, int* columnsToComponentColumns)
 {
@@ -446,7 +446,7 @@ void decomposeOneSumDoubleToChar(TU* tu, TU_SPARSE_DOUBLE* matrix, int* numCompo
   /* Compute sizes. */
   for (int component = 0; component < countComponents; ++component)
   {
-    TU_SPARSE_CHAR* compMatrix = &(*components)[component].matrix;
+    TU_MATRIX_CHAR* compMatrix = &(*components)[component].matrix;
     compMatrix->numRows = 0;
     compMatrix->numColumns = 0;
     compMatrix->numNonzeros = 0;
@@ -469,8 +469,8 @@ void decomposeOneSumDoubleToChar(TU* tu, TU_SPARSE_DOUBLE* matrix, int* numCompo
   /* Allocate memory */
   for (int component = 0; component < countComponents; ++component)
   {
-    TU_SPARSE_CHAR* compMatrix = &(*components)[component].matrix;
-    TU_SPARSE_CHAR* compTranspose = &(*components)[component].transpose;
+    TU_MATRIX_CHAR* compMatrix = &(*components)[component].matrix;
+    TU_MATRIX_CHAR* compTranspose = &(*components)[component].transpose;
 
     (*components)[component].rowsToOriginal = (int*) malloc(compMatrix->numRows*sizeof(int));
     (*components)[component].columnsToOriginal = (int*) malloc(compMatrix->numColumns*sizeof(int));
@@ -501,7 +501,7 @@ void decomposeOneSumDoubleToChar(TU* tu, TU_SPARSE_DOUBLE* matrix, int* numCompo
   /* We can now fill the matrices of each component. */
   for (int component = 0; component < countComponents; ++component)
   {
-    TU_SPARSE_CHAR* compTranspose = &(*components)[component].transpose;
+    TU_MATRIX_CHAR* compTranspose = &(*components)[component].transpose;
 
     /* Compute the slices in the transposed component matrix from the graph. */
     int countNonzeros = 0;
@@ -548,8 +548,8 @@ void decomposeOneSumDoubleToChar(TU* tu, TU_SPARSE_DOUBLE* matrix, int* numCompo
   /* We now create the row-wise representation from the column-wise one. */
   for (int component = 0; component < countComponents; ++component)
   {
-    TU_SPARSE_CHAR* compMatrix = &(*components)[component].matrix;
-    TU_SPARSE_CHAR* compTranspose = &(*components)[component].transpose;
+    TU_MATRIX_CHAR* compMatrix = &(*components)[component].matrix;
+    TU_MATRIX_CHAR* compTranspose = &(*components)[component].transpose;
 
     /* Compute the slices in the component matrix from the graph. */
     int countNonzeros = 0;
@@ -612,7 +612,7 @@ void decomposeOneSumDoubleToChar(TU* tu, TU_SPARSE_DOUBLE* matrix, int* numCompo
   free(graphNodes);
 }
 
-void decomposeOneSumIntToChar(TU* tu, TU_SPARSE_INT* matrix, int* numComponents,
+void decomposeOneSumIntToChar(TU* tu, TU_MATRIX_INT* matrix, int* numComponents,
   TU_ONESUM_COMPONENT_CHAR** components, int* rowsToComponents, int* columnsToComponents,
   int* rowsToComponentRows, int* columnsToComponentColumns)
 {
@@ -746,7 +746,7 @@ void decomposeOneSumIntToChar(TU* tu, TU_SPARSE_INT* matrix, int* numComponents,
   /* Compute sizes. */
   for (int component = 0; component < countComponents; ++component)
   {
-    TU_SPARSE_CHAR* compMatrix = &(*components)[component].matrix;
+    TU_MATRIX_CHAR* compMatrix = &(*components)[component].matrix;
     compMatrix->numRows = 0;
     compMatrix->numColumns = 0;
     compMatrix->numNonzeros = 0;
@@ -769,8 +769,8 @@ void decomposeOneSumIntToChar(TU* tu, TU_SPARSE_INT* matrix, int* numComponents,
   /* Allocate memory */
   for (int component = 0; component < countComponents; ++component)
   {
-    TU_SPARSE_CHAR* compMatrix = &(*components)[component].matrix;
-    TU_SPARSE_CHAR* compTranspose = &(*components)[component].transpose;
+    TU_MATRIX_CHAR* compMatrix = &(*components)[component].matrix;
+    TU_MATRIX_CHAR* compTranspose = &(*components)[component].transpose;
 
     (*components)[component].rowsToOriginal = (int*) malloc(compMatrix->numRows*sizeof(int));
     (*components)[component].columnsToOriginal = (int*) malloc(compMatrix->numColumns*sizeof(int));
@@ -801,7 +801,7 @@ void decomposeOneSumIntToChar(TU* tu, TU_SPARSE_INT* matrix, int* numComponents,
   /* We can now fill the matrices of each component. */
   for (int component = 0; component < countComponents; ++component)
   {
-    TU_SPARSE_CHAR* compTranspose = &(*components)[component].transpose;
+    TU_MATRIX_CHAR* compTranspose = &(*components)[component].transpose;
 
     /* Compute the slices in the transposed component matrix from the graph. */
     int countNonzeros = 0;
@@ -848,8 +848,8 @@ void decomposeOneSumIntToChar(TU* tu, TU_SPARSE_INT* matrix, int* numComponents,
   /* We now create the row-wise representation from the column-wise one. */
   for (int component = 0; component < countComponents; ++component)
   {
-    TU_SPARSE_CHAR* compMatrix = &(*components)[component].matrix;
-    TU_SPARSE_CHAR* compTranspose = &(*components)[component].transpose;
+    TU_MATRIX_CHAR* compMatrix = &(*components)[component].matrix;
+    TU_MATRIX_CHAR* compTranspose = &(*components)[component].transpose;
 
     /* Compute the slices in the component matrix from the graph. */
     int countNonzeros = 0;
@@ -913,7 +913,7 @@ void decomposeOneSumIntToChar(TU* tu, TU_SPARSE_INT* matrix, int* numComponents,
 }
 
 
-void decomposeOneSumCharToChar(TU* tu, TU_SPARSE_CHAR* matrix, int* numComponents,
+void decomposeOneSumCharToChar(TU* tu, TU_MATRIX_CHAR* matrix, int* numComponents,
   TU_ONESUM_COMPONENT_CHAR** components, int* rowsToComponents, int* columnsToComponents,
   int* rowsToComponentRows, int* columnsToComponentColumns)
 {
@@ -1047,7 +1047,7 @@ void decomposeOneSumCharToChar(TU* tu, TU_SPARSE_CHAR* matrix, int* numComponent
   /* Compute sizes. */
   for (int component = 0; component < countComponents; ++component)
   {
-    TU_SPARSE_CHAR* compMatrix = &(*components)[component].matrix;
+    TU_MATRIX_CHAR* compMatrix = &(*components)[component].matrix;
     compMatrix->numRows = 0;
     compMatrix->numColumns = 0;
     compMatrix->numNonzeros = 0;
@@ -1070,8 +1070,8 @@ void decomposeOneSumCharToChar(TU* tu, TU_SPARSE_CHAR* matrix, int* numComponent
   /* Allocate memory */
   for (int component = 0; component < countComponents; ++component)
   {
-    TU_SPARSE_CHAR* compMatrix = &(*components)[component].matrix;
-    TU_SPARSE_CHAR* compTranspose = &(*components)[component].transpose;
+    TU_MATRIX_CHAR* compMatrix = &(*components)[component].matrix;
+    TU_MATRIX_CHAR* compTranspose = &(*components)[component].transpose;
 
     (*components)[component].rowsToOriginal = (int*) malloc(compMatrix->numRows*sizeof(int));
     (*components)[component].columnsToOriginal = (int*) malloc(compMatrix->numColumns*sizeof(int));
@@ -1102,7 +1102,7 @@ void decomposeOneSumCharToChar(TU* tu, TU_SPARSE_CHAR* matrix, int* numComponent
   /* We can now fill the matrices of each component. */
   for (int component = 0; component < countComponents; ++component)
   {
-    TU_SPARSE_CHAR* compTranspose = &(*components)[component].transpose;
+    TU_MATRIX_CHAR* compTranspose = &(*components)[component].transpose;
 
     /* Compute the slices in the transposed component matrix from the graph. */
     int countNonzeros = 0;
@@ -1147,8 +1147,8 @@ void decomposeOneSumCharToChar(TU* tu, TU_SPARSE_CHAR* matrix, int* numComponent
   /* We now create the row-wise representation from the column-wise one. */
   for (int component = 0; component < countComponents; ++component)
   {
-    TU_SPARSE_CHAR* compMatrix = &(*components)[component].matrix;
-    TU_SPARSE_CHAR* compTranspose = &(*components)[component].transpose;
+    TU_MATRIX_CHAR* compMatrix = &(*components)[component].matrix;
+    TU_MATRIX_CHAR* compTranspose = &(*components)[component].transpose;
 
     /* Compute the slices in the component matrix from the graph. */
     int countNonzeros = 0;

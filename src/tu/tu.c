@@ -51,7 +51,7 @@ static bool testTotalUnimodularityOneSum(TU* tu, int numComponents,
   return true;
 }
 
-bool TUtestTotalUnimodularityDouble(TU* tu, TU_SPARSE_DOUBLE* matrix, double epsilon,
+bool TUtestTotalUnimodularityDouble(TU* tu, TU_MATRIX_DOUBLE* matrix, double epsilon,
   TU_DEC** decomposition, TU_SUBMATRIX** submatrix)
 {
   int numComponents;
@@ -105,7 +105,7 @@ bool TUtestTotalUnimodularityDouble(TU* tu, TU_SPARSE_DOUBLE* matrix, double eps
   return testTotalUnimodularityOneSum(tu, numComponents, components, decomposition, submatrix);
 }
 
-bool TUtestTotalUnimodularityInt(TU* tu, TU_SPARSE_INT* matrix, TU_DEC** decomposition,
+bool TUtestTotalUnimodularityInt(TU* tu, TU_MATRIX_INT* matrix, TU_DEC** decomposition,
   TU_SUBMATRIX** submatrix)
 {
   int numComponents;
@@ -159,7 +159,7 @@ bool TUtestTotalUnimodularityInt(TU* tu, TU_SPARSE_INT* matrix, TU_DEC** decompo
   return testTotalUnimodularityOneSum(tu, numComponents, components, decomposition, submatrix);
 }
 
-bool TUtestTotalUnimodularityChar(TU* tu, TU_SPARSE_CHAR* matrix, TU_DEC** decomposition,
+bool TUtestTotalUnimodularityChar(TU* tu, TU_MATRIX_CHAR* matrix, TU_DEC** decomposition,
   TU_SUBMATRIX** submatrix)
 {
   int numComponents;

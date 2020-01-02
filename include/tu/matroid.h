@@ -61,7 +61,7 @@ int TUgetDecNumColumns(
 TU_EXPORT
 int TUgetDecMatrix(
   TU_DEC* dec, /**< Decomposition tree */
-  TU_SPARSE_CHAR* matrix /**< Matrix */
+  TU_MATRIX_CHAR* matrix /**< Matrix */
 );
 
 /**
@@ -70,7 +70,7 @@ int TUgetDecMatrix(
 TU_EXPORT
 int TUgetDecTranspose(
   TU_DEC* dec, /**< Decomposition tree */
-  TU_SPARSE_CHAR* transpose /**< Transpose of matrix */
+  TU_MATRIX_CHAR* transpose /**< Transpose of matrix */
 );
 
 /**

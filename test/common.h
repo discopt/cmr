@@ -7,11 +7,11 @@
 extern "C" {
 #endif
 
-TU_SPARSE_DOUBLE stringToSparseDouble(const char* string);
+TU_MATRIX_DOUBLE stringToMatrixDouble(const char* string);
 
-TU_SPARSE_INT stringToSparseInt(const char* string);
+TU_MATRIX_INT stringToMatrixInt(const char* string);
 
-TU_SPARSE_CHAR stringToSparseChar(const char* string);
+TU_MATRIX_CHAR stringToMatrixChar(const char* string);
 
 #ifdef __cplusplus
 }
