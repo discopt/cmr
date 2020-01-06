@@ -9,9 +9,16 @@
 extern "C" {
 #endif
 
-struct TU_GRAPH_;
+typedef struct
+{
+  int numNodes;
+  int numArcs;
+} TU_GRAPH;
 
-typedef struct TU_GRAPH_ TU_GRAPH;
+void TUfreeGraph(
+  TU* tu,           /**< TU environment. */
+  TU_GRAPH** pgraph /**< Graph */
+);
 
 #ifdef __cplusplus
 }

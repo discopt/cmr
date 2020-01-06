@@ -11,7 +11,7 @@ void TUfreeDec(TU* tu, TU_DEC** dec)
   {
     for (int c = 0; c < (*dec)->numChildren; ++c)
       TUfreeDec(tu, &(*dec)->children[c]);
-    free((*dec)->children);
+    TUfreeBlockArray(tu, &(*dec)->children);
   }
   if ((*dec)->matrix)
     TUfreeCharMatrix(tu, &(*dec)->matrix);
@@ -21,8 +21,7 @@ void TUfreeDec(TU* tu, TU_DEC** dec)
     TUfreeGraph(tu, &(*dec)->graph);
   if ((*dec)->cograph)
     TUfreeGraph(tu, &(*dec)->cograph);
-  free(*dec);
-  *dec = NULL;
+  TUfreeBlock(tu, dec);
 }
 
 bool TUisDecLeaf(TU_DEC* dec)
