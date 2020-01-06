@@ -5,8 +5,11 @@
 
 TEST(Matrix, Submatrix)
 {
-  TU* tu;
-  TU_MATRIX_CHAR matrix = stringToMatrixChar("10 10 "
+  TU* tu = NULL;
+  TUcreateEnvironment(&tu);
+
+  TU_CHAR_MATRIX* matrix = NULL;
+  stringToCharMatrix(tu, &matrix, "10 10 "
     "+1 -1  0  0  0  0  0  0  0  0 "
     "-1 +1  0  0  0  0  0  0  0  0 "
     "0   0 +1  0  0  0  0 -1  0  0 "
@@ -19,8 +22,8 @@ TEST(Matrix, Submatrix)
     "0   0  0  0  0  0  0 -1  0 +1 "
   );
 
-  TU_SUBMATRIX* submatrix;
-  TUcreateSubmatrix(&submatrix, 3, 3);
+  TU_SUBMATRIX* submatrix = NULL;
+  TUcreateSubmatrix(tu, &submatrix, 3, 3);
   submatrix->rows[0] = 1;
   submatrix->rows[1] = 3;
   submatrix->rows[2] = 4;
@@ -28,18 +31,21 @@ TEST(Matrix, Submatrix)
   submatrix->columns[1] = 4;
   submatrix->columns[2] = 6;
 
-  TU_MATRIX_CHAR result;
-  TUfilterSubmatrixChar(&matrix, submatrix, &result);
+  TU_CHAR_MATRIX* result = NULL;
+  TUfilterCharSubmatrix(tu, matrix, submatrix, &result);
 
-  TU_MATRIX_CHAR check = stringToMatrixChar("3 3 "
+  TU_CHAR_MATRIX* check = NULL;
+  stringToCharMatrix(tu, &check, "3 3 "
     "+1  0   0"
     " 0 -1  +1"
     " 0  0  -1"
   );
-  ASSERT_TRUE(TUcheckMatrixEqualChar(&result, &check));
-  TUclearMatrixChar(&check);
+  ASSERT_TRUE(TUcheckCharMatrixEqual(result, check));
+  TUfreeCharMatrix(tu, &check);
 
-  TUclearMatrixChar(&result);
-  TUfreeSubmatrix(&submatrix);
-  TUclearMatrixChar(&matrix);
+  TUfreeCharMatrix(tu, &result);
+  TUfreeSubmatrix(tu, &submatrix);
+  TUfreeCharMatrix(tu, &matrix);
+
+  TUfreeEnvironment(&tu);
 }

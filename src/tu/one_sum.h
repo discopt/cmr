@@ -14,8 +14,8 @@ extern "C" {
 
 typedef struct
 {
-  TU_MATRIX matrix;       /**< Sparse matrix. */
-  TU_MATRIX transpose;    /**< Sparse transposed matrix. */
+  TU_MATRIX* matrix;      /**< Sparse matrix. */
+  TU_MATRIX* transpose;   /**< Sparse transposed matrix. */
   int* rowsToOriginal;    /**< Maps component rows to original matrix rows. */
   int* columnsToOriginal; /**< Maps component columns to original matrix columns. */
 } TU_ONESUM_COMPONENT;

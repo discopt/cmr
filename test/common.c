@@ -5,29 +5,27 @@
 
 #include <stdio.h>
 
-TU_MATRIX_DOUBLE stringToMatrixDouble(const char* string)
+void stringToDoubleMatrix(TU* tu, TU_DOUBLE_MATRIX** matrix, const char* string)
 {
-  TU_MATRIX_DOUBLE matrix;
+  assert(tu);
   char* end;
-  int maxNonzeros = 256;
+  int numRows, numColumns;
 
   /* Read size of matrix. */
-  matrix.numRows = strtol(string, &end, 10);
+  numRows = strtol(string, &end, 10);
   assert(end > string);
   string = end;
-  matrix.numColumns = strtol(string, &end, 10);
+  numColumns = strtol(string, &end, 10);
   assert(end > string);
   string = end;
 
-  matrix.rowStarts = (int*) malloc(matrix.numRows * sizeof(int));
-  matrix.numNonzeros = 0;
-  matrix.entryColumns = (int*) malloc(maxNonzeros * sizeof(int));
-  matrix.entryValues = (double*) malloc(maxNonzeros * sizeof(double));
+  TUcreateDoubleMatrix(tu, matrix, numRows, numColumns, numRows * numColumns);
 
-  for (int row = 0; row < matrix.numRows; ++row)
+  (*matrix)->numNonzeros = 0;
+  for (int row = 0; row < (*matrix)->numRows; ++row)
   {
-    matrix.rowStarts[row] = matrix.numNonzeros;
-    for (int column = 0; column < matrix.numColumns; ++column)
+    (*matrix)->rowStarts[row] = (*matrix)->numNonzeros;
+    for (int column = 0; column < (*matrix)->numColumns; ++column)
     {
       double x = strtod(string, &end);
       assert(end > string);
@@ -35,116 +33,83 @@ TU_MATRIX_DOUBLE stringToMatrixDouble(const char* string)
 
       if (x != 0.0)
       {
-        /* Enlarge array if necessary. */
-        if (matrix.numNonzeros == maxNonzeros)
-        {
-          maxNonzeros *= 2;
-          matrix.entryColumns = (int*) realloc(matrix.entryColumns, maxNonzeros * sizeof(int));
-          matrix.entryValues = (double*) realloc(matrix.entryValues, maxNonzeros * sizeof(double));
-        }
-
-        matrix.entryColumns[matrix.numNonzeros] = column;
-        matrix.entryValues[matrix.numNonzeros] = x;
-        matrix.numNonzeros++;
+        (*matrix)->entryColumns[(*matrix)->numNonzeros] = column;
+        (*matrix)->entryValues[(*matrix)->numNonzeros] = x;
+        (*matrix)->numNonzeros++;
       }
     }
   }
-
-  return matrix;
 }
 
-TU_MATRIX_INT stringToMatrixInt(const char* string)
+void stringToIntMatrix(TU* tu, TU_INT_MATRIX** matrix, const char* string)
 {
-  TU_MATRIX_INT matrix;
+  assert(tu);
   char* end;
-  int maxNonzeros = 256;
+  int numRows, numColumns;
 
   /* Read size of matrix. */
-  matrix.numRows = strtol(string, &end, 10);
+  numRows = strtol(string, &end, 10);
   assert(end > string);
   string = end;
-  matrix.numColumns = strtol(string, &end, 10);
+  numColumns = strtol(string, &end, 10);
   assert(end > string);
   string = end;
 
-  matrix.rowStarts = (int*) malloc(matrix.numRows * sizeof(int));
-  matrix.numNonzeros = 0;
-  matrix.entryColumns = (int*) malloc(maxNonzeros * sizeof(int));
-  matrix.entryValues = (int*) malloc(maxNonzeros * sizeof(int));
+  TUcreateIntMatrix(tu, matrix, numRows, numColumns, numRows * numColumns);
 
-  for (int row = 0; row < matrix.numRows; ++row)
+  (*matrix)->numNonzeros = 0;
+  for (int row = 0; row < (*matrix)->numRows; ++row)
   {
-    matrix.rowStarts[row] = matrix.numNonzeros;
-    for (int column = 0; column < matrix.numColumns; ++column)
+    (*matrix)->rowStarts[row] = (*matrix)->numNonzeros;
+    for (int column = 0; column < (*matrix)->numColumns; ++column)
     {
       int x = strtol(string, &end, 10);
       assert(end > string);
       string = end;
 
-      if (x != 0.0)
+      if (x != 0)
       {
-        /* Enlarge array if necessary. */
-        if (matrix.numNonzeros == maxNonzeros)
-        {
-          maxNonzeros *= 2;
-          matrix.entryColumns = (int*) realloc(matrix.entryColumns, maxNonzeros * sizeof(int));
-          matrix.entryValues = (int*) realloc(matrix.entryValues, maxNonzeros * sizeof(int));
-        }
-
-        matrix.entryColumns[matrix.numNonzeros] = column;
-        matrix.entryValues[matrix.numNonzeros] = x;
-        matrix.numNonzeros++;
+        (*matrix)->entryColumns[(*matrix)->numNonzeros] = column;
+        (*matrix)->entryValues[(*matrix)->numNonzeros] = x;
+        (*matrix)->numNonzeros++;
       }
     }
   }
-
-  return matrix;
 }
 
-TU_MATRIX_CHAR stringToMatrixChar(const char* string)
+
+void stringToCharMatrix(TU* tu, TU_CHAR_MATRIX** matrix, const char* string)
 {
-  TU_MATRIX_CHAR matrix;
+  assert(tu);
   char* end;
-  int maxNonzeros = 256;
+  int numRows, numColumns;
 
   /* Read size of matrix. */
-  matrix.numRows = strtol(string, &end, 10);
+  numRows = strtol(string, &end, 10);
   assert(end > string);
   string = end;
-  matrix.numColumns = strtol(string, &end, 10);
+  numColumns = strtol(string, &end, 10);
   assert(end > string);
   string = end;
 
-  matrix.rowStarts = (int*) malloc(matrix.numRows * sizeof(int));
-  matrix.numNonzeros = 0;
-  matrix.entryColumns = (int*) malloc(maxNonzeros * sizeof(int));
-  matrix.entryValues = (char*) malloc(maxNonzeros * sizeof(char));
+  TUcreateCharMatrix(tu, matrix, numRows, numColumns, numRows * numColumns);
 
-  for (int row = 0; row < matrix.numRows; ++row)
+  (*matrix)->numNonzeros = 0;
+  for (int row = 0; row < (*matrix)->numRows; ++row)
   {
-    matrix.rowStarts[row] = matrix.numNonzeros;
-    for (int column = 0; column < matrix.numColumns; ++column)
+    (*matrix)->rowStarts[row] = (*matrix)->numNonzeros;
+    for (int column = 0; column < (*matrix)->numColumns; ++column)
     {
-      char x = strtol(string, &end, 10);
+      int x = strtol(string, &end, 10);
       assert(end > string);
       string = end;
 
-      if (x != 0.0)
+      if (x != 0)
       {
-        /* Enlarge array if necessary. */
-        if (matrix.numNonzeros == maxNonzeros)
-        {
-          maxNonzeros *= 2;
-          matrix.entryColumns = (int*) realloc(matrix.entryColumns, maxNonzeros * sizeof(int));
-          matrix.entryValues = (char*) realloc(matrix.entryValues, maxNonzeros * sizeof(char));
-        }
-
-        matrix.entryColumns[matrix.numNonzeros] = column;
-        matrix.entryValues[matrix.numNonzeros] = x;
-        matrix.numNonzeros++;
+        (*matrix)->entryColumns[(*matrix)->numNonzeros] = column;
+        (*matrix)->entryValues[(*matrix)->numNonzeros] = x;
+        (*matrix)->numNonzeros++;
       }
     }
   }
-
-  return matrix;
 }

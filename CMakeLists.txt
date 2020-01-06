@@ -47,6 +47,7 @@ add_library(tu
   src/tu/matroid_decomposition.cpp
   src/tu/matroid_graph.cpp
   src/tu/nested_minor_sequence.cpp
+  src/tu/regular.c
   src/tu/separation.cpp
   src/tu/total_unimodularity.cpp
   src/tu/unimodularity.cpp

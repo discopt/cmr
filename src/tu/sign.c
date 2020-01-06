@@ -2,6 +2,7 @@
 #include "sign_internal.h"
 #include "matrix_internal.h"
 #include "one_sum.h"
+#include "env_internal.h"
 
 #include <assert.h>
 #include <stdlib.h>
@@ -18,18 +19,13 @@ typedef struct
   char targetValue; /**< Entry in current row if a target node, and 0 otherwise. */
 } GRAPH_NODE;
 
-char signSequentiallyConnected(
-  TU* tu,
-  TU_MATRIX_CHAR* matrix,
-  TU_MATRIX_CHAR* transpose,
-  bool change,
-  TU_SUBMATRIX** submatrix
-  )
+char signSequentiallyConnected(TU* tu, TU_CHAR_MATRIX* matrix, TU_CHAR_MATRIX* transpose,
+  bool change, TU_SUBMATRIX** submatrix)
 {
   bool matrixChanged = false;
   
-  assert(TUcheckMatrixTransposeChar(matrix, transpose));
-  assert(TUisTernaryChar(matrix, NULL));
+  assert(TUcheckCharMatrixTranspose(matrix, transpose));
+  assert(TUisTernaryChar(tu, matrix, NULL));
 
   /* If we have more rows than columns, we work with the transpose. */
   if (matrix->numRows > matrix->numColumns)
@@ -52,10 +48,13 @@ char signSequentiallyConnected(
 
   const int firstRowNode = matrix->numColumns;
 
-  GRAPH_NODE* graphNodes = (GRAPH_NODE*) malloc((matrix->numColumns + matrix->numRows) * sizeof(GRAPH_NODE));
-  int* bfsQueue = (int*) malloc((matrix->numColumns + matrix->numRows) * sizeof(int));
+  GRAPH_NODE* graphNodes = NULL;
+  int* bfsQueue = NULL;
   int bfsQueueBegin = 0;
   int bfsQueueEnd = 0;
+
+  TUallocStackArray(tu, &graphNodes, matrix->numColumns + matrix->numRows);
+  TUallocStackArray(tu, &bfsQueue, matrix->numColumns + matrix->numRows);
 
   /* Main loop iterates over the rows. */
   for (int row = 1; row < matrix->numRows; ++row)
@@ -148,7 +147,7 @@ char signSequentiallyConnected(
                 {
                   int i = 1;
                   int j = 1;
-                  TUcreateSubmatrix(submatrix, length/2, length/2);
+                  TUcreateSubmatrix(tu, submatrix, length/2, length/2);
                   pathNode = c;
                   (*submatrix)->columns[0] = c;
                   (*submatrix)->rows[0] = row;
@@ -178,8 +177,8 @@ char signSequentiallyConnected(
                 }
                 else
                 {
-                  free(bfsQueue);
-                  free(graphNodes);
+                  TUfreeStackArray(tu, &bfsQueue);
+                  TUfreeStackArray(tu, &graphNodes);
                   return 'm';
                 }
               }
@@ -253,8 +252,8 @@ char signSequentiallyConnected(
   }
 #endif
 
-  free(bfsQueue);
-  free(graphNodes);
+  TUfreeStackArray(tu, &bfsQueue);
+  TUfreeStackArray(tu, &graphNodes);
 
   return matrixChanged ? 'm' : 0;
 }
@@ -267,7 +266,7 @@ char signSequentiallyConnected(
 
 bool signDouble(
   TU* tu,                   /**< TU environment. */
-  TU_MATRIX_DOUBLE* matrix, /**< Sparse double matrix. */
+  TU_DOUBLE_MATRIX* matrix, /**< Sparse double matrix. */
   bool change,              /**< Whether the signs of \p matrix shall be modified. */
   TU_SUBMATRIX** submatrix  /**< If not \c NULL, a submatrix with bad determinant is stored. */
 )
@@ -276,7 +275,7 @@ bool signDouble(
   int numComponents;
   TU_ONESUM_COMPONENT* components;
 
-  assert(TUisTernaryDouble(matrix, 0.1, NULL));
+  assert(TUisTernaryDouble(tu, matrix, 0.1, NULL));
 
 #ifdef DEBUG_SIGN
   printf("sign:\n");
@@ -296,8 +295,8 @@ bool signDouble(
     printf("-> Component %d of size %dx%d\n", comp, components[comp].matrix.numRows,
       components[comp].matrix.numColumns);
 #endif
-    char modified = signSequentiallyConnected(tu, (TU_MATRIX_CHAR*) &components[comp].matrix,
-      (TU_MATRIX_CHAR*) &components[comp].transpose, change, (submatrix && !*submatrix) ? &compSubmatrix : NULL);
+    char modified = signSequentiallyConnected(tu, (TU_CHAR_MATRIX*) &components[comp].matrix,
+      (TU_CHAR_MATRIX*) &components[comp].transpose, change, (submatrix && !*submatrix) ? &compSubmatrix : NULL);
 #ifdef DEBUG_SIGN
     printf("-> Component %d yields: %c\n", comp, modified ? modified : '0');
 #endif
@@ -330,9 +329,9 @@ bool signDouble(
     bool copyTranspose = modified == 't';
 
     /* Either the matrix or its transposed was modified. */
-    TU_MATRIX_CHAR* sourceMatrix = copyTranspose ?
-      (TU_MATRIX_CHAR*) &components[comp].transpose :
-      (TU_MATRIX_CHAR*) &components[comp].matrix;
+    TU_CHAR_MATRIX* sourceMatrix = copyTranspose ?
+      (TU_CHAR_MATRIX*) &components[comp].transpose :
+      (TU_CHAR_MATRIX*) &components[comp].matrix;
 
     /* We have to copy the changes back to the original matrix. */
     for (int sourceRow = 0; sourceRow < sourceMatrix->numRows; ++sourceRow)
@@ -382,22 +381,22 @@ bool signDouble(
 
   for (int c = 0; c < numComponents; ++c)
   {
-    TUclearMatrixChar((TU_MATRIX_CHAR*) &components[c].matrix);
-    TUclearMatrixChar((TU_MATRIX_CHAR*) &components[c].transpose);
-    free(components[c].rowsToOriginal);
-    free(components[c].columnsToOriginal);
+    TUfreeCharMatrix(tu, (TU_CHAR_MATRIX**) &components[c].matrix);
+    TUfreeCharMatrix(tu, (TU_CHAR_MATRIX**) &components[c].transpose);
+    TUfreeBlockArray(tu, &components[c].rowsToOriginal);
+    TUfreeBlockArray(tu, &components[c].columnsToOriginal);
   }
-  free(components);
+  TUfreeBlockArray(tu, &components);
 
   return wasCorrect;
 }
 
-bool TUtestSignDouble(TU* tu, TU_MATRIX_DOUBLE* matrix, TU_SUBMATRIX** submatrix)
+bool TUtestSignDouble(TU* tu, TU_DOUBLE_MATRIX* matrix, TU_SUBMATRIX** submatrix)
 {
   return signDouble(tu, matrix, false, submatrix);
 }
 
-bool TUcorrectSignDouble(TU* tu, TU_MATRIX_DOUBLE* matrix, TU_SUBMATRIX** submatrix)
+bool TUcorrectSignDouble(TU* tu, TU_DOUBLE_MATRIX* matrix, TU_SUBMATRIX** submatrix)
 {
   return signDouble(tu, matrix, true, submatrix);
 }
@@ -410,7 +409,7 @@ bool TUcorrectSignDouble(TU* tu, TU_MATRIX_DOUBLE* matrix, TU_SUBMATRIX** submat
 
 bool signInt(
   TU* tu,                   /**< TU environment. */
-  TU_MATRIX_INT* matrix,    /**< Sparse int matrix. */
+  TU_INT_MATRIX* matrix,    /**< Sparse int matrix. */
   bool change,              /**< Whether the signs of \p matrix shall be modified. */
   TU_SUBMATRIX** submatrix  /**< If not \c NULL, a submatrix with bad determinant is stored. */
 )
@@ -419,7 +418,7 @@ bool signInt(
   int numComponents;
   TU_ONESUM_COMPONENT* components;
 
-  assert(TUisTernaryInt(matrix, NULL));
+  assert(TUisTernaryInt(tu, matrix, NULL));
 
 #ifdef DEBUG_SIGN
   printf("sign:\n");
@@ -439,8 +438,8 @@ bool signInt(
     printf("-> Component %d of size %dx%d\n", comp, components[comp].matrix.numRows,
       components[comp].matrix.numColumns);
 #endif
-    char modified = signSequentiallyConnected(tu, (TU_MATRIX_CHAR*) &components[comp].matrix,
-      (TU_MATRIX_CHAR*) &components[comp].transpose, change, (submatrix &&
+    char modified = signSequentiallyConnected(tu, (TU_CHAR_MATRIX*) &components[comp].matrix,
+      (TU_CHAR_MATRIX*) &components[comp].transpose, change, (submatrix &&
       !*submatrix) ? &compSubmatrix : NULL);
 #ifdef DEBUG_SIGN
     printf("-> Component %d yields: %c\n", comp, modified ? modified : '0');
@@ -474,9 +473,9 @@ bool signInt(
     bool copyTranspose = modified == 't';
 
     /* Either the matrix or its transposed was modified. */
-    TU_MATRIX_CHAR* sourceMatrix = copyTranspose ?
-      (TU_MATRIX_CHAR*) &components[comp].transpose :
-      (TU_MATRIX_CHAR*) &components[comp].matrix;
+    TU_CHAR_MATRIX* sourceMatrix = copyTranspose ?
+      (TU_CHAR_MATRIX*) &components[comp].transpose :
+      (TU_CHAR_MATRIX*) &components[comp].matrix;
 
     /* We have to copy the changes back to the original matrix. */
     for (int sourceRow = 0; sourceRow < sourceMatrix->numRows; ++sourceRow)
@@ -526,22 +525,22 @@ bool signInt(
 
   for (int c = 0; c < numComponents; ++c)
   {
-    TUclearMatrixChar((TU_MATRIX_CHAR*) &components[c].matrix);
-    TUclearMatrixChar((TU_MATRIX_CHAR*) &components[c].transpose);
-    free(components[c].rowsToOriginal);
-    free(components[c].columnsToOriginal);
+    TUfreeCharMatrix(tu, (TU_CHAR_MATRIX**) &components[c].matrix);
+    TUfreeCharMatrix(tu, (TU_CHAR_MATRIX**) &components[c].transpose);
+    TUfreeBlockArray(tu, &components[c].rowsToOriginal);
+    TUfreeBlockArray(tu, &components[c].columnsToOriginal);
   }
-  free(components);
+  TUfreeBlockArray(tu, &components);
 
   return wasCorrect;
 }
 
-bool TUtestSignInt(TU* tu, TU_MATRIX_INT* matrix, TU_SUBMATRIX** submatrix)
+bool TUtestSignInt(TU* tu, TU_INT_MATRIX* matrix, TU_SUBMATRIX** submatrix)
 {
   return signInt(tu, matrix, false, submatrix);
 }
 
-bool TUcorrectSignInt(TU* tu, TU_MATRIX_INT* matrix, TU_SUBMATRIX** submatrix)
+bool TUcorrectSignInt(TU* tu, TU_INT_MATRIX* matrix, TU_SUBMATRIX** submatrix)
 {
   return signInt(tu, matrix, true, submatrix);
 }
@@ -554,7 +553,7 @@ bool TUcorrectSignInt(TU* tu, TU_MATRIX_INT* matrix, TU_SUBMATRIX** submatrix)
 
 bool signChar(
   TU* tu,                   /**< TU environment. */
-  TU_MATRIX_CHAR* matrix,   /**< Sparse char matrix. */
+  TU_CHAR_MATRIX* matrix,   /**< Sparse char matrix. */
   bool change,              /**< Whether the signs of \p matrix shall be modified. */
   TU_SUBMATRIX** submatrix  /**< If not \c NULL, a submatrix with bad determinant is stored. */
 )
@@ -563,7 +562,7 @@ bool signChar(
   int numComponents;
   TU_ONESUM_COMPONENT* components;
 
-  assert(TUisTernaryChar(matrix, NULL));
+  assert(TUisTernaryChar(tu, matrix, NULL));
 
 #ifdef DEBUG_SIGN
   printf("sign:\n");
@@ -583,8 +582,8 @@ bool signChar(
     printf("-> Component %d of size %dx%d\n", comp, components[comp].matrix.numRows,
       components[comp].matrix.numColumns);
 #endif
-    char modified = signSequentiallyConnected(tu, (TU_MATRIX_CHAR*) &components[comp].matrix,
-      (TU_MATRIX_CHAR*) &components[comp].transpose, change, (submatrix && !*submatrix) ? &compSubmatrix : NULL);
+    char modified = signSequentiallyConnected(tu, (TU_CHAR_MATRIX*) &components[comp].matrix,
+      (TU_CHAR_MATRIX*) &components[comp].transpose, change, (submatrix && !*submatrix) ? &compSubmatrix : NULL);
 #ifdef DEBUG_SIGN
     printf("-> Component %d yields: %c\n", comp, modified ? modified : '0');
 #endif
@@ -617,9 +616,9 @@ bool signChar(
     bool copyTranspose = modified == 't';
 
     /* Either the matrix or its transposed was modified. */
-    TU_MATRIX_CHAR* sourceMatrix = copyTranspose ?
-      (TU_MATRIX_CHAR*) &components[comp].transpose :
-      (TU_MATRIX_CHAR*) &components[comp].matrix;
+    TU_CHAR_MATRIX* sourceMatrix = copyTranspose ?
+      (TU_CHAR_MATRIX*) &components[comp].transpose :
+      (TU_CHAR_MATRIX*) &components[comp].matrix;
 
     /* We have to copy the changes back to the original matrix. */
     for (int sourceRow = 0; sourceRow < sourceMatrix->numRows; ++sourceRow)
@@ -669,22 +668,22 @@ bool signChar(
 
   for (int c = 0; c < numComponents; ++c)
   {
-    TUclearMatrixChar((TU_MATRIX_CHAR*) &components[c].matrix);
-    TUclearMatrixChar((TU_MATRIX_CHAR*) &components[c].transpose);
-    free(components[c].rowsToOriginal);
-    free(components[c].columnsToOriginal);
+    TUfreeCharMatrix(tu, (TU_CHAR_MATRIX**) &components[c].matrix);
+    TUfreeCharMatrix(tu, (TU_CHAR_MATRIX**) &components[c].transpose);
+    TUfreeBlockArray(tu, &components[c].rowsToOriginal);
+    TUfreeBlockArray(tu, &components[c].columnsToOriginal);
   }
-  free(components);
+  TUfreeBlockArray(tu, &components);
 
   return wasCorrect;
 }
 
-bool TUtestSignChar(TU* tu, TU_MATRIX_CHAR* matrix, TU_SUBMATRIX** submatrix)
+bool TUtestSignChar(TU* tu, TU_CHAR_MATRIX* matrix, TU_SUBMATRIX** submatrix)
 {
   return signChar(tu, matrix, false, submatrix);
 }
 
-bool TUcorrectSignChar(TU* tu, TU_MATRIX_CHAR* matrix, TU_SUBMATRIX** submatrix)
+bool TUcorrectSignChar(TU* tu, TU_CHAR_MATRIX* matrix, TU_SUBMATRIX** submatrix)
 {
   return signChar(tu, matrix, true, submatrix);
 }

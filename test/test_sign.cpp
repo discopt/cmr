@@ -6,7 +6,9 @@
 TEST(Sign, Change)
 {
   TU* tu;
-  TU_MATRIX_CHAR matrix = stringToMatrixChar("10 10 "
+  TUcreateEnvironment(&tu);
+  TU_CHAR_MATRIX* matrix = NULL;
+  stringToCharMatrix(tu, &matrix, "10 10 "
     "+1 -1  0  0  0  0  0  0  0  0 "
     "-1 +1  0  0  0  0  0  0  0  0 "
     "0   0 +1  0  0  0  0 -1  0  0 "
@@ -18,7 +20,8 @@ TEST(Sign, Change)
     "0   0  0  0  0  0  0  0 +1 -1 "
     "0   0  0  0  0  0  0 -1  0 +1 "
   );
-  TU_MATRIX_CHAR check = stringToMatrixChar("10 10 "
+  TU_CHAR_MATRIX* check = NULL;
+  stringToCharMatrix(tu, &check, "10 10 "
     "+1 -1  0  0  0  0  0  0  0  0 "
     "-1 +1  0  0  0  0  0  0  0  0 "
     "0   0 +1  0  0  0  0 -1  0  0 "
@@ -30,29 +33,29 @@ TEST(Sign, Change)
     "0   0  0  0  0  0  0  0 -1 -1 "
     "0   0  0  0  0  0  0 -1  0 +1 "
   );
-  TU_MATRIX_CHAR checkViolator = stringToMatrixChar("3 3 "
+  TU_CHAR_MATRIX* checkViolator = NULL;
+  stringToCharMatrix(tu, &checkViolator, "3 3 "
     "-1 -1 0 "
     "0 1 -1 "
     "-1 0 1 "
   );
 
-  TUinit(&tu);
   TU_SUBMATRIX* submatrix = NULL;
-  TU_MATRIX_CHAR violator;
+  TU_CHAR_MATRIX* violator = NULL;
 
-  ASSERT_FALSE(TUtestSignChar(tu, &matrix, &submatrix));
+  ASSERT_FALSE(TUtestSignChar(tu, matrix, &submatrix));
   ASSERT_TRUE(submatrix != NULL);
-  TUfilterSubmatrixChar(&matrix, submatrix, &violator);
-  ASSERT_TRUE(TUcheckMatrixEqualChar(&violator, &checkViolator));
-  TUclearMatrixChar(&violator);
-  TUfreeSubmatrix(&submatrix);
+  TUfilterCharSubmatrix(tu, matrix, submatrix, &violator);
+  ASSERT_TRUE(TUcheckCharMatrixEqual(violator, checkViolator));
+  TUfreeCharMatrix(tu, &violator);
+  TUfreeSubmatrix(tu, &submatrix);
 
-  ASSERT_FALSE(TUcorrectSignChar(tu, &matrix, NULL));
-  ASSERT_TRUE(TUcheckMatrixEqualChar(&matrix, &check));
+  ASSERT_FALSE(TUcorrectSignChar(tu, matrix, NULL));
+  ASSERT_TRUE(TUcheckCharMatrixEqual(matrix, check));
 
-  TUclearMatrixChar(&checkViolator);
-  TUclearMatrixChar(&check);
-  TUclearMatrixChar(&matrix);
+  TUfreeCharMatrix(tu, &checkViolator);
+  TUfreeCharMatrix(tu, &check);
+  TUfreeCharMatrix(tu, &matrix);
 
-  TUfree(&tu);
+  TUfreeEnvironment(&tu);
 }

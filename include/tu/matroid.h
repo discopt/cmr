@@ -10,32 +10,75 @@ extern "C" {
 
 typedef enum
 {
-  TU_DEC_IRREGULAR = 0,
-  TU_DEC_GRAPHIC = 1,
-  TU_DEC_COGRAPHIC = 2,
-  TU_DEC_R10 = 3,
-  TU_DEC_ONE_SUM = 4,
-  TU_DEC_TWO_SUM = 5,
-  TU_DEC_THREE_SUM = 6
-} TU_DEC_TYPE;
+  TU_DEC_ONE_SUM = 1,
+  TU_DEC_TWO_SUM = 2,
+  TU_DEC_THREE_SUM = 3,
+  TU_DEC_R10 = 4,
+  TU_DEC_TYPE_MASK = 7,
+  TU_DEC_GRAPHIC = 8,
+  TU_DEC_COGRAPHIC = 16,
+  TU_DEC_REGULAR = 32
+} TU_DEC_FLAGS;
 
-struct TU_DEC_;
-
-typedef struct TU_DEC_ TU_DEC;
+typedef struct _TU_DEC
+{
+  TU_DEC_FLAGS flags; /**< Flags for this tree node. */
+  int numChildren; /**< Number of children of this tree node. */
+  struct _TU_DEC** children; /**< Array with pointers to children of this tree node. */
+  TU_GRAPH *graph; /**< Graph corresponding to this tree node, or \c NULL.  */
+  TU_GRAPH *cograph; /**< Cograph corresponding to this tree node, or \c NULL.  */
+  TU_CHAR_MATRIX* matrix; /**< Binary matrix representing this tree node's matroid. */
+  TU_CHAR_MATRIX* transpose; /**< Transpose of matrix representing this tree node's matroid. */
+  int* rowLabels; /**< Array with row labels. */
+  int* columnLabels; /**< Array with column labels. */
+} TU_DEC;
 
 /**
- * \brief Frees a decomposition tree.
+ * \brief Frees a decomposition tree (including the data of all its nodes.
  */
 TU_EXPORT
 void TUfreeDec(
-  TU_DEC** dec /**< Pointer to decomposition */
+  TU* tu,       /**< TU environment. */
+  TU_DEC** dec  /**< Pointer to decomposition tree. */
 );
 
 /**
- * \brief Returns the type of the root of the decomposition tree.
+ * \brief Returns \c true iff this node is a leaf of the tree.
  */
 TU_EXPORT
-TU_DEC_TYPE TUgetDecType(
+bool TUisDecLeaf(
+  TU_DEC* dec /**< Decomposition tree */
+);
+
+/**
+ * \brief Returns \c true if and only if tree node corresponds to a regular matroid.
+ */
+TU_EXPORT
+bool TUisDecRegular(
+  TU_DEC* dec /**< Decomposition tree */
+);
+
+/**
+ * \brief Returns \c true if and only if tree node corresponds to a graphic matroid.
+ */
+TU_EXPORT
+bool TUisDecGraphic(
+  TU_DEC* dec /**< Decomposition tree */
+);
+
+/**
+ * \brief Returns \c true if and only if tree node corresponds to a cographic matroid.
+ */
+TU_EXPORT
+bool TUisDecCographic(
+  TU_DEC* dec /**< Decomposition tree */
+);
+
+/**
+ * \brief Returns \c k if tree node corresponds to a k-decomposition, and 0 otherwise.
+ */
+TU_EXPORT
+char TUisDecSum(
   TU_DEC* dec /**< Decomposition tree */
 );
 
@@ -55,61 +98,11 @@ int TUgetDecNumColumns(
   TU_DEC* dec /**< Decomposition tree */
 );
 
-/**
- * \brief Returns the sparse matrix associated to this decomposition tree.
- */
-TU_EXPORT
-int TUgetDecMatrix(
-  TU_DEC* dec, /**< Decomposition tree */
-  TU_MATRIX_CHAR* matrix /**< Matrix */
-);
 
 /**
- * \brief Returns the transpose of the matrix associated to this decomposition tree.
- */
-TU_EXPORT
-int TUgetDecTranspose(
-  TU_DEC* dec, /**< Decomposition tree */
-  TU_MATRIX_CHAR* transpose /**< Transpose of matrix */
-);
-
-/**
- * \brief Returns the number of child nodes of the root of this decomposition tree.
- */
-TU_EXPORT
-int TUgetDecNumChildren(
-  TU_DEC* dec /**< Decomposition tree */
-);
-
-/**
- * \brief Returns a child of the root of this decomposition tree.
- * 
- * \p child must be in [0, \ref TUgetDecNumChildren).
- */
-TU_EXPORT
-int TUgetDecChild(
-  TU_DEC* dec, /**< Decomposition tree */
-  int child /**< Index of child. */
-);
-
-/**
- * \brief Returns the row labels of the matrix of this decomposition tree.
- */
-TU_EXPORT
-int* TUgetDecRowLabels(
-  TU_DEC* dec /**< Decomposition tree */
-);
-
-/**
- * \brief Returns the column labels of the matrix of this decomposition tree.
- */
-TU_EXPORT
-int* TUgetDecColumnLabels(
-  TU_DEC* dec /**< Decomposition tree */
-);
-
-/**
- * \brief Returns the rank of the lower-left submatrix of the root of this decomposition tree.
+ * \brief Returns the rank of the lower-left submatrix of this node of the tree.
+ *
+ * Only valid if either flag \ref TU_DEC_TWO_SUM or \ref TU_DEC_THREE_SUM is set.
  */
 TU_EXPORT
 int TUgetDecRankLowerLeft(
@@ -117,12 +110,15 @@ int TUgetDecRankLowerLeft(
 );
 
 /**
- * \brief Returns the rank of the top-right submatrix of the root of this decomposition tree.
+ * \brief Returns the rank of the top-right submatrix of this node of the tree.
+ *
+ * Only valid if either flag \ref TU_DEC_TWO_SUM or \ref TU_DEC_THREE_SUM is set.
  */
 TU_EXPORT
 int TUgetDecRankTopRight(
   TU_DEC* dec /**< Decomposition tree */
 );
+
 
 #ifdef __cplusplus
 }

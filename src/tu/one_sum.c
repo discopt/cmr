@@ -166,7 +166,7 @@ void decomposeOneSum(TU* tu, TU_MATRIX* matrix, size_t matrixType, size_t target
   /* Compute sizes. */
   for (int component = 0; component < countComponents; ++component)
   {
-    TU_MATRIX* compMatrix = &(*components)[component].matrix;
+    TU_MATRIX* compMatrix = (*components)[component].matrix;
     compMatrix->numRows = 0;
     compMatrix->numColumns = 0;
     compMatrix->numNonzeros = 0;
@@ -179,18 +179,18 @@ void decomposeOneSum(TU* tu, TU_MATRIX* matrix, size_t matrixType, size_t target
     assert(component >= 0);
     if (node < firstColumnNode)
     {
-      (*components)[component].matrix.numRows++;
-      (*components)[component].matrix.numNonzeros += end - start;
+      (*components)[component].matrix->numRows++;
+      (*components)[component].matrix->numNonzeros += end - start;
     }
     else
-      (*components)[component].matrix.numColumns++;
+      (*components)[component].matrix->numColumns++;
   }
 
   /* Allocate memory */
   for (int component = 0; component < countComponents; ++component)
   {
-    TU_MATRIX* compMatrix = &(*components)[component].matrix;
-    TU_MATRIX* compTranspose = &(*components)[component].transpose;
+    TU_MATRIX* compMatrix = (*components)[component].matrix;
+    TU_MATRIX* compTranspose = (*components)[component].transpose;
 
     (*components)[component].rowsToOriginal = (int*) malloc(compMatrix->numRows*sizeof(int));
     (*components)[component].columnsToOriginal = (int*) malloc(compMatrix->numColumns*sizeof(int));
@@ -221,7 +221,7 @@ void decomposeOneSum(TU* tu, TU_MATRIX* matrix, size_t matrixType, size_t target
   /* We can now fill the matrices of each component. */
   for (int component = 0; component < countComponents; ++component)
   {
-    TU_MATRIX* compTranspose = &(*components)[component].transpose;
+    TU_MATRIX* compTranspose = (*components)[component].transpose;
 
     /* Compute the slices in the transposed component matrix from the graph. */
     int countNonzeros = 0;
@@ -320,8 +320,8 @@ void decomposeOneSum(TU* tu, TU_MATRIX* matrix, size_t matrixType, size_t target
   /* We now create the row-wise representation from the column-wise one. */
   for (int component = 0; component < countComponents; ++component)
   {
-    TU_MATRIX* compMatrix = &(*components)[component].matrix;
-    TU_MATRIX* compTranspose = &(*components)[component].transpose;
+    TU_MATRIX* compMatrix = (*components)[component].matrix;
+    TU_MATRIX* compTranspose = (*components)[component].transpose;
 
     /* Compute the slices in the component matrix from the graph. */
     int countNonzeros = 0;
