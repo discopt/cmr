@@ -38,15 +38,15 @@ bool TUtestBinaryRegularLabeled(TU* tu, TU_CHAR_MATRIX* matrix, int* rowLabels, 
     NULL, NULL, NULL, NULL);
 
   /* Sort components by number of nonzeros. */
-  TU_ONESUM_COMPONENT** orderedComponents = 
-    (TU_ONESUM_COMPONENT**) malloc( numComponents * sizeof(TU_ONESUM_COMPONENT*) );
+  TU_ONESUM_COMPONENT** orderedComponents = NULL;
+  TUallocStackArray(tu, &orderedComponents, numComponents);
   for (int comp = 0; comp < numComponents; ++comp)
     orderedComponents[comp] = &components[comp];
   qsort(orderedComponents, numComponents, sizeof(TU_ONESUM_COMPONENT*), &compareComponents);
 
   /* Test regularity for each component. */
 
-  if (decomposition)
+  if (numComponents > 0 && decomposition)
   {
     TUallocBlock(tu, decomposition);
     (*decomposition)->numChildren = numComponents;
@@ -60,6 +60,9 @@ bool TUtestBinaryRegularLabeled(TU* tu, TU_CHAR_MATRIX* matrix, int* rowLabels, 
     for (int column = 0; column < (*decomposition)->matrix->numColumns; ++column)
       (*decomposition)->columnLabels[column] = columnLabels[column];
     (*decomposition)->flags = TU_DEC_ONE_SUM;
+
+    TUcopyCharMatrix(tu, matrix, &(*decomposition)->matrix);
+    (*decomposition)->transpose = NULL;
   }
 
   for (int i = 0; i < numComponents; ++i)
@@ -86,12 +89,19 @@ bool TUtestBinaryRegularLabeled(TU* tu, TU_CHAR_MATRIX* matrix, int* rowLabels, 
   }
 
 cleanup:
-  free(orderedComponents);
+  TUfreeStackArray(tu, &orderedComponents);
 
   for (int comp = 0; comp < numComponents; ++comp)
   {
-    TUfreeCharMatrix(tu, (TU_CHAR_MATRIX**) &components[comp].matrix);
-    TUfreeCharMatrix(tu, (TU_CHAR_MATRIX**) &components[comp].transpose);
+    if (decomposition)
+    {
+//       (*decomposition)->
+    }
+    else
+    {
+      TUfreeCharMatrix(tu, (TU_CHAR_MATRIX**) &components[comp].matrix);
+      TUfreeCharMatrix(tu, (TU_CHAR_MATRIX**) &components[comp].transpose);
+    }
     TUfreeBlockArray(tu, &components[comp].rowsToOriginal);
     TUfreeBlockArray(tu, &components[comp].columnsToOriginal);
   }

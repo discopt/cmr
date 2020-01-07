@@ -29,6 +29,7 @@ void _TUallocBlock(TU* tu, void** ptr, size_t size)
 {
   assert(tu);
   assert(ptr);
+  assert(*ptr == NULL);
   *ptr = malloc(size);
 }
 
@@ -45,6 +46,7 @@ void _TUallocBlockArray(TU* tu, void** ptr, size_t size, size_t length)
 {
   assert(tu);
   assert(ptr);
+  assert(*ptr == NULL);
   *ptr = malloc(size * length);
 }
 
@@ -63,6 +65,7 @@ void _TUallocStack(TU* tu, void** ptr, size_t size)
 {
   assert(tu);
   assert(ptr);
+  assert(*ptr == NULL);
   *ptr = malloc(size);
 }
 
@@ -79,6 +82,7 @@ void _TUallocStackArray(TU* tu, void** ptr, size_t size, size_t length)
 {
   assert(tu);
   assert(ptr);
+  assert(*ptr == NULL);
   *ptr = malloc(size * length);
 }
 

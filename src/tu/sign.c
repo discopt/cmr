@@ -23,7 +23,7 @@ char signSequentiallyConnected(TU* tu, TU_CHAR_MATRIX* matrix, TU_CHAR_MATRIX* t
   bool change, TU_SUBMATRIX** submatrix)
 {
   bool matrixChanged = false;
-  
+
   assert(TUcheckCharMatrixTranspose(matrix, transpose));
   assert(TUisTernaryChar(tu, matrix, NULL));
 
@@ -61,7 +61,7 @@ char signSequentiallyConnected(TU* tu, TU_CHAR_MATRIX* matrix, TU_CHAR_MATRIX* t
   {
 #ifdef DEBUG_SIGN
     printf("  Before processing row %d:\n", row);
-    TUprintSparseAsDenseChar(stdout, matrix, ' ', true);
+    TUprintCharMatrixDense(stdout, matrix, ' ', true);
 #endif
 
     for (int v = 0; v < matrix->numColumns + matrix->numRows; ++v)
@@ -248,7 +248,7 @@ char signSequentiallyConnected(TU* tu, TU_CHAR_MATRIX* matrix, TU_CHAR_MATRIX* t
   if (change)
   {
     printf("  After signing:\n");
-    TUprintSparseAsDenseChar(stdout, matrix, ' ', true);
+    TUprintCharMatrixDense(stdout, matrix, ' ', true);
   }
 #endif
 
@@ -273,13 +273,13 @@ bool signDouble(
 {
   bool wasCorrect = true;
   int numComponents;
-  TU_ONESUM_COMPONENT* components;
+  TU_ONESUM_COMPONENT* components = NULL;
 
   assert(TUisTernaryDouble(tu, matrix, 0.1, NULL));
 
 #ifdef DEBUG_SIGN
   printf("sign:\n");
-  TUprintSparseAsDenseDouble(stdout, matrix, ' ', true);
+  TUprintDoubleMatrixDense(stdout, matrix, ' ', true);
 #endif
 
   /* Decompose into 1-connected components. */
@@ -292,11 +292,11 @@ bool signDouble(
     TU_SUBMATRIX* compSubmatrix = NULL;
 
 #ifdef DEBUG_SIGN
-    printf("-> Component %d of size %dx%d\n", comp, components[comp].matrix.numRows,
-      components[comp].matrix.numColumns);
+    printf("-> Component %d of size %dx%d\n", comp, components[comp].matrix->numRows,
+      components[comp].matrix->numColumns);
 #endif
-    char modified = signSequentiallyConnected(tu, (TU_CHAR_MATRIX*) &components[comp].matrix,
-      (TU_CHAR_MATRIX*) &components[comp].transpose, change, (submatrix && !*submatrix) ? &compSubmatrix : NULL);
+    char modified = signSequentiallyConnected(tu, (TU_CHAR_MATRIX*) components[comp].matrix,
+      (TU_CHAR_MATRIX*) components[comp].transpose, change, (submatrix && !*submatrix) ? &compSubmatrix : NULL);
 #ifdef DEBUG_SIGN
     printf("-> Component %d yields: %c\n", comp, modified ? modified : '0');
 #endif
@@ -373,7 +373,7 @@ bool signDouble(
   if (!wasCorrect && change)
   {
     printf("Modified original matrix:\n");
-    TUprintSparseAsDenseChar(stdout, matrix, ' ', true);
+    TUprintDoubleMatrixDense(stdout, matrix, ' ', true);
   }
 #endif
 
@@ -422,7 +422,7 @@ bool signInt(
 
 #ifdef DEBUG_SIGN
   printf("sign:\n");
-  TUprintSparseAsDenseInt(stdout, matrix, ' ', true);
+  TUprintIntMatrixDense(stdout, matrix, ' ', true);
 #endif
 
   /* Decompose into 1-connected components. */
@@ -435,11 +435,11 @@ bool signInt(
     TU_SUBMATRIX* compSubmatrix = NULL;
 
 #ifdef DEBUG_SIGN
-    printf("-> Component %d of size %dx%d\n", comp, components[comp].matrix.numRows,
-      components[comp].matrix.numColumns);
+    printf("-> Component %d of size %dx%d\n", comp, components[comp].matrix->numRows,
+      components[comp].matrix->numColumns);
 #endif
-    char modified = signSequentiallyConnected(tu, (TU_CHAR_MATRIX*) &components[comp].matrix,
-      (TU_CHAR_MATRIX*) &components[comp].transpose, change, (submatrix &&
+    char modified = signSequentiallyConnected(tu, (TU_CHAR_MATRIX*) components[comp].matrix,
+      (TU_CHAR_MATRIX*) components[comp].transpose, change, (submatrix &&
       !*submatrix) ? &compSubmatrix : NULL);
 #ifdef DEBUG_SIGN
     printf("-> Component %d yields: %c\n", comp, modified ? modified : '0');
@@ -474,8 +474,8 @@ bool signInt(
 
     /* Either the matrix or its transposed was modified. */
     TU_CHAR_MATRIX* sourceMatrix = copyTranspose ?
-      (TU_CHAR_MATRIX*) &components[comp].transpose :
-      (TU_CHAR_MATRIX*) &components[comp].matrix;
+      (TU_CHAR_MATRIX*) components[comp].transpose :
+      (TU_CHAR_MATRIX*) components[comp].matrix;
 
     /* We have to copy the changes back to the original matrix. */
     for (int sourceRow = 0; sourceRow < sourceMatrix->numRows; ++sourceRow)
@@ -517,7 +517,7 @@ bool signInt(
   if (!wasCorrect && change)
   {
     printf("Modified original matrix:\n");
-    TUprintSparseAsDenseInt(stdout, matrix, ' ', true);
+    TUprintIntMatrixDense(stdout, matrix, ' ', true);
   }
 #endif
 
@@ -560,13 +560,13 @@ bool signChar(
 {
   bool wasCorrect = true;
   int numComponents;
-  TU_ONESUM_COMPONENT* components;
+  TU_ONESUM_COMPONENT* components = NULL;
 
   assert(TUisTernaryChar(tu, matrix, NULL));
 
 #ifdef DEBUG_SIGN
   printf("sign:\n");
-  TUprintSparseAsDenseChar(stdout, matrix, ' ', true);
+  TUprintCharMatrixDense(stdout, matrix, ' ', true);
 #endif
 
   /* Decompose into 1-connected components. */
@@ -579,11 +579,11 @@ bool signChar(
     TU_SUBMATRIX* compSubmatrix = NULL;
 
 #ifdef DEBUG_SIGN
-    printf("-> Component %d of size %dx%d\n", comp, components[comp].matrix.numRows,
-      components[comp].matrix.numColumns);
+    printf("-> Component %d of size %dx%d\n", comp, components[comp].matrix->numRows,
+      components[comp].matrix->numColumns);
 #endif
-    char modified = signSequentiallyConnected(tu, (TU_CHAR_MATRIX*) &components[comp].matrix,
-      (TU_CHAR_MATRIX*) &components[comp].transpose, change, (submatrix && !*submatrix) ? &compSubmatrix : NULL);
+    char modified = signSequentiallyConnected(tu, (TU_CHAR_MATRIX*) components[comp].matrix,
+      (TU_CHAR_MATRIX*) components[comp].transpose, change, (submatrix && !*submatrix) ? &compSubmatrix : NULL);
 #ifdef DEBUG_SIGN
     printf("-> Component %d yields: %c\n", comp, modified ? modified : '0');
 #endif
@@ -617,8 +617,8 @@ bool signChar(
 
     /* Either the matrix or its transposed was modified. */
     TU_CHAR_MATRIX* sourceMatrix = copyTranspose ?
-      (TU_CHAR_MATRIX*) &components[comp].transpose :
-      (TU_CHAR_MATRIX*) &components[comp].matrix;
+      (TU_CHAR_MATRIX*) components[comp].transpose :
+      (TU_CHAR_MATRIX*) components[comp].matrix;
 
     /* We have to copy the changes back to the original matrix. */
     for (int sourceRow = 0; sourceRow < sourceMatrix->numRows; ++sourceRow)
@@ -660,7 +660,7 @@ bool signChar(
   if (!wasCorrect && change)
   {
     printf("Modified original matrix:\n");
-    TUprintSparseAsDenseChar(stdout, matrix, ' ', true);
+    TUprintCharMatrixDense(stdout, matrix, ' ', true);
   }
 #endif
 

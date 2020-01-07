@@ -69,7 +69,27 @@ void TUfreeDoubleMatrix(
   TU* tu,                   /**< TU environment. */
   TU_DOUBLE_MATRIX** matrix /**< Double matrix */
 );
-  
+
+/**
+ * \brief Copy a double matrix.
+ */
+TU_EXPORT
+void TUcopyDoubleMatrix(
+  TU* tu,                   /**< TU environment. */
+  TU_DOUBLE_MATRIX* matrix, /**< Given matrix. */
+  TU_DOUBLE_MATRIX** result /**< Pointer to created copy of matrix. */
+);
+
+/**
+ * \brief Create the transposed double matrix.
+ */
+TU_EXPORT
+void TUtransposeDoubleMatrix(
+  TU* tu,                   /**< TU environment. */
+  TU_DOUBLE_MATRIX* matrix, /**< Given matrix. */
+  TU_DOUBLE_MATRIX** result /**< Pointer to created transpose of matrix. */
+);
+
 /**
  * \brief Row-wise representation of sparse int matrix.
  */
@@ -133,6 +153,26 @@ void TUfreeIntMatrix(
 );
 
 /**
+ * \brief Copy an int matrix.
+ */
+TU_EXPORT
+void TUcopyIntMatrix(
+  TU* tu,                 /**< TU environment. */
+  TU_INT_MATRIX* matrix,  /**< Given matrix. */
+  TU_INT_MATRIX** result  /**< Pointer to created copy of matrix. */
+);
+
+/**
+ * \brief Create the transposed int matrix.
+ */
+TU_EXPORT
+void TUtransposeIntMatrix(
+  TU* tu,                   /**< TU environment. */
+  TU_INT_MATRIX* matrix, /**< Given matrix. */
+  TU_INT_MATRIX** result /**< Pointer to created transpose of matrix. */
+);
+
+/**
  * \brief Row-wise representation of sparse char matrix
  */
 
@@ -193,6 +233,26 @@ TU_EXPORT
 void TUfreeCharMatrix(
   TU* tu,                 /**< TU environment. */
   TU_CHAR_MATRIX** matrix /**< Char matrix */
+);
+
+/**
+ * \brief Copy a char matrix.
+ */
+TU_EXPORT
+void TUcopyCharMatrix(
+  TU* tu,                 /**< TU environment. */
+  TU_CHAR_MATRIX* matrix, /**< Given matrix. */
+  TU_CHAR_MATRIX** result /**< Pointer to created copy of matrix. */
+);
+
+/**
+ * \brief Create the transposed char matrix.
+ */
+TU_EXPORT
+void TUtransposeCharMatrix(
+  TU* tu,                   /**< TU environment. */
+  TU_CHAR_MATRIX* matrix, /**< Given matrix. */
+  TU_CHAR_MATRIX** result /**< Pointer to created transpose of matrix. */
 );
 
 /**
@@ -278,11 +338,10 @@ bool TUcheckDoubleMatrixTranspose(
  */
 
 TU_EXPORT
-bool TUcheckMatrixTransposeInt(
+bool TUcheckIntMatrixTranspose(
   TU_INT_MATRIX* matrix1, /**< First matrix */
   TU_INT_MATRIX* matrix2  /**< Second matrix */
 );
-
 
 /**
  * \brief Checks whether two char matrices are transposes of each other.
@@ -381,7 +440,6 @@ void TUfreeSubmatrix(
   TU* tu,                   /**< TU environment */
   TU_SUBMATRIX** submatrix  /**< Pointer to submatrix */
 );
-
 
 /**
  * \brief Creates a submatrix of a char matrix explicitly.

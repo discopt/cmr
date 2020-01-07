@@ -3,6 +3,89 @@
 #include "common.h"
 #include <tu/matrix.h>
 
+TEST(Matrix, Transpose)
+{
+  TU* tu = NULL;
+  TUcreateEnvironment(&tu);
+
+  /* Double matrices. */
+  {
+    TU_DOUBLE_MATRIX* A = NULL;
+    stringToDoubleMatrix(tu, &A, "4 5 "
+      "1 2 3 0 0 "
+      "0 4 5 0 6 "
+      "7 0 0 8 0 "
+      "0 0 9 0 0 "
+    );
+
+    TU_DOUBLE_MATRIX* B = NULL;
+    stringToDoubleMatrix(tu, &B, "5 4 "
+      "1 0 7 0 "
+      "2 4 0 0 "
+      "3 5 0 9 "
+      "0 0 8 0 "
+      "0 6 0 0 "
+    );
+
+    ASSERT_TRUE(TUcheckDoubleMatrixTranspose(A, B));
+
+    TUfreeDoubleMatrix(tu, &B);
+    TUfreeDoubleMatrix(tu, &A);
+  }
+
+  /* Int matrices. */
+  {
+    TU_INT_MATRIX* A = NULL;
+    stringToIntMatrix(tu, &A, "4 5 "
+      "1 2 3 0 0 "
+      "0 4 5 0 6 "
+      "7 0 0 8 0 "
+      "0 0 9 0 0 "
+    );
+
+    TU_INT_MATRIX* B = NULL;
+    stringToIntMatrix(tu, &B, "5 4 "
+      "1 0 7 0 "
+      "2 4 0 0 "
+      "3 5 0 9 "
+      "0 0 8 0 "
+      "0 6 0 0 "
+    );
+
+    ASSERT_TRUE(TUcheckIntMatrixTranspose(A, B));
+
+    TUfreeIntMatrix(tu, &B);
+    TUfreeIntMatrix(tu, &A);
+  }
+
+  /* Char matrices. */
+  {
+    TU_CHAR_MATRIX* A = NULL;
+    stringToCharMatrix(tu, &A, "4 5 "
+      "1 2 3 0 0 "
+      "0 4 5 0 6 "
+      "7 0 0 8 0 "
+      "0 0 9 0 0 "
+    );
+
+    TU_CHAR_MATRIX* B = NULL;
+    stringToCharMatrix(tu, &B, "5 4 "
+      "1 0 7 0 "
+      "2 4 0 0 "
+      "3 5 0 9 "
+      "0 0 8 0 "
+      "0 6 0 0 "
+    );
+
+    ASSERT_TRUE(TUcheckCharMatrixTranspose(A, B));
+
+    TUfreeCharMatrix(tu, &B);
+    TUfreeCharMatrix(tu, &A);
+  }
+  
+  TUfreeEnvironment(&tu);
+}
+
 TEST(Matrix, Submatrix)
 {
   TU* tu = NULL;

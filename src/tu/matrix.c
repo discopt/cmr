@@ -4,73 +4,159 @@
 #include <stdlib.h>
 #include <math.h>
 
+#include "env_internal.h"
+
 void TUcreateDoubleMatrix(TU* tu, TU_DOUBLE_MATRIX** matrix, int numRows, int numColumns, 
   int numNonzeros)
 {
   assert(matrix);
+  assert(*matrix == NULL);
+
   TUallocBlock(tu, matrix);
   (*matrix)->numRows = numRows;
   (*matrix)->numColumns = numColumns;
   (*matrix)->numNonzeros = numNonzeros;
-  TUallocBlockArray(tu, &(*matrix)->rowStarts, numRows);
+  (*matrix)->rowStarts = NULL;
+  (*matrix)->entryColumns = NULL;
+  (*matrix)->entryValues = NULL;
+  TUallocBlockArray(tu, &(*matrix)->rowStarts, numRows + 1);
   if (numNonzeros > 0)
   {
     TUallocBlockArray(tu, &(*matrix)->entryColumns, numNonzeros);
     TUallocBlockArray(tu, &(*matrix)->entryValues, numNonzeros);
-  }
-  else
-  {
-    (*matrix)->entryColumns = NULL;
-    (*matrix)->entryValues = NULL;
   }
 }
 
 void TUfreeDoubleMatrix(TU* tu, TU_DOUBLE_MATRIX** matrix)
 {
   assert(matrix);
+  assert(*matrix);
+  assert((*matrix)->rowStarts);
+  assert((*matrix)->numNonzeros == 0 || (*matrix)->entryColumns);
+  assert((*matrix)->numNonzeros == 0 || (*matrix)->entryValues);
 
-  TUfreeBlock(tu, matrix);
-  if ((*matrix)->rowStarts)
-    TUfreeBlockArray(tu, &(*matrix)->rowStarts);
+  TUfreeBlockArray(tu, &(*matrix)->rowStarts);
   if ((*matrix)->numNonzeros > 0)
   {
     TUfreeBlockArray(tu, &(*matrix)->entryColumns);
     TUfreeBlockArray(tu, &(*matrix)->entryValues);
   }
+  TUfreeBlock(tu, matrix);
+}
+
+void TUcopyDoubleMatrix(TU* tu, TU_DOUBLE_MATRIX* matrix, TU_DOUBLE_MATRIX** result)
+{
+  assert(tu);
+  assert(matrix);
+  assert(result);
+  assert(*result == NULL);
+
+  TUcreateDoubleMatrix(tu, result, matrix->numRows, matrix->numColumns, matrix->numNonzeros);
+  for (int row = 0; row < matrix->numRows; ++row)
+    (*result)->rowStarts[row] = matrix->rowStarts[row];
+  (*result)->rowStarts[matrix->numRows] = matrix->numNonzeros;
+  for (int entry = 0; entry < matrix->numNonzeros; ++entry)
+  {
+    (*result)->entryColumns[entry] = matrix->entryColumns[entry];
+    (*result)->entryValues[entry] = matrix->entryValues[entry];
+  }
+}
+
+void TUtransposeDoubleMatrix(TU* tu, TU_DOUBLE_MATRIX* matrix, TU_DOUBLE_MATRIX** result)
+{
+  assert(tu);
+  assert(matrix);
+  assert(result);
+  assert(*result == NULL);
+  assert(TUcheckDoubleMatrixSorted(matrix));
+
+  TUcreateDoubleMatrix(tu, result, matrix->numColumns, matrix->numRows, matrix->numNonzeros);
+
+  /* Count number of nonzeros in each column, storing in the next entry. */
+  for (int c = 0; c <= matrix->numColumns; ++c)
+    (*result)->rowStarts[c] = 0;
+  for (int e = 0; e < matrix->numNonzeros; ++e)
+    (*result)->rowStarts[matrix->entryColumns[e] + 1]++;
+
+  /* Compute start indices for columns. */
+  for (int c = 1; c < matrix->numColumns; ++c)
+    (*result)->rowStarts[c] += (*result)->rowStarts[c-1];
+
+  /* Create nonzeros. */
+  for (int row = 0; row < matrix->numRows; ++row)
+  {
+    int begin = matrix->rowStarts[row];
+    int end = row + 1 < matrix->numRows ? matrix->rowStarts[row+1] : matrix->numNonzeros;
+    for (int entry = begin; entry < end; ++entry)
+    {
+      int column = matrix->entryColumns[entry];
+      int transEntry = (*result)->rowStarts[column];
+      (*result)->entryColumns[transEntry] = row;
+      (*result)->entryValues[transEntry] = matrix->entryValues[entry];
+      (*result)->rowStarts[column]++;
+    }
+  }
+
+  /* We shifted rowStarts of *result, so we shift it back. */
+  for (int c = matrix->numColumns; c > 0; --c)
+    (*result)->rowStarts[c] = (*result)->rowStarts[c-1];
+  (*result)->rowStarts[0] = 0;
 }
 
 void TUcreateIntMatrix(TU* tu, TU_INT_MATRIX** matrix, int numRows, int numColumns, 
   int numNonzeros)
 {
   assert(matrix);
+  assert(*matrix == NULL);
+
   TUallocBlock(tu, matrix);
   (*matrix)->numRows = numRows;
   (*matrix)->numColumns = numColumns;
   (*matrix)->numNonzeros = numNonzeros;
-  TUallocBlockArray(tu, &(*matrix)->rowStarts, numRows);
+  (*matrix)->rowStarts = NULL;
+  (*matrix)->entryColumns = NULL;
+  (*matrix)->entryValues = NULL;
+  TUallocBlockArray(tu, &(*matrix)->rowStarts, numRows + 1);
   if (numNonzeros > 0)
   {
     TUallocBlockArray(tu, &(*matrix)->entryColumns, numNonzeros);
     TUallocBlockArray(tu, &(*matrix)->entryValues, numNonzeros);
-  }
-  else
-  {
-    (*matrix)->entryColumns = NULL;
-    (*matrix)->entryValues = NULL;
   }
 }
 
 void TUfreeIntMatrix(TU* tu, TU_INT_MATRIX** matrix)
 {
   assert(matrix);
+  assert(*matrix);
+  assert((*matrix)->rowStarts);
+  assert((*matrix)->numNonzeros == 0 || (*matrix)->entryColumns);
+  assert((*matrix)->numNonzeros == 0 || (*matrix)->entryValues);
 
-  TUfreeBlock(tu, matrix);
-  if ((*matrix)->rowStarts)
-    TUfreeBlockArray(tu, &(*matrix)->rowStarts);
+  TUfreeBlockArray(tu, &(*matrix)->rowStarts);
   if ((*matrix)->numNonzeros > 0)
   {
     TUfreeBlockArray(tu, &(*matrix)->entryColumns);
     TUfreeBlockArray(tu, &(*matrix)->entryValues);
+  }
+  TUfreeBlock(tu, matrix);
+}
+
+
+void TUcopyIntMatrix(TU* tu, TU_INT_MATRIX* matrix, TU_INT_MATRIX** result)
+{
+  assert(tu);
+  assert(matrix);
+  assert(result);
+  assert(*result == NULL);
+
+  TUcreateIntMatrix(tu, result, matrix->numRows, matrix->numColumns, matrix->numNonzeros);
+  for (int row = 0; row < matrix->numRows; ++row)
+    (*result)->rowStarts[row] = matrix->rowStarts[row];
+  (*result)->rowStarts[matrix->numRows] = matrix->numNonzeros;
+  for (int entry = 0; entry < matrix->numNonzeros; ++entry)
+  {
+    (*result)->entryColumns[entry] = matrix->entryColumns[entry];
+    (*result)->entryValues[entry] = matrix->entryValues[entry];
   }
 }
 
@@ -78,36 +164,58 @@ void TUcreateCharMatrix(TU* tu, TU_CHAR_MATRIX** matrix, int numRows, int numCol
   int numNonzeros)
 {
   assert(matrix);
+  assert(*matrix == NULL);
+
   TUallocBlock(tu, matrix);
   (*matrix)->numRows = numRows;
   (*matrix)->numColumns = numColumns;
   (*matrix)->numNonzeros = numNonzeros;
-  TUallocBlockArray(tu, &(*matrix)->rowStarts, numRows);
+  (*matrix)->rowStarts = NULL;
+  (*matrix)->entryColumns = NULL;
+  (*matrix)->entryValues = NULL;
+  TUallocBlockArray(tu, &(*matrix)->rowStarts, numRows + 1);
   if (numNonzeros > 0)
   {
     TUallocBlockArray(tu, &(*matrix)->entryColumns, numNonzeros);
     TUallocBlockArray(tu, &(*matrix)->entryValues, numNonzeros);
-  }
-  else
-  {
-    (*matrix)->entryColumns = NULL;
-    (*matrix)->entryValues = NULL;
   }
 }
 
 void TUfreeCharMatrix(TU* tu, TU_CHAR_MATRIX** matrix)
 {
   assert(matrix);
+  assert(*matrix);
+  assert((*matrix)->rowStarts);
+  assert((*matrix)->numNonzeros == 0 || (*matrix)->entryColumns);
+  assert((*matrix)->numNonzeros == 0 || (*matrix)->entryValues);
 
-  TUfreeBlock(tu, matrix);
-  if ((*matrix)->rowStarts)
-    TUfreeBlockArray(tu, &(*matrix)->rowStarts);
+  TUfreeBlockArray(tu, &(*matrix)->rowStarts);
   if ((*matrix)->numNonzeros > 0)
   {
     TUfreeBlockArray(tu, &(*matrix)->entryColumns);
     TUfreeBlockArray(tu, &(*matrix)->entryValues);
   }
+  TUfreeBlock(tu, matrix);
 }
+
+void TUcopyCharMatrix(TU* tu, TU_CHAR_MATRIX* matrix, TU_CHAR_MATRIX** result)
+{
+  assert(tu);
+  assert(matrix);
+  assert(result);
+  assert(*result == NULL);
+
+  TUcreateCharMatrix(tu, result, matrix->numRows, matrix->numColumns, matrix->numNonzeros);
+  for (int row = 0; row < matrix->numRows; ++row)
+    (*result)->rowStarts[row] = matrix->rowStarts[row];
+  (*result)->rowStarts[matrix->numRows] = matrix->numNonzeros;
+  for (int entry = 0; entry < matrix->numNonzeros; ++entry)
+  {
+    (*result)->entryColumns[entry] = matrix->entryColumns[entry];
+    (*result)->entryValues[entry] = matrix->entryValues[entry];
+  }
+}
+
 
 void TUprintDoubleMatrixDense(FILE* stream, TU_DOUBLE_MATRIX* sparse, char zeroChar, bool header)
 {
@@ -339,78 +447,8 @@ bool TUcheckCharMatrixEqual(TU_CHAR_MATRIX* matrix1, TU_CHAR_MATRIX* matrix2)
 
 bool TUcheckDoubleMatrixTranspose(TU_DOUBLE_MATRIX* matrix1, TU_DOUBLE_MATRIX* matrix2)
 {
-  assert(matrix1 != NULL);
-  assert(matrix2 != NULL);
+  bool result = true;
 
-  if (matrix1->numRows != matrix2->numColumns)
-    return false;
-  if (matrix1->numColumns != matrix2->numRows)
-    return false;
-  if (matrix1->numNonzeros != matrix2->numNonzeros)
-    return false;
-
-  int* currentColumnEntries = (int*) malloc(matrix1->numColumns * sizeof(int) );
-  for (int column = 0; column < matrix2->numRows; ++column)
-    currentColumnEntries[column] = matrix2->rowStarts[column];
-
-  for (int row = 0; row < matrix1->numRows; ++row)
-  {
-    int begin = matrix1->rowStarts[row];
-    int end = row + 1 < matrix1->numRows ? matrix1->rowStarts[row + 1] : matrix1->numNonzeros;
-    for (int entry = begin; entry < end; ++entry)
-    {
-      int column = matrix1->entryColumns[entry];
-      int entry2 = currentColumnEntries[column];
-      if (matrix2->entryColumns[entry2] != row)
-        return false;
-      if (matrix2->entryValues[entry2] != matrix1->entryValues[entry])
-        return false;
-    }
-  }
-
-  free(currentColumnEntries);
-
-  return true;
-}
-
-bool TUcheckIntMatrixTranspose(TU_INT_MATRIX* matrix1, TU_INT_MATRIX* matrix2)
-{
-  assert(matrix1 != NULL);
-  assert(matrix2 != NULL);
-
-  if (matrix1->numRows != matrix2->numColumns)
-    return false;
-  if (matrix1->numColumns != matrix2->numRows)
-    return false;
-  if (matrix1->numNonzeros != matrix2->numNonzeros)
-    return false;
-
-  int* currentColumnEntries = (int*) malloc(matrix1->numColumns * sizeof(int) );
-  for (int column = 0; column < matrix2->numRows; ++column)
-    currentColumnEntries[column] = matrix2->rowStarts[column];
-
-  for (int row = 0; row < matrix1->numRows; ++row)
-  {
-    int begin = matrix1->rowStarts[row];
-    int end = row + 1 < matrix1->numRows ? matrix1->rowStarts[row + 1] : matrix1->numNonzeros;
-    for (int entry = begin; entry < end; ++entry)
-    {
-      int column = matrix1->entryColumns[entry];
-      int entry2 = currentColumnEntries[column];
-      if (matrix2->entryColumns[entry2] != row)
-        return false;
-      if (matrix2->entryValues[entry2] != matrix1->entryValues[entry])
-        return false;
-    }
-  }
-
-  free(currentColumnEntries);
-
-  return true;
-}
-
-bool TUcheckCharMatrixTranspose(TU_CHAR_MATRIX* matrix1, TU_CHAR_MATRIX* matrix2)
-{
   assert(matrix1 != NULL);
   assert(matrix2 != NULL);
 
@@ -433,17 +471,107 @@ bool TUcheckCharMatrixTranspose(TU_CHAR_MATRIX* matrix1, TU_CHAR_MATRIX* matrix2
     {
       int column = matrix1->entryColumns[entry1];
       int entry2 = currentColumnEntries[column];
-      if (matrix2->entryColumns[entry2] != row)
-        return false;
-      if (matrix2->entryValues[entry2] != matrix1->entryValues[entry1])
-        return false;
+      if (matrix2->entryColumns[entry2] != row 
+        || matrix2->entryValues[entry2] != matrix1->entryValues[entry1])
+      {
+        result = false;
+        goto cleanup;
+      }
       currentColumnEntries[column]++;
     }
   }
 
+cleanup:
+
   free(currentColumnEntries);
 
-  return true;
+  return result;
+}
+
+bool TUcheckIntMatrixTranspose(TU_INT_MATRIX* matrix1, TU_INT_MATRIX* matrix2)
+{
+  bool result = true;
+
+  assert(matrix1 != NULL);
+  assert(matrix2 != NULL);
+
+  if (matrix1->numRows != matrix2->numColumns)
+    return false;
+  if (matrix1->numColumns != matrix2->numRows)
+    return false;
+  if (matrix1->numNonzeros != matrix2->numNonzeros)
+    return false;
+
+  int* currentColumnEntries = (int*) malloc(matrix1->numColumns * sizeof(int) );
+  for (int column = 0; column < matrix2->numRows; ++column)
+    currentColumnEntries[column] = matrix2->rowStarts[column];
+
+  for (int row = 0; row < matrix1->numRows; ++row)
+  {
+    int begin = matrix1->rowStarts[row];
+    int end = row + 1 < matrix1->numRows ? matrix1->rowStarts[row + 1] : matrix1->numNonzeros;
+    for (int entry1 = begin; entry1 < end; ++entry1)
+    {
+      int column = matrix1->entryColumns[entry1];
+      int entry2 = currentColumnEntries[column];
+      if (matrix2->entryColumns[entry2] != row 
+        || matrix2->entryValues[entry2] != matrix1->entryValues[entry1])
+      {
+        result = false;
+        goto cleanup;
+      }
+      currentColumnEntries[column]++;
+    }
+  }
+
+cleanup:
+
+  free(currentColumnEntries);
+
+  return result;
+}
+
+bool TUcheckCharMatrixTranspose(TU_CHAR_MATRIX* matrix1, TU_CHAR_MATRIX* matrix2)
+{
+  bool result = true;
+
+  assert(matrix1 != NULL);
+  assert(matrix2 != NULL);
+
+  if (matrix1->numRows != matrix2->numColumns)
+    return false;
+  if (matrix1->numColumns != matrix2->numRows)
+    return false;
+  if (matrix1->numNonzeros != matrix2->numNonzeros)
+    return false;
+
+  int* currentColumnEntries = (int*) malloc(matrix1->numColumns * sizeof(int) );
+  for (int column = 0; column < matrix2->numRows; ++column)
+    currentColumnEntries[column] = matrix2->rowStarts[column];
+
+  for (int row = 0; row < matrix1->numRows; ++row)
+  {
+    int begin = matrix1->rowStarts[row];
+    int end = row + 1 < matrix1->numRows ? matrix1->rowStarts[row + 1] : matrix1->numNonzeros;
+    for (int entry1 = begin; entry1 < end; ++entry1)
+    {
+      int column = matrix1->entryColumns[entry1];
+      int entry2 = currentColumnEntries[column];
+      if (matrix2->entryColumns[entry2] != row 
+        || matrix2->entryValues[entry2] != matrix1->entryValues[entry1])
+      {
+        result = false;
+        goto cleanup;
+      }
+      currentColumnEntries[column]++;
+    }
+  }
+
+cleanup:
+
+  free(currentColumnEntries);
+
+  return result;
 }
 
 bool TUcheckDoubleMatrixSorted(TU_DOUBLE_MATRIX* sparse)
@@ -621,6 +749,8 @@ void TUcreateSubmatrix(TU* tu, TU_SUBMATRIX** submatrix, int numRows, int numCol
   TUallocBlock(tu, submatrix);
   (*submatrix)->numRows = numRows;
   (*submatrix)->numColumns = numColumns;
+  (*submatrix)->rows = NULL;
+  (*submatrix)->columns = NULL;
   TUallocBlockArray(tu, &(*submatrix)->rows, numRows);
   TUallocBlockArray(tu, &(*submatrix)->columns, numColumns);
 }
@@ -665,7 +795,7 @@ void TUfilterCharSubmatrix(TU* tu, TU_CHAR_MATRIX* matrix, TU_SUBMATRIX* submatr
   assert(result);
 
   int* columnMap = NULL;
-  TUallocBlockArray(tu, &columnMap, matrix->numColumns);
+  TUallocStackArray(tu, &columnMap, matrix->numColumns);
   for (int c = 0; c < matrix->numColumns; ++c)
     columnMap[c] = -1;
   for (int j = 0; j < submatrix->numColumns; ++j)
@@ -692,9 +822,9 @@ void TUfilterCharSubmatrix(TU* tu, TU_CHAR_MATRIX* matrix, TU_SUBMATRIX* submatr
         ++numNonzeros;
     }
   }
-  
-  (*result)->entryColumns = (int*) malloc( numNonzeros * sizeof(int) );
-  (*result)->entryValues = (char*) malloc( numNonzeros * sizeof(char) );
+
+  TUallocBlockArray(tu, &(*result)->entryColumns, numNonzeros);
+  TUallocBlockArray(tu, &(*result)->entryValues, numNonzeros);
 
   /* Copy nonzeros. */
   for (int i = 0; i < submatrix->numRows; ++i)
@@ -719,5 +849,5 @@ void TUfilterCharSubmatrix(TU* tu, TU_CHAR_MATRIX* matrix, TU_SUBMATRIX* submatr
   (*result)->rowStarts[(*result)->numRows] = (*result)->numNonzeros;
 
   if (columnMap)
-    free(columnMap);
+    TUfreeStackArray(tu, &columnMap);
 }
