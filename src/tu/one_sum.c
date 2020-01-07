@@ -105,7 +105,7 @@ void decomposeOneSum(TU* tu, TU_MATRIX* matrix, size_t matrixType, size_t target
       else if (matrixType == sizeof(char))
         nonzero = ((char*)matrix->entryValues)[e] != 0;
       else
-        assert("Invalid matrixType parameter." == 0);      
+        assert("Invalid matrixType parameter." == 0);
       if (nonzero)
       {
         int column = matrix->entryColumns[e];
@@ -120,9 +120,9 @@ void decomposeOneSum(TU* tu, TU_MATRIX* matrix, size_t matrixType, size_t target
   }
 
   /*
-   * We decremented the degree entries, so they should be 0. From now on we can query 
+   * We decremented the degree entries, so they should be 0. From now on we can query
    * graphNodes[node+1].adjacencyStart - graphNodes[node].adjacencyStart if necessary.
-   * 
+   *
    * TODO: make degree a union with something else to save memory and improve cache behavior.
    */
 

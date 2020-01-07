@@ -123,7 +123,7 @@ int TUgetDecRankTopRight(
 
 /**
  * \brief Performs a 1-sum decomposition to a binary linear matroid.
- * 
+ *
  * Initializes the \c *pdecomposition to a partial decomposition tree. If the matroid is a 1-sum
  * then \c *pdecomposition will be a \ref TU_DEC_ONE_SUM tree node and its children will be
  * initialized with corresponding sequentially connected submatrices. Otherwise, \c *pdecomposition
@@ -141,9 +141,9 @@ int TUregularDecomposeOneSum(
 
 /**
  * \brief Tests binary linear matroid for regularity.
- * 
+ *
  * If \p decomposition is not \c NULL, \c *decomposition will be a decomposition tree.
- * 
+ *
  */
 
 TU_EXPORT

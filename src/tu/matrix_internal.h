@@ -64,7 +64,6 @@ void TUsortSubmatrix(
 namespace tu
 {
 
-  
   /**
    * Exception to indicate a pivot on a zero element.
    */

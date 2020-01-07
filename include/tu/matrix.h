@@ -47,7 +47,7 @@ typedef struct
 } TU_DOUBLE_MATRIX;
 
 /**
- * \brief Creates a double matrix of size \p numRows times \p numColumns with \p numNonzeros 
+ * \brief Creates a double matrix of size \p numRows times \p numColumns with \p numNonzeros
  *        nonzeros. The row starts and entries are allocated but not initialized.
  */
 
@@ -129,7 +129,7 @@ typedef struct
 
 
 /**
- * \brief Creates an int matrix of size \p numRows times \p numColumns with \p numNonzeros 
+ * \brief Creates an int matrix of size \p numRows times \p numColumns with \p numNonzeros
  *        nonzeros. The row starts and entries are allocated but not initialized.
  */
 
@@ -212,7 +212,7 @@ typedef struct
 
 
 /**
- * \brief Creates a char matrix of size \p numRows times \p numColumns with \p numNonzeros 
+ * \brief Creates a char matrix of size \p numRows times \p numColumns with \p numNonzeros
  *        nonzeros. The row starts and entries are allocated but not initialized.
  */
 
@@ -383,7 +383,7 @@ bool TUcheckCharMatrixSorted(
 
 /**
  * \brief Row and column indices for a submatrix
- * 
+ *
  * Does not contain information about the matrix it refers to.
  */
 typedef struct
@@ -408,7 +408,7 @@ typedef struct
 
 /**
  * \brief Creates a submatrix of given size.
- * 
+ *
  * Only allocates the memory. Use \ref TUgetSubmatrixRows and \ref TUgetSubmatrixColumns to modify
  * the row and column indices, respectively.
  */

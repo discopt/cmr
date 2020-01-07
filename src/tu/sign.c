@@ -161,7 +161,7 @@ char signSequentiallyConnected(TU* tu, TU_CHAR_MATRIX* matrix, TU_CHAR_MATRIX* t
                   }
                   while (graphNodes[pathNode].targetValue == 0);
                   TUsortSubmatrix(*submatrix);
-                  
+
 #ifdef DEBUG_SIGN
                   printf("      Submatrix filled with %d rows and %d columns.\n", i, j);
 #endif
@@ -260,7 +260,7 @@ char signSequentiallyConnected(TU* tu, TU_CHAR_MATRIX* matrix, TU_CHAR_MATRIX* t
 
 /**
  * \brief Signs a given ternary double matrix.
- * 
+ *
  * Returns \c true if and only if the signs were already correct.
  */
 
@@ -403,7 +403,7 @@ bool TUcorrectSignDouble(TU* tu, TU_DOUBLE_MATRIX* matrix, TU_SUBMATRIX** submat
 
 /**
  * \brief Signs a given ternary int matrix.
- * 
+ *
  * Returns \c true if and only if the signs were already correct.
  */
 
@@ -547,7 +547,7 @@ bool TUcorrectSignInt(TU* tu, TU_INT_MATRIX* matrix, TU_SUBMATRIX** submatrix)
 
 /**
  * \brief Signs a given ternary char matrix.
- * 
+ *
  * Returns \c true if and only if the signs were already correct.
  */
 

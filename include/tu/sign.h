@@ -11,7 +11,7 @@ extern "C" {
  * \brief Tests if signs of double matrix nonzeros qualify for being TU.
  *
  * The \p matrix is assumed to be ternary.
- * 
+ *
  * Returns \c true if and only if the signs are correct.
  */
 
@@ -41,7 +41,7 @@ bool TUcorrectSignDouble(
  * \brief Tests if signs of int matrix nonzeros qualify for being TU.
  *
  * The \p matrix is assumed to be ternary.
- * 
+ *
  * Returns \c true if and only if the signs are correct.
  */
 
@@ -72,7 +72,7 @@ bool TUcorrectSignInt(
  * \brief Tests if signs of char matrix nonzeros qualify for being TU.
  *
  * The \p matrix is assumed to be ternary.
- * 
+ *
  * Returns \c true if and only if the signs are correct.
  */
 

@@ -121,7 +121,7 @@ bool TUregularSequentiallyConnected(TU* tu, TU_DEC* decomposition, bool certify,
   return true;
 }
 
-int compareComponents(const void* a, const void* b)
+int compareOneSumComponents(const void* a, const void* b)
 {
   return ((TU_ONESUM_COMPONENT*)a)->matrix->numNonzeros -
     ((TU_ONESUM_COMPONENT*)b)->matrix->numNonzeros;
@@ -141,7 +141,7 @@ int TUregularDecomposeOneSum(TU* tu, TU_CHAR_MATRIX* matrix, int* rowLabels, int
   /* Perform 1-sum decomposition. */
 
   int numComponents;
-  TU_ONESUM_COMPONENT* components = NULL;  
+  TU_ONESUM_COMPONENT* components = NULL;
   decomposeOneSum(tu, (TU_MATRIX*) matrix, sizeof(char), sizeof(char), &numComponents, &components,
     NULL, NULL, NULL, NULL);
 
@@ -181,13 +181,13 @@ int TUregularDecomposeOneSum(TU* tu, TU_CHAR_MATRIX* matrix, int* rowLabels, int
       for (int column = 0; column < matrix->numColumns; ++column)
         decomposition->columnLabels[column] = columnLabels[column];
     }
-    
+
     /* Sort components by number of nonzeros. */
     TU_ONESUM_COMPONENT** orderedComponents = NULL;
     TUallocStackArray(tu, &orderedComponents, numComponents);
     for (int comp = 0; comp < numComponents; ++comp)
       orderedComponents[comp] = &components[comp];
-    qsort(orderedComponents, numComponents, sizeof(TU_ONESUM_COMPONENT*), &compareComponents);
+    qsort(orderedComponents, numComponents, sizeof(TU_ONESUM_COMPONENT*), &compareOneSumComponents);
 
     /* Initialize child nodes */
     decomposition->numChildren = numComponents;
@@ -248,12 +248,20 @@ bool TUregularTest(TU* tu, TU_CHAR_MATRIX* matrix, int* rowLabels, int* columnLa
   }
   else
   {
+    if (certify)
+      decomposition->flags = TU_DEC_ONE_SUM | TU_DEC_GRAPHIC | TU_DEC_COGRAPHIC | TU_DEC_REGULAR;
+
     for (int child = 0; child < numChildren; ++child)
     {
       bool result = TUregularSequentiallyConnected(tu, decomposition->children[child], certify,
         false, false);
       isRegular = isRegular && result;
-      if (!result && !certify)
+      if (certify)
+      {
+        decomposition->flags &= (decomposition->children[child]->flags
+          & (TU_DEC_REGULAR | TU_DEC_GRAPHIC | TU_DEC_COGRAPHIC));
+      }
+      else if (!result)
         break;
     }
   }

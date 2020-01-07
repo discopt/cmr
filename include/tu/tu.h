@@ -12,7 +12,7 @@ extern "C" {
 /**
  * \brief Tests a double matrix for total unimodularity with absolute error
  * tolerance \p epsilon.
- * 
+ *
  * Returns \c true if and only if \p matrix is TU.
  *
  * If \p decomposition is not \c NULL and the algorithm has to test regularity of the support
@@ -21,7 +21,7 @@ extern "C" {
  *
  * If \p submatrix is not \c NULL and the matrix is not TU, then a submatrix with an absolute
  * determinant larger than 1 will be searched, which may cause extra computational effort. In this
- * case, \c *submatrix will point to this submatrix for which the caller must use 
+ * case, \c *submatrix will point to this submatrix for which the caller must use
  * \ref TUfreeSubmatrix to free memory. It is set to \c NULL otherwise.
  */
 
@@ -36,7 +36,7 @@ bool TUtestTotalUnimodularityDouble(
 
 /**
  * \brief Tests an int matrix for total unimodularity.
- * 
+ *
  * Returns \c true if and only if \p matrix is TU.
  *
  * If \p decomposition is not \c NULL and the algorithm has to test regularity of the support
@@ -45,7 +45,7 @@ bool TUtestTotalUnimodularityDouble(
  *
  * If \p submatrix is not \c NULL and the matrix is not TU, then a submatrix with an absolute
  * determinant larger than 1 will be searched, which may cause extra computational effort. In this
- * case, \c *submatrix will point to this submatrix for which the caller must use 
+ * case, \c *submatrix will point to this submatrix for which the caller must use
  * \ref TUfreeSubmatrix to free memory. It is set to \c NULL otherwise.
  */
 
@@ -59,7 +59,7 @@ bool TUtestTotalUnimodularityInt(
 
 /**
  * \brief Tests a char matrix for total unimodularity.
- * 
+ *
  * Returns \c true if and only if \p matrix is TU.
  *
  * If \p decomposition is not \c NULL and the algorithm has to test regularity of the support
@@ -68,7 +68,7 @@ bool TUtestTotalUnimodularityInt(
  *
  * If \p submatrix is not \c NULL and the matrix is not TU, then a submatrix with an absolute
  * determinant larger than 1 will be searched, which may cause extra computational effort. In this
- * case, \c *submatrix will point to this submatrix for which the caller must use 
+ * case, \c *submatrix will point to this submatrix for which the caller must use
  * \ref TUfreeSubmatrix to free memory. It is set to \c NULL otherwise.
  */
 

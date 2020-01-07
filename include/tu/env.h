@@ -14,7 +14,7 @@ struct _TU;
 
 /**
  * \brief Environment for computations
- * 
+ *
  * Manages memory, threading, output and parameters.
  */
 
@@ -22,7 +22,7 @@ typedef struct _TU TU;
 
 /**
  * \brief Initializes a default TU
- * 
+ *
  * It has default parameters and outputs to stdout.
  */
 

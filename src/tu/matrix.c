@@ -6,7 +6,7 @@
 
 #include "env_internal.h"
 
-void TUcreateDoubleMatrix(TU* tu, TU_DOUBLE_MATRIX** matrix, int numRows, int numColumns, 
+void TUcreateDoubleMatrix(TU* tu, TU_DOUBLE_MATRIX** matrix, int numRows, int numColumns,
   int numNonzeros)
 {
   assert(matrix);
@@ -103,7 +103,7 @@ void TUtransposeDoubleMatrix(TU* tu, TU_DOUBLE_MATRIX* matrix, TU_DOUBLE_MATRIX*
   (*result)->rowStarts[0] = 0;
 }
 
-void TUcreateIntMatrix(TU* tu, TU_INT_MATRIX** matrix, int numRows, int numColumns, 
+void TUcreateIntMatrix(TU* tu, TU_INT_MATRIX** matrix, int numRows, int numColumns,
   int numNonzeros)
 {
   assert(matrix);
@@ -160,7 +160,7 @@ void TUcopyIntMatrix(TU* tu, TU_INT_MATRIX* matrix, TU_INT_MATRIX** result)
   }
 }
 
-void TUcreateCharMatrix(TU* tu, TU_CHAR_MATRIX** matrix, int numRows, int numColumns, 
+void TUcreateCharMatrix(TU* tu, TU_CHAR_MATRIX** matrix, int numRows, int numColumns,
   int numNonzeros)
 {
   assert(matrix);
@@ -471,7 +471,7 @@ bool TUcheckDoubleMatrixTranspose(TU_DOUBLE_MATRIX* matrix1, TU_DOUBLE_MATRIX* m
     {
       int column = matrix1->entryColumns[entry1];
       int entry2 = currentColumnEntries[column];
-      if (matrix2->entryColumns[entry2] != row 
+      if (matrix2->entryColumns[entry2] != row
         || matrix2->entryValues[entry2] != matrix1->entryValues[entry1])
       {
         result = false;
@@ -514,7 +514,7 @@ bool TUcheckIntMatrixTranspose(TU_INT_MATRIX* matrix1, TU_INT_MATRIX* matrix2)
     {
       int column = matrix1->entryColumns[entry1];
       int entry2 = currentColumnEntries[column];
-      if (matrix2->entryColumns[entry2] != row 
+      if (matrix2->entryColumns[entry2] != row
         || matrix2->entryValues[entry2] != matrix1->entryValues[entry1])
       {
         result = false;
@@ -557,7 +557,7 @@ bool TUcheckCharMatrixTranspose(TU_CHAR_MATRIX* matrix1, TU_CHAR_MATRIX* matrix2
     {
       int column = matrix1->entryColumns[entry1];
       int entry2 = currentColumnEntries[column];
-      if (matrix2->entryColumns[entry2] != row 
+      if (matrix2->entryColumns[entry2] != row
         || matrix2->entryValues[entry2] != matrix1->entryValues[entry1])
       {
         result = false;
@@ -745,7 +745,7 @@ bool TUisTernaryChar(TU* tu, TU_CHAR_MATRIX* sparse, TU_SUBMATRIX** submatrix)
 void TUcreateSubmatrix(TU* tu, TU_SUBMATRIX** submatrix, int numRows, int numColumns)
 {
   assert(submatrix != NULL);
-  
+
   TUallocBlock(tu, submatrix);
   (*submatrix)->numRows = numRows;
   (*submatrix)->numColumns = numColumns;

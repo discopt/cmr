@@ -82,7 +82,7 @@ TEST(Matrix, Transpose)
     TUfreeCharMatrix(tu, &B);
     TUfreeCharMatrix(tu, &A);
   }
-  
+
   TUfreeEnvironment(&tu);
 }
 

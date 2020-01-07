@@ -19,7 +19,7 @@
  *
  * If \p submatrix is not \c NULL and the matrix is not TU, then a submatrix with an absolute
  * determinant larger than 1 will be searched, which may cause extra computational effort. In this
- * case, \c *submatrix will point to this submatrix for which the caller must use 
+ * case, \c *submatrix will point to this submatrix for which the caller must use
  * \ref TUfreeSubmatrix to free memory. It is set to \c NULL otherwise.
  */
 
@@ -32,7 +32,7 @@ static bool testTotalUnimodularityOneSum(TU* tu, int numComponents,
   /* Sort components by number of nonzeros. */
 
   /* Check each component for base cases first. If enabled, ask for forbidden minors. */
-  
+
   /* Check non-base cases by decomposing, using information about minors. If enabled, ask for
      rows/columns that cause irregularity. */
 
