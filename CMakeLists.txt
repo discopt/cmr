@@ -36,7 +36,6 @@ endif()
 add_library(tu
   src/tu/env.c
   src/tu/matrix.c
-  src/tu/matroid.c
   src/tu/one_sum.c
   src/tu/sign.c
   src/tu/tu.c

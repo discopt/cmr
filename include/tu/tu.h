@@ -6,7 +6,7 @@ extern "C" {
 #endif
 
 #include <tu/env.h>
-#include <tu/matroid.h>
+#include <tu/regular.h>
 #include <tu/matrix.h>
 
 /**
