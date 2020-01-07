@@ -3,9 +3,27 @@
 #include <assert.h>
 #include <stdlib.h>
 
+#include "regular_internal.h"
 #include "env_internal.h"
 #include "one_sum.h"
 
+void TUcreateDec(TU* tu, TU_DEC** pdec)
+{
+  assert(pdec != NULL);
+  assert(*pdec == NULL);
+
+  TUallocBlock(tu, pdec);
+  TU_DEC* dec = *pdec;
+  dec->matrix = NULL;
+  dec->transpose = NULL;
+  dec->rowLabels = NULL;
+  dec->columnLabels = NULL;
+  dec->flags = 0;
+  dec->children = NULL;
+  dec->numChildren = 0;
+  dec->graph = NULL;
+  dec->cograph = NULL;
+}
 
 void TUfreeDec(TU* tu, TU_DEC** dec)
 {
@@ -78,7 +96,6 @@ int TUgetDecNumColumns(TU_DEC* dec)
  *
  * Only valid if \c type is \ref TU_DEC_TWO_SUM or \ref TU_DEC_THREE_SUM.
  */
-TU_EXPORT
 int TUgetDecRankLowerLeft(
   TU_DEC* dec /**< Decomposition tree */
 );
@@ -88,14 +105,19 @@ int TUgetDecRankLowerLeft(
  *
  * Only valid if \c type is \ref TU_DEC_TWO_SUM or \ref TU_DEC_THREE_SUM.
  */
-TU_EXPORT
 int TUgetDecRankTopRight(
   TU_DEC* dec /**< Decomposition tree */
 );
 
-bool TUtestBinaryRegularSequentiallyConnected(TU* tu, TU_CHAR_MATRIX* matrix,
-  TU_CHAR_MATRIX* transpose, TU_DEC** decomposition, bool notGraphic, bool notCographic)
+
+bool TUregularSequentiallyConnected(TU* tu, TU_DEC* decomposition, bool certify, bool notGraphic,
+  bool notCographic)
 {
+  assert(tu);
+  assert(decomposition);
+  assert(decomposition->matrix);
+  assert(decomposition->transpose);
+
   return true;
 }
 
@@ -105,120 +127,139 @@ int compareComponents(const void* a, const void* b)
     ((TU_ONESUM_COMPONENT*)b)->matrix->numNonzeros;
 }
 
-bool TUtestBinaryRegularLabeled(TU* tu, TU_CHAR_MATRIX* matrix, int* rowLabels, int* columnLabels,
-  TU_DEC** decomposition)
+int TUregularDecomposeOneSum(TU* tu, TU_CHAR_MATRIX* matrix, int* rowLabels, int* columnLabels,
+  TU_DEC** pdecomposition)
 {
-  bool isRegular = true;
-  int numComponents;
-  TU_ONESUM_COMPONENT* components;
-
   assert(tu);
   assert(matrix);
-
-  /* Check entries. */
-
   assert(TUisBinaryChar(tu, matrix, NULL));
+  assert(pdecomposition);
+
+  TUcreateDec(tu, pdecomposition);
+  TU_DEC* decomposition = *pdecomposition;
 
   /* Perform 1-sum decomposition. */
 
+  int numComponents;
+  TU_ONESUM_COMPONENT* components = NULL;  
   decomposeOneSum(tu, (TU_MATRIX*) matrix, sizeof(char), sizeof(char), &numComponents, &components,
     NULL, NULL, NULL, NULL);
 
-  /* Sort components by number of nonzeros. */
-  TU_ONESUM_COMPONENT** orderedComponents = NULL;
-  TUallocStackArray(tu, &orderedComponents, numComponents);
-  for (int comp = 0; comp < numComponents; ++comp)
-    orderedComponents[comp] = &components[comp];
-  qsort(orderedComponents, numComponents, sizeof(TU_ONESUM_COMPONENT*), &compareComponents);
-
-  /* Test regularity for each component. */
-
-  if (numComponents > 0 && decomposition)
+  if (numComponents <= 1)
   {
-    TUallocBlock(tu, decomposition);
-    (*decomposition)->numChildren = numComponents;
-    TUallocBlockArray(tu, &(*decomposition)->children, numComponents);
-    (*decomposition)->graph = NULL;
-    (*decomposition)->cograph = NULL;
-    TUallocBlockArray(tu, &(*decomposition)->rowLabels, matrix->numRows);
-    TUallocBlockArray(tu, &(*decomposition)->columnLabels, matrix->numColumns);
-    for (int row = 0; row < (*decomposition)->matrix->numRows; ++row)
-      (*decomposition)->rowLabels[row] = rowLabels[row];
-    for (int column = 0; column < (*decomposition)->matrix->numColumns; ++column)
-      (*decomposition)->columnLabels[column] = columnLabels[column];
-    (*decomposition)->flags = TU_DEC_ONE_SUM;
-
-    TUcopyCharMatrix(tu, matrix, &(*decomposition)->matrix);
-    (*decomposition)->transpose = NULL;
-  }
-
-  for (int i = 0; i < numComponents; ++i)
-  {
-    int comp = (orderedComponents[i] - components) / sizeof(TU_ONESUM_COMPONENT*);
-    assert(comp >= 0);
-    assert(comp < numComponents);
-
-    TU_DEC* compDecomposition = NULL;
-
-    bool compRegular = TUtestBinaryRegularSequentiallyConnected(tu,
-      (TU_CHAR_MATRIX*) &components[comp].matrix, (TU_CHAR_MATRIX*) &components[comp].transpose,
-      decomposition ? &compDecomposition : NULL, false, false);
-
-    isRegular = isRegular && compRegular;
-
-    if (!decomposition && !compRegular)
-      goto cleanup;
-
-    if (decomposition)
+    decomposition->matrix = (TU_CHAR_MATRIX*) components[0].matrix;
+    decomposition->transpose = (TU_CHAR_MATRIX*) components[0].transpose;
+    if (rowLabels)
     {
-      assert(compRegular);
+      TUallocBlockArray(tu, &decomposition->rowLabels, matrix->numRows);
+      for (int row = 0; row < matrix->numRows; ++row)
+        decomposition->rowLabels[row] = rowLabels[components[0].rowsToOriginal[row]];
+    }
+    if (columnLabels)
+    {
+      TUallocBlockArray(tu, &decomposition->columnLabels, matrix->numColumns);
+      for (int column = 0; column < matrix->numColumns; ++column)
+        decomposition->columnLabels[column] = columnLabels[components[0].columnsToOriginal[column]];
     }
   }
+  else
+  {
+    decomposition->flags = TU_DEC_ONE_SUM;
 
-cleanup:
-  TUfreeStackArray(tu, &orderedComponents);
+    /* Copy matrix and labels to node and compute transpose. */
+    TUcopyCharMatrix(tu, matrix, &decomposition->matrix);
+    TUtransposeCharMatrix(tu, matrix, &decomposition->transpose);
+    if (rowLabels)
+    {
+      TUallocBlockArray(tu, &decomposition->rowLabels, matrix->numRows);
+      for (int row = 0; row < matrix->numRows; ++row)
+        decomposition->rowLabels[row] = rowLabels[row];
+    }
+    if (columnLabels)
+    {
+      TUallocBlockArray(tu, &decomposition->columnLabels, matrix->numColumns);
+      for (int column = 0; column < matrix->numColumns; ++column)
+        decomposition->columnLabels[column] = columnLabels[column];
+    }
+    
+    /* Sort components by number of nonzeros. */
+    TU_ONESUM_COMPONENT** orderedComponents = NULL;
+    TUallocStackArray(tu, &orderedComponents, numComponents);
+    for (int comp = 0; comp < numComponents; ++comp)
+      orderedComponents[comp] = &components[comp];
+    qsort(orderedComponents, numComponents, sizeof(TU_ONESUM_COMPONENT*), &compareComponents);
+
+    /* Initialize child nodes */
+    decomposition->numChildren = numComponents;
+    TUallocBlockArray(tu, &decomposition->children, numComponents);
+
+    for (int i = 0; i < numComponents; ++i)
+    {
+      int comp = (orderedComponents[i] - components) / sizeof(TU_ONESUM_COMPONENT*);
+      TUcreateDec(tu, &decomposition->children[i]);
+      TU_DEC* child = decomposition->children[i];
+      child->matrix = (TU_CHAR_MATRIX*) components[comp].matrix;
+      child->transpose = (TU_CHAR_MATRIX*) components[comp].transpose;
+      if (rowLabels)
+      {
+        TUallocBlockArray(tu, &child->rowLabels, child->matrix->numRows);
+        for (int row = 0; row < child->matrix->numRows; ++row)
+          child->rowLabels[row] = rowLabels[components[comp].rowsToOriginal[row]];
+      }
+      if (columnLabels)
+      {
+        TUallocBlockArray(tu, &child->columnLabels, child->matrix->numColumns);
+        for (int column = 0; column < child->matrix->numColumns; ++column)
+          child->columnLabels[column] = columnLabels[components[comp].columnsToOriginal[column]];
+      }
+    }
+
+    TUfreeStackArray(tu, &orderedComponents);
+  }
 
   for (int comp = 0; comp < numComponents; ++comp)
   {
-    if (decomposition)
-    {
-//       (*decomposition)->
-    }
-    else
-    {
-      TUfreeCharMatrix(tu, (TU_CHAR_MATRIX**) &components[comp].matrix);
-      TUfreeCharMatrix(tu, (TU_CHAR_MATRIX**) &components[comp].transpose);
-    }
     TUfreeBlockArray(tu, &components[comp].rowsToOriginal);
     TUfreeBlockArray(tu, &components[comp].columnsToOriginal);
   }
   TUfreeBlockArray(tu, &components);
 
-  return isRegular;
+  return numComponents;
 }
 
-
-bool TUtestBinaryRegular(TU* tu, TU_CHAR_MATRIX* matrix, TU_DEC** decomposition)
+bool TUregularTest(TU* tu, TU_CHAR_MATRIX* matrix, int* rowLabels, int* columnLabels,
+  TU_DEC** pdecomposition)
 {
-  bool result;
-  int* rowLabels = NULL;
-  int* columnLabels = NULL;
+  bool isRegular = true;
+  bool certify = pdecomposition != NULL;
 
   assert(tu);
   assert(matrix);
 
-  TUallocStackArray(tu, &rowLabels, matrix->numRows);
-  TUallocStackArray(tu, &columnLabels, matrix->numColumns);
+  /* Perform a 1-sum decomposition. */
+  TU_DEC* decomposition = NULL;
 
-  for (int row = 0; row < matrix->numRows; ++row)
-    rowLabels[row] = -1 - row;
-  for (int column = 0; column < matrix->numColumns; ++column)
-    columnLabels[column] = 1 + column;
+  int numChildren = TUregularDecomposeOneSum(tu, matrix, rowLabels, columnLabels, &decomposition);
+  if (certify)
+    *pdecomposition = decomposition;
+  if (numChildren <= 1)
+  {
+    isRegular = TUregularSequentiallyConnected(tu, decomposition, certify, false, false);
+  }
+  else
+  {
+    for (int child = 0; child < numChildren; ++child)
+    {
+      bool result = TUregularSequentiallyConnected(tu, decomposition->children[child], certify,
+        false, false);
+      isRegular = isRegular && result;
+      if (!result && !certify)
+        break;
+    }
+  }
 
-  result = TUtestBinaryRegularLabeled(tu, matrix, rowLabels, columnLabels, decomposition);
+  if (!pdecomposition)
+    TUfreeDec(tu, &decomposition);
 
-  TUfreeStackArray(tu, &columnLabels);
-  TUfreeStackArray(tu, &rowLabels);
-
-  return result;
+  return isRegular;
 }

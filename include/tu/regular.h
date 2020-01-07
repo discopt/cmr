@@ -23,15 +23,16 @@ typedef enum
 
 typedef struct _TU_DEC
 {
-  TU_DEC_FLAGS flags; /**< Flags for this tree node. */
-  int numChildren; /**< Number of children of this tree node. */
-  struct _TU_DEC** children; /**< Array with pointers to children of this tree node. */
-  TU_GRAPH *graph; /**< Graph corresponding to this tree node, or \c NULL.  */
-  TU_GRAPH *cograph; /**< Cograph corresponding to this tree node, or \c NULL.  */
   TU_CHAR_MATRIX* matrix; /**< Binary matrix representing this tree node's matroid. */
   TU_CHAR_MATRIX* transpose; /**< Transpose of matrix representing this tree node's matroid. */
   int* rowLabels; /**< Array with row labels. */
   int* columnLabels; /**< Array with column labels. */
+
+  TU_DEC_FLAGS flags; /**< Flags for this tree node. */
+  TU_GRAPH *graph; /**< Graph corresponding to this tree node, or \c NULL.  */
+  TU_GRAPH *cograph; /**< Cograph corresponding to this tree node, or \c NULL.  */
+  int numChildren; /**< Number of children of this tree node. */
+  struct _TU_DEC** children; /**< Array with pointers to children of this tree node. */
 } TU_DEC;
 
 /**
@@ -121,30 +122,36 @@ int TUgetDecRankTopRight(
 );
 
 /**
- * \brief Tests binary linear matroid for regularity.
+ * \brief Performs a 1-sum decomposition to a binary linear matroid.
  * 
- * If \p decomposition is not \c NULL, \c *decomposition will be a decomposition tree.
+ * Initializes the \c *pdecomposition to a partial decomposition tree. If the matroid is a 1-sum
+ * then \c *pdecomposition will be a \ref TU_DEC_ONE_SUM tree node and its children will be
+ * initialized with corresponding sequentially connected submatrices. Otherwise, \c *pdecomposition
+ * itself will be initialized with a sequentially connected permutation of the given matroid.
  */
 
 TU_EXPORT
-bool TUtestBinaryRegularLabeled(
-  TU* tu,                 /**< TU environment */
-  TU_CHAR_MATRIX* matrix, /**< Double matrix */
-  int* rowLabels,         /**< Labels of matroid elements corresponding to rows. */
-  int* columnLabels,      /**< Labels of matroid elements corresponding to columns. */
-  TU_DEC** decomposition  /**< If not \c NULL, the decomposition tree is stored. */
+int TUregularDecomposeOneSum(
+  TU* tu,                 /**< TU environment. */
+  TU_CHAR_MATRIX* matrix, /**< Given matrix. */
+  int* rowLabels,         /**< Row labels of matrix; can be \c NULL. */
+  int* columnLabels,      /**< Column labels of matrix; can be \c NULL. */
+  TU_DEC** pdecomposition /**< Pointer for storing the partial decomposition. */
 );
 
 /**
  * \brief Tests binary linear matroid for regularity.
  * 
  * If \p decomposition is not \c NULL, \c *decomposition will be a decomposition tree.
+ * 
  */
 
 TU_EXPORT
-bool TUtestBinaryRegular(
+bool TUregularTest(
   TU* tu,                 /**< TU environment */
-  TU_CHAR_MATRIX* matrix, /**< Double matrix */
+  TU_CHAR_MATRIX* matrix, /**< Char matrix */
+  int* rowLabels,         /**< Row labels of matrix; can be \c NULL. */
+  int* columnLabels,      /**< Column labels of matrix; can be \c NULL. */
   TU_DEC** decomposition  /**< If not \c NULL, the decomposition tree is stored. */
 );
 
