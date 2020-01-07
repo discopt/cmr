@@ -17,7 +17,7 @@ struct GraphNode
 typedef struct GraphNode GRAPH_NODE;
 
 void decomposeOneSum(TU* tu, TU_MATRIX* matrix, size_t matrixType, size_t targetType,
-  int* numComponents, TU_ONESUM_COMPONENT** components, int* rowsToComponents,
+  int* numComponents, TU_ONESUM_COMPONENT** pcomponents, int* rowsToComponents,
   int* columnsToComponents, int* rowsToComponentRows, int* columnsToComponentColumns)
 {
   GRAPH_NODE* graphNodes = NULL;
@@ -32,8 +32,8 @@ void decomposeOneSum(TU* tu, TU_MATRIX* matrix, size_t matrixType, size_t target
   assert(tu != NULL);
   assert(matrix != NULL);
   assert(numComponents != NULL);
-  assert(components != NULL);
-  assert(*components == NULL);
+  assert(pcomponents != NULL);
+  assert(*pcomponents == NULL);
 
 #ifdef DEBUG_ONE_SUM
   printf("decomposeOneSum:\n");
@@ -183,45 +183,46 @@ void decomposeOneSum(TU* tu, TU_MATRIX* matrix, size_t matrixType, size_t target
 #endif
 
   /* Allocate component data. */
-  TUallocBlockArray(tu, components, countComponents);
+  TUallocBlockArray(tu, pcomponents, countComponents);
+  TU_ONESUM_COMPONENT* components = *pcomponents;
 
   /* Compute sizes. */
-  for (int component = 0; component < countComponents; ++component)
+  for (int comp = 0; comp < countComponents; ++comp)
   {
-    (*components)[component].matrix = NULL;
-    (*components)[component].transpose = NULL;
-    (*components)[component].rowsToOriginal = NULL;
-    (*components)[component].columnsToOriginal = NULL;
-    TUcreateCharMatrix(tu, (TU_CHAR_MATRIX**) &(*components)[component].matrix, 0, 0, 0);
+    components[comp].matrix = NULL;
+    components[comp].transpose = NULL;
+    components[comp].rowsToOriginal = NULL;
+    components[comp].columnsToOriginal = NULL;
+    TUcreateCharMatrix(tu, (TU_CHAR_MATRIX**) &components[comp].matrix, 0, 0, 0);
   }
 
   for (int node = 0; node < numNodes; ++node)
   {
-    int component = graphNodes[node].component;
+    int comp = graphNodes[node].component;
     int start = graphNodes[node].adjacencyStart;
     int end = graphNodes[node + 1].adjacencyStart;
-    assert(component >= 0);
+    assert(comp >= 0);
     if (node < firstColumnNode)
     {
-      (*components)[component].matrix->numRows++;
-      (*components)[component].matrix->numNonzeros += end - start;
+      components[comp].matrix->numRows++;
+      components[comp].matrix->numNonzeros += end - start;
     }
     else
-      (*components)[component].matrix->numColumns++;
+      components[comp].matrix->numColumns++;
   }
 
   /* Allocate memory */
-  for (int component = 0; component < countComponents; ++component)
+  for (int comp = 0; comp < countComponents; ++comp)
   {
-    TU_MATRIX* compMatrix = (*components)[component].matrix;
+    TU_MATRIX* compMatrix = components[comp].matrix;
 
 #ifdef DEBUG_ONE_SUM
     printf("Component %d has %dx%d matrix with %d nonzeros.\n", component, compMatrix->numRows,
       compMatrix->numColumns, compMatrix->numNonzeros);
 #endif
 
-    TUallocBlockArray(tu, &(*components)[component].rowsToOriginal, compMatrix->numRows);
-    TUallocBlockArray(tu, &(*components)[component].columnsToOriginal, compMatrix->numColumns);
+    TUallocBlockArray(tu, &components[comp].rowsToOriginal, compMatrix->numRows);
+    TUallocBlockArray(tu, &components[comp].columnsToOriginal, compMatrix->numColumns);
     TUfreeBlockArray(tu, &compMatrix->rowStarts);
     TUallocBlockArray(tu, &compMatrix->rowStarts, compMatrix->numRows + 1);
     if (compMatrix->numNonzeros > 0)
@@ -231,14 +232,14 @@ void decomposeOneSum(TU* tu, TU_MATRIX* matrix, size_t matrixType, size_t target
     {
       if (compMatrix->numNonzeros > 0)
         TUallocBlockArray(tu, (char**) &compMatrix->entryValues, compMatrix->numNonzeros);
-      TUcreateCharMatrix(tu, (TU_CHAR_MATRIX**) &(*components)[component].transpose,
+      TUcreateCharMatrix(tu, (TU_CHAR_MATRIX**) &components[comp].transpose,
         compMatrix->numColumns, compMatrix->numRows, compMatrix->numNonzeros);
     }
     else if (targetType == sizeof(int))
     {
       if (compMatrix->numNonzeros > 0)
         TUallocBlockArray(tu, (int**) &compMatrix->entryValues, compMatrix->numNonzeros);
-      TUcreateIntMatrix(tu, (TU_INT_MATRIX**) &(*components)[component].transpose,
+      TUcreateIntMatrix(tu, (TU_INT_MATRIX**) &components[comp].transpose,
         compMatrix->numColumns, compMatrix->numRows, compMatrix->numNonzeros);
     }
     else
@@ -246,7 +247,7 @@ void decomposeOneSum(TU* tu, TU_MATRIX* matrix, size_t matrixType, size_t target
       assert(targetType == sizeof(double));
       if (compMatrix->numNonzeros > 0)
         TUallocBlockArray(tu, (double**) &compMatrix->entryValues, compMatrix->numNonzeros);
-      TUcreateDoubleMatrix(tu, (TU_DOUBLE_MATRIX**) &(*components)[component].transpose,
+      TUcreateDoubleMatrix(tu, (TU_DOUBLE_MATRIX**) &components[comp].transpose,
         compMatrix->numColumns, compMatrix->numRows, compMatrix->numNonzeros);
     }
   }
@@ -254,12 +255,12 @@ void decomposeOneSum(TU* tu, TU_MATRIX* matrix, size_t matrixType, size_t target
   /* Fill mapping arrays. */
   for (int node = 0; node < numNodes; ++node)
   {
-    int component = graphNodes[node].component;
+    int comp = graphNodes[node].component;
     int order = graphNodes[node].order;
     if (node < firstColumnNode)
-      (*components)[component].rowsToOriginal[order] = node;
+      components[comp].rowsToOriginal[order] = node;
     else
-      (*components)[component].columnsToOriginal[order] = node - firstColumnNode;
+      components[comp].columnsToOriginal[order] = node - firstColumnNode;
   }
 
 #ifdef DEBUG_ONE_SUM
@@ -267,25 +268,25 @@ void decomposeOneSum(TU* tu, TU_MATRIX* matrix, size_t matrixType, size_t target
   {
     printf("Component %d's rows map to original rows:", comp);
     for (int row = 0; row < (*components)[comp].matrix->numRows; ++row)
-      printf(" %d", (*components)[comp].rowsToOriginal[row]);
+      printf(" %d", components[comp].rowsToOriginal[row]);
     printf("\n");
     printf("Component %d's columns map to original columns:", comp);
     for (int column = 0; column < (*components)[comp].matrix->numColumns; ++column)
-      printf(" %d", (*components)[comp].columnsToOriginal[column]);
+      printf(" %d", components[comp].columnsToOriginal[column]);
     printf("\n");
   }
 #endif
 
   /* We can now fill the matrices of each component. */
-  for (int component = 0; component < countComponents; ++component)
+  for (int comp = 0; comp < countComponents; ++comp)
   {
-    TU_MATRIX* compTranspose = (*components)[component].transpose;
+    TU_MATRIX* compTranspose = components[comp].transpose;
 
     /* Compute the slices in the transposed component matrix from the graph. */
     int countNonzeros = 0;
     for (int compColumn = 0; compColumn < compTranspose->numRows; ++compColumn)
     {
-      int column = (*components)[component].columnsToOriginal[compColumn];
+      int column = components[comp].columnsToOriginal[compColumn];
       int node = firstColumnNode + column;
       compTranspose->rowStarts[compColumn] = countNonzeros;
 #ifdef DEBUG_ONE_SUM
@@ -298,7 +299,7 @@ void decomposeOneSum(TU* tu, TU_MATRIX* matrix, size_t matrixType, size_t target
     /* Fill the slices. To ensure that it is sorted, we iterate row-wise. */
     for (int compRow = 0; compRow < compTranspose->numColumns; ++compRow)
     {
-      int row = (*components)[component].rowsToOriginal[compRow];
+      int row = components[comp].rowsToOriginal[compRow];
       int start = matrix->rowStarts[row];
       int end = row + 1 < matrix->numRows ? matrix->rowStarts[row + 1] : matrix->numNonzeros;
 
@@ -395,16 +396,16 @@ void decomposeOneSum(TU* tu, TU_MATRIX* matrix, size_t matrixType, size_t target
   }
 
   /* We now create the row-wise representation from the column-wise one. */
-  for (int component = 0; component < countComponents; ++component)
+  for (int comp = 0; comp < countComponents; ++comp)
   {
-    TU_MATRIX* compMatrix = (*components)[component].matrix;
-    TU_MATRIX* compTranspose = (*components)[component].transpose;
+    TU_MATRIX* compMatrix = components[comp].matrix;
+    TU_MATRIX* compTranspose = components[comp].transpose;
 
     /* Compute the slices in the component matrix from the graph. */
     int countNonzeros = 0;
     for (int compRow = 0; compRow < compMatrix->numRows; ++compRow)
     {
-      int row = (*components)[component].rowsToOriginal[compRow];
+      int row = components[comp].rowsToOriginal[compRow];
       int node = row;
       compMatrix->rowStarts[compRow] = countNonzeros;
       countNonzeros += graphNodes[node+1].adjacencyStart - graphNodes[node].adjacencyStart;
@@ -446,18 +447,18 @@ void decomposeOneSum(TU* tu, TU_MATRIX* matrix, size_t matrixType, size_t target
 
     if (targetType == sizeof(double))
     {
-      assert(TUcheckDoubleMatrixTranspose((TU_DOUBLE_MATRIX*) (*components)[component].matrix,
-        (TU_DOUBLE_MATRIX*) (*components)[component].transpose));
+      assert(TUcheckDoubleMatrixTranspose((TU_DOUBLE_MATRIX*) components[comp].matrix,
+        (TU_DOUBLE_MATRIX*) components[comp].transpose));
     }
     else if (targetType == sizeof(int))
     {
-      assert(TUcheckIntMatrixTranspose((TU_INT_MATRIX*) (*components)[component].matrix,
-        (TU_INT_MATRIX*) (*components)[component].transpose));
+      assert(TUcheckIntMatrixTranspose((TU_INT_MATRIX*) components[comp].matrix,
+        (TU_INT_MATRIX*) components[comp].transpose));
     }
     else if (targetType == sizeof(char))
     {
-      assert(TUcheckCharMatrixTranspose((TU_CHAR_MATRIX*) (*components)[component].matrix,
-        (TU_CHAR_MATRIX*) (*components)[component].transpose));
+      assert(TUcheckCharMatrixTranspose((TU_CHAR_MATRIX*) components[comp].matrix,
+        (TU_CHAR_MATRIX*) components[comp].transpose));
     }
   }
 
