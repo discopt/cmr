@@ -48,6 +48,9 @@ add_library(tu
   src/tu/matroid_graph.cpp
   src/tu/nested_minor_sequence.cpp
   src/tu/regular.c
+  src/tu/regular_dec.c
+  src/tu/regular_onesum.c
+  src/tu/regular_simplesums.c
   src/tu/separation.cpp
   src/tu/total_unimodularity.cpp
   src/tu/unimodularity.cpp

@@ -10,6 +10,7 @@ endif()
 add_executable(tu_gtest
   common.c
   test_sign.cpp
+  test_graph.cpp
 #  test_incidence.cpp
 #  test_preprocessing.cpp
   test_matrix.cpp

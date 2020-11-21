@@ -72,6 +72,16 @@ TU_EXPORT
 void _TUallocBlockArray(TU* tu, void** ptr, size_t size, size_t length);
 
 /**
+ * \brief Reallocates memory for an array of blocks.
+ */
+
+#define TUreallocBlockArray(tu, ptr, length) \
+  _TUreallocBlockArray(tu, (void**) ptr, sizeof(**ptr), length)
+
+TU_EXPORT
+void _TUreallocBlockArray(TU* tu, void** ptr, size_t size, size_t length);
+
+/**
  * \brief Frees memory of an array of blocks.
  */
 

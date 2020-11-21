@@ -50,6 +50,13 @@ void _TUallocBlockArray(TU* tu, void** ptr, size_t size, size_t length)
   *ptr = malloc(size * length);
 }
 
+void _TUreallocBlockArray(TU* tu, void** ptr, size_t size, size_t length)
+{
+  assert(tu);
+  assert(ptr);
+  *ptr = realloc(*ptr, size * length);
+}
+
 void _TUfreeBlockArray(TU* tu, void** ptr)
 {
   assert(tu);
