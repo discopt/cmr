@@ -10,7 +10,7 @@ TEST(Matrix, Transpose)
 
   /* Double matrices. */
   {
-    TU_DOUBLE_MATRIX* A = NULL;
+    TU_DBLMAT* A = NULL;
     stringToDoubleMatrix(tu, &A, "4 5 "
       "1 2 3 0 0 "
       "0 4 5 0 6 "
@@ -18,7 +18,7 @@ TEST(Matrix, Transpose)
       "0 0 9 0 0 "
     );
 
-    TU_DOUBLE_MATRIX* B = NULL;
+    TU_DBLMAT* B = NULL;
     stringToDoubleMatrix(tu, &B, "5 4 "
       "1 0 7 0 "
       "2 4 0 0 "
@@ -27,15 +27,15 @@ TEST(Matrix, Transpose)
       "0 6 0 0 "
     );
 
-    ASSERT_TRUE(TUcheckDoubleMatrixTranspose(A, B));
+    ASSERT_TRUE(TUdblmatCheckTranspose(A, B));
 
-    TUfreeDoubleMatrix(tu, &B);
-    TUfreeDoubleMatrix(tu, &A);
+    TUdblmatFree(tu, &B);
+    TUdblmatFree(tu, &A);
   }
 
   /* Int matrices. */
   {
-    TU_INT_MATRIX* A = NULL;
+    TU_INTMAT* A = NULL;
     stringToIntMatrix(tu, &A, "4 5 "
       "1 2 3 0 0 "
       "0 4 5 0 6 "
@@ -43,7 +43,7 @@ TEST(Matrix, Transpose)
       "0 0 9 0 0 "
     );
 
-    TU_INT_MATRIX* B = NULL;
+    TU_INTMAT* B = NULL;
     stringToIntMatrix(tu, &B, "5 4 "
       "1 0 7 0 "
       "2 4 0 0 "
@@ -52,15 +52,15 @@ TEST(Matrix, Transpose)
       "0 6 0 0 "
     );
 
-    ASSERT_TRUE(TUcheckIntMatrixTranspose(A, B));
+    ASSERT_TRUE(TUintmatCheckTranspose(A, B));
 
-    TUfreeIntMatrix(tu, &B);
-    TUfreeIntMatrix(tu, &A);
+    TUintmatFree(tu, &B);
+    TUintmatFree(tu, &A);
   }
 
   /* Char matrices. */
   {
-    TU_CHAR_MATRIX* A = NULL;
+    TU_CHRMAT* A = NULL;
     stringToCharMatrix(tu, &A, "4 5 "
       "1 2 3 0 0 "
       "0 4 5 0 6 "
@@ -68,7 +68,7 @@ TEST(Matrix, Transpose)
       "0 0 9 0 0 "
     );
 
-    TU_CHAR_MATRIX* B = NULL;
+    TU_CHRMAT* B = NULL;
     stringToCharMatrix(tu, &B, "5 4 "
       "1 0 7 0 "
       "2 4 0 0 "
@@ -77,10 +77,10 @@ TEST(Matrix, Transpose)
       "0 6 0 0 "
     );
 
-    ASSERT_TRUE(TUcheckCharMatrixTranspose(A, B));
+    ASSERT_TRUE(TUchrmatCheckTranspose(A, B));
 
-    TUfreeCharMatrix(tu, &B);
-    TUfreeCharMatrix(tu, &A);
+    TUchrmatFree(tu, &B);
+    TUchrmatFree(tu, &A);
   }
 
   TUfreeEnvironment(&tu);
@@ -91,7 +91,7 @@ TEST(Matrix, Submatrix)
   TU* tu = NULL;
   TUcreateEnvironment(&tu);
 
-  TU_CHAR_MATRIX* matrix = NULL;
+  TU_CHRMAT* matrix = NULL;
   stringToCharMatrix(tu, &matrix, "10 10 "
     "+1 -1  0  0  0  0  0  0  0  0 "
     "-1 +1  0  0  0  0  0  0  0  0 "
@@ -114,21 +114,21 @@ TEST(Matrix, Submatrix)
   submatrix->columns[1] = 4;
   submatrix->columns[2] = 6;
 
-  TU_CHAR_MATRIX* result = NULL;
+  TU_CHRMAT* result = NULL;
   TUfilterCharSubmatrix(tu, matrix, submatrix, &result);
 
-  TU_CHAR_MATRIX* check = NULL;
+  TU_CHRMAT* check = NULL;
   stringToCharMatrix(tu, &check, "3 3 "
     "+1  0   0"
     " 0 -1  +1"
     " 0  0  -1"
   );
-  ASSERT_TRUE(TUcheckCharMatrixEqual(result, check));
-  TUfreeCharMatrix(tu, &check);
+  ASSERT_TRUE(TUchrmatCheckEqual(result, check));
+  TUchrmatFree(tu, &check);
 
-  TUfreeCharMatrix(tu, &result);
+  TUchrmatFree(tu, &result);
   TUfreeSubmatrix(tu, &submatrix);
-  TUfreeCharMatrix(tu, &matrix);
+  TUchrmatFree(tu, &matrix);
 
   TUfreeEnvironment(&tu);
 }

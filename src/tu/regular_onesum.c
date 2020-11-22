@@ -13,7 +13,7 @@ int compareOneSumComponents(const void* a, const void* b)
     ((TU_ONESUM_COMPONENT*)b)->matrix->numNonzeros;
 }
 
-int TUregularDecomposeOneSum(TU* tu, TU_CHAR_MATRIX* matrix, int* rowLabels, int* columnLabels,
+int TUregularDecomposeOneSum(TU* tu, TU_CHRMAT* matrix, int* rowLabels, int* columnLabels,
   TU_DEC** pdecomposition, bool constructDecomposition)
 {
   assert(tu);
@@ -33,11 +33,11 @@ int TUregularDecomposeOneSum(TU* tu, TU_CHAR_MATRIX* matrix, int* rowLabels, int
 
   if (numComponents <= 1)
   {
-    decomposition->matrix = (TU_CHAR_MATRIX*) components[0].matrix;
+    decomposition->matrix = (TU_CHRMAT*) components[0].matrix;
     if (constructDecomposition)
-      decomposition->transpose = (TU_CHAR_MATRIX*) components[0].transpose;
+      decomposition->transpose = (TU_CHRMAT*) components[0].transpose;
     else
-      TUfreeCharMatrix(tu, (TU_CHAR_MATRIX**) &components[0].transpose);
+      TUchrmatFree(tu, (TU_CHRMAT**) &components[0].transpose);
     if (rowLabels)
     {
       TUallocBlockArray(tu, &decomposition->rowLabels, matrix->numRows);
@@ -58,8 +58,8 @@ int TUregularDecomposeOneSum(TU* tu, TU_CHAR_MATRIX* matrix, int* rowLabels, int
     /* Copy matrix and labels to node and compute transpose. */
     if (constructDecomposition)
     {
-      TUcopyCharMatrix(tu, matrix, &decomposition->matrix);
-      TUtransposeCharMatrix(tu, matrix, &decomposition->transpose);
+      TUchrmatCopy(tu, matrix, &decomposition->matrix);
+      TUchrmatTranspose(tu, matrix, &decomposition->transpose);
     }
     if (rowLabels)
     {
@@ -90,11 +90,11 @@ int TUregularDecomposeOneSum(TU* tu, TU_CHAR_MATRIX* matrix, int* rowLabels, int
       int comp = (orderedComponents[i] - components) / sizeof(TU_ONESUM_COMPONENT*);
       TUcreateDec(tu, &decomposition->children[i]);
       TU_DEC* child = decomposition->children[i];
-      child->matrix = (TU_CHAR_MATRIX*) components[comp].matrix;
+      child->matrix = (TU_CHRMAT*) components[comp].matrix;
       if (constructDecomposition)
-        child->transpose = (TU_CHAR_MATRIX*) components[comp].transpose;
+        child->transpose = (TU_CHRMAT*) components[comp].transpose;
       else
-        TUfreeCharMatrix(tu, (TU_CHAR_MATRIX**) &components[comp].transpose);
+        TUchrmatFree(tu, (TU_CHRMAT**) &components[comp].transpose);
       if (rowLabels)
       {
         TUallocBlockArray(tu, &child->rowLabels, child->matrix->numRows);

@@ -18,7 +18,7 @@ extern "C" {
 TU_EXPORT
 bool TUtestSignDouble(
   TU* tu,                   /**< TU environment. */
-  TU_DOUBLE_MATRIX* matrix, /**< Sparse double matrix. */
+  TU_DBLMAT* matrix, /**< Sparse double matrix. */
   TU_SUBMATRIX** submatrix  /**< If not \c NULL, a submatrix with bad determinant is stored. */
 );
 
@@ -33,7 +33,7 @@ bool TUtestSignDouble(
 TU_EXPORT
 bool TUcorrectSignDouble(
   TU* tu,                   /**< TU environment */
-  TU_DOUBLE_MATRIX* matrix, /**< Sparse double matrix */
+  TU_DBLMAT* matrix, /**< Sparse double matrix */
   TU_SUBMATRIX** submatrix  /**< If not \c NULL, a submatrix with bad determinant is stored. */
 );
 
@@ -48,7 +48,7 @@ bool TUcorrectSignDouble(
 TU_EXPORT
 bool TUtestSignInt(
   TU* tu,                   /**< TU environment */
-  TU_INT_MATRIX* matrix,    /**< Sparse int matrix */
+  TU_INTMAT* matrix,    /**< Sparse int matrix */
   TU_SUBMATRIX** submatrix  /**< If not \c NULL, a submatrix with bad determinant is stored. */
 );
 
@@ -63,7 +63,7 @@ bool TUtestSignInt(
 TU_EXPORT
 bool TUcorrectSignInt(
   TU* tu,                   /**< TU environment */
-  TU_INT_MATRIX* matrix,    /**< Sparse int matrix */
+  TU_INTMAT* matrix,    /**< Sparse int matrix */
   TU_SUBMATRIX** submatrix  /**< If not \c NULL, a submatrix with bad determinant is stored. */
 );
 
@@ -79,7 +79,7 @@ bool TUcorrectSignInt(
 TU_EXPORT
 bool TUtestSignChar(
   TU* tu,                   /**< TU environment */
-  TU_CHAR_MATRIX* matrix,   /**< Sparse char matrix */
+  TU_CHRMAT* matrix,   /**< Sparse char matrix */
   TU_SUBMATRIX** submatrix  /**< If not \c NULL, a submatrix with bad determinant is stored. */
 );
 
@@ -95,7 +95,7 @@ bool TUtestSignChar(
 TU_EXPORT
 bool TUcorrectSignChar(
   TU* tu,                   /**< TU environment */
-  TU_CHAR_MATRIX* matrix,   /**< Sparse char matrix */
+  TU_CHRMAT* matrix,   /**< Sparse char matrix */
   TU_SUBMATRIX** submatrix  /**< If not \c NULL, a submatrix with bad determinant is stored. */
 );
 

@@ -317,16 +317,16 @@ void TUlistgraphDeleteEdge(TU* tu, TU_LISTGRAPH* graph, TU_LISTGRAPH_EDGE e)
 }
 
 
-void TUlistgraphPrint(TU_LISTGRAPH* graph)
+void TUlistgraphPrint(FILE* stream, TU_LISTGRAPH* graph)
 {
   for (TU_LISTGRAPH_NODE v = TUlistgraphNodesFirst(graph); TUlistgraphNodesValid(graph, v);
     TUlistgraphNodesNext(graph, v))
   {
-    printf("Node %d:\n", v);
+    fprintf(stream, "Node %d:\n", v);
     for (TU_LISTGRAPH_EDGE e = TUlistgraphIncidentFirst(graph, v);
       TUlistgraphIncidentValid(graph, e); TUlistgraphIncidentNext(graph, e))
     {
-      printf("  Edge %d: {%d,%d}\n", e, TUlistgraphIncidentSource(graph, e),
+      fprintf(stream, "  Edge %d: {%d,%d}\n", e, TUlistgraphIncidentSource(graph, e),
         TUlistgraphIncidentTarget(graph, e));
     }
   }

@@ -25,8 +25,8 @@ extern "C" {
 
 char signSequentiallyConnected(
   TU* tu,                     /**< TU environment. */
-  TU_CHAR_MATRIX* matrix,     /**< Sparse matrix. */
-  TU_CHAR_MATRIX* transpose,  /**< Transpose of \p matrix. */
+  TU_CHRMAT* matrix,     /**< Sparse matrix. */
+  TU_CHRMAT* transpose,  /**< Transpose of \p matrix. */
   bool change,                /**< Whether signs of \p matrix should be changed if necessary */
   TU_SUBMATRIX** submatrix    /**< If not \c NULL, a submatrix with bad determinant is stored. */
 );

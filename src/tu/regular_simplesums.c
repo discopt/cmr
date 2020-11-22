@@ -14,8 +14,8 @@ TU_DEC* TUregularDecomposeSimpleSums(TU* tu, TU_DEC* decomposition, bool unitVec
   assert(TUisTernaryChar(tu, decomposition->matrix, NULL));
 
   TU_DEC* result = decomposition;
-  TU_CHAR_MATRIX* matrix = decomposition->matrix;
-  TU_CHAR_MATRIX* transpose = decomposition->transpose;
+  TU_CHRMAT* matrix = decomposition->matrix;
+  TU_CHRMAT* transpose = decomposition->transpose;
 
   int* rowNonzeros = NULL;
   int* columnNonzeros = NULL;
@@ -76,7 +76,7 @@ TU_DEC* TUregularDecomposeSimpleSums(TU* tu, TU_DEC* decomposition, bool unitVec
         if (element < 0)
         {
           int row = -1 - element;
-          TUcreateCharMatrix(tu, &result->children[0]->matrix, 2, 1, 2);
+          TUchrmatCreate(tu, &result->children[0]->matrix, 2, 1, 2);
           result->children[1]->matrix->rowStarts[0] = 0;
           result->children[1]->matrix->rowStarts[1] = 1;
           result->children[1]->matrix->rowStarts[2] = 2;
@@ -119,7 +119,7 @@ TU_DEC* TUregularDecomposeSimpleSums(TU* tu, TU_DEC* decomposition, bool unitVec
 
           /* Create matrix of 2nd child. */
 
-          TUcreateCharMatrix(tu, &result->children[1]->matrix, result->matrix->numRows - 1,
+          TUchrmatCreate(tu, &result->children[1]->matrix, result->matrix->numRows - 1,
             result->matrix->numColumns, result->matrix->numNonzeros - 1);
           int entry = 0;
           for (int r = 0; r < result->matrix->numRows; ++r)
@@ -153,7 +153,7 @@ TU_DEC* TUregularDecomposeSimpleSums(TU* tu, TU_DEC* decomposition, bool unitVec
         else
         {
           int column = element;
-          TUcreateCharMatrix(tu, &result->children[0]->matrix, 1, 2, 2);
+          TUchrmatCreate(tu, &result->children[0]->matrix, 1, 2, 2);
           result->children[1]->matrix->rowStarts[0] = 0;
           result->children[1]->matrix->rowStarts[1] = 2;
           result->children[1]->matrix->entryColumns[0] = 0;
@@ -196,7 +196,7 @@ TU_DEC* TUregularDecomposeSimpleSums(TU* tu, TU_DEC* decomposition, bool unitVec
 
           /* Create matrix of 2nd child. */
 
-          TUcreateCharMatrix(tu, &result->children[1]->transpose, result->transpose->numRows - 1,
+          TUchrmatCreate(tu, &result->children[1]->transpose, result->transpose->numRows - 1,
             result->transpose->numColumns, result->transpose->numNonzeros - 1);
           int entry = 0;
           for (int r = 0; r < result->transpose->numRows; ++r)

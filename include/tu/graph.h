@@ -131,6 +131,7 @@ void TUlistgraphDeleteEdge(
   ((graph)->arcs[i].target)
 
 void TUlistgraphPrint(
+  FILE* stream,        /**< Stream. */
   TU_LISTGRAPH* graph  /**< Graph structure. */
 );
 

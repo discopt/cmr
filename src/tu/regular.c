@@ -6,7 +6,7 @@
 #include "regular_internal.h"
 #include "env_internal.h"
 
-bool TUregularTest(TU* tu, TU_CHAR_MATRIX* matrix, int* rowLabels, int* columnLabels,
+bool TUregularTest(TU* tu, TU_CHRMAT* matrix, int* rowLabels, int* columnLabels,
   TU_DEC** pdecomposition)
 {
   bool isRegular = true;

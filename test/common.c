@@ -5,7 +5,7 @@
 
 #include <stdio.h>
 
-void stringToDoubleMatrix(TU* tu, TU_DOUBLE_MATRIX** matrix, const char* string)
+void stringToDoubleMatrix(TU* tu, TU_DBLMAT** matrix, const char* string)
 {
   assert(tu);
   char* end;
@@ -19,7 +19,7 @@ void stringToDoubleMatrix(TU* tu, TU_DOUBLE_MATRIX** matrix, const char* string)
   assert(end > string);
   string = end;
 
-  TUcreateDoubleMatrix(tu, matrix, numRows, numColumns, numRows * numColumns);
+  TUdblmatCreate(tu, matrix, numRows, numColumns, numRows * numColumns);
 
   (*matrix)->numNonzeros = 0;
   for (int row = 0; row < (*matrix)->numRows; ++row)
@@ -41,7 +41,7 @@ void stringToDoubleMatrix(TU* tu, TU_DOUBLE_MATRIX** matrix, const char* string)
   }
 }
 
-void stringToIntMatrix(TU* tu, TU_INT_MATRIX** matrix, const char* string)
+void stringToIntMatrix(TU* tu, TU_INTMAT** matrix, const char* string)
 {
   assert(tu);
   char* end;
@@ -55,7 +55,7 @@ void stringToIntMatrix(TU* tu, TU_INT_MATRIX** matrix, const char* string)
   assert(end > string);
   string = end;
 
-  TUcreateIntMatrix(tu, matrix, numRows, numColumns, numRows * numColumns);
+  TUintmatCreate(tu, matrix, numRows, numColumns, numRows * numColumns);
 
   (*matrix)->numNonzeros = 0;
   for (int row = 0; row < (*matrix)->numRows; ++row)
@@ -78,7 +78,7 @@ void stringToIntMatrix(TU* tu, TU_INT_MATRIX** matrix, const char* string)
 }
 
 
-void stringToCharMatrix(TU* tu, TU_CHAR_MATRIX** matrix, const char* string)
+void stringToCharMatrix(TU* tu, TU_CHRMAT** matrix, const char* string)
 {
   assert(tu);
   char* end;
@@ -92,7 +92,7 @@ void stringToCharMatrix(TU* tu, TU_CHAR_MATRIX** matrix, const char* string)
   assert(end > string);
   string = end;
 
-  TUcreateCharMatrix(tu, matrix, numRows, numColumns, numRows * numColumns);
+  TUchrmatCreate(tu, matrix, numRows, numColumns, numRows * numColumns);
 
   (*matrix)->numNonzeros = 0;
   for (int row = 0; row < (*matrix)->numRows; ++row)

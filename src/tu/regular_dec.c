@@ -39,9 +39,9 @@ void TUfreeDec(TU* tu, TU_DEC** pdec)
     TUfreeBlockArray(tu, &dec->children);
   }
   if (dec->matrix)
-    TUfreeCharMatrix(tu, &dec->matrix);
+    TUchrmatFree(tu, &dec->matrix);
   if (dec->transpose)
-    TUfreeCharMatrix(tu, &dec->transpose);
+    TUchrmatFree(tu, &dec->transpose);
   if (dec->rowLabels)
     TUfreeBlockArray(tu, &dec->rowLabels);
   if (dec->columnLabels)
@@ -138,7 +138,7 @@ void TUcreateDecChild(TU* tu, TU_DEC* dec, int numRows, int* rows, int numColumn
   assert(rows);
   assert(columns);
 
-  TU_CHAR_MATRIX* parentMatrix = dec->matrix;
+  TU_CHRMAT* parentMatrix = dec->matrix;
   assert(parentMatrix);
 
   TUcreateDec(tu, presult);
@@ -162,8 +162,8 @@ void TUcreateDecChild(TU* tu, TU_DEC* dec, int numRows, int* rows, int numColumn
 
   /* Create the child matrix. */
   
-  TUcreateCharMatrix(tu, &result->matrix, numRows, numColumns, 0);
-  TU_CHAR_MATRIX* childMatrix = result->matrix;
+  TUchrmatCreate(tu, &result->matrix, numRows, numColumns, 0);
+  TU_CHRMAT* childMatrix = result->matrix;
 
   int* columnMap = NULL;
   TUallocStackArray(tu, &columnMap, parentMatrix->numColumns);
@@ -197,7 +197,7 @@ void TUcreateDecChild(TU* tu, TU_DEC* dec, int numRows, int* rows, int numColumn
   /* Write nonzeros to child matrix. */
 
   numNonzeros = 0;
-  int countNonzeros; // TODO: Added to make it compile.
+  int countNonzeros = 0; // TODO: Added to make it compile.
   for (int childRow = 0; childRow < numRows; ++childRow)
   {
     int parentRow = rows[childRow];
@@ -222,6 +222,6 @@ void TUcreateDecChild(TU* tu, TU_DEC* dec, int numRows, int* rows, int numColumn
 
   if (constructDecomposition)
   {
-    TUtransposeCharMatrix(tu, result->matrix, &result->transpose);
+    TUchrmatTranspose(tu, result->matrix, &result->transpose);
   }
 }

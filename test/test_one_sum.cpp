@@ -8,7 +8,7 @@ TEST(OneSum, DoubleToDouble)
   TU* tu = NULL;
   TUcreateEnvironment(&tu);
 
-  TU_DOUBLE_MATRIX* matrix = NULL;
+  TU_DBLMAT* matrix = NULL;
   stringToDoubleMatrix(tu, &matrix, "10 10 "
     "0 1 0 2 0 0 0 0 0 0 "
     "0 0 0 0 0 0 0 1 0 0 "
@@ -29,8 +29,8 @@ TEST(OneSum, DoubleToDouble)
   int rowsToComponentRows[10];
   int columnsToComponentColumns[10];
 
-  TU_DOUBLE_MATRIX* check = NULL;
-  TU_DOUBLE_MATRIX* checkTranspose = NULL;
+  TU_DBLMAT* check = NULL;
+  TU_DBLMAT* checkTranspose = NULL;
   decomposeOneSum(tu, (TU_MATRIX*) matrix, sizeof(double), sizeof(double), &numComponents, &components,
     rowsToComponents, columnsToComponents, rowsToComponentRows, columnsToComponentColumns);
 
@@ -45,8 +45,8 @@ TEST(OneSum, DoubleToDouble)
     "2 4 5 "
     "0 0 6 "
   );
-  ASSERT_TRUE(TUcheckDoubleMatrixEqual(check, (TU_DOUBLE_MATRIX*) components[0].matrix));
-  ASSERT_TRUE(TUcheckDoubleMatrixEqual(checkTranspose, (TU_DOUBLE_MATRIX*) components[0].transpose));
+  ASSERT_TRUE(TUdblmatCheckEqual(check, (TU_DBLMAT*) components[0].matrix));
+  ASSERT_TRUE(TUdblmatCheckEqual(checkTranspose, (TU_DBLMAT*) components[0].transpose));
   ASSERT_EQ(components[0].rowsToOriginal[0], 0);
   ASSERT_EQ(components[0].rowsToOriginal[1], 5);
   ASSERT_EQ(components[0].rowsToOriginal[2], 6);
@@ -65,8 +65,8 @@ TEST(OneSum, DoubleToDouble)
   ASSERT_EQ(columnsToComponentColumns[1], 0);
   ASSERT_EQ(columnsToComponentColumns[3], 1);
   ASSERT_EQ(columnsToComponentColumns[8], 2);
-  TUfreeDoubleMatrix(tu, &check);
-  TUfreeDoubleMatrix(tu, &checkTranspose);
+  TUdblmatFree(tu, &check);
+  TUdblmatFree(tu, &checkTranspose);
 
   stringToDoubleMatrix(tu, &check, "2 2 "
     "1 0 "
@@ -76,8 +76,8 @@ TEST(OneSum, DoubleToDouble)
     "1 3 "
     "0 2 "
   );
-  ASSERT_TRUE(TUcheckDoubleMatrixEqual(check, (TU_DOUBLE_MATRIX*) components[1].matrix));
-  ASSERT_TRUE(TUcheckDoubleMatrixEqual(checkTranspose, (TU_DOUBLE_MATRIX*) components[1].transpose));
+  ASSERT_TRUE(TUdblmatCheckEqual(check, (TU_DBLMAT*) components[1].matrix));
+  ASSERT_TRUE(TUdblmatCheckEqual(checkTranspose, (TU_DBLMAT*) components[1].transpose));
   ASSERT_EQ(components[1].rowsToOriginal[0], 1);
   ASSERT_EQ(components[1].rowsToOriginal[1], 2);
   ASSERT_EQ(components[1].columnsToOriginal[0], 7);
@@ -90,20 +90,20 @@ TEST(OneSum, DoubleToDouble)
   ASSERT_EQ(rowsToComponentRows[2], 1);
   ASSERT_EQ(columnsToComponentColumns[7], 0);
   ASSERT_EQ(columnsToComponentColumns[2], 1);
-  TUfreeDoubleMatrix(tu, &check);
-  TUfreeDoubleMatrix(tu, &checkTranspose);
+  TUdblmatFree(tu, &check);
+  TUdblmatFree(tu, &checkTranspose);
 
   stringToDoubleMatrix(tu, &check, "1 0 "
   );
   stringToDoubleMatrix(tu, &checkTranspose, "0 1 "
   );
-  ASSERT_TRUE(TUcheckDoubleMatrixEqual(check, (TU_DOUBLE_MATRIX*) components[2].matrix));
-  ASSERT_TRUE(TUcheckDoubleMatrixEqual(checkTranspose, (TU_DOUBLE_MATRIX*) components[2].transpose));
+  ASSERT_TRUE(TUdblmatCheckEqual(check, (TU_DBLMAT*) components[2].matrix));
+  ASSERT_TRUE(TUdblmatCheckEqual(checkTranspose, (TU_DBLMAT*) components[2].transpose));
   ASSERT_EQ(components[2].rowsToOriginal[0], 3);
   ASSERT_EQ(rowsToComponents[3], 2);
   ASSERT_EQ(rowsToComponentRows[3], 0);
-  TUfreeDoubleMatrix(tu, &check);
-  TUfreeDoubleMatrix(tu, &checkTranspose);
+  TUdblmatFree(tu, &check);
+  TUdblmatFree(tu, &checkTranspose);
 
   stringToDoubleMatrix(tu, &check, "1 1 "
     "1 "
@@ -111,16 +111,16 @@ TEST(OneSum, DoubleToDouble)
   stringToDoubleMatrix(tu, &checkTranspose, "1 1 "
     "1 "
   );
-  ASSERT_TRUE(TUcheckDoubleMatrixEqual(check, (TU_DOUBLE_MATRIX*) components[3].matrix));
-  ASSERT_TRUE(TUcheckDoubleMatrixEqual(checkTranspose, (TU_DOUBLE_MATRIX*) components[3].transpose));
+  ASSERT_TRUE(TUdblmatCheckEqual(check, (TU_DBLMAT*) components[3].matrix));
+  ASSERT_TRUE(TUdblmatCheckEqual(checkTranspose, (TU_DBLMAT*) components[3].transpose));
   ASSERT_EQ(components[3].rowsToOriginal[0], 4);
   ASSERT_EQ(components[3].columnsToOriginal[0], 0);
   ASSERT_EQ(rowsToComponents[4], 3);
   ASSERT_EQ(columnsToComponents[0], 3);
   ASSERT_EQ(rowsToComponentRows[4], 0);
   ASSERT_EQ(columnsToComponentColumns[0], 0);
-  TUfreeDoubleMatrix(tu, &check);
-  TUfreeDoubleMatrix(tu, &checkTranspose);
+  TUdblmatFree(tu, &check);
+  TUdblmatFree(tu, &checkTranspose);
 
   stringToDoubleMatrix(tu, &check, "3 3 "
     "1 0 0 "
@@ -132,8 +132,8 @@ TEST(OneSum, DoubleToDouble)
     "0 3 0 "
     "0 4 5 "
   );
-  ASSERT_TRUE(TUcheckDoubleMatrixEqual(check, (TU_DOUBLE_MATRIX*) components[4].matrix));
-  ASSERT_TRUE(TUcheckDoubleMatrixEqual(checkTranspose, (TU_DOUBLE_MATRIX*) components[4].transpose));
+  ASSERT_TRUE(TUdblmatCheckEqual(check, (TU_DBLMAT*) components[4].matrix));
+  ASSERT_TRUE(TUdblmatCheckEqual(checkTranspose, (TU_DBLMAT*) components[4].transpose));
   ASSERT_EQ(components[4].rowsToOriginal[0], 7);
   ASSERT_EQ(components[4].rowsToOriginal[1], 8);
   ASSERT_EQ(components[4].rowsToOriginal[2], 9);
@@ -152,31 +152,31 @@ TEST(OneSum, DoubleToDouble)
   ASSERT_EQ(columnsToComponentColumns[4], 0);
   ASSERT_EQ(columnsToComponentColumns[5], 1);
   ASSERT_EQ(columnsToComponentColumns[6], 2);
-  TUfreeDoubleMatrix(tu, &check);
-  TUfreeDoubleMatrix(tu, &checkTranspose);
+  TUdblmatFree(tu, &check);
+  TUdblmatFree(tu, &checkTranspose);
 
   stringToDoubleMatrix(tu, &check, "0 1 "
   );
   stringToDoubleMatrix(tu, &checkTranspose, "1 0 "
   );
-  ASSERT_TRUE(TUcheckDoubleMatrixEqual(check, (TU_DOUBLE_MATRIX*) components[5].matrix));
-  ASSERT_TRUE(TUcheckDoubleMatrixEqual(checkTranspose, (TU_DOUBLE_MATRIX*) components[5].transpose));
+  ASSERT_TRUE(TUdblmatCheckEqual(check, (TU_DBLMAT*) components[5].matrix));
+  ASSERT_TRUE(TUdblmatCheckEqual(checkTranspose, (TU_DBLMAT*) components[5].transpose));
   ASSERT_EQ(components[5].columnsToOriginal[0], 9);
   ASSERT_EQ(columnsToComponents[9], 5);
   ASSERT_EQ(columnsToComponentColumns[9], 0);
-  TUfreeDoubleMatrix(tu, &check);
-  TUfreeDoubleMatrix(tu, &checkTranspose);
+  TUdblmatFree(tu, &check);
+  TUdblmatFree(tu, &checkTranspose);
 
   for (int c = 0; c < numComponents; ++c)
   {
-    TUfreeDoubleMatrix(tu, (TU_DOUBLE_MATRIX**) &components[c].matrix);
-    TUfreeDoubleMatrix(tu, (TU_DOUBLE_MATRIX**) &components[c].transpose);
+    TUdblmatFree(tu, (TU_DBLMAT**) &components[c].matrix);
+    TUdblmatFree(tu, (TU_DBLMAT**) &components[c].transpose);
     TUfreeBlockArray(tu, &components[c].rowsToOriginal);
     TUfreeBlockArray(tu, &components[c].columnsToOriginal);
   }
   TUfreeBlockArray(tu, &components);
 
-  TUfreeDoubleMatrix(tu, &matrix);
+  TUdblmatFree(tu, &matrix);
   TUfreeEnvironment(&tu);
 }
 
@@ -185,7 +185,7 @@ TEST(OneSum, IntToInt)
   TU* tu = NULL;
   TUcreateEnvironment(&tu);
 
-  TU_INT_MATRIX* matrix = NULL;
+  TU_INTMAT* matrix = NULL;
   stringToIntMatrix(tu, &matrix, "10 10 "
     "0 1 0 2 0 0 0 0 0 0 "
     "0 0 0 0 0 0 0 1 0 0 "
@@ -206,8 +206,8 @@ TEST(OneSum, IntToInt)
   int rowsToComponentRows[10];
   int columnsToComponentColumns[10];
 
-  TU_INT_MATRIX* check = NULL;
-  TU_INT_MATRIX* checkTranspose = NULL;
+  TU_INTMAT* check = NULL;
+  TU_INTMAT* checkTranspose = NULL;
   decomposeOneSum(tu, (TU_MATRIX*) matrix, sizeof(int), sizeof(int), &numComponents, &components,
     rowsToComponents, columnsToComponents, rowsToComponentRows, columnsToComponentColumns);
 
@@ -222,8 +222,8 @@ TEST(OneSum, IntToInt)
     "2 4 5 "
     "0 0 6 "
   );
-  ASSERT_TRUE(TUcheckIntMatrixEqual(check, (TU_INT_MATRIX*) components[0].matrix));
-  ASSERT_TRUE(TUcheckIntMatrixEqual(checkTranspose, (TU_INT_MATRIX*) components[0].transpose));
+  ASSERT_TRUE(TUintmatCheckEqual(check, (TU_INTMAT*) components[0].matrix));
+  ASSERT_TRUE(TUintmatCheckEqual(checkTranspose, (TU_INTMAT*) components[0].transpose));
   ASSERT_EQ(components[0].rowsToOriginal[0], 0);
   ASSERT_EQ(components[0].rowsToOriginal[1], 5);
   ASSERT_EQ(components[0].rowsToOriginal[2], 6);
@@ -242,8 +242,8 @@ TEST(OneSum, IntToInt)
   ASSERT_EQ(columnsToComponentColumns[1], 0);
   ASSERT_EQ(columnsToComponentColumns[3], 1);
   ASSERT_EQ(columnsToComponentColumns[8], 2);
-  TUfreeIntMatrix(tu, &check);
-  TUfreeIntMatrix(tu, &checkTranspose);
+  TUintmatFree(tu, &check);
+  TUintmatFree(tu, &checkTranspose);
 
   stringToIntMatrix(tu, &check, "2 2 "
     "1 0 "
@@ -253,8 +253,8 @@ TEST(OneSum, IntToInt)
     "1 3 "
     "0 2 "
   );
-  ASSERT_TRUE(TUcheckIntMatrixEqual(check, (TU_INT_MATRIX*) components[1].matrix));
-  ASSERT_TRUE(TUcheckIntMatrixEqual(checkTranspose, (TU_INT_MATRIX*) components[1].transpose));
+  ASSERT_TRUE(TUintmatCheckEqual(check, (TU_INTMAT*) components[1].matrix));
+  ASSERT_TRUE(TUintmatCheckEqual(checkTranspose, (TU_INTMAT*) components[1].transpose));
   ASSERT_EQ(components[1].rowsToOriginal[0], 1);
   ASSERT_EQ(components[1].rowsToOriginal[1], 2);
   ASSERT_EQ(components[1].columnsToOriginal[0], 7);
@@ -267,20 +267,20 @@ TEST(OneSum, IntToInt)
   ASSERT_EQ(rowsToComponentRows[2], 1);
   ASSERT_EQ(columnsToComponentColumns[7], 0);
   ASSERT_EQ(columnsToComponentColumns[2], 1);
-  TUfreeIntMatrix(tu, &check);
-  TUfreeIntMatrix(tu, &checkTranspose);
+  TUintmatFree(tu, &check);
+  TUintmatFree(tu, &checkTranspose);
 
   stringToIntMatrix(tu, &check, "1 0 "
   );
   stringToIntMatrix(tu, &checkTranspose, "0 1 "
   );
-  ASSERT_TRUE(TUcheckIntMatrixEqual(check, (TU_INT_MATRIX*) components[2].matrix));
-  ASSERT_TRUE(TUcheckIntMatrixEqual(checkTranspose, (TU_INT_MATRIX*) components[2].transpose));
+  ASSERT_TRUE(TUintmatCheckEqual(check, (TU_INTMAT*) components[2].matrix));
+  ASSERT_TRUE(TUintmatCheckEqual(checkTranspose, (TU_INTMAT*) components[2].transpose));
   ASSERT_EQ(components[2].rowsToOriginal[0], 3);
   ASSERT_EQ(rowsToComponents[3], 2);
   ASSERT_EQ(rowsToComponentRows[3], 0);
-  TUfreeIntMatrix(tu, &check);
-  TUfreeIntMatrix(tu, &checkTranspose);
+  TUintmatFree(tu, &check);
+  TUintmatFree(tu, &checkTranspose);
 
   stringToIntMatrix(tu, &check, "1 1 "
     "1 "
@@ -288,16 +288,16 @@ TEST(OneSum, IntToInt)
   stringToIntMatrix(tu, &checkTranspose, "1 1 "
     "1 "
   );
-  ASSERT_TRUE(TUcheckIntMatrixEqual(check, (TU_INT_MATRIX*) components[3].matrix));
-  ASSERT_TRUE(TUcheckIntMatrixEqual(checkTranspose, (TU_INT_MATRIX*) components[3].transpose));
+  ASSERT_TRUE(TUintmatCheckEqual(check, (TU_INTMAT*) components[3].matrix));
+  ASSERT_TRUE(TUintmatCheckEqual(checkTranspose, (TU_INTMAT*) components[3].transpose));
   ASSERT_EQ(components[3].rowsToOriginal[0], 4);
   ASSERT_EQ(components[3].columnsToOriginal[0], 0);
   ASSERT_EQ(rowsToComponents[4], 3);
   ASSERT_EQ(columnsToComponents[0], 3);
   ASSERT_EQ(rowsToComponentRows[4], 0);
   ASSERT_EQ(columnsToComponentColumns[0], 0);
-  TUfreeIntMatrix(tu, &check);
-  TUfreeIntMatrix(tu, &checkTranspose);
+  TUintmatFree(tu, &check);
+  TUintmatFree(tu, &checkTranspose);
 
   stringToIntMatrix(tu, &check, "3 3 "
     "1 0 0 "
@@ -309,8 +309,8 @@ TEST(OneSum, IntToInt)
     "0 3 0 "
     "0 4 5 "
   );
-  ASSERT_TRUE(TUcheckIntMatrixEqual(check, (TU_INT_MATRIX*) components[4].matrix));
-  ASSERT_TRUE(TUcheckIntMatrixEqual(checkTranspose, (TU_INT_MATRIX*) components[4].transpose));
+  ASSERT_TRUE(TUintmatCheckEqual(check, (TU_INTMAT*) components[4].matrix));
+  ASSERT_TRUE(TUintmatCheckEqual(checkTranspose, (TU_INTMAT*) components[4].transpose));
   ASSERT_EQ(components[4].rowsToOriginal[0], 7);
   ASSERT_EQ(components[4].rowsToOriginal[1], 8);
   ASSERT_EQ(components[4].rowsToOriginal[2], 9);
@@ -329,31 +329,31 @@ TEST(OneSum, IntToInt)
   ASSERT_EQ(columnsToComponentColumns[4], 0);
   ASSERT_EQ(columnsToComponentColumns[5], 1);
   ASSERT_EQ(columnsToComponentColumns[6], 2);
-  TUfreeIntMatrix(tu, &check);
-  TUfreeIntMatrix(tu, &checkTranspose);
+  TUintmatFree(tu, &check);
+  TUintmatFree(tu, &checkTranspose);
 
   stringToIntMatrix(tu, &check, "0 1 "
   );
   stringToIntMatrix(tu, &checkTranspose, "1 0 "
   );
-  ASSERT_TRUE(TUcheckIntMatrixEqual(check, (TU_INT_MATRIX*) components[5].matrix));
-  ASSERT_TRUE(TUcheckIntMatrixEqual(checkTranspose, (TU_INT_MATRIX*) components[5].transpose));
+  ASSERT_TRUE(TUintmatCheckEqual(check, (TU_INTMAT*) components[5].matrix));
+  ASSERT_TRUE(TUintmatCheckEqual(checkTranspose, (TU_INTMAT*) components[5].transpose));
   ASSERT_EQ(components[5].columnsToOriginal[0], 9);
   ASSERT_EQ(columnsToComponents[9], 5);
   ASSERT_EQ(columnsToComponentColumns[9], 0);
-  TUfreeIntMatrix(tu, &check);
-  TUfreeIntMatrix(tu, &checkTranspose);
+  TUintmatFree(tu, &check);
+  TUintmatFree(tu, &checkTranspose);
 
   for (int c = 0; c < numComponents; ++c)
   {
-    TUfreeIntMatrix(tu, (TU_INT_MATRIX**) &components[c].matrix);
-    TUfreeIntMatrix(tu, (TU_INT_MATRIX**) &components[c].transpose);
+    TUintmatFree(tu, (TU_INTMAT**) &components[c].matrix);
+    TUintmatFree(tu, (TU_INTMAT**) &components[c].transpose);
     TUfreeBlockArray(tu, &components[c].rowsToOriginal);
     TUfreeBlockArray(tu, &components[c].columnsToOriginal);
   }
   TUfreeBlockArray(tu, &components);
 
-  TUfreeIntMatrix(tu, &matrix);
+  TUintmatFree(tu, &matrix);
   TUfreeEnvironment(&tu);
 }
 
@@ -362,7 +362,7 @@ TEST(OneSum, CharToChar)
   TU* tu = NULL;
   TUcreateEnvironment(&tu);
 
-  TU_CHAR_MATRIX* matrix = NULL;
+  TU_CHRMAT* matrix = NULL;
   stringToCharMatrix(tu, &matrix, "10 10 "
     "0 1 0 2 0 0 0 0 0 0 "
     "0 0 0 0 0 0 0 1 0 0 "
@@ -383,8 +383,8 @@ TEST(OneSum, CharToChar)
   int rowsToComponentRows[10];
   int columnsToComponentColumns[10];
 
-  TU_CHAR_MATRIX* check = NULL;
-  TU_CHAR_MATRIX* checkTranspose = NULL;
+  TU_CHRMAT* check = NULL;
+  TU_CHRMAT* checkTranspose = NULL;
   decomposeOneSum(tu, (TU_MATRIX*) matrix, sizeof(char), sizeof(char), &numComponents, &components,
     rowsToComponents, columnsToComponents, rowsToComponentRows, columnsToComponentColumns);
 
@@ -399,8 +399,8 @@ TEST(OneSum, CharToChar)
     "2 4 5 "
     "0 0 6 "
   );
-  ASSERT_TRUE(TUcheckCharMatrixEqual(check, (TU_CHAR_MATRIX*) components[0].matrix));
-  ASSERT_TRUE(TUcheckCharMatrixEqual(checkTranspose, (TU_CHAR_MATRIX*) components[0].transpose));
+  ASSERT_TRUE(TUchrmatCheckEqual(check, (TU_CHRMAT*) components[0].matrix));
+  ASSERT_TRUE(TUchrmatCheckEqual(checkTranspose, (TU_CHRMAT*) components[0].transpose));
   ASSERT_EQ(components[0].rowsToOriginal[0], 0);
   ASSERT_EQ(components[0].rowsToOriginal[1], 5);
   ASSERT_EQ(components[0].rowsToOriginal[2], 6);
@@ -419,8 +419,8 @@ TEST(OneSum, CharToChar)
   ASSERT_EQ(columnsToComponentColumns[1], 0);
   ASSERT_EQ(columnsToComponentColumns[3], 1);
   ASSERT_EQ(columnsToComponentColumns[8], 2);
-  TUfreeCharMatrix(tu, &check);
-  TUfreeCharMatrix(tu, &checkTranspose);
+  TUchrmatFree(tu, &check);
+  TUchrmatFree(tu, &checkTranspose);
 
   stringToCharMatrix(tu, &check, "2 2 "
     "1 0 "
@@ -430,8 +430,8 @@ TEST(OneSum, CharToChar)
     "1 3 "
     "0 2 "
   );
-  ASSERT_TRUE(TUcheckCharMatrixEqual(check, (TU_CHAR_MATRIX*) components[1].matrix));
-  ASSERT_TRUE(TUcheckCharMatrixEqual(checkTranspose, (TU_CHAR_MATRIX*) components[1].transpose));
+  ASSERT_TRUE(TUchrmatCheckEqual(check, (TU_CHRMAT*) components[1].matrix));
+  ASSERT_TRUE(TUchrmatCheckEqual(checkTranspose, (TU_CHRMAT*) components[1].transpose));
   ASSERT_EQ(components[1].rowsToOriginal[0], 1);
   ASSERT_EQ(components[1].rowsToOriginal[1], 2);
   ASSERT_EQ(components[1].columnsToOriginal[0], 7);
@@ -444,20 +444,20 @@ TEST(OneSum, CharToChar)
   ASSERT_EQ(rowsToComponentRows[2], 1);
   ASSERT_EQ(columnsToComponentColumns[7], 0);
   ASSERT_EQ(columnsToComponentColumns[2], 1);
-  TUfreeCharMatrix(tu, &check);
-  TUfreeCharMatrix(tu, &checkTranspose);
+  TUchrmatFree(tu, &check);
+  TUchrmatFree(tu, &checkTranspose);
 
   stringToCharMatrix(tu, &check, "1 0 "
   );
   stringToCharMatrix(tu, &checkTranspose, "0 1 "
   );
-  ASSERT_TRUE(TUcheckCharMatrixEqual(check, (TU_CHAR_MATRIX*) components[2].matrix));
-  ASSERT_TRUE(TUcheckCharMatrixEqual(checkTranspose, (TU_CHAR_MATRIX*) components[2].transpose));
+  ASSERT_TRUE(TUchrmatCheckEqual(check, (TU_CHRMAT*) components[2].matrix));
+  ASSERT_TRUE(TUchrmatCheckEqual(checkTranspose, (TU_CHRMAT*) components[2].transpose));
   ASSERT_EQ(components[2].rowsToOriginal[0], 3);
   ASSERT_EQ(rowsToComponents[3], 2);
   ASSERT_EQ(rowsToComponentRows[3], 0);
-  TUfreeCharMatrix(tu, &check);
-  TUfreeCharMatrix(tu, &checkTranspose);
+  TUchrmatFree(tu, &check);
+  TUchrmatFree(tu, &checkTranspose);
 
   stringToCharMatrix(tu, &check, "1 1 "
     "1 "
@@ -465,16 +465,16 @@ TEST(OneSum, CharToChar)
   stringToCharMatrix(tu, &checkTranspose, "1 1 "
     "1 "
   );
-  ASSERT_TRUE(TUcheckCharMatrixEqual(check, (TU_CHAR_MATRIX*) components[3].matrix));
-  ASSERT_TRUE(TUcheckCharMatrixEqual(checkTranspose, (TU_CHAR_MATRIX*) components[3].transpose));
+  ASSERT_TRUE(TUchrmatCheckEqual(check, (TU_CHRMAT*) components[3].matrix));
+  ASSERT_TRUE(TUchrmatCheckEqual(checkTranspose, (TU_CHRMAT*) components[3].transpose));
   ASSERT_EQ(components[3].rowsToOriginal[0], 4);
   ASSERT_EQ(components[3].columnsToOriginal[0], 0);
   ASSERT_EQ(rowsToComponents[4], 3);
   ASSERT_EQ(columnsToComponents[0], 3);
   ASSERT_EQ(rowsToComponentRows[4], 0);
   ASSERT_EQ(columnsToComponentColumns[0], 0);
-  TUfreeCharMatrix(tu, &check);
-  TUfreeCharMatrix(tu, &checkTranspose);
+  TUchrmatFree(tu, &check);
+  TUchrmatFree(tu, &checkTranspose);
 
   stringToCharMatrix(tu, &check, "3 3 "
     "1 0 0 "
@@ -486,8 +486,8 @@ TEST(OneSum, CharToChar)
     "0 3 0 "
     "0 4 5 "
   );
-  ASSERT_TRUE(TUcheckCharMatrixEqual(check, (TU_CHAR_MATRIX*) components[4].matrix));
-  ASSERT_TRUE(TUcheckCharMatrixEqual(checkTranspose, (TU_CHAR_MATRIX*) components[4].transpose));
+  ASSERT_TRUE(TUchrmatCheckEqual(check, (TU_CHRMAT*) components[4].matrix));
+  ASSERT_TRUE(TUchrmatCheckEqual(checkTranspose, (TU_CHRMAT*) components[4].transpose));
   ASSERT_EQ(components[4].rowsToOriginal[0], 7);
   ASSERT_EQ(components[4].rowsToOriginal[1], 8);
   ASSERT_EQ(components[4].rowsToOriginal[2], 9);
@@ -506,30 +506,30 @@ TEST(OneSum, CharToChar)
   ASSERT_EQ(columnsToComponentColumns[4], 0);
   ASSERT_EQ(columnsToComponentColumns[5], 1);
   ASSERT_EQ(columnsToComponentColumns[6], 2);
-  TUfreeCharMatrix(tu, &check);
-  TUfreeCharMatrix(tu, &checkTranspose);
+  TUchrmatFree(tu, &check);
+  TUchrmatFree(tu, &checkTranspose);
 
   stringToCharMatrix(tu, &check, "0 1 "
   );
   stringToCharMatrix(tu, &checkTranspose, "1 0 "
   );
-  ASSERT_TRUE(TUcheckCharMatrixEqual(check, (TU_CHAR_MATRIX*) components[5].matrix));
-  ASSERT_TRUE(TUcheckCharMatrixEqual(checkTranspose, (TU_CHAR_MATRIX*) components[5].transpose));
+  ASSERT_TRUE(TUchrmatCheckEqual(check, (TU_CHRMAT*) components[5].matrix));
+  ASSERT_TRUE(TUchrmatCheckEqual(checkTranspose, (TU_CHRMAT*) components[5].transpose));
   ASSERT_EQ(components[5].columnsToOriginal[0], 9);
   ASSERT_EQ(columnsToComponents[9], 5);
   ASSERT_EQ(columnsToComponentColumns[9], 0);
-  TUfreeCharMatrix(tu, &check);
-  TUfreeCharMatrix(tu, &checkTranspose);
+  TUchrmatFree(tu, &check);
+  TUchrmatFree(tu, &checkTranspose);
 
   for (int c = 0; c < numComponents; ++c)
   {
-    TUfreeCharMatrix(tu, (TU_CHAR_MATRIX**) &components[c].matrix);
-    TUfreeCharMatrix(tu, (TU_CHAR_MATRIX**) &components[c].transpose);
+    TUchrmatFree(tu, (TU_CHRMAT**) &components[c].matrix);
+    TUchrmatFree(tu, (TU_CHRMAT**) &components[c].transpose);
     TUfreeBlockArray(tu, &components[c].rowsToOriginal);
     TUfreeBlockArray(tu, &components[c].columnsToOriginal);
   }
   TUfreeBlockArray(tu, &components);
 
-  TUfreeCharMatrix(tu, &matrix);
+  TUchrmatFree(tu, &matrix);
   TUfreeEnvironment(&tu);
 }

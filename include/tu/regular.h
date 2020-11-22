@@ -27,8 +27,8 @@ typedef enum
 
 typedef struct _TU_DEC
 {
-  TU_CHAR_MATRIX* matrix;     /**< Binary matrix representing this tree node's matroid. */
-  TU_CHAR_MATRIX* transpose;  /**< Transpose of matrix representing this tree node's matroid. */
+  TU_CHRMAT* matrix;     /**< Binary matrix representing this tree node's matroid. */
+  TU_CHRMAT* transpose;  /**< Transpose of matrix representing this tree node's matroid. */
   int* rowLabels;             /**< Array with row labels. */
   int* columnLabels;          /**< Array with column labels. */
   int* parentRows;            /**< Mapping to rows of parent node or \c NULL. */
@@ -137,7 +137,7 @@ int TUgetDecRankUpperRight(
 TU_EXPORT
 bool TUregularTest(
   TU* tu,                 /**< TU environment */
-  TU_CHAR_MATRIX* matrix, /**< Char matrix */
+  TU_CHRMAT* matrix, /**< Char matrix */
   int* rowLabels,         /**< Row labels of matrix; can be \c NULL. */
   int* columnLabels,      /**< Column labels of matrix; can be \c NULL. */
   TU_DEC** decomposition  /**< If not \c NULL, the decomposition tree is stored. */
@@ -155,7 +155,7 @@ bool TUregularTest(
 TU_EXPORT
 int TUregularDecomposeOneSum(
   TU* tu,                     /**< TU environment. */
-  TU_CHAR_MATRIX* matrix,     /**< Given matrix. */
+  TU_CHRMAT* matrix,     /**< Given matrix. */
   int* rowLabels,             /**< Row labels of matrix; can be \c NULL. */
   int* columnLabels,          /**< Column labels of matrix; can be \c NULL. */
   TU_DEC** pdecomposition,    /**< Pointer for storing the partial decomposition. */

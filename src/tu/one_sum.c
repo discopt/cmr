@@ -193,7 +193,7 @@ void decomposeOneSum(TU* tu, TU_MATRIX* matrix, size_t matrixType, size_t target
     components[comp].transpose = NULL;
     components[comp].rowsToOriginal = NULL;
     components[comp].columnsToOriginal = NULL;
-    TUcreateCharMatrix(tu, (TU_CHAR_MATRIX**) &components[comp].matrix, 0, 0, 0);
+    TUchrmatCreate(tu, (TU_CHRMAT**) &components[comp].matrix, 0, 0, 0);
   }
 
   for (int node = 0; node < numNodes; ++node)
@@ -232,14 +232,14 @@ void decomposeOneSum(TU* tu, TU_MATRIX* matrix, size_t matrixType, size_t target
     {
       if (compMatrix->numNonzeros > 0)
         TUallocBlockArray(tu, (char**) &compMatrix->entryValues, compMatrix->numNonzeros);
-      TUcreateCharMatrix(tu, (TU_CHAR_MATRIX**) &components[comp].transpose,
+      TUchrmatCreate(tu, (TU_CHRMAT**) &components[comp].transpose,
         compMatrix->numColumns, compMatrix->numRows, compMatrix->numNonzeros);
     }
     else if (targetType == sizeof(int))
     {
       if (compMatrix->numNonzeros > 0)
         TUallocBlockArray(tu, (int**) &compMatrix->entryValues, compMatrix->numNonzeros);
-      TUcreateIntMatrix(tu, (TU_INT_MATRIX**) &components[comp].transpose,
+      TUintmatCreate(tu, (TU_INTMAT**) &components[comp].transpose,
         compMatrix->numColumns, compMatrix->numRows, compMatrix->numNonzeros);
     }
     else
@@ -247,7 +247,7 @@ void decomposeOneSum(TU* tu, TU_MATRIX* matrix, size_t matrixType, size_t target
       assert(targetType == sizeof(double));
       if (compMatrix->numNonzeros > 0)
         TUallocBlockArray(tu, (double**) &compMatrix->entryValues, compMatrix->numNonzeros);
-      TUcreateDoubleMatrix(tu, (TU_DOUBLE_MATRIX**) &components[comp].transpose,
+      TUdblmatCreate(tu, (TU_DBLMAT**) &components[comp].transpose,
         compMatrix->numColumns, compMatrix->numRows, compMatrix->numNonzeros);
     }
   }
@@ -447,18 +447,18 @@ void decomposeOneSum(TU* tu, TU_MATRIX* matrix, size_t matrixType, size_t target
 
     if (targetType == sizeof(double))
     {
-      assert(TUcheckDoubleMatrixTranspose((TU_DOUBLE_MATRIX*) components[comp].matrix,
-        (TU_DOUBLE_MATRIX*) components[comp].transpose));
+      assert(TUdblmatCheckTranspose((TU_DBLMAT*) components[comp].matrix,
+        (TU_DBLMAT*) components[comp].transpose));
     }
     else if (targetType == sizeof(int))
     {
-      assert(TUcheckIntMatrixTranspose((TU_INT_MATRIX*) components[comp].matrix,
-        (TU_INT_MATRIX*) components[comp].transpose));
+      assert(TUintmatCheckTranspose((TU_INTMAT*) components[comp].matrix,
+        (TU_INTMAT*) components[comp].transpose));
     }
     else if (targetType == sizeof(char))
     {
-      assert(TUcheckCharMatrixTranspose((TU_CHAR_MATRIX*) components[comp].matrix,
-        (TU_CHAR_MATRIX*) components[comp].transpose));
+      assert(TUchrmatCheckTranspose((TU_CHRMAT*) components[comp].matrix,
+        (TU_CHRMAT*) components[comp].transpose));
     }
   }
 

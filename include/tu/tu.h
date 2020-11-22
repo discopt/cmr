@@ -28,7 +28,7 @@ extern "C" {
 TU_EXPORT
 bool TUtestTotalUnimodularityDouble(
   TU* tu,                   /**< TU environment */
-  TU_DOUBLE_MATRIX* matrix, /**< Double matrix */
+  TU_DBLMAT* matrix, /**< Double matrix */
   double epsilon,           /**< Absolute error tolerance */
   TU_DEC** decomposition,   /**< If not \c NULL, the decomposition tree is stored. */
   TU_SUBMATRIX** submatrix  /**< If not \c NULL, a submatrix with bad determinant is stored. */
@@ -52,7 +52,7 @@ bool TUtestTotalUnimodularityDouble(
 TU_EXPORT
 bool TUtestTotalUnimodularityInt(
   TU* tu,                   /**< TU environment */
-  TU_INT_MATRIX* matrix,    /**< Int matrix */
+  TU_INTMAT* matrix,    /**< Int matrix */
   TU_DEC** decomposition,   /**< If not \c NULL, the decomposition tree is stored. */
   TU_SUBMATRIX** submatrix  /**< If not \c NULL, a submatrix with bad determinant is stored. */
 );
@@ -75,7 +75,7 @@ bool TUtestTotalUnimodularityInt(
 TU_EXPORT
 bool TUtestTotalUnimodularityChar(
   TU* tu,                   /**< TU environment */
-  TU_CHAR_MATRIX* matrix,   /**< Char matrix */
+  TU_CHRMAT* matrix,   /**< Char matrix */
   TU_DEC** decomposition,   /**< If not \c NULL, the decomposition tree is stored. */
   TU_SUBMATRIX** submatrix  /**< If not \c NULL, a submatrix with bad determinant is stored. */
 );

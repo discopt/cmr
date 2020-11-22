@@ -7,7 +7,7 @@ TEST(Sign, Change)
 {
   TU* tu;
   TUcreateEnvironment(&tu);
-  TU_CHAR_MATRIX* matrix = NULL;
+  TU_CHRMAT* matrix = NULL;
   stringToCharMatrix(tu, &matrix, "10 10 "
     "+1 -1  0  0  0  0  0  0  0  0 "
     "-1 +1  0  0  0  0  0  0  0  0 "
@@ -20,7 +20,7 @@ TEST(Sign, Change)
     "0   0  0  0  0  0  0  0 +1 -1 "
     "0   0  0  0  0  0  0 -1  0 +1 "
   );
-  TU_CHAR_MATRIX* check = NULL;
+  TU_CHRMAT* check = NULL;
   stringToCharMatrix(tu, &check, "10 10 "
     "+1 -1  0  0  0  0  0  0  0  0 "
     "-1 +1  0  0  0  0  0  0  0  0 "
@@ -33,7 +33,7 @@ TEST(Sign, Change)
     "0   0  0  0  0  0  0  0 -1 -1 "
     "0   0  0  0  0  0  0 -1  0 +1 "
   );
-  TU_CHAR_MATRIX* checkViolator = NULL;
+  TU_CHRMAT* checkViolator = NULL;
   stringToCharMatrix(tu, &checkViolator, "3 3 "
     "-1 -1 0 "
     "0 1 -1 "
@@ -41,21 +41,21 @@ TEST(Sign, Change)
   );
 
   TU_SUBMATRIX* submatrix = NULL;
-  TU_CHAR_MATRIX* violator = NULL;
+  TU_CHRMAT* violator = NULL;
 
   ASSERT_FALSE(TUtestSignChar(tu, matrix, &submatrix));
   ASSERT_TRUE(submatrix != NULL);
   TUfilterCharSubmatrix(tu, matrix, submatrix, &violator);
-  ASSERT_TRUE(TUcheckCharMatrixEqual(violator, checkViolator));
-  TUfreeCharMatrix(tu, &violator);
+  ASSERT_TRUE(TUchrmatCheckEqual(violator, checkViolator));
+  TUchrmatFree(tu, &violator);
   TUfreeSubmatrix(tu, &submatrix);
 
   ASSERT_FALSE(TUcorrectSignChar(tu, matrix, NULL));
-  ASSERT_TRUE(TUcheckCharMatrixEqual(matrix, check));
+  ASSERT_TRUE(TUchrmatCheckEqual(matrix, check));
 
-  TUfreeCharMatrix(tu, &checkViolator);
-  TUfreeCharMatrix(tu, &check);
-  TUfreeCharMatrix(tu, &matrix);
+  TUchrmatFree(tu, &checkViolator);
+  TUchrmatFree(tu, &check);
+  TUchrmatFree(tu, &matrix);
 
   TUfreeEnvironment(&tu);
 }

@@ -34,8 +34,8 @@ int main(int argc, const char** argv)
   TUcreateEnvironment(&tu);
 
   /* Init transpose of matrix. */
-  TU_CHAR_MATRIX* transposed = NULL;
-  TUcreateCharMatrix(tu, &transposed, numEdges, numNodes-1, numEdges * (numNodes-1));
+  TU_CHRMAT* transposed = NULL;
+  TUchrmatCreate(tu, &transposed, numEdges, numNodes-1, numEdges * (numNodes-1));
   transposed->numNonzeros = 0;
 
   /* Create random arborescence. */
@@ -93,14 +93,14 @@ int main(int argc, const char** argv)
   TUfreeBlockArray(tu, &nextTreeNode);
   TUfreeBlockArray(tu, &treeDistance);
 
-  TU_CHAR_MATRIX* matrix = NULL;
-  TUtransposeCharMatrix(tu, transposed, &matrix);
-  TUfreeCharMatrix(tu, &transposed);
+  TU_CHRMAT* matrix = NULL;
+  TUchrmatTranspose(tu, transposed, &matrix);
+  TUchrmatFree(tu, &transposed);
 
   /* Print matrix. */
 
-  TUprintCharMatrixDense(stdout, matrix, '0', true);
-  TUfreeCharMatrix(tu, &matrix);
+  TUchrmatPrintDense(stdout, matrix, '0', true);
+  TUchrmatFree(tu, &matrix);
 
   /* Cleanup */
 

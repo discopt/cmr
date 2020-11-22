@@ -6,7 +6,7 @@
 
 #include "env_internal.h"
 
-void TUcreateDoubleMatrix(TU* tu, TU_DOUBLE_MATRIX** matrix, int numRows, int numColumns,
+void TUdblmatCreate(TU* tu, TU_DBLMAT** matrix, int numRows, int numColumns,
   int numNonzeros)
 {
   assert(matrix);
@@ -27,7 +27,7 @@ void TUcreateDoubleMatrix(TU* tu, TU_DOUBLE_MATRIX** matrix, int numRows, int nu
   }
 }
 
-void TUfreeDoubleMatrix(TU* tu, TU_DOUBLE_MATRIX** matrix)
+void TUdblmatFree(TU* tu, TU_DBLMAT** matrix)
 {
   assert(matrix);
   assert(*matrix);
@@ -44,14 +44,14 @@ void TUfreeDoubleMatrix(TU* tu, TU_DOUBLE_MATRIX** matrix)
   TUfreeBlock(tu, matrix);
 }
 
-void TUcopyDoubleMatrix(TU* tu, TU_DOUBLE_MATRIX* matrix, TU_DOUBLE_MATRIX** result)
+void TUdblmatCopy(TU* tu, TU_DBLMAT* matrix, TU_DBLMAT** result)
 {
   assert(tu);
   assert(matrix);
   assert(result);
   assert(*result == NULL);
 
-  TUcreateDoubleMatrix(tu, result, matrix->numRows, matrix->numColumns, matrix->numNonzeros);
+  TUdblmatCreate(tu, result, matrix->numRows, matrix->numColumns, matrix->numNonzeros);
   for (int row = 0; row < matrix->numRows; ++row)
     (*result)->rowStarts[row] = matrix->rowStarts[row];
   (*result)->rowStarts[matrix->numRows] = matrix->numNonzeros;
@@ -62,15 +62,15 @@ void TUcopyDoubleMatrix(TU* tu, TU_DOUBLE_MATRIX* matrix, TU_DOUBLE_MATRIX** res
   }
 }
 
-void TUtransposeDoubleMatrix(TU* tu, TU_DOUBLE_MATRIX* matrix, TU_DOUBLE_MATRIX** result)
+void TUdblmatTranspose(TU* tu, TU_DBLMAT* matrix, TU_DBLMAT** result)
 {
   assert(tu);
   assert(matrix);
   assert(result);
   assert(*result == NULL);
-  assert(TUcheckDoubleMatrixSorted(matrix));
+  assert(TUdblmatCheckSorted(matrix));
 
-  TUcreateDoubleMatrix(tu, result, matrix->numColumns, matrix->numRows, matrix->numNonzeros);
+  TUdblmatCreate(tu, result, matrix->numColumns, matrix->numRows, matrix->numNonzeros);
 
   /* Count number of nonzeros in each column, storing in the next entry. */
   for (int c = 0; c <= matrix->numColumns; ++c)
@@ -103,7 +103,63 @@ void TUtransposeDoubleMatrix(TU* tu, TU_DOUBLE_MATRIX* matrix, TU_DOUBLE_MATRIX*
   (*result)->rowStarts[0] = 0;
 }
 
-void TUcreateIntMatrix(TU* tu, TU_INT_MATRIX** matrix, int numRows, int numColumns,
+void TUintmatCreate(TU* tu, TU_INTMAT** matrix, int numRows, int numColumns, int numNonzeros)
+{
+  assert(matrix);
+  assert(*matrix == NULL);
+
+  TUallocBlock(tu, matrix);
+  (*matrix)->numRows = numRows;
+  (*matrix)->numColumns = numColumns;
+  (*matrix)->numNonzeros = numNonzeros;
+  (*matrix)->rowStarts = NULL;
+  (*matrix)->entryColumns = NULL;
+  (*matrix)->entryValues = NULL;
+  TUallocBlockArray(tu, &(*matrix)->rowStarts, numRows + 1);
+  if (numNonzeros > 0)
+  {
+    TUallocBlockArray(tu, &(*matrix)->entryColumns, numNonzeros);
+    TUallocBlockArray(tu, &(*matrix)->entryValues, numNonzeros);
+  }
+}
+
+void TUintmatFree(TU* tu, TU_INTMAT** matrix)
+{
+  assert(matrix);
+  assert(*matrix);
+  assert((*matrix)->rowStarts);
+  assert((*matrix)->numNonzeros == 0 || (*matrix)->entryColumns);
+  assert((*matrix)->numNonzeros == 0 || (*matrix)->entryValues);
+
+  TUfreeBlockArray(tu, &(*matrix)->rowStarts);
+  if ((*matrix)->numNonzeros > 0)
+  {
+    TUfreeBlockArray(tu, &(*matrix)->entryColumns);
+    TUfreeBlockArray(tu, &(*matrix)->entryValues);
+  }
+  TUfreeBlock(tu, matrix);
+}
+
+
+void TUintmatCopy(TU* tu, TU_INTMAT* matrix, TU_INTMAT** result)
+{
+  assert(tu);
+  assert(matrix);
+  assert(result);
+  assert(*result == NULL);
+
+  TUintmatCreate(tu, result, matrix->numRows, matrix->numColumns, matrix->numNonzeros);
+  for (int row = 0; row < matrix->numRows; ++row)
+    (*result)->rowStarts[row] = matrix->rowStarts[row];
+  (*result)->rowStarts[matrix->numRows] = matrix->numNonzeros;
+  for (int entry = 0; entry < matrix->numNonzeros; ++entry)
+  {
+    (*result)->entryColumns[entry] = matrix->entryColumns[entry];
+    (*result)->entryValues[entry] = matrix->entryValues[entry];
+  }
+}
+
+void TUchrmatCreate(TU* tu, TU_CHRMAT** matrix, int numRows, int numColumns,
   int numNonzeros)
 {
   assert(matrix);
@@ -124,7 +180,7 @@ void TUcreateIntMatrix(TU* tu, TU_INT_MATRIX** matrix, int numRows, int numColum
   }
 }
 
-void TUfreeIntMatrix(TU* tu, TU_INT_MATRIX** matrix)
+void TUchrmatFree(TU* tu, TU_CHRMAT** matrix)
 {
   assert(matrix);
   assert(*matrix);
@@ -141,71 +197,14 @@ void TUfreeIntMatrix(TU* tu, TU_INT_MATRIX** matrix)
   TUfreeBlock(tu, matrix);
 }
 
-
-void TUcopyIntMatrix(TU* tu, TU_INT_MATRIX* matrix, TU_INT_MATRIX** result)
+void TUchrmatCopy(TU* tu, TU_CHRMAT* matrix, TU_CHRMAT** result)
 {
   assert(tu);
   assert(matrix);
   assert(result);
   assert(*result == NULL);
 
-  TUcreateIntMatrix(tu, result, matrix->numRows, matrix->numColumns, matrix->numNonzeros);
-  for (int row = 0; row < matrix->numRows; ++row)
-    (*result)->rowStarts[row] = matrix->rowStarts[row];
-  (*result)->rowStarts[matrix->numRows] = matrix->numNonzeros;
-  for (int entry = 0; entry < matrix->numNonzeros; ++entry)
-  {
-    (*result)->entryColumns[entry] = matrix->entryColumns[entry];
-    (*result)->entryValues[entry] = matrix->entryValues[entry];
-  }
-}
-
-void TUcreateCharMatrix(TU* tu, TU_CHAR_MATRIX** matrix, int numRows, int numColumns,
-  int numNonzeros)
-{
-  assert(matrix);
-  assert(*matrix == NULL);
-
-  TUallocBlock(tu, matrix);
-  (*matrix)->numRows = numRows;
-  (*matrix)->numColumns = numColumns;
-  (*matrix)->numNonzeros = numNonzeros;
-  (*matrix)->rowStarts = NULL;
-  (*matrix)->entryColumns = NULL;
-  (*matrix)->entryValues = NULL;
-  TUallocBlockArray(tu, &(*matrix)->rowStarts, numRows + 1);
-  if (numNonzeros > 0)
-  {
-    TUallocBlockArray(tu, &(*matrix)->entryColumns, numNonzeros);
-    TUallocBlockArray(tu, &(*matrix)->entryValues, numNonzeros);
-  }
-}
-
-void TUfreeCharMatrix(TU* tu, TU_CHAR_MATRIX** matrix)
-{
-  assert(matrix);
-  assert(*matrix);
-  assert((*matrix)->rowStarts);
-  assert((*matrix)->numNonzeros == 0 || (*matrix)->entryColumns);
-  assert((*matrix)->numNonzeros == 0 || (*matrix)->entryValues);
-
-  TUfreeBlockArray(tu, &(*matrix)->rowStarts);
-  if ((*matrix)->numNonzeros > 0)
-  {
-    TUfreeBlockArray(tu, &(*matrix)->entryColumns);
-    TUfreeBlockArray(tu, &(*matrix)->entryValues);
-  }
-  TUfreeBlock(tu, matrix);
-}
-
-void TUcopyCharMatrix(TU* tu, TU_CHAR_MATRIX* matrix, TU_CHAR_MATRIX** result)
-{
-  assert(tu);
-  assert(matrix);
-  assert(result);
-  assert(*result == NULL);
-
-  TUcreateCharMatrix(tu, result, matrix->numRows, matrix->numColumns, matrix->numNonzeros);
+  TUchrmatCreate(tu, result, matrix->numRows, matrix->numColumns, matrix->numNonzeros);
   for (int row = 0; row < matrix->numRows; ++row)
     (*result)->rowStarts[row] = matrix->rowStarts[row];
   (*result)->rowStarts[matrix->numRows] = matrix->numNonzeros;
@@ -217,15 +216,15 @@ void TUcopyCharMatrix(TU* tu, TU_CHAR_MATRIX* matrix, TU_CHAR_MATRIX** result)
 }
 
 
-void TUtransposeCharMatrix(TU* tu, TU_CHAR_MATRIX* matrix, TU_CHAR_MATRIX** result)
+void TUchrmatTranspose(TU* tu, TU_CHRMAT* matrix, TU_CHRMAT** result)
 {
   assert(tu);
   assert(matrix);
   assert(result);
   assert(*result == NULL);
-  assert(TUcheckCharMatrixSorted(matrix));
+  assert(TUchrmatCheckSorted(matrix));
 
-  TUcreateCharMatrix(tu, result, matrix->numColumns, matrix->numRows, matrix->numNonzeros);
+  TUchrmatCreate(tu, result, matrix->numColumns, matrix->numRows, matrix->numNonzeros);
 
   /* Count number of nonzeros in each column, storing in the next entry. */
   for (int c = 0; c <= matrix->numColumns; ++c)
@@ -258,7 +257,7 @@ void TUtransposeCharMatrix(TU* tu, TU_CHAR_MATRIX* matrix, TU_CHAR_MATRIX** resu
   (*result)->rowStarts[0] = 0;
 }
 
-void TUprintDoubleMatrixDense(FILE* stream, TU_DOUBLE_MATRIX* sparse, char zeroChar, bool header)
+void TUdblmatPrintDense(FILE* stream, TU_DBLMAT* sparse, char zeroChar, bool header)
 {
   assert(stream != NULL);
   assert(sparse != NULL);
@@ -299,7 +298,7 @@ void TUprintDoubleMatrixDense(FILE* stream, TU_DOUBLE_MATRIX* sparse, char zeroC
   free(rowEntries);
 }
 
-void TUprintIntMatrixDense(FILE* stream, TU_INT_MATRIX* sparse, char zeroChar, bool header)
+void TUintmatPrintDense(FILE* stream, TU_INTMAT* sparse, char zeroChar, bool header)
 {
   assert(stream != NULL);
   assert(sparse != NULL);
@@ -340,7 +339,7 @@ void TUprintIntMatrixDense(FILE* stream, TU_INT_MATRIX* sparse, char zeroChar, b
   free(rowEntries);
 }
 
-void TUprintCharMatrixDense(FILE* stream, TU_CHAR_MATRIX* sparse, char zeroChar, bool header)
+void TUchrmatPrintDense(FILE* stream, TU_CHRMAT* sparse, char zeroChar, bool header)
 {
   assert(stream != NULL);
   assert(sparse != NULL);
@@ -381,10 +380,10 @@ void TUprintCharMatrixDense(FILE* stream, TU_CHAR_MATRIX* sparse, char zeroChar,
   free(rowEntries);
 }
 
-bool TUcheckDoubleMatrixEqual(TU_DOUBLE_MATRIX* matrix1, TU_DOUBLE_MATRIX* matrix2)
+bool TUdblmatCheckEqual(TU_DBLMAT* matrix1, TU_DBLMAT* matrix2)
 {
-  assert(TUcheckDoubleMatrixSorted(matrix1));
-  assert(TUcheckDoubleMatrixSorted(matrix2));
+  assert(TUdblmatCheckSorted(matrix1));
+  assert(TUdblmatCheckSorted(matrix2));
 
   if (matrix1->numRows != matrix2->numRows)
     return false;
@@ -416,10 +415,10 @@ bool TUcheckDoubleMatrixEqual(TU_DOUBLE_MATRIX* matrix1, TU_DOUBLE_MATRIX* matri
   return true;
 }
 
-bool TUcheckIntMatrixEqual(TU_INT_MATRIX* matrix1, TU_INT_MATRIX* matrix2)
+bool TUintmatCheckEqual(TU_INTMAT* matrix1, TU_INTMAT* matrix2)
 {
-  assert(TUcheckIntMatrixSorted(matrix1));
-  assert(TUcheckIntMatrixSorted(matrix2));
+  assert(TUintmatCheckSorted(matrix1));
+  assert(TUintmatCheckSorted(matrix2));
 
   if (matrix1->numRows != matrix2->numRows)
     return false;
@@ -451,10 +450,10 @@ bool TUcheckIntMatrixEqual(TU_INT_MATRIX* matrix1, TU_INT_MATRIX* matrix2)
   return true;
 }
 
-bool TUcheckCharMatrixEqual(TU_CHAR_MATRIX* matrix1, TU_CHAR_MATRIX* matrix2)
+bool TUchrmatCheckEqual(TU_CHRMAT* matrix1, TU_CHRMAT* matrix2)
 {
-  assert(TUcheckCharMatrixSorted(matrix1));
-  assert(TUcheckCharMatrixSorted(matrix2));
+  assert(TUchrmatCheckSorted(matrix1));
+  assert(TUchrmatCheckSorted(matrix2));
 
   if (matrix1->numRows != matrix2->numRows)
     return false;
@@ -486,7 +485,7 @@ bool TUcheckCharMatrixEqual(TU_CHAR_MATRIX* matrix1, TU_CHAR_MATRIX* matrix2)
   return true;
 }
 
-bool TUcheckDoubleMatrixTranspose(TU_DOUBLE_MATRIX* matrix1, TU_DOUBLE_MATRIX* matrix2)
+bool TUdblmatCheckTranspose(TU_DBLMAT* matrix1, TU_DBLMAT* matrix2)
 {
   bool result = true;
 
@@ -529,7 +528,7 @@ cleanup:
   return result;
 }
 
-bool TUcheckIntMatrixTranspose(TU_INT_MATRIX* matrix1, TU_INT_MATRIX* matrix2)
+bool TUintmatCheckTranspose(TU_INTMAT* matrix1, TU_INTMAT* matrix2)
 {
   bool result = true;
 
@@ -572,7 +571,7 @@ cleanup:
   return result;
 }
 
-bool TUcheckCharMatrixTranspose(TU_CHAR_MATRIX* matrix1, TU_CHAR_MATRIX* matrix2)
+bool TUchrmatCheckTranspose(TU_CHRMAT* matrix1, TU_CHRMAT* matrix2)
 {
   bool result = true;
 
@@ -615,7 +614,7 @@ cleanup:
   return result;
 }
 
-bool TUcheckDoubleMatrixSorted(TU_DOUBLE_MATRIX* sparse)
+bool TUdblmatCheckSorted(TU_DBLMAT* sparse)
 {
   assert(sparse != NULL);
 
@@ -633,17 +632,17 @@ bool TUcheckDoubleMatrixSorted(TU_DOUBLE_MATRIX* sparse)
   return true;
 }
 
-bool TUcheckIntMatrixSorted(TU_INT_MATRIX* sparse)
+bool TUintmatCheckSorted(TU_INTMAT* sparse)
 {
-  return TUcheckDoubleMatrixSorted((TU_DOUBLE_MATRIX*) sparse);
+  return TUdblmatCheckSorted((TU_DBLMAT*) sparse);
 }
 
-bool TUcheckCharMatrixSorted(TU_CHAR_MATRIX* sparse)
+bool TUchrmatCheckSorted(TU_CHRMAT* sparse)
 {
-  return TUcheckDoubleMatrixSorted((TU_DOUBLE_MATRIX*) sparse);
+  return TUdblmatCheckSorted((TU_DBLMAT*) sparse);
 }
 
-bool TUisBinaryDouble(TU* tu, TU_DOUBLE_MATRIX* sparse, double epsilon, TU_SUBMATRIX** submatrix)
+bool TUisBinaryDouble(TU* tu, TU_DBLMAT* sparse, double epsilon, TU_SUBMATRIX** submatrix)
 {
   assert(sparse != NULL);
 
@@ -667,7 +666,7 @@ bool TUisBinaryDouble(TU* tu, TU_DOUBLE_MATRIX* sparse, double epsilon, TU_SUBMA
   return true;
 }
 
-bool TUisBinaryInt(TU* tu, TU_INT_MATRIX* sparse, TU_SUBMATRIX** submatrix)
+bool TUisBinaryInt(TU* tu, TU_INTMAT* sparse, TU_SUBMATRIX** submatrix)
 {
   assert(sparse != NULL);
 
@@ -690,7 +689,7 @@ bool TUisBinaryInt(TU* tu, TU_INT_MATRIX* sparse, TU_SUBMATRIX** submatrix)
   return true;
 }
 
-bool TUisBinaryChar(TU* tu, TU_CHAR_MATRIX* sparse, TU_SUBMATRIX** submatrix)
+bool TUisBinaryChar(TU* tu, TU_CHRMAT* sparse, TU_SUBMATRIX** submatrix)
 {
   assert(sparse != NULL);
 
@@ -713,7 +712,7 @@ bool TUisBinaryChar(TU* tu, TU_CHAR_MATRIX* sparse, TU_SUBMATRIX** submatrix)
   return true;
 }
 
-bool TUisTernaryDouble(TU* tu, TU_DOUBLE_MATRIX* sparse, double epsilon, TU_SUBMATRIX** submatrix)
+bool TUisTernaryDouble(TU* tu, TU_DBLMAT* sparse, double epsilon, TU_SUBMATRIX** submatrix)
 {
   assert(sparse != NULL);
 
@@ -737,7 +736,7 @@ bool TUisTernaryDouble(TU* tu, TU_DOUBLE_MATRIX* sparse, double epsilon, TU_SUBM
   return true;
 }
 
-bool TUisTernaryInt(TU* tu, TU_INT_MATRIX* sparse, TU_SUBMATRIX** submatrix)
+bool TUisTernaryInt(TU* tu, TU_INTMAT* sparse, TU_SUBMATRIX** submatrix)
 {
   assert(sparse != NULL);
 
@@ -760,7 +759,7 @@ bool TUisTernaryInt(TU* tu, TU_INT_MATRIX* sparse, TU_SUBMATRIX** submatrix)
   return true;
 }
 
-bool TUisTernaryChar(TU* tu, TU_CHAR_MATRIX* sparse, TU_SUBMATRIX** submatrix)
+bool TUisTernaryChar(TU* tu, TU_CHRMAT* sparse, TU_SUBMATRIX** submatrix)
 {
   assert(sparse != NULL);
 
@@ -828,8 +827,8 @@ void TUsortSubmatrix(TU_SUBMATRIX* submatrix)
   qsort(submatrix->columns, submatrix->numColumns, sizeof(int), TUsortSubmatrixCompare);
 }
 
-void TUfilterCharSubmatrix(TU* tu, TU_CHAR_MATRIX* matrix, TU_SUBMATRIX* submatrix,
-  TU_CHAR_MATRIX** result)
+void TUfilterCharSubmatrix(TU* tu, TU_CHRMAT* matrix, TU_SUBMATRIX* submatrix,
+  TU_CHRMAT** result)
 {
   assert(matrix);
   assert(submatrix);
@@ -845,7 +844,7 @@ void TUfilterCharSubmatrix(TU* tu, TU_CHAR_MATRIX* matrix, TU_SUBMATRIX* submatr
     columnMap[submatrix->columns[j]] = j;
   }
 
-  TUcreateCharMatrix(tu, result, submatrix->numRows, submatrix->numColumns, 0);
+  TUchrmatCreate(tu, result, submatrix->numRows, submatrix->numColumns, 0);
 
   /* Count nonzeros. */
   int numNonzeros = 0;

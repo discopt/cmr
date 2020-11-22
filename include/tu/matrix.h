@@ -44,7 +44,7 @@ typedef struct
    * \brief Array mapping each entry to its value
    */
   double* entryValues;
-} TU_DOUBLE_MATRIX;
+} TU_DBLMAT;
 
 /**
  * \brief Creates a double matrix of size \p numRows times \p numColumns with \p numNonzeros
@@ -52,9 +52,9 @@ typedef struct
  */
 
 TU_EXPORT
-void TUcreateDoubleMatrix(
+void TUdblmatCreate(
   TU* tu,                     /**< TU environment. */
-  TU_DOUBLE_MATRIX** matrix,  /**< Pointer for storing the created matrix. */
+  TU_DBLMAT** matrix,  /**< Pointer for storing the created matrix. */
   int numRows,                /**< Number of rows. */
   int numColumns,             /**< Number of columns. */
   int numNonzeros             /**< Number of nonzeros. */
@@ -65,29 +65,29 @@ void TUcreateDoubleMatrix(
  */
 
 TU_EXPORT
-void TUfreeDoubleMatrix(
+void TUdblmatFree(
   TU* tu,                   /**< TU environment. */
-  TU_DOUBLE_MATRIX** matrix /**< Double matrix */
+  TU_DBLMAT** matrix /**< Double matrix */
 );
 
 /**
  * \brief Copy a double matrix.
  */
 TU_EXPORT
-void TUcopyDoubleMatrix(
+void TUdblmatCopy(
   TU* tu,                   /**< TU environment. */
-  TU_DOUBLE_MATRIX* matrix, /**< Given matrix. */
-  TU_DOUBLE_MATRIX** result /**< Pointer to created copy of matrix. */
+  TU_DBLMAT* matrix, /**< Given matrix. */
+  TU_DBLMAT** result /**< Pointer to created copy of matrix. */
 );
 
 /**
  * \brief Create the transposed double matrix.
  */
 TU_EXPORT
-void TUtransposeDoubleMatrix(
+void TUdblmatTranspose(
   TU* tu,                   /**< TU environment. */
-  TU_DOUBLE_MATRIX* matrix, /**< Given matrix. */
-  TU_DOUBLE_MATRIX** result /**< Pointer to created transpose of matrix. */
+  TU_DBLMAT* matrix, /**< Given matrix. */
+  TU_DBLMAT** result /**< Pointer to created transpose of matrix. */
 );
 
 /**
@@ -125,7 +125,7 @@ typedef struct
    * \brief Array mapping each entry to its value
    */
   int* entryValues;
-} TU_INT_MATRIX;
+} TU_INTMAT;
 
 
 /**
@@ -134,9 +134,9 @@ typedef struct
  */
 
 TU_EXPORT
-void TUcreateIntMatrix(
+void TUintmatCreate(
   TU* tu,                 /**< TU environment. */
-  TU_INT_MATRIX** matrix, /**< Pointer for storing the created matrix. */
+  TU_INTMAT** matrix, /**< Pointer for storing the created matrix. */
   int numRows,            /**< Number of rows. */
   int numColumns,         /**< Number of columns. */
   int numNonzeros         /**< Number of nonzeros. */
@@ -147,29 +147,29 @@ void TUcreateIntMatrix(
  */
 
 TU_EXPORT
-void TUfreeIntMatrix(
+void TUintmatFree(
   TU* tu,                 /**< TU environment. */
-  TU_INT_MATRIX** matrix  /**< Double matrix */
+  TU_INTMAT** matrix  /**< Double matrix */
 );
 
 /**
  * \brief Copy an int matrix.
  */
 TU_EXPORT
-void TUcopyIntMatrix(
+void TUintmatCopy(
   TU* tu,                 /**< TU environment. */
-  TU_INT_MATRIX* matrix,  /**< Given matrix. */
-  TU_INT_MATRIX** result  /**< Pointer to created copy of matrix. */
+  TU_INTMAT* matrix,  /**< Given matrix. */
+  TU_INTMAT** result  /**< Pointer to created copy of matrix. */
 );
 
 /**
  * \brief Create the transposed int matrix.
  */
 TU_EXPORT
-void TUtransposeIntMatrix(
+void TUintmatTranspose(
   TU* tu,                   /**< TU environment. */
-  TU_INT_MATRIX* matrix, /**< Given matrix. */
-  TU_INT_MATRIX** result /**< Pointer to created transpose of matrix. */
+  TU_INTMAT* matrix, /**< Given matrix. */
+  TU_INTMAT** result /**< Pointer to created transpose of matrix. */
 );
 
 /**
@@ -207,7 +207,7 @@ typedef struct
    * \brief Array mapping each entry to its value
    */
   char* entryValues;
-} TU_CHAR_MATRIX;
+} TU_CHRMAT;
 
 
 
@@ -217,9 +217,9 @@ typedef struct
  */
 
 TU_EXPORT
-void TUcreateCharMatrix(
+void TUchrmatCreate(
   TU* tu,                   /**< TU environment. */
-  TU_CHAR_MATRIX** matrix,  /**< Pointer for storing the created matrix. */
+  TU_CHRMAT** matrix,  /**< Pointer for storing the created matrix. */
   int numRows,              /**< Number of rows. */
   int numColumns,           /**< Number of columns. */
   int numNonzeros           /**< Number of nonzeros. */
@@ -230,29 +230,29 @@ void TUcreateCharMatrix(
  */
 
 TU_EXPORT
-void TUfreeCharMatrix(
+void TUchrmatFree(
   TU* tu,                 /**< TU environment. */
-  TU_CHAR_MATRIX** matrix /**< Char matrix */
+  TU_CHRMAT** matrix /**< Char matrix */
 );
 
 /**
  * \brief Copy a char matrix.
  */
 TU_EXPORT
-void TUcopyCharMatrix(
+void TUchrmatCopy(
   TU* tu,                 /**< TU environment. */
-  TU_CHAR_MATRIX* matrix, /**< Given matrix. */
-  TU_CHAR_MATRIX** result /**< Pointer to created copy of matrix. */
+  TU_CHRMAT* matrix, /**< Given matrix. */
+  TU_CHRMAT** result /**< Pointer to created copy of matrix. */
 );
 
 /**
  * \brief Create the transposed char matrix.
  */
 TU_EXPORT
-void TUtransposeCharMatrix(
+void TUchrmatTranspose(
   TU* tu,                   /**< TU environment. */
-  TU_CHAR_MATRIX* matrix, /**< Given matrix. */
-  TU_CHAR_MATRIX** result /**< Pointer to created transpose of matrix. */
+  TU_CHRMAT* matrix, /**< Given matrix. */
+  TU_CHRMAT** result /**< Pointer to created transpose of matrix. */
 );
 
 /**
@@ -260,9 +260,9 @@ void TUtransposeCharMatrix(
  */
 
 TU_EXPORT
-void TUprintDoubleMatrixDense(
+void TUdblmatPrintDense(
   FILE* stream,             /**< File stream to print to */
-  TU_DOUBLE_MATRIX* matrix, /**< Double matrix */
+  TU_DBLMAT* matrix, /**< Double matrix */
   char zeroChar,            /**< Character to print for a zero */
   bool header               /**< Whether to print row and column indices */
 );
@@ -272,9 +272,9 @@ void TUprintDoubleMatrixDense(
  */
 
 TU_EXPORT
-void TUprintIntMatrixDense(
+void TUintmatPrintDense(
   FILE* stream,           /**< File stream to print to */
-  TU_INT_MATRIX* matrix,  /**< Int matrix */
+  TU_INTMAT* matrix,  /**< Int matrix */
   char zeroChar,          /**< Character to print for a zero */
   bool header             /**< Whether to print row and column indices */
 );
@@ -284,9 +284,9 @@ void TUprintIntMatrixDense(
  */
 
 TU_EXPORT
-void TUprintCharMatrixDense(
+void TUchrmatPrintDense(
   FILE* stream,           /**< File stream to print to */
-  TU_CHAR_MATRIX* matrix, /**< Char matrix */
+  TU_CHRMAT* matrix, /**< Char matrix */
   char zeroChar,          /**< Character to print for a zero */
   bool header             /**< Whether to print row and column indices */
 );
@@ -296,9 +296,9 @@ void TUprintCharMatrixDense(
  */
 
 TU_EXPORT
-bool TUcheckDoubleMatrixEqual(
-  TU_DOUBLE_MATRIX* matrix1,  /**< First matrix */
-  TU_DOUBLE_MATRIX* matrix2   /**< Second matrix */
+bool TUdblmatCheckEqual(
+  TU_DBLMAT* matrix1,  /**< First matrix */
+  TU_DBLMAT* matrix2   /**< Second matrix */
 );
 
 /**
@@ -306,9 +306,9 @@ bool TUcheckDoubleMatrixEqual(
  */
 
 TU_EXPORT
-bool TUcheckIntMatrixEqual(
-  TU_INT_MATRIX* matrix1, /**< First matrix */
-  TU_INT_MATRIX* matrix2  /**< Second matrix */
+bool TUintmatCheckEqual(
+  TU_INTMAT* matrix1, /**< First matrix */
+  TU_INTMAT* matrix2  /**< Second matrix */
 );
 
 
@@ -317,9 +317,9 @@ bool TUcheckIntMatrixEqual(
  */
 
 TU_EXPORT
-bool TUcheckCharMatrixEqual(
-  TU_CHAR_MATRIX* matrix1,  /**< First matrix */
-  TU_CHAR_MATRIX* matrix2   /**< Second matrix */
+bool TUchrmatCheckEqual(
+  TU_CHRMAT* matrix1,  /**< First matrix */
+  TU_CHRMAT* matrix2   /**< Second matrix */
 );
 
 /**
@@ -327,9 +327,9 @@ bool TUcheckCharMatrixEqual(
  */
 
 TU_EXPORT
-bool TUcheckDoubleMatrixTranspose(
-  TU_DOUBLE_MATRIX* matrix1,  /**< First matrix */
-  TU_DOUBLE_MATRIX* matrix2   /**< Second matrix */
+bool TUdblmatCheckTranspose(
+  TU_DBLMAT* matrix1,  /**< First matrix */
+  TU_DBLMAT* matrix2   /**< Second matrix */
 );
 
 
@@ -338,9 +338,9 @@ bool TUcheckDoubleMatrixTranspose(
  */
 
 TU_EXPORT
-bool TUcheckIntMatrixTranspose(
-  TU_INT_MATRIX* matrix1, /**< First matrix */
-  TU_INT_MATRIX* matrix2  /**< Second matrix */
+bool TUintmatCheckTranspose(
+  TU_INTMAT* matrix1, /**< First matrix */
+  TU_INTMAT* matrix2  /**< Second matrix */
 );
 
 /**
@@ -348,9 +348,9 @@ bool TUcheckIntMatrixTranspose(
  */
 
 TU_EXPORT
-bool TUcheckCharMatrixTranspose(
-  TU_CHAR_MATRIX* matrix1, /**< First matrix */
-  TU_CHAR_MATRIX* matrix2 /**< Second matrix */
+bool TUchrmatCheckTranspose(
+  TU_CHRMAT* matrix1, /**< First matrix */
+  TU_CHRMAT* matrix2 /**< Second matrix */
 );
 
 /**
@@ -358,8 +358,8 @@ bool TUcheckCharMatrixTranspose(
  */
 
 TU_EXPORT
-bool TUcheckDoubleMatrixSorted(
-  TU_DOUBLE_MATRIX* matrix /** Double matrix */
+bool TUdblmatCheckSorted(
+  TU_DBLMAT* matrix /** Double matrix */
 );
 
 /**
@@ -367,8 +367,8 @@ bool TUcheckDoubleMatrixSorted(
  */
 
 TU_EXPORT
-bool TUcheckIntMatrixSorted(
-  TU_INT_MATRIX* matrix /** Int matrix */
+bool TUintmatCheckSorted(
+  TU_INTMAT* matrix /** Int matrix */
 );
 
 /**
@@ -376,8 +376,8 @@ bool TUcheckIntMatrixSorted(
  */
 
 TU_EXPORT
-bool TUcheckCharMatrixSorted(
-  TU_CHAR_MATRIX* matrix /** Char matrix */
+bool TUchrmatCheckSorted(
+  TU_CHRMAT* matrix /** Char matrix */
 );
 
 
@@ -447,9 +447,9 @@ void TUfreeSubmatrix(
 TU_EXPORT
 void TUfilterCharSubmatrix(
   TU* tu,                   /**< TU environment. */
-  TU_CHAR_MATRIX* matrix,   /**< Given matrix */
+  TU_CHRMAT* matrix,   /**< Given matrix */
   TU_SUBMATRIX* submatrix,  /**< Specified submatrix */
-  TU_CHAR_MATRIX** result   /**< Resulting submatrix as a char matrix. */
+  TU_CHRMAT** result   /**< Resulting submatrix as a char matrix. */
 );
 
 
@@ -461,7 +461,7 @@ void TUfilterCharSubmatrix(
 TU_EXPORT
 bool TUisBinaryDouble(
   TU* tu,                   /**< TU environment. */
-  TU_DOUBLE_MATRIX* matrix, /**< Char matrix */
+  TU_DBLMAT* matrix, /**< Char matrix */
   double epsilon,           /**< Absolute error tolerance */
   TU_SUBMATRIX** submatrix  /**< If not \c NULL, a non-ternary entry is stored in \c *submatrix. */
 );
@@ -473,7 +473,7 @@ bool TUisBinaryDouble(
 TU_EXPORT
 bool TUisBinaryInt(
   TU* tu,                   /**< TU environment. */
-  TU_INT_MATRIX* matrix,    /**< Char matrix */
+  TU_INTMAT* matrix,    /**< Char matrix */
   TU_SUBMATRIX** submatrix  /**< If not \c NULL, a non-ternary entry is stored in \c *submatrix. */
 );
 
@@ -484,7 +484,7 @@ bool TUisBinaryInt(
 TU_EXPORT
 bool TUisBinaryChar(
   TU* tu,                   /**< TU environment. */
-  TU_CHAR_MATRIX* matrix,   /**< Char matrix */
+  TU_CHRMAT* matrix,   /**< Char matrix */
   TU_SUBMATRIX** submatrix  /**< If not \c NULL, a non-ternary entry is stored in \c *submatrix. */
 );
 
@@ -496,7 +496,7 @@ bool TUisBinaryChar(
 TU_EXPORT
 bool TUisTernaryDouble(
   TU* tu,                   /**< TU environment. */
-  TU_DOUBLE_MATRIX* matrix, /**< Char matrix */
+  TU_DBLMAT* matrix, /**< Char matrix */
   double epsilon,           /**< Absolute error tolerance */
   TU_SUBMATRIX** submatrix  /**< If not \c NULL, a non-ternary entry is stored in \c *submatrix. */
 );
@@ -508,7 +508,7 @@ bool TUisTernaryDouble(
 TU_EXPORT
 bool TUisTernaryInt(
   TU* tu,                   /**< TU environment. */
-  TU_INT_MATRIX* matrix,    /**< Char matrix */
+  TU_INTMAT* matrix,    /**< Char matrix */
   TU_SUBMATRIX** submatrix  /**< If not \c NULL, a non-ternary entry is stored in \c *submatrix. */
 );
 
@@ -519,7 +519,7 @@ bool TUisTernaryInt(
 TU_EXPORT
 bool TUisTernaryChar(
   TU* tu,                   /**< TU environment. */
-  TU_CHAR_MATRIX* matrix,   /**< Char matrix */
+  TU_CHRMAT* matrix,   /**< Char matrix */
   TU_SUBMATRIX** submatrix  /**< If not \c NULL, a non-ternary entry is stored in \c *submatrix. */
 );
 
