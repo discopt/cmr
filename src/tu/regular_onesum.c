@@ -18,7 +18,7 @@ int TUregularDecomposeOneSum(TU* tu, TU_CHRMAT* matrix, int* rowLabels, int* col
 {
   assert(tu);
   assert(matrix);
-  assert(TUisTernaryChar(tu, matrix, NULL));
+  assert(TUisTernaryChr(tu, matrix, NULL));
   assert(pdecomposition);
 
   TUcreateDec(tu, pdecomposition);

@@ -105,8 +105,8 @@ TEST(Matrix, Submatrix)
     "0   0  0  0  0  0  0 -1  0 +1 "
   );
 
-  TU_SUBMATRIX* submatrix = NULL;
-  TUcreateSubmatrix(tu, &submatrix, 3, 3);
+  TU_SUBMAT* submatrix = NULL;
+  TUsubmatCreate(tu, &submatrix, 3, 3);
   submatrix->rows[0] = 1;
   submatrix->rows[1] = 3;
   submatrix->rows[2] = 4;
@@ -115,7 +115,7 @@ TEST(Matrix, Submatrix)
   submatrix->columns[2] = 6;
 
   TU_CHRMAT* result = NULL;
-  TUfilterCharSubmatrix(tu, matrix, submatrix, &result);
+  TUchrsubmatFilter(tu, matrix, submatrix, &result);
 
   TU_CHRMAT* check = NULL;
   stringToCharMatrix(tu, &check, "3 3 "
@@ -127,7 +127,7 @@ TEST(Matrix, Submatrix)
   TUchrmatFree(tu, &check);
 
   TUchrmatFree(tu, &result);
-  TUfreeSubmatrix(tu, &submatrix);
+  TUsubmatFree(tu, &submatrix);
   TUchrmatFree(tu, &matrix);
 
   TUfreeEnvironment(&tu);

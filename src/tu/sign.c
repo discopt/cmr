@@ -20,12 +20,12 @@ typedef struct
 } GRAPH_NODE;
 
 char signSequentiallyConnected(TU* tu, TU_CHRMAT* matrix, TU_CHRMAT* transpose,
-  bool change, TU_SUBMATRIX** submatrix)
+  bool change, TU_SUBMAT** submatrix)
 {
   bool matrixChanged = false;
 
   assert(TUchrmatCheckTranspose(matrix, transpose));
-  assert(TUisTernaryChar(tu, matrix, NULL));
+  assert(TUisTernaryChr(tu, matrix, NULL));
 
   /* If we have more rows than columns, we work with the transpose. */
   if (matrix->numRows > matrix->numColumns)
@@ -147,7 +147,7 @@ char signSequentiallyConnected(TU* tu, TU_CHRMAT* matrix, TU_CHRMAT* transpose,
                 {
                   int i = 1;
                   int j = 1;
-                  TUcreateSubmatrix(tu, submatrix, length/2, length/2);
+                  TUsubmatCreate(tu, submatrix, length/2, length/2);
                   pathNode = c;
                   (*submatrix)->columns[0] = c;
                   (*submatrix)->rows[0] = row;
@@ -268,14 +268,14 @@ bool signDouble(
   TU* tu,                   /**< TU environment. */
   TU_DBLMAT* matrix, /**< Sparse double matrix. */
   bool change,              /**< Whether the signs of \p matrix shall be modified. */
-  TU_SUBMATRIX** submatrix  /**< If not \c NULL, a submatrix with bad determinant is stored. */
+  TU_SUBMAT** submatrix  /**< If not \c NULL, a submatrix with bad determinant is stored. */
 )
 {
   bool wasCorrect = true;
   int numComponents;
   TU_ONESUM_COMPONENT* components = NULL;
 
-  assert(TUisTernaryDouble(tu, matrix, 0.1, NULL));
+  assert(TUisTernaryDbl(tu, matrix, 0.1, NULL));
 
 #ifdef DEBUG_SIGN
   printf("sign:\n");
@@ -289,7 +289,7 @@ bool signDouble(
 
   for (int comp = 0; comp < numComponents; ++comp)
   {
-    TU_SUBMATRIX* compSubmatrix = NULL;
+    TU_SUBMAT* compSubmatrix = NULL;
 
 #ifdef DEBUG_SIGN
     printf("-> Component %d of size %dx%d\n", comp, components[comp].matrix->numRows,
@@ -391,12 +391,12 @@ bool signDouble(
   return wasCorrect;
 }
 
-bool TUtestSignDouble(TU* tu, TU_DBLMAT* matrix, TU_SUBMATRIX** submatrix)
+bool TUtestSignDouble(TU* tu, TU_DBLMAT* matrix, TU_SUBMAT** submatrix)
 {
   return signDouble(tu, matrix, false, submatrix);
 }
 
-bool TUcorrectSignDouble(TU* tu, TU_DBLMAT* matrix, TU_SUBMATRIX** submatrix)
+bool TUcorrectSignDouble(TU* tu, TU_DBLMAT* matrix, TU_SUBMAT** submatrix)
 {
   return signDouble(tu, matrix, true, submatrix);
 }
@@ -411,7 +411,7 @@ bool signInt(
   TU* tu,                   /**< TU environment. */
   TU_INTMAT* matrix,    /**< Sparse int matrix. */
   bool change,              /**< Whether the signs of \p matrix shall be modified. */
-  TU_SUBMATRIX** submatrix  /**< If not \c NULL, a submatrix with bad determinant is stored. */
+  TU_SUBMAT** submatrix  /**< If not \c NULL, a submatrix with bad determinant is stored. */
 )
 {
   bool wasCorrect = true;
@@ -432,7 +432,7 @@ bool signInt(
 
   for (int comp = 0; comp < numComponents; ++comp)
   {
-    TU_SUBMATRIX* compSubmatrix = NULL;
+    TU_SUBMAT* compSubmatrix = NULL;
 
 #ifdef DEBUG_SIGN
     printf("-> Component %d of size %dx%d\n", comp, components[comp].matrix->numRows,
@@ -535,12 +535,12 @@ bool signInt(
   return wasCorrect;
 }
 
-bool TUtestSignInt(TU* tu, TU_INTMAT* matrix, TU_SUBMATRIX** submatrix)
+bool TUtestSignInt(TU* tu, TU_INTMAT* matrix, TU_SUBMAT** submatrix)
 {
   return signInt(tu, matrix, false, submatrix);
 }
 
-bool TUcorrectSignInt(TU* tu, TU_INTMAT* matrix, TU_SUBMATRIX** submatrix)
+bool TUcorrectSignInt(TU* tu, TU_INTMAT* matrix, TU_SUBMAT** submatrix)
 {
   return signInt(tu, matrix, true, submatrix);
 }
@@ -555,14 +555,14 @@ bool signChar(
   TU* tu,                   /**< TU environment. */
   TU_CHRMAT* matrix,   /**< Sparse char matrix. */
   bool change,              /**< Whether the signs of \p matrix shall be modified. */
-  TU_SUBMATRIX** submatrix  /**< If not \c NULL, a submatrix with bad determinant is stored. */
+  TU_SUBMAT** submatrix  /**< If not \c NULL, a submatrix with bad determinant is stored. */
 )
 {
   bool wasCorrect = true;
   int numComponents;
   TU_ONESUM_COMPONENT* components = NULL;
 
-  assert(TUisTernaryChar(tu, matrix, NULL));
+  assert(TUisTernaryChr(tu, matrix, NULL));
 
 #ifdef DEBUG_SIGN
   printf("sign:\n");
@@ -576,7 +576,7 @@ bool signChar(
 
   for (int comp = 0; comp < numComponents; ++comp)
   {
-    TU_SUBMATRIX* compSubmatrix = NULL;
+    TU_SUBMAT* compSubmatrix = NULL;
 
 #ifdef DEBUG_SIGN
     printf("-> Component %d of size %dx%d\n", comp, components[comp].matrix->numRows,
@@ -678,12 +678,12 @@ bool signChar(
   return wasCorrect;
 }
 
-bool TUtestSignChar(TU* tu, TU_CHRMAT* matrix, TU_SUBMATRIX** submatrix)
+bool TUtestSignChar(TU* tu, TU_CHRMAT* matrix, TU_SUBMAT** submatrix)
 {
   return signChar(tu, matrix, false, submatrix);
 }
 
-bool TUcorrectSignChar(TU* tu, TU_CHRMAT* matrix, TU_SUBMATRIX** submatrix)
+bool TUcorrectSignChar(TU* tu, TU_CHRMAT* matrix, TU_SUBMAT** submatrix)
 {
   return signChar(tu, matrix, true, submatrix);
 }

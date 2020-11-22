@@ -19,7 +19,7 @@ TU_EXPORT
 bool TUtestSignDouble(
   TU* tu,                   /**< TU environment. */
   TU_DBLMAT* matrix, /**< Sparse double matrix. */
-  TU_SUBMATRIX** submatrix  /**< If not \c NULL, a submatrix with bad determinant is stored. */
+  TU_SUBMAT** submatrix  /**< If not \c NULL, a submatrix with bad determinant is stored. */
 );
 
 /**
@@ -34,7 +34,7 @@ TU_EXPORT
 bool TUcorrectSignDouble(
   TU* tu,                   /**< TU environment */
   TU_DBLMAT* matrix, /**< Sparse double matrix */
-  TU_SUBMATRIX** submatrix  /**< If not \c NULL, a submatrix with bad determinant is stored. */
+  TU_SUBMAT** submatrix  /**< If not \c NULL, a submatrix with bad determinant is stored. */
 );
 
 /**
@@ -49,7 +49,7 @@ TU_EXPORT
 bool TUtestSignInt(
   TU* tu,                   /**< TU environment */
   TU_INTMAT* matrix,    /**< Sparse int matrix */
-  TU_SUBMATRIX** submatrix  /**< If not \c NULL, a submatrix with bad determinant is stored. */
+  TU_SUBMAT** submatrix  /**< If not \c NULL, a submatrix with bad determinant is stored. */
 );
 
 /**
@@ -64,7 +64,7 @@ TU_EXPORT
 bool TUcorrectSignInt(
   TU* tu,                   /**< TU environment */
   TU_INTMAT* matrix,    /**< Sparse int matrix */
-  TU_SUBMATRIX** submatrix  /**< If not \c NULL, a submatrix with bad determinant is stored. */
+  TU_SUBMAT** submatrix  /**< If not \c NULL, a submatrix with bad determinant is stored. */
 );
 
 
@@ -80,7 +80,7 @@ TU_EXPORT
 bool TUtestSignChar(
   TU* tu,                   /**< TU environment */
   TU_CHRMAT* matrix,   /**< Sparse char matrix */
-  TU_SUBMATRIX** submatrix  /**< If not \c NULL, a submatrix with bad determinant is stored. */
+  TU_SUBMAT** submatrix  /**< If not \c NULL, a submatrix with bad determinant is stored. */
 );
 
 
@@ -96,7 +96,7 @@ TU_EXPORT
 bool TUcorrectSignChar(
   TU* tu,                   /**< TU environment */
   TU_CHRMAT* matrix,   /**< Sparse char matrix */
-  TU_SUBMATRIX** submatrix  /**< If not \c NULL, a submatrix with bad determinant is stored. */
+  TU_SUBMAT** submatrix  /**< If not \c NULL, a submatrix with bad determinant is stored. */
 );
 
 #ifdef __cplusplus

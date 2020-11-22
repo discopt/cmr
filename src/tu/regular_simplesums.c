@@ -11,7 +11,7 @@ TU_DEC* TUregularDecomposeSimpleSums(TU* tu, TU_DEC* decomposition, bool unitVec
 {
   assert(tu);
   assert(decomposition);
-  assert(TUisTernaryChar(tu, decomposition->matrix, NULL));
+  assert(TUisTernaryChr(tu, decomposition->matrix, NULL));
 
   TU_DEC* result = decomposition;
   TU_CHRMAT* matrix = decomposition->matrix;
@@ -25,7 +25,7 @@ TU_DEC* TUregularDecomposeSimpleSums(TU* tu, TU_DEC* decomposition, bool unitVec
   /* Ensure that we have the transpose available. */
 
   if (constructDecomposition && result->transpose == NULL)
-    TUtransposeCharMatrix(tu, result->matrix, &result->transpose);
+    TUchrmatTranspose(tu, result->matrix, &result->transpose);
 
   if (unitVectors)
   {
@@ -148,7 +148,7 @@ TU_DEC* TUregularDecomposeSimpleSums(TU* tu, TU_DEC* decomposition, bool unitVec
               result->children[1]->matrix->entryValues[e] = result->matrix->entryValues[e + offset];
             }
           }
-          TUtransposeCharMatrix(tu, result->children[1]->matrix, &result->children[1]->transpose);
+          TUchrmatTranspose(tu, result->children[1]->matrix, &result->children[1]->transpose);
         }
         else
         {
@@ -225,9 +225,9 @@ TU_DEC* TUregularDecomposeSimpleSums(TU* tu, TU_DEC* decomposition, bool unitVec
               result->children[1]->transpose->entryValues[e] = result->transpose->entryValues[e + offset];
             }
           }
-          TUtransposeCharMatrix(tu, result->children[1]->transpose, &result->children[1]->matrix);
+          TUchrmatTranspose(tu, result->children[1]->transpose, &result->children[1]->matrix);
         }
-        TUtransposeCharMatrix(tu, result->children[0]->matrix, &result->children[0]->transpose);
+        TUchrmatTranspose(tu, result->children[0]->matrix, &result->children[0]->transpose);
       }
 
       /* Make second child the current node. */

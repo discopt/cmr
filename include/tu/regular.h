@@ -45,7 +45,7 @@ typedef struct _TU_DEC
  * \brief Frees a decomposition tree (including the data of all its nodes.
  */
 TU_EXPORT
-void TUfreeDec(
+void TUdecFree(
   TU* tu,       /**< TU environment. */
   TU_DEC** dec  /**< Pointer to decomposition tree. */
 );
@@ -54,7 +54,7 @@ void TUfreeDec(
  * \brief Returns \c true iff this node is a leaf of the tree.
  */
 TU_EXPORT
-bool TUisDecLeaf(
+bool TUdecIsLeaf(
   TU_DEC* dec /**< Decomposition tree */
 );
 
@@ -62,7 +62,7 @@ bool TUisDecLeaf(
  * \brief Returns \c true if and only if tree node corresponds to a regular matroid.
  */
 TU_EXPORT
-bool TUisDecRegular(
+bool TUdecIsRegular(
   TU_DEC* dec /**< Decomposition tree */
 );
 
@@ -70,7 +70,7 @@ bool TUisDecRegular(
  * \brief Returns \c true if and only if tree node corresponds to a graphic matroid.
  */
 TU_EXPORT
-bool TUisDecGraphic(
+bool TUdecIsGraphic(
   TU_DEC* dec /**< Decomposition tree */
 );
 
@@ -78,7 +78,7 @@ bool TUisDecGraphic(
  * \brief Returns \c true if and only if tree node corresponds to a cographic matroid.
  */
 TU_EXPORT
-bool TUisDecCographic(
+bool TUdecIsCographic(
   TU_DEC* dec /**< Decomposition tree */
 );
 
@@ -86,7 +86,7 @@ bool TUisDecCographic(
  * \brief Returns \c k if tree node corresponds to a k-decomposition, and 0 otherwise.
  */
 TU_EXPORT
-char TUisDecSum(
+char TUdecIsSum(
   TU_DEC* dec /**< Decomposition tree */
 );
 
@@ -94,7 +94,7 @@ char TUisDecSum(
  * \brief Returns the number of matrix rows associated to this decomposition tree.
  */
 TU_EXPORT
-int TUgetDecNumRows(
+int TUdecNumRows(
   TU_DEC* dec /**< Decomposition tree */
 );
 
@@ -102,7 +102,7 @@ int TUgetDecNumRows(
  * \brief Returns the number of matrix columns associated to this decomposition tree.
  */
 TU_EXPORT
-int TUgetDecNumColumns(
+int TUdecNumColumns(
   TU_DEC* dec /**< Decomposition tree */
 );
 

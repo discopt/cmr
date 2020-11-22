@@ -46,7 +46,7 @@ bool TUregularTest(TU* tu, TU_CHRMAT* matrix, int* rowLabels, int* columnLabels,
   }
 
   if (!pdecomposition)
-    TUfreeDec(tu, &decomposition);
+    TUdecFree(tu, &decomposition);
 
   return isRegular;
 }

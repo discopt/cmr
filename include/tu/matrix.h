@@ -404,7 +404,7 @@ typedef struct
    * \brief Array with column indices
    */
   int* columns;
-} TU_SUBMATRIX;
+} TU_SUBMAT;
 
 /**
  * \brief Creates a submatrix of given size.
@@ -413,9 +413,9 @@ typedef struct
  * the row and column indices, respectively.
  */
 TU_EXPORT
-void TUcreateSubmatrix(
+void TUsubmatCreate(
   TU* tu,                   /**< TU environment. */
-  TU_SUBMATRIX** submatrix, /** Pointer to where the submatrix is to be stored. */
+  TU_SUBMAT** submatrix, /** Pointer to where the submatrix is to be stored. */
   int numRows,              /**< Number of rows */
   int numColumns            /**< Number of columns */
 );
@@ -425,9 +425,9 @@ void TUcreateSubmatrix(
  */
 
 TU_EXPORT
-void TUcreateSubmatrix1x1(
+void TUsubmatCreate1x1(
   TU* tu,                   /**< TU environment. */
-  TU_SUBMATRIX** submatrix, /**< Pointer to submatrix */
+  TU_SUBMAT** submatrix, /**< Pointer to submatrix */
   int row,                  /**< Row of entry */
   int column                /**< Column of entry */
 );
@@ -436,19 +436,19 @@ void TUcreateSubmatrix1x1(
  * \brief Frees a submatrix.
  */
 TU_EXPORT
-void TUfreeSubmatrix(
+void TUsubmatFree(
   TU* tu,                   /**< TU environment */
-  TU_SUBMATRIX** submatrix  /**< Pointer to submatrix */
+  TU_SUBMAT** submatrix  /**< Pointer to submatrix */
 );
 
 /**
  * \brief Creates a submatrix of a char matrix explicitly.
  */
 TU_EXPORT
-void TUfilterCharSubmatrix(
+void TUchrsubmatFilter(
   TU* tu,                   /**< TU environment. */
   TU_CHRMAT* matrix,   /**< Given matrix */
-  TU_SUBMATRIX* submatrix,  /**< Specified submatrix */
+  TU_SUBMAT* submatrix,  /**< Specified submatrix */
   TU_CHRMAT** result   /**< Resulting submatrix as a char matrix. */
 );
 
@@ -459,11 +459,11 @@ void TUfilterCharSubmatrix(
  */
 
 TU_EXPORT
-bool TUisBinaryDouble(
+bool TUisBinaryDbl(
   TU* tu,                   /**< TU environment. */
   TU_DBLMAT* matrix, /**< Char matrix */
   double epsilon,           /**< Absolute error tolerance */
-  TU_SUBMATRIX** submatrix  /**< If not \c NULL, a non-ternary entry is stored in \c *submatrix. */
+  TU_SUBMAT** submatrix  /**< If not \c NULL, a non-ternary entry is stored in \c *submatrix. */
 );
 
 /**
@@ -474,7 +474,7 @@ TU_EXPORT
 bool TUisBinaryInt(
   TU* tu,                   /**< TU environment. */
   TU_INTMAT* matrix,    /**< Char matrix */
-  TU_SUBMATRIX** submatrix  /**< If not \c NULL, a non-ternary entry is stored in \c *submatrix. */
+  TU_SUBMAT** submatrix  /**< If not \c NULL, a non-ternary entry is stored in \c *submatrix. */
 );
 
 /**
@@ -482,10 +482,10 @@ bool TUisBinaryInt(
  */
 
 TU_EXPORT
-bool TUisBinaryChar(
+bool TUisBinaryChr(
   TU* tu,                   /**< TU environment. */
   TU_CHRMAT* matrix,   /**< Char matrix */
-  TU_SUBMATRIX** submatrix  /**< If not \c NULL, a non-ternary entry is stored in \c *submatrix. */
+  TU_SUBMAT** submatrix  /**< If not \c NULL, a non-ternary entry is stored in \c *submatrix. */
 );
 
 /**
@@ -494,11 +494,11 @@ bool TUisBinaryChar(
  */
 
 TU_EXPORT
-bool TUisTernaryDouble(
+bool TUisTernaryDbl(
   TU* tu,                   /**< TU environment. */
   TU_DBLMAT* matrix, /**< Char matrix */
   double epsilon,           /**< Absolute error tolerance */
-  TU_SUBMATRIX** submatrix  /**< If not \c NULL, a non-ternary entry is stored in \c *submatrix. */
+  TU_SUBMAT** submatrix  /**< If not \c NULL, a non-ternary entry is stored in \c *submatrix. */
 );
 
 /**
@@ -509,7 +509,7 @@ TU_EXPORT
 bool TUisTernaryInt(
   TU* tu,                   /**< TU environment. */
   TU_INTMAT* matrix,    /**< Char matrix */
-  TU_SUBMATRIX** submatrix  /**< If not \c NULL, a non-ternary entry is stored in \c *submatrix. */
+  TU_SUBMAT** submatrix  /**< If not \c NULL, a non-ternary entry is stored in \c *submatrix. */
 );
 
 /**
@@ -517,10 +517,10 @@ bool TUisTernaryInt(
  */
 
 TU_EXPORT
-bool TUisTernaryChar(
+bool TUisTernaryChr(
   TU* tu,                   /**< TU environment. */
   TU_CHRMAT* matrix,   /**< Char matrix */
-  TU_SUBMATRIX** submatrix  /**< If not \c NULL, a non-ternary entry is stored in \c *submatrix. */
+  TU_SUBMAT** submatrix  /**< If not \c NULL, a non-ternary entry is stored in \c *submatrix. */
 );
 
 #ifdef __cplusplus

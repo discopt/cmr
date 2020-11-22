@@ -26,12 +26,12 @@ extern "C" {
  */
 
 TU_EXPORT
-bool TUtestTotalUnimodularityDouble(
-  TU* tu,                   /**< TU environment */
-  TU_DBLMAT* matrix, /**< Double matrix */
-  double epsilon,           /**< Absolute error tolerance */
-  TU_DEC** decomposition,   /**< If not \c NULL, the decomposition tree is stored. */
-  TU_SUBMATRIX** submatrix  /**< If not \c NULL, a submatrix with bad determinant is stored. */
+bool TUtestTotalUnimodularityDbl(
+  TU* tu,                 /**< TU environment */
+  TU_DBLMAT* matrix,      /**< Double matrix */
+  double epsilon,         /**< Absolute error tolerance */
+  TU_DEC** decomposition, /**< If not \c NULL, the decomposition tree is stored. */
+  TU_SUBMAT** submatrix   /**< If not \c NULL, a submatrix with bad determinant is stored. */
 );
 
 /**
@@ -51,10 +51,10 @@ bool TUtestTotalUnimodularityDouble(
 
 TU_EXPORT
 bool TUtestTotalUnimodularityInt(
-  TU* tu,                   /**< TU environment */
-  TU_INTMAT* matrix,    /**< Int matrix */
-  TU_DEC** decomposition,   /**< If not \c NULL, the decomposition tree is stored. */
-  TU_SUBMATRIX** submatrix  /**< If not \c NULL, a submatrix with bad determinant is stored. */
+  TU* tu,                 /**< TU environment */
+  TU_INTMAT* matrix,      /**< Int matrix */
+  TU_DEC** decomposition, /**< If not \c NULL, the decomposition tree is stored. */
+  TU_SUBMAT** submatrix   /**< If not \c NULL, a submatrix with bad determinant is stored. */
 );
 
 /**
@@ -73,11 +73,11 @@ bool TUtestTotalUnimodularityInt(
  */
 
 TU_EXPORT
-bool TUtestTotalUnimodularityChar(
-  TU* tu,                   /**< TU environment */
-  TU_CHRMAT* matrix,   /**< Char matrix */
-  TU_DEC** decomposition,   /**< If not \c NULL, the decomposition tree is stored. */
-  TU_SUBMATRIX** submatrix  /**< If not \c NULL, a submatrix with bad determinant is stored. */
+bool TUtestTotalUnimodularityChr(
+  TU* tu,                 /**< TU environment */
+  TU_CHRMAT* matrix,      /**< Char matrix */
+  TU_DEC** decomposition, /**< If not \c NULL, the decomposition tree is stored. */
+  TU_SUBMAT** submatrix   /**< If not \c NULL, a submatrix with bad determinant is stored. */
 );
 
 #ifdef __cplusplus

@@ -40,15 +40,15 @@ TEST(Sign, Change)
     "-1 0 1 "
   );
 
-  TU_SUBMATRIX* submatrix = NULL;
+  TU_SUBMAT* submatrix = NULL;
   TU_CHRMAT* violator = NULL;
 
   ASSERT_FALSE(TUtestSignChar(tu, matrix, &submatrix));
   ASSERT_TRUE(submatrix != NULL);
-  TUfilterCharSubmatrix(tu, matrix, submatrix, &violator);
+  TUchrsubmatFilter(tu, matrix, submatrix, &violator);
   ASSERT_TRUE(TUchrmatCheckEqual(violator, checkViolator));
   TUchrmatFree(tu, &violator);
-  TUfreeSubmatrix(tu, &submatrix);
+  TUsubmatFree(tu, &submatrix);
 
   ASSERT_FALSE(TUcorrectSignChar(tu, matrix, NULL));
   ASSERT_TRUE(TUchrmatCheckEqual(matrix, check));

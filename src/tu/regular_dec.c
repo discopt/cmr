@@ -25,7 +25,7 @@ void TUcreateDec(TU* tu, TU_DEC** pdec)
   dec->cograph = NULL;
 }
 
-void TUfreeDec(TU* tu, TU_DEC** pdec)
+void TUdecFree(TU* tu, TU_DEC** pdec)
 {
   assert(pdec);
   assert(*pdec);
@@ -35,7 +35,7 @@ void TUfreeDec(TU* tu, TU_DEC** pdec)
   if (dec->numChildren > 0)
   {
     for (int c = 0; c < dec->numChildren; ++c)
-      TUfreeDec(tu, &dec->children[c]);
+      TUdecFree(tu, &dec->children[c]);
     TUfreeBlockArray(tu, &dec->children);
   }
   if (dec->matrix)
@@ -58,45 +58,45 @@ void TUfreeDec(TU* tu, TU_DEC** pdec)
   TUfreeBlock(tu, pdec);
 }
 
-bool TUisDecLeaf(TU_DEC* dec)
+bool TUdecIsLeaf(TU_DEC* dec)
 {
   assert(dec);
   return dec->numChildren == 0;
 }
 
-bool TUisDecRegular(TU_DEC* dec)
+bool TUdecIsRegular(TU_DEC* dec)
 {
   assert(dec);
   return dec->flags & TU_DEC_REGULAR;
 }
 
-bool TUisDecGraphic(TU_DEC* dec)
+bool TUdecIsGraphic(TU_DEC* dec)
 {
   assert(dec);
   return dec->flags & TU_DEC_GRAPHIC;
 }
 
-bool TUisDecCographic(TU_DEC* dec)
+bool TUdecIsCographic(TU_DEC* dec)
 {
   assert(dec);
   return dec->flags & TU_DEC_COGRAPHIC;
 }
 
-char TUisDecSum(TU_DEC* dec)
+char TUdecIsSum(TU_DEC* dec)
 {
   assert(dec);
   char result = dec->flags & TU_DEC_TYPE_MASK;
   return result <= 3 ? result : 0;
 }
 
-int TUgetDecNumRows(TU_DEC* dec)
+int TUdecNumRows(TU_DEC* dec)
 {
   assert(dec);
   assert(dec->matrix);
   return dec->matrix->numRows;
 }
 
-int TUgetDecNumColumns(TU_DEC* dec)
+int TUdecNumColumns(TU_DEC* dec)
 {
   assert(dec);
   assert(dec->matrix);

@@ -642,7 +642,7 @@ bool TUchrmatCheckSorted(TU_CHRMAT* sparse)
   return TUdblmatCheckSorted((TU_DBLMAT*) sparse);
 }
 
-bool TUisBinaryDouble(TU* tu, TU_DBLMAT* sparse, double epsilon, TU_SUBMATRIX** submatrix)
+bool TUisBinaryDbl(TU* tu, TU_DBLMAT* sparse, double epsilon, TU_SUBMAT** submatrix)
 {
   assert(sparse != NULL);
 
@@ -657,7 +657,7 @@ bool TUisBinaryDouble(TU* tu, TU_DBLMAT* sparse, double epsilon, TU_SUBMATRIX** 
       if (rounded < 0 || rounded > +1 || fabs(value - rounded) > epsilon)
       {
         if (submatrix)
-          TUcreateSubmatrix1x1(tu, submatrix, row, sparse->entryColumns[entry]);
+          TUsubmatCreate1x1(tu, submatrix, row, sparse->entryColumns[entry]);
         return false;
       }
     }
@@ -666,7 +666,7 @@ bool TUisBinaryDouble(TU* tu, TU_DBLMAT* sparse, double epsilon, TU_SUBMATRIX** 
   return true;
 }
 
-bool TUisBinaryInt(TU* tu, TU_INTMAT* sparse, TU_SUBMATRIX** submatrix)
+bool TUisBinaryInt(TU* tu, TU_INTMAT* sparse, TU_SUBMAT** submatrix)
 {
   assert(sparse != NULL);
 
@@ -680,7 +680,7 @@ bool TUisBinaryInt(TU* tu, TU_INTMAT* sparse, TU_SUBMATRIX** submatrix)
       if (value < 0 || value > 1)
       {
         if (submatrix)
-          TUcreateSubmatrix1x1(tu, submatrix, row, sparse->entryColumns[entry]);
+          TUsubmatCreate1x1(tu, submatrix, row, sparse->entryColumns[entry]);
         return false;
       }
     }
@@ -689,7 +689,7 @@ bool TUisBinaryInt(TU* tu, TU_INTMAT* sparse, TU_SUBMATRIX** submatrix)
   return true;
 }
 
-bool TUisBinaryChar(TU* tu, TU_CHRMAT* sparse, TU_SUBMATRIX** submatrix)
+bool TUisBinaryChr(TU* tu, TU_CHRMAT* sparse, TU_SUBMAT** submatrix)
 {
   assert(sparse != NULL);
 
@@ -703,7 +703,7 @@ bool TUisBinaryChar(TU* tu, TU_CHRMAT* sparse, TU_SUBMATRIX** submatrix)
       if (value < 0 || value > 1)
       {
         if (submatrix)
-          TUcreateSubmatrix1x1(tu, submatrix, row, sparse->entryColumns[entry]);
+          TUsubmatCreate1x1(tu, submatrix, row, sparse->entryColumns[entry]);
         return false;
       }
     }
@@ -712,7 +712,7 @@ bool TUisBinaryChar(TU* tu, TU_CHRMAT* sparse, TU_SUBMATRIX** submatrix)
   return true;
 }
 
-bool TUisTernaryDouble(TU* tu, TU_DBLMAT* sparse, double epsilon, TU_SUBMATRIX** submatrix)
+bool TUisTernaryDbl(TU* tu, TU_DBLMAT* sparse, double epsilon, TU_SUBMAT** submatrix)
 {
   assert(sparse != NULL);
 
@@ -727,7 +727,7 @@ bool TUisTernaryDouble(TU* tu, TU_DBLMAT* sparse, double epsilon, TU_SUBMATRIX**
       if (rounded < -1 || rounded > +1 || fabs(value - rounded) > epsilon)
       {
         if (submatrix)
-          TUcreateSubmatrix1x1(tu, submatrix, row, sparse->entryColumns[entry]);
+          TUsubmatCreate1x1(tu, submatrix, row, sparse->entryColumns[entry]);
         return false;
       }
     }
@@ -736,7 +736,7 @@ bool TUisTernaryDouble(TU* tu, TU_DBLMAT* sparse, double epsilon, TU_SUBMATRIX**
   return true;
 }
 
-bool TUisTernaryInt(TU* tu, TU_INTMAT* sparse, TU_SUBMATRIX** submatrix)
+bool TUisTernaryInt(TU* tu, TU_INTMAT* sparse, TU_SUBMAT** submatrix)
 {
   assert(sparse != NULL);
 
@@ -750,7 +750,7 @@ bool TUisTernaryInt(TU* tu, TU_INTMAT* sparse, TU_SUBMATRIX** submatrix)
       if (value < -1 || value > +1)
       {
         if (submatrix)
-          TUcreateSubmatrix1x1(tu, submatrix, row, sparse->entryColumns[entry]);
+          TUsubmatCreate1x1(tu, submatrix, row, sparse->entryColumns[entry]);
         return false;
       }
     }
@@ -759,7 +759,7 @@ bool TUisTernaryInt(TU* tu, TU_INTMAT* sparse, TU_SUBMATRIX** submatrix)
   return true;
 }
 
-bool TUisTernaryChar(TU* tu, TU_CHRMAT* sparse, TU_SUBMATRIX** submatrix)
+bool TUisTernaryChr(TU* tu, TU_CHRMAT* sparse, TU_SUBMAT** submatrix)
 {
   assert(sparse != NULL);
 
@@ -773,7 +773,7 @@ bool TUisTernaryChar(TU* tu, TU_CHRMAT* sparse, TU_SUBMATRIX** submatrix)
       if (value < -1 || value > +1)
       {
         if (submatrix)
-          TUcreateSubmatrix1x1(tu, submatrix, row, sparse->entryColumns[entry]);
+          TUsubmatCreate1x1(tu, submatrix, row, sparse->entryColumns[entry]);
         return false;
       }
     }
@@ -782,7 +782,7 @@ bool TUisTernaryChar(TU* tu, TU_CHRMAT* sparse, TU_SUBMATRIX** submatrix)
   return true;
 }
 
-void TUcreateSubmatrix(TU* tu, TU_SUBMATRIX** submatrix, int numRows, int numColumns)
+void TUsubmatCreate(TU* tu, TU_SUBMAT** submatrix, int numRows, int numColumns)
 {
   assert(submatrix != NULL);
 
@@ -795,14 +795,14 @@ void TUcreateSubmatrix(TU* tu, TU_SUBMATRIX** submatrix, int numRows, int numCol
   TUallocBlockArray(tu, &(*submatrix)->columns, numColumns);
 }
 
-void TUcreateSubmatrix1x1(TU* tu, TU_SUBMATRIX** submatrix, int row, int column)
+void TUsubmatCreate1x1(TU* tu, TU_SUBMAT** submatrix, int row, int column)
 {
-  TUcreateSubmatrix(tu, submatrix, 1, 1);
+  TUsubmatCreate(tu, submatrix, 1, 1);
   (*submatrix)->rows[0] = row;
   (*submatrix)->columns[0] = column;
 }
 
-void TUfreeSubmatrix(TU* tu, TU_SUBMATRIX** submatrix)
+void TUsubmatFree(TU* tu, TU_SUBMAT** submatrix)
 {
   assert(submatrix);
 
@@ -819,7 +819,7 @@ static int TUsortSubmatrixCompare(const void* p1, const void* p2)
   return *(int*)p1 - *(int*)p2;
 }
 
-void TUsortSubmatrix(TU_SUBMATRIX* submatrix)
+void TUsortSubmatrix(TU_SUBMAT* submatrix)
 {
   assert(submatrix);
 
@@ -827,7 +827,7 @@ void TUsortSubmatrix(TU_SUBMATRIX* submatrix)
   qsort(submatrix->columns, submatrix->numColumns, sizeof(int), TUsortSubmatrixCompare);
 }
 
-void TUfilterCharSubmatrix(TU* tu, TU_CHRMAT* matrix, TU_SUBMATRIX* submatrix,
+void TUchrsubmatFilter(TU* tu, TU_CHRMAT* matrix, TU_SUBMAT* submatrix,
   TU_CHRMAT** result)
 {
   assert(matrix);

@@ -49,7 +49,7 @@ typedef struct
  */
 
 void TUsortSubmatrix(
-  TU_SUBMATRIX* submatrix /**< The submatrix. */
+  TU_SUBMAT* submatrix /**< The submatrix. */
 );
 
 #ifdef __cplusplus

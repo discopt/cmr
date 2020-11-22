@@ -28,7 +28,7 @@ char signSequentiallyConnected(
   TU_CHRMAT* matrix,     /**< Sparse matrix. */
   TU_CHRMAT* transpose,  /**< Transpose of \p matrix. */
   bool change,                /**< Whether signs of \p matrix should be changed if necessary */
-  TU_SUBMATRIX** submatrix    /**< If not \c NULL, a submatrix with bad determinant is stored. */
+  TU_SUBMAT** submatrix    /**< If not \c NULL, a submatrix with bad determinant is stored. */
 );
 
 #ifdef __cplusplus
