@@ -217,6 +217,47 @@ void TUcopyCharMatrix(TU* tu, TU_CHAR_MATRIX* matrix, TU_CHAR_MATRIX** result)
 }
 
 
+void TUtransposeCharMatrix(TU* tu, TU_CHAR_MATRIX* matrix, TU_CHAR_MATRIX** result)
+{
+  assert(tu);
+  assert(matrix);
+  assert(result);
+  assert(*result == NULL);
+  assert(TUcheckCharMatrixSorted(matrix));
+
+  TUcreateCharMatrix(tu, result, matrix->numColumns, matrix->numRows, matrix->numNonzeros);
+
+  /* Count number of nonzeros in each column, storing in the next entry. */
+  for (int c = 0; c <= matrix->numColumns; ++c)
+    (*result)->rowStarts[c] = 0;
+  for (int e = 0; e < matrix->numNonzeros; ++e)
+    (*result)->rowStarts[matrix->entryColumns[e] + 1]++;
+
+  /* Compute start indices for columns. */
+  for (int c = 1; c < matrix->numColumns; ++c)
+    (*result)->rowStarts[c] += (*result)->rowStarts[c-1];
+
+  /* Create nonzeros. */
+  for (int row = 0; row < matrix->numRows; ++row)
+  {
+    int begin = matrix->rowStarts[row];
+    int end = row + 1 < matrix->numRows ? matrix->rowStarts[row+1] : matrix->numNonzeros;
+    for (int entry = begin; entry < end; ++entry)
+    {
+      int column = matrix->entryColumns[entry];
+      int transEntry = (*result)->rowStarts[column];
+      (*result)->entryColumns[transEntry] = row;
+      (*result)->entryValues[transEntry] = matrix->entryValues[entry];
+      (*result)->rowStarts[column]++;
+    }
+  }
+
+  /* We shifted rowStarts of *result, so we shift it back. */
+  for (int c = matrix->numColumns; c > 0; --c)
+    (*result)->rowStarts[c] = (*result)->rowStarts[c-1];
+  (*result)->rowStarts[0] = 0;
+}
+
 void TUprintDoubleMatrixDense(FILE* stream, TU_DOUBLE_MATRIX* sparse, char zeroChar, bool header)
 {
   assert(stream != NULL);

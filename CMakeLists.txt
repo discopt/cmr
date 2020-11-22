@@ -66,6 +66,15 @@ target_link_libraries(tu_test
 )
 set_target_properties(tu_test PROPERTIES OUTPUT_NAME tu-test)
 
+# Target for the random_network
+add_executable(random_network
+   src/test/random_network.c)
+target_link_libraries(random_network
+   PRIVATE
+      TU::tu
+)
+set_target_properties(random_network PROPERTIES OUTPUT_NAME random-network)
+
 # Write compilation settings to tu/config.h.
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/include/tu/config.h.in ${CMAKE_BINARY_DIR}/tu/config.h @ONLY)
 

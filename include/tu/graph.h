@@ -130,6 +130,10 @@ void TUlistgraphDeleteEdge(
 #define TUlistgraphIncidentTarget(graph, i) \
   ((graph)->arcs[i].target)
 
+void TUlistgraphPrint(
+  TU_LISTGRAPH* graph  /**< Graph structure. */
+);
+
 #ifdef __cplusplus
 }
 #endif
