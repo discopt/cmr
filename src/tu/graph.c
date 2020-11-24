@@ -9,14 +9,14 @@
 #define isValid(nodeOrArc) \
   ((nodeOrArc) >= 0)
 
-void TUlistgraphEnsureConsistent(TU* tu, TU_GRAPH* graph)
+void TUgraphEnsureConsistent(TU* tu, TU_GRAPH* graph)
 {
   assert(tu);
   assert(graph);
 
 #ifdef DEBUG_GRAPH
   printf("Ensuring consistency of listgraph with %d nodes and %d edges.\n",
-    TUlistgraphNumNodes(graph), TUlistgraphNumEdges(graph));
+    TUgraphNumNodes(graph), TUgraphNumEdges(graph));
 #endif /* DEBUG_GRAPH */
 
   /* Count nodes and check prev/next linked lists. */
@@ -120,7 +120,7 @@ void TUgraphCreateEmpty(TU* tu, TU_GRAPH** pgraph, int memNodes, int memEdges)
     graph->arcs[2*e].next = e+1;
   graph->arcs[2*graph->memEdges-2].next = -1;
 
-  TUlistgraphEnsureConsistent(tu, graph);
+  TUgraphEnsureConsistent(tu, graph);
 }
 
 void TUgraphFree(TU* tu, TU_GRAPH** pgraph)
@@ -128,11 +128,11 @@ void TUgraphFree(TU* tu, TU_GRAPH** pgraph)
   assert(pgraph);
 
 #ifdef DEBUG_GRAPH
-  printf("TUlistgraphFree(|V|=%d, |E|=%d)\n", TUlistgraphNumNodes(*pgraph),
-    TUlistgraphNumEdges(*pgraph));
+  printf("TUgraphFree(|V|=%d, |E|=%d)\n", TUgraphNumNodes(*pgraph),
+    TUgraphNumEdges(*pgraph));
 #endif /* DEBUG_GRAPH */
 
-  TUlistgraphEnsureConsistent(tu, *pgraph);
+  TUgraphEnsureConsistent(tu, *pgraph);
 
   TU_GRAPH* graph = *pgraph;
 
@@ -160,16 +160,16 @@ void TUgraphClear(TU* tu, TU_GRAPH* graph)
     graph->arcs[2*e].next = e+1;
   graph->arcs[2*graph->memEdges-2].next = -1;
 
-  TUlistgraphEnsureConsistent(tu, graph);
+  TUgraphEnsureConsistent(tu, graph);
 }
 
 TU_GRAPH_NODE TUgraphAddNode(TU* tu, TU_GRAPH *graph)
 {
 #ifdef DEBUG_GRAPH
-  printf("TUlistgraphAddNode\n");
+  printf("TUgraphAddNode\n");
 #endif /* DEBUG_GRAPH */
 
-  TUlistgraphEnsureConsistent(tu, graph);
+  TUgraphEnsureConsistent(tu, graph);
 
   /* If the free list is empty, we have reallocate. */
   if (!isValid(graph->freeNode))
@@ -196,7 +196,7 @@ TU_GRAPH_NODE TUgraphAddNode(TU* tu, TU_GRAPH *graph)
     graph->nodes[graph->firstNode].prev = result;
   graph->firstNode = result;
 
-  TUlistgraphEnsureConsistent(tu, graph);
+  TUgraphEnsureConsistent(tu, graph);
 
   return result;
 }
@@ -205,10 +205,10 @@ TU_GRAPH_EDGE TUgraphAddEdge(TU* tu, TU_GRAPH* graph, TU_GRAPH_NODE u,
   TU_GRAPH_NODE v)
 {
 #ifdef DEBUG_GRAPH
-  printf("TUlistgraphAddEdge\n");
+  printf("TUgraphAddEdge\n");
 #endif /* DEBUG_GRAPH */
 
-  TUlistgraphEnsureConsistent(tu, graph);
+  TUgraphEnsureConsistent(tu, graph);
   assert(u >= 0);
   assert(u < graph->numNodes);
   assert(v >= 0);
@@ -256,7 +256,7 @@ TU_GRAPH_EDGE TUgraphAddEdge(TU* tu, TU_GRAPH* graph, TU_GRAPH_NODE u,
     graph->arcs[firstOut].prev = arc;
   graph->nodes[v].firstOut = arc;
 
-  TUlistgraphEnsureConsistent(tu, graph);
+  TUgraphEnsureConsistent(tu, graph);
 
   return result;
 }
@@ -264,17 +264,17 @@ TU_GRAPH_EDGE TUgraphAddEdge(TU* tu, TU_GRAPH* graph, TU_GRAPH_NODE u,
 void TUgraphDeleteNode(TU* tu, TU_GRAPH* graph, TU_GRAPH_NODE v)
 {
 #ifdef DEBUG_GRAPH
-  printf("TUlistgraphDeleteNode(|V|=%d, |E|=%d, v=%d)\n", TUlistgraphNumNodes(graph),
-    TUlistgraphNumEdges(graph), v);
+  printf("TUgraphDeleteNode(|V|=%d, |E|=%d, v=%d)\n", TUgraphNumNodes(graph),
+    TUgraphNumEdges(graph), v);
 #endif /* DEBUG_GRAPH */
 
-  TUlistgraphEnsureConsistent(tu, graph);
+  TUgraphEnsureConsistent(tu, graph);
 
   /* Remove incident edges of which v is the source. */
   while (isValid(graph->nodes[v].firstOut))
     TUgraphDeleteEdge(tu, graph, graph->nodes[v].firstOut/2);
 
-  TUlistgraphEnsureConsistent(tu, graph);
+  TUgraphEnsureConsistent(tu, graph);
 
   /* Remove node from node list. */
   TU_GRAPH_NODE prev = graph->nodes[v].prev;
@@ -290,14 +290,14 @@ void TUgraphDeleteNode(TU* tu, TU_GRAPH* graph, TU_GRAPH_NODE v)
   graph->freeNode = v;
   graph->numNodes--;
 
-  TUlistgraphEnsureConsistent(tu, graph);
+  TUgraphEnsureConsistent(tu, graph);
 }
 
 void TUgraphDeleteEdge(TU* tu, TU_GRAPH* graph, TU_GRAPH_EDGE e)
 {
 #ifdef DEBUG_GRAPH
-  printf("TUlistgraphDeleteEdge(|V|=%d, |E|=%d, %d", TUlistgraphNumNodes(graph),
-    TUlistgraphNumEdges(graph), e);
+  printf("TUgraphDeleteEdge(|V|=%d, |E|=%d, %d", TUgraphNumNodes(graph),
+    TUgraphNumEdges(graph), e);
   fflush(stdout);
 #endif /* DEBUG_GRAPH */
 
@@ -311,7 +311,7 @@ void TUgraphDeleteEdge(TU* tu, TU_GRAPH* graph, TU_GRAPH_EDGE e)
   printf(" = {%d,%d})\n", u, v);
 #endif /* DEBUG_GRAPH */
 
-  TUlistgraphEnsureConsistent(tu, graph);
+  TUgraphEnsureConsistent(tu, graph);
 
   /* Remove from u's list of outgoing arcs. */  
   TU_GRAPH_EDGE prev = graph->arcs[arc].prev;
@@ -339,7 +339,7 @@ void TUgraphDeleteEdge(TU* tu, TU_GRAPH* graph, TU_GRAPH_EDGE e)
   if (isValid(next))
     graph->arcs[next].prev = prev;
 
-  TUlistgraphEnsureConsistent(tu, graph);
+  TUgraphEnsureConsistent(tu, graph);
 }
 
 TU_GRAPH_ITER TUgraphIncFirst(TU_GRAPH* graph, TU_GRAPH_NODE v)
@@ -388,7 +388,7 @@ TU_GRAPH_ITER TUgraphEdgesFirst(TU_GRAPH* graph)
 TU_GRAPH_ITER TUgraphEdgesNext(TU_GRAPH* graph, TU_GRAPH_ITER i)
 {
 #ifdef DEBUG_GRAPH
-  printf("TUlistgraphEdgesNext(%d): arc is (%d,%d), opposite is %d, prev = %d, next = %d\n", i,
+  printf("TUsgraphEdgesNext(%d): arc is (%d,%d), opposite is %d, prev = %d, next = %d\n", i,
     graph->arcs[i ^ 1].target, graph->arcs[i].target, i^1, graph->arcs[i].prev, graph->arcs[i].next);
 #endif /* DEBUG_GRAPH */
   while (true)

@@ -203,7 +203,7 @@ void TUtdecAddColumnApply(TU* tu, TU_TDEC* tdec, TU_TDEC_NEWCOLUMN* newcol)
   assert(newcol);
 }
 
-bool testGraphicnessBixbyWagner(TU* tu, TU_CHRMAT* matrix, TU_CHRMAT* transpose,
+bool testGraphicnessTDecomposition(TU* tu, TU_CHRMAT* matrix, TU_CHRMAT* transpose,
   TU_GRAPH* graph, TU_GRAPH_EDGE* basis, TU_GRAPH_EDGE* cobasis, TU_SUBMAT** psubmatrix)
 {
   assert(tu);
