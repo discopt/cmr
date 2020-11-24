@@ -7,7 +7,7 @@ TEST(Graph, Modifications)
 {
   TU* tu = NULL;
   TUcreateEnvironment(&tu);
-
+  
   TU_LISTGRAPH* graph = NULL;
   TUlistgraphCreateEmpty(tu, &graph, 1, 1);
 
@@ -28,17 +28,19 @@ TEST(Graph, Modifications)
 
   int countNodes = 0;
   for (TU_LISTGRAPH_NODE v = TUlistgraphNodesFirst(graph); TUlistgraphNodesValid(graph, v);
-    TUlistgraphNodesNext(graph, v))
+    v = TUlistgraphNodesNext(graph, v))
   {
     ++countNodes;
   }
   ASSERT_EQ(countNodes, TUlistgraphNumNodes(graph));
 
   int countIncidentEdges = 0;
-  for (TU_LISTGRAPH_INCIDENT i= TUlistgraphIncidentFirst(graph, b);
-    TUlistgraphIncidentValid(graph, i); TUlistgraphIncidentNext(graph, i))
+  for (TU_LISTGRAPH_INCIDENT i = TUlistgraphIncidentFirst(graph, b);
+    TUlistgraphIncidentValid(graph, i); i = TUlistgraphIncidentNext(graph, i))
   {
     TU_LISTGRAPH_EDGE e = TUlistgraphIncidentEdge(graph, i);
+    ASSERT_GE(e, 0);
+    ASSERT_LT(e, graph->memEdges);
     ++countIncidentEdges;
   }
   ASSERT_EQ(countIncidentEdges, 3);

@@ -1,5 +1,6 @@
 #include <tu/graph.h>
 #include <tu/matrix.h>
+#include <tu/graphic.h>
 
 void printUsage(const char* program)
 {
@@ -99,11 +100,36 @@ int main(int argc, const char** argv)
 
   /* Print matrix. */
 
-  TUchrmatPrintDense(stdout, matrix, '0', true);
-  TUchrmatFree(tu, &matrix);
+  TUchrmatPrintDense(stdout, matrix, ' ', true);
+
+  /* Check for graphicness. */
+
+  TU_LISTGRAPH* graph = NULL;
+  TU_LISTGRAPH_EDGE* basis = NULL;
+  TU_LISTGRAPH_EDGE* cobasis = NULL;
+  TU_SUBMAT* submatrix = NULL;
+
+  TUtestGraphicnessChr(tu, matrix, &graph, &basis, &cobasis, &submatrix);
+
+  if (graph)
+  {
+    printf("Represented graph:\n");
+    TUlistgraphPrint(stdout, graph);
+    if (basis)
+    {
+      for (int r = 0; r < matrix->numRows; ++r)
+        printf("Row %d corresponds to edge %d.\n", r, basis[r]);
+    }
+    if (cobasis)
+    {
+      for (int c = 0; c < matrix->numColumns; ++c)
+        printf("Col %d corresponds to edge %d.\n", c, cobasis[c]);
+    }
+  }
 
   /* Cleanup */
 
+  TUchrmatFree(tu, &matrix);
   TUfreeEnvironment(&tu);
 
   return EXIT_SUCCESS;

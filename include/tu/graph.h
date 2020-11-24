@@ -71,6 +71,15 @@ void TUlistgraphFree(
 );
 
 /**
+ * \brief Removes all nodes and columns, keeping the memory.
+ */
+
+void TUlistgraphClear(
+  TU* tu,             /**< TU environment. */
+  TU_LISTGRAPH* graph /**< Graph structure. */
+);
+
+/**
  * \brief Adds a node to a listgraph.
  * 
  * Adds a node to a listgraph.
@@ -111,24 +120,41 @@ void TUlistgraphDeleteEdge(
 );
 
 #define TUlistgraphNodesFirst(graph) \
-  (graph->firstNode)
+  ((graph)->firstNode)
 #define TUlistgraphNodesValid(graph, v) \
   (v >= 0)
 #define TUlistgraphNodesNext(graph, v) \
-  v = (graph)->nodes[v].next
+  (graph)->nodes[v].next
 
-#define TUlistgraphIncidentFirst(graph, v) \
-  (graph)->nodes[v].firstOut
+TU_LISTGRAPH_INCIDENT TUlistgraphIncidentFirst(TU_LISTGRAPH* graph, TU_LISTGRAPH_NODE v);
+
 #define TUlistgraphIncidentValid(graph, i) \
   (i >= 0)
-#define TUlistgraphIncidentNext(graph, i) \
-  i = (graph)->arcs[i].next
+
+TU_LISTGRAPH_INCIDENT TUlistgraphIncidentNext(TU_LISTGRAPH* graph, TU_LISTGRAPH_INCIDENT e);
+
 #define TUlistgraphIncidentEdge(graph, i) \
   ((i)/2)
 #define TUlistgraphIncidentSource(graph, i) \
   ((graph)->arcs[i ^ 1].target)
 #define TUlistgraphIncidentTarget(graph, i) \
   ((graph)->arcs[i].target)
+
+
+#define TUlistgraphEdgesValid(graph, e) \
+  (e >= 0)
+
+TU_LISTGRAPH_INCIDENT TUlistgraphEdgesFirst(
+  TU_LISTGRAPH* graph
+);
+
+TU_LISTGRAPH_INCIDENT TUlistgraphEdgesNext(
+  TU_LISTGRAPH* graph,
+  TU_LISTGRAPH_INCIDENT e
+);
+
+#define TUlistgraphEdgesEdge(graph, i) \
+  ((i)/2)
 
 void TUlistgraphPrint(
   FILE* stream,        /**< Stream. */

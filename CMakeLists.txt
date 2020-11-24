@@ -34,6 +34,7 @@ endif()
 
 # Target for the TU library.
 add_library(tu
+  src/tu/bixby_wagner.c
   src/tu/env.c
   src/tu/matrix.c
   src/tu/one_sum.c
