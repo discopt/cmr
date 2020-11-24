@@ -3,7 +3,7 @@
 #include "env_internal.h"
 #include "matrix_internal.h"
 #include "one_sum.h"
-#include "bixby_wagner.h"
+#include "tdec.h"
 
 #include <assert.h>
 #include <limits.h>
@@ -24,7 +24,7 @@ static bool testGraphicness(TU* tu, int numComponents, TU_ONESUM_COMPONENT* comp
   if (pbasis)
   {
     TUallocBlockArray(tu, pbasis, numRows);
-    TUallocBlockArray(tu, &componentBasis, numRows);
+    TUallocStackArray(tu, &componentBasis, numRows);
 
 #ifndef NDEBUG /* We initialize with something far off to find bugs. */
     for (int r = 0; r < numRows; ++r)
@@ -35,7 +35,7 @@ static bool testGraphicness(TU* tu, int numComponents, TU_ONESUM_COMPONENT* comp
   if (pcobasis)
   {
     TUallocBlockArray(tu, pcobasis, numColumns);
-    TUallocBlockArray(tu, &componentCobasis, numColumns);
+    TUallocStackArray(tu, &componentCobasis, numColumns);
 
 #ifndef NDEBUG /* We initialize with something far off to find bugs. */
     for (int c = 0; c < numColumns; ++c)
@@ -46,7 +46,7 @@ static bool testGraphicness(TU* tu, int numComponents, TU_ONESUM_COMPONENT* comp
   bool isGraphic = true;
   for (int comp = 0; comp < numComponents; ++comp)
   {
-    isGraphic = testGraphicnessBixbyWagner(tu, (TU_CHRMAT*)components[comp].matrix,
+    isGraphic = testGraphicnessTDecomposition(tu, (TU_CHRMAT*)components[comp].matrix,
       (TU_CHRMAT*)components[comp].transpose, componentGraph, componentBasis, componentCobasis,
       psubmatrix);
 
@@ -62,9 +62,9 @@ static bool testGraphicness(TU* tu, int numComponents, TU_ONESUM_COMPONENT* comp
 
       assert(graph);
       TU_GRAPH_NODE* componentNodesToNodes = NULL;
-      TUallocBlockArray(tu, &componentNodesToNodes, TUgraphMemNodes(componentGraph));
+      TUallocStackArray(tu, &componentNodesToNodes, TUgraphMemNodes(componentGraph));
       TU_GRAPH_EDGE* componentEdgesToEdges = NULL;
-      TUallocBlockArray(tu, &componentEdgesToEdges, TUgraphMemEdges(componentGraph));
+      TUallocStackArray(tu, &componentEdgesToEdges, TUgraphMemEdges(componentGraph));
 
       printf("Copying %d nodes.\n", TUgraphNumNodes(componentGraph));
       for (TU_GRAPH_NODE v = TUgraphNodesFirst(componentGraph);
@@ -105,17 +105,17 @@ static bool testGraphicness(TU* tu, int numComponents, TU_ONESUM_COMPONENT* comp
         }
       }
 
-      TUfreeBlockArray(tu, &componentEdgesToEdges);
-      TUfreeBlockArray(tu, &componentNodesToNodes);
+      TUfreeStackArray(tu, &componentEdgesToEdges);
+      TUfreeStackArray(tu, &componentNodesToNodes);
 
       TUgraphClear(tu, componentGraph);
     }
   }
 
   if (pcobasis)
-    TUfreeBlockArray(tu, &componentCobasis);
+    TUfreeStackArray(tu, &componentCobasis);
   if (pbasis)
-    TUfreeBlockArray(tu, &componentBasis);
+    TUfreeStackArray(tu, &componentBasis);
   if (componentGraph)
     TUgraphFree(tu, &componentGraph);
 

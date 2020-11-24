@@ -51,9 +51,9 @@ void TUdecFree(TU* tu, TU_DEC** pdec)
   if (dec->parentColumns)
     TUfreeBlockArray(tu, &dec->parentColumns);
   if (dec->graph)
-    TUlistgraphFree(tu, &dec->graph);
+    TUgraphFree(tu, &dec->graph);
   if (dec->cograph)
-    TUlistgraphFree(tu, &dec->cograph);
+    TUgraphFree(tu, &dec->cograph);
 
   TUfreeBlock(tu, pdec);
 }
