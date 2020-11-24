@@ -35,8 +35,8 @@ typedef struct _TU_DEC
   int* parentColumns;         /**< Mapping to columns of parent node or \c NULL. */
 
   TU_DEC_FLAGS flags;         /**< Flags for this tree node. */
-  TU_LISTGRAPH *graph;        /**< Graph corresponding to this tree node, or \c NULL.  */
-  TU_LISTGRAPH *cograph;      /**< Cograph corresponding to this tree node, or \c NULL.  */
+  TU_GRAPH *graph;        /**< Graph corresponding to this tree node, or \c NULL.  */
+  TU_GRAPH *cograph;      /**< Cograph corresponding to this tree node, or \c NULL.  */
   int numChildren;            /**< Number of children of this tree node. */
   struct _TU_DEC** children;  /**< Array with pointers to children of this tree node. */
 } TU_DEC;

@@ -9,74 +9,74 @@
 extern "C" {
 #endif
 
-typedef int TU_LISTGRAPH_NODE;
-typedef int TU_LISTGRAPH_EDGE;
-typedef int TU_LISTGRAPH_INCIDENT;
+typedef int TU_GRAPH_NODE;
+typedef int TU_GRAPH_EDGE;
+typedef int TU_GRAPH_ITER;
 
 typedef struct
 {
   int prev;
   int next;
   int firstOut;
-} _TU_LISTGRAPH_NODE;
+} _TU_GRAPH_NODE;
 
 typedef struct
 {
   int target;
   int prev;
   int next;
-} _TU_LISTGRAPH_ARC;
+} _TU_GRAPH_ARC;
 
 typedef struct
 {
   int numNodes;
   int memNodes;
-  _TU_LISTGRAPH_NODE* nodes;
+  _TU_GRAPH_NODE* nodes;
   int firstNode;
   int freeNode;
 
   int numEdges;
   int memEdges;
-  _TU_LISTGRAPH_ARC* arcs;
+  _TU_GRAPH_ARC* arcs;
   int freeEdge;
-} TU_LISTGRAPH;
+} TU_GRAPH;
 
-#define TUlistgraphNumNodes(graph) \
+#define TUgraphNumNodes(graph) \
   ((graph)->numNodes)
 
-#define TUlistgraphMemNodes(graph) \
+#define TUgraphMemNodes(graph) \
   ((graph)->memNodes)
 
-#define TUlistgraphNumEdges(graph) \
+#define TUgraphNumEdges(graph) \
   ((graph)->numEdges)
 
-#define TUlistgraphMemEdges(graph) \
+#define TUgraphMemEdges(graph) \
   ((graph)->memEdges)
 
-#define TUlistgraphEdgeU(graph, e) \
+#define TUgraphEdgeU(graph, e) \
   ((graph)->arcs[2*e + 1].target)
-#define TUlistgraphEdgeV(graph, e) \
+#define TUgraphEdgeV(graph, e) \
   ((graph)->arcs[2*e].target)
   
-void TUlistgraphCreateEmpty(
+void TUgraphCreateEmpty(
   TU* tu,                 /**< TU environment. */
-  TU_LISTGRAPH** pgraph,  /**< Pointer to graph structure. */
+  TU_GRAPH** pgraph,  /**< Pointer to graph structure. */
   int memNodes,           /**< Allocate memory for this number of nodes. */
   int memEdges            /**< Allocate memory for this number of edges. */
 );
 
-void TUlistgraphFree(
+void TUgraphFree(
   TU* tu,               /**< TU environment. */
-  TU_LISTGRAPH** pgraph /**< Pointer to graph structure. */
+  TU_GRAPH** pgraph /**< Pointer to graph structure. */
 );
 
 /**
  * \brief Removes all nodes and columns, keeping the memory.
  */
 
-void TUlistgraphClear(
+void TUgraphClear(
   TU* tu,             /**< TU environment. */
-  TU_LISTGRAPH* graph /**< Graph structure. */
+  TU_GRAPH* graph /**< Graph structure. */
 );
 
 /**
@@ -87,9 +87,9 @@ void TUlistgraphClear(
  * \return Node structure of new node.
  */
 
-TU_LISTGRAPH_NODE TUlistgraphAddNode(
+TU_GRAPH_NODE TUgraphAddNode(
   TU* tu,             /**< TU environment. */
-  TU_LISTGRAPH* graph /**< Graph structure. */
+  TU_GRAPH* graph /**< Graph structure. */
 );
 
 /**
@@ -100,65 +100,65 @@ TU_LISTGRAPH_NODE TUlistgraphAddNode(
  * \return Edge structure of new edge.
  */
 
-TU_LISTGRAPH_EDGE TUlistgraphAddEdge(
+TU_GRAPH_EDGE TUgraphAddEdge(
   TU* tu,              /**< TU environment. */
-  TU_LISTGRAPH* graph, /**< Graph structure. */
-  TU_LISTGRAPH_NODE u, /**< One node of the edge. */
-  TU_LISTGRAPH_NODE v  /**< Other node of the edge. */
+  TU_GRAPH* graph, /**< Graph structure. */
+  TU_GRAPH_NODE u, /**< One node of the edge. */
+  TU_GRAPH_NODE v  /**< Other node of the edge. */
 );
 
-void TUlistgraphDeleteNode(
+void TUgraphDeleteNode(
   TU* tu,               /**< TU environment. */
-  TU_LISTGRAPH* graph,  /**< Graph structure. */
-  TU_LISTGRAPH_NODE v   /**< Node to be deleted. */
+  TU_GRAPH* graph,  /**< Graph structure. */
+  TU_GRAPH_NODE v   /**< Node to be deleted. */
 );
 
-void TUlistgraphDeleteEdge(
+void TUgraphDeleteEdge(
   TU* tu,               /**< TU environment. */
-  TU_LISTGRAPH* graph,  /**< Graph structure. */
-  TU_LISTGRAPH_EDGE e   /**< Edge to be deleted. */
+  TU_GRAPH* graph,  /**< Graph structure. */
+  TU_GRAPH_EDGE e   /**< Edge to be deleted. */
 );
 
-#define TUlistgraphNodesFirst(graph) \
+#define TUgraphNodesFirst(graph) \
   ((graph)->firstNode)
-#define TUlistgraphNodesValid(graph, v) \
+#define TUgraphNodesValid(graph, v) \
   (v >= 0)
-#define TUlistgraphNodesNext(graph, v) \
+#define TUgraphNodesNext(graph, v) \
   (graph)->nodes[v].next
 
-TU_LISTGRAPH_INCIDENT TUlistgraphIncidentFirst(TU_LISTGRAPH* graph, TU_LISTGRAPH_NODE v);
+TU_GRAPH_ITER TUgraphIncFirst(TU_GRAPH* graph, TU_GRAPH_NODE v);
 
-#define TUlistgraphIncidentValid(graph, i) \
+#define TUgraphIncValid(graph, i) \
   (i >= 0)
 
-TU_LISTGRAPH_INCIDENT TUlistgraphIncidentNext(TU_LISTGRAPH* graph, TU_LISTGRAPH_INCIDENT e);
+TU_GRAPH_ITER TUgraphIncNext(TU_GRAPH* graph, TU_GRAPH_ITER e);
 
-#define TUlistgraphIncidentEdge(graph, i) \
+#define TUgraphIncEdge(graph, i) \
   ((i)/2)
-#define TUlistgraphIncidentSource(graph, i) \
+#define TUgraphIncSource(graph, i) \
   ((graph)->arcs[i ^ 1].target)
-#define TUlistgraphIncidentTarget(graph, i) \
+#define TUgraphIncTarget(graph, i) \
   ((graph)->arcs[i].target)
 
 
-#define TUlistgraphEdgesValid(graph, e) \
+#define TUgraphEdgesValid(graph, e) \
   (e >= 0)
 
-TU_LISTGRAPH_INCIDENT TUlistgraphEdgesFirst(
-  TU_LISTGRAPH* graph
+TU_GRAPH_ITER TUgraphEdgesFirst(
+  TU_GRAPH* graph
 );
 
-TU_LISTGRAPH_INCIDENT TUlistgraphEdgesNext(
-  TU_LISTGRAPH* graph,
-  TU_LISTGRAPH_INCIDENT e
+TU_GRAPH_ITER TUgraphEdgesNext(
+  TU_GRAPH* graph,
+  TU_GRAPH_ITER e
 );
 
-#define TUlistgraphEdgesEdge(graph, i) \
+#define TUgraphEdgesEdge(graph, i) \
   ((i)/2)
 
-void TUlistgraphPrint(
+void TUgraphPrint(
   FILE* stream,        /**< Stream. */
-  TU_LISTGRAPH* graph  /**< Graph structure. */
+  TU_GRAPH* graph  /**< Graph structure. */
 );
 
 #ifdef __cplusplus

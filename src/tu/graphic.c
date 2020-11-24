@@ -9,18 +9,18 @@
 #include <limits.h>
 
 static bool testGraphicness(TU* tu, int numComponents, TU_ONESUM_COMPONENT* components,
-  TU_LISTGRAPH** pgraph, TU_LISTGRAPH_EDGE** pbasis, TU_LISTGRAPH_EDGE** pcobasis,
+  TU_GRAPH** pgraph, TU_GRAPH_EDGE** pbasis, TU_GRAPH_EDGE** pcobasis,
   TU_SUBMAT** psubmatrix, int numRows, int numColumns)
 {
-  TU_LISTGRAPH* graph = NULL;
-  TU_LISTGRAPH* componentGraph = NULL;
+  TU_GRAPH* graph = NULL;
+  TU_GRAPH* componentGraph = NULL;
   if (pgraph)
   {
-    TUlistgraphCreateEmpty(tu, pgraph, numRows + numComponents, numRows + numColumns);
-    TUlistgraphCreateEmpty(tu, &componentGraph, numRows + numComponents, numRows + numColumns);
+    TUgraphCreateEmpty(tu, pgraph, numRows + numComponents, numRows + numColumns);
+    TUgraphCreateEmpty(tu, &componentGraph, numRows + numComponents, numRows + numColumns);
     graph = *pgraph;
   }
-  TU_LISTGRAPH_EDGE* componentBasis = NULL;
+  TU_GRAPH_EDGE* componentBasis = NULL;
   if (pbasis)
   {
     TUallocBlockArray(tu, pbasis, numRows);
@@ -31,7 +31,7 @@ static bool testGraphicness(TU* tu, int numComponents, TU_ONESUM_COMPONENT* comp
       componentBasis[r] = INT_MIN;
 #endif /* !NDEBUG */
   }
-  TU_LISTGRAPH_EDGE* componentCobasis = NULL;
+  TU_GRAPH_EDGE* componentCobasis = NULL;
   if (pcobasis)
   {
     TUallocBlockArray(tu, pcobasis, numColumns);
@@ -58,32 +58,32 @@ static bool testGraphicness(TU* tu, int numComponents, TU_ONESUM_COMPONENT* comp
     if (componentGraph)
     {
       printf("testGraphicnessBixbyWagner returned the following graph:\n");
-      TUlistgraphPrint(stdout, componentGraph);
+      TUgraphPrint(stdout, componentGraph);
 
       assert(graph);
-      TU_LISTGRAPH_NODE* componentNodesToNodes = NULL;
-      TUallocBlockArray(tu, &componentNodesToNodes, TUlistgraphMemNodes(componentGraph));
-      TU_LISTGRAPH_EDGE* componentEdgesToEdges = NULL;
-      TUallocBlockArray(tu, &componentEdgesToEdges, TUlistgraphMemEdges(componentGraph));
+      TU_GRAPH_NODE* componentNodesToNodes = NULL;
+      TUallocBlockArray(tu, &componentNodesToNodes, TUgraphMemNodes(componentGraph));
+      TU_GRAPH_EDGE* componentEdgesToEdges = NULL;
+      TUallocBlockArray(tu, &componentEdgesToEdges, TUgraphMemEdges(componentGraph));
 
-      printf("Copying %d nodes.\n", TUlistgraphNumNodes(componentGraph));
-      for (TU_LISTGRAPH_NODE v = TUlistgraphNodesFirst(componentGraph);
-        TUlistgraphNodesValid(componentGraph, v); v = TUlistgraphNodesNext(componentGraph, v))
+      printf("Copying %d nodes.\n", TUgraphNumNodes(componentGraph));
+      for (TU_GRAPH_NODE v = TUgraphNodesFirst(componentGraph);
+        TUgraphNodesValid(componentGraph, v); v = TUgraphNodesNext(componentGraph, v))
       {
-        assert(v >= 0 && v < TUlistgraphMemNodes(componentGraph));
-        componentNodesToNodes[v] = TUlistgraphAddNode(tu, graph);
+        assert(v >= 0 && v < TUgraphMemNodes(componentGraph));
+        componentNodesToNodes[v] = TUgraphAddNode(tu, graph);
         printf("component node %d is mapped to node %d.\n", v, componentNodesToNodes[v]);
       }
 
-      for (TU_LISTGRAPH_INCIDENT i = TUlistgraphEdgesFirst(componentGraph);
-        TUlistgraphEdgesValid(componentGraph, i); i = TUlistgraphEdgesNext(componentGraph, i))
+      for (TU_GRAPH_ITER i = TUgraphEdgesFirst(componentGraph);
+        TUgraphEdgesValid(componentGraph, i); i = TUgraphEdgesNext(componentGraph, i))
       {
-        TU_LISTGRAPH_EDGE e = TUlistgraphEdgesEdge(componentGraph, i);
-        assert(e >= 0 && e < TUlistgraphMemEdges(componentGraph));
-        printf("Edge %d is {%d,%d} and mapped to {%d,%d}\n", e, TUlistgraphEdgeU(componentGraph, e),
-          TUlistgraphEdgeV(componentGraph, e), componentNodesToNodes[TUlistgraphEdgeU(componentGraph, e)], componentNodesToNodes[TUlistgraphEdgeV(componentGraph, e)] );
-        componentEdgesToEdges[e] = TUlistgraphAddEdge(tu, graph, componentNodesToNodes[
-          TUlistgraphEdgeU(componentGraph, e)], componentNodesToNodes[TUlistgraphEdgeV(componentGraph, e)]);
+        TU_GRAPH_EDGE e = TUgraphEdgesEdge(componentGraph, i);
+        assert(e >= 0 && e < TUgraphMemEdges(componentGraph));
+        printf("Edge %d is {%d,%d} and mapped to {%d,%d}\n", e, TUgraphEdgeU(componentGraph, e),
+          TUgraphEdgeV(componentGraph, e), componentNodesToNodes[TUgraphEdgeU(componentGraph, e)], componentNodesToNodes[TUgraphEdgeV(componentGraph, e)] );
+        componentEdgesToEdges[e] = TUgraphAddEdge(tu, graph, componentNodesToNodes[
+          TUgraphEdgeU(componentGraph, e)], componentNodesToNodes[TUgraphEdgeV(componentGraph, e)]);
       }
       if (componentBasis)
       {
@@ -108,7 +108,7 @@ static bool testGraphicness(TU* tu, int numComponents, TU_ONESUM_COMPONENT* comp
       TUfreeBlockArray(tu, &componentEdgesToEdges);
       TUfreeBlockArray(tu, &componentNodesToNodes);
 
-      TUlistgraphClear(tu, componentGraph);
+      TUgraphClear(tu, componentGraph);
     }
   }
 
@@ -117,7 +117,7 @@ static bool testGraphicness(TU* tu, int numComponents, TU_ONESUM_COMPONENT* comp
   if (pbasis)
     TUfreeBlockArray(tu, &componentBasis);
   if (componentGraph)
-    TUlistgraphFree(tu, &componentGraph);
+    TUgraphFree(tu, &componentGraph);
 
   for (int comp = 0; comp < numComponents; ++comp)
   {
@@ -131,8 +131,8 @@ static bool testGraphicness(TU* tu, int numComponents, TU_ONESUM_COMPONENT* comp
   return isGraphic;
 }
 
-bool TUtestGraphicnessChr(TU* tu, TU_CHRMAT* matrix, TU_LISTGRAPH** pgraph,
-  TU_LISTGRAPH_EDGE** pbasis, TU_LISTGRAPH_EDGE** pcobasis, TU_SUBMAT** psubmatrix)
+bool TUtestGraphicnessChr(TU* tu, TU_CHRMAT* matrix, TU_GRAPH** pgraph,
+  TU_GRAPH_EDGE** pbasis, TU_GRAPH_EDGE** pcobasis, TU_SUBMAT** psubmatrix)
 {
   int numComponents;
   TU_ONESUM_COMPONENT* components = NULL;

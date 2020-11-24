@@ -104,9 +104,9 @@ int main(int argc, const char** argv)
 
   /* Check for graphicness. */
 
-  TU_LISTGRAPH* graph = NULL;
-  TU_LISTGRAPH_EDGE* basis = NULL;
-  TU_LISTGRAPH_EDGE* cobasis = NULL;
+  TU_GRAPH* graph = NULL;
+  TU_GRAPH_EDGE* basis = NULL;
+  TU_GRAPH_EDGE* cobasis = NULL;
   TU_SUBMAT* submatrix = NULL;
 
   TUtestGraphicnessChr(tu, matrix, &graph, &basis, &cobasis, &submatrix);
@@ -114,7 +114,7 @@ int main(int argc, const char** argv)
   if (graph)
   {
     printf("Represented graph:\n");
-    TUlistgraphPrint(stdout, graph);
+    TUgraphPrint(stdout, graph);
     if (basis)
     {
       for (int r = 0; r < matrix->numRows; ++r)

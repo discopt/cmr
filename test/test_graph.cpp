@@ -8,51 +8,51 @@ TEST(Graph, Modifications)
   TU* tu = NULL;
   TUcreateEnvironment(&tu);
   
-  TU_LISTGRAPH* graph = NULL;
-  TUlistgraphCreateEmpty(tu, &graph, 1, 1);
+  TU_GRAPH* graph = NULL;
+  TUgraphCreateEmpty(tu, &graph, 1, 1);
 
-  TU_LISTGRAPH_NODE a = TUlistgraphAddNode(tu, graph);
-  TU_LISTGRAPH_NODE b = TUlistgraphAddNode(tu, graph);
-  TU_LISTGRAPH_NODE c = TUlistgraphAddNode(tu, graph);
-  TU_LISTGRAPH_NODE d = TUlistgraphAddNode(tu, graph);
+  TU_GRAPH_NODE a = TUgraphAddNode(tu, graph);
+  TU_GRAPH_NODE b = TUgraphAddNode(tu, graph);
+  TU_GRAPH_NODE c = TUgraphAddNode(tu, graph);
+  TU_GRAPH_NODE d = TUgraphAddNode(tu, graph);
 
-  TU_LISTGRAPH_EDGE ab = TUlistgraphAddEdge(tu, graph, a, b);
-  TU_LISTGRAPH_EDGE ac = TUlistgraphAddEdge(tu, graph, a, c);
-  TU_LISTGRAPH_EDGE ad = TUlistgraphAddEdge(tu, graph, a, d);
-  TU_LISTGRAPH_EDGE bc = TUlistgraphAddEdge(tu, graph, b, c);
-  TU_LISTGRAPH_EDGE bd = TUlistgraphAddEdge(tu, graph, b, d);
-  TU_LISTGRAPH_EDGE cd = TUlistgraphAddEdge(tu, graph, c, d);
+  TU_GRAPH_EDGE ab = TUgraphAddEdge(tu, graph, a, b);
+  TU_GRAPH_EDGE ac = TUgraphAddEdge(tu, graph, a, c);
+  TU_GRAPH_EDGE ad = TUgraphAddEdge(tu, graph, a, d);
+  TU_GRAPH_EDGE bc = TUgraphAddEdge(tu, graph, b, c);
+  TU_GRAPH_EDGE bd = TUgraphAddEdge(tu, graph, b, d);
+  TU_GRAPH_EDGE cd = TUgraphAddEdge(tu, graph, c, d);
 
-  ASSERT_EQ(TUlistgraphNumNodes(graph), 4);
-  ASSERT_EQ(TUlistgraphNumEdges(graph), 6);
+  ASSERT_EQ(TUgraphNumNodes(graph), 4);
+  ASSERT_EQ(TUgraphNumEdges(graph), 6);
 
   int countNodes = 0;
-  for (TU_LISTGRAPH_NODE v = TUlistgraphNodesFirst(graph); TUlistgraphNodesValid(graph, v);
-    v = TUlistgraphNodesNext(graph, v))
+  for (TU_GRAPH_NODE v = TUgraphNodesFirst(graph); TUgraphNodesValid(graph, v);
+    v = TUgraphNodesNext(graph, v))
   {
     ++countNodes;
   }
-  ASSERT_EQ(countNodes, TUlistgraphNumNodes(graph));
+  ASSERT_EQ(countNodes, TUgraphNumNodes(graph));
 
   int countIncidentEdges = 0;
-  for (TU_LISTGRAPH_INCIDENT i = TUlistgraphIncidentFirst(graph, b);
-    TUlistgraphIncidentValid(graph, i); i = TUlistgraphIncidentNext(graph, i))
+  for (TU_GRAPH_ITER i = TUgraphIncFirst(graph, b);
+    TUgraphIncValid(graph, i); i = TUgraphIncNext(graph, i))
   {
-    TU_LISTGRAPH_EDGE e = TUlistgraphIncidentEdge(graph, i);
+    TU_GRAPH_EDGE e = TUgraphIncEdge(graph, i);
     ASSERT_GE(e, 0);
     ASSERT_LT(e, graph->memEdges);
     ++countIncidentEdges;
   }
   ASSERT_EQ(countIncidentEdges, 3);
 
-  TUlistgraphDeleteEdge(tu, graph, bc);
+  TUgraphDeleteEdge(tu, graph, bc);
 
-  TUlistgraphDeleteNode(tu, graph, a);
+  TUgraphDeleteNode(tu, graph, a);
 
-  ASSERT_EQ(TUlistgraphNumNodes(graph), 3);
-  ASSERT_EQ(TUlistgraphNumEdges(graph), 2);
+  ASSERT_EQ(TUgraphNumNodes(graph), 3);
+  ASSERT_EQ(TUgraphNumEdges(graph), 2);
 
-  TUlistgraphFree(tu, &graph);
+  TUgraphFree(tu, &graph);
   
   TUfreeEnvironment(&tu);
 }

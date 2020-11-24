@@ -31,9 +31,9 @@ TU_EXPORT
 bool TUtestGraphicnessChr(
   TU* tu,                       /**< TU environment */
   TU_CHRMAT* matrix,            /**< Char matrix */
-  TU_LISTGRAPH** pgraph,        /**< If not \c NULL, the graph is stored. */
-  TU_LISTGRAPH_EDGE** pbasis,   /**< If not \c NULL, contains basis edges. */
-  TU_LISTGRAPH_EDGE** pcobasis, /**< If not \c NULL, contains cobasis edges. */
+  TU_GRAPH** pgraph,        /**< If not \c NULL, the graph is stored. */
+  TU_GRAPH_EDGE** pbasis,   /**< If not \c NULL, contains basis edges. */
+  TU_GRAPH_EDGE** pcobasis, /**< If not \c NULL, contains cobasis edges. */
   TU_SUBMAT** psubmatrix        /**< If not \c NULL, containes a minimal nongraphic submatrix. */
 );
 

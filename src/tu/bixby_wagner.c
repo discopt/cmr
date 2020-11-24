@@ -94,12 +94,12 @@ static void freeTDecomposition(TU* tu, TDEC** ptdec)
 }
 
 bool testGraphicnessBixbyWagner(TU* tu, TU_CHRMAT* matrix, TU_CHRMAT* transpose,
-  TU_LISTGRAPH* graph, TU_LISTGRAPH_EDGE* basis, TU_LISTGRAPH_EDGE* cobasis, TU_SUBMAT** psubmatrix)
+  TU_GRAPH* graph, TU_GRAPH_EDGE* basis, TU_GRAPH_EDGE* cobasis, TU_SUBMAT** psubmatrix)
 {
   assert(tu);
   assert(matrix);
   assert(transpose);
-  assert(!graph || (TUlistgraphNumNodes(graph) == 0 && TUlistgraphNumEdges(graph) == 0));
+  assert(!graph || (TUgraphNumNodes(graph) == 0 && TUgraphNumEdges(graph) == 0));
   assert(!psubmatrix || !*psubmatrix);
   assert(!basis || graph);
   assert(!cobasis || graph);
@@ -115,24 +115,24 @@ bool testGraphicnessBixbyWagner(TU* tu, TU_CHRMAT* matrix, TU_CHRMAT* transpose,
     {
       /* Construct a path with numRows edges and with numColumns loops at 0. */
 
-      TU_LISTGRAPH_NODE s = TUlistgraphAddNode(tu, graph);
+      TU_GRAPH_NODE s = TUgraphAddNode(tu, graph);
       for (int c = 0; c < matrix->numColumns; ++c)
       {
-        TU_LISTGRAPH_EDGE e = TUlistgraphAddEdge(tu, graph, s, s);
+        TU_GRAPH_EDGE e = TUgraphAddEdge(tu, graph, s, s);
         if (cobasis)
           *cobasis++ = e;
       }
       for (int r = 0; r < matrix->numRows; ++r)
       {
-        TU_LISTGRAPH_NODE t = TUlistgraphAddNode(tu, graph);
-        TU_LISTGRAPH_EDGE e = TUlistgraphAddEdge(tu, graph, s, t);
+        TU_GRAPH_NODE t = TUgraphAddNode(tu, graph);
+        TU_GRAPH_EDGE e = TUgraphAddEdge(tu, graph, s, t);
         if (basis)
           *basis++ = e;
         s = t;
       }
       
-      printf("Constructed graph with %d nodes and %d edges.\n", TUlistgraphNumNodes(graph),
-        TUlistgraphNumEdges(graph));
+      printf("Constructed graph with %d nodes and %d edges.\n", TUgraphNumNodes(graph),
+        TUgraphNumEdges(graph));
     }
     return true;
   }
