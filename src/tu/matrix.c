@@ -44,6 +44,15 @@ void TUdblmatFree(TU* tu, TU_DBLMAT** matrix)
   TUfreeBlock(tu, matrix);
 }
 
+void TUdblmatChangeNumNonzeros(TU* tu, TU_DBLMAT* matrix, int newNumNonzeros)
+{
+  assert(tu);
+  assert(matrix);
+  TUreallocBlockArray(tu, &matrix->entryColumns, newNumNonzeros);
+  TUreallocBlockArray(tu, &matrix->entryValues, newNumNonzeros);
+  matrix->numNonzeros = newNumNonzeros;
+}
+
 void TUdblmatCopy(TU* tu, TU_DBLMAT* matrix, TU_DBLMAT** result)
 {
   assert(tu);
@@ -140,6 +149,14 @@ void TUintmatFree(TU* tu, TU_INTMAT** matrix)
   TUfreeBlock(tu, matrix);
 }
 
+void TUintmatChangeNumNonzeros(TU* tu, TU_INTMAT* matrix, int newNumNonzeros)
+{
+  assert(tu);
+  assert(matrix);
+  TUreallocBlockArray(tu, &matrix->entryColumns, newNumNonzeros);
+  TUreallocBlockArray(tu, &matrix->entryValues, newNumNonzeros);
+  matrix->numNonzeros = newNumNonzeros;
+}
 
 void TUintmatCopy(TU* tu, TU_INTMAT* matrix, TU_INTMAT** result)
 {
@@ -195,6 +212,15 @@ void TUchrmatFree(TU* tu, TU_CHRMAT** matrix)
     TUfreeBlockArray(tu, &(*matrix)->entryValues);
   }
   TUfreeBlock(tu, matrix);
+}
+
+void TUchrmatChangeNumNonzeros(TU* tu, TU_CHRMAT* matrix, int newNumNonzeros)
+{
+  assert(tu);
+  assert(matrix);
+  TUreallocBlockArray(tu, &matrix->entryColumns, newNumNonzeros);
+  TUreallocBlockArray(tu, &matrix->entryValues, newNumNonzeros);
+  matrix->numNonzeros = newNumNonzeros;
 }
 
 void TUchrmatCopy(TU* tu, TU_CHRMAT* matrix, TU_CHRMAT** result)

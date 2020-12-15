@@ -55,7 +55,6 @@ void TUgraphEnsureConsistent(TU* tu, TU_GRAPH* graph)
 #endif /* DEBUG_GRAPH */
 
     /* Check lists for outgoing arcs. */
-    int j = -1;
     for (TU_GRAPH_ITER i = TUgraphIncFirst(graph, v);
       TUgraphIncValid(graph, i); i = TUgraphIncNext(graph, i))
     {
@@ -68,7 +67,6 @@ void TUgraphEnsureConsistent(TU* tu, TU_GRAPH* graph)
       if (TUgraphIncSource(graph, i) == TUgraphIncTarget(graph, i))
         ++countLoops;
       assert(graph->arcs[i ^ 1].target == v);
-      j = i;
       ++countIncident;
     }
   }
@@ -401,11 +399,20 @@ TU_GRAPH_ITER TUgraphEdgesNext(TU_GRAPH* graph, TU_GRAPH_ITER i)
 
     TU_GRAPH_NODE source = graph->arcs[i ^ 1].target;
     source = graph->nodes[source].next;
-    if (source < 0)
-      return -1;
-    i = graph->nodes[source].firstOut;
-    if (!(i & 0x1))
-      return i;
+    while (true)
+    {
+      if (source < 0)
+        return -1;
+      i = graph->nodes[source].firstOut;
+      if (i >= 0)
+      {
+        if (!(i & 0x1))
+          return i;
+        else
+          break;
+      }
+      source = graph->nodes[source].next;
+    }
   } 
 }
 
@@ -424,4 +431,28 @@ void TUgraphPrint(FILE* stream, TU_GRAPH* graph)
         TUgraphIncSource(graph, i), TUgraphIncTarget(graph, i), i);
     }
   }
+}
+
+void TUgraphMergeNodes(TU* tu, TU_GRAPH* graph, TU_GRAPH_NODE u, TU_GRAPH_NODE v)
+{
+  assert(graph);
+  assert(u >= 0);
+  assert(u < graph->numNodes);
+  assert(v >= 0);
+  assert(v < graph->numNodes);
+  assert(u != v);
+
+  int a;
+  while ((a = graph->nodes[v].firstOut) >= 0)
+  {
+    graph->nodes[v].firstOut = graph->arcs[a].next;
+    graph->arcs[a ^ 1].target = u;
+    graph->arcs[a].next = graph->nodes[u].firstOut;
+    if (graph->nodes[u].firstOut >= 0)
+      graph->arcs[graph->nodes[u].firstOut].prev = a;
+    graph->arcs[a].prev = -1;
+    graph->nodes[u].firstOut = a;
+  }
+
+  TUgraphEnsureConsistent(tu, graph);
 }

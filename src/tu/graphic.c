@@ -3,7 +3,8 @@
 #include "env_internal.h"
 #include "matrix_internal.h"
 #include "one_sum.h"
-#include "tdec.h"
+#include "heap.h"
+#include <tu/tdec.h>
 
 #include <assert.h>
 #include <limits.h>
@@ -57,7 +58,7 @@ static bool testGraphicness(TU* tu, int numComponents, TU_ONESUM_COMPONENT* comp
 
     if (componentGraph)
     {
-      printf("testGraphicnessBixbyWagner returned the following graph:\n");
+      printf("testGraphicnessTDecomposition returned the following graph:\n");
       TUgraphPrint(stdout, componentGraph);
 
       assert(graph);
@@ -118,6 +119,11 @@ static bool testGraphicness(TU* tu, int numComponents, TU_ONESUM_COMPONENT* comp
     TUfreeStackArray(tu, &componentBasis);
   if (componentGraph)
     TUgraphFree(tu, &componentGraph);
+  if (!isGraphic && graph)
+  {
+    TUgraphFree(tu, &graph);
+    *pgraph = NULL;
+  }
 
   for (int comp = 0; comp < numComponents; ++comp)
   {
@@ -153,4 +159,256 @@ bool TUtestGraphicnessChr(TU* tu, TU_CHRMAT* matrix, TU_GRAPH** pgraph,
 
   return testGraphicness(tu, numComponents, components, pgraph, pbasis, pcobasis, psubmatrix,
     matrix->numRows, matrix->numColumns);
+}
+
+typedef enum
+{
+  UNKNOWN = 0,
+  SEEN = 1,
+  COMPLETED = 2,
+  BASIC = 3,
+} STAGE;
+
+typedef struct
+{
+  STAGE stage;
+  int predecessor;
+  TU_GRAPH_EDGE rootEdge;
+} NodeData;
+
+int compareInt(const void* A, const void* B)
+{
+  int* a = (int*) A;
+  int* b = (int*) B;
+  return *a - *b;
+}
+
+void TUconvertGraphToBinaryMatrix(TU* tu, TU_GRAPH* graph, TU_CHRMAT** matrix, int numBasisEdges,
+  TU_GRAPH_EDGE* basisEdges, int numCobasisEdges, TU_GRAPH_EDGE* cobasisEdges)
+{
+  assert(tu);
+  assert(graph);
+  assert(matrix);
+  assert(numBasisEdges == 0 || basisEdges);
+  assert(numCobasisEdges == 0 || cobasisEdges);
+
+  NodeData* nodeData = NULL;
+  TUallocStackArray(tu, &nodeData, TUgraphMemNodes(graph));
+  TU_INTHEAP heap;
+  TUintheapInitStack(tu, &heap, TUgraphMemNodes(graph));
+  int* lengths = NULL;
+  TUallocStackArray(tu, &lengths, TUgraphMemEdges(graph));
+  for (TU_GRAPH_NODE v = TUgraphNodesFirst(graph); TUgraphNodesValid(graph, v);
+    v = TUgraphNodesNext(graph, v))
+  {
+    nodeData[v].stage = UNKNOWN;
+  }
+  for (TU_GRAPH_ITER i = TUgraphEdgesFirst(graph); TUgraphEdgesValid(graph, i);
+    i = TUgraphEdgesNext(graph, i))
+  {
+    TU_GRAPH_EDGE e = TUgraphEdgesEdge(graph, i);
+    lengths[e] = 1;
+  }
+  for (int b = 0; b < numBasisEdges; ++b)
+    lengths[basisEdges[b]] = 0;
+
+  /* Start Dijkstra's algorithm at each node. */
+  int countComponents = 0;
+  for (TU_GRAPH_NODE s = TUgraphNodesFirst(graph); TUgraphNodesValid(graph, s);
+    s = TUgraphNodesNext(graph, s))
+  {
+    if (nodeData[s].stage != UNKNOWN)
+      continue;
+
+    nodeData[s].predecessor = -1;
+    nodeData[s].rootEdge = -1;
+    ++countComponents;
+    TUintheapInsert(&heap, s, 0);
+    while (!TUintheapEmpty(&heap))
+    {
+      int distance = TUintheapMinimumValue(&heap);
+      TU_GRAPH_NODE v = TUintheapExtractMinimum(&heap);
+      nodeData[v].stage = COMPLETED;
+      for (TU_GRAPH_ITER i = TUgraphIncFirst(graph, v); TUgraphIncValid(graph, i);
+        i = TUgraphIncNext(graph, i))
+      {
+        assert(TUgraphIncSource(graph, i) == v);
+        TU_GRAPH_NODE w = TUgraphIncTarget(graph, i);
+
+        /* Skip if already completed. */
+        if (nodeData[w].stage == COMPLETED)
+          continue;
+
+        TU_GRAPH_EDGE e = TUgraphIncEdge(graph, i);
+        int newDistance = distance + lengths[e];
+        if (newDistance < TUintheapGetValueInfinity(&heap, w))
+        {
+          nodeData[w].stage = SEEN;
+          nodeData[w].predecessor = v;
+          nodeData[w].rootEdge = e;
+          TUintheapDecreaseInsert(&heap, w, newDistance);
+        }
+      }
+    }
+  }
+
+  TUfreeStackArray(tu, &lengths);
+  TUintheapClearStack(tu, &heap);
+
+  /* Now nodeData[.].predecessor is an arborescence for each connected component. */
+
+  TU_GRAPH_NODE* nodesRows = NULL; /* Non-root node v is mapped to row of edge {v,predecessor(v)}. */
+  TUallocStackArray(tu, &nodesRows, TUgraphMemNodes(graph));
+  for (TU_GRAPH_NODE v = TUgraphNodesFirst(graph); TUgraphNodesValid(graph, v);
+    v = TUgraphNodesNext(graph, v))
+  {
+    nodesRows[v] = -1;
+  }
+  int numRows = 0;
+  for (int i = 0; i < numBasisEdges; ++i)
+  {
+    TU_GRAPH_NODE u = TUgraphEdgeU(graph, basisEdges[i]);
+    TU_GRAPH_NODE v = TUgraphEdgeV(graph, basisEdges[i]);
+    if (nodeData[u].predecessor == v)
+    {
+      nodesRows[numRows] = u;
+      ++numRows;
+      nodeData[u].stage = BASIC;
+    }
+    else if (nodeData[v].predecessor == u)
+    {
+      nodesRows[numRows] = v;
+      ++numRows;
+      nodeData[v].stage = BASIC;
+    }
+  }
+  if (numRows < TUgraphNumNodes(graph) - countComponents)
+  {
+    /* Some basis edges are missing. */
+    for (TU_GRAPH_NODE v = TUgraphNodesFirst(graph); TUgraphNodesValid(graph, v);
+      v = TUgraphNodesNext(graph, v))
+    {
+      if (nodeData[v].predecessor >= 0 && nodeData[v].stage != BASIC)
+      {
+        nodesRows[v] = numRows;
+        ++numRows;
+        nodeData[v].stage = BASIC;
+      }
+    }
+  }
+
+  TU_CHRMAT* transposed = NULL;
+  TUchrmatCreate(tu, &transposed, TUgraphNumEdges(graph) - numRows, numRows, 16 * numRows);
+  int numNonzeros = 0; /* Current number of nonzeros. transpose->numNonzeros is the memory. */
+  int numColumns = 0;
+  TU_GRAPH_EDGE* edgeColumns = NULL;
+  TUallocStackArray(tu, &edgeColumns, TUgraphMemEdges(graph));
+  for (TU_GRAPH_ITER i = TUgraphEdgesFirst(graph); TUgraphEdgesValid(graph, i);
+    i = TUgraphEdgesNext(graph, i))
+  {
+    TU_GRAPH_EDGE e = TUgraphEdgesEdge(graph, i);
+    TU_GRAPH_NODE u = TUgraphEdgeU(graph, e);
+    TU_GRAPH_NODE v = TUgraphEdgeV(graph, e);
+    edgeColumns[TUgraphEdgesEdge(graph, i)] =
+      (nodeData[u].rootEdge == e || nodeData[v].rootEdge == e) ? -1 : -2;
+  }
+  TU_GRAPH_NODE* uPath = NULL;
+  TUallocStackArray(tu, &uPath, numRows);
+  TU_GRAPH_NODE* vPath = NULL;
+  TUallocStackArray(tu, &vPath, numRows);
+  TU_GRAPH_ITER iter = TUgraphEdgesFirst(graph);
+  int cobasicIndex = 0;
+  while (TUgraphEdgesValid(graph, iter))
+  {
+    TU_GRAPH_EDGE e;
+    if (cobasicIndex < numCobasisEdges)
+    {
+      e = cobasisEdges[cobasicIndex];
+      ++cobasicIndex;
+    }
+    else
+    {
+      e = TUgraphEdgesEdge(graph, iter);
+      iter = TUgraphEdgesNext(graph, iter);
+    }
+    if (edgeColumns[e] >= -1)
+      continue;
+
+    TU_GRAPH_NODE u = TUgraphEdgeU(graph, e);
+    TU_GRAPH_NODE v = TUgraphEdgeV(graph, e);
+    printf("Edge %d {%d,%d} corresponds to column %d.\n", e, u, v, numColumns);
+
+    transposed->rowStarts[numColumns] = numNonzeros;
+    edgeColumns[e] = numColumns;
+
+    /* Enlarge space for nonzeros if necessary. */
+    if (numNonzeros + numRows > transposed->numNonzeros)
+      TUchrmatChangeNumNonzeros(tu, transposed, 2 * transposed->numNonzeros);
+
+    /* Compute u-root path. */
+    int uPathLength = 0;
+    TU_GRAPH_NODE w = u;
+    while (nodeData[w].predecessor != -1)
+    {
+      uPath[uPathLength] = w;
+      ++uPathLength;
+      w = nodeData[w].predecessor;
+    }
+
+    /* Compute v-root path. */
+    int vPathLength = 0;
+    w = v;
+    while (nodeData[w].predecessor != -1)
+    {
+      vPath[vPathLength] = w;
+      ++vPathLength;
+      w = nodeData[w].predecessor;
+    }
+
+    /* Remove common part of u-root path and v-root path. */
+    while (uPathLength > 0 && vPathLength > 0 && uPath[uPathLength-1] == vPath[vPathLength-1])
+    {
+      --uPathLength;
+      --vPathLength;
+    }
+
+    for (int j = 0; j < uPathLength; ++j)
+    {
+      assert(nodesRows[uPath[j]] >= 0);
+      transposed->entryColumns[numNonzeros] = nodesRows[uPath[j]];
+      transposed->entryValues[numNonzeros] = 1;
+      ++numNonzeros;
+    }
+    for (int j = 0; j < vPathLength; ++j)
+    {
+      assert(nodesRows[vPath[j]] >= 0);
+      transposed->entryColumns[numNonzeros] = nodesRows[vPath[j]];
+      transposed->entryValues[numNonzeros] = 1;
+      ++numNonzeros;
+    }
+    qsort(&transposed->entryColumns[transposed->rowStarts[numColumns]], uPathLength + vPathLength,
+      sizeof(int), compareInt);
+
+    ++numColumns;
+  }
+
+  TUfreeStackArray(tu, &vPath);
+  TUfreeStackArray(tu, &uPath);
+  TUfreeStackArray(tu, &edgeColumns);
+
+  transposed->rowStarts[numColumns] = numNonzeros;
+  if (numNonzeros == 0 && transposed->numNonzeros > 0)
+  {
+    TUfreeBlockArray(tu, &transposed->entryColumns);
+    TUfreeBlockArray(tu, &transposed->entryValues);
+  }
+  transposed->numNonzeros = numNonzeros;
+
+  TUchrmatTranspose(tu, transposed, matrix);
+  TUchrmatFree(tu, &transposed);
+
+  /* We now process the nonbasic edges. */
+
+  TUfreeStackArray(tu, &nodesRows);
+  TUfreeStackArray(tu, &nodeData);
 }

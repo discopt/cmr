@@ -85,7 +85,6 @@ TU_DEC* TUregularDecomposeSimpleSums(TU* tu, TU_DEC* decomposition, bool unitVec
           result->children[1]->matrix->entryValues[0] = matrix->entryValues[matrix->rowStarts[row]];
           result->children[1]->matrix->entryValues[1] = 1;
           int column = matrix->entryColumns[matrix->rowStarts[row]];
-          int value;
           int begin = transpose->rowStarts[column];
           int end = column < transpose->numRows ? transpose->rowStarts[column + 1] 
             : transpose->numNonzeros;
@@ -162,7 +161,6 @@ TU_DEC* TUregularDecomposeSimpleSums(TU* tu, TU_DEC* decomposition, bool unitVec
             = transpose->entryValues[transpose->rowStarts[column]];
           result->children[1]->matrix->entryValues[1] = 1;
           int row = transpose->entryColumns[transpose->rowStarts[column]];
-          int value;
           int begin = matrix->rowStarts[row];
           int end = row < matrix->numRows ? matrix->rowStarts[row + 1] 
             : matrix->numNonzeros;

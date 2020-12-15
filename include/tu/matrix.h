@@ -53,11 +53,11 @@ typedef struct
 
 TU_EXPORT
 void TUdblmatCreate(
-  TU* tu,                     /**< TU environment. */
+  TU* tu,              /**< TU environment. */
   TU_DBLMAT** matrix,  /**< Pointer for storing the created matrix. */
-  int numRows,                /**< Number of rows. */
-  int numColumns,             /**< Number of columns. */
-  int numNonzeros             /**< Number of nonzeros. */
+  int numRows,         /**< Number of rows. */
+  int numColumns,      /**< Number of columns. */
+  int numNonzeros      /**< Number of nonzeros. */
 );
 
 /**
@@ -66,8 +66,19 @@ void TUdblmatCreate(
 
 TU_EXPORT
 void TUdblmatFree(
-  TU* tu,                   /**< TU environment. */
-  TU_DBLMAT** matrix /**< Double matrix */
+  TU* tu,             /**< TU environment. */
+  TU_DBLMAT** matrix  /**< Double matrix */
+);
+
+/**
+ * \brief Changes the number of nonzeros and reallocates corresponding arrays.
+ */
+
+TU_EXPORT
+void TUdblmatChangeNumNonzeros(
+  TU* tu,             /*< TU environment. */
+  TU_DBLMAT* matrix,  /*< Given matrix matrix. */
+  int newNumNonzeros  /*< New number of nonzeros. */ 
 );
 
 /**
@@ -75,9 +86,9 @@ void TUdblmatFree(
  */
 TU_EXPORT
 void TUdblmatCopy(
-  TU* tu,                   /**< TU environment. */
-  TU_DBLMAT* matrix, /**< Given matrix. */
-  TU_DBLMAT** result /**< Pointer to created copy of matrix. */
+  TU* tu,             /**< TU environment. */
+  TU_DBLMAT* matrix,  /**< Given matrix. */
+  TU_DBLMAT** result  /**< Pointer to created copy of matrix. */
 );
 
 /**
@@ -85,9 +96,9 @@ void TUdblmatCopy(
  */
 TU_EXPORT
 void TUdblmatTranspose(
-  TU* tu,                   /**< TU environment. */
-  TU_DBLMAT* matrix, /**< Given matrix. */
-  TU_DBLMAT** result /**< Pointer to created transpose of matrix. */
+  TU* tu,             /**< TU environment. */
+  TU_DBLMAT* matrix,  /**< Given matrix. */
+  TU_DBLMAT** result  /**< Pointer to created transpose of matrix. */
 );
 
 /**
@@ -150,6 +161,17 @@ TU_EXPORT
 void TUintmatFree(
   TU* tu,                 /**< TU environment. */
   TU_INTMAT** matrix  /**< Double matrix */
+);
+
+/**
+ * \brief Changes the number of nonzeros and reallocates corresponding arrays.
+ */
+
+TU_EXPORT
+void TUintmatChangeNumNonzeros(
+  TU* tu,             /*< TU environment. */
+  TU_INTMAT* matrix,  /*< Given matrix matrix. */
+  int newNumNonzeros  /*< New number of nonzeros. */ 
 );
 
 /**
@@ -233,6 +255,17 @@ TU_EXPORT
 void TUchrmatFree(
   TU* tu,                 /**< TU environment. */
   TU_CHRMAT** matrix /**< Char matrix */
+);
+
+/**
+ * \brief Changes the number of nonzeros and reallocates corresponding arrays.
+ */
+
+TU_EXPORT
+void TUchrmatChangeNumNonzeros(
+  TU* tu,             /*< TU environment. */
+  TU_CHRMAT* matrix,  /*< Given matrix matrix. */
+  int newNumNonzeros  /*< New number of nonzeros. */ 
 );
 
 /**

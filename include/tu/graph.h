@@ -15,16 +15,16 @@ typedef int TU_GRAPH_ITER;
 
 typedef struct
 {
-  int prev;
-  int next;
-  int firstOut;
+  int prev;     /*< Next node in node list. */
+  int next;     /*< Previous node in node list. */
+  int firstOut; /*< First out-arc of this node. */
 } _TU_GRAPH_NODE;
 
 typedef struct
 {
-  int target;
-  int prev;
-  int next;
+  int target; /*< Target node of this arc. */
+  int prev;   /*< Next arc in out-arc list of source node. */
+  int next;   /*< Previous arc in out-arc list of source node. */
 } _TU_GRAPH_ARC;
 
 typedef struct
@@ -148,17 +148,32 @@ TU_GRAPH_ITER TUgraphEdgesFirst(
   TU_GRAPH* graph
 );
 
+/**
+ * \brief Returns iterator of next edge in list of all edges.
+ */
+
 TU_GRAPH_ITER TUgraphEdgesNext(
-  TU_GRAPH* graph,
-  TU_GRAPH_ITER e
+  TU_GRAPH* graph,  /*< Graph. */
+  TU_GRAPH_ITER e   /*< Current edge iterator. */
 );
 
 #define TUgraphEdgesEdge(graph, i) \
   ((i)/2)
 
 void TUgraphPrint(
-  FILE* stream,        /**< Stream. */
-  TU_GRAPH* graph  /**< Graph structure. */
+  FILE* stream,   /*< Stream. */
+  TU_GRAPH* graph /*< Graph structure. */
+);
+
+/**
+ * \brief Merges two nodes \p u and \p v.
+ */
+
+void TUgraphMergeNodes(
+  TU* tu,           /*< TU environment. */
+  TU_GRAPH* graph,  /*< Graph. */
+  TU_GRAPH_NODE u,  /*< First node. */
+  TU_GRAPH_NODE v   /*< Second node. */
 );
 
 #ifdef __cplusplus

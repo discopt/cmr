@@ -29,12 +29,23 @@ extern "C" {
 
 TU_EXPORT
 bool TUtestGraphicnessChr(
-  TU* tu,                       /**< TU environment */
-  TU_CHRMAT* matrix,            /**< Char matrix */
+  TU* tu,                   /**< TU environment */
+  TU_CHRMAT* matrix,        /**< Char matrix */
   TU_GRAPH** pgraph,        /**< If not \c NULL, the graph is stored. */
   TU_GRAPH_EDGE** pbasis,   /**< If not \c NULL, contains basis edges. */
   TU_GRAPH_EDGE** pcobasis, /**< If not \c NULL, contains cobasis edges. */
-  TU_SUBMAT** psubmatrix        /**< If not \c NULL, containes a minimal nongraphic submatrix. */
+  TU_SUBMAT** psubmatrix    /**< If not \c NULL, containes a minimal nongraphic submatrix. */
+);
+
+TU_EXPORT
+void TUconvertGraphToBinaryMatrix(
+  TU* tu,                     /*< TU environment. */
+  TU_GRAPH* graph,            /*< Graph. */
+  TU_CHRMAT** matrix,         /*< Pointer for storing the binary representation matrix. */
+  int numBasisEdges,          /*< Length of \p basisEdges (0 if \c basisEdges is NULL). */
+  TU_GRAPH_EDGE* basisEdges,  /*< If not \c NULL, tries to use these edges for the basis. */
+  int numCobasisEdges,        /*< Length of \p cobasisEdges (0 if \c cobasisEdges is NULL). */
+  TU_GRAPH_EDGE* cobasisEdges /*< If not \c NULL, tries to order columns as specified. */
 );
 
 #ifdef __cplusplus

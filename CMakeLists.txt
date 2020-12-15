@@ -44,6 +44,7 @@ add_library(tu
   src/tu/ghouila_houri.cpp
   src/tu/graph.c
   src/tu/graphic.c
+  src/tu/heap.c
   src/tu/logger.cpp
   src/tu/matrix.cpp
   src/tu/matroid_decomposition.cpp
