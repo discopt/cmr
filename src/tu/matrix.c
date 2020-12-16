@@ -882,15 +882,17 @@ static int TUsortSubmatrixCompare(const void* p1, const void* p2)
   return *(int*)p1 - *(int*)p2;
 }
 
-void TUsortSubmatrix(TU_SUBMAT* submatrix)
+TU_ERROR TUsortSubmatrix(TU_SUBMAT* submatrix)
 {
   assert(submatrix);
 
   qsort(submatrix->rows, submatrix->numRows, sizeof(int), TUsortSubmatrixCompare);
   qsort(submatrix->columns, submatrix->numColumns, sizeof(int), TUsortSubmatrixCompare);
+
+  return TU_OKAY;
 }
 
-void TUchrsubmatFilter(TU* tu, TU_CHRMAT* matrix, TU_SUBMAT* submatrix,
+TU_ERROR TUchrsubmatFilter(TU* tu, TU_CHRMAT* matrix, TU_SUBMAT* submatrix,
   TU_CHRMAT** result)
 {
   assert(matrix);
@@ -898,7 +900,7 @@ void TUchrsubmatFilter(TU* tu, TU_CHRMAT* matrix, TU_SUBMAT* submatrix,
   assert(result);
 
   int* columnMap = NULL;
-  TUallocStackArray(tu, &columnMap, matrix->numColumns);
+  TU_CALL( TUallocStackArray(tu, &columnMap, matrix->numColumns) );
   for (int c = 0; c < matrix->numColumns; ++c)
     columnMap[c] = -1;
   for (int j = 0; j < submatrix->numColumns; ++j)
@@ -907,7 +909,7 @@ void TUchrsubmatFilter(TU* tu, TU_CHRMAT* matrix, TU_SUBMAT* submatrix,
     columnMap[submatrix->columns[j]] = j;
   }
 
-  TUchrmatCreate(tu, result, submatrix->numRows, submatrix->numColumns, 0);
+  TU_CALL( TUchrmatCreate(tu, result, submatrix->numRows, submatrix->numColumns, 0) );
 
   /* Count nonzeros. */
   int numNonzeros = 0;
@@ -926,8 +928,8 @@ void TUchrsubmatFilter(TU* tu, TU_CHRMAT* matrix, TU_SUBMAT* submatrix,
     }
   }
 
-  TUallocBlockArray(tu, &(*result)->entryColumns, numNonzeros);
-  TUallocBlockArray(tu, &(*result)->entryValues, numNonzeros);
+  TU_CALL( TUallocBlockArray(tu, &(*result)->entryColumns, numNonzeros) );
+  TU_CALL( TUallocBlockArray(tu, &(*result)->entryValues, numNonzeros) );
 
   /* Copy nonzeros. */
   for (int i = 0; i < submatrix->numRows; ++i)
@@ -952,5 +954,7 @@ void TUchrsubmatFilter(TU* tu, TU_CHRMAT* matrix, TU_SUBMAT* submatrix,
   (*result)->rowStarts[(*result)->numRows] = (*result)->numNonzeros;
 
   if (columnMap)
-    TUfreeStackArray(tu, &columnMap);
+    TU_CALL( TUfreeStackArray(tu, &columnMap) );
+
+  return TU_OKAY;
 }

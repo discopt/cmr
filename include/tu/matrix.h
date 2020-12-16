@@ -458,7 +458,7 @@ void TUsubmatFree(
  * \brief Creates a submatrix of a char matrix explicitly.
  */
 TU_EXPORT
-void TUchrsubmatFilter(
+TU_ERROR TUchrsubmatFilter(
   TU* tu,                   /**< TU environment. */
   TU_CHRMAT* matrix,   /**< Given matrix */
   TU_SUBMAT* submatrix,  /**< Specified submatrix */

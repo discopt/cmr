@@ -48,7 +48,7 @@ typedef struct
  * \brief Sorts the row and column indices of \p submatrix.
  */
 
-void TUsortSubmatrix(
+TU_ERROR TUsortSubmatrix(
   TU_SUBMAT* submatrix /**< The submatrix. */
 );
 
