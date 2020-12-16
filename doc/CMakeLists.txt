@@ -3,6 +3,7 @@ find_package(Doxygen)
 
 if(DOXYGEN_FOUND)
   set(DOXYGEN_EXTRA_PACKAGES "amsmath")
+  set(DOXYGEN_EXTRACT_ALL "yes")
   doxygen_add_docs(doc
     ${CMAKE_CURRENT_SOURCE_DIR}/README.md ${CMAKE_SOURCE_DIR}/include/tu ${CMAKE_SOURCE_DIR}/src/tu
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}

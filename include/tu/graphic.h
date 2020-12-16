@@ -37,15 +37,19 @@ bool TUtestGraphicnessChr(
   TU_SUBMAT** psubmatrix    /**< If not \c NULL, containes a minimal nongraphic submatrix. */
 );
 
+/**
+ * \brief Computes a binary matrix representing a given graph.
+ */
+
 TU_EXPORT
 void TUconvertGraphToBinaryMatrix(
-  TU* tu,                     /*< TU environment. */
-  TU_GRAPH* graph,            /*< Graph. */
-  TU_CHRMAT** matrix,         /*< Pointer for storing the binary representation matrix. */
-  int numBasisEdges,          /*< Length of \p basisEdges (0 if \c basisEdges is NULL). */
-  TU_GRAPH_EDGE* basisEdges,  /*< If not \c NULL, tries to use these edges for the basis. */
-  int numCobasisEdges,        /*< Length of \p cobasisEdges (0 if \c cobasisEdges is NULL). */
-  TU_GRAPH_EDGE* cobasisEdges /*< If not \c NULL, tries to order columns as specified. */
+  TU* tu,                     /**< TU environment. */
+  TU_GRAPH* graph,            /**< Graph. */
+  TU_CHRMAT** matrix,         /**< Pointer for storing the binary representation matrix. */
+  int numBasisEdges,          /**< Length of \p basisEdges (0 if \c basisEdges is NULL). */
+  TU_GRAPH_EDGE* basisEdges,  /**< If not \c NULL, tries to use these edges for the basis. */
+  int numCobasisEdges,        /**< Length of \p cobasisEdges (0 if \c cobasisEdges is NULL). */
+  TU_GRAPH_EDGE* cobasisEdges /**< If not \c NULL, tries to order columns as specified. */
 );
 
 #ifdef __cplusplus

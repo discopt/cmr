@@ -235,12 +235,14 @@ TU_GRAPH_NODE TUgraphIncTarget(
 
 /**
  * \brief Returns iterator of next edge in list of all edges.
+ *
+ * Returns iterator of next edge in list of all edges.
  */
 
 static inline
 TU_GRAPH_ITER TUgraphEdgesNext(
-  TU_GRAPH* graph,  /*< Graph. */
-  TU_GRAPH_ITER i   /*< Current edge iterator. */
+  TU_GRAPH* graph,  /**< Graph. */
+  TU_GRAPH_ITER i   /**< Current edge iterator. */
 )
 {
   while (true)

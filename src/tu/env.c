@@ -1,103 +1,201 @@
+// #define DEBUG_STACK /** Uncomment to debug TUallocStack and TUfreeStack. */
+
 #include "env_internal.h"
 
 #include <assert.h>
 #include <stdlib.h>
 
-void TUcreateEnvironment(TU** tu)
+static const size_t FIRST_STACK_SIZE = 4096L; /**< Size of the first stack. */
+static const int INITIAL_MEM_STACKS = 16;     /**< Initial number of allocated stacks. */
+
+TU_ERROR TUcreateEnvironment(TU** ptu)
 {
-  assert(tu != NULL);
-  *tu = (TU*) malloc(sizeof(TU));
-  (*tu)->output = stdout;
-  (*tu)->closeOutput = false;
-  (*tu)->numThreads = 1;
-  (*tu)->verbosity = 1;
+  if (!ptu)
+    return TU_ERROR_INPUT;
+
+  *ptu = (TU*) malloc(sizeof(TU));
+  TU* tu = *ptu;
+  if (!tu)
+    return TU_ERROR_MEMORY;
+
+  tu->output = stdout;
+  tu->closeOutput = false;
+  tu->numThreads = 1;
+  tu->verbosity = 1;
+
+  /* Initialize stack memory. */
+  tu->stacks = malloc(INITIAL_MEM_STACKS * sizeof(TU_STACK));
+  if (!tu->stacks)
+  {
+    free(*ptu);
+    *ptu = NULL;
+    return TU_ERROR_MEMORY;
+  }
+  tu->stacks[0].memory = malloc(FIRST_STACK_SIZE * sizeof(char));
+  if (!tu->stacks[0].memory)
+  {
+    free(tu->stacks);
+    free(tu);
+    *ptu = NULL;
+    return TU_ERROR_MEMORY;
+  }
+  tu->stacks[0].top = FIRST_STACK_SIZE;
+  tu->memStacks = INITIAL_MEM_STACKS;
+  tu->numStacks = 1;
+  tu->currentStack = 0;
+
+  return TU_OKAY;
 }
 
-/**
- * \brief Frees a TU environment
- */
-
-void TUfreeEnvironment(TU ** tu)
+TU_ERROR TUfreeEnvironment(TU** ptu)
 {
-  assert(tu != NULL);
-  if ((*tu)->closeOutput)
-    fclose((*tu)->output);
-  free(*tu);
+  if (!ptu)
+    return TU_ERROR_INPUT;
+
+  TU* tu = *ptu;
+  
+  if (tu->closeOutput)
+    fclose(tu->output);
+
+  for (int s = 0; s < tu->numStacks; ++s)
+    free(tu->stacks[s].memory);
+  free(tu->stacks);
+  free(*ptu);
+  *ptu = NULL;
+
+  return TU_OKAY;
 }
 
-void _TUallocBlock(TU* tu, void** ptr, size_t size)
+TU_ERROR _TUallocBlock(TU* tu, void** ptr, size_t size)
 {
   assert(tu);
   assert(ptr);
   assert(*ptr == NULL);
   *ptr = malloc(size);
+
+  return *ptr ? TU_OKAY : TU_ERROR_MEMORY;
 }
 
-void _TUfreeBlock(TU* tu, void** ptr, size_t size)
+TU_ERROR _TUfreeBlock(TU* tu, void** ptr, size_t size)
 {
   assert(tu);
   assert(ptr);
   assert(*ptr);
   free(*ptr);
   *ptr = NULL;
+
+  return TU_OKAY;
 }
 
-void _TUallocBlockArray(TU* tu, void** ptr, size_t size, size_t length)
+TU_ERROR _TUallocBlockArray(TU* tu, void** ptr, size_t size, size_t length)
 {
   assert(tu);
   assert(ptr);
   assert(*ptr == NULL);
   *ptr = malloc(size * length);
+
+  return *ptr ? TU_OKAY : TU_ERROR_MEMORY;
 }
 
-void _TUreallocBlockArray(TU* tu, void** ptr, size_t size, size_t length)
+TU_ERROR _TUreallocBlockArray(TU* tu, void** ptr, size_t size, size_t length)
 {
   assert(tu);
   assert(ptr);
   *ptr = realloc(*ptr, size * length);
+
+  return *ptr ? TU_OKAY : TU_ERROR_MEMORY;
 }
 
-void _TUfreeBlockArray(TU* tu, void** ptr)
+TU_ERROR _TUfreeBlockArray(TU* tu, void** ptr)
 {
   assert(tu);
   assert(ptr);
   assert(*ptr);
   free(*ptr);
   *ptr = NULL;
+
+  return TU_OKAY;
 }
 
+#define STACK_SIZE(k) \
+  (FIRST_STACK_SIZE << k)
 
-
-void _TUallocStack(TU* tu, void** ptr, size_t size)
+TU_ERROR _TUallocStack(TU* tu, void** ptr, size_t size)
 {
   assert(tu);
   assert(ptr);
   assert(*ptr == NULL);
-  *ptr = malloc(size);
+
+  size_t requiredSpace = size + sizeof(void*);
+#if defined(DEBUG_STACK)
+  printf("TUallocStack() called for %ld bytes; current stack: %ld, numStacks: %ld, memStack: %ld.\n",
+    size, tu->currentStack, tu->numStacks, tu->memStacks);
+  fflush(stdout);
+  printf("Current stack has capacity %ld and %ld free bytes.\n",
+    FIRST_STACK_SIZE << tu->currentStack, tu->stacks[tu->currentStack].top);
+  fflush(stdout);
+#endif /* DEBUG_STACK */
+  
+  while (tu->stacks[tu->currentStack].top < requiredSpace)
+  {
+    ++tu->currentStack;
+    if (tu->currentStack == tu->numStacks)
+    {
+      /* If necessary, enlarge the slacks array. */
+      if (tu->numStacks == tu->memStacks)
+      {
+        tu->stacks = realloc(tu->stacks, 2 * tu->memStacks * sizeof(TU_STACK));
+        size_t newSize = 2*tu->memStacks;
+        for (int s = tu->memStacks; s < newSize; ++s)
+        {
+          tu->stacks[s].memory = NULL;
+          tu->stacks[s].top = FIRST_STACK_SIZE << s;
+        }
+        tu->memStacks = newSize;
+      }
+
+      tu->stacks[tu->numStacks].top = FIRST_STACK_SIZE << tu->numStacks;
+      tu->stacks[tu->numStacks].memory = malloc(tu->stacks[tu->numStacks].top * sizeof(char));
+      ++tu->numStacks;
+    }
+
+    assert(tu->stacks[tu->currentStack].top == (FIRST_STACK_SIZE << tu->currentStack));
+  }
+
+  /* The chunk fits into the last stack. */
+
+  TU_STACK* pstack = &tu->stacks[tu->currentStack];
+  pstack->top -= size;
+  *ptr = &pstack->memory[pstack->top];
+  pstack->top -= sizeof(void*);
+  void* pallocated = &pstack->memory[pstack->top];
+  *((size_t*)pallocated) = size;
+  return TU_OKAY;
 }
 
-void _TUfreeStack(TU* tu, void** ptr, size_t size)
+TU_ERROR _TUfreeStack(TU* tu, void** ptr)
 {
   assert(tu);
   assert(ptr);
   assert(*ptr);
-  free(*ptr);
-  *ptr = NULL;
-}
 
-void _TUallocStackArray(TU* tu, void** ptr, size_t size, size_t length)
-{
-  assert(tu);
-  assert(ptr);
-  assert(*ptr == NULL);
-  *ptr = malloc(size * length);
-}
+  TU_STACK* stack = &tu->stacks[tu->currentStack];
+  size_t size = *((size_t*) &stack->memory[stack->top]);
 
-void _TUfreeStackArray(TU* tu, void** ptr)
-{
-  assert(tu);
-  assert(ptr);
-  assert(*ptr);
-  free(*ptr);
+#ifndef NDEBUG
+  if (&stack->memory[stack->top + sizeof(void*)] != *ptr)
+  {
+    fprintf(stderr,
+      "Wrong order of TUfreeStack(Array) detected. Top chunk on stack has size %ld.\n",
+      size);
+    fflush(stderr);
+  }
+#endif /* !NDEBUG */
+
+  stack->top += size + sizeof(void*);
+  if (stack->top == (FIRST_STACK_SIZE << tu->currentStack) && tu->currentStack > 0)
+    --tu->currentStack;
   *ptr = NULL;
+
+  return TU_OKAY;
 }

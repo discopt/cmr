@@ -10,40 +10,27 @@ extern "C" {
 #endif
 
 /**
- * \brief Row-wise representation of sparse double matrix
+ * \brief Row-wise representation of sparse double matrix.
+ * 
+ * The columns and values of all nonzeros are stored in \ref entryColumns and \ref entryValues,
+ * respectively.
+ * Those of row \c r are stored from \ref rowStarts[r] until (but not including)
+ * \ref rowStarts[r+1]. The last row is an exception, since \ref rowStarts[\ref numRows] need not
+ * be defined.
+ * For convenience, one may store this additional entry.
+ * In particular \ref TUdblmatCreate allocates sufficient space for it.
+ * However, all public methods use \ref numRows to determine the last row's number of nonzeros via
+ * \ref numNonzeros.
  */
 
 typedef struct
 {
-  /**
-   * \brief Number of rows
-   */
-  int numRows;
-
-  /**
-   * \brief Number of columns
-   */
-  int numColumns;
-
-  /**
-   * \brief Number of nonzeros
-   */
-  int numNonzeros;
-
-  /**
-   * \brief Array mapping each row to its first entry
-   */
-  int* rowStarts;
-
-  /**
-   * \brief Array mapping each entry to its column
-   */
-  int* entryColumns;
-
-  /**
-   * \brief Array mapping each entry to its value
-   */
-  double* entryValues;
+  int numRows;          /**< \brief Number of rows. */
+  int numColumns;       /**< \brief Number of columns. */
+  int numNonzeros;      /**< \brief Number of and memory allocated for nonzeros. */
+  int* rowStarts;       /**< \brief Array mapping each row to the index of its first entry. */
+  int* entryColumns;    /**< \brief Array mapping each entry to its column.*/
+  double* entryValues;  /**< \brief Array mapping each entry to its value. */
 } TU_DBLMAT;
 
 /**
@@ -52,8 +39,8 @@ typedef struct
  */
 
 TU_EXPORT
-void TUdblmatCreate(
-  TU* tu,              /**< TU environment. */
+TU_ERROR TUdblmatCreate(
+  TU* tu,              /**< \ref TU environment. */
   TU_DBLMAT** matrix,  /**< Pointer for storing the created matrix. */
   int numRows,         /**< Number of rows. */
   int numColumns,      /**< Number of columns. */
@@ -65,9 +52,9 @@ void TUdblmatCreate(
  */
 
 TU_EXPORT
-void TUdblmatFree(
-  TU* tu,             /**< TU environment. */
-  TU_DBLMAT** matrix  /**< Double matrix */
+TU_ERROR TUdblmatFree(
+  TU* tu,             /**< \ref TU environment. */
+  TU_DBLMAT** matrix  /**< Pointer to matrix. */
 );
 
 /**
@@ -75,82 +62,81 @@ void TUdblmatFree(
  */
 
 TU_EXPORT
-void TUdblmatChangeNumNonzeros(
-  TU* tu,             /*< TU environment. */
-  TU_DBLMAT* matrix,  /*< Given matrix matrix. */
-  int newNumNonzeros  /*< New number of nonzeros. */ 
+TU_ERROR TUdblmatChangeNumNonzeros(
+  TU* tu,             /**< \ref TU environment. */
+  TU_DBLMAT* matrix,  /**< Given matrix matrix. */
+  int newNumNonzeros  /**< New number of nonzeros. */ 
 );
 
 /**
- * \brief Copy a double matrix.
+ * \brief Copies a double matrix to a newly allocated one.
+ * 
+ * Allocates *\p result and copies \p matrix there.
  */
 TU_EXPORT
-void TUdblmatCopy(
-  TU* tu,             /**< TU environment. */
+TU_ERROR TUdblmatCopy(
+  TU* tu,             /**< \ref TU environment. */
   TU_DBLMAT* matrix,  /**< Given matrix. */
-  TU_DBLMAT** result  /**< Pointer to created copy of matrix. */
+  TU_DBLMAT** result  /**< Pointer to store a copy of \p matrix. */
 );
 
 /**
- * \brief Create the transposed double matrix.
+ * \brief Creates the transpose of a double matrix.
  */
 TU_EXPORT
-void TUdblmatTranspose(
-  TU* tu,             /**< TU environment. */
+TU_ERROR TUdblmatTranspose(
+  TU* tu,             /**< \ref TU environment. */
   TU_DBLMAT* matrix,  /**< Given matrix. */
-  TU_DBLMAT** result  /**< Pointer to created transpose of matrix. */
+  TU_DBLMAT** result  /**< Pointer to store the transpose of \p matrix. */
 );
+
+
+
+
+
+
+
+
+
+
+
 
 /**
  * \brief Row-wise representation of sparse int matrix.
+ * 
+ * The columns and values of all nonzeros are stored in \ref entryColumns and \ref entryValues,
+ * respectively.
+ * Those of row \c r are stored from \ref rowStarts[r] until (but not including)
+ * \ref rowStarts[r+1]. The last row is an exception, since \ref rowStarts[\ref numRows] need not
+ * be defined.
+ * For convenience, one may store this additional entry.
+ * In particular \ref TUintmatCreate allocates sufficient space for it.
+ * However, all public methods use \ref numRows to determine the last row's number of nonzeros via
+ * \ref numNonzeros.
  */
 
 typedef struct
 {
-  /**
-   * \brief Number of rows
-   */
-  int numRows;
-
-  /**
-   * \brief Number of columns
-   */
-  int numColumns;
-
-  /**
-   * \brief Number of nonzeros
-   */
-  int numNonzeros;
-
-  /**
-   * \brief Array mapping each row to its first entry
-   */
-  int* rowStarts;
-
-  /**
-   * \brief Array mapping each entry to its column
-   */
-  int* entryColumns;
-
-  /**
-   * \brief Array mapping each entry to its value
-   */
-  int* entryValues;
+  int numRows;        /**< \brief Number of rows. */
+  int numColumns;     /**< \brief Number of columns. */
+  int numNonzeros;    /**< \brief Number of and memory allocated for nonzeros. */
+  int* rowStarts;     /**< \brief Array mapping each row to the index of its first entry. */
+  int* entryColumns;  /**< \brief Array mapping each entry to its column.*/
+  int* entryValues;   /**< \brief Array mapping each entry to its value. */
 } TU_INTMAT;
 
-
 /**
- * \brief Creates an int matrix of size \p numRows times \p numColumns with \p numNonzeros
+ * \brief Creates a double matrix of size \p numRows times \p numColumns with \p numNonzeros
  *        nonzeros. The row starts and entries are allocated but not initialized.
  */
 
 TU_EXPORT
-void TUintmatCreate(
-  TU* tu,                 /**< TU environment. */
-  TU_INTMAT** matrix, /**< Pointer for storing the created matrix. */
-  int numRows,            /**< Number of rows. */
-  int numColumns,         /**< Number of columns. */
-  int numNonzeros         /**< Number of nonzeros. */
+TU_ERROR TUintmatCreate(
+  TU* tu,              /**< \ref TU environment. */
+  TU_INTMAT** matrix,  /**< Pointer for storing the created matrix. */
+  int numRows,         /**< Number of rows. */
+  int numColumns,      /**< Number of columns. */
+  int numNonzeros      /**< Number of nonzeros. */
 );
 
 /**
@@ -158,9 +144,9 @@ void TUintmatCreate(
  */
 
 TU_EXPORT
-void TUintmatFree(
-  TU* tu,                 /**< TU environment. */
-  TU_INTMAT** matrix  /**< Double matrix */
+TU_ERROR TUintmatFree(
+  TU* tu,             /**< \ref TU environment. */
+  TU_INTMAT** matrix  /**< Pointer to matrix. */
 );
 
 /**
@@ -168,70 +154,62 @@ void TUintmatFree(
  */
 
 TU_EXPORT
-void TUintmatChangeNumNonzeros(
-  TU* tu,             /*< TU environment. */
-  TU_INTMAT* matrix,  /*< Given matrix matrix. */
-  int newNumNonzeros  /*< New number of nonzeros. */ 
+TU_ERROR TUintmatChangeNumNonzeros(
+  TU* tu,             /**< \ref TU environment. */
+  TU_INTMAT* matrix,  /**< Given matrix matrix. */
+  int newNumNonzeros  /**< New number of nonzeros. */ 
 );
 
 /**
- * \brief Copy an int matrix.
+ * \brief Copies an int matrix to a newly allocated one.
+ * 
+ * Allocates *\p result and copies \p matrix there.
  */
 TU_EXPORT
-void TUintmatCopy(
-  TU* tu,                 /**< TU environment. */
+TU_ERROR TUintmatCopy(
+  TU* tu,             /**< \ref TU environment. */
   TU_INTMAT* matrix,  /**< Given matrix. */
-  TU_INTMAT** result  /**< Pointer to created copy of matrix. */
+  TU_INTMAT** result  /**< Pointer to store a copy of \p matrix. */
 );
 
 /**
- * \brief Create the transposed int matrix.
+ * \brief Creates the transpose of an int matrix.
  */
 TU_EXPORT
-void TUintmatTranspose(
-  TU* tu,                   /**< TU environment. */
-  TU_INTMAT* matrix, /**< Given matrix. */
-  TU_INTMAT** result /**< Pointer to created transpose of matrix. */
+TU_ERROR TUintmatTranspose(
+  TU* tu,             /**< \ref TU environment. */
+  TU_INTMAT* matrix,  /**< Given matrix. */
+  TU_INTMAT** result  /**< Pointer to store the transpose of \p matrix. */
 );
 
+
+
+
+
+
 /**
- * \brief Row-wise representation of sparse char matrix
+ * \brief Row-wise representation of sparse char matrix.
+ * 
+ * The columns and values of all nonzeros are stored in \ref entryColumns and \ref entryValues,
+ * respectively.
+ * Those of row \c r are stored from \ref rowStarts[r] until (but not including)
+ * \ref rowStarts[r+1]. The last row is an exception, since \ref rowStarts[\ref numRows] need not
+ * be defined.
+ * For convenience, one may store this additional entry.
+ * In particular \ref TUcharmatCreate allocates sufficient space for it.
+ * However, all public methods use \ref numRows to determine the last row's number of nonzeros via
+ * \ref numNonzeros.
  */
 
 typedef struct
 {
-  /**
-   * \brief Number of rows
-   */
-  int numRows;
-
-  /**
-   * \brief Number of columns
-   */
-  int numColumns;
-
-  /**
-   * \brief Number of nonzeros
-   */
-  int numNonzeros;
-
-  /**
-   * \brief Array mapping each row to its first entry
-   */
-  int* rowStarts;
-
-  /**
-   * \brief Array mapping each entry to its column
-   */
-  int* entryColumns;
-
-  /**
-   * \brief Array mapping each entry to its value
-   */
-  char* entryValues;
+  int numRows;        /**< \brief Number of rows. */
+  int numColumns;     /**< \brief Number of columns. */
+  int numNonzeros;    /**< \brief Number of and memory allocated for nonzeros. */
+  int* rowStarts;     /**< \brief Array mapping each row to the index of its first entry. */
+  int* entryColumns;  /**< \brief Array mapping each entry to its column.*/
+  char* entryValues;  /**< \brief Array mapping each entry to its value. */
 } TU_CHRMAT;
-
-
 
 /**
  * \brief Creates a char matrix of size \p numRows times \p numColumns with \p numNonzeros
@@ -239,22 +217,22 @@ typedef struct
  */
 
 TU_EXPORT
-void TUchrmatCreate(
-  TU* tu,                   /**< TU environment. */
+TU_ERROR TUchrmatCreate(
+  TU* tu,              /**< \ref TU environment. */
   TU_CHRMAT** matrix,  /**< Pointer for storing the created matrix. */
-  int numRows,              /**< Number of rows. */
-  int numColumns,           /**< Number of columns. */
-  int numNonzeros           /**< Number of nonzeros. */
+  int numRows,         /**< Number of rows. */
+  int numColumns,      /**< Number of columns. */
+  int numNonzeros      /**< Number of nonzeros. */
 );
 
 /**
- * \brief Frees the memory of a char matrix.
+ * \brief Frees the memory of an int matrix.
  */
 
 TU_EXPORT
-void TUchrmatFree(
-  TU* tu,                 /**< TU environment. */
-  TU_CHRMAT** matrix /**< Char matrix */
+TU_ERROR TUchrmatFree(
+  TU* tu,             /**< \ref TU environment. */
+  TU_CHRMAT** matrix  /**< Pointer to matrix. */
 );
 
 /**
@@ -262,30 +240,32 @@ void TUchrmatFree(
  */
 
 TU_EXPORT
-void TUchrmatChangeNumNonzeros(
-  TU* tu,             /*< TU environment. */
-  TU_CHRMAT* matrix,  /*< Given matrix matrix. */
-  int newNumNonzeros  /*< New number of nonzeros. */ 
+TU_ERROR TUchrmatChangeNumNonzeros(
+  TU* tu,             /**< \ref TU environment. */
+  TU_CHRMAT* matrix,  /**< Given matrix matrix. */
+  int newNumNonzeros  /**< New number of nonzeros. */ 
 );
 
 /**
- * \brief Copy a char matrix.
+ * \brief Copies an int matrix to a newly allocated one.
+ * 
+ * Allocates *\p result and copies \p matrix there.
  */
 TU_EXPORT
-void TUchrmatCopy(
-  TU* tu,                 /**< TU environment. */
-  TU_CHRMAT* matrix, /**< Given matrix. */
-  TU_CHRMAT** result /**< Pointer to created copy of matrix. */
+TU_ERROR TUchrmatCopy(
+  TU* tu,             /**< \ref TU environment. */
+  TU_CHRMAT* matrix,  /**< Given matrix. */
+  TU_CHRMAT** result  /**< Pointer to store a copy of \p matrix. */
 );
 
 /**
- * \brief Create the transposed char matrix.
+ * \brief Creates the transpose of an int matrix.
  */
 TU_EXPORT
-void TUchrmatTranspose(
-  TU* tu,                   /**< TU environment. */
-  TU_CHRMAT* matrix, /**< Given matrix. */
-  TU_CHRMAT** result /**< Pointer to created transpose of matrix. */
+TU_ERROR TUchrmatTranspose(
+  TU* tu,             /**< \ref TU environment. */
+  TU_CHRMAT* matrix,  /**< Given matrix. */
+  TU_CHRMAT** result  /**< Pointer to store the transpose of \p matrix. */
 );
 
 /**
@@ -293,11 +273,11 @@ void TUchrmatTranspose(
  */
 
 TU_EXPORT
-void TUdblmatPrintDense(
-  FILE* stream,             /**< File stream to print to */
-  TU_DBLMAT* matrix, /**< Double matrix */
-  char zeroChar,            /**< Character to print for a zero */
-  bool header               /**< Whether to print row and column indices */
+TU_ERROR TUdblmatPrintDense(
+  FILE* stream,       /**< File stream to print to */
+  TU_DBLMAT* matrix,  /**< Double matrix */
+  char zeroChar,      /**< Character to print for a zero */
+  bool header         /**< Whether to print row and column indices */
 );
 
 /**
@@ -305,11 +285,11 @@ void TUdblmatPrintDense(
  */
 
 TU_EXPORT
-void TUintmatPrintDense(
-  FILE* stream,           /**< File stream to print to */
+TU_ERROR TUintmatPrintDense(
+  FILE* stream,       /**< File stream to print to */
   TU_INTMAT* matrix,  /**< Int matrix */
-  char zeroChar,          /**< Character to print for a zero */
-  bool header             /**< Whether to print row and column indices */
+  char zeroChar,      /**< Character to print for a zero */
+  bool header         /**< Whether to print row and column indices */
 );
 
 /**
@@ -317,11 +297,11 @@ void TUintmatPrintDense(
  */
 
 TU_EXPORT
-void TUchrmatPrintDense(
-  FILE* stream,           /**< File stream to print to */
-  TU_CHRMAT* matrix, /**< Char matrix */
-  char zeroChar,          /**< Character to print for a zero */
-  bool header             /**< Whether to print row and column indices */
+TU_ERROR TUchrmatPrintDense(
+  FILE* stream,       /**< File stream to print to */
+  TU_CHRMAT* matrix,  /**< Char matrix */
+  char zeroChar,      /**< Character to print for a zero */
+  bool header         /**< Whether to print row and column indices */
 );
 
 /**
@@ -383,7 +363,7 @@ bool TUintmatCheckTranspose(
 TU_EXPORT
 bool TUchrmatCheckTranspose(
   TU_CHRMAT* matrix1, /**< First matrix */
-  TU_CHRMAT* matrix2 /**< Second matrix */
+  TU_CHRMAT* matrix2  /**< Second matrix */
 );
 
 /**
@@ -392,7 +372,7 @@ bool TUchrmatCheckTranspose(
 
 TU_EXPORT
 bool TUdblmatCheckSorted(
-  TU_DBLMAT* matrix /** Double matrix */
+  TU_DBLMAT* matrix /**< Double matrix */
 );
 
 /**
@@ -401,7 +381,7 @@ bool TUdblmatCheckSorted(
 
 TU_EXPORT
 bool TUintmatCheckSorted(
-  TU_INTMAT* matrix /** Int matrix */
+  TU_INTMAT* matrix /**< Int matrix */
 );
 
 /**
@@ -410,7 +390,7 @@ bool TUintmatCheckSorted(
 
 TU_EXPORT
 bool TUchrmatCheckSorted(
-  TU_CHRMAT* matrix /** Char matrix */
+  TU_CHRMAT* matrix /**< Char matrix */
 );
 
 

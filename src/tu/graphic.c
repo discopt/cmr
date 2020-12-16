@@ -163,18 +163,26 @@ bool TUtestGraphicnessChr(TU* tu, TU_CHRMAT* matrix, TU_GRAPH** pgraph,
 
 typedef enum
 {
-  UNKNOWN = 0,
-  SEEN = 1,
-  COMPLETED = 2,
-  BASIC = 3,
+  UNKNOWN = 0,    /**< The node was not considered by the shortest-path, yet. */
+  SEEN = 1,       /**< Some path to the node is known. */
+  COMPLETED = 2,  /**< The shortest path to the node is known. */
+  BASIC = 3,      /**< The rootEdge of that node belongs to the spanning forest. */
 } STAGE;
+
+/**
+ * \brief Node information for shortest-path computation in \ref TUconvertGraphToBinaryMatrix.
+ */
 
 typedef struct
 {
-  STAGE stage;
-  int predecessor;
-  TU_GRAPH_EDGE rootEdge;
+  STAGE stage;            /**< At which stage of the algorithm is this node? */
+  int predecessor;        /**< Predecessor node in shortest-path branching, or -1 for a root. */
+  TU_GRAPH_EDGE rootEdge; /**< The actual edge towards the predecessor, or -1 for a root./ */
 } NodeData;
+
+/**
+ * \brief Comparator for sorting ints increasingly.
+ */
 
 int compareInt(const void* A, const void* B)
 {
