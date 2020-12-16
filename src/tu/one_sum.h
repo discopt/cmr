@@ -24,7 +24,7 @@ typedef struct
  * \brief Decomposes int matrix into 1-connected submatrices.
  */
 
-void decomposeOneSum(
+TU_ERROR decomposeOneSum(
   TU* tu,                               /**< TU environment */
   TU_MATRIX* matrix,                    /**< Matrix */
   size_t matrixType,                    /**< Size of base type of matrix. */

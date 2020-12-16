@@ -16,7 +16,7 @@ struct GraphNode
 };
 typedef struct GraphNode GRAPH_NODE;
 
-void decomposeOneSum(TU* tu, TU_MATRIX* matrix, size_t matrixType, size_t targetType,
+TU_ERROR decomposeOneSum(TU* tu, TU_MATRIX* matrix, size_t matrixType, size_t targetType,
   int* numComponents, TU_ONESUM_COMPONENT** pcomponents, int* rowsToComponents,
   int* columnsToComponents, int* rowsToComponentRows, int* columnsToComponentColumns)
 {
@@ -45,9 +45,9 @@ void decomposeOneSum(TU* tu, TU_MATRIX* matrix, size_t matrixType, size_t target
     TUprintCharMatrixDense(stdout, (TU_CHAR_MATRIX*) matrix, '0', true);
 #endif
 
-  TUallocStackArray(tu, &graphNodes, numNodes + 1);
-  TUallocStackArray(tu, &graphAdjacencies, 2 * matrix->numNonzeros);
-  TUallocStackArray(tu, &queue, numNodes);
+  TU_CALL( TUallocStackArray(tu, &graphNodes, numNodes + 1) );
+  TU_CALL( TUallocStackArray(tu, &graphAdjacencies, 2 * matrix->numNonzeros) );
+  TU_CALL( TUallocStackArray(tu, &queue, numNodes) );
 
   for (int node = 0; node < numNodes; ++node)
   {
@@ -183,7 +183,7 @@ void decomposeOneSum(TU* tu, TU_MATRIX* matrix, size_t matrixType, size_t target
 #endif
 
   /* Allocate component data. */
-  TUallocBlockArray(tu, pcomponents, countComponents);
+  TU_CALL( TUallocBlockArray(tu, pcomponents, countComponents) );
   TU_ONESUM_COMPONENT* components = *pcomponents;
 
   /* Compute sizes. */
@@ -193,7 +193,7 @@ void decomposeOneSum(TU* tu, TU_MATRIX* matrix, size_t matrixType, size_t target
     components[comp].transpose = NULL;
     components[comp].rowsToOriginal = NULL;
     components[comp].columnsToOriginal = NULL;
-    TUchrmatCreate(tu, (TU_CHRMAT**) &components[comp].matrix, 0, 0, 0);
+    TU_CALL( TUchrmatCreate(tu, (TU_CHRMAT**) &components[comp].matrix, 0, 0, 0) );
   }
 
   for (int node = 0; node < numNodes; ++node)
@@ -221,34 +221,33 @@ void decomposeOneSum(TU* tu, TU_MATRIX* matrix, size_t matrixType, size_t target
       compMatrix->numColumns, compMatrix->numNonzeros);
 #endif
 
-    TUallocBlockArray(tu, &components[comp].rowsToOriginal, compMatrix->numRows);
-    TUallocBlockArray(tu, &components[comp].columnsToOriginal, compMatrix->numColumns);
-    TUfreeBlockArray(tu, &compMatrix->rowStarts);
-    TUallocBlockArray(tu, &compMatrix->rowStarts, compMatrix->numRows + 1);
+    TU_CALL( TUallocBlockArray(tu, &components[comp].rowsToOriginal, compMatrix->numRows) );
+    TU_CALL( TUallocBlockArray(tu, &components[comp].columnsToOriginal, compMatrix->numColumns) );
+    TU_CALL( TUreallocBlockArray(tu, &compMatrix->rowStarts, compMatrix->numRows + 1) );
     if (compMatrix->numNonzeros > 0)
-      TUallocBlockArray(tu, &compMatrix->entryColumns, compMatrix->numNonzeros);
+      TU_CALL( TUallocBlockArray(tu, &compMatrix->entryColumns, compMatrix->numNonzeros) );
 
     if (targetType == sizeof(char))
     {
       if (compMatrix->numNonzeros > 0)
-        TUallocBlockArray(tu, (char**) &compMatrix->entryValues, compMatrix->numNonzeros);
-      TUchrmatCreate(tu, (TU_CHRMAT**) &components[comp].transpose,
-        compMatrix->numColumns, compMatrix->numRows, compMatrix->numNonzeros);
+        TU_CALL( TUallocBlockArray(tu, (char**) &compMatrix->entryValues, compMatrix->numNonzeros) );
+      TU_CALL( TUchrmatCreate(tu, (TU_CHRMAT**) &components[comp].transpose,
+        compMatrix->numColumns, compMatrix->numRows, compMatrix->numNonzeros) );
     }
     else if (targetType == sizeof(int))
     {
       if (compMatrix->numNonzeros > 0)
-        TUallocBlockArray(tu, (int**) &compMatrix->entryValues, compMatrix->numNonzeros);
-      TUintmatCreate(tu, (TU_INTMAT**) &components[comp].transpose,
-        compMatrix->numColumns, compMatrix->numRows, compMatrix->numNonzeros);
+        TU_CALL( TUallocBlockArray(tu, (int**) &compMatrix->entryValues, compMatrix->numNonzeros) );
+      TU_CALL( TUintmatCreate(tu, (TU_INTMAT**) &components[comp].transpose,
+        compMatrix->numColumns, compMatrix->numRows, compMatrix->numNonzeros) );
     }
     else
     {
       assert(targetType == sizeof(double));
       if (compMatrix->numNonzeros > 0)
-        TUallocBlockArray(tu, (double**) &compMatrix->entryValues, compMatrix->numNonzeros);
-      TUdblmatCreate(tu, (TU_DBLMAT**) &components[comp].transpose,
-        compMatrix->numColumns, compMatrix->numRows, compMatrix->numNonzeros);
+        TU_CALL( TUallocBlockArray(tu, (double**) &compMatrix->entryValues, compMatrix->numNonzeros) );
+      TU_CALL( TUdblmatCreate(tu, (TU_DBLMAT**) &components[comp].transpose,
+        compMatrix->numColumns, compMatrix->numRows, compMatrix->numNonzeros) );
     }
   }
 
@@ -484,7 +483,9 @@ void decomposeOneSum(TU* tu, TU_MATRIX* matrix, size_t matrixType, size_t target
       columnsToComponentColumns[column] = graphNodes[firstColumnNode + column].order;
   }
 
-  TUfreeStackArray(tu, &queue);
-  TUfreeStackArray(tu, &graphAdjacencies);
-  TUfreeStackArray(tu, &graphNodes);
+  TU_CALL( TUfreeStackArray(tu, &queue) );
+  TU_CALL( TUfreeStackArray(tu, &graphAdjacencies) );
+  TU_CALL( TUfreeStackArray(tu, &graphNodes) );
+
+  return TU_OKAY;
 }

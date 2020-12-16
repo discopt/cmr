@@ -16,14 +16,18 @@ extern "C" {
  *
  * Returns \c true if and only if \p matrix is graphic.
  *
- * If \p pgraph is not \c NULL and if \p matrix is graphic, then \c *pgraph will point to a graph
+ * If \p pgraph is not \c NULL and if \p matrix is graphic, then *\p pgraph will point to a graph
  * representing \p matrix, and it is set to \c NULL otherwise.
- * If in addition to \p pgraph also \pbasis is not \c NULL, then this will be an array of edges
- * forming the basis, i.e., indexing the rows of the matrix.
+ * The caller must release the memory via \ref TUgraphFree.
+ * If in addition to \p pgraph also \p pbasis (resp. \p pcobasis) is not \c NULL, then this will be
+ * an array of edges forming the basis (resp. cobasis), i.e., indexing the rows (resp. columns) of
+ * the matrix.
+ * The caller must release the memory via \ref TUfreeBlockArray.
  *
- * If \p submatrix is not \c NULL and the matrix is not graphic, then a minimal nongraphic submatrix
- * will be searched, which may cause extra computational effort. In this case, \c *submatrix will
- * point to this submatrix for which the caller must use \ref TUsubmatrixFree to free memory.
+ * If \p psubmatrix is not \c NULL and the matrix is not graphic, then a minimal nongraphic submatrix
+ * will be searched, which may cause extra computational effort.
+ * In this case, *\p submatrix will point to this submatrix.
+ * The caller must release the memory via \ref TUsubmatFree.
  * It is set to \c NULL otherwise.
  */
 

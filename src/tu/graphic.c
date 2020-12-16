@@ -152,8 +152,8 @@ bool TUtestGraphicnessChr(TU* tu, TU_CHRMAT* matrix, TU_GRAPH** pgraph,
 
   /* Perform 1-sum decomposition. */
 
-  decomposeOneSum(tu, (TU_MATRIX*) matrix, sizeof(char), sizeof(char), &numComponents, &components,
-    NULL, NULL, NULL, NULL);
+  TU_CALL( decomposeOneSum(tu, (TU_MATRIX*) matrix, sizeof(char), sizeof(char), &numComponents,
+    &components, NULL, NULL, NULL, NULL) );
 
   /* Process all components. */
 
