@@ -15,45 +15,45 @@ extern "C" {
 
 typedef struct
 {
-  int size;       /*< Current size of the heap. */
-  int memKeys;    /*< Memory for keys. */
-  int* values;    /*< Array that maps keys to values. */
-  int* positions; /*< Array that maps keys to heap positions. */
-  int* data;      /*< Array that maps heap positions to keys. */
+  int size;       /**< \brief Current size of the heap. */
+  int memKeys;    /**< \brief Memory for keys. */
+  int* values;    /**< \brief Array that maps keys to values. */
+  int* positions; /**< \brief Array that maps keys to heap positions. */
+  int* data;      /**< \brief Array that maps heap positions to keys. */
 } TU_INTHEAP;
 
-void TUintheapInitStack(
-  TU* tu,           /*< TU environment. */
-  TU_INTHEAP* heap, /*< Heap. */
+TU_ERROR TUintheapInitStack(
+  TU* tu,           /**< TU environment. */
+  TU_INTHEAP* heap, /**< Heap. */
   int memKeys       /*< Memory for keys and heap. */
 );
 
-void TUintheapClearStack(
-  TU* tu,           /*< TU environment. */
-  TU_INTHEAP* heap  /*< Heap. */
+TU_ERROR TUintheapClearStack(
+  TU* tu,           /**< TU environment. */
+  TU_INTHEAP* heap  /**< Heap. */
 );
 
-void TUintheapInsert(
-  TU_INTHEAP* heap, /*< Heap. */
-  int key,          /*< Key of new element. */
-  int value         /*< Value of new element. */
+TU_ERROR TUintheapInsert(
+  TU_INTHEAP* heap, /**< Heap. */
+  int key,          /**< Key of new element. */
+  int value         /**< Value of new element. */
 );
 
-void TUintheapDecrease(
-  TU_INTHEAP* heap, /*< Heap. */
-  int key,          /*< Key of element. */
-  int newValue      /*< New value of element. */
+TU_ERROR TUintheapDecrease(
+  TU_INTHEAP* heap, /**< Heap. */
+  int key,          /**< Key of element. */
+  int newValue      /**< New value of element. */
 );
 
-void TUintheapDecreaseInsert(
-  TU_INTHEAP* heap, /*< Heap. */
-  int key,          /*< Key of element. */
-  int newValue      /*< New value of element. */
+TU_ERROR TUintheapDecreaseInsert(
+  TU_INTHEAP* heap, /**< Heap. */
+  int key,          /**< Key of element. */
+  int newValue      /**< New value of element. */
 );
 
 static inline
 bool TUintheapEmpty(
-  TU_INTHEAP* heap  /*< Heap. */
+  TU_INTHEAP* heap  /**< Heap. */
 )
 {
   return heap->size == 0;

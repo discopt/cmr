@@ -3,7 +3,7 @@
 #include <assert.h>
 #include <limits.h>
 
-void TUintheapInitStack(TU* tu, TU_INTHEAP* heap, int memKeys)
+TU_ERROR TUintheapInitStack(TU* tu, TU_INTHEAP* heap, int memKeys)
 {
   assert(tu);
   assert(heap);
@@ -12,27 +12,31 @@ void TUintheapInitStack(TU* tu, TU_INTHEAP* heap, int memKeys)
   heap->memKeys = memKeys;
   heap->size = 0;
   heap->positions = NULL;
-  TUallocStackArray(tu, &heap->positions, memKeys);
+  TU_CALL( TUallocStackArray(tu, &heap->positions, memKeys) );
   for (int i = 0; i < memKeys; ++i)
     heap->positions[i] = -1;
   heap->values = NULL;
-  TUallocStackArray(tu, &heap->values, memKeys);
+  TU_CALL( TUallocStackArray(tu, &heap->values, memKeys) );
   heap->data = NULL;
-  TUallocStackArray(tu, &heap->data, memKeys);
+  TU_CALL( TUallocStackArray(tu, &heap->data, memKeys) );
+
+  return TU_OKAY;
 }
 
-void TUintheapClearStack(TU* tu, TU_INTHEAP* heap)
+TU_ERROR TUintheapClearStack(TU* tu, TU_INTHEAP* heap)
 {
   assert(tu);
   assert(heap);
 
-  TUfreeStackArray(tu, &heap->data);
-  TUfreeStackArray(tu, &heap->values);
-  TUfreeStackArray(tu, &heap->positions);
+  TU_CALL( TUfreeStackArray(tu, &heap->data) );
+  TU_CALL( TUfreeStackArray(tu, &heap->values) );
+  TU_CALL( TUfreeStackArray(tu, &heap->positions) );
   heap->memKeys = 0;
+
+  return TU_OKAY;
 }
 
-void TUintheapInsert(TU_INTHEAP* heap, int key, int value)
+TU_ERROR TUintheapInsert(TU_INTHEAP* heap, int key, int value)
 {
   assert(heap);
   assert(key >= 0);
@@ -65,9 +69,11 @@ void TUintheapInsert(TU_INTHEAP* heap, int key, int value)
   }
 
   ++heap->size;
+
+  return TU_OKAY;
 }
 
-void TUintheapDecrease(TU_INTHEAP* heap, int key, int newValue)
+TU_ERROR TUintheapDecrease(TU_INTHEAP* heap, int key, int newValue)
 {
   assert(heap);
   assert(heap->positions[key] >= 0);
@@ -93,9 +99,11 @@ void TUintheapDecrease(TU_INTHEAP* heap, int key, int newValue)
     currentKey = parentKey;
     currentValue = parentValue;
   }
+
+  return TU_OKAY;
 }
 
-void TUintheapDecreaseInsert(TU_INTHEAP* heap, int key, int newValue)
+TU_ERROR TUintheapDecreaseInsert(TU_INTHEAP* heap, int key, int newValue)
 {
   assert(heap);
   assert(key >= 0);
@@ -131,6 +139,8 @@ void TUintheapDecreaseInsert(TU_INTHEAP* heap, int key, int newValue)
     currentKey = parentKey;
     currentValue = parentValue;
   }
+
+  return TU_OKAY;
 }
 
 int TUintheapExtractMinimum(TU_INTHEAP* heap)

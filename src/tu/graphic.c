@@ -191,8 +191,8 @@ int compareInt(const void* A, const void* B)
   return *a - *b;
 }
 
-void TUconvertGraphToBinaryMatrix(TU* tu, TU_GRAPH* graph, TU_CHRMAT** matrix, int numBasisEdges,
-  TU_GRAPH_EDGE* basisEdges, int numCobasisEdges, TU_GRAPH_EDGE* cobasisEdges)
+TU_ERROR TUconvertGraphToBinaryMatrix(TU* tu, TU_GRAPH* graph, TU_CHRMAT** matrix,
+  int numBasisEdges, TU_GRAPH_EDGE* basisEdges, int numCobasisEdges, TU_GRAPH_EDGE* cobasisEdges)
 {
   assert(tu);
   assert(graph);
@@ -201,11 +201,11 @@ void TUconvertGraphToBinaryMatrix(TU* tu, TU_GRAPH* graph, TU_CHRMAT** matrix, i
   assert(numCobasisEdges == 0 || cobasisEdges);
 
   NodeData* nodeData = NULL;
-  TUallocStackArray(tu, &nodeData, TUgraphMemNodes(graph));
+  TU_CALL( TUallocStackArray(tu, &nodeData, TUgraphMemNodes(graph)) );
   TU_INTHEAP heap;
-  TUintheapInitStack(tu, &heap, TUgraphMemNodes(graph));
+  TU_CALL( TUintheapInitStack(tu, &heap, TUgraphMemNodes(graph)) );
   int* lengths = NULL;
-  TUallocStackArray(tu, &lengths, TUgraphMemEdges(graph));
+  TU_CALL( TUallocStackArray(tu, &lengths, TUgraphMemEdges(graph)) );
   for (TU_GRAPH_NODE v = TUgraphNodesFirst(graph); TUgraphNodesValid(graph, v);
     v = TUgraphNodesNext(graph, v))
   {
@@ -260,13 +260,13 @@ void TUconvertGraphToBinaryMatrix(TU* tu, TU_GRAPH* graph, TU_CHRMAT** matrix, i
     }
   }
 
-  TUfreeStackArray(tu, &lengths);
-  TUintheapClearStack(tu, &heap);
+  TU_CALL( TUfreeStackArray(tu, &lengths) );
+  TU_CALL( TUintheapClearStack(tu, &heap) );
 
   /* Now nodeData[.].predecessor is an arborescence for each connected component. */
 
   TU_GRAPH_NODE* nodesRows = NULL; /* Non-root node v is mapped to row of edge {v,predecessor(v)}. */
-  TUallocStackArray(tu, &nodesRows, TUgraphMemNodes(graph));
+  TU_CALL( TUallocStackArray(tu, &nodesRows, TUgraphMemNodes(graph)) );
   for (TU_GRAPH_NODE v = TUgraphNodesFirst(graph); TUgraphNodesValid(graph, v);
     v = TUgraphNodesNext(graph, v))
   {
@@ -306,11 +306,12 @@ void TUconvertGraphToBinaryMatrix(TU* tu, TU_GRAPH* graph, TU_CHRMAT** matrix, i
   }
 
   TU_CHRMAT* transposed = NULL;
-  TUchrmatCreate(tu, &transposed, TUgraphNumEdges(graph) - numRows, numRows, 16 * numRows);
+  TU_CALL( TUchrmatCreate(tu, &transposed, TUgraphNumEdges(graph) - numRows, numRows,
+    16 * numRows) );
   int numNonzeros = 0; /* Current number of nonzeros. transpose->numNonzeros is the memory. */
   int numColumns = 0;
   TU_GRAPH_EDGE* edgeColumns = NULL;
-  TUallocStackArray(tu, &edgeColumns, TUgraphMemEdges(graph));
+  TU_CALL( TUallocStackArray(tu, &edgeColumns, TUgraphMemEdges(graph)) );
   for (TU_GRAPH_ITER i = TUgraphEdgesFirst(graph); TUgraphEdgesValid(graph, i);
     i = TUgraphEdgesNext(graph, i))
   {
@@ -321,9 +322,9 @@ void TUconvertGraphToBinaryMatrix(TU* tu, TU_GRAPH* graph, TU_CHRMAT** matrix, i
       (nodeData[u].rootEdge == e || nodeData[v].rootEdge == e) ? -1 : -2;
   }
   TU_GRAPH_NODE* uPath = NULL;
-  TUallocStackArray(tu, &uPath, numRows);
+  TU_CALL( TUallocStackArray(tu, &uPath, numRows) );
   TU_GRAPH_NODE* vPath = NULL;
-  TUallocStackArray(tu, &vPath, numRows);
+  TU_CALL( TUallocStackArray(tu, &vPath, numRows) );
   TU_GRAPH_ITER iter = TUgraphEdgesFirst(graph);
   int cobasicIndex = 0;
   while (TUgraphEdgesValid(graph, iter))
@@ -351,7 +352,7 @@ void TUconvertGraphToBinaryMatrix(TU* tu, TU_GRAPH* graph, TU_CHRMAT** matrix, i
 
     /* Enlarge space for nonzeros if necessary. */
     if (numNonzeros + numRows > transposed->numNonzeros)
-      TUchrmatChangeNumNonzeros(tu, transposed, 2 * transposed->numNonzeros);
+      TU_CALL( TUchrmatChangeNumNonzeros(tu, transposed, 2 * transposed->numNonzeros) );
 
     /* Compute u-root path. */
     int uPathLength = 0;
@@ -400,23 +401,25 @@ void TUconvertGraphToBinaryMatrix(TU* tu, TU_GRAPH* graph, TU_CHRMAT** matrix, i
     ++numColumns;
   }
 
-  TUfreeStackArray(tu, &vPath);
-  TUfreeStackArray(tu, &uPath);
-  TUfreeStackArray(tu, &edgeColumns);
+  TU_CALL( TUfreeStackArray(tu, &vPath) );
+  TU_CALL( TUfreeStackArray(tu, &uPath) );
+  TU_CALL( TUfreeStackArray(tu, &edgeColumns) );
 
   transposed->rowStarts[numColumns] = numNonzeros;
   if (numNonzeros == 0 && transposed->numNonzeros > 0)
   {
-    TUfreeBlockArray(tu, &transposed->entryColumns);
-    TUfreeBlockArray(tu, &transposed->entryValues);
+    TU_CALL( TUfreeBlockArray(tu, &transposed->entryColumns) );
+    TU_CALL( TUfreeBlockArray(tu, &transposed->entryValues) );
   }
   transposed->numNonzeros = numNonzeros;
 
-  TUchrmatTranspose(tu, transposed, matrix);
-  TUchrmatFree(tu, &transposed);
+  TU_CALL( TUchrmatTranspose(tu, transposed, matrix) );
+  TU_CALL( TUchrmatFree(tu, &transposed) );
 
   /* We now process the nonbasic edges. */
 
-  TUfreeStackArray(tu, &nodesRows);
-  TUfreeStackArray(tu, &nodeData);
+  TU_CALL( TUfreeStackArray(tu, &nodesRows) );
+  TU_CALL( TUfreeStackArray(tu, &nodeData) );
+
+  return TU_OKAY;
 }

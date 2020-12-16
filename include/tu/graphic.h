@@ -42,7 +42,7 @@ bool TUtestGraphicnessChr(
  */
 
 TU_EXPORT
-void TUconvertGraphToBinaryMatrix(
+TU_ERROR TUconvertGraphToBinaryMatrix(
   TU* tu,                     /**< TU environment. */
   TU_GRAPH* graph,            /**< Graph. */
   TU_CHRMAT** matrix,         /**< Pointer for storing the binary representation matrix. */
