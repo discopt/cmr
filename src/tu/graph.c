@@ -167,8 +167,12 @@ TU_ERROR TUgraphClear(TU* tu, TU_GRAPH* graph)
   return TU_OKAY;
 }
 
-TU_GRAPH_NODE TUgraphAddNode(TU* tu, TU_GRAPH *graph)
+TU_ERROR TUgraphAddNode(TU* tu, TU_GRAPH *graph, TU_GRAPH_NODE* pnode)
 {
+  assert(tu);
+  assert(graph);
+  assert(pnode);
+
 #ifdef DEBUG_GRAPH
   printf("TUgraphAddNode\n");
 #endif /* DEBUG_GRAPH */
@@ -190,19 +194,19 @@ TU_GRAPH_NODE TUgraphAddNode(TU* tu, TU_GRAPH *graph)
 
   /* Add to list. */
 
-  int result = graph->freeNode;
-  graph->freeNode = graph->nodes[result].next;
+  *pnode = graph->freeNode;
+  graph->freeNode = graph->nodes[*pnode].next;
   graph->numNodes++;
-  graph->nodes[result].firstOut = -1;
-  graph->nodes[result].prev = -1;
-  graph->nodes[result].next = graph->firstNode;
+  graph->nodes[*pnode].firstOut = -1;
+  graph->nodes[*pnode].prev = -1;
+  graph->nodes[*pnode].next = graph->firstNode;
   if (isValid(graph->firstNode))
-    graph->nodes[graph->firstNode].prev = result;
-  graph->firstNode = result;
+    graph->nodes[graph->firstNode].prev = *pnode;
+  graph->firstNode = *pnode;
 
   TUgraphEnsureConsistent(tu, graph);
 
-  return result;
+  return TU_OKAY;
 }
 
 TU_GRAPH_EDGE TUgraphAddEdge(TU* tu, TU_GRAPH* graph, TU_GRAPH_NODE u,

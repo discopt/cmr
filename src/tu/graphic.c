@@ -89,7 +89,7 @@ static TU_ERROR testGraphicness(
         TUgraphNodesValid(componentGraph, v); v = TUgraphNodesNext(componentGraph, v))
       {
         assert(v >= 0 && v < TUgraphMemNodes(componentGraph));
-        componentNodesToNodes[v] = TUgraphAddNode(tu, graph);
+        TU_CALL( TUgraphAddNode(tu, graph, &componentNodesToNodes[v]) );
 #if defined(TU_DEBUG_GRAPHIC)
         printf("component node %d is mapped to node %d.\n", v, componentNodesToNodes[v]);
 #endif /* TU_DEBUG_GRAPHIC */

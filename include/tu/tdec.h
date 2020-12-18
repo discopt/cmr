@@ -64,7 +64,7 @@ int TUtdecNumEdges(
  */
 
 TU_EXPORT
-void TUtdecToGraph(
+TU_ERROR TUtdecToGraph(
   TU* tu,                 /**< TU environment. */
   TU_TDEC* tdec,          /**< t-decomposition. */
   TU_GRAPH* graph,        /**< Graph. */

@@ -612,7 +612,7 @@ int TUtdecNumEdges(TU_TDEC* tdec)
   return tdec->numEdges;
 }
 
-void TUtdecToGraph(TU* tu, TU_TDEC* tdec, TU_GRAPH* graph, bool merge, TU_GRAPH_EDGE* basis,
+TU_ERROR TUtdecToGraph(TU* tu, TU_TDEC* tdec, TU_GRAPH* graph, bool merge, TU_GRAPH_EDGE* basis,
   TU_GRAPH_EDGE* cobasis, int* edgeElements)
 {
   assert(tu);
@@ -623,22 +623,24 @@ void TUtdecToGraph(TU* tu, TU_TDEC* tdec, TU_GRAPH* graph, bool merge, TU_GRAPH_
   printf("TUtdecToGraph for t-decomposition.\n");
 #endif /* TU_DEBUG_TDEC */
 
-  TUgraphClear(tu, graph);
+  TU_CALL( TUgraphClear(tu, graph) );
 
   TU_GRAPH_EDGE* localEdgeElements = NULL;
   if (edgeElements)
     localEdgeElements = edgeElements;
   else if (basis || cobasis)
-    TUallocStackArray(tu, &localEdgeElements, tdec->numEdges);
+    TU_CALL( TUallocStackArray(tu, &localEdgeElements, tdec->numEdges) );
   TU_GRAPH_NODE* tdecNodesToGraphNodes = NULL;
-  TUallocStackArray(tu, &tdecNodesToGraphNodes, tdec->numNodes);
+  TU_CALL( TUallocStackArray(tu, &tdecNodesToGraphNodes, tdec->numNodes) );
   TU_GRAPH_EDGE* tdecEdgesToGraphEdges = NULL;
-  TUallocStackArray(tu, &tdecEdgesToGraphEdges, tdec->numEdges);
+  TU_CALL( TUallocStackArray(tu, &tdecEdgesToGraphEdges, tdec->numEdges) );
 
   for (int v = 0; v < tdec->numNodes; ++v)
   {
     if (tdec->nodes[v].nextNode < 0)
-      tdecNodesToGraphNodes[v] = TUgraphAddNode(tu, graph);
+    {
+      TU_CALL( TUgraphAddNode(tu, graph, &tdecNodesToGraphNodes[v]) );
+    }
     else
       tdecNodesToGraphNodes[v] = -1;
   }
@@ -675,13 +677,13 @@ void TUtdecToGraph(TU* tu, TU_TDEC* tdec, TU_GRAPH* graph, bool merge, TU_GRAPH_
       TU_GRAPH_NODE childU = TUgraphEdgeU(graph, child);
       TU_GRAPH_NODE childV = TUgraphEdgeV(graph, child);
 
-      TUgraphMergeNodes(tu, graph, parentU, childU);      
-      TUgraphDeleteNode(tu, graph, childU);
-      TUgraphMergeNodes(tu, graph, parentV, childV);
-      TUgraphDeleteNode(tu, graph, childV);
+      TU_CALL( TUgraphMergeNodes(tu, graph, parentU, childU) );      
+      TU_CALL( TUgraphDeleteNode(tu, graph, childU) );
+      TU_CALL( TUgraphMergeNodes(tu, graph, parentV, childV) );
+      TU_CALL( TUgraphDeleteNode(tu, graph, childV) );
 
-      TUgraphDeleteEdge(tu, graph, parent);
-      TUgraphDeleteEdge(tu, graph, child);
+      TU_CALL( TUgraphDeleteEdge(tu, graph, parent) );
+      TU_CALL( TUgraphDeleteEdge(tu, graph, child) );
     }
   }
 
@@ -701,10 +703,12 @@ void TUtdecToGraph(TU* tu, TU_TDEC* tdec, TU_GRAPH* graph, bool merge, TU_GRAPH_
     }
   }
 
-  TUfreeStackArray(tu, &tdecEdgesToGraphEdges);
-  TUfreeStackArray(tu, &tdecNodesToGraphNodes);
+  TU_CALL( TUfreeStackArray(tu, &tdecEdgesToGraphEdges) );
+  TU_CALL( TUfreeStackArray(tu, &tdecNodesToGraphNodes) );
   if (localEdgeElements != edgeElements)
-    TUfreeStackArray(tu, &localEdgeElements);
+    TU_CALL( TUfreeStackArray(tu, &localEdgeElements) );
+
+  return TU_OKAY;
 }
 
 void TUtdecnewcolumnCreate(TU* tu, TU_TDEC_NEWCOLUMN** pnewcolumn)
@@ -1319,7 +1323,8 @@ TU_ERROR testGraphicnessTDecomposition(TU* tu, TU_CHRMAT* matrix, TU_CHRMAT* tra
     {
       /* Construct a path with numRows edges and with numColumns loops at 0. */
 
-      TU_GRAPH_NODE s = TUgraphAddNode(tu, graph);
+      TU_GRAPH_NODE s;
+      TU_CALL( TUgraphAddNode(tu, graph, &s) );
       for (int c = 0; c < matrix->numColumns; ++c)
       {
         TU_GRAPH_EDGE e = TUgraphAddEdge(tu, graph, s, s);
@@ -1328,7 +1333,8 @@ TU_ERROR testGraphicnessTDecomposition(TU* tu, TU_CHRMAT* matrix, TU_CHRMAT* tra
       }
       for (int r = 0; r < matrix->numRows; ++r)
       {
-        TU_GRAPH_NODE t = TUgraphAddNode(tu, graph);
+        TU_GRAPH_NODE t;
+        TU_CALL( TUgraphAddNode(tu, graph, &t) );
         TU_GRAPH_EDGE e = TUgraphAddEdge(tu, graph, s, t);
         if (basis)
           *basis++ = e;

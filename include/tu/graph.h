@@ -106,9 +106,10 @@ TU_ERROR TUgraphClear(
  * \return Node structure of new node.
  */
 
-TU_GRAPH_NODE TUgraphAddNode(
-  TU* tu,         /**< TU environment. */
-  TU_GRAPH* graph /**< Graph structure. */
+TU_ERROR TUgraphAddNode(
+  TU* tu,               /**< TU environment. */
+  TU_GRAPH* graph,      /**< Graph structure. */
+  TU_GRAPH_NODE* pnode  /**< Pointer for storing the new node. */
 );
 
 /**

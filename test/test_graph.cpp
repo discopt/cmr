@@ -11,10 +11,11 @@ TEST(Graph, Modifications)
   TU_GRAPH* graph = NULL;
   TUgraphCreateEmpty(tu, &graph, 1, 1);
 
-  TU_GRAPH_NODE a = TUgraphAddNode(tu, graph);
-  TU_GRAPH_NODE b = TUgraphAddNode(tu, graph);
-  TU_GRAPH_NODE c = TUgraphAddNode(tu, graph);
-  TU_GRAPH_NODE d = TUgraphAddNode(tu, graph);
+  TU_GRAPH_NODE a,b,c,d;
+  TUgraphAddNode(tu, graph, &a);
+  TUgraphAddNode(tu, graph, &b);
+  TUgraphAddNode(tu, graph, &c);
+  TUgraphAddNode(tu, graph, &d);
 
   TU_GRAPH_EDGE ab = TUgraphAddEdge(tu, graph, a, b);
   TU_GRAPH_EDGE ac = TUgraphAddEdge(tu, graph, a, c);
