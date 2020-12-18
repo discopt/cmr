@@ -14,7 +14,7 @@ extern "C" {
 /**
  * \brief Tests a char matrix for graphicness.
  *
- * Returns \c true if and only if \p matrix is graphic.
+ * Sets \p isGraphic to \c true if and only if the given \p matrix is graphic.
  *
  * If \p pgraph is not \c NULL and if \p matrix is graphic, then *\p pgraph will point to a graph
  * representing \p matrix, and it is set to \c NULL otherwise.
@@ -32,9 +32,10 @@ extern "C" {
  */
 
 TU_EXPORT
-bool TUtestGraphicnessChr(
-  TU* tu,                   /**< TU environment */
-  TU_CHRMAT* matrix,        /**< Char matrix */
+TU_ERROR TUtestGraphicnessChr(
+  TU* tu,                   /**< TU environment. */
+  TU_CHRMAT* matrix,        /**< Char matrix. */
+  bool* isGraphic,          /**< Returns true if and only if \p matrix is graphic. */
   TU_GRAPH** pgraph,        /**< If not \c NULL, the graph is stored. */
   TU_GRAPH_EDGE** pbasis,   /**< If not \c NULL, contains basis edges. */
   TU_GRAPH_EDGE** pcobasis, /**< If not \c NULL, contains cobasis edges. */

@@ -28,35 +28,35 @@ typedef struct _TU_TDEC_NEWCOLUMN TU_TDEC_NEWCOLUMN;
 
 TU_EXPORT
 void TUtdecCreate(
-  TU* tu,         /*< TU environment. */
-  TU_TDEC** ptdec,   /*< Pointer to new t-decomposition. .*/
-  int rootRow,    /*< Row of 1-entry of root member. */
-  int memEdges,   /*< Initial memory for edges of the t-decomposition. */
-  int memNodes,   /*< Initial memory for nodes of the t-decomposition. */
-  int memMembers, /*< Initial memory for members of the t-decomposition. */
-  int numRows,    /*< Number of rows. */
-  int numColumns  /*< Number of columns. */
+  TU* tu,           /**< TU environment. */
+  TU_TDEC** ptdec,  /**< Pointer to new t-decomposition. .*/
+  int rootRow,      /**< Row of 1-entry of root member. */
+  int memEdges,     /**< Initial memory for edges of the t-decomposition. */
+  int memNodes,     /**< Initial memory for nodes of the t-decomposition. */
+  int memMembers,   /**< Initial memory for members of the t-decomposition. */
+  int numRows,      /**< Number of rows. */
+  int numColumns    /**< Number of columns. */
 );
 
 TU_EXPORT
 void TUtdecFree(
-  TU* tu,         /*< TU environment. */
-  TU_TDEC** ptdec /*< Pointer to t-decomposition. .*/
+  TU* tu,         /**< TU environment. */
+  TU_TDEC** ptdec /**< Pointer to t-decomposition. .*/
 );
 
 TU_EXPORT
 int TUtdecBasisSize(
-  TU_TDEC* tdec   /*< t-decomposition. */
+  TU_TDEC* tdec   /**< t-decomposition. */
 );
 
 TU_EXPORT
 int TUtdecCobasisSize(
-  TU_TDEC* tdec   /*< t-decomposition. */
+  TU_TDEC* tdec   /**< t-decomposition. */
 );
 
 TU_EXPORT
 int TUtdecNumEdges(
-  TU_TDEC* tdec   /*< t-decomposition. */
+  TU_TDEC* tdec   /**< t-decomposition. */
 );
 
 /**
@@ -65,55 +65,56 @@ int TUtdecNumEdges(
 
 TU_EXPORT
 void TUtdecToGraph(
-  TU* tu,                 /*< TU environment. */
-  TU_TDEC* tdec,          /*< t-decomposition. */
-  TU_GRAPH* graph,        /*< Graph. */
-  bool merge,             /*< Merge and remove corresponding parent and child markers. */
-  TU_GRAPH_EDGE* basis,   /*< If not NULL, the edges of a spanning tree are stored here. */
-  TU_GRAPH_EDGE* cobasis, /*< If not NULL, the non-basis edges are stored here. */
-  int* edgeElements       /*< If not NULL, the elements for each edge are stored here. */
+  TU* tu,                 /**< TU environment. */
+  TU_TDEC* tdec,          /**< t-decomposition. */
+  TU_GRAPH* graph,        /**< Graph. */
+  bool merge,             /**< Merge and remove corresponding parent and child markers. */
+  TU_GRAPH_EDGE* basis,   /**< If not NULL, the edges of a spanning tree are stored here. */
+  TU_GRAPH_EDGE* cobasis, /**< If not NULL, the non-basis edges are stored here. */
+  int* edgeElements       /**< If not NULL, the elements for each edge are stored here. */
 );
 
 TU_EXPORT
 void TUtdecnewcolumnCreate(
-  TU* tu,                         /*< TU environment. */
-  TU_TDEC_NEWCOLUMN** pnewcolumn  /*< new-column structure. */
+  TU* tu,                         /**< TU environment. */
+  TU_TDEC_NEWCOLUMN** pnewcolumn  /**< new-column structure. */
 );
 
 TU_EXPORT
 void TUtdecnewcolumnFree(
-  TU* tu,                         /*< TU environment. */
-  TU_TDEC_NEWCOLUMN** pnewcolumn  /*< new-column structure. */
+  TU* tu,                         /**< TU environment. */
+  TU_TDEC_NEWCOLUMN** pnewcolumn  /**< new-column structure. */
 );
 
 TU_EXPORT
 void TUtdecAddColumnCheck(
-  TU* tu,                     /*< TU environment. */
-  TU_TDEC* tdec,              /*< t-decomposition. */
-  TU_TDEC_NEWCOLUMN* newcol,  /*< new-column structure. */
-  int* entryRows,             /*< Array of rows with 1-entry in this column. */
-  int numEntries              /*< Number of 1-entries in this column. */
+  TU* tu,                     /**< TU environment. */
+  TU_TDEC* tdec,              /**< t-decomposition. */
+  TU_TDEC_NEWCOLUMN* newcol,  /**< new-column structure. */
+  int* entryRows,             /**< Array of rows with 1-entry in this column. */
+  int numEntries              /**< Number of 1-entries in this column. */
 );
 
 TU_EXPORT
 void TUtdecAddColumnApply(
-  TU* tu,                     /*< TU environment. */
-  TU_TDEC* tdec,              /*< t-decomposition. */
-  TU_TDEC_NEWCOLUMN* newcol,  /*< new-column structure. */
-  int column,                 /*< Index of new column to be added. */
-  int* entryRows,             /*< Array of rows with 1-entry in this column. */
-  int numEntries              /*< Number of 1-entries in this column. */
+  TU* tu,                     /**< \ref TU environment. */
+  TU_TDEC* tdec,              /**< t-decomposition. */
+  TU_TDEC_NEWCOLUMN* newcol,  /**< new-column structure. */
+  int column,                 /**< Index of new column to be added. */
+  int* entryRows,             /**< Array of rows with 1-entry in this column. */
+  int numEntries              /**< Number of 1-entries in this column. */
 );
 
 TU_EXPORT
-bool testGraphicnessTDecomposition(
-  TU* tu,                 /*< TU environment. */
-  TU_CHRMAT* matrix,      /*< 1-connected matrix to be test. */
-  TU_CHRMAT* transpose,   /*< Transpose of \p matrix. */
-  TU_GRAPH* graph,        /*< If not \c NULL and graphic, a graph represented by the matrix. */
-  TU_GRAPH_EDGE* basis,   /*< If not \c NULL and graphic, a map from rows to basis edges. */
-  TU_GRAPH_EDGE* cobasis, /*< If not \c NULL and graphic, a map from columns to cobasis edges. */
-  TU_SUBMAT** psubmatrix  /*< If not \c NULL and not graphic, a minimal violating submatrix. */
+TU_ERROR testGraphicnessTDecomposition(
+  TU* tu,                 /**< \ref TU environment. */
+  TU_CHRMAT* matrix,      /**< 1-connected matrix to be tested. */
+  TU_CHRMAT* transpose,   /**< Transpose of \p matrix. */
+  bool* isGraphic,        /**< Whether \p matrix is graphic. */
+  TU_GRAPH* graph,        /**< If not \c NULL and graphic, a graph represented by the matrix. */
+  TU_GRAPH_EDGE* basis,   /**< If not \c NULL and graphic, a map from rows to basis edges. */
+  TU_GRAPH_EDGE* cobasis, /**< If not \c NULL and graphic, a map from columns to cobasis edges. */
+  TU_SUBMAT** psubmatrix  /**< If not \c NULL and not graphic, a minimal violating submatrix. */
 );
 
 #ifdef __cplusplus

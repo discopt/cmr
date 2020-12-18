@@ -1,3 +1,5 @@
+// #define TU_DEBUG_GRAPHIC /* Uncomment to debug graphic. */
+
 #include <tu/graphic.h>
 
 #include "env_internal.h"
@@ -9,23 +11,36 @@
 #include <assert.h>
 #include <limits.h>
 
-static bool testGraphicness(TU* tu, int numComponents, TU_ONESUM_COMPONENT* components,
-  TU_GRAPH** pgraph, TU_GRAPH_EDGE** pbasis, TU_GRAPH_EDGE** pcobasis,
-  TU_SUBMAT** psubmatrix, int numRows, int numColumns)
+/**
+ * \brief Tests a 1-sum decomposition of a matrix for graphicness.
+ */
+
+static TU_ERROR testGraphicness(
+  TU* tu,                           /**< \ref TU environment. */
+  int numComponents,                /**< Number of 1-connected components. */
+  TU_ONESUM_COMPONENT* components,  /**< Array of 1-connected components. */
+  bool* isGraphic,                  /**< Set to \c true iff all components are graphic. */
+  TU_GRAPH** pgraph,                /**< Either \c NULL or a pointer for storing a graph represented by the matrix. */
+  TU_GRAPH_EDGE** pbasis,           /**< Either \c NULL or a pointer for storing an array of (basis) edges corresponding to the rows. */
+  TU_GRAPH_EDGE** pcobasis,         /**< Either \c NULL or a pointer for storing an array of (cobasis) edges corresponding to the columns . */
+  TU_SUBMAT** psubmatrix,           /**< Either \c NULL or a pointer for storing a minimally non-graphic submatrix. */
+  int numRows,                      /**< Number of rows of the decomposed matrix. */
+  int numColumns                    /**< Number of columns of the decomposed matrix. */
+)
 {
   TU_GRAPH* graph = NULL;
   TU_GRAPH* componentGraph = NULL;
   if (pgraph)
   {
-    TUgraphCreateEmpty(tu, pgraph, numRows + numComponents, numRows + numColumns);
-    TUgraphCreateEmpty(tu, &componentGraph, numRows + numComponents, numRows + numColumns);
+    TU_CALL( TUgraphCreateEmpty(tu, pgraph, numRows + numComponents, numRows + numColumns) );
+    TU_CALL( TUgraphCreateEmpty(tu, &componentGraph, numRows + numComponents, numRows + numColumns) );
     graph = *pgraph;
   }
   TU_GRAPH_EDGE* componentBasis = NULL;
   if (pbasis)
   {
-    TUallocBlockArray(tu, pbasis, numRows);
-    TUallocStackArray(tu, &componentBasis, numRows);
+    TU_CALL( TUallocBlockArray(tu, pbasis, numRows) );
+    TU_CALL( TUallocStackArray(tu, &componentBasis, numRows) );
 
 #ifndef NDEBUG /* We initialize with something far off to find bugs. */
     for (int r = 0; r < numRows; ++r)
@@ -35,8 +50,8 @@ static bool testGraphicness(TU* tu, int numComponents, TU_ONESUM_COMPONENT* comp
   TU_GRAPH_EDGE* componentCobasis = NULL;
   if (pcobasis)
   {
-    TUallocBlockArray(tu, pcobasis, numColumns);
-    TUallocStackArray(tu, &componentCobasis, numColumns);
+    TU_CALL( TUallocBlockArray(tu, pcobasis, numColumns) );
+    TU_CALL( TUallocStackArray(tu, &componentCobasis, numColumns) );
 
 #ifndef NDEBUG /* We initialize with something far off to find bugs. */
     for (int c = 0; c < numColumns; ++c)
@@ -44,36 +59,40 @@ static bool testGraphicness(TU* tu, int numComponents, TU_ONESUM_COMPONENT* comp
 #endif /* !NDEBUG */
   }
 
-  bool isGraphic = true;
+  *isGraphic = true;
   for (int comp = 0; comp < numComponents; ++comp)
   {
-    isGraphic = testGraphicnessTDecomposition(tu, (TU_CHRMAT*)components[comp].matrix,
-      (TU_CHRMAT*)components[comp].transpose, componentGraph, componentBasis, componentCobasis,
-      psubmatrix);
+    TU_CALL( testGraphicnessTDecomposition(tu, (TU_CHRMAT*)components[comp].matrix,
+      (TU_CHRMAT*)components[comp].transpose, isGraphic, componentGraph, componentBasis,
+      componentCobasis, psubmatrix) );
 
-    if (!isGraphic)
-    {
+    if (!*isGraphic)
       break;
-    }
 
     if (componentGraph)
     {
+#if defined(TU_DEBUG_GRAPHIC)
       printf("testGraphicnessTDecomposition returned the following graph:\n");
       TUgraphPrint(stdout, componentGraph);
+#endif /* TU_DEBUG_GRAPHIC */
 
       assert(graph);
       TU_GRAPH_NODE* componentNodesToNodes = NULL;
-      TUallocStackArray(tu, &componentNodesToNodes, TUgraphMemNodes(componentGraph));
+      TU_CALL( TUallocStackArray(tu, &componentNodesToNodes, TUgraphMemNodes(componentGraph)) );
       TU_GRAPH_EDGE* componentEdgesToEdges = NULL;
-      TUallocStackArray(tu, &componentEdgesToEdges, TUgraphMemEdges(componentGraph));
+      TU_CALL( TUallocStackArray(tu, &componentEdgesToEdges, TUgraphMemEdges(componentGraph)) );
 
+#if defined(TU_DEBUG_GRAPHIC)
       printf("Copying %d nodes.\n", TUgraphNumNodes(componentGraph));
+#endif /* TU_DEBUG_GRAPHIC */
       for (TU_GRAPH_NODE v = TUgraphNodesFirst(componentGraph);
         TUgraphNodesValid(componentGraph, v); v = TUgraphNodesNext(componentGraph, v))
       {
         assert(v >= 0 && v < TUgraphMemNodes(componentGraph));
         componentNodesToNodes[v] = TUgraphAddNode(tu, graph);
+#if defined(TU_DEBUG_GRAPHIC)
         printf("component node %d is mapped to node %d.\n", v, componentNodesToNodes[v]);
+#endif /* TU_DEBUG_GRAPHIC */
       }
 
       for (TU_GRAPH_ITER i = TUgraphEdgesFirst(componentGraph);
@@ -81,8 +100,6 @@ static bool testGraphicness(TU* tu, int numComponents, TU_ONESUM_COMPONENT* comp
       {
         TU_GRAPH_EDGE e = TUgraphEdgesEdge(componentGraph, i);
         assert(e >= 0 && e < TUgraphMemEdges(componentGraph));
-        printf("Edge %d is {%d,%d} and mapped to {%d,%d}\n", e, TUgraphEdgeU(componentGraph, e),
-          TUgraphEdgeV(componentGraph, e), componentNodesToNodes[TUgraphEdgeU(componentGraph, e)], componentNodesToNodes[TUgraphEdgeV(componentGraph, e)] );
         componentEdgesToEdges[e] = TUgraphAddEdge(tu, graph, componentNodesToNodes[
           TUgraphEdgeU(componentGraph, e)], componentNodesToNodes[TUgraphEdgeV(componentGraph, e)]);
       }
@@ -106,38 +123,38 @@ static bool testGraphicness(TU* tu, int numComponents, TU_ONESUM_COMPONENT* comp
         }
       }
 
-      TUfreeStackArray(tu, &componentEdgesToEdges);
-      TUfreeStackArray(tu, &componentNodesToNodes);
+      TU_CALL( TUfreeStackArray(tu, &componentEdgesToEdges) );
+      TU_CALL( TUfreeStackArray(tu, &componentNodesToNodes) );
 
-      TUgraphClear(tu, componentGraph);
+      TU_CALL( TUgraphClear(tu, componentGraph) );
     }
   }
 
   if (pcobasis)
-    TUfreeStackArray(tu, &componentCobasis);
+    TU_CALL( TUfreeStackArray(tu, &componentCobasis) );
   if (pbasis)
-    TUfreeStackArray(tu, &componentBasis);
+    TU_CALL( TUfreeStackArray(tu, &componentBasis) );
   if (componentGraph)
-    TUgraphFree(tu, &componentGraph);
+    TU_CALL( TUgraphFree(tu, &componentGraph) );
   if (!isGraphic && graph)
   {
-    TUgraphFree(tu, &graph);
+    TU_CALL( TUgraphFree(tu, &graph) );
     *pgraph = NULL;
   }
 
   for (int comp = 0; comp < numComponents; ++comp)
   {
-    TUchrmatFree(tu, (TU_CHRMAT**) &components[comp].matrix);
-    TUchrmatFree(tu, (TU_CHRMAT**) &components[comp].transpose);
-    TUfreeBlockArray(tu, &components[comp].rowsToOriginal);
-    TUfreeBlockArray(tu, &components[comp].columnsToOriginal);
+    TU_CALL( TUchrmatFree(tu, (TU_CHRMAT**) &components[comp].matrix) );
+    TU_CALL( TUchrmatFree(tu, (TU_CHRMAT**) &components[comp].transpose) );
+    TU_CALL( TUfreeBlockArray(tu, &components[comp].rowsToOriginal) );
+    TU_CALL( TUfreeBlockArray(tu, &components[comp].columnsToOriginal) );
   }
-  TUfreeBlockArray(tu, &components);
+  TU_CALL( TUfreeBlockArray(tu, &components) );
 
-  return isGraphic;
+  return TU_OKAY;
 }
 
-bool TUtestGraphicnessChr(TU* tu, TU_CHRMAT* matrix, TU_GRAPH** pgraph,
+TU_ERROR TUtestGraphicnessChr(TU* tu, TU_CHRMAT* matrix, bool* isGraphic, TU_GRAPH** pgraph,
   TU_GRAPH_EDGE** pbasis, TU_GRAPH_EDGE** pcobasis, TU_SUBMAT** psubmatrix)
 {
   int numComponents;
@@ -157,8 +174,10 @@ bool TUtestGraphicnessChr(TU* tu, TU_CHRMAT* matrix, TU_GRAPH** pgraph,
 
   /* Process all components. */
 
-  return testGraphicness(tu, numComponents, components, pgraph, pbasis, pcobasis, psubmatrix,
-    matrix->numRows, matrix->numColumns);
+  TU_CALL( testGraphicness(tu, numComponents, components, isGraphic, pgraph, pbasis, pcobasis,
+    psubmatrix, matrix->numRows, matrix->numColumns) );
+
+  return TU_OKAY;
 }
 
 typedef enum
@@ -191,12 +210,13 @@ int compareInt(const void* A, const void* B)
   return *a - *b;
 }
 
-TU_ERROR TUconvertGraphToBinaryMatrix(TU* tu, TU_GRAPH* graph, TU_CHRMAT** matrix,
+TU_ERROR TUconvertGraphToBinaryMatrix(TU* tu, TU_GRAPH* graph, TU_CHRMAT** pmatrix,
   int numBasisEdges, TU_GRAPH_EDGE* basisEdges, int numCobasisEdges, TU_GRAPH_EDGE* cobasisEdges)
 {
   assert(tu);
   assert(graph);
-  assert(matrix);
+  assert(pmatrix);
+  assert(!*pmatrix);
   assert(numBasisEdges == 0 || basisEdges);
   assert(numCobasisEdges == 0 || cobasisEdges);
 
@@ -279,13 +299,13 @@ TU_ERROR TUconvertGraphToBinaryMatrix(TU* tu, TU_GRAPH* graph, TU_CHRMAT** matri
     TU_GRAPH_NODE v = TUgraphEdgeV(graph, basisEdges[i]);
     if (nodeData[u].predecessor == v)
     {
-      nodesRows[numRows] = u;
+      nodesRows[u] = numRows;
       ++numRows;
       nodeData[u].stage = BASIC;
     }
     else if (nodeData[v].predecessor == u)
     {
-      nodesRows[numRows] = v;
+      nodesRows[v] = numRows;
       ++numRows;
       nodeData[v].stage = BASIC;
     }
@@ -340,12 +360,12 @@ TU_ERROR TUconvertGraphToBinaryMatrix(TU* tu, TU_GRAPH* graph, TU_CHRMAT** matri
       e = TUgraphEdgesEdge(graph, iter);
       iter = TUgraphEdgesNext(graph, iter);
     }
+
     if (edgeColumns[e] >= -1)
       continue;
 
     TU_GRAPH_NODE u = TUgraphEdgeU(graph, e);
     TU_GRAPH_NODE v = TUgraphEdgeV(graph, e);
-    printf("Edge %d {%d,%d} corresponds to column %d.\n", e, u, v, numColumns);
 
     transposed->rowStarts[numColumns] = numNonzeros;
     edgeColumns[e] = numColumns;
@@ -413,7 +433,7 @@ TU_ERROR TUconvertGraphToBinaryMatrix(TU* tu, TU_GRAPH* graph, TU_CHRMAT** matri
   }
   transposed->numNonzeros = numNonzeros;
 
-  TU_CALL( TUchrmatTranspose(tu, transposed, matrix) );
+  TU_CALL( TUchrmatTranspose(tu, transposed, pmatrix) );
   TU_CALL( TUchrmatFree(tu, &transposed) );
 
   /* We now process the nonbasic edges. */

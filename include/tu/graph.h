@@ -77,14 +77,14 @@ TU_GRAPH_NODE TUgraphEdgeV(TU_GRAPH* graph, TU_GRAPH_EDGE e)
   return graph->arcs[2*e].target;
 }
 
-void TUgraphCreateEmpty(
+TU_ERROR TUgraphCreateEmpty(
   TU* tu,                 /**< TU environment. */
   TU_GRAPH** pgraph,  /**< Pointer to graph structure. */
   int memNodes,           /**< Allocate memory for this number of nodes. */
   int memEdges            /**< Allocate memory for this number of edges. */
 );
 
-void TUgraphFree(
+TU_ERROR TUgraphFree(
   TU* tu,               /**< TU environment. */
   TU_GRAPH** pgraph /**< Pointer to graph structure. */
 );
@@ -93,7 +93,7 @@ void TUgraphFree(
  * \brief Removes all nodes and columns, keeping the memory.
  */
 
-void TUgraphClear(
+TU_ERROR TUgraphClear(
   TU* tu,             /**< TU environment. */
   TU_GRAPH* graph /**< Graph structure. */
 );
@@ -107,7 +107,7 @@ void TUgraphClear(
  */
 
 TU_GRAPH_NODE TUgraphAddNode(
-  TU* tu,             /**< TU environment. */
+  TU* tu,         /**< TU environment. */
   TU_GRAPH* graph /**< Graph structure. */
 );
 
@@ -126,13 +126,13 @@ TU_GRAPH_EDGE TUgraphAddEdge(
   TU_GRAPH_NODE v  /**< Other node of the edge. */
 );
 
-void TUgraphDeleteNode(
+TU_ERROR TUgraphDeleteNode(
   TU* tu,               /**< TU environment. */
   TU_GRAPH* graph,  /**< Graph structure. */
   TU_GRAPH_NODE v   /**< Node to be deleted. */
 );
 
-void TUgraphDeleteEdge(
+TU_ERROR TUgraphDeleteEdge(
   TU* tu,               /**< TU environment. */
   TU_GRAPH* graph,  /**< Graph structure. */
   TU_GRAPH_EDGE e   /**< Edge to be deleted. */
@@ -305,7 +305,7 @@ TU_GRAPH_EDGE TUgraphEdgesEdge(
   return i/2;
 }
 
-void TUgraphPrint(
+TU_ERROR TUgraphPrint(
   FILE* stream,   /*< Stream. */
   TU_GRAPH* graph /*< Graph structure. */
 );
@@ -314,7 +314,7 @@ void TUgraphPrint(
  * \brief Merges two nodes \p u and \p v.
  */
 
-void TUgraphMergeNodes(
+TU_ERROR TUgraphMergeNodes(
   TU* tu,           /*< TU environment. */
   TU_GRAPH* graph,  /*< Graph. */
   TU_GRAPH_NODE u,  /*< First node. */

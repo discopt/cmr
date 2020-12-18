@@ -92,22 +92,22 @@ void TUgraphEnsureConsistent(TU* tu, TU_GRAPH* graph)
 #endif /* DEBUG_GRAPH */
 }
 
-void TUgraphCreateEmpty(TU* tu, TU_GRAPH** pgraph, int memNodes, int memEdges)
+TU_ERROR TUgraphCreateEmpty(TU* tu, TU_GRAPH** pgraph, int memNodes, int memEdges)
 {
   assert(tu);
   assert(pgraph);
   assert(*pgraph == NULL);
 
-  TUallocBlock(tu, pgraph);
+  TU_CALL( TUallocBlock(tu, pgraph) );
   TU_GRAPH* graph = *pgraph;
   graph->numNodes = 0;
   graph->memNodes = memNodes;
   graph->nodes = NULL;
-  TUallocBlockArray(tu, &graph->nodes, memNodes);
+  TU_CALL( TUallocBlockArray(tu, &graph->nodes, memNodes) );
   graph->numEdges = 0;
   graph->memEdges = memEdges;
   graph->arcs = NULL;
-  TUallocBlockArray(tu, &graph->arcs, 2 * memEdges);
+  TU_CALL( TUallocBlockArray(tu, &graph->arcs, 2 * memEdges) );
   graph->firstNode = -1;
   graph->freeNode = (memNodes > 0) ? 0 : -1;
   for (int v = 0; v < graph->memNodes - 1; ++v)
@@ -119,9 +119,11 @@ void TUgraphCreateEmpty(TU* tu, TU_GRAPH** pgraph, int memNodes, int memEdges)
   graph->arcs[2*graph->memEdges-2].next = -1;
 
   TUgraphEnsureConsistent(tu, graph);
+
+  return TU_OKAY;
 }
 
-void TUgraphFree(TU* tu, TU_GRAPH** pgraph)
+TU_ERROR TUgraphFree(TU* tu, TU_GRAPH** pgraph)
 {
   assert(pgraph);
 
@@ -134,14 +136,16 @@ void TUgraphFree(TU* tu, TU_GRAPH** pgraph)
 
   TU_GRAPH* graph = *pgraph;
 
-  TUfreeBlockArray(tu, &graph->nodes);
-  TUfreeBlockArray(tu, &graph->arcs);
+  TU_CALL( TUfreeBlockArray(tu, &graph->nodes) );
+  TU_CALL( TUfreeBlockArray(tu, &graph->arcs) );
 
-  TUfreeBlock(tu, pgraph);
+  TU_CALL( TUfreeBlock(tu, pgraph) );
   *pgraph = NULL;
+
+  return TU_OKAY;
 }
 
-void TUgraphClear(TU* tu, TU_GRAPH* graph)
+TU_ERROR TUgraphClear(TU* tu, TU_GRAPH* graph)
 {
   assert(tu);
   assert(graph);
@@ -159,6 +163,8 @@ void TUgraphClear(TU* tu, TU_GRAPH* graph)
   graph->arcs[2*graph->memEdges-2].next = -1;
 
   TUgraphEnsureConsistent(tu, graph);
+
+  return TU_OKAY;
 }
 
 TU_GRAPH_NODE TUgraphAddNode(TU* tu, TU_GRAPH *graph)
@@ -173,7 +179,7 @@ TU_GRAPH_NODE TUgraphAddNode(TU* tu, TU_GRAPH *graph)
   if (!isValid(graph->freeNode))
   {
     int mem = (graph->memNodes < 256 ? 0 : 256) + 2 * graph->memNodes;
-    TUreallocBlockArray(tu, &graph->nodes, mem);
+    TU_CALL( TUreallocBlockArray(tu, &graph->nodes, mem) );
     assert(graph->nodes);
     for (int v = graph->memNodes; v < mem-1; ++v)
       graph->nodes[v].next = v+1;
@@ -217,7 +223,7 @@ TU_GRAPH_EDGE TUgraphAddEdge(TU* tu, TU_GRAPH* graph, TU_GRAPH_NODE u,
   if (!isValid(graph->freeEdge))
   {
     int newMemEdges = (graph->memEdges < 1024 ? 0 : 1024) + 2 * graph->memEdges;
-    TUreallocBlockArray(tu, &graph->arcs, 2*newMemEdges);
+    TU_CALL( TUreallocBlockArray(tu, &graph->arcs, 2*newMemEdges) );
     assert(graph->arcs);
     for (int e = graph->memEdges; e < newMemEdges-1; ++e)
       graph->arcs[2*e].next = (e+1);
@@ -259,7 +265,7 @@ TU_GRAPH_EDGE TUgraphAddEdge(TU* tu, TU_GRAPH* graph, TU_GRAPH_NODE u,
   return result;
 }
 
-void TUgraphDeleteNode(TU* tu, TU_GRAPH* graph, TU_GRAPH_NODE v)
+TU_ERROR TUgraphDeleteNode(TU* tu, TU_GRAPH* graph, TU_GRAPH_NODE v)
 {
 #ifdef DEBUG_GRAPH
   printf("TUgraphDeleteNode(|V|=%d, |E|=%d, v=%d)\n", TUgraphNumNodes(graph),
@@ -289,9 +295,11 @@ void TUgraphDeleteNode(TU* tu, TU_GRAPH* graph, TU_GRAPH_NODE v)
   graph->numNodes--;
 
   TUgraphEnsureConsistent(tu, graph);
+
+  return TU_OKAY;
 }
 
-void TUgraphDeleteEdge(TU* tu, TU_GRAPH* graph, TU_GRAPH_EDGE e)
+TU_ERROR TUgraphDeleteEdge(TU* tu, TU_GRAPH* graph, TU_GRAPH_EDGE e)
 {
 #ifdef DEBUG_GRAPH
   printf("TUgraphDeleteEdge(|V|=%d, |E|=%d, %d", TUgraphNumNodes(graph),
@@ -338,10 +346,12 @@ void TUgraphDeleteEdge(TU* tu, TU_GRAPH* graph, TU_GRAPH_EDGE e)
     graph->arcs[next].prev = prev;
 
   TUgraphEnsureConsistent(tu, graph);
+
+  return TU_OKAY;
 }
 
 
-void TUgraphPrint(FILE* stream, TU_GRAPH* graph)
+TU_ERROR TUgraphPrint(FILE* stream, TU_GRAPH* graph)
 {
   printf("Graph with %d nodes and %d edges.\n", TUgraphNumNodes(graph),
     TUgraphNumEdges(graph));
@@ -356,9 +366,11 @@ void TUgraphPrint(FILE* stream, TU_GRAPH* graph)
         TUgraphIncSource(graph, i), TUgraphIncTarget(graph, i), i);
     }
   }
+
+  return TU_OKAY;
 }
 
-void TUgraphMergeNodes(TU* tu, TU_GRAPH* graph, TU_GRAPH_NODE u, TU_GRAPH_NODE v)
+TU_ERROR TUgraphMergeNodes(TU* tu, TU_GRAPH* graph, TU_GRAPH_NODE u, TU_GRAPH_NODE v)
 {
   assert(graph);
   assert(u >= 0);
@@ -380,4 +392,6 @@ void TUgraphMergeNodes(TU* tu, TU_GRAPH* graph, TU_GRAPH_NODE u, TU_GRAPH_NODE v
   }
 
   TUgraphEnsureConsistent(tu, graph);
+
+  return TU_OKAY;
 }

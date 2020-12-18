@@ -108,8 +108,9 @@ int main(int argc, const char** argv)
   TU_GRAPH_EDGE* basis = NULL;
   TU_GRAPH_EDGE* cobasis = NULL;
   TU_SUBMAT* submatrix = NULL;
+  bool isGraphic;
 
-  TUtestGraphicnessChr(tu, matrix, &graph, &basis, &cobasis, &submatrix);
+  TUtestGraphicnessChr(tu, matrix, &isGraphic, &graph, &basis, &cobasis, &submatrix);
 
   if (graph)
   {

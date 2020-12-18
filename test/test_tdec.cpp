@@ -19,7 +19,8 @@ TEST(TDec, SingleColumn)
   );
 
   TU_GRAPH* graph = NULL;
-  bool isGraphic = TUtestGraphicnessChr(tu, matrix, &graph, NULL, NULL, NULL);
+  bool isGraphic;
+  TUtestGraphicnessChr(tu, matrix, &isGraphic, &graph, NULL, NULL, NULL);
   ASSERT_TRUE(isGraphic);
   ASSERT_TRUE(graph);
   

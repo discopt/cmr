@@ -3,39 +3,66 @@
 #include "common.h"
 #include <tu/graphic.h>
 
-TEST(Graphic, ToBinaryMatrix)
+void testGraphicMatrix(
+  TU* tu,             /**< \ref TU environment. */
+  TU_CHRMAT* matrix   /**< Matrix to be used for testing. */
+)
+{
+  TU_GRAPH* graph = NULL;
+  TU_GRAPH_EDGE* basis = NULL;
+  TU_GRAPH_EDGE* cobasis = NULL;
+  bool isGraphic;
+  ASSERT_FALSE( TUtestGraphicnessChr(tu, matrix, &isGraphic, &graph, &basis, &cobasis, NULL) );
+
+  ASSERT_TRUE( isGraphic );
+  ASSERT_TRUE( basis );
+  ASSERT_TRUE( cobasis );
+
+  TU_CHRMAT* result = NULL;
+  TU_CALL( TUconvertGraphToBinaryMatrix(tu, graph, &result, matrix->numRows, basis,
+    matrix->numColumns, cobasis) );
+
+  ASSERT_TRUE( result );
+
+  if (TUchrmatCheckEqual(matrix, result))
+  {
+    printf("The representation matrix of represented graph is equal to input matrix.\n");
+  }
+  else
+  {
+    printf("Input matrix:\n");
+    ASSERT_FALSE( TUchrmatPrintDense(stdout, matrix, ' ', true) );
+
+    printf("Graph:\n");
+    ASSERT_FALSE( TUgraphPrint(stdout, graph) );
+
+    printf("Representation matrix:\n");
+    ASSERT_FALSE( TUchrmatPrintDense(stdout, result, ' ', true) );
+  }
+  
+
+  ASSERT_FALSE( TUgraphFree(tu, &graph) );
+  ASSERT_FALSE( TUfreeBlockArray(tu, &basis) );
+  ASSERT_FALSE( TUfreeBlockArray(tu, &cobasis) );
+  ASSERT_FALSE( TUchrmatFree(tu, &result) );
+}
+
+TEST(Graphic, Polygon)
 {
   TU* tu = NULL;
-  TUcreateEnvironment(&tu);
+  ASSERT_FALSE( TUcreateEnvironment(&tu) );
   
-  TU_GRAPH* graph = NULL;
-  TUgraphCreateEmpty(tu, &graph, 1, 1);
+  TU_CHRMAT* A = NULL;
+  ASSERT_FALSE( stringToCharMatrix(tu, &A, "4 1 "
+    "1 "
+    "1 "
+    "0 "
+    "1 "
+  ) );
 
-  TU_GRAPH_NODE v1 = TUgraphAddNode(tu, graph);
-  TU_GRAPH_NODE v2 = TUgraphAddNode(tu, graph);
-  TU_GRAPH_NODE v3 = TUgraphAddNode(tu, graph);
-  TU_GRAPH_NODE v4 = TUgraphAddNode(tu, graph);
-  TU_GRAPH_NODE v5 = TUgraphAddNode(tu, graph);
+  testGraphicMatrix(tu, A);
 
-  TU_GRAPH_EDGE e1 = TUgraphAddEdge(tu, graph, v1, v1);
-  TU_GRAPH_EDGE e2 = TUgraphAddEdge(tu, graph, v1, v2);
-  TU_GRAPH_EDGE e3 = TUgraphAddEdge(tu, graph, v2, v3);
-  TU_GRAPH_EDGE e4 = TUgraphAddEdge(tu, graph, v3, v4);
-  TU_GRAPH_EDGE e5 = TUgraphAddEdge(tu, graph, v4, v5);
-  TU_GRAPH_EDGE e6 = TUgraphAddEdge(tu, graph, v1, v4);
-  TU_GRAPH_EDGE e7 = TUgraphAddEdge(tu, graph, v1, v5);
-  TU_GRAPH_EDGE e8 = TUgraphAddEdge(tu, graph, v2, v4);
-  
-  TU_GRAPH_EDGE basis[4] = { e2, e3, e4, e5 };
-  TU_GRAPH_EDGE cobasis[4] = { e1, e7, e6, e8 };
+  ASSERT_FALSE( TUchrmatFree(tu, &A) );
 
-  TU_CHRMAT* matrix = NULL;
-  TUconvertGraphToBinaryMatrix(tu, graph, &matrix, 4, basis, 4, cobasis);
-
-  TUchrmatPrintDense(stdout, matrix, ' ', true);
-  TUchrmatFree(tu, &matrix);
-
-  TUgraphFree(tu, &graph);
-  
-  TUfreeEnvironment(&tu);
+  ASSERT_FALSE( TUfreeEnvironment(&tu) );
 }

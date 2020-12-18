@@ -7,11 +7,11 @@
 extern "C" {
 #endif
 
-void stringToDoubleMatrix(TU* tu, TU_DBLMAT** matrix, const char* string);
+TU_ERROR stringToDoubleMatrix(TU* tu, TU_DBLMAT** matrix, const char* string);
 
-void stringToIntMatrix(TU* tu, TU_INTMAT** matrix, const char* string);
+TU_ERROR stringToIntMatrix(TU* tu, TU_INTMAT** matrix, const char* string);
 
-void stringToCharMatrix(TU* tu, TU_CHRMAT** matrix, const char* string);
+TU_ERROR stringToCharMatrix(TU* tu, TU_CHRMAT** matrix, const char* string);
 
 #ifdef __cplusplus
 }

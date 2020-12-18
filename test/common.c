@@ -5,7 +5,7 @@
 
 #include <stdio.h>
 
-void stringToDoubleMatrix(TU* tu, TU_DBLMAT** matrix, const char* string)
+TU_ERROR  stringToDoubleMatrix(TU* tu, TU_DBLMAT** matrix, const char* string)
 {
   assert(tu);
   char* end;
@@ -39,9 +39,11 @@ void stringToDoubleMatrix(TU* tu, TU_DBLMAT** matrix, const char* string)
       }
     }
   }
+
+  return TU_OKAY;
 }
 
-void stringToIntMatrix(TU* tu, TU_INTMAT** matrix, const char* string)
+TU_ERROR stringToIntMatrix(TU* tu, TU_INTMAT** matrix, const char* string)
 {
   assert(tu);
   char* end;
@@ -75,10 +77,11 @@ void stringToIntMatrix(TU* tu, TU_INTMAT** matrix, const char* string)
       }
     }
   }
+
+  return TU_OKAY;
 }
 
-
-void stringToCharMatrix(TU* tu, TU_CHRMAT** matrix, const char* string)
+TU_ERROR stringToCharMatrix(TU* tu, TU_CHRMAT** matrix, const char* string)
 {
   assert(tu);
   char* end;
@@ -112,4 +115,6 @@ void stringToCharMatrix(TU* tu, TU_CHRMAT** matrix, const char* string)
       }
     }
   }
+
+  return TU_OKAY;
 }
