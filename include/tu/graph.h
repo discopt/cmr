@@ -109,7 +109,7 @@ TU_ERROR TUgraphClear(
 TU_ERROR TUgraphAddNode(
   TU* tu,               /**< TU environment. */
   TU_GRAPH* graph,      /**< Graph structure. */
-  TU_GRAPH_NODE* pnode  /**< Pointer for storing the new node. */
+  TU_GRAPH_NODE* pnode  /**< Pointer for storing the new node, or \c NULL. */
 );
 
 /**
@@ -120,11 +120,12 @@ TU_ERROR TUgraphAddNode(
  * \return Edge structure of new edge.
  */
 
-TU_GRAPH_EDGE TUgraphAddEdge(
-  TU* tu,              /**< TU environment. */
-  TU_GRAPH* graph, /**< Graph structure. */
-  TU_GRAPH_NODE u, /**< One node of the edge. */
-  TU_GRAPH_NODE v  /**< Other node of the edge. */
+TU_ERROR TUgraphAddEdge(
+  TU* tu,               /**< \ref TU environment. */
+  TU_GRAPH* graph,      /**< Graph structure. */
+  TU_GRAPH_NODE u,      /**< One node of the edge. */
+  TU_GRAPH_NODE v,      /**< Other node of the edge. */
+  TU_GRAPH_EDGE* pedge  /**< Pointer for storinge the new edge, or \c NULL.*/
 );
 
 TU_ERROR TUgraphDeleteNode(

@@ -171,10 +171,9 @@ TU_ERROR TUgraphAddNode(TU* tu, TU_GRAPH *graph, TU_GRAPH_NODE* pnode)
 {
   assert(tu);
   assert(graph);
-  assert(pnode);
 
 #ifdef DEBUG_GRAPH
-  printf("TUgraphAddNode\n");
+  printf("TUgraphAddNode().\n");
 #endif /* DEBUG_GRAPH */
 
   TUgraphEnsureConsistent(tu, graph);
@@ -194,26 +193,29 @@ TU_ERROR TUgraphAddNode(TU* tu, TU_GRAPH *graph, TU_GRAPH_NODE* pnode)
 
   /* Add to list. */
 
-  *pnode = graph->freeNode;
-  graph->freeNode = graph->nodes[*pnode].next;
+  TU_GRAPH_NODE node = graph->freeNode;
+  graph->freeNode = graph->nodes[node].next;
   graph->numNodes++;
-  graph->nodes[*pnode].firstOut = -1;
-  graph->nodes[*pnode].prev = -1;
-  graph->nodes[*pnode].next = graph->firstNode;
+  graph->nodes[node].firstOut = -1;
+  graph->nodes[node].prev = -1;
+  graph->nodes[node].next = graph->firstNode;
   if (isValid(graph->firstNode))
-    graph->nodes[graph->firstNode].prev = *pnode;
-  graph->firstNode = *pnode;
+    graph->nodes[graph->firstNode].prev = node;
+  graph->firstNode = node;
 
   TUgraphEnsureConsistent(tu, graph);
+
+  if (pnode)
+    *pnode = node;
 
   return TU_OKAY;
 }
 
-TU_GRAPH_EDGE TUgraphAddEdge(TU* tu, TU_GRAPH* graph, TU_GRAPH_NODE u,
-  TU_GRAPH_NODE v)
+TU_ERROR TUgraphAddEdge(TU* tu, TU_GRAPH* graph, TU_GRAPH_NODE u, TU_GRAPH_NODE v,
+  TU_GRAPH_EDGE* pedge)
 {
 #ifdef DEBUG_GRAPH
-  printf("TUgraphAddEdge\n");
+  printf("TUgraphAddEdge(%d,%d).\n", u, v);
 #endif /* DEBUG_GRAPH */
 
   TUgraphEnsureConsistent(tu, graph);
@@ -238,10 +240,10 @@ TU_GRAPH_EDGE TUgraphAddEdge(TU* tu, TU_GRAPH* graph, TU_GRAPH_NODE u,
   
   /* Add to list. */
 
-  int result = graph->freeEdge;
-  graph->freeEdge = graph->arcs[2*result].next;
+  TU_GRAPH_EDGE edge = graph->freeEdge;
+  int arc = 2*edge;
+  graph->freeEdge = graph->arcs[arc].next;
   graph->numEdges++;
-  int arc = 2*result;
 
   /* Add arc to list of outgoing arcs from u. */
 
@@ -266,7 +268,10 @@ TU_GRAPH_EDGE TUgraphAddEdge(TU* tu, TU_GRAPH* graph, TU_GRAPH_NODE u,
 
   TUgraphEnsureConsistent(tu, graph);
 
-  return result;
+  if (pedge)
+    *pedge = edge;
+
+  return TU_OKAY;
 }
 
 TU_ERROR TUgraphDeleteNode(TU* tu, TU_GRAPH* graph, TU_GRAPH_NODE v)

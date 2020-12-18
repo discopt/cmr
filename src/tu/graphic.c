@@ -100,8 +100,8 @@ static TU_ERROR testGraphicness(
       {
         TU_GRAPH_EDGE e = TUgraphEdgesEdge(componentGraph, i);
         assert(e >= 0 && e < TUgraphMemEdges(componentGraph));
-        componentEdgesToEdges[e] = TUgraphAddEdge(tu, graph, componentNodesToNodes[
-          TUgraphEdgeU(componentGraph, e)], componentNodesToNodes[TUgraphEdgeV(componentGraph, e)]);
+        TU_CALL( TUgraphAddEdge(tu, graph, componentNodesToNodes[TUgraphEdgeU(componentGraph, e)],
+          componentNodesToNodes[TUgraphEdgeV(componentGraph, e)], &componentEdgesToEdges[e]) );
       }
       if (componentBasis)
       {

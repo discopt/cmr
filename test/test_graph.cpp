@@ -17,12 +17,13 @@ TEST(Graph, Modifications)
   TUgraphAddNode(tu, graph, &c);
   TUgraphAddNode(tu, graph, &d);
 
-  TU_GRAPH_EDGE ab = TUgraphAddEdge(tu, graph, a, b);
-  TU_GRAPH_EDGE ac = TUgraphAddEdge(tu, graph, a, c);
-  TU_GRAPH_EDGE ad = TUgraphAddEdge(tu, graph, a, d);
-  TU_GRAPH_EDGE bc = TUgraphAddEdge(tu, graph, b, c);
-  TU_GRAPH_EDGE bd = TUgraphAddEdge(tu, graph, b, d);
-  TU_GRAPH_EDGE cd = TUgraphAddEdge(tu, graph, c, d);
+  TU_GRAPH_EDGE ab, ac, ad, bc, bd, cd;
+  TUgraphAddEdge(tu, graph, a, b, &ab);
+  TUgraphAddEdge(tu, graph, a, c, &ac);
+  TUgraphAddEdge(tu, graph, a, d, &ad);
+  TUgraphAddEdge(tu, graph, b, c, &bc);
+  TUgraphAddEdge(tu, graph, b, d, &bd);
+  TUgraphAddEdge(tu, graph, c, d, &cd);
 
   ASSERT_EQ(TUgraphNumNodes(graph), 4);
   ASSERT_EQ(TUgraphNumEdges(graph), 6);

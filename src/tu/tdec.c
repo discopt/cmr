@@ -652,8 +652,9 @@ TU_ERROR TUtdecToGraph(TU* tu, TU_TDEC* tdec, TU_GRAPH* graph, bool merge, TU_GR
     {
       TU_TDEC_NODE head = findEdgeHead(tdec, e);
       TU_TDEC_NODE tail = findEdgeTail(tdec, e);
-      TU_TDEC_EDGE edge = TUgraphAddEdge(tu, graph, tdecNodesToGraphNodes[head],
-        tdecNodesToGraphNodes[tail]);
+      TU_TDEC_EDGE edge;
+      TU_CALL( TUgraphAddEdge(tu, graph, tdecNodesToGraphNodes[head], tdecNodesToGraphNodes[tail],
+        &edge) );
       tdecEdgesToGraphEdges[e] = edge;
       assert(edge < tdec->numEdges);
       if (localEdgeElements)
@@ -1327,7 +1328,8 @@ TU_ERROR testGraphicnessTDecomposition(TU* tu, TU_CHRMAT* matrix, TU_CHRMAT* tra
       TU_CALL( TUgraphAddNode(tu, graph, &s) );
       for (int c = 0; c < matrix->numColumns; ++c)
       {
-        TU_GRAPH_EDGE e = TUgraphAddEdge(tu, graph, s, s);
+        TU_GRAPH_EDGE e;
+        TU_CALL( TUgraphAddEdge(tu, graph, s, s, &e) );
         if (cobasis)
           *cobasis++ = e;
       }
@@ -1335,7 +1337,8 @@ TU_ERROR testGraphicnessTDecomposition(TU* tu, TU_CHRMAT* matrix, TU_CHRMAT* tra
       {
         TU_GRAPH_NODE t;
         TU_CALL( TUgraphAddNode(tu, graph, &t) );
-        TU_GRAPH_EDGE e = TUgraphAddEdge(tu, graph, s, t);
+        TU_GRAPH_EDGE e;
+        TU_CALL( TUgraphAddEdge(tu, graph, s, t, &e) );
         if (basis)
           *basis++ = e;
         s = t;
