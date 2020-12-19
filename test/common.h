@@ -13,6 +13,9 @@ TU_ERROR stringToIntMatrix(TU* tu, TU_INTMAT** matrix, const char* string);
 
 TU_ERROR stringToCharMatrix(TU* tu, TU_CHRMAT** matrix, const char* string);
 
+#define ASSERT_TU_CALL(x) \
+  ASSERT_FALSE(x)
+
 #ifdef __cplusplus
 }
 #endif

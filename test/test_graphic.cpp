@@ -50,19 +50,31 @@ void testGraphicMatrix(
 TEST(Graphic, Polygon)
 {
   TU* tu = NULL;
-  ASSERT_FALSE( TUcreateEnvironment(&tu) );
-  
+  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
   TU_CHRMAT* A = NULL;
-  ASSERT_FALSE( stringToCharMatrix(tu, &A, "4 1 "
+  ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "4 1 "
     "1 "
     "1 "
     "0 "
     "1 "
   ) );
-
   testGraphicMatrix(tu, A);
+  ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
+  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+}
 
-  ASSERT_FALSE( TUchrmatFree(tu, &A) );
-
-  ASSERT_FALSE( TUfreeEnvironment(&tu) );
+TEST(Graphic, PolygonPlusEdge)
+{
+  TU* tu = NULL;
+  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
+  TU_CHRMAT* A = NULL;
+  ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "4 2 "
+    "1 0 "
+    "1 1 "
+    "1 0 "
+    "1 1 "
+  ) );
+  testGraphicMatrix(tu, A);
+  ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
+  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }

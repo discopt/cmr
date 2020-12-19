@@ -87,7 +87,7 @@ void TUtdecnewcolumnFree(
 );
 
 TU_EXPORT
-void TUtdecAddColumnCheck(
+TU_ERROR TUtdecAddColumnCheck(
   TU* tu,                     /**< TU environment. */
   TU_TDEC* tdec,              /**< t-decomposition. */
   TU_TDEC_NEWCOLUMN* newcol,  /**< new-column structure. */

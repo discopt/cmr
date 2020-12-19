@@ -26,20 +26,22 @@ typedef enum
  */
 
 #define TU_CALL(call) \
-  while (true) \
   { \
-    TU_ERROR _tu_error = call; \
-    if (_tu_error) \
+    while (true) \
     { \
-      if (_tu_error == TU_ERROR_INPUT) \
-        printf("User input error"); \
-      else if (_tu_error == TU_ERROR_MEMORY) \
-        printf("Memory (re)allocation failed"); \
-      else \
-        printf("Unknown error"); \
-      printf(" in %s:%d.\n", __FILE__, __LINE__); \
+      TU_ERROR _tu_error = call; \
+      if (_tu_error) \
+      { \
+        if (_tu_error == TU_ERROR_INPUT) \
+          printf("User input error"); \
+        else if (_tu_error == TU_ERROR_MEMORY) \
+          printf("Memory (re)allocation failed"); \
+        else \
+          printf("Unknown error"); \
+        printf(" in %s:%d.\n", __FILE__, __LINE__); \
+      } \
+      break; \
     } \
-    break; \
   }
 
 struct TU_ENVIRONMENT;
