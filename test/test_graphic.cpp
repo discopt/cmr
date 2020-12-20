@@ -47,6 +47,19 @@ void testGraphicMatrix(
   ASSERT_FALSE( TUchrmatFree(tu, &result) );
 }
 
+TEST(Graphic, Bond)
+{
+  TU* tu = NULL;
+  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
+  TU_CHRMAT* A = NULL;
+  ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "1 1 "
+    "1 "
+  ) );
+  testGraphicMatrix(tu, A);
+  ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
+  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+}
+
 TEST(Graphic, Polygon)
 {
   TU* tu = NULL;

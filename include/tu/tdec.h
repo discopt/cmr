@@ -27,7 +27,7 @@ typedef struct _TU_TDEC TU_TDEC;
 typedef struct _TU_TDEC_NEWCOLUMN TU_TDEC_NEWCOLUMN;
 
 TU_EXPORT
-void TUtdecCreate(
+TU_ERROR TUtdecCreate(
   TU* tu,           /**< TU environment. */
   TU_TDEC** ptdec,  /**< Pointer to new t-decomposition. .*/
   int rootRow,      /**< Row of 1-entry of root member. */
@@ -39,7 +39,7 @@ void TUtdecCreate(
 );
 
 TU_EXPORT
-void TUtdecFree(
+TU_ERROR TUtdecFree(
   TU* tu,         /**< TU environment. */
   TU_TDEC** ptdec /**< Pointer to t-decomposition. .*/
 );
@@ -75,13 +75,13 @@ TU_ERROR TUtdecToGraph(
 );
 
 TU_EXPORT
-void TUtdecnewcolumnCreate(
+TU_ERROR TUtdecnewcolumnCreate(
   TU* tu,                         /**< TU environment. */
   TU_TDEC_NEWCOLUMN** pnewcolumn  /**< new-column structure. */
 );
 
 TU_EXPORT
-void TUtdecnewcolumnFree(
+TU_ERROR TUtdecnewcolumnFree(
   TU* tu,                         /**< TU environment. */
   TU_TDEC_NEWCOLUMN** pnewcolumn  /**< new-column structure. */
 );
@@ -96,7 +96,7 @@ TU_ERROR TUtdecAddColumnCheck(
 );
 
 TU_EXPORT
-void TUtdecAddColumnApply(
+TU_ERROR TUtdecAddColumnApply(
   TU* tu,                     /**< \ref TU environment. */
   TU_TDEC* tdec,              /**< t-decomposition. */
   TU_TDEC_NEWCOLUMN* newcol,  /**< new-column structure. */

@@ -433,10 +433,12 @@ static TU_TDEC_EDGE createMarkerEdge(
   return edge;
 }
 
-static TU_TDEC_MEMBER createMember(
-  TU* tu,                   /*< TU environment . */
-  TU_TDEC* tdec,            /*< t-decomposition. */
-  TU_TDEC_MEMBER_TYPE type  /*< Type of member. */
+static
+TU_ERROR createMember(
+  TU* tu,                   /**< \ref TU environment . */
+  TU_TDEC* tdec,            /**< t-decomposition. */
+  TU_TDEC_MEMBER_TYPE type, /**< Type of member. */
+  TU_TDEC_MEMBER* pmember   /**< Created member. */
 )
 {
   assert(tu);
@@ -453,7 +455,7 @@ static TU_TDEC_MEMBER createMember(
   else /* No member in free list, so we enlarge the array. */
   {
     int newSize = 2 * tdec->memMembers + 16;
-    TUreallocBlockArray(tu, &tdec->members, newSize);
+    TU_CALL( TUreallocBlockArray(tu, &tdec->members, newSize) );
     for (int m = tdec->memMembers + 1; m < newSize; ++m)
       tdec->members[m].nextMember = m+1;
     tdec->members[newSize-1].nextMember = -1;
@@ -474,24 +476,26 @@ static TU_TDEC_MEMBER createMember(
 
   tdec->numMembers++;
 
-  return member;
+  *pmember = member;
+
+  return TU_OKAY;
 }
 
-void TUtdecCreate(TU* tu, TU_TDEC** ptdec, int rootRow, int memEdges, int memNodes,
+TU_ERROR TUtdecCreate(TU* tu, TU_TDEC** ptdec, int rootRow, int memEdges, int memNodes,
   int memMembers, int numRows, int numColumns)
 {
   assert(tu);
   assert(ptdec);
   assert(!*ptdec);
 
-  TUallocBlock(tu, ptdec);
+  TU_CALL( TUallocBlock(tu, ptdec) );
   TU_TDEC* tdec = *ptdec;
   if (memMembers < 1)
     memMembers = 1;
   tdec->memMembers = memMembers;
   tdec->numMembers = 1;
   tdec->members = NULL;
-  TUallocBlockArray(tu, &tdec->members, tdec->memMembers);
+  TU_CALL( TUallocBlockArray(tu, &tdec->members, tdec->memMembers) );
   for (int m = 1; m < memMembers; ++m)
     tdec->members[m].nextMember = m+1;
   if (memMembers > 1)
@@ -513,7 +517,7 @@ void TUtdecCreate(TU* tu, TU_TDEC** ptdec, int rootRow, int memEdges, int memNod
     memNodes = 2;
   tdec->memNodes = memNodes;
   tdec->nodes = NULL;
-  TUallocBlockArray(tu, &tdec->nodes, memNodes);
+  TU_CALL( TUallocBlockArray(tu, &tdec->nodes, memNodes) );
   tdec->nodes[0].nextNode = -1;
   tdec->nodes[1].nextNode = -1;
   tdec->numNodes = 2;
@@ -531,7 +535,7 @@ void TUtdecCreate(TU* tu, TU_TDEC** ptdec, int rootRow, int memEdges, int memNod
     memEdges = 2;
   tdec->memEdges = memEdges;
   tdec->edges = NULL;
-  TUallocBlockArray(tu, &tdec->edges, memEdges);
+  TU_CALL( TUallocBlockArray(tu, &tdec->edges, memEdges) );
   tdec->numEdges = 2;
 
   /* First edge is co-tree edge corresponding to artificial column. */
@@ -568,7 +572,7 @@ void TUtdecCreate(TU* tu, TU_TDEC** ptdec, int rootRow, int memEdges, int memNod
   tdec->numRows = numRows > rootRow ? numRows : rootRow + 1;
   tdec->memRows = numRows;
   tdec->rowEdges = NULL;
-  TUallocBlockArray(tu, &tdec->rowEdges, tdec->numRows);
+  TU_CALL( TUallocBlockArray(tu, &tdec->rowEdges, tdec->numRows) );
   for (int r = 0; r < tdec->numRows; ++r)
     tdec->rowEdges[r].edge = -1;
   tdec->rowEdges[rootRow].edge = 1;
@@ -576,23 +580,27 @@ void TUtdecCreate(TU* tu, TU_TDEC** ptdec, int rootRow, int memEdges, int memNod
   tdec->numColumns = numColumns > 0 ? numColumns : 1;
   tdec->memColumns = tdec->numColumns;
   tdec->columnEdges = NULL;
-  TUallocBlockArray(tu, &tdec->columnEdges, tdec->numColumns);
+  TU_CALL( TUallocBlockArray(tu, &tdec->columnEdges, tdec->numColumns) );
   for (int c = 0; c < tdec->numColumns; ++c)
     tdec->columnEdges[c].edge = -1;
+
+  return TU_OKAY;
 }
 
-void TUtdecFree(TU* tu, TU_TDEC** ptdec)
+TU_ERROR TUtdecFree(TU* tu, TU_TDEC** ptdec)
 {
   assert(ptdec);
   assert(*ptdec);
 
   TU_TDEC* tdec = *ptdec;
-  TUfreeBlockArray(tu, &tdec->members);
-  TUfreeBlockArray(tu, &tdec->edges);
-  TUfreeBlockArray(tu, &tdec->nodes);
-  TUfreeBlockArray(tu, &tdec->rowEdges);
-  TUfreeBlockArray(tu, &tdec->columnEdges);
-  TUfreeBlock(tu, ptdec);
+  TU_CALL( TUfreeBlockArray(tu, &tdec->members) );
+  TU_CALL( TUfreeBlockArray(tu, &tdec->edges) );
+  TU_CALL( TUfreeBlockArray(tu, &tdec->nodes) );
+  TU_CALL( TUfreeBlockArray(tu, &tdec->rowEdges) );
+  TU_CALL( TUfreeBlockArray(tu, &tdec->columnEdges) );
+  TU_CALL( TUfreeBlock(tu, ptdec) );
+
+  return TU_OKAY;
 }
 
 int TUtdecBasisSize(TU_TDEC* tdec)
@@ -716,10 +724,11 @@ TU_ERROR TUtdecToGraph(TU* tu, TU_TDEC* tdec, TU_GRAPH* graph, bool merge, TU_GR
   return TU_OKAY;
 }
 
-void TUtdecnewcolumnCreate(TU* tu, TU_TDEC_NEWCOLUMN** pnewcolumn)
+TU_ERROR TUtdecnewcolumnCreate(TU* tu, TU_TDEC_NEWCOLUMN** pnewcolumn)
 {
   assert(tu);
-  TUallocBlock(tu, pnewcolumn);
+
+  TU_CALL( TUallocBlock(tu, pnewcolumn) );
   TU_TDEC_NEWCOLUMN* newcolumn = *pnewcolumn;
   newcolumn->remainsGraphic = true;
   newcolumn->memReducedMembers = 0;
@@ -734,24 +743,37 @@ void TUtdecnewcolumnCreate(TU* tu, TU_TDEC_NEWCOLUMN** pnewcolumn)
   newcolumn->memChildrenStorage = 0;
   newcolumn->usedChildrenStorage = 0;
   newcolumn->childrenStorage = NULL;
+
+  return TU_OKAY;
 }
 
-void TUtdecnewcolumnFree(TU* tu, TU_TDEC_NEWCOLUMN** pnewcolumn)
+TU_ERROR TUtdecnewcolumnFree(TU* tu, TU_TDEC_NEWCOLUMN** pnewcolumn)
 {
   assert(tu);
   assert(*pnewcolumn);
+
   TU_TDEC_NEWCOLUMN* newcolumn = *pnewcolumn;
   
   if (newcolumn->reducedMembers)
-    TUfreeBlockArray(tu, &newcolumn->reducedMembers);
+  {
+    TU_CALL( TUfreeBlockArray(tu, &newcolumn->reducedMembers) );
+  }
   if (newcolumn->membersToReducedMembers)
-    TUfreeBlockArray(tu, &newcolumn->membersToReducedMembers);
+  {
+    TU_CALL( TUfreeBlockArray(tu, &newcolumn->membersToReducedMembers) );
+  }
   if (newcolumn->reducedEdgeStorage)
-    TUfreeBlockArray(tu, &newcolumn->reducedEdgeStorage);
+  {
+    TU_CALL( TUfreeBlockArray(tu, &newcolumn->reducedEdgeStorage) );
+  }
   if (newcolumn->childrenStorage)
-    TUfreeBlockArray(tu, &newcolumn->childrenStorage);
+  {
+    TU_CALL( TUfreeBlockArray(tu, &newcolumn->childrenStorage) );
+  }
 
-  TUfreeBlock(tu, pnewcolumn);
+  TU_CALL( TUfreeBlock(tu, pnewcolumn) );
+
+  return TU_OKAY;
 }
 
 static
@@ -1043,7 +1065,8 @@ TU_ERROR computeReducedMemberChildren(
  * \brief Count the number of children of a reduced member having certain types.
  */
 
-static TU_ERROR countChildrenTypes(
+static
+TU_ERROR countChildrenTypes(
   TU* tu,                       /**< \ref TU environment. */
   TU_TDEC* tdec,                /**< t-decomposition. */
   TU_TDEC_NEWCOLUMN* newcolumn, /**< new column. */
@@ -1213,11 +1236,12 @@ TU_ERROR checkPrimeRoot(
   return TU_OKAY;
 }
 
-static void addColumnBondSame(
-  TU* tu,                       /*< TU environment. */
-  TU_TDEC* tdec,                /*< t-decomposition. */
-  TU_TDEC_NEWCOLUMN* newcolumn, /*< new-column structure. */
-  TU_TDEC_EDGE newEdge          /*< Edge. */
+static
+TU_ERROR addColumnBondSame(
+  TU* tu,                       /**< \ref TU environment. */
+  TU_TDEC* tdec,                /**< t-decomposition. */
+  TU_TDEC_NEWCOLUMN* newcolumn, /**< new-column structure. */
+  TU_TDEC_EDGE newEdge          /**< Edge. */
 )
 {
 #if defined(TU_DEBUG_TDEC)
@@ -1232,13 +1256,16 @@ static void addColumnBondSame(
   tdec->edges[newEdge].head = newcolumn->terminalNode1;
   tdec->edges[newEdge].tail = newcolumn->terminalNode2;
   tdec->members[newcolumn->terminalMember1].numEdges++;
+
+  return TU_OKAY;
 }
 
-static void addColumnPolygonSame(
-  TU* tu,                       /*< TU environment. */
-  TU_TDEC* tdec,                /*< t-decomposition. */
-  TU_TDEC_NEWCOLUMN* newcolumn, /*< new-column structure. */
-  TU_TDEC_EDGE newEdge          /*< Edge. */
+static
+TU_ERROR addColumnPolygonSame(
+  TU* tu,                       /**< \ref TU environment. */
+  TU_TDEC* tdec,                /**< t-decomposition. */
+  TU_TDEC_NEWCOLUMN* newcolumn, /**< new-column structure. */
+  TU_TDEC_EDGE newEdge          /**< Edge. */
 )
 {
 #if defined(TU_DEBUG_TDEC)
@@ -1246,13 +1273,16 @@ static void addColumnPolygonSame(
 #endif /* TU_DEBUG_TDEC */
   
   assert(false);
+
+  return TU_OKAY;
 }
 
-static void addColumnPrimeSame(
-  TU* tu,                       /*< TU environment. */
-  TU_TDEC* tdec,                /*< t-decomposition. */
-  TU_TDEC_NEWCOLUMN* newcolumn, /*< new-column structure. */
-  TU_TDEC_EDGE newEdge          /*< Edge. */
+static
+TU_ERROR addColumnPrimeSame(
+  TU* tu,                       /**< \ref TU environment. */
+  TU_TDEC* tdec,                /**< t-decomposition. */
+  TU_TDEC_NEWCOLUMN* newcolumn, /**< new-column structure. */
+  TU_TDEC_EDGE newEdge          /**< Edge. */
 )
 {
 #if defined(TU_DEBUG_TDEC)
@@ -1260,6 +1290,8 @@ static void addColumnPrimeSame(
 #endif /* TU_DEBUG_TDEC */
   
   assert(false);
+
+  return TU_OKAY;
 }
 
 TU_ERROR TUtdecAddColumnCheck(TU* tu, TU_TDEC* tdec, TU_TDEC_NEWCOLUMN* newcolumn, int* entryRows,
@@ -1329,8 +1361,9 @@ TU_ERROR TUtdecAddColumnCheck(TU* tu, TU_TDEC* tdec, TU_TDEC_NEWCOLUMN* newcolum
   return TU_OKAY;
 }
 
-static TU_TDEC_EDGE createNewRowsPolygon(
-  TU* tu,             /**< TU environment. */
+static
+TU_TDEC_EDGE createNewRowsPolygon(
+  TU* tu,             /**< \ref TU environment. */
   TU_TDEC* tdec,      /**< t-decomposition. */
   TU_TDEC_NODE head,  /**< Head node. */
   TU_TDEC_NODE tail,  /**< Tail node. */
@@ -1371,7 +1404,8 @@ static TU_TDEC_EDGE createNewRowsPolygon(
      * Arrow e --> f means that e->next = f, f->prev = e, e->head = f->tail.
      */
 
-    TU_TDEC_MEMBER newMember = createMember(tu, tdec, TDEC_MEMBER_TYPE_POLYGON);
+    TU_TDEC_MEMBER newMember;
+    createMember(tu, tdec, TDEC_MEMBER_TYPE_POLYGON, &newMember);
     TU_TDEC_EDGE parentMarkerEdge = createMarkerEdge(tu, tdec, INT_MIN, head, tail, true);
     tdec->edges[parentMarkerEdge].childMember = newMember;
     
@@ -1416,7 +1450,7 @@ static TU_TDEC_EDGE createNewRowsPolygon(
     return createColumnEdge(tu, tdec, INT_MIN, head, tail, column);
 }
 
-void TUtdecAddColumnApply(TU* tu, TU_TDEC* tdec, TU_TDEC_NEWCOLUMN* newcolumn, int column,
+TU_ERROR TUtdecAddColumnApply(TU* tu, TU_TDEC* tdec, TU_TDEC_NEWCOLUMN* newcolumn, int column,
   int* entryRows, int numEntries)
 {
   assert(tu);
@@ -1446,7 +1480,7 @@ void TUtdecAddColumnApply(TU* tu, TU_TDEC* tdec, TU_TDEC_NEWCOLUMN* newcolumn, i
       assert(tdec->members[newcolumn->reducedMembers[0].member].type == TDEC_MEMBER_TYPE_PRIME);
       addColumnPrimeSame(tu, tdec, newcolumn, newEdge);
     }
-    return;
+    return TU_OKAY;
   }
   
   assert(false);
@@ -1510,8 +1544,7 @@ TU_ERROR testGraphicnessTDecomposition(TU* tu, TU_CHRMAT* matrix, TU_CHRMAT* tra
   printf("  Root row is %d.\n", rootRow);
 #endif /* TU_DEBUG_TDEC */
   TU_TDEC* tdec = NULL;
-  TUtdecCreate(tu, &tdec, rootRow, 0, 0, 0, 0, 0); /* TODO: avoid reallocations. */
-
+  TU_CALL( TUtdecCreate(tu, &tdec, rootRow, 0, 0, 0, 0, 0) ); /* TODO: avoid reallocations. */
   
   /* Process each column. */
   TU_TDEC_NEWCOLUMN* newcol = NULL;
