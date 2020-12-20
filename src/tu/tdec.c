@@ -321,6 +321,7 @@ TU_ERROR addEdgeToMember(
   }
   tdec->edges[edge].prev = -1;
   tdec->members[member].firstEdge = edge;
+  tdec->members[member].numEdges++;
 
   return TU_OKAY;
 }
@@ -373,7 +374,7 @@ TU_ERROR createEdge(
   if (member >= 0)
   {
 #if defined(TU_DEBUG_TDEC)
-    printf("        createEdge inserts into member's edge list.\n");
+    printf("        createEdge inserts %d into member %d's edge list.\n", edge, member);
 #endif /* TU_DEBUG_TDEC */
     TU_CALL( addEdgeToMember(tu, tdec, edge, member) );
   }
@@ -406,10 +407,6 @@ TU_ERROR createRowEdge(
   data->childMember = -1;
   data->name = row;
   setRowEdge(tu, tdec, row, edge);
-#ifndef NDEBUG
-  data->next = INT_MIN;
-  data->prev = INT_MIN;
-#endif /* !NDEBUG */
 
 #if defined(TU_DEBUG_TDEC)
   printf("        Created row edge {%d,%d} of member %d for row %d.\n", head, tail, member, row);
@@ -441,10 +438,6 @@ TU_ERROR createColumnEdge(
   data->childMember = -1;
   data->name = -1-column;
   setColumnEdge(tu, tdec, column, edge);
-#ifndef NDEBUG
-  data->next = INT_MIN;
-  data->prev = INT_MIN;
-#endif /* !NDEBUG */
 
 #if defined(TU_DEBUG_TDEC)
   printf("        Created column edge {%d,%d} of member %d for column %d.\n", head, tail, member,
@@ -479,10 +472,6 @@ TU_ERROR createMarkerEdge(
     data->name = INT_MAX - tdec->numMarkers;
   else
     data->name = -(INT_MAX - tdec->numMarkers);
-#ifndef NDEBUG
-  data->next = INT_MIN;
-  data->prev = INT_MIN;
-#endif /* !NDEBUG */
 
 #if defined(TU_DEBUG_TDEC)
   printf("        Created %s marker edge {%d,%d} of member %d.\n", isParent ? "parent" : "child",
@@ -1493,10 +1482,7 @@ TU_ERROR createNewRowsPolygon(
         TU_TDEC_EDGE treeEdge;
         TU_CALL( createRowEdge(tu, tdec, &treeEdge, newMember, tdec->edges[lastEdge].tail,
           newTail, row) );
-        tdec->edges[lastEdge].prev = treeEdge;
-        tdec->edges[treeEdge].next = lastEdge;
         lastEdge = treeEdge;
-        tdec->members[newMember].numEdges++;
       }
     }
 
@@ -1504,13 +1490,8 @@ TU_ERROR createNewRowsPolygon(
     TU_TDEC_EDGE cotreeEdge;
     TU_CALL( createColumnEdge(tu, tdec, &cotreeEdge, newMember, tdec->edges[lastEdge].tail,
       childMarkerHead, column) );
-    tdec->edges[childMarkerEdge].next = cotreeEdge;
-    tdec->edges[cotreeEdge].prev = childMarkerEdge;
-    tdec->edges[lastEdge].prev = cotreeEdge;
-    tdec->edges[cotreeEdge].next = lastEdge;
-    tdec->members[newMember].numEdges += 2;
 
-    return parentMarkerEdge;
+    *pedge = parentMarkerEdge;
   }
   else
   {
