@@ -8,67 +8,68 @@
 
 typedef struct
 {
-  TU_TDEC_NODE nextNode; /*< Next representative of same node towards root, or -1 if root. */
+  TU_TDEC_NODE nextNode; /**< \brief Next representative of same node towards root, or -1 if root. */
 } TU_TDEC_NODE_DATA;
 
 typedef struct
 {
-  int name;                   /*< Name of this edge. */
-  TU_TDEC_MEMBER member;      /*< Member this edge belongs to or -1 if in free list. */
-  TU_TDEC_NODE head;          /*< Head node of this edge. */
-  TU_TDEC_NODE tail;          /*< Tail node of this edge. */
-  TU_TDEC_EDGE prev;          /*< Next edge of this member. Must be a directed cycle if member is a polygon. */
-  TU_TDEC_EDGE next;          /*< Previous edge of this member. Must be a directed cycle if member is a polygon. */
-  TU_TDEC_MEMBER childMember; /*< Child member linked to this edge, or -1. */
+  int name;                   /**< \brief Name of this edge. */
+  TU_TDEC_MEMBER member;      /**< \brief Member this edge belongs to or -1 if in free list. */
+  TU_TDEC_NODE head;          /**< \brief Head node of this edge. */
+  TU_TDEC_NODE tail;          /**< \brief Tail node of this edge. */
+  TU_TDEC_EDGE prev;          /**< \brief Next edge of this member. Must be a directed cycle if member is a polygon. */
+  TU_TDEC_EDGE next;          /**< \brief Previous edge of this member. Must be a directed cycle if member is a polygon. */
+  TU_TDEC_MEMBER childMember; /**< \brief Child member linked to this edge, or -1. */
 } TU_TDEC_EDGE_DATA;
 
 typedef struct
 {
-  TU_TDEC_MEMBER_TYPE type;     /*< Type of member. Only valid if root representative. */
-  TU_TDEC_MEMBER nextMember;    /*< Next representative of same member towards root, or -1 if root. */
-  TU_TDEC_MEMBER parentMember;  /*< Parent member of this member. Only valid if root representative. */
-  int numEdges;                 /*< Number of edges. Only valid if root representative. */
-  TU_TDEC_EDGE markerToParent;  /*< Parent marker edge. Only valid if root representative. */
-  TU_TDEC_EDGE markerOfParent;  /*< Child marker of parent to which this member is linked. Only valid if root representative. */
+  TU_TDEC_MEMBER_TYPE type;     /**< \brief Type of member. Only valid if root representative. */
+  TU_TDEC_MEMBER nextMember;    /**< \brief Next representative of same member towards root, or -1 if root. */
+  TU_TDEC_MEMBER parentMember;  /**< \brief Parent member of this member. Only valid if root representative. */
+  int numEdges;                 /**< \brief Number of edges. Only valid if root representative. */
+  TU_TDEC_EDGE markerToParent;  /**< \brief Parent marker edge. Only valid if root representative. */
+  TU_TDEC_EDGE markerOfParent;  /**< \brief Child marker of parent to which this member is linked. Only valid if root representative. */
+  TU_TDEC_EDGE firstEdge;       /**< \brief First edge in doubly-linked edge list of this member. */
 } TU_TDEC_MEMBER_DATA;
 
 typedef struct
 {
-  TU_TDEC_EDGE edge;  /*< Edge or -1. */
+  TU_TDEC_EDGE edge;  /**< \brief Edge or -1. */
 } TU_TDEC_ROW_DATA;
 
 typedef struct
 {
-  TU_TDEC_EDGE edge;  /*< Edge or -1. */
+  TU_TDEC_EDGE edge;  /**< \brief Edge or -1. */
 } TU_TDEC_COLUMN_DATA;
 
 struct _TU_TDEC
 {
-  int memMembers;                   /*< Allocated memory for members. */
-  int numMembers;                   /*< Number of members. */
-  TU_TDEC_MEMBER_DATA* members;     /*< Array of members. */
-  TU_TDEC_MEMBER firstFreeMember;   /*< First member in free list or -1. */
-  int rootRow;                      /*< Unique row element in member 0. */
+  int memMembers;                   /**< \brief Allocated memory for members. */
+  int numMembers;                   /**< \brief Number of members. */
+  TU_TDEC_MEMBER_DATA* members;     /**< \brief Array of members. */
+  TU_TDEC_MEMBER firstFreeMember;   /**< \brief First member in free list or -1. */
+  int rootRow;                      /**< \brief Unique row element in member 0. */
 
-  int memEdges;                     /*< Allocated memory for edges. */
-  int numEdges;                     /*< Number of used edges. */
-  TU_TDEC_EDGE_DATA* edges;         /*< Array of edges. */
-  TU_TDEC_EDGE firstFreeEdge;       /*< First edge in free list or -1. */
+  int memEdges;                     /**< \brief Allocated memory for edges. */
+  int numEdges;                     /**< \brief Number of used edges. */
+  TU_TDEC_EDGE_DATA* edges;         /**< \brief Array of edges. */
+  TU_TDEC_EDGE firstFreeEdge;       /**< \brief First edge in free list or -1. */
 
-  int memNodes;                     /*< Allocated memory for nodes. */
-  int numNodes;                     /*< Number of nodes. */
-  TU_TDEC_NODE_DATA* nodes;         /*< Array of nodes. */
-  TU_TDEC_NODE firstFreeNode;       /*< First node in free list or -1. */
+  int memNodes;                     /**< \brief Allocated memory for nodes. */
+  int numNodes;                     /**< \brief Number of nodes. */
+  TU_TDEC_NODE_DATA* nodes;         /**< \brief Array of nodes. */
+  TU_TDEC_NODE firstFreeNode;       /**< \brief First node in free list or -1. */
 
-  int memRows;                      /*< Allocated memory for \c rowEdges. */
-  int numRows;                      /*< Number of rows. */
-  TU_TDEC_ROW_DATA* rowEdges;       /*< Maps each row to its edge. */
+  int memRows;                      /**< \brief Allocated memory for \c rowEdges. */
+  int numRows;                      /**< \brief Number of rows. */
+  TU_TDEC_ROW_DATA* rowEdges;       /**< \brief Maps each row to its edge. */
 
-  int memColumns;                   /*< Allocated memory for \c columnEdges. */
-  int numColumns;                   /*< Number of columns. */
-  TU_TDEC_COLUMN_DATA* columnEdges; /*< Maps each column to its edge. */
+  int memColumns;                   /**< \brief Allocated memory for \c columnEdges. */
+  int numColumns;                   /**< \brief Number of columns. */
+  TU_TDEC_COLUMN_DATA* columnEdges; /**< \brief Maps each column to its edge. */
 
-  int numMarkers;                   /*< Number of marker edge pairs in t-decomposition. */
+  int numMarkers;                   /**< \brief Number of marker edge pairs in t-decomposition. */
 };
 
 typedef enum
@@ -82,49 +83,49 @@ typedef enum
 } Type;
 
 /**
- * Additional edge information specific to a path.
+ * \brief Additional edge information specific to a path.
  */
 
 typedef struct _ReducedEdge
 {
-  TU_TDEC_EDGE edge;          /*< The edge in the t-decomposition. */
-  struct _ReducedEdge* next;  /*< Next edge of this reduced member, or NULL. */
+  TU_TDEC_EDGE edge;          /**< \brief The edge in the t-decomposition. */
+  struct _ReducedEdge* next;  /**< \brief Next edge of this reduced member, or NULL. */
 } ReducedEdge;
 
 /**
- * Additional member information specfic to a given path.
+ * \brief Additional member information specfic to a given path.
  */
 
 typedef struct _ReducedMember
 {
-  TU_TDEC_MEMBER member;                /**< The member from the t-decomposition. */
-  int depth;                            /**< Depth of this member in the reduced t-decomposition. */
-  Type type;                            /**< Type of this member. */
-  int numChildren;                      /**< Number of children in the reduced t-decomposition. */
-  struct _ReducedMember** children;     /**< Children in the reduced t-decomposition. */
-  ReducedEdge* firstReducedEdge;        /**< First edge in linked list of edges of this reduced member. */
+  TU_TDEC_MEMBER member;                /**< \brief The member from the t-decomposition. */
+  int depth;                            /**< \brief Depth of this member in the reduced t-decomposition. */
+  Type type;                            /**< \brief Type of this member. */
+  int numChildren;                      /**< \brief Number of children in the reduced t-decomposition. */
+  struct _ReducedMember** children;     /**< \brief Children in the reduced t-decomposition. */
+  ReducedEdge* firstReducedEdge;        /**< \brief First edge in linked list of edges of this reduced member. */
 } ReducedMember;
 
 struct _TU_TDEC_NEWCOLUMN
 {
-  bool remainsGraphic;                      /**< Indicator whether adding this column maintains graphicness. */
-  int memReducedMembers;                    /**< Allocated memory for \c reducedMembers. */
-  int numReducedMembers;                    /**< Number of members in \c reducedMembers. */
-  ReducedMember* reducedMembers;            /**< Array of reduced members, sorted by increasing depth. */
-  ReducedMember** membersToReducedMembers;  /**< Array mapping members to members of the reduced t-decomposition. */
+  bool remainsGraphic;                      /**< \brief Indicator whether adding this column maintains graphicness. */
+  int memReducedMembers;                    /**< \brief Allocated memory for \c reducedMembers. */
+  int numReducedMembers;                    /**< \brief Number of members in \c reducedMembers. */
+  ReducedMember* reducedMembers;            /**< \brief Array of reduced members, sorted by increasing depth. */
+  ReducedMember** membersToReducedMembers;  /**< \brief Array mapping members to members of the reduced t-decomposition. */
 
-  ReducedEdge* reducedEdgeStorage;          /**< Storage for edge lists of reduced members. */
-  int memReducedEdgeStorage;                /**< Allocated memory for \c reducedEdgeStorage. */
-  int usedReducedEdgeStorage;               /**< Number of stored edges in \c reducedEdgeStorage. */
+  ReducedEdge* reducedEdgeStorage;          /**< \brief Storage for edge lists of reduced members. */
+  int memReducedEdgeStorage;                /**< \brief Allocated memory for \c reducedEdgeStorage. */
+  int usedReducedEdgeStorage;               /**< \brief Number of stored edges in \c reducedEdgeStorage. */
 
-  ReducedMember** childrenStorage;          /**< Storage for members' arrays of children in reduced t-decomposition. */
-  int usedChildrenStorage;                  /**< Number of stored children in \c childrenStorage. */
-  int memChildrenStorage;                   /**< Allocated memory for \c childrenStorage. */
+  ReducedMember** childrenStorage;          /**< \brief Storage for members' arrays of children in reduced t-decomposition. */
+  int usedChildrenStorage;                  /**< \brief Number of stored children in \c childrenStorage. */
+  int memChildrenStorage;                   /**< \brief Allocated memory for \c childrenStorage. */
 
-  TU_TDEC_NODE terminalNode1;               /**< First terminal node of path. */
-  TU_TDEC_NODE terminalNode2;               /**< Second terminal node of path. */
-  TU_TDEC_MEMBER terminalMember1;           /**< First terminal member of path. */
-  TU_TDEC_MEMBER terminalMember2;           /**< Second terminal member of path. */
+  TU_TDEC_NODE terminalNode1;               /**< \brief First terminal node of path. */
+  TU_TDEC_NODE terminalNode2;               /**< \brief Second terminal node of path. */
+  TU_TDEC_MEMBER terminalMember1;           /**< \brief First terminal member of path. */
+  TU_TDEC_MEMBER terminalMember2;           /**< \brief Second terminal member of path. */
 };
 
 int compareMemberDepths(const void* a, const void* b)
@@ -204,10 +205,9 @@ TU_TDEC_NODE findEdgeTail(TU_TDEC* tdec, TU_TDEC_EDGE edge)
   return findNode(tdec, tdec->edges[edge].tail);
 }
 
-
 static TU_TDEC_NODE createNode(
-  TU* tu,       /*< TU environment . */
-  TU_TDEC* tdec /*< t-decomposition. */
+  TU* tu,       /**< \ref TU environment . */
+  TU_TDEC* tdec /**< t-decomposition. */
 )
 {
   assert(tu);
@@ -242,10 +242,10 @@ static TU_TDEC_NODE createNode(
 }
 
 static void setRowEdge(
-  TU* tu,           /*< TU environment. */
-  TU_TDEC* tdec,    /*< t-decomposition. */
-  int row ,         /*< Row (index). */
-  TU_TDEC_EDGE edge /*< Edge to be assigned to \p row. */
+  TU* tu,           /**< \ref TU environment. */
+  TU_TDEC* tdec,    /**< t-decomposition. */
+  int row ,         /**< Row (index). */
+  TU_TDEC_EDGE edge /**< Edge to be assigned to \p row. */
 )
 {
   assert(tu);
@@ -269,10 +269,10 @@ static void setRowEdge(
 }
 
 static void setColumnEdge(
-  TU* tu,           /*< TU environment. */
-  TU_TDEC* tdec,    /*< t-decomposition. */
-  int column,       /*< Column (index). */
-  TU_TDEC_EDGE edge /*< Edge to be assigned to \p column. */
+  TU* tu,           /**< \ref TU environment. */
+  TU_TDEC* tdec,    /**< t-decomposition. */
+  int column,       /**< Column (index). */
+  TU_TDEC_EDGE edge /**< Edge to be assigned to \p column. */
 )
 {
   assert(tu);
@@ -295,15 +295,51 @@ static void setColumnEdge(
     tdec->numColumns = column + 1;
 }
 
+/**
+ * \brief Adds \p edge to the edge list of \p member.
+ */
 
-static TU_TDEC_EDGE createEdge(
-  TU* tu,                 /*< TU environment. */
-  TU_TDEC* tdec,          /*< t-decomposition. */
-  TU_TDEC_MEMBER member   /*< Member this edge belongs to. */
+static
+TU_ERROR addEdgeToMember(
+  TU* tu,               /**< \ref TU environment. */
+  TU_TDEC* tdec,        /**< t-decomposition. */
+  TU_TDEC_EDGE edge,    /**< Edge to be added. */ 
+  TU_TDEC_MEMBER member /**< Member. */
 )
 {
   assert(tu);
   assert(tdec);
+  assert(edge >= 0);
+  assert(member >= 0);
+  assert(member < tdec->numMembers);
+
+  tdec->edges[edge].next = tdec->members[member].firstEdge;
+  if (tdec->members[member].firstEdge >= 0)
+  {
+    assert(tdec->edges[tdec->members[member].firstEdge].prev == -1);
+    tdec->edges[tdec->members[member].firstEdge].prev = edge;
+  }
+  tdec->edges[edge].prev = -1;
+  tdec->members[member].firstEdge = edge;
+
+  return TU_OKAY;
+}
+
+/**
+ * \brief Creates a new edge.
+ */
+
+static
+TU_ERROR createEdge(
+  TU* tu,                 /**< \ref TU environment. */
+  TU_TDEC* tdec,          /**< t-decomposition. */
+  TU_TDEC_MEMBER member,  /**< Member this edge belongs to. */
+  TU_TDEC_EDGE* pedge     /**< Pointer for storing the new edge. */
+)
+{
+  assert(tu);
+  assert(tdec);
+  assert(pedge);
 
   TU_TDEC_EDGE edge = tdec->firstFreeEdge;
   if (edge >= 0)
@@ -316,7 +352,7 @@ static TU_TDEC_EDGE createEdge(
   else /* No edge in free list, so we enlarge the array. */
   {
     int newSize = 2 * tdec->memEdges + 16;
-    TUreallocBlockArray(tu, &tdec->edges, newSize);
+    TU_CALL( TUreallocBlockArray(tu, &tdec->edges, newSize) );
     for (int e = tdec->memEdges + 1; e < newSize; ++e)
     {
       tdec->edges[e].next = e+1;
@@ -333,22 +369,37 @@ static TU_TDEC_EDGE createEdge(
 
   tdec->edges[edge].member = member;
   tdec->numEdges++;
-  return edge;
+
+  if (member >= 0)
+  {
+#if defined(TU_DEBUG_TDEC)
+    printf("        createEdge inserts into member's edge list.\n");
+#endif /* TU_DEBUG_TDEC */
+    TU_CALL( addEdgeToMember(tu, tdec, edge, member) );
+  }
+
+  *pedge = edge;
+  
+  return TU_OKAY;
 }
 
-static TU_TDEC_EDGE createRowEdge(
-  TU* tu,                 /*< TU environment. */
-  TU_TDEC* tdec,          /*< t-decomposition. */
-  TU_TDEC_MEMBER member,  /*< Member this edge belongs to. */
-  TU_TDEC_NODE head,      /*< Head node of this edge. */
-  TU_TDEC_NODE tail,      /*< Tail node of this edge. */
-  int row                 /*< Row (index) this edge corresponds to. */
-  )
+static
+TU_ERROR createRowEdge(
+  TU* tu,                 /**< \ref TU environment. */
+  TU_TDEC* tdec,          /**< t-decomposition. */
+  TU_TDEC_EDGE* pedge,    /**< Pointer for storing the new edge. */
+  TU_TDEC_MEMBER member,  /**< Member this edge belongs to. */
+  TU_TDEC_NODE head,      /**< Head node of this edge. */
+  TU_TDEC_NODE tail,      /**< Tail node of this edge. */
+  int row                 /**< Row (index) this edge corresponds to. */
+)
 {
   assert(tu);
   assert(tdec);
+  assert(pedge);
 
-  TU_TDEC_EDGE edge = createEdge(tu, tdec, member);
+  TU_CALL( createEdge(tu, tdec, member, pedge) );
+  TU_TDEC_EDGE edge = *pedge;
   TU_TDEC_EDGE_DATA* data = &tdec->edges[edge];
   data->head = head;
   data->tail = tail;
@@ -364,22 +415,26 @@ static TU_TDEC_EDGE createRowEdge(
   printf("        Created row edge {%d,%d} of member %d for row %d.\n", head, tail, member, row);
 #endif /* TU_DEBUG_TDEC */
 
-  return edge;
+  return TU_OKAY;
 }
 
-static TU_TDEC_EDGE createColumnEdge(
+static
+TU_ERROR createColumnEdge(
   TU* tu,                 /*< TU environment. */
   TU_TDEC* tdec,          /*< t-decomposition. */
+  TU_TDEC_EDGE* pedge,    /**< Pointer for storing the new edge. */
   TU_TDEC_MEMBER member,  /*< Member this edge belongs to. */
   TU_TDEC_NODE head,      /*< Head node of this edge. */
   TU_TDEC_NODE tail,      /*< Tail node of this edge. */
   int column              /*< Column (index) this edge corresponds to. */
-  )
+)
 {
   assert(tu);
   assert(tdec);
+  assert(pedge);
 
-  TU_TDEC_EDGE edge = createEdge(tu, tdec, member);
+  TU_CALL( createEdge(tu, tdec, member, pedge) );
+  TU_TDEC_EDGE edge = *pedge;
   TU_TDEC_EDGE_DATA* data = &tdec->edges[edge];
   data->head = head;
   data->tail = tail;
@@ -399,19 +454,23 @@ static TU_TDEC_EDGE createColumnEdge(
   return edge;
 }
 
-static TU_TDEC_EDGE createMarkerEdge(
-  TU* tu,                 /*< TU environment. */
-  TU_TDEC* tdec,          /*< t-decomposition. */
-  TU_TDEC_MEMBER member,  /*< Member this edge belongs to. */
-  TU_TDEC_NODE head,      /*< Head node of this edge. */
-  TU_TDEC_NODE tail,      /*< Tail node of this edge. */
-  bool isParent           /*< Whether this is the parent marker edge. */
-  )
+static
+TU_ERROR createMarkerEdge(
+  TU* tu,                 /**< \ref TU environment. */
+  TU_TDEC* tdec,          /**< t-decomposition. */
+  TU_TDEC_EDGE* pedge,    /**< Pointer for storing the new edge. */
+  TU_TDEC_MEMBER member,  /**< Member this edge belongs to. */
+  TU_TDEC_NODE head,      /**< Head node of this edge. */
+  TU_TDEC_NODE tail,      /**< Tail node of this edge. */
+  bool isParent           /**< Whether this is the parent marker edge. */
+)
 {
   assert(tu);
   assert(tdec);
+  assert(pedge);
 
-  TU_TDEC_EDGE edge = createEdge(tu, tdec, member);
+  TU_CALL( createEdge(tu, tdec, member, pedge) );
+  TU_TDEC_EDGE edge = *pedge;
   TU_TDEC_EDGE_DATA* data = &tdec->edges[edge];
   data->head = head;
   data->tail = tail;
@@ -430,7 +489,7 @@ static TU_TDEC_EDGE createMarkerEdge(
     head, tail, member);
 #endif /* TU_DEBUG_TDEC */
 
-  return edge;
+  return TU_OKAY;
 }
 
 static
@@ -467,12 +526,14 @@ TU_ERROR createMember(
       member);
 #endif /* TU_DEBUG_TDEC */
   }
-  tdec->members[member].markerOfParent = INT_MIN;
-  tdec->members[member].markerToParent = INT_MIN;
-  tdec->members[member].nextMember = -1;
-  tdec->members[member].numEdges = 0;
-  tdec->members[member].parentMember = INT_MIN;
-  tdec->members[member].type = type;
+  TU_TDEC_MEMBER_DATA* data = &tdec->members[member];
+  data->markerOfParent = INT_MIN;
+  data->markerToParent = INT_MIN;
+  data->firstEdge = -1;
+  data->nextMember = -1;
+  data->numEdges = 0;
+  data->parentMember = INT_MIN;
+  data->type = type;
 
   tdec->numMembers++;
 
@@ -1362,14 +1423,15 @@ TU_ERROR TUtdecAddColumnCheck(TU* tu, TU_TDEC* tdec, TU_TDEC_NEWCOLUMN* newcolum
 }
 
 static
-TU_TDEC_EDGE createNewRowsPolygon(
-  TU* tu,             /**< \ref TU environment. */
-  TU_TDEC* tdec,      /**< t-decomposition. */
-  TU_TDEC_NODE head,  /**< Head node. */
-  TU_TDEC_NODE tail,  /**< Tail node. */
-  int column,         /**< Index of new column to be added. */
-  int* entryRows,     /**< Array of rows with 1-entry in this column. */
-  int numEntries      /**< Number of 1-entries in this column. */
+TU_ERROR createNewRowsPolygon(
+  TU* tu,               /**< \ref TU environment. */
+  TU_TDEC* tdec,        /**< t-decomposition. */
+  TU_TDEC_EDGE* pedge,  /**< Pointer for storing the new edge. */
+  TU_TDEC_NODE head,    /**< Head node. */
+  TU_TDEC_NODE tail,    /**< Tail node. */
+  int column,           /**< Index of new column to be added. */
+  int* entryRows,       /**< Array of rows with 1-entry in this column. */
+  int numEntries        /**< Number of 1-entries in this column. */
 )
 {
   assert(tu);
@@ -1405,15 +1467,17 @@ TU_TDEC_EDGE createNewRowsPolygon(
      */
 
     TU_TDEC_MEMBER newMember;
-    createMember(tu, tdec, TDEC_MEMBER_TYPE_POLYGON, &newMember);
-    TU_TDEC_EDGE parentMarkerEdge = createMarkerEdge(tu, tdec, INT_MIN, head, tail, true);
+    TU_CALL( createMember(tu, tdec, TDEC_MEMBER_TYPE_POLYGON, &newMember) );
+    TU_TDEC_EDGE parentMarkerEdge;
+    TU_CALL( createMarkerEdge(tu, tdec, &parentMarkerEdge, INT_MIN, head, tail, true) );
     tdec->edges[parentMarkerEdge].childMember = newMember;
     
     /* Add child marker edge and link it to marker edges. */
     TU_TDEC_NODE childMarkerHead = createNode(tu, tdec);
     TU_TDEC_NODE childMarkerTail = createNode(tu, tdec);
-    TU_TDEC_EDGE childMarkerEdge = createMarkerEdge(tu, tdec, newMember, childMarkerHead,
-      childMarkerTail, false);
+    TU_TDEC_EDGE childMarkerEdge;
+    TU_CALL( createMarkerEdge(tu, tdec, &childMarkerEdge, newMember, childMarkerHead,
+      childMarkerTail, false) );
     tdec->members[newMember].markerOfParent = parentMarkerEdge;
     tdec->members[newMember].markerToParent = childMarkerEdge;
     tdec->numMarkers++;
@@ -1426,8 +1490,9 @@ TU_TDEC_EDGE createNewRowsPolygon(
       if (row >= tdec->numRows || tdec->rowEdges[row].edge < 0)
       {
         TU_TDEC_NODE newTail = createNode(tu, tdec);
-        TU_TDEC_EDGE treeEdge = createRowEdge(tu, tdec, newMember, tdec->edges[lastEdge].tail,
-          newTail, row);
+        TU_TDEC_EDGE treeEdge;
+        TU_CALL( createRowEdge(tu, tdec, &treeEdge, newMember, tdec->edges[lastEdge].tail,
+          newTail, row) );
         tdec->edges[lastEdge].prev = treeEdge;
         tdec->edges[treeEdge].next = lastEdge;
         lastEdge = treeEdge;
@@ -1436,8 +1501,9 @@ TU_TDEC_EDGE createNewRowsPolygon(
     }
 
     /* Add cotree edge. */
-    TU_TDEC_EDGE cotreeEdge = createColumnEdge(tu, tdec, newMember, tdec->edges[lastEdge].tail,
-      childMarkerHead, column);
+    TU_TDEC_EDGE cotreeEdge;
+    TU_CALL( createColumnEdge(tu, tdec, &cotreeEdge, newMember, tdec->edges[lastEdge].tail,
+      childMarkerHead, column) );
     tdec->edges[childMarkerEdge].next = cotreeEdge;
     tdec->edges[cotreeEdge].prev = childMarkerEdge;
     tdec->edges[lastEdge].prev = cotreeEdge;
@@ -1447,7 +1513,11 @@ TU_TDEC_EDGE createNewRowsPolygon(
     return parentMarkerEdge;
   }
   else
-    return createColumnEdge(tu, tdec, INT_MIN, head, tail, column);
+  {
+    TU_CALL( createColumnEdge(tu, tdec, pedge, INT_MIN, head, tail, column) );
+  }
+
+  return TU_OKAY;
 }
 
 TU_ERROR TUtdecAddColumnApply(TU* tu, TU_TDEC* tdec, TU_TDEC_NEWCOLUMN* newcolumn, int column,
@@ -1463,8 +1533,9 @@ TU_ERROR TUtdecAddColumnApply(TU* tu, TU_TDEC* tdec, TU_TDEC_NEWCOLUMN* newcolum
   printf("  Adding a column with %d 1's.\n", numEntries);
 #endif /* TU_DEBUG_TDEC */
 
-  TU_TDEC_EDGE newEdge = createNewRowsPolygon(tu, tdec, newcolumn->terminalNode1,
-    newcolumn->terminalNode2, column, entryRows, numEntries);
+  TU_TDEC_EDGE newEdge;
+  TU_CALL( createNewRowsPolygon(tu, tdec, &newEdge, newcolumn->terminalNode1,
+    newcolumn->terminalNode2, column, entryRows, numEntries) );
 #if defined(TU_DEBUG_TDEC)
   printf("    New edge is %d.\n", newEdge);
 #endif /* TU_DEBUG_TDEC */
@@ -1472,18 +1543,24 @@ TU_ERROR TUtdecAddColumnApply(TU* tu, TU_TDEC* tdec, TU_TDEC_NEWCOLUMN* newcolum
   if (newcolumn->terminalMember1 == newcolumn->terminalMember2)
   {
     if (tdec->members[newcolumn->reducedMembers[0].member].type == TDEC_MEMBER_TYPE_BOND)
-      addColumnBondSame(tu, tdec, newcolumn, newEdge);
+    {
+      TU_CALL( addColumnBondSame(tu, tdec, newcolumn, newEdge) );
+    }
     else if (tdec->members[newcolumn->reducedMembers[0].member].type == TDEC_MEMBER_TYPE_POLYGON)
-      addColumnPolygonSame(tu, tdec, newcolumn, newEdge);
+    {
+      TU_CALL( addColumnPolygonSame(tu, tdec, newcolumn, newEdge) );
+    }
     else
     {
       assert(tdec->members[newcolumn->reducedMembers[0].member].type == TDEC_MEMBER_TYPE_PRIME);
-      addColumnPrimeSame(tu, tdec, newcolumn, newEdge);
+      TU_CALL( addColumnPrimeSame(tu, tdec, newcolumn, newEdge) );
     }
     return TU_OKAY;
   }
   
   assert(false);
+
+  return TU_OKAY;
 }
 
 TU_ERROR testGraphicnessTDecomposition(TU* tu, TU_CHRMAT* matrix, TU_CHRMAT* transpose,
