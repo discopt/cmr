@@ -81,11 +81,14 @@ TEST(Graphic, PolygonPlusEdge)
   TU* tu = NULL;
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
   TU_CHRMAT* A = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "4 2 "
-    "1 0 "
-    "1 1 "
-    "1 0 "
-    "1 1 "
+  ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "7 2 "
+    "1 0 " // 0
+    "1 1 " // 1
+    "1 0 " // 2
+    "1 1 " // 3
+    "1 1 " // 4
+    "1 0 " // 5
+    "1 1 " // 6
   ) );
   testGraphicMatrix(tu, A);
   ASSERT_TU_CALL( TUchrmatFree(tu, &A) );

@@ -88,11 +88,11 @@ TU_ERROR TUtdecnewcolumnFree(
 
 TU_EXPORT
 TU_ERROR TUtdecAddColumnCheck(
-  TU* tu,                     /**< TU environment. */
-  TU_TDEC* tdec,              /**< t-decomposition. */
-  TU_TDEC_NEWCOLUMN* newcol,  /**< new-column structure. */
-  int* entryRows,             /**< Array of rows with 1-entry in this column. */
-  int numEntries              /**< Number of 1-entries in this column. */
+  TU* tu,                       /**< TU environment. */
+  TU_TDEC* tdec,                /**< t-decomposition. */
+  TU_TDEC_NEWCOLUMN* newcolumn, /**< new-column structure. */
+  int* entryRows,               /**< Array of rows with 1-entry in this column. */
+  int numEntries                /**< Number of 1-entries in this column. */
 );
 
 TU_EXPORT
