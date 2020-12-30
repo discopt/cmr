@@ -1765,6 +1765,63 @@ TU_ERROR addColumnPreprocessPrime(
 }
 
 /**
+ * \brief Replaces an edge by a bond containing it.
+ * 
+ * The given member should have at least two edges.
+ */
+
+static
+TU_ERROR createEdgeBond(
+  TU* tu,                       /**< \ref TU environment. */
+  TU_TDEC* tdec,                /**< t-decomposition. */
+  TU_TDEC_NEWCOLUMN* newcolumn, /**< new column. */
+  TU_TDEC_MEMBER member,        /**< Polygon member to be squeezed. */
+  TU_TDEC_EDGE edge,            /**< Edge. */
+  TU_TDEC_EDGE* pChildEdge      /**< Pointer for storing the child marker edge to the new bond. */
+)
+{
+  assert(tu);
+  assert(tdec);
+  assert(member >= 0);
+  assert(member < tdec->memMembers);
+  assert(pChildEdge);
+
+#if defined(TU_DEBUG_TDEC)
+  printf("    Creating bond for edge %d in member %d.\n", edge, member);
+#endif /* TU_DEBUG_TDEC */
+
+  TU_TDEC_MEMBER bond = -1;
+  TU_CALL( createMember(tu, tdec, TDEC_MEMBER_TYPE_BOND, &bond) );
+  tdec->members[bond].parentMember = member;
+  tdec->members[bond].markerOfParent = edge;
+
+  TU_TDEC_EDGE markerOfParent;
+  TU_CALL( createMarkerEdge(tu, tdec, &markerOfParent, member, tdec->edges[edge].head,
+    tdec->edges[edge].tail, true) );
+  tdec->edges[markerOfParent].childMember = bond;
+  tdec->edges[markerOfParent].next = tdec->edges[edge].next;
+  tdec->edges[markerOfParent].prev = tdec->edges[edge].prev;
+  assert(tdec->edges[markerOfParent].next != markerOfParent);
+  tdec->edges[tdec->edges[markerOfParent].next].prev = markerOfParent;
+  tdec->edges[tdec->edges[markerOfParent].prev].next = markerOfParent;
+  if (tdec->members[member].firstEdge == edge)
+    tdec->members[member].firstEdge = markerOfParent;
+  tdec->members[bond].markerOfParent = markerOfParent;
+
+  TU_TDEC_EDGE markerToParent;
+  TU_CALL( createMarkerEdge(tu, tdec, &markerToParent, bond, -1, -1, false) );
+  TU_CALL( addEdgeToMembersEdgeList(tu, tdec, markerToParent, bond) );
+  tdec->members[bond].markerToParent = markerToParent;
+  tdec->numMarkers++;
+
+  TU_CALL( addEdgeToMembersEdgeList(tu, tdec, edge, bond) );
+
+  *pChildEdge = markerOfParent;
+
+  return TU_OKAY;
+}
+
+/**
  * \brief Squeezes subset of polygon edges into a new polygon connected via a bond.
  * 
  * Takes all edges of the polygon \p member for which \p edgesPredicate is the same as
@@ -1779,7 +1836,7 @@ TU_ERROR squeezePolygonEdges(
   TU_TDEC_MEMBER member,        /**< Polygon member to be squeezed. */
   bool* edgesPredicate,         /**< Map from edges to predicate. */
   bool predicateValue,          /**< Value of predicate. */
-  TU_TDEC_EDGE* pBondChildEdge  /**< Pointer for storing the child marker edge for the new bond. */
+  TU_TDEC_EDGE* pChildEdge      /**< Pointer for storing the parent marker edge for the new bond. */
 )
 {
   assert(tu);
@@ -1788,7 +1845,7 @@ TU_ERROR squeezePolygonEdges(
   assert(member < tdec->memMembers);
   assert(edgesPredicate);
   assert(tdec->members[member].type == TDEC_MEMBER_TYPE_POLYGON);
-  assert(pBondChildEdge);
+  assert(pChildEdge);
 
 #if defined(TU_DEBUG_TDEC)
   printf("    Squeezing polygon %d.\n", member);
@@ -1896,7 +1953,7 @@ TU_ERROR squeezePolygonEdges(
   while (edge != polygonParentMarker);
 #endif /* TU_DEBUG_TDEC */
 
-  *pBondChildEdge = memberChildMarker;
+  *pChildEdge = memberChildMarker;
 
   return TU_OKAY;
 }
@@ -1936,8 +1993,15 @@ TU_ERROR addColumnPreprocessPolygon(
     if (reducedMember->firstReducedEdge->next == NULL)
     {
       /* There is only one path edge, so we create a bond for that edge. */
-      
-      assert(0 == "addColumnPreprocessPolygon for a single edge is not implemented.");
+      TU_TDEC_EDGE bondChildMarker;
+      TU_CALL( createEdgeBond(tu, tdec, newcolumn, reducedMember->member,
+        reducedMember->firstReducedEdge->edge, &bondChildMarker) );
+
+      TU_TDEC_MEMBER bond = tdec->edges[bondChildMarker].childMember;
+      newcolumn->terminalMember1 = bond;
+      newcolumn->terminalMember2 = bond;
+      *pNumAssignedTerminals = 2;
+      return TU_OKAY;
     }
     else
     {
