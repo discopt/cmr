@@ -383,9 +383,9 @@ TU_ERROR TUgraphMergeNodes(TU* tu, TU_GRAPH* graph, TU_GRAPH_NODE u, TU_GRAPH_NO
 {
   assert(graph);
   assert(u >= 0);
-  assert(u < graph->numNodes);
+  assert(u < graph->memNodes);
   assert(v >= 0);
-  assert(v < graph->numNodes);
+  assert(v < graph->memNodes);
   assert(u != v);
 
   int a;

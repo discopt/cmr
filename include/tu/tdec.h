@@ -40,8 +40,18 @@ TU_ERROR TUtdecCreate(
 
 TU_EXPORT
 TU_ERROR TUtdecFree(
-  TU* tu,         /**< TU environment. */
+  TU* tu,         /**< \ref TU environment. */
   TU_TDEC** ptdec /**< Pointer to t-decomposition. .*/
+);
+
+/**
+ * \brief Checks \p tdec for consistency and returns an explanation if not.
+ */
+
+TU_EXPORT
+const char* TUtdecIsConsistent(
+  TU* tu,       /**< \ref TU environment. */
+  TU_TDEC* tdec /**< t-decomposition. */
 );
 
 TU_EXPORT

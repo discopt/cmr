@@ -241,37 +241,31 @@ TU_GRAPH_NODE TUgraphIncTarget(
  * Returns iterator of next edge in list of all edges.
  */
 
-static inline
+static //inline
 TU_GRAPH_ITER TUgraphEdgesNext(
   TU_GRAPH* graph,  /**< Graph. */
   TU_GRAPH_ITER i   /**< Current edge iterator. */
 )
 {
+  TU_GRAPH_NODE source = graph->arcs[i ^ 1].target;
+  TU_GRAPH_ITER j = graph->arcs[i].next;
   while (true)
   {
-    TU_GRAPH_ITER j = graph->arcs[i].next;
-    while (j >= 0 && (j & 0x1))
-      j = graph->arcs[j].next;
-    if (j >= 0)
-      return j;
-
-    TU_GRAPH_NODE source = graph->arcs[i ^ 1].target;
-    source = graph->nodes[source].next;
-    while (true)
+    while (j >= 0)
     {
-      if (source < 0)
-        return -1;
-      i = graph->nodes[source].firstOut;
-      if (i >= 0)
-      {
-        if (!(i & 0x1))
-          return i;
-        else
-          break;
-      }
-      source = graph->nodes[source].next;
+      if (!(j & 0x1))
+        return j;
+      j = graph->arcs[j].next;
     }
-  } 
+    source = graph->nodes[source].next;
+    if (source < 0)
+      return -1;
+
+    j = graph->nodes[source].firstOut;
+  }
+  while (source >= 0);
+
+  return -1;
 }
 
 static inline
@@ -279,13 +273,19 @@ TU_GRAPH_ITER TUgraphEdgesFirst(
   TU_GRAPH* graph /**< Graph structure. */
 )
 {
-  if (graph->firstNode < 0)
-    return -1;
-
-  TU_GRAPH_ITER i = graph->nodes[graph->firstNode].firstOut;
-  if (i & 0x1)
-    i = TUgraphEdgesNext(graph, i);
-  return i;
+  for (TU_GRAPH_NODE v = TUgraphNodesFirst(graph); TUgraphNodesValid(graph, v);
+    v = TUgraphNodesNext(graph, v))
+  {
+    TU_GRAPH_ITER i = graph->nodes[v].firstOut;
+    if (i >= 0)
+    {
+      /* We found some node with an incident edge. */
+      if (i & 0x1)
+        i = TUgraphEdgesNext(graph, i);
+      return i;
+    }
+  }
+  return -1;
 }
 
 static inline

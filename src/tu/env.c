@@ -4,9 +4,14 @@
 
 #include <assert.h>
 #include <stdlib.h>
+#include <limits.h>
 
 static const size_t FIRST_STACK_SIZE = 4096L; /**< Size of the first stack. */
 static const int INITIAL_MEM_STACKS = 16;     /**< Initial number of allocated stacks. */
+
+#if !defined(NDEBUG)
+static const int PROTECTION = INT_MIN / 42;   /**< Protection bytes to detect corruption. */
+#endif /* !NDEBUG */
 
 TU_ERROR TUcreateEnvironment(TU** ptu)
 {
@@ -126,7 +131,15 @@ TU_ERROR _TUallocStack(TU* tu, void** ptr, size_t size)
   assert(ptr);
   assert(*ptr == NULL);
 
+  /* Avoid allocation of zero bytes. */
+  if (size < 4)
+    size = 4;
+
   size_t requiredSpace = size + sizeof(void*);
+#if !defined(NDEBUG)
+  requiredSpace += sizeof(int);
+#endif /* !NDEBUG */
+  
 #if defined(DEBUG_STACK)
   printf("TUallocStack() called for %ld bytes; current stack: %ld, numStacks: %ld, memStack: %ld.\n",
     size, tu->currentStack, tu->numStacks, tu->memStacks);
@@ -135,7 +148,7 @@ TU_ERROR _TUallocStack(TU* tu, void** ptr, size_t size)
     FIRST_STACK_SIZE << tu->currentStack, tu->stacks[tu->currentStack].top);
   fflush(stdout);
 #endif /* DEBUG_STACK */
-  
+
   while (tu->stacks[tu->currentStack].top < requiredSpace)
   {
     ++tu->currentStack;
@@ -167,9 +180,17 @@ TU_ERROR _TUallocStack(TU* tu, void** ptr, size_t size)
   TU_STACK* pstack = &tu->stacks[tu->currentStack];
   pstack->top -= size;
   *ptr = &pstack->memory[pstack->top];
+#if !defined(NDEBUG)
+  pstack->top -= sizeof(int);
+  *((int*) &pstack->memory[pstack->top]) = PROTECTION;
+#endif /* !NDEBUG */
   pstack->top -= sizeof(void*);
-  void* pallocated = &pstack->memory[pstack->top];
-  *((size_t*)pallocated) = size;
+  *((size_t*) &pstack->memory[pstack->top]) = size;
+
+#if defined(DEBUG_STACK)
+  printf("Writing size %ld to %p.\n", size, &pstack->memory[pstack->top]);
+#endif /* DEBUG_STACK */
+
   return TU_OKAY;
 }
 
@@ -182,17 +203,37 @@ TU_ERROR _TUfreeStack(TU* tu, void** ptr)
   TU_STACK* stack = &tu->stacks[tu->currentStack];
   size_t size = *((size_t*) &stack->memory[stack->top]);
 
+#if defined(DEBUG_STACK)
+  printf("TUfreeStack() called for %ld bytes (size stored at %p).\n", size,
+    &stack->memory[stack->top]);
+#endif /* DEBUG_STACK */
+
+  assert(size < (FIRST_STACK_SIZE << tu->numStacks));
+
+#if !defined(NDEBUG)
+  if (*((int*) (&stack->memory[stack->top] + sizeof(void*))) != PROTECTION)
+  {
+    fprintf(stderr, "Memory corruption of stack detected!\n");
+    fflush(stderr);
+  }
+#endif /* !NDEBUG */
+
+
 #ifndef NDEBUG
-  if (&stack->memory[stack->top + sizeof(void*)] != *ptr)
+  if (&stack->memory[stack->top + sizeof(int) + sizeof(void*)] != *ptr)
   {
     fprintf(stderr,
-      "Wrong order of TUfreeStack(Array) detected. Top chunk on stack has size %ld.\n",
+      "Wrong order of TUfreeStack(Array) detected. Top chunk on stack has size %ld!\n",
       size);
     fflush(stderr);
   }
 #endif /* !NDEBUG */
 
   stack->top += size + sizeof(void*);
+#if !defined(NDEBUG)
+  stack->top += sizeof(int);
+#endif /* !NDEBUG */
+
   if (stack->top == (FIRST_STACK_SIZE << tu->currentStack) && tu->currentStack > 0)
     --tu->currentStack;
   *ptr = NULL;
