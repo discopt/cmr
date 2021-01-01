@@ -101,10 +101,14 @@ TU_ERROR TUgraphCreateEmpty(TU* tu, TU_GRAPH** pgraph, int memNodes, int memEdge
   TU_CALL( TUallocBlock(tu, pgraph) );
   TU_GRAPH* graph = *pgraph;
   graph->numNodes = 0;
+  if (memNodes <= 0)
+    memNodes = 1;
   graph->memNodes = memNodes;
   graph->nodes = NULL;
   TU_CALL( TUallocBlockArray(tu, &graph->nodes, memNodes) );
   graph->numEdges = 0;
+  if (memEdges <= 0)
+    memEdges = 1;
   graph->memEdges = memEdges;
   graph->arcs = NULL;
   TU_CALL( TUallocBlockArray(tu, &graph->arcs, 2 * memEdges) );

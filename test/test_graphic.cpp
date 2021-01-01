@@ -2,6 +2,7 @@
 
 #include "common.h"
 #include <tu/graphic.h>
+#include <tu/tdec.h>
 
 void testGraphicMatrix(
   TU* tu,             /**< \ref TU environment. */
@@ -9,14 +10,23 @@ void testGraphicMatrix(
 )
 {
   TU_GRAPH* graph = NULL;
+  ASSERT_FALSE( TUgraphCreateEmpty(tu, &graph, 0, 0) );
   TU_GRAPH_EDGE* basis = NULL;
+  ASSERT_FALSE( TUallocBlockArray(tu, &basis, matrix->numRows) );
   TU_GRAPH_EDGE* cobasis = NULL;
+  ASSERT_FALSE( TUallocBlockArray(tu, &cobasis, matrix->numColumns) );
   bool isGraphic;
-  ASSERT_FALSE( TUtestGraphicnessChr(tu, matrix, &isGraphic, &graph, &basis, &cobasis, NULL) );
+  TU_CHRMAT* transpose = NULL;
+  ASSERT_FALSE( TUchrmatTranspose(tu, matrix, &transpose) );
+
+  ASSERT_FALSE( testGraphicnessTDecomposition(tu, matrix, transpose, &isGraphic, graph, basis,
+    cobasis, NULL) );
 
   ASSERT_TRUE( isGraphic );
   ASSERT_TRUE( basis );
   ASSERT_TRUE( cobasis );
+
+  ASSERT_FALSE( TUchrmatFree(tu, &transpose) );
 
   TU_CHRMAT* result = NULL;
   TU_CALL( TUconvertGraphToBinaryMatrix(tu, graph, &result, matrix->numRows, basis,
@@ -39,7 +49,6 @@ void testGraphicMatrix(
     printf("Representation matrix:\n");
     ASSERT_FALSE( TUchrmatPrintDense(stdout, result, ' ', true) );
   }
-  
 
   ASSERT_FALSE( TUgraphFree(tu, &graph) );
   ASSERT_FALSE( TUfreeBlockArray(tu, &basis) );
@@ -79,7 +88,7 @@ TEST(Graphic, Polygon)
     ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "4 1 "
       "1 "
       "1 "
-      "0 "
+      "1 "
       "1 "
     ) );
     testGraphicMatrix(tu, A);
@@ -116,6 +125,29 @@ TEST(Graphic, PolygonPlusEdge)
       "1 0 " // 4
       "1 0 " // 5
       "1 1 " // 6
+    ) );
+    testGraphicMatrix(tu, A);
+    ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
+  }
+  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+}
+
+TEST(Graphic, BixbyWagnerAppendix)
+{
+  TU* tu = NULL;
+  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
+  {
+    TU_CHRMAT* A = NULL;
+    ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "9 7 "
+      "1 0 0 0 0 0 1 " // 0
+      "0 1 1 1 0 0 1 " // 1
+      "0 1 1 1 0 0 1 " // 2
+      "0 1 1 1 0 1 1 " // 3
+      "0 0 0 0 1 1 1 " // 4
+      "0 1 1 1 1 0 0 " // 5
+      "1 1 1 1 0 0 0 " // 6
+      "1 1 0 1 0 0 0 " // 7
+      "1 0 0 0 0 0 0 " // 8
     ) );
     testGraphicMatrix(tu, A);
     ASSERT_TU_CALL( TUchrmatFree(tu, &A) );

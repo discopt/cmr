@@ -95,7 +95,7 @@ TU_ERROR stringToCharMatrix(TU* tu, TU_CHRMAT** matrix, const char* string)
   assert(end > string);
   string = end;
 
-  TUchrmatCreate(tu, matrix, numRows, numColumns, numRows * numColumns);
+  TU_CALL( TUchrmatCreate(tu, matrix, numRows, numColumns, numRows * numColumns) );
 
   (*matrix)->numNonzeros = 0;
   for (int row = 0; row < (*matrix)->numRows; ++row)

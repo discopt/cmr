@@ -1104,13 +1104,22 @@ TU_ERROR TUtdecToGraph(TU* tu, TU_TDEC* tdec, TU_GRAPH* graph, bool merge, TU_GR
 
   if (basis || cobasis)
   {
+#if !defined(NDEBUG)
+    /* This is only relevant if a 1-separation exists. */
+    for (int r = 0; r < tdec->numRows; ++r)
+      basis[r] = INT_MIN;
+    for (int c = 0; c < tdec->numColumns; ++c)
+      cobasis[c] = INT_MIN;
+#endif /* !NDEBUG */
+
     for (TU_GRAPH_ITER i = TUgraphEdgesFirst(graph); TUgraphEdgesValid(graph, i);
       i = TUgraphEdgesNext(graph, i))
     {
       TU_GRAPH_EDGE e = TUgraphEdgesEdge(graph, i);
 
 #if defined(TU_DEBUG_TDEC)
-      printf("  Graph edge %d = {%d,%d}\n", e, TUgraphEdgeU(graph, e), TUgraphEdgeV(graph, e));
+      printf("  Graph edge %d = {%d,%d} <%d>\n", e, TUgraphEdgeU(graph, e), TUgraphEdgeV(graph, e),
+        localEdgeElements[e]);
       fflush(stdout);
 #endif /* TU_DEBUG_TDEC */
 
@@ -1120,6 +1129,14 @@ TU_ERROR TUtdecToGraph(TU* tu, TU_TDEC* tdec, TU_GRAPH* graph, bool merge, TU_GR
       else if (element < 0 && cobasis)
         cobasis[-1-element] = e;
     }
+
+#if !defined(NDEBUG)
+    /* These assertions indicate a 1-separable input matrix. */
+    for (int r = 0; r < tdec->numRows; ++r)
+      assert(basis[r] >= 0);
+    for (int c = 0; c < tdec->numColumns; ++c)
+      assert(cobasis[c] >= 0);
+#endif /* !NDEBUG */
   }
 
   TU_CALL( TUfreeStackArray(tu, &tdecEdgesToGraphEdges) );
@@ -1259,6 +1276,7 @@ TU_ERROR findReducedDecomposition(
   {
     int row = entryRows[p];
     TU_TDEC_EDGE edge = (row < tdec->numRows) ? tdec->rowEdges[row].edge : -1;
+    printf("      Entry %d is row %d of %d and corresponds to edge %d.\n", p, row, tdec->numRows, edge);
     if (edge >= 0)
     {
 #if defined(TU_DEBUG_TDEC)
@@ -1319,13 +1337,14 @@ TU_ERROR findReducedDecomposition(
     else
     {
 #if defined(TU_DEBUG_TDEC)
-      printf("      Edge %d is new.\n", edge);
+      printf("      Edge <%d> is new.\n", entryRows[p]);
 #endif /* TU_DEBUG_TDEC */
     }
   }
 
 #if defined(TU_DEBUG_TDEC)
   printf("      Root member is %d with temporary depth %d.\n", reducedRootMember, reducedRootDepth);
+  fflush(stdout);
 #endif /* TU_DEBUG_TDEC */
 
   for (int i = 0; i < newcolumn->numReducedMembers; ++i)
@@ -2462,7 +2481,7 @@ TU_ERROR TUtdecAddColumnApply(TU* tu, TU_TDEC* tdec, TU_TDEC_NEWCOLUMN* newcolum
 }
 
 TU_ERROR testGraphicnessTDecomposition(TU* tu, TU_CHRMAT* matrix, TU_CHRMAT* transpose,
-  bool* isGraphic, TU_GRAPH* graph, TU_GRAPH_EDGE* basis, TU_GRAPH_EDGE* cobasis,
+  bool* pisGraphic, TU_GRAPH* graph, TU_GRAPH_EDGE* basis, TU_GRAPH_EDGE* cobasis,
   TU_SUBMAT** psubmatrix)
 {
   assert(tu);
@@ -2481,7 +2500,7 @@ TU_ERROR testGraphicnessTDecomposition(TU* tu, TU_CHRMAT* matrix, TU_CHRMAT* tra
 
   if (matrix->numNonzeros == 0)
   {
-    *isGraphic = true;
+    *pisGraphic = true;
     if (graph)
     {
       /* Construct a path with numRows edges and with numColumns loops at 0. */
@@ -2524,6 +2543,7 @@ TU_ERROR testGraphicnessTDecomposition(TU* tu, TU_CHRMAT* matrix, TU_CHRMAT* tra
   /* Process each column. */
   TU_TDEC_NEWCOLUMN* newcol = NULL;
   TUtdecnewcolumnCreate(tu, &newcol);
+  *pisGraphic = true;
   for (int column = 0; column < matrix->numColumns; ++column)
   {
     TUtdecAddColumnCheck(tu, tdec, newcol,
@@ -2538,13 +2558,13 @@ TU_ERROR testGraphicnessTDecomposition(TU* tu, TU_CHRMAT* matrix, TU_CHRMAT* tra
     }
     else
     {
-      *isGraphic = false;
+      *pisGraphic = false;
       assert(!"Not implemented");
     }
   }
   TUtdecnewcolumnFree(tu, &newcol);
 
-  if (*isGraphic && graph)
+  if (*pisGraphic && graph)
   {
     TUtdecToGraph(tu, tdec, graph, true, basis, cobasis, NULL);
   }

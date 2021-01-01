@@ -8,8 +8,6 @@ extern "C" {
 #include <tu/graph.h>
 #include <tu/matrix.h>
 
-#include "one_sum.h"
-
 typedef enum
 {
   TDEC_MEMBER_TYPE_INVALID = 0,
@@ -120,7 +118,7 @@ TU_ERROR testGraphicnessTDecomposition(
   TU* tu,                 /**< \ref TU environment. */
   TU_CHRMAT* matrix,      /**< 1-connected matrix to be tested. */
   TU_CHRMAT* transpose,   /**< Transpose of \p matrix. */
-  bool* isGraphic,        /**< Whether \p matrix is graphic. */
+  bool* pisGraphic,       /**< Pointer for storing Whether \p matrix is graphic. */
   TU_GRAPH* graph,        /**< If not \c NULL and graphic, a graph represented by the matrix. */
   TU_GRAPH_EDGE* basis,   /**< If not \c NULL and graphic, a map from rows to basis edges. */
   TU_GRAPH_EDGE* cobasis, /**< If not \c NULL and graphic, a map from columns to cobasis edges. */

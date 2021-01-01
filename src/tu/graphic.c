@@ -238,7 +238,11 @@ TU_ERROR TUconvertGraphToBinaryMatrix(TU* tu, TU_GRAPH* graph, TU_CHRMAT** pmatr
     lengths[e] = 1;
   }
   for (int b = 0; b < numBasisEdges; ++b)
+  {
+    printf("basis[%d] = %d\n", b, basisEdges[b]);
+    fflush(stdout);
     lengths[basisEdges[b]] = 0;
+  }
 
   /* Start Dijkstra's algorithm at each node. */
   int countComponents = 0;
