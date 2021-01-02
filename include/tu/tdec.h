@@ -90,7 +90,8 @@ TU_EXPORT
 TU_ERROR TUtdecToDot(
   TU* tu,                 /**< \ref TU environment. */
   TU_TDEC* tdec,          /**< t-decomposition. */
-  FILE* stream            /**< Stream to write to. */
+  FILE* stream,           /**< Stream to write to. */
+  bool* edgesHighlighted  /**< Indicator for edges to be highlighted. */
 );
 
 TU_EXPORT
