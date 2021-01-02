@@ -73,13 +73,24 @@ int TUtdecNumEdges(
 
 TU_EXPORT
 TU_ERROR TUtdecToGraph(
-  TU* tu,                 /**< TU environment. */
+  TU* tu,                 /**< \ref TU environment. */
   TU_TDEC* tdec,          /**< t-decomposition. */
   TU_GRAPH* graph,        /**< Graph. */
   bool merge,             /**< Merge and remove corresponding parent and child markers. */
   TU_GRAPH_EDGE* basis,   /**< If not NULL, the edges of a spanning tree are stored here. */
   TU_GRAPH_EDGE* cobasis, /**< If not NULL, the non-basis edges are stored here. */
   int* edgeElements       /**< If not NULL, the elements for each edge are stored here. */
+);
+
+/**
+ * \brief Visualizes a t-decomposition as a graph in \c dot format.
+ */
+
+TU_EXPORT
+TU_ERROR TUtdecToDot(
+  TU* tu,                 /**< \ref TU environment. */
+  TU_TDEC* tdec,          /**< t-decomposition. */
+  FILE* stream            /**< Stream to write to. */
 );
 
 TU_EXPORT

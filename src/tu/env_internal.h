@@ -81,4 +81,29 @@ TU_ERROR _TUfreeStack(
 #define TUfreeStackArray(tu, ptr) \
   _TUfreeStack(tu, (void**) ptr)
 
+char* TUconsistencyMessage(const char* format, ...);
+
+#if !defined(NDEBUG)
+
+#define TUconsistencyAssert( call ) \
+  do \
+  { \
+    char* __message = call; \
+    if (__message) \
+    { \
+      fflush(stdout); \
+      fprintf(stderr, "%s:%d: %s\n", __FILE__, __LINE__, __message); \
+      fflush(stderr); \
+      free(__message); \
+      exit(1); \
+    } \
+  } \
+  while (false);
+
+#else
+
+#define TUconsistencyAssert( call )
+  
+#endif
+
 #endif /* TU_ENV_INTERNAL_H */

@@ -5,6 +5,8 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <limits.h>
+#include <stdarg.h>
+#include <string.h>
 
 static const size_t FIRST_STACK_SIZE = 4096L; /**< Size of the first stack. */
 static const int INITIAL_MEM_STACKS = 16;     /**< Initial number of allocated stacks. */
@@ -239,4 +241,17 @@ TU_ERROR _TUfreeStack(TU* tu, void** ptr)
   *ptr = NULL;
 
   return TU_OKAY;
+}
+
+char* TUconsistencyMessage(const char* format, ...)
+{
+  assert(format);
+
+  char buffer[256];
+  va_list argptr;
+  va_start(argptr, format);
+  vsprintf(buffer, format, argptr);
+  va_end(argptr);
+
+  return strdup(buffer);
 }

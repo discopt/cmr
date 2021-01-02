@@ -88,7 +88,7 @@ bool isRepresentativeMember(
  */
 
 static
-const char* consistencyEdges(
+char* consistencyEdges(
   TU* tu,       /**< \ref TU environment. */
   TU_TDEC* tdec /**< t-decomposition. */
 )
@@ -102,20 +102,27 @@ const char* consistencyEdges(
       continue;
 
     TU_TDEC_EDGE edge = tdec->members[member].firstEdge;
-    if (edge < 0)
-      continue;
-
-    do
+    int countEdges = 0;
+    if (edge >= 0)
     {
-      if (edge < 0 || edge >= tdec->memEdges)
-        return "edge out of range";
-      if (tdec->edges[edge].next < 0 || tdec->edges[edge].next > tdec->memEdges)
-        return "edge's next out of range";
-      if (tdec->edges[tdec->edges[edge].next].prev != edge)
-        return "inconsistent doubly-linked edge list";
-      edge = tdec->edges[edge].next;
+      do
+      {
+        if (edge < 0 || edge >= tdec->memEdges)
+          return TUconsistencyMessage("edge %d of member %d out of range.", member, edge);
+        if (tdec->edges[edge].next < 0 || tdec->edges[edge].next > tdec->memEdges)
+          return TUconsistencyMessage("edge %d of member %d has next out of range", member, edge);
+        if (tdec->edges[tdec->edges[edge].next].prev != edge)
+          return TUconsistencyMessage("member %d has inconsistent edge list", member);
+        edge = tdec->edges[edge].next;
+        countEdges++;
+      }
+      while (edge != tdec->members[member].firstEdge);
     }
-    while (edge != tdec->members[member].firstEdge);
+    if (countEdges != tdec->members[member].numEdges)
+    {
+      return TUconsistencyMessage("member %d has %d edges, but numEdges %d", member, countEdges,
+        tdec->members[member].numEdges);
+    }
   }
 
   return NULL;
@@ -128,7 +135,7 @@ const char* consistencyEdges(
  */
 
 static
-const char* consistencyMembers(
+char* consistencyMembers(
   TU* tu,       /**< \ref TU environment. */
   TU_TDEC* tdec /**< t-decomposition. */
 )
@@ -141,7 +148,7 @@ const char* consistencyMembers(
     if (tdec->members[member].type != TDEC_MEMBER_TYPE_BOND
       && tdec->members[member].type != TDEC_MEMBER_TYPE_PRIME
       && tdec->members[member].type != TDEC_MEMBER_TYPE_POLYGON)
-      return "invalid member type";
+      return TUconsistencyMessage("member %d has invalid type", member);
   }
 
   return NULL;
@@ -154,7 +161,7 @@ const char* consistencyMembers(
  */
 
 static
-const char* consistencyNodes(
+char* consistencyNodes(
   TU* tu,       /**< \ref TU environment. */
   TU_TDEC* tdec /**< t-decomposition. */
 )
@@ -175,20 +182,20 @@ const char* consistencyNodes(
       if (isPrime)
       {
         if (head < 0)
-          return "invalid head node of prime member's edge";
+          return TUconsistencyMessage("edge %d of prime member %d has invalid head node", edge, member);
         if (tail < 0)
-          return "invalid tail node of prime member's edge";
+          return TUconsistencyMessage("edge %d of prime member %d has invalid tail node", edge, member);
         if (head >= tdec->memNodes)
-          return "head node beyond range.";
+          return TUconsistencyMessage("edge %d of prime member %d has head node out of range", edge, member);
         if (tail >= tdec->memNodes)
-          return "tail node beyond range.";
+          return TUconsistencyMessage("edge %d of prime member %d has tail node out of range", edge, member);
       }
       else
       {
         if (head >= 0)
-          return "head node of non-prime member's edge is not -1";
+          return TUconsistencyMessage("edge %d of non-prime member %d has a head node", edge, member);
         if (tail >= 0)
-          return "tail node of non-prime member's edge is not -1";
+          return TUconsistencyMessage("edge %d of non-prime member %d has a tail node", edge, member);
       }
       edge = tdec->edges[edge].next;
     }
@@ -197,102 +204,6 @@ const char* consistencyNodes(
 
   return NULL;
 }
-
-
-/**
- * \brief Checks whether \p tdec has consistent parent/child structure of members.
- * 
- * \returns Explanation of inconsistency, or \c NULL.
- */
-
-static
-const char* consistencyParentChild(
-  TU* tu,       /**< \ref TU environment. */
-  TU_TDEC* tdec /**< t-decomposition. */
-)
-{
-  assert(tu);
-  assert(tdec);
-
-  if (tdec->memMembers < tdec->numMembers)
-    return "member count and memory inconsistent";
-  if (tdec->numMembers < 1)
-    return "no members";
-  if (tdec->members[0].markerOfParent != -1)
-    return "marker of root's parent shall be invalid";
-  if (tdec->members[0].parentMember != -1)
-    return "root's parent shall be invalid";
-  if (tdec->members[0].type != TDEC_MEMBER_TYPE_BOND)
-    return "root member is not a bond";
-  if (tdec->edges[tdec->members[0].markerToParent].name != INT_MIN)
-    return "parent marker of root is not INT_MIN";
-
-  int* countChildren = NULL;
-  if (TUallocStackArray(tu, &countChildren, tdec->memMembers) != TU_OKAY)
-    return "stack allocation in consistencyParentChild() failed";
-  for (int m = 0; m < tdec->memMembers; ++m)
-    countChildren[m] = 0;
-
-  for (TU_TDEC_MEMBER member = 0; member < tdec->numMembers; ++member)
-  {
-    if (tdec->members[member].parentMember < 0 && member != 0)
-    {
-      TUfreeStackArray(tu, &countChildren);
-      return "non-root member without parent";
-    }
-    if (tdec->members[member].parentMember >= 0 && member == 0)
-    {
-      TUfreeStackArray(tu, &countChildren);
-      return "root member with parent";
-    }
-    if (tdec->members[member].parentMember >= tdec->memMembers)
-    {
-      TUfreeStackArray(tu, &countChildren);
-      return "parent member out of range";
-    }
-    if (tdec->members[member].parentMember >= 0)
-      countChildren[tdec->members[member].parentMember]++;
-  }
-
-  for (TU_TDEC_MEMBER member = 0; member < tdec->numMembers; ++member)
-  {
-    TU_TDEC_EDGE edge = tdec->members[member].firstEdge;
-    if (edge < 0)
-      continue;
-    do
-    {
-      if (tdec->edges[edge].childMember >= 0)
-      {
-        countChildren[member]--;
-        
-        if (tdec->members[tdec->edges[edge].childMember].parentMember != member)
-        {
-          TUfreeStackArray(tu, &countChildren);
-          return "bad parentMember";
-        }
-        if (tdec->members[tdec->edges[edge].childMember].markerOfParent != edge)
-        {
-          TUfreeStackArray(tu, &countChildren);
-          return "bad markerOfParent";
-        }
-        TU_TDEC_EDGE markerChild = tdec->members[tdec->edges[edge].childMember].markerToParent;
-        if (tdec->edges[markerChild].name != -tdec->edges[edge].name)
-        {
-          TUfreeStackArray(tu, &countChildren);
-          return "names of corresponding marker edges are not negations";
-        }
-      }
-      edge = tdec->edges[edge].next;
-    }
-    while (edge != tdec->members[member].firstEdge);
-  }
-
-  if (TUfreeStackArray(tu, &countChildren) != TU_OKAY)
-    return "stack deallocation in consistencyParentChild() failed";
-
-  return NULL;
-}
-
 
 /**
  * \brief Checks whether the members of \p tdec form a tree.
@@ -301,7 +212,7 @@ const char* consistencyParentChild(
  */
 
 static
-const char* consistencyTree(
+char* consistencyTree(
   TU* tu,       /**< \ref TU environment. */
   TU_TDEC* tdec /**< t-decomposition. */
 )
@@ -327,38 +238,6 @@ const char* consistencyTree(
 
   return NULL;
 }
-
-const char* TUtdecConsistency(TU* tu, TU_TDEC* tdec)
-{
-  const char* message = NULL;
-  if ((message = consistencyMembers(tu, tdec)))
-    return message;
-  if ((message = consistencyEdges(tu, tdec)))
-    return message;
-  if ((message = consistencyNodes(tu, tdec)))
-    return message;
-  if ((message = consistencyParentChild(tu, tdec)))
-    return message;
-  if ((message = consistencyTree(tu, tdec)))
-    return message;
-
-  return NULL;
-}
-
-#define assertConsistency(tu, tdec) \
-  do \
-  { \
-    const char* __message = TUtdecConsistency(tu, tdec); \
-    if (__message) \
-    { \
-      fflush(stdout); \
-      fprintf(stderr, "%s:%d: t-decomposition is inconsistent: %s\n", __FILE__, __LINE__, __message); \
-      fflush(stderr); \
-      exit(1); \
-    } \
-  } \
-  while (false);
-
 
 typedef enum
 {
@@ -463,6 +342,126 @@ static // TODO: inline
 TU_TDEC_MEMBER findEdgeMember(TU_TDEC* tdec, TU_TDEC_EDGE edge)
 {
   return findMember(tdec, tdec->edges[edge].member);
+}
+
+/**
+ * \brief Checks whether \p tdec has consistent parent/child structure of members.
+ * 
+ * \returns Explanation of inconsistency, or \c NULL.
+ */
+
+static
+char* consistencyParentChild(
+  TU* tu,       /**< \ref TU environment. */
+  TU_TDEC* tdec /**< t-decomposition. */
+)
+{
+  assert(tu);
+  assert(tdec);
+
+  if (tdec->memMembers < tdec->numMembers)
+    return TUconsistencyMessage("member count and memory are inconsistent");
+  if (tdec->numMembers < 1)
+    return TUconsistencyMessage("no member count and memory are inconsistent");
+  if (tdec->members[0].markerOfParent != -1)
+    return TUconsistencyMessage("root member does not have a valid parent");
+  if (tdec->members[0].parentMember != -1)
+    return TUconsistencyMessage("root's parent shall be invalid");
+  if (tdec->members[0].type != TDEC_MEMBER_TYPE_BOND)
+    return TUconsistencyMessage("root member is not a bond");
+  if (tdec->edges[tdec->members[0].markerToParent].name != INT_MIN)
+    return TUconsistencyMessage("parent marker of root is not INT_MIN");
+
+  int* countChildren = NULL;
+  if (TUallocStackArray(tu, &countChildren, tdec->memMembers) != TU_OKAY)
+    return TUconsistencyMessage("stack allocation in consistencyParentChild() failed");
+  for (int m = 0; m < tdec->memMembers; ++m)
+    countChildren[m] = 0;
+
+  for (TU_TDEC_MEMBER member = 0; member < tdec->numMembers; ++member)
+  {
+    if (tdec->members[member].parentMember < 0 && member != 0)
+    {
+      TUfreeStackArray(tu, &countChildren);
+      return TUconsistencyMessage("non-root member %d without parent", member);
+    }
+    if (tdec->members[member].parentMember >= 0 && member == 0)
+    {
+      TUfreeStackArray(tu, &countChildren);
+      return TUconsistencyMessage("root member 0 has a parent");
+    }
+    if (tdec->members[member].parentMember >= tdec->memMembers)
+    {
+      TUfreeStackArray(tu, &countChildren);
+      return TUconsistencyMessage("parent member of %d is out of range", member);
+    }
+    if (tdec->members[member].parentMember >= 0)
+      countChildren[tdec->members[member].parentMember]++;
+  }
+
+  for (TU_TDEC_MEMBER member = 0; member < tdec->numMembers; ++member)
+  {
+    if (!isRepresentativeMember(tdec, member))
+      continue;
+
+    TU_TDEC_EDGE edge = tdec->members[member].firstEdge;
+    if (edge < 0)
+      continue;
+    do
+    {
+      if (tdec->edges[edge].childMember >= 0)
+      {
+        countChildren[member]--;
+        
+        if (tdec->members[tdec->edges[edge].childMember].parentMember != member)
+        {
+          TUfreeStackArray(tu, &countChildren);
+          return TUconsistencyMessage("member %d has child %d whose parent member is %d", member,
+            tdec->edges[edge].childMember,
+            tdec->members[tdec->edges[edge].childMember].parentMember);
+        }
+        if (tdec->members[tdec->edges[edge].childMember].markerOfParent != edge)
+        {
+          TUfreeStackArray(tu, &countChildren);
+          return TUconsistencyMessage("member %d has child edge %d for child %d whose parent's markerOfParent is %d",
+            member, edge, tdec->edges[edge].childMember,
+            tdec->members[tdec->edges[edge].childMember].markerOfParent);
+        }
+        TU_TDEC_EDGE markerChild = tdec->members[tdec->edges[edge].childMember].markerToParent;
+        if (tdec->edges[markerChild].name != -tdec->edges[edge].name)
+        {
+          TUfreeStackArray(tu, &countChildren);
+          return TUconsistencyMessage("marker edges %d and %d of members %d (parent) and %d (child) have names %d and %d.",
+            edge, markerChild, member, findEdgeMember(tdec, markerChild), tdec->edges[edge].name,
+            tdec->edges[markerChild].name);
+        }
+      }
+      edge = tdec->edges[edge].next;
+    }
+    while (edge != tdec->members[member].firstEdge);
+  }
+
+  if (TUfreeStackArray(tu, &countChildren) != TU_OKAY)
+    return "stack deallocation in consistencyParentChild() failed";
+
+  return NULL;
+}
+
+char* TUtdecConsistency(TU* tu, TU_TDEC* tdec)
+{
+  char* message = NULL;
+  if ((message = consistencyMembers(tu, tdec)))
+    return message;
+  if ((message = consistencyEdges(tu, tdec)))
+    return message;
+  if ((message = consistencyNodes(tu, tdec)))
+    return message;
+  if ((message = consistencyParentChild(tu, tdec)))
+    return message;
+  if ((message = consistencyTree(tu, tdec)))
+    return message;
+
+  return NULL;
 }
 
 static
@@ -714,7 +713,7 @@ TU_ERROR createRowEdge(
   setRowEdge(tu, tdec, row, edge);
 
 #if defined(TU_DEBUG_TDEC)
-  printf("        Created row edge {%d,%d} of member %d for row %d.\n", head, tail, member, row);
+  printf("        Created row edge %d <%d> of member %d.\n", edge, row, member);
 #endif /* TU_DEBUG_TDEC */
 
   return TU_OKAY;
@@ -814,6 +813,11 @@ TU_ERROR createMember(
   *pmember = tdec->numMembers;
   tdec->numMembers++;
 
+#if defined(TU_DEBUG_TDEC)
+  printf("        Creating %s member %d\n", type == TDEC_MEMBER_TYPE_BOND ? "bond" :
+    (type == TDEC_MEMBER_TYPE_PRIME ? "prime" : "polygon"), *pmember);
+#endif /* TU_DEBUG_TDEC */
+
   return TU_OKAY;
 }
 
@@ -905,7 +909,7 @@ TU_ERROR TUtdecCreate(TU* tu, TU_TDEC** ptdec, int rootRow, int memEdges, int me
   for (int c = 0; c < tdec->numColumns; ++c)
     tdec->columnEdges[c].edge = -1;
 
-  assertConsistency(tu, tdec);
+  TUconsistencyAssert( TUtdecConsistency(tu, tdec) );
 
   return TU_OKAY;
 }
@@ -954,7 +958,7 @@ TU_ERROR TUtdecToGraph(TU* tu, TU_TDEC* tdec, TU_GRAPH* graph, bool merge, TU_GR
   assert(tdec);
   assert(graph);
 
-  assertConsistency(tu, tdec);
+  TUconsistencyAssert( TUtdecConsistency(tu, tdec) );
 
 #if defined(TU_DEBUG_TDEC)
   printf("TUtdecToGraph for t-decomposition.\n");
@@ -1146,6 +1150,63 @@ TU_ERROR TUtdecToGraph(TU* tu, TU_TDEC* tdec, TU_GRAPH* graph, bool merge, TU_GR
 
   return TU_OKAY;
 }
+
+TU_ERROR TUtdecToDot(TU* tu, TU_TDEC* tdec, FILE* stream)
+{
+  assert(tu);
+  assert(tdec);
+  assert(stream);
+
+  fprintf(stream, "// t-decomposition\n");
+  fprintf(stream, "graph tdec {\n");
+  fprintf(stream, "  compound = true;\n");
+  for (TU_TDEC_MEMBER member = 0; member < tdec->numMembers; ++member)
+  {
+    fprintf(stream, "  subgraph member%d {\n", member);
+    if (tdec->members[member].type == TDEC_MEMBER_TYPE_BOND)
+    {
+      TU_TDEC_EDGE edge = tdec->members[member].firstEdge;
+      do
+      {
+        fprintf(stream, "    %d.0 -- %d.1 [label=\"%d\"];\n", member, member, edge);
+        edge = tdec->edges[edge].next;
+      }
+      while (edge != tdec->members[member].firstEdge);
+    }
+    else if (tdec->members[member].type == TDEC_MEMBER_TYPE_PRIME)
+    {
+      TU_TDEC_EDGE edge = tdec->members[member].firstEdge;
+      do
+      {
+        TU_TDEC_NODE u = findEdgeHead(tdec, edge);
+        TU_TDEC_NODE v = findEdgeTail(tdec, edge);
+        fprintf(stream, "    %d -- %d [label=\"%d\"];\n", u, v, edge);
+        edge = tdec->edges[edge].next;
+      }
+      while (edge != tdec->members[member].firstEdge);
+    }
+    else
+    {
+      assert(tdec->members[member].type == TDEC_MEMBER_TYPE_POLYGON);
+      TU_TDEC_EDGE edge = tdec->members[member].firstEdge;
+      int i = 0;
+      do
+      {
+        printf("%d of %d\n", i, tdec->members[member].numEdges);
+        fprintf(stream, "    %d.%d -- %d.%d [label=\"%d\"];\n", member, i, member,
+          (i+1) % tdec->members[member].numEdges, edge);
+        edge = tdec->edges[edge].next;
+        i++;
+      }
+      while (edge != tdec->members[member].firstEdge);
+    }
+    fprintf(stream, "  }\n");
+  }
+  fprintf(stream, "}\n");
+
+  return TU_OKAY;
+}
+
 
 TU_ERROR TUtdecnewcolumnCreate(TU* tu, TU_TDEC_NEWCOLUMN** pnewcolumn)
 {
@@ -1689,7 +1750,7 @@ TU_ERROR TUtdecAddColumnCheck(TU* tu, TU_TDEC* tdec, TU_TDEC_NEWCOLUMN* newcolum
   printf("\n  Preparing to add a column with %d 1's.\n", numEntries);
 #endif /* TU_DEBUG_TDEC */
 
-  assertConsistency(tu, tdec);
+  TUconsistencyAssert( TUtdecConsistency(tu, tdec) );
 
   TU_CALL( initializeNewColumn(tu, tdec, newcolumn) );
   TU_CALL( findReducedDecomposition(tu, tdec, newcolumn, entryRows, numEntries) );
@@ -1704,7 +1765,7 @@ TU_ERROR TUtdecAddColumnCheck(TU* tu, TU_TDEC* tdec, TU_TDEC_NEWCOLUMN* newcolum
 #endif /* TU_DEBUG_TDEC */
   }
 
-  assertConsistency(tu, tdec);
+  TUconsistencyAssert( TUtdecConsistency(tu, tdec) );
 
   return TU_OKAY;
 }
@@ -1924,12 +1985,13 @@ TU_ERROR squeezePolygonEdges(
     tdec->edges[oldNext].prev = oldPrev;
     tdec->members[member].numEdges--;
 
-    /* Add edge and newNode to new edge list. */
+    /* Add edge to new edge list. */
     TU_TDEC_EDGE newPrev = tdec->edges[polygonParentMarker].prev;
     tdec->edges[newPrev].next = edge;
     tdec->edges[polygonParentMarker].prev = edge;
     tdec->edges[edge].prev = newPrev;
     tdec->edges[edge].next = polygonParentMarker;
+    tdec->members[polygon].numEdges++;
 
     edge = oldNext;
   }
@@ -1945,6 +2007,7 @@ TU_ERROR squeezePolygonEdges(
   tdec->edges[memberChildMarker].prev = oldPrev;
   tdec->edges[oldPrev].next = memberChildMarker;
   tdec->edges[firstEdge].prev = memberChildMarker;
+  tdec->members[member].numEdges++;
 
   /* Link all. */
   tdec->members[polygon].parentMember = bond;
@@ -2071,7 +2134,7 @@ TU_ERROR addColumnPreprocess(
     reducedMember->member);
 #endif /* TU_DEBUG_TDEC */
 
-  assertConsistency(tu, tdec);
+  TUconsistencyAssert( TUtdecConsistency(tu, tdec) );
 
   /* Handle children recursively. */
   for (int c = 0; c < reducedMember->numChildren; ++c)
@@ -2121,7 +2184,7 @@ TU_ERROR addColumnPreprocess(
     assert(0 == "Not tested.");
   }
 
-  assertConsistency(tu, tdec);
+  TUconsistencyAssert( TUtdecConsistency(tu, tdec) );
 
 #if 0
   
@@ -2418,7 +2481,7 @@ TU_ERROR TUtdecAddColumnApply(TU* tu, TU_TDEC* tdec, TU_TDEC_NEWCOLUMN* newcolum
   printf("  Adding a column with %d 1's.\n", numEntries);
 #endif /* TU_DEBUG_TDEC */
 
-  assertConsistency(tu, tdec);
+  TUconsistencyAssert( TUtdecConsistency(tu, tdec) );
 
   int numAssignedTerminals = 0;
   TU_CALL( addColumnPreprocess(tu, tdec, newcolumn, &newcolumn->reducedMembers[0],
@@ -2436,16 +2499,20 @@ TU_ERROR TUtdecAddColumnApply(TU* tu, TU_TDEC* tdec, TU_TDEC_NEWCOLUMN* newcolum
   TU_CALL( createNewRowsPolygon(tu, tdec, &newMember, &newEdge, newcolumn->terminalNode1,
     newcolumn->terminalNode2, column, entryRows, numEntries) );
 #if defined(TU_DEBUG_TDEC)
-  printf("    New edge is %d.\n", newEdge);
+  printf("    New edge is %d of %d. Terminal members are %d and %d.\n", newEdge, newMember,
+    newcolumn->terminalMember1, newcolumn->terminalMember2);
   fflush(stdout);
 #endif /* TU_DEBUG_TDEC */
 
-  ReducedMember* rootReduced = &newcolumn->reducedMembers[0];
-  TU_TDEC_MEMBER rootMember = rootReduced->member;
-  assert(rootReduced);
-
   if (newcolumn->terminalMember1 == newcolumn->terminalMember2)
   {
+#if defined(TU_DEBUG_TDEC)
+    printf("    Unique terminal member %d is %s.\n", newcolumn->terminalMember1,
+      tdec->members[newcolumn->terminalMember1].type == TDEC_MEMBER_TYPE_BOND ? "a bond" :
+      (tdec->members[newcolumn->terminalMember1].type == TDEC_MEMBER_TYPE_PRIME ? "prime" : "a polygon"));
+    fflush(stdout);
+#endif /* TU_DEBUG_TDEC */
+
     if (tdec->members[newcolumn->terminalMember1].type == TDEC_MEMBER_TYPE_BOND)
     {
       /* Add edge to the bond.  */
@@ -2455,9 +2522,7 @@ TU_ERROR TUtdecAddColumnApply(TU* tu, TU_TDEC* tdec, TU_TDEC_NEWCOLUMN* newcolum
       tdec->edges[newEdge].tail = newcolumn->terminalNode2;
       TU_CALL( addEdgeToMembersEdgeList(tu, tdec, newEdge, newcolumn->terminalMember1) );
       if (newMember >= 0)
-      {
-        tdec->members[newMember].parentMember = rootMember;
-      }
+        tdec->members[newMember].parentMember = newcolumn->terminalMember1;
     }
     else if (tdec->members[newcolumn->terminalMember1].type == TDEC_MEMBER_TYPE_POLYGON)
     {
@@ -2475,7 +2540,7 @@ TU_ERROR TUtdecAddColumnApply(TU* tu, TU_TDEC* tdec, TU_TDEC_NEWCOLUMN* newcolum
     assert(0 == "Adding of column with different end components not implemented.");
   }
 
-  assertConsistency(tu, tdec);
+  TUconsistencyAssert( TUtdecConsistency(tu, tdec) );
 
   return TU_OKAY;
 }
@@ -2546,6 +2611,10 @@ TU_ERROR testGraphicnessTDecomposition(TU* tu, TU_CHRMAT* matrix, TU_CHRMAT* tra
   *pisGraphic = true;
   for (int column = 0; column < matrix->numColumns; ++column)
   {
+    FILE* dotFile = fopen("tdec.dot", "w");
+    TU_CALL( TUtdecToDot(tu, tdec, dotFile) );
+    fclose(dotFile);
+    
     TUtdecAddColumnCheck(tu, tdec, newcol,
       &transpose->entryColumns[transpose->rowStarts[column]],
       transpose->rowStarts[column+1] - transpose->rowStarts[column]);
