@@ -28,7 +28,6 @@ TU_EXPORT
 TU_ERROR TUtdecCreate(
   TU* tu,           /**< TU environment. */
   TU_TDEC** ptdec,  /**< Pointer to new t-decomposition. .*/
-  int rootRow,      /**< Row of 1-entry of root member. */
   int memEdges,     /**< Initial memory for edges of the t-decomposition. */
   int memNodes,     /**< Initial memory for nodes of the t-decomposition. */
   int memMembers,   /**< Initial memory for members of the t-decomposition. */
