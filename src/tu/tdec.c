@@ -1407,9 +1407,15 @@ TU_ERROR computeReducedDecomposition(
 #endif /* TU_DEBUG_TDEC */
 
   /* Enlarge members array. */
+  int maxRow = 0;
+  for (int p = 0; p < numEntries; ++p)
+  {
+    if (entryRows[p] > maxRow)
+      maxRow = entryRows[p];
+  }
   if (newcolumn->memReducedMembers < tdec->numMembers + numEntries)
   {
-    newcolumn->memReducedMembers = tdec->memMembers + numEntries;
+    newcolumn->memReducedMembers = tdec->memMembers + maxRow + 1;
     TU_CALL( TUreallocBlockArray(tu, &newcolumn->reducedMembers, newcolumn->memReducedMembers) );
     TU_CALL( TUreallocBlockArray(tu, &newcolumn->membersToReducedMembers,
       newcolumn->memReducedMembers) );
@@ -1597,7 +1603,6 @@ TU_ERROR completeReducedDecomposition(
   }
 
   /* Create reduced members. */
-
   for (int p = 0; p < numEntries; ++p)
   {
     int row = entryRows[p];
