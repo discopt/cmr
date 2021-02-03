@@ -13,7 +13,11 @@ typedef struct
 
 typedef struct
 {
-  int name;                   /**< \brief Name of this edge. */
+  int name;                   /**< \brief Name of this edge.
+                               *
+                               * 0, 1, ..., m-1 indicate rows, -1,-2, ..., -n indicate columns,
+                               * and for (small) k >= 0, MAX_INT-k and -MAX_INT+k indicate
+                               * markers of the parent and to the parent, respectively. */
   TU_TDEC_MEMBER member;      /**< \brief Member this edge belongs to or -1 if in free list. */
   TU_TDEC_NODE head;          /**< \brief Head node of this edge for a prime member, -1 otherwise. */
   TU_TDEC_NODE tail;          /**< \brief Tail node of this edge for a prime member, -1 otherwise. */
@@ -383,16 +387,9 @@ char* consistencyParentChild(
 
   for (TU_TDEC_MEMBER member = 0; member < tdec->numMembers; ++member)
   {
-    if (tdec->members[member].parentMember < 0 && member != 0)
-    {
-      TUfreeStackArray(tu, &countChildren);
-      return TUconsistencyMessage("non-root member %d without parent", member);
-    }
-    if (tdec->members[member].parentMember >= 0 && member == 0)
-    {
-      TUfreeStackArray(tu, &countChildren);
-      return TUconsistencyMessage("root member 0 has a parent");
-    }
+    if (tdec->members[member].representativeMember != -1)
+      continue;
+
     if (tdec->members[member].parentMember >= tdec->memMembers)
     {
       TUfreeStackArray(tu, &countChildren);
@@ -419,8 +416,8 @@ char* consistencyParentChild(
         if (tdec->members[tdec->edges[edge].childMember].parentMember != member)
         {
           TUfreeStackArray(tu, &countChildren);
-          return TUconsistencyMessage("member %d has child %d whose parent member is %d", member,
-            tdec->edges[edge].childMember,
+          return TUconsistencyMessage("member %d has child edge %d for child %d whose parent member is %d",
+            member, edge, tdec->edges[edge].childMember,
             tdec->members[tdec->edges[edge].childMember].parentMember);
         }
         if (tdec->members[tdec->edges[edge].childMember].markerOfParent != edge)
@@ -778,7 +775,7 @@ TU_ERROR createMarkerEdge(
   if (isParent)
     data->name = INT_MAX - tdec->numMarkers;
   else
-    data->name = -(INT_MAX - tdec->numMarkers);
+    data->name = -INT_MAX + tdec->numMarkers;
 
 #if defined(TU_DEBUG_TDEC)
   printf("        Created %s marker edge {%d,%d} of member %d.\n", isParent ? "parent" : "child",
@@ -806,12 +803,12 @@ TU_ERROR createMember(
   }
 
   TU_TDEC_MEMBER_DATA* data = &tdec->members[tdec->numMembers];
-  data->markerOfParent = INT_MIN;
-  data->markerToParent = INT_MIN;
+  data->markerOfParent = -1;
+  data->markerToParent = -1;
   data->firstEdge = -1;
   data->representativeMember = -1;
   data->numEdges = 0;
-  data->parentMember = INT_MIN;
+  data->parentMember = -1;
   data->type = type;
   *pmember = tdec->numMembers;
   tdec->numMembers++;
@@ -975,7 +972,7 @@ TU_ERROR TUtdecToGraph(TU* tu, TU_TDEC* tdec, TU_GRAPH* graph, bool merge, TU_GR
       "a bond" : (type == TDEC_MEMBER_TYPE_POLYGON ? "a polygon" : "prime"),
        tdec->members[member].numEdges);
 #endif /* TU_DEBUG_TDEC */
-    
+
     TU_GRAPH_EDGE graphEdge;
     TU_TDEC_EDGE edge = tdec->members[member].firstEdge;
     if (type == TDEC_MEMBER_TYPE_PRIME)
@@ -1000,15 +997,10 @@ TU_ERROR TUtdecToGraph(TU* tu, TU_TDEC* tdec, TU_GRAPH* graph, bool merge, TU_GR
       TU_CALL( TUgraphAddNode(tu, graph, &graphTail) );
       do
       {
-        if (tdec->edges[edge].name != INT_MIN)
-        {
-          TU_CALL( TUgraphAddEdge(tu, graph, graphHead, graphTail, &graphEdge) );
-          tdecEdgesToGraphEdges[edge] = graphEdge;
-          if (localEdgeElements)
-            localEdgeElements[graphEdge] = tdec->edges[edge].name;
-        }
-        else
-          tdecEdgesToGraphEdges[edge] = -1;
+        TU_CALL( TUgraphAddEdge(tu, graph, graphHead, graphTail, &graphEdge) );
+        tdecEdgesToGraphEdges[edge] = graphEdge;
+        if (localEdgeElements)
+          localEdgeElements[graphEdge] = tdec->edges[edge].name;
         edge = tdec->edges[edge].next;
       }
       while (edge != tdec->members[member].firstEdge);
@@ -1329,7 +1321,7 @@ ReducedMember* createReducedMember(
 )
 {
 #if defined(TU_DEBUG_TDEC)
-  printf("      Creating reduced member %d.\n", member);
+  printf("      Attempting to create reduced member %d.\n", member);
 #endif /* TU_DEBUG_TDEC */
 
   ReducedMember* reducedMember = newcolumn->membersToReducedMembers[member];
@@ -1338,11 +1330,15 @@ ReducedMember* createReducedMember(
     /* This member is a known reduced member. If we meet an existing path of low depth, we remember
      * that. */
 
+#if defined(TU_DEBUG_TDEC)
+    printf("      Reduced member exists.\n");
+#endif /* TU_DEBUG_TDEC */
+
     if (!rootDepthMinimizer[reducedMember->rootMember] ||
       reducedMember->depth < rootDepthMinimizer[reducedMember->rootMember]->depth)
     {
 #if defined(TU_DEBUG_TDEC)
-      printf("      Reduced member exists.\n");
+      printf("      Updating depth to %d.\n", reducedMember->depth);
 #endif /* TU_DEBUG_TDEC */
       rootDepthMinimizer[reducedMember->rootMember] = reducedMember;
     }
@@ -1380,10 +1376,17 @@ ReducedMember* createReducedMember(
         TU_CALL( TUreallocBlockArray(tu, &newcolumn->reducedComponents,
           newcolumn->memReducedComponents) );
       }
+#if defined(TU_DEBUG_TDEC)
+      printf("      Initializing the new reduced component %d.\n", newcolumn->numReducedComponents);
+#endif /* TU_DEBUG_TDEC */
 
       newcolumn->reducedComponents[newcolumn->numReducedComponents].root = reducedMember;
       newcolumn->numReducedComponents++;
     }
+
+#if defined(TU_DEBUG_TDEC)
+      printf("      The root member of %d is %d.\n", reducedMember->member, reducedMember->rootMember);
+#endif /* TU_DEBUG_TDEC */
   }
   return reducedMember;
 }
@@ -1437,20 +1440,34 @@ TU_ERROR computeReducedDecomposition(
 
       /* For the first edge of this member, we set the depth minimizer to the new reduced member. */
       if (!rootDepthMinimizer[reducedMember->rootMember])
+      {
         rootDepthMinimizer[reducedMember->rootMember] = reducedMember;
+      }
     }
   }
 
   /* We set the reduced roots according to the minimizers. */
-  for (int r = 0; r < newcolumn->numReducedComponents; ++r)
+  for (int i = 0; i < newcolumn->numReducedComponents; ++i)
   {
-    newcolumn->reducedComponents[r].root =
-      rootDepthMinimizer[newcolumn->reducedComponents[r].root->member];
-    newcolumn->reducedComponents[r].rootDepth =
-      rootDepthMinimizer[newcolumn->reducedComponents[r].root->member]->depth;
 #if defined(TU_DEBUG_TDEC)
-    printf("      Member %d is a reduced root.\n", newcolumn->reducedComponents[r].root->member);
+    printf("      Considering reduced component %d with root member %d.\n", i,
+      newcolumn->reducedComponents[i].root->member);
+    printf("      The minimizer is %d.\n", rootDepthMinimizer[newcolumn->reducedComponents[i].root->member]->member);
 #endif /* TU_DEBUG_TDEC */
+    newcolumn->reducedComponents[i].root =
+      rootDepthMinimizer[newcolumn->reducedComponents[i].root->member];
+//     newcolumn->reducedComponents[i].rootDepth =
+//       rootDepthMinimizer[newcolumn->reducedComponents[i].root->member]->depth;
+#if defined(TU_DEBUG_TDEC)
+    printf("      Member %d is a reduced root.\n", newcolumn->reducedComponents[i].root->member);
+#endif /* TU_DEBUG_TDEC */
+  }
+
+  /* Allocate memory for children. */
+  if (newcolumn->memChildrenStorage < newcolumn->numReducedMembers)
+  {
+    newcolumn->memChildrenStorage = 2*newcolumn->numReducedMembers;
+    TU_CALL( TUreallocBlockArray(tu, &newcolumn->childrenStorage, newcolumn->memChildrenStorage) );
   }
 
   /* Set memory pointer of each reduced member. */
@@ -1470,14 +1487,22 @@ TU_ERROR computeReducedDecomposition(
     reducedMember->numChildren = 0;
   }
 
+#if defined(TU_DEBUG_TDEC)
+  printf("    Total number of children is %d / %d.\n", newcolumn->usedChildrenStorage,
+    newcolumn->memChildrenStorage);
+  fflush(stdout);
+#endif /* TU_DEBUG_TDEC */
+
   /* Set children of each reduced member. */
   for (int m = 0; m < newcolumn->numReducedMembers; ++m)
   {
     ReducedMember* reducedMember = &newcolumn->reducedMembers[m];
-    if (reducedMember->depth < rootDepthMinimizer[reducedMember->rootMember]->depth)
+    if (reducedMember->depth <= rootDepthMinimizer[reducedMember->rootMember]->depth)
     {
 #if defined(TU_DEBUG_TDEC)
-      printf("      Member %d's depth is smaller than its reduced root.\n", reducedMember->member);
+      printf("      Member %d's depth is smaller than or equal to that of its reduced root.\n",
+        reducedMember->member);
+      fflush(stdout);
 #endif /* TU_DEBUG_TDEC */
       continue;
     }
@@ -1491,8 +1516,7 @@ TU_ERROR computeReducedDecomposition(
 #if defined(TU_DEBUG_TDEC)
       printf("      Reduced member %ld (= member %d) has %d (= member %d) as child %d.\n",
         (parentReducedMember - newcolumn->reducedMembers),
-        tdec->members[newcolumn->reducedMembers[m].member].parentMember,
-        m, newcolumn->reducedMembers[m].member, parentReducedMember->numChildren);
+        parentReducedMember->member, m, newcolumn->reducedMembers[m].member, parentReducedMember->numChildren);
 #endif /* TU_DEBUG_TDEC */
       parentReducedMember->children[parentReducedMember->numChildren] = &newcolumn->reducedMembers[m];
       parentReducedMember->numChildren++;
@@ -1735,10 +1759,11 @@ TU_ERROR countChildrenTypes(
 
 static
 TU_ERROR determineTypes(
-  TU* tu,                       /**< \ref TU environment. */
-  TU_TDEC* tdec,                /**< t-decomposition. */
-  TU_TDEC_NEWCOLUMN* newcolumn, /**< new-column structure. */
-  ReducedMember* reducedMember  /**< Reduced member. */
+  TU* tu,                             /**< \ref TU environment. */
+  TU_TDEC* tdec,                      /**< t-decomposition. */
+  TU_TDEC_NEWCOLUMN* newcolumn,       /**< new-column structure. */
+  ReducedComponent* reducedComponent, /**< Reduced component. */
+  ReducedMember* reducedMember        /**< Reduced member. */
 )
 {
   assert(tu);
@@ -1753,7 +1778,7 @@ TU_ERROR determineTypes(
   /* First handle children recursively. */
   for (int c = 0; c < reducedMember->numChildren; ++c)
   {
-    TU_CALL( determineTypes(tu, tdec, newcolumn, reducedMember->children[c]) );
+    TU_CALL( determineTypes(tu, tdec, newcolumn, reducedComponent, reducedMember->children[c]) );
 
 #if defined(TU_DEBUG_TDEC)
     if (newcolumn->remainsGraphic)
@@ -1767,7 +1792,6 @@ TU_ERROR determineTypes(
       return TU_OKAY;
   }
 
-  bool isRoot = (reducedMember == &newcolumn->reducedMembers[0]);
   int numOneEnd;
   int numTwoEnds;
   TU_CALL( countChildrenTypes(tu, tdec, reducedMember, &numOneEnd, &numTwoEnds) );
@@ -1783,6 +1807,8 @@ TU_ERROR determineTypes(
     return TU_OKAY;
   }
 
+  bool isRoot = reducedMember == reducedComponent->root;
+
   /* Different behavior for bonds, polygons and prime components. */
   TU_TDEC_MEMBER member = reducedMember->member;
   if (tdec->members[member].type == TDEC_MEMBER_TYPE_BOND)
@@ -1794,7 +1820,13 @@ TU_ERROR determineTypes(
     }
     else
     {
-      assert(0 == "Typing of non-root bond not implemented.");
+      // No children, but an reduced edge.
+      if (2*numTwoEnds + numOneEnd == 0 && reducedMember->firstReducedEdge)
+        reducedMember->type = TYPE_1_HEAD_END_TAIL_END;
+      else
+      {
+        assert(0 == "Typing of non-root bond not fully implemented.");
+      }
     }
   }
   else if (tdec->members[member].type == TDEC_MEMBER_TYPE_POLYGON)
@@ -1876,8 +1908,11 @@ TU_ERROR determineTypes(
     newcolumn->edgesInPath[markerOfParent] = true;
 
     /* Increase node degrees of nodes in parent. */
-    newcolumn->nodesDegree[findEdgeHead(tdec, markerOfParent)]++;
-    newcolumn->nodesDegree[findEdgeTail(tdec, markerOfParent)]++;
+    if (tdec->members[reducedParent->member].type == TDEC_MEMBER_TYPE_PRIME)
+    {
+      newcolumn->nodesDegree[findEdgeHead(tdec, markerOfParent)]++;
+      newcolumn->nodesDegree[findEdgeTail(tdec, markerOfParent)]++;
+    }
 
 #if defined(TU_DEBUG_TDEC)
     printf("    Added marker edge of parent to list of reduced edges.\n");
@@ -1908,7 +1943,8 @@ TU_ERROR TUtdecAddColumnCheck(TU* tu, TU_TDEC* tdec, TU_TDEC_NEWCOLUMN* newcolum
 
   for (int i = 0; i < newcolumn->numReducedComponents; ++i)
   {
-    TU_CALL( determineTypes(tu, tdec, newcolumn, newcolumn->reducedComponents[i].root) );
+    TU_CALL( determineTypes(tu, tdec, newcolumn, &newcolumn->reducedComponents[i],
+      newcolumn->reducedComponents[i].root) );
   }
 
   if (newcolumn->remainsGraphic)
@@ -2123,24 +2159,34 @@ TU_ERROR squeezePolygonEdges(
 
   TU_TDEC_EDGE firstEdge = tdec->members[member].firstEdge;
   TU_TDEC_EDGE edge = firstEdge;
+  bool encounteredStayingEdge = false;
   do
   {
+#if defined(TU_DEBUG_TDEC)
+    printf("        Edge %d <%d>", edge, tdec->edges[edge].name);
+    if (tdec->edges[edge].childMember >= 0)
+      printf(" (with child %d)", tdec->edges[edge].childMember);
+    if (edge == tdec->members[member].markerToParent)
+      printf(" (with parent %d)", tdec->members[member].parentMember);
+    printf(" (prev = %d, next = %d)", tdec->edges[edge].prev, tdec->edges[edge].next);
+    fflush(stdout);
+#endif /* TU_DEBUG_TDEC */
     /* Evaluate predicate. */
     bool value = edgesPredicate[edge];
     if ((value && !predicateValue) || (!value && predicateValue))
     {
 #if defined(TU_DEBUG_TDEC)
-      printf("        Edge %d <%d> does not satisfy the predicate.\n", edge,
-        tdec->edges[edge].name);
+      printf(" does not satisfy the predicate.\n");
       fflush(stdout);
 #endif /* TU_DEBUG_TDEC */
-      tdec->members[member].firstEdge = edge;
       edge = tdec->edges[edge].next;
+      encounteredStayingEdge = true;
       continue;
     }
 
 #if defined(TU_DEBUG_TDEC)
-    printf("        Edge %d = <%d> satisfies the predicate.\n", edge, tdec->edges[edge].name);
+    printf(" satisfies the predicate.\n");
+    fflush(stdout);
 #endif /* TU_DEBUG_TDEC */
 
     assert(edge != tdec->members[member].markerToParent);
@@ -2159,11 +2205,25 @@ TU_ERROR squeezePolygonEdges(
     tdec->edges[edge].prev = newPrev;
     tdec->edges[edge].next = polygonParentMarker;
     tdec->edges[edge].member = polygon;
+    if (tdec->edges[edge].childMember >= 0)
+    {
+      assert( tdec->members[tdec->edges[edge].childMember].parentMember == member);
+      tdec->members[tdec->edges[edge].childMember].parentMember = polygon;
+    }
     tdec->members[polygon].numEdges++;
+
+    /* Did we move the first edge of this member? */
+    if (edge == firstEdge)
+    {
+      tdec->members[member].firstEdge = oldNext;
+      firstEdge = oldNext;
+      edge = oldNext;
+      continue;
+    }
 
     edge = oldNext;
   }
-  while (edge != firstEdge);
+  while (edge != firstEdge || !encounteredStayingEdge);
 
   /* Add child marker edge from old polygon to bond and add it to edge list. */
   TU_TDEC_EDGE memberChildMarker;
@@ -2364,6 +2424,12 @@ TU_ERROR addColumnPreprocess(
 #endif /* TU_DEBUG_TDEC */
 
   TUconsistencyAssert( TUtdecConsistency(tu, tdec) );
+  
+  /* If we are type 1, then we don't need to do anything. */
+  if (reducedMember->type == TYPE_1_HEAD_END_TAIL_END)
+  {
+    return TU_OKAY;
+  }
 
   /* Handle children recursively. */
   for (int c = 0; c < reducedMember->numChildren; ++c)
@@ -2372,7 +2438,7 @@ TU_ERROR addColumnPreprocess(
       pNumAssignedTerminals) );
   }
 
-  bool isRoot = (reducedMember == &newcolumn->reducedMembers[0]);
+  bool isRoot = reducedMember == reducedComponent->root;
 
   /* Different behavior for bonds, polygons and prime components. */
 
@@ -2405,7 +2471,7 @@ TU_ERROR addColumnPreprocess(
       newcolumn->memReducedEdgeStorage *= 2;
       TU_CALL( TUreallocBlockArray(tu, &newcolumn->reducedEdgeStorage,
         newcolumn->memReducedEdgeStorage) );
-      for (int e = newcolumn->usedChildrenStorage; e < newcolumn->memChildrenStorage; ++e)
+      for (int e = newcolumn->usedReducedEdgeStorage; e < newcolumn->memReducedEdgeStorage; ++e)
         newcolumn->reducedEdgeStorage[e].next = &newcolumn->reducedEdgeStorage[e+1];
       
     }
@@ -2832,6 +2898,68 @@ TU_ERROR addColumnUpdate(
   return TU_OKAY;
 }
 
+static
+TU_ERROR doReorderComponent(
+  TU* tu,                           /**< \ref TU environment. */
+  TU_TDEC* tdec,                    /**< t-decomposition. */
+  TU_TDEC_MEMBER member,            /**< Member to be processed. */
+  TU_TDEC_MEMBER newParent,         /**< New parent of \p member. */
+  TU_TDEC_MEMBER newMarkerToParent, /**< New marker edge linked to new parent of \p member. */
+  TU_TDEC_MEMBER markerOfNewParent  /**< Counterpart to \p newMarkerToParent. */
+)
+{
+  assert(tu);
+  assert(tdec);
+  assert(member >= 0);
+  assert(newParent >= 0);
+
+  TU_TDEC_MEMBER oldParent = findMemberParent(tdec, member);
+  TU_TDEC_EDGE oldMarkerToParent = tdec->members[member].markerToParent;
+  TU_TDEC_EDGE oldMarkerOfParent = tdec->members[member].markerOfParent;
+
+#if defined(TU_DEBUG_TDEC)
+  printf("        Flipping parenting of member %d with old parent %d and new parent %d.\n", member,
+    oldParent, newParent);
+  fflush(stdout);
+#endif /* TU_DEBUG_TDEC */
+  
+  tdec->members[member].markerToParent = newMarkerToParent;
+  tdec->members[member].markerOfParent = markerOfNewParent;
+  tdec->edges[markerOfNewParent].childMember = member;
+
+  if (oldMarkerToParent >= 0)
+    TU_CALL( doReorderComponent(tu, tdec, oldParent, member, oldMarkerOfParent, oldMarkerToParent) );
+
+  return TU_OKAY;
+}
+
+static
+TU_ERROR reorderComponent(
+  TU* tu,                 /**< \ref TU environment. */
+  TU_TDEC* tdec,          /**< t-decomposition. */
+  TU_TDEC_MEMBER newRoot  /**< The new root of the component. */
+)
+{
+  assert(tu);
+  assert(tdec);
+  assert(newRoot >= 0 && newRoot < tdec->memMembers);
+  assert(isRepresentativeMember(tdec, newRoot));
+
+#if defined(TU_DEBUG_TDEC)
+  printf("      Making member %d the new root of its component.\n", newRoot);
+  fflush(stdout);
+#endif /* TU_DEBUG_TDEC */
+
+
+  if (tdec->members[newRoot].parentMember >= 0)
+  {
+    TU_CALL( doReorderComponent(tu, tdec, findMemberParent(tdec, newRoot), newRoot,
+      tdec->members[newRoot].markerOfParent, tdec->members[newRoot].markerToParent) );
+  }
+  
+  return TU_OKAY;
+}
+
 TU_ERROR TUtdecAddColumnApply(TU* tu, TU_TDEC* tdec, TU_TDEC_NEWCOLUMN* newcolumn, int column,
   int* entryRows, int numEntries)
 {
@@ -2886,6 +3014,9 @@ TU_ERROR TUtdecAddColumnApply(TU* tu, TU_TDEC* tdec, TU_TDEC_NEWCOLUMN* newcolum
     TU_TDEC_EDGE newEdge;
     TU_CALL( createEdge(tu, tdec, -1, &newEdge) );
     componentNewEdges[i] = newEdge;
+    tdec->edges[newEdge].childMember = -1;
+    tdec->edges[newEdge].head = -1;
+    tdec->edges[newEdge].tail = -1;
 
     TU_CALL( addColumnUpdate(tu, tdec, newcolumn, reducedComponent, newEdge) );
   }
@@ -2895,15 +3026,13 @@ TU_ERROR TUtdecAddColumnApply(TU* tu, TU_TDEC* tdec, TU_TDEC_NEWCOLUMN* newcolum
     if (c == maxDepthComponent)
     {
 #if defined(TU_DEBUG_TDEC)
-      printf("      Reduced component %d has maximum depth.\n", c);
+      printf("      Reduced component %d has maximum depth and will remain a root.\n", c);
 #endif /* TU_DEBUG_TDEC */
     }
     else
     {
-#if defined(TU_DEBUG_TDEC)
-      printf("      Reduced component %d must be re-ordered.\n", c);
-#endif /* TU_DEBUG_TDEC */
-
+      TU_CALL( reorderComponent(tu, tdec, findMember(tdec,
+        tdec->edges[componentNewEdges[c]].member)) );
     }
   }
   
@@ -2919,7 +3048,54 @@ TU_ERROR TUtdecAddColumnApply(TU* tu, TU_TDEC* tdec, TU_TDEC_NEWCOLUMN* newcolum
   }
   else
   {
-    assert(0 == "Adding multiple components not implemented.");
+    /*
+     * We create another edge for the column as well as a polygon containing all new edges and this one.
+     */
+
+    TU_TDEC_MEMBER polygon;
+    TU_CALL( createMember(tu, tdec, TDEC_MEMBER_TYPE_POLYGON, &polygon) );
+
+    TU_TDEC_EDGE columnEdge;
+    TU_CALL( createEdge(tu, tdec, polygon, &columnEdge) );
+    tdec->edges[columnEdge].childMember = -1;
+    tdec->edges[columnEdge].head = -1;
+    tdec->edges[columnEdge].tail = -1;
+    tdec->edges[columnEdge].name = -1-column;
+    TU_CALL( addEdgeToMembersEdgeList(tu, tdec, columnEdge, polygon) );
+
+    for (int i = 0; i < newcolumn->numReducedComponents; ++i)
+    {
+      TU_TDEC_EDGE newEdge = componentNewEdges[i];
+      TU_TDEC_EDGE markerEdge;
+      TU_CALL( createEdge(tu, tdec, polygon, &markerEdge) );
+      TU_CALL( addEdgeToMembersEdgeList(tu, tdec, markerEdge, polygon) );
+      tdec->edges[markerEdge].head = -1;
+      tdec->edges[markerEdge].tail = -1;
+
+      TU_TDEC_MEMBER partnerMember = findEdgeMember(tdec, newEdge);
+
+      if (i == maxDepthComponent)
+      {
+        tdec->edges[markerEdge].childMember = -1;
+        tdec->edges[markerEdge].name = INT_MAX - tdec->numMarkers;
+        tdec->members[polygon].parentMember = partnerMember;
+        tdec->members[polygon].markerToParent = markerEdge;
+        tdec->members[polygon].markerOfParent = newEdge;
+        tdec->edges[newEdge].name = -INT_MAX + tdec->numMarkers;
+        tdec->edges[newEdge].childMember = polygon;
+      }
+      else
+      {
+        tdec->edges[markerEdge].childMember = partnerMember;
+        tdec->members[partnerMember].markerOfParent = markerEdge;
+        tdec->members[partnerMember].markerToParent = newEdge;
+        tdec->members[partnerMember].parentMember = polygon;
+        tdec->edges[markerEdge].name = INT_MAX - tdec->numMarkers;
+        tdec->edges[newEdge].name = -INT_MAX + tdec->numMarkers;
+      }
+
+      tdec->numMarkers++;
+    }
   }
 
   TU_CALL( TUfreeStackArray(tu, &componentNewEdges) );
@@ -3065,7 +3241,9 @@ TU_ERROR testGraphicnessTDecomposition(TU* tu, TU_CHRMAT* matrix, TU_CHRMAT* tra
   for (int column = 0; column < matrix->numColumns; ++column)
   {
 #if defined(TU_DEBUG_TDEC)
-    FILE* dotFile = fopen("tdec.dot", "w");
+    char name[256];
+    snprintf(name, 256, "tdec-before-column-%02d.dot", column);
+    FILE* dotFile = fopen(name, "w");
     bool* edgesHighlighted = NULL;
     TU_CALL( TUallocStackArray(tu, &edgesHighlighted, tdec->memEdges) );
     for (int e = 0; e < tdec->memEdges; ++e)
@@ -3098,6 +3276,19 @@ TU_ERROR testGraphicnessTDecomposition(TU* tu, TU_CHRMAT* matrix, TU_CHRMAT* tra
     }
   }
   TUtdecnewcolumnFree(tu, &newcol);
+
+#if defined(TU_DEBUG_TDEC)
+  char name[256];
+  snprintf(name, 256, "tdec-final.dot");
+  FILE* dotFile = fopen(name, "w");
+  bool* edgesHighlighted = NULL;
+  TU_CALL( TUallocStackArray(tu, &edgesHighlighted, tdec->memEdges) );
+  for (int e = 0; e < tdec->memEdges; ++e)
+    edgesHighlighted[e] = false;
+  TU_CALL( TUtdecToDot(tu, tdec, dotFile, edgesHighlighted) );
+  TU_CALL( TUfreeStackArray(tu, &edgesHighlighted) );
+  fclose(dotFile);
+#endif /* TU_DEBUG_TDEC */
 
   if (*pisGraphic && graph)
   {
