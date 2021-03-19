@@ -4,6 +4,23 @@
 #include <stdio.h>
 #include <stdbool.h>
 
+#if defined(TU_DEBUG)
+
+#define TUdbgMsg(...) \
+  do \
+  { \
+    printf( __VA_ARGS__ ); \
+    fflush(stdout); \
+  } \
+  while (false)
+
+#else /* TU_DEBUG */
+
+#define TUdbgMsg(...)
+
+#endif /* TU_DEBUG */
+
+
 typedef struct
 {
   char* memory; /**< \brief Raw memory. */
