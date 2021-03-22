@@ -3,16 +3,22 @@
 
 #include <stdio.h>
 #include <stdbool.h>
+#include <stdarg.h>
 
 #if defined(TU_DEBUG)
 
-#define TUdbgMsg(...) \
-  do \
-  { \
-    printf( __VA_ARGS__ ); \
-    fflush(stdout); \
-  } \
-  while (false)
+static
+void TUdbgMsg(int indent, const char* format, ...)
+{
+  va_list args;
+
+  for (int i = 0; i < indent; ++i)
+    putchar(' ');
+  va_start(args, format);
+  vprintf(format, args);
+  va_end(args);
+  fflush(stdout);
+}
 
 #else /* TU_DEBUG */
 
