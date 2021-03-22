@@ -208,6 +208,7 @@ TU_ERROR _TUfreeStack(TU* tu, void** ptr)
 #if defined(DEBUG_STACK)
   printf("TUfreeStack() called for %ld bytes (size stored at %p).\n", size,
     &stack->memory[stack->top]);
+  fflush(stdout);
 #endif /* DEBUG_STACK */
 
   assert(size < (FIRST_STACK_SIZE << tu->numStacks));

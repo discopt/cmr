@@ -224,13 +224,12 @@ char* consistencyTree(
 
   for (TU_TDEC_MEMBER member = 0; member < tdec->numMembers; ++member)
   {
-    if (member == 0)
+    if (!isRepresentativeMember(tdec, member))
       continue;
 
     int length = 0;
     TU_TDEC_MEMBER current;
-    for (current = tdec->members[member].parentMember; current >= 0;
-      current = tdec->members[current].parentMember)
+    for (current = tdec->members[member].parentMember; current >= 0; current = tdec->members[current].parentMember)
     {
       ++length;
       if (length > tdec->numMembers)
@@ -389,7 +388,7 @@ char* consistencyParentChild(
 
   for (TU_TDEC_MEMBER member = 0; member < tdec->numMembers; ++member)
   {
-    if (tdec->members[member].representativeMember != -1)
+    if (!isRepresentativeMember(tdec, member))
       continue;
 
     if (tdec->members[member].parentMember >= tdec->memMembers)
@@ -821,7 +820,7 @@ TU_ERROR TUtdecToGraph(TU* tu, TU_TDEC* tdec, TU_GRAPH* graph, bool merge, TU_GR
   else if (basis || cobasis)
     TU_CALL( TUallocStackArray(tu, &localEdgeElements, tdec->memEdges) );
   TU_GRAPH_NODE* tdecNodesToGraphNodes = NULL;
-  TU_CALL( TUallocStackArray(tu, &tdecNodesToGraphNodes, tdec->numNodes) );
+  TU_CALL( TUallocStackArray(tu, &tdecNodesToGraphNodes, tdec->memNodes) );
   TU_GRAPH_EDGE* tdecEdgesToGraphEdges = NULL;
   TU_CALL( TUallocStackArray(tu, &tdecEdgesToGraphEdges, tdec->memEdges) );
 
@@ -914,7 +913,7 @@ TU_ERROR TUtdecToGraph(TU* tu, TU_TDEC* tdec, TU_GRAPH* graph, bool merge, TU_GR
 
     for (int m = 0; m < tdec->numMembers; ++m)
     {
-      if (!isRepresentativeMember(tdec, m))
+      if (!isRepresentativeMember(tdec, m) || tdec->members[m].parentMember < 0)
         continue;
 
       TU_GRAPH_EDGE parent = tdecEdgesToGraphEdges[tdec->members[m].markerOfParent];
@@ -1471,7 +1470,7 @@ TU_ERROR completeReducedDecomposition(
       TU_TDEC_EDGE edge;
       TU_CALL( createEdge(tu, tdec, member, &edge) );
       TU_CALL( addEdgeToMembersEdgeList(tu, tdec, edge, member) );
-      tdec->edges[edge].name = r+1; // TODO: replace by r.
+      tdec->edges[edge].name = r;
       tdec->edges[edge].head = -1;
       tdec->edges[edge].tail = -1;
       tdec->edges[edge].childMember = -1;
@@ -2030,6 +2029,7 @@ TU_ERROR determineTypePrime(
         TU_TDEC_NODE v = findEdgeHead(tdec, edge);
         currentNode = (v != currentNode) ? v : findEdgeTail(tdec, edge);
       }
+      TUfreeStackArray(tu, &nodeEdges);
 
       /* Exchange such that we end nodes 0 and 1 are end nodes of the same path. */
       if (currentNode == reducedMember->primeEndNodes[2])
@@ -2060,8 +2060,6 @@ TU_ERROR determineTypePrime(
         reducedMember->primeEndNodes[3] = tmp;
       }
       assert(reducedMember->primeEndNodes[2] == parentMarkerNodes[0] || reducedMember->primeEndNodes[2] == parentMarkerNodes[1]);
-
-      TUfreeStackArray(tu, &nodeEdges);
 
       assert(0 == "Typing of prime not fully implemented: non-root with 4 path nodes.");
     }
