@@ -56,6 +56,38 @@ void testGraphicMatrix(
   ASSERT_FALSE( TUchrmatFree(tu, &result) );
 }
 
+TEST(Graphic, RootBondTwoEnds)
+{
+  TU* tu = NULL;
+  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
+
+  /* A root bond (attached to a polygon) with two child markers, each containing a (single-edge-) path. */
+  {
+    TU_CHRMAT* A = NULL;
+    ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "3 3 "
+      "1 1  1 "
+      "1 0  1 "
+      "0 1  1 "
+    ) );
+    testGraphicMatrix(tu, A);
+    ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
+  }
+
+  /* A bond with an additional edge and two child markers, each containing a (single-edge-) path. */
+  {
+    TU_CHRMAT* A = NULL;
+    ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "3 4 "
+      "1 1 1  1 "
+      "0 1 0  1 "
+      "0 0 1  1 "
+    ) );
+    testGraphicMatrix(tu, A);
+    ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
+  }
+
+  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+}
+
 TEST(Graphic, Bond)
 {
   TU* tu = NULL;
