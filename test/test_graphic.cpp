@@ -11,26 +11,26 @@ void testGraphicMatrix(
 )
 {
   TU_GRAPH* graph = NULL;
-  ASSERT_FALSE( TUgraphCreateEmpty(tu, &graph, 0, 0) );
+  ASSERT_TU_CALL( TUgraphCreateEmpty(tu, &graph, 0, 0) );
   TU_GRAPH_EDGE* basis = NULL;
-  ASSERT_FALSE( TUallocBlockArray(tu, &basis, matrix->numRows) );
+  ASSERT_TU_CALL( TUallocBlockArray(tu, &basis, matrix->numRows) );
   TU_GRAPH_EDGE* cobasis = NULL;
-  ASSERT_FALSE( TUallocBlockArray(tu, &cobasis, matrix->numColumns) );
+  ASSERT_TU_CALL( TUallocBlockArray(tu, &cobasis, matrix->numColumns) );
   bool isGraphic;
   TU_CHRMAT* transpose = NULL;
-  ASSERT_FALSE( TUchrmatTranspose(tu, matrix, &transpose) );
+  ASSERT_TU_CALL( TUchrmatTranspose(tu, matrix, &transpose) );
 
-  ASSERT_FALSE( testGraphicnessTDecomposition(tu, matrix, transpose, &isGraphic, graph, basis,
+  ASSERT_TU_CALL( testGraphicnessTDecomposition(tu, matrix, transpose, &isGraphic, graph, basis,
     cobasis, NULL, mergeLeafBonds) );
 
   ASSERT_TRUE( isGraphic );
   ASSERT_TRUE( basis );
   ASSERT_TRUE( cobasis );
 
-  ASSERT_FALSE( TUchrmatFree(tu, &transpose) );
+  ASSERT_TU_CALL( TUchrmatFree(tu, &transpose) );
 
   TU_CHRMAT* result = NULL;
-  TU_CALL( TUconvertGraphToBinaryMatrix(tu, graph, &result, matrix->numRows, basis,
+  ASSERT_TU_CALL( TUconvertGraphToBinaryMatrix(tu, graph, &result, matrix->numRows, basis,
     matrix->numColumns, cobasis) );
 
   ASSERT_TRUE( result );
@@ -42,19 +42,19 @@ void testGraphicMatrix(
   else
   {
     printf("Input matrix:\n");
-    ASSERT_FALSE( TUchrmatPrintDense(stdout, matrix, ' ', true) );
+    ASSERT_TU_CALL( TUchrmatPrintDense(stdout, matrix, ' ', true) );
 
     printf("Graph:\n");
-    ASSERT_FALSE( TUgraphPrint(stdout, graph) );
+    ASSERT_TU_CALL( TUgraphPrint(stdout, graph) );
 
     printf("Representation matrix:\n");
-    ASSERT_FALSE( TUchrmatPrintDense(stdout, result, ' ', true) );
+    ASSERT_TU_CALL( TUchrmatPrintDense(stdout, result, ' ', true) );
   }
 
-  ASSERT_FALSE( TUgraphFree(tu, &graph) );
-  ASSERT_FALSE( TUfreeBlockArray(tu, &basis) );
-  ASSERT_FALSE( TUfreeBlockArray(tu, &cobasis) );
-  ASSERT_FALSE( TUchrmatFree(tu, &result) );
+  ASSERT_TU_CALL( TUgraphFree(tu, &graph) );
+  ASSERT_TU_CALL( TUfreeBlockArray(tu, &basis) );
+  ASSERT_TU_CALL( TUfreeBlockArray(tu, &cobasis) );
+  ASSERT_TU_CALL( TUchrmatFree(tu, &result) );
 }
 
 TEST(Graphic, RootBondTwoOneEnds)
