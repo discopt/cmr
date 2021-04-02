@@ -2108,7 +2108,34 @@ TU_ERROR determineTypePrime(
       }
       assert(reducedMember->primeEndNodes[2] == parentMarkerNodes[0] || reducedMember->primeEndNodes[2] == parentMarkerNodes[1]);
 
-      assert(0 == "Typing of prime not fully implemented: non-root with 4 path nodes.");
+      TUdbgMsg(6 + 2*depth, "End nodes of first path are %d and %d.\n", reducedMember->primeEndNodes[0],
+        reducedMember->primeEndNodes[1]);
+      TUdbgMsg(6 + 2*depth, "End nodes of second path are %d and %d.\n", reducedMember->primeEndNodes[2],
+        reducedMember->primeEndNodes[3]);
+
+      if (reducedMember->primeEndNodes[0] != parentMarkerNodes[0] && reducedMember->primeEndNodes[0] != parentMarkerNodes[1])
+      {
+        TUdbgMsg(6 + 2*depth, "First path does not start at parent marker edge.\n");
+        newcolumn->remainsGraphic = false;
+        return TU_OKAY;
+      }
+      if (reducedMember->primeEndNodes[2] != parentMarkerNodes[0] && reducedMember->primeEndNodes[2] != parentMarkerNodes[1])
+      {
+        TUdbgMsg(6 + 2*depth, "Second path does not start at parent marker edge.\n");
+        newcolumn->remainsGraphic = false;
+        return TU_OKAY;
+      }
+
+      if (numOneEnd == 0 && numTwoEnds == 0)
+      {
+        reducedMember->type = TYPE_4_CONNECTS_TWO_PATHS;
+        TU_CALL( addTerminal(tu, tdec, reducedComponent, member, reducedMember->primeEndNodes[1]) );
+        TU_CALL( addTerminal(tu, tdec, reducedComponent, member, reducedMember->primeEndNodes[3]) );
+      }
+      else
+      {
+        assert(0 == "Typing of prime not fully implemented: non-root with 4 path nodes and end(s) in children.");
+      }
     }
   }
 
@@ -2367,6 +2394,54 @@ TU_ERROR createBondNodes(
 }
 
 static
+TU_ERROR splitBond(
+  TU* tu,                     /**< \ref TU environment. */
+  TU_TDEC* tdec,              /**< t-decomposition. */
+  TU_TDEC_MEMBER bond,        /**< A bond member. */
+  TU_TDEC_EDGE edge1,         /**< First edge to be moved into the child bond. */
+  TU_TDEC_EDGE edge2,         /**< Second edge to be moved into the child bond. */
+  TU_TDEC_MEMBER* pChildBond  /**< Pointer to storing the newly created child bond. */
+)
+{
+  assert(tu);
+  assert(tdec);
+  assert(bond >= 0);
+  assert(bond < tdec->memMembers);
+  assert(edge1 >= 0);
+  assert(edge1 < tdec->memEdges);
+  assert(edge2 >= 0);
+  assert(edge2 < tdec->memEdges);
+
+  TU_TDEC_MEMBER childBond;
+  TU_CALL( createMember(tu, tdec, TDEC_MEMBER_TYPE_BOND, &childBond) );
+  TU_TDEC_EDGE markerOfParentBond, markerOfChildBond;
+  TU_CALL( createEdge(tu, tdec, bond, &markerOfParentBond) );
+  TU_CALL( addEdgeToMembersEdgeList(tu, tdec, markerOfParentBond, bond) );
+  TU_CALL( createEdge(tu, tdec, childBond, &markerOfChildBond) );
+  TU_CALL( addEdgeToMembersEdgeList(tu, tdec, markerOfChildBond, childBond) );
+  tdec->members[childBond].markerOfParent = markerOfParentBond;
+  tdec->members[childBond].markerToParent = markerOfChildBond;
+  tdec->members[childBond].parentMember = bond;
+  tdec->edges[markerOfParentBond].childMember = childBond;
+  tdec->edges[markerOfChildBond].childMember = -1;
+
+  TU_CALL( removeEdgeFromMembersEdgeList(tu, tdec, edge1, bond) );
+  tdec->edges[edge1].member = childBond;
+  TU_CALL( addEdgeToMembersEdgeList(tu, tdec, edge1, childBond) );
+  tdec->members[findMember(tdec, tdec->edges[edge1].childMember)].parentMember = childBond;
+
+  TU_CALL( removeEdgeFromMembersEdgeList(tu, tdec, edge2, bond) );
+  tdec->edges[edge2].member = childBond;
+  TU_CALL( addEdgeToMembersEdgeList(tu, tdec, edge2, childBond) );
+  tdec->members[findMember(tdec, tdec->edges[edge2].childMember)].parentMember = childBond;
+
+  if (pChildBond)
+    *pChildBond = childBond;
+
+  return TU_OKAY;
+}
+
+static
 TU_ERROR addColumnProcessBond(
   TU* tu,                             /**< \ref TU environment. */
   TU_TDEC* tdec,                      /**< t-decomposition. */
@@ -2414,31 +2489,14 @@ TU_ERROR addColumnProcessBond(
     else if (numOneEnd == 2)
     {
       assert(reducedComponent->numTerminals == 2);
+      
+      /* If the bond contains more than 3 edges, we split the two child edges off, which creates a bond with a parent
+       * marker and the two children.
+       * Test: Graphic.RootBondTwoOneEnds */
 
       if (tdec->members[member].numEdges > 3)
       {
-        TU_TDEC_MEMBER newBond;
-        TU_CALL( createMember(tu, tdec, TDEC_MEMBER_TYPE_BOND, &newBond) );
-        TU_TDEC_EDGE markerOfParentBond, markerOfChildBond;
-        TU_CALL( createEdge(tu, tdec, member, &markerOfParentBond) );
-        TU_CALL( addEdgeToMembersEdgeList(tu, tdec, markerOfParentBond, member) );
-        TU_CALL( createEdge(tu, tdec, newBond, &markerOfChildBond) );
-        TU_CALL( addEdgeToMembersEdgeList(tu, tdec, markerOfChildBond, newBond) );
-        tdec->members[newBond].markerOfParent = markerOfParentBond;
-        tdec->members[newBond].markerToParent = markerOfChildBond;
-        tdec->members[newBond].parentMember = member;
-        tdec->edges[markerOfParentBond].childMember = newBond;
-        tdec->edges[markerOfChildBond].childMember = -1;
-
-        for (int c = 0; c < 2; ++c)
-        {
-          TU_CALL( removeEdgeFromMembersEdgeList(tu, tdec, childMarkerEdges[c], member) );
-          tdec->edges[childMarkerEdges[c]].member = newBond;
-          TU_CALL( addEdgeToMembersEdgeList(tu, tdec, childMarkerEdges[c], newBond) );
-          tdec->members[findMember(tdec, tdec->edges[childMarkerEdges[c]].childMember)].parentMember = newBond;
-        }
-
-        member = newBond;
+        TU_CALL( splitBond(tu, tdec, member, childMarkerEdges[0], childMarkerEdges[1], &member) );
         reducedMember->member = member;
       }
 
@@ -2460,7 +2518,11 @@ TU_ERROR addColumnProcessBond(
     }
     else
     {
-      assert(0 == "addColumnProcessBond for root not fully implemented.");
+      assert(numTwoEnds == 1);
+      assert(reducedMember->firstPathEdge);
+
+      /* We don't merge since everything interesting happens in the child. */
+      /* Test: Graphic.RootBondOneTwoEnd.  */
     }
   }
   else

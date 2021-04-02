@@ -56,7 +56,7 @@ void testGraphicMatrix(
   ASSERT_FALSE( TUchrmatFree(tu, &result) );
 }
 
-TEST(Graphic, RootBondTwoEnds)
+TEST(Graphic, RootBondTwoOneEnds)
 {
   TU* tu = NULL;
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
@@ -80,6 +80,26 @@ TEST(Graphic, RootBondTwoEnds)
       "1 1 1  1 "
       "0 1 0  1 "
       "0 0 1  1 "
+    ) );
+    testGraphicMatrix(tu, A);
+    ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
+  }
+
+  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+}
+
+TEST(Graphic, RootBondOneTwoEnd)
+{
+  TU* tu = NULL;
+  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
+
+  /* A root bond with a K_4 prime as a child, whose tree nodes are parallel edges. */
+  {
+    TU_CHRMAT* A = NULL;
+    ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "3 5 "
+      "1 1 1 1  1 "
+      "0 0 1 1  1 "
+      "0 1 0 1  1 "
     ) );
     testGraphicMatrix(tu, A);
     ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
