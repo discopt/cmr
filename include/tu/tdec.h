@@ -133,7 +133,8 @@ TU_ERROR testGraphicnessTDecomposition(
   TU_GRAPH* graph,        /**< If not \c NULL and graphic, a graph represented by the matrix. */
   TU_GRAPH_EDGE* basis,   /**< If not \c NULL and graphic, a map from rows to basis edges. */
   TU_GRAPH_EDGE* cobasis, /**< If not \c NULL and graphic, a map from columns to cobasis edges. */
-  TU_SUBMAT** psubmatrix  /**< If not \c NULL and not graphic, a minimal violating submatrix. */
+  TU_SUBMAT** psubmatrix, /**< If not \c NULL and not graphic, a minimal violating submatrix. */
+  int mergeLeafBonds      /**< Leaf bonds of the t-decomposition are merged (1: at the end; 2: after each column). */
 );
 
 #ifdef __cplusplus

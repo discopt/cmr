@@ -110,7 +110,7 @@ int main(int argc, const char** argv)
   TU_SUBMAT* submatrix = NULL;
   bool isGraphic;
 
-  TUtestGraphicnessChr(tu, matrix, &isGraphic, &graph, &basis, &cobasis, &submatrix);
+  TUtestGraphicnessChr(tu, matrix, &isGraphic, &graph, &basis, &cobasis, &submatrix, 1);
 
   if (graph)
   {

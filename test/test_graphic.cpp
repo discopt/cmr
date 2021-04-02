@@ -6,7 +6,8 @@
 
 void testGraphicMatrix(
   TU* tu,             /**< \ref TU environment. */
-  TU_CHRMAT* matrix   /**< Matrix to be used for testing. */
+  TU_CHRMAT* matrix,  /**< Matrix to be used for testing. */
+  int mergeLeafBonds  /**< Leaf bonds of the t-decomposition are merged (1: at the end; 2: after each column). */
 )
 {
   TU_GRAPH* graph = NULL;
@@ -20,7 +21,7 @@ void testGraphicMatrix(
   ASSERT_FALSE( TUchrmatTranspose(tu, matrix, &transpose) );
 
   ASSERT_FALSE( testGraphicnessTDecomposition(tu, matrix, transpose, &isGraphic, graph, basis,
-    cobasis, NULL) );
+    cobasis, NULL, mergeLeafBonds) );
 
   ASSERT_TRUE( isGraphic );
   ASSERT_TRUE( basis );
@@ -69,7 +70,7 @@ TEST(Graphic, RootBondTwoOneEnds)
       "1 0  1 "
       "0 1  1 "
     ) );
-    testGraphicMatrix(tu, A);
+    testGraphicMatrix(tu, A, 0);
     ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
   }
 
@@ -81,7 +82,7 @@ TEST(Graphic, RootBondTwoOneEnds)
       "0 1 0  1 "
       "0 0 1  1 "
     ) );
-    testGraphicMatrix(tu, A);
+    testGraphicMatrix(tu, A, 0);
     ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
   }
 
@@ -101,7 +102,7 @@ TEST(Graphic, RootBondOneTwoEnd)
       "0 0 1 1  1 "
       "0 1 0 1  1 "
     ) );
-    testGraphicMatrix(tu, A);
+    testGraphicMatrix(tu, A, 0);
     ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
   }
 
@@ -122,7 +123,7 @@ TEST(Graphic, InternalBondOneOneEnd)
       "1 1  1 " /* bond edge */
       "0 1  1 " /* edge of second triangle */
     ) );
-    testGraphicMatrix(tu, A);
+    testGraphicMatrix(tu, A, 0);
     ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
   }
 
@@ -135,7 +136,7 @@ TEST(Graphic, InternalBondOneOneEnd)
       "1 1 1  1 " /* bond edge */
       "0 0 1  1 " /* edge of second triangle */
     ) );
-    testGraphicMatrix(tu, A);
+    testGraphicMatrix(tu, A, 0);
     ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
   }
 
@@ -151,7 +152,7 @@ TEST(Graphic, Bond)
     ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "1 1 "
       "1 "
     ) );
-    testGraphicMatrix(tu, A);
+    testGraphicMatrix(tu, A, 0);
     ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
   }
   {
@@ -159,7 +160,7 @@ TEST(Graphic, Bond)
     ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "1 3 "
       "1 1 1 "
     ) );
-    testGraphicMatrix(tu, A);
+    testGraphicMatrix(tu, A, 0);
     ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
   }
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
@@ -177,7 +178,7 @@ TEST(Graphic, Polygon)
       "1 "
       "1 "
     ) );
-    testGraphicMatrix(tu, A);
+    testGraphicMatrix(tu, A, 0);
     ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
   }
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
@@ -199,7 +200,7 @@ TEST(Graphic, PolygonPlusEdge)
       "1 0 " // 5
       "1 1 " // 6
     ) );
-    testGraphicMatrix(tu, A);
+    testGraphicMatrix(tu, A, 0);
     ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
   }
 
@@ -214,7 +215,7 @@ TEST(Graphic, PolygonPlusEdge)
       "1 0 " // 5
       "1 1 " // 6
     ) );
-    testGraphicMatrix(tu, A);
+    testGraphicMatrix(tu, A, 0);
     ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
   }
 
@@ -238,7 +239,7 @@ TEST(Graphic, BixbyWagnerAppendix)
       "1 1 0 1 0 0 0 " // 7
       "1 0 0 0 0 0 0 " // 8
     ) );
-    testGraphicMatrix(tu, A);
+    testGraphicMatrix(tu, A, 0);
     ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
   }
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );

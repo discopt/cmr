@@ -2557,11 +2557,6 @@ TU_ERROR addColumnProcessBond(
     {
       assert(reducedComponent->numTerminals >= 1);
 
-      if (tdec->members[member].numEdges >= 4)
-      {
-        assert(0 == "addColumnProcessBond for root with one 1-end and >= 4 edges is not implemented: we need to split off the two child marker edges into another bond.");
-      }
-
       TU_TDEC_NODE tail, head;
       TU_CALL( createNode(tu, tdec, &tail) );
       TU_CALL( createNode(tu, tdec, &head) );
@@ -3893,7 +3888,7 @@ TU_ERROR reorderComponent(
 }
 
 static
-TU_ERROR mergeLeafBonds(
+TU_ERROR doMergeLeafBonds(
   TU* tu,       /**< \ref TU environment. */
   TU_TDEC* tdec /**< t-decomposition. */
 )
@@ -4068,13 +4063,6 @@ TU_ERROR TUtdecAddColumnApply(TU* tu, TU_TDEC* tdec, TU_TDEC_NEWCOLUMN* newcolum
   TU_CALL( debugDot(tu, tdec, newcolumn) );
 #endif /* TU_DEBUG_DOT */
 
-  TU_CALL( mergeLeafBonds(tu, tdec) );
-
-#if defined(TU_DEBUG_DOT)
-  TU_CALL( debugDot(tu, tdec, newcolumn) );
-#endif /* TU_DEBUG_DOT */
-
-
   TU_CALL( TUfreeStackArray(tu, &componentNewEdges) );
 
   newcolumn->numReducedMembers = 0;
@@ -4087,7 +4075,7 @@ TU_ERROR TUtdecAddColumnApply(TU* tu, TU_TDEC* tdec, TU_TDEC_NEWCOLUMN* newcolum
 
 TU_ERROR testGraphicnessTDecomposition(TU* tu, TU_CHRMAT* matrix, TU_CHRMAT* transpose,
   bool* pisGraphic, TU_GRAPH* graph, TU_GRAPH_EDGE* basis, TU_GRAPH_EDGE* cobasis,
-  TU_SUBMAT** psubmatrix)
+  TU_SUBMAT** psubmatrix, int mergeLeafBonds)
 {
   assert(tu);
   assert(matrix);
@@ -4096,6 +4084,8 @@ TU_ERROR testGraphicnessTDecomposition(TU* tu, TU_CHRMAT* matrix, TU_CHRMAT* tra
   assert(!psubmatrix || !*psubmatrix);
   assert(!basis || graph);
   assert(!cobasis || graph);
+  assert(mergeLeafBonds >= 0);
+  assert(mergeLeafBonds <= 2);
 
 #if defined(TU_DEBUG_TDEC)
   printf("testGraphicnessTDecomposition called for a 1-connected %dx%d matrix.\n",
@@ -4159,6 +4149,13 @@ TU_ERROR testGraphicnessTDecomposition(TU* tu, TU_CHRMAT* matrix, TU_CHRMAT* tra
     {
       TU_CALL( TUtdecAddColumnApply(tu, tdec, newcolumn, column, &transpose->entryColumns[transpose->rowStarts[column]],
         transpose->rowStarts[column+1] - transpose->rowStarts[column]) );
+      
+      TU_CALL( doMergeLeafBonds(tu, tdec) );
+
+#if defined(TU_DEBUG_DOT)
+      TU_CALL( debugDot(tu, tdec, newcolumn) );
+#endif /* TU_DEBUG_DOT */
+
     }
     else
     {
