@@ -108,6 +108,40 @@ TEST(Graphic, RootBondOneTwoEnd)
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
 
+TEST(Graphic, InternalBondOneOneEnd)
+{
+  TU* tu = NULL;
+  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
+
+  /* A triangle linked to a small bond that is linked to a triangle.
+   * Path contains one edge of each member. */
+  {
+    TU_CHRMAT* A = NULL;
+    ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "3 3 "
+      "1 0  1 " /* edge of first triangle */
+      "1 1  1 " /* bond edge */
+      "0 1  1 " /* edge of second triangle */
+    ) );
+    testGraphicMatrix(tu, A);
+    ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
+  }
+
+  /* A triangle linked to a large bond that is linked to a triangle.
+   * Path contains one edge of each member. */
+  {
+    TU_CHRMAT* A = NULL;
+    ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "3 4 "
+      "1 0 0  1 " /* edge of first triangle */
+      "1 1 1  1 " /* bond edge */
+      "0 0 1  1 " /* edge of second triangle */
+    ) );
+    testGraphicMatrix(tu, A);
+    ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
+  }
+
+  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+}
+
 TEST(Graphic, Bond)
 {
   TU* tu = NULL;

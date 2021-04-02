@@ -123,7 +123,7 @@ TU_TDEC_MEMBER findEdgeMember(TU_TDEC* tdec, TU_TDEC_EDGE edge)
 
 /**
  * \brief Checks whether \p tdec has consistent edge data.
- * 
+ *
  * \returns Explanation of inconsistency, or \c NULL.
  */
 
@@ -173,7 +173,7 @@ char* consistencyEdges(
 
 /**
  * \brief Checks whether \p tdec has consistent member data.
- * 
+ *
  * \returns Explanation of inconsistency, or \c NULL.
  */
 
@@ -199,7 +199,7 @@ char* consistencyMembers(
 
 /**
  * \brief Checks whether \p tdec has consistent node data.
- * 
+ *
  * \returns Explanation of inconsistency, or \c NULL.
  */
 
@@ -246,7 +246,7 @@ char* consistencyNodes(
 
 /**
  * \brief Checks whether the members of \p tdec form a forest.
- * 
+ *
  * \returns Explanation of inconsistency, or \c NULL.
  */
 
@@ -300,7 +300,7 @@ typedef struct _PathEdge
 
 /**
  * \brief Additional member information specfic to a given path.
- * 
+ *
  * @TODO: Maybe add parent reduced member as well, so we don't have to go via the membersToReducedMembers array.
  */
 
@@ -366,7 +366,7 @@ int compareMemberDepths(const void* a, const void* b)
 
 /**
  * \brief Checks whether \p tdec has consistent parent/child structure of members.
- * 
+ *
  * \returns Explanation of inconsistency, or \c NULL.
  */
 
@@ -550,7 +550,7 @@ TU_ERROR createNode(
 
 /**
  * \brief Adds \p edge to the edge list of \p member.
- * 
+ *
  * Requires that \p edge already has \p member as its member.
  */
 
@@ -931,7 +931,6 @@ TU_ERROR TUtdecToGraph(TU* tu, TU_TDEC* tdec, TU_GRAPH* graph, bool merge, TU_GR
       edge = tdec->edges[edge].next;
       while (edge != tdec->members[member].firstEdge)
       {
-        
         TU_GRAPH_NODE w;
         TU_CALL( TUgraphAddNode(tu, graph, &w) );
         TU_CALL( TUgraphAddEdge(tu, graph, v, w, &graphEdge) );
@@ -1195,7 +1194,7 @@ TU_ERROR TUtdecnewcolumnFree(TU* tu, TU_TDEC_NEWCOLUMN** pnewcolumn)
   assert(*pnewcolumn);
 
   TU_TDEC_NEWCOLUMN* newcolumn = *pnewcolumn;
-  
+
   if (newcolumn->edgesInPath)
     TU_CALL( TUfreeBlockArray(tu, &newcolumn->edgesInPath) );
 
@@ -1512,7 +1511,7 @@ TU_ERROR completeReducedDecomposition(
     {
       TU_TDEC_MEMBER member;
       TU_CALL( createMember(tu, tdec, TDEC_MEMBER_TYPE_BOND, &member) );
-      
+
       TU_TDEC_EDGE edge;
       TU_CALL( createEdge(tu, tdec, member, &edge) );
       TU_CALL( addEdgeToMembersEdgeList(tu, tdec, edge, member) );
@@ -1593,7 +1592,7 @@ TU_ERROR initializeReducedMemberEdgeLists(
   assert(tu);
   assert(tdec);
   assert(newcolumn);
-  
+
   TUdbgMsg(4, "Initializing edge lists for members of reduced t-decomposition.\n");
 
   for (int v = 0; v < tdec->memNodes; ++v)
@@ -2035,10 +2034,10 @@ TU_ERROR determineTypePrime(
     else if (numEndNodes == 4)
     {
       /* We figure out which end nodes are connected. */
-      
+
       TU_TDEC_EDGE* nodeEdges = NULL;
       TUallocStackArray(tu, &nodeEdges, 2*tdec->memNodes);
-      
+
       /* Initialize relevant entries to -1. */
       for (PathEdge* reducedEdge = reducedMember->firstPathEdge; reducedEdge; reducedEdge = reducedEdge->next)
       {
@@ -2289,12 +2288,14 @@ TU_ERROR setEdgeNodes(
   TU* tu,             /**< \ref TU environment. */
   TU_TDEC* tdec,      /**< t-decomposition. */
   TU_TDEC_EDGE edge,  /**< Reduced component. */
-  TU_TDEC_NODE tail,  /**< New tail node. */ 
+  TU_TDEC_NODE tail,  /**< New tail node. */
   TU_TDEC_NODE head   /**< New head node. */
 )
 {
   assert(tu);
   assert(tdec);
+  assert(edge >= 0);
+  assert(edge < tdec->memEdges);
 
   tdec->edges[edge].tail = tail;
   tdec->edges[edge].head = head;
@@ -2318,6 +2319,29 @@ TU_ERROR mergeMemberIntoParent(
   TU_TDEC_MEMBER parentMember = findMemberParent(tdec, member);
   assert(parentMember >= 0);
 
+#if defined(TU_DEBUG_TDEC)
+  TU_TDEC_EDGE edge = tdec->members[member].firstEdge;
+  do
+  {
+    if (tdec->edges[edge].head < 0 || tdec->edges[edge].tail < 0)
+      TUdbgMsg(0, "Edge %d of merge child member %d does not have nodes.\n", edge, member);
+    assert(tdec->edges[edge].tail >= 0);
+    assert(tdec->edges[edge].head >= 0);
+    edge = tdec->edges[edge].next;
+  }
+  while (edge != tdec->members[member].firstEdge);
+  edge = tdec->members[parentMember].firstEdge;
+  do
+  {
+    if (tdec->edges[edge].head < 0 || tdec->edges[edge].tail < 0)
+      TUdbgMsg(0, "Edge %d of merge child member %d does not have nodes.\n", edge, parentMember);
+    assert(tdec->edges[edge].tail >= 0);
+    assert(tdec->edges[edge].head >= 0);
+    edge = tdec->edges[edge].next;
+  }
+  while (edge != tdec->members[parentMember].firstEdge);
+#endif /* TU_DEBUG_TDEC */
+
   TU_TDEC_EDGE parentEdge = tdec->members[member].markerOfParent;
   assert(parentEdge >= 0);
   TU_TDEC_EDGE childEdge = tdec->members[member].markerToParent;
@@ -2329,7 +2353,7 @@ TU_ERROR mergeMemberIntoParent(
   TU_TDEC_NODE childEdgeNodes[2] = { findEdgeTail(tdec, childEdge), findEdgeHead(tdec, childEdge) };
 
   /* Identify nodes. */
-  
+
   tdec->nodes[childEdgeNodes[0]].representativeNode = parentEdgeNodes[headToHead ? 0 : 1];
   tdec->nodes[childEdgeNodes[1]].representativeNode = parentEdgeNodes[headToHead ? 1 : 0];
 
@@ -2461,7 +2485,7 @@ TU_ERROR addColumnProcessBond(
   int numOneEnd, numTwoEnds;
   TU_TDEC_EDGE childMarkerEdges[2];
   TU_CALL( countChildrenTypes(tu, tdec, reducedMember, &numOneEnd, &numTwoEnds, childMarkerEdges) );
-  
+
   TUdbgMsg(6 + 2*depth, "addColumnProcessBond for%s member %d (reduced %ld), #one-ends = %d, #two-ends = %d.\n",
     depth == 0 ? " root" : "", member, (reducedMember - newcolumn->reducedMembers), numOneEnd, numTwoEnds);
 
@@ -2489,7 +2513,7 @@ TU_ERROR addColumnProcessBond(
     else if (numOneEnd == 2)
     {
       assert(reducedComponent->numTerminals == 2);
-      
+
       /* If the bond contains more than 3 edges, we split the two child edges off, which creates a bond with a parent
        * marker and the two children.
        * Test: Graphic.RootBondTwoOneEnds */
@@ -2542,7 +2566,7 @@ TU_ERROR addColumnProcessBond(
       TU_CALL( createNode(tu, tdec, &tail) );
       TU_CALL( createNode(tu, tdec, &head) );
       TU_TDEC_EDGE edge = tdec->members[member].firstEdge;
-      do 
+      do
       {
         TU_CALL( setEdgeNodes(tu, tdec, edge, tail, head) );
         edge = tdec->edges[edge].next;
@@ -2650,7 +2674,7 @@ TU_ERROR addColumnProcessPrime(
         /* primeEndNodes[0] is the connecting node of the parent marker. */
         /* primeEndNodes[1] is the connecting node of the child marker. */
         assert(reducedMember->primeEndNodes[1] >= 0);
-        
+
         assert(0 == "addColumnProcessPrime is not fully implemented.");
       }
       else
@@ -2678,7 +2702,7 @@ TU_ERROR addColumnProcessPrime(
 
 /**
  * \brief Replaces an edge by a bond containing it.
- * 
+ *
  * The given member should have at least two edges.
  */
 
@@ -2737,7 +2761,7 @@ TU_ERROR createEdgeBond(
 
 /**
  * \brief Squeezes subset of polygon edges into a new polygon connected via a bond.
- * 
+ *
  * Takes all edges of the polygon \p member for which \p edgesPredicate is the same as
  * \p predicateValue.
  */
@@ -2800,7 +2824,7 @@ TU_ERROR squeezePolygonEdges(
   } while (e != tdec->members[member].firstEdge);
   assert(numSatisfying > 1);
 #endif /* !NDEBUG */
-  
+
   /* Go through old polygon. */
 
   TU_TDEC_EDGE firstEdge = tdec->members[member].firstEdge;
@@ -2956,7 +2980,7 @@ TU_ERROR addColumnProcessPolygon(
         TU_CALL( createEdgeBond(tu, tdec, newcolumn, member, reducedMember->firstPathEdge->edge, &bondChildMarker) );
         newBond = tdec->edges[bondChildMarker].childMember;
         // TODO: maybe change createEdgeBond to return pointer to bond.
-        
+
 #if defined(TU_DEBUG_DOT)
         TU_CALL( debugDot(tu, tdec, newcolumn) );
 #endif /* TU_DEBUG_DOT */
@@ -2965,12 +2989,12 @@ TU_ERROR addColumnProcessPolygon(
       {
         /* Squeeze off all path edges by moving them to a new polygon and creating a bond to connect
          * it to the remaining polygon. */
- 
+
         TU_CALL( squeezePolygonEdges(tu, tdec, member, newcolumn->edgesInPath, true, &newBond, NULL) );
       }
       TU_CALL( addTerminal(tu, tdec, reducedComponent, newBond, -1) );
       TU_CALL( addTerminal(tu, tdec, reducedComponent, newBond, -1) );
-      
+
 #if defined(TU_DEBUG_DOT)
       TU_CALL( debugDot(tu, tdec, newcolumn) );
 #endif /* TU_DEBUG_DOT */
@@ -2992,7 +3016,7 @@ TU_ERROR addColumnProcessPolygon(
         TU_CALL( squeezePolygonEdges(tu, tdec, member, newcolumn->edgesInPath, true, &newBond, NULL) );
 
         pathEdge = tdec->members[newBond].markerOfParent;
-        
+
 #if defined(TU_DEBUG_DOT)
         TU_CALL( debugDot(tu, tdec, newcolumn) );
 #endif /* TU_DEBUG_DOT */
@@ -3005,7 +3029,7 @@ TU_ERROR addColumnProcessPolygon(
         newcolumn->edgesInPath[childMarkerEdges[0]] = true;
         TU_CALL( squeezePolygonEdges(tu, tdec, member, newcolumn->edgesInPath, true, NULL, &member) );
         newcolumn->edgesInPath[childMarkerEdges[0]] = false;
-        
+
 #if defined(TU_DEBUG_DOT)
         TU_CALL( debugDot(tu, tdec, newcolumn) );
 #endif /* TU_DEBUG_DOT */
@@ -3049,7 +3073,7 @@ TU_ERROR addColumnProcessPolygon(
         TU_CALL( squeezePolygonEdges(tu, tdec, member, newcolumn->edgesInPath, true, &newBond, NULL) );
         reducedMember->polygonPathEdge = tdec->members[newBond].markerOfParent;
         newcolumn->edgesInPath[reducedMember->polygonPathEdge] = true;
-        
+
 #if defined(TU_DEBUG_DOT)
         TU_CALL( debugDot(tu, tdec, newcolumn) );
 #endif /* TU_DEBUG_DOT */
@@ -3058,7 +3082,7 @@ TU_ERROR addColumnProcessPolygon(
       {
         reducedMember->polygonPathEdge = reducedMember->firstPathEdge->edge;
       }
-      
+
       /* If necessary, we squeeze off the non-path edges as well. */
 
       assert(tdec->members[member].numEdges >= 3);
@@ -3077,7 +3101,7 @@ TU_ERROR addColumnProcessPolygon(
         TU_CALL( squeezePolygonEdges(tu, tdec, member, newcolumn->edgesInPath, false, &newBond, NULL) );
         reducedMember->polygonNonpathEdge = tdec->members[newBond].markerOfParent;
         newcolumn->edgesInPath[markerToParent] = false;
-        
+
 #if defined(TU_DEBUG_DOT)
         TU_CALL( debugDot(tu, tdec, newcolumn) );
 #endif /* TU_DEBUG_DOT */
@@ -3101,6 +3125,7 @@ TU_ERROR addColumnProcessPolygon(
     {
       /* Squeeze off all path edges by moving them to a new polygon and creating a bond to connect
       * it to the remaining polygon. */
+
       if (!reducedMember->firstPathEdge)
         reducedMember->polygonPathEdge = -1;
       else if (!reducedMember->firstPathEdge->next)
@@ -3111,24 +3136,23 @@ TU_ERROR addColumnProcessPolygon(
         TU_CALL( squeezePolygonEdges(tu, tdec, member, newcolumn->edgesInPath, true, &newBond, NULL) );
         reducedMember->polygonPathEdge = tdec->members[newBond].markerOfParent;
         newcolumn->edgesInPath[reducedMember->polygonPathEdge] = true;
-        
+
 #if defined(TU_DEBUG_DOT)
         TU_CALL( debugDot(tu, tdec, newcolumn) );
 #endif /* TU_DEBUG_DOT */
       }
-    
+
       /* If necessary, we squeeze off the non-path edges as well. */
-      assert(tdec->members[member].numEdges >= 3);      
-      if (tdec->members[member].numEdges == 3)
+      assert(tdec->members[member].numEdges >= 3);
+      int numNonPathEdges = tdec->members[member].numEdges - 2 - (reducedMember->polygonPathEdge >= 0 ? 1 : 0);
+      TUdbgMsg(8 + 2*depth, "Number of non-path edges is %d.\n", numNonPathEdges);
+      if (numNonPathEdges == 0)
         reducedMember->polygonNonpathEdge = -1;
-      else if (tdec->members[member].numEdges == (reducedMember->polygonPathEdge >= 0 ? 4 : 3))
+      else if (numNonPathEdges == 1)
       {
-        reducedMember->polygonNonpathEdge = tdec->members[member].firstEdge;
-        while (reducedMember->polygonNonpathEdge == tdec->members[member].markerToParent
-          || reducedMember->polygonNonpathEdge == childMarkerEdges[0])
-        {
+        reducedMember->polygonNonpathEdge = tdec->edges[tdec->members[member].markerToParent].next;
+        if (reducedMember->polygonNonpathEdge == childMarkerEdges[0])
           reducedMember->polygonNonpathEdge = tdec->edges[reducedMember->polygonNonpathEdge].next;
-        }
       }
       else
       {
@@ -3139,12 +3163,14 @@ TU_ERROR addColumnProcessPolygon(
         reducedMember->polygonNonpathEdge = tdec->members[newBond].markerOfParent;
         newcolumn->edgesInPath[tdec->members[member].markerToParent] = false;
         newcolumn->edgesInPath[childMarkerEdges[0]] = false;
-        
+
 #if defined(TU_DEBUG_DOT)
         TU_CALL( debugDot(tu, tdec, newcolumn) );
 #endif /* TU_DEBUG_DOT */
       }
-      
+
+      TUdbgMsg(8 + 2*depth, "After (potential) squeezing: path edge is %d and non-path edge is %d.\n",
+        reducedMember->polygonPathEdge, reducedMember->polygonNonpathEdge);
       assert(tdec->members[member].numEdges <= 4);
 
       /* We now create the nodes of the triangle so that the path leaves it via the parent marker edge's head node. */
@@ -3172,6 +3198,11 @@ TU_ERROR addColumnProcessPolygon(
         TU_CALL( setEdgeNodes(tu, tdec, childMarkerEdges[0], c, b) );
         TU_CALL( setEdgeNodes(tu, tdec, reducedMember->polygonNonpathEdge, a, c) );
       }
+
+#if defined(TU_DEBUG_DOT)
+      TU_CALL( debugDot(tu, tdec, newcolumn) );
+#endif /* TU_DEBUG_DOT */
+
       TU_CALL( mergeMemberIntoParent(tu, tdec, tdec->edges[childMarkerEdges[0]].childMember, true) );
 
 #if defined(TU_DEBUG_DOT)
@@ -3180,15 +3211,15 @@ TU_ERROR addColumnProcessPolygon(
 
       return TU_OKAY;
     }
-    
+
     assert(0 == "addColumnProcessPolygon for non-root not implemented.");
   }
-  
-  
+
+
 //   if (depth == 0 && numOneEnd == 0 && numTwoEnds == 0)
 //   {
 //     /* Root polygon containing both ends. */
-// 
+//
 //     assert(reducedMember->firstPathEdge);
 //     if (reducedMember->firstPathEdge->next == NULL)
 //     {
@@ -3196,7 +3227,7 @@ TU_ERROR addColumnProcessPolygon(
 //       TU_TDEC_EDGE bondChildMarker;
 //       TU_CALL( createEdgeBond(tu, tdec, newcolumn, reducedMember->member,
 //         reducedMember->firstPathEdge->edge, &bondChildMarker) );
-// 
+//
 //       TU_TDEC_MEMBER bond = tdec->edges[bondChildMarker].childMember;
 //       reducedComponent->terminalMember[0] = bond;
 //       reducedComponent->terminalMember[1] = bond;
@@ -3207,10 +3238,10 @@ TU_ERROR addColumnProcessPolygon(
 //     {
 //       /* Squeeze off all path edges by moving them to a new polygon and creating a bond to connect
 //        * it to the remaining polygon. */
-// 
+//
 //       TU_TDEC_MEMBER newBond = -1;
 //       TU_CALL( squeezePolygonEdges(tu, tdec, reducedMember->member, newcolumn->edgesInPath, true, &newBond, NULL) );
-// 
+//
 //       TU_TDEC_MEMBER bond = tdec->edges[tdec->members[newBond].markerOfParent].childMember;
 //       reducedComponent->terminalMember[0] = bond;
 //       reducedComponent->terminalMember[1] = bond;
@@ -3222,10 +3253,10 @@ TU_ERROR addColumnProcessPolygon(
 //   {
 //     /* Squeeze off all path edges by moving them to a new polygon and creating a bond to connect
 //      * it to the remaining polygon. */
-// 
+//
 //     assert(reducedComponent->numTerminals < 2);
 //     assert(reducedMember->firstPathEdge);
-// 
+//
 //     /* Squeeze off path edges (if more than one). */
 //     if (reducedMember->firstPathEdge->next)
 //     {
@@ -3238,9 +3269,9 @@ TU_ERROR addColumnProcessPolygon(
 //     {
 //       reducedMember->polygonPathEdge = reducedMember->firstPathEdge->edge;
 //     }
-// 
+//
 // //     printf("squeezedPathEdge = %d. Old polygon has length %d\n", reducedMember->representativePathEdge, tdec->members[reducedMember->member].numEdges);
-// 
+//
 //     assert(tdec->members[reducedMember->member].numEdges >= 3);
 //     if (tdec->members[reducedMember->member].numEdges == 3)
 //     {
@@ -3259,21 +3290,21 @@ TU_ERROR addColumnProcessPolygon(
 //       newcolumn->edgesInPath[markerToParent] = false;
 //     }
 //     assert(tdec->members[reducedMember->member].numEdges == 3);
-// 
+//
 //     TU_CALL( addTerminal(tu, tdec, reducedComponent, reducedMember->member, -1) );
-// 
+//
 //     return TU_OKAY;
 //   }
 //   else if (depth == 0 && numOneEnd == 1)
 //   {
 //     assert(numTwoEnds == 0);
-// 
+//
 //     /* Squeeze off all path edges by moving them to a new polygon and creating a bond to connect
 //      * it to the remaining polygon. */
-// 
+//
 //     assert(reducedComponent->numTerminals < 2);
 //     assert(reducedMember->firstPathEdge);
-// 
+//
 //     /* Squeeze off path edges (if more than one). */
 //     if (reducedMember->firstPathEdge->next)
 //     {
@@ -3286,7 +3317,7 @@ TU_ERROR addColumnProcessPolygon(
 //     {
 //       reducedMember->polygonPathEdge = reducedMember->firstPathEdge->edge;
 //     }
-// 
+//
 //     /* We find the child marker to the child containing the other path end. */
 //     TU_TDEC_EDGE childMarkerEdge = -1;
 //     for (int c = 0; c < reducedMember->numChildren; ++c)
@@ -3299,8 +3330,8 @@ TU_ERROR addColumnProcessPolygon(
 //       }
 //     }
 //     assert(childMarkerEdge >= 0);
-// 
-//     /* 
+//
+//     /*
 //      * Unless the polygon consists of only the parent marker, the child marker (containing a path end) and a
 //      * representative edge, we squeeze off the representative edge and the child marker.
 //      */
@@ -3311,14 +3342,14 @@ TU_ERROR addColumnProcessPolygon(
 //       TU_CALL( squeezePolygonEdges(tu, tdec, reducedMember->member, newcolumn->edgesInPath, true, &newBond,
 //         &newPolygon) );
 //       newcolumn->edgesInPath[childMarkerEdge] = false;
-// 
+//
 // #if defined(TU_DEBUG_TDEC)
 //       printf("        Reduced member %d is replaced by new polygon %d.\n", reducedMember->member, newPolygon);
 //       fflush(stdout);
 // #endif /* TU_DEBUG_TDEC */
 //       reducedMember->member = newPolygon;
 //       newcolumn->membersToReducedMembers[newPolygon] = reducedMember;
-//       
+//
 //       /* Remove those children from reduced member that are not children anymore. */
 //       for (int c = 0; c < reducedMember->numChildren; )
 //       {
@@ -3330,19 +3361,19 @@ TU_ERROR addColumnProcessPolygon(
 //           printf("          Removing child member %d.\n", reducedMember->children[c]->member);
 //           fflush(stdout);
 // #endif /* TU_DEBUG_TDEC */
-// 
+//
 //           reducedMember->children[c] = reducedMember->children[reducedMember->numChildren-1];
 //           reducedMember->numChildren--;
 //         }
 //       }
 //     }
-// 
+//
 //     reducedComponent->terminalMember[reducedComponent->numTerminals] = reducedMember->member;
 //     reducedComponent->numTerminals++;
-// 
+//
 //     return TU_OKAY;
 //   }
-// 
+//
 // #if defined(TU_DEBUG_TDEC)
 //   printf("        End of addColumnPreprocessPolygon for reduced%s member %ld (member %d), #one-ends = %d, #two-ends = %d.\n",
 //     depth == 0 ? " root" : "", (reducedMember - newcolumn->reducedMembers), reducedMember->member,
@@ -3358,7 +3389,7 @@ TU_ERROR addColumnProcessPolygon(
 
 /**
  * \brief Process reduced t-decomposition before the actual modification.
- * 
+ *
  * Processes the reduced members in depth-first search manner and does the following:
  * - Polygons are squeezed.
  * - Terminal nodes and (reduced) members are detected.
@@ -3384,7 +3415,7 @@ TU_ERROR addColumnProcessComponent(
     (reducedMember - &newcolumn->reducedMembers[0]));
 
   TUconsistencyAssert( TUtdecConsistency(tu, tdec) );
-  
+
   /* If we are type 1, then we don't need to do anything. */
   if (reducedMember->type == TYPE_1_CLOSES_CYCLE)
   {
@@ -3446,9 +3477,9 @@ TU_ERROR addColumnProcessComponent(
 //   assert(tdec);
 //   assert(newcolumn);
 //   assert(reducedComponent);
-// 
+//
 //   assert(isRepresentativeMember(tdec, member));
-// 
+//
 //   /* We iterate to next parent until we have processed the root. */
 //   while (true)
 //   {
@@ -3456,7 +3487,7 @@ TU_ERROR addColumnProcessComponent(
 //     printf("        Creating missing nodes of member %d.\n", member);
 //     fflush(stdout);
 // #endif /* TU_DEBUG_TDEC */
-// 
+//
 //     if (tdec->members[member].type == TDEC_MEMBER_TYPE_BOND)
 //     {
 //       TU_TDEC_EDGE edge = tdec->members[member].firstEdge;
@@ -3470,7 +3501,7 @@ TU_ERROR addColumnProcessComponent(
 //         printf("          Nodes of this bond are %d and %d.\n", head, tail);
 //         fflush(stdout);
 // #endif /* TU_DEBUG_TDEC */
-// 
+//
 //         do
 //         {
 //           tdec->edges[edge].head = head;
@@ -3478,7 +3509,7 @@ TU_ERROR addColumnProcessComponent(
 //           edge = tdec->edges[edge].next;
 //         }
 //         while (edge != tdec->members[member].firstEdge);
-// 
+//
 //         /* When creating a new prime component, terminal nodes of bonds are always heads. */
 //         if (reducedComponent->terminalMember[0] == member)
 //         {
@@ -3517,7 +3548,7 @@ TU_ERROR addColumnProcessComponent(
 //         }
 //         while (edge != firstEdge);
 //         tdec->edges[firstEdge].tail = lastHead;
-// 
+//
 //         /* Determine the terminal node if this is a terminal member. */
 //         TU_TDEC_NODE* pTerminalNode = NULL;
 //         if (reducedComponent->terminalMember[0] == member)
@@ -3527,12 +3558,12 @@ TU_ERROR addColumnProcessComponent(
 //         if (pTerminalNode)
 //         {
 //           assert(tdec->members[member].numEdges == 3);
-// 
+//
 //           TU_TDEC_EDGE markerToParent = tdec->members[member].markerToParent;
 //           TU_TDEC_EDGE edge = tdec->edges[markerToParent].next;
 //           TU_TDEC_EDGE pathEdge = newcolumn->edgesInPath[edge] ? edge : tdec->edges[edge].next;
 //           TU_TDEC_EDGE nonPathEdge = newcolumn->edgesInPath[edge] ? tdec->edges[edge].next : edge;
-//             
+//
 //           if (member == reducedComponent->root->member)
 //             *pTerminalNode = findCommonNode(tdec, pathEdge, markerToParent);
 //           else
@@ -3541,11 +3572,11 @@ TU_ERROR addColumnProcessComponent(
 //           printf("          Setting node %d as a terminal node.\n", *pTerminalNode);
 // #endif /* TU_DEBUG_TDEC */
 //         }
-// 
+//
 // #if defined(TU_DEBUG_TDEC)
 //         printf("          Edges of this polygon have these nodes:\n");
 //         edge = firstEdge;
-//         do 
+//         do
 //         {
 //           printf("            %d <%d> is {%d,%d}\n", edge, tdec->edges[edge].name,
 //             tdec->edges[edge].tail, tdec->edges[edge].head);
@@ -3556,20 +3587,20 @@ TU_ERROR addColumnProcessComponent(
 // #endif /* TU_DEBUG_TDEC */
 //       }
 //     }
-// 
+//
 //     /* This was the reduced root, so we stop. */
 //     if (member == reducedComponent->root->member)
 //       break;
-// 
+//
 //     member = findMemberParent(tdec, member);
 //   }
-// 
+//
 //   return TU_OKAY;
 // }
 
 /**
  * \brief Merges two members on a path, which finally yields a prime member.
- * 
+ *
  * If the parent of the merge is a bond, we always merge so that the path goes through the head node of the bond.
  * Hence, if the child of the merge is a bond, the path-containing node of the parent with the tail (resp. head) node
  * of the bond if the bond contains (resp. does not contain) a path edge.
@@ -3589,16 +3620,16 @@ TU_ERROR addColumnProcessComponent(
 //   assert(newcolumn);
 //   assert(reducedComponent);
 //   ReducedMember* childReducedMember = reducedMember2;
-// 
+//
 //   /* We iterate to next parent until we have processed the root. */
 //   while (childReducedMember != reducedComponent->root)
 //   {
 //     TU_TDEC_MEMBER childMember = findMember(tdec, childReducedMember->member);
 //     TU_TDEC_MEMBER parentMember = findMemberParent(tdec, childMember);
 //     ReducedMember* parentReducedMember = newcolumn->membersToReducedMembers[parentMember];
-// 
+//
 //     assert(childReducedMember->type != TYPE_4_CONNECTS_TWO_PATHS);
-// 
+//
 // #if defined(TU_DEBUG_TDEC)
 //     printf("        Merging %s child member %d of type %d with its parent %s member %d of type %d.\n",
 //       tdec->members[childMember].type == TDEC_MEMBER_TYPE_BOND ? "bond" :
@@ -3608,7 +3639,7 @@ TU_ERROR addColumnProcessComponent(
 //       parentReducedMember->type);
 //     fflush(stdout);
 // #endif /* TU_DEBUG_TDEC */
-// 
+//
 //     /* Figure out how the parent wants to be connected. Bonds always go via head. */
 //     bool parentViaHead = true;
 //     TU_TDEC_EDGE markerOfParent = tdec->members[childMember].markerOfParent;
@@ -3631,13 +3662,13 @@ TU_ERROR addColumnProcessComponent(
 //     {
 //       assert(0 == "mergeMembers for prime parent not implemented.");
 //     }
-// 
+//
 //     /* Figure out how the child wants to be connected. */
 //     TU_TDEC_EDGE markerToParent = tdec->members[childMember].markerToParent;
 //     TU_TDEC_NODE markerToParentHead = findEdgeHead(tdec, markerToParent);
 //     TU_TDEC_NODE markerToParentTail = findEdgeTail(tdec, markerToParent);
 //     bool childViaHead; /* Shall indicate whether this child's subpath ends in parent marker's head node */
-// 
+//
 //     if (tdec->members[childMember].type == TDEC_MEMBER_TYPE_BOND)
 //     {
 //       childViaHead = childReducedMember->firstReducedEdge == NULL;
@@ -3659,13 +3690,13 @@ TU_ERROR addColumnProcessComponent(
 //     {
 //       assert(0 == "mergeMembers for prime member not implemented.");
 //     }
-// 
+//
 //     /* We first merge the nodes of the two marker edges. */
-// 
+//
 //     if (parentViaHead == childViaHead)
 //     {
 //       /* We identify head with head. */
-// 
+//
 // #if defined(TU_DEBUG_TDEC)
 //       printf("          Identifying parent marker head node %d with head node %d.\n",
 //         markerToParentHead, markerOfParentHead);
@@ -3673,14 +3704,14 @@ TU_ERROR addColumnProcessComponent(
 //         markerToParentTail, markerOfParentTail);
 //       fflush(stdout);
 // #endif /* TU_DEBUG_TDEC */
-//       
+//
 //       tdec->nodes[markerToParentHead].representativeNode = markerOfParentHead;
 //       tdec->nodes[markerToParentTail].representativeNode = markerOfParentTail;
 //     }
 //     else
 //     {
 //       /* We identify head with tail. */
-//       
+//
 // #if defined(TU_DEBUG_TDEC)
 //       printf("          Identifying parent marker head node %d with tail node %d.\n",
 //         markerToParentHead, markerOfParentTail);
@@ -3688,12 +3719,12 @@ TU_ERROR addColumnProcessComponent(
 //         markerToParentTail, markerOfParentHead);
 //       fflush(stdout);
 // #endif /* TU_DEBUG_TDEC */
-// 
+//
 //       tdec->nodes[markerToParentHead].representativeNode = markerOfParentTail;
 //       tdec->nodes[markerToParentTail].representativeNode = markerOfParentHead;
 //     }
-// 
-//     /* We add the member's edges to the parent's edge list and thereby remove the two marker 
+//
+//     /* We add the member's edges to the parent's edge list and thereby remove the two marker
 //      * edges. */
 //     if (tdec->members[parentMember].firstEdge == markerOfParent)
 //       tdec->members[parentMember].firstEdge = tdec->edges[markerOfParent].next;
@@ -3702,18 +3733,18 @@ TU_ERROR addColumnProcessComponent(
 //     tdec->edges[tdec->edges[markerToParent].next].prev = tdec->edges[markerOfParent].prev;
 //     tdec->edges[tdec->edges[markerToParent].prev].next = tdec->edges[markerOfParent].next;;
 //     tdec->members[parentMember].numEdges += tdec->members[childMember].numEdges - 2;
-// 
+//
 //     tdec->numEdges -= 2;
 //     tdec->edges[markerOfParent].next = tdec->firstFreeEdge;
 //     tdec->edges[markerToParent].next = markerOfParent;
 //     tdec->firstFreeEdge = markerToParent;
-// 
+//
 //     /* We now merge the member. */
 //     tdec->members[childMember].representativeMember = parentMember;
-// 
+//
 //     childReducedMember = parentReducedMember;
 //   }
-// 
+//
 //   return TU_OKAY;
 // }
 
@@ -3729,13 +3760,13 @@ TU_ERROR addColumnProcessComponent(
 //   assert(tu);
 //   assert(tdec);
 //   assert(newcolumn);
-// 
+//
 // #if defined(TU_DEBUG_TDEC)
 //   printf("      Updating reduced decomposition with component %ld, adding edge %d.\n",
 //     (reducedComponent - &newcolumn->reducedComponents[0]), newEdge);
 //   fflush(stdout);
 // #endif /* TU_DEBUG_TDEC */
-// 
+//
 //   if (reducedComponent->terminalMember[0] == reducedComponent->terminalMember[1])
 //   {
 // #if defined(TU_DEBUG_TDEC)
@@ -3745,11 +3776,11 @@ TU_ERROR addColumnProcessComponent(
 //       "a polygon"));
 //     fflush(stdout);
 // #endif /* TU_DEBUG_TDEC */
-// 
+//
 //     if (tdec->members[reducedComponent->terminalMember[0]].type == TDEC_MEMBER_TYPE_BOND)
 //     {
 //       /* Add edge to the bond.  */
-// 
+//
 //       tdec->edges[newEdge].member = reducedComponent->terminalMember[0];
 //       tdec->edges[newEdge].head = -1;
 //       tdec->edges[newEdge].tail = -1;
@@ -3775,35 +3806,35 @@ TU_ERROR addColumnProcessComponent(
 //       reducedComponent->terminalNode[1], reducedComponent->terminalMember[1]);
 //     fflush(stdout);
 // #endif /* TU_DEBUG_TDEC */
-// 
+//
 //     TU_CALL( createMissingNodes(tu, tdec, newcolumn, reducedComponent, reducedComponent->terminalMember[0]) );
 //     TU_CALL( createMissingNodes(tu, tdec, newcolumn, reducedComponent, reducedComponent->terminalMember[1]) );
-// 
+//
 // #if defined(TU_DEBUG_TDEC)
 //     printf("      Terminal nodes are now %d and %d.\n", reducedComponent->terminalNode[0],
 //       reducedComponent->terminalNode[1]);
 //     fflush(stdout);
 // #endif /* TU_DEBUG_TDEC */
-// 
+//
 //     TU_CALL( mergeMembers(tu, tdec, newcolumn, reducedComponent,
 //       newcolumn->membersToReducedMembers[reducedComponent->terminalMember[0]]) );
 //     TU_CALL( mergeMembers(tu, tdec, newcolumn, reducedComponent,
 //       newcolumn->membersToReducedMembers[reducedComponent->terminalMember[1]]) );
 //     tdec->members[findMember(tdec, reducedComponent->root->member)].type = TDEC_MEMBER_TYPE_PRIME;
-// 
+//
 // #if defined(TU_DEBUG_TDEC)
-//     printf("      Adding edge {%d,%d} to merged prime component.\n", findNode(tdec, reducedComponent->terminalNode[0]), 
+//     printf("      Adding edge {%d,%d} to merged prime component.\n", findNode(tdec, reducedComponent->terminalNode[0]),
 //       findNode(tdec, reducedComponent->terminalNode[1]));
 //     fflush(stdout);
 // #endif /* TU_DEBUG_TDEC */
-// 
+//
 //     /* Add edge to the prime component.  */
 //     tdec->edges[newEdge].member = reducedComponent->root->member;
 //     tdec->edges[newEdge].head = findNode(tdec, reducedComponent->terminalNode[0]);
 //     tdec->edges[newEdge].tail = findNode(tdec, reducedComponent->terminalNode[1]);
 //     TU_CALL( addEdgeToMembersEdgeList(tu, tdec, newEdge, reducedComponent->root->member) );
 //   }
-// 
+//
 //   return TU_OKAY;
 // }
 
@@ -3827,7 +3858,7 @@ TU_ERROR doReorderComponent(
   TU_TDEC_EDGE oldMarkerOfParent = tdec->members[member].markerOfParent;
 
   TUdbgMsg(8, "Flipping parenting of member %d with old parent %d and new parent %d.\n", member, oldParent, newParent);
-  
+
   tdec->members[member].markerToParent = newMarkerToParent;
   tdec->members[member].markerOfParent = markerOfNewParent;
   tdec->edges[markerOfNewParent].childMember = member;
@@ -3857,7 +3888,7 @@ TU_ERROR reorderComponent(
     TU_CALL( doReorderComponent(tu, tdec, findMemberParent(tdec, newRoot), newRoot,
       tdec->members[newRoot].markerOfParent, tdec->members[newRoot].markerToParent) );
   }
-  
+
   return TU_OKAY;
 }
 
@@ -3920,7 +3951,7 @@ TU_ERROR TUtdecAddColumnApply(TU* tu, TU_TDEC* tdec, TU_TDEC_NEWCOLUMN* newcolum
 
   /* Create reduced components for new edges. */
   TU_CALL( completeReducedDecomposition(tu, tdec, newcolumn, entryRows, numEntries) );
-  
+
   /* Process all reduced components individually. */
 
   TU_TDEC_EDGE* componentNewEdges = NULL;
@@ -3970,7 +4001,7 @@ TU_ERROR TUtdecAddColumnApply(TU* tu, TU_TDEC* tdec, TU_TDEC_NEWCOLUMN* newcolum
     else
       TU_CALL( reorderComponent(tu, tdec, findMember(tdec, tdec->edges[componentNewEdges[c]].member)) );
   }
-  
+
   if (newcolumn->numReducedComponents == 0)
   {
     assert(0 == "Adding a zero column not implemented.");
@@ -4036,13 +4067,13 @@ TU_ERROR TUtdecAddColumnApply(TU* tu, TU_TDEC* tdec, TU_TDEC_NEWCOLUMN* newcolum
 #if defined(TU_DEBUG_DOT)
   TU_CALL( debugDot(tu, tdec, newcolumn) );
 #endif /* TU_DEBUG_DOT */
-  
+
   TU_CALL( mergeLeafBonds(tu, tdec) );
 
 #if defined(TU_DEBUG_DOT)
   TU_CALL( debugDot(tu, tdec, newcolumn) );
 #endif /* TU_DEBUG_DOT */
-  
+
 
   TU_CALL( TUfreeStackArray(tu, &componentNewEdges) );
 
