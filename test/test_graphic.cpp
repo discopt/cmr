@@ -43,7 +43,7 @@ void testGraphicMatrix(
   {
     printf("Input matrix:\n");
     ASSERT_TU_CALL( TUchrmatPrintDense(stdout, matrix, ' ', true) );
-
+  
     printf("Graph:\n");
     ASSERT_TU_CALL( TUgraphPrint(stdout, graph) );
 
@@ -137,6 +137,44 @@ TEST(Graphic, InternalBondOneOneEnd)
       "0 0 1  1 " /* edge of second triangle */
     ) );
     testGraphicMatrix(tu, A, 0);
+    ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
+  }
+
+  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+}
+
+TEST(Graphic, RootPolygonTwoOneEnds)
+{
+  TU* tu = NULL;
+  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
+
+  /* Polygon with a path edge and two attached bond/polygons containing the path ends. */
+  {
+    TU_CHRMAT* A = NULL;
+    ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "6 4 "
+      "1 0 0  0 " /* edge of polygon */
+      "1 0 0  1 " /* second edge of polygon */
+      "1 1 0  0 " /* edge of first connecting bond. */
+      "0 1 0  1 " /* edge of first triangle */
+      "1 0 1  0 " /* edge of second connecting bond */
+      "0 0 1  1 " /* edge of second triangle */
+    ) );
+    testGraphicMatrix(tu, A, 2);
+    ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
+  }
+
+  /* Polygon with no path edge and two attached bond/polygons containing the path ends. */
+  {
+    TU_CHRMAT* A = NULL;
+    ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "6 4 "
+      "1 0 0  0 " /* edge of polygon */
+      "1 0 0  0 " /* second edge of polygon */
+      "1 1 0  0 " /* edge of first connecting bond. */
+      "0 1 0  1 " /* edge of first triangle */
+      "1 0 1  0 " /* edge of second connecting bond */
+      "0 0 1  1 " /* edge of second triangle */
+    ) );
+    testGraphicMatrix(tu, A, 2);
     ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
   }
 

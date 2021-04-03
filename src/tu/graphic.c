@@ -240,8 +240,7 @@ TU_ERROR TUconvertGraphToBinaryMatrix(TU* tu, TU_GRAPH* graph, TU_CHRMAT** pmatr
   }
   for (int b = 0; b < numBasisEdges; ++b)
   {
-    printf("basis[%d] = %d\n", b, basisEdges[b]);
-    fflush(stdout);
+    TUdbgMsg(0, "basis[%d] = %d\n", b, basisEdges[b]);
     lengths[basisEdges[b]] = 0;
   }
 
