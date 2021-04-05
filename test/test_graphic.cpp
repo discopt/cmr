@@ -181,6 +181,28 @@ TEST(Graphic, RootPolygonTwoOneEnds)
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
 
+
+TEST(Graphic, RootPolygonOneTwoEnd)
+{
+  TU* tu = NULL;
+  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
+
+  /* Polygon with a K_4. */
+  {
+    TU_CHRMAT* A = NULL;
+    ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "4 4 "
+      "1 1 1 1 " /* first edge of polygon */
+      "1 1 1 1 " /* second edge of polygon, where K_4 is attached. */
+      "0 1 0 1 " /* */
+      "0 0 1 1 " /* */
+    ) );
+    testGraphicMatrix(tu, A, 2);
+    ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
+  }
+
+  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+}
+
 TEST(Graphic, Bond)
 {
   TU* tu = NULL;
