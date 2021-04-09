@@ -1945,11 +1945,9 @@ TU_ERROR determineTypePrime(
 
   if (depth == 0)
   {
-    if (numEndNodes == 0)
-    {
-      assert(0 == "Typing of prime not fully implemented: non-root with 0 path nodes.");
-    }
-    else if (numEndNodes == 2)
+    assert(numEndNodes > 0); /* Should only happen if the marker edge closes a cycle via the parent, but we are a root. */
+
+    if (numEndNodes == 2)
     {
       if (numOneEnd == 0 && numTwoEnds == 0)
       {
@@ -1957,17 +1955,40 @@ TU_ERROR determineTypePrime(
         TU_CALL( addTerminal(tu, tdec, reducedComponent, member, reducedMember->primeEndNodes[0]) );
         TU_CALL( addTerminal(tu, tdec, reducedComponent, member, reducedMember->primeEndNodes[1]) );
       }
+      else if (numOneEnd == 1)
+      {
+        if (reducedMember->primeEndNodes[0] == childMarkerNodes[0]
+          || reducedMember->primeEndNodes[0] == childMarkerNodes[1])
+        {
+          reducedMember->type = TYPE_5_ROOT;
+          TU_CALL( addTerminal(tu, tdec, reducedComponent, member, reducedMember->primeEndNodes[1]) );
+        }
+        else if (reducedMember->primeEndNodes[1] == childMarkerNodes[0]
+          || reducedMember->primeEndNodes[1] == childMarkerNodes[1])
+        {
+          reducedMember->type = TYPE_5_ROOT;
+          TU_CALL( addTerminal(tu, tdec, reducedComponent, member, reducedMember->primeEndNodes[0]) );
+        }
+        else
+        {
+          newcolumn->remainsGraphic = false;
+        }
+      }
       else
       {
-        assert(0 == "Typing of prime not fully implemented: non-root with 2 path nodes.");
+        assert(0 == "Typing of prime not fully implemented: root with 2 path nodes.");
       }
     }
-    else if (numEndNodes == 4)
+    else
+    {
+      assert(numEndNodes == 4);
       newcolumn->remainsGraphic = false;
+    }
   }
   else
   {
-    /* Non-root member. */
+    /* Non-root prime member. */
+
     int parentMarkerDegrees[2] = {
       newcolumn->nodesDegree[parentMarkerNodes[0]],
       newcolumn->nodesDegree[parentMarkerNodes[1]]
@@ -2395,7 +2416,7 @@ TU_ERROR moveReducedRoot(
         cycleWithUniqueEndChild = false;
     }
   }
-  
+
   TUdbgMsg(6, "Updated reduced root member is %d.\n", reducedMember->member);
 
   reducedComponent->root = reducedMember;
@@ -2765,8 +2786,22 @@ TU_ERROR addColumnProcessPrime(
     {
       assert(reducedComponent->numTerminals == 2);
     }
+    else if (numOneEnd == 1)
+    {
+      assert(reducedComponent->numTerminals == 2);
+
+      TU_TDEC_MEMBER childMember = findMember(tdec, tdec->edges[childMarkerEdges[0]].childMember);
+      bool headToHead = reducedMember->primeEndNodes[0] == childMarkerNodes[1]
+        || reducedMember->primeEndNodes[1] == childMarkerNodes[1];
+      assert(headToHead || reducedMember->primeEndNodes[0] == childMarkerNodes[0]
+        || reducedMember->primeEndNodes[1] == childMarkerNodes[0]);
+
+      TU_CALL( mergeMemberIntoParent(tu, tdec, childMember, headToHead) );
+    }
     else
     {
+      assert(numOneEnd == 2);
+
       assert(0 == "addColumnProcessPrime is not fully implemented.");
     }
   }
@@ -2897,7 +2932,7 @@ TU_ERROR splitPolygon(
 #if defined(TU_DEBUG_TDEC)
   TUdbgMsg(8, "Checking polygon %d for splitting... ", member);
 #endif /* TU_DEBUG_TDEC */
-  
+
   TU_TDEC_EDGE edge = tdec->members[member].firstEdge;
   TU_TDEC_EDGE someSatisfyingEdge = -1;
   int numSatisfyingEdges = 0;
@@ -2911,7 +2946,7 @@ TU_ERROR splitPolygon(
     }
     edge = tdec->edges[edge].next;
   } while (edge != tdec->members[member].firstEdge);
-  
+
   TUdbgMsg(0, "%d of %d edges satisfy the predicate.\n", numSatisfyingEdges, tdec->members[member].numEdges);
 
   if (numSatisfyingEdges == 0)
@@ -2927,61 +2962,10 @@ TU_ERROR splitPolygon(
   {
     if (pNewPolygon)
       *pNewPolygon = -1;
-//     if (enforceBond)
-//     {
-//       TU_TDEC_MEMBER childMember = tdec->edges[someSatisfyingEdge].childMember;
-//       if (childMember >= 0)
-//       {
-//         childMember = findMember(tdec, childMember);
-//         if (tdec->members[childMember].type == TDEC_MEMBER_TYPE_BOND)
-//         {
-//           
-//         }
-//       }
-//       
-//       TUdbgMsg(8, "Creating only a bond.\n");
-//       
-//       /* Initialize new bond. */
-//       TU_TDEC_MEMBER bond;
-//       TU_CALL( createMember(tu, tdec, TDEC_MEMBER_TYPE_BOND, &bond) );
-//       TU_TDEC_EDGE bondParentMarker;
-//       TU_CALL( createMarkerEdge(tu, tdec, &bondParentMarker, bond, -1, -1, false) );
-//       TU_CALL( addEdgeToMembersEdgeList(tu, tdec, bondParentMarker, bond) );
-//       tdec->members[bond].markerToParent = bondParentMarker;
-// 
-//       /* Add child marker edge from old polygon to bond and add it to edge list. */
-//       TU_TDEC_EDGE memberChildMarker;
-//       TU_CALL( createMarkerEdge(tu, tdec, &memberChildMarker, member, -1, -1, true) );
-//       tdec->numMarkers++;
-//       tdec->members[bond].markerOfParent = memberChildMarker;
-// 
-//       /* Replace someSatisfyingEdge in member by memberChildMarker. */
-//       TU_TDEC_EDGE prev = tdec->edges[someSatisfyingEdge].prev;
-//       TU_TDEC_EDGE next = tdec->edges[someSatisfyingEdge].next;
-//       tdec->edges[memberChildMarker].prev = prev;
-//       tdec->edges[memberChildMarker].next = next;
-//       tdec->edges[prev].next = memberChildMarker;
-//       tdec->edges[next].prev = memberChildMarker;
-// 
-//       tdec->edges[someSatisfyingEdge].member = bond;
-//       TU_CALL(addEdgeToMembersEdgeList(tu, tdec, someSatisfyingEdge, bond));
-// 
-//       /* Link all. */
-//       tdec->members[bond].parentMember = member;
-//       tdec->edges[memberChildMarker].childMember = bond;
-// 
-//       if (pRepresentativeEdge)
-//         *pRepresentativeEdge = memberChildMarker;
-//       if (pNewBond)
-//         *pNewBond = bond;
-//     }
-//     else
-//     {
     if (pRepresentativeEdge)
       *pRepresentativeEdge = someSatisfyingEdge;
     if (pNewBond)
       *pNewBond = -1;
-//     }
   }
   else
   {
@@ -3152,7 +3136,7 @@ TU_ERROR addColumnProcessPolygon(
   {
     /* If we have a child containing both ends then we should have moved the reduced root there. */
     assert(numTwoEnds == 0);
-    
+
     if (numOneEnd == 0)
     {
       /* Root polygon containing both ends. */
@@ -3169,7 +3153,7 @@ TU_ERROR addColumnProcessPolygon(
       else
       {
         TUdbgMsg(8 + 2*depth, "Polygon contains both terminal nodes and a non-path parent marker edge.\n");
-  
+
         /* Squeeze off all path edges by moving them to a new polygon and creating a bond to connect it to the
          * remaining polygon. */
         TU_CALL( splitPolygon(tu, tdec, member, newcolumn->edgesInPath, true, &representativeEdge, NULL, NULL) );
@@ -3297,10 +3281,10 @@ TU_ERROR addColumnProcessPolygon(
 #endif /* TU_DEBUG_DOT */
 
       /* a <----- b ------ c -----> d ---- a
-       *   child0   parent   child1   path 
-       * 
+       *   child0   parent   child1   path
+       *
        * or
-       * 
+       *
        * a <----- b ------ c -----> d=a
        *   child0   parent   child1 */
       TU_TDEC_NODE a, b, c, d;
@@ -3325,7 +3309,7 @@ TU_ERROR addColumnProcessPolygon(
   }
   else
   {
-    /* Non-root polygon. */    
+    /* Non-root polygon. */
     assert(reducedMember->type != TYPE_1_CLOSES_CYCLE); /* addColumnProcess should never consider such a member. */
     assert(reducedMember->type != TYPE_2_SHORTCUT); /* For polygons this can never happen. */
     assert(reducedMember->type != TYPE_4_CONNECTS_TWO_PATHS); /* This should only happen at the root. */
@@ -3652,7 +3636,7 @@ TU_ERROR TUtdecAddColumnApply(TU* tu, TU_TDEC* tdec, TU_TDEC_NEWCOLUMN* newcolum
     ReducedComponent* reducedComponent = &newcolumn->reducedComponents[i];
 
     TUdbgMsg(4, "Moving root of reduced component %d.\n", i);
-    
+
     TU_CALL( moveReducedRoot(tu, tdec, newcolumn, reducedComponent) );
 
 #if defined(TU_DEBUG_DOT)
@@ -3865,7 +3849,7 @@ TU_ERROR testGraphicnessTDecomposition(TU* tu, TU_CHRMAT* matrix, TU_CHRMAT* tra
       assert(!"Not implemented");
     }
   }
-  
+
   if (mergeLeafBonds > 0)
     TU_CALL( doMergeLeafBonds(tu, tdec) );
 
@@ -3884,4 +3868,3 @@ TU_ERROR testGraphicnessTDecomposition(TU* tu, TU_CHRMAT* matrix, TU_CHRMAT* tra
 
   return TU_OKAY;
 }
-

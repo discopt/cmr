@@ -109,6 +109,28 @@ TEST(Graphic, RootBondOneTwoEnd)
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
 
+TEST(Graphic, RootPrimeOneOneEnd)
+{
+  TU* tu = NULL;
+  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
+
+  /* A K_4 with an attached polygon (via bond) containing an end node. */
+  {
+    TU_CHRMAT* A = NULL;
+    ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "5 5 "
+      "1 1 0 0  1 "
+      "1 0 1 1  0 "
+      "0 1 1 1  1 "
+      "0 0 0 1  1 "
+      "0 0 0 1  1 "
+    ) );
+    testGraphicMatrix(tu, A, 2);
+    ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
+  }
+
+  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+}
+
 TEST(Graphic, InternalBondOneOneEnd)
 {
   TU* tu = NULL;
