@@ -3150,7 +3150,10 @@ TU_ERROR addColumnProcessPolygon(
 
   if (depth == 0)
   {
-    if (numOneEnd == 0 && numTwoEnds == 0)
+    /* If we have a child containing both ends then we should have moved the reduced root there. */
+    assert(numTwoEnds == 0);
+    
+    if (numOneEnd == 0)
     {
       /* Root polygon containing both ends. */
       assert(reducedMember->firstPathEdge);
@@ -3173,11 +3176,19 @@ TU_ERROR addColumnProcessPolygon(
       }
 
       TU_TDEC_EDGE childMember = tdec->edges[representativeEdge].childMember;
+      TU_TDEC_NODE tail = -1;
+      TU_TDEC_NODE head = -1;
       if (childMember < 0)
         TU_CALL( createEdgeBond(tu, tdec, representativeEdge, &childMember) );
+      else if (tdec->members[childMember].type == TDEC_MEMBER_TYPE_PRIME)
+      {
+        tail = findEdgeTail(tdec, tdec->members[childMember].markerToParent);
+        head = findEdgeHead(tdec, tdec->members[childMember].markerToParent);
+        assert(0 == "TEST ME"); // TODO
+      }
 
-      TU_CALL( addTerminal(tu, tdec, reducedComponent, childMember, -1) );
-      TU_CALL( addTerminal(tu, tdec, reducedComponent, childMember, -1) );
+      TU_CALL( addTerminal(tu, tdec, reducedComponent, childMember, tail) );
+      TU_CALL( addTerminal(tu, tdec, reducedComponent, childMember, head) );
 
 #if defined(TU_DEBUG_DOT)
       TU_CALL( debugDot(tu, tdec, newcolumn) );
@@ -3259,8 +3270,10 @@ TU_ERROR addColumnProcessPolygon(
       TU_CALL( debugDot(tu, tdec, newcolumn) );
 #endif /* TU_DEBUG_DOT */
     }
-    else if (numOneEnd == 2)
+    else
     {
+      assert(numOneEnd == 2);
+
       /* If there is more than 1 path edge, we squeeze off by moving them to a new polygon and creating a bond to
        * connect it to the remaining polygon. */
       TU_TDEC_EDGE pathEdge;
@@ -3309,15 +3322,20 @@ TU_ERROR addColumnProcessPolygon(
       TU_CALL( mergeMemberIntoParent(tu, tdec, tdec->edges[childMarkerEdges[1]].childMember, true) );
       tdec->members[member].type = TDEC_MEMBER_TYPE_PRIME;
     }
-    else
-    {
-      assert(0 == "addColumnProcessPolygon for root with interesting children not implemented.");
-    }
   }
   else
   {
-    if (reducedMember->type == TYPE_3_EXTENSION && numOneEnd + numTwoEnds == 0)
+    /* Non-root polygon. */    
+    assert(reducedMember->type != TYPE_1_CLOSES_CYCLE); /* addColumnProcess should never consider such a member. */
+    assert(reducedMember->type != TYPE_2_SHORTCUT); /* For polygons this can never happen. */
+    assert(reducedMember->type != TYPE_4_CONNECTS_TWO_PATHS); /* This should only happen at the root. */
+    assert(reducedMember->type != TYPE_5_ROOT); /* We are not a root. */
+    assert(reducedMember->type == TYPE_3_EXTENSION); /* Only remaining case. */
+
+    if (numOneEnd == 0)
     {
+      assert(numOneEnd == 0);
+      assert(numTwoEnds == 0);
       assert(reducedComponent->numTerminals < 2);
       assert(reducedMember->firstPathEdge);
 
@@ -3364,8 +3382,10 @@ TU_ERROR addColumnProcessPolygon(
 
       return TU_OKAY;
     }
-    else if (reducedMember->type == TYPE_3_EXTENSION && numOneEnd == 1)
+    else
     {
+      assert(numOneEnd == 1);
+
       /* Squeeze off all path edges by moving them to a new polygon and creating a bond to connect
        * it to the remaining polygon. */
       TU_TDEC_EDGE pathEdge = -1;
@@ -3439,8 +3459,6 @@ TU_ERROR addColumnProcessPolygon(
 
       return TU_OKAY;
     }
-
-    assert(0 == "addColumnProcessPolygon for non-root not implemented.");
   }
 
   return TU_OKAY;
