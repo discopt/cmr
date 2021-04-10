@@ -4,6 +4,11 @@
 #include <tu/graphic.h>
 #include <tu/tdec.h>
 
+// TODO: prime in which a parent marker node has degree 2.
+// TODO: prime in which both parent marker nodes have degree 1 because one is also a node of a child marker.
+// TODO: row with only 0's (including TUconvertGraphToBinaryMatrix)
+// TODO: column with only 0's. 
+
 void testGraphicMatrix(
   TU* tu,             /**< \ref TU environment. */
   TU_CHRMAT* matrix,  /**< Matrix to be used for testing. */
@@ -123,6 +128,55 @@ TEST(Graphic, RootPrimeOneOneEnd)
       "0 1 1 1  1 "
       "0 0 0 1  1 "
       "0 0 0 1  1 "
+    ) );
+    testGraphicMatrix(tu, A, 2);
+    ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
+  }
+
+  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+}
+
+TEST(Graphic, RootPrimeTwoOneEnds)
+{
+  TU* tu = NULL;
+  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
+
+  /* A K_4 with two attached polygons (via bonds), each containing an end node. */
+  {
+    TU_CHRMAT* A = NULL;
+    ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "7 6 "
+      "1 1 0 0 1  1 "
+      "1 0 1 1 0  0 "
+      "0 1 1 1 1  1 "
+      "0 0 0 1 0  1 "
+      "0 0 0 1 0  1 "
+      "0 0 0 0 1  1 "
+      "0 0 0 0 1  1 "
+    ) );
+    testGraphicMatrix(tu, A, 2);
+    ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
+  }
+
+  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+}
+
+TEST(Graphic, RootPrimeFourPaths)
+{
+  TU* tu = NULL;
+  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
+
+  /* A type-4 prime with two attached polygons (via bonds), each containing an end node. */
+  {
+    TU_CHRMAT* A = NULL;
+    ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "8 9 "
+      "1 1 1 1 1 1  1  1  1 "
+      "1 1 1 1 1 1  1  1  1 "
+      "1 1 1 1 1 1  1  1  1 "
+      "0 1 0 1 1 0  1  1  1 "
+      "0 0 1 1 1 1  1  1  1 "
+      "0 0 0 0 1 1  1  0  0 "
+      "0 0 0 0 0 0  1  0  1 "
+      "0 0 0 0 0 0  0  1  1 "
     ) );
     testGraphicMatrix(tu, A, 2);
     ASSERT_TU_CALL( TUchrmatFree(tu, &A) );

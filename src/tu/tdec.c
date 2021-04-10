@@ -77,6 +77,15 @@ struct _TU_TDEC
   int numMarkers;                   /**< \brief Number of marker edge pairs in t-decomposition. */
 };
 
+#define SWAP_INTS(a, b) \
+  do \
+  { \
+    int tmp = a; \
+    a = b; \
+    b = tmp; \
+  } \
+  while (false)
+
 static inline
 bool isRepresentativeMember(
   TU_TDEC* tdec,        /**< t-decomposition. */
@@ -86,7 +95,6 @@ bool isRepresentativeMember(
   assert(tdec);
   return tdec->members[member].representativeMember < 0;
 }
-
 
 static TU_TDEC_MEMBER findMember(TU_TDEC* tdec, TU_TDEC_MEMBER start)
 {
@@ -1722,6 +1730,8 @@ TU_ERROR addTerminal(
   assert(node >= 0 || tdec->members[member].type == TDEC_MEMBER_TYPE_BOND);
   assert(reducedComponent->numTerminals != 1 || node >= 0 || member == reducedComponent->terminalMember[0]);
 
+  TUdbgMsg(12, "Setting terminal node %d of member %d.\n", node, member);
+
   if (reducedComponent->numTerminals == 2)
   {
     TUdbgMsg(8, "Attempted to add terminal but already 2 known. We should detect non-graphicness soon.\n");
@@ -1976,7 +1986,22 @@ TU_ERROR determineTypePrime(
       }
       else
       {
-        assert(0 == "Typing of prime not fully implemented: root with 2 path nodes.");
+        assert(numOneEnd == 2);
+
+        bool matched[2] = { false, false };
+        for (int i = 0; i < 2; ++i)
+        {
+          for (int j = 0; j < 4; ++j)
+          {
+            if (reducedMember->primeEndNodes[i] == childMarkerNodes[j])
+              matched[j/2] = true;
+          }
+        }
+        
+        if (matched[0] && matched[1])
+          reducedMember->type = TYPE_5_ROOT;
+        else
+          newcolumn->remainsGraphic = false;
       }
     }
     else
@@ -2028,12 +2053,7 @@ TU_ERROR determineTypePrime(
     {
       /* Exchange such that end node 0 is at the parent marker. */
       if (reducedMember->primeEndNodes[0] != parentMarkerNodes[0] && reducedMember->primeEndNodes[0] != parentMarkerNodes[1])
-      {
-        TU_TDEC_NODE tmp = reducedMember->primeEndNodes[0];
-        reducedMember->primeEndNodes[0] = reducedMember->primeEndNodes[1];
-        reducedMember->primeEndNodes[1] = tmp;
-      }
-      assert(reducedMember->primeEndNodes[0] == parentMarkerNodes[0] || reducedMember->primeEndNodes[0] == parentMarkerNodes[1]);
+        SWAP_INTS(reducedMember->primeEndNodes[0], reducedMember->primeEndNodes[0]);
 
       if (numOneEnd == 0 && numTwoEnds == 0)
       {
@@ -2055,6 +2075,38 @@ TU_ERROR determineTypePrime(
         {
           /* Both have degree 0 or 2. */
           newcolumn->remainsGraphic = false;
+        }
+      }
+      else if (numOneEnd == 1)
+      {
+        int nodes[4] = {
+          parentMarkerNodes[0] == reducedMember->primeEndNodes[0] ? 0 : (parentMarkerNodes[0] == reducedMember->primeEndNodes[1] ? 1 : -1),
+          parentMarkerNodes[1] == reducedMember->primeEndNodes[0] ? 0 : (parentMarkerNodes[1] == reducedMember->primeEndNodes[1] ? 1 : -1),
+          childMarkerNodes[0] == reducedMember->primeEndNodes[0] ? 0 : (childMarkerNodes[0] == reducedMember->primeEndNodes[1] ? 1 : -1),
+          childMarkerNodes[1] == reducedMember->primeEndNodes[0] ? 0 : (childMarkerNodes[1] == reducedMember->primeEndNodes[1] ? 1 : -1)
+        };
+        if (nodes[0] < 0)
+          SWAP_INTS(nodes[0], nodes[1]);
+        if (nodes[2] < 0)
+          SWAP_INTS(nodes[2], nodes[3]);
+
+        /* If all four marker edge nodes or not at least one of each type are path end nodes, it is not graphic. */
+        if ((nodes[1] >= 0 && nodes[3] >= 0) || nodes[0] < 0 || nodes[2] < 0)
+        {
+          newcolumn->remainsGraphic = false;
+          return TU_OKAY;
+        }
+
+        if (nodes[1] < 0)
+        {
+          /* Only one parent marker node is a path end. */
+          reducedMember->type = newcolumn->nodesDegree[parentMarkerNodes[1 - nodes[0]]] == 1
+            ? TYPE_2_SHORTCUT : TYPE_3_EXTENSION;
+        }
+        else
+        {
+          /* Other parent marker nodes are path ends. */
+          assert(false);
         }
       }
       else
@@ -2122,20 +2174,12 @@ TU_ERROR determineTypePrime(
 
       /* Exchange such that end node 0 is at the parent marker. */
       if (reducedMember->primeEndNodes[0] != parentMarkerNodes[0] && reducedMember->primeEndNodes[0] != parentMarkerNodes[1])
-      {
-        TU_TDEC_NODE tmp = reducedMember->primeEndNodes[0];
-        reducedMember->primeEndNodes[0] = reducedMember->primeEndNodes[1];
-        reducedMember->primeEndNodes[1] = tmp;
-      }
+        SWAP_INTS(reducedMember->primeEndNodes[0], reducedMember->primeEndNodes[1]);
       assert(reducedMember->primeEndNodes[0] == parentMarkerNodes[0] || reducedMember->primeEndNodes[0] == parentMarkerNodes[1]);
 
       /* Exchange such that end node 2 is at the parent marker. */
       if (reducedMember->primeEndNodes[2] != parentMarkerNodes[0] && reducedMember->primeEndNodes[2] != parentMarkerNodes[1])
-      {
-        TU_TDEC_NODE tmp = reducedMember->primeEndNodes[2];
-        reducedMember->primeEndNodes[2] = reducedMember->primeEndNodes[3];
-        reducedMember->primeEndNodes[3] = tmp;
-      }
+        SWAP_INTS(reducedMember->primeEndNodes[2], reducedMember->primeEndNodes[3]);
       assert(reducedMember->primeEndNodes[2] == parentMarkerNodes[0] || reducedMember->primeEndNodes[2] == parentMarkerNodes[1]);
 
       TUdbgMsg(6 + 2*depth, "End nodes of first path are %d and %d.\n", reducedMember->primeEndNodes[0],
@@ -2161,6 +2205,63 @@ TU_ERROR determineTypePrime(
         reducedMember->type = TYPE_4_CONNECTS_TWO_PATHS;
         TU_CALL( addTerminal(tu, tdec, reducedComponent, member, reducedMember->primeEndNodes[1]) );
         TU_CALL( addTerminal(tu, tdec, reducedComponent, member, reducedMember->primeEndNodes[3]) );
+      }
+      else if (numOneEnd == 1)
+      {
+        bool pathConnects[2] = {
+          reducedMember->primeEndNodes[1] == childMarkerNodes[0]
+            || reducedMember->primeEndNodes[1] == childMarkerNodes[1],
+          reducedMember->primeEndNodes[3] == childMarkerNodes[0]
+            || reducedMember->primeEndNodes[3] == childMarkerNodes[1]
+        };
+
+        if (pathConnects[0] && pathConnects[1])
+        {
+          TUdbgMsg(6 + 2*depth, "The both paths end at the child marker edge.\n");
+          reducedMember->type = TYPE_4_CONNECTS_TWO_PATHS;
+        }
+        else if (pathConnects[0])
+        {
+          TUdbgMsg(6 + 2*depth, "Only the first path ends at the child marker edge.\n");
+          reducedMember->type = TYPE_4_CONNECTS_TWO_PATHS;
+          TU_CALL( addTerminal(tu, tdec, reducedComponent, member, reducedMember->primeEndNodes[3]) );
+        }
+        else if (pathConnects[1])
+        {
+          TUdbgMsg(6 + 2*depth, "Only the second path ends at the child marker edge.\n");
+          reducedMember->type = TYPE_4_CONNECTS_TWO_PATHS;
+          TU_CALL( addTerminal(tu, tdec, reducedComponent, member, reducedMember->primeEndNodes[1]) );
+        }
+        else
+        {
+          TUdbgMsg(6 + 2*depth, "No path ends at the child marker edge.\n");
+          newcolumn->remainsGraphic = false;
+        }
+      }
+      else if (numOneEnd == 2)
+      {
+        bool pathConnected[2] = { false, false };
+        bool childConnected[2] = { false, false };
+        for (int i = 0; i < 2; ++i)
+        {
+          for (int j = 0; j < 4; ++j)
+          {
+            if (reducedMember->primeEndNodes[1 + 2*i] == childMarkerNodes[j])
+            {
+              pathConnected[i] = true;
+              childConnected[j/2] = true;
+            }
+          }
+        }
+        if (pathConnected[0] && pathConnected[1] && childConnected[0] && childConnected[1])
+        {
+          reducedMember->type = TYPE_4_CONNECTS_TWO_PATHS;
+        }
+        else
+        {
+          TUdbgMsg(6 + 2*depth, "No pairing of paths to nodes of child marker edges possible.\n");
+          newcolumn->remainsGraphic = false;
+        }
       }
       else
       {
@@ -2300,6 +2401,8 @@ TU_ERROR TUtdecAddColumnCheck(TU* tu, TU_TDEC* tdec, TU_TDEC_NEWCOLUMN* newcolum
   TU_CALL( initializeNewColumn(tu, tdec, newcolumn) );
   TU_CALL( computeReducedDecomposition(tu, tdec, newcolumn, entryRows, numEntries) );
   TU_CALL( initializeReducedMemberEdgeLists(tu, tdec, newcolumn, entryRows, numEntries) );
+
+  TU_CALL( debugDot(tu, tdec, newcolumn) );
 
   for (int i = 0; i < newcolumn->numReducedComponents; ++i)
   {
@@ -2674,7 +2777,7 @@ TU_ERROR addColumnProcessBond(
       TU_CALL( createBondNodes(tu, tdec, member) );
       TU_CALL( mergeMemberIntoParent(tu, tdec, tdec->edges[childMarkerEdges[0]].childMember, true) );
       TU_CALL( mergeMemberIntoParent(tu, tdec, tdec->edges[childMarkerEdges[1]].childMember,
-        reducedMember->firstPathEdge == NULL) );
+        reducedMember->firstPathEdge == NULL && reducedMember->type != TYPE_4_CONNECTS_TWO_PATHS) );
 
 #if defined(TU_DEBUG_DOT)
       TU_CALL( debugDot(tu, tdec, newcolumn) );
@@ -2728,8 +2831,8 @@ TU_ERROR addColumnProcessBond(
   return TU_OKAY;
 }
 
-// TODO: inline
-static void flipEdge(
+inline static
+void flipEdge(
   TU_TDEC* tdec,    /**< t-decomposition. */
   TU_TDEC_EDGE edge /**< edge. */
 )
@@ -2738,9 +2841,7 @@ static void flipEdge(
   assert(edge >= 0);
   assert(edge < tdec->memEdges);
 
-  TU_TDEC_NODE tmp = tdec->edges[edge].head;
-  tdec->edges[edge].head = tdec->edges[edge].tail;
-  tdec->edges[edge].tail = tmp;
+  SWAP_INTS(tdec->edges[edge].tail, tdec->edges[edge].head);
 }
 
 static
@@ -2801,8 +2902,24 @@ TU_ERROR addColumnProcessPrime(
     else
     {
       assert(numOneEnd == 2);
+      assert(reducedComponent->numTerminals == 2);
 
-      assert(0 == "addColumnProcessPrime is not fully implemented.");
+      TU_TDEC_MEMBER childMember0 = findMember(tdec, tdec->edges[childMarkerEdges[0]].childMember);
+      TU_TDEC_MEMBER childMember1 = findMember(tdec, tdec->edges[childMarkerEdges[1]].childMember);
+      bool headToHead[2];
+      for (int i = 0; i < 2; ++i)
+      {
+        for (int j = 0; j < 4; ++j)
+        {
+          if (reducedMember->primeEndNodes[i] == childMarkerNodes[j])
+            headToHead[j/2] = j % 2 == 1;
+        }
+      }
+
+      // TODO: What if the prime has type 4, i.e., the marker edge is a path edge?
+
+      TU_CALL( mergeMemberIntoParent(tu, tdec, childMember0, headToHead[0]) );
+      TU_CALL( mergeMemberIntoParent(tu, tdec, childMember1, headToHead[1]) );
     }
   }
   else
@@ -3159,11 +3276,21 @@ TU_ERROR addColumnProcessPolygon(
         TU_CALL( splitPolygon(tu, tdec, member, newcolumn->edgesInPath, true, &representativeEdge, NULL, NULL) );
       }
 
+#if defined(TU_DEBUG_DOT)
+      TU_CALL( debugDot(tu, tdec, newcolumn) );
+#endif /* TU_DEBUG_DOT */
+
       TU_TDEC_EDGE childMember = tdec->edges[representativeEdge].childMember;
       TU_TDEC_NODE tail = -1;
       TU_TDEC_NODE head = -1;
       if (childMember < 0)
+      {
         TU_CALL( createEdgeBond(tu, tdec, representativeEdge, &childMember) );
+
+#if defined(TU_DEBUG_DOT)
+      TU_CALL( debugDot(tu, tdec, newcolumn) );
+#endif /* TU_DEBUG_DOT */
+      }
       else if (tdec->members[childMember].type == TDEC_MEMBER_TYPE_PRIME)
       {
         tail = findEdgeTail(tdec, tdec->members[childMember].markerToParent);
@@ -3171,6 +3298,7 @@ TU_ERROR addColumnProcessPolygon(
         assert(0 == "TEST ME"); // TODO
       }
 
+      assert(reducedComponent->numTerminals == 0);
       TU_CALL( addTerminal(tu, tdec, reducedComponent, childMember, tail) );
       TU_CALL( addTerminal(tu, tdec, reducedComponent, childMember, head) );
 
@@ -3322,6 +3450,8 @@ TU_ERROR addColumnProcessPolygon(
       assert(numTwoEnds == 0);
       assert(reducedComponent->numTerminals < 2);
       assert(reducedMember->firstPathEdge);
+
+      TUdbgMsg(6 + 2*depth, "Non-root polygon %d without one-end children.\n", member);
 
       /* Squeeze off all path edges by moving them to a new polygon and creating a bond to connect
        * it to the remaining polygon. */
@@ -3820,7 +3950,7 @@ TU_ERROR testGraphicnessTDecomposition(TU* tu, TU_CHRMAT* matrix, TU_CHRMAT* tra
   TU_TDEC_NEWCOLUMN* newcolumn = NULL;
   TUtdecnewcolumnCreate(tu, &newcolumn);
   *pisGraphic = true;
-  for (int column = 0; column < matrix->numColumns; ++column)
+  for (int column = 0; column < matrix->numColumns && *pisGraphic; ++column)
   {
     TU_CALL( TUtdecAddColumnCheck(tu, tdec, newcolumn,
       &transpose->entryColumns[transpose->rowStarts[column]],
@@ -3846,16 +3976,18 @@ TU_ERROR testGraphicnessTDecomposition(TU* tu, TU_CHRMAT* matrix, TU_CHRMAT* tra
     else
     {
       *pisGraphic = false;
-      assert(!"Not implemented");
     }
   }
 
-  if (mergeLeafBonds > 0)
-    TU_CALL( doMergeLeafBonds(tu, tdec) );
+  if (*pisGraphic)
+  {
+    if (mergeLeafBonds > 0)
+      TU_CALL( doMergeLeafBonds(tu, tdec) );
 
 #if defined(TU_DEBUG_DOT)
-  TU_CALL( debugDot(tu, tdec, newcolumn) );
+    TU_CALL( debugDot(tu, tdec, newcolumn) );
 #endif /* TU_DEBUG_DOT */
+  }
 
   TU_CALL( TUtdecnewcolumnFree(tu, &newcolumn) );
 

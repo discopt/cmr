@@ -104,7 +104,8 @@ TU_ERROR stringToCharMatrix(TU* tu, TU_CHRMAT** matrix, const char* string)
     for (int column = 0; column < (*matrix)->numColumns; ++column)
     {
       int x = strtol(string, &end, 10);
-      assert(end > string);
+      if (end == string)
+        return TU_ERROR_INPUT;
       string = end;
 
       if (x != 0)
