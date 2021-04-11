@@ -4,9 +4,6 @@
 #include <tu/graphic.h>
 #include <tu/tdec.h>
 
-// TODO: row with only 0's (including TUconvertGraphToBinaryMatrix)
-// TODO: column with only 0's. 
-
 void testGraphicMatrix(
   TU* tu,             /**< \ref TU environment. */
   TU_CHRMAT* matrix,  /**< Matrix to be used for testing. */
@@ -335,6 +332,21 @@ TEST(Graphic, InternalPrime)
       "1  1 1 1  1  1 " /* edge of prime */
       "0  0 1 1  1  1 " /* edge of prime */
       "0  0 0 0  1  1 " /* edge of triangle leaf */
+    ) );
+    testGraphicMatrix(tu, A, 2);
+    ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
+  }
+
+  /* A triangle linked to a prime that is linked to two other triangles, next to the parent marker edge. */
+  {
+    TU_CHRMAT* A = NULL;
+    ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "6 7 "
+      "1 1 1 1  0  0  1 " /* first edge of triangle root */
+      "1 1 1 1  0  0  1 " /* second edge of triangle root */
+      "0 1 0 1  1  0  0 " /* edge of prime */
+      "0 0 1 1  0  1  0 " /* edge of prime */
+      "0 0 0 0  1  0  1 " /* edge of triangle */
+      "0 0 0 0  0  1  1 " /* edge of triangle */
     ) );
     testGraphicMatrix(tu, A, 2);
     ASSERT_TU_CALL( TUchrmatFree(tu, &A) );

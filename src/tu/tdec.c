@@ -2102,7 +2102,32 @@ TU_ERROR determineTypePrime(
       }
       else
       {
-        assert(0 == "Typing of prime not fully implemented: non-root with 0 path nodes and 2 child markers with a path end.");
+        /* We're not the root but have two proper children. */
+        int childMarkerParentNode[2] = { -1, -1 };
+        bool isParallel = false;
+        for (int i = 0; i < 4; ++i)
+        {
+          for (int j = 0; j < 2; ++j)
+          {
+            if (childMarkerNodes[i] == parentMarkerNodes[j])
+            {
+              if (childMarkerParentNode[i/2] >= 0)
+                isParallel = true;
+              childMarkerParentNode[i/2] = j;
+            }
+          }
+        }
+
+        TUdbgMsg(6 + 2*depth, "No paths, %s, child[0] incident to %d and child[1] incident to %d.\n",
+          isParallel ? "parallel" : "not parallel", childMarkerParentNode[0], childMarkerParentNode[1]);
+
+        if (!isParallel && childMarkerParentNode[0] >= 0 && childMarkerParentNode[1] >= 0
+          && childMarkerParentNode[0] != childMarkerParentNode[1])
+        {
+          reducedMember->type = TYPE_4_CONNECTS_TWO_PATHS;
+        }
+        else
+          newcolumn->remainsGraphic = false;
       }
     }
     else if (numEndNodes == 2)
@@ -4073,6 +4098,7 @@ TU_ERROR testGraphicnessTDecomposition(TU* tu, TU_CHRMAT* matrix, TU_CHRMAT* tra
         tdec->memRows = matrix->numRows;
       }
 
+      /* Add single-edge bonds for each missing row. */
       for (int r = tdec->numRows; r < matrix->numRows; ++r)
       {
         TU_TDEC_MEMBER member;
