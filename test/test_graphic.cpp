@@ -4,8 +4,6 @@
 #include <tu/graphic.h>
 #include <tu/tdec.h>
 
-// TODO: prime in which a parent marker node has degree 2.
-// TODO: prime in which both parent marker nodes have degree 1 because one is also a node of a child marker.
 // TODO: row with only 0's (including TUconvertGraphToBinaryMatrix)
 // TODO: column with only 0's. 
 
@@ -62,11 +60,31 @@ void testGraphicMatrix(
   ASSERT_TU_CALL( TUchrmatFree(tu, &result) );
 }
 
-TEST(Graphic, RootBondTwoOneEnds)
+TEST(Graphic, RootBond)
 {
   TU* tu = NULL;
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
 
+  /* Just a bond. */
+  {
+    TU_CHRMAT* A = NULL;
+    ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "1 1 "
+      "1 "
+    ) );
+    testGraphicMatrix(tu, A, 0);
+    ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
+  }
+
+  /* A larger bond */
+  {
+    TU_CHRMAT* A = NULL;
+    ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "1 3 "
+      "1 1 1 "
+    ) );
+    testGraphicMatrix(tu, A, 0);
+    ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
+  }
+  
   /* A root bond (attached to a polygon) with two child markers, each containing a (single-edge-) path. */
   {
     TU_CHRMAT* A = NULL;
@@ -91,14 +109,6 @@ TEST(Graphic, RootBondTwoOneEnds)
     ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
   }
 
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
-}
-
-TEST(Graphic, RootBondOneTwoEnd)
-{
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
-
   /* A root bond with a K_4 prime as a child, whose tree nodes are parallel edges. */
   {
     TU_CHRMAT* A = NULL;
@@ -114,7 +124,71 @@ TEST(Graphic, RootBondOneTwoEnd)
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
 
-TEST(Graphic, RootPrimeOneOneEnd)
+TEST(Graphic, RootPolygon)
+{
+  TU* tu = NULL;
+  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
+
+  /* Just a polygon */
+  {
+    TU_CHRMAT* A = NULL;
+    ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "4 1 "
+      "1 "
+      "1 "
+      "1 "
+      "1 "
+    ) );
+    testGraphicMatrix(tu, A, 0);
+    ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
+  }
+
+  /* Polygon with a path edge and two attached bond/polygons containing the path ends. */
+  {
+    TU_CHRMAT* A = NULL;
+    ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "6 4 "
+      "1 0 0  0 " /* edge of polygon */
+      "1 0 0  1 " /* second edge of polygon */
+      "1 1 0  0 " /* edge of first connecting bond. */
+      "0 1 0  1 " /* edge of first triangle */
+      "1 0 1  0 " /* edge of second connecting bond */
+      "0 0 1  1 " /* edge of second triangle */
+    ) );
+    testGraphicMatrix(tu, A, 2);
+    ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
+  }
+
+  /* Polygon with no path edge and two attached bond/polygons containing the path ends. */
+  {
+    TU_CHRMAT* A = NULL;
+    ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "6 4 "
+      "1 0 0  0 " /* edge of polygon */
+      "1 0 0  0 " /* second edge of polygon */
+      "1 1 0  0 " /* edge of first connecting bond. */
+      "0 1 0  1 " /* edge of first triangle */
+      "1 0 1  0 " /* edge of second connecting bond */
+      "0 0 1  1 " /* edge of second triangle */
+    ) );
+    testGraphicMatrix(tu, A, 2);
+    ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
+  }
+  
+  /* Polygon with a K_4. */
+  {
+    TU_CHRMAT* A = NULL;
+    ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "4 4 "
+      "1 1 1 1 " /* first edge of polygon */
+      "1 1 1 1 " /* second edge of polygon, where K_4 is attached. */
+      "0 1 0 1 " /* */
+      "0 0 1 1 " /* */
+    ) );
+    testGraphicMatrix(tu, A, 2);
+    ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
+  }
+
+  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+}
+
+TEST(Graphic, RootPrime)
 {
   TU* tu = NULL;
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
@@ -133,14 +207,6 @@ TEST(Graphic, RootPrimeOneOneEnd)
     ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
   }
 
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
-}
-
-TEST(Graphic, RootPrimeTwoOneEnds)
-{
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
-
   /* A K_4 with two attached polygons (via bonds), each containing an end node. */
   {
     TU_CHRMAT* A = NULL;
@@ -156,14 +222,6 @@ TEST(Graphic, RootPrimeTwoOneEnds)
     testGraphicMatrix(tu, A, 2);
     ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
   }
-
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
-}
-
-TEST(Graphic, RootPrimeTwoPaths)
-{
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
 
   /* A type-4 prime with two attached polygons (via bonds), each containing an end node. */
   {
@@ -185,73 +243,7 @@ TEST(Graphic, RootPrimeTwoPaths)
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
 
-TEST(Graphic, InternalPrime)
-{
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
-
-//   /* A triangle linked to a prime linked to a triangle with prime path of length 1. */
-//   {
-//     TU_CHRMAT* A = NULL;
-//     ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "5 5 "
-//       "1 0 0  0  1 " /* edge of triangle root */
-//       "1 1 0  0  1 " /* edge of prime */
-//       "1 1 1  1  0 " /* edge of prime */
-//       "1 0 1  1  0 " /* edge of prime */
-//       "0 0 0  1  1 " /* edge of triangle leaf */
-//     ) );
-//     testGraphicMatrix(tu, A, 2);
-//     ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
-//   }
-// 
-//   /* A triangle linked to a prime linked to a triangle with prime path of length 0. */
-//   {
-//     TU_CHRMAT* A = NULL;
-//     ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "5 5 "
-//       "1 0 0  0  1 " /* edge of triangle root */
-//       "1 1 0  1  0 " /* edge of prime */
-//       "1 1 1  1  0 " /* edge of prime */
-//       "1 0 1  0  0 " /* edge of prime */
-//       "0 0 0  1  1 " /* edge of triangle leaf */
-//     ) );
-//     testGraphicMatrix(tu, A, 2);
-//     ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
-//   }
-// 
-//   /* A triangle linked to a prime linked to a triangle with prime path of length 2 that ends at the second parent
-//    * marker node = child marker node. The path edges of the prime member are 3-star. */
-//   {
-//     TU_CHRMAT* A = NULL;
-//     ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "5 6 "
-//       "1  0 0 0  0  1 " /* edge of triangle root */
-//       "1  1 1 0  0  1 " /* edge of prime */
-//       "1  1 0 1  1  1 " /* edge of prime */
-//       "0  0 1 1  1  0 " /* edge of prime */
-//       "0  0 0 0  1  1 " /* edge of triangle leaf */
-//     ) );
-//     testGraphicMatrix(tu, A, 2);
-//     ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
-//   }
-
-  /* A triangle linked to a prime linked to a triangle with prime path of length 3 that passes by at the second parent
-   * marker node. The path edges of the prime member are 3-star. */
-  {
-    TU_CHRMAT* A = NULL;
-    ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "5 6 "
-      "1  0 0 0  0  1 " /* edge of triangle root */
-      "1  1 1 0  0  1 " /* edge of prime */
-      "1  1 1 1  1  1 " /* edge of prime */
-      "0  0 1 1  1  1 " /* edge of prime */
-      "0  0 0 0  1  1 " /* edge of triangle leaf */
-    ) );
-    testGraphicMatrix(tu, A, 2);
-    ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
-  }
-
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
-}
-
-TEST(Graphic, InternalBondOneOneEnd)
+TEST(Graphic, InternalBond)
 {
   TU* tu = NULL;
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
@@ -285,6 +277,72 @@ TEST(Graphic, InternalBondOneOneEnd)
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
 
+TEST(Graphic, InternalPrime)
+{
+  TU* tu = NULL;
+  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
+
+  /* A triangle linked to a prime linked to a triangle with prime path of length 1. */
+  {
+    TU_CHRMAT* A = NULL;
+    ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "5 5 "
+      "1 0 0  0  1 " /* edge of triangle root */
+      "1 1 0  0  1 " /* edge of prime */
+      "1 1 1  1  0 " /* edge of prime */
+      "1 0 1  1  0 " /* edge of prime */
+      "0 0 0  1  1 " /* edge of triangle leaf */
+    ) );
+    testGraphicMatrix(tu, A, 2);
+    ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
+  }
+
+  /* A triangle linked to a prime linked to a triangle with prime path of length 0. */
+  {
+    TU_CHRMAT* A = NULL;
+    ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "5 5 "
+      "1 0 0  0  1 " /* edge of triangle root */
+      "1 1 0  1  0 " /* edge of prime */
+      "1 1 1  1  0 " /* edge of prime */
+      "1 0 1  0  0 " /* edge of prime */
+      "0 0 0  1  1 " /* edge of triangle leaf */
+    ) );
+    testGraphicMatrix(tu, A, 2);
+    ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
+  }
+
+  /* A triangle linked to a prime linked to a triangle with prime path of length 2 that ends at the second parent
+   * marker node = child marker node. The path edges of the prime member are 3-star. */
+  {
+    TU_CHRMAT* A = NULL;
+    ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "5 6 "
+      "1  0 0 0  0  1 " /* edge of triangle root */
+      "1  1 1 0  0  1 " /* edge of prime */
+      "1  1 0 1  1  1 " /* edge of prime */
+      "0  0 1 1  1  0 " /* edge of prime */
+      "0  0 0 0  1  1 " /* edge of triangle leaf */
+    ) );
+    testGraphicMatrix(tu, A, 2);
+    ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
+  }
+
+  /* A triangle linked to a prime linked to a triangle with prime path of length 3 that passes by at the second parent
+   * marker node. The path edges of the prime member are 3-star. */
+  {
+    TU_CHRMAT* A = NULL;
+    ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "5 6 "
+      "1  0 0 0  0  1 " /* edge of triangle root */
+      "1  1 1 0  0  1 " /* edge of prime */
+      "1  1 1 1  1  1 " /* edge of prime */
+      "0  0 1 1  1  1 " /* edge of prime */
+      "0  0 0 0  1  1 " /* edge of triangle leaf */
+    ) );
+    testGraphicMatrix(tu, A, 2);
+    ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
+  }
+
+  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+}
+
 TEST(Graphic, LeafPrime)
 {
   TU* tu = NULL;
@@ -300,145 +358,6 @@ TEST(Graphic, LeafPrime)
       "1 0 1  0 " /* edge of prime */
     ) );
     testGraphicMatrix(tu, A, 2);
-    ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
-  }
-
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
-}
-
-TEST(Graphic, RootPolygonTwoOneEnds)
-{
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
-
-  /* Polygon with a path edge and two attached bond/polygons containing the path ends. */
-  {
-    TU_CHRMAT* A = NULL;
-    ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "6 4 "
-      "1 0 0  0 " /* edge of polygon */
-      "1 0 0  1 " /* second edge of polygon */
-      "1 1 0  0 " /* edge of first connecting bond. */
-      "0 1 0  1 " /* edge of first triangle */
-      "1 0 1  0 " /* edge of second connecting bond */
-      "0 0 1  1 " /* edge of second triangle */
-    ) );
-    testGraphicMatrix(tu, A, 2);
-    ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
-  }
-
-  /* Polygon with no path edge and two attached bond/polygons containing the path ends. */
-  {
-    TU_CHRMAT* A = NULL;
-    ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "6 4 "
-      "1 0 0  0 " /* edge of polygon */
-      "1 0 0  0 " /* second edge of polygon */
-      "1 1 0  0 " /* edge of first connecting bond. */
-      "0 1 0  1 " /* edge of first triangle */
-      "1 0 1  0 " /* edge of second connecting bond */
-      "0 0 1  1 " /* edge of second triangle */
-    ) );
-    testGraphicMatrix(tu, A, 2);
-    ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
-  }
-
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
-}
-
-
-TEST(Graphic, RootPolygonOneTwoEnd)
-{
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
-
-  /* Polygon with a K_4. */
-  {
-    TU_CHRMAT* A = NULL;
-    ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "4 4 "
-      "1 1 1 1 " /* first edge of polygon */
-      "1 1 1 1 " /* second edge of polygon, where K_4 is attached. */
-      "0 1 0 1 " /* */
-      "0 0 1 1 " /* */
-    ) );
-    testGraphicMatrix(tu, A, 2);
-    ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
-  }
-
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
-}
-
-TEST(Graphic, Bond)
-{
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
-  {
-    TU_CHRMAT* A = NULL;
-    ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "1 1 "
-      "1 "
-    ) );
-    testGraphicMatrix(tu, A, 0);
-    ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
-  }
-  {
-    TU_CHRMAT* A = NULL;
-    ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "1 3 "
-      "1 1 1 "
-    ) );
-    testGraphicMatrix(tu, A, 0);
-    ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
-  }
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
-}
-
-TEST(Graphic, Polygon)
-{
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
-  {
-    TU_CHRMAT* A = NULL;
-    ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "4 1 "
-      "1 "
-      "1 "
-      "1 "
-      "1 "
-    ) );
-    testGraphicMatrix(tu, A, 0);
-    ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
-  }
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
-}
-
-TEST(Graphic, PolygonPlusEdge)
-{
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
-
-  {
-    TU_CHRMAT* A = NULL;
-    ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "7 2 "
-      "1 0 " // 0
-      "1 0 " // 1
-      "1 0 " // 2
-      "1 0 " // 3
-      "1 0 " // 4
-      "1 0 " // 5
-      "1 1 " // 6
-    ) );
-    testGraphicMatrix(tu, A, 0);
-    ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
-  }
-
-  {
-    TU_CHRMAT* A = NULL;
-    ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "7 2 "
-      "1 0 " // 0
-      "1 1 " // 1
-      "1 0 " // 2
-      "1 1 " // 3
-      "1 1 " // 4
-      "1 0 " // 5
-      "1 1 " // 6
-    ) );
-    testGraphicMatrix(tu, A, 0);
     ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
   }
 
