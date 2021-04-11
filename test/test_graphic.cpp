@@ -352,6 +352,22 @@ TEST(Graphic, InternalPrime)
     ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
   }
 
+  /* A triangle linked to a prime that is linked to two other triangles, one next to the parent marker edge and one
+   * via a path of length 1. */
+  {
+    TU_CHRMAT* A = NULL;
+    ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "6 7 "
+      "1 1 1 1  1  0  1 " /* first edge of triangle root */
+      "1 1 1 1  1  0  1 " /* second edge of triangle root */
+      "0 1 0 1  1  0  1 " /* edge of prime */
+      "0 0 1 1  0  1  0 " /* edge of prime */
+      "0 0 0 0  1  0  1 " /* edge of triangle */
+      "0 0 0 0  0  1  1 " /* edge of triangle */
+    ) );
+    testGraphicMatrix(tu, A, 2);
+    ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
+  }
+
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
 

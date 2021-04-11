@@ -2184,7 +2184,35 @@ TU_ERROR determineTypePrime(
       }
       else
       {
-        assert(0 == "Typing of prime not fully implemented: non-root with 2 path nodes.");
+        assert(numOneEnd == 2);
+
+        TU_TDEC_NODE otherParentNode = -1;
+        if (endNodes[0] == parentMarkerNodes[0])
+          otherParentNode = parentMarkerNodes[1];
+        else if (endNodes[0] == parentMarkerNodes[1])
+          otherParentNode = parentMarkerNodes[0];
+        else
+        {
+          newcolumn->remainsGraphic = false;
+          return TU_OKAY;
+        }
+
+        bool matched[4] = {
+          childMarkerNodes[0] == endNodes[1] || childMarkerNodes[0] == otherParentNode,
+          childMarkerNodes[1] == endNodes[1] || childMarkerNodes[1] == otherParentNode,
+          endNodes[1] == childMarkerNodes[0] || endNodes[1] == childMarkerNodes[1]
+            || endNodes[1] == childMarkerNodes[2] || endNodes[1] == childMarkerNodes[3],
+          otherParentNode == childMarkerNodes[0] || otherParentNode == childMarkerNodes[1]
+            || otherParentNode == childMarkerNodes[2] || otherParentNode == childMarkerNodes[3]
+        };
+        if (matched[0] && matched[1] && matched[2] && matched[3])
+        {
+          reducedMember->type = TYPE_4_CONNECTS_TWO_PATHS;
+        }
+        else
+        {
+          newcolumn->remainsGraphic = false;
+        }
       }
     }
     else if (numEndNodes == 4)
