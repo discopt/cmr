@@ -386,3 +386,32 @@ TEST(Graphic, BixbyWagnerAppendix)
   }
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
+
+TEST(Graphic, Specials)
+{
+  TU* tu = NULL;
+  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
+
+  /* Bond matrix plus empty row. */
+  {
+    TU_CHRMAT* A = NULL;
+    ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "2 1 "
+      "1 "
+      "0 "
+    ) );
+    testGraphicMatrix(tu, A, 0);
+    ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
+  }
+
+  /* Bond matrix plus empty column. */
+  {
+    TU_CHRMAT* A = NULL;
+    ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "1 2 "
+      "1 0 "
+    ) );
+    testGraphicMatrix(tu, A, 0);
+    ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
+  }
+
+  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+}

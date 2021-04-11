@@ -198,8 +198,11 @@ char* consistencyMembers(
   {
     if (tdec->members[member].type != TDEC_MEMBER_TYPE_BOND
       && tdec->members[member].type != TDEC_MEMBER_TYPE_PRIME
-      && tdec->members[member].type != TDEC_MEMBER_TYPE_POLYGON)
+      && tdec->members[member].type != TDEC_MEMBER_TYPE_POLYGON
+      && tdec->members[member].type != TDEC_MEMBER_TYPE_LOOP)
+    {
       return TUconsistencyMessage("member %d has invalid type", member);
+    }
   }
 
   return NULL;
@@ -930,10 +933,8 @@ TU_ERROR TUtdecToGraph(TU* tu, TU_TDEC* tdec, TU_GRAPH* graph, bool merge, TU_GR
       }
       while (edge != tdec->members[member].firstEdge);
     }
-    else
+    else if (type == TDEC_MEMBER_TYPE_POLYGON)
     {
-      assert(type == TDEC_MEMBER_TYPE_POLYGON);
-
       TU_GRAPH_NODE firstNode, v;
       TU_CALL( TUgraphAddNode(tu, graph, &firstNode) );
       v = firstNode;
@@ -951,6 +952,17 @@ TU_ERROR TUtdecToGraph(TU* tu, TU_TDEC* tdec, TU_GRAPH* graph, bool merge, TU_GR
         v = w;
       }
       TU_CALL( TUgraphAddEdge(tu, graph, v, firstNode, &graphEdge) );
+      tdecEdgesToGraphEdges[edge] = graphEdge;
+      if (localEdgeElements)
+        localEdgeElements[graphEdge] = tdec->edges[edge].name;
+    }
+    else
+    {
+      assert(type == TDEC_MEMBER_TYPE_LOOP);
+
+      TU_GRAPH_NODE v;
+      TU_CALL( TUgraphAddNode(tu, graph, &v) );
+      TU_CALL( TUgraphAddEdge(tu, graph, v, v, &graphEdge) );
       tdecEdgesToGraphEdges[edge] = graphEdge;
       if (localEdgeElements)
         localEdgeElements[graphEdge] = tdec->edges[edge].name;
@@ -1125,9 +1137,8 @@ TU_ERROR TUtdecToDot(TU* tu, TU_TDEC* tdec, FILE* stream, bool* edgesHighlighted
       }
       while (edge != tdec->members[member].firstEdge);
     }
-    else
+    else if (tdec->members[member].type == TDEC_MEMBER_TYPE_POLYGON)
     {
-      assert(tdec->members[member].type == TDEC_MEMBER_TYPE_POLYGON);
       TU_TDEC_EDGE edge = tdec->members[member].firstEdge;
       int i = 0;
       do
@@ -1138,6 +1149,12 @@ TU_ERROR TUtdecToDot(TU* tu, TU_TDEC* tdec, FILE* stream, bool* edgesHighlighted
         i++;
       }
       while (edge != tdec->members[member].firstEdge);
+    }
+    else
+    {
+      assert(tdec->members[member].type == TDEC_MEMBER_TYPE_LOOP);
+
+      edgeToDot(stream, tdec, member, tdec->members[member].firstEdge, 0, 0, false);
     }
     fprintf(stream, "  }\n");
   }
@@ -3861,7 +3878,13 @@ TU_ERROR TUtdecAddColumnApply(TU* tu, TU_TDEC* tdec, TU_TDEC_NEWCOLUMN* newcolum
 
   if (newcolumn->numReducedComponents == 0)
   {
-    assert(0 == "Adding a zero column not implemented.");
+    TU_TDEC_MEMBER loopMember;
+    TU_CALL( createMember(tu, tdec, TDEC_MEMBER_TYPE_LOOP, &loopMember) );
+    TU_TDEC_MEMBER loopEdge;
+    TU_CALL( createEdge(tu, tdec, loopMember, &loopEdge) );
+    TU_CALL( addEdgeToMembersEdgeList(tu, tdec, loopEdge, loopMember) );
+    tdec->edges[loopEdge].name = -1 - column;
+    tdec->edges[loopEdge].childMember = -1;
   }
   else if (newcolumn->numReducedComponents == 1)
   {
@@ -4040,6 +4063,37 @@ TU_ERROR testGraphicnessTDecomposition(TU* tu, TU_CHRMAT* matrix, TU_CHRMAT* tra
 
   if (*pisGraphic && graph)
   {
+    /* Add members and edges for empty rows. */
+    if (tdec->numRows < matrix->numRows)
+    {
+      /* Reallocate if necessary. */
+      if (tdec->memRows < matrix->numRows)
+      {
+        TUreallocBlockArray(tu, &tdec->rowEdges, matrix->numRows);
+        tdec->memRows = matrix->numRows;
+      }
+
+      for (int r = tdec->numRows; r < matrix->numRows; ++r)
+      {
+        TU_TDEC_MEMBER member;
+        TU_CALL( createMember(tu, tdec, TDEC_MEMBER_TYPE_BOND, &member) );
+
+        TU_TDEC_EDGE edge;
+        TU_CALL( createEdge(tu, tdec, member, &edge) );
+        TU_CALL( addEdgeToMembersEdgeList(tu, tdec, edge, member) );
+        tdec->edges[edge].name = r;
+        tdec->edges[edge].head = -1;
+        tdec->edges[edge].tail = -1;
+        tdec->edges[edge].childMember = -1;
+
+        TUdbgMsg(8, "New empty row %d is edge %d of member %d.\n", r, edge, member);
+
+        tdec->rowEdges[r].edge = edge;
+      }
+
+      tdec->numRows = matrix->numRows;
+    }
+
     TU_CALL( TUtdecToGraph(tu, tdec, graph, true, basis, cobasis, NULL) );
   }
 
