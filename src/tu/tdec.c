@@ -2859,36 +2859,28 @@ TU_ERROR addColumnProcessBond(
   }
   else
   {
-    /* Non-root bond.*/
+    /* Non-root bond. This cannot be a leaf since then it would contain a path edge, i.e., it closes a cycle. */
 
-    if (numOneEnd == 1)
+    assert(numOneEnd == 1);
+    assert(reducedComponent->numTerminals >= 1);
+
+    TU_TDEC_NODE tail, head;
+    TU_CALL( createNode(tu, tdec, &tail) );
+    TU_CALL( createNode(tu, tdec, &head) );
+    TU_TDEC_EDGE edge = tdec->members[member].firstEdge;
+    do
     {
-      assert(reducedComponent->numTerminals >= 1);
+      TU_CALL( setEdgeNodes(tu, tdec, edge, tail, head) );
+      edge = tdec->edges[edge].next;
+    }
+    while (edge != tdec->members[member].firstEdge);
 
-      TU_TDEC_NODE tail, head;
-      TU_CALL( createNode(tu, tdec, &tail) );
-      TU_CALL( createNode(tu, tdec, &head) );
-      TU_TDEC_EDGE edge = tdec->members[member].firstEdge;
-      do
-      {
-        TU_CALL( setEdgeNodes(tu, tdec, edge, tail, head) );
-        edge = tdec->edges[edge].next;
-      }
-      while (edge != tdec->members[member].firstEdge);
-
-      TU_CALL( mergeMemberIntoParent(tu, tdec, tdec->edges[childMarkerEdges[0]].childMember,
-        !reducedMember->firstPathEdge) );
+    TU_CALL( mergeMemberIntoParent(tu, tdec, tdec->edges[childMarkerEdges[0]].childMember,
+      !reducedMember->firstPathEdge) );
 
 #if defined(TU_DEBUG_DOT)
-      TU_CALL( debugDot(tu, tdec, newcolumn) );
+    TU_CALL( debugDot(tu, tdec, newcolumn) );
 #endif /* TU_DEBUG_DOT */
-
-      return TU_OKAY;
-    }
-    else
-    {
-      assert(0 == "addColumnProcessBond is not fully implemented.");
-    }
   }
 
   return TU_OKAY;
