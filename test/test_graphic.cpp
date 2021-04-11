@@ -218,6 +218,21 @@ TEST(Graphic, InternalPrime)
     ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
   }
 
+  /* A triangle linked to a prime linked to a triangle with prime path of length 2 that revisits the second parent
+   * marker node. The path edges of the prime member are 3-star. */
+  {
+    TU_CHRMAT* A = NULL;
+    ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "5 6 "
+      "1  0 0 0  0  1 " /* edge of triangle root */
+      "1  1 1 0  0  1 " /* edge of prime */
+      "1  1 0 1  1  1 " /* edge of prime */
+      "0  0 1 1  1  0 " /* edge of prime */
+      "0  0 0 0  1  1 " /* edge of triangle leaf */
+    ) );
+    testGraphicMatrix(tu, A, 2);
+    ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
+  }
+
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
 

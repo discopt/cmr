@@ -2133,17 +2133,11 @@ TU_ERROR determineTypePrime(
           newcolumn->remainsGraphic = false;
           return TU_OKAY;
         }
-
-        if (nodes[1] < 0)
-        {
-          /* Only one parent marker node is a path end. */
-          reducedMember->type = newcolumn->nodesDegree[parentMarkerNodes[1 - nodes[0]]] == 1
-            ? TYPE_2_SHORTCUT : TYPE_3_EXTENSION;
-        }
         else
         {
-          /* Other parent marker nodes are path ends. */
-          assert(false);
+          reducedMember->type = 
+            (newcolumn->nodesDegree[parentMarkerNodes[0]] + newcolumn->nodesDegree[parentMarkerNodes[1]]) == 1
+            ? TYPE_3_EXTENSION : TYPE_2_SHORTCUT;
         }
       }
       else
@@ -2967,8 +2961,10 @@ TU_ERROR addColumnProcessPrime(
       if (parentMarkerNodes[0] == endNodes[0])
         flipEdge(tdec, tdec->members[member].markerToParent);
     }
-    else if (numOneEnd == 1)
+    else
     {
+      assert(numOneEnd == 1);
+      
       if (numEndNodes >= 2)
       {
         /* Flip parent if necessary. */
@@ -2992,10 +2988,6 @@ TU_ERROR addColumnProcessPrime(
         TU_CALL( debugDot(tu, tdec, newcolumn) );
 #endif /* TU_DEBUG_DOT */
       }
-    }
-    else
-    {
-      assert(0 == "addColumnProcessPrime is not fully implemented.");
     }
   }
 
