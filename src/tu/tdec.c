@@ -1795,16 +1795,6 @@ TU_ERROR determineTypePolygon(
 
   TU_TDEC_MEMBER member = findMember(tdec, reducedMember->member);
 
-  if (depth == 0)
-  {
-    /* We assume that we are not the root of the whole decomposition. */
-    assert(tdec->members[member].parentMember >= 0);
-
-    newcolumn->remainsGraphic = numTwoEnds == 0;
-    reducedMember->type = TYPE_5_ROOT;
-    return TU_OKAY;
-  }
-
   int countPathEdges = 0;
   for (PathEdge* edge = reducedMember->firstPathEdge; edge != NULL; edge = edge->next)
     ++countPathEdges;
@@ -1813,6 +1803,16 @@ TU_ERROR determineTypePolygon(
   TUdbgMsg(8+2*depth,
     "Determining type of polygon with %d edges, %d path edges, %d 1-end children and %d 2-end children.\n", numEdges,
     countPathEdges, numOneEnd, numTwoEnds);
+
+  if (depth == 0)
+  {
+    /* We assume that we are not the root of the whole decomposition. */
+    assert(tdec->members[member].parentMember >= 0);
+
+    newcolumn->remainsGraphic = (numTwoEnds == 0);
+    reducedMember->type = (countPathEdges == numEdges - 1) ? TYPE_4_CONNECTS_TWO_PATHS : TYPE_5_ROOT;
+    return TU_OKAY;
+  }
 
   if (countPathEdges == numEdges - 1)
   {
@@ -3292,6 +3292,30 @@ TU_ERROR addColumnProcessPolygon(
         /* Squeeze off all non-path edges by moving them to a new polygon and creating a bond to connect it to the
          * remaining polygon. */
         TU_CALL( splitPolygon(tu, tdec, member, newcolumn->edgesInPath, false, &representativeEdge, NULL, NULL) );
+      }
+      else if (reducedMember->type == TYPE_4_CONNECTS_TWO_PATHS)
+      {
+        TUdbgMsg(8 + 2*depth, "Polygon contains both terminal nodes which are the parent marker edge nodes.\n");
+
+        TU_TDEC_MEMBER parentMember = tdec->members[member].parentMember;
+        TU_TDEC_EDGE markerOfParent = tdec->members[member].markerOfParent;
+        if (parentMember < 0)
+        {
+          assert("Type-4 Polygon that is root of decomposition." == 0);
+        }
+        else if (tdec->members[parentMember].type == TDEC_MEMBER_TYPE_BOND)
+        {
+          TU_CALL( addTerminal(tu, tdec, reducedComponent, findEdgeMember(tdec, markerOfParent), -1 ) );
+          TU_CALL( addTerminal(tu, tdec, reducedComponent, findEdgeMember(tdec, markerOfParent), -1 ) );
+        }
+        else
+        {
+          assert(tdec->members[parentMember].type == TDEC_MEMBER_TYPE_PRIME);
+          TU_CALL( addTerminal(tu, tdec, reducedComponent, findEdgeMember(tdec, markerOfParent), findEdgeTail(tdec, markerOfParent) ) );
+          TU_CALL( addTerminal(tu, tdec, reducedComponent, findEdgeMember(tdec, markerOfParent), findEdgeHead(tdec, markerOfParent) ) );
+        }
+
+        return TU_OKAY;
       }
       else
       {
