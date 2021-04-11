@@ -2264,8 +2264,10 @@ TU_ERROR determineTypePrime(
           newcolumn->remainsGraphic = false;
         }
       }
-      else if (numOneEnd == 2)
+      else
       {
+        assert(numOneEnd == 2);
+
         bool pathConnected[2] = { false, false };
         bool childConnected[2] = { false, false };
         for (int i = 0; i < 2; ++i)
@@ -2288,10 +2290,6 @@ TU_ERROR determineTypePrime(
           TUdbgMsg(6 + 2*depth, "No pairing of paths to nodes of child marker edges possible.\n");
           newcolumn->remainsGraphic = false;
         }
-      }
-      else
-      {
-        assert(0 == "Typing of prime not fully implemented: non-root with 4 path nodes and end(s) in children.");
       }
     }
   }
