@@ -190,7 +190,7 @@ TEST(Graphic, InternalPrime)
   TU* tu = NULL;
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
 
-  /* A triangle linked to a prime linked to a triangle. */
+  /* A triangle linked to a prime linked to a triangle with prime path of length 1. */
   {
     TU_CHRMAT* A = NULL;
     ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "5 5 "
@@ -198,6 +198,20 @@ TEST(Graphic, InternalPrime)
       "1 1 0  0  1 " /* edge of prime */
       "1 1 1  1  0 " /* edge of prime */
       "1 0 1  1  0 " /* edge of prime */
+      "0 0 0  1  1 " /* edge of triangle leaf */
+    ) );
+    testGraphicMatrix(tu, A, 2);
+    ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
+  }
+
+  /* A triangle linked to a prime linked to a triangle with prime path of length 0. */
+  {
+    TU_CHRMAT* A = NULL;
+    ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "5 5 "
+      "1 0 0  0  1 " /* edge of triangle root */
+      "1 1 0  1  0 " /* edge of prime */
+      "1 1 1  1  0 " /* edge of prime */
+      "1 0 1  0  0 " /* edge of prime */
       "0 0 0  1  1 " /* edge of triangle leaf */
     ) );
     testGraphicMatrix(tu, A, 2);

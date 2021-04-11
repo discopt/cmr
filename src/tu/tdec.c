@@ -2975,6 +2975,7 @@ TU_ERROR addColumnProcessPrime(
         if (endNodes[0] == parentMarkerNodes[0])
           flipEdge(tdec, tdec->members[member].markerToParent);
 
+        /* Merge child. */
         TU_CALL( mergeMemberIntoParent(tu, tdec, findMember(tdec, tdec->edges[childMarkerEdges[0]].childMember),
           endNodes[1] == childMarkerNodes[1]) );
       }
