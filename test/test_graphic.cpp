@@ -160,7 +160,7 @@ TEST(Graphic, RootPrimeTwoOneEnds)
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
 
-TEST(Graphic, RootPrimeFourPaths)
+TEST(Graphic, RootPrimeTwoPaths)
 {
   TU* tu = NULL;
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
@@ -177,6 +177,28 @@ TEST(Graphic, RootPrimeFourPaths)
       "0 0 0 0 1 1  1  0  0 "
       "0 0 0 0 0 0  1  0  1 "
       "0 0 0 0 0 0  0  1  1 "
+    ) );
+    testGraphicMatrix(tu, A, 2);
+    ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
+  }
+
+  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+}
+
+TEST(Graphic, InternalPrime)
+{
+  TU* tu = NULL;
+  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
+
+  /* A triangle linked to a prime linked to a triangle. */
+  {
+    TU_CHRMAT* A = NULL;
+    ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "5 5 "
+      "1 0 0  0  1 " /* edge of triangle root */
+      "1 1 0  0  1 " /* edge of prime */
+      "1 1 1  1  0 " /* edge of prime */
+      "1 0 1  1  0 " /* edge of prime */
+      "0 0 0  1  1 " /* edge of triangle leaf */
     ) );
     testGraphicMatrix(tu, A, 2);
     ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
@@ -213,6 +235,27 @@ TEST(Graphic, InternalBondOneOneEnd)
       "0 0 1  1 " /* edge of second triangle */
     ) );
     testGraphicMatrix(tu, A, 0);
+    ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
+  }
+
+  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+}
+
+TEST(Graphic, LeafPrime)
+{
+  TU* tu = NULL;
+  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
+
+  /* A triangle linked to a prime */
+  {
+    TU_CHRMAT* A = NULL;
+    ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "4 4 "
+      "1 0 0  1 " /* edge of triangle root */
+      "1 1 0  1 " /* edge of prime */
+      "1 1 1  1 " /* edge of prime */
+      "1 0 1  0 " /* edge of prime */
+    ) );
+    testGraphicMatrix(tu, A, 2);
     ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
   }
 

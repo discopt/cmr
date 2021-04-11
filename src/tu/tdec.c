@@ -2364,7 +2364,9 @@ TU_ERROR TUtdecAddColumnCheck(TU* tu, TU_TDEC* tdec, TU_TDEC_NEWCOLUMN* newcolum
   TU_CALL( computeReducedDecomposition(tu, tdec, newcolumn, entryRows, numEntries) );
   TU_CALL( initializeReducedMemberEdgeLists(tu, tdec, newcolumn, entryRows, numEntries) );
 
+#if defined(TU_DEBUG_DOT)
   TU_CALL( debugDot(tu, tdec, newcolumn) );
+#endif /* TU_DEBUG_DOT */
 
   for (int i = 0; i < newcolumn->numReducedComponents; ++i)
   {
@@ -2948,8 +2950,6 @@ TU_ERROR addColumnProcessPrime(
         }
       }
 
-      // TODO: What if the prime has type 4, i.e., the marker edge is a path edge?
-
       TU_CALL( mergeMemberIntoParent(tu, tdec, childMember0, headToHead[0]) );
       TU_CALL( mergeMemberIntoParent(tu, tdec, childMember1, headToHead[1]) );
     }
@@ -2969,13 +2969,14 @@ TU_ERROR addColumnProcessPrime(
     }
     else if (numOneEnd == 1)
     {
-      if (endNodes[0] >= 0)
+      if (numEndNodes >= 2)
       {
-        /* endNodes[0] is the connecting node of the parent marker. */
-        /* endNodes[1] is the connecting node of the child marker. */
-        assert(endNodes[1] >= 0);
+        /* Flip parent if necessary. */
+        if (endNodes[0] == parentMarkerNodes[0])
+          flipEdge(tdec, tdec->members[member].markerToParent);
 
-        assert(0 == "addColumnProcessPrime is not fully implemented.");
+        TU_CALL( mergeMemberIntoParent(tu, tdec, findMember(tdec, tdec->edges[childMarkerEdges[0]].childMember),
+          endNodes[1] == childMarkerNodes[1]) );
       }
       else
       {
