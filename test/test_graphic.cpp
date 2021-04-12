@@ -470,27 +470,30 @@ TEST(Graphic, RandomMatrix)
 {
   TU* tu = NULL;
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
-  
+
+  while (true)
   {
     TU_CHRMAT* A = NULL;
-    ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "3 20 "
-      "0 0 0 1 1 0 0 0 0 0 0 1 0 1 0 0 1 0 1 0 "
-      "0 0 0 0 0 0 0 1 1 1 0 0 1 0 1 1 0 0 1 0 " 
-      "0 0 0 0 0 1 0 0 1 0 0 0 0 0 0 1 0 0 1 0 "
+    ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "5 20 "
+      "0 0 0 0 0 1 0 0 1 0 1 1 1 0 0 1 1 0 1 0 "
+      "0 1 0 0 0 0 1 0 1 1 0 0 0 0 0 0 0 0 1 0 "
+      "0 1 0 0 1 0 0 0 1 0 1 0 0 0 1 0 1 0 0 0 "
+      "0 1 1 0 0 1 0 0 0 0 0 1 0 0 0 1 0 0 0 0 "
+      "1 0 0 1 1 0 0 0 1 0 0 0 0 0 1 1 1 0 0 0 "
     ) );
-    testGraphicMatrix(tu, A, 0);
+    testMatrix(tu, A, 0);
     ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
+    
+    ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+    return;
   }
   
   srand(0);
-  const int numMatrices = 100; // 100
-  const int numRows = 3; // 3
-  const int numColumns = 20; // 20 
-  const double probability = 0.3; // 0.3
+  const int numMatrices = 1000; // 1000
+  const int numRows = 5; // 5
+  const int numColumns = 20; // 20
+  const double probability = 0.3; // 0.3 
 
- 
-  
-  
   for (int i = 0; i < numMatrices; ++i)
   {
     TU_CHRMAT* A = NULL;

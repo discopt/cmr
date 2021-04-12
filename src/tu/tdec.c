@@ -1,6 +1,5 @@
 #define TU_DEBUG /* Uncomment to enable general debugging. */
-#define TU_DEBUG_TDEC /* Uncomment to enable debugging of t-decompositions. */
-// #define TU_DEBUG_TDEC_SQUEEZE /* Uncomment to enable debug output for squeezing of polygons. */
+// #define TU_DEBUG_SPLITTING /* Uncomment to enable debug output for splitting of polygons. */
 #define TU_DEBUG_DOT /* Uncomment to output dot files after modifications of the t-decomposition. */
 
 #include <tu/tdec.h>
@@ -532,9 +531,7 @@ TU_ERROR createNode(
   TU_TDEC_NODE node = tdec->firstFreeNode;
   if (node >= 0)
   {
-#if defined(TU_DEBUG_TDEC)
-    printf("            createNode returns free node %d.\n", node);
-#endif /* TU_DEBUG_TDEC */
+    TUdbgMsg(10, "createNode returns free node %d.\n", node);
     tdec->firstFreeNode = tdec->nodes[node].representativeNode;
   }
   else /* No member in free list, so we enlarge the array. */
@@ -1293,9 +1290,7 @@ ReducedMember* createReducedMember(
   ReducedMember** rootDepthMinimizer  /**< Array mapping root members to the depth minimizer. */
 )
 {
-#if defined(TU_DEBUG_TDEC)
-  printf("        Attempting to create reduced member %d.\n", member);
-#endif /* TU_DEBUG_TDEC */
+  TUdbgMsg(8, "Attempting to create reduced member %d.\n", member);
 
   ReducedMember* reducedMember = newcolumn->membersToReducedMembers[member];
   if (reducedMember)
@@ -1778,7 +1773,7 @@ TU_ERROR determineTypeBond(
     return TU_OKAY;
   }
 
-  /* No children, but a reduced edge. */
+  /* No children, but a path edge. */
   if (2*numTwoEnds + numOneEnd == 0 && reducedMember->firstPathEdge)
     reducedMember->type = TYPE_1_CLOSES_CYCLE;
   else if (numOneEnd == 1)
@@ -2031,16 +2026,22 @@ TU_ERROR determineTypePrime(
 
   if (depth == 0)
   {
-    assert(numEndNodes > 0); /* Should only happen if the marker edge closes a cycle via the parent, but we are a root. */
     bool hasParentMarker = tdec->members[member].markerToParent >= 0;
 
-    if (numEndNodes == 2)
+    if (numEndNodes == 0)
     {
-      if (numOneEnd == 0 && numTwoEnds == 0)
+      /* No path edges, so there should be two adjacent child marker edges. */
+      if (numOneEnd == 2 && (childMarkerNodes[0] == childMarkerNodes[2] || childMarkerNodes[0] == childMarkerNodes[3]
+          || childMarkerNodes[1] == childMarkerNodes[2] || childMarkerNodes[2] == childMarkerNodes[3]))
       {
         reducedMember->type = TYPE_5_ROOT;
       }
-      else if (numOneEnd == 1)
+      else
+        newcolumn->remainsGraphic = false;
+    }
+    else if (numEndNodes == 2)
+    {
+      if (numOneEnd == 1)
       {
         if ((endNodes[0] == parentMarkerNodes[0] || endNodes[0] == parentMarkerNodes[1] || !hasParentMarker)
           && (endNodes[1] == childMarkerNodes[0] || endNodes[1] == childMarkerNodes[1]))
@@ -2057,10 +2058,8 @@ TU_ERROR determineTypePrime(
           newcolumn->remainsGraphic = false;
         }
       }
-      else
+      else if (numOneEnd == 2)
       {
-        assert(numOneEnd == 2);
-
         bool matched[2] = { false, false };
         for (int i = 0; i < 2; ++i)
         {
@@ -2075,6 +2074,26 @@ TU_ERROR determineTypePrime(
           reducedMember->type = TYPE_5_ROOT;
         else
           newcolumn->remainsGraphic = false;
+      }
+      else if (numTwoEnds == 0)
+      {
+        assert(numOneEnd == 0);
+        reducedMember->type = TYPE_5_ROOT;
+      }
+      else
+      {
+        assert(numOneEnd == 0);
+        assert(numTwoEnds == 1);
+
+        if ((childMarkerNodes[0] == endNodes[0] && childMarkerNodes[1] == endNodes[1])
+          || (childMarkerNodes[0] == endNodes[1] && childMarkerNodes[1] == endNodes[0]))
+        {
+          reducedMember->type = TYPE_5_ROOT;
+        }
+        else
+        {
+          newcolumn->remainsGraphic = false;
+        }
       }
     }
     else
@@ -2175,28 +2194,44 @@ TU_ERROR determineTypePrime(
       }
       else if (numOneEnd == 1)
       {
-        int nodes[4] = {
-          parentMarkerNodes[0] == reducedMember->primeEndNodes[0] ? 0 : (parentMarkerNodes[0] == reducedMember->primeEndNodes[1] ? 1 : -1),
-          parentMarkerNodes[1] == reducedMember->primeEndNodes[0] ? 0 : (parentMarkerNodes[1] == reducedMember->primeEndNodes[1] ? 1 : -1),
-          childMarkerNodes[0] == reducedMember->primeEndNodes[0] ? 0 : (childMarkerNodes[0] == reducedMember->primeEndNodes[1] ? 1 : -1),
-          childMarkerNodes[1] == reducedMember->primeEndNodes[0] ? 0 : (childMarkerNodes[1] == reducedMember->primeEndNodes[1] ? 1 : -1)
-        };
-        if (nodes[0] < 0)
-          SWAP_INTS(nodes[0], nodes[1]);
-        if (nodes[2] < 0)
-          SWAP_INTS(nodes[2], nodes[3]);
+        TUdbgMsg(6 + 2*depth, "%d-%d-path, parent {%d,%d} and child {%d,%d}\n", endNodes[0], endNodes[1],
+          parentMarkerNodes[0], parentMarkerNodes[1], childMarkerNodes[0], childMarkerNodes[1]);
 
-        /* If all four marker edge nodes or not at least one of each type are path end nodes, it is not graphic. */
-        if ((nodes[1] >= 0 && nodes[3] >= 0) || nodes[0] < 0 || nodes[2] < 0)
+        if (parentMarkerNodes[0] != endNodes[0])
+        {
+          SWAP_INTS(parentMarkerNodes[0], parentMarkerNodes[1]);
+          SWAP_INTS(parentMarkerDegrees[0], parentMarkerDegrees[1]);
+        }
+        if (parentMarkerNodes[0] != endNodes[0])
         {
           newcolumn->remainsGraphic = false;
           return TU_OKAY;
         }
+
+        if (parentMarkerNodes[1] == endNodes[1])
+        {
+          /* Path closes a cycle with parent marker edge. */
+          if (childMarkerNodes[0] == parentMarkerNodes[0] || childMarkerNodes[0] == parentMarkerNodes[1]
+            || childMarkerNodes[1] == parentMarkerNodes[0] || childMarkerNodes[1] == parentMarkerNodes[1])
+          {
+            reducedMember->type = TYPE_2_SHORTCUT;
+          }
+          else
+          {
+            newcolumn->remainsGraphic = false;
+          }
+        }
         else
         {
-          reducedMember->type = 
-            (newcolumn->nodesDegree[parentMarkerNodes[0]] + newcolumn->nodesDegree[parentMarkerNodes[1]]) == 1
-            ? TYPE_3_EXTENSION : TYPE_2_SHORTCUT;
+          /* Path end is not incident to parent marker edge. */
+          if (childMarkerNodes[0] == endNodes[1] || childMarkerNodes[1] == endNodes[1])
+          {
+            reducedMember->type = TYPE_3_EXTENSION;
+          }
+          else
+          {
+            newcolumn->remainsGraphic = false;
+          }
         }
       }
       else
@@ -2355,13 +2390,13 @@ TU_ERROR determineTypes(
   TU_TDEC_EDGE childMarkerEdges[2];
   TU_CALL( countChildrenTypes(tu, tdec, reducedMember, &numOneEnd, &numTwoEnds, childMarkerEdges) );
 
-#if defined(TU_DEBUG_TDEC)
+#if defined(TU_DEBUG)
   int countReducedEdges = 0;
   for (PathEdge* e = reducedMember->firstPathEdge; e; e = e->next)
     ++countReducedEdges;
-  TUdbgMsg(6 + 2*depth, "Member %d has %d children with one end and %d with two ends and %d reduced edges.\n",
+  TUdbgMsg(6 + 2*depth, "Member %d has %d children with one end and %d with two ends and %d path edges.\n",
     reducedMember->member, numOneEnd, numTwoEnds, countReducedEdges);
-#endif /* TU_DEBUG_TDEC */
+#endif /* TU_DEBUG */
 
   if (2*numTwoEnds + numOneEnd > 2)
   {
@@ -2402,7 +2437,7 @@ TU_ERROR determineTypes(
     TUdbgMsg(6 + 2*depth, "Parent member %d is reduced member %ld.\n", parentMember,
       (reducedParent - newcolumn->reducedMembers));
 
-    /* Add marker edge of parent to reduced parent's reduced edges. */
+    /* Add marker edge of parent to reduced parent's path edges. */
     PathEdge* reducedEdge = NULL;
     TU_CALL( createPathEdge(tu, newcolumn, markerOfParent, reducedParent->firstPathEdge, &reducedEdge) );
     reducedParent->firstPathEdge = reducedEdge;
@@ -2417,7 +2452,7 @@ TU_ERROR determineTypes(
       newcolumn->nodesDegree[findEdgeTail(tdec, markerOfParent)]++;
     }
 
-    TUdbgMsg(6 + 2*depth, "Added marker edge of parent to list of reduced edges.\n");
+    TUdbgMsg(6 + 2*depth, "Added marker edge of parent to list of path edges.\n");
   }
 
   return TU_OKAY;
@@ -2637,7 +2672,7 @@ TU_ERROR mergeMemberIntoParent(
   TU_TDEC_MEMBER parentMember = findMemberParent(tdec, member);
   assert(parentMember >= 0);
 
-#if defined(TU_DEBUG_TDEC)
+#if defined(TU_DEBUG)
   TU_TDEC_EDGE edge = tdec->members[member].firstEdge;
   do
   {
@@ -2658,7 +2693,7 @@ TU_ERROR mergeMemberIntoParent(
     edge = tdec->edges[edge].next;
   }
   while (edge != tdec->members[parentMember].firstEdge);
-#endif /* TU_DEBUG_TDEC */
+#endif /* TU_DEBUG */
 
   TU_TDEC_EDGE parentEdge = tdec->members[member].markerOfParent;
   assert(parentEdge >= 0);
@@ -3145,9 +3180,9 @@ TU_ERROR splitPolygon(
   assert(edgesPredicate);
   assert(tdec->members[member].type == TDEC_MEMBER_TYPE_POLYGON);
 
-#if defined(TU_DEBUG_TDEC)
+#if defined(TU_DEBUG)
   TUdbgMsg(8, "Checking polygon %d for splitting... ", member);
-#endif /* TU_DEBUG_TDEC */
+#endif /* TU_DEBUG */
 
   TU_TDEC_EDGE edge = tdec->members[member].firstEdge;
   TU_TDEC_EDGE someSatisfyingEdge = -1;
@@ -3212,30 +3247,30 @@ TU_ERROR splitPolygon(
     bool encounteredStayingEdge = false;
     do
     {
-#if defined(TU_DEBUG_TDEC_SQUEEZE)
+#if defined(TU_DEBUG_SPLITTING)
       TUdbgMsg(8, "Edge %d <%d>", edge, tdec->edges[edge].name);
       if (tdec->edges[edge].childMember >= 0)
         TUdbgMsg(0, " (with child %d)", tdec->edges[edge].childMember);
       if (edge == tdec->members[member].markerToParent)
         TUdbgMsg(0, " (with parent %d)", tdec->members[member].parentMember);
       TUdbgMsg(0, " (prev = %d, next = %d)", tdec->edges[edge].prev, tdec->edges[edge].next);
-#endif /* TU_DEBUG_TDEC */
+#endif /* TU_DEBUG_SPLITTING*/
 
       /* Evaluate predicate. */
       bool value = edgesPredicate[edge];
       if ((value && !predicateValue) || (!value && predicateValue))
       {
-#if defined(TU_DEBUG_TDEC_SQUEEZE)
+#if defined(TU_DEBUG_SPLITTING)
         TUdbgMsg(" does not satisfy the predicate.\n");
-#endif /* TU_DEBUG_TDEC */
+#endif /* TU_DEBUG_SPLITTING */
         edge = tdec->edges[edge].next;
         encounteredStayingEdge = true;
         continue;
       }
 
-#if defined(TU_DEBUG_TDEC_SQUEEZE)
+#if defined(TU_DEBUG_SPLITTING)
       TUdbgMsg(0, " satisfies the predicate.\n");
-#endif /* TU_DEBUG_TDEC */
+#endif /* TU_DEBUG_SPLITTING */
 
       assert(edge != tdec->members[member].markerToParent);
 
@@ -3291,7 +3326,7 @@ TU_ERROR splitPolygon(
     tdec->members[bond].parentMember = member;
     tdec->edges[memberChildMarker].childMember = bond;
 
-#if defined(TU_DEBUG_TDEC_SQUEEZE)
+#if defined(TU_DEBUG_SPLITTING)
     TUdbgMsg(8, "Updated old polygon with these edges:");
     edge = firstEdge;
     do
@@ -3310,7 +3345,7 @@ TU_ERROR splitPolygon(
     }
     while (edge != polygonParentMarker);
     TUdbgMsg(0, ".\n");
-#endif /* TU_DEBUG_TDEC */
+#endif /* TU_DEBUG_SPLITTING */
 
     TUdbgMsg(8, "Connecting bond is member %d and squeezed polygon is member %d.\n", bond, polygon);
 
@@ -3635,7 +3670,7 @@ TU_ERROR addColumnProcessPolygon(
       else if (numNonPathEdges == 1)
       {
         nonPathEdge = tdec->edges[tdec->members[member].markerToParent].next;
-        if (nonPathEdge == childMarkerEdges[0])
+        while (nonPathEdge == childMarkerEdges[0] || nonPathEdge == pathEdge)
           nonPathEdge = tdec->edges[nonPathEdge].next;
       }
       else
@@ -3651,7 +3686,7 @@ TU_ERROR addColumnProcessPolygon(
 #endif /* TU_DEBUG_DOT */
       }
 
-      TUdbgMsg(8 + 2*depth, "After (potential) squeezing: path edge is %d and non-path edge is %d.\n",
+      TUdbgMsg(8 + 2*depth, "After (potential) splitting: path edge is %d and non-path edge is %d.\n",
         pathEdge, nonPathEdge);
       assert(tdec->members[member].numEdges <= 4);
 
@@ -4030,11 +4065,11 @@ TU_ERROR testGraphicnessTDecomposition(TU* tu, TU_CHRMAT* matrix, TU_CHRMAT* tra
   assert(mergeLeafBonds >= 0);
   assert(mergeLeafBonds <= 2);
 
-#if defined(TU_DEBUG_TDEC)
-  printf("testGraphicnessTDecomposition called for a 1-connected %dx%d matrix.\n",
-    matrix->numRows, matrix->numColumns);
+#if defined(TU_DEBUG)
+  TUdbgMsg(0, "testGraphicnessTDecomposition called for a 1-connected %dx%d matrix.\n", matrix->numRows,
+    matrix->numColumns);
   TUchrmatPrintDense(stdout, (TU_CHRMAT*) matrix, '0', true);
-#endif /* TU_DEBUG_TDEC */
+#endif /* TU_DEBUG */
 
   if (matrix->numNonzeros == 0)
   {
@@ -4063,10 +4098,7 @@ TU_ERROR testGraphicnessTDecomposition(TU* tu, TU_CHRMAT* matrix, TU_CHRMAT* tra
         s = t;
       }
 
-#if defined(TU_DEBUG_TDEC)
-      printf("Constructed graph with %d nodes and %d edges.\n", TUgraphNumNodes(graph),
-        TUgraphNumEdges(graph));
-#endif /* TU_DEBUG_TDEC */
+      TUdbgMsg(0, "Constructed graph with %d nodes and %d edges.\n", TUgraphNumNodes(graph), TUgraphNumEdges(graph));
     }
     return TU_OKAY;
   }
