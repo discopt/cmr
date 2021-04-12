@@ -1,5 +1,7 @@
 #include <gtest/gtest.h>
 
+#include <stdlib.h>
+
 #include "common.h"
 #include <tu/graphic.h>
 #include <tu/tdec.h>
@@ -55,6 +57,26 @@ void testGraphicMatrix(
   ASSERT_TU_CALL( TUfreeBlockArray(tu, &basis) );
   ASSERT_TU_CALL( TUfreeBlockArray(tu, &cobasis) );
   ASSERT_TU_CALL( TUchrmatFree(tu, &result) );
+}
+
+void testMatrix(
+  TU* tu,             /**< \ref TU environment. */
+  TU_CHRMAT* matrix,  /**< Matrix to be used for testing. */
+  int mergeLeafBonds  /**< Leaf bonds of the t-decomposition are merged (1: at the end; 2: after each column). */
+)
+{
+  TU_GRAPH* graph = NULL;
+  ASSERT_TU_CALL( TUgraphCreateEmpty(tu, &graph, 0, 0) );
+  bool isGraphic;
+  TU_CHRMAT* transpose = NULL;
+  ASSERT_TU_CALL( TUchrmatTranspose(tu, matrix, &transpose) );
+
+  ASSERT_TU_CALL( testGraphicnessTDecomposition(tu, matrix, transpose, &isGraphic, graph, NULL,
+    NULL, NULL, mergeLeafBonds) );
+
+  ASSERT_TU_CALL( TUchrmatFree(tu, &transpose) );
+
+  ASSERT_TU_CALL( TUgraphFree(tu, &graph) );
 }
 
 TEST(Graphic, RootBond)
@@ -438,6 +460,60 @@ TEST(Graphic, Specials)
       "1 0 "
     ) );
     testGraphicMatrix(tu, A, 0);
+    ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
+  }
+
+  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+}
+
+TEST(Graphic, RandomMatrix)
+{
+  TU* tu = NULL;
+  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
+  
+  {
+    TU_CHRMAT* A = NULL;
+    ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "3 20 "
+      "0 0 0 1 1 0 0 0 0 0 0 1 0 1 0 0 1 0 1 0 "
+      "0 0 0 0 0 0 0 1 1 1 0 0 1 0 1 1 0 0 1 0 " 
+      "0 0 0 0 0 1 0 0 1 0 0 0 0 0 0 1 0 0 1 0 "
+    ) );
+    testGraphicMatrix(tu, A, 0);
+    ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
+  }
+  
+  srand(0);
+  const int numMatrices = 100; // 100
+  const int numRows = 3; // 3
+  const int numColumns = 20; // 20 
+  const double probability = 0.3; // 0.3
+
+ 
+  
+  
+  for (int i = 0; i < numMatrices; ++i)
+  {
+    TU_CHRMAT* A = NULL;
+    TUchrmatCreate(tu, &A, numRows, numColumns, numRows * numColumns);
+
+    A->numNonzeros = 0;
+    for (int row = 0; row < numRows; ++row)
+    {
+      A->rowStarts[row] = A->numNonzeros;
+      for (int column = 0; column < numColumns; ++column)
+      {
+        if ((rand() * 1.0 / RAND_MAX) < probability)
+        {
+          A->entryColumns[A->numNonzeros] = column;
+          A->entryValues[A->numNonzeros] = 1;
+          A->numNonzeros++;
+        }
+      }
+    }
+    A->rowStarts[numRows] = A->numNonzeros;
+
+    testMatrix(tu, A, 0);
+
     ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
   }
 

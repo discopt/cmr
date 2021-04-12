@@ -349,9 +349,9 @@ struct _TU_TDEC_NEWCOLUMN
   int memReducedComponents;                 /**< \brief Allocated memory for \c reducedComponents. */
   int numReducedComponents;                 /**< \brief Number of reduced root members. */
 
-  PathEdge* pathEdgeStorage;             /**< \brief Storage for edge lists of reduced members. */
-  int memPathEdges;                /**< \brief Allocated memory for \c reducedEdgeStorage. */
-  int numPathEdges;               /**< \brief Number of stored edges in \c reducedEdgeStorage. */
+  PathEdge* pathEdges;                      /**< \brief Storage for edge lists of path edges. */
+  int memPathEdges;                         /**< \brief Allocated memory for \c pathEdges. */
+  int numPathEdges;                         /**< \brief Number of stored edges in \c pathEdges. */
 
   ReducedMember** childrenStorage;          /**< \brief Storage for members' arrays of children in reduced t-decomposition. */
   int usedChildrenStorage;                  /**< \brief Number of stored children in \c childrenStorage. */
@@ -1206,7 +1206,7 @@ TU_ERROR TUtdecnewcolumnCreate(TU* tu, TU_TDEC_NEWCOLUMN** pnewcolumn)
   newcolumn->memReducedComponents = 0;
   newcolumn->reducedComponents = NULL;
 
-  newcolumn->pathEdgeStorage = NULL;
+  newcolumn->pathEdges = NULL;
   newcolumn->memPathEdges = 0;
   newcolumn->numPathEdges = 0;
 
@@ -1240,8 +1240,8 @@ TU_ERROR TUtdecnewcolumnFree(TU* tu, TU_TDEC_NEWCOLUMN** pnewcolumn)
 
   if (newcolumn->membersToReducedMembers)
     TU_CALL( TUfreeBlockArray(tu, &newcolumn->membersToReducedMembers) );
-  if (newcolumn->pathEdgeStorage)
-    TU_CALL( TUfreeBlockArray(tu, &newcolumn->pathEdgeStorage) );
+  if (newcolumn->pathEdges)
+    TU_CALL( TUfreeBlockArray(tu, &newcolumn->pathEdges) );
   if (newcolumn->childrenStorage)
     TU_CALL( TUfreeBlockArray(tu, &newcolumn->childrenStorage) );
 
@@ -1494,6 +1494,36 @@ TU_ERROR computeReducedDecomposition(
 }
 
 /**
+ * Allocates a path edge structure.
+ */
+
+static
+TU_ERROR createPathEdge(
+  TU* tu,                       /**< \ref TU environment. */
+  TU_TDEC_NEWCOLUMN* newcolumn, /**< new column. */
+  TU_TDEC_EDGE edge,            /**< The edge it refers to. */
+  PathEdge* next,               /**< The next edge in the singly linked list of this reduced member. */
+  PathEdge** pNewPathEdge       /**< Pointer for storing the new path edge. */
+)
+{
+  assert(tu);
+  assert(newcolumn);
+
+  if (newcolumn->numPathEdges == newcolumn->memPathEdges)
+  {
+    newcolumn->memPathEdges = 16 + 2 * newcolumn->memPathEdges;
+    TU_CALL( TUreallocBlockArray(tu, &newcolumn->pathEdges, newcolumn->memPathEdges) );
+  }
+
+  *pNewPathEdge = &newcolumn->pathEdges[newcolumn->numPathEdges];
+  newcolumn->pathEdges[newcolumn->numPathEdges].edge = edge;
+  newcolumn->pathEdges[newcolumn->numPathEdges].next = next;
+  newcolumn->numPathEdges++;
+
+  return TU_OKAY;
+}
+
+/**
  * \brief Creates members and reduced members of new edges.
  */
 
@@ -1577,11 +1607,8 @@ TU_ERROR completeReducedDecomposition(
       reducedMember->rootMember = -1;
       reducedMember->type = TYPE_5_ROOT;
 
-      assert(newcolumn->numPathEdges + 1 < newcolumn->memPathEdges);
-      PathEdge* reducedEdge = &newcolumn->pathEdgeStorage[newcolumn->numPathEdges];
-      newcolumn->numPathEdges++;
-      reducedEdge->next = NULL;
-      reducedEdge->edge = edge;
+      PathEdge* reducedEdge;
+      TU_CALL( createPathEdge(tu, newcolumn, edge, NULL, &reducedEdge) );
       reducedMember->firstPathEdge = reducedEdge;
 
       if (newcolumn->numReducedComponents == newcolumn->memReducedComponents)
@@ -1630,15 +1657,7 @@ TU_ERROR initializeReducedMemberEdgeLists(
   for (int e = 0; e < tdec->memEdges; ++e)
     newcolumn->edgesInPath[e] = false;
 
-  /* (Re)allocate memory for edge lists. */
   assert(newcolumn->numPathEdges == 0);
-  int requiredMemPathEdges = numEntries + newcolumn->numReducedMembers;
-  if (newcolumn->memPathEdges < requiredMemPathEdges)
-  {
-    newcolumn->memPathEdges = 2 * requiredMemPathEdges;
-    TU_CALL( TUreallocBlockArray(tu, &newcolumn->pathEdgeStorage,
-      newcolumn->memPathEdges) );
-  }
 
   /* Start with empty lists. */
   for (int i = 0; i < newcolumn->numReducedMembers; ++i)
@@ -1655,11 +1674,9 @@ TU_ERROR initializeReducedMemberEdgeLists(
       assert(member >= 0);
       ReducedMember* reducedMember = newcolumn->membersToReducedMembers[member];
       assert(reducedMember);
-      newcolumn->pathEdgeStorage[newcolumn->numPathEdges].next = reducedMember->firstPathEdge;
-      newcolumn->pathEdgeStorage[newcolumn->numPathEdges].edge = edge;
-      reducedMember->firstPathEdge = &newcolumn->pathEdgeStorage[newcolumn->numPathEdges];
-      ++newcolumn->numPathEdges;
-
+      PathEdge* pathEdge;
+      TU_CALL( createPathEdge(tu, newcolumn, edge, reducedMember->firstPathEdge, &pathEdge) );
+      reducedMember->firstPathEdge = pathEdge;
       newcolumn->edgesInPath[edge] = true;
       if (tdec->members[member].type == TDEC_MEMBER_TYPE_PRIME)
       {
@@ -2386,12 +2403,8 @@ TU_ERROR determineTypes(
       (reducedParent - newcolumn->reducedMembers));
 
     /* Add marker edge of parent to reduced parent's reduced edges. */
-
-    assert(newcolumn->numPathEdges < newcolumn->memPathEdges);
-    PathEdge* reducedEdge = &newcolumn->pathEdgeStorage[newcolumn->numPathEdges];
-    ++newcolumn->numPathEdges;
-    reducedEdge->edge = markerOfParent;
-    reducedEdge->next = reducedParent->firstPathEdge;
+    PathEdge* reducedEdge = NULL;
+    TU_CALL( createPathEdge(tu, newcolumn, markerOfParent, reducedParent->firstPathEdge, &reducedEdge) );
     reducedParent->firstPathEdge = reducedEdge;
 
     /* Indicate that marker edge of parent belongs to path. */
@@ -3770,7 +3783,9 @@ TU_ERROR doReorderComponent(
 
   tdec->members[member].markerToParent = newMarkerToParent;
   tdec->members[member].markerOfParent = markerOfNewParent;
+  tdec->members[member].parentMember = newParent;
   tdec->edges[markerOfNewParent].childMember = member;
+  tdec->edges[newMarkerToParent].childMember = -1;
 
   if (oldMarkerToParent >= 0)
     TU_CALL( doReorderComponent(tu, tdec, oldParent, member, oldMarkerOfParent, oldMarkerToParent) );
@@ -4018,7 +4033,7 @@ TU_ERROR testGraphicnessTDecomposition(TU* tu, TU_CHRMAT* matrix, TU_CHRMAT* tra
 #if defined(TU_DEBUG_TDEC)
   printf("testGraphicnessTDecomposition called for a 1-connected %dx%d matrix.\n",
     matrix->numRows, matrix->numColumns);
-  TUchrmatPrintDense(stdout, (TU_CHRMAT*) matrix, ' ', true);
+  TUchrmatPrintDense(stdout, (TU_CHRMAT*) matrix, '0', true);
 #endif /* TU_DEBUG_TDEC */
 
   if (matrix->numNonzeros == 0)
