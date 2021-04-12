@@ -2700,10 +2700,10 @@ TU_ERROR mergeMemberIntoParent(
   TU_TDEC_EDGE childEdge = tdec->members[member].markerToParent;
   assert(childEdge >= 0);
 
-  TUdbgMsg(10, "Merging member %d into %d, identifying %d with %d.\n", member, parentMember, childEdge, parentEdge);
-
   TU_TDEC_NODE parentEdgeNodes[2] = { findEdgeTail(tdec, parentEdge), findEdgeHead(tdec, parentEdge) };
   TU_TDEC_NODE childEdgeNodes[2] = { findEdgeTail(tdec, childEdge), findEdgeHead(tdec, childEdge) };
+  TUdbgMsg(10, "Merging member %d into %d, identifying %d = {%d,%d} with %d = {%d,%d}.\n", member, parentMember,
+    childEdge, childEdgeNodes[0], childEdgeNodes[1], parentEdge, parentEdgeNodes[0], parentEdgeNodes[1]);
 
   /* Identify nodes. */
 
@@ -2913,6 +2913,7 @@ TU_ERROR addColumnProcessBond(
     TU_TDEC_NODE tail, head;
     TU_CALL( createNode(tu, tdec, &tail) );
     TU_CALL( createNode(tu, tdec, &head) );
+    TUdbgMsg(8 + 2*depth, "Bond's tail node is %d and head node is %d.\n", tail, head);
     TU_TDEC_EDGE edge = tdec->members[member].firstEdge;
     do
     {
@@ -3541,49 +3542,101 @@ TU_ERROR addColumnProcessPolygon(
     {
       assert(numOneEnd == 2);
 
-      /* If there is more than 1 path edge, we squeeze off by moving them to a new polygon and creating a bond to
+      /* If there is more than 1 path edge, we split off by moving them to a new polygon and creating a bond to
        * connect it to the remaining polygon. */
-      TU_TDEC_EDGE pathEdge;
-      TU_CALL( splitPolygon(tu, tdec, member, newcolumn->edgesInPath, true, &pathEdge, NULL, NULL) );
-
-      if (tdec->members[member].numEdges > (pathEdge >= 0 ? 4 : 3))
+      TU_TDEC_EDGE pathEdge = -1;
+      TU_TDEC_EDGE nonPathEdge = -1;
+      if (reducedMember->type != TYPE_4_CONNECTS_TWO_PATHS)
       {
-        /* The parent marker is a non-path edge. If there is another one, then we split off the polygon consisting of
+        /* Parent marker is a non-path edge. We split off path edges if more than one. */
+        TU_CALL( splitPolygon(tu, tdec, member, newcolumn->edgesInPath, true, &pathEdge, NULL, NULL) );
+
+        /* If there is another non-path edge, we split off the polygon consisting of
          * the two relevant child marker edges and possibly the path edge. We then replace the current polygon by the
          * new one. */
-        if (pathEdge >= 0)
-          newcolumn->edgesInPath[pathEdge] = true;
-        newcolumn->edgesInPath[childMarkerEdges[0]] = true;
-        newcolumn->edgesInPath[childMarkerEdges[1]] = true;
-        TU_CALL( splitPolygon(tu, tdec, member, newcolumn->edgesInPath, true, NULL, NULL, &member) );
-        reducedMember->member = member;
+
+        if (tdec->members[member].numEdges > (pathEdge >= 0 ? 4 : 3))
+        {
+          if (pathEdge >= 0)
+            newcolumn->edgesInPath[pathEdge] = true;
+          newcolumn->edgesInPath[childMarkerEdges[0]] = true;
+          newcolumn->edgesInPath[childMarkerEdges[1]] = true;
+          TU_CALL( splitPolygon(tu, tdec, member, newcolumn->edgesInPath, true, NULL, NULL, &member) );
+          reducedMember->member = member;
+        }
+
+        nonPathEdge = tdec->members[member].markerToParent;
+      }
+      else 
+      {
+        assert(newcolumn->edgesInPath[tdec->members[member].markerToParent]);
+
+        if (reducedMember->firstPathEdge)
+        {
+          /* Parent marker is one of several path edges. */
+          TU_CALL( splitPolygon(tu, tdec, member, newcolumn->edgesInPath, false, NULL, NULL, &member) );
+          reducedMember->member = member;
+        }
+        pathEdge = tdec->members[member].markerToParent;
+
+        if (tdec->members[member].numEdges > 3)
+        {
+          newcolumn->edgesInPath[childMarkerEdges[0]] = true;
+          newcolumn->edgesInPath[childMarkerEdges[1]] = true;
+          TU_CALL( splitPolygon(tu, tdec, member, newcolumn->edgesInPath, false, &nonPathEdge, NULL, NULL) );
+          newcolumn->edgesInPath[childMarkerEdges[0]] = false;
+          newcolumn->edgesInPath[childMarkerEdges[1]] = false;
+        }
+        else
+          nonPathEdge = -1;
       }
 
 #if defined(TU_DEBUG_DOT)
+      TUdbgMsg(8 + 2*depth,
+        "After splitting off, the (potential) path edge is %d and the (potential) non-path edge is %d.\n",
+        pathEdge, nonPathEdge);
       TU_CALL( debugDot(tu, tdec, newcolumn) );
 #endif /* TU_DEBUG_DOT */
+      
+      assert(pathEdge >= 0 || nonPathEdge >= 0);
 
-      /* a <----- b ------ c -----> d ---- a
-       *   child0   parent   child1   path
+      /* a <----- b ---- c -----> d -------- a
+       *   child0   path   child1   non-path
        *
        * or
        *
-       * a <----- b ------ c -----> d=a
-       *   child0   parent   child1 */
+       * a <----- b ---- c -----> d=a
+       *   child0   path   child1
+       *
+       * or
+       *
+       * a <----- b=c -----> d -------- a
+       *   child0     child1   non-path */
       TU_TDEC_NODE a, b, c, d;
       TU_CALL( createNode(tu, tdec, &a) );
       TU_CALL( createNode(tu, tdec, &b) );
-      TU_CALL( createNode(tu, tdec, &c) );
       if (pathEdge >= 0)
-      {
+        TU_CALL( createNode(tu, tdec, &c) );
+      else
+        c = b;
+      if (nonPathEdge >= 0)
         TU_CALL( createNode(tu, tdec, &d) );
-        TU_CALL( setEdgeNodes(tu, tdec, pathEdge, d, a) );
-      }
       else
         d = a;
-      TU_CALL( setEdgeNodes(tu, tdec, childMarkerEdges[0], b, a) );
-      TU_CALL( setEdgeNodes(tu, tdec, tdec->members[member].markerToParent, b, c) );
-      TU_CALL( setEdgeNodes(tu, tdec, childMarkerEdges[1], c, d) );
+      TU_CALL( setEdgeNodes(tu, tdec, childMarkerEdges[0], a, b) );
+      TUdbgMsg(8 + 2*depth, "First child edge %d = {%d, %d}\n", childMarkerEdges[0], a, b);
+      TU_CALL( setEdgeNodes(tu, tdec, childMarkerEdges[1], d, c) );
+      TUdbgMsg(8 + 2*depth, "Second child edge %d = {%d, %d}\n", childMarkerEdges[1], d, c);
+      if (pathEdge >= 0)
+      {
+        TU_CALL( setEdgeNodes(tu, tdec, pathEdge, b, c) );
+        TUdbgMsg(8 + 2*depth, "Path edge %d = {%d, %d}\n", pathEdge, b, c);
+      }
+      if (nonPathEdge >= 0)
+      {
+        TU_CALL( setEdgeNodes(tu, tdec, nonPathEdge, d, a) );
+        TUdbgMsg(8 + 2*depth, "Non-path edge %d = {%d, %d}\n", nonPathEdge, d, a);
+      }
 
       TU_CALL( mergeMemberIntoParent(tu, tdec, tdec->edges[childMarkerEdges[0]].childMember, true) );
       TU_CALL( mergeMemberIntoParent(tu, tdec, tdec->edges[childMarkerEdges[1]].childMember, true) );
