@@ -1,6 +1,6 @@
 #define TU_DEBUG /* Uncomment to enable general debugging. */
 // #define TU_DEBUG_SPLITTING /* Uncomment to enable debug output for splitting of polygons. */
-#define TU_DEBUG_DOT /* Uncomment to output dot files after modifications of the t-decomposition. */
+// #define TU_DEBUG_DOT /* Uncomment to output dot files after modifications of the t-decomposition. */
 
 #include <tu/tdec.h>
 #include "env_internal.h"
@@ -2169,30 +2169,10 @@ TU_ERROR determineTypePrime(
     else if (numEndNodes == 2)
     {
       /* Exchange such that end node 0 is at the parent marker. */
-      if (reducedMember->primeEndNodes[0] != parentMarkerNodes[0] && reducedMember->primeEndNodes[0] != parentMarkerNodes[1])
-        SWAP_INTS(reducedMember->primeEndNodes[0], reducedMember->primeEndNodes[0]);
+      if (endNodes[0] != parentMarkerNodes[0] && endNodes[0] != parentMarkerNodes[1])
+        SWAP_INTS(endNodes[0], endNodes[0]);
 
-      if (numOneEnd == 0 && numTwoEnds == 0)
-      {
-        if (parentMarkerDegrees[0] % 2 == 0 && parentMarkerDegrees[1] == 1)
-        {
-          reducedMember->type = parentMarkerDegrees[0] == 0 ? TYPE_3_EXTENSION : TYPE_2_SHORTCUT;
-        }
-        else if (parentMarkerDegrees[0] == 1 && parentMarkerDegrees[1] % 2 == 0)
-        {
-          reducedMember->type = parentMarkerDegrees[1] == 0 ? TYPE_3_EXTENSION : TYPE_2_SHORTCUT;
-        }
-        else if (parentMarkerDegrees[0] == 1 && parentMarkerDegrees[1] == 1)
-        {
-          reducedMember->type = TYPE_1_CLOSES_CYCLE;
-        }
-        else
-        {
-          /* Both have degree 0 or 2. */
-          newcolumn->remainsGraphic = false;
-        }
-      }
-      else if (numOneEnd == 1)
+      if (numOneEnd == 1)
       {
         TUdbgMsg(6 + 2*depth, "%d-%d-path, parent {%d,%d} and child {%d,%d}\n", endNodes[0], endNodes[1],
           parentMarkerNodes[0], parentMarkerNodes[1], childMarkerNodes[0], childMarkerNodes[1]);
@@ -2234,10 +2214,8 @@ TU_ERROR determineTypePrime(
           }
         }
       }
-      else
+      else if (numOneEnd == 2)
       {
-        assert(numOneEnd == 2);
-
         TU_TDEC_NODE otherParentNode = -1;
         if (endNodes[0] == parentMarkerNodes[0])
           otherParentNode = parentMarkerNodes[1];
@@ -2258,6 +2236,46 @@ TU_ERROR determineTypePrime(
             || otherParentNode == childMarkerNodes[2] || otherParentNode == childMarkerNodes[3]
         };
         if (matched[0] && matched[1] && matched[2] && matched[3])
+        {
+          reducedMember->type = TYPE_4_CONNECTS_TWO_PATHS;
+        }
+        else
+        {
+          newcolumn->remainsGraphic = false;
+        }
+      }
+      else if (numTwoEnds == 0)
+      {
+        if (parentMarkerDegrees[0] % 2 == 0 && parentMarkerDegrees[1] == 1)
+        {
+          reducedMember->type = parentMarkerDegrees[0] == 0 ? TYPE_3_EXTENSION : TYPE_2_SHORTCUT;
+        }
+        else if (parentMarkerDegrees[0] == 1 && parentMarkerDegrees[1] % 2 == 0)
+        {
+          reducedMember->type = parentMarkerDegrees[1] == 0 ? TYPE_3_EXTENSION : TYPE_2_SHORTCUT;
+        }
+        else if (parentMarkerDegrees[0] == 1 && parentMarkerDegrees[1] == 1)
+        {
+          reducedMember->type = TYPE_1_CLOSES_CYCLE;
+        }
+        else
+        {
+          /* Both have degree 0 or 2. */
+          newcolumn->remainsGraphic = false;
+        }
+      }
+      else
+      {
+        assert(numTwoEnds == 1);
+
+        if ((endNodes[0] == parentMarkerNodes[0] && parentMarkerNodes[1] == childMarkerNodes[0]
+          && childMarkerNodes[1] == endNodes[1])
+          || (endNodes[0] == parentMarkerNodes[0] && parentMarkerNodes[1] == childMarkerNodes[1]
+          && childMarkerNodes[0] == endNodes[1])
+          || (endNodes[0] == parentMarkerNodes[1] && parentMarkerNodes[0] == childMarkerNodes[0]
+          && childMarkerNodes[1] == endNodes[1])
+          || (endNodes[0] == parentMarkerNodes[1] && parentMarkerNodes[0] == childMarkerNodes[1]
+          && childMarkerNodes[0] == endNodes[1]))
         {
           reducedMember->type = TYPE_4_CONNECTS_TWO_PATHS;
         }

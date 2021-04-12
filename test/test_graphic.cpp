@@ -471,7 +471,7 @@ TEST(Graphic, RandomMatrix)
   TU* tu = NULL;
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
 
-  while (true)
+  while (false)
   {
     TU_CHRMAT* A = NULL;
     ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "5 20 "
