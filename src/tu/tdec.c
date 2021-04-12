@@ -1,6 +1,6 @@
 #define TU_DEBUG /* Uncomment to enable general debugging. */
 // #define TU_DEBUG_SPLITTING /* Uncomment to enable debug output for splitting of polygons. */
-// #define TU_DEBUG_DOT /* Uncomment to output dot files after modifications of the t-decomposition. */
+#define TU_DEBUG_DOT /* Uncomment to output dot files after modifications of the t-decomposition. */
 
 #include <tu/tdec.h>
 #include "env_internal.h"
@@ -3524,6 +3524,12 @@ TU_ERROR addColumnProcessPolygon(
          * connect it to the remaining polygon. */
         TU_TDEC_EDGE pathEdge;
         TU_CALL( splitPolygon(tu, tdec, member, newcolumn->edgesInPath, true, &pathEdge, NULL, NULL) );
+        if (pathEdge >= 0)
+          newcolumn->edgesInPath[pathEdge] = true;
+        
+#if defined(TU_DEBUG_DOT)
+        TU_CALL( debugDot(tu, tdec, newcolumn) );
+#endif /* TU_DEBUG_DOT */
 
         /* Unless the polygon consists of only the parent marker, the child marker (containing a path end) and a
          * representative edge, we squeeze off the representative edge and the child marker. */
