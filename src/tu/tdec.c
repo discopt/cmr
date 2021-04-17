@@ -1,6 +1,6 @@
 #define TU_DEBUG /* Uncomment to enable general debugging. */
 // #define TU_DEBUG_SPLITTING /* Uncomment to enable debug output for splitting of polygons. */
-// #define TU_DEBUG_DOT /* Uncomment to output dot files after modifications of the t-decomposition. */
+#define TU_DEBUG_DOT /* Uncomment to output dot files after modifications of the t-decomposition. */
 
 // TODO: Refactor replacement of an edge by another one.
 // TODO: Refactor creation of a pair of marker edges instead of one.
@@ -3916,7 +3916,11 @@ TU_ERROR addColumnProcessPolygon(
       /* Squeeze off all path edges by moving them to a new polygon and creating a bond to connect
        * it to the remaining polygon. */
       TU_TDEC_EDGE pathEdge = -1;
+      TUdbgMsg(8 + 2*depth, "Splitting of path edges.\n");
       TU_CALL( splitPolygon(tu, tdec, member, newcolumn->edgesInPath, true, &pathEdge, NULL, NULL) );
+      if (pathEdge >= 0)
+        newcolumn->edgesInPath[pathEdge] = true;
+      debugDot(tu, tdec, newcolumn);
 
       /* If necessary, we squeeze off the non-path edges as well. */
       assert(tdec->members[member].numEdges >= 3);
