@@ -1,6 +1,6 @@
 #define TU_DEBUG /* Uncomment to enable general debugging. */
 // #define TU_DEBUG_SPLITTING /* Uncomment to enable debug output for splitting of polygons. */
-#define TU_DEBUG_DOT /* Uncomment to output dot files after modifications of the t-decomposition. */
+// #define TU_DEBUG_DOT /* Uncomment to output dot files after modifications of the t-decomposition. */
 
 // TODO: Refactor replacement of an edge by another one.
 // TODO: Refactor creation of a pair of marker edges instead of one.
@@ -3784,8 +3784,10 @@ TU_ERROR addColumnProcessPolygon(
           /* Parent marker is one of several path edges. */
           TU_CALL( splitPolygon(tu, tdec, member, newcolumn->edgesInPath, false, NULL, NULL, &member) );
           reducedMember->member = member;
+          newcolumn->edgesInPath[tdec->members[member].markerToParent] = true;
         }
         pathEdge = tdec->members[member].markerToParent;
+        debugDot(tu, tdec, newcolumn);
 
         if (tdec->members[member].numEdges > 3)
         {
