@@ -1,6 +1,6 @@
 #define TU_DEBUG /* Uncomment to enable general debugging. */
 // #define TU_DEBUG_SPLITTING /* Uncomment to enable debug output for splitting of polygons. */
-#define TU_DEBUG_DOT /* Uncomment to output dot files after modifications of the t-decomposition. */
+// #define TU_DEBUG_DOT /* Uncomment to output dot files after modifications of the t-decomposition. */
 
 // TODO: Refactor replacement of an edge by another one.
 // TODO: Refactor creation of a pair of marker edges instead of one.
@@ -1540,9 +1540,10 @@ TU_ERROR computeReducedDecomposition(
     if (entryRows[p] > maxRow)
       maxRow = entryRows[p];
   }
-  if (newcolumn->memReducedMembers < tdec->numMembers + numEntries)
+  size_t maxNumReducedMembers = tdec->numMembers + maxRow + 1;
+  if (newcolumn->memReducedMembers < maxNumReducedMembers)
   {
-    newcolumn->memReducedMembers = tdec->memMembers + maxRow + 1;
+    newcolumn->memReducedMembers = maxNumReducedMembers;
     TU_CALL( TUreallocBlockArray(tu, &newcolumn->reducedMembers, newcolumn->memReducedMembers) );
     TU_CALL( TUreallocBlockArray(tu, &newcolumn->membersToReducedMembers,
       newcolumn->memReducedMembers) );
@@ -1670,12 +1671,7 @@ TU_ERROR createPathEdge(
   assert(tu);
   assert(newcolumn);
 
-  if (newcolumn->numPathEdges == newcolumn->memPathEdges)
-  {
-    newcolumn->memPathEdges = 16 + 2 * newcolumn->memPathEdges;
-    TU_CALL( TUreallocBlockArray(tu, &newcolumn->pathEdges, newcolumn->memPathEdges) );
-  }
-
+  assert(newcolumn->numPathEdges < newcolumn->memPathEdges);
   *pNewPathEdge = &newcolumn->pathEdges[newcolumn->numPathEdges];
   newcolumn->pathEdges[newcolumn->numPathEdges].edge = edge;
   newcolumn->pathEdges[newcolumn->numPathEdges].next = next;
@@ -1819,6 +1815,12 @@ TU_ERROR initializeReducedMemberEdgeLists(
     newcolumn->edgesInPath[e] = false;
 
   assert(newcolumn->numPathEdges == 0);
+  size_t maxNumPathEdges = numEntries + tdec->numMembers;
+  if (newcolumn->memPathEdges < maxNumPathEdges)
+  {
+    TU_CALL( TUreallocBlockArray(tu, &newcolumn->pathEdges, maxNumPathEdges) );
+    newcolumn->memPathEdges = maxNumPathEdges;
+  }
 
   /* Start with empty lists. */
   for (int i = 0; i < newcolumn->numReducedMembers; ++i)
@@ -2466,11 +2468,7 @@ TU_ERROR determineTypePrime(
         return TU_OKAY;
       }
 
-      if (numOneEnd == 0 && numTwoEnds == 0)
-      {
-        reducedMember->type = TYPE_4_CONNECTS_TWO_PATHS;
-      }
-      else if (numOneEnd == 1)
+      if (numOneEnd == 1)
       {
         bool pathConnects[2] = {
           reducedMember->primeEndNodes[1] == childMarkerNodes[0]
@@ -2500,10 +2498,8 @@ TU_ERROR determineTypePrime(
           newcolumn->remainsGraphic = false;
         }
       }
-      else
+      else if (numOneEnd == 2)
       {
-        assert(numOneEnd == 2);
-
         bool pathConnected[2] = { false, false };
         bool childConnected[2] = { false, false };
         for (int i = 0; i < 2; ++i)
@@ -2526,6 +2522,15 @@ TU_ERROR determineTypePrime(
           TUdbgMsg(6 + 2*depth, "No pairing of paths to nodes of child marker edges possible.\n");
           newcolumn->remainsGraphic = false;
         }
+      }
+      else if (numTwoEnds == 0)
+      {
+        reducedMember->type = TYPE_4_CONNECTS_TWO_PATHS;
+      }
+      else
+      {
+        assert(numTwoEnds == 1);
+        newcolumn->remainsGraphic = false;
       }
     }
   }
