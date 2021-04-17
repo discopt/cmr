@@ -1,6 +1,6 @@
 #define TU_DEBUG /* Uncomment to enable general debugging. */
 // #define TU_DEBUG_SPLITTING /* Uncomment to enable debug output for splitting of polygons. */
-// #define TU_DEBUG_DOT /* Uncomment to output dot files after modifications of the t-decomposition. */
+#define TU_DEBUG_DOT /* Uncomment to output dot files after modifications of the t-decomposition. */
 
 // TODO: Refactor replacement of an edge by another one.
 // TODO: Refactor creation of a pair of marker edges instead of one.
@@ -2711,7 +2711,9 @@ TU_ERROR moveReducedRoot(
 
   while (cycleWithUniqueEndChild)
   {
-    TUdbgMsg(6, "Reduced member closes a cycle with a 1- or 2-end child marker edge.\n");
+    TUdbgMsg(6, "Reduced %s member %d closes a cycle with a 1- or 2-end child marker edge.\n",
+      tdec->members[member].type == TDEC_MEMBER_TYPE_BOND ? "bond" :
+      (tdec->members[member].type == TDEC_MEMBER_TYPE_POLYGON ? "polygon" : "prime"), member);
 
     TU_TDEC_MEMBER childMember = findMember(tdec, tdec->edges[childMarkerEdges[0]].childMember);
     newcolumn->edgesInPath[ tdec->members[childMember].markerToParent ] = true;
@@ -2738,7 +2740,52 @@ TU_ERROR moveReducedRoot(
     }
     else if (tdec->members[member].type == TDEC_MEMBER_TYPE_PRIME)
     {
-      cycleWithUniqueEndChild = ((numOneEnd == 1 || numTwoEnds == 1) && reducedMember->primeEndNodes[3] >= 0);
+      if (numTwoEnds == 1 || numOneEnd == 1)
+      {
+        /* For non-root primes, we have to check whether the path edges together with the parent marker edge form a cycle
+        * with a two-end child. */
+        TU_TDEC_NODE parentMarkerNodes[2] = {
+          findEdgeTail(tdec, tdec->members[member].markerToParent),
+          findEdgeHead(tdec, tdec->members[member].markerToParent)
+        };
+        TU_TDEC_NODE childMarkerNodes[2] = {
+          findEdgeTail(tdec, childMarkerEdges[0]),
+          findEdgeHead(tdec, childMarkerEdges[0])
+        };
+
+        int numEndNodes = reducedMember->primeEndNodes[0] < 0 ? 0 : (reducedMember->primeEndNodes[2] < 0 ? 2 : 4);
+        if (numEndNodes == 0)
+        {
+          /* Without path edges the child marker would have to be parallel to the parent marker, which is detected
+           * during typing. */
+          cycleWithUniqueEndChild = false;
+          break;
+        }
+
+        /* Determine the end nodes of the path including the parent marker edge. */
+        TU_TDEC_NODE endNodes[2];
+        if (numEndNodes == 4)
+        {
+          endNodes[0] = reducedMember->primeEndNodes[1];
+          endNodes[1] = reducedMember->primeEndNodes[3];
+        }
+        else if (reducedMember->primeEndNodes[0] == parentMarkerNodes[0])
+        {
+          endNodes[0] = parentMarkerNodes[1];
+          endNodes[1] = reducedMember->primeEndNodes[1];
+        }
+        else
+        {
+          assert(reducedMember->primeEndNodes[0] == parentMarkerNodes[1]);
+          endNodes[0] = parentMarkerNodes[0];
+          endNodes[1] = reducedMember->primeEndNodes[1];
+        }
+
+        cycleWithUniqueEndChild = (endNodes[0] == childMarkerNodes[0] && endNodes[1] == childMarkerNodes[1])
+          || (endNodes[0] == childMarkerNodes[1] && endNodes[1] == childMarkerNodes[0]);
+      }
+      else
+        cycleWithUniqueEndChild = false;
     }
     else
     {
