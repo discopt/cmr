@@ -1,4 +1,4 @@
-#define TU_DEBUG /* Uncomment to enable general debugging. */
+// #define TU_DEBUG /* Uncomment to enable general debugging. */
 // #define TU_DEBUG_SPLITTING /* Uncomment to enable debug output for splitting of polygons. */
 // #define TU_DEBUG_DOT /* Uncomment to output dot files after modifications of the t-decomposition. */
 
