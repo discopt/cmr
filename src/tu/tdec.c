@@ -2185,7 +2185,7 @@ TU_ERROR determineTypePrime(
     SWAP_INTS(endNodes[0], endNodes[1]);
   }
 
-  TUdbgMsg(6 + 2*depth, "Prime member %d has %d path end nodes:", member, numEndNodes);
+  TUdbgMsg(6 + 2*depth, "Prime %smember %d has %d path end nodes:", depth == 0 ? "root " : "", member, numEndNodes);
   if (numEndNodes >= 2)
     TUdbgMsg(0, " a path from %d to %d.", endNodes[0], endNodes[1]);
   if (numEndNodes == 4)
@@ -2194,8 +2194,6 @@ TU_ERROR determineTypePrime(
 
   if (depth == 0)
   {
-    bool hasParentMarker = tdec->members[member].markerToParent >= 0;
-
     if (numEndNodes == 0)
     {
       /* No path edges, so there should be two adjacent child marker edges. */
@@ -2211,20 +2209,22 @@ TU_ERROR determineTypePrime(
     {
       if (numOneEnd == 1)
       {
-        if ((endNodes[0] == parentMarkerNodes[0] || endNodes[0] == parentMarkerNodes[1] || !hasParentMarker)
-          && (endNodes[1] == childMarkerNodes[0] || endNodes[1] == childMarkerNodes[1]))
+        bool pathAdjacentToChildMarker = false;
+        for (int i = 0; i < 2; ++i)
         {
-          reducedMember->type = TYPE_5_ROOT;
+          for (int j = 0; j < 2; ++j)
+          {
+            if (endNodes[i] == childMarkerNodes[j])
+            {
+              pathAdjacentToChildMarker = true;
+              break;
+            }
+          }
         }
-        else if ((endNodes[1] == parentMarkerNodes[0] || endNodes[1] == parentMarkerNodes[1] || !hasParentMarker)
-          && (endNodes[0] == childMarkerNodes[0] || endNodes[0] == childMarkerNodes[1]))
-        {
+        if (pathAdjacentToChildMarker)
           reducedMember->type = TYPE_5_ROOT;
-        }
         else
-        {
           newcolumn->remainsGraphic = false;
-        }
       }
       else if (numOneEnd == 2)
       {
@@ -2375,6 +2375,10 @@ TU_ERROR determineTypePrime(
           if (childMarkerNodes[0] == endNodes[1] || childMarkerNodes[1] == endNodes[1])
           {
             reducedMember->type = TYPE_3_EXTENSION;
+          }
+          else if (childMarkerNodes[0] == parentMarkerNodes[1] || childMarkerNodes[1] == parentMarkerNodes[1])
+          {
+            reducedMember->type = TYPE_4_CONNECTS_TWO_PATHS;
           }
           else
           {
