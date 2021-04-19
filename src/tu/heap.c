@@ -1,3 +1,5 @@
+// #define TU_DEBUG /* Uncomment to debug the heap. */
+
 #include "heap.h"
 
 #include <assert.h>
@@ -41,8 +43,10 @@ TU_ERROR TUintheapInsert(TU_INTHEAP* heap, int key, int value)
   assert(heap);
   assert(key >= 0);
   assert(key < heap->memKeys);
-
   assert(heap->size < heap->memKeys);
+
+  TUdbgMsg(10, "Inserting entry %d->%d.\n", key, value);
+
   heap->data[heap->size] = key;
   heap->positions[key] = heap->size;
   heap->values[key] = value;
@@ -80,6 +84,7 @@ TU_ERROR TUintheapDecrease(TU_INTHEAP* heap, int key, int newValue)
 
   int currentKey = key;
   int current = heap->positions[currentKey];
+  TUdbgMsg(10, "Decreasing entry %d->%d to %d->%d.\n", key, heap->values[currentKey], key, newValue);
   heap->values[currentKey] = newValue;
   int currentValue = newValue;
   while (current > 0)
@@ -87,6 +92,7 @@ TU_ERROR TUintheapDecrease(TU_INTHEAP* heap, int key, int newValue)
     int parent = (current-1) / 2;
     int parentKey = heap->data[parent];
     int parentValue = heap->values[parentKey];
+    TUdbgMsg(12, "Parent: %d->%d.\n", parentKey, parentValue);
     if (parentValue <= currentValue)
       break;
 
@@ -109,10 +115,14 @@ TU_ERROR TUintheapDecreaseInsert(TU_INTHEAP* heap, int key, int newValue)
   assert(key >= 0);
   assert(key < heap->memKeys);
 
+  TUdbgMsg(10, "Decrease-inserting entry %d->%d.\n", key, newValue);
+
   int currentKey = key;
   int current;
   if (heap->positions[key] >= 0)
+  {
     current = heap->positions[currentKey];
+  }
   else
   {
     current = heap->size;
@@ -122,11 +132,14 @@ TU_ERROR TUintheapDecreaseInsert(TU_INTHEAP* heap, int key, int newValue)
   }
   heap->values[currentKey] = newValue;
   int currentValue = newValue;
+  TUdbgMsg(12, "Initial entry %d is %d->%d.\n", current, currentKey, currentValue);
+  
   while (current > 0)
   {
     int parent = (current-1) / 2;
     int parentKey = heap->data[parent];
     int parentValue = heap->values[parentKey];
+    TUdbgMsg(12, "Parent: %d->%d (compared to value %d).\n", parentKey, parentValue, currentValue);
     if (parentValue <= currentValue)
       break;
 
@@ -136,8 +149,6 @@ TU_ERROR TUintheapDecreaseInsert(TU_INTHEAP* heap, int key, int newValue)
     heap->data[parent] = currentKey;
     heap->data[current]  = parentKey;
     current = parent;
-    currentKey = parentKey;
-    currentValue = parentValue;
   }
 
   return TU_OKAY;
@@ -152,6 +163,8 @@ int TUintheapExtractMinimum(TU_INTHEAP* heap)
   heap->data[0] = heap->data[heap->size - 1];
   heap->positions[heap->data[0]] = 0;
   --heap->size;
+  
+  TUdbgMsg(10, "Extracting %d->%d.\n", extracted, heap->values[extracted]);
 
   int current = 0;
   int currentKey = heap->data[0];

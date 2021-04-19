@@ -34,7 +34,6 @@ void testGraphicMatrix(
   TU_CHRMAT* result = NULL;
   ASSERT_TU_CALL( TUconvertGraphToBinaryMatrix(tu, graph, &result, matrix->numRows, basis,
     matrix->numColumns, cobasis) );
-
   ASSERT_TRUE( result );
 
   if (TUchrmatCheckEqual(matrix, result))
@@ -51,7 +50,20 @@ void testGraphicMatrix(
 
     printf("Representation matrix:\n");
     ASSERT_TU_CALL( TUchrmatPrintDense(stdout, result, ' ', true) );
+
+    printf("Basis:");
+    for (int r = 0; r < matrix->numRows; ++r)
+      printf(" %d", basis[r]);
+    printf("\n");
+
+    printf("Cobasis:");
+    for (int c = 0; c < matrix->numColumns; ++c)
+      printf(" %d", cobasis[c]);
+    printf("\n");
   }
+
+  ASSERT_TRUE( TUchrmatCheckEqual(matrix, result) );
+  ASSERT_TRUE( isGraphic );
 
   ASSERT_TU_CALL( TUgraphFree(tu, &graph) );
   ASSERT_TU_CALL( TUfreeBlockArray(tu, &basis) );
@@ -512,9 +524,9 @@ TEST(Graphic, RandomGraph)
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
   
   srand(0);
-  const int numGraphs = 1000;
+  const int numGraphs = 10000;
   const int numNodes = 5;
-  const int numEdges = 30;
+  const int numEdges = 8;
 
   TU_GRAPH_NODE* nodes = NULL;
   ASSERT_TU_CALL( TUallocBlockArray(tu, &nodes, numNodes) );

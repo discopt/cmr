@@ -1,4 +1,4 @@
-// #define TU_DEBUG_GRAPHIC /* Uncomment to debug graphic. */
+// #define TU_DEBUG /* Uncomment to debug graphic. */
 
 #include <tu/graphic.h>
 
@@ -240,7 +240,8 @@ TU_ERROR TUconvertGraphToBinaryMatrix(TU* tu, TU_GRAPH* graph, TU_CHRMAT** pmatr
   }
   for (int b = 0; b < numBasisEdges; ++b)
   {
-    TUdbgMsg(0, "basis[%d] = %d\n", b, basisEdges[b]);
+    TUdbgMsg(0, "basis element %d is edge %d = {%d,%d}\n", b, basisEdges[b], TUgraphEdgeU(graph, basisEdges[b]),
+      TUgraphEdgeV(graph, basisEdges[b]));
     lengths[basisEdges[b]] = 0;
   }
 
@@ -252,6 +253,7 @@ TU_ERROR TUconvertGraphToBinaryMatrix(TU* tu, TU_GRAPH* graph, TU_CHRMAT** pmatr
     if (nodeData[s].stage != UNKNOWN)
       continue;
 
+    TUdbgMsg(2, "Executing Dijkstra at starting node %d.\n", s);
     nodeData[s].predecessor = -1;
     nodeData[s].rootEdge = -1;
     ++countComponents;
@@ -260,6 +262,7 @@ TU_ERROR TUconvertGraphToBinaryMatrix(TU* tu, TU_GRAPH* graph, TU_CHRMAT** pmatr
     {
       int distance = TUintheapMinimumValue(&heap);
       TU_GRAPH_NODE v = TUintheapExtractMinimum(&heap);
+      TUdbgMsg(4, "Processing node %d at distance %d.\n", v, distance);
       nodeData[v].stage = COMPLETED;
       for (TU_GRAPH_ITER i = TUgraphIncFirst(graph, v); TUgraphIncValid(graph, i);
         i = TUgraphIncNext(graph, i))
@@ -275,6 +278,8 @@ TU_ERROR TUconvertGraphToBinaryMatrix(TU* tu, TU_GRAPH* graph, TU_CHRMAT** pmatr
         int newDistance = distance + lengths[e];
         if (newDistance < TUintheapGetValueInfinity(&heap, w))
         {
+          TUdbgMsg(6, "Updating distance of %d via predecessor %d from %d to %d.\n", w, v,
+            TUintheapGetValueInfinity(&heap, w), newDistance);
           nodeData[w].stage = SEEN;
           nodeData[w].predecessor = v;
           nodeData[w].rootEdge = e;
@@ -291,8 +296,7 @@ TU_ERROR TUconvertGraphToBinaryMatrix(TU* tu, TU_GRAPH* graph, TU_CHRMAT** pmatr
 
   TU_GRAPH_NODE* nodesRows = NULL; /* Non-root node v is mapped to row of edge {v,predecessor(v)}. */
   TU_CALL( TUallocStackArray(tu, &nodesRows, TUgraphMemNodes(graph)) );
-  for (TU_GRAPH_NODE v = TUgraphNodesFirst(graph); TUgraphNodesValid(graph, v);
-    v = TUgraphNodesNext(graph, v))
+  for (TU_GRAPH_NODE v = TUgraphNodesFirst(graph); TUgraphNodesValid(graph, v); v = TUgraphNodesNext(graph, v))
   {
     nodesRows[v] = -1;
   }
@@ -301,17 +305,20 @@ TU_ERROR TUconvertGraphToBinaryMatrix(TU* tu, TU_GRAPH* graph, TU_CHRMAT** pmatr
   {
     TU_GRAPH_NODE u = TUgraphEdgeU(graph, basisEdges[i]);
     TU_GRAPH_NODE v = TUgraphEdgeV(graph, basisEdges[i]);
+    TUdbgMsg(2, "Basic edge %d = {%d,%d}.\n", basisEdges[i], u, v);
     if (nodeData[u].predecessor == v)
     {
       nodesRows[u] = numRows;
       ++numRows;
       nodeData[u].stage = BASIC;
+      TUdbgMsg(2, "Basic edge {%d,%d}: %d is predecessor of %d; node %d is row %d.\n", u, v, v, u, u, nodesRows[u]);
     }
     else if (nodeData[v].predecessor == u)
     {
       nodesRows[v] = numRows;
       ++numRows;
       nodeData[v].stage = BASIC;
+      TUdbgMsg(2, "Basic edge {%d,%d}: %d is predecessor of %d; node %d is row %d.\n", u, v, u, v, v, nodesRows[v]);
     }
   }
   if (numRows < TUgraphNumNodes(graph) - countComponents)
@@ -325,6 +332,8 @@ TU_ERROR TUconvertGraphToBinaryMatrix(TU* tu, TU_GRAPH* graph, TU_CHRMAT** pmatr
         nodesRows[v] = numRows;
         ++numRows;
         nodeData[v].stage = BASIC;
+        TUdbgMsg(2, "Predecessor edge {%d,%d} not basic; node %d is row %d.\n", nodeData[v].predecessor, v, v,
+          nodesRows[v]);
       }
     }
   }

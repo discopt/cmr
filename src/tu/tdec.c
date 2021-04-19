@@ -1,6 +1,6 @@
-// #define TU_DEBUG /* Uncomment to enable general debugging. */
+#define TU_DEBUG /* Uncomment to enable general debugging. */
 // #define TU_DEBUG_SPLITTING /* Uncomment to enable debug output for splitting of polygons. */
-// #define TU_DEBUG_DOT /* Uncomment to output dot files after modifications of the t-decomposition. */
+#define TU_DEBUG_DOT /* Uncomment to output dot files after modifications of the t-decomposition. */
 
 // TODO: Refactor replacement of an edge by another one.
 // TODO: Refactor creation of a pair of marker edges instead of one.
@@ -3212,8 +3212,8 @@ TU_ERROR addColumnProcessPrime(
     childMarkerEdges[1] < 0 ? -1 : findEdgeHead(tdec, childMarkerEdges[1])
   };
 
-  TU_TDEC_NODE* endNodes = reducedMember->primeEndNodes;
-  int numEndNodes = endNodes[0] < 0 ? 0 : (endNodes[2] < 0 ? 2 : 4 );
+  TU_TDEC_NODE* pathEndNodes = reducedMember->primeEndNodes;
+  int numPathEndNodes = pathEndNodes[0] < 0 ? 0 : (pathEndNodes[2] < 0 ? 2 : 4 );
 
   if (depth == 0)
   {
@@ -3224,45 +3224,45 @@ TU_ERROR addColumnProcessPrime(
       /* The parent marker is a path edge, so we modify the endNodes array. */
       newcolumn->nodesDegree[parentMarkerNodes[0]]++;
       newcolumn->nodesDegree[parentMarkerNodes[1]]++;
-      if (numEndNodes == 0)
+      if (numPathEndNodes == 0)
       {
-        endNodes[0] = parentMarkerNodes[0];
-        endNodes[1] = parentMarkerNodes[1];
-        numEndNodes = 1;
+        pathEndNodes[0] = parentMarkerNodes[0];
+        pathEndNodes[1] = parentMarkerNodes[1];
+        numPathEndNodes = 1;
       }
-      else if (numEndNodes == 2)
+      else if (numPathEndNodes == 2)
       {
-        if (endNodes[0] == parentMarkerNodes[0])
-          endNodes[0] = parentMarkerNodes[1];
-        else if (endNodes[0] == parentMarkerNodes[1])
-          endNodes[0] = parentMarkerNodes[0];
+        if (pathEndNodes[0] == parentMarkerNodes[0])
+          pathEndNodes[0] = parentMarkerNodes[1];
+        else if (pathEndNodes[0] == parentMarkerNodes[1])
+          pathEndNodes[0] = parentMarkerNodes[0];
       }
       else
       {
-        endNodes[0] = endNodes[3];
-        endNodes[2] = -1;
-        endNodes[3] = -1;
-        numEndNodes = 2;
+        pathEndNodes[0] = pathEndNodes[3];
+        pathEndNodes[2] = -1;
+        pathEndNodes[3] = -1;
+        numPathEndNodes = 2;
       }
     }
 
-    assert(numEndNodes <= 2);
+    assert(numPathEndNodes <= 2);
 
     if (numOneEnd == 0 && numTwoEnds == 0)
     {
-      assert(numEndNodes >= 2);
+      assert(numPathEndNodes >= 2);
 
-      TU_CALL( addTerminal(tu, tdec, reducedComponent, member, endNodes[0]) );
-      TU_CALL( addTerminal(tu, tdec, reducedComponent, member, endNodes[1]) );
+      TU_CALL( addTerminal(tu, tdec, reducedComponent, member, pathEndNodes[0]) );
+      TU_CALL( addTerminal(tu, tdec, reducedComponent, member, pathEndNodes[1]) );
     }
     else if (numOneEnd == 1)
     {
       TU_CALL( addTerminal(tu, tdec, reducedComponent, member,
-        (endNodes[0] == childMarkerNodes[0] || endNodes[0] == childMarkerNodes[1]) ? endNodes[1] : endNodes[0] ) );
+        (pathEndNodes[0] == childMarkerNodes[0] || pathEndNodes[0] == childMarkerNodes[1]) ? pathEndNodes[1] : pathEndNodes[0] ) );
 
       TU_TDEC_MEMBER childMember = findMember(tdec, tdec->edges[childMarkerEdges[0]].childMember);
-      bool headToHead = endNodes[0] == childMarkerNodes[1] || endNodes[1] == childMarkerNodes[1];
-      assert(headToHead || endNodes[0] == childMarkerNodes[0] || endNodes[1] == childMarkerNodes[0]);
+      bool headToHead = pathEndNodes[0] == childMarkerNodes[1] || pathEndNodes[1] == childMarkerNodes[1];
+      assert(headToHead || pathEndNodes[0] == childMarkerNodes[0] || pathEndNodes[1] == childMarkerNodes[0]);
 
       TU_CALL( mergeMemberIntoParent(tu, tdec, childMember, headToHead) );
     }
@@ -3271,20 +3271,52 @@ TU_ERROR addColumnProcessPrime(
       assert(numOneEnd == 2);
       assert(reducedComponent->numTerminals == 2);
 
-      TU_TDEC_MEMBER childMember0 = findMember(tdec, tdec->edges[childMarkerEdges[0]].childMember);
-      TU_TDEC_MEMBER childMember1 = findMember(tdec, tdec->edges[childMarkerEdges[1]].childMember);
-      bool headToHead[2];
-      for (int i = 0; i < 2; ++i)
+      TU_TDEC_MEMBER childMember[2] = {
+        findMember(tdec, tdec->edges[childMarkerEdges[0]].childMember),
+        findMember(tdec, tdec->edges[childMarkerEdges[1]].childMember)
+      };
+
+      /* Count to how many path end nodes each child marker is incident. */
+      int numIncidentPathNodes[2] = { 0, 0 };
+      for (int c = 0; c < 2; ++c)
       {
-        for (int j = 0; j < 4; ++j)
+        for (int i = 0; i < 2; ++i)
         {
-          if (endNodes[i] == childMarkerNodes[j])
-            headToHead[j/2] = j % 2 == 1;
+          for (int j = 0; j < 2; ++j)
+          {
+            if (pathEndNodes[i] == childMarkerNodes[2*c + j])
+              numIncidentPathNodes[c]++;
+          }
         }
       }
+      TUdbgMsg(8 + 2*depth,
+        "Child marker %d = {%d,%d} has %d incident path end nodes and child marker %d = {%d,%d} has %d.\n",
+        childMarkerEdges[0], childMarkerNodes[0], childMarkerNodes[1], numIncidentPathNodes[0], childMarkerEdges[1],
+        childMarkerNodes[2], childMarkerNodes[3], numIncidentPathNodes[1]);
+      assert(numIncidentPathNodes[0] >= 1);
+      assert(numIncidentPathNodes[1] >= 1);
+      assert(numIncidentPathNodes[0] + numIncidentPathNodes[1] <= 3);
 
-      TU_CALL( mergeMemberIntoParent(tu, tdec, childMember0, headToHead[0]) );
-      TU_CALL( mergeMemberIntoParent(tu, tdec, childMember1, headToHead[1]) );
+      /* If a child marker is incident to both path ends, then we ensure it is the second one. */
+      if (numIncidentPathNodes[0] == 2)
+      {
+        SWAP_INTS(childMember[0], childMember[1]);
+        SWAP_INTS(childMarkerNodes[0], childMarkerNodes[2]);
+        SWAP_INTS(childMarkerNodes[1], childMarkerNodes[3]);
+      }
+
+      if (pathEndNodes[0] != childMarkerNodes[0] && pathEndNodes[0] != childMarkerNodes[1])
+        SWAP_INTS(pathEndNodes[0], pathEndNodes[1]);
+
+      TUdbgMsg(8 + 2*depth, "After swapping, we have a %d-%d-path as well as child markers {%d,%d} and {%d,%d}.\n",
+        pathEndNodes[0], pathEndNodes[1], childMarkerNodes[0], childMarkerNodes[1], childMarkerNodes[2], childMarkerNodes[3]);
+
+      assert(pathEndNodes[0] == childMarkerNodes[0] || pathEndNodes[0] == childMarkerNodes[1]);
+      TU_CALL( mergeMemberIntoParent(tu, tdec, childMember[0], pathEndNodes[0] == childMarkerNodes[1]) );
+      debugDot(tu, tdec, newcolumn);
+
+      TU_CALL( mergeMemberIntoParent(tu, tdec, childMember[1], pathEndNodes[1] == childMarkerNodes[3]) );
+      debugDot(tu, tdec, newcolumn);
     }
   }
   else
@@ -3294,25 +3326,39 @@ TU_ERROR addColumnProcessPrime(
     if (numOneEnd == 0 && numTwoEnds == 0)
     {
       assert(reducedMember->firstPathEdge);
-      assert(endNodes[0] >= 0);
+      assert(pathEndNodes[0] >= 0);
 
-      TU_CALL( addTerminal(tu, tdec, reducedComponent, member, endNodes[1]) );
-      if (parentMarkerNodes[0] == endNodes[0])
+      TU_CALL( addTerminal(tu, tdec, reducedComponent, member, pathEndNodes[1]) );
+      if (parentMarkerNodes[0] == pathEndNodes[0])
         flipEdge(tdec, tdec->members[member].markerToParent);
     }
     else
     {
       assert(numOneEnd == 1);
       
-      if (numEndNodes >= 2)
+      if (numPathEndNodes >= 2)
       {
+        TUdbgMsg(8 + 2*depth, "%d-%d-path with parent marker {%d,%d} and child marker {%d,%d}.\n", pathEndNodes[0],
+          pathEndNodes[1], parentMarkerNodes[0], parentMarkerNodes[1], childMarkerNodes[0], childMarkerNodes[1]);
+
+        /* Ensure that the child marker is incident to the path end node 1. */
+        if (pathEndNodes[1] != childMarkerNodes[0] && pathEndNodes[1] != childMarkerNodes[1])
+          SWAP_INTS(pathEndNodes[0], pathEndNodes[1]);
+        assert(pathEndNodes[1] == childMarkerNodes[0] || pathEndNodes[1] == childMarkerNodes[1]);
+        
         /* Flip parent if necessary. */
-        if (endNodes[0] == parentMarkerNodes[0])
+        if (pathEndNodes[0] == parentMarkerNodes[0])
+        {
           flipEdge(tdec, tdec->members[member].markerToParent);
+          SWAP_INTS(parentMarkerNodes[0], parentMarkerNodes[1]);
+        }
+
+        assert(pathEndNodes[0] == parentMarkerNodes[1]);
 
         /* Merge child. */
         TU_CALL( mergeMemberIntoParent(tu, tdec, findMember(tdec, tdec->edges[childMarkerEdges[0]].childMember),
-          endNodes[1] == childMarkerNodes[1]) );
+          pathEndNodes[1] == childMarkerNodes[1]) );
+        debugDot(tu, tdec, newcolumn);
       }
       else
       {
@@ -3901,9 +3947,9 @@ TU_ERROR addColumnProcessPolygon(
         newcolumn->edgesInPath[markerToParent] = true;
         TU_CALL( splitPolygon(tu, tdec, member, newcolumn->edgesInPath, false, &nonPathEdge, NULL, NULL) );
         newcolumn->edgesInPath[markerToParent] = false;
-        debugDot(tu, tdec, newcolumn);
       }
       assert(tdec->members[member].numEdges == 3);
+      debugDot(tu, tdec, newcolumn);
 
       /* We now create the nodes of the triangle so that the path leaves it via the parent marker edge's head node. */
 
