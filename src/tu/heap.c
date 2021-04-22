@@ -1,4 +1,5 @@
 // #define TU_DEBUG /* Uncomment to debug the heap. */
+// #define TU_DEBUG_HEAP_CONTENT /* Uncomment to print the whole heap after each operation. */
 
 #include "heap.h"
 
@@ -38,6 +39,26 @@ TU_ERROR TUintheapClearStack(TU* tu, TU_INTHEAP* heap)
   return TU_OKAY;
 }
 
+#if defined(TU_DEBUG_HEAP_CONTENT)
+static
+void debugHeap(TU_INTHEAP* heap)
+{
+  printf("                    Heap:");
+  for (int i = 0; i < heap->size; ++i)
+  {
+    printf(" %d:%d->%d", i, heap->data[i], heap->values[heap->data[i]]);
+  }
+  printf("\n");
+  fflush(stdout);
+}
+#else
+static inline
+void debugHeap(TU_INTHEAP* heap)
+{
+  
+}
+#endif /* TU_DEBUG_HEAP_CONTENT */
+
 TU_ERROR TUintheapInsert(TU_INTHEAP* heap, int key, int value)
 {
   assert(heap);
@@ -45,7 +66,7 @@ TU_ERROR TUintheapInsert(TU_INTHEAP* heap, int key, int value)
   assert(key < heap->memKeys);
   assert(heap->size < heap->memKeys);
 
-  TUdbgMsg(10, "Inserting entry %d->%d.\n", key, value);
+  TUdbgMsg(20, "Heap insert: %d->%d.\n", key, value);
 
   heap->data[heap->size] = key;
   heap->positions[key] = heap->size;
@@ -74,6 +95,8 @@ TU_ERROR TUintheapInsert(TU_INTHEAP* heap, int key, int value)
 
   ++heap->size;
 
+  debugHeap(heap);
+
   return TU_OKAY;
 }
 
@@ -84,7 +107,7 @@ TU_ERROR TUintheapDecrease(TU_INTHEAP* heap, int key, int newValue)
 
   int currentKey = key;
   int current = heap->positions[currentKey];
-  TUdbgMsg(10, "Decreasing entry %d->%d to %d->%d.\n", key, heap->values[currentKey], key, newValue);
+  TUdbgMsg(20, "Heap decrease: %d->%d to %d->%d.\n", key, heap->values[currentKey], key, newValue);
   heap->values[currentKey] = newValue;
   int currentValue = newValue;
   while (current > 0)
@@ -106,6 +129,8 @@ TU_ERROR TUintheapDecrease(TU_INTHEAP* heap, int key, int newValue)
     currentValue = parentValue;
   }
 
+  debugHeap(heap);
+
   return TU_OKAY;
 }
 
@@ -115,7 +140,7 @@ TU_ERROR TUintheapDecreaseInsert(TU_INTHEAP* heap, int key, int newValue)
   assert(key >= 0);
   assert(key < heap->memKeys);
 
-  TUdbgMsg(10, "Decrease-inserting entry %d->%d.\n", key, newValue);
+  TUdbgMsg(20, "Heap decrease-insert: %d->%d.\n", key, newValue);
 
   int currentKey = key;
   int current;
@@ -132,14 +157,14 @@ TU_ERROR TUintheapDecreaseInsert(TU_INTHEAP* heap, int key, int newValue)
   }
   heap->values[currentKey] = newValue;
   int currentValue = newValue;
-  TUdbgMsg(12, "Initial entry %d is %d->%d.\n", current, currentKey, currentValue);
+  TUdbgMsg(22, "Initial is %d:%d->%d.\n", current, currentKey, currentValue);
   
   while (current > 0)
   {
     int parent = (current-1) / 2;
     int parentKey = heap->data[parent];
     int parentValue = heap->values[parentKey];
-    TUdbgMsg(12, "Parent: %d->%d (compared to value %d).\n", parentKey, parentValue, currentValue);
+    TUdbgMsg(22, "Parent: %d:%d->%d, child value: %d.\n", parent, parentKey, parentValue, currentValue);
     if (parentValue <= currentValue)
       break;
 
@@ -150,6 +175,8 @@ TU_ERROR TUintheapDecreaseInsert(TU_INTHEAP* heap, int key, int newValue)
     heap->data[current]  = parentKey;
     current = parent;
   }
+
+  debugHeap(heap);
 
   return TU_OKAY;
 }
@@ -164,7 +191,7 @@ int TUintheapExtractMinimum(TU_INTHEAP* heap)
   heap->positions[heap->data[0]] = 0;
   --heap->size;
   
-  TUdbgMsg(10, "Extracting %d->%d.\n", extracted, heap->values[extracted]);
+  TUdbgMsg(20, "Heap extract: %d->%d.\n", extracted, heap->values[extracted]);
 
   int current = 0;
   int currentKey = heap->data[0];
@@ -182,28 +209,31 @@ int TUintheapExtractMinimum(TU_INTHEAP* heap)
       if (currentValue <= leftValue)
         break;
 
+      TUdbgMsg(22, "Swapping %d:%d->%d with left child %d:%d->%d.\n", current, currentKey, currentValue, left, leftKey,
+        leftValue);
       heap->positions[leftKey] = current;
       heap->positions[currentKey] = left;
       heap->data[current] = leftKey;
       heap->data[left] = currentKey;
       current = left;
-      currentKey = leftKey;
-      currentValue = leftValue;
     }
     else
     {
       if (currentValue <= rightValue)
         break;
 
+      TUdbgMsg(22, "Swapping %d:%d->%d with right child %d:%d->%d.\n", current, currentKey, currentValue, right, rightKey,
+        rightValue);
+
       heap->positions[rightKey] = current;
       heap->positions[currentKey] = right;
       heap->data[current] = rightKey;
       heap->data[right] = currentKey;
       current = right;
-      currentKey = rightKey;
-      currentValue = rightValue;
     }
   }
+
+  debugHeap(heap);
   
   return extracted;
 }

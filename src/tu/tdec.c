@@ -1,6 +1,6 @@
 #define TU_DEBUG /* Uncomment to enable general debugging. */
 // #define TU_DEBUG_SPLITTING /* Uncomment to enable debug output for splitting of polygons. */
-#define TU_DEBUG_DOT /* Uncomment to output dot files after modifications of the t-decomposition. */
+// #define TU_DEBUG_DOT /* Uncomment to output dot files after modifications of the t-decomposition. */
 
 // TODO: Refactor replacement of an edge by another one.
 // TODO: Refactor creation of a pair of marker edges instead of one.
@@ -2080,8 +2080,8 @@ TU_ERROR determineTypePrime(
     childMarkerEdges[1] < 0 ? -1 : findEdgeHead(tdec, childMarkerEdges[1])
   };
 
-  TU_TDEC_NODE* endNodes = reducedMember->primeEndNodes;
-  int numEndNodes = 0;
+  TU_TDEC_NODE* pathEndNodes = reducedMember->primeEndNodes;
+  int numPathEndNodes = 0;
 
   /* Check the node degrees (with respect to path edges) in this component. */
   for (PathEdge* reducedEdge = reducedMember->firstPathEdge; reducedEdge; reducedEdge = reducedEdge->next)
@@ -2099,16 +2099,16 @@ TU_ERROR determineTypePrime(
 
       if (newcolumn->nodesDegree[v] == 1)
       {
-        if (numEndNodes == 4)
+        if (numPathEndNodes == 4)
         {
           TUdbgMsg(6 + 2*depth, "Prime member %d has at least five path end nodes: %d, %d, %d, %d and %d.\n",
-            reducedMember->member, endNodes[0], endNodes[1], endNodes[2], endNodes[3], v);
+            reducedMember->member, pathEndNodes[0], pathEndNodes[1], pathEndNodes[2], pathEndNodes[3], v);
           newcolumn->remainsGraphic = false;
           return TU_OKAY;
         }
 
-        endNodes[numEndNodes] = v;
-        ++numEndNodes;
+        pathEndNodes[numPathEndNodes] = v;
+        ++numPathEndNodes;
       }
     }
   }
@@ -2118,7 +2118,7 @@ TU_ERROR determineTypePrime(
    * For each path, parent marker nodes should come first (i.e., index 0 and 2).
    */
 
-  if (numEndNodes == 4)
+  if (numPathEndNodes == 4)
   {
     TU_TDEC_EDGE* nodeEdges = NULL;
     TUallocStackArray(tu, &nodeEdges, 2*tdec->memNodes);
@@ -2148,7 +2148,7 @@ TU_ERROR determineTypePrime(
 
     /* Start at end node 0 and see where we end. */
     TU_TDEC_EDGE previousEdge = -1;
-    TU_TDEC_NODE currentNode = endNodes[0];
+    TU_TDEC_NODE currentNode = pathEndNodes[0];
     while (true)
     {
       TU_TDEC_EDGE edge = nodeEdges[2*currentNode];
@@ -2163,49 +2163,51 @@ TU_ERROR determineTypePrime(
     TUfreeStackArray(tu, &nodeEdges);
 
     /* Exchange such that we end nodes 0 and 1 are end nodes of the same path. */
-    if (currentNode == endNodes[2])
+    if (currentNode == pathEndNodes[2])
     {
-      endNodes[2] = endNodes[1];
-      endNodes[1] = currentNode;
+      pathEndNodes[2] = pathEndNodes[1];
+      pathEndNodes[1] = currentNode;
     }
-    else if (currentNode == endNodes[3])
+    else if (currentNode == pathEndNodes[3])
     {
-      endNodes[3] = endNodes[1];
-      endNodes[1] = currentNode;
+      pathEndNodes[3] = pathEndNodes[1];
+      pathEndNodes[1] = currentNode;
     }
 
     /* Exchange such that end node 2 is at the parent marker. */
-    if (endNodes[2] != parentMarkerNodes[0] && endNodes[2] != parentMarkerNodes[1])
-      SWAP_INTS(endNodes[2], endNodes[3]);
+    if (pathEndNodes[2] != parentMarkerNodes[0] && pathEndNodes[2] != parentMarkerNodes[1])
+      SWAP_INTS(pathEndNodes[2], pathEndNodes[3]);
   }
 
   /* Exchange such that end node 0 is at the parent marker. */
-  if (numEndNodes >= 2 && endNodes[0] != parentMarkerNodes[0] && endNodes[0] != parentMarkerNodes[1])
+  if (numPathEndNodes >= 2 && pathEndNodes[0] != parentMarkerNodes[0] && pathEndNodes[0] != parentMarkerNodes[1])
   {
-    SWAP_INTS(endNodes[0], endNodes[1]);
+    SWAP_INTS(pathEndNodes[0], pathEndNodes[1]);
   }
 
-  TUdbgMsg(6 + 2*depth, "Prime %smember %d has %d path end nodes:", depth == 0 ? "root " : "", member, numEndNodes);
-  if (numEndNodes >= 2)
-    TUdbgMsg(0, " a path from %d to %d.", endNodes[0], endNodes[1]);
-  if (numEndNodes == 4)
-    TUdbgMsg(0, " a path from %d to %d.", endNodes[0], endNodes[1]);
+  TUdbgMsg(6 + 2*depth, "Prime %smember %d has %d path end nodes:", depth == 0 ? "root " : "", member, numPathEndNodes);
+  if (numPathEndNodes >= 2)
+    TUdbgMsg(0, " a path from %d to %d.", pathEndNodes[0], pathEndNodes[1]);
+  if (numPathEndNodes == 4)
+    TUdbgMsg(0, " a path from %d to %d.", pathEndNodes[0], pathEndNodes[1]);
   TUdbgMsg(0, "\n");
 
   if (depth == 0)
   {
-    if (numEndNodes == 0)
+    if (numPathEndNodes == 0)
     {
+      TUdbgMsg(6 + 2*depth, "Root without paths. Child markers are {%d,%d} and {%d,%d}.\n", childMarkerNodes[0], childMarkerNodes[1],
+        childMarkerNodes[2], childMarkerNodes[3]);
       /* No path edges, so there should be two adjacent child marker edges. */
       if (numOneEnd == 2 && (childMarkerNodes[0] == childMarkerNodes[2] || childMarkerNodes[0] == childMarkerNodes[3]
-          || childMarkerNodes[1] == childMarkerNodes[2] || childMarkerNodes[2] == childMarkerNodes[3]))
+          || childMarkerNodes[1] == childMarkerNodes[2] || childMarkerNodes[1] == childMarkerNodes[3]))
       {
         reducedMember->type = TYPE_5_ROOT;
       }
       else
         newcolumn->remainsGraphic = false;
     }
-    else if (numEndNodes == 2)
+    else if (numPathEndNodes == 2)
     {
       if (numOneEnd == 1)
       {
@@ -2214,7 +2216,7 @@ TU_ERROR determineTypePrime(
         {
           for (int j = 0; j < 2; ++j)
           {
-            if (endNodes[i] == childMarkerNodes[j])
+            if (pathEndNodes[i] == childMarkerNodes[j])
             {
               pathAdjacentToChildMarker = true;
               break;
@@ -2253,8 +2255,8 @@ TU_ERROR determineTypePrime(
         assert(numOneEnd == 0);
         assert(numTwoEnds == 1);
 
-        if ((childMarkerNodes[0] == endNodes[0] && childMarkerNodes[1] == endNodes[1])
-          || (childMarkerNodes[0] == endNodes[1] && childMarkerNodes[1] == endNodes[0]))
+        if ((childMarkerNodes[0] == pathEndNodes[0] && childMarkerNodes[1] == pathEndNodes[1])
+          || (childMarkerNodes[0] == pathEndNodes[1] && childMarkerNodes[1] == pathEndNodes[0]))
         {
           reducedMember->type = TYPE_5_ROOT;
         }
@@ -2266,7 +2268,7 @@ TU_ERROR determineTypePrime(
     }
     else
     {
-      assert(numEndNodes == 4);
+      assert(numPathEndNodes == 4);
       newcolumn->remainsGraphic = false;
     }
   }
@@ -2279,7 +2281,7 @@ TU_ERROR determineTypePrime(
       newcolumn->nodesDegree[parentMarkerNodes[1]]
     };
 
-    if (numEndNodes == 0)
+    if (numPathEndNodes == 0)
     {
       /* We have no path edges, so there must be at least one child containing one/two path ends. */
       assert(numOneEnd + numTwoEnds > 0);
@@ -2334,29 +2336,29 @@ TU_ERROR determineTypePrime(
           newcolumn->remainsGraphic = false;
       }
     }
-    else if (numEndNodes == 2)
+    else if (numPathEndNodes == 2)
     {
-      /* Exchange such that end node 0 is at the parent marker. */
-      if (endNodes[0] != parentMarkerNodes[0] && endNodes[0] != parentMarkerNodes[1])
-        SWAP_INTS(endNodes[0], endNodes[0]);
+      /* Exchange such that end node 0 is at the parent marker (or none of the end nodes is). */
+      if (pathEndNodes[0] != parentMarkerNodes[0] && pathEndNodes[0] != parentMarkerNodes[1])
+        SWAP_INTS(pathEndNodes[0], pathEndNodes[0]);
 
       if (numOneEnd == 1)
       {
-        TUdbgMsg(6 + 2*depth, "%d-%d-path, parent {%d,%d} and child {%d,%d}\n", endNodes[0], endNodes[1],
+        TUdbgMsg(6 + 2*depth, "%d-%d-path, parent {%d,%d} and child {%d,%d}\n", pathEndNodes[0], pathEndNodes[1],
           parentMarkerNodes[0], parentMarkerNodes[1], childMarkerNodes[0], childMarkerNodes[1]);
 
-        if (parentMarkerNodes[0] != endNodes[0])
+        if (parentMarkerNodes[0] != pathEndNodes[0])
         {
           SWAP_INTS(parentMarkerNodes[0], parentMarkerNodes[1]);
           SWAP_INTS(parentMarkerDegrees[0], parentMarkerDegrees[1]);
         }
-        if (parentMarkerNodes[0] != endNodes[0])
+        if (parentMarkerNodes[0] != pathEndNodes[0])
         {
           newcolumn->remainsGraphic = false;
           return TU_OKAY;
         }
 
-        if (parentMarkerNodes[1] == endNodes[1])
+        if (parentMarkerNodes[1] == pathEndNodes[1])
         {
           /* Path closes a cycle with parent marker edge. */
           if (childMarkerNodes[0] == parentMarkerNodes[0] || childMarkerNodes[0] == parentMarkerNodes[1]
@@ -2372,7 +2374,7 @@ TU_ERROR determineTypePrime(
         else
         {
           /* Path end is not incident to parent marker edge. */
-          if (childMarkerNodes[0] == endNodes[1] || childMarkerNodes[1] == endNodes[1])
+          if (childMarkerNodes[0] == pathEndNodes[1] || childMarkerNodes[1] == pathEndNodes[1])
           {
             reducedMember->type = TYPE_3_EXTENSION;
           }
@@ -2388,10 +2390,15 @@ TU_ERROR determineTypePrime(
       }
       else if (numOneEnd == 2)
       {
-        TU_TDEC_NODE otherParentNode = -1;
-        if (endNodes[0] == parentMarkerNodes[0])
+        TUdbgMsg(6 + 2*depth, "%d-%d-path, parent marker {%d,%d} and child markers {%d,%d} and {%d,%d}\n",
+          pathEndNodes[0], pathEndNodes[1], parentMarkerNodes[0], parentMarkerNodes[1], childMarkerNodes[0],
+          childMarkerNodes[1], childMarkerNodes[2], childMarkerNodes[3]);
+        
+        /* We know that pathEndNodes[0] is incident to the parent marker. */
+        TU_TDEC_NODE otherParentNode;
+        if (pathEndNodes[0] == parentMarkerNodes[0])
           otherParentNode = parentMarkerNodes[1];
-        else if (endNodes[0] == parentMarkerNodes[1])
+        else if (pathEndNodes[0] == parentMarkerNodes[1])
           otherParentNode = parentMarkerNodes[0];
         else
         {
@@ -2399,15 +2406,31 @@ TU_ERROR determineTypePrime(
           return TU_OKAY;
         }
 
-        bool matched[4] = {
-          childMarkerNodes[0] == endNodes[1] || childMarkerNodes[0] == otherParentNode,
-          childMarkerNodes[1] == endNodes[1] || childMarkerNodes[1] == otherParentNode,
-          endNodes[1] == childMarkerNodes[0] || endNodes[1] == childMarkerNodes[1]
-            || endNodes[1] == childMarkerNodes[2] || endNodes[1] == childMarkerNodes[3],
-          otherParentNode == childMarkerNodes[0] || otherParentNode == childMarkerNodes[1]
-            || otherParentNode == childMarkerNodes[2] || otherParentNode == childMarkerNodes[3]
-        };
-        if (matched[0] && matched[1] && matched[2] && matched[3])
+        /* Two 1-ends and a path that closes a cycle with the parent marker is only allowed for root members. */
+        if (pathEndNodes[1] == otherParentNode)
+        {
+          newcolumn->remainsGraphic = false;
+          return TU_OKAY;
+        }
+
+        bool childMatched[2] = { false, false };
+        bool pathEndMatched = false;
+        bool otherParentMatched = false;
+        for (int i = 0; i < 4; ++i)
+        {
+          if (childMarkerNodes[i] == pathEndNodes[1])
+          {
+            childMatched[i/2] = true;
+            pathEndMatched = true;
+          }
+          if (childMarkerNodes[i] == otherParentNode)
+          {
+            childMatched[i/2] = true;
+            otherParentMatched = true;
+          }
+        }
+
+        if (childMatched[0] && childMatched[1] && pathEndMatched && otherParentMatched)
         {
           reducedMember->type = TYPE_4_CONNECTS_TWO_PATHS;
         }
@@ -2440,14 +2463,14 @@ TU_ERROR determineTypePrime(
       {
         assert(numTwoEnds == 1);
 
-        if ((endNodes[0] == parentMarkerNodes[0] && parentMarkerNodes[1] == childMarkerNodes[0]
-          && childMarkerNodes[1] == endNodes[1])
-          || (endNodes[0] == parentMarkerNodes[0] && parentMarkerNodes[1] == childMarkerNodes[1]
-          && childMarkerNodes[0] == endNodes[1])
-          || (endNodes[0] == parentMarkerNodes[1] && parentMarkerNodes[0] == childMarkerNodes[0]
-          && childMarkerNodes[1] == endNodes[1])
-          || (endNodes[0] == parentMarkerNodes[1] && parentMarkerNodes[0] == childMarkerNodes[1]
-          && childMarkerNodes[0] == endNodes[1]))
+        if ((pathEndNodes[0] == parentMarkerNodes[0] && parentMarkerNodes[1] == childMarkerNodes[0]
+          && childMarkerNodes[1] == pathEndNodes[1])
+          || (pathEndNodes[0] == parentMarkerNodes[0] && parentMarkerNodes[1] == childMarkerNodes[1]
+          && childMarkerNodes[0] == pathEndNodes[1])
+          || (pathEndNodes[0] == parentMarkerNodes[1] && parentMarkerNodes[0] == childMarkerNodes[0]
+          && childMarkerNodes[1] == pathEndNodes[1])
+          || (pathEndNodes[0] == parentMarkerNodes[1] && parentMarkerNodes[0] == childMarkerNodes[1]
+          && childMarkerNodes[0] == pathEndNodes[1]))
         {
           reducedMember->type = TYPE_4_CONNECTS_TWO_PATHS;
         }
@@ -2457,7 +2480,7 @@ TU_ERROR determineTypePrime(
         }
       }
     }
-    else if (numEndNodes == 4)
+    else if (numPathEndNodes == 4)
     {
       if (reducedMember->primeEndNodes[0] != parentMarkerNodes[0] && reducedMember->primeEndNodes[0] != parentMarkerNodes[1])
       {
@@ -2616,8 +2639,8 @@ TU_ERROR determineTypes(
       childMarkerEdges, depth) );
   }
 
-  TUdbgMsg(6 + 2*depth, "Determined type %d.\n", reducedMember->type);
-
+  TUdbgMsg(6 + 2*depth, "Determined type %d (%s).\n", reducedMember->type, newcolumn->remainsGraphic ? "graphic" : "non-graphic");
+  
   /* Parent marker edge closes cycle, so we propagate information to parent. */
 
   if (!isRoot && reducedMember->type == TYPE_1_CLOSES_CYCLE)
@@ -2677,6 +2700,8 @@ TU_ERROR TUtdecAddColumnCheck(TU* tu, TU_TDEC* tdec, TU_TDEC_NEWCOLUMN* newcolum
   {
     TU_CALL( determineTypes(tu, tdec, newcolumn, &newcolumn->reducedComponents[i],
       newcolumn->reducedComponents[i].root, 0) );
+    
+    TUdbgMsg(6, "After inspecting reduced component %d, graphic = %d.\n", i, newcolumn->remainsGraphic);
   }
 
   if (newcolumn->remainsGraphic)
@@ -3280,7 +3305,7 @@ TU_ERROR addColumnProcessPrime(
       int numIncidentPathNodes[2] = { 0, 0 };
       for (int c = 0; c < 2; ++c)
       {
-        for (int i = 0; i < 2; ++i)
+        for (int i = 0; i < numPathEndNodes; ++i)
         {
           for (int j = 0; j < 2; ++j)
           {
@@ -3293,9 +3318,6 @@ TU_ERROR addColumnProcessPrime(
         "Child marker %d = {%d,%d} has %d incident path end nodes and child marker %d = {%d,%d} has %d.\n",
         childMarkerEdges[0], childMarkerNodes[0], childMarkerNodes[1], numIncidentPathNodes[0], childMarkerEdges[1],
         childMarkerNodes[2], childMarkerNodes[3], numIncidentPathNodes[1]);
-      assert(numIncidentPathNodes[0] >= 1);
-      assert(numIncidentPathNodes[1] >= 1);
-      assert(numIncidentPathNodes[0] + numIncidentPathNodes[1] <= 3);
 
       /* If a child marker is incident to both path ends, then we ensure it is the second one. */
       if (numIncidentPathNodes[0] == 2)
@@ -3303,6 +3325,79 @@ TU_ERROR addColumnProcessPrime(
         SWAP_INTS(childMember[0], childMember[1]);
         SWAP_INTS(childMarkerNodes[0], childMarkerNodes[2]);
         SWAP_INTS(childMarkerNodes[1], childMarkerNodes[3]);
+      }
+      
+      /* Check if the two child markers are parallel. We then create a bond with the two. */
+      if ((childMarkerNodes[0] == childMarkerNodes[2] && childMarkerNodes[1] == childMarkerNodes[3])
+        || (childMarkerNodes[0] == childMarkerNodes[3] && childMarkerNodes[1] == childMarkerNodes[2]))
+      {
+        TUdbgMsg(8, "Moving child marker edges %d = {%d,%d} and %d = {%d,%d} to a new bond.\n", childMarkerEdges[0],
+          childMarkerNodes[0], childMarkerNodes[1], childMarkerEdges[1], childMarkerNodes[2], childMarkerNodes[3]);
+
+        TU_TDEC_MEMBER newBond = -1;
+        TU_CALL( createMember(tu, tdec, TDEC_MEMBER_TYPE_BOND, &newBond) );
+        tdec->members[newBond].parentMember = member;
+        tdec->members[childMember[0]].parentMember = newBond;
+        tdec->members[childMember[1]].parentMember = newBond;
+
+        TU_TDEC_EDGE markerOfParent;
+        TU_CALL( createMarkerEdge(tu, tdec, &markerOfParent, member, childMarkerNodes[0], childMarkerNodes[1],
+          true) );
+        tdec->edges[markerOfParent].tail = childMarkerNodes[0];
+        tdec->edges[markerOfParent].head = childMarkerNodes[1];
+        tdec->edges[markerOfParent].childMember = newBond;
+        tdec->edges[markerOfParent].next = tdec->edges[childMarkerEdges[0]].next;
+        tdec->edges[markerOfParent].prev = tdec->edges[childMarkerEdges[0]].prev;
+        tdec->edges[tdec->edges[markerOfParent].next].prev = markerOfParent;
+        tdec->edges[tdec->edges[markerOfParent].prev].next = markerOfParent;
+        if (tdec->members[member].firstEdge == childMarkerEdges[0])
+          tdec->members[member].firstEdge = markerOfParent;
+        tdec->members[newBond].markerOfParent = markerOfParent;
+        tdec->edges[childMarkerEdges[0]].tail = -1;
+        tdec->edges[childMarkerEdges[0]].head = -1;
+        tdec->edges[childMarkerEdges[1]].tail = -1;
+        tdec->edges[childMarkerEdges[1]].head = -1;
+
+        TU_TDEC_EDGE markerToParent;
+        TU_CALL( createMarkerEdge(tu, tdec, &markerToParent, newBond, -1, -1, false) );
+        TU_CALL( addEdgeToMembersEdgeList(tu, tdec, markerToParent, newBond) );
+        tdec->members[newBond].markerToParent = markerToParent;
+        tdec->numMarkers++;
+
+        tdec->edges[childMarkerEdges[0]].member = newBond;
+        TU_CALL( addEdgeToMembersEdgeList(tu, tdec, childMarkerEdges[0], newBond) );
+        TU_CALL( removeEdgeFromMembersEdgeList(tu, tdec, childMarkerEdges[1], member) );
+        tdec->edges[childMarkerEdges[1]].member = newBond;
+        TU_CALL( addEdgeToMembersEdgeList(tu, tdec, childMarkerEdges[1], newBond) );
+
+        debugDot(tu, tdec, newcolumn);
+
+        /* We have to merge in the bond. */
+        TU_CALL( createBondNodes(tu, tdec, newBond) );
+        TU_CALL( mergeMemberIntoParent(tu, tdec, tdec->edges[childMarkerEdges[0]].childMember, true) );
+        /* If there is no path, then we merge heads to heads. Otherwise, one head is mapped to tail, such that the path
+         * is used. */
+        TU_CALL( mergeMemberIntoParent(tu, tdec, tdec->edges[childMarkerEdges[1]].childMember, numPathEndNodes == 0) );
+
+        debugDot(tu, tdec, newcolumn);
+
+        return TU_OKAY;
+      }
+
+      if (numPathEndNodes == 0)
+      {
+        /* We fake existence of a path by setting both path end nodes to the node common to both child markers. */
+        if (childMarkerNodes[0] == childMarkerNodes[2] || childMarkerNodes[0] == childMarkerNodes[3])
+        {
+          pathEndNodes[0] = childMarkerNodes[0];
+          pathEndNodes[1] = childMarkerNodes[0];
+        }
+        else
+        {
+          assert(childMarkerNodes[1] == childMarkerNodes[2] || childMarkerNodes[1] == childMarkerNodes[3]);
+          pathEndNodes[0] = childMarkerNodes[1];
+          pathEndNodes[1] = childMarkerNodes[1];
+        }
       }
 
       if (pathEndNodes[0] != childMarkerNodes[0] && pathEndNodes[0] != childMarkerNodes[1])
