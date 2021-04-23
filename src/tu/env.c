@@ -1,4 +1,6 @@
-// #define DEBUG_STACK /** Uncomment to debug TUallocStack and TUfreeStack. */
+// #define TU_DEBUG /* Uncomment for general debugging. */
+// #define DEBUG_STACK /* Uncomment to debug TUallocStack and TUfreeStack. */
+// #define REPLACE_STACK_BY_MALLOC /* Uncomment to not use a stack at all, which may help to detect memory corruption. */
 
 #include "env_internal.h"
 
@@ -11,7 +13,7 @@
 static const size_t FIRST_STACK_SIZE = 4096L; /**< Size of the first stack. */
 static const int INITIAL_MEM_STACKS = 16;     /**< Initial number of allocated stacks. */
 
-#if !defined(NDEBUG)
+#if !defined(NDEBUG) && !defined(REPLACE_STACK_BY_MALLOC)
 static const int PROTECTION = INT_MIN / 42;   /**< Protection bytes to detect corruption. */
 #endif /* !NDEBUG */
 
@@ -124,10 +126,57 @@ TU_ERROR _TUfreeBlockArray(TU* tu, void** ptr)
   return TU_OKAY;
 }
 
+#if defined(REPLACE_STACK_BY_MALLOC)
+
+TU_ERROR _TUallocStack(
+  TU* tu,
+  void** ptr,
+  size_t size
+)
+{
+  assert(tu);
+  assert(ptr);
+
+  /* Avoid allocation of zero bytes. */
+  if (size < 4)
+    size = 4;
+
+  *ptr = malloc(size);
+
+  return *ptr ? TU_OKAY : TU_ERROR_MEMORY;
+}
+
+TU_ERROR _TUfreeStack(
+  TU* tu,
+  void** ptr
+)
+{
+  assert(tu);
+  assert(ptr);
+  assert(*ptr);
+
+  free(*ptr);
+
+  return TU_OKAY;
+}
+
+void TUassertStackConsistency(
+  TU* tu
+)
+{
+
+}
+
+#else
+
 #define STACK_SIZE(k) \
   (FIRST_STACK_SIZE << k)
 
-TU_ERROR _TUallocStack(TU* tu, void** ptr, size_t size)
+TU_ERROR _TUallocStack(
+  TU* tu,
+  void** ptr,
+  size_t size
+)
 {
   assert(tu);
   assert(ptr);
@@ -141,7 +190,7 @@ TU_ERROR _TUallocStack(TU* tu, void** ptr, size_t size)
 #if !defined(NDEBUG)
   requiredSpace += sizeof(int);
 #endif /* !NDEBUG */
-  
+
 #if defined(DEBUG_STACK)
   printf("TUallocStack() called for %ld bytes; current stack: %ld, numStacks: %ld, memStack: %ld.\n",
     size, tu->currentStack, tu->numStacks, tu->memStacks);
@@ -203,6 +252,7 @@ TU_ERROR _TUfreeStack(TU* tu, void** ptr)
   assert(*ptr);
 
   TU_STACK* stack = &tu->stacks[tu->currentStack];
+  TUdbgMsg(0, "TUfreeStack called for pointer %p. Last stack is %d.\n", *ptr, tu->currentStack);
   size_t size = *((size_t*) &stack->memory[stack->top]);
 
 #if defined(DEBUG_STACK)
@@ -218,6 +268,7 @@ TU_ERROR _TUfreeStack(TU* tu, void** ptr)
   {
     fprintf(stderr, "Memory corruption of stack detected!\n");
     fflush(stderr);
+    assert(false);
   }
 #endif /* !NDEBUG */
 
@@ -237,12 +288,45 @@ TU_ERROR _TUfreeStack(TU* tu, void** ptr)
   stack->top += sizeof(int);
 #endif /* !NDEBUG */
 
-  if (stack->top == (FIRST_STACK_SIZE << tu->currentStack) && tu->currentStack > 0)
+  while (stack->top == (FIRST_STACK_SIZE << tu->currentStack) && tu->currentStack > 0)
+  {
     --tu->currentStack;
+    stack = &tu->stacks[tu->currentStack];
+  }
   *ptr = NULL;
 
   return TU_OKAY;
 }
+
+void TUassertStackConsistency(
+  TU* tu
+)
+{
+  assert(tu);
+
+#if !defined(NDEBUG)
+  for (int s = 0; s <= tu->currentStack; ++s)
+  {
+    TU_STACK* stack = &tu->stacks[s];
+
+    void* ptr = &stack->memory[stack->top];
+    TUdbgMsg(2, "Stack %d of size %d has memory range [%p,%p). top is %p\n", s, STACK_SIZE(s), stack->memory,
+      stack->memory + STACK_SIZE(s), ptr);
+    while (ptr < (void*)stack->memory + STACK_SIZE(s))
+    {
+      TUdbgMsg(4, "pointer is %p.", ptr);
+      size_t size = *((size_t*) ptr);
+      TUdbgMsg(0, " It indicates a chunk of size %d.\n", size);
+      ptr += sizeof(size_t*);
+      assert(*((int*)ptr) == PROTECTION);
+      ptr += size + sizeof(int);
+    }
+  }
+
+#endif /* !NDEBUG */
+}
+
+#endif /* REPLACE_STACK_BY_MALLOC */
 
 char* TUconsistencyMessage(const char* format, ...)
 {

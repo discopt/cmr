@@ -104,6 +104,31 @@ TU_ERROR _TUfreeStack(
 #define TUfreeStackArray(tu, ptr) \
   _TUfreeStack(tu, (void**) ptr)
 
+#if !defined(NDEBUG)
+
+/**
+ * \brief Checks stack protection fields for corruption. 
+ *
+ * Useful for debugging memory errors.
+ */
+
+void TUassertStackConsistency(
+  TU* tu  /**< \ref TU environment. */
+);
+
+#else
+
+static inline
+void TUassertStackConsistency(
+  TU* tu  /**< \ref TU environment. */
+)
+{
+  assert(tu);
+}
+
+
+#endif /* !NDEBUG */
+  
 char* TUconsistencyMessage(const char* format, ...);
 
 #if !defined(NDEBUG)

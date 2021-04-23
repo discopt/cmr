@@ -220,9 +220,12 @@ TU_ERROR TUconvertGraphToBinaryMatrix(TU* tu, TU_GRAPH* graph, TU_CHRMAT** pmatr
   assert(!*pmatrix);
   assert(numBasisEdges == 0 || basisEdges);
   assert(numCobasisEdges == 0 || cobasisEdges);
+  TUassertStackConsistency(tu);
 
-  NodeData* nodeData = NULL;
+  NodeData* nodeData = NULL;  
+  
   TU_CALL( TUallocStackArray(tu, &nodeData, TUgraphMemNodes(graph)) );
+  
   TU_INTHEAP heap;
   TU_CALL( TUintheapInitStack(tu, &heap, TUgraphMemNodes(graph)) );
   int* lengths = NULL;
@@ -244,6 +247,8 @@ TU_ERROR TUconvertGraphToBinaryMatrix(TU* tu, TU_GRAPH* graph, TU_CHRMAT** pmatr
       TUgraphEdgeV(graph, basisEdges[b]));
     lengths[basisEdges[b]] = 0;
   }
+
+  TUassertStackConsistency(tu);
 
   /* Start Dijkstra's algorithm at each node. */
   int countComponents = 0;
@@ -289,6 +294,7 @@ TU_ERROR TUconvertGraphToBinaryMatrix(TU* tu, TU_GRAPH* graph, TU_CHRMAT** pmatr
     }
   }
 
+  TUassertStackConsistency(tu);
   TU_CALL( TUfreeStackArray(tu, &lengths) );
   TU_CALL( TUintheapClearStack(tu, &heap) );
 
@@ -337,6 +343,8 @@ TU_ERROR TUconvertGraphToBinaryMatrix(TU* tu, TU_GRAPH* graph, TU_CHRMAT** pmatr
       }
     }
   }
+
+  TUassertStackConsistency(tu);
 
   TU_CHRMAT* transposed = NULL;
   TU_CALL( TUchrmatCreate(tu, &transposed, TUgraphNumEdges(graph) - numRows, numRows,
@@ -434,6 +442,8 @@ TU_ERROR TUconvertGraphToBinaryMatrix(TU* tu, TU_GRAPH* graph, TU_CHRMAT** pmatr
     ++numColumns;
   }
 
+  TUassertStackConsistency(tu);
+
   TU_CALL( TUfreeStackArray(tu, &vPath) );
   TU_CALL( TUfreeStackArray(tu, &uPath) );
   TU_CALL( TUfreeStackArray(tu, &edgeColumns) );
@@ -451,8 +461,12 @@ TU_ERROR TUconvertGraphToBinaryMatrix(TU* tu, TU_GRAPH* graph, TU_CHRMAT** pmatr
 
   /* We now process the nonbasic edges. */
 
+  TUassertStackConsistency(tu);
   TU_CALL( TUfreeStackArray(tu, &nodesRows) );
+  TUassertStackConsistency(tu);
   TU_CALL( TUfreeStackArray(tu, &nodeData) );
+
+  TUassertStackConsistency(tu);
 
   return TU_OKAY;
 }
