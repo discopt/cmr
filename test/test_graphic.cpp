@@ -91,20 +91,23 @@ void testMatrix(
   ASSERT_TU_CALL( TUgraphFree(tu, &graph) );
 }
 
-
 TEST(Graphic, Specific)
 {
   TU* tu = NULL;
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
   
   TU_CHRMAT* A = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "6 5 "
-"1 1 0 0 0 "
-"0 1 1 1 1 "
-"0 0 1 0 0 "
-"1 0 1 1 1 "
-"0 0 1 0 1 "
-"0 0 0 1 1 "
+  ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "10 19 "
+"0 0 0 0 1 1 0 0 1 0 0 1 1 1 0 1 1 0 1 "
+"0 0 0 1 1 1 0 0 0 0 0 1 1 1 0 0 0 0 0 "
+"0 0 0 0 1 1 1 0 0 0 0 1 0 1 0 1 1 0 1 "
+"0 0 0 0 0 0 1 0 1 0 0 0 1 0 0 0 0 0 0 "
+"0 0 0 0 0 0 0 0 0 1 0 0 0 0 1 0 0 0 0 "
+"0 0 0 0 1 0 0 0 0 1 1 1 0 0 0 1 0 0 0 "
+"0 0 0 0 0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 "
+"0 0 0 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0 0 "
+"0 0 0 0 0 1 0 0 0 0 1 0 0 1 1 0 0 0 0 "
+"0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 0 1 "
   ) );
 //   testMatrix(tu, A, 0);
   testGraphicMatrix(tu, A, 0);
@@ -547,8 +550,8 @@ TEST(Graphic, RandomGraph)
   
   srand(1);
   const int numGraphs = 10000;
-  const int numNodes = 7;
-  const int numEdges = 16;
+  const int numNodes = 11;
+  const int numEdges = 29;
 
   TU_GRAPH_NODE* nodes = NULL;
   ASSERT_TU_CALL( TUallocBlockArray(tu, &nodes, numNodes) );

@@ -2189,7 +2189,7 @@ TU_ERROR determineTypePrime(
   if (numPathEndNodes >= 2)
     TUdbgMsg(0, " a path from %d to %d.", pathEndNodes[0], pathEndNodes[1]);
   if (numPathEndNodes == 4)
-    TUdbgMsg(0, " a path from %d to %d.", pathEndNodes[0], pathEndNodes[1]);
+    TUdbgMsg(0, " a path from %d to %d.", pathEndNodes[2], pathEndNodes[3]);
   TUdbgMsg(0, "\n");
 
   if (depth == 0)
@@ -2556,8 +2556,19 @@ TU_ERROR determineTypePrime(
       }
       else
       {
+        /* One child marker with both ends. We already checked that path end nodes 0 and 2 are parent marker nodes. */
         assert(numTwoEnds == 1);
-        newcolumn->remainsGraphic = false;
+        
+        if ((pathEndNodes[1] == childMarkerNodes[0] && pathEndNodes[3] == childMarkerNodes[1])
+          || (pathEndNodes[1] == childMarkerNodes[1] && pathEndNodes[3] == childMarkerNodes[0]))
+        {
+          reducedMember->type = TYPE_4_CONNECTS_TWO_PATHS;
+        }
+        else
+        {
+          TUdbgMsg(6 + 2*depth, "Paths do not end at child marker.");
+          newcolumn->remainsGraphic = false;
+        }
       }
     }
   }
