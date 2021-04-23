@@ -69,6 +69,16 @@ target_link_libraries(tu_test
 )
 set_target_properties(tu_test PROPERTIES OUTPUT_NAME tu-test)
 
+# Target for the test binary.
+add_executable(graphicness_test
+   src/test/main.c)
+target_link_libraries(graphicness_test
+   PRIVATE
+      TU::tu
+)
+set_target_properties(graphicness_test PROPERTIES OUTPUT_NAME graphicness-test)
+
+
 # Target for the random_network
 add_executable(random_network
    src/test/random_network.c)

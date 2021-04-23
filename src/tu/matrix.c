@@ -196,8 +196,7 @@ TU_ERROR TUintmatCopy(TU* tu, TU_INTMAT* matrix, TU_INTMAT** result)
   return TU_OKAY;
 }
 
-TU_ERROR TUchrmatCreate(TU* tu, TU_CHRMAT** matrix, int numRows, int numColumns,
-  int numNonzeros)
+TU_ERROR TUchrmatCreate(TU* tu, TU_CHRMAT** matrix, int numRows, int numColumns, int numNonzeros)
 {
   assert(matrix);
   assert(*matrix == NULL);
@@ -439,6 +438,198 @@ TU_ERROR TUchrmatPrintDense(FILE* stream, TU_CHRMAT* sparse, char zeroChar, bool
   }
 
   free(rowEntries);
+
+  return TU_OKAY;
+}
+
+TU_ERROR TUdblmatCreateFromDenseStream(TU* tu, TU_DBLMAT** pmatrix, FILE* stream)
+{
+  assert(pmatrix);
+  assert(!*pmatrix);
+  assert(stream);
+
+  int numRows, numColumns;
+  int numRead = fscanf(stream, "%d %d", &numRows, &numColumns);
+  if (numRead < 2)
+    return TU_ERROR_INPUT;
+
+  TU_CALL( TUdblmatCreate(tu, pmatrix, numRows, numColumns, 0) );
+
+  /* Initial memory. */
+  int memEntries = numRows * numColumns;
+  if (memEntries > 256)
+    memEntries = 256;
+  int* entryColumns = NULL;
+  double* entryValues = NULL;
+  TU_CALL( TUallocBlockArray(tu, &entryColumns, memEntries) );
+  TU_CALL( TUallocBlockArray(tu, &entryValues, memEntries) );
+
+  int entry = 0;
+  for (int row = 0; row < numRows; ++row)
+  {
+    (*pmatrix)->rowStarts[row] = entry;
+    for (int column = 0; column < numColumns; ++column)
+    {
+      double x;
+      numRead = fscanf(stream, "%lf", &x);
+      if (numRead < 1)
+        return TU_ERROR_INPUT;
+
+      if (x == 0.0)
+        continue;
+
+      if (entry == memEntries)
+      {
+        memEntries = 2*memEntries;
+        TU_CALL( TUreallocBlockArray(tu, &entryColumns, memEntries) );
+        TU_CALL( TUreallocBlockArray(tu, &entryValues, memEntries) );
+      }
+
+      entryColumns[entry] = column;
+      entryValues[entry] = x;
+      ++entry;
+    }
+  }
+  (*pmatrix)->rowStarts[numRows] = entry;
+
+  /* Make arrays smaller again. */
+  if (entry < memEntries)
+  {
+    TU_CALL( TUreallocBlockArray(tu, &entryColumns, entry) );
+    TU_CALL( TUreallocBlockArray(tu, &entryValues, entry) );
+  }
+
+  (*pmatrix)->entryColumns = entryColumns;
+  (*pmatrix)->entryValues = entryValues;
+  (*pmatrix)->numNonzeros = entry;
+
+  return TU_OKAY;
+}
+
+TU_ERROR TUintmatCreateFromDenseStream(TU* tu, TU_INTMAT** pmatrix, FILE* stream)
+{
+  assert(pmatrix);
+  assert(!*pmatrix);
+  assert(stream);
+
+  int numRows, numColumns;
+  int numRead = fscanf(stream, "%d %d", &numRows, &numColumns);
+  if (numRead < 2)
+    return TU_ERROR_INPUT;
+
+  TU_CALL( TUintmatCreate(tu, pmatrix, numRows, numColumns, 0) );
+
+  /* Initial memory. */
+  int memEntries = numRows * numColumns;
+  if (memEntries > 256)
+    memEntries = 256;
+  int* entryColumns = NULL;
+  int* entryValues = NULL;
+  TU_CALL( TUallocBlockArray(tu, &entryColumns, memEntries) );
+  TU_CALL( TUallocBlockArray(tu, &entryValues, memEntries) );
+
+  int entry = 0;
+  for (int row = 0; row < numRows; ++row)
+  {
+    (*pmatrix)->rowStarts[row] = entry;
+    for (int column = 0; column < numColumns; ++column)
+    {
+      int x;
+      numRead = fscanf(stream, "%d", &x);
+      if (numRead < 1)
+        return TU_ERROR_INPUT;
+
+      if (x == 0.0)
+        continue;
+
+      if (entry == memEntries)
+      {
+        memEntries = 2*memEntries;
+        TU_CALL( TUreallocBlockArray(tu, &entryColumns, memEntries) );
+        TU_CALL( TUreallocBlockArray(tu, &entryValues, memEntries) );
+      }
+
+      entryColumns[entry] = column;
+      entryValues[entry] = x;
+      ++entry;
+    }
+  }
+  (*pmatrix)->rowStarts[numRows] = entry;
+
+  /* Make arrays smaller again. */
+  if (entry < memEntries)
+  {
+    TU_CALL( TUreallocBlockArray(tu, &entryColumns, entry) );
+    TU_CALL( TUreallocBlockArray(tu, &entryValues, entry) );
+  }
+
+  (*pmatrix)->entryColumns = entryColumns;
+  (*pmatrix)->entryValues = entryValues;
+  (*pmatrix)->numNonzeros = entry;
+
+  return TU_OKAY;
+}
+
+TU_ERROR TUchrmatCreateFromDenseStream(TU* tu, TU_CHRMAT** pmatrix, FILE* stream)
+{
+  assert(pmatrix);
+  assert(!*pmatrix);
+  assert(stream);
+
+  int numRows, numColumns;
+  int numRead = fscanf(stream, "%d %d", &numRows, &numColumns);
+  if (numRead < 2)
+    return TU_ERROR_INPUT;
+
+  TU_CALL( TUchrmatCreate(tu, pmatrix, numRows, numColumns, 0) );
+
+  /* Initial memory. */
+  int memEntries = numRows * numColumns;
+  if (memEntries > 256)
+    memEntries = 256;
+  int* entryColumns = NULL;
+  char* entryValues = NULL;
+  TU_CALL( TUallocBlockArray(tu, &entryColumns, memEntries) );
+  TU_CALL( TUallocBlockArray(tu, &entryValues, memEntries) );
+
+  int entry = 0;
+  for (int row = 0; row < numRows; ++row)
+  {
+    (*pmatrix)->rowStarts[row] = entry;
+    for (int column = 0; column < numColumns; ++column)
+    {
+      int x;
+      numRead = fscanf(stream, "%d", &x);
+      if (numRead < 1)
+        return TU_ERROR_INPUT;
+
+      if (x == 0.0)
+        continue;
+
+      if (entry == memEntries)
+      {
+        memEntries = 2*memEntries;
+        TU_CALL( TUreallocBlockArray(tu, &entryColumns, memEntries) );
+        TU_CALL( TUreallocBlockArray(tu, &entryValues, memEntries) );
+      }
+
+      entryColumns[entry] = column;
+      entryValues[entry] = x;
+      ++entry;
+    }
+  }
+  (*pmatrix)->rowStarts[numRows] = entry;
+
+  /* Make arrays smaller again. */
+  if (entry < memEntries)
+  {
+    TU_CALL( TUreallocBlockArray(tu, &entryColumns, entry) );
+    TU_CALL( TUreallocBlockArray(tu, &entryValues, entry) );
+  }
+
+  (*pmatrix)->entryColumns = entryColumns;
+  (*pmatrix)->entryValues = entryValues;
+  (*pmatrix)->numNonzeros = entry;
 
   return TU_OKAY;
 }

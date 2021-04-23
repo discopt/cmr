@@ -305,6 +305,39 @@ TU_ERROR TUchrmatPrintDense(
 );
 
 /**
+ * \brief Reads a double matrix from a file \p stream.
+ */
+
+TU_EXPORT
+TU_ERROR TUdblmatCreateFromDenseStream(
+  TU* tu,               /**< \ref TU environment. */
+  TU_DBLMAT** pmatrix,  /**< Pointer for storing the matrix. */
+  FILE* stream          /**< File stream to read from. */
+);
+
+/**
+ * \brief Reads an int matrix from a file \p stream.
+ */
+
+TU_EXPORT
+TU_ERROR TUintmatCreateFromDenseStream(
+  TU* tu,               /**< \ref TU environment. */
+  TU_INTMAT** pmatrix,  /**< Pointer for storing the matrix. */
+  FILE* stream          /**< File stream to read from. */
+);
+
+/**
+ * \brief Reads a char matrix from a file \p stream.
+ */
+
+TU_EXPORT
+TU_ERROR TUchrmatCreateFromDenseStream(
+  TU* tu,               /**< \ref TU environment. */
+  TU_CHRMAT** pmatrix,  /**< Pointer for storing the matrix. */
+  FILE* stream          /**< File stream to read from. */
+);
+
+/**
  * \brief Checks whether two double matrices are equal.
  */
 

@@ -91,30 +91,30 @@ void testMatrix(
   ASSERT_TU_CALL( TUgraphFree(tu, &graph) );
 }
 
-TEST(Graphic, Specific)
-{
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
-  
-  TU_CHRMAT* A = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "10 19 "
-"0 0 0 0 1 1 0 0 1 0 0 1 1 1 0 1 1 0 1 "
-"0 0 0 1 1 1 0 0 0 0 0 1 1 1 0 0 0 0 0 "
-"0 0 0 0 1 1 1 0 0 0 0 1 0 1 0 1 1 0 1 "
-"0 0 0 0 0 0 1 0 1 0 0 0 1 0 0 0 0 0 0 "
-"0 0 0 0 0 0 0 0 0 1 0 0 0 0 1 0 0 0 0 "
-"0 0 0 0 1 0 0 0 0 1 1 1 0 0 0 1 0 0 0 "
-"0 0 0 0 0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 "
-"0 0 0 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0 0 "
-"0 0 0 0 0 1 0 0 0 0 1 0 0 1 1 0 0 0 0 "
-"0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 0 1 "
-  ) );
-//   testMatrix(tu, A, 0);
-  testGraphicMatrix(tu, A, 0);
-  ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
-
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
-}
+// TEST(Graphic, Specific)
+// {
+//   TU* tu = NULL;
+//   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
+//   
+//   TU_CHRMAT* A = NULL;
+//   ASSERT_TU_CALL( stringToCharMatrix(tu, &A, "10 19 "
+// "0 0 0 0 1 1 0 0 1 0 0 1 1 1 0 1 1 0 1 "
+// "0 0 0 1 1 1 0 0 0 0 0 1 1 1 0 0 0 0 0 "
+// "0 0 0 0 1 1 1 0 0 0 0 1 0 1 0 1 1 0 1 "
+// "0 0 0 0 0 0 1 0 1 0 0 0 1 0 0 0 0 0 0 "
+// "0 0 0 0 0 0 0 0 0 1 0 0 0 0 1 0 0 0 0 "
+// "0 0 0 0 1 0 0 0 0 1 1 1 0 0 0 1 0 0 0 "
+// "0 0 0 0 0 0 0 0 0 0 0 1 0 1 0 0 0 0 0 "
+// "0 0 0 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0 0 "
+// "0 0 0 0 0 1 0 0 0 0 1 0 0 1 1 0 0 0 0 "
+// "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 0 1 "
+//   ) );
+// //   testMatrix(tu, A, 0);
+//   testGraphicMatrix(tu, A, 0);
+//   ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
+// 
+//   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+// }
 
 TEST(Graphic, RootBond)
 {
@@ -549,9 +549,9 @@ TEST(Graphic, RandomGraph)
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
   
   srand(1);
-  const int numGraphs = 10000;
-  const int numNodes = 11;
-  const int numEdges = 29;
+  const int numGraphs = 10;
+  const int numNodes = 1000;
+  const int numEdges = 10000;
 
   TU_GRAPH_NODE* nodes = NULL;
   ASSERT_TU_CALL( TUallocBlockArray(tu, &nodes, numNodes) );
@@ -574,6 +574,10 @@ TEST(Graphic, RandomGraph)
 
     TU_CHRMAT* A = NULL;
     ASSERT_TU_CALL( TUconvertGraphToBinaryMatrix(tu, graph, &A, 0, NULL, 0, NULL) );
+    
+    FILE* f = fopen("instance.mat", "w");
+    ASSERT_TU_CALL( TUchrmatPrintDense(f, A, '0', false) );
+    fclose(f);
 
     ASSERT_TU_CALL( TUgraphFree(tu, &graph) );
 
