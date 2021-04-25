@@ -298,13 +298,14 @@ TU_ERROR _TUfreeStack(TU* tu, void** ptr)
   return TU_OKAY;
 }
 
+#if !defined(NDEBUG)
+
 void TUassertStackConsistency(
   TU* tu
 )
 {
   assert(tu);
 
-#if !defined(NDEBUG)
   for (int s = 0; s <= tu->currentStack; ++s)
   {
     TU_STACK* stack = &tu->stacks[s];
@@ -322,11 +323,11 @@ void TUassertStackConsistency(
       ptr += size + sizeof(int);
     }
   }
-
-#endif /* !NDEBUG */
 }
 
-#endif /* REPLACE_STACK_BY_MALLOC */
+#endif /* !NDEBUG */
+
+#endif /* else REPLACE_STACK_BY_MALLOC */
 
 char* TUconsistencyMessage(const char* format, ...)
 {

@@ -1,4 +1,4 @@
-// #define TU_DEBUG /* Uncomment to enable general debugging. */
+#define TU_DEBUG /* Uncomment to enable general debugging. */
 // #define TU_DEBUG_SPLITTING /* Uncomment to enable debug output for splitting of polygons. */
 // #define TU_DEBUG_DOT /* Uncomment to output dot files after modifications of the t-decomposition. */
 
@@ -1950,7 +1950,7 @@ TU_ERROR determineTypeBond(
   {
     if (reducedMember->firstPathEdge)
     {
-      /* If there is a path edge then this should have been the root, but it is not! */
+      /* Tested in TypingInnerBondWithEdge */
       newcolumn->remainsGraphic = false;
     }
     else
@@ -2006,6 +2006,7 @@ TU_ERROR determineTypePolygon(
     /* We assume that we are not the root of the whole decomposition. */
     assert(tdec->members[member].parentMember >= 0);
 
+    /* Tested in TypingRootPolygon2Child */
     newcolumn->remainsGraphic = (numTwoEnds == 0);
     reducedMember->type = (countPathEdges == numEdges - 1) ? TYPE_1_CLOSES_CYCLE : TYPE_5_ROOT;
     return TU_OKAY;
@@ -2022,6 +2023,7 @@ TU_ERROR determineTypePolygon(
   }
   else if (numTwoEnds == 1)
   {
+    /* Tested in TypingInnerPolygon2Child. */
     newcolumn->remainsGraphic = false;
   }
   else if (numOneEnd == 1)
@@ -2093,6 +2095,8 @@ TU_ERROR determineTypePrime(
       if (newcolumn->nodesDegree[v] >= 3)
       {
         TUdbgMsg(6 + 2*depth, "Node %d of prime member %d has path-degree at least 3.\n", v, reducedMember->member);
+
+        /* Tested in TypingAnyPrimeDegree3. */
         newcolumn->remainsGraphic = false;
         return TU_OKAY;
       }
@@ -2103,6 +2107,8 @@ TU_ERROR determineTypePrime(
         {
           TUdbgMsg(6 + 2*depth, "Prime member %d has at least five path end nodes: %d, %d, %d, %d and %d.\n",
             reducedMember->member, pathEndNodes[0], pathEndNodes[1], pathEndNodes[2], pathEndNodes[3], v);
+
+          /* Tested in TypingAnyPrimeManyPaths.*/
           newcolumn->remainsGraphic = false;
           return TU_OKAY;
         }
@@ -2205,7 +2211,10 @@ TU_ERROR determineTypePrime(
         reducedMember->type = TYPE_5_ROOT;
       }
       else
+      {
+        /* Tested in TypingRootPrimeNoPathsNotAdjacent1Children. */
         newcolumn->remainsGraphic = false;
+      }
     }
     else if (numPathEndNodes == 2)
     {
@@ -2226,7 +2235,10 @@ TU_ERROR determineTypePrime(
         if (pathAdjacentToChildMarker)
           reducedMember->type = TYPE_5_ROOT;
         else
+        {
+          /* Tested in TypingRootPrimeOnePath1Child. */
           newcolumn->remainsGraphic = false;
+        }
       }
       else if (numOneEnd == 2)
       {
@@ -2243,7 +2255,10 @@ TU_ERROR determineTypePrime(
         if (matched[0] && matched[1])
           reducedMember->type = TYPE_5_ROOT;
         else
+        {
+          /* Tested in TypingRootPrimeTwoPath1Children. */
           newcolumn->remainsGraphic = false;
+        }
       }
       else if (numTwoEnds == 0)
       {
@@ -2262,6 +2277,7 @@ TU_ERROR determineTypePrime(
         }
         else
         {
+          /* Tested in TypingRootPrimeOnePath2Child. */
           newcolumn->remainsGraphic = false;
         }
       }
@@ -2269,6 +2285,8 @@ TU_ERROR determineTypePrime(
     else
     {
       assert(numPathEndNodes == 4);
+
+      /* Tested in TypingRootPrimeTwoPaths. */
       newcolumn->remainsGraphic = false;
     }
   }
@@ -2292,6 +2310,8 @@ TU_ERROR determineTypePrime(
       if (numOneEnd == 0)
       {
         /* Even if parent and child marker (type 4) are adjacent, this is non-graphic. */
+
+        /* Tested in TypingInternalPrimeNoPath2Child. */
         newcolumn->remainsGraphic = false;
       }
       else if (numOneEnd == 1)
@@ -2606,11 +2626,8 @@ TU_ERROR determineTypes(
     else
     {
       TUdbgMsg(6 + 2*depth, "Child prohibits graphicness.\n");
-    }
-
-    /* Abort if some part indicates non-graphicness. */
-    if (!newcolumn->remainsGraphic)
       return TU_OKAY;
+    }
   }
 
   int numOneEnd, numTwoEnds;
@@ -2627,6 +2644,7 @@ TU_ERROR determineTypes(
 
   if (2*numTwoEnds + numOneEnd > 2)
   {
+    /* Tested in Graphic.TypingManyChildrenTerminals */
     newcolumn->remainsGraphic = false;
     return TU_OKAY;
   }
@@ -3786,7 +3804,7 @@ TU_ERROR addColumnProcessPolygon(
       {
         TUdbgMsg(8 + 2*depth, "Polygon contains both terminal nodes which are the parent marker edge nodes.\n");
 
-        TU_TDEC_MEMBER parentMember = tdec->members[member].parentMember;
+        TU_TDEC_MEMBER parentMember = findMemberParent(tdec, member);
         TU_TDEC_EDGE markerOfParent = tdec->members[member].markerOfParent;
         assert(parentMember >= 0); /* A polygon can only close a cycle if it has a parent. */
         if (tdec->members[parentMember].type == TDEC_MEMBER_TYPE_BOND)

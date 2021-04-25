@@ -22,12 +22,16 @@ void TUgraphEnsureConsistent(TU* tu, TU_GRAPH* graph)
   /* Count nodes and check prev/next linked lists. */
 
   int countNodes = 0;
+#if !defined(NDEBUG)
   TU_GRAPH_NODE u = -1;
+#endif /* !NDEBUG */
   for (TU_GRAPH_NODE v = TUgraphNodesFirst(graph); TUgraphNodesValid(graph, v);
     v = TUgraphNodesNext(graph, v))
   {
     assert(graph->nodes[v].prev == u);
+#if !defined(NDEBUG)
     u = v;
+#endif /* !NDEBUG */
     ++countNodes;
   }
   assert(graph->numNodes == countNodes);

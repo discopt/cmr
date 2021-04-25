@@ -123,7 +123,7 @@ void TUassertStackConsistency(
   TU* tu  /**< \ref TU environment. */
 )
 {
-  assert(tu);
+
 }
 
 
