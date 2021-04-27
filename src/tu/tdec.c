@@ -3154,33 +3154,28 @@ TU_ERROR addColumnProcessBond(
   {
     if (numOneEnd == 0 && numTwoEnds == 0)
     {
+      /* Tested in UpdateRootBondNoChildren. */
+
       assert(reducedMember->firstPathEdge);
       TU_CALL( addTerminal(tu, tdec, reducedComponent, member, -1) );
       TU_CALL( addTerminal(tu, tdec, reducedComponent, member, -1) );
-
       return TU_OKAY;
     }
-    else if (numOneEnd == 1)
+    else
     {
-      assert(reducedComponent->numTerminals == 1);
+      /* Tested in UpdateRootBondTwoSingleChildren. */
 
-      /* We don't merge since the child shall be the terminal member (rule (R3) in the paper)! */
-      assert(reducedMember->firstPathEdge);
-      TU_TDEC_MEMBER childMember = tdec->edges[childMarkerEdges[0]].childMember;
-      TU_TDEC_EDGE childsParentMarker = tdec->members[childMember].markerToParent;
-      TU_CALL( addTerminal(tu, tdec, reducedComponent, childMember, findEdgeTail(tdec, childsParentMarker)) );
-      tdec->members[childMember].type = TDEC_MEMBER_TYPE_PRIME;
-    }
-    else if (numOneEnd == 2)
-    {
+      /* If we have one single-child or a double-child then we should have moved the reduced root. */
+      assert(numOneEnd == 2);
       assert(reducedComponent->numTerminals == 2);
-
+      
       /* If the bond contains more than 3 edges, we split the two child edges off, which creates a bond with a parent
        * marker and the two children.
        * Test: Graphic.RootBondTwoOneEnds */
 
       if (tdec->members[member].numEdges > 3)
       {
+        /* Tested in UpdateRootBondNoChildrenSplit. */
         TU_CALL( splitBond(tu, tdec, member, childMarkerEdges[0], childMarkerEdges[1], &member) );
         reducedMember->member = member;
       }
@@ -3197,19 +3192,12 @@ TU_ERROR addColumnProcessBond(
 
       return TU_OKAY;
     }
-    else
-    {
-      assert(numTwoEnds == 1);
-      assert(reducedMember->firstPathEdge);
-
-      /* We don't merge since everything interesting happens in the child. */
-      /* Test: Graphic.RootBondOneTwoEnd.  */
-    }
   }
   else
   {
-    /* Non-root bond. This cannot be a leaf since then it would contain a path edge, i.e., it closes a cycle. */
+    /* Tested in UpdateInternalBondOneSingleChild. */
 
+    /* Cannot be a leaf since then it would contain a path edge, i.e., it closes a cycle. */
     assert(numOneEnd == 1);
     assert(reducedComponent->numTerminals >= 1);
 
@@ -3811,6 +3799,8 @@ TU_ERROR addColumnProcessPolygon(
       TU_TDEC_EDGE representativeEdge;
       if (newcolumn->edgesInPath[tdec->members[member].markerToParent])
       {
+        /* Tested in UpdateRootPolygonNoChildrenParent. */
+        
         TUdbgMsg(8 + 2*depth, "Polygon contains both terminal nodes and the parent marker edge is a path edge.\n");
 
         /* Squeeze off all non-path edges by moving them to a new polygon and creating a bond to connect it to the
@@ -3819,6 +3809,8 @@ TU_ERROR addColumnProcessPolygon(
       }
       else if (reducedMember->type == TYPE_1_CLOSES_CYCLE)
       {
+        /* Tested in UpdateRootPolygonNoChildrenHamiltonianPath. */
+        
         TUdbgMsg(8 + 2*depth, "Polygon contains both terminal nodes which are the parent marker edge nodes.\n");
 
         TU_TDEC_MEMBER parentMember = findMemberParent(tdec, member);
@@ -3840,6 +3832,7 @@ TU_ERROR addColumnProcessPolygon(
       }
       else
       {
+        /* Tested in UpdateRootPolygonNoChildren. */
         TUdbgMsg(8 + 2*depth, "Polygon contains both terminal nodes and a non-path parent marker edge.\n");
 
         /* Squeeze off all path edges by moving them to a new polygon and creating a bond to connect it to the
@@ -3874,6 +3867,8 @@ TU_ERROR addColumnProcessPolygon(
 
       if (newcolumn->edgesInPath[tdec->members[member].markerToParent])
       {
+        /* Tested in UpdateRootPolygonOneSingleChildParent. */
+        
         /* There is more than 1 path edge, so we split off all non-path edges and work in the new polygon. */
         if (reducedMember->firstPathEdge)
         {
@@ -3904,8 +3899,9 @@ TU_ERROR addColumnProcessPolygon(
       }
       else
       {
+        /* Tested in UpdateRootPolygonOneSingleChild. */
+  
         /* Parent marker edge is not a path edge. */
-
         assert(reducedMember->firstPathEdge);
 
         /* If there is more than 1 path edge, we squeeze off by moving them to a new polygon and creating a bond to
@@ -3952,6 +3948,8 @@ TU_ERROR addColumnProcessPolygon(
       TU_TDEC_EDGE nonPathEdge = -1;
       if (reducedMember->type != TYPE_4_CONNECTS_TWO_PATHS)
       {
+        /* Tested in UpdateRootPolygonTwoSingleChildren. */
+        
         /* Parent marker is a non-path edge. We split off path edges if more than one. */
         TU_CALL( splitPolygon(tu, tdec, member, newcolumn->edgesInPath, true, &pathEdge, NULL, NULL) );
 
@@ -3971,8 +3969,10 @@ TU_ERROR addColumnProcessPolygon(
 
         nonPathEdge = tdec->members[member].markerToParent;
       }
-      else 
+      else
       {
+        /* Tested in UpdateRootPolygonTwoSingleChildrenParent. */
+
         assert(newcolumn->edgesInPath[tdec->members[member].markerToParent]);
 
         if (reducedMember->firstPathEdge)
@@ -4058,6 +4058,8 @@ TU_ERROR addColumnProcessPolygon(
 
     if (numOneEnd == 0)
     {
+      /* Tested in UpdateLeafPolygon. */
+
       assert(numOneEnd == 0);
       assert(numTwoEnds == 0);
       assert(reducedComponent->numTerminals < 2);

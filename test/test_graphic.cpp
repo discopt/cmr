@@ -534,7 +534,7 @@ TEST(Graphic, RandomMatrix)
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
   
   srand(0);
-  const int numMatrices = 100;
+  const int numMatrices = 10000;
   const int numRows = 10;
   const int numColumns = 20;
   const double probability = 0.3;
@@ -570,15 +570,197 @@ TEST(Graphic, RandomMatrix)
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
 
-TEST(Graphic, RandomGraph)
+TEST(Graphic, UpdateRootBondNoChildren)
+{
+  TU* tu = NULL;
+  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
+  TU_CHRMAT* matrix = NULL;
+  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "1 1 "
+    "1 "
+  ) );
+  testGraphicMatrix(tu, matrix, 2);
+  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
+  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+}
+
+TEST(Graphic, UpdateRootBondTwoSingleChildren)
+{
+  TU* tu = NULL;
+  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
+  TU_CHRMAT* matrix = NULL;
+  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "3 3 "
+    "1 1 0 "
+    "0 1 1 "
+    "1 0 1 "
+  ) );
+  testGraphicMatrix(tu, matrix, 2);
+  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
+  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+}
+
+TEST(Graphic, UpdateRootBondTwoSingleChildrenSplit)
+{
+  TU* tu = NULL;
+  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
+  TU_CHRMAT* matrix = NULL;
+  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "3 4 "
+    "1 1 1 0 "
+    "1 0 0 1 "
+    "0 0 1 1 "
+  ) );
+  testGraphicMatrix(tu, matrix, 2);
+  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
+  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+}
+
+TEST(Graphic, UpdateInternalBondOneSingleChild)
+{
+  TU* tu = NULL;
+  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
+  TU_CHRMAT* matrix = NULL;
+  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "3 3 "
+    "1 0 1 "
+    "1 1 0 "
+    "0 1 1 "
+  ) );
+  testGraphicMatrix(tu, matrix, 2);
+  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
+  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+}
+
+TEST(Graphic, UpdateRootPolygonNoChildrenParent)
+{
+  TU* tu = NULL;
+  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
+  TU_CHRMAT* matrix = NULL;
+  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "3 3 "
+    "1 1 1 "
+    "0 1 1 "
+    "0 1 0 "
+  ) );
+  testGraphicMatrix(tu, matrix, 2);
+  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
+  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+}
+
+TEST(Graphic, UpdateRootPolygonNoChildrenHamiltonianPath)
+{
+  TU* tu = NULL;
+  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
+  TU_CHRMAT* matrix = NULL;
+  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "3 3 "
+    "1 0 0 "
+    "1 1 1 "
+    "1 1 1 "
+  ) );
+  testGraphicMatrix(tu, matrix, 2);
+  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
+  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+}
+
+TEST(Graphic, UpdateRootPolygonNoChildren)
+{
+  TU* tu = NULL;
+  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
+  TU_CHRMAT* matrix = NULL;
+  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "3 2 "
+    "1 0 "
+    "1 1 "
+    "1 1 "
+  ) );
+  testGraphicMatrix(tu, matrix, 2);
+  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
+  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+}
+
+
+TEST(Graphic, UpdateRootPolygonOneSingleChildParent)
+{
+  TU* tu = NULL;
+  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
+  TU_CHRMAT* matrix = NULL;
+  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "3 3 "
+    "1 0 1 "
+    "1 1 0 "
+    "0 1 1 "
+  ) );
+  testGraphicMatrix(tu, matrix, 2);
+  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
+  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+}
+
+TEST(Graphic, UpdateRootPolygonOneSingleChild)
+{
+  TU* tu = NULL;
+  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
+  TU_CHRMAT* matrix = NULL;
+  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "4 3 "
+    "1 1 0 "
+    "1 1 1 "
+    "1 0 1 "
+    "0 0 1 "
+  ) );
+  testGraphicMatrix(tu, matrix, 2);
+  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
+  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+}
+
+TEST(Graphic, UpdateRootPolygonTwoSingleChildren)
+{
+  TU* tu = NULL;
+  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
+  TU_CHRMAT* matrix = NULL;
+  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "4 4 "
+    "1 1 0 0 "
+    "1 1 1 1 "
+    "0 1 0 1 "
+    "0 0 1 1 "
+  ) );
+  testGraphicMatrix(tu, matrix, 2);
+  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
+  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+}
+
+TEST(Graphic, UpdateRootPolygonTwoSingleChildrenParent)
+{
+  TU* tu = NULL;
+  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
+  TU_CHRMAT* matrix = NULL;
+  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "4 4 "
+    "1 0 1 1 "
+    "0 1 0 1 "
+    "1 1 1 0 "
+    "0 0 1 1 "
+  ) );
+  testGraphicMatrix(tu, matrix, 2);
+  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
+  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+}
+
+TEST(Graphic, UpdateLeafPolygon)
+{
+  TU* tu = NULL;
+  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
+  TU_CHRMAT* matrix = NULL;
+  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "3 3 "
+    "1 0 1 "
+    "1 1 0 "
+    "0 1 1 "
+  ) );
+  testGraphicMatrix(tu, matrix, 2);
+  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
+  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+}
+
+TEST(Graphic, UpdateRandomGraph)
 {
   TU* tu = NULL;
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
 
   srand(1);
-  const int numGraphs = 1;
-  const int numNodes = 10;
-  const int numEdges = 5 * numNodes;
+  const int numGraphs = 100000;
+  const int numNodes = 4;
+  const int numEdges = 6;
 
   TU_GRAPH_NODE* nodes = NULL;
   ASSERT_TU_CALL( TUallocBlockArray(tu, &nodes, numNodes) );
@@ -603,7 +785,7 @@ TEST(Graphic, RandomGraph)
     ASSERT_TU_CALL( TUconvertGraphToBinaryMatrix(tu, graph, &A, 0, NULL, 0, NULL) );
     
 //     FILE* f = fopen("instance.mat", "w");
-//     ASSERT_TU_CALL( TUchrmatPrintDense(f, A, '0', false) );
+    ASSERT_TU_CALL( TUchrmatPrintDense(stdout, A, '0', false) );
 //     fclose(f);
 
     ASSERT_TU_CALL( TUgraphFree(tu, &graph) );
