@@ -1,4 +1,4 @@
-#define TU_DEBUG /* Uncomment to enable general debugging. */
+// #define TU_DEBUG /* Uncomment to enable general debugging. */
 // #define TU_DEBUG_SPLITTING /* Uncomment to enable debug output for splitting of polygons. */
 // #define TU_DEBUG_DOT /* Uncomment to output dot files after modifications of the t-decomposition. */
 
@@ -2006,7 +2006,7 @@ TU_ERROR determineTypePolygon(
     /* We assume that we are not the root of the whole decomposition. */
     assert(tdec->members[member].parentMember >= 0);
 
-    /* Tested in TypingRootPolygon2Child */
+    /* Tested in TypingRootPolygonDoubleChild */
     newcolumn->remainsGraphic = (numTwoEnds == 0);
     reducedMember->type = (countPathEdges == numEdges - 1) ? TYPE_1_CLOSES_CYCLE : TYPE_5_ROOT;
     return TU_OKAY;
@@ -2212,7 +2212,7 @@ TU_ERROR determineTypePrime(
       }
       else
       {
-        /* Tested in TypingRootPrimeNoPathsNotAdjacent1Children. */
+        /* Tested in TypingRootPrimeNoPathsDisjointSingleChildren. */
         newcolumn->remainsGraphic = false;
       }
     }
@@ -2236,7 +2236,7 @@ TU_ERROR determineTypePrime(
           reducedMember->type = TYPE_5_ROOT;
         else
         {
-          /* Tested in TypingRootPrimeOnePath1Child. */
+          /* Tested in TypingRootPrimeOnePathSingleChild. */
           newcolumn->remainsGraphic = false;
         }
       }
@@ -2256,7 +2256,7 @@ TU_ERROR determineTypePrime(
           reducedMember->type = TYPE_5_ROOT;
         else
         {
-          /* Tested in TypingRootPrimeTwoPath1Children. */
+          /* Tested in TypingRootPrimeOnePathTwoSingleChildren. */
           newcolumn->remainsGraphic = false;
         }
       }
@@ -2277,7 +2277,7 @@ TU_ERROR determineTypePrime(
         }
         else
         {
-          /* Tested in TypingRootPrimeOnePath2Child. */
+          /* Tested in TypingRootPrimeOnePathDoubleChild. */
           newcolumn->remainsGraphic = false;
         }
       }
@@ -2311,7 +2311,7 @@ TU_ERROR determineTypePrime(
       {
         /* Even if parent and child marker (type 4) are adjacent, this is non-graphic. */
 
-        /* Tested in TypingInternalPrimeNoPath2Child. */
+        /* Tested in TypingInternalPrimeNoPathNoSingleChild. */
         newcolumn->remainsGraphic = false;
       }
       else if (numOneEnd == 1)
@@ -2323,6 +2323,7 @@ TU_ERROR determineTypePrime(
         }
         else
         {
+          /* Tested in TypingInternalPrimeNoPathOneSingleChild. */
           newcolumn->remainsGraphic = false;
         }
       }
@@ -2353,7 +2354,10 @@ TU_ERROR determineTypePrime(
           reducedMember->type = TYPE_4_CONNECTS_TWO_PATHS;
         }
         else
+        {
+          /* Tested in TypingInternalPrimeNoPathTwoSingleChildren. */
           newcolumn->remainsGraphic = false;
+        }
       }
     }
     else if (numPathEndNodes == 2)
@@ -2374,6 +2378,7 @@ TU_ERROR determineTypePrime(
         }
         if (parentMarkerNodes[0] != pathEndNodes[0])
         {
+          /* Tested in TypingInternalPrimeOnePathOneSingleChild. */
           newcolumn->remainsGraphic = false;
           return TU_OKAY;
         }
@@ -2388,6 +2393,7 @@ TU_ERROR determineTypePrime(
           }
           else
           {
+            /* Tested in TypingInternalPrimeOnePathOneSingleChild. */
             newcolumn->remainsGraphic = false;
           }
         }
@@ -2404,6 +2410,7 @@ TU_ERROR determineTypePrime(
           }
           else
           {
+            /* Tested in TypingInternalPrimeOnePathOneSingleChild. */
             newcolumn->remainsGraphic = false;
           }
         }
@@ -2422,6 +2429,7 @@ TU_ERROR determineTypePrime(
           otherParentNode = parentMarkerNodes[0];
         else
         {
+          /* Tested in TypingInternalPrimeOnePathTwoSingleChildren. */
           newcolumn->remainsGraphic = false;
           return TU_OKAY;
         }
@@ -2429,6 +2437,7 @@ TU_ERROR determineTypePrime(
         /* Two 1-ends and a path that closes a cycle with the parent marker is only allowed for root members. */
         if (pathEndNodes[1] == otherParentNode)
         {
+          /* Tested in TypingInternalPrimeOnePathTwoSingleChildren. */
           newcolumn->remainsGraphic = false;
           return TU_OKAY;
         }
@@ -2456,6 +2465,7 @@ TU_ERROR determineTypePrime(
         }
         else
         {
+          /* Tested in TypingInternalPrimeOnePathTwoSingleChildren. */
           newcolumn->remainsGraphic = false;
         }
       }
@@ -2476,6 +2486,7 @@ TU_ERROR determineTypePrime(
         else
         {
           /* Both have degree 0 or 2. */
+          /* Tested in TypingInternalPrimeOnePathNoChildren. */
           newcolumn->remainsGraphic = false;
         }
       }
@@ -2496,6 +2507,7 @@ TU_ERROR determineTypePrime(
         }
         else
         {
+          /* Tested in TypingInternalPrimeOnePathDoubleChild. */
           newcolumn->remainsGraphic = false;
         }
       }
@@ -2505,12 +2517,14 @@ TU_ERROR determineTypePrime(
       if (reducedMember->primeEndNodes[0] != parentMarkerNodes[0] && reducedMember->primeEndNodes[0] != parentMarkerNodes[1])
       {
         TUdbgMsg(6 + 2*depth, "First path does not start at parent marker edge.\n");
+        /* Tested in TypingInternalPrimeTwoPathsNonadjacentParent. */
         newcolumn->remainsGraphic = false;
         return TU_OKAY;
       }
       if (reducedMember->primeEndNodes[2] != parentMarkerNodes[0] && reducedMember->primeEndNodes[2] != parentMarkerNodes[1])
       {
         TUdbgMsg(6 + 2*depth, "Second path does not start at parent marker edge.\n");
+        /* Tested in TypingInternalPrimeTwoPathsNonadjacentParent. */
         newcolumn->remainsGraphic = false;
         return TU_OKAY;
       }
@@ -2542,6 +2556,7 @@ TU_ERROR determineTypePrime(
         else
         {
           TUdbgMsg(6 + 2*depth, "No path ends at the child marker edge.\n");
+          /* Tested in TypingInternalPrimeTwoPathOneSingleChild. */
           newcolumn->remainsGraphic = false;
         }
       }
@@ -2567,6 +2582,7 @@ TU_ERROR determineTypePrime(
         else
         {
           TUdbgMsg(6 + 2*depth, "No pairing of paths to nodes of child marker edges possible.\n");
+          /* Tested in TypingInternalPrimeTwoPathsTwoSingleChildren. */
           newcolumn->remainsGraphic = false;
         }
       }
@@ -2587,6 +2603,7 @@ TU_ERROR determineTypePrime(
         else
         {
           TUdbgMsg(6 + 2*depth, "Paths do not end at child marker.");
+          /* Tested in TypingInternalPrimeTwoPathsDoubleChild. */
           newcolumn->remainsGraphic = false;
         }
       }
@@ -2672,7 +2689,7 @@ TU_ERROR determineTypes(
   
   /* Parent marker edge closes cycle, so we propagate information to parent. */
 
-  if (!isRoot && reducedMember->type == TYPE_1_CLOSES_CYCLE)
+  if (newcolumn->remainsGraphic && !isRoot && reducedMember->type == TYPE_1_CLOSES_CYCLE)
   {
     TU_TDEC_MEMBER parentMember = findMemberParent(tdec, reducedMember->member);
     ReducedMember* reducedParent = newcolumn->membersToReducedMembers[parentMember];
