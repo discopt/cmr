@@ -32,8 +32,8 @@ TU_ERROR TUtdecCreate(
   int memEdges,     /**< Initial memory for edges of the t-decomposition. */
   int memNodes,     /**< Initial memory for nodes of the t-decomposition. */
   int memMembers,   /**< Initial memory for members of the t-decomposition. */
-  int numRows,      /**< Number of rows. */
-  int numColumns    /**< Number of columns. */
+  int memRows,      /**< Initial memory for rows. */
+  int memColumns    /**< Initial memory for columns. */
 );
 
 TU_EXPORT

@@ -796,8 +796,7 @@ TU_ERROR createMember(
   return TU_OKAY;
 }
 
-TU_ERROR TUtdecCreate(TU* tu, TU_TDEC** ptdec, int memEdges, int memNodes, int memMembers,
-  int numRows, int numColumns)
+TU_ERROR TUtdecCreate(TU* tu, TU_TDEC** ptdec, int memEdges, int memNodes, int memMembers, int memRows, int memColumns)
 {
   assert(tu);
   assert(ptdec);
@@ -805,8 +804,6 @@ TU_ERROR TUtdecCreate(TU* tu, TU_TDEC** ptdec, int memEdges, int memNodes, int m
 
   TU_CALL( TUallocBlock(tu, ptdec) );
   TU_TDEC* tdec = *ptdec;
-  if (memMembers < numRows)
-    memMembers = numRows;
   tdec->memMembers = memMembers;
   tdec->numMembers = 0;
   tdec->members = NULL;
@@ -845,17 +842,17 @@ TU_ERROR TUtdecCreate(TU* tu, TU_TDEC** ptdec, int memEdges, int memNodes, int m
   else
     tdec->firstFreeEdge = -1;
 
-  tdec->numRows = numRows;
-  tdec->memRows = numRows;
+  tdec->numRows = 0;
+  tdec->memRows = memRows;
   tdec->rowEdges = NULL;
-  TU_CALL( TUallocBlockArray(tu, &tdec->rowEdges, tdec->numRows) );
+  TU_CALL( TUallocBlockArray(tu, &tdec->rowEdges, tdec->memRows) );
   for (int r = 0; r < tdec->numRows; ++r)
     tdec->rowEdges[r].edge = -1;
 
-  tdec->numColumns = numColumns;
-  tdec->memColumns = tdec->numColumns;
+  tdec->numColumns = 0;
+  tdec->memColumns = memColumns;
   tdec->columnEdges = NULL;
-  TU_CALL( TUallocBlockArray(tu, &tdec->columnEdges, tdec->numColumns) );
+  TU_CALL( TUallocBlockArray(tu, &tdec->columnEdges, tdec->memColumns) );
   for (int c = 0; c < tdec->numColumns; ++c)
     tdec->columnEdges[c].edge = -1;
 
@@ -1304,8 +1301,6 @@ TU_ERROR initializeNewColumn(
 
   newcolumn->remainsGraphic = true;
   newcolumn->numPathEdges = 0;
-
-  // TODO: Remember sizes of these arrays.
 
   /* memEdges does not suffice since new edges can be created by squeezing off.
    * Each squeezing off introduces 4 new edges, and we might apply this twice for each polygon member. */
@@ -4521,7 +4516,7 @@ TU_ERROR testGraphicnessTDecomposition(TU* tu, TU_CHRMAT* matrix, TU_CHRMAT* tra
   }
 
   TU_TDEC* tdec = NULL;
-  TU_CALL( TUtdecCreate(tu, &tdec, 0, 0, 0, 0, 0) ); /* TODO: avoid reallocations. */
+  TU_CALL( TUtdecCreate(tu, &tdec, 4096, 1024, 256, 256, 256) ); /* TODO: avoid reallocations. */
 
   /* Process each column. */
   TU_TDEC_NEWCOLUMN* newcolumn = NULL;
