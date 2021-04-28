@@ -4303,48 +4303,6 @@ TU_ERROR reorderComponent(
   return TU_OKAY;
 }
 
-static
-TU_ERROR doMergeLeafBonds(
-  TU* tu,       /**< \ref TU environment. */
-  TU_TDEC* tdec /**< t-decomposition. */
-)
-{
-  assert(tu);
-  assert(tdec);
-
-  for (TU_TDEC_MEMBER member = 0; member < tdec->numMembers; ++member)
-  {
-    if (isRepresentativeMember(tdec, member) && tdec->members[member].type == TDEC_MEMBER_TYPE_BOND
-      && tdec->members[member].numEdges == 2 && tdec->members[member].parentMember >= 0)
-    {
-      TU_TDEC_MEMBER parentMember = tdec->members[member].parentMember;
-      TU_TDEC_EDGE parentEdge = tdec->members[member].markerOfParent;
-      TU_TDEC_EDGE childEdge = tdec->members[member].markerToParent;
-      TU_TDEC_EDGE otherBondEdge = tdec->edges[childEdge].next;
-      TUdbgMsg(4, "Merging bond %d into its parent %d.\n", member, parentMember);
-
-      /* We just use the nodes of the parent's child marker (even if -1). */
-      tdec->edges[otherBondEdge].head = tdec->edges[parentEdge].head;
-      tdec->edges[otherBondEdge].tail = tdec->edges[parentEdge].tail;
-
-      /* Identify members. */
-      tdec->members[member].representativeMember = parentMember;
-
-      /* We replace the parent's child marker edge by the members non-parent marker edge and remove the two marker edges. */
-      tdec->edges[otherBondEdge].member = findMember(tdec, parentMember);
-      TU_CALL( replaceEdgeInMembersEdgeList(tdec, parentEdge, otherBondEdge) );
-
-      /* Add the marker edges to the free list. */
-      tdec->numEdges -= 2;
-      tdec->edges[parentEdge].next = tdec->firstFreeEdge;
-      tdec->edges[childEdge].next = parentEdge;
-      tdec->firstFreeEdge = childEdge;
-    }
-  }
-
-  return TU_OKAY;
-}
-
 TU_ERROR TUtdecAddColumnApply(TU* tu, TU_TDEC* tdec, TU_TDEC_NEWCOLUMN* newcolumn, int column,
   int* entryRows, int numEntries)
 {
@@ -4497,7 +4455,7 @@ TU_ERROR TUtdecAddColumnApply(TU* tu, TU_TDEC* tdec, TU_TDEC_NEWCOLUMN* newcolum
 
 TU_ERROR testGraphicnessTDecomposition(TU* tu, TU_CHRMAT* matrix, TU_CHRMAT* transpose,
   bool* pisGraphic, TU_GRAPH* graph, TU_GRAPH_EDGE* basis, TU_GRAPH_EDGE* cobasis,
-  TU_SUBMAT** psubmatrix, int mergeLeafBonds)
+  TU_SUBMAT** psubmatrix)
 {
   assert(tu);
   assert(matrix);
@@ -4506,8 +4464,6 @@ TU_ERROR testGraphicnessTDecomposition(TU* tu, TU_CHRMAT* matrix, TU_CHRMAT* tra
   assert(!psubmatrix || !*psubmatrix);
   assert(!basis || graph);
   assert(!cobasis || graph);
-  assert(mergeLeafBonds >= 0);
-  assert(mergeLeafBonds <= 2);
 
 #if defined(TU_DEBUG)
   TUdbgMsg(0, "testGraphicnessTDecomposition called for a 1-connected %dx%d matrix.\n", matrix->numRows,
@@ -4567,21 +4523,12 @@ TU_ERROR testGraphicnessTDecomposition(TU* tu, TU_CHRMAT* matrix, TU_CHRMAT* tra
       TU_CALL( TUtdecAddColumnApply(tu, tdec, newcolumn, column, &transpose->entryColumns[transpose->rowStarts[column]],
         transpose->rowStarts[column+1] - transpose->rowStarts[column]) );
 
-      if (mergeLeafBonds == 2)
-        TU_CALL( doMergeLeafBonds(tu, tdec) );
-
       debugDot(tu, tdec, newcolumn);
     }
     else
     {
       *pisGraphic = false;
     }
-  }
-
-  if (*pisGraphic && mergeLeafBonds > 0)
-  {
-    TU_CALL( doMergeLeafBonds(tu, tdec) );
-    debugDot(tu, tdec, newcolumn);
   }
 
   TU_CALL( TUtdecnewcolumnFree(tu, &newcolumn) );

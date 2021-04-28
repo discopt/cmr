@@ -23,7 +23,7 @@ void testGraphicMatrix(
   ASSERT_TU_CALL( TUchrmatTranspose(tu, matrix, &transpose) );
 
   ASSERT_TU_CALL( testGraphicnessTDecomposition(tu, matrix, transpose, &isGraphic, graph, basis,
-    cobasis, NULL, mergeLeafBonds) );
+    cobasis, NULL) );
 
   ASSERT_TRUE( isGraphic );
   ASSERT_TRUE( basis );
@@ -82,8 +82,7 @@ void testNongraphicMatrix(
   bool isGraphic;
   TU_CHRMAT* transpose = NULL;
   ASSERT_TU_CALL( TUchrmatTranspose(tu, matrix, &transpose) );
-  ASSERT_TU_CALL( testGraphicnessTDecomposition(tu, matrix, transpose, &isGraphic, graph, NULL, NULL, NULL,
-    mergeLeafBonds) );
+  ASSERT_TU_CALL( testGraphicnessTDecomposition(tu, matrix, transpose, &isGraphic, graph, NULL, NULL, NULL) );
   ASSERT_FALSE( isGraphic );
   ASSERT_TU_CALL( TUchrmatFree(tu, &transpose) );
   ASSERT_TU_CALL( TUgraphFree(tu, &graph) );
@@ -100,8 +99,7 @@ void testMatrix(
   bool isGraphic;
   TU_CHRMAT* transpose = NULL;
   ASSERT_TU_CALL( TUchrmatTranspose(tu, matrix, &transpose) );
-  ASSERT_TU_CALL( testGraphicnessTDecomposition(tu, matrix, transpose, &isGraphic, graph, NULL, NULL, NULL,
-    mergeLeafBonds) );
+  ASSERT_TU_CALL( testGraphicnessTDecomposition(tu, matrix, transpose, &isGraphic, graph, NULL, NULL, NULL) );
   ASSERT_TU_CALL( TUchrmatFree(tu, &transpose) );
   ASSERT_TU_CALL( TUgraphFree(tu, &graph) );
 }

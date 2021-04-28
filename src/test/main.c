@@ -19,7 +19,7 @@ TU_ERROR run(const char* instanceFileName)
   TU_GRAPH* graph = NULL;
   TU_GRAPH_EDGE* basis = NULL;
   TU_GRAPH_EDGE* cobasis = NULL;
-  TU_CALL( TUtestGraphicnessChr(tu, matrix, &isGraphic, &graph, &basis, &cobasis, NULL, 0) );
+  TU_CALL( TUtestGraphicnessChr(tu, matrix, &isGraphic, &graph, &basis, &cobasis, NULL) );
 
   if (isGraphic)
   {

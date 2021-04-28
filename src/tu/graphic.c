@@ -25,8 +25,7 @@ static TU_ERROR testGraphicness(
   TU_GRAPH_EDGE** pcobasis,         /**< Either \c NULL or a pointer for storing an array of (cobasis) edges corresponding to the columns . */
   TU_SUBMAT** psubmatrix,           /**< Either \c NULL or a pointer for storing a minimally non-graphic submatrix. */
   int numRows,                      /**< Number of rows of the decomposed matrix. */
-  int numColumns,                   /**< Number of columns of the decomposed matrix. */
-  int mergeLeafBonds                /**< Leaf bonds of the t-decomposition are merged (1: at the end; 2: after each column). */
+  int numColumns                    /**< Number of columns of the decomposed matrix. */
 )
 {
   TU_GRAPH* graph = NULL;
@@ -65,7 +64,7 @@ static TU_ERROR testGraphicness(
   {
     TU_CALL( testGraphicnessTDecomposition(tu, (TU_CHRMAT*)components[comp].matrix,
       (TU_CHRMAT*)components[comp].transpose, isGraphic, componentGraph, componentBasis,
-      componentCobasis, psubmatrix, mergeLeafBonds) );
+      componentCobasis, psubmatrix) );
 
     if (!*isGraphic)
       break;
@@ -156,7 +155,7 @@ static TU_ERROR testGraphicness(
 }
 
 TU_ERROR TUtestGraphicnessChr(TU* tu, TU_CHRMAT* matrix, bool* isGraphic, TU_GRAPH** pgraph,
-  TU_GRAPH_EDGE** pbasis, TU_GRAPH_EDGE** pcobasis, TU_SUBMAT** psubmatrix, int mergeLeafBonds)
+  TU_GRAPH_EDGE** pbasis, TU_GRAPH_EDGE** pcobasis, TU_SUBMAT** psubmatrix)
 {
   int numComponents;
   TU_ONESUM_COMPONENT* components = NULL;
@@ -176,7 +175,7 @@ TU_ERROR TUtestGraphicnessChr(TU* tu, TU_CHRMAT* matrix, bool* isGraphic, TU_GRA
   /* Process all components. */
 
   TU_CALL( testGraphicness(tu, numComponents, components, isGraphic, pgraph, pbasis, pcobasis,
-    psubmatrix, matrix->numRows, matrix->numColumns, mergeLeafBonds) );
+    psubmatrix, matrix->numRows, matrix->numColumns) );
 
   return TU_OKAY;
 }
