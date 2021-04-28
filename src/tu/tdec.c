@@ -2,7 +2,6 @@
 // #define TU_DEBUG_SPLITTING /* Uncomment to enable debug output for splitting of polygons. */
 // #define TU_DEBUG_DOT /* Uncomment to output dot files after modifications of the t-decomposition. */
 
-// TODO: rename Internal to Inner
 // TODO: Refactor replacement of an edge by another one.
 // TODO: Refactor creation of a pair of marker edges instead of one.
 
@@ -2312,7 +2311,7 @@ TU_ERROR determineTypePrime(
       {
         /* Even if parent and child marker (type 4) are adjacent, this is non-graphic. */
 
-        /* Tested in TypingInternalPrimeNoPathNoSingleChild. */
+        /* Tested in TypingInnerPrimeNoPathNoSingleChild. */
         newcolumn->remainsGraphic = false;
       }
       else if (numOneEnd == 1)
@@ -2324,7 +2323,7 @@ TU_ERROR determineTypePrime(
         }
         else
         {
-          /* Tested in TypingInternalPrimeNoPathOneSingleChild. */
+          /* Tested in TypingInnerPrimeNoPathOneSingleChild. */
           newcolumn->remainsGraphic = false;
         }
       }
@@ -2356,7 +2355,7 @@ TU_ERROR determineTypePrime(
         }
         else
         {
-          /* Tested in TypingInternalPrimeNoPathTwoSingleChildren. */
+          /* Tested in TypingInnerPrimeNoPathTwoSingleChildren. */
           newcolumn->remainsGraphic = false;
         }
       }
@@ -2379,7 +2378,7 @@ TU_ERROR determineTypePrime(
         }
         if (parentMarkerNodes[0] != pathEndNodes[0])
         {
-          /* Tested in TypingInternalPrimeOnePathOneSingleChild. */
+          /* Tested in TypingInnerPrimeOnePathOneSingleChild. */
           newcolumn->remainsGraphic = false;
           return TU_OKAY;
         }
@@ -2394,7 +2393,7 @@ TU_ERROR determineTypePrime(
           }
           else
           {
-            /* Tested in TypingInternalPrimeOnePathOneSingleChild. */
+            /* Tested in TypingInnerPrimeOnePathOneSingleChild. */
             newcolumn->remainsGraphic = false;
           }
         }
@@ -2411,7 +2410,7 @@ TU_ERROR determineTypePrime(
           }
           else
           {
-            /* Tested in TypingInternalPrimeOnePathOneSingleChild. */
+            /* Tested in TypingInnerPrimeOnePathOneSingleChild. */
             newcolumn->remainsGraphic = false;
           }
         }
@@ -2430,7 +2429,7 @@ TU_ERROR determineTypePrime(
           otherParentNode = parentMarkerNodes[0];
         else
         {
-          /* Tested in TypingInternalPrimeOnePathTwoSingleChildren. */
+          /* Tested in TypingInnerPrimeOnePathTwoSingleChildren. */
           newcolumn->remainsGraphic = false;
           return TU_OKAY;
         }
@@ -2438,7 +2437,7 @@ TU_ERROR determineTypePrime(
         /* Two 1-ends and a path that closes a cycle with the parent marker is only allowed for root members. */
         if (pathEndNodes[1] == otherParentNode)
         {
-          /* Tested in TypingInternalPrimeOnePathTwoSingleChildren. */
+          /* Tested in TypingInnerPrimeOnePathTwoSingleChildren. */
           newcolumn->remainsGraphic = false;
           return TU_OKAY;
         }
@@ -2466,7 +2465,7 @@ TU_ERROR determineTypePrime(
         }
         else
         {
-          /* Tested in TypingInternalPrimeOnePathTwoSingleChildren. */
+          /* Tested in TypingInnerPrimeOnePathTwoSingleChildren. */
           newcolumn->remainsGraphic = false;
         }
       }
@@ -2487,7 +2486,7 @@ TU_ERROR determineTypePrime(
         else
         {
           /* Both have degree 0 or 2. */
-          /* Tested in TypingInternalPrimeOnePathNoChildren. */
+          /* Tested in TypingInnerPrimeOnePathNoChildren. */
           newcolumn->remainsGraphic = false;
         }
       }
@@ -2508,7 +2507,7 @@ TU_ERROR determineTypePrime(
         }
         else
         {
-          /* Tested in TypingInternalPrimeOnePathDoubleChild. */
+          /* Tested in TypingInnerPrimeOnePathDoubleChild. */
           newcolumn->remainsGraphic = false;
         }
       }
@@ -2518,14 +2517,14 @@ TU_ERROR determineTypePrime(
       if (reducedMember->primeEndNodes[0] != parentMarkerNodes[0] && reducedMember->primeEndNodes[0] != parentMarkerNodes[1])
       {
         TUdbgMsg(6 + 2*depth, "First path does not start at parent marker edge.\n");
-        /* Tested in TypingInternalPrimeTwoPathsNonadjacentParent. */
+        /* Tested in TypingInnerPrimeTwoPathsNonadjacentParent. */
         newcolumn->remainsGraphic = false;
         return TU_OKAY;
       }
       if (reducedMember->primeEndNodes[2] != parentMarkerNodes[0] && reducedMember->primeEndNodes[2] != parentMarkerNodes[1])
       {
         TUdbgMsg(6 + 2*depth, "Second path does not start at parent marker edge.\n");
-        /* Tested in TypingInternalPrimeTwoPathsNonadjacentParent. */
+        /* Tested in TypingInnerPrimeTwoPathsNonadjacentParent. */
         newcolumn->remainsGraphic = false;
         return TU_OKAY;
       }
@@ -2557,7 +2556,7 @@ TU_ERROR determineTypePrime(
         else
         {
           TUdbgMsg(6 + 2*depth, "No path ends at the child marker edge.\n");
-          /* Tested in TypingInternalPrimeTwoPathOneSingleChild. */
+          /* Tested in TypingInnerPrimeTwoPathOneSingleChild. */
           newcolumn->remainsGraphic = false;
         }
       }
@@ -2583,7 +2582,7 @@ TU_ERROR determineTypePrime(
         else
         {
           TUdbgMsg(6 + 2*depth, "No pairing of paths to nodes of child marker edges possible.\n");
-          /* Tested in TypingInternalPrimeTwoPathsTwoSingleChildren. */
+          /* Tested in TypingInnerPrimeTwoPathsTwoSingleChildren. */
           newcolumn->remainsGraphic = false;
         }
       }
@@ -2604,7 +2603,7 @@ TU_ERROR determineTypePrime(
         else
         {
           TUdbgMsg(6 + 2*depth, "Paths do not end at child marker.");
-          /* Tested in TypingInternalPrimeTwoPathsDoubleChild. */
+          /* Tested in TypingInnerPrimeTwoPathsDoubleChild. */
           newcolumn->remainsGraphic = false;
         }
       }
@@ -3196,7 +3195,7 @@ TU_ERROR addColumnProcessBond(
   }
   else
   {
-    /* Tested in UpdateInternalBondOneSingleChild. */
+    /* Tested in UpdateInnerBondOneSingleChild. */
 
     /* Cannot be a leaf since then it would contain a path edge, i.e., it closes a cycle. */
     assert(numOneEnd == 1);
@@ -4127,7 +4126,7 @@ TU_ERROR addColumnProcessPolygon(
     }
     else
     {
-      /* Tested in UpdateInternalPolygonOneSingleChild. */
+      /* Tested in UpdateInnerPolygonOneSingleChild. */
       assert(numOneEnd == 1);
 
       /* Squeeze off all path edges by moving them to a new polygon and creating a bond to connect
