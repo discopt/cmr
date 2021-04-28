@@ -43,7 +43,7 @@ TU_ERROR TUtestGraphicnessChr(
 );
 
 /**
- * \brief Computes a binary matrix representing a given graph.
+ * \brief Computes the binary representation matrix for a given graph.
  */
 
 TU_EXPORT

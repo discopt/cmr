@@ -358,7 +358,10 @@ struct _TU_TDEC_NEWCOLUMN
   int memChildrenStorage;                   /**< \brief Allocated memory for \c childrenStorage. */
 
   int* nodesDegree;                         /**< \brief Map from nodes to degree w.r.t. path edges. */
+  int memNodesDegree;                       /**< \brief Allocated memory for \c nodesDegree. */
+
   bool* edgesInPath;                        /**< \brief Map from edges to indicator for being in the path. */
+  int memEdgesInPath;                       /**< \brief Allocated memory for \p edgesInPath. */
 };
 
 int compareMemberDepths(const void* a, const void* b)
@@ -1249,7 +1252,10 @@ TU_ERROR TUtdecnewcolumnCreate(TU* tu, TU_TDEC_NEWCOLUMN** pnewcolumn)
   newcolumn->childrenStorage = NULL;
 
   newcolumn->nodesDegree = NULL;
+  newcolumn->memNodesDegree = 0;
+  
   newcolumn->edgesInPath = NULL;
+  newcolumn->memEdgesInPath = 0;
 
   return TU_OKAY;
 }
@@ -1303,11 +1309,22 @@ TU_ERROR initializeNewColumn(
 
   /* memEdges does not suffice since new edges can be created by squeezing off.
    * Each squeezing off introduces 4 new edges, and we might apply this twice for each polygon member. */
-  TU_CALL( TUreallocBlockArray(tu, &newcolumn->edgesInPath, tdec->memEdges + 8*tdec->numMembers + 32) );
-  TU_CALL( TUreallocBlockArray(tu, &newcolumn->nodesDegree, tdec->memNodes) );
+  size_t requiredNumEdgesInPath = tdec->memEdges + 8*tdec->numMembers + 32;
+  if (requiredNumEdgesInPath > newcolumn->memEdgesInPath)
+  {
+    TU_CALL( TUreallocBlockArray(tu, &newcolumn->edgesInPath, requiredNumEdgesInPath) );
+    newcolumn->memEdgesInPath = requiredNumEdgesInPath;
+  }
+
+  if (newcolumn->memNodesDegree < tdec->memNodes)
+  {
+    while (newcolumn->memNodesDegree < tdec->memNodes)
+      newcolumn->memNodesDegree = 16 + 2 * newcolumn->memNodesDegree;
+    TU_CALL( TUreallocBlockArray(tu, &newcolumn->nodesDegree, newcolumn->memNodesDegree) );
+  }
 
 #if defined(TU_DEBUG_DOT)
-  for (int e = 0; e < tdec->memEdges + 8*tdec->numMembers + 32; ++e)
+  for (int e = 0; e < requiredNumEdgesInPath; ++e)
     newcolumn->edgesInPath[e] = false;
 #endif /* TU_DEBUG_DOT */
 

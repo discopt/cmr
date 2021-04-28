@@ -557,7 +557,7 @@ TEST(Graphic, RandomMatrix)
     }
     A->rowStarts[numRows] = A->numNonzeros;
     
-    TUchrmatPrintDense(stdout, A, '0', false);
+    /* TUchrmatPrintDense(stdout, A, '0', false); */
 
     testMatrix(tu, A, 0);
 
@@ -939,15 +939,8 @@ TEST(Graphic, UpdateRandomGraph)
       ASSERT_TU_CALL( TUgraphAddEdge(tu, graph, nodes[u], nodes[v], NULL) );
     }
 
-//     printf("\n\n\nGraph:\n");
-//     ASSERT_TU_CALL( TUgraphPrint(stdout, graph) );
-
     TU_CHRMAT* A = NULL;
     ASSERT_TU_CALL( TUconvertGraphToBinaryMatrix(tu, graph, &A, 0, NULL, 0, NULL) );
-    
-//     FILE* f = fopen("instance.mat", "w");
-    ASSERT_TU_CALL( TUchrmatPrintDense(stdout, A, '0', false) );
-//     fclose(f);
 
     ASSERT_TU_CALL( TUgraphFree(tu, &graph) );
 
