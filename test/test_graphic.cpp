@@ -534,7 +534,7 @@ TEST(Graphic, RandomMatrix)
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
   
   srand(0);
-  const int numMatrices = 10000;
+  const int numMatrices = 1000;
   const int numRows = 10;
   const int numColumns = 20;
   const double probability = 0.3;
@@ -752,15 +752,180 @@ TEST(Graphic, UpdateLeafPolygon)
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
 
+TEST(Graphic, UpdateInternalPolygonOneSingleChild)
+{
+  TU* tu = NULL;
+  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
+  TU_CHRMAT* matrix = NULL;
+  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "4 4 "
+    "1 0 0 1 "
+    "1 1 0 1 "
+    "1 1 1 0 "
+    "0 0 1 1 "
+  ) );
+  testGraphicMatrix(tu, matrix, 2);
+  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
+  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+}
+
+TEST(Graphic, UpdateRootPrimeParentOnly)
+{
+  TU* tu = NULL;
+  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
+  TU_CHRMAT* matrix = NULL;
+  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "4 4 "
+    "1 0 1 1 "
+    "0 1 1 0 "
+    "1 1 1 0 "
+    "0 1 0 1 "
+  ) );
+  testGraphicMatrix(tu, matrix, 2);
+  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
+  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+}
+
+TEST(Graphic, UpdateRootPrimeParentJoinsPaths)
+{
+  TU* tu = NULL;
+  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
+  TU_CHRMAT* matrix = NULL;
+  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "4 4 "
+    "1 1 1 1 "
+    "1 1 0 1 "
+    "0 0 1 0 "
+    "0 1 1 1 "
+  ) );
+  testGraphicMatrix(tu, matrix, 2);
+  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
+  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+}
+
+TEST(Graphic, UpdateRootPrimeNoChildren)
+{
+  TU* tu = NULL;
+  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
+  TU_CHRMAT* matrix = NULL;
+  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "3 4 "
+    "1 0 1 1 "
+    "1 1 0 0 "
+    "0 1 1 1 "
+  ) );
+  testGraphicMatrix(tu, matrix, 2);
+  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
+  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+}
+
+TEST(Graphic, UpdateRootPrimeOneSingleChild)
+{
+  TU* tu = NULL;
+  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
+  TU_CHRMAT* matrix = NULL;
+  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "4 4 "
+    "1 1 0 0 "
+    "0 1 0 1 "
+    "1 1 1 0 "
+    "1 0 1 1 "
+  ) );
+  testGraphicMatrix(tu, matrix, 2);
+  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
+  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+}
+
+TEST(Graphic, UpdateRootPrimeTwoSingleChildren)
+{
+  TU* tu = NULL;
+  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
+  TU_CHRMAT* matrix = NULL;
+  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "5 5 "
+    "1 0 0 1 1 "
+    "1 1 0 0 1 "
+    "0 1 1 0 1 "
+    "0 1 0 1 0 "
+    "0 0 0 1 1 "
+  ) );
+  testGraphicMatrix(tu, matrix, 2);
+  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
+  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+}
+
+TEST(Graphic, UpdateRootPrimeTwoParallelSingleChildren)
+{
+  TU* tu = NULL;
+  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
+  TU_CHRMAT* matrix = NULL;
+  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "5 5 "
+    "1 1 0 1 0 "
+    "1 0 0 0 1 "
+    "1 0 1 1 0 "
+    "0 0 0 1 1 "
+    "0 1 1 0 0 "
+  ) );
+  testGraphicMatrix(tu, matrix, 2);
+  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
+  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+}
+
+
+TEST(Graphic, UpdateLeafPrime)
+{
+  TU* tu = NULL;
+  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
+  TU_CHRMAT* matrix = NULL;
+  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "4 4 "
+    "1 1 0 1 "
+    "1 1 0 0 "
+    "1 0 1 0 "
+    "0 1 1 1 "
+  ) );
+  testGraphicMatrix(tu, matrix, 2);
+  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
+  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+}
+
+TEST(Graphic, UpdateInnerPrimeOnePath)
+{
+  TU* tu = NULL;
+  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
+  TU_CHRMAT* matrix = NULL;
+  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "5 4 "
+    "0 1 1 1 "
+    "1 0 1 0 "
+    "1 1 0 0 "
+    "0 0 1 1 "
+    "1 0 1 1 "
+  ) );
+  testGraphicMatrix(tu, matrix, 2);
+  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
+  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+}
+
+TEST(Graphic, UpdateInnerPrimeNoPath)
+{
+  TU* tu = NULL;
+  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
+  TU_CHRMAT* matrix = NULL;
+  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "5 5 "
+    "1 1 0 0 1 "
+    "0 0 1 1 0 "
+    "1 0 1 0 0 "
+    "0 1 1 0 1 "
+    "0 1 0 1 1 "
+  ) );
+  testGraphicMatrix(tu, matrix, 2);
+  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
+  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+}
+
+
 TEST(Graphic, UpdateRandomGraph)
 {
   TU* tu = NULL;
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
 
   srand(1);
-  const int numGraphs = 100000;
-  const int numNodes = 4;
-  const int numEdges = 6;
+  const int numGraphs = 1000;
+  const int numNodes = 6;
+  const int numEdges = 10;
 
   TU_GRAPH_NODE* nodes = NULL;
   ASSERT_TU_CALL( TUallocBlockArray(tu, &nodes, numNodes) );

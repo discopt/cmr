@@ -2,6 +2,7 @@
 // #define TU_DEBUG_SPLITTING /* Uncomment to enable debug output for splitting of polygons. */
 // #define TU_DEBUG_DOT /* Uncomment to output dot files after modifications of the t-decomposition. */
 
+// TODO: rename Internal to Inner
 // TODO: Refactor replacement of an edge by another one.
 // TODO: Refactor creation of a pair of marker edges instead of one.
 
@@ -3285,6 +3286,8 @@ TU_ERROR addColumnProcessPrime(
       newcolumn->nodesDegree[parentMarkerNodes[1]]++;
       if (numPathEndNodes == 0)
       {
+        /* Tested in UpdateRootPrimeParentOnly. */
+
         pathEndNodes[0] = parentMarkerNodes[0];
         pathEndNodes[1] = parentMarkerNodes[1];
         numPathEndNodes = 1;
@@ -3298,6 +3301,8 @@ TU_ERROR addColumnProcessPrime(
       }
       else
       {
+        /* Tested in UpdateRootPrimeParentJoinsPaths. */
+        
         pathEndNodes[0] = pathEndNodes[3];
         pathEndNodes[2] = -1;
         pathEndNodes[3] = -1;
@@ -3309,13 +3314,16 @@ TU_ERROR addColumnProcessPrime(
 
     if (numOneEnd == 0 && numTwoEnds == 0)
     {
-      assert(numPathEndNodes >= 2);
+      /* Tested in UpdateRootPrimeNoChildren. */
 
+      assert(numPathEndNodes >= 2);
       TU_CALL( addTerminal(tu, tdec, reducedComponent, member, pathEndNodes[0]) );
       TU_CALL( addTerminal(tu, tdec, reducedComponent, member, pathEndNodes[1]) );
     }
     else if (numOneEnd == 1)
     {
+      /* Tested in UpdateRootPrimeOneSingleChild. */
+
       TU_CALL( addTerminal(tu, tdec, reducedComponent, member,
         (pathEndNodes[0] == childMarkerNodes[0] || pathEndNodes[0] == childMarkerNodes[1]) ? pathEndNodes[1] : pathEndNodes[0] ) );
 
@@ -3327,6 +3335,8 @@ TU_ERROR addColumnProcessPrime(
     }
     else
     {
+      /* Tested in UpdateRootPrimeTwoSingleChildren. */
+
       assert(numOneEnd == 2);
       assert(reducedComponent->numTerminals == 2);
 
@@ -3365,9 +3375,11 @@ TU_ERROR addColumnProcessPrime(
       if ((childMarkerNodes[0] == childMarkerNodes[2] && childMarkerNodes[1] == childMarkerNodes[3])
         || (childMarkerNodes[0] == childMarkerNodes[3] && childMarkerNodes[1] == childMarkerNodes[2]))
       {
+        /* Tested in UpdateRootPrimeTwoParallelSingleChildren. */
+        
         TUdbgMsg(8, "Moving child marker edges %d = {%d,%d} and %d = {%d,%d} to a new bond.\n", childMarkerEdges[0],
           childMarkerNodes[0], childMarkerNodes[1], childMarkerEdges[1], childMarkerNodes[2], childMarkerNodes[3]);
-
+        
         TU_TDEC_MEMBER newBond = -1;
         TU_CALL( createMember(tu, tdec, TDEC_MEMBER_TYPE_BOND, &newBond) );
         tdec->members[newBond].parentMember = member;
@@ -3454,6 +3466,8 @@ TU_ERROR addColumnProcessPrime(
 
     if (numOneEnd == 0 && numTwoEnds == 0)
     {
+      /* Tested in UpdateLeafPrime. */
+
       assert(reducedMember->firstPathEdge);
       assert(pathEndNodes[0] >= 0);
 
@@ -3464,9 +3478,11 @@ TU_ERROR addColumnProcessPrime(
     else
     {
       assert(numOneEnd == 1);
-      
+
       if (numPathEndNodes >= 2)
       {
+        /* Tested in UpdateInnerPrimeOnePath. */
+
         TUdbgMsg(8 + 2*depth, "%d-%d-path with parent marker {%d,%d} and child marker {%d,%d}.\n", pathEndNodes[0],
           pathEndNodes[1], parentMarkerNodes[0], parentMarkerNodes[1], childMarkerNodes[0], childMarkerNodes[1]);
 
@@ -3491,6 +3507,8 @@ TU_ERROR addColumnProcessPrime(
       }
       else
       {
+        /* Tested in UpdateInnerPrimeNoPath. */
+
         /* Parent marker and child marker must be next to each other. */
         if (parentMarkerNodes[0] == childMarkerNodes[0] || parentMarkerNodes[0] == childMarkerNodes[1])
           flipEdge(tdec, tdec->members[member].markerToParent);
@@ -4109,6 +4127,7 @@ TU_ERROR addColumnProcessPolygon(
     }
     else
     {
+      /* Tested in UpdateInternalPolygonOneSingleChild. */
       assert(numOneEnd == 1);
 
       /* Squeeze off all path edges by moving them to a new polygon and creating a bond to connect
