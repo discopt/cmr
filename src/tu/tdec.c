@@ -558,27 +558,19 @@ TU_ERROR createNode(
 }
 
 /**
- * \brief Adds \p edge to the edge list of \p member.
- *
- * Requires that \p edge already has \p member as its member.
+ * \brief Adds \p edge to the edge list of its member.
  */
 
 static
 TU_ERROR addEdgeToMembersEdgeList(
-  TU* tu,               /**< \ref TU environment. */
-  TU_TDEC* tdec,        /**< t-decomposition. */
-  TU_TDEC_EDGE edge,    /**< Edge to be added. */
-  TU_TDEC_MEMBER member /**< Member. */
+  TU_TDEC* tdec,    /**< t-decomposition. */
+  TU_TDEC_EDGE edge /**< Edge to be added. */
 )
 {
-  assert(tu);
   assert(tdec);
   assert(edge >= 0);
-  assert(member >= 0);
-  assert(member < tdec->numMembers);
-  assert(isRepresentativeMember(tdec, member));
-  assert(tdec->edges[edge].member == member);
 
+  TU_TDEC_MEMBER member = findEdgeMember(tdec, edge);
   TU_TDEC_EDGE first = tdec->members[member].firstEdge;
   if (first >= 0)
   {
@@ -602,25 +594,19 @@ TU_ERROR addEdgeToMembersEdgeList(
 }
 
 /**
- * \brief Removes \p edge from the edge list of \p member.
+ * \brief Removes \p edge from the edge list of its member.
  */
 
 static
 TU_ERROR removeEdgeFromMembersEdgeList(
-  TU* tu,               /**< \ref TU environment. */
-  TU_TDEC* tdec,        /**< t-decomposition. */
-  TU_TDEC_EDGE edge,    /**< Edge to be added. */
-  TU_TDEC_MEMBER member /**< Member. */
+  TU_TDEC* tdec,    /**< t-decomposition. */
+  TU_TDEC_EDGE edge /**< Edge to be added. */
 )
 {
-  assert(tu);
   assert(tdec);
   assert(edge >= 0);
-  assert(member >= 0);
-  assert(member < tdec->numMembers);
-  assert(isRepresentativeMember(tdec, member));
-  assert(findMember(tdec, tdec->edges[edge].member) == member);
 
+  TU_TDEC_MEMBER member = findEdgeMember(tdec, edge);
   if (tdec->members[member].numEdges == 1)
     tdec->members[member].firstEdge = -1;
   else
@@ -1373,10 +1359,8 @@ TU_ERROR parallelParentChildCheckMember(
         tdec->edges[markerOfParent].member = newBond;
         tdec->edges[markerOfParent].tail = -1;
         tdec->edges[markerOfParent].head = -1;
-        TU_CALL( addEdgeToMembersEdgeList(tu, tdec, markerOfParent, newBond) );
-        TU_CALL( addEdgeToMembersEdgeList(tu, tdec, newMarkerToParent, newBond) );
-        tdec->members[newBond].markerOfParent = newMarkerOfParent;
-        tdec->members[newBond].markerToParent = newMarkerToParent;
+        TU_CALL( addEdgeToMembersEdgeList(tdec, markerOfParent) );
+        TU_CALL( addEdgeToMembersEdgeList(tdec, newMarkerToParent) );
         tdec->members[member].parentMember = newBond;
         parentMember = newBond;
       }
@@ -1386,9 +1370,9 @@ TU_ERROR parallelParentChildCheckMember(
       TUdbgMsg(12, "Removing child marker edge %d from member %d and adding it to the new bond %d.\n", childMarkerEdge,
         member, parentMember);
 
-      TU_CALL( removeEdgeFromMembersEdgeList(tu, tdec, childMarkerEdge, member) );
+      TU_CALL( removeEdgeFromMembersEdgeList(tdec, childMarkerEdge) );
       tdec->edges[childMarkerEdge].member = parentMember;
-      TU_CALL( addEdgeToMembersEdgeList(tu, tdec, childMarkerEdge, parentMember) );
+      TU_CALL( addEdgeToMembersEdgeList(tdec, childMarkerEdge) );
       tdec->edges[childMarkerEdge].tail = -1;
       tdec->edges[childMarkerEdge].head = -1;
       tdec->members[childMember].parentMember = parentMember;
@@ -1748,7 +1732,7 @@ TU_ERROR completeReducedDecomposition(
 
       TU_TDEC_EDGE edge;
       TU_CALL( createEdge(tu, tdec, member, &edge) );
-      TU_CALL( addEdgeToMembersEdgeList(tu, tdec, edge, member) );
+      TU_CALL( addEdgeToMembersEdgeList(tdec, edge) );
       tdec->edges[edge].name = r;
       tdec->edges[edge].head = -1;
       tdec->edges[edge].tail = -1;
@@ -3117,19 +3101,17 @@ TU_ERROR splitBond(
   TU_CALL( createMember(tu, tdec, TDEC_MEMBER_TYPE_BOND, &childBond) );
   TU_TDEC_EDGE markerOfParentBond, markerOfChildBond;
   TU_CALL( createMarkerEdgePair(tu, tdec, bond, &markerOfParentBond, -1, -1, childBond, &markerOfChildBond, -1, -1) );
-  TU_CALL( addEdgeToMembersEdgeList(tu, tdec, markerOfParentBond, bond) );
-  TU_CALL( addEdgeToMembersEdgeList(tu, tdec, markerOfChildBond, childBond) );
-  tdec->members[childBond].markerOfParent = markerOfParentBond;
-  tdec->members[childBond].markerToParent = markerOfChildBond;
+  TU_CALL( addEdgeToMembersEdgeList(tdec, markerOfParentBond) );
+  TU_CALL( addEdgeToMembersEdgeList(tdec, markerOfChildBond) );
 
-  TU_CALL( removeEdgeFromMembersEdgeList(tu, tdec, edge1, bond) );
+  TU_CALL( removeEdgeFromMembersEdgeList(tdec, edge1) );
   tdec->edges[edge1].member = childBond;
-  TU_CALL( addEdgeToMembersEdgeList(tu, tdec, edge1, childBond) );
+  TU_CALL( addEdgeToMembersEdgeList(tdec, edge1) );
   tdec->members[findMember(tdec, tdec->edges[edge1].childMember)].parentMember = childBond;
 
-  TU_CALL( removeEdgeFromMembersEdgeList(tu, tdec, edge2, bond) );
+  TU_CALL( removeEdgeFromMembersEdgeList(tdec, edge2) );
   tdec->edges[edge2].member = childBond;
-  TU_CALL( addEdgeToMembersEdgeList(tu, tdec, edge2, childBond) );
+  TU_CALL( addEdgeToMembersEdgeList(tdec, edge2) );
   tdec->members[findMember(tdec, tdec->edges[edge2].childMember)].parentMember = childBond;
 
   if (pChildBond)
@@ -3406,20 +3388,18 @@ TU_ERROR addColumnProcessPrime(
         tdec->edges[tdec->edges[markerOfParent].prev].next = markerOfParent;
         if (tdec->members[member].firstEdge == childMarkerEdges[0])
           tdec->members[member].firstEdge = markerOfParent;
-        tdec->members[newBond].markerOfParent = markerOfParent;
         tdec->edges[childMarkerEdges[0]].tail = -1;
         tdec->edges[childMarkerEdges[0]].head = -1;
         tdec->edges[childMarkerEdges[1]].tail = -1;
         tdec->edges[childMarkerEdges[1]].head = -1;
 
-        TU_CALL( addEdgeToMembersEdgeList(tu, tdec, markerToParent, newBond) );
-        tdec->members[newBond].markerToParent = markerToParent;
+        TU_CALL( addEdgeToMembersEdgeList(tdec, markerToParent) );
 
         tdec->edges[childMarkerEdges[0]].member = newBond;
-        TU_CALL( addEdgeToMembersEdgeList(tu, tdec, childMarkerEdges[0], newBond) );
-        TU_CALL( removeEdgeFromMembersEdgeList(tu, tdec, childMarkerEdges[1], member) );
+        TU_CALL( addEdgeToMembersEdgeList(tdec, childMarkerEdges[0]) );
+        TU_CALL( removeEdgeFromMembersEdgeList(tdec, childMarkerEdges[1]) );
         tdec->edges[childMarkerEdges[1]].member = newBond;
-        TU_CALL( addEdgeToMembersEdgeList(tu, tdec, childMarkerEdges[1], newBond) );
+        TU_CALL( addEdgeToMembersEdgeList(tdec, childMarkerEdges[1]) );
 
         debugDot(tu, tdec, newcolumn);
 
@@ -3563,13 +3543,11 @@ TU_ERROR createEdgeBond(
   tdec->edges[tdec->edges[markerOfParent].prev].next = markerOfParent;
   if (tdec->members[parentMember].firstEdge == edge)
     tdec->members[parentMember].firstEdge = markerOfParent;
-  tdec->members[newBond].markerOfParent = markerOfParent;
 
-  TU_CALL( addEdgeToMembersEdgeList(tu, tdec, markerToParent, newBond) );
-  tdec->members[newBond].markerToParent = markerToParent;
+  TU_CALL( addEdgeToMembersEdgeList(tdec, markerToParent) );
 
   tdec->edges[edge].member = newBond;
-  TU_CALL( addEdgeToMembersEdgeList(tu, tdec, edge, newBond) );
+  TU_CALL( addEdgeToMembersEdgeList(tdec, edge) );
 
   if (pNewBond)
     *pNewBond = newBond;
@@ -3653,10 +3631,8 @@ TU_ERROR splitPolygon(
 
     TU_TDEC_EDGE polygonParentMarker, bondChildMarker;
     TU_CALL( createMarkerEdgePair(tu, tdec, bond, &bondChildMarker, -1, -1, polygon, &polygonParentMarker, -1, -1) );
-    TU_CALL( addEdgeToMembersEdgeList(tu, tdec, polygonParentMarker, polygon) );
-    tdec->members[polygon].markerToParent = polygonParentMarker;
-    TU_CALL( addEdgeToMembersEdgeList(tu, tdec, bondChildMarker, bond) );
-    tdec->members[polygon].markerOfParent = bondChildMarker;
+    TU_CALL( addEdgeToMembersEdgeList(tdec, polygonParentMarker) );
+    TU_CALL( addEdgeToMembersEdgeList(tdec, bondChildMarker) );
 
     /* Go through old polygon. */
     TU_TDEC_EDGE firstEdge = tdec->members[member].firstEdge;
@@ -3727,9 +3703,7 @@ TU_ERROR splitPolygon(
 
     TU_TDEC_EDGE memberChildMarker, bondParentMarker;
     TU_CALL( createMarkerEdgePair(tu, tdec, member, &memberChildMarker, -1, -1, bond, &bondParentMarker, -1, -1) );
-    TU_CALL( addEdgeToMembersEdgeList(tu, tdec, bondParentMarker, bond) );
-    tdec->members[bond].markerToParent = bondParentMarker;
-    tdec->members[bond].markerOfParent = memberChildMarker;
+    TU_CALL( addEdgeToMembersEdgeList(tdec, bondParentMarker) );
     TU_TDEC_EDGE oldPrev = tdec->edges[firstEdge].prev;
     tdec->edges[memberChildMarker].next = firstEdge;
     tdec->edges[memberChildMarker].prev = oldPrev;
@@ -4414,7 +4388,7 @@ TU_ERROR TUtdecAddColumnApply(TU* tu, TU_TDEC* tdec, TU_TDEC_NEWCOLUMN* newcolum
     tdec->edges[newEdge].head = reducedComponent->terminalNode[0];
     tdec->edges[newEdge].tail = reducedComponent->terminalNode[1];
     tdec->edges[newEdge].name = INT_MAX/2;
-    TU_CALL( addEdgeToMembersEdgeList(tu, tdec, newEdge, tdec->edges[newEdge].member) );
+    TU_CALL( addEdgeToMembersEdgeList(tdec, newEdge) );
   }
 
   for (int c = 0; c < newcolumn->numReducedComponents; ++c)
@@ -4431,7 +4405,7 @@ TU_ERROR TUtdecAddColumnApply(TU* tu, TU_TDEC* tdec, TU_TDEC_NEWCOLUMN* newcolum
     TU_CALL( createMember(tu, tdec, TDEC_MEMBER_TYPE_LOOP, &loopMember) );
     TU_TDEC_MEMBER loopEdge;
     TU_CALL( createEdge(tu, tdec, loopMember, &loopEdge) );
-    TU_CALL( addEdgeToMembersEdgeList(tu, tdec, loopEdge, loopMember) );
+    TU_CALL( addEdgeToMembersEdgeList(tdec, loopEdge) );
     tdec->edges[loopEdge].name = -1 - column;
     tdec->edges[loopEdge].childMember = -1;
   }
@@ -4456,14 +4430,14 @@ TU_ERROR TUtdecAddColumnApply(TU* tu, TU_TDEC* tdec, TU_TDEC_NEWCOLUMN* newcolum
     tdec->edges[columnEdge].head = -1;
     tdec->edges[columnEdge].tail = -1;
     tdec->edges[columnEdge].name = -1 - column;
-    TU_CALL( addEdgeToMembersEdgeList(tu, tdec, columnEdge, polygon) );
+    TU_CALL( addEdgeToMembersEdgeList(tdec, columnEdge) );
 
     for (int i = 0; i < newcolumn->numReducedComponents; ++i)
     {
       TU_TDEC_EDGE newEdge = componentNewEdges[i];
       TU_TDEC_EDGE markerEdge;
       TU_CALL( createEdge(tu, tdec, polygon, &markerEdge) );
-      TU_CALL( addEdgeToMembersEdgeList(tu, tdec, markerEdge, polygon) );
+      TU_CALL( addEdgeToMembersEdgeList(tdec, markerEdge) );
       tdec->edges[markerEdge].head = -1;
       tdec->edges[markerEdge].tail = -1;
 
@@ -4616,7 +4590,7 @@ TU_ERROR testGraphicnessTDecomposition(TU* tu, TU_CHRMAT* matrix, TU_CHRMAT* tra
 
         TU_TDEC_EDGE edge;
         TU_CALL( createEdge(tu, tdec, member, &edge) );
-        TU_CALL( addEdgeToMembersEdgeList(tu, tdec, edge, member) );
+        TU_CALL( addEdgeToMembersEdgeList(tdec, edge) );
         tdec->edges[edge].name = r;
         tdec->edges[edge].head = -1;
         tdec->edges[edge].tail = -1;
