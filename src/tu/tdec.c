@@ -2,8 +2,6 @@
 // #define TU_DEBUG_SPLITTING /* Uncomment to enable debug output for splitting of polygons. */
 // #define TU_DEBUG_DOT /* Uncomment to output dot files after modifications of the t-decomposition. */
 
-// TODO: Refactor replacement of an edge by another one.
-
 #include <tu/tdec.h>
 #include "env_internal.h"
 
@@ -621,6 +619,39 @@ TU_ERROR removeEdgeFromMembersEdgeList(
   }
 
   tdec->members[member].numEdges--;
+
+  return TU_OKAY;
+}
+
+
+/**
+ * \brief Replaced \p oldEdge in its member by \p newEdge.
+ * 
+ * Assumes that \p newEdge has the same member but is not in its edge list.
+ */
+
+static
+TU_ERROR replaceEdgeInMembersEdgeList(
+  TU_TDEC* tdec,        /**< t-decomposition. */
+  TU_TDEC_EDGE oldEdge, /**< Edge to be removed. */
+  TU_TDEC_EDGE newEdge  /**< Edge to be added. */
+)
+{
+  assert(tdec);
+  assert(oldEdge >= 0);
+  assert(newEdge >= 0);
+
+  TU_TDEC_MEMBER member = findEdgeMember(tdec, oldEdge);
+  assert(findEdgeMember(tdec, newEdge) == member);
+
+  tdec->edges[newEdge].tail = tdec->edges[oldEdge].tail;
+  tdec->edges[newEdge].head = tdec->edges[oldEdge].head;
+  tdec->edges[newEdge].next = tdec->edges[oldEdge].next;
+  tdec->edges[newEdge].prev = tdec->edges[oldEdge].prev;
+  tdec->edges[tdec->edges[oldEdge].next].prev = newEdge;
+  tdec->edges[tdec->edges[oldEdge].prev].next = newEdge;
+  if (tdec->members[member].firstEdge == oldEdge)
+    tdec->members[member].firstEdge = newEdge;
 
   return TU_OKAY;
 }
@@ -1346,15 +1377,7 @@ TU_ERROR parallelParentChildCheckMember(
         TU_CALL( createMarkerEdgePair(tu, tdec, parentMember, &newMarkerOfParent, tdec->edges[markerOfParent].tail,
           tdec->edges[markerOfParent].head, newBond, &newMarkerToParent, -1, -1) );
 
-        /* Replace markerOfParent by newMarkerOfParent. */
-        tdec->edges[newMarkerOfParent].next = tdec->edges[markerOfParent].next;
-        tdec->edges[newMarkerOfParent].prev = tdec->edges[markerOfParent].prev;
-        tdec->edges[tdec->edges[markerOfParent].next].prev = newMarkerOfParent;
-        tdec->edges[tdec->edges[markerOfParent].prev].next = newMarkerOfParent;
-        if (tdec->members[parentMember].firstEdge == markerOfParent)
-          tdec->members[parentMember].firstEdge = newMarkerOfParent;
-        tdec->edges[newMarkerOfParent].tail = tdec->edges[markerOfParent].tail;
-        tdec->edges[newMarkerOfParent].head = tdec->edges[markerOfParent].head;
+        TU_CALL( replaceEdgeInMembersEdgeList(tdec, markerOfParent, newMarkerOfParent) );
         tdec->edges[markerOfParent].childMember = member;
         tdec->edges[markerOfParent].member = newBond;
         tdec->edges[markerOfParent].tail = -1;
@@ -3382,24 +3405,20 @@ TU_ERROR addColumnProcessPrime(
         TU_TDEC_EDGE markerOfParent, markerToParent;
         TU_CALL( createMarkerEdgePair(tu, tdec, member, &markerOfParent, childMarkerNodes[0], childMarkerNodes[1],
           newBond, &markerToParent, -1, -1) );
-        tdec->edges[markerOfParent].next = tdec->edges[childMarkerEdges[0]].next;
-        tdec->edges[markerOfParent].prev = tdec->edges[childMarkerEdges[0]].prev;
-        tdec->edges[tdec->edges[markerOfParent].next].prev = markerOfParent;
-        tdec->edges[tdec->edges[markerOfParent].prev].next = markerOfParent;
-        if (tdec->members[member].firstEdge == childMarkerEdges[0])
-          tdec->members[member].firstEdge = markerOfParent;
-        tdec->edges[childMarkerEdges[0]].tail = -1;
-        tdec->edges[childMarkerEdges[0]].head = -1;
-        tdec->edges[childMarkerEdges[1]].tail = -1;
-        tdec->edges[childMarkerEdges[1]].head = -1;
-
+        
+        TU_CALL( replaceEdgeInMembersEdgeList(tdec, childMarkerEdges[0], markerOfParent) );
         TU_CALL( addEdgeToMembersEdgeList(tdec, markerToParent) );
-
         tdec->edges[childMarkerEdges[0]].member = newBond;
         TU_CALL( addEdgeToMembersEdgeList(tdec, childMarkerEdges[0]) );
         TU_CALL( removeEdgeFromMembersEdgeList(tdec, childMarkerEdges[1]) );
         tdec->edges[childMarkerEdges[1]].member = newBond;
         TU_CALL( addEdgeToMembersEdgeList(tdec, childMarkerEdges[1]) );
+
+        /* The bond has no nodes, so we have to get rid of these. */
+        tdec->edges[childMarkerEdges[0]].tail = -1;
+        tdec->edges[childMarkerEdges[0]].head = -1;
+        tdec->edges[childMarkerEdges[1]].tail = -1;
+        tdec->edges[childMarkerEdges[1]].head = -1;
 
         debugDot(tu, tdec, newcolumn);
 
@@ -4312,13 +4331,10 @@ TU_ERROR doMergeLeafBonds(
       tdec->members[member].representativeMember = parentMember;
 
       /* We replace the parent's child marker edge by the members non-parent marker edge and remove the two marker edges. */
-      if (tdec->members[parentMember].firstEdge == parentEdge)
-        tdec->members[parentMember].firstEdge = tdec->edges[parentEdge].next;
-      tdec->edges[tdec->edges[parentEdge].next].prev = otherBondEdge;
-      tdec->edges[tdec->edges[parentEdge].prev].next = otherBondEdge;
-      tdec->edges[otherBondEdge].prev = tdec->edges[parentEdge].prev;
-      tdec->edges[otherBondEdge].next = tdec->edges[parentEdge].next;
       tdec->edges[otherBondEdge].member = findMember(tdec, parentMember);
+      TU_CALL( replaceEdgeInMembersEdgeList(tdec, parentEdge, otherBondEdge) );
+
+      /* Add the marker edges to the free list. */
       tdec->numEdges -= 2;
       tdec->edges[parentEdge].next = tdec->firstFreeEdge;
       tdec->edges[childEdge].next = parentEdge;
