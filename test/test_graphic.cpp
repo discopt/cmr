@@ -921,9 +921,9 @@ TEST(Graphic, UpdateRandomGraph)
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
 
   srand(1);
-  const int numGraphs = 1000;
-  const int numNodes = 6;
-  const int numEdges = 10;
+  const int numGraphs = 100;
+  const int numNodes = 10;
+  const int numEdges = 30;
 
   TU_GRAPH_NODE* nodes = NULL;
   ASSERT_TU_CALL( TUallocBlockArray(tu, &nodes, numNodes) );
