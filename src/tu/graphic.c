@@ -222,7 +222,7 @@ TU_ERROR TUconvertGraphToBinaryMatrix(TU* tu, TU_GRAPH* graph, TU_CHRMAT** pmatr
   assert(numCobasisEdges == 0 || cobasisEdges);
   TUassertStackConsistency(tu);
 
-  NodeData* nodeData = NULL;  
+  NodeData* nodeData = NULL;
   
   TU_CALL( TUallocStackArray(tu, &nodeData, TUgraphMemNodes(graph)) );
   

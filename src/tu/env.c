@@ -62,7 +62,7 @@ TU_ERROR TUfreeEnvironment(TU** ptu)
     return TU_ERROR_INPUT;
 
   TU* tu = *ptu;
-  
+
   if (tu->closeOutput)
     fclose(tu->output);
 

@@ -107,7 +107,7 @@ int TUgetDecRankLowerLeft(TU_DEC* dec)
 {
   assert(dec);
 
-  if ((dec->flags & TU_DEC_TYPE_MASK) == TU_DEC_THREE_SUM 
+  if ((dec->flags & TU_DEC_TYPE_MASK) == TU_DEC_THREE_SUM
     && !(dec->flags & TU_DEC_RANK_UPPER_RIGHT))
     return 2;
   else if (dec->flags & (TU_DEC_RANK_LOWER_LEFT))
@@ -120,7 +120,7 @@ int TUgetDecRankUpperRight(TU_DEC* dec)
 {
   assert(dec);
 
-  if ((dec->flags & TU_DEC_TYPE_MASK) == TU_DEC_THREE_SUM 
+  if ((dec->flags & TU_DEC_TYPE_MASK) == TU_DEC_THREE_SUM
     && !(dec->flags & TU_DEC_RANK_LOWER_LEFT))
     return 2;
   else if (dec->flags & (TU_DEC_RANK_UPPER_RIGHT))
@@ -161,7 +161,7 @@ void TUcreateDecChild(TU* tu, TU_DEC* dec, int numRows, int* rows, int numColumn
     result->parentColumns[numColumns + column] = 0;
 
   /* Create the child matrix. */
-  
+
   TUchrmatCreate(tu, &result->matrix, numRows, numColumns, 0);
   TU_CHRMAT* childMatrix = result->matrix;
 

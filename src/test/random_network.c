@@ -89,7 +89,7 @@ int main(int argc, const char** argv)
       }
     }
   }
-  
+
   TUfreeBlockArray(tu, &column);
   TUfreeBlockArray(tu, &nextTreeNode);
   TUfreeBlockArray(tu, &treeDistance);

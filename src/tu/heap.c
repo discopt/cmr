@@ -55,7 +55,7 @@ void debugHeap(TU_INTHEAP* heap)
 static inline
 void debugHeap(TU_INTHEAP* heap)
 {
-  
+
 }
 #endif /* TU_DEBUG_HEAP_CONTENT */
 
@@ -158,7 +158,7 @@ TU_ERROR TUintheapDecreaseInsert(TU_INTHEAP* heap, int key, int newValue)
   heap->values[currentKey] = newValue;
   int currentValue = newValue;
   TUdbgMsg(22, "Initial is %d:%d->%d.\n", current, currentKey, currentValue);
-  
+
   while (current > 0)
   {
     int parent = (current-1) / 2;
@@ -190,7 +190,7 @@ int TUintheapExtractMinimum(TU_INTHEAP* heap)
   heap->data[0] = heap->data[heap->size - 1];
   heap->positions[heap->data[0]] = 0;
   --heap->size;
-  
+
   TUdbgMsg(20, "Heap extract: %d->%d.\n", extracted, heap->values[extracted]);
 
   int current = 0;
@@ -234,6 +234,6 @@ int TUintheapExtractMinimum(TU_INTHEAP* heap)
   }
 
   debugHeap(heap);
-  
+
   return extracted;
 }

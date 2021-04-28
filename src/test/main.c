@@ -7,7 +7,7 @@
 TU_ERROR run(const char* instanceFileName)
 {
   FILE* instanceFile = fopen(instanceFileName, "r");
-  
+
   TU* tu = NULL;
   TU_CALL( TUcreateEnvironment(&tu) );
 
@@ -44,7 +44,7 @@ TU_ERROR run(const char* instanceFileName)
     printf("Input matrix is NOT graphic.\n");
 
   TU_CALL( TUchrmatFree(tu, &matrix) );
-  
+
   TU_CALL( TUfreeEnvironment(&tu) );
 
   return TU_OKAY;

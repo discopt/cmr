@@ -86,7 +86,7 @@ TU_DEC* TUregularDecomposeSimpleSums(TU* tu, TU_DEC* decomposition, bool unitVec
           result->children[1]->matrix->entryValues[1] = 1;
           int column = matrix->entryColumns[matrix->rowStarts[row]];
           int begin = transpose->rowStarts[column];
-          int end = column < transpose->numRows ? transpose->rowStarts[column + 1] 
+          int end = column < transpose->numRows ? transpose->rowStarts[column + 1]
             : transpose->numNonzeros;
           int otherRow = -1;
           for (int entry = begin; entry < end; ++entry)
@@ -157,13 +157,11 @@ TU_DEC* TUregularDecomposeSimpleSums(TU* tu, TU_DEC* decomposition, bool unitVec
           result->children[1]->matrix->rowStarts[1] = 2;
           result->children[1]->matrix->entryColumns[0] = 0;
           result->children[1]->matrix->entryColumns[1] = 1;
-          result->children[1]->matrix->entryValues[0] 
-            = transpose->entryValues[transpose->rowStarts[column]];
+          result->children[1]->matrix->entryValues[0] = transpose->entryValues[transpose->rowStarts[column]];
           result->children[1]->matrix->entryValues[1] = 1;
           int row = transpose->entryColumns[transpose->rowStarts[column]];
           int begin = matrix->rowStarts[row];
-          int end = row < matrix->numRows ? matrix->rowStarts[row + 1] 
-            : matrix->numNonzeros;
+          int end = row < matrix->numRows ? matrix->rowStarts[row + 1] : matrix->numNonzeros;
           int otherColumn = -1;
           for (int entry = begin; entry < end; ++entry)
           {
@@ -229,7 +227,7 @@ TU_DEC* TUregularDecomposeSimpleSums(TU* tu, TU_DEC* decomposition, bool unitVec
       }
 
       /* Make second child the current node. */
-      
+
       result = result->children[1];
     }
 

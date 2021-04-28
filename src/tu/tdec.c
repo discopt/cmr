@@ -1278,7 +1278,7 @@ TU_ERROR initializeNewColumn(
 /**
  * \brief Ensures that the child marker in \p member for \p childMember is not parallel to the parent marker of
  * \p member.
- * 
+ *
  * Note that this can only happen when a component is reordered (receiving a new root) because reduced components shall
  * be joined.
  */
@@ -1330,7 +1330,7 @@ TU_ERROR parallelParentChildCheckMember(
       {
         TUdbgMsg(12, "Parent is not a bond, so we create one between edges %d and %d.\n",
           tdec->members[member].markerToParent, tdec->members[member].markerOfParent);
-        
+
         TU_TDEC_MEMBER newBond;
         TU_CALL( createMember(tu, tdec, TDEC_MEMBER_TYPE_BOND, &newBond) );
         TU_TDEC_EDGE markerOfParent = tdec->members[member].markerOfParent;
@@ -1514,7 +1514,7 @@ TU_ERROR createReducedMembers(
 
     TUdbgMsg(8, "The root member of %d is %d.\n", reducedMember->member, reducedMember->rootMember);
   }
-  
+
   *pReducedMember = reducedMember;
 
   return TU_OKAY;
@@ -1555,7 +1555,7 @@ TU_ERROR computeReducedDecomposition(
 
   ReducedMember** rootDepthMinimizer = NULL;
   /* Factor 2 because of possible new bonds due to ensureChildParentMarkersNotParallel */
-  TU_CALL( TUallocStackArray(tu, &rootDepthMinimizer, 2*tdec->numMembers) ); 
+  TU_CALL( TUallocStackArray(tu, &rootDepthMinimizer, 2*tdec->numMembers) );
   for (int m = 0; m < 2*tdec->numMembers; ++m)
     rootDepthMinimizer[m] = NULL;
   newcolumn->numReducedMembers = 0;
@@ -2251,7 +2251,7 @@ TU_ERROR determineTypePrime(
               matched[j/2] = true;
           }
         }
-        
+
         if (matched[0] && matched[1])
           reducedMember->type = TYPE_5_ROOT;
         else
@@ -2420,7 +2420,7 @@ TU_ERROR determineTypePrime(
         TUdbgMsg(6 + 2*depth, "%d-%d-path, parent marker {%d,%d} and child markers {%d,%d} and {%d,%d}\n",
           pathEndNodes[0], pathEndNodes[1], parentMarkerNodes[0], parentMarkerNodes[1], childMarkerNodes[0],
           childMarkerNodes[1], childMarkerNodes[2], childMarkerNodes[3]);
-        
+
         /* We know that pathEndNodes[0] is incident to the parent marker. */
         TU_TDEC_NODE otherParentNode;
         if (pathEndNodes[0] == parentMarkerNodes[0])
@@ -2594,7 +2594,7 @@ TU_ERROR determineTypePrime(
       {
         /* One child marker with both ends. We already checked that path end nodes 0 and 2 are parent marker nodes. */
         assert(numTwoEnds == 1);
-        
+
         if ((pathEndNodes[1] == childMarkerNodes[0] && pathEndNodes[3] == childMarkerNodes[1])
           || (pathEndNodes[1] == childMarkerNodes[1] && pathEndNodes[3] == childMarkerNodes[0]))
         {
@@ -2686,7 +2686,7 @@ TU_ERROR determineTypes(
   }
 
   TUdbgMsg(6 + 2*depth, "Determined type %d (%s).\n", reducedMember->type, newcolumn->remainsGraphic ? "graphic" : "non-graphic");
-  
+
   /* Parent marker edge closes cycle, so we propagate information to parent. */
 
   if (newcolumn->remainsGraphic && !isRoot && reducedMember->type == TYPE_1_CLOSES_CYCLE)
@@ -2746,7 +2746,7 @@ TU_ERROR TUtdecAddColumnCheck(TU* tu, TU_TDEC* tdec, TU_TDEC_NEWCOLUMN* newcolum
   {
     TU_CALL( determineTypes(tu, tdec, newcolumn, &newcolumn->reducedComponents[i],
       newcolumn->reducedComponents[i].root, 0) );
-    
+
     TUdbgMsg(6, "After inspecting reduced component %d, graphic = %d.\n", i, newcolumn->remainsGraphic);
   }
 
@@ -3168,7 +3168,7 @@ TU_ERROR addColumnProcessBond(
       /* If we have one single-child or a double-child then we should have moved the reduced root. */
       assert(numOneEnd == 2);
       assert(reducedComponent->numTerminals == 2);
-      
+
       /* If the bond contains more than 3 edges, we split the two child edges off, which creates a bond with a parent
        * marker and the two children.
        * Test: Graphic.RootBondTwoOneEnds */
@@ -3301,7 +3301,7 @@ TU_ERROR addColumnProcessPrime(
       else
       {
         /* Tested in UpdateRootPrimeParentJoinsPaths. */
-        
+
         pathEndNodes[0] = pathEndNodes[3];
         pathEndNodes[2] = -1;
         pathEndNodes[3] = -1;
@@ -3369,16 +3369,16 @@ TU_ERROR addColumnProcessPrime(
         SWAP_INTS(childMarkerNodes[0], childMarkerNodes[2]);
         SWAP_INTS(childMarkerNodes[1], childMarkerNodes[3]);
       }
-      
+
       /* Check if the two child markers are parallel. We then create a bond with the two. */
       if ((childMarkerNodes[0] == childMarkerNodes[2] && childMarkerNodes[1] == childMarkerNodes[3])
         || (childMarkerNodes[0] == childMarkerNodes[3] && childMarkerNodes[1] == childMarkerNodes[2]))
       {
         /* Tested in UpdateRootPrimeTwoParallelSingleChildren. */
-        
+
         TUdbgMsg(8, "Moving child marker edges %d = {%d,%d} and %d = {%d,%d} to a new bond.\n", childMarkerEdges[0],
           childMarkerNodes[0], childMarkerNodes[1], childMarkerEdges[1], childMarkerNodes[2], childMarkerNodes[3]);
-        
+
         TU_TDEC_MEMBER newBond = -1;
         TU_CALL( createMember(tu, tdec, TDEC_MEMBER_TYPE_BOND, &newBond) );
         tdec->members[newBond].parentMember = member;
@@ -3489,7 +3489,7 @@ TU_ERROR addColumnProcessPrime(
         if (pathEndNodes[1] != childMarkerNodes[0] && pathEndNodes[1] != childMarkerNodes[1])
           SWAP_INTS(pathEndNodes[0], pathEndNodes[1]);
         assert(pathEndNodes[1] == childMarkerNodes[0] || pathEndNodes[1] == childMarkerNodes[1]);
-        
+
         /* Flip parent if necessary. */
         if (pathEndNodes[0] == parentMarkerNodes[0])
         {
@@ -3817,7 +3817,7 @@ TU_ERROR addColumnProcessPolygon(
       if (newcolumn->edgesInPath[tdec->members[member].markerToParent])
       {
         /* Tested in UpdateRootPolygonNoChildrenParent. */
-        
+
         TUdbgMsg(8 + 2*depth, "Polygon contains both terminal nodes and the parent marker edge is a path edge.\n");
 
         /* Squeeze off all non-path edges by moving them to a new polygon and creating a bond to connect it to the
@@ -3827,7 +3827,7 @@ TU_ERROR addColumnProcessPolygon(
       else if (reducedMember->type == TYPE_1_CLOSES_CYCLE)
       {
         /* Tested in UpdateRootPolygonNoChildrenHamiltonianPath. */
-        
+
         TUdbgMsg(8 + 2*depth, "Polygon contains both terminal nodes which are the parent marker edge nodes.\n");
 
         TU_TDEC_MEMBER parentMember = findMemberParent(tdec, member);
@@ -3885,7 +3885,7 @@ TU_ERROR addColumnProcessPolygon(
       if (newcolumn->edgesInPath[tdec->members[member].markerToParent])
       {
         /* Tested in UpdateRootPolygonOneSingleChildParent. */
-        
+
         /* There is more than 1 path edge, so we split off all non-path edges and work in the new polygon. */
         if (reducedMember->firstPathEdge)
         {
@@ -3917,7 +3917,7 @@ TU_ERROR addColumnProcessPolygon(
       else
       {
         /* Tested in UpdateRootPolygonOneSingleChild. */
-  
+
         /* Parent marker edge is not a path edge. */
         assert(reducedMember->firstPathEdge);
 
@@ -3966,7 +3966,7 @@ TU_ERROR addColumnProcessPolygon(
       if (reducedMember->type != TYPE_4_CONNECTS_TWO_PATHS)
       {
         /* Tested in UpdateRootPolygonTwoSingleChildren. */
-        
+
         /* Parent marker is a non-path edge. We split off path edges if more than one. */
         TU_CALL( splitPolygon(tu, tdec, member, newcolumn->edgesInPath, true, &pathEdge, NULL, NULL) );
 
@@ -4018,7 +4018,7 @@ TU_ERROR addColumnProcessPolygon(
         "After splitting off, the (potential) path edge is %d and the (potential) non-path edge is %d.\n",
         pathEdge, nonPathEdge);
       debugDot(tu, tdec, newcolumn);
-      
+
       assert(pathEdge >= 0 || nonPathEdge >= 0);
 
       /* a <----- b ---- c -----> d -------- a

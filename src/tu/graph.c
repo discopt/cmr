@@ -245,7 +245,7 @@ TU_ERROR TUgraphAddEdge(TU* tu, TU_GRAPH* graph, TU_GRAPH_NODE u, TU_GRAPH_NODE 
     graph->freeEdge = graph->memEdges;
     graph->memEdges = newMemEdges;
   }
-  
+
   /* Add to list. */
 
   TU_GRAPH_EDGE edge = graph->freeEdge;
@@ -336,7 +336,7 @@ TU_ERROR TUgraphDeleteEdge(TU* tu, TU_GRAPH* graph, TU_GRAPH_EDGE e)
 
   TUgraphEnsureConsistent(tu, graph);
 
-  /* Remove from u's list of outgoing arcs. */  
+  /* Remove from u's list of outgoing arcs. */
   TU_GRAPH_EDGE prev = graph->arcs[arc].prev;
   TU_GRAPH_EDGE next = graph->arcs[arc].next;
   if (isValid(prev))
