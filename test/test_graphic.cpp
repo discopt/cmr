@@ -3,27 +3,22 @@
 #include <stdlib.h>
 
 #include "common.h"
+
 #include <tu/graphic.h>
-#include <tu/tdec.h>
 
 void testGraphicMatrix(
-  TU* tu,             /**< \ref TU environment. */
-  TU_CHRMAT* matrix,  /**< Matrix to be used for testing. */
-  int mergeLeafBonds  /**< Leaf bonds of the t-decomposition are merged (1: at the end; 2: after each column). */
+  TU* tu,           /**< \ref TU environment. */
+  TU_CHRMAT* matrix /**< Matrix to be used for testing. */
 )
 {
-  TU_GRAPH* graph = NULL;
-  ASSERT_TU_CALL( TUgraphCreateEmpty(tu, &graph, 0, 0) );
-  TU_GRAPH_EDGE* basis = NULL;
-  ASSERT_TU_CALL( TUallocBlockArray(tu, &basis, matrix->numRows) );
-  TU_GRAPH_EDGE* cobasis = NULL;
-  ASSERT_TU_CALL( TUallocBlockArray(tu, &cobasis, matrix->numColumns) );
   bool isGraphic;
+  TU_GRAPH* graph = NULL;
+  TU_GRAPH_EDGE* basis = NULL;
+  TU_GRAPH_EDGE* cobasis = NULL;
   TU_CHRMAT* transpose = NULL;
   ASSERT_TU_CALL( TUchrmatTranspose(tu, matrix, &transpose) );
 
-  ASSERT_TU_CALL( testGraphicnessTDecomposition(tu, matrix, transpose, &isGraphic, graph, basis,
-    cobasis, NULL) );
+  ASSERT_TU_CALL( TUtestGraphicness(tu, transpose, &isGraphic, &graph, &basis, &cobasis, NULL) );
 
   ASSERT_TRUE( isGraphic );
   ASSERT_TRUE( basis );
@@ -72,34 +67,28 @@ void testGraphicMatrix(
 }
 
 void testNongraphicMatrix(
-  TU* tu,             /**< \ref TU environment. */
-  TU_CHRMAT* matrix,  /**< Matrix to be used for testing. */
-  int mergeLeafBonds  /**< Leaf bonds of the t-decomposition are merged (1: at the end; 2: after each column). */
+  TU* tu,           /**< \ref TU environment. */
+  TU_CHRMAT* matrix /**< Matrix to be used for testing. */
 )
 {
-  TU_GRAPH* graph = NULL;
-  ASSERT_TU_CALL( TUgraphCreateEmpty(tu, &graph, 0, 0) );
   bool isGraphic;
   TU_CHRMAT* transpose = NULL;
   ASSERT_TU_CALL( TUchrmatTranspose(tu, matrix, &transpose) );
-  ASSERT_TU_CALL( testGraphicnessTDecomposition(tu, matrix, transpose, &isGraphic, graph, NULL, NULL, NULL) );
+  ASSERT_TU_CALL( TUtestGraphicness(tu, transpose, &isGraphic, NULL, NULL, NULL, NULL) );
   ASSERT_FALSE( isGraphic );
   ASSERT_TU_CALL( TUchrmatFree(tu, &transpose) );
-  ASSERT_TU_CALL( TUgraphFree(tu, &graph) );
 }
 
 void testMatrix(
-  TU* tu,             /**< \ref TU environment. */
-  TU_CHRMAT* matrix,  /**< Matrix to be used for testing. */
-  int mergeLeafBonds  /**< Leaf bonds of the t-decomposition are merged (1: at the end; 2: after each column). */
+  TU* tu,           /**< \ref TU environment. */
+  TU_CHRMAT* matrix /**< Matrix to be used for testing. */
 )
 {
   TU_GRAPH* graph = NULL;
-  ASSERT_TU_CALL( TUgraphCreateEmpty(tu, &graph, 0, 0) );
   bool isGraphic;
   TU_CHRMAT* transpose = NULL;
   ASSERT_TU_CALL( TUchrmatTranspose(tu, matrix, &transpose) );
-  ASSERT_TU_CALL( testGraphicnessTDecomposition(tu, matrix, transpose, &isGraphic, graph, NULL, NULL, NULL) );
+  ASSERT_TU_CALL( TUtestGraphicness(tu, transpose, &isGraphic, &graph, NULL, NULL, NULL) );
   ASSERT_TU_CALL( TUchrmatFree(tu, &transpose) );
   ASSERT_TU_CALL( TUgraphFree(tu, &graph) );
 }
@@ -116,7 +105,7 @@ TEST(Graphic, TypingManyChildrenTerminals)
     "0 0 0 0 1 0 1 1 0 0 "
     "0 0 1 0 0 0 1 0 1 1 "
   ) );
-  testNongraphicMatrix(tu, matrix, 2);
+  testNongraphicMatrix(tu, matrix);
   ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
@@ -132,7 +121,7 @@ TEST(Graphic, TypingInnerBondWithEdge)
     "0 0 1 0 1 1 "
     "1 0 1 1 0 1 "
   ) );
-  testNongraphicMatrix(tu, matrix, 2);
+  testNongraphicMatrix(tu, matrix);
   ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
@@ -148,7 +137,7 @@ TEST(Graphic, TypingInnerPolygonDoubleChild)
     "1 1 1 "
     "1 1 0 "
   ) );
-  testNongraphicMatrix(tu, matrix, 2);
+  testNongraphicMatrix(tu, matrix);
   ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
@@ -164,7 +153,7 @@ TEST(Graphic, TypingRootPolygonDoubleChild)
     "1 0 1 "
     "0 1 1 "
   ) );
-  testNongraphicMatrix(tu, matrix, 2);
+  testNongraphicMatrix(tu, matrix);
   ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
@@ -180,7 +169,7 @@ TEST(Graphic, TypingAnyPrimeDegree3)
     "1 0 1 1 "
     "0 1 1 1 "
   ) );
-  testNongraphicMatrix(tu, matrix, 2);
+  testNongraphicMatrix(tu, matrix);
   ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
@@ -197,7 +186,7 @@ TEST(Graphic, TypingAnyPrimeManyPaths)
     "0 1 1 1 0 0 1 "
     "0 1 0 0 0 1 1 "
   ) );
-  testNongraphicMatrix(tu, matrix, 2);
+  testNongraphicMatrix(tu, matrix);
   ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
@@ -214,7 +203,7 @@ TEST(Graphic, TypingRootPrimeNoPathsDisjointSingleChildren)
     "1 1 0 0 "
     "1 1 0 1 "
   ) );
-  testNongraphicMatrix(tu, matrix, 2);
+  testNongraphicMatrix(tu, matrix);
   ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
@@ -231,7 +220,7 @@ TEST(Graphic, TypingRootPrimeOnePathSingleChild)
     "0 1 0 1 "
     "1 0 1 1 "
   ) );
-  testNongraphicMatrix(tu, matrix, 2);
+  testNongraphicMatrix(tu, matrix);
   ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
@@ -248,7 +237,7 @@ TEST(Graphic, TypingRootPrimeOnePathTwoSingleChildren)
     "1 0 1 0 "
     "1 1 0 1 "
   ) );
-  testNongraphicMatrix(tu, matrix, 2);
+  testNongraphicMatrix(tu, matrix);
   ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
@@ -266,7 +255,7 @@ TEST(Graphic, TypingRootPrimeOnePathDoubleChild)
     "0 0 1 0 1 1 "
     "1 1 1 0 1 0 "
   ) );
-  testNongraphicMatrix(tu, matrix, 2);
+  testNongraphicMatrix(tu, matrix);
   ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
@@ -281,7 +270,7 @@ TEST(Graphic, TypingRootPrimeTwoPaths)
     "1 1 0 1 "
     "0 1 1 1 "
   ) );
-  testNongraphicMatrix(tu, matrix, 2);
+  testNongraphicMatrix(tu, matrix);
   ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
@@ -298,7 +287,7 @@ TEST(Graphic, TypingInnerPrimeNoPathNoSingleChild)
     "0 0 0 0 1 1 0 "
     "1 1 0 1 1 1 0 "
   ) );
-  testNongraphicMatrix(tu, matrix, 2);
+  testNongraphicMatrix(tu, matrix);
   ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
@@ -314,7 +303,7 @@ TEST(Graphic, TypingInnerPrimeNoPathOneSingleChild)
     "0 1 1 0 "
     "1 1 0 0 "
   ) );
-  testNongraphicMatrix(tu, matrix, 2);
+  testNongraphicMatrix(tu, matrix);
   ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
@@ -331,7 +320,7 @@ TEST(Graphic, TypingInnerPrimeNoPathTwoSingleChildren)
     "1 1 0 0 "
     "0 1 0 1 "
   ) );
-  testNongraphicMatrix(tu, matrix, 2);
+  testNongraphicMatrix(tu, matrix);
   ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
@@ -348,7 +337,7 @@ TEST(Graphic, TypingInnerPrimeOnePathOneSingleChild)
     "0 1 1 1 "
     "1 1 0 1 "
   ) );
-  testNongraphicMatrix(tu, matrix, 2);
+  testNongraphicMatrix(tu, matrix);
   ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
 
   ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "5 5 "
@@ -358,7 +347,7 @@ TEST(Graphic, TypingInnerPrimeOnePathOneSingleChild)
     "1 1 0 0 1 "
     "0 1 0 1 0 "
   ) );
-  testNongraphicMatrix(tu, matrix, 2);
+  testNongraphicMatrix(tu, matrix);
   ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
 
   ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "4 4 "
@@ -367,7 +356,7 @@ TEST(Graphic, TypingInnerPrimeOnePathOneSingleChild)
     "1 1 0 0 "
     "1 0 1 1 "
   ) );
-  testNongraphicMatrix(tu, matrix, 2);
+  testNongraphicMatrix(tu, matrix);
   ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
 
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
@@ -385,7 +374,7 @@ TEST(Graphic, TypingInnerPrimeOnePathTwoSingleChildren)
     "1 1 0 0 "
     "0 1 0 1 "
   ) );
-  testNongraphicMatrix(tu, matrix, 2);
+  testNongraphicMatrix(tu, matrix);
   ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
 
   ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "6 6 "
@@ -396,7 +385,7 @@ TEST(Graphic, TypingInnerPrimeOnePathTwoSingleChildren)
     "1 0 1 1 0 0 "
     "1 1 0 1 0 0 "
   ) );
-  testNongraphicMatrix(tu, matrix, 2);
+  testNongraphicMatrix(tu, matrix);
   ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
 
   ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "5 4 "
@@ -406,7 +395,7 @@ TEST(Graphic, TypingInnerPrimeOnePathTwoSingleChildren)
     "0 1 1 0 "
     "1 1 1 1 "
   ) );
-  testNongraphicMatrix(tu, matrix, 2);
+  testNongraphicMatrix(tu, matrix);
   ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
 
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
@@ -422,7 +411,7 @@ TEST(Graphic, TypingInnerPrimeOnePathNoChildren)
     "1 1 1 0 "
     "1 0 1 1 "
   ) );
-  testNongraphicMatrix(tu, matrix, 2);
+  testNongraphicMatrix(tu, matrix);
   ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
@@ -439,7 +428,7 @@ TEST(Graphic, TypingInnerPrimeOnePathDoubleChild)
     "0 1 0 1 0 0 1 0 "
     "0 0 0 0 1 0 1 0 "
   ) );
-  testNongraphicMatrix(tu, matrix, 2);
+  testNongraphicMatrix(tu, matrix);
   ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
@@ -456,7 +445,7 @@ TEST(Graphic, TypingInnerPrimeTwoPathsNonadjacentParent)
     "0 1 0 1 1 0 "
     "0 1 1 0 1 0 "
   ) );
-  testNongraphicMatrix(tu, matrix, 2);
+  testNongraphicMatrix(tu, matrix);
   ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
 
   ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "5 6 "
@@ -466,7 +455,7 @@ TEST(Graphic, TypingInnerPrimeTwoPathsNonadjacentParent)
     "0 1 1 1 0 0 "
     "1 0 0 1 1 1 "
   ) );
-  testNongraphicMatrix(tu, matrix, 2);
+  testNongraphicMatrix(tu, matrix);
   ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
 
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
@@ -484,7 +473,7 @@ TEST(Graphic, TypingInnerPrimeTwoPathOneSingleChild)
     "1 1 0 0 0 1 "
     "0 0 0 1 1 0 "
   ) );
-  testNongraphicMatrix(tu, matrix, 2);
+  testNongraphicMatrix(tu, matrix);
   ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
@@ -501,7 +490,7 @@ TEST(Graphic, TypingInnerPrimeTwoPathTwoSingleChildren)
     "0 1 0 0 0 1 "
     "1 0 1 1 0 1 "
   ) );
-  testNongraphicMatrix(tu, matrix, 2);
+  testNongraphicMatrix(tu, matrix);
   ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
@@ -520,7 +509,7 @@ TEST(Graphic, TypingInnerPrimeTwoPathsDoubleChild)
     "1 0 0 0 1 1 "
     "0 1 0 0 0 1 "
   ) );
-  testNongraphicMatrix(tu, matrix, 2);
+  testNongraphicMatrix(tu, matrix);
   ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
@@ -559,7 +548,7 @@ TEST(Graphic, RandomMatrix)
     
     /* TUchrmatPrintDense(stdout, A, '0', false); */
 
-    testMatrix(tu, A, 0);
+    testMatrix(tu, A);
 
     ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
   }
@@ -575,7 +564,7 @@ TEST(Graphic, UpdateRootBondNoChildren)
   ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "1 1 "
     "1 "
   ) );
-  testGraphicMatrix(tu, matrix, 2);
+  testGraphicMatrix(tu, matrix);
   ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
@@ -590,7 +579,7 @@ TEST(Graphic, UpdateRootBondTwoSingleChildren)
     "0 1 1 "
     "1 0 1 "
   ) );
-  testGraphicMatrix(tu, matrix, 2);
+  testGraphicMatrix(tu, matrix);
   ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
@@ -605,7 +594,7 @@ TEST(Graphic, UpdateRootBondTwoSingleChildrenSplit)
     "1 0 0 1 "
     "0 0 1 1 "
   ) );
-  testGraphicMatrix(tu, matrix, 2);
+  testGraphicMatrix(tu, matrix);
   ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
@@ -620,7 +609,7 @@ TEST(Graphic, UpdateInnerBondOneSingleChild)
     "1 1 0 "
     "0 1 1 "
   ) );
-  testGraphicMatrix(tu, matrix, 2);
+  testGraphicMatrix(tu, matrix);
   ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
@@ -635,7 +624,7 @@ TEST(Graphic, UpdateRootPolygonNoChildrenParent)
     "0 1 1 "
     "0 1 0 "
   ) );
-  testGraphicMatrix(tu, matrix, 2);
+  testGraphicMatrix(tu, matrix);
   ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
@@ -650,7 +639,7 @@ TEST(Graphic, UpdateRootPolygonNoChildrenHamiltonianPath)
     "1 1 1 "
     "1 1 1 "
   ) );
-  testGraphicMatrix(tu, matrix, 2);
+  testGraphicMatrix(tu, matrix);
   ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
@@ -665,7 +654,7 @@ TEST(Graphic, UpdateRootPolygonNoChildren)
     "1 1 "
     "1 1 "
   ) );
-  testGraphicMatrix(tu, matrix, 2);
+  testGraphicMatrix(tu, matrix);
   ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
@@ -681,7 +670,7 @@ TEST(Graphic, UpdateRootPolygonOneSingleChildParent)
     "1 1 0 "
     "0 1 1 "
   ) );
-  testGraphicMatrix(tu, matrix, 2);
+  testGraphicMatrix(tu, matrix);
   ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
@@ -697,7 +686,7 @@ TEST(Graphic, UpdateRootPolygonOneSingleChild)
     "1 0 1 "
     "0 0 1 "
   ) );
-  testGraphicMatrix(tu, matrix, 2);
+  testGraphicMatrix(tu, matrix);
   ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
@@ -713,7 +702,7 @@ TEST(Graphic, UpdateRootPolygonTwoSingleChildren)
     "0 1 0 1 "
     "0 0 1 1 "
   ) );
-  testGraphicMatrix(tu, matrix, 2);
+  testGraphicMatrix(tu, matrix);
   ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
@@ -729,7 +718,7 @@ TEST(Graphic, UpdateRootPolygonTwoSingleChildrenParent)
     "1 1 1 0 "
     "0 0 1 1 "
   ) );
-  testGraphicMatrix(tu, matrix, 2);
+  testGraphicMatrix(tu, matrix);
   ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
@@ -744,7 +733,7 @@ TEST(Graphic, UpdateLeafPolygon)
     "1 1 0 "
     "0 1 1 "
   ) );
-  testGraphicMatrix(tu, matrix, 2);
+  testGraphicMatrix(tu, matrix);
   ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
@@ -760,7 +749,7 @@ TEST(Graphic, UpdateInnerPolygonOneSingleChild)
     "1 1 1 0 "
     "0 0 1 1 "
   ) );
-  testGraphicMatrix(tu, matrix, 2);
+  testGraphicMatrix(tu, matrix);
   ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
@@ -776,7 +765,7 @@ TEST(Graphic, UpdateRootPrimeParentOnly)
     "1 1 1 0 "
     "0 1 0 1 "
   ) );
-  testGraphicMatrix(tu, matrix, 2);
+  testGraphicMatrix(tu, matrix);
   ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
@@ -792,7 +781,7 @@ TEST(Graphic, UpdateRootPrimeParentJoinsPaths)
     "0 0 1 0 "
     "0 1 1 1 "
   ) );
-  testGraphicMatrix(tu, matrix, 2);
+  testGraphicMatrix(tu, matrix);
   ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
@@ -807,7 +796,7 @@ TEST(Graphic, UpdateRootPrimeNoChildren)
     "1 1 0 0 "
     "0 1 1 1 "
   ) );
-  testGraphicMatrix(tu, matrix, 2);
+  testGraphicMatrix(tu, matrix);
   ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
@@ -823,7 +812,7 @@ TEST(Graphic, UpdateRootPrimeOneSingleChild)
     "1 1 1 0 "
     "1 0 1 1 "
   ) );
-  testGraphicMatrix(tu, matrix, 2);
+  testGraphicMatrix(tu, matrix);
   ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
@@ -840,7 +829,7 @@ TEST(Graphic, UpdateRootPrimeTwoSingleChildren)
     "0 1 0 1 0 "
     "0 0 0 1 1 "
   ) );
-  testGraphicMatrix(tu, matrix, 2);
+  testGraphicMatrix(tu, matrix);
   ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
@@ -857,7 +846,7 @@ TEST(Graphic, UpdateRootPrimeTwoParallelSingleChildren)
     "0 0 0 1 1 "
     "0 1 1 0 0 "
   ) );
-  testGraphicMatrix(tu, matrix, 2);
+  testGraphicMatrix(tu, matrix);
   ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
@@ -874,7 +863,7 @@ TEST(Graphic, UpdateLeafPrime)
     "1 0 1 0 "
     "0 1 1 1 "
   ) );
-  testGraphicMatrix(tu, matrix, 2);
+  testGraphicMatrix(tu, matrix);
   ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
@@ -891,7 +880,7 @@ TEST(Graphic, UpdateInnerPrimeOnePath)
     "0 0 1 1 "
     "1 0 1 1 "
   ) );
-  testGraphicMatrix(tu, matrix, 2);
+  testGraphicMatrix(tu, matrix);
   ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
@@ -908,7 +897,7 @@ TEST(Graphic, UpdateInnerPrimeNoPath)
     "0 1 1 0 1 "
     "0 1 0 1 1 "
   ) );
-  testGraphicMatrix(tu, matrix, 2);
+  testGraphicMatrix(tu, matrix);
   ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
@@ -944,7 +933,7 @@ TEST(Graphic, UpdateRandomGraph)
 
     ASSERT_TU_CALL( TUgraphFree(tu, &graph) );
 
-    testGraphicMatrix(tu, A, 0);
+    testGraphicMatrix(tu, A);
 
     ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
   }

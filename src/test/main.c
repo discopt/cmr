@@ -15,11 +15,14 @@ TU_ERROR run(const char* instanceFileName)
   TU_CALL( TUchrmatCreateFromDenseStream(tu, &matrix, instanceFile) );
   fclose(instanceFile);
 
+  TU_CHRMAT* transpose = NULL;
+  TU_CALL( TUchrmatTranspose(tu, matrix, &transpose) );
+
   bool isGraphic;
   TU_GRAPH* graph = NULL;
   TU_GRAPH_EDGE* basis = NULL;
   TU_GRAPH_EDGE* cobasis = NULL;
-  TU_CALL( TUtestGraphicnessChr(tu, matrix, &isGraphic, &graph, &basis, &cobasis, NULL) );
+  TU_CALL( TUtestGraphicness(tu, transpose, &isGraphic, &graph, &basis, &cobasis, NULL) );
 
   if (isGraphic)
   {
@@ -43,6 +46,7 @@ TU_ERROR run(const char* instanceFileName)
   else
     printf("Input matrix is NOT graphic.\n");
 
+  TU_CALL( TUchrmatFree(tu, &transpose) );
   TU_CALL( TUchrmatFree(tu, &matrix) );
 
   TU_CALL( TUfreeEnvironment(&tu) );

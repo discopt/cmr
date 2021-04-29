@@ -32,10 +32,10 @@ extern "C" {
  */
 
 TU_EXPORT
-TU_ERROR TUtestGraphicnessChr(
+TU_ERROR TUtestGraphicness(
   TU* tu,                   /**< TU environment. */
-  TU_CHRMAT* matrix,        /**< Char matrix. */
-  bool* isGraphic,          /**< Returns true if and only if \p matrix is graphic. */
+  TU_CHRMAT* transpose,     /**< Transpose of matrix to be tested. */
+  bool* pisGraphic,          /**< Returns true if and only if the matrix is graphic. */
   TU_GRAPH** pgraph,        /**< If not \c NULL, the graph is stored. */
   TU_GRAPH_EDGE** pbasis,   /**< If not \c NULL, contains basis edges. */
   TU_GRAPH_EDGE** pcobasis, /**< If not \c NULL, contains cobasis edges. */

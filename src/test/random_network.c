@@ -96,7 +96,6 @@ int main(int argc, const char** argv)
 
   TU_CHRMAT* matrix = NULL;
   TUchrmatTranspose(tu, transposed, &matrix);
-  TUchrmatFree(tu, &transposed);
 
   /* Print matrix. */
 
@@ -110,7 +109,7 @@ int main(int argc, const char** argv)
   TU_SUBMAT* submatrix = NULL;
   bool isGraphic;
 
-  TUtestGraphicnessChr(tu, matrix, &isGraphic, &graph, &basis, &cobasis, &submatrix);
+  TUtestGraphicness(tu, transposed, &isGraphic, &graph, &basis, &cobasis, &submatrix);
 
   if (graph)
   {
@@ -130,6 +129,7 @@ int main(int argc, const char** argv)
 
   /* Cleanup */
 
+  TUchrmatFree(tu, &transposed);
   TUchrmatFree(tu, &matrix);
   TUfreeEnvironment(&tu);
 
