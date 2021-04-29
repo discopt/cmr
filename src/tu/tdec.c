@@ -739,7 +739,7 @@ TU_ERROR createMarkerEdgePair(
   data->head = markerOfParentHead;
   data->childMember = childMember;
   data->name = -INT_MAX + tdec->numMarkerPairs;
-  TUdbgMsg(12, "Created child marker edge {%d,%d} <%d> of member %d.\n", childMarkerTail, childMarkerHead, data->name,
+  TUdbgMsg(12, "Created child marker edge {%d,%d} <%d> of member %d.\n", markerOfParentTail, markerOfParentHead, data->name,
     parentMember);
 
   /* Create the parent marker edge of the child member. */
@@ -753,7 +753,7 @@ TU_ERROR createMarkerEdgePair(
   tdec->members[childMember].markerOfParent = *pMarkerOfParent;
   tdec->members[childMember].markerToParent = *pMarkerToParent;
   data->name = INT_MAX - tdec->numMarkerPairs;
-  TUdbgMsg(12, "Created child marker edge {%d,%d} <%d> of member %d.\n", childMarkerTail, childMarkerHead, data->name,
+  TUdbgMsg(12, "Created child marker edge {%d,%d} <%d> of member %d.\n", markerToParentTail, markerToParentHead, data->name,
     parentMember);
 
   /* Increase counter of used marker pairs. */
