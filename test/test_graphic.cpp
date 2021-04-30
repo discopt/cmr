@@ -27,8 +27,8 @@ void testGraphicMatrix(
   ASSERT_TU_CALL( TUchrmatFree(tu, &transpose) );
 
   TU_CHRMAT* result = NULL;
-  ASSERT_TU_CALL( TUconvertGraphToBinaryMatrix(tu, graph, &result, matrix->numRows, basis,
-    matrix->numColumns, cobasis) );
+  ASSERT_TU_CALL( TUconvertGraphToBinaryMatrix(tu, graph, &result, matrix->numRows, basis, matrix->numColumns,
+    cobasis) );
   ASSERT_TRUE( result );
 
   if (TUchrmatCheckEqual(matrix, result))
@@ -90,7 +90,8 @@ void testMatrix(
   ASSERT_TU_CALL( TUchrmatTranspose(tu, matrix, &transpose) );
   ASSERT_TU_CALL( TUtestGraphicness(tu, transpose, &isGraphic, &graph, NULL, NULL, NULL) );
   ASSERT_TU_CALL( TUchrmatFree(tu, &transpose) );
-  ASSERT_TU_CALL( TUgraphFree(tu, &graph) );
+  if (graph)
+    ASSERT_TU_CALL( TUgraphFree(tu, &graph) );
 }
 
 TEST(Graphic, TypingManyChildrenTerminals)

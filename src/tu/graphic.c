@@ -1,4 +1,4 @@
-#define TU_DEBUG /* Uncomment to debug graphic. */
+// #define TU_DEBUG /* Uncomment to debug graphic. */
 // #define TU_DEBUG_DOT /* Uncomment to write dot files of t-decompositions. */
 
 #include <tu/graphic.h>
@@ -200,6 +200,8 @@ DEC_MEMBER findEdgeMember(
   return findMember(dec, dec->edges[edge].member);
 }
 
+#if !defined(NDEBUG)
+
 /**
  * \brief Checks whether \p dec has consistent edge data.
  *
@@ -351,91 +353,6 @@ char* consistencyTree(
   return NULL;
 }
 
-typedef enum
-{
-  TYPE_CYCLE_CHILD = 1,   /**< Parent marker edge plus path edges form a cycle.
-                           *   If graphic, this means we can replace the child by its child marker, adding the latter to
-                           *   the list of path edges. */
-  TYPE_SINGLE_CHILD = 2,  /**< One node of the parent marker edge is a path end.
-                           *   If graphic, this means that one terminal node is in this member or its children. */
-  TYPE_DOUBLE_CHILD = 3,  /**< Path edges form two cycles and adding the parent marker edge yields one.
-                           *   If graphic, this means that both terminal nodes are in this member or its children. */
-  TYPE_ROOT = 4           /**< Root member of reduced decomposition. */
-} Type;
-
-/**
- * \brief Additional information specific to a path edge.
- */
-
-typedef struct _PathEdge
-{
-  DEC_EDGE edge;          /**< \brief The actual edge in the decomposition. */
-  struct _PathEdge* next; /**< \brief Next edge of this reduced member, or \c NULL. */
-} PathEdge;
-
-/**
- * \brief Additional member information specfic to a given path.
- *
- * @TODO: Maybe add parent reduced member as well, so we don't have to go via the membersToReducedMembers array.
- */
-
-typedef struct _ReducedMember
-{
-  DEC_MEMBER member;                /**< \brief The member from the decomposition. */
-  DEC_MEMBER rootMember;            /**< \brief The root member of this component of the decomposition. */
-  int depth;                        /**< \brief Depth of this member in the reduced decomposition. */
-  Type type;                        /**< \brief Type of this member. */
-  struct _ReducedMember* parent;    /**< \brief Parent in the reduced decomposition. */
-  int numChildren;                  /**< \brief Number of children in the reduced decomposition. */
-  struct _ReducedMember** children; /**< \brief Children in the reduced decomposition. */
-  PathEdge* firstPathEdge;          /**< \brief First edge in linked list of path edges of \p member. */
-  DEC_NODE rigidEndNodes[4];        /**< \brief For rigid members, the end nodes of the paths inside the member (or -1). */
-} ReducedMember;
-
-/**
- * \brief A component of the reduced decomposition.
- */
-
-typedef struct _ReducedComponent
-{
-  int rootDepth;                /**< \brief Depth of reduced root member. */
-  ReducedMember* root;          /**< \brief Reduced root member. */
-  DEC_NODE terminalNode[2];     /**< \brief Terminal nodes of path. */
-  DEC_MEMBER terminalMember[2]; /**< \brief Terminal members of path. */
-  int numTerminals;
-} ReducedComponent;
-
-/**
- * \brief Information for adding a new column.
- */
-
-typedef struct
-{
-  bool remainsGraphic;                      /**< \brief Indicator whether adding this column maintains graphicness. */
-  int memReducedMembers;                    /**< \brief Allocated memory for \c reducedMembers. */
-  int numReducedMembers;                    /**< \brief Number of members in \c reducedMembers. */
-  ReducedMember* reducedMembers;            /**< \brief Array of reduced members, sorted by increasing depth. */
-  ReducedMember** membersToReducedMembers;  /**< \brief Array mapping members to members of the reduced t-decomposition. */
-
-  ReducedComponent* reducedComponents;      /**< \brief Array with reduced root members. */
-  int memReducedComponents;                 /**< \brief Allocated memory for \c reducedComponents. */
-  int numReducedComponents;                 /**< \brief Number of reduced root members. */
-
-  PathEdge* pathEdges;                      /**< \brief Storage for edge lists of path edges. */
-  int memPathEdges;                         /**< \brief Allocated memory for \c pathEdges. */
-  int numPathEdges;                         /**< \brief Number of stored edges in \c pathEdges. */
-
-  ReducedMember** childrenStorage;          /**< \brief Storage for members' arrays of children in reduced t-decomposition. */
-  int usedChildrenStorage;                  /**< \brief Number of stored children in \c childrenStorage. */
-  int memChildrenStorage;                   /**< \brief Allocated memory for \c childrenStorage. */
-
-  int* nodesDegree;                         /**< \brief Map from nodes to degree w.r.t. path edges. */
-  int memNodesDegree;                       /**< \brief Allocated memory for \c nodesDegree. */
-
-  bool* edgesInPath;                        /**< \brief Map from edges to indicator for being in the path. */
-  int memEdgesInPath;                       /**< \brief Allocated memory for \p edgesInPath. */
-} DEC_NEWCOLUMN;
-
 /**
  * \brief Checks whether \p dec has consistent parent/child structure of members.
  *
@@ -547,6 +464,93 @@ char* decConsistency(
 
   return NULL;
 }
+
+#endif /* !NDEBUG */
+
+typedef enum
+{
+  TYPE_CYCLE_CHILD = 1,   /**< Parent marker edge plus path edges form a cycle.
+                           *   If graphic, this means we can replace the child by its child marker, adding the latter to
+                           *   the list of path edges. */
+  TYPE_SINGLE_CHILD = 2,  /**< One node of the parent marker edge is a path end.
+                           *   If graphic, this means that one terminal node is in this member or its children. */
+  TYPE_DOUBLE_CHILD = 3,  /**< Path edges form two cycles and adding the parent marker edge yields one.
+                           *   If graphic, this means that both terminal nodes are in this member or its children. */
+  TYPE_ROOT = 4           /**< Root member of reduced decomposition. */
+} Type;
+
+/**
+ * \brief Additional information specific to a path edge.
+ */
+
+typedef struct _PathEdge
+{
+  DEC_EDGE edge;          /**< \brief The actual edge in the decomposition. */
+  struct _PathEdge* next; /**< \brief Next edge of this reduced member, or \c NULL. */
+} PathEdge;
+
+/**
+ * \brief Additional member information specfic to a given path.
+ *
+ * @TODO: Maybe add parent reduced member as well, so we don't have to go via the membersToReducedMembers array.
+ */
+
+typedef struct _ReducedMember
+{
+  DEC_MEMBER member;                /**< \brief The member from the decomposition. */
+  DEC_MEMBER rootMember;            /**< \brief The root member of this component of the decomposition. */
+  int depth;                        /**< \brief Depth of this member in the reduced decomposition. */
+  Type type;                        /**< \brief Type of this member. */
+  struct _ReducedMember* parent;    /**< \brief Parent in the reduced decomposition. */
+  int numChildren;                  /**< \brief Number of children in the reduced decomposition. */
+  struct _ReducedMember** children; /**< \brief Children in the reduced decomposition. */
+  PathEdge* firstPathEdge;          /**< \brief First edge in linked list of path edges of \p member. */
+  DEC_NODE rigidEndNodes[4];        /**< \brief For rigid members, the end nodes of the paths inside the member (or -1). */
+} ReducedMember;
+
+/**
+ * \brief A component of the reduced decomposition.
+ */
+
+typedef struct _ReducedComponent
+{
+  int rootDepth;                /**< \brief Depth of reduced root member. */
+  ReducedMember* root;          /**< \brief Reduced root member. */
+  DEC_NODE terminalNode[2];     /**< \brief Terminal nodes of path. */
+  DEC_MEMBER terminalMember[2]; /**< \brief Terminal members of path. */
+  int numTerminals;
+} ReducedComponent;
+
+/**
+ * \brief Information for adding a new column.
+ */
+
+typedef struct
+{
+  bool remainsGraphic;                      /**< \brief Indicator whether adding this column maintains graphicness. */
+  int memReducedMembers;                    /**< \brief Allocated memory for \c reducedMembers. */
+  int numReducedMembers;                    /**< \brief Number of members in \c reducedMembers. */
+  ReducedMember* reducedMembers;            /**< \brief Array of reduced members, sorted by increasing depth. */
+  ReducedMember** membersToReducedMembers;  /**< \brief Array mapping members to members of the reduced t-decomposition. */
+
+  ReducedComponent* reducedComponents;      /**< \brief Array with reduced root members. */
+  int memReducedComponents;                 /**< \brief Allocated memory for \c reducedComponents. */
+  int numReducedComponents;                 /**< \brief Number of reduced root members. */
+
+  PathEdge* pathEdges;                      /**< \brief Storage for edge lists of path edges. */
+  int memPathEdges;                         /**< \brief Allocated memory for \c pathEdges. */
+  int numPathEdges;                         /**< \brief Number of stored edges in \c pathEdges. */
+
+  ReducedMember** childrenStorage;          /**< \brief Storage for members' arrays of children in reduced t-decomposition. */
+  int usedChildrenStorage;                  /**< \brief Number of stored children in \c childrenStorage. */
+  int memChildrenStorage;                   /**< \brief Allocated memory for \c childrenStorage. */
+
+  int* nodesDegree;                         /**< \brief Map from nodes to degree w.r.t. path edges. */
+  int memNodesDegree;                       /**< \brief Allocated memory for \c nodesDegree. */
+
+  bool* edgesInPath;                        /**< \brief Map from edges to indicator for being in the path. */
+  int memEdgesInPath;                       /**< \brief Allocated memory for \p edgesInPath. */
+} DEC_NEWCOLUMN;
 
 /**
  * \brief Returns the representative node of \p node.
@@ -4653,136 +4657,136 @@ TU_ERROR TUtestGraphicness(TU* tu, TU_CHRMAT* transpose, bool* pisGraphic, TU_GR
   TUdbgMsg(0, "TUtestGraphicness called a %dx%d matrix whose transpose is \n", transpose->numColumns, transpose->numRows);
   TUchrmatPrintDense(stdout, (TU_CHRMAT*) transpose, '0', true);
 #endif /* TU_DEBUG */
-
-  TU_GRAPH* graph = NULL;
-  if (pgraph)
-  {
-    if (*pgraph)
-    {
-      TU_CALL( TUgraphClear(tu, *pgraph) );
-    }
-    else
-    {
-      TU_CALL( TUgraphCreateEmpty(tu, pgraph, transpose->numColumns + 2 * transpose->numRows,
-        transpose->numColumns + 3 * transpose->numRows) );
-    }
-    graph = *pgraph;
-  }
-
-  int* basis = NULL;
-  if (pbasis)
-  {
-    if (!*pbasis)
-      TU_CALL( TUallocBlockArray(tu, pbasis, transpose->numColumns) );
-    basis = *pbasis;
-  }
-  int* cobasis = NULL;
-  if (pcobasis)
-  {
-    if (!*pcobasis)
-      TU_CALL( TUallocBlockArray(tu, pcobasis, transpose->numRows) );
-    cobasis = *pcobasis;
-  }
-
-  if (transpose->numNonzeros == 0)
-  {
-    *pisGraphic = true;
-    if (graph)
-    {
-      /* Construct a path with numRows edges and with numColumns loops at 0. */
-
-      TU_GRAPH_NODE s;
-      TU_CALL( TUgraphAddNode(tu, graph, &s) );
-      for (int c = 0; c < transpose->numRows; ++c)
-      {
-        TU_GRAPH_EDGE e;
-        TU_CALL( TUgraphAddEdge(tu, graph, s, s, &e) );
-        if (cobasis)
-          *cobasis++ = e;
-      }
-      for (int r = 0; r < transpose->numColumns; ++r)
-      {
-        TU_GRAPH_NODE t;
-        TU_CALL( TUgraphAddNode(tu, graph, &t) );
-        TU_GRAPH_EDGE e;
-        TU_CALL( TUgraphAddEdge(tu, graph, s, t, &e) );
-        if (basis)
-          *basis++ = e;
-        s = t;
-      }
-
-      TUdbgMsg(0, "Constructed graph with %d nodes and %d edges.\n", TUgraphNumNodes(graph), TUgraphNumEdges(graph));
-    }
-    return TU_OKAY;
-  }
+  
+  *pisGraphic = true;
 
   Dec* dec = NULL;
-  TU_CALL( decCreate(tu, &dec, 4096, 1024, 256, 256, 256) );
-
-  /* Process each column. */
-  DEC_NEWCOLUMN* newcolumn = NULL;
-  TU_CALL( newcolumnCreate(tu, &newcolumn) );
-  *pisGraphic = true;
-  for (int column = 0; column < transpose->numRows && *pisGraphic; ++column)
+  if (transpose->numNonzeros > 0)
   {
-    TU_CALL( addColumnCheck(dec, newcolumn, &transpose->entryColumns[transpose->rowStarts[column]],
-      transpose->rowStarts[column+1] - transpose->rowStarts[column]) );
+    TU_CALL( decCreate(tu, &dec, 4096, 1024, 256, 256, 256) );
 
-    debugDot(dec, newcolumn);
-
-    if (newcolumn->remainsGraphic)
+    /* Process each column. */
+    DEC_NEWCOLUMN* newcolumn = NULL;
+    TU_CALL( newcolumnCreate(tu, &newcolumn) );
+    for (int column = 0; column < transpose->numRows && *pisGraphic; ++column)
     {
-      TU_CALL( addColumnApply(dec, newcolumn, column, &transpose->entryColumns[transpose->rowStarts[column]],
+      TU_CALL( addColumnCheck(dec, newcolumn, &transpose->entryColumns[transpose->rowStarts[column]],
         transpose->rowStarts[column+1] - transpose->rowStarts[column]) );
 
       debugDot(dec, newcolumn);
+
+      if (newcolumn->remainsGraphic)
+      {
+        TU_CALL( addColumnApply(dec, newcolumn, column, &transpose->entryColumns[transpose->rowStarts[column]],
+          transpose->rowStarts[column+1] - transpose->rowStarts[column]) );
+      }
+      else
+        *pisGraphic = false;
     }
-    else
-    {
-      *pisGraphic = false;
-    }
+
+    TU_CALL( newcolumnFree(tu, &newcolumn) );
   }
-
-  TU_CALL( newcolumnFree(tu, &newcolumn) );
-
-  if (*pisGraphic && graph)
+  
+  if (*pisGraphic)
   {
-    /* Add members and edges for empty rows. */
-    if (dec->numRows < transpose->numColumns)
+    /* Allocate memory for graph, basis and cobasis. */
+    
+    TU_GRAPH* graph = NULL;
+    if (pgraph)
     {
-      /* Reallocate if necessary. */
-      if (dec->memRows < transpose->numColumns)
+      if (!*pgraph)
       {
-        TUreallocBlockArray(tu, &dec->rowEdges, transpose->numColumns);
-        dec->memRows = transpose->numColumns;
+        TU_CALL( TUgraphCreateEmpty(tu, pgraph, transpose->numColumns + 2 * transpose->numRows,
+          transpose->numColumns + 3 * transpose->numRows) );
       }
-
-      /* Add single-edge parallel for each missing row. */
-      for (int r = dec->numRows; r < transpose->numColumns; ++r)
-      {
-        DEC_MEMBER member;
-        TU_CALL( createMember(dec, DEC_MEMBER_TYPE_PARALLEL, &member) );
-
-        DEC_EDGE edge;
-        TU_CALL( createEdge(dec, member, &edge) );
-        TU_CALL( addEdgeToMembersEdgeList(dec, edge) );
-        dec->edges[edge].name = r;
-        dec->edges[edge].head = -1;
-        dec->edges[edge].tail = -1;
-        dec->edges[edge].childMember = -1;
-
-        TUdbgMsg(8, "New empty row %d is edge %d of member %d.\n", r, edge, member);
-
-        dec->rowEdges[r].edge = edge;
-      }
-
-      dec->numRows = transpose->numColumns;
+      graph = *pgraph;
     }
 
-    TU_CALL( decToGraph(dec, graph, true, basis, cobasis, NULL) );
+    int* basis = NULL;
+    if (pbasis)
+    {
+      if (!*pbasis)
+        TU_CALL( TUallocBlockArray(tu, pbasis, transpose->numColumns) );
+      basis = *pbasis;
+    }
+    int* cobasis = NULL;
+    if (pcobasis)
+    {
+      if (!*pcobasis)
+        TU_CALL( TUallocBlockArray(tu, pcobasis, transpose->numRows) );
+      cobasis = *pcobasis;
+    }
+
+    if (graph)
+    {
+      if (transpose->numNonzeros > 0)
+      {
+        /* Add members and edges for empty rows. */
+        if (dec->numRows < transpose->numColumns)
+        {
+          /* Reallocate if necessary. */
+          if (dec->memRows < transpose->numColumns)
+          {
+            TUreallocBlockArray(tu, &dec->rowEdges, transpose->numColumns);
+            dec->memRows = transpose->numColumns;
+          }
+
+          /* Add single-edge parallel for each missing row. */
+          for (int r = dec->numRows; r < transpose->numColumns; ++r)
+          {
+            DEC_MEMBER member;
+            TU_CALL( createMember(dec, DEC_MEMBER_TYPE_PARALLEL, &member) );
+
+            DEC_EDGE edge;
+            TU_CALL( createEdge(dec, member, &edge) );
+            TU_CALL( addEdgeToMembersEdgeList(dec, edge) );
+            dec->edges[edge].name = r;
+            dec->edges[edge].head = -1;
+            dec->edges[edge].tail = -1;
+            dec->edges[edge].childMember = -1;
+
+            TUdbgMsg(8, "New empty row %d is edge %d of member %d.\n", r, edge, member);
+
+            dec->rowEdges[r].edge = edge;
+          }
+
+          dec->numRows = transpose->numColumns;
+        }
+
+        TU_CALL( decToGraph(dec, graph, true, basis, cobasis, NULL) );
+      }
+      else
+      {
+        TU_CALL( TUgraphClear(tu, graph) );
+        /* Construct a path with numRows edges and with numColumns loops at 0. */
+
+        TU_GRAPH_NODE s;
+        TU_CALL( TUgraphAddNode(tu, graph, &s) );
+        for (int c = 0; c < transpose->numRows; ++c)
+        {
+          TU_GRAPH_EDGE e;
+          TU_CALL( TUgraphAddEdge(tu, graph, s, s, &e) );
+          if (cobasis)
+            *cobasis++ = e;
+        }
+        for (int r = 0; r < transpose->numColumns; ++r)
+        {
+          TU_GRAPH_NODE t;
+          TU_CALL( TUgraphAddNode(tu, graph, &t) );
+          TU_GRAPH_EDGE e;
+          TU_CALL( TUgraphAddEdge(tu, graph, s, t, &e) );
+          if (basis)
+            *basis++ = e;
+          s = t;
+        }
+
+        TUdbgMsg(0, "Constructed graph with %d nodes and %d edges.\n", TUgraphNumNodes(graph), TUgraphNumEdges(graph));
+      }
+    }
   }
 
-  TU_CALL( decFree(&dec) );
+  if (dec)
+    TU_CALL( decFree(&dec) );
 
   return TU_OKAY;
 }
