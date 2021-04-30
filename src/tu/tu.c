@@ -75,10 +75,11 @@ bool TUtestTotalUnimodularityDbl(TU* tu, TU_DBLMAT* matrix, double epsilon,
   for (int comp = 0; comp < numComponents; ++comp)
   {
     TU_SUBMAT* compSubmatrix;
-    char signFailed = signSequentiallyConnected(tu, (TU_CHRMAT*) &components[comp].matrix,
-      (TU_CHRMAT*) &components[comp].transpose, false, submatrix ? &compSubmatrix : NULL);
+    char modification;
+    TU_CALL( signSequentiallyConnected(tu, (TU_CHRMAT*) &components[comp].matrix,
+      (TU_CHRMAT*) &components[comp].transpose, false, &modification, submatrix ? &compSubmatrix : NULL) );
 
-    if (signFailed)
+    if (modification)
     {
       if (submatrix)
       {
@@ -130,10 +131,11 @@ bool TUtestTotalUnimodularityInt(TU* tu, TU_INTMAT* matrix, TU_DEC** decompositi
   for (int comp = 0; comp < numComponents; ++comp)
   {
     TU_SUBMAT* compSubmatrix;
-    char signFailed = signSequentiallyConnected(tu, (TU_CHRMAT*) &components[comp].matrix,
-      (TU_CHRMAT*) &components[comp].transpose, false, submatrix ? &compSubmatrix : NULL);
+    char modified;
+    TU_CALL( signSequentiallyConnected(tu, (TU_CHRMAT*) &components[comp].matrix,
+      (TU_CHRMAT*) &components[comp].transpose, false, &modified, submatrix ? &compSubmatrix : NULL) );
 
-    if (signFailed)
+    if (modified)
     {
       if (submatrix)
       {
@@ -185,10 +187,11 @@ bool TUtestTotalUnimodularityChr(TU* tu, TU_CHRMAT* matrix, TU_DEC** decompositi
   for (int comp = 0; comp < numComponents; ++comp)
   {
     TU_SUBMAT* compSubmatrix;
-    char signFailed = signSequentiallyConnected(tu, (TU_CHRMAT*) &components[comp].matrix,
-      (TU_CHRMAT*) &components[comp].transpose, false, submatrix ? &compSubmatrix : NULL);
+    char modified;
+    signSequentiallyConnected(tu, (TU_CHRMAT*) &components[comp].matrix,
+      (TU_CHRMAT*) &components[comp].transpose, false, &modified, submatrix ? &compSubmatrix : NULL);
 
-    if (signFailed)
+    if (modified)
     {
       if (submatrix)
       {

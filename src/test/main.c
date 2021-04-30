@@ -56,6 +56,12 @@ TU_ERROR run(const char* instanceFileName)
 
 int main(int argc, char** argv)
 {
+  if (argc == 1)
+  {
+    printf("No input file specified.\n");
+    return EXIT_FAILURE;
+  }
+
   TU_ERROR error = run(argv[1]);
   switch (error)
   {

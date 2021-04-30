@@ -23,12 +23,13 @@ extern "C" {
  * memory. It is set to \c NULL if no sign changes are needed.
  */
 
-char signSequentiallyConnected(
-  TU* tu,                     /**< TU environment. */
-  TU_CHRMAT* matrix,     /**< Sparse matrix. */
-  TU_CHRMAT* transpose,  /**< Transpose of \p matrix. */
-  bool change,                /**< Whether signs of \p matrix should be changed if necessary */
-  TU_SUBMAT** submatrix    /**< If not \c NULL, a submatrix with bad determinant is stored. */
+TU_ERROR signSequentiallyConnected(
+  TU* tu,                 /**< \ref TU environment. */
+  TU_CHRMAT* matrix,      /**< Sparse matrix. */
+  TU_CHRMAT* transpose,   /**< Transpose of \p matrix. */
+  bool change,            /**< Whether signs of \p matrix should be changed if necessary */
+  char* pmodification,    /**< Pointer for storing which matrix was modified.*/
+  TU_SUBMAT** psubmatrix  /**< If not \c NULL, a submatrix with bad determinant is stored. */
 );
 
 #ifdef __cplusplus

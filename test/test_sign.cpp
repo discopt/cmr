@@ -43,14 +43,17 @@ TEST(Sign, Change)
   TU_SUBMAT* submatrix = NULL;
   TU_CHRMAT* violator = NULL;
 
-  ASSERT_FALSE(TUtestSignChar(tu, matrix, &submatrix));
+  bool alreadySigned;
+  ASSERT_TU_CALL( TUtestSignChr(tu, matrix, &alreadySigned, &submatrix) );
+  ASSERT_FALSE(alreadySigned);
   ASSERT_TRUE(submatrix != NULL);
   TUchrsubmatFilter(tu, matrix, submatrix, &violator);
   ASSERT_TRUE(TUchrmatCheckEqual(violator, checkViolator));
   TUchrmatFree(tu, &violator);
   TUsubmatFree(tu, &submatrix);
 
-  ASSERT_FALSE(TUcorrectSignChar(tu, matrix, NULL));
+  ASSERT_TU_CALL( TUcorrectSignChr(tu, matrix, &alreadySigned, NULL) );
+  ASSERT_FALSE(alreadySigned);
   ASSERT_TRUE(TUchrmatCheckEqual(matrix, check));
 
   TUchrmatFree(tu, &checkViolator);
