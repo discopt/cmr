@@ -110,7 +110,7 @@ TEST(Graphic, TypingManyChildrenTerminals)
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
 
-TEST(Graphic, TypingInnerBondWithEdge)
+TEST(Graphic, TypingInnerParallelWithEdge)
 {
   TU* tu = NULL;
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
@@ -126,7 +126,7 @@ TEST(Graphic, TypingInnerBondWithEdge)
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
 
-TEST(Graphic, TypingInnerPolygonDoubleChild)
+TEST(Graphic, TypingInnerSeriesDoubleChild)
 {
   TU* tu = NULL;
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
@@ -142,7 +142,7 @@ TEST(Graphic, TypingInnerPolygonDoubleChild)
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
 
-TEST(Graphic, TypingRootPolygonDoubleChild)
+TEST(Graphic, TypingRootSeriesDoubleChild)
 {
   TU* tu = NULL;
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
@@ -158,7 +158,7 @@ TEST(Graphic, TypingRootPolygonDoubleChild)
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
 
-TEST(Graphic, TypingAnyPrimeDegree3)
+TEST(Graphic, TypingAnyRigidDegree3)
 {
   TU* tu = NULL;
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
@@ -174,7 +174,7 @@ TEST(Graphic, TypingAnyPrimeDegree3)
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
 
-TEST(Graphic, TypingAnyPrimeManyPaths)
+TEST(Graphic, TypingAnyRigidManyPaths)
 {
   TU* tu = NULL;
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
@@ -191,7 +191,7 @@ TEST(Graphic, TypingAnyPrimeManyPaths)
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
 
-TEST(Graphic, TypingRootPrimeNoPathsDisjointSingleChildren)
+TEST(Graphic, TypingRootRigidNoPathsDisjointSingleChildren)
 {
   TU* tu = NULL;
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
@@ -209,7 +209,7 @@ TEST(Graphic, TypingRootPrimeNoPathsDisjointSingleChildren)
 }
 
 
-TEST(Graphic, TypingRootPrimeOnePathSingleChild)
+TEST(Graphic, TypingRootRigidOnePathSingleChild)
 {
   TU* tu = NULL;
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
@@ -225,7 +225,7 @@ TEST(Graphic, TypingRootPrimeOnePathSingleChild)
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
 
-TEST(Graphic, TypingRootPrimeOnePathTwoSingleChildren)
+TEST(Graphic, TypingRootRigidOnePathTwoSingleChildren)
 {
   TU* tu = NULL;
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
@@ -243,7 +243,7 @@ TEST(Graphic, TypingRootPrimeOnePathTwoSingleChildren)
 }
 
 
-TEST(Graphic, TypingRootPrimeOnePathDoubleChild)
+TEST(Graphic, TypingRootRigidOnePathDoubleChild)
 {
   TU* tu = NULL;
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
@@ -260,7 +260,7 @@ TEST(Graphic, TypingRootPrimeOnePathDoubleChild)
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
 
-TEST(Graphic, TypingRootPrimeTwoPaths)
+TEST(Graphic, TypingRootRigidTwoPaths)
 {
   TU* tu = NULL;
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
@@ -275,7 +275,7 @@ TEST(Graphic, TypingRootPrimeTwoPaths)
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
 
-TEST(Graphic, TypingInnerPrimeNoPathNoSingleChild)
+TEST(Graphic, TypingInnerRigidNoPathNoSingleChild)
 {
   TU* tu = NULL;
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
@@ -292,7 +292,7 @@ TEST(Graphic, TypingInnerPrimeNoPathNoSingleChild)
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
 
-TEST(Graphic, TypingInnerPrimeNoPathOneSingleChild)
+TEST(Graphic, TypingInnerRigidNoPathOneSingleChild)
 {
   TU* tu = NULL;
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
@@ -308,7 +308,7 @@ TEST(Graphic, TypingInnerPrimeNoPathOneSingleChild)
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
 
-TEST(Graphic, TypingInnerPrimeNoPathTwoSingleChildren)
+TEST(Graphic, TypingInnerRigidNoPathTwoSingleChildren)
 {
   TU* tu = NULL;
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
@@ -326,7 +326,7 @@ TEST(Graphic, TypingInnerPrimeNoPathTwoSingleChildren)
 }
 
 
-TEST(Graphic, TypingInnerPrimeOnePathOneSingleChild)
+TEST(Graphic, TypingInnerRigidOnePathOneSingleChild)
 {
   TU* tu = NULL;
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
@@ -362,7 +362,7 @@ TEST(Graphic, TypingInnerPrimeOnePathOneSingleChild)
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
 
-TEST(Graphic, TypingInnerPrimeOnePathTwoSingleChildren)
+TEST(Graphic, TypingInnerRigidOnePathTwoSingleChildren)
 {
   TU* tu = NULL;
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
@@ -401,7 +401,7 @@ TEST(Graphic, TypingInnerPrimeOnePathTwoSingleChildren)
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
 
-TEST(Graphic, TypingInnerPrimeOnePathNoChildren)
+TEST(Graphic, TypingInnerRigidOnePathNoChildren)
 {
   TU* tu = NULL;
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
@@ -416,7 +416,7 @@ TEST(Graphic, TypingInnerPrimeOnePathNoChildren)
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
 
-TEST(Graphic, TypingInnerPrimeOnePathDoubleChild)
+TEST(Graphic, TypingInnerRigidOnePathDoubleChild)
 {
   TU* tu = NULL;
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
@@ -433,7 +433,7 @@ TEST(Graphic, TypingInnerPrimeOnePathDoubleChild)
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
 
-TEST(Graphic, TypingInnerPrimeTwoPathsNonadjacentParent)
+TEST(Graphic, TypingInnerRigidTwoPathsNonadjacentParent)
 {
   TU* tu = NULL;
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
@@ -461,7 +461,7 @@ TEST(Graphic, TypingInnerPrimeTwoPathsNonadjacentParent)
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
 
-TEST(Graphic, TypingInnerPrimeTwoPathOneSingleChild)
+TEST(Graphic, TypingInnerRigidTwoPathOneSingleChild)
 {
   TU* tu = NULL;
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
@@ -478,7 +478,7 @@ TEST(Graphic, TypingInnerPrimeTwoPathOneSingleChild)
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
 
-TEST(Graphic, TypingInnerPrimeTwoPathTwoSingleChildren)
+TEST(Graphic, TypingInnerRigidTwoPathTwoSingleChildren)
 {
   TU* tu = NULL;
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
@@ -495,7 +495,7 @@ TEST(Graphic, TypingInnerPrimeTwoPathTwoSingleChildren)
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
 
-TEST(Graphic, TypingInnerPrimeTwoPathsDoubleChild)
+TEST(Graphic, TypingInnerRigidTwoPathsDoubleChild)
 {
   TU* tu = NULL;
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
@@ -556,7 +556,7 @@ TEST(Graphic, RandomMatrix)
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
 
-TEST(Graphic, UpdateRootBondNoChildren)
+TEST(Graphic, UpdateRootParallelNoChildren)
 {
   TU* tu = NULL;
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
@@ -569,7 +569,7 @@ TEST(Graphic, UpdateRootBondNoChildren)
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
 
-TEST(Graphic, UpdateRootBondTwoSingleChildren)
+TEST(Graphic, UpdateRootParallelTwoSingleChildren)
 {
   TU* tu = NULL;
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
@@ -584,7 +584,7 @@ TEST(Graphic, UpdateRootBondTwoSingleChildren)
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
 
-TEST(Graphic, UpdateRootBondTwoSingleChildrenSplit)
+TEST(Graphic, UpdateRootParallelTwoSingleChildrenSplit)
 {
   TU* tu = NULL;
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
@@ -599,7 +599,7 @@ TEST(Graphic, UpdateRootBondTwoSingleChildrenSplit)
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
 
-TEST(Graphic, UpdateInnerBondOneSingleChild)
+TEST(Graphic, UpdateInnerParallelOneSingleChild)
 {
   TU* tu = NULL;
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
@@ -614,7 +614,7 @@ TEST(Graphic, UpdateInnerBondOneSingleChild)
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
 
-TEST(Graphic, UpdateRootPolygonNoChildrenParent)
+TEST(Graphic, UpdateRootSeriesNoChildrenParent)
 {
   TU* tu = NULL;
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
@@ -629,7 +629,7 @@ TEST(Graphic, UpdateRootPolygonNoChildrenParent)
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
 
-TEST(Graphic, UpdateRootPolygonNoChildrenHamiltonianPath)
+TEST(Graphic, UpdateRootSeriesNoChildrenHamiltonianPath)
 {
   TU* tu = NULL;
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
@@ -644,7 +644,7 @@ TEST(Graphic, UpdateRootPolygonNoChildrenHamiltonianPath)
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
 
-TEST(Graphic, UpdateRootPolygonNoChildren)
+TEST(Graphic, UpdateRootSeriesNoChildren)
 {
   TU* tu = NULL;
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
@@ -660,7 +660,7 @@ TEST(Graphic, UpdateRootPolygonNoChildren)
 }
 
 
-TEST(Graphic, UpdateRootPolygonOneSingleChildParent)
+TEST(Graphic, UpdateRootSeriesOneSingleChildParent)
 {
   TU* tu = NULL;
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
@@ -675,7 +675,7 @@ TEST(Graphic, UpdateRootPolygonOneSingleChildParent)
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
 
-TEST(Graphic, UpdateRootPolygonOneSingleChild)
+TEST(Graphic, UpdateRootSeriesOneSingleChild)
 {
   TU* tu = NULL;
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
@@ -691,7 +691,7 @@ TEST(Graphic, UpdateRootPolygonOneSingleChild)
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
 
-TEST(Graphic, UpdateRootPolygonTwoSingleChildren)
+TEST(Graphic, UpdateRootSeriesTwoSingleChildren)
 {
   TU* tu = NULL;
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
@@ -707,7 +707,7 @@ TEST(Graphic, UpdateRootPolygonTwoSingleChildren)
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
 
-TEST(Graphic, UpdateRootPolygonTwoSingleChildrenParent)
+TEST(Graphic, UpdateRootSeriesTwoSingleChildrenParent)
 {
   TU* tu = NULL;
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
@@ -723,7 +723,7 @@ TEST(Graphic, UpdateRootPolygonTwoSingleChildrenParent)
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
 
-TEST(Graphic, UpdateLeafPolygon)
+TEST(Graphic, UpdateLeafSeries)
 {
   TU* tu = NULL;
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
@@ -738,7 +738,7 @@ TEST(Graphic, UpdateLeafPolygon)
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
 
-TEST(Graphic, UpdateInnerPolygonOneSingleChild)
+TEST(Graphic, UpdateInnerSeriesOneSingleChild)
 {
   TU* tu = NULL;
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
@@ -754,7 +754,7 @@ TEST(Graphic, UpdateInnerPolygonOneSingleChild)
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
 
-TEST(Graphic, UpdateRootPrimeParentOnly)
+TEST(Graphic, UpdateRootRigidParentOnly)
 {
   TU* tu = NULL;
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
@@ -770,7 +770,7 @@ TEST(Graphic, UpdateRootPrimeParentOnly)
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
 
-TEST(Graphic, UpdateRootPrimeParentJoinsPaths)
+TEST(Graphic, UpdateRootRigidParentJoinsPaths)
 {
   TU* tu = NULL;
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
@@ -786,7 +786,7 @@ TEST(Graphic, UpdateRootPrimeParentJoinsPaths)
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
 
-TEST(Graphic, UpdateRootPrimeNoChildren)
+TEST(Graphic, UpdateRootRigidNoChildren)
 {
   TU* tu = NULL;
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
@@ -801,7 +801,7 @@ TEST(Graphic, UpdateRootPrimeNoChildren)
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
 
-TEST(Graphic, UpdateRootPrimeOneSingleChild)
+TEST(Graphic, UpdateRootRigidOneSingleChild)
 {
   TU* tu = NULL;
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
@@ -817,7 +817,7 @@ TEST(Graphic, UpdateRootPrimeOneSingleChild)
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
 
-TEST(Graphic, UpdateRootPrimeTwoSingleChildren)
+TEST(Graphic, UpdateRootRigidTwoSingleChildren)
 {
   TU* tu = NULL;
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
@@ -834,7 +834,7 @@ TEST(Graphic, UpdateRootPrimeTwoSingleChildren)
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
 
-TEST(Graphic, UpdateRootPrimeTwoParallelSingleChildren)
+TEST(Graphic, UpdateRootRigidTwoParallelSingleChildren)
 {
   TU* tu = NULL;
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
@@ -852,7 +852,7 @@ TEST(Graphic, UpdateRootPrimeTwoParallelSingleChildren)
 }
 
 
-TEST(Graphic, UpdateLeafPrime)
+TEST(Graphic, UpdateLeafRigid)
 {
   TU* tu = NULL;
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
@@ -868,7 +868,7 @@ TEST(Graphic, UpdateLeafPrime)
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
 
-TEST(Graphic, UpdateInnerPrimeOnePath)
+TEST(Graphic, UpdateInnerRigidOnePath)
 {
   TU* tu = NULL;
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
@@ -885,7 +885,7 @@ TEST(Graphic, UpdateInnerPrimeOnePath)
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
 
-TEST(Graphic, UpdateInnerPrimeNoPath)
+TEST(Graphic, UpdateInnerRigidNoPath)
 {
   TU* tu = NULL;
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
