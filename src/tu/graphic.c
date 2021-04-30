@@ -894,12 +894,16 @@ TU_ERROR createMember(
   return TU_OKAY;
 }
 
+/**
+ * \brief Creates an empty decomposition.
+ */
+
 TU_ERROR decCreate(
-  TU* tu,           /**< TU environment. */
-  DEC** pdec,  /**< Pointer to new t-decomposition. .*/
-  int memEdges,     /**< Initial memory for edges of the t-decomposition. */
-  int memNodes,     /**< Initial memory for nodes of the t-decomposition. */
-  int memMembers,   /**< Initial memory for members of the t-decomposition. */
+  TU* tu,           /**< \ref TU environment. */
+  DEC** pdec,       /**< Pointer to new decomposition. .*/
+  int memEdges,     /**< Initial memory for edges of the decomposition. */
+  int memNodes,     /**< Initial memory for nodes of the decomposition. */
+  int memMembers,   /**< Initial memory for members of the decomposition. */
   int memRows,      /**< Initial memory for rows. */
   int memColumns    /**< Initial memory for columns. */
 )
@@ -968,40 +972,41 @@ TU_ERROR decCreate(
   return TU_OKAY;
 }
 
+/**
+ * \brief Frees the decomposition \p *pdec.
+ */
+
 TU_ERROR decFree(
-  TU* tu,     /**< \ref TU environment. */
-  DEC** pdec /**< Pointer to t-decomposition. .*/
+  DEC** pdec /**< Pointer to decomposition. */
 )
 {
   assert(pdec);
   assert(*pdec);
 
   DEC* dec = *pdec;
-  TU_CALL( TUfreeBlockArray(tu, &dec->members) );
-  TU_CALL( TUfreeBlockArray(tu, &dec->edges) );
-  TU_CALL( TUfreeBlockArray(tu, &dec->nodes) );
-  TU_CALL( TUfreeBlockArray(tu, &dec->rowEdges) );
-  TU_CALL( TUfreeBlockArray(tu, &dec->columnEdges) );
-  TU_CALL( TUfreeBlock(tu, pdec) );
+  TU_CALL( TUfreeBlockArray(dec->tu, &dec->members) );
+  TU_CALL( TUfreeBlockArray(dec->tu, &dec->edges) );
+  TU_CALL( TUfreeBlockArray(dec->tu, &dec->nodes) );
+  TU_CALL( TUfreeBlockArray(dec->tu, &dec->rowEdges) );
+  TU_CALL( TUfreeBlockArray(dec->tu, &dec->columnEdges) );
+  TU_CALL( TUfreeBlock(dec->tu, pdec) );
 
   return TU_OKAY;
 }
 
 /**
- * \brief Creates a graph represented by given t-decomposition.
+ * \brief Creates a graph represented by given decomposition.
  */
 
 TU_ERROR decToGraph(
-  TU* tu,                 /**< \ref TU environment. */
-  DEC* dec,              /**< t-decomposition. */
-  TU_GRAPH* graph,        /**< Graph. */
+  DEC* dec,               /**< Decomposition. */
+  TU_GRAPH* graph,        /**< Graph to be filled. */
   bool merge,             /**< Merge and remove corresponding parent and child markers. */
   TU_GRAPH_EDGE* basis,   /**< If not NULL, the edges of a spanning tree are stored here. */
   TU_GRAPH_EDGE* cobasis, /**< If not NULL, the non-basis edges are stored here. */
   int* edgeElements       /**< If not NULL, the elements for each edge are stored here. */
 )
 {
-  assert(tu);
   assert(dec);
   assert(graph);
 
@@ -1009,23 +1014,23 @@ TU_ERROR decToGraph(
 
   TUdbgMsg(0, "TUdecToGraph for t-decomposition.\n");
 
-  TU_CALL( TUgraphClear(tu, graph) );
+  TU_CALL( TUgraphClear(dec->tu, graph) );
 
   TU_GRAPH_EDGE* localEdgeElements = NULL;
   if (edgeElements)
     localEdgeElements = edgeElements;
   else if (basis || cobasis)
-    TU_CALL( TUallocStackArray(tu, &localEdgeElements, dec->memEdges) );
+    TU_CALL( TUallocStackArray(dec->tu, &localEdgeElements, dec->memEdges) );
   TU_GRAPH_NODE* decNodesToGraphNodes = NULL;
-  TU_CALL( TUallocStackArray(tu, &decNodesToGraphNodes, dec->memNodes) );
+  TU_CALL( TUallocStackArray(dec->tu, &decNodesToGraphNodes, dec->memNodes) );
   TU_GRAPH_EDGE* decEdgesToGraphEdges = NULL;
-  TU_CALL( TUallocStackArray(tu, &decEdgesToGraphEdges, dec->memEdges) );
+  TU_CALL( TUallocStackArray(dec->tu, &decEdgesToGraphEdges, dec->memEdges) );
 
   for (int v = 0; v < dec->memNodes; ++v)
   {
     if (dec->nodes[v].representativeNode < 0)
     {
-      TU_CALL( TUgraphAddNode(tu, graph, &decNodesToGraphNodes[v]) );
+      TU_CALL( TUgraphAddNode(dec->tu, graph, &decNodesToGraphNodes[v]) );
     }
     else
       decNodesToGraphNodes[v] = -1;
@@ -1047,7 +1052,7 @@ TU_ERROR decToGraph(
       {
         DEC_NODE head = findEdgeHead(dec, edge);
         DEC_NODE tail = findEdgeTail(dec, edge);
-        TU_CALL( TUgraphAddEdge(tu, graph, decNodesToGraphNodes[head], decNodesToGraphNodes[tail],
+        TU_CALL( TUgraphAddEdge(dec->tu, graph, decNodesToGraphNodes[head], decNodesToGraphNodes[tail],
           &graphEdge) );
         decEdgesToGraphEdges[edge] = graphEdge;
         if (localEdgeElements)
@@ -1059,11 +1064,11 @@ TU_ERROR decToGraph(
     else if (type == DEC_MEMBER_TYPE_PARALLEL)
     {
       TU_GRAPH_NODE graphHead, graphTail;
-      TU_CALL( TUgraphAddNode(tu, graph, &graphHead) );
-      TU_CALL( TUgraphAddNode(tu, graph, &graphTail) );
+      TU_CALL( TUgraphAddNode(dec->tu, graph, &graphHead) );
+      TU_CALL( TUgraphAddNode(dec->tu, graph, &graphTail) );
       do
       {
-        TU_CALL( TUgraphAddEdge(tu, graph, graphHead, graphTail, &graphEdge) );
+        TU_CALL( TUgraphAddEdge(dec->tu, graph, graphHead, graphTail, &graphEdge) );
         decEdgesToGraphEdges[edge] = graphEdge;
         if (localEdgeElements)
           localEdgeElements[graphEdge] = dec->edges[edge].name;
@@ -1074,14 +1079,14 @@ TU_ERROR decToGraph(
     else if (type == DEC_MEMBER_TYPE_SERIES)
     {
       TU_GRAPH_NODE firstNode, v;
-      TU_CALL( TUgraphAddNode(tu, graph, &firstNode) );
+      TU_CALL( TUgraphAddNode(dec->tu, graph, &firstNode) );
       v = firstNode;
       edge = dec->edges[edge].next;
       while (edge != dec->members[member].firstEdge)
       {
         TU_GRAPH_NODE w;
-        TU_CALL( TUgraphAddNode(tu, graph, &w) );
-        TU_CALL( TUgraphAddEdge(tu, graph, v, w, &graphEdge) );
+        TU_CALL( TUgraphAddNode(dec->tu, graph, &w) );
+        TU_CALL( TUgraphAddEdge(dec->tu, graph, v, w, &graphEdge) );
         decEdgesToGraphEdges[edge] = graphEdge;
         if (localEdgeElements)
           localEdgeElements[graphEdge] = dec->edges[edge].name;
@@ -1089,7 +1094,7 @@ TU_ERROR decToGraph(
         edge = dec->edges[edge].next;
         v = w;
       }
-      TU_CALL( TUgraphAddEdge(tu, graph, v, firstNode, &graphEdge) );
+      TU_CALL( TUgraphAddEdge(dec->tu, graph, v, firstNode, &graphEdge) );
       decEdgesToGraphEdges[edge] = graphEdge;
       if (localEdgeElements)
         localEdgeElements[graphEdge] = dec->edges[edge].name;
@@ -1099,8 +1104,8 @@ TU_ERROR decToGraph(
       assert(type == DEC_MEMBER_TYPE_LOOP);
 
       TU_GRAPH_NODE v;
-      TU_CALL( TUgraphAddNode(tu, graph, &v) );
-      TU_CALL( TUgraphAddEdge(tu, graph, v, v, &graphEdge) );
+      TU_CALL( TUgraphAddNode(dec->tu, graph, &v) );
+      TU_CALL( TUgraphAddEdge(dec->tu, graph, v, v, &graphEdge) );
       decEdgesToGraphEdges[edge] = graphEdge;
       if (localEdgeElements)
         localEdgeElements[graphEdge] = dec->edges[edge].name;
@@ -1130,13 +1135,13 @@ TU_ERROR decToGraph(
         dec->edges[dec->members[m].markerOfParent].name, child, childU, childV,
         dec->edges[dec->members[m].markerToParent].name);
 
-      TU_CALL( TUgraphMergeNodes(tu, graph, parentU, childU) );
-      TU_CALL( TUgraphDeleteNode(tu, graph, childU) );
-      TU_CALL( TUgraphMergeNodes(tu, graph, parentV, childV) );
-      TU_CALL( TUgraphDeleteNode(tu, graph, childV) );
+      TU_CALL( TUgraphMergeNodes(dec->tu, graph, parentU, childU) );
+      TU_CALL( TUgraphDeleteNode(dec->tu, graph, childU) );
+      TU_CALL( TUgraphMergeNodes(dec->tu, graph, parentV, childV) );
+      TU_CALL( TUgraphDeleteNode(dec->tu, graph, childV) );
 
-      TU_CALL( TUgraphDeleteEdge(tu, graph, parent) );
-      TU_CALL( TUgraphDeleteEdge(tu, graph, child) );
+      TU_CALL( TUgraphDeleteEdge(dec->tu, graph, parent) );
+      TU_CALL( TUgraphDeleteEdge(dec->tu, graph, child) );
     }
   }
 
@@ -1178,23 +1183,27 @@ TU_ERROR decToGraph(
 #endif /* !NDEBUG */
   }
 
-  TU_CALL( TUfreeStackArray(tu, &decEdgesToGraphEdges) );
-  TU_CALL( TUfreeStackArray(tu, &decNodesToGraphNodes) );
+  TU_CALL( TUfreeStackArray(dec->tu, &decEdgesToGraphEdges) );
+  TU_CALL( TUfreeStackArray(dec->tu, &decNodesToGraphNodes) );
   if (localEdgeElements != edgeElements)
-    TU_CALL( TUfreeStackArray(tu, &localEdgeElements) );
+    TU_CALL( TUfreeStackArray(dec->tu, &localEdgeElements) );
 
   return TU_OKAY;
 }
 
+/**
+ * Prints an edge in \c dot format to \p stream.
+ */
+
 static
 void edgeToDot(
-  FILE* stream,           /**< File stream. */
-  DEC* dec,          /**< t-decomposition. */
+  FILE* stream,       /**< File stream. */
+  DEC* dec,           /**< Decomposition. */
   DEC_MEMBER member,  /**< Member this edge belongs to. */
   DEC_EDGE edge,      /**< Edge. */
-  int u,                  /**< First node. */
-  int v,                  /**< Second node. */
-  bool red                /**< Whether to color it red. */
+  int u,              /**< First node. */
+  int v,              /**< Second node. */
+  bool red            /**< Whether to color it red. */
 )
 {
   assert(stream);
@@ -1238,17 +1247,15 @@ void edgeToDot(
 }
 
 /**
- * \brief Visualizes a t-decomposition as a graph in \c dot format.
+ * \brief Visualizes a decomposition in \c dot format.
  */
 
 TU_ERROR TUdecToDot(
-  TU* tu,                 /**< \ref TU environment. */
-  DEC* dec,              /**< t-decomposition. */
+  DEC* dec,               /**< Decomposition. */
   FILE* stream,           /**< Stream to write to. */
   bool* edgesHighlighted  /**< Indicator for edges to be highlighted. */
 )
 {
-  assert(tu);
   assert(dec);
   assert(stream);
 
@@ -1312,11 +1319,13 @@ TU_ERROR TUdecToDot(
 
 static inline
 void debugDot(
-  TU* tu,                       /**< \ref TU environment. */
-  DEC* dec,                /**< t-decomposition. */
+  DEC* dec,                 /**< Decomposition. */
   DEC_NEWCOLUMN* newcolumn  /**< new column. */
 )
 {
+  assert(dec);
+  assert(newcolumn || !newcolumn);
+
 #if defined(TU_DEBUG_DOT)
   static int dotFileCounter = 1;
   char name[256];
@@ -1525,7 +1534,7 @@ TU_ERROR parallelParentChildCheckMember(
       dec->edges[childMarkerEdge].head = -1;
       dec->members[childMember].parentMember = parentMember;
 
-      debugDot(tu, dec, NULL);
+      debugDot(dec, NULL);
     }
   }
 
@@ -2894,7 +2903,7 @@ TU_ERROR addColumnCheck(
   TU_CALL( computeReducedDecomposition(tu, dec, newcolumn, entryRows, numEntries) );
   TU_CALL( initializeReducedMemberEdgeLists(tu, dec, newcolumn, entryRows, numEntries) );
 
-  debugDot(tu, dec, newcolumn);
+  debugDot(dec, newcolumn);
 
   for (int i = 0; i < newcolumn->numReducedComponents; ++i)
   {
@@ -3326,7 +3335,7 @@ TU_ERROR addColumnProcessParallel(
         reducedMember->member = member;
       }
 
-      debugDot(tu, dec, newcolumn);
+      debugDot(dec, newcolumn);
 
       assert(dec->members[member].numEdges == 3);
       TU_CALL( createParallelNodes(tu, dec, member) );
@@ -3334,7 +3343,7 @@ TU_ERROR addColumnProcessParallel(
       TU_CALL( mergeMemberIntoParent(tu, dec, dec->edges[childMarkerEdges[1]].childMember,
         reducedMember->firstPathEdge == NULL && reducedMember->type != TYPE_DOUBLE_CHILD) );
 
-      debugDot(tu, dec, newcolumn);
+      debugDot(dec, newcolumn);
 
       return TU_OKAY;
     }
@@ -3362,7 +3371,7 @@ TU_ERROR addColumnProcessParallel(
     TU_CALL( mergeMemberIntoParent(tu, dec, dec->edges[childMarkerEdges[0]].childMember,
       !reducedMember->firstPathEdge) );
 
-    debugDot(tu, dec, newcolumn);
+    debugDot(dec, newcolumn);
   }
 
   return TU_OKAY;
@@ -3549,7 +3558,7 @@ TU_ERROR addColumnProcessRigid(
         dec->edges[childMarkerEdges[1]].tail = -1;
         dec->edges[childMarkerEdges[1]].head = -1;
 
-        debugDot(tu, dec, newcolumn);
+        debugDot(dec, newcolumn);
 
         /* We have to merge in the parallel. */
         TU_CALL( createParallelNodes(tu, dec, newParallel) );
@@ -3558,7 +3567,7 @@ TU_ERROR addColumnProcessRigid(
          * is used. */
         TU_CALL( mergeMemberIntoParent(tu, dec, dec->edges[childMarkerEdges[1]].childMember, numPathEndNodes == 0) );
 
-        debugDot(tu, dec, newcolumn);
+        debugDot(dec, newcolumn);
 
         return TU_OKAY;
       }
@@ -3587,10 +3596,10 @@ TU_ERROR addColumnProcessRigid(
 
       assert(pathEndNodes[0] == childMarkerNodes[0] || pathEndNodes[0] == childMarkerNodes[1]);
       TU_CALL( mergeMemberIntoParent(tu, dec, childMember[0], pathEndNodes[0] == childMarkerNodes[1]) );
-      debugDot(tu, dec, newcolumn);
+      debugDot(dec, newcolumn);
 
       TU_CALL( mergeMemberIntoParent(tu, dec, childMember[1], pathEndNodes[1] == childMarkerNodes[3]) );
-      debugDot(tu, dec, newcolumn);
+      debugDot(dec, newcolumn);
     }
   }
   else
@@ -3636,7 +3645,7 @@ TU_ERROR addColumnProcessRigid(
         /* Merge child. */
         TU_CALL( mergeMemberIntoParent(tu, dec, findMember(dec, dec->edges[childMarkerEdges[0]].childMember),
           pathEndNodes[1] == childMarkerNodes[1]) );
-        debugDot(tu, dec, newcolumn);
+        debugDot(dec, newcolumn);
       }
       else
       {
@@ -3649,7 +3658,7 @@ TU_ERROR addColumnProcessRigid(
         TU_CALL( mergeMemberIntoParent(tu, dec, dec->edges[childMarkerEdges[0]].childMember,
           parentMarkerNodes[0] == childMarkerNodes[1] || parentMarkerNodes[1] == childMarkerNodes[1]) );
 
-        debugDot(tu, dec, newcolumn);
+        debugDot(dec, newcolumn);
       }
     }
   }
@@ -3969,7 +3978,7 @@ TU_ERROR addColumnProcessSeries(
         TU_CALL( splitSeries(tu, dec, member, newcolumn->edgesInPath, true, &representativeEdge, NULL, NULL) );
       }
 
-      debugDot(tu, dec, newcolumn);
+      debugDot(dec, newcolumn);
 
       DEC_EDGE childMember = dec->edges[representativeEdge].childMember;
       DEC_NODE tail = -1;
@@ -3977,7 +3986,7 @@ TU_ERROR addColumnProcessSeries(
       if (childMember < 0)
       {
         TU_CALL( createEdgeParallel(tu, dec, representativeEdge, &childMember) );
-        debugDot(tu, dec, newcolumn);
+        debugDot(dec, newcolumn);
       }
       else if (dec->members[childMember].type == DEC_MEMBER_TYPE_RIGID)
       {
@@ -3988,7 +3997,7 @@ TU_ERROR addColumnProcessSeries(
       assert(reducedComponent->numTerminals == 0);
       TU_CALL( addTerminal(tu, dec, reducedComponent, childMember, tail) );
       TU_CALL( addTerminal(tu, dec, reducedComponent, childMember, head) );
-      debugDot(tu, dec, newcolumn);
+      debugDot(dec, newcolumn);
     }
     else if (numOneEnd == 1)
     {
@@ -4039,7 +4048,7 @@ TU_ERROR addColumnProcessSeries(
         TU_CALL( splitSeries(tu, dec, member, newcolumn->edgesInPath, true, &pathEdge, NULL, NULL) );
         if (pathEdge >= 0)
           newcolumn->edgesInPath[pathEdge] = true;
-        debugDot(tu, dec, newcolumn);
+        debugDot(dec, newcolumn);
 
         /* Unless the series member consists of only the parent marker, the child marker (containing a path end) and a
          * representative edge, we squeeze off the representative edge and the child marker. */
@@ -4048,7 +4057,7 @@ TU_ERROR addColumnProcessSeries(
           newcolumn->edgesInPath[childMarkerEdges[0]] = true;
           TU_CALL( splitSeries(tu, dec, member, newcolumn->edgesInPath, true, NULL, NULL, &member) );
           newcolumn->edgesInPath[childMarkerEdges[0]] = false;
-          debugDot(tu, dec, newcolumn);
+          debugDot(dec, newcolumn);
         }
 
         assert(dec->members[member].numEdges == 3);
@@ -4063,7 +4072,7 @@ TU_ERROR addColumnProcessSeries(
         TU_CALL( addTerminal(tu, dec, reducedComponent, member, b) );
         TU_CALL( mergeMemberIntoParent(tu, dec, dec->edges[childMarkerEdges[0]].childMember, true) );
       }
-      debugDot(tu, dec, newcolumn);
+      debugDot(dec, newcolumn);
     }
     else
     {
@@ -4109,7 +4118,7 @@ TU_ERROR addColumnProcessSeries(
           newcolumn->edgesInPath[dec->members[member].markerToParent] = true;
         }
         pathEdge = dec->members[member].markerToParent;
-        debugDot(tu, dec, newcolumn);
+        debugDot(dec, newcolumn);
 
         if (dec->members[member].numEdges > 3)
         {
@@ -4126,7 +4135,7 @@ TU_ERROR addColumnProcessSeries(
       TUdbgMsg(8 + 2*depth,
         "After splitting off, the (potential) path edge is %d and the (potential) non-path edge is %d.\n",
         pathEdge, nonPathEdge);
-      debugDot(tu, dec, newcolumn);
+      debugDot(dec, newcolumn);
 
       assert(pathEdge >= 0 || nonPathEdge >= 0);
 
@@ -4217,7 +4226,7 @@ TU_ERROR addColumnProcessSeries(
         newcolumn->edgesInPath[markerToParent] = false;
       }
       assert(dec->members[member].numEdges == 3);
-      debugDot(tu, dec, newcolumn);
+      debugDot(dec, newcolumn);
 
       /* We now create the nodes of the triangle so that the path leaves it via the parent marker edge's head node. */
 
@@ -4244,7 +4253,7 @@ TU_ERROR addColumnProcessSeries(
       TU_CALL( splitSeries(tu, dec, member, newcolumn->edgesInPath, true, &pathEdge, NULL, NULL) );
       if (pathEdge >= 0)
         newcolumn->edgesInPath[pathEdge] = true;
-      debugDot(tu, dec, newcolumn);
+      debugDot(dec, newcolumn);
 
       /* If necessary, we squeeze off the non-path edges as well. */
       assert(dec->members[member].numEdges >= 3);
@@ -4266,7 +4275,7 @@ TU_ERROR addColumnProcessSeries(
         TU_CALL( splitSeries(tu, dec, member, newcolumn->edgesInPath, false, &nonPathEdge, NULL, NULL) );
         newcolumn->edgesInPath[dec->members[member].markerToParent] = false;
         newcolumn->edgesInPath[childMarkerEdges[0]] = false;
-        debugDot(tu, dec, newcolumn);
+        debugDot(dec, newcolumn);
       }
 
       TUdbgMsg(8 + 2*depth, "After (potential) splitting: path edge is %d and non-path edge is %d.\n",
@@ -4298,10 +4307,10 @@ TU_ERROR addColumnProcessSeries(
         TU_CALL( setEdgeNodes(tu, dec, childMarkerEdges[0], c, b) );
         TU_CALL( setEdgeNodes(tu, dec, nonPathEdge, a, c) );
       }
-      debugDot(tu, dec, newcolumn);
+      debugDot(dec, newcolumn);
 
       TU_CALL( mergeMemberIntoParent(tu, dec, dec->edges[childMarkerEdges[0]].childMember, true) );
-      debugDot(tu, dec, newcolumn);
+      debugDot(dec, newcolumn);
 
       return TU_OKAY;
     }
@@ -4463,7 +4472,7 @@ TU_ERROR addColumnApply(
     TUdbgMsg(4, "Moving root of reduced component %d.\n", i);
 
     TU_CALL( moveReducedRoot(tu, dec, newcolumn, reducedComponent) );
-    debugDot(tu, dec, newcolumn);
+    debugDot(dec, newcolumn);
 
     TUdbgMsg(4, "Processing reduced component %d of depth %d.\n", i, reducedComponent->rootDepth);
 
@@ -4571,7 +4580,7 @@ TU_ERROR addColumnApply(
     }
   }
 
-  debugDot(tu, dec, newcolumn);
+  debugDot(dec, newcolumn);
 
   TU_CALL( TUfreeStackArray(tu, &componentNewEdges) );
 
@@ -4672,14 +4681,14 @@ TU_ERROR TUtestGraphicness(TU* tu, TU_CHRMAT* transpose, bool* pisGraphic, TU_GR
       &transpose->entryColumns[transpose->rowStarts[column]],
       transpose->rowStarts[column+1] - transpose->rowStarts[column]) );
 
-    debugDot(tu, dec, newcolumn);
+    debugDot(dec, newcolumn);
 
     if (newcolumn->remainsGraphic)
     {
       TU_CALL( addColumnApply(tu, dec, newcolumn, column, &transpose->entryColumns[transpose->rowStarts[column]],
         transpose->rowStarts[column+1] - transpose->rowStarts[column]) );
 
-      debugDot(tu, dec, newcolumn);
+      debugDot(dec, newcolumn);
     }
     else
     {
@@ -4723,10 +4732,10 @@ TU_ERROR TUtestGraphicness(TU* tu, TU_CHRMAT* transpose, bool* pisGraphic, TU_GR
       dec->numRows = transpose->numColumns;
     }
 
-    TU_CALL( decToGraph(tu, dec, graph, true, basis, cobasis, NULL) );
+    TU_CALL( decToGraph(dec, graph, true, basis, cobasis, NULL) );
   }
 
-  TU_CALL( decFree(tu, &dec) );
+  TU_CALL( decFree(&dec) );
 
   return TU_OKAY;
 }
