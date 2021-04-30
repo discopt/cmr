@@ -98,6 +98,8 @@ typedef struct
 
 typedef struct
 {
+  TU* tu;                       /**< \brief \ref TU environment. */
+
   int memMembers;               /**< \brief Allocated memory for members. */
   int numMembers;               /**< \brief Number of members. */
   DEC_MEMBER_DATA* members;     /**< \brief Array of members. */
@@ -206,11 +208,9 @@ DEC_MEMBER findEdgeMember(
 
 static
 char* consistencyEdges(
-  TU* tu,   /**< \ref TU environment. */
   DEC* dec  /**< Decomposition. */
 )
 {
-  assert(tu);
   assert(dec);
 
   for (DEC_MEMBER member = 0; member < dec->numMembers; ++member)
@@ -256,11 +256,9 @@ char* consistencyEdges(
 
 static
 char* consistencyMembers(
-  TU* tu,   /**< \ref TU environment. */
   DEC* dec  /**< Decomposition. */
 )
 {
-  assert(tu);
   assert(dec);
 
   for (DEC_MEMBER member = 0; member < dec->numMembers; ++member)
@@ -285,11 +283,9 @@ char* consistencyMembers(
 
 static
 char* consistencyNodes(
-  TU* tu,   /**< \ref TU environment. */
   DEC* dec  /**< Decomposition. */
 )
 {
-  assert(tu);
   assert(dec);
 
   for (DEC_MEMBER member = 0; member < dec->numMembers; ++member)
@@ -332,11 +328,9 @@ char* consistencyNodes(
 
 static
 char* consistencyTree(
-  TU* tu,   /**< \ref TU environment. */
   DEC* dec  /**< Decomposition. */
 )
 {
-  assert(tu);
   assert(dec);
 
   for (DEC_MEMBER member = 0; member < dec->numMembers; ++member)
@@ -370,13 +364,13 @@ typedef enum
 } Type;
 
 /**
- * \brief Additional edge information specific to a path.
+ * \brief Additional information specific to a path edge.
  */
 
 typedef struct _PathEdge
 {
-  DEC_EDGE edge;          /**< \brief The edge in the t-decomposition. */
-  struct _PathEdge* next;  /**< \brief Next edge of this reduced member, or \c NULL. */
+  DEC_EDGE edge;          /**< \brief The actual edge in the decomposition. */
+  struct _PathEdge* next; /**< \brief Next edge of this reduced member, or \c NULL. */
 } PathEdge;
 
 /**
@@ -387,25 +381,33 @@ typedef struct _PathEdge
 
 typedef struct _ReducedMember
 {
-  DEC_MEMBER member;                /**< \brief The member from the t-decomposition. */
-  DEC_MEMBER rootMember;            /**< \brief The root member of this component of the t-decomposition. */
-  int depth;                        /**< \brief Depth of this member in the reduced t-decomposition. */
+  DEC_MEMBER member;                /**< \brief The member from the decomposition. */
+  DEC_MEMBER rootMember;            /**< \brief The root member of this component of the decomposition. */
+  int depth;                        /**< \brief Depth of this member in the reduced decomposition. */
   Type type;                        /**< \brief Type of this member. */
-  struct _ReducedMember* parent;    /**< \brief Parent in the reduced t-decomposition. */
-  int numChildren;                  /**< \brief Number of children in the reduced t-decomposition. */
-  struct _ReducedMember** children; /**< \brief Children in the reduced t-decomposition. */
+  struct _ReducedMember* parent;    /**< \brief Parent in the reduced decomposition. */
+  int numChildren;                  /**< \brief Number of children in the reduced decomposition. */
+  struct _ReducedMember** children; /**< \brief Children in the reduced decomposition. */
   PathEdge* firstPathEdge;          /**< \brief First edge in linked list of path edges of \p member. */
   DEC_NODE rigidEndNodes[4];        /**< \brief For rigid members, the end nodes of the paths inside the member (or -1). */
 } ReducedMember;
 
+/**
+ * \brief A component of the reduced decomposition.
+ */
+
 typedef struct _ReducedComponent
 {
-  int rootDepth;                    /**< \brief Depth of reduced root member. */
-  ReducedMember* root;              /**< \brief Reduced root member. */
+  int rootDepth;                /**< \brief Depth of reduced root member. */
+  ReducedMember* root;          /**< \brief Reduced root member. */
   DEC_NODE terminalNode[2];     /**< \brief Terminal nodes of path. */
   DEC_MEMBER terminalMember[2]; /**< \brief Terminal members of path. */
   int numTerminals;
 } ReducedComponent;
+
+/**
+ * \brief Information for adding a new column.
+ */
 
 typedef struct
 {
@@ -434,18 +436,6 @@ typedef struct
   int memEdgesInPath;                       /**< \brief Allocated memory for \p edgesInPath. */
 } DEC_NEWCOLUMN;
 
-int compareMemberDepths(const void* a, const void* b)
-{
-  const ReducedMember* first = a;
-  const ReducedMember* second = b;
-  /* Negative depths are moved to the end. */
-  if (first->depth < 0)
-    return +1;
-  if (second->depth < 0)
-    return -1;
-  return first->depth - second->depth;
-}
-
 /**
  * \brief Checks whether \p dec has consistent parent/child structure of members.
  *
@@ -454,11 +444,9 @@ int compareMemberDepths(const void* a, const void* b)
 
 static
 char* consistencyParentChild(
-  TU* tu,       /**< \ref TU environment. */
-  DEC* dec /**< t-decomposition. */
+  DEC* dec  /**< Decomposition. */
 )
 {
-  assert(tu);
   assert(dec);
 
   if (dec->memMembers < dec->numMembers)
@@ -467,7 +455,7 @@ char* consistencyParentChild(
     return TUconsistencyMessage("negative member count");
 
   int* countChildren = NULL;
-  if (TUallocStackArray(tu, &countChildren, dec->memMembers) != TU_OKAY)
+  if (TUallocStackArray(dec->tu, &countChildren, dec->memMembers) != TU_OKAY)
     return TUconsistencyMessage("stack allocation in consistencyParentChild() failed");
   for (int m = 0; m < dec->memMembers; ++m)
     countChildren[m] = 0;
@@ -479,7 +467,7 @@ char* consistencyParentChild(
 
     if (dec->members[member].parentMember >= dec->memMembers)
     {
-      TUfreeStackArray(tu, &countChildren);
+      TUfreeStackArray(dec->tu, &countChildren);
       return TUconsistencyMessage("parent member of %d is out of range", member);
     }
     if (dec->members[member].parentMember >= 0)
@@ -502,14 +490,14 @@ char* consistencyParentChild(
 
         if (findMember(dec, dec->members[findMember(dec, dec->edges[edge].childMember)].parentMember) != findMember(dec, member))
         {
-          TUfreeStackArray(tu, &countChildren);
+          TUfreeStackArray(dec->tu, &countChildren);
           return TUconsistencyMessage("member %d has child edge %d for child %d whose parent member is %d",
             member, edge, findMember(dec, dec->edges[edge].childMember),
             findMember(dec, dec->members[findMember(dec, dec->edges[edge].childMember)].parentMember));
         }
         if (dec->members[findMember(dec, dec->edges[edge].childMember)].markerOfParent != edge)
         {
-          TUfreeStackArray(tu, &countChildren);
+          TUfreeStackArray(dec->tu, &countChildren);
           return TUconsistencyMessage("member %d has child edge %d for child %d whose parent's markerOfParent is %d",
             member, edge, findMember(dec, dec->edges[edge].childMember),
             dec->members[findMember(dec, dec->edges[edge].childMember)].markerOfParent);
@@ -517,7 +505,7 @@ char* consistencyParentChild(
         DEC_EDGE markerChild = dec->members[findMember(dec, dec->edges[edge].childMember)].markerToParent;
         if (dec->edges[markerChild].name != -dec->edges[edge].name)
         {
-          TUfreeStackArray(tu, &countChildren);
+          TUfreeStackArray(dec->tu, &countChildren);
           return TUconsistencyMessage("marker edges %d and %d of members %d (parent) and %d (child) have names %d and %d.",
             edge, markerChild, member, findEdgeMember(dec, markerChild), dec->edges[edge].name,
             dec->edges[markerChild].name);
@@ -528,24 +516,26 @@ char* consistencyParentChild(
     while (edge != dec->members[member].firstEdge);
   }
 
-  if (TUfreeStackArray(tu, &countChildren) != TU_OKAY)
+  if (TUfreeStackArray(dec->tu, &countChildren) != TU_OKAY)
     return "stack deallocation in consistencyParentChild() failed";
 
   return NULL;
 }
 
-char* TUdecConsistency(TU* tu, DEC* dec)
+char* TUdecConsistency(
+  DEC* dec  /**< Decomposition. */
+)
 {
   char* message = NULL;
-  if ((message = consistencyMembers(tu, dec)))
+  if ((message = consistencyMembers(dec)))
     return message;
-  if ((message = consistencyEdges(tu, dec)))
+  if ((message = consistencyEdges(dec)))
     return message;
-  if ((message = consistencyNodes(tu, dec)))
+  if ((message = consistencyNodes(dec)))
     return message;
-  if ((message = consistencyParentChild(tu, dec)))
+  if ((message = consistencyParentChild(dec)))
     return message;
-  if ((message = consistencyTree(tu, dec)))
+  if ((message = consistencyTree(dec)))
     return message;
 
   return NULL;
@@ -882,6 +872,7 @@ TU_ERROR decCreate(
 
   TU_CALL( TUallocBlock(tu, pdec) );
   DEC* dec = *pdec;
+  dec->tu = tu;
   dec->memMembers = memMembers;
   dec->numMembers = 0;
   dec->members = NULL;
@@ -934,7 +925,7 @@ TU_ERROR decCreate(
   for (int c = 0; c < dec->numColumns; ++c)
     dec->columnEdges[c].edge = -1;
 
-  TUconsistencyAssert( TUdecConsistency(tu, dec) );
+  TUconsistencyAssert( TUdecConsistency(dec) );
 
   return TU_OKAY;
 }
@@ -976,7 +967,7 @@ TU_ERROR decToGraph(
   assert(dec);
   assert(graph);
 
-  TUconsistencyAssert( TUdecConsistency(tu, dec) );
+  TUconsistencyAssert( TUdecConsistency(dec) );
 
   TUdbgMsg(0, "TUdecToGraph for t-decomposition.\n");
 
@@ -2855,7 +2846,7 @@ TU_ERROR addColumnCheck(
 
   TUdbgMsg(0, "\n  Checking whether we can add a column with %d 1's.\n", numEntries);
 
-  TUconsistencyAssert( TUdecConsistency(tu, dec) );
+  TUconsistencyAssert( TUdecConsistency(dec) );
 
   /* Check for the (not yet computed) reduced decomposition whether there is a pair of parallel child/parent marker
    * edges in a non-parallel. */
@@ -2878,7 +2869,7 @@ TU_ERROR addColumnCheck(
   if (newcolumn->remainsGraphic)
     TUdbgMsg(4, "Adding the column would maintain graphicness.\n");
 
-  TUconsistencyAssert( TUdecConsistency(tu, dec) );
+  TUconsistencyAssert( TUdecConsistency(dec) );
 
   return TU_OKAY;
 }
@@ -4308,7 +4299,7 @@ TU_ERROR addColumnProcessComponent(
   TUdbgMsg(6 + 2*depth, "addColumnProcessComponent(member %d = reduced member %ld)\n", reducedMember->member,
     (reducedMember - &newcolumn->reducedMembers[0]));
 
-  TUconsistencyAssert( TUdecConsistency(tu, dec) );
+  TUconsistencyAssert( TUdecConsistency(dec) );
 
   /* If we are non-root type 1, then we don't need to do anything. */
   if (reducedMember->type == TYPE_CYCLE_CHILD && depth > 0)
@@ -4338,7 +4329,7 @@ TU_ERROR addColumnProcessComponent(
   else
     TU_CALL( addColumnProcessRigid(tu, dec, newcolumn, reducedComponent, reducedMember, depth) );
 
-  TUconsistencyAssert( TUdecConsistency(tu, dec) );
+  TUconsistencyAssert( TUdecConsistency(dec) );
 
   return TU_OKAY;
 }
@@ -4415,7 +4406,7 @@ TU_ERROR addColumnApply(
 
   TUdbgMsg(0, "\n  Adding a column with %d 1's.\n", numEntries);
 
-  TUconsistencyAssert( TUdecConsistency(tu, dec) );
+  TUconsistencyAssert( TUdecConsistency(dec) );
 
   /* Create reduced components for new edges. */
   TU_CALL( completeReducedDecomposition(tu, dec, newcolumn, entryRows, numEntries) );
@@ -4549,7 +4540,7 @@ TU_ERROR addColumnApply(
   newcolumn->numReducedMembers = 0;
   newcolumn->numReducedComponents = 0;
 
-  TUconsistencyAssert( TUdecConsistency(tu, dec) );
+  TUconsistencyAssert( TUdecConsistency(dec) );
 
   return TU_OKAY;
 }
