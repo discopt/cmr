@@ -34,9 +34,7 @@ TU_ERROR run(const char* instanceFileName)
     TU_CALL( TUconvertGraphToBinaryMatrix(tu, graph, &checkMatrix, matrix->numRows, basis, matrix->numColumns,
       cobasis) );
 
-    if (TUchrmatCheckEqual(matrix, checkMatrix))
-      printf("Check: computed representation matrix agrees with input matrix.\n");
-    else
+    if (!TUchrmatCheckEqual(matrix, checkMatrix))
       printf("ERROR: computed representation matrix does NOT agree with input matrix!\n");
 
     TU_CALL( TUchrmatFree(tu, &checkMatrix) );
