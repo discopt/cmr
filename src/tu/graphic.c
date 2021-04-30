@@ -522,7 +522,14 @@ char* consistencyParentChild(
   return NULL;
 }
 
-char* TUdecConsistency(
+/**
+ * \brief Checks whether \p dec is consistent.
+ *
+ * \returns Explanation of inconsistency, or \c NULL.
+ */
+
+static
+char* decConsistency(
   DEC* dec  /**< Decomposition. */
 )
 {
@@ -541,15 +548,26 @@ char* TUdecConsistency(
   return NULL;
 }
 
+/**
+ * \brief Returns the representative node of \p node.
+ * 
+ * Assumes \p node is indeed a node, i.e., not -1.
+ */
+
 static
-DEC_NODE findNode(DEC* dec, DEC_NODE start)
+DEC_NODE findNode(
+  DEC* dec,
+  DEC_NODE node
+)
 {
-  DEC_NODE current = start;
+  assert(node >= 0);
+
+  DEC_NODE current = node;
   DEC_NODE next;
   while ((next = dec->nodes[current].representativeNode) >= 0)
     current = next;
   DEC_NODE root = current;
-  current = start;
+  current = node;
   while ((next = dec->nodes[current].representativeNode) >= 0)
   {
     if (next != root)
@@ -559,36 +577,54 @@ DEC_NODE findNode(DEC* dec, DEC_NODE start)
   return root;
 }
 
-static inline
-DEC_NODE findEdgeHead(DEC* dec, DEC_EDGE edge)
-{
-  assert(dec);
-  assert(edge >= 0);
-  assert(edge < dec->memEdges);
-  assert(dec->edges[edge].head >= 0);
-  assert(dec->edges[edge].head < dec->memNodes);
-  return findNode(dec, dec->edges[edge].head);
-}
+/**
+ * \brief Returns the representative node of the tail of \p edge.
+ */
 
 static inline
-DEC_NODE findEdgeTail(DEC* dec, DEC_EDGE edge)
+DEC_NODE findEdgeTail(
+  DEC* dec,     /**< Decomposition. */
+  DEC_EDGE edge /**< Edge. */
+)
 {
   assert(dec);
   assert(edge >= 0);
   assert(edge < dec->memEdges);
   assert(dec->edges[edge].tail >= 0);
   assert(dec->edges[edge].tail < dec->memNodes);
+
   return findNode(dec, dec->edges[edge].tail);
 }
 
+/**
+ * \brief Returns the representative node of the head of \p edge.
+ */
+
+static inline
+DEC_NODE findEdgeHead(
+  DEC* dec,     /**< Decomposition. */
+  DEC_EDGE edge /**< Edge. */
+)
+{
+  assert(dec);
+  assert(edge >= 0);
+  assert(edge < dec->memEdges);
+  assert(dec->edges[edge].head >= 0);
+  assert(dec->edges[edge].head < dec->memNodes);
+
+  return findNode(dec, dec->edges[edge].head);
+}
+
+/**
+ * \brief Creates a node for some rigid member of the decomposition \p dec.
+ */
+
 static
 TU_ERROR createNode(
-  TU* tu,             /**< \ref TU environment . */
-  DEC* dec,      /**< t-decomposition. */
+  DEC* dec,       /**< Decomposition. */
   DEC_NODE* pnode /**< Pointer for storing new node. */
 )
 {
-  assert(tu);
   assert(dec);
   assert(pnode);
 
@@ -598,10 +634,12 @@ TU_ERROR createNode(
     TUdbgMsg(10, "createNode returns free node %d.\n", node);
     dec->firstFreeNode = dec->nodes[node].representativeNode;
   }
-  else /* No member in free list, so we enlarge the array. */
+  else
   {
+    /* No node in free list, so we enlarge the array. */
+
     int newSize = 2 * dec->memNodes + 16;
-    TU_CALL( TUreallocBlockArray(tu, &dec->nodes, newSize) );
+    TU_CALL( TUreallocBlockArray(dec->tu, &dec->nodes, newSize) );
     for (int v = dec->memNodes + 1; v < newSize; ++v)
       dec->nodes[v].representativeNode = v+1;
     dec->nodes[newSize-1].representativeNode = -1;
@@ -624,7 +662,7 @@ TU_ERROR createNode(
 
 static
 TU_ERROR addEdgeToMembersEdgeList(
-  DEC* dec,    /**< t-decomposition. */
+  DEC* dec,     /**< Decomposition. */
   DEC_EDGE edge /**< Edge to be added. */
 )
 {
@@ -660,7 +698,7 @@ TU_ERROR addEdgeToMembersEdgeList(
 
 static
 TU_ERROR removeEdgeFromMembersEdgeList(
-  DEC* dec,    /**< t-decomposition. */
+  DEC* dec,     /**< Decomposition. */
   DEC_EDGE edge /**< Edge to be added. */
 )
 {
@@ -695,7 +733,7 @@ TU_ERROR removeEdgeFromMembersEdgeList(
 
 static
 TU_ERROR replaceEdgeInMembersEdgeList(
-  DEC* dec,        /**< t-decomposition. */
+  DEC* dec,         /**< Decomposition. */
   DEC_EDGE oldEdge, /**< Edge to be removed. */
   DEC_EDGE newEdge  /**< Edge to be added. */
 )
@@ -720,18 +758,16 @@ TU_ERROR replaceEdgeInMembersEdgeList(
 }
 
 /**
- * \brief Creates a new edge.
+ * \brief Creates a new edge in \p member.
  */
 
 static
 TU_ERROR createEdge(
-  TU* tu,                 /**< \ref TU environment. */
-  DEC* dec,          /**< t-decomposition. */
+  DEC* dec,           /**< Decomposition. */
   DEC_MEMBER member,  /**< Member this edge belongs to. */
   DEC_EDGE* pedge     /**< Pointer for storing the new edge. */
 )
 {
-  assert(tu);
   assert(dec);
   assert(pedge);
   assert(member < 0 || isRepresentativeMember(dec, member));
@@ -745,7 +781,7 @@ TU_ERROR createEdge(
   else /* No edge in free list, so we enlarge the array. */
   {
     int newSize = 2 * dec->memEdges + 16;
-    TU_CALL( TUreallocBlockArray(tu, &dec->edges, newSize) );
+    TU_CALL( TUreallocBlockArray(dec->tu, &dec->edges, newSize) );
     for (int e = dec->memEdges + 1; e < newSize; ++e)
     {
       dec->edges[e].next = e+1;
@@ -769,22 +805,23 @@ TU_ERROR createEdge(
   return TU_OKAY;
 }
 
+/**
+ * \brief Creates a pair of marker edges for linking parent \p parentMember to child \p childMember.
+ */
 
 static
 TU_ERROR createMarkerEdgePair(
-  TU* tu,                           /**< \ref TU environment. */
-  DEC* dec,                    /**< t-decomposition. */
+  DEC* dec,                     /**< Decomposition. */
   DEC_MEMBER parentMember,      /**< Parent member. */
   DEC_EDGE* pMarkerOfParent,    /**< Pointer for storing the new child marker in the parent. */
   DEC_NODE markerOfParentTail,  /**< Tail node of this *\p pChildMarker. */
-  DEC_NODE markerOfParentHead, /**< Head node of this *\p pChildMarker. */
-  DEC_MEMBER childMember,   /**< Child member. */
-  DEC_EDGE* pMarkerToParent,  /**< Pointer for storing the new parent marker in the child. */
-  DEC_NODE markerToParentTail, /**< Tail node of this *\p pParentMarker. */
-  DEC_NODE markerToParentHead  /**< Head node of this *\p pParentMarker. */
+  DEC_NODE markerOfParentHead,  /**< Head node of this *\p pChildMarker. */
+  DEC_MEMBER childMember,       /**< Child member. */
+  DEC_EDGE* pMarkerToParent,    /**< Pointer for storing the new parent marker in the child. */
+  DEC_NODE markerToParentTail,  /**< Tail node of this *\p pParentMarker. */
+  DEC_NODE markerToParentHead   /**< Head node of this *\p pParentMarker. */
 )
 {
-  assert(tu);
   assert(dec);
   assert(pMarkerOfParent);
   assert(pMarkerToParent);
@@ -793,7 +830,7 @@ TU_ERROR createMarkerEdgePair(
 
   /* Create the child marker edge of the parent member. */
 
-  TU_CALL( createEdge(tu, dec, parentMember, pMarkerOfParent) );
+  TU_CALL( createEdge(dec, parentMember, pMarkerOfParent) );
   DEC_EDGE_DATA* data = &dec->edges[*pMarkerOfParent];
   data->tail = markerOfParentTail;
   data->head = markerOfParentHead;
@@ -804,7 +841,7 @@ TU_ERROR createMarkerEdgePair(
 
   /* Create the parent marker edge of the child member. */
 
-  TU_CALL( createEdge(tu, dec, childMember, pMarkerToParent) );
+  TU_CALL( createEdge(dec, childMember, pMarkerToParent) );
   data = &dec->edges[*pMarkerToParent];
   data->tail = markerToParentTail;
   data->head = markerToParentHead;
@@ -822,21 +859,23 @@ TU_ERROR createMarkerEdgePair(
   return TU_OKAY;
 }
 
+/**
+ * \brief Creates a new member.
+ */
+
 static
 TU_ERROR createMember(
-  TU* tu,                   /**< \ref TU environment. */
-  DEC* dec,            /**< t-decomposition. */
+  DEC* dec,             /**< Decomposition. */
   DEC_MEMBER_TYPE type, /**< Type of member. */
-  DEC_MEMBER* pmember   /**< Created member. */
+  DEC_MEMBER* pmember   /**< Pointer for storing the new member. */
 )
 {
-  assert(tu);
   assert(dec);
 
   if (dec->numMembers == dec->memMembers)
   {
     dec->memMembers = 16 + 2 * dec->memMembers;
-    TU_CALL( TUreallocBlockArray(tu, &dec->members, dec->memMembers) );
+    TU_CALL( TUreallocBlockArray(dec->tu, &dec->members, dec->memMembers) );
   }
 
   DEC_MEMBER_DATA* data = &dec->members[dec->numMembers];
@@ -850,8 +889,7 @@ TU_ERROR createMember(
   *pmember = dec->numMembers;
   dec->numMembers++;
 
-  TUdbgMsg(10, "Creating %s member %d.\n",
-    type == DEC_MEMBER_TYPE_PARALLEL ? "parallel" : (type == DEC_MEMBER_TYPE_RIGID ? "rigid" : "series"), *pmember);
+  TUdbgMsg(10, "Creating %s member %d.\n", memberTypeString(type), *pmember);
 
   return TU_OKAY;
 }
@@ -925,7 +963,7 @@ TU_ERROR decCreate(
   for (int c = 0; c < dec->numColumns; ++c)
     dec->columnEdges[c].edge = -1;
 
-  TUconsistencyAssert( TUdecConsistency(dec) );
+  TUconsistencyAssert( decConsistency(dec) );
 
   return TU_OKAY;
 }
@@ -967,7 +1005,7 @@ TU_ERROR decToGraph(
   assert(dec);
   assert(graph);
 
-  TUconsistencyAssert( TUdecConsistency(dec) );
+  TUconsistencyAssert( decConsistency(dec) );
 
   TUdbgMsg(0, "TUdecToGraph for t-decomposition.\n");
 
@@ -1458,10 +1496,10 @@ TU_ERROR parallelParentChildCheckMember(
           dec->members[member].markerToParent, dec->members[member].markerOfParent);
 
         DEC_MEMBER newParallel;
-        TU_CALL( createMember(tu, dec, DEC_MEMBER_TYPE_PARALLEL, &newParallel) );
+        TU_CALL( createMember(dec, DEC_MEMBER_TYPE_PARALLEL, &newParallel) );
         DEC_EDGE markerOfParent = dec->members[member].markerOfParent;
         DEC_EDGE newMarkerOfParent, newMarkerToParent;
-        TU_CALL( createMarkerEdgePair(tu, dec, parentMember, &newMarkerOfParent, dec->edges[markerOfParent].tail,
+        TU_CALL( createMarkerEdgePair(dec, parentMember, &newMarkerOfParent, dec->edges[markerOfParent].tail,
           dec->edges[markerOfParent].head, newParallel, &newMarkerToParent, -1, -1) );
 
         TU_CALL( replaceEdgeInMembersEdgeList(dec, markerOfParent, newMarkerOfParent) );
@@ -1838,10 +1876,10 @@ TU_ERROR completeReducedDecomposition(
     for (int r = dec->numRows; r < newNumRows; ++r)
     {
       DEC_MEMBER member;
-      TU_CALL( createMember(tu, dec, DEC_MEMBER_TYPE_PARALLEL, &member) );
+      TU_CALL( createMember(dec, DEC_MEMBER_TYPE_PARALLEL, &member) );
 
       DEC_EDGE edge;
-      TU_CALL( createEdge(tu, dec, member, &edge) );
+      TU_CALL( createEdge(dec, member, &edge) );
       TU_CALL( addEdgeToMembersEdgeList(dec, edge) );
       dec->edges[edge].name = r;
       dec->edges[edge].head = -1;
@@ -2846,7 +2884,7 @@ TU_ERROR addColumnCheck(
 
   TUdbgMsg(0, "\n  Checking whether we can add a column with %d 1's.\n", numEntries);
 
-  TUconsistencyAssert( TUdecConsistency(dec) );
+  TUconsistencyAssert( decConsistency(dec) );
 
   /* Check for the (not yet computed) reduced decomposition whether there is a pair of parallel child/parent marker
    * edges in a non-parallel. */
@@ -2869,7 +2907,7 @@ TU_ERROR addColumnCheck(
   if (newcolumn->remainsGraphic)
     TUdbgMsg(4, "Adding the column would maintain graphicness.\n");
 
-  TUconsistencyAssert( TUdecConsistency(dec) );
+  TUconsistencyAssert( decConsistency(dec) );
 
   return TU_OKAY;
 }
@@ -3175,8 +3213,8 @@ TU_ERROR createParallelNodes(
   }
 
   DEC_NODE tail, head;
-  TU_CALL( createNode(tu, dec, &tail) );
-  TU_CALL( createNode(tu, dec, &head) );
+  TU_CALL( createNode(dec, &tail) );
+  TU_CALL( createNode(dec, &head) );
 
   do
   {
@@ -3212,9 +3250,9 @@ TU_ERROR splitParallel(
   assert(edge2 < dec->memEdges);
 
   DEC_MEMBER childParallel;
-  TU_CALL( createMember(tu, dec, DEC_MEMBER_TYPE_PARALLEL, &childParallel) );
+  TU_CALL( createMember(dec, DEC_MEMBER_TYPE_PARALLEL, &childParallel) );
   DEC_EDGE markerOfParentParallel, markerOfChildParallel;
-  TU_CALL( createMarkerEdgePair(tu, dec, parallel, &markerOfParentParallel, -1, -1, childParallel, &markerOfChildParallel, -1, -1) );
+  TU_CALL( createMarkerEdgePair(dec, parallel, &markerOfParentParallel, -1, -1, childParallel, &markerOfChildParallel, -1, -1) );
   TU_CALL( addEdgeToMembersEdgeList(dec, markerOfParentParallel) );
   TU_CALL( addEdgeToMembersEdgeList(dec, markerOfChildParallel) );
 
@@ -3310,8 +3348,8 @@ TU_ERROR addColumnProcessParallel(
     assert(reducedComponent->numTerminals >= 1);
 
     DEC_NODE tail, head;
-    TU_CALL( createNode(tu, dec, &tail) );
-    TU_CALL( createNode(tu, dec, &head) );
+    TU_CALL( createNode(dec, &tail) );
+    TU_CALL( createNode(dec, &head) );
     TUdbgMsg(8 + 2*depth, "Parallel's tail node is %d and head node is %d.\n", tail, head);
     DEC_EDGE edge = dec->members[member].firstEdge;
     do
@@ -3488,13 +3526,13 @@ TU_ERROR addColumnProcessRigid(
           childMarkerNodes[0], childMarkerNodes[1], childMarkerEdges[1], childMarkerNodes[2], childMarkerNodes[3]);
 
         DEC_MEMBER newParallel = -1;
-        TU_CALL( createMember(tu, dec, DEC_MEMBER_TYPE_PARALLEL, &newParallel) );
+        TU_CALL( createMember(dec, DEC_MEMBER_TYPE_PARALLEL, &newParallel) );
         dec->members[newParallel].parentMember = member;
         dec->members[childMember[0]].parentMember = newParallel;
         dec->members[childMember[1]].parentMember = newParallel;
 
         DEC_EDGE markerOfParent, markerToParent;
-        TU_CALL( createMarkerEdgePair(tu, dec, member, &markerOfParent, childMarkerNodes[0], childMarkerNodes[1],
+        TU_CALL( createMarkerEdgePair(dec, member, &markerOfParent, childMarkerNodes[0], childMarkerNodes[1],
           newParallel, &markerToParent, -1, -1) );
         
         TU_CALL( replaceEdgeInMembersEdgeList(dec, childMarkerEdges[0], markerOfParent) );
@@ -3640,11 +3678,11 @@ TU_ERROR createEdgeParallel(
 
   DEC_MEMBER parentMember = findEdgeMember(dec, edge);
   DEC_MEMBER newParallel = -1;
-  TU_CALL( createMember(tu, dec, DEC_MEMBER_TYPE_PARALLEL, &newParallel) );
+  TU_CALL( createMember(dec, DEC_MEMBER_TYPE_PARALLEL, &newParallel) );
   dec->members[newParallel].parentMember = parentMember;
 
   DEC_EDGE markerOfParent, markerToParent;
-  TU_CALL( createMarkerEdgePair(tu, dec, parentMember, &markerOfParent, dec->edges[edge].tail, dec->edges[edge].head,
+  TU_CALL( createMarkerEdgePair(dec, parentMember, &markerOfParent, dec->edges[edge].tail, dec->edges[edge].head,
     newParallel, &markerToParent, -1, -1) );
   dec->edges[markerOfParent].next = dec->edges[edge].next;
   dec->edges[markerOfParent].prev = dec->edges[edge].prev;
@@ -3733,14 +3771,14 @@ TU_ERROR splitSeries(
   {
     /* Initialize new series member. */
     DEC_MEMBER series;
-    TU_CALL( createMember(tu, dec, DEC_MEMBER_TYPE_SERIES, &series) );
+    TU_CALL( createMember(dec, DEC_MEMBER_TYPE_SERIES, &series) );
 
     /* Initialize new parallel. */
     DEC_MEMBER parallel;
-    TU_CALL( createMember(tu, dec, DEC_MEMBER_TYPE_PARALLEL, &parallel) );
+    TU_CALL( createMember(dec, DEC_MEMBER_TYPE_PARALLEL, &parallel) );
 
     DEC_EDGE seriesParentMarker, parallelChildMarker;
-    TU_CALL( createMarkerEdgePair(tu, dec, parallel, &parallelChildMarker, -1, -1, series, &seriesParentMarker, -1, -1) );
+    TU_CALL( createMarkerEdgePair(dec, parallel, &parallelChildMarker, -1, -1, series, &seriesParentMarker, -1, -1) );
     TU_CALL( addEdgeToMembersEdgeList(dec, seriesParentMarker) );
     TU_CALL( addEdgeToMembersEdgeList(dec, parallelChildMarker) );
 
@@ -3812,7 +3850,7 @@ TU_ERROR splitSeries(
     while (edge != firstEdge || !encounteredStayingEdge);
 
     DEC_EDGE memberChildMarker, parallelParentMarker;
-    TU_CALL( createMarkerEdgePair(tu, dec, member, &memberChildMarker, -1, -1, parallel, &parallelParentMarker, -1, -1) );
+    TU_CALL( createMarkerEdgePair(dec, member, &memberChildMarker, -1, -1, parallel, &parallelParentMarker, -1, -1) );
     TU_CALL( addEdgeToMembersEdgeList(dec, parallelParentMarker) );
     DEC_EDGE oldPrev = dec->edges[firstEdge].prev;
     dec->edges[memberChildMarker].next = firstEdge;
@@ -3973,11 +4011,11 @@ TU_ERROR addColumnProcessSeries(
         newcolumn->edgesInPath[childMarkerEdges[0]] = false;
 
         DEC_NODE a, b, c;
-        TU_CALL( createNode(tu, dec, &a) );
-        TU_CALL( createNode(tu, dec, &b) );
+        TU_CALL( createNode(dec, &a) );
+        TU_CALL( createNode(dec, &b) );
         if (dec->members[member].numEdges == 3)
         {
-          TU_CALL( createNode(tu, dec, &c) );
+          TU_CALL( createNode(dec, &c) );
           TU_CALL( setEdgeNodes(tu, dec, nonPathEdge, a, c) );
         }
         else
@@ -4016,9 +4054,9 @@ TU_ERROR addColumnProcessSeries(
         assert(dec->members[member].numEdges == 3);
 
         DEC_NODE a, b, c;
-        TU_CALL( createNode(tu, dec, &a) );
-        TU_CALL( createNode(tu, dec, &b) );
-        TU_CALL( createNode(tu, dec, &c) );
+        TU_CALL( createNode(dec, &a) );
+        TU_CALL( createNode(dec, &b) );
+        TU_CALL( createNode(dec, &c) );
         TU_CALL( setEdgeNodes(tu, dec, dec->members[member].markerToParent, b, c) );
         TU_CALL( setEdgeNodes(tu, dec, pathEdge, a, b) );
         TU_CALL( setEdgeNodes(tu, dec, childMarkerEdges[0], c, a) );
@@ -4105,14 +4143,14 @@ TU_ERROR addColumnProcessSeries(
        * a <----- b=c -----> d -------- a
        *   child0     child1   non-path */
       DEC_NODE a, b, c, d;
-      TU_CALL( createNode(tu, dec, &a) );
-      TU_CALL( createNode(tu, dec, &b) );
+      TU_CALL( createNode(dec, &a) );
+      TU_CALL( createNode(dec, &b) );
       if (pathEdge >= 0)
-        TU_CALL( createNode(tu, dec, &c) );
+        TU_CALL( createNode(dec, &c) );
       else
         c = b;
       if (nonPathEdge >= 0)
-        TU_CALL( createNode(tu, dec, &d) );
+        TU_CALL( createNode(dec, &d) );
       else
         d = a;
       TU_CALL( setEdgeNodes(tu, dec, childMarkerEdges[0], a, b) );
@@ -4184,9 +4222,9 @@ TU_ERROR addColumnProcessSeries(
       /* We now create the nodes of the triangle so that the path leaves it via the parent marker edge's head node. */
 
       DEC_NODE a, b, c;
-      TU_CALL( createNode(tu, dec, &a) );
-      TU_CALL( createNode(tu, dec, &b) );
-      TU_CALL( createNode(tu, dec, &c) );
+      TU_CALL( createNode(dec, &a) );
+      TU_CALL( createNode(dec, &b) );
+      TU_CALL( createNode(dec, &c) );
       TU_CALL( setEdgeNodes(tu, dec, dec->members[reducedMember->member].markerToParent, a, b) );
       TU_CALL( setEdgeNodes(tu, dec, pathEdge, b, c) );
       TU_CALL( setEdgeNodes(tu, dec, nonPathEdge, c, a) );
@@ -4238,13 +4276,13 @@ TU_ERROR addColumnProcessSeries(
       /* We now create the nodes of the triangle so that the path leaves it via the parent marker edge's head node. */
 
       DEC_NODE a, b, c, d;
-      TU_CALL( createNode(tu, dec, &a) );
-      TU_CALL( createNode(tu, dec, &b) );
-      TU_CALL( createNode(tu, dec, &c) );
+      TU_CALL( createNode(dec, &a) );
+      TU_CALL( createNode(dec, &b) );
+      TU_CALL( createNode(dec, &c) );
       TU_CALL( setEdgeNodes(tu, dec, dec->members[reducedMember->member].markerToParent, a, b) );
       if (dec->members[member].numEdges == 4)
       {
-        TU_CALL( createNode(tu, dec, &d) );
+        TU_CALL( createNode(dec, &d) );
         TU_CALL( setEdgeNodes(tu, dec, pathEdge, b, c) );
         TU_CALL( setEdgeNodes(tu, dec, childMarkerEdges[0], d, c) );
         TU_CALL( setEdgeNodes(tu, dec, nonPathEdge, d, a) );
@@ -4299,7 +4337,7 @@ TU_ERROR addColumnProcessComponent(
   TUdbgMsg(6 + 2*depth, "addColumnProcessComponent(member %d = reduced member %ld)\n", reducedMember->member,
     (reducedMember - &newcolumn->reducedMembers[0]));
 
-  TUconsistencyAssert( TUdecConsistency(dec) );
+  TUconsistencyAssert( decConsistency(dec) );
 
   /* If we are non-root type 1, then we don't need to do anything. */
   if (reducedMember->type == TYPE_CYCLE_CHILD && depth > 0)
@@ -4329,7 +4367,7 @@ TU_ERROR addColumnProcessComponent(
   else
     TU_CALL( addColumnProcessRigid(tu, dec, newcolumn, reducedComponent, reducedMember, depth) );
 
-  TUconsistencyAssert( TUdecConsistency(dec) );
+  TUconsistencyAssert( decConsistency(dec) );
 
   return TU_OKAY;
 }
@@ -4406,7 +4444,7 @@ TU_ERROR addColumnApply(
 
   TUdbgMsg(0, "\n  Adding a column with %d 1's.\n", numEntries);
 
-  TUconsistencyAssert( TUdecConsistency(dec) );
+  TUconsistencyAssert( decConsistency(dec) );
 
   /* Create reduced components for new edges. */
   TU_CALL( completeReducedDecomposition(tu, dec, newcolumn, entryRows, numEntries) );
@@ -4449,7 +4487,7 @@ TU_ERROR addColumnApply(
      * marker edge that will be linked to a new series member consisting of all these marker edges and the column edge.
      */
     DEC_EDGE newEdge;
-    TU_CALL( createEdge(tu, dec, -1, &newEdge) );
+    TU_CALL( createEdge(dec, -1, &newEdge) );
     componentNewEdges[i] = newEdge;
     dec->edges[newEdge].childMember = -1;
     dec->edges[newEdge].member = findMember(dec, reducedComponent->terminalMember[0]);
@@ -4470,9 +4508,9 @@ TU_ERROR addColumnApply(
   if (newcolumn->numReducedComponents == 0)
   {
     DEC_MEMBER loopMember;
-    TU_CALL( createMember(tu, dec, DEC_MEMBER_TYPE_LOOP, &loopMember) );
+    TU_CALL( createMember(dec, DEC_MEMBER_TYPE_LOOP, &loopMember) );
     DEC_MEMBER loopEdge;
-    TU_CALL( createEdge(tu, dec, loopMember, &loopEdge) );
+    TU_CALL( createEdge(dec, loopMember, &loopEdge) );
     TU_CALL( addEdgeToMembersEdgeList(dec, loopEdge) );
     dec->edges[loopEdge].name = -1 - column;
     dec->edges[loopEdge].childMember = -1;
@@ -4488,10 +4526,10 @@ TU_ERROR addColumnApply(
     /* We create another edge for the column as well as a series member containing all new edges and this one. */
 
     DEC_MEMBER series;
-    TU_CALL( createMember(tu, dec, DEC_MEMBER_TYPE_SERIES, &series) );
+    TU_CALL( createMember(dec, DEC_MEMBER_TYPE_SERIES, &series) );
 
     DEC_EDGE columnEdge;
-    TU_CALL( createEdge(tu, dec, series, &columnEdge) );
+    TU_CALL( createEdge(dec, series, &columnEdge) );
     dec->edges[columnEdge].childMember = -1;
     dec->edges[columnEdge].head = -1;
     dec->edges[columnEdge].tail = -1;
@@ -4502,7 +4540,7 @@ TU_ERROR addColumnApply(
     {
       DEC_EDGE newEdge = componentNewEdges[i];
       DEC_EDGE markerEdge;
-      TU_CALL( createEdge(tu, dec, series, &markerEdge) );
+      TU_CALL( createEdge(dec, series, &markerEdge) );
       TU_CALL( addEdgeToMembersEdgeList(dec, markerEdge) );
       dec->edges[markerEdge].head = -1;
       dec->edges[markerEdge].tail = -1;
@@ -4540,7 +4578,7 @@ TU_ERROR addColumnApply(
   newcolumn->numReducedMembers = 0;
   newcolumn->numReducedComponents = 0;
 
-  TUconsistencyAssert( TUdecConsistency(dec) );
+  TUconsistencyAssert( decConsistency(dec) );
 
   return TU_OKAY;
 }
@@ -4667,10 +4705,10 @@ TU_ERROR TUtestGraphicness(TU* tu, TU_CHRMAT* transpose, bool* pisGraphic, TU_GR
       for (int r = dec->numRows; r < transpose->numColumns; ++r)
       {
         DEC_MEMBER member;
-        TU_CALL( createMember(tu, dec, DEC_MEMBER_TYPE_PARALLEL, &member) );
+        TU_CALL( createMember(dec, DEC_MEMBER_TYPE_PARALLEL, &member) );
 
         DEC_EDGE edge;
-        TU_CALL( createEdge(tu, dec, member, &edge) );
+        TU_CALL( createEdge(dec, member, &edge) );
         TU_CALL( addEdgeToMembersEdgeList(dec, edge) );
         dec->edges[edge].name = r;
         dec->edges[edge].head = -1;
