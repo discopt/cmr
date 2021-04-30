@@ -7,6 +7,8 @@
 TU_ERROR run(const char* instanceFileName)
 {
   FILE* instanceFile = fopen(instanceFileName, "r");
+  if (!instanceFile)
+    return TU_ERROR_INPUT;
 
   TU* tu = NULL;
   TU_CALL( TUcreateEnvironment(&tu) );
