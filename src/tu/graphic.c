@@ -58,7 +58,7 @@ typedef int DEC_MEMBER; /**< \brief Type for refering to a decomposition member.
 typedef struct
 {
   DEC_NODE representativeNode;  /**< \brief Next representative of same node towards root, or -1 if root. */
-} DEC_NODE_DATA;
+} DecNodeData;
 
 typedef struct
 {
@@ -73,7 +73,7 @@ typedef struct
   DEC_EDGE prev;          /**< \brief Next edge of this member. */
   DEC_EDGE next;          /**< \brief Previous edge of this member. */
   DEC_MEMBER childMember; /**< \brief Child member linked to this edge, or -1. */
-} DEC_EDGE_DATA;
+} DecEdgeData;
 
 typedef struct
 {
@@ -89,12 +89,12 @@ typedef struct
 typedef struct
 {
   DEC_EDGE edge;  /**< \brief Edge corresponding to this row or -1. */
-} DEC_ROW_DATA;
+} DecRowData;
 
 typedef struct
 {
   DEC_EDGE edge;  /**< \brief Edge corresponding to this column or -1. */
-} DEC_COLUMN_DATA;
+} DecColumnData;
 
 typedef struct
 {
@@ -106,24 +106,24 @@ typedef struct
 
   int memEdges;                 /**< \brief Allocated memory for edges. */
   int numEdges;                 /**< \brief Number of used edges. */
-  DEC_EDGE_DATA* edges;         /**< \brief Array of edges. */
+  DecEdgeData* edges;         /**< \brief Array of edges. */
   DEC_EDGE firstFreeEdge;       /**< \brief First edge in free list or -1. */
 
   int memNodes;                 /**< \brief Allocated memory for nodes. */
   int numNodes;                 /**< \brief Number of nodes. */
-  DEC_NODE_DATA* nodes;         /**< \brief Array of nodes. */
+  DecNodeData* nodes;         /**< \brief Array of nodes. */
   DEC_NODE firstFreeNode;       /**< \brief First node in free list or -1. */
 
   int memRows;                  /**< \brief Allocated memory for \c rowEdges. */
   int numRows;                  /**< \brief Number of rows. */
-  DEC_ROW_DATA* rowEdges;       /**< \brief Maps each row to its edge. */
+  DecRowData* rowEdges;       /**< \brief Maps each row to its edge. */
 
   int memColumns;               /**< \brief Allocated memory for \c columnEdges. */
   int numColumns;               /**< \brief Number of columns. */
-  DEC_COLUMN_DATA* columnEdges; /**< \brief Maps each column to its edge. */
+  DecColumnData* columnEdges; /**< \brief Maps each column to its edge. */
 
   int numMarkerPairs;           /**< \brief Number of marker edge pairs in t-decomposition. */
-} DEC;
+} Dec;
 
 /**
  * \brief Returns \c true if and only \p member is a representative member.
@@ -131,7 +131,7 @@ typedef struct
 
 static inline
 bool isRepresentativeMember(
-  DEC* dec,         /**< Decomposition. */
+  Dec* dec,         /**< Decomposition. */
   DEC_MEMBER member /**< Member of \p dec. */
 )
 {
@@ -146,7 +146,7 @@ bool isRepresentativeMember(
 
 static
 DEC_MEMBER findMember(
-  DEC* dec,         /**< Decomposition. */
+  Dec* dec,         /**< Decomposition. */
   DEC_MEMBER member /**< Member for which the representative shall be returned. */
 )
 {
@@ -173,7 +173,7 @@ DEC_MEMBER findMember(
 
 static inline
 DEC_MEMBER findMemberParent(
-  DEC* dec,         /**< Decomposition. */
+  Dec* dec,         /**< Decomposition. */
   DEC_MEMBER member /**< Member whose parent shall be returned. */
 )
 {
@@ -193,7 +193,7 @@ DEC_MEMBER findMemberParent(
 
 static inline
 DEC_MEMBER findEdgeMember(
-  DEC* dec,     /**< Decomposition. */
+  Dec* dec,     /**< Decomposition. */
   DEC_EDGE edge /**< Edge. */
 )
 {
@@ -208,7 +208,7 @@ DEC_MEMBER findEdgeMember(
 
 static
 char* consistencyEdges(
-  DEC* dec  /**< Decomposition. */
+  Dec* dec  /**< Decomposition. */
 )
 {
   assert(dec);
@@ -256,7 +256,7 @@ char* consistencyEdges(
 
 static
 char* consistencyMembers(
-  DEC* dec  /**< Decomposition. */
+  Dec* dec  /**< Decomposition. */
 )
 {
   assert(dec);
@@ -283,7 +283,7 @@ char* consistencyMembers(
 
 static
 char* consistencyNodes(
-  DEC* dec  /**< Decomposition. */
+  Dec* dec  /**< Decomposition. */
 )
 {
   assert(dec);
@@ -328,7 +328,7 @@ char* consistencyNodes(
 
 static
 char* consistencyTree(
-  DEC* dec  /**< Decomposition. */
+  Dec* dec  /**< Decomposition. */
 )
 {
   assert(dec);
@@ -444,7 +444,7 @@ typedef struct
 
 static
 char* consistencyParentChild(
-  DEC* dec  /**< Decomposition. */
+  Dec* dec  /**< Decomposition. */
 )
 {
   assert(dec);
@@ -530,7 +530,7 @@ char* consistencyParentChild(
 
 static
 char* decConsistency(
-  DEC* dec  /**< Decomposition. */
+  Dec* dec  /**< Decomposition. */
 )
 {
   char* message = NULL;
@@ -556,7 +556,7 @@ char* decConsistency(
 
 static
 DEC_NODE findNode(
-  DEC* dec,
+  Dec* dec,
   DEC_NODE node
 )
 {
@@ -583,7 +583,7 @@ DEC_NODE findNode(
 
 static inline
 DEC_NODE findEdgeTail(
-  DEC* dec,     /**< Decomposition. */
+  Dec* dec,     /**< Decomposition. */
   DEC_EDGE edge /**< Edge. */
 )
 {
@@ -602,7 +602,7 @@ DEC_NODE findEdgeTail(
 
 static inline
 DEC_NODE findEdgeHead(
-  DEC* dec,     /**< Decomposition. */
+  Dec* dec,     /**< Decomposition. */
   DEC_EDGE edge /**< Edge. */
 )
 {
@@ -621,7 +621,7 @@ DEC_NODE findEdgeHead(
 
 static
 TU_ERROR createNode(
-  DEC* dec,       /**< Decomposition. */
+  Dec* dec,       /**< Decomposition. */
   DEC_NODE* pnode /**< Pointer for storing new node. */
 )
 {
@@ -662,7 +662,7 @@ TU_ERROR createNode(
 
 static
 TU_ERROR addEdgeToMembersEdgeList(
-  DEC* dec,     /**< Decomposition. */
+  Dec* dec,     /**< Decomposition. */
   DEC_EDGE edge /**< Edge to be added. */
 )
 {
@@ -698,7 +698,7 @@ TU_ERROR addEdgeToMembersEdgeList(
 
 static
 TU_ERROR removeEdgeFromMembersEdgeList(
-  DEC* dec,     /**< Decomposition. */
+  Dec* dec,     /**< Decomposition. */
   DEC_EDGE edge /**< Edge to be added. */
 )
 {
@@ -733,7 +733,7 @@ TU_ERROR removeEdgeFromMembersEdgeList(
 
 static
 TU_ERROR replaceEdgeInMembersEdgeList(
-  DEC* dec,         /**< Decomposition. */
+  Dec* dec,         /**< Decomposition. */
   DEC_EDGE oldEdge, /**< Edge to be removed. */
   DEC_EDGE newEdge  /**< Edge to be added. */
 )
@@ -763,7 +763,7 @@ TU_ERROR replaceEdgeInMembersEdgeList(
 
 static
 TU_ERROR createEdge(
-  DEC* dec,           /**< Decomposition. */
+  Dec* dec,           /**< Decomposition. */
   DEC_MEMBER member,  /**< Member this edge belongs to. */
   DEC_EDGE* pedge     /**< Pointer for storing the new edge. */
 )
@@ -811,7 +811,7 @@ TU_ERROR createEdge(
 
 static
 TU_ERROR createMarkerEdgePair(
-  DEC* dec,                     /**< Decomposition. */
+  Dec* dec,                     /**< Decomposition. */
   DEC_MEMBER parentMember,      /**< Parent member. */
   DEC_EDGE* pMarkerOfParent,    /**< Pointer for storing the new child marker in the parent. */
   DEC_NODE markerOfParentTail,  /**< Tail node of this *\p pChildMarker. */
@@ -831,7 +831,7 @@ TU_ERROR createMarkerEdgePair(
   /* Create the child marker edge of the parent member. */
 
   TU_CALL( createEdge(dec, parentMember, pMarkerOfParent) );
-  DEC_EDGE_DATA* data = &dec->edges[*pMarkerOfParent];
+  DecEdgeData* data = &dec->edges[*pMarkerOfParent];
   data->tail = markerOfParentTail;
   data->head = markerOfParentHead;
   data->childMember = childMember;
@@ -865,7 +865,7 @@ TU_ERROR createMarkerEdgePair(
 
 static
 TU_ERROR createMember(
-  DEC* dec,             /**< Decomposition. */
+  Dec* dec,             /**< Decomposition. */
   DEC_MEMBER_TYPE type, /**< Type of member. */
   DEC_MEMBER* pmember   /**< Pointer for storing the new member. */
 )
@@ -900,7 +900,7 @@ TU_ERROR createMember(
 
 TU_ERROR decCreate(
   TU* tu,           /**< \ref TU environment. */
-  DEC** pdec,       /**< Pointer to new decomposition. .*/
+  Dec** pdec,       /**< Pointer to new decomposition. .*/
   int memEdges,     /**< Initial memory for edges of the decomposition. */
   int memNodes,     /**< Initial memory for nodes of the decomposition. */
   int memMembers,   /**< Initial memory for members of the decomposition. */
@@ -913,7 +913,7 @@ TU_ERROR decCreate(
   assert(!*pdec);
 
   TU_CALL( TUallocBlock(tu, pdec) );
-  DEC* dec = *pdec;
+  Dec* dec = *pdec;
   dec->tu = tu;
   dec->memMembers = memMembers;
   dec->numMembers = 0;
@@ -977,13 +977,13 @@ TU_ERROR decCreate(
  */
 
 TU_ERROR decFree(
-  DEC** pdec /**< Pointer to decomposition. */
+  Dec** pdec /**< Pointer to decomposition. */
 )
 {
   assert(pdec);
   assert(*pdec);
 
-  DEC* dec = *pdec;
+  Dec* dec = *pdec;
   TU_CALL( TUfreeBlockArray(dec->tu, &dec->members) );
   TU_CALL( TUfreeBlockArray(dec->tu, &dec->edges) );
   TU_CALL( TUfreeBlockArray(dec->tu, &dec->nodes) );
@@ -999,7 +999,7 @@ TU_ERROR decFree(
  */
 
 TU_ERROR decToGraph(
-  DEC* dec,               /**< Decomposition. */
+  Dec* dec,               /**< Decomposition. */
   TU_GRAPH* graph,        /**< Graph to be filled. */
   bool merge,             /**< Merge and remove corresponding parent and child markers. */
   TU_GRAPH_EDGE* basis,   /**< If not NULL, the edges of a spanning tree are stored here. */
@@ -1198,7 +1198,7 @@ TU_ERROR decToGraph(
 static
 void edgeToDot(
   FILE* stream,       /**< File stream. */
-  DEC* dec,           /**< Decomposition. */
+  Dec* dec,           /**< Decomposition. */
   DEC_MEMBER member,  /**< Member this edge belongs to. */
   DEC_EDGE edge,      /**< Edge. */
   int u,              /**< First node. */
@@ -1251,7 +1251,7 @@ void edgeToDot(
  */
 
 TU_ERROR TUdecToDot(
-  DEC* dec,               /**< Decomposition. */
+  Dec* dec,               /**< Decomposition. */
   FILE* stream,           /**< Stream to write to. */
   bool* edgesHighlighted  /**< Indicator for edges to be highlighted. */
 )
@@ -1317,9 +1317,15 @@ TU_ERROR TUdecToDot(
   return TU_OKAY;
 }
 
+/**<
+ * \brief Writes decomposition to a dot file in the current directory.
+ * 
+ * The file name is dec-NUMBER.dot where NUMBER is increased for each call and reset for a new decomposition.
+ */
+
 static inline
 void debugDot(
-  DEC* dec,                 /**< Decomposition. */
+  Dec* dec,                 /**< Decomposition. */
   DEC_NEWCOLUMN* newcolumn  /**< new column. */
 )
 {
@@ -1340,9 +1346,13 @@ void debugDot(
 #endif /* TU_DEBUG_DOT */
 }
 
+/**
+ * \brief Creates a \ref DEC_NEWCOLUMN structure.
+ */
+
 TU_ERROR newcolumnCreate(
-  TU* tu,                         /**< TU environment. */
-  DEC_NEWCOLUMN** pnewcolumn  /**< new-column structure. */
+  TU* tu,                     /**< \ref TU environment. */
+  DEC_NEWCOLUMN** pnewcolumn  /**< Pointer for storing the newcolumn structure. */
 )
 {
   assert(tu);
@@ -1376,9 +1386,13 @@ TU_ERROR newcolumnCreate(
   return TU_OKAY;
 }
 
+/**
+ * \brief Frees a \ref DEC_NEWCOLUMN structure.
+ */
+
 TU_ERROR newcolumnFree(
-  TU* tu,                         /**< TU environment. */
-  DEC_NEWCOLUMN** pnewcolumn  /**< new-column structure. */
+  TU* tu,                     /**< \ref TU environment. */
+  DEC_NEWCOLUMN** pnewcolumn  /**< Pointer to newcolumn structure. */
 )
 {
   assert(tu);
@@ -1409,14 +1423,16 @@ TU_ERROR newcolumnFree(
   return TU_OKAY;
 }
 
+/**
+ * \brief Initializes a \ref DEC_NEWCOLUMN structure in order to check for a column.
+ */
+
 static
 TU_ERROR initializeNewColumn(
-  TU* tu,                       /**< \ref TU environment. */
-  DEC* dec,                /**< t-decomposition. */
-  DEC_NEWCOLUMN* newcolumn  /**< new column. */
+  Dec* dec,                 /**< Decomposition. */
+  DEC_NEWCOLUMN* newcolumn  /**< newcolumn. */
 )
 {
-  assert(tu);
   assert(dec);
   assert(newcolumn);
   assert(newcolumn->numReducedMembers == 0);
@@ -1429,7 +1445,7 @@ TU_ERROR initializeNewColumn(
   size_t requiredNumEdgesInPath = dec->memEdges + 8*dec->numMembers + 32;
   if (requiredNumEdgesInPath > newcolumn->memEdgesInPath)
   {
-    TU_CALL( TUreallocBlockArray(tu, &newcolumn->edgesInPath, requiredNumEdgesInPath) );
+    TU_CALL( TUreallocBlockArray(dec->tu, &newcolumn->edgesInPath, requiredNumEdgesInPath) );
     newcolumn->memEdgesInPath = requiredNumEdgesInPath;
   }
 
@@ -1437,7 +1453,7 @@ TU_ERROR initializeNewColumn(
   {
     while (newcolumn->memNodesDegree < dec->memNodes)
       newcolumn->memNodesDegree = 16 + 2 * newcolumn->memNodesDegree;
-    TU_CALL( TUreallocBlockArray(tu, &newcolumn->nodesDegree, newcolumn->memNodesDegree) );
+    TU_CALL( TUreallocBlockArray(dec->tu, &newcolumn->nodesDegree, newcolumn->memNodesDegree) );
   }
 
 #if defined(TU_DEBUG_DOT)
@@ -1458,14 +1474,12 @@ TU_ERROR initializeNewColumn(
 
 static
 TU_ERROR parallelParentChildCheckMember(
-  TU* tu,                     /**< \ref TU environment. */
-  DEC* dec,              /**< t-decomposition. */
-  bool* visitedMembers,       /**< Map from members to indicator of whether this was already a \p childMember. */
-  DEC_MEMBER member,      /**< Parent of \p childMember. */
-  DEC_MEMBER childMember  /**< Child member of \p member. */
+  Dec* dec,              /**< Decomposition. */
+  bool* visitedMembers,  /**< Map from members to indicator of whether this was already a \p childMember. */
+  DEC_MEMBER member,     /**< Parent of \p childMember. */
+  DEC_MEMBER childMember /**< Child member of \p member. */
 )
 {
-  assert(tu);
   assert(dec);
   assert(childMember >= 0);
   assert(member == findMemberParent(dec, childMember));
@@ -1501,7 +1515,7 @@ TU_ERROR parallelParentChildCheckMember(
 
       if (dec->members[parentMember].type != DEC_MEMBER_TYPE_PARALLEL)
       {
-        TUdbgMsg(12, "Parent member is not paralle, so we create a parallel member between edges %d and %d.\n",
+        TUdbgMsg(12, "Parent member is not a parallel member, so we create one for edges %d and %d.\n",
           dec->members[member].markerToParent, dec->members[member].markerOfParent);
 
         DEC_MEMBER newParallel;
@@ -1538,20 +1552,21 @@ TU_ERROR parallelParentChildCheckMember(
     }
   }
 
-  TU_CALL( parallelParentChildCheckMember(tu, dec, visitedMembers, parentMember, member) );
+  TU_CALL( parallelParentChildCheckMember(dec, visitedMembers, parentMember, member) );
 
   return TU_OKAY;
 }
+/**
+ * \brief Ensures that no child marker in the reduced decomposition is parallel to the parent marker.
+ */
 
 static
 TU_ERROR parallelParentChildCheckReducedMembers(
-  TU* tu,         /**< \ref TU environment. */
-  DEC* dec,  /**< t-decomposition. */
+  Dec* dec,       /**< Decomposition. */
   int* entryRows, /**< Array of rows of new column's enries. */
   int numEntries  /**< Length of \p entryRows. */
 )
 {
-  assert(tu);
   assert(dec);
   assert(entryRows);
 
@@ -1559,7 +1574,7 @@ TU_ERROR parallelParentChildCheckReducedMembers(
 
   size_t maxNumMembers = 2*dec->numMembers;
   bool* visitedMembers = NULL;
-  TU_CALL( TUallocStackArray(tu, &visitedMembers, maxNumMembers) );
+  TU_CALL( TUallocStackArray(dec->tu, &visitedMembers, maxNumMembers) );
   for (int m = 0; m < maxNumMembers; ++m)
     visitedMembers[m] = false;
 
@@ -1577,11 +1592,11 @@ TU_ERROR parallelParentChildCheckReducedMembers(
       member);
     DEC_MEMBER parentMember = findMemberParent(dec, member);
     if (parentMember >= 0)
-      TU_CALL( parallelParentChildCheckMember(tu, dec, visitedMembers, parentMember, member) );
+      TU_CALL( parallelParentChildCheckMember(dec, visitedMembers, parentMember, member) );
   }
 
   assert(dec->numMembers <= maxNumMembers);
-  TU_CALL( TUfreeStackArray(tu, &visitedMembers) );
+  TU_CALL( TUfreeStackArray(dec->tu, &visitedMembers) );
 
   return TU_OKAY;
 }
@@ -1592,15 +1607,13 @@ TU_ERROR parallelParentChildCheckReducedMembers(
 
 static
 TU_ERROR createReducedMembers(
-  TU* tu,                             /**< \ref TU environment. */
-  DEC* dec,                      /**< t-decomposition. */
-  DEC_NEWCOLUMN* newcolumn,       /**< new column. */
-  DEC_MEMBER member,              /**< Member to create reduced member for. */
+  Dec* dec,                           /**< Decomposition. */
+  DEC_NEWCOLUMN* newcolumn,           /**< newcolumn. */
+  DEC_MEMBER member,                  /**< Member to create reduced member for. */
   ReducedMember** rootDepthMinimizer, /**< Array mapping root members to the depth minimizer. */
   ReducedMember** pReducedMember      /**< Pointer for storing the created reduced member. */
 )
 {
-  assert(tu);
   assert(dec);
   assert(newcolumn);
   assert(member >= 0);
@@ -1644,7 +1657,7 @@ TU_ERROR createReducedMembers(
       parentMember = findMemberParent(dec, member);
 
       ReducedMember* parentReducedMember;
-      TU_CALL( createReducedMembers(tu, dec, newcolumn, parentMember, rootDepthMinimizer, &parentReducedMember) );
+      TU_CALL( createReducedMembers(dec, newcolumn, parentMember, rootDepthMinimizer, &parentReducedMember) );
       reducedMember->parent = parentReducedMember;
       reducedMember->depth = parentReducedMember->depth + 1;
       reducedMember->rootMember = parentReducedMember->rootMember;
@@ -1661,8 +1674,7 @@ TU_ERROR createReducedMembers(
       if (newcolumn->memReducedComponents == newcolumn->numReducedComponents)
       {
         newcolumn->memReducedComponents = 2 * newcolumn->memReducedComponents + 16;
-        TU_CALL( TUreallocBlockArray(tu, &newcolumn->reducedComponents,
-          newcolumn->memReducedComponents) );
+        TU_CALL( TUreallocBlockArray(dec->tu, &newcolumn->reducedComponents, newcolumn->memReducedComponents) );
       }
       TUdbgMsg(8, "Initializing the new reduced component %d.\n", newcolumn->numReducedComponents);
 
@@ -1678,13 +1690,16 @@ TU_ERROR createReducedMembers(
   return TU_OKAY;
 }
 
+/**
+ * \brief Computes the reduced decomposition.
+ */
+
 static
 TU_ERROR computeReducedDecomposition(
-  TU* tu,                       /**< \ref TU environment. */
-  DEC* dec,                /**< t-decomposition. */
-  DEC_NEWCOLUMN* newcolumn, /**< new column. */
-  int* entryRows,               /**< Array of rows of new column's enries. */
-  int numEntries                /**< Length of \p entryRows. */
+  Dec* dec,                 /**< Decomposition. */
+  DEC_NEWCOLUMN* newcolumn, /**< newcolumn. */
+  int* entryRows,           /**< Array of rows of new column's enries. */
+  int numEntries            /**< Length of \p entryRows. */
 )
 {
   /* Identify all members on the path. For the induced sub-arborescence we also compute the
@@ -1702,9 +1717,8 @@ TU_ERROR computeReducedDecomposition(
   if (newcolumn->memReducedMembers < maxNumReducedMembers)
   {
     newcolumn->memReducedMembers = maxNumReducedMembers;
-    TU_CALL( TUreallocBlockArray(tu, &newcolumn->reducedMembers, newcolumn->memReducedMembers) );
-    TU_CALL( TUreallocBlockArray(tu, &newcolumn->membersToReducedMembers,
-      newcolumn->memReducedMembers) );
+    TU_CALL( TUreallocBlockArray(dec->tu, &newcolumn->reducedMembers, newcolumn->memReducedMembers) );
+    TU_CALL( TUreallocBlockArray(dec->tu, &newcolumn->membersToReducedMembers, newcolumn->memReducedMembers) );
   }
 
   /* Initialize the mapping from members to reduced members. */
@@ -1713,7 +1727,7 @@ TU_ERROR computeReducedDecomposition(
 
   ReducedMember** rootDepthMinimizer = NULL;
   /* Factor 2 because of possible new parallels due to ensureChildParentMarkersNotParallel */
-  TU_CALL( TUallocStackArray(tu, &rootDepthMinimizer, 2*dec->numMembers) );
+  TU_CALL( TUallocStackArray(dec->tu, &rootDepthMinimizer, 2*dec->numMembers) );
   for (int m = 0; m < 2*dec->numMembers; ++m)
     rootDepthMinimizer[m] = NULL;
   newcolumn->numReducedMembers = 0;
@@ -1727,7 +1741,7 @@ TU_ERROR computeReducedDecomposition(
       DEC_MEMBER member = findEdgeMember(dec, edge);
       TUdbgMsg(8, "Edge %d exists and belongs to member %d.\n", edge, member);
       ReducedMember* reducedMember;
-      TU_CALL( createReducedMembers(tu, dec, newcolumn, member, rootDepthMinimizer, &reducedMember) );
+      TU_CALL( createReducedMembers(dec, newcolumn, member, rootDepthMinimizer, &reducedMember) );
 
       /* For the first edge of this member, we set the depth minimizer to the new reduced member. */
       if (!rootDepthMinimizer[reducedMember->rootMember])
@@ -1758,7 +1772,7 @@ TU_ERROR computeReducedDecomposition(
   if (newcolumn->memChildrenStorage < newcolumn->numReducedMembers)
   {
     newcolumn->memChildrenStorage = 2*newcolumn->numReducedMembers;
-    TU_CALL( TUreallocBlockArray(tu, &newcolumn->childrenStorage, newcolumn->memChildrenStorage) );
+    TU_CALL( TUreallocBlockArray(dec->tu, &newcolumn->childrenStorage, newcolumn->memChildrenStorage) );
   }
   newcolumn->usedChildrenStorage = 0;
 
@@ -1808,22 +1822,22 @@ TU_ERROR computeReducedDecomposition(
     }
   }
 
-  TU_CALL( TUfreeStackArray(tu, &rootDepthMinimizer) );
+  TU_CALL( TUfreeStackArray(dec->tu, &rootDepthMinimizer) );
 
   return TU_OKAY;
 }
 
 /**
- * Allocates a path edge structure.
+ * \brief Allocates a path edge structure.
  */
 
 static
 TU_ERROR createPathEdge(
-  TU* tu,                       /**< \ref TU environment. */
+  TU* tu,                   /**< \ref TU environment. */
   DEC_NEWCOLUMN* newcolumn, /**< new column. */
   DEC_EDGE edge,            /**< The edge it refers to. */
-  PathEdge* next,               /**< The next edge in the singly linked list of this reduced member. */
-  PathEdge** pNewPathEdge       /**< Pointer for storing the new path edge. */
+  PathEdge* next,           /**< The next edge in the singly linked list of this reduced member. */
+  PathEdge** pNewPathEdge   /**< Pointer for storing the new path edge. */
 )
 {
   assert(tu);
@@ -1844,23 +1858,21 @@ TU_ERROR createPathEdge(
 
 static
 TU_ERROR completeReducedDecomposition(
-  TU* tu,                       /**< \ref TU environment. */
-  DEC* dec,                /**< t-decomposition. */
-  DEC_NEWCOLUMN* newcolumn, /**< new column. */
-  int* entryRows,               /**< Array of rows of new column's enries. */
-  int numEntries                /**< Length of \p entryRows. */
+  Dec* dec,                 /**< Decomposition. */
+  DEC_NEWCOLUMN* newcolumn, /**< newcolumn. */
+  int* rows,                /**< Array of rows (of new column's entries). */
+  int numRows               /**< Length of \p rows. */
 )
 {
-  assert(tu);
   assert(dec);
   assert(newcolumn);
 
   /* Check if we need new rows. */
 
   int newNumRows = dec->numRows-1;
-  for (int p = 0; p < numEntries; ++p)
+  for (int p = 0; p < numRows; ++p)
   {
-    int row = entryRows[p];
+    int row = rows[p];
     DEC_EDGE edge = (row < dec->numRows) ? dec->rowEdges[row].edge : -1;
     if (edge < 0)
     {
@@ -1879,7 +1891,7 @@ TU_ERROR completeReducedDecomposition(
     if (newNumRows > dec->memRows)
     {
       dec->memRows = 2*newNumRows;
-      TU_CALL( TUreallocBlockArray(tu, &dec->rowEdges, dec->memRows) );
+      TU_CALL( TUreallocBlockArray(dec->tu, &dec->rowEdges, dec->memRows) );
     }
 
     for (int r = dec->numRows; r < newNumRows; ++r)
@@ -1902,9 +1914,9 @@ TU_ERROR completeReducedDecomposition(
   }
 
   /* Create reduced members. */
-  for (int p = 0; p < numEntries; ++p)
+  for (int p = 0; p < numRows; ++p)
   {
-    int row = entryRows[p];
+    int row = rows[p];
     if (row >= dec->numRows)
     {
       /* Edge and member for this row were created. We create the reduced member. */
@@ -1923,13 +1935,13 @@ TU_ERROR completeReducedDecomposition(
       reducedMember->type = TYPE_ROOT;
 
       PathEdge* reducedEdge;
-      TU_CALL( createPathEdge(tu, newcolumn, edge, NULL, &reducedEdge) );
+      TU_CALL( createPathEdge(dec->tu, newcolumn, edge, NULL, &reducedEdge) );
       reducedMember->firstPathEdge = reducedEdge;
 
       if (newcolumn->numReducedComponents == newcolumn->memReducedComponents)
       {
         newcolumn->memReducedComponents = 2 * newcolumn->memReducedComponents + 16;
-        TU_CALL( TUreallocBlockArray(tu, &newcolumn->reducedComponents,
+        TU_CALL( TUreallocBlockArray(dec->tu, &newcolumn->reducedComponents,
           newcolumn->memReducedComponents) );
       }
 
@@ -1952,20 +1964,22 @@ TU_ERROR completeReducedDecomposition(
   return TU_OKAY;
 }
 
+/**
+ * \brief Creates path edges in reduced decomposition.
+ */
+
 static
-TU_ERROR initializeReducedMemberEdgeLists(
-  TU* tu,                       /**< \ref TU environment. */
-  DEC* dec,                /**< t-decomposition. */
-  DEC_NEWCOLUMN* newcolumn, /**< new column. */
-  int* entryRows,               /**< Array of rows of new column's enries. */
-  int numEntries                /**< Length of \p entryRows. */
+TU_ERROR createReducedDecompositionPathEdges(
+  Dec* dec,                 /**< Decomposition. */
+  DEC_NEWCOLUMN* newcolumn, /**< newcolumn. */
+  int* rows,                /**< Array of rows (of new column's enries). */
+  int numRows               /**< Length of \p rows. */
 )
 {
-  assert(tu);
   assert(dec);
   assert(newcolumn);
 
-  TUdbgMsg(4, "Initializing edge lists for members of reduced t-decomposition.\n");
+  TUdbgMsg(4, "Initializing edge lists for members of reduced decomposition.\n");
 
   for (int v = 0; v < dec->memNodes; ++v)
     newcolumn->nodesDegree[v] = 0;
@@ -1973,10 +1987,10 @@ TU_ERROR initializeReducedMemberEdgeLists(
     newcolumn->edgesInPath[e] = false;
 
   assert(newcolumn->numPathEdges == 0);
-  size_t maxNumPathEdges = numEntries + dec->numMembers;
+  size_t maxNumPathEdges = numRows + dec->numMembers;
   if (newcolumn->memPathEdges < maxNumPathEdges)
   {
-    TU_CALL( TUreallocBlockArray(tu, &newcolumn->pathEdges, maxNumPathEdges) );
+    TU_CALL( TUreallocBlockArray(dec->tu, &newcolumn->pathEdges, maxNumPathEdges) );
     newcolumn->memPathEdges = maxNumPathEdges;
   }
 
@@ -1985,9 +1999,9 @@ TU_ERROR initializeReducedMemberEdgeLists(
     newcolumn->reducedMembers[i].firstPathEdge = NULL;
 
   /* Fill edge lists. */
-  for (int p = 0; p < numEntries; ++p)
+  for (int p = 0; p < numRows; ++p)
   {
-    int row = entryRows[p];
+    int row = rows[p];
     DEC_EDGE edge = (row < dec->numRows) ? dec->rowEdges[row].edge : -1;
     if (edge >= 0)
     {
@@ -1996,7 +2010,7 @@ TU_ERROR initializeReducedMemberEdgeLists(
       ReducedMember* reducedMember = newcolumn->membersToReducedMembers[member];
       assert(reducedMember);
       PathEdge* pathEdge;
-      TU_CALL( createPathEdge(tu, newcolumn, edge, reducedMember->firstPathEdge, &pathEdge) );
+      TU_CALL( createPathEdge(dec->tu, newcolumn, edge, reducedMember->firstPathEdge, &pathEdge) );
       reducedMember->firstPathEdge = pathEdge;
       newcolumn->edgesInPath[edge] = true;
       if (dec->members[member].type == DEC_MEMBER_TYPE_RIGID)
@@ -2019,15 +2033,13 @@ TU_ERROR initializeReducedMemberEdgeLists(
 
 static
 TU_ERROR countChildrenTypes(
-  TU* tu,                           /**< \ref TU environment. */
-  DEC* dec,                    /**< t-decomposition. */
-  ReducedMember* reducedMember,     /**< Reduced member. */
-  int* pNumOneEnd,                  /**< Number of children that (recursively) must contain one path end. */
-  int* pNumTwoEnds,                 /**< Number of children that (recursively) must contain two path ends. */
+  Dec* dec,                     /**< Decomposition. */
+  ReducedMember* reducedMember, /**< Reduced member. */
+  int* pNumOneEnd,              /**< Number of children that (recursively) must contain one path end. */
+  int* pNumTwoEnds,             /**< Number of children that (recursively) must contain two path ends. */
   DEC_EDGE childMarkerEdges[2]  /**< Array for storing a child marker edges containing one/two path ends. */
 )
 {
-  assert(tu);
   assert(dec);
   assert(reducedMember);
   assert(pNumOneEnd);
@@ -2068,20 +2080,22 @@ TU_ERROR countChildrenTypes(
   return TU_OKAY;
 }
 
+/**
+ * \brief Determines the type of a parallel member.
+ */
+
 static
 TU_ERROR determineTypeParallel(
-  TU* tu,                             /**< \ref TU environment. */
-  DEC* dec,                      /**< t-decomposition. */
-  DEC_NEWCOLUMN* newcolumn,       /**< new-column structure. */
+  Dec* dec,                           /**< Decomposition. */
+  DEC_NEWCOLUMN* newcolumn,           /**< newcolumn. */
   ReducedComponent* reducedComponent, /**< Reduced component. */
   ReducedMember* reducedMember,       /**< Reduced member. */
   int numOneEnd,                      /**< Number of child markers containing one path end. */
   int numTwoEnds,                     /**< Number of child markers containing two path ends. */
-  DEC_EDGE childMarkerEdges[2],   /**< Marker edges of children containing one/two path ends. */
-  int depth                           /**< Depth of member in reduced t-decomposition. */
+  DEC_EDGE childMarkerEdges[2],       /**< Marker edges of children containing one/two path ends. */
+  int depth                           /**< Depth of member in reduced decomposition. */
 )
 {
-  assert(tu);
   assert(dec);
   assert(newcolumn);
   assert(reducedComponent);
@@ -2124,20 +2138,22 @@ TU_ERROR determineTypeParallel(
   return TU_OKAY;
 }
 
+/**
+ * \brief Determines the type of a series member.
+ */
+
 static
 TU_ERROR determineTypeSeries(
-  TU* tu,                             /**< \ref TU environment. */
-  DEC* dec,                      /**< t-decomposition. */
-  DEC_NEWCOLUMN* newcolumn,       /**< new-column structure. */
+  Dec* dec,                           /**< Decomposition. */
+  DEC_NEWCOLUMN* newcolumn,           /**< newcolumn. */
   ReducedComponent* reducedComponent, /**< Reduced component. */
   ReducedMember* reducedMember,       /**< Reduced member. */
   int numOneEnd,                      /**< Number of child markers containing one path end. */
   int numTwoEnds,                     /**< Number of child markers containing two path ends. */
-  DEC_EDGE childMarkerEdges[2],   /**< Marker edges of children containing one/two path ends. */
+  DEC_EDGE childMarkerEdges[2],       /**< Marker edges of children containing one/two path ends. */
   int depth                           /**< Depth of member in reduced t-decomposition. */
 )
 {
-  assert(tu);
   assert(dec);
   assert(newcolumn);
   assert(reducedComponent);
@@ -2202,20 +2218,22 @@ TU_ERROR determineTypeSeries(
   return TU_OKAY;
 }
 
+/**
+ * \brief Determines the type of a rigid member.
+ */
+
 static
 TU_ERROR determineTypeRigid(
-  TU* tu,                             /**< \ref TU environment. */
-  DEC* dec,                      /**< t-decomposition. */
-  DEC_NEWCOLUMN* newcolumn,       /**< new-column structure. */
+  Dec* dec,                           /**< Decomposition. */
+  DEC_NEWCOLUMN* newcolumn,           /**< newcolumn. */
   ReducedComponent* reducedComponent, /**< Reduced component. */
   ReducedMember* reducedMember,       /**< Reduced member. */
   int numOneEnd,                      /**< Number of child markers containing one path end. */
   int numTwoEnds,                     /**< Number of child markers containing two path ends. */
-  DEC_EDGE childMarkerEdges[2],   /**< Marker edges of children containing one/two path ends. */
+  DEC_EDGE childMarkerEdges[2],       /**< Marker edges of children containing one/two path ends. */
   int depth                           /**< Depth of member in reduced t-decomposition. */
 )
 {
-  assert(tu);
   assert(dec);
   assert(newcolumn);
   assert(reducedComponent);
@@ -2285,7 +2303,7 @@ TU_ERROR determineTypeRigid(
   if (numPathEndNodes == 4)
   {
     DEC_EDGE* nodeEdges = NULL;
-    TUallocStackArray(tu, &nodeEdges, 2*dec->memNodes);
+    TUallocStackArray(dec->tu, &nodeEdges, 2*dec->memNodes);
 
     /* Initialize relevant entries to -1. */
     for (PathEdge* reducedEdge = reducedMember->firstPathEdge; reducedEdge; reducedEdge = reducedEdge->next)
@@ -2324,7 +2342,7 @@ TU_ERROR determineTypeRigid(
       DEC_NODE v = findEdgeHead(dec, edge);
       currentNode = (v != currentNode) ? v : findEdgeTail(dec, edge);
     }
-    TUfreeStackArray(tu, &nodeEdges);
+    TUfreeStackArray(dec->tu, &nodeEdges);
 
     /* Exchange such that we end nodes 0 and 1 are end nodes of the same path. */
     if (currentNode == pathEndNodes[2])
@@ -2771,17 +2789,19 @@ TU_ERROR determineTypeRigid(
   return TU_OKAY;
 }
 
+/**
+ * \brief Determines the type of a member and all its children in the reduced decomposition.
+ */
+
 static
 TU_ERROR determineTypes(
-  TU* tu,                             /**< \ref TU environment. */
-  DEC* dec,                      /**< t-decomposition. */
-  DEC_NEWCOLUMN* newcolumn,       /**< new-column structure. */
+  Dec* dec,                           /**< Decomposition. */
+  DEC_NEWCOLUMN* newcolumn,           /**< newcolumn. */
   ReducedComponent* reducedComponent, /**< Reduced component. */
   ReducedMember* reducedMember,       /**< Reduced member. */
   int depth                           /**< Depth of member in reduced t-decomposition. */
 )
 {
-  assert(tu);
   assert(dec);
   assert(newcolumn);
 
@@ -2791,7 +2811,7 @@ TU_ERROR determineTypes(
   /* First handle children recursively. */
   for (int c = 0; c < reducedMember->numChildren; ++c)
   {
-    TU_CALL( determineTypes(tu, dec, newcolumn, reducedComponent, reducedMember->children[c], depth + 1) );
+    TU_CALL( determineTypes(dec, newcolumn, reducedComponent, reducedMember->children[c], depth + 1) );
 
     if (newcolumn->remainsGraphic)
     {
@@ -2807,7 +2827,7 @@ TU_ERROR determineTypes(
 
   int numOneEnd, numTwoEnds;
   DEC_EDGE childMarkerEdges[2];
-  TU_CALL( countChildrenTypes(tu, dec, reducedMember, &numOneEnd, &numTwoEnds, childMarkerEdges) );
+  TU_CALL( countChildrenTypes(dec, reducedMember, &numOneEnd, &numTwoEnds, childMarkerEdges) );
 
 #if defined(TU_DEBUG)
   int countReducedEdges = 0;
@@ -2828,18 +2848,18 @@ TU_ERROR determineTypes(
   DEC_MEMBER member = findMember(dec, reducedMember->member);
   if (dec->members[member].type == DEC_MEMBER_TYPE_PARALLEL)
   {
-    TU_CALL( determineTypeParallel(tu, dec, newcolumn, reducedComponent, reducedMember, numOneEnd, numTwoEnds,
+    TU_CALL( determineTypeParallel(dec, newcolumn, reducedComponent, reducedMember, numOneEnd, numTwoEnds,
       childMarkerEdges, depth) );
   }
   else if (dec->members[member].type == DEC_MEMBER_TYPE_SERIES)
   {
-    TU_CALL( determineTypeSeries(tu, dec, newcolumn, reducedComponent, reducedMember, numOneEnd, numTwoEnds,
+    TU_CALL( determineTypeSeries(dec, newcolumn, reducedComponent, reducedMember, numOneEnd, numTwoEnds,
       childMarkerEdges, depth) );
   }
   else
   {
     assert(dec->members[member].type == DEC_MEMBER_TYPE_RIGID);
-    TU_CALL( determineTypeRigid(tu, dec, newcolumn, reducedComponent, reducedMember, numOneEnd, numTwoEnds,
+    TU_CALL( determineTypeRigid(dec, newcolumn, reducedComponent, reducedMember, numOneEnd, numTwoEnds,
       childMarkerEdges, depth) );
   }
 
@@ -2859,7 +2879,7 @@ TU_ERROR determineTypes(
 
     /* Add marker edge of parent to reduced parent's path edges. */
     PathEdge* reducedEdge = NULL;
-    TU_CALL( createPathEdge(tu, newcolumn, markerOfParent, reducedParent->firstPathEdge, &reducedEdge) );
+    TU_CALL( createPathEdge(dec->tu, newcolumn, markerOfParent, reducedParent->firstPathEdge, &reducedEdge) );
     reducedParent->firstPathEdge = reducedEdge;
 
     /* Indicate that marker edge of parent belongs to path. */
@@ -2878,37 +2898,41 @@ TU_ERROR determineTypes(
   return TU_OKAY;
 }
 
+/**
+ * \brief Checks if a new column can be added to the decomposition.
+ * 
+ * Information necessary for carrying out the addition is stored in \p newcolumn.
+ */
+
 TU_ERROR addColumnCheck(
-  TU* tu,                       /**< TU environment. */
-  DEC* dec,                    /**< t-decomposition. */
-  DEC_NEWCOLUMN* newcolumn, /**< new-column structure. */
-  int* entryRows,               /**< Array of rows with 1-entry in this column. */
-  int numEntries                /**< Number of 1-entries in this column. */
+  Dec* dec,                 /**< Decomposition. */
+  DEC_NEWCOLUMN* newcolumn, /**< newcolumn. */
+  int* rows,                /**< Array of rows (with 1-entry in this column). */
+  int numRows               /**< Length of \p rows. */
 )
 {
-  assert(tu);
   assert(dec);
   assert(newcolumn);
-  assert(entryRows);
+  assert(rows);
 
-  TUdbgMsg(0, "\n  Checking whether we can add a column with %d 1's.\n", numEntries);
+  TUdbgMsg(0, "\n  Checking whether we can add a column with %d 1's.\n", numRows);
 
   TUconsistencyAssert( decConsistency(dec) );
 
   /* Check for the (not yet computed) reduced decomposition whether there is a pair of parallel child/parent marker
    * edges in a non-parallel. */
-  TU_CALL( parallelParentChildCheckReducedMembers(tu, dec, entryRows, numEntries) );
+  TU_CALL( parallelParentChildCheckReducedMembers(dec, rows, numRows) );
 
-  TU_CALL( initializeNewColumn(tu, dec, newcolumn) );
-  TU_CALL( computeReducedDecomposition(tu, dec, newcolumn, entryRows, numEntries) );
-  TU_CALL( initializeReducedMemberEdgeLists(tu, dec, newcolumn, entryRows, numEntries) );
+  TU_CALL( initializeNewColumn(dec, newcolumn) );
+  TU_CALL( computeReducedDecomposition(dec, newcolumn, rows, numRows) );
+  TU_CALL( createReducedDecompositionPathEdges(dec, newcolumn, rows, numRows) );
 
   debugDot(dec, newcolumn);
 
   for (int i = 0; i < newcolumn->numReducedComponents; ++i)
   {
-    TU_CALL( determineTypes(tu, dec, newcolumn, &newcolumn->reducedComponents[i],
-      newcolumn->reducedComponents[i].root, 0) );
+    TU_CALL( determineTypes(dec, newcolumn, &newcolumn->reducedComponents[i], newcolumn->reducedComponents[i].root,
+      0) );
 
     TUdbgMsg(6, "After inspecting reduced component %d, graphic = %d.\n", i, newcolumn->remainsGraphic);
   }
@@ -2921,18 +2945,22 @@ TU_ERROR addColumnCheck(
   return TU_OKAY;
 }
 
+/**
+ * \brief Add a terminal of a reduced component.
+ */
+
 static
 TU_ERROR addTerminal(
-  TU* tu,                             /**< \ref TU environment. */
-  DEC* dec,                      /**< t-decomposition. */
+  Dec* dec,                           /**< Decomposition. */
   ReducedComponent* reducedComponent, /**< Reduced component. */
-  DEC_MEMBER member,              /**< New terminal member. */
-  DEC_NODE node                   /**< New terminal node. */
+  DEC_MEMBER member,                  /**< New terminal member. */
+  DEC_NODE node                       /**< New terminal node. */
 )
 {
   assert(reducedComponent);
   assert(member >= 0);
   assert(isRepresentativeMember(dec, member));
+  assert(dec->members[member].type == DEC_MEMBER_TYPE_PARALLEL || node >= 0);
 
   /* For parallels we don't need to provide a node. */
   assert(node >= 0 || dec->members[member].type == DEC_MEMBER_TYPE_PARALLEL);
@@ -2954,15 +2982,17 @@ TU_ERROR addTerminal(
   return TU_OKAY;
 }
 
+/**
+ * \brief Moves the reduced root upwards as long as it has a TYPE_DOUBLE_CHILD child.
+ */
+
 static
 TU_ERROR moveReducedRoot(
-  TU* tu,                             /**< \ref TU environment. */
-  DEC* dec,                      /**< t-decomposition. */
-  DEC_NEWCOLUMN* newcolumn,       /**< new-column structure. */
+  Dec* dec,                           /**< Decomposition. */
+  DEC_NEWCOLUMN* newcolumn,           /**< newcolumn. */
   ReducedComponent* reducedComponent  /**< Reduced component. */
 )
 {
-  assert(tu);
   assert(dec);
   assert(newcolumn);
   assert(reducedComponent);
@@ -2973,7 +3003,7 @@ TU_ERROR moveReducedRoot(
 
   int numOneEnd, numTwoEnds;
   DEC_EDGE childMarkerEdges[2];
-  TU_CALL( countChildrenTypes(tu, dec, reducedMember, &numOneEnd, &numTwoEnds, childMarkerEdges) );
+  TU_CALL( countChildrenTypes(dec, reducedMember, &numOneEnd, &numTwoEnds, childMarkerEdges) );
 
   bool cycleWithUniqueEndChild;
   if (dec->members[member].type == DEC_MEMBER_TYPE_PARALLEL)
@@ -3031,7 +3061,7 @@ TU_ERROR moveReducedRoot(
 
     member = reducedMember->member;
     assert(isRepresentativeMember(dec, member));
-    TU_CALL( countChildrenTypes(tu, dec, reducedMember, &numOneEnd, &numTwoEnds, childMarkerEdges) );
+    TU_CALL( countChildrenTypes(dec, reducedMember, &numOneEnd, &numTwoEnds, childMarkerEdges) );
 
     if (dec->members[member].type == DEC_MEMBER_TYPE_PARALLEL)
     {
@@ -3109,18 +3139,18 @@ TU_ERROR moveReducedRoot(
   return TU_OKAY;
 }
 
-
+/**
+ * \brief Sets the tail/head nodes of a \p edge to \p tail and \p head, respectively.
+ */
 
 static
 TU_ERROR setEdgeNodes(
-  TU* tu,             /**< \ref TU environment. */
-  DEC* dec,      /**< t-decomposition. */
+  Dec* dec,       /**< Decomposition. */
   DEC_EDGE edge,  /**< Reduced component. */
   DEC_NODE tail,  /**< New tail node. */
   DEC_NODE head   /**< New head node. */
 )
 {
-  assert(tu);
   assert(dec);
   assert(edge >= 0);
   assert(edge < dec->memEdges);
@@ -3131,15 +3161,20 @@ TU_ERROR setEdgeNodes(
   return TU_OKAY;
 }
 
+/**
+ * \brief Merges \p member into its parent.
+ * 
+ * If \p headToHead is \c true, then the two head nodes (and the two tail nodes) are identified with each other.
+ * Otherwise, a head is identified with a tail.
+ */
+
 static
 TU_ERROR mergeMemberIntoParent(
-  TU* tu,                 /**< \ref TU environment. */
-  DEC* dec,          /**< t-decomposition. */
-  DEC_MEMBER member,  /**< Reduced component. */
-  bool headToHead         /**< Whether the heads of the edges shall be joined. */
+  Dec* dec,          /**< Decomposition. */
+  DEC_MEMBER member, /**< Reduced component. */
+  bool headToHead    /**< Whether the heads of the edges shall be joined. */
 )
 {
-  assert(tu);
   assert(dec);
   assert(member >= 0);
 
@@ -3199,14 +3234,16 @@ TU_ERROR mergeMemberIntoParent(
   return TU_OKAY;
 }
 
+/**
+ * \brief Create nodes of a parallel member.
+ */
+
 static
 TU_ERROR createParallelNodes(
-  TU* tu,           /**< \ref TU environment. */
-  DEC* dec,        /**< t-decomposition. */
+  Dec* dec,         /**< Decomposition. */
   DEC_MEMBER member /**< A parallel member. */
 )
 {
-  assert(tu);
   assert(dec);
   assert(member >= 0);
   member = findMember(dec, member);
@@ -3239,17 +3276,19 @@ TU_ERROR createParallelNodes(
   return TU_OKAY;
 }
 
+/**
+ * \brief Splits a parallel member into two parallel members joined via a series member.
+ */
+
 static
 TU_ERROR splitParallel(
-  TU* tu,                     /**< \ref TU environment. */
-  DEC* dec,                  /**< t-decomposition. */
+  Dec* dec,                   /**< Decomposition. */
   DEC_MEMBER parallel,        /**< A parallel member. */
   DEC_EDGE edge1,             /**< First edge to be moved into the child parallel. */
   DEC_EDGE edge2,             /**< Second edge to be moved into the child parallel. */
   DEC_MEMBER* pChildParallel  /**< Pointer to storing the newly created child parallel. */
 )
 {
-  assert(tu);
   assert(dec);
   assert(parallel >= 0);
   assert(parallel < dec->memMembers);
@@ -3281,17 +3320,19 @@ TU_ERROR splitParallel(
   return TU_OKAY;
 }
 
+/**
+ * \brief Processes a parallel member when adding a column.
+ */
+
 static
 TU_ERROR addColumnProcessParallel(
-  TU* tu,                             /**< \ref TU environment. */
-  DEC* dec,                          /**< t-decomposition. */
+  Dec* dec,                           /**< Decomposition. */
   DEC_NEWCOLUMN* newcolumn,           /**< new-column structure. */
   ReducedComponent* reducedComponent, /**< Reduced component. */
   ReducedMember* reducedMember,       /**< Reduced member. */
   int depth                           /**< Depth of this member in reduced t-decomposition. */
 )
 {
-  assert(tu);
   assert(dec);
   assert(newcolumn);
   assert(reducedMember);
@@ -3300,7 +3341,7 @@ TU_ERROR addColumnProcessParallel(
 
   int numOneEnd, numTwoEnds;
   DEC_EDGE childMarkerEdges[2];
-  TU_CALL( countChildrenTypes(tu, dec, reducedMember, &numOneEnd, &numTwoEnds, childMarkerEdges) );
+  TU_CALL( countChildrenTypes(dec, reducedMember, &numOneEnd, &numTwoEnds, childMarkerEdges) );
 
   TUdbgMsg(6 + 2*depth, "addColumnProcessParallel for%s member %d (reduced %ld), #one-ends = %d, #two-ends = %d of type %d.\n",
     depth == 0 ? " root" : "", member, (reducedMember - newcolumn->reducedMembers), numOneEnd, numTwoEnds, reducedMember->type);
@@ -3312,8 +3353,8 @@ TU_ERROR addColumnProcessParallel(
       /* Tested in UpdateRootParallelNoChildren. */
 
       assert(reducedMember->firstPathEdge);
-      TU_CALL( addTerminal(tu, dec, reducedComponent, member, -1) );
-      TU_CALL( addTerminal(tu, dec, reducedComponent, member, -1) );
+      TU_CALL( addTerminal(dec, reducedComponent, member, -1) );
+      TU_CALL( addTerminal(dec, reducedComponent, member, -1) );
       return TU_OKAY;
     }
     else
@@ -3331,16 +3372,16 @@ TU_ERROR addColumnProcessParallel(
       if (dec->members[member].numEdges > 3)
       {
         /* Tested in UpdateRootParallelNoChildrenSplit. */
-        TU_CALL( splitParallel(tu, dec, member, childMarkerEdges[0], childMarkerEdges[1], &member) );
+        TU_CALL( splitParallel(dec, member, childMarkerEdges[0], childMarkerEdges[1], &member) );
         reducedMember->member = member;
       }
 
       debugDot(dec, newcolumn);
 
       assert(dec->members[member].numEdges == 3);
-      TU_CALL( createParallelNodes(tu, dec, member) );
-      TU_CALL( mergeMemberIntoParent(tu, dec, dec->edges[childMarkerEdges[0]].childMember, true) );
-      TU_CALL( mergeMemberIntoParent(tu, dec, dec->edges[childMarkerEdges[1]].childMember,
+      TU_CALL( createParallelNodes(dec, member) );
+      TU_CALL( mergeMemberIntoParent(dec, dec->edges[childMarkerEdges[0]].childMember, true) );
+      TU_CALL( mergeMemberIntoParent(dec, dec->edges[childMarkerEdges[1]].childMember,
         reducedMember->firstPathEdge == NULL && reducedMember->type != TYPE_DOUBLE_CHILD) );
 
       debugDot(dec, newcolumn);
@@ -3363,12 +3404,12 @@ TU_ERROR addColumnProcessParallel(
     DEC_EDGE edge = dec->members[member].firstEdge;
     do
     {
-      TU_CALL( setEdgeNodes(tu, dec, edge, tail, head) );
+      TU_CALL( setEdgeNodes(dec, edge, tail, head) );
       edge = dec->edges[edge].next;
     }
     while (edge != dec->members[member].firstEdge);
 
-    TU_CALL( mergeMemberIntoParent(tu, dec, dec->edges[childMarkerEdges[0]].childMember,
+    TU_CALL( mergeMemberIntoParent(dec, dec->edges[childMarkerEdges[0]].childMember,
       !reducedMember->firstPathEdge) );
 
     debugDot(dec, newcolumn);
@@ -3379,7 +3420,7 @@ TU_ERROR addColumnProcessParallel(
 
 inline static
 void flipEdge(
-  DEC* dec,    /**< t-decomposition. */
+  Dec* dec,    /**< t-decomposition. */
   DEC_EDGE edge /**< edge. */
 )
 {
@@ -3390,17 +3431,19 @@ void flipEdge(
   SWAP_INTS(dec->edges[edge].tail, dec->edges[edge].head);
 }
 
+/**
+ * \brief Processes a rigid member when adding a column.
+ */
+
 static
 TU_ERROR addColumnProcessRigid(
-  TU* tu,                             /**< \ref TU environment. */
-  DEC* dec,                      /**< t-decomposition. */
-  DEC_NEWCOLUMN* newcolumn,       /**< new-column structure. */
+  Dec* dec,                           /**< Decomposition. */
+  DEC_NEWCOLUMN* newcolumn,           /**< newcolumn. */
   ReducedComponent* reducedComponent, /**< Reduced component. */
   ReducedMember* reducedMember,       /**< Reduced member. */
   int depth                           /**< Depth of this member in reduced t-decomposition. */
 )
 {
-  assert(tu);
   assert(dec);
   assert(newcolumn);
   assert(reducedMember);
@@ -3409,7 +3452,7 @@ TU_ERROR addColumnProcessRigid(
 
   int numOneEnd, numTwoEnds;
   DEC_EDGE childMarkerEdges[2];
-  TU_CALL( countChildrenTypes(tu, dec, reducedMember, &numOneEnd, &numTwoEnds, childMarkerEdges) );
+  TU_CALL( countChildrenTypes(dec, reducedMember, &numOneEnd, &numTwoEnds, childMarkerEdges) );
 
   TUdbgMsg(6 + 2*depth, "addColumnProcessRigid for%s member %d (reduced %ld), #one-ends = %d, #two-ends = %d of type %d.\n",
     depth == 0 ? " root" : "", reducedMember->member, (reducedMember - newcolumn->reducedMembers), numOneEnd,
@@ -3471,21 +3514,22 @@ TU_ERROR addColumnProcessRigid(
       /* Tested in UpdateRootRigidNoChildren. */
 
       assert(numPathEndNodes >= 2);
-      TU_CALL( addTerminal(tu, dec, reducedComponent, member, pathEndNodes[0]) );
-      TU_CALL( addTerminal(tu, dec, reducedComponent, member, pathEndNodes[1]) );
+      TU_CALL( addTerminal(dec, reducedComponent, member, pathEndNodes[0]) );
+      TU_CALL( addTerminal(dec, reducedComponent, member, pathEndNodes[1]) );
     }
     else if (numOneEnd == 1)
     {
       /* Tested in UpdateRootRigidOneSingleChild. */
 
-      TU_CALL( addTerminal(tu, dec, reducedComponent, member,
-        (pathEndNodes[0] == childMarkerNodes[0] || pathEndNodes[0] == childMarkerNodes[1]) ? pathEndNodes[1] : pathEndNodes[0] ) );
+      TU_CALL( addTerminal(dec, reducedComponent, member,
+        (pathEndNodes[0] == childMarkerNodes[0] || pathEndNodes[0] == childMarkerNodes[1])
+        ? pathEndNodes[1] : pathEndNodes[0] ) );
 
       DEC_MEMBER childMember = findMember(dec, dec->edges[childMarkerEdges[0]].childMember);
       bool headToHead = pathEndNodes[0] == childMarkerNodes[1] || pathEndNodes[1] == childMarkerNodes[1];
       assert(headToHead || pathEndNodes[0] == childMarkerNodes[0] || pathEndNodes[1] == childMarkerNodes[0]);
 
-      TU_CALL( mergeMemberIntoParent(tu, dec, childMember, headToHead) );
+      TU_CALL( mergeMemberIntoParent(dec, childMember, headToHead) );
     }
     else
     {
@@ -3561,11 +3605,11 @@ TU_ERROR addColumnProcessRigid(
         debugDot(dec, newcolumn);
 
         /* We have to merge in the parallel. */
-        TU_CALL( createParallelNodes(tu, dec, newParallel) );
-        TU_CALL( mergeMemberIntoParent(tu, dec, dec->edges[childMarkerEdges[0]].childMember, true) );
+        TU_CALL( createParallelNodes(dec, newParallel) );
+        TU_CALL( mergeMemberIntoParent(dec, dec->edges[childMarkerEdges[0]].childMember, true) );
         /* If there is no path, then we merge heads to heads. Otherwise, one head is mapped to tail, such that the path
          * is used. */
-        TU_CALL( mergeMemberIntoParent(tu, dec, dec->edges[childMarkerEdges[1]].childMember, numPathEndNodes == 0) );
+        TU_CALL( mergeMemberIntoParent(dec, dec->edges[childMarkerEdges[1]].childMember, numPathEndNodes == 0) );
 
         debugDot(dec, newcolumn);
 
@@ -3595,10 +3639,10 @@ TU_ERROR addColumnProcessRigid(
         pathEndNodes[0], pathEndNodes[1], childMarkerNodes[0], childMarkerNodes[1], childMarkerNodes[2], childMarkerNodes[3]);
 
       assert(pathEndNodes[0] == childMarkerNodes[0] || pathEndNodes[0] == childMarkerNodes[1]);
-      TU_CALL( mergeMemberIntoParent(tu, dec, childMember[0], pathEndNodes[0] == childMarkerNodes[1]) );
+      TU_CALL( mergeMemberIntoParent(dec, childMember[0], pathEndNodes[0] == childMarkerNodes[1]) );
       debugDot(dec, newcolumn);
 
-      TU_CALL( mergeMemberIntoParent(tu, dec, childMember[1], pathEndNodes[1] == childMarkerNodes[3]) );
+      TU_CALL( mergeMemberIntoParent(dec, childMember[1], pathEndNodes[1] == childMarkerNodes[3]) );
       debugDot(dec, newcolumn);
     }
   }
@@ -3613,7 +3657,7 @@ TU_ERROR addColumnProcessRigid(
       assert(reducedMember->firstPathEdge);
       assert(pathEndNodes[0] >= 0);
 
-      TU_CALL( addTerminal(tu, dec, reducedComponent, member, pathEndNodes[1]) );
+      TU_CALL( addTerminal(dec, reducedComponent, member, pathEndNodes[1]) );
       if (parentMarkerNodes[0] == pathEndNodes[0])
         flipEdge(dec, dec->members[member].markerToParent);
     }
@@ -3643,7 +3687,7 @@ TU_ERROR addColumnProcessRigid(
         assert(pathEndNodes[0] == parentMarkerNodes[1]);
 
         /* Merge child. */
-        TU_CALL( mergeMemberIntoParent(tu, dec, findMember(dec, dec->edges[childMarkerEdges[0]].childMember),
+        TU_CALL( mergeMemberIntoParent(dec, findMember(dec, dec->edges[childMarkerEdges[0]].childMember),
           pathEndNodes[1] == childMarkerNodes[1]) );
         debugDot(dec, newcolumn);
       }
@@ -3655,7 +3699,7 @@ TU_ERROR addColumnProcessRigid(
         if (parentMarkerNodes[0] == childMarkerNodes[0] || parentMarkerNodes[0] == childMarkerNodes[1])
           flipEdge(dec, dec->members[member].markerToParent);
 
-        TU_CALL( mergeMemberIntoParent(tu, dec, dec->edges[childMarkerEdges[0]].childMember,
+        TU_CALL( mergeMemberIntoParent(dec, dec->edges[childMarkerEdges[0]].childMember,
           parentMarkerNodes[0] == childMarkerNodes[1] || parentMarkerNodes[1] == childMarkerNodes[1]) );
 
         debugDot(dec, newcolumn);
@@ -3674,13 +3718,11 @@ TU_ERROR addColumnProcessRigid(
 
 static
 TU_ERROR createEdgeParallel(
-  TU* tu,                   /**< \ref TU environment. */
-  DEC* dec,                /**< t-decomposition. */
+  Dec* dec,                 /**< Decomposition. */
   DEC_EDGE edge,            /**< Edge to be replaced by a parallel containing that edge. */
   DEC_MEMBER* pNewParallel  /**< Pointer for storing the new parallel. */
 )
 {
-  assert(tu);
   assert(dec);
 
   TUdbgMsg(8, "Creating parallel for edge %d.\n", edge);
@@ -3721,17 +3763,15 @@ TU_ERROR createEdgeParallel(
 
 static
 TU_ERROR splitSeries(
-  TU* tu,                             /**< \ref TU environment. */
-  DEC* dec,                      /**< t-decomposition. */
-  DEC_MEMBER member,              /**< Series member to be squeezed. */
-  bool* edgesPredicate,               /**< Map from edges to predicate. */
-  bool predicateValue,                /**< Value of predicate. */
+  Dec* dec,                       /**< Decomposition. */
+  DEC_MEMBER member,              /**< Series member to be split. */
+  bool* edgesPredicate,           /**< Map from edges to predicate. */
+  bool predicateValue,            /**< Value of predicate. */
   DEC_EDGE* pRepresentativeEdge,  /**< Pointer for storing the child marker edge that links to new parallel. */
-  DEC_MEMBER* pNewParallel,           /**< Pointer for storing the new parallel. */
-  DEC_MEMBER* pNewSeries         /**< Pointer for storing the new parallel. */
+  DEC_MEMBER* pNewParallel,       /**< Pointer for storing the new parallel. */
+  DEC_MEMBER* pNewSeries          /**< Pointer for storing the new parallel. */
 )
 {
-  assert(tu);
   assert(dec);
   assert(member >= 0);
   assert(member < dec->memMembers);
@@ -3901,17 +3941,19 @@ TU_ERROR splitSeries(
   return TU_OKAY;
 }
 
+/**
+ * \brief Processes a series member when adding a column.
+ */
+
 static
 TU_ERROR addColumnProcessSeries(
-  TU* tu,                             /**< \ref TU environment. */
-  DEC* dec,                      /**< t-decomposition. */
-  DEC_NEWCOLUMN* newcolumn,       /**< new-column structure. */
+  Dec* dec,                           /**< Decomposition. */
+  DEC_NEWCOLUMN* newcolumn,           /**< newcolumn. */
   ReducedComponent* reducedComponent, /**< Reduced component. */
   ReducedMember* reducedMember,       /**< Reduced member. */
   int depth                           /**< Depth of this member in reduced t-decomposition. */
 )
 {
-  assert(tu);
   assert(dec);
   assert(newcolumn);
   assert(reducedMember);
@@ -3920,7 +3962,7 @@ TU_ERROR addColumnProcessSeries(
 
   int numOneEnd, numTwoEnds;
   DEC_EDGE childMarkerEdges[2];
-  TU_CALL( countChildrenTypes(tu, dec, reducedMember, &numOneEnd, &numTwoEnds, childMarkerEdges) );
+  TU_CALL( countChildrenTypes(dec, reducedMember, &numOneEnd, &numTwoEnds, childMarkerEdges) );
 
   TUdbgMsg(6 + 2*depth, "addColumnProcessSeries for%s member %d (reduced %ld), #one-ends = %d, #two-ends = %d of type %d.\n",
     depth == 0 ? " root" : "", member, (reducedMember - newcolumn->reducedMembers), numOneEnd, numTwoEnds, reducedMember->type);
@@ -3943,7 +3985,7 @@ TU_ERROR addColumnProcessSeries(
 
         /* Squeeze off all non-path edges by moving them to a new series member and creating a parallel member to
          * connect it to the remaining series member. */
-        TU_CALL( splitSeries(tu, dec, member, newcolumn->edgesInPath, false, &representativeEdge, NULL, NULL) );
+        TU_CALL( splitSeries(dec, member, newcolumn->edgesInPath, false, &representativeEdge, NULL, NULL) );
       }
       else if (reducedMember->type == TYPE_CYCLE_CHILD)
       {
@@ -3956,14 +3998,16 @@ TU_ERROR addColumnProcessSeries(
         assert(parentMember >= 0); /* A series member can only close a cycle if it has a parent. */
         if (dec->members[parentMember].type == DEC_MEMBER_TYPE_PARALLEL)
         {
-          TU_CALL( addTerminal(tu, dec, reducedComponent, findEdgeMember(dec, markerOfParent), -1 ) );
-          TU_CALL( addTerminal(tu, dec, reducedComponent, findEdgeMember(dec, markerOfParent), -1 ) );
+          TU_CALL( addTerminal(dec, reducedComponent, findEdgeMember(dec, markerOfParent), -1 ) );
+          TU_CALL( addTerminal(dec, reducedComponent, findEdgeMember(dec, markerOfParent), -1 ) );
         }
         else
         {
           assert(dec->members[parentMember].type == DEC_MEMBER_TYPE_RIGID);
-          TU_CALL( addTerminal(tu, dec, reducedComponent, findEdgeMember(dec, markerOfParent), findEdgeTail(dec, markerOfParent) ) );
-          TU_CALL( addTerminal(tu, dec, reducedComponent, findEdgeMember(dec, markerOfParent), findEdgeHead(dec, markerOfParent) ) );
+          TU_CALL( addTerminal(dec, reducedComponent, findEdgeMember(dec, markerOfParent),
+            findEdgeTail(dec, markerOfParent) ) );
+          TU_CALL( addTerminal(dec, reducedComponent, findEdgeMember(dec, markerOfParent),
+            findEdgeHead(dec, markerOfParent) ) );
         }
 
         return TU_OKAY;
@@ -3971,11 +4015,11 @@ TU_ERROR addColumnProcessSeries(
       else
       {
         /* Tested in UpdateRootSeriesNoChildren. */
-        TUdbgMsg(8 + 2*depth, "Series contains both terminal nodes and a non-path parent marker edge.\n");
+        TUdbgMsg(8 + 2*depth, "Series member contains both terminal nodes and a non-path parent marker edge.\n");
 
         /* Squeeze off all path edges by moving them to a new series member and creating a parallel member to connect it
          * to the remaining series member. */
-        TU_CALL( splitSeries(tu, dec, member, newcolumn->edgesInPath, true, &representativeEdge, NULL, NULL) );
+        TU_CALL( splitSeries(dec, member, newcolumn->edgesInPath, true, &representativeEdge, NULL, NULL) );
       }
 
       debugDot(dec, newcolumn);
@@ -3985,7 +4029,7 @@ TU_ERROR addColumnProcessSeries(
       DEC_NODE head = -1;
       if (childMember < 0)
       {
-        TU_CALL( createEdgeParallel(tu, dec, representativeEdge, &childMember) );
+        TU_CALL( createEdgeParallel(dec, representativeEdge, &childMember) );
         debugDot(dec, newcolumn);
       }
       else if (dec->members[childMember].type == DEC_MEMBER_TYPE_RIGID)
@@ -3995,8 +4039,8 @@ TU_ERROR addColumnProcessSeries(
       }
 
       assert(reducedComponent->numTerminals == 0);
-      TU_CALL( addTerminal(tu, dec, reducedComponent, childMember, tail) );
-      TU_CALL( addTerminal(tu, dec, reducedComponent, childMember, head) );
+      TU_CALL( addTerminal(dec, reducedComponent, childMember, tail) );
+      TU_CALL( addTerminal(dec, reducedComponent, childMember, head) );
       debugDot(dec, newcolumn);
     }
     else if (numOneEnd == 1)
@@ -4010,13 +4054,13 @@ TU_ERROR addColumnProcessSeries(
         /* There is more than 1 path edge, so we split off all non-path edges and work in the new series member. */
         if (reducedMember->firstPathEdge)
         {
-          TU_CALL( splitSeries(tu, dec, member, newcolumn->edgesInPath, false, NULL, NULL, &member) );
+          TU_CALL( splitSeries(dec, member, newcolumn->edgesInPath, false, NULL, NULL, &member) );
           reducedMember->member = member;
           newcolumn->edgesInPath[dec->members[member].markerToParent] = true;
         }
         newcolumn->edgesInPath[childMarkerEdges[0]] = true;
         DEC_EDGE nonPathEdge;
-        TU_CALL( splitSeries(tu, dec, member, newcolumn->edgesInPath, false, &nonPathEdge, NULL, NULL) );
+        TU_CALL( splitSeries(dec, member, newcolumn->edgesInPath, false, &nonPathEdge, NULL, NULL) );
         newcolumn->edgesInPath[childMarkerEdges[0]] = false;
 
         DEC_NODE a, b, c;
@@ -4025,14 +4069,14 @@ TU_ERROR addColumnProcessSeries(
         if (dec->members[member].numEdges == 3)
         {
           TU_CALL( createNode(dec, &c) );
-          TU_CALL( setEdgeNodes(tu, dec, nonPathEdge, a, c) );
+          TU_CALL( setEdgeNodes(dec, nonPathEdge, a, c) );
         }
         else
           c = a;
-        TU_CALL( setEdgeNodes(tu, dec, dec->members[member].markerToParent, a, b) );
-        TU_CALL( setEdgeNodes(tu, dec, childMarkerEdges[0], c, b) );
-        TU_CALL( addTerminal(tu, dec, reducedComponent, member, a) );
-        TU_CALL( mergeMemberIntoParent(tu, dec, dec->edges[childMarkerEdges[0]].childMember, true) );
+        TU_CALL( setEdgeNodes(dec, dec->members[member].markerToParent, a, b) );
+        TU_CALL( setEdgeNodes(dec, childMarkerEdges[0], c, b) );
+        TU_CALL( addTerminal(dec, reducedComponent, member, a) );
+        TU_CALL( mergeMemberIntoParent(dec, dec->edges[childMarkerEdges[0]].childMember, true) );
         dec->members[member].type = DEC_MEMBER_TYPE_RIGID;
       }
       else
@@ -4045,7 +4089,7 @@ TU_ERROR addColumnProcessSeries(
         /* If there is more than 1 path edge, we squeeze off by moving them to a new series member and creating a
          * parallel member to connect it to the remaining series member. */
         DEC_EDGE pathEdge;
-        TU_CALL( splitSeries(tu, dec, member, newcolumn->edgesInPath, true, &pathEdge, NULL, NULL) );
+        TU_CALL( splitSeries(dec, member, newcolumn->edgesInPath, true, &pathEdge, NULL, NULL) );
         if (pathEdge >= 0)
           newcolumn->edgesInPath[pathEdge] = true;
         debugDot(dec, newcolumn);
@@ -4055,7 +4099,7 @@ TU_ERROR addColumnProcessSeries(
         if (dec->members[member].numEdges > 3)
         {
           newcolumn->edgesInPath[childMarkerEdges[0]] = true;
-          TU_CALL( splitSeries(tu, dec, member, newcolumn->edgesInPath, true, NULL, NULL, &member) );
+          TU_CALL( splitSeries(dec, member, newcolumn->edgesInPath, true, NULL, NULL, &member) );
           newcolumn->edgesInPath[childMarkerEdges[0]] = false;
           debugDot(dec, newcolumn);
         }
@@ -4066,11 +4110,11 @@ TU_ERROR addColumnProcessSeries(
         TU_CALL( createNode(dec, &a) );
         TU_CALL( createNode(dec, &b) );
         TU_CALL( createNode(dec, &c) );
-        TU_CALL( setEdgeNodes(tu, dec, dec->members[member].markerToParent, b, c) );
-        TU_CALL( setEdgeNodes(tu, dec, pathEdge, a, b) );
-        TU_CALL( setEdgeNodes(tu, dec, childMarkerEdges[0], c, a) );
-        TU_CALL( addTerminal(tu, dec, reducedComponent, member, b) );
-        TU_CALL( mergeMemberIntoParent(tu, dec, dec->edges[childMarkerEdges[0]].childMember, true) );
+        TU_CALL( setEdgeNodes(dec, dec->members[member].markerToParent, b, c) );
+        TU_CALL( setEdgeNodes(dec, pathEdge, a, b) );
+        TU_CALL( setEdgeNodes(dec, childMarkerEdges[0], c, a) );
+        TU_CALL( addTerminal(dec, reducedComponent, member, b) );
+        TU_CALL( mergeMemberIntoParent(dec, dec->edges[childMarkerEdges[0]].childMember, true) );
       }
       debugDot(dec, newcolumn);
     }
@@ -4087,7 +4131,7 @@ TU_ERROR addColumnProcessSeries(
         /* Tested in UpdateRootSeriesTwoSingleChildren. */
 
         /* Parent marker is a non-path edge. We split off path edges if more than one. */
-        TU_CALL( splitSeries(tu, dec, member, newcolumn->edgesInPath, true, &pathEdge, NULL, NULL) );
+        TU_CALL( splitSeries(dec, member, newcolumn->edgesInPath, true, &pathEdge, NULL, NULL) );
 
         /* If there is another non-path edge, we split off the series member consisting of the two relevant child marker
          * edges and possibly the path edge. We then replace the current series member by the new one. */
@@ -4098,7 +4142,7 @@ TU_ERROR addColumnProcessSeries(
             newcolumn->edgesInPath[pathEdge] = true;
           newcolumn->edgesInPath[childMarkerEdges[0]] = true;
           newcolumn->edgesInPath[childMarkerEdges[1]] = true;
-          TU_CALL( splitSeries(tu, dec, member, newcolumn->edgesInPath, true, NULL, NULL, &member) );
+          TU_CALL( splitSeries(dec, member, newcolumn->edgesInPath, true, NULL, NULL, &member) );
           reducedMember->member = member;
         }
 
@@ -4113,7 +4157,7 @@ TU_ERROR addColumnProcessSeries(
         if (reducedMember->firstPathEdge)
         {
           /* Parent marker is one of several path edges. */
-          TU_CALL( splitSeries(tu, dec, member, newcolumn->edgesInPath, false, NULL, NULL, &member) );
+          TU_CALL( splitSeries(dec, member, newcolumn->edgesInPath, false, NULL, NULL, &member) );
           reducedMember->member = member;
           newcolumn->edgesInPath[dec->members[member].markerToParent] = true;
         }
@@ -4124,7 +4168,7 @@ TU_ERROR addColumnProcessSeries(
         {
           newcolumn->edgesInPath[childMarkerEdges[0]] = true;
           newcolumn->edgesInPath[childMarkerEdges[1]] = true;
-          TU_CALL( splitSeries(tu, dec, member, newcolumn->edgesInPath, false, &nonPathEdge, NULL, NULL) );
+          TU_CALL( splitSeries(dec, member, newcolumn->edgesInPath, false, &nonPathEdge, NULL, NULL) );
           newcolumn->edgesInPath[childMarkerEdges[0]] = false;
           newcolumn->edgesInPath[childMarkerEdges[1]] = false;
         }
@@ -4162,23 +4206,23 @@ TU_ERROR addColumnProcessSeries(
         TU_CALL( createNode(dec, &d) );
       else
         d = a;
-      TU_CALL( setEdgeNodes(tu, dec, childMarkerEdges[0], a, b) );
+      TU_CALL( setEdgeNodes(dec, childMarkerEdges[0], a, b) );
       TUdbgMsg(8 + 2*depth, "First child edge %d = {%d, %d}\n", childMarkerEdges[0], a, b);
-      TU_CALL( setEdgeNodes(tu, dec, childMarkerEdges[1], d, c) );
+      TU_CALL( setEdgeNodes(dec, childMarkerEdges[1], d, c) );
       TUdbgMsg(8 + 2*depth, "Second child edge %d = {%d, %d}\n", childMarkerEdges[1], d, c);
       if (pathEdge >= 0)
       {
-        TU_CALL( setEdgeNodes(tu, dec, pathEdge, b, c) );
+        TU_CALL( setEdgeNodes(dec, pathEdge, b, c) );
         TUdbgMsg(8 + 2*depth, "Path edge %d = {%d, %d}\n", pathEdge, b, c);
       }
       if (nonPathEdge >= 0)
       {
-        TU_CALL( setEdgeNodes(tu, dec, nonPathEdge, d, a) );
+        TU_CALL( setEdgeNodes(dec, nonPathEdge, d, a) );
         TUdbgMsg(8 + 2*depth, "Non-path edge %d = {%d, %d}\n", nonPathEdge, d, a);
       }
 
-      TU_CALL( mergeMemberIntoParent(tu, dec, dec->edges[childMarkerEdges[0]].childMember, true) );
-      TU_CALL( mergeMemberIntoParent(tu, dec, dec->edges[childMarkerEdges[1]].childMember, true) );
+      TU_CALL( mergeMemberIntoParent(dec, dec->edges[childMarkerEdges[0]].childMember, true) );
+      TU_CALL( mergeMemberIntoParent(dec, dec->edges[childMarkerEdges[1]].childMember, true) );
       dec->members[member].type = DEC_MEMBER_TYPE_RIGID;
     }
   }
@@ -4204,7 +4248,7 @@ TU_ERROR addColumnProcessSeries(
       /* Squeeze off all path edges by moving them to a new series member and creating a parallel member to connect it
        * to the remaining series member. */
       DEC_EDGE pathEdge = -1;
-      TU_CALL( splitSeries(tu, dec, member, newcolumn->edgesInPath, true, &pathEdge, NULL, NULL) );
+      TU_CALL( splitSeries(dec, member, newcolumn->edgesInPath, true, &pathEdge, NULL, NULL) );
       assert(pathEdge >= 0);
       newcolumn->edgesInPath[pathEdge] = true;
 
@@ -4222,7 +4266,7 @@ TU_ERROR addColumnProcessSeries(
         /* We temporarily mark the parent edge to belong to the path. */
         DEC_EDGE markerToParent = dec->members[member].markerToParent;
         newcolumn->edgesInPath[markerToParent] = true;
-        TU_CALL( splitSeries(tu, dec, member, newcolumn->edgesInPath, false, &nonPathEdge, NULL, NULL) );
+        TU_CALL( splitSeries(dec, member, newcolumn->edgesInPath, false, &nonPathEdge, NULL, NULL) );
         newcolumn->edgesInPath[markerToParent] = false;
       }
       assert(dec->members[member].numEdges == 3);
@@ -4234,10 +4278,10 @@ TU_ERROR addColumnProcessSeries(
       TU_CALL( createNode(dec, &a) );
       TU_CALL( createNode(dec, &b) );
       TU_CALL( createNode(dec, &c) );
-      TU_CALL( setEdgeNodes(tu, dec, dec->members[reducedMember->member].markerToParent, a, b) );
-      TU_CALL( setEdgeNodes(tu, dec, pathEdge, b, c) );
-      TU_CALL( setEdgeNodes(tu, dec, nonPathEdge, c, a) );
-      TU_CALL( addTerminal(tu, dec, reducedComponent, reducedMember->member, c) );
+      TU_CALL( setEdgeNodes(dec, dec->members[reducedMember->member].markerToParent, a, b) );
+      TU_CALL( setEdgeNodes(dec, pathEdge, b, c) );
+      TU_CALL( setEdgeNodes(dec, nonPathEdge, c, a) );
+      TU_CALL( addTerminal(dec, reducedComponent, reducedMember->member, c) );
 
       return TU_OKAY;
     }
@@ -4250,7 +4294,7 @@ TU_ERROR addColumnProcessSeries(
        * to the remaining series member. */
       DEC_EDGE pathEdge = -1;
       TUdbgMsg(8 + 2*depth, "Splitting of path edges.\n");
-      TU_CALL( splitSeries(tu, dec, member, newcolumn->edgesInPath, true, &pathEdge, NULL, NULL) );
+      TU_CALL( splitSeries(dec, member, newcolumn->edgesInPath, true, &pathEdge, NULL, NULL) );
       if (pathEdge >= 0)
         newcolumn->edgesInPath[pathEdge] = true;
       debugDot(dec, newcolumn);
@@ -4272,7 +4316,7 @@ TU_ERROR addColumnProcessSeries(
       {
         newcolumn->edgesInPath[dec->members[member].markerToParent] = true;
         newcolumn->edgesInPath[childMarkerEdges[0]] = true;
-        TU_CALL( splitSeries(tu, dec, member, newcolumn->edgesInPath, false, &nonPathEdge, NULL, NULL) );
+        TU_CALL( splitSeries(dec, member, newcolumn->edgesInPath, false, &nonPathEdge, NULL, NULL) );
         newcolumn->edgesInPath[dec->members[member].markerToParent] = false;
         newcolumn->edgesInPath[childMarkerEdges[0]] = false;
         debugDot(dec, newcolumn);
@@ -4288,28 +4332,28 @@ TU_ERROR addColumnProcessSeries(
       TU_CALL( createNode(dec, &a) );
       TU_CALL( createNode(dec, &b) );
       TU_CALL( createNode(dec, &c) );
-      TU_CALL( setEdgeNodes(tu, dec, dec->members[reducedMember->member].markerToParent, a, b) );
+      TU_CALL( setEdgeNodes(dec, dec->members[reducedMember->member].markerToParent, a, b) );
       if (dec->members[member].numEdges == 4)
       {
         TU_CALL( createNode(dec, &d) );
-        TU_CALL( setEdgeNodes(tu, dec, pathEdge, b, c) );
-        TU_CALL( setEdgeNodes(tu, dec, childMarkerEdges[0], d, c) );
-        TU_CALL( setEdgeNodes(tu, dec, nonPathEdge, d, a) );
+        TU_CALL( setEdgeNodes(dec, pathEdge, b, c) );
+        TU_CALL( setEdgeNodes(dec, childMarkerEdges[0], d, c) );
+        TU_CALL( setEdgeNodes(dec, nonPathEdge, d, a) );
       }
       else if (nonPathEdge == -1)
       {
-        TU_CALL( setEdgeNodes(tu, dec, pathEdge, b, c) );
-        TU_CALL( setEdgeNodes(tu, dec, childMarkerEdges[0], a, c) );
+        TU_CALL( setEdgeNodes(dec, pathEdge, b, c) );
+        TU_CALL( setEdgeNodes(dec, childMarkerEdges[0], a, c) );
       }
       else
       {
         assert(pathEdge == -1);
-        TU_CALL( setEdgeNodes(tu, dec, childMarkerEdges[0], c, b) );
-        TU_CALL( setEdgeNodes(tu, dec, nonPathEdge, a, c) );
+        TU_CALL( setEdgeNodes(dec, childMarkerEdges[0], c, b) );
+        TU_CALL( setEdgeNodes(dec, nonPathEdge, a, c) );
       }
       debugDot(dec, newcolumn);
 
-      TU_CALL( mergeMemberIntoParent(tu, dec, dec->edges[childMarkerEdges[0]].childMember, true) );
+      TU_CALL( mergeMemberIntoParent(dec, dec->edges[childMarkerEdges[0]].childMember, true) );
       debugDot(dec, newcolumn);
 
       return TU_OKAY;
@@ -4320,25 +4364,23 @@ TU_ERROR addColumnProcessSeries(
 }
 
 /**
- * \brief Process reduced t-decomposition before the actual modification.
+ * \brief Processes a component of a reduced decomposition before the actual modification.
  *
  * Processes the reduced members in depth-first search manner and does the following:
- * - Seriess are squeezed.
+ * - Series members are squeezed.
  * - Terminal nodes and (reduced) members are detected.
  * - Marker edges along unique path between terminal nodes are merged.
  */
 
 static
 TU_ERROR addColumnProcessComponent(
-  TU* tu,                             /**< \ref TU environment. */
-  DEC* dec,                      /**< t-decomposition. */
-  DEC_NEWCOLUMN* newcolumn,       /**< new-column structure. */
+  Dec* dec,                           /**< Decomposition. */
+  DEC_NEWCOLUMN* newcolumn,           /**< new-column structure. */
   ReducedComponent* reducedComponent, /**< Reduced component. */
   ReducedMember* reducedMember,       /**< Reduced member. */
   int depth                           /**< Depth of member in reduced t-decomposition. */
 )
 {
-  assert(tu);
   assert(dec);
   assert(newcolumn);
   assert(reducedComponent);
@@ -4360,7 +4402,7 @@ TU_ERROR addColumnProcessComponent(
     ReducedMember* child = reducedMember->children[c];
     if (child->type != TYPE_CYCLE_CHILD)
     {
-      TU_CALL( addColumnProcessComponent(tu, dec, newcolumn, reducedComponent, reducedMember->children[c], depth+1) );
+      TU_CALL( addColumnProcessComponent(dec, newcolumn, reducedComponent, reducedMember->children[c], depth+1) );
     }
     else
     {
@@ -4370,28 +4412,30 @@ TU_ERROR addColumnProcessComponent(
 
   /* Different behavior for parallel members, series members and rigid components. */
   if (dec->members[reducedMember->member].type == DEC_MEMBER_TYPE_PARALLEL)
-    TU_CALL( addColumnProcessParallel(tu, dec, newcolumn, reducedComponent, reducedMember, depth) );
+    TU_CALL( addColumnProcessParallel(dec, newcolumn, reducedComponent, reducedMember, depth) );
   else if (dec->members[reducedMember->member].type == DEC_MEMBER_TYPE_SERIES)
-    TU_CALL( addColumnProcessSeries(tu, dec, newcolumn, reducedComponent, reducedMember, depth) );
+    TU_CALL( addColumnProcessSeries(dec, newcolumn, reducedComponent, reducedMember, depth) );
   else
-    TU_CALL( addColumnProcessRigid(tu, dec, newcolumn, reducedComponent, reducedMember, depth) );
+    TU_CALL( addColumnProcessRigid(dec, newcolumn, reducedComponent, reducedMember, depth) );
 
   TUconsistencyAssert( decConsistency(dec) );
 
   return TU_OKAY;
 }
 
+/**
+ * \brief Recursive method to reorder a member by making \p newParent the new parent.
+ */
+
 static
 TU_ERROR doReorderComponent(
-  TU* tu,                           /**< \ref TU environment. */
-  DEC* dec,                    /**< t-decomposition. */
+  Dec* dec,                     /**< Decomposition. */
   DEC_MEMBER member,            /**< Member to be processed. */
   DEC_MEMBER newParent,         /**< New parent of \p member. */
   DEC_MEMBER newMarkerToParent, /**< New marker edge linked to new parent of \p member. */
   DEC_MEMBER markerOfNewParent  /**< Counterpart to \p newMarkerToParent. */
 )
 {
-  assert(tu);
   assert(dec);
   assert(member >= 0);
   assert(newParent >= 0);
@@ -4409,19 +4453,21 @@ TU_ERROR doReorderComponent(
   dec->edges[newMarkerToParent].childMember = -1;
 
   if (oldMarkerToParent >= 0)
-    TU_CALL( doReorderComponent(tu, dec, oldParent, member, oldMarkerOfParent, oldMarkerToParent) );
+    TU_CALL( doReorderComponent(dec, oldParent, member, oldMarkerOfParent, oldMarkerToParent) );
 
   return TU_OKAY;
 }
 
+/**
+ * \brief Reorders a component, making \p newRoot the new root.
+ */
+
 static
 TU_ERROR reorderComponent(
-  TU* tu,                 /**< \ref TU environment. */
-  DEC* dec,          /**< t-decomposition. */
+  Dec* dec,           /**< Decomposition. */
   DEC_MEMBER newRoot  /**< The new root of the component. */
 )
 {
-  assert(tu);
   assert(dec);
   assert(newRoot >= 0 && newRoot < dec->memMembers);
   assert(isRepresentativeMember(dec, newRoot));
@@ -4430,38 +4476,40 @@ TU_ERROR reorderComponent(
 
   if (dec->members[newRoot].parentMember >= 0)
   {
-    TU_CALL( doReorderComponent(tu, dec, findMemberParent(dec, newRoot), newRoot,
+    TU_CALL( doReorderComponent(dec, findMemberParent(dec, newRoot), newRoot,
       dec->members[newRoot].markerOfParent, dec->members[newRoot].markerToParent) );
   }
 
   return TU_OKAY;
 }
 
+/**
+ * \brief Actually adds a column with ones in \p rows, using information from \p newcolumn.
+ */
+
 TU_ERROR addColumnApply(
-  TU* tu,                     /**< \ref TU environment. */
-  DEC* dec,                  /**< t-decomposition. */
-  DEC_NEWCOLUMN* newcolumn,  /**< new-column structure. */
-  int column,                 /**< Index of new column to be added. */
-  int* entryRows,             /**< Array of rows with 1-entry in this column. */
-  int numEntries              /**< Number of 1-entries in this column. */
+  Dec* dec,                 /**< Decomposition. */
+  DEC_NEWCOLUMN* newcolumn, /**< newcolumn. */
+  int column,               /**< Index of new column to be added. */
+  int* rows,                /**< Array of rows with 1-entry in this column. */
+  int numRows               /**< Length of \p rows. */
 )
 {
-  assert(tu);
   assert(dec);
   assert(newcolumn);
   assert(newcolumn->remainsGraphic);
 
-  TUdbgMsg(0, "\n  Adding a column with %d 1's.\n", numEntries);
+  TUdbgMsg(0, "\n  Adding a column with %d 1's.\n", numRows);
 
   TUconsistencyAssert( decConsistency(dec) );
 
   /* Create reduced components for new edges. */
-  TU_CALL( completeReducedDecomposition(tu, dec, newcolumn, entryRows, numEntries) );
+  TU_CALL( completeReducedDecomposition(dec, newcolumn, rows, numRows) );
 
   /* Process all reduced components individually. */
 
   DEC_EDGE* componentNewEdges = NULL;
-  TU_CALL( TUallocStackArray(tu, &componentNewEdges, newcolumn->numReducedComponents) );
+  TU_CALL( TUallocStackArray(dec->tu, &componentNewEdges, newcolumn->numReducedComponents) );
 
   int maxDepthComponent = -1;
   TUdbgMsg(4, "Processing %d reduced components.\n", newcolumn->numReducedComponents);
@@ -4471,7 +4519,7 @@ TU_ERROR addColumnApply(
 
     TUdbgMsg(4, "Moving root of reduced component %d.\n", i);
 
-    TU_CALL( moveReducedRoot(tu, dec, newcolumn, reducedComponent) );
+    TU_CALL( moveReducedRoot(dec, newcolumn, reducedComponent) );
     debugDot(dec, newcolumn);
 
     TUdbgMsg(4, "Processing reduced component %d of depth %d.\n", i, reducedComponent->rootDepth);
@@ -4482,7 +4530,7 @@ TU_ERROR addColumnApply(
       maxDepthComponent = i;
     }
 
-    TU_CALL( addColumnProcessComponent(tu, dec, newcolumn, reducedComponent, reducedComponent->root, 0) );
+    TU_CALL( addColumnProcessComponent(dec, newcolumn, reducedComponent, reducedComponent->root, 0) );
 
     assert(reducedComponent->numTerminals == 2);
     TUdbgMsg(6, "Terminal members are %d and %d.\n", reducedComponent->terminalMember[0],
@@ -4511,7 +4559,7 @@ TU_ERROR addColumnApply(
     if (c == maxDepthComponent)
       TUdbgMsg(6, "Reduced component %d has maximum depth and will remain a root.\n", c);
     else
-      TU_CALL( reorderComponent(tu, dec, findMember(dec, dec->edges[componentNewEdges[c]].member)) );
+      TU_CALL( reorderComponent(dec, findMember(dec, dec->edges[componentNewEdges[c]].member)) );
   }
 
   if (newcolumn->numReducedComponents == 0)
@@ -4582,7 +4630,7 @@ TU_ERROR addColumnApply(
 
   debugDot(dec, newcolumn);
 
-  TU_CALL( TUfreeStackArray(tu, &componentNewEdges) );
+  TU_CALL( TUfreeStackArray(dec->tu, &componentNewEdges) );
 
   newcolumn->numReducedMembers = 0;
   newcolumn->numReducedComponents = 0;
@@ -4668,7 +4716,7 @@ TU_ERROR TUtestGraphicness(TU* tu, TU_CHRMAT* transpose, bool* pisGraphic, TU_GR
     return TU_OKAY;
   }
 
-  DEC* dec = NULL;
+  Dec* dec = NULL;
   TU_CALL( decCreate(tu, &dec, 4096, 1024, 256, 256, 256) );
 
   /* Process each column. */
@@ -4677,15 +4725,14 @@ TU_ERROR TUtestGraphicness(TU* tu, TU_CHRMAT* transpose, bool* pisGraphic, TU_GR
   *pisGraphic = true;
   for (int column = 0; column < transpose->numRows && *pisGraphic; ++column)
   {
-    TU_CALL( addColumnCheck(tu, dec, newcolumn,
-      &transpose->entryColumns[transpose->rowStarts[column]],
+    TU_CALL( addColumnCheck(dec, newcolumn, &transpose->entryColumns[transpose->rowStarts[column]],
       transpose->rowStarts[column+1] - transpose->rowStarts[column]) );
 
     debugDot(dec, newcolumn);
 
     if (newcolumn->remainsGraphic)
     {
-      TU_CALL( addColumnApply(tu, dec, newcolumn, column, &transpose->entryColumns[transpose->rowStarts[column]],
+      TU_CALL( addColumnApply(dec, newcolumn, column, &transpose->entryColumns[transpose->rowStarts[column]],
         transpose->rowStarts[column+1] - transpose->rowStarts[column]) );
 
       debugDot(dec, newcolumn);
@@ -4742,11 +4789,11 @@ TU_ERROR TUtestGraphicness(TU* tu, TU_CHRMAT* transpose, bool* pisGraphic, TU_GR
 
 typedef enum
 {
-  UNKNOWN = 0,    /**< The node was not considered by the shortest-path, yet. */
-  SEEN = 1,       /**< Some path to the node is known. */
-  COMPLETED = 2,  /**< The shortest path to the node is known. */
-  BASIC = 3,      /**< The rootEdge of that node belongs to the spanning forest. */
-} STAGE;
+  UNKNOWN = 0,    /**< \brief The node was not considered by the shortest-path, yet. */
+  SEEN = 1,       /**< \brief Some path to the node is known. */
+  COMPLETED = 2,  /**< \brief The shortest path to the node is known. */
+  BASIC = 3,      /**< \brief The rootEdge of that node belongs to the spanning forest. */
+} DIJKSTRA_STAGE;
 
 /**
  * \brief Node information for shortest-path computation in \ref TUconvertGraphToBinaryMatrix.
@@ -4754,10 +4801,10 @@ typedef enum
 
 typedef struct
 {
-  STAGE stage;            /**< At which stage of the algorithm is this node? */
-  int predecessor;        /**< Predecessor node in shortest-path branching, or -1 for a root. */
-  TU_GRAPH_EDGE rootEdge; /**< The actual edge towards the predecessor, or -1 for a root./ */
-} NodeData;
+  DIJKSTRA_STAGE stage;   /**< \brief At which stage of the algorithm is this node? */
+  int predecessor;        /**< \brief Predecessor node in shortest-path branching, or -1 for a root. */
+  TU_GRAPH_EDGE rootEdge; /**< \brief The actual edge towards the predecessor, or -1 for a root./ */
+} DijkstraNodeData;
 
 /**
  * \brief Comparator for sorting ints increasingly.
@@ -4781,7 +4828,7 @@ TU_ERROR TUconvertGraphToBinaryMatrix(TU* tu, TU_GRAPH* graph, TU_CHRMAT** pmatr
   assert(numCobasisEdges == 0 || cobasisEdges);
   TUassertStackConsistency(tu);
 
-  NodeData* nodeData = NULL;
+  DijkstraNodeData* nodeData = NULL;
   
   TU_CALL( TUallocStackArray(tu, &nodeData, TUgraphMemNodes(graph)) );
   
