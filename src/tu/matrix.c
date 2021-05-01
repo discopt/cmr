@@ -576,7 +576,8 @@ TU_ERROR TUchrmatCreateFromDenseStream(TU* tu, TU_CHRMAT** pmatrix, FILE* stream
   assert(!*pmatrix);
   assert(stream);
 
-  int numRows, numColumns;
+  int numRows = 0;
+  int numColumns = 0;
   int numRead = fscanf(stream, "%d %d", &numRows, &numColumns);
   if (numRead < 2)
     return TU_ERROR_INPUT;

@@ -11,10 +11,10 @@
 
 struct GraphNode
 {
-  int adjacencyStart; /**< Index of first outgoing arc. */
-  int component; /**< Index of component of matrix. */
-  int degree; /**< Used to count the degree. */
-  int order; /**< Corresponding row/column in component. */
+  int adjacencyStart; /**< \brief Index of first outgoing arc. */
+  int component;      /**< \brief Index of component of matrix. */
+  int degree;         /**< \brief Used to count the degree. */
+  int order;          /**< \brief Corresponding row/column in component. */
 };
 typedef struct GraphNode GRAPH_NODE;
 

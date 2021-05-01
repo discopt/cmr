@@ -5,10 +5,11 @@
 
 TEST(Sign, Change)
 {
-  TU* tu;
-  TUcreateEnvironment(&tu);
+  TU* tu = NULL;
+  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
+
   TU_CHRMAT* matrix = NULL;
-  stringToCharMatrix(tu, &matrix, "10 10 "
+  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "10 10 "
     "+1 -1  0  0  0  0  0  0  0  0 "
     "-1 +1  0  0  0  0  0  0  0  0 "
     "0   0 +1  0  0  0  0 -1  0  0 "
@@ -19,9 +20,9 @@ TEST(Sign, Change)
     "0   0 -1 +1  0  0  0  0  0  0 "
     "0   0  0  0  0  0  0  0 +1 -1 "
     "0   0  0  0  0  0  0 -1  0 +1 "
-  );
+  ) );
   TU_CHRMAT* check = NULL;
-  stringToCharMatrix(tu, &check, "10 10 "
+  ASSERT_TU_CALL( stringToCharMatrix(tu, &check, "10 10 "
     "+1 -1  0  0  0  0  0  0  0  0 "
     "-1 +1  0  0  0  0  0  0  0  0 "
     "0   0 +1  0  0  0  0 -1  0  0 "
@@ -32,13 +33,13 @@ TEST(Sign, Change)
     "0   0 -1 -1  0  0  0  0  0  0 "
     "0   0  0  0  0  0  0  0 -1 -1 "
     "0   0  0  0  0  0  0 -1  0 +1 "
-  );
+  ) );
   TU_CHRMAT* checkViolator = NULL;
-  stringToCharMatrix(tu, &checkViolator, "3 3 "
+  ASSERT_TU_CALL( stringToCharMatrix(tu, &checkViolator, "3 3 "
     "-1 -1 0 "
     "0 1 -1 "
     "-1 0 1 "
-  );
+  ) );
 
   TU_SUBMAT* submatrix = NULL;
   TU_CHRMAT* violator = NULL;
@@ -56,9 +57,9 @@ TEST(Sign, Change)
   ASSERT_FALSE(alreadySigned);
   ASSERT_TRUE(TUchrmatCheckEqual(matrix, check));
 
-  TUchrmatFree(tu, &checkViolator);
-  TUchrmatFree(tu, &check);
-  TUchrmatFree(tu, &matrix);
+  ASSERT_TU_CALL( TUchrmatFree(tu, &checkViolator) );
+  ASSERT_TU_CALL( TUchrmatFree(tu, &check) );
+  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
 
   TUfreeEnvironment(&tu);
 }

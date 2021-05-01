@@ -38,6 +38,7 @@ typedef enum
       else \
         printf("Unknown error"); \
       printf(" in %s:%d.\n", __FILE__, __LINE__); \
+      return _tu_error; \
     } \
   } while (false)
 
