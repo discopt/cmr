@@ -18,7 +18,7 @@ void testGraphicMatrix(
   TU_CHRMAT* transpose = NULL;
   ASSERT_TU_CALL( TUchrmatTranspose(tu, matrix, &transpose) );
 
-  ASSERT_TU_CALL( TUtestGraphicness(tu, transpose, &isGraphic, &graph, &basis, &cobasis, NULL) );
+  ASSERT_TU_CALL( TUtestBinaryGraphic(tu, transpose, &isGraphic, &graph, &basis, &cobasis, NULL) );
 
   ASSERT_TRUE( isGraphic );
   ASSERT_TRUE( basis );
@@ -27,8 +27,8 @@ void testGraphicMatrix(
   ASSERT_TU_CALL( TUchrmatFree(tu, &transpose) );
 
   TU_CHRMAT* result = NULL;
-  ASSERT_TU_CALL( TUconvertGraphToBinaryMatrix(tu, graph, &result, matrix->numRows, basis, matrix->numColumns,
-    cobasis) );
+  ASSERT_TU_CALL( TUcomputeGraphBinaryRepresentationMatrix(tu, graph, &result, matrix->numRows, basis,
+    matrix->numColumns, cobasis) );
   ASSERT_TRUE( result );
 
   if (TUchrmatCheckEqual(matrix, result))
@@ -74,7 +74,7 @@ void testNongraphicMatrix(
   bool isGraphic;
   TU_CHRMAT* transpose = NULL;
   ASSERT_TU_CALL( TUchrmatTranspose(tu, matrix, &transpose) );
-  ASSERT_TU_CALL( TUtestGraphicness(tu, transpose, &isGraphic, NULL, NULL, NULL, NULL) );
+  ASSERT_TU_CALL( TUtestBinaryGraphic(tu, transpose, &isGraphic, NULL, NULL, NULL, NULL) );
   ASSERT_FALSE( isGraphic );
   ASSERT_TU_CALL( TUchrmatFree(tu, &transpose) );
 }
@@ -88,7 +88,7 @@ void testMatrix(
   bool isGraphic;
   TU_CHRMAT* transpose = NULL;
   ASSERT_TU_CALL( TUchrmatTranspose(tu, matrix, &transpose) );
-  ASSERT_TU_CALL( TUtestGraphicness(tu, transpose, &isGraphic, &graph, NULL, NULL, NULL) );
+  ASSERT_TU_CALL( TUtestBinaryGraphic(tu, transpose, &isGraphic, &graph, NULL, NULL, NULL) );
   ASSERT_TU_CALL( TUchrmatFree(tu, &transpose) );
   if (graph)
     ASSERT_TU_CALL( TUgraphFree(tu, &graph) );
@@ -930,7 +930,7 @@ TEST(Graphic, UpdateRandomGraph)
     }
 
     TU_CHRMAT* A = NULL;
-    ASSERT_TU_CALL( TUconvertGraphToBinaryMatrix(tu, graph, &A, 0, NULL, 0, NULL) );
+    ASSERT_TU_CALL( TUcomputeGraphBinaryRepresentationMatrix(tu, graph, &A, 0, NULL, 0, NULL) );
 
     ASSERT_TU_CALL( TUgraphFree(tu, &graph) );
 

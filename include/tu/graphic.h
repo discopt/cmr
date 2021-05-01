@@ -32,7 +32,7 @@ extern "C" {
  */
 
 TU_EXPORT
-TU_ERROR TUtestGraphicness(
+TU_ERROR TUtestBinaryGraphic(
   TU* tu,                   /**< TU environment. */
   TU_CHRMAT* transpose,     /**< Transpose of matrix to be tested. */
   bool* pisGraphic,          /**< Returns true if and only if the matrix is graphic. */
@@ -47,7 +47,7 @@ TU_ERROR TUtestGraphicness(
  */
 
 TU_EXPORT
-TU_ERROR TUconvertGraphToBinaryMatrix(
+TU_ERROR TUcomputeGraphBinaryRepresentationMatrix(
   TU* tu,                     /**< TU environment. */
   TU_GRAPH* graph,            /**< Graph. */
   TU_CHRMAT** matrix,         /**< Pointer for storing the binary representation matrix. */

@@ -4644,7 +4644,7 @@ TU_ERROR addColumnApply(
   return TU_OKAY;
 }
 
-TU_ERROR TUtestGraphicness(TU* tu, TU_CHRMAT* transpose, bool* pisGraphic, TU_GRAPH** pgraph, TU_GRAPH_EDGE** pbasis,
+TU_ERROR TUtestBinaryGraphic(TU* tu, TU_CHRMAT* transpose, bool* pisGraphic, TU_GRAPH** pgraph, TU_GRAPH_EDGE** pbasis,
   TU_GRAPH_EDGE** pcobasis, TU_SUBMAT** psubmatrix)
 {
   assert(tu);
@@ -4821,8 +4821,8 @@ int compareInt(const void* A, const void* B)
   return *a - *b;
 }
 
-TU_ERROR TUconvertGraphToBinaryMatrix(TU* tu, TU_GRAPH* graph, TU_CHRMAT** pmatrix,
-  int numBasisEdges, TU_GRAPH_EDGE* basisEdges, int numCobasisEdges, TU_GRAPH_EDGE* cobasisEdges)
+TU_ERROR TUcomputeGraphBinaryRepresentationMatrix(TU* tu, TU_GRAPH* graph, TU_CHRMAT** pmatrix, int numBasisEdges,
+  TU_GRAPH_EDGE* basisEdges, int numCobasisEdges, TU_GRAPH_EDGE* cobasisEdges)
 {
   assert(tu);
   assert(graph);

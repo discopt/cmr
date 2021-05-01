@@ -109,7 +109,7 @@ int main(int argc, const char** argv)
   TU_SUBMAT* submatrix = NULL;
   bool isGraphic;
 
-  TUtestGraphicness(tu, transposed, &isGraphic, &graph, &basis, &cobasis, &submatrix);
+  TU_CALL( TUtestBinaryGraphic(tu, transposed, &isGraphic, &graph, &basis, &cobasis, &submatrix) );
 
   if (graph)
   {

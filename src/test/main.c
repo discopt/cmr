@@ -24,15 +24,15 @@ TU_ERROR run(const char* instanceFileName)
   TU_GRAPH* graph = NULL;
   TU_GRAPH_EDGE* basis = NULL;
   TU_GRAPH_EDGE* cobasis = NULL;
-  TU_CALL( TUtestGraphicness(tu, transpose, &isGraphic, &graph, &basis, &cobasis, NULL) );
+  TU_CALL( TUtestBinaryGraphic(tu, transpose, &isGraphic, &graph, &basis, &cobasis, NULL) );
 
   if (isGraphic)
   {
     printf("Input matrix is graphic.\n");
 
     TU_CHRMAT* checkMatrix = NULL;
-    TU_CALL( TUconvertGraphToBinaryMatrix(tu, graph, &checkMatrix, matrix->numRows, basis, matrix->numColumns,
-      cobasis) );
+    TU_CALL( TUcomputeGraphBinaryRepresentationMatrix(tu, graph, &checkMatrix, matrix->numRows, basis,
+      matrix->numColumns, cobasis) );
 
     if (!TUchrmatCheckEqual(matrix, checkMatrix))
       printf("ERROR: computed representation matrix does NOT agree with input matrix!\n");
