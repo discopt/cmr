@@ -64,7 +64,7 @@ TU_ERROR TUdblmatFree(
 TU_EXPORT
 TU_ERROR TUdblmatChangeNumNonzeros(
   TU* tu,             /**< \ref TU environment. */
-  TU_DBLMAT* matrix,  /**< Given matrix matrix. */
+  TU_DBLMAT* matrix,  /**< Given matrix. */
   int newNumNonzeros  /**< New number of nonzeros. */ 
 );
 
@@ -156,7 +156,7 @@ TU_ERROR TUintmatFree(
 TU_EXPORT
 TU_ERROR TUintmatChangeNumNonzeros(
   TU* tu,             /**< \ref TU environment. */
-  TU_INTMAT* matrix,  /**< Given matrix matrix. */
+  TU_INTMAT* matrix,  /**< Given matrix. */
   int newNumNonzeros  /**< New number of nonzeros. */ 
 );
 
@@ -242,7 +242,7 @@ TU_ERROR TUchrmatFree(
 TU_EXPORT
 TU_ERROR TUchrmatChangeNumNonzeros(
   TU* tu,             /**< \ref TU environment. */
-  TU_CHRMAT* matrix,  /**< Given matrix matrix. */
+  TU_CHRMAT* matrix,  /**< Given matrix. */
   int newNumNonzeros  /**< New number of nonzeros. */ 
 );
 
