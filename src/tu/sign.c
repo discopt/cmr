@@ -57,8 +57,8 @@ TU_ERROR signSequentiallyConnected(
 
   TUdbgMsg(2, "signSequentiallyConnected.\n");
 
+  *pmodification = 0;
   const int firstRowNode = matrix->numColumns;
-
   GRAPH_NODE* graphNodes = NULL;
   int* bfsQueue = NULL;
   int bfsQueueBegin = 0;
