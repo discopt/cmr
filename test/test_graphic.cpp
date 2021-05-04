@@ -28,7 +28,7 @@ void testGraphicMatrix(
 
   TU_CHRMAT* result = NULL;
   ASSERT_TU_CALL( TUcomputeGraphBinaryRepresentationMatrix(tu, graph, &result, matrix->numRows, basis,
-    matrix->numColumns, cobasis) );
+    matrix->numColumns, cobasis, NULL) );
   ASSERT_TRUE( result );
 
   if (TUchrmatCheckEqual(matrix, result))
@@ -930,7 +930,7 @@ TEST(Graphic, UpdateRandomGraph)
     }
 
     TU_CHRMAT* A = NULL;
-    ASSERT_TU_CALL( TUcomputeGraphBinaryRepresentationMatrix(tu, graph, &A, 0, NULL, 0, NULL) );
+    ASSERT_TU_CALL( TUcomputeGraphBinaryRepresentationMatrix(tu, graph, &A, 0, NULL, 0, NULL, NULL) );
 
     ASSERT_TU_CALL( TUgraphFree(tu, &graph) );
 
@@ -942,3 +942,88 @@ TEST(Graphic, UpdateRandomGraph)
 
   ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
+
+TEST(Graphic, RepresentationMatrix)
+{
+  TU* tu = NULL;
+  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
+
+  TU_GRAPH* graph = NULL;
+  ASSERT_TU_CALL( TUgraphCreateEmpty(tu, &graph, 0, 0) );
+
+  /**
+   * Spanning forest: 
+   *
+   *        c2                h7 --  
+   *        ^                 ^   \
+   *        |                 \   /
+   * a0 --> b1 <-- d3 --> e4   ---
+   *
+   *     -->
+   *  f5 --> g6
+   *     -->
+   */
+  
+  TU_GRAPH_NODE a, b, c, d, e, f, g, h;
+  ASSERT_TU_CALL( TUgraphAddNode(tu, graph, &a) );
+  ASSERT_TU_CALL( TUgraphAddNode(tu, graph, &b) );
+  ASSERT_TU_CALL( TUgraphAddNode(tu, graph, &c) );
+  ASSERT_TU_CALL( TUgraphAddNode(tu, graph, &d) );
+  ASSERT_TU_CALL( TUgraphAddNode(tu, graph, &e) );
+  ASSERT_TU_CALL( TUgraphAddNode(tu, graph, &f) );
+  ASSERT_TU_CALL( TUgraphAddNode(tu, graph, &g) );
+  ASSERT_TU_CALL( TUgraphAddNode(tu, graph, &h) );
+  
+  TU_GRAPH_EDGE basis[5];
+  ASSERT_TU_CALL( TUgraphAddEdge(tu, graph, a, b, &basis[0]) );
+  ASSERT_TU_CALL( TUgraphAddEdge(tu, graph, b, c, &basis[1]) );
+  ASSERT_TU_CALL( TUgraphAddEdge(tu, graph, d, b, &basis[2]) );
+  ASSERT_TU_CALL( TUgraphAddEdge(tu, graph, d, e, &basis[3]) );
+  ASSERT_TU_CALL( TUgraphAddEdge(tu, graph, f, g, &basis[4]) );
+
+  TU_GRAPH_EDGE cobasis[6];
+  ASSERT_TU_CALL( TUgraphAddEdge(tu, graph, c, a, &cobasis[0]) );
+  ASSERT_TU_CALL( TUgraphAddEdge(tu, graph, a, e, &cobasis[1]) );
+  ASSERT_TU_CALL( TUgraphAddEdge(tu, graph, e, c, &cobasis[2]) );
+  ASSERT_TU_CALL( TUgraphAddEdge(tu, graph, f, g, &cobasis[3]) );
+  ASSERT_TU_CALL( TUgraphAddEdge(tu, graph, g, f, &cobasis[4]) );
+  ASSERT_TU_CALL( TUgraphAddEdge(tu, graph, h, h, &cobasis[5]) );
+
+  bool isCorrectBasis = false;
+  TU_CHRMAT* matrix = NULL;
+  TU_CHRMAT* check = NULL;
+
+  /* Check binary representation matrix. */
+  ASSERT_TU_CALL( TUcomputeGraphBinaryRepresentationMatrix(tu, graph, &matrix, 5, basis, 6, cobasis, &isCorrectBasis) );
+  ASSERT_TRUE( isCorrectBasis );
+  stringToCharMatrix(tu, &check, "5 6 "
+    "1 1 0 0 0 0 "
+    "1 0 1 0 0 0 "
+    "0 1 1 0 0 0 "
+    "0 1 1 0 0 0 "
+    "0 0 0 1 1 0 "
+  );
+  ASSERT_TRUE( TUchrmatCheckEqual(matrix, check) );
+  ASSERT_TU_CALL( TUchrmatFree(tu, &check) );
+  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
+
+  /* Check ternary representation matrix. */
+  bool edgesReversed[] = { false, false, false, false, false, false, false, false, false, false, false };
+  ASSERT_TU_CALL( TUcomputeGraphTernaryRepresentationMatrix(tu, graph, &matrix, edgesReversed, 5, basis, 6, cobasis,
+    &isCorrectBasis) );
+  ASSERT_TRUE( isCorrectBasis );
+  stringToCharMatrix(tu, &check, "5 6 "
+    "-1  1  0  0  0  0 "
+    "-1  0  1  0  0  0 "
+    "0  -1  1  0  0  0 "
+    "0   1 -1  0  0  0 "
+    "0   0  0  1 -1  0 "
+  );
+  ASSERT_TRUE( TUchrmatCheckEqual(matrix, check) );
+  ASSERT_TU_CALL( TUchrmatFree(tu, &check) );
+  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
+  
+  ASSERT_TU_CALL( TUgraphFree(tu, &graph) );
+  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+}
+

@@ -1,4 +1,4 @@
-#define TU_DEBUG /* Uncomment to debug graphic. */
+// #define TU_DEBUG /* Uncomment to debug graphic. */
 
 #include <tu/sign.h>
 #include "sign_internal.h"

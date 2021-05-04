@@ -32,7 +32,7 @@ TU_ERROR run(const char* instanceFileName)
 
     TU_CHRMAT* checkMatrix = NULL;
     TU_CALL( TUcomputeGraphBinaryRepresentationMatrix(tu, graph, &checkMatrix, matrix->numRows, basis,
-      matrix->numColumns, cobasis) );
+      matrix->numColumns, cobasis, NULL) );
 
     if (!TUchrmatCheckEqual(matrix, checkMatrix))
       printf("ERROR: computed representation matrix does NOT agree with input matrix!\n");
