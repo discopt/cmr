@@ -9,6 +9,14 @@
 extern "C" {
 #endif
 
+/**
+ * \defgroup Graph Graph
+ * 
+ * Undirected graphs.
+ * 
+ * @{
+ */
+
 typedef int TU_GRAPH_NODE; /**< \brief Reference to a node of \ref TU_GRAPH. */
 typedef int TU_GRAPH_EDGE; /**< \brief Reference to an edge of \ref TU_GRAPH. */
 typedef int TU_GRAPH_ITER; /**< \brief Reference to an edge iterator of \ref TU_GRAPH. */
@@ -422,6 +430,8 @@ TU_ERROR TUgraphMergeNodes(
   TU_GRAPH_NODE u,  /**< First node. */
   TU_GRAPH_NODE v   /**< Second node. */
 );
+
+/**@}*/
 
 #ifdef __cplusplus
 }

@@ -361,7 +361,8 @@ TU_ERROR computeRepresentationMatrix(
 }
 
 TU_ERROR TUcomputeGraphBinaryRepresentationMatrix(TU* tu, TU_GRAPH* graph, TU_CHRMAT** pmatrix, TU_CHRMAT** ptranspose,
-  int numBasisEdges, TU_GRAPH_EDGE* basisEdges, int numCobasisEdges, TU_GRAPH_EDGE* cobasisEdges, bool* pisCorrectBasis)
+  int numForestEdges, TU_GRAPH_EDGE* forestEdges, int numCoforestEdges, TU_GRAPH_EDGE* coforestEdges,
+  bool* pisCorrectBasis)
 {
   assert(tu);
   assert(graph);
@@ -370,8 +371,8 @@ TU_ERROR TUcomputeGraphBinaryRepresentationMatrix(TU* tu, TU_GRAPH* graph, TU_CH
   assert(!ptranspose || !*ptranspose);
 
   TU_CHRMAT* transpose = NULL;
-  TU_CALL( computeRepresentationMatrix(tu, graph, false, &transpose, NULL, numBasisEdges, basisEdges,
-    numCobasisEdges, cobasisEdges, pisCorrectBasis) );
+  TU_CALL( computeRepresentationMatrix(tu, graph, false, &transpose, NULL, numForestEdges, forestEdges,
+    numCoforestEdges, coforestEdges, pisCorrectBasis) );
 
   if (pmatrix)
     TU_CALL( TUchrmatTranspose(tu, transpose, pmatrix) );
@@ -386,8 +387,8 @@ TU_ERROR TUcomputeGraphBinaryRepresentationMatrix(TU* tu, TU_GRAPH* graph, TU_CH
 }
 
 TU_ERROR TUcomputeGraphTernaryRepresentationMatrix(TU* tu, TU_GRAPH* graph, TU_CHRMAT** pmatrix, TU_CHRMAT** ptranspose,
-  bool* edgesReversed, int numBasisEdges, TU_GRAPH_EDGE* basisEdges, int numCobasisEdges, TU_GRAPH_EDGE* cobasisEdges,
-  bool* pisCorrectBasis)
+  bool* edgesReversed, int numForestEdges, TU_GRAPH_EDGE* forestEdges, int numCoforestEdges,
+  TU_GRAPH_EDGE* coforestEdges, bool* pisCorrectBasis)
 { 
   assert(tu);
   assert(graph);
@@ -396,8 +397,8 @@ TU_ERROR TUcomputeGraphTernaryRepresentationMatrix(TU* tu, TU_GRAPH* graph, TU_C
   assert(!ptranspose || !*ptranspose);
 
   TU_CHRMAT* transpose = NULL;
-  TU_CALL( computeRepresentationMatrix(tu, graph, true, &transpose, edgesReversed, numBasisEdges, basisEdges,
-    numCobasisEdges, cobasisEdges, pisCorrectBasis) );
+  TU_CALL( computeRepresentationMatrix(tu, graph, true, &transpose, edgesReversed, numForestEdges, forestEdges,
+    numCoforestEdges, coforestEdges, pisCorrectBasis) );
 
   if (pmatrix)
     TU_CALL( TUchrmatTranspose(tu, transpose, pmatrix) );
@@ -5532,3 +5533,5 @@ TU_ERROR TUtestTernaryGraphic(TU* tu, TU_CHRMAT* transpose, bool* pisGraphic, TU
 
   return TU_OKAY;
 }
+
+/**@}*/

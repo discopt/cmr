@@ -10,101 +10,149 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+  
+/**
+ * \defgroup Graphic Representation Matrices of Graphs
+ * 
+ * @{
+ */
 
 /**
- * \brief Computes the binary representation matrix M for a given graph.
+ * \brief Computes the binary representation matrix for a given graph.
+ * 
+ * Let \f$ G = (V,E) \f$ be an undirected graph with nodes \f$ V \f$ and edges \f$ E \f$.
+ * Let \f$ T \subseteq E \f$ be a spanning forest of \f$ G \f$.
+ * The **binary representation matrix** \f$ M := M(G,T) \f$ is a matrix \f$ M \in \{0,1\}^{T \times (E \setminus T)} \f$
+ * with \f$ M_{e,f} = 1 \iff e \f$ belongs to the unique cycle in \f$ T \cup \{f\} \f$.
+ *
+ * Computes \f$ M(G,T) \f$ for given \f$ G \f$ and spanning forest \f$ T \f$ given by \p forestEdges.
+ * If \p forestEdges is \c NULL, \f$ T \f$ is some spanning forest \f$ T \f$ of \f$ G \f$ is computed.
+ * The ordering of the columns can be specified via \p coforestEdges.
+ * 
+ * \note The function computes a representation matrix of \f$ G \f$ regardless of whether \p forestEdges is a correct
+ * spanning tree. This is indicated via *\p pisCorrectForest.
  */
 
 TU_EXPORT
 TU_ERROR TUcomputeGraphBinaryRepresentationMatrix(
   TU* tu,                       /**< \ref TU environment. */
-  TU_GRAPH* graph,              /**< Graph. */
-  TU_CHRMAT** pmatrix,          /**< Pointer for storing M (may be be \c NULL). */
-  TU_CHRMAT** ptranspose,       /**< Pointer for storing the transpose of M (may be be \c NULL). */
-  int numBasisEdges,            /**< Length of \p basisEdges (0 if \c basisEdges is NULL). */
-  TU_GRAPH_EDGE* basisEdges,    /**< If not \c NULL, tries to use these edges for the basis. */
-  int numCobasisEdges,          /**< Length of \p cobasisEdges (0 if \c cobasisEdges is NULL). */
-  TU_GRAPH_EDGE* cobasisEdges,  /**< If not \c NULL, tries to order columns as specified. */
-  bool* pisCorrectBasis         /**< If not \c NULL, returns \c true if and only if \c basisEdges formed a basis. */
+  TU_GRAPH* graph,              /**< Graph \f$ G \f$. */
+  TU_CHRMAT** pmatrix,          /**< Pointer for storing \f$ M \f$ (may be \c NULL). */
+  TU_CHRMAT** ptranspose,       /**< Pointer for storing \f$ M^{\mathsf{T}} \f$ (may be \c NULL). */
+  int numForestEdges,           /**< Length of \p forestEdges (0 if \c forestEdges is \c NULL). */
+  TU_GRAPH_EDGE* forestEdges,   /**< If not \c NULL, spanning forest edges as rows in this order. */
+  int numCoforestEdges,         /**< Length of \p coforestEdges (0 if \c coforestEdges is \c NULL). */
+  TU_GRAPH_EDGE* coforestEdges, /**< If not \c NULL, complement of forest edges as columns in this order. */
+  bool* pisCorrectForest        /**< Pointer for storing whether \c forestEdges is a spanning forest of \f$ G \f$ (may be \c NULL). */
 );
 
 /**
- * \brief Computes the ternary representation matrix M for a graph.
+ * \brief Computes the ternary representation matrix for a given graph.
+ * 
+ * Let \f$ G = (V,E) \f$ be a directed graph with nodes \f$ V \f$ and edges \f$ E \f$.
+ * Let \f$ T \subseteq E \f$ be a spanning forest of \f$ G \f$, directed arbitrarily.
+ * The **ternary representation matrix** \f$ M := M(G,T) \f$ is a matrix
+ * \f$ M \in \{-1,0,1\}^{T \times (E \setminus T)} \f$ with \f$ M_{e,\{u,v\}} = +1 \f$ (resp.\ \f$ M_{e,\{u,v\}} \f$ if
+ * \f$ e \f$ is a forward edge (resp.\ backward edge) on the unique \f$ s \f$-\f$ t \f$-path in \f$ T \f$.
+ *
+ * Computes \f$ M(G,T) \f$ for given \f$ G \f$ and spanning forest \f$ T \f$ given by \p forestEdges.
+ * The direction of the edges is specified by \p edgesReversed.
+ * If \p forestEdges is \c NULL, \f$ T \f$ is some spanning forest \f$ T \f$ of \f$ G \f$ is computed.
+ * The ordering of the columns can be specified via \p coforestEdges.
+ * 
+ * \note The function computes a representation matrix of \f$ G \f$ regardless of whether \p forestEdges is a correct
+ * spanning tree. This is indicated via *\p pisCorrectForest.
  */
 
 TU_EXPORT
 TU_ERROR TUcomputeGraphTernaryRepresentationMatrix(
   TU* tu,                       /**< \ref TU environment. */
-  TU_GRAPH* graph,              /**< Graph. */
-  TU_CHRMAT** pmatrix,          /**< Pointer for storing M (may be be \c NULL). */
-  TU_CHRMAT** ptranspose,       /**< Pointer for storing the transpose of M (may be be \c NULL). */
-  bool* edgesReversed,          /**< Indicates, for each edge {u,v}, whether we consider (u,v) (if \c false) */
-                                /**< or (v,u) (if \c true). */
-  int numBasisEdges,            /**< Length of \p basisEdges (0 if \c basisEdges is \c NULL). */
-  TU_GRAPH_EDGE* basisEdges,    /**< If not \c NULL, tries to use these edges for the basis. */
-  int numCobasisEdges,          /**< Length of \p cobasisEdges (0 if \c cobasisEdges is \c NULL). */
-  TU_GRAPH_EDGE* cobasisEdges,  /**< If not \c NULL, tries to order columns as specified. */
-  bool* pisCorrectBasis         /**< If not \c NULL, returns \c true if and only if \c basisEdges formed a basis. */
+  TU_GRAPH* graph,              /**< \ref Graph \f$ G \f$. */
+  TU_CHRMAT** pmatrix,          /**< Pointer for storing \f$ M \f$ (may be \c NULL). */
+  TU_CHRMAT** ptranspose,       /**< Pointer for storing \f$ M^{\mathsf{T}} \f$ (may be \c NULL). */
+  bool* edgesReversed,          /**< Indicates, for each edge \f$ \{u, v\}\f$, whether we consider \f$ (u, v)\f$  (if \c false) */
+                                /**< or \f$ (v,u)\f$  (if \c true). */
+  int numForestEdges,           /**< Length of \p forestEdges (0 if \c forestEdges is \c NULL). */
+  TU_GRAPH_EDGE* forestEdges,   /**< If not \c NULL, spanning forest edges as rows in this order. */
+  int numCoforestEdges,         /**< Length of \p coforestEdges (0 if \c coforestEdges is \c NULL). */
+  TU_GRAPH_EDGE* coforestEdges, /**< If not \c NULL, complement of forest edges as columns in this order. */
+  bool* pisCorrectForest        /**< Pointer for storing whether \c forestEdges is a spanning forest of \f$ G \f$ (may be \c NULL). */
 );
 
 /**
  * \brief Tests a binary matrix for graphicness.
- * 
- * The binary matrix is given by its \p transpose. It determines whether the matrix is the binary representation matrix
- * of some graph and sets \p *pisGraphic accordingly. The algorithm is based on one of Bixby and Wagner.
  *
- * If \p pgraph is not \c NULL and if the matrix is graphic, then *\p pgraph will point to a graph representing it, and
- * it is set to \c NULL otherwise. The caller must release the memory via \ref TUgraphFree.
- * If in addition to \p pgraph also \p pbasis (resp. \p pcobasis) is not \c NULL, then this will be an array of edges
- * forming the basis (resp. cobasis), i.e., indexing the rows (resp. columns) of the matrix.
+ * Let \f$ G = (V,E) \f$ be an undirected graph with nodes \f$ V \f$ and edges \f$ E \f$.
+ * Let \f$ T \subseteq E \f$ be a spanning forest of \f$ G \f$.
+ * The **binary representation matrix** \f$ M := M(G,T) \f$ is a matrix \f$ M \in \{0,1\}^{T \times (E \setminus T)} \f$
+ * with \f$ M_{e,f} = 1 \iff e \f$ belongs to the unique cycle in \f$ T \cup \{f\} \f$.
+ *
+ * Tests if \f$ M = M(G,T) \f$ for some graph \f$ G \f$ and some spanning forest \f$ T \f$ of G and sets *\p pisGraphic
+ * accordingly.
+ * The matrix \f$ M \f$ is given by \f$ M^{\mathsf{T}} := \f$ \p transpose.
+ *
+ * If \f$ M \f$ is such a representation matrix and \p pgraph != \c NULL, then one possible graph \f$ G \f$ is
+ * computed and stored in *\p pgraph.
+ * The caller must release the memory via \ref TUgraphFree.
+ * If in addition to \p pgraph also \p pforestEdges (resp. \p pcoforestEdges) != \c NULL, then a corresponding
+ * spanning forest \f$ T \f$ (resp.\ its complement \f$ E \setminus T \f$ is stored in *\p pforestEdges (resp.\ 
+ * \p pcoforestEdges).
  * The caller must release the memory via \ref TUfreeBlockArray.
  *
- * If \p psubmatrix is not \c NULL and the matrix is not graphic, then a minimal nongraphic submatrix will be searched,
- * which may cause extra computational effort. In this case, *\p submatrix will point to this submatrix. The caller must
- * release the memory via \ref TUsubmatFree. It is set to \c NULL otherwise.
+ * If \f$ M \f$ is not such a representation matrix and \p psubmatrix != \c NULL, then a minimal submatrix of
+ * \f$ M \f$ with the same property is computed and stored in *\p psubmatrix.
+ * The caller must release the memory via \ref TUsubmatFree.
  */
 
 TU_EXPORT
 TU_ERROR TUtestBinaryGraphic(
-  TU* tu,                   /**< \ref TU environment. */
-  TU_CHRMAT* transpose,     /**< Transpose of matrix to be tested. */
-  bool* pisGraphic,         /**< Returns true if and only if the matrix is graphic. */
-  TU_GRAPH** pgraph,        /**< Pointer for storing the graph (if graphic). */
-  TU_GRAPH_EDGE** pbasis,   /**< Pointer for storing the basis (if graphic), i.e., a spanning forest.  */
-  TU_GRAPH_EDGE** pcobasis, /**< Pointer for storing the cobasis (if graphic), i.e., complement of \p basis. */
-  TU_SUBMAT** psubmatrix    /**< Pointer for storing a minimal nongraphic submatrix (if nongraphic). */
+  TU* tu,                         /**< \ref TU environment. */
+  TU_CHRMAT* transpose,           /**< \f$ M^{\mathsf{T}} \f$ */
+  bool* pisGraphic,               /**< Returns true if and only if the matrix is graphic. */
+  TU_GRAPH** pgraph,              /**< Pointer for storing \ref Graph \f$ G \f$ (if graphic). */
+  TU_GRAPH_EDGE** pforestEdges,   /**< Pointer for storing \f$ T \f$ (if graphic).  */
+  TU_GRAPH_EDGE** pcoforestEdges, /**< Pointer for storing \f$ E \setminus T \f$ (if graphic). */
+  TU_SUBMAT** psubmatrix          /**< Pointer for storing a minimal nongraphic submatrix (if nongraphic). */
 );
 
 /**
  * \brief Tests a ternary matrix for graphicness.
  * 
- * The ternary matrix is given by its \p transpose. It determines whether the matrix is the ternary representation
- * matrix of some graph and sets \p *pisGraphic accordingly. The algorithm is based on one of Bixby and Wagner.
+ * Let \f$ G = (V,E) \f$ be a directed graph with nodes \f$ V \f$ and edges \f$ E \f$.
+ * Let \f$ T \subseteq E \f$ be a spanning forest of \f$ G \f$, directed arbitrarily.
+ * The **ternary representation matrix** \f$ M := M(G,T) \f$ is a matrix \f$ M \in \{-1,0,1\}^{T \times (E \setminus T)} \f$
+ * with \f$ M_{e,f} = 1 \iff e \f$ belongs to the unique cycle in \f$ T \cup \{f\} \f$.
  *
- * If \p pgraph is not \c NULL and if the matrix is graphic, then *\p pgraph will point to a graph representing it, and
- * it is set to \c NULL otherwise. The caller must release the memory via \ref TUgraphFree.
- * If in addition to \p pgraph also \p pbasis (resp. \p pcobasis) is not \c NULL, then this will be an array of edges
- * forming the basis (resp. cobasis), i.e., indexing the rows (resp. columns) of the matrix.
- * Similarly, if \p pgraph is not \c NULL and if the matrix is graphic, then \p pedgesReversed will be an array that
- * indicates, for each edge, whether this shall be reversed.
- * The caller must release the memory of \p *pbasis, \p *pcobasis and \p *pedgesReversed via \ref TUfreeBlockArray.
+ * Tests if \f$ M = M(G,T) \f$ for some graph \f$ G \f$ and some spanning forest \f$ T \f$ of G and sets *\p pisGraphic
+ * accordingly.
+ * The matrix \f$ M \f$ is given by \f$ M^{\mathsf{T}} := \f$ \p transpose.
  *
- * If \p psubmatrix is not \c NULL and the matrix is not graphic, then a minimal nongraphic submatrix will be searched,
- * which may cause extra computational effort. In this case, *\p submatrix will point to this submatrix. The caller must
- * release the memory via \ref TUsubmatFree. It is set to \c NULL otherwise.
+ * If \f$ M \f$ is such a representation matrix and \p pgraph != \c NULL, then one possible graph \f$ G \f$ is
+ * computed and stored in *\p pgraph.
+ * The caller must release the memory via \ref TUgraphFree.
+ * If in addition to \p pgraph also \p pforestEdges (resp. \p pcoforestEdges) != \c NULL, then a corresponding
+ * spanning forest \f$ T \f$ (resp.\ its complement \f$ E \setminus T \f$ is stored in *\p pforestEdges (resp.\ 
+ * \p pcoforestEdges).
+ * The caller must release the memory via \ref TUfreeBlockArray.
+ *
+ * If \f$ M \f$ is not such a representation matrix and \p psubmatrix != \c NULL, then a minimal submatrix of
+ * \f$ M \f$ with the same property is computed and stored in *\p psubmatrix.
+ * The caller must release the memory via \ref TUsubmatFree.
  */
 
 TU_EXPORT
 TU_ERROR TUtestTernaryGraphic(
-  TU* tu,                   /**< \ref TU environment. */
-  TU_CHRMAT* transpose,     /**< Transpose of matrix to be tested. */
-  bool* pisGraphic,         /**< Returns true if and only if the matrix is graphic. */
-  TU_GRAPH** pgraph,        /**< Pointer for storing the graph (if graphic). */
-  TU_GRAPH_EDGE** pbasis,   /**< Pointer for storing the basis (if graphic), i.e., a spanning forest.  */
-  TU_GRAPH_EDGE** pcobasis, /**< Pointer for storing the cobasis (if graphic), i.e., complement of \p basis. */
-  bool** pedgesReversed,    /**< Pointer for storing indicators which edges are reversed for the correct sign. */
-  TU_SUBMAT** psubmatrix    /**< Pointer for storing a minimal nongraphic submatrix (if nongraphic). */
+  TU* tu,                         /**< \ref TU environment. */
+  TU_CHRMAT* transpose,           /**< \f$ M^{\mathsf{T}} \f$ */
+  bool* pisGraphic,               /**< Returns true if and only if the matrix is graphic. */
+  TU_GRAPH** pgraph,              /**< Pointer for storing \ref Graph \f$ G \f$ (if graphic). */
+  TU_GRAPH_EDGE** pforestEdges,   /**< Pointer for storing \f$ T \f$ (if graphic).  */
+  TU_GRAPH_EDGE** pcoforestEdges, /**< Pointer for storing \f$ E \setminus T \f$ (if graphic). */
+  bool** pedgesReversed,          /**< Pointer for storing indicators which edges are reversed for the correct sign. */
+  TU_SUBMAT** psubmatrix          /**< Pointer for storing a minimal nongraphic submatrix (if nongraphic). */
 );
+
+/**@}*/
 
 #ifdef __cplusplus
 }
