@@ -31,7 +31,7 @@ TU_ERROR run(const char* instanceFileName)
     printf("Input matrix is graphic.\n");
 
     TU_CHRMAT* checkMatrix = NULL;
-    TU_CALL( TUcomputeGraphBinaryRepresentationMatrix(tu, graph, &checkMatrix, matrix->numRows, basis,
+    TU_CALL( TUcomputeGraphBinaryRepresentationMatrix(tu, graph, &checkMatrix, NULL, matrix->numRows, basis,
       matrix->numColumns, cobasis, NULL) );
 
     if (!TUchrmatCheckEqual(matrix, checkMatrix))

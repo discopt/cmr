@@ -1,4 +1,4 @@
-// #define DEBUG_GRAPH
+//#define TU_DEBUG /* Uncomment to debug graph operations. */
 
 #include <tu/graph.h>
 
@@ -14,10 +14,8 @@ void TUgraphEnsureConsistent(TU* tu, TU_GRAPH* graph)
   assert(tu);
   assert(graph);
 
-#ifdef DEBUG_GRAPH
-  printf("Ensuring consistency of listgraph with %d nodes and %d edges.\n",
-    TUgraphNumNodes(graph), TUgraphNumEdges(graph));
-#endif /* DEBUG_GRAPH */
+  TUdbgMsg(0, "Ensuring consistency of listgraph with %d nodes and %d edges.\n", TUgraphNumNodes(graph),
+    TUgraphNumEdges(graph));
 
   /* Count nodes and check prev/next linked lists. */
 
@@ -25,8 +23,7 @@ void TUgraphEnsureConsistent(TU* tu, TU_GRAPH* graph)
 #if !defined(NDEBUG)
   TU_GRAPH_NODE u = -1;
 #endif /* !NDEBUG */
-  for (TU_GRAPH_NODE v = TUgraphNodesFirst(graph); TUgraphNodesValid(graph, v);
-    v = TUgraphNodesNext(graph, v))
+  for (TU_GRAPH_NODE v = TUgraphNodesFirst(graph); TUgraphNodesValid(graph, v); v = TUgraphNodesNext(graph, v))
   {
     assert(graph->nodes[v].prev == u);
 #if !defined(NDEBUG)
@@ -51,22 +48,15 @@ void TUgraphEnsureConsistent(TU* tu, TU_GRAPH* graph)
 
   int countIncident = 0;
   int countLoops = 0;
-  for (TU_GRAPH_NODE v = TUgraphNodesFirst(graph); TUgraphNodesValid(graph, v);
-    v = TUgraphNodesNext(graph, v))
+  for (TU_GRAPH_NODE v = TUgraphNodesFirst(graph); TUgraphNodesValid(graph, v); v = TUgraphNodesNext(graph, v))
   {
-#ifdef DEBUG_GRAPH
-    printf("First out-arc of node %d is %d\n", v, graph->nodes[v].firstOut);
-#endif /* DEBUG_GRAPH */
+    TUdbgMsg(0, "First out-arc of node %d is %d\n", v, graph->nodes[v].firstOut);
 
     /* Check lists for outgoing arcs. */
-    for (TU_GRAPH_ITER i = TUgraphIncFirst(graph, v);
-      TUgraphIncValid(graph, i); i = TUgraphIncNext(graph, i))
+    for (TU_GRAPH_ITER i = TUgraphIncFirst(graph, v); TUgraphIncValid(graph, i); i = TUgraphIncNext(graph, i))
     {
-#ifdef DEBUG_GRAPH
-      printf("Current arc is %d = (%d,%d), opposite arc is %d, prev is %d, next is %d.\n", i,
-        graph->arcs[i ^ 1].target, graph->arcs[i].target, i^1, graph->arcs[i].prev,
-        graph->arcs[i].next);
-#endif /* DEBUG_GRAPH */
+      TUdbgMsg(0, "Current arc is %d = (%d,%d), opposite arc is %d, prev is %d, next is %d.\n", i,
+        graph->arcs[i ^ 1].target, graph->arcs[i].target, i^1, graph->arcs[i].prev, graph->arcs[i].next);
 
       if (TUgraphIncSource(graph, i) == TUgraphIncTarget(graph, i))
         ++countLoops;
@@ -79,9 +69,7 @@ void TUgraphEnsureConsistent(TU* tu, TU_GRAPH* graph)
   countFree = 0;
   int e = graph->freeEdge;
 
-#ifdef DEBUG_GRAPH
-  printf("freeEdge = %d\n", e);
-#endif /* DEBUG_GRAPH */
+  TUdbgMsg(0, "freeEdge = %d\n", e);
 
   while (isValid(e))
   {
@@ -91,9 +79,7 @@ void TUgraphEnsureConsistent(TU* tu, TU_GRAPH* graph)
 
   assert(countIncident + countLoops + 2 * countFree == 2 * graph->memEdges);
 
-#ifdef DEBUG_GRAPH
-  printf("Consistency checked.\n");
-#endif /* DEBUG_GRAPH */
+  TUdbgMsg(0, "Consistency checked.\n");
 }
 
 TU_ERROR TUgraphCreateEmpty(TU* tu, TU_GRAPH** pgraph, int memNodes, int memEdges)
@@ -135,10 +121,7 @@ TU_ERROR TUgraphFree(TU* tu, TU_GRAPH** pgraph)
 {
   assert(pgraph);
 
-#ifdef DEBUG_GRAPH
-  printf("TUgraphFree(|V|=%d, |E|=%d)\n", TUgraphNumNodes(*pgraph),
-    TUgraphNumEdges(*pgraph));
-#endif /* DEBUG_GRAPH */
+  TUdbgMsg(0, "TUgraphFree(|V|=%d, |E|=%d)\n", TUgraphNumNodes(*pgraph), TUgraphNumEdges(*pgraph));
 
   TUgraphEnsureConsistent(tu, *pgraph);
 
@@ -180,9 +163,7 @@ TU_ERROR TUgraphAddNode(TU* tu, TU_GRAPH *graph, TU_GRAPH_NODE* pnode)
   assert(tu);
   assert(graph);
 
-#ifdef DEBUG_GRAPH
-  printf("TUgraphAddNode().\n");
-#endif /* DEBUG_GRAPH */
+  TUdbgMsg(0, "TUgraphAddNode().\n");
 
   TUgraphEnsureConsistent(tu, graph);
 
@@ -222,9 +203,7 @@ TU_ERROR TUgraphAddNode(TU* tu, TU_GRAPH *graph, TU_GRAPH_NODE* pnode)
 TU_ERROR TUgraphAddEdge(TU* tu, TU_GRAPH* graph, TU_GRAPH_NODE u, TU_GRAPH_NODE v,
   TU_GRAPH_EDGE* pedge)
 {
-#ifdef DEBUG_GRAPH
-  printf("TUgraphAddEdge(%d,%d).\n", u, v);
-#endif /* DEBUG_GRAPH */
+  TUdbgMsg(0, "TUgraphAddEdge(%d,%d).\n", u, v);
 
   TUgraphEnsureConsistent(tu, graph);
   assert(u >= 0);
@@ -284,10 +263,7 @@ TU_ERROR TUgraphAddEdge(TU* tu, TU_GRAPH* graph, TU_GRAPH_NODE u, TU_GRAPH_NODE 
 
 TU_ERROR TUgraphDeleteNode(TU* tu, TU_GRAPH* graph, TU_GRAPH_NODE v)
 {
-#ifdef DEBUG_GRAPH
-  printf("TUgraphDeleteNode(|V|=%d, |E|=%d, v=%d)\n", TUgraphNumNodes(graph),
-    TUgraphNumEdges(graph), v);
-#endif /* DEBUG_GRAPH */
+  TUdbgMsg(0, "TUgraphDeleteNode(|V|=%d, |E|=%d, v=%d)\n", TUgraphNumNodes(graph), TUgraphNumEdges(graph), v);
 
   TUgraphEnsureConsistent(tu, graph);
 
@@ -318,11 +294,7 @@ TU_ERROR TUgraphDeleteNode(TU* tu, TU_GRAPH* graph, TU_GRAPH_NODE v)
 
 TU_ERROR TUgraphDeleteEdge(TU* tu, TU_GRAPH* graph, TU_GRAPH_EDGE e)
 {
-#ifdef DEBUG_GRAPH
-  printf("TUgraphDeleteEdge(|V|=%d, |E|=%d, %d", TUgraphNumNodes(graph),
-    TUgraphNumEdges(graph), e);
-  fflush(stdout);
-#endif /* DEBUG_GRAPH */
+  TUdbgMsg(0, "TUgraphDeleteEdge(|V|=%d, |E|=%d, %d", TUgraphNumNodes(graph), TUgraphNumEdges(graph), e);
 
   assert(isValid(e));
 
@@ -330,9 +302,7 @@ TU_ERROR TUgraphDeleteEdge(TU* tu, TU_GRAPH* graph, TU_GRAPH_EDGE e)
   TU_GRAPH_NODE u = graph->arcs[arc+1].target;
   TU_GRAPH_NODE v = graph->arcs[arc].target;
 
-#ifdef DEBUG_GRAPH
-  printf(" = {%d,%d})\n", u, v);
-#endif /* DEBUG_GRAPH */
+  TUdbgMsg(0, " = {%d,%d})\n", u, v);
 
   TUgraphEnsureConsistent(tu, graph);
 
@@ -370,17 +340,14 @@ TU_ERROR TUgraphDeleteEdge(TU* tu, TU_GRAPH* graph, TU_GRAPH_EDGE e)
 
 TU_ERROR TUgraphPrint(FILE* stream, TU_GRAPH* graph)
 {
-  printf("Graph with %d nodes and %d edges.\n", TUgraphNumNodes(graph),
-    TUgraphNumEdges(graph));
-  for (TU_GRAPH_NODE v = TUgraphNodesFirst(graph); TUgraphNodesValid(graph, v);
-    v = TUgraphNodesNext(graph, v))
+  printf("Graph with %d nodes and %d edges.\n", TUgraphNumNodes(graph), TUgraphNumEdges(graph));
+  for (TU_GRAPH_NODE v = TUgraphNodesFirst(graph); TUgraphNodesValid(graph, v); v = TUgraphNodesNext(graph, v))
   {
     fprintf(stream, "Node %d:\n", v);
-    for (TU_GRAPH_ITER i = TUgraphIncFirst(graph, v);
-      TUgraphIncValid(graph, i); i = TUgraphIncNext(graph, i))
+    for (TU_GRAPH_ITER i = TUgraphIncFirst(graph, v); TUgraphIncValid(graph, i); i = TUgraphIncNext(graph, i))
     {
-      fprintf(stream, "  Edge %d: {%d,%d} {arc = %d}\n", TUgraphIncEdge(graph, i),
-        TUgraphIncSource(graph, i), TUgraphIncTarget(graph, i), i);
+      fprintf(stream, "  Edge %d: {%d,%d} {arc = %d}\n", TUgraphIncEdge(graph, i), TUgraphIncSource(graph, i),
+        TUgraphIncTarget(graph, i), i);
     }
   }
 

@@ -329,7 +329,7 @@ TU_GRAPH_NODE TUgraphIncTarget(
  * \brief Returns iterator of next edge in list of all edges.
  */
 
-static //inline
+static inline
 TU_GRAPH_ITER TUgraphEdgesNext(
   TU_GRAPH* graph,  /**< Graph. */
   TU_GRAPH_ITER i   /**< Current edge iterator. */
@@ -351,9 +351,6 @@ TU_GRAPH_ITER TUgraphEdgesNext(
 
     j = graph->nodes[source].firstOut;
   }
-  while (source >= 0);
-
-  return -1;
 }
 
 /**

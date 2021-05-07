@@ -19,7 +19,7 @@ struct GraphNode
 typedef struct GraphNode GRAPH_NODE;
 
 TU_ERROR decomposeOneSum(TU* tu, TU_MATRIX* matrix, size_t matrixType, size_t targetType,
-  int* numComponents, TU_ONESUM_COMPONENT** pcomponents, int* rowsToComponents,
+  int* pnumComponents, TU_ONESUM_COMPONENT** pcomponents, int* rowsToComponents,
   int* columnsToComponents, int* rowsToComponentRows, int* columnsToComponentColumns)
 {
   GRAPH_NODE* graphNodes = NULL;
@@ -31,11 +31,10 @@ TU_ERROR decomposeOneSum(TU* tu, TU_MATRIX* matrix, size_t matrixType, size_t ta
   const int firstColumnNode = matrix->numRows;
   int i;
 
-  assert(tu != NULL);
-  assert(matrix != NULL);
-  assert(numComponents != NULL);
-  assert(pcomponents != NULL);
-  assert(*pcomponents == NULL);
+  assert(tu);
+  assert(matrix);
+  assert(pnumComponents);
+  assert(pcomponents);
 
 #if defined(TU_DEBUG)
   TUdbgMsg(0, "decomposeOneSum:\n");
@@ -176,7 +175,7 @@ TU_ERROR decomposeOneSum(TU* tu, TU_MATRIX* matrix, size_t matrixType, size_t ta
     }
   }
 
-  *numComponents = countComponents;
+  *pnumComponents = countComponents;
 
 #if defined(TU_DEBUG)
   printf("DFS found %d components.\n", countComponents);
@@ -467,22 +466,22 @@ TU_ERROR decomposeOneSum(TU* tu, TU_MATRIX* matrix, size_t matrixType, size_t ta
   }
 
   /* Fill arrays for original matrix viewpoint. */
-  if (rowsToComponents != NULL)
+  if (rowsToComponents)
   {
     for (int row = 0; row < matrix->numRows; ++row)
       rowsToComponents[row] = graphNodes[row].component;
   }
-  if (columnsToComponents != NULL)
+  if (columnsToComponents)
   {
     for (int column = 0; column < matrix->numColumns; ++column)
       columnsToComponents[column] = graphNodes[firstColumnNode + column].component;
   }
-  if (rowsToComponentRows != NULL)
+  if (rowsToComponentRows)
   {
     for (int row = 0; row < matrix->numRows; ++row)
       rowsToComponentRows[row] = graphNodes[row].order;
   }
-  if (columnsToComponentColumns != NULL)
+  if (columnsToComponentColumns)
   {
     for (int column = 0; column < matrix->numColumns; ++column)
       columnsToComponentColumns[column] = graphNodes[firstColumnNode + column].order;

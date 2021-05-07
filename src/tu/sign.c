@@ -282,8 +282,8 @@ TU_ERROR signDbl(
 
   /* Decompose into 1-connected components. */
 
-  TU_CALL( decomposeOneSum(tu, (TU_MATRIX*) matrix, sizeof(double), sizeof(double), &numComponents, &components, NULL, NULL,
-    NULL, NULL) );
+  TU_CALL( decomposeOneSum(tu, (TU_MATRIX*) matrix, sizeof(double), sizeof(double), &numComponents, &components, NULL,
+    NULL, NULL, NULL) );
 
   *palreadySigned = true;
   for (int comp = 0; comp < numComponents; ++comp)
@@ -565,7 +565,7 @@ TU_ERROR signChr(
 {
   assert(tu);
   assert(matrix);
-  assert(palreadySigned);
+  assert(!psubmatrix || !*psubmatrix);
 
   int numComponents;
   TU_ONESUM_COMPONENT* components = NULL;
@@ -582,7 +582,8 @@ TU_ERROR signChr(
   TU_CALL( decomposeOneSum(tu, (TU_MATRIX*) matrix, sizeof(char), sizeof(char), &numComponents, &components, NULL, NULL,
     NULL, NULL) );
 
-  *palreadySigned = true;
+  if (palreadySigned)
+    *palreadySigned = true;
   for (int comp = 0; comp < numComponents; ++comp)
   {
     TU_SUBMAT* compSubmatrix = NULL;
@@ -603,7 +604,8 @@ TU_ERROR signChr(
       continue;
     }
 
-    *palreadySigned = false;
+    if (palreadySigned)
+      *palreadySigned = false;
 
     /* If we found a submatrix for the first time: */
     if (compSubmatrix)
@@ -667,7 +669,7 @@ TU_ERROR signChr(
   }
 
 #if defined(TU_DEBUG)
-  if (!*palreadySigned && change)
+  if (palreadySigned && !*palreadySigned && change)
   {
     TUdbgMsg(0, "Modified original matrix:\n");
     TUchrmatPrintDense(stdout, matrix, ' ', true);

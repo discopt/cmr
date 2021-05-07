@@ -29,7 +29,7 @@ TU_ERROR decomposeOneSum(
   TU_MATRIX* matrix,                /**< Matrix */
   size_t matrixType,                /**< Size of base type of matrix. */
   size_t targetType,                /**< Size of base type of component matrices. */
-  int* numComponents,               /**< Number of components */
+  int* pnumComponents,               /**< Number of components */
   TU_ONESUM_COMPONENT** components, /**< Component information */
   int* rowsToComponents,            /**< Mapping of rows of \p matrix to components. Can be \c NULL. */
   int* columnsToComponents,         /**< Mapping of columns of \p matrix to components. Can be \c NULL. */

@@ -54,6 +54,7 @@ add_library(tu
   src/tu/regular_onesum.c
   src/tu/regular_simplesums.c
   src/tu/separation.cpp
+  src/tu/sort.c
   src/tu/total_unimodularity.cpp
   src/tu/unimodularity.cpp
   src/tu/zero_plus_minus_one.cpp

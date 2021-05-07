@@ -12,7 +12,6 @@
 
 namespace tu
 {
-
   /// Forward declaration
 
   template <typename MatroidType, typename MatrixType>

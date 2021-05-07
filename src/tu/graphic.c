@@ -2,11 +2,13 @@
 // #define TU_DEBUG_DOT /* Uncomment to write dot files of t-decompositions. */
 
 #include <tu/graphic.h>
+#include <tu/sign.h>
 
 #include "env_internal.h"
 #include "matrix_internal.h"
 #include "one_sum.h"
 #include "heap.h"
+#include "sort.h"
 
 #include <assert.h>
 #include <limits.h>
@@ -20,6 +22,394 @@
     b = tmp; \
   } \
   while (false)
+
+
+typedef enum
+{
+  UNKNOWN = 0,    /**< \brief The node was not considered by the shortest-path, yet. */
+  SEEN = 1,       /**< \brief Some path to the node is known. */
+  COMPLETED = 2,  /**< \brief The shortest path to the node is known. */
+  BASIC = 3,      /**< \brief The rootEdge of that node belongs to the spanning forest. */
+} DIJKSTRA_STAGE;
+
+/**
+ * \brief Node information for shortest-path computation in \ref TUconvertGraphToBinaryMatrix.
+ */
+
+typedef struct
+{
+  DIJKSTRA_STAGE stage;   /**< \brief At which stage of the algorithm is this node? */
+  int predecessor;        /**< \brief Predecessor node in shortest-path branching, or -1 for a root. */
+  TU_GRAPH_EDGE rootEdge; /**< \brief The actual edge towards the predecessor, or -1 for a root./ */
+  bool reversed;          /**< \brief Whether the edge towards the predecessor is reversed. */
+} DijkstraNodeData;
+
+/**
+ * \brief Comparator for sorting ints using \ref TUsort2 in ascending way.
+ */
+
+int compareInt2(const void** A, const void** B)
+{
+  int** a = (int**) A;
+  int** b = (int**) B;
+  return **a - **b;
+}
+
+/**
+ * \brief Computes the transpose of the binary or ternary representation matrix of a graph.
+ */
+
+static
+TU_ERROR computeRepresentationMatrix(
+  TU* tu,                       /**< \ref TU environment. */
+  TU_GRAPH* graph,              /**< Graph. */
+  bool ternary,                 /**< Whether we need to compute correct signs. */
+  TU_CHRMAT** ptranspose,       /**< Pointer for storing the transpose of the matrix. */
+  bool* edgesReversed,          /**< Indicates, for each edge {u,v}, whether we consider (u,v) (if \c false) */
+                                /**< or (v,u) (if \c true). */
+  int numBasisEdges,            /**< Length of \p basisEdges (0 if \c basisEdges is NULL). */
+  TU_GRAPH_EDGE* basisEdges,    /**< If not \c NULL, tries to use these edges for the basis. */
+  int numCobasisEdges,          /**< Length of \p cobasisEdges (0 if \c cobasisEdges is NULL). */
+  TU_GRAPH_EDGE* cobasisEdges,  /**< If not \c NULL, tries to order columns as specified. */
+  bool* pisCorrectBasis         /**< If not \c NULL, returns \c true if and only if \c basisEdges formed a basis. */
+)
+{
+  assert(tu);
+  assert(graph);
+  assert(ptranspose && !*ptranspose);
+  assert(numBasisEdges == 0 || basisEdges);
+  assert(numCobasisEdges == 0 || cobasisEdges);
+  TUassertStackConsistency(tu);
+
+  TUdbgMsg(0, "Computing %s representation matrix.\n", ternary ? "ternary" : "binary");
+  
+  DijkstraNodeData* nodeData = NULL;
+  TU_CALL( TUallocStackArray(tu, &nodeData, TUgraphMemNodes(graph)) );
+  TU_INTHEAP heap;
+  TU_CALL( TUintheapInitStack(tu, &heap, TUgraphMemNodes(graph)) );
+  int* lengths = NULL;
+  TU_CALL( TUallocStackArray(tu, &lengths, TUgraphMemEdges(graph)) );
+  for (TU_GRAPH_NODE v = TUgraphNodesFirst(graph); TUgraphNodesValid(graph, v);
+    v = TUgraphNodesNext(graph, v))
+  {
+    nodeData[v].stage = UNKNOWN;
+  }
+  for (TU_GRAPH_ITER i = TUgraphEdgesFirst(graph); TUgraphEdgesValid(graph, i);
+    i = TUgraphEdgesNext(graph, i))
+  {
+    TU_GRAPH_EDGE e = TUgraphEdgesEdge(graph, i);
+    lengths[e] = 1;
+  }
+  for (int b = 0; b < numBasisEdges; ++b)
+  {
+    TUdbgMsg(0, "basis element %d is edge %d = {%d,%d}\n", b, basisEdges[b], TUgraphEdgeU(graph, basisEdges[b]),
+      TUgraphEdgeV(graph, basisEdges[b]));
+    lengths[basisEdges[b]] = 0;
+  }
+
+  TUassertStackConsistency(tu);
+
+  /* Start Dijkstra's algorithm at each node. */
+  int countComponents = 0;
+  for (TU_GRAPH_NODE s = TUgraphNodesFirst(graph); TUgraphNodesValid(graph, s);
+    s = TUgraphNodesNext(graph, s))
+  {
+    if (nodeData[s].stage != UNKNOWN)
+      continue;
+
+    TUdbgMsg(2, "Executing Dijkstra at starting node %d.\n", s);
+    nodeData[s].predecessor = -1;
+    nodeData[s].rootEdge = -1;
+    ++countComponents;
+    TUintheapInsert(&heap, s, 0);
+    while (!TUintheapEmpty(&heap))
+    {
+      int distance = TUintheapMinimumValue(&heap);
+      TU_GRAPH_NODE v = TUintheapExtractMinimum(&heap);
+      TUdbgMsg(4, "Processing node %d at distance %d.\n", v, distance);
+      nodeData[v].stage = COMPLETED;
+      for (TU_GRAPH_ITER i = TUgraphIncFirst(graph, v); TUgraphIncValid(graph, i);
+        i = TUgraphIncNext(graph, i))
+      {
+        assert(TUgraphIncSource(graph, i) == v);
+        TU_GRAPH_NODE w = TUgraphIncTarget(graph, i);
+
+        /* Skip if already completed. */
+        if (nodeData[w].stage == COMPLETED)
+          continue;
+
+        TU_GRAPH_EDGE e = TUgraphIncEdge(graph, i);
+        int newDistance = distance + lengths[e];
+        if (newDistance < TUintheapGetValueInfinity(&heap, w))
+        {
+          TUdbgMsg(6, "Updating distance of (%d,%d) from %d to %d.\n", v, w, TUintheapGetValueInfinity(&heap, w),
+            newDistance);
+          nodeData[w].stage = SEEN;
+          nodeData[w].predecessor = v;
+          nodeData[w].rootEdge = e;
+          nodeData[w].reversed = edgesReversed ? edgesReversed[e] : false;
+          if (w == TUgraphEdgeU(graph, e))
+            nodeData[w].reversed = !nodeData[w].reversed;
+          TUintheapDecreaseInsert(&heap, w, newDistance);
+        }
+      }
+    }
+  }
+
+  TUassertStackConsistency(tu);
+  TU_CALL( TUfreeStackArray(tu, &lengths) );
+  TU_CALL( TUintheapClearStack(tu, &heap) );
+
+  /* Now nodeData[.].predecessor is an arborescence for each connected component. */
+
+  TU_GRAPH_NODE* nodesRows = NULL; /* Non-root node v is mapped to row of edge {v,predecessor(v)}. */
+  TU_CALL( TUallocStackArray(tu, &nodesRows, TUgraphMemNodes(graph)) );
+  char* nodesReversed = NULL; /* Non-root node v is mapped to +1 or -1 depending on the direction of {v,predecessor(v)}. */
+  TU_CALL( TUallocStackArray(tu, &nodesReversed, TUgraphMemNodes(graph)) );
+  for (TU_GRAPH_NODE v = TUgraphNodesFirst(graph); TUgraphNodesValid(graph, v); v = TUgraphNodesNext(graph, v))
+  {
+    nodesRows[v] = -1;
+    nodesReversed[v] = 1;
+  }
+
+  int numRows = 0;
+  if (pisCorrectBasis)
+    *pisCorrectBasis = true;
+  for (int i = 0; i < numBasisEdges; ++i)
+  {
+    TU_GRAPH_NODE u = TUgraphEdgeU(graph, basisEdges[i]);
+    TU_GRAPH_NODE v = TUgraphEdgeV(graph, basisEdges[i]);
+    TUdbgMsg(2, "Basic edge %d = {%d,%d}.\n", basisEdges[i], u, v);
+    if (nodeData[u].predecessor == v)
+    {
+      nodesRows[u] = numRows;
+      nodesReversed[u] = nodeData[u].reversed ? -1 : 1;
+      ++numRows;
+      nodeData[u].stage = BASIC;
+      TUdbgMsg(2, "Basic edge (%d,%d): %d is predecessor of %d; node %d is row %d; reversed = %s.\n", v, u, v, u, u,
+        nodesRows[u], nodeData[u].reversed ? "true" : "false");
+    }
+    else if (nodeData[v].predecessor == u)
+    {
+      nodesRows[v] = numRows;
+      nodesReversed[v] = nodeData[v].reversed ? -1 : 1;
+      ++numRows;
+      nodeData[v].stage = BASIC;
+      TUdbgMsg(2, "Basic edge (%d,%d): %d is predecessor of %d; node %d is row %d; reversed = %s\n", u, v, u, v, v,
+        nodesRows[v], nodeData[v].reversed ? "true" : "false");
+    }
+    else
+    {
+      /* A provided basic edge is not part of the spanning forest. */
+      if (pisCorrectBasis)
+        *pisCorrectBasis = false;
+    }
+  }
+  if (numRows < TUgraphNumNodes(graph) - countComponents)
+  {
+    /* An edge from the spanning forest is not part of the basis. */
+    if (pisCorrectBasis)
+      *pisCorrectBasis = false;
+
+    for (TU_GRAPH_NODE v = TUgraphNodesFirst(graph); TUgraphNodesValid(graph, v); v = TUgraphNodesNext(graph, v))
+    {
+      if (nodeData[v].predecessor >= 0 && nodeData[v].stage != BASIC)
+      {
+        nodesRows[v] = numRows;
+        nodesReversed[v] = nodeData[v].reversed ? -1 : 1;
+        ++numRows;
+        nodeData[v].stage = BASIC;
+        TUdbgMsg(2, "Predecessor edge {%d,%d} not basic; node %d is row %d.\n", nodeData[v].predecessor, v, v,
+          nodesRows[v]);
+      }
+    }
+  }
+
+  TUassertStackConsistency(tu);
+
+  TU_CALL( TUchrmatCreate(tu, ptranspose, TUgraphNumEdges(graph) - numRows, numRows,
+    16 * numRows) );
+  TU_CHRMAT* transpose = *ptranspose;
+  int numNonzeros = 0; /* Current number of nonzeros. transpose->numNonzeros is the memory. */
+  int numColumns = 0;
+  TU_GRAPH_EDGE* edgeColumns = NULL;
+  TU_CALL( TUallocStackArray(tu, &edgeColumns, TUgraphMemEdges(graph)) );
+  for (TU_GRAPH_ITER i = TUgraphEdgesFirst(graph); TUgraphEdgesValid(graph, i);
+    i = TUgraphEdgesNext(graph, i))
+  {
+    TU_GRAPH_EDGE e = TUgraphEdgesEdge(graph, i);
+    TU_GRAPH_NODE u = TUgraphEdgeU(graph, e);
+    TU_GRAPH_NODE v = TUgraphEdgeV(graph, e);
+    edgeColumns[TUgraphEdgesEdge(graph, i)] =
+      (nodeData[u].rootEdge == e || nodeData[v].rootEdge == e) ? -1 : -2;
+  }
+  TU_GRAPH_NODE* uPath = NULL;
+  TU_CALL( TUallocStackArray(tu, &uPath, numRows) );
+  TU_GRAPH_NODE* vPath = NULL;
+  TU_CALL( TUallocStackArray(tu, &vPath, numRows) );
+  TU_GRAPH_ITER iter = TUgraphEdgesFirst(graph);
+  int cobasicIndex = 0;
+  while (TUgraphEdgesValid(graph, iter))
+  {
+    TU_GRAPH_EDGE e;
+    if (cobasicIndex < numCobasisEdges)
+    {
+      e = cobasisEdges[cobasicIndex];
+      ++cobasicIndex;
+    }
+    else
+    {
+      e = TUgraphEdgesEdge(graph, iter);
+      iter = TUgraphEdgesNext(graph, iter);
+    }
+
+    if (edgeColumns[e] >= -1)
+      continue;
+
+    TU_GRAPH_NODE u = TUgraphEdgeU(graph, e);
+    TU_GRAPH_NODE v = TUgraphEdgeV(graph, e);
+    if (edgesReversed && edgesReversed[e])
+      SWAP_INTS(u, v);
+    TUdbgMsg(4, "Edge %d = (%d,%d) (including reverse)\n", e, u, v);
+
+    transpose->rowStarts[numColumns] = numNonzeros;
+    edgeColumns[e] = numColumns;
+
+    /* Enlarge space for nonzeros if necessary. */
+    if (numNonzeros + numRows > transpose->numNonzeros)
+      TU_CALL( TUchrmatChangeNumNonzeros(tu, transpose, 2 * transpose->numNonzeros) );
+
+    /* Compute u-root path. */
+    int uPathLength = 0;
+    TU_GRAPH_NODE w = u;
+    while (nodeData[w].predecessor != -1)
+    {
+      uPath[uPathLength] = w;
+      ++uPathLength;
+      w = nodeData[w].predecessor;
+    }
+
+    /* Compute v-root path. */
+    int vPathLength = 0;
+    w = v;
+    while (nodeData[w].predecessor != -1)
+    {
+      vPath[vPathLength] = w;
+      ++vPathLength;
+      w = nodeData[w].predecessor;
+    }
+
+    /* Remove common part of u-root path and v-root path. */
+    while (uPathLength > 0 && vPathLength > 0 && uPath[uPathLength-1] == vPath[vPathLength-1])
+    {
+      --uPathLength;
+      --vPathLength;
+    }
+
+    /* Create nonzeros. */
+    for (int j = 0; j < uPathLength; ++j)
+    {
+      assert(nodesRows[uPath[j]] >= 0);
+      transpose->entryColumns[numNonzeros] = nodesRows[uPath[j]];
+      transpose->entryValues[numNonzeros] = ternary ? -nodesReversed[uPath[j]] : 1;
+      TUdbgMsg(4, "u: row %d. nodesReversed = %d, result = %d\n", nodesRows[uPath[j]],
+        nodesReversed[uPath[j]], transpose->entryValues[numNonzeros]);
+      ++numNonzeros;
+    }
+    for (int j = 0; j < vPathLength; ++j)
+    {
+      assert(nodesRows[vPath[j]] >= 0);
+      transpose->entryColumns[numNonzeros] = nodesRows[vPath[j]];
+      transpose->entryValues[numNonzeros] = ternary ? nodesReversed[vPath[j]] : 1;
+      TUdbgMsg(4, "v: row %d. nodesReversed = %d, result = %d\n", nodesRows[vPath[j]],
+        nodesReversed[vPath[j]], transpose->entryValues[numNonzeros]);
+      ++numNonzeros;
+    }
+
+    TU_CALL( TUsort2(tu, uPathLength + vPathLength, &transpose->entryColumns[transpose->rowStarts[numColumns]],
+      sizeof(int), &transpose->entryValues[transpose->rowStarts[numColumns]], sizeof(char), compareInt2) );
+
+    ++numColumns;
+  }
+
+  TUassertStackConsistency(tu);
+
+  TU_CALL( TUfreeStackArray(tu, &vPath) );
+  TU_CALL( TUfreeStackArray(tu, &uPath) );
+  TU_CALL( TUfreeStackArray(tu, &edgeColumns) );
+
+  transpose->rowStarts[numColumns] = numNonzeros;
+  if (numNonzeros == 0 && transpose->numNonzeros > 0)
+  {
+    TU_CALL( TUfreeBlockArray(tu, &transpose->entryColumns) );
+    TU_CALL( TUfreeBlockArray(tu, &transpose->entryValues) );
+  }
+  transpose->numNonzeros = numNonzeros;
+
+  /* We now process the nonbasic edges. */
+
+  TUassertStackConsistency(tu);
+  TU_CALL( TUfreeStackArray(tu, &nodesReversed) );
+  TUassertStackConsistency(tu);
+  TU_CALL( TUfreeStackArray(tu, &nodesRows) );
+  TUassertStackConsistency(tu);
+  TU_CALL( TUfreeStackArray(tu, &nodeData) );
+
+  TUassertStackConsistency(tu);
+
+  return TU_OKAY;
+}
+
+TU_ERROR TUcomputeGraphBinaryRepresentationMatrix(TU* tu, TU_GRAPH* graph, TU_CHRMAT** pmatrix, TU_CHRMAT** ptranspose,
+  int numBasisEdges, TU_GRAPH_EDGE* basisEdges, int numCobasisEdges, TU_GRAPH_EDGE* cobasisEdges, bool* pisCorrectBasis)
+{
+  assert(tu);
+  assert(graph);
+  assert(pmatrix || ptranspose);
+  assert(!pmatrix || !*pmatrix);
+  assert(!ptranspose || !*ptranspose);
+
+  TU_CHRMAT* transpose = NULL;
+  TU_CALL( computeRepresentationMatrix(tu, graph, false, &transpose, NULL, numBasisEdges, basisEdges,
+    numCobasisEdges, cobasisEdges, pisCorrectBasis) );
+
+  if (pmatrix)
+    TU_CALL( TUchrmatTranspose(tu, transpose, pmatrix) );
+
+  /* Return or free the transpose matrix. */
+  if (ptranspose)
+    *ptranspose = transpose;
+  else
+    TU_CALL( TUchrmatFree(tu, &transpose) );
+
+  return TU_OKAY;
+}
+
+TU_ERROR TUcomputeGraphTernaryRepresentationMatrix(TU* tu, TU_GRAPH* graph, TU_CHRMAT** pmatrix, TU_CHRMAT** ptranspose,
+  bool* edgesReversed, int numBasisEdges, TU_GRAPH_EDGE* basisEdges, int numCobasisEdges, TU_GRAPH_EDGE* cobasisEdges,
+  bool* pisCorrectBasis)
+{ 
+  assert(tu);
+  assert(graph);
+  assert(pmatrix || ptranspose);
+  assert(!pmatrix || !*pmatrix);
+  assert(!ptranspose || !*ptranspose);
+
+  TU_CHRMAT* transpose = NULL;
+  TU_CALL( computeRepresentationMatrix(tu, graph, true, &transpose, edgesReversed, numBasisEdges, basisEdges,
+    numCobasisEdges, cobasisEdges, pisCorrectBasis) );
+
+  if (pmatrix)
+    TU_CALL( TUchrmatTranspose(tu, transpose, pmatrix) );
+
+  /* Return or free the transpose matrix. */
+  if (ptranspose)
+    *ptranspose = transpose;
+  else
+    TU_CALL( TUchrmatFree(tu, &transpose) );
+
+  return TU_OKAY;
+}
 
 
 typedef enum
@@ -1150,6 +1540,27 @@ TU_ERROR decToGraph(
   }
 
   // TODO: Remove nodes with degree 0 or 1?!
+  bool* nodesUsed = NULL;
+  TU_CALL( TUallocStackArray(dec->tu, &nodesUsed, TUgraphMemNodes(graph)) );
+  for (TU_GRAPH_NODE v = TUgraphNodesFirst(graph); TUgraphNodesValid(graph, v); v = TUgraphNodesNext(graph, v))
+    nodesUsed[v] = false;
+  for (TU_GRAPH_ITER i = TUgraphEdgesFirst(graph); TUgraphEdgesValid(graph, i); i = TUgraphEdgesNext(graph, i))
+  {
+    TU_GRAPH_EDGE e = TUgraphEdgesEdge(graph, i);
+    nodesUsed[TUgraphEdgeU(graph, e)] = true;
+    nodesUsed[TUgraphEdgeV(graph, e)] = true;
+  }
+  for (TU_GRAPH_NODE v = TUgraphNodesFirst(graph); TUgraphNodesValid(graph, v); )
+  {
+    TU_GRAPH_NODE next = TUgraphNodesNext(graph, v);
+    if (!nodesUsed[v])
+    {
+      TUdbgMsg(2, "Removing degree-0 node %d.\n", v);
+      TUgraphDeleteNode(dec->tu, graph, v);
+    }
+    v = next;
+  }
+  TU_CALL( TUfreeStackArray(dec->tu, &nodesUsed) );
 
   /* Construct (co)basis. */
 
@@ -4652,12 +5063,13 @@ TU_ERROR TUtestBinaryGraphic(TU* tu, TU_CHRMAT* transpose, bool* pisGraphic, TU_
   assert(!psubmatrix || !*psubmatrix);
   assert(!pbasis || pgraph);
   assert(!pcobasis || pgraph);
+  assert(pisGraphic);
 
 #if defined(TU_DEBUG)
-  TUdbgMsg(0, "TUtestGraphicness called a %dx%d matrix whose transpose is \n", transpose->numColumns, transpose->numRows);
+  TUdbgMsg(0, "TUtestBinaryGraphic called for a %dx%d matrix whose transpose is \n", transpose->numColumns, transpose->numRows);
   TUchrmatPrintDense(stdout, (TU_CHRMAT*) transpose, '0', true);
 #endif /* TU_DEBUG */
-  
+
   *pisGraphic = true;
 
   Dec* dec = NULL;
@@ -4791,107 +5203,155 @@ TU_ERROR TUtestBinaryGraphic(TU* tu, TU_CHRMAT* transpose, bool* pisGraphic, TU_
   return TU_OKAY;
 }
 
-typedef enum
+typedef struct
 {
-  UNKNOWN = 0,    /**< \brief The node was not considered by the shortest-path, yet. */
-  SEEN = 1,       /**< \brief Some path to the node is known. */
-  COMPLETED = 2,  /**< \brief The shortest path to the node is known. */
-  BASIC = 3,      /**< \brief The rootEdge of that node belongs to the spanning forest. */
-} DIJKSTRA_STAGE;
-
-/**
- * \brief Node information for shortest-path computation in \ref TUconvertGraphToBinaryMatrix.
- */
+  int basisIndex;
+} TernaryGraphicEdgeData;
 
 typedef struct
 {
-  DIJKSTRA_STAGE stage;   /**< \brief At which stage of the algorithm is this node? */
-  int predecessor;        /**< \brief Predecessor node in shortest-path branching, or -1 for a root. */
-  TU_GRAPH_EDGE rootEdge; /**< \brief The actual edge towards the predecessor, or -1 for a root./ */
-  bool reversed;          /**< \brief Whether the edge towards the predecessor is reversed. */
-} DijkstraNodeData;
+  DIJKSTRA_STAGE stage; /* Stage in BFS. */
+  int predecessor;      /* Predecessor node. */
+  TU_GRAPH_EDGE edge;   /* Edge connecting to predecessor node. */
+  int distance;         /* Combinatorial distance to the BFS root. */
+  char sign;            /* Sign of this tree edge with respect to current column. */
+  bool fixed;           /* Whether the orientation of this edge is already fixed. */
+} TernaryGraphicNodeData;
 
-/**
- * \brief Comparator for sorting ints increasingly.
- */
-
-int compareInt(const void* A, const void* B)
-{
-  int* a = (int*) A;
-  int* b = (int*) B;
-  return *a - *b;
-}
-
-static
-TU_ERROR computeRepresentationMatrix(
-  TU* tu,                       /**< \ref TU environment. */
-  TU_GRAPH* graph,              /**< Graph. */
-  bool ternary,                 /**< Whether we need to compute correct signs. */
-  TU_CHRMAT** pmatrix,          /**< Pointer for storing the binary representation matrix. */
-  bool* edgesReversed,          /**< Indicates, for each edge {u,v}, whether we consider (u,v) (if \c false) */
-                                /**< or (v,u) (if \c true). */
-  int numBasisEdges,            /**< Length of \p basisEdges (0 if \c basisEdges is NULL). */
-  TU_GRAPH_EDGE* basisEdges,    /**< If not \c NULL, tries to use these edges for the basis. */
-  int numCobasisEdges,          /**< Length of \p cobasisEdges (0 if \c cobasisEdges is NULL). */
-  TU_GRAPH_EDGE* cobasisEdges,  /**< If not \c NULL, tries to order columns as specified. */
-  bool* pisCorrectBasis         /**< If not \c NULL, returns \c true if and only if \c basisEdges formed a basis. */
-)
+TU_ERROR TUtestTernaryGraphic(TU* tu, TU_CHRMAT* transpose, bool* pisGraphic, TU_GRAPH** pgraph, TU_GRAPH_EDGE** pbasis,
+  TU_GRAPH_EDGE** pcobasis, bool** pedgesReversed, TU_SUBMAT** psubmatrix)
 {
   assert(tu);
-  assert(graph);
-  assert(pmatrix);
-  assert(!*pmatrix);
-  assert(numBasisEdges == 0 || basisEdges);
-  assert(numCobasisEdges == 0 || cobasisEdges);
-  TUassertStackConsistency(tu);
+  assert(transpose);
+  assert(!psubmatrix || !*psubmatrix);
+  assert(!pbasis || pgraph);
+  assert(!pcobasis || pgraph);
+  assert(!pedgesReversed || pgraph);
+  assert(pisGraphic);
 
-  DijkstraNodeData* nodeData = NULL;
+#if defined(TU_DEBUG)
+  TUdbgMsg(0, "TUtestTernaryGraphic called for a %dx%d matrix whose transpose is \n", transpose->numColumns,
+    transpose->numRows);
+  TUchrmatPrintDense(stdout, (TU_CHRMAT*) transpose, '0', true);
+#endif /* TU_DEBUG */
+
+  bool alreadySigned;
+  TU_CALL( TUtestSignChr(tu, transpose, &alreadySigned, psubmatrix) );
+  if (!alreadySigned)
+  {
+    *pisGraphic = false;
+    return TU_OKAY;
+  }
+
+  TU_GRAPH_EDGE* basis = NULL;
+  TU_GRAPH_EDGE* cobasis = NULL;
+  TU_CALL( TUtestBinaryGraphic(tu, transpose, pisGraphic, pgraph, &basis, &cobasis, psubmatrix) );
+  if (pbasis)
+    *pbasis = basis;
+  if (pcobasis)
+    *pcobasis = cobasis;
+  if (!*pisGraphic || !pgraph || !pedgesReversed)
+  {
+    /* We have to free (co)basis information if the caller didn't ask for it. */
+    if (!pbasis)
+      TU_CALL( TUfreeBlockArray(tu, &basis) );
+    if (!pcobasis)
+      TU_CALL( TUfreeBlockArray(tu, &cobasis) );
+    return TU_OKAY;
+  }
+
+  /* We have to find out which edges are reversed. */
+  TU_GRAPH* graph = *pgraph;
+  TUdbgMsg(0, "Matrix is graphic. Computing reversed edges.");
+  TU_CALL( TUallocBlockArray(tu, pedgesReversed, TUgraphMemEdges(graph)) );
+
+#if defined(TU_DEBUG)
+  TUgraphPrint(stdout, *pgraph);
+  for (int b = 0; b < transpose->numColumns; ++b)
+    TUdbgMsg(2, "Basis #%d is %d.\n", b, (*pbasis)[b]);
+  for (int b = 0; b < transpose->numRows; ++b)
+    TUdbgMsg(2, "Cobasis #%d is %d.\n", b, (*pcobasis)[b]);
+#endif /* TU_DEBUG */
+
+  /* Decompose into 1-connected components. */
+  int numComponents;
+  TU_ONESUM_COMPONENT* components = NULL;
+  TU_CALL( decomposeOneSum(tu, (TU_MATRIX*) transpose, sizeof(char), sizeof(char), &numComponents, &components, NULL,
+    NULL, NULL, NULL) );
+
+  /* Allocate and initialize auxiliary data for nodes. */
+  TernaryGraphicNodeData* nodeData = NULL;
   TU_CALL( TUallocStackArray(tu, &nodeData, TUgraphMemNodes(graph)) );
-  TU_INTHEAP heap;
-  TU_CALL( TUintheapInitStack(tu, &heap, TUgraphMemNodes(graph)) );
-  int* lengths = NULL;
-  TU_CALL( TUallocStackArray(tu, &lengths, TUgraphMemEdges(graph)) );
-  for (TU_GRAPH_NODE v = TUgraphNodesFirst(graph); TUgraphNodesValid(graph, v);
-    v = TUgraphNodesNext(graph, v))
+  for (TU_GRAPH_NODE v = TUgraphNodesFirst(graph); TUgraphNodesValid(graph, v); v = TUgraphNodesNext(graph, v))
   {
     nodeData[v].stage = UNKNOWN;
+    nodeData[v].fixed = false;
+    nodeData[v].predecessor = -1;
+    nodeData[v].distance = 0;
+    nodeData[v].sign = 0;
+    nodeData[v].edge = -1;
   }
-  for (TU_GRAPH_ITER i = TUgraphEdgesFirst(graph); TUgraphEdgesValid(graph, i);
-    i = TUgraphEdgesNext(graph, i))
+
+  /* Allocate and initialize auxiliary data for edges. */
+  TernaryGraphicEdgeData* edgeData = NULL;
+  TU_CALL( TUallocStackArray(tu, &edgeData, TUgraphMemEdges(graph)) );
+  TUassertStackConsistency(tu);
+  for (TU_GRAPH_ITER i = TUgraphEdgesFirst(graph); TUgraphEdgesValid(graph, i); i = TUgraphEdgesNext(graph, i))
   {
     TU_GRAPH_EDGE e = TUgraphEdgesEdge(graph, i);
-    lengths[e] = 1;
+    edgeData[e].basisIndex = -1;
+    (*pedgesReversed)[e] = false;
   }
-  for (int b = 0; b < numBasisEdges; ++b)
-  {
-    TUdbgMsg(0, "basis element %d is edge %d = {%d,%d}\n", b, basisEdges[b], TUgraphEdgeU(graph, basisEdges[b]),
-      TUgraphEdgeV(graph, basisEdges[b]));
-    lengths[basisEdges[b]] = 0;
-  }
+  for (int b = 0; b < transpose->numColumns; ++b)
+    edgeData[basis[b]].basisIndex = b;
 
+  /* Allocate and initialize a queue for BFS. */
+  int* queue = NULL;
+  int queueFirst;
+  int queueBeyond;
+  TUallocStackArray(tu, &queue, transpose->numColumns + transpose->numRows);
   TUassertStackConsistency(tu);
 
-  /* Start Dijkstra's algorithm at each node. */
-  int countComponents = 0;
-  for (TU_GRAPH_NODE s = TUgraphNodesFirst(graph); TUgraphNodesValid(graph, s);
-    s = TUgraphNodesNext(graph, s))
+  /* Process 1-connected components of the (transposed) matrix. */
+  for (int comp = 0; comp < numComponents; ++comp)
   {
-    if (nodeData[s].stage != UNKNOWN)
+    TU_CHRMAT* componentMatrix = (TU_CHRMAT*) components[comp].transpose;
+
+#if defined(TU_DEBUG)
+    TUdbgMsg(2, "Processing component #%d of %d.\n", comp, numComponents);
+    for (int row = 0; row < componentMatrix->numRows; ++row)
+      TUdbgMsg(4, "Component row %d corresponds to original row %d.\n", row, components[comp].columnsToOriginal[row]);
+    for (int column = 0; column < componentMatrix->numColumns; ++column)
+      TUdbgMsg(4, "Component column %d corresponds to original column %d.\n", column,
+        components[comp].rowsToOriginal[column]);
+    TU_CALL( TUchrmatPrintDense(stdout, componentMatrix, '0', true) );
+#endif /* TU_DEBUG */
+
+    /* If there are no nonzeros then also no signs can be wrong. */
+    if (componentMatrix->numNonzeros == 0)
       continue;
 
-    TUdbgMsg(2, "Executing Dijkstra at starting node %d.\n", s);
-    nodeData[s].predecessor = -1;
-    nodeData[s].rootEdge = -1;
-    ++countComponents;
-    TUintheapInsert(&heap, s, 0);
-    while (!TUintheapEmpty(&heap))
+    assert(componentMatrix->numRows > 0);
+    assert(componentMatrix->numColumns > 0);
+
+    /* Run BFS on the component of the graph induced by this 1-connected matrix component.
+     * We use some node from one of the rows as a starting node. */
+    int componentRow = components[comp].columnsToOriginal[0];
+    TU_GRAPH_EDGE e = basis[componentRow];
+    TU_GRAPH_NODE start = TUgraphEdgeU(graph, e);
+    TUdbgMsg(4, "Starting BFS at node %d.\n", start);
+    queue[0] = start;
+    queueFirst = 0;
+    queueBeyond = 1;
+    assert(nodeData[start].stage == UNKNOWN);
+    nodeData[start].stage = SEEN;
+    while (queueFirst < queueBeyond)
     {
-      int distance = TUintheapMinimumValue(&heap);
-      TU_GRAPH_NODE v = TUintheapExtractMinimum(&heap);
-      TUdbgMsg(4, "Processing node %d at distance %d.\n", v, distance);
+      TU_GRAPH_NODE v = queue[queueFirst];
+      ++queueFirst;
+      TUdbgMsg(6, "Processing node %d.\n", v);
       nodeData[v].stage = COMPLETED;
-      for (TU_GRAPH_ITER i = TUgraphIncFirst(graph, v); TUgraphIncValid(graph, i);
-        i = TUgraphIncNext(graph, i))
+      for (TU_GRAPH_ITER i = TUgraphIncFirst(graph, v); TUgraphIncValid(graph, i); i = TUgraphIncNext(graph, i))
       {
         assert(TUgraphIncSource(graph, i) == v);
         TU_GRAPH_NODE w = TUgraphIncTarget(graph, i);
@@ -4901,252 +5361,174 @@ TU_ERROR computeRepresentationMatrix(
           continue;
 
         TU_GRAPH_EDGE e = TUgraphIncEdge(graph, i);
-        int newDistance = distance + lengths[e];
-        if (newDistance < TUintheapGetValueInfinity(&heap, w))
+        if (edgeData[e].basisIndex < 0)
+          continue;
+
+        if (nodeData[w].stage == UNKNOWN)
         {
-          TUdbgMsg(6, "Updating distance of %d via predecessor %d from %d to %d.\n", w, v,
-            TUintheapGetValueInfinity(&heap, w), newDistance);
+          TUdbgMsg(6, "Found new node via arc (%d,%d).\n", v, w);
           nodeData[w].stage = SEEN;
           nodeData[w].predecessor = v;
-          nodeData[w].rootEdge = e;
-          nodeData[w].reversed = edgesReversed ? edgesReversed[e] : false;
-          if (w == TUgraphEdgeU(graph, e))
-            nodeData[w].reversed = !nodeData[w].reversed;
-          TUintheapDecreaseInsert(&heap, w, newDistance);
+          nodeData[w].distance = nodeData[v].distance + 1;
+          nodeData[w].edge = e;
+          queue[queueBeyond] = w;
+          ++queueBeyond;
         }
       }
     }
-  }
 
-  TUassertStackConsistency(tu);
-  TU_CALL( TUfreeStackArray(tu, &lengths) );
-  TU_CALL( TUintheapClearStack(tu, &heap) );
-
-  /* Now nodeData[.].predecessor is an arborescence for each connected component. */
-
-  TU_GRAPH_NODE* nodesRows = NULL; /* Non-root node v is mapped to row of edge {v,predecessor(v)}. */
-  TU_CALL( TUallocStackArray(tu, &nodesRows, TUgraphMemNodes(graph)) );
-  char* nodesReversed = NULL; /* Non-root node v is mapped to +1 or -1 depending on the direction of {v,predecessor(v)}. */
-  TU_CALL( TUallocStackArray(tu, &nodesReversed, TUgraphMemNodes(graph)) );
-  for (TU_GRAPH_NODE v = TUgraphNodesFirst(graph); TUgraphNodesValid(graph, v); v = TUgraphNodesNext(graph, v))
-  {
-    nodesRows[v] = -1;
-    nodesReversed[v] = 1;
-  }
-
-  int numRows = 0;
-  if (pisCorrectBasis)
-    *pisCorrectBasis = true;
-  for (int i = 0; i < numBasisEdges; ++i)
-  {
-    TU_GRAPH_NODE u = TUgraphEdgeU(graph, basisEdges[i]);
-    TU_GRAPH_NODE v = TUgraphEdgeV(graph, basisEdges[i]);
-    TUdbgMsg(2, "Basic edge %d = {%d,%d}.\n", basisEdges[i], u, v);
-    if (nodeData[u].predecessor == v)
+    /* We now go through the columns of the matrix and inspect the signs. */
+    for (int componentColumn = 0; componentColumn < componentMatrix->numColumns; ++componentColumn)
     {
-      nodesRows[u] = numRows;
-      nodesReversed[u] = nodeData[u].reversed ? -1 : 1;
-      ++numRows;
-      nodeData[u].stage = BASIC;
-      TUdbgMsg(2, "Basic edge {%d,%d}: %d is predecessor of %d; node %d is row %d; reversed = %s.\n", u, v, v, u, u,
-        nodesRows[u], nodeData[u].reversed ? "true" : "false");
-    }
-    else if (nodeData[v].predecessor == u)
-    {
-      nodesRows[v] = numRows;
-      nodesReversed[v] = nodeData[v].reversed ? -1 : 1;
-      ++numRows;
-      nodeData[v].stage = BASIC;
-      TUdbgMsg(2, "Basic edge {%d,%d}: %d is predecessor of %d; node %d is row %d; reversed = %s\n", u, v, u, v, v,
-        nodesRows[v], nodeData[v].reversed ? "true" : "false");
-    }
-    else
-    {
-      /* A provided basic edge is not part of the spanning forest. */
-      if (pisCorrectBasis)
-        *pisCorrectBasis = false;
-    }
-  }
-  if (numRows < TUgraphNumNodes(graph) - countComponents)
-  {
-    /* An edge from the spanning forest is not part of the basis. */
-    if (pisCorrectBasis)
-      *pisCorrectBasis = false;
+      int column = components[comp].rowsToOriginal[componentColumn];
+      
+      TU_GRAPH_EDGE columnEdge = cobasis[column];
+      TU_GRAPH_NODE s = TUgraphEdgeU(graph, columnEdge);
+      TU_GRAPH_NODE t = TUgraphEdgeV(graph, columnEdge);
 
-    for (TU_GRAPH_NODE v = TUgraphNodesFirst(graph); TUgraphNodesValid(graph, v);
-      v = TUgraphNodesNext(graph, v))
-    {
-      if (nodeData[v].predecessor >= 0 && nodeData[v].stage != BASIC)
+      TUdbgMsg(4, "Inspecting signs of column %d corresponding to %d={%d,%d}.\n", column, columnEdge, s, t);
+
+      int first = transpose->rowStarts[column];
+      int beyond = column == transpose->numRows ? transpose->numNonzeros : transpose->rowStarts[column+1];
+      int minDistance = INT_MAX; /* The depth in the BFS tree that the s-r and t-r paths have in common. */
+      for (int entry = first; entry < beyond; ++entry)
       {
-        nodesRows[v] = numRows;
-        nodesReversed[v] = nodeData[v].reversed ? -1 : 1;
-        ++numRows;
-        nodeData[v].stage = BASIC;
-        TUdbgMsg(2, "Predecessor edge {%d,%d} not basic; node %d is row %d.\n", nodeData[v].predecessor, v, v,
-          nodesRows[v]);
+        TUdbgMsg(6, "Entry %d is in row %d with value %d.\n", entry, transpose->entryColumns[entry],
+          transpose->entryValues[entry]);
+        
+        TU_GRAPH_EDGE rowEdge = basis[transpose->entryColumns[entry]];
+        TU_GRAPH_NODE u = TUgraphEdgeU(graph, rowEdge);
+        TU_GRAPH_NODE v = TUgraphEdgeV(graph, rowEdge);
+        if (nodeData[v].predecessor == u)
+        {
+          /* (u,v) */
+          if (nodeData[u].distance < minDistance)
+            minDistance = nodeData[u].distance;
+          nodeData[v].sign = transpose->entryValues[entry];
+        }
+        else
+        {
+          /* (v,u) */
+          assert(nodeData[u].predecessor == v);
+          if (nodeData[v].distance < minDistance)
+            minDistance = nodeData[v].distance;
+          nodeData[u].sign = transpose->entryValues[entry];
+        }
+      }
+
+      TUdbgMsg(6, "Minimum distance is %d.\n", minDistance);
+
+      /* Follow s-r path up to minDistance. If we encounter a fixed edge, then we decide whether we have to revert the
+       * column edge. */
+      TU_GRAPH_NODE v = s;
+      bool foundFixed = false;
+      bool reversedColumnEdge = false;
+      while (nodeData[v].distance > minDistance)
+      {
+        if (nodeData[v].fixed)
+        {
+          char currentSign = TUgraphEdgeU(graph, nodeData[v].edge) == v ? 1 : -1;
+          if ((*pedgesReversed)[nodeData[v].edge])
+            currentSign *= -1;
+          foundFixed = true;
+          reversedColumnEdge = currentSign != nodeData[v].sign;
+          break;
+        }
+        v = nodeData[v].predecessor;
+      }
+      if (!foundFixed)
+      {
+        /* Since we were not successful with the s-r path, we now follow the t-r path up to minDistance. Again, if we
+         * encounter a fixed edge, then we decide whether we have to revert the column edge. */
+        v = t;
+        while (nodeData[v].distance > minDistance)
+        {
+          if (nodeData[v].fixed)
+          {
+            char currentSign = TUgraphEdgeU(graph, nodeData[v].edge) == v ? -1 : 1;
+            if ((*pedgesReversed)[nodeData[v].edge])
+              currentSign *= -1;
+            foundFixed = true;
+            reversedColumnEdge = currentSign != nodeData[v].sign;
+            break;
+          }
+          v = nodeData[v].predecessor;
+        }
+      }
+      (*pedgesReversed)[columnEdge] = reversedColumnEdge;
+      TUdbgMsg(6, "Found a fixed tree edge: %s. Column edge reversed = %s\n", foundFixed ? "yes" : "no",
+        reversedColumnEdge ? "yes" : "no");
+
+      /* Again we follow the s-r path up to minDistance to reorder the tree edges. */
+      v = s;
+      while (nodeData[v].distance > minDistance)
+      {
+        char currentSign = TUgraphEdgeU(graph, nodeData[v].edge) == v ? 1 : -1;
+        
+        if (reversedColumnEdge)
+          currentSign *= -1;
+        assert(!nodeData[v].fixed || (*pedgesReversed)[nodeData[v].edge] == (currentSign != nodeData[v].sign));
+        (*pedgesReversed)[nodeData[v].edge] = currentSign != nodeData[v].sign;
+        TUdbgMsg(6, "Path from %d towards root: tree edge (%d,%d) is edge {%d,%d}; graph imposed sign (with column edge reverting) is %d; matrix sign is %d; reversed = %s\n",
+          s, nodeData[v].predecessor, v, TUgraphEdgeU(graph, nodeData[v].edge), TUgraphEdgeV(graph, nodeData[v].edge),
+          currentSign, nodeData[v].sign, (*pedgesReversed)[nodeData[v].edge] ? "yes" : "no");
+        nodeData[v].fixed = true;
+#if !defined(NDEBUG)
+        nodeData[v].sign = 0; /* For debugging we make all signs 0 again. */
+#endif /* !NDEBUG */
+        v = nodeData[v].predecessor;
+      }
+      /* Finally, we follow the t-r path up to minDistance to reorder the tree edges. */
+      v = t;
+      while (nodeData[v].distance > minDistance)
+      {
+        char currentSign = TUgraphEdgeU(graph, nodeData[v].edge) == v ? -1 : 1;
+        if (reversedColumnEdge)
+          currentSign *= -1;
+        assert(!nodeData[v].fixed || (*pedgesReversed)[nodeData[v].edge] == (currentSign != nodeData[v].sign));
+        (*pedgesReversed)[nodeData[v].edge] = currentSign != nodeData[v].sign;
+        TUdbgMsg(6, "Path from %d towards root: tree edge (%d,%d) is edge {%d,%d}; graph imposed sign (with column edge reverting) is %d; matrix sign is %d; reversed = %s\n",
+          t, nodeData[v].predecessor, v, TUgraphEdgeU(graph, nodeData[v].edge), TUgraphEdgeV(graph, nodeData[v].edge),
+          currentSign, nodeData[v].sign, (*pedgesReversed)[nodeData[v].edge] ? "yes" : "no");
+        nodeData[v].fixed = true;
+#if !defined(NDEBUG)
+        nodeData[v].sign = 0; /* For debugging we make all signs 0 again. */
+#endif /* !NDEBUG */
+        v = nodeData[v].predecessor;
       }
     }
   }
 
-  TUassertStackConsistency(tu);
-
-  TU_CHRMAT* transposed = NULL;
-  TU_CALL( TUchrmatCreate(tu, &transposed, TUgraphNumEdges(graph) - numRows, numRows,
-    16 * numRows) );
-  int numNonzeros = 0; /* Current number of nonzeros. transpose->numNonzeros is the memory. */
-  int numColumns = 0;
-  TU_GRAPH_EDGE* edgeColumns = NULL;
-  TU_CALL( TUallocStackArray(tu, &edgeColumns, TUgraphMemEdges(graph)) );
-  for (TU_GRAPH_ITER i = TUgraphEdgesFirst(graph); TUgraphEdgesValid(graph, i);
-    i = TUgraphEdgesNext(graph, i))
+#if defined(TU_DEBUG)
+  for (TU_GRAPH_ITER i = TUgraphEdgesFirst(graph); TUgraphEdgesValid(graph, i); i = TUgraphEdgesNext(graph, i))
   {
     TU_GRAPH_EDGE e = TUgraphEdgesEdge(graph, i);
-    TU_GRAPH_NODE u = TUgraphEdgeU(graph, e);
-    TU_GRAPH_NODE v = TUgraphEdgeV(graph, e);
-    edgeColumns[TUgraphEdgesEdge(graph, i)] =
-      (nodeData[u].rootEdge == e || nodeData[v].rootEdge == e) ? -1 : -2;
+    TUdbgMsg(2, "Edge %d={%d,%d} reversed = %s\n", e, TUgraphEdgeU(graph, e), TUgraphEdgeV(graph, e),
+      (*pedgesReversed)[e] ? "yes" : "no");
   }
-  TU_GRAPH_NODE* uPath = NULL;
-  TU_CALL( TUallocStackArray(tu, &uPath, numRows) );
-  TU_GRAPH_NODE* vPath = NULL;
-  TU_CALL( TUallocStackArray(tu, &vPath, numRows) );
-  TU_GRAPH_ITER iter = TUgraphEdgesFirst(graph);
-  int cobasicIndex = 0;
-  while (TUgraphEdgesValid(graph, iter))
-  {
-    TU_GRAPH_EDGE e;
-    if (cobasicIndex < numCobasisEdges)
-    {
-      e = cobasisEdges[cobasicIndex];
-      ++cobasicIndex;
-    }
-    else
-    {
-      e = TUgraphEdgesEdge(graph, iter);
-      iter = TUgraphEdgesNext(graph, iter);
-    }
-
-    if (edgeColumns[e] >= -1)
-      continue;
-
-    TU_GRAPH_NODE u = TUgraphEdgeU(graph, e);
-    TU_GRAPH_NODE v = TUgraphEdgeV(graph, e);
-    bool uvSign = 1;
-    if (edgesReversed && edgesReversed[e])
-      uvSign = -1;
-
-    transposed->rowStarts[numColumns] = numNonzeros;
-    edgeColumns[e] = numColumns;
-
-    /* Enlarge space for nonzeros if necessary. */
-    if (numNonzeros + numRows > transposed->numNonzeros)
-      TU_CALL( TUchrmatChangeNumNonzeros(tu, transposed, 2 * transposed->numNonzeros) );
-
-    /* Compute u-root path. */
-    int uPathLength = 0;
-    TU_GRAPH_NODE w = u;
-    while (nodeData[w].predecessor != -1)
-    {
-      uPath[uPathLength] = w;
-      ++uPathLength;
-      w = nodeData[w].predecessor;
-    }
-
-    /* Compute v-root path. */
-    int vPathLength = 0;
-    w = v;
-    while (nodeData[w].predecessor != -1)
-    {
-      vPath[vPathLength] = w;
-      ++vPathLength;
-      w = nodeData[w].predecessor;
-    }
-
-    /* Remove common part of u-root path and v-root path. */
-    while (uPathLength > 0 && vPathLength > 0 && uPath[uPathLength-1] == vPath[vPathLength-1])
-    {
-      --uPathLength;
-      --vPathLength;
-    }
-
-    /* Create nonzeros. */
-    for (int j = 0; j < uPathLength; ++j)
-    {
-      assert(nodesRows[uPath[j]] >= 0);
-      transposed->entryColumns[numNonzeros] = nodesRows[uPath[j]];
-      transposed->entryValues[numNonzeros] = ternary ? -nodesReversed[uPath[j]] * uvSign : 1;
-      TUdbgMsg(4, "u: row %d. uvSign = %d, nodesReversed = %d, result = %d\n", nodesRows[uPath[j]], uvSign,
-        nodesReversed[uPath[j]], transposed->entryValues[numNonzeros]);
-      ++numNonzeros;
-    }
-    for (int j = 0; j < vPathLength; ++j)
-    {
-      assert(nodesRows[vPath[j]] >= 0);
-      transposed->entryColumns[numNonzeros] = nodesRows[vPath[j]];
-      transposed->entryValues[numNonzeros] = ternary ? nodesReversed[vPath[j]] * uvSign : 1;
-      TUdbgMsg(4, "v: row %d. uvSign = %d, nodesReversed = %d, result = %d\n", nodesRows[vPath[j]], uvSign,
-        nodesReversed[vPath[j]], transposed->entryValues[numNonzeros]);
-      ++numNonzeros;
-    }
-    qsort(&transposed->entryColumns[transposed->rowStarts[numColumns]], uPathLength + vPathLength,
-      sizeof(int), compareInt);
-
-    ++numColumns;
-  }
+#endif /* TU_DEBUG */
 
   TUassertStackConsistency(tu);
-
-  TU_CALL( TUfreeStackArray(tu, &vPath) );
-  TU_CALL( TUfreeStackArray(tu, &uPath) );
-  TU_CALL( TUfreeStackArray(tu, &edgeColumns) );
-
-  transposed->rowStarts[numColumns] = numNonzeros;
-  if (numNonzeros == 0 && transposed->numNonzeros > 0)
-  {
-    TU_CALL( TUfreeBlockArray(tu, &transposed->entryColumns) );
-    TU_CALL( TUfreeBlockArray(tu, &transposed->entryValues) );
-  }
-  transposed->numNonzeros = numNonzeros;
-
-  TU_CALL( TUchrmatTranspose(tu, transposed, pmatrix) );
-  TU_CALL( TUchrmatFree(tu, &transposed) );
-
-  /* We now process the nonbasic edges. */
-
-  TUassertStackConsistency(tu);
-  TU_CALL( TUfreeStackArray(tu, &nodesReversed) );
-  TUassertStackConsistency(tu);
-  TU_CALL( TUfreeStackArray(tu, &nodesRows) );
-  TUassertStackConsistency(tu);
+  TU_CALL( TUfreeStackArray(tu, &queue) );
+  TU_CALL( TUfreeStackArray(tu, &edgeData) );
   TU_CALL( TUfreeStackArray(tu, &nodeData) );
-
   TUassertStackConsistency(tu);
 
-  return TU_OKAY;
-}
+  /* Free memory of 1-sum decomposition. */
+  for (int c = 0; c < numComponents; ++c)
+  {
+    TUchrmatFree(tu, (TU_CHRMAT**) &components[c].matrix);
+    TUchrmatFree(tu, (TU_CHRMAT**) &components[c].transpose);
+    TUfreeBlockArray(tu, &components[c].rowsToOriginal);
+    TUfreeBlockArray(tu, &components[c].columnsToOriginal);
+  }
+  TUfreeBlockArray(tu, &components);
 
-TU_ERROR TUcomputeGraphBinaryRepresentationMatrix(TU* tu, TU_GRAPH* graph, TU_CHRMAT** pmatrix, int numBasisEdges,
-  TU_GRAPH_EDGE* basisEdges, int numCobasisEdges, TU_GRAPH_EDGE* cobasisEdges, bool* pisCorrectBasis)
-{
-  assert(tu);
-  assert(graph);
-  assert(pmatrix && !*pmatrix);
-
-  TU_CALL( computeRepresentationMatrix(tu, graph, false, pmatrix, NULL, numBasisEdges, basisEdges, numCobasisEdges,
-    cobasisEdges, pisCorrectBasis) );
-
-  return TU_OKAY;
-}
-
-TU_ERROR TUcomputeGraphTernaryRepresentationMatrix(TU* tu, TU_GRAPH* graph, TU_CHRMAT** pmatrix, bool* edgesReversed,
-  int numBasisEdges, TU_GRAPH_EDGE* basisEdges, int numCobasisEdges, TU_GRAPH_EDGE* cobasisEdges, bool* pisCorrectBasis)
-{ 
-  assert(tu);
-  assert(graph);
-  assert(pmatrix && !*pmatrix);
-
-  TU_CALL( computeRepresentationMatrix(tu, graph, true, pmatrix, edgesReversed, numBasisEdges, basisEdges,
-    numCobasisEdges, cobasisEdges, pisCorrectBasis) );
+  /* We have to free (co)basis information if the caller didn't ask for it. */
+  if (!pbasis)
+    TU_CALL( TUfreeBlockArray(tu, &basis) );
+  if (!pcobasis)
+    TU_CALL( TUfreeBlockArray(tu, &cobasis) );
 
   return TU_OKAY;
 }
