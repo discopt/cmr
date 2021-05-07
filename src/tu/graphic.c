@@ -33,7 +33,7 @@ typedef enum
 } DIJKSTRA_STAGE;
 
 /**
- * \brief Node information for shortest-path computation in \ref TUconvertGraphToBinaryMatrix.
+ * \brief Node information for shortest-path computation in \ref TUcomputeGraphBinaryRepresentationMatrix.
  */
 
 typedef struct
@@ -882,7 +882,7 @@ typedef struct _PathEdge
 /**
  * \brief Additional member information specfic to a given path.
  *
- * @TODO: Maybe add parent reduced member as well, so we don't have to go via the membersToReducedMembers array.
+ * TODO: Maybe add parent reduced member as well, so we don't have to go via the membersToReducedMembers array.
  */
 
 typedef struct _ReducedMember

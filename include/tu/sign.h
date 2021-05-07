@@ -17,8 +17,8 @@ TU_EXPORT
 TU_ERROR TUtestSignDbl(
   TU* tu,                 /**< \ref TU environment. */
   TU_DBLMAT* matrix,      /**< Sparse double matrix. */
-  bool* pisSignable,      /**< Pointer for storing whether \p matrix can be signed. */
-  TU_SUBMAT** psubmatrix  /**< If not \c NULL, a submatrix with bad determinant is stored. */
+  bool* pcorrectSign,     /**< Pointer for storing whether \p matrix can be signed. */
+  TU_SUBMAT** psubmatrix  /**< Pointer for storing a submatrix with bad determinant (may be \c NULL). */
 );
 
 /**
@@ -29,10 +29,10 @@ TU_ERROR TUtestSignDbl(
 
 TU_EXPORT
 TU_ERROR TUcorrectSignDbl(
-  TU* tu,               /**< \ref TU environment */
-  TU_DBLMAT* matrix,    /**< Sparse double matrix */
-  bool* pisSignable,    /**< Pointer for storing whether \p matrix was modified. */
-  TU_SUBMAT** submatrix /**< If not \c NULL, a submatrix with bad determinant is stored. */
+  TU* tu,                 /**< \ref TU environment */
+  TU_DBLMAT* matrix,      /**< Sparse double matrix */
+  bool* palreadySigned,   /**< Pointer for storing whether \p matrix was modified. */
+  TU_SUBMAT** psubmatrix  /**< Pointer for storing a submatrix with bad determinant (may be \c NULL). */
 );
 
 /**
@@ -45,8 +45,8 @@ TU_EXPORT
 TU_ERROR TUtestSignInt(
   TU* tu,                 /**< \ref TU environment */
   TU_INTMAT* matrix,      /**< Sparse int matrix */
-  bool* pisSignable,      /**< Pointer for storing whether \p matrix can be signed. */
-  TU_SUBMAT** psubmatrix  /**< If not \c NULL, a submatrix with bad determinant is stored. */
+  bool* pcorrectSign,     /**< Pointer for storing whether \p matrix was modified. */
+  TU_SUBMAT** psubmatrix  /**< Pointer for storing a submatrix with bad determinant (may be \c NULL). */
 );
 
 /**
@@ -59,8 +59,8 @@ TU_EXPORT
 TU_ERROR TUcorrectSignInt(
   TU* tu,                 /**< \ref TU environment */
   TU_INTMAT* matrix,      /**< Sparse int matrix */
-  bool* pisSignable,      /**< Pointer for storing whether \p matrix can be signed. */
-  TU_SUBMAT** psubmatrix  /**< If not \c NULL, a submatrix with bad determinant is stored. */
+  bool* palreadySigned,   /**< Pointer for storing whether \p matrix was modified. */
+  TU_SUBMAT** psubmatrix  /**< Pointer for storing a submatrix with bad determinant (may be \c NULL). */
 );
 
 
@@ -74,8 +74,8 @@ TU_EXPORT
 TU_ERROR TUtestSignChr(
   TU* tu,                 /**< \ref TU environment */
   TU_CHRMAT* matrix,      /**< Sparse char matrix */
-  bool* palreadySigned,   /**< Pointer for storing whether \p matrix has the right sign. */
-  TU_SUBMAT** psubmatrix  /**< If not \c NULL, a submatrix with bad determinant is stored. */
+  bool* pcorrectSign,     /**< Pointer for storing whether \p matrix has the right sign. */
+  TU_SUBMAT** psubmatrix  /**< Pointer for storing a submatrix with bad determinant (may be \c NULL). */
 );
 
 
@@ -89,8 +89,8 @@ TU_EXPORT
 TU_ERROR TUcorrectSignChr(
   TU* tu,                 /**< \ref TU environment */
   TU_CHRMAT* matrix,      /**< Sparse char matrix */
-  bool* palreadySigned,   /**< Pointer for storing whether \p matrix was already signed correctly. */
-  TU_SUBMAT** psubmatrix  /**< If not \c NULL, a submatrix with bad determinant is stored. */
+  bool* palreadySigned,   /**< Pointer for storing whether \p matrix was modified. */
+  TU_SUBMAT** psubmatrix  /**< Pointer for storing a submatrix with bad determinant (may be \c NULL). */
 );
 
 #ifdef __cplusplus

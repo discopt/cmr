@@ -11,20 +11,26 @@
 /**
  * \brief Tests the 1-sum of char matrices for total unimodularity.
  *
- * Returns \c true if and only if \p matrix is TU.
+ * Returns \c true if and only if the 1-sum of the given \p components is TU.
  *
- * If \p decomposition is not \c NULL and the algorithm has to test regularity of the support
- * matrix, then \c *decomposition will point to a decomposition tree for which the caller must use
- * \ref TUfreeDec to free memory. It is set to \c NULL otherwise.
+ * If \p pdecomposition is not \c NULL and the algorithm has to test regularity of the support matrix, then
+ * \c *pdecomposition will point to a decomposition tree for which the caller must use \ref TUdecFree to free memory.
+ * It is set to \c NULL in case regularity of the support matrix does not need to be determined.
  *
- * If \p submatrix is not \c NULL and the matrix is not TU, then a submatrix with an absolute
- * determinant larger than 1 will be searched, which may cause extra computational effort. In this
- * case, \c *submatrix will point to this submatrix for which the caller must use
- * \ref TUfreeSubmatrix to free memory. It is set to \c NULL otherwise.
+ * If \p psubmatrix is not \c NULL and the matrix is not TU, then a submatrix with an absolute determinant larger than
+ * 1 will be searched, which may cause extra computational effort. In this case, *\p psubmatrix will point to this
+ * submatrix for which the caller must use \ref TUsubmatFree to free memory. It is set to \c NULL otherwise.
  */
 
-static bool testTotalUnimodularityOneSum(TU* tu, int numComponents,
-  TU_ONESUM_COMPONENT* components, TU_DEC** decomposition, TU_SUBMAT** submatrix)
+static
+TU_ERROR testTotalUnimodularityOneSum(
+  TU* tu,                           /**< \ref TU environment. */
+  int numComponents,                /**< Number of 1-connected components. */
+  TU_ONESUM_COMPONENT* components,  /**< 1-sum decomposition of matrix to be tested. */
+  bool* pisTU,                      /**< Pointer for storing whether matrix is TU.*/
+  TU_DEC** pdec,          /**< Pointer for storing the decomposition tree (may be \c NULL). */
+  TU_SUBMAT** psubmatrix  /**< Pointer for storing a bad submatrix with a bad determinant (may be \c NULL). */
+)
 {
   assert(numComponents >= 0);
   assert(components);
@@ -38,7 +44,7 @@ static bool testTotalUnimodularityOneSum(TU* tu, int numComponents,
 
   /* If not regular and submatrix is required, start search in smallest non-regular component. */
 
-  assert(false);
+  assert("TU test not implemented, yet." == 0);
 
   for (int c = 0; c < numComponents; ++c)
   {
@@ -48,21 +54,21 @@ static bool testTotalUnimodularityOneSum(TU* tu, int numComponents,
     TUfreeBlockArray(tu, &components[c].columnsToOriginal);
   }
 
-  return true;
+  return TU_OKAY;
 }
 
-bool TUtestTotalUnimodularityDbl(TU* tu, TU_DBLMAT* matrix, double epsilon,
-  TU_DEC** decomposition, TU_SUBMAT** submatrix)
+TU_ERROR TUtestTotalUnimodularityDbl(TU* tu, TU_DBLMAT* matrix, double epsilon, bool* pisTU, TU_DEC** pdec,
+  TU_SUBMAT** psubmatrix)
 {
-  int numComponents;
-  TU_ONESUM_COMPONENT* components;
-
   assert(tu);
   assert(matrix);
 
+  int numComponents;
+  TU_ONESUM_COMPONENT* components;
+
   /* Check entries. */
 
-  if (!TUisTernaryDbl(tu, matrix, epsilon, submatrix))
+  if (!TUisTernaryDbl(tu, matrix, epsilon, psubmatrix))
     return false;
 
   /* Perform 1-sum decomposition. */
@@ -77,11 +83,11 @@ bool TUtestTotalUnimodularityDbl(TU* tu, TU_DBLMAT* matrix, double epsilon,
     TU_SUBMAT* compSubmatrix;
     char modification;
     TU_CALL( signSequentiallyConnected(tu, (TU_CHRMAT*) &components[comp].matrix,
-      (TU_CHRMAT*) &components[comp].transpose, false, &modification, submatrix ? &compSubmatrix : NULL) );
+      (TU_CHRMAT*) &components[comp].transpose, false, &modification, psubmatrix ? &compSubmatrix : NULL) );
 
     if (modification)
     {
-      if (submatrix)
+      if (psubmatrix)
       {
         /* Translate component indices to indices of whole matrix and sort them again. */
         for (int r = 0; r < compSubmatrix->numRows; ++r)
@@ -89,7 +95,7 @@ bool TUtestTotalUnimodularityDbl(TU* tu, TU_DBLMAT* matrix, double epsilon,
         for (int c = 0; c < compSubmatrix->numColumns; ++c)
           compSubmatrix->columns[c] = components[comp].columnsToOriginal[compSubmatrix->columns[c]];
         TUsortSubmatrix(compSubmatrix);
-        *submatrix = compSubmatrix;
+        *psubmatrix = compSubmatrix;
       }
 
       for (int c = 0; c < numComponents; ++c)
@@ -104,27 +110,26 @@ bool TUtestTotalUnimodularityDbl(TU* tu, TU_DBLMAT* matrix, double epsilon,
     }
   }
 
-  return testTotalUnimodularityOneSum(tu, numComponents, components, decomposition, submatrix);
+  return testTotalUnimodularityOneSum(tu, numComponents, components, pisTU, pdec, psubmatrix);
 }
 
-bool TUtestTotalUnimodularityInt(TU* tu, TU_INTMAT* matrix, TU_DEC** decomposition,
-  TU_SUBMAT** submatrix)
+TU_ERROR TUtestTotalUnimodularityInt(TU* tu, TU_INTMAT* matrix, bool* pisTU, TU_DEC** pdec, TU_SUBMAT** psubmatrix)
 {
-  int numComponents;
-  TU_ONESUM_COMPONENT* components;
-
   assert(tu);
   assert(matrix);
 
+  int numComponents;
+  TU_ONESUM_COMPONENT* components;
+
   /* Check entries. */
 
-  if (!TUisTernaryInt(tu, matrix, submatrix))
+  if (!TUisTernaryInt(tu, matrix, psubmatrix))
     return false;
 
   /* Perform 1-sum decomposition. */
 
-  decomposeOneSum(tu, (TU_MATRIX*) matrix, sizeof(int), sizeof(char), &numComponents, &components,
-    NULL, NULL, NULL, NULL);
+  TU_CALL( decomposeOneSum(tu, (TU_MATRIX*) matrix, sizeof(int), sizeof(char), &numComponents, &components, NULL, NULL,
+    NULL, NULL) );
 
   /* Check correct signing for each component. */
 
@@ -133,11 +138,11 @@ bool TUtestTotalUnimodularityInt(TU* tu, TU_INTMAT* matrix, TU_DEC** decompositi
     TU_SUBMAT* compSubmatrix;
     char modified;
     TU_CALL( signSequentiallyConnected(tu, (TU_CHRMAT*) &components[comp].matrix,
-      (TU_CHRMAT*) &components[comp].transpose, false, &modified, submatrix ? &compSubmatrix : NULL) );
+      (TU_CHRMAT*) &components[comp].transpose, false, &modified, psubmatrix ? &compSubmatrix : NULL) );
 
     if (modified)
     {
-      if (submatrix)
+      if (psubmatrix)
       {
         /* Translate component indices to indices of whole matrix and sort them again. */
         for (int r = 0; r < compSubmatrix->numRows; ++r)
@@ -145,7 +150,7 @@ bool TUtestTotalUnimodularityInt(TU* tu, TU_INTMAT* matrix, TU_DEC** decompositi
         for (int c = 0; c < compSubmatrix->numColumns; ++c)
           compSubmatrix->columns[c] = components[comp].columnsToOriginal[compSubmatrix->columns[c]];
         TUsortSubmatrix(compSubmatrix);
-        *submatrix = compSubmatrix;
+        *psubmatrix = compSubmatrix;
       }
 
       for (int c = 0; c < numComponents; ++c)
@@ -160,27 +165,26 @@ bool TUtestTotalUnimodularityInt(TU* tu, TU_INTMAT* matrix, TU_DEC** decompositi
     }
   }
 
-  return testTotalUnimodularityOneSum(tu, numComponents, components, decomposition, submatrix);
+  return testTotalUnimodularityOneSum(tu, numComponents, components, pisTU, pdec, psubmatrix);
 }
 
-bool TUtestTotalUnimodularityChr(TU* tu, TU_CHRMAT* matrix, TU_DEC** decomposition,
-  TU_SUBMAT** submatrix)
+TU_ERROR TUtestTotalUnimodularityChr(TU* tu, TU_CHRMAT* matrix, bool* pisTU, TU_DEC** pdec, TU_SUBMAT** psubmatrix)
 {
-  int numComponents;
-  TU_ONESUM_COMPONENT* components;
-
   assert(tu);
   assert(matrix);
 
+  int numComponents;
+  TU_ONESUM_COMPONENT* components;
+
   /* Check entries. */
 
-  if (!TUisTernaryChr(tu, matrix, submatrix))
+  if (!TUisTernaryChr(tu, matrix, psubmatrix))
     return false;
 
   /* Perform 1-sum decomposition. */
 
-  decomposeOneSum(tu, (TU_MATRIX*) matrix, sizeof(char), sizeof(char), &numComponents, &components,
-    NULL, NULL, NULL, NULL);
+  TU_CALL( decomposeOneSum(tu, (TU_MATRIX*) matrix, sizeof(char), sizeof(char), &numComponents, &components, NULL, NULL,
+    NULL, NULL) );
 
   /* Check correct signing for each component. */
 
@@ -189,11 +193,11 @@ bool TUtestTotalUnimodularityChr(TU* tu, TU_CHRMAT* matrix, TU_DEC** decompositi
     TU_SUBMAT* compSubmatrix;
     char modified;
     signSequentiallyConnected(tu, (TU_CHRMAT*) &components[comp].matrix,
-      (TU_CHRMAT*) &components[comp].transpose, false, &modified, submatrix ? &compSubmatrix : NULL);
+      (TU_CHRMAT*) &components[comp].transpose, false, &modified, psubmatrix ? &compSubmatrix : NULL);
 
     if (modified)
     {
-      if (submatrix)
+      if (psubmatrix)
       {
         /* Translate component indices to indices of whole matrix and sort them again. */
         for (int r = 0; r < compSubmatrix->numRows; ++r)
@@ -201,7 +205,7 @@ bool TUtestTotalUnimodularityChr(TU* tu, TU_CHRMAT* matrix, TU_DEC** decompositi
         for (int c = 0; c < compSubmatrix->numColumns; ++c)
           compSubmatrix->columns[c] = components[comp].columnsToOriginal[compSubmatrix->columns[c]];
         TUsortSubmatrix(compSubmatrix);
-        *submatrix = compSubmatrix;
+        *psubmatrix = compSubmatrix;
       }
 
       for (int c = 0; c < numComponents; ++c)
@@ -216,5 +220,5 @@ bool TUtestTotalUnimodularityChr(TU* tu, TU_CHRMAT* matrix, TU_DEC** decompositi
     }
   }
 
-  return testTotalUnimodularityOneSum(tu, numComponents, components, decomposition, submatrix);
+  return testTotalUnimodularityOneSum(tu, numComponents, components, pisTU, pdec, psubmatrix);
 }

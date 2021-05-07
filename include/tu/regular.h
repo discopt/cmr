@@ -46,8 +46,8 @@ typedef struct _TU_DEC
  */
 TU_EXPORT
 void TUdecFree(
-  TU* tu,       /**< TU environment. */
-  TU_DEC** dec  /**< Pointer to decomposition tree. */
+  TU* tu,       /**< \ref TU environment. */
+  TU_DEC** pdec /**< Pointer to decomposition tree. */
 );
 
 /**
@@ -136,11 +136,11 @@ int TUgetDecRankUpperRight(
 
 TU_EXPORT
 bool TUregularTest(
-  TU* tu,                 /**< TU environment */
-  TU_CHRMAT* matrix, /**< Char matrix */
-  int* rowLabels,         /**< Row labels of matrix; can be \c NULL. */
-  int* columnLabels,      /**< Column labels of matrix; can be \c NULL. */
-  TU_DEC** decomposition  /**< If not \c NULL, the decomposition tree is stored. */
+  TU* tu,             /**< \ref TU environment. */
+  TU_CHRMAT* matrix,  /**< Char matrix. */
+  int* rowLabels,     /**< Row labels of matrix (may be \c NULL). */
+  int* columnLabels,  /**< Column labels of matrix (may be \c NULL). */
+  TU_DEC** pdec       /**< Pointer for storing the decomposition tree (may be \c NULL). */
 );
 
 /**
@@ -154,11 +154,11 @@ bool TUregularTest(
 
 TU_EXPORT
 int TUregularDecomposeOneSum(
-  TU* tu,                     /**< TU environment. */
-  TU_CHRMAT* matrix,     /**< Given matrix. */
-  int* rowLabels,             /**< Row labels of matrix; can be \c NULL. */
-  int* columnLabels,          /**< Column labels of matrix; can be \c NULL. */
-  TU_DEC** pdecomposition,    /**< Pointer for storing the partial decomposition. */
+  TU* tu,                     /**< \ref TU environment. */
+  TU_CHRMAT* matrix,          /**< Given matrix. */
+  int* rowLabels,             /**< Row labels of matrix (may be \c NULL). */
+  int* columnLabels,          /**< Column labels of matrix (may be \c NULL). */
+  TU_DEC** pdec,              /**< Pointer for storing the decomposition tree (may be \c NULL). */
   bool constructDecomposition /**< Whether to construct the decomposition. */
 );
 
@@ -175,8 +175,8 @@ int TUregularDecomposeOneSum(
 
 TU_EXPORT
 TU_DEC* TUregularDecomposeSimpleSums(
-  TU* tu,                     /**< TU environment. */
-  TU_DEC* decomposition,      /**< The partial decomposition that is produced. */
+  TU* tu,                     /**< \ref TU environment. */
+  TU_DEC* dec,                /**< The partial decomposition that is produced. */
   bool unitVectors,           /**< Split off unit vectors via 2-sums. */
   bool paths,                 /**< Split off paths via 3-sums. */
   bool constructDecomposition /**< Whether to construct a proper decomposition. */

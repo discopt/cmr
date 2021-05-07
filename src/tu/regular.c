@@ -7,37 +7,37 @@
 #include "env_internal.h"
 
 bool TUregularTest(TU* tu, TU_CHRMAT* matrix, int* rowLabels, int* columnLabels,
-  TU_DEC** pdecomposition)
+  TU_DEC** pdec)
 {
   bool isRegular = true;
-  bool certify = pdecomposition != NULL;
+  bool certify = pdec != NULL;
 
   assert(tu);
   assert(matrix);
 
   /* Perform a 1-sum decomposition. */
-  TU_DEC* decomposition = NULL;
+  TU_DEC* dec = NULL;
 
-  int numChildren = TUregularDecomposeOneSum(tu, matrix, rowLabels, columnLabels, &decomposition, true);
+  int numChildren = TUregularDecomposeOneSum(tu, matrix, rowLabels, columnLabels, &dec, true);
   if (certify)
-    *pdecomposition = decomposition;
+    *pdec = dec;
   if (numChildren <= 1)
   {
-    isRegular = TUregularSequentiallyConnected(tu, decomposition, certify, false, false);
+    isRegular = TUregularSequentiallyConnected(tu, dec, certify, false, false);
   }
   else
   {
     if (certify)
-      decomposition->flags = TU_DEC_ONE_SUM | TU_DEC_GRAPHIC | TU_DEC_COGRAPHIC | TU_DEC_REGULAR;
+      dec->flags = TU_DEC_ONE_SUM | TU_DEC_GRAPHIC | TU_DEC_COGRAPHIC | TU_DEC_REGULAR;
 
     for (int child = 0; child < numChildren; ++child)
     {
-      bool result = TUregularSequentiallyConnected(tu, decomposition->children[child], certify,
+      bool result = TUregularSequentiallyConnected(tu, dec->children[child], certify,
         false, false);
       isRegular = isRegular && result;
       if (certify)
       {
-        decomposition->flags &= (decomposition->children[child]->flags
+        dec->flags &= (dec->children[child]->flags
           & (TU_DEC_REGULAR | TU_DEC_GRAPHIC | TU_DEC_COGRAPHIC));
       }
       else if (!result)
@@ -45,8 +45,8 @@ bool TUregularTest(TU* tu, TU_CHRMAT* matrix, int* rowLabels, int* columnLabels,
     }
   }
 
-  if (!pdecomposition)
-    TUdecFree(tu, &decomposition);
+  if (!pdec)
+    TUdecFree(tu, &dec);
 
   return isRegular;
 }

@@ -196,7 +196,7 @@ TU_ERROR TUintmatTranspose(
  * \ref rowStarts[r+1]. The last row is an exception, since \ref rowStarts[\ref numRows] need not
  * be defined.
  * For convenience, one may store this additional entry.
- * In particular \ref TUcharmatCreate allocates sufficient space for it.
+ * In particular \ref TUchrmatCreate allocates sufficient space for it.
  * However, all public methods use \ref numRows to determine the last row's number of nonzeros via
  * \ref numNonzeros.
  */
@@ -455,15 +455,15 @@ typedef struct
 /**
  * \brief Creates a submatrix of given size.
  *
- * Only allocates the memory. Use \ref TUgetSubmatrixRows and \ref TUgetSubmatrixColumns to modify
- * the row and column indices, respectively.
+ * Only allocates the memory. Use rows and columns attributes of *\p psubmatrix to actually set the row and column
+ * indices, respectively.
  */
 TU_EXPORT
-void TUsubmatCreate(
-  TU* tu,                   /**< TU environment. */
-  TU_SUBMAT** submatrix, /** Pointer to where the submatrix is to be stored. */
-  int numRows,              /**< Number of rows */
-  int numColumns            /**< Number of columns */
+TU_ERROR TUsubmatCreate(
+  TU* tu,                 /**< \ref TU environment. */
+  TU_SUBMAT** psubmatrix, /**< Pointer to where the submatrix is to be stored. */
+  int numRows,            /**< Number of rows */
+  int numColumns          /**< Number of columns */
 );
 
 /**
@@ -472,10 +472,10 @@ void TUsubmatCreate(
 
 TU_EXPORT
 void TUsubmatCreate1x1(
-  TU* tu,                   /**< TU environment. */
-  TU_SUBMAT** submatrix, /**< Pointer to submatrix */
-  int row,                  /**< Row of entry */
-  int column                /**< Column of entry */
+  TU* tu,                 /**< \ref TU environment. */
+  TU_SUBMAT** psubmatrix, /**< Pointer to submatrix */
+  int row,                /**< Row of entry */
+  int column              /**< Column of entry */
 );
 
 /**
@@ -483,33 +483,32 @@ void TUsubmatCreate1x1(
  */
 TU_EXPORT
 void TUsubmatFree(
-  TU* tu,                   /**< TU environment */
-  TU_SUBMAT** submatrix  /**< Pointer to submatrix */
+  TU* tu,                 /**< \ref TU environment. */
+  TU_SUBMAT** psubmatrix  /**< Pointer to submatrix. */
 );
 
 /**
- * \brief Creates a submatrix of a char matrix explicitly.
+ * \brief Creates a submatrix of a char matrix as an explicit matrix.
  */
 TU_EXPORT
 TU_ERROR TUchrsubmatFilter(
-  TU* tu,                   /**< TU environment. */
-  TU_CHRMAT* matrix,   /**< Given matrix */
-  TU_SUBMAT* submatrix,  /**< Specified submatrix */
-  TU_CHRMAT** result   /**< Resulting submatrix as a char matrix. */
+  TU* tu,               /**< \ref TU environment. */
+  TU_CHRMAT* matrix,    /**< Given matrix */
+  TU_SUBMAT* submatrix, /**< Specified submatrix */
+  TU_CHRMAT** result    /**< Pointer for storing the resulting char matrix. */
 );
 
 
 /**
- * \brief Checks if double matrix has only entries in {0, 1} with absolute error
- * tolerance \p epsilon.
+ * \brief Checks if double matrix has only entries in {0, 1} with absolute error tolerance \p epsilon.
  */
 
 TU_EXPORT
 bool TUisBinaryDbl(
-  TU* tu,                   /**< TU environment. */
-  TU_DBLMAT* matrix, /**< Char matrix */
-  double epsilon,           /**< Absolute error tolerance */
-  TU_SUBMAT** submatrix  /**< If not \c NULL, a non-ternary entry is stored in \c *submatrix. */
+  TU* tu,                 /**< \ref TU environment. */
+  TU_DBLMAT* matrix,      /**< Double matrix */
+  double epsilon,         /**< Absolute error tolerance */
+  TU_SUBMAT** psubmatrix  /**< Pointer for storing a non-binary entry as a submatrix (may be \c NULL). */
 );
 
 /**
@@ -518,9 +517,9 @@ bool TUisBinaryDbl(
 
 TU_EXPORT
 bool TUisBinaryInt(
-  TU* tu,                   /**< TU environment. */
-  TU_INTMAT* matrix,    /**< Char matrix */
-  TU_SUBMAT** submatrix  /**< If not \c NULL, a non-ternary entry is stored in \c *submatrix. */
+  TU* tu,                 /**< \ref TU environment. */
+  TU_INTMAT* matrix,      /**< Int matrix */
+  TU_SUBMAT** psubmatrix  /**< Pointer for storing a non-binary entry as a submatrix (may be \c NULL). */
 );
 
 /**
@@ -529,22 +528,21 @@ bool TUisBinaryInt(
 
 TU_EXPORT
 bool TUisBinaryChr(
-  TU* tu,                   /**< TU environment. */
-  TU_CHRMAT* matrix,   /**< Char matrix */
-  TU_SUBMAT** submatrix  /**< If not \c NULL, a non-ternary entry is stored in \c *submatrix. */
+  TU* tu,                 /**< \ref TU environment. */
+  TU_CHRMAT* matrix,      /**< Char matrix */
+  TU_SUBMAT** psubmatrix  /**< Pointer for storing a non-binary entry as a submatrix (may be \c NULL). */
 );
 
 /**
- * \brief Checks if double matrix has only entries in {-1, 0, +1} with absolute error
- * tolerance \p epsilon.
+ * \brief Checks if double matrix has only entries in {-1, 0, +1} with absolute error tolerance \p epsilon.
  */
 
 TU_EXPORT
 bool TUisTernaryDbl(
-  TU* tu,                   /**< TU environment. */
-  TU_DBLMAT* matrix, /**< Char matrix */
-  double epsilon,           /**< Absolute error tolerance */
-  TU_SUBMAT** submatrix  /**< If not \c NULL, a non-ternary entry is stored in \c *submatrix. */
+  TU* tu,                 /**< \ref TU environment. */
+  TU_DBLMAT* matrix,      /**< Double matrix */
+  double epsilon,         /**< Absolute error tolerance */
+  TU_SUBMAT** psubmatrix  /**< Pointer for storing a non-ternary entry as a submatrix (may be \c NULL). */
 );
 
 /**
@@ -553,9 +551,9 @@ bool TUisTernaryDbl(
 
 TU_EXPORT
 bool TUisTernaryInt(
-  TU* tu,                   /**< TU environment. */
-  TU_INTMAT* matrix,    /**< Char matrix */
-  TU_SUBMAT** submatrix  /**< If not \c NULL, a non-ternary entry is stored in \c *submatrix. */
+  TU* tu,                 /**< \ref TU environment. */
+  TU_INTMAT* matrix,      /**< Int matrix */
+  TU_SUBMAT** psubmatrix  /**< Pointer for storing a non-ternary entry as a submatrix (may be \c NULL). */
 );
 
 /**
@@ -564,9 +562,9 @@ bool TUisTernaryInt(
 
 TU_EXPORT
 bool TUisTernaryChr(
-  TU* tu,                   /**< TU environment. */
-  TU_CHRMAT* matrix,   /**< Char matrix */
-  TU_SUBMAT** submatrix  /**< If not \c NULL, a non-ternary entry is stored in \c *submatrix. */
+  TU* tu,                 /**< \ref TU environment. */
+  TU_CHRMAT* matrix,      /**< Char matrix */
+  TU_SUBMAT** psubmatrix  /**< Pointer for storing a non-ternary entry as a submatrix (may be \c NULL). */
 );
 
 #ifdef __cplusplus

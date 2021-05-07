@@ -14,15 +14,15 @@ int compareOneSumComponents(const void* a, const void* b)
 }
 
 int TUregularDecomposeOneSum(TU* tu, TU_CHRMAT* matrix, int* rowLabels, int* columnLabels,
-  TU_DEC** pdecomposition, bool constructDecomposition)
+  TU_DEC** pdec, bool constructDecomposition)
 {
   assert(tu);
   assert(matrix);
   assert(TUisTernaryChr(tu, matrix, NULL));
-  assert(pdecomposition);
+  assert(pdec);
 
-  TUcreateDec(tu, pdecomposition);
-  TU_DEC* decomposition = *pdecomposition;
+  TUcreateDec(tu, pdec);
+  TU_DEC* dec = *pdec;
 
   /* Perform 1-sum decomposition. */
 
@@ -33,45 +33,45 @@ int TUregularDecomposeOneSum(TU* tu, TU_CHRMAT* matrix, int* rowLabels, int* col
 
   if (numComponents <= 1)
   {
-    decomposition->matrix = (TU_CHRMAT*) components[0].matrix;
+    dec->matrix = (TU_CHRMAT*) components[0].matrix;
     if (constructDecomposition)
-      decomposition->transpose = (TU_CHRMAT*) components[0].transpose;
+      dec->transpose = (TU_CHRMAT*) components[0].transpose;
     else
       TUchrmatFree(tu, (TU_CHRMAT**) &components[0].transpose);
     if (rowLabels)
     {
-      TUallocBlockArray(tu, &decomposition->rowLabels, matrix->numRows);
+      TUallocBlockArray(tu, &dec->rowLabels, matrix->numRows);
       for (int row = 0; row < matrix->numRows; ++row)
-        decomposition->rowLabels[row] = rowLabels[components[0].rowsToOriginal[row]];
+        dec->rowLabels[row] = rowLabels[components[0].rowsToOriginal[row]];
     }
     if (columnLabels)
     {
-      TUallocBlockArray(tu, &decomposition->columnLabels, matrix->numColumns);
+      TUallocBlockArray(tu, &dec->columnLabels, matrix->numColumns);
       for (int column = 0; column < matrix->numColumns; ++column)
-        decomposition->columnLabels[column] = columnLabels[components[0].columnsToOriginal[column]];
+        dec->columnLabels[column] = columnLabels[components[0].columnsToOriginal[column]];
     }
   }
   else
   {
-    decomposition->flags = TU_DEC_ONE_SUM;
+    dec->flags = TU_DEC_ONE_SUM;
 
     /* Copy matrix and labels to node and compute transpose. */
     if (constructDecomposition)
     {
-      TUchrmatCopy(tu, matrix, &decomposition->matrix);
-      TUchrmatTranspose(tu, matrix, &decomposition->transpose);
+      TUchrmatCopy(tu, matrix, &dec->matrix);
+      TUchrmatTranspose(tu, matrix, &dec->transpose);
     }
     if (rowLabels)
     {
-      TUallocBlockArray(tu, &decomposition->rowLabels, matrix->numRows);
+      TUallocBlockArray(tu, &dec->rowLabels, matrix->numRows);
       for (int row = 0; row < matrix->numRows; ++row)
-        decomposition->rowLabels[row] = rowLabels[row];
+        dec->rowLabels[row] = rowLabels[row];
     }
     if (columnLabels)
     {
-      TUallocBlockArray(tu, &decomposition->columnLabels, matrix->numColumns);
+      TUallocBlockArray(tu, &dec->columnLabels, matrix->numColumns);
       for (int column = 0; column < matrix->numColumns; ++column)
-        decomposition->columnLabels[column] = columnLabels[column];
+        dec->columnLabels[column] = columnLabels[column];
     }
 
     /* Sort components by number of nonzeros. */
@@ -82,14 +82,14 @@ int TUregularDecomposeOneSum(TU* tu, TU_CHRMAT* matrix, int* rowLabels, int* col
     qsort(orderedComponents, numComponents, sizeof(TU_ONESUM_COMPONENT*), &compareOneSumComponents);
 
     /* Initialize child nodes */
-    decomposition->numChildren = numComponents;
-    TUallocBlockArray(tu, &decomposition->children, numComponents);
+    dec->numChildren = numComponents;
+    TUallocBlockArray(tu, &dec->children, numComponents);
 
     for (int i = 0; i < numComponents; ++i)
     {
       int comp = (orderedComponents[i] - components) / sizeof(TU_ONESUM_COMPONENT*);
-      TUcreateDec(tu, &decomposition->children[i]);
-      TU_DEC* child = decomposition->children[i];
+      TUcreateDec(tu, &dec->children[i]);
+      TU_DEC* child = dec->children[i];
       child->matrix = (TU_CHRMAT*) components[comp].matrix;
       if (constructDecomposition)
         child->transpose = (TU_CHRMAT*) components[comp].transpose;

@@ -6,16 +6,15 @@
 #include "regular_internal.h"
 #include "env_internal.h"
 
-TU_DEC* TUregularDecomposeSimpleSums(TU* tu, TU_DEC* decomposition, bool unitVectors, bool paths,
-  bool constructDecomposition)
+TU_DEC* TUregularDecomposeSimpleSums(TU* tu, TU_DEC* dec, bool unitVectors, bool paths, bool constructDecomposition)
 {
   assert(tu);
-  assert(decomposition);
-  assert(TUisTernaryChr(tu, decomposition->matrix, NULL));
+  assert(dec);
+  assert(TUisTernaryChr(tu, dec->matrix, NULL));
 
-  TU_DEC* result = decomposition;
-  TU_CHRMAT* matrix = decomposition->matrix;
-  TU_CHRMAT* transpose = decomposition->transpose;
+  TU_DEC* result = dec;
+  TU_CHRMAT* matrix = dec->matrix;
+  TU_CHRMAT* transpose = dec->transpose;
 
   int* rowNonzeros = NULL;
   int* columnNonzeros = NULL;
@@ -107,13 +106,13 @@ TU_DEC* TUregularDecomposeSimpleSums(TU* tu, TU_DEC* decomposition, bool unitVec
             queue[queueEnd] = column;
             queueEnd++;
           }
-          if (decomposition->rowLabels && decomposition->columnLabels)
+          if (dec->rowLabels && dec->columnLabels)
           {
             TUallocBlockArray(tu, &result->children[0]->rowLabels, 2);
             TUallocBlockArray(tu, &result->children[0]->columnLabels, 1);
-            result->children[0]->rowLabels[0] = decomposition->rowLabels[row];
-            result->children[0]->rowLabels[1] = decomposition->rowLabels[otherRow];
-            result->children[0]->columnLabels[0] = decomposition->columnLabels[column];
+            result->children[0]->rowLabels[0] = dec->rowLabels[row];
+            result->children[0]->rowLabels[1] = dec->rowLabels[otherRow];
+            result->children[0]->columnLabels[0] = dec->columnLabels[column];
           }
 
           /* Create matrix of 2nd child. */
@@ -181,13 +180,13 @@ TU_DEC* TUregularDecomposeSimpleSums(TU* tu, TU_DEC* decomposition, bool unitVec
             queue[queueEnd] = -1 - row;
             queueEnd++;
           }
-          if (decomposition->rowLabels && decomposition->columnLabels)
+          if (dec->rowLabels && dec->columnLabels)
           {
             TUallocBlockArray(tu, &result->children[0]->rowLabels, 1);
             TUallocBlockArray(tu, &result->children[0]->columnLabels, 2);
-            result->children[0]->columnLabels[0] = decomposition->columnLabels[column];
-            result->children[0]->columnLabels[1] = decomposition->columnLabels[otherColumn];
-            result->children[0]->rowLabels[0] = decomposition->rowLabels[row];
+            result->children[0]->columnLabels[0] = dec->columnLabels[column];
+            result->children[0]->columnLabels[1] = dec->columnLabels[otherColumn];
+            result->children[0]->rowLabels[0] = dec->rowLabels[row];
           }
 
           /* Create matrix of 2nd child. */

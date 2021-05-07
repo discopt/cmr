@@ -10,28 +10,28 @@ extern "C" {
 #include <tu/matrix.h>
 
 /**
- * \brief Tests a double matrix for total unimodularity with absolute error
- * tolerance \p epsilon.
+ * \brief Tests a double matrix for total unimodularity.
  *
- * Returns \c true if and only if \p matrix is TU.
+ * Returns \c true if and only if \p matrix is TU, where we consider entries to be equal to -1, 0 or +1 if their
+ * distance is at most \p epsilon.
  *
- * If \p decomposition is not \c NULL and the algorithm has to test regularity of the support
- * matrix, then \c *decomposition will point to a decomposition tree for which the caller must use
- * \ref TUfreeDec to free memory. It is set to \c NULL otherwise.
+ * If \p pdecomposition is not \c NULL and the algorithm has to test regularity of the support matrix, then
+ * \c *pdecomposition will point to a decomposition tree for which the caller must use \ref TUdecFree to free memory.
+ * It is set to \c NULL in case regularity of the support matrix does not need to be determined.
  *
- * If \p submatrix is not \c NULL and the matrix is not TU, then a submatrix with an absolute
- * determinant larger than 1 will be searched, which may cause extra computational effort. In this
- * case, \c *submatrix will point to this submatrix for which the caller must use
- * \ref TUfreeSubmatrix to free memory. It is set to \c NULL otherwise.
+ * If \p psubmatrix is not \c NULL and the matrix is not TU, then a submatrix with an absolute determinant larger than
+ * 1 will be searched, which may cause extra computational effort. In this case, *\p psubmatrix will point to this
+ * submatrix for which the caller must use \ref TUsubmatFree to free memory. It is set to \c NULL otherwise.
  */
 
 TU_EXPORT
-bool TUtestTotalUnimodularityDbl(
-  TU* tu,                 /**< TU environment */
+TU_ERROR TUtestTotalUnimodularityDbl(
+  TU* tu,                 /**< \ref TU environment */
   TU_DBLMAT* matrix,      /**< Double matrix */
   double epsilon,         /**< Absolute error tolerance */
-  TU_DEC** decomposition, /**< If not \c NULL, the decomposition tree is stored. */
-  TU_SUBMAT** submatrix   /**< If not \c NULL, a submatrix with bad determinant is stored. */
+  bool* pisTU,            /**< Pointer for storing whether \p matrix is TU.*/
+  TU_DEC** pdec,          /**< Pointer for storing the decomposition tree (may be \c NULL). */
+  TU_SUBMAT** psubmatrix  /**< Pointer for storing a bad submatrix with a bad determinant (may be \c NULL). */
 );
 
 /**
@@ -39,22 +39,22 @@ bool TUtestTotalUnimodularityDbl(
  *
  * Returns \c true if and only if \p matrix is TU.
  *
- * If \p decomposition is not \c NULL and the algorithm has to test regularity of the support
- * matrix, then \c *decomposition will point to a decomposition tree for which the caller must use
- * \ref TUfreeDec to free memory. It is set to \c NULL otherwise.
+ * If \p pdecomposition is not \c NULL and the algorithm has to test regularity of the support matrix, then
+ * \c *pdecomposition will point to a decomposition tree for which the caller must use \ref TUdecFree to free memory.
+ * It is set to \c NULL in case regularity of the support matrix does not need to be determined.
  *
- * If \p submatrix is not \c NULL and the matrix is not TU, then a submatrix with an absolute
- * determinant larger than 1 will be searched, which may cause extra computational effort. In this
- * case, \c *submatrix will point to this submatrix for which the caller must use
- * \ref TUfreeSubmatrix to free memory. It is set to \c NULL otherwise.
+ * If \p psubmatrix is not \c NULL and the matrix is not TU, then a submatrix with an absolute determinant larger than
+ * 1 will be searched, which may cause extra computational effort. In this case, *\p psubmatrix will point to this
+ * submatrix for which the caller must use \ref TUsubmatFree to free memory. It is set to \c NULL otherwise.
  */
 
 TU_EXPORT
-bool TUtestTotalUnimodularityInt(
-  TU* tu,                 /**< TU environment */
+TU_ERROR TUtestTotalUnimodularityInt(
+  TU* tu,                 /**< \ref TU environment */
   TU_INTMAT* matrix,      /**< Int matrix */
-  TU_DEC** decomposition, /**< If not \c NULL, the decomposition tree is stored. */
-  TU_SUBMAT** submatrix   /**< If not \c NULL, a submatrix with bad determinant is stored. */
+  bool* pisTU,            /**< Pointer for storing whether \p matrix is TU.*/
+  TU_DEC** pdec,          /**< Pointer for storing the decomposition tree (may be \c NULL). */
+  TU_SUBMAT** psubmatrix  /**< Pointer for storing a bad submatrix with a bad determinant (may be \c NULL). */
 );
 
 /**
@@ -62,22 +62,22 @@ bool TUtestTotalUnimodularityInt(
  *
  * Returns \c true if and only if \p matrix is TU.
  *
- * If \p decomposition is not \c NULL and the algorithm has to test regularity of the support
- * matrix, then \c *decomposition will point to a decomposition tree for which the caller must use
- * \ref TUfreeDec to free memory. It is set to \c NULL otherwise.
+ * If \p pdecomposition is not \c NULL and the algorithm has to test regularity of the support matrix, then
+ * \c *pdecomposition will point to a decomposition tree for which the caller must use \ref TUdecFree to free memory.
+ * It is set to \c NULL in case regularity of the support matrix does not need to be determined.
  *
- * If \p submatrix is not \c NULL and the matrix is not TU, then a submatrix with an absolute
- * determinant larger than 1 will be searched, which may cause extra computational effort. In this
- * case, \c *submatrix will point to this submatrix for which the caller must use
- * \ref TUfreeSubmatrix to free memory. It is set to \c NULL otherwise.
+ * If \p psubmatrix is not \c NULL and the matrix is not TU, then a submatrix with an absolute determinant larger than
+ * 1 will be searched, which may cause extra computational effort. In this case, *\p psubmatrix will point to this
+ * submatrix for which the caller must use \ref TUsubmatFree to free memory. It is set to \c NULL otherwise.
  */
 
 TU_EXPORT
-bool TUtestTotalUnimodularityChr(
-  TU* tu,                 /**< TU environment */
-  TU_CHRMAT* matrix,      /**< Char matrix */
-  TU_DEC** decomposition, /**< If not \c NULL, the decomposition tree is stored. */
-  TU_SUBMAT** submatrix   /**< If not \c NULL, a submatrix with bad determinant is stored. */
+TU_ERROR TUtestTotalUnimodularityChr(
+  TU* tu,                 /**< \ref TU environment */
+  TU_CHRMAT* matrix,      /**< Char matrix to be tested. */
+  bool* pisTU,            /**< Pointer for storing whether \p matrix is TU.*/
+  TU_DEC** pdec,          /**< Pointer for storing the decomposition tree (may be \c NULL). */
+  TU_SUBMAT** psubmatrix  /**< Pointer for storing a bad submatrix with a bad determinant (may be \c NULL). */
 );
 
 #ifdef __cplusplus

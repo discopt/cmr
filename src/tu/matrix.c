@@ -1037,17 +1037,20 @@ bool TUisTernaryChr(TU* tu, TU_CHRMAT* sparse, TU_SUBMAT** submatrix)
   return true;
 }
 
-void TUsubmatCreate(TU* tu, TU_SUBMAT** submatrix, int numRows, int numColumns)
+TU_ERROR TUsubmatCreate(TU* tu, TU_SUBMAT** psubmatrix, int numRows, int numColumns)
 {
-  assert(submatrix != NULL);
+  assert(psubmatrix != NULL);
 
-  TUallocBlock(tu, submatrix);
-  (*submatrix)->numRows = numRows;
-  (*submatrix)->numColumns = numColumns;
-  (*submatrix)->rows = NULL;
-  (*submatrix)->columns = NULL;
-  TUallocBlockArray(tu, &(*submatrix)->rows, numRows);
-  TUallocBlockArray(tu, &(*submatrix)->columns, numColumns);
+  TU_CALL( TUallocBlock(tu, psubmatrix) );
+  TU_SUBMAT* submatrix = *psubmatrix;
+  submatrix->numRows = numRows;
+  submatrix->numColumns = numColumns;
+  submatrix->rows = NULL;
+  submatrix->columns = NULL;
+  TU_CALL( TUallocBlockArray(tu, &submatrix->rows, numRows) );
+  TU_CALL( TUallocBlockArray(tu, &submatrix->columns, numColumns) );
+
+  return TU_OKAY;
 }
 
 void TUsubmatCreate1x1(TU* tu, TU_SUBMAT** submatrix, int row, int column)

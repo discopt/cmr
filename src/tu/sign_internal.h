@@ -19,7 +19,7 @@ extern "C" {
  * depending on whether \p matrix or \p transpose was modified (or would have been modified).
  *
  * If \p submatrix is not \c NULL and sign changes are necessary, then a submatrix with determinant
- * -2 or +2 is stored in \c *submatrix and the caller must use \ref TUfreeSubmatrix to free its
+ * -2 or +2 is stored in *\p psubmatrix and the caller must use \ref TUsubmatFree free its
  * memory. It is set to \c NULL if no sign changes are needed.
  */
 
@@ -29,7 +29,7 @@ TU_ERROR signSequentiallyConnected(
   TU_CHRMAT* transpose,   /**< Transpose of \p matrix. */
   bool change,            /**< Whether signs of \p matrix should be changed if necessary */
   char* pmodification,    /**< Pointer for storing which matrix was modified.*/
-  TU_SUBMAT** psubmatrix  /**< If not \c NULL, a submatrix with bad determinant is stored. */
+  TU_SUBMAT** psubmatrix  /**< Pointer for storing a submatrix with a bad determinant (may be \c NULL). */
 );
 
 #ifdef __cplusplus
