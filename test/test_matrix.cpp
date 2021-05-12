@@ -1,12 +1,106 @@
 #include <gtest/gtest.h>
 
+#include <stdio.h>
+
 #include "common.h"
 #include <tu/matrix.h>
+
+TEST(Matrix, Read)
+{
+  TU* tu = NULL;
+  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
+
+  /* Double matrices. */
+  {
+    const char* denseInput = "3 3 "
+      "1 0 0 "
+      "0 1 1 "
+      "-1 0 2 ";
+    FILE* stream = fmemopen((char*) denseInput, strlen(denseInput), "r");
+    TU_DBLMAT* dense = NULL;
+    ASSERT_TU_CALL( TUdblmatCreateFromDenseStream(tu, &dense, stream) );
+    fclose(stream);
+
+    const char* sparseInput = "3 3 5 "
+      "0 0 1 "
+      "1 1 1 "
+      "1 2 1 "
+      "2 0 -1 "
+      "2 2 2 ";
+    stream = fmemopen((char*) sparseInput, strlen(sparseInput), "r");
+    TU_DBLMAT* sparse = NULL;
+    ASSERT_TU_CALL( TUdblmatCreateFromSparseStream(tu, &sparse, stream) );
+    fclose(stream);
+
+    ASSERT_TRUE( TUdblmatCheckEqual(dense, sparse) );
+
+    ASSERT_TU_CALL( TUdblmatFree(tu, &dense) );
+    ASSERT_TU_CALL( TUdblmatFree(tu, &sparse) );
+  }
+
+  /* Int matrices. */
+  {
+    const char* denseInput = "3 3 "
+      "1 0 0 "
+      "0 1 1 "
+      "-1 0 2 ";
+    FILE* stream = fmemopen((char*) denseInput, strlen(denseInput), "r");
+    TU_INTMAT* dense = NULL;
+    ASSERT_TU_CALL( TUintmatCreateFromDenseStream(tu, &dense, stream) );
+    fclose(stream);
+
+    const char* sparseInput = "3 3 5 "
+      "0 0 1 "
+      "1 1 1 "
+      "1 2 1 "
+      "2 0 -1 "
+      "2 2 2 ";
+    stream = fmemopen((char*) sparseInput, strlen(sparseInput), "r");
+    TU_INTMAT* sparse = NULL;
+    ASSERT_TU_CALL( TUintmatCreateFromSparseStream(tu, &sparse, stream) );
+    fclose(stream);
+
+    ASSERT_TRUE( TUintmatCheckEqual(dense, sparse) );
+
+    ASSERT_TU_CALL( TUintmatFree(tu, &dense) );
+    ASSERT_TU_CALL( TUintmatFree(tu, &sparse) );
+  }
+
+  /* Char matrices. */
+  {
+    const char* denseInput = "3 3 "
+      "1 0 0 "
+      "0 1 1 "
+      "-1 0 2 ";
+    FILE* stream = fmemopen((char*) denseInput, strlen(denseInput), "r");
+    TU_CHRMAT* dense = NULL;
+    ASSERT_TU_CALL( TUchrmatCreateFromDenseStream(tu, &dense, stream) );
+    fclose(stream);
+
+    const char* sparseInput = "3 3 5 "
+      "0 0 1 "
+      "1 1 1 "
+      "1 2 1 "
+      "2 0 -1 "
+      "2 2 2 ";
+    stream = fmemopen((char*) sparseInput, strlen(sparseInput), "r");
+    TU_CHRMAT* sparse = NULL;
+    ASSERT_TU_CALL( TUchrmatCreateFromSparseStream(tu, &sparse, stream) );
+    fclose(stream);
+
+    ASSERT_TRUE( TUchrmatCheckEqual(dense, sparse) );
+
+    ASSERT_TU_CALL( TUchrmatFree(tu, &dense) );
+    ASSERT_TU_CALL( TUchrmatFree(tu, &sparse) );
+  }
+
+  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+}
 
 TEST(Matrix, Transpose)
 {
   TU* tu = NULL;
-  TUcreateEnvironment(&tu);
+  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
 
   /* Double matrices. */
   {
@@ -83,13 +177,13 @@ TEST(Matrix, Transpose)
     TUchrmatFree(tu, &A);
   }
 
-  TUfreeEnvironment(&tu);
+  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
 
 TEST(Matrix, Submatrix)
 {
   TU* tu = NULL;
-  TUcreateEnvironment(&tu);
+  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
 
   TU_CHRMAT* matrix = NULL;
   stringToCharMatrix(tu, &matrix, "10 10 "
@@ -130,5 +224,5 @@ TEST(Matrix, Submatrix)
   TUsubmatFree(tu, &submatrix);
   TUchrmatFree(tu, &matrix);
 
-  TUfreeEnvironment(&tu);
+  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
 }
