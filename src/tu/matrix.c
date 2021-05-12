@@ -3,7 +3,9 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <math.h>
+#include <limits.h>
 
+#include "sort.h"
 #include "env_internal.h"
 
 TU_ERROR TUdblmatCreate(TU* tu, TU_DBLMAT** matrix, int numRows, int numColumns,
@@ -313,6 +315,59 @@ TU_ERROR TUchrmatTranspose(TU* tu, TU_CHRMAT* matrix, TU_CHRMAT** result)
   return TU_OKAY;
 }
 
+TU_ERROR TUdblmatPrintNonzeros(FILE* stream, TU_DBLMAT* matrix)
+{
+  assert(stream);
+  assert(matrix);
+
+  fprintf(stream, "%d %d %d\n\n", matrix->numRows, matrix->numColumns, matrix->numNonzeros);
+  for (int row = 0; row < matrix->numRows; ++row)
+  {
+    int first = matrix->rowStarts[row];
+    int beyond = (row+1 == matrix->numRows) ? matrix->rowStarts[row+1] : matrix->numNonzeros;
+    for (int entry = first; entry < beyond; ++entry)
+      fprintf(stream, "%d %d %f\n", row, matrix->entryColumns[entry], matrix->entryValues[entry]);
+  }
+
+  return TU_OKAY;
+}
+
+TU_ERROR TUintmatPrintNonzeros(FILE* stream, TU_INTMAT* matrix)
+{
+  assert(stream);
+  assert(matrix);
+
+  fprintf(stream, "%d %d %d\n\n", matrix->numRows, matrix->numColumns, matrix->numNonzeros);
+  for (int row = 0; row < matrix->numRows; ++row)
+  {
+    int first = matrix->rowStarts[row];
+    int beyond = (row+1 == matrix->numRows) ? matrix->rowStarts[row+1] : matrix->numNonzeros;
+    for (int entry = first; entry < beyond; ++entry)
+      fprintf(stream, "%d %d %d\n", row, matrix->entryColumns[entry], matrix->entryValues[entry]);
+  }
+
+  return TU_OKAY;
+}
+
+TU_ERROR TUchrmatPrintNonzeros(FILE* stream, TU_CHRMAT* matrix)
+{
+  assert(stream);
+  assert(matrix);
+
+  fprintf(stream, "%d %d %d\n\n", matrix->numRows, matrix->numColumns, matrix->numNonzeros);
+  for (int row = 0; row < matrix->numRows; ++row)
+  {
+    int first = matrix->rowStarts[row];
+    int beyond = (row+1 == matrix->numRows) ? matrix->rowStarts[row+1] : matrix->numNonzeros;
+    for (int entry = first; entry < beyond; ++entry)
+      fprintf(stream, "%d %d %d\n", row, matrix->entryColumns[entry], matrix->entryValues[entry]);
+  }
+
+  return TU_OKAY;
+}
+
+
+
 TU_ERROR TUdblmatPrintDense(FILE* stream, TU_DBLMAT* matrix, char zeroChar, bool header)
 {
   assert(stream != NULL);
@@ -438,6 +493,295 @@ TU_ERROR TUchrmatPrintDense(FILE* stream, TU_CHRMAT* matrix, char zeroChar, bool
   }
 
   free(rowEntries);
+
+  return TU_OKAY;
+}
+
+typedef struct
+{
+  int row;
+  int column;
+  double value;
+} DblNonzero;
+
+int compareDblNonzeros(const void* pa, const void* pb)
+{
+  int aRow = ((const DblNonzero*)pa)->row;
+  int bRow = ((const DblNonzero*)pb)->row;
+  if (aRow < bRow)
+    return -1;
+  else if (aRow > bRow)
+    return +1;
+
+  int aColumn = ((const DblNonzero*)pa)->column;
+  int bColumn = ((const DblNonzero*)pb)->column;
+  return aColumn - bColumn;
+}
+
+TU_ERROR TUdblmatCreateFromSparseStream(TU* tu, TU_DBLMAT** pmatrix, FILE* stream)
+{
+  assert(pmatrix);
+  assert(!*pmatrix);
+  assert(stream);
+
+  int numRows, numColumns, numNonzeros;
+  int numRead = fscanf(stream, "%d %d %d", &numRows, &numColumns, &numNonzeros);
+  if (numRead < 3)
+    return TU_ERROR_INPUT;
+
+  /* Read all nonzeros. */
+
+  DblNonzero* nonzeros = NULL;
+  TU_CALL( TUallocStackArray(tu, &nonzeros, numNonzeros) );
+  int entry = 0;
+  for (int i = 0; i < numNonzeros; ++i)
+  {
+    int row;
+    int column;
+    double value;
+    numRead = fscanf(stream, "%d %d %lf", &row, &column, &value);
+    if (numRead < 3 || row < 0 || column < 0 || row >= numRows || column >= numColumns)
+    {
+      TU_CALL( TUfreeStackArray(tu, &nonzeros) );
+      return TU_ERROR_INPUT;
+    }
+    if (value != 0.0)
+    {
+      nonzeros[entry].row = row;
+      nonzeros[entry].column = column;
+      nonzeros[entry].value = value;
+      ++entry;
+    }
+  }
+  numNonzeros = entry;
+
+  /* We sort all nonzeros by row and then by column. */
+  TU_CALL( TUsort(tu, numNonzeros, nonzeros, sizeof(DblNonzero), compareDblNonzeros) );
+
+  TU_CALL( TUdblmatCreate(tu, pmatrix, numRows, numColumns, numNonzeros) );
+  int previousRow = -1;
+  int previousColumn = -1;
+  int* pentryColumn = (*pmatrix)->entryColumns;
+  double* pentryValue = (*pmatrix)->entryValues;
+  for (int entry = 0; entry < numNonzeros; ++entry)
+  {
+    int row = nonzeros[entry].row;
+    int column = nonzeros[entry].column;
+    if (row == previousRow && column == previousColumn)
+    {
+      TU_CALL( TUfreeStackArray(tu, &nonzeros) );
+      TU_CALL( TUdblmatFree(tu, pmatrix) );
+      return TU_ERROR_INPUT;
+    }
+    while (previousRow < row)
+    {
+      ++previousRow;
+      (*pmatrix)->rowStarts[previousRow] = entry;
+    }
+    *pentryColumn++ = nonzeros[entry].column;
+    *pentryValue++ = nonzeros[entry].value;
+    previousColumn = column;
+  }
+  while (previousRow < numRows)
+  {
+    ++previousRow;
+    (*pmatrix)->rowStarts[previousRow] = numNonzeros;
+  }
+
+  TU_CALL( TUfreeStackArray(tu, &nonzeros) );
+
+  return TU_OKAY;
+}
+
+typedef struct
+{
+  int row;
+  int column;
+  int value;
+} IntNonzero;
+
+int compareIntNonzeros(const void* pa, const void* pb)
+{
+  int aRow = ((const IntNonzero*)pa)->row;
+  int bRow = ((const IntNonzero*)pb)->row;
+  if (aRow < bRow)
+    return -1;
+  else if (aRow > bRow)
+    return +1;
+
+  int aColumn = ((const IntNonzero*)pa)->column;
+  int bColumn = ((const IntNonzero*)pb)->column;
+  return aColumn - bColumn;
+}
+
+TU_ERROR TUintmatCreateFromSparseStream(TU* tu, TU_INTMAT** pmatrix, FILE* stream)
+{
+  assert(pmatrix);
+  assert(!*pmatrix);
+  assert(stream);
+
+  int numRows, numColumns, numNonzeros;
+  int numRead = fscanf(stream, "%d %d %d", &numRows, &numColumns, &numNonzeros);
+  if (numRead < 3)
+    return TU_ERROR_INPUT;
+
+  /* Read all nonzeros. */
+
+  IntNonzero* nonzeros = NULL;
+  TU_CALL( TUallocStackArray(tu, &nonzeros, numNonzeros) );
+  int entry = 0;
+  for (int i = 0; i < numNonzeros; ++i)
+  {
+    int row;
+    int column;
+    int value;
+    numRead = fscanf(stream, "%d %d %d", &row, &column, &value);
+    if (numRead < 3 || row < 0 || column < 0 || row >= numRows || column >= numColumns)
+    {
+      TU_CALL( TUfreeStackArray(tu, &nonzeros) );
+      return TU_ERROR_INPUT;
+    }
+    if (value != 0)
+    {
+      nonzeros[entry].row = row;
+      nonzeros[entry].column = column;
+      nonzeros[entry].value = value;
+      ++entry;
+    }
+  }
+  numNonzeros = entry;
+
+  /* We sort all nonzeros by row and then by column. */
+  TU_CALL( TUsort(tu, numNonzeros, nonzeros, sizeof(IntNonzero), compareIntNonzeros) );
+
+  TU_CALL( TUintmatCreate(tu, pmatrix, numRows, numColumns, numNonzeros) );
+  int previousRow = -1;
+  int previousColumn = -1;
+  int* pentryColumn = (*pmatrix)->entryColumns;
+  int* pentryValue = (*pmatrix)->entryValues;
+  for (int entry = 0; entry < numNonzeros; ++entry)
+  {
+    int row = nonzeros[entry].row;
+    int column = nonzeros[entry].column;
+    if (row == previousRow && column == previousColumn)
+    {
+      TU_CALL( TUfreeStackArray(tu, &nonzeros) );
+      TU_CALL( TUintmatFree(tu, pmatrix) );
+      return TU_ERROR_INPUT;
+    }
+    while (previousRow < row)
+    {
+      ++previousRow;
+      (*pmatrix)->rowStarts[previousRow] = entry;
+    }
+    *pentryColumn++ = nonzeros[entry].column;
+    *pentryValue++ = nonzeros[entry].value;
+    previousColumn = column;
+  }
+  while (previousRow < numRows)
+  {
+    ++previousRow;
+    (*pmatrix)->rowStarts[previousRow] = numNonzeros;
+  }
+
+  TU_CALL( TUfreeStackArray(tu, &nonzeros) );
+
+  return TU_OKAY;
+}
+
+typedef struct
+{
+  int row;
+  int column;
+  char value;
+} ChrNonzero;
+
+int compareChrNonzeros(const void* pa, const void* pb)
+{
+  int aRow = ((const ChrNonzero*)pa)->row;
+  int bRow = ((const ChrNonzero*)pb)->row;
+  if (aRow < bRow)
+    return -1;
+  else if (aRow > bRow)
+    return +1;
+
+  int aColumn = ((const ChrNonzero*)pa)->column;
+  int bColumn = ((const ChrNonzero*)pb)->column;
+  return aColumn - bColumn;
+}
+
+TU_ERROR TUchrmatCreateFromSparseStream(TU* tu, TU_CHRMAT** pmatrix, FILE* stream)
+{
+  assert(pmatrix);
+  assert(!*pmatrix);
+  assert(stream);
+
+  int numRows, numColumns, numNonzeros;
+  int numRead = fscanf(stream, "%d %d %d", &numRows, &numColumns, &numNonzeros);
+  if (numRead < 3)
+    return TU_ERROR_INPUT;
+
+  /* Read all nonzeros. */
+
+  ChrNonzero* nonzeros = NULL;
+  TU_CALL( TUallocStackArray(tu, &nonzeros, numNonzeros) );
+  int entry = 0;
+  for (int i = 0; i < numNonzeros; ++i)
+  {
+    int row;
+    int column;
+    int value;
+    numRead = fscanf(stream, "%d %d %d", &row, &column, &value);
+    if (numRead < 3 || row < 0 || column < 0 || row >= numRows || column >= numColumns || value < CHAR_MIN
+      || value > CHAR_MAX)
+    {
+      TU_CALL( TUfreeStackArray(tu, &nonzeros) );
+      return TU_ERROR_INPUT;
+    }
+    if (value != 0)
+    {
+      nonzeros[entry].row = row;
+      nonzeros[entry].column = column;
+      nonzeros[entry].value = value;
+      ++entry;
+    }
+  }
+  numNonzeros = entry;
+
+  /* We sort all nonzeros by row and then by column. */
+  TU_CALL( TUsort(tu, numNonzeros, nonzeros, sizeof(ChrNonzero), compareChrNonzeros) );
+
+  TU_CALL( TUchrmatCreate(tu, pmatrix, numRows, numColumns, numNonzeros) );
+  int previousRow = -1;
+  int previousColumn = -1;
+  int* pentryColumn = (*pmatrix)->entryColumns;
+  char* pentryValue = (*pmatrix)->entryValues;
+  for (int entry = 0; entry < numNonzeros; ++entry)
+  {
+    int row = nonzeros[entry].row;
+    int column = nonzeros[entry].column;
+    if (row == previousRow && column == previousColumn)
+    {
+      TU_CALL( TUfreeStackArray(tu, &nonzeros) );
+      TU_CALL( TUchrmatFree(tu, pmatrix) );
+      return TU_ERROR_INPUT;
+    }
+    while (previousRow < row)
+    {
+      ++previousRow;
+      (*pmatrix)->rowStarts[previousRow] = entry;
+    }
+    *pentryColumn++ = nonzeros[entry].column;
+    *pentryValue++ = nonzeros[entry].value;
+    previousColumn = column;
+  }
+  while (previousRow < numRows)
+  {
+    ++previousRow;
+    (*pmatrix)->rowStarts[previousRow] = numNonzeros;
+  }
+
+  TU_CALL( TUfreeStackArray(tu, &nonzeros) );
 
   return TU_OKAY;
 }

@@ -11,7 +11,7 @@ extern "C" {
 
 /**
  * \brief Row-wise representation of sparse double matrix.
- *
+ * 
  * The columns and values of all nonzeros are stored in \ref entryColumns and \ref entryValues,
  * respectively.
  * Those of row \c r are stored from \ref rowStarts[r] until (but not including)
@@ -65,12 +65,12 @@ TU_EXPORT
 TU_ERROR TUdblmatChangeNumNonzeros(
   TU* tu,             /**< \ref TU environment. */
   TU_DBLMAT* matrix,  /**< Given matrix. */
-  int newNumNonzeros  /**< New number of nonzeros. */
+  int newNumNonzeros  /**< New number of nonzeros. */ 
 );
 
 /**
  * \brief Copies a double matrix to a newly allocated one.
- *
+ * 
  * Allocates *\p result and copies \p matrix there.
  */
 TU_EXPORT
@@ -103,7 +103,7 @@ TU_ERROR TUdblmatTranspose(
 
 /**
  * \brief Row-wise representation of sparse int matrix.
- *
+ * 
  * The columns and values of all nonzeros are stored in \ref entryColumns and \ref entryValues,
  * respectively.
  * Those of row \c r are stored from \ref rowStarts[r] until (but not including)
@@ -157,12 +157,12 @@ TU_EXPORT
 TU_ERROR TUintmatChangeNumNonzeros(
   TU* tu,             /**< \ref TU environment. */
   TU_INTMAT* matrix,  /**< Given matrix. */
-  int newNumNonzeros  /**< New number of nonzeros. */
+  int newNumNonzeros  /**< New number of nonzeros. */ 
 );
 
 /**
  * \brief Copies an int matrix to a newly allocated one.
- *
+ * 
  * Allocates *\p result and copies \p matrix there.
  */
 TU_EXPORT
@@ -189,7 +189,7 @@ TU_ERROR TUintmatTranspose(
 
 /**
  * \brief Row-wise representation of sparse char matrix.
- *
+ * 
  * The columns and values of all nonzeros are stored in \ref entryColumns and \ref entryValues,
  * respectively.
  * Those of row \c r are stored from \ref rowStarts[r] until (but not including)
@@ -243,12 +243,12 @@ TU_EXPORT
 TU_ERROR TUchrmatChangeNumNonzeros(
   TU* tu,             /**< \ref TU environment. */
   TU_CHRMAT* matrix,  /**< Given matrix. */
-  int newNumNonzeros  /**< New number of nonzeros. */
+  int newNumNonzeros  /**< New number of nonzeros. */ 
 );
 
 /**
  * \brief Copies an int matrix to a newly allocated one.
- *
+ * 
  * Allocates *\p result and copies \p matrix there.
  */
 TU_EXPORT
@@ -266,6 +266,37 @@ TU_ERROR TUchrmatTranspose(
   TU* tu,             /**< \ref TU environment. */
   TU_CHRMAT* matrix,  /**< Given matrix. */
   TU_CHRMAT** result  /**< Pointer to store the transpose of \p matrix. */
+);
+
+/**
+ * \brief Prints a double matrix.
+ */
+
+TU_EXPORT
+TU_ERROR TUdblmatPrintNonzeros(
+  FILE* stream,       /**< File stream to print to. */
+  TU_DBLMAT* matrix   /**< Double matrix. */
+);
+
+
+/**
+ * \brief Prints an int matrix.
+ */
+
+TU_EXPORT
+TU_ERROR TUintmatPrintNonzeros(
+  FILE* stream,       /**< File stream to print to. */
+  TU_INTMAT* matrix   /**< Int matrix. */
+);
+
+/**
+ * \brief Prints a char matrix.
+ */
+
+TU_EXPORT
+TU_ERROR TUchrmatPrintNonzeros(
+  FILE* stream,       /**< File stream to print to. */
+  TU_CHRMAT* matrix   /**< Char matrix. */
 );
 
 /**
@@ -305,7 +336,49 @@ TU_ERROR TUchrmatPrintDense(
 );
 
 /**
- * \brief Reads a double matrix from a file \p stream.
+ * \brief Reads a sparse double matrix from a file \p stream.
+ * 
+ * Zero entries are ignored, and multiple occurences of (row,column) pairs are considered as errors.
+ * Returns \ref TU_ERROR_INPUT in case of errors. In this case, *\p pmatrix will be \c NULL.
+ */
+
+TU_EXPORT
+TU_ERROR TUdblmatCreateFromSparseStream(
+  TU* tu,               /**< \ref TU environment. */
+  TU_DBLMAT** pmatrix,  /**< Pointer for storing the matrix. */
+  FILE* stream          /**< File stream to read from. */
+);
+
+/**
+ * \brief Reads a sparse int matrix from a file \p stream.
+ *  
+ * Zero entries are ignored, and multiple occurences of (row,column) pairs are considered as errors.
+ * Returns \ref TU_ERROR_INPUT in case of errors. In this case, *\p pmatrix will be \c NULL.
+ */
+
+TU_EXPORT
+TU_ERROR TUintmatCreateFromSparseStream(
+  TU* tu,               /**< \ref TU environment. */
+  TU_INTMAT** pmatrix,  /**< Pointer for storing the matrix. */
+  FILE* stream          /**< File stream to read from. */
+);
+
+/**
+ * \brief Reads a sparse char matrix from a file \p stream.
+ *  
+ * Zero entries are ignored, and multiple occurences of (row,column) pairs are considered as errors.
+ * Returns \ref TU_ERROR_INPUT in case of errors. In this case, *\p pmatrix will be \c NULL.
+ */
+
+TU_EXPORT
+TU_ERROR TUchrmatCreateFromSparseStream(
+  TU* tu,               /**< \ref TU environment. */
+  TU_CHRMAT** pmatrix,  /**< Pointer for storing the matrix. */
+  FILE* stream          /**< File stream to read from. */
+);
+
+/**
+ * \brief Reads a densely stored double matrix from a file \p stream.
  */
 
 TU_EXPORT
@@ -316,7 +389,7 @@ TU_ERROR TUdblmatCreateFromDenseStream(
 );
 
 /**
- * \brief Reads an int matrix from a file \p stream.
+ * \brief Reads a densely stored int matrix from a file \p stream.
  */
 
 TU_EXPORT
@@ -327,7 +400,7 @@ TU_ERROR TUintmatCreateFromDenseStream(
 );
 
 /**
- * \brief Reads a char matrix from a file \p stream.
+ * \brief Reads a densely stored char matrix from a file \p stream.
  */
 
 TU_EXPORT
