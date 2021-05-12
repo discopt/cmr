@@ -50,7 +50,7 @@ TU_ERROR TUtestSignInt(
 );
 
 /**
- * \brief Modifies signs of double matrix nonzeros to qualify for being TU.
+ * \brief Modifies signs of int matrix nonzeros to qualify for being TU.
  *
  * The \p matrix is assumed to be ternary.
  */

@@ -78,15 +78,23 @@ target_link_libraries(graphicness_test
 )
 set_target_properties(graphicness_test PROPERTIES OUTPUT_NAME graphicness-test)
 
+# Target for the tu-convert-matrix.
+add_executable(tu_convert_matrix
+  src/test/convert_matrix_main.c)
+target_link_libraries(tu_convert_matrix
+  PRIVATE
+     TU::tu
+)
+set_target_properties(tu_convert_matrix PROPERTIES OUTPUT_NAME tu-convert-matrix)
 
-# Target for the graphic-column-submatrix binary.
-#add_executable(graphic_column_submatrix
-#   src/test/graphic_column_submatrix.c)
-#target_link_libraries(graphic_column_submatrix
-#   PRIVATE
-#      TU::tu
-#)
-#set_target_properties(graphic_column_submatrix PROPERTIES OUTPUT_NAME graphic-column-submatrix)
+# Target for the tu-sign.
+add_executable(tu_sign
+  src/test/sign_main.c)
+target_link_libraries(tu_sign
+  PRIVATE
+     TU::tu
+)
+set_target_properties(tu_sign PROPERTIES OUTPUT_NAME tu-sign)
 
 
 # Target for the random_network

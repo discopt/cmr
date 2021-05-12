@@ -315,7 +315,7 @@ TU_ERROR TUchrmatTranspose(TU* tu, TU_CHRMAT* matrix, TU_CHRMAT** result)
   return TU_OKAY;
 }
 
-TU_ERROR TUdblmatPrintNonzeros(FILE* stream, TU_DBLMAT* matrix)
+TU_ERROR TUdblmatPrintSparse(FILE* stream, TU_DBLMAT* matrix)
 {
   assert(stream);
   assert(matrix);
@@ -324,7 +324,7 @@ TU_ERROR TUdblmatPrintNonzeros(FILE* stream, TU_DBLMAT* matrix)
   for (int row = 0; row < matrix->numRows; ++row)
   {
     int first = matrix->rowStarts[row];
-    int beyond = (row+1 == matrix->numRows) ? matrix->rowStarts[row+1] : matrix->numNonzeros;
+    int beyond = (row+1 < matrix->numRows) ? matrix->rowStarts[row+1] : matrix->numNonzeros;
     for (int entry = first; entry < beyond; ++entry)
       fprintf(stream, "%d %d %f\n", row, matrix->entryColumns[entry], matrix->entryValues[entry]);
   }
@@ -332,7 +332,7 @@ TU_ERROR TUdblmatPrintNonzeros(FILE* stream, TU_DBLMAT* matrix)
   return TU_OKAY;
 }
 
-TU_ERROR TUintmatPrintNonzeros(FILE* stream, TU_INTMAT* matrix)
+TU_ERROR TUintmatPrintSparse(FILE* stream, TU_INTMAT* matrix)
 {
   assert(stream);
   assert(matrix);
@@ -341,7 +341,7 @@ TU_ERROR TUintmatPrintNonzeros(FILE* stream, TU_INTMAT* matrix)
   for (int row = 0; row < matrix->numRows; ++row)
   {
     int first = matrix->rowStarts[row];
-    int beyond = (row+1 == matrix->numRows) ? matrix->rowStarts[row+1] : matrix->numNonzeros;
+    int beyond = (row+1 < matrix->numRows) ? matrix->rowStarts[row+1] : matrix->numNonzeros;
     for (int entry = first; entry < beyond; ++entry)
       fprintf(stream, "%d %d %d\n", row, matrix->entryColumns[entry], matrix->entryValues[entry]);
   }
@@ -349,7 +349,7 @@ TU_ERROR TUintmatPrintNonzeros(FILE* stream, TU_INTMAT* matrix)
   return TU_OKAY;
 }
 
-TU_ERROR TUchrmatPrintNonzeros(FILE* stream, TU_CHRMAT* matrix)
+TU_ERROR TUchrmatPrintSparse(FILE* stream, TU_CHRMAT* matrix)
 {
   assert(stream);
   assert(matrix);
@@ -358,7 +358,7 @@ TU_ERROR TUchrmatPrintNonzeros(FILE* stream, TU_CHRMAT* matrix)
   for (int row = 0; row < matrix->numRows; ++row)
   {
     int first = matrix->rowStarts[row];
-    int beyond = (row+1 == matrix->numRows) ? matrix->rowStarts[row+1] : matrix->numNonzeros;
+    int beyond = (row+1 < matrix->numRows) ? matrix->rowStarts[row+1] : matrix->numNonzeros;
     for (int entry = first; entry < beyond; ++entry)
       fprintf(stream, "%d %d %d\n", row, matrix->entryColumns[entry], matrix->entryValues[entry]);
   }
@@ -1622,6 +1622,210 @@ TU_ERROR TUchrmatFilterSubmat(TU* tu, TU_CHRMAT* matrix, TU_SUBMAT* submatrix, T
 
   if (columnMap)
     TU_CALL( TUfreeStackArray(tu, &columnMap) );
+
+  return TU_OKAY;
+}
+
+TU_ERROR TUsupportDbl(TU* tu, TU_DBLMAT* matrix, double epsilon, TU_CHRMAT** psupport)
+{
+  assert(tu);
+  assert(matrix);
+  assert(psupport);
+  assert(!*psupport);
+
+  TU_CALL( TUchrmatCreate(tu, psupport, matrix->numRows, matrix->numColumns, matrix->numNonzeros) );
+  TU_CHRMAT* result = *psupport;
+
+  int resultEntry = 0;
+  for (int row = 0; row < matrix->numRows; ++row)
+  {
+    result->rowStarts[row] = resultEntry;
+    int firstMatrixEntry = matrix->rowStarts[row];
+    int beyondMatrixEntry = (row+1 < matrix->numRows) ? matrix->rowStarts[row+1] : matrix->numNonzeros;
+    for (int matrixEntry = firstMatrixEntry; matrixEntry < beyondMatrixEntry; ++matrixEntry)
+    {
+      if (fabs(matrix->entryValues[matrixEntry]) > epsilon)
+      {
+        result->entryColumns[resultEntry] = matrix->entryColumns[matrixEntry];
+        result->entryValues[resultEntry] = 1;
+        resultEntry++;
+      }
+    }
+  }
+  result->rowStarts[matrix->numRows] = resultEntry;
+
+  return TU_OKAY;
+}
+
+TU_ERROR TUsignedSupportDbl(TU* tu, TU_DBLMAT* matrix, double epsilon, TU_CHRMAT** psupport)
+{
+  assert(tu);
+  assert(matrix);
+  assert(psupport);
+  assert(!*psupport);
+
+  TU_CALL( TUchrmatCreate(tu, psupport, matrix->numRows, matrix->numColumns, matrix->numNonzeros) );
+  TU_CHRMAT* result = *psupport;
+
+  int resultEntry = 0;
+  for (int row = 0; row < matrix->numRows; ++row)
+  {
+    result->rowStarts[row] = resultEntry;
+    int firstMatrixEntry = matrix->rowStarts[row];
+    int beyondMatrixEntry = (row+1 < matrix->numRows) ? matrix->rowStarts[row+1] : matrix->numNonzeros;
+    for (int matrixEntry = firstMatrixEntry; matrixEntry < beyondMatrixEntry; ++matrixEntry)
+    {
+      if (matrix->entryValues[matrixEntry] > epsilon)
+      {
+        result->entryColumns[resultEntry] = matrix->entryColumns[matrixEntry];
+        result->entryValues[resultEntry] = 1;
+        resultEntry++;
+      }
+      else if (matrix->entryValues[matrixEntry] < -epsilon)
+      {
+        result->entryColumns[resultEntry] = matrix->entryColumns[matrixEntry];
+        result->entryValues[resultEntry] = -1;
+        resultEntry++;
+      }
+    }
+  }
+  result->rowStarts[matrix->numRows] = resultEntry;
+
+  return TU_OKAY;
+}
+
+TU_ERROR TUsupportInt(TU* tu, TU_INTMAT* matrix, TU_CHRMAT** psupport)
+{
+  assert(tu);
+  assert(matrix);
+  assert(psupport);
+  assert(!*psupport);
+
+  TU_CALL( TUchrmatCreate(tu, psupport, matrix->numRows, matrix->numColumns, matrix->numNonzeros) );
+  TU_CHRMAT* result = *psupport;
+
+  int resultEntry = 0;
+  for (int row = 0; row < matrix->numRows; ++row)
+  {
+    result->rowStarts[row] = resultEntry;
+    int firstMatrixEntry = matrix->rowStarts[row];
+    int beyondMatrixEntry = (row+1 < matrix->numRows) ? matrix->rowStarts[row+1] : matrix->numNonzeros;
+    for (int matrixEntry = firstMatrixEntry; matrixEntry < beyondMatrixEntry; ++matrixEntry)
+    {
+      if (matrix->entryValues[matrixEntry] != 0)
+      {
+        result->entryColumns[resultEntry] = matrix->entryColumns[matrixEntry];
+        result->entryValues[resultEntry] = 1;
+        resultEntry++;
+      }
+    }
+  }
+  result->rowStarts[matrix->numRows] = resultEntry;
+
+  return TU_OKAY;
+}
+
+TU_ERROR TUsignedSupportInt(TU* tu, TU_INTMAT* matrix, TU_CHRMAT** psupport)
+{
+  assert(tu);
+  assert(matrix);
+  assert(psupport);
+  assert(!*psupport);
+
+  TU_CALL( TUchrmatCreate(tu, psupport, matrix->numRows, matrix->numColumns, matrix->numNonzeros) );
+  TU_CHRMAT* result = *psupport;
+
+  int resultEntry = 0;
+  for (int row = 0; row < matrix->numRows; ++row)
+  {
+    result->rowStarts[row] = resultEntry;
+    int firstMatrixEntry = matrix->rowStarts[row];
+    int beyondMatrixEntry = (row+1 < matrix->numRows) ? matrix->rowStarts[row+1] : matrix->numNonzeros;
+    for (int matrixEntry = firstMatrixEntry; matrixEntry < beyondMatrixEntry; ++matrixEntry)
+    {
+      if (matrix->entryValues[matrixEntry] > 0)
+      {
+        result->entryColumns[resultEntry] = matrix->entryColumns[matrixEntry];
+        result->entryValues[resultEntry] = 1;
+        resultEntry++;
+      }
+      else if (matrix->entryValues[matrixEntry] < 0)
+      {
+        result->entryColumns[resultEntry] = matrix->entryColumns[matrixEntry];
+        result->entryValues[resultEntry] = -1;
+        resultEntry++;
+      }
+    }
+  }
+  result->rowStarts[matrix->numRows] = resultEntry;
+
+  return TU_OKAY;
+}
+
+TU_ERROR TUsupportChr(TU* tu, TU_CHRMAT* matrix, TU_CHRMAT** psupport)
+{
+  assert(tu);
+  assert(matrix);
+  assert(psupport);
+  assert(!*psupport);
+
+  TU_CALL( TUchrmatCreate(tu, psupport, matrix->numRows, matrix->numColumns, matrix->numNonzeros) );
+  TU_CHRMAT* result = *psupport;
+
+  int resultEntry = 0;
+  for (int row = 0; row < matrix->numRows; ++row)
+  {
+    result->rowStarts[row] = resultEntry;
+    int firstMatrixEntry = matrix->rowStarts[row];
+    int beyondMatrixEntry = (row+1 < matrix->numRows) ? matrix->rowStarts[row+1] : matrix->numNonzeros;
+    for (int matrixEntry = firstMatrixEntry; matrixEntry < beyondMatrixEntry; ++matrixEntry)
+    {
+      if (matrix->entryValues[matrixEntry] != 0)
+      {
+        result->entryColumns[resultEntry] = matrix->entryColumns[matrixEntry];
+        result->entryValues[resultEntry] = 1;
+        resultEntry++;
+      }
+    }
+  }
+  result->rowStarts[matrix->numRows] = resultEntry;
+
+  return TU_OKAY;
+}
+
+TU_ERROR TUsignedSupportChr(TU* tu, TU_CHRMAT* matrix, TU_CHRMAT** psupport)
+{
+  assert(tu);
+  assert(matrix);
+  assert(psupport);
+  assert(!*psupport);
+
+  TU_CALL( TUchrmatCreate(tu, psupport, matrix->numRows, matrix->numColumns, matrix->numNonzeros) );
+  TU_CHRMAT* result = *psupport;
+
+  int resultEntry = 0;
+  for (int row = 0; row < matrix->numRows; ++row)
+  {
+    result->rowStarts[row] = resultEntry;
+    int firstMatrixEntry = matrix->rowStarts[row];
+    int beyondMatrixEntry = (row+1 < matrix->numRows) ? matrix->rowStarts[row+1] : matrix->numNonzeros;
+    for (int matrixEntry = firstMatrixEntry; matrixEntry < beyondMatrixEntry; ++matrixEntry)
+    {
+      if (matrix->entryValues[matrixEntry] > 0)
+      {
+        result->entryColumns[resultEntry] = matrix->entryColumns[matrixEntry];
+        result->entryValues[resultEntry] = 1;
+        resultEntry++;
+      }
+      else if (matrix->entryValues[matrixEntry] < 0)
+      {
+        result->entryColumns[resultEntry] = matrix->entryColumns[matrixEntry];
+        result->entryValues[resultEntry] = -1;
+        resultEntry++;
+      }
+    }
+  }
+  result->rowStarts[matrix->numRows] = resultEntry;
 
   return TU_OKAY;
 }
