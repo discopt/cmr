@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
 
 project(TU
-   VERSION 2.0.0
+   VERSION 1.9.0
    LANGUAGES C CXX)
 
 option(SHARED "Build shared libraries" ON)
@@ -69,7 +69,7 @@ target_link_libraries(tu_test
 )
 set_target_properties(tu_test PROPERTIES OUTPUT_NAME tu-test)
 
-# Target for the test binary.
+# Target for the graphicness-test binary.
 add_executable(graphicness_test
    src/test/main.c)
 target_link_libraries(graphicness_test
@@ -77,6 +77,16 @@ target_link_libraries(graphicness_test
       TU::tu
 )
 set_target_properties(graphicness_test PROPERTIES OUTPUT_NAME graphicness-test)
+
+
+# Target for the graphic-column-submatrix binary.
+add_executable(graphic_column_submatrix
+   src/test/graphic_column_submatrix.c)
+target_link_libraries(graphic_column_submatrix
+   PRIVATE
+      TU::tu
+)
+set_target_properties(graphic_column_submatrix PROPERTIES OUTPUT_NAME graphic-column-submatrix)
 
 
 # Target for the random_network
