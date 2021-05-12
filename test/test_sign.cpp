@@ -48,7 +48,7 @@ TEST(Sign, Change)
   ASSERT_TU_CALL( TUtestSignChr(tu, matrix, &alreadySigned, &submatrix) );
   ASSERT_FALSE(alreadySigned);
   ASSERT_TRUE(submatrix != NULL);
-  TUchrsubmatFilter(tu, matrix, submatrix, &violator);
+  ASSERT_TU_CALL( TUchrmatFilterSubmat(tu, matrix, submatrix, &violator) );
   ASSERT_TRUE(TUchrmatCheckEqual(violator, checkViolator));
   TUchrmatFree(tu, &violator);
   TUsubmatFree(tu, &submatrix);

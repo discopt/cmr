@@ -82,7 +82,7 @@ TU_ERROR computeRepresentationMatrix(
   TUassertStackConsistency(tu);
 
   TUdbgMsg(0, "Computing %s representation matrix.\n", ternary ? "ternary" : "binary");
-  
+
   DijkstraNodeData* nodeData = NULL;
   TU_CALL( TUallocStackArray(tu, &nodeData, TUgraphMemNodes(graph)) );
   TU_INTHEAP heap;
@@ -389,7 +389,7 @@ TU_ERROR TUcomputeGraphBinaryRepresentationMatrix(TU* tu, TU_GRAPH* graph, TU_CH
 TU_ERROR TUcomputeGraphTernaryRepresentationMatrix(TU* tu, TU_GRAPH* graph, TU_CHRMAT** pmatrix, TU_CHRMAT** ptranspose,
   bool* edgesReversed, int numForestEdges, TU_GRAPH_EDGE* forestEdges, int numCoforestEdges,
   TU_GRAPH_EDGE* coforestEdges, bool* pisCorrectBasis)
-{ 
+{
   assert(tu);
   assert(graph);
   assert(pmatrix || ptranspose);
@@ -558,7 +558,7 @@ DEC_MEMBER findMember(
 
 /**
  * \brief Returns the representative of the parent member of \p member.
- * 
+ *
  * Assumes that \p member is a representative member.
  */
 
@@ -945,7 +945,7 @@ typedef struct
 
 /**
  * \brief Returns the representative node of \p node.
- * 
+ *
  * Assumes \p node is indeed a node, i.e., not -1.
  */
 
@@ -1122,7 +1122,7 @@ TU_ERROR removeEdgeFromMembersEdgeList(
 
 /**
  * \brief Replaced \p oldEdge in its member by \p newEdge.
- * 
+ *
  * Assumes that \p newEdge has the same member but is not in its edge list.
  */
 
@@ -1735,7 +1735,7 @@ TU_ERROR TUdecToDot(
 
 /**<
  * \brief Writes decomposition to a dot file in the current directory.
- * 
+ *
  * The file name is dec-NUMBER.dot where NUMBER is increased for each call and reset for a new decomposition.
  */
 
@@ -1795,7 +1795,7 @@ TU_ERROR newcolumnCreate(
 
   newcolumn->nodesDegree = NULL;
   newcolumn->memNodesDegree = 0;
-  
+
   newcolumn->edgesInPath = NULL;
   newcolumn->memEdgesInPath = 0;
 
@@ -3316,7 +3316,7 @@ TU_ERROR determineTypes(
 
 /**
  * \brief Checks if a new column can be added to the decomposition.
- * 
+ *
  * Information necessary for carrying out the addition is stored in \p newcolumn.
  */
 
@@ -3579,7 +3579,7 @@ TU_ERROR setEdgeNodes(
 
 /**
  * \brief Merges \p member into its parent.
- * 
+ *
  * If \p headToHead is \c true, then the two head nodes (and the two tail nodes) are identified with each other.
  * Otherwise, a head is identified with a tail.
  */
@@ -4003,7 +4003,7 @@ TU_ERROR addColumnProcessRigid(
         DEC_EDGE markerOfParent, markerToParent;
         TU_CALL( createMarkerEdgePair(dec, member, &markerOfParent, childMarkerNodes[0], childMarkerNodes[1],
           newParallel, &markerToParent, -1, -1) );
-        
+
         TU_CALL( replaceEdgeInMembersEdgeList(dec, childMarkerEdges[0], markerOfParent) );
         TU_CALL( addEdgeToMembersEdgeList(dec, markerToParent) );
         dec->edges[childMarkerEdges[0]].member = newParallel;
@@ -5099,11 +5099,11 @@ TU_ERROR TUtestBinaryGraphic(TU* tu, TU_CHRMAT* transpose, bool* pisGraphic, TU_
 
     TU_CALL( newcolumnFree(tu, &newcolumn) );
   }
-  
+
   if (*pisGraphic)
   {
     /* Allocate memory for graph, basis and cobasis. */
-    
+
     TU_GRAPH* graph = NULL;
     if (pgraph)
     {
@@ -5382,7 +5382,7 @@ TU_ERROR TUtestTernaryGraphic(TU* tu, TU_CHRMAT* transpose, bool* pisGraphic, TU
     for (int componentColumn = 0; componentColumn < componentMatrix->numColumns; ++componentColumn)
     {
       int column = components[comp].rowsToOriginal[componentColumn];
-      
+
       TU_GRAPH_EDGE columnEdge = cobasis[column];
       TU_GRAPH_NODE s = TUgraphEdgeU(graph, columnEdge);
       TU_GRAPH_NODE t = TUgraphEdgeV(graph, columnEdge);
@@ -5396,7 +5396,7 @@ TU_ERROR TUtestTernaryGraphic(TU* tu, TU_CHRMAT* transpose, bool* pisGraphic, TU
       {
         TUdbgMsg(6, "Entry %d is in row %d with value %d.\n", entry, transpose->entryColumns[entry],
           transpose->entryValues[entry]);
-        
+
         TU_GRAPH_EDGE rowEdge = basis[transpose->entryColumns[entry]];
         TU_GRAPH_NODE u = TUgraphEdgeU(graph, rowEdge);
         TU_GRAPH_NODE v = TUgraphEdgeV(graph, rowEdge);
@@ -5465,7 +5465,7 @@ TU_ERROR TUtestTernaryGraphic(TU* tu, TU_CHRMAT* transpose, bool* pisGraphic, TU
       while (nodeData[v].distance > minDistance)
       {
         char currentSign = TUgraphEdgeU(graph, nodeData[v].edge) == v ? 1 : -1;
-        
+
         if (reversedColumnEdge)
           currentSign *= -1;
         assert(!nodeData[v].fixed || (*pedgesReversed)[nodeData[v].edge] == (currentSign != nodeData[v].sign));
@@ -5533,5 +5533,65 @@ TU_ERROR TUtestTernaryGraphic(TU* tu, TU_CHRMAT* transpose, bool* pisGraphic, TU
 
   return TU_OKAY;
 }
+
+TU_ERROR TUtestBinaryGraphicColumnSubmatrixGreedy(TU* tu, TU_CHRMAT* transpose, size_t* orderedColumns,
+  TU_SUBMAT** psubmatrix)
+{
+  assert(tu);
+  assert(transpose);
+  assert(psubmatrix);
+
+  size_t numRows = transpose->numColumns;
+  size_t numColumns = transpose->numRows;
+
+  TUdbgMsg(0, "TUtestBinaryGraphicColumnSubmatrixGreedy for %dx%d matrix with transpose\n", numRows, numColumns);
+#if defined(TU_DEBUG)
+  TU_CALL( TUchrmatPrintDense(stdout, transpose, '0', true) );
+#endif /* TU_DEBUG */
+
+  TU_CALL( TUsubmatCreate(tu, psubmatrix, numRows, numColumns) );
+  TU_SUBMAT* submatrix = *psubmatrix;
+  submatrix->numRows = 0;
+  submatrix->numColumns = 0;
+  for (int row = 0; row < numRows; ++row)
+  {
+    submatrix->rows[submatrix->numRows++] = row;
+  }
+
+  /* Try to add each column. */
+  Dec* dec = NULL;
+  TU_CALL( decCreate(tu, &dec, 4096, 1024, 256, 256, 256) );
+
+  /* Process each column. */
+  DEC_NEWCOLUMN* newcolumn = NULL;
+  TU_CALL( newcolumnCreate(tu, &newcolumn) );
+  for (int c = 0; c < numColumns; ++c)
+  {
+    int column = orderedColumns ? orderedColumns[c] : c;
+
+    TUdbgMsg(0, "!!! Trying to append column %d.\n", column);
+
+    int lengthColumn = ((column == transpose->numRows-1) ? transpose->numNonzeros : transpose->rowStarts[column+1])
+      - transpose->rowStarts[column];
+    TU_CALL( addColumnCheck(dec, newcolumn, &transpose->entryColumns[transpose->rowStarts[column]], lengthColumn) );
+
+    TUdbgMsg(0, "!!! Appending column %s graphicness.\n", newcolumn->remainsGraphic ? "maintains" : " would destroy");
+
+    if (newcolumn->remainsGraphic)
+    {
+      TU_CALL( addColumnApply(dec, newcolumn, column, &transpose->entryColumns[transpose->rowStarts[column]],
+        lengthColumn) );
+      submatrix->columns[submatrix->numColumns] = column;
+      submatrix->numColumns++;
+    }
+  }
+
+  TU_CALL( newcolumnFree(tu, &newcolumn) );
+  TU_CALL( decFree(&dec) );
+
+  return TU_OKAY;
+}
+
+
 
 /**@}*/

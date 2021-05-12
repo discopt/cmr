@@ -77,7 +77,7 @@ TU_ERROR TUsort2(TU* tu, size_t length, void* array1, size_t elementSize1, void*
     }
   }
 
-  /* Free the temporary space. */  
+  /* Free the temporary space. */
   TU_CALL( TUfreeStackArray(tu, &pointerArray) );
   TU_CALL( TUfreeStackArray(tu, &temp2) );
   TU_CALL( TUfreeStackArray(tu, &temp1) );
@@ -86,42 +86,3 @@ TU_ERROR TUsort2(TU* tu, size_t length, void* array1, size_t elementSize1, void*
   return TU_OKAY;
 }
 
-
-
-
-// void qsort2(void* base1, size_t nitems, size_t size1, int (*compare)(const void **, const void **), void* base2,
-//   size_t size2)
-// {
-//   
-//   
-//   for (int = 0; i < nitems; ++i)
-//     
-//   
-//   size_t i, j, k;
-//     int ta, tb;
-// 
-//     /* create array of pointers to a[] */
-//     for(i = 0; i < sizeof(a)/sizeof(a[0]); i++)
-//         pa[i] = &a[i];
-// 
-//     /* sort array of pointers */
-//     qsort(pa, sizeof(a)/sizeof(a[0]), sizeof(pa[0]), compare);
-// 
-//     /* reorder a[] and b[] according to the array of pointers */
-//     for(i = 0; i < sizeof(a)/sizeof(a[0]); i++){
-//         if(i != pa[i]-a){
-//             ta = a[i];
-//             tb = b[i];
-//             k = i;
-//             while(i != (j = pa[k]-a)){
-//                 a[k] = a[j];
-//                 b[k] = b[j];
-//                 pa[k] = &a[k];
-//                 k = j;
-//             }
-//             a[k] = ta;
-//             b[k] = tb;
-//             pa[k] = &a[k];
-//         }
-//     }
-// }

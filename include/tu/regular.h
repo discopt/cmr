@@ -169,7 +169,7 @@ int TUregularDecomposeOneSum(
  * Assumes that \p decomposition contains valid \c matrix and \c transpose entries.
  * A simple 2-sum is one where one component consists of only one row and one column. It is found
  * by splitting off unit vectors.
- * 
+ *
  * \returns Remaining submatrix.
  */
 

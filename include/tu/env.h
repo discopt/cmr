@@ -84,7 +84,7 @@ TU_ERROR TUfreeEnvironment(
 
 /**
  * \brief Carries out the allocation for \ref TUallocBlock.
- * 
+ *
  * \note Use \ref TUallocBlock to allocate block memory.
  */
 
@@ -100,7 +100,7 @@ TU_ERROR _TUallocBlock(TU* tu, void** ptr, size_t size);
 
 /**
  * \brief Carries out the deallocation for \ref TUfreeBlock.
- * 
+ *
  * \note Use \ref TUfreeBlock to free block memory.
  */
 
@@ -109,7 +109,7 @@ TU_ERROR _TUfreeBlock(TU* tu, void** ptr, size_t size);
 
 /**
  * \brief Allocates block memory for an array of chunks.
- * 
+ *
  * The block memory shall be freed with \ref TUfreeBlockArray. Its size can be changed via
  * \ref TUreallocBlockArray.
  * The size of each chunk is determined automatically.
@@ -120,7 +120,7 @@ TU_ERROR _TUfreeBlock(TU* tu, void** ptr, size_t size);
 
 /**
  * \brief Carries out the allocation for \ref TUallocBlockArray.
- * 
+ *
  * \note Use \ref TUallocBlockArray to allocate block memory.
  */
 
@@ -129,7 +129,7 @@ TU_ERROR _TUallocBlockArray(TU* tu, void** ptr, size_t size, size_t length);
 
 /**
  * \brief Reallocates block memory of an array of chunks.
- * 
+ *
  * The block memory shall be freed with \ref TUfreeBlockArray.
  * The size of each chunk is determined automatically.
  */
@@ -139,7 +139,7 @@ TU_ERROR _TUallocBlockArray(TU* tu, void** ptr, size_t size, size_t length);
 
 /**
  * \brief Carries out the reallocation for \ref TUreallocBlockArray.
- * 
+ *
  * \note Use \ref TUreallocBlockArray to reallocate block memory.
  */
 
@@ -148,7 +148,7 @@ TU_ERROR _TUreallocBlockArray(TU* tu, void** ptr, size_t size, size_t length);
 
 /**
  * \brief Carries out the deallocation for \ref TUfreeBlockArray.
- * 
+ *
  * \note Use \ref TUfreeBlockArray to free a block memory array.
  */
 

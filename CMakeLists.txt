@@ -80,23 +80,23 @@ set_target_properties(graphicness_test PROPERTIES OUTPUT_NAME graphicness-test)
 
 
 # Target for the graphic-column-submatrix binary.
-add_executable(graphic_column_submatrix
-   src/test/graphic_column_submatrix.c)
-target_link_libraries(graphic_column_submatrix
-   PRIVATE
-      TU::tu
-)
-set_target_properties(graphic_column_submatrix PROPERTIES OUTPUT_NAME graphic-column-submatrix)
+#add_executable(graphic_column_submatrix
+#   src/test/graphic_column_submatrix.c)
+#target_link_libraries(graphic_column_submatrix
+#   PRIVATE
+#      TU::tu
+#)
+#set_target_properties(graphic_column_submatrix PROPERTIES OUTPUT_NAME graphic-column-submatrix)
 
 
 # Target for the random_network
-add_executable(random_network
-   src/test/random_network.c)
-target_link_libraries(random_network
-   PRIVATE
-      TU::tu
-)
-set_target_properties(random_network PROPERTIES OUTPUT_NAME random-network)
+#add_executable(random_network
+#   src/test/random_network.c)
+#target_link_libraries(random_network
+#   PRIVATE
+#      TU::tu
+#)
+#set_target_properties(random_network PROPERTIES OUTPUT_NAME random-network)
 
 # Write compilation settings to tu/config.h.
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/include/tu/config.h.in ${CMAKE_BINARY_DIR}/tu/config.h @ONLY)

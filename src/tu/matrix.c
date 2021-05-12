@@ -313,32 +313,32 @@ TU_ERROR TUchrmatTranspose(TU* tu, TU_CHRMAT* matrix, TU_CHRMAT** result)
   return TU_OKAY;
 }
 
-TU_ERROR TUdblmatPrintDense(FILE* stream, TU_DBLMAT* sparse, char zeroChar, bool header)
+TU_ERROR TUdblmatPrintDense(FILE* stream, TU_DBLMAT* matrix, char zeroChar, bool header)
 {
   assert(stream != NULL);
-  assert(sparse != NULL);
-  double* rowEntries = (double*) calloc(sparse->numColumns, sizeof(double));
+  assert(matrix != NULL);
+  double* rowEntries = (double*) calloc(matrix->numColumns, sizeof(double));
 
-  fprintf(stream, "%d %d\n", sparse->numRows, sparse->numColumns);
+  fprintf(stream, "%d %d\n", matrix->numRows, matrix->numColumns);
   if (header)
   {
     fputs("   ", stream);
-    for (int column = 0; column < sparse->numColumns; ++column)
+    for (int column = 0; column < matrix->numColumns; ++column)
       fprintf(stream, "%d ", column % 10);
     fputs("\n  ", stream);
-    for (int column = 0; column < sparse->numColumns; ++column)
+    for (int column = 0; column < matrix->numColumns; ++column)
       fputs("--", stream);
     fputc('\n', stream);
   }
-  for (int row = 0; row < sparse->numRows; ++row)
+  for (int row = 0; row < matrix->numRows; ++row)
   {
     if (header)
       fprintf(stream, "%d| ", row % 10);
-    int start = sparse->rowStarts[row];
-    int end = row + 1 < sparse->numRows ? sparse->rowStarts[row + 1] : sparse->numNonzeros;
+    int start = matrix->rowStarts[row];
+    int end = row + 1 < matrix->numRows ? matrix->rowStarts[row + 1] : matrix->numNonzeros;
     for (int i = start; i < end; ++i)
-      rowEntries[sparse->entryColumns[i]] = sparse->entryValues[i];
-    for (int column = 0; column < sparse->numColumns; ++column)
+      rowEntries[matrix->entryColumns[i]] = matrix->entryValues[i];
+    for (int column = 0; column < matrix->numColumns; ++column)
     {
       double x = rowEntries[column];
       if (x == 0.0)
@@ -347,7 +347,7 @@ TU_ERROR TUdblmatPrintDense(FILE* stream, TU_DBLMAT* sparse, char zeroChar, bool
         fprintf(stream, "%f ", x);
     }
     for (int i = start; i < end; ++i)
-      rowEntries[sparse->entryColumns[i]] = 0.0;
+      rowEntries[matrix->entryColumns[i]] = 0.0;
     fputc('\n', stream);
   }
 
@@ -356,32 +356,32 @@ TU_ERROR TUdblmatPrintDense(FILE* stream, TU_DBLMAT* sparse, char zeroChar, bool
   return TU_OKAY;
 }
 
-TU_ERROR TUintmatPrintDense(FILE* stream, TU_INTMAT* sparse, char zeroChar, bool header)
+TU_ERROR TUintmatPrintDense(FILE* stream, TU_INTMAT* matrix, char zeroChar, bool header)
 {
   assert(stream != NULL);
-  assert(sparse != NULL);
-  int* rowEntries = (int*) calloc(sparse->numColumns, sizeof(int));
+  assert(matrix != NULL);
+  int* rowEntries = (int*) calloc(matrix->numColumns, sizeof(int));
 
-  fprintf(stream, "%d %d\n", sparse->numRows, sparse->numColumns);
+  fprintf(stream, "%d %d\n", matrix->numRows, matrix->numColumns);
   if (header)
   {
     fputs("   ", stream);
-    for (int column = 0; column < sparse->numColumns; ++column)
+    for (int column = 0; column < matrix->numColumns; ++column)
       fprintf(stream, "%d ", column % 10);
     fputs("\n  ", stream);
-    for (int column = 0; column < sparse->numColumns; ++column)
+    for (int column = 0; column < matrix->numColumns; ++column)
       fputs("--", stream);
     fputc('\n', stream);
   }
-  for (int row = 0; row < sparse->numRows; ++row)
+  for (int row = 0; row < matrix->numRows; ++row)
   {
     if (header)
       fprintf(stream, "%d| ", row % 10);
-    int start = sparse->rowStarts[row];
-    int end = row + 1 < sparse->numRows ? sparse->rowStarts[row + 1] : sparse->numNonzeros;
+    int start = matrix->rowStarts[row];
+    int end = row + 1 < matrix->numRows ? matrix->rowStarts[row + 1] : matrix->numNonzeros;
     for (int i = start; i < end; ++i)
-      rowEntries[sparse->entryColumns[i]] = sparse->entryValues[i];
-    for (int column = 0; column < sparse->numColumns; ++column)
+      rowEntries[matrix->entryColumns[i]] = matrix->entryValues[i];
+    for (int column = 0; column < matrix->numColumns; ++column)
     {
       int x = rowEntries[column];
       if (x == 0.0)
@@ -390,7 +390,7 @@ TU_ERROR TUintmatPrintDense(FILE* stream, TU_INTMAT* sparse, char zeroChar, bool
         fprintf(stream, "%d ", x);
     }
     for (int i = start; i < end; ++i)
-      rowEntries[sparse->entryColumns[i]] = 0.0;
+      rowEntries[matrix->entryColumns[i]] = 0.0;
     fputc('\n', stream);
   }
 
@@ -399,32 +399,32 @@ TU_ERROR TUintmatPrintDense(FILE* stream, TU_INTMAT* sparse, char zeroChar, bool
   return TU_OKAY;
 }
 
-TU_ERROR TUchrmatPrintDense(FILE* stream, TU_CHRMAT* sparse, char zeroChar, bool header)
+TU_ERROR TUchrmatPrintDense(FILE* stream, TU_CHRMAT* matrix, char zeroChar, bool header)
 {
   assert(stream != NULL);
-  assert(sparse != NULL);
-  char* rowEntries = (char*) calloc(sparse->numColumns, sizeof(char));
+  assert(matrix != NULL);
+  char* rowEntries = (char*) calloc(matrix->numColumns, sizeof(char));
 
-  fprintf(stream, "%d %d\n", sparse->numRows, sparse->numColumns);
+  fprintf(stream, "%d %d\n", matrix->numRows, matrix->numColumns);
   if (header)
   {
     fputs("   ", stream);
-    for (int column = 0; column < sparse->numColumns; ++column)
+    for (int column = 0; column < matrix->numColumns; ++column)
       fprintf(stream, "%d ", column % 10);
     fputs("\n  ", stream);
-    for (int column = 0; column < sparse->numColumns; ++column)
+    for (int column = 0; column < matrix->numColumns; ++column)
       fputs("--", stream);
     fputc('\n', stream);
   }
-  for (int row = 0; row < sparse->numRows; ++row)
+  for (int row = 0; row < matrix->numRows; ++row)
   {
     if (header)
       fprintf(stream, "%d| ", row % 10);
-    int start = sparse->rowStarts[row];
-    int end = row + 1 < sparse->numRows ? sparse->rowStarts[row + 1] : sparse->numNonzeros;
+    int start = matrix->rowStarts[row];
+    int end = row + 1 < matrix->numRows ? matrix->rowStarts[row + 1] : matrix->numNonzeros;
     for (int i = start; i < end; ++i)
-      rowEntries[sparse->entryColumns[i]] = sparse->entryValues[i];
-    for (int column = 0; column < sparse->numColumns; ++column)
+      rowEntries[matrix->entryColumns[i]] = matrix->entryValues[i];
+    for (int column = 0; column < matrix->numColumns; ++column)
     {
       char x = rowEntries[column];
       if (x == 0.0)
@@ -433,7 +433,7 @@ TU_ERROR TUchrmatPrintDense(FILE* stream, TU_CHRMAT* sparse, char zeroChar, bool
         fprintf(stream, "%d ", x);
     }
     for (int i = start; i < end; ++i)
-      rowEntries[sparse->entryColumns[i]] = 0.0;
+      rowEntries[matrix->entryColumns[i]] = 0.0;
     fputc('\n', stream);
   }
 
@@ -1060,16 +1060,18 @@ void TUsubmatCreate1x1(TU* tu, TU_SUBMAT** submatrix, int row, int column)
   (*submatrix)->columns[0] = column;
 }
 
-void TUsubmatFree(TU* tu, TU_SUBMAT** submatrix)
+TU_ERROR TUsubmatFree(TU* tu, TU_SUBMAT** psubmatrix)
 {
-  assert(submatrix);
+  assert(psubmatrix);
 
-  if ((*submatrix)->rows)
-    TUfreeBlockArray(tu, &(*submatrix)->rows);
-  if ((*submatrix)->columns)
-    TUfreeBlockArray(tu, &(*submatrix)->columns);
-  TUfreeBlockArray(tu, submatrix);
-  *submatrix = NULL;
+  if ((*psubmatrix)->rows)
+    TUfreeBlockArray(tu, &(*psubmatrix)->rows);
+  if ((*psubmatrix)->columns)
+    TUfreeBlockArray(tu, &(*psubmatrix)->columns);
+  TUfreeBlockArray(tu, psubmatrix);
+  *psubmatrix = NULL;
+
+  return TU_OKAY;
 }
 
 static int TUsortSubmatrixCompare(const void* p1, const void* p2)
@@ -1087,8 +1089,7 @@ TU_ERROR TUsortSubmatrix(TU_SUBMAT* submatrix)
   return TU_OKAY;
 }
 
-TU_ERROR TUchrsubmatFilter(TU* tu, TU_CHRMAT* matrix, TU_SUBMAT* submatrix,
-  TU_CHRMAT** result)
+TU_ERROR TUdblmatFilterSubmat(TU* tu, TU_DBLMAT* matrix, TU_SUBMAT* submatrix, TU_DBLMAT** result)
 {
   assert(matrix);
   assert(submatrix);
@@ -1103,8 +1104,6 @@ TU_ERROR TUchrsubmatFilter(TU* tu, TU_CHRMAT* matrix, TU_SUBMAT* submatrix,
     assert(submatrix->columns[j] < matrix->numColumns);
     columnMap[submatrix->columns[j]] = j;
   }
-
-  TU_CALL( TUchrmatCreate(tu, result, submatrix->numRows, submatrix->numColumns, 0) );
 
   /* Count nonzeros. */
   int numNonzeros = 0;
@@ -1123,10 +1122,139 @@ TU_ERROR TUchrsubmatFilter(TU* tu, TU_CHRMAT* matrix, TU_SUBMAT* submatrix,
     }
   }
 
-  TU_CALL( TUallocBlockArray(tu, &(*result)->entryColumns, numNonzeros) );
-  TU_CALL( TUallocBlockArray(tu, &(*result)->entryValues, numNonzeros) );
+  TU_CALL( TUdblmatCreate(tu, result, submatrix->numRows, submatrix->numColumns, numNonzeros) );
 
   /* Copy nonzeros. */
+  (*result)->numNonzeros = 0;
+  for (int i = 0; i < submatrix->numRows; ++i)
+  {
+    (*result)->rowStarts[i] = (*result)->numNonzeros;
+    int r = submatrix->rows[i];
+    assert(r < matrix->numRows);
+
+    int begin = matrix->rowStarts[r];
+    int end = r + 1 < matrix->numRows ? matrix->rowStarts[r+1] : matrix->numNonzeros;
+    for (int e = begin; e < end; ++e)
+    {
+      int c = matrix->entryColumns[e];
+      if (columnMap[c] >= 0)
+      {
+        (*result)->entryColumns[(*result)->numNonzeros] = columnMap[c];
+        (*result)->entryValues[(*result)->numNonzeros] = matrix->entryValues[e];
+        (*result)->numNonzeros++;
+      }
+    }
+  }
+  (*result)->rowStarts[(*result)->numRows] = (*result)->numNonzeros;
+
+  if (columnMap)
+    TU_CALL( TUfreeStackArray(tu, &columnMap) );
+
+  return TU_OKAY;
+}
+
+
+TU_ERROR TUintmatFilterSubmat(TU* tu, TU_INTMAT* matrix, TU_SUBMAT* submatrix, TU_INTMAT** result)
+{
+  assert(matrix);
+  assert(submatrix);
+  assert(result);
+
+  int* columnMap = NULL;
+  TU_CALL( TUallocStackArray(tu, &columnMap, matrix->numColumns) );
+  for (int c = 0; c < matrix->numColumns; ++c)
+    columnMap[c] = -1;
+  for (int j = 0; j < submatrix->numColumns; ++j)
+  {
+    assert(submatrix->columns[j] < matrix->numColumns);
+    columnMap[submatrix->columns[j]] = j;
+  }
+
+  /* Count nonzeros. */
+  int numNonzeros = 0;
+  for (int i = 0; i < submatrix->numRows; ++i)
+  {
+    int r = submatrix->rows[i];
+    assert(r < matrix->numRows);
+
+    int begin = matrix->rowStarts[r];
+    int end = r + 1 < matrix->numRows ? matrix->rowStarts[r+1] : matrix->numNonzeros;
+    for (int e = begin; e < end; ++e)
+    {
+      int c = matrix->entryColumns[e];
+      if (columnMap[c] >= 0)
+        ++numNonzeros;
+    }
+  }
+
+  TU_CALL( TUintmatCreate(tu, result, submatrix->numRows, submatrix->numColumns, numNonzeros) );
+
+  /* Copy nonzeros. */
+  (*result)->numNonzeros = 0;
+  for (int i = 0; i < submatrix->numRows; ++i)
+  {
+    (*result)->rowStarts[i] = (*result)->numNonzeros;
+    int r = submatrix->rows[i];
+    assert(r < matrix->numRows);
+
+    int begin = matrix->rowStarts[r];
+    int end = r + 1 < matrix->numRows ? matrix->rowStarts[r+1] : matrix->numNonzeros;
+    for (int e = begin; e < end; ++e)
+    {
+      int c = matrix->entryColumns[e];
+      if (columnMap[c] >= 0)
+      {
+        (*result)->entryColumns[(*result)->numNonzeros] = columnMap[c];
+        (*result)->entryValues[(*result)->numNonzeros] = matrix->entryValues[e];
+        (*result)->numNonzeros++;
+      }
+    }
+  }
+  (*result)->rowStarts[(*result)->numRows] = (*result)->numNonzeros;
+
+  if (columnMap)
+    TU_CALL( TUfreeStackArray(tu, &columnMap) );
+
+  return TU_OKAY;
+}
+
+TU_ERROR TUchrmatFilterSubmat(TU* tu, TU_CHRMAT* matrix, TU_SUBMAT* submatrix, TU_CHRMAT** result)
+{
+  assert(matrix);
+  assert(submatrix);
+  assert(result);
+
+  int* columnMap = NULL;
+  TU_CALL( TUallocStackArray(tu, &columnMap, matrix->numColumns) );
+  for (int c = 0; c < matrix->numColumns; ++c)
+    columnMap[c] = -1;
+  for (int j = 0; j < submatrix->numColumns; ++j)
+  {
+    assert(submatrix->columns[j] < matrix->numColumns);
+    columnMap[submatrix->columns[j]] = j;
+  }
+
+  /* Count nonzeros. */
+  int numNonzeros = 0;
+  for (int i = 0; i < submatrix->numRows; ++i)
+  {
+    int r = submatrix->rows[i];
+    assert(r < matrix->numRows);
+
+    int begin = matrix->rowStarts[r];
+    int end = r + 1 < matrix->numRows ? matrix->rowStarts[r+1] : matrix->numNonzeros;
+    for (int e = begin; e < end; ++e)
+    {
+      int c = matrix->entryColumns[e];
+      if (columnMap[c] >= 0)
+        ++numNonzeros;
+    }
+  }
+
+  TU_CALL( TUchrmatCreate(tu, result, submatrix->numRows, submatrix->numColumns, numNonzeros) );
+
+  /* Copy nonzeros. */
+  (*result)->numNonzeros = 0;
   for (int i = 0; i < submatrix->numRows; ++i)
   {
     (*result)->rowStarts[i] = (*result)->numNonzeros;

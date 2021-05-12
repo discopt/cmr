@@ -11,7 +11,7 @@ extern "C" {
 
 /**
  * \brief Row-wise representation of sparse double matrix.
- * 
+ *
  * The columns and values of all nonzeros are stored in \ref entryColumns and \ref entryValues,
  * respectively.
  * Those of row \c r are stored from \ref rowStarts[r] until (but not including)
@@ -65,12 +65,12 @@ TU_EXPORT
 TU_ERROR TUdblmatChangeNumNonzeros(
   TU* tu,             /**< \ref TU environment. */
   TU_DBLMAT* matrix,  /**< Given matrix. */
-  int newNumNonzeros  /**< New number of nonzeros. */ 
+  int newNumNonzeros  /**< New number of nonzeros. */
 );
 
 /**
  * \brief Copies a double matrix to a newly allocated one.
- * 
+ *
  * Allocates *\p result and copies \p matrix there.
  */
 TU_EXPORT
@@ -103,7 +103,7 @@ TU_ERROR TUdblmatTranspose(
 
 /**
  * \brief Row-wise representation of sparse int matrix.
- * 
+ *
  * The columns and values of all nonzeros are stored in \ref entryColumns and \ref entryValues,
  * respectively.
  * Those of row \c r are stored from \ref rowStarts[r] until (but not including)
@@ -157,12 +157,12 @@ TU_EXPORT
 TU_ERROR TUintmatChangeNumNonzeros(
   TU* tu,             /**< \ref TU environment. */
   TU_INTMAT* matrix,  /**< Given matrix. */
-  int newNumNonzeros  /**< New number of nonzeros. */ 
+  int newNumNonzeros  /**< New number of nonzeros. */
 );
 
 /**
  * \brief Copies an int matrix to a newly allocated one.
- * 
+ *
  * Allocates *\p result and copies \p matrix there.
  */
 TU_EXPORT
@@ -189,7 +189,7 @@ TU_ERROR TUintmatTranspose(
 
 /**
  * \brief Row-wise representation of sparse char matrix.
- * 
+ *
  * The columns and values of all nonzeros are stored in \ref entryColumns and \ref entryValues,
  * respectively.
  * Those of row \c r are stored from \ref rowStarts[r] until (but not including)
@@ -243,12 +243,12 @@ TU_EXPORT
 TU_ERROR TUchrmatChangeNumNonzeros(
   TU* tu,             /**< \ref TU environment. */
   TU_CHRMAT* matrix,  /**< Given matrix. */
-  int newNumNonzeros  /**< New number of nonzeros. */ 
+  int newNumNonzeros  /**< New number of nonzeros. */
 );
 
 /**
  * \brief Copies an int matrix to a newly allocated one.
- * 
+ *
  * Allocates *\p result and copies \p matrix there.
  */
 TU_EXPORT
@@ -274,10 +274,10 @@ TU_ERROR TUchrmatTranspose(
 
 TU_EXPORT
 TU_ERROR TUdblmatPrintDense(
-  FILE* stream,       /**< File stream to print to */
-  TU_DBLMAT* matrix,  /**< Double matrix */
-  char zeroChar,      /**< Character to print for a zero */
-  bool header         /**< Whether to print row and column indices */
+  FILE* stream,       /**< File stream to print to. */
+  TU_DBLMAT* matrix,  /**< Double matrix. */
+  char zeroChar,      /**< Character to print for a zero. */
+  bool header         /**< Whether to print row and column indices. */
 );
 
 /**
@@ -286,10 +286,10 @@ TU_ERROR TUdblmatPrintDense(
 
 TU_EXPORT
 TU_ERROR TUintmatPrintDense(
-  FILE* stream,       /**< File stream to print to */
-  TU_INTMAT* matrix,  /**< Int matrix */
-  char zeroChar,      /**< Character to print for a zero */
-  bool header         /**< Whether to print row and column indices */
+  FILE* stream,       /**< File stream to print to. */
+  TU_INTMAT* matrix,  /**< Int matrix. */
+  char zeroChar,      /**< Character to print for a zero. */
+  bool header         /**< Whether to print row and column indices. */
 );
 
 /**
@@ -298,10 +298,10 @@ TU_ERROR TUintmatPrintDense(
 
 TU_EXPORT
 TU_ERROR TUchrmatPrintDense(
-  FILE* stream,       /**< File stream to print to */
-  TU_CHRMAT* matrix,  /**< Char matrix */
-  char zeroChar,      /**< Character to print for a zero */
-  bool header         /**< Whether to print row and column indices */
+  FILE* stream,       /**< File stream to print to. */
+  TU_CHRMAT* matrix,  /**< Char matrix. */
+  char zeroChar,      /**< Character to print for a zero. */
+  bool header         /**< Whether to print row and column indices. */
 );
 
 /**
@@ -482,16 +482,39 @@ void TUsubmatCreate1x1(
  * \brief Frees a submatrix.
  */
 TU_EXPORT
-void TUsubmatFree(
+TU_ERROR TUsubmatFree(
   TU* tu,                 /**< \ref TU environment. */
   TU_SUBMAT** psubmatrix  /**< Pointer to submatrix. */
+);
+
+/**
+ * \brief Creates a submatrix of a double matrix as an explicit matrix.
+ */
+TU_EXPORT
+TU_ERROR TUdblmatFilterSubmat(
+  TU* tu,               /**< \ref TU environment. */
+  TU_DBLMAT* matrix,    /**< Given matrix */
+  TU_SUBMAT* submatrix, /**< Specified submatrix */
+  TU_DBLMAT** result    /**< Pointer for storing the resulting double matrix. */
+);
+
+
+/**
+ * \brief Creates a submatrix of an int matrix as an explicit matrix.
+ */
+TU_EXPORT
+TU_ERROR TUintmatFilterSubmat(
+  TU* tu,               /**< \ref TU environment. */
+  TU_INTMAT* matrix,    /**< Given matrix */
+  TU_SUBMAT* submatrix, /**< Specified submatrix */
+  TU_INTMAT** result    /**< Pointer for storing the resulting int matrix. */
 );
 
 /**
  * \brief Creates a submatrix of a char matrix as an explicit matrix.
  */
 TU_EXPORT
-TU_ERROR TUchrsubmatFilter(
+TU_ERROR TUchrmatFilterSubmat(
   TU* tu,               /**< \ref TU environment. */
   TU_CHRMAT* matrix,    /**< Given matrix */
   TU_SUBMAT* submatrix, /**< Specified submatrix */

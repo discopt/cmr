@@ -60,7 +60,7 @@ struct TU_ENVIRONMENT
 
 /**
  * \brief Carries out the allocation for \ref TUallocStack.
- * 
+ *
  * \note Use \ref TUallocStack to allocate stack memory.
  */
 
@@ -80,7 +80,7 @@ TU_ERROR _TUallocStack(
 
 /**
  * \brief Carries out the deallocation for \ref TUfreeStack.
- * 
+ *
  * \note Use \ref TUfreeStack to free stack memory.
  */
 
@@ -100,14 +100,14 @@ TU_ERROR _TUfreeStack(
 /**
  * \brief Frees memory of an array of blocks on the stack.
  */
-  
+
 #define TUfreeStackArray(tu, ptr) \
   _TUfreeStack(tu, (void**) ptr)
 
 #if !defined(NDEBUG)
 
 /**
- * \brief Checks stack protection fields for corruption. 
+ * \brief Checks stack protection fields for corruption.
  *
  * Useful for debugging memory errors.
  */
@@ -128,7 +128,7 @@ void TUassertStackConsistency(
 
 
 #endif /* !NDEBUG */
-  
+
 char* TUconsistencyMessage(const char* format, ...);
 
 #if !defined(NDEBUG)
@@ -151,7 +151,7 @@ char* TUconsistencyMessage(const char* format, ...);
 #else
 
 #define TUconsistencyAssert( call )
-  
+
 #endif
 
 #endif /* TU_ENV_INTERNAL_H */

@@ -115,7 +115,7 @@ TEST(Matrix, Submatrix)
   submatrix->columns[2] = 6;
 
   TU_CHRMAT* result = NULL;
-  TUchrsubmatFilter(tu, matrix, submatrix, &result);
+  ASSERT_TU_CALL( TUchrmatFilterSubmat(tu, matrix, submatrix, &result) );
 
   TU_CHRMAT* check = NULL;
   stringToCharMatrix(tu, &check, "3 3 "

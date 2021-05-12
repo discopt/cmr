@@ -11,9 +11,9 @@ extern "C" {
 
 /**
  * \defgroup Graph Graph
- * 
+ *
  * Undirected graphs.
- * 
+ *
  * @{
  */
 
@@ -154,9 +154,9 @@ TU_ERROR TUgraphClear(
 
 /**
  * \brief Adds a node to a graph.
- * 
+ *
  * Adds a node to a graph.
- * 
+ *
  * \return Node structure of new node.
  */
 
@@ -168,9 +168,9 @@ TU_ERROR TUgraphAddNode(
 
 /**
  * \brief Adds an edge to a graph.
- * 
+ *
  * Adds an edge to a graph.
- * 
+ *
  * \return Edge of new edge.
  */
 
@@ -211,7 +211,7 @@ TU_GRAPH_NODE TUgraphNodesFirst(
   TU_GRAPH* graph /**< Graph. */
 )
 {
-  return graph->firstNode; 
+  return graph->firstNode;
 }
 
 /**
