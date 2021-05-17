@@ -326,7 +326,7 @@ TU_ERROR TUdblmatPrintSparse(FILE* stream, TU_DBLMAT* matrix)
     int first = matrix->rowStarts[row];
     int beyond = (row+1 < matrix->numRows) ? matrix->rowStarts[row+1] : matrix->numNonzeros;
     for (int entry = first; entry < beyond; ++entry)
-      fprintf(stream, "%d %d %f\n", row, matrix->entryColumns[entry], matrix->entryValues[entry]);
+      fprintf(stream, "%d %d  %f\n", row, matrix->entryColumns[entry], matrix->entryValues[entry]);
   }
 
   return TU_OKAY;
@@ -343,7 +343,7 @@ TU_ERROR TUintmatPrintSparse(FILE* stream, TU_INTMAT* matrix)
     int first = matrix->rowStarts[row];
     int beyond = (row+1 < matrix->numRows) ? matrix->rowStarts[row+1] : matrix->numNonzeros;
     for (int entry = first; entry < beyond; ++entry)
-      fprintf(stream, "%d %d %d\n", row, matrix->entryColumns[entry], matrix->entryValues[entry]);
+      fprintf(stream, "%d %d  %d\n", row, matrix->entryColumns[entry], matrix->entryValues[entry]);
   }
 
   return TU_OKAY;
@@ -360,7 +360,7 @@ TU_ERROR TUchrmatPrintSparse(FILE* stream, TU_CHRMAT* matrix)
     int first = matrix->rowStarts[row];
     int beyond = (row+1 < matrix->numRows) ? matrix->rowStarts[row+1] : matrix->numNonzeros;
     for (int entry = first; entry < beyond; ++entry)
-      fprintf(stream, "%d %d %d\n", row, matrix->entryColumns[entry], matrix->entryValues[entry]);
+      fprintf(stream, "%d %d  %d\n", row, matrix->entryColumns[entry], matrix->entryValues[entry]);
   }
 
   return TU_OKAY;
