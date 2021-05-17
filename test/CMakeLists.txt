@@ -12,6 +12,7 @@ add_executable(tu_gtest
   test_sign.cpp
   test_graph.cpp
   test_graphic.cpp
+  test_hashtable.cpp
 #  test_preprocessing.cpp
   test_matrix.cpp
   test_main.cpp)

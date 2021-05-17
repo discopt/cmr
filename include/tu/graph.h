@@ -2,6 +2,7 @@
 #define TU_GRAPH_H
 
 #include <tu/env.h>
+#include <tu/element.h>
 
 #include <stdio.h>
 
@@ -58,6 +59,8 @@ size_t TUgraphMemNodes(
   TU_GRAPH* graph /**< Graph. */
 )
 {
+  assert(graph);
+
   return graph->memNodes;
 }
 
@@ -70,6 +73,8 @@ int TUgraphNumNodes(
   TU_GRAPH* graph /**< Graph. */
 )
 {
+  assert(graph);
+
   return graph->numNodes;
 }
 
@@ -82,6 +87,8 @@ size_t TUgraphMemEdges(
   TU_GRAPH* graph /**< Graph. */
 )
 {
+  assert(graph);
+
   return graph->memEdges;
 }
 
@@ -94,6 +101,8 @@ int TUgraphNumEdges(
   TU_GRAPH* graph /**< Graph. */
 )
 {
+  assert(graph);
+
   return graph->numEdges;
 }
 
@@ -107,6 +116,8 @@ TU_GRAPH_NODE TUgraphEdgeU(
   TU_GRAPH_EDGE e   /**< Edge of \p graph. */
 )
 {
+  assert(graph);
+
   return graph->arcs[2*e+1].target;
 }
 
@@ -120,6 +131,8 @@ TU_GRAPH_NODE TUgraphEdgeV(
   TU_GRAPH_EDGE e   /**< Edge of \p graph. */
 )
 {
+  assert(graph);
+
   return graph->arcs[2*e].target;
 }
 
@@ -127,6 +140,7 @@ TU_GRAPH_NODE TUgraphEdgeV(
  * \brief Creates an empty graph.
  */
 
+TU_EXPORT
 TU_ERROR TUgraphCreateEmpty(
   TU* tu,             /**< \ref TU environment. */
   TU_GRAPH** pgraph,  /**< Pointer for storing the graph. */
@@ -138,6 +152,7 @@ TU_ERROR TUgraphCreateEmpty(
  * \brief Frees a graph.
  */
 
+TU_EXPORT
 TU_ERROR TUgraphFree(
   TU* tu,           /**< \ref TU environment. */
   TU_GRAPH** pgraph /**< Pointer to graph. */
@@ -147,6 +162,7 @@ TU_ERROR TUgraphFree(
  * \brief Removes all nodes and columns, keeping the memory.
  */
 
+TU_EXPORT
 TU_ERROR TUgraphClear(
   TU* tu,         /**< \ref TU environment. */
   TU_GRAPH* graph /**< Graph structure. */
@@ -160,6 +176,7 @@ TU_ERROR TUgraphClear(
  * \return Node structure of new node.
  */
 
+TU_EXPORT
 TU_ERROR TUgraphAddNode(
   TU* tu,               /**< \ref TU environment. */
   TU_GRAPH* graph,      /**< Graph. */
@@ -174,6 +191,7 @@ TU_ERROR TUgraphAddNode(
  * \return Edge of new edge.
  */
 
+TU_EXPORT
 TU_ERROR TUgraphAddEdge(
   TU* tu,               /**< \ref TU environment. */
   TU_GRAPH* graph,      /**< Graph. */
@@ -186,6 +204,7 @@ TU_ERROR TUgraphAddEdge(
  * \brief Removes node \p v and all its incident edges from \p graph.
  */
 
+TU_EXPORT
 TU_ERROR TUgraphDeleteNode(
   TU* tu,           /**< \ref TU environment. */
   TU_GRAPH* graph,  /**< Graph. */
@@ -196,6 +215,7 @@ TU_ERROR TUgraphDeleteNode(
  * \brief Removes edge \p e from \p graph.
  */
 
+TU_EXPORT
 TU_ERROR TUgraphDeleteEdge(
   TU* tu,           /**< \ref TU environment. */
   TU_GRAPH* graph,  /**< Graph. */
@@ -211,6 +231,8 @@ TU_GRAPH_NODE TUgraphNodesFirst(
   TU_GRAPH* graph /**< Graph. */
 )
 {
+  assert(graph);
+
   return graph->firstNode;
 }
 
@@ -224,6 +246,8 @@ bool TUgraphNodesValid(
   TU_GRAPH_NODE v   /**< Node. */
 )
 {
+  assert(graph);
+
   return v >= 0;
 }
 
@@ -237,6 +261,8 @@ TU_GRAPH_NODE TUgraphNodesNext(
   TU_GRAPH_NODE v   /**< Node. */
 )
 {
+  assert(graph);
+
   return graph->nodes[v].next;
 }
 
@@ -250,6 +276,8 @@ TU_GRAPH_ITER TUgraphIncFirst(
   TU_GRAPH_NODE v   /**< Node. */
 )
 {
+  assert(graph);
+
   TU_GRAPH_ITER i = graph->nodes[v].firstOut;
   while (true)
   {
@@ -271,6 +299,8 @@ bool TUgraphIncValid(
   TU_GRAPH_ITER i   /**< Iterator for edges incident to a node. */
 )
 {
+  assert(graph);
+
   return i >= 0;
 }
 
@@ -284,6 +314,8 @@ TU_GRAPH_ITER TUgraphIncNext(
   TU_GRAPH_ITER i   /**< Iterator for edges incident to a node. */
 )
 {
+  assert(graph);
+
   while (true)
   {
     i = graph->arcs[i].next;
@@ -304,6 +336,8 @@ TU_GRAPH_EDGE TUgraphIncEdge(
   TU_GRAPH_ITER i   /**< Iterator for edges incident to a node. */
 )
 {
+  assert(graph);
+
   return i/2;
 }
 
@@ -370,6 +404,8 @@ TU_GRAPH_ITER TUgraphEdgesFirst(
   TU_GRAPH* graph /**< Graph. */
 )
 {
+  assert(graph);
+
   for (TU_GRAPH_NODE v = TUgraphNodesFirst(graph); TUgraphNodesValid(graph, v);
     v = TUgraphNodesNext(graph, v))
   {
@@ -395,6 +431,8 @@ bool TUgraphEdgesValid(
   TU_GRAPH_ITER i   /**< Iterator for edges incident to a node. */
 )
 {
+  assert(graph);
+
   return i >= 0;
 }
 
@@ -408,6 +446,8 @@ TU_GRAPH_EDGE TUgraphEdgesEdge(
   TU_GRAPH_ITER i   /**< Iterator for edges. */
 )
 {
+  assert(graph);
+
   return i/2;
 }
 
@@ -415,6 +455,7 @@ TU_GRAPH_EDGE TUgraphEdgesEdge(
  * \brief Prints the \p graph, writing to \p stream.
  */
 
+TU_EXPORT
 TU_ERROR TUgraphPrint(
   FILE* stream,   /**< Stream. */
   TU_GRAPH* graph /**< Graph structure. */
@@ -424,11 +465,22 @@ TU_ERROR TUgraphPrint(
  * \brief Merges two nodes \p u and \p v of \p graph.
  */
 
+TU_EXPORT
 TU_ERROR TUgraphMergeNodes(
   TU* tu,           /**< \ref TU environment. */
   TU_GRAPH* graph,  /**< Graph. */
   TU_GRAPH_NODE u,  /**< First node. */
   TU_GRAPH_NODE v   /**< Second node. */
+);
+
+
+TU_EXPORT
+TU_ERROR TUgraphCreateFromEdgeList(
+  TU* tu,                   /**< \ref TU environment. */
+  TU_GRAPH** pgraph,        /**< Pointer for storing the graph. */
+  Element** pedgeElements,  /**< Pointer for storing element of each edge (may be \c NULL). */
+  char*** pnodeLabels,      /**< Pointer for storing string node labels (may be \c NULL). */
+  FILE* stream              /**< File stream to read from. */
 );
 
 /**@}*/

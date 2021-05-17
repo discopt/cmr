@@ -34,6 +34,7 @@ endif()
 
 # Target for the TU library.
 add_library(tu
+  src/tu/element.c
   src/tu/env.c
   src/tu/matrix.c
   src/tu/one_sum.c
@@ -43,6 +44,7 @@ add_library(tu
   src/tu/ghouila_houri.cpp
   src/tu/graph.c
   src/tu/graphic.c
+  src/tu/hashtable.c
   src/tu/heap.c
   src/tu/logger.cpp
   src/tu/matrix.cpp
@@ -69,14 +71,23 @@ target_link_libraries(tu_test
 )
 set_target_properties(tu_test PROPERTIES OUTPUT_NAME tu-test)
 
-# Target for the graphicness-test binary.
-add_executable(graphicness_test
-   src/test/main.c)
-target_link_libraries(graphicness_test
+# Target for the tu-test-new binary.
+add_executable(tu_test_new
+   src/test/test_main.c)
+target_link_libraries(tu_test_new
    PRIVATE
       TU::tu
 )
-set_target_properties(graphicness_test PROPERTIES OUTPUT_NAME graphicness-test)
+set_target_properties(tu_test_new PROPERTIES OUTPUT_NAME tu-test-new)
+
+# Target for the graph-matrix binary.
+add_executable(tu_graph_matrix
+   src/test/graph_matrix_main.c)
+target_link_libraries(tu_graph_matrix
+   PRIVATE
+      TU::tu
+)
+set_target_properties(tu_graph_matrix PROPERTIES OUTPUT_NAME tu-graph-matrix)
 
 # Target for the tu-convert-matrix.
 add_executable(tu_convert_matrix

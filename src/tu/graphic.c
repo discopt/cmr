@@ -67,18 +67,18 @@ TU_ERROR computeRepresentationMatrix(
   TU_CHRMAT** ptranspose,       /**< Pointer for storing the transpose of the matrix. */
   bool* edgesReversed,          /**< Indicates, for each edge {u,v}, whether we consider (u,v) (if \c false) */
                                 /**< or (v,u) (if \c true). */
-  int numBasisEdges,            /**< Length of \p basisEdges (0 if \c basisEdges is NULL). */
-  TU_GRAPH_EDGE* basisEdges,    /**< If not \c NULL, tries to use these edges for the basis. */
-  int numCobasisEdges,          /**< Length of \p cobasisEdges (0 if \c cobasisEdges is NULL). */
-  TU_GRAPH_EDGE* cobasisEdges,  /**< If not \c NULL, tries to order columns as specified. */
-  bool* pisCorrectBasis         /**< If not \c NULL, returns \c true if and only if \c basisEdges formed a basis. */
+  int numForestEdges,           /**< Length of \p forestEdges (0 if \c forestEdges is \c NULL). */
+  TU_GRAPH_EDGE* forestEdges,   /**< If not \c NULL, tries to use these edges for the basis. */
+  int numCoforestEdges,         /**< Length of \p coforestEdges (0 if \c coforestEdges is \c NULL). */
+  TU_GRAPH_EDGE* coforestEdges, /**< If not \c NULL, tries to order columns as specified. */
+  bool* pisCorrectForest        /**< If not \c NULL, returns \c true if and only if \c forestEdges are spanning forest. */
 )
 {
   assert(tu);
   assert(graph);
   assert(ptranspose && !*ptranspose);
-  assert(numBasisEdges == 0 || basisEdges);
-  assert(numCobasisEdges == 0 || cobasisEdges);
+  assert(numForestEdges == 0 || forestEdges);
+  assert(numForestEdges == 0 || coforestEdges);
   TUassertStackConsistency(tu);
 
   TUdbgMsg(0, "Computing %s representation matrix.\n", ternary ? "ternary" : "binary");
@@ -100,11 +100,14 @@ TU_ERROR computeRepresentationMatrix(
     TU_GRAPH_EDGE e = TUgraphEdgesEdge(graph, i);
     lengths[e] = 1;
   }
-  for (int b = 0; b < numBasisEdges; ++b)
+  for (int b = 0; b < numForestEdges; ++b)
   {
-    TUdbgMsg(0, "basis element %d is edge %d = {%d,%d}\n", b, basisEdges[b], TUgraphEdgeU(graph, basisEdges[b]),
-      TUgraphEdgeV(graph, basisEdges[b]));
-    lengths[basisEdges[b]] = 0;
+    if (forestEdges[b] >= 0)
+    {
+      TUdbgMsg(0, "forest element %d is edge %d = {%d,%d}\n", b, forestEdges[b], TUgraphEdgeU(graph, forestEdges[b]),
+        TUgraphEdgeV(graph, forestEdges[b]));
+      lengths[forestEdges[b]] = 0;
+    }
   }
 
   TUassertStackConsistency(tu);
@@ -173,13 +176,13 @@ TU_ERROR computeRepresentationMatrix(
   }
 
   int numRows = 0;
-  if (pisCorrectBasis)
-    *pisCorrectBasis = true;
-  for (int i = 0; i < numBasisEdges; ++i)
+  if (pisCorrectForest)
+    *pisCorrectForest = true;
+  for (int i = 0; i < numForestEdges; ++i)
   {
-    TU_GRAPH_NODE u = TUgraphEdgeU(graph, basisEdges[i]);
-    TU_GRAPH_NODE v = TUgraphEdgeV(graph, basisEdges[i]);
-    TUdbgMsg(2, "Basic edge %d = {%d,%d}.\n", basisEdges[i], u, v);
+    TU_GRAPH_NODE u = TUgraphEdgeU(graph, forestEdges[i]);
+    TU_GRAPH_NODE v = TUgraphEdgeV(graph, forestEdges[i]);
+    TUdbgMsg(2, "Forest edge %d = {%d,%d}.\n", forestEdges[i], u, v);
     if (nodeData[u].predecessor == v)
     {
       nodesRows[u] = numRows;
@@ -201,15 +204,15 @@ TU_ERROR computeRepresentationMatrix(
     else
     {
       /* A provided basic edge is not part of the spanning forest. */
-      if (pisCorrectBasis)
-        *pisCorrectBasis = false;
+      if (pisCorrectForest)
+        *pisCorrectForest = false;
     }
   }
   if (numRows < TUgraphNumNodes(graph) - countComponents)
   {
-    /* An edge from the spanning forest is not part of the basis. */
-    if (pisCorrectBasis)
-      *pisCorrectBasis = false;
+    /* Some edge from the spanning forest is not a forest edge. */
+    if (pisCorrectForest)
+      *pisCorrectForest = false;
 
     for (TU_GRAPH_NODE v = TUgraphNodesFirst(graph); TUgraphNodesValid(graph, v); v = TUgraphNodesNext(graph, v))
     {
@@ -251,13 +254,13 @@ TU_ERROR computeRepresentationMatrix(
   int cobasicIndex = 0;
   while (TUgraphEdgesValid(graph, iter))
   {
-    TU_GRAPH_EDGE e;
-    if (cobasicIndex < numCobasisEdges)
+    TU_GRAPH_EDGE e = -1;
+    while (cobasicIndex < numCoforestEdges && e < 0)
     {
-      e = cobasisEdges[cobasicIndex];
+      e = coforestEdges[cobasicIndex];
       ++cobasicIndex;
     }
-    else
+    if (cobasicIndex >= numCoforestEdges)
     {
       e = TUgraphEdgesEdge(graph, iter);
       iter = TUgraphEdgesNext(graph, iter);
@@ -362,7 +365,7 @@ TU_ERROR computeRepresentationMatrix(
 
 TU_ERROR TUcomputeGraphBinaryRepresentationMatrix(TU* tu, TU_GRAPH* graph, TU_CHRMAT** pmatrix, TU_CHRMAT** ptranspose,
   int numForestEdges, TU_GRAPH_EDGE* forestEdges, int numCoforestEdges, TU_GRAPH_EDGE* coforestEdges,
-  bool* pisCorrectBasis)
+  bool* pisCorrectForest)
 {
   assert(tu);
   assert(graph);
@@ -372,7 +375,7 @@ TU_ERROR TUcomputeGraphBinaryRepresentationMatrix(TU* tu, TU_GRAPH* graph, TU_CH
 
   TU_CHRMAT* transpose = NULL;
   TU_CALL( computeRepresentationMatrix(tu, graph, false, &transpose, NULL, numForestEdges, forestEdges,
-    numCoforestEdges, coforestEdges, pisCorrectBasis) );
+    numCoforestEdges, coforestEdges, pisCorrectForest) );
 
   if (pmatrix)
     TU_CALL( TUchrmatTranspose(tu, transpose, pmatrix) );
@@ -388,7 +391,7 @@ TU_ERROR TUcomputeGraphBinaryRepresentationMatrix(TU* tu, TU_GRAPH* graph, TU_CH
 
 TU_ERROR TUcomputeGraphTernaryRepresentationMatrix(TU* tu, TU_GRAPH* graph, TU_CHRMAT** pmatrix, TU_CHRMAT** ptranspose,
   bool* edgesReversed, int numForestEdges, TU_GRAPH_EDGE* forestEdges, int numCoforestEdges,
-  TU_GRAPH_EDGE* coforestEdges, bool* pisCorrectBasis)
+  TU_GRAPH_EDGE* coforestEdges, bool* pisCorrectForest)
 {
   assert(tu);
   assert(graph);
@@ -398,7 +401,7 @@ TU_ERROR TUcomputeGraphTernaryRepresentationMatrix(TU* tu, TU_GRAPH* graph, TU_C
 
   TU_CHRMAT* transpose = NULL;
   TU_CALL( computeRepresentationMatrix(tu, graph, true, &transpose, edgesReversed, numForestEdges, forestEdges,
-    numCoforestEdges, coforestEdges, pisCorrectBasis) );
+    numCoforestEdges, coforestEdges, pisCorrectForest) );
 
   if (pmatrix)
     TU_CALL( TUchrmatTranspose(tu, transpose, pmatrix) );
@@ -434,7 +437,7 @@ const char* memberTypeString(
   case DEC_MEMBER_TYPE_SERIES:
     return "series";
   case DEC_MEMBER_TYPE_RIGID:
-    return "ridig";
+    return "rigid";
   case DEC_MEMBER_TYPE_LOOP:
     return "loop";
   default:
@@ -442,7 +445,7 @@ const char* memberTypeString(
   }
 }
 
-typedef int DEC_EDGE;   /**< \brief Type for refering to an decomposition edge. */
+typedef int DEC_EDGE;   /**< \brief Type for refering to a decomposition edge. */
 typedef int DEC_NODE;   /**< \brief Type for refering to a decomposition node. */
 typedef int DEC_MEMBER; /**< \brief Type for refering to a decomposition member. */
 
@@ -453,9 +456,9 @@ typedef struct
 
 typedef struct
 {
-  int name;               /**< \brief Name of this edge.
+  Element element;        /**< \brief Element corresponding to this edge.
                            *
-                           * 0, 1, ..., m-1 indicate rows, -1,-2, ..., -n indicate columns,
+                           * 1, 2, ..., m indicate rows, -1,-2, ..., -n indicate columns,
                            * and for (small) k >= 0, MAX_INT-k and -MAX_INT+k indicate
                            * markers of the parent and to the parent, respectively. */
   DEC_MEMBER member;      /**< \brief Member this edge belongs to or -1 if in free list. */
@@ -811,12 +814,12 @@ char* consistencyParentChild(
             dec->members[findMember(dec, dec->edges[edge].childMember)].markerOfParent);
         }
         DEC_EDGE markerChild = dec->members[findMember(dec, dec->edges[edge].childMember)].markerToParent;
-        if (dec->edges[markerChild].name != -dec->edges[edge].name)
+        if (dec->edges[markerChild].element != -dec->edges[edge].element)
         {
           TUfreeStackArray(dec->tu, &countChildren);
           return TUconsistencyMessage("marker edges %d and %d of members %d (parent) and %d (child) have names %d and %d.",
-            edge, markerChild, member, findEdgeMember(dec, markerChild), dec->edges[edge].name,
-            dec->edges[markerChild].name);
+            edge, markerChild, member, findEdgeMember(dec, markerChild), dec->edges[edge].element,
+            dec->edges[markerChild].element);
         }
       }
       edge = dec->edges[edge].next;
@@ -1191,7 +1194,7 @@ TU_ERROR createEdge(
 
   dec->edges[edge].tail = -1;
   dec->edges[edge].head = -1;
-  dec->edges[edge].name = INT_MAX/2;
+  dec->edges[edge].element = 0;
   dec->edges[edge].member = member;
   dec->numEdges++;
 
@@ -1230,9 +1233,9 @@ TU_ERROR createMarkerEdgePair(
   data->tail = markerOfParentTail;
   data->head = markerOfParentHead;
   data->childMember = childMember;
-  data->name = -INT_MAX + dec->numMarkerPairs;
-  TUdbgMsg(12, "Created child marker edge {%d,%d} <%d> of parent member %d.\n", markerOfParentTail, markerOfParentHead,
-    data->name, parentMember);
+  data->element = -INT_MAX + dec->numMarkerPairs;
+  TUdbgMsg(12, "Created child marker edge {%d,%d} <%s> of parent member %d.\n", markerOfParentTail, markerOfParentHead,
+    TUelementString(data->element, NULL), parentMember);
 
   /* Create the parent marker edge of the child member. */
 
@@ -1244,9 +1247,9 @@ TU_ERROR createMarkerEdgePair(
   dec->members[childMember].parentMember = parentMember;
   dec->members[childMember].markerOfParent = *pMarkerOfParent;
   dec->members[childMember].markerToParent = *pMarkerToParent;
-  data->name = INT_MAX - dec->numMarkerPairs;
-  TUdbgMsg(12, "Created child marker edge {%d,%d} <%d> of child member %d.\n", markerToParentTail, markerToParentHead,
-    data->name, childMember);
+  data->element = INT_MAX - dec->numMarkerPairs;
+  TUdbgMsg(12, "Created child marker edge {%d,%d} <%s> of child member %d.\n", markerToParentTail, markerToParentHead,
+    TUelementString(data->element, NULL), childMember);
 
   /* Increase counter of used marker pairs. */
   dec->numMarkerPairs++;
@@ -1393,13 +1396,14 @@ TU_ERROR decFree(
  * \brief Creates a graph represented by given decomposition.
  */
 
+static
 TU_ERROR decToGraph(
-  Dec* dec,               /**< Decomposition. */
-  TU_GRAPH* graph,        /**< Graph to be filled. */
-  bool merge,             /**< Merge and remove corresponding parent and child markers. */
-  TU_GRAPH_EDGE* basis,   /**< If not NULL, the edges of a spanning tree are stored here. */
-  TU_GRAPH_EDGE* cobasis, /**< If not NULL, the non-basis edges are stored here. */
-  int* edgeElements       /**< If not NULL, the elements for each edge are stored here. */
+  Dec* dec,                     /**< Decomposition. */
+  TU_GRAPH* graph,              /**< Graph to be filled. */
+  bool merge,                   /**< Merge and remove corresponding parent and child markers. */
+  TU_GRAPH_EDGE* forestEdges,   /**< If not \c NULL, the edges of a spanning tree are stored here. */
+  TU_GRAPH_EDGE* coforestEdges, /**< If not \c NULL, the non-basis edges are stored here. */
+  Element* edgeElements             /**< If not \c NULL, the elements for each edge are stored here. */
 )
 {
   assert(dec);
@@ -1411,10 +1415,10 @@ TU_ERROR decToGraph(
 
   TU_CALL( TUgraphClear(dec->tu, graph) );
 
-  TU_GRAPH_EDGE* localEdgeElements = NULL;
+  Element* localEdgeElements = NULL;
   if (edgeElements)
     localEdgeElements = edgeElements;
-  else if (basis || cobasis)
+  else if (forestEdges || coforestEdges)
     TU_CALL( TUallocStackArray(dec->tu, &localEdgeElements, dec->memEdges) );
   TU_GRAPH_NODE* decNodesToGraphNodes = NULL;
   TU_CALL( TUallocStackArray(dec->tu, &decNodesToGraphNodes, dec->memNodes) );
@@ -1451,7 +1455,7 @@ TU_ERROR decToGraph(
           &graphEdge) );
         decEdgesToGraphEdges[edge] = graphEdge;
         if (localEdgeElements)
-          localEdgeElements[graphEdge] = dec->edges[edge].name;
+          localEdgeElements[graphEdge] = dec->edges[edge].element;
         edge = dec->edges[edge].next;
       }
       while (edge != dec->members[member].firstEdge);
@@ -1466,7 +1470,7 @@ TU_ERROR decToGraph(
         TU_CALL( TUgraphAddEdge(dec->tu, graph, graphHead, graphTail, &graphEdge) );
         decEdgesToGraphEdges[edge] = graphEdge;
         if (localEdgeElements)
-          localEdgeElements[graphEdge] = dec->edges[edge].name;
+          localEdgeElements[graphEdge] = dec->edges[edge].element;
         edge = dec->edges[edge].next;
       }
       while (edge != dec->members[member].firstEdge);
@@ -1484,7 +1488,7 @@ TU_ERROR decToGraph(
         TU_CALL( TUgraphAddEdge(dec->tu, graph, v, w, &graphEdge) );
         decEdgesToGraphEdges[edge] = graphEdge;
         if (localEdgeElements)
-          localEdgeElements[graphEdge] = dec->edges[edge].name;
+          localEdgeElements[graphEdge] = dec->edges[edge].element;
 
         edge = dec->edges[edge].next;
         v = w;
@@ -1492,7 +1496,7 @@ TU_ERROR decToGraph(
       TU_CALL( TUgraphAddEdge(dec->tu, graph, v, firstNode, &graphEdge) );
       decEdgesToGraphEdges[edge] = graphEdge;
       if (localEdgeElements)
-        localEdgeElements[graphEdge] = dec->edges[edge].name;
+        localEdgeElements[graphEdge] = dec->edges[edge].element;
     }
     else
     {
@@ -1503,7 +1507,7 @@ TU_ERROR decToGraph(
       TU_CALL( TUgraphAddEdge(dec->tu, graph, v, v, &graphEdge) );
       decEdgesToGraphEdges[edge] = graphEdge;
       if (localEdgeElements)
-        localEdgeElements[graphEdge] = dec->edges[edge].name;
+        localEdgeElements[graphEdge] = dec->edges[edge].element;
     }
   }
 
@@ -1526,9 +1530,10 @@ TU_ERROR decToGraph(
       TU_GRAPH_NODE childU = TUgraphEdgeU(graph, child);
       TU_GRAPH_NODE childV = TUgraphEdgeV(graph, child);
 
-      TUdbgMsg(2, "Merging edges %d = {%d,%d} <%d> and %d = {%d,%d} <%d>.\n", parent, parentU, parentV,
-        dec->edges[dec->members[m].markerOfParent].name, child, childU, childV,
-        dec->edges[dec->members[m].markerToParent].name);
+      TUdbgMsg(2, "Merging edges %d = {%d,%d} <%s>", parent, parentU, parentV,
+        TUelementString(dec->edges[dec->members[m].markerOfParent].element, NULL));
+      TUdbgMsg(0, " and %d = {%d,%d} <%s>.\n", child, childU, childV,
+        TUelementString(dec->edges[dec->members[m].markerToParent].element, NULL));
 
       TU_CALL( TUgraphMergeNodes(dec->tu, graph, parentU, childU) );
       TU_CALL( TUgraphDeleteNode(dec->tu, graph, childU) );
@@ -1563,16 +1568,16 @@ TU_ERROR decToGraph(
   }
   TU_CALL( TUfreeStackArray(dec->tu, &nodesUsed) );
 
-  /* Construct (co)basis. */
+  /* Construct (co)forest. */
 
-  if (basis || cobasis)
+  if (forestEdges || coforestEdges)
   {
 #if !defined(NDEBUG)
     /* This is only relevant if a 1-separation exists. */
     for (int r = 0; r < dec->numRows; ++r)
-      basis[r] = INT_MIN;
+      forestEdges[r] = INT_MIN;
     for (int c = 0; c < dec->numColumns; ++c)
-      cobasis[c] = INT_MIN;
+      coforestEdges[c] = INT_MIN;
 #endif /* !NDEBUG */
 
     for (TU_GRAPH_ITER i = TUgraphEdgesFirst(graph); TUgraphEdgesValid(graph, i);
@@ -1580,22 +1585,28 @@ TU_ERROR decToGraph(
     {
       TU_GRAPH_EDGE e = TUgraphEdgesEdge(graph, i);
 
-      TUdbgMsg(2, "Graph edge %d = {%d,%d} <%d>\n", e, TUgraphEdgeU(graph, e), TUgraphEdgeV(graph, e),
-        localEdgeElements[e]);
+      TUdbgMsg(2, "Graph edge %d = {%d,%d} <%s>\n", e, TUgraphEdgeU(graph, e), TUgraphEdgeV(graph, e),
+        TUelementString(localEdgeElements[e], NULL));
 
-      int element = localEdgeElements[e];
-      if (element >= 0 && basis)
-        basis[element] = e;
-      else if (element < 0 && cobasis)
-        cobasis[-1-element] = e;
+      Element element = localEdgeElements[e];
+      if (TUelementIsRow(element) && forestEdges)
+      {
+        TUdbgMsg(0, "Edge corresponds to element %d = row %d.\n", element, TUelementToRowIndex(element));
+        forestEdges[TUelementToRowIndex(element)] = e;
+      }
+      else if (TUelementIsColumn(element) && coforestEdges)
+      {
+        TUdbgMsg(0, "Edge corresponds to element %d = column %d.\n", element, TUelementToColumnIndex(element));
+        coforestEdges[TUelementToColumnIndex(element)] = e;
+      }
     }
 
 #if !defined(NDEBUG)
     /* These assertions indicate a 1-separable input matrix. */
     for (int r = 0; r < dec->numRows; ++r)
-      assert(basis[r] >= 0);
+      assert(forestEdges[r] >= 0);
     for (int c = 0; c < dec->numColumns; ++c)
-      assert(cobasis[c] >= 0);
+      assert(coforestEdges[c] >= 0);
 #endif /* !NDEBUG */
   }
 
@@ -1655,8 +1666,8 @@ void edgeToDot(
   else
   {
     fflush(stdout);
-    fprintf(stream, "    %c_%d_%d -- %c_%d_%d [label=\"%d <%d>\",style=bold%s];\n", type, member, u, type, member, v,
-      edge, dec->edges[edge].name, redStyle);
+    fprintf(stream, "    %c_%d_%d -- %c_%d_%d [label=\"%d <%s>\",style=bold%s];\n", type, member, u, type, member, v,
+      edge, TUelementString(dec->edges[edge].element, NULL), redStyle);
     fprintf(stream, "    %c_%d_%d [shape=box];\n", type, member, u);
     fprintf(stream, "    %c_%d_%d [shape=box];\n", type, member, v);
   }
@@ -2318,7 +2329,7 @@ TU_ERROR completeReducedDecomposition(
       DEC_EDGE edge;
       TU_CALL( createEdge(dec, member, &edge) );
       TU_CALL( addEdgeToMembersEdgeList(dec, edge) );
-      dec->edges[edge].name = r;
+      dec->edges[edge].element = TUrowToElement(r);
       dec->edges[edge].head = -1;
       dec->edges[edge].tail = -1;
       dec->edges[edge].childMember = -1;
@@ -2435,8 +2446,9 @@ TU_ERROR createReducedDecompositionPathEdges(
         newcolumn->nodesDegree[findEdgeTail(dec, edge)]++;
       }
 
-      TUdbgMsg(6, "Edge %d <%d> belongs to reduced member %ld which is member %d.\n", edge, dec->edges[edge].name,
-        (reducedMember - newcolumn->reducedMembers), reducedMember->member);
+      TUdbgMsg(6, "Edge %d <%s> belongs to reduced member %ld which is member %d.\n", edge,
+        TUelementString(dec->edges[edge].element, NULL), (reducedMember - newcolumn->reducedMembers),
+        reducedMember->member);
     }
   }
 
@@ -4966,7 +4978,7 @@ TU_ERROR addColumnApply(
     dec->edges[newEdge].member = findMember(dec, reducedComponent->terminalMember[0]);
     dec->edges[newEdge].head = reducedComponent->terminalNode[0];
     dec->edges[newEdge].tail = reducedComponent->terminalNode[1];
-    dec->edges[newEdge].name = INT_MAX/2;
+    dec->edges[newEdge].element = 0;
     TU_CALL( addEdgeToMembersEdgeList(dec, newEdge) );
   }
 
@@ -4985,13 +4997,13 @@ TU_ERROR addColumnApply(
     DEC_MEMBER loopEdge;
     TU_CALL( createEdge(dec, loopMember, &loopEdge) );
     TU_CALL( addEdgeToMembersEdgeList(dec, loopEdge) );
-    dec->edges[loopEdge].name = -1 - column;
+    dec->edges[loopEdge].element = TUcolumnToElement(column);
     dec->edges[loopEdge].childMember = -1;
   }
   else if (newcolumn->numReducedComponents == 1)
   {
     DEC_EDGE columnEdge = componentNewEdges[0];
-    dec->edges[columnEdge].name = -1 - column;
+    dec->edges[columnEdge].element = TUcolumnToElement(column);
     dec->edges[columnEdge].childMember = -1;
   }
   else
@@ -5006,7 +5018,7 @@ TU_ERROR addColumnApply(
     dec->edges[columnEdge].childMember = -1;
     dec->edges[columnEdge].head = -1;
     dec->edges[columnEdge].tail = -1;
-    dec->edges[columnEdge].name = -1 - column;
+    dec->edges[columnEdge].element = TUcolumnToElement(column);
     TU_CALL( addEdgeToMembersEdgeList(dec, columnEdge) );
 
     for (int i = 0; i < newcolumn->numReducedComponents; ++i)
@@ -5023,11 +5035,11 @@ TU_ERROR addColumnApply(
       if (i == maxDepthComponent)
       {
         dec->edges[markerEdge].childMember = -1;
-        dec->edges[markerEdge].name = INT_MAX - dec->numMarkerPairs;
+        dec->edges[markerEdge].element = INT_MAX - dec->numMarkerPairs;
         dec->members[series].parentMember = partnerMember;
         dec->members[series].markerToParent = markerEdge;
         dec->members[series].markerOfParent = newEdge;
-        dec->edges[newEdge].name = -INT_MAX + dec->numMarkerPairs;
+        dec->edges[newEdge].element = -INT_MAX + dec->numMarkerPairs;
         dec->edges[newEdge].childMember = series;
       }
       else
@@ -5036,8 +5048,8 @@ TU_ERROR addColumnApply(
         dec->members[partnerMember].markerOfParent = markerEdge;
         dec->members[partnerMember].markerToParent = newEdge;
         dec->members[partnerMember].parentMember = series;
-        dec->edges[markerEdge].name = INT_MAX - dec->numMarkerPairs;
-        dec->edges[newEdge].name = -INT_MAX + dec->numMarkerPairs;
+        dec->edges[markerEdge].element = INT_MAX - dec->numMarkerPairs;
+        dec->edges[newEdge].element = -INT_MAX + dec->numMarkerPairs;
       }
 
       dec->numMarkerPairs++;
@@ -5056,14 +5068,14 @@ TU_ERROR addColumnApply(
   return TU_OKAY;
 }
 
-TU_ERROR TUtestBinaryGraphic(TU* tu, TU_CHRMAT* transpose, bool* pisGraphic, TU_GRAPH** pgraph, TU_GRAPH_EDGE** pbasis,
-  TU_GRAPH_EDGE** pcobasis, TU_SUBMAT** psubmatrix)
+TU_ERROR TUtestBinaryGraphic(TU* tu, TU_CHRMAT* transpose, bool* pisGraphic, TU_GRAPH** pgraph,
+  TU_GRAPH_EDGE** pforestEdges, TU_GRAPH_EDGE** pcoforestEdges, TU_SUBMAT** psubmatrix)
 {
   assert(tu);
   assert(transpose);
   assert(!psubmatrix || !*psubmatrix);
-  assert(!pbasis || pgraph);
-  assert(!pcobasis || pgraph);
+  assert(!pforestEdges || pgraph);
+  assert(!pcoforestEdges || pgraph);
   assert(pisGraphic);
 
 #if defined(TU_DEBUG)
@@ -5102,7 +5114,7 @@ TU_ERROR TUtestBinaryGraphic(TU* tu, TU_CHRMAT* transpose, bool* pisGraphic, TU_
 
   if (*pisGraphic)
   {
-    /* Allocate memory for graph, basis and cobasis. */
+    /* Allocate memory for graph, forest and coforest. */
 
     TU_GRAPH* graph = NULL;
     if (pgraph)
@@ -5115,19 +5127,19 @@ TU_ERROR TUtestBinaryGraphic(TU* tu, TU_CHRMAT* transpose, bool* pisGraphic, TU_
       graph = *pgraph;
     }
 
-    int* basis = NULL;
-    if (pbasis)
+    int* forest = NULL;
+    if (pforestEdges)
     {
-      if (!*pbasis)
-        TU_CALL( TUallocBlockArray(tu, pbasis, transpose->numColumns) );
-      basis = *pbasis;
+      if (!*pforestEdges)
+        TU_CALL( TUallocBlockArray(tu, pforestEdges, transpose->numColumns) );
+      forest = *pforestEdges;
     }
-    int* cobasis = NULL;
-    if (pcobasis)
+    int* coforest = NULL;
+    if (pcoforestEdges)
     {
-      if (!*pcobasis)
-        TU_CALL( TUallocBlockArray(tu, pcobasis, transpose->numRows) );
-      cobasis = *pcobasis;
+      if (!*pcoforestEdges)
+        TU_CALL( TUallocBlockArray(tu, pcoforestEdges, transpose->numRows) );
+      coforest = *pcoforestEdges;
     }
 
     if (graph)
@@ -5153,7 +5165,7 @@ TU_ERROR TUtestBinaryGraphic(TU* tu, TU_CHRMAT* transpose, bool* pisGraphic, TU_
             DEC_EDGE edge;
             TU_CALL( createEdge(dec, member, &edge) );
             TU_CALL( addEdgeToMembersEdgeList(dec, edge) );
-            dec->edges[edge].name = r;
+            dec->edges[edge].element = TUrowToElement(r);
             dec->edges[edge].head = -1;
             dec->edges[edge].tail = -1;
             dec->edges[edge].childMember = -1;
@@ -5166,7 +5178,7 @@ TU_ERROR TUtestBinaryGraphic(TU* tu, TU_CHRMAT* transpose, bool* pisGraphic, TU_
           dec->numRows = transpose->numColumns;
         }
 
-        TU_CALL( decToGraph(dec, graph, true, basis, cobasis, NULL) );
+        TU_CALL( decToGraph(dec, graph, true, forest, coforest, NULL) );
       }
       else
       {
@@ -5179,8 +5191,8 @@ TU_ERROR TUtestBinaryGraphic(TU* tu, TU_CHRMAT* transpose, bool* pisGraphic, TU_
         {
           TU_GRAPH_EDGE e;
           TU_CALL( TUgraphAddEdge(tu, graph, s, s, &e) );
-          if (cobasis)
-            *cobasis++ = e;
+          if (coforest)
+            *coforest++ = e;
         }
         for (int r = 0; r < transpose->numColumns; ++r)
         {
@@ -5188,8 +5200,8 @@ TU_ERROR TUtestBinaryGraphic(TU* tu, TU_CHRMAT* transpose, bool* pisGraphic, TU_
           TU_CALL( TUgraphAddNode(tu, graph, &t) );
           TU_GRAPH_EDGE e;
           TU_CALL( TUgraphAddEdge(tu, graph, s, t, &e) );
-          if (basis)
-            *basis++ = e;
+          if (forest)
+            *forest++ = e;
           s = t;
         }
 
@@ -5206,7 +5218,7 @@ TU_ERROR TUtestBinaryGraphic(TU* tu, TU_CHRMAT* transpose, bool* pisGraphic, TU_
 
 typedef struct
 {
-  int basisIndex;
+  int forestIndex;
 } TernaryGraphicEdgeData;
 
 typedef struct
@@ -5219,14 +5231,14 @@ typedef struct
   bool fixed;           /* Whether the orientation of this edge is already fixed. */
 } TernaryGraphicNodeData;
 
-TU_ERROR TUtestTernaryGraphic(TU* tu, TU_CHRMAT* transpose, bool* pisGraphic, TU_GRAPH** pgraph, TU_GRAPH_EDGE** pbasis,
-  TU_GRAPH_EDGE** pcobasis, bool** pedgesReversed, TU_SUBMAT** psubmatrix)
+TU_ERROR TUtestTernaryGraphic(TU* tu, TU_CHRMAT* transpose, bool* pisGraphic, TU_GRAPH** pgraph,
+  TU_GRAPH_EDGE** pforestEdges, TU_GRAPH_EDGE** pcoforestEdges, bool** pedgesReversed, TU_SUBMAT** psubmatrix)
 {
   assert(tu);
   assert(transpose);
   assert(!psubmatrix || !*psubmatrix);
-  assert(!pbasis || pgraph);
-  assert(!pcobasis || pgraph);
+  assert(!pforestEdges || pgraph);
+  assert(!pcoforestEdges || pgraph);
   assert(!pedgesReversed || pgraph);
   assert(pisGraphic);
 
@@ -5244,20 +5256,20 @@ TU_ERROR TUtestTernaryGraphic(TU* tu, TU_CHRMAT* transpose, bool* pisGraphic, TU
     return TU_OKAY;
   }
 
-  TU_GRAPH_EDGE* basis = NULL;
-  TU_GRAPH_EDGE* cobasis = NULL;
-  TU_CALL( TUtestBinaryGraphic(tu, transpose, pisGraphic, pgraph, &basis, &cobasis, psubmatrix) );
-  if (pbasis)
-    *pbasis = basis;
-  if (pcobasis)
-    *pcobasis = cobasis;
+  TU_GRAPH_EDGE* forestEdges = NULL;
+  TU_GRAPH_EDGE* coforestEdges = NULL;
+  TU_CALL( TUtestBinaryGraphic(tu, transpose, pisGraphic, pgraph, &forestEdges, &coforestEdges, psubmatrix) );
+  if (pforestEdges)
+    *pforestEdges = forestEdges;
+  if (pcoforestEdges)
+    *pcoforestEdges = coforestEdges;
   if (!*pisGraphic || !pgraph || !pedgesReversed)
   {
-    /* We have to free (co)basis information if the caller didn't ask for it. */
-    if (!pbasis)
-      TU_CALL( TUfreeBlockArray(tu, &basis) );
-    if (!pcobasis)
-      TU_CALL( TUfreeBlockArray(tu, &cobasis) );
+    /* We have to free (co)forest information if the caller didn't ask for it. */
+    if (!pforestEdges)
+      TU_CALL( TUfreeBlockArray(tu, &forestEdges) );
+    if (!pcoforestEdges)
+      TU_CALL( TUfreeBlockArray(tu, &coforestEdges) );
     return TU_OKAY;
   }
 
@@ -5269,9 +5281,9 @@ TU_ERROR TUtestTernaryGraphic(TU* tu, TU_CHRMAT* transpose, bool* pisGraphic, TU
 #if defined(TU_DEBUG)
   TUgraphPrint(stdout, *pgraph);
   for (int b = 0; b < transpose->numColumns; ++b)
-    TUdbgMsg(2, "Basis #%d is %d.\n", b, (*pbasis)[b]);
+    TUdbgMsg(2, "Forest #%d is %d.\n", b, (*pforestEdges)[b]);
   for (int b = 0; b < transpose->numRows; ++b)
-    TUdbgMsg(2, "Cobasis #%d is %d.\n", b, (*pcobasis)[b]);
+    TUdbgMsg(2, "Coforest #%d is %d.\n", b, (*pcoforestEdges)[b]);
 #endif /* TU_DEBUG */
 
   /* Decompose into 1-connected components. */
@@ -5300,11 +5312,11 @@ TU_ERROR TUtestTernaryGraphic(TU* tu, TU_CHRMAT* transpose, bool* pisGraphic, TU
   for (TU_GRAPH_ITER i = TUgraphEdgesFirst(graph); TUgraphEdgesValid(graph, i); i = TUgraphEdgesNext(graph, i))
   {
     TU_GRAPH_EDGE e = TUgraphEdgesEdge(graph, i);
-    edgeData[e].basisIndex = -1;
+    edgeData[e].forestIndex = -1;
     (*pedgesReversed)[e] = false;
   }
   for (int b = 0; b < transpose->numColumns; ++b)
-    edgeData[basis[b]].basisIndex = b;
+    edgeData[forestEdges[b]].forestIndex = b;
 
   /* Allocate and initialize a queue for BFS. */
   int* queue = NULL;
@@ -5338,7 +5350,7 @@ TU_ERROR TUtestTernaryGraphic(TU* tu, TU_CHRMAT* transpose, bool* pisGraphic, TU
     /* Run BFS on the component of the graph induced by this 1-connected matrix component.
      * We use some node from one of the rows as a starting node. */
     int componentRow = components[comp].columnsToOriginal[0];
-    TU_GRAPH_EDGE e = basis[componentRow];
+    TU_GRAPH_EDGE e = forestEdges[componentRow];
     TU_GRAPH_NODE start = TUgraphEdgeU(graph, e);
     TUdbgMsg(4, "Starting BFS at node %d.\n", start);
     queue[0] = start;
@@ -5362,7 +5374,7 @@ TU_ERROR TUtestTernaryGraphic(TU* tu, TU_CHRMAT* transpose, bool* pisGraphic, TU
           continue;
 
         TU_GRAPH_EDGE e = TUgraphIncEdge(graph, i);
-        if (edgeData[e].basisIndex < 0)
+        if (edgeData[e].forestIndex < 0)
           continue;
 
         if (nodeData[w].stage == UNKNOWN)
@@ -5383,7 +5395,7 @@ TU_ERROR TUtestTernaryGraphic(TU* tu, TU_CHRMAT* transpose, bool* pisGraphic, TU
     {
       int column = components[comp].rowsToOriginal[componentColumn];
 
-      TU_GRAPH_EDGE columnEdge = cobasis[column];
+      TU_GRAPH_EDGE columnEdge = coforestEdges[column];
       TU_GRAPH_NODE s = TUgraphEdgeU(graph, columnEdge);
       TU_GRAPH_NODE t = TUgraphEdgeV(graph, columnEdge);
 
@@ -5397,7 +5409,7 @@ TU_ERROR TUtestTernaryGraphic(TU* tu, TU_CHRMAT* transpose, bool* pisGraphic, TU
         TUdbgMsg(6, "Entry %d is in row %d with value %d.\n", entry, transpose->entryColumns[entry],
           transpose->entryValues[entry]);
 
-        TU_GRAPH_EDGE rowEdge = basis[transpose->entryColumns[entry]];
+        TU_GRAPH_EDGE rowEdge = forestEdges[transpose->entryColumns[entry]];
         TU_GRAPH_NODE u = TUgraphEdgeU(graph, rowEdge);
         TU_GRAPH_NODE v = TUgraphEdgeV(graph, rowEdge);
         if (nodeData[v].predecessor == u)
@@ -5525,11 +5537,11 @@ TU_ERROR TUtestTernaryGraphic(TU* tu, TU_CHRMAT* transpose, bool* pisGraphic, TU
   }
   TUfreeBlockArray(tu, &components);
 
-  /* We have to free (co)basis information if the caller didn't ask for it. */
-  if (!pbasis)
-    TU_CALL( TUfreeBlockArray(tu, &basis) );
-  if (!pcobasis)
-    TU_CALL( TUfreeBlockArray(tu, &cobasis) );
+  /* We have to free (co)forest information if the caller didn't ask for it. */
+  if (!pforestEdges)
+    TU_CALL( TUfreeBlockArray(tu, &forestEdges) );
+  if (!pcoforestEdges)
+    TU_CALL( TUfreeBlockArray(tu, &coforestEdges) );
 
   return TU_OKAY;
 }

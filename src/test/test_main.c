@@ -5,6 +5,16 @@
 #include <tu/matrix.h>
 #include <tu/graphic.h>
 
+int printUsage(const char* program)
+{
+  printf("Usage: %s [OPTION]... MATRIX\n\n", program);
+  puts("Tests matrix for total unimodularity or related properties.");
+  puts("\nOptions:");
+  puts("  -i FORMAT  Format of MATRIX file, among {dense, sparse}; default: dense.");
+
+  return EXIT_FAILURE;
+}
+
 TU_ERROR run(const char* instanceFileName, bool sparse)
 {
   FILE* instanceFile = fopen(instanceFileName, "r");

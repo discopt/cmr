@@ -1,10 +1,15 @@
-//#define TU_DEBUG /* Uncomment to debug graph operations. */
+// #define TU_DEBUG /* Uncomment to debug graph operations. */
 
 #include <tu/graph.h>
 
 #include "env_internal.h"
+#include "hashtable.h"
 
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <assert.h>
+#include <ctype.h>
 
 #define isValid(nodeOrArc) \
   ((nodeOrArc) >= 0)
@@ -340,6 +345,9 @@ TU_ERROR TUgraphDeleteEdge(TU* tu, TU_GRAPH* graph, TU_GRAPH_EDGE e)
 
 TU_ERROR TUgraphPrint(FILE* stream, TU_GRAPH* graph)
 {
+  assert(stream);
+  assert(graph);
+
   printf("Graph with %d nodes and %d edges.\n", TUgraphNumNodes(graph), TUgraphNumEdges(graph));
   for (TU_GRAPH_NODE v = TUgraphNodesFirst(graph); TUgraphNodesValid(graph, v); v = TUgraphNodesNext(graph, v))
   {
@@ -376,6 +384,172 @@ TU_ERROR TUgraphMergeNodes(TU* tu, TU_GRAPH* graph, TU_GRAPH_NODE u, TU_GRAPH_NO
   }
 
   TUgraphEnsureConsistent(tu, graph);
+
+  return TU_OKAY;
+}
+
+TU_ERROR TUgraphCreateFromEdgeList(TU* tu, TU_GRAPH** pgraph, Element** pedgeElements, char*** pnodeLabels,
+  FILE* stream)
+{
+  assert(tu);
+  assert(pgraph);
+  assert(!*pgraph);
+  assert(!pedgeElements || !*pedgeElements);
+  assert(!pnodeLabels || !*pnodeLabels);
+  assert(stream);
+
+  char* line = NULL;
+  size_t length = 0;
+  ssize_t numRead;
+
+  char* uToken = NULL;
+  char* vToken = NULL;
+  char* elementToken = NULL;
+
+  TU_CALL( TUgraphCreateEmpty(tu, pgraph, 256, 1024) );
+  TU_GRAPH* graph = *pgraph;
+  size_t memNodeLabels = 256;
+  if (pnodeLabels)
+    TU_CALL( TUallocBlockArray(tu, pnodeLabels, memNodeLabels) );
+  size_t memEdgeElements = 256;
+  if (pedgeElements)
+    TU_CALL( TUallocBlockArray(tu, pedgeElements, memEdgeElements) );
+
+  TU_HASHTABLE* nodeNames = NULL;
+  TU_CALL( TUhashtableCreate(tu, &nodeNames, 8, 1024) );
+  
+  while ((numRead = getline(&line, &length, stream)) != -1)
+  {
+    char* s = line;
+
+    /* Scan for whitespace */
+    while (*s && isspace(*s))
+      ++s;
+    if (!*s)
+      break;
+
+    /* Scan name of node u. */
+    uToken = s;
+    while (*s && !isspace(*s))
+      ++s;
+    *s = '\0';
+    ++s;
+
+    /* Scan for whitespace */
+    while (*s && isspace(*s))
+      ++s;
+    if (!*s)
+      break;
+
+    /* Scan name of node v. */
+    vToken = s;
+    while (*s && !isspace(*s))
+      ++s;
+    *s = '\0';
+    ++s;
+
+    /* Scan for whitespace */
+    while (*s && isspace(*s))
+      ++s;
+    if (*s)
+    {
+      /* Scan element. */
+      elementToken = s;
+      while (*s && !isspace(*s))
+        ++s;
+      *s = '\0';
+      ++s;
+    }
+    else
+    {
+      elementToken = NULL;
+    }
+
+    /* Figure out node u if it exists. */
+
+    TU_HASHTABLE_ENTRY entry;
+    TU_HASHTABLE_HASH hash;
+    TU_GRAPH_NODE uNode; 
+    if (TUhashtableFind(nodeNames, uToken, strlen(uToken), &entry, &hash))
+      uNode = (TU_GRAPH_NODE) (size_t) TUhashtableValue(nodeNames, entry);
+    else
+    {
+      TU_CALL( TUgraphAddNode(tu, graph, &uNode) );
+      TU_CALL( TUhashtableInsertEntryHash(tu, nodeNames, uToken, strlen(uToken), entry, hash, (void*) (size_t) uNode) );
+
+      /* Add node label. */
+      if (pnodeLabels)
+      {
+        if (uNode >= memNodeLabels)
+        {
+          memNodeLabels *= 2;
+          TU_CALL( TUreallocBlockArray(tu, pnodeLabels, memNodeLabels) );
+        }
+
+        (*pnodeLabels)[uNode] = strdup(uToken);
+      }
+    }
+
+    /* Figure out node v if it exists. */
+
+    TU_GRAPH_NODE vNode; 
+    if (TUhashtableFind(nodeNames, vToken, strlen(vToken), &entry, &hash))
+      vNode = (TU_GRAPH_NODE) (size_t) TUhashtableValue(nodeNames, entry);
+    else
+    {
+      TU_CALL( TUgraphAddNode(tu, graph, &vNode) );
+      TU_CALL( TUhashtableInsertEntryHash(tu, nodeNames, vToken, strlen(vToken), entry, hash, (void*) (size_t) vNode) );
+      
+      /* Add node label. */
+      if (pnodeLabels)
+      {
+        if (vNode >= memNodeLabels)
+        {
+          memNodeLabels *= 2;
+          TU_CALL( TUreallocBlockArray(tu, pnodeLabels, memNodeLabels) );
+        }
+
+        (*pnodeLabels)[vNode] = strdup(vToken);
+      }
+    }
+
+    /* Extract element. */
+
+    Element element = 0;
+    if (elementToken)
+    {
+      if (strchr("rRtT-", elementToken[0]))
+      {
+        sscanf(&elementToken[1], "%d", &element);
+        element = -element;
+      }
+      else if (strchr("cC", elementToken[0]))
+        sscanf(&elementToken[1], "%d", &element);
+      else
+        sscanf(elementToken, "%d", &element);
+    }
+
+    TU_GRAPH_EDGE edge;
+    TU_CALL( TUgraphAddEdge(tu, graph, uNode, vNode, &edge) );
+
+    if (pedgeElements)
+    {
+      if (edge >= memEdgeElements)
+      {
+        do
+        {
+          memEdgeElements *= 2;
+        }
+        while (edge >= memEdgeElements);
+        TU_CALL( TUreallocBlockArray(tu, pedgeElements, memEdgeElements) );
+      }
+
+      (*pedgeElements)[edge] = element;
+    }
+  }
+
+  TU_CALL( TUhashtableFree(tu, &nodeNames) );
+  free(line);
 
   return TU_OKAY;
 }

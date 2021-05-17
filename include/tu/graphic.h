@@ -2,6 +2,7 @@
 #define TU_GRAPHIC_H
 
 #include <tu/env.h>
+#include <tu/element.h>
 #include <tu/matrix.h>
 #include <tu/graph.h>
 

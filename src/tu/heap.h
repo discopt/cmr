@@ -5,7 +5,7 @@
 #include "env_internal.h"
 #include <limits.h>
 
-#ifdef __cplusplus
+#ifdef __cplus
 extern "C" {
 #endif
 
