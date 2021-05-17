@@ -98,16 +98,6 @@ target_link_libraries(tu_convert_matrix
 )
 set_target_properties(tu_convert_matrix PROPERTIES OUTPUT_NAME tu-convert-matrix)
 
-# Target for the tu-sign.
-add_executable(tu_sign
-  src/test/sign_main.c)
-target_link_libraries(tu_sign
-  PRIVATE
-     TU::tu
-)
-set_target_properties(tu_sign PROPERTIES OUTPUT_NAME tu-sign)
-
-
 # Target for the random_network
 #add_executable(random_network
 #   src/test/random_network.c)
