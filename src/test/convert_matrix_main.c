@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <assert.h>
 
 #include <tu/matrix.h>
 #include <tu/sign.h>
@@ -19,7 +20,88 @@ typedef enum
   SIGNED_SUPPORT = 2
 } Task;
 
-TU_ERROR runDbl(const char* instanceFileName, Format inputFormat, Format outputFormat, Task task)
+static
+TU_ERROR printDbl(TU* tu, TU_DBLMAT* matrix, Format outputFormat, bool transpose)
+{
+  assert(matrix);
+
+  TU_DBLMAT* output = NULL;
+  if (transpose)
+  {
+    TU_CALL( TUdblmatTranspose(tu, matrix, &output) );
+  }
+  else
+    output = matrix;
+
+  TU_ERROR error = TU_OKAY;
+  if (outputFormat == SPARSE)
+    TU_CALL( TUdblmatPrintSparse(stdout, output) );
+  else if (outputFormat == DENSE)
+    TU_CALL( TUdblmatPrintDense(stdout, output, '0', false) );
+  else
+    error = TU_ERROR_INPUT;
+
+  if (transpose)
+    TU_CALL( TUdblmatFree(tu, &output) );
+
+  return error;
+}
+
+static
+TU_ERROR printInt(TU* tu, TU_INTMAT* matrix, Format outputFormat, bool transpose)
+{
+  assert(matrix);
+
+  TU_INTMAT* output = NULL;
+  if (transpose)
+  {
+    TU_CALL( TUintmatTranspose(tu, matrix, &output) );
+  }
+  else
+    output = matrix;
+
+  TU_ERROR error = TU_OKAY;
+  if (outputFormat == SPARSE)
+    TU_CALL( TUintmatPrintSparse(stdout, output) );
+  else if (outputFormat == DENSE)
+    TU_CALL( TUintmatPrintDense(stdout, output, '0', false) );
+  else
+    error = TU_ERROR_INPUT;
+
+  if (transpose)
+    TU_CALL( TUintmatFree(tu, &output) );
+
+  return error;
+}
+
+static
+TU_ERROR printChr(TU* tu, TU_CHRMAT* matrix, Format outputFormat, bool transpose)
+{
+  assert(matrix);
+
+  TU_CHRMAT* output = NULL;
+  if (transpose)
+  {
+    TU_CALL( TUchrmatTranspose(tu, matrix, &output) );
+  }
+  else
+    output = matrix;
+
+  TU_ERROR error = TU_OKAY;
+  if (outputFormat == SPARSE)
+    TU_CALL( TUchrmatPrintSparse(stdout, output) );
+  else if (outputFormat == DENSE)
+    TU_CALL( TUchrmatPrintDense(stdout, output, '0', false) );
+  else
+    error = TU_ERROR_INPUT;
+
+  if (transpose)
+    TU_CALL( TUchrmatFree(tu, &output) );
+
+  return error;
+}
+
+TU_ERROR runDbl(const char* instanceFileName, Format inputFormat, Format outputFormat, Task task, bool transpose)
 {
   FILE* instanceFile = fopen(instanceFileName, "r");
   if (!instanceFile)
@@ -41,34 +123,19 @@ TU_ERROR runDbl(const char* instanceFileName, Format inputFormat, Format outputF
   {
     TU_CHRMAT* result = NULL;
     TU_CALL( TUsupportDbl(tu, matrix, 1.0e-9, &result) );
-    if (outputFormat == SPARSE)
-      TU_CALL( TUchrmatPrintSparse(stdout, result) );
-    else if (outputFormat == DENSE)
-      TU_CALL( TUchrmatPrintDense(stdout, result, '0', false) );
-    else
-      return TU_ERROR_INPUT;
+    TU_CALL( printChr(tu, result, outputFormat, transpose) );
     TU_CALL( TUchrmatFree(tu, &result) );
   }
   else if (task == SIGNED_SUPPORT)
   {
     TU_CHRMAT* result = NULL;
     TU_CALL( TUsignedSupportDbl(tu, matrix, 1.0e-9, &result) );
-    if (outputFormat == SPARSE)
-      TU_CALL( TUchrmatPrintSparse(stdout, result) );
-    else if (outputFormat == DENSE)
-      TU_CALL( TUchrmatPrintDense(stdout, result, '0', false) );
-    else
-      return TU_ERROR_INPUT;
+    TU_CALL( printChr(tu, result, outputFormat, transpose) );
     TU_CALL( TUchrmatFree(tu, &result) );
   }
   else
   {
-    if (outputFormat == SPARSE)
-      TU_CALL( TUdblmatPrintSparse(stdout, matrix) );
-    else if (outputFormat == DENSE)
-      TU_CALL( TUdblmatPrintDense(stdout, matrix, '0', false) );
-    else
-      return TU_ERROR_INPUT;
+    TU_CALL( printDbl(tu, matrix, outputFormat, transpose) );
   }
 
   TU_CALL( TUdblmatFree(tu, &matrix) );
@@ -78,7 +145,7 @@ TU_ERROR runDbl(const char* instanceFileName, Format inputFormat, Format outputF
   return TU_OKAY;
 }
 
-TU_ERROR runInt(const char* instanceFileName, Format inputFormat, Format outputFormat, Task task)
+TU_ERROR runInt(const char* instanceFileName, Format inputFormat, Format outputFormat, Task task, bool transpose)
 {
   FILE* instanceFile = fopen(instanceFileName, "r");
   if (!instanceFile)
@@ -100,34 +167,19 @@ TU_ERROR runInt(const char* instanceFileName, Format inputFormat, Format outputF
   {
     TU_CHRMAT* result = NULL;
     TU_CALL( TUsupportInt(tu, matrix, &result) );
-    if (outputFormat == SPARSE)
-      TU_CALL( TUchrmatPrintSparse(stdout, result) );
-    else if (outputFormat == DENSE)
-      TU_CALL( TUchrmatPrintDense(stdout, result, '0', false) );
-    else
-      return TU_ERROR_INPUT;
+    TU_CALL( printChr(tu, result, outputFormat, transpose) );
     TU_CALL( TUchrmatFree(tu, &result) );
   }
   else if (task == SIGNED_SUPPORT)
   {
     TU_CHRMAT* result = NULL;
     TU_CALL( TUsignedSupportInt(tu, matrix, &result) );
-    if (outputFormat == SPARSE)
-      TU_CALL( TUchrmatPrintSparse(stdout, result) );
-    else if (outputFormat == DENSE)
-      TU_CALL( TUchrmatPrintDense(stdout, result, '0', false) );
-    else
-      return TU_ERROR_INPUT;
+    TU_CALL( printChr(tu, result, outputFormat, transpose) );
     TU_CALL( TUchrmatFree(tu, &result) );
   }
   else
   {
-    if (outputFormat == SPARSE)
-      TU_CALL( TUintmatPrintSparse(stdout, matrix) );
-    else if (outputFormat == DENSE)
-      TU_CALL( TUintmatPrintDense(stdout, matrix, '0', false) );
-    else
-      return TU_ERROR_INPUT;
+    TU_CALL( printInt(tu, matrix, outputFormat, transpose) );
   }
 
   TU_CALL( TUintmatFree(tu, &matrix) );
@@ -140,13 +192,14 @@ TU_ERROR runInt(const char* instanceFileName, Format inputFormat, Format outputF
 int printUsage(const char* program)
 {
   printf("Usage: %s [OPTION]... MATRIX\n\n", program);
-  puts("Copies MATRIX into another format.");
+  puts("Copies MATRIX, potentially applying an operation.");
   puts("\nOptions:");
-  puts("  -i FORMAT  Format of MATRIX file, among {dense, sparse}; default: dense.");
-  puts("  -o FORMAT  Format of output, among {dense, sparse}; default: same as input.");
-  puts("  -s         Create support matrix instead of copying.");
-  puts("  -t         Create signed support matrix instead of copying.");
-  puts("  -d         Use double arithmetic.");
+  puts("  -i, --input FORMAT  Format of MATRIX file, among {dense, sparse}; default: dense.");
+  puts("  -o, --output FORMAT Format of output, among {dense, sparse}; default: same as input.");
+  puts("  -s, --support       Create support matrix instead of copying.");
+  puts("  -t, --transpose     Output transposed matrix (can be combined with other operations).");
+  puts("  -S, --sign          Create signed support matrix instead of copying.");
+  puts("  -d, --double        Use double arithmetic.");
   
   return EXIT_FAILURE;
 }
@@ -157,16 +210,17 @@ int main(int argc, char** argv)
   Format inputFormat = DENSE;
   Format outputFormat = UNDEFINED;
   Task task = COPY;
+  bool transpose = false;
   bool doubleArithmetic = false;
   char* instanceFileName = NULL;
   for (int a = 1; a < argc; ++a)
   {
-    if (!strcmp(argv[a], "-h"))
+    if (!strcmp(argv[a], "-h") || !strcmp(argv[a], "--help"))
     {
       printUsage(argv[0]);
       return EXIT_SUCCESS;
     }
-    else if (!strcmp(argv[a], "-i") && a+1 < argc)
+    else if ((!strcmp(argv[a], "-i") || !strcmp(argv[a], "--input")) && a+1 < argc)
     {
       if (!strcmp(argv[a+1], "dense"))
         inputFormat = DENSE;
@@ -179,7 +233,7 @@ int main(int argc, char** argv)
       }
       ++a;
     }
-    else if (!strcmp(argv[a], "-o") && a+1 < argc)
+    else if ((!strcmp(argv[a], "-o") || !strcmp(argv[a], "--output")) && a+1 < argc)
     {
       if (!strcmp(argv[a+1], "dense"))
         outputFormat = DENSE;
@@ -192,11 +246,13 @@ int main(int argc, char** argv)
       }
       ++a;
     }
-    else if (!strcmp(argv[a], "-s"))
+    else if (!strcmp(argv[a], "-s") || !strcmp(argv[a], "--support"))
       task = SUPPORT;
-    else if (!strcmp(argv[a], "-t"))
+    else if (!strcmp(argv[a], "-S") || !strcmp(argv[a], "--sign"))
       task = SIGNED_SUPPORT;
-    else if (!strcmp(argv[a], "-d"))
+    else if (!strcmp(argv[a], "-t") || !strcmp(argv[a], "--transpose"))
+      transpose = true;
+    else if (!strcmp(argv[a], "-d") || !strcmp(argv[a], "--double"))
       doubleArithmetic = true;
     else if (!instanceFileName)
       instanceFileName = argv[a];
@@ -217,9 +273,9 @@ int main(int argc, char** argv)
 
   TU_ERROR error;
   if (doubleArithmetic)
-    error = runDbl(instanceFileName, inputFormat, outputFormat, task);
+    error = runDbl(instanceFileName, inputFormat, outputFormat, task, transpose);
   else
-    error = runInt(instanceFileName, inputFormat, outputFormat, task);
+    error = runInt(instanceFileName, inputFormat, outputFormat, task, transpose);
   switch (error)
   {
   case TU_ERROR_INPUT:
