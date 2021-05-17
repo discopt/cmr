@@ -25,11 +25,12 @@ int printUsage(const char* program)
   puts("\nOptions:");
   puts("  -i FORMAT  Format of input GRAPH file, among {edgelist}; default: edgelist.");
   puts("  -o FORMAT  Format of output matrix file, among {sparse,dense}; default: dense.");
+  puts("  -b         Convert to binary representation matrix (default: ternary).");
 
   return EXIT_FAILURE;
 }
 
-TU_ERROR run(const char* instanceFileName, GraphFormat inputFormat, MatrixFormat outputFormat)
+TU_ERROR run(const char* instanceFileName, GraphFormat inputFormat, MatrixFormat outputFormat, bool binary)
 {
   FILE* instanceFile = fopen(instanceFileName, "r");
   if (!instanceFile)
@@ -93,8 +94,16 @@ TU_ERROR run(const char* instanceFileName, GraphFormat inputFormat, MatrixFormat
 
     TU_CHRMAT* matrix = NULL;
     bool isCorrectForest = false;
-    TUcomputeGraphBinaryRepresentationMatrix(tu, graph, &matrix, NULL, numForestEdges, forestEdges, numCoforestEdges,
-      coforestEdges, &isCorrectForest);
+    if (binary)
+    {
+      TU_CALL( TUcomputeGraphBinaryRepresentationMatrix(tu, graph, &matrix, NULL, numForestEdges, forestEdges,
+        numCoforestEdges, coforestEdges, &isCorrectForest) );
+    }
+    else
+    {
+      TU_CALL( TUcomputeGraphTernaryRepresentationMatrix(tu, graph, &matrix, NULL, NULL, numForestEdges, forestEdges,
+        numCoforestEdges, coforestEdges, &isCorrectForest) );
+    }
 
     if (outputFormat == MATRIX_FORMAT_DENSE)
       TU_CALL( TUchrmatPrintDense(stdout, matrix, '0', false) );
@@ -118,6 +127,7 @@ int main(int argc, char** argv)
 {
   GraphFormat inputFormat = GRAPH_FORMAT_UNDEFINED;
   MatrixFormat outputFormat = MATRIX_FORMAT_DENSE;
+  bool binary = false;
   char* instanceFileName = NULL;
   for (int a = 1; a < argc; ++a)
   {
@@ -125,6 +135,10 @@ int main(int argc, char** argv)
     {
       printUsage(argv[0]);
       return EXIT_SUCCESS;
+    }
+    else if (!strcmp(argv[a], "-b"))
+    {
+      binary = true;
     }
     else if (!strcmp(argv[a], "-i") && a+1 < argc)
     {
@@ -165,7 +179,7 @@ int main(int argc, char** argv)
     return printUsage(argv[0]);
   }
 
-  TU_ERROR error = run(instanceFileName, inputFormat, outputFormat);
+  TU_ERROR error = run(instanceFileName, inputFormat, outputFormat, binary);
   switch (error)
   {
   case TU_ERROR_INPUT:
