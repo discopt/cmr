@@ -1,5 +1,6 @@
 // #define TU_DEBUG /* Uncomment to debug graphic. */
 // #define TU_DEBUG_DOT /* Uncomment to write dot files of t-decompositions. */
+// #define TU_DEBUG_CONSISTENCY /* Uncomment to check consistency of t-decompositions. */
 
 #include <tu/graphic.h>
 #include <tu/sign.h>
@@ -594,7 +595,7 @@ DEC_MEMBER findEdgeMember(
   return findMember(dec, dec->edges[edge].member);
 }
 
-#if !defined(NDEBUG)
+#if defined(TU_DEBUG_CONSISTENCY)
 
 /**
  * \brief Checks whether \p dec has consistent edge data.
@@ -859,7 +860,7 @@ char* decConsistency(
   return NULL;
 }
 
-#endif /* !NDEBUG */
+#endif /* TU_DEBUG_CONSISTENCY */
 
 typedef enum
 {
@@ -1365,7 +1366,9 @@ TU_ERROR decCreate(
   for (int c = 0; c < dec->numColumns; ++c)
     dec->columnEdges[c].edge = -1;
 
+#if defined(TU_DEBUG_CONSISTENCY)
   TUconsistencyAssert( decConsistency(dec) );
+#endif /* TU_DEBUG_CONSISTENCY */
 
   return TU_OKAY;
 }
@@ -1409,7 +1412,10 @@ TU_ERROR decToGraph(
   assert(dec);
   assert(graph);
 
+#if defined(TU_DEBUG_CONSISTENCY)
   TUconsistencyAssert( decConsistency(dec) );
+#endif /* TU_DEBUG_CONSISTENCY */
+
 
   TUdbgMsg(0, "TUdecToGraph for t-decomposition.\n");
 
@@ -1983,6 +1989,7 @@ TU_ERROR parallelParentChildCheckMember(
 
   return TU_OKAY;
 }
+
 /**
  * \brief Ensures that no child marker in the reduced decomposition is parallel to the parent marker.
  */
@@ -3345,7 +3352,10 @@ TU_ERROR addColumnCheck(
 
   TUdbgMsg(0, "\n  Checking whether we can add a column with %d 1's.\n", numRows);
 
+#if defined(TU_DEBUG_CONSISTENCY)
   TUconsistencyAssert( decConsistency(dec) );
+#endif /* TU_DEBUG_CONSISTENCY */
+
 
   /* Check for the (not yet computed) reduced decomposition whether there is a pair of parallel child/parent marker
    * edges in a non-parallel. */
@@ -3368,7 +3378,10 @@ TU_ERROR addColumnCheck(
   if (newcolumn->remainsGraphic)
     TUdbgMsg(4, "Adding the column would maintain graphicness.\n");
 
+#if defined(TU_DEBUG_CONSISTENCY)
   TUconsistencyAssert( decConsistency(dec) );
+#endif /* TU_DEBUG_CONSISTENCY */
+
 
   return TU_OKAY;
 }
@@ -4816,7 +4829,10 @@ TU_ERROR addColumnProcessComponent(
   TUdbgMsg(6 + 2*depth, "addColumnProcessComponent(member %d = reduced member %ld)\n", reducedMember->member,
     (reducedMember - &newcolumn->reducedMembers[0]));
 
+#if defined(TU_DEBUG_CONSISTENCY)
   TUconsistencyAssert( decConsistency(dec) );
+#endif /* TU_DEBUG_CONSISTENCY */
+
 
   /* If we are non-root type 1, then we don't need to do anything. */
   if (reducedMember->type == TYPE_CYCLE_CHILD && depth > 0)
@@ -4846,7 +4862,10 @@ TU_ERROR addColumnProcessComponent(
   else
     TU_CALL( addColumnProcessRigid(dec, newcolumn, reducedComponent, reducedMember, depth) );
 
+#if defined(TU_DEBUG_CONSISTENCY)
   TUconsistencyAssert( decConsistency(dec) );
+#endif /* TU_DEBUG_CONSISTENCY */
+
 
   return TU_OKAY;
 }
@@ -4929,7 +4948,10 @@ TU_ERROR addColumnApply(
 
   TUdbgMsg(0, "\n  Adding a column with %d 1's.\n", numRows);
 
+#if defined(TU_DEBUG_CONSISTENCY)
   TUconsistencyAssert( decConsistency(dec) );
+#endif /* TU_DEBUG_CONSISTENCY */
+
 
   /* Create reduced components for new edges. */
   TU_CALL( completeReducedDecomposition(dec, newcolumn, rows, numRows) );
@@ -5063,7 +5085,9 @@ TU_ERROR addColumnApply(
   newcolumn->numReducedMembers = 0;
   newcolumn->numReducedComponents = 0;
 
+#if defined(TU_DEBUG_CONSISTENCY)
   TUconsistencyAssert( decConsistency(dec) );
+#endif /* TU_DEBUG_CONSISTENCY */
 
   return TU_OKAY;
 }

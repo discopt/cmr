@@ -1,4 +1,5 @@
 // #define TU_DEBUG /* Uncomment to debug graph operations. */
+// #define TU_DEBUG_CONSISTENCY /* Uncomment to check consistency of t-decompositions. */
 
 #include <tu/graph.h>
 
@@ -117,7 +118,9 @@ TU_ERROR TUgraphCreateEmpty(TU* tu, TU_GRAPH** pgraph, int memNodes, int memEdge
     graph->arcs[2*e].next = e+1;
   graph->arcs[2*graph->memEdges-2].next = -1;
 
+#if defined(TU_DEBUG_CONSISTENCY)
   TUgraphEnsureConsistent(tu, graph);
+#endif /* TU_DEBUG_CONSISTENCY */
 
   return TU_OKAY;
 }
@@ -128,7 +131,9 @@ TU_ERROR TUgraphFree(TU* tu, TU_GRAPH** pgraph)
 
   TUdbgMsg(0, "TUgraphFree(|V|=%d, |E|=%d)\n", TUgraphNumNodes(*pgraph), TUgraphNumEdges(*pgraph));
 
+#if defined(TU_DEBUG_CONSISTENCY)
   TUgraphEnsureConsistent(tu, *pgraph);
+#endif /* TU_DEBUG_CONSISTENCY */
 
   TU_GRAPH* graph = *pgraph;
 
@@ -158,7 +163,9 @@ TU_ERROR TUgraphClear(TU* tu, TU_GRAPH* graph)
     graph->arcs[2*e].next = e+1;
   graph->arcs[2*graph->memEdges-2].next = -1;
 
+#if defined(TU_DEBUG_CONSISTENCY)
   TUgraphEnsureConsistent(tu, graph);
+#endif /* TU_DEBUG_CONSISTENCY */
 
   return TU_OKAY;
 }
@@ -170,7 +177,9 @@ TU_ERROR TUgraphAddNode(TU* tu, TU_GRAPH *graph, TU_GRAPH_NODE* pnode)
 
   TUdbgMsg(0, "TUgraphAddNode().\n");
 
+#if defined(TU_DEBUG_CONSISTENCY)
   TUgraphEnsureConsistent(tu, graph);
+#endif /* TU_DEBUG_CONSISTENCY */
 
   /* If the free list is empty, we have reallocate. */
   if (!isValid(graph->freeNode))
@@ -197,7 +206,9 @@ TU_ERROR TUgraphAddNode(TU* tu, TU_GRAPH *graph, TU_GRAPH_NODE* pnode)
     graph->nodes[graph->firstNode].prev = node;
   graph->firstNode = node;
 
+#if defined(TU_DEBUG_CONSISTENCY)
   TUgraphEnsureConsistent(tu, graph);
+#endif /* TU_DEBUG_CONSISTENCY */
 
   if (pnode)
     *pnode = node;
@@ -210,7 +221,9 @@ TU_ERROR TUgraphAddEdge(TU* tu, TU_GRAPH* graph, TU_GRAPH_NODE u, TU_GRAPH_NODE 
 {
   TUdbgMsg(0, "TUgraphAddEdge(%d,%d).\n", u, v);
 
+#if defined(TU_DEBUG_CONSISTENCY)
   TUgraphEnsureConsistent(tu, graph);
+#endif /* TU_DEBUG_CONSISTENCY */
   assert(u >= 0);
   assert(u < graph->numNodes);
   assert(v >= 0);
@@ -258,7 +271,9 @@ TU_ERROR TUgraphAddEdge(TU* tu, TU_GRAPH* graph, TU_GRAPH_NODE u, TU_GRAPH_NODE 
     graph->arcs[firstOut].prev = arc;
   graph->nodes[v].firstOut = arc;
 
+#if defined(TU_DEBUG_CONSISTENCY)
   TUgraphEnsureConsistent(tu, graph);
+#endif /* TU_DEBUG_CONSISTENCY */
 
   if (pedge)
     *pedge = edge;
@@ -270,13 +285,17 @@ TU_ERROR TUgraphDeleteNode(TU* tu, TU_GRAPH* graph, TU_GRAPH_NODE v)
 {
   TUdbgMsg(0, "TUgraphDeleteNode(|V|=%d, |E|=%d, v=%d)\n", TUgraphNumNodes(graph), TUgraphNumEdges(graph), v);
 
+#if defined(TU_DEBUG_CONSISTENCY)
   TUgraphEnsureConsistent(tu, graph);
+#endif /* TU_DEBUG_CONSISTENCY */
 
   /* Remove incident edges of which v is the source. */
   while (isValid(graph->nodes[v].firstOut))
     TUgraphDeleteEdge(tu, graph, graph->nodes[v].firstOut/2);
 
+#if defined(TU_DEBUG_CONSISTENCY)
   TUgraphEnsureConsistent(tu, graph);
+#endif /* TU_DEBUG_CONSISTENCY */
 
   /* Remove node from node list. */
   TU_GRAPH_NODE prev = graph->nodes[v].prev;
@@ -292,7 +311,9 @@ TU_ERROR TUgraphDeleteNode(TU* tu, TU_GRAPH* graph, TU_GRAPH_NODE v)
   graph->freeNode = v;
   graph->numNodes--;
 
+#if defined(TU_DEBUG_CONSISTENCY)
   TUgraphEnsureConsistent(tu, graph);
+#endif /* TU_DEBUG_CONSISTENCY */
 
   return TU_OKAY;
 }
@@ -309,7 +330,9 @@ TU_ERROR TUgraphDeleteEdge(TU* tu, TU_GRAPH* graph, TU_GRAPH_EDGE e)
 
   TUdbgMsg(0, " = {%d,%d})\n", u, v);
 
+#if defined(TU_DEBUG_CONSISTENCY)
   TUgraphEnsureConsistent(tu, graph);
+#endif /* TU_DEBUG_CONSISTENCY */
 
   /* Remove from u's list of outgoing arcs. */
   TU_GRAPH_EDGE prev = graph->arcs[arc].prev;
@@ -337,7 +360,9 @@ TU_ERROR TUgraphDeleteEdge(TU* tu, TU_GRAPH* graph, TU_GRAPH_EDGE e)
   if (isValid(next))
     graph->arcs[next].prev = prev;
 
+#if defined(TU_DEBUG_CONSISTENCY)
   TUgraphEnsureConsistent(tu, graph);
+#endif /* TU_DEBUG_CONSISTENCY */
 
   return TU_OKAY;
 }
@@ -383,7 +408,9 @@ TU_ERROR TUgraphMergeNodes(TU* tu, TU_GRAPH* graph, TU_GRAPH_NODE u, TU_GRAPH_NO
     graph->nodes[u].firstOut = a;
   }
 
+#if defined(TU_DEBUG_CONSISTENCY)
   TUgraphEnsureConsistent(tu, graph);
+#endif /* TU_DEBUG_CONSISTENCY */
 
   return TU_OKAY;
 }
