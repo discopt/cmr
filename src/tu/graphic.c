@@ -472,13 +472,14 @@ typedef struct
 
 typedef struct
 {
-  DEC_MEMBER_TYPE type;             /**< \brief Type of member. Only valid for representative member. */
-  DEC_MEMBER representativeMember;  /**< \brief Representative of member, or -1 if this is a representative member. */
-  DEC_MEMBER parentMember;          /**< \brief Parent member of this member or -1 for a root. Only valid for representative member. */
-  int numEdges;                     /**< \brief Number of edges. Only valid for representative member. */
-  DEC_EDGE markerToParent;          /**< \brief Parent marker edge. Only valid for representative member. */
-  DEC_EDGE markerOfParent;          /**< \brief Child marker of parent to which this member is linked. Only valid if root representative. */
-  DEC_EDGE firstEdge;               /**< \brief First edge in doubly-linked edge list of this member. */
+  DEC_MEMBER_TYPE type;                 /**< \brief Type of member. Only valid for representative member. */
+  DEC_MEMBER representativeMember;      /**< \brief Representative of member, or -1 if this is a representative member. */
+  DEC_MEMBER parentMember;              /**< \brief Parent member of this member or -1 for a root. Only valid for representative member. */
+  int numEdges;                         /**< \brief Number of edges. Only valid for representative member. */
+  DEC_EDGE markerToParent;              /**< \brief Parent marker edge. Only valid for representative member. */
+  DEC_EDGE markerOfParent;              /**< \brief Child marker of parent to which this member is linked. Only valid if root representative. */
+  DEC_EDGE firstEdge;                   /**< \brief First edge in doubly-linked edge list of this member. */
+  size_t lastParallelParentChildVisit;  /**< \brief Visit counter for \ref parallelParentChildCheckReducedMembers. */
 } DEC_MEMBER_DATA;
 
 typedef struct
@@ -493,31 +494,32 @@ typedef struct
 
 typedef struct
 {
-  TU* tu;                       /**< \brief \ref TU environment. */
+  TU* tu;                           /**< \brief \ref TU environment. */
 
-  int memMembers;               /**< \brief Allocated memory for members. */
-  int numMembers;               /**< \brief Number of members. */
-  DEC_MEMBER_DATA* members;     /**< \brief Array of members. */
+  int memMembers;                   /**< \brief Allocated memory for members. */
+  int numMembers;                   /**< \brief Number of members. */
+  DEC_MEMBER_DATA* members;         /**< \brief Array of members. */
 
-  int memEdges;                 /**< \brief Allocated memory for edges. */
-  int numEdges;                 /**< \brief Number of used edges. */
-  DecEdgeData* edges;         /**< \brief Array of edges. */
-  DEC_EDGE firstFreeEdge;       /**< \brief First edge in free list or -1. */
+  int memEdges;                     /**< \brief Allocated memory for edges. */
+  int numEdges;                     /**< \brief Number of used edges. */
+  DecEdgeData* edges;               /**< \brief Array of edges. */
+  DEC_EDGE firstFreeEdge;           /**< \brief First edge in free list or -1. */
 
-  int memNodes;                 /**< \brief Allocated memory for nodes. */
-  int numNodes;                 /**< \brief Number of nodes. */
-  DecNodeData* nodes;         /**< \brief Array of nodes. */
-  DEC_NODE firstFreeNode;       /**< \brief First node in free list or -1. */
+  int memNodes;                     /**< \brief Allocated memory for nodes. */
+  int numNodes;                     /**< \brief Number of nodes. */
+  DecNodeData* nodes;               /**< \brief Array of nodes. */
+  DEC_NODE firstFreeNode;           /**< \brief First node in free list or -1. */
 
-  int memRows;                  /**< \brief Allocated memory for \c rowEdges. */
-  int numRows;                  /**< \brief Number of rows. */
-  DecRowData* rowEdges;       /**< \brief Maps each row to its edge. */
+  int memRows;                      /**< \brief Allocated memory for \c rowEdges. */
+  int numRows;                      /**< \brief Number of rows. */
+  DecRowData* rowEdges;             /**< \brief Maps each row to its edge. */
 
-  int memColumns;               /**< \brief Allocated memory for \c columnEdges. */
-  int numColumns;               /**< \brief Number of columns. */
-  DecColumnData* columnEdges; /**< \brief Maps each column to its edge. */
+  int memColumns;                   /**< \brief Allocated memory for \c columnEdges. */
+  int numColumns;                   /**< \brief Number of columns. */
+  DecColumnData* columnEdges;       /**< \brief Maps each column to its edge. */
 
-  int numMarkerPairs;           /**< \brief Number of marker edge pairs in t-decomposition. */
+  int numMarkerPairs;               /**< \brief Number of marker edge pairs in t-decomposition. */
+  size_t parallelParentChildVisit;  /**< \brief Visit counter for \ref parallelParentChildCheckReducedMembers. */
 } Dec;
 
 /**
@@ -1285,6 +1287,7 @@ TU_ERROR createMember(
   data->numEdges = 0;
   data->parentMember = -1;
   data->type = type;
+  data->lastParallelParentChildVisit = 0;
   *pmember = dec->numMembers;
   dec->numMembers++;
 
@@ -1337,6 +1340,7 @@ TU_ERROR decCreate(
   TU_CALL( TUallocBlockArray(tu, &dec->edges, memEdges) );
   dec->numEdges = 0;
   dec->numMarkerPairs = 0;
+  dec->parallelParentChildVisit = 0;
 
   /* Initialize free list with unused edges. */
   if (memEdges > dec->numEdges)
@@ -1908,7 +1912,6 @@ TU_ERROR initializeNewColumn(
 static
 TU_ERROR parallelParentChildCheckMember(
   Dec* dec,              /**< Decomposition. */
-  bool* visitedMembers,  /**< Map from members to indicator of whether this was already a \p childMember. */
   DEC_MEMBER member,     /**< Parent of \p childMember. */
   DEC_MEMBER childMember /**< Child member of \p member. */
 )
@@ -1916,13 +1919,12 @@ TU_ERROR parallelParentChildCheckMember(
   assert(dec);
   assert(childMember >= 0);
   assert(member == findMemberParent(dec, childMember));
-  assert(visitedMembers);
 
   /* Stop if childMember was already processed at some point. */
-  if (visitedMembers[childMember])
+  if (dec->members[childMember].lastParallelParentChildVisit == dec->parallelParentChildVisit)
     return TU_OKAY;
 
-  visitedMembers[childMember] = true;
+  dec->members[childMember].lastParallelParentChildVisit = dec->parallelParentChildVisit;
   DEC_MEMBER parentMember = findMemberParent(dec, member);
   TUdbgMsg(10, "Consider child member %d of %d with parent %d.\n", childMember, member, parentMember);
   if (parentMember < 0)
@@ -1985,7 +1987,7 @@ TU_ERROR parallelParentChildCheckMember(
     }
   }
 
-  TU_CALL( parallelParentChildCheckMember(dec, visitedMembers, parentMember, member) );
+  TU_CALL( parallelParentChildCheckMember(dec, parentMember, member) );
 
   return TU_OKAY;
 }
@@ -2004,13 +2006,7 @@ TU_ERROR parallelParentChildCheckReducedMembers(
   assert(dec);
   assert(entryRows);
 
-  /* Create array of visited members to avoid multiple consideration of a whole path towards the same root. */
-
-  size_t maxNumMembers = 2*dec->numMembers;
-  bool* visitedMembers = NULL;
-  TU_CALL( TUallocStackArray(dec->tu, &visitedMembers, maxNumMembers) );
-  for (int m = 0; m < maxNumMembers; ++m)
-    visitedMembers[m] = false;
+  dec->parallelParentChildVisit++;
 
   /* Start processing at each member containing a row element. */
   for (int p = 0; p < numEntries; ++p)
@@ -2026,11 +2022,8 @@ TU_ERROR parallelParentChildCheckReducedMembers(
       member);
     DEC_MEMBER parentMember = findMemberParent(dec, member);
     if (parentMember >= 0)
-      TU_CALL( parallelParentChildCheckMember(dec, visitedMembers, parentMember, member) );
+      TU_CALL( parallelParentChildCheckMember(dec, parentMember, member) );
   }
-
-  assert(dec->numMembers <= maxNumMembers);
-  TU_CALL( TUfreeStackArray(dec->tu, &visitedMembers) );
 
   return TU_OKAY;
 }
