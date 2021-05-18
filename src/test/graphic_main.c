@@ -24,12 +24,13 @@ int printUsage(const char* program)
   puts("  -b         Consider binary representation matrices (default: ternary).");
   puts("Formats for matrices: dense, sparse");
   puts("Formats for graphs: edgelist");
+  puts("If FILE is `-', then the input will be read from stdin.");
   return EXIT_FAILURE;
 }
 
 TU_ERROR matrixToGraph(const char* instanceFileName, FileFormat inputFormat, FileFormat outputFormat, bool binary)
 {
-  FILE* instanceFile = fopen(instanceFileName, "r");
+  FILE* instanceFile = strcmp(instanceFileName, "-") ? fopen(instanceFileName, "r") : stdin;
   if (!instanceFile)
     return TU_ERROR_INPUT;
 
@@ -43,7 +44,8 @@ TU_ERROR matrixToGraph(const char* instanceFileName, FileFormat inputFormat, Fil
     TU_CALL( TUchrmatCreateFromDenseStream(tu, &matrix, instanceFile) );
   else if (inputFormat == FILEFORMAT_MATRIX_SPARSE)
     TU_CALL( TUchrmatCreateFromSparseStream(tu, &matrix, instanceFile) );
-  fclose(instanceFile);
+  if (instanceFile != stdin)
+    fclose(instanceFile);
 
   /* Transpose it. */
 
@@ -114,7 +116,7 @@ TU_ERROR matrixToGraph(const char* instanceFileName, FileFormat inputFormat, Fil
 
 TU_ERROR graphToMatrix(const char* instanceFileName, FileFormat inputFormat, FileFormat outputFormat, bool binary)
 {
-  FILE* instanceFile = fopen(instanceFileName, "r");
+  FILE* instanceFile = strcmp(instanceFileName, "-") ? fopen(instanceFileName, "r") : stdin;
   if (!instanceFile)
     return TU_ERROR_INPUT;
 
@@ -129,7 +131,8 @@ TU_ERROR graphToMatrix(const char* instanceFileName, FileFormat inputFormat, Fil
   {
     TU_CALL( TUgraphCreateFromEdgeList(tu, &graph, &edgeElements, NULL, instanceFile) );
   }
-  fclose(instanceFile);
+  if (instanceFile != stdin)
+    fclose(instanceFile);
 
   /* Scan edges for (co)forest edges. */
   size_t numForestEdges = 0;

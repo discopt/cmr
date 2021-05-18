@@ -103,7 +103,7 @@ TU_ERROR printChr(TU* tu, TU_CHRMAT* matrix, Format outputFormat, bool transpose
 
 TU_ERROR runDbl(const char* instanceFileName, Format inputFormat, Format outputFormat, Task task, bool transpose)
 {
-  FILE* instanceFile = fopen(instanceFileName, "r");
+  FILE* instanceFile = strcmp(instanceFileName, "-") ? fopen(instanceFileName, "r") : stdin;
   if (!instanceFile)
     return TU_ERROR_INPUT;
 
@@ -117,7 +117,8 @@ TU_ERROR runDbl(const char* instanceFileName, Format inputFormat, Format outputF
     TU_CALL( TUdblmatCreateFromDenseStream(tu, &matrix, instanceFile) );
   else
     return TU_ERROR_INPUT;
-  fclose(instanceFile);
+  if (instanceFile != stdin)
+    fclose(instanceFile);
 
   if (task == SUPPORT)
   {
@@ -147,7 +148,7 @@ TU_ERROR runDbl(const char* instanceFileName, Format inputFormat, Format outputF
 
 TU_ERROR runInt(const char* instanceFileName, Format inputFormat, Format outputFormat, Task task, bool transpose)
 {
-  FILE* instanceFile = fopen(instanceFileName, "r");
+  FILE* instanceFile = strcmp(instanceFileName, "-") ? fopen(instanceFileName, "r") : stdin;
   if (!instanceFile)
     return TU_ERROR_INPUT;
 
@@ -161,7 +162,8 @@ TU_ERROR runInt(const char* instanceFileName, Format inputFormat, Format outputF
     TU_CALL( TUintmatCreateFromDenseStream(tu, &matrix, instanceFile) );
   else
     return TU_ERROR_INPUT;
-  fclose(instanceFile);
+  if (instanceFile != stdin)
+    fclose(instanceFile);
 
   if (task == SUPPORT)
   {
@@ -200,6 +202,7 @@ int printUsage(const char* program)
   puts("  -t, --transpose     Output transposed matrix (can be combined with other operations).");
   puts("  -S, --sign          Create signed support matrix instead of copying.");
   puts("  -d, --double        Use double arithmetic.");
+  puts("If MATRIX is `-', then the matrix will be read from stdin.");
   
   return EXIT_FAILURE;
 }
