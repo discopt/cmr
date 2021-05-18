@@ -81,13 +81,13 @@ target_link_libraries(tu_test_new
 set_target_properties(tu_test_new PROPERTIES OUTPUT_NAME tu-test-new)
 
 # Target for the graph-matrix binary.
-add_executable(tu_graph_matrix
-   src/test/graph_matrix_main.c)
-target_link_libraries(tu_graph_matrix
+add_executable(tu_graphic
+   src/test/graphic_main.c)
+target_link_libraries(tu_graphic
    PRIVATE
       TU::tu
 )
-set_target_properties(tu_graph_matrix PROPERTIES OUTPUT_NAME tu-graph-matrix)
+set_target_properties(tu_graphic PROPERTIES OUTPUT_NAME tu-graphic)
 
 # Target for the tu-convert-matrix.
 add_executable(tu_convert_matrix
