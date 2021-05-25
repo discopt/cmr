@@ -520,8 +520,8 @@ TEST(Graphic, RandomMatrix)
   
   srand(0);
   const int numMatrices = 1000;
-  const int numRows = 10;
-  const int numColumns = 20;
+  const int numRows = 100;
+  const int numColumns = 200;
   const double probability = 0.3;
 
   for (int i = 0; i < numMatrices; ++i)
@@ -907,9 +907,9 @@ TEST(Graphic, UpdateRandomGraph)
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
 
   srand(1);
-  const int numGraphs = 100;
-  const int numNodes = 10;
-  const int numEdges = 30;
+  const int numGraphs = 1000;
+  const int numNodes = 21;
+  const int numEdges = 40;
 
   TU_GRAPH_NODE* nodes = NULL;
   ASSERT_TU_CALL( TUallocBlockArray(tu, &nodes, numNodes) );
