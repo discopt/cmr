@@ -929,7 +929,7 @@ typedef struct
   int memReducedMembers;                    /**< \brief Allocated memory for \c reducedMembers. */
   int numReducedMembers;                    /**< \brief Number of members in \c reducedMembers. */
   ReducedMember* reducedMembers;            /**< \brief Array of reduced members, sorted by increasing depth. */
-  ReducedMember** membersToReducedMembers;  /**< \brief Array mapping members to members of the reduced t-decomposition. */
+  ReducedMember** membersToReducedMembers;  /**< \brief Array mapping members to reduced members. Has no entries for new members. */
 
   ReducedComponent* reducedComponents;      /**< \brief Array with reduced root members. */
   int memReducedComponents;                 /**< \brief Allocated memory for \c reducedComponents. */
@@ -939,7 +939,7 @@ typedef struct
   int memPathEdges;                         /**< \brief Allocated memory for \c pathEdges. */
   int numPathEdges;                         /**< \brief Number of stored edges in \c pathEdges. */
 
-  ReducedMember** childrenStorage;          /**< \brief Storage for members' arrays of children in reduced t-decomposition. */
+  ReducedMember** childrenStorage;          /**< \brief Storage for reduced members' arrays of children. */
   int usedChildrenStorage;                  /**< \brief Number of stored children in \c childrenStorage. */
   int memChildrenStorage;                   /**< \brief Allocated memory for \c childrenStorage. */
 
@@ -2107,6 +2107,7 @@ TU_ERROR createReducedMembers(
 
   TUdbgMsg(8, "Attempting to create reduced member %d.\n", member);
 
+  assert(member < newcolumn->memReducedMembers);
   ReducedMember* reducedMember = newcolumn->membersToReducedMembers[member];
   if (reducedMember)
   {
@@ -2204,18 +2205,18 @@ TU_ERROR computeReducedDecomposition(
     if (entryRows[p] > maxRow)
       maxRow = entryRows[p];
   }
-  size_t maxNumReducedMembers = dec->numMembers + maxRow + 1;
-  if (newcolumn->memReducedMembers < maxNumReducedMembers)
+  size_t requiredNumReducedMembers = dec->numMembers + maxRow;
+  if (requiredNumReducedMembers >= newcolumn->memReducedMembers)
   {
-    newcolumn->memReducedMembers = maxNumReducedMembers;
-    TU_CALL( TUreallocBlockArray(dec->tu, &newcolumn->reducedMembers, newcolumn->memReducedMembers) );
-    TU_CALL( TUreallocBlockArray(dec->tu, &newcolumn->membersToReducedMembers, newcolumn->memReducedMembers) );
+    size_t newSize = 16 + 2 * newcolumn->memReducedMembers;
+    while (newSize < requiredNumReducedMembers)
+      newSize *= 2;
+    TU_CALL( TUreallocBlockArray(dec->tu, &newcolumn->reducedMembers, newSize) );
+    TU_CALL( TUreallocBlockArray(dec->tu, &newcolumn->membersToReducedMembers, newSize) );
+    for (size_t m = newcolumn->memReducedMembers; m < newSize; ++m)
+      newcolumn->membersToReducedMembers[m] = NULL;
+    newcolumn->memReducedMembers = newSize;
   }
-
-  /* Initialize the mapping from members to reduced members. */
-//   for (int m = 0; m < dec->numMembers; ++m)
-//     newcolumn->membersToReducedMembers[m] = NULL;
-  initNull((void**) newcolumn->membersToReducedMembers, dec->numMembers);
 
   ReducedMember** rootDepthMinimizer = NULL;
   /* Factor 2 because of possible new parallels due to ensureChildParentMarkersNotParallel */
@@ -2455,7 +2456,6 @@ TU_ERROR completeReducedDecomposition(
           newcolumn->memReducedComponents) );
       }
 
-      newcolumn->membersToReducedMembers[member] = reducedMember;
       newcolumn->reducedComponents[newcolumn->numReducedComponents].root = reducedMember;
       newcolumn->reducedComponents[newcolumn->numReducedComponents].rootDepth = 0;
       newcolumn->reducedComponents[newcolumn->numReducedComponents].numTerminals = 0;
@@ -3418,13 +3418,23 @@ TU_ERROR addColumnCheck(
       TUdbgMsg(6, "Edge %d is still marked as path edge after clean-up.\n", e);
     assert(!newcolumn->edgesInPath[e]);
   }
-#endif /* TU_DEBUG || !NDEBUG */
+#endif /* TU_DEBUG */
 
   /* Check for the (not yet computed) reduced decomposition whether there is a pair of parallel child/parent marker
    * edges in a non-parallel. */
   TU_CALL( parallelParentChildCheckReducedMembers(dec, rows, numRows) );
 
   TU_CALL( initializeNewColumn(dec, newcolumn) );
+
+#if defined(TU_DEBUG)
+  for (size_t m = 0; m < newcolumn->memReducedMembers; ++m)
+  {
+    if (newcolumn->membersToReducedMembers[m])
+      TUdbgMsg(6, "Member %d is still mapped to reduced member before new reduced decomposition is computed.\n", m);
+    assert(!newcolumn->membersToReducedMembers[m]);
+  }
+#endif /* TU_DEBUG */
+
   TU_CALL( computeReducedDecomposition(dec, newcolumn, rows, numRows) );
   TU_CALL( createReducedDecompositionPathEdges(dec, newcolumn, rows, numRows) );
 
@@ -3438,13 +3448,19 @@ TU_ERROR addColumnCheck(
     TUdbgMsg(6, "After inspecting reduced component %d, graphic = %d.\n", i, newcolumn->remainsGraphic);
   }
 
+  /* Clean-up membersToReducedMembers. */
+  for (size_t i = 0; i < newcolumn->numReducedMembers; ++i)
+  {
+    ReducedMember* reducedMember = &newcolumn->reducedMembers[i];
+    newcolumn->membersToReducedMembers[reducedMember->member] = NULL;
+  }
+
   if (newcolumn->remainsGraphic)
     TUdbgMsg(4, "Adding the column would maintain graphicness.\n");
 
 #if defined(TU_DEBUG_CONSISTENCY)
   TUconsistencyAssert( decConsistency(dec) );
 #endif /* TU_DEBUG_CONSISTENCY */
-
 
   return TU_OKAY;
 }
