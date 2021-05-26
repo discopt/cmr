@@ -920,6 +920,16 @@ typedef struct _ReducedComponent
 } ReducedComponent;
 
 /**
+ * \brief Additional information for each member (specific to a new column).
+ */
+
+typedef struct
+{
+  ReducedMember* reducedMember;       /**< \brief Reduced member corresponding to this member. */
+  ReducedMember* rootDepthMinimizer;  /**< \brief Reduced root of this reduced component this member belongs to. */
+} MemberInfo;
+
+/**
  * \brief Information for adding a new column.
  */
 
@@ -929,7 +939,7 @@ typedef struct
   int memReducedMembers;                    /**< \brief Allocated memory for \c reducedMembers. */
   int numReducedMembers;                    /**< \brief Number of members in \c reducedMembers. */
   ReducedMember* reducedMembers;            /**< \brief Array of reduced members, sorted by increasing depth. */
-  ReducedMember** membersToReducedMembers;  /**< \brief Array mapping members to reduced members. Has no entries for new members. */
+  MemberInfo* memberInfo;                   /**< \brief Additional information for each member. */
 
   ReducedComponent* reducedComponents;      /**< \brief Array with reduced root members. */
   int memReducedComponents;                 /**< \brief Allocated memory for \c reducedComponents. */
@@ -1802,7 +1812,7 @@ TU_ERROR newcolumnCreate(
   newcolumn->memReducedMembers = 0;
   newcolumn->numReducedMembers = 0;
   newcolumn->reducedMembers = NULL;
-  newcolumn->membersToReducedMembers = NULL;
+  newcolumn->memberInfo = NULL;
 
   newcolumn->numReducedComponents = 0;
   newcolumn->memReducedComponents = 0;
@@ -1851,8 +1861,8 @@ TU_ERROR newcolumnFree(
   if (newcolumn->reducedMembers)
     TU_CALL( TUfreeBlockArray(tu, &newcolumn->reducedMembers) );
 
-  if (newcolumn->membersToReducedMembers)
-    TU_CALL( TUfreeBlockArray(tu, &newcolumn->membersToReducedMembers) );
+  if (newcolumn->memberInfo)
+    TU_CALL( TUfreeBlockArray(tu, &newcolumn->memberInfo) );
   if (newcolumn->pathEdges)
     TU_CALL( TUfreeBlockArray(tu, &newcolumn->pathEdges) );
   if (newcolumn->childrenStorage)
@@ -2096,19 +2106,18 @@ TU_ERROR createReducedMembers(
   Dec* dec,                           /**< Decomposition. */
   DEC_NEWCOLUMN* newcolumn,           /**< newcolumn. */
   DEC_MEMBER member,                  /**< Member to create reduced member for. */
-  ReducedMember** rootDepthMinimizer, /**< Array mapping root members to the depth minimizer. */
-  ReducedMember** pReducedMember      /**< Pointer for storing the created reduced member. */
+  ReducedMember** preducedMember      /**< Pointer for storing the created reduced member. */
 )
 {
   assert(dec);
   assert(newcolumn);
   assert(member >= 0);
-  assert(pReducedMember);
+  assert(preducedMember);
 
   TUdbgMsg(8, "Attempting to create reduced member %d.\n", member);
 
   assert(member < newcolumn->memReducedMembers);
-  ReducedMember* reducedMember = newcolumn->membersToReducedMembers[member];
+  ReducedMember* reducedMember = newcolumn->memberInfo[member].reducedMember;
   if (reducedMember)
   {
     /* This member is a known reduced member. If we meet an existing path of low depth, we remember
@@ -2116,18 +2125,18 @@ TU_ERROR createReducedMembers(
 
     TUdbgMsg(10, "Reduced member exists.\n");
 
-    if (!rootDepthMinimizer[reducedMember->rootMember] ||
-      reducedMember->depth < rootDepthMinimizer[reducedMember->rootMember]->depth)
+    if (!newcolumn->memberInfo[reducedMember->rootMember].rootDepthMinimizer ||
+      reducedMember->depth < newcolumn->memberInfo[reducedMember->rootMember].rootDepthMinimizer->depth)
     {
       TUdbgMsg(8, "Updating depth to %d.\n", reducedMember->depth);
-      rootDepthMinimizer[reducedMember->rootMember] = reducedMember;
+      newcolumn->memberInfo[reducedMember->rootMember].rootDepthMinimizer = reducedMember;
     }
   }
   else
   {
     reducedMember = &newcolumn->reducedMembers[newcolumn->numReducedMembers];
     newcolumn->numReducedMembers++;
-    newcolumn->membersToReducedMembers[member] = reducedMember;
+    newcolumn->memberInfo[member].reducedMember = reducedMember;
     reducedMember->member = member;
     reducedMember->numChildren = 0;
     reducedMember->rigidEndNodes[0] = -1;
@@ -2141,7 +2150,7 @@ TU_ERROR createReducedMembers(
     if (parentMember >= 0)
     {
       ReducedMember* parentReducedMember;
-      TU_CALL( createReducedMembers(dec, newcolumn, parentMember, rootDepthMinimizer, &parentReducedMember) );
+      TU_CALL( createReducedMembers(dec, newcolumn, parentMember, &parentReducedMember) );
       reducedMember->parent = parentReducedMember;
       reducedMember->depth = parentReducedMember->depth + 1;
       reducedMember->rootMember = parentReducedMember->rootMember;
@@ -2170,16 +2179,9 @@ TU_ERROR createReducedMembers(
     TUdbgMsg(8, "The root member of %d is %d.\n", reducedMember->member, reducedMember->rootMember);
   }
 
-  *pReducedMember = reducedMember;
+  *preducedMember = reducedMember;
 
   return TU_OKAY;
-}
-
-static
-void initNull(void** array, int length)
-{
-  for (int i = 0; i < length; ++i)
-    array[i] = NULL;
 }
 
 /**
@@ -2212,18 +2214,14 @@ TU_ERROR computeReducedDecomposition(
     while (newSize < requiredNumReducedMembers)
       newSize *= 2;
     TU_CALL( TUreallocBlockArray(dec->tu, &newcolumn->reducedMembers, newSize) );
-    TU_CALL( TUreallocBlockArray(dec->tu, &newcolumn->membersToReducedMembers, newSize) );
+    TU_CALL( TUreallocBlockArray(dec->tu, &newcolumn->memberInfo, newSize) );
     for (size_t m = newcolumn->memReducedMembers; m < newSize; ++m)
-      newcolumn->membersToReducedMembers[m] = NULL;
+    {
+      newcolumn->memberInfo[m].reducedMember = NULL;
+      newcolumn->memberInfo[m].rootDepthMinimizer = NULL;
+    }
     newcolumn->memReducedMembers = newSize;
   }
-
-  ReducedMember** rootDepthMinimizer = NULL;
-  /* Factor 2 because of possible new parallels due to ensureChildParentMarkersNotParallel */
-  TU_CALL( TUallocStackArray(dec->tu, &rootDepthMinimizer, 2*dec->numMembers) );
-//   for (int m = 0; m < 2*dec->numMembers; ++m)
-//     rootDepthMinimizer[m] = NULL;
-  initNull((void**) rootDepthMinimizer, 2*dec->numMembers);
 
   newcolumn->numReducedMembers = 0;
   for (int p = 0; p < numEntries; ++p)
@@ -2236,12 +2234,12 @@ TU_ERROR computeReducedDecomposition(
       DEC_MEMBER member = findEdgeMember(dec, edge);
       TUdbgMsg(8, "Edge %d exists and belongs to member %d.\n", edge, member);
       ReducedMember* reducedMember;
-      TU_CALL( createReducedMembers(dec, newcolumn, member, rootDepthMinimizer, &reducedMember) );
+      TU_CALL( createReducedMembers(dec, newcolumn, member, &reducedMember) );
 
       /* For the first edge of this member, we set the depth minimizer to the new reduced member. */
-      if (!rootDepthMinimizer[reducedMember->rootMember])
+      if (!newcolumn->memberInfo[reducedMember->rootMember].rootDepthMinimizer)
       {
-        rootDepthMinimizer[reducedMember->rootMember] = reducedMember;
+        newcolumn->memberInfo[reducedMember->rootMember].rootDepthMinimizer = reducedMember;
       }
     }
   }
@@ -2252,12 +2250,12 @@ TU_ERROR computeReducedDecomposition(
     TUdbgMsg(6, "Considering reduced component %d with initial root member %d.\n", i,
       newcolumn->reducedComponents[i].root->member);
     TUdbgMsg(8, "The minimizer is %d.\n",
-      rootDepthMinimizer[newcolumn->reducedComponents[i].root->member]->member);
+      newcolumn->memberInfo[newcolumn->reducedComponents[i].root->member].rootDepthMinimizer->member);
 
     newcolumn->reducedComponents[i].rootDepth =
-      rootDepthMinimizer[newcolumn->reducedComponents[i].root->member]->depth;
+      newcolumn->memberInfo[newcolumn->reducedComponents[i].root->member].rootDepthMinimizer->depth;
     newcolumn->reducedComponents[i].root =
-      rootDepthMinimizer[newcolumn->reducedComponents[i].root->member];
+      newcolumn->memberInfo[newcolumn->reducedComponents[i].root->member].rootDepthMinimizer;
     newcolumn->reducedComponents[i].numTerminals = 0;
     TUdbgMsg(8, "Member %d is the new root of the reduced decomposition of this component.\n",
       newcolumn->reducedComponents[i].root->member);
@@ -2271,11 +2269,11 @@ TU_ERROR computeReducedDecomposition(
   }
   newcolumn->usedChildrenStorage = 0;
 
-  /* Set memory pointer of each reduced member. */
+  /* Set children memory pointer of each reduced member. */
   for (int m = 0; m < newcolumn->numReducedMembers; ++m)
   {
     ReducedMember* reducedMember = &newcolumn->reducedMembers[m];
-    if (reducedMember->depth >= rootDepthMinimizer[reducedMember->rootMember]->depth)
+    if (reducedMember->depth >= newcolumn->memberInfo[reducedMember->rootMember].rootDepthMinimizer->depth)
     {
       TUdbgMsg(6, "Member %d's depth is greater than that of the root, and it has %d children.\n",
         reducedMember->member, reducedMember->numChildren);
@@ -2290,20 +2288,20 @@ TU_ERROR computeReducedDecomposition(
     }
   }
 
-  TUdbgMsg(4, "Total number of children is %d / %d.\n", newcolumn->usedChildrenStorage, newcolumn->memChildrenStorage);
+  TUdbgMsg(4, "Total number of children is %d with space for %d.\n", newcolumn->usedChildrenStorage, newcolumn->memChildrenStorage);
 
   /* Set children of each reduced member. */
   for (int m = 0; m < newcolumn->numReducedMembers; ++m)
   {
     ReducedMember* reducedMember = &newcolumn->reducedMembers[m];
-    if (reducedMember->depth <= rootDepthMinimizer[reducedMember->rootMember]->depth)
+    if (reducedMember->depth <= newcolumn->memberInfo[reducedMember->rootMember].rootDepthMinimizer->depth)
     {
       TUdbgMsg(6, "Member %d's depth is smaller than or equal to that of its reduced root.\n", reducedMember->member);
       continue;
     }
 
     DEC_MEMBER parentMember = findMemberParent(dec, newcolumn->reducedMembers[m].member);
-    ReducedMember* parentReducedMember = parentMember >= 0 ? newcolumn->membersToReducedMembers[parentMember] : NULL;
+    ReducedMember* parentReducedMember = parentMember >= 0 ? newcolumn->memberInfo[parentMember].reducedMember : NULL;
     TUdbgMsg(6, "Member %d's depth is greater than that of its reduced root. Its parent is %d, and reduced parent %p.\n",
       reducedMember->member, parentMember, parentReducedMember);
 
@@ -2317,7 +2315,16 @@ TU_ERROR computeReducedDecomposition(
     }
   }
 
-  TU_CALL( TUfreeStackArray(dec->tu, &rootDepthMinimizer) );
+  /* Clean-up rootDepthMinimizer entries. */
+  for (size_t i = 0; i < newcolumn->numReducedMembers; ++i)
+  {
+    ReducedMember* reducedMember = &newcolumn->reducedMembers[i];
+    assert(reducedMember);
+    DEC_MEMBER rootMember = reducedMember->rootMember;
+    assert(rootMember >= 0);
+    assert(rootMember < dec->memMembers);
+    newcolumn->memberInfo[rootMember].rootDepthMinimizer = NULL;
+  }
 
   return TU_OKAY;
 }
@@ -2512,7 +2519,7 @@ TU_ERROR createReducedDecompositionPathEdges(
     {
       DEC_MEMBER member = findEdgeMember(dec, edge);
       assert(member >= 0);
-      ReducedMember* reducedMember = newcolumn->membersToReducedMembers[member];
+      ReducedMember* reducedMember = newcolumn->memberInfo[member].reducedMember;
 
       assert(reducedMember);
       TU_CALL( createPathEdge(dec, newcolumn, edge, reducedMember) );
@@ -3310,7 +3317,9 @@ TU_ERROR determineTypes(
   /* First handle children recursively. */
   for (int c = 0; c < reducedMember->numChildren; ++c)
   {
-    TU_CALL( determineTypes(dec, newcolumn, reducedComponent, reducedMember->children[c], depth + 1) );
+    ReducedMember* reducedChild = reducedMember->children[c];
+    assert(reducedChild);
+    TU_CALL( determineTypes(dec, newcolumn, reducedComponent, reducedChild, depth + 1) );
 
     if (newcolumn->remainsGraphic)
     {
@@ -3369,7 +3378,7 @@ TU_ERROR determineTypes(
   if (newcolumn->remainsGraphic && !isRoot && reducedMember->type == TYPE_CYCLE_CHILD)
   {
     DEC_MEMBER parentMember = findMemberParent(dec, reducedMember->member);
-    ReducedMember* reducedParent = newcolumn->membersToReducedMembers[parentMember];
+    ReducedMember* reducedParent = newcolumn->memberInfo[parentMember].reducedMember;
     DEC_EDGE markerOfParent = dec->members[member].markerOfParent;
 
     TUdbgMsg(6 + 2*depth, "Marker edge closes cycle.\n");
@@ -3429,9 +3438,9 @@ TU_ERROR addColumnCheck(
 #if defined(TU_DEBUG)
   for (size_t m = 0; m < newcolumn->memReducedMembers; ++m)
   {
-    if (newcolumn->membersToReducedMembers[m])
+    if (newcolumn->memberInfo[m].reducedMember)
       TUdbgMsg(6, "Member %d is still mapped to reduced member before new reduced decomposition is computed.\n", m);
-    assert(!newcolumn->membersToReducedMembers[m]);
+    assert(!newcolumn->memberInfo[m].reducedMember);
   }
 #endif /* TU_DEBUG */
 
@@ -3452,7 +3461,7 @@ TU_ERROR addColumnCheck(
   for (size_t i = 0; i < newcolumn->numReducedMembers; ++i)
   {
     ReducedMember* reducedMember = &newcolumn->reducedMembers[i];
-    newcolumn->membersToReducedMembers[reducedMember->member] = NULL;
+    newcolumn->memberInfo[reducedMember->member].reducedMember = NULL;
   }
 
   if (newcolumn->remainsGraphic)
