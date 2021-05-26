@@ -1941,20 +1941,6 @@ TU_ERROR initializeNewColumn(
   }
 #endif /* TU_DEBUG || !NDEBUG */
 
-  /* memEdges does not suffice since new edges can be created by squeezing off.
-   * Each squeezing off introduces 4 new edges, and we might apply this twice for each series member. */
-  size_t requiredNumEdgesInPath = dec->memEdges + 8*dec->numMembers + 32;
-  if (requiredNumEdgesInPath > newcolumn->memEdgesInPath)
-  {
-    size_t newSize = 16 + 2*newcolumn->memEdgesInPath;
-    while (newSize < requiredNumEdgesInPath)
-      newSize *= 2;
-    TU_CALL( TUreallocBlockArray(dec->tu, &newcolumn->edgesInPath, newSize) );
-    for (size_t i = newcolumn->memEdgesInPath; i < newSize; ++i)
-      newcolumn->edgesInPath[i] = false;
-    newcolumn->memEdgesInPath = newSize;
-  }
-
   /* Enlarge nodesDegree array and initialize new portion to zero. */
   if (newcolumn->memNodesDegree < dec->memNodes)
   {
@@ -2137,6 +2123,7 @@ TU_ERROR createReducedMembers(
     reducedMember = &newcolumn->reducedMembers[newcolumn->numReducedMembers];
     newcolumn->numReducedMembers++;
     newcolumn->memberInfo[member].reducedMember = reducedMember;
+    assert(isRepresentativeMember(dec, member));
     reducedMember->member = member;
     reducedMember->numChildren = 0;
     reducedMember->rigidEndNodes[0] = -1;
@@ -2173,6 +2160,7 @@ TU_ERROR createReducedMembers(
       TUdbgMsg(8, "Initializing the new reduced component %d.\n", newcolumn->numReducedComponents);
 
       newcolumn->reducedComponents[newcolumn->numReducedComponents].root = reducedMember;
+      assert(isRepresentativeMember(dec, reducedMember->member));
       newcolumn->numReducedComponents++;
     }
 
@@ -2256,6 +2244,7 @@ TU_ERROR computeReducedDecomposition(
       newcolumn->memberInfo[newcolumn->reducedComponents[i].root->member].rootDepthMinimizer->depth;
     newcolumn->reducedComponents[i].root =
       newcolumn->memberInfo[newcolumn->reducedComponents[i].root->member].rootDepthMinimizer;
+    assert(isRepresentativeMember(dec, newcolumn->reducedComponents[i].root->member));
     newcolumn->reducedComponents[i].numTerminals = 0;
     TUdbgMsg(8, "Member %d is the new root of the reduced decomposition of this component.\n",
       newcolumn->reducedComponents[i].root->member);
@@ -2346,6 +2335,7 @@ TU_ERROR createPathEdge(
 {
   assert(dec);
   assert(newcolumn);
+  assert(edge < newcolumn->memEdgesInPath);
 
   assert(newcolumn->numPathEdges < newcolumn->memPathEdges);
   PathEdge* pathEdge = &newcolumn->pathEdges[newcolumn->numPathEdges];
@@ -2449,6 +2439,7 @@ TU_ERROR completeReducedDecomposition(
       ReducedMember* reducedMember = &newcolumn->reducedMembers[newcolumn->numReducedMembers];
       newcolumn->numReducedMembers++;
       reducedMember->numChildren = 0;
+      assert(isRepresentativeMember(dec, member));
       reducedMember->member = member;
       reducedMember->depth = 0;
       reducedMember->rootMember = -1;
@@ -2464,6 +2455,7 @@ TU_ERROR completeReducedDecomposition(
       }
 
       newcolumn->reducedComponents[newcolumn->numReducedComponents].root = reducedMember;
+      assert(isRepresentativeMember(dec, reducedMember->member));
       newcolumn->reducedComponents[newcolumn->numReducedComponents].rootDepth = 0;
       newcolumn->reducedComponents[newcolumn->numReducedComponents].numTerminals = 0;
 #if !defined(NDEBUG)
@@ -3419,7 +3411,7 @@ TU_ERROR addColumnCheck(
 
   /* Reset \ref nodesDegree to 0 and edgesInPath to false by inspecting path edges from previous iteration. */
   TU_CALL( removeAllPathEdges(dec, newcolumn) );
-  
+
 #if defined(TU_DEBUG)
   for (size_t e = 0; e < newcolumn->memEdgesInPath; ++e)
   {
@@ -3434,6 +3426,26 @@ TU_ERROR addColumnCheck(
   TU_CALL( parallelParentChildCheckReducedMembers(dec, rows, numRows) );
 
   TU_CALL( initializeNewColumn(dec, newcolumn) );
+
+  /* Ensure that the edgesInPath array is long enough.
+   * memEdges does not suffice since new edges can be created by splitting and we need those for new rows.
+   * Each splitting introduces 4 new edges, and we might apply this twice for each series member.
+   */
+  int maxRow = 0;
+  for (int i = 0; i < numRows; ++i)
+    maxRow = rows[i] > maxRow ? rows[i] : maxRow;
+
+  size_t requiredNumEdgesInPath = dec->memEdges + maxRow + 8*dec->numMembers;
+  if (requiredNumEdgesInPath > newcolumn->memEdgesInPath)
+  {
+    size_t newSize = 16 + 2*newcolumn->memEdgesInPath;
+    while (newSize < requiredNumEdgesInPath)
+      newSize *= 2;
+    TU_CALL( TUreallocBlockArray(dec->tu, &newcolumn->edgesInPath, newSize) );
+    for (size_t i = newcolumn->memEdgesInPath; i < newSize; ++i)
+      newcolumn->edgesInPath[i] = false;
+    newcolumn->memEdgesInPath = newSize;
+  }
 
 #if defined(TU_DEBUG)
   for (size_t m = 0; m < newcolumn->memReducedMembers; ++m)
@@ -3527,8 +3539,7 @@ TU_ERROR moveReducedRoot(
   assert(reducedComponent);
 
   ReducedMember* reducedMember = reducedComponent->root;
-  DEC_MEMBER member = reducedMember->member;
-  assert(isRepresentativeMember(dec, member));
+  DEC_MEMBER member = findMember(dec, reducedMember->member);
 
   int numOneEnd, numTwoEnds;
   DEC_EDGE childMarkerEdges[2];
@@ -3906,6 +3917,7 @@ TU_ERROR addColumnProcessParallel(
       {
         /* Tested in UpdateRootParallelNoChildrenSplit. */
         TU_CALL( splitParallel(dec, member, childMarkerEdges[0], childMarkerEdges[1], &member) );
+        assert(isRepresentativeMember(dec, member));
         reducedMember->member = member;
       }
 
@@ -4587,6 +4599,7 @@ TU_ERROR addColumnProcessSeries(
         if (reducedMember->firstPathEdge->nextSibling)
         {
           TU_CALL( splitSeries(dec, member, newcolumn->edgesInPath, false, NULL, NULL, &member) );
+          assert(isRepresentativeMember(dec, member));
           reducedMember->member = member;
           TU_CALL( createPathEdge(dec, newcolumn, dec->members[member].markerToParent, reducedMember) );
         }
@@ -4681,6 +4694,7 @@ TU_ERROR addColumnProcessSeries(
           TU_CALL( splitSeries(dec, member, newcolumn->edgesInPath, true, NULL, NULL, &member) );
           newcolumn->edgesInPath[childMarkerEdges[0]] = false;
           newcolumn->edgesInPath[childMarkerEdges[1]] = false;
+          assert(isRepresentativeMember(dec, member));
           reducedMember->member = member;
         }
 
@@ -4697,6 +4711,7 @@ TU_ERROR addColumnProcessSeries(
         {
           /* Parent marker is one of several path edges. */
           TU_CALL( splitSeries(dec, member, newcolumn->edgesInPath, false, NULL, NULL, &member) );
+          assert(isRepresentativeMember(dec, member));
           reducedMember->member = member;
           TU_CALL( createPathEdge(dec, newcolumn, dec->members[member].markerToParent, reducedMember) );
         }
