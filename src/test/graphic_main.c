@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 
 #include <tu/matrix.h>
 #include <tu/graphic.h>
@@ -60,10 +61,16 @@ TU_ERROR matrixToGraph(const char* instanceFileName, FileFormat inputFormat, Fil
   TU_GRAPH_EDGE* forestEdges = NULL;
   TU_GRAPH_EDGE* coforestEdges = NULL;
   bool* edgesReversed = NULL;
+
+  clock_t startTime = clock();
+
   if (binary)
     TU_CALL( TUtestBinaryGraphic(tu, transpose, &isGraphic, &graph, &forestEdges, &coforestEdges, NULL) );
   else
     TU_CALL( TUtestTernaryGraphic(tu, transpose, &isGraphic, &graph, &forestEdges, &coforestEdges, &edgesReversed, NULL) );
+
+  clock_t endTime = clock();
+  fprintf(stderr, "Time: %f\n", (endTime - startTime) * 1.0 / CLOCKS_PER_SEC);
 
   fprintf(stderr, "%s input matrix is %sgraphic.\n", binary ? "Binary" : "Ternary", isGraphic ? "" : "NOT ");
 
@@ -177,6 +184,9 @@ TU_ERROR graphToMatrix(const char* instanceFileName, FileFormat inputFormat, Fil
 
   TU_CHRMAT* matrix = NULL;
   bool isCorrectForest = false;
+
+  clock_t startTime = clock();
+
   if (binary)
   {
     TU_CALL( TUcomputeGraphBinaryRepresentationMatrix(tu, graph, &matrix, NULL, numForestEdges, forestEdges,
@@ -187,6 +197,9 @@ TU_ERROR graphToMatrix(const char* instanceFileName, FileFormat inputFormat, Fil
     TU_CALL( TUcomputeGraphTernaryRepresentationMatrix(tu, graph, &matrix, NULL, NULL, numForestEdges, forestEdges,
       numCoforestEdges, coforestEdges, &isCorrectForest) );
   }
+
+  clock_t endTime = clock();
+  fprintf(stderr, "Time: %f\n", (endTime - startTime) * 1.0 / CLOCKS_PER_SEC);
 
   if (outputFormat == FILEFORMAT_MATRIX_DENSE)
     TU_CALL( TUchrmatPrintDense(stdout, matrix, '0', false) );
@@ -308,6 +321,7 @@ int main(int argc, char** argv)
     error = matrixToGraph(instanceFileName, inputFormat, outputFormat, binary);
   else
     error = graphToMatrix(instanceFileName, inputFormat, outputFormat, binary);
+
   switch (error)
   {
   case TU_ERROR_INPUT:
