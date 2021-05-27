@@ -22,11 +22,11 @@ TEST(Matrix, Read)
     fclose(stream);
 
     const char* sparseInput = "3 3 5 "
-      "0 0 1 "
-      "1 1 1 "
-      "1 2 1 "
-      "2 0 -1 "
-      "2 2 2 ";
+      "1 1 0.25 "
+      "2 2 0.5 "
+      "2 3 1 "
+      "3 1 -1 "
+      "3 3 2 ";
     stream = fmemopen((char*) sparseInput, strlen(sparseInput), "r");
     TU_DBLMAT* sparse = NULL;
     ASSERT_TU_CALL( TUdblmatCreateFromSparseStream(tu, &sparse, stream) );
@@ -50,11 +50,11 @@ TEST(Matrix, Read)
     fclose(stream);
 
     const char* sparseInput = "3 3 5 "
-      "0 0 1 "
       "1 1 1 "
-      "1 2 1 "
-      "2 0 -1 "
-      "2 2 2 ";
+      "2 2 1 "
+      "2 3 1 "
+      "3 1 -1 "
+      "3 3 2 ";
     stream = fmemopen((char*) sparseInput, strlen(sparseInput), "r");
     TU_INTMAT* sparse = NULL;
     ASSERT_TU_CALL( TUintmatCreateFromSparseStream(tu, &sparse, stream) );
@@ -78,11 +78,11 @@ TEST(Matrix, Read)
     fclose(stream);
 
     const char* sparseInput = "3 3 5 "
-      "0 0 1 "
       "1 1 1 "
-      "1 2 1 "
-      "2 0 -1 "
-      "2 2 2 ";
+      "2 2 1 "
+      "2 3 1 "
+      "3 1 -1 "
+      "3 3 2 ";
     stream = fmemopen((char*) sparseInput, strlen(sparseInput), "r");
     TU_CHRMAT* sparse = NULL;
     ASSERT_TU_CALL( TUchrmatCreateFromSparseStream(tu, &sparse, stream) );

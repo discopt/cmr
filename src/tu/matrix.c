@@ -369,7 +369,7 @@ TU_ERROR TUdblmatPrintSparse(FILE* stream, TU_DBLMAT* matrix)
     int first = matrix->rowStarts[row];
     int beyond = (row+1 < matrix->numRows) ? matrix->rowStarts[row+1] : matrix->numNonzeros;
     for (int entry = first; entry < beyond; ++entry)
-      fprintf(stream, "%d %d  %f\n", row, matrix->entryColumns[entry], matrix->entryValues[entry]);
+      fprintf(stream, "%d %d  %f\n", row+1, matrix->entryColumns[entry]+1, matrix->entryValues[entry]);
   }
 
   return TU_OKAY;
@@ -386,7 +386,7 @@ TU_ERROR TUintmatPrintSparse(FILE* stream, TU_INTMAT* matrix)
     int first = matrix->rowStarts[row];
     int beyond = (row+1 < matrix->numRows) ? matrix->rowStarts[row+1] : matrix->numNonzeros;
     for (int entry = first; entry < beyond; ++entry)
-      fprintf(stream, "%d %d  %d\n", row, matrix->entryColumns[entry], matrix->entryValues[entry]);
+      fprintf(stream, "%d %d  %d\n", row+1, matrix->entryColumns[entry]+1, matrix->entryValues[entry]);
   }
 
   return TU_OKAY;
@@ -403,7 +403,7 @@ TU_ERROR TUchrmatPrintSparse(FILE* stream, TU_CHRMAT* matrix)
     int first = matrix->rowStarts[row];
     int beyond = (row+1 < matrix->numRows) ? matrix->rowStarts[row+1] : matrix->numNonzeros;
     for (int entry = first; entry < beyond; ++entry)
-      fprintf(stream, "%d %d  %d\n", row, matrix->entryColumns[entry], matrix->entryValues[entry]);
+      fprintf(stream, "%d %d  %d\n", row+1, matrix->entryColumns[entry]+1, matrix->entryValues[entry]);
   }
 
   return TU_OKAY;
@@ -583,15 +583,15 @@ TU_ERROR TUdblmatCreateFromSparseStream(TU* tu, TU_DBLMAT** pmatrix, FILE* strea
     int column;
     double value;
     numRead = fscanf(stream, "%d %d %lf", &row, &column, &value);
-    if (numRead < 3 || row < 0 || column < 0 || row >= numRows || column >= numColumns)
+    if (numRead < 3 || row <= 0 || column <= 0 || row > numRows || column > numColumns)
     {
       TU_CALL( TUfreeStackArray(tu, &nonzeros) );
       return TU_ERROR_INPUT;
     }
     if (value != 0.0)
     {
-      nonzeros[entry].row = row;
-      nonzeros[entry].column = column;
+      nonzeros[entry].row = row - 1;
+      nonzeros[entry].column = column - 1;
       nonzeros[entry].value = value;
       ++entry;
     }
@@ -679,15 +679,15 @@ TU_ERROR TUintmatCreateFromSparseStream(TU* tu, TU_INTMAT** pmatrix, FILE* strea
     int column;
     int value;
     numRead = fscanf(stream, "%d %d %d", &row, &column, &value);
-    if (numRead < 3 || row < 0 || column < 0 || row >= numRows || column >= numColumns)
+    if (numRead < 3 || row <= 0 || column <= 0 || row > numRows || column > numColumns)
     {
       TU_CALL( TUfreeStackArray(tu, &nonzeros) );
       return TU_ERROR_INPUT;
     }
     if (value != 0)
     {
-      nonzeros[entry].row = row;
-      nonzeros[entry].column = column;
+      nonzeros[entry].row = row - 1;
+      nonzeros[entry].column = column - 1;
       nonzeros[entry].value = value;
       ++entry;
     }
@@ -775,7 +775,7 @@ TU_ERROR TUchrmatCreateFromSparseStream(TU* tu, TU_CHRMAT** pmatrix, FILE* strea
     int column;
     int value;
     numRead = fscanf(stream, "%d %d %d", &row, &column, &value);
-    if (numRead < 3 || row < 0 || column < 0 || row >= numRows || column >= numColumns || value < CHAR_MIN
+    if (numRead < 3 || row <= 0 || column <= 0 || row > numRows || column > numColumns || value < CHAR_MIN
       || value > CHAR_MAX)
     {
       TU_CALL( TUfreeStackArray(tu, &nonzeros) );
@@ -783,8 +783,8 @@ TU_ERROR TUchrmatCreateFromSparseStream(TU* tu, TU_CHRMAT** pmatrix, FILE* strea
     }
     if (value != 0)
     {
-      nonzeros[entry].row = row;
-      nonzeros[entry].column = column;
+      nonzeros[entry].row = row - 1;
+      nonzeros[entry].column = column - 1;
       nonzeros[entry].value = value;
       ++entry;
     }
