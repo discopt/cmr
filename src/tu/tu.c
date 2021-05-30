@@ -63,7 +63,7 @@ TU_ERROR TUtestTotalUnimodularityDbl(TU* tu, TU_DBLMAT* matrix, double epsilon, 
   assert(tu);
   assert(matrix);
 
-  int numComponents;
+  size_t numComponents;
   TU_ONESUM_COMPONENT* components;
 
   /* Check entries. */
@@ -73,8 +73,8 @@ TU_ERROR TUtestTotalUnimodularityDbl(TU* tu, TU_DBLMAT* matrix, double epsilon, 
 
   /* Perform 1-sum decomposition. */
 
-  decomposeOneSum(tu, (TU_MATRIX*) matrix, sizeof(double), sizeof(char), &numComponents,
-    &components, NULL, NULL, NULL, NULL);
+  TU_CALL( decomposeOneSum(tu, (TU_MATRIX*) matrix, sizeof(double), sizeof(char), &numComponents, &components, NULL,
+    NULL, NULL, NULL) );
 
   /* Check correct signing for each component. */
 
@@ -94,7 +94,7 @@ TU_ERROR TUtestTotalUnimodularityDbl(TU* tu, TU_DBLMAT* matrix, double epsilon, 
           compSubmatrix->rows[r] = components[comp].rowsToOriginal[compSubmatrix->rows[r]];
         for (int c = 0; c < compSubmatrix->numColumns; ++c)
           compSubmatrix->columns[c] = components[comp].columnsToOriginal[compSubmatrix->columns[c]];
-        TUsortSubmatrix(compSubmatrix);
+        TUsortSubmatrix(tu, compSubmatrix);
         *psubmatrix = compSubmatrix;
       }
 
@@ -118,7 +118,7 @@ TU_ERROR TUtestTotalUnimodularityInt(TU* tu, TU_INTMAT* matrix, bool* pisTU, TU_
   assert(tu);
   assert(matrix);
 
-  int numComponents;
+  size_t numComponents;
   TU_ONESUM_COMPONENT* components;
 
   /* Check entries. */
@@ -149,7 +149,7 @@ TU_ERROR TUtestTotalUnimodularityInt(TU* tu, TU_INTMAT* matrix, bool* pisTU, TU_
           compSubmatrix->rows[r] = components[comp].rowsToOriginal[compSubmatrix->rows[r]];
         for (int c = 0; c < compSubmatrix->numColumns; ++c)
           compSubmatrix->columns[c] = components[comp].columnsToOriginal[compSubmatrix->columns[c]];
-        TUsortSubmatrix(compSubmatrix);
+        TUsortSubmatrix(tu, compSubmatrix);
         *psubmatrix = compSubmatrix;
       }
 
@@ -173,7 +173,7 @@ TU_ERROR TUtestTotalUnimodularityChr(TU* tu, TU_CHRMAT* matrix, bool* pisTU, TU_
   assert(tu);
   assert(matrix);
 
-  int numComponents;
+  size_t numComponents;
   TU_ONESUM_COMPONENT* components;
 
   /* Check entries. */
@@ -204,7 +204,7 @@ TU_ERROR TUtestTotalUnimodularityChr(TU* tu, TU_CHRMAT* matrix, bool* pisTU, TU_
           compSubmatrix->rows[r] = components[comp].rowsToOriginal[compSubmatrix->rows[r]];
         for (int c = 0; c < compSubmatrix->numColumns; ++c)
           compSubmatrix->columns[c] = components[comp].columnsToOriginal[compSubmatrix->columns[c]];
-        TUsortSubmatrix(compSubmatrix);
+        TUsortSubmatrix(tu, compSubmatrix);
         *psubmatrix = compSubmatrix;
       }
 

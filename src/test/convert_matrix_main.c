@@ -91,7 +91,7 @@ TU_ERROR printChr(TU* tu, TU_CHRMAT* matrix, Format outputFormat, bool transpose
   if (outputFormat == SPARSE)
     TU_CALL( TUchrmatPrintSparse(stdout, output) );
   else if (outputFormat == DENSE)
-    TU_CALL( TUchrmatPrintDense(stdout, output, '0', false) );
+    TU_CALL( TUchrmatPrintDense(tu, stdout, output, '0', false) );
   else
     error = TU_ERROR_INPUT;
 

@@ -19,8 +19,8 @@ struct GraphNode
 typedef struct GraphNode GRAPH_NODE;
 
 TU_ERROR decomposeOneSum(TU* tu, TU_MATRIX* matrix, size_t matrixType, size_t targetType,
-  int* pnumComponents, TU_ONESUM_COMPONENT** pcomponents, int* rowsToComponents,
-  int* columnsToComponents, int* rowsToComponentRows, int* columnsToComponentColumns)
+  size_t* pnumComponents, TU_ONESUM_COMPONENT** pcomponents, size_t* rowsToComponents,
+  size_t* columnsToComponents, size_t* rowsToComponentRows, size_t* columnsToComponentColumns)
 {
   GRAPH_NODE* graphNodes = NULL;
   int* graphAdjacencies = NULL;

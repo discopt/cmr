@@ -16,9 +16,10 @@ extern "C" {
 
 typedef enum
 {
-  TU_OKAY = 0,        /**< No error. */
-  TU_ERROR_INPUT = 1, /**< Bad user input. */
-  TU_ERROR_MEMORY = 2 /**< Error during (re)allocation. */
+  TU_OKAY = 0,          /**< No error. */
+  TU_ERROR_INPUT = 1,   /**< Bad user input. */
+  TU_ERROR_MEMORY = 2,  /**< Error during (re)allocation. */
+  TU_ERROR_INVALID = 3  /**< Other invalid data. */
 } TU_ERROR;
 
 /**
@@ -145,6 +146,26 @@ TU_ERROR _TUallocBlockArray(TU* tu, void** ptr, size_t size, size_t length);
 
 TU_EXPORT
 TU_ERROR _TUreallocBlockArray(TU* tu, void** ptr, size_t size, size_t length);
+
+/**
+ * \brief Allocates block memory for an array of chunks and copies it from \p source.
+ *
+ * The block memory shall be freed with \ref TUfreeBlockArray. Its size can be changed via
+ * \ref TUreallocBlockArray.
+ * The size of each chunk is determined automatically.
+ */
+
+#define TUduplicateBlockArray(tu, ptr, length, source) \
+  _TUduplicateBlockArray(tu, (void**) ptr, sizeof(**ptr), length, source)
+
+/**
+ * \brief Carries out the duplication for \ref TUduplicateBlockArray.
+ *
+ * \note Use \ref TUduplicateBlockArray to duplicate block memory.
+ */
+
+TU_EXPORT
+TU_ERROR _TUduplicateBlockArray(TU* tu, void** ptr, size_t size, size_t length, void* source);
 
 /**
  * \brief Carries out the deallocation for \ref TUfreeBlockArray.

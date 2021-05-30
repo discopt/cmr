@@ -49,7 +49,22 @@ typedef struct
  */
 
 TU_ERROR TUsortSubmatrix(
-  TU_SUBMAT* submatrix /**< The submatrix. */
+  TU* tu,               /**< \ref TU environment. */
+  TU_SUBMAT* submatrix  /**< The submatrix. */
+);
+
+/**
+ * \brief Creates a \p numRows x \p numColumns submatrix of the char \p matrix indexed by \p rows and \p columns.
+ */
+
+TU_ERROR TUchrmatFilter(
+  TU* tu,             /**< \ref TU environment. */
+  TU_CHRMAT* matrix,  /**< Matrix. */
+  size_t numRows,     /**< Number of rows of submatrix. */
+  size_t* rows,       /**< Rows of \p matrix to be copied into the submatrix. */
+  size_t numColumns,  /**< Number of columns of submatrix. */
+  size_t* columns,    /**< Columns of \p matrix to be copied into the submatrix. */
+  TU_CHRMAT** presult /**< Pointer for storing the created submatrix. */
 );
 
 #ifdef __cplusplus

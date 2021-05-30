@@ -18,6 +18,18 @@ extern "C" {
  * @{
  */
 
+typedef enum
+{
+  TU_NONGRAPHIC_F_7 = 1,
+  TU_NONGRAPHIC_F_7_DUAL,
+  TU_NONGRAPHIC_K_5_DUAL1,
+  TU_NONGRAPHIC_K_5_DUAL2,
+  TU_NONGRAPHIC_K_5_DUAL3,
+  TU_NONGRAPHIC_K_3_3_DUAL1,
+  TU_NONGRAPHIC_K_3_3_DUAL2,
+  TU_NONGRAPHIC_K_3_3_DUAL3,
+} TU_NONGRAPHIC_MINOR;
+
 /**
  * \brief Computes the binary representation matrix for a given graph.
  *
@@ -114,6 +126,7 @@ TU_ERROR TUtestBinaryGraphic(
   TU_GRAPH_EDGE** pforestEdges,   /**< Pointer for storing \f$ T \f$ (if graphic).  */
   TU_GRAPH_EDGE** pcoforestEdges, /**< Pointer for storing \f$ E \setminus T \f$ (if graphic). */
   TU_SUBMAT** psubmatrix          /**< Pointer for storing a minimal nongraphic submatrix (if nongraphic). */
+  
 );
 
 /**

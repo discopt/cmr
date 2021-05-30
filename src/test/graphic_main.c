@@ -133,7 +133,7 @@ TU_ERROR graphToMatrix(const char* instanceFileName, FileFormat inputFormat, Fil
   /* Read edge list. */
 
   TU_GRAPH* graph = NULL;
-  Element* edgeElements = NULL;
+  TU_ELEMENT* edgeElements = NULL;
   if (inputFormat == FILEFORMAT_GRAPH_EDGELIST)
   {
     TU_CALL( TUgraphCreateFromEdgeList(tu, &graph, &edgeElements, NULL, instanceFile) );
@@ -147,7 +147,7 @@ TU_ERROR graphToMatrix(const char* instanceFileName, FileFormat inputFormat, Fil
   for (TU_GRAPH_ITER i = TUgraphEdgesFirst(graph); TUgraphEdgesValid(graph, i); i = TUgraphEdgesNext(graph, i))
   {
     TU_GRAPH_EDGE e = TUgraphEdgesEdge(graph, i);
-    Element element = edgeElements[e];
+    TU_ELEMENT element = edgeElements[e];
     if (TUelementIsRow(element))
       numForestEdges++;
     else if (TUelementIsColumn(element))
@@ -167,7 +167,7 @@ TU_ERROR graphToMatrix(const char* instanceFileName, FileFormat inputFormat, Fil
   for (TU_GRAPH_ITER i = TUgraphEdgesFirst(graph); TUgraphEdgesValid(graph, i); i = TUgraphEdgesNext(graph, i))
   {
     TU_GRAPH_EDGE e = TUgraphEdgesEdge(graph, i);
-    Element element = edgeElements[e];
+    TU_ELEMENT element = edgeElements[e];
     if (TUelementIsRow(element))
     {
       size_t rowIndex = TUelementToRowIndex(element);
@@ -202,7 +202,7 @@ TU_ERROR graphToMatrix(const char* instanceFileName, FileFormat inputFormat, Fil
   fprintf(stderr, "Time: %f\n", (endTime - startTime) * 1.0 / CLOCKS_PER_SEC);
 
   if (outputFormat == FILEFORMAT_MATRIX_DENSE)
-    TU_CALL( TUchrmatPrintDense(stdout, matrix, '0', false) );
+    TU_CALL( TUchrmatPrintDense(tu, stdout, matrix, '0', false) );
   else if (outputFormat == FILEFORMAT_MATRIX_SPARSE)
     TU_CALL( TUchrmatPrintSparse(stdout, matrix) );
   else

@@ -115,13 +115,22 @@ TU_ERROR _TUreallocBlockArray(TU* tu, void** ptr, size_t size, size_t length)
   return *ptr ? TU_OKAY : TU_ERROR_MEMORY;
 }
 
+TU_ERROR _TUduplicateBlockArray(TU* tu, void** ptr, size_t size, size_t length, void* source)
+{
+  assert(source);
+
+  TU_CALL( _TUallocBlockArray(tu, ptr, size, length) );
+  memcpy(*ptr, source, size * length);
+
+  return TU_OKAY;
+}
+
 TU_ERROR _TUfreeBlockArray(TU* tu, void** ptr)
 {
   assert(tu);
   assert(ptr);
-  assert(*ptr);
+
   free(*ptr);
-  *ptr = NULL;
 
   return TU_OKAY;
 }

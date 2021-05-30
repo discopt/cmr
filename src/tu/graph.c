@@ -129,13 +129,15 @@ TU_ERROR TUgraphFree(TU* tu, TU_GRAPH** pgraph)
 {
   assert(pgraph);
 
-  TUdbgMsg(0, "TUgraphFree(|V|=%d, |E|=%d)\n", TUgraphNumNodes(*pgraph), TUgraphNumEdges(*pgraph));
+  TU_GRAPH* graph = *pgraph;
+  if (!graph)
+    return TU_OKAY;
+
+  TUdbgMsg(0, "TUgraphFree(|V|=%d, |E|=%d)\n", TUgraphNumNodes(graph), TUgraphNumEdges(graph));
 
 #if defined(TU_DEBUG_CONSISTENCY)
-  TUgraphEnsureConsistent(tu, *pgraph);
+  TUgraphEnsureConsistent(tu, graph);
 #endif /* TU_DEBUG_CONSISTENCY */
-
-  TU_GRAPH* graph = *pgraph;
 
   TU_CALL( TUfreeBlockArray(tu, &graph->nodes) );
   TU_CALL( TUfreeBlockArray(tu, &graph->arcs) );
@@ -415,7 +417,7 @@ TU_ERROR TUgraphMergeNodes(TU* tu, TU_GRAPH* graph, TU_GRAPH_NODE u, TU_GRAPH_NO
   return TU_OKAY;
 }
 
-TU_ERROR TUgraphCreateFromEdgeList(TU* tu, TU_GRAPH** pgraph, Element** pedgeElements, char*** pnodeLabels,
+TU_ERROR TUgraphCreateFromEdgeList(TU* tu, TU_GRAPH** pgraph, TU_ELEMENT** pedgeElements, char*** pnodeLabels,
   FILE* stream)
 {
   assert(tu);
@@ -542,7 +544,7 @@ TU_ERROR TUgraphCreateFromEdgeList(TU* tu, TU_GRAPH** pgraph, Element** pedgeEle
 
     /* Extract element. */
 
-    Element element = 0;
+    TU_ELEMENT element = 0;
     if (elementToken)
     {
       if (strchr("rRtT-", elementToken[0]))

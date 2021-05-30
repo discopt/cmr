@@ -6,7 +6,7 @@
 static char elementStringBuffer[32];
 
 TU_EXPORT
-const char* TUelementString(Element element, char* buffer)
+const char* TUelementString(TU_ELEMENT element, char* buffer)
 {
   if (!buffer)
     buffer = elementStringBuffer;

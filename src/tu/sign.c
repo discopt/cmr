@@ -46,7 +46,7 @@ TU_ERROR signSequentiallyConnected(
     if (psubmatrix && *psubmatrix)
     {
       assert((*psubmatrix)->numRows == (*psubmatrix)->numColumns);
-      int* tmp = (*psubmatrix)->rows;
+      size_t* tmp = (*psubmatrix)->rows;
       (*psubmatrix)->rows = (*psubmatrix)->columns;
       (*psubmatrix)->columns = tmp;
     }
@@ -152,20 +152,21 @@ TU_ERROR signSequentiallyConnected(
                 {
                   int i = 1;
                   int j = 1;
-                  TUsubmatCreate(tu, psubmatrix, length/2, length/2);
+                  TU_CALL( TUsubmatCreate(tu, length/2, length/2, psubmatrix) );
+                  TU_SUBMAT* submatrix = *psubmatrix;
                   pathNode = c;
-                  (*psubmatrix)->columns[0] = c;
-                  (*psubmatrix)->rows[0] = row;
+                  submatrix->columns[0] = c;
+                  submatrix->rows[0] = row;
                   do
                   {
                     pathNode = graphNodes[pathNode].predecessorNode;
                     if (pathNode >= firstRowNode)
-                      (*psubmatrix)->rows[i++] = pathNode - firstRowNode;
+                      submatrix->rows[i++] = pathNode - firstRowNode;
                     else
-                      (*psubmatrix)->columns[j++] = pathNode;
+                      submatrix->columns[j++] = pathNode;
                   }
                   while (graphNodes[pathNode].targetValue == 0);
-                  TUsortSubmatrix(*psubmatrix);
+                  TU_CALL( TUsortSubmatrix(tu, submatrix) );
 
                   TUdbgMsg(6, "Submatrix filled with %d rows and %d columns.\n", i, j);
                 }
@@ -270,7 +271,7 @@ TU_ERROR signDbl(
   assert(matrix);
   assert(palreadySigned);
 
-  int numComponents;
+  size_t numComponents;
   TU_ONESUM_COMPONENT* components = NULL;
 
   assert(TUisTernaryDbl(tu, matrix, 1.0e-3, NULL));
@@ -317,7 +318,7 @@ TU_ERROR signDbl(
         compSubmatrix->rows[r] = components[comp].rowsToOriginal[compSubmatrix->rows[r]];
       for (int c = 0; c < compSubmatrix->numColumns; ++c)
         compSubmatrix->columns[c] = components[comp].columnsToOriginal[compSubmatrix->columns[c]];
-      TUsortSubmatrix(compSubmatrix);
+      TU_CALL( TUsortSubmatrix(tu, compSubmatrix) );
       *psubmatrix = compSubmatrix;
     }
 
@@ -418,7 +419,7 @@ TU_ERROR signInt(
   assert(matrix);
   assert(palreadySigned);
 
-  int numComponents;
+  size_t numComponents;
   TU_ONESUM_COMPONENT* components = NULL;
 
   assert(TUisTernaryInt(tu, matrix, NULL));
@@ -465,7 +466,7 @@ TU_ERROR signInt(
         compSubmatrix->rows[r] = components[comp].rowsToOriginal[compSubmatrix->rows[r]];
       for (int c = 0; c < compSubmatrix->numColumns; ++c)
         compSubmatrix->columns[c] = components[comp].columnsToOriginal[compSubmatrix->columns[c]];
-      TUsortSubmatrix(compSubmatrix);
+      TUsortSubmatrix(tu, compSubmatrix);
       *psubmatrix = compSubmatrix;
     }
 
@@ -567,7 +568,7 @@ TU_ERROR signChr(
   assert(matrix);
   assert(!psubmatrix || !*psubmatrix);
 
-  int numComponents;
+  size_t numComponents;
   TU_ONESUM_COMPONENT* components = NULL;
 
   assert(TUisTernaryChr(tu, matrix, NULL));
@@ -616,7 +617,7 @@ TU_ERROR signChr(
         compSubmatrix->rows[r] = components[comp].rowsToOriginal[compSubmatrix->rows[r]];
       for (int c = 0; c < compSubmatrix->numColumns; ++c)
         compSubmatrix->columns[c] = components[comp].columnsToOriginal[compSubmatrix->columns[c]];
-      TUsortSubmatrix(compSubmatrix);
+      TUsortSubmatrix(tu, compSubmatrix);
       *psubmatrix = compSubmatrix;
     }
 

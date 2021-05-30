@@ -36,13 +36,13 @@ void testBinaryGraphicMatrix(
   if (!TUchrmatCheckEqual(matrix, result))
   {
     printf("Input matrix:\n");
-    ASSERT_TU_CALL( TUchrmatPrintDense(stdout, matrix, ' ', true) );
+    ASSERT_TU_CALL( TUchrmatPrintDense(tu, stdout, matrix, ' ', true) );
   
     printf("Graph:\n");
     ASSERT_TU_CALL( TUgraphPrint(stdout, graph) );
 
     printf("Representation matrix:\n");
-    ASSERT_TU_CALL( TUchrmatPrintDense(stdout, result, ' ', true) );
+    ASSERT_TU_CALL( TUchrmatPrintDense(tu, stdout, result, ' ', true) );
 
     printf("Basis:");
     for (int r = 0; r < matrix->numRows; ++r)
@@ -1056,13 +1056,13 @@ void testTernaryGraphicMatrix(
   if (!TUchrmatCheckEqual(matrix, result))
   {
     printf("Input matrix:\n");
-    ASSERT_TU_CALL( TUchrmatPrintDense(stdout, matrix, '0', true) );
+    ASSERT_TU_CALL( TUchrmatPrintDense(tu, stdout, matrix, '0', true) );
   
     printf("Graph:\n");
     ASSERT_TU_CALL( TUgraphPrint(stdout, graph) );
 
     printf("Representation matrix:\n");
-    ASSERT_TU_CALL( TUchrmatPrintDense(stdout, result, '0', true) );
+    ASSERT_TU_CALL( TUchrmatPrintDense(tu, stdout, result, '0', true) );
 
     printf("Basis:");
     for (int r = 0; r < matrix->numRows; ++r)

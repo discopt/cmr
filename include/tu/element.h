@@ -9,16 +9,16 @@
 extern "C" {
 #endif
 
-typedef int Element;
+typedef int TU_ELEMENT;
 
 TU_EXPORT
 const char* TUelementString(
-  Element element,  /**< Element to print. */
+  TU_ELEMENT element,  /**< Element to print. */
   char* buffer      /**< Buffer of size at least 32. May be \c NULL, in which case a static buffer is used. */
 );
 
 static inline
-Element TUrowToElement(
+TU_ELEMENT TUrowToElement(
   size_t row  /**< Row index. */
 )
 {
@@ -26,7 +26,7 @@ Element TUrowToElement(
 }
 
 static inline
-Element TUcolumnToElement(
+TU_ELEMENT TUcolumnToElement(
   size_t column  /**< Column index. */
 )
 {
@@ -35,7 +35,7 @@ Element TUcolumnToElement(
 
 static inline
 bool TUelementIsRow(
-  Element element /**< Element to check. */
+  TU_ELEMENT element /**< Element to check. */
 )
 {
   return element < 0;
@@ -43,7 +43,7 @@ bool TUelementIsRow(
 
 static inline
 size_t TUelementToRowIndex(
-  Element element /**< Element to convert. */
+  TU_ELEMENT element /**< Element to convert. */
 )
 {
   assert(element < 0);
@@ -52,7 +52,7 @@ size_t TUelementToRowIndex(
 
 static inline
 bool TUelementIsColumn(
-  Element element /**< Element to check. */
+  TU_ELEMENT element /**< Element to check. */
 )
 {
   return element > 0;
@@ -60,7 +60,7 @@ bool TUelementIsColumn(
 
 static inline
 size_t TUelementToColumnIndex(
-  Element element /**< Element to convert. */
+  TU_ELEMENT element /**< Element to convert. */
 )
 {
   assert(element > 0);

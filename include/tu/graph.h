@@ -478,7 +478,7 @@ TU_EXPORT
 TU_ERROR TUgraphCreateFromEdgeList(
   TU* tu,                   /**< \ref TU environment. */
   TU_GRAPH** pgraph,        /**< Pointer for storing the graph. */
-  Element** pedgeElements,  /**< Pointer for storing element of each edge (may be \c NULL). */
+  TU_ELEMENT** pedgeElements,  /**< Pointer for storing element of each edge (may be \c NULL). */
   char*** pnodeLabels,      /**< Pointer for storing string node labels (may be \c NULL). */
   FILE* stream              /**< File stream to read from. */
 );

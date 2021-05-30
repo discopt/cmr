@@ -20,19 +20,19 @@ typedef struct
   /**
    * \brief Number of rows
    */
-  int numRows;
+  size_t numRows;
   /**
    * \brief Array with row indices
    */
-  int* rows;
+  size_t* rows;
   /**
    * \brief Number of columns
    */
-  int numColumns;
+  size_t numColumns;
   /**
    * \brief Array with column indices
    */
-  int* columns;
+  size_t* columns;
 } TU_SUBMAT;
 
 /**
@@ -152,9 +152,9 @@ TU_ERROR TUdblmatCreate(
 TU_EXPORT
 TU_ERROR TUsubmatCreate(
   TU* tu,                 /**< \ref TU environment. */
-  TU_SUBMAT** psubmatrix, /**< Pointer to where the submatrix is to be stored. */
-  int numRows,            /**< Number of rows */
-  int numColumns          /**< Number of columns */
+  size_t numRows,         /**< Number of rows. */
+  size_t numColumns,      /**< Number of columns. */
+  TU_SUBMAT** psubmatrix  /**< Pointer for storing the submatrix. */
 );
 
 /**
@@ -162,16 +162,17 @@ TU_ERROR TUsubmatCreate(
  */
 
 TU_EXPORT
-void TUsubmatCreate1x1(
+TU_ERROR TUsubmatCreate1x1(
   TU* tu,                 /**< \ref TU environment. */
-  TU_SUBMAT** psubmatrix, /**< Pointer to submatrix */
-  int row,                /**< Row of entry */
-  int column              /**< Column of entry */
+  size_t row,             /**< Row of entry */
+  size_t column,          /**< Column of entry */
+  TU_SUBMAT** psubmatrix  /**< Pointer for storing the submatrix */
 );
 
 /**
  * \brief Frees a submatrix.
  */
+
 TU_EXPORT
 TU_ERROR TUsubmatFree(
   TU* tu,                 /**< \ref TU environment. */
@@ -204,7 +205,7 @@ TU_ERROR TUsubmatFree(
 TU_EXPORT
 TU_ERROR TUdblmatFree(
   TU* tu,             /**< \ref TU environment. */
-  TU_DBLMAT** matrix  /**< Pointer to matrix. */
+  TU_DBLMAT** pmatrix /**< Pointer to matrix (may be \c NULL). */
 );
 
 /**
@@ -407,7 +408,7 @@ TU_ERROR TUintmatCreate(
 TU_EXPORT
 TU_ERROR TUintmatFree(
   TU* tu,             /**< \ref TU environment. */
-  TU_INTMAT** matrix  /**< Pointer to matrix. */
+  TU_INTMAT** pmatrix /**< Pointer to matrix (may be \c NULL). */
 );
 
 /**
@@ -611,7 +612,7 @@ TU_ERROR TUchrmatCreate(
 TU_EXPORT
 TU_ERROR TUchrmatFree(
   TU* tu,             /**< \ref TU environment. */
-  TU_CHRMAT** matrix  /**< Pointer to matrix. */
+  TU_CHRMAT** pmatrix /**< Pointer to matrix (may be \c NULL). */
 );
 
 /**
@@ -667,6 +668,7 @@ TU_ERROR TUchrmatPrintSparse(
 
 TU_EXPORT
 TU_ERROR TUchrmatPrintDense(
+  TU* tu,             /**< \ref TU environment. */
   FILE* stream,       /**< File stream to print to. */
   TU_CHRMAT* matrix,  /**< Char matrix. */
   char zeroChar,      /**< Character to print for a zero. */
@@ -738,7 +740,7 @@ TU_ERROR TUchrmatFilterSubmat(
   TU* tu,               /**< \ref TU environment. */
   TU_CHRMAT* matrix,    /**< Given matrix */
   TU_SUBMAT* submatrix, /**< Specified submatrix */
-  TU_CHRMAT** result    /**< Pointer for storing the resulting char matrix. */
+  TU_CHRMAT** presult   /**< Pointer for storing the resulting char matrix. */
 );
 
 /**

@@ -22,17 +22,17 @@ TEST(OneSum, DoubleToDouble)
     "0 0 0 0 0 0 5 0 0 0 "
   );
 
-  int numComponents;
+  size_t numComponents;
   TU_ONESUM_COMPONENT* components = NULL;
-  int rowsToComponents[10];
-  int columnsToComponents[10];
-  int rowsToComponentRows[10];
-  int columnsToComponentColumns[10];
+  size_t rowsToComponents[10];
+  size_t columnsToComponents[10];
+  size_t rowsToComponentRows[10];
+  size_t columnsToComponentColumns[10];
 
   TU_DBLMAT* check = NULL;
   TU_DBLMAT* checkTranspose = NULL;
-  decomposeOneSum(tu, (TU_MATRIX*) matrix, sizeof(double), sizeof(double), &numComponents, &components,
-    rowsToComponents, columnsToComponents, rowsToComponentRows, columnsToComponentColumns);
+  ASSERT_TU_CALL( decomposeOneSum(tu, (TU_MATRIX*) matrix, sizeof(double), sizeof(double), &numComponents, &components,
+    rowsToComponents, columnsToComponents, rowsToComponentRows, columnsToComponentColumns) );
 
   ASSERT_EQ(numComponents, 6);
   stringToDoubleMatrix(tu, &check, "3 3 "
@@ -199,17 +199,17 @@ TEST(OneSum, IntToInt)
     "0 0 0 0 0 0 5 0 0 0 "
   );
 
-  int numComponents;
+  size_t numComponents;
   TU_ONESUM_COMPONENT* components = NULL;
-  int rowsToComponents[10];
-  int columnsToComponents[10];
-  int rowsToComponentRows[10];
-  int columnsToComponentColumns[10];
+  size_t rowsToComponents[10];
+  size_t columnsToComponents[10];
+  size_t rowsToComponentRows[10];
+  size_t columnsToComponentColumns[10];
 
   TU_INTMAT* check = NULL;
   TU_INTMAT* checkTranspose = NULL;
-  decomposeOneSum(tu, (TU_MATRIX*) matrix, sizeof(int), sizeof(int), &numComponents, &components,
-    rowsToComponents, columnsToComponents, rowsToComponentRows, columnsToComponentColumns);
+  ASSERT_TU_CALL( decomposeOneSum(tu, (TU_MATRIX*) matrix, sizeof(int), sizeof(int), &numComponents, &components,
+    rowsToComponents, columnsToComponents, rowsToComponentRows, columnsToComponentColumns) );
 
   ASSERT_EQ(numComponents, 6);
   stringToIntMatrix(tu, &check, "3 3 "
@@ -376,17 +376,17 @@ TEST(OneSum, CharToChar)
     "0 0 0 0 0 0 5 0 0 0 "
   );
 
-  int numComponents;
+  size_t numComponents;
   TU_ONESUM_COMPONENT* components = NULL;
-  int rowsToComponents[10];
-  int columnsToComponents[10];
-  int rowsToComponentRows[10];
-  int columnsToComponentColumns[10];
+  size_t rowsToComponents[10];
+  size_t columnsToComponents[10];
+  size_t rowsToComponentRows[10];
+  size_t columnsToComponentColumns[10];
 
   TU_CHRMAT* check = NULL;
   TU_CHRMAT* checkTranspose = NULL;
-  decomposeOneSum(tu, (TU_MATRIX*) matrix, sizeof(char), sizeof(char), &numComponents, &components,
-    rowsToComponents, columnsToComponents, rowsToComponentRows, columnsToComponentColumns);
+  ASSERT_TU_CALL( decomposeOneSum(tu, (TU_MATRIX*) matrix, sizeof(char), sizeof(char), &numComponents, &components,
+    rowsToComponents, columnsToComponents, rowsToComponentRows, columnsToComponentColumns) );
 
   ASSERT_EQ(numComponents, 6);
   stringToCharMatrix(tu, &check, "3 3 "

@@ -200,7 +200,7 @@ TEST(Matrix, Submatrix)
   );
 
   TU_SUBMAT* submatrix = NULL;
-  TUsubmatCreate(tu, &submatrix, 3, 3);
+  ASSERT_TU_CALL( TUsubmatCreate(tu, 3, 3, &submatrix) );
   submatrix->rows[0] = 1;
   submatrix->rows[1] = 3;
   submatrix->rows[2] = 4;

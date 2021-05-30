@@ -457,7 +457,7 @@ typedef struct
 
 typedef struct
 {
-  Element element;        /**< \brief Element corresponding to this edge.
+  TU_ELEMENT element;        /**< \brief Element corresponding to this edge.
                            *
                            * 1, 2, ..., m indicate rows, -1,-2, ..., -n indicate columns,
                            * and for (small) k >= 0, MAX_INT-k and -MAX_INT+k indicate
@@ -1422,7 +1422,7 @@ TU_ERROR decToGraph(
   bool merge,                   /**< Merge and remove corresponding parent and child markers. */
   TU_GRAPH_EDGE* forestEdges,   /**< If not \c NULL, the edges of a spanning tree are stored here. */
   TU_GRAPH_EDGE* coforestEdges, /**< If not \c NULL, the non-basis edges are stored here. */
-  Element* edgeElements             /**< If not \c NULL, the elements for each edge are stored here. */
+  TU_ELEMENT* edgeElements             /**< If not \c NULL, the elements for each edge are stored here. */
 )
 {
   assert(dec);
@@ -1437,7 +1437,7 @@ TU_ERROR decToGraph(
 
   TU_CALL( TUgraphClear(dec->tu, graph) );
 
-  Element* localEdgeElements = NULL;
+  TU_ELEMENT* localEdgeElements = NULL;
   if (edgeElements)
     localEdgeElements = edgeElements;
   else if (forestEdges || coforestEdges)
@@ -1610,7 +1610,7 @@ TU_ERROR decToGraph(
       TUdbgMsg(2, "Graph edge %d = {%d,%d} <%s>\n", e, TUgraphEdgeU(graph, e), TUgraphEdgeV(graph, e),
         TUelementString(localEdgeElements[e], NULL));
 
-      Element element = localEdgeElements[e];
+      TU_ELEMENT element = localEdgeElements[e];
       if (TUelementIsRow(element) && forestEdges)
       {
         TUdbgMsg(0, "Edge corresponds to element %d = row %d.\n", element, TUelementToRowIndex(element));
@@ -5426,7 +5426,7 @@ TU_ERROR TUtestTernaryGraphic(TU* tu, TU_CHRMAT* transpose, bool* pisGraphic, TU
 #endif /* TU_DEBUG */
 
   /* Decompose into 1-connected components. */
-  int numComponents;
+  size_t numComponents;
   TU_ONESUM_COMPONENT* components = NULL;
   TU_CALL( decomposeOneSum(tu, (TU_MATRIX*) transpose, sizeof(char), sizeof(char), &numComponents, &components, NULL,
     NULL, NULL, NULL) );
@@ -5700,7 +5700,7 @@ TU_ERROR TUtestBinaryGraphicColumnSubmatrixGreedy(TU* tu, TU_CHRMAT* transpose, 
   TU_CALL( TUchrmatPrintDense(stdout, transpose, '0', true) );
 #endif /* TU_DEBUG */
 
-  TU_CALL( TUsubmatCreate(tu, psubmatrix, numRows, numColumns) );
+  TU_CALL( TUsubmatCreate(tu, numRows, numColumns, psubmatrix) );
   TU_SUBMAT* submatrix = *psubmatrix;
   submatrix->numRows = 0;
   submatrix->numColumns = 0;

@@ -3,8 +3,10 @@
 #include <assert.h>
 #include <stdlib.h>
 
+#include "decomposition_internal.h"
 #include "regular_internal.h"
 #include "env_internal.h"
+#include "sort.h"
 #include "one_sum.h"
 
 int compareOneSumComponents(const void* a, const void* b)
@@ -13,111 +15,54 @@ int compareOneSumComponents(const void* a, const void* b)
     ((TU_ONESUM_COMPONENT*)b)->matrix->numNonzeros;
 }
 
-int TUregularDecomposeOneSum(TU* tu, TU_CHRMAT* matrix, int* rowLabels, int* columnLabels,
-  TU_DEC** pdec, bool constructDecomposition)
+TU_ERROR TUregularDecomposeOneSum(TU* tu, TU_DEC* dec, TU_CHRMAT* matrix)
 {
   assert(tu);
+  assert(dec);
   assert(matrix);
-  assert(TUisTernaryChr(tu, matrix, NULL));
-  assert(pdec);
-
-  TUcreateDec(tu, pdec);
-  TU_DEC* dec = *pdec;
 
   /* Perform 1-sum decomposition. */
 
-  int numComponents;
+  size_t numComponents;
   TU_ONESUM_COMPONENT* components = NULL;
-  decomposeOneSum(tu, (TU_MATRIX*) matrix, sizeof(char), sizeof(char), &numComponents, &components,
-    NULL, NULL, NULL, NULL);
+  TU_CALL( decomposeOneSum(tu, (TU_MATRIX*) matrix, sizeof(char), sizeof(char), &numComponents, &components, NULL, NULL,
+    NULL, NULL) );
 
-  if (numComponents <= 1)
+  if (numComponents == 1)
   {
-    dec->matrix = (TU_CHRMAT*) components[0].matrix;
-    if (constructDecomposition)
-      dec->transpose = (TU_CHRMAT*) components[0].transpose;
-    else
-      TUchrmatFree(tu, (TU_CHRMAT**) &components[0].transpose);
-    if (rowLabels)
-    {
-      TUallocBlockArray(tu, &dec->rowLabels, matrix->numRows);
-      for (int row = 0; row < matrix->numRows; ++row)
-        dec->rowLabels[row] = rowLabels[components[0].rowsToOriginal[row]];
-    }
-    if (columnLabels)
-    {
-      TUallocBlockArray(tu, &dec->columnLabels, matrix->numColumns);
-      for (int column = 0; column < matrix->numColumns; ++column)
-        dec->columnLabels[column] = columnLabels[components[0].columnsToOriginal[column]];
-    }
+    TU_CALL( TUchrmatFree(tu, (TU_CHRMAT**) &components[0].matrix) );
+    TU_CALL( TUchrmatFree(tu, (TU_CHRMAT**) &components[0].transpose) );
+    TU_CALL( TUfreeBlockArray(tu, &components[0].rowsToOriginal) );
+    TU_CALL( TUfreeBlockArray(tu, &components[0].columnsToOriginal) );
   }
-  else
+  else if (numComponents >= 2)
   {
-    dec->flags = TU_DEC_ONE_SUM;
-
-    /* Copy matrix and labels to node and compute transpose. */
-    if (constructDecomposition)
-    {
-      TUchrmatCopy(tu, matrix, &dec->matrix);
-      TUchrmatTranspose(tu, matrix, &dec->transpose);
-    }
-    if (rowLabels)
-    {
-      TUallocBlockArray(tu, &dec->rowLabels, matrix->numRows);
-      for (int row = 0; row < matrix->numRows; ++row)
-        dec->rowLabels[row] = rowLabels[row];
-    }
-    if (columnLabels)
-    {
-      TUallocBlockArray(tu, &dec->columnLabels, matrix->numColumns);
-      for (int column = 0; column < matrix->numColumns; ++column)
-        dec->columnLabels[column] = columnLabels[column];
-    }
-
-    /* Sort components by number of nonzeros. */
+    /* We create an intermediate array for sorting the components by number of nonzeros. */
     TU_ONESUM_COMPONENT** orderedComponents = NULL;
-    TUallocStackArray(tu, &orderedComponents, numComponents);
+    TU_CALL( TUallocStackArray(tu, &orderedComponents, numComponents) );
     for (int comp = 0; comp < numComponents; ++comp)
       orderedComponents[comp] = &components[comp];
-    qsort(orderedComponents, numComponents, sizeof(TU_ONESUM_COMPONENT*), &compareOneSumComponents);
+    TU_CALL( TUsort(tu, numComponents, orderedComponents, sizeof(TU_ONESUM_COMPONENT*), &compareOneSumComponents) );
 
-    /* Initialize child nodes */
-    dec->numChildren = numComponents;
-    TUallocBlockArray(tu, &dec->children, numComponents);
-
-    for (int i = 0; i < numComponents; ++i)
+    /* We now create the children. */
+    TU_CALL( TUdecSetNumChildren(tu, dec, numComponents) );
+    for (int c = 0; c < numComponents; ++c)
     {
-      int comp = (orderedComponents[i] - components) / sizeof(TU_ONESUM_COMPONENT*);
-      TUcreateDec(tu, &dec->children[i]);
-      TU_DEC* child = dec->children[i];
-      child->matrix = (TU_CHRMAT*) components[comp].matrix;
-      if (constructDecomposition)
-        child->transpose = (TU_CHRMAT*) components[comp].transpose;
-      else
-        TUchrmatFree(tu, (TU_CHRMAT**) &components[comp].transpose);
-      if (rowLabels)
-      {
-        TUallocBlockArray(tu, &child->rowLabels, child->matrix->numRows);
-        for (int row = 0; row < child->matrix->numRows; ++row)
-          child->rowLabels[row] = rowLabels[components[comp].rowsToOriginal[row]];
-      }
-      if (columnLabels)
-      {
-        TUallocBlockArray(tu, &child->columnLabels, child->matrix->numColumns);
-        for (int column = 0; column < child->matrix->numColumns; ++column)
-          child->columnLabels[column] = columnLabels[components[comp].columnsToOriginal[column]];
-      }
+      TU_ONESUM_COMPONENT* component = orderedComponents[c];
+      TU_CALL( TUdecCreate(tu, dec, component->matrix->numRows, component->rowsToOriginal,
+        component->matrix->numColumns, component->columnsToOriginal, &dec->children[c]) );
+      dec->children[c]->matrix = (TU_CHRMAT*) component->matrix;
+      dec->children[c]->transpose = (TU_CHRMAT*) component->transpose;
+      TU_CALL( TUfreeBlockArray(tu, &component->rowsToOriginal) );
+      TU_CALL( TUfreeBlockArray(tu, &component->columnsToOriginal) );
+      TU_CALL( TUdecInheritElements(tu, dec->children[c]) );
     }
+    dec->type = TU_DEC_ONE_SUM;
 
-    TUfreeStackArray(tu, &orderedComponents);
+    TU_CALL( TUfreeStackArray(tu, &orderedComponents) );
   }
 
-  for (int comp = 0; comp < numComponents; ++comp)
-  {
-    TUfreeBlockArray(tu, &components[comp].rowsToOriginal);
-    TUfreeBlockArray(tu, &components[comp].columnsToOriginal);
-  }
-  TUfreeBlockArray(tu, &components);
+  TU_CALL( TUfreeBlockArray(tu, &components) );
 
-  return numComponents;
+  return TU_OKAY;
 }
