@@ -15,13 +15,13 @@ typedef struct
 } TU_SERIES_PARALLEL;
 
 /**
- * \brief Splits off all series or parallel elements of \p matrix.
+ * \brief Finds all series or parallel elements of \p matrix.
  *
  * The \p matrix is assumed to be ternary.
  */
 
 TU_EXPORT
-TU_ERROR TUsplitSeriesParallelChr(
+TU_ERROR TUfindSeriesParallelChr(
   TU* tu,                         /**< \ref TU environment. */
   TU_CHRMAT* matrix,              /**< Sparse char matrix. */
   TU_SERIES_PARALLEL* operations, /**< Array for storing the operations. Must be sufficiently large. */

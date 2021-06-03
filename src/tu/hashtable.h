@@ -25,7 +25,7 @@ TU_ERROR TUhashtableFree(
 
 bool TUhashtableFind(
   TU_HASHTABLE* hashtable,    /**< Hash table. */
-  const void* keyArray,             /**< First byte of key array. */
+  const void* keyArray,       /**< First byte of key array. */
   size_t keyLength,           /**< Length of key array in bytes. */
   TU_HASHTABLE_ENTRY* pentry, /**< Pointer for storing the entry in the hash table. */
   TU_HASHTABLE_HASH* phash    /**< Pointer for storing the entry in the hash table. */
@@ -45,19 +45,19 @@ const void* TUhashtableValue(
 TU_ERROR TUhashtableInsertEntryHash(
   TU* tu,                   /**< \ref TU environment. */
   TU_HASHTABLE* hashtable,  /**< Hash table. */
-  const void* keyArray,           /**< First byte of key array. */
+  const void* keyArray,     /**< First byte of key array. */
   size_t keyLength,         /**< Length of key array. */
   TU_HASHTABLE_ENTRY entry, /**< Known entry of key, determined by \ref TUhashtableFind. */
   TU_HASHTABLE_HASH hash,   /**< Known hash of key, determined by \ref TUhashtableFind. */
-  const void* value               /**< Value to be set. */
+  const void* value         /**< Value to be set. */
 );
 
 TU_ERROR TUhashtableInsert(
   TU* tu,                   /**< \ref TU environment. */
   TU_HASHTABLE* hashtable,  /**< Hash table. */
-  const void* keyArray,           /**< First byte of key array. */
+  const void* keyArray,     /**< First byte of key array. */
   size_t keyLength,         /**< Length of key array. */
-  const void* value               /**< Value to be set. */
+  const void* value         /**< Value to be set. */
 );
 
 

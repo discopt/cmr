@@ -497,7 +497,7 @@ TU_ERROR TUintmatPrintDense(FILE* stream, TU_INTMAT* matrix, char zeroChar, bool
         fprintf(stream, "%d ", x);
     }
     for (int i = start; i < end; ++i)
-      rowEntries[matrix->entryColumns[i]] = 0.0;
+      rowEntries[matrix->entryColumns[i]] = 0;
     fputc('\n', stream);
   }
 
@@ -545,7 +545,7 @@ TU_ERROR TUchrmatPrintDense(TU* tu, FILE* stream, TU_CHRMAT* matrix, char zeroCh
         fprintf(stream, "%d ", x);
     }
     for (int i = start; i < end; ++i)
-      rowEntries[matrix->entryColumns[i]] = 0.0;
+      rowEntries[matrix->entryColumns[i]] = 0;
     fputc('\n', stream);
   }
 

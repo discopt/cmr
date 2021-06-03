@@ -15,7 +15,8 @@ add_executable(tu_gtest
   test_hashtable.cpp
 #  test_preprocessing.cpp
   test_matrix.cpp
-  test_main.cpp)
+  test_main.cpp
+  test_series_parallel.cpp)
 
 # Add tests for non-exported functions only for static library.
 if(NOT SHARED)
