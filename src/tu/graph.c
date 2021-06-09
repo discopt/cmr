@@ -444,8 +444,8 @@ TU_ERROR TUgraphCreateFromEdgeList(TU* tu, TU_GRAPH** pgraph, TU_ELEMENT** pedge
   if (pedgeElements)
     TU_CALL( TUallocBlockArray(tu, pedgeElements, memEdgeElements) );
 
-  TU_HASHTABLE* nodeNames = NULL;
-  TU_CALL( TUhashtableCreate(tu, &nodeNames, 8, 1024) );
+  TU_LINEARHASHTABLE_ARRAY* nodeNames = NULL;
+  TU_CALL( TUlinearhashtableArrayCreate(tu, &nodeNames, 8, 1024) );
   
   while ((numRead = getline(&line, &length, stream)) != -1)
   {
@@ -496,15 +496,16 @@ TU_ERROR TUgraphCreateFromEdgeList(TU* tu, TU_GRAPH** pgraph, TU_ELEMENT** pedge
 
     /* Figure out node u if it exists. */
 
-    TU_HASHTABLE_ENTRY entry;
-    TU_HASHTABLE_HASH hash;
+    TU_LINEARHASHTABLE_BUCKET bucket;
+    TU_LINEARHASHTABLE_HASH hash;
     TU_GRAPH_NODE uNode; 
-    if (TUhashtableFind(nodeNames, uToken, strlen(uToken), &entry, &hash))
-      uNode = (TU_GRAPH_NODE) (size_t) TUhashtableValue(nodeNames, entry);
+    if (TUlinearhashtableArrayFind(nodeNames, uToken, strlen(uToken), &bucket, &hash))
+      uNode = (TU_GRAPH_NODE) (size_t) TUlinearhashtableArrayValue(nodeNames, bucket);
     else
     {
       TU_CALL( TUgraphAddNode(tu, graph, &uNode) );
-      TU_CALL( TUhashtableInsertEntryHash(tu, nodeNames, uToken, strlen(uToken), entry, hash, (void*) (size_t) uNode) );
+      TU_CALL( TUlinearhashtableArrayInsertBucketHash(tu, nodeNames, uToken, strlen(uToken), bucket, hash,
+        (void*) (size_t) uNode) );
 
       /* Add node label. */
       if (pnodeLabels)
@@ -522,12 +523,13 @@ TU_ERROR TUgraphCreateFromEdgeList(TU* tu, TU_GRAPH** pgraph, TU_ELEMENT** pedge
     /* Figure out node v if it exists. */
 
     TU_GRAPH_NODE vNode; 
-    if (TUhashtableFind(nodeNames, vToken, strlen(vToken), &entry, &hash))
-      vNode = (TU_GRAPH_NODE) (size_t) TUhashtableValue(nodeNames, entry);
+    if (TUlinearhashtableArrayFind(nodeNames, vToken, strlen(vToken), &bucket, &hash))
+      vNode = (TU_GRAPH_NODE) (size_t) TUlinearhashtableArrayValue(nodeNames, bucket);
     else
     {
       TU_CALL( TUgraphAddNode(tu, graph, &vNode) );
-      TU_CALL( TUhashtableInsertEntryHash(tu, nodeNames, vToken, strlen(vToken), entry, hash, (void*) (size_t) vNode) );
+      TU_CALL( TUlinearhashtableArrayInsertBucketHash(tu, nodeNames, vToken, strlen(vToken), bucket, hash,
+        (void*) (size_t) vNode) );
       
       /* Add node label. */
       if (pnodeLabels)
@@ -577,7 +579,7 @@ TU_ERROR TUgraphCreateFromEdgeList(TU* tu, TU_GRAPH** pgraph, TU_ELEMENT** pedge
     }
   }
 
-  TU_CALL( TUhashtableFree(tu, &nodeNames) );
+  TU_CALL( TUlinearhashtableArrayFree(tu, &nodeNames) );
   free(line);
 
   return TU_OKAY;

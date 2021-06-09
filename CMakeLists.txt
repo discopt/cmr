@@ -81,7 +81,7 @@ target_link_libraries(tu_test_new
 )
 set_target_properties(tu_test_new PROPERTIES OUTPUT_NAME tu-test-new)
 
-# Target for the graph-matrix binary.
+# Target for the tu-graphic binary.
 add_executable(tu_graphic
    src/test/graphic_main.c)
 target_link_libraries(tu_graphic
@@ -89,6 +89,15 @@ target_link_libraries(tu_graphic
       TU::tu
 )
 set_target_properties(tu_graphic PROPERTIES OUTPUT_NAME tu-graphic)
+
+# Target for the tu-series-parallel binary.
+add_executable(tu_series_parallel
+   src/test/series_parallel_main.c)
+target_link_libraries(tu_series_parallel
+   PRIVATE
+      TU::tu
+)
+set_target_properties(tu_series_parallel PROPERTIES OUTPUT_NAME tu-series-parallel)
 
 # Target for the tu-convert-matrix.
 add_executable(tu_convert_matrix

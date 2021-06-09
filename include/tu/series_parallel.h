@@ -15,17 +15,19 @@ typedef struct
 } TU_SERIES_PARALLEL;
 
 /**
- * \brief Finds all series or parallel elements of \p matrix.
+ * \brief Finds all series or parallel elements of the binary \p matrix.
  *
- * The \p matrix is assumed to be ternary.
+ * If \p isSorted is \c true, then the running time is linear in the number of rows + number of columns + number of
+ * nonzeros of \p matrix.
  */
 
 TU_EXPORT
-TU_ERROR TUfindSeriesParallelChr(
+TU_ERROR TUfindSeriesParallelBinary(
   TU* tu,                         /**< \ref TU environment. */
   TU_CHRMAT* matrix,              /**< Sparse char matrix. */
   TU_SERIES_PARALLEL* operations, /**< Array for storing the operations. Must be sufficiently large. */
-  size_t* pnumOperations          /**< Pointer for storing the number of operations. */  
+  size_t* pnumOperations,         /**< Pointer for storing the number of operations. */  
+  bool isSorted                   /**< Whether the entries of \p matrix are sorted. */
 );
 
 #ifdef __cplusplus

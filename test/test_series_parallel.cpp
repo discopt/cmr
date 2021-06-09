@@ -25,7 +25,7 @@ TEST(SeriesParallel, Char)
   TU_SERIES_PARALLEL operations[20];
   size_t numOperations;
 
-  ASSERT_TU_CALL( TUfindSeriesParallelChr(tu, matrix, operations, &numOperations) );
+  ASSERT_TU_CALL( TUfindSeriesParallelBinary(tu, matrix, operations, &numOperations, true) );
 
   TUchrmatFree(tu, &matrix);
   TUfreeEnvironment(&tu);
