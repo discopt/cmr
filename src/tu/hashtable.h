@@ -101,6 +101,10 @@ TU_LISTHASHTABLE_HASH TUlisthashtableHash(
   TU_LISTHASHTABLE_ENTRY entry  /**< Entry. */
 );
 
+size_t TUlisthashtableNumBuckets(
+  TU_LISTHASHTABLE* hashtable /**< Hash table. */
+);
+
 /**
  * \brief Inserts \p value with \p hash into the hash table, even if an entry with the same hash exists.
  */

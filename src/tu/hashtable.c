@@ -12,22 +12,22 @@
 
 typedef struct
 {
-  size_t keyIndex;          /**< \brief Position of first key byte in \ref TU_HASHTABLE::keyStorage. */
-  size_t keyLength;       /**< \brief Length of key array. */
+  size_t keyIndex;              /**< \brief Position of first key byte in \ref TU_HASHTABLE::keyStorage. */
+  size_t keyLength;             /**< \brief Length of key array. */
   TU_LINEARHASHTABLE_HASH hash; /**< \brief Hash value of key array. */
   const void* value;            /**< \brief Stored value. */
 } LinearhashtableArrayBucket;
 
 struct _TU_LINEARHASHTABLE_ARRAY
 {
-  size_t numBuckets;                        /**< \brief Size of the hash table. */
+  size_t numBuckets;                    /**< \brief Size of the hash table. */
   LinearhashtableArrayBucket* buckets;  /**< \brief Actual hash table. */
 
-  unsigned char* keyStorage;          /**< \brief Storage for keys. */
-  long freeKeyIndex;                  /**< \brief First unused byte in \ref keyStorage. */
-  size_t memKeyStorage;               /**< \brief Length of \ref keyStorage. */
+  unsigned char* keyStorage;            /**< \brief Storage for keys. */
+  long freeKeyIndex;                    /**< \brief First unused byte in \ref keyStorage. */
+  size_t memKeyStorage;                 /**< \brief Length of \ref keyStorage. */
 
-  size_t numElements;                 /**< \brief Number of stored key/value pairs. */
+  size_t numElements;                   /**< \brief Number of stored key/value pairs. */
 };
 
 static inline
@@ -364,6 +364,11 @@ TU_LISTHASHTABLE_HASH TUlisthashtableHash(TU_LISTHASHTABLE* hashtable, TU_LISTHA
   assert(hashtable);
 
   return hashtable->nodes[entry].hash;
+}
+
+size_t TUlisthashtableNumBuckets(TU_LISTHASHTABLE* hashtable)
+{
+  return hashtable->numBuckets;
 }
 
 TU_ERROR TUlisthashtableInsert(TU* tu, TU_LISTHASHTABLE* hashtable, TU_LISTHASHTABLE_HASH hash,

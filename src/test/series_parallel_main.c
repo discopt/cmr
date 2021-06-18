@@ -58,6 +58,7 @@ TU_ERROR matrixSeriesParallel2Sums(const char* instanceFileName, FileFormat inpu
   TU_CALL( TUfindSeriesParallelBinary(tu, matrix, removed, &numRemoved, true) );
   endTime = clock();
   fprintf(stderr, "Search time: %f\n", (endTime - startTime) * 1.0 / CLOCKS_PER_SEC);
+  fprintf(stderr, "Number of removed rows/columns: %ld\n", numRemoved);
 
   startTime = clock();
   endTime = clock();
