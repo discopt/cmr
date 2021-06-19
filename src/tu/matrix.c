@@ -789,8 +789,8 @@ TU_ERROR TUchrmatCreateFromSparseStream(TU* tu, TU_CHRMAT** pmatrix, FILE* strea
     int column;
     int value;
     numRead = fscanf(stream, "%d %d %d", &row, &column, &value);
-    if (numRead < 3 || row <= 0 || column <= 0 || row > numRows || column > numColumns || value < CHAR_MIN
-      || value > CHAR_MAX)
+    if (numRead < 3 || row <= 0 || column <= 0 || row > numRows || column > numColumns || value < SCHAR_MIN
+      || value > SCHAR_MAX)
     {
       TU_CALL( TUfreeStackArray(tu, &nonzeros) );
       return TU_ERROR_INPUT;

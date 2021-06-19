@@ -10,8 +10,8 @@ extern "C" {
 
 typedef struct
 {
-  TU_ELEMENT element;
-  TU_ELEMENT mate;
+  TU_ELEMENT element;   /**< Element that is removed. */
+  TU_ELEMENT mate;      /**< Element is parallel to or in series with \ref element, or 0 for a zero row/column. */
 } TU_SERIES_PARALLEL;
 
 /**
@@ -23,6 +23,22 @@ typedef struct
 
 TU_EXPORT
 TU_ERROR TUfindSeriesParallelBinary(
+  TU* tu,                         /**< \ref TU environment. */
+  TU_CHRMAT* matrix,              /**< Sparse char matrix. */
+  TU_SERIES_PARALLEL* operations, /**< Array for storing the operations. Must be sufficiently large. */
+  size_t* pnumOperations,         /**< Pointer for storing the number of operations. */  
+  bool isSorted                   /**< Whether the entries of \p matrix are sorted. */
+);
+
+/**
+ * \brief Finds all series or parallel elements of the ternary \p matrix.
+ *
+ * If \p isSorted is \c true, then the running time is linear in the number of rows + number of columns + number of
+ * nonzeros of \p matrix.
+ */
+
+TU_EXPORT
+TU_ERROR TUfindSeriesParallelTernary(
   TU* tu,                         /**< \ref TU environment. */
   TU_CHRMAT* matrix,              /**< Sparse char matrix. */
   TU_SERIES_PARALLEL* operations, /**< Array for storing the operations. Must be sufficiently large. */

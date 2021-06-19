@@ -16,7 +16,7 @@ typedef enum
 int printUsage(const char* program)
 {
   printf("Usage: %s [OPTION]... FILE\n\n", program);
-  puts("Detects all series/parallel 2-sums of the binary matrix and outputs the remaining submatrix.");
+  puts("Detects all series/parallel 2-sums of the ternary or binary matrix and outputs the remaining submatrix.");
   puts("Options:");
   puts("  -i FORMAT  Format of input FILE; default: `dense'.");
   puts("  -o FORMAT  Format of output; default: `dense'.");
@@ -55,7 +55,7 @@ TU_ERROR matrixSeriesParallel2Sums(const char* instanceFileName, FileFormat inpu
   TU_CALL( TUallocBlockArray(tu, &removed, matrix->numRows + matrix->numColumns) );
 
   startTime = clock();
-  TU_CALL( TUfindSeriesParallelBinary(tu, matrix, removed, &numRemoved, true) );
+  TU_CALL( TUfindSeriesParallelTernary(tu, matrix, removed, &numRemoved, true) );
   endTime = clock();
   fprintf(stderr, "Search time: %f\n", (endTime - startTime) * 1.0 / CLOCKS_PER_SEC);
   fprintf(stderr, "Number of removed rows/columns: %ld\n", numRemoved);

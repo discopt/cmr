@@ -7,7 +7,16 @@
 #include "hashtable.h"
 #include "sort.h"
 
+#include <limits.h>
 #include <stdint.h>
+
+#define RANGE_SIGNED_HASH (LLONG_MAX/2)
+
+static inline
+long long projectSignedHash(long long value)
+{
+  return ((value + RANGE_SIGNED_HASH - 1) % (2*RANGE_SIGNED_HASH-1)) - (RANGE_SIGNED_HASH-1);
+}
 
 typedef struct _Nonzero
 {
@@ -17,6 +26,7 @@ typedef struct _Nonzero
   struct _Nonzero* below;
   size_t row;
   size_t column;
+  char value;
 } Nonzero;
 
 static inline
@@ -46,7 +56,7 @@ typedef struct
 {
   Nonzero nonzeros;
   size_t numNonzeros;
-  TU_LISTHASHTABLE_HASH hash;
+  long long hash;
   TU_LISTHASHTABLE_ENTRY hashEntry;
   bool inQueue;
 } ElementData;
@@ -73,6 +83,7 @@ TU_ERROR initialScan(TU* tu, TU_LISTHASHTABLE* hashtable, ElementData* data, siz
   /* Check for unit vector. */
   for (size_t i = 0; i < sizeData; ++i)
   {
+    TUdbgMsg(2, "%s %d has %d nonzeros.\n", isRow ? "Row" : "Column", i, data[i].numNonzeros);
     assert(data[i].numNonzeros > 0);
     if (data[i].numNonzeros == 1)
     {
@@ -84,11 +95,11 @@ TU_ERROR initialScan(TU* tu, TU_LISTHASHTABLE* hashtable, ElementData* data, siz
     }
     else
     {
-      TU_LISTHASHTABLE_ENTRY entry = TUlisthashtableFindFirst(hashtable, data[i].hash);
-      TUdbgMsg(2, "Search for hash %d of %s %d yields entry %d.\n", data[i].hash, isRow ? "row" : "column", i, entry);
+      TU_LISTHASHTABLE_ENTRY entry = TUlisthashtableFindFirst(hashtable, llabs(data[i].hash));
+      TUdbgMsg(2, "Search for hash %ld of %s %d yields entry %d.\n", data[i].hash, isRow ? "row" : "column", i, entry);
       if (entry == SIZE_MAX)
       {
-        TU_CALL( TUlisthashtableInsert(tu, hashtable, data[i].hash, i, &data[i].hashEntry) );
+        TU_CALL( TUlisthashtableInsert(tu, hashtable, llabs(data[i].hash), i, &data[i].hashEntry) );
       }
       else
       {
@@ -119,6 +130,7 @@ TU_ERROR initListMatrix(TU* tu, TU_CHRMAT* matrix, Nonzero* nonzeros, ElementDat
     {
       nonzeros[i].row = row;
       nonzeros[i].column = matrix->entryColumns[e];
+      nonzeros[i].value = matrix->entryValues[e];
       i++;
     }
   }
@@ -173,29 +185,36 @@ TU_ERROR initListMatrix(TU* tu, TU_CHRMAT* matrix, Nonzero* nonzeros, ElementDat
 }
 
 static
-size_t findParallel(ElementData* data, TU_LISTHASHTABLE* hashtable, size_t index, bool isRow)
+size_t findParallel(ElementData* data, TU_LISTHASHTABLE* hashtable, size_t index, bool isRow, bool ternary)
 {
-  TU_LISTHASHTABLE_HASH hash = data[index].hash;
-  TUdbgMsg(4, "Processing %s %d with a collision (hash value %llu).\n", isRow ? "row" : "column", index, hash);
+  TU_LISTHASHTABLE_HASH hash = llabs(data[index].hash);
+  TUdbgMsg(4, "Processing %s %d with a collision (hash value %ld).\n", isRow ? "row" : "column", index,
+    data[index].hash);
   for (TU_LISTHASHTABLE_ENTRY entry = TUlisthashtableFindFirst(hashtable, hash);
     entry != SIZE_MAX; entry = TUlisthashtableFindNext(hashtable, hash, entry))          
   {
     size_t j = TUlisthashtableValue(hashtable, entry);
     TUdbgMsg(8, "%s %d has the same hash value. Comparing...\n", isRow ? "Row" : "Column", j);
     bool equal = true;
+    bool negated = ternary;
     if (isRow)
     {
       Nonzero* nz1 = data[index].nonzeros.right;
       Nonzero* nz2 = data[j].nonzeros.right;
-      while (true)
+      while (equal || negated)
       {
         if (nz1->column != nz2->column)
         {
           equal = false;
+          negated = false;
           break;
         }
         if (nz1->column == SIZE_MAX)
           break;
+        if (nz1->value == nz2->value)
+          negated = false;
+        else
+          equal = false;
         nz1 = nz1->right;
         nz2 = nz2->right;
       }
@@ -204,21 +223,26 @@ size_t findParallel(ElementData* data, TU_LISTHASHTABLE* hashtable, size_t index
     {
       Nonzero* nz1 = data[index].nonzeros.below;
       Nonzero* nz2 = data[j].nonzeros.below;
-      while (true)
+      while (equal || negated)
       {
         if (nz1->row != nz2->row)
         {
           equal = false;
+          negated = false;
           break;
         }
         if (nz1->row == SIZE_MAX)
           break;
+        if (nz1->value == nz2->value)
+          negated = false;
+        else
+          equal = false;
         nz1 = nz1->below;
         nz2 = nz2->below;
       }
     }
 
-    if (equal)
+    if (equal || negated)
       return j;
   }
 
@@ -226,7 +250,7 @@ size_t findParallel(ElementData* data, TU_LISTHASHTABLE* hashtable, size_t index
 }
 
 static
-TU_ERROR processNonzero(TU* tu, TU_LISTHASHTABLE* hashtable, size_t hashChange, size_t index, ElementData* indexData,
+TU_ERROR processNonzero(TU* tu, TU_LISTHASHTABLE* hashtable, long long hashChange, size_t index, ElementData* indexData,
   TU_ELEMENT* queue, size_t* pqueueEnd, size_t queueMemory,  bool isRow)
 {
   assert(tu);
@@ -234,8 +258,11 @@ TU_ERROR processNonzero(TU* tu, TU_LISTHASHTABLE* hashtable, size_t hashChange, 
   assert(hashtable);
   assert(queue);
 
-  indexData->numNonzeros--;
-  indexData->hash += hashChange;
+  indexData->numNonzeros--; 
+  long long newHash = projectSignedHash(indexData->hash + hashChange);
+  TUdbgMsg(4, "processing nonzero. Old hash is %ld, change is %ld, new hash is %ld.\n", indexData->hash, hashChange,
+    newHash);
+  indexData->hash = newHash;
 
   /* Check whether we created a unit column. */
   if (indexData->numNonzeros == 1)
@@ -276,18 +303,24 @@ TU_ERROR processNonzero(TU* tu, TU_LISTHASHTABLE* hashtable, size_t hashChange, 
   return TU_OKAY;
 }
 
-TU_ERROR TUfindSeriesParallelBinary(TU* tu, TU_CHRMAT* matrix, TU_SERIES_PARALLEL* operations, size_t* pnumOperations,
-  bool isSorted)
+static
+TU_ERROR findSeriesParallel(
+  TU* tu,                         /**< \ref TU environment. */
+  TU_CHRMAT* matrix,              /**< Sparse char matrix. */
+  TU_SERIES_PARALLEL* operations, /**< Array for storing the operations. Must be sufficiently large. */
+  size_t* pnumOperations,         /**< Pointer for storing the number of operations. */  
+  bool isSorted,                  /**< Whether the entries of \p matrix are sorted. */
+  bool ternary                    /**< Whether we also have to check for negated unit/parallel vectors. */
+)
 {
   assert(tu);
   assert(matrix);
   assert(operations);
   assert(pnumOperations);
-  assert(TUisBinaryChr(tu, matrix, NULL));
 
-  TUdbgMsg(0, "Searching for series/parallel elements in a %dx%d matrix with %d nonzeros.\n", matrix->numRows,
-    matrix->numColumns, matrix->numNonzeros);
-  
+  TUdbgMsg(0, "Searching for series/parallel elements in a %s %dx%d matrix with %d nonzeros.\n",
+    ternary ? "ternary" : "binary", matrix->numRows, matrix->numColumns, matrix->numNonzeros);
+
   size_t numRows = matrix->numRows;
   size_t numColumns = matrix->numColumns;
   ElementData* rowData = NULL;
@@ -310,14 +343,15 @@ TU_ERROR TUfindSeriesParallelBinary(TU* tu, TU_CHRMAT* matrix, TU_SERIES_PARALLE
   }
 
   /* We prepare the hashing. Every coordinate has its own value. These are added up for all nonzero entries. */
-  size_t* entryToHash = NULL;
+  long long* entryToHash = NULL;
   size_t numEntries = numRows > numColumns ? numRows : numColumns;
   TU_CALL( TUallocStackArray(tu, &entryToHash, numEntries) );
   size_t h = 1;
   for (size_t e = 0; e < numEntries; ++e)
   {
     entryToHash[e] = h;
-    h = 3 * h + 1;
+    TUdbgMsg(2, "Entry %d has hash %ld.\n", e, h);
+    h = projectSignedHash(3 * h);
   }
 
   /* We scan the matrix once to compute the number of nonzeros and the hash of each row and each column. */
@@ -329,11 +363,17 @@ TU_ERROR TUfindSeriesParallelBinary(TU* tu, TU_CHRMAT* matrix, TU_SERIES_PARALLE
     {
       size_t column = matrix->entryColumns[e];
       char value = matrix->entryValues[e];
-      assert(value == 1);
+      assert(value == 1 || (ternary && value == -1));
+
+      /* Update row data. */
       rowData[row].numNonzeros++;
-      rowData[row].hash += value * entryToHash[column];
+      long long newHash = projectSignedHash(rowData[row].hash + value * entryToHash[column]);
+      rowData[row].hash  = newHash;
+
+      /* Update column data. */
       columnData[column].numNonzeros++;
-      columnData[column].hash += value * entryToHash[row];
+      newHash = projectSignedHash(columnData[column].hash + value * entryToHash[row]);
+      columnData[column].hash = newHash;
     }
   }
 
@@ -388,7 +428,7 @@ TU_ERROR TUfindSeriesParallelBinary(TU* tu, TU_CHRMAT* matrix, TU_SERIES_PARALLE
       TUdbgMsg(4, "Status:\n");
       for (size_t row = 0; row < matrix->numRows; ++row)
       {
-        TUdbgMsg(6, "Row %d: %d nonzeros, hashed = %s, hash = %d", row, rowData[row].numNonzeros,
+        TUdbgMsg(6, "Row %d: %d nonzeros, hashed = %s, hash = %ld", row, rowData[row].numNonzeros,
           rowData[row].hashEntry == SIZE_MAX ? "NO" : "YES", rowData[row].hash);
         if (rowData[row].hashEntry != SIZE_MAX)
           TUdbgMsg(0, ", hashtable entry: %d with hash=%d, value=%d", rowData[row].hashEntry,
@@ -398,7 +438,7 @@ TU_ERROR TUfindSeriesParallelBinary(TU* tu, TU_CHRMAT* matrix, TU_SERIES_PARALLE
       }
       for (size_t column = 0; column < matrix->numColumns; ++column)
       {
-        TUdbgMsg(6, "Column %d: %d nonzeros, hashed = %s, hash = %d", column, columnData[column].numNonzeros,
+        TUdbgMsg(6, "Column %d: %d nonzeros, hashed = %s, hash = %ld", column, columnData[column].numNonzeros,
           columnData[column].hashEntry == SIZE_MAX ? "NO" : "YES", columnData[column].hash);
         if (columnData[column].hashEntry != SIZE_MAX)
           TUdbgMsg(0, ", hashtable entry: %d with hash=%d, value=%d", columnData[column].hashEntry,
@@ -459,12 +499,12 @@ TU_ERROR TUfindSeriesParallelBinary(TU* tu, TU_CHRMAT* matrix, TU_SERIES_PARALLE
         if (rowData[row1].numNonzeros > 1)
         {
           rowData[row1].inQueue = false;
-          size_t row2 = findParallel(rowData, rowHashtable, row1, true);
+          size_t row2 = findParallel(rowData, rowHashtable, row1, true, ternary);
           
           if (row2 == SIZE_MAX)
           {
             TUdbgMsg(6, "No parallel row found. Inserting row %d.\n", row1);
-            TU_CALL( TUlisthashtableInsert(tu, rowHashtable, rowData[row1].hash, row1, &rowData[row1].hashEntry) );
+            TU_CALL( TUlisthashtableInsert(tu, rowHashtable, llabs(rowData[row1].hash), row1, &rowData[row1].hashEntry) );
           }
           else
           {
@@ -481,7 +521,7 @@ TU_ERROR TUfindSeriesParallelBinary(TU* tu, TU_CHRMAT* matrix, TU_SERIES_PARALLE
               TUdbgMsg(8, "Processing nonzero at column %d.\n", entry->column);
 
               unlinkNonzero(entry);
-              TU_CALL( processNonzero(tu, columnHashtable, -entryToHash[entry->row], entry->column,
+              TU_CALL( processNonzero(tu, columnHashtable, -entryToHash[entry->row] * entry->value, entry->column,
                 &columnData[entry->column], queue, &queueEnd, queueMemory, false) );
             }
             rowData[row1].numNonzeros = 0;
@@ -506,7 +546,7 @@ TU_ERROR TUfindSeriesParallelBinary(TU* tu, TU_CHRMAT* matrix, TU_SERIES_PARALLE
 
           unlinkNonzero(entry);
           rowData[row1].numNonzeros--;
-          TU_CALL( processNonzero(tu, columnHashtable, -entryToHash[entry->row], column, &columnData[column], queue,
+          TU_CALL( processNonzero(tu, columnHashtable, -entryToHash[entry->row] * entry->value, column, &columnData[column], queue,
             &queueEnd, queueMemory, false) );
         }
       }
@@ -518,12 +558,12 @@ TU_ERROR TUfindSeriesParallelBinary(TU* tu, TU_CHRMAT* matrix, TU_SERIES_PARALLE
         if (columnData[column1].numNonzeros > 1)
         {
           columnData[column1].inQueue = false;
-          size_t column2 = findParallel(columnData, columnHashtable, column1, false);
+          size_t column2 = findParallel(columnData, columnHashtable, column1, false, ternary);
 
           if (column2 == SIZE_MAX)
           {
             TUdbgMsg(6, "No parallel column found. Inserting column %d.\n", column1);
-            TU_CALL( TUlisthashtableInsert(tu, columnHashtable, columnData[column1].hash, column1,
+            TU_CALL( TUlisthashtableInsert(tu, columnHashtable, llabs(columnData[column1].hash), column1,
               &columnData[column1].hashEntry) );
           }
           else
@@ -541,7 +581,7 @@ TU_ERROR TUfindSeriesParallelBinary(TU* tu, TU_CHRMAT* matrix, TU_SERIES_PARALLE
               TUdbgMsg(8, "Processing nonzero at row %d.\n", entry->row);
 
               unlinkNonzero(entry);
-              TU_CALL( processNonzero(tu, rowHashtable, -entryToHash[entry->column], entry->row,
+              TU_CALL( processNonzero(tu, rowHashtable, -entryToHash[entry->column] * entry->value, entry->row,
                 &rowData[entry->row], queue, &queueEnd, queueMemory, true) );
             }
             columnData[column1].numNonzeros = 0;
@@ -565,7 +605,7 @@ TU_ERROR TUfindSeriesParallelBinary(TU* tu, TU_CHRMAT* matrix, TU_SERIES_PARALLE
 
           unlinkNonzero(entry);
           columnData[column1].numNonzeros--;
-          TU_CALL( processNonzero(tu, rowHashtable, -entryToHash[entry->column], row, &rowData[row], queue,
+          TU_CALL( processNonzero(tu, rowHashtable, -entryToHash[entry->column] * entry->value, row, &rowData[row], queue,
             &queueEnd, queueMemory, true) );
         }
       }
@@ -585,6 +625,34 @@ TU_ERROR TUfindSeriesParallelBinary(TU* tu, TU_CHRMAT* matrix, TU_SERIES_PARALLE
   TU_CALL( TUfreeStackArray(tu, &entryToHash) );
   TU_CALL( TUfreeStackArray(tu, &columnData) );
   TU_CALL( TUfreeStackArray(tu, &rowData) );
+
+  return TU_OKAY;
+}
+
+TU_ERROR TUfindSeriesParallelBinary(TU* tu, TU_CHRMAT* matrix, TU_SERIES_PARALLEL* operations, size_t* pnumOperations,
+  bool isSorted)
+{
+  assert(tu);
+  assert(matrix);
+  assert(operations);
+  assert(pnumOperations);
+  assert(TUisBinaryChr(tu, matrix, NULL));
+
+  TU_CALL( findSeriesParallel(tu, matrix, operations, pnumOperations, isSorted, false) );
+
+  return TU_OKAY;
+}
+
+TU_ERROR TUfindSeriesParallelTernary(TU* tu, TU_CHRMAT* matrix, TU_SERIES_PARALLEL* operations, size_t* pnumOperations,
+  bool isSorted)
+{
+  assert(tu);
+  assert(matrix);
+  assert(operations);
+  assert(pnumOperations);
+  assert(TUisTernaryChr(tu, matrix, NULL));
+
+  TU_CALL( findSeriesParallel(tu, matrix, operations, pnumOperations, isSorted, true) );
 
   return TU_OKAY;
 }
