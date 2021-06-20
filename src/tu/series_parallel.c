@@ -185,7 +185,12 @@ TU_ERROR initListMatrix(TU* tu, TU_CHRMAT* matrix, Nonzero* nonzeros, ElementDat
 }
 
 static
-size_t findParallel(ElementData* data, TU_LISTHASHTABLE* hashtable, size_t index, bool isRow, bool ternary)
+size_t findParallel(
+  ElementData* data,            /**< Array with row/column data. */
+  TU_LISTHASHTABLE* hashtable,  /**< Hash table for row/column hashes. */
+  size_t index,                 /**< Index in \p data. */
+  bool isRow                    /**< Whether we are dealing with rows. */
+)
 {
   TU_LISTHASHTABLE_HASH hash = llabs(data[index].hash);
   TUdbgMsg(4, "Processing %s %d with a collision (hash value %ld).\n", isRow ? "row" : "column", index,
@@ -196,7 +201,7 @@ size_t findParallel(ElementData* data, TU_LISTHASHTABLE* hashtable, size_t index
     size_t j = TUlisthashtableValue(hashtable, entry);
     TUdbgMsg(8, "%s %d has the same hash value. Comparing...\n", isRow ? "Row" : "Column", j);
     bool equal = true;
-    bool negated = ternary;
+    bool negated = true;
     if (isRow)
     {
       Nonzero* nz1 = data[index].nonzeros.right;
@@ -303,23 +308,18 @@ TU_ERROR processNonzero(TU* tu, TU_LISTHASHTABLE* hashtable, long long hashChang
   return TU_OKAY;
 }
 
-static
-TU_ERROR findSeriesParallel(
-  TU* tu,                         /**< \ref TU environment. */
-  TU_CHRMAT* matrix,              /**< Sparse char matrix. */
-  TU_SERIES_PARALLEL* operations, /**< Array for storing the operations. Must be sufficiently large. */
-  size_t* pnumOperations,         /**< Pointer for storing the number of operations. */  
-  bool isSorted,                  /**< Whether the entries of \p matrix are sorted. */
-  bool ternary                    /**< Whether we also have to check for negated unit/parallel vectors. */
-)
+TU_ERROR TUfindSeriesParallel(TU* tu, TU_CHRMAT* matrix, TU_SERIES_PARALLEL* operations, size_t* pnumOperations,
+  TU_SUBMAT** premainingSubmatrix, TU_SUBMAT** pwheelSubmatrix, bool isSorted)
 {
   assert(tu);
   assert(matrix);
   assert(operations);
   assert(pnumOperations);
+  assert(!premainingSubmatrix || !*premainingSubmatrix);
+  assert(!pwheelSubmatrix || !*pwheelSubmatrix);
 
-  TUdbgMsg(0, "Searching for series/parallel elements in a %s %dx%d matrix with %d nonzeros.\n",
-    ternary ? "ternary" : "binary", matrix->numRows, matrix->numColumns, matrix->numNonzeros);
+  TUdbgMsg(0, "Searching for series/parallel elements in a %dx%d matrix with %d nonzeros.\n", matrix->numRows,
+    matrix->numColumns, matrix->numNonzeros);
 
   size_t numRows = matrix->numRows;
   size_t numColumns = matrix->numColumns;
@@ -363,7 +363,7 @@ TU_ERROR findSeriesParallel(
     {
       size_t column = matrix->entryColumns[e];
       char value = matrix->entryValues[e];
-      assert(value == 1 || (ternary && value == -1));
+      assert(value == 1 || value == -1);
 
       /* Update row data. */
       rowData[row].numNonzeros++;
@@ -392,20 +392,18 @@ TU_ERROR findSeriesParallel(
   TU_CALL( TUlisthashtableCreate(tu, &columnHashtable, nextPower2(numColumns), numColumns) );
   TU_CALL( initialScan(tu, columnHashtable, columnData, numColumns, queue, &queueEnd, false) );
 
-  if (queueEnd > queueStart)
+  if (queueEnd > queueStart || (pwheelSubmatrix && numEntries))
   {
-    /* There is at least one series or parallel element. */
-    TUdbgMsg(2, "There is at least one series/parallel element.\n");
-
     /* Create nonzeros of matrix. */
     Nonzero* nonzeros = NULL;
     TU_CALL( TUallocStackArray(tu, &nonzeros, matrix->numNonzeros) );
-    
+
     TU_CALL( initListMatrix(tu, matrix, nonzeros, rowData, columnData, isSorted) );
 
     /* We now start main loop. */
     *pnumOperations = 0;
-
+    size_t numRowOperations = 0;
+    size_t numColumnOperations = 0;
     while (queueEnd > queueStart)
     {
       assert(queueEnd - queueStart <= numRows + numColumns);
@@ -453,34 +451,6 @@ TU_ERROR findSeriesParallel(
           TUelementIsRow(e) ? "row" : "column", TUelementIsRow(e) ? TUelementToRowIndex(e) : TUelementToColumnIndex(e));
       }
       TUdbgMsg(0, "\n");
-
-      /* Invariant: each row/column is either 0 or in queue or in hash. */
-//       for (size_t row = 0; row < numRows; ++row)
-//       {
-//         bool inHash = rowData[row].hashEntry != SIZE_MAX;
-//         bool inQueue = rowData[row].inQueue;
-//         bool isZero = rowData[row].numNonzeros == 0;
-//         bool isUnit = rowData[row].numNonzeros == 1;
-//         if (((inHash ? 1 : 0) + (inQueue ? 1 : 0) + (isZero ? 1 : 0) != 1) || (isUnit && inHash))
-//         {
-//           TUdbgMsg(0, "Row %d: inHash = %s, inQueue = %s, isZero = %s, isUnit = %s\n", row, inHash ? "yes" : "no",
-//             inQueue ? "yes" : "no", isZero ? "yes" : "no", isUnit ? "yes" : "no");
-//           assert(!"Row invariant not satisfied.");
-//         }
-//       }
-//       for (size_t column = 0; column < numColumns; ++column)
-//       {
-//         bool inHash = columnData[column].hashEntry != SIZE_MAX;
-//         bool inQueue = columnData[column].inQueue;
-//         bool isZero = columnData[column].numNonzeros == 0;
-//         bool isUnit = columnData[column].numNonzeros == 1;
-//         if (((inHash ? 1 : 0) + (inQueue ? 1 : 0) + (isZero ? 1 : 0) != 1) || (isUnit && inHash))
-//         {
-//           TUdbgMsg(0, "Column %d: inHash = %s, inQueue = %s, isZero = %s, isUnit = %s\n", column, inHash ? "yes" : "no",
-//             inQueue ? "yes" : "no", isZero ? "yes" : "no", isUnit ? "yes" : "no");
-//           assert(!"Column invariant not satisfied.");
-//         }
-//       }
 #endif /* TU_DEBUG */
 
       TU_ELEMENT element = queue[queueStart % queueMemory];
@@ -499,7 +469,7 @@ TU_ERROR findSeriesParallel(
         if (rowData[row1].numNonzeros > 1)
         {
           rowData[row1].inQueue = false;
-          size_t row2 = findParallel(rowData, rowHashtable, row1, true, ternary);
+          size_t row2 = findParallel(rowData, rowHashtable, row1, true);
           
           if (row2 == SIZE_MAX)
           {
@@ -514,6 +484,7 @@ TU_ERROR findSeriesParallel(
             operations[*pnumOperations].element = TUrowToElement(row1);
             operations[*pnumOperations].mate = TUrowToElement(row2);
             (*pnumOperations)++;
+            numRowOperations++;
 
             for (Nonzero* entry = rowData[row1].nonzeros.right; entry != &rowData[row1].nonzeros;
               entry = entry->right)
@@ -548,6 +519,7 @@ TU_ERROR findSeriesParallel(
           }
           operations[*pnumOperations].element = element;
           (*pnumOperations)++;
+          numRowOperations++;
         }
       }
       else
@@ -558,7 +530,7 @@ TU_ERROR findSeriesParallel(
         if (columnData[column1].numNonzeros > 1)
         {
           columnData[column1].inQueue = false;
-          size_t column2 = findParallel(columnData, columnHashtable, column1, false, ternary);
+          size_t column2 = findParallel(columnData, columnHashtable, column1, false);
 
           if (column2 == SIZE_MAX)
           {
@@ -574,6 +546,7 @@ TU_ERROR findSeriesParallel(
             operations[*pnumOperations].element = TUcolumnToElement(column1);
             operations[*pnumOperations].mate = TUcolumnToElement(column2);
             (*pnumOperations)++;
+            numColumnOperations++;
 
             for (Nonzero* entry = columnData[column1].nonzeros.below; entry != &columnData[column1].nonzeros;
               entry = entry->below)
@@ -608,8 +581,31 @@ TU_ERROR findSeriesParallel(
           }
           operations[*pnumOperations].element = element;
           (*pnumOperations)++;
+          numColumnOperations++;
         }
       }
+    }
+
+    /* Extract remaining submatrix. */
+    if (premainingSubmatrix)
+    {
+      TU_CALL( TUsubmatCreate(tu, matrix->numRows - numRowOperations, matrix->numColumns - numColumnOperations,
+        premainingSubmatrix) );
+      TU_SUBMAT* remainingSubmatrix = *premainingSubmatrix;
+      size_t rowSubmatrix = 0;
+      for (size_t row = 0; row < matrix->numRows; ++row)
+      {
+        if (rowData[row].numNonzeros > 0)
+          remainingSubmatrix->rows[rowSubmatrix++] = row;
+      }
+      assert(rowSubmatrix + numRowOperations == matrix->numRows);
+      size_t columnSubmatrix = 0;
+      for (size_t column = 0; column < matrix->numColumns; ++column)
+      {
+        if (columnData[column].numNonzeros > 0)
+          remainingSubmatrix->columns[columnSubmatrix++] = column;
+      }
+      assert(columnSubmatrix + numColumnOperations == matrix->numColumns);
     }
 
     TU_CALL( TUfreeStackArray(tu, &nonzeros) );
@@ -617,6 +613,16 @@ TU_ERROR findSeriesParallel(
   else
   {
     TUdbgMsg(2, "No series/parallel element found.\n");
+
+    if (premainingSubmatrix)
+    {
+      TU_CALL( TUsubmatCreate(tu, matrix->numRows, matrix->numColumns, premainingSubmatrix) );
+      TU_SUBMAT* remainingSubmatrix = *premainingSubmatrix;
+      for (size_t row = 0; row < matrix->numRows; ++row)
+        remainingSubmatrix->rows[row] = row;
+      for (size_t column = 0; column < matrix->numColumns; ++column)
+        remainingSubmatrix->columns[column] = column;
+    }
   }
 
   TU_CALL( TUlisthashtableFree(tu, &columnHashtable) );
@@ -626,34 +632,6 @@ TU_ERROR findSeriesParallel(
   TU_CALL( TUfreeStackArray(tu, &entryToHash) );
   TU_CALL( TUfreeStackArray(tu, &columnData) );
   TU_CALL( TUfreeStackArray(tu, &rowData) );
-
-  return TU_OKAY;
-}
-
-TU_ERROR TUfindSeriesParallelBinary(TU* tu, TU_CHRMAT* matrix, TU_SERIES_PARALLEL* operations, size_t* pnumOperations,
-  bool isSorted)
-{
-  assert(tu);
-  assert(matrix);
-  assert(operations);
-  assert(pnumOperations);
-  assert(TUisBinaryChr(tu, matrix, NULL));
-
-  TU_CALL( findSeriesParallel(tu, matrix, operations, pnumOperations, isSorted, false) );
-
-  return TU_OKAY;
-}
-
-TU_ERROR TUfindSeriesParallelTernary(TU* tu, TU_CHRMAT* matrix, TU_SERIES_PARALLEL* operations, size_t* pnumOperations,
-  bool isSorted)
-{
-  assert(tu);
-  assert(matrix);
-  assert(operations);
-  assert(pnumOperations);
-  assert(TUisTernaryChr(tu, matrix, NULL));
-
-  TU_CALL( findSeriesParallel(tu, matrix, operations, pnumOperations, isSorted, true) );
 
   return TU_OKAY;
 }

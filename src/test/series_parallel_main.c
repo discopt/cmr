@@ -46,27 +46,38 @@ TU_ERROR matrixSeriesParallel2Sums(const char* instanceFileName, FileFormat inpu
   if (instanceFile != stdin)
     fclose(instanceFile);
   endTime = clock();
-  fprintf(stderr, "Read time: %f\n", (endTime - startTime) * 1.0 / CLOCKS_PER_SEC);
+  fprintf(stderr, "Read %dx%d matrix with %d nonzeros: %fs\n", matrix->numRows, matrix->numColumns,
+    matrix->numNonzeros, (endTime - startTime) * 1.0 / CLOCKS_PER_SEC);
 
   /* Run the search. */
 
-  TU_SERIES_PARALLEL* removed = NULL;
+  TU_SERIES_PARALLEL* operations = NULL;
   size_t numRemoved = 0;
-  TU_CALL( TUallocBlockArray(tu, &removed, matrix->numRows + matrix->numColumns) );
+  TU_CALL( TUallocBlockArray(tu, &operations, matrix->numRows + matrix->numColumns) );
+  TU_SUBMAT* remainingSubmatrix = NULL;
+  TU_SUBMAT* wheelSubmatrix = NULL;
 
   startTime = clock();
-  TU_CALL( TUfindSeriesParallelTernary(tu, matrix, removed, &numRemoved, true) );
+  TU_CALL( TUfindSeriesParallel(tu, matrix, operations, &numRemoved, &remainingSubmatrix, &wheelSubmatrix, true) );
   endTime = clock();
-  fprintf(stderr, "Search time: %f\n", (endTime - startTime) * 1.0 / CLOCKS_PER_SEC);
-  fprintf(stderr, "Number of removed rows/columns: %ld\n", numRemoved);
+
+  fprintf(stderr, "Removed %ld series/parallel/zero elements: %fs\n", numRemoved,
+    (endTime - startTime) * 1.0 / CLOCKS_PER_SEC);
 
   startTime = clock();
+  TU_CHRMAT* remainingMatrix = NULL;
+  if (remainingSubmatrix)
+    TU_CALL( TUchrmatFilterSubmat(tu, matrix, remainingSubmatrix, &remainingMatrix) );
   endTime = clock();
-  fprintf(stderr, "Extraction time: %f\n", (endTime - startTime) * 1.0 / CLOCKS_PER_SEC);
+  fprintf(stderr, "Extracted %dx%d matrix with %d nonzeros: %fs\n", remainingMatrix->numRows,
+    remainingMatrix->numColumns, remainingMatrix->numNonzeros, (endTime - startTime) * 1.0 / CLOCKS_PER_SEC);
 
   /* Cleanup. */
 
-  TU_CALL( TUfreeBlockArray(tu, &removed) );
+  TU_CALL( TUchrmatFree(tu, &remainingMatrix) );
+  TU_CALL( TUsubmatFree(tu, &wheelSubmatrix) );
+  TU_CALL( TUsubmatFree(tu, &remainingSubmatrix) );
+  TU_CALL( TUfreeBlockArray(tu, &operations) );
   TU_CALL( TUchrmatFree(tu, &matrix) );
   TU_CALL( TUfreeEnvironment(&tu) );
 

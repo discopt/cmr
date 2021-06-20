@@ -15,22 +15,6 @@ typedef struct
 } TU_SERIES_PARALLEL;
 
 /**
- * \brief Finds all series or parallel elements of the binary \p matrix.
- *
- * If \p isSorted is \c true, then the running time is linear in the number of rows + number of columns + number of
- * nonzeros of \p matrix.
- */
-
-TU_EXPORT
-TU_ERROR TUfindSeriesParallelBinary(
-  TU* tu,                         /**< \ref TU environment. */
-  TU_CHRMAT* matrix,              /**< Sparse char matrix. */
-  TU_SERIES_PARALLEL* operations, /**< Array for storing the operations. Must be sufficiently large. */
-  size_t* pnumOperations,         /**< Pointer for storing the number of operations. */  
-  bool isSorted                   /**< Whether the entries of \p matrix are sorted. */
-);
-
-/**
  * \brief Finds all series or parallel elements of the ternary \p matrix.
  *
  * If \p isSorted is \c true, then the running time is linear in the number of rows + number of columns + number of
@@ -38,12 +22,14 @@ TU_ERROR TUfindSeriesParallelBinary(
  */
 
 TU_EXPORT
-TU_ERROR TUfindSeriesParallelTernary(
-  TU* tu,                         /**< \ref TU environment. */
-  TU_CHRMAT* matrix,              /**< Sparse char matrix. */
-  TU_SERIES_PARALLEL* operations, /**< Array for storing the operations. Must be sufficiently large. */
-  size_t* pnumOperations,         /**< Pointer for storing the number of operations. */  
-  bool isSorted                   /**< Whether the entries of \p matrix are sorted. */
+TU_ERROR TUfindSeriesParallel(
+  TU* tu,                           /**< \ref TU environment. */
+  TU_CHRMAT* matrix,                /**< Sparse char matrix. */
+  TU_SERIES_PARALLEL* operations,   /**< Array for storing the operations. Must be sufficiently large. */
+  size_t* pnumOperations,           /**< Pointer for storing the number of operations. */  
+  TU_SUBMAT** premainingSubmatrix,  /**< Pointer for storing the submatrix that remains. */
+  TU_SUBMAT** pwheelSubmatrix,      /**< Pointer for storing a submatrix representing a wheel. */
+  bool isSorted                     /**< Whether the entries of \p matrix are sorted. */
 );
 
 #ifdef __cplusplus
