@@ -84,10 +84,10 @@ TU_ERROR initialScan(TU* tu, TU_LISTHASHTABLE* hashtable, ElementData* data, siz
   for (size_t i = 0; i < sizeData; ++i)
   {
     TUdbgMsg(2, "%s %d has %d nonzeros.\n", isRow ? "Row" : "Column", i, data[i].numNonzeros);
-    assert(data[i].numNonzeros > 0);
-    if (data[i].numNonzeros == 1)
+    if (data[i].numNonzeros <= 1)
     {
-      TUdbgMsg(4, "Initial inspection: unit %s %d found.\n", isRow ? "row" : "column", i);
+      TUdbgMsg(4, "Initial inspection: %s %s %d found.\n", data[i].numNonzeros == 0 ? "zero" : "unit",
+        isRow ? "row" : "column", i);
       queue[*pqueueEnd] = isRow ? TUrowToElement(i) : TUcolumnToElement(i);
       data[i].inQueue = true;
       data[i].hashEntry = SIZE_MAX;
@@ -264,10 +264,10 @@ TU_ERROR processNonzero(TU* tu, TU_LISTHASHTABLE* hashtable, long long hashChang
     newHash);
   indexData->hash = newHash;
 
-  /* Check whether we created a unit column. */
-  if (indexData->numNonzeros == 1)
+  /* Check whether we created a zero or unit element. */
+  if (indexData->numNonzeros <= 1)
   {
-    TUdbgMsg(10, "Found unit %s %d.\n", isRow ? "row" : "column", index);
+    TUdbgMsg(10, "Found %s %s %d.\n", indexData->numNonzeros == 0 ? "zero" : "unit", isRow ? "row" : "column", index);
 
     /* Add to queue if necessary. */
     if (!indexData->inQueue)
@@ -455,32 +455,32 @@ TU_ERROR findSeriesParallel(
       TUdbgMsg(0, "\n");
 
       /* Invariant: each row/column is either 0 or in queue or in hash. */
-      for (size_t row = 0; row < numRows; ++row)
-      {
-        bool inHash = rowData[row].hashEntry != SIZE_MAX;
-        bool inQueue = rowData[row].inQueue;
-        bool isZero = rowData[row].numNonzeros == 0;
-        bool isUnit = rowData[row].numNonzeros == 1;
-        if (((inHash ? 1 : 0) + (inQueue ? 1 : 0) + (isZero ? 1 : 0) != 1) || (isUnit && inHash))
-        {
-          TUdbgMsg(0, "Row %d: inHash = %s, inQueue = %s, isZero = %s, isUnit = %s\n", row, inHash ? "yes" : "no",
-            inQueue ? "yes" : "no", isZero ? "yes" : "no", isUnit ? "yes" : "no");
-          assert(!"Row invariant not satisfied.");
-        }
-      }
-      for (size_t column = 0; column < numColumns; ++column)
-      {
-        bool inHash = columnData[column].hashEntry != SIZE_MAX;
-        bool inQueue = columnData[column].inQueue;
-        bool isZero = columnData[column].numNonzeros == 0;
-        bool isUnit = columnData[column].numNonzeros == 1;
-        if (((inHash ? 1 : 0) + (inQueue ? 1 : 0) + (isZero ? 1 : 0) != 1) || (isUnit && inHash))
-        {
-          TUdbgMsg(0, "Column %d: inHash = %s, inQueue = %s, isZero = %s, isUnit = %s\n", column, inHash ? "yes" : "no",
-            inQueue ? "yes" : "no", isZero ? "yes" : "no", isUnit ? "yes" : "no");
-          assert(!"Column invariant not satisfied.");
-        }
-      }
+//       for (size_t row = 0; row < numRows; ++row)
+//       {
+//         bool inHash = rowData[row].hashEntry != SIZE_MAX;
+//         bool inQueue = rowData[row].inQueue;
+//         bool isZero = rowData[row].numNonzeros == 0;
+//         bool isUnit = rowData[row].numNonzeros == 1;
+//         if (((inHash ? 1 : 0) + (inQueue ? 1 : 0) + (isZero ? 1 : 0) != 1) || (isUnit && inHash))
+//         {
+//           TUdbgMsg(0, "Row %d: inHash = %s, inQueue = %s, isZero = %s, isUnit = %s\n", row, inHash ? "yes" : "no",
+//             inQueue ? "yes" : "no", isZero ? "yes" : "no", isUnit ? "yes" : "no");
+//           assert(!"Row invariant not satisfied.");
+//         }
+//       }
+//       for (size_t column = 0; column < numColumns; ++column)
+//       {
+//         bool inHash = columnData[column].hashEntry != SIZE_MAX;
+//         bool inQueue = columnData[column].inQueue;
+//         bool isZero = columnData[column].numNonzeros == 0;
+//         bool isUnit = columnData[column].numNonzeros == 1;
+//         if (((inHash ? 1 : 0) + (inQueue ? 1 : 0) + (isZero ? 1 : 0) != 1) || (isUnit && inHash))
+//         {
+//           TUdbgMsg(0, "Column %d: inHash = %s, inQueue = %s, isZero = %s, isUnit = %s\n", column, inHash ? "yes" : "no",
+//             inQueue ? "yes" : "no", isZero ? "yes" : "no", isUnit ? "yes" : "no");
+//           assert(!"Column invariant not satisfied.");
+//         }
+//       }
 #endif /* TU_DEBUG */
 
       TU_ELEMENT element = queue[queueStart % queueMemory];
@@ -529,25 +529,25 @@ TU_ERROR findSeriesParallel(
         }
         else
         {
-          /* Unit row vector. */
-          TUdbgMsg(4, "Processing unit row %d with %d nonzeros.\n", row1, rowData[row1].numNonzeros);
-          assert(rowData[row1].numNonzeros == 1);
+          /* Zero or unit row vector. */
+          TUdbgMsg(4, "Processing %s row %d.\n", rowData[row1].numNonzeros == 0 ? "zero" : "unit", row1);
 
           rowData[row1].inQueue = false;
-          Nonzero* entry = rowData[row1].nonzeros.right;
-          size_t column = entry->column;
+          if (rowData[row1].numNonzeros)
+          {
+            Nonzero* entry = rowData[row1].nonzeros.right;
+            size_t column = entry->column;
 
-          TUdbgMsg(4, "Processing unit row %d with 1 in column %d.\n", row1, column);
+            TUdbgMsg(4, "Processing unit row %d with 1 in column %d.\n", row1, column);
 
-          /* Store operation. */
+            unlinkNonzero(entry);
+            rowData[row1].numNonzeros--;
+            TU_CALL( processNonzero(tu, columnHashtable, -entryToHash[entry->row] * entry->value, column,
+              &columnData[column], queue, &queueEnd, queueMemory, false) );
+            operations[*pnumOperations].mate = TUcolumnToElement(column);
+          }
           operations[*pnumOperations].element = element;
-          operations[*pnumOperations].mate = TUcolumnToElement(column);
           (*pnumOperations)++;
-
-          unlinkNonzero(entry);
-          rowData[row1].numNonzeros--;
-          TU_CALL( processNonzero(tu, columnHashtable, -entryToHash[entry->row] * entry->value, column, &columnData[column], queue,
-            &queueEnd, queueMemory, false) );
         }
       }
       else
@@ -589,24 +589,25 @@ TU_ERROR findSeriesParallel(
         }
         else
         {
-          /* Unit column vector. */
-          assert(columnData[column1].numNonzeros == 1);
+          /* Zero or unit column vector. */
+          TUdbgMsg(4, "Processing %s column %d.\n", columnData[column1].numNonzeros == 0 ? "zero" : "unit", column1);
 
           columnData[column1].inQueue = false;
-          Nonzero* entry = columnData[column1].nonzeros.below;
-          size_t row = entry->row;
+          if (columnData[column1].numNonzeros)
+          {
+            Nonzero* entry = columnData[column1].nonzeros.below;
+            size_t row = entry->row;
 
-          TUdbgMsg(4, "Processing unit column %d with 1 in row %d.\n", column1, row);
+            TUdbgMsg(4, "Processing unit column %d with 1 in row %d.\n", column1, row);
 
-          /* Store operation. */
+            unlinkNonzero(entry);
+            columnData[column1].numNonzeros--;
+            TU_CALL( processNonzero(tu, rowHashtable, -entryToHash[entry->column] * entry->value, row,
+              &rowData[row], queue, &queueEnd, queueMemory, true) );
+            operations[*pnumOperations].mate = TUrowToElement(row);
+          }
           operations[*pnumOperations].element = element;
-          operations[*pnumOperations].mate = TUrowToElement(row);
           (*pnumOperations)++;
-
-          unlinkNonzero(entry);
-          columnData[column1].numNonzeros--;
-          TU_CALL( processNonzero(tu, rowHashtable, -entryToHash[entry->column] * entry->value, row, &rowData[row], queue,
-            &queueEnd, queueMemory, true) );
         }
       }
     }
