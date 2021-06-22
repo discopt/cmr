@@ -12,7 +12,8 @@ typedef enum
   FILEFORMAT_UNDEFINED = 0,
   FILEFORMAT_MATRIX_DENSE = 1,
   FILEFORMAT_MATRIX_SPARSE = 2,
-  FILEFORMAT_GRAPH_EDGELIST = 3
+  FILEFORMAT_GRAPH_EDGELIST = 3,
+  FILEFORMAT_GRAPH_DOT = 4,
 } FileFormat;
 
 int printUsage(const char* program)
@@ -104,6 +105,38 @@ TU_ERROR matrixToGraph(const char* instanceFileName, FileFormat inputFormat, Fil
         }
         printf("%d %d c%ld\n", u, v, column+1);
       }
+    }
+    else if (outputFormat == FILEFORMAT_GRAPH_DOT)
+    {
+      char buffer[16];
+      printf("%s G {\n", binary ? "graph" : "digraph");
+      for (size_t row = 0; row < transpose->numColumns; ++row)
+      {
+        TU_GRAPH_EDGE e = forestEdges[row];
+        TU_GRAPH_NODE u = TUgraphEdgeU(graph, e);
+        TU_GRAPH_NODE v = TUgraphEdgeV(graph, e);
+        if (edgesReversed && edgesReversed[e])
+        {
+          TU_GRAPH_NODE temp = u;
+          u = v;
+          v = temp;
+        }
+        printf(" v_%d -%c v_%d [label=\"%s\",style=bold,color=red];\n", u, binary ? '-' : '>', v, TUelementString(TUrowToElement(row), buffer));
+      }
+      for (size_t column = 0; column < transpose->numRows; ++column)
+      {
+        TU_GRAPH_EDGE e = coforestEdges[column];
+        TU_GRAPH_NODE u = TUgraphEdgeU(graph, e);
+        TU_GRAPH_NODE v = TUgraphEdgeV(graph, e);
+        if (edgesReversed && edgesReversed[e])
+        {
+          TU_GRAPH_NODE temp = u;
+          u = v;
+          v = temp;
+        }
+        printf(" v_%d -%c v_%d [label=\"%s\"];\n", u, binary ? '-' : '>', v, TUelementString(TUcolumnToElement(column), buffer));
+      }
+      puts("}");
     }
 
     if (edgesReversed)
@@ -260,6 +293,8 @@ int main(int argc, char** argv)
         outputFormat = FILEFORMAT_MATRIX_SPARSE;
       else if (!strcmp(argv[a+1], "edgelist"))
         outputFormat = FILEFORMAT_GRAPH_EDGELIST;
+      else if (!strcmp(argv[a+1], "dot"))
+        outputFormat = FILEFORMAT_GRAPH_DOT;
       else
       {
         printf("Error: unknown output format <%s>.\n\n", argv[a+1]);
