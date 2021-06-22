@@ -28,7 +28,7 @@ TU_ERROR TUfindSeriesParallel(
   TU_SERIES_PARALLEL* operations,   /**< Array for storing the operations. Must be sufficiently large. */
   size_t* pnumOperations,           /**< Pointer for storing the number of operations. */  
   TU_SUBMAT** premainingSubmatrix,  /**< Pointer for storing the submatrix that remains. */
-  TU_SUBMAT** pwheelSubmatrix,      /**< Pointer for storing a submatrix representing a wheel. */
+//   TU_SUBMAT** pwheelSubmatrix,      /**< Pointer for storing a submatrix representing a wheel. */
   bool isSorted                     /**< Whether the entries of \p matrix are sorted. */
 );
 

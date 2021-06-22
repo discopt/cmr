@@ -55,10 +55,10 @@ TU_ERROR matrixSeriesParallel2Sums(const char* instanceFileName, FileFormat inpu
   size_t numRemoved = 0;
   TU_CALL( TUallocBlockArray(tu, &operations, matrix->numRows + matrix->numColumns) );
   TU_SUBMAT* remainingSubmatrix = NULL;
-  TU_SUBMAT* wheelSubmatrix = NULL;
+//   TU_SUBMAT* wheelSubmatrix = NULL;
 
   startTime = clock();
-  TU_CALL( TUfindSeriesParallel(tu, matrix, operations, &numRemoved, &remainingSubmatrix, &wheelSubmatrix, true) );
+  TU_CALL( TUfindSeriesParallel(tu, matrix, operations, &numRemoved, &remainingSubmatrix, /*&wheelSubmatrix, */true) );
   endTime = clock();
 
   fprintf(stderr, "Removed %ld series/parallel/zero elements: %fs\n", numRemoved,
@@ -75,7 +75,7 @@ TU_ERROR matrixSeriesParallel2Sums(const char* instanceFileName, FileFormat inpu
   /* Cleanup. */
 
   TU_CALL( TUchrmatFree(tu, &remainingMatrix) );
-  TU_CALL( TUsubmatFree(tu, &wheelSubmatrix) );
+//   TU_CALL( TUsubmatFree(tu, &wheelSubmatrix) );
   TU_CALL( TUsubmatFree(tu, &remainingSubmatrix) );
   TU_CALL( TUfreeBlockArray(tu, &operations) );
   TU_CALL( TUchrmatFree(tu, &matrix) );

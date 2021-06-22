@@ -309,14 +309,14 @@ TU_ERROR processNonzero(TU* tu, TU_LISTHASHTABLE* hashtable, long long hashChang
 }
 
 TU_ERROR TUfindSeriesParallel(TU* tu, TU_CHRMAT* matrix, TU_SERIES_PARALLEL* operations, size_t* pnumOperations,
-  TU_SUBMAT** premainingSubmatrix, TU_SUBMAT** pwheelSubmatrix, bool isSorted)
+  TU_SUBMAT** premainingSubmatrix, /*TU_SUBMAT** pwheelSubmatrix, */bool isSorted)
 {
   assert(tu);
   assert(matrix);
   assert(operations);
   assert(pnumOperations);
   assert(!premainingSubmatrix || !*premainingSubmatrix);
-  assert(!pwheelSubmatrix || !*pwheelSubmatrix);
+//   assert(!pwheelSubmatrix || !*pwheelSubmatrix);
 
   TUdbgMsg(0, "Searching for series/parallel elements in a %dx%d matrix with %d nonzeros.\n", matrix->numRows,
     matrix->numColumns, matrix->numNonzeros);
@@ -392,7 +392,7 @@ TU_ERROR TUfindSeriesParallel(TU* tu, TU_CHRMAT* matrix, TU_SERIES_PARALLEL* ope
   TU_CALL( TUlisthashtableCreate(tu, &columnHashtable, nextPower2(numColumns), numColumns) );
   TU_CALL( initialScan(tu, columnHashtable, columnData, numColumns, queue, &queueEnd, false) );
 
-  if (queueEnd > queueStart || (pwheelSubmatrix && numEntries))
+  if (queueEnd > queueStart/* || (pwheelSubmatrix && numEntries)*/)
   {
     /* Create nonzeros of matrix. */
     Nonzero* nonzeros = NULL;
