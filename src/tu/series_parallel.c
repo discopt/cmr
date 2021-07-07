@@ -1,4 +1,4 @@
-#define TU_DEBUG /* Uncomment to debug this file. */
+//#define TU_DEBUG /* Uncomment to debug this file. */
 // #define TU_DEBUG_MATRIX_LIST /* Uncomment to print linked list of matrix in each iteration. */
 
 #include <tu/series_parallel.h>
@@ -36,6 +36,37 @@ typedef struct _Nonzero
   size_t column;
   char value;
 } Nonzero;
+
+static char seriesParallelStringBuffer[32];
+
+char* TUspString(TU_SP operation, char* buffer)
+{
+  if (!buffer)
+    buffer = seriesParallelStringBuffer;
+
+  if (operation.element > 0)
+  {
+    if (operation.mate > 0)
+      sprintf(buffer, "c%d copy of c%d", operation.element, operation.mate);
+    else if (operation.mate < 0)
+      sprintf(buffer, "c%d unit at r%d", operation.element, -operation.mate);
+    else
+      sprintf(buffer, "c%d zero", operation.element);
+    return buffer;
+  }
+  else if (operation.element < 0)
+  {
+    if (operation.mate > 0)
+      sprintf(buffer, "r%d unit at c%d", -operation.element, operation.mate);
+    else if (operation.mate < 0)
+      sprintf(buffer, "r%d copy of r%d", -operation.element, -operation.mate);
+    else
+      sprintf(buffer, "r%d zero", -operation.element);
+    return buffer;
+  }
+  else
+    return "<invalid series-parallel operations>";
+}
 
 static inline
 void unlinkNonzero(Nonzero* nonzero)
@@ -318,7 +349,7 @@ TU_ERROR processNonzero(TU* tu, TU_LISTHASHTABLE* hashtable, long long hashChang
   return TU_OKAY;
 }
 
-TU_ERROR TUfindSeriesParallel(TU* tu, TU_CHRMAT* matrix, TU_SERIES_PARALLEL* operations, size_t* pnumOperations,
+TU_ERROR TUfindSeriesParallel(TU* tu, TU_CHRMAT* matrix, TU_SP* operations, size_t* pnumOperations,
   TU_SUBMAT** premainingSubmatrix, /*TU_SUBMAT** pwheelSubmatrix, */bool isSorted)
 {
   assert(tu);
@@ -527,6 +558,8 @@ TU_ERROR TUfindSeriesParallel(TU* tu, TU_CHRMAT* matrix, TU_SERIES_PARALLEL* ope
               &columnData[column], queue, &queueEnd, queueMemory, false) );
             operations[*pnumOperations].mate = TUcolumnToElement(column);
           }
+          else
+            operations[*pnumOperations].mate = 0;
           operations[*pnumOperations].element = element;
           (*pnumOperations)++;
           numRowOperations++;
@@ -591,6 +624,8 @@ TU_ERROR TUfindSeriesParallel(TU* tu, TU_CHRMAT* matrix, TU_SERIES_PARALLEL* ope
               &rowData[row], queue, &queueEnd, queueMemory, true) );
             operations[*pnumOperations].mate = TUrowToElement(row);
           }
+          else
+            operations[*pnumOperations].mate = 0;
           operations[*pnumOperations].element = element;
           (*pnumOperations)++;
           numColumnOperations++;

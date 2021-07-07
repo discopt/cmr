@@ -51,7 +51,7 @@ TU_ERROR matrixSeriesParallel2Sums(const char* instanceFileName, FileFormat inpu
 
   /* Run the search. */
 
-  TU_SERIES_PARALLEL* operations = NULL;
+  TU_SP* operations = NULL;
   size_t numRemoved = 0;
   TU_CALL( TUallocBlockArray(tu, &operations, matrix->numRows + matrix->numColumns) );
   TU_SUBMAT* remainingSubmatrix = NULL;
