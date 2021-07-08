@@ -220,51 +220,60 @@ TU_ERROR initListMatrix(
     TU_CALL( TUsort(tu, matrix->numNonzeros, nonzeros, sizeof(Nonzero), compareNonzeros) );
   
   /* Initialize linked list for rows. */
-  if (matrix->numRows > 0)
-  {
-    anchor->below = &rowData[0].nonzeros;
-    rowData[0].nonzeros.above = anchor;
-    anchor->above = &rowData[matrix->numRows-1].nonzeros;
-    rowData[matrix->numRows-1].nonzeros.below = anchor;
-  }
-  else
-  {
-    anchor->below = anchor;
-    anchor->above = anchor;
-  }
   for (size_t row = 0; row < matrix->numRows; ++row)
   {
     rowData[row].nonzeros.left = &rowData[row].nonzeros;
     rowData[row].nonzeros.row = row;
     rowData[row].nonzeros.column = SIZE_MAX;
-    if (row > 0)
-      rowData[row].nonzeros.above = &rowData[row-1].nonzeros;
-    if (row + 1 < matrix->numRows)
-      rowData[row].nonzeros.below = &rowData[row+1].nonzeros;
+  }
+  if (anchor)
+  {
+    if (matrix->numRows > 0)
+    {
+      anchor->below = &rowData[0].nonzeros;
+      rowData[0].nonzeros.above = anchor;
+      anchor->above = &rowData[matrix->numRows-1].nonzeros;
+      rowData[matrix->numRows-1].nonzeros.below = anchor;
+      for (size_t row = 1; row < matrix->numRows; ++row)
+      {
+        rowData[row].nonzeros.above = &rowData[row-1].nonzeros;
+        rowData[row-1].nonzeros.below = &rowData[row].nonzeros;
+      }
+    }
+    else
+    {
+      anchor->below = anchor;
+      anchor->above = anchor;
+    }
   }
 
   /* Initialize linked list for columns. */
-  if (matrix->numColumns > 0)
-  {
-    anchor->right = &columnData[0].nonzeros;
-    columnData[0].nonzeros.left = anchor;
-    anchor->left = &columnData[matrix->numColumns-1].nonzeros;
-    columnData[matrix->numColumns-1].nonzeros.right = anchor;
-  }
-  else
-  {
-    anchor->right = anchor;
-    anchor->left = anchor;
-  }
   for (size_t column = 0; column < matrix->numColumns; ++column)
   {
     columnData[column].nonzeros.above = &columnData[column].nonzeros;
     columnData[column].nonzeros.column = column;
     columnData[column].nonzeros.row = SIZE_MAX;
-    if (column > 0)
-      columnData[column].nonzeros.left = &columnData[column-1].nonzeros;
-    if (column + 1 < matrix->numColumns)
-      columnData[column].nonzeros.right = &columnData[column+1].nonzeros;
+  }
+  
+  if (anchor)
+  {
+    if (matrix->numColumns > 0)
+    {
+      anchor->right = &columnData[0].nonzeros;
+      columnData[0].nonzeros.left = anchor;
+      anchor->left = &columnData[matrix->numColumns-1].nonzeros;
+      columnData[matrix->numColumns-1].nonzeros.right = anchor;
+      for (size_t column = 1; column < matrix->numColumns; ++column)
+      {
+        columnData[column].nonzeros.left = &columnData[column-1].nonzeros;
+        columnData[column-1].nonzeros.right = &columnData[column].nonzeros;
+      }
+    }
+    else
+    {
+      anchor->right = anchor;
+      anchor->left = anchor;
+    }
   }
 
   /* Link the lists of nonzeros. */
@@ -736,15 +745,16 @@ TU_ERROR TUfindSeriesParallel(TU* tu, TU_CHRMAT* matrix, TU_SP* operations, size
     TU_CALL( TUallocStackArray(tu, &nonzeros, matrix->numNonzeros) );
 
     /* Dummy in linked lists for row/column data. */
-    Nonzero anchor;
-    anchor.row = SIZE_MAX;
-    anchor.column = SIZE_MAX;
-    TU_CALL( initListMatrix(tu, matrix, &anchor, nonzeros, rowData, columnData, isSorted) );
+    Nonzero the_anchor;
+    the_anchor.row = SIZE_MAX;
+    the_anchor.column = SIZE_MAX;
+    Nonzero* anchor = pwheelSubmatrix ? &the_anchor : NULL;
+    TU_CALL( initListMatrix(tu, matrix, anchor, nonzeros, rowData, columnData, isSorted) );
 
     /* We now start main loop. */
     size_t numRowOperations = 0;
     size_t numColumnOperations = 0;
-    TU_CALL( reduceListMatrix(tu, &anchor, rowData, columnData, rowHashtable, columnHashtable, entryToHash, queue,
+    TU_CALL( reduceListMatrix(tu, anchor, rowData, columnData, rowHashtable, columnHashtable, entryToHash, queue,
       &queueStart, &queueEnd, queueMemory, operations, pnumOperations, &numRowOperations, &numColumnOperations) );
 
     /* Extract remaining submatrix. */
