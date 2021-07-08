@@ -1,6 +1,8 @@
 //#define TU_DEBUG /* Uncomment to debug this file. */
 // #define TU_DEBUG_MATRIX_LIST /* Uncomment to print linked list of matrix in each iteration. */
 
+// TODO: Try to not fill the hashtable in initialScan but just add all elements to the queue.
+
 #include <tu/series_parallel.h>
 
 #include "env_internal.h"
@@ -119,7 +121,7 @@ typedef struct
 {
   Nonzero nonzeros;                   /**< Dummy nonzero in that row/column. */
   size_t numNonzeros;                 /**< Number of nonzeros in that row/column. */
-  long long hashValue;                /**< Hash value of this element. */               
+  long long hashValue;                /**< Hash value of this element. */
   TU_LISTHASHTABLE_ENTRY hashEntry;   /**< Entry in row or column hashtable. */
   bool inQueue;                       /**< Whether this element is in the queue. */
 } ElementData;
@@ -156,7 +158,7 @@ TU_ERROR initialScan(
 )
 {
   assert(tu);
-  assert(hashtable);
+  assert(hashtable || sizeData == 0);
 
   for (size_t i = 0; i < sizeData; ++i)
   {
@@ -263,7 +265,7 @@ TU_ERROR initListMatrix(
 
 /**
  * \brief Checks whether the row/column at \p index is a (negated) copy of a row/column stored in the hashtable.
- * 
+ *
  * Compares the actual vectors by traversing the linked-list representation.
  */
 
@@ -279,7 +281,7 @@ size_t findCopy(
   TUdbgMsg(4, "Processing %s %d with a collision (hash value %ld).\n", isRow ? "row" : "column", index,
     data[index].hashOrType);
   for (TU_LISTHASHTABLE_ENTRY entry = TUlisthashtableFindFirst(hashtable, hash);
-    entry != SIZE_MAX; entry = TUlisthashtableFindNext(hashtable, hash, entry))          
+    entry != SIZE_MAX; entry = TUlisthashtableFindNext(hashtable, hash, entry))
   {
     size_t collisionIndex = TUlisthashtableValue(hashtable, entry);
     TUdbgMsg(8, "%s %d has the same hash value. Comparing...\n", isRow ? "Row" : "Column", j);
@@ -359,7 +361,7 @@ TU_ERROR processNonzero(
   assert(hashtable);
   assert(queue);
 
-  indexData->numNonzeros--; 
+  indexData->numNonzeros--;
   long long newHash = projectSignedHash(indexData->hashValue + hashChange);
   TUdbgMsg(4, "Processing nonzero. Old hash is %ld, change is %ld, new hash is %ld.\n", indexData->hashOrType, hashChange,
     newHash);
@@ -384,40 +386,83 @@ TU_ERROR processNonzero(
 }
 
 TU_ERROR TUfindSeriesParallel(TU* tu, TU_CHRMAT* matrix, TU_SP* operations, size_t* pnumOperations,
-  TU_SUBMAT** premainingSubmatrix, /*TU_SUBMAT** pwheelSubmatrix, */bool isSorted)
+  TU_SUBMAT** premainingSubmatrix, TU_SUBMAT** pwheelSubmatrix, TU_ELEMENT* separationElements,
+  size_t* pnumSeparationElements, bool isSorted)
 {
   assert(tu);
   assert(matrix);
-  assert(operations);
+  assert(operations || (matrix->numRows == 0 && matrix->numColumns == 0));
   assert(pnumOperations);
   assert(!premainingSubmatrix || !*premainingSubmatrix);
-//   assert(!pwheelSubmatrix || !*pwheelSubmatrix);
+  assert(!pwheelSubmatrix || !*pwheelSubmatrix);
+  assert(!separationElements || pnumSeparationElements);
+  assert(!separationElements || pwheelSubmatrix);
 
   TUdbgMsg(0, "Searching for series/parallel elements in a %dx%d matrix with %d nonzeros.\n", matrix->numRows,
     matrix->numColumns, matrix->numNonzeros);
 
   size_t numRows = matrix->numRows;
   size_t numColumns = matrix->numColumns;
+
+  /* Dummy in linked lists for row/column data. */
+  Nonzero anchor;
+
+  /* Initialize row data. */
   ElementData* rowData = NULL;
-  ElementData* columnData = NULL;
   TU_CALL( TUallocStackArray(tu, &rowData, numRows) );
-  for (size_t row = 0; row < numRows; ++row)
+  if (numRows > 0)
   {
-    rowData[row].numNonzeros = 0;
-    rowData[row].hashValue = 0;
-    rowData[row].hashEntry = SIZE_MAX;
-    rowData[row].inQueue = false;
+    anchor.below = &rowData[0].nonzeros;
+    rowData[0].nonzeros.above = &anchor;
+    anchor.above = &rowData[numRows-1].nonzeros;
+    rowData[numRows-1].nonzeros.below = &anchor;
+    for (size_t row = 0; row < numRows; ++row)
+    {
+      rowData[row].numNonzeros = 0;
+      rowData[row].hashValue = 0;
+      rowData[row].hashEntry = SIZE_MAX;
+      rowData[row].inQueue = false;
+      if (row > 0)
+        rowData[row].nonzeros.above = &rowData[row-1].nonzeros;
+      if (row + 1 < numRows)
+        rowData[row].nonzeros.below = &rowData[row+1].nonzeros;
+    }
   }
-  TU_CALL( TUallocStackArray(tu, &columnData, numColumns) );
-  for (size_t column = 0; column < numColumns; ++column)
+  else
   {
-    columnData[column].numNonzeros = 0;
-    columnData[column].hashValue = 0;
-    columnData[column].hashEntry = SIZE_MAX;
-    columnData[column].inQueue = false;
+    anchor.above = &anchor;
+    anchor.below = &anchor;
   }
 
-  /* We prepare the hashing. Every coordinate has its own value. These are added up for all nonzero entries. */
+  /* Initialize column data. */
+  ElementData* columnData = NULL;
+  TU_CALL( TUallocStackArray(tu, &columnData, numColumns) );
+  if (numColumns > 0)
+  {
+    anchor.right = &columnData[0].nonzeros;
+    columnData[0].nonzeros.left = &anchor;
+    anchor.left = &columnData[numColumns-1].nonzeros;
+    columnData[numColumns-1].nonzeros.right = &anchor;
+    for (size_t column = 0; column < numColumns; ++column)
+    {
+      columnData[column].numNonzeros = 0;
+      columnData[column].hashValue = 0;
+      columnData[column].hashEntry = SIZE_MAX;
+      columnData[column].inQueue = false;
+      if (column > 0)
+        columnData[column].nonzeros.left = &columnData[column-1].nonzeros;
+      if (column + 1 < numColumns)
+        columnData[column].nonzeros.right = &columnData[column+1].nonzeros;
+    }
+  }
+  else
+  {
+    anchor.left = &anchor;
+    anchor.right = &anchor;
+  }
+
+  /* We prepare the hashing. Every coordinate has its own value. These are added up for all nonzero entries and
+   * projected into the domain [-RANGE_SIGNED_HASH, +RANGE_SIGNED_HASH]. */
   long long* entryToHash = NULL;
   size_t numEntries = numRows > numColumns ? numRows : numColumns;
   TU_CALL( TUallocStackArray(tu, &entryToHash, numEntries) );
@@ -459,15 +504,20 @@ TU_ERROR TUfindSeriesParallel(TU* tu, TU_CHRMAT* matrix, TU_SP* operations, size
   size_t queueMemory = numRows + numColumns;
   TU_CALL( TUallocStackArray(tu, &queue, queueMemory) );
 
+  /* Initialize the hashtables. */
   TU_LISTHASHTABLE* rowHashtable = NULL;
-  TU_CALL( TUlisthashtableCreate(tu, &rowHashtable, nextPower2(numRows), numRows) );
-  TU_CALL( initialScan(tu, rowHashtable, rowData, numRows, queue, &queueEnd, true) );
-
+  if (numRows > 0)
+    TU_CALL( TUlisthashtableCreate(tu, &rowHashtable, nextPower2(numRows), numRows) );
   TU_LISTHASHTABLE* columnHashtable = NULL;
-  TU_CALL( TUlisthashtableCreate(tu, &columnHashtable, nextPower2(numColumns), numColumns) );
+  if (numColumns > 0)
+    TU_CALL( TUlisthashtableCreate(tu, &columnHashtable, nextPower2(numColumns), numColumns) );
+
+  /* Initially scan rows/columns and add them either to the queue or to the hashtable. */
+  TU_CALL( initialScan(tu, rowHashtable, rowData, numRows, queue, &queueEnd, true) );
   TU_CALL( initialScan(tu, columnHashtable, columnData, numColumns, queue, &queueEnd, false) );
 
-  if (queueEnd > queueStart/* || (pwheelSubmatrix && numEntries)*/)
+  *pnumOperations = 0;
+  if (queueEnd > queueStart || (pwheelSubmatrix && numEntries))
   {
     /* Create nonzeros of matrix. */
     Nonzero* nonzeros = NULL;
@@ -476,7 +526,6 @@ TU_ERROR TUfindSeriesParallel(TU* tu, TU_CHRMAT* matrix, TU_SP* operations, size
     TU_CALL( initListMatrix(tu, matrix, nonzeros, rowData, columnData, isSorted) );
 
     /* We now start main loop. */
-    *pnumOperations = 0;
     size_t numRowOperations = 0;
     size_t numColumnOperations = 0;
     while (queueEnd > queueStart)
@@ -530,7 +579,7 @@ TU_ERROR TUfindSeriesParallel(TU* tu, TU_CHRMAT* matrix, TU_SP* operations, size
 
       TU_ELEMENT element = queue[queueStart % queueMemory];
       ++queueStart;
-      
+
       TUdbgMsg(2, "Top element is %s %d with %d nonzeros.\n", TUelementIsRow(element) ? "row" : "column",
         TUelementIsRow(element) ? TUelementToRowIndex(element) : TUelementToColumnIndex(element),
         TUelementIsRow(element) ? rowData[TUelementToRowIndex(element)].numNonzeros :
@@ -545,7 +594,7 @@ TU_ERROR TUfindSeriesParallel(TU* tu, TU_CHRMAT* matrix, TU_SP* operations, size
         {
           rowData[row1].inQueue = false;
           size_t row2 = findCopy(rowData, rowHashtable, row1, true);
-          
+
           if (row2 == SIZE_MAX)
           {
             TUdbgMsg(6, "No parallel row found. Inserting row %d.\n", row1);
@@ -750,7 +799,7 @@ TU_ERROR TUfindSeriesParallel(TU* tu, TU_CHRMAT* matrix, TU_SP* operations, size
 //            break;
 //        }
 //      }
-//      
+//
 //      TUdbgMsg(2, "Block has grown to %dx2.\n", numBlockRows);
 //
 //      /* Grow all-1's matrix to the right. */
@@ -881,7 +930,7 @@ TU_ERROR TUfindSeriesParallel(TU* tu, TU_CHRMAT* matrix, TU_SP* operations, size
 //            columnData[column].numNonzeros = row;
 //            if (columnData[column].hashOrType == OTHER)
 //            {
-//              
+//
 //            }
 //            else if (!columnData[column].inQueue)
 //            {

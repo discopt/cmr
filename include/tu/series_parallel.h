@@ -10,7 +10,7 @@ extern "C" {
 
 /**
  * \brief Represents a series-parallel operation
- */  
+ */
 
 typedef struct
 {
@@ -104,20 +104,35 @@ bool TUspIsValid(
 }
 
 /**
- * \brief Finds all series or parallel elements of the ternary \p matrix.
+ * \brief Finds all series-parallel reductions for the ternary \p matrix.
+ *
+ * If \p premainingSubmatrix is not \c NULL, then the SP-reduced submatrix is stored.
+ *
+ * If \p pwheelSubmatrix is not \c NULL and \p matrix is not series-parallel, then a wheel submatrix is stored.
+ * This may cause overhead that is linear in the number of rows + number of columns + number
+ *
+ * If \p separationElements is not \c NULL, also \p pwheelSubmatrix must not be \c NULL.
+ * If during the search for the wheel submatrix a 2-separation (not belonging to a series-parallel reduction) is found,
+ * then this is stored and the algorithm terminates.
  *
  * If \p isSorted is \c true, then the running time is linear in the number of rows + number of columns + number of
- * nonzeros of \p matrix.
+ * nonzeros of \p matrix up to hashtable collisions.
+ * Otherwise, extra overhead is caused by sorting all nonzeros.
  */
 
 TU_EXPORT
 TU_ERROR TUfindSeriesParallel(
   TU* tu,                           /**< \ref TU environment. */
   TU_CHRMAT* matrix,                /**< Sparse char matrix. */
-  TU_SP* operations,                /**< Array for storing the operations. Must be sufficiently large. */
-  size_t* pnumOperations,           /**< Pointer for storing the number of operations. */  
-  TU_SUBMAT** premainingSubmatrix,  /**< Pointer for storing the submatrix that remains. */
-//   TU_SUBMAT** pwheelSubmatrix,      /**< Pointer for storing a submatrix representing a wheel. */
+  TU_SP* operations,                /**< Array for storing the SP-reductions. Must be sufficiently large, e.g., number
+                                     **< of rows + number of columns. */
+  size_t* pnumOperations,           /**< Pointer for storing the number of SP-reductions. */
+  TU_SUBMAT** premainingSubmatrix,  /**< Pointer for storing the SP-reduced submatrix (may be \c NULL). */
+  TU_SUBMAT** pwheelSubmatrix,      /**< Pointer for storing a submatrix representing a wheel (may be \c NULL). */
+  TU_ELEMENT* separationElements,   /**< Array for storing elements of one part of a 2-separation. If not \c NULL, it
+                                     **< must have sufficient capacity. */
+  size_t* pnumSeparationElements,   /**< Pointer for storing the number of elements stored in \p separationElements
+                                     **< (may be \c NULL). */
   bool isSorted                     /**< Whether the entries of \p matrix are sorted. */
 );
 

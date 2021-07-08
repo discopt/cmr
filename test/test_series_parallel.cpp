@@ -3,6 +3,25 @@
 #include "common.h"
 #include <tu/series_parallel.h>
 
+TEST(SeriesParallel, Empty)
+{
+  TU* tu = NULL;
+  TUcreateEnvironment(&tu);
+
+  TU_CHRMAT* mat0x0 = NULL;
+  ASSERT_TU_CALL( stringToCharMatrix(tu, &mat0x0, "0 0 "
+  ) );
+
+  TU_SP operations[1];
+  size_t numOperations;
+
+  ASSERT_TU_CALL( TUfindSeriesParallel(tu, mat0x0, operations, &numOperations, NULL, NULL, NULL, NULL, true) );
+  ASSERT_EQ( numOperations, 0 );
+
+  TUchrmatFree(tu, &mat0x0);
+  TUfreeEnvironment(&tu);
+}
+
 TEST(SeriesParallel, Binary)
 {
   TU* tu = NULL;
@@ -35,7 +54,7 @@ TEST(SeriesParallel, Binary)
   TU_SP operations[40];
   size_t numOperations;
 
-  ASSERT_TU_CALL( TUfindSeriesParallel(tu, matrix, operations, &numOperations, NULL, /*NULL, */true) );
+  ASSERT_TU_CALL( TUfindSeriesParallel(tu, matrix, operations, &numOperations, NULL, NULL, NULL, NULL, true) );
   ASSERT_EQ( numOperations, 20 );
   ASSERT_EQ( operations[0].element, -6);  ASSERT_EQ( operations[0].mate, -2);
   ASSERT_EQ( operations[1].element, -7);  ASSERT_EQ( operations[1].mate, 5);
