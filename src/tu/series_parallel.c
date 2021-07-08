@@ -385,6 +385,219 @@ TU_ERROR processNonzero(
   return TU_OKAY;
 }
 
+/**
+ * \brief Carry out the actual reduction algorithm after all data structures are initialized.
+ */
+
+static
+TU_ERROR
+reduceListMatrix(
+  TU* tu,                             /**< \ref TU environment. */
+  ElementData* rowData,               /**< Row data. */
+  ElementData* columnData,            /**< Column data. */
+  TU_LISTHASHTABLE* rowHashtable,     /**< Row hashtable. */
+  TU_LISTHASHTABLE* columnHashtable,  /**< Column hashtable. */
+  long long* entryToHash,             /**< Pre-computed hash values of vector entries. */
+  TU_ELEMENT* queue,                  /**< Queue. */
+  size_t* pqueueStart,                /**< Pointer to start of queue. */
+  size_t* pqueueEnd,                  /**< Pointer to end of queue. */
+  size_t queueMemory,                 /**< Memory allocated for queue. */
+  TU_SP* operations,                  /**< Array for storing the SP-reductions. Must be sufficiently large, e.g., number
+                                       **< of rows + number of columns. */
+  size_t* pnumOperations,             /**< Pointer for storing the number of SP-reductions. */
+  size_t* pnumRowOperations,          /**< Pointer for storing the number of row operations (may be \c NULL). */
+  size_t* pnumColumnOperations        /**< Pointer for storing the number of column operations (may be \c NULL). */
+)
+{
+  while (*pqueueEnd > *pqueueStart)
+  {
+#if defined(TU_DEBUG_MATRIX_LIST)
+    TUdbgMsg(0, "Row-wise matrix via list:\n");
+    for (size_t row = 0; row < matrix->numRows; ++row)
+    {
+      for (Nonzero* nz = rowData[row].nonzeros.right; nz != &rowData[row].nonzeros; nz = nz->right)
+      {
+        TUdbgMsg(2, "Nonzero at (%d,%d); left is (%d,%d), right is (%d,%d), above is (%d,%d), below is (%d,%d)\n",
+          nz->row, nz->column, nz->left->row, nz->left->column, nz->right->row, nz->right->column, nz->above->row,
+          nz->above->column, nz->below->row, nz->below->column);
+      }
+    }
+#endif /* TU_DEBUG_MATRIX_LIST */
+
+#if defined(TU_DEBUG)
+    TUdbgMsg(0, "\n");
+    TUdbgMsg(4, "Status:\n");
+    for (size_t row = 0; row < matrix->numRows; ++row)
+    {
+      TUdbgMsg(6, "Row %d: %d nonzeros, hashed = %s, hash = %ld", row, rowData[row].numNonzeros,
+        rowData[row].hashEntry == SIZE_MAX ? "NO" : "YES", rowData[row].hashOrType);
+      if (rowData[row].hashEntry != SIZE_MAX)
+        TUdbgMsg(0, ", hashtable entry: %d with hash=%d, value=%d", rowData[row].hashEntry,
+          TUlisthashtableHash(rowHashtable, rowData[row].hashEntry),
+          TUlisthashtableValue(rowHashtable, rowData[row].hashEntry));
+      TUdbgMsg(0, "\n");
+    }
+    for (size_t column = 0; column < matrix->numColumns; ++column)
+    {
+      TUdbgMsg(6, "Column %d: %d nonzeros, hashed = %s, hash = %ld", column, columnData[column].numNonzeros,
+        columnData[column].hashEntry == SIZE_MAX ? "NO" : "YES", columnData[column].hashOrType);
+      if (columnData[column].hashEntry != SIZE_MAX)
+        TUdbgMsg(0, ", hashtable entry: %d with hash=%d, value=%d", columnData[column].hashEntry,
+          TUlisthashtableHash(columnHashtable, columnData[column].hashEntry),
+          TUlisthashtableValue(columnHashtable, columnData[column].hashEntry));
+      TUdbgMsg(0, "\n");
+    }
+    for (size_t q = queueStart; q < queueEnd; ++q)
+    {
+      TU_ELEMENT e = queue[q % queueMemory];
+      TUdbgMsg(6, "Queue #%d @ %d: %s %d\n", q, q % queueMemory,
+        TUelementIsRow(e) ? "row" : "column", TUelementIsRow(e) ? TUelementToRowIndex(e) : TUelementToColumnIndex(e));
+    }
+    TUdbgMsg(0, "\n");
+#endif /* TU_DEBUG */
+
+    TU_ELEMENT element = queue[(*pqueueStart) % queueMemory];
+    ++(*pqueueStart);
+
+    TUdbgMsg(2, "Top element is %s %d with %d nonzeros.\n", TUelementIsRow(element) ? "row" : "column",
+      TUelementIsRow(element) ? TUelementToRowIndex(element) : TUelementToColumnIndex(element),
+      TUelementIsRow(element) ? rowData[TUelementToRowIndex(element)].numNonzeros :
+      columnData[TUelementToColumnIndex(element)].numNonzeros);
+
+    if (TUelementIsRow(element))
+    {
+      /* We consider a row. */
+
+      size_t row1 = TUelementToRowIndex(element);
+      if (rowData[row1].numNonzeros > 1)
+      {
+        rowData[row1].inQueue = false;
+        size_t row2 = findCopy(rowData, rowHashtable, row1, true);
+
+        if (row2 == SIZE_MAX)
+        {
+          TUdbgMsg(6, "No parallel row found. Inserting row %d.\n", row1);
+          TU_CALL( TUlisthashtableInsert(tu, rowHashtable, llabs(rowData[row1].hashValue), row1, &rowData[row1].hashEntry) );
+        }
+        else
+        {
+          TUdbgMsg(6, "Row %d is parallel.\n", row2);
+
+          /* We found a parallel row. */
+          operations[*pnumOperations].element = TUrowToElement(row1);
+          operations[*pnumOperations].mate = TUrowToElement(row2);
+          (*pnumOperations)++;
+          (*pnumRowOperations)++;
+
+          for (Nonzero* entry = rowData[row1].nonzeros.right; entry != &rowData[row1].nonzeros;
+            entry = entry->right)
+          {
+            TUdbgMsg(8, "Processing nonzero at column %d.\n", entry->column);
+
+            unlinkNonzero(entry);
+            TU_CALL( processNonzero(tu, columnHashtable, -entryToHash[entry->row] * entry->value, entry->column,
+              &columnData[entry->column], queue, pqueueEnd, queueMemory, false) );
+          }
+          rowData[row1].numNonzeros = 0;
+        }
+      }
+      else
+      {
+        /* Zero or unit row vector. */
+        TUdbgMsg(4, "Processing %s row %d.\n", rowData[row1].numNonzeros == 0 ? "zero" : "unit", row1);
+
+        rowData[row1].inQueue = false;
+        if (rowData[row1].numNonzeros)
+        {
+          Nonzero* entry = rowData[row1].nonzeros.right;
+          size_t column = entry->column;
+
+          TUdbgMsg(4, "Processing unit row %d with 1 in column %d.\n", row1, column);
+
+          unlinkNonzero(entry);
+          rowData[row1].numNonzeros--;
+          TU_CALL( processNonzero(tu, columnHashtable, -entryToHash[entry->row] * entry->value, column,
+            &columnData[column], queue, pqueueEnd, queueMemory, false) );
+          operations[*pnumOperations].mate = TUcolumnToElement(column);
+        }
+        else
+          operations[*pnumOperations].mate = 0;
+        operations[*pnumOperations].element = element;
+        (*pnumOperations)++;
+        (*pnumRowOperations)++;
+      }
+    }
+    else
+    {
+      /* We consider a column. */
+
+      size_t column1 = TUelementToColumnIndex(element);
+      if (columnData[column1].numNonzeros > 1)
+      {
+        columnData[column1].inQueue = false;
+        size_t column2 = findCopy(columnData, columnHashtable, column1, false);
+
+        if (column2 == SIZE_MAX)
+        {
+          TUdbgMsg(6, "No parallel column found. Inserting column %d.\n", column1);
+          TU_CALL( TUlisthashtableInsert(tu, columnHashtable, llabs(columnData[column1].hashValue), column1,
+            &columnData[column1].hashEntry) );
+        }
+        else
+        {
+          TUdbgMsg(6, "Column %d is parallel.\n", column2);
+
+          /* We found a parallel column. */
+          operations[*pnumOperations].element = TUcolumnToElement(column1);
+          operations[*pnumOperations].mate = TUcolumnToElement(column2);
+          (*pnumOperations)++;
+          (*pnumColumnOperations)++;
+
+          for (Nonzero* entry = columnData[column1].nonzeros.below; entry != &columnData[column1].nonzeros;
+            entry = entry->below)
+          {
+            TUdbgMsg(8, "Processing nonzero at row %d.\n", entry->row);
+
+            unlinkNonzero(entry);
+            TU_CALL( processNonzero(tu, rowHashtable, -entryToHash[entry->column] * entry->value, entry->row,
+              &rowData[entry->row], queue, pqueueEnd, queueMemory, true) );
+          }
+          columnData[column1].numNonzeros = 0;
+          assert(columnData[column1].nonzeros.above == &columnData[column1].nonzeros);
+          assert(columnData[column1].nonzeros.below == &columnData[column1].nonzeros);
+        }
+      }
+      else
+      {
+        /* Zero or unit column vector. */
+        TUdbgMsg(4, "Processing %s column %d.\n", columnData[column1].numNonzeros == 0 ? "zero" : "unit", column1);
+
+        columnData[column1].inQueue = false;
+        if (columnData[column1].numNonzeros)
+        {
+          Nonzero* entry = columnData[column1].nonzeros.below;
+          size_t row = entry->row;
+
+          TUdbgMsg(4, "Processing unit column %d with 1 in row %d.\n", column1, row);
+
+          unlinkNonzero(entry);
+          columnData[column1].numNonzeros--;
+          TU_CALL( processNonzero(tu, rowHashtable, -entryToHash[entry->column] * entry->value, row,
+            &rowData[row], queue, pqueueEnd, queueMemory, true) );
+          operations[*pnumOperations].mate = TUrowToElement(row);
+        }
+        else
+          operations[*pnumOperations].mate = 0;
+        operations[*pnumOperations].element = element;
+        (*pnumOperations)++;
+        (*pnumColumnOperations)++;
+      }
+    }
+  }
+
+  return TU_OKAY;
+}
+
 TU_ERROR TUfindSeriesParallel(TU* tu, TU_CHRMAT* matrix, TU_SP* operations, size_t* pnumOperations,
   TU_SUBMAT** premainingSubmatrix, TU_SUBMAT** pwheelSubmatrix, TU_ELEMENT* separationElements,
   size_t* pnumSeparationElements, bool isSorted)
@@ -528,193 +741,8 @@ TU_ERROR TUfindSeriesParallel(TU* tu, TU_CHRMAT* matrix, TU_SP* operations, size
     /* We now start main loop. */
     size_t numRowOperations = 0;
     size_t numColumnOperations = 0;
-    while (queueEnd > queueStart)
-    {
-      assert(queueEnd - queueStart <= numRows + numColumns);
-
-#if defined(TU_DEBUG_MATRIX_LIST)
-      TUdbgMsg(0, "Row-wise matrix via list:\n");
-      for (size_t row = 0; row < matrix->numRows; ++row)
-      {
-        for (Nonzero* nz = rowData[row].nonzeros.right; nz != &rowData[row].nonzeros; nz = nz->right)
-        {
-          TUdbgMsg(2, "Nonzero at (%d,%d); left is (%d,%d), right is (%d,%d), above is (%d,%d), below is (%d,%d)\n",
-            nz->row, nz->column, nz->left->row, nz->left->column, nz->right->row, nz->right->column, nz->above->row,
-            nz->above->column, nz->below->row, nz->below->column);
-        }
-      }
-#endif /* TU_DEBUG_MATRIX_LIST */
-
-#if defined(TU_DEBUG)
-      TUdbgMsg(0, "\n");
-      TUdbgMsg(4, "Status:\n");
-      for (size_t row = 0; row < matrix->numRows; ++row)
-      {
-        TUdbgMsg(6, "Row %d: %d nonzeros, hashed = %s, hash = %ld", row, rowData[row].numNonzeros,
-          rowData[row].hashEntry == SIZE_MAX ? "NO" : "YES", rowData[row].hashOrType);
-        if (rowData[row].hashEntry != SIZE_MAX)
-          TUdbgMsg(0, ", hashtable entry: %d with hash=%d, value=%d", rowData[row].hashEntry,
-            TUlisthashtableHash(rowHashtable, rowData[row].hashEntry),
-            TUlisthashtableValue(rowHashtable, rowData[row].hashEntry));
-        TUdbgMsg(0, "\n");
-      }
-      for (size_t column = 0; column < matrix->numColumns; ++column)
-      {
-        TUdbgMsg(6, "Column %d: %d nonzeros, hashed = %s, hash = %ld", column, columnData[column].numNonzeros,
-          columnData[column].hashEntry == SIZE_MAX ? "NO" : "YES", columnData[column].hashOrType);
-        if (columnData[column].hashEntry != SIZE_MAX)
-          TUdbgMsg(0, ", hashtable entry: %d with hash=%d, value=%d", columnData[column].hashEntry,
-            TUlisthashtableHash(columnHashtable, columnData[column].hashEntry),
-            TUlisthashtableValue(columnHashtable, columnData[column].hashEntry));
-        TUdbgMsg(0, "\n");
-      }
-      for (size_t q = queueStart; q < queueEnd; ++q)
-      {
-        TU_ELEMENT e = queue[q % queueMemory];
-        TUdbgMsg(6, "Queue #%d @ %d: %s %d\n", q, q % queueMemory,
-          TUelementIsRow(e) ? "row" : "column", TUelementIsRow(e) ? TUelementToRowIndex(e) : TUelementToColumnIndex(e));
-      }
-      TUdbgMsg(0, "\n");
-#endif /* TU_DEBUG */
-
-      TU_ELEMENT element = queue[queueStart % queueMemory];
-      ++queueStart;
-
-      TUdbgMsg(2, "Top element is %s %d with %d nonzeros.\n", TUelementIsRow(element) ? "row" : "column",
-        TUelementIsRow(element) ? TUelementToRowIndex(element) : TUelementToColumnIndex(element),
-        TUelementIsRow(element) ? rowData[TUelementToRowIndex(element)].numNonzeros :
-        columnData[TUelementToColumnIndex(element)].numNonzeros);
-
-      if (TUelementIsRow(element))
-      {
-        /* We consider a row. */
-
-        size_t row1 = TUelementToRowIndex(element);
-        if (rowData[row1].numNonzeros > 1)
-        {
-          rowData[row1].inQueue = false;
-          size_t row2 = findCopy(rowData, rowHashtable, row1, true);
-
-          if (row2 == SIZE_MAX)
-          {
-            TUdbgMsg(6, "No parallel row found. Inserting row %d.\n", row1);
-            TU_CALL( TUlisthashtableInsert(tu, rowHashtable, llabs(rowData[row1].hashValue), row1, &rowData[row1].hashEntry) );
-          }
-          else
-          {
-            TUdbgMsg(6, "Row %d is parallel.\n", row2);
-
-            /* We found a parallel row. */
-            operations[*pnumOperations].element = TUrowToElement(row1);
-            operations[*pnumOperations].mate = TUrowToElement(row2);
-            (*pnumOperations)++;
-            numRowOperations++;
-
-            for (Nonzero* entry = rowData[row1].nonzeros.right; entry != &rowData[row1].nonzeros;
-              entry = entry->right)
-            {
-              TUdbgMsg(8, "Processing nonzero at column %d.\n", entry->column);
-
-              unlinkNonzero(entry);
-              TU_CALL( processNonzero(tu, columnHashtable, -entryToHash[entry->row] * entry->value, entry->column,
-                &columnData[entry->column], queue, &queueEnd, queueMemory, false) );
-            }
-            rowData[row1].numNonzeros = 0;
-          }
-        }
-        else
-        {
-          /* Zero or unit row vector. */
-          TUdbgMsg(4, "Processing %s row %d.\n", rowData[row1].numNonzeros == 0 ? "zero" : "unit", row1);
-
-          rowData[row1].inQueue = false;
-          if (rowData[row1].numNonzeros)
-          {
-            Nonzero* entry = rowData[row1].nonzeros.right;
-            size_t column = entry->column;
-
-            TUdbgMsg(4, "Processing unit row %d with 1 in column %d.\n", row1, column);
-
-            unlinkNonzero(entry);
-            rowData[row1].numNonzeros--;
-            TU_CALL( processNonzero(tu, columnHashtable, -entryToHash[entry->row] * entry->value, column,
-              &columnData[column], queue, &queueEnd, queueMemory, false) );
-            operations[*pnumOperations].mate = TUcolumnToElement(column);
-          }
-          else
-            operations[*pnumOperations].mate = 0;
-          operations[*pnumOperations].element = element;
-          (*pnumOperations)++;
-          numRowOperations++;
-        }
-      }
-      else
-      {
-        /* We consider a column. */
-
-        size_t column1 = TUelementToColumnIndex(element);
-        if (columnData[column1].numNonzeros > 1)
-        {
-          columnData[column1].inQueue = false;
-          size_t column2 = findCopy(columnData, columnHashtable, column1, false);
-
-          if (column2 == SIZE_MAX)
-          {
-            TUdbgMsg(6, "No parallel column found. Inserting column %d.\n", column1);
-            TU_CALL( TUlisthashtableInsert(tu, columnHashtable, llabs(columnData[column1].hashValue), column1,
-              &columnData[column1].hashEntry) );
-          }
-          else
-          {
-            TUdbgMsg(6, "Column %d is parallel.\n", column2);
-
-            /* We found a parallel column. */
-            operations[*pnumOperations].element = TUcolumnToElement(column1);
-            operations[*pnumOperations].mate = TUcolumnToElement(column2);
-            (*pnumOperations)++;
-            numColumnOperations++;
-
-            for (Nonzero* entry = columnData[column1].nonzeros.below; entry != &columnData[column1].nonzeros;
-              entry = entry->below)
-            {
-              TUdbgMsg(8, "Processing nonzero at row %d.\n", entry->row);
-
-              unlinkNonzero(entry);
-              TU_CALL( processNonzero(tu, rowHashtable, -entryToHash[entry->column] * entry->value, entry->row,
-                &rowData[entry->row], queue, &queueEnd, queueMemory, true) );
-            }
-            columnData[column1].numNonzeros = 0;
-            assert(columnData[column1].nonzeros.above == &columnData[column1].nonzeros);
-            assert(columnData[column1].nonzeros.below == &columnData[column1].nonzeros);
-          }
-        }
-        else
-        {
-          /* Zero or unit column vector. */
-          TUdbgMsg(4, "Processing %s column %d.\n", columnData[column1].numNonzeros == 0 ? "zero" : "unit", column1);
-
-          columnData[column1].inQueue = false;
-          if (columnData[column1].numNonzeros)
-          {
-            Nonzero* entry = columnData[column1].nonzeros.below;
-            size_t row = entry->row;
-
-            TUdbgMsg(4, "Processing unit column %d with 1 in row %d.\n", column1, row);
-
-            unlinkNonzero(entry);
-            columnData[column1].numNonzeros--;
-            TU_CALL( processNonzero(tu, rowHashtable, -entryToHash[entry->column] * entry->value, row,
-              &rowData[row], queue, &queueEnd, queueMemory, true) );
-            operations[*pnumOperations].mate = TUrowToElement(row);
-          }
-          else
-            operations[*pnumOperations].mate = 0;
-          operations[*pnumOperations].element = element;
-          (*pnumOperations)++;
-          numColumnOperations++;
-        }
-      }
-    }
+    TU_CALL( reduceListMatrix(tu, rowData, columnData, rowHashtable, columnHashtable, entryToHash, queue, &queueStart,
+      &queueEnd, queueMemory, operations, pnumOperations, &numRowOperations, &numColumnOperations) );
 
     /* Extract remaining submatrix. */
     if (premainingSubmatrix)
