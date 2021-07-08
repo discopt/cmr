@@ -7,18 +7,46 @@ TEST(SeriesParallel, Empty)
 {
   TU* tu = NULL;
   TUcreateEnvironment(&tu);
-
-  TU_CHRMAT* mat0x0 = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &mat0x0, "0 0 "
-  ) );
-
-  TU_SP operations[1];
+  TU_SP operations[2];
   size_t numOperations;
 
-  ASSERT_TU_CALL( TUfindSeriesParallel(tu, mat0x0, operations, &numOperations, NULL, NULL, NULL, NULL, true) );
-  ASSERT_EQ( numOperations, 0 );
+  {
+    TU_CHRMAT* mat0x0 = NULL;
+    ASSERT_TU_CALL( stringToCharMatrix(tu, &mat0x0, "0 0 "
+    ) );
 
-  TUchrmatFree(tu, &mat0x0);
+    ASSERT_TU_CALL( TUfindSeriesParallel(tu, mat0x0, operations, &numOperations, NULL, NULL, NULL, NULL, true) );
+    ASSERT_EQ( numOperations, 0 );
+
+    TUchrmatFree(tu, &mat0x0);
+  }
+
+  {
+    TU_CHRMAT* mat2x0 = NULL;
+    ASSERT_TU_CALL( stringToCharMatrix(tu, &mat2x0, "2 0 "
+    ) );
+
+    ASSERT_TU_CALL( TUfindSeriesParallel(tu, mat2x0, operations, &numOperations, NULL, NULL, NULL, NULL, true) );
+    ASSERT_EQ( numOperations, 2 );
+    ASSERT_EQ( operations[0].element, -1 ); ASSERT_EQ( operations[0].mate, 0 );
+    ASSERT_EQ( operations[1].element, -2 ); ASSERT_EQ( operations[1].mate, 0 );
+
+    TUchrmatFree(tu, &mat2x0);
+  }
+
+  {
+    TU_CHRMAT* mat0x2 = NULL;
+    ASSERT_TU_CALL( stringToCharMatrix(tu, &mat0x2, "0 2 "
+    ) );
+
+    ASSERT_TU_CALL( TUfindSeriesParallel(tu, mat0x2, operations, &numOperations, NULL, NULL, NULL, NULL, true) );
+    ASSERT_EQ( numOperations, 2 );
+    ASSERT_EQ( operations[0].element, 1 ); ASSERT_EQ( operations[0].mate, 0 );
+    ASSERT_EQ( operations[1].element, 2 ); ASSERT_EQ( operations[1].mate, 0 );
+
+    TUchrmatFree(tu, &mat0x2);
+  }
+
   TUfreeEnvironment(&tu);
 }
 
