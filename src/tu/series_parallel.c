@@ -542,6 +542,13 @@ TU_ERROR reduceListMatrix(
               &columnData[entry->column], queue, pqueueEnd, queueMemory, false) );
           }
           rowData[row1].numNonzeros = 0;
+          if (anchor)
+          {
+            rowData[row1].nonzeros.above->below = rowData[row1].nonzeros.below;
+            rowData[row1].nonzeros.below->above = rowData[row1].nonzeros.above;
+          }
+          assert(rowData[row1].nonzeros.left == &rowData[row1].nonzeros);
+          assert(rowData[row1].nonzeros.right == &rowData[row1].nonzeros);
         }
       }
       else
@@ -568,6 +575,11 @@ TU_ERROR reduceListMatrix(
         operations[*pnumOperations].element = element;
         (*pnumOperations)++;
         (*pnumRowOperations)++;
+        if (anchor)
+        {
+          rowData[row1].nonzeros.above->below = rowData[row1].nonzeros.below;
+          rowData[row1].nonzeros.below->above = rowData[row1].nonzeros.above;
+        }
       }
     }
     else
@@ -606,6 +618,11 @@ TU_ERROR reduceListMatrix(
               &rowData[entry->row], queue, pqueueEnd, queueMemory, true) );
           }
           columnData[column1].numNonzeros = 0;
+          if (anchor)
+          {
+            columnData[column1].nonzeros.left->right = columnData[column1].nonzeros.right;
+            columnData[column1].nonzeros.right->left = columnData[column1].nonzeros.left;
+          }
           assert(columnData[column1].nonzeros.above == &columnData[column1].nonzeros);
           assert(columnData[column1].nonzeros.below == &columnData[column1].nonzeros);
         }
@@ -634,6 +651,11 @@ TU_ERROR reduceListMatrix(
         operations[*pnumOperations].element = element;
         (*pnumOperations)++;
         (*pnumColumnOperations)++;
+        if (anchor)
+        {
+          columnData[column1].nonzeros.left->right = columnData[column1].nonzeros.right;
+          columnData[column1].nonzeros.right->left = columnData[column1].nonzeros.left;
+        }
       }
     }
   }
