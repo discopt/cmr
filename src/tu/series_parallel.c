@@ -45,6 +45,7 @@ typedef struct _Nonzero
   size_t row;             /**< \brief Row. */
   size_t column;          /**< \brief Column. */
   char value;             /**< \brief Matrix entry. */
+  bool disabled;          /**< \brief Whether this edge is disabled in breadth-first search. */
 } Nonzero;
 
 static char seriesParallelStringBuffer[32]; /**< Static buffer for \ref TUspString. */
@@ -89,7 +90,7 @@ void unlinkNonzero(
 {
   assert(nonzero);
 
-  TUdbgMsg(4, "Removing (%d,%d) from linked list.\n", nonzero->row, nonzero->column);
+  TUdbgMsg(4, "Removing r%d,c%d from linked list.\n", nonzero->row+1, nonzero->column+1);
   nonzero->above->below = nonzero->below;
   nonzero->below->above = nonzero->above;
   nonzero->left->right = nonzero->right;
@@ -119,11 +120,17 @@ int compareNonzeros(const void* a, const void* b)
 
 typedef struct
 {
-  Nonzero nonzeros;                   /**< Dummy nonzero in that row/column. */
-  size_t numNonzeros;                 /**< Number of nonzeros in that row/column. */
-  long long hashValue;                /**< Hash value of this element. */
-  TU_LISTHASHTABLE_ENTRY hashEntry;   /**< Entry in row or column hashtable. */
-  bool inQueue;                       /**< Whether this element is in the queue. */
+  Nonzero nonzeros;                   /**< \brief Dummy nonzero in that row/column. */
+  size_t numNonzeros;                 /**< \brief Number of nonzeros in that row/column. */
+  long long hashValue;                /**< \brief Hash value of this element. */
+  TU_LISTHASHTABLE_ENTRY hashEntry;   /**< \brief Entry in row or column hashtable. */
+  bool inQueue;                       /**< \brief Whether this element is in the queue. */
+  char lastBFS;                       /**< \brief Last breadth-first search that found this node.
+                                       **< Is 0 initially, positive for search runs, -1 if marked and -2 for SP-reduced
+                                       **< element. */
+  size_t distance;                    /**< \brief Distance in breadth-first search. */
+  size_t predecessor;                 /**< \brief Index of predecessor element in breadth-first search. */
+  bool specialBFS;                    /**< \brief Whether this is a special node in breadith-first search. */
 } ElementData;
 
 /**
@@ -211,6 +218,7 @@ TU_ERROR initListMatrix(
       nonzeros[i].row = row;
       nonzeros[i].column = matrix->entryColumns[e];
       nonzeros[i].value = matrix->entryValues[e];
+      nonzeros[i].disabled = false;
       i++;
     }
   }
@@ -254,7 +262,7 @@ TU_ERROR initListMatrix(
     columnData[column].nonzeros.column = column;
     columnData[column].nonzeros.row = SIZE_MAX;
   }
-  
+
   if (anchor)
   {
     if (matrix->numColumns > 0)
@@ -461,34 +469,35 @@ TU_ERROR reduceListMatrix(
 
 #if defined(TU_DEBUG)
     TUdbgMsg(0, "\n");
-    TUdbgMsg(4, "Status:\n");
-    for (Nonzero* nz = anchor->below; nz != anchor; nz = nz->below)
+    if (anchor)
     {
-      TUdbgMsg(6, "nz is %p\n", nz);
-      size_t row = nz->row;
-      TUdbgMsg(6, "Row %d %d\n", row, rowData[row].numNonzeros);
-      TUdbgMsg(6, "Row %d: %d nonzeros, hashed = %s, hash = %ld", row, rowData[row].numNonzeros,
-        rowData[row].hashEntry == SIZE_MAX ? "NO" : "YES", rowData[row].hashValue);
-      if (rowData[row].hashEntry != SIZE_MAX)
+      TUdbgMsg(4, "Status:\n");
+      for (Nonzero* nz = anchor->below; nz != anchor; nz = nz->below)
       {
-        TUdbgMsg(0, ", hashtable entry: %d with hash=%d, value=%d", rowData[row].hashEntry,
-          TUlisthashtableHash(rowHashtable, rowData[row].hashEntry),
-          TUlisthashtableValue(rowHashtable, rowData[row].hashEntry));
+        size_t row = nz->row;
+        TUdbgMsg(6, "Row %d: %d nonzeros, hashed = %s, hash = %ld", row, rowData[row].numNonzeros,
+          rowData[row].hashEntry == SIZE_MAX ? "NO" : "YES", rowData[row].hashValue);
+        if (rowData[row].hashEntry != SIZE_MAX)
+        {
+          TUdbgMsg(0, ", hashtable entry: %d with hash=%d, value=%d", rowData[row].hashEntry,
+            TUlisthashtableHash(rowHashtable, rowData[row].hashEntry),
+            TUlisthashtableValue(rowHashtable, rowData[row].hashEntry));
+        }
+        TUdbgMsg(0, "\n");
       }
-      TUdbgMsg(0, "\n");
-    }
-    for (Nonzero* nz = anchor->right; nz != anchor; nz = nz->right)
-    {
-      size_t column = nz->column;
-      TUdbgMsg(6, "Column %d: %d nonzeros, hashed = %s, hash = %ld", column, columnData[column].numNonzeros,
-        columnData[column].hashEntry == SIZE_MAX ? "NO" : "YES", columnData[column].hashValue);
-      if (columnData[column].hashEntry != SIZE_MAX)
+      for (Nonzero* nz = anchor->right; nz != anchor; nz = nz->right)
       {
-        TUdbgMsg(0, ", hashtable entry: %d with hash=%d, value=%d", columnData[column].hashEntry,
-          TUlisthashtableHash(columnHashtable, columnData[column].hashEntry),
-          TUlisthashtableValue(columnHashtable, columnData[column].hashEntry));
+        size_t column = nz->column;
+        TUdbgMsg(6, "Column %d: %d nonzeros, hashed = %s, hash = %ld", column, columnData[column].numNonzeros,
+          columnData[column].hashEntry == SIZE_MAX ? "NO" : "YES", columnData[column].hashValue);
+        if (columnData[column].hashEntry != SIZE_MAX)
+        {
+          TUdbgMsg(0, ", hashtable entry: %d with hash=%d, value=%d", columnData[column].hashEntry,
+            TUlisthashtableHash(columnHashtable, columnData[column].hashEntry),
+            TUlisthashtableValue(columnHashtable, columnData[column].hashEntry));
+        }
+        TUdbgMsg(0, "\n");
       }
-      TUdbgMsg(0, "\n");
     }
     for (size_t q = *pqueueStart; q < *pqueueEnd; ++q)
     {
@@ -542,6 +551,7 @@ TU_ERROR reduceListMatrix(
               &columnData[entry->column], queue, pqueueEnd, queueMemory, false) );
           }
           rowData[row1].numNonzeros = 0;
+          rowData[row1].lastBFS = -2;
           if (anchor)
           {
             rowData[row1].nonzeros.above->below = rowData[row1].nonzeros.below;
@@ -575,6 +585,7 @@ TU_ERROR reduceListMatrix(
         operations[*pnumOperations].element = element;
         (*pnumOperations)++;
         (*pnumRowOperations)++;
+        rowData[row1].lastBFS = -2;
         if (anchor)
         {
           rowData[row1].nonzeros.above->below = rowData[row1].nonzeros.below;
@@ -607,6 +618,7 @@ TU_ERROR reduceListMatrix(
           operations[*pnumOperations].mate = TUcolumnToElement(column2);
           (*pnumOperations)++;
           (*pnumColumnOperations)++;
+          columnData[column1].lastBFS = -2;
 
           for (Nonzero* entry = columnData[column1].nonzeros.below; entry != &columnData[column1].nonzeros;
             entry = entry->below)
@@ -651,6 +663,7 @@ TU_ERROR reduceListMatrix(
         operations[*pnumOperations].element = element;
         (*pnumOperations)++;
         (*pnumColumnOperations)++;
+        columnData[column1].lastBFS = -2;
         if (anchor)
         {
           columnData[column1].nonzeros.left->right = columnData[column1].nonzeros.right;
@@ -663,9 +676,186 @@ TU_ERROR reduceListMatrix(
   return TU_OKAY;
 }
 
+static
+TU_ERROR breadthFirstSearch(
+  TU* tu,                   /**< \ref TU environment. */
+  size_t currentBFS,        /**< Number of this execution of breadth-first search. */
+  ElementData* rowData,     /**< Row data. */
+  ElementData* columnData,  /**< Column data. */
+  TU_ELEMENT* queue,        /**< Queue. */
+  size_t queueMemory,       /**< Memory for queue. */
+  TU_ELEMENT* sources,      /**< Array of source nodes. */
+  size_t numSources,        /**< Number of source nodes. */
+  TU_ELEMENT* targets,      /**< Array of target nodes. */
+  size_t numTargets,        /**< Number of target nodes. */
+  size_t* pfoundTarget,     /**< Pointer for storing the index of the target node found. */
+  size_t* pnumEdges         /**< Pointer for storing the number of traversed edges. */
+)
+{
+  assert(tu);
+  assert(rowData);
+  assert(columnData);
+  assert(queue);
+  assert(queueMemory > 0);
+
+  TUdbgMsg(6, "BFS #%d for %d sources and %d targets.\n", currentBFS, numSources, numTargets);
+  size_t queueStart = 0;
+  size_t queueEnd = numSources;
+  for (size_t s = 0; s < numSources; ++s)
+  {
+    TU_ELEMENT element = sources[s];
+    queue[s] = element;
+    if (TUelementIsRow(element))
+    {
+      size_t row = TUelementToRowIndex(element);
+      rowData[row].distance = 0;
+      rowData[row].lastBFS = currentBFS;
+    }
+    else
+    {
+      size_t column = TUelementToColumnIndex(element);
+      columnData[column].distance = 0;
+      columnData[column].lastBFS = currentBFS;
+    }
+  }
+  for (size_t t = 0; t < numTargets; ++t)
+  {
+    TU_ELEMENT element = targets[t];
+    if (TUelementIsRow(element))
+      rowData[TUelementToRowIndex(element)].lastBFS = currentBFS+1;
+    else
+      columnData[TUelementToColumnIndex(element)].lastBFS = currentBFS+1;
+  }
+  if (pnumEdges)
+    *pnumEdges = 0;
+  while (queueEnd > queueStart)
+  {
+    TU_ELEMENT element = queue[queueStart % queueMemory];
+    queueStart++;
+    
+    TUdbgMsg(8, "Queue: %s", TUelementString(element, NULL));
+    for (size_t q = queueStart; q < queueEnd; ++q)
+      TUdbgMsg(0, ",%s", TUelementString(queue[q % queueMemory], NULL));
+    TUdbgMsg(0, "\n");
+
+    if (TUelementIsRow(element))
+    {
+      size_t row = TUelementToRowIndex(element);
+      for (Nonzero* nz = rowData[row].nonzeros.right; nz->column != SIZE_MAX; nz = nz->right)
+      {
+        /* Skip edge if disabled. */
+        if (nz->disabled)
+        {
+          TUdbgMsg(10, "Edge r%d,c%d is disabled.\n", nz->row+1, nz->column+1);
+          continue;
+        }
+
+        if (pnumEdges)
+          (*pnumEdges)++;
+        size_t column = nz->column;
+        if (columnData[column].lastBFS != currentBFS)
+        {
+          /* We found a new column node. */
+          TUdbgMsg(10, "Node c%d receives distance %d (last BFS #%d)\n", column+1, rowData[row].distance + 1,
+            columnData[column].lastBFS);
+          columnData[column].distance = rowData[row].distance + 1;
+          columnData[column].predecessor = row;
+          queue[queueEnd % queueMemory] = TUcolumnToElement(column);
+          queueEnd++;
+          if (columnData[column].lastBFS == currentBFS+1)
+          {
+            queueStart = queueEnd;
+            if (pfoundTarget)
+            {
+              for (size_t t = 0; t < numTargets; ++t)
+              {
+                if (targets[t] == TUcolumnToElement(column))
+                {
+                  *pfoundTarget = t;
+                  break;
+                }
+              }
+            }
+            break;
+          }
+          else
+            columnData[column].lastBFS = currentBFS;
+        }
+        else
+        {
+          TUdbgMsg(10, "Node c%d already known.\n", column+1);
+        }
+      }
+    }
+    else
+    {
+      size_t column = TUelementToColumnIndex(element);
+      for (Nonzero* nz = columnData[column].nonzeros.below; nz->row != SIZE_MAX; nz = nz->below)
+      {
+        /* Skip edge if disabled. */
+        if (nz->disabled)
+        {
+          TUdbgMsg(10, "Edge r%d,c%d is disabled.\n", nz->row+1, nz->column+1);
+          continue;
+        }
+
+        if (pnumEdges)
+          (*pnumEdges)++;
+        size_t row = nz->row;
+        if (rowData[row].lastBFS != currentBFS)
+        {
+          /* We found a new row node. */
+          TUdbgMsg(10, "Node r%d receives distance %d (last BFS #%d)\n", row+1, columnData[column].distance + 1,
+            rowData[row].lastBFS);
+          rowData[row].distance = columnData[column].distance + 1;
+          rowData[row].predecessor = column;
+          queue[queueEnd % queueMemory] = TUrowToElement(row);
+          queueEnd++;
+          if (rowData[row].lastBFS == currentBFS+1)
+          {
+            queueStart = queueEnd;
+            if (pfoundTarget)
+            {
+              for (size_t t = 0; t < numTargets; ++t)
+              {
+                if (targets[t] == TUrowToElement(row))
+                {
+                  *pfoundTarget = t;
+                  break;
+                }
+              }
+            }
+            break;
+          }
+          else
+            rowData[row].lastBFS = currentBFS;
+        }
+        else
+        {
+          TUdbgMsg(10, "Node r%d already known.\n", row+1);
+        }
+      }
+    }
+  }
+
+  /* Reset lastBFS for targets. */
+  for (size_t t = 0; t < numTargets; ++t)
+  {
+    TU_ELEMENT element = targets[t];
+    if (TUelementIsRow(element))
+      rowData[TUelementToRowIndex(element)].lastBFS = 0;
+    else
+      columnData[TUelementToColumnIndex(element)].lastBFS = 0;
+  }
+  if (pnumEdges)
+    (*pnumEdges) /= 2;
+
+  return TU_OKAY;
+}
+
 TU_ERROR TUfindSeriesParallel(TU* tu, TU_CHRMAT* matrix, TU_SP* operations, size_t* pnumOperations,
-  TU_SUBMAT** premainingSubmatrix, TU_SUBMAT** pwheelSubmatrix, TU_ELEMENT* separationElements,
-  size_t* pnumSeparationElements, bool isSorted)
+  TU_SUBMAT** premainingSubmatrix, TU_SUBMAT** pwheelSubmatrix, TU_ELEMENT* separationRank1Elements,
+  size_t* pnumSeparationRank1Elements, bool isSorted)
 {
   assert(tu);
   assert(matrix);
@@ -673,8 +863,8 @@ TU_ERROR TUfindSeriesParallel(TU* tu, TU_CHRMAT* matrix, TU_SP* operations, size
   assert(pnumOperations);
   assert(!premainingSubmatrix || !*premainingSubmatrix);
   assert(!pwheelSubmatrix || !*pwheelSubmatrix);
-  assert(!separationElements || pnumSeparationElements);
-  assert(!separationElements || pwheelSubmatrix);
+  assert(!separationRank1Elements || pnumSeparationRank1Elements);
+  assert(!separationRank1Elements || pwheelSubmatrix);
 
   TUdbgMsg(0, "Searching for series/parallel elements in a %dx%d matrix with %d nonzeros.\n", matrix->numRows,
     matrix->numColumns, matrix->numNonzeros);
@@ -691,6 +881,7 @@ TU_ERROR TUfindSeriesParallel(TU* tu, TU_CHRMAT* matrix, TU_SP* operations, size
     rowData[row].hashValue = 0;
     rowData[row].hashEntry = SIZE_MAX;
     rowData[row].inQueue = false;
+    rowData[row].lastBFS = 0;
   }
 
   /* Initialize column data. */
@@ -702,6 +893,7 @@ TU_ERROR TUfindSeriesParallel(TU* tu, TU_CHRMAT* matrix, TU_SP* operations, size
     columnData[column].hashValue = 0;
     columnData[column].hashEntry = SIZE_MAX;
     columnData[column].inQueue = false;
+    columnData[column].lastBFS = 0;
   }
 
   /* We prepare the hashing. Every coordinate has its own value. These are added up for all nonzero entries and
@@ -802,211 +994,303 @@ TU_ERROR TUfindSeriesParallel(TU* tu, TU_CHRMAT* matrix, TU_SP* operations, size
     }
 
     /* Search for a wheel representation submatrix. */
-   if (pwheelSubmatrix && *pnumOperations != numEntries)
-   {
-     TUdbgMsg(2, "Searching for wheel graph representation submatrix.\n");
+    if (pwheelSubmatrix && *pnumOperations != numEntries)
+    {
+      TUdbgMsg(2, "Searching for wheel graph representation submatrix.\n");
 
-//      for (size_t row = 0; row < numRows; ++row)
-//        rowData[row].hashOrType = rowData[row].numNonzeros ? ZERO : REMOVED;
-//      for (size_t column = 0; column < numColumns; ++column)
-//        columnData[column].hashOrType = columnData[column].numNonzeros ? ZERO : REMOVED;
-//
-//      /* Find first nonzero row and left-most 1 there. */
-//      Nonzero* blockTopLeft = NULL;
-//      for (size_t row = 0; row < numRows; ++row)
-//      {
-//        if (rowData[row].hashOrType != REMOVED)
-//        {
-//          blockTopLeft = rowData[row].nonzeros.right;
-//          break;
-//        }
-//      }
-//      assert(blockTopLeft);
-//      rowData[blockTopLeft->row].hashOrType = BLOCK;
-//
-//      /* Find next 1 to the right of top-left. */
-//      Nonzero* blockTopNext = blockTopLeft->right;
-//      assert(blockTopLeft->column != SIZE_MAX);
-//
-//      /* Grow all-1's matrix downwards. */
-//      Nonzero* first = blockTopLeft->below;
-//      Nonzero* second = blockTopNext->below;
-//      Nonzero** blockRowEntry = NULL;
-//      TU_CALL( TUallocStackArray(tu, &blockRowEntry, matrix->numRows - numRowOperations) );
-//      blockRowEntry[0] = blockTopLeft;
-//      size_t numBlockRows = 1;
-//      size_t numBlockColumns = 0;
-//      while (true)
-//      {
-//        if (first->row == second->row)
-//        {
-//          rowData[first->row].hashOrType = BLOCK;
-//          blockRowEntry[numBlockRows++] = first;
-//          first = first->below;
-//          if (first->row == SIZE_MAX)
-//            break;
-//          second = second->below;
-//          if (second->row == SIZE_MAX)
-//            break;
-//        }
-//        else if (first->row < second->row)
-//        {
-//          first = first->below;
-//          if (first->row == SIZE_MAX)
-//            break;
-//        }
-//        else
-//        {
-//          second = second->below;
-//          if (second->row == SIZE_MAX)
-//            break;
-//        }
-//      }
-//
-//      TUdbgMsg(2, "Block has grown to %dx2.\n", numBlockRows);
-//
-//      /* Grow all-1's matrix to the right. */
-//      if (numBlockRows == 1)
-//      {
-//        while (blockTopNext->column != SIZE_MAX)
-//        {
-//          columnData[blockTopNext->column].hashOrType = BLOCK;
-//          blockTopNext = blockTopNext->right;
-//          ++numBlockColumns;
-//        }
-//      }
-//      else
-//      {
-//        size_t maximizer = 0; /* Row (of block) */
-//        size_t maxColumn = blockTopLeft->column;
-//        for (size_t current = 1; true; current = (current + 1) % numBlockRows)
-//        {
-//          TUdbgMsg(6, "Current = %d, maximizer = %d, column = %d, maxColumn = %d\n",
-//            current, maximizer, blockRowEntry[current]->column, maxColumn);
-//          if (current == maximizer)
-//          {
-//            /* We have found a new column. */
-//            assert(columnData[blockRowEntry[current]->column].hashOrType == ZERO);
-//            columnData[blockRowEntry[current]->column].hashOrType = BLOCK;
-//            ++numBlockColumns;
-//            blockRowEntry[current] = blockRowEntry[current]->right;
-//            maxColumn = blockRowEntry[current]->column;
-//            if (maxColumn == SIZE_MAX)
-//              break;
-//          }
-//          else
-//          {
-//            /* We scan to the right. */
-//            size_t column;
-//            while ((column = blockRowEntry[current]->column) < maxColumn)
-//              blockRowEntry[current] = blockRowEntry[current]->right;
-//
-//            if (column == SIZE_MAX)
-//              break;
-//            else if (column > maxColumn)
-//            {
-//              maximizer = current;
-//              maxColumn = column;
-//            }
-//          }
-//        }
-//      }
-//      TUdbgMsg(2, "Block has grown to %dx%d.\n", numBlockRows, numBlockColumns);
-//
-//      /* Check columns parallel to block. */
-//      for (size_t row = 0; row < numRows; ++row)
-//      {
-//        if (rowData[row].hashOrType != BLOCK)
-//          continue;
-//
-//        for (Nonzero* entry = rowData[row].nonzeros.right; entry->column != SIZE_MAX; entry = entry->right)
-//        {
-//          size_t column = entry->column;
-//          if (columnData[column].hashOrType == ZERO)
-//            columnData[column].hashOrType = OTHER;
-//        }
-//      }
-//
-//      /* Check rows parallel to block. */
-//      for (size_t column = 0; column < numColumns; ++column)
-//      {
-//        if (columnData[column].hashOrType != BLOCK)
-//          continue;
-//
-//        for (Nonzero* entry = columnData[column].nonzeros.below; entry->row != SIZE_MAX; entry = entry->below)
-//        {
-//          size_t row = entry->row;
-//          if (rowData[row].hashOrType == ZERO)
-//            rowData[row].hashOrType = OTHER;
-//        }
-//      }
-//
-//#if defined(TU_DEBUG)
-//      for (size_t row = 0; row < numRows; ++row)
-//      {
-//        if (rowData[row].hashOrType == BLOCK)
-//          TUdbgMsg(4, "Row %d belongs to block.\n", row);
-//        else if (rowData[row].hashOrType == ZERO)
-//          TUdbgMsg(4, "Row %d is zero parallel to block.\n", row);
-//        else if (rowData[row].hashOrType == REMOVED)
-//          TUdbgMsg(4, "Row %d was removed.\n", row);
-//        else
-//          TUdbgMsg(4, "Row %d is nonzero parallel to block.\n", row);
-//      }
-//      for (size_t column = 0; column < numColumns; ++column)
-//      {
-//        if (columnData[column].hashOrType == BLOCK)
-//          TUdbgMsg(4, "Column %d belongs to block.\n", column);
-//        else if (columnData[column].hashOrType == ZERO)
-//          TUdbgMsg(4, "Column %d is zero parallel to block.\n", column);
-//        else if (columnData[column].hashOrType == REMOVED)
-//          TUdbgMsg(4, "Column %d was removed.\n", column);
-//        else
-//          TUdbgMsg(4, "Column %d is nonzero parallel to block.\n", column);
-//      }
-//#endif /* TU_DEBUG */
-//
-//      /* We re-use the queue for a breadth-first search. */
-//      queueStart = 0;
-//      queueEnd = 0;
-//      for (size_t row = 0; row < numRows; ++row)
-//      {
-//        if (rowData[row].hashOrType == OTHER)
-//        {
-//          queue[queueEnd++] = TUrowToElement(row);
-//          rowData[row].inQueue = true;
-//          rowData[row].numNonzeros = SIZE_MAX;
-//        }
-//      }
-//      while (queueStart < queueEnd)
-//      {
-//        TU_ELEMENT element = queue[queueStart];
-//        if (TUelementIsRow(element))
-//        {
-//          size_t row = TUelementToRowIndex(element);
-//          for (Nonzero* entry = rowData[row].nonzeros.right; entry->column != SIZE_MAX; entry = entry->right)
-//          {
-//            size_t column = entry->column;
-//            if (columnData[column].hashOrType == BLOCK)
-//              continue;
-//
-//            columnData[column].numNonzeros = row;
-//            if (columnData[column].hashOrType == OTHER)
-//            {
-//
-//            }
-//            else if (!columnData[column].inQueue)
-//            {
-//              queue[queueEnd++] = TUcolumnToElement(column);
-//              columnData[column].inQueue = true;
-//            }
-//          }
-//        }
-//      }
-//
-//      /* Cleanup. */
-//      TU_CALL( TUfreeStackArray(tu, &blockRowEntry) );
-   }
+      assert(anchor);
+      assert(anchor->below != anchor);
+      size_t currentBFS = 0;
+      for (size_t row = 0; row < numRows; ++row)
+        rowData[row].specialBFS = false;
+      for (size_t column = 0; column < numColumns; ++column)
+        columnData[column].specialBFS = false;
+      Nonzero** nzBlock = NULL; /* Pointers for simultaneously traversing columns of block. */
+      TU_CALL( TUallocStackArray(tu, &nzBlock, numColumns) );
+      TU_ELEMENT* sources = NULL;
+      TU_CALL( TUallocStackArray(tu, &sources, numRows) );
+      TU_ELEMENT* targets = NULL;
+      TU_CALL( TUallocStackArray(tu, &targets, numColumns) );
+      size_t numEdges = 0;
+      for (size_t row = 0; row < numRows; ++row)
+        numEdges += rowData[row].numNonzeros;
+      while (true)
+      {
+        size_t sourceRow = anchor->below->row;
+        rowData[sourceRow].lastBFS = currentBFS;
+        rowData[sourceRow].predecessor = SIZE_MAX;
+        rowData[sourceRow].distance = 0;
+        size_t targetColumn = rowData[sourceRow].nonzeros.right->column;
+        rowData[sourceRow].nonzeros.right->disabled = true;
+
+        TUdbgMsg(4, "Searching for a chordless cycle from r%d to c%d.\n", sourceRow+1, targetColumn+1);
+        
+        sources[0] = TUrowToElement(sourceRow);
+        targets[0] = TUcolumnToElement(targetColumn);
+        size_t foundTarget = SIZE_MAX;
+        currentBFS++;
+        TU_CALL( breadthFirstSearch(tu, currentBFS, rowData, columnData, queue, queueMemory, sources, 1, targets, 1,
+          &foundTarget, 0) );
+        rowData[sourceRow].nonzeros.right->disabled = false;
+        assert(foundTarget == 0);
+        size_t length = columnData[targetColumn].distance + 1;
+
+        TUdbgMsg(4, "Length of cycle is %d.\n", length);
+
+        if (length > 4)
+        {
+          /* We found a long chordless cycle. Traverse backwards along path and collect rows/columns. */
+          TU_CALL( TUsubmatCreate(tu, length/2, length/2, pwheelSubmatrix) );
+          TU_SUBMAT* wheelSubmatrix = *pwheelSubmatrix;
+          size_t column = targetColumn;
+          size_t row;
+          for (size_t i = 0; i < length/2; ++i)
+          {
+            row = columnData[column].predecessor;
+            wheelSubmatrix->columns[i] = column;
+            wheelSubmatrix->rows[i] = row;
+            column = rowData[row].predecessor;
+          }
+          break;
+        }
+
+        /* We have found a 2-by-2 matrix with only 1's. */
+        size_t row1 = sourceRow;
+        size_t row2 = columnData[targetColumn].predecessor;
+        TUdbgMsg(4, "Growing the 2x2 submatrix with 1's is at r%d, r%d, c%d, c%d.\n", row1+1, row2+1,
+          targetColumn+1, rowData[row2+1].predecessor+1);
+
+        /* Go trough the two nonzeros of the two rows simultaneously. */
+        Nonzero* nz1 = rowData[row1].nonzeros.right;
+        Nonzero* nz2 = rowData[row2].nonzeros.right;
+        size_t numTargets = 0;
+        while (nz1->column != SIZE_MAX)
+        {
+          if (nz1->column < nz2->column)
+          {
+            nz1 = nz1->right;
+          }
+          else if (nz1->column > nz2->column)
+            nz2 = nz2->right;
+          else
+          {
+            columnData[nz1->column].specialBFS = true;
+            nzBlock[numTargets] = columnData[nz1->column].nonzeros.below;
+            targets[numTargets++] = TUcolumnToElement(nz1->column);
+            nz1 = nz1->right;
+            nz2 = nz2->right;
+          }
+        }
+        TUdbgMsg(4, "Identified %d target columns.\n", numTargets);
+
+        /* Go through the nonzeros of all marked columns simultaneously. */
+        size_t maxIndex = 0;
+        size_t maxRow = nzBlock[0]->row;
+        size_t currentIndex = 1;
+        size_t numSources = 0;
+        while (maxRow != SIZE_MAX)
+        {
+          if (currentIndex == maxIndex)
+          {
+            /* All nonzeros now have the same row. */
+            for (size_t j = 0; j < numTargets; ++j)
+              nzBlock[j]->disabled = true;
+            rowData[maxRow].specialBFS = true;
+            sources[numSources++] = TUrowToElement(maxRow);
+            ++maxRow;
+          }
+          while (nzBlock[currentIndex]->row < maxRow)
+            nzBlock[currentIndex] = nzBlock[currentIndex]->below;
+          if (nzBlock[currentIndex]->row > maxRow)
+          {
+            maxIndex = currentIndex;
+            maxRow = nzBlock[currentIndex]->row;
+          }
+          currentIndex = (currentIndex + 1) % numTargets;
+        }
+
+        TUdbgMsg(4, "Identified %d source rows.\n", numSources);
+  
+        currentBFS++;
+        foundTarget = SIZE_MAX;
+        size_t numTraversedEdges = 0;
+        TU_CALL( breadthFirstSearch(tu, currentBFS, rowData, columnData, queue, queueMemory, sources, numSources,
+          targets, numTargets, &foundTarget, &numTraversedEdges) );
+        if (foundTarget < SIZE_MAX)
+        {
+          size_t length = columnData[TUelementToColumnIndex(targets[foundTarget])].distance + 1;
+          targetColumn = TUelementToColumnIndex(targets[foundTarget]);
+          TUdbgMsg(4, "Length of cycle is %d.\n", length);
+
+          size_t wheelSize = length == 4 ? 3 : length/2;
+          TU_CALL( TUsubmatCreate(tu, wheelSize, wheelSize, pwheelSubmatrix) );
+          TU_SUBMAT* wheelSubmatrix = *pwheelSubmatrix;
+
+          if (length > 4)
+          {
+            /* The cycle is long and we simply traverse it and collect all rows and columns. */
+            size_t column = targetColumn;
+            size_t row;
+            for (size_t i = 0; i < length/2; ++i)
+            {
+              row = columnData[column].predecessor;
+              wheelSubmatrix->columns[i] = column;
+              wheelSubmatrix->rows[i] = row;
+              column = rowData[row].predecessor;
+            }
+          }
+          else
+          {
+            /* The cycle is short and we need to add one row and one column from the block of 1's. */
+
+            size_t column1 = targetColumn; /* Belongs to block. */
+            size_t row2 = columnData[column1].predecessor; /* Does not belong to block. */
+            size_t column2 = rowData[row2].predecessor; /* Does not belong to block. */
+            size_t row1 = columnData[column2].predecessor; /* Belongs to block. */
+            TUdbgMsg(4, "Short cycle is induced by r%d,r%d,c%d,c%d.\n", row1+1, row2+1, column1+1, column2+1);
+
+            /* Go through nonzeros of row2 and mark them. */
+            for (Nonzero* nz = rowData[row2].nonzeros.right; nz->column != SIZE_MAX; nz = nz->right)
+              columnData[nz->column].lastBFS = -1;
+
+            /* Find a non-marked source column. */
+            size_t column3 = SIZE_MAX;
+            for (size_t t = 0; t < numTargets; ++t)
+            {
+              column3 = TUelementToColumnIndex(targets[t]);
+              if (columnData[column3].lastBFS >= 0)
+                break;
+            }
+            assert(column3 != SIZE_MAX);
+            TUdbgMsg(4, "Adding c%d\n", column3+1);
+
+            /* Go through nonzeros of column 2 and mark them. */
+            for (Nonzero* nz = columnData[column2].nonzeros.below; nz->row != SIZE_MAX; nz = nz->below)
+              rowData[nz->row].lastBFS = -1;
+
+            /* Find a non-marked source column. */
+            size_t row3 = SIZE_MAX;
+            for (size_t s = 0; s < numSources; ++s)
+            {
+              row3 = TUelementToRowIndex(sources[s]);
+              if (rowData[row3].lastBFS >= 0)
+                break;
+            }
+            assert(row3 != SIZE_MAX);
+            TUdbgMsg(4, "Adding r%d\n", row3+1);
+            wheelSubmatrix->rows[0] = row3;
+            wheelSubmatrix->rows[1] = row1;
+            wheelSubmatrix->rows[2] = row2;
+            wheelSubmatrix->columns[0] = column3;
+            wheelSubmatrix->columns[1] = column1;
+            wheelSubmatrix->columns[2] = column2;
+          }
+          break;
+        }
+
+        if (separationRank1Elements && pnumSeparationRank1Elements)
+        {
+          TUdbgMsg(4, "No path found. Extracting 2-separation.\n");
+
+          *pnumSeparationRank1Elements = 0;
+          /* Collect all rows that are reachable. */
+          for (size_t row = 0; row < numRows; ++row)
+          {
+            if (rowData[row].lastBFS == currentBFS)
+              separationRank1Elements[(*pnumSeparationRank1Elements)++] = TUrowToElement(row);
+          }
+          /* Collect all columns that are not reachable. */
+          for (size_t column = 0; column < numColumns; ++column)
+          {
+            if (columnData[column].lastBFS >= -1 && columnData[column].lastBFS != currentBFS)
+              separationRank1Elements[(*pnumSeparationRank1Elements)++] = TUcolumnToElement(column);
+          }
+
+          break;
+        }
+
+        TUdbgMsg(4, "No path found. Determining smaller part of 2-separation.\n");
+        TUdbgMsg(4, "%d edges were traversed, %d are in rank-1 submatrix, and %d of %d remain.\n", numTraversedEdges,
+          numSources * numTargets, numEdges - numTraversedEdges - numSources * numTargets, numEdges);
+        size_t numEdgesPartWithColumn = numTraversedEdges + numSources;
+        size_t numEdgesPartWithRow = numEdges - numTraversedEdges - (numSources - 1) * numTargets;
+        TUdbgMsg(4, "Part with a column from block has %d nonzeros, part with a row from the block has %d nonzeros.\n",
+          numEdgesPartWithColumn, numEdgesPartWithRow);
+
+        /* We restrict our search on the smaller part. */
+        if (numEdgesPartWithColumn <= numEdgesPartWithRow)
+        {
+          numEdges = numEdgesPartWithColumn;
+
+          /* Remove all but one column from the block. */
+          for (size_t t = 0; t < numTargets; ++t)
+          {
+            size_t column = TUelementToColumnIndex(targets[t]);
+            for (Nonzero* nz = columnData[column].nonzeros.below; nz->row != SIZE_MAX; nz = nz->below)
+            {
+              if (t > 0 || !rowData[nz->row].specialBFS)
+              {
+                rowData[nz->row].numNonzeros--;
+                unlinkNonzero(nz);
+              }
+              else
+                nz->disabled = false;
+            }
+            if (t == 0)
+              columnData[column].numNonzeros = numSources;
+            else
+            {
+              columnData[column].numNonzeros = 0;
+              columnData[column].nonzeros.left->right = columnData[column].nonzeros.right;
+              columnData[column].nonzeros.right->left = columnData[column].nonzeros.left;
+            }
+          }
+          
+          /* Mark all source rows and the single remaining target column as non-special again. */
+          for (size_t s = 0; s < numSources; ++s)
+            rowData[TUelementToRowIndex(sources[s])].specialBFS = false;
+          columnData[TUelementToColumnIndex(targets[0])].specialBFS = false;
+        }
+        else
+        {
+          numEdges = numEdgesPartWithRow;
+
+          /* Remove all but one row from the block. */
+          for (size_t s = 0; s < numSources; ++s)
+          {
+            size_t row = TUelementToRowIndex(sources[s]);
+            for (Nonzero* nz = rowData[row].nonzeros.right; nz->column != SIZE_MAX; nz = nz->right)
+            {
+              if (s > 0 || !columnData[nz->column].specialBFS)
+              {
+                columnData[nz->column].numNonzeros--;
+                unlinkNonzero(nz);
+              }
+              else
+                nz->disabled = false;
+            }
+            if (s == 0)
+              rowData[row].numNonzeros = numTargets;
+            else
+            {
+              rowData[row].numNonzeros = 0;
+              rowData[row].nonzeros.left->right = rowData[row].nonzeros.right;
+              rowData[row].nonzeros.right->left = rowData[row].nonzeros.left;
+            }
+          }
+          
+          /* Mark all target columns and the single remaining source row as non-special again. */
+          for (size_t t = 0; t < numTargets; ++t)
+            columnData[TUelementToColumnIndex(targets[t])].specialBFS = false;
+          rowData[TUelementToRowIndex(sources[0])].specialBFS = false;
+        }
+        
+        TUdbgMsg(0, "!!! Recursing.\n");
+      }
+      TU_CALL( TUfreeStackArray(tu, &targets) );
+      TU_CALL( TUfreeStackArray(tu, &sources) );
+      TU_CALL( TUfreeStackArray(tu, &nzBlock) );
+    }
 
     TU_CALL( TUfreeStackArray(tu, &nonzeros) );
   }
