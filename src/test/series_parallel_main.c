@@ -90,7 +90,7 @@ TU_ERROR matrixSeriesParallel2Sums(
   }
   endTime = clock();
 
-  fprintf(stderr, "Recognition done in %fs seconds. Matrix %sseries-parallel; %ld reductions can be applied.\n",
+  fprintf(stderr, "Recognition done in %f seconds. Matrix %sseries-parallel; %ld reductions can be applied.\n",
     (endTime - startTime) * 1.0 / CLOCKS_PER_SEC / numRepetitions,
     numOperations == matrix->numRows + matrix->numColumns ? "IS " : "is NOT ", numOperations);
 
