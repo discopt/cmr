@@ -77,9 +77,9 @@ TU_ERROR matrixSeriesParallel2Sums(
     (outputWheelElements || outputWheelMatrix) ? &wheelSubmatrix : NULL, NULL, NULL, true) );
   endTime = clock();
 
-  fprintf(stderr, "Recognition done in %fs seconds. Matrix %s series-parallel.\n",
+  fprintf(stderr, "Recognition done in %fs seconds. Matrix %sseries-parallel; %ld reductions can be applied.\n",
     (endTime - startTime) * 1.0 / CLOCKS_PER_SEC,
-    numOperations == matrix->numRows + matrix->numColumns ? "IS" : "is NOT");
+    numOperations == matrix->numRows + matrix->numColumns ? "IS " : "is NOT ", numOperations);
 
   if (outputReductions)
   {
