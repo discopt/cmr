@@ -854,14 +854,14 @@ TU_ERROR breadthFirstSearch(
 }
 
 TU_ERROR TUfindSeriesParallel(TU* tu, TU_CHRMAT* matrix, TU_SP* operations, size_t* pnumOperations,
-  TU_SUBMAT** premainingSubmatrix, TU_SUBMAT** pwheelSubmatrix, TU_ELEMENT* separationRank1Elements,
+  TU_SUBMAT** preducedSubmatrix, TU_SUBMAT** pwheelSubmatrix, TU_ELEMENT* separationRank1Elements,
   size_t* pnumSeparationRank1Elements, bool isSorted)
 {
   assert(tu);
   assert(matrix);
   assert(operations || (matrix->numRows == 0 && matrix->numColumns == 0));
   assert(pnumOperations);
-  assert(!premainingSubmatrix || !*premainingSubmatrix);
+  assert(!preducedSubmatrix || !*preducedSubmatrix);
   assert(!pwheelSubmatrix || !*pwheelSubmatrix);
   assert(!separationRank1Elements || pnumSeparationRank1Elements);
   assert(!separationRank1Elements || pwheelSubmatrix);
@@ -952,7 +952,7 @@ TU_ERROR TUfindSeriesParallel(TU* tu, TU_CHRMAT* matrix, TU_SP* operations, size
   TU_CALL( initialScan(tu, columnHashtable, columnData, numColumns, queue, &queueEnd, false) );
 
   *pnumOperations = 0;
-  if (queueEnd > queueStart || (pwheelSubmatrix && numEntries))
+  if (queueEnd > queueStart || (pwheelSubmatrix && (numRows + numColumns > 0)))
   {
     /* Create nonzeros of matrix. */
     Nonzero* nonzeros = NULL;
@@ -972,11 +972,11 @@ TU_ERROR TUfindSeriesParallel(TU* tu, TU_CHRMAT* matrix, TU_SP* operations, size
       &queueStart, &queueEnd, queueMemory, operations, pnumOperations, &numRowOperations, &numColumnOperations) );
 
     /* Extract remaining submatrix. */
-    if (premainingSubmatrix)
+    if (preducedSubmatrix)
     {
       TU_CALL( TUsubmatCreate(tu, matrix->numRows - numRowOperations, matrix->numColumns - numColumnOperations,
-        premainingSubmatrix) );
-      TU_SUBMAT* remainingSubmatrix = *premainingSubmatrix;
+        preducedSubmatrix) );
+      TU_SUBMAT* remainingSubmatrix = *preducedSubmatrix;
       size_t rowSubmatrix = 0;
       for (size_t row = 0; row < matrix->numRows; ++row)
       {
@@ -994,7 +994,7 @@ TU_ERROR TUfindSeriesParallel(TU* tu, TU_CHRMAT* matrix, TU_SP* operations, size
     }
 
     /* Search for a wheel representation submatrix. */
-    if (pwheelSubmatrix && *pnumOperations != numEntries)
+    if (pwheelSubmatrix && (*pnumOperations != (numRows + numColumns)))
     {
       TUdbgMsg(2, "Searching for wheel graph representation submatrix.\n");
 
@@ -1298,10 +1298,10 @@ TU_ERROR TUfindSeriesParallel(TU* tu, TU_CHRMAT* matrix, TU_SP* operations, size
   {
     TUdbgMsg(2, "No series/parallel element found.\n");
 
-    if (premainingSubmatrix)
+    if (preducedSubmatrix)
     {
-      TU_CALL( TUsubmatCreate(tu, matrix->numRows, matrix->numColumns, premainingSubmatrix) );
-      TU_SUBMAT* remainingSubmatrix = *premainingSubmatrix;
+      TU_CALL( TUsubmatCreate(tu, matrix->numRows, matrix->numColumns, preducedSubmatrix) );
+      TU_SUBMAT* remainingSubmatrix = *preducedSubmatrix;
       for (size_t row = 0; row < matrix->numRows; ++row)
         remainingSubmatrix->rows[row] = row;
       for (size_t column = 0; column < matrix->numColumns; ++column)

@@ -8,6 +8,7 @@ option(SHARED "Build shared libraries" ON)
 set(BUILD_SHARED_LIBS ${SHARED})
 message(STATUS "Build shared libraries: " ${SHARED})
 option(THREADS "Support for parallelization" ON)
+option(GENERATORS "Compile matrix generators" OFF)
 
 # Add cmake/ to CMAKE_MODULE_PATH.
 list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake)
@@ -30,6 +31,12 @@ if(TU_WITH_THREADS)
   message(STATUS "Parallelization: ON")
 else()
   message(STATUS "Parallelization: OFF")
+endif()
+
+if(GENERATORS)
+  message(STATUS "Generators: ON")
+else()
+  message(STATUS "Generators: OFF")
 endif()
 
 # Target for the TU library.
@@ -92,10 +99,10 @@ set_target_properties(tu_graphic PROPERTIES OUTPUT_NAME tu-graphic)
 
 # Target for the tu-series-parallel binary.
 add_executable(tu_series_parallel
-   src/test/series_parallel_main.c)
+  src/test/series_parallel_main.c)
 target_link_libraries(tu_series_parallel
-   PRIVATE
-      TU::tu
+  PRIVATE
+    TU::tu
 )
 set_target_properties(tu_series_parallel PROPERTIES OUTPUT_NAME tu-series-parallel)
 
@@ -107,6 +114,16 @@ target_link_libraries(tu_convert_matrix
      TU::tu
 )
 set_target_properties(tu_convert_matrix PROPERTIES OUTPUT_NAME tu-convert-matrix)
+
+if(GENERATORS)
+  add_executable(tu_generate_series_parallel
+    src/gen/series_parallel_gen.c)
+  target_link_libraries(tu_generate_series_parallel
+    PRIVATE
+      TU::tu
+  )
+  set_target_properties(tu_generate_series_parallel PROPERTIES OUTPUT_NAME tu-generate-series-parallel)
+endif()
 
 # Target for the random_network
 #add_executable(random_network

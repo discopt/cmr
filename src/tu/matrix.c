@@ -431,7 +431,7 @@ TU_ERROR TUdblmatPrintDense(FILE* stream, TU_DBLMAT* matrix, char zeroChar, bool
   {
     fputs("   ", stream);
     for (int column = 0; column < matrix->numColumns; ++column)
-      fprintf(stream, "%d ", column % 10);
+      fprintf(stream, "%d ", (column+1) % 10);
     fputs("\n  ", stream);
     for (int column = 0; column < matrix->numColumns; ++column)
       fputs("--", stream);
@@ -440,7 +440,7 @@ TU_ERROR TUdblmatPrintDense(FILE* stream, TU_DBLMAT* matrix, char zeroChar, bool
   for (int row = 0; row < matrix->numRows; ++row)
   {
     if (header)
-      fprintf(stream, "%d| ", row % 10);
+      fprintf(stream, "%d| ", (row+1) % 10);
     int start = matrix->rowStarts[row];
     int end = row + 1 < matrix->numRows ? matrix->rowStarts[row + 1] : matrix->numNonzeros;
     for (int i = start; i < end; ++i)
@@ -474,7 +474,7 @@ TU_ERROR TUintmatPrintDense(FILE* stream, TU_INTMAT* matrix, char zeroChar, bool
   {
     fputs("   ", stream);
     for (int column = 0; column < matrix->numColumns; ++column)
-      fprintf(stream, "%d ", column % 10);
+      fprintf(stream, "%d ", (column+1) % 10);
     fputs("\n  ", stream);
     for (int column = 0; column < matrix->numColumns; ++column)
       fputs("--", stream);
@@ -483,7 +483,7 @@ TU_ERROR TUintmatPrintDense(FILE* stream, TU_INTMAT* matrix, char zeroChar, bool
   for (int row = 0; row < matrix->numRows; ++row)
   {
     if (header)
-      fprintf(stream, "%d| ", row % 10);
+      fprintf(stream, "%d| ", (row+1) % 10);
     int start = matrix->rowStarts[row];
     int end = row + 1 < matrix->numRows ? matrix->rowStarts[row + 1] : matrix->numNonzeros;
     for (int i = start; i < end; ++i)
@@ -522,7 +522,7 @@ TU_ERROR TUchrmatPrintDense(TU* tu, FILE* stream, TU_CHRMAT* matrix, char zeroCh
   {
     fputs("   ", stream);
     for (int column = 0; column < matrix->numColumns; ++column)
-      fprintf(stream, "%d ", column % 10);
+      fprintf(stream, "%d ", (column+1) % 10);
     fputs("\n  ", stream);
     for (int column = 0; column < matrix->numColumns; ++column)
       fputs("--", stream);
@@ -531,7 +531,7 @@ TU_ERROR TUchrmatPrintDense(TU* tu, FILE* stream, TU_CHRMAT* matrix, char zeroCh
   for (int row = 0; row < matrix->numRows; ++row)
   {
     if (header)
-      fprintf(stream, "%d| ", row % 10);
+      fprintf(stream, "%d| ", (row+1) % 10);
     int start = matrix->rowStarts[row];
     int end = row + 1 < matrix->numRows ? matrix->rowStarts[row + 1] : matrix->numNonzeros;
     for (int i = start; i < end; ++i)

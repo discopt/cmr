@@ -127,7 +127,7 @@ TU_ERROR TUfindSeriesParallel(
   TU_SP* operations,                    /**< Array for storing the SP-reductions. Must be sufficiently large, e.g., number
                                          **< of rows + number of columns. */
   size_t* pnumOperations,               /**< Pointer for storing the number of SP-reductions. */
-  TU_SUBMAT** premainingSubmatrix,      /**< Pointer for storing the SP-reduced submatrix (may be \c NULL). */
+  TU_SUBMAT** preducedSubmatrix,        /**< Pointer for storing the SP-reduced submatrix (may be \c NULL). */
   TU_SUBMAT** pwheelSubmatrix,          /**< Pointer for storing a submatrix representing a wheel (may be \c NULL). */
   TU_ELEMENT* separationRank1Elements,  /**< Array for storing elements of one part of a 2-separation. If not \c NULL,
                                          **< it must have sufficient capacity. */
