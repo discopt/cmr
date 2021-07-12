@@ -97,9 +97,11 @@ TU_ERROR genMatrixSeriesParallel(
 
   size_t numTotalRows = numBaseRows + numZeroRows + numUnitRows + numCopiedRows;
   size_t numTotalColumns = numBaseColumns + numZeroColumns + numUnitColumns + numCopiedColumns;
+  size_t totalMemory = 0;
 
   Nonzero* rowHeads = NULL;
   TU_CALL( TUallocBlockArray(tu, &rowHeads, numTotalRows) );
+  totalMemory += sizeof(Nonzero) * numTotalRows;
   for (size_t row = 0; row < numTotalRows; ++row)
   {
     rowHeads[row].left = &rowHeads[row];
@@ -111,7 +113,8 @@ TU_ERROR genMatrixSeriesParallel(
   }
 
   Nonzero* columnHeads = NULL;
-  TU_CALL( TUallocBlockArray(tu, &columnHeads, numTotalRows) );
+  TU_CALL( TUallocBlockArray(tu, &columnHeads, numTotalColumns) );
+  totalMemory += sizeof(Nonzero) * numTotalColumns;
   for (size_t column = 0; column < numTotalColumns; ++column)
   {
     columnHeads[column].left = NULL;
@@ -132,6 +135,7 @@ TU_ERROR genMatrixSeriesParallel(
         continue;
 
       TU_CALL( addNonzero(tu, rowHeads, columnHeads, &numBaseNonzeros, row, column) );
+      totalMemory += sizeof(Nonzero);
     }
   }
   size_t numTotalNonzeros = numBaseNonzeros;
@@ -140,6 +144,7 @@ TU_ERROR genMatrixSeriesParallel(
   char* operations = NULL;
   size_t numOperations = numZeroRows + numZeroColumns + numUnitRows + numUnitColumns + numCopiedRows + numCopiedColumns;
   TU_CALL( TUallocBlockArray(tu, &operations, numOperations) );
+  totalMemory += sizeof(char) * numOperations;
   char* op = operations;
   for (size_t i = 0; i < numZeroRows; ++i)
     (*op++) = 'z';
@@ -185,6 +190,7 @@ TU_ERROR genMatrixSeriesParallel(
       {
         size_t column = randRange(0, numColumns);
         TU_CALL( addNonzero(tu, rowHeads, columnHeads, &numTotalNonzeros, numRows, column) );
+        totalMemory += sizeof(Nonzero);
         ++numRows;
         break;
       }
@@ -192,6 +198,7 @@ TU_ERROR genMatrixSeriesParallel(
       {
         size_t row = randRange(0, numRows);
         TU_CALL( addNonzero(tu, rowHeads, columnHeads, &numTotalNonzeros, row, numColumns) );
+        totalMemory += sizeof(Nonzero);
         ++numColumns;
         break;
       }
@@ -199,7 +206,10 @@ TU_ERROR genMatrixSeriesParallel(
       {
         size_t row = randRange(0, numRows);
         for (Nonzero* nz = rowHeads[row].right; nz->column != SIZE_MAX; nz = nz->right)
+        {
           TU_CALL( addNonzero(tu, rowHeads, columnHeads, &numTotalNonzeros, numRows, nz->column) );
+          totalMemory += sizeof(Nonzero);
+        }
         ++numRows;
         break;
       }
@@ -207,28 +217,25 @@ TU_ERROR genMatrixSeriesParallel(
       {
         size_t column = randRange(0, numColumns);
         for (Nonzero* nz = columnHeads[column].below; nz->row != SIZE_MAX; nz = nz->below)
+        {
           TU_CALL( addNonzero(tu, rowHeads, columnHeads, &numTotalNonzeros, nz->row, numColumns) );
+          totalMemory += sizeof(Nonzero);
+        }
         ++numColumns;
         break;
       }
     }
   }
 
-  fprintf(stderr, "Generated a %ldx%ld matrix with %ld nonzeros.\n", numTotalRows, numTotalColumns, numTotalNonzeros);
-  fprintf(stderr, "It contains a %ldx%ld base matrix with %ld nonzeros, 1-entries generated with probability %g.\n",
-    numBaseRows, numBaseColumns, numBaseNonzeros, probability);
-  fprintf(stderr, "Series-parallel operations: %ldx%ld zero, %ldx%ld unit, %ldx%ld copied\n", numZeroRows,
-    numZeroColumns, numUnitRows, numUnitColumns, numCopiedRows, numCopiedColumns);
-  if (randomize)
-    fputs("Random row and column permutations were applied.\n", stderr);
-
   /* Create permutations. */
   size_t* rowPermutation = NULL;
   TU_CALL( TUallocBlockArray(tu, &rowPermutation, numTotalRows) );
+  totalMemory += sizeof(size_t) * numTotalRows;
   for (size_t row = 0; row < numTotalRows; ++row)
     rowPermutation[row] = row;
   size_t* columnPermutation = NULL;
   TU_CALL( TUallocBlockArray(tu, &columnPermutation, numTotalColumns) );
+  totalMemory += sizeof(size_t) * numTotalColumns;
   for (size_t column = 0; column < numTotalColumns; ++column)
     columnPermutation[column] = column;
   if (randomize)
@@ -248,6 +255,15 @@ TU_ERROR genMatrixSeriesParallel(
       columnPermutation[c] = tmp;
     }
   }
+
+  fprintf(stderr, "Generated a %ldx%ld matrix with %ld nonzeros.\n", numTotalRows, numTotalColumns, numTotalNonzeros);
+  fprintf(stderr, "It contains a %ldx%ld base matrix with %ld nonzeros, 1-entries generated with probability %g.\n",
+    numBaseRows, numBaseColumns, numBaseNonzeros, probability);
+  fprintf(stderr, "Series-parallel operations: %ldx%ld zero, %ldx%ld unit, %ldx%ld copied\n", numZeroRows,
+    numZeroColumns, numUnitRows, numUnitColumns, numCopiedRows, numCopiedColumns);
+  if (randomize)
+    fputs("Random row and column permutations were applied.\n", stderr);
+  fprintf(stderr, "Amount of memory used: %.2g GB.\n", totalMemory / (1024.0*1024.0*1024.0));
 
   /* Print matrix. */
 
