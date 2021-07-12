@@ -25,6 +25,7 @@ int printUsage(const char* program)
   puts("  -R         Output the reduced matrix.");
   puts("  -w         Output the elements of a wheel matrix if not series-parallel.");
   puts("  -W         Output a wheel matrix if not series-parallel.");
+  puts("  -N NUM     Repeat the computation N times.");
   puts("Matrix formats: dense, sparse");
   puts("If FILE is `-', then the input will be read from stdin.");
   return EXIT_FAILURE;
@@ -38,7 +39,8 @@ TU_ERROR matrixSeriesParallel2Sums(
   bool outputReducedElements,   /**< Whether to output the elements of the reduced matrix. */
   bool outputReducedMatrix,     /**< Whether to output the reduced matrix. */
   bool outputWheelElements,     /**< Whether to output the elements of a wheel matrix if not series-parallel. */
-  bool outputWheelMatrix        /**< Whether to output a wheel matrix if not series-parallel. */
+  bool outputWheelMatrix,       /**< Whether to output a wheel matrix if not series-parallel. */
+  size_t numRepetitions         /**< Number of repetitions of the recognition algorithm. */
 )
 {
   clock_t startTime, endTime;
@@ -72,13 +74,24 @@ TU_ERROR matrixSeriesParallel2Sums(
   TU_SUBMAT* wheelSubmatrix = NULL;
 
   startTime = clock();
-  TU_CALL( TUfindSeriesParallel(tu, matrix, operations, &numOperations,
-    (outputReducedElements || outputReducedMatrix) ? &reducedSubmatrix : NULL,
-    (outputWheelElements || outputWheelMatrix) ? &wheelSubmatrix : NULL, NULL, NULL, true) );
+  for (size_t i = 0; i < numRepetitions; ++i)
+  {
+    TU_CALL( TUfindSeriesParallel(tu, matrix, operations, &numOperations,
+      (outputReducedElements || outputReducedMatrix) ? &reducedSubmatrix : NULL,
+      (outputWheelElements || outputWheelMatrix) ? &wheelSubmatrix : NULL, NULL, NULL, true) );
+    
+    if (i+1 < numRepetitions)
+    {
+      if (reducedSubmatrix)
+        TU_CALL( TUsubmatFree(tu, &reducedSubmatrix) );
+      if (wheelSubmatrix)
+        TU_CALL( TUsubmatFree(tu, &wheelSubmatrix) );
+    }
+  }
   endTime = clock();
 
   fprintf(stderr, "Recognition done in %fs seconds. Matrix %sseries-parallel; %ld reductions can be applied.\n",
-    (endTime - startTime) * 1.0 / CLOCKS_PER_SEC,
+    (endTime - startTime) * 1.0 / CLOCKS_PER_SEC / numRepetitions,
     numOperations == matrix->numRows + matrix->numColumns ? "IS " : "is NOT ", numOperations);
 
   if (outputReductions)
@@ -165,6 +178,7 @@ int main(int argc, char** argv)
   bool outputReducedMatrix = false;
   bool outputWheelElements = false;
   bool outputWheelMatrix = false;
+  size_t repetitions = 1;
   for (int a = 1; a < argc; ++a)
   {
     if (!strcmp(argv[a], "-h"))
@@ -182,6 +196,17 @@ int main(int argc, char** argv)
       outputWheelElements = true;
     else if (!strcmp(argv[a], "-W"))
       outputWheelMatrix = true;
+    else if (!strcmp(argv[a], "-N") && a+1 < argc)
+    {
+      char* p;
+      repetitions = strtoull(argv[a+1], &p, 10);
+      if (*p != '\0')
+      {
+        fprintf(stderr, "Error: invalid number of repetitions <%s>.\n", argv[a+1]);
+        return printUsage(argv[0]);
+      }
+      ++a;
+    }
     else if (!strcmp(argv[a], "-i") && a+1 < argc)
     {
       if (!strcmp(argv[a+1], "dense"))
@@ -224,7 +249,7 @@ int main(int argc, char** argv)
   }
 
   TU_ERROR error = matrixSeriesParallel2Sums(instanceFileName, inputFormat, outputFormat, outputReductions,
-    outputReducedElements, outputReducedMatrix, outputWheelElements, outputWheelMatrix);
+    outputReducedElements, outputReducedMatrix, outputWheelElements, outputWheelMatrix, repetitions);
   switch (error)
   {
   case TU_ERROR_INPUT:
