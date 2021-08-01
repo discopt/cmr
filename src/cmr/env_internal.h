@@ -1,14 +1,14 @@
-#ifndef TU_ENV_INTERNAL_H
-#define TU_ENV_INTERNAL_H
+#ifndef CMR_ENV_INTERNAL_H
+#define CMR_ENV_INTERNAL_H
 
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdarg.h>
 
-#if defined(TU_DEBUG)
+#if defined(CMR_DEBUG)
 
 static
-void TUdbgMsg(int indent, const char* format, ...)
+void CMRdbgMsg(int indent, const char* format, ...)
 {
   va_list args;
 
@@ -20,11 +20,11 @@ void TUdbgMsg(int indent, const char* format, ...)
   fflush(stdout);
 }
 
-#else /* TU_DEBUG */
+#else /* CMR_DEBUG */
 
-#define TUdbgMsg(...)
+#define CMRdbgMsg(...)
 
-#endif /* TU_DEBUG */
+#endif /* CMR_DEBUG */
 
 
 typedef struct
@@ -33,7 +33,7 @@ typedef struct
   size_t top;   /**< \brief First used byte. */
 } TU_STACK;
 
-struct TU_ENVIRONMENT
+struct CMR_ENVIRONMENT
 {
   FILE* output;         /**< \brief Output stream or \c NULL if silent. */
   bool closeOutput;     /**< \brief Whether to close the output stream at the end. */
@@ -51,42 +51,42 @@ struct TU_ENVIRONMENT
 /**
  * \brief Allocates statck memory for *\p ptr.
  *
- * Stack memory shall be freed with \ref TUfreeStack in the reverse order of allocation.
+ * Stack memory shall be freed with \ref CMRfreeStack in the reverse order of allocation.
  * The size is determined automatically.
  */
 
-#define TUallocStack(tu, ptr) \
-  _TUallocStack(tu, (void**) ptr, sizeof(**ptr))
+#define CMRallocStack(cmr, ptr) \
+  _CMRallocStack(cmr, (void**) ptr, sizeof(**ptr))
 
 /**
- * \brief Carries out the allocation for \ref TUallocStack.
+ * \brief Carries out the allocation for \ref CMRallocStack.
  *
- * \note Use \ref TUallocStack to allocate stack memory.
+ * \note Use \ref CMRallocStack to allocate stack memory.
  */
 
 CMR_EXPORT
-CMR_ERROR _TUallocStack(
-  TU* tu,     /**< \ref TU environment. */
+CMR_ERROR _CMRallocStack(
+  CMR* cmr,     /**< \ref CMR environment. */
   void** ptr, /**< Pointer where the space shall be allocated. */
   size_t size /**< Space to allocate. */
 );
 
 /**
- * \brief Frees a stack memory chunk allocated with \ref TUallocStack.
+ * \brief Frees a stack memory chunk allocated with \ref CMRallocStack.
  */
 
-#define TUfreeStack(tu, ptr) \
-  _TUfreeStack(tu, (void**) ptr, sizeof(**ptr))
+#define CMRfreeStack(cmr, ptr) \
+  _CMRfreeStack(cmr, (void**) ptr, sizeof(**ptr))
 
 /**
- * \brief Carries out the deallocation for \ref TUfreeStack.
+ * \brief Carries out the deallocation for \ref CMRfreeStack.
  *
- * \note Use \ref TUfreeStack to free stack memory.
+ * \note Use \ref CMRfreeStack to free stack memory.
  */
 
 CMR_EXPORT
-CMR_ERROR _TUfreeStack(
-  TU* tu,     /**< \ref TU environment. */
+CMR_ERROR _CMRfreeStack(
+  CMR* cmr,     /**< \ref CMR environment. */
   void** ptr  /**< Pointer of space to be freed. */
 );
 
@@ -94,15 +94,15 @@ CMR_ERROR _TUfreeStack(
  * \brief Allocates memory for an array of blocks on the stack.
  */
 
-#define TUallocStackArray(tu, ptr, length) \
-  _TUallocStack(tu, (void**) ptr, sizeof(**ptr) * (length))
+#define CMRallocStackArray(cmr, ptr, length) \
+  _CMRallocStack(cmr, (void**) ptr, sizeof(**ptr) * (length))
 
 /**
  * \brief Frees memory of an array of blocks on the stack.
  */
 
-#define TUfreeStackArray(tu, ptr) \
-  _TUfreeStack(tu, (void**) ptr)
+#define CMRfreeStackArray(cmr, ptr) \
+  _CMRfreeStack(cmr, (void**) ptr)
 
 #if !defined(NDEBUG)
 
@@ -112,15 +112,15 @@ CMR_ERROR _TUfreeStack(
  * Useful for debugging memory errors.
  */
 
-void TUassertStackConsistency(
-  TU* tu  /**< \ref TU environment. */
+void CMRassertStackConsistency(
+  CMR* cmr  /**< \ref CMR environment. */
 );
 
 #else
 
 static inline
-void TUassertStackConsistency(
-  TU* tu  /**< \ref TU environment. */
+void CMRassertStackConsistency(
+  TU* tu  /**< \ref CMR environment. */
 )
 {
 
@@ -129,11 +129,11 @@ void TUassertStackConsistency(
 
 #endif /* !NDEBUG */
 
-char* TUconsistencyMessage(const char* format, ...);
+char* CMRconsistencyMessage(const char* format, ...);
 
 #if !defined(NDEBUG)
 
-#define TUconsistencyAssert( call ) \
+#define CMRconsistencyAssert( call ) \
   do \
   { \
     char* __message = call; \
@@ -150,8 +150,8 @@ char* TUconsistencyMessage(const char* format, ...);
 
 #else
 
-#define TUconsistencyAssert( call )
+#define CMRconsistencyAssert( call )
 
 #endif
 
-#endif /* TU_ENV_INTERNAL_H */
+#endif /* CMR_ENV_INTERNAL_H */

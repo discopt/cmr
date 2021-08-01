@@ -62,23 +62,23 @@ add_library(cmr
   src/cmr/zero_plus_minus_one.cpp
 )
 
-# Target for the cmr-test binary.
-add_executable(cmr_test
+# Target for the tu-test binary.
+add_executable(tu_test
   src/test/main.cpp)
-target_link_libraries(cmr_test
+target_link_libraries(tu_test
   PRIVATE
     CMR::cmr
 )
-set_target_properties(cmr_test PROPERTIES OUTPUT_NAME cmr-test)
+set_target_properties(tu_test PROPERTIES OUTPUT_NAME tu-test)
 
 # Target for the cmr-test-new binary.
-add_executable(cmr_test_new
-  src/test/test_main.c)
-target_link_libraries(cmr_test_new
+add_executable(cmr_tu_test
+  src/test/tu_main.c)
+target_link_libraries(cmr_tu_test
   PRIVATE
     CMR::cmr
 )
-set_target_properties(cmr_test_new PROPERTIES OUTPUT_NAME cmr-test-new)
+set_target_properties(cmr_tu_test PROPERTIES OUTPUT_NAME cmr-tu-test)
 
 # Target for the graph-matrix binary.
 add_executable(cmr_graphic
@@ -148,7 +148,7 @@ endif()
 ### Installation ###
 include(GNUInstallDirs)
 
-install(TARGETS cmr_test
+install(TARGETS tu_test
    RUNTIME
       DESTINATION bin
 )

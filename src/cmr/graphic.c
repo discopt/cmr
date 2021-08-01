@@ -1,6 +1,6 @@
-// #define TU_DEBUG /* Uncomment to debug graphic. */
-// #define TU_DEBUG_DOT /* Uncomment to write dot files of t-decompositions. */
-// #define TU_DEBUG_CONSISTENCY /* Uncomment to check consistency of t-decompositions. */
+// #define CMR_DEBUG /* Uncomment to debug graphic. */
+// #define CMR_DEBUG_DOT /* Uncomment to write dot files of t-decompositions. */
+// #define CMR_DEBUG_CONSISTENCY /* Uncomment to check consistency of t-decompositions. */
 
 #include <cmr/graphic.h>
 #include <cmr/sign.h>
@@ -34,19 +34,19 @@ typedef enum
 } DIJKSTRA_STAGE;
 
 /**
- * \brief Node information for shortest-path computation in \ref TUcomputeGraphBinaryRepresentationMatrix.
+ * \brief Node information for shortest-path computation in \ref CMRcomputeGraphBinaryRepresentationMatrix.
  */
 
 typedef struct
 {
   DIJKSTRA_STAGE stage;   /**< \brief At which stage of the algorithm is this node? */
   int predecessor;        /**< \brief Predecessor node in shortest-path branching, or -1 for a root. */
-  TU_GRAPH_EDGE rootEdge; /**< \brief The actual edge towards the predecessor, or -1 for a root./ */
+  CMR_GRAPH_EDGE rootEdge; /**< \brief The actual edge towards the predecessor, or -1 for a root./ */
   bool reversed;          /**< \brief Whether the edge towards the predecessor is reversed. */
 } DijkstraNodeData;
 
 /**
- * \brief Comparator for sorting ints using \ref TUsort2 in ascending way.
+ * \brief Comparator for sorting ints using \ref CMRsort2 in ascending way.
  */
 
 int compareInt2(const void** A, const void** B)
@@ -62,115 +62,115 @@ int compareInt2(const void** A, const void** B)
 
 static
 CMR_ERROR computeRepresentationMatrix(
-  TU* tu,                       /**< \ref TU environment. */
-  TU_GRAPH* graph,              /**< Graph. */
+  CMR* cmr,                       /**< \ref CMR environment. */
+  CMR_GRAPH* graph,              /**< Graph. */
   bool ternary,                 /**< Whether we need to compute correct signs. */
-  TU_CHRMAT** ptranspose,       /**< Pointer for storing the transpose of the matrix. */
+  CMR_CHRMAT** ptranspose,       /**< Pointer for storing the transpose of the matrix. */
   bool* edgesReversed,          /**< Indicates, for each edge {u,v}, whether we consider (u,v) (if \c false) */
                                 /**< or (v,u) (if \c true). */
   int numForestEdges,           /**< Length of \p forestEdges (0 if \c forestEdges is \c NULL). */
-  TU_GRAPH_EDGE* forestEdges,   /**< If not \c NULL, tries to use these edges for the basis. */
+  CMR_GRAPH_EDGE* forestEdges,   /**< If not \c NULL, tries to use these edges for the basis. */
   int numCoforestEdges,         /**< Length of \p coforestEdges (0 if \c coforestEdges is \c NULL). */
-  TU_GRAPH_EDGE* coforestEdges, /**< If not \c NULL, tries to order columns as specified. */
+  CMR_GRAPH_EDGE* coforestEdges, /**< If not \c NULL, tries to order columns as specified. */
   bool* pisCorrectForest        /**< If not \c NULL, returns \c true if and only if \c forestEdges are spanning forest. */
 )
 {
-  assert(tu);
+  assert(cmr);
   assert(graph);
   assert(ptranspose && !*ptranspose);
   assert(numForestEdges == 0 || forestEdges);
   assert(numForestEdges == 0 || coforestEdges);
-  TUassertStackConsistency(tu);
+  CMRassertStackConsistency(cmr);
 
-  TUdbgMsg(0, "Computing %s representation matrix.\n", ternary ? "ternary" : "binary");
+  CMRdbgMsg(0, "Computing %s representation matrix.\n", ternary ? "ternary" : "binary");
 
   DijkstraNodeData* nodeData = NULL;
-  TU_CALL( TUallocStackArray(tu, &nodeData, TUgraphMemNodes(graph)) );
-  TU_INTHEAP heap;
-  TU_CALL( TUintheapInitStack(tu, &heap, TUgraphMemNodes(graph)) );
+  CMR_CALL( CMRallocStackArray(cmr, &nodeData, CMRgraphMemNodes(graph)) );
+  CMR_INTHEAP heap;
+  CMR_CALL( CMRintheapInitStack(cmr, &heap, CMRgraphMemNodes(graph)) );
   int* lengths = NULL;
-  TU_CALL( TUallocStackArray(tu, &lengths, TUgraphMemEdges(graph)) );
-  for (TU_GRAPH_NODE v = TUgraphNodesFirst(graph); TUgraphNodesValid(graph, v);
-    v = TUgraphNodesNext(graph, v))
+  CMR_CALL( CMRallocStackArray(cmr, &lengths, CMRgraphMemEdges(graph)) );
+  for (CMR_GRAPH_NODE v = CMRgraphNodesFirst(graph); CMRgraphNodesValid(graph, v);
+    v = CMRgraphNodesNext(graph, v))
   {
     nodeData[v].stage = UNKNOWN;
   }
-  for (TU_GRAPH_ITER i = TUgraphEdgesFirst(graph); TUgraphEdgesValid(graph, i);
-    i = TUgraphEdgesNext(graph, i))
+  for (CMR_GRAPH_ITER i = CMRgraphEdgesFirst(graph); CMRgraphEdgesValid(graph, i);
+    i = CMRgraphEdgesNext(graph, i))
   {
-    TU_GRAPH_EDGE e = TUgraphEdgesEdge(graph, i);
+    CMR_GRAPH_EDGE e = CMRgraphEdgesEdge(graph, i);
     lengths[e] = 1;
   }
   for (int b = 0; b < numForestEdges; ++b)
   {
     if (forestEdges[b] >= 0)
     {
-      TUdbgMsg(0, "forest element %d is edge %d = {%d,%d}\n", b, forestEdges[b], TUgraphEdgeU(graph, forestEdges[b]),
-        TUgraphEdgeV(graph, forestEdges[b]));
+      CMRdbgMsg(0, "forest element %d is edge %d = {%d,%d}\n", b, forestEdges[b], CMRgraphEdgeU(graph, forestEdges[b]),
+        CMRgraphEdgeV(graph, forestEdges[b]));
       lengths[forestEdges[b]] = 0;
     }
   }
 
-  TUassertStackConsistency(tu);
+  CMRassertStackConsistency(cmr);
 
   /* Start Dijkstra's algorithm at each node. */
   int countComponents = 0;
-  for (TU_GRAPH_NODE s = TUgraphNodesFirst(graph); TUgraphNodesValid(graph, s);
-    s = TUgraphNodesNext(graph, s))
+  for (CMR_GRAPH_NODE s = CMRgraphNodesFirst(graph); CMRgraphNodesValid(graph, s);
+    s = CMRgraphNodesNext(graph, s))
   {
     if (nodeData[s].stage != UNKNOWN)
       continue;
 
-    TUdbgMsg(2, "Executing Dijkstra at starting node %d.\n", s);
+    CMRdbgMsg(2, "Executing Dijkstra at starting node %d.\n", s);
     nodeData[s].predecessor = -1;
     nodeData[s].rootEdge = -1;
     ++countComponents;
-    TUintheapInsert(&heap, s, 0);
-    while (!TUintheapEmpty(&heap))
+    CMRintheapInsert(&heap, s, 0);
+    while (!CMRintheapEmpty(&heap))
     {
-      int distance = TUintheapMinimumValue(&heap);
-      TU_GRAPH_NODE v = TUintheapExtractMinimum(&heap);
-      TUdbgMsg(4, "Processing node %d at distance %d.\n", v, distance);
+      int distance = CMRintheapMinimumValue(&heap);
+      CMR_GRAPH_NODE v = CMRintheapExtractMinimum(&heap);
+      CMRdbgMsg(4, "Processing node %d at distance %d.\n", v, distance);
       nodeData[v].stage = COMPLETED;
-      for (TU_GRAPH_ITER i = TUgraphIncFirst(graph, v); TUgraphIncValid(graph, i);
-        i = TUgraphIncNext(graph, i))
+      for (CMR_GRAPH_ITER i = CMRgraphIncFirst(graph, v); CMRgraphIncValid(graph, i);
+        i = CMRgraphIncNext(graph, i))
       {
-        assert(TUgraphIncSource(graph, i) == v);
-        TU_GRAPH_NODE w = TUgraphIncTarget(graph, i);
+        assert(CMRgraphIncSource(graph, i) == v);
+        CMR_GRAPH_NODE w = CMRgraphIncTarget(graph, i);
 
         /* Skip if already completed. */
         if (nodeData[w].stage == COMPLETED)
           continue;
 
-        TU_GRAPH_EDGE e = TUgraphIncEdge(graph, i);
+        CMR_GRAPH_EDGE e = CMRgraphIncEdge(graph, i);
         int newDistance = distance + lengths[e];
-        if (newDistance < TUintheapGetValueInfinity(&heap, w))
+        if (newDistance < CMRintheapGetValueInfinity(&heap, w))
         {
-          TUdbgMsg(6, "Updating distance of (%d,%d) from %d to %d.\n", v, w, TUintheapGetValueInfinity(&heap, w),
+          CMRdbgMsg(6, "Updating distance of (%d,%d) from %d to %d.\n", v, w, CMRintheapGetValueInfinity(&heap, w),
             newDistance);
           nodeData[w].stage = SEEN;
           nodeData[w].predecessor = v;
           nodeData[w].rootEdge = e;
           nodeData[w].reversed = edgesReversed ? edgesReversed[e] : false;
-          if (w == TUgraphEdgeU(graph, e))
+          if (w == CMRgraphEdgeU(graph, e))
             nodeData[w].reversed = !nodeData[w].reversed;
-          TUintheapDecreaseInsert(&heap, w, newDistance);
+          CMRintheapDecreaseInsert(&heap, w, newDistance);
         }
       }
     }
   }
 
-  TUassertStackConsistency(tu);
-  TU_CALL( TUfreeStackArray(tu, &lengths) );
-  TU_CALL( TUintheapClearStack(tu, &heap) );
+  CMRassertStackConsistency(cmr);
+  CMR_CALL( CMRfreeStackArray(cmr, &lengths) );
+  CMR_CALL( CMRintheapClearStack(cmr, &heap) );
 
   /* Now nodeData[.].predecessor is an arborescence for each connected component. */
 
-  TU_GRAPH_NODE* nodesRows = NULL; /* Non-root node v is mapped to row of edge {v,predecessor(v)}. */
-  TU_CALL( TUallocStackArray(tu, &nodesRows, TUgraphMemNodes(graph)) );
+  CMR_GRAPH_NODE* nodesRows = NULL; /* Non-root node v is mapped to row of edge {v,predecessor(v)}. */
+  CMR_CALL( CMRallocStackArray(cmr, &nodesRows, CMRgraphMemNodes(graph)) );
   char* nodesReversed = NULL; /* Non-root node v is mapped to +1 or -1 depending on the direction of {v,predecessor(v)}. */
-  TU_CALL( TUallocStackArray(tu, &nodesReversed, TUgraphMemNodes(graph)) );
-  for (TU_GRAPH_NODE v = TUgraphNodesFirst(graph); TUgraphNodesValid(graph, v); v = TUgraphNodesNext(graph, v))
+  CMR_CALL( CMRallocStackArray(cmr, &nodesReversed, CMRgraphMemNodes(graph)) );
+  for (CMR_GRAPH_NODE v = CMRgraphNodesFirst(graph); CMRgraphNodesValid(graph, v); v = CMRgraphNodesNext(graph, v))
   {
     nodesRows[v] = -1;
     nodesReversed[v] = 1;
@@ -181,16 +181,16 @@ CMR_ERROR computeRepresentationMatrix(
     *pisCorrectForest = true;
   for (int i = 0; i < numForestEdges; ++i)
   {
-    TU_GRAPH_NODE u = TUgraphEdgeU(graph, forestEdges[i]);
-    TU_GRAPH_NODE v = TUgraphEdgeV(graph, forestEdges[i]);
-    TUdbgMsg(2, "Forest edge %d = {%d,%d}.\n", forestEdges[i], u, v);
+    CMR_GRAPH_NODE u = CMRgraphEdgeU(graph, forestEdges[i]);
+    CMR_GRAPH_NODE v = CMRgraphEdgeV(graph, forestEdges[i]);
+    CMRdbgMsg(2, "Forest edge %d = {%d,%d}.\n", forestEdges[i], u, v);
     if (nodeData[u].predecessor == v)
     {
       nodesRows[u] = numRows;
       nodesReversed[u] = nodeData[u].reversed ? -1 : 1;
       ++numRows;
       nodeData[u].stage = BASIC;
-      TUdbgMsg(2, "Basic edge (%d,%d): %d is predecessor of %d; node %d is row %d; reversed = %s.\n", v, u, v, u, u,
+      CMRdbgMsg(2, "Basic edge (%d,%d): %d is predecessor of %d; node %d is row %d; reversed = %s.\n", v, u, v, u, u,
         nodesRows[u], nodeData[u].reversed ? "true" : "false");
     }
     else if (nodeData[v].predecessor == u)
@@ -199,7 +199,7 @@ CMR_ERROR computeRepresentationMatrix(
       nodesReversed[v] = nodeData[v].reversed ? -1 : 1;
       ++numRows;
       nodeData[v].stage = BASIC;
-      TUdbgMsg(2, "Basic edge (%d,%d): %d is predecessor of %d; node %d is row %d; reversed = %s\n", u, v, u, v, v,
+      CMRdbgMsg(2, "Basic edge (%d,%d): %d is predecessor of %d; node %d is row %d; reversed = %s\n", u, v, u, v, v,
         nodesRows[v], nodeData[v].reversed ? "true" : "false");
     }
     else
@@ -209,13 +209,13 @@ CMR_ERROR computeRepresentationMatrix(
         *pisCorrectForest = false;
     }
   }
-  if (numRows < TUgraphNumNodes(graph) - countComponents)
+  if (numRows < CMRgraphNumNodes(graph) - countComponents)
   {
     /* Some edge from the spanning forest is not a forest edge. */
     if (pisCorrectForest)
       *pisCorrectForest = false;
 
-    for (TU_GRAPH_NODE v = TUgraphNodesFirst(graph); TUgraphNodesValid(graph, v); v = TUgraphNodesNext(graph, v))
+    for (CMR_GRAPH_NODE v = CMRgraphNodesFirst(graph); CMRgraphNodesValid(graph, v); v = CMRgraphNodesNext(graph, v))
     {
       if (nodeData[v].predecessor >= 0 && nodeData[v].stage != BASIC)
       {
@@ -223,39 +223,39 @@ CMR_ERROR computeRepresentationMatrix(
         nodesReversed[v] = nodeData[v].reversed ? -1 : 1;
         ++numRows;
         nodeData[v].stage = BASIC;
-        TUdbgMsg(2, "Predecessor edge {%d,%d} not basic; node %d is row %d.\n", nodeData[v].predecessor, v, v,
+        CMRdbgMsg(2, "Predecessor edge {%d,%d} not basic; node %d is row %d.\n", nodeData[v].predecessor, v, v,
           nodesRows[v]);
       }
     }
   }
 
-  TUassertStackConsistency(tu);
+  CMRassertStackConsistency(cmr);
 
-  TU_CALL( TUchrmatCreate(tu, ptranspose, TUgraphNumEdges(graph) - numRows, numRows,
+  CMR_CALL( CMRchrmatCreate(cmr, ptranspose, CMRgraphNumEdges(graph) - numRows, numRows,
     16 * numRows) );
-  TU_CHRMAT* transpose = *ptranspose;
+  CMR_CHRMAT* transpose = *ptranspose;
   int numNonzeros = 0; /* Current number of nonzeros. transpose->numNonzeros is the memory. */
   int numColumns = 0;
-  TU_GRAPH_EDGE* edgeColumns = NULL;
-  TU_CALL( TUallocStackArray(tu, &edgeColumns, TUgraphMemEdges(graph)) );
-  for (TU_GRAPH_ITER i = TUgraphEdgesFirst(graph); TUgraphEdgesValid(graph, i);
-    i = TUgraphEdgesNext(graph, i))
+  CMR_GRAPH_EDGE* edgeColumns = NULL;
+  CMR_CALL( CMRallocStackArray(cmr, &edgeColumns, CMRgraphMemEdges(graph)) );
+  for (CMR_GRAPH_ITER i = CMRgraphEdgesFirst(graph); CMRgraphEdgesValid(graph, i);
+    i = CMRgraphEdgesNext(graph, i))
   {
-    TU_GRAPH_EDGE e = TUgraphEdgesEdge(graph, i);
-    TU_GRAPH_NODE u = TUgraphEdgeU(graph, e);
-    TU_GRAPH_NODE v = TUgraphEdgeV(graph, e);
-    edgeColumns[TUgraphEdgesEdge(graph, i)] =
+    CMR_GRAPH_EDGE e = CMRgraphEdgesEdge(graph, i);
+    CMR_GRAPH_NODE u = CMRgraphEdgeU(graph, e);
+    CMR_GRAPH_NODE v = CMRgraphEdgeV(graph, e);
+    edgeColumns[CMRgraphEdgesEdge(graph, i)] =
       (nodeData[u].rootEdge == e || nodeData[v].rootEdge == e) ? -1 : -2;
   }
-  TU_GRAPH_NODE* uPath = NULL;
-  TU_CALL( TUallocStackArray(tu, &uPath, numRows) );
-  TU_GRAPH_NODE* vPath = NULL;
-  TU_CALL( TUallocStackArray(tu, &vPath, numRows) );
-  TU_GRAPH_ITER iter = TUgraphEdgesFirst(graph);
+  CMR_GRAPH_NODE* uPath = NULL;
+  CMR_CALL( CMRallocStackArray(cmr, &uPath, numRows) );
+  CMR_GRAPH_NODE* vPath = NULL;
+  CMR_CALL( CMRallocStackArray(cmr, &vPath, numRows) );
+  CMR_GRAPH_ITER iter = CMRgraphEdgesFirst(graph);
   int cobasicIndex = 0;
-  while (TUgraphEdgesValid(graph, iter))
+  while (CMRgraphEdgesValid(graph, iter))
   {
-    TU_GRAPH_EDGE e = -1;
+    CMR_GRAPH_EDGE e = -1;
     while (cobasicIndex < numCoforestEdges && e < 0)
     {
       e = coforestEdges[cobasicIndex];
@@ -263,29 +263,29 @@ CMR_ERROR computeRepresentationMatrix(
     }
     if (cobasicIndex >= numCoforestEdges)
     {
-      e = TUgraphEdgesEdge(graph, iter);
-      iter = TUgraphEdgesNext(graph, iter);
+      e = CMRgraphEdgesEdge(graph, iter);
+      iter = CMRgraphEdgesNext(graph, iter);
     }
 
     if (edgeColumns[e] >= -1)
       continue;
 
-    TU_GRAPH_NODE u = TUgraphEdgeU(graph, e);
-    TU_GRAPH_NODE v = TUgraphEdgeV(graph, e);
+    CMR_GRAPH_NODE u = CMRgraphEdgeU(graph, e);
+    CMR_GRAPH_NODE v = CMRgraphEdgeV(graph, e);
     if (edgesReversed && edgesReversed[e])
       SWAP_INTS(u, v);
-    TUdbgMsg(4, "Edge %d = (%d,%d) (including reverse)\n", e, u, v);
+    CMRdbgMsg(4, "Edge %d = (%d,%d) (including reverse)\n", e, u, v);
 
     transpose->rowStarts[numColumns] = numNonzeros;
     edgeColumns[e] = numColumns;
 
     /* Enlarge space for nonzeros if necessary. */
     if (numNonzeros + numRows > transpose->numNonzeros)
-      TU_CALL( TUchrmatChangeNumNonzeros(tu, transpose, 2 * transpose->numNonzeros) );
+      CMR_CALL( CMRchrmatChangeNumNonzeros(cmr, transpose, 2 * transpose->numNonzeros) );
 
     /* Compute u-root path. */
     int uPathLength = 0;
-    TU_GRAPH_NODE w = u;
+    CMR_GRAPH_NODE w = u;
     while (nodeData[w].predecessor != -1)
     {
       uPath[uPathLength] = w;
@@ -316,7 +316,7 @@ CMR_ERROR computeRepresentationMatrix(
       assert(nodesRows[uPath[j]] >= 0);
       transpose->entryColumns[numNonzeros] = nodesRows[uPath[j]];
       transpose->entryValues[numNonzeros] = ternary ? -nodesReversed[uPath[j]] : 1;
-      TUdbgMsg(4, "u: row %d. nodesReversed = %d, result = %d\n", nodesRows[uPath[j]],
+      CMRdbgMsg(4, "u: row %d. nodesReversed = %d, result = %d\n", nodesRows[uPath[j]],
         nodesReversed[uPath[j]], transpose->entryValues[numNonzeros]);
       ++numNonzeros;
     }
@@ -325,93 +325,93 @@ CMR_ERROR computeRepresentationMatrix(
       assert(nodesRows[vPath[j]] >= 0);
       transpose->entryColumns[numNonzeros] = nodesRows[vPath[j]];
       transpose->entryValues[numNonzeros] = ternary ? nodesReversed[vPath[j]] : 1;
-      TUdbgMsg(4, "v: row %d. nodesReversed = %d, result = %d\n", nodesRows[vPath[j]],
+      CMRdbgMsg(4, "v: row %d. nodesReversed = %d, result = %d\n", nodesRows[vPath[j]],
         nodesReversed[vPath[j]], transpose->entryValues[numNonzeros]);
       ++numNonzeros;
     }
 
-    TU_CALL( TUsort2(tu, uPathLength + vPathLength, &transpose->entryColumns[transpose->rowStarts[numColumns]],
+    CMR_CALL( CMRsort2(cmr, uPathLength + vPathLength, &transpose->entryColumns[transpose->rowStarts[numColumns]],
       sizeof(int), &transpose->entryValues[transpose->rowStarts[numColumns]], sizeof(char), compareInt2) );
 
     ++numColumns;
   }
 
-  TUassertStackConsistency(tu);
+  CMRassertStackConsistency(cmr);
 
-  TU_CALL( TUfreeStackArray(tu, &vPath) );
-  TU_CALL( TUfreeStackArray(tu, &uPath) );
-  TU_CALL( TUfreeStackArray(tu, &edgeColumns) );
+  CMR_CALL( CMRfreeStackArray(cmr, &vPath) );
+  CMR_CALL( CMRfreeStackArray(cmr, &uPath) );
+  CMR_CALL( CMRfreeStackArray(cmr, &edgeColumns) );
 
   transpose->rowStarts[numColumns] = numNonzeros;
   if (numNonzeros == 0 && transpose->numNonzeros > 0)
   {
-    TU_CALL( TUfreeBlockArray(tu, &transpose->entryColumns) );
-    TU_CALL( TUfreeBlockArray(tu, &transpose->entryValues) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &transpose->entryColumns) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &transpose->entryValues) );
   }
   transpose->numNonzeros = numNonzeros;
 
   /* We now process the nonbasic edges. */
 
-  TUassertStackConsistency(tu);
-  TU_CALL( TUfreeStackArray(tu, &nodesReversed) );
-  TUassertStackConsistency(tu);
-  TU_CALL( TUfreeStackArray(tu, &nodesRows) );
-  TUassertStackConsistency(tu);
-  TU_CALL( TUfreeStackArray(tu, &nodeData) );
+  CMRassertStackConsistency(cmr);
+  CMR_CALL( CMRfreeStackArray(cmr, &nodesReversed) );
+  CMRassertStackConsistency(cmr);
+  CMR_CALL( CMRfreeStackArray(cmr, &nodesRows) );
+  CMRassertStackConsistency(cmr);
+  CMR_CALL( CMRfreeStackArray(cmr, &nodeData) );
 
-  TUassertStackConsistency(tu);
+  CMRassertStackConsistency(cmr);
 
   return CMR_OKAY;
 }
 
-CMR_ERROR TUcomputeGraphBinaryRepresentationMatrix(TU* tu, TU_GRAPH* graph, TU_CHRMAT** pmatrix, TU_CHRMAT** ptranspose,
-  int numForestEdges, TU_GRAPH_EDGE* forestEdges, int numCoforestEdges, TU_GRAPH_EDGE* coforestEdges,
+CMR_ERROR CMRcomputeGraphBinaryRepresentationMatrix(CMR* cmr, CMR_GRAPH* graph, CMR_CHRMAT** pmatrix, CMR_CHRMAT** ptranspose,
+  int numForestEdges, CMR_GRAPH_EDGE* forestEdges, int numCoforestEdges, CMR_GRAPH_EDGE* coforestEdges,
   bool* pisCorrectForest)
 {
-  assert(tu);
+  assert(cmr);
   assert(graph);
   assert(pmatrix || ptranspose);
   assert(!pmatrix || !*pmatrix);
   assert(!ptranspose || !*ptranspose);
 
-  TU_CHRMAT* transpose = NULL;
-  TU_CALL( computeRepresentationMatrix(tu, graph, false, &transpose, NULL, numForestEdges, forestEdges,
+  CMR_CHRMAT* transpose = NULL;
+  CMR_CALL( computeRepresentationMatrix(cmr, graph, false, &transpose, NULL, numForestEdges, forestEdges,
     numCoforestEdges, coforestEdges, pisCorrectForest) );
 
   if (pmatrix)
-    TU_CALL( TUchrmatTranspose(tu, transpose, pmatrix) );
+    CMR_CALL( CMRchrmatTranspose(cmr, transpose, pmatrix) );
 
   /* Return or free the transpose matrix. */
   if (ptranspose)
     *ptranspose = transpose;
   else
-    TU_CALL( TUchrmatFree(tu, &transpose) );
+    CMR_CALL( CMRchrmatFree(cmr, &transpose) );
 
   return CMR_OKAY;
 }
 
-CMR_ERROR TUcomputeGraphTernaryRepresentationMatrix(TU* tu, TU_GRAPH* graph, TU_CHRMAT** pmatrix, TU_CHRMAT** ptranspose,
-  bool* edgesReversed, int numForestEdges, TU_GRAPH_EDGE* forestEdges, int numCoforestEdges,
-  TU_GRAPH_EDGE* coforestEdges, bool* pisCorrectForest)
+CMR_ERROR CMRcomputeGraphTernaryRepresentationMatrix(CMR* cmr, CMR_GRAPH* graph, CMR_CHRMAT** pmatrix, CMR_CHRMAT** ptranspose,
+  bool* edgesReversed, int numForestEdges, CMR_GRAPH_EDGE* forestEdges, int numCoforestEdges,
+  CMR_GRAPH_EDGE* coforestEdges, bool* pisCorrectForest)
 {
-  assert(tu);
+  assert(cmr);
   assert(graph);
   assert(pmatrix || ptranspose);
   assert(!pmatrix || !*pmatrix);
   assert(!ptranspose || !*ptranspose);
 
-  TU_CHRMAT* transpose = NULL;
-  TU_CALL( computeRepresentationMatrix(tu, graph, true, &transpose, edgesReversed, numForestEdges, forestEdges,
+  CMR_CHRMAT* transpose = NULL;
+  CMR_CALL( computeRepresentationMatrix(cmr, graph, true, &transpose, edgesReversed, numForestEdges, forestEdges,
     numCoforestEdges, coforestEdges, pisCorrectForest) );
 
   if (pmatrix)
-    TU_CALL( TUchrmatTranspose(tu, transpose, pmatrix) );
+    CMR_CALL( CMRchrmatTranspose(cmr, transpose, pmatrix) );
 
   /* Return or free the transpose matrix. */
   if (ptranspose)
     *ptranspose = transpose;
   else
-    TU_CALL( TUchrmatFree(tu, &transpose) );
+    CMR_CALL( CMRchrmatFree(cmr, &transpose) );
 
   return CMR_OKAY;
 }
@@ -457,7 +457,7 @@ typedef struct
 
 typedef struct
 {
-  Element element;        /**< \brief Element corresponding to this edge.
+  CMR_ELEMENT element;        /**< \brief Element corresponding to this edge.
                            *
                            * 1, 2, ..., m indicate rows, -1,-2, ..., -n indicate columns,
                            * and for (small) k >= 0, MAX_INT-k and -MAX_INT+k indicate
@@ -494,7 +494,7 @@ typedef struct
 
 typedef struct
 {
-  TU* tu;                           /**< \brief \ref TU environment. */
+  CMR* cmr;                           /**< \brief \ref CMR environment. */
 
   int memMembers;                   /**< \brief Allocated memory for members. */
   int numMembers;                   /**< \brief Number of members. */
@@ -597,7 +597,7 @@ DEC_MEMBER findEdgeMember(
   return findMember(dec, dec->edges[edge].member);
 }
 
-#if defined(TU_DEBUG_CONSISTENCY)
+#if defined(CMR_DEBUG_CONSISTENCY)
 
 /**
  * \brief Checks whether \p dec has consistent edge data.
@@ -624,13 +624,13 @@ char* consistencyEdges(
       do
       {
         if (edge < 0 || edge >= dec->memEdges)
-          return TUconsistencyMessage("edge %d of member %d out of range.", member, edge);
+          return CMRconsistencyMessage("edge %d of member %d out of range.", member, edge);
         if (dec->edges[edge].next < 0 || dec->edges[edge].next > dec->memEdges)
-          return TUconsistencyMessage("edge %d of member %d has next out of range", member, edge);
+          return CMRconsistencyMessage("edge %d of member %d has next out of range", member, edge);
         if (dec->edges[dec->edges[edge].next].prev != edge)
-          return TUconsistencyMessage("member %d has inconsistent edge list", member);
+          return CMRconsistencyMessage("member %d has inconsistent edge list", member);
         if (findEdgeMember(dec, edge) != member)
-          return TUconsistencyMessage("edge %d belongs to member %d but is in member %d's edge list.", edge,
+          return CMRconsistencyMessage("edge %d belongs to member %d but is in member %d's edge list.", edge,
             findEdgeMember(dec, edge), member);
         edge = dec->edges[edge].next;
         countEdges++;
@@ -639,7 +639,7 @@ char* consistencyEdges(
     }
     if (countEdges != dec->members[member].numEdges)
     {
-      return TUconsistencyMessage("member %d has %d edges, but numEdges %d", member, countEdges,
+      return CMRconsistencyMessage("member %d has %d edges, but numEdges %d", member, countEdges,
         dec->members[member].numEdges);
     }
   }
@@ -667,7 +667,7 @@ char* consistencyMembers(
       && dec->members[member].type != DEC_MEMBER_TYPE_SERIES
       && dec->members[member].type != DEC_MEMBER_TYPE_LOOP)
     {
-      return TUconsistencyMessage("member %d has invalid type", member);
+      return CMRconsistencyMessage("member %d has invalid type", member);
     }
   }
 
@@ -703,13 +703,13 @@ char* consistencyNodes(
       if (isRigid)
       {
         if (head < 0)
-          return TUconsistencyMessage("edge %d of rigid member %d has invalid head node", edge, member);
+          return CMRconsistencyMessage("edge %d of rigid member %d has invalid head node", edge, member);
         if (tail < 0)
-          return TUconsistencyMessage("edge %d of rigid member %d has invalid tail node", edge, member);
+          return CMRconsistencyMessage("edge %d of rigid member %d has invalid tail node", edge, member);
         if (head >= dec->memNodes)
-          return TUconsistencyMessage("edge %d of rigid member %d has head node out of range", edge, member);
+          return CMRconsistencyMessage("edge %d of rigid member %d has head node out of range", edge, member);
         if (tail >= dec->memNodes)
-          return TUconsistencyMessage("edge %d of rigid member %d has tail node out of range", edge, member);
+          return CMRconsistencyMessage("edge %d of rigid member %d has tail node out of range", edge, member);
       }
       edge = dec->edges[edge].next;
     }
@@ -764,13 +764,13 @@ char* consistencyParentChild(
   assert(dec);
 
   if (dec->memMembers < dec->numMembers)
-    return TUconsistencyMessage("member count and memory are inconsistent");
+    return CMRconsistencyMessage("member count and memory are inconsistent");
   if (dec->numMembers < 0)
-    return TUconsistencyMessage("negative member count");
+    return CMRconsistencyMessage("negative member count");
 
   int* countChildren = NULL;
-  if (TUallocStackArray(dec->tu, &countChildren, dec->memMembers) != CMR_OKAY)
-    return TUconsistencyMessage("stack allocation in consistencyParentChild() failed");
+  if (CMRallocStackArray(dec->cmr, &countChildren, dec->memMembers) != CMR_OKAY)
+    return CMRconsistencyMessage("stack allocation in consistencyParentChild() failed");
   for (int m = 0; m < dec->memMembers; ++m)
     countChildren[m] = 0;
 
@@ -781,8 +781,8 @@ char* consistencyParentChild(
 
     if (dec->members[member].parentMember >= dec->memMembers)
     {
-      TUfreeStackArray(dec->tu, &countChildren);
-      return TUconsistencyMessage("parent member of %d is out of range", member);
+      CMRfreeStackArray(dec->cmr, &countChildren);
+      return CMRconsistencyMessage("parent member of %d is out of range", member);
     }
     if (dec->members[member].parentMember >= 0)
       countChildren[dec->members[member].parentMember]++;
@@ -804,23 +804,23 @@ char* consistencyParentChild(
 
         if (findMember(dec, dec->members[findMember(dec, dec->edges[edge].childMember)].parentMember) != findMember(dec, member))
         {
-          TUfreeStackArray(dec->tu, &countChildren);
-          return TUconsistencyMessage("member %d has child edge %d for child %d whose parent member is %d",
+          CMRfreeStackArray(dec->cmr, &countChildren);
+          return CMRconsistencyMessage("member %d has child edge %d for child %d whose parent member is %d",
             member, edge, findMember(dec, dec->edges[edge].childMember),
             findMember(dec, dec->members[findMember(dec, dec->edges[edge].childMember)].parentMember));
         }
         if (dec->members[findMember(dec, dec->edges[edge].childMember)].markerOfParent != edge)
         {
-          TUfreeStackArray(dec->tu, &countChildren);
-          return TUconsistencyMessage("member %d has child edge %d for child %d whose parent's markerOfParent is %d",
+          CMRfreeStackArray(dec->cmr, &countChildren);
+          return CMRconsistencyMessage("member %d has child edge %d for child %d whose parent's markerOfParent is %d",
             member, edge, findMember(dec, dec->edges[edge].childMember),
             dec->members[findMember(dec, dec->edges[edge].childMember)].markerOfParent);
         }
         DEC_EDGE markerChild = dec->members[findMember(dec, dec->edges[edge].childMember)].markerToParent;
         if (dec->edges[markerChild].element != -dec->edges[edge].element)
         {
-          TUfreeStackArray(dec->tu, &countChildren);
-          return TUconsistencyMessage("marker edges %d and %d of members %d (parent) and %d (child) have names %d and %d.",
+          CMRfreeStackArray(dec->cmr, &countChildren);
+          return CMRconsistencyMessage("marker edges %d and %d of members %d (parent) and %d (child) have names %d and %d.",
             edge, markerChild, member, findEdgeMember(dec, markerChild), dec->edges[edge].element,
             dec->edges[markerChild].element);
         }
@@ -830,7 +830,7 @@ char* consistencyParentChild(
     while (edge != dec->members[member].firstEdge);
   }
 
-  if (TUfreeStackArray(dec->tu, &countChildren) != CMR_OKAY)
+  if (CMRfreeStackArray(dec->cmr, &countChildren) != CMR_OKAY)
     return "stack deallocation in consistencyParentChild() failed";
 
   return NULL;
@@ -862,7 +862,7 @@ char* decConsistency(
   return NULL;
 }
 
-#endif /* TU_DEBUG_CONSISTENCY */
+#endif /* CMR_DEBUG_CONSISTENCY */
 
 typedef enum
 {
@@ -1044,7 +1044,7 @@ CMR_ERROR createNode(
   DEC_NODE node = dec->firstFreeNode;
   if (node >= 0)
   {
-    TUdbgMsg(10, "createNode returns free node %d.\n", node);
+    CMRdbgMsg(10, "createNode returns free node %d.\n", node);
     dec->firstFreeNode = dec->nodes[node].representativeNode;
   }
   else
@@ -1052,14 +1052,14 @@ CMR_ERROR createNode(
     /* No node in free list, so we enlarge the array. */
 
     int newSize = 2 * dec->memNodes + 16;
-    TU_CALL( TUreallocBlockArray(dec->tu, &dec->nodes, newSize) );
+    CMR_CALL( CMRreallocBlockArray(dec->cmr, &dec->nodes, newSize) );
     for (int v = dec->memNodes + 1; v < newSize; ++v)
       dec->nodes[v].representativeNode = v+1;
     dec->nodes[newSize-1].representativeNode = -1;
     dec->firstFreeNode = dec->memNodes + 1;
     node = dec->memNodes;
     dec->memNodes = newSize;
-    TUdbgMsg(12, "createNode enlarges node array to %d and returns node %d.\n", newSize, node);
+    CMRdbgMsg(12, "createNode enlarges node array to %d and returns node %d.\n", newSize, node);
   }
   dec->nodes[node].representativeNode = -1;
   dec->numNodes++;
@@ -1188,13 +1188,13 @@ CMR_ERROR createEdge(
   DEC_EDGE edge = dec->firstFreeEdge;
   if (edge >= 0)
   {
-    TUdbgMsg(12, "Creating edge %d by using a free edge.\n", edge);
+    CMRdbgMsg(12, "Creating edge %d by using a free edge.\n", edge);
     dec->firstFreeEdge = dec->edges[edge].next;
   }
   else /* No edge in free list, so we enlarge the array. */
   {
     int newSize = 2 * dec->memEdges + 16;
-    TU_CALL( TUreallocBlockArray(dec->tu, &dec->edges, newSize) );
+    CMR_CALL( CMRreallocBlockArray(dec->cmr, &dec->edges, newSize) );
     for (int e = dec->memEdges + 1; e < newSize; ++e)
     {
       dec->edges[e].next = e+1;
@@ -1204,7 +1204,7 @@ CMR_ERROR createEdge(
     dec->firstFreeEdge = dec->memEdges + 1;
     edge = dec->memEdges;
     dec->memEdges = newSize;
-    TUdbgMsg(12, "Creating edge %d and reallocating edge to array %d elements.\n", edge, newSize);
+    CMRdbgMsg(12, "Creating edge %d and reallocating edge to array %d elements.\n", edge, newSize);
   }
 
   dec->edges[edge].tail = -1;
@@ -1243,18 +1243,18 @@ CMR_ERROR createMarkerEdgePair(
 
   /* Create the child marker edge of the parent member. */
 
-  TU_CALL( createEdge(dec, parentMember, pMarkerOfParent) );
+  CMR_CALL( createEdge(dec, parentMember, pMarkerOfParent) );
   DecEdgeData* data = &dec->edges[*pMarkerOfParent];
   data->tail = markerOfParentTail;
   data->head = markerOfParentHead;
   data->childMember = childMember;
   data->element = -INT_MAX + dec->numMarkerPairs;
-  TUdbgMsg(12, "Created child marker edge {%d,%d} <%s> of parent member %d.\n", markerOfParentTail, markerOfParentHead,
-    TUelementString(data->element, NULL), parentMember);
+  CMRdbgMsg(12, "Created child marker edge {%d,%d} <%s> of parent member %d.\n", markerOfParentTail, markerOfParentHead,
+    CMRelementString(data->element, NULL), parentMember);
 
   /* Create the parent marker edge of the child member. */
 
-  TU_CALL( createEdge(dec, childMember, pMarkerToParent) );
+  CMR_CALL( createEdge(dec, childMember, pMarkerToParent) );
   data = &dec->edges[*pMarkerToParent];
   data->tail = markerToParentTail;
   data->head = markerToParentHead;
@@ -1263,7 +1263,7 @@ CMR_ERROR createMarkerEdgePair(
   dec->members[childMember].markerOfParent = *pMarkerOfParent;
   dec->members[childMember].markerToParent = *pMarkerToParent;
   data->element = INT_MAX - dec->numMarkerPairs;
-  TUdbgMsg(12, "Created child marker edge {%d,%d} <%s> of child member %d.\n", markerToParentTail, markerToParentHead,
+  CMRdbgMsg(12, "Created child marker edge {%d,%d} <%s> of child member %d.\n", markerToParentTail, markerToParentHead,
     TUelementString(data->element, NULL), childMember);
 
   /* Increase counter of used marker pairs. */
@@ -1288,7 +1288,7 @@ CMR_ERROR createMember(
   if (dec->numMembers == dec->memMembers)
   {
     dec->memMembers = 16 + 2 * dec->memMembers;
-    TU_CALL( TUreallocBlockArray(dec->tu, &dec->members, dec->memMembers) );
+    CMR_CALL( CMRreallocBlockArray(dec->cmr, &dec->members, dec->memMembers) );
   }
 
   DEC_MEMBER_DATA* data = &dec->members[dec->numMembers];
@@ -1303,7 +1303,7 @@ CMR_ERROR createMember(
   *pmember = dec->numMembers;
   dec->numMembers++;
 
-  TUdbgMsg(10, "Creating %s member %d.\n", memberTypeString(type), *pmember);
+  CMRdbgMsg(10, "Creating %s member %d.\n", memberTypeString(type), *pmember);
 
   return CMR_OKAY;
 }
@@ -1313,7 +1313,7 @@ CMR_ERROR createMember(
  */
 
 CMR_ERROR decCreate(
-  TU* tu,           /**< \ref TU environment. */
+  CMR* cmr,           /**< \ref CMR environment. */
   Dec** pdec,       /**< Pointer to new decomposition. .*/
   int memEdges,     /**< Initial memory for edges of the decomposition. */
   int memNodes,     /**< Initial memory for nodes of the decomposition. */
@@ -1322,23 +1322,23 @@ CMR_ERROR decCreate(
   int memColumns    /**< Initial memory for columns. */
 )
 {
-  assert(tu);
+  assert(cmr);
   assert(pdec);
   assert(!*pdec);
 
-  TU_CALL( TUallocBlock(tu, pdec) );
+  CMR_CALL( CMRallocBlock(cmr, pdec) );
   Dec* dec = *pdec;
-  dec->tu = tu;
+  dec->cmr = cmr;
   dec->memMembers = memMembers;
   dec->numMembers = 0;
   dec->members = NULL;
-  TU_CALL( TUallocBlockArray(tu, &dec->members, dec->memMembers) );
+  CMR_CALL( CMRallocBlockArray(cmr, &dec->members, dec->memMembers) );
 
   if (memNodes < 1)
     memNodes = 1;
   dec->memNodes = memNodes;
   dec->nodes = NULL;
-  TU_CALL( TUallocBlockArray(tu, &dec->nodes, memNodes) );
+  CMR_CALL( CMRallocBlockArray(cmr, &dec->nodes, memNodes) );
   dec->numNodes = 0;
   for (int v = 0; v < memNodes; ++v)
     dec->nodes[v].representativeNode = v+1;
@@ -1349,7 +1349,7 @@ CMR_ERROR decCreate(
     memEdges = 1;
   dec->memEdges = memEdges;
   dec->edges = NULL;
-  TU_CALL( TUallocBlockArray(tu, &dec->edges, memEdges) );
+  CMR_CALL( CMRallocBlockArray(cmr, &dec->edges, memEdges) );
   dec->numEdges = 0;
   dec->numMarkerPairs = 0;
   dec->parallelParentChildVisit = 0;
@@ -1371,20 +1371,20 @@ CMR_ERROR decCreate(
   dec->numRows = 0;
   dec->memRows = memRows;
   dec->rowEdges = NULL;
-  TU_CALL( TUallocBlockArray(tu, &dec->rowEdges, dec->memRows) );
+  CMR_CALL( CMRallocBlockArray(cmr, &dec->rowEdges, dec->memRows) );
   for (int r = 0; r < dec->numRows; ++r)
     dec->rowEdges[r].edge = -1;
 
   dec->numColumns = 0;
   dec->memColumns = memColumns;
   dec->columnEdges = NULL;
-  TU_CALL( TUallocBlockArray(tu, &dec->columnEdges, dec->memColumns) );
+  CMR_CALL( CMRallocBlockArray(cmr, &dec->columnEdges, dec->memColumns) );
   for (int c = 0; c < dec->numColumns; ++c)
     dec->columnEdges[c].edge = -1;
 
-#if defined(TU_DEBUG_CONSISTENCY)
-  TUconsistencyAssert( decConsistency(dec) );
-#endif /* TU_DEBUG_CONSISTENCY */
+#if defined(CMR_DEBUG_CONSISTENCY)
+  CMRconsistencyAssert( decConsistency(dec) );
+#endif /* CMR_DEBUG_CONSISTENCY */
 
   return CMR_OKAY;
 }
@@ -1401,12 +1401,12 @@ CMR_ERROR decFree(
   assert(*pdec);
 
   Dec* dec = *pdec;
-  TU_CALL( TUfreeBlockArray(dec->tu, &dec->members) );
-  TU_CALL( TUfreeBlockArray(dec->tu, &dec->edges) );
-  TU_CALL( TUfreeBlockArray(dec->tu, &dec->nodes) );
-  TU_CALL( TUfreeBlockArray(dec->tu, &dec->rowEdges) );
-  TU_CALL( TUfreeBlockArray(dec->tu, &dec->columnEdges) );
-  TU_CALL( TUfreeBlock(dec->tu, pdec) );
+  CMR_CALL( CMRfreeBlockArray(dec->cmr, &dec->members) );
+  CMR_CALL( CMRfreeBlockArray(dec->cmr, &dec->edges) );
+  CMR_CALL( CMRfreeBlockArray(dec->cmr, &dec->nodes) );
+  CMR_CALL( CMRfreeBlockArray(dec->cmr, &dec->rowEdges) );
+  CMR_CALL( CMRfreeBlockArray(dec->cmr, &dec->columnEdges) );
+  CMR_CALL( CMRfreeBlock(dec->cmr, pdec) );
 
   return CMR_OKAY;
 }
@@ -1418,40 +1418,40 @@ CMR_ERROR decFree(
 static
 CMR_ERROR decToGraph(
   Dec* dec,                     /**< Decomposition. */
-  TU_GRAPH* graph,              /**< Graph to be filled. */
+  CMR_GRAPH* graph,              /**< Graph to be filled. */
   bool merge,                   /**< Merge and remove corresponding parent and child markers. */
-  TU_GRAPH_EDGE* forestEdges,   /**< If not \c NULL, the edges of a spanning tree are stored here. */
-  TU_GRAPH_EDGE* coforestEdges, /**< If not \c NULL, the non-basis edges are stored here. */
-  Element* edgeElements             /**< If not \c NULL, the elements for each edge are stored here. */
+  CMR_GRAPH_EDGE* forestEdges,   /**< If not \c NULL, the edges of a spanning tree are stored here. */
+  CMR_GRAPH_EDGE* coforestEdges, /**< If not \c NULL, the non-basis edges are stored here. */
+  CMR_ELEMENT* edgeElements             /**< If not \c NULL, the elements for each edge are stored here. */
 )
 {
   assert(dec);
   assert(graph);
 
-#if defined(TU_DEBUG_CONSISTENCY)
-  TUconsistencyAssert( decConsistency(dec) );
-#endif /* TU_DEBUG_CONSISTENCY */
+#if defined(CMR_DEBUG_CONSISTENCY)
+  CMRconsistencyAssert( decConsistency(dec) );
+#endif /* CMR_DEBUG_CONSISTENCY */
 
 
-  TUdbgMsg(0, "TUdecToGraph for t-decomposition.\n");
+  CMRdbgMsg(0, "CMRtudecToGraph for t-decomposition.\n");
 
-  TU_CALL( TUgraphClear(dec->tu, graph) );
+  CMR_CALL( CMRgraphClear(dec->cmr, graph) );
 
-  Element* localEdgeElements = NULL;
+  CMR_ELEMENT* localEdgeElements = NULL;
   if (edgeElements)
     localEdgeElements = edgeElements;
   else if (forestEdges || coforestEdges)
-    TU_CALL( TUallocStackArray(dec->tu, &localEdgeElements, dec->memEdges) );
-  TU_GRAPH_NODE* decNodesToGraphNodes = NULL;
-  TU_CALL( TUallocStackArray(dec->tu, &decNodesToGraphNodes, dec->memNodes) );
-  TU_GRAPH_EDGE* decEdgesToGraphEdges = NULL;
-  TU_CALL( TUallocStackArray(dec->tu, &decEdgesToGraphEdges, dec->memEdges) );
+    CMR_CALL( CMRallocStackArray(dec->cmr, &localEdgeElements, dec->memEdges) );
+  CMR_GRAPH_NODE* decNodesToGraphNodes = NULL;
+  CMR_CALL( CMRallocStackArray(dec->cmr, &decNodesToGraphNodes, dec->memNodes) );
+  CMR_GRAPH_EDGE* decEdgesToGraphEdges = NULL;
+  CMR_CALL( CMRallocStackArray(dec->cmr, &decEdgesToGraphEdges, dec->memEdges) );
 
   for (int v = 0; v < dec->memNodes; ++v)
   {
     if (dec->nodes[v].representativeNode < 0)
     {
-      TU_CALL( TUgraphAddNode(dec->tu, graph, &decNodesToGraphNodes[v]) );
+      CMR_CALL( CMRgraphAddNode(dec->cmr, graph, &decNodesToGraphNodes[v]) );
     }
     else
       decNodesToGraphNodes[v] = -1;
@@ -1463,9 +1463,9 @@ CMR_ERROR decToGraph(
       continue;
 
     DEC_MEMBER_TYPE type = dec->members[member].type;
-    TUdbgMsg(2, "Member %d is %s with %d edges.\n", member, memberTypeString(type), dec->members[member].numEdges);
+    CMRdbgMsg(2, "Member %d is %s with %d edges.\n", member, memberTypeString(type), dec->members[member].numEdges);
 
-    TU_GRAPH_EDGE graphEdge;
+    CMR_GRAPH_EDGE graphEdge;
     DEC_EDGE edge = dec->members[member].firstEdge;
     if (type == DEC_MEMBER_TYPE_RIGID)
     {
@@ -1473,7 +1473,7 @@ CMR_ERROR decToGraph(
       {
         DEC_NODE head = findEdgeHead(dec, edge);
         DEC_NODE tail = findEdgeTail(dec, edge);
-        TU_CALL( TUgraphAddEdge(dec->tu, graph, decNodesToGraphNodes[head], decNodesToGraphNodes[tail],
+        CMR_CALL( CMRgraphAddEdge(dec->cmr, graph, decNodesToGraphNodes[head], decNodesToGraphNodes[tail],
           &graphEdge) );
         decEdgesToGraphEdges[edge] = graphEdge;
         if (localEdgeElements)
@@ -1484,12 +1484,12 @@ CMR_ERROR decToGraph(
     }
     else if (type == DEC_MEMBER_TYPE_PARALLEL)
     {
-      TU_GRAPH_NODE graphHead, graphTail;
-      TU_CALL( TUgraphAddNode(dec->tu, graph, &graphHead) );
-      TU_CALL( TUgraphAddNode(dec->tu, graph, &graphTail) );
+      CMR_GRAPH_NODE graphHead, graphTail;
+      CMR_CALL( CMRgraphAddNode(dec->cmr, graph, &graphHead) );
+      CMR_CALL( CMRgraphAddNode(dec->cmr, graph, &graphTail) );
       do
       {
-        TU_CALL( TUgraphAddEdge(dec->tu, graph, graphHead, graphTail, &graphEdge) );
+        CMR_CALL( CMRgraphAddEdge(dec->cmr, graph, graphHead, graphTail, &graphEdge) );
         decEdgesToGraphEdges[edge] = graphEdge;
         if (localEdgeElements)
           localEdgeElements[graphEdge] = dec->edges[edge].element;
@@ -1499,15 +1499,15 @@ CMR_ERROR decToGraph(
     }
     else if (type == DEC_MEMBER_TYPE_SERIES)
     {
-      TU_GRAPH_NODE firstNode, v;
-      TU_CALL( TUgraphAddNode(dec->tu, graph, &firstNode) );
+      CMR_GRAPH_NODE firstNode, v;
+      CMR_CALL( CMRgraphAddNode(dec->cmr, graph, &firstNode) );
       v = firstNode;
       edge = dec->edges[edge].next;
       while (edge != dec->members[member].firstEdge)
       {
-        TU_GRAPH_NODE w;
-        TU_CALL( TUgraphAddNode(dec->tu, graph, &w) );
-        TU_CALL( TUgraphAddEdge(dec->tu, graph, v, w, &graphEdge) );
+        CMR_GRAPH_NODE w;
+        CMR_CALL( CMRgraphAddNode(dec->cmr, graph, &w) );
+        CMR_CALL( CMRgraphAddEdge(dec->cmr, graph, v, w, &graphEdge) );
         decEdgesToGraphEdges[edge] = graphEdge;
         if (localEdgeElements)
           localEdgeElements[graphEdge] = dec->edges[edge].element;
@@ -1515,7 +1515,7 @@ CMR_ERROR decToGraph(
         edge = dec->edges[edge].next;
         v = w;
       }
-      TU_CALL( TUgraphAddEdge(dec->tu, graph, v, firstNode, &graphEdge) );
+      CMR_CALL( CMRgraphAddEdge(dec->cmr, graph, v, firstNode, &graphEdge) );
       decEdgesToGraphEdges[edge] = graphEdge;
       if (localEdgeElements)
         localEdgeElements[graphEdge] = dec->edges[edge].element;
@@ -1524,9 +1524,9 @@ CMR_ERROR decToGraph(
     {
       assert(type == DEC_MEMBER_TYPE_LOOP);
 
-      TU_GRAPH_NODE v;
-      TU_CALL( TUgraphAddNode(dec->tu, graph, &v) );
-      TU_CALL( TUgraphAddEdge(dec->tu, graph, v, v, &graphEdge) );
+      CMR_GRAPH_NODE v;
+      CMR_CALL( CMRgraphAddNode(dec->cmr, graph, &v) );
+      CMR_CALL( CMRgraphAddEdge(dec->cmr, graph, v, v, &graphEdge) );
       decEdgesToGraphEdges[edge] = graphEdge;
       if (localEdgeElements)
         localEdgeElements[graphEdge] = dec->edges[edge].element;
@@ -1537,58 +1537,58 @@ CMR_ERROR decToGraph(
 
   if (merge)
   {
-    TUdbgMsg(2, "Before merging, the graph has %d nodes and %d edges.\n", TUgraphNumNodes(graph),
-      TUgraphNumEdges(graph));
+    CMRdbgMsg(2, "Before merging, the graph has %d nodes and %d edges.\n", CMRgraphNumNodes(graph),
+      CMRgraphNumEdges(graph));
 
     for (int m = 0; m < dec->numMembers; ++m)
     {
       if (!isRepresentativeMember(dec, m) || dec->members[m].parentMember < 0)
         continue;
 
-      TU_GRAPH_EDGE parent = decEdgesToGraphEdges[dec->members[m].markerOfParent];
-      TU_GRAPH_EDGE child = decEdgesToGraphEdges[dec->members[m].markerToParent];
-      TU_GRAPH_NODE parentU = TUgraphEdgeU(graph, parent);
-      TU_GRAPH_NODE parentV = TUgraphEdgeV(graph, parent);
-      TU_GRAPH_NODE childU = TUgraphEdgeU(graph, child);
-      TU_GRAPH_NODE childV = TUgraphEdgeV(graph, child);
+      CMR_GRAPH_EDGE parent = decEdgesToGraphEdges[dec->members[m].markerOfParent];
+      CMR_GRAPH_EDGE child = decEdgesToGraphEdges[dec->members[m].markerToParent];
+      CMR_GRAPH_NODE parentU = CMRgraphEdgeU(graph, parent);
+      CMR_GRAPH_NODE parentV = CMRgraphEdgeV(graph, parent);
+      CMR_GRAPH_NODE childU = CMRgraphEdgeU(graph, child);
+      CMR_GRAPH_NODE childV = CMRgraphEdgeV(graph, child);
 
-      TUdbgMsg(2, "Merging edges %d = {%d,%d} <%s>", parent, parentU, parentV,
+      CMRdbgMsg(2, "Merging edges %d = {%d,%d} <%s>", parent, parentU, parentV,
         TUelementString(dec->edges[dec->members[m].markerOfParent].element, NULL));
-      TUdbgMsg(0, " and %d = {%d,%d} <%s>.\n", child, childU, childV,
+      CMRdbgMsg(0, " and %d = {%d,%d} <%s>.\n", child, childU, childV,
         TUelementString(dec->edges[dec->members[m].markerToParent].element, NULL));
 
-      TU_CALL( TUgraphMergeNodes(dec->tu, graph, parentU, childU) );
-      TU_CALL( TUgraphDeleteNode(dec->tu, graph, childU) );
-      TU_CALL( TUgraphMergeNodes(dec->tu, graph, parentV, childV) );
-      TU_CALL( TUgraphDeleteNode(dec->tu, graph, childV) );
+      CMR_CALL( CMRgraphMergeNodes(dec->cmr, graph, parentU, childU) );
+      CMR_CALL( CMRgraphDeleteNode(dec->cmr, graph, childU) );
+      CMR_CALL( CMRgraphMergeNodes(dec->cmr, graph, parentV, childV) );
+      CMR_CALL( CMRgraphDeleteNode(dec->cmr, graph, childV) );
 
-      TU_CALL( TUgraphDeleteEdge(dec->tu, graph, parent) );
-      TU_CALL( TUgraphDeleteEdge(dec->tu, graph, child) );
+      CMR_CALL( CMRgraphDeleteEdge(dec->cmr, graph, parent) );
+      CMR_CALL( CMRgraphDeleteEdge(dec->cmr, graph, child) );
     }
   }
 
   // TODO: Remove nodes with degree 0 or 1?!
   bool* nodesUsed = NULL;
-  TU_CALL( TUallocStackArray(dec->tu, &nodesUsed, TUgraphMemNodes(graph)) );
-  for (TU_GRAPH_NODE v = TUgraphNodesFirst(graph); TUgraphNodesValid(graph, v); v = TUgraphNodesNext(graph, v))
+  CMR_CALL( CMRallocStackArray(dec->cmr, &nodesUsed, CMRgraphMemNodes(graph)) );
+  for (CMR_GRAPH_NODE v = CMRgraphNodesFirst(graph); CMRgraphNodesValid(graph, v); v = CMRgraphNodesNext(graph, v))
     nodesUsed[v] = false;
-  for (TU_GRAPH_ITER i = TUgraphEdgesFirst(graph); TUgraphEdgesValid(graph, i); i = TUgraphEdgesNext(graph, i))
+  for (CMR_GRAPH_ITER i = CMRgraphEdgesFirst(graph); CMRgraphEdgesValid(graph, i); i = CMRgraphEdgesNext(graph, i))
   {
-    TU_GRAPH_EDGE e = TUgraphEdgesEdge(graph, i);
-    nodesUsed[TUgraphEdgeU(graph, e)] = true;
-    nodesUsed[TUgraphEdgeV(graph, e)] = true;
+    CMR_GRAPH_EDGE e = CMRgraphEdgesEdge(graph, i);
+    nodesUsed[CMRgraphEdgeU(graph, e)] = true;
+    nodesUsed[CMRgraphEdgeV(graph, e)] = true;
   }
-  for (TU_GRAPH_NODE v = TUgraphNodesFirst(graph); TUgraphNodesValid(graph, v); )
+  for (CMR_GRAPH_NODE v = CMRgraphNodesFirst(graph); CMRgraphNodesValid(graph, v); )
   {
-    TU_GRAPH_NODE next = TUgraphNodesNext(graph, v);
+    CMR_GRAPH_NODE next = CMRgraphNodesNext(graph, v);
     if (!nodesUsed[v])
     {
-      TUdbgMsg(2, "Removing degree-0 node %d.\n", v);
-      TUgraphDeleteNode(dec->tu, graph, v);
+      CMRdbgMsg(2, "Removing degree-0 node %d.\n", v);
+      CMRgraphDeleteNode(dec->cmr, graph, v);
     }
     v = next;
   }
-  TU_CALL( TUfreeStackArray(dec->tu, &nodesUsed) );
+  CMR_CALL( CMRfreeStackArray(dec->cmr, &nodesUsed) );
 
   /* Construct (co)forest. */
 
@@ -1602,24 +1602,24 @@ CMR_ERROR decToGraph(
       coforestEdges[c] = INT_MIN;
 #endif /* !NDEBUG */
 
-    for (TU_GRAPH_ITER i = TUgraphEdgesFirst(graph); TUgraphEdgesValid(graph, i);
-      i = TUgraphEdgesNext(graph, i))
+    for (CMR_GRAPH_ITER i = CMRgraphEdgesFirst(graph); CMRgraphEdgesValid(graph, i);
+      i = CMRgraphEdgesNext(graph, i))
     {
-      TU_GRAPH_EDGE e = TUgraphEdgesEdge(graph, i);
+      CMR_GRAPH_EDGE e = CMRgraphEdgesEdge(graph, i);
 
-      TUdbgMsg(2, "Graph edge %d = {%d,%d} <%s>\n", e, TUgraphEdgeU(graph, e), TUgraphEdgeV(graph, e),
+      CMRdbgMsg(2, "Graph edge %d = {%d,%d} <%s>\n", e, CMRgraphEdgeU(graph, e), CMRgraphEdgeV(graph, e),
         TUelementString(localEdgeElements[e], NULL));
 
-      Element element = localEdgeElements[e];
-      if (TUelementIsRow(element) && forestEdges)
+      CMR_ELEMENT element = localEdgeElements[e];
+      if (CMRelementIsRow(element) && forestEdges)
       {
-        TUdbgMsg(0, "Edge corresponds to element %d = row %d.\n", element, TUelementToRowIndex(element));
-        forestEdges[TUelementToRowIndex(element)] = e;
+        CMRdbgMsg(0, "Edge corresponds to element %d = row %d.\n", element, TUelementToRowIndex(element));
+        forestEdges[CMRelementToRowIndex(element)] = e;
       }
-      else if (TUelementIsColumn(element) && coforestEdges)
+      else if (CMRelementIsColumn(element) && coforestEdges)
       {
-        TUdbgMsg(0, "Edge corresponds to element %d = column %d.\n", element, TUelementToColumnIndex(element));
-        coforestEdges[TUelementToColumnIndex(element)] = e;
+        CMRdbgMsg(0, "Edge corresponds to element %d = column %d.\n", element, TUelementToColumnIndex(element));
+        coforestEdges[CMRelementToColumnIndex(element)] = e;
       }
     }
 
@@ -1632,10 +1632,10 @@ CMR_ERROR decToGraph(
 #endif /* !NDEBUG */
   }
 
-  TU_CALL( TUfreeStackArray(dec->tu, &decEdgesToGraphEdges) );
-  TU_CALL( TUfreeStackArray(dec->tu, &decNodesToGraphNodes) );
+  CMR_CALL( CMRfreeStackArray(dec->cmr, &decEdgesToGraphEdges) );
+  CMR_CALL( CMRfreeStackArray(dec->cmr, &decNodesToGraphNodes) );
   if (localEdgeElements != edgeElements)
-    TU_CALL( TUfreeStackArray(dec->tu, &localEdgeElements) );
+    CMR_CALL( CMRfreeStackArray(dec->cmr, &localEdgeElements) );
 
   return CMR_OKAY;
 }
@@ -1689,7 +1689,7 @@ void edgeToDot(
   {
     fflush(stdout);
     fprintf(stream, "    %c_%d_%d -- %c_%d_%d [label=\"%d <%s>\",style=bold%s];\n", type, member, u, type, member, v,
-      edge, TUelementString(dec->edges[edge].element, NULL), redStyle);
+      edge, CMRelementString(dec->edges[edge].element, NULL), redStyle);
     fprintf(stream, "    %c_%d_%d [shape=box];\n", type, member, u);
     fprintf(stream, "    %c_%d_%d [shape=box];\n", type, member, v);
   }
@@ -1699,7 +1699,7 @@ void edgeToDot(
  * \brief Visualizes a decomposition in \c dot format.
  */
 
-CMR_ERROR TUdecToDot(
+CMR_ERROR CMRtudecToDot(
   Dec* dec,               /**< Decomposition. */
   FILE* stream,           /**< Stream to write to. */
   bool* edgesHighlighted  /**< Indicator for edges to be highlighted. */
@@ -1781,18 +1781,18 @@ void debugDot(
   assert(dec);
   assert(newcolumn || !newcolumn);
 
-#if defined(TU_DEBUG_DOT)
+#if defined(CMR_DEBUG_DOT)
   static int dotFileCounter = 1;
   char name[256];
   snprintf(name, 256, "dec-%03d.dot", dotFileCounter);
-  TUdbgMsg(0, "Writing <%s>...", name);
+  CMRdbgMsg(0, "Writing <%s>...", name);
   FILE* dotFile = fopen(name, "w");
-  TUdecToDot(dec, dotFile, newcolumn ? newcolumn->edgesInPath : NULL);
+  CMRtudecToDot(dec, dotFile, newcolumn ? newcolumn->edgesInPath : NULL);
   fclose(dotFile);
-  TUdbgMsg(0, " done.\n");
+  CMRdbgMsg(0, " done.\n");
 
   dotFileCounter++;
-#endif /* TU_DEBUG_DOT */
+#endif /* CMR_DEBUG_DOT */
 }
 
 /**
@@ -1800,13 +1800,13 @@ void debugDot(
  */
 
 CMR_ERROR newcolumnCreate(
-  TU* tu,                     /**< \ref TU environment. */
+  CMR* cmr,                     /**< \ref CMR environment. */
   DEC_NEWCOLUMN** pnewcolumn  /**< Pointer for storing the newcolumn structure. */
 )
 {
-  assert(tu);
+  assert(cmr);
 
-  TU_CALL( TUallocBlock(tu, pnewcolumn) );
+  CMR_CALL( CMRallocBlock(cmr, pnewcolumn) );
   DEC_NEWCOLUMN* newcolumn = *pnewcolumn;
   newcolumn->remainsGraphic = true;
   newcolumn->memReducedMembers = 0;
@@ -1841,34 +1841,34 @@ CMR_ERROR newcolumnCreate(
  */
 
 CMR_ERROR newcolumnFree(
-  TU* tu,                     /**< \ref TU environment. */
+  CMR* cmr,                     /**< \ref CMR environment. */
   DEC_NEWCOLUMN** pnewcolumn  /**< Pointer to newcolumn structure. */
 )
 {
-  assert(tu);
+  assert(cmr);
   assert(*pnewcolumn);
 
   DEC_NEWCOLUMN* newcolumn = *pnewcolumn;
 
   if (newcolumn->edgesInPath)
-    TU_CALL( TUfreeBlockArray(tu, &newcolumn->edgesInPath) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &newcolumn->edgesInPath) );
 
   if (newcolumn->nodesDegree)
-    TU_CALL( TUfreeBlockArray(tu, &newcolumn->nodesDegree) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &newcolumn->nodesDegree) );
 
   if (newcolumn->reducedComponents)
-    TU_CALL( TUfreeBlockArray(tu, &newcolumn->reducedComponents) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &newcolumn->reducedComponents) );
   if (newcolumn->reducedMembers)
-    TU_CALL( TUfreeBlockArray(tu, &newcolumn->reducedMembers) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &newcolumn->reducedMembers) );
 
   if (newcolumn->memberInfo)
-    TU_CALL( TUfreeBlockArray(tu, &newcolumn->memberInfo) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &newcolumn->memberInfo) );
   if (newcolumn->pathEdges)
-    TU_CALL( TUfreeBlockArray(tu, &newcolumn->pathEdges) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &newcolumn->pathEdges) );
   if (newcolumn->childrenStorage)
-    TU_CALL( TUfreeBlockArray(tu, &newcolumn->childrenStorage) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &newcolumn->childrenStorage) );
 
-  TU_CALL( TUfreeBlock(tu, pnewcolumn) );
+  CMR_CALL( CMRfreeBlock(cmr, pnewcolumn) );
 
   return CMR_OKAY;
 }
@@ -1890,7 +1890,7 @@ CMR_ERROR removeAllPathEdges(
   for (PathEdge* pathEdge = newcolumn->firstPathEdge; pathEdge; pathEdge = pathEdge->nextOverall)
   {
     DEC_EDGE edge = pathEdge->edge;
-    TUdbgMsg(6, "Removing path edge %d.\n", pathEdge->edge);
+    CMRdbgMsg(6, "Removing path edge %d.\n", pathEdge->edge);
     newcolumn->edgesInPath[edge] = false;
 
     DEC_MEMBER member = findEdgeMember(dec, edge);
@@ -1904,7 +1904,7 @@ CMR_ERROR removeAllPathEdges(
         continue;
       newcolumn->nodesDegree[tail] = 0;
       newcolumn->nodesDegree[head] = 0;
-      TUdbgMsg(0, "Set nodesDegree of nodes of edge %d = {%d,%d} to 0.\n", edge, tail, head);
+      CMRdbgMsg(0, "Set nodesDegree of nodes of edge %d = {%d,%d} to 0.\n", edge, tail, head);
     }
   }
   newcolumn->firstPathEdge = NULL;
@@ -1929,17 +1929,17 @@ CMR_ERROR initializeNewColumn(
 
   newcolumn->remainsGraphic = true;
 
-#if defined(TU_DEBUG)
+#if defined(CMR_DEBUG)
   for (size_t i = 0; i < newcolumn->memNodesDegree; ++i)
   {
     if (dec->nodes[i].representativeNode != i)
       continue;
 
     if (newcolumn->nodesDegree[i] != 0)
-      TUdbgMsg(6, "Node %d still has degree %d after clean-up.\n", i, newcolumn->nodesDegree[i]);
+      CMRdbgMsg(6, "Node %d still has degree %d after clean-up.\n", i, newcolumn->nodesDegree[i]);
     assert(newcolumn->nodesDegree[i] == 0);
   }
-#endif /* TU_DEBUG || !NDEBUG */
+#endif /* CMR_DEBUG || !NDEBUG */
 
   /* Enlarge nodesDegree array and initialize new portion to zero. */
   if (newcolumn->memNodesDegree < dec->memNodes)
@@ -1947,7 +1947,7 @@ CMR_ERROR initializeNewColumn(
     size_t newSize = 16 + 2 *newcolumn->memNodesDegree;
     while (newSize < dec->memNodes)
       newSize *= 2;
-    TU_CALL( TUreallocBlockArray(dec->tu, &newcolumn->nodesDegree, newSize) );
+    CMR_CALL( CMRreallocBlockArray(dec->cmr, &newcolumn->nodesDegree, newSize) );
     for (size_t i = newcolumn->memNodesDegree; i < newSize; ++i)
       newcolumn->nodesDegree[i] = 0;
     newcolumn->memNodesDegree = newSize;
@@ -1981,13 +1981,13 @@ CMR_ERROR parallelParentChildCheckMember(
 
   dec->members[childMember].lastParallelParentChildVisit = dec->parallelParentChildVisit;
   DEC_MEMBER parentMember = findMemberParent(dec, member);
-  TUdbgMsg(10, "Consider child member %d of %d with parent %d.\n", childMember, member, parentMember);
+  CMRdbgMsg(10, "Consider child member %d of %d with parent %d.\n", childMember, member, parentMember);
   if (parentMember < 0)
     return CMR_OKAY;
 
   if (dec->members[member].type == DEC_MEMBER_TYPE_RIGID)
   {
-    TUdbgMsg(10, "Checking if the child marker of %d for child member %d is not parallel to %d's parent marker.\n",
+    CMRdbgMsg(10, "Checking if the child marker of %d for child member %d is not parallel to %d's parent marker.\n",
       member, childMember, member);
 
     DEC_EDGE childMarkerEdge = dec->members[childMember].markerOfParent;
@@ -2000,40 +2000,40 @@ CMR_ERROR parallelParentChildCheckMember(
 
     if ((nodes[0] == nodes[2] && nodes[1] == nodes[3]) || (nodes[0] == nodes[3] && nodes[1] == nodes[2]))
     {
-      TUdbgMsg(12, "Child marker edge %d is parallel to parent marker edge %d.\n",
+      CMRdbgMsg(12, "Child marker edge %d is parallel to parent marker edge %d.\n",
         dec->members[childMember].markerOfParent, dec->members[member].markerToParent);
 
       if (dec->members[parentMember].type != DEC_MEMBER_TYPE_PARALLEL)
       {
-        TUdbgMsg(12, "Parent member is not a parallel member, so we create one for edges %d and %d.\n",
+        CMRdbgMsg(12, "Parent member is not a parallel member, so we create one for edges %d and %d.\n",
           dec->members[member].markerToParent, dec->members[member].markerOfParent);
 
         DEC_MEMBER newParallel;
-        TU_CALL( createMember(dec, DEC_MEMBER_TYPE_PARALLEL, &newParallel) );
+        CMR_CALL( createMember(dec, DEC_MEMBER_TYPE_PARALLEL, &newParallel) );
         DEC_EDGE markerOfParent = dec->members[member].markerOfParent;
         DEC_EDGE newMarkerOfParent, newMarkerToParent;
-        TU_CALL( createMarkerEdgePair(dec, parentMember, &newMarkerOfParent, dec->edges[markerOfParent].tail,
+        CMR_CALL( createMarkerEdgePair(dec, parentMember, &newMarkerOfParent, dec->edges[markerOfParent].tail,
           dec->edges[markerOfParent].head, newParallel, &newMarkerToParent, -1, -1) );
 
-        TU_CALL( replaceEdgeInMembersEdgeList(dec, markerOfParent, newMarkerOfParent) );
+        CMR_CALL( replaceEdgeInMembersEdgeList(dec, markerOfParent, newMarkerOfParent) );
         dec->edges[markerOfParent].childMember = member;
         dec->edges[markerOfParent].member = newParallel;
         dec->edges[markerOfParent].tail = -1;
         dec->edges[markerOfParent].head = -1;
-        TU_CALL( addEdgeToMembersEdgeList(dec, markerOfParent) );
-        TU_CALL( addEdgeToMembersEdgeList(dec, newMarkerToParent) );
+        CMR_CALL( addEdgeToMembersEdgeList(dec, markerOfParent) );
+        CMR_CALL( addEdgeToMembersEdgeList(dec, newMarkerToParent) );
         dec->members[member].parentMember = newParallel;
         parentMember = newParallel;
       }
 
       assert(dec->members[parentMember].type == DEC_MEMBER_TYPE_PARALLEL);
 
-      TUdbgMsg(12, "Removing child marker edge %d from member %d and adding it to the new parallel member %d.\n",
+      CMRdbgMsg(12, "Removing child marker edge %d from member %d and adding it to the new parallel member %d.\n",
         childMarkerEdge, member, parentMember);
 
-      TU_CALL( removeEdgeFromMembersEdgeList(dec, childMarkerEdge) );
+      CMR_CALL( removeEdgeFromMembersEdgeList(dec, childMarkerEdge) );
       dec->edges[childMarkerEdge].member = parentMember;
-      TU_CALL( addEdgeToMembersEdgeList(dec, childMarkerEdge) );
+      CMR_CALL( addEdgeToMembersEdgeList(dec, childMarkerEdge) );
       dec->edges[childMarkerEdge].tail = -1;
       dec->edges[childMarkerEdge].head = -1;
       dec->members[childMember].parentMember = parentMember;
@@ -2042,7 +2042,7 @@ CMR_ERROR parallelParentChildCheckMember(
     }
   }
 
-  TU_CALL( parallelParentChildCheckMember(dec, parentMember, member) );
+  CMR_CALL( parallelParentChildCheckMember(dec, parentMember, member) );
 
   return CMR_OKAY;
 }
@@ -2073,11 +2073,11 @@ CMR_ERROR parallelParentChildCheckReducedMembers(
     if (edge < 0)
       continue;
     DEC_MEMBER member = findEdgeMember(dec, edge);
-    TUdbgMsg(6, "Entry %d is row %d of %d and corresponds to edge %d of member %d.\n", p, row, dec->numRows, edge,
+    CMRdbgMsg(6, "Entry %d is row %d of %d and corresponds to edge %d of member %d.\n", p, row, dec->numRows, edge,
       member);
     DEC_MEMBER parentMember = findMemberParent(dec, member);
     if (parentMember >= 0)
-      TU_CALL( parallelParentChildCheckMember(dec, parentMember, member) );
+      CMR_CALL( parallelParentChildCheckMember(dec, parentMember, member) );
   }
 
   return CMR_OKAY;
@@ -2100,7 +2100,7 @@ CMR_ERROR createReducedMembers(
   assert(member >= 0);
   assert(preducedMember);
 
-  TUdbgMsg(8, "Attempting to create reduced member %d.\n", member);
+  CMRdbgMsg(8, "Attempting to create reduced member %d.\n", member);
 
   assert(member < newcolumn->memReducedMembers);
   ReducedMember* reducedMember = newcolumn->memberInfo[member].reducedMember;
@@ -2109,12 +2109,12 @@ CMR_ERROR createReducedMembers(
     /* This member is a known reduced member. If we meet an existing path of low depth, we remember
      * that. */
 
-    TUdbgMsg(10, "Reduced member exists.\n");
+    CMRdbgMsg(10, "Reduced member exists.\n");
 
     if (!newcolumn->memberInfo[reducedMember->rootMember].rootDepthMinimizer ||
       reducedMember->depth < newcolumn->memberInfo[reducedMember->rootMember].rootDepthMinimizer->depth)
     {
-      TUdbgMsg(8, "Updating depth to %d.\n", reducedMember->depth);
+      CMRdbgMsg(8, "Updating depth to %d.\n", reducedMember->depth);
       newcolumn->memberInfo[reducedMember->rootMember].rootDepthMinimizer = reducedMember;
     }
   }
@@ -2131,13 +2131,13 @@ CMR_ERROR createReducedMembers(
     reducedMember->rigidEndNodes[2] = -1;
     reducedMember->rigidEndNodes[3] = -1;
 
-    TUdbgMsg(10, "Reduced member is new.\n");
+    CMRdbgMsg(10, "Reduced member is new.\n");
 
     DEC_MEMBER parentMember = findMemberParent(dec, member);
     if (parentMember >= 0)
     {
       ReducedMember* parentReducedMember;
-      TU_CALL( createReducedMembers(dec, newcolumn, parentMember, &parentReducedMember) );
+      CMR_CALL( createReducedMembers(dec, newcolumn, parentMember, &parentReducedMember) );
       reducedMember->parent = parentReducedMember;
       reducedMember->depth = parentReducedMember->depth + 1;
       reducedMember->rootMember = parentReducedMember->rootMember;
@@ -2155,16 +2155,16 @@ CMR_ERROR createReducedMembers(
       if (newcolumn->memReducedComponents == newcolumn->numReducedComponents)
       {
         newcolumn->memReducedComponents = 2 * newcolumn->memReducedComponents + 16;
-        TU_CALL( TUreallocBlockArray(dec->tu, &newcolumn->reducedComponents, newcolumn->memReducedComponents) );
+        CMR_CALL( CMRreallocBlockArray(dec->cmr, &newcolumn->reducedComponents, newcolumn->memReducedComponents) );
       }
-      TUdbgMsg(8, "Initializing the new reduced component %d.\n", newcolumn->numReducedComponents);
+      CMRdbgMsg(8, "Initializing the new reduced component %d.\n", newcolumn->numReducedComponents);
 
       newcolumn->reducedComponents[newcolumn->numReducedComponents].root = reducedMember;
       assert(isRepresentativeMember(dec, reducedMember->member));
       newcolumn->numReducedComponents++;
     }
 
-    TUdbgMsg(8, "The root member of %d is %d.\n", reducedMember->member, reducedMember->rootMember);
+    CMRdbgMsg(8, "The root member of %d is %d.\n", reducedMember->member, reducedMember->rootMember);
   }
 
   *preducedMember = reducedMember;
@@ -2186,7 +2186,7 @@ CMR_ERROR computeReducedDecomposition(
 {
   /* Identify all members on the path. For the induced sub-arborescence we also compute the
    * depths. After the computation, its root has depth pathRootDepth. */
-  TUdbgMsg(4, "Computing reduced t-decomposition.\n");
+  CMRdbgMsg(4, "Computing reduced t-decomposition.\n");
 
   /* Enlarge members array. */
   int maxRow = 0;
@@ -2201,8 +2201,8 @@ CMR_ERROR computeReducedDecomposition(
     size_t newSize = 16 + 2 * newcolumn->memReducedMembers;
     while (newSize < requiredNumReducedMembers)
       newSize *= 2;
-    TU_CALL( TUreallocBlockArray(dec->tu, &newcolumn->reducedMembers, newSize) );
-    TU_CALL( TUreallocBlockArray(dec->tu, &newcolumn->memberInfo, newSize) );
+    CMR_CALL( CMRreallocBlockArray(dec->cmr, &newcolumn->reducedMembers, newSize) );
+    CMR_CALL( CMRreallocBlockArray(dec->cmr, &newcolumn->memberInfo, newSize) );
     for (size_t m = newcolumn->memReducedMembers; m < newSize; ++m)
     {
       newcolumn->memberInfo[m].reducedMember = NULL;
@@ -2216,13 +2216,13 @@ CMR_ERROR computeReducedDecomposition(
   {
     int row = entryRows[p];
     DEC_EDGE edge = (row < dec->numRows) ? dec->rowEdges[row].edge : -1;
-    TUdbgMsg(6, "Entry %d is row %d of %d and corresponds to edge %d.\n", p, row, dec->numRows, edge);
+    CMRdbgMsg(6, "Entry %d is row %d of %d and corresponds to edge %d.\n", p, row, dec->numRows, edge);
     if (edge >= 0)
     {
       DEC_MEMBER member = findEdgeMember(dec, edge);
-      TUdbgMsg(8, "Edge %d exists and belongs to member %d.\n", edge, member);
+      CMRdbgMsg(8, "Edge %d exists and belongs to member %d.\n", edge, member);
       ReducedMember* reducedMember;
-      TU_CALL( createReducedMembers(dec, newcolumn, member, &reducedMember) );
+      CMR_CALL( createReducedMembers(dec, newcolumn, member, &reducedMember) );
 
       /* For the first edge of this member, we set the depth minimizer to the new reduced member. */
       if (!newcolumn->memberInfo[reducedMember->rootMember].rootDepthMinimizer)
@@ -2235,9 +2235,9 @@ CMR_ERROR computeReducedDecomposition(
   /* We set the reduced roots according to the minimizers. */
   for (int i = 0; i < newcolumn->numReducedComponents; ++i)
   {
-    TUdbgMsg(6, "Considering reduced component %d with initial root member %d.\n", i,
+    CMRdbgMsg(6, "Considering reduced component %d with initial root member %d.\n", i,
       newcolumn->reducedComponents[i].root->member);
-    TUdbgMsg(8, "The minimizer is %d.\n",
+    CMRdbgMsg(8, "The minimizer is %d.\n",
       newcolumn->memberInfo[newcolumn->reducedComponents[i].root->member].rootDepthMinimizer->member);
 
     newcolumn->reducedComponents[i].rootDepth =
@@ -2246,7 +2246,7 @@ CMR_ERROR computeReducedDecomposition(
       newcolumn->memberInfo[newcolumn->reducedComponents[i].root->member].rootDepthMinimizer;
     assert(isRepresentativeMember(dec, newcolumn->reducedComponents[i].root->member));
     newcolumn->reducedComponents[i].numTerminals = 0;
-    TUdbgMsg(8, "Member %d is the new root of the reduced decomposition of this component.\n",
+    CMRdbgMsg(8, "Member %d is the new root of the reduced decomposition of this component.\n",
       newcolumn->reducedComponents[i].root->member);
   }
 
@@ -2254,7 +2254,7 @@ CMR_ERROR computeReducedDecomposition(
   if (newcolumn->memChildrenStorage < newcolumn->numReducedMembers)
   {
     newcolumn->memChildrenStorage = 2*newcolumn->numReducedMembers;
-    TU_CALL( TUreallocBlockArray(dec->tu, &newcolumn->childrenStorage, newcolumn->memChildrenStorage) );
+    CMR_CALL( CMRreallocBlockArray(dec->cmr, &newcolumn->childrenStorage, newcolumn->memChildrenStorage) );
   }
   newcolumn->usedChildrenStorage = 0;
 
@@ -2264,7 +2264,7 @@ CMR_ERROR computeReducedDecomposition(
     ReducedMember* reducedMember = &newcolumn->reducedMembers[m];
     if (reducedMember->depth >= newcolumn->memberInfo[reducedMember->rootMember].rootDepthMinimizer->depth)
     {
-      TUdbgMsg(6, "Member %d's depth is greater than that of the root, and it has %d children.\n",
+      CMRdbgMsg(6, "Member %d's depth is greater than that of the root, and it has %d children.\n",
         reducedMember->member, reducedMember->numChildren);
       reducedMember->children = &newcolumn->childrenStorage[newcolumn->usedChildrenStorage];
       newcolumn->usedChildrenStorage += reducedMember->numChildren;
@@ -2272,12 +2272,12 @@ CMR_ERROR computeReducedDecomposition(
     }
     else
     {
-      TUdbgMsg(6, "Member %d's depth is smaller than that of its new root.\n", reducedMember->member);
+      CMRdbgMsg(6, "Member %d's depth is smaller than that of its new root.\n", reducedMember->member);
       continue;
     }
   }
 
-  TUdbgMsg(4, "Total number of children is %d with space for %d.\n", newcolumn->usedChildrenStorage, newcolumn->memChildrenStorage);
+  CMRdbgMsg(4, "Total number of children is %d with space for %d.\n", newcolumn->usedChildrenStorage, newcolumn->memChildrenStorage);
 
   /* Set children of each reduced member. */
   for (int m = 0; m < newcolumn->numReducedMembers; ++m)
@@ -2285,18 +2285,18 @@ CMR_ERROR computeReducedDecomposition(
     ReducedMember* reducedMember = &newcolumn->reducedMembers[m];
     if (reducedMember->depth <= newcolumn->memberInfo[reducedMember->rootMember].rootDepthMinimizer->depth)
     {
-      TUdbgMsg(6, "Member %d's depth is smaller than or equal to that of its reduced root.\n", reducedMember->member);
+      CMRdbgMsg(6, "Member %d's depth is smaller than or equal to that of its reduced root.\n", reducedMember->member);
       continue;
     }
 
     DEC_MEMBER parentMember = findMemberParent(dec, newcolumn->reducedMembers[m].member);
     ReducedMember* parentReducedMember = parentMember >= 0 ? newcolumn->memberInfo[parentMember].reducedMember : NULL;
-    TUdbgMsg(6, "Member %d's depth is greater than that of its reduced root. Its parent is %d, and reduced parent %p.\n",
+    CMRdbgMsg(6, "Member %d's depth is greater than that of its reduced root. Its parent is %d, and reduced parent %p.\n",
       reducedMember->member, parentMember, parentReducedMember);
 
     if (parentReducedMember)
     {
-      TUdbgMsg(6, "Reduced member %ld (= member %d) has %d (= member %d) as child %d.\n",
+      CMRdbgMsg(6, "Reduced member %ld (= member %d) has %d (= member %d) as child %d.\n",
         (parentReducedMember - newcolumn->reducedMembers),
         parentReducedMember->member, m, newcolumn->reducedMembers[m].member, parentReducedMember->numChildren);
       parentReducedMember->children[parentReducedMember->numChildren] = &newcolumn->reducedMembers[m];
@@ -2351,13 +2351,13 @@ CMR_ERROR createPathEdge(
   /* Increase node degrees of nodes in a rigid parent. */
   if (dec->members[reducedMember->member].type == DEC_MEMBER_TYPE_RIGID)
   {
-    TUdbgMsg(14, "Creating path edge for %d = {%d,%d} in rigid member %d.\n", edge, findEdgeTail(dec, edge),
+    CMRdbgMsg(14, "Creating path edge for %d = {%d,%d} in rigid member %d.\n", edge, findEdgeTail(dec, edge),
       findEdgeHead(dec, edge), reducedMember->member);
     newcolumn->nodesDegree[findEdgeTail(dec, edge)]++;
     newcolumn->nodesDegree[findEdgeHead(dec, edge)]++;
   }
   else
-    TUdbgMsg(14, "Creating path edge for %d in non-rigid member %d.\n", edge, reducedMember->member);
+    CMRdbgMsg(14, "Creating path edge for %d in non-rigid member %d.\n", edge, reducedMember->member);
 
   return CMR_OKAY;
 }
@@ -2392,7 +2392,7 @@ CMR_ERROR completeReducedDecomposition(
   }
   newNumRows++;
 
-  TUdbgMsg(4, "Completing reduced decomposition: increasing #rows from %d to %d.\n", dec->numRows, newNumRows);
+  CMRdbgMsg(4, "Completing reduced decomposition: increasing #rows from %d to %d.\n", dec->numRows, newNumRows);
 
   /* Create single-edge parallel members for all new rows. */
 
@@ -2401,23 +2401,23 @@ CMR_ERROR completeReducedDecomposition(
     if (newNumRows > dec->memRows)
     {
       dec->memRows = 2*newNumRows;
-      TU_CALL( TUreallocBlockArray(dec->tu, &dec->rowEdges, dec->memRows) );
+      CMR_CALL( CMRreallocBlockArray(dec->cmr, &dec->rowEdges, dec->memRows) );
     }
 
     for (int r = dec->numRows; r < newNumRows; ++r)
     {
       DEC_MEMBER member;
-      TU_CALL( createMember(dec, DEC_MEMBER_TYPE_PARALLEL, &member) );
+      CMR_CALL( createMember(dec, DEC_MEMBER_TYPE_PARALLEL, &member) );
 
       DEC_EDGE edge;
-      TU_CALL( createEdge(dec, member, &edge) );
-      TU_CALL( addEdgeToMembersEdgeList(dec, edge) );
-      dec->edges[edge].element = TUrowToElement(r);
+      CMR_CALL( createEdge(dec, member, &edge) );
+      CMR_CALL( addEdgeToMembersEdgeList(dec, edge) );
+      dec->edges[edge].element = CMRrowToElement(r);
       dec->edges[edge].head = -1;
       dec->edges[edge].tail = -1;
       dec->edges[edge].childMember = -1;
 
-      TUdbgMsg(8, "New row %d is edge %d of member %d.\n", r, edge, member);
+      CMRdbgMsg(8, "New row %d is edge %d of member %d.\n", r, edge, member);
 
       dec->rowEdges[r].edge = edge;
     }
@@ -2433,7 +2433,7 @@ CMR_ERROR completeReducedDecomposition(
       DEC_EDGE edge = dec->rowEdges[row].edge;
       DEC_MEMBER member = findEdgeMember(dec, edge);
 
-      TUdbgMsg(4, "Creating reduced member for edge %d of member %d.\n", edge, member);
+      CMRdbgMsg(4, "Creating reduced member for edge %d of member %d.\n", edge, member);
 
       assert(newcolumn->numReducedMembers < newcolumn->memReducedMembers);
       ReducedMember* reducedMember = &newcolumn->reducedMembers[newcolumn->numReducedMembers];
@@ -2445,12 +2445,12 @@ CMR_ERROR completeReducedDecomposition(
       reducedMember->rootMember = -1;
       reducedMember->type = TYPE_ROOT;
       reducedMember->firstPathEdge = NULL;
-      TU_CALL( createPathEdge(dec, newcolumn, edge, reducedMember) );
+      CMR_CALL( createPathEdge(dec, newcolumn, edge, reducedMember) );
 
       if (newcolumn->numReducedComponents == newcolumn->memReducedComponents)
       {
         newcolumn->memReducedComponents = 2 * newcolumn->memReducedComponents + 16;
-        TU_CALL( TUreallocBlockArray(dec->tu, &newcolumn->reducedComponents,
+        CMR_CALL( CMRreallocBlockArray(dec->cmr, &newcolumn->reducedComponents,
           newcolumn->memReducedComponents) );
       }
 
@@ -2488,13 +2488,13 @@ CMR_ERROR createReducedDecompositionPathEdges(
   assert(dec);
   assert(newcolumn);
 
-  TUdbgMsg(4, "Initializing edge lists for members of reduced decomposition.\n");
+  CMRdbgMsg(4, "Initializing edge lists for members of reduced decomposition.\n");
 
   assert(newcolumn->numPathEdges == 0);
   size_t maxNumPathEdges = numRows + dec->numMembers;
   if (newcolumn->memPathEdges < maxNumPathEdges)
   {
-    TU_CALL( TUreallocBlockArray(dec->tu, &newcolumn->pathEdges, maxNumPathEdges) );
+    CMR_CALL( CMRreallocBlockArray(dec->cmr, &newcolumn->pathEdges, maxNumPathEdges) );
     newcolumn->memPathEdges = maxNumPathEdges;
   }
 
@@ -2514,10 +2514,10 @@ CMR_ERROR createReducedDecompositionPathEdges(
       ReducedMember* reducedMember = newcolumn->memberInfo[member].reducedMember;
 
       assert(reducedMember);
-      TU_CALL( createPathEdge(dec, newcolumn, edge, reducedMember) );
+      CMR_CALL( createPathEdge(dec, newcolumn, edge, reducedMember) );
 
-      TUdbgMsg(6, "Edge %d <%s> belongs to reduced member %ld which is %s member %d.\n", edge,
-        TUelementString(dec->edges[edge].element, NULL), (reducedMember - newcolumn->reducedMembers),
+      CMRdbgMsg(6, "Edge %d <%s> belongs to reduced member %ld which is %s member %d.\n", edge,
+        CMRelementString(dec->edges[edge].element, NULL), (reducedMember - newcolumn->reducedMembers),
         memberTypeString(reducedMember->member), reducedMember->member);
     }
   }
@@ -2669,7 +2669,7 @@ CMR_ERROR determineTypeSeries(
     ++countPathEdges;
   int numEdges = dec->members[member].numEdges;
 
-  TUdbgMsg(8+2*depth,
+  CMRdbgMsg(8+2*depth,
     "Determining type of series with %d edges, %d path edges, %d 1-end children and %d 2-end children.\n", numEdges,
     countPathEdges, numOneEnd, numTwoEnds);
 
@@ -2768,7 +2768,7 @@ CMR_ERROR determineTypeRigid(
       DEC_NODE v = nodes[i];
       if (newcolumn->nodesDegree[v] >= 3)
       {
-        TUdbgMsg(6 + 2*depth, "Node %d of rigid member %d has path-degree at least 3.\n", v, reducedMember->member);
+        CMRdbgMsg(6 + 2*depth, "Node %d of rigid member %d has path-degree at least 3.\n", v, reducedMember->member);
 
         /* Tested in TypingAnyRigidDegree3. */
         newcolumn->remainsGraphic = false;
@@ -2779,7 +2779,7 @@ CMR_ERROR determineTypeRigid(
       {
         if (numPathEndNodes == 4)
         {
-          TUdbgMsg(6 + 2*depth, "Rigid member %d has at least five path end nodes: %d, %d, %d, %d and %d.\n",
+          CMRdbgMsg(6 + 2*depth, "Rigid member %d has at least five path end nodes: %d, %d, %d, %d and %d.\n",
             reducedMember->member, pathEndNodes[0], pathEndNodes[1], pathEndNodes[2], pathEndNodes[3], v);
 
           /* Tested in TypingAnyRigidManyPaths.*/
@@ -2801,7 +2801,7 @@ CMR_ERROR determineTypeRigid(
   if (numPathEndNodes == 4)
   {
     DEC_EDGE* nodeEdges = NULL;
-    TUallocStackArray(dec->tu, &nodeEdges, 2*dec->memNodes);
+    CMRallocStackArray(dec->cmr, &nodeEdges, 2*dec->memNodes);
 
     /* Initialize relevant entries to -1. */
     for (PathEdge* reducedEdge = reducedMember->firstPathEdge; reducedEdge; reducedEdge = reducedEdge->nextSibling)
@@ -2840,7 +2840,7 @@ CMR_ERROR determineTypeRigid(
       DEC_NODE v = findEdgeHead(dec, edge);
       currentNode = (v != currentNode) ? v : findEdgeTail(dec, edge);
     }
-    TUfreeStackArray(dec->tu, &nodeEdges);
+    CMRfreeStackArray(dec->cmr, &nodeEdges);
 
     /* Exchange such that we end nodes 0 and 1 are end nodes of the same path. */
     if (currentNode == pathEndNodes[2])
@@ -2865,18 +2865,18 @@ CMR_ERROR determineTypeRigid(
     SWAP_INTS(pathEndNodes[0], pathEndNodes[1]);
   }
 
-  TUdbgMsg(6 + 2*depth, "Rigid %smember %d has %d path end nodes:", depth == 0 ? "root " : "", member, numPathEndNodes);
+  CMRdbgMsg(6 + 2*depth, "Rigid %smember %d has %d path end nodes:", depth == 0 ? "root " : "", member, numPathEndNodes);
   if (numPathEndNodes >= 2)
-    TUdbgMsg(0, " a path from %d to %d.", pathEndNodes[0], pathEndNodes[1]);
+    CMRdbgMsg(0, " a path from %d to %d.", pathEndNodes[0], pathEndNodes[1]);
   if (numPathEndNodes == 4)
-    TUdbgMsg(0, " a path from %d to %d.", pathEndNodes[2], pathEndNodes[3]);
-  TUdbgMsg(0, "\n");
+    CMRdbgMsg(0, " a path from %d to %d.", pathEndNodes[2], pathEndNodes[3]);
+  CMRdbgMsg(0, "\n");
 
   if (depth == 0)
   {
     if (numPathEndNodes == 0)
     {
-      TUdbgMsg(6 + 2*depth, "Root without paths. Child markers are {%d,%d} and {%d,%d}.\n", childMarkerNodes[0], childMarkerNodes[1],
+      CMRdbgMsg(6 + 2*depth, "Root without paths. Child markers are {%d,%d} and {%d,%d}.\n", childMarkerNodes[0], childMarkerNodes[1],
         childMarkerNodes[2], childMarkerNodes[3]);
       /* No path edges, so there should be two adjacent child marker edges. */
       if (numOneEnd == 2 && (childMarkerNodes[0] == childMarkerNodes[2] || childMarkerNodes[0] == childMarkerNodes[3]
@@ -3019,7 +3019,7 @@ CMR_ERROR determineTypeRigid(
           }
         }
 
-        TUdbgMsg(6 + 2*depth, "No paths, %s, child[0] incident to %d and child[1] incident to %d.\n",
+        CMRdbgMsg(6 + 2*depth, "No paths, %s, child[0] incident to %d and child[1] incident to %d.\n",
           isParallel ? "parallel" : "not parallel", childMarkerParentNode[0], childMarkerParentNode[1]);
 
         if (!isParallel && childMarkerParentNode[0] >= 0 && childMarkerParentNode[1] >= 0
@@ -3042,7 +3042,7 @@ CMR_ERROR determineTypeRigid(
 
       if (numOneEnd == 1)
       {
-        TUdbgMsg(6 + 2*depth, "%d-%d-path, parent {%d,%d} and child {%d,%d}\n", pathEndNodes[0], pathEndNodes[1],
+        CMRdbgMsg(6 + 2*depth, "%d-%d-path, parent {%d,%d} and child {%d,%d}\n", pathEndNodes[0], pathEndNodes[1],
           parentMarkerNodes[0], parentMarkerNodes[1], childMarkerNodes[0], childMarkerNodes[1]);
 
         if (parentMarkerNodes[0] != pathEndNodes[0])
@@ -3091,7 +3091,7 @@ CMR_ERROR determineTypeRigid(
       }
       else if (numOneEnd == 2)
       {
-        TUdbgMsg(6 + 2*depth, "%d-%d-path, parent marker {%d,%d} and child markers {%d,%d} and {%d,%d}\n",
+        CMRdbgMsg(6 + 2*depth, "%d-%d-path, parent marker {%d,%d} and child markers {%d,%d} and {%d,%d}\n",
           pathEndNodes[0], pathEndNodes[1], parentMarkerNodes[0], parentMarkerNodes[1], childMarkerNodes[0],
           childMarkerNodes[1], childMarkerNodes[2], childMarkerNodes[3]);
 
@@ -3190,14 +3190,14 @@ CMR_ERROR determineTypeRigid(
     {
       if (reducedMember->rigidEndNodes[0] != parentMarkerNodes[0] && reducedMember->rigidEndNodes[0] != parentMarkerNodes[1])
       {
-        TUdbgMsg(6 + 2*depth, "First path does not start at parent marker edge.\n");
+        CMRdbgMsg(6 + 2*depth, "First path does not start at parent marker edge.\n");
         /* Tested in TypingInnerRigidTwoPathsNonadjacentParent. */
         newcolumn->remainsGraphic = false;
         return CMR_OKAY;
       }
       if (reducedMember->rigidEndNodes[2] != parentMarkerNodes[0] && reducedMember->rigidEndNodes[2] != parentMarkerNodes[1])
       {
-        TUdbgMsg(6 + 2*depth, "Second path does not start at parent marker edge.\n");
+        CMRdbgMsg(6 + 2*depth, "Second path does not start at parent marker edge.\n");
         /* Tested in TypingInnerRigidTwoPathsNonadjacentParent. */
         newcolumn->remainsGraphic = false;
         return CMR_OKAY;
@@ -3214,22 +3214,22 @@ CMR_ERROR determineTypeRigid(
 
         if (pathConnects[0] && pathConnects[1])
         {
-          TUdbgMsg(6 + 2*depth, "The both paths end at the child marker edge.\n");
+          CMRdbgMsg(6 + 2*depth, "The both paths end at the child marker edge.\n");
           reducedMember->type = TYPE_DOUBLE_CHILD;
         }
         else if (pathConnects[0])
         {
-          TUdbgMsg(6 + 2*depth, "Only the first path ends at the child marker edge.\n");
+          CMRdbgMsg(6 + 2*depth, "Only the first path ends at the child marker edge.\n");
           reducedMember->type = TYPE_DOUBLE_CHILD;
         }
         else if (pathConnects[1])
         {
-          TUdbgMsg(6 + 2*depth, "Only the second path ends at the child marker edge.\n");
+          CMRdbgMsg(6 + 2*depth, "Only the second path ends at the child marker edge.\n");
           reducedMember->type = TYPE_DOUBLE_CHILD;
         }
         else
         {
-          TUdbgMsg(6 + 2*depth, "No path ends at the child marker edge.\n");
+          CMRdbgMsg(6 + 2*depth, "No path ends at the child marker edge.\n");
           /* Tested in TypingInnerRigidTwoPathOneSingleChild. */
           newcolumn->remainsGraphic = false;
         }
@@ -3255,7 +3255,7 @@ CMR_ERROR determineTypeRigid(
         }
         else
         {
-          TUdbgMsg(6 + 2*depth, "No pairing of paths to nodes of child marker edges possible.\n");
+          CMRdbgMsg(6 + 2*depth, "No pairing of paths to nodes of child marker edges possible.\n");
           /* Tested in TypingInnerRigidTwoPathsTwoSingleChildren. */
           newcolumn->remainsGraphic = false;
         }
@@ -3276,7 +3276,7 @@ CMR_ERROR determineTypeRigid(
         }
         else
         {
-          TUdbgMsg(6 + 2*depth, "Paths do not end at child marker.");
+          CMRdbgMsg(6 + 2*depth, "Paths do not end at child marker.");
           /* Tested in TypingInnerRigidTwoPathsDoubleChild. */
           newcolumn->remainsGraphic = false;
         }
@@ -3303,7 +3303,7 @@ CMR_ERROR determineTypes(
   assert(dec);
   assert(newcolumn);
 
-  TUdbgMsg(4 + 2*depth, "determineTypes(member %d = reduced member %ld)\n", reducedMember->member,
+  CMRdbgMsg(4 + 2*depth, "determineTypes(member %d = reduced member %ld)\n", reducedMember->member,
     reducedMember - &newcolumn->reducedMembers[0]);
 
   /* First handle children recursively. */
@@ -3311,31 +3311,31 @@ CMR_ERROR determineTypes(
   {
     ReducedMember* reducedChild = reducedMember->children[c];
     assert(reducedChild);
-    TU_CALL( determineTypes(dec, newcolumn, reducedComponent, reducedChild, depth + 1) );
+    CMR_CALL( determineTypes(dec, newcolumn, reducedComponent, reducedChild, depth + 1) );
 
     if (newcolumn->remainsGraphic)
     {
-      TUdbgMsg(6 + 2*depth, "Child member %d of %d has type %d\n", reducedMember->children[c]->member, reducedMember->member,
+      CMRdbgMsg(6 + 2*depth, "Child member %d of %d has type %d\n", reducedMember->children[c]->member, reducedMember->member,
         reducedMember->children[c]->type);
     }
     else
     {
-      TUdbgMsg(6 + 2*depth, "Child prohibits graphicness.\n");
+      CMRdbgMsg(6 + 2*depth, "Child prohibits graphicness.\n");
       return CMR_OKAY;
     }
   }
 
   int numOneEnd, numTwoEnds;
   DEC_EDGE childMarkerEdges[2];
-  TU_CALL( countChildrenTypes(dec, reducedMember, &numOneEnd, &numTwoEnds, childMarkerEdges) );
+  CMR_CALL( countChildrenTypes(dec, reducedMember, &numOneEnd, &numTwoEnds, childMarkerEdges) );
 
-#if defined(TU_DEBUG)
+#if defined(CMR_DEBUG)
   int countReducedEdges = 0;
   for (PathEdge* e = reducedMember->firstPathEdge; e; e = e->nextSibling)
     ++countReducedEdges;
-  TUdbgMsg(6 + 2*depth, "Member %d has %d children with one end and %d with two ends and %d path edges.\n",
+  CMRdbgMsg(6 + 2*depth, "Member %d has %d children with one end and %d with two ends and %d path edges.\n",
     reducedMember->member, numOneEnd, numTwoEnds, countReducedEdges);
-#endif /* TU_DEBUG */
+#endif /* CMR_DEBUG */
 
   if (2*numTwoEnds + numOneEnd > 2)
   {
@@ -3348,22 +3348,22 @@ CMR_ERROR determineTypes(
   DEC_MEMBER member = findMember(dec, reducedMember->member);
   if (dec->members[member].type == DEC_MEMBER_TYPE_PARALLEL)
   {
-    TU_CALL( determineTypeParallel(dec, newcolumn, reducedComponent, reducedMember, numOneEnd, numTwoEnds,
+    CMR_CALL( determineTypeParallel(dec, newcolumn, reducedComponent, reducedMember, numOneEnd, numTwoEnds,
       childMarkerEdges, depth) );
   }
   else if (dec->members[member].type == DEC_MEMBER_TYPE_SERIES)
   {
-    TU_CALL( determineTypeSeries(dec, newcolumn, reducedComponent, reducedMember, numOneEnd, numTwoEnds,
+    CMR_CALL( determineTypeSeries(dec, newcolumn, reducedComponent, reducedMember, numOneEnd, numTwoEnds,
       childMarkerEdges, depth) );
   }
   else
   {
     assert(dec->members[member].type == DEC_MEMBER_TYPE_RIGID);
-    TU_CALL( determineTypeRigid(dec, newcolumn, reducedComponent, reducedMember, numOneEnd, numTwoEnds,
+    CMR_CALL( determineTypeRigid(dec, newcolumn, reducedComponent, reducedMember, numOneEnd, numTwoEnds,
       childMarkerEdges, depth) );
   }
 
-  TUdbgMsg(6 + 2*depth, "Determined type %d (%s).\n", reducedMember->type, newcolumn->remainsGraphic ? "graphic" : "non-graphic");
+  CMRdbgMsg(6 + 2*depth, "Determined type %d (%s).\n", reducedMember->type, newcolumn->remainsGraphic ? "graphic" : "non-graphic");
 
   /* Parent marker edge closes cycle, so we propagate information to parent. */
 
@@ -3373,14 +3373,14 @@ CMR_ERROR determineTypes(
     ReducedMember* reducedParent = newcolumn->memberInfo[parentMember].reducedMember;
     DEC_EDGE markerOfParent = dec->members[member].markerOfParent;
 
-    TUdbgMsg(6 + 2*depth, "Marker edge closes cycle.\n");
-    TUdbgMsg(6 + 2*depth, "Parent member %d is reduced member %ld.\n", parentMember,
+    CMRdbgMsg(6 + 2*depth, "Marker edge closes cycle.\n");
+    CMRdbgMsg(6 + 2*depth, "Parent member %d is reduced member %ld.\n", parentMember,
       (reducedParent - newcolumn->reducedMembers));
 
     /* Add marker edge of parent to reduced parent's path edges. */
-    TU_CALL( createPathEdge(dec, newcolumn, markerOfParent, reducedParent) );
+    CMR_CALL( createPathEdge(dec, newcolumn, markerOfParent, reducedParent) );
 
-    TUdbgMsg(6 + 2*depth, "Added marker edge of parent to list of path edges.\n");
+    CMRdbgMsg(6 + 2*depth, "Added marker edge of parent to list of path edges.\n");
   }
 
   return CMR_OKAY;
@@ -3403,29 +3403,29 @@ CMR_ERROR addColumnCheck(
   assert(newcolumn);
   assert(rows);
 
-  TUdbgMsg(0, "\n  Checking whether we can add a column with %d 1's.\n", numRows);
+  CMRdbgMsg(0, "\n  Checking whether we can add a column with %d 1's.\n", numRows);
 
-#if defined(TU_DEBUG_CONSISTENCY)
-  TUconsistencyAssert( decConsistency(dec) );
-#endif /* TU_DEBUG_CONSISTENCY */
+#if defined(CMR_DEBUG_CONSISTENCY)
+  CMRconsistencyAssert( decConsistency(dec) );
+#endif /* CMR_DEBUG_CONSISTENCY */
 
   /* Reset \ref nodesDegree to 0 and edgesInPath to false by inspecting path edges from previous iteration. */
-  TU_CALL( removeAllPathEdges(dec, newcolumn) );
+  CMR_CALL( removeAllPathEdges(dec, newcolumn) );
 
-#if defined(TU_DEBUG)
+#if defined(CMR_DEBUG)
   for (size_t e = 0; e < newcolumn->memEdgesInPath; ++e)
   {
     if (newcolumn->edgesInPath[e])
-      TUdbgMsg(6, "Edge %d is still marked as path edge after clean-up.\n", e);
+      CMRdbgMsg(6, "Edge %d is still marked as path edge after clean-up.\n", e);
     assert(!newcolumn->edgesInPath[e]);
   }
-#endif /* TU_DEBUG */
+#endif /* CMR_DEBUG */
 
   /* Check for the (not yet computed) reduced decomposition whether there is a pair of parallel child/parent marker
    * edges in a non-parallel. */
-  TU_CALL( parallelParentChildCheckReducedMembers(dec, rows, numRows) );
+  CMR_CALL( parallelParentChildCheckReducedMembers(dec, rows, numRows) );
 
-  TU_CALL( initializeNewColumn(dec, newcolumn) );
+  CMR_CALL( initializeNewColumn(dec, newcolumn) );
 
   /* Ensure that the edgesInPath array is long enough.
    * memEdges does not suffice since new edges can be created by splitting and we need those for new rows.
@@ -3441,32 +3441,32 @@ CMR_ERROR addColumnCheck(
     size_t newSize = 16 + 2*newcolumn->memEdgesInPath;
     while (newSize < requiredNumEdgesInPath)
       newSize *= 2;
-    TU_CALL( TUreallocBlockArray(dec->tu, &newcolumn->edgesInPath, newSize) );
+    CMR_CALL( CMRreallocBlockArray(dec->cmr, &newcolumn->edgesInPath, newSize) );
     for (size_t i = newcolumn->memEdgesInPath; i < newSize; ++i)
       newcolumn->edgesInPath[i] = false;
     newcolumn->memEdgesInPath = newSize;
   }
 
-#if defined(TU_DEBUG)
+#if defined(CMR_DEBUG)
   for (size_t m = 0; m < newcolumn->memReducedMembers; ++m)
   {
     if (newcolumn->memberInfo[m].reducedMember)
-      TUdbgMsg(6, "Member %d is still mapped to reduced member before new reduced decomposition is computed.\n", m);
+      CMRdbgMsg(6, "Member %d is still mapped to reduced member before new reduced decomposition is computed.\n", m);
     assert(!newcolumn->memberInfo[m].reducedMember);
   }
-#endif /* TU_DEBUG */
+#endif /* CMR_DEBUG */
 
-  TU_CALL( computeReducedDecomposition(dec, newcolumn, rows, numRows) );
-  TU_CALL( createReducedDecompositionPathEdges(dec, newcolumn, rows, numRows) );
+  CMR_CALL( computeReducedDecomposition(dec, newcolumn, rows, numRows) );
+  CMR_CALL( createReducedDecompositionPathEdges(dec, newcolumn, rows, numRows) );
 
   debugDot(dec, newcolumn);
 
   for (int i = 0; i < newcolumn->numReducedComponents; ++i)
   {
-    TU_CALL( determineTypes(dec, newcolumn, &newcolumn->reducedComponents[i], newcolumn->reducedComponents[i].root,
+    CMR_CALL( determineTypes(dec, newcolumn, &newcolumn->reducedComponents[i], newcolumn->reducedComponents[i].root,
       0) );
 
-    TUdbgMsg(6, "After inspecting reduced component %d, graphic = %d.\n", i, newcolumn->remainsGraphic);
+    CMRdbgMsg(6, "After inspecting reduced component %d, graphic = %d.\n", i, newcolumn->remainsGraphic);
   }
 
   /* Clean-up membersToReducedMembers. */
@@ -3477,11 +3477,11 @@ CMR_ERROR addColumnCheck(
   }
 
   if (newcolumn->remainsGraphic)
-    TUdbgMsg(4, "Adding the column would maintain graphicness.\n");
+    CMRdbgMsg(4, "Adding the column would maintain graphicness.\n");
 
-#if defined(TU_DEBUG_CONSISTENCY)
-  TUconsistencyAssert( decConsistency(dec) );
-#endif /* TU_DEBUG_CONSISTENCY */
+#if defined(CMR_DEBUG_CONSISTENCY)
+  CMRconsistencyAssert( decConsistency(dec) );
+#endif /* CMR_DEBUG_CONSISTENCY */
 
   return CMR_OKAY;
 }
@@ -3507,11 +3507,11 @@ CMR_ERROR addTerminal(
   assert(node >= 0 || dec->members[member].type == DEC_MEMBER_TYPE_PARALLEL);
   assert(reducedComponent->numTerminals != 1 || node >= 0 || member == reducedComponent->terminalMember[0]);
 
-  TUdbgMsg(12, "Setting terminal node %d of member %d.\n", node, member);
+  CMRdbgMsg(12, "Setting terminal node %d of member %d.\n", node, member);
 
   if (reducedComponent->numTerminals == 2)
   {
-    TUdbgMsg(8, "Attempted to add terminal but already 2 known. We should detect non-graphicness soon.\n");
+    CMRdbgMsg(8, "Attempted to add terminal but already 2 known. We should detect non-graphicness soon.\n");
   }
   else
   {
@@ -3543,7 +3543,7 @@ CMR_ERROR moveReducedRoot(
 
   int numOneEnd, numTwoEnds;
   DEC_EDGE childMarkerEdges[2];
-  TU_CALL( countChildrenTypes(dec, reducedMember, &numOneEnd, &numTwoEnds, childMarkerEdges) );
+  CMR_CALL( countChildrenTypes(dec, reducedMember, &numOneEnd, &numTwoEnds, childMarkerEdges) );
 
   bool cycleWithUniqueEndChild;
   if (dec->members[member].type == DEC_MEMBER_TYPE_PARALLEL)
@@ -3576,13 +3576,13 @@ CMR_ERROR moveReducedRoot(
 
   if (!cycleWithUniqueEndChild)
   {
-    TUdbgMsg(6, "Reduced root member does not close a cycle with a 1- or 2-end child marker edge.\n");
+    CMRdbgMsg(6, "Reduced root member does not close a cycle with a 1- or 2-end child marker edge.\n");
     return CMR_OKAY;
   }
 
   while (cycleWithUniqueEndChild)
   {
-    TUdbgMsg(6, "Reduced %s member %d closes a cycle with a 1- or 2-end child marker edge.\n",
+    CMRdbgMsg(6, "Reduced %s member %d closes a cycle with a 1- or 2-end child marker edge.\n",
       memberTypeString(dec->members[member].type), member);
 
     DEC_MEMBER childMember = findMember(dec, dec->edges[childMarkerEdges[0]].childMember);
@@ -3601,11 +3601,11 @@ CMR_ERROR moveReducedRoot(
     /* Now reduced member corresponds to the child, so we can mark its parent marker as a path edge. */
     assert(reducedMember->member == childMember);
 //     newcolumn->edgesInPath[dec->members[childMember].markerToParent] = true;
-    TU_CALL( createPathEdge(dec, newcolumn, dec->members[childMember].markerToParent, reducedMember) );
+    CMR_CALL( createPathEdge(dec, newcolumn, dec->members[childMember].markerToParent, reducedMember) );
 
     member = reducedMember->member;
     assert(isRepresentativeMember(dec, member));
-    TU_CALL( countChildrenTypes(dec, reducedMember, &numOneEnd, &numTwoEnds, childMarkerEdges) );
+    CMR_CALL( countChildrenTypes(dec, reducedMember, &numOneEnd, &numTwoEnds, childMarkerEdges) );
 
     if (dec->members[member].type == DEC_MEMBER_TYPE_PARALLEL)
     {
@@ -3676,7 +3676,7 @@ CMR_ERROR moveReducedRoot(
     }
   }
 
-  TUdbgMsg(6, "Updated reduced root member is %d.\n", reducedMember->member);
+  CMRdbgMsg(6, "Updated reduced root member is %d.\n", reducedMember->member);
 
   reducedComponent->root = reducedMember;
 
@@ -3726,20 +3726,20 @@ CMR_ERROR mergeMemberIntoParent(
   DEC_MEMBER parentMember = findMemberParent(dec, member);
   assert(parentMember >= 0);
 
-  TUdbgMsg(10, "Merging child member %d into its parent member %d.\n", member, parentMember);
+  CMRdbgMsg(10, "Merging child member %d into its parent member %d.\n", member, parentMember);
 
-#if defined(TU_DEBUG)
+#if defined(CMR_DEBUG)
   DEC_EDGE edge = dec->members[member].firstEdge;
   do
   {
     if (dec->edges[edge].head < 0 || dec->edges[edge].tail < 0)
-      TUdbgMsg(10, "Edge %d of merge member %d does not have nodes.\n", edge, member);
+      CMRdbgMsg(10, "Edge %d of merge member %d does not have nodes.\n", edge, member);
     assert(dec->edges[edge].tail >= 0);
     assert(dec->edges[edge].head >= 0);
     edge = dec->edges[edge].next;
   }
   while (edge != dec->members[member].firstEdge);
-#endif /* TU_DEBUG */
+#endif /* CMR_DEBUG */
 
   DEC_EDGE parentEdge = dec->members[member].markerOfParent;
   assert(parentEdge >= 0);
@@ -3748,7 +3748,7 @@ CMR_ERROR mergeMemberIntoParent(
 
   DEC_NODE parentEdgeNodes[2] = { findEdgeTail(dec, parentEdge), findEdgeHead(dec, parentEdge) };
   DEC_NODE childEdgeNodes[2] = { findEdgeTail(dec, childEdge), findEdgeHead(dec, childEdge) };
-  TUdbgMsg(10, "Merging member %d into %d, identifying %d = {%d,%d} with %d = {%d,%d}.\n", member, parentMember,
+  CMRdbgMsg(10, "Merging member %d into %d, identifying %d = {%d,%d} with %d = {%d,%d}.\n", member, parentMember,
     childEdge, childEdgeNodes[0], childEdgeNodes[1], parentEdge, parentEdgeNodes[0], parentEdgeNodes[1]);
 
   /* Identify nodes. */
@@ -3803,8 +3803,8 @@ CMR_ERROR createParallelNodes(
   }
 
   DEC_NODE tail, head;
-  TU_CALL( createNode(dec, &tail) );
-  TU_CALL( createNode(dec, &head) );
+  CMR_CALL( createNode(dec, &tail) );
+  CMR_CALL( createNode(dec, &head) );
 
   do
   {
@@ -3842,20 +3842,20 @@ CMR_ERROR splitParallel(
   assert(edge2 < dec->memEdges);
 
   DEC_MEMBER childParallel;
-  TU_CALL( createMember(dec, DEC_MEMBER_TYPE_PARALLEL, &childParallel) );
+  CMR_CALL( createMember(dec, DEC_MEMBER_TYPE_PARALLEL, &childParallel) );
   DEC_EDGE markerOfParentParallel, markerOfChildParallel;
-  TU_CALL( createMarkerEdgePair(dec, parallel, &markerOfParentParallel, -1, -1, childParallel, &markerOfChildParallel, -1, -1) );
-  TU_CALL( addEdgeToMembersEdgeList(dec, markerOfParentParallel) );
-  TU_CALL( addEdgeToMembersEdgeList(dec, markerOfChildParallel) );
+  CMR_CALL( createMarkerEdgePair(dec, parallel, &markerOfParentParallel, -1, -1, childParallel, &markerOfChildParallel, -1, -1) );
+  CMR_CALL( addEdgeToMembersEdgeList(dec, markerOfParentParallel) );
+  CMR_CALL( addEdgeToMembersEdgeList(dec, markerOfChildParallel) );
 
-  TU_CALL( removeEdgeFromMembersEdgeList(dec, edge1) );
+  CMR_CALL( removeEdgeFromMembersEdgeList(dec, edge1) );
   dec->edges[edge1].member = childParallel;
-  TU_CALL( addEdgeToMembersEdgeList(dec, edge1) );
+  CMR_CALL( addEdgeToMembersEdgeList(dec, edge1) );
   dec->members[findMember(dec, dec->edges[edge1].childMember)].parentMember = childParallel;
 
-  TU_CALL( removeEdgeFromMembersEdgeList(dec, edge2) );
+  CMR_CALL( removeEdgeFromMembersEdgeList(dec, edge2) );
   dec->edges[edge2].member = childParallel;
-  TU_CALL( addEdgeToMembersEdgeList(dec, edge2) );
+  CMR_CALL( addEdgeToMembersEdgeList(dec, edge2) );
   dec->members[findMember(dec, dec->edges[edge2].childMember)].parentMember = childParallel;
 
   if (pChildParallel)
@@ -3885,9 +3885,9 @@ CMR_ERROR addColumnProcessParallel(
 
   int numOneEnd, numTwoEnds;
   DEC_EDGE childMarkerEdges[2];
-  TU_CALL( countChildrenTypes(dec, reducedMember, &numOneEnd, &numTwoEnds, childMarkerEdges) );
+  CMR_CALL( countChildrenTypes(dec, reducedMember, &numOneEnd, &numTwoEnds, childMarkerEdges) );
 
-  TUdbgMsg(6 + 2*depth, "addColumnProcessParallel for%s member %d (reduced %ld), #one-ends = %d, #two-ends = %d of type %d.\n",
+  CMRdbgMsg(6 + 2*depth, "addColumnProcessParallel for%s member %d (reduced %ld), #one-ends = %d, #two-ends = %d of type %d.\n",
     depth == 0 ? " root" : "", member, (reducedMember - newcolumn->reducedMembers), numOneEnd, numTwoEnds, reducedMember->type);
 
   if (depth == 0)
@@ -3897,8 +3897,8 @@ CMR_ERROR addColumnProcessParallel(
       /* Tested in UpdateRootParallelNoChildren. */
 
       assert(reducedMember->firstPathEdge);
-      TU_CALL( addTerminal(dec, reducedComponent, member, -1) );
-      TU_CALL( addTerminal(dec, reducedComponent, member, -1) );
+      CMR_CALL( addTerminal(dec, reducedComponent, member, -1) );
+      CMR_CALL( addTerminal(dec, reducedComponent, member, -1) );
       return CMR_OKAY;
     }
     else
@@ -3916,7 +3916,7 @@ CMR_ERROR addColumnProcessParallel(
       if (dec->members[member].numEdges > 3)
       {
         /* Tested in UpdateRootParallelNoChildrenSplit. */
-        TU_CALL( splitParallel(dec, member, childMarkerEdges[0], childMarkerEdges[1], &member) );
+        CMR_CALL( splitParallel(dec, member, childMarkerEdges[0], childMarkerEdges[1], &member) );
         assert(isRepresentativeMember(dec, member));
         reducedMember->member = member;
       }
@@ -3924,9 +3924,9 @@ CMR_ERROR addColumnProcessParallel(
       debugDot(dec, newcolumn);
 
       assert(dec->members[member].numEdges == 3);
-      TU_CALL( createParallelNodes(dec, member) );
-      TU_CALL( mergeMemberIntoParent(dec, dec->edges[childMarkerEdges[0]].childMember, true) );
-      TU_CALL( mergeMemberIntoParent(dec, dec->edges[childMarkerEdges[1]].childMember,
+      CMR_CALL( createParallelNodes(dec, member) );
+      CMR_CALL( mergeMemberIntoParent(dec, dec->edges[childMarkerEdges[0]].childMember, true) );
+      CMR_CALL( mergeMemberIntoParent(dec, dec->edges[childMarkerEdges[1]].childMember,
         reducedMember->firstPathEdge == NULL && reducedMember->type != TYPE_DOUBLE_CHILD) );
 
       debugDot(dec, newcolumn);
@@ -3943,18 +3943,18 @@ CMR_ERROR addColumnProcessParallel(
     assert(reducedComponent->numTerminals >= 1);
 
     DEC_NODE tail, head;
-    TU_CALL( createNode(dec, &tail) );
-    TU_CALL( createNode(dec, &head) );
-    TUdbgMsg(8 + 2*depth, "Parallel's tail node is %d and head node is %d.\n", tail, head);
+    CMR_CALL( createNode(dec, &tail) );
+    CMR_CALL( createNode(dec, &head) );
+    CMRdbgMsg(8 + 2*depth, "Parallel's tail node is %d and head node is %d.\n", tail, head);
     DEC_EDGE edge = dec->members[member].firstEdge;
     do
     {
-      TU_CALL( setEdgeNodes(dec, edge, tail, head) );
+      CMR_CALL( setEdgeNodes(dec, edge, tail, head) );
       edge = dec->edges[edge].next;
     }
     while (edge != dec->members[member].firstEdge);
 
-    TU_CALL( mergeMemberIntoParent(dec, dec->edges[childMarkerEdges[0]].childMember,
+    CMR_CALL( mergeMemberIntoParent(dec, dec->edges[childMarkerEdges[0]].childMember,
       !reducedMember->firstPathEdge) );
 
     debugDot(dec, newcolumn);
@@ -3997,9 +3997,9 @@ CMR_ERROR addColumnProcessRigid(
 
   int numOneEnd, numTwoEnds;
   DEC_EDGE childMarkerEdges[2];
-  TU_CALL( countChildrenTypes(dec, reducedMember, &numOneEnd, &numTwoEnds, childMarkerEdges) );
+  CMR_CALL( countChildrenTypes(dec, reducedMember, &numOneEnd, &numTwoEnds, childMarkerEdges) );
 
-  TUdbgMsg(6 + 2*depth, "addColumnProcessRigid for%s member %d (reduced %ld), #one-ends = %d, #two-ends = %d of type %d.\n",
+  CMRdbgMsg(6 + 2*depth, "addColumnProcessRigid for%s member %d (reduced %ld), #one-ends = %d, #two-ends = %d of type %d.\n",
     depth == 0 ? " root" : "", reducedMember->member, (reducedMember - newcolumn->reducedMembers), numOneEnd,
     numTwoEnds, reducedMember->type);
 
@@ -4057,14 +4057,14 @@ CMR_ERROR addColumnProcessRigid(
       /* Tested in UpdateRootRigidNoChildren. */
 
       assert(numPathEndNodes >= 2);
-      TU_CALL( addTerminal(dec, reducedComponent, member, pathEndNodes[0]) );
-      TU_CALL( addTerminal(dec, reducedComponent, member, pathEndNodes[1]) );
+      CMR_CALL( addTerminal(dec, reducedComponent, member, pathEndNodes[0]) );
+      CMR_CALL( addTerminal(dec, reducedComponent, member, pathEndNodes[1]) );
     }
     else if (numOneEnd == 1)
     {
       /* Tested in UpdateRootRigidOneSingleChild. */
 
-      TU_CALL( addTerminal(dec, reducedComponent, member,
+      CMR_CALL( addTerminal(dec, reducedComponent, member,
         (pathEndNodes[0] == childMarkerNodes[0] || pathEndNodes[0] == childMarkerNodes[1])
         ? pathEndNodes[1] : pathEndNodes[0] ) );
 
@@ -4072,7 +4072,7 @@ CMR_ERROR addColumnProcessRigid(
       bool headToHead = pathEndNodes[0] == childMarkerNodes[1] || pathEndNodes[1] == childMarkerNodes[1];
       assert(headToHead || pathEndNodes[0] == childMarkerNodes[0] || pathEndNodes[1] == childMarkerNodes[0]);
 
-      TU_CALL( mergeMemberIntoParent(dec, childMember, headToHead) );
+      CMR_CALL( mergeMemberIntoParent(dec, childMember, headToHead) );
     }
     else
     {
@@ -4099,7 +4099,7 @@ CMR_ERROR addColumnProcessRigid(
           }
         }
       }
-      TUdbgMsg(8 + 2*depth,
+      CMRdbgMsg(8 + 2*depth,
         "Child marker %d = {%d,%d} has %d incident path end nodes and child marker %d = {%d,%d} has %d.\n",
         childMarkerEdges[0], childMarkerNodes[0], childMarkerNodes[1], numIncidentPathNodes[0], childMarkerEdges[1],
         childMarkerNodes[2], childMarkerNodes[3], numIncidentPathNodes[1]);
@@ -4118,26 +4118,26 @@ CMR_ERROR addColumnProcessRigid(
       {
         /* Tested in UpdateRootRigidTwoParallelSingleChildren. */
 
-        TUdbgMsg(8, "Moving child marker edges %d = {%d,%d} and %d = {%d,%d} to a new parallel.\n", childMarkerEdges[0],
+        CMRdbgMsg(8, "Moving child marker edges %d = {%d,%d} and %d = {%d,%d} to a new parallel.\n", childMarkerEdges[0],
           childMarkerNodes[0], childMarkerNodes[1], childMarkerEdges[1], childMarkerNodes[2], childMarkerNodes[3]);
 
         DEC_MEMBER newParallel = -1;
-        TU_CALL( createMember(dec, DEC_MEMBER_TYPE_PARALLEL, &newParallel) );
+        CMR_CALL( createMember(dec, DEC_MEMBER_TYPE_PARALLEL, &newParallel) );
         dec->members[newParallel].parentMember = member;
         dec->members[childMember[0]].parentMember = newParallel;
         dec->members[childMember[1]].parentMember = newParallel;
 
         DEC_EDGE markerOfParent, markerToParent;
-        TU_CALL( createMarkerEdgePair(dec, member, &markerOfParent, childMarkerNodes[0], childMarkerNodes[1],
+        CMR_CALL( createMarkerEdgePair(dec, member, &markerOfParent, childMarkerNodes[0], childMarkerNodes[1],
           newParallel, &markerToParent, -1, -1) );
 
-        TU_CALL( replaceEdgeInMembersEdgeList(dec, childMarkerEdges[0], markerOfParent) );
-        TU_CALL( addEdgeToMembersEdgeList(dec, markerToParent) );
+        CMR_CALL( replaceEdgeInMembersEdgeList(dec, childMarkerEdges[0], markerOfParent) );
+        CMR_CALL( addEdgeToMembersEdgeList(dec, markerToParent) );
         dec->edges[childMarkerEdges[0]].member = newParallel;
-        TU_CALL( addEdgeToMembersEdgeList(dec, childMarkerEdges[0]) );
-        TU_CALL( removeEdgeFromMembersEdgeList(dec, childMarkerEdges[1]) );
+        CMR_CALL( addEdgeToMembersEdgeList(dec, childMarkerEdges[0]) );
+        CMR_CALL( removeEdgeFromMembersEdgeList(dec, childMarkerEdges[1]) );
         dec->edges[childMarkerEdges[1]].member = newParallel;
-        TU_CALL( addEdgeToMembersEdgeList(dec, childMarkerEdges[1]) );
+        CMR_CALL( addEdgeToMembersEdgeList(dec, childMarkerEdges[1]) );
 
         /* The parallel has no nodes, so we have to get rid of these. */
         dec->edges[childMarkerEdges[0]].tail = -1;
@@ -4148,11 +4148,11 @@ CMR_ERROR addColumnProcessRigid(
         debugDot(dec, newcolumn);
 
         /* We have to merge in the parallel. */
-        TU_CALL( createParallelNodes(dec, newParallel) );
-        TU_CALL( mergeMemberIntoParent(dec, dec->edges[childMarkerEdges[0]].childMember, true) );
+        CMR_CALL( createParallelNodes(dec, newParallel) );
+        CMR_CALL( mergeMemberIntoParent(dec, dec->edges[childMarkerEdges[0]].childMember, true) );
         /* If there is no path, then we merge heads to heads. Otherwise, one head is mapped to tail, such that the path
          * is used. */
-        TU_CALL( mergeMemberIntoParent(dec, dec->edges[childMarkerEdges[1]].childMember, numPathEndNodes == 0) );
+        CMR_CALL( mergeMemberIntoParent(dec, dec->edges[childMarkerEdges[1]].childMember, numPathEndNodes == 0) );
 
         debugDot(dec, newcolumn);
 
@@ -4178,14 +4178,14 @@ CMR_ERROR addColumnProcessRigid(
       if (pathEndNodes[0] != childMarkerNodes[0] && pathEndNodes[0] != childMarkerNodes[1])
         SWAP_INTS(pathEndNodes[0], pathEndNodes[1]);
 
-      TUdbgMsg(8 + 2*depth, "After swapping, we have a %d-%d-path as well as child markers {%d,%d} and {%d,%d}.\n",
+      CMRdbgMsg(8 + 2*depth, "After swapping, we have a %d-%d-path as well as child markers {%d,%d} and {%d,%d}.\n",
         pathEndNodes[0], pathEndNodes[1], childMarkerNodes[0], childMarkerNodes[1], childMarkerNodes[2], childMarkerNodes[3]);
 
       assert(pathEndNodes[0] == childMarkerNodes[0] || pathEndNodes[0] == childMarkerNodes[1]);
-      TU_CALL( mergeMemberIntoParent(dec, childMember[0], pathEndNodes[0] == childMarkerNodes[1]) );
+      CMR_CALL( mergeMemberIntoParent(dec, childMember[0], pathEndNodes[0] == childMarkerNodes[1]) );
       debugDot(dec, newcolumn);
 
-      TU_CALL( mergeMemberIntoParent(dec, childMember[1], pathEndNodes[1] == childMarkerNodes[3]) );
+      CMR_CALL( mergeMemberIntoParent(dec, childMember[1], pathEndNodes[1] == childMarkerNodes[3]) );
       debugDot(dec, newcolumn);
     }
   }
@@ -4200,7 +4200,7 @@ CMR_ERROR addColumnProcessRigid(
       assert(reducedMember->firstPathEdge);
       assert(pathEndNodes[0] >= 0);
 
-      TU_CALL( addTerminal(dec, reducedComponent, member, pathEndNodes[1]) );
+      CMR_CALL( addTerminal(dec, reducedComponent, member, pathEndNodes[1]) );
       if (parentMarkerNodes[0] == pathEndNodes[0])
         flipEdge(dec, dec->members[member].markerToParent);
     }
@@ -4212,7 +4212,7 @@ CMR_ERROR addColumnProcessRigid(
       {
         /* Tested in UpdateInnerRigidOnePath. */
 
-        TUdbgMsg(8 + 2*depth, "%d-%d-path with parent marker {%d,%d} and child marker {%d,%d}.\n", pathEndNodes[0],
+        CMRdbgMsg(8 + 2*depth, "%d-%d-path with parent marker {%d,%d} and child marker {%d,%d}.\n", pathEndNodes[0],
           pathEndNodes[1], parentMarkerNodes[0], parentMarkerNodes[1], childMarkerNodes[0], childMarkerNodes[1]);
 
         /* Ensure that the child marker is incident to the path end node 1. */
@@ -4230,7 +4230,7 @@ CMR_ERROR addColumnProcessRigid(
         assert(pathEndNodes[0] == parentMarkerNodes[1]);
 
         /* Merge child. */
-        TU_CALL( mergeMemberIntoParent(dec, findMember(dec, dec->edges[childMarkerEdges[0]].childMember),
+        CMR_CALL( mergeMemberIntoParent(dec, findMember(dec, dec->edges[childMarkerEdges[0]].childMember),
           pathEndNodes[1] == childMarkerNodes[1]) );
         debugDot(dec, newcolumn);
       }
@@ -4242,7 +4242,7 @@ CMR_ERROR addColumnProcessRigid(
         if (parentMarkerNodes[0] == childMarkerNodes[0] || parentMarkerNodes[0] == childMarkerNodes[1])
           flipEdge(dec, dec->members[member].markerToParent);
 
-        TU_CALL( mergeMemberIntoParent(dec, dec->edges[childMarkerEdges[0]].childMember,
+        CMR_CALL( mergeMemberIntoParent(dec, dec->edges[childMarkerEdges[0]].childMember,
           parentMarkerNodes[0] == childMarkerNodes[1] || parentMarkerNodes[1] == childMarkerNodes[1]) );
 
         debugDot(dec, newcolumn);
@@ -4268,15 +4268,15 @@ CMR_ERROR createEdgeParallel(
 {
   assert(dec);
 
-  TUdbgMsg(8, "Creating parallel for edge %d.\n", edge);
+  CMRdbgMsg(8, "Creating parallel for edge %d.\n", edge);
 
   DEC_MEMBER parentMember = findEdgeMember(dec, edge);
   DEC_MEMBER newParallel = -1;
-  TU_CALL( createMember(dec, DEC_MEMBER_TYPE_PARALLEL, &newParallel) );
+  CMR_CALL( createMember(dec, DEC_MEMBER_TYPE_PARALLEL, &newParallel) );
   dec->members[newParallel].parentMember = parentMember;
 
   DEC_EDGE markerOfParent, markerToParent;
-  TU_CALL( createMarkerEdgePair(dec, parentMember, &markerOfParent, dec->edges[edge].tail, dec->edges[edge].head,
+  CMR_CALL( createMarkerEdgePair(dec, parentMember, &markerOfParent, dec->edges[edge].tail, dec->edges[edge].head,
     newParallel, &markerToParent, -1, -1) );
   dec->edges[markerOfParent].next = dec->edges[edge].next;
   dec->edges[markerOfParent].prev = dec->edges[edge].prev;
@@ -4286,10 +4286,10 @@ CMR_ERROR createEdgeParallel(
   if (dec->members[parentMember].firstEdge == edge)
     dec->members[parentMember].firstEdge = markerOfParent;
 
-  TU_CALL( addEdgeToMembersEdgeList(dec, markerToParent) );
+  CMR_CALL( addEdgeToMembersEdgeList(dec, markerToParent) );
 
   dec->edges[edge].member = newParallel;
-  TU_CALL( addEdgeToMembersEdgeList(dec, edge) );
+  CMR_CALL( addEdgeToMembersEdgeList(dec, edge) );
 
   if (pNewParallel)
     *pNewParallel = newParallel;
@@ -4321,9 +4321,9 @@ CMR_ERROR splitSeries(
   assert(edgesPredicate);
   assert(dec->members[member].type == DEC_MEMBER_TYPE_SERIES);
 
-#if defined(TU_DEBUG)
-  TUdbgMsg(8, "Checking series member %d for splitting... ", member);
-#endif /* TU_DEBUG */
+#if defined(CMR_DEBUG)
+  CMRdbgMsg(8, "Checking series member %d for splitting... ", member);
+#endif /* CMR_DEBUG */
 
   DEC_EDGE edge = dec->members[member].firstEdge;
   DEC_EDGE someSatisfyingEdge = -1;
@@ -4339,7 +4339,7 @@ CMR_ERROR splitSeries(
     edge = dec->edges[edge].next;
   } while (edge != dec->members[member].firstEdge);
 
-  TUdbgMsg(0, "%d of %d edges satisfy the predicate.\n", numSatisfyingEdges, dec->members[member].numEdges);
+  CMRdbgMsg(0, "%d of %d edges satisfy the predicate.\n", numSatisfyingEdges, dec->members[member].numEdges);
 
   if (numSatisfyingEdges == 0)
   {
@@ -4363,16 +4363,16 @@ CMR_ERROR splitSeries(
   {
     /* Initialize new series member. */
     DEC_MEMBER series;
-    TU_CALL( createMember(dec, DEC_MEMBER_TYPE_SERIES, &series) );
+    CMR_CALL( createMember(dec, DEC_MEMBER_TYPE_SERIES, &series) );
 
     /* Initialize new parallel. */
     DEC_MEMBER parallel;
-    TU_CALL( createMember(dec, DEC_MEMBER_TYPE_PARALLEL, &parallel) );
+    CMR_CALL( createMember(dec, DEC_MEMBER_TYPE_PARALLEL, &parallel) );
 
     DEC_EDGE seriesParentMarker, parallelChildMarker;
-    TU_CALL( createMarkerEdgePair(dec, parallel, &parallelChildMarker, -1, -1, series, &seriesParentMarker, -1, -1) );
-    TU_CALL( addEdgeToMembersEdgeList(dec, seriesParentMarker) );
-    TU_CALL( addEdgeToMembersEdgeList(dec, parallelChildMarker) );
+    CMR_CALL( createMarkerEdgePair(dec, parallel, &parallelChildMarker, -1, -1, series, &seriesParentMarker, -1, -1) );
+    CMR_CALL( addEdgeToMembersEdgeList(dec, seriesParentMarker) );
+    CMR_CALL( addEdgeToMembersEdgeList(dec, parallelChildMarker) );
 
     /* Go through old series member. */
     DEC_EDGE firstEdge = dec->members[member].firstEdge;
@@ -4380,30 +4380,30 @@ CMR_ERROR splitSeries(
     bool encounteredStayingEdge = false;
     do
     {
-#if defined(TU_DEBUG_SPLITTING)
-      TUdbgMsg(8, "Edge %d <%d>", edge, dec->edges[edge].name);
+#if defined(CMR_DEBUG_SPLITTING)
+      CMRdbgMsg(8, "Edge %d <%d>", edge, dec->edges[edge].name);
       if (dec->edges[edge].childMember >= 0)
-        TUdbgMsg(0, " (with child %d)", dec->edges[edge].childMember);
+        CMRdbgMsg(0, " (with child %d)", dec->edges[edge].childMember);
       if (edge == dec->members[member].markerToParent)
-        TUdbgMsg(0, " (with parent %d)", dec->members[member].parentMember);
-      TUdbgMsg(0, " (prev = %d, next = %d)", dec->edges[edge].prev, dec->edges[edge].next);
-#endif /* TU_DEBUG_SPLITTING*/
+        CMRdbgMsg(0, " (with parent %d)", dec->members[member].parentMember);
+      CMRdbgMsg(0, " (prev = %d, next = %d)", dec->edges[edge].prev, dec->edges[edge].next);
+#endif /* CMR_DEBUG_SPLITTING*/
 
       /* Evaluate predicate. */
       bool value = edgesPredicate[edge];
       if ((value && !predicateValue) || (!value && predicateValue))
       {
-#if defined(TU_DEBUG_SPLITTING)
-        TUdbgMsg(" does not satisfy the predicate.\n");
-#endif /* TU_DEBUG_SPLITTING */
+#if defined(CMR_DEBUG_SPLITTING)
+        CMRdbgMsg(" does not satisfy the predicate.\n");
+#endif /* CMR_DEBUG_SPLITTING */
         edge = dec->edges[edge].next;
         encounteredStayingEdge = true;
         continue;
       }
 
-#if defined(TU_DEBUG_SPLITTING)
-      TUdbgMsg(0, " satisfies the predicate.\n");
-#endif /* TU_DEBUG_SPLITTING */
+#if defined(CMR_DEBUG_SPLITTING)
+      CMRdbgMsg(0, " satisfies the predicate.\n");
+#endif /* CMR_DEBUG_SPLITTING */
 
       assert(edge != dec->members[member].markerToParent);
 
@@ -4442,8 +4442,8 @@ CMR_ERROR splitSeries(
     while (edge != firstEdge || !encounteredStayingEdge);
 
     DEC_EDGE memberChildMarker, parallelParentMarker;
-    TU_CALL( createMarkerEdgePair(dec, member, &memberChildMarker, -1, -1, parallel, &parallelParentMarker, -1, -1) );
-    TU_CALL( addEdgeToMembersEdgeList(dec, parallelParentMarker) );
+    CMR_CALL( createMarkerEdgePair(dec, member, &memberChildMarker, -1, -1, parallel, &parallelParentMarker, -1, -1) );
+    CMR_CALL( addEdgeToMembersEdgeList(dec, parallelParentMarker) );
     DEC_EDGE oldPrev = dec->edges[firstEdge].prev;
     dec->edges[memberChildMarker].next = firstEdge;
     dec->edges[memberChildMarker].prev = oldPrev;
@@ -4451,28 +4451,28 @@ CMR_ERROR splitSeries(
     dec->edges[firstEdge].prev = memberChildMarker;
     dec->members[member].numEdges++;
 
-#if defined(TU_DEBUG_SPLITTING)
-    TUdbgMsg(8, "Updated old series member with these edges:");
+#if defined(CMR_DEBUG_SPLITTING)
+    CMRdbgMsg(8, "Updated old series member with these edges:");
     edge = firstEdge;
     do
     {
-      TUdbgMsg(0, " %d <%d>", edge, dec->edges[edge].name);
+      CMRdbgMsg(0, " %d <%d>", edge, dec->edges[edge].name);
       edge = dec->edges[edge].next;
     }
     while (edge != firstEdge);
-    TUdbgMsg(0, ".\n");
-    TUdbgMsg(8, "New series member has these edges:");
+    CMRdbgMsg(0, ".\n");
+    CMRdbgMsg(8, "New series member has these edges:");
     edge = seriesParentMarker;
     do
     {
-      TUdbgMsg(0, " %d <%d>", edge, dec->edges[edge].name);
+      CMRdbgMsg(0, " %d <%d>", edge, dec->edges[edge].name);
       edge = dec->edges[edge].next;
     }
     while (edge != seriesParentMarker);
-    TUdbgMsg(0, ".\n");
-#endif /* TU_DEBUG_SPLITTING */
+    CMRdbgMsg(0, ".\n");
+#endif /* CMR_DEBUG_SPLITTING */
 
-    TUdbgMsg(8, "Connecting parallel is member %d and squeezed series member is member %d.\n", parallel, series);
+    CMRdbgMsg(8, "Connecting parallel is member %d and squeezed series member is member %d.\n", parallel, series);
 
     if (pRepresentativeEdge)
       *pRepresentativeEdge = memberChildMarker;
@@ -4505,9 +4505,9 @@ CMR_ERROR addColumnProcessSeries(
 
   int numOneEnd, numTwoEnds;
   DEC_EDGE childMarkerEdges[2];
-  TU_CALL( countChildrenTypes(dec, reducedMember, &numOneEnd, &numTwoEnds, childMarkerEdges) );
+  CMR_CALL( countChildrenTypes(dec, reducedMember, &numOneEnd, &numTwoEnds, childMarkerEdges) );
 
-  TUdbgMsg(6 + 2*depth, "addColumnProcessSeries for%s member %d (reduced %ld), #one-ends = %d, #two-ends = %d of type %d.\n",
+  CMRdbgMsg(6 + 2*depth, "addColumnProcessSeries for%s member %d (reduced %ld), #one-ends = %d, #two-ends = %d of type %d.\n",
     depth == 0 ? " root" : "", member, (reducedMember - newcolumn->reducedMembers), numOneEnd, numTwoEnds, reducedMember->type);
 
   if (depth == 0)
@@ -4524,32 +4524,32 @@ CMR_ERROR addColumnProcessSeries(
       {
         /* Tested in UpdateRootSeriesNoChildrenParent. */
 
-        TUdbgMsg(8 + 2*depth, "Series contains both terminal nodes and the parent marker edge is a path edge.\n");
+        CMRdbgMsg(8 + 2*depth, "Series contains both terminal nodes and the parent marker edge is a path edge.\n");
 
         /* Squeeze off all non-path edges by moving them to a new series member and creating a parallel member to
          * connect it to the remaining series member. */
-        TU_CALL( splitSeries(dec, member, newcolumn->edgesInPath, false, &representativeEdge, NULL, NULL) );
+        CMR_CALL( splitSeries(dec, member, newcolumn->edgesInPath, false, &representativeEdge, NULL, NULL) );
       }
       else if (reducedMember->type == TYPE_CYCLE_CHILD)
       {
         /* Tested in UpdateRootSeriesNoChildrenHamiltonianPath. */
 
-        TUdbgMsg(8 + 2*depth, "Series contains both terminal nodes which are the parent marker edge nodes.\n");
+        CMRdbgMsg(8 + 2*depth, "Series contains both terminal nodes which are the parent marker edge nodes.\n");
 
         DEC_MEMBER parentMember = findMemberParent(dec, member);
         DEC_EDGE markerOfParent = dec->members[member].markerOfParent;
         assert(parentMember >= 0); /* A series member can only close a cycle if it has a parent. */
         if (dec->members[parentMember].type == DEC_MEMBER_TYPE_PARALLEL)
         {
-          TU_CALL( addTerminal(dec, reducedComponent, findEdgeMember(dec, markerOfParent), -1 ) );
-          TU_CALL( addTerminal(dec, reducedComponent, findEdgeMember(dec, markerOfParent), -1 ) );
+          CMR_CALL( addTerminal(dec, reducedComponent, findEdgeMember(dec, markerOfParent), -1 ) );
+          CMR_CALL( addTerminal(dec, reducedComponent, findEdgeMember(dec, markerOfParent), -1 ) );
         }
         else
         {
           assert(dec->members[parentMember].type == DEC_MEMBER_TYPE_RIGID);
-          TU_CALL( addTerminal(dec, reducedComponent, findEdgeMember(dec, markerOfParent),
+          CMR_CALL( addTerminal(dec, reducedComponent, findEdgeMember(dec, markerOfParent),
             findEdgeTail(dec, markerOfParent) ) );
-          TU_CALL( addTerminal(dec, reducedComponent, findEdgeMember(dec, markerOfParent),
+          CMR_CALL( addTerminal(dec, reducedComponent, findEdgeMember(dec, markerOfParent),
             findEdgeHead(dec, markerOfParent) ) );
         }
 
@@ -4558,11 +4558,11 @@ CMR_ERROR addColumnProcessSeries(
       else
       {
         /* Tested in UpdateRootSeriesNoChildren. */
-        TUdbgMsg(8 + 2*depth, "Series member contains both terminal nodes and a non-path parent marker edge.\n");
+        CMRdbgMsg(8 + 2*depth, "Series member contains both terminal nodes and a non-path parent marker edge.\n");
 
         /* Squeeze off all path edges by moving them to a new series member and creating a parallel member to connect it
          * to the remaining series member. */
-        TU_CALL( splitSeries(dec, member, newcolumn->edgesInPath, true, &representativeEdge, NULL, NULL) );
+        CMR_CALL( splitSeries(dec, member, newcolumn->edgesInPath, true, &representativeEdge, NULL, NULL) );
       }
 
       debugDot(dec, newcolumn);
@@ -4572,7 +4572,7 @@ CMR_ERROR addColumnProcessSeries(
       DEC_NODE head = -1;
       if (childMember < 0)
       {
-        TU_CALL( createEdgeParallel(dec, representativeEdge, &childMember) );
+        CMR_CALL( createEdgeParallel(dec, representativeEdge, &childMember) );
         debugDot(dec, newcolumn);
       }
       else if (dec->members[childMember].type == DEC_MEMBER_TYPE_RIGID)
@@ -4582,8 +4582,8 @@ CMR_ERROR addColumnProcessSeries(
       }
 
       assert(reducedComponent->numTerminals == 0);
-      TU_CALL( addTerminal(dec, reducedComponent, childMember, tail) );
-      TU_CALL( addTerminal(dec, reducedComponent, childMember, head) );
+      CMR_CALL( addTerminal(dec, reducedComponent, childMember, tail) );
+      CMR_CALL( addTerminal(dec, reducedComponent, childMember, head) );
       debugDot(dec, newcolumn);
     }
     else if (numOneEnd == 1)
@@ -4598,30 +4598,30 @@ CMR_ERROR addColumnProcessSeries(
         assert(reducedMember->firstPathEdge);
         if (reducedMember->firstPathEdge->nextSibling)
         {
-          TU_CALL( splitSeries(dec, member, newcolumn->edgesInPath, false, NULL, NULL, &member) );
+          CMR_CALL( splitSeries(dec, member, newcolumn->edgesInPath, false, NULL, NULL, &member) );
           assert(isRepresentativeMember(dec, member));
           reducedMember->member = member;
-          TU_CALL( createPathEdge(dec, newcolumn, dec->members[member].markerToParent, reducedMember) );
+          CMR_CALL( createPathEdge(dec, newcolumn, dec->members[member].markerToParent, reducedMember) );
         }
         newcolumn->edgesInPath[childMarkerEdges[0]] = true;
         DEC_EDGE nonPathEdge;
-        TU_CALL( splitSeries(dec, member, newcolumn->edgesInPath, false, &nonPathEdge, NULL, NULL) );
+        CMR_CALL( splitSeries(dec, member, newcolumn->edgesInPath, false, &nonPathEdge, NULL, NULL) );
         newcolumn->edgesInPath[childMarkerEdges[0]] = false;
 
         DEC_NODE a, b, c;
-        TU_CALL( createNode(dec, &a) );
-        TU_CALL( createNode(dec, &b) );
+        CMR_CALL( createNode(dec, &a) );
+        CMR_CALL( createNode(dec, &b) );
         if (dec->members[member].numEdges == 3)
         {
-          TU_CALL( createNode(dec, &c) );
-          TU_CALL( setEdgeNodes(dec, nonPathEdge, a, c) );
+          CMR_CALL( createNode(dec, &c) );
+          CMR_CALL( setEdgeNodes(dec, nonPathEdge, a, c) );
         }
         else
           c = a;
-        TU_CALL( setEdgeNodes(dec, dec->members[member].markerToParent, a, b) );
-        TU_CALL( setEdgeNodes(dec, childMarkerEdges[0], c, b) );
-        TU_CALL( addTerminal(dec, reducedComponent, member, a) );
-        TU_CALL( mergeMemberIntoParent(dec, dec->edges[childMarkerEdges[0]].childMember, true) );
+        CMR_CALL( setEdgeNodes(dec, dec->members[member].markerToParent, a, b) );
+        CMR_CALL( setEdgeNodes(dec, childMarkerEdges[0], c, b) );
+        CMR_CALL( addTerminal(dec, reducedComponent, member, a) );
+        CMR_CALL( mergeMemberIntoParent(dec, dec->edges[childMarkerEdges[0]].childMember, true) );
         dec->members[member].type = DEC_MEMBER_TYPE_RIGID;
       }
       else
@@ -4634,10 +4634,10 @@ CMR_ERROR addColumnProcessSeries(
         /* If there is more than 1 path edge, we squeeze off by moving them to a new series member and creating a
          * parallel member to connect it to the remaining series member. */
         DEC_EDGE pathEdge;
-        TU_CALL( splitSeries(dec, member, newcolumn->edgesInPath, true, &pathEdge, NULL, NULL) );
+        CMR_CALL( splitSeries(dec, member, newcolumn->edgesInPath, true, &pathEdge, NULL, NULL) );
         if (pathEdge >= 0)
         {
-          TU_CALL( createPathEdge(dec, newcolumn, pathEdge, reducedMember) );
+          CMR_CALL( createPathEdge(dec, newcolumn, pathEdge, reducedMember) );
         }
         debugDot(dec, newcolumn);
 
@@ -4646,7 +4646,7 @@ CMR_ERROR addColumnProcessSeries(
         if (dec->members[member].numEdges > 3)
         {
           newcolumn->edgesInPath[childMarkerEdges[0]] = true;
-          TU_CALL( splitSeries(dec, member, newcolumn->edgesInPath, true, NULL, NULL, &member) );
+          CMR_CALL( splitSeries(dec, member, newcolumn->edgesInPath, true, NULL, NULL, &member) );
           newcolumn->edgesInPath[childMarkerEdges[0]] = false;
           debugDot(dec, newcolumn);
         }
@@ -4654,14 +4654,14 @@ CMR_ERROR addColumnProcessSeries(
         assert(dec->members[member].numEdges == 3);
 
         DEC_NODE a, b, c;
-        TU_CALL( createNode(dec, &a) );
-        TU_CALL( createNode(dec, &b) );
-        TU_CALL( createNode(dec, &c) );
-        TU_CALL( setEdgeNodes(dec, dec->members[member].markerToParent, b, c) );
-        TU_CALL( setEdgeNodes(dec, pathEdge, a, b) );
-        TU_CALL( setEdgeNodes(dec, childMarkerEdges[0], c, a) );
-        TU_CALL( addTerminal(dec, reducedComponent, member, b) );
-        TU_CALL( mergeMemberIntoParent(dec, dec->edges[childMarkerEdges[0]].childMember, true) );
+        CMR_CALL( createNode(dec, &a) );
+        CMR_CALL( createNode(dec, &b) );
+        CMR_CALL( createNode(dec, &c) );
+        CMR_CALL( setEdgeNodes(dec, dec->members[member].markerToParent, b, c) );
+        CMR_CALL( setEdgeNodes(dec, pathEdge, a, b) );
+        CMR_CALL( setEdgeNodes(dec, childMarkerEdges[0], c, a) );
+        CMR_CALL( addTerminal(dec, reducedComponent, member, b) );
+        CMR_CALL( mergeMemberIntoParent(dec, dec->edges[childMarkerEdges[0]].childMember, true) );
       }
       debugDot(dec, newcolumn);
     }
@@ -4678,7 +4678,7 @@ CMR_ERROR addColumnProcessSeries(
         /* Tested in UpdateRootSeriesTwoSingleChildren. */
 
         /* Parent marker is a non-path edge. We split off path edges if more than one. */
-        TU_CALL( splitSeries(dec, member, newcolumn->edgesInPath, true, &pathEdge, NULL, NULL) );
+        CMR_CALL( splitSeries(dec, member, newcolumn->edgesInPath, true, &pathEdge, NULL, NULL) );
 
         /* If there is another non-path edge, we split off the series member consisting of the two relevant child marker
          * edges and possibly the path edge. We then replace the current series member by the new one. */
@@ -4687,11 +4687,11 @@ CMR_ERROR addColumnProcessSeries(
         {
           if (pathEdge >= 0)
           {
-            TU_CALL( createPathEdge(dec, newcolumn, pathEdge, reducedMember) );
+            CMR_CALL( createPathEdge(dec, newcolumn, pathEdge, reducedMember) );
           }
           newcolumn->edgesInPath[childMarkerEdges[0]] = true;
           newcolumn->edgesInPath[childMarkerEdges[1]] = true;
-          TU_CALL( splitSeries(dec, member, newcolumn->edgesInPath, true, NULL, NULL, &member) );
+          CMR_CALL( splitSeries(dec, member, newcolumn->edgesInPath, true, NULL, NULL, &member) );
           newcolumn->edgesInPath[childMarkerEdges[0]] = false;
           newcolumn->edgesInPath[childMarkerEdges[1]] = false;
           assert(isRepresentativeMember(dec, member));
@@ -4710,10 +4710,10 @@ CMR_ERROR addColumnProcessSeries(
         if (reducedMember->firstPathEdge->nextSibling)
         {
           /* Parent marker is one of several path edges. */
-          TU_CALL( splitSeries(dec, member, newcolumn->edgesInPath, false, NULL, NULL, &member) );
+          CMR_CALL( splitSeries(dec, member, newcolumn->edgesInPath, false, NULL, NULL, &member) );
           assert(isRepresentativeMember(dec, member));
           reducedMember->member = member;
-          TU_CALL( createPathEdge(dec, newcolumn, dec->members[member].markerToParent, reducedMember) );
+          CMR_CALL( createPathEdge(dec, newcolumn, dec->members[member].markerToParent, reducedMember) );
         }
         pathEdge = dec->members[member].markerToParent;
         debugDot(dec, newcolumn);
@@ -4722,7 +4722,7 @@ CMR_ERROR addColumnProcessSeries(
         {
           newcolumn->edgesInPath[childMarkerEdges[0]] = true;
           newcolumn->edgesInPath[childMarkerEdges[1]] = true;
-          TU_CALL( splitSeries(dec, member, newcolumn->edgesInPath, false, &nonPathEdge, NULL, NULL) );
+          CMR_CALL( splitSeries(dec, member, newcolumn->edgesInPath, false, &nonPathEdge, NULL, NULL) );
           newcolumn->edgesInPath[childMarkerEdges[0]] = false;
           newcolumn->edgesInPath[childMarkerEdges[1]] = false;
         }
@@ -4730,7 +4730,7 @@ CMR_ERROR addColumnProcessSeries(
           nonPathEdge = -1;
       }
 
-      TUdbgMsg(8 + 2*depth,
+      CMRdbgMsg(8 + 2*depth,
         "After splitting off, the (potential) path edge is %d and the (potential) non-path edge is %d.\n",
         pathEdge, nonPathEdge);
       debugDot(dec, newcolumn);
@@ -4750,33 +4750,33 @@ CMR_ERROR addColumnProcessSeries(
        * a <----- b=c -----> d -------- a
        *   child0     child1   non-path */
       DEC_NODE a, b, c, d;
-      TU_CALL( createNode(dec, &a) );
-      TU_CALL( createNode(dec, &b) );
+      CMR_CALL( createNode(dec, &a) );
+      CMR_CALL( createNode(dec, &b) );
       if (pathEdge >= 0)
-        TU_CALL( createNode(dec, &c) );
+        CMR_CALL( createNode(dec, &c) );
       else
         c = b;
       if (nonPathEdge >= 0)
-        TU_CALL( createNode(dec, &d) );
+        CMR_CALL( createNode(dec, &d) );
       else
         d = a;
-      TU_CALL( setEdgeNodes(dec, childMarkerEdges[0], a, b) );
-      TUdbgMsg(8 + 2*depth, "First child edge %d = {%d, %d}\n", childMarkerEdges[0], a, b);
-      TU_CALL( setEdgeNodes(dec, childMarkerEdges[1], d, c) );
-      TUdbgMsg(8 + 2*depth, "Second child edge %d = {%d, %d}\n", childMarkerEdges[1], d, c);
+      CMR_CALL( setEdgeNodes(dec, childMarkerEdges[0], a, b) );
+      CMRdbgMsg(8 + 2*depth, "First child edge %d = {%d, %d}\n", childMarkerEdges[0], a, b);
+      CMR_CALL( setEdgeNodes(dec, childMarkerEdges[1], d, c) );
+      CMRdbgMsg(8 + 2*depth, "Second child edge %d = {%d, %d}\n", childMarkerEdges[1], d, c);
       if (pathEdge >= 0)
       {
-        TU_CALL( setEdgeNodes(dec, pathEdge, b, c) );
-        TUdbgMsg(8 + 2*depth, "Path edge %d = {%d, %d}\n", pathEdge, b, c);
+        CMR_CALL( setEdgeNodes(dec, pathEdge, b, c) );
+        CMRdbgMsg(8 + 2*depth, "Path edge %d = {%d, %d}\n", pathEdge, b, c);
       }
       if (nonPathEdge >= 0)
       {
-        TU_CALL( setEdgeNodes(dec, nonPathEdge, d, a) );
-        TUdbgMsg(8 + 2*depth, "Non-path edge %d = {%d, %d}\n", nonPathEdge, d, a);
+        CMR_CALL( setEdgeNodes(dec, nonPathEdge, d, a) );
+        CMRdbgMsg(8 + 2*depth, "Non-path edge %d = {%d, %d}\n", nonPathEdge, d, a);
       }
 
-      TU_CALL( mergeMemberIntoParent(dec, dec->edges[childMarkerEdges[0]].childMember, true) );
-      TU_CALL( mergeMemberIntoParent(dec, dec->edges[childMarkerEdges[1]].childMember, true) );
+      CMR_CALL( mergeMemberIntoParent(dec, dec->edges[childMarkerEdges[0]].childMember, true) );
+      CMR_CALL( mergeMemberIntoParent(dec, dec->edges[childMarkerEdges[1]].childMember, true) );
       dec->members[member].type = DEC_MEMBER_TYPE_RIGID;
     }
   }
@@ -4797,14 +4797,14 @@ CMR_ERROR addColumnProcessSeries(
       assert(reducedComponent->numTerminals < 2);
       assert(reducedMember->firstPathEdge);
 
-      TUdbgMsg(6 + 2*depth, "Non-root series member %d without one-end children.\n", member);
+      CMRdbgMsg(6 + 2*depth, "Non-root series member %d without one-end children.\n", member);
 
       /* Squeeze off all path edges by moving them to a new series member and creating a parallel member to connect it
        * to the remaining series member. */
       DEC_EDGE pathEdge = -1;
-      TU_CALL( splitSeries(dec, member, newcolumn->edgesInPath, true, &pathEdge, NULL, NULL) );
+      CMR_CALL( splitSeries(dec, member, newcolumn->edgesInPath, true, &pathEdge, NULL, NULL) );
       assert(pathEdge >= 0);
-      TU_CALL( createPathEdge(dec, newcolumn, pathEdge, reducedMember) );
+      CMR_CALL( createPathEdge(dec, newcolumn, pathEdge, reducedMember) );
 
       /* If necessary, we squeeze off the non-path edges as well. */
       assert(dec->members[member].numEdges >= 3);
@@ -4820,7 +4820,7 @@ CMR_ERROR addColumnProcessSeries(
         /* We temporarily mark the parent edge to belong to the path. */
         DEC_EDGE markerToParent = dec->members[member].markerToParent;
         newcolumn->edgesInPath[markerToParent] = true;
-        TU_CALL( splitSeries(dec, member, newcolumn->edgesInPath, false, &nonPathEdge, NULL, NULL) );
+        CMR_CALL( splitSeries(dec, member, newcolumn->edgesInPath, false, &nonPathEdge, NULL, NULL) );
         newcolumn->edgesInPath[markerToParent] = false;
       }
       assert(dec->members[member].numEdges == 3);
@@ -4829,13 +4829,13 @@ CMR_ERROR addColumnProcessSeries(
       /* We now create the nodes of the triangle so that the path leaves it via the parent marker edge's head node. */
 
       DEC_NODE a, b, c;
-      TU_CALL( createNode(dec, &a) );
-      TU_CALL( createNode(dec, &b) );
-      TU_CALL( createNode(dec, &c) );
-      TU_CALL( setEdgeNodes(dec, dec->members[reducedMember->member].markerToParent, a, b) );
-      TU_CALL( setEdgeNodes(dec, pathEdge, b, c) );
-      TU_CALL( setEdgeNodes(dec, nonPathEdge, c, a) );
-      TU_CALL( addTerminal(dec, reducedComponent, reducedMember->member, c) );
+      CMR_CALL( createNode(dec, &a) );
+      CMR_CALL( createNode(dec, &b) );
+      CMR_CALL( createNode(dec, &c) );
+      CMR_CALL( setEdgeNodes(dec, dec->members[reducedMember->member].markerToParent, a, b) );
+      CMR_CALL( setEdgeNodes(dec, pathEdge, b, c) );
+      CMR_CALL( setEdgeNodes(dec, nonPathEdge, c, a) );
+      CMR_CALL( addTerminal(dec, reducedComponent, reducedMember->member, c) );
 
       return CMR_OKAY;
     }
@@ -4847,18 +4847,18 @@ CMR_ERROR addColumnProcessSeries(
       /* Squeeze off all path edges by moving them to a new series member and creating a parallel member to connect it
        * to the remaining series member. */
       DEC_EDGE pathEdge = -1;
-      TUdbgMsg(8 + 2*depth, "Splitting of path edges.\n");
-      TU_CALL( splitSeries(dec, member, newcolumn->edgesInPath, true, &pathEdge, NULL, NULL) );
+      CMRdbgMsg(8 + 2*depth, "Splitting of path edges.\n");
+      CMR_CALL( splitSeries(dec, member, newcolumn->edgesInPath, true, &pathEdge, NULL, NULL) );
       if (pathEdge >= 0)
       {
-        TU_CALL( createPathEdge(dec, newcolumn, pathEdge, reducedMember) );
+        CMR_CALL( createPathEdge(dec, newcolumn, pathEdge, reducedMember) );
       }
       debugDot(dec, newcolumn);
 
       /* If necessary, we squeeze off the non-path edges as well. */
       assert(dec->members[member].numEdges >= 3);
       int numNonPathEdges = dec->members[member].numEdges - 2 - (pathEdge >= 0 ? 1 : 0);
-      TUdbgMsg(8 + 2*depth, "Number of non-path edges is %d.\n", numNonPathEdges);
+      CMRdbgMsg(8 + 2*depth, "Number of non-path edges is %d.\n", numNonPathEdges);
       DEC_EDGE nonPathEdge;
       if (numNonPathEdges == 0)
         nonPathEdge = -1;
@@ -4872,44 +4872,44 @@ CMR_ERROR addColumnProcessSeries(
       {
         newcolumn->edgesInPath[dec->members[member].markerToParent] = true;
         newcolumn->edgesInPath[childMarkerEdges[0]] = true;
-        TU_CALL( splitSeries(dec, member, newcolumn->edgesInPath, false, &nonPathEdge, NULL, NULL) );
+        CMR_CALL( splitSeries(dec, member, newcolumn->edgesInPath, false, &nonPathEdge, NULL, NULL) );
         newcolumn->edgesInPath[dec->members[member].markerToParent] = false;
         newcolumn->edgesInPath[childMarkerEdges[0]] = false;
         debugDot(dec, newcolumn);
       }
 
-      TUdbgMsg(8 + 2*depth, "After (potential) splitting: path edge is %d and non-path edge is %d.\n",
+      CMRdbgMsg(8 + 2*depth, "After (potential) splitting: path edge is %d and non-path edge is %d.\n",
         pathEdge, nonPathEdge);
       assert(dec->members[member].numEdges <= 4);
 
       /* We now create the nodes of the triangle so that the path leaves it via the parent marker edge's head node. */
 
       DEC_NODE a, b, c, d;
-      TU_CALL( createNode(dec, &a) );
-      TU_CALL( createNode(dec, &b) );
-      TU_CALL( createNode(dec, &c) );
-      TU_CALL( setEdgeNodes(dec, dec->members[reducedMember->member].markerToParent, a, b) );
+      CMR_CALL( createNode(dec, &a) );
+      CMR_CALL( createNode(dec, &b) );
+      CMR_CALL( createNode(dec, &c) );
+      CMR_CALL( setEdgeNodes(dec, dec->members[reducedMember->member].markerToParent, a, b) );
       if (dec->members[member].numEdges == 4)
       {
-        TU_CALL( createNode(dec, &d) );
-        TU_CALL( setEdgeNodes(dec, pathEdge, b, c) );
-        TU_CALL( setEdgeNodes(dec, childMarkerEdges[0], d, c) );
-        TU_CALL( setEdgeNodes(dec, nonPathEdge, d, a) );
+        CMR_CALL( createNode(dec, &d) );
+        CMR_CALL( setEdgeNodes(dec, pathEdge, b, c) );
+        CMR_CALL( setEdgeNodes(dec, childMarkerEdges[0], d, c) );
+        CMR_CALL( setEdgeNodes(dec, nonPathEdge, d, a) );
       }
       else if (nonPathEdge == -1)
       {
-        TU_CALL( setEdgeNodes(dec, pathEdge, b, c) );
-        TU_CALL( setEdgeNodes(dec, childMarkerEdges[0], a, c) );
+        CMR_CALL( setEdgeNodes(dec, pathEdge, b, c) );
+        CMR_CALL( setEdgeNodes(dec, childMarkerEdges[0], a, c) );
       }
       else
       {
         assert(pathEdge == -1);
-        TU_CALL( setEdgeNodes(dec, childMarkerEdges[0], c, b) );
-        TU_CALL( setEdgeNodes(dec, nonPathEdge, a, c) );
+        CMR_CALL( setEdgeNodes(dec, childMarkerEdges[0], c, b) );
+        CMR_CALL( setEdgeNodes(dec, nonPathEdge, a, c) );
       }
       debugDot(dec, newcolumn);
 
-      TU_CALL( mergeMemberIntoParent(dec, dec->edges[childMarkerEdges[0]].childMember, true) );
+      CMR_CALL( mergeMemberIntoParent(dec, dec->edges[childMarkerEdges[0]].childMember, true) );
       debugDot(dec, newcolumn);
 
       return CMR_OKAY;
@@ -4941,12 +4941,12 @@ CMR_ERROR addColumnProcessComponent(
   assert(newcolumn);
   assert(reducedComponent);
 
-  TUdbgMsg(6 + 2*depth, "addColumnProcessComponent(member %d = reduced member %ld)\n", reducedMember->member,
+  CMRdbgMsg(6 + 2*depth, "addColumnProcessComponent(member %d = reduced member %ld)\n", reducedMember->member,
     (reducedMember - &newcolumn->reducedMembers[0]));
 
-#if defined(TU_DEBUG_CONSISTENCY)
-  TUconsistencyAssert( decConsistency(dec) );
-#endif /* TU_DEBUG_CONSISTENCY */
+#if defined(CMR_DEBUG_CONSISTENCY)
+  CMRconsistencyAssert( decConsistency(dec) );
+#endif /* CMR_DEBUG_CONSISTENCY */
 
 
   /* If we are non-root type 1, then we don't need to do anything. */
@@ -4961,25 +4961,25 @@ CMR_ERROR addColumnProcessComponent(
     ReducedMember* child = reducedMember->children[c];
     if (child->type != TYPE_CYCLE_CHILD)
     {
-      TU_CALL( addColumnProcessComponent(dec, newcolumn, reducedComponent, reducedMember->children[c], depth+1) );
+      CMR_CALL( addColumnProcessComponent(dec, newcolumn, reducedComponent, reducedMember->children[c], depth+1) );
     }
     else
     {
-      TUdbgMsg(8 + 2*depth, "Member %d is implicitly replaced by a path edge.\n", findMember(dec, child->member));
+      CMRdbgMsg(8 + 2*depth, "Member %d is implicitly replaced by a path edge.\n", findMember(dec, child->member));
     }
   }
 
   /* Different behavior for parallel members, series members and rigid components. */
   if (dec->members[reducedMember->member].type == DEC_MEMBER_TYPE_PARALLEL)
-    TU_CALL( addColumnProcessParallel(dec, newcolumn, reducedComponent, reducedMember, depth) );
+    CMR_CALL( addColumnProcessParallel(dec, newcolumn, reducedComponent, reducedMember, depth) );
   else if (dec->members[reducedMember->member].type == DEC_MEMBER_TYPE_SERIES)
-    TU_CALL( addColumnProcessSeries(dec, newcolumn, reducedComponent, reducedMember, depth) );
+    CMR_CALL( addColumnProcessSeries(dec, newcolumn, reducedComponent, reducedMember, depth) );
   else
-    TU_CALL( addColumnProcessRigid(dec, newcolumn, reducedComponent, reducedMember, depth) );
+    CMR_CALL( addColumnProcessRigid(dec, newcolumn, reducedComponent, reducedMember, depth) );
 
-#if defined(TU_DEBUG_CONSISTENCY)
-  TUconsistencyAssert( decConsistency(dec) );
-#endif /* TU_DEBUG_CONSISTENCY */
+#if defined(CMR_DEBUG_CONSISTENCY)
+  CMRconsistencyAssert( decConsistency(dec) );
+#endif /* CMR_DEBUG_CONSISTENCY */
 
 
   return CMR_OKAY;
@@ -5006,7 +5006,7 @@ CMR_ERROR doReorderComponent(
   DEC_EDGE oldMarkerToParent = dec->members[member].markerToParent;
   DEC_EDGE oldMarkerOfParent = dec->members[member].markerOfParent;
 
-  TUdbgMsg(8, "Flipping parenting of member %d with old parent %d and new parent %d.\n", member, oldParent, newParent);
+  CMRdbgMsg(8, "Flipping parenting of member %d with old parent %d and new parent %d.\n", member, oldParent, newParent);
 
   dec->members[member].markerToParent = newMarkerToParent;
   dec->members[member].markerOfParent = markerOfNewParent;
@@ -5015,7 +5015,7 @@ CMR_ERROR doReorderComponent(
   dec->edges[newMarkerToParent].childMember = -1;
 
   if (oldMarkerToParent >= 0)
-    TU_CALL( doReorderComponent(dec, oldParent, member, oldMarkerOfParent, oldMarkerToParent) );
+    CMR_CALL( doReorderComponent(dec, oldParent, member, oldMarkerOfParent, oldMarkerToParent) );
 
   return CMR_OKAY;
 }
@@ -5034,11 +5034,11 @@ CMR_ERROR reorderComponent(
   assert(newRoot >= 0 && newRoot < dec->memMembers);
   assert(isRepresentativeMember(dec, newRoot));
 
-  TUdbgMsg(4, "Making member %d the new root of its component.\n", newRoot);
+  CMRdbgMsg(4, "Making member %d the new root of its component.\n", newRoot);
 
   if (dec->members[newRoot].parentMember >= 0)
   {
-    TU_CALL( doReorderComponent(dec, findMemberParent(dec, newRoot), newRoot,
+    CMR_CALL( doReorderComponent(dec, findMemberParent(dec, newRoot), newRoot,
       dec->members[newRoot].markerOfParent, dec->members[newRoot].markerToParent) );
   }
 
@@ -5061,33 +5061,33 @@ CMR_ERROR addColumnApply(
   assert(newcolumn);
   assert(newcolumn->remainsGraphic);
 
-  TUdbgMsg(0, "\n  Adding a column with %d 1's.\n", numRows);
+  CMRdbgMsg(0, "\n  Adding a column with %d 1's.\n", numRows);
 
-#if defined(TU_DEBUG_CONSISTENCY)
-  TUconsistencyAssert( decConsistency(dec) );
-#endif /* TU_DEBUG_CONSISTENCY */
+#if defined(CMR_DEBUG_CONSISTENCY)
+  CMRconsistencyAssert( decConsistency(dec) );
+#endif /* CMR_DEBUG_CONSISTENCY */
 
 
   /* Create reduced components for new edges. */
-  TU_CALL( completeReducedDecomposition(dec, newcolumn, rows, numRows) );
+  CMR_CALL( completeReducedDecomposition(dec, newcolumn, rows, numRows) );
 
   /* Process all reduced components individually. */
 
   DEC_EDGE* componentNewEdges = NULL;
-  TU_CALL( TUallocStackArray(dec->tu, &componentNewEdges, newcolumn->numReducedComponents) );
+  CMR_CALL( CMRallocStackArray(dec->cmr, &componentNewEdges, newcolumn->numReducedComponents) );
 
   int maxDepthComponent = -1;
-  TUdbgMsg(4, "Processing %d reduced components.\n", newcolumn->numReducedComponents);
+  CMRdbgMsg(4, "Processing %d reduced components.\n", newcolumn->numReducedComponents);
   for (int i = 0; i < newcolumn->numReducedComponents; ++i)
   {
     ReducedComponent* reducedComponent = &newcolumn->reducedComponents[i];
 
-    TUdbgMsg(4, "Moving root of reduced component %d.\n", i);
+    CMRdbgMsg(4, "Moving root of reduced component %d.\n", i);
 
-    TU_CALL( moveReducedRoot(dec, newcolumn, reducedComponent) );
+    CMR_CALL( moveReducedRoot(dec, newcolumn, reducedComponent) );
     debugDot(dec, newcolumn);
 
-    TUdbgMsg(4, "Processing reduced component %d of depth %d.\n", i, reducedComponent->rootDepth);
+    CMRdbgMsg(4, "Processing reduced component %d of depth %d.\n", i, reducedComponent->rootDepth);
 
     if (maxDepthComponent < 0 || reducedComponent->rootDepth
       > newcolumn->reducedComponents[maxDepthComponent].rootDepth)
@@ -5095,12 +5095,12 @@ CMR_ERROR addColumnApply(
       maxDepthComponent = i;
     }
 
-    TU_CALL( addColumnProcessComponent(dec, newcolumn, reducedComponent, reducedComponent->root, 0) );
+    CMR_CALL( addColumnProcessComponent(dec, newcolumn, reducedComponent, reducedComponent->root, 0) );
 
     assert(reducedComponent->numTerminals == 2);
-    TUdbgMsg(6, "Terminal members are %d and %d.\n", reducedComponent->terminalMember[0],
+    CMRdbgMsg(6, "Terminal members are %d and %d.\n", reducedComponent->terminalMember[0],
       reducedComponent->terminalMember[1]);
-    TUdbgMsg(6, "Terminal nodes are %d and %d.\n", reducedComponent->terminalNode[0],
+    CMRdbgMsg(6, "Terminal nodes are %d and %d.\n", reducedComponent->terminalNode[0],
       reducedComponent->terminalNode[1]);
     assert(findMember(dec, reducedComponent->terminalMember[0])
       == findMember(dec, reducedComponent->terminalMember[1]));
@@ -5109,38 +5109,38 @@ CMR_ERROR addColumnApply(
      * marker edge that will be linked to a new series member consisting of all these marker edges and the column edge.
      */
     DEC_EDGE newEdge;
-    TU_CALL( createEdge(dec, -1, &newEdge) );
+    CMR_CALL( createEdge(dec, -1, &newEdge) );
     componentNewEdges[i] = newEdge;
     dec->edges[newEdge].childMember = -1;
     dec->edges[newEdge].member = findMember(dec, reducedComponent->terminalMember[0]);
     dec->edges[newEdge].head = reducedComponent->terminalNode[0];
     dec->edges[newEdge].tail = reducedComponent->terminalNode[1];
     dec->edges[newEdge].element = 0;
-    TU_CALL( addEdgeToMembersEdgeList(dec, newEdge) );
+    CMR_CALL( addEdgeToMembersEdgeList(dec, newEdge) );
   }
 
   for (int c = 0; c < newcolumn->numReducedComponents; ++c)
   {
     if (c == maxDepthComponent)
-      TUdbgMsg(6, "Reduced component %d has maximum depth and will remain a root.\n", c);
+      CMRdbgMsg(6, "Reduced component %d has maximum depth and will remain a root.\n", c);
     else
-      TU_CALL( reorderComponent(dec, findMember(dec, dec->edges[componentNewEdges[c]].member)) );
+      CMR_CALL( reorderComponent(dec, findMember(dec, dec->edges[componentNewEdges[c]].member)) );
   }
 
   if (newcolumn->numReducedComponents == 0)
   {
     DEC_MEMBER loopMember;
-    TU_CALL( createMember(dec, DEC_MEMBER_TYPE_LOOP, &loopMember) );
+    CMR_CALL( createMember(dec, DEC_MEMBER_TYPE_LOOP, &loopMember) );
     DEC_MEMBER loopEdge;
-    TU_CALL( createEdge(dec, loopMember, &loopEdge) );
-    TU_CALL( addEdgeToMembersEdgeList(dec, loopEdge) );
-    dec->edges[loopEdge].element = TUcolumnToElement(column);
+    CMR_CALL( createEdge(dec, loopMember, &loopEdge) );
+    CMR_CALL( addEdgeToMembersEdgeList(dec, loopEdge) );
+    dec->edges[loopEdge].element = CMRcolumnToElement(column);
     dec->edges[loopEdge].childMember = -1;
   }
   else if (newcolumn->numReducedComponents == 1)
   {
     DEC_EDGE columnEdge = componentNewEdges[0];
-    dec->edges[columnEdge].element = TUcolumnToElement(column);
+    dec->edges[columnEdge].element = CMRcolumnToElement(column);
     dec->edges[columnEdge].childMember = -1;
   }
   else
@@ -5148,22 +5148,22 @@ CMR_ERROR addColumnApply(
     /* We create another edge for the column as well as a series member containing all new edges and this one. */
 
     DEC_MEMBER series;
-    TU_CALL( createMember(dec, DEC_MEMBER_TYPE_SERIES, &series) );
+    CMR_CALL( createMember(dec, DEC_MEMBER_TYPE_SERIES, &series) );
 
     DEC_EDGE columnEdge;
-    TU_CALL( createEdge(dec, series, &columnEdge) );
+    CMR_CALL( createEdge(dec, series, &columnEdge) );
     dec->edges[columnEdge].childMember = -1;
     dec->edges[columnEdge].head = -1;
     dec->edges[columnEdge].tail = -1;
-    dec->edges[columnEdge].element = TUcolumnToElement(column);
-    TU_CALL( addEdgeToMembersEdgeList(dec, columnEdge) );
+    dec->edges[columnEdge].element = CMRcolumnToElement(column);
+    CMR_CALL( addEdgeToMembersEdgeList(dec, columnEdge) );
 
     for (int i = 0; i < newcolumn->numReducedComponents; ++i)
     {
       DEC_EDGE newEdge = componentNewEdges[i];
       DEC_EDGE markerEdge;
-      TU_CALL( createEdge(dec, series, &markerEdge) );
-      TU_CALL( addEdgeToMembersEdgeList(dec, markerEdge) );
+      CMR_CALL( createEdge(dec, series, &markerEdge) );
+      CMR_CALL( addEdgeToMembersEdgeList(dec, markerEdge) );
       dec->edges[markerEdge].head = -1;
       dec->edges[markerEdge].tail = -1;
 
@@ -5195,72 +5195,72 @@ CMR_ERROR addColumnApply(
 
   debugDot(dec, newcolumn);
 
-  TU_CALL( TUfreeStackArray(dec->tu, &componentNewEdges) );
+  CMR_CALL( CMRfreeStackArray(dec->cmr, &componentNewEdges) );
 
   newcolumn->numReducedMembers = 0;
   newcolumn->numReducedComponents = 0;
 
-#if defined(TU_DEBUG_CONSISTENCY)
-  TUconsistencyAssert( decConsistency(dec) );
-#endif /* TU_DEBUG_CONSISTENCY */
+#if defined(CMR_DEBUG_CONSISTENCY)
+  CMRconsistencyAssert( decConsistency(dec) );
+#endif /* CMR_DEBUG_CONSISTENCY */
 
   return CMR_OKAY;
 }
 
-CMR_ERROR TUtestBinaryGraphic(TU* tu, TU_CHRMAT* transpose, bool* pisGraphic, TU_GRAPH** pgraph,
-  TU_GRAPH_EDGE** pforestEdges, TU_GRAPH_EDGE** pcoforestEdges, TU_SUBMAT** psubmatrix)
+CMR_ERROR CMRtestBinaryGraphic(CMR* cmr, CMR_CHRMAT* transpose, bool* pisGraphic, CMR_GRAPH** pgraph,
+  CMR_GRAPH_EDGE** pforestEdges, CMR_GRAPH_EDGE** pcoforestEdges, CMR_SUBMAT** psubmatrix)
 {
-  assert(tu);
+  assert(cmr);
   assert(transpose);
   assert(!psubmatrix || !*psubmatrix);
   assert(!pforestEdges || pgraph);
   assert(!pcoforestEdges || pgraph);
   assert(pisGraphic);
 
-#if defined(TU_DEBUG)
-  TUdbgMsg(0, "TUtestBinaryGraphic called for a %dx%d matrix whose transpose is \n", transpose->numColumns, transpose->numRows);
-//   TUchrmatPrintDense(stdout, (TU_CHRMAT*) transpose, '0', true);
-#endif /* TU_DEBUG */
+#if defined(CMR_DEBUG)
+  CMRdbgMsg(0, "CMRtestBinaryGraphic called for a %dx%d matrix whose transpose is \n", transpose->numColumns, transpose->numRows);
+//   CMRchrmatPrintDense(stdout, (CMR_CHRMAT*) transpose, '0', true);
+#endif /* CMR_DEBUG */
 
   *pisGraphic = true;
 
   Dec* dec = NULL;
   if (transpose->numNonzeros > 0)
   {
-    TU_CALL( decCreate(tu, &dec, 4096, 1024, 256, 256, 256) );
+    CMR_CALL( decCreate(cmr, &dec, 4096, 1024, 256, 256, 256) );
 
     /* Process each column. */
     DEC_NEWCOLUMN* newcolumn = NULL;
-    TU_CALL( newcolumnCreate(tu, &newcolumn) );
+    CMR_CALL( newcolumnCreate(cmr, &newcolumn) );
     for (int column = 0; column < transpose->numRows && *pisGraphic; ++column)
     {
-      TU_CALL( addColumnCheck(dec, newcolumn, &transpose->entryColumns[transpose->rowStarts[column]],
+      CMR_CALL( addColumnCheck(dec, newcolumn, &transpose->entryColumns[transpose->rowStarts[column]],
         transpose->rowStarts[column+1] - transpose->rowStarts[column]) );
 
       debugDot(dec, newcolumn);
 
       if (newcolumn->remainsGraphic)
       {
-        TU_CALL( addColumnApply(dec, newcolumn, column, &transpose->entryColumns[transpose->rowStarts[column]],
+        CMR_CALL( addColumnApply(dec, newcolumn, column, &transpose->entryColumns[transpose->rowStarts[column]],
           transpose->rowStarts[column+1] - transpose->rowStarts[column]) );
       }
       else
         *pisGraphic = false;
     }
 
-    TU_CALL( newcolumnFree(tu, &newcolumn) );
+    CMR_CALL( newcolumnFree(cmr, &newcolumn) );
   }
 
   if (*pisGraphic)
   {
     /* Allocate memory for graph, forest and coforest. */
 
-    TU_GRAPH* graph = NULL;
+    CMR_GRAPH* graph = NULL;
     if (pgraph)
     {
       if (!*pgraph)
       {
-        TU_CALL( TUgraphCreateEmpty(tu, pgraph, transpose->numColumns + 2 * transpose->numRows,
+        CMR_CALL( CMRgraphCreateEmpty(cmr, pgraph, transpose->numColumns + 2 * transpose->numRows,
           transpose->numColumns + 3 * transpose->numRows) );
       }
       graph = *pgraph;
@@ -5270,14 +5270,14 @@ CMR_ERROR TUtestBinaryGraphic(TU* tu, TU_CHRMAT* transpose, bool* pisGraphic, TU
     if (pforestEdges)
     {
       if (!*pforestEdges)
-        TU_CALL( TUallocBlockArray(tu, pforestEdges, transpose->numColumns) );
+        CMR_CALL( CMRallocBlockArray(cmr, pforestEdges, transpose->numColumns) );
       forest = *pforestEdges;
     }
     int* coforest = NULL;
     if (pcoforestEdges)
     {
       if (!*pcoforestEdges)
-        TU_CALL( TUallocBlockArray(tu, pcoforestEdges, transpose->numRows) );
+        CMR_CALL( CMRallocBlockArray(cmr, pcoforestEdges, transpose->numRows) );
       coforest = *pcoforestEdges;
     }
 
@@ -5291,7 +5291,7 @@ CMR_ERROR TUtestBinaryGraphic(TU* tu, TU_CHRMAT* transpose, bool* pisGraphic, TU
           /* Reallocate if necessary. */
           if (dec->memRows < transpose->numColumns)
           {
-            TUreallocBlockArray(tu, &dec->rowEdges, transpose->numColumns);
+            CMRreallocBlockArray(cmr, &dec->rowEdges, transpose->numColumns);
             dec->memRows = transpose->numColumns;
           }
 
@@ -5299,17 +5299,17 @@ CMR_ERROR TUtestBinaryGraphic(TU* tu, TU_CHRMAT* transpose, bool* pisGraphic, TU
           for (int r = dec->numRows; r < transpose->numColumns; ++r)
           {
             DEC_MEMBER member;
-            TU_CALL( createMember(dec, DEC_MEMBER_TYPE_PARALLEL, &member) );
+            CMR_CALL( createMember(dec, DEC_MEMBER_TYPE_PARALLEL, &member) );
 
             DEC_EDGE edge;
-            TU_CALL( createEdge(dec, member, &edge) );
-            TU_CALL( addEdgeToMembersEdgeList(dec, edge) );
-            dec->edges[edge].element = TUrowToElement(r);
+            CMR_CALL( createEdge(dec, member, &edge) );
+            CMR_CALL( addEdgeToMembersEdgeList(dec, edge) );
+            dec->edges[edge].element = CMRrowToElement(r);
             dec->edges[edge].head = -1;
             dec->edges[edge].tail = -1;
             dec->edges[edge].childMember = -1;
 
-            TUdbgMsg(8, "New empty row %d is edge %d of member %d.\n", r, edge, member);
+            CMRdbgMsg(8, "New empty row %d is edge %d of member %d.\n", r, edge, member);
 
             dec->rowEdges[r].edge = edge;
           }
@@ -5317,40 +5317,40 @@ CMR_ERROR TUtestBinaryGraphic(TU* tu, TU_CHRMAT* transpose, bool* pisGraphic, TU
           dec->numRows = transpose->numColumns;
         }
 
-        TU_CALL( decToGraph(dec, graph, true, forest, coforest, NULL) );
+        CMR_CALL( decToGraph(dec, graph, true, forest, coforest, NULL) );
       }
       else
       {
-        TU_CALL( TUgraphClear(tu, graph) );
+        CMR_CALL( CMRgraphClear(cmr, graph) );
         /* Construct a path with numRows edges and with numColumns loops at 0. */
 
-        TU_GRAPH_NODE s;
-        TU_CALL( TUgraphAddNode(tu, graph, &s) );
+        CMR_GRAPH_NODE s;
+        CMR_CALL( CMRgraphAddNode(cmr, graph, &s) );
         for (int c = 0; c < transpose->numRows; ++c)
         {
-          TU_GRAPH_EDGE e;
-          TU_CALL( TUgraphAddEdge(tu, graph, s, s, &e) );
+          CMR_GRAPH_EDGE e;
+          CMR_CALL( CMRgraphAddEdge(cmr, graph, s, s, &e) );
           if (coforest)
             *coforest++ = e;
         }
         for (int r = 0; r < transpose->numColumns; ++r)
         {
-          TU_GRAPH_NODE t;
-          TU_CALL( TUgraphAddNode(tu, graph, &t) );
-          TU_GRAPH_EDGE e;
-          TU_CALL( TUgraphAddEdge(tu, graph, s, t, &e) );
+          CMR_GRAPH_NODE t;
+          CMR_CALL( CMRgraphAddNode(cmr, graph, &t) );
+          CMR_GRAPH_EDGE e;
+          CMR_CALL( CMRgraphAddEdge(cmr, graph, s, t, &e) );
           if (forest)
             *forest++ = e;
           s = t;
         }
 
-        TUdbgMsg(0, "Constructed graph with %d nodes and %d edges.\n", TUgraphNumNodes(graph), TUgraphNumEdges(graph));
+        CMRdbgMsg(0, "Constructed graph with %d nodes and %d edges.\n", CMRgraphNumNodes(graph), CMRgraphNumEdges(graph));
       }
     }
   }
 
   if (dec)
-    TU_CALL( decFree(&dec) );
+    CMR_CALL( decFree(&dec) );
 
   return CMR_OKAY;
 }
@@ -5364,16 +5364,16 @@ typedef struct
 {
   DIJKSTRA_STAGE stage; /* Stage in BFS. */
   int predecessor;      /* Predecessor node. */
-  TU_GRAPH_EDGE edge;   /* Edge connecting to predecessor node. */
+  CMR_GRAPH_EDGE edge;   /* Edge connecting to predecessor node. */
   int distance;         /* Combinatorial distance to the BFS root. */
   char sign;            /* Sign of this tree edge with respect to current column. */
   bool fixed;           /* Whether the orientation of this edge is already fixed. */
 } TernaryGraphicNodeData;
 
-CMR_ERROR TUtestTernaryGraphic(TU* tu, TU_CHRMAT* transpose, bool* pisGraphic, TU_GRAPH** pgraph,
-  TU_GRAPH_EDGE** pforestEdges, TU_GRAPH_EDGE** pcoforestEdges, bool** pedgesReversed, TU_SUBMAT** psubmatrix)
+CMR_ERROR CMRtestTernaryGraphic(CMR* cmr, CMR_CHRMAT* transpose, bool* pisGraphic, CMR_GRAPH** pgraph,
+  CMR_GRAPH_EDGE** pforestEdges, CMR_GRAPH_EDGE** pcoforestEdges, bool** pedgesReversed, CMR_SUBMAT** psubmatrix)
 {
-  assert(tu);
+  assert(cmr);
   assert(transpose);
   assert(!psubmatrix || !*psubmatrix);
   assert(!pforestEdges || pgraph);
@@ -5381,23 +5381,23 @@ CMR_ERROR TUtestTernaryGraphic(TU* tu, TU_CHRMAT* transpose, bool* pisGraphic, T
   assert(!pedgesReversed || pgraph);
   assert(pisGraphic);
 
-#if defined(TU_DEBUG)
-  TUdbgMsg(0, "TUtestTernaryGraphic called for a %dx%d matrix whose transpose is \n", transpose->numColumns,
+#if defined(CMR_DEBUG)
+  CMRdbgMsg(0, "CMRtestTernaryGraphic called for a %dx%d matrix whose transpose is \n", transpose->numColumns,
     transpose->numRows);
-  TUchrmatPrintDense(stdout, (TU_CHRMAT*) transpose, '0', true);
-#endif /* TU_DEBUG */
+  CMRchrmatPrintDense(stdout, (CMR_CHRMAT*) transpose, '0', true);
+#endif /* CMR_DEBUG */
 
   bool alreadySigned;
-  TU_CALL( TUtestSignChr(tu, transpose, &alreadySigned, psubmatrix) );
+  CMR_CALL( CMRtestSignChr(cmr, transpose, &alreadySigned, psubmatrix) );
   if (!alreadySigned)
   {
     *pisGraphic = false;
     return CMR_OKAY;
   }
 
-  TU_GRAPH_EDGE* forestEdges = NULL;
-  TU_GRAPH_EDGE* coforestEdges = NULL;
-  TU_CALL( TUtestBinaryGraphic(tu, transpose, pisGraphic, pgraph, &forestEdges, &coforestEdges, psubmatrix) );
+  CMR_GRAPH_EDGE* forestEdges = NULL;
+  CMR_GRAPH_EDGE* coforestEdges = NULL;
+  CMR_CALL( CMRtestBinaryGraphic(cmr, transpose, pisGraphic, pgraph, &forestEdges, &coforestEdges, psubmatrix) );
   if (pforestEdges)
     *pforestEdges = forestEdges;
   if (pcoforestEdges)
@@ -5406,35 +5406,35 @@ CMR_ERROR TUtestTernaryGraphic(TU* tu, TU_CHRMAT* transpose, bool* pisGraphic, T
   {
     /* We have to free (co)forest information if the caller didn't ask for it. */
     if (!pforestEdges)
-      TU_CALL( TUfreeBlockArray(tu, &forestEdges) );
+      CMR_CALL( CMRfreeBlockArray(cmr, &forestEdges) );
     if (!pcoforestEdges)
-      TU_CALL( TUfreeBlockArray(tu, &coforestEdges) );
+      CMR_CALL( CMRfreeBlockArray(cmr, &coforestEdges) );
     return CMR_OKAY;
   }
 
   /* We have to find out which edges are reversed. */
-  TU_GRAPH* graph = *pgraph;
-  TUdbgMsg(0, "Matrix is graphic. Computing reversed edges.");
-  TU_CALL( TUallocBlockArray(tu, pedgesReversed, TUgraphMemEdges(graph)) );
+  CMR_GRAPH* graph = *pgraph;
+  CMRdbgMsg(0, "Matrix is graphic. Computing reversed edges.");
+  CMR_CALL( CMRallocBlockArray(cmr, pedgesReversed, CMRgraphMemEdges(graph)) );
 
-#if defined(TU_DEBUG)
-  TUgraphPrint(stdout, *pgraph);
+#if defined(CMR_DEBUG)
+  CMRgraphPrint(stdout, *pgraph);
   for (int b = 0; b < transpose->numColumns; ++b)
-    TUdbgMsg(2, "Forest #%d is %d.\n", b, (*pforestEdges)[b]);
+    CMRdbgMsg(2, "Forest #%d is %d.\n", b, (*pforestEdges)[b]);
   for (int b = 0; b < transpose->numRows; ++b)
-    TUdbgMsg(2, "Coforest #%d is %d.\n", b, (*pcoforestEdges)[b]);
-#endif /* TU_DEBUG */
+    CMRdbgMsg(2, "Coforest #%d is %d.\n", b, (*pcoforestEdges)[b]);
+#endif /* CMR_DEBUG */
 
   /* Decompose into 1-connected components. */
   int numComponents;
-  TU_ONESUM_COMPONENT* components = NULL;
-  TU_CALL( decomposeOneSum(tu, (TU_MATRIX*) transpose, sizeof(char), sizeof(char), &numComponents, &components, NULL,
+  CMR_ONESUM_COMPONENT* components = NULL;
+  CMR_CALL( decomposeOneSum(cmr, (CMR_MATRIX*) transpose, sizeof(char), sizeof(char), &numComponents, &components, NULL,
     NULL, NULL, NULL) );
 
   /* Allocate and initialize auxiliary data for nodes. */
   TernaryGraphicNodeData* nodeData = NULL;
-  TU_CALL( TUallocStackArray(tu, &nodeData, TUgraphMemNodes(graph)) );
-  for (TU_GRAPH_NODE v = TUgraphNodesFirst(graph); TUgraphNodesValid(graph, v); v = TUgraphNodesNext(graph, v))
+  CMR_CALL( CMRallocStackArray(cmr, &nodeData, CMRgraphMemNodes(graph)) );
+  for (CMR_GRAPH_NODE v = CMRgraphNodesFirst(graph); CMRgraphNodesValid(graph, v); v = CMRgraphNodesNext(graph, v))
   {
     nodeData[v].stage = UNKNOWN;
     nodeData[v].fixed = false;
@@ -5446,11 +5446,11 @@ CMR_ERROR TUtestTernaryGraphic(TU* tu, TU_CHRMAT* transpose, bool* pisGraphic, T
 
   /* Allocate and initialize auxiliary data for edges. */
   TernaryGraphicEdgeData* edgeData = NULL;
-  TU_CALL( TUallocStackArray(tu, &edgeData, TUgraphMemEdges(graph)) );
-  TUassertStackConsistency(tu);
-  for (TU_GRAPH_ITER i = TUgraphEdgesFirst(graph); TUgraphEdgesValid(graph, i); i = TUgraphEdgesNext(graph, i))
+  CMR_CALL( CMRallocStackArray(cmr, &edgeData, CMRgraphMemEdges(graph)) );
+  CMRassertStackConsistency(cmr);
+  for (CMR_GRAPH_ITER i = CMRgraphEdgesFirst(graph); CMRgraphEdgesValid(graph, i); i = CMRgraphEdgesNext(graph, i))
   {
-    TU_GRAPH_EDGE e = TUgraphEdgesEdge(graph, i);
+    CMR_GRAPH_EDGE e = CMRgraphEdgesEdge(graph, i);
     edgeData[e].forestIndex = -1;
     (*pedgesReversed)[e] = false;
   }
@@ -5461,23 +5461,23 @@ CMR_ERROR TUtestTernaryGraphic(TU* tu, TU_CHRMAT* transpose, bool* pisGraphic, T
   int* queue = NULL;
   int queueFirst;
   int queueBeyond;
-  TUallocStackArray(tu, &queue, transpose->numColumns + transpose->numRows);
-  TUassertStackConsistency(tu);
+  CMRallocStackArray(cmr, &queue, transpose->numColumns + transpose->numRows);
+  CMRassertStackConsistency(cmr);
 
   /* Process 1-connected components of the (transposed) matrix. */
   for (int comp = 0; comp < numComponents; ++comp)
   {
-    TU_CHRMAT* componentMatrix = (TU_CHRMAT*) components[comp].transpose;
+    CMR_CHRMAT* componentMatrix = (CMR_CHRMAT*) components[comp].transpose;
 
-#if defined(TU_DEBUG)
-    TUdbgMsg(2, "Processing component #%d of %d.\n", comp, numComponents);
+#if defined(CMR_DEBUG)
+    CMRdbgMsg(2, "Processing component #%d of %d.\n", comp, numComponents);
     for (int row = 0; row < componentMatrix->numRows; ++row)
-      TUdbgMsg(4, "Component row %d corresponds to original row %d.\n", row, components[comp].columnsToOriginal[row]);
+      CMRdbgMsg(4, "Component row %d corresponds to original row %d.\n", row, components[comp].columnsToOriginal[row]);
     for (int column = 0; column < componentMatrix->numColumns; ++column)
-      TUdbgMsg(4, "Component column %d corresponds to original column %d.\n", column,
+      CMRdbgMsg(4, "Component column %d corresponds to original column %d.\n", column,
         components[comp].rowsToOriginal[column]);
-    TU_CALL( TUchrmatPrintDense(stdout, componentMatrix, '0', true) );
-#endif /* TU_DEBUG */
+    CMR_CALL( CMRchrmatPrintDense(stdout, componentMatrix, '0', true) );
+#endif /* CMR_DEBUG */
 
     /* If there are no nonzeros then also no signs can be wrong. */
     if (componentMatrix->numNonzeros == 0)
@@ -5489,9 +5489,9 @@ CMR_ERROR TUtestTernaryGraphic(TU* tu, TU_CHRMAT* transpose, bool* pisGraphic, T
     /* Run BFS on the component of the graph induced by this 1-connected matrix component.
      * We use some node from one of the rows as a starting node. */
     int componentRow = components[comp].columnsToOriginal[0];
-    TU_GRAPH_EDGE e = forestEdges[componentRow];
-    TU_GRAPH_NODE start = TUgraphEdgeU(graph, e);
-    TUdbgMsg(4, "Starting BFS at node %d.\n", start);
+    CMR_GRAPH_EDGE e = forestEdges[componentRow];
+    CMR_GRAPH_NODE start = CMRgraphEdgeU(graph, e);
+    CMRdbgMsg(4, "Starting BFS at node %d.\n", start);
     queue[0] = start;
     queueFirst = 0;
     queueBeyond = 1;
@@ -5499,26 +5499,26 @@ CMR_ERROR TUtestTernaryGraphic(TU* tu, TU_CHRMAT* transpose, bool* pisGraphic, T
     nodeData[start].stage = SEEN;
     while (queueFirst < queueBeyond)
     {
-      TU_GRAPH_NODE v = queue[queueFirst];
+      CMR_GRAPH_NODE v = queue[queueFirst];
       ++queueFirst;
-      TUdbgMsg(6, "Processing node %d.\n", v);
+      CMRdbgMsg(6, "Processing node %d.\n", v);
       nodeData[v].stage = COMPLETED;
-      for (TU_GRAPH_ITER i = TUgraphIncFirst(graph, v); TUgraphIncValid(graph, i); i = TUgraphIncNext(graph, i))
+      for (CMR_GRAPH_ITER i = CMRgraphIncFirst(graph, v); CMRgraphIncValid(graph, i); i = CMRgraphIncNext(graph, i))
       {
-        assert(TUgraphIncSource(graph, i) == v);
-        TU_GRAPH_NODE w = TUgraphIncTarget(graph, i);
+        assert(CMRgraphIncSource(graph, i) == v);
+        CMR_GRAPH_NODE w = CMRgraphIncTarget(graph, i);
 
         /* Skip if already completed. */
         if (nodeData[w].stage == COMPLETED)
           continue;
 
-        TU_GRAPH_EDGE e = TUgraphIncEdge(graph, i);
+        CMR_GRAPH_EDGE e = CMRgraphIncEdge(graph, i);
         if (edgeData[e].forestIndex < 0)
           continue;
 
         if (nodeData[w].stage == UNKNOWN)
         {
-          TUdbgMsg(6, "Found new node via arc (%d,%d).\n", v, w);
+          CMRdbgMsg(6, "Found new node via arc (%d,%d).\n", v, w);
           nodeData[w].stage = SEEN;
           nodeData[w].predecessor = v;
           nodeData[w].distance = nodeData[v].distance + 1;
@@ -5534,23 +5534,23 @@ CMR_ERROR TUtestTernaryGraphic(TU* tu, TU_CHRMAT* transpose, bool* pisGraphic, T
     {
       int column = components[comp].rowsToOriginal[componentColumn];
 
-      TU_GRAPH_EDGE columnEdge = coforestEdges[column];
-      TU_GRAPH_NODE s = TUgraphEdgeU(graph, columnEdge);
-      TU_GRAPH_NODE t = TUgraphEdgeV(graph, columnEdge);
+      CMR_GRAPH_EDGE columnEdge = coforestEdges[column];
+      CMR_GRAPH_NODE s = CMRgraphEdgeU(graph, columnEdge);
+      CMR_GRAPH_NODE t = CMRgraphEdgeV(graph, columnEdge);
 
-      TUdbgMsg(4, "Inspecting signs of column %d corresponding to %d={%d,%d}.\n", column, columnEdge, s, t);
+      CMRdbgMsg(4, "Inspecting signs of column %d corresponding to %d={%d,%d}.\n", column, columnEdge, s, t);
 
       int first = transpose->rowStarts[column];
       int beyond = column == transpose->numRows ? transpose->numNonzeros : transpose->rowStarts[column+1];
       int minDistance = INT_MAX; /* The depth in the BFS tree that the s-r and t-r paths have in common. */
       for (int entry = first; entry < beyond; ++entry)
       {
-        TUdbgMsg(6, "Entry %d is in row %d with value %d.\n", entry, transpose->entryColumns[entry],
+        CMRdbgMsg(6, "Entry %d is in row %d with value %d.\n", entry, transpose->entryColumns[entry],
           transpose->entryValues[entry]);
 
-        TU_GRAPH_EDGE rowEdge = forestEdges[transpose->entryColumns[entry]];
-        TU_GRAPH_NODE u = TUgraphEdgeU(graph, rowEdge);
-        TU_GRAPH_NODE v = TUgraphEdgeV(graph, rowEdge);
+        CMR_GRAPH_EDGE rowEdge = forestEdges[transpose->entryColumns[entry]];
+        CMR_GRAPH_NODE u = CMRgraphEdgeU(graph, rowEdge);
+        CMR_GRAPH_NODE v = CMRgraphEdgeV(graph, rowEdge);
         if (nodeData[v].predecessor == u)
         {
           /* (u,v) */
@@ -5568,18 +5568,18 @@ CMR_ERROR TUtestTernaryGraphic(TU* tu, TU_CHRMAT* transpose, bool* pisGraphic, T
         }
       }
 
-      TUdbgMsg(6, "Minimum distance is %d.\n", minDistance);
+      CMRdbgMsg(6, "Minimum distance is %d.\n", minDistance);
 
       /* Follow s-r path up to minDistance. If we encounter a fixed edge, then we decide whether we have to revert the
        * column edge. */
-      TU_GRAPH_NODE v = s;
+      CMR_GRAPH_NODE v = s;
       bool foundFixed = false;
       bool reversedColumnEdge = false;
       while (nodeData[v].distance > minDistance)
       {
         if (nodeData[v].fixed)
         {
-          char currentSign = TUgraphEdgeU(graph, nodeData[v].edge) == v ? 1 : -1;
+          char currentSign = CMRgraphEdgeU(graph, nodeData[v].edge) == v ? 1 : -1;
           if ((*pedgesReversed)[nodeData[v].edge])
             currentSign *= -1;
           foundFixed = true;
@@ -5597,7 +5597,7 @@ CMR_ERROR TUtestTernaryGraphic(TU* tu, TU_CHRMAT* transpose, bool* pisGraphic, T
         {
           if (nodeData[v].fixed)
           {
-            char currentSign = TUgraphEdgeU(graph, nodeData[v].edge) == v ? -1 : 1;
+            char currentSign = CMRgraphEdgeU(graph, nodeData[v].edge) == v ? -1 : 1;
             if ((*pedgesReversed)[nodeData[v].edge])
               currentSign *= -1;
             foundFixed = true;
@@ -5608,21 +5608,21 @@ CMR_ERROR TUtestTernaryGraphic(TU* tu, TU_CHRMAT* transpose, bool* pisGraphic, T
         }
       }
       (*pedgesReversed)[columnEdge] = reversedColumnEdge;
-      TUdbgMsg(6, "Found a fixed tree edge: %s. Column edge reversed = %s\n", foundFixed ? "yes" : "no",
+      CMRdbgMsg(6, "Found a fixed tree edge: %s. Column edge reversed = %s\n", foundFixed ? "yes" : "no",
         reversedColumnEdge ? "yes" : "no");
 
       /* Again we follow the s-r path up to minDistance to reorder the tree edges. */
       v = s;
       while (nodeData[v].distance > minDistance)
       {
-        char currentSign = TUgraphEdgeU(graph, nodeData[v].edge) == v ? 1 : -1;
+        char currentSign = CMRgraphEdgeU(graph, nodeData[v].edge) == v ? 1 : -1;
 
         if (reversedColumnEdge)
           currentSign *= -1;
         assert(!nodeData[v].fixed || (*pedgesReversed)[nodeData[v].edge] == (currentSign != nodeData[v].sign));
         (*pedgesReversed)[nodeData[v].edge] = currentSign != nodeData[v].sign;
-        TUdbgMsg(6, "Path from %d towards root: tree edge (%d,%d) is edge {%d,%d}; graph imposed sign (with column edge reverting) is %d; matrix sign is %d; reversed = %s\n",
-          s, nodeData[v].predecessor, v, TUgraphEdgeU(graph, nodeData[v].edge), TUgraphEdgeV(graph, nodeData[v].edge),
+        CMRdbgMsg(6, "Path from %d towards root: tree edge (%d,%d) is edge {%d,%d}; graph imposed sign (with column edge reverting) is %d; matrix sign is %d; reversed = %s\n",
+          s, nodeData[v].predecessor, v, CMRgraphEdgeU(graph, nodeData[v].edge), CMRgraphEdgeV(graph, nodeData[v].edge),
           currentSign, nodeData[v].sign, (*pedgesReversed)[nodeData[v].edge] ? "yes" : "no");
         nodeData[v].fixed = true;
 #if !defined(NDEBUG)
@@ -5634,13 +5634,13 @@ CMR_ERROR TUtestTernaryGraphic(TU* tu, TU_CHRMAT* transpose, bool* pisGraphic, T
       v = t;
       while (nodeData[v].distance > minDistance)
       {
-        char currentSign = TUgraphEdgeU(graph, nodeData[v].edge) == v ? -1 : 1;
+        char currentSign = CMRgraphEdgeU(graph, nodeData[v].edge) == v ? -1 : 1;
         if (reversedColumnEdge)
           currentSign *= -1;
         assert(!nodeData[v].fixed || (*pedgesReversed)[nodeData[v].edge] == (currentSign != nodeData[v].sign));
         (*pedgesReversed)[nodeData[v].edge] = currentSign != nodeData[v].sign;
-        TUdbgMsg(6, "Path from %d towards root: tree edge (%d,%d) is edge {%d,%d}; graph imposed sign (with column edge reverting) is %d; matrix sign is %d; reversed = %s\n",
-          t, nodeData[v].predecessor, v, TUgraphEdgeU(graph, nodeData[v].edge), TUgraphEdgeV(graph, nodeData[v].edge),
+        CMRdbgMsg(6, "Path from %d towards root: tree edge (%d,%d) is edge {%d,%d}; graph imposed sign (with column edge reverting) is %d; matrix sign is %d; reversed = %s\n",
+          t, nodeData[v].predecessor, v, CMRgraphEdgeU(graph, nodeData[v].edge), CMRgraphEdgeV(graph, nodeData[v].edge),
           currentSign, nodeData[v].sign, (*pedgesReversed)[nodeData[v].edge] ? "yes" : "no");
         nodeData[v].fixed = true;
 #if !defined(NDEBUG)
@@ -5651,57 +5651,57 @@ CMR_ERROR TUtestTernaryGraphic(TU* tu, TU_CHRMAT* transpose, bool* pisGraphic, T
     }
   }
 
-#if defined(TU_DEBUG)
-  for (TU_GRAPH_ITER i = TUgraphEdgesFirst(graph); TUgraphEdgesValid(graph, i); i = TUgraphEdgesNext(graph, i))
+#if defined(CMR_DEBUG)
+  for (CMR_GRAPH_ITER i = CMRgraphEdgesFirst(graph); CMRgraphEdgesValid(graph, i); i = CMRgraphEdgesNext(graph, i))
   {
-    TU_GRAPH_EDGE e = TUgraphEdgesEdge(graph, i);
-    TUdbgMsg(2, "Edge %d={%d,%d} reversed = %s\n", e, TUgraphEdgeU(graph, e), TUgraphEdgeV(graph, e),
+    CMR_GRAPH_EDGE e = CMRgraphEdgesEdge(graph, i);
+    CMRdbgMsg(2, "Edge %d={%d,%d} reversed = %s\n", e, CMRgraphEdgeU(graph, e), CMRgraphEdgeV(graph, e),
       (*pedgesReversed)[e] ? "yes" : "no");
   }
-#endif /* TU_DEBUG */
+#endif /* CMR_DEBUG */
 
-  TUassertStackConsistency(tu);
-  TU_CALL( TUfreeStackArray(tu, &queue) );
-  TU_CALL( TUfreeStackArray(tu, &edgeData) );
-  TU_CALL( TUfreeStackArray(tu, &nodeData) );
-  TUassertStackConsistency(tu);
+  CMRassertStackConsistency(cmr);
+  CMR_CALL( CMRfreeStackArray(cmr, &queue) );
+  CMR_CALL( CMRfreeStackArray(cmr, &edgeData) );
+  CMR_CALL( CMRfreeStackArray(cmr, &nodeData) );
+  CMRassertStackConsistency(cmr);
 
   /* Free memory of 1-sum decomposition. */
   for (int c = 0; c < numComponents; ++c)
   {
-    TUchrmatFree(tu, (TU_CHRMAT**) &components[c].matrix);
-    TUchrmatFree(tu, (TU_CHRMAT**) &components[c].transpose);
-    TUfreeBlockArray(tu, &components[c].rowsToOriginal);
-    TUfreeBlockArray(tu, &components[c].columnsToOriginal);
+    CMRchrmatFree(cmr, (CMR_CHRMAT**) &components[c].matrix);
+    CMRchrmatFree(cmr, (CMR_CHRMAT**) &components[c].transpose);
+    CMRfreeBlockArray(cmr, &components[c].rowsToOriginal);
+    CMRfreeBlockArray(cmr, &components[c].columnsToOriginal);
   }
-  TUfreeBlockArray(tu, &components);
+  CMRfreeBlockArray(cmr, &components);
 
   /* We have to free (co)forest information if the caller didn't ask for it. */
   if (!pforestEdges)
-    TU_CALL( TUfreeBlockArray(tu, &forestEdges) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &forestEdges) );
   if (!pcoforestEdges)
-    TU_CALL( TUfreeBlockArray(tu, &coforestEdges) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &coforestEdges) );
 
   return CMR_OKAY;
 }
 
-CMR_ERROR TUtestBinaryGraphicColumnSubmatrixGreedy(TU* tu, TU_CHRMAT* transpose, size_t* orderedColumns,
-  TU_SUBMAT** psubmatrix)
+CMR_ERROR CMRtestBinaryGraphicColumnSubmatrixGreedy(CMR* cmr, CMR_CHRMAT* transpose, size_t* orderedColumns,
+  CMR_SUBMAT** psubmatrix)
 {
-  assert(tu);
+  assert(cmr);
   assert(transpose);
   assert(psubmatrix);
 
   size_t numRows = transpose->numColumns;
   size_t numColumns = transpose->numRows;
 
-  TUdbgMsg(0, "TUtestBinaryGraphicColumnSubmatrixGreedy for %dx%d matrix with transpose\n", numRows, numColumns);
-#if defined(TU_DEBUG)
-  TU_CALL( TUchrmatPrintDense(stdout, transpose, '0', true) );
-#endif /* TU_DEBUG */
+  CMRdbgMsg(0, "CMRtestBinaryGraphicColumnSubmatrixGreedy for %dx%d matrix with transpose\n", numRows, numColumns);
+#if defined(CMR_DEBUG)
+  CMR_CALL( CMRchrmatPrintDense(stdout, transpose, '0', true) );
+#endif /* CMR_DEBUG */
 
-  TU_CALL( TUsubmatCreate(tu, psubmatrix, numRows, numColumns) );
-  TU_SUBMAT* submatrix = *psubmatrix;
+  CMR_CALL( CMRsubmatCreate(cmr, psubmatrix, numRows, numColumns) );
+  CMR_SUBMAT* submatrix = *psubmatrix;
   submatrix->numRows = 0;
   submatrix->numColumns = 0;
   for (int row = 0; row < numRows; ++row)
@@ -5711,34 +5711,34 @@ CMR_ERROR TUtestBinaryGraphicColumnSubmatrixGreedy(TU* tu, TU_CHRMAT* transpose,
 
   /* Try to add each column. */
   Dec* dec = NULL;
-  TU_CALL( decCreate(tu, &dec, 4096, 1024, 256, 256, 256) );
+  CMR_CALL( decCreate(cmr, &dec, 4096, 1024, 256, 256, 256) );
 
   /* Process each column. */
   DEC_NEWCOLUMN* newcolumn = NULL;
-  TU_CALL( newcolumnCreate(tu, &newcolumn) );
+  CMR_CALL( newcolumnCreate(cmr, &newcolumn) );
   for (int c = 0; c < numColumns; ++c)
   {
     int column = orderedColumns ? orderedColumns[c] : c;
 
-    TUdbgMsg(0, "!!! Trying to append column %d.\n", column);
+    CMRdbgMsg(0, "!!! Trying to append column %d.\n", column);
 
     int lengthColumn = ((column == transpose->numRows-1) ? transpose->numNonzeros : transpose->rowStarts[column+1])
       - transpose->rowStarts[column];
-    TU_CALL( addColumnCheck(dec, newcolumn, &transpose->entryColumns[transpose->rowStarts[column]], lengthColumn) );
+    CMR_CALL( addColumnCheck(dec, newcolumn, &transpose->entryColumns[transpose->rowStarts[column]], lengthColumn) );
 
-    TUdbgMsg(0, "!!! Appending column %s graphicness.\n", newcolumn->remainsGraphic ? "maintains" : " would destroy");
+    CMRdbgMsg(0, "!!! Appending column %s graphicness.\n", newcolumn->remainsGraphic ? "maintains" : " would destroy");
 
     if (newcolumn->remainsGraphic)
     {
-      TU_CALL( addColumnApply(dec, newcolumn, column, &transpose->entryColumns[transpose->rowStarts[column]],
+      CMR_CALL( addColumnApply(dec, newcolumn, column, &transpose->entryColumns[transpose->rowStarts[column]],
         lengthColumn) );
       submatrix->columns[submatrix->numColumns] = column;
       submatrix->numColumns++;
     }
   }
 
-  TU_CALL( newcolumnFree(tu, &newcolumn) );
-  TU_CALL( decFree(&dec) );
+  CMR_CALL( newcolumnFree(cmr, &newcolumn) );
+  CMR_CALL( decFree(&dec) );
 
   return CMR_OKAY;
 }

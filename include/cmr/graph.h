@@ -1,5 +1,5 @@
-#ifndef TU_GRAPH_H
-#define TU_GRAPH_H
+#ifndef CMR_GRAPH_H
+#define CMR_GRAPH_H
 
 #include <cmr/env.h>
 #include <cmr/element.h>
@@ -18,45 +18,45 @@ extern "C" {
  * @{
  */
 
-typedef int TU_GRAPH_NODE; /**< \brief Reference to a node of \ref TU_GRAPH. */
-typedef int TU_GRAPH_EDGE; /**< \brief Reference to an edge of \ref TU_GRAPH. */
-typedef int TU_GRAPH_ITER; /**< \brief Reference to an edge iterator of \ref TU_GRAPH. */
+typedef int CMR_GRAPH_NODE; /**< \brief Reference to a node of \ref CMR_GRAPH. */
+typedef int CMR_GRAPH_EDGE; /**< \brief Reference to an edge of \ref CMR_GRAPH. */
+typedef int CMR_GRAPH_ITER; /**< \brief Reference to an edge iterator of \ref CMR_GRAPH. */
 
 typedef struct
 {
   int prev;     /**< \brief Next node in node list. */
   int next;     /**< \brief Previous node in node list. */
   int firstOut; /**< \brief First out-arc of this node. */
-} TU_GRAPH_NODE_DATA;
+} CMR_GRAPH_NODE_DATA;
 
 typedef struct
 {
   int target; /**< \brief Target node of this arc. */
   int prev;   /**< \brief Next arc in out-arc list of source node. */
   int next;   /**< \brief Previous arc in out-arc list of source node. */
-} TU_GRAPH_ARC_DATA;
+} CMR_GRAPH_ARC_DATA;
 
 typedef struct
 {
   int numNodes;               /**< \brief Number of nodes. */
   int memNodes;               /**< \brief Number of nodes for which memory is allocated. */
-  TU_GRAPH_NODE_DATA* nodes;  /**< \brief Array containing node data. */
+  CMR_GRAPH_NODE_DATA* nodes;  /**< \brief Array containing node data. */
   int firstNode;              /**< \brief Index of first node. */
   int freeNode;               /**< \brief Beginning of free-list of nodes. */
 
   int numEdges;               /**< \brief Number of edges. */
   int memEdges;               /**< \brief Number of edges for which memory is allocated. */
-  TU_GRAPH_ARC_DATA* arcs;    /**< \brief Array containing arc data. */
+  CMR_GRAPH_ARC_DATA* arcs;    /**< \brief Array containing arc data. */
   int freeEdge;               /**< \brief Beginning of free-list of arc. */
-} TU_GRAPH;
+} CMR_GRAPH;
 
 /**
  * \brief Returns number of nodes for which memory is allocated.
  */
 
 static inline
-size_t TUgraphMemNodes(
-  TU_GRAPH* graph /**< Graph. */
+size_t CMRgraphMemNodes(
+  CMR_GRAPH* graph /**< Graph. */
 )
 {
   assert(graph);
@@ -69,8 +69,8 @@ size_t TUgraphMemNodes(
  */
 
 static inline
-int TUgraphNumNodes(
-  TU_GRAPH* graph /**< Graph. */
+int CMRgraphNumNodes(
+  CMR_GRAPH* graph /**< Graph. */
 )
 {
   assert(graph);
@@ -83,8 +83,8 @@ int TUgraphNumNodes(
  */
 
 static inline
-size_t TUgraphMemEdges(
-  TU_GRAPH* graph /**< Graph. */
+size_t CMRgraphMemEdges(
+  CMR_GRAPH* graph /**< Graph. */
 )
 {
   assert(graph);
@@ -97,8 +97,8 @@ size_t TUgraphMemEdges(
  */
 
 static inline
-int TUgraphNumEdges(
-  TU_GRAPH* graph /**< Graph. */
+int CMRgraphNumEdges(
+  CMR_GRAPH* graph /**< Graph. */
 )
 {
   assert(graph);
@@ -111,9 +111,9 @@ int TUgraphNumEdges(
  */
 
 static inline
-TU_GRAPH_NODE TUgraphEdgeU(
-  TU_GRAPH* graph,  /**< Graph. */
-  TU_GRAPH_EDGE e   /**< Edge of \p graph. */
+CMR_GRAPH_NODE CMRgraphEdgeU(
+  CMR_GRAPH* graph,  /**< Graph. */
+  CMR_GRAPH_EDGE e   /**< Edge of \p graph. */
 )
 {
   assert(graph);
@@ -126,9 +126,9 @@ TU_GRAPH_NODE TUgraphEdgeU(
  */
 
 static inline
-TU_GRAPH_NODE TUgraphEdgeV(
-  TU_GRAPH* graph,  /**< Graph. */
-  TU_GRAPH_EDGE e   /**< Edge of \p graph. */
+CMR_GRAPH_NODE CMRgraphEdgeV(
+  CMR_GRAPH* graph,  /**< Graph. */
+  CMR_GRAPH_EDGE e   /**< Edge of \p graph. */
 )
 {
   assert(graph);
@@ -141,9 +141,9 @@ TU_GRAPH_NODE TUgraphEdgeV(
  */
 
 CMR_EXPORT
-CMR_ERROR TUgraphCreateEmpty(
-  TU* tu,             /**< \ref TU environment. */
-  TU_GRAPH** pgraph,  /**< Pointer for storing the graph. */
+CMR_ERROR CMRgraphCreateEmpty(
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_GRAPH** pgraph,  /**< Pointer for storing the graph. */
   int memNodes,       /**< Allocate memory for this number of nodes. */
   int memEdges        /**< Allocate memory for this number of edges. */
 );
@@ -153,9 +153,9 @@ CMR_ERROR TUgraphCreateEmpty(
  */
 
 CMR_EXPORT
-CMR_ERROR TUgraphFree(
-  TU* tu,           /**< \ref TU environment. */
-  TU_GRAPH** pgraph /**< Pointer to graph. */
+CMR_ERROR CMRgraphFree(
+  CMR* cmr,           /**< \ref CMR environment. */
+  CMR_GRAPH** pgraph /**< Pointer to graph. */
 );
 
 /**
@@ -163,9 +163,9 @@ CMR_ERROR TUgraphFree(
  */
 
 CMR_EXPORT
-CMR_ERROR TUgraphClear(
-  TU* tu,         /**< \ref TU environment. */
-  TU_GRAPH* graph /**< Graph structure. */
+CMR_ERROR CMRgraphClear(
+  CMR* cmr,         /**< \ref CMR environment. */
+  CMR_GRAPH* graph /**< Graph structure. */
 );
 
 /**
@@ -177,10 +177,10 @@ CMR_ERROR TUgraphClear(
  */
 
 CMR_EXPORT
-CMR_ERROR TUgraphAddNode(
-  TU* tu,               /**< \ref TU environment. */
-  TU_GRAPH* graph,      /**< Graph. */
-  TU_GRAPH_NODE* pnode  /**< Pointer for storing the new node, or \c NULL. */
+CMR_ERROR CMRgraphAddNode(
+  CMR* cmr,               /**< \ref CMR environment. */
+  CMR_GRAPH* graph,      /**< Graph. */
+  CMR_GRAPH_NODE* pnode  /**< Pointer for storing the new node, or \c NULL. */
 );
 
 /**
@@ -192,12 +192,12 @@ CMR_ERROR TUgraphAddNode(
  */
 
 CMR_EXPORT
-CMR_ERROR TUgraphAddEdge(
-  TU* tu,               /**< \ref TU environment. */
-  TU_GRAPH* graph,      /**< Graph. */
-  TU_GRAPH_NODE u,      /**< One node of the edge. */
-  TU_GRAPH_NODE v,      /**< Other node of the edge. */
-  TU_GRAPH_EDGE* pedge  /**< Pointer for storinge the new edge, or \c NULL.*/
+CMR_ERROR CMRgraphAddEdge(
+  CMR* cmr,               /**< \ref CMR environment. */
+  CMR_GRAPH* graph,      /**< Graph. */
+  CMR_GRAPH_NODE u,      /**< One node of the edge. */
+  CMR_GRAPH_NODE v,      /**< Other node of the edge. */
+  CMR_GRAPH_EDGE* pedge  /**< Pointer for storinge the new edge, or \c NULL.*/
 );
 
 /**
@@ -205,10 +205,10 @@ CMR_ERROR TUgraphAddEdge(
  */
 
 CMR_EXPORT
-CMR_ERROR TUgraphDeleteNode(
-  TU* tu,           /**< \ref TU environment. */
-  TU_GRAPH* graph,  /**< Graph. */
-  TU_GRAPH_NODE v   /**< Node to be deleted. */
+CMR_ERROR CMRgraphDeleteNode(
+  CMR* cmr,           /**< \ref CMR environment. */
+  CMR_GRAPH* graph,  /**< Graph. */
+  CMR_GRAPH_NODE v   /**< Node to be deleted. */
 );
 
 /**
@@ -216,10 +216,10 @@ CMR_ERROR TUgraphDeleteNode(
  */
 
 CMR_EXPORT
-CMR_ERROR TUgraphDeleteEdge(
-  TU* tu,           /**< \ref TU environment. */
-  TU_GRAPH* graph,  /**< Graph. */
-  TU_GRAPH_EDGE e   /**< Edge to be deleted. */
+CMR_ERROR CMRgraphDeleteEdge(
+  CMR* cmr,           /**< \ref CMR environment. */
+  CMR_GRAPH* graph,  /**< Graph. */
+  CMR_GRAPH_EDGE e   /**< Edge to be deleted. */
 );
 
 /**
@@ -227,8 +227,8 @@ CMR_ERROR TUgraphDeleteEdge(
  */
 
 static inline
-TU_GRAPH_NODE TUgraphNodesFirst(
-  TU_GRAPH* graph /**< Graph. */
+CMR_GRAPH_NODE CMRgraphNodesFirst(
+  CMR_GRAPH* graph /**< Graph. */
 )
 {
   assert(graph);
@@ -241,9 +241,9 @@ TU_GRAPH_NODE TUgraphNodesFirst(
  */
 
 static inline
-bool TUgraphNodesValid(
-  TU_GRAPH* graph,  /**< Graph. */
-  TU_GRAPH_NODE v   /**< Node. */
+bool CMRgraphNodesValid(
+  CMR_GRAPH* graph,  /**< Graph. */
+  CMR_GRAPH_NODE v   /**< Node. */
 )
 {
   assert(graph);
@@ -256,9 +256,9 @@ bool TUgraphNodesValid(
  */
 
 static inline
-TU_GRAPH_NODE TUgraphNodesNext(
-  TU_GRAPH* graph,  /**< Graph. */
-  TU_GRAPH_NODE v   /**< Node. */
+CMR_GRAPH_NODE CMRgraphNodesNext(
+  CMR_GRAPH* graph,  /**< Graph. */
+  CMR_GRAPH_NODE v   /**< Node. */
 )
 {
   assert(graph);
@@ -271,14 +271,14 @@ TU_GRAPH_NODE TUgraphNodesNext(
  */
 
 static inline
-TU_GRAPH_ITER TUgraphIncFirst(
-  TU_GRAPH* graph,  /**< Graph. */
-  TU_GRAPH_NODE v   /**< Node. */
+CMR_GRAPH_ITER CMRgraphIncFirst(
+  CMR_GRAPH* graph,  /**< Graph. */
+  CMR_GRAPH_NODE v   /**< Node. */
 )
 {
   assert(graph);
 
-  TU_GRAPH_ITER i = graph->nodes[v].firstOut;
+  CMR_GRAPH_ITER i = graph->nodes[v].firstOut;
   while (true)
   {
     if (i < 0)
@@ -294,9 +294,9 @@ TU_GRAPH_ITER TUgraphIncFirst(
  */
 
 static inline
-bool TUgraphIncValid(
-  TU_GRAPH* graph,  /**< Graph structure. */
-  TU_GRAPH_ITER i   /**< Iterator for edges incident to a node. */
+bool CMRgraphIncValid(
+  CMR_GRAPH* graph,  /**< Graph structure. */
+  CMR_GRAPH_ITER i   /**< Iterator for edges incident to a node. */
 )
 {
   assert(graph);
@@ -309,9 +309,9 @@ bool TUgraphIncValid(
  */
 
 static inline
-TU_GRAPH_ITER TUgraphIncNext(
-  TU_GRAPH* graph,  /**< Graph. */
-  TU_GRAPH_ITER i   /**< Iterator for edges incident to a node. */
+CMR_GRAPH_ITER CMRgraphIncNext(
+  CMR_GRAPH* graph,  /**< Graph. */
+  CMR_GRAPH_ITER i   /**< Iterator for edges incident to a node. */
 )
 {
   assert(graph);
@@ -331,9 +331,9 @@ TU_GRAPH_ITER TUgraphIncNext(
  */
 
 static inline
-TU_GRAPH_EDGE TUgraphIncEdge(
-  TU_GRAPH* graph,  /**< Graph. */
-  TU_GRAPH_ITER i   /**< Iterator for edges incident to a node. */
+CMR_GRAPH_EDGE CMRgraphIncEdge(
+  CMR_GRAPH* graph,  /**< Graph. */
+  CMR_GRAPH_ITER i   /**< Iterator for edges incident to a node. */
 )
 {
   assert(graph);
@@ -346,9 +346,9 @@ TU_GRAPH_EDGE TUgraphIncEdge(
  */
 
 static inline
-TU_GRAPH_NODE TUgraphIncSource(
-  TU_GRAPH* graph,  /**< Graph structure. */
-  TU_GRAPH_ITER i   /**< Iterator for edges incident to a node. */
+CMR_GRAPH_NODE CMRgraphIncSource(
+  CMR_GRAPH* graph,  /**< Graph structure. */
+  CMR_GRAPH_ITER i   /**< Iterator for edges incident to a node. */
 )
 {
   return graph->arcs[i^1].target;
@@ -359,9 +359,9 @@ TU_GRAPH_NODE TUgraphIncSource(
  */
 
 static inline
-TU_GRAPH_NODE TUgraphIncTarget(
-  TU_GRAPH* graph,  /**< Graph structure. */
-  TU_GRAPH_ITER i   /**< Iterator for edges incident to a node. */
+CMR_GRAPH_NODE CMRgraphIncTarget(
+  CMR_GRAPH* graph,  /**< Graph structure. */
+  CMR_GRAPH_ITER i   /**< Iterator for edges incident to a node. */
 )
 {
   return graph->arcs[i].target;
@@ -372,13 +372,13 @@ TU_GRAPH_NODE TUgraphIncTarget(
  */
 
 static inline
-TU_GRAPH_ITER TUgraphEdgesNext(
-  TU_GRAPH* graph,  /**< Graph. */
-  TU_GRAPH_ITER i   /**< Current edge iterator. */
+CMR_GRAPH_ITER CMRgraphEdgesNext(
+  CMR_GRAPH* graph,  /**< Graph. */
+  CMR_GRAPH_ITER i   /**< Current edge iterator. */
 )
 {
-  TU_GRAPH_NODE source = graph->arcs[i ^ 1].target;
-  TU_GRAPH_ITER j = graph->arcs[i].next;
+  CMR_GRAPH_NODE source = graph->arcs[i ^ 1].target;
+  CMR_GRAPH_ITER j = graph->arcs[i].next;
   while (true)
   {
     while (j >= 0)
@@ -400,21 +400,21 @@ TU_GRAPH_ITER TUgraphEdgesNext(
  */
 
 static inline
-TU_GRAPH_ITER TUgraphEdgesFirst(
-  TU_GRAPH* graph /**< Graph. */
+CMR_GRAPH_ITER CMRgraphEdgesFirst(
+  CMR_GRAPH* graph /**< Graph. */
 )
 {
   assert(graph);
 
-  for (TU_GRAPH_NODE v = TUgraphNodesFirst(graph); TUgraphNodesValid(graph, v);
-    v = TUgraphNodesNext(graph, v))
+  for (CMR_GRAPH_NODE v = CMRgraphNodesFirst(graph); CMRgraphNodesValid(graph, v);
+    v = CMRgraphNodesNext(graph, v))
   {
-    TU_GRAPH_ITER i = graph->nodes[v].firstOut;
+    CMR_GRAPH_ITER i = graph->nodes[v].firstOut;
     if (i >= 0)
     {
       /* We found some node with an incident edge. */
       if (i & 0x1)
-        i = TUgraphEdgesNext(graph, i);
+        i = CMRgraphEdgesNext(graph, i);
       return i;
     }
   }
@@ -426,9 +426,9 @@ TU_GRAPH_ITER TUgraphEdgesFirst(
  */
 
 static inline
-bool TUgraphEdgesValid(
-  TU_GRAPH* graph,  /**< Graph structure. */
-  TU_GRAPH_ITER i   /**< Iterator for edges incident to a node. */
+bool CMRgraphEdgesValid(
+  CMR_GRAPH* graph,  /**< Graph structure. */
+  CMR_GRAPH_ITER i   /**< Iterator for edges incident to a node. */
 )
 {
   assert(graph);
@@ -441,9 +441,9 @@ bool TUgraphEdgesValid(
  */
 
 static inline
-TU_GRAPH_EDGE TUgraphEdgesEdge(
-  TU_GRAPH* graph,  /**< Graph structure. */
-  TU_GRAPH_ITER i   /**< Iterator for edges. */
+CMR_GRAPH_EDGE CMRgraphEdgesEdge(
+  CMR_GRAPH* graph,  /**< Graph structure. */
+  CMR_GRAPH_ITER i   /**< Iterator for edges. */
 )
 {
   assert(graph);
@@ -456,9 +456,9 @@ TU_GRAPH_EDGE TUgraphEdgesEdge(
  */
 
 CMR_EXPORT
-CMR_ERROR TUgraphPrint(
+CMR_ERROR CMRgraphPrint(
   FILE* stream,   /**< Stream. */
-  TU_GRAPH* graph /**< Graph structure. */
+  CMR_GRAPH* graph /**< Graph structure. */
 );
 
 /**
@@ -466,19 +466,19 @@ CMR_ERROR TUgraphPrint(
  */
 
 CMR_EXPORT
-CMR_ERROR TUgraphMergeNodes(
-  TU* tu,           /**< \ref TU environment. */
-  TU_GRAPH* graph,  /**< Graph. */
-  TU_GRAPH_NODE u,  /**< First node. */
-  TU_GRAPH_NODE v   /**< Second node. */
+CMR_ERROR CMRgraphMergeNodes(
+  CMR* cmr,           /**< \ref CMR environment. */
+  CMR_GRAPH* graph,  /**< Graph. */
+  CMR_GRAPH_NODE u,  /**< First node. */
+  CMR_GRAPH_NODE v   /**< Second node. */
 );
 
 
 CMR_EXPORT
-CMR_ERROR TUgraphCreateFromEdgeList(
-  TU* tu,                   /**< \ref TU environment. */
-  TU_GRAPH** pgraph,        /**< Pointer for storing the graph. */
-  Element** pedgeElements,  /**< Pointer for storing element of each edge (may be \c NULL). */
+CMR_ERROR CMRgraphCreateFromEdgeList(
+  CMR* cmr,                   /**< \ref CMR environment. */
+  CMR_GRAPH** pgraph,        /**< Pointer for storing the graph. */
+  CMR_ELEMENT** pedgeElements,  /**< Pointer for storing element of each edge (may be \c NULL). */
   char*** pnodeLabels,      /**< Pointer for storing string node labels (may be \c NULL). */
   FILE* stream              /**< File stream to read from. */
 );
@@ -489,4 +489,4 @@ CMR_ERROR TUgraphCreateFromEdgeList(
 }
 #endif
 
-#endif /* TU_GRAPH_H */
+#endif /* CMR_GRAPH_H */

@@ -1,5 +1,5 @@
-#ifndef TU_SIGN_H
-#define TU_SIGN_H
+#ifndef CMR_SIGN_H
+#define CMR_SIGN_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -14,11 +14,11 @@ extern "C" {
  */
 
 CMR_EXPORT
-CMR_ERROR TUtestSignDbl(
-  TU* tu,                 /**< \ref TU environment. */
-  TU_DBLMAT* matrix,      /**< Sparse double matrix. */
+CMR_ERROR CMRtestSignDbl(
+  CMR* cmr,                 /**< \ref CMR environment. */
+  CMR_DBLMAT* matrix,      /**< Sparse double matrix. */
   bool* pcorrectSign,     /**< Pointer for storing whether \p matrix can be signed. */
-  TU_SUBMAT** psubmatrix  /**< Pointer for storing a submatrix with bad determinant (may be \c NULL). */
+  CMR_SUBMAT** psubmatrix  /**< Pointer for storing a submatrix with bad determinant (may be \c NULL). */
 );
 
 /**
@@ -28,11 +28,11 @@ CMR_ERROR TUtestSignDbl(
  */
 
 CMR_EXPORT
-CMR_ERROR TUcorrectSignDbl(
-  TU* tu,                 /**< \ref TU environment */
-  TU_DBLMAT* matrix,      /**< Sparse double matrix */
+CMR_ERROR CMRcorrectSignDbl(
+  CMR* cmr,                 /**< \ref CMR environment */
+  CMR_DBLMAT* matrix,      /**< Sparse double matrix */
   bool* palreadySigned,   /**< Pointer for storing whether \p matrix was modified. */
-  TU_SUBMAT** psubmatrix  /**< Pointer for storing a submatrix with bad determinant (may be \c NULL). */
+  CMR_SUBMAT** psubmatrix  /**< Pointer for storing a submatrix with bad determinant (may be \c NULL). */
 );
 
 /**
@@ -42,11 +42,11 @@ CMR_ERROR TUcorrectSignDbl(
  */
 
 CMR_EXPORT
-CMR_ERROR TUtestSignInt(
-  TU* tu,                 /**< \ref TU environment */
-  TU_INTMAT* matrix,      /**< Sparse int matrix */
+CMR_ERROR CMRtestSignInt(
+  CMR* cmr,                 /**< \ref CMR environment */
+  CMR_INTMAT* matrix,      /**< Sparse int matrix */
   bool* pcorrectSign,     /**< Pointer for storing whether \p matrix was modified. */
-  TU_SUBMAT** psubmatrix  /**< Pointer for storing a submatrix with bad determinant (may be \c NULL). */
+  CMR_SUBMAT** psubmatrix  /**< Pointer for storing a submatrix with bad determinant (may be \c NULL). */
 );
 
 /**
@@ -56,11 +56,11 @@ CMR_ERROR TUtestSignInt(
  */
 
 CMR_EXPORT
-CMR_ERROR TUcorrectSignInt(
-  TU* tu,                 /**< \ref TU environment */
-  TU_INTMAT* matrix,      /**< Sparse int matrix */
+CMR_ERROR CMRcorrectSignInt(
+  CMR* cmr,                 /**< \ref CMR environment */
+  CMR_INTMAT* matrix,      /**< Sparse int matrix */
   bool* palreadySigned,   /**< Pointer for storing whether \p matrix was modified. */
-  TU_SUBMAT** psubmatrix  /**< Pointer for storing a submatrix with bad determinant (may be \c NULL). */
+  CMR_SUBMAT** psubmatrix  /**< Pointer for storing a submatrix with bad determinant (may be \c NULL). */
 );
 
 
@@ -71,11 +71,11 @@ CMR_ERROR TUcorrectSignInt(
  */
 
 CMR_EXPORT
-CMR_ERROR TUtestSignChr(
-  TU* tu,                 /**< \ref TU environment */
-  TU_CHRMAT* matrix,      /**< Sparse char matrix */
+CMR_ERROR CMRtestSignChr(
+  CMR* cmr,                 /**< \ref CMR environment */
+  CMR_CHRMAT* matrix,      /**< Sparse char matrix */
   bool* pcorrectSign,     /**< Pointer for storing whether \p matrix has the right sign. */
-  TU_SUBMAT** psubmatrix  /**< Pointer for storing a submatrix with bad determinant (may be \c NULL). */
+  CMR_SUBMAT** psubmatrix  /**< Pointer for storing a submatrix with bad determinant (may be \c NULL). */
 );
 
 
@@ -86,15 +86,15 @@ CMR_ERROR TUtestSignChr(
  */
 
 CMR_EXPORT
-CMR_ERROR TUcorrectSignChr(
-  TU* tu,                 /**< \ref TU environment */
-  TU_CHRMAT* matrix,      /**< Sparse char matrix */
+CMR_ERROR CMRcorrectSignChr(
+  CMR* cmr,                 /**< \ref CMR environment */
+  CMR_CHRMAT* matrix,      /**< Sparse char matrix */
   bool* palreadySigned,   /**< Pointer for storing whether \p matrix was modified. */
-  TU_SUBMAT** psubmatrix  /**< Pointer for storing a submatrix with bad determinant (may be \c NULL). */
+  CMR_SUBMAT** psubmatrix  /**< Pointer for storing a submatrix with bad determinant (may be \c NULL). */
 );
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* TU_SIGN_H */
+#endif /* CMR_SIGN_H */

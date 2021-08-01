@@ -1,5 +1,5 @@
-#ifndef TU_SORT_INTERNAL_H
-#define TU_SORT_INTERNAL_H
+#ifndef CMR_SORT_INTERNAL_H
+#define CMR_SORT_INTERNAL_H
 
 #include "env_internal.h"
 
@@ -14,8 +14,8 @@ extern "C" {
  * The arguments must be dereferenced once in order to access the actual element.
  */
 
-CMR_ERROR TUsort(
-  TU* tu,                                   /**< \ref TU environment. */
+CMR_ERROR CMRsort(
+  CMR* cmr,                                   /**< \ref CMR environment. */
   size_t length,                            /**< Number of elements in both arrays. */
   void *array,                              /**< Pointer to the first element of the array.  */
   size_t elementSize,                              /**< Size (in bytes) of each element of the array. */
@@ -30,8 +30,8 @@ CMR_ERROR TUsort(
  * in order to access the actual element.
  */
 
-CMR_ERROR TUsort2(
-  TU* tu,                                     /**< \ref TU environment. */
+CMR_ERROR CMRsort2(
+  CMR* cmr,                                     /**< \ref CMR environment. */
   size_t length,                              /**< Number of elements in both arrays. */
   void *array1,                               /**< Pointer to the first element of the first array.  */
   size_t elementSize1,                        /**< Size (in bytes) of each element of the first array. */
@@ -44,4 +44,4 @@ CMR_ERROR TUsort2(
 }
 #endif
 
-#endif /* TU_SORT_INTERNAL_H */
+#endif /* CMR_SORT_INTERNAL_H */

@@ -5,11 +5,11 @@
 
 TEST(Sign, Change)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
 
-  TU_CHRMAT* matrix = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "10 10 "
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "10 10 "
     "+1 -1  0  0  0  0  0  0  0  0 "
     "-1 +1  0  0  0  0  0  0  0  0 "
     "0   0 +1  0  0  0  0 -1  0  0 "
@@ -21,8 +21,8 @@ TEST(Sign, Change)
     "0   0  0  0  0  0  0  0 +1 -1 "
     "0   0  0  0  0  0  0 -1  0 +1 "
   ) );
-  TU_CHRMAT* check = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &check, "10 10 "
+  CMR_CHRMAT* check = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &check, "10 10 "
     "+1 -1  0  0  0  0  0  0  0  0 "
     "-1 +1  0  0  0  0  0  0  0  0 "
     "0   0 +1  0  0  0  0 -1  0  0 "
@@ -34,32 +34,32 @@ TEST(Sign, Change)
     "0   0  0  0  0  0  0  0 -1 -1 "
     "0   0  0  0  0  0  0 -1  0 +1 "
   ) );
-  TU_CHRMAT* checkViolator = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &checkViolator, "3 3 "
+  CMR_CHRMAT* checkViolator = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &checkViolator, "3 3 "
     "-1 -1 0 "
     "0 1 -1 "
     "-1 0 1 "
   ) );
 
-  TU_SUBMAT* submatrix = NULL;
-  TU_CHRMAT* violator = NULL;
+  CMR_SUBMAT* submatrix = NULL;
+  CMR_CHRMAT* violator = NULL;
 
   bool alreadySigned;
-  ASSERT_TU_CALL( TUtestSignChr(tu, matrix, &alreadySigned, &submatrix) );
+  ASSERT_CMR_CALL( CMRtestSignChr(cmr, matrix, &alreadySigned, &submatrix) );
   ASSERT_FALSE(alreadySigned);
   ASSERT_TRUE(submatrix != NULL);
-  ASSERT_TU_CALL( TUchrmatFilterSubmat(tu, matrix, submatrix, &violator) );
-  ASSERT_TRUE(TUchrmatCheckEqual(violator, checkViolator));
-  TUchrmatFree(tu, &violator);
-  TUsubmatFree(tu, &submatrix);
+  ASSERT_CMR_CALL( CMRchrmatFilterSubmat(cmr, matrix, submatrix, &violator) );
+  ASSERT_TRUE(CMRchrmatCheckEqual(violator, checkViolator));
+  CMRchrmatFree(cmr, &violator);
+  CMRsubmatFree(cmr, &submatrix);
 
-  ASSERT_TU_CALL( TUcorrectSignChr(tu, matrix, &alreadySigned, NULL) );
+  ASSERT_CMR_CALL( CMRcorrectSignChr(cmr, matrix, &alreadySigned, NULL) );
   ASSERT_FALSE(alreadySigned);
-  ASSERT_TRUE(TUchrmatCheckEqual(matrix, check));
+  ASSERT_TRUE(CMRchrmatCheckEqual(matrix, check));
 
-  ASSERT_TU_CALL( TUchrmatFree(tu, &checkViolator) );
-  ASSERT_TU_CALL( TUchrmatFree(tu, &check) );
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &checkViolator) );
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &check) );
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
 
-  TUfreeEnvironment(&tu);
+  CMRfreeEnvironment(&cmr);
 }

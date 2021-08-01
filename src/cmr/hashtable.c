@@ -1,4 +1,4 @@
-// #define TU_DEBUG /* Uncomment to debug the hash table. */
+// #define CMR_DEBUG /* Uncomment to debug the hash table. */
 
 #include "hashtable.h"
 
@@ -11,13 +11,13 @@
 
 typedef struct
 {
-  size_t keyIndex;          /**< \brief Position of first key byte in \ref TU_HASHTABLE::keyStorage. */
+  size_t keyIndex;          /**< \brief Position of first key byte in \ref CMR_HASHTABLE::keyStorage. */
   size_t keyLength;       /**< \brief Length of key array. */
-  TU_HASHTABLE_HASH hash; /**< \brief Hash value of key array. */
+  CMR_HASHTABLE_HASH hash; /**< \brief Hash value of key array. */
   const void* value;            /**< \brief Stored value. */
 } TableData;
 
-struct _TU_HASHTABLE
+struct _CMR_HASHTABLE
 {
   size_t size;                /**< \brief Size of the hash table. */
   TableData* table;           /**< \brief Actual hash table. */
@@ -30,57 +30,57 @@ struct _TU_HASHTABLE
 };
 
 static inline
-size_t hashEntry(TU_HASHTABLE* hashtable, TU_HASHTABLE_HASH hash)
+size_t hashEntry(CMR_HASHTABLE* hashtable, CMR_HASHTABLE_HASH hash)
 {
   assert(hashtable);
 
   return hash % hashtable->size;
 }
 
-CMR_ERROR TUhashtableCreate(TU* tu, TU_HASHTABLE** phashtable, size_t initialSize, size_t initialKeyMemory)
+CMR_ERROR CMRhashtableCreate(CMR* cmr, CMR_HASHTABLE** phashtable, size_t initialSize, size_t initialKeyMemory)
 {
-  assert(tu);
+  assert(cmr);
   assert(phashtable);
   assert(!*phashtable);
   assert(initialSize > 0);
   assert(initialKeyMemory > 0);
 
-  TU_CALL( TUallocBlock(tu, phashtable) );
-  TU_HASHTABLE* hashtable = *phashtable;
+  CMR_CALL( CMRallocBlock(cmr, phashtable) );
+  CMR_HASHTABLE* hashtable = *phashtable;
 
   hashtable->size = initialSize;
   hashtable->table = NULL;
-  TU_CALL( TUallocBlockArray(tu, &hashtable->table, initialSize) );
+  CMR_CALL( CMRallocBlockArray(cmr, &hashtable->table, initialSize) );
   for (size_t i = 0; i < initialSize; ++i)
     hashtable->table[i].keyLength = 0;
 
   hashtable->freeKeyIndex = 0;
   hashtable->memKeyStorage = initialKeyMemory;
   hashtable->keyStorage = NULL;
-  TU_CALL( TUallocBlockArray(tu, &hashtable->keyStorage, initialKeyMemory) );
+  CMR_CALL( CMRallocBlockArray(cmr, &hashtable->keyStorage, initialKeyMemory) );
 
   hashtable->numElements = 0;
 
   return CMR_OKAY;
 }
 
-CMR_ERROR TUhashtableFree(TU* tu, TU_HASHTABLE** phashtable)
+CMR_ERROR CMRhashtableFree(CMR* cmr, CMR_HASHTABLE** phashtable)
 {
-  assert(tu);
+  assert(cmr);
   assert(phashtable);
   assert(*phashtable);
 
-  TU_HASHTABLE* hashtable = *phashtable;
+  CMR_HASHTABLE* hashtable = *phashtable;
 
-  TU_CALL( TUfreeBlockArray(tu, &hashtable->table) );
-  TU_CALL( TUfreeBlockArray(tu, &hashtable->keyStorage) );
-  TU_CALL( TUfreeBlock(tu, phashtable) );
+  CMR_CALL( CMRfreeBlockArray(cmr, &hashtable->table) );
+  CMR_CALL( CMRfreeBlockArray(cmr, &hashtable->keyStorage) );
+  CMR_CALL( CMRfreeBlock(cmr, phashtable) );
   *phashtable = NULL;
 
   return CMR_OKAY;
 }
 
-const void* TUhashtableKey(TU_HASHTABLE* hashtable, TU_HASHTABLE_HASH hash, size_t* pKeyLength)
+const void* CMRhashtableKey(CMR_HASHTABLE* hashtable, CMR_HASHTABLE_HASH hash, size_t* pKeyLength)
 {
   assert(hashtable);
   assert(hash >= 0);
@@ -91,7 +91,7 @@ const void* TUhashtableKey(TU_HASHTABLE* hashtable, TU_HASHTABLE_HASH hash, size
   return &hashtable->keyStorage[data->keyIndex];
 }
 
-const void* TUhashtableValue(TU_HASHTABLE* hashtable, TU_HASHTABLE_HASH hash)
+const void* CMRhashtableValue(CMR_HASHTABLE* hashtable, CMR_HASHTABLE_HASH hash)
 {
   assert(hashtable);
   assert(hash >= 0);
@@ -99,8 +99,8 @@ const void* TUhashtableValue(TU_HASHTABLE* hashtable, TU_HASHTABLE_HASH hash)
   return hashtable->table[hashEntry(hashtable, hash)].value;
 }
 
-bool TUhashtableFind(TU_HASHTABLE* hashtable, const void* keyArray, size_t keyLength, TU_HASHTABLE_ENTRY* pentry,
-  TU_HASHTABLE_HASH* phash)
+bool CMRhashtableFind(CMR_HASHTABLE* hashtable, const void* keyArray, size_t keyLength, CMR_HASHTABLE_ENTRY* pentry,
+  CMR_HASHTABLE_HASH* phash)
 {
   assert(hashtable);
   assert(keyArray);
@@ -108,21 +108,21 @@ bool TUhashtableFind(TU_HASHTABLE* hashtable, const void* keyArray, size_t keyLe
   assert(pentry);
   assert(phash);
 
-  TU_HASHTABLE_HASH hash = 5381;
+  CMR_HASHTABLE_HASH hash = 5381;
   for (size_t i = 0; i < keyLength; ++i)
     hash = ((hash << 5) + hash) + ((unsigned char*)keyArray)[i];
 
   *phash = hash;
-  TUdbgMsg(0, "TUhashtableFind computed hash %ld\n", hash);
+  CMRdbgMsg(0, "CMRhashtableFind computed hash %ld\n", hash);
 
-  TU_HASHTABLE_ENTRY entry = hash % hashtable->size;
+  CMR_HASHTABLE_ENTRY entry = hash % hashtable->size;
   while (true)
   {
-    TUdbgMsg(2, "Checking entry %d\n", entry);
+    CMRdbgMsg(2, "Checking entry %d\n", entry);
     /* If bucket is empty, then key does not exist. */
     if (!hashtable->table[entry].keyLength)
     {
-      TUdbgMsg(2, "-> found empty bucket.\n");
+      CMRdbgMsg(2, "-> found empty bucket.\n");
       *pentry = entry;
       return false;
     }
@@ -134,7 +134,7 @@ bool TUhashtableFind(TU_HASHTABLE* hashtable, const void* keyArray, size_t keyLe
       equal = equal && ((unsigned char*)keyArray)[i] == hashtable->keyStorage[index + i];
     if (equal)
     {
-      TUdbgMsg(2, "-> found bucket %d with key.\n", entry);
+      CMRdbgMsg(2, "-> found bucket %d with key.\n", entry);
       *pentry = entry;
       return true;
     }
@@ -143,10 +143,10 @@ bool TUhashtableFind(TU_HASHTABLE* hashtable, const void* keyArray, size_t keyLe
   }
 }
 
-CMR_ERROR TUhashtableInsertEntryHash(TU* tu, TU_HASHTABLE* hashtable, const void* keyArray, size_t keyLength,
-  TU_HASHTABLE_ENTRY entry, TU_HASHTABLE_HASH hash, const void* value)
+CMR_ERROR CMRhashtableInsertEntryHash(CMR* cmr, CMR_HASHTABLE* hashtable, const void* keyArray, size_t keyLength,
+  CMR_HASHTABLE_ENTRY entry, CMR_HASHTABLE_HASH hash, const void* value)
 {
-  assert(tu);
+  assert(cmr);
   assert(hashtable);
   assert(keyArray);
   assert(keyLength > 0);
@@ -170,7 +170,7 @@ CMR_ERROR TUhashtableInsertEntryHash(TU* tu, TU_HASHTABLE* hashtable, const void
       hashtable->memKeyStorage *= 2;
     }
     while (hashtable->freeKeyIndex + keyLength > hashtable->memKeyStorage);
-    TU_CALL( TUreallocBlockArray(tu, &hashtable->keyStorage, hashtable->memKeyStorage) );
+    CMR_CALL( CMRreallocBlockArray(cmr, &hashtable->keyStorage, hashtable->memKeyStorage) );
   }
 
   /* Store entry by creating a copy of key in storage. */
@@ -188,12 +188,12 @@ CMR_ERROR TUhashtableInsertEntryHash(TU* tu, TU_HASHTABLE* hashtable, const void
 
   if (hashtable->numElements > hashtable->size / 8)
   {
-    TUdbgMsg(0, "Enlarging hash table.\n");
+    CMRdbgMsg(0, "Enlarging hash table.\n");
     
     /* We now double the size of the hash table. */
 
     size_t newSize = 2 * hashtable->size;
-    TU_CALL( TUreallocBlockArray(tu, &hashtable->table, newSize) );
+    CMR_CALL( CMRreallocBlockArray(cmr, &hashtable->table, newSize) );
     for (size_t i = hashtable->size; i < newSize; ++i)
       hashtable->table[i].keyLength = 0;
     size_t oldSize = hashtable->size;
@@ -206,16 +206,16 @@ CMR_ERROR TUhashtableInsertEntryHash(TU* tu, TU_HASHTABLE* hashtable, const void
         continue;
       
       size_t j = hashEntry(hashtable, hashtable->table[i].hash);
-      TUdbgMsg(2, "Hash %ld was at %d before and would like to be at %d.", hashtable->table[i].hash, i, j);
+      CMRdbgMsg(2, "Hash %ld was at %d before and would like to be at %d.", hashtable->table[i].hash, i, j);
       while (j != i && hashtable->table[j].keyLength)
         j = (j+1) % hashtable->size;
       if (j == i)
       {
-        TUdbgMsg(1, "-> next available entry is old one %d.\n", j);
+        CMRdbgMsg(1, "-> next available entry is old one %d.\n", j);
       }
       else
       {
-        TUdbgMsg(1, "-> next available entry is %d. Moving it there.\n", j);
+        CMRdbgMsg(1, "-> next available entry is %d. Moving it there.\n", j);
         hashtable->table[j].hash = hashtable->table[i].hash;
         hashtable->table[j].keyIndex = hashtable->table[i].keyIndex;
         hashtable->table[j].keyLength = hashtable->table[i].keyLength;
@@ -228,17 +228,17 @@ CMR_ERROR TUhashtableInsertEntryHash(TU* tu, TU_HASHTABLE* hashtable, const void
   return CMR_OKAY;
 }
 
-CMR_ERROR TUhashtableInsert(TU* tu, TU_HASHTABLE* hashtable, const void* keyArray, size_t keyLength, const void* value)
+CMR_ERROR CMRhashtableInsert(CMR* cmr, CMR_HASHTABLE* hashtable, const void* keyArray, size_t keyLength, const void* value)
 {
-  assert(tu);
+  assert(cmr);
   assert(hashtable);
   assert(keyArray);
   assert(keyLength > 0);
 
-  TU_HASHTABLE_ENTRY entry;
-  TU_HASHTABLE_HASH hash;
-  TU_CALL( TUhashtableFind(hashtable, keyArray, keyLength, &entry, &hash) );
-  TU_CALL( TUhashtableInsertEntryHash(tu, hashtable, keyArray, keyLength, entry, hash, value) );
+  CMR_HASHTABLE_ENTRY entry;
+  CMR_HASHTABLE_HASH hash;
+  CMR_CALL( CMRhashtableFind(hashtable, keyArray, keyLength, &entry, &hash) );
+  CMR_CALL( CMRhashtableInsertEntryHash(cmr, hashtable, keyArray, keyLength, entry, hash, value) );
 
   return CMR_OKAY;
 }

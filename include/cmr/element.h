@@ -1,5 +1,5 @@
-#ifndef TU_ELEMENT_H
-#define TU_ELEMENT_H
+#ifndef CMR_ELEMENT_H
+#define CMR_ELEMENT_H
 
 #include <cmr/env.h>
 
@@ -9,16 +9,16 @@
 extern "C" {
 #endif
 
-typedef int Element;
+typedef int CMR_ELEMENT;
 
 CMR_EXPORT
-const char* TUelementString(
-  Element element,  /**< Element to print. */
-  char* buffer      /**< Buffer of size at least 32. May be \c NULL, in which case a static buffer is used. */
+const char* CMRelementString(
+  CMR_ELEMENT element,  /**< Element to print. */
+  char* buffer          /**< Buffer of size at least 32. May be \c NULL, in which case a static buffer is used. */
 );
 
 static inline
-Element TUrowToElement(
+CMR_ELEMENT CMRrowToElement(
   size_t row  /**< Row index. */
 )
 {
@@ -26,7 +26,7 @@ Element TUrowToElement(
 }
 
 static inline
-Element TUcolumnToElement(
+CMR_ELEMENT CMRcolumnToElement(
   size_t column  /**< Column index. */
 )
 {
@@ -34,16 +34,16 @@ Element TUcolumnToElement(
 }
 
 static inline
-bool TUelementIsRow(
-  Element element /**< Element to check. */
+bool CMRelementIsRow(
+  CMR_ELEMENT element /**< Element to check. */
 )
 {
   return element < 0;
 }
 
 static inline
-size_t TUelementToRowIndex(
-  Element element /**< Element to convert. */
+size_t CMRelementToRowIndex(
+  CMR_ELEMENT element /**< Element to convert. */
 )
 {
   assert(element < 0);
@@ -51,16 +51,16 @@ size_t TUelementToRowIndex(
 }
 
 static inline
-bool TUelementIsColumn(
-  Element element /**< Element to check. */
+bool CMRelementIsColumn(
+  CMR_ELEMENT element /**< Element to check. */
 )
 {
   return element > 0;
 }
 
 static inline
-size_t TUelementToColumnIndex(
-  Element element /**< Element to convert. */
+size_t CMRelementToColumnIndex(
+  CMR_ELEMENT element /**< Element to convert. */
 )
 {
   assert(element > 0);
@@ -71,4 +71,4 @@ size_t TUelementToColumnIndex(
 }
 #endif
 
-#endif /* TU_ELEMENT_H */
+#endif /* CMR_ELEMENT_H */

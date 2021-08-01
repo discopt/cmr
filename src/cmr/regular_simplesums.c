@@ -6,32 +6,32 @@
 #include "regular_internal.h"
 #include "env_internal.h"
 
-TU_DEC* TUregularDecomposeSimpleSums(TU* tu, TU_DEC* dec, bool unitVectors, bool paths, bool constructDecomposition)
+CMR_TU_DEC* CMRregularDecomposeSimpleSums(CMR* cmr, CMR_TU_DEC* dec, bool unitVectors, bool paths, bool constructDecomposition)
 {
-  assert(tu);
+  assert(cmr);
   assert(dec);
-  assert(TUisTernaryChr(tu, dec->matrix, NULL));
+  assert(CMRisTernaryChr(cmr, dec->matrix, NULL));
 
-  TU_DEC* result = dec;
-  TU_CHRMAT* matrix = dec->matrix;
-  TU_CHRMAT* transpose = dec->transpose;
+  CMR_TU_DEC* result = dec;
+  CMR_CHRMAT* matrix = dec->matrix;
+  CMR_CHRMAT* transpose = dec->transpose;
 
   int* rowNonzeros = NULL;
   int* columnNonzeros = NULL;
-  TUallocStackArray(tu, &rowNonzeros, matrix->numRows);
-  TUallocStackArray(tu, &columnNonzeros, matrix->numColumns);
+  CMRallocStackArray(cmr, &rowNonzeros, matrix->numRows);
+  CMRallocStackArray(cmr, &columnNonzeros, matrix->numColumns);
 
   /* Ensure that we have the transpose available. */
 
   if (constructDecomposition && result->transpose == NULL)
-    TUchrmatTranspose(tu, result->matrix, &result->transpose);
+    CMRchrmatTranspose(cmr, result->matrix, &result->transpose);
 
   if (unitVectors)
   {
     int* queue = NULL;
     int queueBegin = 0;
     int queueEnd = 0;
-    TUallocStackArray(tu, &queue, matrix->numRows + matrix->numColumns);
+    CMRallocStackArray(cmr, &queue, matrix->numRows + matrix->numColumns);
 
     for (int row = 0; row < matrix->numRows; ++row)
     {
@@ -61,21 +61,21 @@ TU_DEC* TUregularDecomposeSimpleSums(TU* tu, TU_DEC* dec, bool unitVectors, bool
     {
       int element = queue[queueBegin];
       result->numChildren = 2;
-      result->flags = constructDecomposition ? TU_DEC_TWO_SUM : TU_DEC_MULTI_SUM;
-      TUallocBlockArray(tu, &result->children, 2);
-      TUcreateDec(tu, &result->children[0]);
-      TUcreateDec(tu, &result->children[1]);
+      result->flags = constructDecomposition ? CMR_TU_DEC_TWO_SUM : CMR_TU_DEC_MULTI_SUM;
+      CMRallocBlockArray(cmr, &result->children, 2);
+      CMRcreateDec(cmr, &result->children[0]);
+      CMRcreateDec(cmr, &result->children[1]);
 
       /* Create children: First is 1x2 or 2x1 matrix, second is without the unit vector. */
 
-      result->children[0]->flags = TU_DEC_PROCESSED | TU_DEC_GRAPHIC | TU_DEC_COGRAPHIC
-        | TU_DEC_REGULAR;
+      result->children[0]->flags = CMR_TU_DEC_PROCESSED | CMR_TU_DEC_GRAPHIC | CMR_TU_DEC_COGRAPHIC
+        | CMR_TU_DEC_REGULAR;
       if (constructDecomposition)
       {
         if (element < 0)
         {
           int row = -1 - element;
-          TUchrmatCreate(tu, &result->children[0]->matrix, 2, 1, 2);
+          CMRchrmatCreate(cmr, &result->children[0]->matrix, 2, 1, 2);
           result->children[1]->matrix->rowStarts[0] = 0;
           result->children[1]->matrix->rowStarts[1] = 1;
           result->children[1]->matrix->rowStarts[2] = 2;
@@ -108,8 +108,8 @@ TU_DEC* TUregularDecomposeSimpleSums(TU* tu, TU_DEC* dec, bool unitVectors, bool
           }
           if (dec->rowLabels && dec->columnLabels)
           {
-            TUallocBlockArray(tu, &result->children[0]->rowLabels, 2);
-            TUallocBlockArray(tu, &result->children[0]->columnLabels, 1);
+            CMRallocBlockArray(cmr, &result->children[0]->rowLabels, 2);
+            CMRallocBlockArray(cmr, &result->children[0]->columnLabels, 1);
             result->children[0]->rowLabels[0] = dec->rowLabels[row];
             result->children[0]->rowLabels[1] = dec->rowLabels[otherRow];
             result->children[0]->columnLabels[0] = dec->columnLabels[column];
@@ -117,7 +117,7 @@ TU_DEC* TUregularDecomposeSimpleSums(TU* tu, TU_DEC* dec, bool unitVectors, bool
 
           /* Create matrix of 2nd child. */
 
-          TUchrmatCreate(tu, &result->children[1]->matrix, result->matrix->numRows - 1,
+          CMRchrmatCreate(cmr, &result->children[1]->matrix, result->matrix->numRows - 1,
             result->matrix->numColumns, result->matrix->numNonzeros - 1);
           int entry = 0;
           for (int r = 0; r < result->matrix->numRows; ++r)
@@ -146,12 +146,12 @@ TU_DEC* TUregularDecomposeSimpleSums(TU* tu, TU_DEC* dec, bool unitVectors, bool
               result->children[1]->matrix->entryValues[e] = result->matrix->entryValues[e + offset];
             }
           }
-          TUchrmatTranspose(tu, result->children[1]->matrix, &result->children[1]->transpose);
+          CMRchrmatTranspose(cmr, result->children[1]->matrix, &result->children[1]->transpose);
         }
         else
         {
           int column = element;
-          TUchrmatCreate(tu, &result->children[0]->matrix, 1, 2, 2);
+          CMRchrmatCreate(cmr, &result->children[0]->matrix, 1, 2, 2);
           result->children[1]->matrix->rowStarts[0] = 0;
           result->children[1]->matrix->rowStarts[1] = 2;
           result->children[1]->matrix->entryColumns[0] = 0;
@@ -182,8 +182,8 @@ TU_DEC* TUregularDecomposeSimpleSums(TU* tu, TU_DEC* dec, bool unitVectors, bool
           }
           if (dec->rowLabels && dec->columnLabels)
           {
-            TUallocBlockArray(tu, &result->children[0]->rowLabels, 1);
-            TUallocBlockArray(tu, &result->children[0]->columnLabels, 2);
+            CMRallocBlockArray(cmr, &result->children[0]->rowLabels, 1);
+            CMRallocBlockArray(cmr, &result->children[0]->columnLabels, 2);
             result->children[0]->columnLabels[0] = dec->columnLabels[column];
             result->children[0]->columnLabels[1] = dec->columnLabels[otherColumn];
             result->children[0]->rowLabels[0] = dec->rowLabels[row];
@@ -191,7 +191,7 @@ TU_DEC* TUregularDecomposeSimpleSums(TU* tu, TU_DEC* dec, bool unitVectors, bool
 
           /* Create matrix of 2nd child. */
 
-          TUchrmatCreate(tu, &result->children[1]->transpose, result->transpose->numRows - 1,
+          CMRchrmatCreate(cmr, &result->children[1]->transpose, result->transpose->numRows - 1,
             result->transpose->numColumns, result->transpose->numNonzeros - 1);
           int entry = 0;
           for (int r = 0; r < result->transpose->numRows; ++r)
@@ -220,9 +220,9 @@ TU_DEC* TUregularDecomposeSimpleSums(TU* tu, TU_DEC* dec, bool unitVectors, bool
               result->children[1]->transpose->entryValues[e] = result->transpose->entryValues[e + offset];
             }
           }
-          TUchrmatTranspose(tu, result->children[1]->transpose, &result->children[1]->matrix);
+          CMRchrmatTranspose(cmr, result->children[1]->transpose, &result->children[1]->matrix);
         }
-        TUchrmatTranspose(tu, result->children[0]->matrix, &result->children[0]->transpose);
+        CMRchrmatTranspose(cmr, result->children[0]->matrix, &result->children[0]->transpose);
       }
 
       /* Make second child the current node. */
@@ -230,11 +230,11 @@ TU_DEC* TUregularDecomposeSimpleSums(TU* tu, TU_DEC* dec, bool unitVectors, bool
       result = result->children[1];
     }
 
-    TUfreeStackArray(tu, &queue);
+    CMRfreeStackArray(cmr, &queue);
   }
 
-  TUfreeStackArray(tu, &columnNonzeros);
-  TUfreeStackArray(tu, &rowNonzeros);
+  CMRfreeStackArray(cmr, &columnNonzeros);
+  CMRfreeStackArray(cmr, &rowNonzeros);
 
   return result;
 }

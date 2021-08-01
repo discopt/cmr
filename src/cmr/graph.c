@@ -1,5 +1,5 @@
-// #define TU_DEBUG /* Uncomment to debug graph operations. */
-// #define TU_DEBUG_CONSISTENCY /* Uncomment to check consistency of t-decompositions. */
+// #define CMR_DEBUG /* Uncomment to debug graph operations. */
+// #define CMR_DEBUG_CONSISTENCY /* Uncomment to check consistency of t-decompositions. */
 
 #include <cmr/graph.h>
 
@@ -15,21 +15,21 @@
 #define isValid(nodeOrArc) \
   ((nodeOrArc) >= 0)
 
-void TUgraphEnsureConsistent(TU* tu, TU_GRAPH* graph)
+void CMRgraphEnsureConsistent(CMR* cmr, CMR_GRAPH* graph)
 {
-  assert(tu);
+  assert(cmr);
   assert(graph);
 
-  TUdbgMsg(0, "Ensuring consistency of listgraph with %d nodes and %d edges.\n", TUgraphNumNodes(graph),
-    TUgraphNumEdges(graph));
+  CMRdbgMsg(0, "Ensuring consistency of listgraph with %d nodes and %d edges.\n", CMRgraphNumNodes(graph),
+    CMRgraphNumEdges(graph));
 
   /* Count nodes and check prev/next linked lists. */
 
   int countNodes = 0;
 #if !defined(NDEBUG)
-  TU_GRAPH_NODE u = -1;
+  CMR_GRAPH_NODE u = -1;
 #endif /* !NDEBUG */
-  for (TU_GRAPH_NODE v = TUgraphNodesFirst(graph); TUgraphNodesValid(graph, v); v = TUgraphNodesNext(graph, v))
+  for (CMR_GRAPH_NODE v = CMRgraphNodesFirst(graph); CMRgraphNodesValid(graph, v); v = CMRgraphNodesNext(graph, v))
   {
     assert(graph->nodes[v].prev == u);
 #if !defined(NDEBUG)
@@ -42,7 +42,7 @@ void TUgraphEnsureConsistent(TU* tu, TU_GRAPH* graph)
   /* Count free nodes. */
 
   int countFree = 0;
-  TU_GRAPH_NODE v = graph->freeNode;
+  CMR_GRAPH_NODE v = graph->freeNode;
   while (isValid(v))
   {
     v = graph->nodes[v].next;
@@ -54,17 +54,17 @@ void TUgraphEnsureConsistent(TU* tu, TU_GRAPH* graph)
 
   int countIncident = 0;
   int countLoops = 0;
-  for (TU_GRAPH_NODE v = TUgraphNodesFirst(graph); TUgraphNodesValid(graph, v); v = TUgraphNodesNext(graph, v))
+  for (CMR_GRAPH_NODE v = CMRgraphNodesFirst(graph); CMRgraphNodesValid(graph, v); v = CMRgraphNodesNext(graph, v))
   {
-    TUdbgMsg(0, "First out-arc of node %d is %d\n", v, graph->nodes[v].firstOut);
+    CMRdbgMsg(0, "First out-arc of node %d is %d\n", v, graph->nodes[v].firstOut);
 
     /* Check lists for outgoing arcs. */
-    for (TU_GRAPH_ITER i = TUgraphIncFirst(graph, v); TUgraphIncValid(graph, i); i = TUgraphIncNext(graph, i))
+    for (CMR_GRAPH_ITER i = CMRgraphIncFirst(graph, v); CMRgraphIncValid(graph, i); i = CMRgraphIncNext(graph, i))
     {
-      TUdbgMsg(0, "Current arc is %d = (%d,%d), opposite arc is %d, prev is %d, next is %d.\n", i,
+      CMRdbgMsg(0, "Current arc is %d = (%d,%d), opposite arc is %d, prev is %d, next is %d.\n", i,
         graph->arcs[i ^ 1].target, graph->arcs[i].target, i^1, graph->arcs[i].prev, graph->arcs[i].next);
 
-      if (TUgraphIncSource(graph, i) == TUgraphIncTarget(graph, i))
+      if (CMRgraphIncSource(graph, i) == CMRgraphIncTarget(graph, i))
         ++countLoops;
       assert(graph->arcs[i ^ 1].target == v);
       ++countIncident;
@@ -75,7 +75,7 @@ void TUgraphEnsureConsistent(TU* tu, TU_GRAPH* graph)
   countFree = 0;
   int e = graph->freeEdge;
 
-  TUdbgMsg(0, "freeEdge = %d\n", e);
+  CMRdbgMsg(0, "freeEdge = %d\n", e);
 
   while (isValid(e))
   {
@@ -85,29 +85,29 @@ void TUgraphEnsureConsistent(TU* tu, TU_GRAPH* graph)
 
   assert(countIncident + countLoops + 2 * countFree == 2 * graph->memEdges);
 
-  TUdbgMsg(0, "Consistency checked.\n");
+  CMRdbgMsg(0, "Consistency checked.\n");
 }
 
-CMR_ERROR TUgraphCreateEmpty(TU* tu, TU_GRAPH** pgraph, int memNodes, int memEdges)
+CMR_ERROR CMRgraphCreateEmpty(CMR* cmr, CMR_GRAPH** pgraph, int memNodes, int memEdges)
 {
-  assert(tu);
+  assert(cmr);
   assert(pgraph);
   assert(*pgraph == NULL);
 
-  TU_CALL( TUallocBlock(tu, pgraph) );
-  TU_GRAPH* graph = *pgraph;
+  CMR_CALL( CMRallocBlock(cmr, pgraph) );
+  CMR_GRAPH* graph = *pgraph;
   graph->numNodes = 0;
   if (memNodes <= 0)
     memNodes = 1;
   graph->memNodes = memNodes;
   graph->nodes = NULL;
-  TU_CALL( TUallocBlockArray(tu, &graph->nodes, memNodes) );
+  CMR_CALL( CMRallocBlockArray(cmr, &graph->nodes, memNodes) );
   graph->numEdges = 0;
   if (memEdges <= 0)
     memEdges = 1;
   graph->memEdges = memEdges;
   graph->arcs = NULL;
-  TU_CALL( TUallocBlockArray(tu, &graph->arcs, 2 * memEdges) );
+  CMR_CALL( CMRallocBlockArray(cmr, &graph->arcs, 2 * memEdges) );
   graph->firstNode = -1;
   graph->freeNode = (memNodes > 0) ? 0 : -1;
   for (int v = 0; v < graph->memNodes - 1; ++v)
@@ -118,37 +118,37 @@ CMR_ERROR TUgraphCreateEmpty(TU* tu, TU_GRAPH** pgraph, int memNodes, int memEdg
     graph->arcs[2*e].next = e+1;
   graph->arcs[2*graph->memEdges-2].next = -1;
 
-#if defined(TU_DEBUG_CONSISTENCY)
-  TUgraphEnsureConsistent(tu, graph);
-#endif /* TU_DEBUG_CONSISTENCY */
+#if defined(CMR_DEBUG_CONSISTENCY)
+  CMRgraphEnsureConsistent(cmr, graph);
+#endif /* CMR_DEBUG_CONSISTENCY */
 
   return CMR_OKAY;
 }
 
-CMR_ERROR TUgraphFree(TU* tu, TU_GRAPH** pgraph)
+CMR_ERROR CMRgraphFree(CMR* cmr, CMR_GRAPH** pgraph)
 {
   assert(pgraph);
 
-  TUdbgMsg(0, "TUgraphFree(|V|=%d, |E|=%d)\n", TUgraphNumNodes(*pgraph), TUgraphNumEdges(*pgraph));
+  CMRdbgMsg(0, "CMRgraphFree(|V|=%d, |E|=%d)\n", CMRgraphNumNodes(*pgraph), CMRgraphNumEdges(*pgraph));
 
-#if defined(TU_DEBUG_CONSISTENCY)
-  TUgraphEnsureConsistent(tu, *pgraph);
-#endif /* TU_DEBUG_CONSISTENCY */
+#if defined(CMR_DEBUG_CONSISTENCY)
+  CMRgraphEnsureConsistent(cmr, *pgraph);
+#endif /* CMR_DEBUG_CONSISTENCY */
 
-  TU_GRAPH* graph = *pgraph;
+  CMR_GRAPH* graph = *pgraph;
 
-  TU_CALL( TUfreeBlockArray(tu, &graph->nodes) );
-  TU_CALL( TUfreeBlockArray(tu, &graph->arcs) );
+  CMR_CALL( CMRfreeBlockArray(cmr, &graph->nodes) );
+  CMR_CALL( CMRfreeBlockArray(cmr, &graph->arcs) );
 
-  TU_CALL( TUfreeBlock(tu, pgraph) );
+  CMR_CALL( CMRfreeBlock(cmr, pgraph) );
   *pgraph = NULL;
 
   return CMR_OKAY;
 }
 
-CMR_ERROR TUgraphClear(TU* tu, TU_GRAPH* graph)
+CMR_ERROR CMRgraphClear(CMR* cmr, CMR_GRAPH* graph)
 {
-  assert(tu);
+  assert(cmr);
   assert(graph);
 
   graph->numNodes = 0;
@@ -163,29 +163,29 @@ CMR_ERROR TUgraphClear(TU* tu, TU_GRAPH* graph)
     graph->arcs[2*e].next = e+1;
   graph->arcs[2*graph->memEdges-2].next = -1;
 
-#if defined(TU_DEBUG_CONSISTENCY)
-  TUgraphEnsureConsistent(tu, graph);
-#endif /* TU_DEBUG_CONSISTENCY */
+#if defined(CMR_DEBUG_CONSISTENCY)
+  CMRgraphEnsureConsistent(cmr, graph);
+#endif /* CMR_DEBUG_CONSISTENCY */
 
   return CMR_OKAY;
 }
 
-CMR_ERROR TUgraphAddNode(TU* tu, TU_GRAPH *graph, TU_GRAPH_NODE* pnode)
+CMR_ERROR CMRgraphAddNode(CMR* cmr, CMR_GRAPH *graph, CMR_GRAPH_NODE* pnode)
 {
-  assert(tu);
+  assert(cmr);
   assert(graph);
 
-  TUdbgMsg(0, "TUgraphAddNode().\n");
+  CMRdbgMsg(0, "CMRgraphAddNode().\n");
 
-#if defined(TU_DEBUG_CONSISTENCY)
-  TUgraphEnsureConsistent(tu, graph);
-#endif /* TU_DEBUG_CONSISTENCY */
+#if defined(CMR_DEBUG_CONSISTENCY)
+  CMRgraphEnsureConsistent(cmr, graph);
+#endif /* CMR_DEBUG_CONSISTENCY */
 
   /* If the free list is empty, we have reallocate. */
   if (!isValid(graph->freeNode))
   {
     int mem = (graph->memNodes < 256 ? 0 : 256) + 2 * graph->memNodes;
-    TU_CALL( TUreallocBlockArray(tu, &graph->nodes, mem) );
+    CMR_CALL( CMRreallocBlockArray(cmr, &graph->nodes, mem) );
     assert(graph->nodes);
     for (int v = graph->memNodes; v < mem-1; ++v)
       graph->nodes[v].next = v+1;
@@ -196,7 +196,7 @@ CMR_ERROR TUgraphAddNode(TU* tu, TU_GRAPH *graph, TU_GRAPH_NODE* pnode)
 
   /* Add to list. */
 
-  TU_GRAPH_NODE node = graph->freeNode;
+  CMR_GRAPH_NODE node = graph->freeNode;
   graph->freeNode = graph->nodes[node].next;
   graph->numNodes++;
   graph->nodes[node].firstOut = -1;
@@ -206,9 +206,9 @@ CMR_ERROR TUgraphAddNode(TU* tu, TU_GRAPH *graph, TU_GRAPH_NODE* pnode)
     graph->nodes[graph->firstNode].prev = node;
   graph->firstNode = node;
 
-#if defined(TU_DEBUG_CONSISTENCY)
-  TUgraphEnsureConsistent(tu, graph);
-#endif /* TU_DEBUG_CONSISTENCY */
+#if defined(CMR_DEBUG_CONSISTENCY)
+  CMRgraphEnsureConsistent(cmr, graph);
+#endif /* CMR_DEBUG_CONSISTENCY */
 
   if (pnode)
     *pnode = node;
@@ -216,14 +216,14 @@ CMR_ERROR TUgraphAddNode(TU* tu, TU_GRAPH *graph, TU_GRAPH_NODE* pnode)
   return CMR_OKAY;
 }
 
-CMR_ERROR TUgraphAddEdge(TU* tu, TU_GRAPH* graph, TU_GRAPH_NODE u, TU_GRAPH_NODE v,
-  TU_GRAPH_EDGE* pedge)
+CMR_ERROR CMRgraphAddEdge(CMR* cmr, CMR_GRAPH* graph, CMR_GRAPH_NODE u, CMR_GRAPH_NODE v,
+  CMR_GRAPH_EDGE* pedge)
 {
-  TUdbgMsg(0, "TUgraphAddEdge(%d,%d).\n", u, v);
+  CMRdbgMsg(0, "CMRgraphAddEdge(%d,%d).\n", u, v);
 
-#if defined(TU_DEBUG_CONSISTENCY)
-  TUgraphEnsureConsistent(tu, graph);
-#endif /* TU_DEBUG_CONSISTENCY */
+#if defined(CMR_DEBUG_CONSISTENCY)
+  CMRgraphEnsureConsistent(cmr, graph);
+#endif /* CMR_DEBUG_CONSISTENCY */
   assert(u >= 0);
   assert(u < graph->numNodes);
   assert(v >= 0);
@@ -234,7 +234,7 @@ CMR_ERROR TUgraphAddEdge(TU* tu, TU_GRAPH* graph, TU_GRAPH_NODE u, TU_GRAPH_NODE
   if (!isValid(graph->freeEdge))
   {
     int newMemEdges = (graph->memEdges < 1024 ? 0 : 1024) + 2 * graph->memEdges;
-    TU_CALL( TUreallocBlockArray(tu, &graph->arcs, 2*newMemEdges) );
+    CMR_CALL( CMRreallocBlockArray(cmr, &graph->arcs, 2*newMemEdges) );
     assert(graph->arcs);
     for (int e = graph->memEdges; e < newMemEdges-1; ++e)
       graph->arcs[2*e].next = (e+1);
@@ -245,7 +245,7 @@ CMR_ERROR TUgraphAddEdge(TU* tu, TU_GRAPH* graph, TU_GRAPH_NODE u, TU_GRAPH_NODE
 
   /* Add to list. */
 
-  TU_GRAPH_EDGE edge = graph->freeEdge;
+  CMR_GRAPH_EDGE edge = graph->freeEdge;
   int arc = 2*edge;
   graph->freeEdge = graph->arcs[arc].next;
   graph->numEdges++;
@@ -271,9 +271,9 @@ CMR_ERROR TUgraphAddEdge(TU* tu, TU_GRAPH* graph, TU_GRAPH_NODE u, TU_GRAPH_NODE
     graph->arcs[firstOut].prev = arc;
   graph->nodes[v].firstOut = arc;
 
-#if defined(TU_DEBUG_CONSISTENCY)
-  TUgraphEnsureConsistent(tu, graph);
-#endif /* TU_DEBUG_CONSISTENCY */
+#if defined(CMR_DEBUG_CONSISTENCY)
+  CMRgraphEnsureConsistent(cmr, graph);
+#endif /* CMR_DEBUG_CONSISTENCY */
 
   if (pedge)
     *pedge = edge;
@@ -281,25 +281,25 @@ CMR_ERROR TUgraphAddEdge(TU* tu, TU_GRAPH* graph, TU_GRAPH_NODE u, TU_GRAPH_NODE
   return CMR_OKAY;
 }
 
-CMR_ERROR TUgraphDeleteNode(TU* tu, TU_GRAPH* graph, TU_GRAPH_NODE v)
+CMR_ERROR CMRgraphDeleteNode(CMR* cmr, CMR_GRAPH* graph, CMR_GRAPH_NODE v)
 {
-  TUdbgMsg(0, "TUgraphDeleteNode(|V|=%d, |E|=%d, v=%d)\n", TUgraphNumNodes(graph), TUgraphNumEdges(graph), v);
+  CMRdbgMsg(0, "CMRgraphDeleteNode(|V|=%d, |E|=%d, v=%d)\n", CMRgraphNumNodes(graph), CMRgraphNumEdges(graph), v);
 
-#if defined(TU_DEBUG_CONSISTENCY)
-  TUgraphEnsureConsistent(tu, graph);
-#endif /* TU_DEBUG_CONSISTENCY */
+#if defined(CMR_DEBUG_CONSISTENCY)
+  CMRgraphEnsureConsistent(cmr, graph);
+#endif /* CMR_DEBUG_CONSISTENCY */
 
   /* Remove incident edges of which v is the source. */
   while (isValid(graph->nodes[v].firstOut))
-    TUgraphDeleteEdge(tu, graph, graph->nodes[v].firstOut/2);
+    CMRgraphDeleteEdge(cmr, graph, graph->nodes[v].firstOut/2);
 
-#if defined(TU_DEBUG_CONSISTENCY)
-  TUgraphEnsureConsistent(tu, graph);
-#endif /* TU_DEBUG_CONSISTENCY */
+#if defined(CMR_DEBUG_CONSISTENCY)
+  CMRgraphEnsureConsistent(cmr, graph);
+#endif /* CMR_DEBUG_CONSISTENCY */
 
   /* Remove node from node list. */
-  TU_GRAPH_NODE prev = graph->nodes[v].prev;
-  TU_GRAPH_NODE next = graph->nodes[v].next;
+  CMR_GRAPH_NODE prev = graph->nodes[v].prev;
+  CMR_GRAPH_NODE next = graph->nodes[v].next;
   if (isValid(prev))
     graph->nodes[prev].next = next;
   else
@@ -311,32 +311,32 @@ CMR_ERROR TUgraphDeleteNode(TU* tu, TU_GRAPH* graph, TU_GRAPH_NODE v)
   graph->freeNode = v;
   graph->numNodes--;
 
-#if defined(TU_DEBUG_CONSISTENCY)
-  TUgraphEnsureConsistent(tu, graph);
-#endif /* TU_DEBUG_CONSISTENCY */
+#if defined(CMR_DEBUG_CONSISTENCY)
+  CMRgraphEnsureConsistent(cmr, graph);
+#endif /* CMR_DEBUG_CONSISTENCY */
 
   return CMR_OKAY;
 }
 
-CMR_ERROR TUgraphDeleteEdge(TU* tu, TU_GRAPH* graph, TU_GRAPH_EDGE e)
+CMR_ERROR CMRgraphDeleteEdge(CMR* cmr, CMR_GRAPH* graph, CMR_GRAPH_EDGE e)
 {
-  TUdbgMsg(0, "TUgraphDeleteEdge(|V|=%d, |E|=%d, %d", TUgraphNumNodes(graph), TUgraphNumEdges(graph), e);
+  CMRdbgMsg(0, "CMRgraphDeleteEdge(|V|=%d, |E|=%d, %d", CMRgraphNumNodes(graph), CMRgraphNumEdges(graph), e);
 
   assert(isValid(e));
 
   int arc = 2*e;
-  TU_GRAPH_NODE u = graph->arcs[arc+1].target;
-  TU_GRAPH_NODE v = graph->arcs[arc].target;
+  CMR_GRAPH_NODE u = graph->arcs[arc+1].target;
+  CMR_GRAPH_NODE v = graph->arcs[arc].target;
 
-  TUdbgMsg(0, " = {%d,%d})\n", u, v);
+  CMRdbgMsg(0, " = {%d,%d})\n", u, v);
 
-#if defined(TU_DEBUG_CONSISTENCY)
-  TUgraphEnsureConsistent(tu, graph);
-#endif /* TU_DEBUG_CONSISTENCY */
+#if defined(CMR_DEBUG_CONSISTENCY)
+  CMRgraphEnsureConsistent(cmr, graph);
+#endif /* CMR_DEBUG_CONSISTENCY */
 
   /* Remove from u's list of outgoing arcs. */
-  TU_GRAPH_EDGE prev = graph->arcs[arc].prev;
-  TU_GRAPH_EDGE next = graph->arcs[arc].next;
+  CMR_GRAPH_EDGE prev = graph->arcs[arc].prev;
+  CMR_GRAPH_EDGE next = graph->arcs[arc].next;
   if (isValid(prev))
     graph->arcs[prev].next = next;
   else
@@ -360,34 +360,34 @@ CMR_ERROR TUgraphDeleteEdge(TU* tu, TU_GRAPH* graph, TU_GRAPH_EDGE e)
   if (isValid(next))
     graph->arcs[next].prev = prev;
 
-#if defined(TU_DEBUG_CONSISTENCY)
-  TUgraphEnsureConsistent(tu, graph);
-#endif /* TU_DEBUG_CONSISTENCY */
+#if defined(CMR_DEBUG_CONSISTENCY)
+  CMRgraphEnsureConsistent(cmr, graph);
+#endif /* CMR_DEBUG_CONSISTENCY */
 
   return CMR_OKAY;
 }
 
 
-CMR_ERROR TUgraphPrint(FILE* stream, TU_GRAPH* graph)
+CMR_ERROR CMRgraphPrint(FILE* stream, CMR_GRAPH* graph)
 {
   assert(stream);
   assert(graph);
 
-  printf("Graph with %d nodes and %d edges.\n", TUgraphNumNodes(graph), TUgraphNumEdges(graph));
-  for (TU_GRAPH_NODE v = TUgraphNodesFirst(graph); TUgraphNodesValid(graph, v); v = TUgraphNodesNext(graph, v))
+  printf("Graph with %d nodes and %d edges.\n", CMRgraphNumNodes(graph), CMRgraphNumEdges(graph));
+  for (CMR_GRAPH_NODE v = CMRgraphNodesFirst(graph); CMRgraphNodesValid(graph, v); v = CMRgraphNodesNext(graph, v))
   {
     fprintf(stream, "Node %d:\n", v);
-    for (TU_GRAPH_ITER i = TUgraphIncFirst(graph, v); TUgraphIncValid(graph, i); i = TUgraphIncNext(graph, i))
+    for (CMR_GRAPH_ITER i = CMRgraphIncFirst(graph, v); CMRgraphIncValid(graph, i); i = CMRgraphIncNext(graph, i))
     {
-      fprintf(stream, "  Edge %d: {%d,%d} {arc = %d}\n", TUgraphIncEdge(graph, i), TUgraphIncSource(graph, i),
-        TUgraphIncTarget(graph, i), i);
+      fprintf(stream, "  Edge %d: {%d,%d} {arc = %d}\n", CMRgraphIncEdge(graph, i), CMRgraphIncSource(graph, i),
+        CMRgraphIncTarget(graph, i), i);
     }
   }
 
   return CMR_OKAY;
 }
 
-CMR_ERROR TUgraphMergeNodes(TU* tu, TU_GRAPH* graph, TU_GRAPH_NODE u, TU_GRAPH_NODE v)
+CMR_ERROR CMRgraphMergeNodes(CMR* cmr, CMR_GRAPH* graph, CMR_GRAPH_NODE u, CMR_GRAPH_NODE v)
 {
   assert(graph);
   assert(u >= 0);
@@ -408,17 +408,17 @@ CMR_ERROR TUgraphMergeNodes(TU* tu, TU_GRAPH* graph, TU_GRAPH_NODE u, TU_GRAPH_N
     graph->nodes[u].firstOut = a;
   }
 
-#if defined(TU_DEBUG_CONSISTENCY)
-  TUgraphEnsureConsistent(tu, graph);
-#endif /* TU_DEBUG_CONSISTENCY */
+#if defined(CMR_DEBUG_CONSISTENCY)
+  CMRgraphEnsureConsistent(cmr, graph);
+#endif /* CMR_DEBUG_CONSISTENCY */
 
   return CMR_OKAY;
 }
 
-CMR_ERROR TUgraphCreateFromEdgeList(TU* tu, TU_GRAPH** pgraph, Element** pedgeElements, char*** pnodeLabels,
+CMR_ERROR CMRgraphCreateFromEdgeList(CMR* cmr, CMR_GRAPH** pgraph, CMR_ELEMENT** pedgeElements, char*** pnodeLabels,
   FILE* stream)
 {
-  assert(tu);
+  assert(cmr);
   assert(pgraph);
   assert(!*pgraph);
   assert(!pedgeElements || !*pedgeElements);
@@ -433,17 +433,17 @@ CMR_ERROR TUgraphCreateFromEdgeList(TU* tu, TU_GRAPH** pgraph, Element** pedgeEl
   char* vToken = NULL;
   char* elementToken = NULL;
 
-  TU_CALL( TUgraphCreateEmpty(tu, pgraph, 256, 1024) );
-  TU_GRAPH* graph = *pgraph;
+  CMR_CALL( CMRgraphCreateEmpty(cmr, pgraph, 256, 1024) );
+  CMR_GRAPH* graph = *pgraph;
   size_t memNodeLabels = 256;
   if (pnodeLabels)
-    TU_CALL( TUallocBlockArray(tu, pnodeLabels, memNodeLabels) );
+    CMR_CALL( CMRallocBlockArray(cmr, pnodeLabels, memNodeLabels) );
   size_t memEdgeElements = 256;
   if (pedgeElements)
-    TU_CALL( TUallocBlockArray(tu, pedgeElements, memEdgeElements) );
+    CMR_CALL( CMRallocBlockArray(cmr, pedgeElements, memEdgeElements) );
 
-  TU_HASHTABLE* nodeNames = NULL;
-  TU_CALL( TUhashtableCreate(tu, &nodeNames, 8, 1024) );
+  CMR_HASHTABLE* nodeNames = NULL;
+  CMR_CALL( CMRhashtableCreate(cmr, &nodeNames, 8, 1024) );
   
   while ((numRead = getline(&line, &length, stream)) != -1)
   {
@@ -494,15 +494,15 @@ CMR_ERROR TUgraphCreateFromEdgeList(TU* tu, TU_GRAPH** pgraph, Element** pedgeEl
 
     /* Figure out node u if it exists. */
 
-    TU_HASHTABLE_ENTRY entry;
-    TU_HASHTABLE_HASH hash;
-    TU_GRAPH_NODE uNode; 
-    if (TUhashtableFind(nodeNames, uToken, strlen(uToken), &entry, &hash))
-      uNode = (TU_GRAPH_NODE) (size_t) TUhashtableValue(nodeNames, entry);
+    CMR_HASHTABLE_ENTRY entry;
+    CMR_HASHTABLE_HASH hash;
+    CMR_GRAPH_NODE uNode; 
+    if (CMRhashtableFind(nodeNames, uToken, strlen(uToken), &entry, &hash))
+      uNode = (CMR_GRAPH_NODE) (size_t) CMRhashtableValue(nodeNames, entry);
     else
     {
-      TU_CALL( TUgraphAddNode(tu, graph, &uNode) );
-      TU_CALL( TUhashtableInsertEntryHash(tu, nodeNames, uToken, strlen(uToken), entry, hash, (void*) (size_t) uNode) );
+      CMR_CALL( CMRgraphAddNode(cmr, graph, &uNode) );
+      CMR_CALL( CMRhashtableInsertEntryHash(cmr, nodeNames, uToken, strlen(uToken), entry, hash, (void*) (size_t) uNode) );
 
       /* Add node label. */
       if (pnodeLabels)
@@ -510,7 +510,7 @@ CMR_ERROR TUgraphCreateFromEdgeList(TU* tu, TU_GRAPH** pgraph, Element** pedgeEl
         if (uNode >= memNodeLabels)
         {
           memNodeLabels *= 2;
-          TU_CALL( TUreallocBlockArray(tu, pnodeLabels, memNodeLabels) );
+          CMR_CALL( CMRreallocBlockArray(cmr, pnodeLabels, memNodeLabels) );
         }
 
         (*pnodeLabels)[uNode] = strdup(uToken);
@@ -519,13 +519,13 @@ CMR_ERROR TUgraphCreateFromEdgeList(TU* tu, TU_GRAPH** pgraph, Element** pedgeEl
 
     /* Figure out node v if it exists. */
 
-    TU_GRAPH_NODE vNode; 
-    if (TUhashtableFind(nodeNames, vToken, strlen(vToken), &entry, &hash))
-      vNode = (TU_GRAPH_NODE) (size_t) TUhashtableValue(nodeNames, entry);
+    CMR_GRAPH_NODE vNode; 
+    if (CMRhashtableFind(nodeNames, vToken, strlen(vToken), &entry, &hash))
+      vNode = (CMR_GRAPH_NODE) (size_t) CMRhashtableValue(nodeNames, entry);
     else
     {
-      TU_CALL( TUgraphAddNode(tu, graph, &vNode) );
-      TU_CALL( TUhashtableInsertEntryHash(tu, nodeNames, vToken, strlen(vToken), entry, hash, (void*) (size_t) vNode) );
+      CMR_CALL( CMRgraphAddNode(cmr, graph, &vNode) );
+      CMR_CALL( CMRhashtableInsertEntryHash(cmr, nodeNames, vToken, strlen(vToken), entry, hash, (void*) (size_t) vNode) );
       
       /* Add node label. */
       if (pnodeLabels)
@@ -533,7 +533,7 @@ CMR_ERROR TUgraphCreateFromEdgeList(TU* tu, TU_GRAPH** pgraph, Element** pedgeEl
         if (vNode >= memNodeLabels)
         {
           memNodeLabels *= 2;
-          TU_CALL( TUreallocBlockArray(tu, pnodeLabels, memNodeLabels) );
+          CMR_CALL( CMRreallocBlockArray(cmr, pnodeLabels, memNodeLabels) );
         }
 
         (*pnodeLabels)[vNode] = strdup(vToken);
@@ -542,7 +542,7 @@ CMR_ERROR TUgraphCreateFromEdgeList(TU* tu, TU_GRAPH** pgraph, Element** pedgeEl
 
     /* Extract element. */
 
-    Element element = 0;
+    CMR_ELEMENT element = 0;
     if (elementToken)
     {
       if (strchr("rRtT-", elementToken[0]))
@@ -556,8 +556,8 @@ CMR_ERROR TUgraphCreateFromEdgeList(TU* tu, TU_GRAPH** pgraph, Element** pedgeEl
         sscanf(elementToken, "%d", &element);
     }
 
-    TU_GRAPH_EDGE edge;
-    TU_CALL( TUgraphAddEdge(tu, graph, uNode, vNode, &edge) );
+    CMR_GRAPH_EDGE edge;
+    CMR_CALL( CMRgraphAddEdge(cmr, graph, uNode, vNode, &edge) );
 
     if (pedgeElements)
     {
@@ -568,14 +568,14 @@ CMR_ERROR TUgraphCreateFromEdgeList(TU* tu, TU_GRAPH** pgraph, Element** pedgeEl
           memEdgeElements *= 2;
         }
         while (edge >= memEdgeElements);
-        TU_CALL( TUreallocBlockArray(tu, pedgeElements, memEdgeElements) );
+        CMR_CALL( CMRreallocBlockArray(cmr, pedgeElements, memEdgeElements) );
       }
 
       (*pedgeElements)[edge] = element;
     }
   }
 
-  TU_CALL( TUhashtableFree(tu, &nodeNames) );
+  CMR_CALL( CMRhashtableFree(cmr, &nodeNames) );
   free(line);
 
   return CMR_OKAY;

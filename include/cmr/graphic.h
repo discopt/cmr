@@ -1,5 +1,5 @@
-#ifndef TU_GRAPHIC_H
-#define TU_GRAPHIC_H
+#ifndef CMR_GRAPHIC_H
+#define CMR_GRAPHIC_H
 
 #include <cmr/env.h>
 #include <cmr/element.h>
@@ -35,15 +35,15 @@ extern "C" {
  */
 
 CMR_EXPORT
-CMR_ERROR TUcomputeGraphBinaryRepresentationMatrix(
-  TU* tu,                       /**< \ref TU environment. */
-  TU_GRAPH* graph,              /**< Graph \f$ G \f$. */
-  TU_CHRMAT** pmatrix,          /**< Pointer for storing \f$ M \f$ (may be \c NULL). */
-  TU_CHRMAT** ptranspose,       /**< Pointer for storing \f$ M^{\mathsf{T}} \f$ (may be \c NULL). */
+CMR_ERROR CMRcomputeGraphBinaryRepresentationMatrix(
+  CMR* cmr,                       /**< \ref CMR environment. */
+  CMR_GRAPH* graph,              /**< Graph \f$ G \f$. */
+  CMR_CHRMAT** pmatrix,          /**< Pointer for storing \f$ M \f$ (may be \c NULL). */
+  CMR_CHRMAT** ptranspose,       /**< Pointer for storing \f$ M^{\mathsf{T}} \f$ (may be \c NULL). */
   int numForestEdges,           /**< Length of \p forestEdges (0 if \c forestEdges is \c NULL). */
-  TU_GRAPH_EDGE* forestEdges,   /**< If not \c NULL, spanning forest edges as rows in this order. */
+  CMR_GRAPH_EDGE* forestEdges,   /**< If not \c NULL, spanning forest edges as rows in this order. */
   int numCoforestEdges,         /**< Length of \p coforestEdges (0 if \c coforestEdges is \c NULL). */
-  TU_GRAPH_EDGE* coforestEdges, /**< If not \c NULL, complement of forest edges as columns in this order. */
+  CMR_GRAPH_EDGE* coforestEdges, /**< If not \c NULL, complement of forest edges as columns in this order. */
   bool* pisCorrectForest        /**< Pointer for storing whether \c forestEdges is a spanning forest of \f$ G \f$ (may be \c NULL). */
 );
 
@@ -66,17 +66,17 @@ CMR_ERROR TUcomputeGraphBinaryRepresentationMatrix(
  */
 
 CMR_EXPORT
-CMR_ERROR TUcomputeGraphTernaryRepresentationMatrix(
-  TU* tu,                       /**< \ref TU environment. */
-  TU_GRAPH* graph,              /**< \ref Graph \f$ G \f$. */
-  TU_CHRMAT** pmatrix,          /**< Pointer for storing \f$ M \f$ (may be \c NULL). */
-  TU_CHRMAT** ptranspose,       /**< Pointer for storing \f$ M^{\mathsf{T}} \f$ (may be \c NULL). */
+CMR_ERROR CMRcomputeGraphTernaryRepresentationMatrix(
+  CMR* cmr,                       /**< \ref CMR environment. */
+  CMR_GRAPH* graph,              /**< \ref Graph \f$ G \f$. */
+  CMR_CHRMAT** pmatrix,          /**< Pointer for storing \f$ M \f$ (may be \c NULL). */
+  CMR_CHRMAT** ptranspose,       /**< Pointer for storing \f$ M^{\mathsf{T}} \f$ (may be \c NULL). */
   bool* edgesReversed,          /**< Indicates, for each edge \f$ \{u, v\}\f$, whether we consider \f$ (u, v)\f$  (if \c false) */
                                 /**< or \f$ (v,u)\f$  (if \c true). */
   int numForestEdges,           /**< Length of \p forestEdges (0 if \c forestEdges is \c NULL). */
-  TU_GRAPH_EDGE* forestEdges,   /**< If not \c NULL, spanning forest edges as rows in this order. */
+  CMR_GRAPH_EDGE* forestEdges,   /**< If not \c NULL, spanning forest edges as rows in this order. */
   int numCoforestEdges,         /**< Length of \p coforestEdges (0 if \c coforestEdges is \c NULL). */
-  TU_GRAPH_EDGE* coforestEdges, /**< If not \c NULL, complement of forest edges as columns in this order. */
+  CMR_GRAPH_EDGE* coforestEdges, /**< If not \c NULL, complement of forest edges as columns in this order. */
   bool* pisCorrectForest        /**< Pointer for storing whether \c forestEdges is a spanning forest of \f$ G \f$ (may be \c NULL). */
 );
 
@@ -94,26 +94,26 @@ CMR_ERROR TUcomputeGraphTernaryRepresentationMatrix(
  *
  * If \f$ M \f$ is such a representation matrix and \p pgraph != \c NULL, then one possible graph \f$ G \f$ is
  * computed and stored in *\p pgraph.
- * The caller must release the memory via \ref TUgraphFree.
+ * The caller must release the memory via \ref CMRgraphFree.
  * If in addition to \p pgraph also \p pforestEdges (resp. \p pcoforestEdges) != \c NULL, then a corresponding
  * spanning forest \f$ T \f$ (resp.\ its complement \f$ E \setminus T \f$ is stored in *\p pforestEdges (resp.
  * \p pcoforestEdges).
- * The caller must release the memory via \ref TUfreeBlockArray.
+ * The caller must release the memory via \ref CMRfreeBlockArray.
  *
  * If \f$ M \f$ is not such a representation matrix and \p psubmatrix != \c NULL, then a minimal submatrix of
  * \f$ M \f$ with the same property is computed and stored in *\p psubmatrix.
- * The caller must release the memory via \ref TUsubmatFree.
+ * The caller must release the memory via \ref CMRsubmatFree.
  */
 
 CMR_EXPORT
-CMR_ERROR TUtestBinaryGraphic(
-  TU* tu,                         /**< \ref TU environment. */
-  TU_CHRMAT* transpose,           /**< \f$ M^{\mathsf{T}} \f$ */
+CMR_ERROR CMRtestBinaryGraphic(
+  CMR* cmr,                         /**< \ref CMR environment. */
+  CMR_CHRMAT* transpose,           /**< \f$ M^{\mathsf{T}} \f$ */
   bool* pisGraphic,               /**< Returns true if and only if the matrix is graphic. */
-  TU_GRAPH** pgraph,              /**< Pointer for storing \ref Graph \f$ G \f$ (if graphic). */
-  TU_GRAPH_EDGE** pforestEdges,   /**< Pointer for storing \f$ T \f$ (if graphic).  */
-  TU_GRAPH_EDGE** pcoforestEdges, /**< Pointer for storing \f$ E \setminus T \f$ (if graphic). */
-  TU_SUBMAT** psubmatrix          /**< Pointer for storing a minimal nongraphic submatrix (if nongraphic). */
+  CMR_GRAPH** pgraph,              /**< Pointer for storing \ref Graph \f$ G \f$ (if graphic). */
+  CMR_GRAPH_EDGE** pforestEdges,   /**< Pointer for storing \f$ T \f$ (if graphic).  */
+  CMR_GRAPH_EDGE** pcoforestEdges, /**< Pointer for storing \f$ E \setminus T \f$ (if graphic). */
+  CMR_SUBMAT** psubmatrix          /**< Pointer for storing a minimal nongraphic submatrix (if nongraphic). */
 );
 
 /**
@@ -130,27 +130,27 @@ CMR_ERROR TUtestBinaryGraphic(
  *
  * If \f$ M \f$ is such a representation matrix and \p pgraph != \c NULL, then one possible graph \f$ G \f$ is
  * computed and stored in *\p pgraph.
- * The caller must release the memory via \ref TUgraphFree.
+ * The caller must release the memory via \ref CMRgraphFree.
  * If in addition to \p pgraph also \p pforestEdges (resp. \p pcoforestEdges) != \c NULL, then a corresponding
  * spanning forest \f$ T \f$ (resp.\ its complement \f$ E \setminus T \f$ is stored in *\p pforestEdges (resp.
  * \p pcoforestEdges).
- * The caller must release the memory via \ref TUfreeBlockArray.
+ * The caller must release the memory via \ref CMRfreeBlockArray.
  *
  * If \f$ M \f$ is not such a representation matrix and \p psubmatrix != \c NULL, then a minimal submatrix of
  * \f$ M \f$ with the same property is computed and stored in *\p psubmatrix.
- * The caller must release the memory via \ref TUsubmatFree.
+ * The caller must release the memory via \ref CMRsubmatFree.
  */
 
 CMR_EXPORT
-CMR_ERROR TUtestTernaryGraphic(
-  TU* tu,                         /**< \ref TU environment. */
-  TU_CHRMAT* transpose,           /**< \f$ M^{\mathsf{T}} \f$ */
+CMR_ERROR CMRtestTernaryGraphic(
+  CMR* cmr,                         /**< \ref CMR environment. */
+  CMR_CHRMAT* transpose,           /**< \f$ M^{\mathsf{T}} \f$ */
   bool* pisGraphic,               /**< Returns true if and only if the matrix is graphic. */
-  TU_GRAPH** pgraph,              /**< Pointer for storing \ref Graph \f$ G \f$ (if graphic). */
-  TU_GRAPH_EDGE** pforestEdges,   /**< Pointer for storing \f$ T \f$ (if graphic).  */
-  TU_GRAPH_EDGE** pcoforestEdges, /**< Pointer for storing \f$ E \setminus T \f$ (if graphic). */
+  CMR_GRAPH** pgraph,              /**< Pointer for storing \ref Graph \f$ G \f$ (if graphic). */
+  CMR_GRAPH_EDGE** pforestEdges,   /**< Pointer for storing \f$ T \f$ (if graphic).  */
+  CMR_GRAPH_EDGE** pcoforestEdges, /**< Pointer for storing \f$ E \setminus T \f$ (if graphic). */
   bool** pedgesReversed,          /**< Pointer for storing indicators which edges are reversed for the correct sign. */
-  TU_SUBMAT** psubmatrix          /**< Pointer for storing a minimal nongraphic submatrix (if nongraphic). */
+  CMR_SUBMAT** psubmatrix          /**< Pointer for storing a minimal nongraphic submatrix (if nongraphic). */
 );
 
 /**
@@ -167,11 +167,11 @@ CMR_ERROR TUtestTernaryGraphic(
  */
 
 CMR_EXPORT
-CMR_ERROR TUtestBinaryGraphicColumnSubmatrixGreedy(
-  TU* tu,                 /**< \ref TU environment. */
-  TU_CHRMAT* transpose,   /**< \f$ M^{\mathsf{T}} \f$ */
+CMR_ERROR CMRtestBinaryGraphicColumnSubmatrixGreedy(
+  CMR* cmr,                 /**< \ref CMR environment. */
+  CMR_CHRMAT* transpose,   /**< \f$ M^{\mathsf{T}} \f$ */
   size_t* orderedColumns, /**< Permutation of column indices of \f$ M \f$. */
-  TU_SUBMAT** psubmatrix  /**< Pointer for storing the submatrix. */
+  CMR_SUBMAT** psubmatrix  /**< Pointer for storing the submatrix. */
 );
 
 /**@}*/
@@ -180,4 +180,4 @@ CMR_ERROR TUtestBinaryGraphicColumnSubmatrixGreedy(
 }
 #endif
 
-#endif /* TU_GRAPHIC_H */
+#endif /* CMR_GRAPHIC_H */

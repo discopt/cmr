@@ -5,9 +5,9 @@
 
 #include <stdio.h>
 
-CMR_ERROR stringToDoubleMatrix(TU* tu, TU_DBLMAT** matrix, const char* string)
+CMR_ERROR stringToDoubleMatrix(CMR* cmr, CMR_DBLMAT** matrix, const char* string)
 {
-  assert(tu);
+  assert(cmr);
   char* end;
   int numRows, numColumns;
 
@@ -19,7 +19,7 @@ CMR_ERROR stringToDoubleMatrix(TU* tu, TU_DBLMAT** matrix, const char* string)
   assert(end > string);
   string = end;
 
-  TUdblmatCreate(tu, matrix, numRows, numColumns, numRows * numColumns);
+  CMRdblmatCreate(cmr, matrix, numRows, numColumns, numRows * numColumns);
 
   (*matrix)->numNonzeros = 0;
   for (int row = 0; row < (*matrix)->numRows; ++row)
@@ -43,9 +43,9 @@ CMR_ERROR stringToDoubleMatrix(TU* tu, TU_DBLMAT** matrix, const char* string)
   return CMR_OKAY;
 }
 
-CMR_ERROR stringToIntMatrix(TU* tu, TU_INTMAT** matrix, const char* string)
+CMR_ERROR stringToIntMatrix(CMR* cmr, CMR_INTMAT** matrix, const char* string)
 {
-  assert(tu);
+  assert(cmr);
   char* end;
   int numRows, numColumns;
 
@@ -57,7 +57,7 @@ CMR_ERROR stringToIntMatrix(TU* tu, TU_INTMAT** matrix, const char* string)
   assert(end > string);
   string = end;
 
-  TUintmatCreate(tu, matrix, numRows, numColumns, numRows * numColumns);
+  CMRintmatCreate(cmr, matrix, numRows, numColumns, numRows * numColumns);
 
   (*matrix)->numNonzeros = 0;
   for (int row = 0; row < (*matrix)->numRows; ++row)
@@ -81,9 +81,9 @@ CMR_ERROR stringToIntMatrix(TU* tu, TU_INTMAT** matrix, const char* string)
   return CMR_OKAY;
 }
 
-CMR_ERROR stringToCharMatrix(TU* tu, TU_CHRMAT** matrix, const char* string)
+CMR_ERROR stringToCharMatrix(CMR* cmr, CMR_CHRMAT** matrix, const char* string)
 {
-  assert(tu);
+  assert(cmr);
   char* end;
   int numRows, numColumns;
 
@@ -95,7 +95,7 @@ CMR_ERROR stringToCharMatrix(TU* tu, TU_CHRMAT** matrix, const char* string)
   assert(end > string);
   string = end;
 
-  TU_CALL( TUchrmatCreate(tu, matrix, numRows, numColumns, numRows * numColumns) );
+  CMR_CALL( CMRchrmatCreate(cmr, matrix, numRows, numColumns, numRows * numColumns) );
 
   (*matrix)->numNonzeros = 0;
   for (int row = 0; row < (*matrix)->numRows; ++row)

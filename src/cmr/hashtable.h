@@ -1,5 +1,5 @@
-#ifndef TU_HASHTABLE_INTERNAL_H
-#define TU_HASHTABLE_INTERNAL_H
+#ifndef CMR_HASHTABLE_INTERNAL_H
+#define CMR_HASHTABLE_INTERNAL_H
 
 #include "env_internal.h"
 
@@ -7,54 +7,54 @@
 extern "C" {
 #endif
 
-typedef struct _TU_HASHTABLE TU_HASHTABLE;
-typedef size_t TU_HASHTABLE_ENTRY;
-typedef size_t TU_HASHTABLE_HASH;
+typedef struct _CMR_HASHTABLE CMR_HASHTABLE;
+typedef size_t CMR_HASHTABLE_ENTRY;
+typedef size_t CMR_HASHTABLE_HASH;
 
-CMR_ERROR TUhashtableCreate(
-  TU* tu,                     /**< \ref TU environment. */
-  TU_HASHTABLE** phashtable,  /**< Pointer for storing the hash table. */
+CMR_ERROR CMRhashtableCreate(
+  CMR* cmr,                     /**< \ref CMR environment. */
+  CMR_HASHTABLE** phashtable,  /**< Pointer for storing the hash table. */
   size_t initialSize,         /**< Initial size of hash table. */
   size_t initialKeyMemory     /**< Initial memory for keys. */  
 );
 
-CMR_ERROR TUhashtableFree(
-  TU* tu,                   /**< \ref TU environment. */
-  TU_HASHTABLE** phashtable /**< Pointer to the hash table. */
+CMR_ERROR CMRhashtableFree(
+  CMR* cmr,                   /**< \ref CMR environment. */
+  CMR_HASHTABLE** phashtable /**< Pointer to the hash table. */
 );
 
-bool TUhashtableFind(
-  TU_HASHTABLE* hashtable,    /**< Hash table. */
+bool CMRhashtableFind(
+  CMR_HASHTABLE* hashtable,    /**< Hash table. */
   const void* keyArray,             /**< First byte of key array. */
   size_t keyLength,           /**< Length of key array in bytes. */
-  TU_HASHTABLE_ENTRY* pentry, /**< Pointer for storing the entry in the hash table. */
-  TU_HASHTABLE_HASH* phash    /**< Pointer for storing the entry in the hash table. */
+  CMR_HASHTABLE_ENTRY* pentry, /**< Pointer for storing the entry in the hash table. */
+  CMR_HASHTABLE_HASH* phash    /**< Pointer for storing the entry in the hash table. */
 );
 
-const void* TUhashtableKey(
-  TU_HASHTABLE* hashtable,  /**< Hash table. */
-  TU_HASHTABLE_ENTRY entry, /**< Entry. */
+const void* CMRhashtableKey(
+  CMR_HASHTABLE* hashtable,  /**< Hash table. */
+  CMR_HASHTABLE_ENTRY entry, /**< Entry. */
   size_t* pKeyLength        /**< Length of key array. */
 );
 
-const void* TUhashtableValue(
-  TU_HASHTABLE* hashtable,  /**< Hash table. */
-  TU_HASHTABLE_ENTRY entry  /**< Entry. */
+const void* CMRhashtableValue(
+  CMR_HASHTABLE* hashtable,  /**< Hash table. */
+  CMR_HASHTABLE_ENTRY entry  /**< Entry. */
 );
 
-CMR_ERROR TUhashtableInsertEntryHash(
-  TU* tu,                   /**< \ref TU environment. */
-  TU_HASHTABLE* hashtable,  /**< Hash table. */
+CMR_ERROR CMRhashtableInsertEntryHash(
+  CMR* cmr,                   /**< \ref CMR environment. */
+  CMR_HASHTABLE* hashtable,  /**< Hash table. */
   const void* keyArray,           /**< First byte of key array. */
   size_t keyLength,         /**< Length of key array. */
-  TU_HASHTABLE_ENTRY entry, /**< Known entry of key, determined by \ref TUhashtableFind. */
-  TU_HASHTABLE_HASH hash,   /**< Known hash of key, determined by \ref TUhashtableFind. */
+  CMR_HASHTABLE_ENTRY entry, /**< Known entry of key, determined by \ref CMRhashtableFind. */
+  CMR_HASHTABLE_HASH hash,   /**< Known hash of key, determined by \ref CMRhashtableFind. */
   const void* value               /**< Value to be set. */
 );
 
-CMR_ERROR TUhashtableInsert(
-  TU* tu,                   /**< \ref TU environment. */
-  TU_HASHTABLE* hashtable,  /**< Hash table. */
+CMR_ERROR CMRhashtableInsert(
+  CMR* cmr,                   /**< \ref CMR environment. */
+  CMR_HASHTABLE* hashtable,  /**< Hash table. */
   const void* keyArray,           /**< First byte of key array. */
   size_t keyLength,         /**< Length of key array. */
   const void* value               /**< Value to be set. */
@@ -67,4 +67,4 @@ CMR_ERROR TUhashtableInsert(
 }
 #endif
 
-#endif /* TU_HASHTABLE_INTERNAL_H */
+#endif /* CMR_HASHTABLE_INTERNAL_H */

@@ -1,5 +1,5 @@
-#ifndef TU_MATRIX_INTERNAL_H
-#define TU_MATRIX_INTERNAL_H
+#ifndef CMR_MATRIX_INTERNAL_H
+#define CMR_MATRIX_INTERNAL_H
 
 #include <cmr/matrix.h>
 
@@ -42,14 +42,14 @@ typedef struct
    * \brief Array mapping each entry to its value
    */
   void* entryValues;
-} TU_MATRIX;
+} CMR_MATRIX;
 
 /**
  * \brief Sorts the row and column indices of \p submatrix.
  */
 
-CMR_ERROR TUsortSubmatrix(
-  TU_SUBMAT* submatrix /**< The submatrix. */
+CMR_ERROR CMRsortSubmatrix(
+  CMR_SUBMAT* submatrix /**< The submatrix. */
 );
 
 #ifdef __cplusplus
@@ -299,4 +299,4 @@ namespace tu
 
 #endif /* __cplusplus */
 
-#endif /* TU_MATRIX_INTERNAL_H */
+#endif /* CMR_MATRIX_INTERNAL_H */

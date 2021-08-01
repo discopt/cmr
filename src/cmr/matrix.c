@@ -8,30 +8,30 @@
 #include "sort.h"
 #include "env_internal.h"
 
-CMR_ERROR TUdblmatCreate(TU* tu, TU_DBLMAT** matrix, int numRows, int numColumns,
+CMR_ERROR CMRdblmatCreate(CMR* cmr, CMR_DBLMAT** matrix, int numRows, int numColumns,
   int numNonzeros)
 {
   assert(matrix);
   assert(*matrix == NULL);
 
-  TU_CALL( TUallocBlock(tu, matrix) );
+  CMR_CALL( CMRallocBlock(cmr, matrix) );
   (*matrix)->numRows = numRows;
   (*matrix)->numColumns = numColumns;
   (*matrix)->numNonzeros = numNonzeros;
   (*matrix)->rowStarts = NULL;
   (*matrix)->entryColumns = NULL;
   (*matrix)->entryValues = NULL;
-  TU_CALL( TUallocBlockArray(tu, &(*matrix)->rowStarts, numRows + 1) );
+  CMR_CALL( CMRallocBlockArray(cmr, &(*matrix)->rowStarts, numRows + 1) );
   if (numNonzeros > 0)
   {
-    TU_CALL( TUallocBlockArray(tu, &(*matrix)->entryColumns, numNonzeros) );
-    TU_CALL( TUallocBlockArray(tu, &(*matrix)->entryValues, numNonzeros) );
+    CMR_CALL( CMRallocBlockArray(cmr, &(*matrix)->entryColumns, numNonzeros) );
+    CMR_CALL( CMRallocBlockArray(cmr, &(*matrix)->entryValues, numNonzeros) );
   }
 
   return CMR_OKAY;
 }
 
-CMR_ERROR TUdblmatFree(TU* tu, TU_DBLMAT** matrix)
+CMR_ERROR CMRdblmatFree(CMR* cmr, CMR_DBLMAT** matrix)
 {
   assert(matrix);
   assert(*matrix);
@@ -39,37 +39,37 @@ CMR_ERROR TUdblmatFree(TU* tu, TU_DBLMAT** matrix)
   assert((*matrix)->numNonzeros == 0 || (*matrix)->entryColumns);
   assert((*matrix)->numNonzeros == 0 || (*matrix)->entryValues);
 
-  TU_CALL( TUfreeBlockArray(tu, &(*matrix)->rowStarts) );
+  CMR_CALL( CMRfreeBlockArray(cmr, &(*matrix)->rowStarts) );
   if ((*matrix)->numNonzeros > 0)
   {
-    TU_CALL( TUfreeBlockArray(tu, &(*matrix)->entryColumns) );
-    TU_CALL( TUfreeBlockArray(tu, &(*matrix)->entryValues) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &(*matrix)->entryColumns) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &(*matrix)->entryValues) );
   }
-  TU_CALL( TUfreeBlock(tu, matrix) );
+  CMR_CALL( CMRfreeBlock(cmr, matrix) );
 
   return CMR_OKAY;
 }
 
-CMR_ERROR TUdblmatChangeNumNonzeros(TU* tu, TU_DBLMAT* matrix, int newNumNonzeros)
+CMR_ERROR CMRdblmatChangeNumNonzeros(CMR* cmr, CMR_DBLMAT* matrix, int newNumNonzeros)
 {
-  assert(tu);
+  assert(cmr);
   assert(matrix);
 
-  TU_CALL( TUreallocBlockArray(tu, &matrix->entryColumns, newNumNonzeros) );
-  TU_CALL( TUreallocBlockArray(tu, &matrix->entryValues, newNumNonzeros) );
+  CMR_CALL( CMRreallocBlockArray(cmr, &matrix->entryColumns, newNumNonzeros) );
+  CMR_CALL( CMRreallocBlockArray(cmr, &matrix->entryValues, newNumNonzeros) );
   matrix->numNonzeros = newNumNonzeros;
 
   return CMR_OKAY;
 }
 
-CMR_ERROR TUdblmatCopy(TU* tu, TU_DBLMAT* matrix, TU_DBLMAT** result)
+CMR_ERROR CMRdblmatCopy(CMR* cmr, CMR_DBLMAT* matrix, CMR_DBLMAT** result)
 {
-  assert(tu);
+  assert(cmr);
   assert(matrix);
   assert(result);
   assert(*result == NULL);
 
-  TU_CALL( TUdblmatCreate(tu, result, matrix->numRows, matrix->numColumns, matrix->numNonzeros) );
+  CMR_CALL( CMRdblmatCreate(cmr, result, matrix->numRows, matrix->numColumns, matrix->numNonzeros) );
   for (int row = 0; row < matrix->numRows; ++row)
     (*result)->rowStarts[row] = matrix->rowStarts[row];
   (*result)->rowStarts[matrix->numRows] = matrix->numNonzeros;
@@ -82,15 +82,15 @@ CMR_ERROR TUdblmatCopy(TU* tu, TU_DBLMAT* matrix, TU_DBLMAT** result)
   return CMR_OKAY;
 }
 
-CMR_ERROR TUdblmatTranspose(TU* tu, TU_DBLMAT* matrix, TU_DBLMAT** result)
+CMR_ERROR CMRdblmatTranspose(CMR* cmr, CMR_DBLMAT* matrix, CMR_DBLMAT** result)
 {
-  assert(tu);
+  assert(cmr);
   assert(matrix);
   assert(result);
   assert(*result == NULL);
-  assert(TUdblmatCheckSorted(matrix));
+  assert(CMRdblmatCheckSorted(matrix));
 
-  TU_CALL( TUdblmatCreate(tu, result, matrix->numColumns, matrix->numRows, matrix->numNonzeros) );
+  CMR_CALL( CMRdblmatCreate(cmr, result, matrix->numColumns, matrix->numRows, matrix->numNonzeros) );
 
   /* Count number of nonzeros in each column, storing in the next entry. */
   for (int c = 0; c <= matrix->numColumns; ++c)
@@ -125,29 +125,29 @@ CMR_ERROR TUdblmatTranspose(TU* tu, TU_DBLMAT* matrix, TU_DBLMAT** result)
   return CMR_OKAY;
 }
 
-CMR_ERROR TUintmatCreate(TU* tu, TU_INTMAT** matrix, int numRows, int numColumns, int numNonzeros)
+CMR_ERROR CMRintmatCreate(CMR* cmr, CMR_INTMAT** matrix, int numRows, int numColumns, int numNonzeros)
 {
   assert(matrix);
   assert(*matrix == NULL);
 
-  TU_CALL( TUallocBlock(tu, matrix) );
+  CMR_CALL( CMRallocBlock(cmr, matrix) );
   (*matrix)->numRows = numRows;
   (*matrix)->numColumns = numColumns;
   (*matrix)->numNonzeros = numNonzeros;
   (*matrix)->rowStarts = NULL;
   (*matrix)->entryColumns = NULL;
   (*matrix)->entryValues = NULL;
-  TU_CALL( TUallocBlockArray(tu, &(*matrix)->rowStarts, numRows + 1) );
+  CMR_CALL( CMRallocBlockArray(cmr, &(*matrix)->rowStarts, numRows + 1) );
   if (numNonzeros > 0)
   {
-    TU_CALL( TUallocBlockArray(tu, &(*matrix)->entryColumns, numNonzeros) );
-    TU_CALL( TUallocBlockArray(tu, &(*matrix)->entryValues, numNonzeros) );
+    CMR_CALL( CMRallocBlockArray(cmr, &(*matrix)->entryColumns, numNonzeros) );
+    CMR_CALL( CMRallocBlockArray(cmr, &(*matrix)->entryValues, numNonzeros) );
   }
 
   return CMR_OKAY;
 }
 
-CMR_ERROR TUintmatFree(TU* tu, TU_INTMAT** matrix)
+CMR_ERROR CMRintmatFree(CMR* cmr, CMR_INTMAT** matrix)
 {
   assert(matrix);
   assert(*matrix);
@@ -155,37 +155,37 @@ CMR_ERROR TUintmatFree(TU* tu, TU_INTMAT** matrix)
   assert((*matrix)->numNonzeros == 0 || (*matrix)->entryColumns);
   assert((*matrix)->numNonzeros == 0 || (*matrix)->entryValues);
 
-  TU_CALL( TUfreeBlockArray(tu, &(*matrix)->rowStarts) );
+  CMR_CALL( CMRfreeBlockArray(cmr, &(*matrix)->rowStarts) );
   if ((*matrix)->numNonzeros > 0)
   {
-    TU_CALL( TUfreeBlockArray(tu, &(*matrix)->entryColumns) );
-    TU_CALL( TUfreeBlockArray(tu, &(*matrix)->entryValues) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &(*matrix)->entryColumns) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &(*matrix)->entryValues) );
   }
-  TU_CALL( TUfreeBlock(tu, matrix) );
+  CMR_CALL( CMRfreeBlock(cmr, matrix) );
 
   return CMR_OKAY;
 }
 
-CMR_ERROR TUintmatChangeNumNonzeros(TU* tu, TU_INTMAT* matrix, int newNumNonzeros)
+CMR_ERROR CMRintmatChangeNumNonzeros(CMR* cmr, CMR_INTMAT* matrix, int newNumNonzeros)
 {
-  assert(tu);
+  assert(cmr);
   assert(matrix);
 
-  TU_CALL( TUreallocBlockArray(tu, &matrix->entryColumns, newNumNonzeros) );
-  TU_CALL( TUreallocBlockArray(tu, &matrix->entryValues, newNumNonzeros) );
+  CMR_CALL( CMRreallocBlockArray(cmr, &matrix->entryColumns, newNumNonzeros) );
+  CMR_CALL( CMRreallocBlockArray(cmr, &matrix->entryValues, newNumNonzeros) );
   matrix->numNonzeros = newNumNonzeros;
 
   return CMR_OKAY;
 }
 
-CMR_ERROR TUintmatCopy(TU* tu, TU_INTMAT* matrix, TU_INTMAT** result)
+CMR_ERROR CMRintmatCopy(CMR* cmr, CMR_INTMAT* matrix, CMR_INTMAT** result)
 {
-  assert(tu);
+  assert(cmr);
   assert(matrix);
   assert(result);
   assert(*result == NULL);
 
-  TU_CALL( TUintmatCreate(tu, result, matrix->numRows, matrix->numColumns, matrix->numNonzeros) );
+  CMR_CALL( CMRintmatCreate(cmr, result, matrix->numRows, matrix->numColumns, matrix->numNonzeros) );
   for (int row = 0; row < matrix->numRows; ++row)
     (*result)->rowStarts[row] = matrix->rowStarts[row];
   (*result)->rowStarts[matrix->numRows] = matrix->numNonzeros;
@@ -198,15 +198,15 @@ CMR_ERROR TUintmatCopy(TU* tu, TU_INTMAT* matrix, TU_INTMAT** result)
   return CMR_OKAY;
 }
 
-CMR_ERROR TUintmatTranspose(TU* tu, TU_INTMAT* matrix, TU_INTMAT** result)
+CMR_ERROR CMRintmatTranspose(CMR* cmr, CMR_INTMAT* matrix, CMR_INTMAT** result)
 {
-  assert(tu);
+  assert(cmr);
   assert(matrix);
   assert(result);
   assert(*result == NULL);
-  assert(TUintmatCheckSorted(matrix));
+  assert(CMRintmatCheckSorted(matrix));
 
-  TU_CALL( TUintmatCreate(tu, result, matrix->numColumns, matrix->numRows, matrix->numNonzeros) );
+  CMR_CALL( CMRintmatCreate(cmr, result, matrix->numColumns, matrix->numRows, matrix->numNonzeros) );
 
   /* Count number of nonzeros in each column, storing in the next entry. */
   for (int c = 0; c <= matrix->numColumns; ++c)
@@ -241,29 +241,29 @@ CMR_ERROR TUintmatTranspose(TU* tu, TU_INTMAT* matrix, TU_INTMAT** result)
   return CMR_OKAY;
 }
 
-CMR_ERROR TUchrmatCreate(TU* tu, TU_CHRMAT** matrix, int numRows, int numColumns, int numNonzeros)
+CMR_ERROR CMRchrmatCreate(CMR* cmr, CMR_CHRMAT** matrix, int numRows, int numColumns, int numNonzeros)
 {
   assert(matrix);
   assert(*matrix == NULL);
 
-  TU_CALL( TUallocBlock(tu, matrix) );
+  CMR_CALL( CMRallocBlock(cmr, matrix) );
   (*matrix)->numRows = numRows;
   (*matrix)->numColumns = numColumns;
   (*matrix)->numNonzeros = numNonzeros;
   (*matrix)->rowStarts = NULL;
   (*matrix)->entryColumns = NULL;
   (*matrix)->entryValues = NULL;
-  TU_CALL( TUallocBlockArray(tu, &(*matrix)->rowStarts, numRows + 1) );
+  CMR_CALL( CMRallocBlockArray(cmr, &(*matrix)->rowStarts, numRows + 1) );
   if (numNonzeros > 0)
   {
-    TU_CALL( TUallocBlockArray(tu, &(*matrix)->entryColumns, numNonzeros) );
-    TU_CALL( TUallocBlockArray(tu, &(*matrix)->entryValues, numNonzeros) );
+    CMR_CALL( CMRallocBlockArray(cmr, &(*matrix)->entryColumns, numNonzeros) );
+    CMR_CALL( CMRallocBlockArray(cmr, &(*matrix)->entryValues, numNonzeros) );
   }
 
   return CMR_OKAY;
 }
 
-CMR_ERROR TUchrmatFree(TU* tu, TU_CHRMAT** matrix)
+CMR_ERROR CMRchrmatFree(CMR* cmr, CMR_CHRMAT** matrix)
 {
   assert(matrix);
   assert(*matrix);
@@ -271,37 +271,37 @@ CMR_ERROR TUchrmatFree(TU* tu, TU_CHRMAT** matrix)
   assert((*matrix)->numNonzeros == 0 || (*matrix)->entryColumns);
   assert((*matrix)->numNonzeros == 0 || (*matrix)->entryValues);
 
-  TU_CALL( TUfreeBlockArray(tu, &(*matrix)->rowStarts) );
+  CMR_CALL( CMRfreeBlockArray(cmr, &(*matrix)->rowStarts) );
   if ((*matrix)->numNonzeros > 0)
   {
-    TU_CALL( TUfreeBlockArray(tu, &(*matrix)->entryColumns) );
-    TU_CALL( TUfreeBlockArray(tu, &(*matrix)->entryValues) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &(*matrix)->entryColumns) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &(*matrix)->entryValues) );
   }
-  TU_CALL( TUfreeBlock(tu, matrix) );
+  CMR_CALL( CMRfreeBlock(cmr, matrix) );
 
   return CMR_OKAY;
 }
 
-CMR_ERROR TUchrmatChangeNumNonzeros(TU* tu, TU_CHRMAT* matrix, int newNumNonzeros)
+CMR_ERROR CMRchrmatChangeNumNonzeros(CMR* cmr, CMR_CHRMAT* matrix, int newNumNonzeros)
 {
-  assert(tu);
+  assert(cmr);
   assert(matrix);
 
-  TU_CALL( TUreallocBlockArray(tu, &matrix->entryColumns, newNumNonzeros) );
-  TU_CALL( TUreallocBlockArray(tu, &matrix->entryValues, newNumNonzeros) );
+  CMR_CALL( CMRreallocBlockArray(cmr, &matrix->entryColumns, newNumNonzeros) );
+  CMR_CALL( CMRreallocBlockArray(cmr, &matrix->entryValues, newNumNonzeros) );
   matrix->numNonzeros = newNumNonzeros;
 
   return CMR_OKAY;
 }
 
-CMR_ERROR TUchrmatCopy(TU* tu, TU_CHRMAT* matrix, TU_CHRMAT** result)
+CMR_ERROR CMRchrmatCopy(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT** result)
 {
-  assert(tu);
+  assert(cmr);
   assert(matrix);
   assert(result);
   assert(*result == NULL);
 
-  TU_CALL( TUchrmatCreate(tu, result, matrix->numRows, matrix->numColumns, matrix->numNonzeros) );
+  CMR_CALL( CMRchrmatCreate(cmr, result, matrix->numRows, matrix->numColumns, matrix->numNonzeros) );
   for (int row = 0; row < matrix->numRows; ++row)
     (*result)->rowStarts[row] = matrix->rowStarts[row];
   (*result)->rowStarts[matrix->numRows] = matrix->numNonzeros;
@@ -315,15 +315,15 @@ CMR_ERROR TUchrmatCopy(TU* tu, TU_CHRMAT* matrix, TU_CHRMAT** result)
 }
 
 
-CMR_ERROR TUchrmatTranspose(TU* tu, TU_CHRMAT* matrix, TU_CHRMAT** result)
+CMR_ERROR CMRchrmatTranspose(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT** result)
 {
-  assert(tu);
+  assert(cmr);
   assert(matrix);
   assert(result);
   assert(*result == NULL);
-  assert(TUchrmatCheckSorted(matrix));
+  assert(CMRchrmatCheckSorted(matrix));
 
-  TU_CALL( TUchrmatCreate(tu, result, matrix->numColumns, matrix->numRows, matrix->numNonzeros) );
+  CMR_CALL( CMRchrmatCreate(cmr, result, matrix->numColumns, matrix->numRows, matrix->numNonzeros) );
 
   /* Count number of nonzeros in each column, storing in the next entry. */
   for (int c = 0; c <= matrix->numColumns; ++c)
@@ -358,7 +358,7 @@ CMR_ERROR TUchrmatTranspose(TU* tu, TU_CHRMAT* matrix, TU_CHRMAT** result)
   return CMR_OKAY;
 }
 
-CMR_ERROR TUdblmatPrintSparse(FILE* stream, TU_DBLMAT* matrix)
+CMR_ERROR CMRdblmatPrintSparse(FILE* stream, CMR_DBLMAT* matrix)
 {
   assert(stream);
   assert(matrix);
@@ -375,7 +375,7 @@ CMR_ERROR TUdblmatPrintSparse(FILE* stream, TU_DBLMAT* matrix)
   return CMR_OKAY;
 }
 
-CMR_ERROR TUintmatPrintSparse(FILE* stream, TU_INTMAT* matrix)
+CMR_ERROR CMRintmatPrintSparse(FILE* stream, CMR_INTMAT* matrix)
 {
   assert(stream);
   assert(matrix);
@@ -392,7 +392,7 @@ CMR_ERROR TUintmatPrintSparse(FILE* stream, TU_INTMAT* matrix)
   return CMR_OKAY;
 }
 
-CMR_ERROR TUchrmatPrintSparse(FILE* stream, TU_CHRMAT* matrix)
+CMR_ERROR CMRchrmatPrintSparse(FILE* stream, CMR_CHRMAT* matrix)
 {
   assert(stream);
   assert(matrix);
@@ -411,7 +411,7 @@ CMR_ERROR TUchrmatPrintSparse(FILE* stream, TU_CHRMAT* matrix)
 
 
 
-CMR_ERROR TUdblmatPrintDense(FILE* stream, TU_DBLMAT* matrix, char zeroChar, bool header)
+CMR_ERROR CMRdblmatPrintDense(FILE* stream, CMR_DBLMAT* matrix, char zeroChar, bool header)
 {
   assert(stream != NULL);
   assert(matrix != NULL);
@@ -454,7 +454,7 @@ CMR_ERROR TUdblmatPrintDense(FILE* stream, TU_DBLMAT* matrix, char zeroChar, boo
   return CMR_OKAY;
 }
 
-CMR_ERROR TUintmatPrintDense(FILE* stream, TU_INTMAT* matrix, char zeroChar, bool header)
+CMR_ERROR CMRintmatPrintDense(FILE* stream, CMR_INTMAT* matrix, char zeroChar, bool header)
 {
   assert(stream != NULL);
   assert(matrix != NULL);
@@ -497,7 +497,7 @@ CMR_ERROR TUintmatPrintDense(FILE* stream, TU_INTMAT* matrix, char zeroChar, boo
   return CMR_OKAY;
 }
 
-CMR_ERROR TUchrmatPrintDense(FILE* stream, TU_CHRMAT* matrix, char zeroChar, bool header)
+CMR_ERROR CMRchrmatPrintDense(FILE* stream, CMR_CHRMAT* matrix, char zeroChar, bool header)
 {
   assert(stream != NULL);
   assert(matrix != NULL);
@@ -561,7 +561,7 @@ int compareDblNonzeros(const void* pa, const void* pb)
   return aColumn - bColumn;
 }
 
-CMR_ERROR TUdblmatCreateFromSparseStream(TU* tu, TU_DBLMAT** pmatrix, FILE* stream)
+CMR_ERROR CMRdblmatCreateFromSparseStream(CMR* cmr, CMR_DBLMAT** pmatrix, FILE* stream)
 {
   assert(pmatrix);
   assert(!*pmatrix);
@@ -575,7 +575,7 @@ CMR_ERROR TUdblmatCreateFromSparseStream(TU* tu, TU_DBLMAT** pmatrix, FILE* stre
   /* Read all nonzeros. */
 
   DblNonzero* nonzeros = NULL;
-  TU_CALL( TUallocStackArray(tu, &nonzeros, numNonzeros) );
+  CMR_CALL( CMRallocStackArray(cmr, &nonzeros, numNonzeros) );
   int entry = 0;
   for (int i = 0; i < numNonzeros; ++i)
   {
@@ -585,7 +585,7 @@ CMR_ERROR TUdblmatCreateFromSparseStream(TU* tu, TU_DBLMAT** pmatrix, FILE* stre
     numRead = fscanf(stream, "%d %d %lf", &row, &column, &value);
     if (numRead < 3 || row < 0 || column < 0 || row >= numRows || column >= numColumns)
     {
-      TU_CALL( TUfreeStackArray(tu, &nonzeros) );
+      CMR_CALL( CMRfreeStackArray(cmr, &nonzeros) );
       return CMR_ERROR_INPUT;
     }
     if (value != 0.0)
@@ -599,9 +599,9 @@ CMR_ERROR TUdblmatCreateFromSparseStream(TU* tu, TU_DBLMAT** pmatrix, FILE* stre
   numNonzeros = entry;
 
   /* We sort all nonzeros by row and then by column. */
-  TU_CALL( TUsort(tu, numNonzeros, nonzeros, sizeof(DblNonzero), compareDblNonzeros) );
+  CMR_CALL( CMRsort(cmr, numNonzeros, nonzeros, sizeof(DblNonzero), compareDblNonzeros) );
 
-  TU_CALL( TUdblmatCreate(tu, pmatrix, numRows, numColumns, numNonzeros) );
+  CMR_CALL( CMRdblmatCreate(cmr, pmatrix, numRows, numColumns, numNonzeros) );
   int previousRow = -1;
   int previousColumn = -1;
   int* pentryColumn = (*pmatrix)->entryColumns;
@@ -612,8 +612,8 @@ CMR_ERROR TUdblmatCreateFromSparseStream(TU* tu, TU_DBLMAT** pmatrix, FILE* stre
     int column = nonzeros[entry].column;
     if (row == previousRow && column == previousColumn)
     {
-      TU_CALL( TUfreeStackArray(tu, &nonzeros) );
-      TU_CALL( TUdblmatFree(tu, pmatrix) );
+      CMR_CALL( CMRfreeStackArray(cmr, &nonzeros) );
+      CMR_CALL( CMRdblmatFree(cmr, pmatrix) );
       return CMR_ERROR_INPUT;
     }
     while (previousRow < row)
@@ -631,7 +631,7 @@ CMR_ERROR TUdblmatCreateFromSparseStream(TU* tu, TU_DBLMAT** pmatrix, FILE* stre
     (*pmatrix)->rowStarts[previousRow] = numNonzeros;
   }
 
-  TU_CALL( TUfreeStackArray(tu, &nonzeros) );
+  CMR_CALL( CMRfreeStackArray(cmr, &nonzeros) );
 
   return CMR_OKAY;
 }
@@ -657,7 +657,7 @@ int compareIntNonzeros(const void* pa, const void* pb)
   return aColumn - bColumn;
 }
 
-CMR_ERROR TUintmatCreateFromSparseStream(TU* tu, TU_INTMAT** pmatrix, FILE* stream)
+CMR_ERROR CMRintmatCreateFromSparseStream(CMR* cmr, CMR_INTMAT** pmatrix, FILE* stream)
 {
   assert(pmatrix);
   assert(!*pmatrix);
@@ -671,7 +671,7 @@ CMR_ERROR TUintmatCreateFromSparseStream(TU* tu, TU_INTMAT** pmatrix, FILE* stre
   /* Read all nonzeros. */
 
   IntNonzero* nonzeros = NULL;
-  TU_CALL( TUallocStackArray(tu, &nonzeros, numNonzeros) );
+  CMR_CALL( CMRallocStackArray(cmr, &nonzeros, numNonzeros) );
   int entry = 0;
   for (int i = 0; i < numNonzeros; ++i)
   {
@@ -681,7 +681,7 @@ CMR_ERROR TUintmatCreateFromSparseStream(TU* tu, TU_INTMAT** pmatrix, FILE* stre
     numRead = fscanf(stream, "%d %d %d", &row, &column, &value);
     if (numRead < 3 || row < 0 || column < 0 || row >= numRows || column >= numColumns)
     {
-      TU_CALL( TUfreeStackArray(tu, &nonzeros) );
+      CMR_CALL( CMRfreeStackArray(cmr, &nonzeros) );
       return CMR_ERROR_INPUT;
     }
     if (value != 0)
@@ -695,9 +695,9 @@ CMR_ERROR TUintmatCreateFromSparseStream(TU* tu, TU_INTMAT** pmatrix, FILE* stre
   numNonzeros = entry;
 
   /* We sort all nonzeros by row and then by column. */
-  TU_CALL( TUsort(tu, numNonzeros, nonzeros, sizeof(IntNonzero), compareIntNonzeros) );
+  CMR_CALL( CMRsort(cmr, numNonzeros, nonzeros, sizeof(IntNonzero), compareIntNonzeros) );
 
-  TU_CALL( TUintmatCreate(tu, pmatrix, numRows, numColumns, numNonzeros) );
+  CMR_CALL( CMRintmatCreate(cmr, pmatrix, numRows, numColumns, numNonzeros) );
   int previousRow = -1;
   int previousColumn = -1;
   int* pentryColumn = (*pmatrix)->entryColumns;
@@ -708,8 +708,8 @@ CMR_ERROR TUintmatCreateFromSparseStream(TU* tu, TU_INTMAT** pmatrix, FILE* stre
     int column = nonzeros[entry].column;
     if (row == previousRow && column == previousColumn)
     {
-      TU_CALL( TUfreeStackArray(tu, &nonzeros) );
-      TU_CALL( TUintmatFree(tu, pmatrix) );
+      CMR_CALL( CMRfreeStackArray(cmr, &nonzeros) );
+      CMR_CALL( CMRintmatFree(cmr, pmatrix) );
       return CMR_ERROR_INPUT;
     }
     while (previousRow < row)
@@ -727,7 +727,7 @@ CMR_ERROR TUintmatCreateFromSparseStream(TU* tu, TU_INTMAT** pmatrix, FILE* stre
     (*pmatrix)->rowStarts[previousRow] = numNonzeros;
   }
 
-  TU_CALL( TUfreeStackArray(tu, &nonzeros) );
+  CMR_CALL( CMRfreeStackArray(cmr, &nonzeros) );
 
   return CMR_OKAY;
 }
@@ -753,7 +753,7 @@ int compareChrNonzeros(const void* pa, const void* pb)
   return aColumn - bColumn;
 }
 
-CMR_ERROR TUchrmatCreateFromSparseStream(TU* tu, TU_CHRMAT** pmatrix, FILE* stream)
+CMR_ERROR CMRchrmatCreateFromSparseStream(CMR* cmr, CMR_CHRMAT** pmatrix, FILE* stream)
 {
   assert(pmatrix);
   assert(!*pmatrix);
@@ -767,7 +767,7 @@ CMR_ERROR TUchrmatCreateFromSparseStream(TU* tu, TU_CHRMAT** pmatrix, FILE* stre
   /* Read all nonzeros. */
 
   ChrNonzero* nonzeros = NULL;
-  TU_CALL( TUallocStackArray(tu, &nonzeros, numNonzeros) );
+  CMR_CALL( CMRallocStackArray(cmr, &nonzeros, numNonzeros) );
   int entry = 0;
   for (int i = 0; i < numNonzeros; ++i)
   {
@@ -778,7 +778,7 @@ CMR_ERROR TUchrmatCreateFromSparseStream(TU* tu, TU_CHRMAT** pmatrix, FILE* stre
     if (numRead < 3 || row < 0 || column < 0 || row >= numRows || column >= numColumns || value < CHAR_MIN
       || value > CHAR_MAX)
     {
-      TU_CALL( TUfreeStackArray(tu, &nonzeros) );
+      CMR_CALL( CMRfreeStackArray(cmr, &nonzeros) );
       return CMR_ERROR_INPUT;
     }
     if (value != 0)
@@ -792,9 +792,9 @@ CMR_ERROR TUchrmatCreateFromSparseStream(TU* tu, TU_CHRMAT** pmatrix, FILE* stre
   numNonzeros = entry;
 
   /* We sort all nonzeros by row and then by column. */
-  TU_CALL( TUsort(tu, numNonzeros, nonzeros, sizeof(ChrNonzero), compareChrNonzeros) );
+  CMR_CALL( CMRsort(cmr, numNonzeros, nonzeros, sizeof(ChrNonzero), compareChrNonzeros) );
 
-  TU_CALL( TUchrmatCreate(tu, pmatrix, numRows, numColumns, numNonzeros) );
+  CMR_CALL( CMRchrmatCreate(cmr, pmatrix, numRows, numColumns, numNonzeros) );
   int previousRow = -1;
   int previousColumn = -1;
   int* pentryColumn = (*pmatrix)->entryColumns;
@@ -805,8 +805,8 @@ CMR_ERROR TUchrmatCreateFromSparseStream(TU* tu, TU_CHRMAT** pmatrix, FILE* stre
     int column = nonzeros[entry].column;
     if (row == previousRow && column == previousColumn)
     {
-      TU_CALL( TUfreeStackArray(tu, &nonzeros) );
-      TU_CALL( TUchrmatFree(tu, pmatrix) );
+      CMR_CALL( CMRfreeStackArray(cmr, &nonzeros) );
+      CMR_CALL( CMRchrmatFree(cmr, pmatrix) );
       return CMR_ERROR_INPUT;
     }
     while (previousRow < row)
@@ -824,12 +824,12 @@ CMR_ERROR TUchrmatCreateFromSparseStream(TU* tu, TU_CHRMAT** pmatrix, FILE* stre
     (*pmatrix)->rowStarts[previousRow] = numNonzeros;
   }
 
-  TU_CALL( TUfreeStackArray(tu, &nonzeros) );
+  CMR_CALL( CMRfreeStackArray(cmr, &nonzeros) );
 
   return CMR_OKAY;
 }
 
-CMR_ERROR TUdblmatCreateFromDenseStream(TU* tu, TU_DBLMAT** pmatrix, FILE* stream)
+CMR_ERROR CMRdblmatCreateFromDenseStream(CMR* cmr, CMR_DBLMAT** pmatrix, FILE* stream)
 {
   assert(pmatrix);
   assert(!*pmatrix);
@@ -840,7 +840,7 @@ CMR_ERROR TUdblmatCreateFromDenseStream(TU* tu, TU_DBLMAT** pmatrix, FILE* strea
   if (numRead < 2)
     return CMR_ERROR_INPUT;
 
-  TU_CALL( TUdblmatCreate(tu, pmatrix, numRows, numColumns, 0) );
+  CMR_CALL( CMRdblmatCreate(cmr, pmatrix, numRows, numColumns, 0) );
 
   /* Initial memory. */
   int memEntries = numRows * numColumns;
@@ -848,8 +848,8 @@ CMR_ERROR TUdblmatCreateFromDenseStream(TU* tu, TU_DBLMAT** pmatrix, FILE* strea
     memEntries = 256;
   int* entryColumns = NULL;
   double* entryValues = NULL;
-  TU_CALL( TUallocBlockArray(tu, &entryColumns, memEntries) );
-  TU_CALL( TUallocBlockArray(tu, &entryValues, memEntries) );
+  CMR_CALL( CMRallocBlockArray(cmr, &entryColumns, memEntries) );
+  CMR_CALL( CMRallocBlockArray(cmr, &entryValues, memEntries) );
 
   int entry = 0;
   for (int row = 0; row < numRows; ++row)
@@ -868,8 +868,8 @@ CMR_ERROR TUdblmatCreateFromDenseStream(TU* tu, TU_DBLMAT** pmatrix, FILE* strea
       if (entry == memEntries)
       {
         memEntries = 2*memEntries;
-        TU_CALL( TUreallocBlockArray(tu, &entryColumns, memEntries) );
-        TU_CALL( TUreallocBlockArray(tu, &entryValues, memEntries) );
+        CMR_CALL( CMRreallocBlockArray(cmr, &entryColumns, memEntries) );
+        CMR_CALL( CMRreallocBlockArray(cmr, &entryValues, memEntries) );
       }
 
       entryColumns[entry] = column;
@@ -882,8 +882,8 @@ CMR_ERROR TUdblmatCreateFromDenseStream(TU* tu, TU_DBLMAT** pmatrix, FILE* strea
   /* Make arrays smaller again. */
   if (entry < memEntries)
   {
-    TU_CALL( TUreallocBlockArray(tu, &entryColumns, entry) );
-    TU_CALL( TUreallocBlockArray(tu, &entryValues, entry) );
+    CMR_CALL( CMRreallocBlockArray(cmr, &entryColumns, entry) );
+    CMR_CALL( CMRreallocBlockArray(cmr, &entryValues, entry) );
   }
 
   (*pmatrix)->entryColumns = entryColumns;
@@ -893,7 +893,7 @@ CMR_ERROR TUdblmatCreateFromDenseStream(TU* tu, TU_DBLMAT** pmatrix, FILE* strea
   return CMR_OKAY;
 }
 
-CMR_ERROR TUintmatCreateFromDenseStream(TU* tu, TU_INTMAT** pmatrix, FILE* stream)
+CMR_ERROR CMRintmatCreateFromDenseStream(CMR* cmr, CMR_INTMAT** pmatrix, FILE* stream)
 {
   assert(pmatrix);
   assert(!*pmatrix);
@@ -904,7 +904,7 @@ CMR_ERROR TUintmatCreateFromDenseStream(TU* tu, TU_INTMAT** pmatrix, FILE* strea
   if (numRead < 2)
     return CMR_ERROR_INPUT;
 
-  TU_CALL( TUintmatCreate(tu, pmatrix, numRows, numColumns, 0) );
+  CMR_CALL( CMRintmatCreate(cmr, pmatrix, numRows, numColumns, 0) );
 
   /* Initial memory. */
   int memEntries = numRows * numColumns;
@@ -912,8 +912,8 @@ CMR_ERROR TUintmatCreateFromDenseStream(TU* tu, TU_INTMAT** pmatrix, FILE* strea
     memEntries = 256;
   int* entryColumns = NULL;
   int* entryValues = NULL;
-  TU_CALL( TUallocBlockArray(tu, &entryColumns, memEntries) );
-  TU_CALL( TUallocBlockArray(tu, &entryValues, memEntries) );
+  CMR_CALL( CMRallocBlockArray(cmr, &entryColumns, memEntries) );
+  CMR_CALL( CMRallocBlockArray(cmr, &entryValues, memEntries) );
 
   int entry = 0;
   for (int row = 0; row < numRows; ++row)
@@ -932,8 +932,8 @@ CMR_ERROR TUintmatCreateFromDenseStream(TU* tu, TU_INTMAT** pmatrix, FILE* strea
       if (entry == memEntries)
       {
         memEntries = 2*memEntries;
-        TU_CALL( TUreallocBlockArray(tu, &entryColumns, memEntries) );
-        TU_CALL( TUreallocBlockArray(tu, &entryValues, memEntries) );
+        CMR_CALL( CMRreallocBlockArray(cmr, &entryColumns, memEntries) );
+        CMR_CALL( CMRreallocBlockArray(cmr, &entryValues, memEntries) );
       }
 
       entryColumns[entry] = column;
@@ -946,8 +946,8 @@ CMR_ERROR TUintmatCreateFromDenseStream(TU* tu, TU_INTMAT** pmatrix, FILE* strea
   /* Make arrays smaller again. */
   if (entry < memEntries)
   {
-    TU_CALL( TUreallocBlockArray(tu, &entryColumns, entry) );
-    TU_CALL( TUreallocBlockArray(tu, &entryValues, entry) );
+    CMR_CALL( CMRreallocBlockArray(cmr, &entryColumns, entry) );
+    CMR_CALL( CMRreallocBlockArray(cmr, &entryValues, entry) );
   }
 
   (*pmatrix)->entryColumns = entryColumns;
@@ -957,7 +957,7 @@ CMR_ERROR TUintmatCreateFromDenseStream(TU* tu, TU_INTMAT** pmatrix, FILE* strea
   return CMR_OKAY;
 }
 
-CMR_ERROR TUchrmatCreateFromDenseStream(TU* tu, TU_CHRMAT** pmatrix, FILE* stream)
+CMR_ERROR CMRchrmatCreateFromDenseStream(CMR* cmr, CMR_CHRMAT** pmatrix, FILE* stream)
 {
   assert(pmatrix);
   assert(!*pmatrix);
@@ -969,7 +969,7 @@ CMR_ERROR TUchrmatCreateFromDenseStream(TU* tu, TU_CHRMAT** pmatrix, FILE* strea
   if (numRead < 2)
     return CMR_ERROR_INPUT;
 
-  TU_CALL( TUchrmatCreate(tu, pmatrix, numRows, numColumns, 0) );
+  CMR_CALL( CMRchrmatCreate(cmr, pmatrix, numRows, numColumns, 0) );
 
   /* Initial memory. */
   int memEntries = numRows * numColumns;
@@ -977,8 +977,8 @@ CMR_ERROR TUchrmatCreateFromDenseStream(TU* tu, TU_CHRMAT** pmatrix, FILE* strea
     memEntries = 256;
   int* entryColumns = NULL;
   char* entryValues = NULL;
-  TU_CALL( TUallocBlockArray(tu, &entryColumns, memEntries) );
-  TU_CALL( TUallocBlockArray(tu, &entryValues, memEntries) );
+  CMR_CALL( CMRallocBlockArray(cmr, &entryColumns, memEntries) );
+  CMR_CALL( CMRallocBlockArray(cmr, &entryValues, memEntries) );
 
   int entry = 0;
   for (int row = 0; row < numRows; ++row)
@@ -997,8 +997,8 @@ CMR_ERROR TUchrmatCreateFromDenseStream(TU* tu, TU_CHRMAT** pmatrix, FILE* strea
       if (entry == memEntries)
       {
         memEntries = 2*memEntries;
-        TU_CALL( TUreallocBlockArray(tu, &entryColumns, memEntries) );
-        TU_CALL( TUreallocBlockArray(tu, &entryValues, memEntries) );
+        CMR_CALL( CMRreallocBlockArray(cmr, &entryColumns, memEntries) );
+        CMR_CALL( CMRreallocBlockArray(cmr, &entryValues, memEntries) );
       }
 
       entryColumns[entry] = column;
@@ -1011,8 +1011,8 @@ CMR_ERROR TUchrmatCreateFromDenseStream(TU* tu, TU_CHRMAT** pmatrix, FILE* strea
   /* Make arrays smaller again. */
   if (entry < memEntries)
   {
-    TU_CALL( TUreallocBlockArray(tu, &entryColumns, entry) );
-    TU_CALL( TUreallocBlockArray(tu, &entryValues, entry) );
+    CMR_CALL( CMRreallocBlockArray(cmr, &entryColumns, entry) );
+    CMR_CALL( CMRreallocBlockArray(cmr, &entryValues, entry) );
   }
 
   (*pmatrix)->entryColumns = entryColumns;
@@ -1022,10 +1022,10 @@ CMR_ERROR TUchrmatCreateFromDenseStream(TU* tu, TU_CHRMAT** pmatrix, FILE* strea
   return CMR_OKAY;
 }
 
-bool TUdblmatCheckEqual(TU_DBLMAT* matrix1, TU_DBLMAT* matrix2)
+bool CMRdblmatCheckEqual(CMR_DBLMAT* matrix1, CMR_DBLMAT* matrix2)
 {
-  assert(TUdblmatCheckSorted(matrix1));
-  assert(TUdblmatCheckSorted(matrix2));
+  assert(CMRdblmatCheckSorted(matrix1));
+  assert(CMRdblmatCheckSorted(matrix2));
 
   if (matrix1->numRows != matrix2->numRows)
     return false;
@@ -1057,10 +1057,10 @@ bool TUdblmatCheckEqual(TU_DBLMAT* matrix1, TU_DBLMAT* matrix2)
   return true;
 }
 
-bool TUintmatCheckEqual(TU_INTMAT* matrix1, TU_INTMAT* matrix2)
+bool CMRintmatCheckEqual(CMR_INTMAT* matrix1, CMR_INTMAT* matrix2)
 {
-  assert(TUintmatCheckSorted(matrix1));
-  assert(TUintmatCheckSorted(matrix2));
+  assert(CMRintmatCheckSorted(matrix1));
+  assert(CMRintmatCheckSorted(matrix2));
 
   if (matrix1->numRows != matrix2->numRows)
     return false;
@@ -1092,10 +1092,10 @@ bool TUintmatCheckEqual(TU_INTMAT* matrix1, TU_INTMAT* matrix2)
   return true;
 }
 
-bool TUchrmatCheckEqual(TU_CHRMAT* matrix1, TU_CHRMAT* matrix2)
+bool CMRchrmatCheckEqual(CMR_CHRMAT* matrix1, CMR_CHRMAT* matrix2)
 {
-  assert(TUchrmatCheckSorted(matrix1));
-  assert(TUchrmatCheckSorted(matrix2));
+  assert(CMRchrmatCheckSorted(matrix1));
+  assert(CMRchrmatCheckSorted(matrix2));
 
   if (matrix1->numRows != matrix2->numRows)
     return false;
@@ -1127,7 +1127,7 @@ bool TUchrmatCheckEqual(TU_CHRMAT* matrix1, TU_CHRMAT* matrix2)
   return true;
 }
 
-bool TUdblmatCheckTranspose(TU_DBLMAT* matrix1, TU_DBLMAT* matrix2)
+bool CMRdblmatCheckTranspose(CMR_DBLMAT* matrix1, CMR_DBLMAT* matrix2)
 {
   bool result = true;
 
@@ -1170,7 +1170,7 @@ cleanup:
   return result;
 }
 
-bool TUintmatCheckTranspose(TU_INTMAT* matrix1, TU_INTMAT* matrix2)
+bool CMRintmatCheckTranspose(CMR_INTMAT* matrix1, CMR_INTMAT* matrix2)
 {
   bool result = true;
 
@@ -1213,7 +1213,7 @@ cleanup:
   return result;
 }
 
-bool TUchrmatCheckTranspose(TU_CHRMAT* matrix1, TU_CHRMAT* matrix2)
+bool CMRchrmatCheckTranspose(CMR_CHRMAT* matrix1, CMR_CHRMAT* matrix2)
 {
   bool result = true;
 
@@ -1256,7 +1256,7 @@ cleanup:
   return result;
 }
 
-bool TUdblmatCheckSorted(TU_DBLMAT* sparse)
+bool CMRdblmatCheckSorted(CMR_DBLMAT* sparse)
 {
   assert(sparse != NULL);
 
@@ -1274,17 +1274,17 @@ bool TUdblmatCheckSorted(TU_DBLMAT* sparse)
   return true;
 }
 
-bool TUintmatCheckSorted(TU_INTMAT* sparse)
+bool CMRintmatCheckSorted(CMR_INTMAT* sparse)
 {
-  return TUdblmatCheckSorted((TU_DBLMAT*) sparse);
+  return CMRdblmatCheckSorted((CMR_DBLMAT*) sparse);
 }
 
-bool TUchrmatCheckSorted(TU_CHRMAT* sparse)
+bool CMRchrmatCheckSorted(CMR_CHRMAT* sparse)
 {
-  return TUdblmatCheckSorted((TU_DBLMAT*) sparse);
+  return CMRdblmatCheckSorted((CMR_DBLMAT*) sparse);
 }
 
-bool TUisBinaryDbl(TU* tu, TU_DBLMAT* sparse, double epsilon, TU_SUBMAT** submatrix)
+bool CMRisBinaryDbl(CMR* cmr, CMR_DBLMAT* sparse, double epsilon, CMR_SUBMAT** submatrix)
 {
   assert(sparse != NULL);
 
@@ -1299,7 +1299,7 @@ bool TUisBinaryDbl(TU* tu, TU_DBLMAT* sparse, double epsilon, TU_SUBMAT** submat
       if (rounded < 0 || rounded > +1 || fabs(value - rounded) > epsilon)
       {
         if (submatrix)
-          TUsubmatCreate1x1(tu, submatrix, row, sparse->entryColumns[entry]);
+          CMRsubmatCreate1x1(cmr, submatrix, row, sparse->entryColumns[entry]);
         return false;
       }
     }
@@ -1308,7 +1308,7 @@ bool TUisBinaryDbl(TU* tu, TU_DBLMAT* sparse, double epsilon, TU_SUBMAT** submat
   return true;
 }
 
-bool TUisBinaryInt(TU* tu, TU_INTMAT* sparse, TU_SUBMAT** submatrix)
+bool CMRisBinaryInt(CMR* cmr, CMR_INTMAT* sparse, CMR_SUBMAT** submatrix)
 {
   assert(sparse != NULL);
 
@@ -1322,7 +1322,7 @@ bool TUisBinaryInt(TU* tu, TU_INTMAT* sparse, TU_SUBMAT** submatrix)
       if (value < 0 || value > 1)
       {
         if (submatrix)
-          TUsubmatCreate1x1(tu, submatrix, row, sparse->entryColumns[entry]);
+          CMRsubmatCreate1x1(cmr, submatrix, row, sparse->entryColumns[entry]);
         return false;
       }
     }
@@ -1331,7 +1331,7 @@ bool TUisBinaryInt(TU* tu, TU_INTMAT* sparse, TU_SUBMAT** submatrix)
   return true;
 }
 
-bool TUisBinaryChr(TU* tu, TU_CHRMAT* sparse, TU_SUBMAT** submatrix)
+bool CMRisBinaryChr(CMR* cmr, CMR_CHRMAT* sparse, CMR_SUBMAT** submatrix)
 {
   assert(sparse != NULL);
 
@@ -1345,7 +1345,7 @@ bool TUisBinaryChr(TU* tu, TU_CHRMAT* sparse, TU_SUBMAT** submatrix)
       if (value < 0 || value > 1)
       {
         if (submatrix)
-          TUsubmatCreate1x1(tu, submatrix, row, sparse->entryColumns[entry]);
+          CMRsubmatCreate1x1(cmr, submatrix, row, sparse->entryColumns[entry]);
         return false;
       }
     }
@@ -1354,7 +1354,7 @@ bool TUisBinaryChr(TU* tu, TU_CHRMAT* sparse, TU_SUBMAT** submatrix)
   return true;
 }
 
-bool TUisTernaryDbl(TU* tu, TU_DBLMAT* sparse, double epsilon, TU_SUBMAT** submatrix)
+bool CMRisTernaryDbl(CMR* cmr, CMR_DBLMAT* sparse, double epsilon, CMR_SUBMAT** submatrix)
 {
   assert(sparse != NULL);
 
@@ -1369,7 +1369,7 @@ bool TUisTernaryDbl(TU* tu, TU_DBLMAT* sparse, double epsilon, TU_SUBMAT** subma
       if (rounded < -1 || rounded > +1 || fabs(value - rounded) > epsilon)
       {
         if (submatrix)
-          TUsubmatCreate1x1(tu, submatrix, row, sparse->entryColumns[entry]);
+          CMRsubmatCreate1x1(cmr, submatrix, row, sparse->entryColumns[entry]);
         return false;
       }
     }
@@ -1378,7 +1378,7 @@ bool TUisTernaryDbl(TU* tu, TU_DBLMAT* sparse, double epsilon, TU_SUBMAT** subma
   return true;
 }
 
-bool TUisTernaryInt(TU* tu, TU_INTMAT* sparse, TU_SUBMAT** submatrix)
+bool CMRisTernaryInt(CMR* cmr, CMR_INTMAT* sparse, CMR_SUBMAT** submatrix)
 {
   assert(sparse != NULL);
 
@@ -1392,7 +1392,7 @@ bool TUisTernaryInt(TU* tu, TU_INTMAT* sparse, TU_SUBMAT** submatrix)
       if (value < -1 || value > +1)
       {
         if (submatrix)
-          TUsubmatCreate1x1(tu, submatrix, row, sparse->entryColumns[entry]);
+          CMRsubmatCreate1x1(cmr, submatrix, row, sparse->entryColumns[entry]);
         return false;
       }
     }
@@ -1401,7 +1401,7 @@ bool TUisTernaryInt(TU* tu, TU_INTMAT* sparse, TU_SUBMAT** submatrix)
   return true;
 }
 
-bool TUisTernaryChr(TU* tu, TU_CHRMAT* sparse, TU_SUBMAT** submatrix)
+bool CMRisTernaryChr(CMR* cmr, CMR_CHRMAT* sparse, CMR_SUBMAT** submatrix)
 {
   assert(sparse != NULL);
 
@@ -1415,7 +1415,7 @@ bool TUisTernaryChr(TU* tu, TU_CHRMAT* sparse, TU_SUBMAT** submatrix)
       if (value < -1 || value > +1)
       {
         if (submatrix)
-          TUsubmatCreate1x1(tu, submatrix, row, sparse->entryColumns[entry]);
+          CMRsubmatCreate1x1(cmr, submatrix, row, sparse->entryColumns[entry]);
         return false;
       }
     }
@@ -1424,66 +1424,66 @@ bool TUisTernaryChr(TU* tu, TU_CHRMAT* sparse, TU_SUBMAT** submatrix)
   return true;
 }
 
-CMR_ERROR TUsubmatCreate(TU* tu, TU_SUBMAT** psubmatrix, int numRows, int numColumns)
+CMR_ERROR CMRsubmatCreate(CMR* cmr, CMR_SUBMAT** psubmatrix, int numRows, int numColumns)
 {
   assert(psubmatrix != NULL);
 
-  TU_CALL( TUallocBlock(tu, psubmatrix) );
-  TU_SUBMAT* submatrix = *psubmatrix;
+  CMR_CALL( CMRallocBlock(cmr, psubmatrix) );
+  CMR_SUBMAT* submatrix = *psubmatrix;
   submatrix->numRows = numRows;
   submatrix->numColumns = numColumns;
   submatrix->rows = NULL;
   submatrix->columns = NULL;
-  TU_CALL( TUallocBlockArray(tu, &submatrix->rows, numRows) );
-  TU_CALL( TUallocBlockArray(tu, &submatrix->columns, numColumns) );
+  CMR_CALL( CMRallocBlockArray(cmr, &submatrix->rows, numRows) );
+  CMR_CALL( CMRallocBlockArray(cmr, &submatrix->columns, numColumns) );
 
   return CMR_OKAY;
 }
 
-void TUsubmatCreate1x1(TU* tu, TU_SUBMAT** submatrix, int row, int column)
+void CMRsubmatCreate1x1(CMR* cmr, CMR_SUBMAT** submatrix, int row, int column)
 {
-  TUsubmatCreate(tu, submatrix, 1, 1);
+  CMRsubmatCreate(cmr, submatrix, 1, 1);
   (*submatrix)->rows[0] = row;
   (*submatrix)->columns[0] = column;
 }
 
-CMR_ERROR TUsubmatFree(TU* tu, TU_SUBMAT** psubmatrix)
+CMR_ERROR CMRsubmatFree(CMR* cmr, CMR_SUBMAT** psubmatrix)
 {
   assert(psubmatrix);
 
   if ((*psubmatrix)->rows)
-    TUfreeBlockArray(tu, &(*psubmatrix)->rows);
+    CMRfreeBlockArray(cmr, &(*psubmatrix)->rows);
   if ((*psubmatrix)->columns)
-    TUfreeBlockArray(tu, &(*psubmatrix)->columns);
-  TUfreeBlockArray(tu, psubmatrix);
+    CMRfreeBlockArray(cmr, &(*psubmatrix)->columns);
+  CMRfreeBlockArray(cmr, psubmatrix);
   *psubmatrix = NULL;
 
   return CMR_OKAY;
 }
 
-static int TUsortSubmatrixCompare(const void* p1, const void* p2)
+static int CMRsortSubmatrixCompare(const void* p1, const void* p2)
 {
   return *(int*)p1 - *(int*)p2;
 }
 
-CMR_ERROR TUsortSubmatrix(TU_SUBMAT* submatrix)
+CMR_ERROR CMRsortSubmatrix(CMR_SUBMAT* submatrix)
 {
   assert(submatrix);
 
-  qsort(submatrix->rows, submatrix->numRows, sizeof(int), TUsortSubmatrixCompare);
-  qsort(submatrix->columns, submatrix->numColumns, sizeof(int), TUsortSubmatrixCompare);
+  qsort(submatrix->rows, submatrix->numRows, sizeof(int), CMRsortSubmatrixCompare);
+  qsort(submatrix->columns, submatrix->numColumns, sizeof(int), CMRsortSubmatrixCompare);
 
   return CMR_OKAY;
 }
 
-CMR_ERROR TUdblmatFilterSubmat(TU* tu, TU_DBLMAT* matrix, TU_SUBMAT* submatrix, TU_DBLMAT** result)
+CMR_ERROR CMRdblmatFilterSubmat(CMR* cmr, CMR_DBLMAT* matrix, CMR_SUBMAT* submatrix, CMR_DBLMAT** result)
 {
   assert(matrix);
   assert(submatrix);
   assert(result);
 
   int* columnMap = NULL;
-  TU_CALL( TUallocStackArray(tu, &columnMap, matrix->numColumns) );
+  CMR_CALL( CMRallocStackArray(cmr, &columnMap, matrix->numColumns) );
   for (int c = 0; c < matrix->numColumns; ++c)
     columnMap[c] = -1;
   for (int j = 0; j < submatrix->numColumns; ++j)
@@ -1509,7 +1509,7 @@ CMR_ERROR TUdblmatFilterSubmat(TU* tu, TU_DBLMAT* matrix, TU_SUBMAT* submatrix, 
     }
   }
 
-  TU_CALL( TUdblmatCreate(tu, result, submatrix->numRows, submatrix->numColumns, numNonzeros) );
+  CMR_CALL( CMRdblmatCreate(cmr, result, submatrix->numRows, submatrix->numColumns, numNonzeros) );
 
   /* Copy nonzeros. */
   (*result)->numNonzeros = 0;
@@ -1535,20 +1535,20 @@ CMR_ERROR TUdblmatFilterSubmat(TU* tu, TU_DBLMAT* matrix, TU_SUBMAT* submatrix, 
   (*result)->rowStarts[(*result)->numRows] = (*result)->numNonzeros;
 
   if (columnMap)
-    TU_CALL( TUfreeStackArray(tu, &columnMap) );
+    CMR_CALL( CMRfreeStackArray(cmr, &columnMap) );
 
   return CMR_OKAY;
 }
 
 
-CMR_ERROR TUintmatFilterSubmat(TU* tu, TU_INTMAT* matrix, TU_SUBMAT* submatrix, TU_INTMAT** result)
+CMR_ERROR CMRintmatFilterSubmat(CMR* cmr, CMR_INTMAT* matrix, CMR_SUBMAT* submatrix, CMR_INTMAT** result)
 {
   assert(matrix);
   assert(submatrix);
   assert(result);
 
   int* columnMap = NULL;
-  TU_CALL( TUallocStackArray(tu, &columnMap, matrix->numColumns) );
+  CMR_CALL( CMRallocStackArray(cmr, &columnMap, matrix->numColumns) );
   for (int c = 0; c < matrix->numColumns; ++c)
     columnMap[c] = -1;
   for (int j = 0; j < submatrix->numColumns; ++j)
@@ -1574,7 +1574,7 @@ CMR_ERROR TUintmatFilterSubmat(TU* tu, TU_INTMAT* matrix, TU_SUBMAT* submatrix, 
     }
   }
 
-  TU_CALL( TUintmatCreate(tu, result, submatrix->numRows, submatrix->numColumns, numNonzeros) );
+  CMR_CALL( CMRintmatCreate(cmr, result, submatrix->numRows, submatrix->numColumns, numNonzeros) );
 
   /* Copy nonzeros. */
   (*result)->numNonzeros = 0;
@@ -1600,19 +1600,19 @@ CMR_ERROR TUintmatFilterSubmat(TU* tu, TU_INTMAT* matrix, TU_SUBMAT* submatrix, 
   (*result)->rowStarts[(*result)->numRows] = (*result)->numNonzeros;
 
   if (columnMap)
-    TU_CALL( TUfreeStackArray(tu, &columnMap) );
+    CMR_CALL( CMRfreeStackArray(cmr, &columnMap) );
 
   return CMR_OKAY;
 }
 
-CMR_ERROR TUchrmatFilterSubmat(TU* tu, TU_CHRMAT* matrix, TU_SUBMAT* submatrix, TU_CHRMAT** result)
+CMR_ERROR CMRchrmatFilterSubmat(CMR* cmr, CMR_CHRMAT* matrix, CMR_SUBMAT* submatrix, CMR_CHRMAT** result)
 {
   assert(matrix);
   assert(submatrix);
   assert(result);
 
   int* columnMap = NULL;
-  TU_CALL( TUallocStackArray(tu, &columnMap, matrix->numColumns) );
+  CMR_CALL( CMRallocStackArray(cmr, &columnMap, matrix->numColumns) );
   for (int c = 0; c < matrix->numColumns; ++c)
     columnMap[c] = -1;
   for (int j = 0; j < submatrix->numColumns; ++j)
@@ -1638,7 +1638,7 @@ CMR_ERROR TUchrmatFilterSubmat(TU* tu, TU_CHRMAT* matrix, TU_SUBMAT* submatrix, 
     }
   }
 
-  TU_CALL( TUchrmatCreate(tu, result, submatrix->numRows, submatrix->numColumns, numNonzeros) );
+  CMR_CALL( CMRchrmatCreate(cmr, result, submatrix->numRows, submatrix->numColumns, numNonzeros) );
 
   /* Copy nonzeros. */
   (*result)->numNonzeros = 0;
@@ -1664,20 +1664,20 @@ CMR_ERROR TUchrmatFilterSubmat(TU* tu, TU_CHRMAT* matrix, TU_SUBMAT* submatrix, 
   (*result)->rowStarts[(*result)->numRows] = (*result)->numNonzeros;
 
   if (columnMap)
-    TU_CALL( TUfreeStackArray(tu, &columnMap) );
+    CMR_CALL( CMRfreeStackArray(cmr, &columnMap) );
 
   return CMR_OKAY;
 }
 
-CMR_ERROR TUsupportDbl(TU* tu, TU_DBLMAT* matrix, double epsilon, TU_CHRMAT** psupport)
+CMR_ERROR CMRsupportDbl(CMR* cmr, CMR_DBLMAT* matrix, double epsilon, CMR_CHRMAT** psupport)
 {
-  assert(tu);
+  assert(cmr);
   assert(matrix);
   assert(psupport);
   assert(!*psupport);
 
-  TU_CALL( TUchrmatCreate(tu, psupport, matrix->numRows, matrix->numColumns, matrix->numNonzeros) );
-  TU_CHRMAT* result = *psupport;
+  CMR_CALL( CMRchrmatCreate(cmr, psupport, matrix->numRows, matrix->numColumns, matrix->numNonzeros) );
+  CMR_CHRMAT* result = *psupport;
 
   int resultEntry = 0;
   for (int row = 0; row < matrix->numRows; ++row)
@@ -1700,15 +1700,15 @@ CMR_ERROR TUsupportDbl(TU* tu, TU_DBLMAT* matrix, double epsilon, TU_CHRMAT** ps
   return CMR_OKAY;
 }
 
-CMR_ERROR TUsignedSupportDbl(TU* tu, TU_DBLMAT* matrix, double epsilon, TU_CHRMAT** psupport)
+CMR_ERROR CMRsignedSupportDbl(CMR* cmr, CMR_DBLMAT* matrix, double epsilon, CMR_CHRMAT** psupport)
 {
-  assert(tu);
+  assert(cmr);
   assert(matrix);
   assert(psupport);
   assert(!*psupport);
 
-  TU_CALL( TUchrmatCreate(tu, psupport, matrix->numRows, matrix->numColumns, matrix->numNonzeros) );
-  TU_CHRMAT* result = *psupport;
+  CMR_CALL( CMRchrmatCreate(cmr, psupport, matrix->numRows, matrix->numColumns, matrix->numNonzeros) );
+  CMR_CHRMAT* result = *psupport;
 
   int resultEntry = 0;
   for (int row = 0; row < matrix->numRows; ++row)
@@ -1737,15 +1737,15 @@ CMR_ERROR TUsignedSupportDbl(TU* tu, TU_DBLMAT* matrix, double epsilon, TU_CHRMA
   return CMR_OKAY;
 }
 
-CMR_ERROR TUsupportInt(TU* tu, TU_INTMAT* matrix, TU_CHRMAT** psupport)
+CMR_ERROR CMRsupportInt(CMR* cmr, CMR_INTMAT* matrix, CMR_CHRMAT** psupport)
 {
-  assert(tu);
+  assert(cmr);
   assert(matrix);
   assert(psupport);
   assert(!*psupport);
 
-  TU_CALL( TUchrmatCreate(tu, psupport, matrix->numRows, matrix->numColumns, matrix->numNonzeros) );
-  TU_CHRMAT* result = *psupport;
+  CMR_CALL( CMRchrmatCreate(cmr, psupport, matrix->numRows, matrix->numColumns, matrix->numNonzeros) );
+  CMR_CHRMAT* result = *psupport;
 
   int resultEntry = 0;
   for (int row = 0; row < matrix->numRows; ++row)
@@ -1768,15 +1768,15 @@ CMR_ERROR TUsupportInt(TU* tu, TU_INTMAT* matrix, TU_CHRMAT** psupport)
   return CMR_OKAY;
 }
 
-CMR_ERROR TUsignedSupportInt(TU* tu, TU_INTMAT* matrix, TU_CHRMAT** psupport)
+CMR_ERROR CMRsignedSupportInt(CMR* cmr, CMR_INTMAT* matrix, CMR_CHRMAT** psupport)
 {
-  assert(tu);
+  assert(cmr);
   assert(matrix);
   assert(psupport);
   assert(!*psupport);
 
-  TU_CALL( TUchrmatCreate(tu, psupport, matrix->numRows, matrix->numColumns, matrix->numNonzeros) );
-  TU_CHRMAT* result = *psupport;
+  CMR_CALL( CMRchrmatCreate(cmr, psupport, matrix->numRows, matrix->numColumns, matrix->numNonzeros) );
+  CMR_CHRMAT* result = *psupport;
 
   int resultEntry = 0;
   for (int row = 0; row < matrix->numRows; ++row)
@@ -1805,15 +1805,15 @@ CMR_ERROR TUsignedSupportInt(TU* tu, TU_INTMAT* matrix, TU_CHRMAT** psupport)
   return CMR_OKAY;
 }
 
-CMR_ERROR TUsupportChr(TU* tu, TU_CHRMAT* matrix, TU_CHRMAT** psupport)
+CMR_ERROR CMRsupportChr(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT** psupport)
 {
-  assert(tu);
+  assert(cmr);
   assert(matrix);
   assert(psupport);
   assert(!*psupport);
 
-  TU_CALL( TUchrmatCreate(tu, psupport, matrix->numRows, matrix->numColumns, matrix->numNonzeros) );
-  TU_CHRMAT* result = *psupport;
+  CMR_CALL( CMRchrmatCreate(cmr, psupport, matrix->numRows, matrix->numColumns, matrix->numNonzeros) );
+  CMR_CHRMAT* result = *psupport;
 
   int resultEntry = 0;
   for (int row = 0; row < matrix->numRows; ++row)
@@ -1836,15 +1836,15 @@ CMR_ERROR TUsupportChr(TU* tu, TU_CHRMAT* matrix, TU_CHRMAT** psupport)
   return CMR_OKAY;
 }
 
-CMR_ERROR TUsignedSupportChr(TU* tu, TU_CHRMAT* matrix, TU_CHRMAT** psupport)
+CMR_ERROR CMRsignedSupportChr(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT** psupport)
 {
-  assert(tu);
+  assert(cmr);
   assert(matrix);
   assert(psupport);
   assert(!*psupport);
 
-  TU_CALL( TUchrmatCreate(tu, psupport, matrix->numRows, matrix->numColumns, matrix->numNonzeros) );
-  TU_CHRMAT* result = *psupport;
+  CMR_CALL( CMRchrmatCreate(cmr, psupport, matrix->numRows, matrix->numColumns, matrix->numNonzeros) );
+  CMR_CHRMAT* result = *psupport;
 
   int resultEntry = 0;
   for (int row = 0; row < matrix->numRows; ++row)

@@ -1,4 +1,4 @@
-// #define TU_DEBUG /* Uncomment to debug graphic. */
+// #define CMR_DEBUG /* Uncomment to debug graphic. */
 
 #include <cmr/sign.h>
 #include "sign_internal.h"
@@ -22,26 +22,26 @@ typedef struct
 } GRAPH_NODE;
 
 CMR_ERROR signSequentiallyConnected(
-  TU* tu,                 /**< \ref TU environment. */
-  TU_CHRMAT* matrix,      /**< The matrix to be signed. */
-  TU_CHRMAT* transpose,   /**< The transpose of \p matrix. */
+  CMR* cmr,                 /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,      /**< The matrix to be signed. */
+  CMR_CHRMAT* transpose,   /**< The transpose of \p matrix. */
   bool change,            /**< Whether to modify the matrix. */
   char* pmodification,    /**< Pointer for storing which matrix was modified.*/
-  TU_SUBMAT** psubmatrix  /**< Pointer for storing a submatrix with bad determinant (may be \c NULL). */
+  CMR_SUBMAT** psubmatrix  /**< Pointer for storing a submatrix with bad determinant (may be \c NULL). */
 )
 {
-  assert(tu);
+  assert(cmr);
   assert(matrix);
   assert(transpose);
   assert(pmodification);
 
-  assert(TUchrmatCheckTranspose(matrix, transpose));
-  assert(TUisTernaryChr(tu, matrix, NULL));
+  assert(CMRchrmatCheckTranspose(matrix, transpose));
+  assert(CMRisTernaryChr(cmr, matrix, NULL));
 
   /* If we have more rows than columns, we work with the transpose. */
   if (matrix->numRows > matrix->numColumns)
   {
-    TU_CALL( signSequentiallyConnected(tu, transpose, matrix, change, pmodification, psubmatrix) );
+    CMR_CALL( signSequentiallyConnected(cmr, transpose, matrix, change, pmodification, psubmatrix) );
     assert(*pmodification == 0 || *pmodification == 'm');
     if (psubmatrix && *psubmatrix)
     {
@@ -55,7 +55,7 @@ CMR_ERROR signSequentiallyConnected(
     return CMR_OKAY;
   }
 
-  TUdbgMsg(2, "signSequentiallyConnected.\n");
+  CMRdbgMsg(2, "signSequentiallyConnected.\n");
 
   *pmodification = 0;
   const int firstRowNode = matrix->numColumns;
@@ -64,15 +64,15 @@ CMR_ERROR signSequentiallyConnected(
   int bfsQueueBegin = 0;
   int bfsQueueEnd = 0;
 
-  TUallocStackArray(tu, &graphNodes, matrix->numColumns + matrix->numRows);
-  TUallocStackArray(tu, &bfsQueue, matrix->numColumns + matrix->numRows);
+  CMRallocStackArray(cmr, &graphNodes, matrix->numColumns + matrix->numRows);
+  CMRallocStackArray(cmr, &bfsQueue, matrix->numColumns + matrix->numRows);
 
   /* Main loop iterates over the rows. */
   for (int row = 1; row < matrix->numRows; ++row)
   {
-    TUdbgMsg(2, "Before processing row %d:\n", row);
-#if defined(TU_DEBUG)
-    TUchrmatPrintDense(stdout, matrix, ' ', true);
+    CMRdbgMsg(2, "Before processing row %d:\n", row);
+#if defined(CMR_DEBUG)
+    CMRchrmatPrintDense(stdout, matrix, ' ', true);
 #endif
 
     for (int v = 0; v < matrix->numColumns + matrix->numRows; ++v)
@@ -87,7 +87,7 @@ CMR_ERROR signSequentiallyConnected(
     int end = matrix->rowStarts[row+1];
     if (begin == end)
     {
-      TUdbgMsg(2, "Empty row.\n");
+      CMRdbgMsg(2, "Empty row.\n");
       continue;
     }
 
@@ -111,7 +111,7 @@ CMR_ERROR signSequentiallyConnected(
       if (currentNode >= firstRowNode)
       {
         int r = currentNode - firstRowNode;
-        TUdbgMsg(4, "Current node is %d (row %d), queue length is %d\n", currentNode, r, bfsQueueEnd - bfsQueueBegin);
+        CMRdbgMsg(4, "Current node is %d (row %d), queue length is %d\n", currentNode, r, bfsQueueEnd - bfsQueueBegin);
 
         /* Iterate over outgoing edges. */
         begin = matrix->rowStarts[r];
@@ -140,7 +140,7 @@ CMR_ERROR signSequentiallyConnected(
               }
               while (graphNodes[pathNode].targetValue == 0);
               sum += graphNodes[pathNode].targetValue;
-              TUdbgMsg(6, "Found a chordless cycle between %d and %d with sum %d of length %d\n", c, pathNode, sum,
+              CMRdbgMsg(6, "Found a chordless cycle between %d and %d with sum %d of length %d\n", c, pathNode, sum,
                 length);
 
               if (sum % 4 != 0)
@@ -152,7 +152,7 @@ CMR_ERROR signSequentiallyConnected(
                 {
                   int i = 1;
                   int j = 1;
-                  TUsubmatCreate(tu, psubmatrix, length/2, length/2);
+                  CMRsubmatCreate(cmr, psubmatrix, length/2, length/2);
                   pathNode = c;
                   (*psubmatrix)->columns[0] = c;
                   (*psubmatrix)->rows[0] = row;
@@ -165,19 +165,19 @@ CMR_ERROR signSequentiallyConnected(
                       (*psubmatrix)->columns[j++] = pathNode;
                   }
                   while (graphNodes[pathNode].targetValue == 0);
-                  TUsortSubmatrix(*psubmatrix);
+                  CMRsortSubmatrix(*psubmatrix);
 
-                  TUdbgMsg(6, "Submatrix filled with %d rows and %d columns.\n", i, j);
+                  CMRdbgMsg(6, "Submatrix filled with %d rows and %d columns.\n", i, j);
                 }
-                TUdbgMsg(6, "Sign change required.\n");
+                CMRdbgMsg(6, "Sign change required.\n");
                 graphNodes[c].targetValue *= -1;
                 *pmodification = 'm';
                 if (change)
                   rowChanged = true;
                 else
                 {
-                  TUfreeStackArray(tu, &bfsQueue);
-                  TUfreeStackArray(tu, &graphNodes);
+                  CMRfreeStackArray(cmr, &bfsQueue);
+                  CMRfreeStackArray(cmr, &graphNodes);
                   return CMR_OKAY;
                 }
               }
@@ -188,7 +188,7 @@ CMR_ERROR signSequentiallyConnected(
       else
       {
         int c = currentNode;
-        TUdbgMsg(4, "Current node is %d (column %d), queue length is %d\n", currentNode, c,
+        CMRdbgMsg(4, "Current node is %d (column %d), queue length is %d\n", currentNode, c,
           bfsQueueEnd - bfsQueueBegin);
 
         /* Iterate over outgoing edges. */
@@ -211,16 +211,16 @@ CMR_ERROR signSequentiallyConnected(
       }
     }
 
-#if defined(TU_DEBUG)
+#if defined(CMR_DEBUG)
     for (int v = 0; v < matrix->numColumns + row; ++v)
     {
       if (v == startNode)
-        TUdbgMsg(4, "Source node ");
+        CMRdbgMsg(4, "Source node ");
       else if (graphNodes[v].targetValue != 0)
-        TUdbgMsg(4, "Target node ");
+        CMRdbgMsg(4, "Target node ");
       else
-        TUdbgMsg(4, "Node ");
-      TUdbgMsg(0, "%d is %s%d and has predecessor %d.\n", v, v >= firstRowNode ? "row ": "column ",
+        CMRdbgMsg(4, "Node ");
+      CMRdbgMsg(0, "%d is %s%d and has predecessor %d.\n", v, v >= firstRowNode ? "row ": "column ",
         v >= firstRowNode ? v-firstRowNode : v, graphNodes[v].predecessorNode);
     }
 #endif
@@ -233,22 +233,22 @@ CMR_ERROR signSequentiallyConnected(
       {
         int column = matrix->entryColumns[e];
         if (matrix->entryValues[e] != graphNodes[column].targetValue)
-          TUdbgMsg(2, "Sign change at %d,%d.\n", row, column);
+          CMRdbgMsg(2, "Sign change at %d,%d.\n", row, column);
         matrix->entryValues[e] = graphNodes[column].targetValue;
       }
     }
   }
 
-#if defined(TU_DEBUG)
+#if defined(CMR_DEBUG)
   if (change)
   {
-    TUdbgMsg(2, "After signing:\n");
-    TU_CALL( TUchrmatPrintDense(stdout, matrix, ' ', true) );
+    CMRdbgMsg(2, "After signing:\n");
+    CMR_CALL( CMRchrmatPrintDense(stdout, matrix, ' ', true) );
   }
-#endif /* TU_DEBUG */
+#endif /* CMR_DEBUG */
 
-  TUfreeStackArray(tu, &bfsQueue);
-  TUfreeStackArray(tu, &graphNodes);
+  CMRfreeStackArray(cmr, &bfsQueue);
+  CMRfreeStackArray(cmr, &graphNodes);
 
   return CMR_OKAY;
 }
@@ -259,46 +259,46 @@ CMR_ERROR signSequentiallyConnected(
 
 static
 CMR_ERROR signDbl(
-  TU* tu,                 /**< \ref TU environment. */
-  TU_DBLMAT* matrix,      /**< Sparse double matrix. */
+  CMR* cmr,                 /**< \ref CMR environment. */
+  CMR_DBLMAT* matrix,      /**< Sparse double matrix. */
   bool change,            /**< Whether the signs of \p matrix shall be modified. */
   bool* palreadySigned,   /**< Pointer for storing whether \p matrix was already signed correctly. */
-  TU_SUBMAT** psubmatrix  /**< Pointer for storing a submatrix with bad determinant (may be \c NULL). */
+  CMR_SUBMAT** psubmatrix  /**< Pointer for storing a submatrix with bad determinant (may be \c NULL). */
 )
 {
-  assert(tu);
+  assert(cmr);
   assert(matrix);
   assert(palreadySigned);
 
   int numComponents;
-  TU_ONESUM_COMPONENT* components = NULL;
+  CMR_ONESUM_COMPONENT* components = NULL;
 
-  assert(TUisTernaryDbl(tu, matrix, 1.0e-3, NULL));
+  assert(CMRisTernaryDbl(cmr, matrix, 1.0e-3, NULL));
 
-#if defined(TU_DEBUG)
-  TUdbgMsg(0, "sign:\n");
-  TUdblmatPrintDense(stdout, matrix, ' ', true);
-#endif /* TU_DEBUG */
+#if defined(CMR_DEBUG)
+  CMRdbgMsg(0, "sign:\n");
+  CMRdblmatPrintDense(stdout, matrix, ' ', true);
+#endif /* CMR_DEBUG */
 
   /* Decompose into 1-connected components. */
 
-  TU_CALL( decomposeOneSum(tu, (TU_MATRIX*) matrix, sizeof(double), sizeof(double), &numComponents, &components, NULL,
+  CMR_CALL( decomposeOneSum(cmr, (CMR_MATRIX*) matrix, sizeof(double), sizeof(double), &numComponents, &components, NULL,
     NULL, NULL, NULL) );
 
   *palreadySigned = true;
   for (int comp = 0; comp < numComponents; ++comp)
   {
-    TU_SUBMAT* compSubmatrix = NULL;
+    CMR_SUBMAT* compSubmatrix = NULL;
 
-    TUdbgMsg(2, "-> Component %d of size %dx%d\n", comp, components[comp].matrix->numRows,
+    CMRdbgMsg(2, "-> Component %d of size %dx%d\n", comp, components[comp].matrix->numRows,
       components[comp].matrix->numColumns);
 
     char modified;
-    TU_CALL( signSequentiallyConnected(tu, (TU_CHRMAT*) components[comp].matrix,
-      (TU_CHRMAT*) components[comp].transpose, change, &modified,
+    CMR_CALL( signSequentiallyConnected(cmr, (CMR_CHRMAT*) components[comp].matrix,
+      (CMR_CHRMAT*) components[comp].transpose, change, &modified,
       (psubmatrix && !*psubmatrix) ? &compSubmatrix : NULL) );
 
-    TUdbgMsg(2, "-> Component %d yields: %c\n", comp, modified ? modified : '0');
+    CMRdbgMsg(2, "-> Component %d yields: %c\n", comp, modified ? modified : '0');
 
     if (modified == 0)
     {
@@ -317,7 +317,7 @@ CMR_ERROR signDbl(
         compSubmatrix->rows[r] = components[comp].rowsToOriginal[compSubmatrix->rows[r]];
       for (int c = 0; c < compSubmatrix->numColumns; ++c)
         compSubmatrix->columns[c] = components[comp].columnsToOriginal[compSubmatrix->columns[c]];
-      TUsortSubmatrix(compSubmatrix);
+      CMRsortSubmatrix(compSubmatrix);
       *psubmatrix = compSubmatrix;
     }
 
@@ -329,9 +329,9 @@ CMR_ERROR signDbl(
     bool copyTranspose = modified == 't';
 
     /* Either the matrix or its transposed was modified. */
-    TU_DBLMAT* sourceMatrix = copyTranspose ?
-      (TU_DBLMAT*) components[comp].transpose :
-      (TU_DBLMAT*) components[comp].matrix;
+    CMR_DBLMAT* sourceMatrix = copyTranspose ?
+      (CMR_DBLMAT*) components[comp].transpose :
+      (CMR_DBLMAT*) components[comp].matrix;
 
     /* We have to copy the changes back to the original matrix. */
     for (int sourceRow = 0; sourceRow < sourceMatrix->numRows; ++sourceRow)
@@ -369,36 +369,36 @@ CMR_ERROR signDbl(
     }
   }
 
-#if defined(TU_DEBUG)
+#if defined(CMR_DEBUG)
   if (!*palreadySigned && change)
   {
-    TUdbgMsg(0, "Modified original matrix:\n");
-    TUdblmatPrintDense(stdout, matrix, ' ', true);
+    CMRdbgMsg(0, "Modified original matrix:\n");
+    CMRdblmatPrintDense(stdout, matrix, ' ', true);
   }
-#endif /* TU_DEBUG */
+#endif /* CMR_DEBUG */
 
   /* Clean-up */
 
   for (int c = 0; c < numComponents; ++c)
   {
-    TUchrmatFree(tu, (TU_CHRMAT**) &components[c].matrix);
-    TUchrmatFree(tu, (TU_CHRMAT**) &components[c].transpose);
-    TUfreeBlockArray(tu, &components[c].rowsToOriginal);
-    TUfreeBlockArray(tu, &components[c].columnsToOriginal);
+    CMRchrmatFree(cmr, (CMR_CHRMAT**) &components[c].matrix);
+    CMRchrmatFree(cmr, (CMR_CHRMAT**) &components[c].transpose);
+    CMRfreeBlockArray(cmr, &components[c].rowsToOriginal);
+    CMRfreeBlockArray(cmr, &components[c].columnsToOriginal);
   }
-  TUfreeBlockArray(tu, &components);
+  CMRfreeBlockArray(cmr, &components);
 
   return CMR_OKAY;
 }
 
-CMR_ERROR TUtestSignDbl(TU* tu, TU_DBLMAT* matrix, bool* pcorrectSign, TU_SUBMAT** psubmatrix)
+CMR_ERROR CMRtestSignDbl(CMR* cmr, CMR_DBLMAT* matrix, bool* pcorrectSign, CMR_SUBMAT** psubmatrix)
 {
-  return signDbl(tu, matrix, false, pcorrectSign, psubmatrix);
+  return signDbl(cmr, matrix, false, pcorrectSign, psubmatrix);
 }
 
-CMR_ERROR TUcorrectSignDbl(TU* tu, TU_DBLMAT* matrix, bool* palreadySigned, TU_SUBMAT** psubmatrix)
+CMR_ERROR CMRcorrectSignDbl(CMR* cmr, CMR_DBLMAT* matrix, bool* palreadySigned, CMR_SUBMAT** psubmatrix)
 {
-  return signDbl(tu, matrix, true, palreadySigned, psubmatrix);
+  return signDbl(cmr, matrix, true, palreadySigned, psubmatrix);
 }
 
 /**
@@ -407,46 +407,46 @@ CMR_ERROR TUcorrectSignDbl(TU* tu, TU_DBLMAT* matrix, bool* palreadySigned, TU_S
 
 static
 CMR_ERROR signInt(
-  TU* tu,                 /**< \ref TU environment. */
-  TU_INTMAT* matrix,      /**< Sparse int matrix. */
+  CMR* cmr,                 /**< \ref CMR environment. */
+  CMR_INTMAT* matrix,      /**< Sparse int matrix. */
   bool change,            /**< Whether the signs of \p matrix shall be modified. */
   bool* palreadySigned,   /**< Pointer for storing whether \p matrix was already signed correctly. */
-  TU_SUBMAT** psubmatrix  /**< Pointer for storing a submatrix with bad determinant (may be \c NULL). */
+  CMR_SUBMAT** psubmatrix  /**< Pointer for storing a submatrix with bad determinant (may be \c NULL). */
 )
 {
-  assert(tu);
+  assert(cmr);
   assert(matrix);
   assert(palreadySigned);
 
   int numComponents;
-  TU_ONESUM_COMPONENT* components = NULL;
+  CMR_ONESUM_COMPONENT* components = NULL;
 
-  assert(TUisTernaryInt(tu, matrix, NULL));
+  assert(CMRisTernaryInt(cmr, matrix, NULL));
 
-#if defined(TU_DEBUG)
-  TUdbgMsg(0, "sign:\n");
-  TUintmatPrintDense(stdout, matrix, ' ', true);
-#endif /* TU_DEBUG */
+#if defined(CMR_DEBUG)
+  CMRdbgMsg(0, "sign:\n");
+  CMRintmatPrintDense(stdout, matrix, ' ', true);
+#endif /* CMR_DEBUG */
 
   /* Decompose into 1-connected components. */
 
-  TU_CALL( decomposeOneSum(tu, (TU_MATRIX*) matrix, sizeof(int), sizeof(int), &numComponents, &components, NULL, NULL,
+  CMR_CALL( decomposeOneSum(cmr, (CMR_MATRIX*) matrix, sizeof(int), sizeof(int), &numComponents, &components, NULL, NULL,
     NULL, NULL) );
 
   *palreadySigned = true;
   for (int comp = 0; comp < numComponents; ++comp)
   {
-    TU_SUBMAT* compSubmatrix = NULL;
+    CMR_SUBMAT* compSubmatrix = NULL;
 
-    TUdbgMsg(2, "-> Component %d of size %dx%d\n", comp, components[comp].matrix->numRows,
+    CMRdbgMsg(2, "-> Component %d of size %dx%d\n", comp, components[comp].matrix->numRows,
       components[comp].matrix->numColumns);
 
     char modified;
-    TU_CALL( signSequentiallyConnected(tu, (TU_CHRMAT*) components[comp].matrix,
-      (TU_CHRMAT*) components[comp].transpose, change, &modified,
+    CMR_CALL( signSequentiallyConnected(cmr, (CMR_CHRMAT*) components[comp].matrix,
+      (CMR_CHRMAT*) components[comp].transpose, change, &modified,
       (psubmatrix && !*psubmatrix) ? &compSubmatrix : NULL) );
 
-    TUdbgMsg(2, "-> Component %d yields: %c\n", comp, modified ? modified : '0');
+    CMRdbgMsg(2, "-> Component %d yields: %c\n", comp, modified ? modified : '0');
 
     if (modified == 0)
     {
@@ -465,7 +465,7 @@ CMR_ERROR signInt(
         compSubmatrix->rows[r] = components[comp].rowsToOriginal[compSubmatrix->rows[r]];
       for (int c = 0; c < compSubmatrix->numColumns; ++c)
         compSubmatrix->columns[c] = components[comp].columnsToOriginal[compSubmatrix->columns[c]];
-      TUsortSubmatrix(compSubmatrix);
+      CMRsortSubmatrix(compSubmatrix);
       *psubmatrix = compSubmatrix;
     }
 
@@ -477,9 +477,9 @@ CMR_ERROR signInt(
     bool copyTranspose = modified == 't';
 
     /* Either the matrix or its transposed was modified. */
-    TU_CHRMAT* sourceMatrix = copyTranspose ?
-      (TU_CHRMAT*) components[comp].transpose :
-      (TU_CHRMAT*) components[comp].matrix;
+    CMR_CHRMAT* sourceMatrix = copyTranspose ?
+      (CMR_CHRMAT*) components[comp].transpose :
+      (CMR_CHRMAT*) components[comp].matrix;
 
     /* We have to copy the changes back to the original matrix. */
     for (int sourceRow = 0; sourceRow < sourceMatrix->numRows; ++sourceRow)
@@ -517,36 +517,36 @@ CMR_ERROR signInt(
     }
   }
 
-#if defined(TU_DEBUG)
+#if defined(CMR_DEBUG)
   if (!*palreadySigned && change)
   {
-    TUdbgMsg(0, "Modified original matrix:\n");
-    TUintmatPrintDense(stdout, matrix, ' ', true);
+    CMRdbgMsg(0, "Modified original matrix:\n");
+    CMRintmatPrintDense(stdout, matrix, ' ', true);
   }
-#endif /* TU_DEBUG */
+#endif /* CMR_DEBUG */
 
   /* Clean-up */
 
   for (int c = 0; c < numComponents; ++c)
   {
-    TUchrmatFree(tu, (TU_CHRMAT**) &components[c].matrix);
-    TUchrmatFree(tu, (TU_CHRMAT**) &components[c].transpose);
-    TUfreeBlockArray(tu, &components[c].rowsToOriginal);
-    TUfreeBlockArray(tu, &components[c].columnsToOriginal);
+    CMRchrmatFree(cmr, (CMR_CHRMAT**) &components[c].matrix);
+    CMRchrmatFree(cmr, (CMR_CHRMAT**) &components[c].transpose);
+    CMRfreeBlockArray(cmr, &components[c].rowsToOriginal);
+    CMRfreeBlockArray(cmr, &components[c].columnsToOriginal);
   }
-  TUfreeBlockArray(tu, &components);
+  CMRfreeBlockArray(cmr, &components);
 
   return CMR_OKAY;
 }
 
-CMR_ERROR TUtestSignInt(TU* tu, TU_INTMAT* matrix, bool* pcorrectSign, TU_SUBMAT** psubmatrix)
+CMR_ERROR CMRtestSignInt(CMR* cmr, CMR_INTMAT* matrix, bool* pcorrectSign, CMR_SUBMAT** psubmatrix)
 {
-  return signInt(tu, matrix, false, pcorrectSign, psubmatrix);
+  return signInt(cmr, matrix, false, pcorrectSign, psubmatrix);
 }
 
-CMR_ERROR TUcorrectSignInt(TU* tu, TU_INTMAT* matrix, bool* palreadySigned, TU_SUBMAT** psubmatrix)
+CMR_ERROR CMRcorrectSignInt(CMR* cmr, CMR_INTMAT* matrix, bool* palreadySigned, CMR_SUBMAT** psubmatrix)
 {
-  return signInt(tu, matrix, true, palreadySigned, psubmatrix);
+  return signInt(cmr, matrix, true, palreadySigned, psubmatrix);
 }
 
 
@@ -556,47 +556,47 @@ CMR_ERROR TUcorrectSignInt(TU* tu, TU_INTMAT* matrix, bool* palreadySigned, TU_S
 
 static
 CMR_ERROR signChr(
-  TU* tu,                 /**< \ref TU environment. */
-  TU_CHRMAT* matrix,      /**< Sparse char matrix. */
+  CMR* cmr,                 /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,      /**< Sparse char matrix. */
   bool change,            /**< Whether the signs of \p matrix shall be modified. */
   bool* palreadySigned,   /**< Pointer for storing whether \p matrix was already signed correctly. */
-  TU_SUBMAT** psubmatrix  /**< Pointer for storing a submatrix with bad determinant (may be \c NULL). */
+  CMR_SUBMAT** psubmatrix  /**< Pointer for storing a submatrix with bad determinant (may be \c NULL). */
 )
 {
-  assert(tu);
+  assert(cmr);
   assert(matrix);
   assert(!psubmatrix || !*psubmatrix);
 
   int numComponents;
-  TU_ONESUM_COMPONENT* components = NULL;
+  CMR_ONESUM_COMPONENT* components = NULL;
 
-  assert(TUisTernaryChr(tu, matrix, NULL));
+  assert(CMRisTernaryChr(cmr, matrix, NULL));
 
-#if defined(TU_DEBUG)
-  TUdbgMsg(0, "sign:\n");
-  TUchrmatPrintDense(stdout, matrix, ' ', true);
-#endif /* TU_DEBUG */
+#if defined(CMR_DEBUG)
+  CMRdbgMsg(0, "sign:\n");
+  CMRchrmatPrintDense(stdout, matrix, ' ', true);
+#endif /* CMR_DEBUG */
 
   /* Decompose into 1-connected components. */
 
-  TU_CALL( decomposeOneSum(tu, (TU_MATRIX*) matrix, sizeof(char), sizeof(char), &numComponents, &components, NULL, NULL,
+  CMR_CALL( decomposeOneSum(cmr, (CMR_MATRIX*) matrix, sizeof(char), sizeof(char), &numComponents, &components, NULL, NULL,
     NULL, NULL) );
 
   if (palreadySigned)
     *palreadySigned = true;
   for (int comp = 0; comp < numComponents; ++comp)
   {
-    TU_SUBMAT* compSubmatrix = NULL;
+    CMR_SUBMAT* compSubmatrix = NULL;
 
-    TUdbgMsg(2, "-> Component %d of size %dx%d\n", comp, components[comp].matrix->numRows,
+    CMRdbgMsg(2, "-> Component %d of size %dx%d\n", comp, components[comp].matrix->numRows,
       components[comp].matrix->numColumns);
 
     char modified;
-    TU_CALL( signSequentiallyConnected(tu, (TU_CHRMAT*) components[comp].matrix,
-      (TU_CHRMAT*) components[comp].transpose, change, &modified,
+    CMR_CALL( signSequentiallyConnected(cmr, (CMR_CHRMAT*) components[comp].matrix,
+      (CMR_CHRMAT*) components[comp].transpose, change, &modified,
       (psubmatrix && !*psubmatrix) ? &compSubmatrix : NULL) );
 
-    TUdbgMsg(2, "-> Component %d yields: %c\n", comp, modified ? modified : '0');
+    CMRdbgMsg(2, "-> Component %d yields: %c\n", comp, modified ? modified : '0');
 
     if (modified == 0)
     {
@@ -616,7 +616,7 @@ CMR_ERROR signChr(
         compSubmatrix->rows[r] = components[comp].rowsToOriginal[compSubmatrix->rows[r]];
       for (int c = 0; c < compSubmatrix->numColumns; ++c)
         compSubmatrix->columns[c] = components[comp].columnsToOriginal[compSubmatrix->columns[c]];
-      TUsortSubmatrix(compSubmatrix);
+      CMRsortSubmatrix(compSubmatrix);
       *psubmatrix = compSubmatrix;
     }
 
@@ -628,9 +628,9 @@ CMR_ERROR signChr(
     bool copyTranspose = modified == 't';
 
     /* Either the matrix or its transposed was modified. */
-    TU_CHRMAT* sourceMatrix = copyTranspose ?
-      (TU_CHRMAT*) components[comp].transpose :
-      (TU_CHRMAT*) components[comp].matrix;
+    CMR_CHRMAT* sourceMatrix = copyTranspose ?
+      (CMR_CHRMAT*) components[comp].transpose :
+      (CMR_CHRMAT*) components[comp].matrix;
 
     /* We have to copy the changes back to the original matrix. */
     for (int sourceRow = 0; sourceRow < sourceMatrix->numRows; ++sourceRow)
@@ -668,34 +668,34 @@ CMR_ERROR signChr(
     }
   }
 
-#if defined(TU_DEBUG)
+#if defined(CMR_DEBUG)
   if (palreadySigned && !*palreadySigned && change)
   {
-    TUdbgMsg(0, "Modified original matrix:\n");
-    TUchrmatPrintDense(stdout, matrix, ' ', true);
+    CMRdbgMsg(0, "Modified original matrix:\n");
+    CMRchrmatPrintDense(stdout, matrix, ' ', true);
   }
-#endif /* TU_DEBUG */
+#endif /* CMR_DEBUG */
 
   /* Clean-up */
 
   for (int c = 0; c < numComponents; ++c)
   {
-    TUchrmatFree(tu, (TU_CHRMAT**) &components[c].matrix);
-    TUchrmatFree(tu, (TU_CHRMAT**) &components[c].transpose);
-    TUfreeBlockArray(tu, &components[c].rowsToOriginal);
-    TUfreeBlockArray(tu, &components[c].columnsToOriginal);
+    CMRchrmatFree(cmr, (CMR_CHRMAT**) &components[c].matrix);
+    CMRchrmatFree(cmr, (CMR_CHRMAT**) &components[c].transpose);
+    CMRfreeBlockArray(cmr, &components[c].rowsToOriginal);
+    CMRfreeBlockArray(cmr, &components[c].columnsToOriginal);
   }
-  TUfreeBlockArray(tu, &components);
+  CMRfreeBlockArray(cmr, &components);
 
   return CMR_OKAY;
 }
 
-CMR_ERROR TUtestSignChr(TU* tu, TU_CHRMAT* matrix, bool* pcorrectSign, TU_SUBMAT** psubmatrix)
+CMR_ERROR CMRtestSignChr(CMR* cmr, CMR_CHRMAT* matrix, bool* pcorrectSign, CMR_SUBMAT** psubmatrix)
 {
-  return signChr(tu, matrix, false, pcorrectSign, psubmatrix);
+  return signChr(cmr, matrix, false, pcorrectSign, psubmatrix);
 }
 
-CMR_ERROR TUcorrectSignChr(TU* tu, TU_CHRMAT* matrix, bool* palreadySigned, TU_SUBMAT** psubmatrix)
+CMR_ERROR CMRcorrectSignChr(CMR* cmr, CMR_CHRMAT* matrix, bool* palreadySigned, CMR_SUBMAT** psubmatrix)
 {
-  return signChr(tu, matrix, true, palreadySigned, psubmatrix);
+  return signChr(cmr, matrix, true, palreadySigned, psubmatrix);
 }

@@ -1,5 +1,5 @@
-#ifndef TU_MATRIX_H
-#define TU_MATRIX_H
+#ifndef CMR_MATRIX_H
+#define CMR_MATRIX_H
 
 #include <cmr/env.h>
 
@@ -33,7 +33,7 @@ typedef struct
    * \brief Array with column indices
    */
   int* columns;
-} TU_SUBMAT;
+} CMR_SUBMAT;
 
 /**
  * \brief Row-wise representation of sparse double matrix.
@@ -44,7 +44,7 @@ typedef struct
  * \ref rowStarts[r+1]. The last row is an exception, since \ref rowStarts[\ref numRows] need not
  * be defined.
  * For convenience, one may store this additional entry.
- * In particular \ref TUdblmatCreate allocates sufficient space for it.
+ * In particular \ref CMRdblmatCreate allocates sufficient space for it.
  * However, all public methods use \ref numRows to determine the last row's number of nonzeros via
  * \ref numNonzeros.
  */
@@ -57,7 +57,7 @@ typedef struct
   int* rowStarts;       /**< \brief Array mapping each row to the index of its first entry. */
   int* entryColumns;    /**< \brief Array mapping each entry to its column.*/
   double* entryValues;  /**< \brief Array mapping each entry to its value. */
-} TU_DBLMAT;
+} CMR_DBLMAT;
 
 /**
  * \brief Row-wise representation of sparse int matrix.
@@ -68,7 +68,7 @@ typedef struct
  * \ref rowStarts[r+1]. The last row is an exception, since \ref rowStarts[\ref numRows] need not
  * be defined.
  * For convenience, one may store this additional entry.
- * In particular \ref TUintmatCreate allocates sufficient space for it.
+ * In particular \ref CMRintmatCreate allocates sufficient space for it.
  * However, all public methods use \ref numRows to determine the last row's number of nonzeros via
  * \ref numNonzeros.
  */
@@ -81,7 +81,7 @@ typedef struct
   int* rowStarts;     /**< \brief Array mapping each row to the index of its first entry. */
   int* entryColumns;  /**< \brief Array mapping each entry to its column.*/
   int* entryValues;   /**< \brief Array mapping each entry to its value. */
-} TU_INTMAT;
+} CMR_INTMAT;
 
 /**
  * \brief Row-wise representation of sparse char matrix.
@@ -92,7 +92,7 @@ typedef struct
  * \ref rowStarts[r+1]. The last row is an exception, since \ref rowStarts[\ref numRows] need not
  * be defined.
  * For convenience, one may store this additional entry.
- * In particular \ref TUchrmatCreate allocates sufficient space for it.
+ * In particular \ref CMRchrmatCreate allocates sufficient space for it.
  * However, all public methods use \ref numRows to determine the last row's number of nonzeros via
  * \ref numNonzeros.
  */
@@ -105,7 +105,7 @@ typedef struct
   int* rowStarts;     /**< \brief Array mapping each row to the index of its first entry. */
   int* entryColumns;  /**< \brief Array mapping each entry to its column.*/
   char* entryValues;  /**< \brief Array mapping each entry to its value. */
-} TU_CHRMAT;
+} CMR_CHRMAT;
 
 
 
@@ -131,9 +131,9 @@ typedef struct
  */
 
 CMR_EXPORT
-CMR_ERROR TUdblmatCreate(
-  TU* tu,              /**< \ref TU environment. */
-  TU_DBLMAT** matrix,  /**< Pointer for storing the created matrix. */
+CMR_ERROR CMRdblmatCreate(
+  CMR* cmr,              /**< \ref CMR environment. */
+  CMR_DBLMAT** matrix,  /**< Pointer for storing the created matrix. */
   int numRows,         /**< Number of rows. */
   int numColumns,      /**< Number of columns. */
   int numNonzeros      /**< Number of nonzeros. */
@@ -150,9 +150,9 @@ CMR_ERROR TUdblmatCreate(
  * indices, respectively.
  */
 CMR_EXPORT
-CMR_ERROR TUsubmatCreate(
-  TU* tu,                 /**< \ref TU environment. */
-  TU_SUBMAT** psubmatrix, /**< Pointer to where the submatrix is to be stored. */
+CMR_ERROR CMRsubmatCreate(
+  CMR* cmr,                 /**< \ref CMR environment. */
+  CMR_SUBMAT** psubmatrix, /**< Pointer to where the submatrix is to be stored. */
   int numRows,            /**< Number of rows */
   int numColumns          /**< Number of columns */
 );
@@ -162,9 +162,9 @@ CMR_ERROR TUsubmatCreate(
  */
 
 CMR_EXPORT
-void TUsubmatCreate1x1(
-  TU* tu,                 /**< \ref TU environment. */
-  TU_SUBMAT** psubmatrix, /**< Pointer to submatrix */
+void CMRsubmatCreate1x1(
+  CMR* cmr,                 /**< \ref CMR environment. */
+  CMR_SUBMAT** psubmatrix, /**< Pointer to submatrix */
   int row,                /**< Row of entry */
   int column              /**< Column of entry */
 );
@@ -173,9 +173,9 @@ void TUsubmatCreate1x1(
  * \brief Frees a submatrix.
  */
 CMR_EXPORT
-CMR_ERROR TUsubmatFree(
-  TU* tu,                 /**< \ref TU environment. */
-  TU_SUBMAT** psubmatrix  /**< Pointer to submatrix. */
+CMR_ERROR CMRsubmatFree(
+  CMR* cmr,                 /**< \ref CMR environment. */
+  CMR_SUBMAT** psubmatrix  /**< Pointer to submatrix. */
 );
 
 
@@ -202,9 +202,9 @@ CMR_ERROR TUsubmatFree(
  */
 
 CMR_EXPORT
-CMR_ERROR TUdblmatFree(
-  TU* tu,             /**< \ref TU environment. */
-  TU_DBLMAT** matrix  /**< Pointer to matrix. */
+CMR_ERROR CMRdblmatFree(
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_DBLMAT** matrix  /**< Pointer to matrix. */
 );
 
 /**
@@ -212,9 +212,9 @@ CMR_ERROR TUdblmatFree(
  */
 
 CMR_EXPORT
-CMR_ERROR TUdblmatChangeNumNonzeros(
-  TU* tu,             /**< \ref TU environment. */
-  TU_DBLMAT* matrix,  /**< Given matrix. */
+CMR_ERROR CMRdblmatChangeNumNonzeros(
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_DBLMAT* matrix,  /**< Given matrix. */
   int newNumNonzeros  /**< New number of nonzeros. */ 
 );
 
@@ -224,20 +224,20 @@ CMR_ERROR TUdblmatChangeNumNonzeros(
  * Allocates *\p result and copies \p matrix there.
  */
 CMR_EXPORT
-CMR_ERROR TUdblmatCopy(
-  TU* tu,             /**< \ref TU environment. */
-  TU_DBLMAT* matrix,  /**< Given matrix. */
-  TU_DBLMAT** result  /**< Pointer to store a copy of \p matrix. */
+CMR_ERROR CMRdblmatCopy(
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_DBLMAT* matrix,  /**< Given matrix. */
+  CMR_DBLMAT** result  /**< Pointer to store a copy of \p matrix. */
 );
 
 /**
  * \brief Creates the transpose of a double matrix.
  */
 CMR_EXPORT
-CMR_ERROR TUdblmatTranspose(
-  TU* tu,             /**< \ref TU environment. */
-  TU_DBLMAT* matrix,  /**< Given matrix. */
-  TU_DBLMAT** result  /**< Pointer to store the transpose of \p matrix. */
+CMR_ERROR CMRdblmatTranspose(
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_DBLMAT* matrix,  /**< Given matrix. */
+  CMR_DBLMAT** result  /**< Pointer to store the transpose of \p matrix. */
 );
 
 /**
@@ -245,9 +245,9 @@ CMR_ERROR TUdblmatTranspose(
  */
 
 CMR_EXPORT
-CMR_ERROR TUdblmatPrintSparse(
+CMR_ERROR CMRdblmatPrintSparse(
   FILE* stream,       /**< File stream to print to. */
-  TU_DBLMAT* matrix   /**< Double matrix. */
+  CMR_DBLMAT* matrix   /**< Double matrix. */
 );
 
 
@@ -256,9 +256,9 @@ CMR_ERROR TUdblmatPrintSparse(
  */
 
 CMR_EXPORT
-CMR_ERROR TUdblmatPrintDense(
+CMR_ERROR CMRdblmatPrintDense(
   FILE* stream,       /**< File stream to print to. */
-  TU_DBLMAT* matrix,  /**< Double matrix. */
+  CMR_DBLMAT* matrix,  /**< Double matrix. */
   char zeroChar,      /**< Character to print for a zero. */
   bool header         /**< Whether to print row and column indices. */
 );
@@ -271,9 +271,9 @@ CMR_ERROR TUdblmatPrintDense(
  */
 
 CMR_EXPORT
-CMR_ERROR TUdblmatCreateFromSparseStream(
-  TU* tu,               /**< \ref TU environment. */
-  TU_DBLMAT** pmatrix,  /**< Pointer for storing the matrix. */
+CMR_ERROR CMRdblmatCreateFromSparseStream(
+  CMR* cmr,               /**< \ref CMR environment. */
+  CMR_DBLMAT** pmatrix,  /**< Pointer for storing the matrix. */
   FILE* stream          /**< File stream to read from. */
 );
 
@@ -282,9 +282,9 @@ CMR_ERROR TUdblmatCreateFromSparseStream(
  */
 
 CMR_EXPORT
-CMR_ERROR TUdblmatCreateFromDenseStream(
-  TU* tu,               /**< \ref TU environment. */
-  TU_DBLMAT** pmatrix,  /**< Pointer for storing the matrix. */
+CMR_ERROR CMRdblmatCreateFromDenseStream(
+  CMR* cmr,               /**< \ref CMR environment. */
+  CMR_DBLMAT** pmatrix,  /**< Pointer for storing the matrix. */
   FILE* stream          /**< File stream to read from. */
 );
 
@@ -293,9 +293,9 @@ CMR_ERROR TUdblmatCreateFromDenseStream(
  */
 
 CMR_EXPORT
-bool TUdblmatCheckEqual(
-  TU_DBLMAT* matrix1,  /**< First matrix */
-  TU_DBLMAT* matrix2   /**< Second matrix */
+bool CMRdblmatCheckEqual(
+  CMR_DBLMAT* matrix1,  /**< First matrix */
+  CMR_DBLMAT* matrix2   /**< Second matrix */
 );
 
 /**
@@ -303,9 +303,9 @@ bool TUdblmatCheckEqual(
  */
 
 CMR_EXPORT
-bool TUdblmatCheckTranspose(
-  TU_DBLMAT* matrix1,  /**< First matrix */
-  TU_DBLMAT* matrix2   /**< Second matrix */
+bool CMRdblmatCheckTranspose(
+  CMR_DBLMAT* matrix1,  /**< First matrix */
+  CMR_DBLMAT* matrix2   /**< Second matrix */
 );
 
 /**
@@ -313,19 +313,19 @@ bool TUdblmatCheckTranspose(
  */
 
 CMR_EXPORT
-bool TUdblmatCheckSorted(
-  TU_DBLMAT* matrix /**< Double matrix */
+bool CMRdblmatCheckSorted(
+  CMR_DBLMAT* matrix /**< Double matrix */
 );
 
 /**
  * \brief Creates a submatrix of a double matrix as an explicit matrix.
  */
 CMR_EXPORT
-CMR_ERROR TUdblmatFilterSubmat(
-  TU* tu,               /**< \ref TU environment. */
-  TU_DBLMAT* matrix,    /**< Given matrix */
-  TU_SUBMAT* submatrix, /**< Specified submatrix */
-  TU_DBLMAT** result    /**< Pointer for storing the resulting double matrix. */
+CMR_ERROR CMRdblmatFilterSubmat(
+  CMR* cmr,               /**< \ref CMR environment. */
+  CMR_DBLMAT* matrix,    /**< Given matrix */
+  CMR_SUBMAT* submatrix, /**< Specified submatrix */
+  CMR_DBLMAT** result    /**< Pointer for storing the resulting double matrix. */
 );
 
 /**
@@ -333,11 +333,11 @@ CMR_ERROR TUdblmatFilterSubmat(
  */
 
 CMR_EXPORT
-bool TUisBinaryDbl(
-  TU* tu,                 /**< \ref TU environment. */
-  TU_DBLMAT* matrix,      /**< Double matrix */
+bool CMRisBinaryDbl(
+  CMR* cmr,                 /**< \ref CMR environment. */
+  CMR_DBLMAT* matrix,      /**< Double matrix */
   double epsilon,         /**< Absolute error tolerance */
-  TU_SUBMAT** psubmatrix  /**< Pointer for storing a non-binary entry as a submatrix (may be \c NULL). */
+  CMR_SUBMAT** psubmatrix  /**< Pointer for storing a non-binary entry as a submatrix (may be \c NULL). */
 );
 
 /**
@@ -345,11 +345,11 @@ bool TUisBinaryDbl(
  */
 
 CMR_EXPORT
-bool TUisTernaryDbl(
-  TU* tu,                 /**< \ref TU environment. */
-  TU_DBLMAT* matrix,      /**< Double matrix */
+bool CMRisTernaryDbl(
+  CMR* cmr,                 /**< \ref CMR environment. */
+  CMR_DBLMAT* matrix,      /**< Double matrix */
   double epsilon,         /**< Absolute error tolerance */
-  TU_SUBMAT** psubmatrix  /**< Pointer for storing a non-ternary entry as a submatrix (may be \c NULL). */
+  CMR_SUBMAT** psubmatrix  /**< Pointer for storing a non-ternary entry as a submatrix (may be \c NULL). */
 );
 
 /**
@@ -357,11 +357,11 @@ bool TUisTernaryDbl(
  */
 
 CMR_EXPORT
-CMR_ERROR TUsupportDbl(
-  TU* tu,               /**< \ref TU environment. */
-  TU_DBLMAT* matrix,    /**< Double matrix */
+CMR_ERROR CMRsupportDbl(
+  CMR* cmr,               /**< \ref CMR environment. */
+  CMR_DBLMAT* matrix,    /**< Double matrix */
   double epsilon,       /**< Absolute error tolerance */
-  TU_CHRMAT** psupport  /**< Pointer for storing the support matrix of \p matrix. */
+  CMR_CHRMAT** psupport  /**< Pointer for storing the support matrix of \p matrix. */
 );
 
 /**
@@ -369,11 +369,11 @@ CMR_ERROR TUsupportDbl(
  */
 
 CMR_EXPORT
-CMR_ERROR TUsignedSupportDbl(
-  TU* tu,               /**< \ref TU environment. */
-  TU_DBLMAT* matrix,    /**< Double matrix */
+CMR_ERROR CMRsignedSupportDbl(
+  CMR* cmr,               /**< \ref CMR environment. */
+  CMR_DBLMAT* matrix,    /**< Double matrix */
   double epsilon,       /**< Absolute error tolerance */
-  TU_CHRMAT** psupport  /**< Pointer for storing the support matrix of \p matrix. */
+  CMR_CHRMAT** psupport  /**< Pointer for storing the support matrix of \p matrix. */
 );
 
 
@@ -392,9 +392,9 @@ CMR_ERROR TUsignedSupportDbl(
  */
 
 CMR_EXPORT
-CMR_ERROR TUintmatCreate(
-  TU* tu,              /**< \ref TU environment. */
-  TU_INTMAT** matrix,  /**< Pointer for storing the created matrix. */
+CMR_ERROR CMRintmatCreate(
+  CMR* cmr,              /**< \ref CMR environment. */
+  CMR_INTMAT** matrix,  /**< Pointer for storing the created matrix. */
   int numRows,         /**< Number of rows. */
   int numColumns,      /**< Number of columns. */
   int numNonzeros      /**< Number of nonzeros. */
@@ -405,9 +405,9 @@ CMR_ERROR TUintmatCreate(
  */
 
 CMR_EXPORT
-CMR_ERROR TUintmatFree(
-  TU* tu,             /**< \ref TU environment. */
-  TU_INTMAT** matrix  /**< Pointer to matrix. */
+CMR_ERROR CMRintmatFree(
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_INTMAT** matrix  /**< Pointer to matrix. */
 );
 
 /**
@@ -415,9 +415,9 @@ CMR_ERROR TUintmatFree(
  */
 
 CMR_EXPORT
-CMR_ERROR TUintmatChangeNumNonzeros(
-  TU* tu,             /**< \ref TU environment. */
-  TU_INTMAT* matrix,  /**< Given matrix. */
+CMR_ERROR CMRintmatChangeNumNonzeros(
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_INTMAT* matrix,  /**< Given matrix. */
   int newNumNonzeros  /**< New number of nonzeros. */ 
 );
 
@@ -427,20 +427,20 @@ CMR_ERROR TUintmatChangeNumNonzeros(
  * Allocates *\p result and copies \p matrix there.
  */
 CMR_EXPORT
-CMR_ERROR TUintmatCopy(
-  TU* tu,             /**< \ref TU environment. */
-  TU_INTMAT* matrix,  /**< Given matrix. */
-  TU_INTMAT** result  /**< Pointer to store a copy of \p matrix. */
+CMR_ERROR CMRintmatCopy(
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_INTMAT* matrix,  /**< Given matrix. */
+  CMR_INTMAT** result  /**< Pointer to store a copy of \p matrix. */
 );
 
 /**
  * \brief Creates the transpose of an int matrix.
  */
 CMR_EXPORT
-CMR_ERROR TUintmatTranspose(
-  TU* tu,             /**< \ref TU environment. */
-  TU_INTMAT* matrix,  /**< Given matrix. */
-  TU_INTMAT** result  /**< Pointer to store the transpose of \p matrix. */
+CMR_ERROR CMRintmatTranspose(
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_INTMAT* matrix,  /**< Given matrix. */
+  CMR_INTMAT** result  /**< Pointer to store the transpose of \p matrix. */
 );
 
 /**
@@ -448,9 +448,9 @@ CMR_ERROR TUintmatTranspose(
  */
 
 CMR_EXPORT
-CMR_ERROR TUintmatPrintSparse(
+CMR_ERROR CMRintmatPrintSparse(
   FILE* stream,       /**< File stream to print to. */
-  TU_INTMAT* matrix   /**< Int matrix. */
+  CMR_INTMAT* matrix   /**< Int matrix. */
 );
 
 /**
@@ -458,9 +458,9 @@ CMR_ERROR TUintmatPrintSparse(
  */
 
 CMR_EXPORT
-CMR_ERROR TUintmatPrintDense(
+CMR_ERROR CMRintmatPrintDense(
   FILE* stream,       /**< File stream to print to. */
-  TU_INTMAT* matrix,  /**< Int matrix. */
+  CMR_INTMAT* matrix,  /**< Int matrix. */
   char zeroChar,      /**< Character to print for a zero. */
   bool header         /**< Whether to print row and column indices. */
 );
@@ -473,9 +473,9 @@ CMR_ERROR TUintmatPrintDense(
  */
 
 CMR_EXPORT
-CMR_ERROR TUintmatCreateFromSparseStream(
-  TU* tu,               /**< \ref TU environment. */
-  TU_INTMAT** pmatrix,  /**< Pointer for storing the matrix. */
+CMR_ERROR CMRintmatCreateFromSparseStream(
+  CMR* cmr,               /**< \ref CMR environment. */
+  CMR_INTMAT** pmatrix,  /**< Pointer for storing the matrix. */
   FILE* stream          /**< File stream to read from. */
 );
 
@@ -484,9 +484,9 @@ CMR_ERROR TUintmatCreateFromSparseStream(
  */
 
 CMR_EXPORT
-CMR_ERROR TUintmatCreateFromDenseStream(
-  TU* tu,               /**< \ref TU environment. */
-  TU_INTMAT** pmatrix,  /**< Pointer for storing the matrix. */
+CMR_ERROR CMRintmatCreateFromDenseStream(
+  CMR* cmr,               /**< \ref CMR environment. */
+  CMR_INTMAT** pmatrix,  /**< Pointer for storing the matrix. */
   FILE* stream          /**< File stream to read from. */
 );
 
@@ -495,9 +495,9 @@ CMR_ERROR TUintmatCreateFromDenseStream(
  */
 
 CMR_EXPORT
-bool TUintmatCheckEqual(
-  TU_INTMAT* matrix1, /**< First matrix */
-  TU_INTMAT* matrix2  /**< Second matrix */
+bool CMRintmatCheckEqual(
+  CMR_INTMAT* matrix1, /**< First matrix */
+  CMR_INTMAT* matrix2  /**< Second matrix */
 );
 
 /**
@@ -505,9 +505,9 @@ bool TUintmatCheckEqual(
  */
 
 CMR_EXPORT
-bool TUintmatCheckTranspose(
-  TU_INTMAT* matrix1, /**< First matrix */
-  TU_INTMAT* matrix2  /**< Second matrix */
+bool CMRintmatCheckTranspose(
+  CMR_INTMAT* matrix1, /**< First matrix */
+  CMR_INTMAT* matrix2  /**< Second matrix */
 );
 
 /**
@@ -515,19 +515,19 @@ bool TUintmatCheckTranspose(
  */
 
 CMR_EXPORT
-bool TUintmatCheckSorted(
-  TU_INTMAT* matrix /**< Int matrix */
+bool CMRintmatCheckSorted(
+  CMR_INTMAT* matrix /**< Int matrix */
 );
 
 /**
  * \brief Creates a submatrix of an int matrix as an explicit matrix.
  */
 CMR_EXPORT
-CMR_ERROR TUintmatFilterSubmat(
-  TU* tu,               /**< \ref TU environment. */
-  TU_INTMAT* matrix,    /**< Given matrix */
-  TU_SUBMAT* submatrix, /**< Specified submatrix */
-  TU_INTMAT** result    /**< Pointer for storing the resulting int matrix. */
+CMR_ERROR CMRintmatFilterSubmat(
+  CMR* cmr,               /**< \ref CMR environment. */
+  CMR_INTMAT* matrix,    /**< Given matrix */
+  CMR_SUBMAT* submatrix, /**< Specified submatrix */
+  CMR_INTMAT** result    /**< Pointer for storing the resulting int matrix. */
 );
 
 /**
@@ -535,10 +535,10 @@ CMR_ERROR TUintmatFilterSubmat(
  */
 
 CMR_EXPORT
-bool TUisBinaryInt(
-  TU* tu,                 /**< \ref TU environment. */
-  TU_INTMAT* matrix,      /**< Int matrix */
-  TU_SUBMAT** psubmatrix  /**< Pointer for storing a non-binary entry as a submatrix (may be \c NULL). */
+bool CMRisBinaryInt(
+  CMR* cmr,                 /**< \ref CMR environment. */
+  CMR_INTMAT* matrix,      /**< Int matrix */
+  CMR_SUBMAT** psubmatrix  /**< Pointer for storing a non-binary entry as a submatrix (may be \c NULL). */
 );
 
 /**
@@ -546,10 +546,10 @@ bool TUisBinaryInt(
  */
 
 CMR_EXPORT
-bool TUisTernaryInt(
-  TU* tu,                 /**< \ref TU environment. */
-  TU_INTMAT* matrix,      /**< Int matrix */
-  TU_SUBMAT** psubmatrix  /**< Pointer for storing a non-ternary entry as a submatrix (may be \c NULL). */
+bool CMRisTernaryInt(
+  CMR* cmr,                 /**< \ref CMR environment. */
+  CMR_INTMAT* matrix,      /**< Int matrix */
+  CMR_SUBMAT** psubmatrix  /**< Pointer for storing a non-ternary entry as a submatrix (may be \c NULL). */
 );
 
 /**
@@ -557,10 +557,10 @@ bool TUisTernaryInt(
  */
 
 CMR_EXPORT
-CMR_ERROR TUsupportInt(
-  TU* tu,               /**< \ref TU environment. */
-  TU_INTMAT* matrix,    /**< Int matrix */
-  TU_CHRMAT** psupport  /**< Pointer for storing the support matrix of \p matrix. */
+CMR_ERROR CMRsupportInt(
+  CMR* cmr,               /**< \ref CMR environment. */
+  CMR_INTMAT* matrix,    /**< Int matrix */
+  CMR_CHRMAT** psupport  /**< Pointer for storing the support matrix of \p matrix. */
 );
 
 /**
@@ -568,10 +568,10 @@ CMR_ERROR TUsupportInt(
  */
 
 CMR_EXPORT
-CMR_ERROR TUsignedSupportInt(
-  TU* tu,               /**< \ref TU environment. */
-  TU_INTMAT* matrix,    /**< Int matrix */
-  TU_CHRMAT** psupport  /**< Pointer for storing the support matrix of \p matrix. */
+CMR_ERROR CMRsignedSupportInt(
+  CMR* cmr,               /**< \ref CMR environment. */
+  CMR_INTMAT* matrix,    /**< Int matrix */
+  CMR_CHRMAT** psupport  /**< Pointer for storing the support matrix of \p matrix. */
 );
 
 
@@ -596,9 +596,9 @@ CMR_ERROR TUsignedSupportInt(
  */
 
 CMR_EXPORT
-CMR_ERROR TUchrmatCreate(
-  TU* tu,              /**< \ref TU environment. */
-  TU_CHRMAT** matrix,  /**< Pointer for storing the created matrix. */
+CMR_ERROR CMRchrmatCreate(
+  CMR* cmr,              /**< \ref CMR environment. */
+  CMR_CHRMAT** matrix,  /**< Pointer for storing the created matrix. */
   int numRows,         /**< Number of rows. */
   int numColumns,      /**< Number of columns. */
   int numNonzeros      /**< Number of nonzeros. */
@@ -609,9 +609,9 @@ CMR_ERROR TUchrmatCreate(
  */
 
 CMR_EXPORT
-CMR_ERROR TUchrmatFree(
-  TU* tu,             /**< \ref TU environment. */
-  TU_CHRMAT** matrix  /**< Pointer to matrix. */
+CMR_ERROR CMRchrmatFree(
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_CHRMAT** matrix  /**< Pointer to matrix. */
 );
 
 /**
@@ -619,9 +619,9 @@ CMR_ERROR TUchrmatFree(
  */
 
 CMR_EXPORT
-CMR_ERROR TUchrmatChangeNumNonzeros(
-  TU* tu,             /**< \ref TU environment. */
-  TU_CHRMAT* matrix,  /**< Given matrix. */
+CMR_ERROR CMRchrmatChangeNumNonzeros(
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,  /**< Given matrix. */
   int newNumNonzeros  /**< New number of nonzeros. */ 
 );
 
@@ -631,20 +631,20 @@ CMR_ERROR TUchrmatChangeNumNonzeros(
  * Allocates *\p result and copies \p matrix there.
  */
 CMR_EXPORT
-CMR_ERROR TUchrmatCopy(
-  TU* tu,             /**< \ref TU environment. */
-  TU_CHRMAT* matrix,  /**< Given matrix. */
-  TU_CHRMAT** result  /**< Pointer to store a copy of \p matrix. */
+CMR_ERROR CMRchrmatCopy(
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,  /**< Given matrix. */
+  CMR_CHRMAT** result  /**< Pointer to store a copy of \p matrix. */
 );
 
 /**
  * \brief Creates the transpose of an int matrix.
  */
 CMR_EXPORT
-CMR_ERROR TUchrmatTranspose(
-  TU* tu,             /**< \ref TU environment. */
-  TU_CHRMAT* matrix,  /**< Given matrix. */
-  TU_CHRMAT** result  /**< Pointer to store the transpose of \p matrix. */
+CMR_ERROR CMRchrmatTranspose(
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,  /**< Given matrix. */
+  CMR_CHRMAT** result  /**< Pointer to store the transpose of \p matrix. */
 );
 
 
@@ -654,9 +654,9 @@ CMR_ERROR TUchrmatTranspose(
  */
 
 CMR_EXPORT
-CMR_ERROR TUchrmatPrintSparse(
+CMR_ERROR CMRchrmatPrintSparse(
   FILE* stream,       /**< File stream to print to. */
-  TU_CHRMAT* matrix   /**< Char matrix. */
+  CMR_CHRMAT* matrix   /**< Char matrix. */
 );
 
 
@@ -666,9 +666,9 @@ CMR_ERROR TUchrmatPrintSparse(
  */
 
 CMR_EXPORT
-CMR_ERROR TUchrmatPrintDense(
+CMR_ERROR CMRchrmatPrintDense(
   FILE* stream,       /**< File stream to print to. */
-  TU_CHRMAT* matrix,  /**< Char matrix. */
+  CMR_CHRMAT* matrix,  /**< Char matrix. */
   char zeroChar,      /**< Character to print for a zero. */
   bool header         /**< Whether to print row and column indices. */
 );
@@ -683,9 +683,9 @@ CMR_ERROR TUchrmatPrintDense(
  */
 
 CMR_EXPORT
-CMR_ERROR TUchrmatCreateFromSparseStream(
-  TU* tu,               /**< \ref TU environment. */
-  TU_CHRMAT** pmatrix,  /**< Pointer for storing the matrix. */
+CMR_ERROR CMRchrmatCreateFromSparseStream(
+  CMR* cmr,               /**< \ref CMR environment. */
+  CMR_CHRMAT** pmatrix,  /**< Pointer for storing the matrix. */
   FILE* stream          /**< File stream to read from. */
 );
 
@@ -695,9 +695,9 @@ CMR_ERROR TUchrmatCreateFromSparseStream(
  */
 
 CMR_EXPORT
-CMR_ERROR TUchrmatCreateFromDenseStream(
-  TU* tu,               /**< \ref TU environment. */
-  TU_CHRMAT** pmatrix,  /**< Pointer for storing the matrix. */
+CMR_ERROR CMRchrmatCreateFromDenseStream(
+  CMR* cmr,               /**< \ref CMR environment. */
+  CMR_CHRMAT** pmatrix,  /**< Pointer for storing the matrix. */
   FILE* stream          /**< File stream to read from. */
 );
 
@@ -706,9 +706,9 @@ CMR_ERROR TUchrmatCreateFromDenseStream(
  */
 
 CMR_EXPORT
-bool TUchrmatCheckEqual(
-  TU_CHRMAT* matrix1,  /**< First matrix */
-  TU_CHRMAT* matrix2   /**< Second matrix */
+bool CMRchrmatCheckEqual(
+  CMR_CHRMAT* matrix1,  /**< First matrix */
+  CMR_CHRMAT* matrix2   /**< Second matrix */
 );
 
 /**
@@ -716,9 +716,9 @@ bool TUchrmatCheckEqual(
  */
 
 CMR_EXPORT
-bool TUchrmatCheckTranspose(
-  TU_CHRMAT* matrix1, /**< First matrix */
-  TU_CHRMAT* matrix2  /**< Second matrix */
+bool CMRchrmatCheckTranspose(
+  CMR_CHRMAT* matrix1, /**< First matrix */
+  CMR_CHRMAT* matrix2  /**< Second matrix */
 );
 
 /**
@@ -726,19 +726,19 @@ bool TUchrmatCheckTranspose(
  */
 
 CMR_EXPORT
-bool TUchrmatCheckSorted(
-  TU_CHRMAT* matrix /**< Char matrix */
+bool CMRchrmatCheckSorted(
+  CMR_CHRMAT* matrix /**< Char matrix */
 );
 
 /**
  * \brief Creates a submatrix of a char matrix as an explicit matrix.
  */
 CMR_EXPORT
-CMR_ERROR TUchrmatFilterSubmat(
-  TU* tu,               /**< \ref TU environment. */
-  TU_CHRMAT* matrix,    /**< Given matrix */
-  TU_SUBMAT* submatrix, /**< Specified submatrix */
-  TU_CHRMAT** result    /**< Pointer for storing the resulting char matrix. */
+CMR_ERROR CMRchrmatFilterSubmat(
+  CMR* cmr,               /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,    /**< Given matrix */
+  CMR_SUBMAT* submatrix, /**< Specified submatrix */
+  CMR_CHRMAT** result    /**< Pointer for storing the resulting char matrix. */
 );
 
 /**
@@ -746,10 +746,10 @@ CMR_ERROR TUchrmatFilterSubmat(
  */
 
 CMR_EXPORT
-bool TUisBinaryChr(
-  TU* tu,                 /**< \ref TU environment. */
-  TU_CHRMAT* matrix,      /**< Char matrix */
-  TU_SUBMAT** psubmatrix  /**< Pointer for storing a non-binary entry as a submatrix (may be \c NULL). */
+bool CMRisBinaryChr(
+  CMR* cmr,                 /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,      /**< Char matrix */
+  CMR_SUBMAT** psubmatrix  /**< Pointer for storing a non-binary entry as a submatrix (may be \c NULL). */
 );
 
 /**
@@ -757,10 +757,10 @@ bool TUisBinaryChr(
  */
 
 CMR_EXPORT
-bool TUisTernaryChr(
-  TU* tu,                 /**< \ref TU environment. */
-  TU_CHRMAT* matrix,      /**< Char matrix */
-  TU_SUBMAT** psubmatrix  /**< Pointer for storing a non-ternary entry as a submatrix (may be \c NULL). */
+bool CMRisTernaryChr(
+  CMR* cmr,                 /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,      /**< Char matrix */
+  CMR_SUBMAT** psubmatrix  /**< Pointer for storing a non-ternary entry as a submatrix (may be \c NULL). */
 );
 
 /**
@@ -768,10 +768,10 @@ bool TUisTernaryChr(
  */
 
 CMR_EXPORT
-CMR_ERROR TUsupportChr(
-  TU* tu,               /**< \ref TU environment. */
-  TU_CHRMAT* matrix,    /**< Char matrix */
-  TU_CHRMAT** psupport  /**< Pointer for storing the support matrix of \p matrix. */
+CMR_ERROR CMRsupportChr(
+  CMR* cmr,               /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,    /**< Char matrix */
+  CMR_CHRMAT** psupport  /**< Pointer for storing the support matrix of \p matrix. */
 );
 
 /**
@@ -779,14 +779,14 @@ CMR_ERROR TUsupportChr(
  */
 
 CMR_EXPORT
-CMR_ERROR TUsignedSupportChr(
-  TU* tu,               /**< \ref TU environment. */
-  TU_CHRMAT* matrix,    /**< Char matrix */
-  TU_CHRMAT** psupport  /**< Pointer for storing the support matrix of \p matrix. */
+CMR_ERROR CMRsignedSupportChr(
+  CMR* cmr,               /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,    /**< Char matrix */
+  CMR_CHRMAT** psupport  /**< Pointer for storing the support matrix of \p matrix. */
 );
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* TU_MATRIX_H */
+#endif /* CMR_MATRIX_H */

@@ -1,5 +1,5 @@
-#ifndef TU_SIGN_INTERNAL_H
-#define TU_SIGN_INTERNAL_H
+#ifndef CMR_SIGN_INTERNAL_H
+#define CMR_SIGN_INTERNAL_H
 
 #include <cmr/env.h>
 #include <cmr/matrix.h>
@@ -19,23 +19,23 @@ extern "C" {
  * depending on whether \p matrix or \p transpose was modified (or would have been modified).
  *
  * If \p submatrix is not \c NULL and sign changes are necessary, then a submatrix with determinant
- * -2 or +2 is stored in *\p psubmatrix and the caller must use \ref TUsubmatFree free its
+ * -2 or +2 is stored in *\p psubmatrix and the caller must use \ref CMRsubmatFree free its
  * memory. It is set to \c NULL if no sign changes are needed.
  */
 
 CMR_ERROR signSequentiallyConnected(
-  TU* tu,                 /**< \ref TU environment. */
-  TU_CHRMAT* matrix,      /**< Sparse matrix. */
-  TU_CHRMAT* transpose,   /**< Transpose of \p matrix. */
+  CMR* cmr,                 /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,      /**< Sparse matrix. */
+  CMR_CHRMAT* transpose,   /**< Transpose of \p matrix. */
   bool change,            /**< Whether signs of \p matrix should be changed if necessary */
   char* pmodification,    /**< Pointer for storing which matrix was modified.*/
-  TU_SUBMAT** psubmatrix  /**< Pointer for storing a submatrix with a bad determinant (may be \c NULL). */
+  CMR_SUBMAT** psubmatrix  /**< Pointer for storing a submatrix with a bad determinant (may be \c NULL). */
 );
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* TU_SIGN_INTERNAL_H */
+#endif /* CMR_SIGN_INTERNAL_H */
 
 

@@ -238,7 +238,7 @@ int run(const std::string& file_name, const std::set <char>& tests, bool show_ce
 
   std::cerr << "Combinatorial Matrix Recognition version " << CMR_VERSION_MAJOR << "." << CMR_VERSION_MINOR
     << CMR_VERSION_PATCH << " by Matthias Walter and Klaus Truemper.\n";
-  std::cerr << "See http://matthiaswalter.org/TUtest/ for references and citation.\n\n" << std::flush;
+  std::cerr << "See http://matthiaswalter.org/CMRtest/ for references and citation.\n\n" << std::flush;
 
   std::cout << "Read a " << matrix.size1() << " x " << matrix.size2() << " matrix.\n" << std::endl;
 

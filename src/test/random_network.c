@@ -31,19 +31,19 @@ int main(int argc, const char** argv)
   }
   ++numNodes;
 
-  TU* tu = NULL;
-  TUcreateEnvironment(&tu);
+  CMR* cmr = NULL;
+  CMRcreateEnvironment(&cmr);
 
   /* Init transpose of matrix. */
-  TU_CHRMAT* transposed = NULL;
-  TUchrmatCreate(tu, &transposed, numEdges, numNodes-1, numEdges * (numNodes-1));
+  CMR_CHRMAT* transposed = NULL;
+  CMRchrmatCreate(cmr, &transposed, numEdges, numNodes-1, numEdges * (numNodes-1));
   transposed->numNonzeros = 0;
 
   /* Create random arborescence. */
   int* nextTreeNode = NULL;
   int* treeDistance = NULL;
-  TUallocBlockArray(tu, &nextTreeNode, numNodes);
-  TUallocBlockArray(tu, &treeDistance, numNodes);
+  CMRallocBlockArray(cmr, &nextTreeNode, numNodes);
+  CMRallocBlockArray(cmr, &treeDistance, numNodes);
   nextTreeNode[0] = 0;
   treeDistance[0] = 0;
   for (int v = 1; v < numNodes; ++v)
@@ -54,7 +54,7 @@ int main(int argc, const char** argv)
   }
 
   int* column = NULL;
-  TUallocBlockArray(tu, &column, numNodes - 1);
+  CMRallocBlockArray(cmr, &column, numNodes - 1);
   for (int e = 0; e < numEdges; ++e)
   {
     for (int v = 1; v < numNodes; ++v)
@@ -90,31 +90,31 @@ int main(int argc, const char** argv)
     }
   }
 
-  TUfreeBlockArray(tu, &column);
-  TUfreeBlockArray(tu, &nextTreeNode);
-  TUfreeBlockArray(tu, &treeDistance);
+  CMRfreeBlockArray(cmr, &column);
+  CMRfreeBlockArray(cmr, &nextTreeNode);
+  CMRfreeBlockArray(cmr, &treeDistance);
 
-  TU_CHRMAT* matrix = NULL;
-  TUchrmatTranspose(tu, transposed, &matrix);
+  CMR_CHRMAT* matrix = NULL;
+  CMRchrmatTranspose(cmr, transposed, &matrix);
 
   /* Print matrix. */
 
-  TUchrmatPrintDense(stdout, matrix, ' ', true);
+  CMRchrmatPrintDense(stdout, matrix, ' ', true);
 
   /* Check for graphicness. */
 
-  TU_GRAPH* graph = NULL;
-  TU_GRAPH_EDGE* basis = NULL;
-  TU_GRAPH_EDGE* cobasis = NULL;
-  TU_SUBMAT* submatrix = NULL;
+  CMR_GRAPH* graph = NULL;
+  CMR_GRAPH_EDGE* basis = NULL;
+  CMR_GRAPH_EDGE* cobasis = NULL;
+  CMR_SUBMAT* submatrix = NULL;
   bool isGraphic;
 
-  TU_CALL( TUtestBinaryGraphic(tu, transposed, &isGraphic, &graph, &basis, &cobasis, &submatrix) );
+  CMR_CALL( CMRtestBinaryGraphic(cmr, transposed, &isGraphic, &graph, &basis, &cobasis, &submatrix) );
 
   if (graph)
   {
     printf("Represented graph:\n");
-    TUgraphPrint(stdout, graph);
+    CMRgraphPrint(stdout, graph);
     if (basis)
     {
       for (int r = 0; r < matrix->numRows; ++r)
@@ -129,9 +129,9 @@ int main(int argc, const char** argv)
 
   /* Cleanup */
 
-  TUchrmatFree(tu, &transposed);
-  TUchrmatFree(tu, &matrix);
-  TUfreeEnvironment(&tu);
+  CMRchrmatFree(cmr, &transposed);
+  CMRchrmatFree(cmr, &matrix);
+  CMRfreeEnvironment(&cmr);
 
   return EXIT_SUCCESS;
 }

@@ -1,22 +1,22 @@
-#ifndef TU_REGULAR_INTERNAL_H
-#define TU_REGULAR_INTERNAL_H
+#ifndef CMR_REGULAR_INTERNAL_H
+#define CMR_REGULAR_INTERNAL_H
 
 #include <cmr/regular.h>
 
 /**
  * \brief Creates a decomposition tree node.
  */
-void TUcreateDec(
-  TU* tu,       /**< TU environment. */
-  TU_DEC** dec  /**< Pointer to decomposition tree. */
+void CMRcreateDec(
+  CMR* cmr,       /**< \ref CMR environment. */
+  CMR_TU_DEC** dec  /**< Pointer to decomposition tree. */
 );
 
 /**
  * \brief Creates a decomposition tree node from as minor.
  */
-void TUcreateDecChild(
-  TU* tu,                       /**< TU environment. */
-  TU_DEC* dec,                  /**< Given decomposition node. */
+void CMRcreateDecChild(
+  CMR* cmr,                       /**< \ref CMR environment. */
+  CMR_TU_DEC* dec,                  /**< Given decomposition node. */
   int numRows,                  /**< Number of rows of the child. */
   int* rows,                    /**< Rows of child node's matrix. */
   int numColumns,               /**< Number of columns of the child. */
@@ -26,7 +26,7 @@ void TUcreateDecChild(
   int numExtraColumns,          /**< Extra columns for the child matrix without a parent row. */
   int numExtraNonzeros,         /**< Number of nonzeros in extra rows and columns. */
   bool constructDecomposition,  /**< Whether to construct a proper decomposition. */
-  TU_DEC** result               /**< Pointer to decomposition child. */
+  CMR_TU_DEC** result               /**< Pointer to decomposition child. */
 );
 
 
@@ -36,13 +36,13 @@ void TUcreateDecChild(
  *        a sequentially connected matrix.
  */
 
-bool TUregularSequentiallyConnected(
-  TU* tu,                 /**< TU environment. */
-  TU_DEC* decomposition,  /**< Partial decomposition. */
-  bool certify,           /**< Whether to compute a proper decomposition tree. */
-  bool notGraphic,        /**< If \c true, the matroid is known to be not graphic. */
-  bool notCographic       /**< If \c true, the matroid is known to be not cographic. */
+bool CMRregularSequentiallyConnected(
+  CMR* cmr,                   /**< \ref CMR environment. */
+  CMR_TU_DEC* decomposition, /**< Partial decomposition. */
+  bool certify,               /**< Whether to compute a proper decomposition tree. */
+  bool notGraphic,            /**< If \c true, the matroid is known to be not graphic. */
+  bool notCographic           /**< If \c true, the matroid is known to be not cographic. */
 );
 
-#endif /* TU_REGULAR_INTERNAL_H */
+#endif /* CMR_REGULAR_INTERNAL_H */
 

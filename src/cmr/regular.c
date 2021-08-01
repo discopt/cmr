@@ -6,39 +6,39 @@
 #include "regular_internal.h"
 #include "env_internal.h"
 
-bool TUregularTest(TU* tu, TU_CHRMAT* matrix, int* rowLabels, int* columnLabels,
-  TU_DEC** pdec)
+bool CMRregularTest(CMR* cmr, CMR_CHRMAT* matrix, int* rowLabels, int* columnLabels,
+  CMR_TU_DEC** pdec)
 {
   bool isRegular = true;
   bool certify = pdec != NULL;
 
-  assert(tu);
+  assert(cmr);
   assert(matrix);
 
   /* Perform a 1-sum decomposition. */
-  TU_DEC* dec = NULL;
+  CMR_TU_DEC* dec = NULL;
 
-  int numChildren = TUregularDecomposeOneSum(tu, matrix, rowLabels, columnLabels, &dec, true);
+  int numChildren = CMRregularDecomposeOneSum(cmr, matrix, rowLabels, columnLabels, &dec, true);
   if (certify)
     *pdec = dec;
   if (numChildren <= 1)
   {
-    isRegular = TUregularSequentiallyConnected(tu, dec, certify, false, false);
+    isRegular = CMRregularSequentiallyConnected(cmr, dec, certify, false, false);
   }
   else
   {
     if (certify)
-      dec->flags = TU_DEC_ONE_SUM | TU_DEC_GRAPHIC | TU_DEC_COGRAPHIC | TU_DEC_REGULAR;
+      dec->flags = CMR_TU_DEC_ONE_SUM | CMR_TU_DEC_GRAPHIC | CMR_TU_DEC_COGRAPHIC | CMR_TU_DEC_REGULAR;
 
     for (int child = 0; child < numChildren; ++child)
     {
-      bool result = TUregularSequentiallyConnected(tu, dec->children[child], certify,
+      bool result = CMRregularSequentiallyConnected(cmr, dec->children[child], certify,
         false, false);
       isRegular = isRegular && result;
       if (certify)
       {
         dec->flags &= (dec->children[child]->flags
-          & (TU_DEC_REGULAR | TU_DEC_GRAPHIC | TU_DEC_COGRAPHIC));
+          & (CMR_TU_DEC_REGULAR | CMR_TU_DEC_GRAPHIC | CMR_TU_DEC_COGRAPHIC));
       }
       else if (!result)
         break;
@@ -46,15 +46,15 @@ bool TUregularTest(TU* tu, TU_CHRMAT* matrix, int* rowLabels, int* columnLabels,
   }
 
   if (!pdec)
-    TUdecFree(tu, &dec);
+    CMRtudecFree(cmr, &dec);
 
   return isRegular;
 }
 
-bool TUregularSequentiallyConnected(TU* tu, TU_DEC* decomposition, bool certify, bool notGraphic,
+bool CMRregularSequentiallyConnected(CMR* cmr, CMR_TU_DEC* decomposition, bool certify, bool notGraphic,
   bool notCographic)
 {
-  assert(tu);
+  assert(cmr);
   assert(decomposition);
   assert(decomposition->matrix);
   assert(decomposition->transpose);

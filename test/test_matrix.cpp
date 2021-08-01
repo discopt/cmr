@@ -7,8 +7,8 @@
 
 TEST(Matrix, Read)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
 
   /* Double matrices. */
   {
@@ -17,8 +17,8 @@ TEST(Matrix, Read)
       "0 1 1 "
       "-1 0 2 ";
     FILE* stream = fmemopen((char*) denseInput, strlen(denseInput), "r");
-    TU_DBLMAT* dense = NULL;
-    ASSERT_TU_CALL( TUdblmatCreateFromDenseStream(tu, &dense, stream) );
+    CMR_DBLMAT* dense = NULL;
+    ASSERT_CMR_CALL( CMRdblmatCreateFromDenseStream(cmr, &dense, stream) );
     fclose(stream);
 
     const char* sparseInput = "3 3 5 "
@@ -28,14 +28,14 @@ TEST(Matrix, Read)
       "2 0 -1 "
       "2 2 2 ";
     stream = fmemopen((char*) sparseInput, strlen(sparseInput), "r");
-    TU_DBLMAT* sparse = NULL;
-    ASSERT_TU_CALL( TUdblmatCreateFromSparseStream(tu, &sparse, stream) );
+    CMR_DBLMAT* sparse = NULL;
+    ASSERT_CMR_CALL( CMRdblmatCreateFromSparseStream(cmr, &sparse, stream) );
     fclose(stream);
 
-    ASSERT_TRUE( TUdblmatCheckEqual(dense, sparse) );
+    ASSERT_TRUE( CMRdblmatCheckEqual(dense, sparse) );
 
-    ASSERT_TU_CALL( TUdblmatFree(tu, &dense) );
-    ASSERT_TU_CALL( TUdblmatFree(tu, &sparse) );
+    ASSERT_CMR_CALL( CMRdblmatFree(cmr, &dense) );
+    ASSERT_CMR_CALL( CMRdblmatFree(cmr, &sparse) );
   }
 
   /* Int matrices. */
@@ -45,8 +45,8 @@ TEST(Matrix, Read)
       "0 1 1 "
       "-1 0 2 ";
     FILE* stream = fmemopen((char*) denseInput, strlen(denseInput), "r");
-    TU_INTMAT* dense = NULL;
-    ASSERT_TU_CALL( TUintmatCreateFromDenseStream(tu, &dense, stream) );
+    CMR_INTMAT* dense = NULL;
+    ASSERT_CMR_CALL( CMRintmatCreateFromDenseStream(cmr, &dense, stream) );
     fclose(stream);
 
     const char* sparseInput = "3 3 5 "
@@ -56,14 +56,14 @@ TEST(Matrix, Read)
       "2 0 -1 "
       "2 2 2 ";
     stream = fmemopen((char*) sparseInput, strlen(sparseInput), "r");
-    TU_INTMAT* sparse = NULL;
-    ASSERT_TU_CALL( TUintmatCreateFromSparseStream(tu, &sparse, stream) );
+    CMR_INTMAT* sparse = NULL;
+    ASSERT_CMR_CALL( CMRintmatCreateFromSparseStream(cmr, &sparse, stream) );
     fclose(stream);
 
-    ASSERT_TRUE( TUintmatCheckEqual(dense, sparse) );
+    ASSERT_TRUE( CMRintmatCheckEqual(dense, sparse) );
 
-    ASSERT_TU_CALL( TUintmatFree(tu, &dense) );
-    ASSERT_TU_CALL( TUintmatFree(tu, &sparse) );
+    ASSERT_CMR_CALL( CMRintmatFree(cmr, &dense) );
+    ASSERT_CMR_CALL( CMRintmatFree(cmr, &sparse) );
   }
 
   /* Char matrices. */
@@ -73,8 +73,8 @@ TEST(Matrix, Read)
       "0 1 1 "
       "-1 0 2 ";
     FILE* stream = fmemopen((char*) denseInput, strlen(denseInput), "r");
-    TU_CHRMAT* dense = NULL;
-    ASSERT_TU_CALL( TUchrmatCreateFromDenseStream(tu, &dense, stream) );
+    CMR_CHRMAT* dense = NULL;
+    ASSERT_CMR_CALL( CMRchrmatCreateFromDenseStream(cmr, &dense, stream) );
     fclose(stream);
 
     const char* sparseInput = "3 3 5 "
@@ -84,36 +84,36 @@ TEST(Matrix, Read)
       "2 0 -1 "
       "2 2 2 ";
     stream = fmemopen((char*) sparseInput, strlen(sparseInput), "r");
-    TU_CHRMAT* sparse = NULL;
-    ASSERT_TU_CALL( TUchrmatCreateFromSparseStream(tu, &sparse, stream) );
+    CMR_CHRMAT* sparse = NULL;
+    ASSERT_CMR_CALL( CMRchrmatCreateFromSparseStream(cmr, &sparse, stream) );
     fclose(stream);
 
-    ASSERT_TRUE( TUchrmatCheckEqual(dense, sparse) );
+    ASSERT_TRUE( CMRchrmatCheckEqual(dense, sparse) );
 
-    ASSERT_TU_CALL( TUchrmatFree(tu, &dense) );
-    ASSERT_TU_CALL( TUchrmatFree(tu, &sparse) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &dense) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &sparse) );
   }
 
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
 TEST(Matrix, Transpose)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
 
   /* Double matrices. */
   {
-    TU_DBLMAT* A = NULL;
-    stringToDoubleMatrix(tu, &A, "4 5 "
+    CMR_DBLMAT* A = NULL;
+    stringToDoubleMatrix(cmr, &A, "4 5 "
       "1 2 3 0 0 "
       "0 4 5 0 6 "
       "7 0 0 8 0 "
       "0 0 9 0 0 "
     );
 
-    TU_DBLMAT* B = NULL;
-    stringToDoubleMatrix(tu, &B, "5 4 "
+    CMR_DBLMAT* B = NULL;
+    stringToDoubleMatrix(cmr, &B, "5 4 "
       "1 0 7 0 "
       "2 4 0 0 "
       "3 5 0 9 "
@@ -121,24 +121,24 @@ TEST(Matrix, Transpose)
       "0 6 0 0 "
     );
 
-    ASSERT_TRUE(TUdblmatCheckTranspose(A, B));
+    ASSERT_TRUE(CMRdblmatCheckTranspose(A, B));
 
-    TUdblmatFree(tu, &B);
-    TUdblmatFree(tu, &A);
+    CMRdblmatFree(cmr, &B);
+    CMRdblmatFree(cmr, &A);
   }
 
   /* Int matrices. */
   {
-    TU_INTMAT* A = NULL;
-    stringToIntMatrix(tu, &A, "4 5 "
+    CMR_INTMAT* A = NULL;
+    stringToIntMatrix(cmr, &A, "4 5 "
       "1 2 3 0 0 "
       "0 4 5 0 6 "
       "7 0 0 8 0 "
       "0 0 9 0 0 "
     );
 
-    TU_INTMAT* B = NULL;
-    stringToIntMatrix(tu, &B, "5 4 "
+    CMR_INTMAT* B = NULL;
+    stringToIntMatrix(cmr, &B, "5 4 "
       "1 0 7 0 "
       "2 4 0 0 "
       "3 5 0 9 "
@@ -146,24 +146,24 @@ TEST(Matrix, Transpose)
       "0 6 0 0 "
     );
 
-    ASSERT_TRUE(TUintmatCheckTranspose(A, B));
+    ASSERT_TRUE(CMRintmatCheckTranspose(A, B));
 
-    TUintmatFree(tu, &B);
-    TUintmatFree(tu, &A);
+    CMRintmatFree(cmr, &B);
+    CMRintmatFree(cmr, &A);
   }
 
   /* Char matrices. */
   {
-    TU_CHRMAT* A = NULL;
-    stringToCharMatrix(tu, &A, "4 5 "
+    CMR_CHRMAT* A = NULL;
+    stringToCharMatrix(cmr, &A, "4 5 "
       "1 2 3 0 0 "
       "0 4 5 0 6 "
       "7 0 0 8 0 "
       "0 0 9 0 0 "
     );
 
-    TU_CHRMAT* B = NULL;
-    stringToCharMatrix(tu, &B, "5 4 "
+    CMR_CHRMAT* B = NULL;
+    stringToCharMatrix(cmr, &B, "5 4 "
       "1 0 7 0 "
       "2 4 0 0 "
       "3 5 0 9 "
@@ -171,22 +171,22 @@ TEST(Matrix, Transpose)
       "0 6 0 0 "
     );
 
-    ASSERT_TRUE(TUchrmatCheckTranspose(A, B));
+    ASSERT_TRUE(CMRchrmatCheckTranspose(A, B));
 
-    TUchrmatFree(tu, &B);
-    TUchrmatFree(tu, &A);
+    CMRchrmatFree(cmr, &B);
+    CMRchrmatFree(cmr, &A);
   }
 
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
 TEST(Matrix, Submatrix)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
 
-  TU_CHRMAT* matrix = NULL;
-  stringToCharMatrix(tu, &matrix, "10 10 "
+  CMR_CHRMAT* matrix = NULL;
+  stringToCharMatrix(cmr, &matrix, "10 10 "
     "+1 -1  0  0  0  0  0  0  0  0 "
     "-1 +1  0  0  0  0  0  0  0  0 "
     "0   0 +1  0  0  0  0 -1  0  0 "
@@ -199,8 +199,8 @@ TEST(Matrix, Submatrix)
     "0   0  0  0  0  0  0 -1  0 +1 "
   );
 
-  TU_SUBMAT* submatrix = NULL;
-  TUsubmatCreate(tu, &submatrix, 3, 3);
+  CMR_SUBMAT* submatrix = NULL;
+  CMRsubmatCreate(cmr, &submatrix, 3, 3);
   submatrix->rows[0] = 1;
   submatrix->rows[1] = 3;
   submatrix->rows[2] = 4;
@@ -208,21 +208,21 @@ TEST(Matrix, Submatrix)
   submatrix->columns[1] = 4;
   submatrix->columns[2] = 6;
 
-  TU_CHRMAT* result = NULL;
-  ASSERT_TU_CALL( TUchrmatFilterSubmat(tu, matrix, submatrix, &result) );
+  CMR_CHRMAT* result = NULL;
+  ASSERT_CMR_CALL( CMRchrmatFilterSubmat(cmr, matrix, submatrix, &result) );
 
-  TU_CHRMAT* check = NULL;
-  stringToCharMatrix(tu, &check, "3 3 "
+  CMR_CHRMAT* check = NULL;
+  stringToCharMatrix(cmr, &check, "3 3 "
     "+1  0   0"
     " 0 -1  +1"
     " 0  0  -1"
   );
-  ASSERT_TRUE(TUchrmatCheckEqual(result, check));
-  TUchrmatFree(tu, &check);
+  ASSERT_TRUE(CMRchrmatCheckEqual(result, check));
+  CMRchrmatFree(cmr, &check);
 
-  TUchrmatFree(tu, &result);
-  TUsubmatFree(tu, &submatrix);
-  TUchrmatFree(tu, &matrix);
+  CMRchrmatFree(cmr, &result);
+  CMRsubmatFree(cmr, &submatrix);
+  CMRchrmatFree(cmr, &matrix);
 
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }

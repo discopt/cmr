@@ -21,57 +21,57 @@ CMR_ERROR run(const char* instanceFileName, bool sparse)
   if (!instanceFile)
     return CMR_ERROR_INPUT;
 
-  TU* tu = NULL;
-  TU_CALL( TUcreateEnvironment(&tu) );
+  CMR* cmr = NULL;
+  CMR_CALL( CMRcreateEnvironment(&cmr) );
 
-  TU_CHRMAT* matrix = NULL;
+  CMR_CHRMAT* matrix = NULL;
   if (sparse)
-    TU_CALL( TUchrmatCreateFromSparseStream(tu, &matrix, instanceFile) );
+    CMR_CALL( CMRchrmatCreateFromSparseStream(cmr, &matrix, instanceFile) );
   else
-    TU_CALL( TUchrmatCreateFromDenseStream(tu, &matrix, instanceFile) );
+    CMR_CALL( CMRchrmatCreateFromDenseStream(cmr, &matrix, instanceFile) );
   fclose(instanceFile);
 
-  if (!TUisTernaryChr(tu, matrix, NULL))
+  if (!CMRisTernaryChr(cmr, matrix, NULL))
   {
     printf("Input matrix is not ternary.\n");
-    TU_CALL( TUchrmatFree(tu, &matrix) );
-    TU_CALL( TUfreeEnvironment(&tu) );
+    CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+    CMR_CALL( CMRfreeEnvironment(&cmr) );
     return CMR_OKAY;
   }
 
-  TU_CHRMAT* transpose = NULL;
-  TU_CALL( TUchrmatTranspose(tu, matrix, &transpose) );
+  CMR_CHRMAT* transpose = NULL;
+  CMR_CALL( CMRchrmatTranspose(cmr, matrix, &transpose) );
 
   bool isGraphic;
-  TU_GRAPH* graph = NULL;
-  TU_GRAPH_EDGE* basis = NULL;
-  TU_GRAPH_EDGE* cobasis = NULL;
-  TU_CALL( TUtestTernaryGraphic(tu, transpose, &isGraphic, &graph, &basis, &cobasis, NULL, NULL) );
+  CMR_GRAPH* graph = NULL;
+  CMR_GRAPH_EDGE* basis = NULL;
+  CMR_GRAPH_EDGE* cobasis = NULL;
+  CMR_CALL( CMRtestTernaryGraphic(cmr, transpose, &isGraphic, &graph, &basis, &cobasis, NULL, NULL) );
 
   if (isGraphic)
   {
     printf("Input matrix is graphic.\n");
 
-    TU_CHRMAT* checkMatrix = NULL;
-    TU_CALL( TUcomputeGraphBinaryRepresentationMatrix(tu, graph, &checkMatrix, NULL, matrix->numRows, basis,
+    CMR_CHRMAT* checkMatrix = NULL;
+    CMR_CALL( CMRcomputeGraphBinaryRepresentationMatrix(cmr, graph, &checkMatrix, NULL, matrix->numRows, basis,
       matrix->numColumns, cobasis, NULL) );
 
-    if (!TUchrmatCheckEqual(matrix, checkMatrix))
+    if (!CMRchrmatCheckEqual(matrix, checkMatrix))
       printf("ERROR: computed representation matrix does NOT agree with input matrix!\n");
 
-    TU_CALL( TUchrmatFree(tu, &checkMatrix) );
+    CMR_CALL( CMRchrmatFree(cmr, &checkMatrix) );
 
-    TU_CALL( TUfreeBlockArray(tu, &cobasis) );
-    TU_CALL( TUfreeBlockArray(tu, &basis) );
-    TU_CALL( TUgraphFree(tu, &graph) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &cobasis) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &basis) );
+    CMR_CALL( CMRgraphFree(cmr, &graph) );
   }
   else
     printf("Input matrix is NOT graphic.\n");
 
-  TU_CALL( TUchrmatFree(tu, &transpose) );
-  TU_CALL( TUchrmatFree(tu, &matrix) );
+  CMR_CALL( CMRchrmatFree(cmr, &transpose) );
+  CMR_CALL( CMRchrmatFree(cmr, &matrix) );
 
-  TU_CALL( TUfreeEnvironment(&tu) );
+  CMR_CALL( CMRfreeEnvironment(&cmr) );
 
   return CMR_OKAY;
 }

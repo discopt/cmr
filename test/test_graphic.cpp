@@ -7,42 +7,42 @@
 #include <cmr/graphic.h>
 
 void testBinaryGraphicMatrix(
-  TU* tu,           /**< \ref TU environment. */
-  TU_CHRMAT* matrix /**< Matrix to be used for testing. */
+  CMR* cmr,           /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix /**< Matrix to be used for testing. */
 )
 {
   bool isGraphic;
-  TU_GRAPH* graph = NULL;
-  TU_GRAPH_EDGE* basis = NULL;
-  TU_GRAPH_EDGE* cobasis = NULL;
-  TU_CHRMAT* transpose = NULL;
-  ASSERT_TU_CALL( TUchrmatTranspose(tu, matrix, &transpose) );
+  CMR_GRAPH* graph = NULL;
+  CMR_GRAPH_EDGE* basis = NULL;
+  CMR_GRAPH_EDGE* cobasis = NULL;
+  CMR_CHRMAT* transpose = NULL;
+  ASSERT_CMR_CALL( CMRchrmatTranspose(cmr, matrix, &transpose) );
 
-  ASSERT_TU_CALL( TUtestBinaryGraphic(tu, transpose, &isGraphic, &graph, &basis, &cobasis, NULL) );
+  ASSERT_CMR_CALL( CMRtestBinaryGraphic(cmr, transpose, &isGraphic, &graph, &basis, &cobasis, NULL) );
 
   ASSERT_TRUE( isGraphic );
   ASSERT_TRUE( basis );
   ASSERT_TRUE( cobasis );
 
-  ASSERT_TU_CALL( TUchrmatFree(tu, &transpose) );
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &transpose) );
 
-  TU_CHRMAT* result = NULL;
+  CMR_CHRMAT* result = NULL;
   bool isCorrectBasis;
-  ASSERT_TU_CALL( TUcomputeGraphBinaryRepresentationMatrix(tu, graph, &result, NULL, matrix->numRows, basis,
+  ASSERT_CMR_CALL( CMRcomputeGraphBinaryRepresentationMatrix(cmr, graph, &result, NULL, matrix->numRows, basis,
     matrix->numColumns, cobasis, &isCorrectBasis) );
   ASSERT_TRUE( isCorrectBasis );
   ASSERT_TRUE( result );
 
-  if (!TUchrmatCheckEqual(matrix, result))
+  if (!CMRchrmatCheckEqual(matrix, result))
   {
     printf("Input matrix:\n");
-    ASSERT_TU_CALL( TUchrmatPrintDense(stdout, matrix, ' ', true) );
+    ASSERT_CMR_CALL( CMRchrmatPrintDense(stdout, matrix, ' ', true) );
   
     printf("Graph:\n");
-    ASSERT_TU_CALL( TUgraphPrint(stdout, graph) );
+    ASSERT_CMR_CALL( CMRgraphPrint(stdout, graph) );
 
     printf("Representation matrix:\n");
-    ASSERT_TU_CALL( TUchrmatPrintDense(stdout, result, ' ', true) );
+    ASSERT_CMR_CALL( CMRchrmatPrintDense(stdout, result, ' ', true) );
 
     printf("Basis:");
     for (int r = 0; r < matrix->numRows; ++r)
@@ -55,328 +55,328 @@ void testBinaryGraphicMatrix(
     printf("\n");
   }
 
-  ASSERT_TRUE( TUchrmatCheckEqual(matrix, result) );
+  ASSERT_TRUE( CMRchrmatCheckEqual(matrix, result) );
   ASSERT_TRUE( isGraphic );
 
-  ASSERT_TU_CALL( TUgraphFree(tu, &graph) );
-  ASSERT_TU_CALL( TUfreeBlockArray(tu, &basis) );
-  ASSERT_TU_CALL( TUfreeBlockArray(tu, &cobasis) );
-  ASSERT_TU_CALL( TUchrmatFree(tu, &result) );
+  ASSERT_CMR_CALL( CMRgraphFree(cmr, &graph) );
+  ASSERT_CMR_CALL( CMRfreeBlockArray(cmr, &basis) );
+  ASSERT_CMR_CALL( CMRfreeBlockArray(cmr, &cobasis) );
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &result) );
 }
 
 void testBinaryNongraphicMatrix(
-  TU* tu,           /**< \ref TU environment. */
-  TU_CHRMAT* matrix /**< Matrix to be used for testing. */
+  CMR* cmr,           /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix /**< Matrix to be used for testing. */
 )
 {
   bool isGraphic;
-  TU_CHRMAT* transpose = NULL;
-  ASSERT_TU_CALL( TUchrmatTranspose(tu, matrix, &transpose) );
-  ASSERT_TU_CALL( TUtestBinaryGraphic(tu, transpose, &isGraphic, NULL, NULL, NULL, NULL) );
+  CMR_CHRMAT* transpose = NULL;
+  ASSERT_CMR_CALL( CMRchrmatTranspose(cmr, matrix, &transpose) );
+  ASSERT_CMR_CALL( CMRtestBinaryGraphic(cmr, transpose, &isGraphic, NULL, NULL, NULL, NULL) );
   ASSERT_FALSE( isGraphic );
-  ASSERT_TU_CALL( TUchrmatFree(tu, &transpose) );
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &transpose) );
 }
 
 void testBinaryMatrix(
-  TU* tu,           /**< \ref TU environment. */
-  TU_CHRMAT* matrix /**< Matrix to be used for testing. */
+  CMR* cmr,           /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix /**< Matrix to be used for testing. */
 )
 {
-  TU_GRAPH* graph = NULL;
+  CMR_GRAPH* graph = NULL;
   bool isGraphic;
-  TU_CHRMAT* transpose = NULL;
-  ASSERT_TU_CALL( TUchrmatTranspose(tu, matrix, &transpose) );
-  ASSERT_TU_CALL( TUtestBinaryGraphic(tu, transpose, &isGraphic, &graph, NULL, NULL, NULL) );
-  ASSERT_TU_CALL( TUchrmatFree(tu, &transpose) );
+  CMR_CHRMAT* transpose = NULL;
+  ASSERT_CMR_CALL( CMRchrmatTranspose(cmr, matrix, &transpose) );
+  ASSERT_CMR_CALL( CMRtestBinaryGraphic(cmr, transpose, &isGraphic, &graph, NULL, NULL, NULL) );
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &transpose) );
   if (graph)
-    ASSERT_TU_CALL( TUgraphFree(tu, &graph) );
+    ASSERT_CMR_CALL( CMRgraphFree(cmr, &graph) );
 }
 
 TEST(Graphic, TypingManyChildrenTerminals)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
-  TU_CHRMAT* matrix = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "5 10 "
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "5 10 "
     "1 0 1 1 1 0 1 0 0 0 "
     "0 0 1 0 0 1 1 0 0 0 "
     "0 1 0 1 0 0 1 1 0 0 "
     "0 0 0 0 1 0 1 1 0 0 "
     "0 0 1 0 0 0 1 0 1 1 "
   ) );
-  testBinaryNongraphicMatrix(tu, matrix);
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  testBinaryNongraphicMatrix(cmr, matrix);
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
 TEST(Graphic, TypingInnerParallelWithEdge)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
-  TU_CHRMAT* matrix = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "4 6 "
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "4 6 "
     "1 0 0 0 0 1 "
     "0 0 0 1 0 1 "
     "0 0 1 0 1 1 "
     "1 0 1 1 0 1 "
   ) );
-  testBinaryNongraphicMatrix(tu, matrix);
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  testBinaryNongraphicMatrix(cmr, matrix);
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
 TEST(Graphic, TypingInnerSeriesDoubleChild)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
-  TU_CHRMAT* matrix = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "4 3 "
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "4 3 "
     "1 0 1 "
     "0 1 1 "
     "1 1 1 "
     "1 1 0 "
   ) );
-  testBinaryNongraphicMatrix(tu, matrix);
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  testBinaryNongraphicMatrix(cmr, matrix);
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
 TEST(Graphic, TypingRootSeriesDoubleChild)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
-  TU_CHRMAT* matrix = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "4 3 "
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "4 3 "
     "1 1 0 "
     "1 1 1 "
     "1 0 1 "
     "0 1 1 "
   ) );
-  testBinaryNongraphicMatrix(tu, matrix);
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  testBinaryNongraphicMatrix(cmr, matrix);
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
 TEST(Graphic, TypingAnyRigidDegree3)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
-  TU_CHRMAT* matrix = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "4 4 "
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "4 4 "
     "1 1 0 1 "
     "0 0 1 0 "
     "1 0 1 1 "
     "0 1 1 1 "
   ) );
-  testBinaryNongraphicMatrix(tu, matrix);
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  testBinaryNongraphicMatrix(cmr, matrix);
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
 TEST(Graphic, TypingAnyRigidManyPaths)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
-  TU_CHRMAT* matrix = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "5 7 "
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "5 7 "
     "0 0 0 1 1 1 1 "
     "0 1 1 1 1 0 0 "
     "0 0 0 1 1 0 1 "
     "0 1 1 1 0 0 1 "
     "0 1 0 0 0 1 1 "
   ) );
-  testBinaryNongraphicMatrix(tu, matrix);
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  testBinaryNongraphicMatrix(cmr, matrix);
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
 TEST(Graphic, TypingRootRigidNoPathsDisjointSingleChildren)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
-  TU_CHRMAT* matrix = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "5 4 "
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "5 4 "
     "0 1 1 0 "
     "0 0 1 1 "
     "1 0 1 0 "
     "1 1 0 0 "
     "1 1 0 1 "
   ) );
-  testBinaryNongraphicMatrix(tu, matrix);
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  testBinaryNongraphicMatrix(cmr, matrix);
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
 
 TEST(Graphic, TypingRootRigidOnePathSingleChild)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
-  TU_CHRMAT* matrix = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "4 4 "
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "4 4 "
     "1 1 0 0 "
     "0 1 1 0 "
     "0 1 0 1 "
     "1 0 1 1 "
   ) );
-  testBinaryNongraphicMatrix(tu, matrix);
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  testBinaryNongraphicMatrix(cmr, matrix);
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
 TEST(Graphic, TypingRootRigidOnePathTwoSingleChildren)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
-  TU_CHRMAT* matrix = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "5 4 "
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "5 4 "
     "0 1 1 1 "
     "0 0 1 1 "
     "0 1 1 0 "
     "1 0 1 0 "
     "1 1 0 1 "
   ) );
-  testBinaryNongraphicMatrix(tu, matrix);
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  testBinaryNongraphicMatrix(cmr, matrix);
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
 
 TEST(Graphic, TypingRootRigidOnePathDoubleChild)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
-  TU_CHRMAT* matrix = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "5 6 "
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "5 6 "
     "0 1 1 1 0 1 "
     "1 1 1 1 1 1 "
     "0 1 0 0 1 0 "
     "0 0 1 0 1 1 "
     "1 1 1 0 1 0 "
   ) );
-  testBinaryNongraphicMatrix(tu, matrix);
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  testBinaryNongraphicMatrix(cmr, matrix);
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
 TEST(Graphic, TypingRootRigidTwoPaths)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
-  TU_CHRMAT* matrix = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "3 4 "
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "3 4 "
     "1 1 1 0 "
     "1 1 0 1 "
     "0 1 1 1 "
   ) );
-  testBinaryNongraphicMatrix(tu, matrix);
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  testBinaryNongraphicMatrix(cmr, matrix);
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
 TEST(Graphic, TypingInnerRigidNoPathNoSingleChild)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
-  TU_CHRMAT* matrix = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "5 7 "
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "5 7 "
     "1 1 0 0 0 1 0 "
     "1 1 0 1 1 0 0 "
     "1 0 0 1 0 0 0 "
     "0 0 0 0 1 1 0 "
     "1 1 0 1 1 1 0 "
   ) );
-  testBinaryNongraphicMatrix(tu, matrix);
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  testBinaryNongraphicMatrix(cmr, matrix);
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
 TEST(Graphic, TypingInnerRigidNoPathOneSingleChild)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
-  TU_CHRMAT* matrix = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "4 4 "
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "4 4 "
     "1 0 1 1 "
     "0 1 0 1 "
     "0 1 1 0 "
     "1 1 0 0 "
   ) );
-  testBinaryNongraphicMatrix(tu, matrix);
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  testBinaryNongraphicMatrix(cmr, matrix);
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
 TEST(Graphic, TypingInnerRigidNoPathTwoSingleChildren)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
-  TU_CHRMAT* matrix = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "5 4 "
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "5 4 "
     "0 1 1 0 "
     "1 0 1 1 "
     "1 0 0 1 "
     "1 1 0 0 "
     "0 1 0 1 "
   ) );
-  testBinaryNongraphicMatrix(tu, matrix);
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  testBinaryNongraphicMatrix(cmr, matrix);
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
 
 TEST(Graphic, TypingInnerRigidOnePathOneSingleChild)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
-  TU_CHRMAT* matrix = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "4 4 "
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "4 4 "
     "1 0 1 1 "
     "0 1 0 1 "
     "0 1 1 1 "
     "1 1 0 1 "
   ) );
-  testBinaryNongraphicMatrix(tu, matrix);
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
+  testBinaryNongraphicMatrix(cmr, matrix);
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
 
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "5 5 "
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "5 5 "
     "0 0 0 1 1 "
     "1 0 0 0 1 "
     "1 1 0 1 1 "
     "1 1 0 0 1 "
     "0 1 0 1 0 "
   ) );
-  testBinaryNongraphicMatrix(tu, matrix);
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
+  testBinaryNongraphicMatrix(cmr, matrix);
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
 
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "4 4 "
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "4 4 "
     "0 1 1 1 "
     "1 1 0 1 "
     "1 1 0 0 "
     "1 0 1 1 "
   ) );
-  testBinaryNongraphicMatrix(tu, matrix);
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
+  testBinaryNongraphicMatrix(cmr, matrix);
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
 
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
 TEST(Graphic, TypingInnerRigidOnePathTwoSingleChildren)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
-  TU_CHRMAT* matrix = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "5 4 "
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "5 4 "
     "0 1 1 0 "
     "1 0 1 1 "
     "1 0 0 1 "
     "1 1 0 0 "
     "0 1 0 1 "
   ) );
-  testBinaryNongraphicMatrix(tu, matrix);
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
+  testBinaryNongraphicMatrix(cmr, matrix);
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
 
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "6 6 "
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "6 6 "
     "0 1 1 0 1 0 "
     "0 1 1 1 1 1 "
     "1 0 0 1 0 0 "
@@ -384,122 +384,122 @@ TEST(Graphic, TypingInnerRigidOnePathTwoSingleChildren)
     "1 0 1 1 0 0 "
     "1 1 0 1 0 0 "
   ) );
-  testBinaryNongraphicMatrix(tu, matrix);
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
+  testBinaryNongraphicMatrix(cmr, matrix);
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
 
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "5 4 "
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "5 4 "
     "0 1 0 1 "
     "1 0 1 1 "
     "1 0 0 1 "
     "0 1 1 0 "
     "1 1 1 1 "
   ) );
-  testBinaryNongraphicMatrix(tu, matrix);
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
+  testBinaryNongraphicMatrix(cmr, matrix);
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
 
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
 TEST(Graphic, TypingInnerRigidOnePathNoChildren)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
-  TU_CHRMAT* matrix = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "3 4 "
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "3 4 "
     "1 1 0 1 "
     "1 1 1 0 "
     "1 0 1 1 "
   ) );
-  testBinaryNongraphicMatrix(tu, matrix);
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  testBinaryNongraphicMatrix(cmr, matrix);
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
 TEST(Graphic, TypingInnerRigidOnePathDoubleChild)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
-  TU_CHRMAT* matrix = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "5 8 "
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "5 8 "
     "1 1 1 0 0 0 1 1 "
     "0 0 1 1 1 1 0 0 "
     "0 0 0 0 0 1 1 0 "
     "0 1 0 1 0 0 1 0 "
     "0 0 0 0 1 0 1 0 "
   ) );
-  testBinaryNongraphicMatrix(tu, matrix);
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  testBinaryNongraphicMatrix(cmr, matrix);
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
 TEST(Graphic, TypingInnerRigidTwoPathsNonadjacentParent)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
-  TU_CHRMAT* matrix = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "5 6 "
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "5 6 "
     "0 0 0 0 0 1 "
     "1 1 0 1 1 0 "
     "1 1 1 0 0 0 "
     "0 1 0 1 1 0 "
     "0 1 1 0 1 0 "
   ) );
-  testBinaryNongraphicMatrix(tu, matrix);
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
+  testBinaryNongraphicMatrix(cmr, matrix);
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
 
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "5 6 "
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "5 6 "
     "0 0 1 0 1 1 "
     "0 1 1 0 0 1 "
     "0 0 0 1 0 0 "
     "0 1 1 1 0 0 "
     "1 0 0 1 1 1 "
   ) );
-  testBinaryNongraphicMatrix(tu, matrix);
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
+  testBinaryNongraphicMatrix(cmr, matrix);
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
 
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
 TEST(Graphic, TypingInnerRigidTwoPathOneSingleChild)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
-  TU_CHRMAT* matrix = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "5 6 "
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "5 6 "
     "0 0 0 1 0 1 "
     "1 1 1 0 1 1 "
     "1 0 0 1 1 1 "
     "1 1 0 0 0 1 "
     "0 0 0 1 1 0 "
   ) );
-  testBinaryNongraphicMatrix(tu, matrix);
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  testBinaryNongraphicMatrix(cmr, matrix);
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
 TEST(Graphic, TypingInnerRigidTwoPathTwoSingleChildren)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
-  TU_CHRMAT* matrix = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "5 6 "
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "5 6 "
     "0 1 1 1 1 1 "
     "0 0 0 0 1 1 "
     "0 1 1 0 1 1 "
     "0 1 0 0 0 1 "
     "1 0 1 1 0 1 "
   ) );
-  testBinaryNongraphicMatrix(tu, matrix);
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  testBinaryNongraphicMatrix(cmr, matrix);
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
 TEST(Graphic, TypingInnerRigidTwoPathsDoubleChild)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
-  TU_CHRMAT* matrix = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "7 6 "
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "7 6 "
     "1 1 1 1 1 1 "
     "0 0 1 0 0 0 "
     "1 1 1 1 1 0 "
@@ -508,15 +508,15 @@ TEST(Graphic, TypingInnerRigidTwoPathsDoubleChild)
     "1 0 0 0 1 1 "
     "0 1 0 0 0 1 "
   ) );
-  testBinaryNongraphicMatrix(tu, matrix);
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  testBinaryNongraphicMatrix(cmr, matrix);
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
 TEST(Graphic, RandomMatrix)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
   
   srand(0);
   const int numMatrices = 1000;
@@ -526,8 +526,8 @@ TEST(Graphic, RandomMatrix)
 
   for (int i = 0; i < numMatrices; ++i)
   {
-    TU_CHRMAT* A = NULL;
-    TUchrmatCreate(tu, &A, numRows, numColumns, numRows * numColumns);
+    CMR_CHRMAT* A = NULL;
+    CMRchrmatCreate(cmr, &A, numRows, numColumns, numRows * numColumns);
 
     A->numNonzeros = 0;
     for (int row = 0; row < numRows; ++row)
@@ -545,409 +545,409 @@ TEST(Graphic, RandomMatrix)
     }
     A->rowStarts[numRows] = A->numNonzeros;
     
-    /* TUchrmatPrintDense(stdout, A, '0', false); */
+    /* CMRchrmatPrintDense(stdout, A, '0', false); */
 
-    testBinaryMatrix(tu, A);
+    testBinaryMatrix(cmr, A);
 
-    ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &A) );
   }
 
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
 TEST(Graphic, UpdateRootParallelNoChildren)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
-  TU_CHRMAT* matrix = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "1 1 "
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "1 1 "
     "1 "
   ) );
-  testBinaryGraphicMatrix(tu, matrix);
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  testBinaryGraphicMatrix(cmr, matrix);
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
 TEST(Graphic, UpdateRootParallelTwoSingleChildren)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
-  TU_CHRMAT* matrix = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "3 3 "
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "3 3 "
     "1 1 0 "
     "0 1 1 "
     "1 0 1 "
   ) );
-  testBinaryGraphicMatrix(tu, matrix);
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  testBinaryGraphicMatrix(cmr, matrix);
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
 TEST(Graphic, UpdateRootParallelTwoSingleChildrenSplit)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
-  TU_CHRMAT* matrix = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "3 4 "
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "3 4 "
     "1 1 1 0 "
     "1 0 0 1 "
     "0 0 1 1 "
   ) );
-  testBinaryGraphicMatrix(tu, matrix);
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  testBinaryGraphicMatrix(cmr, matrix);
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
 TEST(Graphic, UpdateInnerParallelOneSingleChild)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
-  TU_CHRMAT* matrix = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "3 3 "
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "3 3 "
     "1 0 1 "
     "1 1 0 "
     "0 1 1 "
   ) );
-  testBinaryGraphicMatrix(tu, matrix);
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  testBinaryGraphicMatrix(cmr, matrix);
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
 TEST(Graphic, UpdateRootSeriesNoChildrenParent)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
-  TU_CHRMAT* matrix = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "3 3 "
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "3 3 "
     "1 1 1 "
     "0 1 1 "
     "0 1 0 "
   ) );
-  testBinaryGraphicMatrix(tu, matrix);
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  testBinaryGraphicMatrix(cmr, matrix);
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
 TEST(Graphic, UpdateRootSeriesNoChildrenHamiltonianPath)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
-  TU_CHRMAT* matrix = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "3 3 "
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "3 3 "
     "1 0 0 "
     "1 1 1 "
     "1 1 1 "
   ) );
-  testBinaryGraphicMatrix(tu, matrix);
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  testBinaryGraphicMatrix(cmr, matrix);
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
 TEST(Graphic, UpdateRootSeriesNoChildren)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
-  TU_CHRMAT* matrix = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "3 2 "
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "3 2 "
     "1 0 "
     "1 1 "
     "1 1 "
   ) );
-  testBinaryGraphicMatrix(tu, matrix);
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  testBinaryGraphicMatrix(cmr, matrix);
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
 
 TEST(Graphic, UpdateRootSeriesOneSingleChildParent)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
-  TU_CHRMAT* matrix = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "3 3 "
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "3 3 "
     "1 0 1 "
     "1 1 0 "
     "0 1 1 "
   ) );
-  testBinaryGraphicMatrix(tu, matrix);
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  testBinaryGraphicMatrix(cmr, matrix);
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
 TEST(Graphic, UpdateRootSeriesOneSingleChild)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
-  TU_CHRMAT* matrix = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "4 3 "
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "4 3 "
     "1 1 0 "
     "1 1 1 "
     "1 0 1 "
     "0 0 1 "
   ) );
-  testBinaryGraphicMatrix(tu, matrix);
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  testBinaryGraphicMatrix(cmr, matrix);
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
 TEST(Graphic, UpdateRootSeriesTwoSingleChildren)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
-  TU_CHRMAT* matrix = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "4 4 "
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "4 4 "
     "1 1 0 0 "
     "1 1 1 1 "
     "0 1 0 1 "
     "0 0 1 1 "
   ) );
-  testBinaryGraphicMatrix(tu, matrix);
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  testBinaryGraphicMatrix(cmr, matrix);
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
 TEST(Graphic, UpdateRootSeriesTwoSingleChildrenParent)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
-  TU_CHRMAT* matrix = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "4 4 "
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "4 4 "
     "1 0 1 1 "
     "0 1 0 1 "
     "1 1 1 0 "
     "0 0 1 1 "
   ) );
-  testBinaryGraphicMatrix(tu, matrix);
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  testBinaryGraphicMatrix(cmr, matrix);
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
 TEST(Graphic, UpdateLeafSeries)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
-  TU_CHRMAT* matrix = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "3 3 "
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "3 3 "
     "1 0 1 "
     "1 1 0 "
     "0 1 1 "
   ) );
-  testBinaryGraphicMatrix(tu, matrix);
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  testBinaryGraphicMatrix(cmr, matrix);
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
 TEST(Graphic, UpdateInnerSeriesOneSingleChild)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
-  TU_CHRMAT* matrix = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "4 4 "
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "4 4 "
     "1 0 0 1 "
     "1 1 0 1 "
     "1 1 1 0 "
     "0 0 1 1 "
   ) );
-  testBinaryGraphicMatrix(tu, matrix);
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  testBinaryGraphicMatrix(cmr, matrix);
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
 TEST(Graphic, UpdateRootRigidParentOnly)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
-  TU_CHRMAT* matrix = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "4 4 "
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "4 4 "
     "1 0 1 1 "
     "0 1 1 0 "
     "1 1 1 0 "
     "0 1 0 1 "
   ) );
-  testBinaryGraphicMatrix(tu, matrix);
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  testBinaryGraphicMatrix(cmr, matrix);
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
 TEST(Graphic, UpdateRootRigidParentJoinsPaths)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
-  TU_CHRMAT* matrix = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "4 4 "
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "4 4 "
     "1 1 1 1 "
     "1 1 0 1 "
     "0 0 1 0 "
     "0 1 1 1 "
   ) );
-  testBinaryGraphicMatrix(tu, matrix);
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  testBinaryGraphicMatrix(cmr, matrix);
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
 TEST(Graphic, UpdateRootRigidNoChildren)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
-  TU_CHRMAT* matrix = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "3 4 "
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "3 4 "
     "1 0 1 1 "
     "1 1 0 0 "
     "0 1 1 1 "
   ) );
-  testBinaryGraphicMatrix(tu, matrix);
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  testBinaryGraphicMatrix(cmr, matrix);
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
 TEST(Graphic, UpdateRootRigidOneSingleChild)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
-  TU_CHRMAT* matrix = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "4 4 "
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "4 4 "
     "1 1 0 0 "
     "0 1 0 1 "
     "1 1 1 0 "
     "1 0 1 1 "
   ) );
-  testBinaryGraphicMatrix(tu, matrix);
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  testBinaryGraphicMatrix(cmr, matrix);
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
 TEST(Graphic, UpdateRootRigidTwoSingleChildren)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
-  TU_CHRMAT* matrix = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "5 5 "
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "5 5 "
     "1 0 0 1 1 "
     "1 1 0 0 1 "
     "0 1 1 0 1 "
     "0 1 0 1 0 "
     "0 0 0 1 1 "
   ) );
-  testBinaryGraphicMatrix(tu, matrix);
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  testBinaryGraphicMatrix(cmr, matrix);
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
 TEST(Graphic, UpdateRootRigidTwoParallelSingleChildren)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
-  TU_CHRMAT* matrix = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "5 5 "
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "5 5 "
     "1 1 0 1 0 "
     "1 0 0 0 1 "
     "1 0 1 1 0 "
     "0 0 0 1 1 "
     "0 1 1 0 0 "
   ) );
-  testBinaryGraphicMatrix(tu, matrix);
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  testBinaryGraphicMatrix(cmr, matrix);
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
 
 TEST(Graphic, UpdateLeafRigid)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
-  TU_CHRMAT* matrix = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "4 4 "
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "4 4 "
     "1 1 0 1 "
     "1 1 0 0 "
     "1 0 1 0 "
     "0 1 1 1 "
   ) );
-  testBinaryGraphicMatrix(tu, matrix);
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  testBinaryGraphicMatrix(cmr, matrix);
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
 TEST(Graphic, UpdateInnerRigidOnePath)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
-  TU_CHRMAT* matrix = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "5 4 "
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "5 4 "
     "0 1 1 1 "
     "1 0 1 0 "
     "1 1 0 0 "
     "0 0 1 1 "
     "1 0 1 1 "
   ) );
-  testBinaryGraphicMatrix(tu, matrix);
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  testBinaryGraphicMatrix(cmr, matrix);
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
 TEST(Graphic, UpdateInnerRigidNoPath)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
-  TU_CHRMAT* matrix = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "5 5 "
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "5 5 "
     "1 1 0 0 1 "
     "0 0 1 1 0 "
     "1 0 1 0 0 "
     "0 1 1 0 1 "
     "0 1 0 1 1 "
   ) );
-  testBinaryGraphicMatrix(tu, matrix);
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  testBinaryGraphicMatrix(cmr, matrix);
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
 TEST(Graphic, UpdateRandomGraph)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
 
   srand(1);
   const int numGraphs = 1000;
   const int numNodes = 21;
   const int numEdges = 40;
 
-  TU_GRAPH_NODE* nodes = NULL;
-  ASSERT_TU_CALL( TUallocBlockArray(tu, &nodes, numNodes) );
+  CMR_GRAPH_NODE* nodes = NULL;
+  ASSERT_CMR_CALL( CMRallocBlockArray(cmr, &nodes, numNodes) );
   for (int i = 0; i < numGraphs; ++i)
   {
-    TU_GRAPH* graph = NULL;
-    ASSERT_TU_CALL( TUgraphCreateEmpty(tu, &graph, numNodes, numEdges) );
+    CMR_GRAPH* graph = NULL;
+    ASSERT_CMR_CALL( CMRgraphCreateEmpty(cmr, &graph, numNodes, numEdges) );
     for (int v = 0; v < numNodes; ++v)
-      ASSERT_TU_CALL( TUgraphAddNode(tu, graph, &nodes[v]) );
+      ASSERT_CMR_CALL( CMRgraphAddNode(cmr, graph, &nodes[v]) );
 
     for (int e = 0; e < numEdges; ++e)
     {
       int u = (rand() * 1.0 / RAND_MAX) * numNodes;
       int v = (rand() * 1.0 / RAND_MAX) * numNodes;
-      ASSERT_TU_CALL( TUgraphAddEdge(tu, graph, nodes[u], nodes[v], NULL) );
+      ASSERT_CMR_CALL( CMRgraphAddEdge(cmr, graph, nodes[u], nodes[v], NULL) );
     }
 
-    TU_CHRMAT* A = NULL;
-    ASSERT_TU_CALL( TUcomputeGraphBinaryRepresentationMatrix(tu, graph, &A, NULL, 0, NULL, 0, NULL, NULL) );
+    CMR_CHRMAT* A = NULL;
+    ASSERT_CMR_CALL( CMRcomputeGraphBinaryRepresentationMatrix(cmr, graph, &A, NULL, 0, NULL, 0, NULL, NULL) );
 
-    ASSERT_TU_CALL( TUgraphFree(tu, &graph) );
+    ASSERT_CMR_CALL( CMRgraphFree(cmr, &graph) );
 
-    testBinaryGraphicMatrix(tu, A);
+    testBinaryGraphicMatrix(cmr, A);
 
-    ASSERT_TU_CALL( TUchrmatFree(tu, &A) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &A) );
   }
-  ASSERT_TU_CALL( TUfreeBlockArray(tu, &nodes) );
+  ASSERT_CMR_CALL( CMRfreeBlockArray(cmr, &nodes) );
 
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
 TEST(Graphic, RepresentationMatrix)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
 
-  TU_GRAPH* graph = NULL;
-  ASSERT_TU_CALL( TUgraphCreateEmpty(tu, &graph, 0, 0) );
+  CMR_GRAPH* graph = NULL;
+  ASSERT_CMR_CALL( CMRgraphCreateEmpty(cmr, &graph, 0, 0) );
 
   /**
    * Spanning forest: 
@@ -962,107 +962,107 @@ TEST(Graphic, RepresentationMatrix)
    *     -->
    */
   
-  TU_GRAPH_NODE a, b, c, d, e, f, g, h;
-  ASSERT_TU_CALL( TUgraphAddNode(tu, graph, &a) );
-  ASSERT_TU_CALL( TUgraphAddNode(tu, graph, &b) );
-  ASSERT_TU_CALL( TUgraphAddNode(tu, graph, &c) );
-  ASSERT_TU_CALL( TUgraphAddNode(tu, graph, &d) );
-  ASSERT_TU_CALL( TUgraphAddNode(tu, graph, &e) );
-  ASSERT_TU_CALL( TUgraphAddNode(tu, graph, &f) );
-  ASSERT_TU_CALL( TUgraphAddNode(tu, graph, &g) );
-  ASSERT_TU_CALL( TUgraphAddNode(tu, graph, &h) );
+  CMR_GRAPH_NODE a, b, c, d, e, f, g, h;
+  ASSERT_CMR_CALL( CMRgraphAddNode(cmr, graph, &a) );
+  ASSERT_CMR_CALL( CMRgraphAddNode(cmr, graph, &b) );
+  ASSERT_CMR_CALL( CMRgraphAddNode(cmr, graph, &c) );
+  ASSERT_CMR_CALL( CMRgraphAddNode(cmr, graph, &d) );
+  ASSERT_CMR_CALL( CMRgraphAddNode(cmr, graph, &e) );
+  ASSERT_CMR_CALL( CMRgraphAddNode(cmr, graph, &f) );
+  ASSERT_CMR_CALL( CMRgraphAddNode(cmr, graph, &g) );
+  ASSERT_CMR_CALL( CMRgraphAddNode(cmr, graph, &h) );
   
-  TU_GRAPH_EDGE basis[5];
-  ASSERT_TU_CALL( TUgraphAddEdge(tu, graph, a, b, &basis[0]) );
-  ASSERT_TU_CALL( TUgraphAddEdge(tu, graph, b, c, &basis[1]) );
-  ASSERT_TU_CALL( TUgraphAddEdge(tu, graph, d, b, &basis[2]) );
-  ASSERT_TU_CALL( TUgraphAddEdge(tu, graph, d, e, &basis[3]) );
-  ASSERT_TU_CALL( TUgraphAddEdge(tu, graph, f, g, &basis[4]) );
+  CMR_GRAPH_EDGE basis[5];
+  ASSERT_CMR_CALL( CMRgraphAddEdge(cmr, graph, a, b, &basis[0]) );
+  ASSERT_CMR_CALL( CMRgraphAddEdge(cmr, graph, b, c, &basis[1]) );
+  ASSERT_CMR_CALL( CMRgraphAddEdge(cmr, graph, d, b, &basis[2]) );
+  ASSERT_CMR_CALL( CMRgraphAddEdge(cmr, graph, d, e, &basis[3]) );
+  ASSERT_CMR_CALL( CMRgraphAddEdge(cmr, graph, f, g, &basis[4]) );
 
-  TU_GRAPH_EDGE cobasis[6];
-  ASSERT_TU_CALL( TUgraphAddEdge(tu, graph, c, a, &cobasis[0]) );
-  ASSERT_TU_CALL( TUgraphAddEdge(tu, graph, a, e, &cobasis[1]) );
-  ASSERT_TU_CALL( TUgraphAddEdge(tu, graph, e, c, &cobasis[2]) );
-  ASSERT_TU_CALL( TUgraphAddEdge(tu, graph, f, g, &cobasis[3]) );
-  ASSERT_TU_CALL( TUgraphAddEdge(tu, graph, g, f, &cobasis[4]) );
-  ASSERT_TU_CALL( TUgraphAddEdge(tu, graph, h, h, &cobasis[5]) );
+  CMR_GRAPH_EDGE cobasis[6];
+  ASSERT_CMR_CALL( CMRgraphAddEdge(cmr, graph, c, a, &cobasis[0]) );
+  ASSERT_CMR_CALL( CMRgraphAddEdge(cmr, graph, a, e, &cobasis[1]) );
+  ASSERT_CMR_CALL( CMRgraphAddEdge(cmr, graph, e, c, &cobasis[2]) );
+  ASSERT_CMR_CALL( CMRgraphAddEdge(cmr, graph, f, g, &cobasis[3]) );
+  ASSERT_CMR_CALL( CMRgraphAddEdge(cmr, graph, g, f, &cobasis[4]) );
+  ASSERT_CMR_CALL( CMRgraphAddEdge(cmr, graph, h, h, &cobasis[5]) );
 
   bool isCorrectBasis = false;
-  TU_CHRMAT* matrix = NULL;
-  TU_CHRMAT* check = NULL;
+  CMR_CHRMAT* matrix = NULL;
+  CMR_CHRMAT* check = NULL;
 
   /* Check binary representation matrix. */
-  ASSERT_TU_CALL( TUcomputeGraphBinaryRepresentationMatrix(tu, graph, &matrix, NULL, 5, basis, 6, cobasis, &isCorrectBasis) );
+  ASSERT_CMR_CALL( CMRcomputeGraphBinaryRepresentationMatrix(cmr, graph, &matrix, NULL, 5, basis, 6, cobasis, &isCorrectBasis) );
   ASSERT_TRUE( isCorrectBasis );
-  stringToCharMatrix(tu, &check, "5 6 "
+  stringToCharMatrix(cmr, &check, "5 6 "
     "1 1 0 0 0 0 "
     "1 0 1 0 0 0 "
     "0 1 1 0 0 0 "
     "0 1 1 0 0 0 "
     "0 0 0 1 1 0 "
   );
-  ASSERT_TRUE( TUchrmatCheckEqual(matrix, check) );
-  ASSERT_TU_CALL( TUchrmatFree(tu, &check) );
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
+  ASSERT_TRUE( CMRchrmatCheckEqual(matrix, check) );
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &check) );
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
 
   /* Check ternary representation matrix. */
   bool edgesReversed[] = { false, false, false, false, false, false, false, false, false, false, false };
-  ASSERT_TU_CALL( TUcomputeGraphTernaryRepresentationMatrix(tu, graph, &matrix, NULL, edgesReversed, 5, basis, 6, cobasis,
+  ASSERT_CMR_CALL( CMRcomputeGraphTernaryRepresentationMatrix(cmr, graph, &matrix, NULL, edgesReversed, 5, basis, 6, cobasis,
     &isCorrectBasis) );
   ASSERT_TRUE( isCorrectBasis );
-  stringToCharMatrix(tu, &check, "5 6 "
+  stringToCharMatrix(cmr, &check, "5 6 "
     "-1  1  0  0  0  0 "
     "-1  0  1  0  0  0 "
     "0  -1  1  0  0  0 "
     "0   1 -1  0  0  0 "
     "0   0  0  1 -1  0 "
   );
-  ASSERT_TRUE( TUchrmatCheckEqual(matrix, check) );
-  ASSERT_TU_CALL( TUchrmatFree(tu, &check) );
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
+  ASSERT_TRUE( CMRchrmatCheckEqual(matrix, check) );
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &check) );
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
 
-  ASSERT_TU_CALL( TUgraphFree(tu, &graph) );
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  ASSERT_CMR_CALL( CMRgraphFree(cmr, &graph) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
 void testTernaryGraphicMatrix(
-  TU* tu,           /**< \ref TU environment. */
-  TU_CHRMAT* matrix /**< Matrix to be used for testing. */
+  CMR* cmr,           /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix /**< Matrix to be used for testing. */
 )
 {
   bool isGraphic;
-  TU_GRAPH* graph = NULL;
-  TU_GRAPH_EDGE* basis = NULL;
-  TU_GRAPH_EDGE* cobasis = NULL;
-  TU_CHRMAT* transpose = NULL;
+  CMR_GRAPH* graph = NULL;
+  CMR_GRAPH_EDGE* basis = NULL;
+  CMR_GRAPH_EDGE* cobasis = NULL;
+  CMR_CHRMAT* transpose = NULL;
   bool* edgesReversed = NULL;
-  ASSERT_TU_CALL( TUchrmatTranspose(tu, matrix, &transpose) );
+  ASSERT_CMR_CALL( CMRchrmatTranspose(cmr, matrix, &transpose) );
 
-  ASSERT_TU_CALL( TUtestTernaryGraphic(tu, transpose, &isGraphic, &graph, &basis, &cobasis, &edgesReversed, NULL) );
+  ASSERT_CMR_CALL( CMRtestTernaryGraphic(cmr, transpose, &isGraphic, &graph, &basis, &cobasis, &edgesReversed, NULL) );
 
   ASSERT_TRUE( isGraphic );
   ASSERT_TRUE( basis );
   ASSERT_TRUE( cobasis );
 
-  ASSERT_TU_CALL( TUchrmatFree(tu, &transpose) );
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &transpose) );
 
-  TU_CHRMAT* result = NULL;
+  CMR_CHRMAT* result = NULL;
   bool isCorrectBasis;
-  ASSERT_TU_CALL( TUcomputeGraphTernaryRepresentationMatrix(tu, graph, &result, NULL, edgesReversed, matrix->numRows,
+  ASSERT_CMR_CALL( CMRcomputeGraphTernaryRepresentationMatrix(cmr, graph, &result, NULL, edgesReversed, matrix->numRows,
     basis, matrix->numColumns, cobasis, &isCorrectBasis) );
   ASSERT_TRUE( isCorrectBasis );
   ASSERT_TRUE( result );
 
-  if (!TUchrmatCheckEqual(matrix, result))
+  if (!CMRchrmatCheckEqual(matrix, result))
   {
     printf("Input matrix:\n");
-    ASSERT_TU_CALL( TUchrmatPrintDense(stdout, matrix, '0', true) );
+    ASSERT_CMR_CALL( CMRchrmatPrintDense(stdout, matrix, '0', true) );
   
     printf("Graph:\n");
-    ASSERT_TU_CALL( TUgraphPrint(stdout, graph) );
+    ASSERT_CMR_CALL( CMRgraphPrint(stdout, graph) );
 
     printf("Representation matrix:\n");
-    ASSERT_TU_CALL( TUchrmatPrintDense(stdout, result, '0', true) );
+    ASSERT_CMR_CALL( CMRchrmatPrintDense(stdout, result, '0', true) );
 
     printf("Basis:");
     for (int r = 0; r < matrix->numRows; ++r)
@@ -1075,22 +1075,22 @@ void testTernaryGraphicMatrix(
     printf("\n");
   }
 
-  ASSERT_TRUE( TUchrmatCheckEqual(matrix, result) );
+  ASSERT_TRUE( CMRchrmatCheckEqual(matrix, result) );
   ASSERT_TRUE( isGraphic );
 
-  ASSERT_TU_CALL( TUgraphFree(tu, &graph) );
-  ASSERT_TU_CALL( TUfreeBlockArray(tu, &basis) );
-  ASSERT_TU_CALL( TUfreeBlockArray(tu, &cobasis) );
-  ASSERT_TU_CALL( TUfreeBlockArray(tu, &edgesReversed) );
-  ASSERT_TU_CALL( TUchrmatFree(tu, &result) );
+  ASSERT_CMR_CALL( CMRgraphFree(cmr, &graph) );
+  ASSERT_CMR_CALL( CMRfreeBlockArray(cmr, &basis) );
+  ASSERT_CMR_CALL( CMRfreeBlockArray(cmr, &cobasis) );
+  ASSERT_CMR_CALL( CMRfreeBlockArray(cmr, &edgesReversed) );
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &result) );
 }
 
 TEST(Graphic, Ternary)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
-  TU_CHRMAT* matrix = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "6 7 "
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "6 7 "
     "-1  0  0  0  1 -1  0 "
     " 1  0  0  1 -1  1  0 "
     " 0 -1  0 -1  1 -1  0 "
@@ -1099,8 +1099,8 @@ TEST(Graphic, Ternary)
     " 0  0 -1  1 -1  0  0 "
   ) );
   
-  testTernaryGraphicMatrix(tu, matrix);
+  testTernaryGraphicMatrix(cmr, matrix);
   
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }

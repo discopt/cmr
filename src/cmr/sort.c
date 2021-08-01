@@ -1,4 +1,4 @@
-// #define TU_DEBUG /* Uncomment to debug the sorting. */
+// #define CMR_DEBUG /* Uncomment to debug the sorting. */
 
 #include "sort.h"
 
@@ -19,31 +19,31 @@
   } \
   while (false)
 
-CMR_ERROR TUsort(TU* tu, size_t length, void* array, size_t elementSize, int (*compare)(const void*, const void*))
+CMR_ERROR CMRsort(CMR* cmr, size_t length, void* array, size_t elementSize, int (*compare)(const void*, const void*))
 {
-  assert(tu);
+  assert(cmr);
 
   qsort(array, length, elementSize, compare);
 
   return CMR_OKAY;
 }
 
-CMR_ERROR TUsort2(TU* tu, size_t length, void* array1, size_t elementSize1, void* array2, size_t elementSize2,
+CMR_ERROR CMRsort2(CMR* cmr, size_t length, void* array1, size_t elementSize1, void* array2, size_t elementSize2,
   int (*compare)(const void**, const void**))
 {
-  assert(tu);
+  assert(cmr);
 
-  TUassertStackConsistency(tu);
+  CMRassertStackConsistency(cmr);
 
   /* Allocate space for temporary elements of both arrays. */
   char* temp1 = NULL;
-  TU_CALL( TUallocStackArray(tu, &temp1, elementSize1) );
+  CMR_CALL( CMRallocStackArray(cmr, &temp1, elementSize1) );
   char* temp2 = NULL;
-  TU_CALL( TUallocStackArray(tu, &temp2, elementSize2) );
+  CMR_CALL( CMRallocStackArray(cmr, &temp2, elementSize2) );
 
   /* Create an array with pointers into array1. */
   void** pointerArray = NULL;
-  TU_CALL( TUallocStackArray(tu, &pointerArray, length) );
+  CMR_CALL( CMRallocStackArray(cmr, &pointerArray, length) );
   void* pointer = array1;
   for (size_t i = 0; i < length; ++i)
   {
@@ -56,7 +56,7 @@ CMR_ERROR TUsort2(TU* tu, size_t length, void* array1, size_t elementSize1, void
   /* Reorder array1 and array2 according to the array of pointers. */
   for (size_t i = 0; i < length; ++i)
   {
-    TUdbgMsg(0, "i = %d, pointerArray[i] = %p array1 = %p, difference = %ld, scaled = %d\n", i, pointerArray[i], array1,
+    CMRdbgMsg(0, "i = %d, pointerArray[i] = %p array1 = %p, difference = %ld, scaled = %d\n", i, pointerArray[i], array1,
       pointerArray[i] - array1, (pointerArray[i] - array1) / elementSize1);
     if (i != (pointerArray[i] - array1) / elementSize1)
     {
@@ -78,10 +78,10 @@ CMR_ERROR TUsort2(TU* tu, size_t length, void* array1, size_t elementSize1, void
   }
 
   /* Free the temporary space. */
-  TU_CALL( TUfreeStackArray(tu, &pointerArray) );
-  TU_CALL( TUfreeStackArray(tu, &temp2) );
-  TU_CALL( TUfreeStackArray(tu, &temp1) );
-  TUassertStackConsistency(tu);
+  CMR_CALL( CMRfreeStackArray(cmr, &pointerArray) );
+  CMR_CALL( CMRfreeStackArray(cmr, &temp2) );
+  CMR_CALL( CMRfreeStackArray(cmr, &temp1) );
+  CMRassertStackConsistency(cmr);
 
   return CMR_OKAY;
 }

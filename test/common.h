@@ -1,5 +1,5 @@
-#ifndef TU_TEST_COMMON_H
-#define TU_TEST_COMMON_H
+#ifndef CMR_TEST_COMMON_H
+#define CMR_TEST_COMMON_H
 
 #include <cmr/matrix.h>
 
@@ -7,17 +7,17 @@
 extern "C" {
 #endif
 
-CMR_ERROR stringToDoubleMatrix(TU* tu, TU_DBLMAT** matrix, const char* string);
+CMR_ERROR stringToDoubleMatrix(CMR* cmr, CMR_DBLMAT** matrix, const char* string);
 
-CMR_ERROR stringToIntMatrix(TU* tu, TU_INTMAT** matrix, const char* string);
+CMR_ERROR stringToIntMatrix(CMR* cmr, CMR_INTMAT** matrix, const char* string);
 
-CMR_ERROR stringToCharMatrix(TU* tu, TU_CHRMAT** matrix, const char* string);
+CMR_ERROR stringToCharMatrix(CMR* cmr, CMR_CHRMAT** matrix, const char* string);
 
-#define ASSERT_TU_CALL(x) \
+#define ASSERT_CMR_CALL(x) \
   ASSERT_FALSE(x)
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* TU_TEST_COMMON_H */
+#endif /* CMR_TEST_COMMON_H */

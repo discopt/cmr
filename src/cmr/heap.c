@@ -1,47 +1,47 @@
-// #define TU_DEBUG /* Uncomment to debug the heap. */
-// #define TU_DEBUG_HEAP_CONTENT /* Uncomment to print the whole heap after each operation. */
+// #define CMR_DEBUG /* Uncomment to debug the heap. */
+// #define CMR_DEBUG_HEAP_CONTENT /* Uncomment to print the whole heap after each operation. */
 
 #include "heap.h"
 
 #include <assert.h>
 #include <limits.h>
 
-CMR_ERROR TUintheapInitStack(TU* tu, TU_INTHEAP* heap, int memKeys)
+CMR_ERROR CMRintheapInitStack(CMR* cmr, CMR_INTHEAP* heap, int memKeys)
 {
-  assert(tu);
+  assert(cmr);
   assert(heap);
   assert(memKeys > 0);
 
   heap->memKeys = memKeys;
   heap->size = 0;
   heap->positions = NULL;
-  TU_CALL( TUallocStackArray(tu, &heap->positions, memKeys) );
+  CMR_CALL( CMRallocStackArray(cmr, &heap->positions, memKeys) );
   for (int i = 0; i < memKeys; ++i)
     heap->positions[i] = -1;
   heap->values = NULL;
-  TU_CALL( TUallocStackArray(tu, &heap->values, memKeys) );
+  CMR_CALL( CMRallocStackArray(cmr, &heap->values, memKeys) );
   heap->data = NULL;
-  TU_CALL( TUallocStackArray(tu, &heap->data, memKeys) );
+  CMR_CALL( CMRallocStackArray(cmr, &heap->data, memKeys) );
 
   return CMR_OKAY;
 }
 
-CMR_ERROR TUintheapClearStack(TU* tu, TU_INTHEAP* heap)
+CMR_ERROR CMRintheapClearStack(CMR* cmr, CMR_INTHEAP* heap)
 {
-  assert(tu);
+  assert(cmr);
   assert(heap);
 
-  TU_CALL( TUfreeStackArray(tu, &heap->data) );
-  TU_CALL( TUfreeStackArray(tu, &heap->values) );
-  TU_CALL( TUfreeStackArray(tu, &heap->positions) );
+  CMR_CALL( CMRfreeStackArray(cmr, &heap->data) );
+  CMR_CALL( CMRfreeStackArray(cmr, &heap->values) );
+  CMR_CALL( CMRfreeStackArray(cmr, &heap->positions) );
   heap->memKeys = 0;
 
   return CMR_OKAY;
 }
 
-#if defined(TU_DEBUG_HEAP_CONTENT)
+#if defined(CMR_DEBUG_HEAP_CONTENT)
 static
-void debugHeap(TU_INTHEAP* heap)
+void debugHeap(CMR_INTHEAP* heap)
 {
   printf("                    Heap:");
   for (int i = 0; i < heap->size; ++i)
@@ -53,20 +53,20 @@ void debugHeap(TU_INTHEAP* heap)
 }
 #else
 static inline
-void debugHeap(TU_INTHEAP* heap)
+void debugHeap(CMR_INTHEAP* heap)
 {
 
 }
-#endif /* TU_DEBUG_HEAP_CONTENT */
+#endif /* CMR_DEBUG_HEAP_CONTENT */
 
-CMR_ERROR TUintheapInsert(TU_INTHEAP* heap, int key, int value)
+CMR_ERROR CMRintheapInsert(CMR_INTHEAP* heap, int key, int value)
 {
   assert(heap);
   assert(key >= 0);
   assert(key < heap->memKeys);
   assert(heap->size < heap->memKeys);
 
-  TUdbgMsg(20, "Heap insert: %d->%d.\n", key, value);
+  CMRdbgMsg(20, "Heap insert: %d->%d.\n", key, value);
 
   heap->data[heap->size] = key;
   heap->positions[key] = heap->size;
@@ -100,14 +100,14 @@ CMR_ERROR TUintheapInsert(TU_INTHEAP* heap, int key, int value)
   return CMR_OKAY;
 }
 
-CMR_ERROR TUintheapDecrease(TU_INTHEAP* heap, int key, int newValue)
+CMR_ERROR CMRintheapDecrease(CMR_INTHEAP* heap, int key, int newValue)
 {
   assert(heap);
   assert(heap->positions[key] >= 0);
 
   int currentKey = key;
   int current = heap->positions[currentKey];
-  TUdbgMsg(20, "Heap decrease: %d->%d to %d->%d.\n", key, heap->values[currentKey], key, newValue);
+  CMRdbgMsg(20, "Heap decrease: %d->%d to %d->%d.\n", key, heap->values[currentKey], key, newValue);
   heap->values[currentKey] = newValue;
   int currentValue = newValue;
   while (current > 0)
@@ -115,7 +115,7 @@ CMR_ERROR TUintheapDecrease(TU_INTHEAP* heap, int key, int newValue)
     int parent = (current-1) / 2;
     int parentKey = heap->data[parent];
     int parentValue = heap->values[parentKey];
-    TUdbgMsg(12, "Parent: %d->%d.\n", parentKey, parentValue);
+    CMRdbgMsg(12, "Parent: %d->%d.\n", parentKey, parentValue);
     if (parentValue <= currentValue)
       break;
 
@@ -134,13 +134,13 @@ CMR_ERROR TUintheapDecrease(TU_INTHEAP* heap, int key, int newValue)
   return CMR_OKAY;
 }
 
-CMR_ERROR TUintheapDecreaseInsert(TU_INTHEAP* heap, int key, int newValue)
+CMR_ERROR CMRintheapDecreaseInsert(CMR_INTHEAP* heap, int key, int newValue)
 {
   assert(heap);
   assert(key >= 0);
   assert(key < heap->memKeys);
 
-  TUdbgMsg(20, "Heap decrease-insert: %d->%d.\n", key, newValue);
+  CMRdbgMsg(20, "Heap decrease-insert: %d->%d.\n", key, newValue);
 
   int currentKey = key;
   int current;
@@ -157,14 +157,14 @@ CMR_ERROR TUintheapDecreaseInsert(TU_INTHEAP* heap, int key, int newValue)
   }
   heap->values[currentKey] = newValue;
   int currentValue = newValue;
-  TUdbgMsg(22, "Initial is %d:%d->%d.\n", current, currentKey, currentValue);
+  CMRdbgMsg(22, "Initial is %d:%d->%d.\n", current, currentKey, currentValue);
 
   while (current > 0)
   {
     int parent = (current-1) / 2;
     int parentKey = heap->data[parent];
     int parentValue = heap->values[parentKey];
-    TUdbgMsg(22, "Parent: %d:%d->%d, child value: %d.\n", parent, parentKey, parentValue, currentValue);
+    CMRdbgMsg(22, "Parent: %d:%d->%d, child value: %d.\n", parent, parentKey, parentValue, currentValue);
     if (parentValue <= currentValue)
       break;
 
@@ -181,7 +181,7 @@ CMR_ERROR TUintheapDecreaseInsert(TU_INTHEAP* heap, int key, int newValue)
   return CMR_OKAY;
 }
 
-int TUintheapExtractMinimum(TU_INTHEAP* heap)
+int CMRintheapExtractMinimum(CMR_INTHEAP* heap)
 {
   assert(heap);
 
@@ -191,7 +191,7 @@ int TUintheapExtractMinimum(TU_INTHEAP* heap)
   heap->positions[heap->data[0]] = 0;
   --heap->size;
 
-  TUdbgMsg(20, "Heap extract: %d->%d.\n", extracted, heap->values[extracted]);
+  CMRdbgMsg(20, "Heap extract: %d->%d.\n", extracted, heap->values[extracted]);
 
   int current = 0;
   int currentKey = heap->data[0];
@@ -209,7 +209,7 @@ int TUintheapExtractMinimum(TU_INTHEAP* heap)
       if (currentValue <= leftValue)
         break;
 
-      TUdbgMsg(22, "Swapping %d:%d->%d with left child %d:%d->%d.\n", current, currentKey, currentValue, left, leftKey,
+      CMRdbgMsg(22, "Swapping %d:%d->%d with left child %d:%d->%d.\n", current, currentKey, currentValue, left, leftKey,
         leftValue);
       heap->positions[leftKey] = current;
       heap->positions[currentKey] = left;
@@ -222,7 +222,7 @@ int TUintheapExtractMinimum(TU_INTHEAP* heap)
       if (currentValue <= rightValue)
         break;
 
-      TUdbgMsg(22, "Swapping %d:%d->%d with right child %d:%d->%d.\n", current, currentKey, currentValue, right, rightKey,
+      CMRdbgMsg(22, "Swapping %d:%d->%d with right child %d:%d->%d.\n", current, currentKey, currentValue, right, rightKey,
         rightValue);
 
       heap->positions[rightKey] = current;

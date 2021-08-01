@@ -34,36 +34,36 @@ CMR_ERROR matrixToGraph(const char* instanceFileName, FileFormat inputFormat, Fi
   if (!instanceFile)
     return CMR_ERROR_INPUT;
 
-  TU* tu = NULL;
-  TU_CALL( TUcreateEnvironment(&tu) );
+  CMR* cmr = NULL;
+  CMR_CALL( CMRcreateEnvironment(&cmr) );
 
   /* Read matrix. */
 
-  TU_CHRMAT* matrix = NULL;
+  CMR_CHRMAT* matrix = NULL;
   if (inputFormat == FILEFORMAT_MATRIX_DENSE)
-    TU_CALL( TUchrmatCreateFromDenseStream(tu, &matrix, instanceFile) );
+    CMR_CALL( CMRchrmatCreateFromDenseStream(cmr, &matrix, instanceFile) );
   else if (inputFormat == FILEFORMAT_MATRIX_SPARSE)
-    TU_CALL( TUchrmatCreateFromSparseStream(tu, &matrix, instanceFile) );
+    CMR_CALL( CMRchrmatCreateFromSparseStream(cmr, &matrix, instanceFile) );
   if (instanceFile != stdin)
     fclose(instanceFile);
 
   /* Transpose it. */
 
-  TU_CHRMAT* transpose = NULL;
-  TU_CALL( TUchrmatTranspose(tu, matrix, &transpose) );
-  TU_CALL( TUchrmatFree(tu, &matrix) );
+  CMR_CHRMAT* transpose = NULL;
+  CMR_CALL( CMRchrmatTranspose(cmr, matrix, &transpose) );
+  CMR_CALL( CMRchrmatFree(cmr, &matrix) );
 
   /* Test for graphicness. */
 
   bool isGraphic;
-  TU_GRAPH* graph = NULL;
-  TU_GRAPH_EDGE* forestEdges = NULL;
-  TU_GRAPH_EDGE* coforestEdges = NULL;
+  CMR_GRAPH* graph = NULL;
+  CMR_GRAPH_EDGE* forestEdges = NULL;
+  CMR_GRAPH_EDGE* coforestEdges = NULL;
   bool* edgesReversed = NULL;
   if (binary)
-    TU_CALL( TUtestBinaryGraphic(tu, transpose, &isGraphic, &graph, &forestEdges, &coforestEdges, NULL) );
+    CMR_CALL( CMRtestBinaryGraphic(cmr, transpose, &isGraphic, &graph, &forestEdges, &coforestEdges, NULL) );
   else
-    TU_CALL( TUtestTernaryGraphic(tu, transpose, &isGraphic, &graph, &forestEdges, &coforestEdges, &edgesReversed, NULL) );
+    CMR_CALL( CMRtestTernaryGraphic(cmr, transpose, &isGraphic, &graph, &forestEdges, &coforestEdges, &edgesReversed, NULL) );
 
   fprintf(stderr, "%s input matrix is %sgraphic.\n", binary ? "Binary" : "Ternary", isGraphic ? "" : "NOT ");
 
@@ -73,12 +73,12 @@ CMR_ERROR matrixToGraph(const char* instanceFileName, FileFormat inputFormat, Fi
     {
       for (size_t row = 0; row < transpose->numColumns; ++row)
       {
-        TU_GRAPH_EDGE e = forestEdges[row];
-        TU_GRAPH_NODE u = TUgraphEdgeU(graph, e);
-        TU_GRAPH_NODE v = TUgraphEdgeV(graph, e);
+        CMR_GRAPH_EDGE e = forestEdges[row];
+        CMR_GRAPH_NODE u = CMRgraphEdgeU(graph, e);
+        CMR_GRAPH_NODE v = CMRgraphEdgeV(graph, e);
         if (edgesReversed && edgesReversed[e])
         {
-          TU_GRAPH_NODE temp = u;
+          CMR_GRAPH_NODE temp = u;
           u = v;
           v = temp;
         }
@@ -86,12 +86,12 @@ CMR_ERROR matrixToGraph(const char* instanceFileName, FileFormat inputFormat, Fi
       }
       for (size_t column = 0; column < transpose->numRows; ++column)
       {
-        TU_GRAPH_EDGE e = coforestEdges[column];
-        TU_GRAPH_NODE u = TUgraphEdgeU(graph, e);
-        TU_GRAPH_NODE v = TUgraphEdgeV(graph, e);
+        CMR_GRAPH_EDGE e = coforestEdges[column];
+        CMR_GRAPH_NODE u = CMRgraphEdgeU(graph, e);
+        CMR_GRAPH_NODE v = CMRgraphEdgeV(graph, e);
         if (edgesReversed && edgesReversed[e])
         {
-          TU_GRAPH_NODE temp = u;
+          CMR_GRAPH_NODE temp = u;
           u = v;
           v = temp;
         }
@@ -100,16 +100,16 @@ CMR_ERROR matrixToGraph(const char* instanceFileName, FileFormat inputFormat, Fi
     }
 
     if (edgesReversed)
-      TU_CALL( TUfreeBlockArray(tu, &edgesReversed) );
-    TU_CALL( TUfreeBlockArray(tu, &forestEdges) );
-    TU_CALL( TUfreeBlockArray(tu, &coforestEdges) );
-    TU_CALL( TUgraphFree(tu, &graph) );
+      CMR_CALL( CMRfreeBlockArray(cmr, &edgesReversed) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &forestEdges) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &coforestEdges) );
+    CMR_CALL( CMRgraphFree(cmr, &graph) );
   }
 
   /* Cleanup. */
 
-  TU_CALL( TUchrmatFree(tu, &transpose) );
-  TU_CALL( TUfreeEnvironment(&tu) );
+  CMR_CALL( CMRchrmatFree(cmr, &transpose) );
+  CMR_CALL( CMRfreeEnvironment(&cmr) );
 
   return CMR_OKAY;
 }
@@ -120,16 +120,16 @@ CMR_ERROR graphToMatrix(const char* instanceFileName, FileFormat inputFormat, Fi
   if (!instanceFile)
     return CMR_ERROR_INPUT;
 
-  TU* tu = NULL;
-  TU_CALL( TUcreateEnvironment(&tu) );
+  CMR* cmr = NULL;
+  CMR_CALL( CMRcreateEnvironment(&cmr) );
 
   /* Read edge list. */
 
-  TU_GRAPH* graph = NULL;
-  Element* edgeElements = NULL;
+  CMR_GRAPH* graph = NULL;
+  CMR_ELEMENT* edgeElements = NULL;
   if (inputFormat == FILEFORMAT_GRAPH_EDGELIST)
   {
-    TU_CALL( TUgraphCreateFromEdgeList(tu, &graph, &edgeElements, NULL, instanceFile) );
+    CMR_CALL( CMRgraphCreateFromEdgeList(cmr, &graph, &edgeElements, NULL, instanceFile) );
   }
   if (instanceFile != stdin)
     fclose(instanceFile);
@@ -137,72 +137,72 @@ CMR_ERROR graphToMatrix(const char* instanceFileName, FileFormat inputFormat, Fi
   /* Scan edges for (co)forest edges. */
   size_t numForestEdges = 0;
   size_t numCoforestEdges = 0;
-  for (TU_GRAPH_ITER i = TUgraphEdgesFirst(graph); TUgraphEdgesValid(graph, i); i = TUgraphEdgesNext(graph, i))
+  for (CMR_GRAPH_ITER i = CMRgraphEdgesFirst(graph); CMRgraphEdgesValid(graph, i); i = CMRgraphEdgesNext(graph, i))
   {
-    TU_GRAPH_EDGE e = TUgraphEdgesEdge(graph, i);
-    Element element = edgeElements[e];
-    if (TUelementIsRow(element))
+    CMR_GRAPH_EDGE e = CMRgraphEdgesEdge(graph, i);
+    CMR_ELEMENT element = edgeElements[e];
+    if (CMRelementIsRow(element))
       numForestEdges++;
-    else if (TUelementIsColumn(element))
+    else if (CMRelementIsColumn(element))
       numCoforestEdges++;
   }
 
   /* Create list of (co)forest edges. */
-  TU_GRAPH_EDGE* forestEdges = NULL;
-  TU_CALL( TUallocBlockArray(tu, &forestEdges, numForestEdges) );
+  CMR_GRAPH_EDGE* forestEdges = NULL;
+  CMR_CALL( CMRallocBlockArray(cmr, &forestEdges, numForestEdges) );
   for (size_t i = 0; i < numForestEdges; ++i)
     forestEdges[i] = -1;
-  TU_GRAPH_EDGE* coforestEdges = NULL;
-  TU_CALL( TUallocBlockArray(tu, &coforestEdges, numCoforestEdges) );
+  CMR_GRAPH_EDGE* coforestEdges = NULL;
+  CMR_CALL( CMRallocBlockArray(cmr, &coforestEdges, numCoforestEdges) );
   for (size_t i = 0; i < numCoforestEdges; ++i)
     coforestEdges[i] = -1;
 
-  for (TU_GRAPH_ITER i = TUgraphEdgesFirst(graph); TUgraphEdgesValid(graph, i); i = TUgraphEdgesNext(graph, i))
+  for (CMR_GRAPH_ITER i = CMRgraphEdgesFirst(graph); CMRgraphEdgesValid(graph, i); i = CMRgraphEdgesNext(graph, i))
   {
-    TU_GRAPH_EDGE e = TUgraphEdgesEdge(graph, i);
-    Element element = edgeElements[e];
-    if (TUelementIsRow(element))
+    CMR_GRAPH_EDGE e = CMRgraphEdgesEdge(graph, i);
+    CMR_ELEMENT element = edgeElements[e];
+    if (CMRelementIsRow(element))
     {
-      size_t rowIndex = TUelementToRowIndex(element);
+      size_t rowIndex = CMRelementToRowIndex(element);
       if (rowIndex < numForestEdges)
         forestEdges[rowIndex] = e;
     }
-    else if (TUelementIsColumn(element))
+    else if (CMRelementIsColumn(element))
     {
-      size_t columnIndex = TUelementToColumnIndex(element);
+      size_t columnIndex = CMRelementToColumnIndex(element);
       if (columnIndex < numCoforestEdges)
         coforestEdges[columnIndex] = e;
     }
   }
 
-  TU_CHRMAT* matrix = NULL;
+  CMR_CHRMAT* matrix = NULL;
   bool isCorrectForest = false;
   if (binary)
   {
-    TU_CALL( TUcomputeGraphBinaryRepresentationMatrix(tu, graph, &matrix, NULL, numForestEdges, forestEdges,
+    CMR_CALL( CMRcomputeGraphBinaryRepresentationMatrix(cmr, graph, &matrix, NULL, numForestEdges, forestEdges,
       numCoforestEdges, coforestEdges, &isCorrectForest) );
   }
   else
   {
-    TU_CALL( TUcomputeGraphTernaryRepresentationMatrix(tu, graph, &matrix, NULL, NULL, numForestEdges, forestEdges,
+    CMR_CALL( CMRcomputeGraphTernaryRepresentationMatrix(cmr, graph, &matrix, NULL, NULL, numForestEdges, forestEdges,
       numCoforestEdges, coforestEdges, &isCorrectForest) );
   }
 
   if (outputFormat == FILEFORMAT_MATRIX_DENSE)
-    TU_CALL( TUchrmatPrintDense(stdout, matrix, '0', false) );
+    CMR_CALL( CMRchrmatPrintDense(stdout, matrix, '0', false) );
   else if (outputFormat == FILEFORMAT_MATRIX_SPARSE)
-    TU_CALL( TUchrmatPrintSparse(stdout, matrix) );
+    CMR_CALL( CMRchrmatPrintSparse(stdout, matrix) );
   else
     assert(false);
 
-  TU_CALL( TUchrmatFree(tu, &matrix) );
+  CMR_CALL( CMRchrmatFree(cmr, &matrix) );
 
   free(coforestEdges);
   free(forestEdges);
   free(edgeElements);
-  TUgraphFree(tu, &graph);
+  CMRgraphFree(cmr, &graph);
 
-  TU_CALL( TUfreeEnvironment(&tu) );
+  CMR_CALL( CMRfreeEnvironment(&cmr) );
 
   return CMR_OKAY;
 }

@@ -1,4 +1,4 @@
-// #define TU_DEBUG /* Uncomment to debug the 1-sum decomposition. */
+// #define CMR_DEBUG /* Uncomment to debug the 1-sum decomposition. */
 
 #include "one_sum.h"
 
@@ -18,8 +18,8 @@ struct GraphNode
 };
 typedef struct GraphNode GRAPH_NODE;
 
-CMR_ERROR decomposeOneSum(TU* tu, TU_MATRIX* matrix, size_t matrixType, size_t targetType,
-  int* pnumComponents, TU_ONESUM_COMPONENT** pcomponents, int* rowsToComponents,
+CMR_ERROR decomposeOneSum(CMR* cmr, CMR_MATRIX* matrix, size_t matrixType, size_t targetType,
+  int* pnumComponents, CMR_ONESUM_COMPONENT** pcomponents, int* rowsToComponents,
   int* columnsToComponents, int* rowsToComponentRows, int* columnsToComponentColumns)
 {
   GRAPH_NODE* graphNodes = NULL;
@@ -31,24 +31,24 @@ CMR_ERROR decomposeOneSum(TU* tu, TU_MATRIX* matrix, size_t matrixType, size_t t
   const int firstColumnNode = matrix->numRows;
   int i;
 
-  assert(tu);
+  assert(cmr);
   assert(matrix);
   assert(pnumComponents);
   assert(pcomponents);
 
-#if defined(TU_DEBUG)
-  TUdbgMsg(0, "decomposeOneSum:\n");
+#if defined(CMR_DEBUG)
+  CMRdbgMsg(0, "decomposeOneSum:\n");
   if (matrixType == sizeof(double))
-    TUdblmatPrintDense(stdout, (TU_DBLMAT*) matrix, '0', true);
+    CMRdblmatPrintDense(stdout, (CMR_DBLMAT*) matrix, '0', true);
   else if (matrixType == sizeof(int))
-    TUintmatPrintDense(stdout, (TU_INTMAT*) matrix, '0', true);
+    CMRintmatPrintDense(stdout, (CMR_INTMAT*) matrix, '0', true);
   else if (matrixType == sizeof(char))
-    TUchrmatPrintDense(stdout, (TU_CHRMAT*) matrix, '0', true);
+    CMRchrmatPrintDense(stdout, (CMR_CHRMAT*) matrix, '0', true);
 #endif
 
-  TU_CALL( TUallocStackArray(tu, &graphNodes, numNodes + 1) );
-  TU_CALL( TUallocStackArray(tu, &graphAdjacencies, 2 * matrix->numNonzeros) );
-  TU_CALL( TUallocStackArray(tu, &queue, numNodes) );
+  CMR_CALL( CMRallocStackArray(cmr, &graphNodes, numNodes + 1) );
+  CMR_CALL( CMRallocStackArray(cmr, &graphAdjacencies, 2 * matrix->numNonzeros) );
+  CMR_CALL( CMRallocStackArray(cmr, &queue, numNodes) );
 
   for (int node = 0; node < numNodes; ++node)
   {
@@ -112,7 +112,7 @@ CMR_ERROR decomposeOneSum(TU* tu, TU_MATRIX* matrix, size_t matrixType, size_t t
       {
         int column = matrix->entryColumns[e];
         int columnNode = firstColumnNode + column;
-        TUdbgMsg(2, "Nonzero (%d,%d) with row node %d (%d neighbors missing) and column node %d (%d neighbors missing).\n",
+        CMRdbgMsg(2, "Nonzero (%d,%d) with row node %d (%d neighbors missing) and column node %d (%d neighbors missing).\n",
           row, column, row, graphNodes[row].degree, columnNode, graphNodes[columnNode].degree);
         graphAdjacencies[graphNodes[row + 1].adjacencyStart - graphNodes[row].degree] = columnNode;
         graphNodes[row].degree--;
@@ -177,7 +177,7 @@ CMR_ERROR decomposeOneSum(TU* tu, TU_MATRIX* matrix, size_t matrixType, size_t t
 
   *pnumComponents = countComponents;
 
-#if defined(TU_DEBUG)
+#if defined(CMR_DEBUG)
   printf("DFS found %d components.\n", countComponents);
   for (int node = 0; node < numNodes; ++node)
   {
@@ -186,8 +186,8 @@ CMR_ERROR decomposeOneSum(TU* tu, TU_MATRIX* matrix, size_t matrixType, size_t t
 #endif
 
   /* Allocate component data. */
-  TU_CALL( TUallocBlockArray(tu, pcomponents, countComponents) );
-  TU_ONESUM_COMPONENT* components = *pcomponents;
+  CMR_CALL( CMRallocBlockArray(cmr, pcomponents, countComponents) );
+  CMR_ONESUM_COMPONENT* components = *pcomponents;
 
   /* Compute sizes. */
   for (int comp = 0; comp < countComponents; ++comp)
@@ -196,7 +196,7 @@ CMR_ERROR decomposeOneSum(TU* tu, TU_MATRIX* matrix, size_t matrixType, size_t t
     components[comp].transpose = NULL;
     components[comp].rowsToOriginal = NULL;
     components[comp].columnsToOriginal = NULL;
-    TU_CALL( TUchrmatCreate(tu, (TU_CHRMAT**) &components[comp].matrix, 0, 0, 0) );
+    CMR_CALL( CMRchrmatCreate(cmr, (CMR_CHRMAT**) &components[comp].matrix, 0, 0, 0) );
   }
 
   for (int node = 0; node < numNodes; ++node)
@@ -217,39 +217,39 @@ CMR_ERROR decomposeOneSum(TU* tu, TU_MATRIX* matrix, size_t matrixType, size_t t
   /* Allocate memory */
   for (int comp = 0; comp < countComponents; ++comp)
   {
-    TU_MATRIX* compMatrix = components[comp].matrix;
+    CMR_MATRIX* compMatrix = components[comp].matrix;
 
-#if defined(TU_DEBUG)
+#if defined(CMR_DEBUG)
     printf("Component %d has %dx%d matrix with %d nonzeros.\n", comp, compMatrix->numRows,
       compMatrix->numColumns, compMatrix->numNonzeros);
 #endif
 
-    TU_CALL( TUallocBlockArray(tu, &components[comp].rowsToOriginal, compMatrix->numRows) );
-    TU_CALL( TUallocBlockArray(tu, &components[comp].columnsToOriginal, compMatrix->numColumns) );
-    TU_CALL( TUreallocBlockArray(tu, &compMatrix->rowStarts, compMatrix->numRows + 1) );
+    CMR_CALL( CMRallocBlockArray(cmr, &components[comp].rowsToOriginal, compMatrix->numRows) );
+    CMR_CALL( CMRallocBlockArray(cmr, &components[comp].columnsToOriginal, compMatrix->numColumns) );
+    CMR_CALL( CMRreallocBlockArray(cmr, &compMatrix->rowStarts, compMatrix->numRows + 1) );
     if (compMatrix->numNonzeros > 0)
-      TU_CALL( TUallocBlockArray(tu, &compMatrix->entryColumns, compMatrix->numNonzeros) );
+      CMR_CALL( CMRallocBlockArray(cmr, &compMatrix->entryColumns, compMatrix->numNonzeros) );
 
     if (targetType == sizeof(char))
     {
       if (compMatrix->numNonzeros > 0)
-        TU_CALL( TUallocBlockArray(tu, (char**) &compMatrix->entryValues, compMatrix->numNonzeros) );
-      TU_CALL( TUchrmatCreate(tu, (TU_CHRMAT**) &components[comp].transpose,
+        CMR_CALL( CMRallocBlockArray(cmr, (char**) &compMatrix->entryValues, compMatrix->numNonzeros) );
+      CMR_CALL( CMRchrmatCreate(cmr, (CMR_CHRMAT**) &components[comp].transpose,
         compMatrix->numColumns, compMatrix->numRows, compMatrix->numNonzeros) );
     }
     else if (targetType == sizeof(int))
     {
       if (compMatrix->numNonzeros > 0)
-        TU_CALL( TUallocBlockArray(tu, (int**) &compMatrix->entryValues, compMatrix->numNonzeros) );
-      TU_CALL( TUintmatCreate(tu, (TU_INTMAT**) &components[comp].transpose,
+        CMR_CALL( CMRallocBlockArray(cmr, (int**) &compMatrix->entryValues, compMatrix->numNonzeros) );
+      CMR_CALL( CMRintmatCreate(cmr, (CMR_INTMAT**) &components[comp].transpose,
         compMatrix->numColumns, compMatrix->numRows, compMatrix->numNonzeros) );
     }
     else
     {
       assert(targetType == sizeof(double));
       if (compMatrix->numNonzeros > 0)
-        TU_CALL( TUallocBlockArray(tu, (double**) &compMatrix->entryValues, compMatrix->numNonzeros) );
-      TU_CALL( TUdblmatCreate(tu, (TU_DBLMAT**) &components[comp].transpose,
+        CMR_CALL( CMRallocBlockArray(cmr, (double**) &compMatrix->entryValues, compMatrix->numNonzeros) );
+      CMR_CALL( CMRdblmatCreate(cmr, (CMR_DBLMAT**) &components[comp].transpose,
         compMatrix->numColumns, compMatrix->numRows, compMatrix->numNonzeros) );
     }
   }
@@ -265,7 +265,7 @@ CMR_ERROR decomposeOneSum(TU* tu, TU_MATRIX* matrix, size_t matrixType, size_t t
       components[comp].columnsToOriginal[order] = node - firstColumnNode;
   }
 
-#if defined(TU_DEBUG)
+#if defined(CMR_DEBUG)
   for (int comp = 0; comp < countComponents; ++comp)
   {
     printf("Component %d's rows map to original rows:", comp);
@@ -282,7 +282,7 @@ CMR_ERROR decomposeOneSum(TU* tu, TU_MATRIX* matrix, size_t matrixType, size_t t
   /* We can now fill the matrices of each component. */
   for (int comp = 0; comp < countComponents; ++comp)
   {
-    TU_MATRIX* compTranspose = components[comp].transpose;
+    CMR_MATRIX* compTranspose = components[comp].transpose;
 
     /* Compute the slices in the transposed component matrix from the graph. */
     int countNonzeros = 0;
@@ -291,7 +291,7 @@ CMR_ERROR decomposeOneSum(TU* tu, TU_MATRIX* matrix, size_t matrixType, size_t t
       int column = components[comp].columnsToOriginal[compColumn];
       int node = firstColumnNode + column;
       compTranspose->rowStarts[compColumn] = countNonzeros;
-#if defined(TU_DEBUG)
+#if defined(CMR_DEBUG)
       printf("Component %d's column %d (row of transposed) starts at component entry %d.\n", comp, compColumn,
         countNonzeros);
 #endif
@@ -323,7 +323,7 @@ CMR_ERROR decomposeOneSum(TU* tu, TU_MATRIX* matrix, size_t matrixType, size_t t
           int column = matrix->entryColumns[matrixEntry];
           int compColumn = graphNodes[firstColumnNode + column].order;
           int compEntry = compTranspose->rowStarts[compColumn];
-#if defined(TU_DEBUG)
+#if defined(CMR_DEBUG)
           printf("Component %d contains matrix entry %d in at %d,%d.",
             comp, matrixEntry, row, column);
           printf(" It will be component entry %d at %d,%d\n", compEntry, compRow, compColumn);
@@ -387,22 +387,22 @@ CMR_ERROR decomposeOneSum(TU* tu, TU_MATRIX* matrix, size_t matrixType, size_t t
       compTranspose->rowStarts[compColumn] = compTranspose->rowStarts[compColumn-1];
     compTranspose->rowStarts[0] = 0;
 
-#if defined(TU_DEBUG)
+#if defined(CMR_DEBUG)
     printf("Component %d's transpose:\n", comp);
     if (targetType == sizeof(double))
-      TUdblmatPrintDense(stdout, (TU_DBLMAT*) compTranspose, '0', true);
+      CMRdblmatPrintDense(stdout, (CMR_DBLMAT*) compTranspose, '0', true);
     else if (targetType == sizeof(int))
-      TUintmatPrintDense(stdout, (TU_INTMAT*) compTranspose, '0', true);
+      CMRintmatPrintDense(stdout, (CMR_INTMAT*) compTranspose, '0', true);
     else if (targetType == sizeof(char))
-      TUchrmatPrintDense(stdout, (TU_CHRMAT*) compTranspose, '0', true);
+      CMRchrmatPrintDense(stdout, (CMR_CHRMAT*) compTranspose, '0', true);
 #endif
   }
 
   /* We now create the row-wise representation from the column-wise one. */
   for (int comp = 0; comp < countComponents; ++comp)
   {
-    TU_MATRIX* compMatrix = components[comp].matrix;
-    TU_MATRIX* compTranspose = components[comp].transpose;
+    CMR_MATRIX* compMatrix = components[comp].matrix;
+    CMR_MATRIX* compTranspose = components[comp].transpose;
 
     /* Compute the slices in the component matrix from the graph. */
     int countNonzeros = 0;
@@ -427,7 +427,7 @@ CMR_ERROR decomposeOneSum(TU* tu, TU_MATRIX* matrix, size_t matrixType, size_t t
         int compMatrixEntry = compMatrix->rowStarts[compRow];
         compMatrix->entryColumns[compMatrixEntry] = compColumn;
         compMatrix->rowStarts[compRow]++;
-#if defined(TU_DEBUG)
+#if defined(CMR_DEBUG)
         printf("Component matrix entry %d (%d,%d in component) copied from component transpose entry %d.\n",
           compMatrixEntry, compRow, compColumn, compTransposeEntry);
 #endif
@@ -450,18 +450,18 @@ CMR_ERROR decomposeOneSum(TU* tu, TU_MATRIX* matrix, size_t matrixType, size_t t
 
     if (targetType == sizeof(double))
     {
-      assert(TUdblmatCheckTranspose((TU_DBLMAT*) components[comp].matrix,
-        (TU_DBLMAT*) components[comp].transpose));
+      assert(CMRdblmatCheckTranspose((CMR_DBLMAT*) components[comp].matrix,
+        (CMR_DBLMAT*) components[comp].transpose));
     }
     else if (targetType == sizeof(int))
     {
-      assert(TUintmatCheckTranspose((TU_INTMAT*) components[comp].matrix,
-        (TU_INTMAT*) components[comp].transpose));
+      assert(CMRintmatCheckTranspose((CMR_INTMAT*) components[comp].matrix,
+        (CMR_INTMAT*) components[comp].transpose));
     }
     else if (targetType == sizeof(char))
     {
-      assert(TUchrmatCheckTranspose((TU_CHRMAT*) components[comp].matrix,
-        (TU_CHRMAT*) components[comp].transpose));
+      assert(CMRchrmatCheckTranspose((CMR_CHRMAT*) components[comp].matrix,
+        (CMR_CHRMAT*) components[comp].transpose));
     }
   }
 
@@ -487,9 +487,9 @@ CMR_ERROR decomposeOneSum(TU* tu, TU_MATRIX* matrix, size_t matrixType, size_t t
       columnsToComponentColumns[column] = graphNodes[firstColumnNode + column].order;
   }
 
-  TU_CALL( TUfreeStackArray(tu, &queue) );
-  TU_CALL( TUfreeStackArray(tu, &graphAdjacencies) );
-  TU_CALL( TUfreeStackArray(tu, &graphNodes) );
+  CMR_CALL( CMRfreeStackArray(cmr, &queue) );
+  CMR_CALL( CMRfreeStackArray(cmr, &graphAdjacencies) );
+  CMR_CALL( CMRfreeStackArray(cmr, &graphNodes) );
 
   return CMR_OKAY;
 }

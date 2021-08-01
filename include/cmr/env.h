@@ -25,24 +25,24 @@ typedef enum
  * \brief Call wrapper for calls returning a \ref CMR_ERROR.
  */
 
-#define TU_CALL(call) \
+#define CMR_CALL(call) \
   do \
   { \
-    CMR_ERROR _tu_error = call; \
-    if (_tu_error) \
+    CMR_ERROR _cmr_error = call; \
+    if (_cmr_error) \
     { \
-      if (_tu_error == CMR_ERROR_INPUT) \
+      if (_cmr_error == CMR_ERROR_INPUT) \
         printf("User input error"); \
-      else if (_tu_error == CMR_ERROR_MEMORY) \
+      else if (_cmr_error == CMR_ERROR_MEMORY) \
         printf("Memory (re)allocation failed"); \
       else \
         printf("Unknown error"); \
       printf(" in %s:%d.\n", __FILE__, __LINE__); \
-      return _tu_error; \
+      return _cmr_error; \
     } \
   } while (false)
 
-struct TU_ENVIRONMENT;
+struct CMR_ENVIRONMENT;
 
 /**
  * \brief Environment for computations
@@ -50,113 +50,113 @@ struct TU_ENVIRONMENT;
  * Manages memory, threading, output and parameters.
  */
 
-typedef struct TU_ENVIRONMENT TU;
+typedef struct CMR_ENVIRONMENT CMR;
 
 /**
- * \brief Allocates and initializes a default \ref TU environment.
+ * \brief Allocates and initializes a default \ref CMR environment.
  *
  * It has default parameters and outputs to stdout.
  */
 
 CMR_EXPORT
-CMR_ERROR TUcreateEnvironment(
-  TU** ptu /**< Pointer at which the \ref TU environment shall be allocated. */
+CMR_ERROR CMRcreateEnvironment(
+  CMR** pcmr  /**< Pointer at which the \ref CMR environment shall be allocated. */
 );
 
 /**
- * \brief Frees a \ref TU environment.
+ * \brief Frees a \ref CMR environment.
  */
 
 CMR_EXPORT
-CMR_ERROR TUfreeEnvironment(
-  TU** ptu /**< Pointer to \ref TU environment. */
+CMR_ERROR CMRfreeEnvironment(
+  CMR** pcmr  /**< Pointer to \ref CMR environment. */
 );
 
 /**
  * \brief Allocates block memory for *\p ptr.
  *
- * Block memory shall be freed with \ref TUfreeBlock.
+ * Block memory shall be freed with \ref CMRfreeBlock.
  * The size is determined automatically.
  */
 
-#define TUallocBlock(tu, ptr) \
-  _TUallocBlock(tu, (void**) ptr, sizeof(**ptr))
+#define CMRallocBlock(cmr, ptr) \
+  _CMRallocBlock(cmr, (void**) ptr, sizeof(**ptr))
 
 /**
- * \brief Carries out the allocation for \ref TUallocBlock.
+ * \brief Carries out the allocation for \ref CMRallocBlock.
  *
- * \note Use \ref TUallocBlock to allocate block memory.
+ * \note Use \ref CMRallocBlock to allocate block memory.
  */
 
 CMR_EXPORT
-CMR_ERROR _TUallocBlock(TU* tu, void** ptr, size_t size);
+CMR_ERROR _CMRallocBlock(CMR* cmr, void** ptr, size_t size);
 
 /**
- * \brief Frees a block memory chunk allocated with \ref TUallocBlock.
+ * \brief Frees a block memory chunk allocated with \ref CMRallocBlock.
  */
 
-#define TUfreeBlock(tu, ptr) \
-  _TUfreeBlock(tu, (void**) ptr, sizeof(**ptr))
+#define CMRfreeBlock(cmr, ptr) \
+  _CMRfreeBlock(cmr, (void**) ptr, sizeof(**ptr))
 
 /**
- * \brief Carries out the deallocation for \ref TUfreeBlock.
+ * \brief Carries out the deallocation for \ref CMRfreeBlock.
  *
- * \note Use \ref TUfreeBlock to free block memory.
+ * \note Use \ref CMRfreeBlock to free block memory.
  */
 
 CMR_EXPORT
-CMR_ERROR _TUfreeBlock(TU* tu, void** ptr, size_t size);
+CMR_ERROR _CMRfreeBlock(CMR* cmr, void** ptr, size_t size);
 
 /**
  * \brief Allocates block memory for an array of chunks.
  *
- * The block memory shall be freed with \ref TUfreeBlockArray. Its size can be changed via
- * \ref TUreallocBlockArray.
+ * The block memory shall be freed with \ref CMRfreeBlockArray. Its size can be changed via
+ * \ref CMRreallocBlockArray.
  * The size of each chunk is determined automatically.
  */
 
-#define TUallocBlockArray(tu, ptr, length) \
-  _TUallocBlockArray(tu, (void**) ptr, sizeof(**ptr), length)
+#define CMRallocBlockArray(cmr, ptr, length) \
+  _CMRallocBlockArray(cmr, (void**) ptr, sizeof(**ptr), length)
 
 /**
- * \brief Carries out the allocation for \ref TUallocBlockArray.
+ * \brief Carries out the allocation for \ref CMRallocBlockArray.
  *
- * \note Use \ref TUallocBlockArray to allocate block memory.
+ * \note Use \ref CMRallocBlockArray to allocate block memory.
  */
 
 CMR_EXPORT
-CMR_ERROR _TUallocBlockArray(TU* tu, void** ptr, size_t size, size_t length);
+CMR_ERROR _CMRallocBlockArray(CMR* cmr, void** ptr, size_t size, size_t length);
 
 /**
  * \brief Reallocates block memory of an array of chunks.
  *
- * The block memory shall be freed with \ref TUfreeBlockArray.
+ * The block memory shall be freed with \ref CMRfreeBlockArray.
  * The size of each chunk is determined automatically.
  */
 
-#define TUreallocBlockArray(tu, ptr, length) \
-  _TUreallocBlockArray(tu, (void**) ptr, sizeof(**ptr), length)
+#define CMRreallocBlockArray(cmr, ptr, length) \
+  _CMRreallocBlockArray(cmr, (void**) ptr, sizeof(**ptr), length)
 
 /**
- * \brief Carries out the reallocation for \ref TUreallocBlockArray.
+ * \brief Carries out the reallocation for \ref CMRreallocBlockArray.
  *
- * \note Use \ref TUreallocBlockArray to reallocate block memory.
+ * \note Use \ref CMRreallocBlockArray to reallocate block memory.
  */
 
 CMR_EXPORT
-CMR_ERROR _TUreallocBlockArray(TU* tu, void** ptr, size_t size, size_t length);
+CMR_ERROR _CMRreallocBlockArray(CMR* cmr, void** ptr, size_t size, size_t length);
 
 /**
- * \brief Carries out the deallocation for \ref TUfreeBlockArray.
+ * \brief Carries out the deallocation for \ref CMRfreeBlockArray.
  *
- * \note Use \ref TUfreeBlockArray to free a block memory array.
+ * \note Use \ref CMRfreeBlockArray to free a block memory array.
  */
 
-#define TUfreeBlockArray(tu, ptr) \
-  _TUfreeBlockArray(tu, (void**) ptr)
+#define CMRfreeBlockArray(cmr, ptr) \
+  _CMRfreeBlockArray(cmr, (void**) ptr)
 
 CMR_EXPORT
-CMR_ERROR _TUfreeBlockArray(TU* tu, void** ptr);
+CMR_ERROR _CMRfreeBlockArray(CMR* cmr, void** ptr);
 
 #ifdef __cplusplus
 }

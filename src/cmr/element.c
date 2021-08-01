@@ -6,7 +6,7 @@
 static char elementStringBuffer[32];
 
 CMR_EXPORT
-const char* TUelementString(Element element, char* buffer)
+const char* CMRelementString(CMR_ELEMENT element, char* buffer)
 {
   if (!buffer)
     buffer = elementStringBuffer;

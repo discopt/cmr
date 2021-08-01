@@ -5,13 +5,13 @@
 
 #include "env_internal.h"
 
-void TUcreateDec(TU* tu, TU_DEC** pdec)
+void CMRcreateDec(CMR* cmr, CMR_TU_DEC** pdec)
 {
   assert(pdec != NULL);
   assert(*pdec == NULL);
 
-  TUallocBlock(tu, pdec);
-  TU_DEC* dec = *pdec;
+  CMRallocBlock(cmr, pdec);
+  CMR_TU_DEC* dec = *pdec;
   dec->matrix = NULL;
   dec->transpose = NULL;
   dec->rowLabels = NULL;
@@ -25,128 +25,128 @@ void TUcreateDec(TU* tu, TU_DEC** pdec)
   dec->cograph = NULL;
 }
 
-void TUdecFree(TU* tu, TU_DEC** pdec)
+void CMRtudecFree(CMR* cmr, CMR_TU_DEC** pdec)
 {
   assert(pdec);
   assert(*pdec);
 
-  TU_DEC* dec = *pdec;
+  CMR_TU_DEC* dec = *pdec;
 
   if (dec->numChildren > 0)
   {
     for (int c = 0; c < dec->numChildren; ++c)
-      TUdecFree(tu, &dec->children[c]);
-    TUfreeBlockArray(tu, &dec->children);
+      CMRtudecFree(cmr, &dec->children[c]);
+    CMRfreeBlockArray(cmr, &dec->children);
   }
   if (dec->matrix)
-    TUchrmatFree(tu, &dec->matrix);
+    CMRchrmatFree(cmr, &dec->matrix);
   if (dec->transpose)
-    TUchrmatFree(tu, &dec->transpose);
+    CMRchrmatFree(cmr, &dec->transpose);
   if (dec->rowLabels)
-    TUfreeBlockArray(tu, &dec->rowLabels);
+    CMRfreeBlockArray(cmr, &dec->rowLabels);
   if (dec->columnLabels)
-    TUfreeBlockArray(tu, &dec->columnLabels);
+    CMRfreeBlockArray(cmr, &dec->columnLabels);
   if (dec->parentRows)
-    TUfreeBlockArray(tu, &dec->parentRows);
+    CMRfreeBlockArray(cmr, &dec->parentRows);
   if (dec->parentColumns)
-    TUfreeBlockArray(tu, &dec->parentColumns);
+    CMRfreeBlockArray(cmr, &dec->parentColumns);
   if (dec->graph)
-    TUgraphFree(tu, &dec->graph);
+    CMRgraphFree(cmr, &dec->graph);
   if (dec->cograph)
-    TUgraphFree(tu, &dec->cograph);
+    CMRgraphFree(cmr, &dec->cograph);
 
-  TUfreeBlock(tu, pdec);
+  CMRfreeBlock(cmr, pdec);
 }
 
-bool TUdecIsLeaf(TU_DEC* dec)
+bool CMRtudecIsLeaf(CMR_TU_DEC* dec)
 {
   assert(dec);
   return dec->numChildren == 0;
 }
 
-bool TUdecIsRegular(TU_DEC* dec)
+bool CMRtudecIsRegular(CMR_TU_DEC* dec)
 {
   assert(dec);
-  return dec->flags & TU_DEC_REGULAR;
+  return dec->flags & CMR_TU_DEC_REGULAR;
 }
 
-bool TUdecIsGraphic(TU_DEC* dec)
+bool CMRtudecIsGraphic(CMR_TU_DEC* dec)
 {
   assert(dec);
-  return dec->flags & TU_DEC_GRAPHIC;
+  return dec->flags & CMR_TU_DEC_GRAPHIC;
 }
 
-bool TUdecIsCographic(TU_DEC* dec)
+bool CMRtudecIsCographic(CMR_TU_DEC* dec)
 {
   assert(dec);
-  return dec->flags & TU_DEC_COGRAPHIC;
+  return dec->flags & CMR_TU_DEC_COGRAPHIC;
 }
 
-char TUdecIsSum(TU_DEC* dec)
+char CMRtudecIsSum(CMR_TU_DEC* dec)
 {
   assert(dec);
-  char result = dec->flags & TU_DEC_TYPE_MASK;
+  char result = dec->flags & CMR_TU_DEC_TYPE_MASK;
   return result <= 3 ? result : 0;
 }
 
-int TUdecNumRows(TU_DEC* dec)
+int CMRtudecNumRows(CMR_TU_DEC* dec)
 {
   assert(dec);
   assert(dec->matrix);
   return dec->matrix->numRows;
 }
 
-int TUdecNumColumns(TU_DEC* dec)
+int CMRtudecNumColumns(CMR_TU_DEC* dec)
 {
   assert(dec);
   assert(dec->matrix);
   return dec->matrix->numColumns;
 }
 
-int TUgetDecRankLowerLeft(TU_DEC* dec)
+int CMRgetDecRankLowerLeft(CMR_TU_DEC* dec)
 {
   assert(dec);
 
-  if ((dec->flags & TU_DEC_TYPE_MASK) == TU_DEC_THREE_SUM
-    && !(dec->flags & TU_DEC_RANK_UPPER_RIGHT))
+  if ((dec->flags & CMR_TU_DEC_TYPE_MASK) == CMR_TU_DEC_THREE_SUM
+    && !(dec->flags & CMR_TU_DEC_RANK_UPPER_RIGHT))
     return 2;
-  else if (dec->flags & (TU_DEC_RANK_LOWER_LEFT))
+  else if (dec->flags & (CMR_TU_DEC_RANK_LOWER_LEFT))
     return 1;
   else
     return 0;
 }
 
-int TUgetDecRankUpperRight(TU_DEC* dec)
+int CMRgetDecRankUpperRight(CMR_TU_DEC* dec)
 {
   assert(dec);
 
-  if ((dec->flags & TU_DEC_TYPE_MASK) == TU_DEC_THREE_SUM
-    && !(dec->flags & TU_DEC_RANK_LOWER_LEFT))
+  if ((dec->flags & CMR_TU_DEC_TYPE_MASK) == CMR_TU_DEC_THREE_SUM
+    && !(dec->flags & CMR_TU_DEC_RANK_LOWER_LEFT))
     return 2;
-  else if (dec->flags & (TU_DEC_RANK_UPPER_RIGHT))
+  else if (dec->flags & (CMR_TU_DEC_RANK_UPPER_RIGHT))
     return 1;
   else
     return 0;
 }
 
-void TUcreateDecChild(TU* tu, TU_DEC* dec, int numRows, int* rows, int numColumns, int* columns,
+void CMRcreateDecChild(CMR* cmr, CMR_TU_DEC* dec, int numRows, int* rows, int numColumns, int* columns,
   int numNonzeros, int numExtraRows, int numExtraColumns, int numExtraNonzeros,
-  bool constructDecomposition, TU_DEC** presult)
+  bool constructDecomposition, CMR_TU_DEC** presult)
 {
-  assert(tu);
+  assert(cmr);
   assert(dec);
   assert(rows);
   assert(columns);
 
-  TU_CHRMAT* parentMatrix = dec->matrix;
+  CMR_CHRMAT* parentMatrix = dec->matrix;
   assert(parentMatrix);
 
-  TUcreateDec(tu, presult);
-  TU_DEC* result = *presult;
+  CMRcreateDec(cmr, presult);
+  CMR_TU_DEC* result = *presult;
 
   /* Copy parentRows from rows. */
 
-  TUallocBlockArray(tu, &result->parentRows, numRows + numExtraRows);
+  CMRallocBlockArray(cmr, &result->parentRows, numRows + numExtraRows);
   for (int row = 0; row < numRows; ++row)
     result->parentRows[row] = rows[row];
   for (int row = 0; row < numExtraRows; ++row)
@@ -154,7 +154,7 @@ void TUcreateDecChild(TU* tu, TU_DEC* dec, int numRows, int* rows, int numColumn
 
   /* Copy parentColumns from columns. */
 
-  TUallocBlockArray(tu, &result->parentColumns, numColumns + numExtraColumns);
+  CMRallocBlockArray(cmr, &result->parentColumns, numColumns + numExtraColumns);
   for (int column = 0; column < numColumns; ++column)
     result->parentColumns[column] = columns[column];
   for (int column = 0; column < numExtraColumns; ++column)
@@ -162,11 +162,11 @@ void TUcreateDecChild(TU* tu, TU_DEC* dec, int numRows, int* rows, int numColumn
 
   /* Create the child matrix. */
 
-  TUchrmatCreate(tu, &result->matrix, numRows, numColumns, 0);
-  TU_CHRMAT* childMatrix = result->matrix;
+  CMRchrmatCreate(cmr, &result->matrix, numRows, numColumns, 0);
+  CMR_CHRMAT* childMatrix = result->matrix;
 
   int* columnMap = NULL;
-  TUallocStackArray(tu, &columnMap, parentMatrix->numColumns);
+  CMRallocStackArray(cmr, &columnMap, parentMatrix->numColumns);
   for (int column = 0; column < parentMatrix->numColumns; ++column)
     columnMap[column] = -1;
   for (int i = 0; i < numColumns; ++i)
@@ -191,8 +191,8 @@ void TUcreateDecChild(TU* tu, TU_DEC* dec, int numRows, int* rows, int numColumn
     }
   }
 
-  TUallocBlockArray(tu, &childMatrix->entryColumns, numNonzeros + numExtraNonzeros);
-  TUallocBlockArray(tu, &childMatrix->entryValues, numNonzeros + numExtraNonzeros);
+  CMRallocBlockArray(cmr, &childMatrix->entryColumns, numNonzeros + numExtraNonzeros);
+  CMRallocBlockArray(cmr, &childMatrix->entryValues, numNonzeros + numExtraNonzeros);
 
   /* Write nonzeros to child matrix. */
 
@@ -218,10 +218,10 @@ void TUcreateDecChild(TU* tu, TU_DEC* dec, int numRows, int* rows, int numColumn
     }
   }
 
-  TUfreeStackArray(tu, &columnMap);
+  CMRfreeStackArray(cmr, &columnMap);
 
   if (constructDecomposition)
   {
-    TUchrmatTranspose(tu, result->matrix, &result->transpose);
+    CMRchrmatTranspose(cmr, result->matrix, &result->transpose);
   }
 }

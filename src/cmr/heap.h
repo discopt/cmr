@@ -1,5 +1,5 @@
-#ifndef TU_HEAP_INTERNAL_H
-#define TU_HEAP_INTERNAL_H
+#ifndef CMR_HEAP_INTERNAL_H
+#define CMR_HEAP_INTERNAL_H
 
 #include <cmr/env.h>
 #include "env_internal.h"
@@ -20,15 +20,15 @@ typedef struct
   int* values;    /**< \brief Array that maps keys to values. */
   int* positions; /**< \brief Array that maps keys to heap positions. */
   int* data;      /**< \brief Array that maps heap positions to keys. */
-} TU_INTHEAP;
+} CMR_INTHEAP;
 
 /**
  * \brief Initializes an empty heap using stack memory.
  */
 
-CMR_ERROR TUintheapInitStack(
-  TU* tu,           /**< \ref TU environment. */
-  TU_INTHEAP* heap, /**< Heap pointer. */
+CMR_ERROR CMRintheapInitStack(
+  CMR* cmr,           /**< \ref CMR environment. */
+  CMR_INTHEAP* heap, /**< Heap pointer. */
   int memKeys       /**< Maximum number of elements and bound on key entries. */
 );
 
@@ -36,17 +36,17 @@ CMR_ERROR TUintheapInitStack(
  * \brief Clears the given \p heap.
  */
 
-CMR_ERROR TUintheapClearStack(
-  TU* tu,           /**< \ref TU environment. */
-  TU_INTHEAP* heap  /**< Heap pointer. */
+CMR_ERROR CMRintheapClearStack(
+  CMR* cmr,           /**< \ref CMR environment. */
+  CMR_INTHEAP* heap  /**< Heap pointer. */
 );
 
 /**
  * \brief Inserts a \p key \p value pair into the heap.
  */
 
-CMR_ERROR TUintheapInsert(
-  TU_INTHEAP* heap, /**< Heap pointer. */
+CMR_ERROR CMRintheapInsert(
+  CMR_INTHEAP* heap, /**< Heap pointer. */
   int key,          /**< Key of new element. */
   int value         /**< Value of new element. */
 );
@@ -55,8 +55,8 @@ CMR_ERROR TUintheapInsert(
  * \brief Decreases the value of \p key to \p newValue.
  */
 
-CMR_ERROR TUintheapDecrease(
-  TU_INTHEAP* heap, /**< Heap pointer. */
+CMR_ERROR CMRintheapDecrease(
+  CMR_INTHEAP* heap, /**< Heap pointer. */
   int key,          /**< Key of element. */
   int newValue      /**< New value of element. */
 );
@@ -65,8 +65,8 @@ CMR_ERROR TUintheapDecrease(
  * \brief Decreases the value of \p key to \p newValue or inserts it.
  */
 
-CMR_ERROR TUintheapDecreaseInsert(
-  TU_INTHEAP* heap, /**< Heap pointer. */
+CMR_ERROR CMRintheapDecreaseInsert(
+  CMR_INTHEAP* heap, /**< Heap pointer. */
   int key,          /**< Key of element. */
   int newValue      /**< New value of element. */
 );
@@ -76,8 +76,8 @@ CMR_ERROR TUintheapDecreaseInsert(
  */
 
 static inline
-bool TUintheapEmpty(
-  TU_INTHEAP* heap  /**< Heap pointer. */
+bool CMRintheapEmpty(
+  CMR_INTHEAP* heap  /**< Heap pointer. */
 )
 {
   return heap->size == 0;
@@ -88,8 +88,8 @@ bool TUintheapEmpty(
  */
 
 static inline
-int TUintheapMinimumKey(
-  TU_INTHEAP* heap  /**< Heap pointer. */
+int CMRintheapMinimumKey(
+  CMR_INTHEAP* heap  /**< Heap pointer. */
 )
 {
   return heap->data[0];
@@ -100,8 +100,8 @@ int TUintheapMinimumKey(
  */
 
 static inline
-int TUintheapMinimumValue(
-  TU_INTHEAP* heap  /**< Heap. */
+int CMRintheapMinimumValue(
+  CMR_INTHEAP* heap  /**< Heap. */
 )
 {
   return heap->values[heap->data[0]];
@@ -112,8 +112,8 @@ int TUintheapMinimumValue(
  */
 
 static inline
-bool TUintheapContains(
-  TU_INTHEAP* heap, /**< Heap pointer. */
+bool CMRintheapContains(
+  CMR_INTHEAP* heap, /**< Heap pointer. */
   int key           /**< Key whose existence shall be checked. */
 )
 {
@@ -121,8 +121,8 @@ bool TUintheapContains(
 }
 
 static inline
-int TUintheapGetValue(
-  TU_INTHEAP* heap, /*< Heap. */
+int CMRintheapGetValue(
+  CMR_INTHEAP* heap, /*< Heap. */
   int key           /*< Key whose value shall be returned. */
 )
 {
@@ -134,8 +134,8 @@ int TUintheapGetValue(
  */
 
 static inline
-int TUintheapGetValueInfinity(
-  TU_INTHEAP* heap, /**< Heap pointer. */
+int CMRintheapGetValueInfinity(
+  CMR_INTHEAP* heap, /**< Heap pointer. */
   int key           /**< Key to be searched. */
 )
 {
@@ -149,12 +149,12 @@ int TUintheapGetValueInfinity(
  * \brief Extracts the minimum element and returns its key.
  */
 
-int TUintheapExtractMinimum(
-  TU_INTHEAP* heap  /**< Heap pointer. */
+int CMRintheapExtractMinimum(
+  CMR_INTHEAP* heap  /**< Heap pointer. */
 );
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* TU_HEAP_INTERNAL_H */
+#endif /* CMR_HEAP_INTERNAL_H */
