@@ -39,11 +39,10 @@ TU_ERROR matrixSeriesParallel2Sums(
   bool outputReducedElements,   /**< Whether to output the elements of the reduced matrix. */
   bool outputReducedMatrix,     /**< Whether to output the reduced matrix. */
   bool outputWheelElements,     /**< Whether to output the elements of a wheel matrix if not series-parallel. */
-  bool outputWheelMatrix,       /**< Whether to output a wheel matrix if not series-parallel. */
-  size_t numRepetitions         /**< Number of repetitions of the recognition algorithm. */
+  bool outputWheelMatrix        /**< Whether to output a wheel matrix if not series-parallel. */
 )
 {
-  clock_t startTime, endTime;
+  clock_t startClock, endTime;
   FILE* instanceFile = strcmp(instanceFileName, "-") ? fopen(instanceFileName, "r") : stdin;
   if (!instanceFile)
     return TU_ERROR_INPUT;
@@ -53,7 +52,7 @@ TU_ERROR matrixSeriesParallel2Sums(
 
   /* Read matrix. */
 
-  startTime = clock();
+  startClock = clock();
   TU_CHRMAT* matrix = NULL;
   if (inputFormat == FILEFORMAT_MATRIX_DENSE)
     TU_CALL( TUchrmatCreateFromDenseStream(tu, &matrix, instanceFile) );
@@ -61,37 +60,25 @@ TU_ERROR matrixSeriesParallel2Sums(
     TU_CALL( TUchrmatCreateFromSparseStream(tu, &matrix, instanceFile) );
   if (instanceFile != stdin)
     fclose(instanceFile);
-  endTime = clock();
   fprintf(stderr, "Read %dx%d matrix with %d nonzeros in %f seconds.\n", matrix->numRows, matrix->numColumns,
-    matrix->numNonzeros, (endTime - startTime) * 1.0 / CLOCKS_PER_SEC);
+    matrix->numNonzeros, (clock() - startClock) * 1.0 / CLOCKS_PER_SEC);
 
   /* Run the search. */
 
-  TU_SP* operations = NULL;
+  TU_SP_OPERATION* operations = NULL;
   size_t numOperations = 0;
   TU_CALL( TUallocBlockArray(tu, &operations, matrix->numRows + matrix->numColumns) );
   TU_SUBMAT* reducedSubmatrix = NULL;
   TU_SUBMAT* wheelSubmatrix = NULL;
 
-  startTime = clock();
-  for (size_t i = 0; i < numRepetitions; ++i)
-  {
-    TU_CALL( TUfindSeriesParallel(tu, matrix, operations, &numOperations,
-      (outputReducedElements || outputReducedMatrix) ? &reducedSubmatrix : NULL,
-      (outputWheelElements || outputWheelMatrix) ? &wheelSubmatrix : NULL, NULL, NULL, true) );
-    
-    if (i+1 < numRepetitions)
-    {
-      if (reducedSubmatrix)
-        TU_CALL( TUsubmatFree(tu, &reducedSubmatrix) );
-      if (wheelSubmatrix)
-        TU_CALL( TUsubmatFree(tu, &wheelSubmatrix) );
-    }
-  }
-  endTime = clock();
+  TU_SP_STATISTICS stats;
+  TU_CALL( TUspInitStatistics(&stats) );
+  TU_CALL( TUfindSeriesParallel(tu, matrix, operations, &numOperations,
+    (outputReducedElements || outputReducedMatrix) ? &reducedSubmatrix : NULL,
+    (outputWheelElements || outputWheelMatrix) ? &wheelSubmatrix : NULL, NULL, NULL, true, &stats) );
 
-  fprintf(stderr, "Recognition done in %f seconds. Matrix %sseries-parallel; %ld reductions can be applied.\n",
-    (endTime - startTime) * 1.0 / CLOCKS_PER_SEC / numRepetitions,
+  fprintf(stderr, "Recognition done in %f seconds with %f for reduction and %f for wheel search. Matrix %sseries-parallel; %ld reductions can be applied.\n",
+    stats.totalTime, stats.reduceTime, stats.wheelTime,
     numOperations == matrix->numRows + matrix->numColumns ? "IS " : "is NOT ", numOperations);
 
   if (outputReductions)
@@ -99,7 +86,7 @@ TU_ERROR matrixSeriesParallel2Sums(
     fprintf(stderr, "Printing %ld series-parallel reductions.\n", numOperations);
     printf("%ld\n", numOperations);
     for (size_t i = 0; i < numOperations; ++i)
-      printf("%s\n", TUspString(operations[i], NULL));
+      printf("%s\n", TUspOperationString(operations[i], NULL));
   }
 
   if (outputReducedElements)
@@ -116,12 +103,12 @@ TU_ERROR matrixSeriesParallel2Sums(
 
   if (outputReducedMatrix)
   {
-    startTime = clock();
+    startClock = clock();
     TU_CHRMAT* reducedMatrix = NULL;
     TU_CALL( TUchrmatFilterSubmat(tu, matrix, reducedSubmatrix, &reducedMatrix) );
     endTime = clock();
     fprintf(stderr, "\nExtracted reduced %dx%d matrix with %d nonzeros in %f seconds.\n", reducedMatrix->numRows,
-      reducedMatrix->numColumns, reducedMatrix->numNonzeros, (endTime - startTime) * 1.0 / CLOCKS_PER_SEC );
+      reducedMatrix->numColumns, reducedMatrix->numNonzeros, (endTime - startClock) * 1.0 / CLOCKS_PER_SEC );
     if (outputFormat == FILEFORMAT_MATRIX_DENSE)
       TU_CALL( TUchrmatPrintDense(tu, stdout, reducedMatrix, '0', false) );
     else if (outputFormat == FILEFORMAT_MATRIX_SPARSE)
@@ -144,12 +131,12 @@ TU_ERROR matrixSeriesParallel2Sums(
 
   if (wheelSubmatrix && outputWheelMatrix)
   {
-    startTime = clock();
+    startClock = clock();
     TU_CHRMAT* wheelMatrix = NULL;
     TU_CALL( TUchrmatFilterSubmat(tu, matrix, wheelSubmatrix, &wheelMatrix) );
     endTime = clock();
     fprintf(stderr, "\nExtracted %dx%d wheel matrix with %d nonzeros in %f seconds.\n", wheelMatrix->numRows,
-      wheelMatrix->numColumns, wheelMatrix->numNonzeros, (endTime - startTime) * 1.0 / CLOCKS_PER_SEC );
+      wheelMatrix->numColumns, wheelMatrix->numNonzeros, (endTime - startClock) * 1.0 / CLOCKS_PER_SEC );
     if (outputFormat == FILEFORMAT_MATRIX_DENSE)
       TU_CALL( TUchrmatPrintDense(tu, stdout, wheelMatrix, '0', false) );
     else if (outputFormat == FILEFORMAT_MATRIX_SPARSE)
@@ -178,7 +165,6 @@ int main(int argc, char** argv)
   bool outputReducedMatrix = false;
   bool outputWheelElements = false;
   bool outputWheelMatrix = false;
-  size_t repetitions = 1;
   for (int a = 1; a < argc; ++a)
   {
     if (!strcmp(argv[a], "-h"))
@@ -196,17 +182,6 @@ int main(int argc, char** argv)
       outputWheelElements = true;
     else if (!strcmp(argv[a], "-W"))
       outputWheelMatrix = true;
-    else if (!strcmp(argv[a], "-N") && a+1 < argc)
-    {
-      char* p;
-      repetitions = strtoull(argv[a+1], &p, 10);
-      if (*p != '\0')
-      {
-        fprintf(stderr, "Error: invalid number of repetitions <%s>.\n", argv[a+1]);
-        return printUsage(argv[0]);
-      }
-      ++a;
-    }
     else if (!strcmp(argv[a], "-i") && a+1 < argc)
     {
       if (!strcmp(argv[a+1], "dense"))
@@ -249,7 +224,7 @@ int main(int argc, char** argv)
   }
 
   TU_ERROR error = matrixSeriesParallel2Sums(instanceFileName, inputFormat, outputFormat, outputReductions,
-    outputReducedElements, outputReducedMatrix, outputWheelElements, outputWheelMatrix, repetitions);
+    outputReducedElements, outputReducedMatrix, outputWheelElements, outputWheelMatrix);
   switch (error)
   {
   case TU_ERROR_INPUT:

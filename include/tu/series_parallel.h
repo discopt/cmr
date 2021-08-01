@@ -9,6 +9,20 @@ extern "C" {
 #include <tu/matrix.h>
 
 /**
+ * \brief Statistics for series-parallel recognition algorithm.
+ */
+
+typedef struct
+{
+  size_t totalCount;
+  double totalTime;
+  size_t reduceCount;
+  double reduceTime;
+  size_t wheelCount;
+  double wheelTime;
+} TU_SP_STATISTICS;
+
+/**
  * \brief Represents a series-parallel operation
  */
 
@@ -16,15 +30,34 @@ typedef struct
 {
   TU_ELEMENT element; /**< Element (row/column) that is removed. */
   TU_ELEMENT mate;    /**< Element is parallel to or in series with \ref element, or 0 for a zero row/column. */
-} TU_SP;
+} TU_SP_OPERATION;
+
+/**
+ * \brief Initializes all statistics for series-parallel computations.
+ */
+
+TU_EXPORT
+TU_ERROR TUspInitStatistics(
+  TU_SP_STATISTICS* stats /**< Pointer to statistics. */
+);
+
+/**
+ * \brief Prints statistics for series-parallel computations.
+ */
+
+TU_EXPORT
+TU_ERROR TUspPrintStatistics(
+  FILE* stream,           /**< File stream to print to. */
+  TU_SP_STATISTICS* stats /**< Pointer to statistics. */
+);
 
 /**
  * Prints the series-parallel \p operation to \p buffer.
  */
 
 TU_EXPORT
-char* TUspString(
-  TU_SP operation,  /**< Series-parallel operation. */
+char* TUspOperationString(
+  TU_SP_OPERATION operation,  /**< Series-parallel operation. */
   char* buffer      /**< Buffer to write to.
                       * If \c NULL, a static one is used which will be overwritten in the next call.
                       * Otherwise, it must hold at least 51 bytes.
@@ -37,7 +70,7 @@ char* TUspString(
 
 static inline
 bool TUspIsRow(
-  TU_SP operation /**< Series-parallel operation. */
+  TU_SP_OPERATION operation /**< Series-parallel operation. */
 )
 {
   return operation.element < 0;
@@ -49,7 +82,7 @@ bool TUspIsRow(
 
 static inline
 bool TUspIsColumn(
-    TU_SP operation /**< Series-parallel operation. */
+  TU_SP_OPERATION operation /**< Series-parallel operation. */
 )
 {
   return operation.element > 0;
@@ -61,7 +94,7 @@ bool TUspIsColumn(
 
 static inline
 bool TUspIsZero(
-    TU_SP operation /**< Series-parallel operation. */
+  TU_SP_OPERATION operation /**< Series-parallel operation. */
 )
 {
   return operation.mate == 0;
@@ -73,7 +106,7 @@ bool TUspIsZero(
 
 static inline
 bool TUspIsUnit(
-    TU_SP operation /**< Series-parallel operation. */
+  TU_SP_OPERATION operation /**< Series-parallel operation. */
 )
 {
   return operation.element * operation.mate < 0;
@@ -85,7 +118,7 @@ bool TUspIsUnit(
 
 static inline
 bool TUspIsCopy(
-    TU_SP operation /**< Series-parallel operation. */
+  TU_SP_OPERATION operation /**< Series-parallel operation. */
 )
 {
   return operation.element * operation.mate > 0;
@@ -97,7 +130,7 @@ bool TUspIsCopy(
 
 static inline
 bool TUspIsValid(
-    TU_SP operation /**< Series-parallel operation. */
+  TU_SP_OPERATION operation /**< Series-parallel operation. */
 )
 {
   return operation.element != 0;
@@ -124,7 +157,7 @@ TU_EXPORT
 TU_ERROR TUfindSeriesParallel(
   TU* tu,                               /**< \ref TU environment. */
   TU_CHRMAT* matrix,                    /**< Sparse char matrix. */
-  TU_SP* operations,                    /**< Array for storing the SP-reductions. Must be sufficiently large, e.g., number
+  TU_SP_OPERATION* operations,          /**< Array for storing the SP-reductions. Must be sufficiently large, e.g., number
                                          **< of rows + number of columns. */
   size_t* pnumOperations,               /**< Pointer for storing the number of SP-reductions. */
   TU_SUBMAT** preducedSubmatrix,        /**< Pointer for storing the SP-reduced submatrix (may be \c NULL). */
@@ -133,7 +166,8 @@ TU_ERROR TUfindSeriesParallel(
                                          **< it must have sufficient capacity. */
   size_t* pnumSeparationRank1Elements,  /**< Pointer for storing the number of elements stored in
                                          **< \p separationRank1Elements (may be \c NULL). */
-  bool isSorted                         /**< Whether the entries of \p matrix are sorted. */
+  bool isSorted,                        /**< Whether the entries of \p matrix are sorted. */
+  TU_SP_STATISTICS* stats               /**< Pointer to statistics (may be \c NULL). */
 );
 
 #ifdef __cplusplus

@@ -7,7 +7,7 @@ TEST(SeriesParallel, Empty)
 {
   TU* tu = NULL;
   ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
-  TU_SP operations[2];
+  TU_SP_OPERATION operations[2];
   size_t numOperations;
 
   {
@@ -15,7 +15,7 @@ TEST(SeriesParallel, Empty)
     ASSERT_TU_CALL( stringToCharMatrix(tu, &mat0x0, "0 0 "
     ) );
 
-    ASSERT_TU_CALL( TUfindSeriesParallel(tu, mat0x0, operations, &numOperations, NULL, NULL, NULL, NULL, true) );
+    ASSERT_TU_CALL( TUfindSeriesParallel(tu, mat0x0, operations, &numOperations, NULL, NULL, NULL, NULL, true, NULL) );
     ASSERT_EQ( numOperations, 0 );
 
     ASSERT_TU_CALL( TUchrmatFree(tu, &mat0x0) );
@@ -26,7 +26,7 @@ TEST(SeriesParallel, Empty)
     ASSERT_TU_CALL( stringToCharMatrix(tu, &mat2x0, "2 0 "
     ) );
 
-    ASSERT_TU_CALL( TUfindSeriesParallel(tu, mat2x0, operations, &numOperations, NULL, NULL, NULL, NULL, true) );
+    ASSERT_TU_CALL( TUfindSeriesParallel(tu, mat2x0, operations, &numOperations, NULL, NULL, NULL, NULL, true, NULL) );
     ASSERT_EQ( numOperations, 2 );
     ASSERT_EQ( operations[0].element, -1 ); ASSERT_EQ( operations[0].mate, 0 );
     ASSERT_EQ( operations[1].element, -2 ); ASSERT_EQ( operations[1].mate, 0 );
@@ -39,7 +39,7 @@ TEST(SeriesParallel, Empty)
     ASSERT_TU_CALL( stringToCharMatrix(tu, &mat0x2, "0 2 "
     ) );
 
-    ASSERT_TU_CALL( TUfindSeriesParallel(tu, mat0x2, operations, &numOperations, NULL, NULL, NULL, NULL, true) );
+    ASSERT_TU_CALL( TUfindSeriesParallel(tu, mat0x2, operations, &numOperations, NULL, NULL, NULL, NULL, true, NULL) );
     ASSERT_EQ( numOperations, 2 );
     ASSERT_EQ( operations[0].element, 1 ); ASSERT_EQ( operations[0].mate, 0 );
     ASSERT_EQ( operations[1].element, 2 ); ASSERT_EQ( operations[1].mate, 0 );
@@ -79,12 +79,13 @@ TEST(SeriesParallel, Reduction)
     "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 "
   ) );
 
-  TU_SP operations[40];
+  TU_SP_OPERATION operations[40];
   size_t numOperations;
   TU_SUBMAT* submatrix = NULL;
 
-  ASSERT_TU_CALL( TUfindSeriesParallel(tu, matrix, operations, &numOperations, &submatrix, NULL, NULL, NULL, true) );
-  ASSERT_EQ( numOperations, 20 );
+  ASSERT_TU_CALL( TUfindSeriesParallel(tu, matrix, operations, &numOperations, &submatrix, NULL, NULL, NULL, true,
+    NULL) );
+  ASSERT_EQ( numOperations, 20);
   ASSERT_EQ( operations[0].element, -6);  ASSERT_EQ( operations[0].mate, -2);
   ASSERT_EQ( operations[1].element, -7);  ASSERT_EQ( operations[1].mate, 5);
   ASSERT_EQ( operations[2].element, -8);  ASSERT_EQ( operations[2].mate, 14);
@@ -143,11 +144,12 @@ TEST(SeriesParallel, FirstAttemptShortWheel)
     "0 0 0 0 0 1 0 0 1 0 0 0 0 0 0 0 0 0 0 0 "
   ) );
 
-  TU_SP operations[40];
+  TU_SP_OPERATION operations[40];
   size_t numOperations;
   TU_SUBMAT* wheelSubmatrix = NULL;
 
-  ASSERT_TU_CALL( TUfindSeriesParallel(tu, matrix, operations, &numOperations, NULL, &wheelSubmatrix, NULL, NULL, true) );
+  ASSERT_TU_CALL( TUfindSeriesParallel(tu, matrix, operations, &numOperations, NULL, &wheelSubmatrix, NULL, NULL, true,
+    NULL) );
   ASSERT_EQ( numOperations, 8 );
 
   TU_CHRMAT* wheelMatrix = NULL;
@@ -190,15 +192,16 @@ TEST(SeriesParallel, SecondAttemptLongWheel)
     "0 0 0 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 "
   ) );
 
-  TU_SP operations[40];
+  TU_SP_OPERATION operations[40];
   size_t numOperations;
   TU_SUBMAT* wheelSubmatrix = NULL;
 
-  ASSERT_TU_CALL( TUfindSeriesParallel(tu, matrix, operations, &numOperations, NULL, &wheelSubmatrix, NULL, NULL, true) );
+  ASSERT_TU_CALL( TUfindSeriesParallel(tu, matrix, operations, &numOperations, NULL, &wheelSubmatrix, NULL, NULL, true,
+    NULL) );
   ASSERT_EQ( numOperations, 8 );
   for (size_t o = 0; o < numOperations; ++o)
   {
-    printf("%s\n", TUspString(operations[o], NULL));
+    printf("%s\n", TUspOperationString(operations[o], NULL));
   }
   
   TU_CHRMAT* wheelMatrix = NULL;
@@ -241,15 +244,16 @@ TEST(SeriesParallel, SecondAttemptShortWheel)
     "0 0 0 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 "
   ) );
 
-  TU_SP operations[40];
+  TU_SP_OPERATION operations[40];
   size_t numOperations;
   TU_SUBMAT* wheelSubmatrix = NULL;
 
-  ASSERT_TU_CALL( TUfindSeriesParallel(tu, matrix, operations, &numOperations, NULL, &wheelSubmatrix, NULL, NULL, true) );
+  ASSERT_TU_CALL( TUfindSeriesParallel(tu, matrix, operations, &numOperations, NULL, &wheelSubmatrix, NULL, NULL, true,
+    NULL) );
   ASSERT_EQ( numOperations, 8 );
   for (size_t o = 0; o < numOperations; ++o)
   {
-    printf("%s\n", TUspString(operations[o], NULL));
+    printf("%s\n", TUspOperationString(operations[o], NULL));
   }
 
   TU_CHRMAT* wheelMatrix = NULL;
@@ -292,14 +296,14 @@ TEST(SeriesParallel, Separation)
     "0 0 0 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 "
   ) );
 
-  TU_SP operations[40];
+  TU_SP_OPERATION operations[40];
   size_t numOperations;
   TU_SUBMAT* wheelSubmatrix = NULL;
   TU_ELEMENT separationRank1Elements[40];
   size_t numSeparationRank1Elements;
 
   ASSERT_TU_CALL( TUfindSeriesParallel(tu, matrix, operations, &numOperations, NULL, &wheelSubmatrix,
-    separationRank1Elements, &numSeparationRank1Elements, true) );
+    separationRank1Elements, &numSeparationRank1Elements, true, NULL) );
   ASSERT_EQ( numOperations, 8 );
   ASSERT_EQ( numSeparationRank1Elements, 17 );
   ASSERT_EQ( separationRank1Elements[0], TUrowToElement(4) );
@@ -354,15 +358,16 @@ TEST(SeriesParallel, ThirdAttemptAfterSeparation)
     "0 0 0 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 "
   ) );
 
-  TU_SP operations[40];
+  TU_SP_OPERATION operations[40];
   size_t numOperations;
   TU_SUBMAT* wheelSubmatrix = NULL;
 
-  ASSERT_TU_CALL( TUfindSeriesParallel(tu, matrix, operations, &numOperations, NULL, &wheelSubmatrix, NULL, NULL, true) );
+  ASSERT_TU_CALL( TUfindSeriesParallel(tu, matrix, operations, &numOperations, NULL, &wheelSubmatrix, NULL, NULL, true,
+    NULL) );
   ASSERT_EQ( numOperations, 8 );
   for (size_t o = 0; o < numOperations; ++o)
   {
-    printf("%s\n", TUspString(operations[o], NULL));
+    printf("%s\n", TUspOperationString(operations[o], NULL));
   }
 
   TU_CHRMAT* wheelMatrix = NULL;

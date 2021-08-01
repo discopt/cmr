@@ -11,6 +11,7 @@
 
 #include <limits.h>
 #include <stdint.h>
+#include <time.h>
 
 #define RANGE_SIGNED_HASH (LLONG_MAX/2)
 
@@ -36,21 +37,48 @@ long long projectSignedHash(long long value)
  * \brief Nonzero in linked-list representation of matrix.
  */
 
-typedef struct _Nonzero
+typedef struct _ListNonzero
 {
-  struct _Nonzero* left;  /**< \brief Pointer to previous nonzero in the same row. */
-  struct _Nonzero* right; /**< \brief Pointer to next nonzero in the same row. */
-  struct _Nonzero* above; /**< \brief Pointer to previous nonzero in the same column. */
-  struct _Nonzero* below; /**< \brief Pointer to next nonzero in the same column. */
+  struct _ListNonzero* left;  /**< \brief Pointer to previous nonzero in the same row. */
+  struct _ListNonzero* right; /**< \brief Pointer to next nonzero in the same row. */
+  struct _ListNonzero* above; /**< \brief Pointer to previous nonzero in the same column. */
+  struct _ListNonzero* below; /**< \brief Pointer to next nonzero in the same column. */
   size_t row;             /**< \brief Row. */
   size_t column;          /**< \brief Column. */
   char value;             /**< \brief Matrix entry. */
   bool disabled;          /**< \brief Whether this edge is disabled in breadth-first search. */
-} Nonzero;
+} ListNonzero;
+
+TU_ERROR TUspInitStatistics(TU_SP_STATISTICS* stats)
+{
+  assert(stats);
+
+  stats->totalCount = 0;
+  stats->totalTime = 0.0;
+  stats->reduceCount = 0;
+  stats->reduceTime = 0.0;
+  stats->wheelCount = 0;
+  stats->wheelTime = 0.0;
+
+  return TU_OKAY;
+}
+
+TU_ERROR TUspPrintStatistics(FILE* stream, TU_SP_STATISTICS* stats)
+{
+  assert(stream);
+  assert(stats);
+
+  fprintf(stream, "Series-parallel computations (count / time):\n");
+  fprintf(stream, "Search for reductions:     %ld / %f\n", stats->reduceCount, stats->reduceTime);
+  fprintf(stream, "Search for wheel matrices: %ld / %f\n", stats->wheelCount, stats->wheelTime);
+  fprintf(stream, "Total:                     %ld / %f\n", stats->totalCount, stats->totalTime);
+
+  return TU_OKAY;
+}
 
 static char seriesParallelStringBuffer[32]; /**< Static buffer for \ref TUspString. */
 
-char* TUspString(TU_SP operation, char* buffer)
+char* TUspOperationString(TU_SP_OPERATION operation, char* buffer)
 {
   if (!buffer)
     buffer = seriesParallelStringBuffer;
@@ -85,7 +113,7 @@ char* TUspString(TU_SP operation, char* buffer)
 
 static inline
 void unlinkNonzero(
-  Nonzero* nonzero  /**< \brief Pointer to nonzero. */
+  ListNonzero* nonzero  /**< \brief Pointer to nonzero. */
 )
 {
   assert(nonzero);
@@ -104,8 +132,8 @@ void unlinkNonzero(
 static
 int compareNonzeros(const void* a, const void* b)
 {
-  const Nonzero* nonzero1 = (const Nonzero*)a;
-  const Nonzero* nonzero2 = (const Nonzero*)b;
+  const ListNonzero* nonzero1 = (const ListNonzero*)a;
+  const ListNonzero* nonzero2 = (const ListNonzero*)b;
   if (nonzero1->row < nonzero2->row)
     return -1;
   else if (nonzero1->row > nonzero2->row)
@@ -120,7 +148,7 @@ int compareNonzeros(const void* a, const void* b)
 
 typedef struct
 {
-  Nonzero nonzeros;                   /**< \brief Dummy nonzero in that row/column. */
+  ListNonzero nonzeros;                   /**< \brief Dummy nonzero in that row/column. */
   size_t numNonzeros;                 /**< \brief Number of nonzeros in that row/column. */
   long long hashValue;                /**< \brief Hash value of this element. */
   TU_LISTHASHTABLE_ENTRY hashEntry;   /**< \brief Entry in row or column hashtable. */
@@ -201,8 +229,8 @@ static
 TU_ERROR initListMatrix(
   TU* tu,                   /**< \ref TU environment. */
   TU_CHRMAT* matrix,        /**< Matrix. */
-  Nonzero* anchor,          /**< Anchor of row/column data nonzeros. */
-  Nonzero* nonzeros,        /**< Memory for storing the nonzeros. */
+  ListNonzero* anchor,          /**< Anchor of row/column data nonzeros. */
+  ListNonzero* nonzeros,        /**< Memory for storing the nonzeros. */
   ElementData* rowData,     /**< Row data. */
   ElementData* columnData,  /**< Column data. */
   bool isSorted             /**< Whether the nonzeros in \p matrix are sorted. */
@@ -225,7 +253,27 @@ TU_ERROR initListMatrix(
 
   /* If necessary, sort the nonzeros in order to create the linked list. */
   if (!isSorted)
-    TU_CALL( TUsort(tu, matrix->numNonzeros, nonzeros, sizeof(Nonzero), compareNonzeros) );
+    TU_CALL( TUsort(tu, matrix->numNonzeros, nonzeros, sizeof(ListNonzero), compareNonzeros) );
+#if !defined(NDEBUG)
+  else
+  {
+    for (size_t row = 0; row < matrix->numRows; ++row)
+    {
+      size_t start = matrix->rowStarts[row];
+      size_t end = row + 1 == matrix->numRows ? matrix->numNonzeros : matrix->rowStarts[row+1];
+      for (size_t i = start + 1; i < end; ++i)
+      {
+        if (matrix->entryColumns[i-1] > matrix->entryColumns[i])
+          isSorted = false;
+      }
+      if (!isSorted)
+      {
+        fprintf(stderr, "Row r%ld of input matrix is not sorted!", row+1);
+        assert("Matrix was expected to be sorted, but is not!" == 0);
+      }
+    }
+  }
+#endif /* !NDEBUG */
   
   /* Initialize linked list for rows. */
   for (size_t row = 0; row < matrix->numRows; ++row)
@@ -287,7 +335,7 @@ TU_ERROR initListMatrix(
   /* Link the lists of nonzeros. */
   for (i = 0; i < matrix->numNonzeros; ++i)
   {
-    Nonzero* nz = &nonzeros[i];
+    ListNonzero* nz = &nonzeros[i];
 
     nz->left = rowData[nonzeros[i].row].nonzeros.left;
     rowData[nz->row].nonzeros.left->right = nz;
@@ -332,8 +380,8 @@ size_t findCopy(
     bool negated = true;
     if (isRow)
     {
-      Nonzero* nz1 = data[index].nonzeros.right;
-      Nonzero* nz2 = data[collisionIndex].nonzeros.right;
+      ListNonzero* nz1 = data[index].nonzeros.right;
+      ListNonzero* nz2 = data[collisionIndex].nonzeros.right;
       while (equal || negated)
       {
         if (nz1->column != nz2->column)
@@ -354,8 +402,8 @@ size_t findCopy(
     }
     else
     {
-      Nonzero* nz1 = data[index].nonzeros.below;
-      Nonzero* nz2 = data[collisionIndex].nonzeros.below;
+      ListNonzero* nz1 = data[index].nonzeros.below;
+      ListNonzero* nz2 = data[collisionIndex].nonzeros.below;
       while (equal || negated)
       {
         if (nz1->row != nz2->row)
@@ -435,7 +483,7 @@ TU_ERROR processNonzero(
 static
 TU_ERROR reduceListMatrix(
   TU* tu,                             /**< \ref TU environment. */
-  Nonzero* anchor,                    /**< Anchor nonzero. */
+  ListNonzero* anchor,                /**< Anchor nonzero. */
   ElementData* rowData,               /**< Row data. */
   ElementData* columnData,            /**< Column data. */
   TU_LISTHASHTABLE* rowHashtable,     /**< Row hashtable. */
@@ -445,7 +493,7 @@ TU_ERROR reduceListMatrix(
   size_t* pqueueStart,                /**< Pointer to start of queue. */
   size_t* pqueueEnd,                  /**< Pointer to end of queue. */
   size_t queueMemory,                 /**< Memory allocated for queue. */
-  TU_SP* operations,                  /**< Array for storing the SP-reductions. Must be sufficiently large, e.g., number
+  TU_SP_OPERATION* operations,        /**< Array for storing the SP-reductions. Must be sufficiently large, e.g., number
                                        **< of rows + number of columns. */
   size_t* pnumOperations,             /**< Pointer for storing the number of SP-reductions. */
   size_t* pnumRowOperations,          /**< Pointer for storing the number of row operations (may be \c NULL). */
@@ -472,7 +520,7 @@ TU_ERROR reduceListMatrix(
     if (anchor)
     {
       TUdbgMsg(4, "Status:\n");
-      for (Nonzero* nz = anchor->below; nz != anchor; nz = nz->below)
+      for (ListNonzero* nz = anchor->below; nz != anchor; nz = nz->below)
       {
         size_t row = nz->row;
         TUdbgMsg(6, "Row %d: %d nonzeros, hashed = %s, hash = %ld", row, rowData[row].numNonzeros,
@@ -485,7 +533,7 @@ TU_ERROR reduceListMatrix(
         }
         TUdbgMsg(0, "\n");
       }
-      for (Nonzero* nz = anchor->right; nz != anchor; nz = nz->right)
+      for (ListNonzero* nz = anchor->right; nz != anchor; nz = nz->right)
       {
         size_t column = nz->column;
         TUdbgMsg(6, "Column %d: %d nonzeros, hashed = %s, hash = %ld", column, columnData[column].numNonzeros,
@@ -541,7 +589,7 @@ TU_ERROR reduceListMatrix(
           (*pnumOperations)++;
           (*pnumRowOperations)++;
 
-          for (Nonzero* entry = rowData[row1].nonzeros.right; entry != &rowData[row1].nonzeros;
+          for (ListNonzero* entry = rowData[row1].nonzeros.right; entry != &rowData[row1].nonzeros;
             entry = entry->right)
           {
             TUdbgMsg(8, "Processing nonzero at column %d.\n", entry->column);
@@ -569,7 +617,7 @@ TU_ERROR reduceListMatrix(
         rowData[row1].inQueue = false;
         if (rowData[row1].numNonzeros)
         {
-          Nonzero* entry = rowData[row1].nonzeros.right;
+          ListNonzero* entry = rowData[row1].nonzeros.right;
           size_t column = entry->column;
 
           TUdbgMsg(4, "Processing unit row %d with 1 in column %d.\n", row1, column);
@@ -620,7 +668,7 @@ TU_ERROR reduceListMatrix(
           (*pnumColumnOperations)++;
           columnData[column1].lastBFS = -2;
 
-          for (Nonzero* entry = columnData[column1].nonzeros.below; entry != &columnData[column1].nonzeros;
+          for (ListNonzero* entry = columnData[column1].nonzeros.below; entry != &columnData[column1].nonzeros;
             entry = entry->below)
           {
             TUdbgMsg(8, "Processing nonzero at row %d.\n", entry->row);
@@ -647,7 +695,7 @@ TU_ERROR reduceListMatrix(
         columnData[column1].inQueue = false;
         if (columnData[column1].numNonzeros)
         {
-          Nonzero* entry = columnData[column1].nonzeros.below;
+          ListNonzero* entry = columnData[column1].nonzeros.below;
           size_t row = entry->row;
 
           TUdbgMsg(4, "Processing unit column %d with 1 in row %d.\n", column1, row);
@@ -741,7 +789,7 @@ TU_ERROR breadthFirstSearch(
     if (TUelementIsRow(element))
     {
       size_t row = TUelementToRowIndex(element);
-      for (Nonzero* nz = rowData[row].nonzeros.right; nz->column != SIZE_MAX; nz = nz->right)
+      for (ListNonzero* nz = rowData[row].nonzeros.right; nz->column != SIZE_MAX; nz = nz->right)
       {
         /* Skip edge if disabled. */
         if (nz->disabled)
@@ -790,7 +838,7 @@ TU_ERROR breadthFirstSearch(
     else
     {
       size_t column = TUelementToColumnIndex(element);
-      for (Nonzero* nz = columnData[column].nonzeros.below; nz->row != SIZE_MAX; nz = nz->below)
+      for (ListNonzero* nz = columnData[column].nonzeros.below; nz->row != SIZE_MAX; nz = nz->below)
       {
         /* Skip edge if disabled. */
         if (nz->disabled)
@@ -853,9 +901,9 @@ TU_ERROR breadthFirstSearch(
   return TU_OKAY;
 }
 
-TU_ERROR TUfindSeriesParallel(TU* tu, TU_CHRMAT* matrix, TU_SP* operations, size_t* pnumOperations,
+TU_ERROR TUfindSeriesParallel(TU* tu, TU_CHRMAT* matrix, TU_SP_OPERATION* operations, size_t* pnumOperations,
   TU_SUBMAT** preducedSubmatrix, TU_SUBMAT** pwheelSubmatrix, TU_ELEMENT* separationRank1Elements,
-  size_t* pnumSeparationRank1Elements, bool isSorted)
+  size_t* pnumSeparationRank1Elements, bool isSorted, TU_SP_STATISTICS* stats)
 {
   assert(tu);
   assert(matrix);
@@ -868,6 +916,14 @@ TU_ERROR TUfindSeriesParallel(TU* tu, TU_CHRMAT* matrix, TU_SP* operations, size
 
   TUdbgMsg(0, "Searching for series/parallel elements in a %dx%d matrix with %d nonzeros.\n", matrix->numRows,
     matrix->numColumns, matrix->numNonzeros);
+
+  clock_t totalClock = 0;
+  clock_t reduceClock = 0;
+  if (stats)
+  {
+    reduceClock = clock();
+    totalClock = clock();
+  }
 
   size_t numRows = matrix->numRows;
   size_t numColumns = matrix->numColumns;
@@ -955,14 +1011,14 @@ TU_ERROR TUfindSeriesParallel(TU* tu, TU_CHRMAT* matrix, TU_SP* operations, size
   if (queueEnd > queueStart || (pwheelSubmatrix && (numRows + numColumns > 0)))
   {
     /* Create nonzeros of matrix. */
-    Nonzero* nonzeros = NULL;
+    ListNonzero* nonzeros = NULL;
     TU_CALL( TUallocStackArray(tu, &nonzeros, matrix->numNonzeros) );
 
     /* Dummy in linked lists for row/column data. */
-    Nonzero the_anchor;
+    ListNonzero the_anchor;
     the_anchor.row = SIZE_MAX;
     the_anchor.column = SIZE_MAX;
-    Nonzero* anchor = pwheelSubmatrix ? &the_anchor : NULL;
+    ListNonzero* anchor = pwheelSubmatrix ? &the_anchor : NULL;
     TU_CALL( initListMatrix(tu, matrix, anchor, nonzeros, rowData, columnData, isSorted) );
 
     /* We now start main loop. */
@@ -970,6 +1026,12 @@ TU_ERROR TUfindSeriesParallel(TU* tu, TU_CHRMAT* matrix, TU_SP* operations, size
     size_t numColumnOperations = 0;
     TU_CALL( reduceListMatrix(tu, anchor, rowData, columnData, rowHashtable, columnHashtable, entryToHash, queue,
       &queueStart, &queueEnd, queueMemory, operations, pnumOperations, &numRowOperations, &numColumnOperations) );
+
+    if (stats)
+    {
+      stats->reduceCount++;
+      stats->reduceTime += (clock() - reduceClock) * 1.0 / CLOCKS_PER_SEC;
+    }
 
     /* Extract remaining submatrix. */
     if (preducedSubmatrix)
@@ -996,6 +1058,10 @@ TU_ERROR TUfindSeriesParallel(TU* tu, TU_CHRMAT* matrix, TU_SP* operations, size
     /* Search for a wheel representation submatrix. */
     if (pwheelSubmatrix && (*pnumOperations != (numRows + numColumns)))
     {
+      clock_t wheelClock = 0;
+      if (stats)
+        wheelClock = clock();
+
       TUdbgMsg(2, "Searching for wheel graph representation submatrix.\n");
 
       assert(anchor);
@@ -1005,7 +1071,7 @@ TU_ERROR TUfindSeriesParallel(TU* tu, TU_CHRMAT* matrix, TU_SP* operations, size
         rowData[row].specialBFS = false;
       for (size_t column = 0; column < numColumns; ++column)
         columnData[column].specialBFS = false;
-      Nonzero** nzBlock = NULL; /* Pointers for simultaneously traversing columns of block. */
+      ListNonzero** nzBlock = NULL; /* Pointers for simultaneously traversing columns of block. */
       TU_CALL( TUallocStackArray(tu, &nzBlock, numColumns) );
       TU_ELEMENT* sources = NULL;
       TU_CALL( TUallocStackArray(tu, &sources, numRows) );
@@ -1024,7 +1090,8 @@ TU_ERROR TUfindSeriesParallel(TU* tu, TU_CHRMAT* matrix, TU_SP* operations, size
         rowData[sourceRow].nonzeros.right->disabled = true;
 
         TUdbgMsg(4, "Searching for a chordless cycle from r%d to c%d.\n", sourceRow+1, targetColumn+1);
-        
+
+        clock_t t = clock();
         sources[0] = TUrowToElement(sourceRow);
         targets[0] = TUcolumnToElement(targetColumn);
         size_t foundTarget = SIZE_MAX;
@@ -1034,6 +1101,7 @@ TU_ERROR TUfindSeriesParallel(TU* tu, TU_CHRMAT* matrix, TU_SP* operations, size
         rowData[sourceRow].nonzeros.right->disabled = false;
         assert(foundTarget == 0);
         size_t length = columnData[targetColumn].distance + 1;
+        fprintf(stderr, "Time for chordless cycle search: %f\n", (clock() - t) * 1.0 / CLOCKS_PER_SEC);
 
         TUdbgMsg(4, "Length of cycle is %d.\n", length);
 
@@ -1060,12 +1128,15 @@ TU_ERROR TUfindSeriesParallel(TU* tu, TU_CHRMAT* matrix, TU_SP* operations, size
         TUdbgMsg(4, "Growing the 2x2 submatrix with 1's is at r%d, r%d, c%d, c%d.\n", row1+1, row2+1,
           targetColumn+1, rowData[row2+1].predecessor+1);
 
+        t = clock();
+
         /* Go trough the two nonzeros of the two rows simultaneously. */
-        Nonzero* nz1 = rowData[row1].nonzeros.right;
-        Nonzero* nz2 = rowData[row2].nonzeros.right;
+        ListNonzero* nz1 = rowData[row1].nonzeros.right;
+        ListNonzero* nz2 = rowData[row2].nonzeros.right;
         size_t numTargets = 0;
         while (nz1->column != SIZE_MAX)
         {
+          TUdbgMsg(6, "nonzeros at column indices %d and %d.\n", nz1->column, nz2->column);
           if (nz1->column < nz2->column)
           {
             nz1 = nz1->right;
@@ -1082,6 +1153,7 @@ TU_ERROR TUfindSeriesParallel(TU* tu, TU_CHRMAT* matrix, TU_SP* operations, size
           }
         }
         TUdbgMsg(4, "Identified %d target columns.\n", numTargets);
+        assert(numTargets >= 2);
 
         /* Go through the nonzeros of all marked columns simultaneously. */
         size_t maxIndex = 0;
@@ -1109,13 +1181,21 @@ TU_ERROR TUfindSeriesParallel(TU* tu, TU_CHRMAT* matrix, TU_SP* operations, size
           currentIndex = (currentIndex + 1) % numTargets;
         }
 
+        fprintf(stderr, "Time for growing block: %f\n", (clock() - t) * 1.0 / CLOCKS_PER_SEC);
+
         TUdbgMsg(4, "Identified %d source rows.\n", numSources);
+        assert(numSources >= 2);
   
+        t = clock();
+
         currentBFS++;
         foundTarget = SIZE_MAX;
         size_t numTraversedEdges = 0;
         TU_CALL( breadthFirstSearch(tu, currentBFS, rowData, columnData, queue, queueMemory, sources, numSources,
           targets, numTargets, &foundTarget, &numTraversedEdges) );
+
+        fprintf(stderr, "Time for second search: %f\n", (clock() - t) * 1.0 / CLOCKS_PER_SEC);
+
         if (foundTarget < SIZE_MAX)
         {
           size_t length = columnData[TUelementToColumnIndex(targets[foundTarget])].distance + 1;
@@ -1150,7 +1230,7 @@ TU_ERROR TUfindSeriesParallel(TU* tu, TU_CHRMAT* matrix, TU_SP* operations, size
             TUdbgMsg(4, "Short cycle is induced by r%d,r%d,c%d,c%d.\n", row1+1, row2+1, column1+1, column2+1);
 
             /* Go through nonzeros of row2 and mark them. */
-            for (Nonzero* nz = rowData[row2].nonzeros.right; nz->column != SIZE_MAX; nz = nz->right)
+            for (ListNonzero* nz = rowData[row2].nonzeros.right; nz->column != SIZE_MAX; nz = nz->right)
               columnData[nz->column].lastBFS = -1;
 
             /* Find a non-marked source column. */
@@ -1165,7 +1245,7 @@ TU_ERROR TUfindSeriesParallel(TU* tu, TU_CHRMAT* matrix, TU_SP* operations, size
             TUdbgMsg(4, "Adding c%d\n", column3+1);
 
             /* Go through nonzeros of column 2 and mark them. */
-            for (Nonzero* nz = columnData[column2].nonzeros.below; nz->row != SIZE_MAX; nz = nz->below)
+            for (ListNonzero* nz = columnData[column2].nonzeros.below; nz->row != SIZE_MAX; nz = nz->below)
               rowData[nz->row].lastBFS = -1;
 
             /* Find a non-marked source column. */
@@ -1226,7 +1306,7 @@ TU_ERROR TUfindSeriesParallel(TU* tu, TU_CHRMAT* matrix, TU_SP* operations, size
           for (size_t t = 0; t < numTargets; ++t)
           {
             size_t column = TUelementToColumnIndex(targets[t]);
-            for (Nonzero* nz = columnData[column].nonzeros.below; nz->row != SIZE_MAX; nz = nz->below)
+            for (ListNonzero* nz = columnData[column].nonzeros.below; nz->row != SIZE_MAX; nz = nz->below)
             {
               if (t > 0 || !rowData[nz->row].specialBFS)
               {
@@ -1259,7 +1339,7 @@ TU_ERROR TUfindSeriesParallel(TU* tu, TU_CHRMAT* matrix, TU_SP* operations, size
           for (size_t s = 0; s < numSources; ++s)
           {
             size_t row = TUelementToRowIndex(sources[s]);
-            for (Nonzero* nz = rowData[row].nonzeros.right; nz->column != SIZE_MAX; nz = nz->right)
+            for (ListNonzero* nz = rowData[row].nonzeros.right; nz->column != SIZE_MAX; nz = nz->right)
             {
               if (s > 0 || !columnData[nz->column].specialBFS)
               {
@@ -1290,6 +1370,12 @@ TU_ERROR TUfindSeriesParallel(TU* tu, TU_CHRMAT* matrix, TU_SP* operations, size
       TU_CALL( TUfreeStackArray(tu, &targets) );
       TU_CALL( TUfreeStackArray(tu, &sources) );
       TU_CALL( TUfreeStackArray(tu, &nzBlock) );
+
+      if (stats)
+      {
+        stats->wheelCount++;
+        stats->wheelTime += (clock() - wheelClock) * 1.0 / CLOCKS_PER_SEC;
+      }
     }
 
     TU_CALL( TUfreeStackArray(tu, &nonzeros) );
@@ -1316,6 +1402,12 @@ TU_ERROR TUfindSeriesParallel(TU* tu, TU_CHRMAT* matrix, TU_SP* operations, size
   TU_CALL( TUfreeStackArray(tu, &entryToHash) );
   TU_CALL( TUfreeStackArray(tu, &columnData) );
   TU_CALL( TUfreeStackArray(tu, &rowData) );
+
+  if (stats)
+  {
+    stats->totalCount++;
+    stats->totalTime += (clock() - totalClock) * 1.0 / CLOCKS_PER_SEC;
+  }
 
   return TU_OKAY;
 }
