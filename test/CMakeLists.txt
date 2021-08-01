@@ -7,7 +7,7 @@ if(NOT GTEST_FOUND)
 endif()
 
 # Target for the googletest.
-add_executable(tu_gtest
+add_executable(cmr_gtest
   common.c
   test_sign.cpp
   test_graph.cpp
@@ -19,20 +19,20 @@ add_executable(tu_gtest
 
 # Add tests for non-exported functions only for static library.
 if(NOT SHARED)
-  target_sources(tu_gtest
+  target_sources(cmr_gtest
     PRIVATE
     test_one_sum.cpp
     )
-  target_include_directories(tu_gtest
+  target_include_directories(cmr_gtest
     PRIVATE
       $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src> # contains private headers.
 )
 
 endif()
 
-# Configure tu_gtest target.
-target_compile_features(tu_gtest PRIVATE cxx_auto_type)
-target_link_libraries(tu_gtest gtest_main TU::tu)
+# Configure cmr_gtest target.
+target_compile_features(cmr_gtest PRIVATE cxx_auto_type)
+target_link_libraries(cmr_gtest gtest_main CMR::cmr)
    
 include(GoogleTest)
-gtest_discover_tests(tu_gtest)
+gtest_discover_tests(cmr_gtest)

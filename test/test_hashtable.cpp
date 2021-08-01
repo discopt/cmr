@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 #include "common.h"
-#include "../src/tu/hashtable.h"
+#include "../src/cmr/hashtable.h"
 
 TEST(Hashtable, Functionality)
 {

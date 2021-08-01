@@ -5,7 +5,7 @@
 
 #include <stdio.h>
 
-TU_ERROR  stringToDoubleMatrix(TU* tu, TU_DBLMAT** matrix, const char* string)
+CMR_ERROR stringToDoubleMatrix(TU* tu, TU_DBLMAT** matrix, const char* string)
 {
   assert(tu);
   char* end;
@@ -40,10 +40,10 @@ TU_ERROR  stringToDoubleMatrix(TU* tu, TU_DBLMAT** matrix, const char* string)
     }
   }
 
-  return TU_OKAY;
+  return CMR_OKAY;
 }
 
-TU_ERROR stringToIntMatrix(TU* tu, TU_INTMAT** matrix, const char* string)
+CMR_ERROR stringToIntMatrix(TU* tu, TU_INTMAT** matrix, const char* string)
 {
   assert(tu);
   char* end;
@@ -78,10 +78,10 @@ TU_ERROR stringToIntMatrix(TU* tu, TU_INTMAT** matrix, const char* string)
     }
   }
 
-  return TU_OKAY;
+  return CMR_OKAY;
 }
 
-TU_ERROR stringToCharMatrix(TU* tu, TU_CHRMAT** matrix, const char* string)
+CMR_ERROR stringToCharMatrix(TU* tu, TU_CHRMAT** matrix, const char* string)
 {
   assert(tu);
   char* end;
@@ -105,7 +105,7 @@ TU_ERROR stringToCharMatrix(TU* tu, TU_CHRMAT** matrix, const char* string)
     {
       int x = strtol(string, &end, 10);
       if (end == string)
-        return TU_ERROR_INPUT;
+        return CMR_ERROR_INPUT;
       string = end;
 
       if (x != 0)
@@ -117,5 +117,5 @@ TU_ERROR stringToCharMatrix(TU* tu, TU_CHRMAT** matrix, const char* string)
     }
   }
 
-  return TU_OKAY;
+  return CMR_OKAY;
 }

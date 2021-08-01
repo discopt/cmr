@@ -2,9 +2,9 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <tu/matrix.h>
-#include <tu/graphic.h>
-#include <tu/graph.h>
+#include <cmr/matrix.h>
+#include <cmr/graphic.h>
+#include <cmr/graph.h>
 
 typedef enum
 {
@@ -28,11 +28,11 @@ int printUsage(const char* program)
   return EXIT_FAILURE;
 }
 
-TU_ERROR matrixToGraph(const char* instanceFileName, FileFormat inputFormat, FileFormat outputFormat, bool binary)
+CMR_ERROR matrixToGraph(const char* instanceFileName, FileFormat inputFormat, FileFormat outputFormat, bool binary)
 {
   FILE* instanceFile = strcmp(instanceFileName, "-") ? fopen(instanceFileName, "r") : stdin;
   if (!instanceFile)
-    return TU_ERROR_INPUT;
+    return CMR_ERROR_INPUT;
 
   TU* tu = NULL;
   TU_CALL( TUcreateEnvironment(&tu) );
@@ -111,14 +111,14 @@ TU_ERROR matrixToGraph(const char* instanceFileName, FileFormat inputFormat, Fil
   TU_CALL( TUchrmatFree(tu, &transpose) );
   TU_CALL( TUfreeEnvironment(&tu) );
 
-  return TU_OKAY;
+  return CMR_OKAY;
 }
 
-TU_ERROR graphToMatrix(const char* instanceFileName, FileFormat inputFormat, FileFormat outputFormat, bool binary)
+CMR_ERROR graphToMatrix(const char* instanceFileName, FileFormat inputFormat, FileFormat outputFormat, bool binary)
 {
   FILE* instanceFile = strcmp(instanceFileName, "-") ? fopen(instanceFileName, "r") : stdin;
   if (!instanceFile)
-    return TU_ERROR_INPUT;
+    return CMR_ERROR_INPUT;
 
   TU* tu = NULL;
   TU_CALL( TUcreateEnvironment(&tu) );
@@ -204,7 +204,7 @@ TU_ERROR graphToMatrix(const char* instanceFileName, FileFormat inputFormat, Fil
 
   TU_CALL( TUfreeEnvironment(&tu) );
 
-  return TU_OKAY;
+  return CMR_OKAY;
 }
 
 int main(int argc, char** argv)
@@ -303,17 +303,17 @@ int main(int argc, char** argv)
     }
   }
 
-  TU_ERROR error;
+  CMR_ERROR error;
   if (inputFormat == FILEFORMAT_MATRIX_DENSE || inputFormat == FILEFORMAT_MATRIX_SPARSE)
     error = matrixToGraph(instanceFileName, inputFormat, outputFormat, binary);
   else
     error = graphToMatrix(instanceFileName, inputFormat, outputFormat, binary);
   switch (error)
   {
-  case TU_ERROR_INPUT:
+  case CMR_ERROR_INPUT:
     puts("Input error.");
     return EXIT_FAILURE;
-  case TU_ERROR_MEMORY:
+  case CMR_ERROR_MEMORY:
     puts("Memory error.");
     return EXIT_FAILURE;
   default:

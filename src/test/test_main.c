@@ -2,8 +2,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <tu/matrix.h>
-#include <tu/graphic.h>
+#include <cmr/matrix.h>
+#include <cmr/graphic.h>
 
 int printUsage(const char* program)
 {
@@ -15,11 +15,11 @@ int printUsage(const char* program)
   return EXIT_FAILURE;
 }
 
-TU_ERROR run(const char* instanceFileName, bool sparse)
+CMR_ERROR run(const char* instanceFileName, bool sparse)
 {
   FILE* instanceFile = fopen(instanceFileName, "r");
   if (!instanceFile)
-    return TU_ERROR_INPUT;
+    return CMR_ERROR_INPUT;
 
   TU* tu = NULL;
   TU_CALL( TUcreateEnvironment(&tu) );
@@ -36,7 +36,7 @@ TU_ERROR run(const char* instanceFileName, bool sparse)
     printf("Input matrix is not ternary.\n");
     TU_CALL( TUchrmatFree(tu, &matrix) );
     TU_CALL( TUfreeEnvironment(&tu) );
-    return TU_OKAY;
+    return CMR_OKAY;
   }
 
   TU_CHRMAT* transpose = NULL;
@@ -73,7 +73,7 @@ TU_ERROR run(const char* instanceFileName, bool sparse)
 
   TU_CALL( TUfreeEnvironment(&tu) );
 
-  return TU_OKAY;
+  return CMR_OKAY;
 }
 
 int main(int argc, char** argv)
@@ -99,13 +99,13 @@ int main(int argc, char** argv)
     return EXIT_FAILURE;
   }
 
-  TU_ERROR error = run(instanceFileName, sparse);
+  CMR_ERROR error = run(instanceFileName, sparse);
   switch (error)
   {
-  case TU_ERROR_INPUT:
+  case CMR_ERROR_INPUT:
     printf("Input error in file <%s>\n", instanceFileName);
     return EXIT_FAILURE;
-  case TU_ERROR_MEMORY:
+  case CMR_ERROR_MEMORY:
     printf("Memory error.\n");
     return EXIT_FAILURE;
   default:

@@ -4,7 +4,7 @@
 
 #include "common.h"
 
-#include <tu/graphic.h>
+#include <cmr/graphic.h>
 
 void testBinaryGraphicMatrix(
   TU* tu,           /**< \ref TU environment. */

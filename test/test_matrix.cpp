@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 #include "common.h"
-#include <tu/matrix.h>
+#include <cmr/matrix.h>
 
 TEST(Matrix, Read)
 {

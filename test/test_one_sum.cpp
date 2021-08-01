@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 #include "common.h"
-#include "../src/tu/one_sum.h"
+#include "../src/cmr/one_sum.h"
 
 TEST(OneSum, DoubleToDouble)
 {

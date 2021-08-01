@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 #include "common.h"
-#include <tu/graph.h>
+#include <cmr/graph.h>
 
 TEST(Graph, Modifications)
 {

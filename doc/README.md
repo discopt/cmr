@@ -1,3 +1,3 @@
-# TU Library # {#mainpage}
+# Combinatorial Matrix Recognition Library # {#mainpage}
 
-This library contains efficient implementations of various algorithm related to totally unimodular matrices and regular matroids as well as network matrices and graphic matroids.
+This library contains efficient implementations of various algorithm for recognizing combinatorial matrices such as totally unimodular, graphic, series-parallel ones.
