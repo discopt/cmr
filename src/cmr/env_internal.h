@@ -31,7 +31,7 @@ typedef struct
 {
   char* memory; /**< \brief Raw memory. */
   size_t top;   /**< \brief First used byte. */
-} TU_STACK;
+} CMR_STACK;
 
 struct CMR_ENVIRONMENT
 {
@@ -43,7 +43,7 @@ struct CMR_ENVIRONMENT
   size_t numStacks;     /**< \brief Number of allocated stacks in stack array. */
   size_t memStacks;     /**< \brief Memory for stack array. */
   size_t currentStack;  /**< \brief Index of last used stack. */
-  TU_STACK* stacks;     /**< \brief Array of stacks. */
+  CMR_STACK* stacks;     /**< \brief Array of stacks. */
 };
 
 #include <cmr/env.h>
@@ -120,7 +120,7 @@ void CMRassertStackConsistency(
 
 static inline
 void CMRassertStackConsistency(
-  TU* tu  /**< \ref CMR environment. */
+  CMR* cmr  /**< \ref CMR environment. */
 )
 {
 

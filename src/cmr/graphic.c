@@ -1264,7 +1264,7 @@ CMR_ERROR createMarkerEdgePair(
   dec->members[childMember].markerToParent = *pMarkerToParent;
   data->element = INT_MAX - dec->numMarkerPairs;
   CMRdbgMsg(12, "Created child marker edge {%d,%d} <%s> of child member %d.\n", markerToParentTail, markerToParentHead,
-    TUelementString(data->element, NULL), childMember);
+    CMRelementString(data->element, NULL), childMember);
 
   /* Increase counter of used marker pairs. */
   dec->numMarkerPairs++;
@@ -1553,9 +1553,9 @@ CMR_ERROR decToGraph(
       CMR_GRAPH_NODE childV = CMRgraphEdgeV(graph, child);
 
       CMRdbgMsg(2, "Merging edges %d = {%d,%d} <%s>", parent, parentU, parentV,
-        TUelementString(dec->edges[dec->members[m].markerOfParent].element, NULL));
+        CMRelementString(dec->edges[dec->members[m].markerOfParent].element, NULL));
       CMRdbgMsg(0, " and %d = {%d,%d} <%s>.\n", child, childU, childV,
-        TUelementString(dec->edges[dec->members[m].markerToParent].element, NULL));
+        CMRelementString(dec->edges[dec->members[m].markerToParent].element, NULL));
 
       CMR_CALL( CMRgraphMergeNodes(dec->cmr, graph, parentU, childU) );
       CMR_CALL( CMRgraphDeleteNode(dec->cmr, graph, childU) );
@@ -1608,17 +1608,17 @@ CMR_ERROR decToGraph(
       CMR_GRAPH_EDGE e = CMRgraphEdgesEdge(graph, i);
 
       CMRdbgMsg(2, "Graph edge %d = {%d,%d} <%s>\n", e, CMRgraphEdgeU(graph, e), CMRgraphEdgeV(graph, e),
-        TUelementString(localEdgeElements[e], NULL));
+        CMRelementString(localEdgeElements[e], NULL));
 
       CMR_ELEMENT element = localEdgeElements[e];
       if (CMRelementIsRow(element) && forestEdges)
       {
-        CMRdbgMsg(0, "Edge corresponds to element %d = row %d.\n", element, TUelementToRowIndex(element));
+        CMRdbgMsg(0, "Edge corresponds to element %d = row %d.\n", element, CMRelementToRowIndex(element));
         forestEdges[CMRelementToRowIndex(element)] = e;
       }
       else if (CMRelementIsColumn(element) && coforestEdges)
       {
-        CMRdbgMsg(0, "Edge corresponds to element %d = column %d.\n", element, TUelementToColumnIndex(element));
+        CMRdbgMsg(0, "Edge corresponds to element %d = column %d.\n", element, CMRelementToColumnIndex(element));
         coforestEdges[CMRelementToColumnIndex(element)] = e;
       }
     }

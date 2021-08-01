@@ -33,7 +33,7 @@ CMR_ERROR CMRcreateEnvironment(CMR** ptu)
   cmr->verbosity = 1;
 
   /* Initialize stack memory. */
-  cmr->stacks = malloc(INITIAL_MEM_STACKS * sizeof(TU_STACK));
+  cmr->stacks = malloc(INITIAL_MEM_STACKS * sizeof(CMR_STACK));
   if (!cmr->stacks)
   {
     free(*ptu);
@@ -129,7 +129,7 @@ CMR_ERROR _CMRfreeBlockArray(CMR* cmr, void** ptr)
 #if defined(REPLACE_STACK_BY_MALLOC)
 
 CMR_ERROR _CMRallocStack(
-  TU* tu,
+  CMR* cmr,
   void** ptr,
   size_t size
 )
@@ -147,7 +147,7 @@ CMR_ERROR _CMRallocStack(
 }
 
 CMR_ERROR _CMRfreeStack(
-  TU* tu,
+  CMR* cmr,
   void** ptr
 )
 {
@@ -161,7 +161,7 @@ CMR_ERROR _CMRfreeStack(
 }
 
 void CMRassertStackConsistency(
-  TU* tu
+  CMR* cmr
 )
 {
 
@@ -208,7 +208,7 @@ CMR_ERROR _CMRallocStack(
       /* If necessary, enlarge the slacks array. */
       if (cmr->numStacks == cmr->memStacks)
       {
-        cmr->stacks = realloc(cmr->stacks, 2 * cmr->memStacks * sizeof(TU_STACK));
+        cmr->stacks = realloc(cmr->stacks, 2 * cmr->memStacks * sizeof(CMR_STACK));
         size_t newSize = 2*cmr->memStacks;
         for (int s = cmr->memStacks; s < newSize; ++s)
         {
@@ -228,7 +228,7 @@ CMR_ERROR _CMRallocStack(
 
   /* The chunk fits into the last stack. */
 
-  TU_STACK* pstack = &cmr->stacks[cmr->currentStack];
+  CMR_STACK* pstack = &cmr->stacks[cmr->currentStack];
   pstack->top -= size;
   *ptr = &pstack->memory[pstack->top];
 #if !defined(NDEBUG)
@@ -251,7 +251,7 @@ CMR_ERROR _CMRfreeStack(CMR* cmr, void** ptr)
   assert(ptr);
   assert(*ptr);
 
-  TU_STACK* stack = &cmr->stacks[cmr->currentStack];
+  CMR_STACK* stack = &cmr->stacks[cmr->currentStack];
   CMRdbgMsg(0, "CMRfreeStack called for pointer %p. Last stack is %d.\n", *ptr, cmr->currentStack);
   size_t size = *((size_t*) &stack->memory[stack->top]);
 
@@ -308,7 +308,7 @@ void CMRassertStackConsistency(
 
   for (int s = 0; s <= cmr->currentStack; ++s)
   {
-    TU_STACK* stack = &cmr->stacks[s];
+    CMR_STACK* stack = &cmr->stacks[s];
 
     void* ptr = &stack->memory[stack->top];
     CMRdbgMsg(2, "Stack %d of size %d has memory range [%p,%p). top is %p\n", s, STACK_SIZE(s), stack->memory,
