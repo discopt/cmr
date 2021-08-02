@@ -80,13 +80,13 @@ target_link_libraries(tu_test
 set_target_properties(tu_test PROPERTIES OUTPUT_NAME tu-test)
 
 # Target for the cmr-test-new binary.
-add_executable(cmr_tu_test
-  src/test/tu_main.c)
-target_link_libraries(cmr_tu_test
+add_executable(cmr_totally_unimodular
+  src/test/totally_unimodular_main.c)
+target_link_libraries(cmr_totally_unimodular
   PRIVATE
     CMR::cmr
 )
-set_target_properties(cmr_tu_test PROPERTIES OUTPUT_NAME cmr-tu-test)
+set_target_properties(cmr_totally_unimodular PROPERTIES OUTPUT_NAME cmr-totally-unimodular)
 
 # Target for the cmr-graphic binary.
 add_executable(cmr_graphic
