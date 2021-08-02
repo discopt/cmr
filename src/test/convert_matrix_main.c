@@ -3,8 +3,8 @@
 #include <string.h>
 #include <assert.h>
 
-#include <tu/matrix.h>
-#include <tu/sign.h>
+#include <cmr/matrix.h>
+#include <cmr/sign.h>
 
 typedef enum
 {
@@ -21,174 +21,174 @@ typedef enum
 } Task;
 
 static
-TU_ERROR printDbl(TU* tu, TU_DBLMAT* matrix, Format outputFormat, bool transpose)
+CMR_ERROR printDbl(CMR* cmr, CMR_DBLMAT* matrix, Format outputFormat, bool transpose)
 {
   assert(matrix);
 
-  TU_DBLMAT* output = NULL;
+  CMR_DBLMAT* output = NULL;
   if (transpose)
   {
-    TU_CALL( TUdblmatTranspose(tu, matrix, &output) );
+    CMR_CALL( CMRdblmatTranspose(cmr, matrix, &output) );
   }
   else
     output = matrix;
 
-  TU_ERROR error = TU_OKAY;
+  CMR_ERROR error = CMR_OKAY;
   if (outputFormat == SPARSE)
-    TU_CALL( TUdblmatPrintSparse(stdout, output) );
+    CMR_CALL( CMRdblmatPrintSparse(stdout, output) );
   else if (outputFormat == DENSE)
-    TU_CALL( TUdblmatPrintDense(stdout, output, '0', false) );
+    CMR_CALL( CMRdblmatPrintDense(stdout, output, '0', false) );
   else
-    error = TU_ERROR_INPUT;
+    error = CMR_ERROR_INPUT;
 
   if (transpose)
-    TU_CALL( TUdblmatFree(tu, &output) );
+    CMR_CALL( CMRdblmatFree(cmr, &output) );
 
   return error;
 }
 
 static
-TU_ERROR printInt(TU* tu, TU_INTMAT* matrix, Format outputFormat, bool transpose)
+CMR_ERROR printInt(CMR* cmr, CMR_INTMAT* matrix, Format outputFormat, bool transpose)
 {
   assert(matrix);
 
-  TU_INTMAT* output = NULL;
+  CMR_INTMAT* output = NULL;
   if (transpose)
   {
-    TU_CALL( TUintmatTranspose(tu, matrix, &output) );
+    CMR_CALL( CMRintmatTranspose(cmr, matrix, &output) );
   }
   else
     output = matrix;
 
-  TU_ERROR error = TU_OKAY;
+  CMR_ERROR error = CMR_OKAY;
   if (outputFormat == SPARSE)
-    TU_CALL( TUintmatPrintSparse(stdout, output) );
+    CMR_CALL( CMRintmatPrintSparse(stdout, output) );
   else if (outputFormat == DENSE)
-    TU_CALL( TUintmatPrintDense(stdout, output, '0', false) );
+    CMR_CALL( CMRintmatPrintDense(stdout, output, '0', false) );
   else
-    error = TU_ERROR_INPUT;
+    error = CMR_ERROR_INPUT;
 
   if (transpose)
-    TU_CALL( TUintmatFree(tu, &output) );
+    CMR_CALL( CMRintmatFree(cmr, &output) );
 
   return error;
 }
 
 static
-TU_ERROR printChr(TU* tu, TU_CHRMAT* matrix, Format outputFormat, bool transpose)
+CMR_ERROR printChr(CMR* cmr, CMR_CHRMAT* matrix, Format outputFormat, bool transpose)
 {
   assert(matrix);
 
-  TU_CHRMAT* output = NULL;
+  CMR_CHRMAT* output = NULL;
   if (transpose)
   {
-    TU_CALL( TUchrmatTranspose(tu, matrix, &output) );
+    CMR_CALL( CMRchrmatTranspose(cmr, matrix, &output) );
   }
   else
     output = matrix;
 
-  TU_ERROR error = TU_OKAY;
+  CMR_ERROR error = CMR_OKAY;
   if (outputFormat == SPARSE)
-    TU_CALL( TUchrmatPrintSparse(stdout, output) );
+    CMR_CALL( CMRchrmatPrintSparse(stdout, output) );
   else if (outputFormat == DENSE)
-    TU_CALL( TUchrmatPrintDense(stdout, output, '0', false) );
+    CMR_CALL( CMRchrmatPrintDense(cmr, stdout, output, '0', false) );
   else
-    error = TU_ERROR_INPUT;
+    error = CMR_ERROR_INPUT;
 
   if (transpose)
-    TU_CALL( TUchrmatFree(tu, &output) );
+    CMR_CALL( CMRchrmatFree(cmr, &output) );
 
   return error;
 }
 
-TU_ERROR runDbl(const char* instanceFileName, Format inputFormat, Format outputFormat, Task task, bool transpose)
+CMR_ERROR runDbl(const char* instanceFileName, Format inputFormat, Format outputFormat, Task task, bool transpose)
 {
   FILE* instanceFile = strcmp(instanceFileName, "-") ? fopen(instanceFileName, "r") : stdin;
   if (!instanceFile)
-    return TU_ERROR_INPUT;
+    return CMR_ERROR_INPUT;
 
-  TU* tu = NULL;
-  TU_CALL( TUcreateEnvironment(&tu) );
+  CMR* cmr = NULL;
+  CMR_CALL( CMRcreateEnvironment(&cmr) );
 
-  TU_DBLMAT* matrix = NULL;
+  CMR_DBLMAT* matrix = NULL;
   if (inputFormat == SPARSE)
-    TU_CALL( TUdblmatCreateFromSparseStream(tu, &matrix, instanceFile) );
+    CMR_CALL( CMRdblmatCreateFromSparseStream(cmr, &matrix, instanceFile) );
   else if (inputFormat == DENSE)
-    TU_CALL( TUdblmatCreateFromDenseStream(tu, &matrix, instanceFile) );
+    CMR_CALL( CMRdblmatCreateFromDenseStream(cmr, &matrix, instanceFile) );
   else
-    return TU_ERROR_INPUT;
+    return CMR_ERROR_INPUT;
   if (instanceFile != stdin)
     fclose(instanceFile);
 
   if (task == SUPPORT)
   {
-    TU_CHRMAT* result = NULL;
-    TU_CALL( TUsupportDbl(tu, matrix, 1.0e-9, &result) );
-    TU_CALL( printChr(tu, result, outputFormat, transpose) );
-    TU_CALL( TUchrmatFree(tu, &result) );
+    CMR_CHRMAT* result = NULL;
+    CMR_CALL( CMRsupportDbl(cmr, matrix, 1.0e-9, &result) );
+    CMR_CALL( printChr(cmr, result, outputFormat, transpose) );
+    CMR_CALL( CMRchrmatFree(cmr, &result) );
   }
   else if (task == SIGNED_SUPPORT)
   {
-    TU_CHRMAT* result = NULL;
-    TU_CALL( TUsignedSupportDbl(tu, matrix, 1.0e-9, &result) );
-    TU_CALL( printChr(tu, result, outputFormat, transpose) );
-    TU_CALL( TUchrmatFree(tu, &result) );
+    CMR_CHRMAT* result = NULL;
+    CMR_CALL( CMRsignedSupportDbl(cmr, matrix, 1.0e-9, &result) );
+    CMR_CALL( printChr(cmr, result, outputFormat, transpose) );
+    CMR_CALL( CMRchrmatFree(cmr, &result) );
   }
   else
   {
-    TU_CALL( printDbl(tu, matrix, outputFormat, transpose) );
+    CMR_CALL( printDbl(cmr, matrix, outputFormat, transpose) );
   }
 
-  TU_CALL( TUdblmatFree(tu, &matrix) );
+  CMR_CALL( CMRdblmatFree(cmr, &matrix) );
 
-  TU_CALL( TUfreeEnvironment(&tu) );
+  CMR_CALL( CMRfreeEnvironment(&cmr) );
 
-  return TU_OKAY;
+  return CMR_OKAY;
 }
 
-TU_ERROR runInt(const char* instanceFileName, Format inputFormat, Format outputFormat, Task task, bool transpose)
+CMR_ERROR runInt(const char* instanceFileName, Format inputFormat, Format outputFormat, Task task, bool transpose)
 {
   FILE* instanceFile = strcmp(instanceFileName, "-") ? fopen(instanceFileName, "r") : stdin;
   if (!instanceFile)
-    return TU_ERROR_INPUT;
+    return CMR_ERROR_INPUT;
 
-  TU* tu = NULL;
-  TU_CALL( TUcreateEnvironment(&tu) );
+  CMR* cmr = NULL;
+  CMR_CALL( CMRcreateEnvironment(&cmr) );
 
-  TU_INTMAT* matrix = NULL;
+  CMR_INTMAT* matrix = NULL;
   if (inputFormat == SPARSE)
-    TU_CALL( TUintmatCreateFromSparseStream(tu, &matrix, instanceFile) );
+    CMR_CALL( CMRintmatCreateFromSparseStream(cmr, &matrix, instanceFile) );
   else if (inputFormat == DENSE)
-    TU_CALL( TUintmatCreateFromDenseStream(tu, &matrix, instanceFile) );
+    CMR_CALL( CMRintmatCreateFromDenseStream(cmr, &matrix, instanceFile) );
   else
-    return TU_ERROR_INPUT;
+    return CMR_ERROR_INPUT;
   if (instanceFile != stdin)
     fclose(instanceFile);
 
   if (task == SUPPORT)
   {
-    TU_CHRMAT* result = NULL;
-    TU_CALL( TUsupportInt(tu, matrix, &result) );
-    TU_CALL( printChr(tu, result, outputFormat, transpose) );
-    TU_CALL( TUchrmatFree(tu, &result) );
+    CMR_CHRMAT* result = NULL;
+    CMR_CALL( CMRsupportInt(cmr, matrix, &result) );
+    CMR_CALL( printChr(cmr, result, outputFormat, transpose) );
+    CMR_CALL( CMRchrmatFree(cmr, &result) );
   }
   else if (task == SIGNED_SUPPORT)
   {
-    TU_CHRMAT* result = NULL;
-    TU_CALL( TUsignedSupportInt(tu, matrix, &result) );
-    TU_CALL( printChr(tu, result, outputFormat, transpose) );
-    TU_CALL( TUchrmatFree(tu, &result) );
+    CMR_CHRMAT* result = NULL;
+    CMR_CALL( CMRsignedSupportInt(cmr, matrix, &result) );
+    CMR_CALL( printChr(cmr, result, outputFormat, transpose) );
+    CMR_CALL( CMRchrmatFree(cmr, &result) );
   }
   else
   {
-    TU_CALL( printInt(tu, matrix, outputFormat, transpose) );
+    CMR_CALL( printInt(cmr, matrix, outputFormat, transpose) );
   }
 
-  TU_CALL( TUintmatFree(tu, &matrix) );
+  CMR_CALL( CMRintmatFree(cmr, &matrix) );
 
-  TU_CALL( TUfreeEnvironment(&tu) );
+  CMR_CALL( CMRfreeEnvironment(&cmr) );
 
-  return TU_OKAY;
+  return CMR_OKAY;
 }
 
 int printUsage(const char* program)
@@ -274,17 +274,17 @@ int main(int argc, char** argv)
   if (outputFormat == UNDEFINED)
     outputFormat = inputFormat;
 
-  TU_ERROR error;
+  CMR_ERROR error;
   if (doubleArithmetic)
     error = runDbl(instanceFileName, inputFormat, outputFormat, task, transpose);
   else
     error = runInt(instanceFileName, inputFormat, outputFormat, task, transpose);
   switch (error)
   {
-  case TU_ERROR_INPUT:
+  case CMR_ERROR_INPUT:
     puts("Input error.");
     return EXIT_FAILURE;
-  case TU_ERROR_MEMORY:
+  case CMR_ERROR_MEMORY:
     puts("Memory error.");
     return EXIT_FAILURE;
   default:

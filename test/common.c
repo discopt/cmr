@@ -5,9 +5,9 @@
 
 #include <stdio.h>
 
-TU_ERROR  stringToDoubleMatrix(TU* tu, TU_DBLMAT** matrix, const char* string)
+CMR_ERROR stringToDoubleMatrix(CMR* cmr, CMR_DBLMAT** matrix, const char* string)
 {
-  assert(tu);
+  assert(cmr);
   char* end;
   int numRows, numColumns;
 
@@ -19,7 +19,7 @@ TU_ERROR  stringToDoubleMatrix(TU* tu, TU_DBLMAT** matrix, const char* string)
   assert(end > string);
   string = end;
 
-  TUdblmatCreate(tu, matrix, numRows, numColumns, numRows * numColumns);
+  CMRdblmatCreate(cmr, matrix, numRows, numColumns, numRows * numColumns);
 
   (*matrix)->numNonzeros = 0;
   for (int row = 0; row < (*matrix)->numRows; ++row)
@@ -40,12 +40,12 @@ TU_ERROR  stringToDoubleMatrix(TU* tu, TU_DBLMAT** matrix, const char* string)
     }
   }
 
-  return TU_OKAY;
+  return CMR_OKAY;
 }
 
-TU_ERROR stringToIntMatrix(TU* tu, TU_INTMAT** matrix, const char* string)
+CMR_ERROR stringToIntMatrix(CMR* cmr, CMR_INTMAT** matrix, const char* string)
 {
-  assert(tu);
+  assert(cmr);
   char* end;
   int numRows, numColumns;
 
@@ -57,7 +57,7 @@ TU_ERROR stringToIntMatrix(TU* tu, TU_INTMAT** matrix, const char* string)
   assert(end > string);
   string = end;
 
-  TUintmatCreate(tu, matrix, numRows, numColumns, numRows * numColumns);
+  CMRintmatCreate(cmr, matrix, numRows, numColumns, numRows * numColumns);
 
   (*matrix)->numNonzeros = 0;
   for (int row = 0; row < (*matrix)->numRows; ++row)
@@ -78,12 +78,12 @@ TU_ERROR stringToIntMatrix(TU* tu, TU_INTMAT** matrix, const char* string)
     }
   }
 
-  return TU_OKAY;
+  return CMR_OKAY;
 }
 
-TU_ERROR stringToCharMatrix(TU* tu, TU_CHRMAT** matrix, const char* string)
+CMR_ERROR stringToCharMatrix(CMR* cmr, CMR_CHRMAT** matrix, const char* string)
 {
-  assert(tu);
+  assert(cmr);
   char* end;
   int numRows, numColumns;
 
@@ -95,7 +95,7 @@ TU_ERROR stringToCharMatrix(TU* tu, TU_CHRMAT** matrix, const char* string)
   assert(end > string);
   string = end;
 
-  TU_CALL( TUchrmatCreate(tu, matrix, numRows, numColumns, numRows * numColumns) );
+  CMR_CALL( CMRchrmatCreate(cmr, matrix, numRows, numColumns, numRows * numColumns) );
 
   (*matrix)->numNonzeros = 0;
   for (int row = 0; row < (*matrix)->numRows; ++row)
@@ -105,7 +105,7 @@ TU_ERROR stringToCharMatrix(TU* tu, TU_CHRMAT** matrix, const char* string)
     {
       int x = strtol(string, &end, 10);
       if (end == string)
-        return TU_ERROR_INPUT;
+        return CMR_ERROR_INPUT;
       string = end;
 
       if (x != 0)
@@ -117,5 +117,5 @@ TU_ERROR stringToCharMatrix(TU* tu, TU_CHRMAT** matrix, const char* string)
     }
   }
 
-  return TU_OKAY;
+  return CMR_OKAY;
 }

@@ -1,145 +1,172 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(TU
-   VERSION 1.9.0
-   LANGUAGES C CXX)
+project(CMR
+  VERSION 1.9.0
+  LANGUAGES C CXX)
 
 option(SHARED "Build shared libraries" ON)
 set(BUILD_SHARED_LIBS ${SHARED})
 message(STATUS "Build shared libraries: " ${SHARED})
 option(THREADS "Support for parallelization" ON)
+option(GENERATORS "Compile matrix generators" OFF)
 
 # Add cmake/ to CMAKE_MODULE_PATH.
 list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake)
 
 # Set default build type.
 if(NOT CMAKE_BUILD_TYPE)
-   set(CMAKE_BUILD_TYPE "Release"
-      CACHE STRING "Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel." FORCE)
+  set(CMAKE_BUILD_TYPE "Release"
+    CACHE STRING "Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel." FORCE)
 endif()
 
 # Dependency: THREADS
 if (THREADS)
   find_package(Threads)
-  set(TU_WITH_THREADS ${Threads_FOUND})
+  set(CMR_WITH_THREADS ${Threads_FOUND})
 else()
-  set(TU_WITH_THREADS)
+  set(CMR_WITH_THREADS)
 endif()
 
-if(TU_WITH_THREADS)
+if(CMR_WITH_THREADS)
   message(STATUS "Parallelization: ON")
 else()
   message(STATUS "Parallelization: OFF")
 endif()
 
-# Target for the TU library.
-add_library(tu
-  src/tu/element.c
-  src/tu/env.c
-  src/tu/matrix.c
-  src/tu/one_sum.c
-  src/tu/sign.c
-  src/tu/tu.c
-  src/tu/determinant.cpp
-  src/tu/ghouila_houri.cpp
-  src/tu/graph.c
-  src/tu/graphic.c
-  src/tu/hashtable.c
-  src/tu/heap.c
-  src/tu/logger.cpp
-  src/tu/matrix.cpp
-  src/tu/matroid_decomposition.cpp
-  src/tu/matroid_graph.cpp
-  src/tu/nested_minor_sequence.cpp
-  src/tu/regular.c
-  src/tu/regular_dec.c
-  src/tu/regular_onesum.c
-  src/tu/regular_simplesums.c
-  src/tu/separation.cpp
-  src/tu/sort.c
-  src/tu/total_unimodularity.cpp
-  src/tu/unimodularity.cpp
-  src/tu/zero_plus_minus_one.cpp
+if(GENERATORS)
+  message(STATUS "Generators: ON")
+else()
+  message(STATUS "Generators: OFF")
+endif()
+
+# Target for the CMR library.
+add_library(cmr
+  src/cmr/decomposition.c
+  src/cmr/element.c
+  src/cmr/env.c
+  src/cmr/matrix.c
+  src/cmr/one_sum.c
+  src/cmr/sign.c
+  src/cmr/tu.c
+  src/cmr/determinant.cpp
+  src/cmr/ghouila_houri.cpp
+  src/cmr/graph.c
+  src/cmr/graphic.c
+  src/cmr/hashtable.c
+  src/cmr/heap.c
+  src/cmr/logger.cpp
+  src/cmr/matrix.cpp
+  src/cmr/matroid_decomposition.cpp
+  src/cmr/matroid_graph.cpp
+  src/cmr/nested_minor_sequence.cpp
+  src/cmr/regular.c
+  src/cmr/regular_onesum.c
+  src/cmr/regular_simplesums.c
+  src/cmr/separation.cpp
+  src/cmr/series_parallel.c
+  src/cmr/sort.c
+  src/cmr/total_unimodularity.cpp
+  src/cmr/unimodularity.cpp
+  src/cmr/zero_plus_minus_one.cpp
 )
 
 # Target for the tu-test binary.
 add_executable(tu_test
-   src/test/main.cpp)
+  src/test/main.cpp)
 target_link_libraries(tu_test
-   PRIVATE
-      TU::tu
+  PRIVATE
+    CMR::cmr
 )
 set_target_properties(tu_test PROPERTIES OUTPUT_NAME tu-test)
 
-# Target for the tu-test-new binary.
-add_executable(tu_test_new
-   src/test/test_main.c)
-target_link_libraries(tu_test_new
-   PRIVATE
-      TU::tu
+# Target for the cmr-test-new binary.
+add_executable(cmr_tu_test
+  src/test/tu_main.c)
+target_link_libraries(cmr_tu_test
+  PRIVATE
+    CMR::cmr
 )
-set_target_properties(tu_test_new PROPERTIES OUTPUT_NAME tu-test-new)
+set_target_properties(cmr_tu_test PROPERTIES OUTPUT_NAME cmr-tu-test)
 
-# Target for the graph-matrix binary.
-add_executable(tu_graphic
+# Target for the cmr-graphic binary.
+add_executable(cmr_graphic
    src/test/graphic_main.c)
-target_link_libraries(tu_graphic
+target_link_libraries(cmr_graphic
    PRIVATE
-      TU::tu
+      CMR::cmr
 )
-set_target_properties(tu_graphic PROPERTIES OUTPUT_NAME tu-graphic)
+set_target_properties(cmr_graphic PROPERTIES OUTPUT_NAME cmr-graphic)
+
+# Target for the cmr-series-parallel binary.
+add_executable(cmr_series_parallel
+  src/test/series_parallel_main.c)
+target_link_libraries(cmr_series_parallel
+  PRIVATE
+    CMR::cmr
+)
+set_target_properties(cmr_series_parallel PROPERTIES OUTPUT_NAME cmr-series-parallel)
 
 # Target for the tu-convert-matrix.
-add_executable(tu_convert_matrix
+add_executable(cmr_convert_matrix
   src/test/convert_matrix_main.c)
-target_link_libraries(tu_convert_matrix
+target_link_libraries(cmr_convert_matrix
   PRIVATE
-     TU::tu
+    CMR::cmr
 )
-set_target_properties(tu_convert_matrix PROPERTIES OUTPUT_NAME tu-convert-matrix)
+set_target_properties(cmr_convert_matrix PROPERTIES OUTPUT_NAME cmr-convert-matrix)
+
+if(GENERATORS)
+  add_executable(cmr_generate_series_parallel
+    src/gen/series_parallel_gen.c)
+  target_link_libraries(cmr_generate_series_parallel
+    PRIVATE
+      CMR::cmr
+  )
+  set_target_properties(cmr_generate_series_parallel PROPERTIES OUTPUT_NAME cmr-generate-series-parallel)
+endif()
 
 # Target for the random_network
 #add_executable(random_network
 #   src/test/random_network.c)
 #target_link_libraries(random_network
 #   PRIVATE
-#      TU::tu
+#      CMR::cmr
 #)
 #set_target_properties(random_network PROPERTIES OUTPUT_NAME random-network)
 
-# Write compilation settings to tu/config.h.
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/include/tu/config.h.in ${CMAKE_BINARY_DIR}/tu/config.h @ONLY)
+# Write compilation settings to cmr/config.h.
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/include/cmr/config.h.in ${CMAKE_BINARY_DIR}/cmr/config.h @ONLY)
 
-# Write export settings to tu/export.h.
+# Write export settings to cmr/export.h.
 include(GenerateExportHeader)
-generate_export_header(tu EXPORT_FILE_NAME ${CMAKE_CURRENT_BINARY_DIR}/tu/export.h)
+generate_export_header(cmr EXPORT_FILE_NAME ${CMAKE_CURRENT_BINARY_DIR}/cmr/export.h)
 
 # TODO: Why both things below?
 # Add an alias so that library can be used inside the build tree.
-add_library(TU::tu ALIAS tu)
+add_library(CMR::cmr ALIAS cmr)
 
-# This is required so that the exported target has the name TU and not just tu.
-set_target_properties(tu PROPERTIES EXPORT_NAME TU)
+# This is required so that the exported target has the name CMR and not just cmr.
+set_target_properties(cmr PROPERTIES EXPORT_NAME CMR)
 
 # Hide non-exported symbols in shared library.
-set_target_properties(tu PROPERTIES CXX_VISIBILITY_PRESET hidden)
-set_target_properties(tu PROPERTIES VISIBILITY_INLINES_HIDDEN 1)
+set_target_properties(cmr PROPERTIES CXX_VISIBILITY_PRESET hidden)
+set_target_properties(cmr PROPERTIES VISIBILITY_INLINES_HIDDEN 1)
 
 # Set target properties.
-target_include_directories(tu
+target_include_directories(cmr
    PUBLIC
       $<INSTALL_INTERFACE:include> # <PREFIX>/include/ contains all installed headers.
       $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> # contains all regular headers.
-      $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}> # contains all configured headers such as tu/config.h and tu/export.h.
+      $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}> # contains all configured headers such as cmr/config.h and cmr/export.h.
    PRIVATE
-      ${CMAKE_CURRENT_SOURCE_DIR}/src/tu/
+      ${CMAKE_CURRENT_SOURCE_DIR}/src/cmr/
 )
 
-target_compile_features(tu PRIVATE cxx_auto_type)
-target_compile_options(tu PRIVATE $<$<CXX_COMPILER_ID:GNU>:-Wall>)
+target_compile_features(cmr PRIVATE cxx_auto_type)
+target_compile_options(cmr PRIVATE $<$<CXX_COMPILER_ID:GNU>:-Wall>)
 
 if(Threads_FOUND)
-  target_link_libraries(tu
+  target_link_libraries(cmr
     PRIVATE
       Threads::Threads
   )
@@ -153,8 +180,8 @@ install(TARGETS tu_test
       DESTINATION bin
 )
 
-install(TARGETS tu
-   EXPORT tu-targets
+install(TARGETS cmr
+   EXPORT cmr-targets
    LIBRARY
       DESTINATION ${CMAKE_INSTALL_LIBDIR}
    ARCHIVE
@@ -165,42 +192,42 @@ install(DIRECTORY include
    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 # Export the targets to a script.
-set(INSTALL_CONFIGDIR ${CMAKE_INSTALL_LIBDIR}/cmake/tu/)
-install(EXPORT tu-targets
-   FILE
-      TUTargets.cmake
-      NAMESPACE TU::
-      DESTINATION ${INSTALL_CONFIGDIR}
+set(INSTALL_CONFIGDIR ${CMAKE_INSTALL_LIBDIR}/cmake/cmr/)
+install(EXPORT cmr-targets
+  FILE
+    CMRTargets.cmake
+    NAMESPACE CMR::
+    DESTINATION ${INSTALL_CONFIGDIR}
 )
 
 include(CMakePackageConfigHelpers)
 
-# Create TUConfig.cmake
-configure_package_config_file(${CMAKE_CURRENT_LIST_DIR}/cmake/TUConfig.cmake.in
-   ${CMAKE_CURRENT_BINARY_DIR}/TUConfig.cmake
-   INSTALL_DESTINATION ${INSTALL_CONFIGDIR}
+# Create CMRConfig.cmake
+configure_package_config_file(${CMAKE_CURRENT_LIST_DIR}/cmake/CMRConfig.cmake.in
+  ${CMAKE_CURRENT_BINARY_DIR}/CMRConfig.cmake
+  INSTALL_DESTINATION ${INSTALL_CONFIGDIR}
 )
 
-# Create TUConfigVersion.cmake.
+# Create CMRConfigVersion.cmake.
 write_basic_package_version_file(
-   ${CMAKE_CURRENT_BINARY_DIR}/TUConfigVersion.cmake
-   VERSION ${PROJECT_VERSION}
-   COMPATIBILITY SameMajorVersion
+  ${CMAKE_CURRENT_BINARY_DIR}/CMRConfigVersion.cmake
+  VERSION ${PROJECT_VERSION}
+  COMPATIBILITY SameMajorVersion
 )
 
-# Install TUConfig.cmake and TUConfigVersion.cmake.
+# Install CMRConfig.cmake and CMRConfigVersion.cmake.
 install(FILES
-   ${CMAKE_CURRENT_BINARY_DIR}/TUConfig.cmake
-   ${CMAKE_CURRENT_BINARY_DIR}/TUConfigVersion.cmake
-   DESTINATION ${INSTALL_CONFIGDIR}
+  ${CMAKE_CURRENT_BINARY_DIR}/CMRConfig.cmake
+  ${CMAKE_CURRENT_BINARY_DIR}/CMRConfigVersion.cmake
+  DESTINATION ${INSTALL_CONFIGDIR}
 )
 
 # Write exported targets.
-export(EXPORT tu-targets
-   FILE ${CMAKE_CURRENT_BINARY_DIR}/TUTargets.cmake NAMESPACE TU::)
+export(EXPORT cmr-targets
+  FILE ${CMAKE_CURRENT_BINARY_DIR}/CMRTargets.cmake NAMESPACE CMR::)
 
 # Register package in user's package registry.
-export(PACKAGE TU)
+export(PACKAGE CMR)
 
 add_subdirectory(doc)
 
