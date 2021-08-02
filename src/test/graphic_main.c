@@ -112,29 +112,31 @@ CMR_ERROR matrixToGraph(const char* instanceFileName, FileFormat inputFormat, Fi
       printf("%s G {\n", binary ? "graph" : "digraph");
       for (size_t row = 0; row < transpose->numColumns; ++row)
       {
-        TU_GRAPH_EDGE e = forestEdges[row];
-        TU_GRAPH_NODE u = TUgraphEdgeU(graph, e);
-        TU_GRAPH_NODE v = TUgraphEdgeV(graph, e);
+        CMR_GRAPH_EDGE e = forestEdges[row];
+        CMR_GRAPH_NODE u = CMRgraphEdgeU(graph, e);
+        CMR_GRAPH_NODE v = CMRgraphEdgeV(graph, e);
         if (edgesReversed && edgesReversed[e])
         {
-          TU_GRAPH_NODE temp = u;
+          CMR_GRAPH_NODE temp = u;
           u = v;
           v = temp;
         }
-        printf(" v_%d -%c v_%d [label=\"%s\",style=bold,color=red];\n", u, binary ? '-' : '>', v, TUelementString(TUrowToElement(row), buffer));
+        printf(" v_%d -%c v_%d [label=\"%s\",style=bold,color=red];\n", u, binary ? '-' : '>', v,
+          CMRelementString(CMRrowToElement(row), buffer));
       }
       for (size_t column = 0; column < transpose->numRows; ++column)
       {
-        TU_GRAPH_EDGE e = coforestEdges[column];
-        TU_GRAPH_NODE u = TUgraphEdgeU(graph, e);
-        TU_GRAPH_NODE v = TUgraphEdgeV(graph, e);
+        CMR_GRAPH_EDGE e = coforestEdges[column];
+        CMR_GRAPH_NODE u = CMRgraphEdgeU(graph, e);
+        CMR_GRAPH_NODE v = CMRgraphEdgeV(graph, e);
         if (edgesReversed && edgesReversed[e])
         {
-          TU_GRAPH_NODE temp = u;
+          CMR_GRAPH_NODE temp = u;
           u = v;
           v = temp;
         }
-        printf(" v_%d -%c v_%d [label=\"%s\"];\n", u, binary ? '-' : '>', v, TUelementString(TUcolumnToElement(column), buffer));
+        printf(" v_%d -%c v_%d [label=\"%s\"];\n", u, binary ? '-' : '>', v,
+          CMRelementString(CMRcolumnToElement(column), buffer));
       }
       puts("}");
     }
