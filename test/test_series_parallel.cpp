@@ -1,62 +1,62 @@
 #include <gtest/gtest.h>
 
 #include "common.h"
-#include <tu/series_parallel.h>
+#include <cmr/series_parallel.h>
 
 TEST(SeriesParallel, Empty)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
-  TU_SP_OPERATION operations[2];
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+  CMR_SP_OPERATION operations[2];
   size_t numOperations;
 
   {
-    TU_CHRMAT* mat0x0 = NULL;
-    ASSERT_TU_CALL( stringToCharMatrix(tu, &mat0x0, "0 0 "
+    CMR_CHRMAT* mat0x0 = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &mat0x0, "0 0 "
     ) );
 
-    ASSERT_TU_CALL( TUfindSeriesParallel(tu, mat0x0, operations, &numOperations, NULL, NULL, NULL, NULL, true, NULL) );
+    ASSERT_CMR_CALL( CMRfindSeriesParallel(cmr, mat0x0, operations, &numOperations, NULL, NULL, NULL, NULL, true, NULL) );
     ASSERT_EQ( numOperations, 0 );
 
-    ASSERT_TU_CALL( TUchrmatFree(tu, &mat0x0) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &mat0x0) );
   }
 
   {
-    TU_CHRMAT* mat2x0 = NULL;
-    ASSERT_TU_CALL( stringToCharMatrix(tu, &mat2x0, "2 0 "
+    CMR_CHRMAT* mat2x0 = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &mat2x0, "2 0 "
     ) );
 
-    ASSERT_TU_CALL( TUfindSeriesParallel(tu, mat2x0, operations, &numOperations, NULL, NULL, NULL, NULL, true, NULL) );
+    ASSERT_CMR_CALL( CMRfindSeriesParallel(cmr, mat2x0, operations, &numOperations, NULL, NULL, NULL, NULL, true, NULL) );
     ASSERT_EQ( numOperations, 2 );
     ASSERT_EQ( operations[0].element, -1 ); ASSERT_EQ( operations[0].mate, 0 );
     ASSERT_EQ( operations[1].element, -2 ); ASSERT_EQ( operations[1].mate, 0 );
 
-    ASSERT_TU_CALL( TUchrmatFree(tu, &mat2x0) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &mat2x0) );
   }
 
   {
-    TU_CHRMAT* mat0x2 = NULL;
-    ASSERT_TU_CALL( stringToCharMatrix(tu, &mat0x2, "0 2 "
+    CMR_CHRMAT* mat0x2 = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &mat0x2, "0 2 "
     ) );
 
-    ASSERT_TU_CALL( TUfindSeriesParallel(tu, mat0x2, operations, &numOperations, NULL, NULL, NULL, NULL, true, NULL) );
+    ASSERT_CMR_CALL( CMRfindSeriesParallel(cmr, mat0x2, operations, &numOperations, NULL, NULL, NULL, NULL, true, NULL) );
     ASSERT_EQ( numOperations, 2 );
     ASSERT_EQ( operations[0].element, 1 ); ASSERT_EQ( operations[0].mate, 0 );
     ASSERT_EQ( operations[1].element, 2 ); ASSERT_EQ( operations[1].mate, 0 );
 
-    ASSERT_TU_CALL( TUchrmatFree(tu, &mat0x2) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &mat0x2) );
   }
 
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
 TEST(SeriesParallel, Reduction)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
 
-  TU_CHRMAT* matrix = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "20 20 "
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "20 20 "
     "0 1 0 1 1 1 1 0 1 1 1 0 1 0 0 0 1 1 1 1 "
     "1 1 0 0 0 1 0 0 0 1 1 0 1 0 0 0 1 1 0 0 "
     "1 0 0 0 0 0 1 0 0 0 0 0 0 0 1 0 0 0 0 1 "
@@ -79,11 +79,11 @@ TEST(SeriesParallel, Reduction)
     "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 "
   ) );
 
-  TU_SP_OPERATION operations[40];
+  CMR_SP_OPERATION operations[40];
   size_t numOperations;
-  TU_SUBMAT* submatrix = NULL;
+  CMR_SUBMAT* submatrix = NULL;
 
-  ASSERT_TU_CALL( TUfindSeriesParallel(tu, matrix, operations, &numOperations, &submatrix, NULL, NULL, NULL, true,
+  ASSERT_CMR_CALL( CMRfindSeriesParallel(cmr, matrix, operations, &numOperations, &submatrix, NULL, NULL, NULL, true,
     NULL) );
   ASSERT_EQ( numOperations, 20);
   ASSERT_EQ( operations[0].element, -6);  ASSERT_EQ( operations[0].mate, -2);
@@ -110,18 +110,18 @@ TEST(SeriesParallel, Reduction)
   ASSERT_EQ( submatrix->numRows, 10 );
   ASSERT_EQ( submatrix->numColumns, 10 );
 
-  ASSERT_TU_CALL( TUsubmatFree(tu, &submatrix) );
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  ASSERT_CMR_CALL( CMRsubmatFree(cmr, &submatrix) );
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
 TEST(SeriesParallel, FirstAttemptShortWheel)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
 
-  TU_CHRMAT* matrix = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "20 20 "
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "20 20 "
     "1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 "
     "1 0 0 0 1 1 1 1 0 0 0 0 0 0 0 0 1 1 0 0 "
     "0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 "
@@ -144,32 +144,32 @@ TEST(SeriesParallel, FirstAttemptShortWheel)
     "0 0 0 0 0 1 0 0 1 0 0 0 0 0 0 0 0 0 0 0 "
   ) );
 
-  TU_SP_OPERATION operations[40];
+  CMR_SP_OPERATION operations[40];
   size_t numOperations;
-  TU_SUBMAT* wheelSubmatrix = NULL;
+  CMR_SUBMAT* wheelSubmatrix = NULL;
 
-  ASSERT_TU_CALL( TUfindSeriesParallel(tu, matrix, operations, &numOperations, NULL, &wheelSubmatrix, NULL, NULL, true,
+  ASSERT_CMR_CALL( CMRfindSeriesParallel(cmr, matrix, operations, &numOperations, NULL, &wheelSubmatrix, NULL, NULL, true,
     NULL) );
   ASSERT_EQ( numOperations, 8 );
 
-  TU_CHRMAT* wheelMatrix = NULL;
-  ASSERT_TU_CALL( TUchrmatFilterSubmat(tu, matrix, wheelSubmatrix, &wheelMatrix) );
+  CMR_CHRMAT* wheelMatrix = NULL;
+  ASSERT_CMR_CALL( CMRchrmatFilterSubmat(cmr, matrix, wheelSubmatrix, &wheelMatrix) );
 
-  TUchrmatPrintDense(tu, stdout, wheelMatrix, '0', true);
+  CMRchrmatPrintDense(cmr, stdout, wheelMatrix, '0', true);
   
-  ASSERT_TU_CALL( TUchrmatFree(tu, &wheelMatrix) );
-  ASSERT_TU_CALL( TUsubmatFree(tu, &wheelSubmatrix) );
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &wheelMatrix) );
+  ASSERT_CMR_CALL( CMRsubmatFree(cmr, &wheelSubmatrix) );
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
 TEST(SeriesParallel, SecondAttemptLongWheel)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
 
-  TU_CHRMAT* matrix = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "20 20 "
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "20 20 "
     "1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 "
     "1 0 0 0 1 1 1 1 0 0 0 0 0 0 0 0 1 0 0 0 "
     "0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 "
@@ -192,36 +192,36 @@ TEST(SeriesParallel, SecondAttemptLongWheel)
     "0 0 0 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 "
   ) );
 
-  TU_SP_OPERATION operations[40];
+  CMR_SP_OPERATION operations[40];
   size_t numOperations;
-  TU_SUBMAT* wheelSubmatrix = NULL;
+  CMR_SUBMAT* wheelSubmatrix = NULL;
 
-  ASSERT_TU_CALL( TUfindSeriesParallel(tu, matrix, operations, &numOperations, NULL, &wheelSubmatrix, NULL, NULL, true,
+  ASSERT_CMR_CALL( CMRfindSeriesParallel(cmr, matrix, operations, &numOperations, NULL, &wheelSubmatrix, NULL, NULL, true,
     NULL) );
   ASSERT_EQ( numOperations, 8 );
   for (size_t o = 0; o < numOperations; ++o)
   {
-    printf("%s\n", TUspOperationString(operations[o], NULL));
+    printf("%s\n", CMRspOperationString(operations[o], NULL));
   }
   
-  TU_CHRMAT* wheelMatrix = NULL;
-  ASSERT_TU_CALL( TUchrmatFilterSubmat(tu, matrix, wheelSubmatrix, &wheelMatrix) );
+  CMR_CHRMAT* wheelMatrix = NULL;
+  ASSERT_CMR_CALL( CMRchrmatFilterSubmat(cmr, matrix, wheelSubmatrix, &wheelMatrix) );
 
-  TUchrmatPrintDense(tu, stdout, wheelMatrix, '0', true);
+  CMRchrmatPrintDense(cmr, stdout, wheelMatrix, '0', true);
   
-  ASSERT_TU_CALL( TUchrmatFree(tu, &wheelMatrix) );
-  ASSERT_TU_CALL( TUsubmatFree(tu, &wheelSubmatrix) );
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &wheelMatrix) );
+  ASSERT_CMR_CALL( CMRsubmatFree(cmr, &wheelSubmatrix) );
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
 TEST(SeriesParallel, SecondAttemptShortWheel)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
 
-  TU_CHRMAT* matrix = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "20 20 "
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "20 20 "
     "1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 "
     "1 0 0 0 1 1 1 1 0 0 0 0 0 0 0 0 1 0 0 0 "
     "0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 "
@@ -244,36 +244,36 @@ TEST(SeriesParallel, SecondAttemptShortWheel)
     "0 0 0 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 "
   ) );
 
-  TU_SP_OPERATION operations[40];
+  CMR_SP_OPERATION operations[40];
   size_t numOperations;
-  TU_SUBMAT* wheelSubmatrix = NULL;
+  CMR_SUBMAT* wheelSubmatrix = NULL;
 
-  ASSERT_TU_CALL( TUfindSeriesParallel(tu, matrix, operations, &numOperations, NULL, &wheelSubmatrix, NULL, NULL, true,
+  ASSERT_CMR_CALL( CMRfindSeriesParallel(cmr, matrix, operations, &numOperations, NULL, &wheelSubmatrix, NULL, NULL, true,
     NULL) );
   ASSERT_EQ( numOperations, 8 );
   for (size_t o = 0; o < numOperations; ++o)
   {
-    printf("%s\n", TUspOperationString(operations[o], NULL));
+    printf("%s\n", CMRspOperationString(operations[o], NULL));
   }
 
-  TU_CHRMAT* wheelMatrix = NULL;
-  ASSERT_TU_CALL( TUchrmatFilterSubmat(tu, matrix, wheelSubmatrix, &wheelMatrix) );
+  CMR_CHRMAT* wheelMatrix = NULL;
+  ASSERT_CMR_CALL( CMRchrmatFilterSubmat(cmr, matrix, wheelSubmatrix, &wheelMatrix) );
 
-  TUchrmatPrintDense(tu, stdout, wheelMatrix, '0', true);
+  CMRchrmatPrintDense(cmr, stdout, wheelMatrix, '0', true);
   
-  ASSERT_TU_CALL( TUchrmatFree(tu, &wheelMatrix) );
-  ASSERT_TU_CALL( TUsubmatFree(tu, &wheelSubmatrix) );
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &wheelMatrix) );
+  ASSERT_CMR_CALL( CMRsubmatFree(cmr, &wheelSubmatrix) );
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
 TEST(SeriesParallel, Separation)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
 
-  TU_CHRMAT* matrix = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "20 20 "
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "20 20 "
     "1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 "
     "1 0 0 0 1 1 1 1 0 0 0 0 0 0 0 0 1 0 0 0 "
     "0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 "
@@ -296,46 +296,46 @@ TEST(SeriesParallel, Separation)
     "0 0 0 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 "
   ) );
 
-  TU_SP_OPERATION operations[40];
+  CMR_SP_OPERATION operations[40];
   size_t numOperations;
-  TU_SUBMAT* wheelSubmatrix = NULL;
-  TU_ELEMENT separationRank1Elements[40];
+  CMR_SUBMAT* wheelSubmatrix = NULL;
+  CMR_ELEMENT separationRank1Elements[40];
   size_t numSeparationRank1Elements;
 
-  ASSERT_TU_CALL( TUfindSeriesParallel(tu, matrix, operations, &numOperations, NULL, &wheelSubmatrix,
+  ASSERT_CMR_CALL( CMRfindSeriesParallel(cmr, matrix, operations, &numOperations, NULL, &wheelSubmatrix,
     separationRank1Elements, &numSeparationRank1Elements, true, NULL) );
   ASSERT_EQ( numOperations, 8 );
   ASSERT_EQ( numSeparationRank1Elements, 17 );
-  ASSERT_EQ( separationRank1Elements[0], TUrowToElement(4) );
-  ASSERT_EQ( separationRank1Elements[1], TUrowToElement(5) );
-  ASSERT_EQ( separationRank1Elements[2], TUrowToElement(6) );
-  ASSERT_EQ( separationRank1Elements[3], TUrowToElement(7) );
-  ASSERT_EQ( separationRank1Elements[4], TUrowToElement(8) );
-  ASSERT_EQ( separationRank1Elements[5], TUrowToElement(9) );
-  ASSERT_EQ( separationRank1Elements[6], TUrowToElement(10) );
-  ASSERT_EQ( separationRank1Elements[7], TUrowToElement(11) );
-  ASSERT_EQ( separationRank1Elements[8], TUrowToElement(12) );
-  ASSERT_EQ( separationRank1Elements[9], TUcolumnToElement(4) );
-  ASSERT_EQ( separationRank1Elements[10], TUcolumnToElement(5) );
-  ASSERT_EQ( separationRank1Elements[11], TUcolumnToElement(6) );
-  ASSERT_EQ( separationRank1Elements[12], TUcolumnToElement(7) );
-  ASSERT_EQ( separationRank1Elements[13], TUcolumnToElement(8) );
-  ASSERT_EQ( separationRank1Elements[14], TUcolumnToElement(9) );
-  ASSERT_EQ( separationRank1Elements[15], TUcolumnToElement(10) );
-  ASSERT_EQ( separationRank1Elements[16], TUcolumnToElement(11) );
+  ASSERT_EQ( separationRank1Elements[0], CMRrowToElement(4) );
+  ASSERT_EQ( separationRank1Elements[1], CMRrowToElement(5) );
+  ASSERT_EQ( separationRank1Elements[2], CMRrowToElement(6) );
+  ASSERT_EQ( separationRank1Elements[3], CMRrowToElement(7) );
+  ASSERT_EQ( separationRank1Elements[4], CMRrowToElement(8) );
+  ASSERT_EQ( separationRank1Elements[5], CMRrowToElement(9) );
+  ASSERT_EQ( separationRank1Elements[6], CMRrowToElement(10) );
+  ASSERT_EQ( separationRank1Elements[7], CMRrowToElement(11) );
+  ASSERT_EQ( separationRank1Elements[8], CMRrowToElement(12) );
+  ASSERT_EQ( separationRank1Elements[9], CMRcolumnToElement(4) );
+  ASSERT_EQ( separationRank1Elements[10], CMRcolumnToElement(5) );
+  ASSERT_EQ( separationRank1Elements[11], CMRcolumnToElement(6) );
+  ASSERT_EQ( separationRank1Elements[12], CMRcolumnToElement(7) );
+  ASSERT_EQ( separationRank1Elements[13], CMRcolumnToElement(8) );
+  ASSERT_EQ( separationRank1Elements[14], CMRcolumnToElement(9) );
+  ASSERT_EQ( separationRank1Elements[15], CMRcolumnToElement(10) );
+  ASSERT_EQ( separationRank1Elements[16], CMRcolumnToElement(11) );
   
-  ASSERT_TU_CALL( TUsubmatFree(tu, &wheelSubmatrix) );
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  ASSERT_CMR_CALL( CMRsubmatFree(cmr, &wheelSubmatrix) );
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
 TEST(SeriesParallel, ThirdAttemptAfterSeparation)
 {
-  TU* tu = NULL;
-  ASSERT_TU_CALL( TUcreateEnvironment(&tu) );
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
 
-  TU_CHRMAT* matrix = NULL;
-  ASSERT_TU_CALL( stringToCharMatrix(tu, &matrix, "20 20 "
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "20 20 "
     "1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 " // 1
     "1 0 0 0 1 1 1 1 0 0 0 0 0 0 0 0 1 0 0 0 " // 2
     "0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 " // 3
@@ -358,25 +358,25 @@ TEST(SeriesParallel, ThirdAttemptAfterSeparation)
     "0 0 0 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 "
   ) );
 
-  TU_SP_OPERATION operations[40];
+  CMR_SP_OPERATION operations[40];
   size_t numOperations;
-  TU_SUBMAT* wheelSubmatrix = NULL;
+  CMR_SUBMAT* wheelSubmatrix = NULL;
 
-  ASSERT_TU_CALL( TUfindSeriesParallel(tu, matrix, operations, &numOperations, NULL, &wheelSubmatrix, NULL, NULL, true,
+  ASSERT_CMR_CALL( CMRfindSeriesParallel(cmr, matrix, operations, &numOperations, NULL, &wheelSubmatrix, NULL, NULL, true,
     NULL) );
   ASSERT_EQ( numOperations, 8 );
   for (size_t o = 0; o < numOperations; ++o)
   {
-    printf("%s\n", TUspOperationString(operations[o], NULL));
+    printf("%s\n", CMRspOperationString(operations[o], NULL));
   }
 
-  TU_CHRMAT* wheelMatrix = NULL;
-  ASSERT_TU_CALL( TUchrmatFilterSubmat(tu, matrix, wheelSubmatrix, &wheelMatrix) );
+  CMR_CHRMAT* wheelMatrix = NULL;
+  ASSERT_CMR_CALL( CMRchrmatFilterSubmat(cmr, matrix, wheelSubmatrix, &wheelMatrix) );
 
-  TUchrmatPrintDense(tu, stdout, wheelMatrix, '0', true);
+  CMRchrmatPrintDense(cmr, stdout, wheelMatrix, '0', true);
   
-  ASSERT_TU_CALL( TUchrmatFree(tu, &wheelMatrix) );
-  ASSERT_TU_CALL( TUsubmatFree(tu, &wheelSubmatrix) );
-  ASSERT_TU_CALL( TUchrmatFree(tu, &matrix) );
-  ASSERT_TU_CALL( TUfreeEnvironment(&tu) );
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &wheelMatrix) );
+  ASSERT_CMR_CALL( CMRsubmatFree(cmr, &wheelSubmatrix) );
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }

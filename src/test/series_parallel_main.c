@@ -3,8 +3,8 @@
 #include <string.h>
 #include <time.h>
 
-#include <tu/matrix.h>
-#include <tu/series_parallel.h>
+#include <cmr/matrix.h>
+#include <cmr/series_parallel.h>
 
 typedef enum
 {
@@ -31,7 +31,7 @@ int printUsage(const char* program)
   return EXIT_FAILURE;
 }
 
-TU_ERROR matrixSeriesParallel2Sums(
+CMR_ERROR matrixSeriesParallel2Sums(
   const char* instanceFileName, /**< File name of instance. */
   FileFormat inputFormat,       /**< Format of input matrix. */
   FileFormat outputFormat,      /**< Format of output matrices. */
@@ -45,19 +45,19 @@ TU_ERROR matrixSeriesParallel2Sums(
   clock_t startClock, endTime;
   FILE* instanceFile = strcmp(instanceFileName, "-") ? fopen(instanceFileName, "r") : stdin;
   if (!instanceFile)
-    return TU_ERROR_INPUT;
+    return CMR_ERROR_INPUT;
 
-  TU* tu = NULL;
-  TU_CALL( TUcreateEnvironment(&tu) );
+  CMR* cmr = NULL;
+  CMR_CALL( CMRcreateEnvironment(&cmr) );
 
   /* Read matrix. */
 
   startClock = clock();
-  TU_CHRMAT* matrix = NULL;
+  CMR_CHRMAT* matrix = NULL;
   if (inputFormat == FILEFORMAT_MATRIX_DENSE)
-    TU_CALL( TUchrmatCreateFromDenseStream(tu, &matrix, instanceFile) );
+    CMR_CALL( CMRchrmatCreateFromDenseStream(cmr, &matrix, instanceFile) );
   else if (inputFormat == FILEFORMAT_MATRIX_SPARSE)
-    TU_CALL( TUchrmatCreateFromSparseStream(tu, &matrix, instanceFile) );
+    CMR_CALL( CMRchrmatCreateFromSparseStream(cmr, &matrix, instanceFile) );
   if (instanceFile != stdin)
     fclose(instanceFile);
   fprintf(stderr, "Read %dx%d matrix with %d nonzeros in %f seconds.\n", matrix->numRows, matrix->numColumns,
@@ -65,15 +65,15 @@ TU_ERROR matrixSeriesParallel2Sums(
 
   /* Run the search. */
 
-  TU_SP_OPERATION* operations = NULL;
+  CMR_SP_OPERATION* operations = NULL;
   size_t numOperations = 0;
-  TU_CALL( TUallocBlockArray(tu, &operations, matrix->numRows + matrix->numColumns) );
-  TU_SUBMAT* reducedSubmatrix = NULL;
-  TU_SUBMAT* wheelSubmatrix = NULL;
+  CMR_CALL( CMRallocBlockArray(cmr, &operations, matrix->numRows + matrix->numColumns) );
+  CMR_SUBMAT* reducedSubmatrix = NULL;
+  CMR_SUBMAT* wheelSubmatrix = NULL;
 
-  TU_SP_STATISTICS stats;
-  TU_CALL( TUspInitStatistics(&stats) );
-  TU_CALL( TUfindSeriesParallel(tu, matrix, operations, &numOperations,
+  CMR_SP_STATISTICS stats;
+  CMR_CALL( CMRspInitStatistics(&stats) );
+  CMR_CALL( CMRfindSeriesParallel(cmr, matrix, operations, &numOperations,
     (outputReducedElements || outputReducedMatrix) ? &reducedSubmatrix : NULL,
     (outputWheelElements || outputWheelMatrix) ? &wheelSubmatrix : NULL, NULL, NULL, true, &stats) );
 
@@ -86,7 +86,7 @@ TU_ERROR matrixSeriesParallel2Sums(
     fprintf(stderr, "Printing %ld series-parallel reductions.\n", numOperations);
     printf("%ld\n", numOperations);
     for (size_t i = 0; i < numOperations; ++i)
-      printf("%s\n", TUspOperationString(operations[i], NULL));
+      printf("%s\n", CMRspOperationString(operations[i], NULL));
   }
 
   if (outputReducedElements)
@@ -104,16 +104,16 @@ TU_ERROR matrixSeriesParallel2Sums(
   if (outputReducedMatrix)
   {
     startClock = clock();
-    TU_CHRMAT* reducedMatrix = NULL;
-    TU_CALL( TUchrmatFilterSubmat(tu, matrix, reducedSubmatrix, &reducedMatrix) );
+    CMR_CHRMAT* reducedMatrix = NULL;
+    CMR_CALL( CMRchrmatFilterSubmat(cmr, matrix, reducedSubmatrix, &reducedMatrix) );
     endTime = clock();
     fprintf(stderr, "\nExtracted reduced %dx%d matrix with %d nonzeros in %f seconds.\n", reducedMatrix->numRows,
       reducedMatrix->numColumns, reducedMatrix->numNonzeros, (endTime - startClock) * 1.0 / CLOCKS_PER_SEC );
     if (outputFormat == FILEFORMAT_MATRIX_DENSE)
-      TU_CALL( TUchrmatPrintDense(tu, stdout, reducedMatrix, '0', false) );
+      CMR_CALL( CMRchrmatPrintDense(cmr, stdout, reducedMatrix, '0', false) );
     else if (outputFormat == FILEFORMAT_MATRIX_SPARSE)
-      TU_CALL( TUchrmatPrintSparse(stdout, reducedMatrix) );
-    TU_CALL( TUchrmatFree(tu, &reducedMatrix) );
+      CMR_CALL( CMRchrmatPrintSparse(stdout, reducedMatrix) );
+    CMR_CALL( CMRchrmatFree(cmr, &reducedMatrix) );
   }
 
   if (wheelSubmatrix && outputWheelElements)
@@ -132,27 +132,27 @@ TU_ERROR matrixSeriesParallel2Sums(
   if (wheelSubmatrix && outputWheelMatrix)
   {
     startClock = clock();
-    TU_CHRMAT* wheelMatrix = NULL;
-    TU_CALL( TUchrmatFilterSubmat(tu, matrix, wheelSubmatrix, &wheelMatrix) );
+    CMR_CHRMAT* wheelMatrix = NULL;
+    CMR_CALL( CMRchrmatFilterSubmat(cmr, matrix, wheelSubmatrix, &wheelMatrix) );
     endTime = clock();
     fprintf(stderr, "\nExtracted %dx%d wheel matrix with %d nonzeros in %f seconds.\n", wheelMatrix->numRows,
       wheelMatrix->numColumns, wheelMatrix->numNonzeros, (endTime - startClock) * 1.0 / CLOCKS_PER_SEC );
     if (outputFormat == FILEFORMAT_MATRIX_DENSE)
-      TU_CALL( TUchrmatPrintDense(tu, stdout, wheelMatrix, '0', false) );
+      CMR_CALL( CMRchrmatPrintDense(cmr, stdout, wheelMatrix, '0', false) );
     else if (outputFormat == FILEFORMAT_MATRIX_SPARSE)
-      TU_CALL( TUchrmatPrintSparse(stdout, wheelMatrix) );
-    TU_CALL( TUchrmatFree(tu, &wheelMatrix) );
+      CMR_CALL( CMRchrmatPrintSparse(stdout, wheelMatrix) );
+    CMR_CALL( CMRchrmatFree(cmr, &wheelMatrix) );
   }
   
   /* Cleanup. */
 
-  TU_CALL( TUsubmatFree(tu, &wheelSubmatrix) );
-  TU_CALL( TUsubmatFree(tu, &reducedSubmatrix) );
-  TU_CALL( TUfreeBlockArray(tu, &operations) );
-  TU_CALL( TUchrmatFree(tu, &matrix) );
-  TU_CALL( TUfreeEnvironment(&tu) );
+  CMR_CALL( CMRsubmatFree(cmr, &wheelSubmatrix) );
+  CMR_CALL( CMRsubmatFree(cmr, &reducedSubmatrix) );
+  CMR_CALL( CMRfreeBlockArray(cmr, &operations) );
+  CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  CMR_CALL( CMRfreeEnvironment(&cmr) );
 
-  return TU_OKAY;
+  return CMR_OKAY;
 }
 
 int main(int argc, char** argv)
@@ -223,14 +223,14 @@ int main(int argc, char** argv)
     return printUsage(argv[0]);
   }
 
-  TU_ERROR error = matrixSeriesParallel2Sums(instanceFileName, inputFormat, outputFormat, outputReductions,
+  CMR_ERROR error = matrixSeriesParallel2Sums(instanceFileName, inputFormat, outputFormat, outputReductions,
     outputReducedElements, outputReducedMatrix, outputWheelElements, outputWheelMatrix);
   switch (error)
   {
-  case TU_ERROR_INPUT:
+  case CMR_ERROR_INPUT:
     puts("Input error.");
     return EXIT_FAILURE;
-  case TU_ERROR_MEMORY:
+  case CMR_ERROR_MEMORY:
     puts("Memory error.");
     return EXIT_FAILURE;
   default:

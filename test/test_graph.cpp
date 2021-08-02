@@ -1,60 +1,60 @@
 #include <gtest/gtest.h>
 
 #include "common.h"
-#include <tu/graph.h>
+#include <cmr/graph.h>
 
 TEST(Graph, Modifications)
 {
-  TU* tu = NULL;
-  TUcreateEnvironment(&tu);
+  CMR* cmr = NULL;
+  CMRcreateEnvironment(&cmr);
   
-  TU_GRAPH* graph = NULL;
-  TUgraphCreateEmpty(tu, &graph, 1, 1);
+  CMR_GRAPH* graph = NULL;
+  CMRgraphCreateEmpty(cmr, &graph, 1, 1);
 
-  TU_GRAPH_NODE a,b,c,d;
-  TUgraphAddNode(tu, graph, &a);
-  TUgraphAddNode(tu, graph, &b);
-  TUgraphAddNode(tu, graph, &c);
-  TUgraphAddNode(tu, graph, &d);
+  CMR_GRAPH_NODE a,b,c,d;
+  CMRgraphAddNode(cmr, graph, &a);
+  CMRgraphAddNode(cmr, graph, &b);
+  CMRgraphAddNode(cmr, graph, &c);
+  CMRgraphAddNode(cmr, graph, &d);
 
-  TU_GRAPH_EDGE ab, ac, ad, bc, bd, cd;
-  TUgraphAddEdge(tu, graph, a, b, &ab);
-  TUgraphAddEdge(tu, graph, a, c, &ac);
-  TUgraphAddEdge(tu, graph, a, d, &ad);
-  TUgraphAddEdge(tu, graph, b, c, &bc);
-  TUgraphAddEdge(tu, graph, b, d, &bd);
-  TUgraphAddEdge(tu, graph, c, d, &cd);
+  CMR_GRAPH_EDGE ab, ac, ad, bc, bd, cd;
+  CMRgraphAddEdge(cmr, graph, a, b, &ab);
+  CMRgraphAddEdge(cmr, graph, a, c, &ac);
+  CMRgraphAddEdge(cmr, graph, a, d, &ad);
+  CMRgraphAddEdge(cmr, graph, b, c, &bc);
+  CMRgraphAddEdge(cmr, graph, b, d, &bd);
+  CMRgraphAddEdge(cmr, graph, c, d, &cd);
 
-  ASSERT_EQ(TUgraphNumNodes(graph), 4);
-  ASSERT_EQ(TUgraphNumEdges(graph), 6);
+  ASSERT_EQ(CMRgraphNumNodes(graph), 4);
+  ASSERT_EQ(CMRgraphNumEdges(graph), 6);
 
   int countNodes = 0;
-  for (TU_GRAPH_NODE v = TUgraphNodesFirst(graph); TUgraphNodesValid(graph, v);
-    v = TUgraphNodesNext(graph, v))
+  for (CMR_GRAPH_NODE v = CMRgraphNodesFirst(graph); CMRgraphNodesValid(graph, v);
+    v = CMRgraphNodesNext(graph, v))
   {
     ++countNodes;
   }
-  ASSERT_EQ(countNodes, TUgraphNumNodes(graph));
+  ASSERT_EQ(countNodes, CMRgraphNumNodes(graph));
 
   int countIncidentEdges = 0;
-  for (TU_GRAPH_ITER i = TUgraphIncFirst(graph, b);
-    TUgraphIncValid(graph, i); i = TUgraphIncNext(graph, i))
+  for (CMR_GRAPH_ITER i = CMRgraphIncFirst(graph, b);
+    CMRgraphIncValid(graph, i); i = CMRgraphIncNext(graph, i))
   {
-    TU_GRAPH_EDGE e = TUgraphIncEdge(graph, i);
+    CMR_GRAPH_EDGE e = CMRgraphIncEdge(graph, i);
     ASSERT_GE(e, 0);
     ASSERT_LT(e, graph->memEdges);
     ++countIncidentEdges;
   }
   ASSERT_EQ(countIncidentEdges, 3);
 
-  TUgraphDeleteEdge(tu, graph, bc);
+  CMRgraphDeleteEdge(cmr, graph, bc);
 
-  TUgraphDeleteNode(tu, graph, a);
+  CMRgraphDeleteNode(cmr, graph, a);
 
-  ASSERT_EQ(TUgraphNumNodes(graph), 3);
-  ASSERT_EQ(TUgraphNumEdges(graph), 2);
+  ASSERT_EQ(CMRgraphNumNodes(graph), 3);
+  ASSERT_EQ(CMRgraphNumEdges(graph), 2);
 
-  TUgraphFree(tu, &graph);
+  CMRgraphFree(cmr, &graph);
   
-  TUfreeEnvironment(&tu);
+  CMRfreeEnvironment(&cmr);
 }

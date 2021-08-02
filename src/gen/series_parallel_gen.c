@@ -5,8 +5,8 @@
 #include <sys/time.h>
 #include <stdint.h>
 
-#include <tu/tu.h>
-#include <tu/series_parallel.h>
+#include <cmr/tu.h>
+#include <cmr/series_parallel.h>
 
 static inline
 size_t randRange(size_t first, size_t beyond)
@@ -52,8 +52,8 @@ typedef struct _ListNonzero
 } ListNonzero;
 
 static
-TU_ERROR addNonzero(
-  TU* tu,
+CMR_ERROR addNonzero(
+  CMR* cmr,
   ListNonzero* rowHeads,
   ListNonzero* columnHeads,
   size_t* pnumNonzeros,
@@ -61,10 +61,10 @@ TU_ERROR addNonzero(
   size_t column
 )
 {
-  assert(tu);
+  assert(cmr);
 
   ListNonzero* nz = NULL;
-  TU_CALL( TUallocBlock(tu, &nz) );
+  CMR_CALL( CMRallocBlock(cmr, &nz) );
   nz->right = &rowHeads[row];
   nz->left = rowHeads[row].left;
   nz->left->right = nz;
@@ -77,7 +77,7 @@ TU_ERROR addNonzero(
   nz->column = column;
   (*pnumNonzeros)++;
   
-  return TU_OKAY;
+  return CMR_OKAY;
 }
 
 typedef struct
@@ -98,7 +98,7 @@ int compareNonzeros(const void* a, const void* b)
     return (int) nza->column - (int) nzb->column;
 }
 
-TU_ERROR genMatrixSeriesParallel(
+CMR_ERROR genMatrixSeriesParallel(
   size_t numBaseRows,       /**< Number of rows of base matrix. */
   size_t numBaseColumns,    /**< Number of columns of base matrix. */
   size_t numZeroRows,       /**< Number of added zero rows. */
@@ -112,15 +112,15 @@ TU_ERROR genMatrixSeriesParallel(
   bool benchmark            /**< Whether to benchmark the recognition algorithm with the matrix instead of printing it. */
 )
 {
-  TU* tu = NULL;
-  TU_CALL( TUcreateEnvironment(&tu) );
+  CMR* cmr = NULL;
+  CMR_CALL( CMRcreateEnvironment(&cmr) );
 
   size_t numTotalRows = numBaseRows + numZeroRows + numUnitRows + numCopiedRows;
   size_t numTotalColumns = numBaseColumns + numZeroColumns + numUnitColumns + numCopiedColumns;
   size_t totalMemory = 0;
 
   ListNonzero* rowHeads = NULL;
-  TU_CALL( TUallocBlockArray(tu, &rowHeads, numTotalRows) );
+  CMR_CALL( CMRallocBlockArray(cmr, &rowHeads, numTotalRows) );
   totalMemory += sizeof(ListNonzero) * numTotalRows;
   for (size_t row = 0; row < numTotalRows; ++row)
   {
@@ -133,7 +133,7 @@ TU_ERROR genMatrixSeriesParallel(
   }
 
   ListNonzero* columnHeads = NULL;
-  TU_CALL( TUallocBlockArray(tu, &columnHeads, numTotalColumns) );
+  CMR_CALL( CMRallocBlockArray(cmr, &columnHeads, numTotalColumns) );
   totalMemory += sizeof(ListNonzero) * numTotalColumns;
   for (size_t column = 0; column < numTotalColumns; ++column)
   {
@@ -154,7 +154,7 @@ TU_ERROR genMatrixSeriesParallel(
       if ((rand() * 1.0 / RAND_MAX) > probability)
         continue;
 
-      TU_CALL( addNonzero(tu, rowHeads, columnHeads, &numBaseNonzeros, row, column) );
+      CMR_CALL( addNonzero(cmr, rowHeads, columnHeads, &numBaseNonzeros, row, column) );
       totalMemory += sizeof(ListNonzero);
     }
   }
@@ -163,7 +163,7 @@ TU_ERROR genMatrixSeriesParallel(
   /* Create a list of all operations. */
   char* operations = NULL;
   size_t numOperations = numZeroRows + numZeroColumns + numUnitRows + numUnitColumns + numCopiedRows + numCopiedColumns;
-  TU_CALL( TUallocBlockArray(tu, &operations, numOperations) );
+  CMR_CALL( CMRallocBlockArray(cmr, &operations, numOperations) );
   totalMemory += sizeof(char) * numOperations;
   char* op = operations;
   for (size_t i = 0; i < numZeroRows; ++i)
@@ -209,7 +209,7 @@ TU_ERROR genMatrixSeriesParallel(
       case 'u':
       {
         size_t column = randRange(0, numColumns);
-        TU_CALL( addNonzero(tu, rowHeads, columnHeads, &numTotalNonzeros, numRows, column) );
+        CMR_CALL( addNonzero(cmr, rowHeads, columnHeads, &numTotalNonzeros, numRows, column) );
         totalMemory += sizeof(ListNonzero);
         ++numRows;
         break;
@@ -217,7 +217,7 @@ TU_ERROR genMatrixSeriesParallel(
       case 'U':
       {
         size_t row = randRange(0, numRows);
-        TU_CALL( addNonzero(tu, rowHeads, columnHeads, &numTotalNonzeros, row, numColumns) );
+        CMR_CALL( addNonzero(cmr, rowHeads, columnHeads, &numTotalNonzeros, row, numColumns) );
         totalMemory += sizeof(ListNonzero);
         ++numColumns;
         break;
@@ -227,7 +227,7 @@ TU_ERROR genMatrixSeriesParallel(
         size_t row = randRange(0, numRows);
         for (ListNonzero* nz = rowHeads[row].right; nz->column != SIZE_MAX; nz = nz->right)
         {
-          TU_CALL( addNonzero(tu, rowHeads, columnHeads, &numTotalNonzeros, numRows, nz->column) );
+          CMR_CALL( addNonzero(cmr, rowHeads, columnHeads, &numTotalNonzeros, numRows, nz->column) );
           totalMemory += sizeof(ListNonzero);
         }
         ++numRows;
@@ -238,7 +238,7 @@ TU_ERROR genMatrixSeriesParallel(
         size_t column = randRange(0, numColumns);
         for (ListNonzero* nz = columnHeads[column].below; nz->row != SIZE_MAX; nz = nz->below)
         {
-          TU_CALL( addNonzero(tu, rowHeads, columnHeads, &numTotalNonzeros, nz->row, numColumns) );
+          CMR_CALL( addNonzero(cmr, rowHeads, columnHeads, &numTotalNonzeros, nz->row, numColumns) );
           totalMemory += sizeof(ListNonzero);
         }
         ++numColumns;
@@ -249,12 +249,12 @@ TU_ERROR genMatrixSeriesParallel(
 
   /* Create permutations. */
   size_t* rowPermutation = NULL;
-  TU_CALL( TUallocBlockArray(tu, &rowPermutation, numTotalRows) );
+  CMR_CALL( CMRallocBlockArray(cmr, &rowPermutation, numTotalRows) );
   totalMemory += sizeof(size_t) * numTotalRows;
   for (size_t row = 0; row < numTotalRows; ++row)
     rowPermutation[row] = row;
   size_t* columnPermutation = NULL;
-  TU_CALL( TUallocBlockArray(tu, &columnPermutation, numTotalColumns) );
+  CMR_CALL( CMRallocBlockArray(cmr, &columnPermutation, numTotalColumns) );
   totalMemory += sizeof(size_t) * numTotalColumns;
   for (size_t column = 0; column < numTotalColumns; ++column)
     columnPermutation[column] = column;
@@ -285,16 +285,16 @@ TU_ERROR genMatrixSeriesParallel(
     fputs("Random row and column permutations were applied.\n", stderr);
   fprintf(stderr, "Amount of memory used: %.2g GB.\n", totalMemory / (1024.0*1024.0*1024.0));
 
-  TU_CALL( TUfreeBlockArray(tu, &operations) );
+  CMR_CALL( CMRfreeBlockArray(cmr, &operations) );
 
   if (benchmark)
   {
     /* Create array of all nonzeros. */
     
     Nonzero* nzs = NULL;
-    TU_CALL( TUallocBlockArray(tu, &nzs, numTotalNonzeros) );
+    CMR_CALL( CMRallocBlockArray(cmr, &nzs, numTotalNonzeros) );
     size_t* numRowNonzeros = NULL;
-    TU_CALL( TUallocBlockArray(tu, &numRowNonzeros, numRows) );
+    CMR_CALL( CMRallocBlockArray(cmr, &numRowNonzeros, numRows) );
     for (size_t row = 0; row < numTotalRows; ++row)
       numRowNonzeros[row] = 0;
     size_t i = 0;
@@ -313,8 +313,8 @@ TU_ERROR genMatrixSeriesParallel(
 
     /* Create matrix. */
 
-    TU_CHRMAT* matrix = NULL;
-    TU_CALL( TUchrmatCreate(tu, &matrix, numTotalRows, numTotalColumns, numTotalNonzeros) );
+    CMR_CHRMAT* matrix = NULL;
+    CMR_CALL( CMRchrmatCreate(cmr, &matrix, numTotalRows, numTotalColumns, numTotalNonzeros) );
 
     size_t row = 0;
     for (size_t i = 0; i < numTotalNonzeros; ++i)
@@ -326,26 +326,26 @@ TU_ERROR genMatrixSeriesParallel(
       matrix->entryValues[i] = 1;
     }
 
-    TU_CALL( TUfreeBlockArray(tu, &numRowNonzeros) );
-    TU_CALL( TUfreeBlockArray(tu, &nzs) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &numRowNonzeros) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &nzs) );
 
-    TU_SP_OPERATION* spOperations = NULL;
-    TU_CALL( TUallocBlockArray(tu, &spOperations, matrix->numRows + matrix->numColumns) );
+    CMR_SP_OPERATION* spOperations = NULL;
+    CMR_CALL( CMRallocBlockArray(cmr, &spOperations, matrix->numRows + matrix->numColumns) );
     size_t numOperations;
 
     /* Benchmark */
 
-    TU_SP_STATISTICS stats;
-    TU_CALL( TUspInitStatistics(&stats) );
-    TU_SUBMAT* wheelMatrix = NULL;
-    TU_CALL( TUfindSeriesParallel(tu, matrix, spOperations, &numOperations, NULL, &wheelMatrix, NULL, NULL, true,
+    CMR_SP_STATISTICS stats;
+    CMR_CALL( CMRspInitStatistics(&stats) );
+    CMR_SUBMAT* wheelMatrix = NULL;
+    CMR_CALL( CMRfindSeriesParallel(cmr, matrix, spOperations, &numOperations, NULL, &wheelMatrix, NULL, NULL, true,
       &stats) );
 
-    TUspPrintStatistics(stdout, &stats);
+    CMRspPrintStatistics(stdout, &stats);
 
-    TU_CALL( TUsubmatFree(tu, &wheelMatrix) );
-    TU_CALL( TUfreeBlockArray(tu, &spOperations) );
-    TU_CALL( TUchrmatFree(tu, &matrix) );
+    CMR_CALL( CMRsubmatFree(cmr, &wheelMatrix) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &spOperations) );
+    CMR_CALL( CMRchrmatFree(cmr, &matrix) );
   }
   else
   {
@@ -363,23 +363,23 @@ TU_ERROR genMatrixSeriesParallel(
 
   /* Cleanup. */
 
-  TU_CALL( TUfreeBlockArray(tu, &columnPermutation) );
-  TU_CALL( TUfreeBlockArray(tu, &rowPermutation) );
+  CMR_CALL( CMRfreeBlockArray(cmr, &columnPermutation) );
+  CMR_CALL( CMRfreeBlockArray(cmr, &rowPermutation) );
   for (size_t row = 0; row < numTotalRows; ++row)
   {
     for (ListNonzero* nz = rowHeads[row].right; nz != &rowHeads[row]; )
     {
       ListNonzero* current = nz;
       nz = nz->right;
-      TU_CALL( TUfreeBlock(tu, &current) );
+      CMR_CALL( CMRfreeBlock(cmr, &current) );
     }
   }
-  TU_CALL( TUfreeBlockArray(tu, &columnHeads) );
-  TU_CALL( TUfreeBlockArray(tu, &rowHeads) );
+  CMR_CALL( CMRfreeBlockArray(cmr, &columnHeads) );
+  CMR_CALL( CMRfreeBlockArray(cmr, &rowHeads) );
 
-  TU_CALL( TUfreeEnvironment(&tu) );
+  CMR_CALL( CMRfreeEnvironment(&cmr) );
 
-  return TU_OKAY;
+  return CMR_OKAY;
 }
 
 int main(int argc, char** argv)
@@ -543,14 +543,14 @@ int main(int argc, char** argv)
   else if (probability < 0.0)
     probability = 0.5;
 
-  TU_ERROR error = genMatrixSeriesParallel(numBaseRows, numBaseColumns, numZeroRows, numZeroColumns, numUnitRows,
+  CMR_ERROR error = genMatrixSeriesParallel(numBaseRows, numBaseColumns, numZeroRows, numZeroColumns, numUnitRows,
     numUnitColumns, numCopiedRows, numCopiedColumns, probability, randomize, benchmark);
   switch (error)
   {
-  case TU_ERROR_INPUT:
+  case CMR_ERROR_INPUT:
     puts("Input error.");
     return EXIT_FAILURE;
-  case TU_ERROR_MEMORY:
+  case CMR_ERROR_MEMORY:
     puts("Memory error.");
     return EXIT_FAILURE;
   default:

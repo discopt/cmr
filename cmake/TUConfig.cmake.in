@@ -1,6 +1,0 @@
-get_filename_component(TU_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
-include(CMakeFindDependencyMacro)
-
-if(NOT TARGET TU::TU)
-   include("${TU_CMAKE_DIR}/TUTargets.cmake")
-endif()
