@@ -26,13 +26,14 @@ size_t randRange(size_t first, size_t beyond)
 int printUsage(const char* program)
 {
   fprintf(stderr, "Usage: %s [OPTIONS] ROWS COLS\n\n", program);
-  fputs("Creates a random ROWS-by-COLS base matrix and augments it using series-parallel operations.\n", stderr);
+  fputs("Creates a random ROWS-by-COLS 0/1 or -1/0/+1 base matrix and augments it using series-parallel operations.\n", stderr);
   fputs("Options:\n", stderr);
   fputs("  -z ROWS COLS Add ROWS zero rows and COLS zero columns (default: 0 0).\n", stderr);
   fputs("  -u ROWS COLS Add ROWS unit rows and COLS unit columns (default: 0 0).\n", stderr);
   fputs("  -c ROWS COLS Add ROWS copied rows and COLS copied columns (default: 0 0).\n", stderr);
-  fputs("  -p PROB      Sets the probability of a '1' in the base matrix (default: 0.5).\n", stderr);
-  fputs("  -s SPARSITY  Sets the probability of a '1' in the base matrix minimum such that each\n", stderr);
+  fputs("  -t           Create a ternary matrix.", stderr);
+  fputs("  -p PROB      Sets the probability of a nonzero in the base matrix (default: 0.5).\n", stderr);
+  fputs("  -s SPARSITY  Sets the probability of a nonzero in the base matrix minimum such that each\n", stderr);
   fputs("               row/column has at least SPARSITY 1's in expectation.\n", stderr);
   fputs("  -r           Randomize matrix by permuting rows and columns afterwards (default: false).\n", stderr);
   fputs("  -b           Benchmarks the recognition algorithm for the created matrix", stderr);
@@ -49,6 +50,7 @@ typedef struct _ListNonzero
   struct _ListNonzero* below;
   size_t row;
   size_t column;
+  char value;
 } ListNonzero;
 
 static
@@ -58,7 +60,8 @@ CMR_ERROR addNonzero(
   ListNonzero* columnHeads,
   size_t* pnumNonzeros,
   size_t row,
-  size_t column
+  size_t column,
+  char value
 )
 {
   assert(cmr);
@@ -75,6 +78,7 @@ CMR_ERROR addNonzero(
   nz->above->below = nz;
   nz->row = row;
   nz->column = column;
+  nz->value = value;
   (*pnumNonzeros)++;
   
   return CMR_OKAY;
@@ -84,6 +88,7 @@ typedef struct
 {
   size_t row;
   size_t column;
+  char value;
 } Nonzero;
 
 int compareNonzeros(const void* a, const void* b)
@@ -107,6 +112,7 @@ CMR_ERROR genMatrixSeriesParallel(
   size_t numUnitColumns,    /**< Number of added unit columns. */
   size_t numCopiedRows,     /**< Number of added copied rows. */
   size_t numCopiedColumns,  /**< Number of added copied columns. */
+  bool ternary,             /**< Whether to create a ternary matrix. */
   double probability,       /**< Probability for each entry of base matrix to be a 1. */
   bool randomize,           /**< Whether to randomize afterwards via row/column permutations. */
   bool benchmark            /**< Whether to benchmark the recognition algorithm with the matrix instead of printing it. */
@@ -154,7 +160,8 @@ CMR_ERROR genMatrixSeriesParallel(
       if ((rand() * 1.0 / RAND_MAX) > probability)
         continue;
 
-      CMR_CALL( addNonzero(cmr, rowHeads, columnHeads, &numBaseNonzeros, row, column) );
+      char sign = (ternary && (rand() * 1.0 / RAND_MAX >= 0.5)) ? -1 : 1;
+      CMR_CALL( addNonzero(cmr, rowHeads, columnHeads, &numBaseNonzeros, row, column, sign) );
       totalMemory += sizeof(ListNonzero);
     }
   }
@@ -209,7 +216,8 @@ CMR_ERROR genMatrixSeriesParallel(
       case 'u':
       {
         size_t column = randRange(0, numColumns);
-        CMR_CALL( addNonzero(cmr, rowHeads, columnHeads, &numTotalNonzeros, numRows, column) );
+        char sign = (ternary && (rand() * 1.0 / RAND_MAX >= 0.5)) ? -1 : 1;
+        CMR_CALL( addNonzero(cmr, rowHeads, columnHeads, &numTotalNonzeros, numRows, column, sign) );
         totalMemory += sizeof(ListNonzero);
         ++numRows;
         break;
@@ -217,7 +225,8 @@ CMR_ERROR genMatrixSeriesParallel(
       case 'U':
       {
         size_t row = randRange(0, numRows);
-        CMR_CALL( addNonzero(cmr, rowHeads, columnHeads, &numTotalNonzeros, row, numColumns) );
+        char sign = (ternary && (rand() * 1.0 / RAND_MAX >= 0.5)) ? -1 : 1;
+        CMR_CALL( addNonzero(cmr, rowHeads, columnHeads, &numTotalNonzeros, row, numColumns, sign) );
         totalMemory += sizeof(ListNonzero);
         ++numColumns;
         break;
@@ -225,9 +234,10 @@ CMR_ERROR genMatrixSeriesParallel(
       case 'c':
       {
         size_t row = randRange(0, numRows);
+        char sign = (ternary && (rand() * 1.0 / RAND_MAX >= 0.5)) ? -1 : 1;
         for (ListNonzero* nz = rowHeads[row].right; nz->column != SIZE_MAX; nz = nz->right)
         {
-          CMR_CALL( addNonzero(cmr, rowHeads, columnHeads, &numTotalNonzeros, numRows, nz->column) );
+          CMR_CALL( addNonzero(cmr, rowHeads, columnHeads, &numTotalNonzeros, numRows, nz->column, sign * nz->value) );
           totalMemory += sizeof(ListNonzero);
         }
         ++numRows;
@@ -236,9 +246,10 @@ CMR_ERROR genMatrixSeriesParallel(
       case 'C':
       {
         size_t column = randRange(0, numColumns);
+        char sign = (ternary && (rand() * 1.0 / RAND_MAX >= 0.5)) ? -1 : 1;
         for (ListNonzero* nz = columnHeads[column].below; nz->row != SIZE_MAX; nz = nz->below)
         {
-          CMR_CALL( addNonzero(cmr, rowHeads, columnHeads, &numTotalNonzeros, nz->row, numColumns) );
+          CMR_CALL( addNonzero(cmr, rowHeads, columnHeads, &numTotalNonzeros, nz->row, numColumns, sign * nz->value) );
           totalMemory += sizeof(ListNonzero);
         }
         ++numColumns;
@@ -304,6 +315,7 @@ CMR_ERROR genMatrixSeriesParallel(
       {
         nzs[i].row = rowPermutation[nz->row];
         nzs[i].column = columnPermutation[nz->column];
+        nzs[i].value = nz->value;
         numRowNonzeros[nzs[i].row]++;
         ++i;
       }
@@ -323,7 +335,7 @@ CMR_ERROR genMatrixSeriesParallel(
         matrix->rowStarts[row++] = i;
 
       matrix->entryColumns[i] = nzs[i].column;
-      matrix->entryValues[i] = 1;
+      matrix->entryValues[i] = nzs[i].value;
     }
 
     CMR_CALL( CMRfreeBlockArray(cmr, &numRowNonzeros) );
@@ -356,7 +368,7 @@ CMR_ERROR genMatrixSeriesParallel(
     {
       for (ListNonzero* nz = rowHeads[row].right; nz->column != SIZE_MAX; nz = nz->right)
       {
-        printf("%ld %ld 1\n", rowPermutation[nz->row]+1, columnPermutation[nz->column]+1);
+        printf("%ld %ld %d\n", rowPermutation[nz->row]+1, columnPermutation[nz->column]+1, nz->value);
       }
     }
   }
@@ -396,6 +408,7 @@ int main(int argc, char** argv)
   size_t numUnitColumns = 0;
   size_t numCopiedRows = 0;
   size_t numCopiedColumns = 0;
+  bool ternary = false;
   double probability = -1.0;
   double sparsity = -1.0;
   bool randomize = false;
@@ -458,6 +471,8 @@ int main(int argc, char** argv)
       }
       a+= 2;
     }
+    else if (!strcmp(argv[a], "-t"))
+      ternary = true;
     else if (!strcmp(argv[a], "-p") && a+1 < argc)
     {
       char* p;
@@ -544,7 +559,7 @@ int main(int argc, char** argv)
     probability = 0.5;
 
   CMR_ERROR error = genMatrixSeriesParallel(numBaseRows, numBaseColumns, numZeroRows, numZeroColumns, numUnitRows,
-    numUnitColumns, numCopiedRows, numCopiedColumns, probability, randomize, benchmark);
+    numUnitColumns, numCopiedRows, numCopiedColumns, ternary, probability, randomize, benchmark);
   switch (error)
   {
   case CMR_ERROR_INPUT:
