@@ -78,33 +78,33 @@ CMR_ERROR CMRspPrintStatistics(FILE* stream, CMR_SP_STATISTICS* stats)
 
 static char seriesParallelStringBuffer[32]; /**< Static buffer for \ref CMRspString. */
 
-char* CMRspOperationString(CMR_SP_OPERATION operation, char* buffer)
+char* CMRspReductionString(CMR_SP_REDUCTION reduction, char* buffer)
 {
   if (!buffer)
     buffer = seriesParallelStringBuffer;
 
-  if (operation.element > 0)
+  if (reduction.element > 0)
   {
-    if (operation.mate > 0)
-      sprintf(buffer, "c%d copy of c%d", operation.element, operation.mate);
-    else if (operation.mate < 0)
-      sprintf(buffer, "c%d unit at r%d", operation.element, -operation.mate);
+    if (reduction.mate > 0)
+      sprintf(buffer, "c%d copy of c%d", reduction.element, reduction.mate);
+    else if (reduction.mate < 0)
+      sprintf(buffer, "c%d unit at r%d", reduction.element, -reduction.mate);
     else
-      sprintf(buffer, "c%d zero", operation.element);
+      sprintf(buffer, "c%d zero", reduction.element);
     return buffer;
   }
-  else if (operation.element < 0)
+  else if (reduction.element < 0)
   {
-    if (operation.mate > 0)
-      sprintf(buffer, "r%d unit at c%d", -operation.element, operation.mate);
-    else if (operation.mate < 0)
-      sprintf(buffer, "r%d copy of r%d", -operation.element, -operation.mate);
+    if (reduction.mate > 0)
+      sprintf(buffer, "r%d unit at c%d", -reduction.element, reduction.mate);
+    else if (reduction.mate < 0)
+      sprintf(buffer, "r%d copy of r%d", -reduction.element, -reduction.mate);
     else
-      sprintf(buffer, "r%d zero", -operation.element);
+      sprintf(buffer, "r%d zero", -reduction.element);
     return buffer;
   }
   else
-    return "<invalid series-parallel operations>";
+    return "<invalid series-parallel reduction>";
 }
 
 /**
@@ -178,6 +178,99 @@ size_t nextPower2(size_t x)
 }
 
 /**
+ * \brief Allocates and initializes element data (on the stack).
+ */
+static
+
+CMR_ERROR createElementData(
+  CMR* cmr,                   /**< \ref CMR environment. */
+  ElementData** pelementData, /**< Pointer for storing the element data. */
+  size_t size                 /**< Number of elements. */
+)
+{
+  assert(cmr);
+  assert(pelementData);
+
+  CMR_CALL( CMRallocStackArray(cmr, pelementData, size) );
+  ElementData* elementData = *pelementData;
+  for (size_t e = 0; e < size; ++e)
+  {
+    elementData[e].numNonzeros = 0;
+    elementData[e].hashValue = 0;
+    elementData[e].hashEntry = SIZE_MAX;
+    elementData[e].inQueue = false;
+    elementData[e].lastBFS = 0;
+  }
+
+  return CMR_OKAY;
+}
+
+static
+CMR_ERROR createHashVector(
+  CMR* cmr,                 /**< \ref CMR environment. */
+  long long** phashVector,  /**< Pointer for storing the hash vector. */
+  size_t size               /**< Size of hash vector. */
+)
+{
+  assert(cmr);
+
+  CMR_CALL( CMRallocStackArray(cmr, phashVector, size) );
+  long long* hashVector = *phashVector;
+  size_t h = 1;
+  for (size_t e = 0; e < size; ++e)
+  {
+    hashVector[e] = h;
+    CMRdbgMsg(2, "Entry %d has hash %ld.\n", e, h);
+    h = projectSignedHash(3 * h);
+  }
+
+  return CMR_OKAY;
+}
+
+/**
+ * \brief Scan the matrix once to compute the number of nonzeros and the hash of each row and each column.
+ */
+
+static
+CMR_ERROR initializeElementData(
+  CMR* cmr,                   /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,         /**< Matrix. */
+  ElementData* rowData,       /**< Row element data. */
+  ElementData* columnData,    /**< Row element data. */
+  long long* hashVector       /**< Hash vector. */
+)
+{
+  assert(cmr);
+  assert(matrix);
+  assert(rowData);
+  assert(columnData);
+
+  for (size_t row = 0; row < matrix->numRows; ++row)
+  {
+    size_t first = matrix->rowStarts[row];
+    size_t beyond = row+1 < matrix->numRows ? matrix->rowStarts[row+1] : matrix->numNonzeros;
+    for (size_t e = first; e < beyond; ++e)
+    {
+      size_t column = matrix->entryColumns[e];
+      char value = matrix->entryValues[e];
+      assert(value == 1 || value == -1);
+
+      /* Update row data. */
+      rowData[row].numNonzeros++;
+      long long newHash = projectSignedHash(rowData[row].hashValue + value * hashVector[column]);
+      rowData[row].hashValue  = newHash;
+
+      /* Update column data. */
+      columnData[column].numNonzeros++;
+      newHash = projectSignedHash(columnData[column].hashValue + value * hashVector[row]);
+      columnData[column].hashValue = newHash;
+    }
+  }
+
+  return CMR_OKAY;
+}
+
+/**
  * \brief Scans the matrix initially in order to add all rows or columns either to the queue or to the hashtable.
  */
 
@@ -226,7 +319,7 @@ CMR_ERROR initialScan(
  */
 
 static
-CMR_ERROR initListMatrix(
+CMR_ERROR initializeListMatrix(
   CMR* cmr,                   /**< \ref CMR environment. */
   CMR_CHRMAT* matrix,        /**< Matrix. */
   ListNonzero* anchor,          /**< Anchor of row/column data nonzeros. */
@@ -493,7 +586,7 @@ CMR_ERROR reduceListMatrix(
   size_t* pqueueStart,                /**< Pointer to start of queue. */
   size_t* pqueueEnd,                  /**< Pointer to end of queue. */
   size_t queueMemory,                 /**< Memory allocated for queue. */
-  CMR_SP_OPERATION* operations,        /**< Array for storing the SP-reductions. Must be sufficiently large, e.g., number
+  CMR_SP_REDUCTION* operations,        /**< Array for storing the SP-reductions. Must be sufficiently large, e.g., number
                                        **< of rows + number of columns. */
   size_t* pnumOperations,             /**< Pointer for storing the number of SP-reductions. */
   size_t* pnumRowOperations,          /**< Pointer for storing the number of row operations (may be \c NULL). */
@@ -901,20 +994,425 @@ CMR_ERROR breadthFirstSearch(
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRfindSeriesParallel(CMR* cmr, CMR_CHRMAT* matrix, CMR_SP_OPERATION* operations, size_t* pnumOperations,
-  CMR_SUBMAT** preducedSubmatrix, CMR_SUBMAT** pwheelSubmatrix, CMR_ELEMENT* separationRank1Elements,
-  size_t* pnumSeparationRank1Elements, bool isSorted, CMR_SP_STATISTICS* stats)
+/**
+ * \brief Extract remaining submatrix.
+ */
+
+static
+CMR_ERROR extractRemainingSubmatrix(
+  CMR* cmr,                       /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,             /**< Matrix. */
+  size_t numRowReductions,        /**< Number of row SP reductions. */
+  size_t numColumnReductions,     /**< Number of column SP reductions. */
+  ElementData* rowData,           /**< Row element data. */
+  ElementData* columnData,        /**< Column element data. */
+  CMR_SUBMAT** preducedSubmatrix  /**< Pointer for storing the reduced submatrix. */
+)
 {
   assert(cmr);
   assert(matrix);
-  assert(operations || (matrix->numRows == 0 && matrix->numColumns == 0));
-  assert(pnumOperations);
-  assert(!preducedSubmatrix || !*preducedSubmatrix);
-  assert(!pwheelSubmatrix || !*pwheelSubmatrix);
-  assert(!separationRank1Elements || pnumSeparationRank1Elements);
-  assert(!separationRank1Elements || pwheelSubmatrix);
+  assert(preducedSubmatrix);
 
-  CMRdbgMsg(0, "Searching for series/parallel elements in a %dx%d matrix with %d nonzeros.\n", matrix->numRows,
+  CMR_CALL( CMRsubmatCreate(cmr, matrix->numRows - numRowReductions, matrix->numColumns - numColumnReductions,
+    preducedSubmatrix) );
+  CMR_SUBMAT* remainingSubmatrix = *preducedSubmatrix;
+  size_t rowSubmatrix = 0;
+  for (size_t row = 0; row < matrix->numRows; ++row)
+  {
+    if (rowData[row].numNonzeros > 0)
+      remainingSubmatrix->rows[rowSubmatrix++] = row;
+  }
+  assert(rowSubmatrix + numRowReductions == matrix->numRows);
+
+  size_t columnSubmatrix = 0;
+  for (size_t column = 0; column < matrix->numColumns; ++column)
+  {
+    if (columnData[column].numNonzeros > 0)
+      remainingSubmatrix->columns[columnSubmatrix++] = column;
+  }
+  assert(columnSubmatrix + numColumnReductions == matrix->numColumns);
+
+  return CMR_OKAY;
+}
+
+/**
+ * \brief Create full matrix as remaining submatrix.
+ */
+
+static
+CMR_ERROR createFullRemainingMatrix(
+  CMR* cmr,                       /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,             /**< Matrix. */
+  CMR_SUBMAT** preducedSubmatrix  /**< Pointer for storing the reduced submatrix. */
+)
+{
+  CMR_CALL( CMRsubmatCreate(cmr, matrix->numRows, matrix->numColumns, preducedSubmatrix) );
+  CMR_SUBMAT* remainingSubmatrix = *preducedSubmatrix;
+  for (size_t row = 0; row < matrix->numRows; ++row)
+    remainingSubmatrix->rows[row] = row;
+  for (size_t column = 0; column < matrix->numColumns; ++column)
+    remainingSubmatrix->columns[column] = column;
+
+  return CMR_OKAY;
+}
+
+/**
+ * \brief Searches for a wheel-submatrix.
+ */
+
+static
+CMR_ERROR extractWheelSubmatrix(
+  CMR* cmr,                             /**< \ref CMR environment. */
+  size_t numRows,                       /**< Number of rows. */
+  size_t numColumns,                    /**< Number of columns. */
+  ElementData* rowData,                 /**< Row element data. */
+  ElementData* columnData,              /**< Row element data. */
+  CMR_ELEMENT* queue,                   /**< Queue memory. */
+  size_t queueMemory,                   /**< Size of \p queue. */
+  ListNonzero* anchor,                  /**< Anchor of list matrix. */
+  CMR_SUBMAT** pwheelSubmatrix,         /**< Pointer for storing the wheel submatrix. */
+  CMR_ELEMENT* separationRank1Elements, /**< Array for storing elements of the rank-1 part of a 2-separation. If not
+                                         **< \c NULL, it must have sufficient capacity. */
+  size_t* pnumSeparationRank1Elements   /**< Pointer for storing the number of elements stored in
+                                         **< \p separationRank1Elements (may be \c NULL). */
+)
+{
+  CMRdbgMsg(2, "Searching for wheel graph representation submatrix.\n");
+
+  assert(anchor);
+  assert(anchor->below != anchor);
+  size_t currentBFS = 0;
+  for (size_t row = 0; row < numRows; ++row)
+    rowData[row].specialBFS = false;
+  for (size_t column = 0; column < numColumns; ++column)
+    columnData[column].specialBFS = false;
+  ListNonzero** nzBlock = NULL; /* Pointers for simultaneously traversing columns of block. */
+  CMR_CALL( CMRallocStackArray(cmr, &nzBlock, numColumns) );
+  CMR_ELEMENT* sources = NULL;
+  CMR_CALL( CMRallocStackArray(cmr, &sources, numRows) );
+  CMR_ELEMENT* targets = NULL;
+  CMR_CALL( CMRallocStackArray(cmr, &targets, numColumns) );
+  size_t numEdges = 0;
+  for (size_t row = 0; row < numRows; ++row)
+    numEdges += rowData[row].numNonzeros;
+  while (true)
+  {
+    size_t sourceRow = anchor->below->row;
+    rowData[sourceRow].lastBFS = currentBFS;
+    rowData[sourceRow].predecessor = SIZE_MAX;
+    rowData[sourceRow].distance = 0;
+    size_t targetColumn = rowData[sourceRow].nonzeros.right->column;
+    rowData[sourceRow].nonzeros.right->disabled = true;
+
+    CMRdbgMsg(4, "Searching for a chordless cycle from r%d to c%d.\n", sourceRow+1, targetColumn+1);
+
+    clock_t t = clock();
+    sources[0] = CMRrowToElement(sourceRow);
+    targets[0] = CMRcolumnToElement(targetColumn);
+    size_t foundTarget = SIZE_MAX;
+    currentBFS++;
+    CMR_CALL( breadthFirstSearch(cmr, currentBFS, rowData, columnData, queue, queueMemory, sources, 1, targets, 1,
+      &foundTarget, 0) );
+    rowData[sourceRow].nonzeros.right->disabled = false;
+    assert(foundTarget == 0);
+    size_t length = columnData[targetColumn].distance + 1;
+    fprintf(stderr, "Time for chordless cycle search: %f\n", (clock() - t) * 1.0 / CLOCKS_PER_SEC);
+
+    CMRdbgMsg(4, "Length of cycle is %d.\n", length);
+
+    if (length > 4)
+    {
+      /* We found a long chordless cycle. Traverse backwards along path and collect rows/columns. */
+      CMR_CALL( CMRsubmatCreate(cmr, length/2, length/2, pwheelSubmatrix) );
+      CMR_SUBMAT* wheelSubmatrix = *pwheelSubmatrix;
+      size_t column = targetColumn;
+      size_t row;
+      for (size_t i = 0; i < length/2; ++i)
+      {
+        row = columnData[column].predecessor;
+        wheelSubmatrix->columns[i] = column;
+        wheelSubmatrix->rows[i] = row;
+        column = rowData[row].predecessor;
+      }
+      break;
+    }
+
+    /* We have found a 2-by-2 matrix with only 1's. */
+    size_t row1 = sourceRow;
+    size_t row2 = columnData[targetColumn].predecessor;
+    CMRdbgMsg(4, "Growing the 2x2 submatrix with 1's is at r%d, r%d, c%d, c%d.\n", row1+1, row2+1,
+      targetColumn+1, rowData[row2+1].predecessor+1);
+
+    t = clock();
+
+    /* Go trough the two nonzeros of the two rows simultaneously. */
+    ListNonzero* nz1 = rowData[row1].nonzeros.right;
+    ListNonzero* nz2 = rowData[row2].nonzeros.right;
+    size_t numTargets = 0;
+    while (nz1->column != SIZE_MAX)
+    {
+      CMRdbgMsg(6, "nonzeros at column indices %d and %d.\n", nz1->column, nz2->column);
+      if (nz1->column < nz2->column)
+      {
+        nz1 = nz1->right;
+      }
+      else if (nz1->column > nz2->column)
+        nz2 = nz2->right;
+      else
+      {
+        columnData[nz1->column].specialBFS = true;
+        nzBlock[numTargets] = columnData[nz1->column].nonzeros.below;
+        targets[numTargets++] = CMRcolumnToElement(nz1->column);
+        nz1 = nz1->right;
+        nz2 = nz2->right;
+      }
+    }
+    CMRdbgMsg(4, "Identified %d target columns.\n", numTargets);
+    assert(numTargets >= 2);
+
+    /* Go through the nonzeros of all marked columns simultaneously. */
+    size_t maxIndex = 0;
+    size_t maxRow = nzBlock[0]->row;
+    size_t currentIndex = 1;
+    size_t numSources = 0;
+    while (maxRow != SIZE_MAX)
+    {
+      if (currentIndex == maxIndex)
+      {
+        /* All nonzeros now have the same row. */
+        for (size_t j = 0; j < numTargets; ++j)
+          nzBlock[j]->disabled = true;
+        rowData[maxRow].specialBFS = true;
+        sources[numSources++] = CMRrowToElement(maxRow);
+        ++maxRow;
+      }
+      while (nzBlock[currentIndex]->row < maxRow)
+        nzBlock[currentIndex] = nzBlock[currentIndex]->below;
+      if (nzBlock[currentIndex]->row > maxRow)
+      {
+        maxIndex = currentIndex;
+        maxRow = nzBlock[currentIndex]->row;
+      }
+      currentIndex = (currentIndex + 1) % numTargets;
+    }
+
+    fprintf(stderr, "Time for growing block: %f\n", (clock() - t) * 1.0 / CLOCKS_PER_SEC);
+
+    CMRdbgMsg(4, "Identified %d source rows.\n", numSources);
+    assert(numSources >= 2);
+
+    t = clock();
+
+    currentBFS++;
+    foundTarget = SIZE_MAX;
+    size_t numTraversedEdges = 0;
+    CMR_CALL( breadthFirstSearch(cmr, currentBFS, rowData, columnData, queue, queueMemory, sources, numSources,
+      targets, numTargets, &foundTarget, &numTraversedEdges) );
+
+    fprintf(stderr, "Time for second search: %f\n", (clock() - t) * 1.0 / CLOCKS_PER_SEC);
+
+    if (foundTarget < SIZE_MAX)
+    {
+      size_t length = columnData[CMRelementToColumnIndex(targets[foundTarget])].distance + 1;
+      targetColumn = CMRelementToColumnIndex(targets[foundTarget]);
+      CMRdbgMsg(4, "Length of cycle is %d.\n", length);
+
+      size_t wheelSize = length == 4 ? 3 : length/2;
+      CMR_CALL( CMRsubmatCreate(cmr, wheelSize, wheelSize, pwheelSubmatrix) );
+      CMR_SUBMAT* wheelSubmatrix = *pwheelSubmatrix;
+
+      if (length > 4)
+      {
+        /* The cycle is long and we simply traverse it and collect all rows and columns. */
+        size_t column = targetColumn;
+        size_t row;
+        for (size_t i = 0; i < length/2; ++i)
+        {
+          row = columnData[column].predecessor;
+          wheelSubmatrix->columns[i] = column;
+          wheelSubmatrix->rows[i] = row;
+          column = rowData[row].predecessor;
+        }
+      }
+      else
+      {
+        /* The cycle is short and we need to add one row and one column from the block of 1's. */
+
+        size_t column1 = targetColumn; /* Belongs to block. */
+        size_t row2 = columnData[column1].predecessor; /* Does not belong to block. */
+        size_t column2 = rowData[row2].predecessor; /* Does not belong to block. */
+        size_t row1 = columnData[column2].predecessor; /* Belongs to block. */
+        CMRdbgMsg(4, "Short cycle is induced by r%d,r%d,c%d,c%d.\n", row1+1, row2+1, column1+1, column2+1);
+
+        /* Go through nonzeros of row2 and mark them. */
+        for (ListNonzero* nz = rowData[row2].nonzeros.right; nz->column != SIZE_MAX; nz = nz->right)
+          columnData[nz->column].lastBFS = -1;
+
+        /* Find a non-marked source column. */
+        size_t column3 = SIZE_MAX;
+        for (size_t t = 0; t < numTargets; ++t)
+        {
+          column3 = CMRelementToColumnIndex(targets[t]);
+          if (columnData[column3].lastBFS >= 0)
+            break;
+        }
+        assert(column3 != SIZE_MAX);
+        CMRdbgMsg(4, "Adding c%d\n", column3+1);
+
+        /* Go through nonzeros of column 2 and mark them. */
+        for (ListNonzero* nz = columnData[column2].nonzeros.below; nz->row != SIZE_MAX; nz = nz->below)
+          rowData[nz->row].lastBFS = -1;
+
+        /* Find a non-marked source column. */
+        size_t row3 = SIZE_MAX;
+        for (size_t s = 0; s < numSources; ++s)
+        {
+          row3 = CMRelementToRowIndex(sources[s]);
+          if (rowData[row3].lastBFS >= 0)
+            break;
+        }
+        assert(row3 != SIZE_MAX);
+        CMRdbgMsg(4, "Adding r%d\n", row3+1);
+        wheelSubmatrix->rows[0] = row3;
+        wheelSubmatrix->rows[1] = row1;
+        wheelSubmatrix->rows[2] = row2;
+        wheelSubmatrix->columns[0] = column3;
+        wheelSubmatrix->columns[1] = column1;
+        wheelSubmatrix->columns[2] = column2;
+      }
+      break;
+    }
+
+    if (separationRank1Elements && pnumSeparationRank1Elements)
+    {
+      CMRdbgMsg(4, "No path found. Extracting 2-separation.\n");
+
+      *pnumSeparationRank1Elements = 0;
+      /* Collect all rows that are reachable. */
+      for (size_t row = 0; row < numRows; ++row)
+      {
+        if (rowData[row].lastBFS == currentBFS)
+          separationRank1Elements[(*pnumSeparationRank1Elements)++] = CMRrowToElement(row);
+      }
+      /* Collect all columns that are not reachable. */
+      for (size_t column = 0; column < numColumns; ++column)
+      {
+        if (columnData[column].lastBFS >= -1 && columnData[column].lastBFS != currentBFS)
+          separationRank1Elements[(*pnumSeparationRank1Elements)++] = CMRcolumnToElement(column);
+      }
+
+      break;
+    }
+
+    CMRdbgMsg(4, "No path found. Determining smaller part of 2-separation.\n");
+    CMRdbgMsg(4, "%d edges were traversed, %d are in rank-1 submatrix, and %d of %d remain.\n", numTraversedEdges,
+      numSources * numTargets, numEdges - numTraversedEdges - numSources * numTargets, numEdges);
+    size_t numEdgesPartWithColumn = numTraversedEdges + numSources;
+    size_t numEdgesPartWithRow = numEdges - numTraversedEdges - (numSources - 1) * numTargets;
+    CMRdbgMsg(4, "Part with a column from block has %d nonzeros, part with a row from the block has %d nonzeros.\n",
+      numEdgesPartWithColumn, numEdgesPartWithRow);
+
+    /* We restrict our search on the smaller part. */
+    if (numEdgesPartWithColumn <= numEdgesPartWithRow)
+    {
+      numEdges = numEdgesPartWithColumn;
+
+      /* Remove all but one column from the block. */
+      for (size_t t = 0; t < numTargets; ++t)
+      {
+        size_t column = CMRelementToColumnIndex(targets[t]);
+        for (ListNonzero* nz = columnData[column].nonzeros.below; nz->row != SIZE_MAX; nz = nz->below)
+        {
+          if (t > 0 || !rowData[nz->row].specialBFS)
+          {
+            rowData[nz->row].numNonzeros--;
+            unlinkNonzero(nz);
+          }
+          else
+            nz->disabled = false;
+        }
+        if (t == 0)
+          columnData[column].numNonzeros = numSources;
+        else
+        {
+          columnData[column].numNonzeros = 0;
+          columnData[column].nonzeros.left->right = columnData[column].nonzeros.right;
+          columnData[column].nonzeros.right->left = columnData[column].nonzeros.left;
+        }
+      }
+      
+      /* Mark all source rows and the single remaining target column as non-special again. */
+      for (size_t s = 0; s < numSources; ++s)
+        rowData[CMRelementToRowIndex(sources[s])].specialBFS = false;
+      columnData[CMRelementToColumnIndex(targets[0])].specialBFS = false;
+    }
+    else
+    {
+      numEdges = numEdgesPartWithRow;
+
+      /* Remove all but one row from the block. */
+      for (size_t s = 0; s < numSources; ++s)
+      {
+        size_t row = CMRelementToRowIndex(sources[s]);
+        for (ListNonzero* nz = rowData[row].nonzeros.right; nz->column != SIZE_MAX; nz = nz->right)
+        {
+          if (s > 0 || !columnData[nz->column].specialBFS)
+          {
+            columnData[nz->column].numNonzeros--;
+            unlinkNonzero(nz);
+          }
+          else
+            nz->disabled = false;
+        }
+        if (s == 0)
+          rowData[row].numNonzeros = numTargets;
+        else
+        {
+          rowData[row].numNonzeros = 0;
+          rowData[row].nonzeros.left->right = rowData[row].nonzeros.right;
+          rowData[row].nonzeros.right->left = rowData[row].nonzeros.left;
+        }
+      }
+      
+      /* Mark all target columns and the single remaining source row as non-special again. */
+      for (size_t t = 0; t < numTargets; ++t)
+        columnData[CMRelementToColumnIndex(targets[t])].specialBFS = false;
+      rowData[CMRelementToRowIndex(sources[0])].specialBFS = false;
+    }
+    
+    CMRdbgMsg(0, "!!! Recursing.\n");
+  }
+  CMR_CALL( CMRfreeStackArray(cmr, &targets) );
+  CMR_CALL( CMRfreeStackArray(cmr, &sources) );
+  CMR_CALL( CMRfreeStackArray(cmr, &nzBlock) );
+
+  return CMR_OKAY;
+}
+
+static
+CMR_ERROR decomposeBinarySeriesParallel(
+  CMR* cmr,                             /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,                   /**< Sparse char matrix. */
+  bool isSorted,                        /**< Whether the entries of \p matrix are sorted. */
+  CMR_SP_REDUCTION* operations,         /**< Array for storing the SP-reductions. Must have capacity at least number of
+                                         **< rows + number of columns. */
+  size_t* pnumOperations,               /**< Pointer for storing the number of SP-reductions. */
+  CMR_SUBMAT** preducedSubmatrix,       /**< Pointer for storing the SP-reduced submatrix (may be \c NULL). */
+  CMR_SUBMAT** pviolatorSubmatrix,      /**< Pointer for storing a wheel-submatrix (may be \c NULL). */
+  CMR_ELEMENT* separationRank1Elements, /**< Array for storing elements of the rank-1 part of a 2-separation. If not
+                                         **< \c NULL, it must have sufficient capacity. */
+  size_t* pnumSeparationRank1Elements,  /**< Pointer for storing the number of elements stored in
+                                         **< \p separationRank1Elements (may be \c NULL). */
+  CMR_SP_STATISTICS* stats              /**< Pointer to statistics (may be \c NULL). */
+)
+{
+  assert(cmr);
+  assert(matrix);
+  assert(operations && pnumOperations);
+  assert(separationRank1Elements || !pnumSeparationRank1Elements);
+  assert(!separationRank1Elements || pnumSeparationRank1Elements);
+
+  CMRdbgMsg(0, "decomposeBinarySeriesParallel for a %dx%d matrix with %d nonzeros.\n", matrix->numRows,
     matrix->numColumns, matrix->numNonzeros);
 
   clock_t totalClock = 0;
@@ -928,65 +1426,17 @@ CMR_ERROR CMRfindSeriesParallel(CMR* cmr, CMR_CHRMAT* matrix, CMR_SP_OPERATION* 
   size_t numRows = matrix->numRows;
   size_t numColumns = matrix->numColumns;
 
-  /* Initialize row data. */
+  /* Initialize element data and hash vector. */
   ElementData* rowData = NULL;
-  CMR_CALL( CMRallocStackArray(cmr, &rowData, numRows) );
-  for (size_t row = 0; row < numRows; ++row)
-  {
-    rowData[row].numNonzeros = 0;
-    rowData[row].hashValue = 0;
-    rowData[row].hashEntry = SIZE_MAX;
-    rowData[row].inQueue = false;
-    rowData[row].lastBFS = 0;
-  }
-
-  /* Initialize column data. */
+  CMR_CALL( createElementData(cmr, &rowData, matrix->numRows) );
   ElementData* columnData = NULL;
-  CMR_CALL( CMRallocStackArray(cmr, &columnData, numColumns) );
-  for (size_t column = 0; column < numColumns; ++column)
-  {
-    columnData[column].numNonzeros = 0;
-    columnData[column].hashValue = 0;
-    columnData[column].hashEntry = SIZE_MAX;
-    columnData[column].inQueue = false;
-    columnData[column].lastBFS = 0;
-  }
+  CMR_CALL( createElementData(cmr, &columnData, matrix->numColumns) );
+  long long* hashVector = NULL;
+  CMR_CALL( createHashVector(cmr, &hashVector,
+    matrix->numRows > matrix->numColumns ? matrix->numRows : matrix->numColumns) );
 
-  /* We prepare the hashing. Every coordinate has its own value. These are added up for all nonzero entries and
-   * projected into the domain [-RANGE_SIGNED_HASH, +RANGE_SIGNED_HASH]. */
-  long long* entryToHash = NULL;
-  size_t numEntries = numRows > numColumns ? numRows : numColumns;
-  CMR_CALL( CMRallocStackArray(cmr, &entryToHash, numEntries) );
-  size_t h = 1;
-  for (size_t e = 0; e < numEntries; ++e)
-  {
-    entryToHash[e] = h;
-    CMRdbgMsg(2, "Entry %d has hash %ld.\n", e, h);
-    h = projectSignedHash(3 * h);
-  }
-
-  /* We scan the matrix once to compute the number of nonzeros and the hash of each row and each column. */
-  for (size_t row = 0; row < numRows; ++row)
-  {
-    size_t first = matrix->rowStarts[row];
-    size_t beyond = row+1 < numRows ? matrix->rowStarts[row+1] : matrix->numNonzeros;
-    for (size_t e = first; e < beyond; ++e)
-    {
-      size_t column = matrix->entryColumns[e];
-      char value = matrix->entryValues[e];
-      assert(value == 1 || value == -1);
-
-      /* Update row data. */
-      rowData[row].numNonzeros++;
-      long long newHash = projectSignedHash(rowData[row].hashValue + value * entryToHash[column]);
-      rowData[row].hashValue  = newHash;
-
-      /* Update column data. */
-      columnData[column].numNonzeros++;
-      newHash = projectSignedHash(columnData[column].hashValue + value * entryToHash[row]);
-      columnData[column].hashValue = newHash;
-    }
-  }
+  /* Scan the matrix to initialize the element data. */
+  CMR_CALL( initializeElementData(cmr, matrix, rowData, columnData, hashVector) );
 
   /* Initialize the queue. */
   CMR_ELEMENT* queue = NULL;
@@ -998,17 +1448,19 @@ CMR_ERROR CMRfindSeriesParallel(CMR* cmr, CMR_CHRMAT* matrix, CMR_SP_OPERATION* 
   /* Initialize the hashtables. */
   CMR_LISTHASHTABLE* rowHashtable = NULL;
   if (numRows > 0)
+  {
     CMR_CALL( CMRlisthashtableCreate(cmr, &rowHashtable, nextPower2(numRows), numRows) );
+    CMR_CALL( initialScan(cmr, rowHashtable, rowData, numRows, queue, &queueEnd, true) );
+  }
   CMR_LISTHASHTABLE* columnHashtable = NULL;
   if (numColumns > 0)
+  {
     CMR_CALL( CMRlisthashtableCreate(cmr, &columnHashtable, nextPower2(numColumns), numColumns) );
-
-  /* Initially scan rows/columns and add them either to the queue or to the hashtable. */
-  CMR_CALL( initialScan(cmr, rowHashtable, rowData, numRows, queue, &queueEnd, true) );
-  CMR_CALL( initialScan(cmr, columnHashtable, columnData, numColumns, queue, &queueEnd, false) );
+    CMR_CALL( initialScan(cmr, columnHashtable, columnData, numColumns, queue, &queueEnd, false) );
+  }
 
   *pnumOperations = 0;
-  if (queueEnd > queueStart || (pwheelSubmatrix && (numRows + numColumns > 0)))
+  if (queueEnd > queueStart || (pviolatorSubmatrix && (numRows + numColumns > 0)))
   {
     /* Create nonzeros of matrix. */
     ListNonzero* nonzeros = NULL;
@@ -1018,14 +1470,14 @@ CMR_ERROR CMRfindSeriesParallel(CMR* cmr, CMR_CHRMAT* matrix, CMR_SP_OPERATION* 
     ListNonzero the_anchor;
     the_anchor.row = SIZE_MAX;
     the_anchor.column = SIZE_MAX;
-    ListNonzero* anchor = pwheelSubmatrix ? &the_anchor : NULL;
-    CMR_CALL( initListMatrix(cmr, matrix, anchor, nonzeros, rowData, columnData, isSorted) );
+    ListNonzero* anchor = pviolatorSubmatrix ? &the_anchor : NULL;
+    CMR_CALL( initializeListMatrix(cmr, matrix, anchor, nonzeros, rowData, columnData, isSorted) );
 
     /* We now start main loop. */
-    size_t numRowOperations = 0;
-    size_t numColumnOperations = 0;
-    CMR_CALL( reduceListMatrix(cmr, anchor, rowData, columnData, rowHashtable, columnHashtable, entryToHash, queue,
-      &queueStart, &queueEnd, queueMemory, operations, pnumOperations, &numRowOperations, &numColumnOperations) );
+    size_t numRowReductions = 0;
+    size_t numColumnReductions = 0;
+    CMR_CALL( reduceListMatrix(cmr, anchor, rowData, columnData, rowHashtable, columnHashtable, hashVector, queue,
+      &queueStart, &queueEnd, queueMemory, operations, pnumOperations, &numRowReductions, &numColumnReductions) );
 
     if (stats)
     {
@@ -1036,340 +1488,18 @@ CMR_ERROR CMRfindSeriesParallel(CMR* cmr, CMR_CHRMAT* matrix, CMR_SP_OPERATION* 
     /* Extract remaining submatrix. */
     if (preducedSubmatrix)
     {
-      CMR_CALL( CMRsubmatCreate(cmr, matrix->numRows - numRowOperations, matrix->numColumns - numColumnOperations,
+      CMR_CALL( extractRemainingSubmatrix(cmr, matrix, numRowReductions, numColumnReductions, rowData, columnData,
         preducedSubmatrix) );
-      CMR_SUBMAT* remainingSubmatrix = *preducedSubmatrix;
-      size_t rowSubmatrix = 0;
-      for (size_t row = 0; row < matrix->numRows; ++row)
-      {
-        if (rowData[row].numNonzeros > 0)
-          remainingSubmatrix->rows[rowSubmatrix++] = row;
-      }
-      assert(rowSubmatrix + numRowOperations == matrix->numRows);
-      size_t columnSubmatrix = 0;
-      for (size_t column = 0; column < matrix->numColumns; ++column)
-      {
-        if (columnData[column].numNonzeros > 0)
-          remainingSubmatrix->columns[columnSubmatrix++] = column;
-      }
-      assert(columnSubmatrix + numColumnOperations == matrix->numColumns);
     }
 
-    /* Search for a wheel representation submatrix. */
-    if (pwheelSubmatrix && (*pnumOperations != (numRows + numColumns)))
+    if (pviolatorSubmatrix && (*pnumOperations != (matrix->numRows + matrix->numColumns)))
     {
       clock_t wheelClock = 0;
       if (stats)
         wheelClock = clock();
 
-      CMRdbgMsg(2, "Searching for wheel graph representation submatrix.\n");
-
-      assert(anchor);
-      assert(anchor->below != anchor);
-      size_t currentBFS = 0;
-      for (size_t row = 0; row < numRows; ++row)
-        rowData[row].specialBFS = false;
-      for (size_t column = 0; column < numColumns; ++column)
-        columnData[column].specialBFS = false;
-      ListNonzero** nzBlock = NULL; /* Pointers for simultaneously traversing columns of block. */
-      CMR_CALL( CMRallocStackArray(cmr, &nzBlock, numColumns) );
-      CMR_ELEMENT* sources = NULL;
-      CMR_CALL( CMRallocStackArray(cmr, &sources, numRows) );
-      CMR_ELEMENT* targets = NULL;
-      CMR_CALL( CMRallocStackArray(cmr, &targets, numColumns) );
-      size_t numEdges = 0;
-      for (size_t row = 0; row < numRows; ++row)
-        numEdges += rowData[row].numNonzeros;
-      while (true)
-      {
-        size_t sourceRow = anchor->below->row;
-        rowData[sourceRow].lastBFS = currentBFS;
-        rowData[sourceRow].predecessor = SIZE_MAX;
-        rowData[sourceRow].distance = 0;
-        size_t targetColumn = rowData[sourceRow].nonzeros.right->column;
-        rowData[sourceRow].nonzeros.right->disabled = true;
-
-        CMRdbgMsg(4, "Searching for a chordless cycle from r%d to c%d.\n", sourceRow+1, targetColumn+1);
-
-        clock_t t = clock();
-        sources[0] = CMRrowToElement(sourceRow);
-        targets[0] = CMRcolumnToElement(targetColumn);
-        size_t foundTarget = SIZE_MAX;
-        currentBFS++;
-        CMR_CALL( breadthFirstSearch(cmr, currentBFS, rowData, columnData, queue, queueMemory, sources, 1, targets, 1,
-          &foundTarget, 0) );
-        rowData[sourceRow].nonzeros.right->disabled = false;
-        assert(foundTarget == 0);
-        size_t length = columnData[targetColumn].distance + 1;
-        fprintf(stderr, "Time for chordless cycle search: %f\n", (clock() - t) * 1.0 / CLOCKS_PER_SEC);
-
-        CMRdbgMsg(4, "Length of cycle is %d.\n", length);
-
-        if (length > 4)
-        {
-          /* We found a long chordless cycle. Traverse backwards along path and collect rows/columns. */
-          CMR_CALL( CMRsubmatCreate(cmr, length/2, length/2, pwheelSubmatrix) );
-          CMR_SUBMAT* wheelSubmatrix = *pwheelSubmatrix;
-          size_t column = targetColumn;
-          size_t row;
-          for (size_t i = 0; i < length/2; ++i)
-          {
-            row = columnData[column].predecessor;
-            wheelSubmatrix->columns[i] = column;
-            wheelSubmatrix->rows[i] = row;
-            column = rowData[row].predecessor;
-          }
-          break;
-        }
-
-        /* We have found a 2-by-2 matrix with only 1's. */
-        size_t row1 = sourceRow;
-        size_t row2 = columnData[targetColumn].predecessor;
-        CMRdbgMsg(4, "Growing the 2x2 submatrix with 1's is at r%d, r%d, c%d, c%d.\n", row1+1, row2+1,
-          targetColumn+1, rowData[row2+1].predecessor+1);
-
-        t = clock();
-
-        /* Go trough the two nonzeros of the two rows simultaneously. */
-        ListNonzero* nz1 = rowData[row1].nonzeros.right;
-        ListNonzero* nz2 = rowData[row2].nonzeros.right;
-        size_t numTargets = 0;
-        while (nz1->column != SIZE_MAX)
-        {
-          CMRdbgMsg(6, "nonzeros at column indices %d and %d.\n", nz1->column, nz2->column);
-          if (nz1->column < nz2->column)
-          {
-            nz1 = nz1->right;
-          }
-          else if (nz1->column > nz2->column)
-            nz2 = nz2->right;
-          else
-          {
-            columnData[nz1->column].specialBFS = true;
-            nzBlock[numTargets] = columnData[nz1->column].nonzeros.below;
-            targets[numTargets++] = CMRcolumnToElement(nz1->column);
-            nz1 = nz1->right;
-            nz2 = nz2->right;
-          }
-        }
-        CMRdbgMsg(4, "Identified %d target columns.\n", numTargets);
-        assert(numTargets >= 2);
-
-        /* Go through the nonzeros of all marked columns simultaneously. */
-        size_t maxIndex = 0;
-        size_t maxRow = nzBlock[0]->row;
-        size_t currentIndex = 1;
-        size_t numSources = 0;
-        while (maxRow != SIZE_MAX)
-        {
-          if (currentIndex == maxIndex)
-          {
-            /* All nonzeros now have the same row. */
-            for (size_t j = 0; j < numTargets; ++j)
-              nzBlock[j]->disabled = true;
-            rowData[maxRow].specialBFS = true;
-            sources[numSources++] = CMRrowToElement(maxRow);
-            ++maxRow;
-          }
-          while (nzBlock[currentIndex]->row < maxRow)
-            nzBlock[currentIndex] = nzBlock[currentIndex]->below;
-          if (nzBlock[currentIndex]->row > maxRow)
-          {
-            maxIndex = currentIndex;
-            maxRow = nzBlock[currentIndex]->row;
-          }
-          currentIndex = (currentIndex + 1) % numTargets;
-        }
-
-        fprintf(stderr, "Time for growing block: %f\n", (clock() - t) * 1.0 / CLOCKS_PER_SEC);
-
-        CMRdbgMsg(4, "Identified %d source rows.\n", numSources);
-        assert(numSources >= 2);
-  
-        t = clock();
-
-        currentBFS++;
-        foundTarget = SIZE_MAX;
-        size_t numTraversedEdges = 0;
-        CMR_CALL( breadthFirstSearch(cmr, currentBFS, rowData, columnData, queue, queueMemory, sources, numSources,
-          targets, numTargets, &foundTarget, &numTraversedEdges) );
-
-        fprintf(stderr, "Time for second search: %f\n", (clock() - t) * 1.0 / CLOCKS_PER_SEC);
-
-        if (foundTarget < SIZE_MAX)
-        {
-          size_t length = columnData[CMRelementToColumnIndex(targets[foundTarget])].distance + 1;
-          targetColumn = CMRelementToColumnIndex(targets[foundTarget]);
-          CMRdbgMsg(4, "Length of cycle is %d.\n", length);
-
-          size_t wheelSize = length == 4 ? 3 : length/2;
-          CMR_CALL( CMRsubmatCreate(cmr, wheelSize, wheelSize, pwheelSubmatrix) );
-          CMR_SUBMAT* wheelSubmatrix = *pwheelSubmatrix;
-
-          if (length > 4)
-          {
-            /* The cycle is long and we simply traverse it and collect all rows and columns. */
-            size_t column = targetColumn;
-            size_t row;
-            for (size_t i = 0; i < length/2; ++i)
-            {
-              row = columnData[column].predecessor;
-              wheelSubmatrix->columns[i] = column;
-              wheelSubmatrix->rows[i] = row;
-              column = rowData[row].predecessor;
-            }
-          }
-          else
-          {
-            /* The cycle is short and we need to add one row and one column from the block of 1's. */
-
-            size_t column1 = targetColumn; /* Belongs to block. */
-            size_t row2 = columnData[column1].predecessor; /* Does not belong to block. */
-            size_t column2 = rowData[row2].predecessor; /* Does not belong to block. */
-            size_t row1 = columnData[column2].predecessor; /* Belongs to block. */
-            CMRdbgMsg(4, "Short cycle is induced by r%d,r%d,c%d,c%d.\n", row1+1, row2+1, column1+1, column2+1);
-
-            /* Go through nonzeros of row2 and mark them. */
-            for (ListNonzero* nz = rowData[row2].nonzeros.right; nz->column != SIZE_MAX; nz = nz->right)
-              columnData[nz->column].lastBFS = -1;
-
-            /* Find a non-marked source column. */
-            size_t column3 = SIZE_MAX;
-            for (size_t t = 0; t < numTargets; ++t)
-            {
-              column3 = CMRelementToColumnIndex(targets[t]);
-              if (columnData[column3].lastBFS >= 0)
-                break;
-            }
-            assert(column3 != SIZE_MAX);
-            CMRdbgMsg(4, "Adding c%d\n", column3+1);
-
-            /* Go through nonzeros of column 2 and mark them. */
-            for (ListNonzero* nz = columnData[column2].nonzeros.below; nz->row != SIZE_MAX; nz = nz->below)
-              rowData[nz->row].lastBFS = -1;
-
-            /* Find a non-marked source column. */
-            size_t row3 = SIZE_MAX;
-            for (size_t s = 0; s < numSources; ++s)
-            {
-              row3 = CMRelementToRowIndex(sources[s]);
-              if (rowData[row3].lastBFS >= 0)
-                break;
-            }
-            assert(row3 != SIZE_MAX);
-            CMRdbgMsg(4, "Adding r%d\n", row3+1);
-            wheelSubmatrix->rows[0] = row3;
-            wheelSubmatrix->rows[1] = row1;
-            wheelSubmatrix->rows[2] = row2;
-            wheelSubmatrix->columns[0] = column3;
-            wheelSubmatrix->columns[1] = column1;
-            wheelSubmatrix->columns[2] = column2;
-          }
-          break;
-        }
-
-        if (separationRank1Elements && pnumSeparationRank1Elements)
-        {
-          CMRdbgMsg(4, "No path found. Extracting 2-separation.\n");
-
-          *pnumSeparationRank1Elements = 0;
-          /* Collect all rows that are reachable. */
-          for (size_t row = 0; row < numRows; ++row)
-          {
-            if (rowData[row].lastBFS == currentBFS)
-              separationRank1Elements[(*pnumSeparationRank1Elements)++] = CMRrowToElement(row);
-          }
-          /* Collect all columns that are not reachable. */
-          for (size_t column = 0; column < numColumns; ++column)
-          {
-            if (columnData[column].lastBFS >= -1 && columnData[column].lastBFS != currentBFS)
-              separationRank1Elements[(*pnumSeparationRank1Elements)++] = CMRcolumnToElement(column);
-          }
-
-          break;
-        }
-
-        CMRdbgMsg(4, "No path found. Determining smaller part of 2-separation.\n");
-        CMRdbgMsg(4, "%d edges were traversed, %d are in rank-1 submatrix, and %d of %d remain.\n", numTraversedEdges,
-          numSources * numTargets, numEdges - numTraversedEdges - numSources * numTargets, numEdges);
-        size_t numEdgesPartWithColumn = numTraversedEdges + numSources;
-        size_t numEdgesPartWithRow = numEdges - numTraversedEdges - (numSources - 1) * numTargets;
-        CMRdbgMsg(4, "Part with a column from block has %d nonzeros, part with a row from the block has %d nonzeros.\n",
-          numEdgesPartWithColumn, numEdgesPartWithRow);
-
-        /* We restrict our search on the smaller part. */
-        if (numEdgesPartWithColumn <= numEdgesPartWithRow)
-        {
-          numEdges = numEdgesPartWithColumn;
-
-          /* Remove all but one column from the block. */
-          for (size_t t = 0; t < numTargets; ++t)
-          {
-            size_t column = CMRelementToColumnIndex(targets[t]);
-            for (ListNonzero* nz = columnData[column].nonzeros.below; nz->row != SIZE_MAX; nz = nz->below)
-            {
-              if (t > 0 || !rowData[nz->row].specialBFS)
-              {
-                rowData[nz->row].numNonzeros--;
-                unlinkNonzero(nz);
-              }
-              else
-                nz->disabled = false;
-            }
-            if (t == 0)
-              columnData[column].numNonzeros = numSources;
-            else
-            {
-              columnData[column].numNonzeros = 0;
-              columnData[column].nonzeros.left->right = columnData[column].nonzeros.right;
-              columnData[column].nonzeros.right->left = columnData[column].nonzeros.left;
-            }
-          }
-          
-          /* Mark all source rows and the single remaining target column as non-special again. */
-          for (size_t s = 0; s < numSources; ++s)
-            rowData[CMRelementToRowIndex(sources[s])].specialBFS = false;
-          columnData[CMRelementToColumnIndex(targets[0])].specialBFS = false;
-        }
-        else
-        {
-          numEdges = numEdgesPartWithRow;
-
-          /* Remove all but one row from the block. */
-          for (size_t s = 0; s < numSources; ++s)
-          {
-            size_t row = CMRelementToRowIndex(sources[s]);
-            for (ListNonzero* nz = rowData[row].nonzeros.right; nz->column != SIZE_MAX; nz = nz->right)
-            {
-              if (s > 0 || !columnData[nz->column].specialBFS)
-              {
-                columnData[nz->column].numNonzeros--;
-                unlinkNonzero(nz);
-              }
-              else
-                nz->disabled = false;
-            }
-            if (s == 0)
-              rowData[row].numNonzeros = numTargets;
-            else
-            {
-              rowData[row].numNonzeros = 0;
-              rowData[row].nonzeros.left->right = rowData[row].nonzeros.right;
-              rowData[row].nonzeros.right->left = rowData[row].nonzeros.left;
-            }
-          }
-          
-          /* Mark all target columns and the single remaining source row as non-special again. */
-          for (size_t t = 0; t < numTargets; ++t)
-            columnData[CMRelementToColumnIndex(targets[t])].specialBFS = false;
-          rowData[CMRelementToRowIndex(sources[0])].specialBFS = false;
-        }
-        
-        CMRdbgMsg(0, "!!! Recursing.\n");
-      }
-      CMR_CALL( CMRfreeStackArray(cmr, &targets) );
-      CMR_CALL( CMRfreeStackArray(cmr, &sources) );
-      CMR_CALL( CMRfreeStackArray(cmr, &nzBlock) );
+      CMR_CALL( extractWheelSubmatrix(cmr, matrix->numRows, matrix->numColumns, rowData, columnData, queue, queueMemory,
+        anchor, pviolatorSubmatrix, separationRank1Elements, pnumSeparationRank1Elements) );
 
       if (stats)
       {
@@ -1385,21 +1515,14 @@ CMR_ERROR CMRfindSeriesParallel(CMR* cmr, CMR_CHRMAT* matrix, CMR_SP_OPERATION* 
     CMRdbgMsg(2, "No series/parallel element found.\n");
 
     if (preducedSubmatrix)
-    {
-      CMR_CALL( CMRsubmatCreate(cmr, matrix->numRows, matrix->numColumns, preducedSubmatrix) );
-      CMR_SUBMAT* remainingSubmatrix = *preducedSubmatrix;
-      for (size_t row = 0; row < matrix->numRows; ++row)
-        remainingSubmatrix->rows[row] = row;
-      for (size_t column = 0; column < matrix->numColumns; ++column)
-        remainingSubmatrix->columns[column] = column;
-    }
+      CMR_CALL( createFullRemainingMatrix(cmr, matrix, preducedSubmatrix) );
   }
 
   CMR_CALL( CMRlisthashtableFree(cmr, &columnHashtable) );
   CMR_CALL( CMRlisthashtableFree(cmr, &rowHashtable) );
 
   CMR_CALL( CMRfreeStackArray(cmr, &queue) );
-  CMR_CALL( CMRfreeStackArray(cmr, &entryToHash) );
+  CMR_CALL( CMRfreeStackArray(cmr, &hashVector) );
   CMR_CALL( CMRfreeStackArray(cmr, &columnData) );
   CMR_CALL( CMRfreeStackArray(cmr, &rowData) );
 
@@ -1411,3 +1534,74 @@ CMR_ERROR CMRfindSeriesParallel(CMR* cmr, CMR_CHRMAT* matrix, CMR_SP_OPERATION* 
 
   return CMR_OKAY;
 }
+
+CMR_ERROR CMRtestBinarySeriesParallel(CMR* cmr, CMR_CHRMAT* matrix, bool isSorted, bool* pisSeriesParallel,
+  CMR_SP_REDUCTION* reductions, size_t* pnumReductions, CMR_SUBMAT** preducedSubmatrix, CMR_SUBMAT** pviolatorSubmatrix,
+  CMR_SP_STATISTICS* stats)
+{
+  assert(cmr);
+  assert(matrix);
+  assert(reductions || !pnumReductions);
+  assert(!reductions || pnumReductions);
+
+  CMR_SP_REDUCTION* localReductions = NULL;
+  size_t localNumReductions = 0;
+  if (!reductions)
+    CMR_CALL( CMRallocStackArray(cmr, &localReductions, matrix->numRows + matrix->numColumns) );
+
+  CMR_CALL( decomposeBinarySeriesParallel(cmr, matrix, isSorted, reductions ? reductions : localReductions,
+    &localNumReductions, preducedSubmatrix, pviolatorSubmatrix, NULL, NULL, stats) );
+
+  if (pisSeriesParallel)
+    *pisSeriesParallel = (*pnumReductions == matrix->numRows + matrix->numColumns);
+  if (reductions)
+    *pnumReductions = localNumReductions;
+  else
+    CMR_CALL( CMRfreeStackArray(cmr, &localReductions) );
+
+  return CMR_OKAY;
+}
+
+CMR_ERROR CMRtestTernarySeriesParallel(CMR* cmr, CMR_CHRMAT* matrix, bool isSorted, bool* pisSeriesParallel,
+  CMR_SP_REDUCTION* operations, size_t* pnumOperations, CMR_SUBMAT** preducedSubmatrix, CMR_SUBMAT** pviolatorSubmatrix,
+  CMR_SP_STATISTICS* stats)
+{
+  assert(cmr);
+  assert(matrix);
+  assert(operations || !pnumOperations);
+  assert(!operations || pnumOperations);
+
+  return CMR_OKAY;
+}
+
+CMR_ERROR CMRdecomposeBinarySeriesParallel(CMR* cmr, CMR_CHRMAT* matrix, bool isSorted, bool* pisSeriesParallel,
+  CMR_SP_REDUCTION* reductions, size_t* pnumReductions, CMR_SUBMAT** preducedSubmatrix, CMR_SUBMAT** pviolatorSubmatrix,
+  CMR_ELEMENT* separationRank1Elements, size_t* pnumSeparationRank1Elements, CMR_SP_STATISTICS* stats)
+{
+  assert(cmr);
+  assert(matrix);
+  assert(reductions || !pnumReductions);
+  assert(!reductions || pnumReductions);
+  assert(separationRank1Elements || !pnumSeparationRank1Elements);
+  assert(!separationRank1Elements || pnumSeparationRank1Elements);
+
+  CMR_SP_REDUCTION* localReductions = NULL;
+  size_t localNumReductions = 0;
+  if (!reductions)
+    CMR_CALL( CMRallocStackArray(cmr, &localReductions, matrix->numRows + matrix->numColumns) );
+
+  CMR_CALL( decomposeBinarySeriesParallel(cmr, matrix, isSorted, reductions ? reductions : localReductions,
+    &localNumReductions, preducedSubmatrix, pviolatorSubmatrix, separationRank1Elements, pnumSeparationRank1Elements,
+    stats) );
+
+  if (pisSeriesParallel)
+    *pisSeriesParallel = (*pnumReductions == matrix->numRows + matrix->numColumns);
+  if (reductions)
+    *pnumReductions = localNumReductions;
+  else
+    CMR_CALL( CMRfreeStackArray(cmr, &localReductions) );
+
+  return CMR_OKAY;
+}
+
+

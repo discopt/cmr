@@ -7,16 +7,21 @@ TEST(SeriesParallel, Empty)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
-  CMR_SP_OPERATION operations[2];
-  size_t numOperations;
+  CMR_SP_REDUCTION reductions[2];
+  size_t numReductions;
 
   {
     CMR_CHRMAT* mat0x0 = NULL;
     ASSERT_CMR_CALL( stringToCharMatrix(cmr, &mat0x0, "0 0 "
     ) );
 
-    ASSERT_CMR_CALL( CMRfindSeriesParallel(cmr, mat0x0, operations, &numOperations, NULL, NULL, NULL, NULL, true, NULL) );
-    ASSERT_EQ( numOperations, 0 );
+    ASSERT_CMR_CALL( CMRtestBinarySeriesParallel(cmr, mat0x0, true, NULL, reductions, &numReductions, NULL, NULL,
+      NULL) );
+    ASSERT_EQ( numReductions, 0 );
+
+    ASSERT_CMR_CALL( CMRtestTernarySeriesParallel(cmr, mat0x0, true, NULL, reductions, &numReductions, NULL, NULL,
+      NULL) );
+    ASSERT_EQ( numReductions, 0 );
 
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &mat0x0) );
   }
@@ -26,10 +31,17 @@ TEST(SeriesParallel, Empty)
     ASSERT_CMR_CALL( stringToCharMatrix(cmr, &mat2x0, "2 0 "
     ) );
 
-    ASSERT_CMR_CALL( CMRfindSeriesParallel(cmr, mat2x0, operations, &numOperations, NULL, NULL, NULL, NULL, true, NULL) );
-    ASSERT_EQ( numOperations, 2 );
-    ASSERT_EQ( operations[0].element, -1 ); ASSERT_EQ( operations[0].mate, 0 );
-    ASSERT_EQ( operations[1].element, -2 ); ASSERT_EQ( operations[1].mate, 0 );
+    ASSERT_CMR_CALL( CMRtestBinarySeriesParallel(cmr, mat2x0, true, NULL, reductions, &numReductions, NULL, NULL,
+      NULL) );
+    ASSERT_EQ( numReductions, 2 );
+    ASSERT_EQ( reductions[0].element, -1 ); ASSERT_EQ( reductions[0].mate, 0 );
+    ASSERT_EQ( reductions[1].element, -2 ); ASSERT_EQ( reductions[1].mate, 0 );
+
+    ASSERT_CMR_CALL( CMRtestTernarySeriesParallel(cmr, mat2x0, true, NULL, reductions, &numReductions, NULL, NULL,
+      NULL) );
+    ASSERT_EQ( numReductions, 2 );
+    ASSERT_EQ( reductions[0].element, -1 ); ASSERT_EQ( reductions[0].mate, 0 );
+    ASSERT_EQ( reductions[1].element, -2 ); ASSERT_EQ( reductions[1].mate, 0 );
 
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &mat2x0) );
   }
@@ -39,10 +51,17 @@ TEST(SeriesParallel, Empty)
     ASSERT_CMR_CALL( stringToCharMatrix(cmr, &mat0x2, "0 2 "
     ) );
 
-    ASSERT_CMR_CALL( CMRfindSeriesParallel(cmr, mat0x2, operations, &numOperations, NULL, NULL, NULL, NULL, true, NULL) );
-    ASSERT_EQ( numOperations, 2 );
-    ASSERT_EQ( operations[0].element, 1 ); ASSERT_EQ( operations[0].mate, 0 );
-    ASSERT_EQ( operations[1].element, 2 ); ASSERT_EQ( operations[1].mate, 0 );
+    ASSERT_CMR_CALL( CMRtestBinarySeriesParallel(cmr, mat0x2, true, NULL, reductions, &numReductions, NULL, NULL,
+      NULL) );
+    ASSERT_EQ( numReductions, 2 );
+    ASSERT_EQ( reductions[0].element, 1 ); ASSERT_EQ( reductions[0].mate, 0 );
+    ASSERT_EQ( reductions[1].element, 2 ); ASSERT_EQ( reductions[1].mate, 0 );
+
+    ASSERT_CMR_CALL( CMRtestTernarySeriesParallel(cmr, mat0x2, true, NULL, reductions, &numReductions, NULL, NULL,
+      NULL) );
+    ASSERT_EQ( numReductions, 2 );
+    ASSERT_EQ( reductions[0].element, 1 ); ASSERT_EQ( reductions[0].mate, 0 );
+    ASSERT_EQ( reductions[1].element, 2 ); ASSERT_EQ( reductions[1].mate, 0 );
 
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &mat0x2) );
   }
@@ -79,11 +98,11 @@ TEST(SeriesParallel, Reduction)
     "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 "
   ) );
 
-  CMR_SP_OPERATION operations[40];
+  CMR_SP_REDUCTION operations[40];
   size_t numOperations;
   CMR_SUBMAT* submatrix = NULL;
 
-  ASSERT_CMR_CALL( CMRfindSeriesParallel(cmr, matrix, operations, &numOperations, &submatrix, NULL, NULL, NULL, true,
+  ASSERT_CMR_CALL( CMRtestBinarySeriesParallel(cmr, matrix, true, NULL, operations, &numOperations, &submatrix, NULL,
     NULL) );
   ASSERT_EQ( numOperations, 20);
   ASSERT_EQ( operations[0].element, -6);  ASSERT_EQ( operations[0].mate, -2);
@@ -144,12 +163,12 @@ TEST(SeriesParallel, FirstAttemptShortWheel)
     "0 0 0 0 0 1 0 0 1 0 0 0 0 0 0 0 0 0 0 0 "
   ) );
 
-  CMR_SP_OPERATION operations[40];
+  CMR_SP_REDUCTION operations[40];
   size_t numOperations;
   CMR_SUBMAT* wheelSubmatrix = NULL;
 
-  ASSERT_CMR_CALL( CMRfindSeriesParallel(cmr, matrix, operations, &numOperations, NULL, &wheelSubmatrix, NULL, NULL, true,
-    NULL) );
+  ASSERT_CMR_CALL( CMRtestBinarySeriesParallel(cmr, matrix, true, NULL, operations, &numOperations, NULL,
+    &wheelSubmatrix, NULL) );
   ASSERT_EQ( numOperations, 8 );
 
   CMR_CHRMAT* wheelMatrix = NULL;
@@ -192,16 +211,16 @@ TEST(SeriesParallel, SecondAttemptLongWheel)
     "0 0 0 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 "
   ) );
 
-  CMR_SP_OPERATION operations[40];
+  CMR_SP_REDUCTION operations[40];
   size_t numOperations;
   CMR_SUBMAT* wheelSubmatrix = NULL;
 
-  ASSERT_CMR_CALL( CMRfindSeriesParallel(cmr, matrix, operations, &numOperations, NULL, &wheelSubmatrix, NULL, NULL, true,
-    NULL) );
+  ASSERT_CMR_CALL( CMRtestBinarySeriesParallel(cmr, matrix, true, NULL, operations, &numOperations, NULL,
+    &wheelSubmatrix, NULL) );
   ASSERT_EQ( numOperations, 8 );
   for (size_t o = 0; o < numOperations; ++o)
   {
-    printf("%s\n", CMRspOperationString(operations[o], NULL));
+    printf("%s\n", CMRspReductionString(operations[o], NULL));
   }
   
   CMR_CHRMAT* wheelMatrix = NULL;
@@ -244,16 +263,16 @@ TEST(SeriesParallel, SecondAttemptShortWheel)
     "0 0 0 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 "
   ) );
 
-  CMR_SP_OPERATION operations[40];
+  CMR_SP_REDUCTION operations[40];
   size_t numOperations;
   CMR_SUBMAT* wheelSubmatrix = NULL;
 
-  ASSERT_CMR_CALL( CMRfindSeriesParallel(cmr, matrix, operations, &numOperations, NULL, &wheelSubmatrix, NULL, NULL, true,
-    NULL) );
+  ASSERT_CMR_CALL( CMRtestBinarySeriesParallel(cmr, matrix, true, NULL, operations, &numOperations, NULL,
+    &wheelSubmatrix, NULL) );
   ASSERT_EQ( numOperations, 8 );
   for (size_t o = 0; o < numOperations; ++o)
   {
-    printf("%s\n", CMRspOperationString(operations[o], NULL));
+    printf("%s\n", CMRspReductionString(operations[o], NULL));
   }
 
   CMR_CHRMAT* wheelMatrix = NULL;
@@ -296,14 +315,14 @@ TEST(SeriesParallel, Separation)
     "0 0 0 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 "
   ) );
 
-  CMR_SP_OPERATION operations[40];
+  CMR_SP_REDUCTION operations[40];
   size_t numOperations;
   CMR_SUBMAT* wheelSubmatrix = NULL;
   CMR_ELEMENT separationRank1Elements[40];
   size_t numSeparationRank1Elements;
 
-  ASSERT_CMR_CALL( CMRfindSeriesParallel(cmr, matrix, operations, &numOperations, NULL, &wheelSubmatrix,
-    separationRank1Elements, &numSeparationRank1Elements, true, NULL) );
+  ASSERT_CMR_CALL( CMRdecomposeBinarySeriesParallel(cmr, matrix, true, NULL, operations, &numOperations, NULL, &wheelSubmatrix,
+    separationRank1Elements, &numSeparationRank1Elements, NULL) );
   ASSERT_EQ( numOperations, 8 );
   ASSERT_EQ( numSeparationRank1Elements, 17 );
   ASSERT_EQ( separationRank1Elements[0], CMRrowToElement(4) );
@@ -358,16 +377,16 @@ TEST(SeriesParallel, ThirdAttemptAfterSeparation)
     "0 0 0 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 "
   ) );
 
-  CMR_SP_OPERATION operations[40];
-  size_t numOperations;
+  CMR_SP_REDUCTION reductions[40];
+  size_t numReductions;
   CMR_SUBMAT* wheelSubmatrix = NULL;
 
-  ASSERT_CMR_CALL( CMRfindSeriesParallel(cmr, matrix, operations, &numOperations, NULL, &wheelSubmatrix, NULL, NULL, true,
-    NULL) );
-  ASSERT_EQ( numOperations, 8 );
-  for (size_t o = 0; o < numOperations; ++o)
+  ASSERT_CMR_CALL( CMRtestBinarySeriesParallel(cmr, matrix, true, NULL, reductions, &numReductions, NULL,
+    &wheelSubmatrix, NULL) );
+  ASSERT_EQ( numReductions, 8 );
+  for (size_t o = 0; o < numReductions; ++o)
   {
-    printf("%s\n", CMRspOperationString(operations[o], NULL));
+    printf("%s\n", CMRspReductionString(reductions[o], NULL));
   }
 
   CMR_CHRMAT* wheelMatrix = NULL;

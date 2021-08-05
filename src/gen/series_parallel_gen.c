@@ -341,22 +341,30 @@ CMR_ERROR genMatrixSeriesParallel(
     CMR_CALL( CMRfreeBlockArray(cmr, &numRowNonzeros) );
     CMR_CALL( CMRfreeBlockArray(cmr, &nzs) );
 
-    CMR_SP_OPERATION* spOperations = NULL;
-    CMR_CALL( CMRallocBlockArray(cmr, &spOperations, matrix->numRows + matrix->numColumns) );
-    size_t numOperations;
+    CMR_SP_REDUCTION* reductions = NULL;
+    CMR_CALL( CMRallocBlockArray(cmr, &reductions, matrix->numRows + matrix->numColumns) );
+    size_t numReductions;
 
     /* Benchmark */
 
     CMR_SP_STATISTICS stats;
     CMR_CALL( CMRspInitStatistics(&stats) );
     CMR_SUBMAT* wheelMatrix = NULL;
-    CMR_CALL( CMRfindSeriesParallel(cmr, matrix, spOperations, &numOperations, NULL, &wheelMatrix, NULL, NULL, true,
-      &stats) );
+    if (ternary)
+    {
+      CMR_CALL( CMRtestTernarySeriesParallel(cmr, matrix, true, NULL, reductions, &numReductions, NULL, &wheelMatrix,
+        &stats) );
+    }
+    else
+    {
+      CMR_CALL( CMRtestBinarySeriesParallel(cmr, matrix, true, NULL, reductions, &numReductions, NULL, &wheelMatrix,
+        &stats) );
+    }
 
     CMRspPrintStatistics(stdout, &stats);
 
     CMR_CALL( CMRsubmatFree(cmr, &wheelMatrix) );
-    CMR_CALL( CMRfreeBlockArray(cmr, &spOperations) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &reductions) );
     CMR_CALL( CMRchrmatFree(cmr, &matrix) );
   }
   else

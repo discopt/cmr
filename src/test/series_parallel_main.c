@@ -65,28 +65,28 @@ CMR_ERROR matrixSeriesParallel2Sums(
 
   /* Run the search. */
 
-  CMR_SP_OPERATION* operations = NULL;
-  size_t numOperations = 0;
-  CMR_CALL( CMRallocBlockArray(cmr, &operations, matrix->numRows + matrix->numColumns) );
+  CMR_SP_REDUCTION* reductions = NULL;
+  size_t numReductions = 0;
+  CMR_CALL( CMRallocBlockArray(cmr, &reductions, matrix->numRows + matrix->numColumns) );
   CMR_SUBMAT* reducedSubmatrix = NULL;
   CMR_SUBMAT* wheelSubmatrix = NULL;
 
   CMR_SP_STATISTICS stats;
   CMR_CALL( CMRspInitStatistics(&stats) );
-  CMR_CALL( CMRfindSeriesParallel(cmr, matrix, operations, &numOperations,
+  CMR_CALL( CMRtestTernarySeriesParallel(cmr, matrix, true, NULL, reductions, &numReductions,
     (outputReducedElements || outputReducedMatrix) ? &reducedSubmatrix : NULL,
-    (outputWheelElements || outputWheelMatrix) ? &wheelSubmatrix : NULL, NULL, NULL, true, &stats) );
+    (outputWheelElements || outputWheelMatrix) ? &wheelSubmatrix : NULL, &stats) );
 
   fprintf(stderr, "Recognition done in %f seconds with %f for reduction and %f for wheel search. Matrix %sseries-parallel; %ld reductions can be applied.\n",
     stats.totalTime, stats.reduceTime, stats.wheelTime,
-    numOperations == matrix->numRows + matrix->numColumns ? "IS " : "is NOT ", numOperations);
+    numReductions == matrix->numRows + matrix->numColumns ? "IS " : "is NOT ", numReductions);
 
   if (outputReductions)
   {
-    fprintf(stderr, "Printing %ld series-parallel reductions.\n", numOperations);
-    printf("%ld\n", numOperations);
-    for (size_t i = 0; i < numOperations; ++i)
-      printf("%s\n", CMRspOperationString(operations[i], NULL));
+    fprintf(stderr, "Printing %ld series-parallel reductions.\n", numReductions);
+    printf("%ld\n", numReductions);
+    for (size_t i = 0; i < numReductions; ++i)
+      printf("%s\n", CMRspReductionString(reductions[i], NULL));
   }
 
   if (outputReducedElements)
@@ -148,7 +148,7 @@ CMR_ERROR matrixSeriesParallel2Sums(
 
   CMR_CALL( CMRsubmatFree(cmr, &wheelSubmatrix) );
   CMR_CALL( CMRsubmatFree(cmr, &reducedSubmatrix) );
-  CMR_CALL( CMRfreeBlockArray(cmr, &operations) );
+  CMR_CALL( CMRfreeBlockArray(cmr, &reductions) );
   CMR_CALL( CMRchrmatFree(cmr, &matrix) );
   CMR_CALL( CMRfreeEnvironment(&cmr) );
 

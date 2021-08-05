@@ -30,7 +30,7 @@ typedef struct
 {
   CMR_ELEMENT element; /**< Element (row/column) that is removed. */
   CMR_ELEMENT mate;    /**< Element is parallel to or in series with \ref element, or 0 for a zero row/column. */
-} CMR_SP_OPERATION;
+} CMR_SP_REDUCTION;
 
 /**
  * \brief Initializes all statistics for series-parallel computations.
@@ -47,8 +47,8 @@ CMR_ERROR CMRspInitStatistics(
 
 CMR_EXPORT
 CMR_ERROR CMRspPrintStatistics(
-  FILE* stream,           /**< File stream to print to. */
-  CMR_SP_STATISTICS* stats /**< Pointer to statistics. */
+  FILE* stream,             /**< File stream to print to. */
+  CMR_SP_STATISTICS* stats  /**< Pointer to statistics. */
 );
 
 /**
@@ -56,12 +56,12 @@ CMR_ERROR CMRspPrintStatistics(
  */
 
 CMR_EXPORT
-char* CMRspOperationString(
-  CMR_SP_OPERATION operation,  /**< Series-parallel operation. */
-  char* buffer      /**< Buffer to write to.
-                      * If \c NULL, a static one is used which will be overwritten in the next call.
-                      * Otherwise, it must hold at least 51 bytes.
-                      **/
+char* CMRspReductionString(
+  CMR_SP_REDUCTION reduction, /**< Series-parallel reduction. */
+  char* buffer                /**< Buffer to write to.
+                               **  If \c NULL, a static one is used which will be overwritten in the next call.
+                               **  Otherwise, it must hold at least 51 bytes.
+                               **/
 );
 
 /**
@@ -70,7 +70,7 @@ char* CMRspOperationString(
 
 static inline
 bool CMRspIsRow(
-  CMR_SP_OPERATION operation /**< Series-parallel operation. */
+  CMR_SP_REDUCTION operation /**< Series-parallel operation. */
 )
 {
   return operation.element < 0;
@@ -82,7 +82,7 @@ bool CMRspIsRow(
 
 static inline
 bool CMRspIsColumn(
-  CMR_SP_OPERATION operation /**< Series-parallel operation. */
+  CMR_SP_REDUCTION operation /**< Series-parallel operation. */
 )
 {
   return operation.element > 0;
@@ -94,7 +94,7 @@ bool CMRspIsColumn(
 
 static inline
 bool CMRspIsZero(
-  CMR_SP_OPERATION operation /**< Series-parallel operation. */
+  CMR_SP_REDUCTION operation /**< Series-parallel operation. */
 )
 {
   return operation.mate == 0;
@@ -106,7 +106,7 @@ bool CMRspIsZero(
 
 static inline
 bool CMRspIsUnit(
-  CMR_SP_OPERATION operation /**< Series-parallel operation. */
+  CMR_SP_REDUCTION operation /**< Series-parallel operation. */
 )
 {
   return operation.element * operation.mate < 0;
@@ -118,7 +118,7 @@ bool CMRspIsUnit(
 
 static inline
 bool CMRspIsCopy(
-  CMR_SP_OPERATION operation /**< Series-parallel operation. */
+  CMR_SP_REDUCTION operation /**< Series-parallel operation. */
 )
 {
   return operation.element * operation.mate > 0;
@@ -130,44 +130,99 @@ bool CMRspIsCopy(
 
 static inline
 bool CMRspIsValid(
-  CMR_SP_OPERATION operation /**< Series-parallel operation. */
+  CMR_SP_REDUCTION operation /**< Series-parallel operation. */
 )
 {
   return operation.element != 0;
 }
 
 /**
+ * \brief Finds all series-parallel reductions for the binary \p matrix.
+ *
+ * If \p premainingSubmatrix is not \c NULL, then the SP-reduced submatrix is stored.
+ *
+ * If \p pviolatorSubmatrix is not \c NULL and \p matrix is not binary series-parallel, then a wheel-submatrix is
+ * stored. This may cause overhead that is linear in the number of rows + number of columns + number of nonzeros of
+ * \p matrix.
+ *
+ * If \p isSorted is \c true, then the running time is linear in the number of rows + number of columns + number of
+ * nonzeros of \p matrix assuming no hashtable collisions. Otherwise, extra overhead is caused by sorting all nonzeros.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRtestBinarySeriesParallel(
+  CMR* cmr,                         /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,               /**< Sparse char matrix. */
+  bool isSorted,                    /**< Whether the entries of \p matrix are sorted. */
+  bool* pisSeriesParallel,          /**< Pointer for storing the result. */
+  CMR_SP_REDUCTION* reductions,     /**< Array for storing the SP-reductions. If not \c NULL, it must have
+                                     **< capacity at least number of rows + number of columns. */
+  size_t* pnumOperations,           /**< Pointer for storing the number of SP-reductions. */
+  CMR_SUBMAT** preducedSubmatrix,   /**< Pointer for storing the SP-reduced submatrix (may be \c NULL). */
+  CMR_SUBMAT** pviolatorSubmatrix,  /**< Pointer for storing a wheel-submatrix (may be \c NULL). */
+  CMR_SP_STATISTICS* stats          /**< Pointer to statistics (may be \c NULL). */
+);
+
+/**
  * \brief Finds all series-parallel reductions for the ternary \p matrix.
  *
  * If \p premainingSubmatrix is not \c NULL, then the SP-reduced submatrix is stored.
  *
- * If \p pwheelSubmatrix is not \c NULL and \p matrix is not series-parallel, then a wheel submatrix is stored.
- * This may cause overhead that is linear in the number of rows + number of columns + number
- *
- * If \p separationRank1Elements is not \c NULL, also \p pnumSeparationRank1Elements and \p pwheelSubmatrix must not be
- * \c NULL. If during the search for the wheel submatrix a 2-separation (not belonging to a series-parallel reduction)
- * is found, then this is stored and the algorithm terminates.
+ * If \p pviolatorSubmatrix is not \c NULL and \p matrix is not ternary series-parallel, then a signed wheel- or
+ * \f$ M_2 \f$-submatrix is stored. This may cause overhead that is linear in the number of rows + number of columns
+ * + number of nonzeros of \p matrix.
  *
  * If \p isSorted is \c true, then the running time is linear in the number of rows + number of columns + number of
- * nonzeros of \p matrix up to hashtable collisions.
- * Otherwise, extra overhead is caused by sorting all nonzeros.
+ * nonzeros of \p matrix assuming no hashtable collisions. Otherwise, extra overhead is caused by sorting all nonzeros.
  */
 
 CMR_EXPORT
-CMR_ERROR CMRfindSeriesParallel(
-  CMR* cmr,                               /**< \ref CMR environment. */
-  CMR_CHRMAT* matrix,                    /**< Sparse char matrix. */
-  CMR_SP_OPERATION* operations,          /**< Array for storing the SP-reductions. Must be sufficiently large, e.g., number
-                                         **< of rows + number of columns. */
+CMR_ERROR CMRtestTernarySeriesParallel(
+  CMR* cmr,                         /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,               /**< Sparse char matrix. */
+  bool isSorted,                    /**< Whether the entries of \p matrix are sorted. */
+  bool* pisSeriesParallel,          /**< Pointer for storing the result. */
+  CMR_SP_REDUCTION* reductions,     /**< Array for storing the SP-reductions. If not \c NULL, it must have
+                                     **< capacity at least number of rows + number of columns. */
+  size_t* pnumOperations,           /**< Pointer for storing the number of SP-reductions. */
+  CMR_SUBMAT** preducedSubmatrix,   /**< Pointer for storing the SP-reduced submatrix (may be \c NULL). */
+  CMR_SUBMAT** pviolatorSubmatrix,  /**< Pointer for storing a signed wheel- or \f$ M_2 \f$-submatrix (may be \c NULL). */
+  CMR_SP_STATISTICS* stats          /**< Pointer to statistics (may be \c NULL). */
+);
+
+/**
+ * \brief Finds all series-parallel reductions for the binary \p matrix.
+ *
+ * If \p premainingSubmatrix is not \c NULL, then the SP-reduced submatrix is stored.
+ *
+ * If \p pviolatorSubmatrix is not \c NULL and \p matrix is not binary series-parallel, then a wheel-submatrix is
+ * stored. This may cause overhead that is linear in the number of rows + number of columns + number of nonzeros of
+ * \p matrix.
+ *
+ * If \p separationRank1Elements is not \c NULL, then also \p pnumSeparationRank1Elements must not be \c NULL.
+ * If during the search for a wheel-submatrix a 2-separation that does not correspond to an SP reduction is found then
+ * such a 2-separation is returned and the algorithm terminates.
+ *
+ * If \p isSorted is \c true, then the running time is linear in the number of rows + number of columns + number of
+ * nonzeros of \p matrix assuming no hashtable collisions. Otherwise, extra overhead is caused by sorting all nonzeros.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRdecomposeBinarySeriesParallel(
+  CMR* cmr,                             /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,                   /**< Sparse char matrix. */
+  bool isSorted,                        /**< Whether the entries of \p matrix are sorted. */
+  bool* pisSeriesParallel,              /**< Pointer for storing the result. */
+  CMR_SP_REDUCTION* reductions,         /**< Array for storing the SP-reductions. If not \c NULL, it must have
+                                         **< capacity at least number of rows + number of columns. */
   size_t* pnumOperations,               /**< Pointer for storing the number of SP-reductions. */
-  CMR_SUBMAT** preducedSubmatrix,        /**< Pointer for storing the SP-reduced submatrix (may be \c NULL). */
-  CMR_SUBMAT** pwheelSubmatrix,          /**< Pointer for storing a submatrix representing a wheel (may be \c NULL). */
-  CMR_ELEMENT* separationRank1Elements,  /**< Array for storing elements of one part of a 2-separation. If not \c NULL,
-                                         **< it must have sufficient capacity. */
+  CMR_SUBMAT** preducedSubmatrix,       /**< Pointer for storing the SP-reduced submatrix (may be \c NULL). */
+  CMR_SUBMAT** pviolatorSubmatrix,      /**< Pointer for storing a wheel-submatrix (may be \c NULL). */
+  CMR_ELEMENT* separationRank1Elements, /**< Array for storing elements of the rank-1 part of a 2-separation. If not
+                                         **< \c NULL, it must have sufficient capacity. */
   size_t* pnumSeparationRank1Elements,  /**< Pointer for storing the number of elements stored in
                                          **< \p separationRank1Elements (may be \c NULL). */
-  bool isSorted,                        /**< Whether the entries of \p matrix are sorted. */
-  CMR_SP_STATISTICS* stats               /**< Pointer to statistics (may be \c NULL). */
+  CMR_SP_STATISTICS* stats              /**< Pointer to statistics (may be \c NULL). */
 );
 
 #ifdef __cplusplus
