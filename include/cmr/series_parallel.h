@@ -20,6 +20,8 @@ typedef struct
   double reduceTime;
   size_t wheelCount;
   double wheelTime;
+  size_t nonbinaryCount;
+  double nonbinaryTime;
 } CMR_SP_STATISTICS;
 
 /**
@@ -184,7 +186,7 @@ CMR_ERROR CMRtestTernarySeriesParallel(
   bool* pisSeriesParallel,          /**< Pointer for storing the result. */
   CMR_SP_REDUCTION* reductions,     /**< Array for storing the SP-reductions. If not \c NULL, it must have
                                      **< capacity at least number of rows + number of columns. */
-  size_t* pnumOperations,           /**< Pointer for storing the number of SP-reductions. */
+  size_t* pnumReductions,           /**< Pointer for storing the number of SP-reductions. */
   CMR_SUBMAT** preducedSubmatrix,   /**< Pointer for storing the SP-reduced submatrix (may be \c NULL). */
   CMR_SUBMAT** pviolatorSubmatrix,  /**< Pointer for storing a signed wheel- or \f$ M_2 \f$-submatrix (may be \c NULL). */
   CMR_SP_STATISTICS* stats          /**< Pointer to statistics (may be \c NULL). */

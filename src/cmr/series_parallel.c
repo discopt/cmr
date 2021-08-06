@@ -1,5 +1,4 @@
 // #define CMR_DEBUG /* Uncomment to debug this file. */
-// #define CMR_DEBUG_MATRIX_LIST /* Uncomment to print linked list of matrix in each iteration. */
 
 // TODO: Try to not fill the hashtable in initialScan but just add all elements to the queue.
 
@@ -57,6 +56,8 @@ CMR_ERROR CMRspInitStatistics(CMR_SP_STATISTICS* stats)
   stats->totalTime = 0.0;
   stats->reduceCount = 0;
   stats->reduceTime = 0.0;
+  stats->nonbinaryCount = 0;
+  stats->nonbinaryTime = 0.0;
   stats->wheelCount = 0;
   stats->wheelTime = 0.0;
 
@@ -228,11 +229,11 @@ CMR_ERROR createHashVector(
 }
 
 /**
- * \brief Scan the matrix once to compute the number of nonzeros and the hash of each row and each column.
+ * \brief Scan the matrix to compute the number of nonzeros and the hash of each row and each column.
  */
 
 static
-CMR_ERROR initializeElementData(
+CMR_ERROR calcNonzeroCountHashFromMatrix(
   CMR* cmr,                   /**< \ref CMR environment. */
   CMR_CHRMAT* matrix,         /**< Matrix. */
   ElementData* rowData,       /**< Row element data. */
@@ -271,11 +272,52 @@ CMR_ERROR initializeElementData(
 }
 
 /**
+ * \brief Scan the matrix to compute the number of nonzeros and the hash of each row and each column.
+ */
+
+static
+CMR_ERROR calcBinaryHashFromListMatrix(
+  CMR* cmr,                   /**< \ref CMR environment. */
+  ListNonzero* anchor,        /**< Anchor of list representation. */
+  ElementData* rowData,       /**< Row element data. */
+  ElementData* columnData,    /**< Row element data. */
+  long long* hashVector       /**< Hash vector. */
+)
+{
+  assert(cmr);
+  assert(anchor);
+  assert(rowData);
+  assert(columnData);
+
+  /* Reset hash values. */
+  for (ListNonzero* rowHead = anchor->below; rowHead != anchor; rowHead = rowHead->below)
+    rowData[rowHead->row].hashValue = 0;
+  for (ListNonzero* columnHead = anchor->right; columnHead != anchor; columnHead = columnHead->right)
+    columnData[columnHead->column].hashValue = 0;
+
+  for (ListNonzero* rowHead = anchor->below; rowHead != anchor; rowHead = rowHead->below)
+  {
+    for (ListNonzero* nz = rowHead->right; nz != rowHead; nz = nz->right)
+    {
+      /* Update row data. */
+      long long newHash = projectSignedHash(rowData[nz->row].hashValue + hashVector[nz->column]);
+      rowData[nz->row].hashValue  = newHash;
+
+      /* Update column data. */
+      newHash = projectSignedHash(columnData[nz->column].hashValue + hashVector[nz->row]);
+      columnData[nz->column].hashValue = newHash;
+    }
+  }
+
+  return CMR_OKAY;
+}
+
+/**
  * \brief Scans the matrix initially in order to add all rows or columns either to the queue or to the hashtable.
  */
 
 static
-CMR_ERROR initialScan(
+CMR_ERROR initializeQueueHashtableFromMatrix(
   CMR* cmr,                       /**< \ref CMR environment. */
   CMR_LISTHASHTABLE* hashtable,  /**< Row or column hashtable. */
   ElementData* data,            /**< Row or column data array. */
@@ -309,6 +351,52 @@ CMR_ERROR initialScan(
     data[i].hashEntry = SIZE_MAX;
     data[i].inQueue = true;
     (*pqueueEnd)++;
+  }
+
+  return CMR_OKAY;
+}
+
+/**
+ * \brief Adds all rows or columns of the list representation of the matrix either to the queue or to the hashtable.
+ */
+
+static
+CMR_ERROR initializeQueueHashtableFromListMatrix(
+  CMR* cmr,                     /**< \ref CMR environment. */
+  CMR_LISTHASHTABLE* hashtable, /**< Row or column hashtable. */
+  ListNonzero* anchor,          /**< Anchor of list matrix representation. */
+  ElementData* data,            /**< Row or column data array. */
+  CMR_ELEMENT* queue,           /**< Queue. */
+  size_t* pqueueEnd,            /**< Pointer to end of queue. */
+  bool isRow                    /**< Whether we are deadling with rows. */
+)
+{
+  assert(cmr);
+
+  CMRdbgMsg(2, "Initializing queue and hashtable from list representation. Inspecting %s.\n",
+    isRow ? "rows" : "columns");
+
+  for (ListNonzero* head = isRow ? anchor->below : anchor->right; head != anchor;
+    head = (isRow ? head->below : head->right))
+  {
+    size_t i = isRow ? head->row : head->column;
+    CMRdbgMsg(4, "%s %d has %d nonzeros.\n", isRow ? "Row" : "Column", i, data[i].numNonzeros);
+
+    /* Check if it qualifies for addition to the hashtable. */
+    assert(data[i].numNonzeros > 1);
+
+    CMR_LISTHASHTABLE_ENTRY entry = CMRlisthashtableFindFirst(hashtable, llabs(data[i].hashValue));
+    CMRdbgMsg(6, "Search for hash %ld of %s %d yields entry %d.\n", data[i].hashValue, isRow ? "row" : "column", i, entry);
+    if (entry == SIZE_MAX)
+      CMR_CALL( CMRlisthashtableInsert(cmr, hashtable, llabs(data[i].hashValue), i, &data[i].hashEntry) );
+    else
+    {
+      /* If it was not added to the hashtable, we add it to the queue. */
+      queue[*pqueueEnd] = isRow ? CMRrowToElement(i) : CMRcolumnToElement(i);
+      data[i].hashEntry = SIZE_MAX;
+      data[i].inQueue = true;
+      (*pqueueEnd)++;
+    }
   }
 
   return CMR_OKAY;
@@ -456,9 +544,10 @@ CMR_ERROR initializeListMatrix(
 static
 size_t findCopy(
   ElementData* data,            /**< Row/column data. */
-  CMR_LISTHASHTABLE* hashtable,  /**< Row/column hashtable. */
+  CMR_LISTHASHTABLE* hashtable, /**< Row/column hashtable. */
   size_t index,                 /**< Index in \p data. */
-  bool isRow                    /**< Whether we are dealing with rows. */
+  bool isRow,                   /**< Whether we are dealing with rows. */
+  bool support                  /**< Whether only the support of the vector matters. */
 )
 {
   CMR_LISTHASHTABLE_HASH hash = llabs(data[index].hashValue);
@@ -475,12 +564,13 @@ size_t findCopy(
     {
       ListNonzero* nz1 = data[index].nonzeros.right;
       ListNonzero* nz2 = data[collisionIndex].nonzeros.right;
-      while (equal || negated)
+      while (equal || negated || support)
       {
         if (nz1->column != nz2->column)
         {
           equal = false;
           negated = false;
+          support = false;
           break;
         }
         if (nz1->column == SIZE_MAX)
@@ -497,12 +587,13 @@ size_t findCopy(
     {
       ListNonzero* nz1 = data[index].nonzeros.below;
       ListNonzero* nz2 = data[collisionIndex].nonzeros.below;
-      while (equal || negated)
+      while (equal || negated || support)
       {
         if (nz1->row != nz2->row)
         {
           equal = false;
           negated = false;
+          support = false;
           break;
         }
         if (nz1->row == SIZE_MAX)
@@ -516,7 +607,7 @@ size_t findCopy(
       }
     }
 
-    if (equal || negated)
+    if (equal || negated || support)
       return collisionIndex;
   }
 
@@ -595,19 +686,6 @@ CMR_ERROR reduceListMatrix(
 {
   while (*pqueueEnd > *pqueueStart)
   {
-#if defined(CMR_DEBUG_MATRIX_LIST)
-    CMRdbgMsg(0, "Row-wise matrix via list:\n");
-    for (size_t row = 0; row < matrix->numRows; ++row)
-    {
-      for (Nonzero* nz = rowData[row].nonzeros.right; nz != &rowData[row].nonzeros; nz = nz->right)
-      {
-        CMRdbgMsg(2, "Nonzero at (%d,%d); left is (%d,%d), right is (%d,%d), above is (%d,%d), below is (%d,%d)\n",
-          nz->row, nz->column, nz->left->row, nz->left->column, nz->right->row, nz->right->column, nz->above->row,
-          nz->above->column, nz->below->row, nz->below->column);
-      }
-    }
-#endif /* CMR_DEBUG_MATRIX_LIST */
-
 #if defined(CMR_DEBUG)
     CMRdbgMsg(0, "\n");
     if (anchor)
@@ -616,7 +694,7 @@ CMR_ERROR reduceListMatrix(
       for (ListNonzero* nz = anchor->below; nz != anchor; nz = nz->below)
       {
         size_t row = nz->row;
-        CMRdbgMsg(6, "Row %d: %d nonzeros, hashed = %s, hash = %ld", row, rowData[row].numNonzeros,
+        CMRdbgMsg(6, "Row r%d: %d nonzeros, hashed = %s, hash = %ld", row+1, rowData[row].numNonzeros,
           rowData[row].hashEntry == SIZE_MAX ? "NO" : "YES", rowData[row].hashValue);
         if (rowData[row].hashEntry != SIZE_MAX)
         {
@@ -629,7 +707,7 @@ CMR_ERROR reduceListMatrix(
       for (ListNonzero* nz = anchor->right; nz != anchor; nz = nz->right)
       {
         size_t column = nz->column;
-        CMRdbgMsg(6, "Column %d: %d nonzeros, hashed = %s, hash = %ld", column, columnData[column].numNonzeros,
+        CMRdbgMsg(6, "Column c%d: %d nonzeros, hashed = %s, hash = %ld", column+1, columnData[column].numNonzeros,
           columnData[column].hashEntry == SIZE_MAX ? "NO" : "YES", columnData[column].hashValue);
         if (columnData[column].hashEntry != SIZE_MAX)
         {
@@ -665,7 +743,7 @@ CMR_ERROR reduceListMatrix(
       if (rowData[row1].numNonzeros > 1)
       {
         rowData[row1].inQueue = false;
-        size_t row2 = findCopy(rowData, rowHashtable, row1, true);
+        size_t row2 = findCopy(rowData, rowHashtable, row1, true, false);
 
         if (row2 == SIZE_MAX)
         {
@@ -742,7 +820,7 @@ CMR_ERROR reduceListMatrix(
       if (columnData[column1].numNonzeros > 1)
       {
         columnData[column1].inQueue = false;
-        size_t column2 = findCopy(columnData, columnHashtable, column1, false);
+        size_t column2 = findCopy(columnData, columnHashtable, column1, false, false);
 
         if (column2 == SIZE_MAX)
         {
@@ -810,6 +888,192 @@ CMR_ERROR reduceListMatrix(
           columnData[column1].nonzeros.left->right = columnData[column1].nonzeros.right;
           columnData[column1].nonzeros.right->left = columnData[column1].nonzeros.left;
         }
+      }
+    }
+  }
+
+  return CMR_OKAY;
+}
+
+
+/**
+ * \brief Try to find an \f$ M_2 \f$-submatrix for a ternary SP-reduced matrix in list representation.
+ */
+
+static
+CMR_ERROR extractNonbinarySubmatrix(
+  CMR* cmr,                           /**< \ref CMR environment. */
+  ListNonzero* anchor,                /**< Anchor nonzero. */
+  ElementData* rowData,               /**< Row data. */
+  ElementData* columnData,            /**< Column data. */
+  CMR_LISTHASHTABLE* rowHashtable,    /**< Row hashtable. */
+  CMR_LISTHASHTABLE* columnHashtable, /**< Column hashtable. */
+  long long* entryToHash,             /**< Pre-computed hash values of vector entries. */
+  CMR_ELEMENT* queue,                 /**< Queue. */
+  size_t* pqueueStart,                /**< Pointer to start of queue. */
+  size_t* pqueueEnd,                  /**< Pointer to end of queue. */
+  size_t queueMemory,                 /**< Memory allocated for queue. */
+  CMR_SUBMAT** pviolatorSubmatrix     /**< Pointer for storing the submatrix if an \f$ M_2 \f$-submatrix is found. */
+)
+{
+  assert(cmr);
+  assert(anchor);
+  assert(rowData);
+  assert(columnData);
+  assert(rowHashtable);
+  assert(columnHashtable);
+  assert(entryToHash);
+  assert(queue);
+  assert(pviolatorSubmatrix);
+
+  CMRdbgMsg(2, "Searching for M_2-submatrix.\n");
+
+  *pviolatorSubmatrix = NULL;
+  while (*pqueueEnd > *pqueueStart)
+  {
+#if defined(CMR_DEBUG)
+    CMRdbgMsg(0, "\n");
+    if (anchor)
+    {
+      CMRdbgMsg(4, "Status:\n");
+      for (ListNonzero* nz = anchor->below; nz != anchor; nz = nz->below)
+      {
+        size_t row = nz->row;
+        CMRdbgMsg(6, "Row r%d: %d nonzeros, hashed = %s, hash = %ld", row+1, rowData[row].numNonzeros,
+          rowData[row].hashEntry == SIZE_MAX ? "NO" : "YES", rowData[row].hashValue);
+        if (rowData[row].hashEntry != SIZE_MAX)
+        {
+          CMRdbgMsg(0, ", hashtable entry: %d with hash=%d, value=%d", rowData[row].hashEntry,
+            CMRlisthashtableHash(rowHashtable, rowData[row].hashEntry),
+            CMRlisthashtableValue(rowHashtable, rowData[row].hashEntry));
+        }
+        CMRdbgMsg(0, "\n");
+      }
+      for (ListNonzero* nz = anchor->right; nz != anchor; nz = nz->right)
+      {
+        size_t column = nz->column;
+        CMRdbgMsg(6, "Column c%d: %d nonzeros, hashed = %s, hash = %ld", column+1, columnData[column].numNonzeros,
+          columnData[column].hashEntry == SIZE_MAX ? "NO" : "YES", columnData[column].hashValue);
+        if (columnData[column].hashEntry != SIZE_MAX)
+        {
+          CMRdbgMsg(0, ", hashtable entry: %d with hash=%d, value=%d", columnData[column].hashEntry,
+            CMRlisthashtableHash(columnHashtable, columnData[column].hashEntry),
+            CMRlisthashtableValue(columnHashtable, columnData[column].hashEntry));
+        }
+        CMRdbgMsg(0, "\n");
+      }
+    }
+    for (size_t q = *pqueueStart; q < *pqueueEnd; ++q)
+    {
+      CMR_ELEMENT e = queue[q % queueMemory];
+      CMRdbgMsg(6, "Queue #%d @ %d: %s\n", q, q % queueMemory, CMRelementString(e, NULL));
+    }
+    CMRdbgMsg(0, "\n");
+#endif /* CMR_DEBUG */
+
+    CMR_ELEMENT element = queue[(*pqueueStart) % queueMemory];
+    ++(*pqueueStart);
+
+    CMRdbgMsg(2, "Top element is %s %d with %d nonzeros.\n", CMRelementIsRow(element) ? "row" : "column",
+      CMRelementIsRow(element) ? CMRelementToRowIndex(element) : CMRelementToColumnIndex(element),
+      CMRelementIsRow(element) ? rowData[CMRelementToRowIndex(element)].numNonzeros :
+      columnData[CMRelementToColumnIndex(element)].numNonzeros);
+
+    if (CMRelementIsRow(element))
+    {
+      /* We consider a row. */
+
+      size_t row1 = CMRelementToRowIndex(element);
+      assert(rowData[row1].numNonzeros > 1);
+      rowData[row1].inQueue = false;
+      size_t row2 = findCopy(rowData, rowHashtable, row1, true, true);
+
+      if (row2 == SIZE_MAX)
+      {
+        CMRdbgMsg(6, "No parallel row found. Inserting row %d.\n", row1);
+        CMR_CALL( CMRlisthashtableInsert(cmr, rowHashtable, llabs(rowData[row1].hashValue), row1, &rowData[row1].hashEntry) );
+      }
+      else
+      {
+        CMRdbgMsg(6, "Row %d is parallel.\n", row2);
+
+        /* We found a row copy. */
+        size_t column1 = SIZE_MAX;
+        size_t column2 = SIZE_MAX;
+        ListNonzero* nz1 = rowData[row1].nonzeros.right;
+        ListNonzero* nz2 = rowData[row2].nonzeros.right;
+        while (column1 == SIZE_MAX || column2 == SIZE_MAX)
+        {
+          if (nz1->value == nz2->value)
+          {
+            if (column1 == SIZE_MAX)
+              column1 = nz1->column;
+          }
+          else
+          {
+            if (column2 == SIZE_MAX)
+              column2 = nz1->column;
+          }
+          nz1 = nz1->right;
+          nz2 = nz2->right;
+        }
+
+        CMR_CALL( CMRsubmatCreate(cmr, 2, 2, pviolatorSubmatrix) );
+        CMR_SUBMAT* violatorSubmatrix = *pviolatorSubmatrix;
+        violatorSubmatrix->rows[0] = row1;
+        violatorSubmatrix->rows[1] = row2;
+        violatorSubmatrix->columns[0] = column1;
+        violatorSubmatrix->columns[1] = column2;
+        break;
+      }
+    }
+    else
+    {
+      /* We consider a column. */
+
+      size_t column1 = CMRelementToColumnIndex(element);
+      assert(columnData[column1].numNonzeros > 1);
+      columnData[column1].inQueue = false;
+      size_t column2 = findCopy(columnData, columnHashtable, column1, false, true);
+
+      if (column2 == SIZE_MAX)
+      {
+        CMRdbgMsg(6, "No parallel column found. Inserting column %d.\n", column1);
+        CMR_CALL( CMRlisthashtableInsert(cmr, columnHashtable, llabs(columnData[column1].hashValue), column1,
+          &columnData[column1].hashEntry) );
+      }
+      else
+      {
+        CMRdbgMsg(6, "Column %d is parallel.\n", column2);
+
+        /* We found a column copy. */
+        size_t row1 = SIZE_MAX;
+        size_t row2 = SIZE_MAX;
+        ListNonzero* nz1 = columnData[column1].nonzeros.below;
+        ListNonzero* nz2 = columnData[column2].nonzeros.below;
+        while (row1 == SIZE_MAX || row2 == SIZE_MAX)
+        {
+          if (nz1->value == nz2->value)
+          {
+            if (row1 == SIZE_MAX)
+              row1 = nz1->row;
+          }
+          else
+          {
+            if (row2 == SIZE_MAX)
+              row2 = nz1->row;
+          }
+          nz1 = nz1->below;
+          nz2 = nz2->below;
+        }
+
+        CMR_CALL( CMRsubmatCreate(cmr, 2, 2, pviolatorSubmatrix) );
+        CMR_SUBMAT* violatorSubmatrix = *pviolatorSubmatrix;
+        violatorSubmatrix->rows[0] = row1;
+        violatorSubmatrix->rows[1] = row2;
+        violatorSubmatrix->columns[0] = column1;
+        violatorSubmatrix->columns[1] = column2;
+        break;
       }
     }
   }
@@ -1141,7 +1405,7 @@ CMR_ERROR extractWheelSubmatrix(
     size_t row1 = sourceRow;
     size_t row2 = columnData[targetColumn].predecessor;
     CMRdbgMsg(4, "Growing the 2x2 submatrix with 1's is at r%d, r%d, c%d, c%d.\n", row1+1, row2+1,
-      targetColumn+1, rowData[row2+1].predecessor+1);
+      targetColumn+1, rowData[row2].predecessor+1);
 
     t = clock();
 
@@ -1394,9 +1658,9 @@ CMR_ERROR decomposeBinarySeriesParallel(
   CMR* cmr,                             /**< \ref CMR environment. */
   CMR_CHRMAT* matrix,                   /**< Sparse char matrix. */
   bool isSorted,                        /**< Whether the entries of \p matrix are sorted. */
-  CMR_SP_REDUCTION* operations,         /**< Array for storing the SP-reductions. Must have capacity at least number of
+  CMR_SP_REDUCTION* reductions,         /**< Array for storing the SP-reductions. Must have capacity at least number of
                                          **< rows + number of columns. */
-  size_t* pnumOperations,               /**< Pointer for storing the number of SP-reductions. */
+  size_t* pnumReductions,               /**< Pointer for storing the number of SP-reductions. */
   CMR_SUBMAT** preducedSubmatrix,       /**< Pointer for storing the SP-reduced submatrix (may be \c NULL). */
   CMR_SUBMAT** pviolatorSubmatrix,      /**< Pointer for storing a wheel-submatrix (may be \c NULL). */
   CMR_ELEMENT* separationRank1Elements, /**< Array for storing elements of the rank-1 part of a 2-separation. If not
@@ -1408,7 +1672,7 @@ CMR_ERROR decomposeBinarySeriesParallel(
 {
   assert(cmr);
   assert(matrix);
-  assert(operations && pnumOperations);
+  assert(reductions && pnumReductions);
   assert(separationRank1Elements || !pnumSeparationRank1Elements);
   assert(!separationRank1Elements || pnumSeparationRank1Elements);
 
@@ -1436,7 +1700,7 @@ CMR_ERROR decomposeBinarySeriesParallel(
     matrix->numRows > matrix->numColumns ? matrix->numRows : matrix->numColumns) );
 
   /* Scan the matrix to initialize the element data. */
-  CMR_CALL( initializeElementData(cmr, matrix, rowData, columnData, hashVector) );
+  CMR_CALL( calcNonzeroCountHashFromMatrix(cmr, matrix, rowData, columnData, hashVector) );
 
   /* Initialize the queue. */
   CMR_ELEMENT* queue = NULL;
@@ -1450,16 +1714,16 @@ CMR_ERROR decomposeBinarySeriesParallel(
   if (numRows > 0)
   {
     CMR_CALL( CMRlisthashtableCreate(cmr, &rowHashtable, nextPower2(numRows), numRows) );
-    CMR_CALL( initialScan(cmr, rowHashtable, rowData, numRows, queue, &queueEnd, true) );
+    CMR_CALL( initializeQueueHashtableFromMatrix(cmr, rowHashtable, rowData, numRows, queue, &queueEnd, true) );
   }
   CMR_LISTHASHTABLE* columnHashtable = NULL;
   if (numColumns > 0)
   {
     CMR_CALL( CMRlisthashtableCreate(cmr, &columnHashtable, nextPower2(numColumns), numColumns) );
-    CMR_CALL( initialScan(cmr, columnHashtable, columnData, numColumns, queue, &queueEnd, false) );
+    CMR_CALL( initializeQueueHashtableFromMatrix(cmr, columnHashtable, columnData, numColumns, queue, &queueEnd, false) );
   }
 
-  *pnumOperations = 0;
+  *pnumReductions = 0;
   if (queueEnd > queueStart || (pviolatorSubmatrix && (numRows + numColumns > 0)))
   {
     /* Create nonzeros of matrix. */
@@ -1477,7 +1741,7 @@ CMR_ERROR decomposeBinarySeriesParallel(
     size_t numRowReductions = 0;
     size_t numColumnReductions = 0;
     CMR_CALL( reduceListMatrix(cmr, anchor, rowData, columnData, rowHashtable, columnHashtable, hashVector, queue,
-      &queueStart, &queueEnd, queueMemory, operations, pnumOperations, &numRowReductions, &numColumnReductions) );
+      &queueStart, &queueEnd, queueMemory, reductions, pnumReductions, &numRowReductions, &numColumnReductions) );
 
     if (stats)
     {
@@ -1492,7 +1756,7 @@ CMR_ERROR decomposeBinarySeriesParallel(
         preducedSubmatrix) );
     }
 
-    if (pviolatorSubmatrix && (*pnumOperations != (matrix->numRows + matrix->numColumns)))
+    if (pviolatorSubmatrix && (*pnumReductions != (matrix->numRows + matrix->numColumns)))
     {
       clock_t wheelClock = 0;
       if (stats)
@@ -1562,17 +1826,6 @@ CMR_ERROR CMRtestBinarySeriesParallel(CMR* cmr, CMR_CHRMAT* matrix, bool isSorte
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRtestTernarySeriesParallel(CMR* cmr, CMR_CHRMAT* matrix, bool isSorted, bool* pisSeriesParallel,
-  CMR_SP_REDUCTION* operations, size_t* pnumOperations, CMR_SUBMAT** preducedSubmatrix, CMR_SUBMAT** pviolatorSubmatrix,
-  CMR_SP_STATISTICS* stats)
-{
-  assert(cmr);
-  assert(matrix);
-  assert(operations || !pnumOperations);
-  assert(!operations || pnumOperations);
-
-  return CMR_OKAY;
-}
 
 CMR_ERROR CMRdecomposeBinarySeriesParallel(CMR* cmr, CMR_CHRMAT* matrix, bool isSorted, bool* pisSeriesParallel,
   CMR_SP_REDUCTION* reductions, size_t* pnumReductions, CMR_SUBMAT** preducedSubmatrix, CMR_SUBMAT** pviolatorSubmatrix,
@@ -1604,4 +1857,201 @@ CMR_ERROR CMRdecomposeBinarySeriesParallel(CMR* cmr, CMR_CHRMAT* matrix, bool is
   return CMR_OKAY;
 }
 
+static
+CMR_ERROR decomposeTernarySeriesParallel(
+  CMR* cmr,                             /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,                   /**< Sparse char matrix. */
+  bool isSorted,                        /**< Whether the entries of \p matrix are sorted. */
+  CMR_SP_REDUCTION* reductions,         /**< Array for storing the SP-reductions. Must have capacity at least number of
+                                         **< rows + number of columns. */
+  size_t* pnumReductions,               /**< Pointer for storing the number of SP-reductions. */
+  CMR_SUBMAT** preducedSubmatrix,       /**< Pointer for storing the SP-reduced submatrix (may be \c NULL). */
+  CMR_SUBMAT** pviolatorSubmatrix,      /**< Pointer for storing a wheel-submatrix (may be \c NULL). */
+  CMR_SP_STATISTICS* stats              /**< Pointer to statistics (may be \c NULL). */
+)
+{
+  assert(cmr);
+  assert(matrix);
+  assert(reductions && pnumReductions);
 
+  CMRdbgMsg(0, "decomposeTernarySeriesParallel for a %dx%d matrix with %d nonzeros.\n", matrix->numRows,
+    matrix->numColumns, matrix->numNonzeros);
+
+  clock_t totalClock = 0;
+  clock_t reduceClock = 0;
+  if (stats)
+  {
+    reduceClock = clock();
+    totalClock = clock();
+  }
+
+  size_t numRows = matrix->numRows;
+  size_t numColumns = matrix->numColumns;
+
+  /* Initialize element data and hash vector. */
+  ElementData* rowData = NULL;
+  CMR_CALL( createElementData(cmr, &rowData, matrix->numRows) );
+  ElementData* columnData = NULL;
+  CMR_CALL( createElementData(cmr, &columnData, matrix->numColumns) );
+  long long* hashVector = NULL;
+  CMR_CALL( createHashVector(cmr, &hashVector,
+    matrix->numRows > matrix->numColumns ? matrix->numRows : matrix->numColumns) );
+
+  /* Scan the matrix to initialize the element data. */
+  CMR_CALL( calcNonzeroCountHashFromMatrix(cmr, matrix, rowData, columnData, hashVector) );
+
+  /* Initialize the queue. */
+  CMR_ELEMENT* queue = NULL;
+  size_t queueStart = 0;
+  size_t queueEnd = 0;
+  size_t queueMemory = numRows + numColumns;
+  CMR_CALL( CMRallocStackArray(cmr, &queue, queueMemory) );
+
+  /* Initialize the hashtables. */
+  CMR_LISTHASHTABLE* rowHashtable = NULL;
+  if (numRows > 0)
+  {
+    CMR_CALL( CMRlisthashtableCreate(cmr, &rowHashtable, nextPower2(numRows), numRows) );
+    CMR_CALL( initializeQueueHashtableFromMatrix(cmr, rowHashtable, rowData, numRows, queue, &queueEnd, true) );
+  }
+  CMR_LISTHASHTABLE* columnHashtable = NULL;
+  if (numColumns > 0)
+  {
+    CMR_CALL( CMRlisthashtableCreate(cmr, &columnHashtable, nextPower2(numColumns), numColumns) );
+    CMR_CALL( initializeQueueHashtableFromMatrix(cmr, columnHashtable, columnData, numColumns, queue, &queueEnd, false) );
+  }
+
+  *pnumReductions = 0;
+  if (queueEnd > queueStart || (pviolatorSubmatrix && (numRows + numColumns > 0)))
+  {
+    /* Create nonzeros of matrix. */
+    ListNonzero* nonzeros = NULL;
+    CMR_CALL( CMRallocStackArray(cmr, &nonzeros, matrix->numNonzeros) );
+
+    /* Dummy in linked lists for row/column data. */
+    ListNonzero the_anchor;
+    the_anchor.row = SIZE_MAX;
+    the_anchor.column = SIZE_MAX;
+    ListNonzero* anchor = pviolatorSubmatrix ? &the_anchor : NULL;
+    CMR_CALL( initializeListMatrix(cmr, matrix, anchor, nonzeros, rowData, columnData, isSorted) );
+
+    /* We now start main loop. */
+    size_t numRowReductions = 0;
+    size_t numColumnReductions = 0;
+    CMR_CALL( reduceListMatrix(cmr, anchor, rowData, columnData, rowHashtable, columnHashtable, hashVector, queue,
+      &queueStart, &queueEnd, queueMemory, reductions, pnumReductions, &numRowReductions, &numColumnReductions) );
+
+    if (stats)
+    {
+      stats->reduceCount++;
+      stats->reduceTime += (clock() - reduceClock) * 1.0 / CLOCKS_PER_SEC;
+    }
+
+    /* Extract remaining submatrix. */
+    if (preducedSubmatrix)
+    {
+      CMR_CALL( extractRemainingSubmatrix(cmr, matrix, numRowReductions, numColumnReductions, rowData, columnData,
+        preducedSubmatrix) );
+    }
+
+    if (pviolatorSubmatrix && (*pnumReductions != (matrix->numRows + matrix->numColumns)))
+    {
+      clock_t nonbinaryClock = 0;
+      if (stats)
+        nonbinaryClock = clock();
+
+      CMR_CALL( calcBinaryHashFromListMatrix(cmr, anchor, rowData, columnData, hashVector) );
+
+      queueStart = 0;
+      queueEnd = 0;
+      CMR_CALL( CMRlisthashtableFree(cmr, &rowHashtable) );
+      CMR_CALL( CMRlisthashtableCreate(cmr, &rowHashtable, nextPower2(numRows), numRows) );
+      CMR_CALL( initializeQueueHashtableFromListMatrix(cmr, rowHashtable, anchor, rowData, queue, &queueEnd, true) );
+
+      CMR_CALL( CMRlisthashtableFree(cmr, &columnHashtable) );
+      CMR_CALL( CMRlisthashtableCreate(cmr, &columnHashtable, nextPower2(numColumns), numColumns) );
+      CMR_CALL( initializeQueueHashtableFromListMatrix(cmr, columnHashtable, anchor, columnData, queue, &queueEnd, false) );
+
+      CMR_CALL( extractNonbinarySubmatrix(cmr, anchor, rowData, columnData, rowHashtable, columnHashtable, hashVector,
+        queue, &queueStart, &queueEnd, queueMemory, pviolatorSubmatrix) );
+
+      if (stats)
+      {
+        stats->nonbinaryCount++;
+        stats->nonbinaryTime += (clock() - nonbinaryClock) * 1.0 / CLOCKS_PER_SEC;
+      }
+
+      if (*pviolatorSubmatrix)
+      {
+        CMRdbgMsg(2, "Extracted an M_2-submatrix.\n");
+      }
+      else
+      {
+        clock_t wheelClock = 0;
+        if (stats)
+          wheelClock = clock();
+
+        CMR_CALL( extractWheelSubmatrix(cmr, matrix->numRows, matrix->numColumns, rowData, columnData, queue,
+          queueMemory, anchor, pviolatorSubmatrix, NULL, NULL) );
+
+        if (stats)
+        {
+          stats->wheelCount++;
+          stats->wheelTime += (clock() - wheelClock) * 1.0 / CLOCKS_PER_SEC;
+        }
+      }
+    }
+
+    CMR_CALL( CMRfreeStackArray(cmr, &nonzeros) );
+  }
+  else
+  {
+    CMRdbgMsg(2, "No series/parallel element found.\n");
+
+    if (preducedSubmatrix)
+      CMR_CALL( createFullRemainingMatrix(cmr, matrix, preducedSubmatrix) );
+  }
+
+  CMR_CALL( CMRlisthashtableFree(cmr, &columnHashtable) );
+  CMR_CALL( CMRlisthashtableFree(cmr, &rowHashtable) );
+
+  CMR_CALL( CMRfreeStackArray(cmr, &queue) );
+  CMR_CALL( CMRfreeStackArray(cmr, &hashVector) );
+  CMR_CALL( CMRfreeStackArray(cmr, &columnData) );
+  CMR_CALL( CMRfreeStackArray(cmr, &rowData) );
+
+  if (stats)
+  {
+    stats->totalCount++;
+    stats->totalTime += (clock() - totalClock) * 1.0 / CLOCKS_PER_SEC;
+  }
+
+  return CMR_OKAY;
+}
+
+CMR_ERROR CMRtestTernarySeriesParallel(CMR* cmr, CMR_CHRMAT* matrix, bool isSorted, bool* pisSeriesParallel,
+  CMR_SP_REDUCTION* reductions, size_t* pnumReductions, CMR_SUBMAT** preducedSubmatrix, CMR_SUBMAT** pviolatorSubmatrix,
+  CMR_SP_STATISTICS* stats)
+{
+  assert(cmr);
+  assert(matrix);
+  assert(reductions || !pnumReductions);
+  assert(!reductions || pnumReductions);
+
+  CMR_SP_REDUCTION* localReductions = NULL;
+  size_t localNumReductions = 0;
+  if (!reductions)
+    CMR_CALL( CMRallocStackArray(cmr, &localReductions, matrix->numRows + matrix->numColumns) );
+
+  CMR_CALL( decomposeTernarySeriesParallel(cmr, matrix, isSorted, reductions ? reductions : localReductions,
+    &localNumReductions, preducedSubmatrix, pviolatorSubmatrix, stats) );
+
+  if (pisSeriesParallel)
+    *pisSeriesParallel = (*pnumReductions == matrix->numRows + matrix->numColumns);
+  if (reductions)
+    *pnumReductions = localNumReductions;
+  else
+    CMR_CALL( CMRfreeStackArray(cmr, &localReductions) );
+
+  return CMR_OKAY;
+}

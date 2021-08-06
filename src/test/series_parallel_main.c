@@ -23,9 +23,8 @@ int printUsage(const char* program)
   puts("  -sp        Output the list of series-parallel reductions.");
   puts("  -r         Output the elements of the reduced matrix.");
   puts("  -R         Output the reduced matrix.");
-  puts("  -w         Output the elements of a wheel matrix if not series-parallel.");
-  puts("  -W         Output a wheel matrix if not series-parallel.");
-  puts("  -N NUM     Repeat the computation N times.");
+  puts("  -n         Output the elements of a minimal non-series-parallel submatrix.");
+  puts("  -N         Output a minimal non-series-parallel submatrix.");
   puts("Matrix formats: dense, sparse");
   puts("If FILE is `-', then the input will be read from stdin.");
   return EXIT_FAILURE;
@@ -38,8 +37,8 @@ CMR_ERROR matrixSeriesParallel2Sums(
   bool outputReductions,        /**< Whether to output the list of series-parallel reductions. */
   bool outputReducedElements,   /**< Whether to output the elements of the reduced matrix. */
   bool outputReducedMatrix,     /**< Whether to output the reduced matrix. */
-  bool outputWheelElements,     /**< Whether to output the elements of a wheel matrix if not series-parallel. */
-  bool outputWheelMatrix        /**< Whether to output a wheel matrix if not series-parallel. */
+  bool outputNonSPElements,     /**< Whether to output the elements of a non-SP submatrix if not series-parallel. */
+  bool outputNonSPMatrix        /**< Whether to output a non-SP submatrix if not series-parallel. */
 )
 {
   clock_t startClock, endTime;
@@ -69,16 +68,17 @@ CMR_ERROR matrixSeriesParallel2Sums(
   size_t numReductions = 0;
   CMR_CALL( CMRallocBlockArray(cmr, &reductions, matrix->numRows + matrix->numColumns) );
   CMR_SUBMAT* reducedSubmatrix = NULL;
-  CMR_SUBMAT* wheelSubmatrix = NULL;
+  CMR_SUBMAT* violatorSubmatrix = NULL;
 
   CMR_SP_STATISTICS stats;
   CMR_CALL( CMRspInitStatistics(&stats) );
   CMR_CALL( CMRtestTernarySeriesParallel(cmr, matrix, true, NULL, reductions, &numReductions,
     (outputReducedElements || outputReducedMatrix) ? &reducedSubmatrix : NULL,
-    (outputWheelElements || outputWheelMatrix) ? &wheelSubmatrix : NULL, &stats) );
+    (outputNonSPElements || outputNonSPMatrix) ? &violatorSubmatrix : NULL, &stats) );
 
-  fprintf(stderr, "Recognition done in %f seconds with %f for reduction and %f for wheel search. Matrix %sseries-parallel; %ld reductions can be applied.\n",
-    stats.totalTime, stats.reduceTime, stats.wheelTime,
+  fprintf(stderr, "Recognition done in %f seconds with %f for reduction, %f for non-binary search and %f for"
+    " wheel search. Matrix %sseries-parallel; %ld reductions can be applied.\n",
+    stats.totalTime, stats.reduceTime, stats.nonbinaryTime, stats.wheelTime,
     numReductions == matrix->numRows + matrix->numColumns ? "IS " : "is NOT ", numReductions);
 
   if (outputReductions)
@@ -116,37 +116,36 @@ CMR_ERROR matrixSeriesParallel2Sums(
     CMR_CALL( CMRchrmatFree(cmr, &reducedMatrix) );
   }
 
-  if (wheelSubmatrix && outputWheelElements)
+  if (violatorSubmatrix && outputNonSPElements)
   {
-    fprintf(stderr, "\nWheel submatrix of order %ld consists of these elements of the input matrix:\n",
-      wheelSubmatrix->numRows);
-    printf("%ld rows:", wheelSubmatrix->numRows);
-    for (size_t r = 0; r < wheelSubmatrix->numRows; ++r)
-      printf(" %ld", wheelSubmatrix->rows[r]+1);
-    printf("\n%ld columns: ", wheelSubmatrix->numColumns);
-    for (size_t c = 0; c < wheelSubmatrix->numColumns; ++c)
-      printf(" %ld", wheelSubmatrix->columns[c]+1);
+    fprintf(stderr, "\nMinimal non-series-parallel submatrix consists of these elements of the input matrix:\n");
+    printf("%ld rows:", violatorSubmatrix->numRows);
+    for (size_t r = 0; r < violatorSubmatrix->numRows; ++r)
+      printf(" %ld", violatorSubmatrix->rows[r]+1);
+    printf("\n%ld columns: ", violatorSubmatrix->numColumns);
+    for (size_t c = 0; c < violatorSubmatrix->numColumns; ++c)
+      printf(" %ld", violatorSubmatrix->columns[c]+1);
     printf("\n");
   }
 
-  if (wheelSubmatrix && outputWheelMatrix)
+  if (violatorSubmatrix && outputNonSPMatrix)
   {
     startClock = clock();
-    CMR_CHRMAT* wheelMatrix = NULL;
-    CMR_CALL( CMRchrmatFilterSubmat(cmr, matrix, wheelSubmatrix, &wheelMatrix) );
+    CMR_CHRMAT* violatorMatrix = NULL;
+    CMR_CALL( CMRchrmatFilterSubmat(cmr, matrix, violatorSubmatrix, &violatorMatrix) );
     endTime = clock();
-    fprintf(stderr, "\nExtracted %dx%d wheel matrix with %d nonzeros in %f seconds.\n", wheelMatrix->numRows,
-      wheelMatrix->numColumns, wheelMatrix->numNonzeros, (endTime - startClock) * 1.0 / CLOCKS_PER_SEC );
+    fprintf(stderr, "\nMinimal %dx%d non-series parallel matrix with %d nonzeros in %f seconds.\n", violatorMatrix->numRows,
+      violatorMatrix->numColumns, violatorMatrix->numNonzeros, (endTime - startClock) * 1.0 / CLOCKS_PER_SEC );
     if (outputFormat == FILEFORMAT_MATRIX_DENSE)
-      CMR_CALL( CMRchrmatPrintDense(cmr, stdout, wheelMatrix, '0', false) );
+      CMR_CALL( CMRchrmatPrintDense(cmr, stdout, violatorMatrix, '0', false) );
     else if (outputFormat == FILEFORMAT_MATRIX_SPARSE)
-      CMR_CALL( CMRchrmatPrintSparse(stdout, wheelMatrix) );
-    CMR_CALL( CMRchrmatFree(cmr, &wheelMatrix) );
+      CMR_CALL( CMRchrmatPrintSparse(stdout, violatorMatrix) );
+    CMR_CALL( CMRchrmatFree(cmr, &violatorMatrix) );
   }
   
   /* Cleanup. */
 
-  CMR_CALL( CMRsubmatFree(cmr, &wheelSubmatrix) );
+  CMR_CALL( CMRsubmatFree(cmr, &violatorSubmatrix) );
   CMR_CALL( CMRsubmatFree(cmr, &reducedSubmatrix) );
   CMR_CALL( CMRfreeBlockArray(cmr, &reductions) );
   CMR_CALL( CMRchrmatFree(cmr, &matrix) );
@@ -163,8 +162,8 @@ int main(int argc, char** argv)
   bool outputReductions = false;
   bool outputReducedElements = false;
   bool outputReducedMatrix = false;
-  bool outputWheelElements = false;
-  bool outputWheelMatrix = false;
+  bool outputNonSPElements = false;
+  bool outputNonSPMatrix = false;
   for (int a = 1; a < argc; ++a)
   {
     if (!strcmp(argv[a], "-h"))
@@ -178,10 +177,10 @@ int main(int argc, char** argv)
       outputReducedElements = true;
     else if (!strcmp(argv[a], "-R"))
       outputReducedMatrix = true;
-    else if (!strcmp(argv[a], "-w"))
-      outputWheelElements = true;
-    else if (!strcmp(argv[a], "-W"))
-      outputWheelMatrix = true;
+    else if (!strcmp(argv[a], "-n"))
+      outputNonSPElements = true;
+    else if (!strcmp(argv[a], "-N"))
+      outputNonSPMatrix = true;
     else if (!strcmp(argv[a], "-i") && a+1 < argc)
     {
       if (!strcmp(argv[a+1], "dense"))
@@ -224,7 +223,7 @@ int main(int argc, char** argv)
   }
 
   CMR_ERROR error = matrixSeriesParallel2Sums(instanceFileName, inputFormat, outputFormat, outputReductions,
-    outputReducedElements, outputReducedMatrix, outputWheelElements, outputWheelMatrix);
+    outputReducedElements, outputReducedMatrix, outputNonSPElements, outputNonSPMatrix);
   switch (error)
   {
   case CMR_ERROR_INPUT:
