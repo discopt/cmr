@@ -11,15 +11,15 @@ addons:
       - doxygen
 
 script:
-  - mkdir build
-  - cd build
+  - mkdir build-release
+  - cd build-release
   - cmake ..
   - make doc
 
 deploy:
   provider: pages
   skip_cleanup: true
-  local_dir: build/doc/html
+  local_dir: build-release/doc/html
   github_token: $GH_REPO_TOKEN
   on:
     branch: master
