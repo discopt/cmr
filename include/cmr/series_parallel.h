@@ -139,16 +139,17 @@ bool CMRspIsValid(
 }
 
 /**
- * \brief Finds all series-parallel reductions for the binary \p matrix.
+ * \brief Finds all series-parallel reductions for the binary \p matrix \f$ A \f$.
+ *
+ * Let \f$ A \in \{-1,0,1\}^{m \times n} \f$ with \f$ k \f$ nonzeros.
  *
  * If \p premainingSubmatrix is not \c NULL, then the SP-reduced submatrix is stored.
  *
  * If \p pviolatorSubmatrix is not \c NULL and \p matrix is not binary series-parallel, then a wheel-submatrix is
- * stored. This may cause overhead that is linear in the number of rows + number of columns + number of nonzeros of
- * \p matrix.
+ * stored.
  *
- * If \p isSorted is \c true, then the running time is linear in the number of rows + number of columns + number of
- * nonzeros of \p matrix assuming no hashtable collisions. Otherwise, extra overhead is caused by sorting all nonzeros.
+ * If \p isSorted is \c true, then the running time is \f$ \mathcal{O} (m + n + k) \f$ assuming no hashtable collisions.
+ * Otherwise, extra overhead of \f$ \mathcal{O}(k \cdot \log k ) \f$ is caused by sorting all nonzeros.
  */
 
 CMR_EXPORT
@@ -158,7 +159,7 @@ CMR_ERROR CMRtestBinarySeriesParallel(
   bool isSorted,                    /**< Whether the entries of \p matrix are sorted. */
   bool* pisSeriesParallel,          /**< Pointer for storing the result. */
   CMR_SP_REDUCTION* reductions,     /**< Array for storing the SP-reductions. If not \c NULL, it must have
-                                     **< capacity at least number of rows + number of columns. */
+                                     **  capacity at least number of rows + number of columns. */
   size_t* pnumOperations,           /**< Pointer for storing the number of SP-reductions. */
   CMR_SUBMAT** preducedSubmatrix,   /**< Pointer for storing the SP-reduced submatrix (may be \c NULL). */
   CMR_SUBMAT** pviolatorSubmatrix,  /**< Pointer for storing a wheel-submatrix (may be \c NULL). */
@@ -166,16 +167,17 @@ CMR_ERROR CMRtestBinarySeriesParallel(
 );
 
 /**
- * \brief Finds all series-parallel reductions for the ternary \p matrix.
+ * \brief Finds all series-parallel reductions for the ternary \p matrix \f$ A \f$.
+ *
+ * Let \f$ A \in \{-1,0,1\}^{m \times n} \f$ with \f$ k \f$ nonzeros.
  *
  * If \p premainingSubmatrix is not \c NULL, then the SP-reduced submatrix is stored.
  *
  * If \p pviolatorSubmatrix is not \c NULL and \p matrix is not ternary series-parallel, then a signed wheel- or
- * \f$ M_2 \f$-submatrix is stored. This may cause overhead that is linear in the number of rows + number of columns
- * + number of nonzeros of \p matrix.
+ * \f$ M_2 \f$-submatrix is stored.
  *
- * If \p isSorted is \c true, then the running time is linear in the number of rows + number of columns + number of
- * nonzeros of \p matrix assuming no hashtable collisions. Otherwise, extra overhead is caused by sorting all nonzeros.
+ * If \p isSorted is \c true, then the running time is \f$ \mathcal{O} (m + n + k) \f$ assuming no hashtable collisions.
+ * Otherwise, extra overhead of \f$ \mathcal{O}(k \cdot \log k ) \f$ is caused by sorting all nonzeros.
  */
 
 CMR_EXPORT
@@ -185,7 +187,7 @@ CMR_ERROR CMRtestTernarySeriesParallel(
   bool isSorted,                    /**< Whether the entries of \p matrix are sorted. */
   bool* pisSeriesParallel,          /**< Pointer for storing the result. */
   CMR_SP_REDUCTION* reductions,     /**< Array for storing the SP-reductions. If not \c NULL, it must have
-                                     **< capacity at least number of rows + number of columns. */
+                                     **  capacity at least number of rows + number of columns. */
   size_t* pnumReductions,           /**< Pointer for storing the number of SP-reductions. */
   CMR_SUBMAT** preducedSubmatrix,   /**< Pointer for storing the SP-reduced submatrix (may be \c NULL). */
   CMR_SUBMAT** pviolatorSubmatrix,  /**< Pointer for storing a signed wheel- or \f$ M_2 \f$-submatrix (may be \c NULL). */
@@ -193,20 +195,21 @@ CMR_ERROR CMRtestTernarySeriesParallel(
 );
 
 /**
- * \brief Finds all series-parallel reductions for the binary \p matrix.
+ * \brief Finds all series-parallel reductions for the binary \p matrix \f$ A \f$.
  *
+ * Let \f$ A \in \{0,1\}^{m \times n} \f$ with \f$ k \f$ nonzeros.
+ * 
  * If \p premainingSubmatrix is not \c NULL, then the SP-reduced submatrix is stored.
  *
  * If \p pviolatorSubmatrix is not \c NULL and \p matrix is not binary series-parallel, then a wheel-submatrix is
- * stored. This may cause overhead that is linear in the number of rows + number of columns + number of nonzeros of
- * \p matrix.
+ * stored.
  *
  * If \p separationRank1Elements is not \c NULL, then also \p pnumSeparationRank1Elements must not be \c NULL.
  * If during the search for a wheel-submatrix a 2-separation that does not correspond to an SP reduction is found then
  * such a 2-separation is returned and the algorithm terminates.
  *
- * If \p isSorted is \c true, then the running time is linear in the number of rows + number of columns + number of
- * nonzeros of \p matrix assuming no hashtable collisions. Otherwise, extra overhead is caused by sorting all nonzeros.
+ * If \p isSorted is \c true, then the running time is \f$ \mathcal{O} (m + n + k) \f$ assuming no hashtable collisions.
+ * Otherwise, extra overhead of \f$ \mathcal{O}(k \cdot \log k ) \f$ is caused by sorting all nonzeros.
  */
 
 CMR_EXPORT
@@ -216,14 +219,14 @@ CMR_ERROR CMRdecomposeBinarySeriesParallel(
   bool isSorted,                        /**< Whether the entries of \p matrix are sorted. */
   bool* pisSeriesParallel,              /**< Pointer for storing the result. */
   CMR_SP_REDUCTION* reductions,         /**< Array for storing the SP-reductions. If not \c NULL, it must have
-                                         **< capacity at least number of rows + number of columns. */
+                                         **  capacity at least number of rows + number of columns. */
   size_t* pnumOperations,               /**< Pointer for storing the number of SP-reductions. */
   CMR_SUBMAT** preducedSubmatrix,       /**< Pointer for storing the SP-reduced submatrix (may be \c NULL). */
   CMR_SUBMAT** pviolatorSubmatrix,      /**< Pointer for storing a wheel-submatrix (may be \c NULL). */
   CMR_ELEMENT* separationRank1Elements, /**< Array for storing elements of the rank-1 part of a 2-separation. If not
-                                         **< \c NULL, it must have sufficient capacity. */
+                                         **  \c NULL, it must have sufficient capacity. */
   size_t* pnumSeparationRank1Elements,  /**< Pointer for storing the number of elements stored in
-                                         **< \p separationRank1Elements (may be \c NULL). */
+                                         **  \p separationRank1Elements (may be \c NULL). */
   CMR_SP_STATISTICS* stats              /**< Pointer to statistics (may be \c NULL). */
 );
 

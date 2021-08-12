@@ -3,31 +3,31 @@
 This C/C++ library contains efficient implementations of various algorithm for recognizing combinatorial matrices.
 The following matrix classes can be recognized:
 
-  - \ref TU
-  - \ref NETWORK
+  - \ref tu
+  - \ref network
 
 Moreover, base representation matrices for the following matroid classes can be recognized:
 
-  - \ref REGULAR
-  - \ref GRAPHIC
-  - \ref SP
+  - \ref regular
+  - \ref graphic
+  - \ref series-parallel
 
 The following matrix/matroid classes are planned:
 
-  - \ref BALANCED
-  - \ref PERFECT
+  - \ref balanced
+  - \ref perfect
 
 # Usage #
 
 The functionality can be used via command-line tools or via its C/C++ interface.
 There is one executable per matrix/matroid class.
 Its documentation and that of the interface can be found on the respective pages.
-The executables accept several \ref FILEFORMATS.
+The executables accept several \ref file-formats.
 
 # License #
 
 The software is released under the [MIT License](https://en.wikipedia.org/wiki/MIT_License).
-For recognition of \ref TU, please cite the paper that describes the algorithm and its implementation:
+For recognition of \ref tu, please cite the paper that describes the algorithm and its implementation:
 
     @Article{WalterT13,
       author    = {Walter, Matthias and Truemper, Klaus},

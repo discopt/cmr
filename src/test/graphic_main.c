@@ -6,6 +6,7 @@
 #include <cmr/matrix.h>
 #include <cmr/graphic.h>
 #include <cmr/graph.h>
+#include <cmr/network.h>
 
 typedef enum
 {
@@ -68,7 +69,7 @@ CMR_ERROR matrixToGraph(const char* instanceFileName, FileFormat inputFormat, Fi
   if (binary)
     CMR_CALL( CMRtestBinaryGraphic(cmr, transpose, &isGraphic, &graph, &forestEdges, &coforestEdges, NULL) );
   else
-    CMR_CALL( CMRtestTernaryGraphic(cmr, transpose, &isGraphic, &graph, &forestEdges, &coforestEdges, &edgesReversed, NULL) );
+    CMR_CALL( CMRtestNetworkMatrix(cmr, transpose, &isGraphic, &graph, &forestEdges, &coforestEdges, &edgesReversed, NULL) );
 
   clock_t endTime = clock();
   fprintf(stderr, "Time: %f\n", (endTime - startTime) * 1.0 / CLOCKS_PER_SEC);
@@ -229,7 +230,7 @@ CMR_ERROR graphToMatrix(const char* instanceFileName, FileFormat inputFormat, Fi
   }
   else
   {
-    CMR_CALL( CMRcomputeGraphTernaryRepresentationMatrix(cmr, graph, &matrix, NULL, NULL, numForestEdges, forestEdges,
+    CMR_CALL( CMRcomputeNetworkMatrix(cmr, graph, &matrix, NULL, NULL, numForestEdges, forestEdges,
       numCoforestEdges, coforestEdges, &isCorrectForest) );
   }
 

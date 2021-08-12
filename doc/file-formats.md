@@ -1,4 +1,4 @@
-# File Formats # {#FILEFORMATS}
+# File Formats # {#file-formats}
 
 ## Matrix File Formats ##
 
@@ -48,5 +48,5 @@ The graph \f$ G = (V,E) \f$ with nodes \f$ V = \{v,x,y,z\} \f$ and edges \f$ E =
     y z c2
     z x c3
 
-Row/column element labels are useful for \ref GRAPHIC.
-In fact, the format represents a digraph, which is useful for \ref NETWORK.
+Row/column element labels are useful for \ref graphic.
+In fact, the format represents a digraph, which is useful for \ref network.

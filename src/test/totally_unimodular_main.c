@@ -5,6 +5,7 @@
 #include <cmr/matrix.h>
 #include <cmr/regular.h>
 #include <cmr/graphic.h>
+#include <cmr/network.h>
 
 int printUsage(const char* program)
 {
@@ -44,7 +45,7 @@ CMR_ERROR run(const char* instanceFileName, bool sparse)
   CMR_GRAPH* graph = NULL;
   CMR_GRAPH_EDGE* basis = NULL;
   CMR_GRAPH_EDGE* cobasis = NULL;
-  CMR_CALL( CMRtestTernaryGraphic(cmr, transpose, &isGraphic, &graph, &basis, &cobasis, NULL, NULL) );
+  CMR_CALL( CMRtestNetworkMatrix(cmr, transpose, &isGraphic, &graph, &basis, &cobasis, NULL, NULL) );
 
   if (isGraphic)
   {

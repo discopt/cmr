@@ -6,20 +6,20 @@ if(DOXYGEN_FOUND)
     ${CMAKE_SOURCE_DIR}/doc/doxygen-awesome-css
     DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/)
   set(DOXYGEN_EXTRA_PACKAGES "amsmath" "amssymb" "mathtools" "amsfont")
-#  set(DOXYGEN_EXTRACT_ALL "yes")
+  set(DOXYGEN_EXTRACT_ALL "yes")
   set(DOXYGEN_EXTRACT_STATIC "yes")
   set(DOXYGEN_USE_MATHJAX "yes")
   set(DOXYGEN_HTML_EXTRA_STYLESHEET "doxygen-awesome-css/doxygen-awesome.css")
   doxygen_add_docs(doc
-    ${CMAKE_CURRENT_SOURCE_DIR}/INDEX.md
-    ${CMAKE_CURRENT_SOURCE_DIR}/FILEFORMATS.md
-    ${CMAKE_CURRENT_SOURCE_DIR}/TU.md
-    ${CMAKE_CURRENT_SOURCE_DIR}/NETWORK.md
-    ${CMAKE_CURRENT_SOURCE_DIR}/REGULAR.md
-    ${CMAKE_CURRENT_SOURCE_DIR}/GRAPHIC.md
-    ${CMAKE_CURRENT_SOURCE_DIR}/SP.md
-    ${CMAKE_CURRENT_SOURCE_DIR}/BALANCED.md
-    ${CMAKE_CURRENT_SOURCE_DIR}/PERFECT.md
+    ${CMAKE_CURRENT_SOURCE_DIR}/index.md
+    ${CMAKE_CURRENT_SOURCE_DIR}/file-formats.md
+    ${CMAKE_CURRENT_SOURCE_DIR}/tu.md
+    ${CMAKE_CURRENT_SOURCE_DIR}/network.md
+    ${CMAKE_CURRENT_SOURCE_DIR}/regular.md
+    ${CMAKE_CURRENT_SOURCE_DIR}/graphic.md
+    ${CMAKE_CURRENT_SOURCE_DIR}/series-parallel.md
+    ${CMAKE_CURRENT_SOURCE_DIR}/balanced.md
+    ${CMAKE_CURRENT_SOURCE_DIR}/perfect.md
     ${CMAKE_SOURCE_DIR}/include/cmr
     ${CMAKE_SOURCE_DIR}/src/cmr
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}

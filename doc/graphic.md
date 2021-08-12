@@ -1,4 +1,4 @@
-# Graphic / Cographic / Planar Matroids # {#GRAPHIC}
+# Graphic / Cographic / Planar Matroids# {#graphic}
 
 Let \f$ G = (V,E) \f$ be a graph and let \f$ T \f$ be a spanning forest.
 The matrix \f$ M(G,T) \in \{0,1\}^{T \times (E \setminus T)} \f$ defined via
@@ -8,8 +8,8 @@ The matrix \f$ M(G,T) \in \{0,1\}^{T \times (E \setminus T)} \f$ defined via
     0 & \text{otherwise}
   \end{cases}
 \f]
-is called the **representation matrix** of \f$ G \f$ with respect to \f$ T \f$.
-A matrix \f$ A \f$ is called **graphic** if there exists a graph \f$ G \f$ with a spanning forest \f$ T \f$ such that \f$ A = M(G,T) \f$.
+is called the **binary representation matrix** of \f$ G \f$ with respect to \f$ T \f$.
+A binary matrix \f$ A \f$ is called **binary graphic** if there exists a graph \f$ G \f$ with a spanning forest \f$ T \f$ such that \f$ A = M(G,T) \f$.
 Moreover, \f$ A \f$ is called **cographic** if \f$ A^{\textsf{T}} \f$ is graphic, and 
 it is called **planar** if it is graphic and cographic.
 
@@ -20,13 +20,12 @@ In particular, for a given matrix \f$ A \f$, it determines whether \f$ A \f$ is 
 
     ./cmr-graphic [OPTION]... FILE
 
-Options are as follows:
+Options:
   - `-i FORMAT` Format of input FILE; default: `dense`.
   - `-o FORMAT` Format of output; default: `edgelist` if input is a matrix and `dense` if input is a graph.
-  - `-b`        Consider binary representation matrices (default: ternary).
 
 Formats for matrices are \ref dense-matrix, \ref sparse-matrix.
-Formats for graphs are \ref edge-list.
+Formats for graphs are \ref edge-list and \ref dot.
 If FILE is `-`, then the input will be read from stdin.
 
 ## Algorithm ##
