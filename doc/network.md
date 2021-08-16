@@ -40,6 +40,5 @@ The functionality is defined in \ref network.h.
 The main functions are:
 
   - CMRcomputeNetworkMatrix() constructs a network matrix for a given digraph.
-  - CMRcomputeConetworkMatrix() constructs a conetwork matrix for a given digraph.
   - CMRtestNetworkMatrix() tests a matrix for being network.
   - CMRtestConetworkMatrix() tests a matrix for being conetwork.

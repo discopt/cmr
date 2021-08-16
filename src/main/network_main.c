@@ -32,7 +32,7 @@ int printUsage(const char* program)
   puts("  -o FORMAT  Format of output; default: `edgelist' if input is a matrix and `dense' if input is a digraph.");
   puts("  -t         Tests for being / converts to conetwork matrix.");
   puts("Formats for matrices: dense, sparse");
-  puts("Formats for digraphs: edgelist");
+  puts("Formats for digraphs: edgelist, dot (output only)");
   puts("If FILE is `-', then the input will be read from stdin.");
 
   return EXIT_FAILURE;
@@ -46,7 +46,7 @@ CMR_ERROR matrixToDigraph(
   const char* instanceFileName, /**< File name containing the input matrix (may be `-' for stdin). */
   FileFormat inputFormat,       /**< Format of the input matrix. */
   FileFormat outputFormat,      /**< Format of the output digraph. */
-  bool conetwork               /**< Whether the input shall be checked for being conetwork instead of network. */
+  bool conetwork                /**< Whether the input shall be checked for being conetwork instead of network. */
 )
 {
   FILE* instanceFile = strcmp(instanceFileName, "-") ? fopen(instanceFileName, "r") : stdin;
@@ -185,7 +185,7 @@ CMR_ERROR digraphToMatrix(
   const char* instanceFileName, /**< File name containing the input digraph (may be `-' for stdin). */
   FileFormat inputFormat,       /**< Format of the input digraph. */
   FileFormat outputFormat,      /**< Format of the output matrix. */
-  bool conetwork               /**< Whether the output shall be the conetwork matrix instead of the network matrix. */
+  bool conetwork                /**< Whether the output shall be the conetwork matrix instead of the network matrix. */
 )
 {
   FILE* instanceFile = strcmp(instanceFileName, "-") ? fopen(instanceFileName, "r") : stdin;
@@ -252,8 +252,16 @@ CMR_ERROR digraphToMatrix(
 
   clock_t startTime = clock();
 
-  CMR_CALL( CMRcomputeNetworkMatrix(cmr, digraph, &matrix, NULL, NULL, numForestEdges, forestEdges, numCoforestEdges,
-    coforestEdges, &isCorrectForest) );
+  if (conetwork)
+  {
+    CMR_CALL( CMRcomputeNetworkMatrix(cmr, digraph, NULL, &matrix, NULL, numForestEdges, forestEdges, numCoforestEdges,
+      coforestEdges, &isCorrectForest) );
+  }
+  else
+  {
+    CMR_CALL( CMRcomputeNetworkMatrix(cmr, digraph, &matrix, NULL, NULL, numForestEdges, forestEdges, numCoforestEdges,
+      coforestEdges, &isCorrectForest) );
+  }
 
   clock_t endTime = clock();
   fprintf(stderr, "Time: %f\n", (endTime - startTime) * 1.0 / CLOCKS_PER_SEC);
@@ -270,7 +278,7 @@ CMR_ERROR digraphToMatrix(
   free(coforestEdges);
   free(forestEdges);
   free(edgeElements);
-  CMRgraphFree(cmr, &digraph);
+  CMR_CALL( CMRgraphFree(cmr, &digraph) );
 
   CMR_CALL( CMRfreeEnvironment(&cmr) );
 

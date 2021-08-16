@@ -32,3 +32,13 @@ If FILE is `-`, then the input will be read from stdin.
 
 The implemented algorithm is based on [An Almost Linear-Time Algorithm for Graph Realization](https://doi.org/10.1287/moor.13.1.99) by Robert E. Bixby and Donald K. Wagner (Mathematics of Operations Research, 1988).
 For a matrix \f$ A \in \{0,1\}^{m \times n}\f$ with \f$ k \f$ nonzeros it runs in \f$ \mathcal{O}( k \cdot \alpha(k, m) ) \f$ time, where \f$ \alpha(\cdot) \f$ denotes the inverse Ackerman function.
+
+
+## C Interface ##
+
+The functionality is defined in \ref graphic.h.
+The main functions are:
+
+  - CMRcomputeGraphicMatrix() constructs a graphic matrix for a given graph.
+  - CMRtestGraphicMatrix() tests a matrix for being graphic.
+  - CMRtestCographicMatrix() tests a matrix for being cographic.

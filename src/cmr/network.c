@@ -49,23 +49,6 @@ CMR_ERROR CMRcomputeNetworkMatrix(CMR* cmr, CMR_GRAPH* digraph, CMR_CHRMAT** pma
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRcomputeConetworkMatrix(CMR* cmr, CMR_GRAPH* digraph, CMR_CHRMAT** pmatrix, CMR_CHRMAT** ptranspose,
-  bool* arcsReversed, int numForestArcs, CMR_GRAPH_EDGE* forestArcs, int numCoforestArcs, CMR_GRAPH_EDGE* coforestArcs,
-  bool* pisCorrectForest)
-{
-  assert(cmr);
-  assert(digraph);
-  assert(pmatrix || ptranspose);
-  assert(!pmatrix || !*pmatrix);
-  assert(!ptranspose || !*ptranspose);
-
-  CMR_CALL( CMRcomputeNetworkMatrix(cmr, digraph, ptranspose, pmatrix, arcsReversed, numForestArcs, forestArcs,
-    numCoforestArcs, coforestArcs, pisCorrectForest) );
-
-  return CMR_OKAY;
-}
-
-
 
 typedef struct
 {
@@ -111,7 +94,7 @@ CMR_ERROR CMRtestConetworkMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisConetwor
 
   CMR_GRAPH_EDGE* forestEdges = NULL;
   CMR_GRAPH_EDGE* coforestEdges = NULL;
-  CMR_CALL( CMRtestBinaryGraphic(cmr, matrix, pisConetwork, pdigraph, &forestEdges, &coforestEdges, psubmatrix) );
+  CMR_CALL( CMRtestCographicMatrix(cmr, matrix, pisConetwork, pdigraph, &forestEdges, &coforestEdges, psubmatrix) );
   if (pforestArcs)
     *pforestArcs = forestEdges;
   if (pcoforestArcs)

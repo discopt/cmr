@@ -52,7 +52,7 @@ CMR_ERROR run(const char* instanceFileName, bool sparse)
     printf("Input matrix is graphic.\n");
 
     CMR_CHRMAT* checkMatrix = NULL;
-    CMR_CALL( CMRcomputeGraphBinaryRepresentationMatrix(cmr, graph, &checkMatrix, NULL, matrix->numRows, basis,
+    CMR_CALL( CMRcomputeGraphicMatrix(cmr, graph, &checkMatrix, NULL, matrix->numRows, basis,
       matrix->numColumns, cobasis, NULL) );
 
     if (!CMRchrmatCheckEqual(matrix, checkMatrix))

@@ -34,7 +34,7 @@ typedef enum
 } DIJKSTRA_STAGE;
 
 /**
- * \brief Node information for shortest-path computation in \ref CMRcomputeGraphBinaryRepresentationMatrix.
+ * \brief Node information for shortest-path computation in \ref CMRcomputeRepresentationMatrix().
  */
 
 typedef struct
@@ -56,43 +56,43 @@ int compareInt2(const void** A, const void** B)
   return **a - **b;
 }
 
-CMR_ERROR CMRcomputeRepresentationMatrix(CMR* cmr, CMR_GRAPH* graph, bool ternary, CMR_CHRMAT** ptranspose,
-  bool* edgesReversed, int numForestEdges, CMR_GRAPH_EDGE* forestEdges, int numCoforestEdges,
-  CMR_GRAPH_EDGE* coforestEdges, bool* pisCorrectForest)
+CMR_ERROR CMRcomputeRepresentationMatrix(CMR* cmr, CMR_GRAPH* digraph, bool ternary, CMR_CHRMAT** ptranspose,
+  bool* arcsReversed, int numForestArcs, CMR_GRAPH_EDGE* forestArcs, int numCoforestArcs, CMR_GRAPH_EDGE* coforestArcs,
+  bool* pisCorrectForest)
 {
   assert(cmr);
-  assert(graph);
+  assert(digraph);
   assert(ptranspose && !*ptranspose);
-  assert(numForestEdges == 0 || forestEdges);
-  assert(numForestEdges == 0 || coforestEdges);
+  assert(numForestArcs == 0 || forestArcs);
+  assert(numForestArcs == 0 || coforestArcs);
   CMRassertStackConsistency(cmr);
 
   CMRdbgMsg(0, "Computing %s representation matrix.\n", ternary ? "ternary" : "binary");
 
   DijkstraNodeData* nodeData = NULL;
-  CMR_CALL( CMRallocStackArray(cmr, &nodeData, CMRgraphMemNodes(graph)) );
+  CMR_CALL( CMRallocStackArray(cmr, &nodeData, CMRgraphMemNodes(digraph)) );
   CMR_INTHEAP heap;
-  CMR_CALL( CMRintheapInitStack(cmr, &heap, CMRgraphMemNodes(graph)) );
+  CMR_CALL( CMRintheapInitStack(cmr, &heap, CMRgraphMemNodes(digraph)) );
   int* lengths = NULL;
-  CMR_CALL( CMRallocStackArray(cmr, &lengths, CMRgraphMemEdges(graph)) );
-  for (CMR_GRAPH_NODE v = CMRgraphNodesFirst(graph); CMRgraphNodesValid(graph, v);
-    v = CMRgraphNodesNext(graph, v))
+  CMR_CALL( CMRallocStackArray(cmr, &lengths, CMRgraphMemEdges(digraph)) );
+  for (CMR_GRAPH_NODE v = CMRgraphNodesFirst(digraph); CMRgraphNodesValid(digraph, v);
+    v = CMRgraphNodesNext(digraph, v))
   {
     nodeData[v].stage = UNKNOWN;
   }
-  for (CMR_GRAPH_ITER i = CMRgraphEdgesFirst(graph); CMRgraphEdgesValid(graph, i);
-    i = CMRgraphEdgesNext(graph, i))
+  for (CMR_GRAPH_ITER i = CMRgraphEdgesFirst(digraph); CMRgraphEdgesValid(digraph, i);
+    i = CMRgraphEdgesNext(digraph, i))
   {
-    CMR_GRAPH_EDGE e = CMRgraphEdgesEdge(graph, i);
+    CMR_GRAPH_EDGE e = CMRgraphEdgesEdge(digraph, i);
     lengths[e] = 1;
   }
-  for (int b = 0; b < numForestEdges; ++b)
+  for (int b = 0; b < numForestArcs; ++b)
   {
-    if (forestEdges[b] >= 0)
+    if (forestArcs[b] >= 0)
     {
       CMRdbgMsg(0, "forest element %d is edge %d = {%d,%d}\n", b, forestEdges[b], CMRgraphEdgeU(graph, forestEdges[b]),
         CMRgraphEdgeV(graph, forestEdges[b]));
-      lengths[forestEdges[b]] = 0;
+      lengths[forestArcs[b]] = 0;
     }
   }
 
@@ -100,8 +100,8 @@ CMR_ERROR CMRcomputeRepresentationMatrix(CMR* cmr, CMR_GRAPH* graph, bool ternar
 
   /* Start Dijkstra's algorithm at each node. */
   int countComponents = 0;
-  for (CMR_GRAPH_NODE s = CMRgraphNodesFirst(graph); CMRgraphNodesValid(graph, s);
-    s = CMRgraphNodesNext(graph, s))
+  for (CMR_GRAPH_NODE s = CMRgraphNodesFirst(digraph); CMRgraphNodesValid(digraph, s);
+    s = CMRgraphNodesNext(digraph, s))
   {
     if (nodeData[s].stage != UNKNOWN)
       continue;
@@ -117,17 +117,17 @@ CMR_ERROR CMRcomputeRepresentationMatrix(CMR* cmr, CMR_GRAPH* graph, bool ternar
       CMR_GRAPH_NODE v = CMRintheapExtractMinimum(&heap);
       CMRdbgMsg(4, "Processing node %d at distance %d.\n", v, distance);
       nodeData[v].stage = COMPLETED;
-      for (CMR_GRAPH_ITER i = CMRgraphIncFirst(graph, v); CMRgraphIncValid(graph, i);
-        i = CMRgraphIncNext(graph, i))
+      for (CMR_GRAPH_ITER i = CMRgraphIncFirst(digraph, v); CMRgraphIncValid(digraph, i);
+        i = CMRgraphIncNext(digraph, i))
       {
-        assert(CMRgraphIncSource(graph, i) == v);
-        CMR_GRAPH_NODE w = CMRgraphIncTarget(graph, i);
+        assert(CMRgraphIncSource(digraph, i) == v);
+        CMR_GRAPH_NODE w = CMRgraphIncTarget(digraph, i);
 
         /* Skip if already completed. */
         if (nodeData[w].stage == COMPLETED)
           continue;
 
-        CMR_GRAPH_EDGE e = CMRgraphIncEdge(graph, i);
+        CMR_GRAPH_EDGE e = CMRgraphIncEdge(digraph, i);
         int newDistance = distance + lengths[e];
         if (newDistance < CMRintheapGetValueInfinity(&heap, w))
         {
@@ -136,8 +136,8 @@ CMR_ERROR CMRcomputeRepresentationMatrix(CMR* cmr, CMR_GRAPH* graph, bool ternar
           nodeData[w].stage = SEEN;
           nodeData[w].predecessor = v;
           nodeData[w].rootEdge = e;
-          nodeData[w].reversed = edgesReversed ? edgesReversed[e] : false;
-          if (w == CMRgraphEdgeU(graph, e))
+          nodeData[w].reversed = arcsReversed ? arcsReversed[e] : false;
+          if (w == CMRgraphEdgeU(digraph, e))
             nodeData[w].reversed = !nodeData[w].reversed;
           CMRintheapDecreaseInsert(&heap, w, newDistance);
         }
@@ -152,10 +152,10 @@ CMR_ERROR CMRcomputeRepresentationMatrix(CMR* cmr, CMR_GRAPH* graph, bool ternar
   /* Now nodeData[.].predecessor is an arborescence for each connected component. */
 
   CMR_GRAPH_NODE* nodesRows = NULL; /* Non-root node v is mapped to row of edge {v,predecessor(v)}. */
-  CMR_CALL( CMRallocStackArray(cmr, &nodesRows, CMRgraphMemNodes(graph)) );
+  CMR_CALL( CMRallocStackArray(cmr, &nodesRows, CMRgraphMemNodes(digraph)) );
   char* nodesReversed = NULL; /* Non-root node v is mapped to +1 or -1 depending on the direction of {v,predecessor(v)}. */
-  CMR_CALL( CMRallocStackArray(cmr, &nodesReversed, CMRgraphMemNodes(graph)) );
-  for (CMR_GRAPH_NODE v = CMRgraphNodesFirst(graph); CMRgraphNodesValid(graph, v); v = CMRgraphNodesNext(graph, v))
+  CMR_CALL( CMRallocStackArray(cmr, &nodesReversed, CMRgraphMemNodes(digraph)) );
+  for (CMR_GRAPH_NODE v = CMRgraphNodesFirst(digraph); CMRgraphNodesValid(digraph, v); v = CMRgraphNodesNext(digraph, v))
   {
     nodesRows[v] = -1;
     nodesReversed[v] = 1;
@@ -164,10 +164,10 @@ CMR_ERROR CMRcomputeRepresentationMatrix(CMR* cmr, CMR_GRAPH* graph, bool ternar
   int numRows = 0;
   if (pisCorrectForest)
     *pisCorrectForest = true;
-  for (int i = 0; i < numForestEdges; ++i)
+  for (int i = 0; i < numForestArcs; ++i)
   {
-    CMR_GRAPH_NODE u = CMRgraphEdgeU(graph, forestEdges[i]);
-    CMR_GRAPH_NODE v = CMRgraphEdgeV(graph, forestEdges[i]);
+    CMR_GRAPH_NODE u = CMRgraphEdgeU(digraph, forestArcs[i]);
+    CMR_GRAPH_NODE v = CMRgraphEdgeV(digraph, forestArcs[i]);
     CMRdbgMsg(2, "Forest edge %d = {%d,%d}.\n", forestEdges[i], u, v);
     if (nodeData[u].predecessor == v)
     {
@@ -194,13 +194,13 @@ CMR_ERROR CMRcomputeRepresentationMatrix(CMR* cmr, CMR_GRAPH* graph, bool ternar
         *pisCorrectForest = false;
     }
   }
-  if (numRows < CMRgraphNumNodes(graph) - countComponents)
+  if (numRows < CMRgraphNumNodes(digraph) - countComponents)
   {
     /* Some edge from the spanning forest is not a forest edge. */
     if (pisCorrectForest)
       *pisCorrectForest = false;
 
-    for (CMR_GRAPH_NODE v = CMRgraphNodesFirst(graph); CMRgraphNodesValid(graph, v); v = CMRgraphNodesNext(graph, v))
+    for (CMR_GRAPH_NODE v = CMRgraphNodesFirst(digraph); CMRgraphNodesValid(digraph, v); v = CMRgraphNodesNext(digraph, v))
     {
       if (nodeData[v].predecessor >= 0 && nodeData[v].stage != BASIC)
       {
@@ -216,48 +216,48 @@ CMR_ERROR CMRcomputeRepresentationMatrix(CMR* cmr, CMR_GRAPH* graph, bool ternar
 
   CMRassertStackConsistency(cmr);
 
-  CMR_CALL( CMRchrmatCreate(cmr, ptranspose, CMRgraphNumEdges(graph) - numRows, numRows,
+  CMR_CALL( CMRchrmatCreate(cmr, ptranspose, CMRgraphNumEdges(digraph) - numRows, numRows,
     16 * numRows) );
   CMR_CHRMAT* transpose = *ptranspose;
   int numNonzeros = 0; /* Current number of nonzeros. transpose->numNonzeros is the memory. */
   int numColumns = 0;
   CMR_GRAPH_EDGE* edgeColumns = NULL;
-  CMR_CALL( CMRallocStackArray(cmr, &edgeColumns, CMRgraphMemEdges(graph)) );
-  for (CMR_GRAPH_ITER i = CMRgraphEdgesFirst(graph); CMRgraphEdgesValid(graph, i);
-    i = CMRgraphEdgesNext(graph, i))
+  CMR_CALL( CMRallocStackArray(cmr, &edgeColumns, CMRgraphMemEdges(digraph)) );
+  for (CMR_GRAPH_ITER i = CMRgraphEdgesFirst(digraph); CMRgraphEdgesValid(digraph, i);
+    i = CMRgraphEdgesNext(digraph, i))
   {
-    CMR_GRAPH_EDGE e = CMRgraphEdgesEdge(graph, i);
-    CMR_GRAPH_NODE u = CMRgraphEdgeU(graph, e);
-    CMR_GRAPH_NODE v = CMRgraphEdgeV(graph, e);
-    edgeColumns[CMRgraphEdgesEdge(graph, i)] =
+    CMR_GRAPH_EDGE e = CMRgraphEdgesEdge(digraph, i);
+    CMR_GRAPH_NODE u = CMRgraphEdgeU(digraph, e);
+    CMR_GRAPH_NODE v = CMRgraphEdgeV(digraph, e);
+    edgeColumns[CMRgraphEdgesEdge(digraph, i)] =
       (nodeData[u].rootEdge == e || nodeData[v].rootEdge == e) ? -1 : -2;
   }
   CMR_GRAPH_NODE* uPath = NULL;
   CMR_CALL( CMRallocStackArray(cmr, &uPath, numRows) );
   CMR_GRAPH_NODE* vPath = NULL;
   CMR_CALL( CMRallocStackArray(cmr, &vPath, numRows) );
-  CMR_GRAPH_ITER iter = CMRgraphEdgesFirst(graph);
+  CMR_GRAPH_ITER iter = CMRgraphEdgesFirst(digraph);
   int cobasicIndex = 0;
-  while (CMRgraphEdgesValid(graph, iter))
+  while (CMRgraphEdgesValid(digraph, iter))
   {
     CMR_GRAPH_EDGE e = -1;
-    while (cobasicIndex < numCoforestEdges && e < 0)
+    while (cobasicIndex < numCoforestArcs && e < 0)
     {
-      e = coforestEdges[cobasicIndex];
+      e = coforestArcs[cobasicIndex];
       ++cobasicIndex;
     }
-    if (cobasicIndex >= numCoforestEdges)
+    if (cobasicIndex >= numCoforestArcs)
     {
-      e = CMRgraphEdgesEdge(graph, iter);
-      iter = CMRgraphEdgesNext(graph, iter);
+      e = CMRgraphEdgesEdge(digraph, iter);
+      iter = CMRgraphEdgesNext(digraph, iter);
     }
 
     if (edgeColumns[e] >= -1)
       continue;
 
-    CMR_GRAPH_NODE u = CMRgraphEdgeU(graph, e);
-    CMR_GRAPH_NODE v = CMRgraphEdgeV(graph, e);
-    if (edgesReversed && edgesReversed[e])
+    CMR_GRAPH_NODE u = CMRgraphEdgeU(digraph, e);
+    CMR_GRAPH_NODE v = CMRgraphEdgeV(digraph, e);
+    if (arcsReversed && arcsReversed[e])
       SWAP_INTS(u, v);
     CMRdbgMsg(4, "Edge %d = (%d,%d) (including reverse)\n", e, u, v);
 
@@ -349,7 +349,7 @@ CMR_ERROR CMRcomputeRepresentationMatrix(CMR* cmr, CMR_GRAPH* graph, bool ternar
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRcomputeGraphBinaryRepresentationMatrix(CMR* cmr, CMR_GRAPH* graph, CMR_CHRMAT** pmatrix, CMR_CHRMAT** ptranspose,
+CMR_ERROR CMRcomputeGraphicMatrix(CMR* cmr, CMR_GRAPH* graph, CMR_CHRMAT** pmatrix, CMR_CHRMAT** ptranspose,
   int numForestEdges, CMR_GRAPH_EDGE* forestEdges, int numCoforestEdges, CMR_GRAPH_EDGE* coforestEdges,
   bool* pisCorrectForest)
 {
@@ -5165,51 +5165,51 @@ CMR_ERROR addColumnApply(
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRtestBinaryGraphic(CMR* cmr, CMR_CHRMAT* transpose, bool* pisGraphic, CMR_GRAPH** pgraph,
+CMR_ERROR CMRtestCographicMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisCographic, CMR_GRAPH** pgraph,
   CMR_GRAPH_EDGE** pforestEdges, CMR_GRAPH_EDGE** pcoforestEdges, CMR_SUBMAT** psubmatrix)
 {
   assert(cmr);
-  assert(transpose);
+  assert(matrix);
   assert(!psubmatrix || !*psubmatrix);
   assert(!pforestEdges || pgraph);
   assert(!pcoforestEdges || pgraph);
-  assert(pisGraphic);
+  assert(pisCographic);
 
 #if defined(CMR_DEBUG)
-  CMRdbgMsg(0, "CMRtestBinaryGraphic called for a %dx%d matrix whose transpose is \n", transpose->numColumns, transpose->numRows);
-//   CMRchrmatPrintDense(stdout, (CMR_CHRMAT*) transpose, '0', true);
+  CMRdbgMsg(0, "CMRtestCographicMatrix called for a %dx%d matrix\n", matrix->numRows, matrix->numColumns);
+  CMRchrmatPrintDense(cmr, stdout, transpose, '0', true);
 #endif /* CMR_DEBUG */
 
-  *pisGraphic = true;
+  *pisCographic = true;
 
   Dec* dec = NULL;
-  if (transpose->numNonzeros > 0)
+  if (matrix->numNonzeros > 0)
   {
     CMR_CALL( decCreate(cmr, &dec, 4096, 1024, 256, 256, 256) );
 
     /* Process each column. */
     DEC_NEWCOLUMN* newcolumn = NULL;
     CMR_CALL( newcolumnCreate(cmr, &newcolumn) );
-    for (int column = 0; column < transpose->numRows && *pisGraphic; ++column)
+    for (int column = 0; column < matrix->numRows && *pisCographic; ++column)
     {
-      CMR_CALL( addColumnCheck(dec, newcolumn, &transpose->entryColumns[transpose->rowStarts[column]],
-        transpose->rowStarts[column+1] - transpose->rowStarts[column]) );
+      CMR_CALL( addColumnCheck(dec, newcolumn, &matrix->entryColumns[matrix->rowStarts[column]],
+        matrix->rowStarts[column+1] - matrix->rowStarts[column]) );
 
       debugDot(dec, newcolumn);
 
       if (newcolumn->remainsGraphic)
       {
-        CMR_CALL( addColumnApply(dec, newcolumn, column, &transpose->entryColumns[transpose->rowStarts[column]],
-          transpose->rowStarts[column+1] - transpose->rowStarts[column]) );
+        CMR_CALL( addColumnApply(dec, newcolumn, column, &matrix->entryColumns[matrix->rowStarts[column]],
+          matrix->rowStarts[column+1] - matrix->rowStarts[column]) );
       }
       else
-        *pisGraphic = false;
+        *pisCographic = false;
     }
 
     CMR_CALL( newcolumnFree(cmr, &newcolumn) );
   }
 
-  if (*pisGraphic)
+  if (*pisCographic)
   {
     /* Allocate memory for graph, forest and coforest. */
 
@@ -5218,8 +5218,8 @@ CMR_ERROR CMRtestBinaryGraphic(CMR* cmr, CMR_CHRMAT* transpose, bool* pisGraphic
     {
       if (!*pgraph)
       {
-        CMR_CALL( CMRgraphCreateEmpty(cmr, pgraph, transpose->numColumns + 2 * transpose->numRows,
-          transpose->numColumns + 3 * transpose->numRows) );
+        CMR_CALL( CMRgraphCreateEmpty(cmr, pgraph, matrix->numColumns + 2 * matrix->numRows,
+          matrix->numColumns + 3 * matrix->numRows) );
       }
       graph = *pgraph;
     }
@@ -5228,33 +5228,33 @@ CMR_ERROR CMRtestBinaryGraphic(CMR* cmr, CMR_CHRMAT* transpose, bool* pisGraphic
     if (pforestEdges)
     {
       if (!*pforestEdges)
-        CMR_CALL( CMRallocBlockArray(cmr, pforestEdges, transpose->numColumns) );
+        CMR_CALL( CMRallocBlockArray(cmr, pforestEdges, matrix->numColumns) );
       forest = *pforestEdges;
     }
     int* coforest = NULL;
     if (pcoforestEdges)
     {
       if (!*pcoforestEdges)
-        CMR_CALL( CMRallocBlockArray(cmr, pcoforestEdges, transpose->numRows) );
+        CMR_CALL( CMRallocBlockArray(cmr, pcoforestEdges, matrix->numRows) );
       coforest = *pcoforestEdges;
     }
 
     if (graph)
     {
-      if (transpose->numNonzeros > 0)
+      if (matrix->numNonzeros > 0)
       {
         /* Add members and edges for empty rows. */
-        if (dec->numRows < transpose->numColumns)
+        if (dec->numRows < matrix->numColumns)
         {
           /* Reallocate if necessary. */
-          if (dec->memRows < transpose->numColumns)
+          if (dec->memRows < matrix->numColumns)
           {
-            CMRreallocBlockArray(cmr, &dec->rowEdges, transpose->numColumns);
-            dec->memRows = transpose->numColumns;
+            CMRreallocBlockArray(cmr, &dec->rowEdges, matrix->numColumns);
+            dec->memRows = matrix->numColumns;
           }
 
           /* Add single-edge parallel for each missing row. */
-          for (int r = dec->numRows; r < transpose->numColumns; ++r)
+          for (int r = dec->numRows; r < matrix->numColumns; ++r)
           {
             DEC_MEMBER member;
             CMR_CALL( createMember(dec, DEC_MEMBER_TYPE_PARALLEL, &member) );
@@ -5272,7 +5272,7 @@ CMR_ERROR CMRtestBinaryGraphic(CMR* cmr, CMR_CHRMAT* transpose, bool* pisGraphic
             dec->rowEdges[r].edge = edge;
           }
 
-          dec->numRows = transpose->numColumns;
+          dec->numRows = matrix->numColumns;
         }
 
         CMR_CALL( decToGraph(dec, graph, true, forest, coforest, NULL) );
@@ -5284,14 +5284,14 @@ CMR_ERROR CMRtestBinaryGraphic(CMR* cmr, CMR_CHRMAT* transpose, bool* pisGraphic
 
         CMR_GRAPH_NODE s;
         CMR_CALL( CMRgraphAddNode(cmr, graph, &s) );
-        for (int c = 0; c < transpose->numRows; ++c)
+        for (int c = 0; c < matrix->numRows; ++c)
         {
           CMR_GRAPH_EDGE e;
           CMR_CALL( CMRgraphAddEdge(cmr, graph, s, s, &e) );
           if (coforest)
             *coforest++ = e;
         }
-        for (int r = 0; r < transpose->numColumns; ++r)
+        for (int r = 0; r < matrix->numColumns; ++r)
         {
           CMR_GRAPH_NODE t;
           CMR_CALL( CMRgraphAddNode(cmr, graph, &t) );
@@ -5370,5 +5370,39 @@ CMR_ERROR CMRtestBinaryGraphicColumnSubmatrixGreedy(CMR* cmr, CMR_CHRMAT* transp
 
   return CMR_OKAY;
 }
+
+CMR_ERROR CMRtestGraphicMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisGraphic, CMR_GRAPH** pgraph,
+  CMR_GRAPH_EDGE** pforestEdges, CMR_GRAPH_EDGE** pcoforestEdges, CMR_SUBMAT** psubmatrix)
+{
+  assert(cmr);
+  assert(matrix);
+  assert(!psubmatrix || !*psubmatrix);
+  assert(!pforestEdges || pgraph);
+  assert(!pcoforestEdges || pgraph);
+  assert(pisGraphic);
+
+  /* Create transpose of matrix. */
+  CMR_CHRMAT* transpose = NULL;
+  CMR_CALL( CMRchrmatTranspose(cmr, matrix, &transpose) );
+
+  CMR_CALL( CMRtestCographicMatrix(cmr, transpose, pisGraphic, pgraph, pforestEdges, pcoforestEdges, psubmatrix) );
+
+  /* Transpose minimal non-cographic matrix to become a minimal non-graphic matrix. */
+  if (psubmatrix && *psubmatrix)
+  {
+    size_t* temp = (*psubmatrix)->rows;
+    (*psubmatrix)->rows = (*psubmatrix)->columns;
+    (*psubmatrix)->columns = temp;
+
+    size_t n = (*psubmatrix)->numRows;
+    (*psubmatrix)->numRows = (*psubmatrix)->numColumns;
+    (*psubmatrix)->numColumns = n;
+  }
+
+  CMR_CALL( CMRchrmatFree(cmr, &transpose) );
+
+  return CMR_OKAY;
+}
+
 
 /**@}*/
