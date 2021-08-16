@@ -1006,7 +1006,7 @@ TEST(Graphic, RepresentationMatrix)
   ASSERT_CMR_CALL( CMRchrmatFree(cmr, &check) );
   ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
 
-  /* Check ternary representation matrix. */
+  /* Check network matrix. */
   bool edgesReversed[] = { false, false, false, false, false, false, false, false, false, false, false };
   ASSERT_CMR_CALL( CMRcomputeNetworkMatrix(cmr, graph, &matrix, NULL, edgesReversed, 5, basis, 6, cobasis,
     &isCorrectBasis) );

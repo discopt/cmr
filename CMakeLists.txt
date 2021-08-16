@@ -73,7 +73,7 @@ add_library(cmr
 
 # Target for the tu-test binary.
 add_executable(tu_test
-  src/test/main.cpp)
+  src/main/main.cpp)
 target_link_libraries(tu_test
   PRIVATE
     CMR::cmr
@@ -82,7 +82,7 @@ set_target_properties(tu_test PROPERTIES OUTPUT_NAME tu-test)
 
 # Target for the cmr-test-new binary.
 add_executable(cmr_totally_unimodular
-  src/test/totally_unimodular_main.c)
+  src/main/totally_unimodular_main.c)
 target_link_libraries(cmr_totally_unimodular
   PRIVATE
     CMR::cmr
@@ -91,16 +91,25 @@ set_target_properties(cmr_totally_unimodular PROPERTIES OUTPUT_NAME cmr-totally-
 
 # Target for the cmr-graphic binary.
 add_executable(cmr_graphic
-   src/test/graphic_main.c)
+   src/main/graphic_main.c)
 target_link_libraries(cmr_graphic
    PRIVATE
       CMR::cmr
 )
 set_target_properties(cmr_graphic PROPERTIES OUTPUT_NAME cmr-graphic)
 
+# Target for the cmr-network binary.
+add_executable(cmr_network
+   src/main/network_main.c) 
+target_link_libraries(cmr_network
+   PRIVATE
+      CMR::cmr
+)
+set_target_properties(cmr_network PROPERTIES OUTPUT_NAME cmr-network)
+
 # Target for the cmr-series-parallel binary.
 add_executable(cmr_series_parallel
-  src/test/series_parallel_main.c)
+  src/main/series_parallel_main.c)
 target_link_libraries(cmr_series_parallel
   PRIVATE
     CMR::cmr
@@ -109,7 +118,7 @@ set_target_properties(cmr_series_parallel PROPERTIES OUTPUT_NAME cmr-series-para
 
 # Target for the tu-convert-matrix.
 add_executable(cmr_convert_matrix
-  src/test/convert_matrix_main.c)
+  src/main/convert_matrix_main.c)
 target_link_libraries(cmr_convert_matrix
   PRIVATE
     CMR::cmr
@@ -128,7 +137,7 @@ endif()
 
 # Target for the random_network
 #add_executable(random_network
-#   src/test/random_network.c)
+#   src/main/random_network.c)
 #target_link_libraries(random_network
 #   PRIVATE
 #      CMR::cmr

@@ -24,8 +24,8 @@ typedef enum
 } DIJKSTRA_STAGE;
 
 CMR_ERROR CMRcomputeNetworkMatrix(CMR* cmr, CMR_GRAPH* digraph, CMR_CHRMAT** pmatrix, CMR_CHRMAT** ptranspose,
-  bool* edgesReversed, int numForestEdges, CMR_GRAPH_EDGE* forestEdges, int numCoforestEdges,
-  CMR_GRAPH_EDGE* coforestEdges, bool* pisCorrectForest)
+  bool* arcsReversed, int numForestArcs, CMR_GRAPH_EDGE* forestArcs, int numCoforestArcs,
+  CMR_GRAPH_EDGE* coforestArcs, bool* pisCorrectForest)
 {
   assert(cmr);
   assert(digraph);
@@ -34,8 +34,8 @@ CMR_ERROR CMRcomputeNetworkMatrix(CMR* cmr, CMR_GRAPH* digraph, CMR_CHRMAT** pma
   assert(!ptranspose || !*ptranspose);
 
   CMR_CHRMAT* transpose = NULL;
-  CMR_CALL( CMRcomputeRepresentationMatrix(cmr, digraph, true, &transpose, edgesReversed, numForestEdges, forestEdges,
-    numCoforestEdges, coforestEdges, pisCorrectForest) );
+  CMR_CALL( CMRcomputeRepresentationMatrix(cmr, digraph, true, &transpose, arcsReversed, numForestArcs, forestArcs,
+    numCoforestArcs, coforestArcs, pisCorrectForest) );
 
   if (pmatrix)
     CMR_CALL( CMRchrmatTranspose(cmr, transpose, pmatrix) );
@@ -49,10 +49,28 @@ CMR_ERROR CMRcomputeNetworkMatrix(CMR* cmr, CMR_GRAPH* digraph, CMR_CHRMAT** pma
   return CMR_OKAY;
 }
 
+CMR_ERROR CMRcomputeConetworkMatrix(CMR* cmr, CMR_GRAPH* digraph, CMR_CHRMAT** pmatrix, CMR_CHRMAT** ptranspose,
+  bool* arcsReversed, int numForestArcs, CMR_GRAPH_EDGE* forestArcs, int numCoforestArcs, CMR_GRAPH_EDGE* coforestArcs,
+  bool* pisCorrectForest)
+{
+  assert(cmr);
+  assert(digraph);
+  assert(pmatrix || ptranspose);
+  assert(!pmatrix || !*pmatrix);
+  assert(!ptranspose || !*ptranspose);
+
+  CMR_CALL( CMRcomputeNetworkMatrix(cmr, digraph, ptranspose, pmatrix, arcsReversed, numForestArcs, forestArcs,
+    numCoforestArcs, coforestArcs, pisCorrectForest) );
+
+  return CMR_OKAY;
+}
+
+
+
 typedef struct
 {
   int forestIndex;
-} TernaryGraphicEdgeData;
+} NetworkEdgeData;
 
 typedef struct
 {
@@ -62,73 +80,73 @@ typedef struct
   int distance;         /* Combinatorial distance to the BFS root. */
   char sign;            /* Sign of this tree edge with respect to current column. */
   bool fixed;           /* Whether the orientation of this edge is already fixed. */
-} TernaryGraphicNodeData;
+} NetworkNodeData;
 
 
 
-CMR_ERROR CMRtestNetworkMatrix(CMR* cmr, CMR_CHRMAT* transpose, bool* pisGraphic, CMR_GRAPH** pgraph,
-  CMR_GRAPH_EDGE** pforestEdges, CMR_GRAPH_EDGE** pcoforestEdges, bool** pedgesReversed, CMR_SUBMAT** psubmatrix)
+CMR_ERROR CMRtestConetworkMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisConetwork, CMR_GRAPH** pdigraph,
+  CMR_GRAPH_EDGE** pforestArcs, CMR_GRAPH_EDGE** pcoforestArcs, bool** parcsReversed, CMR_SUBMAT** psubmatrix)
 {
   assert(cmr);
-  assert(transpose);
+  assert(matrix);
   assert(!psubmatrix || !*psubmatrix);
-  assert(!pforestEdges || pgraph);
-  assert(!pcoforestEdges || pgraph);
-  assert(!pedgesReversed || pgraph);
-  assert(pisGraphic);
+  assert(!pforestArcs || pdigraph);
+  assert(!pcoforestArcs || pdigraph);
+  assert(!parcsReversed || pdigraph);
+  assert(pisConetwork);
 
 #if defined(CMR_DEBUG)
-  CMRdbgMsg(0, "CMRtestTernaryGraphic called for a %dx%d matrix whose transpose is \n", transpose->numColumns,
-    transpose->numRows);
-  CMRchrmatPrintDense(stdout, (CMR_CHRMAT*) transpose, '0', true);
+  CMRdbgMsg(0, "CMRtestConetworkMatrix called for a %dx%d matrix \n", matrix->numRows,
+    matrix->numColumns);
+  CMR_CALL( CMRchrmatPrintDense(cmr, stdout, matrix, '0', true) );
 #endif /* CMR_DEBUG */
 
   bool alreadySigned;
-  CMR_CALL( CMRtestSignChr(cmr, transpose, &alreadySigned, psubmatrix) );
+  CMR_CALL( CMRtestSignChr(cmr, matrix, &alreadySigned, psubmatrix) );
   if (!alreadySigned)
   {
-    *pisGraphic = false;
+    *pisConetwork = false;
     return CMR_OKAY;
   }
 
   CMR_GRAPH_EDGE* forestEdges = NULL;
   CMR_GRAPH_EDGE* coforestEdges = NULL;
-  CMR_CALL( CMRtestBinaryGraphic(cmr, transpose, pisGraphic, pgraph, &forestEdges, &coforestEdges, psubmatrix) );
-  if (pforestEdges)
-    *pforestEdges = forestEdges;
-  if (pcoforestEdges)
-    *pcoforestEdges = coforestEdges;
-  if (!*pisGraphic || !pgraph || !pedgesReversed)
+  CMR_CALL( CMRtestBinaryGraphic(cmr, matrix, pisConetwork, pdigraph, &forestEdges, &coforestEdges, psubmatrix) );
+  if (pforestArcs)
+    *pforestArcs = forestEdges;
+  if (pcoforestArcs)
+    *pcoforestArcs = coforestEdges;
+  if (!*pisConetwork || !pdigraph || !parcsReversed)
   {
     /* We have to free (co)forest information if the caller didn't ask for it. */
-    if (!pforestEdges)
+    if (!pforestArcs)
       CMR_CALL( CMRfreeBlockArray(cmr, &forestEdges) );
-    if (!pcoforestEdges)
+    if (!pcoforestArcs)
       CMR_CALL( CMRfreeBlockArray(cmr, &coforestEdges) );
     return CMR_OKAY;
   }
 
   /* We have to find out which edges are reversed. */
-  CMR_GRAPH* graph = *pgraph;
+  CMR_GRAPH* graph = *pdigraph;
   CMRdbgMsg(0, "Matrix is graphic. Computing reversed edges.");
-  CMR_CALL( CMRallocBlockArray(cmr, pedgesReversed, CMRgraphMemEdges(graph)) );
+  CMR_CALL( CMRallocBlockArray(cmr, parcsReversed, CMRgraphMemEdges(graph)) );
 
 #if defined(CMR_DEBUG)
-  CMRgraphPrint(stdout, *pgraph);
-  for (int b = 0; b < transpose->numColumns; ++b)
-    CMRdbgMsg(2, "Forest #%d is %d.\n", b, (*pforestEdges)[b]);
-  for (int b = 0; b < transpose->numRows; ++b)
-    CMRdbgMsg(2, "Coforest #%d is %d.\n", b, (*pcoforestEdges)[b]);
+  CMRgraphPrint(stdout, *pdigraph);
+  for (int b = 0; b < matrix->numColumns; ++b)
+    CMRdbgMsg(2, "Forest #%d is %d.\n", b, (*pforestArcs)[b]);
+  for (int b = 0; b < matrix->numRows; ++b)
+    CMRdbgMsg(2, "Coforest #%d is %d.\n", b, (*pcoforestArcs)[b]);
 #endif /* CMR_DEBUG */
 
   /* Decompose into 1-connected components. */
   size_t numComponents;
   CMR_ONESUM_COMPONENT* components = NULL;
-  CMR_CALL( decomposeOneSum(cmr, (CMR_MATRIX*) transpose, sizeof(char), sizeof(char), &numComponents, &components, NULL,
+  CMR_CALL( decomposeOneSum(cmr, (CMR_MATRIX*) matrix, sizeof(char), sizeof(char), &numComponents, &components, NULL,
     NULL, NULL, NULL) );
 
   /* Allocate and initialize auxiliary data for nodes. */
-  TernaryGraphicNodeData* nodeData = NULL;
+  NetworkNodeData* nodeData = NULL;
   CMR_CALL( CMRallocStackArray(cmr, &nodeData, CMRgraphMemNodes(graph)) );
   for (CMR_GRAPH_NODE v = CMRgraphNodesFirst(graph); CMRgraphNodesValid(graph, v); v = CMRgraphNodesNext(graph, v))
   {
@@ -141,23 +159,23 @@ CMR_ERROR CMRtestNetworkMatrix(CMR* cmr, CMR_CHRMAT* transpose, bool* pisGraphic
   }
 
   /* Allocate and initialize auxiliary data for edges. */
-  TernaryGraphicEdgeData* edgeData = NULL;
+  NetworkEdgeData* edgeData = NULL;
   CMR_CALL( CMRallocStackArray(cmr, &edgeData, CMRgraphMemEdges(graph)) );
   CMRassertStackConsistency(cmr);
   for (CMR_GRAPH_ITER i = CMRgraphEdgesFirst(graph); CMRgraphEdgesValid(graph, i); i = CMRgraphEdgesNext(graph, i))
   {
     CMR_GRAPH_EDGE e = CMRgraphEdgesEdge(graph, i);
     edgeData[e].forestIndex = -1;
-    (*pedgesReversed)[e] = false;
+    (*parcsReversed)[e] = false;
   }
-  for (int b = 0; b < transpose->numColumns; ++b)
+  for (int b = 0; b < matrix->numColumns; ++b)
     edgeData[forestEdges[b]].forestIndex = b;
 
   /* Allocate and initialize a queue for BFS. */
   int* queue = NULL;
   int queueFirst;
   int queueBeyond;
-  CMRallocStackArray(cmr, &queue, transpose->numColumns + transpose->numRows);
+  CMRallocStackArray(cmr, &queue, matrix->numColumns + matrix->numRows);
   CMRassertStackConsistency(cmr);
 
   /* Process 1-connected components of the (transposed) matrix. */
@@ -172,7 +190,7 @@ CMR_ERROR CMRtestNetworkMatrix(CMR* cmr, CMR_CHRMAT* transpose, bool* pisGraphic
     for (int column = 0; column < componentMatrix->numColumns; ++column)
       CMRdbgMsg(4, "Component column %d corresponds to original column %d.\n", column,
         components[comp].rowsToOriginal[column]);
-    CMR_CALL( CMRchrmatPrintDense(stdout, componentMatrix, '0', true) );
+    CMR_CALL( CMRchrmatPrintDense(cmr, stdout, componentMatrix, '0', true) );
 #endif /* CMR_DEBUG */
 
     /* If there are no nonzeros then also no signs can be wrong. */
@@ -236,15 +254,15 @@ CMR_ERROR CMRtestNetworkMatrix(CMR* cmr, CMR_CHRMAT* transpose, bool* pisGraphic
 
       CMRdbgMsg(4, "Inspecting signs of column %d corresponding to %d={%d,%d}.\n", column, columnEdge, s, t);
 
-      int first = transpose->rowStarts[column];
-      int beyond = column == transpose->numRows ? transpose->numNonzeros : transpose->rowStarts[column+1];
+      int first = matrix->rowStarts[column];
+      int beyond = column == matrix->numRows ? matrix->numNonzeros : matrix->rowStarts[column+1];
       int minDistance = INT_MAX; /* The depth in the BFS tree that the s-r and t-r paths have in common. */
       for (int entry = first; entry < beyond; ++entry)
       {
-        CMRdbgMsg(6, "Entry %d is in row %d with value %d.\n", entry, transpose->entryColumns[entry],
-          transpose->entryValues[entry]);
+        CMRdbgMsg(6, "Entry %d is in row %d with value %d.\n", entry, matrix->entryColumns[entry],
+          matrix->entryValues[entry]);
 
-        CMR_GRAPH_EDGE rowEdge = forestEdges[transpose->entryColumns[entry]];
+        CMR_GRAPH_EDGE rowEdge = forestEdges[matrix->entryColumns[entry]];
         CMR_GRAPH_NODE u = CMRgraphEdgeU(graph, rowEdge);
         CMR_GRAPH_NODE v = CMRgraphEdgeV(graph, rowEdge);
         if (nodeData[v].predecessor == u)
@@ -252,7 +270,7 @@ CMR_ERROR CMRtestNetworkMatrix(CMR* cmr, CMR_CHRMAT* transpose, bool* pisGraphic
           /* (u,v) */
           if (nodeData[u].distance < minDistance)
             minDistance = nodeData[u].distance;
-          nodeData[v].sign = transpose->entryValues[entry];
+          nodeData[v].sign = matrix->entryValues[entry];
         }
         else
         {
@@ -260,7 +278,7 @@ CMR_ERROR CMRtestNetworkMatrix(CMR* cmr, CMR_CHRMAT* transpose, bool* pisGraphic
           assert(nodeData[u].predecessor == v);
           if (nodeData[v].distance < minDistance)
             minDistance = nodeData[v].distance;
-          nodeData[u].sign = transpose->entryValues[entry];
+          nodeData[u].sign = matrix->entryValues[entry];
         }
       }
 
@@ -276,7 +294,7 @@ CMR_ERROR CMRtestNetworkMatrix(CMR* cmr, CMR_CHRMAT* transpose, bool* pisGraphic
         if (nodeData[v].fixed)
         {
           char currentSign = CMRgraphEdgeU(graph, nodeData[v].edge) == v ? 1 : -1;
-          if ((*pedgesReversed)[nodeData[v].edge])
+          if ((*parcsReversed)[nodeData[v].edge])
             currentSign *= -1;
           foundFixed = true;
           reversedColumnEdge = currentSign != nodeData[v].sign;
@@ -294,7 +312,7 @@ CMR_ERROR CMRtestNetworkMatrix(CMR* cmr, CMR_CHRMAT* transpose, bool* pisGraphic
           if (nodeData[v].fixed)
           {
             char currentSign = CMRgraphEdgeU(graph, nodeData[v].edge) == v ? -1 : 1;
-            if ((*pedgesReversed)[nodeData[v].edge])
+            if ((*parcsReversed)[nodeData[v].edge])
               currentSign *= -1;
             foundFixed = true;
             reversedColumnEdge = currentSign != nodeData[v].sign;
@@ -303,7 +321,7 @@ CMR_ERROR CMRtestNetworkMatrix(CMR* cmr, CMR_CHRMAT* transpose, bool* pisGraphic
           v = nodeData[v].predecessor;
         }
       }
-      (*pedgesReversed)[columnEdge] = reversedColumnEdge;
+      (*parcsReversed)[columnEdge] = reversedColumnEdge;
       CMRdbgMsg(6, "Found a fixed tree edge: %s. Column edge reversed = %s\n", foundFixed ? "yes" : "no",
         reversedColumnEdge ? "yes" : "no");
 
@@ -315,11 +333,11 @@ CMR_ERROR CMRtestNetworkMatrix(CMR* cmr, CMR_CHRMAT* transpose, bool* pisGraphic
 
         if (reversedColumnEdge)
           currentSign *= -1;
-        assert(!nodeData[v].fixed || (*pedgesReversed)[nodeData[v].edge] == (currentSign != nodeData[v].sign));
-        (*pedgesReversed)[nodeData[v].edge] = currentSign != nodeData[v].sign;
+        assert(!nodeData[v].fixed || (*parcsReversed)[nodeData[v].edge] == (currentSign != nodeData[v].sign));
+        (*parcsReversed)[nodeData[v].edge] = currentSign != nodeData[v].sign;
         CMRdbgMsg(6, "Path from %d towards root: tree edge (%d,%d) is edge {%d,%d}; graph imposed sign (with column edge reverting) is %d; matrix sign is %d; reversed = %s\n",
           s, nodeData[v].predecessor, v, CMRgraphEdgeU(graph, nodeData[v].edge), CMRgraphEdgeV(graph, nodeData[v].edge),
-          currentSign, nodeData[v].sign, (*pedgesReversed)[nodeData[v].edge] ? "yes" : "no");
+          currentSign, nodeData[v].sign, (*parcsReversed)[nodeData[v].edge] ? "yes" : "no");
         nodeData[v].fixed = true;
 #if !defined(NDEBUG)
         nodeData[v].sign = 0; /* For debugging we make all signs 0 again. */
@@ -333,11 +351,11 @@ CMR_ERROR CMRtestNetworkMatrix(CMR* cmr, CMR_CHRMAT* transpose, bool* pisGraphic
         char currentSign = CMRgraphEdgeU(graph, nodeData[v].edge) == v ? -1 : 1;
         if (reversedColumnEdge)
           currentSign *= -1;
-        assert(!nodeData[v].fixed || (*pedgesReversed)[nodeData[v].edge] == (currentSign != nodeData[v].sign));
-        (*pedgesReversed)[nodeData[v].edge] = currentSign != nodeData[v].sign;
+        assert(!nodeData[v].fixed || (*parcsReversed)[nodeData[v].edge] == (currentSign != nodeData[v].sign));
+        (*parcsReversed)[nodeData[v].edge] = currentSign != nodeData[v].sign;
         CMRdbgMsg(6, "Path from %d towards root: tree edge (%d,%d) is edge {%d,%d}; graph imposed sign (with column edge reverting) is %d; matrix sign is %d; reversed = %s\n",
           t, nodeData[v].predecessor, v, CMRgraphEdgeU(graph, nodeData[v].edge), CMRgraphEdgeV(graph, nodeData[v].edge),
-          currentSign, nodeData[v].sign, (*pedgesReversed)[nodeData[v].edge] ? "yes" : "no");
+          currentSign, nodeData[v].sign, (*parcsReversed)[nodeData[v].edge] ? "yes" : "no");
         nodeData[v].fixed = true;
 #if !defined(NDEBUG)
         nodeData[v].sign = 0; /* For debugging we make all signs 0 again. */
@@ -352,7 +370,7 @@ CMR_ERROR CMRtestNetworkMatrix(CMR* cmr, CMR_CHRMAT* transpose, bool* pisGraphic
   {
     CMR_GRAPH_EDGE e = CMRgraphEdgesEdge(graph, i);
     CMRdbgMsg(2, "Edge %d={%d,%d} reversed = %s\n", e, CMRgraphEdgeU(graph, e), CMRgraphEdgeV(graph, e),
-      (*pedgesReversed)[e] ? "yes" : "no");
+      (*parcsReversed)[e] ? "yes" : "no");
   }
 #endif /* CMR_DEBUG */
 
@@ -373,10 +391,45 @@ CMR_ERROR CMRtestNetworkMatrix(CMR* cmr, CMR_CHRMAT* transpose, bool* pisGraphic
   CMRfreeBlockArray(cmr, &components);
 
   /* We have to free (co)forest information if the caller didn't ask for it. */
-  if (!pforestEdges)
+  if (!pforestArcs)
     CMR_CALL( CMRfreeBlockArray(cmr, &forestEdges) );
-  if (!pcoforestEdges)
+  if (!pcoforestArcs)
     CMR_CALL( CMRfreeBlockArray(cmr, &coforestEdges) );
+
+  return CMR_OKAY;
+}
+
+CMR_ERROR CMRtestNetworkMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisNetwork, CMR_GRAPH** pdigraph,
+  CMR_GRAPH_EDGE** pforestArcs, CMR_GRAPH_EDGE** pcoforestArcs, bool** parcsReversed, CMR_SUBMAT** psubmatrix)
+{
+  assert(cmr);
+  assert(matrix);
+  assert(pisNetwork);
+  assert(!psubmatrix || !*psubmatrix);
+  assert(!pforestArcs || pdigraph);
+  assert(!pcoforestArcs || pdigraph);
+  assert(!parcsReversed || pdigraph);
+
+  /* Create transpose of matrix. */
+  CMR_CHRMAT* transpose = NULL;
+  CMR_CALL( CMRchrmatTranspose(cmr, matrix, &transpose) );
+
+  CMR_CALL( CMRtestConetworkMatrix(cmr, transpose, pisNetwork, pdigraph, pforestArcs, pcoforestArcs, parcsReversed,
+    psubmatrix) );
+
+  /* Transpose minimal non-conetwork matrix to become a minimal non-network matrix. */
+  if (psubmatrix && *psubmatrix)
+  {
+    size_t* temp = (*psubmatrix)->rows;
+    (*psubmatrix)->rows = (*psubmatrix)->columns;
+    (*psubmatrix)->columns = temp;
+
+    size_t n = (*psubmatrix)->numRows;
+    (*psubmatrix)->numRows = (*psubmatrix)->numColumns;
+    (*psubmatrix)->numColumns = n;
+  }
+
+  CMR_CALL( CMRchrmatFree(cmr, &transpose) );
 
   return CMR_OKAY;
 }

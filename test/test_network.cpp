@@ -15,17 +15,13 @@ void testNetworkMatrix(
   CMR_GRAPH* graph = NULL;
   CMR_GRAPH_EDGE* basis = NULL;
   CMR_GRAPH_EDGE* cobasis = NULL;
-  CMR_CHRMAT* transpose = NULL;
   bool* edgesReversed = NULL;
-  ASSERT_CMR_CALL( CMRchrmatTranspose(cmr, matrix, &transpose) );
 
-  ASSERT_CMR_CALL( CMRtestNetworkMatrix(cmr, transpose, &isGraphic, &graph, &basis, &cobasis, &edgesReversed, NULL) );
+  ASSERT_CMR_CALL( CMRtestNetworkMatrix(cmr, matrix, &isGraphic, &graph, &basis, &cobasis, &edgesReversed, NULL) );
 
   ASSERT_TRUE( isGraphic );
   ASSERT_TRUE( basis );
   ASSERT_TRUE( cobasis );
-
-  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &transpose) );
 
   CMR_CHRMAT* result = NULL;
   bool isCorrectBasis;

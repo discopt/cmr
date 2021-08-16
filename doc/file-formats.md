@@ -50,3 +50,9 @@ The graph \f$ G = (V,E) \f$ with nodes \f$ V = \{v,x,y,z\} \f$ and edges \f$ E =
 
 Row/column element labels are useful for \ref graphic.
 In fact, the format represents a digraph, which is useful for \ref network.
+
+\anchor dot
+### Dot ###
+
+The format **dot** is a text format for drawing graphs, e.g., via the [GraphViz](https://graphviz.org) toolbox.
+See [here](https://graphviz.org/doc/info/lang.html) for the language specification.

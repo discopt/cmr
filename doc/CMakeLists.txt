@@ -9,6 +9,8 @@ if(DOXYGEN_FOUND)
   set(DOXYGEN_EXTRACT_ALL "yes")
   set(DOXYGEN_EXTRACT_STATIC "yes")
   set(DOXYGEN_USE_MATHJAX "yes")
+  set(DOXYGEN_INCLUDE_GRAPH "no")
+  set(DOXYGEN_INCLUDED_BY_GRAPH "no")
   set(DOXYGEN_HTML_EXTRA_STYLESHEET "doxygen-awesome-css/doxygen-awesome.css")
   doxygen_add_docs(doc
     ${CMAKE_CURRENT_SOURCE_DIR}/index.md
