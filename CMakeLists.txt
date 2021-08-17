@@ -66,6 +66,7 @@ add_library(cmr
   src/cmr/separation.cpp
   src/cmr/series_parallel.c
   src/cmr/sort.c
+  src/cmr/interface.cpp
   src/cmr/total_unimodularity.cpp
   src/cmr/unimodularity.cpp
   src/cmr/zero_plus_minus_one.cpp
@@ -80,14 +81,14 @@ target_link_libraries(tu_test
 )
 set_target_properties(tu_test PROPERTIES OUTPUT_NAME tu-test)
 
-# Target for the cmr-test-new binary.
-add_executable(cmr_totally_unimodular
-  src/main/totally_unimodular_main.c)
-target_link_libraries(cmr_totally_unimodular
+# Target for the cmr-tu.
+add_executable(cmr_tu
+  src/main/tu_main.c)
+target_link_libraries(cmr_tu
   PRIVATE
     CMR::cmr
 )
-set_target_properties(cmr_totally_unimodular PROPERTIES OUTPUT_NAME cmr-totally-unimodular)
+set_target_properties(cmr_tu PROPERTIES OUTPUT_NAME cmr-tu)
 
 # Target for the cmr-graphic binary.
 add_executable(cmr_graphic

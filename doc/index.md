@@ -12,10 +12,16 @@ Moreover, base representation matrices for the following matroid classes can be 
   - \ref graphic
   - \ref series-parallel
 
+The following additional functionality is also part of the library:
+
+  - \ref conversions
+  - \ref camion
+
 The following matrix/matroid classes are planned:
 
   - \ref balanced
   - \ref perfect
+  - \ref consecutive-ones
 
 # Usage #
 
@@ -27,20 +33,7 @@ The executables accept several \ref file-formats.
 # License #
 
 The software is released under the [MIT License](https://en.wikipedia.org/wiki/MIT_License).
-For recognition of \ref tu, please cite the paper that describes the algorithm and its implementation:
-
-    @Article{WalterT13,
-      author    = {Walter, Matthias and Truemper, Klaus},
-      title     = {{Implementation of a unimodularity test}},
-      journal   = {Mathematical Programming Computation},
-      year      = {2013},
-      volume    = {5},
-      number    = {1},
-      pages     = {57--73},
-      issn      = {1867-2949},
-      doi       = {10.1007/s12532-012-0048-x},
-      publisher = {Springer-Verlag},
-    }
+Please cite the paper(s) corresponding to the respective tools.
 
 # Authors #
 

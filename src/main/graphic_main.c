@@ -26,7 +26,7 @@ typedef enum
 int printUsage(const char* program)
 {
   printf("Usage: %s [OPTION]... FILE\n\n", program);
-  puts("Converts graph to graphic matrix or tests if matrix is graphic, depending on input FILE.");
+  puts("Converts graph to (co)graphic matrix or tests if matrix is (co)graphic, depending on input FILE.");
   puts("Options:");
   puts("  -i FORMAT  Format of input FILE; default: `dense'.");
   puts("  -o FORMAT  Format of output; default: `edgelist' if input is a matrix and `dense' if input is a graph.");

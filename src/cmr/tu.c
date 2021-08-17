@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <assert.h>
 
+#include "interface.h"
 
 /**
  * \brief Tests the 1-sum of char matrices for total unimodularity.
@@ -57,121 +58,15 @@ CMR_ERROR testTotalUnimodularityOneSum(
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRtestTotalUnimodularityDbl(CMR* cmr, CMR_DBLMAT* matrix, double epsilon, bool* pisTU, CMR_TU_DEC** pdec,
+CMR_ERROR CMRtestTotalUnimodularity(CMR* cmr, CMR_CHRMAT* matrix, bool* pisTotallyUnimodular, CMR_TU_DEC** pdec,
   CMR_SUBMAT** psubmatrix)
 {
   assert(cmr);
   assert(matrix);
 
-  size_t numComponents;
-  CMR_ONESUM_COMPONENT* components;
+  CMR_CALL( CMRinterfaceTU(cmr, matrix, pisTotallyUnimodular, pdec, psubmatrix) );
 
-  /* Check entries. */
-
-  if (!CMRisTernaryDbl(cmr, matrix, epsilon, psubmatrix))
-    return false;
-
-  /* Perform 1-sum decomposition. */
-
-  CMR_CALL( decomposeOneSum(cmr, (CMR_MATRIX*) matrix, sizeof(double), sizeof(char), &numComponents, &components, NULL,
-    NULL, NULL, NULL) );
-
-  /* Check correct signing for each component. */
-
-  for (int comp = 0; comp < numComponents; ++comp)
-  {
-    CMR_SUBMAT* compSubmatrix;
-    char modification;
-    CMR_CALL( signSequentiallyConnected(cmr, (CMR_CHRMAT*) &components[comp].matrix,
-      (CMR_CHRMAT*) &components[comp].transpose, false, &modification, psubmatrix ? &compSubmatrix : NULL) );
-
-    if (modification)
-    {
-      if (psubmatrix)
-      {
-        /* Translate component indices to indices of whole matrix and sort them again. */
-        for (int r = 0; r < compSubmatrix->numRows; ++r)
-          compSubmatrix->rows[r] = components[comp].rowsToOriginal[compSubmatrix->rows[r]];
-        for (int c = 0; c < compSubmatrix->numColumns; ++c)
-          compSubmatrix->columns[c] = components[comp].columnsToOriginal[compSubmatrix->columns[c]];
-        CMRsortSubmatrix(cmr, compSubmatrix);
-        *psubmatrix = compSubmatrix;
-      }
-
-      for (int c = 0; c < numComponents; ++c)
-      {
-        CMRchrmatFree(cmr, (CMR_CHRMAT**) &components[c].matrix);
-        CMRchrmatFree(cmr, (CMR_CHRMAT**) &components[c].transpose);
-        CMRfreeBlockArray(cmr, &components[c].rowsToOriginal);
-        CMRfreeBlockArray(cmr, &components[c].columnsToOriginal);
-      }
-
-      return false;
-    }
-  }
-
-  return testTotalUnimodularityOneSum(cmr, numComponents, components, pisTU, pdec, psubmatrix);
-}
-
-CMR_ERROR CMRtestTotalUnimodularityInt(CMR* cmr, CMR_INTMAT* matrix, bool* pisTU, CMR_TU_DEC** pdec, CMR_SUBMAT** psubmatrix)
-{
-  assert(cmr);
-  assert(matrix);
-
-  size_t numComponents;
-  CMR_ONESUM_COMPONENT* components;
-
-  /* Check entries. */
-
-  if (!CMRisTernaryInt(cmr, matrix, psubmatrix))
-    return false;
-
-  /* Perform 1-sum decomposition. */
-
-  CMR_CALL( decomposeOneSum(cmr, (CMR_MATRIX*) matrix, sizeof(int), sizeof(char), &numComponents, &components, NULL, NULL,
-    NULL, NULL) );
-
-  /* Check correct signing for each component. */
-
-  for (int comp = 0; comp < numComponents; ++comp)
-  {
-    CMR_SUBMAT* compSubmatrix;
-    char modified;
-    CMR_CALL( signSequentiallyConnected(cmr, (CMR_CHRMAT*) &components[comp].matrix,
-      (CMR_CHRMAT*) &components[comp].transpose, false, &modified, psubmatrix ? &compSubmatrix : NULL) );
-
-    if (modified)
-    {
-      if (psubmatrix)
-      {
-        /* Translate component indices to indices of whole matrix and sort them again. */
-        for (int r = 0; r < compSubmatrix->numRows; ++r)
-          compSubmatrix->rows[r] = components[comp].rowsToOriginal[compSubmatrix->rows[r]];
-        for (int c = 0; c < compSubmatrix->numColumns; ++c)
-          compSubmatrix->columns[c] = components[comp].columnsToOriginal[compSubmatrix->columns[c]];
-        CMRsortSubmatrix(cmr, compSubmatrix);
-        *psubmatrix = compSubmatrix;
-      }
-
-      for (int c = 0; c < numComponents; ++c)
-      {
-        CMRchrmatFree(cmr, (CMR_CHRMAT**) &components[c].matrix);
-        CMRchrmatFree(cmr, (CMR_CHRMAT**) &components[c].transpose);
-        CMRfreeBlockArray(cmr, &components[c].rowsToOriginal);
-        CMRfreeBlockArray(cmr, &components[c].columnsToOriginal);
-      }
-
-      return false;
-    }
-  }
-
-  return testTotalUnimodularityOneSum(cmr, numComponents, components, pisTU, pdec, psubmatrix);
-}
-
-CMR_ERROR CMRtestTotalUnimodularityChr(CMR* cmr, CMR_CHRMAT* matrix, bool* pisTU, CMR_TU_DEC** pdec, CMR_SUBMAT** psubmatrix)
-{
-  assert(cmr);
-  assert(matrix);
+  return CMR_OKAY;
 
   size_t numComponents;
   CMR_ONESUM_COMPONENT* components;
@@ -220,5 +115,5 @@ CMR_ERROR CMRtestTotalUnimodularityChr(CMR* cmr, CMR_CHRMAT* matrix, bool* pisTU
     }
   }
 
-  return testTotalUnimodularityOneSum(cmr, numComponents, components, pisTU, pdec, psubmatrix);
+  return testTotalUnimodularityOneSum(cmr, numComponents, components, pisTotallyUnimodular, pdec, psubmatrix);
 }

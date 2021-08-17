@@ -10,13 +10,13 @@ The matrix \f$ M(D,T) \in \{-1,0,1\}^{T \times (A \setminus T)} \f$ defined via
   \end{cases}
 \f]
 is called the **network matrix** of \f$ D \f$ with respect to \f$ T \f$.
-A matrix \f$ A \f$ is called **network matrix** if there exists a digraph \f$ D \f$ with a directed spanning forest \f$ T \f$ such that \f$ A = M(D,T) \f$.
-Moreover, \f$ A \f$ is called **conetwork matrix** if \f$ A^{\textsf{T}} \f$ is a network matrix.
+A matrix \f$ M \f$ is called **network matrix** if there exists a digraph \f$ D \f$ with a directed spanning forest \f$ T \f$ such that \f$ M = M(D,T) \f$.
+Moreover, \f$ M \f$ is called **conetwork matrix** if \f$ M^{\textsf{T}} \f$ is a network matrix.
 
 ## Usage ##
 
 The executable `cmr-network` converts digraphs to (co)network matrices and vice versa.
-In particular, for a given matrix \f$ A \f$, it determines whether \f$ A \f$ is (co)network.
+In particular, for a given matrix \f$ M \f$, it determines whether \f$ M \f$ is (co)network.
 
     ./cmr-network [OPTION]... FILE
 
@@ -31,8 +31,7 @@ If FILE is `-`, then the input will be read from stdin.
 
 ## Algorithm ##
 
-The implemented algorithm is based on [An Almost Linear-Time Algorithm for Graph Realization](https://doi.org/10.1287/moor.13.1.99) by Robert E. Bixby and Donald K. Wagner (Mathematics of Operations Research, 1988).
-For a matrix \f$ A \in \{0,1\}^{m \times n}\f$ with \f$ k \f$ nonzeros it runs in \f$ \mathcal{O}( k \cdot \alpha(k, m) ) \f$ time, where \f$ \alpha(\cdot) \f$ denotes the inverse Ackerman function.
+The implemented recognition algorithm first tests the support matrix of \f$ M \f$ for being [(co)graphic](\ref graphic) and uses \ref camion for testing whether \f$ M \f$ is signed correctly.
 
 ## C Interface ##
 
