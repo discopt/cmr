@@ -4,7 +4,7 @@
 #include <assert.h>
 
 #include <cmr/matrix.h>
-#include <cmr/sign.h>
+#include <cmr/camion.h>
 
 typedef enum
 {
@@ -17,7 +17,8 @@ typedef enum
 {
   COPY = 0,
   SUPPORT = 1,
-  SIGNED_SUPPORT = 2
+  SIGNED_SUPPORT = 2,
+  CAMION = 3
 } Task;
 
 static
@@ -179,6 +180,14 @@ CMR_ERROR runInt(const char* instanceFileName, Format inputFormat, Format output
     CMR_CALL( printChr(cmr, result, outputFormat, transpose) );
     CMR_CALL( CMRchrmatFree(cmr, &result) );
   }
+  else if (task == CAMION)
+  {
+    CMR_CHRMAT* result = NULL;
+    CMR_CALL( CMRintmatToChr(cmr, matrix, &result) );
+    CMR_CALL( CMRcomputeCamionSigned(cmr, result, NULL, NULL) );
+    CMR_CALL( printChr(cmr, result, outputFormat, transpose) );
+    CMR_CALL( CMRchrmatFree(cmr, &result) );
+  }
   else
   {
     CMR_CALL( printInt(cmr, matrix, outputFormat, transpose) );
@@ -196,12 +205,13 @@ int printUsage(const char* program)
   printf("Usage: %s [OPTION]... MATRIX\n\n", program);
   puts("Copies MATRIX, potentially applying an operation.");
   puts("\nOptions:");
-  puts("  -i, --input FORMAT  Format of MATRIX file, among {dense, sparse}; default: dense.");
-  puts("  -o, --output FORMAT Format of output, among {dense, sparse}; default: same as input.");
-  puts("  -s, --support       Create support matrix instead of copying.");
-  puts("  -t, --transpose     Output transposed matrix (can be combined with other operations).");
-  puts("  -S, --sign          Create signed support matrix instead of copying.");
-  puts("  -d, --double        Use double arithmetic.");
+  puts("  -i FORMAT Format of MATRIX file, among {dense, sparse}; default: dense.");
+  puts("  -o FORMAT Format of output, among {dense, sparse}; default: same as input.");
+  puts("  -t        Output transposed matrix (can be combined with other operations).");
+  puts("  -s        Create support matrix instead of copying.");
+  puts("  -S        Create signed support matrix instead of copying.");
+  puts("  -c        Creates the Camion-signed version instead of copying.");
+  puts("  -d        Use double arithmetic.");
   puts("If MATRIX is `-', then the matrix will be read from stdin.");
   
   return EXIT_FAILURE;
@@ -218,12 +228,12 @@ int main(int argc, char** argv)
   char* instanceFileName = NULL;
   for (int a = 1; a < argc; ++a)
   {
-    if (!strcmp(argv[a], "-h") || !strcmp(argv[a], "--help"))
+    if (!strcmp(argv[a], "-h"))
     {
       printUsage(argv[0]);
       return EXIT_SUCCESS;
     }
-    else if ((!strcmp(argv[a], "-i") || !strcmp(argv[a], "--input")) && a+1 < argc)
+    else if (!strcmp(argv[a], "-i") && a+1 < argc)
     {
       if (!strcmp(argv[a+1], "dense"))
         inputFormat = DENSE;
@@ -236,7 +246,7 @@ int main(int argc, char** argv)
       }
       ++a;
     }
-    else if ((!strcmp(argv[a], "-o") || !strcmp(argv[a], "--output")) && a+1 < argc)
+    else if (!strcmp(argv[a], "-o") && a+1 < argc)
     {
       if (!strcmp(argv[a+1], "dense"))
         outputFormat = DENSE;
@@ -249,13 +259,15 @@ int main(int argc, char** argv)
       }
       ++a;
     }
-    else if (!strcmp(argv[a], "-s") || !strcmp(argv[a], "--support"))
+    else if (!strcmp(argv[a], "-s"))
       task = SUPPORT;
-    else if (!strcmp(argv[a], "-S") || !strcmp(argv[a], "--sign"))
+    else if (!strcmp(argv[a], "-S"))
       task = SIGNED_SUPPORT;
-    else if (!strcmp(argv[a], "-t") || !strcmp(argv[a], "--transpose"))
+    else if (!strcmp(argv[a], "-c"))
+      task = CAMION;
+    else if (!strcmp(argv[a], "-t"))
       transpose = true;
-    else if (!strcmp(argv[a], "-d") || !strcmp(argv[a], "--double"))
+    else if (!strcmp(argv[a], "-d"))
       doubleArithmetic = true;
     else if (!instanceFileName)
       instanceFileName = argv[a];

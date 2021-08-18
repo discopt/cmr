@@ -1908,3 +1908,24 @@ CMR_ERROR CMRsignedSupportChr(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT** psuppor
 
   return CMR_OKAY;
 }
+
+CMR_ERROR CMRintmatToChr(CMR* cmr, CMR_INTMAT* matrix, CMR_CHRMAT** presult)
+{
+  assert(cmr);
+  assert(matrix);
+  assert(presult);
+
+  CMR_CALL( CMRchrmatCreate(cmr, presult, matrix->numRows, matrix->numColumns, matrix->numNonzeros) );
+  CMR_CHRMAT* result = *presult;
+
+  for (size_t row = 0; row < matrix->numRows; ++row)
+    result->rowStarts[row] = matrix->rowStarts[row];
+
+  for (size_t e = 0; e < matrix->numNonzeros; ++e)
+  {
+    result->entryColumns[e] = matrix->entryColumns[e];
+    result->entryValues[e] = matrix->entryValues[e];
+  }
+
+  return CMR_OKAY;
+}

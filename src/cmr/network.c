@@ -2,7 +2,7 @@
 
 #include <cmr/graphic.h>
 #include <cmr/network.h>
-#include <cmr/sign.h>
+#include <cmr/camion.h>
 
 #include "graphic_internal.h"
 #include "env_internal.h"
@@ -84,9 +84,9 @@ CMR_ERROR CMRtestConetworkMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisConetwor
   CMR_CALL( CMRchrmatPrintDense(cmr, stdout, matrix, '0', true) );
 #endif /* CMR_DEBUG */
 
-  bool alreadySigned;
-  CMR_CALL( CMRtestSignChr(cmr, matrix, &alreadySigned, psubmatrix) );
-  if (!alreadySigned)
+  bool isCamionSigned;
+  CMR_CALL( CMRtestCamionSigned(cmr, matrix, &isCamionSigned, psubmatrix) );
+  if (!isCamionSigned)
   {
     *pisConetwork = false;
     return CMR_OKAY;

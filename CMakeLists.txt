@@ -41,12 +41,12 @@ endif()
 
 # Target for the CMR library.
 add_library(cmr
+  src/cmr/camion.c
   src/cmr/decomposition.c
   src/cmr/element.c
   src/cmr/env.c
   src/cmr/matrix.c
   src/cmr/one_sum.c
-  src/cmr/sign.c
   src/cmr/tu.c
   src/cmr/determinant.cpp
   src/cmr/ghouila_houri.cpp
@@ -72,7 +72,7 @@ add_library(cmr
   src/cmr/zero_plus_minus_one.cpp
 )
 
-# Target for the tu-test binary.
+# Target for the tu-test executable.
 add_executable(tu_test
   src/main/main.cpp)
 target_link_libraries(tu_test
@@ -80,6 +80,15 @@ target_link_libraries(tu_test
     CMR::cmr
 )
 set_target_properties(tu_test PROPERTIES OUTPUT_NAME tu-test)
+
+# Target for the cmr-camion executable.
+add_executable(cmr_camion
+   src/main/camion_main.c) 
+target_link_libraries(cmr_camion
+   PRIVATE
+      CMR::cmr
+)
+set_target_properties(cmr_camion PROPERTIES OUTPUT_NAME cmr-camion)
 
 # Target for the cmr-tu.
 add_executable(cmr_tu
@@ -90,7 +99,7 @@ target_link_libraries(cmr_tu
 )
 set_target_properties(cmr_tu PROPERTIES OUTPUT_NAME cmr-tu)
 
-# Target for the cmr-graphic binary.
+# Target for the cmr-graphic executable.
 add_executable(cmr_graphic
    src/main/graphic_main.c)
 target_link_libraries(cmr_graphic
@@ -99,7 +108,7 @@ target_link_libraries(cmr_graphic
 )
 set_target_properties(cmr_graphic PROPERTIES OUTPUT_NAME cmr-graphic)
 
-# Target for the cmr-network binary.
+# Target for the cmr-network executable.
 add_executable(cmr_network
    src/main/network_main.c) 
 target_link_libraries(cmr_network
@@ -108,7 +117,7 @@ target_link_libraries(cmr_network
 )
 set_target_properties(cmr_network PROPERTIES OUTPUT_NAME cmr-network)
 
-# Target for the cmr-series-parallel binary.
+# Target for the cmr-series-parallel executable.
 add_executable(cmr_series_parallel
   src/main/series_parallel_main.c)
 target_link_libraries(cmr_series_parallel

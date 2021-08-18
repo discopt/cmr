@@ -25,7 +25,7 @@ Options:
 Formats for matrices are \ref dense-matrix and \ref sparse-matrix.
 If FILE is `-`, then the input will be read from stdin.
 
-\note A [Camion-signed](\ref camion) version of a matrix can be **computed** via [cmr-convert-matrix](\ref conversions).
+\note A [Camion-signed](\ref camion) version of a matrix can be **computed** via [cmr-convert-matrix -c](\ref conversions).
 
 ## Algorithm ##
 
@@ -37,4 +37,4 @@ For a matrix \f$ M \in \{-1,0,1\}^{m \times n} \f$ it runs in \f$ \mathcal{O}( \
 The functionality is defined in \ref camion.h.
 The main functions are:
 
-  - CMRtestCamion() tests a matrix for being Camion-signed.
+  - CMRtestCamionSigned() tests a matrix for being Camion-signed.

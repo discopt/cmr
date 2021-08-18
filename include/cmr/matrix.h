@@ -782,9 +782,20 @@ CMR_ERROR CMRsupportChr(
 
 CMR_EXPORT
 CMR_ERROR CMRsignedSupportChr(
-  CMR* cmr,               /**< \ref CMR environment. */
-  CMR_CHRMAT* matrix,    /**< Char matrix */
-  CMR_CHRMAT** psupport  /**< Pointer for storing the support matrix of \p matrix. */
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,   /**< Char matrix */
+  CMR_CHRMAT** psupport /**< Pointer for storing the support matrix of \p matrix. */
+);
+
+/**
+ * \brief Converts int matrix to char matrix.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRintmatToChr(
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_INTMAT* matrix,   /**< Input matrix. */
+  CMR_CHRMAT** presult  /**< Output matrix. */
 );
 
 #ifdef __cplusplus

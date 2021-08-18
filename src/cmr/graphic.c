@@ -3,7 +3,6 @@
 // #define CMR_DEBUG_CONSISTENCY /* Uncomment to check consistency of t-decompositions. */
 
 #include <cmr/graphic.h>
-#include <cmr/sign.h>
 
 #include "env_internal.h"
 #include "matrix_internal.h"

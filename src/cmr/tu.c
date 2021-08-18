@@ -2,7 +2,7 @@
 
 #include "matrix_internal.h"
 #include "one_sum.h"
-#include "sign_internal.h"
+#include "camion_internal.h"
 
 #include <stdlib.h>
 #include <assert.h>
@@ -87,8 +87,8 @@ CMR_ERROR CMRtestTotalUnimodularity(CMR* cmr, CMR_CHRMAT* matrix, bool* pisTotal
   {
     CMR_SUBMAT* compSubmatrix;
     char modified;
-    signSequentiallyConnected(cmr, (CMR_CHRMAT*) &components[comp].matrix,
-      (CMR_CHRMAT*) &components[comp].transpose, false, &modified, psubmatrix ? &compSubmatrix : NULL);
+    CMR_CALL( CMRcomputeCamionSignSequentiallyConnected(cmr, (CMR_CHRMAT*) &components[comp].matrix,
+      (CMR_CHRMAT*) &components[comp].transpose, false, &modified, psubmatrix ? &compSubmatrix : NULL) );
 
     if (modified)
     {

@@ -9,7 +9,7 @@ endif()
 # Target for the googletest.
 add_executable(cmr_gtest
   common.c
-  test_sign.cpp
+  test_camion.cpp
   test_graph.cpp
   test_graphic.cpp
   test_hashtable.cpp
