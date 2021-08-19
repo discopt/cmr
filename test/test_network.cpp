@@ -33,13 +33,13 @@ void testNetworkMatrix(
   if (!CMRchrmatCheckEqual(matrix, result))
   {
     printf("Input matrix:\n");
-    ASSERT_CMR_CALL( CMRchrmatPrintDense(cmr, stdout, matrix, '0', true) );
+    ASSERT_CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', true) );
   
     printf("Graph:\n");
     ASSERT_CMR_CALL( CMRgraphPrint(stdout, graph) );
 
     printf("Representation matrix:\n");
-    ASSERT_CMR_CALL( CMRchrmatPrintDense(cmr, stdout, result, '0', true) );
+    ASSERT_CMR_CALL( CMRchrmatPrintDense(cmr, result, stdout, '0', true) );
 
     printf("Basis:");
     for (int r = 0; r < matrix->numRows; ++r)

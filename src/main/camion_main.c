@@ -59,12 +59,12 @@ CMR_ERROR testCamionSigned(
   startClock = clock();
   CMR_CHRMAT* matrix = NULL;
   if (inputFormat == FILEFORMAT_MATRIX_DENSE)
-    CMR_CALL( CMRchrmatCreateFromDenseStream(cmr, &matrix, instanceFile) );
+    CMR_CALL( CMRchrmatCreateFromDenseStream(cmr, instanceFile, &matrix) );
   else if (inputFormat == FILEFORMAT_MATRIX_SPARSE)
-    CMR_CALL( CMRchrmatCreateFromSparseStream(cmr, &matrix, instanceFile) );
+    CMR_CALL( CMRchrmatCreateFromSparseStream(cmr, instanceFile, &matrix) );
   if (instanceFile != stdin)
     fclose(instanceFile);
-  fprintf(stderr, "Read %dx%d matrix with %d nonzeros in %f seconds.\n", matrix->numRows, matrix->numColumns,
+  fprintf(stderr, "Read %lux%lu matrix with %lu nonzeros in %f seconds.\n", matrix->numRows, matrix->numColumns,
     matrix->numNonzeros, (clock() - startClock) * 1.0 / CLOCKS_PER_SEC);
 
   /* Actual test. */
@@ -94,16 +94,15 @@ CMR_ERROR testCamionSigned(
 
     if (printSubmatrix)
     {
-      startClock = clock();
       CMR_CHRMAT* violatorMatrix = NULL;
       CMR_CALL( CMRchrmatFilterSubmat(cmr, matrix, submatrix, &violatorMatrix) );
       endTime = clock();
-      fprintf(stderr, "\nExtracted %dx%d non-camion submatrix with %d nonzeros in %f seconds.\n", violatorMatrix->numRows,
-        violatorMatrix->numColumns, violatorMatrix->numNonzeros, (endTime - startClock) * 1.0 / CLOCKS_PER_SEC );
+      fprintf(stderr, "\nExtracted %lux%lu non-camion submatrix with %lu nonzeros.\n", violatorMatrix->numRows,
+        violatorMatrix->numColumns, violatorMatrix->numNonzeros);
       if (outputFormat == FILEFORMAT_MATRIX_DENSE)
-        CMR_CALL( CMRchrmatPrintDense(cmr, stdout, violatorMatrix, '0', false) );
+        CMR_CALL( CMRchrmatPrintDense(cmr, violatorMatrix, stdout, '0', false) );
       else if (outputFormat == FILEFORMAT_MATRIX_SPARSE)
-        CMR_CALL( CMRchrmatPrintSparse(stdout, violatorMatrix) );
+        CMR_CALL( CMRchrmatPrintSparse(cmr, violatorMatrix, stdout) );
       CMR_CALL( CMRchrmatFree(cmr, &violatorMatrix) );
     }
 

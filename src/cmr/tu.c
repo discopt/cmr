@@ -73,7 +73,7 @@ CMR_ERROR CMRtestTotalUnimodularity(CMR* cmr, CMR_CHRMAT* matrix, bool* pisTotal
 
   /* Check entries. */
 
-  if (!CMRisTernaryChr(cmr, matrix, psubmatrix))
+  if (!CMRchrmatIsTernary(cmr, matrix, psubmatrix))
     return false;
 
   /* Perform 1-sum decomposition. */

@@ -37,6 +37,8 @@ CMR_ERROR CMRcomputeNetworkMatrix(CMR* cmr, CMR_GRAPH* digraph, CMR_CHRMAT** pma
   CMR_CALL( CMRcomputeRepresentationMatrix(cmr, digraph, true, &transpose, arcsReversed, numForestArcs, forestArcs,
     numCoforestArcs, coforestArcs, pisCorrectForest) );
 
+  CMRconsistencyAssert( CMRchrmatConsistency(transpose) );
+
   if (pmatrix)
     CMR_CALL( CMRchrmatTranspose(cmr, transpose, pmatrix) );
 
@@ -229,7 +231,7 @@ CMR_ERROR CMRtestConetworkMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisConetwor
     /* We now go through the columns of the matrix and inspect the signs. */
     for (int componentColumn = 0; componentColumn < componentMatrix->numColumns; ++componentColumn)
     {
-      int column = components[comp].rowsToOriginal[componentColumn];
+      size_t column = components[comp].rowsToOriginal[componentColumn];
 
       CMR_GRAPH_EDGE columnEdge = coforestEdges[column];
       CMR_GRAPH_NODE s = CMRgraphEdgeU(graph, columnEdge);
@@ -237,8 +239,8 @@ CMR_ERROR CMRtestConetworkMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisConetwor
 
       CMRdbgMsg(4, "Inspecting signs of column %d corresponding to %d={%d,%d}.\n", column, columnEdge, s, t);
 
-      int first = matrix->rowStarts[column];
-      int beyond = column == matrix->numRows ? matrix->numNonzeros : matrix->rowStarts[column+1];
+      size_t first = matrix->rowSlice[column];
+      size_t beyond = matrix->rowSlice[column + 1];
       int minDistance = INT_MAX; /* The depth in the BFS tree that the s-r and t-r paths have in common. */
       for (int entry = first; entry < beyond; ++entry)
       {

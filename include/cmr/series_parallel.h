@@ -148,15 +148,13 @@ bool CMRspIsValid(
  * If \p pviolatorSubmatrix is not \c NULL and \p matrix is not binary series-parallel, then a wheel-submatrix is
  * stored.
  *
- * If \p isSorted is \c true, then the running time is \f$ \mathcal{O} (m + n + k) \f$ assuming no hashtable collisions.
- * Otherwise, extra overhead of \f$ \mathcal{O}(k \cdot \log k ) \f$ is caused by sorting all nonzeros.
+ * The running time is \f$ \mathcal{O} (m + n + k) \f$ assuming no hashtable collisions.
  */
 
 CMR_EXPORT
 CMR_ERROR CMRtestBinarySeriesParallel(
   CMR* cmr,                         /**< \ref CMR environment. */
   CMR_CHRMAT* matrix,               /**< Sparse char matrix. */
-  bool isSorted,                    /**< Whether the entries of \p matrix are sorted. */
   bool* pisSeriesParallel,          /**< Pointer for storing the result. */
   CMR_SP_REDUCTION* reductions,     /**< Array for storing the SP-reductions. If not \c NULL, it must have
                                      **  capacity at least number of rows + number of columns. */
@@ -176,15 +174,13 @@ CMR_ERROR CMRtestBinarySeriesParallel(
  * If \p pviolatorSubmatrix is not \c NULL and \p matrix is not ternary series-parallel, then a signed wheel- or
  * \f$ M_2 \f$-submatrix is stored.
  *
- * If \p isSorted is \c true, then the running time is \f$ \mathcal{O} (m + n + k) \f$ assuming no hashtable collisions.
- * Otherwise, extra overhead of \f$ \mathcal{O}(k \cdot \log k ) \f$ is caused by sorting all nonzeros.
+ * The running time is \f$ \mathcal{O} (m + n + k) \f$ assuming no hashtable collisions.
  */
 
 CMR_EXPORT
 CMR_ERROR CMRtestTernarySeriesParallel(
   CMR* cmr,                         /**< \ref CMR environment. */
   CMR_CHRMAT* matrix,               /**< Sparse char matrix. */
-  bool isSorted,                    /**< Whether the entries of \p matrix are sorted. */
   bool* pisSeriesParallel,          /**< Pointer for storing the result. */
   CMR_SP_REDUCTION* reductions,     /**< Array for storing the SP-reductions. If not \c NULL, it must have
                                      **  capacity at least number of rows + number of columns. */
@@ -208,15 +204,13 @@ CMR_ERROR CMRtestTernarySeriesParallel(
  * If during the search for a wheel-submatrix a 2-separation that does not correspond to an SP reduction is found then
  * such a 2-separation is returned and the algorithm terminates.
  *
- * If \p isSorted is \c true, then the running time is \f$ \mathcal{O} (m + n + k) \f$ assuming no hashtable collisions.
- * Otherwise, extra overhead of \f$ \mathcal{O}(k \cdot \log k ) \f$ is caused by sorting all nonzeros.
+ * The running time is \f$ \mathcal{O} (m + n + k) \f$ assuming no hashtable collisions.
  */
 
 CMR_EXPORT
 CMR_ERROR CMRdecomposeBinarySeriesParallel(
   CMR* cmr,                             /**< \ref CMR environment. */
   CMR_CHRMAT* matrix,                   /**< Sparse char matrix. */
-  bool isSorted,                        /**< Whether the entries of \p matrix are sorted. */
   bool* pisSeriesParallel,              /**< Pointer for storing the result. */
   CMR_SP_REDUCTION* reductions,         /**< Array for storing the SP-reductions. If not \c NULL, it must have
                                          **  capacity at least number of rows + number of columns. */

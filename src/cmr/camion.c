@@ -24,11 +24,11 @@ typedef struct
 
 CMR_ERROR CMRcomputeCamionSignSequentiallyConnected(
   CMR* cmr,               /**< \ref CMR environment. */
-  CMR_CHRMAT* matrix,      /**< The matrix to be signed. */
-  CMR_CHRMAT* transpose,   /**< The transpose of \p matrix. */
+  CMR_CHRMAT* matrix,     /**< The matrix to be signed. */
+  CMR_CHRMAT* transpose,  /**< The transpose of \p matrix. */
   bool change,            /**< Whether to modify the matrix. */
   char* pmodification,    /**< Pointer for storing which matrix was modified.*/
-  CMR_SUBMAT** psubmatrix  /**< Pointer for storing a submatrix with bad determinant (may be \c NULL). */
+  CMR_SUBMAT** psubmatrix /**< Pointer for storing a submatrix with bad determinant (may be \c NULL). */
 )
 {
   assert(cmr);
@@ -36,8 +36,10 @@ CMR_ERROR CMRcomputeCamionSignSequentiallyConnected(
   assert(transpose);
   assert(pmodification);
 
-  assert(CMRchrmatCheckTranspose(matrix, transpose));
-  assert(CMRisTernaryChr(cmr, matrix, NULL));
+  bool isTranspose;
+  CMR_CALL( CMRchrmatCheckTranspose(cmr, matrix, transpose, &isTranspose) );
+  assert(isTranspose);
+  assert(CMRchrmatIsTernary(cmr, matrix, NULL));
 
   /* If we have more rows than columns, we work with the transpose. */
   if (matrix->numRows > matrix->numColumns)
@@ -84,18 +86,18 @@ CMR_ERROR CMRcomputeCamionSignSequentiallyConnected(
     }
 
     bool rowChanged = false;
-    int begin = matrix->rowStarts[row];
-    int end = (row + 1 < matrix->numRows) ? matrix->rowStarts[row+1] : matrix->numNonzeros;
-    if (begin == end)
+    size_t first = matrix->rowSlice[row];
+    size_t beyond = matrix->rowSlice[row + 1];
+    if (first == beyond)
     {
       CMRdbgMsg(2, "Empty row.\n");
       continue;
     }
 
     /* First nonzero in row determines start column node. */
-    int startNode = matrix->entryColumns[begin];
+    int startNode = matrix->entryColumns[first];
     /* All columns of the row's nonzeros are target column nodes. */
-    for (int e = begin; e < end; ++e)
+    for (int e = first; e < beyond; ++e)
       graphNodes[matrix->entryColumns[e]].targetValue = matrix->entryValues[e];
     bfsQueue[0] = startNode;
     graphNodes[startNode].status = 1;
@@ -115,9 +117,9 @@ CMR_ERROR CMRcomputeCamionSignSequentiallyConnected(
         CMRdbgMsg(4, "Current node is %d (row %d), queue length is %d\n", currentNode, r, bfsQueueEnd - bfsQueueBegin);
 
         /* Iterate over outgoing edges. */
-        begin = matrix->rowStarts[r];
-        end = (r+1 < matrix->numRows) ? matrix->rowStarts[r+1] : matrix->numNonzeros;
-        for (int e = begin; e < end; ++e)
+        first = matrix->rowSlice[r];
+        beyond = matrix->rowSlice[r + 1];
+        for (int e = first; e < beyond; ++e)
         {
           int c = matrix->entryColumns[e];
           if (graphNodes[c].status == 0)
@@ -194,11 +196,11 @@ CMR_ERROR CMRcomputeCamionSignSequentiallyConnected(
           bfsQueueEnd - bfsQueueBegin);
 
         /* Iterate over outgoing edges. */
-        begin = transpose->rowStarts[c];
-        end = (c+1 < transpose->numRows) ? transpose->rowStarts[c+1] : transpose->numNonzeros;
-        for (int e = begin; e < end; ++e)
+        first = transpose->rowSlice[c];
+        beyond = transpose->rowSlice[c + 1];
+        for (size_t e = first; e < beyond; ++e)
         {
-          int r = transpose->entryColumns[e];
+          size_t r = transpose->entryColumns[e];
           /* Only rows before current iteration row participate. */
           if (r >= row)
             break;
@@ -229,9 +231,9 @@ CMR_ERROR CMRcomputeCamionSignSequentiallyConnected(
 
     if (rowChanged)
     {
-      begin = matrix->rowStarts[row];
-      end = (row+1 < matrix->numRows) ? matrix->rowStarts[row+1] : matrix->numNonzeros;
-      for (int e = begin; e < end; ++e)
+      first = matrix->rowSlice[row];
+      beyond = matrix->rowSlice[row + 1];
+      for (int e = first; e < beyond; ++e)
       {
         int column = matrix->entryColumns[e];
         if (matrix->entryValues[e] != graphNodes[column].targetValue)
@@ -275,7 +277,7 @@ CMR_ERROR sign(
   size_t numComponents;
   CMR_ONESUM_COMPONENT* components = NULL;
 
-  assert(CMRisTernaryChr(cmr, matrix, NULL));
+  assert(CMRchrmatIsTernary(cmr, matrix, NULL));
 
 #if defined(CMR_DEBUG)
   CMRdbgMsg(0, "sign:\n");
@@ -317,9 +319,9 @@ CMR_ERROR sign(
     {
       assert(psubmatrix && !*psubmatrix);
       /* Translate component indices to indices of whole matrix and sort them again. */
-      for (int r = 0; r < compSubmatrix->numRows; ++r)
+      for (size_t r = 0; r < compSubmatrix->numRows; ++r)
         compSubmatrix->rows[r] = components[comp].rowsToOriginal[compSubmatrix->rows[r]];
-      for (int c = 0; c < compSubmatrix->numColumns; ++c)
+      for (size_t c = 0; c < compSubmatrix->numColumns; ++c)
         compSubmatrix->columns[c] = components[comp].columnsToOriginal[compSubmatrix->columns[c]];
       CMRsortSubmatrix(cmr, compSubmatrix);
       *psubmatrix = compSubmatrix;
@@ -341,29 +343,28 @@ CMR_ERROR sign(
       (CMR_CHRMAT*) components[comp].matrix;
 
     /* We have to copy the changes back to the original matrix. */
-    for (int sourceRow = 0; sourceRow < sourceMatrix->numRows; ++sourceRow)
+    for (size_t sourceRow = 0; sourceRow < sourceMatrix->numRows; ++sourceRow)
     {
-      int sourceBegin = sourceMatrix->rowStarts[sourceRow];
-      int sourceEnd = (sourceRow + 1 < sourceMatrix->numRows) ? sourceMatrix->rowStarts[sourceRow + 1]
-        : sourceMatrix->numNonzeros;
-      for (int sourceEntry = sourceBegin; sourceEntry < sourceEnd; ++sourceEntry)
+      size_t sourceFirst = sourceMatrix->rowSlice[sourceRow];
+      size_t sourceBeyond = sourceMatrix->rowSlice[sourceRow + 1];
+      for (size_t  sourceEntry = sourceFirst; sourceEntry < sourceBeyond; ++sourceEntry)
       {
-        int sourceColumn = sourceMatrix->entryColumns[sourceEntry];
-        int compRow = copyTranspose ? sourceColumn : sourceRow;
-        int compColumn = copyTranspose ? sourceRow : sourceColumn;
-        int row = components[comp].rowsToOriginal[compRow];
-        int column = components[comp].columnsToOriginal[compColumn];
+        size_t sourceColumn = sourceMatrix->entryColumns[sourceEntry];
+        size_t compRow = copyTranspose ? sourceColumn : sourceRow;
+        size_t compColumn = copyTranspose ? sourceRow : sourceColumn;
+        size_t row = components[comp].rowsToOriginal[compRow];
+        size_t column = components[comp].columnsToOriginal[compColumn];
 
         CMRdbgMsg(4, "Searching entry for row %d and column %d.\n", row, column);
 
         /* Perform binary search in row of original matrix to find the column. */
 
-        int lower = matrix->rowStarts[row];
-        int upper = (row + 1 < matrix->numRows) ? matrix->rowStarts[row + 1] : matrix->numNonzeros;
+        size_t lower = matrix->rowSlice[row];
+        size_t upper = matrix->rowSlice[row + 1];
         while (lower < upper)
         {
-          int entry = (lower + upper) / 2;
-          int searchColumn = matrix->entryColumns[entry];
+          size_t entry = (lower + upper) / 2;
+          size_t searchColumn = matrix->entryColumns[entry];
           if (column < searchColumn)
             upper = entry;
           else if (column > searchColumn)

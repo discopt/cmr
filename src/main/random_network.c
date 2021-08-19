@@ -78,7 +78,7 @@ int main(int argc, const char** argv)
       column[second-1] = 1;
       second = nextTreeNode[second];
     }
-    transposed->rowStarts[e] = transposed->numNonzeros;
+    transposed->rowSlice[e] = transposed->numNonzeros;
     for (int v = 1; v < numNodes; ++v)
     {
       if (column[v-1])

@@ -32,8 +32,8 @@ CMR_ERROR CMRcomplementRowColumn(CMR* cmr, CMR_CHRMAT* matrix, size_t complement
     dense[i] = false;
   for (size_t row = 0; row < matrix->numRows; ++row)
   {
-    size_t first = matrix->rowStarts[row];
-    size_t beyond = (row+1 < matrix->numRows) ? matrix->rowStarts[row+1] : matrix->numNonzeros;
+    size_t first = matrix->rowSlice[row];
+    size_t beyond = matrix->rowSlice[row + 1];
     for (size_t e = first; e < beyond; ++e)
     {
       size_t column = matrix->entryColumns[e];
@@ -110,7 +110,7 @@ CMR_ERROR CMRcomplementRowColumn(CMR* cmr, CMR_CHRMAT* matrix, size_t complement
   countNonzeros = 0;
   for (size_t row = 0; row < matrix->numRows; ++row)
   {
-    result->rowStarts[row] = countNonzeros;
+    result->rowSlice[row] = countNonzeros;
     for (size_t column = 0; column < matrix->numColumns; ++column)
     {
       if (dense[entry])

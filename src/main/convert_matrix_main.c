@@ -36,9 +36,9 @@ CMR_ERROR printDbl(CMR* cmr, CMR_DBLMAT* matrix, Format outputFormat, bool trans
 
   CMR_ERROR error = CMR_OKAY;
   if (outputFormat == SPARSE)
-    CMR_CALL( CMRdblmatPrintSparse(stdout, output) );
+    CMR_CALL( CMRdblmatPrintSparse(cmr, output, stdout) );
   else if (outputFormat == DENSE)
-    CMR_CALL( CMRdblmatPrintDense(stdout, output, '0', false) );
+    CMR_CALL( CMRdblmatPrintDense(cmr, output, stdout, '0', false) );
   else
     error = CMR_ERROR_INPUT;
 
@@ -63,9 +63,9 @@ CMR_ERROR printInt(CMR* cmr, CMR_INTMAT* matrix, Format outputFormat, bool trans
 
   CMR_ERROR error = CMR_OKAY;
   if (outputFormat == SPARSE)
-    CMR_CALL( CMRintmatPrintSparse(stdout, output) );
+    CMR_CALL( CMRintmatPrintSparse(cmr, output, stdout) );
   else if (outputFormat == DENSE)
-    CMR_CALL( CMRintmatPrintDense(stdout, output, '0', false) );
+    CMR_CALL( CMRintmatPrintDense(cmr, output, stdout, '0', false) );
   else
     error = CMR_ERROR_INPUT;
 
@@ -90,9 +90,9 @@ CMR_ERROR printChr(CMR* cmr, CMR_CHRMAT* matrix, Format outputFormat, bool trans
 
   CMR_ERROR error = CMR_OKAY;
   if (outputFormat == SPARSE)
-    CMR_CALL( CMRchrmatPrintSparse(stdout, output) );
+    CMR_CALL( CMRchrmatPrintSparse(cmr, output, stdout) );
   else if (outputFormat == DENSE)
-    CMR_CALL( CMRchrmatPrintDense(cmr, stdout, output, '0', false) );
+    CMR_CALL( CMRchrmatPrintDense(cmr, output, stdout, '0', false) );
   else
     error = CMR_ERROR_INPUT;
 
@@ -113,9 +113,9 @@ CMR_ERROR runDbl(const char* instanceFileName, Format inputFormat, Format output
 
   CMR_DBLMAT* matrix = NULL;
   if (inputFormat == SPARSE)
-    CMR_CALL( CMRdblmatCreateFromSparseStream(cmr, &matrix, instanceFile) );
+    CMR_CALL( CMRdblmatCreateFromSparseStream(cmr, instanceFile, &matrix) );
   else if (inputFormat == DENSE)
-    CMR_CALL( CMRdblmatCreateFromDenseStream(cmr, &matrix, instanceFile) );
+    CMR_CALL( CMRdblmatCreateFromDenseStream(cmr, instanceFile, &matrix) );
   else
     return CMR_ERROR_INPUT;
   if (instanceFile != stdin)
@@ -124,14 +124,14 @@ CMR_ERROR runDbl(const char* instanceFileName, Format inputFormat, Format output
   if (task == SUPPORT)
   {
     CMR_CHRMAT* result = NULL;
-    CMR_CALL( CMRsupportDbl(cmr, matrix, 1.0e-9, &result) );
+    CMR_CALL( CMRdblmatSupport(cmr, matrix, 1.0e-9, &result) );
     CMR_CALL( printChr(cmr, result, outputFormat, transpose) );
     CMR_CALL( CMRchrmatFree(cmr, &result) );
   }
   else if (task == SIGNED_SUPPORT)
   {
     CMR_CHRMAT* result = NULL;
-    CMR_CALL( CMRsignedSupportDbl(cmr, matrix, 1.0e-9, &result) );
+    CMR_CALL( CMRdblmatSignedSupport(cmr, matrix, 1.0e-9, &result) );
     CMR_CALL( printChr(cmr, result, outputFormat, transpose) );
     CMR_CALL( CMRchrmatFree(cmr, &result) );
   }
@@ -158,9 +158,9 @@ CMR_ERROR runInt(const char* instanceFileName, Format inputFormat, Format output
 
   CMR_INTMAT* matrix = NULL;
   if (inputFormat == SPARSE)
-    CMR_CALL( CMRintmatCreateFromSparseStream(cmr, &matrix, instanceFile) );
+    CMR_CALL( CMRintmatCreateFromSparseStream(cmr, instanceFile, &matrix) );
   else if (inputFormat == DENSE)
-    CMR_CALL( CMRintmatCreateFromDenseStream(cmr, &matrix, instanceFile) );
+    CMR_CALL( CMRintmatCreateFromDenseStream(cmr, instanceFile, &matrix) );
   else
     return CMR_ERROR_INPUT;
   if (instanceFile != stdin)
@@ -169,14 +169,14 @@ CMR_ERROR runInt(const char* instanceFileName, Format inputFormat, Format output
   if (task == SUPPORT)
   {
     CMR_CHRMAT* result = NULL;
-    CMR_CALL( CMRsupportInt(cmr, matrix, &result) );
+    CMR_CALL( CMRintmatSupport(cmr, matrix, &result) );
     CMR_CALL( printChr(cmr, result, outputFormat, transpose) );
     CMR_CALL( CMRchrmatFree(cmr, &result) );
   }
   else if (task == SIGNED_SUPPORT)
   {
     CMR_CHRMAT* result = NULL;
-    CMR_CALL( CMRsignedSupportInt(cmr, matrix, &result) );
+    CMR_CALL( CMRintmatSignedSupport(cmr, matrix, &result) );
     CMR_CALL( printChr(cmr, result, outputFormat, transpose) );
     CMR_CALL( CMRchrmatFree(cmr, &result) );
   }

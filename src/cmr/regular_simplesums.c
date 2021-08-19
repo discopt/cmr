@@ -36,8 +36,8 @@
 //     for (int row = 0; row < matrix->numRows; ++row)
 //     {
 //       rowNonzeros[row] =
-//         (row + 1 < matrix->numRows ? matrix->rowStarts[row + 1] : matrix->numNonzeros)
-//         - matrix->rowStarts[row];
+//         (row + 1 < matrix->numRows ? matrix->rowSlice[row + 1] : matrix->numNonzeros)
+//         - matrix->rowSlice[row];
 //       if (rowNonzeros[row] == 1)
 //       {
 //         queue[queueEnd] = -1 - row;
@@ -48,8 +48,8 @@
 //     for (int column = 0; column < matrix->numColumns; ++column)
 //     {
 //       columnNonzeros[column] =
-//         (column + 1 < matrix->numColumns ? transpose->rowStarts[column + 1] : matrix->numNonzeros)
-//         - transpose->rowStarts[column];
+//         (column + 1 < matrix->numColumns ? transpose->rowSlice[column + 1] : matrix->numNonzeros)
+//         - transpose->rowSlice[column];
 //       if (columnNonzeros[column] == 1)
 //       {
 //         queue[queueEnd] = column;
@@ -76,16 +76,16 @@
 //         {
 //           int row = -1 - element;
 //           CMRchrmatCreate(cmr, &result->children[0]->matrix, 2, 1, 2);
-//           result->children[1]->matrix->rowStarts[0] = 0;
-//           result->children[1]->matrix->rowStarts[1] = 1;
-//           result->children[1]->matrix->rowStarts[2] = 2;
+//           result->children[1]->matrix->rowSlice[0] = 0;
+//           result->children[1]->matrix->rowSlice[1] = 1;
+//           result->children[1]->matrix->rowSlice[2] = 2;
 //           result->children[1]->matrix->entryColumns[0] = 0;
 //           result->children[1]->matrix->entryColumns[1] = 0;
-//           result->children[1]->matrix->entryValues[0] = matrix->entryValues[matrix->rowStarts[row]];
+//           result->children[1]->matrix->entryValues[0] = matrix->entryValues[matrix->rowSlice[row]];
 //           result->children[1]->matrix->entryValues[1] = 1;
-//           int column = matrix->entryColumns[matrix->rowStarts[row]];
-//           int begin = transpose->rowStarts[column];
-//           int end = column < transpose->numRows ? transpose->rowStarts[column + 1]
+//           int column = matrix->entryColumns[matrix->rowSlice[row]];
+//           int begin = transpose->rowSlice[column];
+//           int end = column < transpose->numRows ? transpose->rowSlice[column + 1]
 //             : transpose->numNonzeros;
 //           int otherRow = -1;
 //           for (int entry = begin; entry < end; ++entry)
@@ -122,19 +122,19 @@
 //           int entry = 0;
 //           for (int r = 0; r < result->matrix->numRows; ++r)
 //           {
-//             result->children[1]->matrix->rowStarts[r] = entry;
+//             result->children[1]->matrix->rowSlice[r] = entry;
 //             int begin, end, offset;
 //             if (r < row)
 //             {
-//               begin = result->matrix->rowStarts[r];
-//               end = r + 1 < result->matrix->numRows ? result->matrix->rowStarts[r + 1]
+//               begin = result->matrix->rowSlice[r];
+//               end = r + 1 < result->matrix->numRows ? result->matrix->rowSlice[r + 1]
 //                 : result->matrix->numNonzeros;
 //               offset = 0;
 //             }
 //             else if (r > row)
 //             {
-//               begin = result->matrix->rowStarts[r + 1];
-//               end = r + 2 < result->matrix->numRows ? result->matrix->rowStarts[r + 2]
+//               begin = result->matrix->rowSlice[r + 1];
+//               end = r + 2 < result->matrix->numRows ? result->matrix->rowSlice[r + 2]
 //                 : result->matrix->numNonzeros;
 //               offset = 1;
 //             }
@@ -152,15 +152,15 @@
 //         {
 //           int column = element;
 //           CMRchrmatCreate(cmr, &result->children[0]->matrix, 1, 2, 2);
-//           result->children[1]->matrix->rowStarts[0] = 0;
-//           result->children[1]->matrix->rowStarts[1] = 2;
+//           result->children[1]->matrix->rowSlice[0] = 0;
+//           result->children[1]->matrix->rowSlice[1] = 2;
 //           result->children[1]->matrix->entryColumns[0] = 0;
 //           result->children[1]->matrix->entryColumns[1] = 1;
-//           result->children[1]->matrix->entryValues[0] = transpose->entryValues[transpose->rowStarts[column]];
+//           result->children[1]->matrix->entryValues[0] = transpose->entryValues[transpose->rowSlice[column]];
 //           result->children[1]->matrix->entryValues[1] = 1;
-//           int row = transpose->entryColumns[transpose->rowStarts[column]];
-//           int begin = matrix->rowStarts[row];
-//           int end = row < matrix->numRows ? matrix->rowStarts[row + 1] : matrix->numNonzeros;
+//           int row = transpose->entryColumns[transpose->rowSlice[column]];
+//           int begin = matrix->rowSlice[row];
+//           int end = row < matrix->numRows ? matrix->rowSlice[row + 1] : matrix->numNonzeros;
 //           int otherColumn = -1;
 //           for (int entry = begin; entry < end; ++entry)
 //           {
@@ -196,19 +196,19 @@
 //           int entry = 0;
 //           for (int r = 0; r < result->transpose->numRows; ++r)
 //           {
-//             result->children[1]->transpose->rowStarts[r] = entry;
+//             result->children[1]->transpose->rowSlice[r] = entry;
 //             int begin, end, offset;
 //             if (r < row)
 //             {
-//               begin = result->transpose->rowStarts[r];
-//               end = r + 1 < result->transpose->numRows ? result->transpose->rowStarts[r + 1]
+//               begin = result->transpose->rowSlice[r];
+//               end = r + 1 < result->transpose->numRows ? result->transpose->rowSlice[r + 1]
 //                 : result->transpose->numNonzeros;
 //               offset = 0;
 //             }
 //             else if (r > row)
 //             {
-//               begin = result->transpose->rowStarts[r + 1];
-//               end = r + 2 < result->transpose->numRows ? result->transpose->rowStarts[r + 2]
+//               begin = result->transpose->rowSlice[r + 1];
+//               end = r + 2 < result->transpose->numRows ? result->transpose->rowSlice[r + 2]
 //                 : result->transpose->numNonzeros;
 //               offset = 1;
 //             }
