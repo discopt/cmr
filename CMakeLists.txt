@@ -42,6 +42,7 @@ endif()
 # Target for the CMR library.
 add_library(cmr
   src/cmr/camion.c
+  src/cmr/ctu.c
   src/cmr/decomposition.c
   src/cmr/element.c
   src/cmr/env.c

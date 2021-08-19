@@ -14,17 +14,18 @@ if(DOXYGEN_FOUND)
   set(DOXYGEN_HTML_EXTRA_STYLESHEET "doxygen-awesome-css/doxygen-awesome.css")
   doxygen_add_docs(doc
     ${CMAKE_CURRENT_SOURCE_DIR}/index.md
-    ${CMAKE_CURRENT_SOURCE_DIR}/file-formats.md
-    ${CMAKE_CURRENT_SOURCE_DIR}/camion.md
-    ${CMAKE_CURRENT_SOURCE_DIR}/tu.md
-    ${CMAKE_CURRENT_SOURCE_DIR}/network.md
-    ${CMAKE_CURRENT_SOURCE_DIR}/regular.md
-    ${CMAKE_CURRENT_SOURCE_DIR}/graphic.md
-    ${CMAKE_CURRENT_SOURCE_DIR}/series-parallel.md
     ${CMAKE_CURRENT_SOURCE_DIR}/balanced.md
-    ${CMAKE_CURRENT_SOURCE_DIR}/perfect.md
+    ${CMAKE_CURRENT_SOURCE_DIR}/camion.md
     ${CMAKE_CURRENT_SOURCE_DIR}/consecutive-ones.md
     ${CMAKE_CURRENT_SOURCE_DIR}/conversions.md
+    ${CMAKE_CURRENT_SOURCE_DIR}/ctu.md
+    ${CMAKE_CURRENT_SOURCE_DIR}/file-formats.md
+    ${CMAKE_CURRENT_SOURCE_DIR}/graphic.md
+    ${CMAKE_CURRENT_SOURCE_DIR}/network.md
+    ${CMAKE_CURRENT_SOURCE_DIR}/perfect.md
+    ${CMAKE_CURRENT_SOURCE_DIR}/regular.md
+    ${CMAKE_CURRENT_SOURCE_DIR}/series-parallel.md
+    ${CMAKE_CURRENT_SOURCE_DIR}/tu.md
     ${CMAKE_SOURCE_DIR}/include/cmr
     ${CMAKE_SOURCE_DIR}/src/cmr
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
