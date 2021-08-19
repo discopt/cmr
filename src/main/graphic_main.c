@@ -59,9 +59,9 @@ CMR_ERROR matrixToGraph(
 
   CMR_CHRMAT* matrix = NULL;
   if (inputFormat == FILEFORMAT_MATRIX_DENSE)
-    CMR_CALL( CMRchrmatCreateFromDenseStream(cmr, &matrix, instanceFile) );
+    CMR_CALL( CMRchrmatCreateFromDenseStream(cmr, instanceFile, &matrix) );
   else if (inputFormat == FILEFORMAT_MATRIX_SPARSE)
-    CMR_CALL( CMRchrmatCreateFromSparseStream(cmr, &matrix, instanceFile) );
+    CMR_CALL( CMRchrmatCreateFromSparseStream(cmr, instanceFile, &matrix) );
   if (instanceFile != stdin)
     fclose(instanceFile);
 
@@ -254,9 +254,9 @@ CMR_ERROR graphToMatrix(
   fprintf(stderr, "Time: %f\n", (endTime - startTime) * 1.0 / CLOCKS_PER_SEC);
 
   if (outputFormat == FILEFORMAT_MATRIX_DENSE)
-    CMR_CALL( CMRchrmatPrintDense(cmr, stdout, matrix, '0', false) );
+    CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', false) );
   else if (outputFormat == FILEFORMAT_MATRIX_SPARSE)
-    CMR_CALL( CMRchrmatPrintSparse(stdout, matrix) );
+    CMR_CALL( CMRchrmatPrintSparse(cmr, matrix, stdout) );
   else
     assert(false);
 

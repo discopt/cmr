@@ -37,13 +37,13 @@ void testBinaryGraphicMatrix(
   if (!CMRchrmatCheckEqual(matrix, result))
   {
     printf("Input matrix:\n");
-    ASSERT_CMR_CALL( CMRchrmatPrintDense(cmr, stdout, matrix, ' ', true) );
+    ASSERT_CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, ' ', true) );
   
     printf("Graph:\n");
     ASSERT_CMR_CALL( CMRgraphPrint(stdout, graph) );
 
     printf("Representation matrix:\n");
-    ASSERT_CMR_CALL( CMRchrmatPrintDense(cmr, stdout, result, ' ', true) );
+    ASSERT_CMR_CALL( CMRchrmatPrintDense(cmr, result, stdout, ' ', true) );
 
     printf("Basis:");
     for (int r = 0; r < matrix->numRows; ++r)
@@ -533,7 +533,7 @@ TEST(Graphic, RandomMatrix)
     A->numNonzeros = 0;
     for (int row = 0; row < numRows; ++row)
     {
-      A->rowStarts[row] = A->numNonzeros;
+      A->rowSlice[row] = A->numNonzeros;
       for (int column = 0; column < numColumns; ++column)
       {
         if ((rand() * 1.0 / RAND_MAX) < probability)
@@ -544,7 +544,7 @@ TEST(Graphic, RandomMatrix)
         }
       }
     }
-    A->rowStarts[numRows] = A->numNonzeros;
+    A->rowSlice[numRows] = A->numNonzeros;
     
     /* CMRchrmatPrintDense(stdout, A, '0', false); */
 

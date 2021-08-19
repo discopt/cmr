@@ -57,11 +57,11 @@ CMR_ERROR decomposeOneSum(CMR* cmr, CMR_MATRIX* matrix, size_t matrixType, size_
   }
 
   /* Count degrees */
-  for (int row = 0; row < matrix->numRows; ++row)
+  for (size_t row = 0; row < matrix->numRows; ++row)
   {
-    int start = matrix->rowStarts[row];
-    int end = row + 1 < matrix->numRows ?  matrix->rowStarts[row+1] : matrix->numNonzeros;
-    for (int e = start; e < end; ++e)
+    size_t first = matrix->rowSlice[row];
+    size_t beyond = matrix->rowSlice[row + 1];
+    for (size_t e = first; e < beyond; ++e)
     {
       bool isNonzero;
       if (matrixType == sizeof(double))
@@ -92,11 +92,11 @@ CMR_ERROR decomposeOneSum(CMR* cmr, CMR_MATRIX* matrix, size_t matrixType, size_
   graphNodes[numNodes].adjacencyStart = i;
 
   /* Scan entries and create adjacencies. */
-  for (int row = 0; row < matrix->numRows; ++row)
+  for (size_t row = 0; row < matrix->numRows; ++row)
   {
-    int start = matrix->rowStarts[row];
-    int end = row + 1 < matrix->numRows ? matrix->rowStarts[row+1] : matrix->numNonzeros;
-    for (int e = start; e < end; ++e)
+    size_t first = matrix->rowSlice[row];
+    size_t beyond = matrix->rowSlice[row+1];
+    for (size_t e = first; e < beyond; ++e)
     {
       bool isNonzero = false;
       if (matrixType == sizeof(double))
@@ -226,7 +226,7 @@ CMR_ERROR decomposeOneSum(CMR* cmr, CMR_MATRIX* matrix, size_t matrixType, size_
 
     CMR_CALL( CMRallocBlockArray(cmr, &components[comp].rowsToOriginal, compMatrix->numRows) );
     CMR_CALL( CMRallocBlockArray(cmr, &components[comp].columnsToOriginal, compMatrix->numColumns) );
-    CMR_CALL( CMRreallocBlockArray(cmr, &compMatrix->rowStarts, compMatrix->numRows + 1) );
+    CMR_CALL( CMRreallocBlockArray(cmr, &compMatrix->rowSlice, compMatrix->numRows + 1) );
     if (compMatrix->numNonzeros > 0)
       CMR_CALL( CMRallocBlockArray(cmr, &compMatrix->entryColumns, compMatrix->numNonzeros) );
 
@@ -290,7 +290,7 @@ CMR_ERROR decomposeOneSum(CMR* cmr, CMR_MATRIX* matrix, size_t matrixType, size_
     {
       int column = components[comp].columnsToOriginal[compColumn];
       int node = firstColumnNode + column;
-      compTranspose->rowStarts[compColumn] = countNonzeros;
+      compTranspose->rowSlice[compColumn] = countNonzeros;
 #if defined(CMR_DEBUG)
       printf("Component %d's column %d (row of transposed) starts at component entry %d.\n", comp, compColumn,
         countNonzeros);
@@ -299,14 +299,14 @@ CMR_ERROR decomposeOneSum(CMR* cmr, CMR_MATRIX* matrix, size_t matrixType, size_
     }
 
     /* Fill the slices. To ensure that it is sorted, we iterate row-wise. */
-    for (int compRow = 0; compRow < compTranspose->numColumns; ++compRow)
+    for (size_t compRow = 0; compRow < compTranspose->numColumns; ++compRow)
     {
-      int row = components[comp].rowsToOriginal[compRow];
-      int start = matrix->rowStarts[row];
-      int end = row + 1 < matrix->numRows ? matrix->rowStarts[row + 1] : matrix->numNonzeros;
+      size_t row = components[comp].rowsToOriginal[compRow];
+      size_t start = matrix->rowSlice[row];
+      size_t end = matrix->rowSlice[row + 1];
 
       /* Iterate over all entries of that row. */
-      for (int matrixEntry = start; matrixEntry < end; ++matrixEntry)
+      for (size_t matrixEntry = start; matrixEntry < end; ++matrixEntry)
       {
         bool isNonzero = false;
         if (matrixType == sizeof(double))
@@ -320,16 +320,16 @@ CMR_ERROR decomposeOneSum(CMR* cmr, CMR_MATRIX* matrix, size_t matrixType, size_
 
         if (isNonzero)
         {
-          int column = matrix->entryColumns[matrixEntry];
+          size_t column = matrix->entryColumns[matrixEntry];
           int compColumn = graphNodes[firstColumnNode + column].order;
-          int compEntry = compTranspose->rowStarts[compColumn];
+          int compEntry = compTranspose->rowSlice[compColumn];
 #if defined(CMR_DEBUG)
           printf("Component %d contains matrix entry %d in at %d,%d.",
             comp, matrixEntry, row, column);
           printf(" It will be component entry %d at %d,%d\n", compEntry, compRow, compColumn);
 #endif
           compTranspose->entryColumns[compEntry] = compRow;
-          compTranspose->rowStarts[compColumn]++;
+          compTranspose->rowSlice[compColumn]++;
           if (targetType == sizeof(double) && matrixType == sizeof(double))
           {
             ((double*)compTranspose->entryValues)[compEntry] =
@@ -381,11 +381,11 @@ CMR_ERROR decomposeOneSum(CMR* cmr, CMR_MATRIX* matrix, size_t matrixType, size_
       }
     }
 
-    /* Since we incremented the rowStarts for each nonzero, the array is shifted by one entry.
+    /* Since we incremented the rowSlice for each nonzero, the array is shifted by one entry.
      * We restore this now. */
     for (int compColumn = compTranspose->numRows; compColumn > 0; --compColumn)
-      compTranspose->rowStarts[compColumn] = compTranspose->rowStarts[compColumn-1];
-    compTranspose->rowStarts[0] = 0;
+      compTranspose->rowSlice[compColumn] = compTranspose->rowSlice[compColumn-1];
+    compTranspose->rowSlice[0] = 0;
 
 #if defined(CMR_DEBUG)
     printf("Component %d's transpose:\n", comp);
@@ -410,23 +410,23 @@ CMR_ERROR decomposeOneSum(CMR* cmr, CMR_MATRIX* matrix, size_t matrixType, size_
     {
       int row = components[comp].rowsToOriginal[compRow];
       int node = row;
-      compMatrix->rowStarts[compRow] = countNonzeros;
+      compMatrix->rowSlice[compRow] = countNonzeros;
       countNonzeros += graphNodes[node+1].adjacencyStart - graphNodes[node].adjacencyStart;
     }
 
     /* Fill the slices. To ensure that it is sorted, we iterate column-wise. */
     for (int compColumn = 0; compColumn < compMatrix->numColumns; ++compColumn)
     {
-      int start = compTranspose->rowStarts[compColumn];
-      int end = compTranspose->rowStarts[compColumn + 1];
+      int start = compTranspose->rowSlice[compColumn];
+      int end = compTranspose->rowSlice[compColumn + 1];
 
       /* Iterate over all entries of that column. */
       for (int compTransposeEntry = start; compTransposeEntry < end; ++compTransposeEntry)
       {
         int compRow = compTranspose->entryColumns[compTransposeEntry];
-        int compMatrixEntry = compMatrix->rowStarts[compRow];
+        int compMatrixEntry = compMatrix->rowSlice[compRow];
         compMatrix->entryColumns[compMatrixEntry] = compColumn;
-        compMatrix->rowStarts[compRow]++;
+        compMatrix->rowSlice[compRow]++;
 #if defined(CMR_DEBUG)
         printf("Component matrix entry %d (%d,%d in component) copied from component transpose entry %d.\n",
           compMatrixEntry, compRow, compColumn, compTransposeEntry);
@@ -442,27 +442,28 @@ CMR_ERROR decomposeOneSum(CMR* cmr, CMR_MATRIX* matrix, size_t matrixType, size_
       }
     }
 
-    /* Since we incremented the rowStarts for each nonzero, the array is shifted by one entry.
+    /* Since we incremented the rowSlice for each nonzero, the array is shifted by one entry.
      * We restore this now. */
     for (int compRow = compMatrix->numRows; compRow > 0; --compRow)
-      compMatrix->rowStarts[compRow] = compMatrix->rowStarts[compRow-1];
-    compMatrix->rowStarts[0] = 0;
-
+      compMatrix->rowSlice[compRow] = compMatrix->rowSlice[compRow-1];
+    compMatrix->rowSlice[0] = 0;
+    bool isTranspose;
     if (targetType == sizeof(double))
     {
-      assert(CMRdblmatCheckTranspose((CMR_DBLMAT*) components[comp].matrix,
-        (CMR_DBLMAT*) components[comp].transpose));
+      CMR_CALL( CMRdblmatCheckTranspose(cmr, (CMR_DBLMAT*) components[comp].matrix,
+        (CMR_DBLMAT*) components[comp].transpose, &isTranspose) ); 
     }
     else if (targetType == sizeof(int))
     {
-      assert(CMRintmatCheckTranspose((CMR_INTMAT*) components[comp].matrix,
-        (CMR_INTMAT*) components[comp].transpose));
+      CMR_CALL( CMRintmatCheckTranspose(cmr, (CMR_INTMAT*) components[comp].matrix,
+        (CMR_INTMAT*) components[comp].transpose, &isTranspose) ); 
     }
     else if (targetType == sizeof(char))
     {
-      assert(CMRchrmatCheckTranspose((CMR_CHRMAT*) components[comp].matrix,
-        (CMR_CHRMAT*) components[comp].transpose));
+      CMR_CALL( CMRchrmatCheckTranspose(cmr, (CMR_CHRMAT*) components[comp].matrix,
+        (CMR_CHRMAT*) components[comp].transpose, &isTranspose) );
     }
+    assert(isTranspose);
   }
 
   /* Fill arrays for original matrix viewpoint. */

@@ -44,17 +44,6 @@ typedef struct
   bool reversed;          /**< \brief Whether the edge towards the predecessor is reversed. */
 } DijkstraNodeData;
 
-/**
- * \brief Comparator for sorting ints using \ref CMRsort2 in ascending way.
- */
-
-int compareInt2(const void** A, const void** B)
-{
-  int** a = (int**) A;
-  int** b = (int**) B;
-  return **a - **b;
-}
-
 CMR_ERROR CMRcomputeRepresentationMatrix(CMR* cmr, CMR_GRAPH* digraph, bool ternary, CMR_CHRMAT** ptranspose,
   bool* arcsReversed, int numForestArcs, CMR_GRAPH_EDGE* forestArcs, int numCoforestArcs, CMR_GRAPH_EDGE* coforestArcs,
   bool* pisCorrectForest)
@@ -260,7 +249,7 @@ CMR_ERROR CMRcomputeRepresentationMatrix(CMR* cmr, CMR_GRAPH* digraph, bool tern
       SWAP_INTS(u, v);
     CMRdbgMsg(4, "Edge %d = (%d,%d) (including reverse)\n", e, u, v);
 
-    transpose->rowStarts[numColumns] = numNonzeros;
+    transpose->rowSlice[numColumns] = numNonzeros;
     edgeColumns[e] = numColumns;
 
     /* Enlarge space for nonzeros if necessary. */
@@ -314,11 +303,11 @@ CMR_ERROR CMRcomputeRepresentationMatrix(CMR* cmr, CMR_GRAPH* digraph, bool tern
       ++numNonzeros;
     }
 
-    CMR_CALL( CMRsort2(cmr, uPathLength + vPathLength, &transpose->entryColumns[transpose->rowStarts[numColumns]],
-      sizeof(int), &transpose->entryValues[transpose->rowStarts[numColumns]], sizeof(char), compareInt2) );
-
     ++numColumns;
   }
+  transpose->rowSlice[numColumns] = numNonzeros;
+
+  CMRchrmatSortNonzeros(cmr, transpose);
 
   CMRassertStackConsistency(cmr);
 
@@ -326,7 +315,7 @@ CMR_ERROR CMRcomputeRepresentationMatrix(CMR* cmr, CMR_GRAPH* digraph, bool tern
   CMR_CALL( CMRfreeStackArray(cmr, &uPath) );
   CMR_CALL( CMRfreeStackArray(cmr, &edgeColumns) );
 
-  transpose->rowStarts[numColumns] = numNonzeros;
+  transpose->rowSlice[numColumns] = numNonzeros;
   if (numNonzeros == 0 && transpose->numNonzeros > 0)
   {
     CMR_CALL( CMRfreeBlockArray(cmr, &transpose->entryColumns) );
@@ -2010,9 +1999,9 @@ CMR_ERROR parallelParentChildCheckMember(
 
 static
 CMR_ERROR parallelParentChildCheckReducedMembers(
-  Dec* dec,       /**< Decomposition. */
-  int* entryRows, /**< Array of rows of new column's enries. */
-  int numEntries  /**< Length of \p entryRows. */
+  Dec* dec,           /**< Decomposition. */
+  size_t* entryRows,  /**< Array of rows of new column's enries. */
+  size_t numEntries   /**< Length of \p entryRows. */
 )
 {
   assert(dec);
@@ -2137,8 +2126,8 @@ static
 CMR_ERROR computeReducedDecomposition(
   Dec* dec,                 /**< Decomposition. */
   DEC_NEWCOLUMN* newcolumn, /**< newcolumn. */
-  int* entryRows,           /**< Array of rows of new column's enries. */
-  int numEntries            /**< Length of \p entryRows. */
+  size_t* entryRows,        /**< Array of rows of new column's enries. */
+  size_t numEntries         /**< Length of \p entryRows. */
 )
 {
   /* Identify all members on the path. For the induced sub-arborescence we also compute the
@@ -2327,8 +2316,8 @@ static
 CMR_ERROR completeReducedDecomposition(
   Dec* dec,                 /**< Decomposition. */
   DEC_NEWCOLUMN* newcolumn, /**< newcolumn. */
-  int* rows,                /**< Array of rows (of new column's entries). */
-  int numRows               /**< Length of \p rows. */
+  size_t* rows,             /**< Array of rows (of new column's entries). */
+  size_t numRows            /**< Length of \p rows. */
 )
 {
   assert(dec);
@@ -2438,8 +2427,8 @@ static
 CMR_ERROR createReducedDecompositionPathEdges(
   Dec* dec,                 /**< Decomposition. */
   DEC_NEWCOLUMN* newcolumn, /**< newcolumn. */
-  int* rows,                /**< Array of rows (of new column's enries). */
-  int numRows               /**< Length of \p rows. */
+  size_t* rows,             /**< Array of rows (of new column's enries). */
+  size_t numRows            /**< Length of \p rows. */
 )
 {
   assert(dec);
@@ -3352,8 +3341,8 @@ CMR_ERROR determineTypes(
 CMR_ERROR addColumnCheck(
   Dec* dec,                 /**< Decomposition. */
   DEC_NEWCOLUMN* newcolumn, /**< newcolumn. */
-  int* rows,                /**< Array of rows (with 1-entry in this column). */
-  int numRows               /**< Length of \p rows. */
+  size_t* rows,             /**< Array of rows (with 1-entry in this column). */
+  size_t numRows            /**< Length of \p rows. */
 )
 {
   assert(dec);
@@ -5009,9 +4998,9 @@ CMR_ERROR reorderComponent(
 CMR_ERROR addColumnApply(
   Dec* dec,                 /**< Decomposition. */
   DEC_NEWCOLUMN* newcolumn, /**< newcolumn. */
-  int column,               /**< Index of new column to be added. */
-  int* rows,                /**< Array of rows with 1-entry in this column. */
-  int numRows               /**< Length of \p rows. */
+  size_t column,            /**< Index of new column to be added. */
+  size_t* rows,             /**< Array of rows with 1-entry in this column. */
+  size_t numRows            /**< Length of \p rows. */
 )
 {
   assert(dec);
@@ -5191,15 +5180,15 @@ CMR_ERROR CMRtestCographicMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisCographi
     CMR_CALL( newcolumnCreate(cmr, &newcolumn) );
     for (int column = 0; column < matrix->numRows && *pisCographic; ++column)
     {
-      CMR_CALL( addColumnCheck(dec, newcolumn, &matrix->entryColumns[matrix->rowStarts[column]],
-        matrix->rowStarts[column+1] - matrix->rowStarts[column]) );
+      CMR_CALL( addColumnCheck(dec, newcolumn, &matrix->entryColumns[matrix->rowSlice[column]],
+        matrix->rowSlice[column+1] - matrix->rowSlice[column]) );
 
       debugDot(dec, newcolumn);
 
       if (newcolumn->remainsGraphic)
       {
-        CMR_CALL( addColumnApply(dec, newcolumn, column, &matrix->entryColumns[matrix->rowStarts[column]],
-          matrix->rowStarts[column+1] - matrix->rowStarts[column]) );
+        CMR_CALL( addColumnApply(dec, newcolumn, column, &matrix->entryColumns[matrix->rowSlice[column]],
+          matrix->rowSlice[column+1] - matrix->rowSlice[column]) );
       }
       else
         *pisCographic = false;
@@ -5349,15 +5338,14 @@ CMR_ERROR CMRtestBinaryGraphicColumnSubmatrixGreedy(CMR* cmr, CMR_CHRMAT* transp
 
     CMRdbgMsg(0, "!!! Trying to append column %d.\n", column);
 
-    int lengthColumn = ((column == transpose->numRows-1) ? transpose->numNonzeros : transpose->rowStarts[column+1])
-      - transpose->rowStarts[column];
-    CMR_CALL( addColumnCheck(dec, newcolumn, &transpose->entryColumns[transpose->rowStarts[column]], lengthColumn) );
+    int lengthColumn = transpose->rowSlice[column+1] - transpose->rowSlice[column];
+    CMR_CALL( addColumnCheck(dec, newcolumn, &transpose->entryColumns[transpose->rowSlice[column]], lengthColumn) );
 
     CMRdbgMsg(0, "!!! Appending column %s graphicness.\n", newcolumn->remainsGraphic ? "maintains" : " would destroy");
 
     if (newcolumn->remainsGraphic)
     {
-      CMR_CALL( addColumnApply(dec, newcolumn, column, &transpose->entryColumns[transpose->rowStarts[column]],
+      CMR_CALL( addColumnApply(dec, newcolumn, column, &transpose->entryColumns[transpose->rowSlice[column]],
         lengthColumn) );
       submatrix->columns[submatrix->numColumns] = column;
       submatrix->numColumns++;

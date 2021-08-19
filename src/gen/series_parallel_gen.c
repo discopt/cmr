@@ -332,7 +332,7 @@ CMR_ERROR genMatrixSeriesParallel(
     for (size_t i = 0; i < numTotalNonzeros; ++i)
     {
       while (row <= nzs[i].row)
-        matrix->rowStarts[row++] = i;
+        matrix->rowSlice[row++] = i;
 
       matrix->entryColumns[i] = nzs[i].column;
       matrix->entryValues[i] = nzs[i].value;

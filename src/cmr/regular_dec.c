@@ -178,13 +178,12 @@ void CMRcreateDecChild(CMR* cmr, CMR_TU_DEC* dec, int numRows, int* rows, int nu
   {
     for (int i = 0; i < numRows; ++i)
     {
-      int parentRow = rows[i];
-      int begin = parentMatrix->rowStarts[parentRow];
-      int end = parentRow + 1 < parentMatrix->numRows ? parentMatrix->rowStarts[parentRow + 1]
-        : parentMatrix->numNonzeros;
-      for (int entry = begin; entry < end; ++entry)
+      size_t parentRow = rows[i];
+      size_t first = parentMatrix->rowSlice[parentRow];
+      size_t beyond = parentMatrix->rowSlice[parentRow + 1];
+      for (size_t entry = first; entry < beyond; ++entry)
       {
-        int parentColumn = parentMatrix->entryColumns[entry];
+        size_t parentColumn = parentMatrix->entryColumns[entry];
         if (columnMap[parentColumn] >= 0)
           ++numNonzeros;
       }
@@ -197,18 +196,17 @@ void CMRcreateDecChild(CMR* cmr, CMR_TU_DEC* dec, int numRows, int* rows, int nu
   /* Write nonzeros to child matrix. */
 
   numNonzeros = 0;
-  int countNonzeros = 0; // TODO: Added to make it compile.
-  for (int childRow = 0; childRow < numRows; ++childRow)
+  size_t countNonzeros = 0; // TODO: Added to make it compile.
+  for (size_t childRow = 0; childRow < numRows; ++childRow)
   {
-    int parentRow = rows[childRow];
-    int begin = parentMatrix->rowStarts[parentRow];
-    int end = parentRow + 1 < parentMatrix->numRows ? parentMatrix->rowStarts[parentRow + 1]
-      : parentMatrix->numNonzeros;
-    childMatrix->rowStarts[childRow] = countNonzeros;
-    for (int entry = begin; entry < end; ++entry)
+    size_t parentRow = rows[childRow];
+    size_t first = parentMatrix->rowSlice[parentRow];
+    size_t beyond = parentMatrix->rowSlice[parentRow + 1];
+    childMatrix->rowSlice[childRow] = countNonzeros;
+    for (size_t entry = first; entry < beyond; ++entry)
     {
-      int parentColumn = parentMatrix->entryColumns[entry];
-      int childColumn = columnMap[parentColumn];
+      size_t parentColumn = parentMatrix->entryColumns[entry];
+      size_t childColumn = columnMap[parentColumn];
       if (childColumn >= 0)
       {
         childMatrix->entryColumns[countNonzeros] = childColumn;

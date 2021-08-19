@@ -17,8 +17,8 @@ CMR_ERROR CMRinterfaceTU(CMR* cmr, CMR_CHRMAT* matrix, bool* pisTU, CMR_TU_DEC**
   tu::integer_matrix mat(matrix->numRows, matrix->numColumns, 0);
   for (size_t row = 0; row < (size_t)matrix->numRows; ++row)
   {
-    size_t first = matrix->rowStarts[row];
-    size_t beyond = (row + 1 < (size_t)matrix->numRows) ? matrix->rowStarts[row+1] : matrix->numNonzeros;
+    size_t first = matrix->rowSlice[row];
+    size_t beyond = matrix->rowSlice[row + 1];
     for (size_t i = first; i < beyond; ++i)
     {
       size_t column = matrix->entryColumns[i];
