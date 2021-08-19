@@ -49,8 +49,7 @@ If FILE is `-`, then the input will be read from stdin.
 ## Algorithm ##
 
 The implemented algorithm is not yet published.
-For a matrix \f$ A \in \{0,1\}^{m \times n}\f$ with \f$ k \f$ sorted nonzeros it runs in \f$ \mathcal{O}( m + n + k ) \f$ time assuming no hashtable collisions.
-The additional effort for a \ref dense-matrix is \f$ \mathcal{O}( m \cdot n ) \f$ and for a \ref sparse-matrix \f$ \mathcal{O}( k \cdot \log k ) \f$.
+For a matrix \f$ A \in \{0,1\}^{m \times n}\f$ with \f$ k \f$ (sorted) nonzeros it runs in \f$ \mathcal{O}( m + n + k ) \f$ time assuming no hashtable collisions.
 
 ## C Interface ##
 

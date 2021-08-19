@@ -70,7 +70,7 @@ CMR_ERROR matrixSeriesParallel2Sums(
 
   CMR_SP_STATISTICS stats;
   CMR_CALL( CMRspInitStatistics(&stats) );
-  CMR_CALL( CMRtestTernarySeriesParallel(cmr, matrix, true, NULL, reductions, &numReductions,
+  CMR_CALL( CMRtestTernarySeriesParallel(cmr, matrix, NULL, reductions, &numReductions,
     (outputReducedElements || outputReducedMatrix) ? &reducedSubmatrix : NULL,
     (outputNonSPElements || outputNonSPMatrix) ? &violatorSubmatrix : NULL, &stats) );
 

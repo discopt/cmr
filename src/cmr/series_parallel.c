@@ -127,23 +127,6 @@ void unlinkNonzero(
 }
 
 /**
- * \brief Compares two nonzeros, first by row (ascending) and then by column (ascending) as a tie-breaker.
- */
-
-static
-int compareNonzeros(const void* a, const void* b)
-{
-  const ListNonzero* nonzero1 = (const ListNonzero*)a;
-  const ListNonzero* nonzero2 = (const ListNonzero*)b;
-  if (nonzero1->row < nonzero2->row)
-    return -1;
-  else if (nonzero1->row > nonzero2->row)
-    return +1;
-  else
-    return nonzero1->column - nonzero2->column;
-}
-
-/**
  * \brief Algorithm data for each element.
  */
 
@@ -408,13 +391,12 @@ CMR_ERROR initializeQueueHashtableFromListMatrix(
 
 static
 CMR_ERROR initializeListMatrix(
-  CMR* cmr,                   /**< \ref CMR environment. */
-  CMR_CHRMAT* matrix,        /**< Matrix. */
-  ListNonzero* anchor,          /**< Anchor of row/column data nonzeros. */
-  ListNonzero* nonzeros,        /**< Memory for storing the nonzeros. */
-  ElementData* rowData,     /**< Row data. */
-  ElementData* columnData,  /**< Column data. */
-  bool isSorted             /**< Whether the nonzeros in \p matrix are sorted. */
+  CMR* cmr,               /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,     /**< Matrix. */
+  ListNonzero* anchor,    /**< Anchor of row/column data nonzeros. */
+  ListNonzero* nonzeros,  /**< Memory for storing the nonzeros. */
+  ElementData* rowData,   /**< Row data. */
+  ElementData* columnData /**< Column data. */
 )
 {
   size_t i = 0;
@@ -431,30 +413,6 @@ CMR_ERROR initializeListMatrix(
       i++;
     }
   }
-
-  /* If necessary, sort the nonzeros in order to create the linked list. */
-  if (!isSorted)
-    CMR_CALL( CMRsort(cmr, matrix->numNonzeros, nonzeros, sizeof(ListNonzero), compareNonzeros) );
-#if !defined(NDEBUG)
-  else
-  {
-    for (size_t row = 0; row < matrix->numRows; ++row)
-    {
-      size_t first = matrix->rowSlice[row];
-      size_t beyond = matrix->rowSlice[row + 1];
-      for (size_t i = first + 1; i < beyond; ++i)
-      {
-        if (matrix->entryColumns[i-1] > matrix->entryColumns[i])
-          isSorted = false;
-      }
-      if (!isSorted)
-      {
-        fprintf(stderr, "Row r%ld of input matrix is not sorted!", row+1);
-        assert("Matrix was expected to be sorted, but is not!" == 0);
-      }
-    }
-  }
-#endif /* !NDEBUG */
   
   /* Initialize linked list for rows. */
   for (size_t row = 0; row < matrix->numRows; ++row)
@@ -1657,7 +1615,6 @@ static
 CMR_ERROR decomposeBinarySeriesParallel(
   CMR* cmr,                             /**< \ref CMR environment. */
   CMR_CHRMAT* matrix,                   /**< Sparse char matrix. */
-  bool isSorted,                        /**< Whether the entries of \p matrix are sorted. */
   CMR_SP_REDUCTION* reductions,         /**< Array for storing the SP-reductions. Must have capacity at least number of
                                          **< rows + number of columns. */
   size_t* pnumReductions,               /**< Pointer for storing the number of SP-reductions. */
@@ -1735,7 +1692,7 @@ CMR_ERROR decomposeBinarySeriesParallel(
     the_anchor.row = SIZE_MAX;
     the_anchor.column = SIZE_MAX;
     ListNonzero* anchor = pviolatorSubmatrix ? &the_anchor : NULL;
-    CMR_CALL( initializeListMatrix(cmr, matrix, anchor, nonzeros, rowData, columnData, isSorted) );
+    CMR_CALL( initializeListMatrix(cmr, matrix, anchor, nonzeros, rowData, columnData) );
 
     /* We now start main loop. */
     size_t numRowReductions = 0;
@@ -1799,7 +1756,7 @@ CMR_ERROR decomposeBinarySeriesParallel(
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRtestBinarySeriesParallel(CMR* cmr, CMR_CHRMAT* matrix, bool isSorted, bool* pisSeriesParallel,
+CMR_ERROR CMRtestBinarySeriesParallel(CMR* cmr, CMR_CHRMAT* matrix, bool* pisSeriesParallel,
   CMR_SP_REDUCTION* reductions, size_t* pnumReductions, CMR_SUBMAT** preducedSubmatrix, CMR_SUBMAT** pviolatorSubmatrix,
   CMR_SP_STATISTICS* stats)
 {
@@ -1813,7 +1770,7 @@ CMR_ERROR CMRtestBinarySeriesParallel(CMR* cmr, CMR_CHRMAT* matrix, bool isSorte
   if (!reductions)
     CMR_CALL( CMRallocStackArray(cmr, &localReductions, matrix->numRows + matrix->numColumns) );
 
-  CMR_CALL( decomposeBinarySeriesParallel(cmr, matrix, isSorted, reductions ? reductions : localReductions,
+  CMR_CALL( decomposeBinarySeriesParallel(cmr, matrix, reductions ? reductions : localReductions,
     &localNumReductions, preducedSubmatrix, pviolatorSubmatrix, NULL, NULL, stats) );
 
   if (pisSeriesParallel)
@@ -1827,7 +1784,7 @@ CMR_ERROR CMRtestBinarySeriesParallel(CMR* cmr, CMR_CHRMAT* matrix, bool isSorte
 }
 
 
-CMR_ERROR CMRdecomposeBinarySeriesParallel(CMR* cmr, CMR_CHRMAT* matrix, bool isSorted, bool* pisSeriesParallel,
+CMR_ERROR CMRdecomposeBinarySeriesParallel(CMR* cmr, CMR_CHRMAT* matrix, bool* pisSeriesParallel,
   CMR_SP_REDUCTION* reductions, size_t* pnumReductions, CMR_SUBMAT** preducedSubmatrix, CMR_SUBMAT** pviolatorSubmatrix,
   CMR_ELEMENT* separationRank1Elements, size_t* pnumSeparationRank1Elements, CMR_SP_STATISTICS* stats)
 {
@@ -1843,7 +1800,7 @@ CMR_ERROR CMRdecomposeBinarySeriesParallel(CMR* cmr, CMR_CHRMAT* matrix, bool is
   if (!reductions)
     CMR_CALL( CMRallocStackArray(cmr, &localReductions, matrix->numRows + matrix->numColumns) );
 
-  CMR_CALL( decomposeBinarySeriesParallel(cmr, matrix, isSorted, reductions ? reductions : localReductions,
+  CMR_CALL( decomposeBinarySeriesParallel(cmr, matrix, reductions ? reductions : localReductions,
     &localNumReductions, preducedSubmatrix, pviolatorSubmatrix, separationRank1Elements, pnumSeparationRank1Elements,
     stats) );
 
@@ -1861,7 +1818,6 @@ static
 CMR_ERROR decomposeTernarySeriesParallel(
   CMR* cmr,                             /**< \ref CMR environment. */
   CMR_CHRMAT* matrix,                   /**< Sparse char matrix. */
-  bool isSorted,                        /**< Whether the entries of \p matrix are sorted. */
   CMR_SP_REDUCTION* reductions,         /**< Array for storing the SP-reductions. Must have capacity at least number of
                                          **< rows + number of columns. */
   size_t* pnumReductions,               /**< Pointer for storing the number of SP-reductions. */
@@ -1933,7 +1889,7 @@ CMR_ERROR decomposeTernarySeriesParallel(
     the_anchor.row = SIZE_MAX;
     the_anchor.column = SIZE_MAX;
     ListNonzero* anchor = pviolatorSubmatrix ? &the_anchor : NULL;
-    CMR_CALL( initializeListMatrix(cmr, matrix, anchor, nonzeros, rowData, columnData, isSorted) );
+    CMR_CALL( initializeListMatrix(cmr, matrix, anchor, nonzeros, rowData, columnData) );
 
     /* We now start main loop. */
     size_t numRowReductions = 0;
@@ -2029,7 +1985,7 @@ CMR_ERROR decomposeTernarySeriesParallel(
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRtestTernarySeriesParallel(CMR* cmr, CMR_CHRMAT* matrix, bool isSorted, bool* pisSeriesParallel,
+CMR_ERROR CMRtestTernarySeriesParallel(CMR* cmr, CMR_CHRMAT* matrix, bool* pisSeriesParallel,
   CMR_SP_REDUCTION* reductions, size_t* pnumReductions, CMR_SUBMAT** preducedSubmatrix, CMR_SUBMAT** pviolatorSubmatrix,
   CMR_SP_STATISTICS* stats)
 {
@@ -2043,8 +1999,8 @@ CMR_ERROR CMRtestTernarySeriesParallel(CMR* cmr, CMR_CHRMAT* matrix, bool isSort
   if (!reductions)
     CMR_CALL( CMRallocStackArray(cmr, &localReductions, matrix->numRows + matrix->numColumns) );
 
-  CMR_CALL( decomposeTernarySeriesParallel(cmr, matrix, isSorted, reductions ? reductions : localReductions,
-    &localNumReductions, preducedSubmatrix, pviolatorSubmatrix, stats) );
+  CMR_CALL( decomposeTernarySeriesParallel(cmr, matrix, reductions ? reductions : localReductions, &localNumReductions,
+    preducedSubmatrix, pviolatorSubmatrix, stats) );
 
   if (pisSeriesParallel)
     *pisSeriesParallel = (*pnumReductions == matrix->numRows + matrix->numColumns);

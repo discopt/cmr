@@ -352,12 +352,12 @@ CMR_ERROR genMatrixSeriesParallel(
     CMR_SUBMAT* wheelMatrix = NULL;
     if (ternary)
     {
-      CMR_CALL( CMRtestTernarySeriesParallel(cmr, matrix, true, NULL, reductions, &numReductions, NULL, &wheelMatrix,
+      CMR_CALL( CMRtestTernarySeriesParallel(cmr, matrix, NULL, reductions, &numReductions, NULL, &wheelMatrix,
         &stats) );
     }
     else
     {
-      CMR_CALL( CMRtestBinarySeriesParallel(cmr, matrix, true, NULL, reductions, &numReductions, NULL, &wheelMatrix,
+      CMR_CALL( CMRtestBinarySeriesParallel(cmr, matrix, NULL, reductions, &numReductions, NULL, &wheelMatrix,
         &stats) );
     }
 
