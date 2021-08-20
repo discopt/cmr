@@ -39,7 +39,7 @@ CMR_ERROR CMRsubmatCreate(
 );
 
 /**
- * \brief Creates a 1 \f$ \times \f$ 1 submatrix.
+ * \brief Creates a 1-by-1 submatrix.
  */
 
 CMR_EXPORT
@@ -64,11 +64,15 @@ CMR_ERROR CMRsubmatFree(
 /**
  * \brief Row-wise representation of sparse double matrix.
  * 
- * The nonzeros of row \c r of the matrix are stored at positions \ref rowSlice[r] up to, but not including,
- * \ref rowSlice[r+1], of the arrays \ref entryColumns and \ref entryValues.
- * The former contains the respective columns while the latter contains the actual matrix entries of the nonzeros.
- * The nonzeros of each row must be ordered by increasing column.
- * Moreover, no duplicates are allowed and all stored nonzero entries must indeed have a value different from 0.
+ * The nonzeros of the matrix are stored in the arrays \ref entryColumns and \ref entryValues, each of length
+ * \ref numNonzeros.
+ * The nonzeros of row \c r are stored at positions \f$ p \in \{a, a+1, \dotsc, b-2, b-1 \}\f$, where
+ * \f$ a := \f$ \ref rowSlice[r] and \f$ b := \f$ \ref rowSlice[r+1].
+ * In particular, the length of the \ref rowSlice array is \ref numRows + 1.
+ * The column is \ref entryColumns[\f$ p \f$] while the actual matrix entry is \ref entryValues[\f$ p \f$].
+ *
+ * The nonzeros of each row must be sorted by column in ascending order.
+ * Moreover, no duplicates are allowed and all stored entries must indeed be nonzero.
  */
 
 typedef struct
@@ -84,11 +88,13 @@ typedef struct
 /**
  * \brief Row-wise representation of sparse int matrix.
  * 
- * The nonzeros of the matrix are stored in the arrays \ref entryColumns and \ref \entryValues, each of length
+ * The nonzeros of the matrix are stored in the arrays \ref entryColumns and \ref entryValues, each of length
  * \ref numNonzeros.
  * The nonzeros of row \c r are stored at positions \f$ p \in \{a, a+1, \dotsc, b-2, b-1 \}\f$, where
  * \f$ a := \f$ \ref rowSlice[r] and \f$ b := \f$ \ref rowSlice[r+1].
- * The column is \ref entryColumns[p] while the actual matrix entry is \ref entryValues[p].
+ * In particular, the length of the \ref rowSlice array is \ref numRows + 1.
+ * The column is \ref entryColumns[\f$ p \f$] while the actual matrix entry is \ref entryValues[\f$ p \f$].
+ *
  * The nonzeros of each row must be sorted by column in ascending order.
  * Moreover, no duplicates are allowed and all stored entries must indeed be nonzero.
  */
@@ -106,11 +112,13 @@ typedef struct
 /**
  * \brief Row-wise representation of sparse char matrix.
  *
- * The nonzeros of the matrix are stored in the arrays \ref entryColumns and \ref \entryValues, each of length
+ * The nonzeros of the matrix are stored in the arrays \ref entryColumns and \ref entryValues, each of length
  * \ref numNonzeros.
  * The nonzeros of row \c r are stored at positions \f$ p \in \{a, a+1, \dotsc, b-2, b-1 \}\f$, where
  * \f$ a := \f$ \ref rowSlice[r] and \f$ b := \f$ \ref rowSlice[r+1].
- * The column is \ref entryColumns[p] while the actual matrix entry is \ref entryValues[p].
+ * In particular, the length of the \ref rowSlice array is \ref numRows + 1.
+ * The column is \ref entryColumns[\f$ p \f$] while the actual matrix entry is \ref entryValues[\f$ p \f$].
+ *
  * The nonzeros of each row must be sorted by column in ascending order.
  * Moreover, no duplicates are allowed and all stored entries must indeed be nonzero.
  */
@@ -126,8 +134,8 @@ typedef struct
 } CMR_CHRMAT;
 
 /**
- * \brief Creates a double matrix of size \p numRows \f$ \times \f$ \p numColumns with \p numNonzeros
- *        nonzeros. The actual arrays are allocated but not initialized.
+ * \brief Creates a double matrix of with \p numRows rows, \p numColumns columns and \p numNonzeros nonzeros.
+ *        The actual arrays are allocated but not initialized.
  */
 
 CMR_EXPORT
@@ -140,9 +148,10 @@ CMR_ERROR CMRdblmatCreate(
 );
 
 /**
- * \brief Creates an int matrix of size \p numRows \f$ \times \f$ \p numColumns with \p numNonzeros
- *        nonzeros. The actual arrays are allocated but not initialized.
+ * \brief Creates an int matrix of with \p numRows rows, \p numColumns columns and \p numNonzeros nonzeros.
+ *        The actual arrays are allocated but not initialized.
  */
+
 
 CMR_EXPORT
 CMR_ERROR CMRintmatCreate(
@@ -154,8 +163,8 @@ CMR_ERROR CMRintmatCreate(
 );
 
 /**
- * \brief Creates a char matrix of size \p numRows \f$ \times \f$ \p numColumns with \p numNonzeros
- *        nonzeros. The actual arrays are allocated but not initialized.
+ * \brief Creates a char matrix of with \p numRows rows, \p numColumns columns and \p numNonzeros nonzeros.
+ *        The actual arrays are allocated but not initialized.
  */
 
 CMR_EXPORT
@@ -549,7 +558,9 @@ CMR_ERROR CMRchrmatCheckTranspose(
  * Checks for duplicate entries.
  * Checks for zero entries.
  *
- * \returns Explanation of inconsistency, or \c NULL if consistent.
+ * \returns \c NULL if consistent. Otherwise, an explanation string is returned, which must free'd with \c free().
+ * 
+ * \see \ref CMRconsistencyAssert() for checking the returned string and aborting in case of inconsistency.
  */
 
 CMR_EXPORT
@@ -564,7 +575,9 @@ char* CMRdblmatConsistency(
  * Checks for duplicate entries.
  * Checks for zero entries.
  *
- * \returns Explanation of inconsistency, or \c NULL if consistent.
+ * \returns \c NULL if consistent. Otherwise, an explanation string is returned, which must free'd with \c free().
+ * 
+ * \see \ref CMRconsistencyAssert() for checking the returned string and aborting in case of inconsistency.
  */
 
 CMR_EXPORT
@@ -579,7 +592,9 @@ char* CMRintmatConsistency(
  * Checks for duplicate entries.
  * Checks for zero entries.
  *
- * \returns Explanation of inconsistency, or \c NULL if consistent.
+ * \returns \c NULL if consistent. Otherwise, an explanation string is returned, which must free'd with \c free().
+ * 
+ * \see \ref CMRconsistencyAssert() for checking the returned string and aborting in case of inconsistency.
  */
 
 CMR_EXPORT

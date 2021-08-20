@@ -133,6 +133,16 @@ char* CMRconsistencyMessage(const char* format, ...);
 
 #if !defined(NDEBUG)
 
+/**
+ * \brief Asserts that \p call reports consistency. Otherwise, the inconsistency explanation is printed and the program
+ *        terminates.
+ * 
+ * The following example code checks \c matrix (of type \ref CMR_CHRMAT*) for consistency using
+ * \ref CMRchrmatConsistency.
+ * 
+ *     CMRconsistencyAssert( CMRchrmatConsistency(matrix) );
+ */
+
 #define CMRconsistencyAssert( call ) \
   do \
   { \
