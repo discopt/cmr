@@ -10,6 +10,7 @@ endif()
 add_executable(cmr_gtest
   common.c
   test_camion.cpp
+  test_ctu.cpp
   test_graph.cpp
   test_graphic.cpp
   test_hashtable.cpp

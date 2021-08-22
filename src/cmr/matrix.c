@@ -579,6 +579,8 @@ CMR_ERROR CMRdblmatPrintDense(CMR* cmr, CMR_DBLMAT* matrix, FILE* stream, char z
       fprintf(stream, "%f ", matrix->entryValues[entry]);
       ++column;
     }
+    for (; column < matrix->numColumns; ++column)
+      fprintf(stream, "%c ", zeroChar);
     fputc('\n', stream);
   }
 
@@ -617,6 +619,8 @@ CMR_ERROR CMRintmatPrintDense(CMR* cmr, CMR_INTMAT* matrix, FILE* stream, char z
       fprintf(stream, "%d ", matrix->entryValues[entry]);
       ++column;
     }
+    for (; column < matrix->numColumns; ++column)
+      fprintf(stream, "%c ", zeroChar);
     fputc('\n', stream);
   }
 
@@ -655,6 +659,8 @@ CMR_ERROR CMRchrmatPrintDense(CMR* cmr, CMR_CHRMAT* matrix, FILE* stream, char z
       fprintf(stream, "%d ", matrix->entryValues[entry]);
       ++column;
     }
+    for (; column < matrix->numColumns; ++column)
+      fprintf(stream, "%c ", zeroChar);
     fputc('\n', stream);
   }
 
@@ -2085,6 +2091,87 @@ CMR_ERROR CMRintmatToChr(CMR* cmr, CMR_INTMAT* matrix, CMR_CHRMAT** presult)
     else
       return CMR_ERROR_OVERFLOW;
   }
+
+  return CMR_OKAY;
+}
+
+CMR_ERROR CMRdblmatFindEntry(CMR* cmr, CMR_DBLMAT* matrix, size_t row, size_t column, size_t* pentry)
+{
+  assert(cmr);
+  CMRconsistencyAssert( CMRdblmatConsistency(matrix) );
+  assert(pentry);
+
+  size_t lower = matrix->rowSlice[row];
+  size_t upper = matrix->rowSlice[row + 1];
+  while (lower < upper)
+  {
+    size_t entry = (lower + upper) / 2;
+    size_t c = matrix->entryColumns[entry];
+    if (c < column)
+      lower = entry + 1;
+    else if (c > column)
+      upper = entry;
+    else
+    {
+      *pentry = entry;
+      return CMR_OKAY;
+    }
+  }
+  *pentry = SIZE_MAX;
+
+  return CMR_OKAY;
+}
+
+CMR_ERROR CMRintmatFindEntry(CMR* cmr, CMR_INTMAT* matrix, size_t row, size_t column, size_t* pentry)
+{
+  assert(cmr);
+  CMRconsistencyAssert( CMRintmatConsistency(matrix) );
+  assert(pentry);
+
+  size_t lower = matrix->rowSlice[row];
+  size_t upper = matrix->rowSlice[row + 1];
+  while (lower < upper)
+  {
+    size_t entry = (lower + upper) / 2;
+    size_t c = matrix->entryColumns[entry];
+    if (c < column)
+      lower = entry + 1;
+    else if (c > column)
+      upper = entry;
+    else
+    {
+      *pentry = entry;
+      return CMR_OKAY;
+    }
+  }
+  *pentry = SIZE_MAX;
+
+  return CMR_OKAY;
+}
+
+CMR_ERROR CMRchrmatFindEntry(CMR* cmr, CMR_CHRMAT* matrix, size_t row, size_t column, size_t* pentry)
+{
+  assert(cmr);
+  CMRconsistencyAssert( CMRchrmatConsistency(matrix) );
+  assert(pentry);
+
+  size_t lower = matrix->rowSlice[row];
+  size_t upper = matrix->rowSlice[row + 1];
+  while (lower < upper)
+  {
+    size_t entry = (lower + upper) / 2;
+    size_t c = matrix->entryColumns[entry];
+    if (c < column)
+      lower = entry + 1;
+    else if (c > column)
+      upper = entry;
+    else
+    {
+      *pentry = entry;
+      return CMR_OKAY;
+    }
+  }
+  *pentry = SIZE_MAX;
 
   return CMR_OKAY;
 }

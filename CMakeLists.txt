@@ -100,6 +100,15 @@ target_link_libraries(cmr_tu
 )
 set_target_properties(cmr_tu PROPERTIES OUTPUT_NAME cmr-tu)
 
+# Target for the cmr-ctu.
+add_executable(cmr_ctu
+  src/main/ctu_main.c)
+target_link_libraries(cmr_ctu
+  PRIVATE
+    CMR::cmr
+)
+set_target_properties(cmr_ctu PROPERTIES OUTPUT_NAME cmr-ctu)
+
 # Target for the cmr-graphic executable.
 add_executable(cmr_graphic
    src/main/graphic_main.c)

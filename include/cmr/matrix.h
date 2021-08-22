@@ -788,6 +788,51 @@ CMR_ERROR CMRintmatToChr(
   CMR_CHRMAT** presult  /**< Pointer for storing the output matrix. */
 );
 
+/**
+ * \brief Finds a specific entry of a double matrix.
+ * 
+ * Searches for the entry at (\p row, \p column) using binary search.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRdblmatFindEntry(
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_DBLMAT* matrix,   /**< Input matrix. */
+  size_t row,           /**< A row. */
+  size_t column,        /**< A column. */
+  size_t* pentry        /**< The entry at \p row, \p column, or \c SIZE_MAX if it is zero. */
+);
+/**
+ * \brief Finds a specific entry of an int matrix.
+ * 
+ * Searches for the entry at (\p row, \p column) using binary search.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRintmatFindEntry(
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_INTMAT* matrix,   /**< Input matrix. */
+  size_t row,           /**< A row. */
+  size_t column,        /**< A column. */
+  size_t* pentry        /**< The entry at \p row, \p column, or \c SIZE_MAX if it is zero. */
+);
+
+/**
+ * \brief Finds a specific entry of a char matrix.
+ * 
+ * Searches for the entry at (\p row, \p column) using binary search.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRchrmatFindEntry(
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,   /**< Input matrix. */
+  size_t row,           /**< A row. */
+  size_t column,        /**< A column. */
+  size_t* pentry        /**< The entry at \p row, \p column, or \c SIZE_MAX if it is zero. */
+);
+
+
 #ifdef __cplusplus
 }
 #endif

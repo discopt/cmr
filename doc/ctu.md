@@ -20,8 +20,8 @@ Options:
   - `-o FORMAT` Format of output matrices; default: `dense`.
   - `-r ROW`    Perform a row complement operation on \f$ M \f$ and do not test for complement total unimodularity.
   - `-c COLUMN` Perform a row complement operation on \f$ M \f$ and do not test for complement total unimodularity.
-  - `-b`        Output the complement operations that leads to a non-totally-unimodular matrix (if \f$ M \f$ is not complement totally unimodular).
-  - `-B`        Output the complemented matrix that is non-totally-unimodular (if \f$ M \f$ is not complement totally unimodular).
+  - `-n`        Output a complement operations that leads tfile:///home/matthias/code/cmr/develop.git/src/main/tu_main.co a non-totally-unimodular matrix (if \f$ M \f$ is not complement totally unimodular).
+  - `-N`        Output a complemented matrix that is non-totally-unimodular (if \f$ M \f$ is not complement totally unimodular).
 
 Formats for matrices are \ref dense-matrix and \ref sparse-matrix.
 If FILE is `-`, then the input will be read from stdin.
