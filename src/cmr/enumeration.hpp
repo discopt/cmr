@@ -3,7 +3,7 @@
 #include <vector>
 
 #include "separation.hpp"
-#include <cmr/permutations.hpp>
+#include "permutations.hpp"
 #include "comparators.hpp"
 #include "partition.hpp"
 #include "binary_linear_space.hpp"

@@ -2,7 +2,7 @@
 
 #include <cassert>
 
-#include <cmr/total_unimodularity.hpp>
+#include "total_unimodularity.hpp"
 #include "matroid.hpp"
 
 namespace tu

@@ -2,8 +2,8 @@
 
 #include <cmr/env.h>
 
-#include <cmr/total_unimodularity.hpp>
-#include <cmr/unimodularity.hpp>
+#include "total_unimodularity.hpp"
+#include "unimodularity.hpp"
 
 #include <boost/numeric/ublas/io.hpp>
 

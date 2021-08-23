@@ -1,9 +1,9 @@
 #pragma once
 
-#include <cmr/gcd.hpp>
-#include <cmr/matrix_transposed.hpp>
-#include <cmr/matrix_permuted.hpp>
-#include <cmr/matrix.hpp>
+#include "gcd.hpp"
+#include "matrix_transposed.hpp"
+#include "matrix_permuted.hpp"
+#include "matrix.hpp"
 
 namespace tu
 {

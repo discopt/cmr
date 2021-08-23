@@ -1,7 +1,7 @@
 #pragma once
 
-#include <cmr/matrix.hpp>
-#include <cmr/matrix_permuted.hpp>
+#include "matrix.hpp"
+#include "matrix_permuted.hpp"
 #include "matrix_reorder.hpp"
 #include "matroid.hpp"
 #include "matroid_permuted.hpp"

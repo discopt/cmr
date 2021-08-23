@@ -1,15 +1,15 @@
 #pragma once
 
-#include <cmr/total_unimodularity.hpp>
+#include "total_unimodularity.hpp"
 
 #include <set>
 
 #include <boost/type_traits/is_const.hpp>
 
-#include <cmr/matrix_transposed.hpp>
-#include <cmr/matrix_permuted.hpp>
+#include "matrix_transposed.hpp"
+#include "matrix_permuted.hpp"
 #include "matrix_reorder.hpp"
-#include <cmr/matrix.hpp>
+#include "matrix.hpp"
 #include "bipartite_graph_bfs.hpp"
 
 namespace tu

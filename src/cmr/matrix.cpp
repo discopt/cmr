@@ -1,4 +1,4 @@
-#include <cmr/matrix.hpp>
+#include "matrix.hpp"
 #include "matrix_internal.h"
 
 namespace tu

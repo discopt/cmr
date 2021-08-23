@@ -1,13 +1,13 @@
 cmake_minimum_required(VERSION 3.5)
 
 project(CMR
-  VERSION 1.9.0
+  VERSION 1.3.0
   LANGUAGES C CXX)
 
 option(SHARED "Build shared libraries" ON)
 set(BUILD_SHARED_LIBS ${SHARED})
 message(STATUS "Build shared libraries: " ${SHARED})
-option(THREADS "Support for parallelization" ON)
+#option(THREADS "Support for parallelization" ON)
 option(GENERATORS "Compile matrix generators" OFF)
 
 # Add cmake/ to CMAKE_MODULE_PATH.
@@ -73,15 +73,6 @@ add_library(cmr
   src/cmr/unimodularity.cpp
   src/cmr/zero_plus_minus_one.cpp
 )
-
-# Target for the tu-test executable.
-add_executable(tu_test
-  src/main/main.cpp)
-target_link_libraries(tu_test
-  PRIVATE
-    CMR::cmr
-)
-set_target_properties(tu_test PROPERTIES OUTPUT_NAME tu-test)
 
 # Target for the cmr-camion executable.
 add_executable(cmr_camion
@@ -215,9 +206,18 @@ endif()
 ### Installation ###
 include(GNUInstallDirs)
 
-install(TARGETS tu_test
-   RUNTIME
-      DESTINATION bin
+install(TARGETS
+    cmr_camion
+    cmr_convert_matrix
+    cmr_ctu
+    cmr_generate_series_parallel
+    cmr_graphic
+    cmr_k_modular
+    cmr_network
+    cmr_series_parallel
+    cmr_tu
+  RUNTIME
+    DESTINATION bin
 )
 
 install(TARGETS cmr

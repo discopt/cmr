@@ -8,7 +8,7 @@
 #include <boost/property_map/property_map.hpp>
 #include <vector>
 
-#include <cmr/matroid_graph.hpp>
+#include "matroid_graph.hpp"
 #include "graph_utils.hpp"
 
 #include <boost/graph/adjacency_list_io.hpp>

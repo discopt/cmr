@@ -52,7 +52,7 @@ CMR_ERROR CMRchrmatFilter(
 
 #ifdef __cplusplus
 
-#include <cmr/matrix_transposed.hpp>
+#include "matrix_transposed.hpp"
 
 namespace tu
 {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <cmr/matroid_decomposition.hpp>
+#include "matroid_decomposition.hpp"
 #include "find_wheel_minor.hpp"
 #include "matroid_separate.hpp"
 #include "nested_minor_sequence.hpp"

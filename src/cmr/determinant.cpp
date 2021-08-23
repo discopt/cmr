@@ -4,7 +4,7 @@
 #include <boost/numeric/ublas/lu.hpp>
 #include <boost/dynamic_bitset.hpp>
 
-#include <cmr/total_unimodularity.hpp>
+#include "total_unimodularity.hpp"
 #include "combinations.hpp"
 
 namespace tu

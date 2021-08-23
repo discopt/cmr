@@ -1,8 +1,8 @@
 #pragma once
 
-#include <cmr/permutations.hpp>
+#include "permutations.hpp"
 #include "matroid_transposed.hpp"
-#include <cmr/matrix.hpp>
+#include "matrix.hpp"
 
 namespace tu
 {
