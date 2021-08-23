@@ -11,11 +11,23 @@ addons:
       - doxygen
 
 script:
+  - mkdir build-debug-generators
+  - cd build-debug-generators
+  - cmake .. -DCMAKE_BUILD_TYPE=Debug -DGENERATORS=on
+  - make
+  - make test
+  - cd ..
+  - mkdir build-release-generators
+  - cd build-release-generators
+  - cmake .. -DCMAKE_BUILD_TYPE=Release -DGENERATORS=on
+  - make
+  - make test
+  - cd ..
   - mkdir build-release
   - cd build-release
-  - cmake ..
-  - cat /home/travis/build/discopt/cmr/build-release/CMakeFiles/CMakeOutput.log
-  - cat /home/travis/build/discopt/cmr/build-release/CMakeFiles/CMakeError.log
+  - cmake .. -DCMAKE_BUILD_TYPE=Release
+  - make
+  - make test
   - make doc
 
 deploy:

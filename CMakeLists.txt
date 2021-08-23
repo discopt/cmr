@@ -7,7 +7,6 @@ project(CMR
 option(SHARED "Build shared libraries" ON)
 set(BUILD_SHARED_LIBS ${SHARED})
 message(STATUS "Build shared libraries: " ${SHARED})
-#option(THREADS "Support for parallelization" ON)
 option(GENERATORS "Compile matrix generators" OFF)
 
 # Add cmake/ to CMAKE_MODULE_PATH.
@@ -17,20 +16,6 @@ list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake)
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Release"
     CACHE STRING "Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel." FORCE)
-endif()
-
-# Dependency: THREADS
-if (THREADS)
-  find_package(Threads)
-  set(CMR_WITH_THREADS ${Threads_FOUND})
-else()
-  set(CMR_WITH_THREADS)
-endif()
-
-if(CMR_WITH_THREADS)
-  message(STATUS "Parallelization: ON")
-else()
-  message(STATUS "Parallelization: OFF")
 endif()
 
 if(GENERATORS)
@@ -154,6 +139,10 @@ if(GENERATORS)
       CMR::cmr
   )
   set_target_properties(cmr_generate_series_parallel PROPERTIES OUTPUT_NAME cmr-generate-series-parallel)
+
+  set(GENERATOR_EXECUTABLES cmr-generate-series-parallel)
+else()
+  set(GENERATOR_EXECUTABLES)
 endif()
 
 # Target for the random_network
@@ -210,12 +199,12 @@ install(TARGETS
     cmr_camion
     cmr_convert_matrix
     cmr_ctu
-    cmr_generate_series_parallel
     cmr_graphic
     cmr_k_modular
     cmr_network
     cmr_series_parallel
     cmr_tu
+    ${GENERATOR_EXECUTABLES}
   RUNTIME
     DESTINATION bin
 )
