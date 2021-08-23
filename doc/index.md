@@ -18,11 +18,12 @@ The following additional functionality is also part of the library:
   - \ref conversions
   - \ref camion
 
-The following matrix/matroid classes are planned:
+The following matrix/matroid classes are **planned**:
 
   - \ref balanced
   - \ref perfect
   - \ref consecutive-ones
+  - \ref max-flow-min-cut
 
 # Usage #
 
