@@ -1,6 +1,14 @@
 #ifndef CMR_ENV_H
 #define CMR_ENV_H
 
+/**
+ * \file env.h
+ *
+ * \author Matthias Walter
+ *
+ * \brief Basic functionality of the software library.
+ */
+
 #ifdef __cplusplus
 extern "C" {
 #endif

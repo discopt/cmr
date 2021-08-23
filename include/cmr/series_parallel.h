@@ -1,6 +1,14 @@
 #ifndef CMR_SERIES_PARALLEL_H
 #define CMR_SERIES_PARALLEL_H
 
+/**
+ * \file series_parallel.h
+ *
+ * \author Matthias Walter
+ *
+ * \brief Recognition of [series-parallel matrices](\ref series-parallel).
+ */
+
 #ifdef __cplusplus
 extern "C" {
 #endif

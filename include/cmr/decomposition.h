@@ -1,6 +1,14 @@
 #ifndef CMR_TU_DECOMPOSITION_H
 #define CMR_TU_DECOMPOSITION_H
 
+/**
+ * \file matrix.h
+ *
+ * \author Matthias Walter
+ *
+ * \brief Data structures for a decomposition tree for a [regular matrix](\ref regular).
+ */
+
 #include <cmr/env.h>
 #include <cmr/element.h>
 #include <cmr/matrix.h>

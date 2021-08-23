@@ -1,6 +1,14 @@
 #ifndef CMR_ELEMENT_H
 #define CMR_ELEMENT_H
 
+/**
+ * \file element.h
+ *
+ * \author Matthias Walter
+ *
+ * \brief Functionality for the row and column **elements** of a matrix.
+ */
+
 #include <cmr/env.h>
 
 #include <assert.h>

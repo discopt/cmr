@@ -16,6 +16,7 @@ if(DOXYGEN_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/index.md
     ${CMAKE_CURRENT_SOURCE_DIR}/balanced.md
     ${CMAKE_CURRENT_SOURCE_DIR}/camion.md
+    ${CMAKE_CURRENT_SOURCE_DIR}/changes.md
     ${CMAKE_CURRENT_SOURCE_DIR}/consecutive-ones.md
     ${CMAKE_CURRENT_SOURCE_DIR}/conversions.md
     ${CMAKE_CURRENT_SOURCE_DIR}/ctu.md

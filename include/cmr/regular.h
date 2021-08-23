@@ -1,6 +1,14 @@
 #ifndef CMR_REGULAR_H
 #define CMR_REGULAR_H
 
+/**
+ * \file regular.h
+ *
+ * \author Matthias Walter and Klaus Truemper
+ *
+ * \brief Recognition of [regular matrices](\ref regular).
+ */
+
 #ifdef __cplusplus
 extern "C" {
 #endif

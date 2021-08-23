@@ -1,6 +1,14 @@
 #ifndef CMR_MATRIX_H
 #define CMR_MATRIX_H
 
+/**
+ * \file matrix.h
+ *
+ * \author Matthias Walter
+ *
+ * \brief Functionality for sparse matrices.
+ */
+
 #include <cmr/env.h>
 
 #include <stdio.h>

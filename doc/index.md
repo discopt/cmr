@@ -1,6 +1,7 @@
 # Combinatorial Matrix Recognition Library # {#index}
 
 This C/C++ library contains efficient implementations of various algorithm for recognizing combinatorial matrices.
+It is the successor of the [TUtest library](\ref TUtest).
 The following matrix classes can be recognized:
 
   - \ref tu
@@ -26,12 +27,14 @@ The following matrix/matroid classes are **planned**:
   - \ref consecutive-ones
   - \ref max-flow-min-cut
 
-# Usage #
+# Installation and Usage #
 
-The functionality can be used via command-line tools or via its C/C++ interface.
+The functionality can be used via command-line tools or via its C interface.
 There is one executable per matrix/matroid class.
 Its documentation and that of the interface can be found on the respective pages.
 The executables accept several \ref file-formats.
+
+Changes and bug fixes are listed [here](\ref changes).
 
 # License #
 
