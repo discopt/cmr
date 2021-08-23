@@ -337,6 +337,7 @@ CMR_ERROR genMatrixSeriesParallel(
       matrix->entryColumns[i] = nzs[i].column;
       matrix->entryValues[i] = nzs[i].value;
     }
+    matrix->rowSlice[matrix->numRows] = matrix->numNonzeros;
 
     CMR_CALL( CMRfreeBlockArray(cmr, &numRowNonzeros) );
     CMR_CALL( CMRfreeBlockArray(cmr, &nzs) );
