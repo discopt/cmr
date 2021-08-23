@@ -55,6 +55,7 @@ add_library(cmr
   src/cmr/graphic.c
   src/cmr/hashtable.c
   src/cmr/heap.c
+  src/cmr/k_modular.c
   src/cmr/logger.cpp
   src/cmr/matrix.cpp
   src/cmr/matroid_decomposition.cpp
@@ -117,6 +118,15 @@ target_link_libraries(cmr_graphic
       CMR::cmr
 )
 set_target_properties(cmr_graphic PROPERTIES OUTPUT_NAME cmr-graphic)
+
+# Target for the cmr-k-modular.
+add_executable(cmr_k_modular
+  src/main/k_modular_main.c)
+target_link_libraries(cmr_k_modular
+  PRIVATE
+    CMR::cmr
+)
+set_target_properties(cmr_k_modular PROPERTIES OUTPUT_NAME cmr-k-modular)
 
 # Target for the cmr-network executable.
 add_executable(cmr_network

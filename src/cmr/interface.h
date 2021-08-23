@@ -17,6 +17,12 @@ CMR_ERROR CMRinterfaceTU(
   CMR_SUBMAT** psubmatrix /**< Pointer for storing a bad submatrix with a bad determinant (may be \c NULL). */
 );
 
+CMR_ERROR CMRinterfaceKModular(
+  CMR* cmr,           /**< \ref CMR environment */
+  CMR_CHRMAT* matrix, /**< Matrix \f$ M \f$. */
+  size_t* pk          /**< Pointer for storing \f$ k \f$ if \f$ M \f$ is \f$ k \f$-modular, or 0 otherwise . */
+);
+
 #ifdef __cplusplus
 }
 #endif

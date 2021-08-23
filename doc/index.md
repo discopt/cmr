@@ -6,6 +6,7 @@ The following matrix classes can be recognized:
   - \ref tu
   - \ref network
   - \ref ctu
+  - \ref k-modular
 
 Moreover, base representation matrices for the following matroid classes can be recognized:
 
