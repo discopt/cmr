@@ -140,7 +140,7 @@ if(GENERATORS)
   )
   set_target_properties(cmr_generate_series_parallel PROPERTIES OUTPUT_NAME cmr-generate-series-parallel)
 
-  set(GENERATOR_EXECUTABLES cmr-generate-series-parallel)
+  set(GENERATOR_EXECUTABLES cmr_generate_series_parallel)
 else()
   set(GENERATOR_EXECUTABLES)
 endif()
