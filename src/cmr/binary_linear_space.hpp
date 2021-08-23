@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include <cmr/permutations.hpp>
+#include "permutations.hpp"
 
 namespace tu
 {

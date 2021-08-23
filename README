@@ -16,9 +16,11 @@ cmake ..
 
 make
 
-5a. Use the binary:
+5a. Use one of binaries:
 
-./src/tu-test
+./cmr-totally-unimodular
+./cmr-graphic
+./cmr-series-parallel
 
 5b. Install the binary and the library:
 

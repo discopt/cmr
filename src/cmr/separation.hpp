@@ -5,7 +5,7 @@
 #include <vector>
 #include "nested_minor_sequence.hpp"
 #include "matroid.hpp"
-#include <cmr/total_unimodularity.hpp>
+#include "total_unimodularity.hpp"
 
 namespace tu
 {

@@ -2,7 +2,7 @@
 
 #include <boost/numeric/ublas/matrix.hpp>
 
-#include <cmr/total_unimodularity.hpp>
+#include "total_unimodularity.hpp"
 
 namespace tu
 {

@@ -7,7 +7,7 @@
 #include "matroid.hpp"
 #include "signing.hpp"
 #include "logger.hpp"
-#include <cmr/total_unimodularity.hpp>
+#include "total_unimodularity.hpp"
 
 namespace tu
 {

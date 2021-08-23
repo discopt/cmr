@@ -15,10 +15,10 @@ extern "C" {
  */
 
 CMR_ERROR CMRsort(
-  CMR* cmr,                                   /**< \ref CMR environment. */
+  CMR* cmr,                                 /**< \ref CMR environment. */
   size_t length,                            /**< Number of elements in both arrays. */
   void *array,                              /**< Pointer to the first element of the array.  */
-  size_t elementSize,                              /**< Size (in bytes) of each element of the array. */
+  size_t elementSize,                       /**< Size (in bytes) of each element of the array. */
   int (*compare)(const void*, const void*)  /**< Comparison function for comparing two elements. */
 );
 

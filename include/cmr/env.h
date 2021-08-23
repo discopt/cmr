@@ -1,6 +1,14 @@
 #ifndef CMR_ENV_H
 #define CMR_ENV_H
 
+/**
+ * \file env.h
+ *
+ * \author Matthias Walter
+ *
+ * \brief Basic functionality of the software library.
+ */
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -16,9 +24,11 @@ extern "C" {
 
 typedef enum
 {
-  CMR_OKAY = 0,         /**< No error. */
-  CMR_ERROR_INPUT = 1,  /**< Bad user input. */
-  CMR_ERROR_MEMORY = 2  /**< Error during (re)allocation. */
+  CMR_OKAY = 0,          /**< No error. */
+  CMR_ERROR_INPUT = 1,   /**< Bad user input. */
+  CMR_ERROR_MEMORY = 2,  /**< Error during (re)allocation. */
+  CMR_ERROR_INVALID = 3, /**< Other invalid data. */
+  CMR_ERROR_OVERFLOW = 4 /**< Overflow in numerical computations. */
 } CMR_ERROR;
 
 /**
@@ -147,13 +157,33 @@ CMR_EXPORT
 CMR_ERROR _CMRreallocBlockArray(CMR* cmr, void** ptr, size_t size, size_t length);
 
 /**
+ * \brief Allocates block memory for an array of chunks and copies it from \p source.
+ *
+ * The block memory shall be freed with \ref CMRfreeBlockArray. Its size can be changed via
+ * \ref CMRreallocBlockArray.
+ * The size of each chunk is determined automatically.
+ */
+
+#define CMRduplicateBlockArray(cmr, ptr, length, source) \
+  _CMRduplicateBlockArray(cmr, (void**) ptr, sizeof(**ptr), length, source)
+
+/**
+ * \brief Carries out the duplication for \ref CMRduplicateBlockArray.
+ *
+ * \note Use \ref CMRduplicateBlockArray to duplicate block memory.
+ */
+
+CMR_EXPORT
+CMR_ERROR _CMRduplicateBlockArray(CMR* cmr, void** ptr, size_t size, size_t length, void* source);
+
+/**
  * \brief Carries out the deallocation for \ref CMRfreeBlockArray.
  *
  * \note Use \ref CMRfreeBlockArray to free a block memory array.
  */
 
-#define CMRfreeBlockArray(cmr, ptr) \
-  _CMRfreeBlockArray(cmr, (void**) ptr)
+#define CMRfreeBlockArray(tu, ptr) \
+  _CMRfreeBlockArray(tu, (void**) ptr)
 
 CMR_EXPORT
 CMR_ERROR _CMRfreeBlockArray(CMR* cmr, void** ptr);

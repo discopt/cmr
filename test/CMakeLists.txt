@@ -9,13 +9,15 @@ endif()
 # Target for the googletest.
 add_executable(cmr_gtest
   common.c
-  test_sign.cpp
+  test_camion.cpp
+  test_ctu.cpp
   test_graph.cpp
   test_graphic.cpp
   test_hashtable.cpp
-#  test_preprocessing.cpp
   test_matrix.cpp
-  test_main.cpp)
+  test_main.cpp
+  test_network.cpp
+  test_series_parallel.cpp)
 
 # Add tests for non-exported functions only for static library.
 if(NOT SHARED)

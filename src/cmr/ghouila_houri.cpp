@@ -1,6 +1,6 @@
 #include <vector>
 
-#include <cmr/total_unimodularity.hpp>
+#include "total_unimodularity.hpp"
 
 namespace tu
 {

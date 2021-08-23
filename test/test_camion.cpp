@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
 
 #include "common.h"
-#include <cmr/sign.h>
+#include <cmr/camion.h>
 
-TEST(Sign, Change)
+TEST(Camion, Change)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -45,15 +45,15 @@ TEST(Sign, Change)
   CMR_CHRMAT* violator = NULL;
 
   bool alreadySigned;
-  ASSERT_CMR_CALL( CMRtestSignChr(cmr, matrix, &alreadySigned, &submatrix) );
+  ASSERT_CMR_CALL( CMRtestCamionSigned(cmr, matrix, &alreadySigned, &submatrix) );
   ASSERT_FALSE(alreadySigned);
   ASSERT_TRUE(submatrix != NULL);
   ASSERT_CMR_CALL( CMRchrmatFilterSubmat(cmr, matrix, submatrix, &violator) );
   ASSERT_TRUE(CMRchrmatCheckEqual(violator, checkViolator));
-  CMRchrmatFree(cmr, &violator);
-  CMRsubmatFree(cmr, &submatrix);
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &violator) );
+  ASSERT_CMR_CALL( CMRsubmatFree(cmr, &submatrix) );
 
-  ASSERT_CMR_CALL( CMRcorrectSignChr(cmr, matrix, &alreadySigned, NULL) );
+  ASSERT_CMR_CALL( CMRcomputeCamionSigned(cmr, matrix, &alreadySigned, NULL) );
   ASSERT_FALSE(alreadySigned);
   ASSERT_TRUE(CMRchrmatCheckEqual(matrix, check));
 
@@ -61,5 +61,5 @@ TEST(Sign, Change)
   ASSERT_CMR_CALL( CMRchrmatFree(cmr, &check) );
   ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
 
-  CMRfreeEnvironment(&cmr);
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }

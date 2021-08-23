@@ -1,6 +1,14 @@
 #ifndef CMR_MATRIX_H
 #define CMR_MATRIX_H
 
+/**
+ * \file matrix.h
+ *
+ * \author Matthias Walter
+ *
+ * \brief Functionality for sparse matrices.
+ */
+
 #include <cmr/env.h>
 
 #include <stdio.h>
@@ -17,130 +25,11 @@ extern "C" {
  */
 typedef struct
 {
-  /**
-   * \brief Number of rows
-   */
-  int numRows;
-  /**
-   * \brief Array with row indices
-   */
-  int* rows;
-  /**
-   * \brief Number of columns
-   */
-  int numColumns;
-  /**
-   * \brief Array with column indices
-   */
-  int* columns;
+  size_t numRows;     /**< \brief Number of rows. */
+  size_t* rows;       /**< \brief Array with row indices. */
+  size_t numColumns;  /** \brief Number of columns. */
+  size_t* columns;    /** \brief Array with column indices. */
 } CMR_SUBMAT;
-
-/**
- * \brief Row-wise representation of sparse double matrix.
- * 
- * The columns and values of all nonzeros are stored in \ref entryColumns and \ref entryValues,
- * respectively.
- * Those of row \c r are stored from \ref rowStarts[r] until (but not including)
- * \ref rowStarts[r+1]. The last row is an exception, since \ref rowStarts[\ref numRows] need not
- * be defined.
- * For convenience, one may store this additional entry.
- * In particular \ref CMRdblmatCreate allocates sufficient space for it.
- * However, all public methods use \ref numRows to determine the last row's number of nonzeros via
- * \ref numNonzeros.
- */
-
-typedef struct
-{
-  int numRows;          /**< \brief Number of rows. */
-  int numColumns;       /**< \brief Number of columns. */
-  int numNonzeros;      /**< \brief Number of and memory allocated for nonzeros. */
-  int* rowStarts;       /**< \brief Array mapping each row to the index of its first entry. */
-  int* entryColumns;    /**< \brief Array mapping each entry to its column.*/
-  double* entryValues;  /**< \brief Array mapping each entry to its value. */
-} CMR_DBLMAT;
-
-/**
- * \brief Row-wise representation of sparse int matrix.
- * 
- * The columns and values of all nonzeros are stored in \ref entryColumns and \ref entryValues,
- * respectively.
- * Those of row \c r are stored from \ref rowStarts[r] until (but not including)
- * \ref rowStarts[r+1]. The last row is an exception, since \ref rowStarts[\ref numRows] need not
- * be defined.
- * For convenience, one may store this additional entry.
- * In particular \ref CMRintmatCreate allocates sufficient space for it.
- * However, all public methods use \ref numRows to determine the last row's number of nonzeros via
- * \ref numNonzeros.
- */
-
-typedef struct
-{
-  int numRows;        /**< \brief Number of rows. */
-  int numColumns;     /**< \brief Number of columns. */
-  int numNonzeros;    /**< \brief Number of and memory allocated for nonzeros. */
-  int* rowStarts;     /**< \brief Array mapping each row to the index of its first entry. */
-  int* entryColumns;  /**< \brief Array mapping each entry to its column.*/
-  int* entryValues;   /**< \brief Array mapping each entry to its value. */
-} CMR_INTMAT;
-
-/**
- * \brief Row-wise representation of sparse char matrix.
- * 
- * The columns and values of all nonzeros are stored in \ref entryColumns and \ref entryValues,
- * respectively.
- * Those of row \c r are stored from \ref rowStarts[r] until (but not including)
- * \ref rowStarts[r+1]. The last row is an exception, since \ref rowStarts[\ref numRows] need not
- * be defined.
- * For convenience, one may store this additional entry.
- * In particular \ref CMRchrmatCreate allocates sufficient space for it.
- * However, all public methods use \ref numRows to determine the last row's number of nonzeros via
- * \ref numNonzeros.
- */
-
-typedef struct
-{
-  int numRows;        /**< \brief Number of rows. */
-  int numColumns;     /**< \brief Number of columns. */
-  int numNonzeros;    /**< \brief Number of and memory allocated for nonzeros. */
-  int* rowStarts;     /**< \brief Array mapping each row to the index of its first entry. */
-  int* entryColumns;  /**< \brief Array mapping each entry to its column.*/
-  char* entryValues;  /**< \brief Array mapping each entry to its value. */
-} CMR_CHRMAT;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/**
- * \brief Creates a double matrix of size \p numRows times \p numColumns with \p numNonzeros
- *        nonzeros. The row starts and entries are allocated but not initialized.
- */
-
-CMR_EXPORT
-CMR_ERROR CMRdblmatCreate(
-  CMR* cmr,              /**< \ref CMR environment. */
-  CMR_DBLMAT** matrix,  /**< Pointer for storing the created matrix. */
-  int numRows,         /**< Number of rows. */
-  int numColumns,      /**< Number of columns. */
-  int numNonzeros      /**< Number of nonzeros. */
-);
-
-
-
 
 
 /**
@@ -151,51 +40,149 @@ CMR_ERROR CMRdblmatCreate(
  */
 CMR_EXPORT
 CMR_ERROR CMRsubmatCreate(
-  CMR* cmr,                 /**< \ref CMR environment. */
-  CMR_SUBMAT** psubmatrix, /**< Pointer to where the submatrix is to be stored. */
-  int numRows,            /**< Number of rows */
-  int numColumns          /**< Number of columns */
+  CMR* cmr,               /**< \ref CMR environment. */
+  size_t numRows,         /**< Number of rows */
+  size_t numColumns,      /**< Number of columns */
+  CMR_SUBMAT** psubmatrix /**< Pointer to where the submatrix is to be stored. */
 );
 
 /**
- * \brief Creates a 1x1 submatrix.
+ * \brief Creates a 1-by-1 submatrix.
  */
 
 CMR_EXPORT
-void CMRsubmatCreate1x1(
-  CMR* cmr,                 /**< \ref CMR environment. */
-  CMR_SUBMAT** psubmatrix, /**< Pointer to submatrix */
-  int row,                /**< Row of entry */
-  int column              /**< Column of entry */
+CMR_ERROR CMRsubmatCreate1x1(
+  CMR* cmr,               /**< \ref CMR environment. */
+  size_t row,             /**< Row of entry */
+  size_t column,          /**< Column of entry */
+  CMR_SUBMAT** psubmatrix /**< Pointer to submatrix */
 );
 
 /**
  * \brief Frees a submatrix.
  */
+
 CMR_EXPORT
 CMR_ERROR CMRsubmatFree(
-  CMR* cmr,                 /**< \ref CMR environment. */
-  CMR_SUBMAT** psubmatrix  /**< Pointer to submatrix. */
+  CMR* cmr,               /**< \ref CMR environment. */
+  CMR_SUBMAT** psubmatrix /**< Pointer to submatrix. */
 );
 
 
+/**
+ * \brief Row-wise representation of sparse double matrix.
+ * 
+ * The nonzeros of the matrix are stored in the arrays \ref entryColumns and \ref entryValues, each of length
+ * \ref numNonzeros.
+ * The nonzeros of row \c r are stored at positions \f$ p \in \{a, a+1, \dotsc, b-2, b-1 \}\f$, where
+ * \f$ a := \f$ \ref rowSlice[r] and \f$ b := \f$ \ref rowSlice[r+1].
+ * In particular, the length of the \ref rowSlice array is \ref numRows + 1.
+ * The column is \ref entryColumns[\f$ p \f$] while the actual matrix entry is \ref entryValues[\f$ p \f$].
+ *
+ * The nonzeros of each row must be sorted by column in ascending order.
+ * Moreover, no duplicates are allowed and all stored entries must indeed be nonzero.
+ */
+
+typedef struct
+{
+  size_t numRows;       /**< \brief Number of rows. */
+  size_t numColumns;    /**< \brief Number of columns. */
+  size_t numNonzeros;   /**< \brief Number of and memory allocated for nonzeros. */
+  size_t* rowSlice;     /**< \brief Array mapping each row to the index of its first entry. */
+  size_t* entryColumns; /**< \brief Array mapping each entry to its column.*/
+  double* entryValues;  /**< \brief Array mapping each entry to its value. */
+} CMR_DBLMAT;
+
+/**
+ * \brief Row-wise representation of sparse int matrix.
+ * 
+ * The nonzeros of the matrix are stored in the arrays \ref entryColumns and \ref entryValues, each of length
+ * \ref numNonzeros.
+ * The nonzeros of row \c r are stored at positions \f$ p \in \{a, a+1, \dotsc, b-2, b-1 \}\f$, where
+ * \f$ a := \f$ \ref rowSlice[r] and \f$ b := \f$ \ref rowSlice[r+1].
+ * In particular, the length of the \ref rowSlice array is \ref numRows + 1.
+ * The column is \ref entryColumns[\f$ p \f$] while the actual matrix entry is \ref entryValues[\f$ p \f$].
+ *
+ * The nonzeros of each row must be sorted by column in ascending order.
+ * Moreover, no duplicates are allowed and all stored entries must indeed be nonzero.
+ */
+
+typedef struct
+{
+  size_t numRows;       /**< \brief Number of rows. */
+  size_t numColumns;    /**< \brief Number of columns. */
+  size_t numNonzeros;   /**< \brief Number of and memory allocated for nonzeros. */
+  size_t * rowSlice;    /**< \brief Array mapping each row to the index of its first entry. */
+  size_t* entryColumns; /**< \brief Array mapping each entry to its column.*/
+  int* entryValues;     /**< \brief Array mapping each entry to its value. */
+} CMR_INTMAT;
+
+/**
+ * \brief Row-wise representation of sparse char matrix.
+ *
+ * The nonzeros of the matrix are stored in the arrays \ref entryColumns and \ref entryValues, each of length
+ * \ref numNonzeros.
+ * The nonzeros of row \c r are stored at positions \f$ p \in \{a, a+1, \dotsc, b-2, b-1 \}\f$, where
+ * \f$ a := \f$ \ref rowSlice[r] and \f$ b := \f$ \ref rowSlice[r+1].
+ * In particular, the length of the \ref rowSlice array is \ref numRows + 1.
+ * The column is \ref entryColumns[\f$ p \f$] while the actual matrix entry is \ref entryValues[\f$ p \f$].
+ *
+ * The nonzeros of each row must be sorted by column in ascending order.
+ * Moreover, no duplicates are allowed and all stored entries must indeed be nonzero.
+ */
+
+typedef struct
+{
+  size_t numRows;       /**< \brief Number of rows. */
+  size_t numColumns;    /**< \brief Number of columns. */
+  size_t numNonzeros;   /**< \brief Number of and memory allocated for nonzeros. */
+  size_t* rowSlice;     /**< \brief Array mapping each row to the index of its first entry. */
+  size_t* entryColumns; /**< \brief Array mapping each entry to its column.*/
+  char* entryValues;    /**< \brief Array mapping each entry to its value. */
+} CMR_CHRMAT;
+
+/**
+ * \brief Creates a double matrix of with \p numRows rows, \p numColumns columns and \p numNonzeros nonzeros.
+ *        The actual arrays are allocated but not initialized.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRdblmatCreate(
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_DBLMAT** presult, /**< Pointer for storing the created matrix. */
+  int numRows,          /**< Number of rows. */
+  int numColumns,       /**< Number of columns. */
+  int numNonzeros       /**< Number of nonzeros. */
+);
+
+/**
+ * \brief Creates an int matrix of with \p numRows rows, \p numColumns columns and \p numNonzeros nonzeros.
+ *        The actual arrays are allocated but not initialized.
+ */
 
 
+CMR_EXPORT
+CMR_ERROR CMRintmatCreate(
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_INTMAT** presult, /**< Pointer for storing the created matrix. */
+  int numRows,          /**< Number of rows. */
+  int numColumns,       /**< Number of columns. */
+  int numNonzeros       /**< Number of nonzeros. */
+);
 
+/**
+ * \brief Creates a char matrix of with \p numRows rows, \p numColumns columns and \p numNonzeros nonzeros.
+ *        The actual arrays are allocated but not initialized.
+ */
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+CMR_EXPORT
+CMR_ERROR CMRchrmatCreate(
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_CHRMAT** presult, /**< Pointer for storing the created matrix. */
+  int numRows,          /**< Number of rows. */
+  int numColumns,       /**< Number of columns. */
+  int numNonzeros       /**< Number of nonzeros. */
+);
 
 /**
  * \brief Frees the memory of a double matrix.
@@ -204,200 +191,7 @@ CMR_ERROR CMRsubmatFree(
 CMR_EXPORT
 CMR_ERROR CMRdblmatFree(
   CMR* cmr,             /**< \ref CMR environment. */
-  CMR_DBLMAT** matrix  /**< Pointer to matrix. */
-);
-
-/**
- * \brief Changes the number of nonzeros and reallocates corresponding arrays.
- */
-
-CMR_EXPORT
-CMR_ERROR CMRdblmatChangeNumNonzeros(
-  CMR* cmr,             /**< \ref CMR environment. */
-  CMR_DBLMAT* matrix,  /**< Given matrix. */
-  int newNumNonzeros  /**< New number of nonzeros. */ 
-);
-
-/**
- * \brief Copies a double matrix to a newly allocated one.
- * 
- * Allocates *\p result and copies \p matrix there.
- */
-CMR_EXPORT
-CMR_ERROR CMRdblmatCopy(
-  CMR* cmr,             /**< \ref CMR environment. */
-  CMR_DBLMAT* matrix,  /**< Given matrix. */
-  CMR_DBLMAT** result  /**< Pointer to store a copy of \p matrix. */
-);
-
-/**
- * \brief Creates the transpose of a double matrix.
- */
-CMR_EXPORT
-CMR_ERROR CMRdblmatTranspose(
-  CMR* cmr,             /**< \ref CMR environment. */
-  CMR_DBLMAT* matrix,  /**< Given matrix. */
-  CMR_DBLMAT** result  /**< Pointer to store the transpose of \p matrix. */
-);
-
-/**
- * \brief Prints a double matrix.
- */
-
-CMR_EXPORT
-CMR_ERROR CMRdblmatPrintSparse(
-  FILE* stream,       /**< File stream to print to. */
-  CMR_DBLMAT* matrix   /**< Double matrix. */
-);
-
-
-/**
- * \brief Prints a double matrix.
- */
-
-CMR_EXPORT
-CMR_ERROR CMRdblmatPrintDense(
-  FILE* stream,       /**< File stream to print to. */
-  CMR_DBLMAT* matrix,  /**< Double matrix. */
-  char zeroChar,      /**< Character to print for a zero. */
-  bool header         /**< Whether to print row and column indices. */
-);
-
-/**
- * \brief Reads a sparse double matrix from a file \p stream.
- * 
- * Zero entries are ignored, and multiple occurences of (row,column) pairs are considered as errors.
- * Returns \ref CMR_ERROR_INPUT in case of errors. In this case, *\p pmatrix will be \c NULL.
- */
-
-CMR_EXPORT
-CMR_ERROR CMRdblmatCreateFromSparseStream(
-  CMR* cmr,               /**< \ref CMR environment. */
-  CMR_DBLMAT** pmatrix,  /**< Pointer for storing the matrix. */
-  FILE* stream          /**< File stream to read from. */
-);
-
-/**
- * \brief Reads a densely stored double matrix from a file \p stream.
- */
-
-CMR_EXPORT
-CMR_ERROR CMRdblmatCreateFromDenseStream(
-  CMR* cmr,               /**< \ref CMR environment. */
-  CMR_DBLMAT** pmatrix,  /**< Pointer for storing the matrix. */
-  FILE* stream          /**< File stream to read from. */
-);
-
-/**
- * \brief Checks whether two double matrices are equal.
- */
-
-CMR_EXPORT
-bool CMRdblmatCheckEqual(
-  CMR_DBLMAT* matrix1,  /**< First matrix */
-  CMR_DBLMAT* matrix2   /**< Second matrix */
-);
-
-/**
- * \brief Checks whether two double matrices are transposes of each other.
- */
-
-CMR_EXPORT
-bool CMRdblmatCheckTranspose(
-  CMR_DBLMAT* matrix1,  /**< First matrix */
-  CMR_DBLMAT* matrix2   /**< Second matrix */
-);
-
-/**
- * \brief Checks whether double matrix has each row sorted by minor.
- */
-
-CMR_EXPORT
-bool CMRdblmatCheckSorted(
-  CMR_DBLMAT* matrix /**< Double matrix */
-);
-
-/**
- * \brief Creates a submatrix of a double matrix as an explicit matrix.
- */
-CMR_EXPORT
-CMR_ERROR CMRdblmatFilterSubmat(
-  CMR* cmr,               /**< \ref CMR environment. */
-  CMR_DBLMAT* matrix,    /**< Given matrix */
-  CMR_SUBMAT* submatrix, /**< Specified submatrix */
-  CMR_DBLMAT** result    /**< Pointer for storing the resulting double matrix. */
-);
-
-/**
- * \brief Checks if double matrix has only entries in {0, 1} with absolute error tolerance \p epsilon.
- */
-
-CMR_EXPORT
-bool CMRisBinaryDbl(
-  CMR* cmr,                 /**< \ref CMR environment. */
-  CMR_DBLMAT* matrix,      /**< Double matrix */
-  double epsilon,         /**< Absolute error tolerance */
-  CMR_SUBMAT** psubmatrix  /**< Pointer for storing a non-binary entry as a submatrix (may be \c NULL). */
-);
-
-/**
- * \brief Checks if double matrix has only entries in {-1, 0, +1} with absolute error tolerance \p epsilon.
- */
-
-CMR_EXPORT
-bool CMRisTernaryDbl(
-  CMR* cmr,                 /**< \ref CMR environment. */
-  CMR_DBLMAT* matrix,      /**< Double matrix */
-  double epsilon,         /**< Absolute error tolerance */
-  CMR_SUBMAT** psubmatrix  /**< Pointer for storing a non-ternary entry as a submatrix (may be \c NULL). */
-);
-
-/**
- * \brief Creates the support matrix of a double \p matrix as a char matrix.
- */
-
-CMR_EXPORT
-CMR_ERROR CMRsupportDbl(
-  CMR* cmr,               /**< \ref CMR environment. */
-  CMR_DBLMAT* matrix,    /**< Double matrix */
-  double epsilon,       /**< Absolute error tolerance */
-  CMR_CHRMAT** psupport  /**< Pointer for storing the support matrix of \p matrix. */
-);
-
-/**
- * \brief Creates the signed support matrix of a double \p matrix as a char matrix.
- */
-
-CMR_EXPORT
-CMR_ERROR CMRsignedSupportDbl(
-  CMR* cmr,               /**< \ref CMR environment. */
-  CMR_DBLMAT* matrix,    /**< Double matrix */
-  double epsilon,       /**< Absolute error tolerance */
-  CMR_CHRMAT** psupport  /**< Pointer for storing the support matrix of \p matrix. */
-);
-
-
-
-
-
-
-
-
-
-
-
-/**
- * \brief Creates a double matrix of size \p numRows times \p numColumns with \p numNonzeros
- *        nonzeros. The row starts and entries are allocated but not initialized.
- */
-
-CMR_EXPORT
-CMR_ERROR CMRintmatCreate(
-  CMR* cmr,              /**< \ref CMR environment. */
-  CMR_INTMAT** matrix,  /**< Pointer for storing the created matrix. */
-  int numRows,         /**< Number of rows. */
-  int numColumns,      /**< Number of columns. */
-  int numNonzeros      /**< Number of nonzeros. */
+  CMR_DBLMAT** pmatrix  /**< Pointer to matrix. */
 );
 
 /**
@@ -407,7 +201,28 @@ CMR_ERROR CMRintmatCreate(
 CMR_EXPORT
 CMR_ERROR CMRintmatFree(
   CMR* cmr,             /**< \ref CMR environment. */
-  CMR_INTMAT** matrix  /**< Pointer to matrix. */
+  CMR_INTMAT** pmatrix  /**< Pointer to matrix. */
+);
+
+/**
+ * \brief Frees the memory of a char matrix.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRchrmatFree(
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_CHRMAT** pmatrix  /**< Pointer to matrix. */
+);
+
+/**
+ * \brief Changes the number of nonzeros and reallocates corresponding arrays.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRdblmatChangeNumNonzeros(
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_DBLMAT* matrix,   /**< Given matrix. */
+  size_t newNumNonzeros /**< New number of nonzeros. */ 
 );
 
 /**
@@ -417,201 +232,8 @@ CMR_ERROR CMRintmatFree(
 CMR_EXPORT
 CMR_ERROR CMRintmatChangeNumNonzeros(
   CMR* cmr,             /**< \ref CMR environment. */
-  CMR_INTMAT* matrix,  /**< Given matrix. */
-  int newNumNonzeros  /**< New number of nonzeros. */ 
-);
-
-/**
- * \brief Copies an int matrix to a newly allocated one.
- * 
- * Allocates *\p result and copies \p matrix there.
- */
-CMR_EXPORT
-CMR_ERROR CMRintmatCopy(
-  CMR* cmr,             /**< \ref CMR environment. */
-  CMR_INTMAT* matrix,  /**< Given matrix. */
-  CMR_INTMAT** result  /**< Pointer to store a copy of \p matrix. */
-);
-
-/**
- * \brief Creates the transpose of an int matrix.
- */
-CMR_EXPORT
-CMR_ERROR CMRintmatTranspose(
-  CMR* cmr,             /**< \ref CMR environment. */
-  CMR_INTMAT* matrix,  /**< Given matrix. */
-  CMR_INTMAT** result  /**< Pointer to store the transpose of \p matrix. */
-);
-
-/**
- * \brief Prints an int matrix.
- */
-
-CMR_EXPORT
-CMR_ERROR CMRintmatPrintSparse(
-  FILE* stream,       /**< File stream to print to. */
-  CMR_INTMAT* matrix   /**< Int matrix. */
-);
-
-/**
- * \brief Prints an int matrix.
- */
-
-CMR_EXPORT
-CMR_ERROR CMRintmatPrintDense(
-  FILE* stream,       /**< File stream to print to. */
-  CMR_INTMAT* matrix,  /**< Int matrix. */
-  char zeroChar,      /**< Character to print for a zero. */
-  bool header         /**< Whether to print row and column indices. */
-);
-
-/**
- * \brief Reads a sparse int matrix from a file \p stream.
- *  
- * Zero entries are ignored, and multiple occurences of (row,column) pairs are considered as errors.
- * Returns \ref CMR_ERROR_INPUT in case of errors. In this case, *\p pmatrix will be \c NULL.
- */
-
-CMR_EXPORT
-CMR_ERROR CMRintmatCreateFromSparseStream(
-  CMR* cmr,               /**< \ref CMR environment. */
-  CMR_INTMAT** pmatrix,  /**< Pointer for storing the matrix. */
-  FILE* stream          /**< File stream to read from. */
-);
-
-/**
- * \brief Reads a densely stored int matrix from a file \p stream.
- */
-
-CMR_EXPORT
-CMR_ERROR CMRintmatCreateFromDenseStream(
-  CMR* cmr,               /**< \ref CMR environment. */
-  CMR_INTMAT** pmatrix,  /**< Pointer for storing the matrix. */
-  FILE* stream          /**< File stream to read from. */
-);
-
-/**
- * \brief Checks whether two int matrices are equal.
- */
-
-CMR_EXPORT
-bool CMRintmatCheckEqual(
-  CMR_INTMAT* matrix1, /**< First matrix */
-  CMR_INTMAT* matrix2  /**< Second matrix */
-);
-
-/**
- * \brief Checks whether two int matrices are transposes of each other.
- */
-
-CMR_EXPORT
-bool CMRintmatCheckTranspose(
-  CMR_INTMAT* matrix1, /**< First matrix */
-  CMR_INTMAT* matrix2  /**< Second matrix */
-);
-
-/**
- * \brief Checks whether int matrix has each row sorted by minor.
- */
-
-CMR_EXPORT
-bool CMRintmatCheckSorted(
-  CMR_INTMAT* matrix /**< Int matrix */
-);
-
-/**
- * \brief Creates a submatrix of an int matrix as an explicit matrix.
- */
-CMR_EXPORT
-CMR_ERROR CMRintmatFilterSubmat(
-  CMR* cmr,               /**< \ref CMR environment. */
-  CMR_INTMAT* matrix,    /**< Given matrix */
-  CMR_SUBMAT* submatrix, /**< Specified submatrix */
-  CMR_INTMAT** result    /**< Pointer for storing the resulting int matrix. */
-);
-
-/**
- * \brief Checks if int matrix has only entries in {0, 1}.
- */
-
-CMR_EXPORT
-bool CMRisBinaryInt(
-  CMR* cmr,                 /**< \ref CMR environment. */
-  CMR_INTMAT* matrix,      /**< Int matrix */
-  CMR_SUBMAT** psubmatrix  /**< Pointer for storing a non-binary entry as a submatrix (may be \c NULL). */
-);
-
-/**
- * \brief Checks if int matrix has only entries in {-1, 0, +1}.
- */
-
-CMR_EXPORT
-bool CMRisTernaryInt(
-  CMR* cmr,                 /**< \ref CMR environment. */
-  CMR_INTMAT* matrix,      /**< Int matrix */
-  CMR_SUBMAT** psubmatrix  /**< Pointer for storing a non-ternary entry as a submatrix (may be \c NULL). */
-);
-
-/**
- * \brief Creates the support matrix of an int \p matrix as a char matrix.
- */
-
-CMR_EXPORT
-CMR_ERROR CMRsupportInt(
-  CMR* cmr,               /**< \ref CMR environment. */
-  CMR_INTMAT* matrix,    /**< Int matrix */
-  CMR_CHRMAT** psupport  /**< Pointer for storing the support matrix of \p matrix. */
-);
-
-/**
- * \brief Creates the signed support matrix of an int \p matrix as a char matrix.
- */
-
-CMR_EXPORT
-CMR_ERROR CMRsignedSupportInt(
-  CMR* cmr,               /**< \ref CMR environment. */
-  CMR_INTMAT* matrix,    /**< Int matrix */
-  CMR_CHRMAT** psupport  /**< Pointer for storing the support matrix of \p matrix. */
-);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/**
- * \brief Creates a char matrix of size \p numRows times \p numColumns with \p numNonzeros
- *        nonzeros. The row starts and entries are allocated but not initialized.
- */
-
-CMR_EXPORT
-CMR_ERROR CMRchrmatCreate(
-  CMR* cmr,              /**< \ref CMR environment. */
-  CMR_CHRMAT** matrix,  /**< Pointer for storing the created matrix. */
-  int numRows,         /**< Number of rows. */
-  int numColumns,      /**< Number of columns. */
-  int numNonzeros      /**< Number of nonzeros. */
-);
-
-/**
- * \brief Frees the memory of an int matrix.
- */
-
-CMR_EXPORT
-CMR_ERROR CMRchrmatFree(
-  CMR* cmr,             /**< \ref CMR environment. */
-  CMR_CHRMAT** matrix  /**< Pointer to matrix. */
+  CMR_INTMAT* matrix,   /**< A matrix. */
+  size_t newNumNonzeros /**< New number of nonzeros. */ 
 );
 
 /**
@@ -621,84 +243,274 @@ CMR_ERROR CMRchrmatFree(
 CMR_EXPORT
 CMR_ERROR CMRchrmatChangeNumNonzeros(
   CMR* cmr,             /**< \ref CMR environment. */
-  CMR_CHRMAT* matrix,  /**< Given matrix. */
-  int newNumNonzeros  /**< New number of nonzeros. */ 
+  CMR_CHRMAT* matrix,   /**< A matrix. */
+  size_t newNumNonzeros /**< New number of nonzeros. */ 
+);
+
+/**
+ * \brief Sorts the nonzeros of a double matrix by column in ascending order.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRdblmatSortNonzeros(
+  CMR* cmr,           /**< \ref CMR environment. */
+  CMR_DBLMAT* matrix  /**< A matrix. */
+);
+
+/**
+ * \brief Sorts the nonzeros of an int matrix by column in ascending order.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRintmatSortNonzeros(
+  CMR* cmr,           /**< \ref CMR environment. */
+  CMR_INTMAT* matrix  /**< A matrix. */
+);
+
+/**
+ * \brief Sorts the nonzeros of a char matrix by column in ascending order.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRchrmatSortNonzeros(
+  CMR* cmr,           /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix  /**< A matrix. */
+);
+
+/**
+ * \brief Copies a double matrix to a newly allocated one.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRdblmatCopy(
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_DBLMAT* matrix,   /**< A matrix. */
+  CMR_DBLMAT** presult  /**< Pointer for storing a copy of \p matrix. */
 );
 
 /**
  * \brief Copies an int matrix to a newly allocated one.
- * 
- * Allocates *\p result and copies \p matrix there.
  */
+
+CMR_EXPORT
+CMR_ERROR CMRintmatCopy(
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_INTMAT* matrix,   /**< A matrix. */
+  CMR_INTMAT** presult  /**< Pointer for storing a copy of \p matrix. */
+);
+
+/**
+ * \brief Copies a char matrix to a newly allocated one.
+ */
+
 CMR_EXPORT
 CMR_ERROR CMRchrmatCopy(
   CMR* cmr,             /**< \ref CMR environment. */
-  CMR_CHRMAT* matrix,  /**< Given matrix. */
-  CMR_CHRMAT** result  /**< Pointer to store a copy of \p matrix. */
+  CMR_CHRMAT* matrix,   /**< A matrix. */
+  CMR_CHRMAT** presult  /**< Pointer for storing a copy of \p matrix. */
+);
+
+/**
+ * \brief Creates the transpose of a double matrix.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRdblmatTranspose(
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_DBLMAT* matrix,   /**< A matrix. */
+  CMR_DBLMAT** presult  /**< Pointer for storing the transpose of \p matrix. */
 );
 
 /**
  * \brief Creates the transpose of an int matrix.
  */
+
+CMR_EXPORT
+CMR_ERROR CMRintmatTranspose(
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_INTMAT* matrix,   /**< Given matrix. */
+  CMR_INTMAT** presult  /**< Pointer for storing the transpose of \p matrix. */
+);
+
+/**
+ * \brief Creates the transpose of a char matrix.
+ */
+
 CMR_EXPORT
 CMR_ERROR CMRchrmatTranspose(
   CMR* cmr,             /**< \ref CMR environment. */
-  CMR_CHRMAT* matrix,  /**< Given matrix. */
-  CMR_CHRMAT** result  /**< Pointer to store the transpose of \p matrix. */
+  CMR_CHRMAT* matrix,   /**< Given matrix. */
+  CMR_CHRMAT** presult  /**< Pointer for storing the transpose of \p matrix. */
 );
 
+/**
+ * \brief Prints a double matrix in sparse format.
+ */
 
+CMR_EXPORT
+CMR_ERROR CMRdblmatPrintSparse(
+  CMR* cmr,           /**< \ref CMR environment. */
+  CMR_DBLMAT* matrix, /**< A matrix. */
+  FILE* stream        /**< File stream to print to. */
+);
 
 /**
- * \brief Prints a char matrix.
+ * \brief Prints an int matrix in sparse format.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRintmatPrintSparse(
+  CMR* cmr,           /**< \ref CMR environment. */
+  CMR_INTMAT* matrix, /**< A matrix. */
+  FILE* stream        /**< File stream to print to. */
+);
+
+/**
+ * \brief Prints a char matrix in sparse format.
  */
 
 CMR_EXPORT
 CMR_ERROR CMRchrmatPrintSparse(
-  FILE* stream,       /**< File stream to print to. */
-  CMR_CHRMAT* matrix   /**< Char matrix. */
+  CMR* cmr,           /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix, /**< A matrix. */
+  FILE* stream        /**< File stream to print to. */
 );
 
-
-
 /**
- * \brief Prints a char matrix.
+ * \brief Prints a double matrix in dense format.
  */
 
 CMR_EXPORT
-CMR_ERROR CMRchrmatPrintDense(
+CMR_ERROR CMRdblmatPrintDense(
+  CMR* cmr,           /**< \ref CMR environment. */
+  CMR_DBLMAT* matrix, /**< A matrix. */
   FILE* stream,       /**< File stream to print to. */
-  CMR_CHRMAT* matrix,  /**< Char matrix. */
   char zeroChar,      /**< Character to print for a zero. */
   bool header         /**< Whether to print row and column indices. */
 );
 
+/**
+ * \brief Prints an int matrix in dense format.
+ */
 
+CMR_EXPORT
+CMR_ERROR CMRintmatPrintDense(
+  CMR* cmr,           /**< \ref CMR environment. */
+  CMR_INTMAT* matrix, /**< A matrix. */
+  FILE* stream,       /**< File stream to print to. */
+  char zeroChar,      /**< Character to print for a zero. */
+  bool header         /**< Whether to print row and column indices. */
+);
 
 /**
- * \brief Reads a sparse char matrix from a file \p stream.
- *  
- * Zero entries are ignored, and multiple occurences of (row,column) pairs are considered as errors.
- * Returns \ref CMR_ERROR_INPUT in case of errors. In this case, *\p pmatrix will be \c NULL.
+ * \brief Prints a char matrix in dense format.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRchrmatPrintDense(
+  CMR* cmr,           /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix, /**< A matrix. */
+  FILE* stream,       /**< File stream to print to. */
+  char zeroChar,      /**< Character to print for a zero. */
+  bool header         /**< Whether to print row and column indices. */
+);
+
+/**
+ * \brief Reads a double matrix from a file \p stream in sparse format.
+ * 
+ * Returns \ref CMR_ERROR_INPUT in case of errors. In this case, *\p presult will be \c NULL.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRdblmatCreateFromSparseStream(
+  CMR* cmr,             /**< \ref CMR environment. */
+  FILE* stream,         /**< File stream to read from. */
+  CMR_DBLMAT** presult  /**< Pointer for storing the matrix. */
+);
+
+/**
+ * \brief Reads an int matrix from a file \p stream in sparse format.
+ * 
+ * Returns \ref CMR_ERROR_INPUT in case of errors. In this case, *\p presult will be \c NULL.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRintmatCreateFromSparseStream(
+  CMR* cmr,             /**< \ref CMR environment. */
+  FILE* stream,         /**< File stream to read from. */
+  CMR_INTMAT** presult  /**< Pointer for storing the matrix. */
+);
+
+/**
+ * \brief Reads a char matrix from a file \p stream in sparse format.
+ * 
+ * Returns \ref CMR_ERROR_INPUT in case of errors. In this case, *\p presult will be \c NULL.
  */
 
 CMR_EXPORT
 CMR_ERROR CMRchrmatCreateFromSparseStream(
-  CMR* cmr,               /**< \ref CMR environment. */
-  CMR_CHRMAT** pmatrix,  /**< Pointer for storing the matrix. */
-  FILE* stream          /**< File stream to read from. */
+  CMR* cmr,             /**< \ref CMR environment. */
+  FILE* stream,         /**< File stream to read from. */
+  CMR_CHRMAT** presult  /**< Pointer for storing the matrix. */
 );
 
+/**
+ * \brief Reads a double matrix from a file \p stream in dense format.
+ *
+ * Returns \ref CMR_ERROR_INPUT in case of errors. In this case, *\p presult will be \c NULL.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRdblmatCreateFromDenseStream(
+  CMR* cmr,             /**< \ref CMR environment. */
+  FILE* stream,         /**< File stream to read from. */
+  CMR_DBLMAT** presult  /**< Pointer for storing the matrix. */
+);
 
 /**
- * \brief Reads a densely stored char matrix from a file \p stream.
+ * \brief Reads an int matrix from a file \p stream in dense format.
+ *
+ * Returns \ref CMR_ERROR_INPUT in case of errors. In this case, *\p presult will be \c NULL.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRintmatCreateFromDenseStream(
+  CMR* cmr,             /**< \ref CMR environment. */
+  FILE* stream,         /**< File stream to read from. */
+  CMR_INTMAT** presult  /**< Pointer for storing the matrix. */
+);
+
+/**
+ * \brief Reads a char matrix from a file \p stream in dense format.
+ *
+ * Returns \ref CMR_ERROR_INPUT in case of errors. In this case, *\p presult will be \c NULL.
  */
 
 CMR_EXPORT
 CMR_ERROR CMRchrmatCreateFromDenseStream(
-  CMR* cmr,               /**< \ref CMR environment. */
-  CMR_CHRMAT** pmatrix,  /**< Pointer for storing the matrix. */
-  FILE* stream          /**< File stream to read from. */
+  CMR* cmr,             /**< \ref CMR environment. */
+  FILE* stream,         /**< File stream to read from. */
+  CMR_CHRMAT** presult  /**< Pointer for storing the matrix. */
+);
+
+/**
+ * \brief Checks whether two double matrices are equal.
+ */
+
+CMR_EXPORT
+bool CMRdblmatCheckEqual(
+  CMR_DBLMAT* matrix1,  /**< First matrix. */
+  CMR_DBLMAT* matrix2   /**< Second matrix. */
+);
+
+/**
+ * \brief Checks whether two int matrices are equal.
+ */
+
+CMR_EXPORT
+bool CMRintmatCheckEqual(
+  CMR_INTMAT* matrix1, /**< First matrix. */
+  CMR_INTMAT* matrix2  /**< Second matrix. */
 );
 
 /**
@@ -707,8 +519,32 @@ CMR_ERROR CMRchrmatCreateFromDenseStream(
 
 CMR_EXPORT
 bool CMRchrmatCheckEqual(
-  CMR_CHRMAT* matrix1,  /**< First matrix */
-  CMR_CHRMAT* matrix2   /**< Second matrix */
+  CMR_CHRMAT* matrix1,  /**< First matrix. */
+  CMR_CHRMAT* matrix2   /**< Second matrix. */
+);
+
+/**
+ * \brief Checks whether two double matrices are transposes of each other.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRdblmatCheckTranspose(
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_DBLMAT* matrix1,  /**< First matrix. */
+  CMR_DBLMAT* matrix2,  /**< Second matrix. */
+  bool* pareTranspose   /**< Pointer for storing whether \p matrix1 and \p matrix2 are tranposes of each other. */
+);
+
+/**
+ * \brief Checks whether two int matrices are transposes of each other.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRintmatCheckTranspose(
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_INTMAT* matrix1, /**< First matrix */
+  CMR_INTMAT* matrix2, /**< Second matrix */
+  bool* pareTranspose   /**< Pointer for storing whether \p matrix1 and \p matrix2 are tranposes of each other. */
 );
 
 /**
@@ -716,74 +552,294 @@ bool CMRchrmatCheckEqual(
  */
 
 CMR_EXPORT
-bool CMRchrmatCheckTranspose(
+CMR_ERROR CMRchrmatCheckTranspose(
+  CMR* cmr,             /**< \ref CMR environment. */
   CMR_CHRMAT* matrix1, /**< First matrix */
-  CMR_CHRMAT* matrix2  /**< Second matrix */
+  CMR_CHRMAT* matrix2, /**< Second matrix */
+  bool* pareTranspose   /**< Pointer for storing whether \p matrix1 and \p matrix2 are tranposes of each other. */
 );
 
 /**
- * \brief Checks whether char matrix has each row sorted by minor.
+ * \brief Checks a double matrix for consistency.
+ *
+ * Checks whether the entries of a row are sorted by column in ascending order.
+ * Checks for duplicate entries.
+ * Checks for zero entries.
+ *
+ * \returns \c NULL if consistent. Otherwise, an explanation string is returned, which must free'd with \c free().
+ * 
+ * \see \ref CMRconsistencyAssert() for checking the returned string and aborting in case of inconsistency.
  */
 
 CMR_EXPORT
-bool CMRchrmatCheckSorted(
-  CMR_CHRMAT* matrix /**< Char matrix */
+char* CMRdblmatConsistency(
+  CMR_DBLMAT* matrix /**< A matrix. */
+);
+
+/**
+ * \brief Checks an int matrix for consistency.
+ *
+ * Checks whether the entries of a row are sorted by column in ascending order.
+ * Checks for duplicate entries.
+ * Checks for zero entries.
+ *
+ * \returns \c NULL if consistent. Otherwise, an explanation string is returned, which must free'd with \c free().
+ * 
+ * \see \ref CMRconsistencyAssert() for checking the returned string and aborting in case of inconsistency.
+ */
+
+CMR_EXPORT
+char* CMRintmatConsistency(
+  CMR_INTMAT* matrix /**< A matrix. */
+);
+
+/**
+ * \brief Checks a char matrix for consistency.
+ *
+ * Checks whether the entries of a row are sorted by column in ascending order.
+ * Checks for duplicate entries.
+ * Checks for zero entries.
+ *
+ * \returns \c NULL if consistent. Otherwise, an explanation string is returned, which must free'd with \c free().
+ * 
+ * \see \ref CMRconsistencyAssert() for checking the returned string and aborting in case of inconsistency.
+ */
+
+CMR_EXPORT
+char* CMRchrmatConsistency(
+  CMR_CHRMAT* matrix /**< A matrix. */
+);
+
+/**
+ * \brief Creates a submatrix of a double matrix as an explicit matrix.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRdblmatFilterSubmat(
+  CMR* cmr,               /**< \ref CMR environment. */
+  CMR_DBLMAT* matrix,     /**< A matrix */
+  CMR_SUBMAT* submatrix,  /**< A submatrix of \p matrix. */
+  CMR_DBLMAT** presult    /**< Pointer for storing the resulting matrix. */
+);
+
+/**
+ * \brief Creates a submatrix of an int matrix as an explicit matrix.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRintmatFilterSubmat(
+  CMR* cmr,               /**< \ref CMR environment. */
+  CMR_INTMAT* matrix,     /**< A matrix */
+  CMR_SUBMAT* submatrix,  /**< A submatrix of \p matrix. */
+  CMR_INTMAT** presult    /**< Pointer for storing the resulting matrix. */
 );
 
 /**
  * \brief Creates a submatrix of a char matrix as an explicit matrix.
  */
+
 CMR_EXPORT
 CMR_ERROR CMRchrmatFilterSubmat(
   CMR* cmr,               /**< \ref CMR environment. */
-  CMR_CHRMAT* matrix,    /**< Given matrix */
-  CMR_SUBMAT* submatrix, /**< Specified submatrix */
-  CMR_CHRMAT** result    /**< Pointer for storing the resulting char matrix. */
+  CMR_CHRMAT* matrix,     /**< A matrix */
+  CMR_SUBMAT* submatrix,  /**< A submatrix of \p matrix. */
+  CMR_CHRMAT** presult    /**< Pointer for storing the resulting double matrix. */
 );
 
 /**
- * \brief Checks if matrix has only entries in {0, 1}.
+ * \brief Checks if a double matrix has only entries in \f$ \{0,1\} \f$ with absolute error tolerance \p epsilon.
  */
 
 CMR_EXPORT
-bool CMRisBinaryChr(
-  CMR* cmr,                 /**< \ref CMR environment. */
-  CMR_CHRMAT* matrix,      /**< Char matrix */
-  CMR_SUBMAT** psubmatrix  /**< Pointer for storing a non-binary entry as a submatrix (may be \c NULL). */
-);
-
-/**
- * \brief Checks if char matrix has only entries in {-1, 0, +1}.
- */
-
-CMR_EXPORT
-bool CMRisTernaryChr(
-  CMR* cmr,                 /**< \ref CMR environment. */
-  CMR_CHRMAT* matrix,      /**< Char matrix */
-  CMR_SUBMAT** psubmatrix  /**< Pointer for storing a non-ternary entry as a submatrix (may be \c NULL). */
-);
-
-/**
- * \brief Creates the support matrix of a char \p matrix as a char matrix.
- */
-
-CMR_EXPORT
-CMR_ERROR CMRsupportChr(
+bool CMRdblmatIsBinary(
   CMR* cmr,               /**< \ref CMR environment. */
-  CMR_CHRMAT* matrix,    /**< Char matrix */
-  CMR_CHRMAT** psupport  /**< Pointer for storing the support matrix of \p matrix. */
+  CMR_DBLMAT* matrix,     /**< A matrix. */
+  double epsilon,         /**< Absolute error tolerance. */
+  CMR_SUBMAT** psubmatrix /**< Pointer for storing a non-binary entry as a submatrix (may be \c NULL). */
 );
 
 /**
- * \brief Creates the signed support matrix of a char \p matrix as a char matrix.
+ * \brief Checks if an int matrix has only entries in \f$ \{0,1\} \f$.
  */
 
 CMR_EXPORT
-CMR_ERROR CMRsignedSupportChr(
+bool CMRintmatIsBinary(
   CMR* cmr,               /**< \ref CMR environment. */
-  CMR_CHRMAT* matrix,    /**< Char matrix */
-  CMR_CHRMAT** psupport  /**< Pointer for storing the support matrix of \p matrix. */
+  CMR_INTMAT* matrix,     /**< A matrix. */
+  CMR_SUBMAT** psubmatrix /**< Pointer for storing a non-binary entry as a submatrix (may be \c NULL). */
 );
+
+/**
+ * \brief Checks if a char matrix has only entries in \f$ \{0,1\} \f$.
+ */
+
+CMR_EXPORT
+bool CMRchrmatIsBinary(
+  CMR* cmr,               /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,     /**< A matrix. */
+  CMR_SUBMAT** psubmatrix /**< Pointer for storing a non-binary entry as a submatrix (may be \c NULL). */
+);
+
+/**
+ * \brief Checks if a double matrix has only entries in \f$ \{-1,0,+1\} \f$ with absolute error tolerance \p epsilon.
+ */
+
+CMR_EXPORT
+bool CMRdblmatIsTernary(
+  CMR* cmr,               /**< \ref CMR environment. */
+  CMR_DBLMAT* matrix,     /**< A matrix. */
+  double epsilon,         /**< Absolute error tolerance. */
+  CMR_SUBMAT** psubmatrix /**< Pointer for storing a non-ternary entry as a submatrix (may be \c NULL). */
+);
+
+/**
+ * \brief Checks if an int matrix has only entries in \f$ \{-1,0,+1\} \f$.
+ */
+
+CMR_EXPORT
+bool CMRintmatIsTernary(
+  CMR* cmr,               /**< \ref CMR environment. */
+  CMR_INTMAT* matrix,     /**< A matrix. */
+  CMR_SUBMAT** psubmatrix /**< Pointer for storing a non-ternary entry as a submatrix (may be \c NULL). */
+);
+
+/**
+ * \brief Checks if a double matrix has only entries in \f$ \{-1,0,+1\} \f$.
+ */
+
+CMR_EXPORT
+bool CMRchrmatIsTernary(
+  CMR* cmr,               /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,     /**< A matrix. */
+  CMR_SUBMAT** psubmatrix /**< Pointer for storing a non-ternary entry as a submatrix (may be \c NULL). */
+);
+
+/**
+ * \brief Creates the (binary) support matrix of a double matrix as a char matrix with absolute error tolerance \p epsilon.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRdblmatSupport(
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_DBLMAT* matrix,   /**< Double matrix */
+  double epsilon,       /**< Absolute error tolerance. */
+  CMR_CHRMAT** presult  /**< Pointer for storing the support matrix of \p matrix. */
+);
+
+/**
+ * \brief Creates the (binary) support matrix of an int matrix as a char matrix.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRintmatSupport(
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_INTMAT* matrix,   /**< Double matrix */
+  CMR_CHRMAT** presult  /**< Pointer for storing the support matrix of \p matrix. */
+);
+
+/**
+ * \brief Creates the (binary) support matrix of a char matrix as a char matrix.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRchrmatSupport(
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,   /**< Double matrix */
+  CMR_CHRMAT** presult  /**< Pointer for storing the support matrix of \p matrix. */
+);
+
+/**
+ * \brief Creates the (ternary) signed support matrix of a double matrix as a char matrix with absolute error tolerance
+ *        \p epsilon.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRdblmatSignedSupport(
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_DBLMAT* matrix,   /**< Double matrix */
+  double epsilon,       /**< Absolute error tolerance. */
+  CMR_CHRMAT** presult  /**< Pointer for storing the support matrix of \p matrix. */
+);
+
+/**
+ * \brief Creates the (ternary) signed support matrix of an int matrix as a char matrix.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRintmatSignedSupport(
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_INTMAT* matrix,   /**< Double matrix */
+  CMR_CHRMAT** presult  /**< Pointer for storing the signed support matrix of \p matrix. */
+);
+
+/**
+ * \brief Creates the (ternary) signed support matrix of a char matrix as a char matrix.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRchrmatSignedSupport(
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,   /**< Double matrix */
+  CMR_CHRMAT** presult  /**< Pointer for storing the signed support matrix of \p matrix. */
+);
+
+/**
+ * \brief Converts an int matrix to a char matrix.
+ *
+ * \returns \ref CMR_ERROR_INPUT in case of overflow.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRintmatToChr(
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_INTMAT* matrix,   /**< Input matrix. */
+  CMR_CHRMAT** presult  /**< Pointer for storing the output matrix. */
+);
+
+/**
+ * \brief Finds a specific entry of a double matrix.
+ * 
+ * Searches for the entry at (\p row, \p column) using binary search.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRdblmatFindEntry(
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_DBLMAT* matrix,   /**< Input matrix. */
+  size_t row,           /**< A row. */
+  size_t column,        /**< A column. */
+  size_t* pentry        /**< The entry at \p row, \p column, or \c SIZE_MAX if it is zero. */
+);
+/**
+ * \brief Finds a specific entry of an int matrix.
+ * 
+ * Searches for the entry at (\p row, \p column) using binary search.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRintmatFindEntry(
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_INTMAT* matrix,   /**< Input matrix. */
+  size_t row,           /**< A row. */
+  size_t column,        /**< A column. */
+  size_t* pentry        /**< The entry at \p row, \p column, or \c SIZE_MAX if it is zero. */
+);
+
+/**
+ * \brief Finds a specific entry of a char matrix.
+ * 
+ * Searches for the entry at (\p row, \p column) using binary search.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRchrmatFindEntry(
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,   /**< Input matrix. */
+  size_t row,           /**< A row. */
+  size_t column,        /**< A column. */
+  size_t* pentry        /**< The entry at \p row, \p column, or \c SIZE_MAX if it is zero. */
+);
+
 
 #ifdef __cplusplus
 }

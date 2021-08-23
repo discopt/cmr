@@ -3,8 +3,10 @@
 #include <assert.h>
 #include <stdlib.h>
 
+#include "decomposition_internal.h"
 #include "regular_internal.h"
 #include "env_internal.h"
+#include "sort.h"
 #include "one_sum.h"
 
 int compareOneSumComponents(const void* a, const void* b)
@@ -13,111 +15,54 @@ int compareOneSumComponents(const void* a, const void* b)
     ((CMR_ONESUM_COMPONENT*)b)->matrix->numNonzeros;
 }
 
-int CMRregularDecomposeOneSum(CMR* cmr, CMR_CHRMAT* matrix, int* rowLabels, int* columnLabels,
-  CMR_TU_DEC** pdec, bool constructDecomposition)
+CMR_ERROR CMRregularDecomposeOneSum(CMR* cmr, CMR_TU_DEC* dec, CMR_CHRMAT* matrix)
 {
   assert(cmr);
+  assert(dec);
   assert(matrix);
-  assert(CMRisTernaryChr(cmr, matrix, NULL));
-  assert(pdec);
-
-  CMRcreateDec(cmr, pdec);
-  CMR_TU_DEC* dec = *pdec;
 
   /* Perform 1-sum decomposition. */
 
-  int numComponents;
+  size_t numComponents;
   CMR_ONESUM_COMPONENT* components = NULL;
-  decomposeOneSum(cmr, (CMR_MATRIX*) matrix, sizeof(char), sizeof(char), &numComponents, &components,
-    NULL, NULL, NULL, NULL);
+  CMR_CALL( decomposeOneSum(cmr, (CMR_MATRIX*) matrix, sizeof(char), sizeof(char), &numComponents, &components, NULL, NULL,
+    NULL, NULL) );
 
-  if (numComponents <= 1)
+  if (numComponents == 1)
   {
-    dec->matrix = (CMR_CHRMAT*) components[0].matrix;
-    if (constructDecomposition)
-      dec->transpose = (CMR_CHRMAT*) components[0].transpose;
-    else
-      CMRchrmatFree(cmr, (CMR_CHRMAT**) &components[0].transpose);
-    if (rowLabels)
-    {
-      CMRallocBlockArray(cmr, &dec->rowLabels, matrix->numRows);
-      for (int row = 0; row < matrix->numRows; ++row)
-        dec->rowLabels[row] = rowLabels[components[0].rowsToOriginal[row]];
-    }
-    if (columnLabels)
-    {
-      CMRallocBlockArray(cmr, &dec->columnLabels, matrix->numColumns);
-      for (int column = 0; column < matrix->numColumns; ++column)
-        dec->columnLabels[column] = columnLabels[components[0].columnsToOriginal[column]];
-    }
+    CMR_CALL( CMRchrmatFree(cmr, (CMR_CHRMAT**) &components[0].matrix) );
+    CMR_CALL( CMRchrmatFree(cmr, (CMR_CHRMAT**) &components[0].transpose) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &components[0].rowsToOriginal) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &components[0].columnsToOriginal) );
   }
-  else
+  else if (numComponents >= 2)
   {
-    dec->flags = CMR_TU_DEC_ONE_SUM;
-
-    /* Copy matrix and labels to node and compute transpose. */
-    if (constructDecomposition)
-    {
-      CMRchrmatCopy(cmr, matrix, &dec->matrix);
-      CMRchrmatTranspose(cmr, matrix, &dec->transpose);
-    }
-    if (rowLabels)
-    {
-      CMRallocBlockArray(cmr, &dec->rowLabels, matrix->numRows);
-      for (int row = 0; row < matrix->numRows; ++row)
-        dec->rowLabels[row] = rowLabels[row];
-    }
-    if (columnLabels)
-    {
-      CMRallocBlockArray(cmr, &dec->columnLabels, matrix->numColumns);
-      for (int column = 0; column < matrix->numColumns; ++column)
-        dec->columnLabels[column] = columnLabels[column];
-    }
-
-    /* Sort components by number of nonzeros. */
+    /* We create an intermediate array for sorting the components by number of nonzeros. */
     CMR_ONESUM_COMPONENT** orderedComponents = NULL;
-    CMRallocStackArray(cmr, &orderedComponents, numComponents);
+    CMR_CALL( CMRallocStackArray(cmr, &orderedComponents, numComponents) );
     for (int comp = 0; comp < numComponents; ++comp)
       orderedComponents[comp] = &components[comp];
-    qsort(orderedComponents, numComponents, sizeof(CMR_ONESUM_COMPONENT*), &compareOneSumComponents);
+    CMR_CALL( CMRsort(cmr, numComponents, orderedComponents, sizeof(CMR_ONESUM_COMPONENT*), &compareOneSumComponents) );
 
-    /* Initialize child nodes */
-    dec->numChildren = numComponents;
-    CMRallocBlockArray(cmr, &dec->children, numComponents);
-
-    for (int i = 0; i < numComponents; ++i)
+    /* We now create the children. */
+    CMR_CALL( CMRtudecSetNumChildren(cmr, dec, numComponents) );
+    for (int c = 0; c < numComponents; ++c)
     {
-      int comp = (orderedComponents[i] - components) / sizeof(CMR_ONESUM_COMPONENT*);
-      CMRcreateDec(cmr, &dec->children[i]);
-      CMR_TU_DEC* child = dec->children[i];
-      child->matrix = (CMR_CHRMAT*) components[comp].matrix;
-      if (constructDecomposition)
-        child->transpose = (CMR_CHRMAT*) components[comp].transpose;
-      else
-        CMRchrmatFree(cmr, (CMR_CHRMAT**) &components[comp].transpose);
-      if (rowLabels)
-      {
-        CMRallocBlockArray(cmr, &child->rowLabels, child->matrix->numRows);
-        for (int row = 0; row < child->matrix->numRows; ++row)
-          child->rowLabels[row] = rowLabels[components[comp].rowsToOriginal[row]];
-      }
-      if (columnLabels)
-      {
-        CMRallocBlockArray(cmr, &child->columnLabels, child->matrix->numColumns);
-        for (int column = 0; column < child->matrix->numColumns; ++column)
-          child->columnLabels[column] = columnLabels[components[comp].columnsToOriginal[column]];
-      }
+      CMR_ONESUM_COMPONENT* component = orderedComponents[c];
+      CMR_CALL( CMRtudecCreate(cmr, dec, component->matrix->numRows, component->rowsToOriginal,
+        component->matrix->numColumns, component->columnsToOriginal, &dec->children[c]) );
+      dec->children[c]->matrix = (CMR_CHRMAT*) component->matrix;
+      dec->children[c]->transpose = (CMR_CHRMAT*) component->transpose;
+      CMR_CALL( CMRfreeBlockArray(cmr, &component->rowsToOriginal) );
+      CMR_CALL( CMRfreeBlockArray(cmr, &component->columnsToOriginal) );
+      CMR_CALL( CMRtudecInheritElements(cmr, dec->children[c]) );
     }
+    dec->type = CMR_TU_DEC_ONE_SUM;
 
-    CMRfreeStackArray(cmr, &orderedComponents);
+    CMR_CALL( CMRfreeStackArray(cmr, &orderedComponents) );
   }
 
-  for (int comp = 0; comp < numComponents; ++comp)
-  {
-    CMRfreeBlockArray(cmr, &components[comp].rowsToOriginal);
-    CMRfreeBlockArray(cmr, &components[comp].columnsToOriginal);
-  }
-  CMRfreeBlockArray(cmr, &components);
+  CMR_CALL( CMRfreeBlockArray(cmr, &components) );
 
-  return numComponents;
+  return CMR_OKAY;
 }

@@ -2,8 +2,8 @@
 
 #include <vector>
 
-#include <cmr/matrix_transposed.hpp>
-#include <cmr/matrix_permuted.hpp>
+#include "matrix_transposed.hpp"
+#include "matrix_permuted.hpp"
 #include "binary_linear_space.hpp"
 
 namespace tu

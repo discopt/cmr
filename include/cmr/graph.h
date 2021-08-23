@@ -1,6 +1,15 @@
 #ifndef CMR_GRAPH_H
 #define CMR_GRAPH_H
 
+/**
+ * \file graph.h
+ *
+ * \author Matthias Walter
+ *
+ * \brief Functionality for graphs.
+ */
+
+
 #include <cmr/env.h>
 #include <cmr/element.h>
 

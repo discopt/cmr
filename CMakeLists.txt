@@ -1,13 +1,14 @@
 cmake_minimum_required(VERSION 3.5)
 
 project(CMR
-  VERSION 1.9.0
+  VERSION 1.3.0
   LANGUAGES C CXX)
 
 option(SHARED "Build shared libraries" ON)
 set(BUILD_SHARED_LIBS ${SHARED})
 message(STATUS "Build shared libraries: " ${SHARED})
-option(THREADS "Support for parallelization" ON)
+#option(THREADS "Support for parallelization" ON)
+option(GENERATORS "Compile matrix generators" OFF)
 
 # Add cmake/ to CMAKE_MODULE_PATH.
 list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake)
@@ -32,13 +33,21 @@ else()
   message(STATUS "Parallelization: OFF")
 endif()
 
+if(GENERATORS)
+  message(STATUS "Generators: ON")
+else()
+  message(STATUS "Generators: OFF")
+endif()
+
 # Target for the CMR library.
 add_library(cmr
+  src/cmr/camion.c
+  src/cmr/ctu.c
+  src/cmr/decomposition.c
   src/cmr/element.c
   src/cmr/env.c
   src/cmr/matrix.c
   src/cmr/one_sum.c
-  src/cmr/sign.c
   src/cmr/tu.c
   src/cmr/determinant.cpp
   src/cmr/ghouila_houri.cpp
@@ -46,61 +55,110 @@ add_library(cmr
   src/cmr/graphic.c
   src/cmr/hashtable.c
   src/cmr/heap.c
+  src/cmr/k_modular.c
   src/cmr/logger.cpp
   src/cmr/matrix.cpp
   src/cmr/matroid_decomposition.cpp
   src/cmr/matroid_graph.cpp
   src/cmr/nested_minor_sequence.cpp
+  src/cmr/network.c
   src/cmr/regular.c
-  src/cmr/regular_dec.c
   src/cmr/regular_onesum.c
   src/cmr/regular_simplesums.c
   src/cmr/separation.cpp
+  src/cmr/series_parallel.c
   src/cmr/sort.c
+  src/cmr/interface.cpp
   src/cmr/total_unimodularity.cpp
   src/cmr/unimodularity.cpp
   src/cmr/zero_plus_minus_one.cpp
 )
 
-# Target for the tu-test binary.
-add_executable(tu_test
-  src/test/main.cpp)
-target_link_libraries(tu_test
+# Target for the cmr-camion executable.
+add_executable(cmr_camion
+   src/main/camion_main.c) 
+target_link_libraries(cmr_camion
+   PRIVATE
+      CMR::cmr
+)
+set_target_properties(cmr_camion PROPERTIES OUTPUT_NAME cmr-camion)
+
+# Target for the cmr-tu.
+add_executable(cmr_tu
+  src/main/tu_main.c)
+target_link_libraries(cmr_tu
   PRIVATE
     CMR::cmr
 )
-set_target_properties(tu_test PROPERTIES OUTPUT_NAME tu-test)
+set_target_properties(cmr_tu PROPERTIES OUTPUT_NAME cmr-tu)
 
-# Target for the cmr-test-new binary.
-add_executable(cmr_tu_test
-  src/test/tu_main.c)
-target_link_libraries(cmr_tu_test
+# Target for the cmr-ctu.
+add_executable(cmr_ctu
+  src/main/ctu_main.c)
+target_link_libraries(cmr_ctu
   PRIVATE
     CMR::cmr
 )
-set_target_properties(cmr_tu_test PROPERTIES OUTPUT_NAME cmr-tu-test)
+set_target_properties(cmr_ctu PROPERTIES OUTPUT_NAME cmr-ctu)
 
-# Target for the graph-matrix binary.
+# Target for the cmr-graphic executable.
 add_executable(cmr_graphic
-  src/test/graphic_main.c)
+   src/main/graphic_main.c)
 target_link_libraries(cmr_graphic
-  PRIVATE
-    CMR::cmr
+   PRIVATE
+      CMR::cmr
 )
 set_target_properties(cmr_graphic PROPERTIES OUTPUT_NAME cmr-graphic)
 
-# Target for the cmr-convert-matrix.
+# Target for the cmr-k-modular.
+add_executable(cmr_k_modular
+  src/main/k_modular_main.c)
+target_link_libraries(cmr_k_modular
+  PRIVATE
+    CMR::cmr
+)
+set_target_properties(cmr_k_modular PROPERTIES OUTPUT_NAME cmr-k-modular)
+
+# Target for the cmr-network executable.
+add_executable(cmr_network
+   src/main/network_main.c) 
+target_link_libraries(cmr_network
+   PRIVATE
+      CMR::cmr
+)
+set_target_properties(cmr_network PROPERTIES OUTPUT_NAME cmr-network)
+
+# Target for the cmr-series-parallel executable.
+add_executable(cmr_series_parallel
+  src/main/series_parallel_main.c)
+target_link_libraries(cmr_series_parallel
+  PRIVATE
+    CMR::cmr
+)
+set_target_properties(cmr_series_parallel PROPERTIES OUTPUT_NAME cmr-series-parallel)
+
+# Target for the tu-convert-matrix.
 add_executable(cmr_convert_matrix
-  src/test/convert_matrix_main.c)
+  src/main/convert_matrix_main.c)
 target_link_libraries(cmr_convert_matrix
   PRIVATE
     CMR::cmr
 )
 set_target_properties(cmr_convert_matrix PROPERTIES OUTPUT_NAME cmr-convert-matrix)
 
+if(GENERATORS)
+  add_executable(cmr_generate_series_parallel
+    src/gen/series_parallel_gen.c)
+  target_link_libraries(cmr_generate_series_parallel
+    PRIVATE
+      CMR::cmr
+  )
+  set_target_properties(cmr_generate_series_parallel PROPERTIES OUTPUT_NAME cmr-generate-series-parallel)
+endif()
+
 # Target for the random_network
 #add_executable(random_network
-#   src/test/random_network.c)
+#   src/main/random_network.c)
 #target_link_libraries(random_network
 #   PRIVATE
 #      CMR::cmr
@@ -148,9 +206,18 @@ endif()
 ### Installation ###
 include(GNUInstallDirs)
 
-install(TARGETS tu_test
-   RUNTIME
-      DESTINATION bin
+install(TARGETS
+    cmr_camion
+    cmr_convert_matrix
+    cmr_ctu
+    cmr_generate_series_parallel
+    cmr_graphic
+    cmr_k_modular
+    cmr_network
+    cmr_series_parallel
+    cmr_tu
+  RUNTIME
+    DESTINATION bin
 )
 
 install(TARGETS cmr

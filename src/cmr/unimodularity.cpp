@@ -1,9 +1,9 @@
-#include <cmr/unimodularity.hpp>
+#include "unimodularity.hpp"
 
-#include <cmr/common.hpp>
-#include <cmr/smith_normal_form.hpp>
-#include <cmr/total_unimodularity.hpp>
-#include <cmr/linear_algebra.hpp>
+#include "common.hpp"
+#include "smith_normal_form.hpp"
+#include "total_unimodularity.hpp"
+#include "linear_algebra.hpp"
 
 namespace tu
 {

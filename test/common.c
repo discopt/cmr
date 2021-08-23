@@ -5,7 +5,7 @@
 
 #include <stdio.h>
 
-CMR_ERROR stringToDoubleMatrix(CMR* cmr, CMR_DBLMAT** matrix, const char* string)
+CMR_ERROR stringToDoubleMatrix(CMR* cmr, CMR_DBLMAT** pmatrix, const char* string)
 {
   assert(cmr);
   char* end;
@@ -19,13 +19,13 @@ CMR_ERROR stringToDoubleMatrix(CMR* cmr, CMR_DBLMAT** matrix, const char* string
   assert(end > string);
   string = end;
 
-  CMRdblmatCreate(cmr, matrix, numRows, numColumns, numRows * numColumns);
+  CMRdblmatCreate(cmr, pmatrix, numRows, numColumns, numRows * numColumns);
 
-  (*matrix)->numNonzeros = 0;
-  for (int row = 0; row < (*matrix)->numRows; ++row)
+  (*pmatrix)->numNonzeros = 0;
+  for (size_t row = 0; row < (*pmatrix)->numRows; ++row)
   {
-    (*matrix)->rowStarts[row] = (*matrix)->numNonzeros;
-    for (int column = 0; column < (*matrix)->numColumns; ++column)
+    (*pmatrix)->rowSlice[row] = (*pmatrix)->numNonzeros;
+    for (size_t column = 0; column < (*pmatrix)->numColumns; ++column)
     {
       double x = strtod(string, &end);
       assert(end > string);
@@ -33,17 +33,18 @@ CMR_ERROR stringToDoubleMatrix(CMR* cmr, CMR_DBLMAT** matrix, const char* string
 
       if (x != 0.0)
       {
-        (*matrix)->entryColumns[(*matrix)->numNonzeros] = column;
-        (*matrix)->entryValues[(*matrix)->numNonzeros] = x;
-        (*matrix)->numNonzeros++;
+        (*pmatrix)->entryColumns[(*pmatrix)->numNonzeros] = column;
+        (*pmatrix)->entryValues[(*pmatrix)->numNonzeros] = x;
+        (*pmatrix)->numNonzeros++;
       }
     }
   }
+  (*pmatrix)->rowSlice[numRows] = (*pmatrix)->numNonzeros;
 
   return CMR_OKAY;
 }
 
-CMR_ERROR stringToIntMatrix(CMR* cmr, CMR_INTMAT** matrix, const char* string)
+CMR_ERROR stringToIntMatrix(CMR* cmr, CMR_INTMAT** pmatrix, const char* string)
 {
   assert(cmr);
   char* end;
@@ -57,13 +58,13 @@ CMR_ERROR stringToIntMatrix(CMR* cmr, CMR_INTMAT** matrix, const char* string)
   assert(end > string);
   string = end;
 
-  CMRintmatCreate(cmr, matrix, numRows, numColumns, numRows * numColumns);
+  CMRintmatCreate(cmr, pmatrix, numRows, numColumns, numRows * numColumns);
 
-  (*matrix)->numNonzeros = 0;
-  for (int row = 0; row < (*matrix)->numRows; ++row)
+  (*pmatrix)->numNonzeros = 0;
+  for (int row = 0; row < (*pmatrix)->numRows; ++row)
   {
-    (*matrix)->rowStarts[row] = (*matrix)->numNonzeros;
-    for (int column = 0; column < (*matrix)->numColumns; ++column)
+    (*pmatrix)->rowSlice[row] = (*pmatrix)->numNonzeros;
+    for (int column = 0; column < (*pmatrix)->numColumns; ++column)
     {
       int x = strtol(string, &end, 10);
       assert(end > string);
@@ -71,21 +72,22 @@ CMR_ERROR stringToIntMatrix(CMR* cmr, CMR_INTMAT** matrix, const char* string)
 
       if (x != 0)
       {
-        (*matrix)->entryColumns[(*matrix)->numNonzeros] = column;
-        (*matrix)->entryValues[(*matrix)->numNonzeros] = x;
-        (*matrix)->numNonzeros++;
+        (*pmatrix)->entryColumns[(*pmatrix)->numNonzeros] = column;
+        (*pmatrix)->entryValues[(*pmatrix)->numNonzeros] = x;
+        (*pmatrix)->numNonzeros++;
       }
     }
   }
+  (*pmatrix)->rowSlice[numRows] = (*pmatrix)->numNonzeros;
 
   return CMR_OKAY;
 }
 
-CMR_ERROR stringToCharMatrix(CMR* cmr, CMR_CHRMAT** matrix, const char* string)
+CMR_ERROR stringToCharMatrix(CMR* cmr, CMR_CHRMAT** pmatrix, const char* string)
 {
   assert(cmr);
   char* end;
-  int numRows, numColumns;
+  size_t numRows, numColumns;
 
   /* Read size of matrix. */
   numRows = strtol(string, &end, 10);
@@ -95,13 +97,13 @@ CMR_ERROR stringToCharMatrix(CMR* cmr, CMR_CHRMAT** matrix, const char* string)
   assert(end > string);
   string = end;
 
-  CMR_CALL( CMRchrmatCreate(cmr, matrix, numRows, numColumns, numRows * numColumns) );
+  CMR_CALL( CMRchrmatCreate(cmr, pmatrix, numRows, numColumns, numRows * numColumns) );
 
-  (*matrix)->numNonzeros = 0;
-  for (int row = 0; row < (*matrix)->numRows; ++row)
+  (*pmatrix)->numNonzeros = 0;
+  for (size_t row = 0; row < (*pmatrix)->numRows; ++row)
   {
-    (*matrix)->rowStarts[row] = (*matrix)->numNonzeros;
-    for (int column = 0; column < (*matrix)->numColumns; ++column)
+    (*pmatrix)->rowSlice[row] = (*pmatrix)->numNonzeros;
+    for (size_t column = 0; column < (*pmatrix)->numColumns; ++column)
     {
       int x = strtol(string, &end, 10);
       if (end == string)
@@ -110,12 +112,13 @@ CMR_ERROR stringToCharMatrix(CMR* cmr, CMR_CHRMAT** matrix, const char* string)
 
       if (x != 0)
       {
-        (*matrix)->entryColumns[(*matrix)->numNonzeros] = column;
-        (*matrix)->entryValues[(*matrix)->numNonzeros] = x;
-        (*matrix)->numNonzeros++;
+        (*pmatrix)->entryColumns[(*pmatrix)->numNonzeros] = column;
+        (*pmatrix)->entryValues[(*pmatrix)->numNonzeros] = x;
+        (*pmatrix)->numNonzeros++;
       }
     }
   }
+  (*pmatrix)->rowSlice[numRows] = (*pmatrix)->numNonzeros;
 
   return CMR_OKAY;
 }

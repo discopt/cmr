@@ -13,23 +13,23 @@ TEST(Matrix, Read)
   /* Double matrices. */
   {
     const char* denseInput = "3 3 "
-      "1 0 0 "
-      "0 1 1 "
+      "0.25 0 0 "
+      "0 0.5 1 "
       "-1 0 2 ";
     FILE* stream = fmemopen((char*) denseInput, strlen(denseInput), "r");
     CMR_DBLMAT* dense = NULL;
-    ASSERT_CMR_CALL( CMRdblmatCreateFromDenseStream(cmr, &dense, stream) );
+    ASSERT_CMR_CALL( CMRdblmatCreateFromDenseStream(cmr, stream, &dense) );
     fclose(stream);
 
     const char* sparseInput = "3 3 5 "
-      "0 0 1 "
-      "1 1 1 "
-      "1 2 1 "
-      "2 0 -1 "
-      "2 2 2 ";
+      "1 1 0.25 "
+      "2 2 0.5 "
+      "2 3 1 "
+      "3 1 -1 "
+      "3 3 2 ";
     stream = fmemopen((char*) sparseInput, strlen(sparseInput), "r");
     CMR_DBLMAT* sparse = NULL;
-    ASSERT_CMR_CALL( CMRdblmatCreateFromSparseStream(cmr, &sparse, stream) );
+    ASSERT_CMR_CALL( CMRdblmatCreateFromSparseStream(cmr, stream, &sparse) );
     fclose(stream);
 
     ASSERT_TRUE( CMRdblmatCheckEqual(dense, sparse) );
@@ -46,18 +46,18 @@ TEST(Matrix, Read)
       "-1 0 2 ";
     FILE* stream = fmemopen((char*) denseInput, strlen(denseInput), "r");
     CMR_INTMAT* dense = NULL;
-    ASSERT_CMR_CALL( CMRintmatCreateFromDenseStream(cmr, &dense, stream) );
+    ASSERT_CMR_CALL( CMRintmatCreateFromDenseStream(cmr, stream, &dense) );
     fclose(stream);
 
     const char* sparseInput = "3 3 5 "
-      "0 0 1 "
       "1 1 1 "
-      "1 2 1 "
-      "2 0 -1 "
-      "2 2 2 ";
+      "2 2 1 "
+      "2 3 1 "
+      "3 1 -1 "
+      "3 3 2 ";
     stream = fmemopen((char*) sparseInput, strlen(sparseInput), "r");
     CMR_INTMAT* sparse = NULL;
-    ASSERT_CMR_CALL( CMRintmatCreateFromSparseStream(cmr, &sparse, stream) );
+    ASSERT_CMR_CALL( CMRintmatCreateFromSparseStream(cmr, stream, &sparse) );
     fclose(stream);
 
     ASSERT_TRUE( CMRintmatCheckEqual(dense, sparse) );
@@ -74,18 +74,18 @@ TEST(Matrix, Read)
       "-1 0 2 ";
     FILE* stream = fmemopen((char*) denseInput, strlen(denseInput), "r");
     CMR_CHRMAT* dense = NULL;
-    ASSERT_CMR_CALL( CMRchrmatCreateFromDenseStream(cmr, &dense, stream) );
+    ASSERT_CMR_CALL( CMRchrmatCreateFromDenseStream(cmr, stream, &dense) );
     fclose(stream);
 
     const char* sparseInput = "3 3 5 "
-      "0 0 1 "
       "1 1 1 "
-      "1 2 1 "
-      "2 0 -1 "
-      "2 2 2 ";
+      "2 2 1 "
+      "2 3 1 "
+      "3 1 -1 "
+      "3 3 2 ";
     stream = fmemopen((char*) sparseInput, strlen(sparseInput), "r");
     CMR_CHRMAT* sparse = NULL;
-    ASSERT_CMR_CALL( CMRchrmatCreateFromSparseStream(cmr, &sparse, stream) );
+    ASSERT_CMR_CALL( CMRchrmatCreateFromSparseStream(cmr, stream, &sparse) );
     fclose(stream);
 
     ASSERT_TRUE( CMRchrmatCheckEqual(dense, sparse) );
@@ -121,7 +121,9 @@ TEST(Matrix, Transpose)
       "0 6 0 0 "
     );
 
-    ASSERT_TRUE(CMRdblmatCheckTranspose(A, B));
+    bool transposes;
+    ASSERT_CMR_CALL( CMRdblmatCheckTranspose(cmr, A, B, &transposes) );
+    ASSERT_TRUE(transposes);
 
     CMRdblmatFree(cmr, &B);
     CMRdblmatFree(cmr, &A);
@@ -146,7 +148,9 @@ TEST(Matrix, Transpose)
       "0 6 0 0 "
     );
 
-    ASSERT_TRUE(CMRintmatCheckTranspose(A, B));
+    bool transposes;
+    ASSERT_CMR_CALL( CMRintmatCheckTranspose(cmr, A, B, &transposes) );
+    ASSERT_TRUE(transposes);
 
     CMRintmatFree(cmr, &B);
     CMRintmatFree(cmr, &A);
@@ -171,7 +175,9 @@ TEST(Matrix, Transpose)
       "0 6 0 0 "
     );
 
-    ASSERT_TRUE(CMRchrmatCheckTranspose(A, B));
+    bool transposes;
+    ASSERT_CMR_CALL( CMRchrmatCheckTranspose(cmr, A, B, &transposes) );
+    ASSERT_TRUE(transposes);
 
     CMRchrmatFree(cmr, &B);
     CMRchrmatFree(cmr, &A);
@@ -200,7 +206,7 @@ TEST(Matrix, Submatrix)
   );
 
   CMR_SUBMAT* submatrix = NULL;
-  CMRsubmatCreate(cmr, &submatrix, 3, 3);
+  ASSERT_CMR_CALL( CMRsubmatCreate(cmr, 3, 3, &submatrix) );
   submatrix->rows[0] = 1;
   submatrix->rows[1] = 3;
   submatrix->rows[2] = 4;
@@ -211,12 +217,15 @@ TEST(Matrix, Submatrix)
   CMR_CHRMAT* result = NULL;
   ASSERT_CMR_CALL( CMRchrmatFilterSubmat(cmr, matrix, submatrix, &result) );
 
+  CMRchrmatPrintDense(cmr, result, stdout, '0', true);
+  
   CMR_CHRMAT* check = NULL;
   stringToCharMatrix(cmr, &check, "3 3 "
     "+1  0   0"
     " 0 -1  +1"
     " 0  0  -1"
   );
+  CMRchrmatPrintDense(cmr, check, stdout, '0', true);
   ASSERT_TRUE(CMRchrmatCheckEqual(result, check));
   CMRchrmatFree(cmr, &check);
 

@@ -22,17 +22,17 @@ TEST(OneSum, DoubleToDouble)
     "0 0 0 0 0 0 5 0 0 0 "
   );
 
-  int numComponents;
+  size_t numComponents;
   CMR_ONESUM_COMPONENT* components = NULL;
-  int rowsToComponents[10];
-  int columnsToComponents[10];
-  int rowsToComponentRows[10];
-  int columnsToComponentColumns[10];
+  size_t rowsToComponents[10];
+  size_t columnsToComponents[10];
+  size_t rowsToComponentRows[10];
+  size_t columnsToComponentColumns[10];
 
   CMR_DBLMAT* check = NULL;
   CMR_DBLMAT* checkTranspose = NULL;
-  decomposeOneSum(cmr, (CMR_MATRIX*) matrix, sizeof(double), sizeof(double), &numComponents, &components,
-    rowsToComponents, columnsToComponents, rowsToComponentRows, columnsToComponentColumns);
+  ASSERT_CMR_CALL( decomposeOneSum(cmr, (CMR_MATRIX*) matrix, sizeof(double), sizeof(double), &numComponents, &components,
+    rowsToComponents, columnsToComponents, rowsToComponentRows, columnsToComponentColumns) );
 
   ASSERT_EQ(numComponents, 6);
   stringToDoubleMatrix(cmr, &check, "3 3 "
@@ -199,17 +199,17 @@ TEST(OneSum, IntToInt)
     "0 0 0 0 0 0 5 0 0 0 "
   );
 
-  int numComponents;
+  size_t numComponents;
   CMR_ONESUM_COMPONENT* components = NULL;
-  int rowsToComponents[10];
-  int columnsToComponents[10];
-  int rowsToComponentRows[10];
-  int columnsToComponentColumns[10];
+  size_t rowsToComponents[10];
+  size_t columnsToComponents[10];
+  size_t rowsToComponentRows[10];
+  size_t columnsToComponentColumns[10];
 
   CMR_INTMAT* check = NULL;
   CMR_INTMAT* checkTranspose = NULL;
-  decomposeOneSum(cmr, (CMR_MATRIX*) matrix, sizeof(int), sizeof(int), &numComponents, &components,
-    rowsToComponents, columnsToComponents, rowsToComponentRows, columnsToComponentColumns);
+  ASSERT_CMR_CALL( decomposeOneSum(cmr, (CMR_MATRIX*) matrix, sizeof(int), sizeof(int), &numComponents, &components,
+    rowsToComponents, columnsToComponents, rowsToComponentRows, columnsToComponentColumns) );
 
   ASSERT_EQ(numComponents, 6);
   stringToIntMatrix(cmr, &check, "3 3 "
@@ -376,17 +376,17 @@ TEST(OneSum, CharToChar)
     "0 0 0 0 0 0 5 0 0 0 "
   );
 
-  int numComponents;
+  size_t numComponents;
   CMR_ONESUM_COMPONENT* components = NULL;
-  int rowsToComponents[10];
-  int columnsToComponents[10];
-  int rowsToComponentRows[10];
-  int columnsToComponentColumns[10];
+  size_t rowsToComponents[10];
+  size_t columnsToComponents[10];
+  size_t rowsToComponentRows[10];
+  size_t columnsToComponentColumns[10];
 
   CMR_CHRMAT* check = NULL;
   CMR_CHRMAT* checkTranspose = NULL;
-  decomposeOneSum(cmr, (CMR_MATRIX*) matrix, sizeof(char), sizeof(char), &numComponents, &components,
-    rowsToComponents, columnsToComponents, rowsToComponentRows, columnsToComponentColumns);
+  ASSERT_CMR_CALL( decomposeOneSum(cmr, (CMR_MATRIX*) matrix, sizeof(char), sizeof(char), &numComponents, &components,
+    rowsToComponents, columnsToComponents, rowsToComponentRows, columnsToComponentColumns) );
 
   ASSERT_EQ(numComponents, 6);
   stringToCharMatrix(cmr, &check, "3 3 "

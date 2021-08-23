@@ -106,6 +106,7 @@ CMR_ERROR _CMRallocBlockArray(CMR* cmr, void** ptr, size_t size, size_t length)
   return *ptr ? CMR_OKAY : CMR_ERROR_MEMORY;
 }
 
+
 CMR_ERROR _CMRreallocBlockArray(CMR* cmr, void** ptr, size_t size, size_t length)
 {
   assert(cmr);
@@ -113,6 +114,20 @@ CMR_ERROR _CMRreallocBlockArray(CMR* cmr, void** ptr, size_t size, size_t length
   *ptr = realloc(*ptr, size * length);
 
   return *ptr ? CMR_OKAY : CMR_ERROR_MEMORY;
+}
+
+CMR_ERROR _CMRduplicateBlockArray(CMR* cmr, void** ptr, size_t size, size_t length, void* source)
+{
+  assert(cmr);
+  assert(ptr);
+  assert(source);
+
+  CMR_CALL( _CMRallocBlockArray(cmr, ptr, size, length) );
+  size_t numBytes = size*length;
+  for (size_t i = 0; i < numBytes; ++i)
+    ((char*)(*ptr))[i] = ((char*)source)[i];
+
+  return CMR_OKAY;
 }
 
 CMR_ERROR _CMRfreeBlockArray(CMR* cmr, void** ptr)

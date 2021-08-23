@@ -129,13 +129,15 @@ CMR_ERROR CMRgraphFree(CMR* cmr, CMR_GRAPH** pgraph)
 {
   assert(pgraph);
 
-  CMRdbgMsg(0, "CMRgraphFree(|V|=%d, |E|=%d)\n", CMRgraphNumNodes(*pgraph), CMRgraphNumEdges(*pgraph));
+  CMR_GRAPH* graph = *pgraph;
+  if (!graph)
+    return CMR_OKAY;
+
+  CMRdbgMsg(0, "CMRgraphFree(|V|=%d, |E|=%d)\n", CMRgraphNumNodes(graph), CMRgraphNumEdges(graph));
 
 #if defined(CMR_DEBUG_CONSISTENCY)
-  CMRgraphEnsureConsistent(cmr, *pgraph);
+  CMRgraphEnsureConsistent(cmr, graph);
 #endif /* CMR_DEBUG_CONSISTENCY */
-
-  CMR_GRAPH* graph = *pgraph;
 
   CMR_CALL( CMRfreeBlockArray(cmr, &graph->nodes) );
   CMR_CALL( CMRfreeBlockArray(cmr, &graph->arcs) );
@@ -442,8 +444,8 @@ CMR_ERROR CMRgraphCreateFromEdgeList(CMR* cmr, CMR_GRAPH** pgraph, CMR_ELEMENT**
   if (pedgeElements)
     CMR_CALL( CMRallocBlockArray(cmr, pedgeElements, memEdgeElements) );
 
-  CMR_HASHTABLE* nodeNames = NULL;
-  CMR_CALL( CMRhashtableCreate(cmr, &nodeNames, 8, 1024) );
+  CMR_LINEARHASHTABLE_ARRAY* nodeNames = NULL;
+  CMR_CALL( CMRlinearhashtableArrayCreate(cmr, &nodeNames, 8, 1024) );
   
   while ((numRead = getline(&line, &length, stream)) != -1)
   {
@@ -494,15 +496,16 @@ CMR_ERROR CMRgraphCreateFromEdgeList(CMR* cmr, CMR_GRAPH** pgraph, CMR_ELEMENT**
 
     /* Figure out node u if it exists. */
 
-    CMR_HASHTABLE_ENTRY entry;
-    CMR_HASHTABLE_HASH hash;
+    CMR_LINEARHASHTABLE_BUCKET bucket;
+    CMR_LINEARHASHTABLE_HASH hash;
     CMR_GRAPH_NODE uNode; 
-    if (CMRhashtableFind(nodeNames, uToken, strlen(uToken), &entry, &hash))
-      uNode = (CMR_GRAPH_NODE) (size_t) CMRhashtableValue(nodeNames, entry);
+    if (CMRlinearhashtableArrayFind(nodeNames, uToken, strlen(uToken), &bucket, &hash))
+      uNode = (CMR_GRAPH_NODE) (size_t) CMRlinearhashtableArrayValue(nodeNames, bucket);
     else
     {
       CMR_CALL( CMRgraphAddNode(cmr, graph, &uNode) );
-      CMR_CALL( CMRhashtableInsertEntryHash(cmr, nodeNames, uToken, strlen(uToken), entry, hash, (void*) (size_t) uNode) );
+      CMR_CALL( CMRlinearhashtableArrayInsertBucketHash(cmr, nodeNames, uToken, strlen(uToken), bucket, hash,
+        (void*) (size_t) uNode) );
 
       /* Add node label. */
       if (pnodeLabels)
@@ -520,12 +523,13 @@ CMR_ERROR CMRgraphCreateFromEdgeList(CMR* cmr, CMR_GRAPH** pgraph, CMR_ELEMENT**
     /* Figure out node v if it exists. */
 
     CMR_GRAPH_NODE vNode; 
-    if (CMRhashtableFind(nodeNames, vToken, strlen(vToken), &entry, &hash))
-      vNode = (CMR_GRAPH_NODE) (size_t) CMRhashtableValue(nodeNames, entry);
+    if (CMRlinearhashtableArrayFind(nodeNames, vToken, strlen(vToken), &bucket, &hash))
+      vNode = (CMR_GRAPH_NODE) (size_t) CMRlinearhashtableArrayValue(nodeNames, bucket);
     else
     {
       CMR_CALL( CMRgraphAddNode(cmr, graph, &vNode) );
-      CMR_CALL( CMRhashtableInsertEntryHash(cmr, nodeNames, vToken, strlen(vToken), entry, hash, (void*) (size_t) vNode) );
+      CMR_CALL( CMRlinearhashtableArrayInsertBucketHash(cmr, nodeNames, vToken, strlen(vToken), bucket, hash,
+        (void*) (size_t) vNode) );
       
       /* Add node label. */
       if (pnodeLabels)
@@ -575,7 +579,7 @@ CMR_ERROR CMRgraphCreateFromEdgeList(CMR* cmr, CMR_GRAPH** pgraph, CMR_ELEMENT**
     }
   }
 
-  CMR_CALL( CMRhashtableFree(cmr, &nodeNames) );
+  CMR_CALL( CMRlinearhashtableArrayFree(cmr, &nodeNames) );
   free(line);
 
   return CMR_OKAY;
