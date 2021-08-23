@@ -31,7 +31,7 @@ int printUsage(const char* program)
   fputs("  -z ROWS COLS Add ROWS zero rows and COLS zero columns (default: 0 0).\n", stderr);
   fputs("  -u ROWS COLS Add ROWS unit rows and COLS unit columns (default: 0 0).\n", stderr);
   fputs("  -c ROWS COLS Add ROWS copied rows and COLS copied columns (default: 0 0).\n", stderr);
-  fputs("  -t           Create a ternary matrix.", stderr);
+  fputs("  -t           Create a ternary matrix.\n", stderr);
   fputs("  -p PROB      Sets the probability of a nonzero in the base matrix (default: 0.5).\n", stderr);
   fputs("  -s SPARSITY  Sets the probability of a nonzero in the base matrix minimum such that each\n", stderr);
   fputs("               row/column has at least SPARSITY 1's in expectation.\n", stderr);
