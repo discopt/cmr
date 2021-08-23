@@ -36,7 +36,7 @@ int printUsage(const char* program)
   fputs("  -s SPARSITY  Sets the probability of a nonzero in the base matrix minimum such that each\n", stderr);
   fputs("               row/column has at least SPARSITY 1's in expectation.\n", stderr);
   fputs("  -r           Randomize matrix by permuting rows and columns afterwards (default: false).\n", stderr);
-  fputs("  -b           Benchmarks the recognition algorithm for the created matrix", stderr);
+  fputs("  -b NUM       Benchmarks the recognition algorithm for the created matrix with NUM repetitions.", stderr);
   fputs("Notes:", stderr);
   fputs("  -p and -s cannot be specified at the same time.\n", stderr);
   return EXIT_FAILURE;
@@ -104,18 +104,18 @@ int compareNonzeros(const void* a, const void* b)
 }
 
 CMR_ERROR genMatrixSeriesParallel(
-  size_t numBaseRows,       /**< Number of rows of base matrix. */
-  size_t numBaseColumns,    /**< Number of columns of base matrix. */
-  size_t numZeroRows,       /**< Number of added zero rows. */
-  size_t numZeroColumns,    /**< Number of added zero columns. */
-  size_t numUnitRows,       /**< Number of added unit rows. */
-  size_t numUnitColumns,    /**< Number of added unit columns. */
-  size_t numCopiedRows,     /**< Number of added copied rows. */
-  size_t numCopiedColumns,  /**< Number of added copied columns. */
-  bool ternary,             /**< Whether to create a ternary matrix. */
-  double probability,       /**< Probability for each entry of base matrix to be a 1. */
-  bool randomize,           /**< Whether to randomize afterwards via row/column permutations. */
-  bool benchmark            /**< Whether to benchmark the recognition algorithm with the matrix instead of printing it. */
+  size_t numBaseRows,         /**< Number of rows of base matrix. */
+  size_t numBaseColumns,      /**< Number of columns of base matrix. */
+  size_t numZeroRows,         /**< Number of added zero rows. */
+  size_t numZeroColumns,      /**< Number of added zero columns. */
+  size_t numUnitRows,         /**< Number of added unit rows. */
+  size_t numUnitColumns,      /**< Number of added unit columns. */
+  size_t numCopiedRows,       /**< Number of added copied rows. */
+  size_t numCopiedColumns,    /**< Number of added copied columns. */
+  bool ternary,               /**< Whether to create a ternary matrix. */
+  double probability,         /**< Probability for each entry of base matrix to be a 1. */
+  bool randomize,             /**< Whether to randomize afterwards via row/column permutations. */
+  size_t benchmarkRepetitions /**< Whether to benchmark the recognition algorithm with the matrix instead of printing it. */
 )
 {
   CMR* cmr = NULL;
@@ -123,280 +123,287 @@ CMR_ERROR genMatrixSeriesParallel(
 
   size_t numTotalRows = numBaseRows + numZeroRows + numUnitRows + numCopiedRows;
   size_t numTotalColumns = numBaseColumns + numZeroColumns + numUnitColumns + numCopiedColumns;
-  size_t totalMemory = 0;
 
-  ListNonzero* rowHeads = NULL;
-  CMR_CALL( CMRallocBlockArray(cmr, &rowHeads, numTotalRows) );
-  totalMemory += sizeof(ListNonzero) * numTotalRows;
-  for (size_t row = 0; row < numTotalRows; ++row)
+  CMR_SP_STATISTICS stats;
+  CMR_CALL( CMRspInitStatistics(&stats) );
+  size_t numBenchmarkNonzeros = 0;
+  for (size_t benchmark = benchmarkRepetitions ? benchmarkRepetitions : 1; benchmark > 0; --benchmark)
   {
-    rowHeads[row].left = &rowHeads[row];
-    rowHeads[row].right = &rowHeads[row];
-    rowHeads[row].above = NULL;
-    rowHeads[row].below = NULL;
-    rowHeads[row].row = row;
-    rowHeads[row].column = SIZE_MAX;
-  }
+    size_t totalMemory = 0;
+    ListNonzero* rowHeads = NULL;
+    CMR_CALL( CMRallocBlockArray(cmr, &rowHeads, numTotalRows) );
+    totalMemory += sizeof(ListNonzero) * numTotalRows;
+    ListNonzero* columnHeads = NULL;
+    CMR_CALL( CMRallocBlockArray(cmr, &columnHeads, numTotalColumns) );
+    totalMemory += sizeof(ListNonzero) * numTotalColumns;
 
-  ListNonzero* columnHeads = NULL;
-  CMR_CALL( CMRallocBlockArray(cmr, &columnHeads, numTotalColumns) );
-  totalMemory += sizeof(ListNonzero) * numTotalColumns;
-  for (size_t column = 0; column < numTotalColumns; ++column)
-  {
-    columnHeads[column].left = NULL;
-    columnHeads[column].right = NULL;
-    columnHeads[column].below = &columnHeads[column];
-    columnHeads[column].above = &columnHeads[column];
-    columnHeads[column].column = column;
-    columnHeads[column].row = SIZE_MAX;
-  }
-
-  /* Create base matrix. */
-  size_t numBaseNonzeros = 0;
-  for (size_t row = 0; row < numBaseRows; ++row)
-  {
-    for (size_t column = 0; column < numBaseColumns; ++column)
-    {
-      if ((rand() * 1.0 / RAND_MAX) > probability)
-        continue;
-
-      char sign = (ternary && (rand() * 1.0 / RAND_MAX >= 0.5)) ? -1 : 1;
-      CMR_CALL( addNonzero(cmr, rowHeads, columnHeads, &numBaseNonzeros, row, column, sign) );
-      totalMemory += sizeof(ListNonzero);
-    }
-  }
-  size_t numTotalNonzeros = numBaseNonzeros;
-
-  /* Create a list of all operations. */
-  char* operations = NULL;
-  size_t numOperations = numZeroRows + numZeroColumns + numUnitRows + numUnitColumns + numCopiedRows + numCopiedColumns;
-  CMR_CALL( CMRallocBlockArray(cmr, &operations, numOperations) );
-  totalMemory += sizeof(char) * numOperations;
-  char* op = operations;
-  for (size_t i = 0; i < numZeroRows; ++i)
-    (*op++) = 'z';
-  for (size_t i = 0; i < numZeroColumns; ++i)
-    (*op++) = 'Z';
-  for (size_t i = 0; i < numUnitRows; ++i)
-    (*op++) = 'u';
-  for (size_t i = 0; i < numUnitColumns; ++i)
-    (*op++) = 'U';
-  for (size_t i = 0; i < numCopiedRows; ++i)
-    (*op++) = 'c';
-  for (size_t i = 0; i < numCopiedColumns; ++i)
-    (*op++) = 'C';
-  assert(op == &operations[numOperations]);
-
-  /* Shuffle operations array. */
-  for (size_t i = 0; i+1 < numOperations; ++i)
-  {
-    size_t j = randRange(i, numOperations);
-    char tmp = operations[i];
-    operations[i] = operations[j];
-    operations[j] = tmp;
-  }
-
-  /* Start applying operations. */
-  size_t numRows = numBaseRows;
-  size_t numColumns = numBaseColumns;
-  for (size_t i = 0; i < numOperations; ++i)
-  {
-    switch(operations[i])
-    {
-      case 'z':
-      {
-        ++numRows;
-        break;
-      }
-      case 'Z':
-      {
-        ++numColumns;
-        break;
-      }
-      case 'u':
-      {
-        size_t column = randRange(0, numColumns);
-        char sign = (ternary && (rand() * 1.0 / RAND_MAX >= 0.5)) ? -1 : 1;
-        CMR_CALL( addNonzero(cmr, rowHeads, columnHeads, &numTotalNonzeros, numRows, column, sign) );
-        totalMemory += sizeof(ListNonzero);
-        ++numRows;
-        break;
-      }
-      case 'U':
-      {
-        size_t row = randRange(0, numRows);
-        char sign = (ternary && (rand() * 1.0 / RAND_MAX >= 0.5)) ? -1 : 1;
-        CMR_CALL( addNonzero(cmr, rowHeads, columnHeads, &numTotalNonzeros, row, numColumns, sign) );
-        totalMemory += sizeof(ListNonzero);
-        ++numColumns;
-        break;
-      }
-      case 'c':
-      {
-        size_t row = randRange(0, numRows);
-        char sign = (ternary && (rand() * 1.0 / RAND_MAX >= 0.5)) ? -1 : 1;
-        for (ListNonzero* nz = rowHeads[row].right; nz->column != SIZE_MAX; nz = nz->right)
-        {
-          CMR_CALL( addNonzero(cmr, rowHeads, columnHeads, &numTotalNonzeros, numRows, nz->column, sign * nz->value) );
-          totalMemory += sizeof(ListNonzero);
-        }
-        ++numRows;
-        break;
-      }
-      case 'C':
-      {
-        size_t column = randRange(0, numColumns);
-        char sign = (ternary && (rand() * 1.0 / RAND_MAX >= 0.5)) ? -1 : 1;
-        for (ListNonzero* nz = columnHeads[column].below; nz->row != SIZE_MAX; nz = nz->below)
-        {
-          CMR_CALL( addNonzero(cmr, rowHeads, columnHeads, &numTotalNonzeros, nz->row, numColumns, sign * nz->value) );
-          totalMemory += sizeof(ListNonzero);
-        }
-        ++numColumns;
-        break;
-      }
-    }
-  }
-
-  /* Create permutations. */
-  size_t* rowPermutation = NULL;
-  CMR_CALL( CMRallocBlockArray(cmr, &rowPermutation, numTotalRows) );
-  totalMemory += sizeof(size_t) * numTotalRows;
-  for (size_t row = 0; row < numTotalRows; ++row)
-    rowPermutation[row] = row;
-  size_t* columnPermutation = NULL;
-  CMR_CALL( CMRallocBlockArray(cmr, &columnPermutation, numTotalColumns) );
-  totalMemory += sizeof(size_t) * numTotalColumns;
-  for (size_t column = 0; column < numTotalColumns; ++column)
-    columnPermutation[column] = column;
-  if (randomize)
-  {
     for (size_t row = 0; row < numTotalRows; ++row)
     {
-      size_t r = randRange(row, numTotalRows);
-      size_t tmp = rowPermutation[row];
-      rowPermutation[row] = rowPermutation[r];
-      rowPermutation[r] = tmp;
+      rowHeads[row].left = &rowHeads[row];
+      rowHeads[row].right = &rowHeads[row];
+      rowHeads[row].above = NULL;
+      rowHeads[row].below = NULL;
+      rowHeads[row].row = row;
+      rowHeads[row].column = SIZE_MAX;
     }
     for (size_t column = 0; column < numTotalColumns; ++column)
     {
-      size_t c = randRange(column, numTotalColumns);
-      size_t tmp = columnPermutation[column];
-      columnPermutation[column] = columnPermutation[c];
-      columnPermutation[c] = tmp;
+      columnHeads[column].left = NULL;
+      columnHeads[column].right = NULL;
+      columnHeads[column].below = &columnHeads[column];
+      columnHeads[column].above = &columnHeads[column];
+      columnHeads[column].column = column;
+      columnHeads[column].row = SIZE_MAX;
     }
-  }
 
-  fprintf(stderr, "Generated a %ldx%ld matrix with %ld nonzeros.\n", numTotalRows, numTotalColumns, numTotalNonzeros);
-  fprintf(stderr, "It contains a %ldx%ld base matrix with %ld nonzeros, 1-entries generated with probability %g.\n",
-    numBaseRows, numBaseColumns, numBaseNonzeros, probability);
-  fprintf(stderr, "Series-parallel operations: %ldx%ld zero, %ldx%ld unit, %ldx%ld copied\n", numZeroRows,
-    numZeroColumns, numUnitRows, numUnitColumns, numCopiedRows, numCopiedColumns);
-  if (randomize)
-    fputs("Random row and column permutations were applied.\n", stderr);
-  fprintf(stderr, "Amount of memory used: %.2g GB.\n", totalMemory / (1024.0*1024.0*1024.0));
-
-  CMR_CALL( CMRfreeBlockArray(cmr, &operations) );
-
-  if (benchmark)
-  {
-    /* Create array of all nonzeros. */
-    
-    Nonzero* nzs = NULL;
-    CMR_CALL( CMRallocBlockArray(cmr, &nzs, numTotalNonzeros) );
-    size_t* numRowNonzeros = NULL;
-    CMR_CALL( CMRallocBlockArray(cmr, &numRowNonzeros, numRows) );
-    for (size_t row = 0; row < numTotalRows; ++row)
-      numRowNonzeros[row] = 0;
-    size_t i = 0;
-    for (size_t row = 0; row < numTotalRows; ++row)
+    /* Create base matrix. */
+    size_t numBaseNonzeros = 0;
+    for (size_t row = 0; row < numBaseRows; ++row)
     {
-      for (ListNonzero* nz = rowHeads[row].right; nz->column != SIZE_MAX; nz = nz->right)
+      for (size_t column = 0; column < numBaseColumns; ++column)
       {
-        nzs[i].row = rowPermutation[nz->row];
-        nzs[i].column = columnPermutation[nz->column];
-        nzs[i].value = nz->value;
-        numRowNonzeros[nzs[i].row]++;
-        ++i;
+        if ((rand() * 1.0 / RAND_MAX) > probability)
+          continue;
+
+        char sign = (ternary && (rand() * 1.0 / RAND_MAX >= 0.5)) ? -1 : 1;
+        CMR_CALL( addNonzero(cmr, rowHeads, columnHeads, &numBaseNonzeros, row, column, sign) );
+        totalMemory += sizeof(ListNonzero);
+      }
+    }
+    size_t numTotalNonzeros = numBaseNonzeros;
+
+    /* Create a list of all operations. */
+    char* operations = NULL;
+    size_t numOperations = numZeroRows + numZeroColumns + numUnitRows + numUnitColumns + numCopiedRows + numCopiedColumns;
+    CMR_CALL( CMRallocBlockArray(cmr, &operations, numOperations) );
+    totalMemory += sizeof(char) * numOperations;
+    char* op = operations;
+    for (size_t i = 0; i < numZeroRows; ++i)
+      (*op++) = 'z';
+    for (size_t i = 0; i < numZeroColumns; ++i)
+      (*op++) = 'Z';
+    for (size_t i = 0; i < numUnitRows; ++i)
+      (*op++) = 'u';
+    for (size_t i = 0; i < numUnitColumns; ++i)
+      (*op++) = 'U';
+    for (size_t i = 0; i < numCopiedRows; ++i)
+      (*op++) = 'c';
+    for (size_t i = 0; i < numCopiedColumns; ++i)
+      (*op++) = 'C';
+    assert(op == &operations[numOperations]);
+
+    /* Shuffle operations array. */
+    for (size_t i = 0; i+1 < numOperations; ++i)
+    {
+      size_t j = randRange(i, numOperations);
+      char tmp = operations[i];
+      operations[i] = operations[j];
+      operations[j] = tmp;
+    }
+
+    /* Start applying operations. */
+    size_t numRows = numBaseRows;
+    size_t numColumns = numBaseColumns;
+    for (size_t i = 0; i < numOperations; ++i)
+    {
+      switch(operations[i])
+      {
+        case 'z':
+        {
+          ++numRows;
+          break;
+        }
+        case 'Z':
+        {
+          ++numColumns;
+          break;
+        }
+        case 'u':
+        {
+          size_t column = randRange(0, numColumns);
+          char sign = (ternary && (rand() * 1.0 / RAND_MAX >= 0.5)) ? -1 : 1;
+          CMR_CALL( addNonzero(cmr, rowHeads, columnHeads, &numTotalNonzeros, numRows, column, sign) );
+          totalMemory += sizeof(ListNonzero);
+          ++numRows;
+          break;
+        }
+        case 'U':
+        {
+          size_t row = randRange(0, numRows);
+          char sign = (ternary && (rand() * 1.0 / RAND_MAX >= 0.5)) ? -1 : 1;
+          CMR_CALL( addNonzero(cmr, rowHeads, columnHeads, &numTotalNonzeros, row, numColumns, sign) );
+          totalMemory += sizeof(ListNonzero);
+          ++numColumns;
+          break;
+        }
+        case 'c':
+        {
+          size_t row = randRange(0, numRows);
+          char sign = (ternary && (rand() * 1.0 / RAND_MAX >= 0.5)) ? -1 : 1;
+          for (ListNonzero* nz = rowHeads[row].right; nz->column != SIZE_MAX; nz = nz->right)
+          {
+            CMR_CALL( addNonzero(cmr, rowHeads, columnHeads, &numTotalNonzeros, numRows, nz->column, sign * nz->value) );
+            totalMemory += sizeof(ListNonzero);
+          }
+          ++numRows;
+          break;
+        }
+        case 'C':
+        {
+          size_t column = randRange(0, numColumns);
+          char sign = (ternary && (rand() * 1.0 / RAND_MAX >= 0.5)) ? -1 : 1;
+          for (ListNonzero* nz = columnHeads[column].below; nz->row != SIZE_MAX; nz = nz->below)
+          {
+            CMR_CALL( addNonzero(cmr, rowHeads, columnHeads, &numTotalNonzeros, nz->row, numColumns, sign * nz->value) );
+            totalMemory += sizeof(ListNonzero);
+          }
+          ++numColumns;
+          break;
+        }
       }
     }
 
-    qsort(nzs, numTotalNonzeros, sizeof(Nonzero), compareNonzeros);
-
-    /* Create matrix. */
-
-    CMR_CHRMAT* matrix = NULL;
-    CMR_CALL( CMRchrmatCreate(cmr, &matrix, numTotalRows, numTotalColumns, numTotalNonzeros) );
-
-    size_t row = 0;
-    for (size_t i = 0; i < numTotalNonzeros; ++i)
+    /* Create permutations. */
+    size_t* rowPermutation = NULL;
+    CMR_CALL( CMRallocBlockArray(cmr, &rowPermutation, numTotalRows) );
+    totalMemory += sizeof(size_t) * numTotalRows;
+    for (size_t row = 0; row < numTotalRows; ++row)
+      rowPermutation[row] = row;
+    size_t* columnPermutation = NULL;
+    CMR_CALL( CMRallocBlockArray(cmr, &columnPermutation, numTotalColumns) );
+    totalMemory += sizeof(size_t) * numTotalColumns;
+    for (size_t column = 0; column < numTotalColumns; ++column)
+      columnPermutation[column] = column;
+    if (randomize)
     {
-      while (row <= nzs[i].row)
-        matrix->rowSlice[row++] = i;
-
-      matrix->entryColumns[i] = nzs[i].column;
-      matrix->entryValues[i] = nzs[i].value;
+      for (size_t row = 0; row < numTotalRows; ++row)
+      {
+        size_t r = randRange(row, numTotalRows);
+        size_t tmp = rowPermutation[row];
+        rowPermutation[row] = rowPermutation[r];
+        rowPermutation[r] = tmp;
+      }
+      for (size_t column = 0; column < numTotalColumns; ++column)
+      {
+        size_t c = randRange(column, numTotalColumns);
+        size_t tmp = columnPermutation[column];
+        columnPermutation[column] = columnPermutation[c];
+        columnPermutation[c] = tmp;
+      }
     }
-    matrix->rowSlice[matrix->numRows] = matrix->numNonzeros;
 
-    CMR_CALL( CMRfreeBlockArray(cmr, &numRowNonzeros) );
-    CMR_CALL( CMRfreeBlockArray(cmr, &nzs) );
+    fprintf(stderr, "Generated a %ldx%ld matrix with %ld nonzeros.\n", numTotalRows, numTotalColumns, numTotalNonzeros);
+    fprintf(stderr, "It contains a %ldx%ld base matrix with %ld nonzeros, 1-entries generated with probability %g.\n",
+      numBaseRows, numBaseColumns, numBaseNonzeros, probability);
+    fprintf(stderr, "Series-parallel operations: %ldx%ld zero, %ldx%ld unit, %ldx%ld copied\n", numZeroRows,
+      numZeroColumns, numUnitRows, numUnitColumns, numCopiedRows, numCopiedColumns);
+    if (randomize)
+      fputs("Random row and column permutations were applied.\n", stderr);
+    fprintf(stderr, "Amount of memory used: %.2g GB.\n", totalMemory / (1024.0*1024.0*1024.0));
 
-    CMR_SP_REDUCTION* reductions = NULL;
-    CMR_CALL( CMRallocBlockArray(cmr, &reductions, matrix->numRows + matrix->numColumns) );
-    size_t numReductions;
+    CMR_CALL( CMRfreeBlockArray(cmr, &operations) );
 
-    /* Benchmark */
-
-    CMR_SP_STATISTICS stats;
-    CMR_CALL( CMRspInitStatistics(&stats) );
-    CMR_SUBMAT* wheelMatrix = NULL;
-    if (ternary)
+    if (benchmarkRepetitions)
     {
-      CMR_CALL( CMRtestTernarySeriesParallel(cmr, matrix, NULL, reductions, &numReductions, NULL, &wheelMatrix,
-        &stats) );
+      /* Create array of all nonzeros. */
+      
+      Nonzero* nzs = NULL;
+      CMR_CALL( CMRallocBlockArray(cmr, &nzs, numTotalNonzeros) );
+      size_t* numRowNonzeros = NULL;
+      CMR_CALL( CMRallocBlockArray(cmr, &numRowNonzeros, numRows) );
+      for (size_t row = 0; row < numTotalRows; ++row)
+        numRowNonzeros[row] = 0;
+      size_t i = 0;
+      for (size_t row = 0; row < numTotalRows; ++row)
+      {
+        for (ListNonzero* nz = rowHeads[row].right; nz->column != SIZE_MAX; nz = nz->right)
+        {
+          nzs[i].row = rowPermutation[nz->row];
+          nzs[i].column = columnPermutation[nz->column];
+          nzs[i].value = nz->value;
+          numRowNonzeros[nzs[i].row]++;
+          ++i;
+        }
+      }
+
+      qsort(nzs, numTotalNonzeros, sizeof(Nonzero), compareNonzeros);
+
+      /* Create matrix. */
+
+      CMR_CHRMAT* matrix = NULL;
+      CMR_CALL( CMRchrmatCreate(cmr, &matrix, numTotalRows, numTotalColumns, numTotalNonzeros) );
+
+      size_t row = 0;
+      for (size_t i = 0; i < numTotalNonzeros; ++i)
+      {
+        while (row <= nzs[i].row)
+          matrix->rowSlice[row++] = i;
+
+        matrix->entryColumns[i] = nzs[i].column;
+        matrix->entryValues[i] = nzs[i].value;
+      }
+      matrix->rowSlice[matrix->numRows] = matrix->numNonzeros;
+
+      CMR_CALL( CMRfreeBlockArray(cmr, &numRowNonzeros) );
+      CMR_CALL( CMRfreeBlockArray(cmr, &nzs) );
+
+      CMR_SP_REDUCTION* reductions = NULL;
+      CMR_CALL( CMRallocBlockArray(cmr, &reductions, matrix->numRows + matrix->numColumns) );
+      size_t numReductions;
+
+      /* Benchmark */
+
+      CMR_SUBMAT* wheelMatrix = NULL;
+      if (ternary)
+      {
+        CMR_CALL( CMRtestTernarySeriesParallel(cmr, matrix, NULL, reductions, &numReductions, NULL, &wheelMatrix,
+          &stats) );
+      }
+      else
+      {
+        CMR_CALL( CMRtestBinarySeriesParallel(cmr, matrix, NULL, reductions, &numReductions, NULL, &wheelMatrix,
+          &stats) );
+      }
+      numBenchmarkNonzeros += numTotalNonzeros;
+
+      CMR_CALL( CMRsubmatFree(cmr, &wheelMatrix) );
+      CMR_CALL( CMRfreeBlockArray(cmr, &reductions) );
+      CMR_CALL( CMRchrmatFree(cmr, &matrix) );
     }
     else
     {
-      CMR_CALL( CMRtestBinarySeriesParallel(cmr, matrix, NULL, reductions, &numReductions, NULL, &wheelMatrix,
-        &stats) );
-    }
+      /* Print matrix. */
 
-    CMRspPrintStatistics(stdout, &stats);
-
-    CMR_CALL( CMRsubmatFree(cmr, &wheelMatrix) );
-    CMR_CALL( CMRfreeBlockArray(cmr, &reductions) );
-    CMR_CALL( CMRchrmatFree(cmr, &matrix) );
-  }
-  else
-  {
-    /* Print matrix. */
-
-    printf("%ld %ld %ld\n\n", numTotalRows, numTotalColumns, numTotalNonzeros);
-    for (size_t row = 0; row < numTotalRows; ++row)
-    {
-      for (ListNonzero* nz = rowHeads[row].right; nz->column != SIZE_MAX; nz = nz->right)
+      printf("%ld %ld %ld\n\n", numTotalRows, numTotalColumns, numTotalNonzeros);
+      for (size_t row = 0; row < numTotalRows; ++row)
       {
-        printf("%ld %ld %d\n", rowPermutation[nz->row]+1, columnPermutation[nz->column]+1, nz->value);
+        for (ListNonzero* nz = rowHeads[row].right; nz->column != SIZE_MAX; nz = nz->right)
+        {
+          printf("%ld %ld %d\n", rowPermutation[nz->row]+1, columnPermutation[nz->column]+1, nz->value);
+        }
       }
     }
-  }
 
-  /* Cleanup. */
+    /* Cleanup. */
 
-  CMR_CALL( CMRfreeBlockArray(cmr, &columnPermutation) );
-  CMR_CALL( CMRfreeBlockArray(cmr, &rowPermutation) );
-  for (size_t row = 0; row < numTotalRows; ++row)
-  {
-    for (ListNonzero* nz = rowHeads[row].right; nz != &rowHeads[row]; )
+    CMR_CALL( CMRfreeBlockArray(cmr, &columnPermutation) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &rowPermutation) );
+    for (size_t row = 0; row < numTotalRows; ++row)
     {
-      ListNonzero* current = nz;
-      nz = nz->right;
-      CMR_CALL( CMRfreeBlock(cmr, &current) );
+      for (ListNonzero* nz = rowHeads[row].right; nz != &rowHeads[row]; )
+      {
+        ListNonzero* current = nz;
+        nz = nz->right;
+        CMR_CALL( CMRfreeBlock(cmr, &current) );
+      }
     }
+
+    CMR_CALL( CMRfreeBlockArray(cmr, &columnHeads) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &rowHeads) );
   }
-  CMR_CALL( CMRfreeBlockArray(cmr, &columnHeads) );
-  CMR_CALL( CMRfreeBlockArray(cmr, &rowHeads) );
+
+  CMRspPrintStatistics(stdout, &stats);
+  printf("Average number of nonzeros:     %f\n", (double)(numBenchmarkNonzeros) * 1.0 / benchmarkRepetitions);
 
   CMR_CALL( CMRfreeEnvironment(&cmr) );
 
@@ -421,7 +428,7 @@ int main(int argc, char** argv)
   double probability = -1.0;
   double sparsity = -1.0;
   bool randomize = false;
-  bool benchmark = false;
+  size_t benchmarkRepetitions = 0;
   for (int a = 1; a < argc; ++a)
   {
     if (!strcmp(argv[a], "-h"))
@@ -508,8 +515,18 @@ int main(int argc, char** argv)
     }
     else if (!strcmp(argv[a], "-r"))
       randomize = true;
-    else if (!strcmp(argv[a], "-b"))
-      benchmark = true;
+    else if (!strcmp(argv[a], "-b") && a+1 < argc)
+    {
+      char* p;
+      benchmarkRepetitions = strtoull(argv[a+1], &p, 10);
+      if (*p != '\0' || benchmarkRepetitions == 0)
+      {
+        fprintf(stderr, "Error: invalid number of benchmark repetitions <%s>", argv[a+1]);
+        printUsage(argv[0]);
+        return EXIT_FAILURE;
+      }
+      a++;
+    }
     else if (numBaseRows == SIZE_MAX)
     {
       char* p = NULL;
@@ -568,7 +585,7 @@ int main(int argc, char** argv)
     probability = 0.5;
 
   CMR_ERROR error = genMatrixSeriesParallel(numBaseRows, numBaseColumns, numZeroRows, numZeroColumns, numUnitRows,
-    numUnitColumns, numCopiedRows, numCopiedColumns, ternary, probability, randomize, benchmark);
+    numUnitColumns, numCopiedRows, numCopiedColumns, ternary, probability, randomize, benchmarkRepetitions);
   switch (error)
   {
   case CMR_ERROR_INPUT:
