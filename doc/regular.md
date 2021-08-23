@@ -1,7 +1,7 @@
 # Regular Matroids # {#regular}
 
 A matrix \f$ M \in \{0,1\}^{m \times n} \f$ is **regular** if the binary matroid represented by \f$ M \f$ is representable over *every* field.
-This is equivalent to requiring that the matroid is equal to the ternary matroid represented by the [Camion-signed](\ref camion) version \f$ M' \f$ of \f$ M \f$.
+This is equivalent to requiring that the matroid is equal to the ternary matroid represented by the [Camion-signed](\ref camion) version \f$ M' \f$ of \f$ M \f$, and thus equivalent to [total unimodularity](\ref tu) of \f$ M' \f$.
 
 
 ## Usage ##
@@ -23,7 +23,9 @@ If FILE is `-`, then the input will be read from stdin.
 ## Algorithm ##
 
 The implemented recognition algorithm is based on [Implementation of a unimodularity test](https://doi.org/10.1007/s12532-012-0048-x) by Matthias Walter and Klaus Truemper (Mathematical Programming Computation, 2013).
-Please cite the paper in case the implementation contributed to your research:
+It is based on Seymour's [decomposition theorem for regular matroids](https://doi.org/10.1016/0095-8956(80)90075-1).
+The algorithm runs in \f$ \mathcal{O}( (m+n)^5 ) \f$ time and is a simplified version of [Truemper's cubic algorithm](https://doi.org/10.1016/0095-8956(90)90030-4).
+Please cite the following paper in case the implementation contributed to your research:
 
     @Article{WalterT13,
       author    = {Walter, Matthias and Truemper, Klaus},
