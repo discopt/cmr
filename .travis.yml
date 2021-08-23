@@ -14,6 +14,7 @@ script:
   - mkdir build-release
   - cd build-release
   - cmake ..
+  - cat /home/travis/build/discopt/cmr/build-release/CMakeFiles/CMakeOutput.log
   - make doc
 
 deploy:
