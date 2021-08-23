@@ -9,7 +9,7 @@ addons:
     packages:
       - cmake
       - doxygen
-      - libboost1.65-dev
+      - libboost-all-dev
 
 script:
   - mkdir build-debug-generators
