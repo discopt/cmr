@@ -581,8 +581,10 @@ int main(int argc, char** argv)
     size_t smallerSize = numBaseRows < numBaseColumns ? numBaseRows : numBaseColumns;
     probability = sparsity * 1.0 / smallerSize;
   }
-  else if (probability < 0.0)
+  if (probability < 0.0)
     probability = 0.5;
+  if (probability > 1.0)
+    probability = 1.0;
 
   CMR_ERROR error = genMatrixSeriesParallel(numBaseRows, numBaseColumns, numZeroRows, numZeroColumns, numUnitRows,
     numUnitColumns, numCopiedRows, numCopiedColumns, ternary, probability, randomize, benchmarkRepetitions);
