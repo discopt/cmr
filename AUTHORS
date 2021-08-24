@@ -1,9 +1,0 @@
-Authors:
- * Matthias Walter <m.walter@utwente.nl>
- * Klaus Truemper <klaus@utdallas.edu>
-
-Thanks to:
- * Volker Kaibel for useful comments.
- * Marc Pfetsch for a polymake-related bugfix
- * David Haws, Nicolas Bonifas, Paulo Seijas, Tobias Windisch, and Bala Krishnamoorthy for reported bugs.
- * Volker Braun for fixes for later boost versions.

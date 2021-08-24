@@ -1,5 +1,3 @@
-=== INSTALLATION ===
-
 1. Create a build directory:
 
 mkdir build
@@ -16,13 +14,17 @@ cmake ..
 
 make
 
-5a. Use one of binaries:
+5. Use one of executables:
 
-./cmr-totally-unimodular
-./cmr-graphic
-./cmr-series-parallel
+./cmr-camion          # Camion's signing algorithm
+./cmr-convert-matrix  # Matrix conversion (dense <-> sparse, transpose, support, sign)
+./cmr-ctu             # Complementary totally unimodular matrices
+./cmr-graphic         # Graphic binary matroids
+./cmr-network         # Network matrices
+./cmr-tu              # Totally unimodular matrices
+./cmr-k-modular       # (Strongly) unimodular and k-modular matrices
+./cmr-series-parallel # Series-parallel matrices
 
-5b. Install the binary and the library:
+6. Optionally, you can also install the executables.
 
-sudo make install
-
+make install
