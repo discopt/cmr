@@ -16,7 +16,8 @@ maxNumNonzeros = maxMemory / 45 # This is the approximate number of bytes requir
 
 bitsNonzeros = int(round(math.log(maxNumNonzeros) / math.log(2), 0))
 
-print('rTot,cTot,rBase,cBase,rUnit,cUnit,rCopy,cCopy,sp,tRed,tWheel,tTern,tTotal,#nzs')
+sys.stdout.write('rTot,cTot,rBase,cBase,rUnit,cUnit,rCopy,cCopy,sp,tRed,tWheel,tTern,tTotal,#nzs\n')
+sys.stdout.flush()
 
 def run(sparsity, numBaseRows, numBaseColumns, numZeroRows, numZeroColumns, numUnitRows, numUnitColumns, numCopiedRows, numCopiedColumns, ternary, repetitions):
   command = [GENERATOR, str(int(numBaseRows)), str(int(numBaseColumns)), '-z', str(int(numZeroRows)), str(int(numZeroColumns)), '-u', str(int(numUnitRows)), str(int(numUnitColumns)), '-c', str(int(numCopiedRows)), str(int(numCopiedColumns)), '-s', str(sparsity), '-b', str(repetitions)]
@@ -43,7 +44,8 @@ def run(sparsity, numBaseRows, numBaseColumns, numZeroRows, numZeroColumns, numU
   timeWheel /= repetitions
   timeTernary /= repetitions
   timeTotal /= repetitions
-  print(f'{numBaseRows+numZeroRows+numUnitRows+numCopiedRows:.0f},{numBaseColumns+numZeroColumns+numUnitColumns+numCopiedColumns:.0f},{numBaseRows},{numBaseColumns},{numZeroRows},{numZeroColumns},{numUnitRows},{numUnitColumns},{numCopiedRows},{numCopiedColumns},{sparsity},{timeReductions},{timeWheel},{timeTernary},{timeTotal},{avgNonzeros}')
+  sys.stdout.write(f'{numBaseRows+numZeroRows+numUnitRows+numCopiedRows:.0f},{numBaseColumns+numZeroColumns+numUnitColumns+numCopiedColumns:.0f},{numBaseRows},{numBaseColumns},{numZeroRows},{numZeroColumns},{numUnitRows},{numUnitColumns},{numCopiedRows},{numCopiedColumns},{sparsity},{timeReductions},{timeWheel},{timeTernary},{timeTotal},{avgNonzeros}\n')
+  sys.stdout.flush()
 
 for ternary in [False, True]:
 
@@ -55,7 +57,7 @@ for ternary in [False, True]:
     run(1, 1, 1, 0, 0, 0.5*size-1, 0.5*size-1, 0.5*size, 0.5*size, ternary, numRepetitions)
     run(1, 1, 1, 0, 0, 0.4*size-1, 0.4*size-1, 0.6*size, 0.6*size, ternary, numRepetitions)
     run(1, 1, 1, 0, 0, 0.3*size-1, 0.3*size-1, 0.7*size, 0.7*size, ternary, numRepetitions)
-    print()
+    sys.stdout.write('\n')
   
   if False:
     # Different layouts, but same number of nonzeros.
@@ -67,7 +69,7 @@ for ternary in [False, True]:
     run(1, 1, 1, 0, 0, 0.5*size*1.6, 0.5*size/2, 0.5*size*1.6, 0.5*size/2, ternary, numRepetitions)
     run(1, 1, 1, 0, 0, 0.5*size*2.0, 0.5*size/4, 0.5*size*2.0, 0.5*size/4, ternary, numRepetitions)
     run(1, 1, 1, 0, 0, 0.5*size*2.3, 0.5*size/8, 0.5*size*2.3, 0.5*size/8, ternary, numRepetitions)
-    print()
+    sys.stdout.write('\n')
   
   if True:
     # Different portion of base.
@@ -83,7 +85,7 @@ for ternary in [False, True]:
     run(0.4*size, 0.8*size, 0.8*size, 0, 0, 0.10*size, 0.10*size, 0.10*size, 0.10*size, ternary, numRepetitions)
     run(0.4*size, 0.9*size, 0.9*size, 0, 0, 0.05*size, 0.05*size, 0.05*size, 0.05*size, ternary, numRepetitions)
     run(0.5*size, 1.0*size, 1.0*size, 0, 0, 0, 0, 0, 0, ternary, numRepetitions)
-    print()
+    sys.stdout.write('\n')
     
   if True:
     # Different densities of full base.
@@ -99,5 +101,5 @@ for ternary in [False, True]:
     run(0.8*size, size, size, 0, 0, 0, 0, 0, 0, ternary, numRepetitions)
     run(0.9*size, size, size, 0, 0, 0, 0, 0, 0, ternary, numRepetitions)
     run(1.0*size, size, size, 0, 0, 0, 0, 0, 0, ternary, numRepetitions)
-    print()
+    sys.stdout.write('\n')
     
