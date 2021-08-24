@@ -16,7 +16,7 @@ maxNumNonzeros = maxMemory / 45 # This is the approximate number of bytes requir
 
 bitsNonzeros = int(round(math.log(maxNumNonzeros) / math.log(2), 0))
 
-sys.stdout.write('rTot,cTot,rBase,cBase,rUnit,cUnit,rCopy,cCopy,sp,tRed,tWheel,tTern,tTotal,#nzs\n')
+sys.stdout.write('rTot,cTot,rBase,cBase,rZero,cZero,rUnit,cUnit,rCopy,cCopy,sp,tRed,tWheel,tTern,tTotal,#nzs\n')
 sys.stdout.flush()
 
 def run(sparsity, numBaseRows, numBaseColumns, numZeroRows, numZeroColumns, numUnitRows, numUnitColumns, numCopiedRows, numCopiedColumns, ternary, repetitions):
