@@ -51,7 +51,7 @@ for ternary in [False, True]:
 
   # Different portions of unit/copied.
   if True:
-    size = 2**(bitsNonzeros-14)
+    size = 2**(bitsNonzeros-15)
     run(1, 1, 1, 0, 0, 0.7*size-1, 0.7*size-1, 0.3*size, 0.3*size, ternary, numRepetitions)
     run(1, 1, 1, 0, 0, 0.6*size-1, 0.6*size-1, 0.4*size, 0.4*size, ternary, numRepetitions)
     run(1, 1, 1, 0, 0, 0.5*size-1, 0.5*size-1, 0.5*size, 0.5*size, ternary, numRepetitions)
@@ -61,7 +61,7 @@ for ternary in [False, True]:
   
   if False:
     # Different layouts, but same number of nonzeros.
-    size = 2**(bitsNonzeros-14)
+    size = 2**(bitsNonzeros-15)
     run(1, 1, 1, 0, 0, 0.5*size/8, 0.5*size*2.3, 0.5*size/8, 0.5*size*2.3, ternary, numRepetitions)
     run(1, 1, 1, 0, 0, 0.5*size/4, 0.5*size*2.0, 0.5*size/4, 0.5*size*2.0, ternary, numRepetitions)
     run(1, 1, 1, 0, 0, 0.5*size/2, 0.5*size*1.6, 0.5*size/2, 0.5*size*1.6, ternary, numRepetitions)
@@ -73,7 +73,7 @@ for ternary in [False, True]:
   
   if True:
     # Different portion of base.
-    size = 2**(bitsNonzeros-14)
+    size = 2**(bitsNonzeros-15)
     run(1, 1, 1, 0, 0, 0.5*size-1, 0.5*size-1, 0.5*size, 0.5*size, ternary, numRepetitions)
     run(0.4*size, 0.1*size, 0.1*size, 0, 0, 0.45*size, 0.45*size, 0.45*size, 0.45*size, ternary, numRepetitions)
     run(0.1*size, 0.2*size, 0.2*size, 0, 0, 0.40*size, 0.40*size, 0.40*size, 0.40*size, ternary, numRepetitions)
@@ -89,7 +89,7 @@ for ternary in [False, True]:
     
   if True:
     # Different densities of full base.
-    size = 2**(bitsNonzeros-14)
+    size = 2**(bitsNonzeros-15)
     run(0.0*size, size, size, 0, 0, 0, 0, 0, 0, ternary, numRepetitions)
     run(0.1*size, size, size, 0, 0, 0, 0, 0, 0, ternary, numRepetitions)
     run(0.2*size, size, size, 0, 0, 0, 0, 0, 0, ternary, numRepetitions)
