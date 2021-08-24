@@ -4,7 +4,6 @@ import math
 import subprocess
 
 GENERATOR = '../build-release/cmr-generate-series-parallel'
-#GENERATOR = '/home/walterm/code/cmr/master.git/build-release/cmr-generate-series-parallel'
 
 # Parameter of script: max amount of GB to be used.
 try:
@@ -49,7 +48,7 @@ def run(sparsity, numBaseRows, numBaseColumns, numZeroRows, numZeroColumns, numU
 for ternary in [False, True]:
 
   # Different portions of unit/copied.
-  if False:
+  if True:
     size = 2**(bitsNonzeros-11)
     run(1, 1, 1, 0, 0, 0.7*size-1, 0.7*size-1, 0.3*size, 0.3*size, ternary, numRepetitions)
     run(1, 1, 1, 0, 0, 0.6*size-1, 0.6*size-1, 0.4*size, 0.4*size, ternary, numRepetitions)
@@ -70,7 +69,7 @@ for ternary in [False, True]:
     run(1, 1, 1, 0, 0, 0.5*size*2.3, 0.5*size/8, 0.5*size*2.3, 0.5*size/8, ternary, numRepetitions)
     print()
   
-  if False:
+  if True:
     # Different portion of base.
     size = 2**(bitsNonzeros-13)
     run(1, 1, 1, 0, 0, 0.5*size-1, 0.5*size-1, 0.5*size, 0.5*size, ternary, numRepetitions)
