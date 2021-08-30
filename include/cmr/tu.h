@@ -23,7 +23,7 @@ extern "C" {
  * Tests if matrix \f$ M \f$ is totally unimodular and sets \p *pisTotallyUnimodular accordingly.
  *
  * If \f$ M \f$ is totally unimodular and \p pdec != \c NULL, then \p *pdec will contain a decomposition tree of the
- * regular matroid. The caller must release it via \ref CMRtudecFree().
+ * regular matroid. The caller must release it via \ref CMRdecFree().
  *
  * If \f$ M \f$ is not totally unimodular and \p psubmatrix != \c NULL, then \p *psubmatrix will indicate a submatrix
  * of \f$ M \f$ with determinant \f$ -2 \f$ or \f$ 2 \f$.
@@ -34,8 +34,10 @@ CMR_ERROR CMRtestTotalUnimodularity(
   CMR* cmr,                   /**< \ref CMR environment */
   CMR_CHRMAT* matrix,         /**< Matrix \f$ M \f$. */
   bool* pisTotallyUnimodular, /**< Pointer for storing whether \f$ M \f$ is totally unimodular. */
-  CMR_TU_DEC** pdec,          /**< Pointer for storing the decomposition tree (may be \c NULL). */
-  CMR_SUBMAT** psubmatrix     /**< Pointer for storing a bad submatrix with a bad determinant (may be \c NULL). */
+  CMR_DEC** pdec,             /**< Pointer for storing the decomposition tree (may be \c NULL). */
+  CMR_SUBMAT** psubmatrix,    /**< Pointer for storing a submatrix with non-ternary determinant (may be \c NULL). */
+  bool checkPlanarity,        /**< Whether graphic minors should be checked for cographicness. */
+  bool completeTree           /**< Whether a complete decomposition tree shall be computed. */
 );
 
 #ifdef __cplusplus

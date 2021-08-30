@@ -23,12 +23,13 @@ extern "C" {
  *
  * Does not contain information about the matrix it refers to.
  */
+
 typedef struct
 {
   size_t numRows;     /**< \brief Number of rows. */
   size_t* rows;       /**< \brief Array with row indices. */
-  size_t numColumns;  /** \brief Number of columns. */
-  size_t* columns;    /** \brief Array with column indices. */
+  size_t numColumns;  /**< \brief Number of columns. */
+  size_t* columns;    /**< \brief Array with column indices. */
 } CMR_SUBMAT;
 
 

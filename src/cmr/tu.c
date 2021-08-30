@@ -3,6 +3,7 @@
 #include "matrix_internal.h"
 #include "one_sum.h"
 #include "camion_internal.h"
+#include "regular_internal.h"
 
 #include <stdlib.h>
 #include <assert.h>
@@ -29,7 +30,7 @@ CMR_ERROR testTotalUnimodularityOneSum(
   int numComponents,                /**< Number of 1-connected components. */
   CMR_ONESUM_COMPONENT* components, /**< 1-sum decomposition of matrix to be tested. */
   bool* pisTU,                      /**< Pointer for storing whether matrix is TU.*/
-  CMR_TU_DEC** pdec,                /**< Pointer for storing the decomposition tree (may be \c NULL). */
+  CMR_DEC** pdec,                /**< Pointer for storing the decomposition tree (may be \c NULL). */
   CMR_SUBMAT** psubmatrix           /**< Pointer for storing a bad submatrix with a bad determinant (may be \c NULL). */
 )
 {
@@ -58,15 +59,29 @@ CMR_ERROR testTotalUnimodularityOneSum(
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRtestTotalUnimodularity(CMR* cmr, CMR_CHRMAT* matrix, bool* pisTotallyUnimodular, CMR_TU_DEC** pdec,
-  CMR_SUBMAT** psubmatrix)
+CMR_ERROR CMRtestTotalUnimodularity(CMR* cmr, CMR_CHRMAT* matrix, bool* pisTotallyUnimodular, CMR_DEC** pdec,
+  CMR_SUBMAT** psubmatrix, bool checkPlanarity, bool completeTree)
 {
   assert(cmr);
   assert(matrix);
 
-  CMR_CALL( CMRinterfaceTU(cmr, matrix, pisTotallyUnimodular, pdec, psubmatrix) );
+  if (!CMRchrmatIsTernary(cmr, matrix, psubmatrix))
+    return CMR_OKAY;
 
+  CMR_CALL( CMRinterfaceTU(cmr, matrix, pisTotallyUnimodular, pdec, psubmatrix) );
+  
+  CMR_MINOR* minor = NULL;
+//   CMR_CALL( CMRtestRegular(cmr, matrix, true, pisTotallyUnimodular, pdec, psubmatrix ? &minor : NULL, checkPlanarity,
+//     completeTree) );
+  if (minor)
+  {
+    assert(minor->numPivots == 0);
+    *psubmatrix = minor->remainingSubmatrix;
+    minor->remainingSubmatrix = NULL;
+  }
+  
   return CMR_OKAY;
+
 
   size_t numComponents;
   CMR_ONESUM_COMPONENT* components;

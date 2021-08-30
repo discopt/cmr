@@ -17,6 +17,7 @@ extern "C" {
 #include <cmr/export.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 /**
  * \brief Type for return codes of library functions.

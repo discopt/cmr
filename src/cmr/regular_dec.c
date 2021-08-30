@@ -5,13 +5,13 @@
 
 #include "env_internal.h"
 
-void CMRcreateDec(CMR* cmr, CMR_TU_DEC** pdec)
+void CMRcreateDec(CMR* cmr, CMR_DEC** pdec)
 {
   assert(pdec != NULL);
   assert(*pdec == NULL);
 
   CMRallocBlock(cmr, pdec);
-  CMR_TU_DEC* dec = *pdec;
+  CMR_DEC* dec = *pdec;
   dec->matrix = NULL;
   dec->transpose = NULL;
   dec->rowLabels = NULL;
@@ -25,17 +25,17 @@ void CMRcreateDec(CMR* cmr, CMR_TU_DEC** pdec)
   dec->cograph = NULL;
 }
 
-void CMRtudecFree(CMR* cmr, CMR_TU_DEC** pdec)
+void CMRdecFree(CMR* cmr, CMR_DEC** pdec)
 {
   assert(pdec);
   assert(*pdec);
 
-  CMR_TU_DEC* dec = *pdec;
+  CMR_DEC* dec = *pdec;
 
   if (dec->numChildren > 0)
   {
     for (int c = 0; c < dec->numChildren; ++c)
-      CMRtudecFree(cmr, &dec->children[c]);
+      CMRdecFree(cmr, &dec->children[c]);
     CMRfreeBlockArray(cmr, &dec->children);
   }
   if (dec->matrix)
@@ -58,80 +58,80 @@ void CMRtudecFree(CMR* cmr, CMR_TU_DEC** pdec)
   CMRfreeBlock(cmr, pdec);
 }
 
-bool CMRtudecIsLeaf(CMR_TU_DEC* dec)
+bool CMRdecIsLeaf(CMR_DEC* dec)
 {
   assert(dec);
   return dec->numChildren == 0;
 }
 
-bool CMRtudecIsRegular(CMR_TU_DEC* dec)
+bool CMRdecIsRegular(CMR_DEC* dec)
 {
   assert(dec);
-  return dec->flags & CMR_TU_DEC_REGULAR;
+  return dec->flags & CMR_DEC_REGULAR;
 }
 
-bool CMRtudecIsGraphic(CMR_TU_DEC* dec)
+bool CMRdecIsGraphic(CMR_DEC* dec)
 {
   assert(dec);
-  return dec->flags & CMR_TU_DEC_GRAPHIC;
+  return dec->flags & CMR_DEC_GRAPHIC;
 }
 
-bool CMRtudecIsCographic(CMR_TU_DEC* dec)
+bool CMRdecIsCographic(CMR_DEC* dec)
 {
   assert(dec);
-  return dec->flags & CMR_TU_DEC_COGRAPHIC;
+  return dec->flags & CMR_DEC_COGRAPHIC;
 }
 
-char CMRtudecIsSum(CMR_TU_DEC* dec)
+char CMRdecIsSum(CMR_DEC* dec)
 {
   assert(dec);
-  char result = dec->flags & CMR_TU_DEC_TYPE_MASK;
+  char result = dec->flags & CMR_DEC_TYPE_MASK;
   return result <= 3 ? result : 0;
 }
 
-int CMRtudecNumRows(CMR_TU_DEC* dec)
+int CMRdecNumRows(CMR_DEC* dec)
 {
   assert(dec);
   assert(dec->matrix);
   return dec->matrix->numRows;
 }
 
-int CMRtudecNumColumns(CMR_TU_DEC* dec)
+int CMRdecNumColumns(CMR_DEC* dec)
 {
   assert(dec);
   assert(dec->matrix);
   return dec->matrix->numColumns;
 }
 
-int CMRgetDecRankLowerLeft(CMR_TU_DEC* dec)
+int CMRgetDecRankLowerLeft(CMR_DEC* dec)
 {
   assert(dec);
 
-  if ((dec->flags & CMR_TU_DEC_TYPE_MASK) == CMR_TU_DEC_THREE_SUM
-    && !(dec->flags & CMR_TU_DEC_RANK_UPPER_RIGHT))
+  if ((dec->flags & CMR_DEC_TYPE_MASK) == CMR_DEC_THREE_SUM
+    && !(dec->flags & CMR_DEC_RANK_UPPER_RIGHT))
     return 2;
-  else if (dec->flags & (CMR_TU_DEC_RANK_LOWER_LEFT))
+  else if (dec->flags & (CMR_DEC_RANK_LOWER_LEFT))
     return 1;
   else
     return 0;
 }
 
-int CMRgetDecRankUpperRight(CMR_TU_DEC* dec)
+int CMRgetDecRankUpperRight(CMR_DEC* dec)
 {
   assert(dec);
 
-  if ((dec->flags & CMR_TU_DEC_TYPE_MASK) == CMR_TU_DEC_THREE_SUM
-    && !(dec->flags & CMR_TU_DEC_RANK_LOWER_LEFT))
+  if ((dec->flags & CMR_DEC_TYPE_MASK) == CMR_DEC_THREE_SUM
+    && !(dec->flags & CMR_DEC_RANK_LOWER_LEFT))
     return 2;
-  else if (dec->flags & (CMR_TU_DEC_RANK_UPPER_RIGHT))
+  else if (dec->flags & (CMR_DEC_RANK_UPPER_RIGHT))
     return 1;
   else
     return 0;
 }
 
-void CMRcreateDecChild(CMR* cmr, CMR_TU_DEC* dec, int numRows, int* rows, int numColumns, int* columns,
+void CMRcreateDecChild(CMR* cmr, CMR_DEC* dec, int numRows, int* rows, int numColumns, int* columns,
   int numNonzeros, int numExtraRows, int numExtraColumns, int numExtraNonzeros,
-  bool constructDecomposition, CMR_TU_DEC** presult)
+  bool constructDecomposition, CMR_DEC** presult)
 {
   assert(cmr);
   assert(dec);
@@ -142,7 +142,7 @@ void CMRcreateDecChild(CMR* cmr, CMR_TU_DEC* dec, int numRows, int* rows, int nu
   assert(parentMatrix);
 
   CMRcreateDec(cmr, presult);
-  CMR_TU_DEC* result = *presult;
+  CMR_DEC* result = *presult;
 
   /* Copy parentRows from rows. */
 

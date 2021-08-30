@@ -73,18 +73,18 @@ CMR_ERROR testTotalUnimodularity(
   /* Actual test. */
 
   bool isTU;
-  CMR_TU_DEC* decomposition = NULL;
+  CMR_DEC* decomposition = NULL;
   CMR_SUBMAT* submatrix = NULL;
   startClock = clock();
   CMR_CALL( CMRtestTotalUnimodularity(cmr, matrix, &isTU, printTree ? &decomposition : NULL,
-    (printSubmatrix || printSubmatrixElements) ? &submatrix : NULL) );
+    (printSubmatrix || printSubmatrixElements) ? &submatrix : NULL, false, false) );
 
   fprintf(stderr, "Determined in %f seconds that it is %stotally unimodular.\n",
     (clock() - startClock) * 1.0 / CLOCKS_PER_SEC, isTU ? "" : "NOT ");
 
   if (decomposition)
   {
-    CMR_CALL( CMRtudecFree(cmr, &decomposition) );
+    CMR_CALL( CMRdecFree(cmr, &decomposition) );
   }
 
   if (submatrix)

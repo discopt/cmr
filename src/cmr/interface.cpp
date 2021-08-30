@@ -8,7 +8,7 @@
 #include <boost/numeric/ublas/io.hpp>
 
 extern "C"
-CMR_ERROR CMRinterfaceTU(CMR* cmr, CMR_CHRMAT* matrix, bool* pisTU, CMR_TU_DEC** pdec, CMR_SUBMAT** psubmatrix)
+CMR_ERROR CMRinterfaceTU(CMR* cmr, CMR_CHRMAT* matrix, bool* pisTU, CMR_DEC** pdec, CMR_SUBMAT** psubmatrix)
 {
   assert(cmr);
   assert(matrix);

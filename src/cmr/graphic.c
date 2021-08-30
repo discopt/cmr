@@ -1379,7 +1379,7 @@ CMR_ERROR decToGraph(
 #endif /* CMR_DEBUG_CONSISTENCY */
 
 
-  CMRdbgMsg(0, "CMRtudecToGraph for t-decomposition.\n");
+  CMRdbgMsg(0, "CMRdecToGraph for t-decomposition.\n");
 
   CMR_CALL( CMRgraphClear(dec->cmr, graph) );
 
@@ -1645,7 +1645,7 @@ void edgeToDot(
  * \brief Visualizes a decomposition in \c dot format.
  */
 
-CMR_ERROR CMRtudecToDot(
+CMR_ERROR CMRdecToDot(
   Dec* dec,               /**< Decomposition. */
   FILE* stream,           /**< Stream to write to. */
   bool* edgesHighlighted  /**< Indicator for edges to be highlighted. */
@@ -1733,7 +1733,7 @@ void debugDot(
   snprintf(name, 256, "dec-%03d.dot", dotFileCounter);
   CMRdbgMsg(0, "Writing <%s>...", name);
   FILE* dotFile = fopen(name, "w");
-  CMRtudecToDot(dec, dotFile, newcolumn ? newcolumn->edgesInPath : NULL);
+  CMRdecToDot(dec, dotFile, newcolumn ? newcolumn->edgesInPath : NULL);
   fclose(dotFile);
   CMRdbgMsg(0, " done.\n");
 

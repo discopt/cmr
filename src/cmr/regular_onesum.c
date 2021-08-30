@@ -3,9 +3,9 @@
 #include <assert.h>
 #include <stdlib.h>
 
-#include "decomposition_internal.h"
-#include "regular_internal.h"
 #include "env_internal.h"
+#include "dec_internal.h"
+#include "regular_internal.h"
 #include "sort.h"
 #include "one_sum.h"
 
@@ -15,7 +15,7 @@ int compareOneSumComponents(const void* a, const void* b)
     ((CMR_ONESUM_COMPONENT*)b)->matrix->numNonzeros;
 }
 
-CMR_ERROR CMRregularDecomposeOneSum(CMR* cmr, CMR_TU_DEC* dec, CMR_CHRMAT* matrix)
+CMR_ERROR CMRregularDecomposeOneSum(CMR* cmr, CMR_DEC* dec, CMR_CHRMAT* matrix)
 {
   assert(cmr);
   assert(dec);
@@ -45,19 +45,18 @@ CMR_ERROR CMRregularDecomposeOneSum(CMR* cmr, CMR_TU_DEC* dec, CMR_CHRMAT* matri
     CMR_CALL( CMRsort(cmr, numComponents, orderedComponents, sizeof(CMR_ONESUM_COMPONENT*), &compareOneSumComponents) );
 
     /* We now create the children. */
-    CMR_CALL( CMRtudecSetNumChildren(cmr, dec, numComponents) );
+    CMR_CALL( CMRdecSetNumChildren(cmr, dec, numComponents) );
     for (int c = 0; c < numComponents; ++c)
     {
       CMR_ONESUM_COMPONENT* component = orderedComponents[c];
-      CMR_CALL( CMRtudecCreate(cmr, dec, component->matrix->numRows, component->rowsToOriginal,
+      CMR_CALL( CMRdecCreate(cmr, dec, component->matrix->numRows, component->rowsToOriginal,
         component->matrix->numColumns, component->columnsToOriginal, &dec->children[c]) );
       dec->children[c]->matrix = (CMR_CHRMAT*) component->matrix;
       dec->children[c]->transpose = (CMR_CHRMAT*) component->transpose;
       CMR_CALL( CMRfreeBlockArray(cmr, &component->rowsToOriginal) );
       CMR_CALL( CMRfreeBlockArray(cmr, &component->columnsToOriginal) );
-      CMR_CALL( CMRtudecInheritElements(cmr, dec->children[c]) );
     }
-    dec->type = CMR_TU_DEC_ONE_SUM;
+    dec->type = CMR_DEC_ONE_SUM;
 
     CMR_CALL( CMRfreeStackArray(cmr, &orderedComponents) );
   }

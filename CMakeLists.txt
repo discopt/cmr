@@ -28,7 +28,7 @@ endif()
 add_library(cmr
   src/cmr/camion.c
   src/cmr/ctu.c
-  src/cmr/decomposition.c
+  src/cmr/dec.c
   src/cmr/element.c
   src/cmr/env.c
   src/cmr/matrix.c
@@ -43,14 +43,16 @@ add_library(cmr
   src/cmr/k_modular.c
   src/cmr/logger.cpp
   src/cmr/matrix.cpp
+  src/cmr/matroid.c
   src/cmr/matroid_decomposition.cpp
   src/cmr/matroid_graph.cpp
   src/cmr/nested_minor_sequence.cpp
   src/cmr/network.c
   src/cmr/regular.c
   src/cmr/regular_onesum.c
-  src/cmr/regular_simplesums.c
+  src/cmr/regular_series_parallel.c
   src/cmr/separation.cpp
+  src/cmr/separation.c
   src/cmr/series_parallel.c
   src/cmr/sort.c
   src/cmr/interface.cpp

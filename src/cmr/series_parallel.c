@@ -1,4 +1,4 @@
-// #define CMR_DEBUG /* Uncomment to debug this file. */
+#define CMR_DEBUG /* Uncomment to debug this file. */
 
 // TODO: Try to not fill the hashtable in initialScan but just add all elements to the queue.
 
@@ -1294,10 +1294,7 @@ CMR_ERROR extractWheelSubmatrix(
   size_t queueMemory,                   /**< Size of \p queue. */
   ListNonzero* anchor,                  /**< Anchor of list matrix. */
   CMR_SUBMAT** pwheelSubmatrix,         /**< Pointer for storing the wheel submatrix. */
-  CMR_ELEMENT* separationRank1Elements, /**< Array for storing elements of the rank-1 part of a 2-separation. If not
-                                         **< \c NULL, it must have sufficient capacity. */
-  size_t* pnumSeparationRank1Elements   /**< Pointer for storing the number of elements stored in
-                                         **< \p separationRank1Elements (may be \c NULL). */
+  CMR_SEPA** pseparation                /**< Pointer for storing a 2-separation (may be \c NULL). */
 )
 {
   CMRdbgMsg(2, "Searching for wheel graph representation submatrix.\n");
@@ -1506,23 +1503,27 @@ CMR_ERROR extractWheelSubmatrix(
       break;
     }
 
-    if (separationRank1Elements && pnumSeparationRank1Elements)
+    if (pseparation)
     {
       CMRdbgMsg(4, "No path found. Extracting 2-separation.\n");
 
-      *pnumSeparationRank1Elements = 0;
-      /* Collect all rows that are reachable. */
+      CMR_CALL( CMRsepaCreate(cmr, numRows, numColumns, pseparation) );
+      CMR_SEPA* sepa = *pseparation;
+      /* Collect all reachable rows/columns. */
       for (size_t row = 0; row < numRows; ++row)
       {
-        if (rowData[row].lastBFS == currentBFS)
-          separationRank1Elements[(*pnumSeparationRank1Elements)++] = CMRrowToElement(row);
+        sepa->rowsToPart[row] = (rowData[row].lastBFS == -2) ? 2:
+          (rowData[row].lastBFS == currentBFS) ? 0 : 1;
+        CMRdbgMsg(6, "Assigning row r%ld to part %d.\n", row+1, sepa->rowsToPart[row]);
       }
       /* Collect all columns that are not reachable. */
       for (size_t column = 0; column < numColumns; ++column)
       {
-        if (columnData[column].lastBFS >= -1 && columnData[column].lastBFS != currentBFS)
-          separationRank1Elements[(*pnumSeparationRank1Elements)++] = CMRcolumnToElement(column);
+        sepa->columnsToPart[column] = (columnData[column].lastBFS == -2) ? 2 :
+          (columnData[column].lastBFS == currentBFS) ? 0 : 1;
+        CMRdbgMsg(6, "Assigning column c%ld to part %d.\n", column+1, sepa->columnsToPart[column]);
       }
+      CMR_CALL( CMRsepaInitialize(cmr, sepa, 1, 0) );
 
       break;
     }
@@ -1621,18 +1622,13 @@ CMR_ERROR decomposeBinarySeriesParallel(
   size_t* pnumReductions,               /**< Pointer for storing the number of SP-reductions. */
   CMR_SUBMAT** preducedSubmatrix,       /**< Pointer for storing the SP-reduced submatrix (may be \c NULL). */
   CMR_SUBMAT** pviolatorSubmatrix,      /**< Pointer for storing a wheel-submatrix (may be \c NULL). */
-  CMR_ELEMENT* separationRank1Elements, /**< Array for storing elements of the rank-1 part of a 2-separation. If not
-                                         **< \c NULL, it must have sufficient capacity. */
-  size_t* pnumSeparationRank1Elements,  /**< Pointer for storing the number of elements stored in
-                                         **< \p separationRank1Elements (may be \c NULL). */
+  CMR_SEPA** pseparation,               /**< Pointer for storing a 2-separation (may be \c NULL). */
   CMR_SP_STATISTICS* stats              /**< Pointer to statistics (may be \c NULL). */
 )
 {
   assert(cmr);
   assert(matrix);
   assert(reductions && pnumReductions);
-  assert(separationRank1Elements || !pnumSeparationRank1Elements);
-  assert(!separationRank1Elements || pnumSeparationRank1Elements);
 
   CMRdbgMsg(0, "decomposeBinarySeriesParallel for a %dx%d matrix with %d nonzeros.\n", matrix->numRows,
     matrix->numColumns, matrix->numNonzeros);
@@ -1721,7 +1717,7 @@ CMR_ERROR decomposeBinarySeriesParallel(
         wheelClock = clock();
 
       CMR_CALL( extractWheelSubmatrix(cmr, matrix->numRows, matrix->numColumns, rowData, columnData, queue, queueMemory,
-        anchor, pviolatorSubmatrix, separationRank1Elements, pnumSeparationRank1Elements) );
+        anchor, pviolatorSubmatrix, pseparation) );
 
       if (stats)
       {
@@ -1772,7 +1768,7 @@ CMR_ERROR CMRtestBinarySeriesParallel(CMR* cmr, CMR_CHRMAT* matrix, bool* pisSer
     CMR_CALL( CMRallocStackArray(cmr, &localReductions, matrix->numRows + matrix->numColumns) );
 
   CMR_CALL( decomposeBinarySeriesParallel(cmr, matrix, reductions ? reductions : localReductions,
-    &localNumReductions, preducedSubmatrix, pviolatorSubmatrix, NULL, NULL, stats) );
+    &localNumReductions, preducedSubmatrix, pviolatorSubmatrix, NULL, stats) );
 
   if (pisSeriesParallel)
     *pisSeriesParallel = (*pnumReductions == matrix->numRows + matrix->numColumns);
@@ -1787,14 +1783,12 @@ CMR_ERROR CMRtestBinarySeriesParallel(CMR* cmr, CMR_CHRMAT* matrix, bool* pisSer
 
 CMR_ERROR CMRdecomposeBinarySeriesParallel(CMR* cmr, CMR_CHRMAT* matrix, bool* pisSeriesParallel,
   CMR_SP_REDUCTION* reductions, size_t* pnumReductions, CMR_SUBMAT** preducedSubmatrix, CMR_SUBMAT** pviolatorSubmatrix,
-  CMR_ELEMENT* separationRank1Elements, size_t* pnumSeparationRank1Elements, CMR_SP_STATISTICS* stats)
+  CMR_SEPA** pseparation, CMR_SP_STATISTICS* stats)
 {
   assert(cmr);
   assert(matrix);
   assert(reductions || !pnumReductions);
   assert(!reductions || pnumReductions);
-  assert(separationRank1Elements || !pnumSeparationRank1Elements);
-  assert(!separationRank1Elements || pnumSeparationRank1Elements);
 
   CMR_SP_REDUCTION* localReductions = NULL;
   size_t localNumReductions = 0;
@@ -1802,8 +1796,7 @@ CMR_ERROR CMRdecomposeBinarySeriesParallel(CMR* cmr, CMR_CHRMAT* matrix, bool* p
     CMR_CALL( CMRallocStackArray(cmr, &localReductions, matrix->numRows + matrix->numColumns) );
 
   CMR_CALL( decomposeBinarySeriesParallel(cmr, matrix, reductions ? reductions : localReductions,
-    &localNumReductions, preducedSubmatrix, pviolatorSubmatrix, separationRank1Elements, pnumSeparationRank1Elements,
-    stats) );
+    &localNumReductions, preducedSubmatrix, pviolatorSubmatrix, pseparation, stats) );
 
   if (pisSeriesParallel)
     *pisSeriesParallel = (*pnumReductions == matrix->numRows + matrix->numColumns);
@@ -1824,6 +1817,7 @@ CMR_ERROR decomposeTernarySeriesParallel(
   size_t* pnumReductions,               /**< Pointer for storing the number of SP-reductions. */
   CMR_SUBMAT** preducedSubmatrix,       /**< Pointer for storing the SP-reduced submatrix (may be \c NULL). */
   CMR_SUBMAT** pviolatorSubmatrix,      /**< Pointer for storing a wheel-submatrix (may be \c NULL). */
+  CMR_SEPA** pseparation,               /**< Pointer for storing a 2-separation (may be \c NULL). */
   CMR_SP_STATISTICS* stats              /**< Pointer to statistics (may be \c NULL). */
 )
 {
@@ -1949,7 +1943,22 @@ CMR_ERROR decomposeTernarySeriesParallel(
           wheelClock = clock();
 
         CMR_CALL( extractWheelSubmatrix(cmr, matrix->numRows, matrix->numColumns, rowData, columnData, queue,
-          queueMemory, anchor, pviolatorSubmatrix, NULL, NULL) );
+          queueMemory, anchor, pviolatorSubmatrix, pseparation) );
+
+        /* Check whether the rank-1 part also has ternary rank 1. */
+        if (pseparation)
+        {
+          CMRdbgMsg(2, "Checking block of -1/+1s for ternary rank 1.\n");
+          
+          CMRdbgMsg(2, "Separation has part 0 (%ldx%ld) and part 1 (%ldx%ld) and ranks %d + %d.\n",
+            (*pseparation)->numRows[0], (*pseparation)->numColumns[0], (*pseparation)->numRows[1],
+            (*pseparation)->numColumns[1], (*pseparation)->rankRows0Columns1, (*pseparation)->rankRows1Columns0);
+
+          bool sepaIsTernary;
+          CMR_CALL( CMRsepaCheckTernary(cmr, *pseparation, matrix, &sepaIsTernary, pviolatorSubmatrix) );
+          if (!sepaIsTernary)
+            CMR_CALL( CMRsepaFree(cmr, pseparation) );
+        }
 
         if (stats)
         {
@@ -2001,7 +2010,34 @@ CMR_ERROR CMRtestTernarySeriesParallel(CMR* cmr, CMR_CHRMAT* matrix, bool* pisSe
     CMR_CALL( CMRallocStackArray(cmr, &localReductions, matrix->numRows + matrix->numColumns) );
 
   CMR_CALL( decomposeTernarySeriesParallel(cmr, matrix, reductions ? reductions : localReductions, &localNumReductions,
-    preducedSubmatrix, pviolatorSubmatrix, stats) );
+    preducedSubmatrix, pviolatorSubmatrix, NULL, stats) );
+
+  if (pisSeriesParallel)
+    *pisSeriesParallel = (*pnumReductions == matrix->numRows + matrix->numColumns);
+  if (reductions)
+    *pnumReductions = localNumReductions;
+  else
+    CMR_CALL( CMRfreeStackArray(cmr, &localReductions) );
+
+  return CMR_OKAY;
+}
+
+CMR_ERROR CMRdecomposeTernarySeriesParallel(CMR* cmr, CMR_CHRMAT* matrix, bool* pisSeriesParallel,
+  CMR_SP_REDUCTION* reductions, size_t* pnumReductions, CMR_SUBMAT** preducedSubmatrix, CMR_SUBMAT** pviolatorSubmatrix,
+  CMR_SEPA** pseparation, CMR_SP_STATISTICS* stats)
+{
+  assert(cmr);
+  assert(matrix);
+  assert(reductions || !pnumReductions);
+  assert(!reductions || pnumReductions);
+
+  CMR_SP_REDUCTION* localReductions = NULL;
+  size_t localNumReductions = 0;
+  if (!reductions)
+    CMR_CALL( CMRallocStackArray(cmr, &localReductions, matrix->numRows + matrix->numColumns) );
+
+  CMR_CALL( decomposeTernarySeriesParallel(cmr, matrix, reductions ? reductions : localReductions,
+    &localNumReductions, preducedSubmatrix, pviolatorSubmatrix, pseparation, stats) );
 
   if (pisSeriesParallel)
     *pisSeriesParallel = (*pnumReductions == matrix->numRows + matrix->numColumns);

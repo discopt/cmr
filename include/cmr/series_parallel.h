@@ -15,6 +15,7 @@ extern "C" {
 
 #include <cmr/element.h>
 #include <cmr/matrix.h>
+#include <cmr/separation.h>
 
 /**
  * \brief Statistics for series-parallel recognition algorithm.
@@ -166,7 +167,7 @@ CMR_ERROR CMRtestBinarySeriesParallel(
   bool* pisSeriesParallel,          /**< Pointer for storing the result. */
   CMR_SP_REDUCTION* reductions,     /**< Array for storing the SP-reductions. If not \c NULL, it must have
                                      **  capacity at least number of rows + number of columns. */
-  size_t* pnumOperations,           /**< Pointer for storing the number of SP-reductions. */
+  size_t* pnumReductions,           /**< Pointer for storing the number of SP-reductions. */
   CMR_SUBMAT** preducedSubmatrix,   /**< Pointer for storing the SP-reduced submatrix (may be \c NULL). */
   CMR_SUBMAT** pviolatorSubmatrix,  /**< Pointer for storing a wheel-submatrix (may be \c NULL). */
   CMR_SP_STATISTICS* stats          /**< Pointer to statistics (may be \c NULL). */
@@ -175,7 +176,7 @@ CMR_ERROR CMRtestBinarySeriesParallel(
 /**
  * \brief Finds all series-parallel reductions for the ternary \p matrix \f$ A \f$.
  *
- * Let \f$ A \in \{-1,0,1\}^{m \times n} \f$ with \f$ k \f$ nonzeros.
+ * Let \f$ A \in \{-1,0,+1\}^{m \times n} \f$ with \f$ k \f$ nonzeros.
  *
  * If \p premainingSubmatrix is not \c NULL, then the SP-reduced submatrix is stored.
  *
@@ -202,15 +203,15 @@ CMR_ERROR CMRtestTernarySeriesParallel(
  * \brief Finds all series-parallel reductions for the binary \p matrix \f$ A \f$.
  *
  * Let \f$ A \in \{0,1\}^{m \times n} \f$ with \f$ k \f$ nonzeros.
- * 
+ *
  * If \p premainingSubmatrix is not \c NULL, then the SP-reduced submatrix is stored.
  *
  * If \p pviolatorSubmatrix is not \c NULL and \p matrix is not binary series-parallel, then a wheel-submatrix is
- * stored.
+ * stored (unless a 2-separation is found; see below).
  *
- * If \p separationRank1Elements is not \c NULL, then also \p pnumSeparationRank1Elements must not be \c NULL.
- * If during the search for a wheel-submatrix a 2-separation that does not correspond to an SP reduction is found then
- * such a 2-separation is returned and the algorithm terminates.
+ * If \p pseparation is not \c NULL and during the search for a wheel-submatrix a 2-separation that does not correspond
+ * to an SP reduction is found then such a 2-separation is returned and the algorithm terminates without returning a
+ * wheel-submatrix.
  *
  * The running time is \f$ \mathcal{O} (m + n + k) \f$ assuming no hashtable collisions.
  */
@@ -222,14 +223,44 @@ CMR_ERROR CMRdecomposeBinarySeriesParallel(
   bool* pisSeriesParallel,              /**< Pointer for storing the result. */
   CMR_SP_REDUCTION* reductions,         /**< Array for storing the SP-reductions. If not \c NULL, it must have
                                          **  capacity at least number of rows + number of columns. */
-  size_t* pnumOperations,               /**< Pointer for storing the number of SP-reductions. */
+  size_t* pnumReductions,               /**< Pointer for storing the number of SP-reductions. */
   CMR_SUBMAT** preducedSubmatrix,       /**< Pointer for storing the SP-reduced submatrix (may be \c NULL). */
   CMR_SUBMAT** pviolatorSubmatrix,      /**< Pointer for storing a wheel-submatrix (may be \c NULL). */
-  CMR_ELEMENT* separationRank1Elements, /**< Array for storing elements of the rank-1 part of a 2-separation. If not
-                                         **  \c NULL, it must have sufficient capacity. */
-  size_t* pnumSeparationRank1Elements,  /**< Pointer for storing the number of elements stored in
-                                         **  \p separationRank1Elements (may be \c NULL). */
+  CMR_SEPA** pseparation,               /**< Pointer for storing a 2-separation (may be \c NULL). */
   CMR_SP_STATISTICS* stats              /**< Pointer to statistics (may be \c NULL). */
+);
+
+
+/**
+ * \brief Finds all series-parallel reductions for the ternary \p matrix \f$ A \f$.
+ *
+ * Let \f$ A \in \{-1,0,+1\}^{m \times n} \f$ with \f$ k \f$ nonzeros.
+ *
+ * If \p premainingSubmatrix is not \c NULL, then the SP-reduced submatrix is stored.
+ *
+ * If \p pviolatorSubmatrix is not \c NULL and \p matrix is not ternary series-parallel, then a signed wheel- or
+ * \f$ M_2 \f$-submatrix is stored (unless a 2-separation is found; see below).
+ *
+ * If \p pseparation is not \c NULL and during the search for a signed wheel-submatrix a 2-separation that does not
+ * correspond to an SP reduction is found then such a 2-separation is returned and the algorithm terminates without
+ * returning a signed wheel- or \f$ M_2 \f$-submatrix.
+ *
+ * The running time is \f$ \mathcal{O} (m + n + k) \f$ assuming no hashtable collisions.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRdecomposeTernarySeriesParallel(
+  CMR* cmr,                             /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,                   /**< Sparse char matrix. */
+  bool* pisSeriesParallel,              /**< Pointer for storing the result. */
+  CMR_SP_REDUCTION* reductions,         /**< Array for storing the SP-reductions. If not \c NULL, it must have
+                                         **  capacity at least number of rows + number of columns. */
+  size_t* pnumReductions,               /**< Pointer for storing the number of SP-reductions. */
+  CMR_SUBMAT** preducedSubmatrix,       /**< Pointer for storing the SP-reduced submatrix (may be \c NULL). */
+  CMR_SUBMAT** pviolatorSubmatrix,      /**< Pointer for storing a signed wheel- or \f$ M_2 \f$-submatrix (may be
+                                         **  \c NULL). */
+  CMR_SEPA** pseparation,               /**< Pointer for storing a 2-separation (may be \c NULL). */
+  CMR_SP_STATISTICS* stats              /**< Pointer to statistics (may be \c NULL). */                                          
 );
 
 #ifdef __cplusplus
