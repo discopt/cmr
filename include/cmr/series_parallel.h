@@ -34,7 +34,7 @@ typedef struct
 } CMR_SP_STATISTICS;
 
 /**
- * \brief Represents a series-parallel operation
+ * \brief Represents a series-parallel reduction
  */
 
 typedef struct
@@ -63,7 +63,7 @@ CMR_ERROR CMRspPrintStatistics(
 );
 
 /**
- * Prints the series-parallel \p operation to \p buffer.
+ * Prints the series-parallel \p reduction to \p buffer.
  */
 
 CMR_EXPORT
@@ -76,75 +76,75 @@ char* CMRspReductionString(
 );
 
 /**
- * \brief Returns \c true if the series-parallel \p operation removes a row, i.e., is series.
+ * \brief Returns \c true if the series-parallel \p reduction removes a row, i.e., is series.
  */
 
 static inline
 bool CMRspIsRow(
-  CMR_SP_REDUCTION operation /**< Series-parallel operation. */
+  CMR_SP_REDUCTION reduction /**< Series-parallel reduction. */
 )
 {
-  return operation.element < 0;
+  return reduction.element < 0;
 }
 
 /**
- * \brief Returns \c true if the series-parallel \p operation removes a column, i.e., is parallel.
+ * \brief Returns \c true if the series-parallel \p reduction removes a column, i.e., is parallel.
  */
 
 static inline
 bool CMRspIsColumn(
-  CMR_SP_REDUCTION operation /**< Series-parallel operation. */
+  CMR_SP_REDUCTION reduction /**< Series-parallel reduction. */
 )
 {
-  return operation.element > 0;
+  return reduction.element > 0;
 }
 
 /**
- * \brief Returns \c true if the series-parallel \p operation removes a zero vector.
+ * \brief Returns \c true if the series-parallel \p reduction removes a zero vector.
  */
 
 static inline
 bool CMRspIsZero(
-  CMR_SP_REDUCTION operation /**< Series-parallel operation. */
+  CMR_SP_REDUCTION reduction /**< Series-parallel reduction. */
 )
 {
-  return operation.mate == 0;
+  return reduction.mate == 0;
 }
 
 /**
- * \brief Returns \c true if the series-parallel \p operation removes a unit vector.
+ * \brief Returns \c true if the series-parallel \p reduction removes a unit vector.
  */
 
 static inline
 bool CMRspIsUnit(
-  CMR_SP_REDUCTION operation /**< Series-parallel operation. */
+  CMR_SP_REDUCTION reduction /**< Series-parallel reduction. */
 )
 {
-  return operation.element * operation.mate < 0;
+  return reduction.element * reduction.mate < 0;
 }
 
 /**
- * \brief Returns \c true if the series-parallel \p operation removes a vector that is a copy of another vector.
+ * \brief Returns \c true if the series-parallel \p reduction removes a vector that is a copy of another vector.
  */
 
 static inline
 bool CMRspIsCopy(
-  CMR_SP_REDUCTION operation /**< Series-parallel operation. */
+  CMR_SP_REDUCTION reduction /**< Series-parallel reduction. */
 )
 {
-  return operation.element * operation.mate > 0;
+  return reduction.element * reduction.mate > 0;
 }
 
 /**
- * \brief Returns \c true if the series-parallel \p operation is valid.
+ * \brief Returns \c true if the series-parallel \p reduction is valid.
  */
 
 static inline
 bool CMRspIsValid(
-  CMR_SP_REDUCTION operation /**< Series-parallel operation. */
+  CMR_SP_REDUCTION reduction /**< Series-parallel reduction. */
 )
 {
-  return operation.element != 0;
+  return reduction.element != 0;
 }
 
 /**

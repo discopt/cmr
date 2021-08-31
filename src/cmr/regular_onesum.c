@@ -15,17 +15,17 @@ int compareOneSumComponents(const void* a, const void* b)
     ((CMR_ONESUM_COMPONENT*)b)->matrix->numNonzeros;
 }
 
-CMR_ERROR CMRregularDecomposeOneSum(CMR* cmr, CMR_DEC* dec, CMR_CHRMAT* matrix)
+CMR_ERROR CMRregularDecomposeOneSum(CMR* cmr, CMR_DEC* dec)
 {
   assert(cmr);
   assert(dec);
-  assert(matrix);
+  assert(dec->matrix);
 
   /* Perform 1-sum decomposition. */
 
   size_t numComponents;
   CMR_ONESUM_COMPONENT* components = NULL;
-  CMR_CALL( decomposeOneSum(cmr, (CMR_MATRIX*) matrix, sizeof(char), sizeof(char), &numComponents, &components, NULL, NULL,
+  CMR_CALL( decomposeOneSum(cmr, (CMR_MATRIX*) dec->matrix, sizeof(char), sizeof(char), &numComponents, &components, NULL, NULL,
     NULL, NULL) );
 
   if (numComponents == 1)

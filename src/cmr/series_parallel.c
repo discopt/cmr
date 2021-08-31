@@ -1,4 +1,4 @@
-#define CMR_DEBUG /* Uncomment to debug this file. */
+// #define CMR_DEBUG /* Uncomment to debug this file. */
 
 // TODO: Try to not fill the hashtable in initialScan but just add all elements to the queue.
 
@@ -636,11 +636,11 @@ CMR_ERROR reduceListMatrix(
   size_t* pqueueStart,                /**< Pointer to start of queue. */
   size_t* pqueueEnd,                  /**< Pointer to end of queue. */
   size_t queueMemory,                 /**< Memory allocated for queue. */
-  CMR_SP_REDUCTION* operations,        /**< Array for storing the SP-reductions. Must be sufficiently large, e.g., number
+  CMR_SP_REDUCTION* reductions,        /**< Array for storing the SP-reductions. Must be sufficiently large, e.g., number
                                        **< of rows + number of columns. */
-  size_t* pnumOperations,             /**< Pointer for storing the number of SP-reductions. */
-  size_t* pnumRowOperations,          /**< Pointer for storing the number of row operations (may be \c NULL). */
-  size_t* pnumColumnOperations        /**< Pointer for storing the number of column operations (may be \c NULL). */
+  size_t* pnumReductions,             /**< Pointer for storing the number of SP-reductions. */
+  size_t* pnumRowReductions,          /**< Pointer for storing the number of row reductions (may be \c NULL). */
+  size_t* pnumColumnReductions        /**< Pointer for storing the number of column reductions (may be \c NULL). */
 )
 {
   while (*pqueueEnd > *pqueueStart)
@@ -714,10 +714,10 @@ CMR_ERROR reduceListMatrix(
           CMRdbgMsg(6, "Row %d is parallel.\n", row2);
 
           /* We found a parallel row. */
-          operations[*pnumOperations].element = CMRrowToElement(row1);
-          operations[*pnumOperations].mate = CMRrowToElement(row2);
-          (*pnumOperations)++;
-          (*pnumRowOperations)++;
+          reductions[*pnumReductions].element = CMRrowToElement(row1);
+          reductions[*pnumReductions].mate = CMRrowToElement(row2);
+          (*pnumReductions)++;
+          (*pnumRowReductions)++;
 
           for (ListNonzero* entry = rowData[row1].nonzeros.right; entry != &rowData[row1].nonzeros;
             entry = entry->right)
@@ -756,13 +756,13 @@ CMR_ERROR reduceListMatrix(
           rowData[row1].numNonzeros--;
           CMR_CALL( processNonzero(cmr, columnHashtable, -entryToHash[entry->row] * entry->value, column,
             &columnData[column], queue, pqueueEnd, queueMemory, false) );
-          operations[*pnumOperations].mate = CMRcolumnToElement(column);
+          reductions[*pnumReductions].mate = CMRcolumnToElement(column);
         }
         else
-          operations[*pnumOperations].mate = 0;
-        operations[*pnumOperations].element = element;
-        (*pnumOperations)++;
-        (*pnumRowOperations)++;
+          reductions[*pnumReductions].mate = 0;
+        reductions[*pnumReductions].element = element;
+        (*pnumReductions)++;
+        (*pnumRowReductions)++;
         rowData[row1].lastBFS = -2;
         if (anchor)
         {
@@ -792,10 +792,10 @@ CMR_ERROR reduceListMatrix(
           CMRdbgMsg(6, "Column %d is parallel.\n", column2);
 
           /* We found a parallel column. */
-          operations[*pnumOperations].element = CMRcolumnToElement(column1);
-          operations[*pnumOperations].mate = CMRcolumnToElement(column2);
-          (*pnumOperations)++;
-          (*pnumColumnOperations)++;
+          reductions[*pnumReductions].element = CMRcolumnToElement(column1);
+          reductions[*pnumReductions].mate = CMRcolumnToElement(column2);
+          (*pnumReductions)++;
+          (*pnumColumnReductions)++;
           columnData[column1].lastBFS = -2;
 
           for (ListNonzero* entry = columnData[column1].nonzeros.below; entry != &columnData[column1].nonzeros;
@@ -834,13 +834,13 @@ CMR_ERROR reduceListMatrix(
           columnData[column1].numNonzeros--;
           CMR_CALL( processNonzero(cmr, rowHashtable, -entryToHash[entry->column] * entry->value, row,
             &rowData[row], queue, pqueueEnd, queueMemory, true) );
-          operations[*pnumOperations].mate = CMRrowToElement(row);
+          reductions[*pnumReductions].mate = CMRrowToElement(row);
         }
         else
-          operations[*pnumOperations].mate = 0;
-        operations[*pnumOperations].element = element;
-        (*pnumOperations)++;
-        (*pnumColumnOperations)++;
+          reductions[*pnumReductions].mate = 0;
+        reductions[*pnumReductions].element = element;
+        (*pnumReductions)++;
+        (*pnumColumnReductions)++;
         columnData[column1].lastBFS = -2;
         if (anchor)
         {
@@ -1293,7 +1293,7 @@ CMR_ERROR extractWheelSubmatrix(
   CMR_ELEMENT* queue,                   /**< Queue memory. */
   size_t queueMemory,                   /**< Size of \p queue. */
   ListNonzero* anchor,                  /**< Anchor of list matrix. */
-  CMR_SUBMAT** pwheelSubmatrix,         /**< Pointer for storing the wheel submatrix. */
+  CMR_SUBMAT** pwheelSubmatrix,         /**< Pointer for storing the wheel submatrix (may be \c NULL). */
   CMR_SEPA** pseparation                /**< Pointer for storing a 2-separation (may be \c NULL). */
 )
 {
@@ -1343,16 +1343,19 @@ CMR_ERROR extractWheelSubmatrix(
     if (length > 4)
     {
       /* We found a long chordless cycle. Traverse backwards along path and collect rows/columns. */
-      CMR_CALL( CMRsubmatCreate(cmr, length/2, length/2, pwheelSubmatrix) );
-      CMR_SUBMAT* wheelSubmatrix = *pwheelSubmatrix;
-      size_t column = targetColumn;
-      size_t row;
-      for (size_t i = 0; i < length/2; ++i)
+      if (pwheelSubmatrix)
       {
-        row = columnData[column].predecessor;
-        wheelSubmatrix->columns[i] = column;
-        wheelSubmatrix->rows[i] = row;
-        column = rowData[row].predecessor;
+        CMR_CALL( CMRsubmatCreate(cmr, length/2, length/2, pwheelSubmatrix) );
+        CMR_SUBMAT* wheelSubmatrix = *pwheelSubmatrix;
+        size_t column = targetColumn;
+        size_t row;
+        for (size_t i = 0; i < length/2; ++i)
+        {
+          row = columnData[column].predecessor;
+          wheelSubmatrix->columns[i] = column;
+          wheelSubmatrix->rows[i] = row;
+          column = rowData[row].predecessor;
+        }
       }
       break;
     }
@@ -1431,7 +1434,7 @@ CMR_ERROR extractWheelSubmatrix(
 
     fprintf(stderr, "Time for second search: %f\n", (clock() - t) * 1.0 / CLOCKS_PER_SEC);
 
-    if (foundTarget < SIZE_MAX)
+    if (foundTarget < SIZE_MAX && pwheelSubmatrix)
     {
       size_t length = columnData[CMRelementToColumnIndex(targets[foundTarget])].distance + 1;
       targetColumn = CMRelementToColumnIndex(targets[foundTarget]);
@@ -1500,6 +1503,11 @@ CMR_ERROR extractWheelSubmatrix(
         wheelSubmatrix->columns[1] = column1;
         wheelSubmatrix->columns[2] = column2;
       }
+      break;
+    }
+    else if (foundTarget < SIZE_MAX)
+    {
+      /* Wheel found, but the user does not care. */
       break;
     }
 
@@ -1710,7 +1718,7 @@ CMR_ERROR decomposeBinarySeriesParallel(
         preducedSubmatrix) );
     }
 
-    if (pviolatorSubmatrix && (*pnumReductions != (matrix->numRows + matrix->numColumns)))
+    if ((pviolatorSubmatrix || pseparation) && (*pnumReductions != (matrix->numRows + matrix->numColumns)))
     {
       clock_t wheelClock = 0;
       if (stats)
@@ -1905,7 +1913,7 @@ CMR_ERROR decomposeTernarySeriesParallel(
         preducedSubmatrix) );
     }
 
-    if (pviolatorSubmatrix && (*pnumReductions != (matrix->numRows + matrix->numColumns)))
+    if ((pviolatorSubmatrix || pseparation) && (*pnumReductions != (matrix->numRows + matrix->numColumns)))
     {
       clock_t nonbinaryClock = 0;
       if (stats)
@@ -1923,8 +1931,11 @@ CMR_ERROR decomposeTernarySeriesParallel(
       CMR_CALL( CMRlisthashtableCreate(cmr, &columnHashtable, nextPower2(numColumns), numColumns) );
       CMR_CALL( initializeQueueHashtableFromListMatrix(cmr, columnHashtable, anchor, columnData, queue, &queueEnd, false) );
 
+      CMR_SUBMAT* violatorSubmatrix;
       CMR_CALL( extractNonbinarySubmatrix(cmr, anchor, rowData, columnData, rowHashtable, columnHashtable, hashVector,
-        queue, &queueStart, &queueEnd, queueMemory, pviolatorSubmatrix) );
+        queue, &queueStart, &queueEnd, queueMemory, &violatorSubmatrix) );
+      if (violatorSubmatrix && pviolatorSubmatrix)
+        *pviolatorSubmatrix = violatorSubmatrix;
 
       if (stats)
       {
@@ -1932,11 +1943,11 @@ CMR_ERROR decomposeTernarySeriesParallel(
         stats->nonbinaryTime += (clock() - nonbinaryClock) * 1.0 / CLOCKS_PER_SEC;
       }
 
-      if (*pviolatorSubmatrix)
+      if (pviolatorSubmatrix && *pviolatorSubmatrix)
       {
         CMRdbgMsg(2, "Extracted an M_2-submatrix.\n");
       }
-      else
+      else if (!violatorSubmatrix)
       {
         clock_t wheelClock = 0;
         if (stats)
@@ -1949,7 +1960,7 @@ CMR_ERROR decomposeTernarySeriesParallel(
         if (pseparation)
         {
           CMRdbgMsg(2, "Checking block of -1/+1s for ternary rank 1.\n");
-          
+
           CMRdbgMsg(2, "Separation has part 0 (%ldx%ld) and part 1 (%ldx%ld) and ranks %d + %d.\n",
             (*pseparation)->numRows[0], (*pseparation)->numColumns[0], (*pseparation)->numRows[1],
             (*pseparation)->numColumns[1], (*pseparation)->rankRows0Columns1, (*pseparation)->rankRows1Columns0);
@@ -1965,6 +1976,12 @@ CMR_ERROR decomposeTernarySeriesParallel(
           stats->wheelCount++;
           stats->wheelTime += (clock() - wheelClock) * 1.0 / CLOCKS_PER_SEC;
         }
+      }
+      else
+      {
+        /* We found a violator but the user doesn't want it. */
+        assert(!violatorSubmatrix);
+        CMR_CALL( CMRsubmatFree(cmr, &violatorSubmatrix) );
       }
     }
 

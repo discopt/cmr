@@ -183,8 +183,8 @@ CMR_ERROR _CMRduplicateBlockArray(CMR* cmr, void** ptr, size_t size, size_t leng
  * \note Use \ref CMRfreeBlockArray to free a block memory array.
  */
 
-#define CMRfreeBlockArray(tu, ptr) \
-  _CMRfreeBlockArray(tu, (void**) ptr)
+#define CMRfreeBlockArray(cmr, ptr) \
+  _CMRfreeBlockArray(cmr, (void**) ptr)
 
 CMR_EXPORT
 CMR_ERROR _CMRfreeBlockArray(CMR* cmr, void** ptr);

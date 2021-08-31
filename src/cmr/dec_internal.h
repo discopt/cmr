@@ -3,6 +3,7 @@
 
 #include <cmr/dec.h>
 #include <cmr/matroid.h>
+#include <cmr/series_parallel.h>
 
 struct _CMR_DEC
 {
@@ -25,6 +26,9 @@ struct _CMR_DEC
 
   CMR_GRAPH* cograph;           /**< \brief Graph represented by the transpose of this matrix. */
   CMR_ELEMENT* coedgeElements;  /**< \brief Array for mapping edges of \ref cograph to elements. */
+
+  CMR_SP_REDUCTION* reductions; /**< \brief Array of series-parallel reductions. */
+  size_t numReductions;         /**< \brief Length of \p reductions. */
 };
 
 /**

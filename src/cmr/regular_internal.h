@@ -15,14 +15,13 @@
  */
 
 CMR_ERROR CMRtestRegular(
-  CMR* cmr,             /**< \ref CMR environment. */
-  CMR_CHRMAT* matrix,   /**< Input matrix. */
-  bool ternary,         /**< Whether signs of \p matrix play a role. */
-  bool *pisRegular,     /**< Pointer for storing whether \p matrix is regular. */
-  CMR_DEC** pdec,       /**< Pointer for storing the decomposition tree (may be \c NULL). */
-  CMR_MINOR** pminor,   /**< Pointer for storing an \f$ F_7 \f$ or \f$ F_7^\star \f$ minor. */
-  bool checkPlanarity,  /**< Whether graphic minors should be checked for cographicness. */
-  bool completeTree     /**< Whether a complete decomposition tree shall be computed. */
+  CMR* cmr,                       /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,             /**< Input matrix. */
+  bool ternary,                   /**< Whether signs of \p matrix play a role. */
+  bool *pisRegular,               /**< Pointer for storing whether \p matrix is regular. */
+  CMR_DEC** pdec,                 /**< Pointer for storing the decomposition tree (may be \c NULL). */
+  CMR_MINOR** pminor,             /**< Pointer for storing an \f$ F_7 \f$ or \f$ F_7^\star \f$ minor. */
+  CMR_REGULAR_PARAMETERS* params  /**< Parameters for the computation. */
 );
 
 /**
@@ -34,23 +33,26 @@ CMR_ERROR CMRtestRegular(
  */
 
 CMR_ERROR CMRregularDecomposeOneSum(
-  CMR* cmr,          /**< \ref CMR environment. */
-  CMR_DEC* dec,      /**< Initialized decomposition node corresponding to \p matrix. */
-  CMR_CHRMAT* matrix /**< Matrix. */
+  CMR* cmr,     /**< \ref CMR environment. */
+  CMR_DEC* dec  /**< Initialized decomposition node with \ref matrix attribute. */
 );
 
 /**
  * \brief Splits off series-parallel elements from the matrix of a decomposition node.
  *
+ * In case the matrix is \ref series-parallel, then \p *pmatrix is set to \c NULL and \p *pdec is declared to be planar.
+ *
+ * In case the matrix does not admit series-parallel reductions, then \p *pmatrix and \p *pdec remain unchanged, except
  * The decomposition node \p *pdec and matrix \p *pmatrix are replaced by the SP-reduced ones, i.e., by the
  * corresponding (grand-) children of the given decomposition and the corresponding matrix.
  */
 
 CMR_ERROR CMRregularDecomposeSeriesParallel(
-  CMR* cmr,                 /**< \ref CMR environment. */
-  CMR_DEC** pdec,           /**< Pointer to decomposition node. */
-  CMR_CHRMAT** pmatrix,     /**< Pointer to matrix of \p *pdec. */
-  bool ternary              /**< Whether to consider the signs of the matrix. */
+  CMR* cmr,                       /**< \ref CMR environment. */
+  CMR_DEC** pdec,                 /**< Pointer to decomposition node. */
+  bool ternary,                   /**< Whether to consider the signs of the matrix. */
+  CMR_SUBMAT** psubmatrix,        /**< Pointer for storing a violator matrix. */
+  CMR_REGULAR_PARAMETERS* params  /**< Parameters for the computation. */
 );
 
 #endif /* CMR_REGULAR_INTERNAL_H */

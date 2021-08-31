@@ -134,7 +134,6 @@ CMR_ERROR _CMRfreeBlockArray(CMR* cmr, void** ptr)
 {
   assert(cmr);
   assert(ptr);
-  assert(*ptr);
   free(*ptr);
   *ptr = NULL;
 

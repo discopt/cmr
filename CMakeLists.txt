@@ -115,6 +115,15 @@ target_link_libraries(cmr_network
 )
 set_target_properties(cmr_network PROPERTIES OUTPUT_NAME cmr-network)
 
+# Target for the cmr-regular
+add_executable(cmr_regular
+  src/main/regular_main.c)
+target_link_libraries(cmr_regular
+  PRIVATE
+    CMR::cmr
+)
+set_target_properties(cmr_regular PROPERTIES OUTPUT_NAME cmr-regular)
+
 # Target for the cmr-series-parallel executable.
 add_executable(cmr_series_parallel
   src/main/series_parallel_main.c)

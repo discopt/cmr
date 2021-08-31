@@ -32,22 +32,23 @@ typedef struct _CMR_DEC CMR_DEC;
 
 typedef enum
 {
-  CMR_DEC_IRREGULAR = -1,          /**< Node represents 3-connected irregular minor. */
-  CMR_DEC_UNKNOWN = 0,             /**< Type of node is not yet determined. */
-  CMR_DEC_ONE_SUM = 1,             /**< Node represents a 1-sum of minors; arbitrary number of child nodes. */
-  CMR_DEC_TWO_SUM = 2,             /**< Node represents a 2-sum of minors; two child nodes. */
-  CMR_DEC_THREE_SUM = 3,           /**< Node represents a 3-sum of minors; two child nodes. */
-  CMR_DEC_GRAPHIC = 4,             /**< Node represents a graphic leaf minor; no child nodes. */
-  CMR_DEC_COGRAPHIC = 5,           /**< Node represents a cographic leaf minor; no child nodes. */
-  CMR_DEC_PLANAR = 6,              /**< Node represents a planar (graphic and cographic) leaf minor; no child nodes. */
+  CMR_DEC_IRREGULAR = -1,         /**< Node represents 3-connected irregular minor. */
+  CMR_DEC_UNKNOWN = 0,            /**< Type of node is not yet determined. */
+  CMR_DEC_ONE_SUM = 1,            /**< Node represents a 1-sum of minors; arbitrary number of child nodes. */
+  CMR_DEC_TWO_SUM = 2,            /**< Node represents a 2-sum of minors; two child nodes. */
+  CMR_DEC_THREE_SUM = 3,          /**< Node represents a 3-sum of minors; two child nodes. */
+  CMR_DEC_GRAPHIC = 4,            /**< Node represents a graphic leaf minor; no child nodes. */
+  CMR_DEC_COGRAPHIC = 5,          /**< Node represents a cographic leaf minor; no child nodes. */
+  CMR_DEC_PLANAR = 6,             /**< Node represents a planar (graphic and cographic) leaf minor; no child nodes. */
+  CMR_DEC_SERIES_PARALLEL = 7,    /**< Node represents a series-parallel reduction; one child node. */  
 
-  CMR_DEC_SPECIAL_R10 = 16,        /**< Node represents a minor isomorphic to \f$ R_{10} \f$. */
-  CMR_DEC_SPECIAL_FANO = 17,       /**< Node represents a minor isomorphic to \f$ F_7 \f$. */
-  CMR_DEC_SPECIAL_FANO_DUAL = 18,  /**< Node represents a minor isomorphic to \f$ F_7^\star \f$. */
-  CMR_DEC_SPECIAL_K_5 = 19,        /**< Node represents a minor isomorphic to \f$ M(K_5) \f$. */
-  CMR_DEC_SPECIAL_K_5_DUAL = 20,   /**< Node represents a minor isomorphic to \f$ M(K_5)^\star \f$. */
-  CMR_DEC_SPECIAL_K_3_3 = 21,      /**< Node represents a minor isomorphic to \f$ M(K_{3,3}) \f$. */
-  CMR_DEC_SPECIAL_K_3_3_DUAL = 22  /**< Node represents a minor isomorphic to \f$ M(K_{3,3})^\star \f$. */
+  CMR_DEC_SPECIAL_R10 = 16,       /**< Node represents a minor isomorphic to \f$ R_{10} \f$. */
+  CMR_DEC_SPECIAL_FANO = 17,      /**< Node represents a minor isomorphic to \f$ F_7 \f$. */
+  CMR_DEC_SPECIAL_FANO_DUAL = 18, /**< Node represents a minor isomorphic to \f$ F_7^\star \f$. */
+  CMR_DEC_SPECIAL_K_5 = 19,       /**< Node represents a minor isomorphic to \f$ M(K_5) \f$. */
+  CMR_DEC_SPECIAL_K_5_DUAL = 20,  /**< Node represents a minor isomorphic to \f$ M(K_5)^\star \f$. */
+  CMR_DEC_SPECIAL_K_3_3 = 21,     /**< Node represents a minor isomorphic to \f$ M(K_{3,3}) \f$. */
+  CMR_DEC_SPECIAL_K_3_3_DUAL = 22 /**< Node represents a minor isomorphic to \f$ M(K_{3,3})^\star \f$. */
 } CMR_DEC_TYPE;
 
 typedef enum
@@ -192,9 +193,13 @@ size_t* CMRdecColumnsParent(
 
 CMR_EXPORT
 CMR_ERROR CMRdecPrint(
-  FILE* stream, /**< Stream. */
-  CMR_DEC* dec, /**< Decomposition. */
-  size_t indent /**< Indentation of this node. */
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_DEC* dec,         /**< Decomposition node. */
+  FILE* stream,         /**< Stream to write to. */
+  size_t indent,        /**< Indentation of this node. */
+  bool printMatrices,   /**< Whether to print matrices. */
+  bool printGraphs,     /**< Whether to print graphs. */
+  bool printReductions  /**< Whether to print series-parallel reductions. */
 );
 
 /**@}*/

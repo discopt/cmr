@@ -14,10 +14,11 @@ CMR_ERROR CMRdecFree(CMR* cmr, CMR_DEC** pdec)
   for (size_t c = 0; c < dec->numChildren; ++c)
     CMR_CALL( CMRdecFree(cmr, &dec->children[c]) );
 
+  CMR_CALL( CMRfreeBlockArray(cmr, &dec->children) );
   CMR_CALL( CMRchrmatFree(cmr, &dec->matrix) );
   CMR_CALL( CMRchrmatFree(cmr, &dec->transpose) );
-  CMR_CALL( CMRfreeBlockArray(cmr, dec->rowsParent) );
-  CMR_CALL( CMRfreeBlockArray(cmr, dec->columnsParent) );
+  CMR_CALL( CMRfreeBlockArray(cmr, &dec->rowsParent) );
+  CMR_CALL( CMRfreeBlockArray(cmr, &dec->columnsParent) );
   CMR_CALL( CMRgraphFree(cmr, &dec->graph) );
   CMR_CALL( CMRfreeBlockArray(cmr, &dec->edgeElements) );
   CMR_CALL( CMRgraphFree(cmr, &dec->cograph) );
@@ -136,8 +137,10 @@ size_t* CMRdecColumnsParent(CMR_DEC* dec)
   return dec->columnsParent;
 }
 
-CMR_ERROR CMRdecPrint(FILE* stream, CMR_DEC* dec, size_t indent)
+CMR_ERROR CMRdecPrint(CMR* cmr, CMR_DEC* dec, FILE* stream, size_t indent, bool printMatrices, bool printGraphs,
+  bool printReductions)
 {
+  assert(cmr);
   assert(stream);
 
   /* Indent. */
@@ -174,6 +177,12 @@ CMR_ERROR CMRdecPrint(FILE* stream, CMR_DEC* dec, size_t indent)
     assert(CMRgraphNumEdges(dec->graph) == CMRgraphNumEdges(dec->cograph));
     fprintf(stream, "planar with %d nodes, %d faces and %d edges {", CMRgraphNumNodes(dec->graph),
       CMRgraphNumNodes(dec->cograph), CMRgraphNumEdges(dec->graph));
+  break;
+  case CMR_DEC_SERIES_PARALLEL:
+    if (dec->numChildren)
+      fprintf(stream, "series-parallel reductions (%ld) with 1 child {", dec->numReductions);
+    else
+      fprintf(stream, "series-parallel {");
   break;
   case CMR_DEC_SPECIAL_R10:
     fprintf(stream, "R10 {");
@@ -221,8 +230,50 @@ CMR_ERROR CMRdecPrint(FILE* stream, CMR_DEC* dec, size_t indent)
   }
   fprintf(stream, "}\n");
 
+  if (printMatrices)
+  {
+    if (dec->matrix || dec->transpose)
+    {
+      for (int i = 0; i < indent; ++i)
+        fputc(' ', stream);
+      fprintf(stream, "Matrix:\n");
+    }
+    if (dec->matrix)
+      CMR_CALL( CMRchrmatPrintDense(cmr, dec->matrix, stream, '0', false) );
+    else if (dec->transpose)
+    {
+      CMR_CHRMAT* matrix = NULL;
+      CMR_CALL( CMRchrmatTranspose(cmr, dec->transpose, &matrix) );
+      CMR_CALL( CMRchrmatPrintDense(cmr, dec->matrix, stream, '0', false) );
+      CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+    }
+    else
+    {
+      for (int i = 0; i < indent; ++i)
+        fputc(' ', stream);
+      fprintf(stream, "No matrix.\n");
+    }
+  }
+  if (printGraphs)
+  {
+    if (dec->graph)
+    {
+      for (int i = 0; i < indent; ++i)
+        fputc(' ', stream);
+      fprintf(stream, "Graph:\n");
+      CMR_CALL( CMRgraphPrint(stream, dec->graph) );
+    }
+    if (dec->cograph)
+    {
+      for (int i = 0; i < indent; ++i)
+        fputc(' ', stream);
+      fprintf(stream, "Cograph:\n");
+      CMR_CALL( CMRgraphPrint(stream, dec->cograph) );
+    }
+  }
+
   for (size_t c = 0; c < dec->numChildren; ++c)
-    CMR_CALL( CMRdecPrint(stream, dec->children[c], indent + 2) );
+    CMR_CALL( CMRdecPrint(cmr, dec->children[c], stream, indent + 2, printMatrices, printGraphs, printReductions) );
 
   return CMR_OKAY;
 }
@@ -258,6 +309,9 @@ CMR_ERROR CMRdecCreate(CMR* cmr, CMR_DEC* parent, size_t numRows, size_t* rowsPa
 
   dec->cograph = NULL;
   dec->coedgeElements = NULL;
+
+  dec->reductions = NULL;
+  dec->numReductions = 0;
 
   return CMR_OKAY;
 }
@@ -298,10 +352,10 @@ CMR_ERROR CMRdecSetNumChildren(CMR* cmr, CMR_DEC* node, size_t numChildren)
   assert(node);
   assert(numChildren >= 0);
 
-  node->numChildren = numChildren;
   CMR_CALL( CMRreallocBlockArray(cmr, &node->children, numChildren) );
-  for (size_t c = 0; c < numChildren; ++c)
+  for (size_t c = node->numChildren; c < numChildren; ++c)
     node->children[c] = NULL;
+  node->numChildren = numChildren;
 
   return CMR_OKAY;
 }
@@ -353,6 +407,8 @@ CMR_ERROR CMRdecComputeRegularity(CMR_DEC* node)
     break;
     case CMR_DEC_SPECIAL_R10:
       node->flags &= ~(CMR_DEC_IS_GRAPHIC | CMR_DEC_IS_COGRAPHIC);
+    break;
+    case CMR_DEC_SERIES_PARALLEL:
     break;
     default:
       assert(false);

@@ -1,4 +1,4 @@
-#define CMR_DEBUG /** Uncomment to debug the regularity check. */
+#define CMR_DEBUG /** Uncomment to debug this file. */
 
 #include <cmr/regular.h>
 
@@ -9,41 +9,67 @@
 #include "dec_internal.h"
 #include "regular_internal.h"
 
-CMR_ERROR CMRtestRegularOneConnected(CMR* cmr, CMR_DEC* dec, CMR_CHRMAT* matrix, CMR_CHRMAT* transpose, bool ternary,
-  bool *pisRegular, CMR_MINOR** pminor, bool checkPlanarity, bool completeTree)
+CMR_ERROR CMRregularInitParameters(CMR_REGULAR_PARAMETERS* params)
+{
+  assert(params);
+
+  params->planarityCheck = false;
+  params->seriesParallel = 2;
+  params->completeTree = false;
+  params->matrices = CMR_DEC_CONSTRUCT_NONE;
+  params->transposes = CMR_DEC_CONSTRUCT_NONE;
+  params->graphs = CMR_DEC_CONSTRUCT_NONE;
+
+  return CMR_OKAY;
+}
+
+static 
+CMR_ERROR testRegularOneConnected(
+  CMR* cmr,                       /**< \ref CMR environment. */
+  CMR_DEC* dec,                   /**< Decomposition node. */
+  bool ternary,                   /**< Whether signs matter. */
+  bool *pisRegular,               /**< Pointer for storing whether \p matrix is regular. */
+  CMR_MINOR** pminor,             /**< Pointer for storing an \f$ F_7 \f$ or \f$ F_7^\star \f$ minor. */
+  CMR_REGULAR_PARAMETERS* params  /**< Parameters for the computation. */
+)
 {
   assert(cmr);
   assert(dec);
-  assert(matrix);
+  assert(dec->matrix);
 
-  CMRdbgMsg(2, "Testing binary %dx%d 1-connected matrix for regularity.\n", matrix->numRows, matrix->numColumns);
+  CMRdbgMsg(2, "Testing binary %dx%d 1-connected matrix for regularity.\n", dec->matrix->numRows,
+    dec->matrix->numColumns);
 
-  CMRdbgMsg(4, "Splitting off series-parallel elements.\n");
-  CMR_CALL( CMRregularDecomposeSeriesParallel(cmr, &dec, &matrix, ternary) );
-
-  assert(false);
+  if (params->seriesParallel)
+  {
+    CMRdbgMsg(4, "Splitting off series-parallel elements.\n");
+    CMR_SUBMAT* submatrix = NULL;
+    CMR_CALL( CMRregularDecomposeSeriesParallel(cmr, &dec, ternary, &submatrix, params) );
+  }
 
   return CMR_OKAY;
 }
 
 CMR_ERROR CMRtestRegular(CMR* cmr, CMR_CHRMAT* matrix, bool ternary, bool *pisRegular, CMR_DEC** pdec,
-  CMR_MINOR** pminor, bool checkPlanarity, bool completeTree)
+  CMR_MINOR** pminor, CMR_REGULAR_PARAMETERS* params)
 {
   assert(cmr);
   assert(matrix);
+  assert(params);
 
   CMRdbgMsg(0, "Testing %s %dx%d matrix for regularity.\n", ternary ? "ternary" : "binary", matrix->numRows,
     matrix->numColumns);
 
   CMR_DEC* dec = NULL;
   CMR_CALL( CMRdecCreate(cmr, NULL, matrix->numRows, NULL, matrix->numColumns, NULL, &dec) );
+  dec->matrix = matrix;
   assert(dec);
 
-  CMR_CALL( CMRregularDecomposeOneSum(cmr, dec, matrix) );
+  CMR_CALL( CMRregularDecomposeOneSum(cmr, dec) );
 
   CMRdbgMsg(2, "1-sum decomposition yields %d components.\n", dec->numChildren == 0 ? 1 : dec->numChildren);
 #if defined(CMR_DEBUG)
-  CMR_CALL( CMRdecPrint(stdout, dec, 2) );
+  CMR_CALL( CMRdecPrint(cmr, dec, stdout, 2, true, true, true) );
 #endif /* CMR_DEBUG */
 
   bool isRegular = true;
@@ -51,11 +77,10 @@ CMR_ERROR CMRtestRegular(CMR* cmr, CMR_CHRMAT* matrix, bool ternary, bool *pisRe
   {
     for (size_t c = 0; c < dec->numChildren; ++c)
     {
-      if (isRegular || completeTree)
+      if (isRegular || params->completeTree)
       {
         bool childIsRegular = true;
-        CMR_CALL( CMRtestRegularOneConnected(cmr, dec, dec->children[c]->matrix, dec->children[c]->transpose, ternary,
-          &childIsRegular, pminor, checkPlanarity, completeTree) );
+        CMR_CALL( testRegularOneConnected(cmr, dec->children[c], ternary, &childIsRegular, pminor, params) );
         if (*pminor)
           CMR_CALL( CMRdecTranslateMinorToParent(dec->children[c], *pminor) );
 
@@ -65,8 +90,7 @@ CMR_ERROR CMRtestRegular(CMR* cmr, CMR_CHRMAT* matrix, bool ternary, bool *pisRe
   }
   else
   {
-    CMR_CALL( CMRtestRegularOneConnected(cmr, dec, matrix, NULL, ternary, &isRegular, pminor, checkPlanarity,
-      completeTree) );
+    CMR_CALL( testRegularOneConnected(cmr, dec, ternary, &isRegular, pminor, params) );
   }
 
   if (pisRegular)
@@ -74,7 +98,20 @@ CMR_ERROR CMRtestRegular(CMR* cmr, CMR_CHRMAT* matrix, bool ternary, bool *pisRe
 
   CMR_CALL( CMRdecComputeRegularity(dec) );
 
-  *pdec = dec;
+  /* If the root must have a matrix, we eventually copy the one passed by the user. */
+  if (params->matrices == CMR_DEC_CONSTRUCT_ALL
+    || (params->matrices == CMR_DEC_CONSTRUCT_LEAVES && dec->numChildren == 0))
+  {
+    CMR_CALL( CMRchrmatCopy(cmr, dec->matrix, &dec->matrix) );
+  }
+  else
+    dec->matrix = NULL;
+
+  /* Either store or free the decomposition. */
+  if (pdec)
+    *pdec = dec;
+  else
+    CMR_CALL( CMRdecFree(cmr, &dec) );
 
   return CMR_OKAY;
 }
@@ -93,10 +130,17 @@ CMR_ERROR CMRtestBinaryRegularConnected(CMR* cmr, CMR_DEC* dec, CMR_CHRMAT* matr
 }
 
 CMR_ERROR CMRtestBinaryRegular(CMR* cmr, CMR_CHRMAT* matrix, bool *pisRegular, CMR_DEC** pdec, CMR_MINOR** pminor,
-  bool checkPlanarity, bool completeTree)
+  CMR_REGULAR_PARAMETERS* params)
 {
   assert(cmr);
   assert(matrix);
+
+  CMR_REGULAR_PARAMETERS defaultParams;
+  if (!params)
+  {
+    CMR_CALL( CMRregularInitParameters(&defaultParams) );
+    params = &defaultParams;
+  }
 
   CMR_SUBMAT* submatrix = NULL;
   if (!CMRchrmatIsBinary(cmr, matrix, &submatrix))
@@ -105,7 +149,7 @@ CMR_ERROR CMRtestBinaryRegular(CMR* cmr, CMR_CHRMAT* matrix, bool *pisRegular, C
     return CMR_OKAY;
   }
 
-  CMR_CALL( CMRtestRegular(cmr, matrix, false, pisRegular, pdec, pminor, checkPlanarity, completeTree) );
+  CMR_CALL( CMRtestRegular(cmr, matrix, false, pisRegular, pdec, pminor, params) );
 
   return CMR_OKAY;
 }
