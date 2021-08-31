@@ -55,29 +55,17 @@ for ternary in [False, True]:
     run(1, 1, 1, 0, 0, 1.0*size-1, 1.0*size-1, 0, 0, ternary, numRepetitions)
     run(1, 1, 1, 0, 0, 0.9*size-1, 0.9*size-1, 0.1*size, 0.1*size, ternary, numRepetitions)
     run(1, 1, 1, 0, 0, 0.8*size-1, 0.8*size-1, 0.2*size, 0.2*size, ternary, numRepetitions)
-#run(1, 1, 1, 0, 0, 0.7*size-1, 0.7*size-1, 0.3*size, 0.3*size, ternary, numRepetitions)
-#run(1, 1, 1, 0, 0, 0.6*size-1, 0.6*size-1, 0.4*size, 0.4*size, ternary, numRepetitions)
-#run(1, 1, 1, 0, 0, 0.5*size-1, 0.5*size-1, 0.5*size, 0.5*size, ternary, numRepetitions)
-#run(1, 1, 1, 0, 0, 0.4*size-1, 0.4*size-1, 0.6*size, 0.6*size, ternary, numRepetitions)
-#run(1, 1, 1, 0, 0, 0.3*size-1, 0.3*size-1, 0.7*size, 0.7*size, ternary, numRepetitions)
+    run(1, 1, 1, 0, 0, 0.7*size-1, 0.7*size-1, 0.3*size, 0.3*size, ternary, numRepetitions)
+    run(1, 1, 1, 0, 0, 0.6*size-1, 0.6*size-1, 0.4*size, 0.4*size, ternary, numRepetitions)
+    run(1, 1, 1, 0, 0, 0.5*size-1, 0.5*size-1, 0.5*size, 0.5*size, ternary, numRepetitions)
+    run(1, 1, 1, 0, 0, 0.4*size-1, 0.4*size-1, 0.6*size, 0.6*size, ternary, numRepetitions)
+    run(1, 1, 1, 0, 0, 0.3*size-1, 0.3*size-1, 0.7*size, 0.7*size, ternary, numRepetitions)
     run(1, 1, 1, 0, 0, 0.2*size-1, 0.2*size-1, 0.8*size, 0.8*size, ternary, numRepetitions)
     run(1, 1, 1, 0, 0, 0.1*size-1, 0.1*size-1, 0.9*size, 0.9*size, ternary, numRepetitions)
     run(1, 1, 1, 0, 0, 0, 0, 1.0*size-1, 1.0*size-1, ternary, numRepetitions)
     sys.stdout.write('\n')
   
-  if False:
-    # Different layouts, but same number of nonzeros.
-    size = 2**(bitsNonzeros-16)
-    run(1, 1, 1, 0, 0, 0.5*size/8, 0.5*size*2.3, 0.5*size/8, 0.5*size*2.3, ternary, numRepetitions)
-    run(1, 1, 1, 0, 0, 0.5*size/4, 0.5*size*2.0, 0.5*size/4, 0.5*size*2.0, ternary, numRepetitions)
-    run(1, 1, 1, 0, 0, 0.5*size/2, 0.5*size*1.6, 0.5*size/2, 0.5*size*1.6, ternary, numRepetitions)
-    run(1, 1, 1, 0, 0, 0.5*size, 0.5*size, 0.5*size, 0.5*size, ternary, numRepetitions)
-    run(1, 1, 1, 0, 0, 0.5*size*1.6, 0.5*size/2, 0.5*size*1.6, 0.5*size/2, ternary, numRepetitions)
-    run(1, 1, 1, 0, 0, 0.5*size*2.0, 0.5*size/4, 0.5*size*2.0, 0.5*size/4, ternary, numRepetitions)
-    run(1, 1, 1, 0, 0, 0.5*size*2.3, 0.5*size/8, 0.5*size*2.3, 0.5*size/8, ternary, numRepetitions)
-    sys.stdout.write('\n')
-  
-  if False:
+  if True:
     # Different portion of base.
     size = 2**(bitsNonzeros-16)
     run(1, 1, 1, 0, 0, 0.5*size-1, 0.5*size-1, 0.5*size, 0.5*size, ternary, numRepetitions)
@@ -93,7 +81,7 @@ for ternary in [False, True]:
     run(0.50*size, 1.0*size, 1.0*size, 0, 0, 0, 0, 0, 0, ternary, numRepetitions)
     sys.stdout.write('\n')
     
-  if False:
+  if True:
     # Different densities of full base.
     size = 2**(bitsNonzeros-16)
     run(0.0*size, size, size, 0, 0, 0, 0, 0, 0, ternary, numRepetitions)
