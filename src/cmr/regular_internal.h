@@ -38,6 +38,23 @@ CMR_ERROR CMRregularDecomposeOneSum(
 );
 
 /**
+ * \brief Tests matrix for graphicness.
+ */
+
+CMR_ERROR CMRregularTestGraphic(
+  CMR* cmr,                   /**< \ref CMR environment. */
+  CMR_CHRMAT** pmatrix,       /**< Pointer to matrix. */
+  CMR_CHRMAT** ptranspose,    /**< Pointer to transpose. */
+  bool ternary,               /**< Whether to also check the signs of the matrix. */
+  bool* pisGraphic,           /**< Pointer for storing the result. */
+  CMR_GRAPH** pgraph,         /**< Pointer for storing the graph if the matrix is graph (may be \c NULL). */
+  CMR_GRAPH_EDGE** pforest,   /**< Pointer for storing the mapping of rows to forest edges. */
+  CMR_GRAPH_EDGE** pcoforest, /**< Pointer for storing the mapping of rows to forest edges. */
+  bool** parcsReversed,       /**< Pointer for storing the array indicating which arcs are reversed. */ 
+  CMR_SUBMAT** psubmatrix     /**< Pointer for storing a minimal non-graphic submatrix (may be \c NULL). */
+);
+
+/**
  * \brief Splits off series-parallel elements from the matrix of a decomposition node.
  *
  * In case the matrix is \ref series-parallel, then \p *pmatrix is set to \c NULL and \p *pdec is declared to be planar.

@@ -5376,15 +5376,7 @@ CMR_ERROR CMRtestGraphicMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisGraphic, C
 
   /* Transpose minimal non-cographic matrix to become a minimal non-graphic matrix. */
   if (psubmatrix && *psubmatrix)
-  {
-    size_t* temp = (*psubmatrix)->rows;
-    (*psubmatrix)->rows = (*psubmatrix)->columns;
-    (*psubmatrix)->columns = temp;
-
-    size_t n = (*psubmatrix)->numRows;
-    (*psubmatrix)->numRows = (*psubmatrix)->numColumns;
-    (*psubmatrix)->numColumns = n;
-  }
+    CMR_CALL( CMRsubmatTranspose(*psubmatrix) );
 
   CMR_CALL( CMRchrmatFree(cmr, &transpose) );
 

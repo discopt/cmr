@@ -22,9 +22,13 @@ CMR_ERROR CMRdecFree(CMR* cmr, CMR_DEC** pdec)
   CMR_CALL( CMRfreeBlockArray(cmr, &dec->rowsParent) );
   CMR_CALL( CMRfreeBlockArray(cmr, &dec->columnsParent) );
   CMR_CALL( CMRgraphFree(cmr, &dec->graph) );
-  CMR_CALL( CMRfreeBlockArray(cmr, &dec->edgeElements) );
+  CMR_CALL( CMRfreeBlockArray(cmr, &dec->graphForest) );
+  CMR_CALL( CMRfreeBlockArray(cmr, &dec->graphCoforest) );
+  CMR_CALL( CMRfreeBlockArray(cmr, &dec->graphArcsReversed) );
   CMR_CALL( CMRgraphFree(cmr, &dec->cograph) );
-  CMR_CALL( CMRfreeBlockArray(cmr, &dec->coedgeElements) );
+  CMR_CALL( CMRfreeBlockArray(cmr, &dec->cographForest) );
+  CMR_CALL( CMRfreeBlockArray(cmr, &dec->cographCoforest) );
+  CMR_CALL( CMRfreeBlockArray(cmr, &dec->cographArcsReversed) );
   CMR_CALL( CMRfreeBlockArray(cmr, &dec->reductions) );
 
   CMR_CALL( CMRfreeBlock(cmr, pdec) );
@@ -308,10 +312,14 @@ CMR_ERROR CMRdecCreate(CMR* cmr, CMR_DEC* parent, size_t numRows, size_t* rowsPa
     CMR_CALL( CMRduplicateBlockArray(cmr, &dec->columnsParent, numColumns, columnsParent) );
 
   dec->graph = NULL;
-  dec->edgeElements = NULL;
+  dec->graphForest = NULL;
+  dec->graphCoforest = NULL;
+  dec->graphArcsReversed = NULL;
 
   dec->cograph = NULL;
-  dec->coedgeElements = NULL;
+  dec->cographForest = NULL;
+  dec->cographCoforest = NULL;
+  dec->cographArcsReversed = NULL;
 
   dec->reductions = NULL;
   dec->numReductions = 0;

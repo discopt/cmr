@@ -56,6 +56,21 @@ CMR_ERROR CMRsubmatFree(CMR* cmr, CMR_SUBMAT** psubmatrix)
   return CMR_OKAY;
 }
 
+CMR_ERROR CMRsubmatTranspose(CMR_SUBMAT* submatrix)
+{
+  assert(submatrix);
+
+  size_t tempSize = submatrix->numRows;
+  submatrix->numRows = submatrix->numColumns;
+  submatrix->numColumns = tempSize;
+
+  size_t* tempArray = submatrix->rows;
+  submatrix->rows = submatrix->columns;
+  submatrix->columns = tempArray;
+
+  return CMR_OKAY;
+}
+
 static int CMRsortSubmatrixCompare(const void* p1, const void* p2)
 {
   return *(size_t*)p1 - *(size_t*)p2;

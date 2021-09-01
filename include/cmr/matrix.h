@@ -69,6 +69,14 @@ CMR_ERROR CMRsubmatFree(
   CMR_SUBMAT** psubmatrix /**< Pointer to submatrix. */
 );
 
+/**
+ * \brief Transposes a submatrix.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRsubmatTranspose(
+  CMR_SUBMAT* submatrix /**< Submatrix to transpose. */
+);
 
 /**
  * \brief Row-wise representation of sparse double matrix.

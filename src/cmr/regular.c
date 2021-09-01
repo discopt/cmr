@@ -40,10 +40,34 @@ CMR_ERROR testRegularOneConnected(
   CMRdbgMsg(2, "Testing binary %dx%d 1-connected matrix for regularity.\n", dec->matrix->numRows,
     dec->matrix->numColumns);
 
+  CMRdbgMsg(4, "Checking for graphicness.\n");
+  CMR_SUBMAT* submatrix = NULL;
+  bool isGraphic;
+  CMR_CALL( CMRregularTestGraphic(cmr, &dec->matrix, &dec->transpose, ternary, &isGraphic, &dec->graph,
+    &dec->graphForest, &dec->graphCoforest, &dec->graphArcsReversed, &submatrix) );
+  if (isGraphic)
+  {
+    dec->type = CMR_DEC_GRAPHIC;
+    if (!params->planarityCheck)
+      return CMR_OKAY;
+  }
+
+  CMRdbgMsg(4, "Checking for cographicness.\n");
+  bool isCographic;
+  CMR_CALL( CMRregularTestGraphic(cmr, &dec->transpose, &dec->matrix, ternary, &isCographic, &dec->cograph,
+    &dec->cographForest, &dec->cographCoforest, &dec->cographArcsReversed, &submatrix) );
+  if (isCographic)
+  {
+    dec->type = (dec->type == CMR_DEC_GRAPHIC) ? CMR_DEC_PLANAR : CMR_DEC_COGRAPHIC;
+    return CMR_OKAY;
+  }
+
+  if (submatrix)
+    CMR_CALL( CMRsubmatTranspose(submatrix) );
+  
   if (params->seriesParallel)
   {
     CMRdbgMsg(4, "Splitting off series-parallel elements.\n");
-    CMR_SUBMAT* submatrix = NULL;
     CMR_CALL( CMRregularDecomposeSeriesParallel(cmr, &dec, ternary, &submatrix, params) );
 
     if (dec->type != CMR_DEC_IRREGULAR)

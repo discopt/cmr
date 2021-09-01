@@ -26,6 +26,7 @@ int printUsage(const char* program)
   puts("Options:");
   puts("  -i FORMAT  Format of input FILE; default: `dense'.");
   puts("  -o FORMAT  Format of output matrices; default: `dense'.");
+  puts("  -p         Test graphic matrices also for cographicness (i.e., planarity).");
   puts("  -d         Compute the complete decomposition tree of the matroid.");
   puts("  -D         Output the computed decomposition tree of the matroid.");
   puts("  -s         Output the elements of a minimal non-regular submatrix.");
@@ -46,6 +47,7 @@ CMR_ERROR testRegularity(
   FileFormat inputFormat,       /**< Format of the input matrix. */
   FileFormat outputFormat,      /**< Format of the output submatrix. */
   bool completeTree,            /**< Whether to compute the complete decomposition tree. */
+  bool planarityCheck,           /**< Whether to test for planarity. */
   bool printTree,               /**< Whether to print the decomposition tree. */
   bool printSubmatrixElements,  /**< Whether to print the elements of a minimal submatrix containing an irregular minor. */
   bool printSubmatrix           /**< Whether to print a minimal submatrix containing an irregular minor. */
@@ -81,6 +83,7 @@ CMR_ERROR testRegularity(
   CMR_REGULAR_PARAMETERS params;
   CMR_CALL( CMRregularInitParameters(&params) );
   params.completeTree = completeTree;
+  params.planarityCheck = planarityCheck;
   params.matrices = printTree ? CMR_DEC_CONSTRUCT_ALL : CMR_DEC_CONSTRUCT_NONE;
   CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, printTree ? &decomposition : NULL,
     (printSubmatrix || printSubmatrixElements) ? &minor : NULL, &params) );
@@ -112,6 +115,7 @@ int main(int argc, char** argv)
   FileFormat inputFormat = FILEFORMAT_UNDEFINED;
   FileFormat outputFormat = FILEFORMAT_MATRIX_DENSE;
   bool completeTree = false;
+  bool planarityCheck = false;
   bool printTree = false;
   bool printSubmatrixElements = false;
   bool printSubmatrix = false;
@@ -127,6 +131,8 @@ int main(int argc, char** argv)
       completeTree = true;
     else if (!strcmp(argv[a], "-D"))
       printTree = true;
+    else if (!strcmp(argv[a], "-p"))
+      planarityCheck = true;
     else if (!strcmp(argv[a], "-s"))
       printSubmatrixElements = true;
     else if (!strcmp(argv[a], "-S"))
@@ -176,8 +182,8 @@ int main(int argc, char** argv)
     inputFormat = FILEFORMAT_MATRIX_DENSE;
 
   CMR_ERROR error;
-  error = testRegularity(instanceFileName, inputFormat, outputFormat, completeTree, printTree, printSubmatrixElements,
-    printSubmatrix);
+  error = testRegularity(instanceFileName, inputFormat, outputFormat, completeTree, planarityCheck, printTree,
+    printSubmatrixElements, printSubmatrix);
 
   switch (error)
   {
