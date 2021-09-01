@@ -1992,7 +1992,20 @@ CMR_ERROR decomposeTernarySeriesParallel(
             (*pseparation)->numColumns[1], CMRsepaRankTopRight(*pseparation), CMRsepaRank(*pseparation));
 
           bool sepaIsTernary;
-          CMR_CALL( CMRsepaCheckTernary(cmr, *pseparation, matrix, &sepaIsTernary, pviolatorSubmatrix) );
+          CMR_SUBMAT* reducedMatrix = NULL;
+          if (preducedSubmatrix)
+            reducedMatrix = *preducedSubmatrix;
+          else
+          {
+            CMR_CALL( extractRemainingSubmatrix(cmr, matrix, numRowReductions, numColumnReductions, rowData, columnData,
+              &reducedMatrix) );
+          }
+
+          CMR_CALL( CMRsepaCheckTernary(cmr, *pseparation, matrix, reducedMatrix, &sepaIsTernary, pviolatorSubmatrix) );
+          
+          if (!preducedSubmatrix)
+            CMR_CALL( CMRsubmatFree(cmr, &reducedMatrix) );
+          
           if (!sepaIsTernary)
             CMR_CALL( CMRsepaFree(cmr, pseparation) );
         }

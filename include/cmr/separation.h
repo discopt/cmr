@@ -135,6 +135,7 @@ CMR_ERROR CMRsepaCheckTernary(
   CMR* cmr,               /**< \ref CMR environment. */
   CMR_SEPA* sepa,         /**< Separation. */
   CMR_CHRMAT* matrix,     /**< Matrix. */
+  CMR_SUBMAT* submatrix,  /**< Submatrix of \p matrix to consider (may be \c NULL). */
   bool* pisTernary,       /**< Pointer for storing whether the check passed. */
   CMR_SUBMAT** psubmatrix /**< Pointer for storing a violator submatrix (may be \c NULL). */
 );

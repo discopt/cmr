@@ -133,6 +133,7 @@ CMR_ERROR checkTernary(
   size_t* blockColumns,
   unsigned char rank,
   CMR_CHRMAT* matrix,
+  CMR_SUBMAT* submatrix,
   bool* pisTernary,
   CMR_SUBMAT** psubmatrix
 )
@@ -155,7 +156,10 @@ CMR_ERROR checkTernary(
     size_t* entries = NULL;
     CMR_CALL( CMRallocStackArray(cmr, &entries, numBlockRows) );
     for (size_t i = 0; i < numBlockRows; ++i)
-      entries[i] = matrix->rowSlice[blockRows[i]];
+    {
+      size_t blockRow = submatrix ? submatrix->rows[blockRows[i]] : blockRows[i];
+      entries[i] = matrix->rowSlice[blockRow];
+    }
 
     size_t firstRow = SIZE_MAX;
     size_t firstColumn = SIZE_MAX;
@@ -166,7 +170,7 @@ CMR_ERROR checkTernary(
 
     for (size_t j = 0; j < numBlockColumns && *pisTernary; ++j)
     {
-      size_t column = blockColumns[j];
+      size_t column = submatrix ? submatrix->columns[blockColumns[j]] : blockColumns[j];
       bool negated;
       for (size_t i = 0; i < numBlockRows && *pisTernary; ++i)
       {
@@ -216,7 +220,8 @@ CMR_ERROR checkTernary(
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRsepaCheckTernary(CMR* cmr, CMR_SEPA* sepa, CMR_CHRMAT* matrix, bool* pisTernary, CMR_SUBMAT** psubmatrix)
+CMR_ERROR CMRsepaCheckTernary(CMR* cmr, CMR_SEPA* sepa, CMR_CHRMAT* matrix, CMR_SUBMAT* submatrix, bool* pisTernary,
+  CMR_SUBMAT** psubmatrix)
 {
   assert(cmr);
   assert(sepa);
@@ -225,11 +230,11 @@ CMR_ERROR CMRsepaCheckTernary(CMR* cmr, CMR_SEPA* sepa, CMR_CHRMAT* matrix, bool
   assert(!psubmatrix || !*psubmatrix);
 
   CMR_CALL( checkTernary(cmr, sepa->numRows[0], sepa->rows[0], sepa->numColumns[1], sepa->columns[1],
-    CMRsepaRankTopRight(sepa), matrix, pisTernary, psubmatrix) );
+    CMRsepaRankTopRight(sepa), matrix, submatrix, pisTernary, psubmatrix) );
   if (*pisTernary)
   {
     CMR_CALL( checkTernary(cmr, sepa->numRows[1], sepa->rows[1], sepa->numColumns[0], sepa->columns[0],
-      CMRsepaRankBottomLeft(sepa), matrix, pisTernary, psubmatrix) );
+      CMRsepaRankBottomLeft(sepa), matrix, submatrix, pisTernary, psubmatrix) );
   }
 
   return CMR_OKAY;
