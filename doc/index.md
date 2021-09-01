@@ -29,6 +29,7 @@ The following matrix/matroid classes are **planned**:
 
 # Installation and Usage #
 
+The library can be found on [github](https://github.com/discopt/cmr/), or directly as a [ZIP Archive](https://github.com/discopt/cmr/archive/refs/heads/master.zip).
 The functionality can be used via command-line tools or via its C interface.
 There is one executable per matrix/matroid class.
 Its documentation and that of the interface can be found on the respective pages.
