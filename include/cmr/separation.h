@@ -4,6 +4,9 @@
 #include <cmr/env.h>
 #include <cmr/matrix.h>
 
+#include <assert.h>
+#include <stdint.h>
+
 /**
  * \file separation.h
  *
@@ -24,8 +27,10 @@ typedef struct
   size_t numColumns[2];             /**< \brief Indicates the number of columns of each part. */
   size_t* rows[2];                  /**< \brief Array of sorted rows for each part. */
   size_t* columns[2];               /**< \brief Array of sorted columns for each part. */
-  unsigned char rankRows0Columns1;  /**< \brief Rank of submatrix corresponding to rows in part 0 and columns in part 1. */
-  unsigned char rankRows1Columns0;  /**< \brief Rank of submatrix corresponding to rows in part 1 and columns in part 0. */
+  size_t extraRows0[2];             /**< \brief Extra rows for part 0 or \c SIZE_MAX if bottom-left rank is lower. */
+  size_t extraColumns1[2];          /**< \brief Extra columns for part 1 or \c SIZE_MAX if bottom-left rank is lower. */
+  size_t extraRows1[2];             /**< \brief Extra rows for part 1 or \c SIZE_MAX if top-right rank is lower. */
+  size_t extraColumns0[2];          /**< \brief Extra columns for part 0 or \c SIZE_MAX if top-right rank is lower. */
   unsigned char* indicatorMemory;   /**< \brief Memory for \ref rowsToPart and \ref columnsToPart. */
   size_t* elementMemory;            /**< \brief Memory for \ref rows and \ref columns. */
 } CMR_SEPA;
@@ -54,10 +59,16 @@ CMR_ERROR CMRsepaCreate(
 
 CMR_EXPORT
 CMR_ERROR CMRsepaInitialize(
-  CMR* cmr,                         /**< \ref CMR environment. */
-  CMR_SEPA* sepa,                   /**< Already created separation. */
-  unsigned char rankRows0Columns1,  /**< Rank of submatrix corresponding to rows in part 0 and columns in part 1. */
-  unsigned char rankRows1Columns0   /**< Rank of submatrix corresponding to rows in part 1 and columns in part 0. */
+  CMR* cmr,                   /**< \ref CMR environment. */
+  CMR_SEPA* sepa,             /**< Already created separation. */
+  size_t firstExtraRow0,      /**< First extra row for part 0 or \c SIZE_MAX if bottom-left rank is 0. */
+  size_t firstExtraColumn1,   /**< First extra column for part 1 or \c SIZE_MAX if bottom-left rank is 0. */
+  size_t firstExtraRow1,      /**< First extra row for part 1 or \c SIZE_MAX if top-right rank is 0. */
+  size_t firstExtraColumn0,   /**< First extra column for part 0 or \c SIZE_MAX if top-right rank is 0. */
+  size_t secondExtraRow0,     /**< Second extra row for part 0 or \c SIZE_MAX if bottom-left rank is at most 1. */
+  size_t secondExtraColumn1,  /**< Second extra column for part 1 or \c SIZE_MAX if bottom-left rank is at most 1. */
+  size_t secondExtraRow1,     /**< Second extra row for part 1 or \c SIZE_MAX if top-right rank is at most 1. */
+  size_t secondExtraColumn0   /**< Second extra column for part 0 or \c SIZE_MAX if top-right rank is at most 1. */
 );
 
 /**
@@ -69,6 +80,46 @@ CMR_ERROR CMRsepaFree(
   CMR* cmr,         /**< \ref CMR environment. */
   CMR_SEPA** psepa  /**< Pointer to separation. */
 );
+
+/**
+ * \brief Returns rank of bottom-left submatrix.
+ */
+
+static inline
+unsigned char CMRsepaRankBottomLeft(
+  CMR_SEPA* sepa  /**< Separation. */
+)
+{
+  assert(sepa);
+
+  return sepa->extraRows0[0] == SIZE_MAX ? 0
+    : (sepa->extraRows0[1] == SIZE_MAX ? 1 : 2);
+}
+
+/**
+ * \brief Returns rank of top-right submatrix.
+ */
+
+static inline
+unsigned char CMRsepaRankTopRight(
+  CMR_SEPA* sepa  /**< Separation. */
+)
+{
+  return sepa->extraRows1[0] == SIZE_MAX ? 0
+    : (sepa->extraRows1[1] == SIZE_MAX ? 1 : 2);
+}
+
+/**
+ * \brief Returns rank sum of bottom-left and top-right submatrices.
+ */
+
+static inline
+unsigned char CMRsepaRank(
+  CMR_SEPA* sepa  /**< Separation. */
+)
+{
+  return CMRsepaRankBottomLeft(sepa) + CMRsepaRankTopRight(sepa);
+}
 
 /**
  * \brief Checks for a given matrix whether the binary k-separation is also a ternary one.

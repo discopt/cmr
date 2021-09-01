@@ -7,7 +7,7 @@
 
 #if defined(CMR_DEBUG)
 
-static
+static inline
 void CMRdbgMsg(int indent, const char* format, ...)
 {
   va_list args;

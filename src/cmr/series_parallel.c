@@ -1293,6 +1293,8 @@ CMR_ERROR extractWheelSubmatrix(
   CMR_ELEMENT* queue,                   /**< Queue memory. */
   size_t queueMemory,                   /**< Size of \p queue. */
   ListNonzero* anchor,                  /**< Anchor of list matrix. */
+  size_t numReducedRows,                /**< Number of rows in reduced matrix. */
+  size_t numReducedColumns,             /**< Number of columns in reduced matrix. */
   CMR_SUBMAT** pwheelSubmatrix,         /**< Pointer for storing the wheel submatrix (may be \c NULL). */
   CMR_SEPA** pseparation                /**< Pointer for storing a 2-separation (may be \c NULL). */
 )
@@ -1515,23 +1517,46 @@ CMR_ERROR extractWheelSubmatrix(
     {
       CMRdbgMsg(4, "No path found. Extracting 2-separation.\n");
 
-      CMR_CALL( CMRsepaCreate(cmr, numRows, numColumns, pseparation) );
+      CMR_CALL( CMRsepaCreate(cmr, numReducedRows, numReducedColumns, pseparation) );
       CMR_SEPA* sepa = *pseparation;
-      /* Collect all reachable rows/columns. */
+
+      /* Collect all reduced reachable rows/columns. */
+      size_t reducedRow = 0;
+      size_t reducedSourceRow = 0;
       for (size_t row = 0; row < numRows; ++row)
       {
-        sepa->rowsToPart[row] = (rowData[row].lastBFS == -2) ? 2:
-          (rowData[row].lastBFS == currentBFS) ? 0 : 1;
-        CMRdbgMsg(6, "Assigning row r%ld to part %d.\n", row+1, sepa->rowsToPart[row]);
+        if (rowData[row].lastBFS == -2)
+          continue;
+
+        sepa->rowsToPart[reducedRow] = (rowData[row].lastBFS == currentBFS) ? 0 : 1;
+        CMRdbgMsg(6, "Assigning row r%ld = reduced row r%ld to part %d.\n", row+1, reducedRow+1,
+          sepa->rowsToPart[reducedRow]);
+        if (row == sourceRow)
+          reducedSourceRow = reducedRow;
+        ++reducedRow;
       }
-      /* Collect all columns that are not reachable. */
+
+      /* Collect all reduced columns that are not reachable. */
+      size_t reducedColumn = 0;
+      size_t reducedTargetColumn = 0;
       for (size_t column = 0; column < numColumns; ++column)
       {
-        sepa->columnsToPart[column] = (columnData[column].lastBFS == -2) ? 2 :
-          (columnData[column].lastBFS == currentBFS) ? 0 : 1;
-        CMRdbgMsg(6, "Assigning column c%ld to part %d.\n", column+1, sepa->columnsToPart[column]);
+        if (columnData[column].lastBFS == -2)
+          continue;
+
+        sepa->columnsToPart[reducedColumn] = (columnData[column].lastBFS == currentBFS) ? 0 : 1;
+        CMRdbgMsg(6, "Assigning column c%ld = reduced column c%ld to part %d.\n", column+1, reducedColumn+1,
+          sepa->columnsToPart[column]);
+        if (column == targetColumn)
+          reducedTargetColumn = reducedColumn;
+        ++reducedColumn;
       }
-      CMR_CALL( CMRsepaInitialize(cmr, sepa, 1, 0) );
+
+      CMRdbgMsg(6, "Extra row r%ld = reduced row r%ld for part 1 and extra column c%ld = reduced column c%ld for part 0.\n",
+        sourceRow + 1, reducedSourceRow + 1, targetColumn + 1, reducedTargetColumn + 1);
+
+      CMR_CALL( CMRsepaInitialize(cmr, sepa, SIZE_MAX, SIZE_MAX, reducedSourceRow, reducedTargetColumn, SIZE_MAX,
+        SIZE_MAX, SIZE_MAX, SIZE_MAX) );
 
       break;
     }
@@ -1725,7 +1750,7 @@ CMR_ERROR decomposeBinarySeriesParallel(
         wheelClock = clock();
 
       CMR_CALL( extractWheelSubmatrix(cmr, matrix->numRows, matrix->numColumns, rowData, columnData, queue, queueMemory,
-        anchor, pviolatorSubmatrix, pseparation) );
+        anchor, numRows - numRowReductions, numColumns - numColumnReductions, pviolatorSubmatrix, pseparation) );
 
       if (stats)
       {
@@ -1807,7 +1832,7 @@ CMR_ERROR CMRdecomposeBinarySeriesParallel(CMR* cmr, CMR_CHRMAT* matrix, bool* p
     &localNumReductions, preducedSubmatrix, pviolatorSubmatrix, pseparation, stats) );
 
   if (pisSeriesParallel)
-    *pisSeriesParallel = (*pnumReductions == matrix->numRows + matrix->numColumns);
+    *pisSeriesParallel = (localNumReductions == matrix->numRows + matrix->numColumns);
   if (reductions)
     *pnumReductions = localNumReductions;
   else
@@ -1954,7 +1979,8 @@ CMR_ERROR decomposeTernarySeriesParallel(
           wheelClock = clock();
 
         CMR_CALL( extractWheelSubmatrix(cmr, matrix->numRows, matrix->numColumns, rowData, columnData, queue,
-          queueMemory, anchor, pviolatorSubmatrix, pseparation) );
+          queueMemory, anchor, numRows - numRowReductions, numColumns - numColumnReductions, pviolatorSubmatrix,
+          pseparation) );
 
         /* Check whether the rank-1 part also has ternary rank 1. */
         if (pseparation)
@@ -1963,7 +1989,7 @@ CMR_ERROR decomposeTernarySeriesParallel(
 
           CMRdbgMsg(2, "Separation has part 0 (%ldx%ld) and part 1 (%ldx%ld) and ranks %d + %d.\n",
             (*pseparation)->numRows[0], (*pseparation)->numColumns[0], (*pseparation)->numRows[1],
-            (*pseparation)->numColumns[1], (*pseparation)->rankRows0Columns1, (*pseparation)->rankRows1Columns0);
+            (*pseparation)->numColumns[1], CMRsepaRankTopRight(*pseparation), CMRsepaRank(*pseparation));
 
           bool sepaIsTernary;
           CMR_CALL( CMRsepaCheckTernary(cmr, *pseparation, matrix, &sepaIsTernary, pviolatorSubmatrix) );

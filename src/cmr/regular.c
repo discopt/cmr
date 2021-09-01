@@ -45,6 +45,12 @@ CMR_ERROR testRegularOneConnected(
     CMRdbgMsg(4, "Splitting off series-parallel elements.\n");
     CMR_SUBMAT* submatrix = NULL;
     CMR_CALL( CMRregularDecomposeSeriesParallel(cmr, &dec, ternary, &submatrix, params) );
+
+    if (dec->type != CMR_DEC_IRREGULAR)
+    {
+      /* TODO: Currently we don't do anything with the wheel matrix. */
+      CMR_CALL( CMRsubmatFree(cmr, &submatrix) );
+    }
   }
 
   return CMR_OKAY;
@@ -102,7 +108,8 @@ CMR_ERROR CMRtestRegular(CMR* cmr, CMR_CHRMAT* matrix, bool ternary, bool *pisRe
   if (params->matrices == CMR_DEC_CONSTRUCT_ALL
     || (params->matrices == CMR_DEC_CONSTRUCT_LEAVES && dec->numChildren == 0))
   {
-    CMR_CALL( CMRchrmatCopy(cmr, dec->matrix, &dec->matrix) );
+    dec->matrix = NULL;
+    CMR_CALL( CMRchrmatCopy(cmr, matrix, &dec->matrix) );
   }
   else
     dec->matrix = NULL;

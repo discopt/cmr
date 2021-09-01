@@ -17,7 +17,7 @@ CMR_ERROR CMRregularDecomposeSeriesParallel(CMR* cmr, CMR_DEC** pdec, bool terna
 
   CMR_DEC* dec = *pdec;
 
-  bool isSeriesParallel;
+  bool isSeriesParallel = true;
   CMR_SP_REDUCTION* reductions = NULL;
   CMR_CALL( CMRallocStackArray(cmr, &reductions, dec->matrix->numRows + dec->matrix->numColumns) );
   size_t numReductions;
@@ -35,7 +35,7 @@ CMR_ERROR CMRregularDecomposeSeriesParallel(CMR* cmr, CMR_DEC** pdec, bool terna
       &reducedSubmatrix, psubmatrix, &separation, NULL) );
   }
 
-  /* Did we find a 2-by-2 submatrix? If yes, it has determinant -2 or +2? */
+  /* Did we find a 2-by-2 submatrix? If yes, is has determinant -2 or +2! */
   if (psubmatrix && *psubmatrix && (*psubmatrix)->numRows == 2)
     dec->type = CMR_DEC_IRREGULAR;
 
@@ -60,10 +60,8 @@ CMR_ERROR CMRregularDecomposeSeriesParallel(CMR* cmr, CMR_DEC** pdec, bool terna
   /* Modify the decomposition for the 2-separation. */
   if (separation)
   {
-    dec->type = CMR_DEC_TWO_SUM;
-    CMR_CALL(  CMRdecSetNumChildren(cmr, dec, 2) );
-
-    
+    CMR_CALL( CMRdecApplySeparation(cmr, dec, separation) );
+    CMR_CALL( CMRsepaFree(cmr, &separation) );
   }
 
   CMR_CALL( CMRfreeStackArray(cmr, &reductions) );

@@ -81,4 +81,14 @@ CMR_ERROR CMRdecTranslateMinorToParent(
   CMR_MINOR* minor  /**< Minor to translate. */
 );
 
+/**
+ * \brief Turns the given node into one for the given separation.
+ */
+
+CMR_ERROR CMRdecApplySeparation(
+  CMR* cmr,       /**< \ref CMR environment. */
+  CMR_DEC* dec,   /**< Decomposition node. */
+  CMR_SEPA* sepa  /**< Separation. */
+);
+
 #endif /* CMR_DEC_INTERNAL_H */

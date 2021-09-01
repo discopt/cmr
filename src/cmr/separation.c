@@ -1,4 +1,4 @@
-#define CMR_DEBUG /* Uncomment to debug this file. */
+// #define CMR_DEBUG /* Uncomment to debug this file. */
 
 #include <cmr/separation.h>
 
@@ -30,10 +30,20 @@ CMR_ERROR CMRsepaCreate(CMR* cmr, size_t numRows, size_t numColumns, CMR_SEPA** 
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRsepaInitialize(CMR* cmr, CMR_SEPA* sepa, unsigned char rankRows0Columns1, unsigned char rankRows1Columns0)
+CMR_ERROR CMRsepaInitialize(CMR* cmr, CMR_SEPA* sepa, size_t firstExtraRow0, size_t firstExtraColumn1,
+  size_t firstExtraRow1, size_t firstExtraColumn0, size_t secondExtraRow0, size_t secondExtraColumn1,
+  size_t secondExtraRow1, size_t secondExtraColumn0)
 {
   assert(cmr);
   assert(sepa);
+  assert((firstExtraRow0 < SIZE_MAX && firstExtraColumn1 < SIZE_MAX)
+    || (firstExtraRow0 == SIZE_MAX && firstExtraColumn1 == SIZE_MAX));
+  assert((firstExtraRow1 < SIZE_MAX && firstExtraColumn0 < SIZE_MAX)
+    || (firstExtraRow1 == SIZE_MAX && firstExtraColumn0 == SIZE_MAX));
+  assert((secondExtraRow0 < SIZE_MAX && secondExtraColumn1 < SIZE_MAX)
+    || (secondExtraRow0 == SIZE_MAX && secondExtraColumn1 == SIZE_MAX));
+  assert((secondExtraRow1 < SIZE_MAX && secondExtraColumn0 < SIZE_MAX)
+    || (secondExtraRow1 == SIZE_MAX && secondExtraColumn0 == SIZE_MAX));
 
   size_t numRows = sepa->numRows[0] + sepa->numRows[1];
   size_t numColumns = sepa->numColumns[0] + sepa->numColumns[1];
@@ -86,8 +96,14 @@ CMR_ERROR CMRsepaInitialize(CMR* cmr, CMR_SEPA* sepa, unsigned char rankRows0Col
     sepa->numColumns[part]++;
   }
 
-  sepa->rankRows0Columns1 = rankRows0Columns1;
-  sepa->rankRows1Columns0 = rankRows1Columns0;
+  sepa->extraRows0[0] = firstExtraRow0;
+  sepa->extraColumns1[0] = firstExtraColumn1;
+  sepa->extraRows1[0] = firstExtraRow1;
+  sepa->extraColumns0[0] = firstExtraColumn0;
+  sepa->extraRows0[1] = secondExtraRow0;
+  sepa->extraColumns1[1] = secondExtraColumn1;
+  sepa->extraRows1[1] = secondExtraRow1;
+  sepa->extraColumns0[1] = secondExtraColumn0;
 
   return CMR_OKAY;
 }
@@ -209,11 +225,11 @@ CMR_ERROR CMRsepaCheckTernary(CMR* cmr, CMR_SEPA* sepa, CMR_CHRMAT* matrix, bool
   assert(!psubmatrix || !*psubmatrix);
 
   CMR_CALL( checkTernary(cmr, sepa->numRows[0], sepa->rows[0], sepa->numColumns[1], sepa->columns[1],
-    sepa->rankRows0Columns1, matrix, pisTernary, psubmatrix) );
+    CMRsepaRankTopRight(sepa), matrix, pisTernary, psubmatrix) );
   if (*pisTernary)
   {
     CMR_CALL( checkTernary(cmr, sepa->numRows[1], sepa->rows[1], sepa->numColumns[0], sepa->columns[0],
-      sepa->rankRows1Columns0, matrix, pisTernary, psubmatrix) );
+      CMRsepaRankBottomLeft(sepa), matrix, pisTernary, psubmatrix) );
   }
 
   return CMR_OKAY;

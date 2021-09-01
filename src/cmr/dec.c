@@ -1,5 +1,7 @@
-#include "dec_internal.h"
+// #define CMR_DEBUG /* Uncomment to debug this file. */
 
+#include "env_internal.h"
+#include "dec_internal.h"
 #include "matrix_internal.h"
 
 CMR_ERROR CMRdecFree(CMR* cmr, CMR_DEC** pdec)
@@ -23,6 +25,7 @@ CMR_ERROR CMRdecFree(CMR* cmr, CMR_DEC** pdec)
   CMR_CALL( CMRfreeBlockArray(cmr, &dec->edgeElements) );
   CMR_CALL( CMRgraphFree(cmr, &dec->cograph) );
   CMR_CALL( CMRfreeBlockArray(cmr, &dec->coedgeElements) );
+  CMR_CALL( CMRfreeBlockArray(cmr, &dec->reductions) );
 
   CMR_CALL( CMRfreeBlock(cmr, pdec) );
 
@@ -168,42 +171,42 @@ CMR_ERROR CMRdecPrint(CMR* cmr, CMR_DEC* dec, FILE* stream, size_t indent, bool 
     fprintf(stream, "%d-sum with %ld children {", dec->type, dec->numChildren);
   break;
   case CMR_DEC_GRAPHIC:
-    fprintf(stream, "graphic with %d nodes and %d edges {", CMRgraphNumNodes(dec->graph), CMRgraphNumEdges(dec->graph));
+    fprintf(stream, "graphic matrix with %d nodes and %d edges {", CMRgraphNumNodes(dec->graph), CMRgraphNumEdges(dec->graph));
   break;
   case CMR_DEC_COGRAPHIC:
-    fprintf(stream, "cographic with %d nodes and %d edges {", CMRgraphNumNodes(dec->graph), CMRgraphNumEdges(dec->graph));
+    fprintf(stream, "cographic matrix with %d nodes and %d edges {", CMRgraphNumNodes(dec->graph), CMRgraphNumEdges(dec->graph));
   break;
   case CMR_DEC_PLANAR:
     assert(CMRgraphNumEdges(dec->graph) == CMRgraphNumEdges(dec->cograph));
-    fprintf(stream, "planar with %d nodes, %d faces and %d edges {", CMRgraphNumNodes(dec->graph),
+    fprintf(stream, "planar matrix with %d nodes, %d faces and %d edges {", CMRgraphNumNodes(dec->graph),
       CMRgraphNumNodes(dec->cograph), CMRgraphNumEdges(dec->graph));
   break;
   case CMR_DEC_SERIES_PARALLEL:
     if (dec->numChildren)
-      fprintf(stream, "series-parallel reductions (%ld) with 1 child {", dec->numReductions);
+      fprintf(stream, "matrix with %ld series-parallel reductions; 1 child {", dec->numReductions);
     else
-      fprintf(stream, "series-parallel {");
+      fprintf(stream, "series-parallel matrix {");
   break;
   case CMR_DEC_SPECIAL_R10:
-    fprintf(stream, "R10 {");
+    fprintf(stream, "matrix representing R10 {");
   break;
   case CMR_DEC_SPECIAL_FANO:
-    fprintf(stream, "F_7 {");
+    fprintf(stream, "matrix representing F_7 {");
   break;
   case CMR_DEC_SPECIAL_FANO_DUAL:
-    fprintf(stream, "F_7^* {");
+    fprintf(stream, "matrix representing F_7^* {");
   break;
   case CMR_DEC_SPECIAL_K_5:
-    fprintf(stream, "K_5 {");
+    fprintf(stream, "matrix representing K_5 {");
   break;
   case CMR_DEC_SPECIAL_K_5_DUAL:
-    fprintf(stream, "K_5^* {");
+    fprintf(stream, "matrix representing K_5^* {");
   break;
   case CMR_DEC_SPECIAL_K_3_3:
-    fprintf(stream, "K_{3,3} {");
+    fprintf(stream, "matrix representing K_{3,3} {");
   break;
   case CMR_DEC_SPECIAL_K_3_3_DUAL:
-    fprintf(stream, "K_{3,3}^* {");
+    fprintf(stream, "matrix representing K_{3,3}^* {");
   break;
   default:
     fprintf(stream, "invalid");
@@ -434,6 +437,58 @@ CMR_ERROR CMRdecTranslateMinorToParent(CMR_DEC* node, CMR_MINOR* minor)
       minor->remainingSubmatrix->rows[row] = node->rowsParent[minor->remainingSubmatrix->rows[row]];
     for (size_t column = 0; column < minor->remainingSubmatrix->numColumns; ++column)
       minor->remainingSubmatrix->columns[column] = node->columnsParent[minor->remainingSubmatrix->columns[column]];
+  }
+
+  return CMR_OKAY;
+}
+
+CMR_ERROR CMRdecApplySeparation(CMR* cmr, CMR_DEC* dec, CMR_SEPA* sepa)
+{
+  assert(cmr);
+  assert(dec);
+  assert(sepa);
+
+  if (CMRsepaRank(sepa) == 1)
+  {
+    dec->type = CMR_DEC_TWO_SUM;
+    CMR_CALL( CMRdecSetNumChildren(cmr, dec, 2) );
+    unsigned char rankBottomLeft = CMRsepaRankBottomLeft(sepa);
+    unsigned char rankTopRight = CMRsepaRankTopRight(sepa);
+
+    CMRdbgMsg(4, "Ranks are %d and %d.\n", rankBottomLeft, rankTopRight);
+
+    for (size_t child = 0; child < 2; ++child)
+    {
+      unsigned char numExtraRows = child == 0 ? rankBottomLeft : rankTopRight;
+      unsigned char numExtraColumns = child == 0 ? rankTopRight : rankBottomLeft;
+
+      CMRdbgMsg(4, "Child %d has %d+%d rows and %d+%d columns.\n", child, sepa->numRows[child], numExtraRows,
+        sepa->numColumns[child], numExtraColumns);
+
+      size_t* extraRows = child == 0 ? sepa->extraRows0 : sepa->extraRows1;
+      size_t* extraColumns = child == 0 ? sepa->extraColumns0 : sepa->extraColumns1;
+
+      CMR_CALL( CMRdecCreate(cmr, dec, sepa->numRows[child] + numExtraRows, NULL,
+        sepa->numColumns[child] + numExtraColumns, NULL, &dec->children[child]) );
+
+      CMR_CALL( CMRallocBlockArray(cmr, &dec->children[child]->rowsParent, dec->children[child]->numRows) );
+      for (size_t row = 0; row < sepa->numRows[child]; ++row)
+        dec->children[child]->rowsParent[row] = sepa->rows[child][row];
+      for (unsigned char extra = 0; extra < numExtraRows; ++extra)
+        dec->children[child]->rowsParent[sepa->numRows[child] + extra] = extraRows[extra];
+
+      CMR_CALL( CMRallocBlockArray(cmr, &dec->children[child]->columnsParent, dec->children[child]->numColumns) );
+      for (size_t column = 0; column < sepa->numColumns[child]; ++column)
+        dec->children[child]->columnsParent[column] = sepa->columns[child][column];
+      for (unsigned char extra = 0; extra < numExtraColumns; ++extra)
+        dec->children[child]->columnsParent[sepa->numColumns[child] + extra] = extraColumns[extra];
+      
+      CMR_CALL( CMRdecInheritMatrices(cmr, dec->children[child]) );
+    }
+  }
+  else
+  {
+    assert("CMRdecApplySeparation only implemented for 2-sums." == 0);
   }
 
   return CMR_OKAY;
