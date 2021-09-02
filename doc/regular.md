@@ -45,4 +45,4 @@ Please cite the following paper in case the implementation contributed to your r
 The functionality is defined in \ref regular.h.
 The main functions are:
 
-  - CMRtestRegular() tests a matrix for having a regular support matrix.
+  - CMRtestBinaryRegular() tests a binary matrix for regularity.
