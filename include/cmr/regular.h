@@ -30,8 +30,6 @@ typedef struct
 {
   bool planarityCheck;          /**< \brief Whether minors identified as graphic should still be checked for
                                  **         cographicness; default: \c false. */
-  unsigned char seriesParallel; /**< \brief When to search for series-parallel elements (0: never, 1: only once,
-                                 **         2: after every decomposition step; default: 2. */
   bool completeTree;            /**< \brief Whether to compute a complete decomposition tree (even if already
                                  **         non-regular; default: \c false. */
   CMR_DEC_CONSTRUCT matrices;   /**< \brief Which matrices of the decomposition to construct; default:

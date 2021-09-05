@@ -14,7 +14,6 @@ CMR_ERROR CMRregularInitParameters(CMR_REGULAR_PARAMETERS* params)
   assert(params);
 
   params->planarityCheck = false;
-  params->seriesParallel = 2;
   params->completeTree = false;
   params->matrices = CMR_DEC_CONSTRUCT_NONE;
   params->transposes = CMR_DEC_CONSTRUCT_NONE;
@@ -65,17 +64,30 @@ CMR_ERROR testRegularOneConnected(
   if (submatrix)
     CMR_CALL( CMRsubmatTranspose(submatrix) );
   
-  if (params->seriesParallel)
-  {
-    CMRdbgMsg(4, "Splitting off series-parallel elements.\n");
-    CMR_CALL( CMRregularDecomposeSeriesParallel(cmr, &dec, ternary, &submatrix, params) );
+  CMRdbgMsg(4, "Splitting off series-parallel elements.\n");
+  CMR_CALL( CMRregularDecomposeSeriesParallel(cmr, &dec, ternary, &submatrix, params) );
 
-    if (dec->type != CMR_DEC_IRREGULAR)
-    {
-      /* TODO: Currently we don't do anything with the wheel matrix. */
-      CMR_CALL( CMRsubmatFree(cmr, &submatrix) );
-    }
+  if (dec->type == CMR_DEC_IRREGULAR)
+    return CMR_OKAY;
+
+  if (dec->type == CMR_DEC_TWO_SUM)
+  {
+    assert(dec->numChildren == 2);
+    CMR_CALL( testRegularOneConnected(cmr, dec->children[0], ternary, pisRegular, pminor, params) );
+
+    if (params->completeTree || *pisRegular)
+      CMR_CALL( testRegularOneConnected(cmr, dec->children[1], ternary, pisRegular, pminor, params) );
+
+    return CMR_OKAY;
   }
+
+  /* No 2-sum found, so we have a wheel submatrix. */
+
+  // TODO: Extract a W_k minor.
+  // TODO: Try out extracting a W_3 minor via pivots to then have a smaller non-(co)graphic minor, reducing search
+  //       effort for 3-separations.
+
+  CMR_CALL( CMRsubmatFree(cmr, &submatrix) );
 
   return CMR_OKAY;
 }
