@@ -10,7 +10,7 @@ extern "C" {
 #endif
 
 /**
- * \brief Nonzero of list matrix.
+ * \brief Nonzero of \ref ListMatrix.
  */
 
 typedef struct _ListMatrixNonzero
@@ -25,23 +25,46 @@ typedef struct _ListMatrixNonzero
   long special : 56;                /**< \brief Remaining bits (on 64 bit) may be used for a special purpose. */
 } ListMatrixNonzero;
 
+/**
+ * \brief Row/column information of \ref ListMatrix.
+ */
+
 typedef struct
 {
   ListMatrixNonzero head;             /**< \brief Dummy nonzero in that row/column. */
   size_t numNonzeros;                 /**< \brief Number of nonzeros in that row/column. */
-  long long hashValue;                /**< \brief Hash value of this element. */
-  CMR_LISTHASHTABLE_ENTRY hashEntry;  /**< \brief Entry in row or column hashtable. */
-  size_t distance;                    /**< \brief Distance in breadth-first search. */
-  size_t predecessor;                 /**< \brief Index of predecessor element in breadth-first search. */
-  bool inQueue : 1;                   /**< \brief Whether this element is in a queue (e.g., of breadth-first search). */
-//   long special : 63; 
-  
-  
-  char lastBFS;                       /**< \brief Last breadth-first search that found this node.
-                                       **< Is 0 initially, positive for search runs, -1 if marked and -2 for SP-reduced
-                                       **< element. */
-  bool specialBFS;                    /**< \brief Whether this is a special node in breadth-first search. */
 } ListMatrixElement;
+
+/**
+ * \brief Linked-list representation of a matrix.
+ */
+
+typedef struct
+{
+  size_t numRows;                       /**< \brief Number of rows. */
+  ListMatrixElement* rowElements;       /**< \brief Row data. */
+  size_t numColumns;                    /**< \brief Number of columns. */
+  ListMatrixElement* columnElements;    /**< \brief Column data. */
+
+  size_t numNonzeros;
+  ListMatrixNonzero anchor;             /**< \brief Anchor for nonzeros. */
+  size_t memNonzeros;                   /**< \brief Amount of memory for nonzeros. */
+  ListMatrixNonzero* nonzeros;          /**< \brief Raw nonzero data. */
+  ListMatrixNonzero* firstFreeNonzero;  /**< \brief Beginning of free list. */
+} ListMatrix;
+
+CMR_ERROR CMRlistmatrixCreate(
+  CMR* cmr,             /**< \ref CMR environment. */
+  size_t numRows,       /**< Number of rows. */
+  size_t numColumns,    /**< Number of columns. */
+  size_t memNonzeros,   /**< Memory for nonzeros. */
+  ListMatrix** presult  /**< Pointer for storing the created list matrix. */
+);
+
+CMR_ERROR CMRlistmatrixFree(
+  CMR* cmr,                 /**< \ref CMR environment. */
+  ListMatrix** plistmatrix  /**< Pointer to list matrix. */
+);
 
 
 
