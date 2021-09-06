@@ -41,6 +41,7 @@ add_library(cmr
   src/cmr/hashtable.c
   src/cmr/heap.c
   src/cmr/k_modular.c
+  src/cmr/list_matrix.c
   src/cmr/logger.cpp
   src/cmr/matrix.cpp
   src/cmr/matroid.c
