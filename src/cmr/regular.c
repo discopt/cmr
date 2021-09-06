@@ -39,39 +39,47 @@ CMR_ERROR testRegularOneConnected(
   CMRdbgMsg(2, "Testing binary %dx%d 1-connected matrix for regularity.\n", dec->matrix->numRows,
     dec->matrix->numColumns);
 
-  CMRdbgMsg(4, "Checking for graphicness.\n");
+  CMRdbgMsg(4, "Checking for graphicness...");
   CMR_SUBMAT* submatrix = NULL;
   bool isGraphic;
   CMR_CALL( CMRregularTestGraphic(cmr, &dec->matrix, &dec->transpose, ternary, &isGraphic, &dec->graph,
     &dec->graphForest, &dec->graphCoforest, &dec->graphArcsReversed, &submatrix) );
   if (isGraphic)
   {
+    CMRdbgMsg(0, " graphic.\n");
     dec->type = CMR_DEC_GRAPHIC;
     if (!params->planarityCheck)
       return CMR_OKAY;
   }
+  CMRdbgMsg(0, " NOT graphic.\n");
 
-  CMRdbgMsg(4, "Checking for cographicness.\n");
+  CMRdbgMsg(4, "Checking for cographicness...");
   bool isCographic;
   CMR_CALL( CMRregularTestGraphic(cmr, &dec->transpose, &dec->matrix, ternary, &isCographic, &dec->cograph,
     &dec->cographForest, &dec->cographCoforest, &dec->cographArcsReversed, &submatrix) );
   if (isCographic)
   {
+    CMRdbgMsg(0, " cographic.\n");
     dec->type = (dec->type == CMR_DEC_GRAPHIC) ? CMR_DEC_PLANAR : CMR_DEC_COGRAPHIC;
     return CMR_OKAY;
   }
+  CMRdbgMsg(0, " NOT cographic.\n");
 
   if (submatrix)
     CMR_CALL( CMRsubmatTranspose(submatrix) );
   
-  CMRdbgMsg(4, "Splitting off series-parallel elements.\n");
+  CMRdbgMsg(4, "Splitting off series-parallel elements...");
   CMR_CALL( CMRregularDecomposeSeriesParallel(cmr, &dec, ternary, &submatrix, params) );
 
   if (dec->type == CMR_DEC_IRREGULAR)
+  {
+    CMRdbgMsg(0, " NOT regular.\n");
     return CMR_OKAY;
+  }
 
   if (dec->type == CMR_DEC_TWO_SUM)
   {
+    CMRdbgMsg(0, " Encountered a 2-separation.\n");
     assert(dec->numChildren == 2);
     CMR_CALL( testRegularOneConnected(cmr, dec->children[0], ternary, pisRegular, pminor, params) );
 
@@ -80,6 +88,8 @@ CMR_ERROR testRegularOneConnected(
 
     return CMR_OKAY;
   }
+
+  CMRdbgMsg(0, " Found a W_k minor.\n");
 
   /* No 2-sum found, so we have a wheel submatrix. */
 
@@ -123,7 +133,7 @@ CMR_ERROR CMRtestRegular(CMR* cmr, CMR_CHRMAT* matrix, bool ternary, bool *pisRe
       {
         bool childIsRegular = true;
         CMR_CALL( testRegularOneConnected(cmr, dec->children[c], ternary, &childIsRegular, pminor, params) );
-        if (*pminor)
+        if (pminor && *pminor)
           CMR_CALL( CMRdecTranslateMinorToParent(dec->children[c], *pminor) );
 
         isRegular = isRegular && childIsRegular;

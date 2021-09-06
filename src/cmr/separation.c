@@ -1,4 +1,4 @@
-#define CMR_DEBUG /* Uncomment to debug this file. */
+// #define CMR_DEBUG /* Uncomment to debug this file. */
 
 #include <cmr/separation.h>
 
@@ -410,7 +410,7 @@ CMR_ERROR CMRtwoSum(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* second, CMR_ELEMENT
         if (column == secondColumnMarker)
           continue;
         result->entryValues[resultNonzero] = second->entryValues[e];
-        result->entryColumns[resultNonzero] = (bottomLeft ? first->numRows : (first->numRows - 1))
+        result->entryColumns[resultNonzero] = (bottomLeft ? first->numColumns : (first->numColumns - 1))
            + (column < secondColumnMarker ? column : (column - 1));
         CMRdbgMsg(2, "Added nonzero #%ld at %ld,%ld with value %d.\n", resultNonzero, resultRow,
           result->entryColumns[resultNonzero], result->entryValues[resultNonzero]);
@@ -422,6 +422,8 @@ CMR_ERROR CMRtwoSum(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* second, CMR_ELEMENT
   }
   result->rowSlice[result->numRows] = resultNonzero;
   assert(resultNonzero == result->numNonzeros);
+  
+  CMRconsistencyAssert( CMRchrmatConsistency(result) );
 
   CMR_CALL( CMRfreeStackArray(cmr, &markerColumn) );
 

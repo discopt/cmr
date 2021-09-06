@@ -68,6 +68,61 @@ CMR_ERROR CMRdecFree(
 );
 
 /**
+ * \brief Returns \c true iff the matrix of the decomposition node is stored.
+ */
+
+CMR_EXPORT
+bool CMRdecHasMatrix(
+  CMR_DEC* dec  /**< Decomposition node. */
+);
+
+/**
+ * \brief Returns \c true iff the transposed matrix of the decomposition node is stored.
+ */
+
+CMR_EXPORT
+bool CMRdecHasTranspose(
+  CMR_DEC* dec  /**< Decomposition node. */
+);
+
+/**
+ * \brief Returns the matrix of the decomposition node (or \c NULL if it is not stored).
+ */
+
+CMR_EXPORT
+CMR_CHRMAT* CMRdecGetMatrix(
+  CMR_DEC* dec  /**< Decomposition node. */
+);
+
+/**
+ * \brief Returns the transposed matrix of the decomposition node (or \c NULL if it is not stored).
+ */
+
+CMR_EXPORT
+CMR_CHRMAT* CMRdecGetTranspose(
+  CMR_DEC* dec  /**< Decomposition node. */
+);
+
+/**
+ * \brief Returns the number of children of the decomposition node.
+ */
+
+CMR_EXPORT
+size_t CMRdecNumChildren(
+  CMR_DEC* dec  /**< Decomposition node. */
+);
+
+/*
+ * \brief Returns a child of the decomposition node.
+ */
+
+CMR_EXPORT
+CMR_DEC* CMRdecChild(
+  CMR_DEC* dec,     /**< Decomposition node. */
+  size_t childIndex /**< Index of child. */
+);
+
+/**
  * \brief Returns k if \p dec is a k-sum node and 0 otherwise.
  */
 

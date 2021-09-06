@@ -1,4 +1,4 @@
-// #define CMR_DEBUG
+// #define CMR_DEBUG /* Uncomment to debug this file. *
 
 #include <cmr/matrix.h>
 
@@ -307,6 +307,7 @@ CMR_ERROR CMRchrmatSortNonzeros(CMR* cmr, CMR_CHRMAT* matrix)
   {
     size_t first = matrix->rowSlice[row];
     size_t beyond = matrix->rowSlice[row + 1];
+    CMRdbgMsg(2, "Sorting nonzero entries in range [%ld,%ld).\n", first, beyond);
     CMR_CALL( CMRsort2(cmr, beyond - first, &matrix->entryColumns[first], sizeof(size_t), &matrix->entryValues[first],
       sizeof(char), compareEntries) );
   }
@@ -504,6 +505,144 @@ CMR_ERROR CMRchrmatTranspose(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT** presult)
   for (size_t c = matrix->numColumns; c > 0; --c)
     result->rowSlice[c] = result->rowSlice[c-1];
   result->rowSlice[0] = 0;
+
+  return CMR_OKAY;
+}
+
+CMR_ERROR CMRdblmatPermute(CMR* cmr, CMR_DBLMAT* matrix, size_t* rows, size_t* columns, CMR_DBLMAT** presult)
+{
+  assert(cmr);
+  assert(matrix);
+  assert(presult);
+
+  CMR_CALL( CMRdblmatCreate(cmr, presult, matrix->numRows, matrix->numColumns, matrix->numNonzeros) );
+  CMR_DBLMAT* result = *presult;
+
+  size_t* columnsToResultColumns = NULL;
+  if (columns)
+  {
+    CMR_CALL( CMRallocStackArray(cmr, &columnsToResultColumns, matrix->numColumns) );
+    for (size_t column = 0; column < matrix->numColumns; ++column)
+      columnsToResultColumns[columns[column]] = column;
+  }
+
+  size_t resultEntry = 0;
+  for (size_t resultRow = 0; resultRow < result->numRows; ++resultRow)
+  {
+    result->rowSlice[resultRow] = resultEntry;
+
+    size_t row = rows ? rows[resultRow] : resultRow;
+    CMRdbgMsg(0, "New row %ld is old row %ld.\n", resultRow, row);
+    size_t first = matrix->rowSlice[row];
+    size_t beyond = matrix->rowSlice[row+1];
+    for (size_t e = first; e < beyond; ++e)
+    {
+      result->entryValues[resultEntry] = matrix->entryValues[e];
+      result->entryColumns[resultEntry] =
+        columnsToResultColumns ? columnsToResultColumns[matrix->entryColumns[e]] : matrix->entryColumns[e];
+      CMRdbgMsg(2, "Entry in old column %ld is now in column %ld; value = %d\n", matrix->entryColumns[e],
+        result->entryColumns[resultEntry], result->entryValues[resultEntry]);
+      ++resultEntry;
+    }
+  }
+  result->rowSlice[result->numRows] = resultEntry;
+
+  if (columnsToResultColumns) 
+    CMR_CALL( CMRfreeStackArray(cmr, &columnsToResultColumns) );
+
+  CMR_CALL( CMRdblmatSortNonzeros(cmr, result) );
+
+  return CMR_OKAY;
+}
+
+CMR_ERROR CMRintmatPermute(CMR* cmr, CMR_INTMAT* matrix, size_t* rows, size_t* columns, CMR_INTMAT** presult)
+{
+  assert(cmr);
+  assert(matrix);
+  assert(presult);
+
+  CMR_CALL( CMRintmatCreate(cmr, presult, matrix->numRows, matrix->numColumns, matrix->numNonzeros) );
+  CMR_INTMAT* result = *presult;
+
+  size_t* columnsToResultColumns = NULL;
+  if (columns)
+  {
+    CMR_CALL( CMRallocStackArray(cmr, &columnsToResultColumns, matrix->numColumns) );
+    for (size_t column = 0; column < matrix->numColumns; ++column)
+      columnsToResultColumns[columns[column]] = column;
+  }
+
+  size_t resultEntry = 0;
+  for (size_t resultRow = 0; resultRow < result->numRows; ++resultRow)
+  {
+    result->rowSlice[resultRow] = resultEntry;
+
+    size_t row = rows ? rows[resultRow] : resultRow;
+    CMRdbgMsg(0, "New row %ld is old row %ld.\n", resultRow, row);
+    size_t first = matrix->rowSlice[row];
+    size_t beyond = matrix->rowSlice[row+1];
+    for (size_t e = first; e < beyond; ++e)
+    {
+      result->entryValues[resultEntry] = matrix->entryValues[e];
+      result->entryColumns[resultEntry] =
+        columnsToResultColumns ? columnsToResultColumns[matrix->entryColumns[e]] : matrix->entryColumns[e];
+      CMRdbgMsg(2, "Entry in old column %ld is now in column %ld; value = %d\n", matrix->entryColumns[e],
+        result->entryColumns[resultEntry], result->entryValues[resultEntry]);
+      ++resultEntry;
+    }
+  }
+  result->rowSlice[result->numRows] = resultEntry;
+
+  if (columnsToResultColumns) 
+    CMR_CALL( CMRfreeStackArray(cmr, &columnsToResultColumns) );
+
+  CMR_CALL( CMRintmatSortNonzeros(cmr, result) );
+
+  return CMR_OKAY;
+}
+
+CMR_ERROR CMRchrmatPermute(CMR* cmr, CMR_CHRMAT* matrix, size_t* rows, size_t* columns, CMR_CHRMAT** presult)
+{
+  assert(cmr);
+  assert(matrix);
+  assert(presult);
+
+  CMR_CALL( CMRchrmatCreate(cmr, presult, matrix->numRows, matrix->numColumns, matrix->numNonzeros) );
+  CMR_CHRMAT* result = *presult;
+
+  size_t* columnsToResultColumns = NULL;
+  if (columns)
+  {
+    CMR_CALL( CMRallocStackArray(cmr, &columnsToResultColumns, matrix->numColumns) );
+    for (size_t column = 0; column < matrix->numColumns; ++column)
+      columnsToResultColumns[columns[column]] = column;
+  }
+
+  size_t resultEntry = 0;
+  for (size_t resultRow = 0; resultRow < result->numRows; ++resultRow)
+  {
+    result->rowSlice[resultRow] = resultEntry;
+
+    size_t row = rows ? rows[resultRow] : resultRow;
+    CMRdbgMsg(0, "New row %ld is old row %ld.\n", resultRow, row);
+    size_t first = matrix->rowSlice[row];
+    size_t beyond = matrix->rowSlice[row+1];
+    for (size_t e = first; e < beyond; ++e)
+    {
+      result->entryValues[resultEntry] = matrix->entryValues[e];
+      result->entryColumns[resultEntry] =
+        columnsToResultColumns ? columnsToResultColumns[matrix->entryColumns[e]] : matrix->entryColumns[e];
+      CMRdbgMsg(2, "Entry in old column %ld is now in column %ld; value = %d\n", matrix->entryColumns[e],
+        result->entryColumns[resultEntry], result->entryValues[resultEntry]);
+      ++resultEntry;
+    }
+  }
+  result->rowSlice[result->numRows] = resultEntry;
+
+  if (columnsToResultColumns) 
+    CMR_CALL( CMRfreeStackArray(cmr, &columnsToResultColumns) );
+
+  CMR_CALL( CMRchrmatSortNonzeros(cmr, result) );
 
   return CMR_OKAY;
 }

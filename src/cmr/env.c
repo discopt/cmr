@@ -196,6 +196,8 @@ CMR_ERROR _CMRallocStack(
   assert(ptr);
   assert(*ptr == NULL);
 
+  assert(("Tried to allocate at least 1 TB." == 0) || size < (1L << 40)); /* We should not allocate more than a terabyte. */
+
   /* Avoid allocation of zero bytes. */
   if (size < 4)
     size = 4;

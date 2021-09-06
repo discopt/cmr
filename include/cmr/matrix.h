@@ -353,6 +353,45 @@ CMR_ERROR CMRchrmatTranspose(
 );
 
 /**
+ * \brief Creates the double matrix obtained from \p matrix by applying row- and column-permutations.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRdblmatPermute(
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_DBLMAT* matrix,   /**< Given matrix. */
+  size_t* rows,         /**< Mapping from new rows to rows of \p matrix (may be \c NULL for identity). */
+  size_t* columns,      /**< Mapping from new columns to columns of \p matrix (may be \c NULL for identity). */
+  CMR_DBLMAT** presult  /**< Pointer for storing the permuted matrix. */
+);
+
+/**
+ * \brief Creates the int matrix obtained from \p matrix by applying row- and column-permutations.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRintmatPermute(
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_INTMAT* matrix,   /**< Given matrix. */
+  size_t* rows,         /**< Mapping from new rows to rows of \p matrix (may be \c NULL for identity). */
+  size_t* columns,      /**< Mapping from new columns to columns of \p matrix (may be \c NULL for identity). */
+  CMR_INTMAT** presult  /**< Pointer for storing the permuted matrix. */
+);
+
+/**
+ * \brief Creates the char matrix obtained from \p matrix by applying row- and column-permutations.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRchrmatPermute(
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,   /**< Given matrix. */
+  size_t* rows,         /**< Mapping from new rows to rows of \p matrix (may be \c NULL for identity). */
+  size_t* columns,      /**< Mapping from new columns to columns of \p matrix (may be \c NULL for identity). */
+  CMR_CHRMAT** presult  /**< Pointer for storing the permuted matrix. */
+);
+
+/**
  * \brief Prints a double matrix in sparse format.
  */
 

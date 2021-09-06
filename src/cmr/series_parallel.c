@@ -1,4 +1,4 @@
-// #define CMR_DEBUG /* Uncomment to debug this file. */
+#define CMR_DEBUG /* Uncomment to debug this file. */
 
 // TODO: Try to not fill the hashtable in initialScan but just add all elements to the queue.
 
@@ -1328,7 +1328,6 @@ CMR_ERROR extractWheelSubmatrix(
 
     CMRdbgMsg(4, "Searching for a chordless cycle from r%d to c%d.\n", sourceRow+1, targetColumn+1);
 
-    clock_t t = clock();
     sources[0] = CMRrowToElement(sourceRow);
     targets[0] = CMRcolumnToElement(targetColumn);
     size_t foundTarget = SIZE_MAX;
@@ -1338,7 +1337,6 @@ CMR_ERROR extractWheelSubmatrix(
     rowData[sourceRow].nonzeros.right->disabled = false;
     assert(foundTarget == 0);
     size_t length = columnData[targetColumn].distance + 1;
-    fprintf(stderr, "Time for chordless cycle search: %f\n", (clock() - t) * 1.0 / CLOCKS_PER_SEC);
 
     CMRdbgMsg(4, "Length of cycle is %d.\n", length);
 
@@ -1367,8 +1365,6 @@ CMR_ERROR extractWheelSubmatrix(
     size_t row2 = columnData[targetColumn].predecessor;
     CMRdbgMsg(4, "Growing the 2x2 submatrix with 1's is at r%d, r%d, c%d, c%d.\n", row1+1, row2+1,
       targetColumn+1, rowData[row2].predecessor+1);
-
-    t = clock();
 
     /* Go trough the two nonzeros of the two rows simultaneously. */
     ListNonzero* nz1 = rowData[row1].nonzeros.right;
@@ -1421,20 +1417,14 @@ CMR_ERROR extractWheelSubmatrix(
       currentIndex = (currentIndex + 1) % numTargets;
     }
 
-    fprintf(stderr, "Time for growing block: %f\n", (clock() - t) * 1.0 / CLOCKS_PER_SEC);
-
     CMRdbgMsg(4, "Identified %d source rows.\n", numSources);
     assert(numSources >= 2);
-
-    t = clock();
 
     currentBFS++;
     foundTarget = SIZE_MAX;
     size_t numTraversedEdges = 0;
     CMR_CALL( breadthFirstSearch(cmr, currentBFS, rowData, columnData, queue, queueMemory, sources, numSources,
       targets, numTargets, &foundTarget, &numTraversedEdges) );
-
-    fprintf(stderr, "Time for second search: %f\n", (clock() - t) * 1.0 / CLOCKS_PER_SEC);
 
     if (foundTarget < SIZE_MAX && pwheelSubmatrix)
     {

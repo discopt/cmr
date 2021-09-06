@@ -4,6 +4,49 @@
 #include "dec_internal.h"
 #include "matrix_internal.h"
 
+bool CMRdecHasMatrix(CMR_DEC* dec)
+{
+  assert(dec);
+
+  return dec->matrix;
+}
+
+bool CMRdecHasTranspose(CMR_DEC* dec)
+{
+  assert(dec);
+
+  return dec->transpose;
+}
+
+CMR_CHRMAT* CMRdecGetMatrix(CMR_DEC* dec)
+{
+  assert(dec);
+
+  return dec->matrix;
+}
+
+CMR_CHRMAT* CMRdecGetTranspose(CMR_DEC* dec)
+{
+  assert(dec);
+
+  return dec->transpose;
+}
+
+size_t CMRdecNumChildren(CMR_DEC* dec)
+{
+  assert(dec);
+
+  return dec->numChildren;
+}
+
+CMR_DEC* CMRdecChild(CMR_DEC* dec, size_t childIndex)
+{
+  assert(dec);
+  assert(childIndex < dec->numChildren);
+
+  return dec->children[childIndex];
+}
+
 CMR_ERROR CMRdecFree(CMR* cmr, CMR_DEC** pdec)
 {
   assert(cmr);
@@ -43,17 +86,17 @@ int CMRdecIsSum(CMR_DEC* dec, bool* plowerLeftNonzeros, bool* pupperRightNonzero
   if (dec->type == CMR_DEC_THREE_SUM)
   {
     if (plowerLeftNonzeros)
-      assert(false);
+      assert("Not implemented for 3-sums." == 0);
     if (pupperRightNonzeros)
-      assert(false);
+      assert("Not implemented for 3-sums." == 0);
     return 3;
   }
   else if (dec->type == CMR_DEC_TWO_SUM)
   {
     if (plowerLeftNonzeros)
-      assert(false);
+      assert("Not implemented for 2-sums." == 0);
     if (pupperRightNonzeros)
-      assert(false);
+      assert("Not implemented for 2-sums." == 0);
     return 2;
   }
   
@@ -178,7 +221,7 @@ CMR_ERROR CMRdecPrint(CMR* cmr, CMR_DEC* dec, FILE* stream, size_t indent, bool 
     fprintf(stream, "graphic matrix with %d nodes and %d edges {", CMRgraphNumNodes(dec->graph), CMRgraphNumEdges(dec->graph));
   break;
   case CMR_DEC_COGRAPHIC:
-    fprintf(stream, "cographic matrix with %d nodes and %d edges {", CMRgraphNumNodes(dec->graph), CMRgraphNumEdges(dec->graph));
+    fprintf(stream, "cographic matrix with %d nodes and %d edges {", CMRgraphNumNodes(dec->cograph), CMRgraphNumEdges(dec->cograph));
   break;
   case CMR_DEC_PLANAR:
     assert(CMRgraphNumEdges(dec->graph) == CMRgraphNumEdges(dec->cograph));
@@ -251,7 +294,7 @@ CMR_ERROR CMRdecPrint(CMR* cmr, CMR_DEC* dec, FILE* stream, size_t indent, bool 
     {
       CMR_CHRMAT* matrix = NULL;
       CMR_CALL( CMRchrmatTranspose(cmr, dec->transpose, &matrix) );
-      CMR_CALL( CMRchrmatPrintDense(cmr, dec->matrix, stream, '0', false) );
+      CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stream, '0', false) );
       CMR_CALL( CMRchrmatFree(cmr, &matrix) );
     }
     else
