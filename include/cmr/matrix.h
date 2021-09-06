@@ -838,6 +838,7 @@ CMR_ERROR CMRintmatFindEntry(
  * \brief Finds a specific entry of a char matrix.
  * 
  * Searches for the entry at (\p row, \p column) using binary search.
+ * If an entry is zero, then \p *pentry is set to \c SIZE_MAX.
  */
 
 CMR_EXPORT
