@@ -3,6 +3,7 @@
 
 #include <cmr/env.h>
 #include <cmr/matrix.h>
+#include <cmr/element.h>
 
 #include <assert.h>
 #include <stdint.h>
@@ -12,7 +13,7 @@
  *
  * \author Matthias Walter
  *
- * \brief Data structures for k-separations.
+ * \brief Data structures for k-separations and k-sums.
  */
 
 #ifdef __cplusplus
@@ -138,6 +139,49 @@ CMR_ERROR CMRsepaCheckTernary(
   CMR_SUBMAT* submatrix,  /**< Submatrix of \p matrix to consider (may be \c NULL). */
   bool* pisTernary,       /**< Pointer for storing whether the check passed. */
   CMR_SUBMAT** psubmatrix /**< Pointer for storing a violator submatrix (may be \c NULL). */
+);
+
+/**
+ * \brief Constructs the 1-sum of \p first and \p second matrix.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRoneSum(
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_CHRMAT* first,    /**< First matrix. */
+  CMR_CHRMAT* second,   /**< Second matrix. */
+  CMR_CHRMAT** presult  /**< Pointer for storing the result. */
+);
+
+/**
+ * \brief Constructs the 2-sum of \p first and \p second matrix via \p firstMarker and \p secondMarker.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRtwoSum(
+  CMR* cmr,                   /**< \ref CMR environment. */
+  CMR_CHRMAT* first,          /**< First matrix. */
+  CMR_CHRMAT* second,         /**< Second matrix. */
+  CMR_ELEMENT firstMarker,    /**< Marker element of first matrix. */
+  CMR_ELEMENT secondMarker,   /**< Marker element of second matrix. */
+  CMR_CHRMAT** presult        /**< Pointer for storing the result. */
+);
+
+/**
+ * \brief Constructs the 3-sum of \p first and \p second matrix via \p firstMarker1, \p firstMarker2, \p secondMarker1
+ * and \p secondMarker2.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRthreeSum(
+  CMR* cmr,                   /**< \ref CMR environment. */
+  CMR_CHRMAT* first,          /**< First matrix. */
+  CMR_CHRMAT* second,         /**< Second matrix. */
+  CMR_ELEMENT firstMarker1,   /**< First marker element of first matrix. */
+  CMR_ELEMENT secondMarker1,  /**< Second marker element of first matrix. */
+  CMR_ELEMENT firstMarker2,   /**< First marker element of second matrix. */
+  CMR_ELEMENT secondMarker2,  /**< Second marker element of second matrix. */
+  CMR_CHRMAT** presult        /**< Pointer for storing the result. */
 );
 
 #ifdef __cplusplus
