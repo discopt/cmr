@@ -1,4 +1,4 @@
-#define CMR_DEBUG /* Uncomment to debug this file. */
+// #define CMR_DEBUG /* Uncomment to debug this file. */
 
 // TODO: Try to not fill the hashtable in initialScan but just add all elements to the queue.
 

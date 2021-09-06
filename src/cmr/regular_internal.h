@@ -72,4 +72,64 @@ CMR_ERROR CMRregularDecomposeSeriesParallel(
   CMR_REGULAR_PARAMETERS* params  /**< Parameters for the computation. */
 );
 
+typedef struct _ListMatrixNonzero
+{
+  struct _ListMatrixNonzero* left;
+  struct _ListMatrixNonzero* right;
+  struct _ListMatrixNonzero* above;
+  struct _ListMatrixNonzero* below;
+  size_t row;
+  size_t column;
+  char value; // TODO: This might not be necessary as we only need the signs whenever a separation is found!
+} ListMatrixNonzero;
+
+typedef struct
+{
+  ListMatrixNonzero head;
+  CMR_ELEMENT element;
+  size_t numNonzeros;
+} ListMatrixElement;
+
+typedef struct
+{
+  ListMatrixElement* rows;
+  size_t numRows;
+  ListMatrixElement* columns;
+  size_t numColumns;
+  size_t numNonzeros;
+  size_t memNonzeros;
+  ListMatrixNonzero* nonzeros;
+  ListMatrixNonzero* firstFreeNonzero;
+} ListMatrix;
+
+CMR_ERROR CMRregularListMatrixFree(
+  CMR* cmr,             /**< \ref CMR environment. */
+  ListMatrix** pmatrix  /**< List matrix. */
+);
+
+typedef struct
+{
+  size_t numRows;
+  size_t numColumns;
+} NestedMinor;
+
+/**
+ * \brief Constructs a sequence of nested 3-connected minors for the matrix of a decomposition node.
+ *
+ * In case the matrix is not 3-connected, a 2-separation is applied to \p dec and the function terminates.
+ */
+
+CMR_ERROR CMRregularConstructNestedMinorSequence(
+  CMR* cmr,                       /**< \ref CMR environment. */
+  CMR_DEC* dec,                   /**< Decomposition node. */
+  bool ternary,                   /**< Whether to consider the signs of the matrix. */
+  CMR_SUBMAT* wheelSubmatrix,     /**< Wheel submatrix to start with. */
+  ListMatrix** pnestedMatrix,     /**< Pointer for storing the list representation of the matrix with visible nested
+                                   **  3-connected minor sequence. */
+  NestedMinor** pnestedMinors,    /**< Pointer for storing the sequence of nested minors. */
+  size_t* pnumNestedMinors,       /**< Pointer for storing the number of nested minors. */
+  CMR_SUBMAT** psubmatrix,        /**< Pointer for storing a violator matrix. */
+  CMR_REGULAR_PARAMETERS* params  /**< Parameters for the computation. */
+);
+
 #endif /* CMR_REGULAR_INTERNAL_H */

@@ -47,6 +47,7 @@ add_library(cmr
   src/cmr/matroid_decomposition.cpp
   src/cmr/matroid_graph.cpp
   src/cmr/nested_minor_sequence.cpp
+  src/cmr/regular_nested_minor_sequence.c
   src/cmr/network.c
   src/cmr/regular.c
   src/cmr/regular_graphic.c

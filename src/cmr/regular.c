@@ -89,15 +89,23 @@ CMR_ERROR testRegularOneConnected(
     return CMR_OKAY;
   }
 
-  CMRdbgMsg(0, " Found a W_k minor.\n");
+  CMR_SUBMAT* wheelSubmatrix = submatrix;
+  CMRdbgMsg(0, " Found a W_%d minor.\n", wheelSubmatrix->numRows);
+  submatrix = NULL;
 
   /* No 2-sum found, so we have a wheel submatrix. */
 
-  // TODO: Extract a W_k minor.
   // TODO: Try out extracting a W_3 minor via pivots to then have a smaller non-(co)graphic minor, reducing search
   //       effort for 3-separations.
 
-  CMR_CALL( CMRsubmatFree(cmr, &submatrix) );
+  ListMatrix* nestedMatrix = NULL;
+  NestedMinor* nestedMinors = NULL;
+  size_t numNestedMinors;
+  CMR_CALL( CMRregularConstructNestedMinorSequence(cmr, dec, ternary, wheelSubmatrix, &nestedMatrix, &nestedMinors,
+    &numNestedMinors, &submatrix, params) );
+  CMR_CALL( CMRsubmatFree(cmr, &wheelSubmatrix) );
+  CMR_CALL( CMRregularListMatrixFree(cmr, &nestedMatrix) );
+  CMR_CALL( CMRfreeBlockArray(cmr, &nestedMinors) );
 
   return CMR_OKAY;
 }
