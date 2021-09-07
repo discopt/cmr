@@ -2,6 +2,7 @@
 #define CMR_LIST_MATRIX_INTERNAL_H
 
 #include <cmr/env.h>
+#include <cmr/matrix.h>
 
 #include "hashtable.h"
 
@@ -37,12 +38,21 @@ typedef struct
 
 /**
  * \brief Linked-list representation of a matrix.
+ *
+ * The Each nonzero is part of two doubly-linked lists, one for all nonzeros in the same row and one for all the
+ * nonzeros in the same column.
+ *
+ * \note If the allocated memory for the rows, columns or nonzeros does not suffice, it is automatically reallocated.
+ *       However, this means that a pointer to a \ref ListMatrixNonzero struct is only valid if no reallocation occurs.
+ *       Hence, the user must make sure that sufficient memory is allocated or that no such pointers are used.
  */
 
 typedef struct
 {
+  size_t memRows;                       /**< \brief Memory for rows. */
   size_t numRows;                       /**< \brief Number of rows. */
   ListMatrixElement* rowElements;       /**< \brief Row data. */
+  size_t memColumns;                    /**< \brief Memory for columns. */
   size_t numColumns;                    /**< \brief Number of columns. */
   ListMatrixElement* columnElements;    /**< \brief Column data. */
 
@@ -53,20 +63,36 @@ typedef struct
   ListMatrixNonzero* firstFreeNonzero;  /**< \brief Beginning of free list. */
 } ListMatrix;
 
-CMR_ERROR CMRlistmatrixCreate(
+/**
+ * \brief Allocates memory for a list matrix.
+ */
+
+CMR_ERROR CMRlistmatrixAlloc(
   CMR* cmr,             /**< \ref CMR environment. */
-  size_t numRows,       /**< Number of rows. */
-  size_t numColumns,    /**< Number of columns. */
+  size_t memRows,       /**< Memory for rows. */
+  size_t memColumns,    /**< Memory for columns. */
   size_t memNonzeros,   /**< Memory for nonzeros. */
   ListMatrix** presult  /**< Pointer for storing the created list matrix. */
 );
+
+/**
+ * \brief Frees a list matrix.
+ */
 
 CMR_ERROR CMRlistmatrixFree(
   CMR* cmr,                 /**< \ref CMR environment. */
   ListMatrix** plistmatrix  /**< Pointer to list matrix. */
 );
 
+/**
+ * \brief Copies \p matrix into \p listmatrix.
+ */
 
+CMR_ERROR CMRlistmatrixInitializeFromMatrix(
+  CMR* cmr,               /**< \ref CMR environment. */
+  ListMatrix* listmatrix, /**< List matrix. */
+  CMR_CHRMAT* matrix      /**< Matrix to be copied to \p listmatrix. */
+);
 
 #ifdef __cplusplus
 }
