@@ -113,7 +113,7 @@ char* CMRspReductionString(CMR_SP_REDUCTION reduction, char* buffer)
 
 static inline
 void unlinkNonzero(
-  ListMatrixNonzero* nonzero /**< \brief Nonzero to be removed from the linked lists. */
+  ListMatrixNonzero* nonzero /**< Nonzero to be removed from the linked lists. */
 )
 {
   assert(nonzero);
@@ -196,12 +196,12 @@ CMR_ERROR createHashVector(
 
 static
 CMR_ERROR calcNonzeroCountHashFromMatrix(
-  CMR* cmr,                           /**< \ref CMR environment. */
-  CMR_CHRMAT* matrix,                 /**< Matrix. */
-  ListMatrix* listmatrix,             /**< List matrix representation. */
-  ElementData* rowData,               /**< Other row element data. */
-  ElementData* columnData,            /**< Other column element data. */
-  long long* hashVector               /**< Hash vector. */
+  CMR* cmr,                 /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,       /**< Matrix. */
+  ListMatrix* listmatrix,   /**< List matrix representation. */
+  ElementData* rowData,     /**< Other row element data. */
+  ElementData* columnData,  /**< Other column element data. */
+  long long* hashVector     /**< Hash vector. */
 )
 {
   assert(cmr);
@@ -240,25 +240,28 @@ CMR_ERROR calcNonzeroCountHashFromMatrix(
 
 static
 CMR_ERROR calcBinaryHashFromListMatrix(
-  CMR* cmr,                           /**< \ref CMR environment. */
-  ListMatrixNonzero* anchor,          /**< Anchor of list representation. */
-  ElementData* rowData,               /**< Other row element data. */
-  ElementData* columnData,            /**< Other column element data. */
-  long long* hashVector               /**< Hash vector. */
+  CMR* cmr,                 /**< \ref CMR environment. */
+  ListMatrix* listmatrix,   /**< List matrix. */
+  ElementData* rowData,     /**< Other row element data. */
+  ElementData* columnData,  /**< Other column element data. */
+  long long* hashVector     /**< Hash vector. */
 )
 {
   assert(cmr);
-  assert(anchor);
+  assert(listmatrix);
   assert(rowData);
   assert(columnData);
 
   /* Reset hash values. */
-  for (ListMatrixNonzero* rowHead = anchor->below; rowHead != anchor; rowHead = rowHead->below)
+  for (ListMatrixNonzero* rowHead = listmatrix->anchor.below; rowHead->row != SIZE_MAX; rowHead = rowHead->below)
     rowData[rowHead->row].hashValue = 0;
-  for (ListMatrixNonzero* columnHead = anchor->right; columnHead != anchor; columnHead = columnHead->right)
+  for (ListMatrixNonzero* columnHead = listmatrix->anchor.right; columnHead->column != SIZE_MAX;
+    columnHead = columnHead->right)
+  {
     columnData[columnHead->column].hashValue = 0;
+  }
 
-  for (ListMatrixNonzero* rowHead = anchor->below; rowHead != anchor; rowHead = rowHead->below)
+  for (ListMatrixNonzero* rowHead = listmatrix->anchor.below; rowHead->row != SIZE_MAX; rowHead = rowHead->below)
   {
     for (ListMatrixNonzero* nz = rowHead->right; nz != rowHead; nz = nz->right)
     {
@@ -328,8 +331,7 @@ static
 CMR_ERROR initializeQueueHashtableFromListMatrix(
   CMR* cmr,                     /**< \ref CMR environment. */
   CMR_LISTHASHTABLE* hashtable, /**< Row or column hashtable. */
-  ListMatrixNonzero* anchor,    /**< Anchor of list matrix representation. */
-  ListMatrixElement* listData,  /**< Row/column list data array. */
+  ListMatrix* listmatrix,       /**< List matrix. */
   ElementData* data,            /**< Other row/column data array. */
   CMR_ELEMENT* queue,           /**< Queue. */
   size_t* pqueueEnd,            /**< Pointer to end of queue. */
@@ -341,11 +343,14 @@ CMR_ERROR initializeQueueHashtableFromListMatrix(
   CMRdbgMsg(2, "Initializing queue and hashtable from list representation. Inspecting %s.\n",
     isRow ? "rows" : "columns");
 
+  ListMatrixNonzero* anchor = &listmatrix->anchor;
+
   for (ListMatrixNonzero* head = isRow ? anchor->below : anchor->right; head != anchor;
     head = (isRow ? head->below : head->right))
   {
     size_t i = isRow ? head->row : head->column;
-    CMRdbgMsg(4, "%s %d has %d nonzeros.\n", isRow ? "Row" : "Column", i, listData[i].numNonzeros);
+    CMRdbgMsg(4, "%s %d has %d nonzeros.\n", isRow ? "Row" : "Column", i,
+      isRow ? listmatrix->rowElements[i].numNonzeros : listmatrix->columnElements[i].numNonzeros);
 
     /* Check if it qualifies for addition to the hashtable. */
     CMR_LISTHASHTABLE_ENTRY entry = CMRlisthashtableFindFirst(hashtable, llabs(data[i].hashValue));
@@ -727,9 +732,7 @@ CMR_ERROR reduceListMatrix(
 static
 CMR_ERROR extractNonbinarySubmatrix(
   CMR* cmr,                           /**< \ref CMR environment. */
-  ListMatrixNonzero* anchor,          /**< Anchor nonzero. */
-  ListMatrixElement* rowListData,     /**< Row data. */
-  ListMatrixElement* columnListData,  /**< Column data. */
+  ListMatrix* listmatrix,             /**< List matrix. */
   ElementData* rowData,               /**< Row data. */
   ElementData* columnData,            /**< Column data. */
   CMR_LISTHASHTABLE* rowHashtable,    /**< Row hashtable. */
@@ -743,7 +746,7 @@ CMR_ERROR extractNonbinarySubmatrix(
 )
 {
   assert(cmr);
-  assert(anchor);
+  assert(listmatrix);
   assert(rowData);
   assert(columnData);
   assert(rowHashtable);
@@ -810,9 +813,9 @@ CMR_ERROR extractNonbinarySubmatrix(
       /* We consider a row. */
 
       size_t row1 = CMRelementToRowIndex(element);
-      assert(rowListData[row1].numNonzeros > 1);
+      assert(listmatrix->rowElements[row1].numNonzeros > 1);
       rowData[row1].inQueue = false;
-      size_t row2 = findCopy(rowListData, rowData, rowHashtable, row1, true, true);
+      size_t row2 = findCopy(listmatrix->rowElements, rowData, rowHashtable, row1, true, true);
 
       if (row2 == SIZE_MAX)
       {
@@ -826,8 +829,8 @@ CMR_ERROR extractNonbinarySubmatrix(
         /* We found a row copy. */
         size_t column1 = SIZE_MAX;
         size_t column2 = SIZE_MAX;
-        ListMatrixNonzero* nz1 = rowListData[row1].head.right;
-        ListMatrixNonzero* nz2 = rowListData[row2].head.right;
+        ListMatrixNonzero* nz1 = listmatrix->rowElements[row1].head.right;
+        ListMatrixNonzero* nz2 = listmatrix->rowElements[row2].head.right;
         while (column1 == SIZE_MAX || column2 == SIZE_MAX)
         {
           if (nz1->value == nz2->value)
@@ -858,9 +861,9 @@ CMR_ERROR extractNonbinarySubmatrix(
       /* We consider a column. */
 
       size_t column1 = CMRelementToColumnIndex(element);
-      assert(columnListData[column1].numNonzeros > 1);
+      assert(listmatrix->columnElements[column1].numNonzeros > 1);
       columnData[column1].inQueue = false;
-      size_t column2 = findCopy(columnListData, columnData, columnHashtable, column1, false, true);
+      size_t column2 = findCopy(listmatrix->columnElements, columnData, columnHashtable, column1, false, true);
 
       if (column2 == SIZE_MAX)
       {
@@ -875,8 +878,8 @@ CMR_ERROR extractNonbinarySubmatrix(
         /* We found a column copy. */
         size_t row1 = SIZE_MAX;
         size_t row2 = SIZE_MAX;
-        ListMatrixNonzero* nz1 = columnListData[column1].head.below;
-        ListMatrixNonzero* nz2 = columnListData[column2].head.below;
+        ListMatrixNonzero* nz1 = listmatrix->columnElements[column1].head.below;
+        ListMatrixNonzero* nz2 = listmatrix->columnElements[column2].head.below;
         while (row1 == SIZE_MAX || row2 == SIZE_MAX)
         {
           if (nz1->value == nz2->value)
@@ -1154,26 +1157,26 @@ CMR_ERROR createFullRemainingMatrix(
 
 static
 CMR_ERROR extractWheelSubmatrix(
-  CMR* cmr,                             /**< \ref CMR environment. */
-  size_t numRows,                       /**< Number of rows. */
-  size_t numColumns,                    /**< Number of columns. */
-  ListMatrixElement* rowListData,       /**< Row element data. */
-  ListMatrixElement* columnListData,    /**< Row element data. */
-  ElementData* rowData,                 /**< Row element data. */
-  ElementData* columnData,              /**< Row element data. */
-  CMR_ELEMENT* queue,                   /**< Queue memory. */
-  size_t queueMemory,                   /**< Size of \p queue. */
-  ListMatrixNonzero* anchor,                  /**< Anchor of list matrix. */
-  size_t numReducedRows,                /**< Number of rows in reduced matrix. */
-  size_t numReducedColumns,             /**< Number of columns in reduced matrix. */
-  CMR_SUBMAT** pwheelSubmatrix,         /**< Pointer for storing the wheel submatrix (may be \c NULL). */
-  CMR_SEPA** pseparation                /**< Pointer for storing a 2-separation (may be \c NULL). */
+  CMR* cmr,                     /**< \ref CMR environment. */
+  ListMatrix* listmatrix,       /**< List matrix. */
+  ElementData* rowData,         /**< Row element data. */
+  ElementData* columnData,      /**< Column element data. */
+  CMR_ELEMENT* queue,           /**< Queue memory. */
+  size_t queueMemory,           /**< Size of \p queue. */
+  size_t numReducedRows,        /**< Number of rows in reduced matrix. */
+  size_t numReducedColumns,     /**< Number of columns in reduced matrix. */
+  CMR_SUBMAT** pwheelSubmatrix, /**< Pointer for storing the wheel submatrix (may be \c NULL). */
+  CMR_SEPA** pseparation        /**< Pointer for storing a 2-separation (may be \c NULL). */
 )
 {
+  assert(cmr);
+  assert(listmatrix);
+
   CMRdbgMsg(2, "Searching for wheel graph representation submatrix.\n");
 
-  assert(anchor);
-  assert(anchor->below != anchor);
+  size_t numRows = listmatrix->numRows;
+  size_t numColumns = listmatrix->numColumns;
+  
   size_t currentBFS = 0;
   for (size_t row = 0; row < numRows; ++row)
     rowData[row].specialBFS = false;
@@ -1187,15 +1190,15 @@ CMR_ERROR extractWheelSubmatrix(
   CMR_CALL( CMRallocStackArray(cmr, &targets, numColumns) );
   size_t numEdges = 0;
   for (size_t row = 0; row < numRows; ++row)
-    numEdges += rowListData[row].numNonzeros;
+    numEdges += listmatrix->rowElements[row].numNonzeros;
   while (true)
   {
-    size_t sourceRow = anchor->below->row;
+    size_t sourceRow = listmatrix->anchor.below->row;
     rowData[sourceRow].lastBFS = currentBFS;
     rowData[sourceRow].predecessor = SIZE_MAX;
     rowData[sourceRow].distance = 0;
-    size_t targetColumn = rowListData[sourceRow].head.right->column;
-    rowListData[sourceRow].head.right->special = 1;
+    size_t targetColumn = listmatrix->rowElements[sourceRow].head.right->column;
+    listmatrix->rowElements[sourceRow].head.right->special = 1;
 
     CMRdbgMsg(4, "Searching for a chordless cycle from r%d to c%d.\n", sourceRow+1, targetColumn+1);
 
@@ -1203,9 +1206,9 @@ CMR_ERROR extractWheelSubmatrix(
     targets[0] = CMRcolumnToElement(targetColumn);
     size_t foundTarget = SIZE_MAX;
     currentBFS++;
-    CMR_CALL( breadthFirstSearch(cmr, currentBFS, rowListData, columnListData, rowData, columnData, queue, queueMemory,
-      sources, 1, targets, 1, &foundTarget, 0) );
-    rowListData[sourceRow].head.right->special = 0;
+    CMR_CALL( breadthFirstSearch(cmr, currentBFS, listmatrix->rowElements, listmatrix->columnElements, rowData,
+      columnData, queue, queueMemory, sources, 1, targets, 1, &foundTarget, 0) );
+    listmatrix->rowElements[sourceRow].head.right->special = 0;
     assert(foundTarget == 0);
     size_t length = columnData[targetColumn].distance + 1;
 
@@ -1238,8 +1241,8 @@ CMR_ERROR extractWheelSubmatrix(
       targetColumn+1, rowData[row2].predecessor+1);
 
     /* Go trough the two nonzeros of the two rows simultaneously. */
-    ListMatrixNonzero* nz1 = rowListData[row1].head.right;
-    ListMatrixNonzero* nz2 = rowListData[row2].head.right;
+    ListMatrixNonzero* nz1 = listmatrix->rowElements[row1].head.right;
+    ListMatrixNonzero* nz2 = listmatrix->rowElements[row2].head.right;
     size_t numTargets = 0;
     while (nz1->column != SIZE_MAX)
     {
@@ -1253,7 +1256,7 @@ CMR_ERROR extractWheelSubmatrix(
       else
       {
         columnData[nz1->column].specialBFS = true;
-        nzBlock[numTargets] = columnListData[nz1->column].head.below;
+        nzBlock[numTargets] = listmatrix->columnElements[nz1->column].head.below;
         targets[numTargets++] = CMRcolumnToElement(nz1->column);
         nz1 = nz1->right;
         nz2 = nz2->right;
@@ -1294,8 +1297,8 @@ CMR_ERROR extractWheelSubmatrix(
     currentBFS++;
     foundTarget = SIZE_MAX;
     size_t numTraversedEdges = 0;
-    CMR_CALL( breadthFirstSearch(cmr, currentBFS, rowListData, columnListData, rowData, columnData, queue, queueMemory,
-      sources, numSources, targets, numTargets, &foundTarget, &numTraversedEdges) );
+    CMR_CALL( breadthFirstSearch(cmr, currentBFS, listmatrix->rowElements, listmatrix->columnElements, rowData,
+      columnData, queue, queueMemory, sources, numSources, targets, numTargets, &foundTarget, &numTraversedEdges) );
 
     if (foundTarget < SIZE_MAX && pwheelSubmatrix)
     {
@@ -1331,7 +1334,7 @@ CMR_ERROR extractWheelSubmatrix(
         CMRdbgMsg(4, "Short cycle is induced by r%d,r%d,c%d,c%d.\n", row1+1, row2+1, column1+1, column2+1);
 
         /* Go through nonzeros of row2 and mark them. */
-        for (ListMatrixNonzero* nz = rowListData[row2].head.right; nz->column != SIZE_MAX; nz = nz->right)
+        for (ListMatrixNonzero* nz = listmatrix->rowElements[row2].head.right; nz->column != SIZE_MAX; nz = nz->right)
           columnData[nz->column].lastBFS = -1;
 
         /* Find a non-marked source column. */
@@ -1346,7 +1349,7 @@ CMR_ERROR extractWheelSubmatrix(
         CMRdbgMsg(4, "Adding c%d\n", column3+1);
 
         /* Go through nonzeros of column 2 and mark them. */
-        for (ListMatrixNonzero* nz = columnListData[column2].head.below; nz->row != SIZE_MAX; nz = nz->below)
+        for (ListMatrixNonzero* nz = listmatrix->columnElements[column2].head.below; nz->row != SIZE_MAX; nz = nz->below)
           rowData[nz->row].lastBFS = -1;
 
         /* Find a non-marked source column. */
@@ -1439,23 +1442,23 @@ CMR_ERROR extractWheelSubmatrix(
       for (size_t t = 0; t < numTargets; ++t)
       {
         size_t column = CMRelementToColumnIndex(targets[t]);
-        for (ListMatrixNonzero* nz = columnListData[column].head.below; nz->row != SIZE_MAX; nz = nz->below)
+        for (ListMatrixNonzero* nz = listmatrix->columnElements[column].head.below; nz->row != SIZE_MAX; nz = nz->below)
         {
           if (t > 0 || !rowData[nz->row].specialBFS)
           {
-            rowListData[nz->row].numNonzeros--;
+            listmatrix->rowElements[nz->row].numNonzeros--;
             unlinkNonzero(nz);
           }
           else
             nz->special = 0;
         }
         if (t == 0)
-          columnListData[column].numNonzeros = numSources;
+          listmatrix->columnElements[column].numNonzeros = numSources;
         else
         {
-          columnListData[column].numNonzeros = 0;
-          columnListData[column].head.left->right = columnListData[column].head.right;
-          columnListData[column].head.right->left = columnListData[column].head.left;
+          listmatrix->columnElements[column].numNonzeros = 0;
+          listmatrix->columnElements[column].head.left->right = listmatrix->columnElements[column].head.right;
+          listmatrix->columnElements[column].head.right->left = listmatrix->columnElements[column].head.left;
         }
       }
       
@@ -1472,23 +1475,23 @@ CMR_ERROR extractWheelSubmatrix(
       for (size_t s = 0; s < numSources; ++s)
       {
         size_t row = CMRelementToRowIndex(sources[s]);
-        for (ListMatrixNonzero* nz = rowListData[row].head.right; nz->column != SIZE_MAX; nz = nz->right)
+        for (ListMatrixNonzero* nz = listmatrix->rowElements[row].head.right; nz->column != SIZE_MAX; nz = nz->right)
         {
           if (s > 0 || !columnData[nz->column].specialBFS)
           {
-            columnListData[nz->column].numNonzeros--;
+            listmatrix->columnElements[nz->column].numNonzeros--;
             unlinkNonzero(nz);
           }
           else
             nz->special = 0;
         }
         if (s == 0)
-          rowListData[row].numNonzeros = numTargets;
+          listmatrix->rowElements[row].numNonzeros = numTargets;
         else
         {
-          rowListData[row].numNonzeros = 0;
-          rowListData[row].head.left->right = rowListData[row].head.right;
-          rowListData[row].head.right->left = rowListData[row].head.left;
+          listmatrix->rowElements[row].numNonzeros = 0;
+          listmatrix->rowElements[row].head.left->right = listmatrix->rowElements[row].head.right;
+          listmatrix->rowElements[row].head.right->left = listmatrix->rowElements[row].head.left;
         }
       }
       
@@ -1509,15 +1512,15 @@ CMR_ERROR extractWheelSubmatrix(
 
 static
 CMR_ERROR decomposeBinarySeriesParallel(
-  CMR* cmr,                             /**< \ref CMR environment. */
-  CMR_CHRMAT* matrix,                   /**< Sparse char matrix. */
-  CMR_SP_REDUCTION* reductions,         /**< Array for storing the SP-reductions. Must have capacity at least number of
-                                         **< rows + number of columns. */
-  size_t* pnumReductions,               /**< Pointer for storing the number of SP-reductions. */
-  CMR_SUBMAT** preducedSubmatrix,       /**< Pointer for storing the SP-reduced submatrix (may be \c NULL). */
-  CMR_SUBMAT** pviolatorSubmatrix,      /**< Pointer for storing a wheel-submatrix (may be \c NULL). */
-  CMR_SEPA** pseparation,               /**< Pointer for storing a 2-separation (may be \c NULL). */
-  CMR_SP_STATISTICS* stats              /**< Pointer to statistics (may be \c NULL). */
+  CMR* cmr,                         /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,               /**< Sparse char matrix. */
+  CMR_SP_REDUCTION* reductions,     /**< Array for storing the SP-reductions. Must have capacity at least number of
+                                     **< rows + number of columns. */
+  size_t* pnumReductions,           /**< Pointer for storing the number of SP-reductions. */
+  CMR_SUBMAT** preducedSubmatrix,   /**< Pointer for storing the SP-reduced submatrix (may be \c NULL). */
+  CMR_SUBMAT** pviolatorSubmatrix,  /**< Pointer for storing a wheel-submatrix (may be \c NULL). */
+  CMR_SEPA** pseparation,           /**< Pointer for storing a 2-separation (may be \c NULL). */
+  CMR_SP_STATISTICS* stats          /**< Pointer to statistics (may be \c NULL). */
 )
 {
   assert(cmr);
@@ -1613,9 +1616,8 @@ CMR_ERROR decomposeBinarySeriesParallel(
       if (stats)
         wheelClock = clock();
 
-      CMR_CALL( extractWheelSubmatrix(cmr, matrix->numRows, matrix->numColumns, listmatrix->rowElements,
-        listmatrix->columnElements, rowData, columnData, queue, queueMemory, &listmatrix->anchor, numRows - numRowReductions,
-        numColumns - numColumnReductions, pviolatorSubmatrix, pseparation) );
+      CMR_CALL( extractWheelSubmatrix(cmr, listmatrix, rowData, columnData, queue, queueMemory,
+        numRows - numRowReductions, numColumns - numColumnReductions, pviolatorSubmatrix, pseparation) );
 
       if (stats)
       {
@@ -1708,15 +1710,15 @@ CMR_ERROR CMRdecomposeBinarySeriesParallel(CMR* cmr, CMR_CHRMAT* matrix, bool* p
 
 static
 CMR_ERROR decomposeTernarySeriesParallel(
-  CMR* cmr,                             /**< \ref CMR environment. */
-  CMR_CHRMAT* matrix,                   /**< Sparse char matrix. */
-  CMR_SP_REDUCTION* reductions,         /**< Array for storing the SP-reductions. Must have capacity at least number of
-                                         **< rows + number of columns. */
-  size_t* pnumReductions,               /**< Pointer for storing the number of SP-reductions. */
-  CMR_SUBMAT** preducedSubmatrix,       /**< Pointer for storing the SP-reduced submatrix (may be \c NULL). */
-  CMR_SUBMAT** pviolatorSubmatrix,      /**< Pointer for storing a wheel-submatrix (may be \c NULL). */
-  CMR_SEPA** pseparation,               /**< Pointer for storing a 2-separation (may be \c NULL). */
-  CMR_SP_STATISTICS* stats              /**< Pointer to statistics (may be \c NULL). */
+  CMR* cmr,                         /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,               /**< Sparse char matrix. */
+  CMR_SP_REDUCTION* reductions,     /**< Array for storing the SP-reductions. Must have capacity at least number of
+                                     **< rows + number of columns. */
+  size_t* pnumReductions,           /**< Pointer for storing the number of SP-reductions. */
+  CMR_SUBMAT** preducedSubmatrix,   /**< Pointer for storing the SP-reduced submatrix (may be \c NULL). */
+  CMR_SUBMAT** pviolatorSubmatrix,  /**< Pointer for storing a wheel-submatrix (may be \c NULL). */
+  CMR_SEPA** pseparation,           /**< Pointer for storing a 2-separation (may be \c NULL). */
+  CMR_SP_STATISTICS* stats          /**< Pointer to statistics (may be \c NULL). */
 )
 {
   assert(cmr);
@@ -1809,23 +1811,23 @@ CMR_ERROR decomposeTernarySeriesParallel(
       if (stats)
         nonbinaryClock = clock();
 
-      CMR_CALL( calcBinaryHashFromListMatrix(cmr, &listmatrix->anchor, rowData, columnData, hashVector) );
+      CMR_CALL( calcBinaryHashFromListMatrix(cmr, listmatrix, rowData, columnData, hashVector) );
 
       queueStart = 0;
       queueEnd = 0;
       CMR_CALL( CMRlisthashtableFree(cmr, &rowHashtable) );
       CMR_CALL( CMRlisthashtableCreate(cmr, &rowHashtable, nextPower2(numRows), numRows) );
-      CMR_CALL( initializeQueueHashtableFromListMatrix(cmr, rowHashtable, &listmatrix->anchor, listmatrix->rowElements, rowData, queue,
-        &queueEnd, true) );
+      CMR_CALL( initializeQueueHashtableFromListMatrix(cmr, rowHashtable, listmatrix, rowData, queue, &queueEnd,
+        true) );
 
       CMR_CALL( CMRlisthashtableFree(cmr, &columnHashtable) );
       CMR_CALL( CMRlisthashtableCreate(cmr, &columnHashtable, nextPower2(numColumns), numColumns) );
-      CMR_CALL( initializeQueueHashtableFromListMatrix(cmr, columnHashtable, &listmatrix->anchor, listmatrix->columnElements, columnData, queue,
-        &queueEnd, false) );
+      CMR_CALL( initializeQueueHashtableFromListMatrix(cmr, columnHashtable, listmatrix, columnData, queue, &queueEnd,
+        false) );
 
       CMR_SUBMAT* violatorSubmatrix;
-      CMR_CALL( extractNonbinarySubmatrix(cmr, &listmatrix->anchor, listmatrix->rowElements, listmatrix->columnElements, rowData, columnData, rowHashtable,
-        columnHashtable, hashVector, queue, &queueStart, &queueEnd, queueMemory, &violatorSubmatrix) );
+      CMR_CALL( extractNonbinarySubmatrix(cmr, listmatrix, rowData, columnData, rowHashtable, columnHashtable,
+        hashVector, queue, &queueStart, &queueEnd, queueMemory, &violatorSubmatrix) );
       if (violatorSubmatrix && pviolatorSubmatrix)
         *pviolatorSubmatrix = violatorSubmatrix;
 
@@ -1845,9 +1847,8 @@ CMR_ERROR decomposeTernarySeriesParallel(
         if (stats)
           wheelClock = clock();
 
-        CMR_CALL( extractWheelSubmatrix(cmr, matrix->numRows, matrix->numColumns, listmatrix->rowElements, listmatrix->columnElements, rowData,
-          columnData, queue, queueMemory, &listmatrix->anchor, numRows - numRowReductions, numColumns - numColumnReductions,
-          pviolatorSubmatrix, pseparation) );
+        CMR_CALL( extractWheelSubmatrix(cmr, listmatrix, rowData, columnData, queue, queueMemory,
+          numRows - numRowReductions, numColumns - numColumnReductions, pviolatorSubmatrix, pseparation) );
 
         /* Check whether the rank-1 part also has ternary rank 1. */
         if (pseparation)

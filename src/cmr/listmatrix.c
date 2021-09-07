@@ -115,7 +115,7 @@ CMR_ERROR CMRlistmatrixInitializeFromMatrix(CMR* cmr, ListMatrix* listmatrix, CM
   listmatrix->anchor.value = 0;
   listmatrix->anchor.special = 0;
 
-  size_t i = 0;
+  ListMatrixNonzero* nonzero = &listmatrix->nonzeros[0];
   for (size_t row = 0; row < matrix->numRows; ++row)
   {
     size_t first = matrix->rowSlice[row];
@@ -123,11 +123,11 @@ CMR_ERROR CMRlistmatrixInitializeFromMatrix(CMR* cmr, ListMatrix* listmatrix, CM
     for (size_t e = first; e < beyond; ++e)
     {
       size_t column = matrix->entryColumns[e];
-      listmatrix->nonzeros[i].row = row;
-      listmatrix->nonzeros[i].column = column;
-      listmatrix->nonzeros[i].value = matrix->entryValues[e];
-      listmatrix->nonzeros[i].special = 0;
-      i++;
+      nonzero->row = row;
+      nonzero->column = column;
+      nonzero->value = matrix->entryValues[e];
+      nonzero->special = 0;
+      nonzero++;
       listmatrix->columnElements[column].numNonzeros++;
     }
   }
@@ -171,7 +171,7 @@ CMR_ERROR CMRlistmatrixInitializeFromMatrix(CMR* cmr, ListMatrix* listmatrix, CM
   }
 
   /* Link the lists of nonzeros. */
-  for (i = 0; i < matrix->numNonzeros; ++i)
+  for (size_t i = 0; i < matrix->numNonzeros; ++i)
   {
     ListMatrixNonzero* nz = &listmatrix->nonzeros[i];
 
