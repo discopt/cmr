@@ -7,7 +7,7 @@
 #include "env_internal.h"
 #include "hashtable.h"
 #include "sort.h"
-#include "list_matrix.h"
+#include "listmatrix.h"
 
 #include <limits.h>
 #include <stdint.h>

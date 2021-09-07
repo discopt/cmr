@@ -1,5 +1,5 @@
-#ifndef CMR_LIST_MATRIX_INTERNAL_H
-#define CMR_LIST_MATRIX_INTERNAL_H
+#ifndef CMR_LISTMATRIX_INTERNAL_H
+#define CMR_LISTMATRIX_INTERNAL_H
 
 #include <cmr/env.h>
 #include <cmr/matrix.h>
@@ -98,4 +98,4 @@ CMR_ERROR CMRlistmatrixInitializeFromMatrix(
 }
 #endif
 
-#endif /* CMR_LIST_MATRIX_INTERNAL_H */
+#endif /* CMR_LISTMATRIX_INTERNAL_H */
