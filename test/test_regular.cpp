@@ -142,9 +142,9 @@ TEST(Regular, TwoSumDuringNestedMinorSearch)
     CMR_CHRMAT* matrix = NULL;
     ASSERT_CMR_CALL( CMRtwoSum(cmr, K_3_3, K_3_3_dual, CMRrowToElement(1), CMRcolumnToElement(1), &matrix) );
 
-    CMRchrmatPrintDense(cmr, K_3_3, stdout, '0', true);
-    CMRchrmatPrintDense(cmr, K_3_3_dual, stdout, '0', true);
-    CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
+//     CMRchrmatPrintDense(cmr, K_3_3, stdout, '0', true);
+//     CMRchrmatPrintDense(cmr, K_3_3_dual, stdout, '0', true);
+//     CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
 
     bool isRegular;
     CMR_DEC* dec = NULL;

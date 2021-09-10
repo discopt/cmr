@@ -3,6 +3,8 @@
 
 #include "env_internal.h"
 
+#include <limits.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -123,6 +125,17 @@ CMR_ERROR CMRlisthashtableRemove(
   CMR_LISTHASHTABLE_ENTRY entry  /**< Entry to be removed. */
 );
 
+#define RANGE_SIGNED_HASH (LLONG_MAX/2)
+
+/**
+ * \brief Projects \p value into the range [-RANGE_SIGNED_HASH, +RANGE_SIGNED_HASH] via a modulo computation.
+ */
+
+static inline
+long long projectSignedHash(long long value)
+{
+  return ((value + RANGE_SIGNED_HASH - 1) % (2*RANGE_SIGNED_HASH-1)) - (RANGE_SIGNED_HASH-1);
+}
 
 #ifdef __cplusplus
 }

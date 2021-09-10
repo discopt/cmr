@@ -22,7 +22,7 @@ CMR_ERROR CMRregularInitParameters(CMR_REGULAR_PARAMETERS* params)
   return CMR_OKAY;
 }
 
-static 
+static
 CMR_ERROR testRegularOneConnected(
   CMR* cmr,                       /**< \ref CMR environment. */
   CMR_DEC* dec,                   /**< Decomposition node. */
@@ -67,7 +67,7 @@ CMR_ERROR testRegularOneConnected(
 
   if (submatrix)
     CMR_CALL( CMRsubmatTranspose(submatrix) );
-  
+
   CMRdbgMsg(4, "Splitting off series-parallel elements...");
   CMR_CALL( CMRregularDecomposeSeriesParallel(cmr, &dec, ternary, &submatrix, params) );
 

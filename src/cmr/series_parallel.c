@@ -9,11 +9,8 @@
 #include "sort.h"
 #include "listmatrix.h"
 
-#include <limits.h>
 #include <stdint.h>
 #include <time.h>
-
-#define RANGE_SIGNED_HASH (LLONG_MAX/2)
 
 typedef enum
 {
@@ -36,15 +33,6 @@ typedef struct
   bool specialBFS;                    /**< \brief Whether this is a special node in breadth-first search. */
 } ElementData;
 
-/**
- * \brief Projects \p value into the range [-RANGE_SIGNED_HASH, +RANGE_SIGNED_HASH] via a modulo computation.
- */
-
-static inline
-long long projectSignedHash(long long value)
-{
-  return ((value + RANGE_SIGNED_HASH - 1) % (2*RANGE_SIGNED_HASH-1)) - (RANGE_SIGNED_HASH-1);
-}
 
 CMR_ERROR CMRspInitStatistics(CMR_SP_STATISTICS* stats)
 {

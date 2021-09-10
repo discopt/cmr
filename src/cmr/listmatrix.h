@@ -85,6 +85,17 @@ CMR_ERROR CMRlistmatrixFree(
 );
 
 /**
+ * \brief Initializes a zero matrix.
+ */
+
+CMR_ERROR CMRlistmatrixInitializeZero(
+  CMR* cmr,               /**< \ref CMR environment. */
+  ListMatrix* listmatrix, /**< List matrix. */
+  size_t numRows,         /**< Number of rows. */
+  size_t numColumns       /**< Number of columns. */
+);
+
+/**
  * \brief Copies \p matrix into \p listmatrix.
  */
 
@@ -92,6 +103,39 @@ CMR_ERROR CMRlistmatrixInitializeFromMatrix(
   CMR* cmr,               /**< \ref CMR environment. */
   ListMatrix* listmatrix, /**< List matrix. */
   CMR_CHRMAT* matrix      /**< Matrix to be copied to \p listmatrix. */
+);
+
+
+/**
+ * \brief Copies \p submatrix of \p matrix into \p listmatrix.
+ */
+
+CMR_ERROR CMRlistmatrixInitializeFromSubmatrix(
+  CMR* cmr,               /**< \ref CMR environment. */
+  ListMatrix* listmatrix, /**< List matrix. */
+  CMR_CHRMAT* matrix,     /**< Matrix to be copied to \p listmatrix. */
+  CMR_SUBMAT* submatrix   /**< Submatrix of \p matrix. */
+);
+
+/**
+ * \brief Copies all but \p submatrix of \p matrix into \p listmatrix.
+ */
+
+CMR_ERROR CMRlistmatrixInitializeFromSubmatrixComplement(
+  CMR* cmr,               /**< \ref CMR environment. */
+  ListMatrix* listmatrix, /**< List matrix. */
+  CMR_CHRMAT* matrix,     /**< Matrix to be copied to \p listmatrix. */
+  CMR_SUBMAT* submatrix   /**< Submatrix of \p matrix. */
+);
+
+/**
+ * \brief Prints the list matrix as a dense matrix.
+ */
+
+CMR_ERROR CMRlistmatrixPrintDense(
+  CMR* cmr,               /**< \ref CMR environment. */
+  ListMatrix* listmatrix, /**< List matrix. */
+  FILE* stream            /**< Stream to print to. */
 );
 
 #ifdef __cplusplus
