@@ -13,6 +13,7 @@ CMR_ERROR CMRregularInitParameters(CMR_REGULAR_PARAMETERS* params)
 {
   assert(params);
 
+  params->fastGraphicness = true;
   params->planarityCheck = false;
   params->completeTree = false;
   params->matrices = CMR_DEC_CONSTRUCT_NONE;
@@ -39,34 +40,43 @@ CMR_ERROR testRegularOneConnected(
   CMRdbgMsg(2, "Testing binary %dx%d 1-connected matrix for regularity.\n", dec->matrix->numRows,
     dec->matrix->numColumns);
 
-  CMRdbgMsg(4, "Checking for graphicness...");
   CMR_SUBMAT* submatrix = NULL;
-  bool isGraphic;
-  CMR_CALL( CMRregularTestGraphic(cmr, &dec->matrix, &dec->transpose, ternary, &isGraphic, &dec->graph,
-    &dec->graphForest, &dec->graphCoforest, &dec->graphArcsReversed, &submatrix) );
-  if (isGraphic)
+
+  if (params->fastGraphicness || dec->matrix->numRows <= 3 || dec->matrix->numColumns <= 3)
   {
-    CMRdbgMsg(0, " graphic.\n");
-    dec->type = CMR_DEC_GRAPHIC;
-    if (!params->planarityCheck)
+    /* We run the almost-linear time algorithm. Otherwise, graphicness is checked later for the 3-connected components. */
+
+    if (params->fastGraphicness || params->planarityCheck || dec->matrix->numRows > 3)
+    {
+      CMRdbgMsg(4, "Checking for graphicness...");
+      bool isGraphic;
+      CMR_CALL( CMRregularTestGraphic(cmr, &dec->matrix, &dec->transpose, ternary, &isGraphic, &dec->graph,
+        &dec->graphForest, &dec->graphCoforest, &dec->graphArcsReversed, &submatrix) );
+      if (isGraphic)
+      {
+        CMRdbgMsg(0, " graphic.\n");
+        dec->type = CMR_DEC_GRAPHIC;
+        if (!params->planarityCheck)
+          return CMR_OKAY;
+      }
+      CMRdbgMsg(0, " NOT graphic.\n");
+    }
+
+    CMRdbgMsg(4, "Checking for cographicness...");
+    bool isCographic;
+    CMR_CALL( CMRregularTestGraphic(cmr, &dec->transpose, &dec->matrix, ternary, &isCographic, &dec->cograph,
+      &dec->cographForest, &dec->cographCoforest, &dec->cographArcsReversed, &submatrix) );
+    if (isCographic)
+    {
+      CMRdbgMsg(0, " cographic.\n");
+      dec->type = (dec->type == CMR_DEC_GRAPHIC) ? CMR_DEC_PLANAR : CMR_DEC_COGRAPHIC;
       return CMR_OKAY;
-  }
-  CMRdbgMsg(0, " NOT graphic.\n");
+    }
+    CMRdbgMsg(0, " NOT cographic.\n");
 
-  CMRdbgMsg(4, "Checking for cographicness...");
-  bool isCographic;
-  CMR_CALL( CMRregularTestGraphic(cmr, &dec->transpose, &dec->matrix, ternary, &isCographic, &dec->cograph,
-    &dec->cographForest, &dec->cographCoforest, &dec->cographArcsReversed, &submatrix) );
-  if (isCographic)
-  {
-    CMRdbgMsg(0, " cographic.\n");
-    dec->type = (dec->type == CMR_DEC_GRAPHIC) ? CMR_DEC_PLANAR : CMR_DEC_COGRAPHIC;
-    return CMR_OKAY;
+    if (submatrix)
+      CMR_CALL( CMRsubmatTranspose(submatrix) );
   }
-  CMRdbgMsg(0, " NOT cographic.\n");
-
-  if (submatrix)
-    CMR_CALL( CMRsubmatTranspose(submatrix) );
 
   CMRdbgMsg(4, "Splitting off series-parallel elements...");
   CMR_CALL( CMRregularDecomposeSeriesParallel(cmr, &dec, ternary, &submatrix, params) );
@@ -74,6 +84,11 @@ CMR_ERROR testRegularOneConnected(
   if (dec->type == CMR_DEC_IRREGULAR)
   {
     CMRdbgMsg(0, " NOT regular.\n");
+    return CMR_OKAY;
+  }
+  else if (dec->type == CMR_DEC_SERIES_PARALLEL)
+  {
+    CMRdbgMsg(0, " series-parallel.\n");
     return CMR_OKAY;
   }
 
@@ -98,15 +113,30 @@ CMR_ERROR testRegularOneConnected(
   // TODO: Try out extracting a W_3 minor via pivots to then have a smaller non-(co)graphic minor, reducing search
   //       effort for 3-separations.
 
-//   ListMatrix* nestedMatrix = NULL;
   NestedMinor* nestedMinors = NULL;
   size_t numNestedMinors;
-  CMR_CALL( CMRregularConstructNestedMinorSequence(cmr, dec, ternary, wheelSubmatrix, //&nestedMatrix,
-                                                   &nestedMinors,
-    &numNestedMinors, &submatrix, params) );
+  CMR_CALL( CMRregularConstructNestedMinorSequence(cmr, dec, ternary, wheelSubmatrix, &nestedMinors, &numNestedMinors,
+    &submatrix, params) );
   CMR_CALL( CMRsubmatFree(cmr, &wheelSubmatrix) );
-//   CMR_CALL( CMRregularListMatrixFree(cmr, &nestedMatrix) );
   CMR_CALL( CMRfreeBlockArray(cmr, &nestedMinors) );
+
+  if (dec->type == CMR_DEC_IRREGULAR)
+  {
+    CMRdbgMsg(0, " NOT regular.\n");
+    return CMR_OKAY;
+  }
+
+  if (dec->type == CMR_DEC_TWO_SUM)
+  {
+    CMRdbgMsg(0, " Encountered a 2-separation.\n");
+    assert(dec->numChildren == 2);
+    CMR_CALL( testRegularOneConnected(cmr, dec->children[0], ternary, pisRegular, pminor, params) );
+
+    if (params->completeTree || *pisRegular)
+      CMR_CALL( testRegularOneConnected(cmr, dec->children[1], ternary, pisRegular, pminor, params) );
+
+    return CMR_OKAY;
+  }
 
   return CMR_OKAY;
 }
@@ -215,3 +245,4 @@ CMR_ERROR CMRtestBinaryRegular(CMR* cmr, CMR_CHRMAT* matrix, bool *pisRegular, C
 
   return CMR_OKAY;
 }
+

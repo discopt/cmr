@@ -95,7 +95,7 @@ CMR_ERROR testCamionSigned(
     if (printSubmatrix)
     {
       CMR_CHRMAT* violatorMatrix = NULL;
-      CMR_CALL( CMRchrmatFilterSubmat(cmr, matrix, submatrix, &violatorMatrix) );
+      CMR_CALL( CMRchrmatZoomSubmat(cmr, matrix, submatrix, &violatorMatrix) );
       endTime = clock();
       fprintf(stderr, "\nExtracted %lux%lu non-camion submatrix with %lu nonzeros.\n", violatorMatrix->numRows,
         violatorMatrix->numColumns, violatorMatrix->numNonzeros);

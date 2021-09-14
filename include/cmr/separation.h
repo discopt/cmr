@@ -184,6 +184,7 @@ CMR_ERROR CMRthreeSum(
   CMR_CHRMAT** presult        /**< Pointer for storing the result. */
 );
 
+
 #ifdef __cplusplus
 }
 #endif

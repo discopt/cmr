@@ -171,7 +171,7 @@ TEST(SeriesParallel, BinaryShortWheel)
   ASSERT_EQ( numOperations, 8 );
 
   CMR_CHRMAT* wheelMatrix = NULL;
-  ASSERT_CMR_CALL( CMRchrmatFilterSubmat(cmr, matrix, wheelSubmatrix, &wheelMatrix) );
+  ASSERT_CMR_CALL( CMRchrmatZoomSubmat(cmr, matrix, wheelSubmatrix, &wheelMatrix) );
 
   CMRchrmatPrintDense(cmr, wheelMatrix, stdout, '0', true);
   
@@ -223,7 +223,7 @@ TEST(SeriesParallel, BinaryLongWheel)
   }
   
   CMR_CHRMAT* wheelMatrix = NULL;
-  ASSERT_CMR_CALL( CMRchrmatFilterSubmat(cmr, matrix, wheelSubmatrix, &wheelMatrix) );
+  ASSERT_CMR_CALL( CMRchrmatZoomSubmat(cmr, matrix, wheelSubmatrix, &wheelMatrix) );
 
   CMRchrmatPrintDense(cmr, wheelMatrix, stdout, '0', true);
   
@@ -275,7 +275,7 @@ TEST(SeriesParallel, BinarySpecialWheel)
   }
 
   CMR_CHRMAT* wheelMatrix = NULL;
-  ASSERT_CMR_CALL( CMRchrmatFilterSubmat(cmr, matrix, wheelSubmatrix, &wheelMatrix) );
+  ASSERT_CMR_CALL( CMRchrmatZoomSubmat(cmr, matrix, wheelSubmatrix, &wheelMatrix) );
 
   CMRchrmatPrintDense(cmr, wheelMatrix, stdout, '0', true);
   
@@ -285,7 +285,64 @@ TEST(SeriesParallel, BinarySpecialWheel)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
-TEST(SeriesParallel, BinarySeparation)
+TEST(SeriesParallel, BinarySeparationFirstSearch)
+{
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "11 11 "
+    " 1 1 1 0 0 0 0 0 0 0 0 "
+    " 0 0 1 1 0 0 0 0 0 0 0 "
+    " 0 1 0 1 0 0 0 0 0 0 0 "
+    " 1 0 0 0 1 1 0 0 0 0 0 "
+    " 1 0 0 0 0 0 0 0 0 0 0 "
+    " 0 0 0 0 1 1 0 0 0 0 1 "
+    " 0 0 0 0 0 1 1 0 0 0 0 "
+    " 0 0 0 0 1 0 1 0 1 0 0 "
+    " 0 0 0 0 0 0 1 1 0 0 0 "
+    " 0 0 0 0 0 0 0 0 1 1 0 "
+    " 0 0 0 0 0 0 0 0 0 1 0 "
+  ) );
+
+  CMR_SP_REDUCTION reductions[22];
+  size_t numReductions;
+  CMR_SUBMAT* wheelSubmatrix = NULL;
+  CMR_SEPA* sepa = NULL;
+
+  ASSERT_CMR_CALL( CMRdecomposeBinarySeriesParallel(cmr, matrix, NULL, reductions, &numReductions, NULL,
+    &wheelSubmatrix, &sepa, NULL) );
+  ASSERT_EQ( numReductions, 8 );
+  
+  ASSERT_EQ( sepa->numRows[0], 3 );
+  ASSERT_EQ( sepa->rows[0][0], 0 );
+  ASSERT_EQ( sepa->rows[0][1], 1 );
+  ASSERT_EQ( sepa->rows[0][2], 2 );
+  
+  ASSERT_EQ( sepa->numColumns[0], 3 );
+  ASSERT_EQ( sepa->columns[0][0], 1 );
+  ASSERT_EQ( sepa->columns[0][1], 2 );
+  ASSERT_EQ( sepa->columns[0][2], 3 );
+
+  ASSERT_EQ( sepa->numRows[1], 4 );
+  ASSERT_EQ( sepa->rows[1][0], 3 );
+  ASSERT_EQ( sepa->rows[1][1], 4 );
+  ASSERT_EQ( sepa->rows[1][2], 5 );
+  ASSERT_EQ( sepa->rows[1][3], 6 );
+
+  ASSERT_EQ( sepa->numColumns[1], 4 );
+  ASSERT_EQ( sepa->columns[1][0], 0 );
+  ASSERT_EQ( sepa->columns[1][1], 4 );
+  ASSERT_EQ( sepa->columns[1][2], 5 );
+  ASSERT_EQ( sepa->columns[1][3], 6 );
+
+  ASSERT_CMR_CALL( CMRsepaFree(cmr, &sepa) );
+  ASSERT_CMR_CALL( CMRsubmatFree(cmr, &wheelSubmatrix) );
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
+}
+
+TEST(SeriesParallel, BinarySeparationSecondSearch)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -411,7 +468,7 @@ TEST(SeriesParallel, BinaryWheelAfterSeparation)
   }
 
   CMR_CHRMAT* wheelMatrix = NULL;
-  ASSERT_CMR_CALL( CMRchrmatFilterSubmat(cmr, matrix, wheelSubmatrix, &wheelMatrix) );
+  ASSERT_CMR_CALL( CMRchrmatZoomSubmat(cmr, matrix, wheelSubmatrix, &wheelMatrix) );
 
   CMRchrmatPrintDense(cmr, wheelMatrix, stdout, '0', true);
   
@@ -488,7 +545,7 @@ TEST(SeriesParallel, TernaryNonbinary)
   }
 
   CMR_CHRMAT* violatorMatrix = NULL;
-  ASSERT_CMR_CALL( CMRchrmatFilterSubmat(cmr, matrix, violatorSubmatrix, &violatorMatrix) );
+  ASSERT_CMR_CALL( CMRchrmatZoomSubmat(cmr, matrix, violatorSubmatrix, &violatorMatrix) );
   ASSERT_EQ( violatorMatrix->numNonzeros, 4 );
   int det = violatorMatrix->entryValues[0] * violatorMatrix->entryValues[3]
     - violatorMatrix->entryValues[1] * violatorMatrix->entryValues[2];
@@ -534,7 +591,7 @@ TEST(SeriesParallel, TernaryWheel)
   }
 
   CMR_CHRMAT* violatorMatrix = NULL;
-  ASSERT_CMR_CALL( CMRchrmatFilterSubmat(cmr, matrix, violatorSubmatrix, &violatorMatrix) );
+  ASSERT_CMR_CALL( CMRchrmatZoomSubmat(cmr, matrix, violatorSubmatrix, &violatorMatrix) );
   ASSERT_EQ( violatorMatrix->numNonzeros, 6 );
 
   ASSERT_CMR_CALL( CMRchrmatPrintDense(cmr, violatorMatrix, stdout, '0', true) );
@@ -670,7 +727,7 @@ TEST(SeriesParallel, TernaryBadSeparation)
 
   ASSERT_FALSE( sepa );
   CMR_CHRMAT* violatorMatrix = NULL;
-  ASSERT_CMR_CALL( CMRchrmatFilterSubmat(cmr, matrix, violatorSubmatrix, &violatorMatrix) );
+  ASSERT_CMR_CALL( CMRchrmatZoomSubmat(cmr, matrix, violatorSubmatrix, &violatorMatrix) );
 
   CMRchrmatPrintDense(cmr, violatorMatrix, stdout, '0', true);
 

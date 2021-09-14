@@ -103,7 +103,7 @@ CMR_ERROR matrixSeriesParallel2Sums(
   {
     startClock = clock();
     CMR_CHRMAT* reducedMatrix = NULL;
-    CMR_CALL( CMRchrmatFilterSubmat(cmr, matrix, reducedSubmatrix, &reducedMatrix) );
+    CMR_CALL( CMRchrmatZoomSubmat(cmr, matrix, reducedSubmatrix, &reducedMatrix) );
     endTime = clock();
     fprintf(stderr, "\nExtracted reduced %lux%lu matrix with %lu nonzeros.\n", reducedMatrix->numRows,
       reducedMatrix->numColumns, reducedMatrix->numNonzeros);
@@ -130,7 +130,7 @@ CMR_ERROR matrixSeriesParallel2Sums(
   {
     startClock = clock();
     CMR_CHRMAT* violatorMatrix = NULL;
-    CMR_CALL( CMRchrmatFilterSubmat(cmr, matrix, violatorSubmatrix, &violatorMatrix) );
+    CMR_CALL( CMRchrmatZoomSubmat(cmr, matrix, violatorSubmatrix, &violatorMatrix) );
     endTime = clock();
     fprintf(stderr, "\nMinimal %lux%lu non-series parallel matrix with %lu nonzeros.\n", violatorMatrix->numRows,
       violatorMatrix->numColumns, violatorMatrix->numNonzeros);

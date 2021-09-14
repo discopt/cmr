@@ -71,6 +71,82 @@ CMR_ERROR CMRsubmatTranspose(CMR_SUBMAT* submatrix)
   return CMR_OKAY;
 }
 
+CMR_ERROR CMRsubmatZoomSubmat(CMR* cmr, CMR_SUBMAT* reference, CMR_SUBMAT* input, CMR_SUBMAT** poutput)
+{
+  assert(cmr);
+  assert(reference);
+  assert(input);
+  assert(poutput);
+
+  CMR_CALL( CMRsubmatCreate(cmr, input->numRows, input->numColumns, poutput) );
+  CMR_SUBMAT* output = *poutput;
+
+  /* Create reverse row mapping. */
+  size_t numRows = 0;
+  for (size_t r = 0; r < reference->numRows; ++r)
+  {
+    size_t row = reference->rows[r];
+    numRows = row > numRows ? row : numRows;
+  }
+  ++numRows;
+  size_t* reverseRows = NULL;
+  CMR_CALL( CMRallocStackArray(cmr, &reverseRows, numRows) );
+  for (size_t row = 0; row < numRows; ++row)
+    reverseRows[row] = SIZE_MAX;
+  for (size_t r = 0; r < reference->numRows; ++r)
+    reverseRows[reference->rows[r]] = r;
+
+  /* Create reverse column mapping. */
+  size_t numColumns = 0;
+  for (size_t c = 0; c < reference->numColumns; ++c)
+  {
+    size_t column = reference->columns[c];
+    numColumns = column > numColumns ? column : numColumns;
+  }
+  ++numColumns;
+  size_t* reverseColumns = NULL;
+  CMR_CALL( CMRallocStackArray(cmr, &reverseColumns, numColumns) );
+  for (size_t column = 0; column < numColumns; ++column)
+    reverseColumns[column] = SIZE_MAX;
+  for (size_t c = 0; c < reference->numColumns; ++c)
+    reverseColumns[reference->columns[c]] = c;
+
+  /* Fill submatrix. */
+  for (size_t r = 0; r < input->numRows; ++r)
+  {
+    size_t row = input->rows[r];
+    size_t submatrixRow = reverseRows[row];
+    if (submatrixRow == SIZE_MAX)
+    {
+      CMR_CALL( CMRfreeStackArray(cmr, &reverseColumns) );
+      CMR_CALL( CMRfreeStackArray(cmr, &reverseRows) );
+      CMR_CALL( CMRsubmatFree(cmr, poutput) );
+      return CMR_ERROR_INPUT;
+    }
+    output->rows[r] = submatrixRow;
+  }
+  for (size_t c = 0; c < input->numColumns; ++c)
+  {
+    size_t column = input->columns[c];
+    size_t submatrixColumn = reverseColumns[column];
+    if (submatrixColumn == SIZE_MAX)
+    {
+      CMR_CALL( CMRfreeStackArray(cmr, &reverseColumns) );
+      CMR_CALL( CMRfreeStackArray(cmr, &reverseRows) );
+      CMR_CALL( CMRsubmatFree(cmr, poutput) );
+      return CMR_ERROR_INPUT;
+    }
+    output->columns[c] = submatrixColumn;
+  }
+
+  /* Cleanup. */
+
+  CMR_CALL( CMRfreeStackArray(cmr, &reverseColumns) );
+  CMR_CALL( CMRfreeStackArray(cmr, &reverseRows) );
+
+  return CMR_OKAY;
+}
+
 static int CMRsortSubmatrixCompare(const void* p1, const void* p2)
 {
   return *(size_t*)p1 - *(size_t*)p2;
@@ -1821,7 +1897,7 @@ bool CMRchrmatIsTernary(CMR* cmr, CMR_CHRMAT* matrix, CMR_SUBMAT** psubmatrix)
   return true;
 }
 
-CMR_ERROR CMRdblmatFilterSubmat(CMR* cmr, CMR_DBLMAT* matrix, CMR_SUBMAT* submatrix, CMR_DBLMAT** presult)
+CMR_ERROR CMRdblmatZoomSubmat(CMR* cmr, CMR_DBLMAT* matrix, CMR_SUBMAT* submatrix, CMR_DBLMAT** presult)
 {
   assert(cmr);
   CMRconsistencyAssert( CMRdblmatConsistency(matrix) );
@@ -1890,7 +1966,7 @@ CMR_ERROR CMRdblmatFilterSubmat(CMR* cmr, CMR_DBLMAT* matrix, CMR_SUBMAT* submat
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRintmatFilterSubmat(CMR* cmr, CMR_INTMAT* matrix, CMR_SUBMAT* submatrix, CMR_INTMAT** presult)
+CMR_ERROR CMRintmatZoomSubmat(CMR* cmr, CMR_INTMAT* matrix, CMR_SUBMAT* submatrix, CMR_INTMAT** presult)
 {
   assert(cmr);
   CMRconsistencyAssert( CMRintmatConsistency(matrix) );
@@ -2028,7 +2104,7 @@ CMR_ERROR CMRchrmatFilter(CMR* cmr, CMR_CHRMAT* matrix, size_t numRows, size_t* 
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRchrmatFilterSubmat(CMR* cmr, CMR_CHRMAT* matrix, CMR_SUBMAT* submatrix, CMR_CHRMAT** presult)
+CMR_ERROR CMRchrmatZoomSubmat(CMR* cmr, CMR_CHRMAT* matrix, CMR_SUBMAT* submatrix, CMR_CHRMAT** presult)
 {
   assert(cmr);
   CMRconsistencyAssert( CMRchrmatConsistency(matrix) );

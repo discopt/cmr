@@ -114,22 +114,6 @@ void unlinkNonzero(
 }
 
 /**
- * \brief Returns the smallest power of 2 at least as large as \p x.
- */
-
-static
-size_t nextPower2(size_t x)
-{
-  x |= x >> 1;
-  x |= x >> 2;
-  x |= x >> 4;
-  x |= x >> 8;
-  x |= x >> 16;
-  x |= x >> 32;
-  return x + 1;
-}
-
-/**
  * \brief Allocates and initializes element data (on the stack).
  */
 
@@ -750,36 +734,6 @@ CMR_ERROR extractNonbinarySubmatrix(
   {
 #if defined(CMR_DEBUG)
     CMRdbgMsg(0, "\n");
-    if (anchor)
-    {
-      CMRdbgMsg(4, "Status:\n");
-      for (ListMatrixNonzero* nz = anchor->below; nz != anchor; nz = nz->below)
-      {
-        size_t row = nz->row;
-        CMRdbgMsg(6, "Row r%d: %d nonzeros, hashed = %s, hash = %ld", row+1, rowListData[row].numNonzeros,
-          rowData[row].hashEntry == SIZE_MAX ? "NO" : "YES", rowData[row].hashValue);
-        if (rowData[row].hashEntry != SIZE_MAX)
-        {
-          CMRdbgMsg(0, ", hashtable entry: %d with hash=%d, value=%d", rowData[row].hashEntry,
-            CMRlisthashtableHash(rowHashtable, rowData[row].hashEntry),
-            CMRlisthashtableValue(rowHashtable, rowData[row].hashEntry));
-        }
-        CMRdbgMsg(0, "\n");
-      }
-      for (ListMatrixNonzero* nz = anchor->right; nz != anchor; nz = nz->right)
-      {
-        size_t column = nz->column;
-        CMRdbgMsg(6, "Column c%d: %d nonzeros, hashed = %s, hash = %ld", column+1, columnListData[column].numNonzeros,
-          columnData[column].hashEntry == SIZE_MAX ? "NO" : "YES", columnData[column].hashValue);
-        if (columnData[column].hashEntry != SIZE_MAX)
-        {
-          CMRdbgMsg(0, ", hashtable entry: %d with hash=%d, value=%d", columnData[column].hashEntry,
-            CMRlisthashtableHash(columnHashtable, columnData[column].hashEntry),
-            CMRlisthashtableValue(columnHashtable, columnData[column].hashEntry));
-        }
-        CMRdbgMsg(0, "\n");
-      }
-    }
     for (size_t q = *pqueueStart; q < *pqueueEnd; ++q)
     {
       CMR_ELEMENT e = queue[q % queueMemory];
@@ -790,11 +744,6 @@ CMR_ERROR extractNonbinarySubmatrix(
 
     CMR_ELEMENT element = queue[(*pqueueStart) % queueMemory];
     ++(*pqueueStart);
-
-    CMRdbgMsg(2, "Top element is %s %d with %d nonzeros.\n", CMRelementIsRow(element) ? "row" : "column",
-      CMRelementIsRow(element) ? CMRelementToRowIndex(element) : CMRelementToColumnIndex(element),
-      CMRelementIsRow(element) ? rowListData[CMRelementToRowIndex(element)].numNonzeros :
-      columnListData[CMRelementToColumnIndex(element)].numNonzeros);
 
     if (CMRelementIsRow(element))
     {
@@ -1197,12 +1146,10 @@ CMR_ERROR extractWheelSubmatrix(
     CMR_CALL( breadthFirstSearch(cmr, currentBFS, listmatrix->rowElements, listmatrix->columnElements, rowData,
       columnData, queue, queueMemory, sources, 1, targets, 1, &foundTarget, 0) );
     listmatrix->rowElements[sourceRow].head.right->special = 0;
-    assert(foundTarget == 0);
-    size_t length = columnData[targetColumn].distance + 1;
-
+    size_t length = (foundTarget == SIZE_MAX) ? SIZE_MAX : columnData[targetColumn].distance + 1;
     CMRdbgMsg(4, "Length of cycle is %d.\n", length);
-
-    if (length > 4)
+     
+    if (foundTarget < SIZE_MAX && length > 4)
     {
       /* We found a long chordless cycle. Traverse backwards along path and collect rows/columns. */
       if (pwheelSubmatrix)
@@ -1222,71 +1169,79 @@ CMR_ERROR extractWheelSubmatrix(
       break;
     }
 
-    /* We have found a 2-by-2 matrix with only 1's. */
-    size_t row1 = sourceRow;
-    size_t row2 = columnData[targetColumn].predecessor;
-    CMRdbgMsg(4, "Growing the 2x2 submatrix with 1's is at r%d, r%d, c%d, c%d.\n", row1+1, row2+1,
-      targetColumn+1, rowData[row2].predecessor+1);
-
-    /* Go trough the two nonzeros of the two rows simultaneously. */
-    ListMatrixNonzero* nz1 = listmatrix->rowElements[row1].head.right;
-    ListMatrixNonzero* nz2 = listmatrix->rowElements[row2].head.right;
-    size_t numTargets = 0;
-    while (nz1->column != SIZE_MAX)
+    size_t numSources = SIZE_MAX;
+    size_t numTargets = SIZE_MAX;
+    size_t numTraversedEdges = SIZE_MAX;
+    if (foundTarget < SIZE_MAX)
     {
-      CMRdbgMsg(6, "nonzeros at column indices %d and %d.\n", nz1->column, nz2->column);
-      if (nz1->column < nz2->column)
+      assert(length == 4);
+
+      /* We have found a 2-by-2 matrix with only 1's. */
+      size_t row1 = sourceRow;
+      size_t row2 = columnData[targetColumn].predecessor;
+      CMRdbgMsg(4, "Growing the 2x2 submatrix with 1's is at r%d, r%d, c%d, c%d.\n", row1+1, row2+1,
+        targetColumn+1, rowData[row2].predecessor+1);
+
+      /* Go trough the two nonzeros of the two rows simultaneously. */
+      ListMatrixNonzero* nz1 = listmatrix->rowElements[row1].head.right;
+      ListMatrixNonzero* nz2 = listmatrix->rowElements[row2].head.right;
+      numTargets = 0;
+      while (nz1->column != SIZE_MAX)
       {
-        nz1 = nz1->right;
+        CMRdbgMsg(6, "nonzeros at column indices %d and %d.\n", nz1->column, nz2->column);
+        if (nz1->column < nz2->column)
+        {
+          nz1 = nz1->right;
+        }
+        else if (nz1->column > nz2->column)
+          nz2 = nz2->right;
+        else
+        {
+          columnData[nz1->column].specialBFS = true;
+          nzBlock[numTargets] = listmatrix->columnElements[nz1->column].head.below;
+          targets[numTargets++] = CMRcolumnToElement(nz1->column);
+          nz1 = nz1->right;
+          nz2 = nz2->right;
+        }
       }
-      else if (nz1->column > nz2->column)
-        nz2 = nz2->right;
-      else
+      CMRdbgMsg(4, "Identified %d target columns.\n", numTargets);
+      assert(numTargets >= 2);
+
+      /* Go through the nonzeros of all marked columns simultaneously. */
+      size_t maxIndex = 0;
+      size_t maxRow = nzBlock[0]->row;
+      size_t currentIndex = 1;
+      numSources = 0;
+      while (maxRow != SIZE_MAX)
       {
-        columnData[nz1->column].specialBFS = true;
-        nzBlock[numTargets] = listmatrix->columnElements[nz1->column].head.below;
-        targets[numTargets++] = CMRcolumnToElement(nz1->column);
-        nz1 = nz1->right;
-        nz2 = nz2->right;
+        if (currentIndex == maxIndex)
+        {
+          /* All nonzeros now have the same row. */
+          for (size_t j = 0; j < numTargets; ++j)
+            nzBlock[j]->special = 1;
+          rowData[maxRow].specialBFS = true;
+          sources[numSources++] = CMRrowToElement(maxRow);
+          ++maxRow;
+        }
+        while (nzBlock[currentIndex]->row < maxRow)
+          nzBlock[currentIndex] = nzBlock[currentIndex]->below;
+        if (nzBlock[currentIndex]->row > maxRow)
+        {
+          maxIndex = currentIndex;
+          maxRow = nzBlock[currentIndex]->row;
+        }
+        currentIndex = (currentIndex + 1) % numTargets;
       }
+
+      CMRdbgMsg(4, "Identified %d source rows.\n", numSources);
+      assert(numSources >= 2);
+
+      currentBFS++;
+      foundTarget = SIZE_MAX;
+      numTraversedEdges = 0;
+      CMR_CALL( breadthFirstSearch(cmr, currentBFS, listmatrix->rowElements, listmatrix->columnElements, rowData,
+        columnData, queue, queueMemory, sources, numSources, targets, numTargets, &foundTarget, &numTraversedEdges) );
     }
-    CMRdbgMsg(4, "Identified %d target columns.\n", numTargets);
-    assert(numTargets >= 2);
-
-    /* Go through the nonzeros of all marked columns simultaneously. */
-    size_t maxIndex = 0;
-    size_t maxRow = nzBlock[0]->row;
-    size_t currentIndex = 1;
-    size_t numSources = 0;
-    while (maxRow != SIZE_MAX)
-    {
-      if (currentIndex == maxIndex)
-      {
-        /* All nonzeros now have the same row. */
-        for (size_t j = 0; j < numTargets; ++j)
-          nzBlock[j]->special = 1;
-        rowData[maxRow].specialBFS = true;
-        sources[numSources++] = CMRrowToElement(maxRow);
-        ++maxRow;
-      }
-      while (nzBlock[currentIndex]->row < maxRow)
-        nzBlock[currentIndex] = nzBlock[currentIndex]->below;
-      if (nzBlock[currentIndex]->row > maxRow)
-      {
-        maxIndex = currentIndex;
-        maxRow = nzBlock[currentIndex]->row;
-      }
-      currentIndex = (currentIndex + 1) % numTargets;
-    }
-
-    CMRdbgMsg(4, "Identified %d source rows.\n", numSources);
-    assert(numSources >= 2);
-
-    currentBFS++;
-    foundTarget = SIZE_MAX;
-    size_t numTraversedEdges = 0;
-    CMR_CALL( breadthFirstSearch(cmr, currentBFS, listmatrix->rowElements, listmatrix->columnElements, rowData,
-      columnData, queue, queueMemory, sources, numSources, targets, numTargets, &foundTarget, &numTraversedEdges) );
 
     if (foundTarget < SIZE_MAX && pwheelSubmatrix)
     {
@@ -1364,6 +1319,8 @@ CMR_ERROR extractWheelSubmatrix(
       /* Wheel found, but the user does not care. */
       break;
     }
+
+    assert(foundTarget == SIZE_MAX);
 
     if (pseparation)
     {

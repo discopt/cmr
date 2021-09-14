@@ -51,7 +51,15 @@ CMR_ERROR CMRregularDecomposeSeriesParallel(CMR* cmr, CMR_DEC** pdec, bool terna
       CMR_CALL( CMRdecSetNumChildren(cmr, dec, 1) );
       CMR_CALL( CMRdecCreate(cmr, dec, reducedSubmatrix->numRows, reducedSubmatrix->rows, reducedSubmatrix->numColumns,
         reducedSubmatrix->columns, &dec->children[0]) );
-      CMR_CALL( CMRchrmatFilterSubmat(cmr, dec->matrix, reducedSubmatrix, &dec->children[0]->matrix) );
+      CMR_CALL( CMRchrmatZoomSubmat(cmr, dec->matrix, reducedSubmatrix, &dec->children[0]->matrix) );
+      if (psubmatrix && *psubmatrix)
+      {
+        /* Zoom into submatrix. */
+        CMR_SUBMAT* zoomedSubmatrix = NULL;
+        CMR_CALL( CMRsubmatZoomSubmat(cmr, reducedSubmatrix, *psubmatrix, &zoomedSubmatrix));
+        CMR_CALL( CMRsubmatFree(cmr, psubmatrix) );
+        *psubmatrix = zoomedSubmatrix;
+      }
       dec = dec->children[0];
       *pdec = dec;
     }

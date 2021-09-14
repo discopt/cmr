@@ -215,7 +215,7 @@ TEST(Matrix, Submatrix)
   submatrix->columns[2] = 6;
 
   CMR_CHRMAT* result = NULL;
-  ASSERT_CMR_CALL( CMRchrmatFilterSubmat(cmr, matrix, submatrix, &result) );
+  ASSERT_CMR_CALL( CMRchrmatZoomSubmat(cmr, matrix, submatrix, &result) );
 
   CMRchrmatPrintDense(cmr, result, stdout, '0', true);
   

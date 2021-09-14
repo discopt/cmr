@@ -245,7 +245,11 @@ CMR_ERROR CMRdecomposeBinarySeriesParallel(
  * correspond to an SP reduction is found then such a 2-separation is returned and the algorithm terminates without
  * returning a signed wheel- or \f$ M_2 \f$-submatrix.
  *
+ * \note \p *pviolatorSubmatrix and \p *pseparation refer to \f$ A \f$ and not to the
+ *
  * The running time is \f$ \mathcal{O} (m + n + k) \f$ assuming no hashtable collisions.
+ *
+ * \see CMRsubmatZoomSubmat() for turning \p *pviolatorSubmatrix into a submatrix of the SP-reduced submatrix.
  */
 
 CMR_EXPORT

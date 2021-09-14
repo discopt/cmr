@@ -28,6 +28,7 @@ typedef enum
 
 typedef struct
 {
+  bool fastGraphicness;         /**< \brief Whether to use fast graphicness check; default: \c true */
   bool planarityCheck;          /**< \brief Whether minors identified as graphic should still be checked for
                                  **         cographicness; default: \c false. */
   bool completeTree;            /**< \brief Whether to compute a complete decomposition tree (even if already

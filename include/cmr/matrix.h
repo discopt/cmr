@@ -79,6 +79,21 @@ CMR_ERROR CMRsubmatTranspose(
 );
 
 /**
+ * \brief Returns the submatrix \p input as a submatrix of the \p reference submatrix.
+ *
+ * Assumes that \p input is a sub-submatrix of \p references, i.e., each row/column of \p input must also appear in
+ * \p reference.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRsubmatZoomSubmat(
+  CMR* cmr,               /**< \ref CMR environment. */
+  CMR_SUBMAT* reference,  /**< Reference submatrix. */
+  CMR_SUBMAT* input,      /**< Input submatrix. */
+  CMR_SUBMAT** poutput    /**< Pointer for storing the output submatrix. */
+);
+
+/**
  * \brief Row-wise representation of sparse double matrix.
  * 
  * The nonzeros of the matrix are stored in the arrays \ref entryColumns and \ref entryValues, each of length
@@ -663,7 +678,7 @@ char* CMRchrmatConsistency(
  */
 
 CMR_EXPORT
-CMR_ERROR CMRdblmatFilterSubmat(
+CMR_ERROR CMRdblmatZoomSubmat(
   CMR* cmr,               /**< \ref CMR environment. */
   CMR_DBLMAT* matrix,     /**< A matrix */
   CMR_SUBMAT* submatrix,  /**< A submatrix of \p matrix. */
@@ -675,7 +690,7 @@ CMR_ERROR CMRdblmatFilterSubmat(
  */
 
 CMR_EXPORT
-CMR_ERROR CMRintmatFilterSubmat(
+CMR_ERROR CMRintmatZoomSubmat(
   CMR* cmr,               /**< \ref CMR environment. */
   CMR_INTMAT* matrix,     /**< A matrix */
   CMR_SUBMAT* submatrix,  /**< A submatrix of \p matrix. */
@@ -687,7 +702,7 @@ CMR_ERROR CMRintmatFilterSubmat(
  */
 
 CMR_EXPORT
-CMR_ERROR CMRchrmatFilterSubmat(
+CMR_ERROR CMRchrmatZoomSubmat(
   CMR* cmr,               /**< \ref CMR environment. */
   CMR_CHRMAT* matrix,     /**< A matrix */
   CMR_SUBMAT* submatrix,  /**< A submatrix of \p matrix. */

@@ -25,6 +25,18 @@ const char* CMRelementString(
   char* buffer          /**< Buffer of size at least 32. May be \c NULL, in which case a static buffer is used. */
 );
 
+/**
+ * \brief Returns \c true if \p element is a row or a column element.
+ */
+
+static inline
+bool CMRelementIsValid(
+  CMR_ELEMENT element /**< Element to check for validity. */
+)
+{
+  return element != 0;
+}
+
 static inline
 CMR_ELEMENT CMRrowToElement(
   size_t row  /**< Row index. */
