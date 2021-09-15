@@ -171,25 +171,123 @@ TEST(Regular, TwoSumDuringNestedMinorSearch)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
-TEST(Regular, Playground)
+TEST(Regular, NestedMinorPivotsOneRowOneColumn)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
 
   CMR_CHRMAT* matrix = NULL;
-  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "12 12 "
-    " 0 0 1 0 0 0 0 0 0 0 0 0 "
-    " 0 0 0 1 0 0 0 0 1 0 1 0 "
-    " 0 1 0 0 0 0 0 0 0 0 0 0 "
-    " 1 0 0 0 0 1 1 0 0 0 0 0 "
-    " 1 0 0 0 0 0 0 1 0 1 0 0 "
-    " 0 0 0 0 0 0 0 0 0 0 1 1 "
-    " 0 0 0 0 1 1 0 0 0 0 0 0 "
-    " 1 0 0 1 0 0 0 0 0 1 0 0 "
-    " 0 0 0 0 0 1 0 0 0 1 0 0 "
-    " 0 1 0 0 0 0 1 0 0 0 0 0 "
-    " 0 0 0 0 0 0 0 0 1 0 0 1 "
-    " 0 0 0 1 0 0 0 0 0 0 0 0 "
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "6 6 "
+    " 1 0 1 0 0 0 "
+    " 1 1 0 0 0 1 "
+    " 0 1 1 0 0 0 "
+    " 0 0 0 0 1 1 "
+    " 0 0 0 1 1 0 "
+    " 0 1 1 1 0 0 "
+  ) );
+
+  CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
+
+  bool isRegular;
+  CMR_DEC* dec = NULL;
+  CMR_REGULAR_PARAMETERS params;
+  ASSERT_CMR_CALL( CMRregularInitParameters(&params) );
+  params.fastGraphicness = false;
+  ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, &params) );
+
+  ASSERT_CMR_CALL( CMRdecPrint(cmr, dec, stdout, 0, true, true, true) );
+  
+  ASSERT_CMR_CALL( CMRdecFree(cmr, &dec) );
+
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
+}
+
+TEST(Regular, NestedMinorPivotsTwoRowsOneColumn)
+{
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "7 6 "
+    " 1 0 1 0 0 0 "
+    " 1 1 0 0 0 0 "
+    " 0 1 1 0 0 0 "
+    " 0 0 1 0 0 1 "
+    " 0 0 0 0 1 1 "
+    " 0 0 0 1 1 0 "
+    " 0 1 1 1 0 0 "
+  ) );
+
+  CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
+
+  bool isRegular;
+  CMR_DEC* dec = NULL;
+  CMR_REGULAR_PARAMETERS params;
+  ASSERT_CMR_CALL( CMRregularInitParameters(&params) );
+  params.fastGraphicness = false;
+  ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, &params) );
+
+  ASSERT_CMR_CALL( CMRdecPrint(cmr, dec, stdout, 0, true, true, true) );
+  
+  ASSERT_CMR_CALL( CMRdecFree(cmr, &dec) );
+
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
+}
+
+TEST(Regular, NestedMinorPivotsOneRowTwoColumns)
+{
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "6 7 "
+    " 1 0 1 0 0 0 0 "
+    " 1 1 0 0 0 0 1 "
+    " 0 1 1 1 0 0 1 "
+    " 0 0 0 0 0 1 1 "
+    " 0 0 0 0 1 1 0 "
+    " 0 0 0 1 1 0 0 "
+  ) );
+
+  CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
+
+  bool isRegular;
+  CMR_DEC* dec = NULL;
+  CMR_REGULAR_PARAMETERS params;
+  ASSERT_CMR_CALL( CMRregularInitParameters(&params) );
+  params.fastGraphicness = false;
+  ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, &params) );
+
+  ASSERT_CMR_CALL( CMRdecPrint(cmr, dec, stdout, 0, true, true, true) );
+  
+  ASSERT_CMR_CALL( CMRdecFree(cmr, &dec) );
+
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
+}
+
+TEST(Regular, NestedMinorPivotsTwoSeparation)
+{
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "10 10 "
+    " 1 0 1 0 0 0 0 0 0 0 "
+    " 1 1 0 0 0 1 0 0 0 0 "
+    " 0 1 1 0 0 0 0 0 0 0 "
+    " 0 0 0 0 1 1 0 0 0 0 "
+    " 0 0 0 1 1 0 0 0 0 0 "
+    " 0 1 1 1 0 0 0 0 0 0 "
+    " 0 0 0 0 0 0 0 1 1 1 "
+    " 0 0 0 0 0 0 1 1 0 1 "
+    " 0 1 1 0 0 0 1 0 0 1 "
+    " 0 1 1 0 0 0 0 0 1 0 "
   ) );
 
   CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
@@ -215,11 +313,11 @@ TEST(Regular, RandomMatrix)
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
   
-  srand(0);
-  const int numMatrices = 1000;
-  const int numRows = 12;
-  const int numColumns = numRows;
-  const double probability = 0.3;
+  srand(1);
+  const int numMatrices = 100;
+  const int numRows = 100;
+  const int numColumns = 100;
+  const double probability = 0.2;
 
   for (int i = 0; i < numMatrices; ++i)
   {

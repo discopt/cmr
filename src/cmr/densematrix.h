@@ -84,6 +84,23 @@ void CMRdensebinmatrixSet(
     *pblock &= ~mask;
 }
 
+
+static inline
+void CMRdensebinmatrixFlip(
+  DenseBinaryMatrix* matrix,  /**< Matrix. */
+  size_t row,                 /**< Row index. */
+  size_t column               /**< Column index. */
+)
+{
+  size_t index = row * matrix->numColumns + column;
+  unsigned long long* pblock = &matrix->data[index / (8 * sizeof(unsigned long long))];
+  size_t mask = (1UL << (index % (8 * sizeof(unsigned long long))));
+  if (*pblock & mask)
+    *pblock &= ~mask;
+  else
+    *pblock |= mask;
+}
+
 #ifdef __cplusplus
 }
 #endif

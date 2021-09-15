@@ -72,7 +72,6 @@ CMR_ERROR initializeHashing(
     for (size_t j = 0; j < numProcessedMinors; ++j)
     {
       size_t minor = processedMinors[j];
-      CMRdbgMsg(8, "Checking major %ld and minor %ld.\n", major, minor);
       if (CMRdensebinmatrixGet(dense, isRow ? major : minor, isRow ? minor : major))
       {
         majorData[major].hashValue = projectSignedHash( majorData[major].hashValue + hashVector[minor] );
@@ -366,6 +365,53 @@ CMR_ERROR searchShortestPath(
 }
 
 static
+CMR_ERROR pivot(
+  CMR* cmr,                 /**< \ref CMR environment. */
+  DenseBinaryMatrix* dense, /**< Remaining matrix. */
+  size_t pivotRow,          /**< Pivot row. */
+  size_t pivotColumn        /**< Pivot column. */
+)
+{
+  assert(cmr);
+  assert(dense);
+
+  /* Collect rows to be modified. */
+  size_t* rows = NULL;
+  CMR_CALL( CMRallocStackArray(cmr, &rows, dense->numRows) );
+  size_t numRows = 0;
+  for (size_t row = 0; row < dense->numRows; ++row)
+  {
+    if (row != pivotRow && CMRdensebinmatrixGet(dense, row, pivotColumn))
+      rows[numRows++] = row;
+  }
+
+  /* Collect rows to be modified. */
+  size_t* columns = NULL;
+  CMR_CALL( CMRallocStackArray(cmr, &columns, dense->numColumns) );
+  size_t numColumns = 0;
+  for (size_t column = 0; column < dense->numColumns; ++column)
+  {
+    if (column != pivotColumn && CMRdensebinmatrixGet(dense, pivotRow, column))
+      columns[numColumns++] = column;
+  }
+
+  for (size_t r = 0; r < numRows; ++r)
+  {
+    size_t row = rows[r];
+    for (size_t c = 0; c < numColumns; ++c)
+    {
+      size_t column = columns[c];
+      CMRdensebinmatrixFlip(dense, row, column);
+    }
+  }
+  
+  CMR_CALL( CMRfreeStackArray(cmr, &columns) );
+  CMR_CALL( CMRfreeStackArray(cmr, &rows) );
+  
+  return CMR_OKAY;
+}
+
+static
 CMR_ERROR applyPivots(
   CMR* cmr,                   /**< \ref CMR environment. */
   DenseBinaryMatrix* dense,   /**< Remaining matrix. */
@@ -388,21 +434,51 @@ CMR_ERROR applyPivots(
   size_t countInvolvedElements = 0;
   for (CMR_ELEMENT e = reachedTarget; CMRelementIsValid(e); )
   {
-    if (countInvolvedElements < 3)
-      newElements[countInvolvedElements] = e;
+    if (countInvolvedElements > 0)
+    {
+      newElements[2] = newElements[1];
+      newElements[1] = newElements[0];
+      newElements[0] = e;
+
+      if (CMRelementIsValid(newElements[2]))
+      {
+        CMRdbgMsg(8, "Pivot at %s", CMRelementString(newElements[2], 0));
+        CMRdbgMsg(0, ",%s.\n", CMRelementString(newElements[1], 0));
+
+        unsigned char rowElement = CMRelementIsRow(newElements[2]) ? 2 : 1;
+        size_t pivotRow = CMRelementToRowIndex(newElements[rowElement]);
+        size_t pivotColumn = CMRelementToColumnIndex(newElements[3-rowElement]);
+        CMR_CALL( pivot(cmr, dense, pivotRow, pivotColumn) );
+
+        /* Exchange links to original row/column. */
+        CMR_ELEMENT tmp = rowData[pivotRow].original;
+        rowData[pivotRow].original = columnData[pivotColumn].original;
+        columnData[pivotColumn].original = tmp;
+
+        newElements[2] = 0;
+        newElements[1] = 0;
+      }
+    }
     if (CMRelementIsRow(e))
       e = rowData[CMRelementToRowIndex(e)].predecessor;
     else
       e = columnData[CMRelementToColumnIndex(e)].predecessor;
     ++countInvolvedElements;
   }
+  if (CMRelementIsValid(newElements[1]))
+    newElements[2] = reachedTarget;
+  else
+    newElements[1] = reachedTarget;
 
-  CMRdbgMsg(8, "Path involves %ld elements. Applying %ld pivots at once.\n", countInvolvedElements,
+  CMRdbgMsg(8, "Path involves %ld elements. Applied %ld pivots.\n", countInvolvedElements,
     (countInvolvedElements - 2) / 2);
-  if (countInvolvedElements <= 3)
-    return CMR_OKAY;
 
-  assert("Not implemented.");
+  if (CMRelementIsValid(newElements[0]))
+    CMRdbgMsg(10, "New element %s\n", CMRelementString(newElements[0], 0));
+  if (CMRelementIsValid(newElements[1]))
+    CMRdbgMsg(10, "New element %s\n", CMRelementString(newElements[1], 0));
+  if (CMRelementIsValid(newElements[2]))
+    CMRdbgMsg(10, "New element %s\n", CMRelementString(newElements[2], 0));
 
   return CMR_OKAY;
 }
@@ -495,15 +571,6 @@ CMR_ERROR CMRregularConstructNestedMinorSequence(CMR* cmr, CMR_DEC* dec, bool te
       CMRdensebinmatrixSet1(dense, row, dec->matrix->entryColumns[e]);
   }
 
-  CMRdbgMsg(6, "Dense matrix:\n");
-  for (size_t row = 0; row < dense->numRows; ++row)
-  {
-    CMRdbgMsg(8, "");
-    for (size_t column = 0; column < dense->numColumns; ++column)
-      CMRdbgMsg(0, "%d", CMRdensebinmatrixGet(dense, row, column));
-    CMRdbgMsg(0, "\n");
-  }
-
   /* Initialize row data. */
   ElementData* rowData = NULL;
   CMR_CALL( CMRallocStackArray(cmr, &rowData, numRows) );
@@ -566,6 +633,16 @@ CMR_ERROR CMRregularConstructNestedMinorSequence(CMR* cmr, CMR_DEC* dec, bool te
   while (numProcessedRows < numRows || numProcessedColumns < numColumns)
   {
     CMRdbgMsg(6, "New iteration; processed %ld rows and %ld columns so far.\n", numProcessedRows, numProcessedColumns);
+    
+    CMRdbgMsg(6, "Dense matrix:\n");
+    for (size_t row = 0; row < dense->numRows; ++row)
+    {
+      CMRdbgMsg(8, "");
+      for (size_t column = 0; column < dense->numColumns; ++column)
+        CMRdbgMsg(0, " %d", CMRdensebinmatrixGet(dense, row, column));
+      CMRdbgMsg(0, "\n");
+    }
+    
     for (size_t row = 0; row < numRows; ++row)
     {
       if (rowData[row].isProcessed)
@@ -793,7 +870,10 @@ CMR_ERROR CMRregularConstructNestedMinorSequence(CMR* cmr, CMR_DEC* dec, bool te
     }
   }
 
-  CMRdbgMsg(6, "Successfully constructed sequence of nested 3-connected minors.\n");
+  if (dec->type == CMR_DEC_TWO_SUM)
+    CMRdbgMsg(6, "Aborting construction of sequence of nested 3-connected minors due to a 2-separation.\n");
+  else
+    CMRdbgMsg(6, "Successfully constructed sequence of nested 3-connected minors.\n");
 
   CMR_CALL( CMRlisthashtableFree(cmr, &columnHashtable) );
   CMR_CALL( CMRlisthashtableFree(cmr, &rowHashtable) );
