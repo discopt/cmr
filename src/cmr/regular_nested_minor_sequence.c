@@ -539,16 +539,11 @@ CMR_ERROR addElement(
 }
 
 CMR_ERROR CMRregularConstructNestedMinorSequence(CMR* cmr, CMR_DEC* dec, bool ternary, CMR_SUBMAT* wheelSubmatrix,
-//   ListMatrix** pnestedMatrix,
-  NestedMinor** pnestedMinors, size_t* pnumNestedMinors, CMR_SUBMAT** psubmatrix,
-  CMR_REGULAR_PARAMETERS* params)
+  CMR_SUBMAT** psubmatrix, CMR_REGULAR_PARAMETERS* params)
 {
   assert(cmr);
   assert(dec);
   assert(wheelSubmatrix);
-//   assert(pnestedMatrix);
-//   assert(pnestedMinors);
-  assert(pnumNestedMinors);
   assert(params);
 
   CMRdbgMsg(4, "Attempting to construct a sequence of 3-connected nested minors.\n");

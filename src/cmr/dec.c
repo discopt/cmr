@@ -73,6 +73,10 @@ CMR_ERROR CMRdecFree(CMR* cmr, CMR_DEC** pdec)
   CMR_CALL( CMRfreeBlockArray(cmr, &dec->cographCoforest) );
   CMR_CALL( CMRfreeBlockArray(cmr, &dec->cographArcsReversed) );
   CMR_CALL( CMRfreeBlockArray(cmr, &dec->reductions) );
+  CMR_CALL( CMRchrmatFree(cmr, &dec->nestedMinorsMatrix) );
+  CMR_CALL( CMRfreeBlockArray(cmr, &dec->nestedMinorsSequence) );
+  CMR_CALL( CMRfreeBlockArray(cmr, &dec->nestedMinorsRowsOriginal) );
+  CMR_CALL( CMRfreeBlockArray(cmr, &dec->nestedMinorsColumnsOriginal) );
 
   CMR_CALL( CMRfreeBlock(cmr, pdec) );
 
@@ -366,6 +370,12 @@ CMR_ERROR CMRdecCreate(CMR* cmr, CMR_DEC* parent, size_t numRows, size_t* rowsPa
 
   dec->reductions = NULL;
   dec->numReductions = 0;
+
+  dec->nestedMinorsMatrix = NULL;
+  dec->nestedMinorsSequence = NULL;
+  dec->nestedMinorsLength = 0;
+  dec->nestedMinorsRowsOriginal = NULL;
+  dec->nestedMinorsColumnsOriginal = NULL;
 
   return CMR_OKAY;
 }

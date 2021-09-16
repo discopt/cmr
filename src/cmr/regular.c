@@ -113,12 +113,8 @@ CMR_ERROR testRegularOneConnected(
   // TODO: Try out extracting a W_3 minor via pivots to then have a smaller non-(co)graphic minor, reducing search
   //       effort for 3-separations.
 
-  NestedMinor* nestedMinors = NULL;
-  size_t numNestedMinors;
-  CMR_CALL( CMRregularConstructNestedMinorSequence(cmr, dec, ternary, wheelSubmatrix, &nestedMinors, &numNestedMinors,
-    &submatrix, params) );
+  CMR_CALL( CMRregularConstructNestedMinorSequence(cmr, dec, ternary, wheelSubmatrix, &submatrix, params) );
   CMR_CALL( CMRsubmatFree(cmr, &wheelSubmatrix) );
-  CMR_CALL( CMRfreeBlockArray(cmr, &nestedMinors) );
 
   if (dec->type == CMR_DEC_IRREGULAR)
   {

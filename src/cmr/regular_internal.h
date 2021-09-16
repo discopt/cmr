@@ -72,16 +72,6 @@ CMR_ERROR CMRregularDecomposeSeriesParallel(
   CMR_REGULAR_PARAMETERS* params  /**< Parameters for the computation. */
 );
 
-// CMR_ERROR CMRregularListMatrixFree(
-//   CMR* cmr,             /**< \ref CMR environment. */
-//   ListMatrix** pmatrix  /**< List matrix. */
-// );
-
-typedef struct
-{
-  size_t numRows;
-  size_t numColumns;
-} NestedMinor;
 
 /**
  * \brief Constructs a sequence of nested 3-connected minors for the matrix of a decomposition node.
@@ -94,10 +84,6 @@ CMR_ERROR CMRregularConstructNestedMinorSequence(
   CMR_DEC* dec,                   /**< Decomposition node. */
   bool ternary,                   /**< Whether to consider the signs of the matrix. */
   CMR_SUBMAT* wheelSubmatrix,     /**< Wheel submatrix to start with. */
-//   ListMatrix** pnestedMatrix,     /**< Pointer for storing the list representation of the matrix with visible nested
-//                                    **  3-connected minor sequence. */
-  NestedMinor** pnestedMinors,    /**< Pointer for storing the sequence of nested minors. */
-  size_t* pnumNestedMinors,       /**< Pointer for storing the number of nested minors. */
   CMR_SUBMAT** psubmatrix,        /**< Pointer for storing a violator matrix. */
   CMR_REGULAR_PARAMETERS* params  /**< Parameters for the computation. */
 );
