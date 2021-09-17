@@ -1,4 +1,4 @@
-#define CMR_DEBUG /** Uncomment to debug this file. */
+// #define CMR_DEBUG /** Uncomment to debug this file. */
 
 #include <cmr/regular.h>
 
@@ -46,7 +46,11 @@ CMR_ERROR testRegularThreeConnectedWithSequence(
   CMRdbgMsg(2, "Testing binary %dx%d 3-connected matrix with given nested sequence of 3-connected minors for regularity.\n",
     dec->matrix->numRows, dec->matrix->numColumns);
 
+#if defined(CMR_DEBUG)
   CMR_CALL( CMRdecPrintSequenceNested3ConnectedMinors(cmr, dec, stdout) );
+#endif /* CMR_DEBUG */
+
+  CMRconsistencyAssert( CMRdecConsistency(dec, false) );
 
   return CMR_OKAY;
 }
@@ -109,8 +113,10 @@ CMR_ERROR testRegularTwoConnected(
   if (dec->nestedMinorsMatrix)
   {
     CMRdbgMsg(4, "A partial sequence of nested minors is already known.\n");
-    
+
+#if defined(CMR_DEBUG)
     CMR_CALL( CMRdecPrintSequenceNested3ConnectedMinors(cmr, dec, stdout) );
+#endif /* CMR_DEBUG */
 
     CMR_CALL( CMRregularExtendNestedMinorSequence(cmr, dec, ternary, &submatrix, params) );
     
@@ -137,8 +143,6 @@ CMR_ERROR testRegularTwoConnected(
       CMRdbgMsg(0, " Encountered a 2-separation.\n");
       assert(dec->numChildren == 2);
       CMR_CALL( testRegularTwoConnected(cmr, dec->children[0], ternary, pisRegular, pminor, params) );
-
-      CMR_CALL( CMRdecPrintSequenceNested3ConnectedMinors(cmr, dec->children[0], stdout) );
 
       if (params->completeTree || *pisRegular)
         CMR_CALL( testRegularTwoConnected(cmr, dec->children[1], ternary, pisRegular, pminor, params) );

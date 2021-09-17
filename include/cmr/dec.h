@@ -257,6 +257,25 @@ CMR_ERROR CMRdecPrint(
   bool printReductions  /**< Whether to print series-parallel reductions. */
 );
 
+
+/**
+ * \brief Checks a decomposition for consistency.
+ *
+ * Checks whether a potentially stored alternative matrix (exhibiting a sequence of nested 3-connected minors) correctly
+ * corresponds to the stored matrix.
+ *
+ * \returns \c NULL if consistent. Otherwise, an explanation string is returned, which must free'd with \c free().
+ * 
+ * \see \ref CMRconsistencyAssert() for checking the returned string and aborting in case of inconsistency.
+ */
+
+CMR_EXPORT
+char* CMRdecConsistency(
+  CMR_DEC* dec, /**< Decomposition. */
+  bool recurse  /**< Whether all (grand-)children shall be checked, too. */
+);
+
+
 /**@}*/
 
 #ifdef __cplusplus

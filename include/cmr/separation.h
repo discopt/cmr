@@ -56,12 +56,13 @@ CMR_ERROR CMRsepaCreate(
  *
  * Assumes that \p separation was created via \ref CMRsepaCreate and that all entries of \ref rowsToPart and
  * \ref columnsToPart are set to either 0 or 1.
+ * Connecting elements are given by the caller.
  */
 
 CMR_EXPORT
 CMR_ERROR CMRsepaInitialize(
   CMR* cmr,                   /**< \ref CMR environment. */
-  CMR_SEPA* sepa,             /**< Already created separation. */
+  CMR_SEPA* separation,       /**< Already created separation. */
   size_t firstExtraRow0,      /**< First extra row for part 0 or \c SIZE_MAX if bottom-left rank is 0. */
   size_t firstExtraColumn1,   /**< First extra column for part 1 or \c SIZE_MAX if bottom-left rank is 0. */
   size_t firstExtraRow1,      /**< First extra row for part 1 or \c SIZE_MAX if top-right rank is 0. */
@@ -70,6 +71,22 @@ CMR_ERROR CMRsepaInitialize(
   size_t secondExtraColumn1,  /**< Second extra column for part 1 or \c SIZE_MAX if bottom-left rank is at most 1. */
   size_t secondExtraRow1,     /**< Second extra row for part 1 or \c SIZE_MAX if top-right rank is at most 1. */
   size_t secondExtraColumn0   /**< Second extra column for part 0 or \c SIZE_MAX if top-right rank is at most 1. */
+);
+
+/**
+ * \brief Initializes a separation.
+ *
+ * Assumes that \p separation was created via \ref CMRsepaCreate and that all entries of \ref rowsToPart and
+ * \ref columnsToPart are set to either 0 or 1.
+ * Connecting elements will be searched by inspecting \p matrix.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRsepaInitializeMatrix(
+  CMR* cmr,               /**< \ref CMR environment. */
+  CMR_SEPA* separation,   /**< Already created separation. */
+  CMR_CHRMAT* matrix,     /**< Matrix this separation belongs to. */
+  unsigned char totalRank /**< Total rank of separation. */
 );
 
 /**

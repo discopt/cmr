@@ -511,14 +511,15 @@ CMR_ERROR CMRdecApplySeparation(CMR* cmr, CMR_DEC* dec, CMR_SEPA* sepa)
   assert(dec);
   assert(sepa);
 
+  unsigned char rankBottomLeft = CMRsepaRankBottomLeft(sepa);
+  unsigned char rankTopRight = CMRsepaRankTopRight(sepa);
+  CMRdbgMsg(4, "Ranks are %d and %d.\n", rankBottomLeft, rankTopRight);
+
   if (CMRsepaRank(sepa) == 1)
   {
     dec->type = CMR_DEC_TWO_SUM;
     CMR_CALL( CMRdecSetNumChildren(cmr, dec, 2) );
-    unsigned char rankBottomLeft = CMRsepaRankBottomLeft(sepa);
-    unsigned char rankTopRight = CMRsepaRankTopRight(sepa);
-
-    CMRdbgMsg(4, "Ranks are %d and %d.\n", rankBottomLeft, rankTopRight);
+    
 
     for (size_t child = 0; child < 2; ++child)
     {
@@ -660,4 +661,194 @@ CMR_ERROR CMRdecPrintSequenceNested3ConnectedMinors(CMR* cmr, CMR_DEC* dec, FILE
   }
 
   return CMR_OKAY;
+}
+
+
+static
+char* consistencyNested(
+  CMR_DEC* dec  /**< Decomposition. */
+)
+{
+  assert(dec);
+
+  if (!dec->nestedMinorsMatrix)
+    return NULL;
+
+  if (!dec->matrix)
+    return CMRconsistencyMessage("nested minor matrix exists, but matrix is missing.");
+  if (!dec->nestedMinorsRowsOriginal)
+    return CMRconsistencyMessage("nested minor matrix exists, row mapping is missing.");
+  if (!dec->nestedMinorsColumnsOriginal)
+    return CMRconsistencyMessage("nested minor matrix exists, column mapping is missing.");
+  if (dec->nestedMinorsMatrix->numRows != dec->matrix->numRows)
+  {
+    return CMRconsistencyMessage("nested minor matrix has %ld rows, but matrix has %ld rows.",
+      dec->nestedMinorsMatrix->numRows, dec->matrix->numRows);
+  }
+  if (dec->nestedMinorsMatrix->numColumns != dec->matrix->numColumns)
+  {
+    return CMRconsistencyMessage("nested minor matrix has %ld columns, but matrix has %ld columns.",
+      dec->nestedMinorsMatrix->numColumns, dec->matrix->numColumns);
+  }
+
+  size_t numRows = dec->matrix->numRows;
+  size_t numColumns = dec->matrix->numColumns;
+  
+  char** dense = (char**) malloc( numRows * sizeof(char*) );
+  for (size_t row = 0; row < numRows; ++row)
+  {
+    dense[row] = (char*) malloc( numColumns * sizeof(char) );
+    for (size_t column = 0; column < numColumns; ++column)
+      dense[row][column] = 0;
+    size_t first = dec->nestedMinorsMatrix->rowSlice[row];
+    size_t beyond = dec->nestedMinorsMatrix->rowSlice[row + 1];
+    for (size_t e = first; e < beyond; ++e)
+      dense[row][dec->nestedMinorsMatrix->entryColumns[e]] = dec->nestedMinorsMatrix->entryValues[e];
+  }
+
+  CMR_ELEMENT* rowElements = (CMR_ELEMENT*) malloc( numRows * sizeof(CMR_ELEMENT) );
+  for (size_t row = 0; row < numRows; ++row)
+    rowElements[row] = dec->nestedMinorsRowsOriginal[row];
+  CMR_ELEMENT* columnElements = (CMR_ELEMENT*) malloc( numColumns * sizeof(CMR_ELEMENT) );
+  for (size_t column = 0; column < numColumns; ++column)
+    columnElements[column] = dec->nestedMinorsColumnsOriginal[column];
+
+  while (true)
+  {
+    /* Find row that is labeled as a column. */
+    size_t pivotRow = SIZE_MAX;
+    for (size_t row = 0; row < numRows; ++row)
+    {
+      if (CMRelementIsColumn(rowElements[row]))
+      {
+        pivotRow = row;
+        break;
+      }
+    }
+
+    if (pivotRow == SIZE_MAX)
+      break;
+
+    /* In that row, find a 1-entry whose column is labeled as a row. */
+    size_t pivotColumn = SIZE_MAX;
+    for (size_t column = 0; column < numColumns; ++column)
+    {
+      if (dense[pivotRow][column] && CMRelementIsRow(columnElements[column]))
+      {
+        pivotColumn = column;
+        break;
+      }
+    }
+
+    assert(pivotColumn < SIZE_MAX);
+
+    /* Pivot. */
+    for (size_t row = 0; row < numRows; ++row)
+    {
+      if (!dense[row][pivotColumn] || row == pivotRow)
+        continue;
+
+      for (size_t column = 0; column < numColumns; ++column)
+      {
+        if (!dense[pivotRow][column] || column == pivotColumn)
+          continue;
+
+        dense[row][column] = dense[row][column] ? 0 : 1;
+      }
+    }
+    CMR_ELEMENT swapElement = rowElements[pivotRow];
+    rowElements[pivotRow] = columnElements[pivotColumn];
+    columnElements[pivotColumn] = swapElement;
+  }
+
+  /* Create mapping from matrix to dense. */
+  size_t* rowToDenseRow = (size_t*) malloc( numRows * sizeof(size_t) );
+  for (size_t denseRow = 0; denseRow < numRows; ++denseRow)
+  {
+    assert(CMRelementIsRow(rowElements[denseRow]));
+    size_t row = CMRelementToRowIndex(rowElements[denseRow]);
+    rowToDenseRow[row] = denseRow;
+  }
+  size_t* columnToDenseColumn = (size_t*) malloc( numColumns * sizeof(size_t) );
+  for (size_t denseColumn = 0; denseColumn < numColumns; ++denseColumn)
+  {
+    assert(CMRelementIsColumn(columnElements[denseColumn]));
+    size_t column = CMRelementToColumnIndex(columnElements[denseColumn]);
+    columnToDenseColumn[column] = denseColumn;
+  }
+
+  size_t countNonzeros = 0;
+  for (size_t row = 0; row < numRows; ++row)
+  {
+    for (size_t column = 0; column < numColumns; ++column)
+    {
+      if (dense[row][column])
+        ++countNonzeros;
+    }
+  }
+
+  char* message = NULL;
+  for (size_t row = 0; row < numRows; ++row)
+  {
+    size_t first = dec->matrix->rowSlice[row];
+    size_t beyond = dec->matrix->rowSlice[row + 1];
+    for (size_t e = first; e < beyond; ++e)
+    {
+      size_t column = dec->matrix->entryColumns[e];
+      if (!dense[rowToDenseRow[row]][columnToDenseColumn[column]])
+      {
+        message = CMRconsistencyMessage(
+          "nested minor matrix has zero entry at %ld,%ld after pivoting, while the matrix entry is nonzero.",
+          row, column);
+        break;
+      }
+    }
+    if (message)
+      break;
+  }
+
+  if (!message && countNonzeros != dec->matrix->numNonzeros)
+  {
+    message = CMRconsistencyMessage(
+      "nested minor matrix has %ld nonzeros after pivoting back, while matrix has %ld nonzeros.",
+      countNonzeros, dec->matrix->numNonzeros);
+  }
+
+  free(columnToDenseColumn);
+  free(rowToDenseRow);
+  free(columnElements);
+  free(rowElements);
+  for (size_t row = 0; row < numRows; ++row)
+    free(dense[row]);
+  free(dense);
+
+  return message;
+}
+
+char* CMRdecConsistency(CMR_DEC* dec, bool recurse)
+{
+  if (!dec)
+    return NULL;
+
+  char* message = consistencyNested(dec);
+  if (message)
+    return message;
+
+  if (recurse)
+  {
+    for (size_t c = 0; c < dec->numChildren; ++c)
+    {
+      char* message = CMRdecConsistency(dec->children[c], true);
+      if (message)
+      {
+        size_t length = strlen(message);
+        char* newMessage = (char*) malloc( (length + 16) * sizeof(char));
+        sprintf(newMessage, "child %ld: %s", c, newMessage);
+        free(message);
+        return newMessage;
+      }
+    }
+  }
+
+  return NULL;
 }

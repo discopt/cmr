@@ -309,6 +309,41 @@ TEST(Regular, NestedMinorPivotsTwoSeparation)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
+TEST(Regular, Playground)
+{
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "8 8 "
+    "1 1 0 0 0 0 0 0 "
+    "0 0 0 0 0 0 0 0 "
+    "0 0 0 1 0 0 0 1 "
+    "0 0 0 0 0 1 1 0 "
+    "0 1 0 1 0 1 0 1 "
+    "0 1 0 0 1 0 1 0 "
+    "1 0 0 0 1 0 0 0 "
+    "0 1 0 1 0 1 0 0 "
+  ) );
+
+  CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
+
+  bool isRegular;
+  CMR_DEC* dec = NULL;
+  CMR_REGULAR_PARAMETERS params;
+  ASSERT_CMR_CALL( CMRregularInitParameters(&params) );
+  params.fastGraphicness = false;
+  ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, &params) );
+
+  ASSERT_CMR_CALL( CMRdecPrint(cmr, dec, stdout, 0, true, true, true) );
+  
+  ASSERT_CMR_CALL( CMRdecFree(cmr, &dec) );
+
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
+}
+
 TEST(Regular, RandomMatrix)
 {
   CMR* cmr = NULL;
@@ -316,8 +351,8 @@ TEST(Regular, RandomMatrix)
   
   srand(1);
   const int numMatrices = 100;
-  const int numRows = 10;
-  const int numColumns = 10;
+  const int numRows = 100;
+  const int numColumns = 100;
   const double probability = 0.2;
 
   for (int i = 0; i < numMatrices; ++i)
@@ -341,7 +376,7 @@ TEST(Regular, RandomMatrix)
     }
     A->rowSlice[numRows] = A->numNonzeros;
 
-    printf("\n\n\n\n");
+    printf("\n\n\nTesting the following random matrix:\n");
     ASSERT_CMR_CALL( CMRchrmatPrintDense(cmr, A, stdout, '0', false) );
 
     bool isRegular;
