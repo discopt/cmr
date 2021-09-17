@@ -23,8 +23,36 @@ CMR_ERROR CMRregularInitParameters(CMR_REGULAR_PARAMETERS* params)
   return CMR_OKAY;
 }
 
+
 static
-CMR_ERROR testRegularOneConnected(
+CMR_ERROR testRegularThreeConnectedWithSequence(
+  CMR* cmr,                       /**< \ref CMR environment. */
+  CMR_DEC* dec,                   /**< Decomposition node. */
+  bool ternary,                   /**< Whether signs matter. */
+  bool *pisRegular,               /**< Pointer for storing whether \p matrix is regular. */
+  CMR_MINOR** pminor,             /**< Pointer for storing an \f$ F_7 \f$ or \f$ F_7^\star \f$ minor. */
+  CMR_REGULAR_PARAMETERS* params  /**< Parameters for the computation. */
+)
+{
+  assert(cmr);
+  assert(dec);
+  assert(dec->matrix);
+  assert(dec-> nestedMinorsMatrix);
+  assert(dec-> nestedMinorsRowsOriginal);
+  assert(dec-> nestedMinorsColumnsOriginal);
+  assert(dec-> nestedMinorsSequence);
+  assert(dec-> nestedMinorsLength > 0);
+
+  CMRdbgMsg(2, "Testing binary %dx%d 3-connected matrix with given nested sequence of 3-connected minors for regularity.\n",
+    dec->matrix->numRows, dec->matrix->numColumns);
+
+  CMR_CALL( CMRdecPrintSequenceNested3ConnectedMinors(cmr, dec, stdout) );
+
+  return CMR_OKAY;
+}
+
+static
+CMR_ERROR testRegularTwoConnected(
   CMR* cmr,                       /**< \ref CMR environment. */
   CMR_DEC* dec,                   /**< Decomposition node. */
   bool ternary,                   /**< Whether signs matter. */
@@ -37,7 +65,7 @@ CMR_ERROR testRegularOneConnected(
   assert(dec);
   assert(dec->matrix);
 
-  CMRdbgMsg(2, "Testing binary %dx%d 1-connected matrix for regularity.\n", dec->matrix->numRows,
+  CMRdbgMsg(2, "Testing binary %dx%d 2-connected matrix for regularity.\n", dec->matrix->numRows,
     dec->matrix->numColumns);
 
   CMR_SUBMAT* submatrix = NULL;
@@ -78,17 +106,59 @@ CMR_ERROR testRegularOneConnected(
       CMR_CALL( CMRsubmatTranspose(submatrix) );
   }
 
-  CMRdbgMsg(4, "Splitting off series-parallel elements...");
-  CMR_CALL( CMRregularDecomposeSeriesParallel(cmr, &dec, ternary, &submatrix, params) );
+  if (dec->nestedMinorsMatrix)
+  {
+    CMRdbgMsg(4, "A partial sequence of nested minors is already known.\n");
+    
+    CMR_CALL( CMRdecPrintSequenceNested3ConnectedMinors(cmr, dec, stdout) );
+
+    CMR_CALL( CMRregularExtendNestedMinorSequence(cmr, dec, ternary, &submatrix, params) );
+    
+    /* Handling of the resulting sequence or 2-separation is done at the end. */
+  }
+  else
+  {
+    CMRdbgMsg(4, "Splitting off series-parallel elements...");
+    CMR_CALL( CMRregularDecomposeSeriesParallel(cmr, &dec, ternary, &submatrix, params) );
+
+    if (dec->type == CMR_DEC_IRREGULAR)
+    {
+      CMRdbgMsg(0, " NOT regular.\n");
+      return CMR_OKAY;
+    }
+    else if (dec->type == CMR_DEC_SERIES_PARALLEL)
+    {
+      CMRdbgMsg(0, " series-parallel.\n");
+      return CMR_OKAY;
+    }
+
+    if (dec->type == CMR_DEC_TWO_SUM)
+    {
+      CMRdbgMsg(0, " Encountered a 2-separation.\n");
+      assert(dec->numChildren == 2);
+      CMR_CALL( testRegularTwoConnected(cmr, dec->children[0], ternary, pisRegular, pminor, params) );
+
+      CMR_CALL( CMRdecPrintSequenceNested3ConnectedMinors(cmr, dec->children[0], stdout) );
+
+      if (params->completeTree || *pisRegular)
+        CMR_CALL( testRegularTwoConnected(cmr, dec->children[1], ternary, pisRegular, pminor, params) );
+
+      return CMR_OKAY;
+    }
+
+    CMR_SUBMAT* wheelSubmatrix = submatrix;
+    CMRdbgMsg(0, " Found a W_%d minor.\n", wheelSubmatrix->numRows);
+    submatrix = NULL;
+
+    /* No 2-sum found, so we have a wheel submatrix. */
+
+    CMR_CALL( CMRregularConstructNestedMinorSequence(cmr, dec, ternary, wheelSubmatrix, &submatrix, params) );
+    CMR_CALL( CMRsubmatFree(cmr, &wheelSubmatrix) );
+  }
 
   if (dec->type == CMR_DEC_IRREGULAR)
   {
     CMRdbgMsg(0, " NOT regular.\n");
-    return CMR_OKAY;
-  }
-  else if (dec->type == CMR_DEC_SERIES_PARALLEL)
-  {
-    CMRdbgMsg(0, " series-parallel.\n");
     return CMR_OKAY;
   }
 
@@ -96,43 +166,16 @@ CMR_ERROR testRegularOneConnected(
   {
     CMRdbgMsg(0, " Encountered a 2-separation.\n");
     assert(dec->numChildren == 2);
-    CMR_CALL( testRegularOneConnected(cmr, dec->children[0], ternary, pisRegular, pminor, params) );
+
+    CMR_CALL( testRegularTwoConnected(cmr, dec->children[0], ternary, pisRegular, pminor, params) );
 
     if (params->completeTree || *pisRegular)
-      CMR_CALL( testRegularOneConnected(cmr, dec->children[1], ternary, pisRegular, pminor, params) );
+      CMR_CALL( testRegularTwoConnected(cmr, dec->children[1], ternary, pisRegular, pminor, params) );
 
     return CMR_OKAY;
   }
 
-  CMR_SUBMAT* wheelSubmatrix = submatrix;
-  CMRdbgMsg(0, " Found a W_%d minor.\n", wheelSubmatrix->numRows);
-  submatrix = NULL;
-
-  /* No 2-sum found, so we have a wheel submatrix. */
-
-  // TODO: Try out extracting a W_3 minor via pivots to then have a smaller non-(co)graphic minor, reducing search
-  //       effort for 3-separations.
-
-  CMR_CALL( CMRregularConstructNestedMinorSequence(cmr, dec, ternary, wheelSubmatrix, &submatrix, params) );
-  CMR_CALL( CMRsubmatFree(cmr, &wheelSubmatrix) );
-
-  if (dec->type == CMR_DEC_IRREGULAR)
-  {
-    CMRdbgMsg(0, " NOT regular.\n");
-    return CMR_OKAY;
-  }
-
-  if (dec->type == CMR_DEC_TWO_SUM)
-  {
-    CMRdbgMsg(0, " Encountered a 2-separation.\n");
-    assert(dec->numChildren == 2);
-    CMR_CALL( testRegularOneConnected(cmr, dec->children[0], ternary, pisRegular, pminor, params) );
-
-    if (params->completeTree || *pisRegular)
-      CMR_CALL( testRegularOneConnected(cmr, dec->children[1], ternary, pisRegular, pminor, params) );
-
-    return CMR_OKAY;
-  }
+  CMR_CALL( testRegularThreeConnectedWithSequence(cmr, dec, ternary, pisRegular, pminor, params) );
 
   return CMR_OKAY;
 }
@@ -167,7 +210,7 @@ CMR_ERROR CMRtestRegular(CMR* cmr, CMR_CHRMAT* matrix, bool ternary, bool *pisRe
       if (isRegular || params->completeTree)
       {
         bool childIsRegular = true;
-        CMR_CALL( testRegularOneConnected(cmr, dec->children[c], ternary, &childIsRegular, pminor, params) );
+        CMR_CALL( testRegularTwoConnected(cmr, dec->children[c], ternary, &childIsRegular, pminor, params) );
         if (pminor && *pminor)
           CMR_CALL( CMRdecTranslateMinorToParent(dec->children[c], *pminor) );
 
@@ -177,7 +220,7 @@ CMR_ERROR CMRtestRegular(CMR* cmr, CMR_CHRMAT* matrix, bool ternary, bool *pisRe
   }
   else
   {
-    CMR_CALL( testRegularOneConnected(cmr, dec, ternary, &isRegular, pminor, params) );
+    CMR_CALL( testRegularTwoConnected(cmr, dec, ternary, &isRegular, pminor, params) );
   }
 
   if (pisRegular)
@@ -211,7 +254,7 @@ CMR_ERROR CMRtestBinaryRegularConnected(CMR* cmr, CMR_DEC* dec, CMR_CHRMAT* matr
   assert(dec);
   assert(matrix);
 
-  CMRdbgMsg(2, "Testing binary %dx%d 1-connected matrix for regularity.\n", matrix->numRows, matrix->numColumns);
+  CMRdbgMsg(2, "Testing binary %dx%d 2-connected matrix for regularity.\n", matrix->numRows, matrix->numColumns);
 
 
   return CMR_OKAY;

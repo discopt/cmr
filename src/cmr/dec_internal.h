@@ -40,11 +40,13 @@ struct _CMR_DEC
   CMR_SP_REDUCTION* reductions;             /**< \brief Array of series-parallel reductions. */
   size_t numReductions;                     /**< \brief Length of \p reductions. */
 
-  CMR_CHRMAT* nestedMinorsMatrix;           /**< \brief Equivalent matrix that displays are sequence of nested minors. */
+  CMR_CHRMAT* nestedMinorsMatrix;           /**< \brief Equivalent binary matrix that displays the sequence of nested
+                                             **         minors. */
   CMR_NESTED_MINOR* nestedMinorsSequence;   /**< \brief Sequence of nested minors. */
   size_t nestedMinorsLength;                /**< \brief Length of sequence of nested minors. */
   CMR_ELEMENT* nestedMinorsRowsOriginal;    /**< \brief Maps rows of \p nestedMinorsMatrix to elements of \p matrix. */
-  CMR_ELEMENT* nestedMinorsColumnsOriginal; /**< \brief Maps columns of \p nestedMinorsMatrix to elements of \p matrix. */
+  CMR_ELEMENT* nestedMinorsColumnsOriginal; /**< \brief Maps columns of \p nestedMinorsMatrix to elements of 
+                                             **         \p matrix. */
 };
 
 /**
@@ -105,6 +107,16 @@ CMR_ERROR CMRdecApplySeparation(
   CMR* cmr,       /**< \ref CMR environment. */
   CMR_DEC* dec,   /**< Decomposition node. */
   CMR_SEPA* sepa  /**< Separation. */
+);
+
+/**
+ * \brief Prints the sequence of nested 3-connected minors for the matrix of a decomposition node.
+ */
+
+CMR_ERROR CMRdecPrintSequenceNested3ConnectedMinors(
+  CMR* cmr,     /**< \ref CMR environment. */
+  CMR_DEC* dec, /**< Decomposition node. */
+  FILE* stream  /**< Stream to print to. */
 );
 
 #endif /* CMR_DEC_INTERNAL_H */

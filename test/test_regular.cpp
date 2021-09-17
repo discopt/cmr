@@ -56,7 +56,7 @@ TEST(Regular, OneSum)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
-TEST(Regular, TwoSumDuringSeriesParallel)
+TEST(Regular, SeriesParallelTwoSeparation)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -116,7 +116,7 @@ TEST(Regular, TwoSumDuringSeriesParallel)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
-TEST(Regular, TwoSumDuringNestedMinorSearch)
+TEST(Regular, NestedMinorSearchTwoSeparation)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -277,17 +277,18 @@ TEST(Regular, NestedMinorPivotsTwoSeparation)
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
 
   CMR_CHRMAT* matrix = NULL;
-  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "10 10 "
-    " 1 0 1 0 0 0 0 0 0 0 "
-    " 1 1 0 0 0 1 0 0 0 0 "
-    " 0 1 1 0 0 0 0 0 0 0 "
-    " 0 0 0 0 1 1 0 0 0 0 "
-    " 0 0 0 1 1 0 0 0 0 0 "
-    " 0 1 1 1 0 0 0 0 0 0 "
-    " 0 0 0 0 0 0 0 1 1 1 "
-    " 0 0 0 0 0 0 1 1 0 1 "
-    " 0 1 1 0 0 0 1 0 0 1 "
-    " 0 1 1 0 0 0 0 0 1 0 "
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "11 11 "
+    " 1 0 1 0 0 0 0 0 0 0 0 "
+    " 1 1 0 0 0 1 0 0 0 0 0 "
+    " 0 1 1 0 0 0 0 0 0 0 0 "
+    " 0 0 0 0 1 1 0 0 0 0 0 "
+    " 0 0 0 1 1 0 0 0 0 0 1 "
+    " 0 1 1 1 0 0 0 0 0 1 0 "
+    " 0 0 0 0 0 0 0 1 1 0 0 "
+    " 0 0 0 0 0 0 1 1 0 0 0 "
+    " 0 1 1 0 0 0 1 0 0 0 0 "
+    " 0 1 1 0 0 0 0 0 1 0 0 "
+    " 0 0 0 0 0 0 0 0 0 1 1 "
   ) );
 
   CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
@@ -315,8 +316,8 @@ TEST(Regular, RandomMatrix)
   
   srand(1);
   const int numMatrices = 100;
-  const int numRows = 100;
-  const int numColumns = 100;
+  const int numRows = 10;
+  const int numColumns = 10;
   const double probability = 0.2;
 
   for (int i = 0; i < numMatrices; ++i)

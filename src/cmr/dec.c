@@ -4,6 +4,8 @@
 #include "dec_internal.h"
 #include "matrix_internal.h"
 
+#include <string.h>
+
 bool CMRdecHasMatrix(CMR_DEC* dec)
 {
   assert(dec);
@@ -550,6 +552,111 @@ CMR_ERROR CMRdecApplySeparation(CMR* cmr, CMR_DEC* dec, CMR_SEPA* sepa)
   else
   {
     assert("CMRdecApplySeparation only implemented for 2-sums." == 0);
+  }
+
+  return CMR_OKAY;
+}
+
+CMR_ERROR CMRdecPrintSequenceNested3ConnectedMinors(CMR* cmr, CMR_DEC* dec, FILE* stream)
+{
+  assert(cmr);
+  assert(dec);
+  assert(stream);
+
+  if (!dec->nestedMinorsMatrix)
+    return CMR_OKAY;
+
+  bool isComplete = dec->nestedMinorsSequence[dec->nestedMinorsLength-1].numColumns == dec->matrix->numColumns
+    && dec->nestedMinorsSequence[dec->nestedMinorsLength-1].numRows == dec->matrix->numRows;
+
+  for (int i = 0; i < 3; ++i)
+  {
+    fprintf(stream, "%*s", 3+ 2*i, "");
+    for (size_t column = i; column < dec->matrix->numColumns; column += 3)
+    {
+      char buffer[16];
+      strcpy(buffer, CMRelementString(dec->nestedMinorsColumnsOriginal[column], 0));
+      size_t length = strlen(buffer);
+      int leftPadding = (6-length) / 2;
+      int rightPadding = 6-length - leftPadding;
+      fprintf(stream, "%*s%s%*s", leftPadding, "", buffer, rightPadding, "");
+    }
+    fputs("\n", stream);
+  }
+
+  fputs("    ", stream);
+  for (size_t column = 0; column < dec->matrix->numColumns; ++column)
+    fputs(column == 0 ? "+-" : "--", stream);
+  fprintf(stream, "%s\n", isComplete ? "+" : "");
+
+  size_t maxNested = 0;
+  for (size_t row = 0; row < dec->matrix->numRows; ++row)
+  {
+    /* maxNested is the first minor with #rows > current row. */
+    bool increased = false;
+    while (maxNested < dec->nestedMinorsLength && dec->nestedMinorsSequence[maxNested].numRows <= row)
+    {
+      increased = true;
+      ++maxNested;
+    }
+
+    if (increased)
+    {
+      fprintf(stream, "    ");
+      for (size_t column = 0; column < dec->matrix->numColumns; ++column)
+      {
+        char separator = ' ';
+        for (size_t j = maxNested; j < dec->nestedMinorsLength; ++j)
+        {
+          if (dec->nestedMinorsSequence[j].numColumns == column)
+            separator = '|';
+        }
+
+        if (column < dec->nestedMinorsSequence[maxNested-1].numColumns)
+          fprintf(stream, column == 0 ? "+-" : "--");
+        else if (column == dec->nestedMinorsSequence[maxNested-1].numColumns)
+          fprintf(stream, "+ ");
+        else
+          fprintf(stream, "%c ", separator);
+      }
+      fprintf(stream, "%s\n", isComplete ? "|" : "");
+    }
+    
+    /* Row label */
+    char buffer[16];
+    strcpy(buffer, CMRelementString(dec->nestedMinorsRowsOriginal[row], 0));
+    size_t length = strlen(buffer);
+    int rightPadding = 4-length;
+    fprintf(stream, "%s%*s", buffer, rightPadding, "");
+
+    size_t first = dec->nestedMinorsMatrix->rowSlice[row];
+    size_t beyond = dec->nestedMinorsMatrix->rowSlice[row + 1];
+    size_t e = first;
+    for (size_t column = 0; column < dec->matrix->numColumns; ++column)
+    {
+      char value;
+      if (e < beyond && dec->nestedMinorsMatrix->entryColumns[e] == column)
+      {
+        value = '1';
+        ++e;
+      }
+      else
+        value = '0';
+      char separator = column > 0 ? ' ' : '|';
+      for (size_t j = maxNested; j < dec->nestedMinorsLength; ++j)
+        if (dec->nestedMinorsSequence[j].numColumns == column)
+          separator = '|';
+      fprintf(stream, "%c%c", separator, value);
+    }
+    fprintf(stream, "%s\n", isComplete ? "|" : "");
+  }
+
+  if (isComplete)
+  {
+    fputs("    ", stream);
+    for (size_t column = 0; column < dec->matrix->numColumns; ++column)
+      fputs(column == 0 ? "+-" : "--", stream);
+    fputs("+\n", stream);
   }
 
   return CMR_OKAY;

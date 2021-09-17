@@ -76,7 +76,8 @@ CMR_ERROR CMRregularDecomposeSeriesParallel(
 /**
  * \brief Constructs a sequence of nested 3-connected minors for the matrix of a decomposition node.
  *
- * In case the matrix is not 3-connected, a 2-separation is applied to \p dec and the function terminates.
+ * In case the matrix is not 3-connected, a 2-separation is applied to \p dec and the function terminates, filling
+ * the relevant variables of \p dec.
  */
 
 CMR_ERROR CMRregularConstructNestedMinorSequence(
@@ -84,6 +85,21 @@ CMR_ERROR CMRregularConstructNestedMinorSequence(
   CMR_DEC* dec,                   /**< Decomposition node. */
   bool ternary,                   /**< Whether to consider the signs of the matrix. */
   CMR_SUBMAT* wheelSubmatrix,     /**< Wheel submatrix to start with. */
+  CMR_SUBMAT** psubmatrix,        /**< Pointer for storing a violator matrix. */
+  CMR_REGULAR_PARAMETERS* params  /**< Parameters for the computation. */
+);
+
+/**
+ * \brief Extends an incomplete sequence of nested 3-connected minors for the matrix of a decomposition node.
+ *
+ * In case the matrix is not 3-connected, a 2-separation is applied to \p dec and the function terminates, filling
+ * the relevant variables of \p dec.
+ */
+
+CMR_ERROR CMRregularExtendNestedMinorSequence(
+  CMR* cmr,                       /**< \ref CMR environment. */
+  CMR_DEC* dec,                   /**< Decomposition node. */
+  bool ternary,                   /**< Whether to consider the signs of the matrix. */
   CMR_SUBMAT** psubmatrix,        /**< Pointer for storing a violator matrix. */
   CMR_REGULAR_PARAMETERS* params  /**< Parameters for the computation. */
 );
