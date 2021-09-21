@@ -604,60 +604,107 @@ TEST(Regular, SequenceGraphicnessOneRow)
     testSequenceGraphicness(cmr, matrix, true);
   }
 
-
-
-
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
-TEST(Regular, RandomMatrix)
+TEST(Regular, R10)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
-  
-  srand(2);
-  const int numMatrices = 1000;
-  const int numRows = 10;
-  const int numColumns = 10;
-  const double probability = 0.2;
 
-  for (int i = 0; i < numMatrices; ++i)
   {
-    CMR_CHRMAT* A = NULL;
-    CMRchrmatCreate(cmr, &A, numRows, numColumns, numRows * numColumns);
+    CMR_CHRMAT* matrix = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "5 5 "
+      "1 0 0 1 1 "
+      "1 1 0 0 1 "
+      "0 1 1 0 1 "
+      "0 0 1 1 1 "
+      "1 1 1 1 1 "
+    ) );
 
-    A->numNonzeros = 0;
-    for (int row = 0; row < numRows; ++row)
-    {
-      A->rowSlice[row] = A->numNonzeros;
-      for (int column = 0; column < numColumns; ++column)
-      {
-        if ((rand() * 1.0 / RAND_MAX) < probability)
-        {
-          A->entryColumns[A->numNonzeros] = column;
-          A->entryValues[A->numNonzeros] = 1;
-          A->numNonzeros++;
-        }
-      }
-    }
-    A->rowSlice[numRows] = A->numNonzeros;
-
-    printf("\n\n\nTesting the following random matrix:\n");
-    ASSERT_CMR_CALL( CMRchrmatPrintDense(cmr, A, stdout, '0', false) );
+    CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
 
     bool isRegular;
     CMR_DEC* dec = NULL;
-    CMR_REGULAR_PARAMETERS params;
-    ASSERT_CMR_CALL( CMRregularInitParameters(&params) );
-    params.fastGraphicness = false;
-    ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, A, &isRegular, &dec, NULL, &params) );
+    ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, NULL) );
+    ASSERT_TRUE( CMRdecIsRegular(dec) );
+    ASSERT_EQ( CMRdecNumChildren(dec), 0 );
     ASSERT_CMR_CALL( CMRdecFree(cmr, &dec) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  }
 
-    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &A) );
+  {
+    CMR_CHRMAT* matrix = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "5 5 "
+      "1 1 0 0 1 "
+      "1 1 1 0 0 "
+      "0 1 1 1 0 "
+      "0 0 1 1 1 "
+      "1 0 0 1 1 "
+    ) );
+
+    CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
+
+    bool isRegular;
+    CMR_DEC* dec = NULL;
+    ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, NULL) );
+    ASSERT_TRUE( CMRdecIsRegular(dec) );
+    ASSERT_EQ( CMRdecNumChildren(dec), 0 );
+    ASSERT_CMR_CALL( CMRdecFree(cmr, &dec) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
   }
 
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
+
+// TEST(Regular, RandomMatrix)
+// {
+//   CMR* cmr = NULL;
+//   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+//   
+//   srand(2);
+//   const int numMatrices = 10000;
+//   const int numRows = 5;
+//   const int numColumns = 5;
+//   const double probability = 0.5;
+// 
+//   for (int i = 0; i < numMatrices; ++i)
+//   {
+//     CMR_CHRMAT* A = NULL;
+//     CMRchrmatCreate(cmr, &A, numRows, numColumns, numRows * numColumns);
+// 
+//     A->numNonzeros = 0;
+//     for (int row = 0; row < numRows; ++row)
+//     {
+//       A->rowSlice[row] = A->numNonzeros;
+//       for (int column = 0; column < numColumns; ++column)
+//       {
+//         if ((rand() * 1.0 / RAND_MAX) < probability)
+//         {
+//           A->entryColumns[A->numNonzeros] = column;
+//           A->entryValues[A->numNonzeros] = 1;
+//           A->numNonzeros++;
+//         }
+//       }
+//     }
+//     A->rowSlice[numRows] = A->numNonzeros;
+// 
+//     printf("\n\n\nTesting the following random matrix:\n");
+//     ASSERT_CMR_CALL( CMRchrmatPrintDense(cmr, A, stdout, '0', false) );
+// 
+//     bool isRegular;
+//     CMR_DEC* dec = NULL;
+//     CMR_REGULAR_PARAMETERS params;
+//     ASSERT_CMR_CALL( CMRregularInitParameters(&params) );
+//     params.fastGraphicness = false;
+//     ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, A, &isRegular, &dec, NULL, &params) );
+//     ASSERT_CMR_CALL( CMRdecFree(cmr, &dec) );
+// 
+//     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &A) );
+//   }
+// 
+//   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
+// }
 
 // TEST(Regular, Playground)
 // {

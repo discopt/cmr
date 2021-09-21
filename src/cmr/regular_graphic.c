@@ -1175,6 +1175,7 @@ CMR_ERROR createWheel(
   return CMR_OKAY;
 }
 
+
 CMR_ERROR CMRregularSequenceGraphic(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT* transpose, CMR_ELEMENT* rowElements,
   CMR_ELEMENT* columnElements, size_t lengthSequence, size_t* sequenceNumRows, size_t* sequenceNumColumns,
   size_t* plastGraphicMinor, CMR_GRAPH** pgraph, CMR_ELEMENT** pedgeElements)

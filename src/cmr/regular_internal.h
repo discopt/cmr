@@ -55,6 +55,16 @@ CMR_ERROR CMRregularTestGraphic(
 );
 
 /**
+ * \brief Tests whether given 3-connected matrix represents \f$ R_{10} \f$.
+ */
+
+CMR_ERROR CMRregularThreeConnectedIsR10(
+  CMR* cmr,     /**< \ref CMR environment. */
+  CMR_DEC* dec, /**< Decomposition. */
+  bool* pisR10  /**< Pointer for storing whether \p matrix represents \f$ R_{10} \f$. */
+);
+
+/**
  * \brief Tests sequence of nested 3-connected minors for graphicness.
  */
 

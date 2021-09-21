@@ -54,6 +54,7 @@ add_library(cmr
   src/cmr/regular.c
   src/cmr/regular_graphic.c
   src/cmr/regular_onesum.c
+  src/cmr/regular_r10.c
   src/cmr/regular_series_parallel.c
   src/cmr/separation.cpp
   src/cmr/separation.c

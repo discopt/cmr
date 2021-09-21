@@ -146,9 +146,17 @@ CMR_ERROR testRegularThreeConnectedWithSequence(
 
   if (!dec->graph && !dec->cograph)
   {
-    CMRdbgMsg(8, "Neither graphic (until %ld) nor cographic (until %ld)!\n", lastGraphicMinor, lastCographicMinor);
+    CMRdbgMsg(8, "Checking for R10.\n");
+    bool isR10;
+    CMR_CALL( CMRregularThreeConnectedIsR10(cmr, dec, &isR10) );
 
-//     assert("Not implemented" == 0);
+    if (!isR10)
+    {
+      CMRdbgMsg(8, "Neither graphic (until %ld) nor cographic (until %ld), nor R_10!\n", lastGraphicMinor,
+        lastCographicMinor);
+    
+      assert("Not implemented" == 0);
+    }
   }
 
   CMR_CALL( CMRchrmatFree(cmr, &nestedMinorsTranspose) );
