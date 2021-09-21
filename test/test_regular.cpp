@@ -4,6 +4,7 @@
 
 #include <cmr/regular.h>
 #include <cmr/separation.h>
+#include <cmr/graphic.h>
 
 TEST(Regular, OneSum)
 {
@@ -105,7 +106,7 @@ TEST(Regular, SeriesParallelTwoSeparation)
     ASSERT_TRUE( CMRdecIsCographic(CMRdecChild(dec, 0)) );
     ASSERT_TRUE( CMRdecIsGraphic(CMRdecChild(dec, 1)) );
     ASSERT_FALSE( CMRdecIsCographic(CMRdecChild(dec, 1)) );
-    
+
     ASSERT_CMR_CALL( CMRdecFree(cmr, &dec) );
 
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
@@ -309,24 +310,19 @@ TEST(Regular, NestedMinorPivotsTwoSeparation)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
-TEST(Regular, Playground)
+/**
+ * \brief Tests a matrix that is graphic.
+ */
+
+static
+void testSequenceGraphicness(
+  CMR* cmr,           /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix, /**< Matrix to test. */
+  bool knowGraphic    /**< Whether the matrix is graphic. */
+)
 {
-  CMR* cmr = NULL;
-  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
-
-  CMR_CHRMAT* matrix = NULL;
-  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "8 8 "
-    "1 1 0 0 0 0 0 0 "
-    "0 0 0 0 0 0 0 0 "
-    "0 0 0 1 0 0 0 1 "
-    "0 0 0 0 0 1 1 0 "
-    "0 1 0 1 0 1 0 1 "
-    "0 1 0 0 1 0 1 0 "
-    "1 0 0 0 1 0 0 0 "
-    "0 1 0 1 0 1 0 0 "
-  ) );
-
-  CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
+  printf("Testing matrix for graphicness via nested minor sequence:\n");
+  ASSERT_CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', true) );
 
   bool isRegular;
   CMR_DEC* dec = NULL;
@@ -335,11 +331,281 @@ TEST(Regular, Playground)
   params.fastGraphicness = false;
   ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, &params) );
 
-  ASSERT_CMR_CALL( CMRdecPrint(cmr, dec, stdout, 0, true, true, true) );
-  
-  ASSERT_CMR_CALL( CMRdecFree(cmr, &dec) );
+  if (knowGraphic)
+  {
+    ASSERT_TRUE( isRegular );
+    ASSERT_TRUE( CMRdecIsGraphic(dec) );
+    CMR_CHRMAT* graphicMatrix = NULL;
+    bool isForest;
+    ASSERT_CMR_CALL( CMRcomputeGraphicMatrix(cmr, CMRdecGraph(dec), &graphicMatrix, NULL, CMRdecGraphSizeForest(dec),
+      CMRdecGraphForest(dec), CMRdecGraphSizeCoforest(dec), CMRdecGraphCoforest(dec), &isForest) );
+    if (!CMRchrmatCheckEqual(matrix, graphicMatrix))
+    {
+      printf("Computed graph with different representation matrix:\n");
+      CMRchrmatPrintDense(cmr, graphicMatrix, stdout, '0', true);
+    }
+    ASSERT_TRUE( CMRchrmatCheckEqual(matrix, graphicMatrix) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &graphicMatrix) );
+    ASSERT_TRUE(isForest);
+  }
+  else
+  {
+    ASSERT_FALSE( CMRdecIsGraphic(dec) );
+  }
 
+  ASSERT_CMR_CALL( CMRdecPrint(cmr, dec, stdout, 0, true, true, true) );
+
+  ASSERT_CMR_CALL( CMRdecFree(cmr, &dec) );
   ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+}
+
+TEST(Regular, SequenceGraphicnessWheel)
+{
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+
+  {
+    CMR_CHRMAT* matrix = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "6 6 "
+      "1 0 0 0 0 1 "
+      "1 1 0 0 0 0 "
+      "0 1 1 0 0 0 "
+      "0 0 1 1 0 0 "
+      "0 0 0 1 1 0 "
+      "0 0 0 0 1 1 "
+    ) );
+    testSequenceGraphicness(cmr, matrix, true);
+  }
+
+  {
+    CMR_CHRMAT* matrix = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "4 4 "
+      "1 0 1 0 "
+      "1 1 0 0 "
+      "0 1 1 1 "
+      "0 0 1 1 "
+    ) );
+    testSequenceGraphicness(cmr, matrix, true);
+  }
+
+  {
+    CMR_CHRMAT* matrix = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "4 4 "
+      "1 1 1 0 "
+      "1 1 0 0 "
+      "0 1 1 1 "
+      "0 0 1 1 "
+    ) );
+    testSequenceGraphicness(cmr, matrix, true);
+  }
+  
+  {
+    CMR_CHRMAT* matrix = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "4 4 "
+      "1 0 1 0 "
+      "1 1 1 0 "
+      "0 1 1 1 "
+      "0 0 1 1 "
+    ) );
+    testSequenceGraphicness(cmr, matrix, true);
+  }
+
+  {
+    CMR_CHRMAT* matrix = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "4 4 "
+      "1 0 1 0 "
+      "1 1 0 0 "
+      "1 1 1 1 "
+      "0 0 1 1 "
+    ) );
+    testSequenceGraphicness(cmr, matrix, true);
+  }
+
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
+}
+
+TEST(Regular, SequenceGraphicnessOneRowOneColumn)
+{
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+
+  {
+    CMR_CHRMAT* matrix = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "7 7 "
+      "1 0 0 1   0   0   0 "
+      "1 1 0 0   0   0   0 "
+      "0 1 1 0   0   0   0 "
+      "0 0 1 1   1   1   1 "
+      "                    "
+      "0 0 0 1   1   1   1 "
+      "                    "
+      "0 0 1 1   1   0   0 "
+      "                    "
+      "0 0 0 0   1   0   1 "
+    ) );
+    testSequenceGraphicness(cmr, matrix, true);
+  }
+
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
+}
+
+TEST(Regular, SequenceGraphicnessTwoRowsOneColumn)
+{
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+
+  {
+    CMR_CHRMAT* matrix = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "8 6 "
+      "1 0 0 1   0   0 "
+      "1 1 0 0   0   0 "
+      "0 1 1 0   0   0 "
+      "0 0 1 1   0   0 "
+      "                "
+      "0 0 0 1   1   0 "
+      "0 0 1 1   1   0 "
+      "                "
+      "0 0 0 1   0   1 "
+      "0 0 0 0   1   1 "
+    ) );
+    testSequenceGraphicness(cmr, matrix, true);
+  }
+
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
+}
+
+TEST(Regular, SequenceGraphicnessOneRowTwoColumns)
+{
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+
+  {
+    CMR_CHRMAT* matrix = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "6 8 "
+      "1 0 0 1   0 0   0 0 "
+      "1 1 0 0   0 0   0 0 "
+      "0 1 1 0   1 0   1 0 "
+      "0 0 1 1   0 1   0 1 "
+      "                    "
+      "0 0 0 0   1 1   1 1 "
+      "                    "
+      "0 0 0 0   0 0   1 1 "
+    ) );
+    testSequenceGraphicness(cmr, matrix, true);
+  }
+
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
+}
+
+TEST(Regular, SequenceGraphicnessOneColumn)
+{
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+
+  {
+    CMR_CHRMAT* matrix = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "6 6 "
+      "1 0 0 1   0   0 "
+      "1 1 0 0   0   0 "
+      "0 1 1 0   0   0 "
+      "0 0 1 1   0   1 "
+      "                "
+      "0 0 0 1   1   0 "
+      "0 0 1 1   1   1 "
+    ) );
+    testSequenceGraphicness(cmr, matrix, true);
+  }
+
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
+}
+
+TEST(Regular, SequenceGraphicnessOneRow)
+{
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+
+  {
+    CMR_CHRMAT* matrix = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "6 5 "
+      "1 1 0   0   0 "
+      "0 1 1   0   1 "
+      "1 0 1   1   0 "
+      "              "
+      "1 0 0   1   0 "
+      "              "
+      "0 1 0   0   1 "
+      "              "
+      "0 1 1   0   0 "
+    ) );
+    testSequenceGraphicness(cmr, matrix, true);
+  }
+
+  {
+    CMR_CHRMAT* matrix = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "5 5 "
+      "1 1 0   0  1 " 
+      "0 1 1   1  0 "
+      "1 0 1   0  0 "
+      "             "
+      "0 1 0   1  1 "
+      "             "
+      "0 0 0   1  1 "
+    ) );
+    testSequenceGraphicness(cmr, matrix, false);
+  }
+
+  {
+    /* Runs into addition of a single row, at least 1 articulation point, but none begin part of all fundamental cycles
+     * induced by 1-edges. */
+    CMR_CHRMAT* matrix = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "10 9 "
+      "1 1 0 0 0 0 0 0 0 "
+      "0 1 1 1 0 0 0 0 0 "
+      "0 1 1 0 0 0 0 0 0 "
+      "1 0 1 0 0 0 0 0 0 "
+      "0 0 1 1 0 0 0 0 1 "
+      "1 0 1 1 1 0 0 0 0 "
+      "0 0 0 1 0 1 0 0 0 "
+      "0 0 0 0 0 1 1 1 0 "
+      "0 0 0 0 0 1 0 0 0 "
+      "0 0 0 0 0 0 1 0 0 "
+    ) );
+    testSequenceGraphicness(cmr, matrix, false);
+  }
+  
+  {
+    /* Runs into addition of a single row with a unique 1 articulation point, but for which the auxiliary graph is not
+     * bipartite. */
+    CMR_CHRMAT* matrix = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "8 10 "
+      "1 0 1 0 1 0 0 0 0 0 "
+      "1 1 1 1 1 0 0 0 0 0 "
+      "0 0 0 0 1 1 0 0 0 0 "
+      "0 1 0 1 1 0 0 1 1 0 "
+      "0 1 1 0 1 1 1 0 0 0 "
+      "0 0 0 0 0 0 1 1 0 0 "
+      "0 0 0 1 0 0 0 0 0 1 "
+      "0 0 1 0 0 0 0 0 0 1 "
+    ) );
+    testSequenceGraphicness(cmr, matrix, false);
+  }
+
+  {
+    /* Runs into addition of a single row with a unique 1 articulation point and bipartite auxiliary graph, and a
+     * 1-edge adjacent to the split node. */
+    CMR_CHRMAT* matrix = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "5 5 "
+      "1 1 0 0 1 "
+      "1 1 1 0 1 "
+      "0 1 1 1 0 "
+      "1 0 0 1 0 "
+      "0 1 1 1 1 "
+    ) );
+    testSequenceGraphicness(cmr, matrix, true);
+  }
+
+
+
 
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
@@ -349,10 +615,10 @@ TEST(Regular, RandomMatrix)
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
   
-  srand(1);
-  const int numMatrices = 100;
-  const int numRows = 100;
-  const int numColumns = 100;
+  srand(2);
+  const int numMatrices = 1000;
+  const int numRows = 10;
+  const int numColumns = 10;
   const double probability = 0.2;
 
   for (int i = 0; i < numMatrices; ++i)
@@ -392,3 +658,38 @@ TEST(Regular, RandomMatrix)
 
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
+
+// TEST(Regular, Playground)
+// {
+//   CMR* cmr = NULL;
+//   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+// 
+//   CMR_CHRMAT* matrix = NULL;
+//   ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "8 8 "
+//     "1 1 0 0 0 0 0 0 "
+//     "0 0 0 0 0 0 0 0 "
+//     "0 0 0 1 0 0 0 1 "
+//     "0 0 0 0 0 1 1 0 "
+//     "0 1 0 1 0 1 0 1 "
+//     "0 1 0 0 1 0 1 0 "
+//     "1 0 0 0 1 0 0 0 "
+//     "0 1 0 1 0 1 0 0 "
+//   ) );
+// 
+//   CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
+// 
+//   bool isRegular;
+//   CMR_DEC* dec = NULL;
+//   CMR_REGULAR_PARAMETERS params;
+//   ASSERT_CMR_CALL( CMRregularInitParameters(&params) );
+//   params.fastGraphicness = false;
+//   ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, &params) );
+// 
+//   ASSERT_CMR_CALL( CMRdecPrint(cmr, dec, stdout, 0, true, true, true) );
+//   
+//   ASSERT_CMR_CALL( CMRdecFree(cmr, &dec) );
+// 
+//   ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+// 
+//   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
+// }

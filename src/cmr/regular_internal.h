@@ -55,6 +55,24 @@ CMR_ERROR CMRregularTestGraphic(
 );
 
 /**
+ * \brief Tests sequence of nested 3-connected minors for graphicness.
+ */
+
+CMR_ERROR CMRregularSequenceGraphic(
+  CMR* cmr,                     /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,           /**< Matrix. */
+  CMR_CHRMAT* transpose,        /**< Transpose. */
+  CMR_ELEMENT* rowElements,     /**< Mapping from matrix rows to original elements. */
+  CMR_ELEMENT* columnElements,  /**< Mapping from matrix columns to original elements. */
+  size_t lengthSequence,        /**< Length of the sequence of nested minors. */
+  size_t* sequenceNumRows,      /**< Array with number of rows of each minor. */  
+  size_t* sequenceNumColumns,   /**< Array with number of columns of each minor. */  
+  size_t* plastGraphicMinor,    /**< Pointer for storing the last graphic minor. */
+  CMR_GRAPH** pgraph,           /**< Pointer for storing the graph. */
+  CMR_ELEMENT** pedgeElements   /**< Pointer for storing the mapping of edges to elements. */
+);
+
+/**
  * \brief Splits off series-parallel elements from the matrix of a decomposition node.
  *
  * In case the matrix is \ref series-parallel, then \p *pmatrix is set to \c NULL and \p *pdec is declared to be planar.

@@ -275,6 +275,96 @@ char* CMRdecConsistency(
   bool recurse  /**< Whether all (grand-)children shall be checked, too. */
 );
 
+/**
+ * \brief Returns the graph (if available).
+ */
+
+CMR_EXPORT
+CMR_GRAPH* CMRdecGraph(
+  CMR_DEC* dec  /**< Decomposition. */
+);
+
+/**
+ * \brief Returns the forest of the graph (if available).
+ */
+
+CMR_EXPORT
+CMR_GRAPH_EDGE* CMRdecGraphForest(
+  CMR_DEC* dec  /**< Decomposition. */
+);
+
+/**
+ * \brief Returns the number of edges of the graph's forest (if available).
+ */
+
+CMR_EXPORT
+size_t CMRdecGraphSizeForest(
+  CMR_DEC* dec  /**< Decomposition. */
+);
+
+/**
+ * \brief Returns the coforest of the graph (if available).
+ */
+
+CMR_EXPORT
+CMR_GRAPH_EDGE* CMRdecGraphCoforest(
+  CMR_DEC* dec  /**< Decomposition. */
+);
+
+/**
+ * \brief Returns the number of edges of the graph's coforest (if available).
+ */
+
+CMR_EXPORT
+size_t CMRdecGraphSizeCoforest(
+  CMR_DEC* dec  /**< Decomposition. */
+);
+
+/**
+ * \brief Returns an array that indicates for the graph's edges whether they must be reversed (if available).
+ */
+
+CMR_EXPORT
+bool* CMRdecGraphArcsReversed(
+  CMR_DEC* dec  /**< Decomposition. */
+);
+
+/**
+ * \brief Returns the cograph (if available).
+ */
+
+CMR_EXPORT
+CMR_GRAPH* CMRdecCograph(
+  CMR_DEC* dec  /**< Decomposition. */
+);
+
+/**
+ * \brief Returns the forest of the cograph (if available).
+ */
+
+CMR_EXPORT
+CMR_GRAPH_EDGE* CMRdecCographForest(
+  CMR_DEC* dec  /**< Decomposition. */
+);
+
+/**
+ * \brief Returns the coforest of the cograph (if available).
+ */
+
+CMR_EXPORT
+CMR_GRAPH_EDGE* CMRdecCographCoforest(
+  CMR_DEC* dec  /**< Decomposition. */
+);
+
+/**
+ * \brief Returns an array that indicates for the cograph's edges whether they must be reversed (if available).
+ */
+
+CMR_EXPORT
+bool* CMRdecCographArcsReversed(
+  CMR_DEC* dec  /**< Decomposition. */
+);
+
 
 /**@}*/
 

@@ -5,12 +5,6 @@
 #include <cmr/matroid.h>
 #include <cmr/series_parallel.h>
 
-typedef struct
-{
-  size_t numRows;
-  size_t numColumns;
-} CMR_NESTED_MINOR;
-
 struct _CMR_DEC
 {
   CMR_DEC_TYPE type;                        /**< \brief Type of this node. */
@@ -42,7 +36,8 @@ struct _CMR_DEC
 
   CMR_CHRMAT* nestedMinorsMatrix;           /**< \brief Equivalent binary matrix that displays the sequence of nested
                                              **         minors. */
-  CMR_NESTED_MINOR* nestedMinorsSequence;   /**< \brief Sequence of nested minors. */
+  size_t* nestedMinorsSequenceNumRows;      /**< \brief Number of rows of sequence of nested minors. */
+  size_t* nestedMinorsSequenceNumColumns;   /**< \brief Number of columns of sequence of nested minors. */
   size_t nestedMinorsLength;                /**< \brief Length of sequence of nested minors. */
   CMR_ELEMENT* nestedMinorsRowsOriginal;    /**< \brief Maps rows of \p nestedMinorsMatrix to elements of \p matrix. */
   CMR_ELEMENT* nestedMinorsColumnsOriginal; /**< \brief Maps columns of \p nestedMinorsMatrix to elements of 

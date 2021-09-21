@@ -87,6 +87,18 @@ size_t CMRelementToColumnIndex(
   return -1 + element;
 }
 
+/**
+ * \brief Transposes \p element, i.e., turns rows into columns and vice versa.
+ */
+
+static inline
+CMR_ELEMENT CMRelementTranspose(
+  CMR_ELEMENT element /**< Element to transpose. */
+)
+{
+  return -element;
+}
+
 #ifdef __cplusplus
 }
 #endif

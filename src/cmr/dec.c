@@ -76,7 +76,8 @@ CMR_ERROR CMRdecFree(CMR* cmr, CMR_DEC** pdec)
   CMR_CALL( CMRfreeBlockArray(cmr, &dec->cographArcsReversed) );
   CMR_CALL( CMRfreeBlockArray(cmr, &dec->reductions) );
   CMR_CALL( CMRchrmatFree(cmr, &dec->nestedMinorsMatrix) );
-  CMR_CALL( CMRfreeBlockArray(cmr, &dec->nestedMinorsSequence) );
+  CMR_CALL( CMRfreeBlockArray(cmr, &dec->nestedMinorsSequenceNumColumns) );
+  CMR_CALL( CMRfreeBlockArray(cmr, &dec->nestedMinorsSequenceNumRows) );
   CMR_CALL( CMRfreeBlockArray(cmr, &dec->nestedMinorsRowsOriginal) );
   CMR_CALL( CMRfreeBlockArray(cmr, &dec->nestedMinorsColumnsOriginal) );
 
@@ -374,7 +375,8 @@ CMR_ERROR CMRdecCreate(CMR* cmr, CMR_DEC* parent, size_t numRows, size_t* rowsPa
   dec->numReductions = 0;
 
   dec->nestedMinorsMatrix = NULL;
-  dec->nestedMinorsSequence = NULL;
+  dec->nestedMinorsSequenceNumRows= NULL;
+  dec->nestedMinorsSequenceNumColumns = NULL;
   dec->nestedMinorsLength = 0;
   dec->nestedMinorsRowsOriginal = NULL;
   dec->nestedMinorsColumnsOriginal = NULL;
@@ -567,8 +569,8 @@ CMR_ERROR CMRdecPrintSequenceNested3ConnectedMinors(CMR* cmr, CMR_DEC* dec, FILE
   if (!dec->nestedMinorsMatrix)
     return CMR_OKAY;
 
-  bool isComplete = dec->nestedMinorsSequence[dec->nestedMinorsLength-1].numColumns == dec->matrix->numColumns
-    && dec->nestedMinorsSequence[dec->nestedMinorsLength-1].numRows == dec->matrix->numRows;
+  bool isComplete = dec->nestedMinorsSequenceNumColumns[dec->nestedMinorsLength-1] == dec->matrix->numColumns
+    && dec->nestedMinorsSequenceNumRows[dec->nestedMinorsLength-1] == dec->matrix->numRows;
 
   for (int i = 0; i < 3; ++i)
   {
@@ -595,7 +597,7 @@ CMR_ERROR CMRdecPrintSequenceNested3ConnectedMinors(CMR* cmr, CMR_DEC* dec, FILE
   {
     /* maxNested is the first minor with #rows > current row. */
     bool increased = false;
-    while (maxNested < dec->nestedMinorsLength && dec->nestedMinorsSequence[maxNested].numRows <= row)
+    while (maxNested < dec->nestedMinorsLength && dec->nestedMinorsSequenceNumRows[maxNested] <= row)
     {
       increased = true;
       ++maxNested;
@@ -609,13 +611,13 @@ CMR_ERROR CMRdecPrintSequenceNested3ConnectedMinors(CMR* cmr, CMR_DEC* dec, FILE
         char separator = ' ';
         for (size_t j = maxNested; j < dec->nestedMinorsLength; ++j)
         {
-          if (dec->nestedMinorsSequence[j].numColumns == column)
+          if (dec->nestedMinorsSequenceNumColumns[j] == column)
             separator = '|';
         }
 
-        if (column < dec->nestedMinorsSequence[maxNested-1].numColumns)
+        if (column < dec->nestedMinorsSequenceNumColumns[maxNested-1])
           fprintf(stream, column == 0 ? "+-" : "--");
-        else if (column == dec->nestedMinorsSequence[maxNested-1].numColumns)
+        else if (column == dec->nestedMinorsSequenceNumColumns[maxNested-1])
           fprintf(stream, "+ ");
         else
           fprintf(stream, "%c ", separator);
@@ -645,7 +647,7 @@ CMR_ERROR CMRdecPrintSequenceNested3ConnectedMinors(CMR* cmr, CMR_DEC* dec, FILE
         value = '0';
       char separator = column > 0 ? ' ' : '|';
       for (size_t j = maxNested; j < dec->nestedMinorsLength; ++j)
-        if (dec->nestedMinorsSequence[j].numColumns == column)
+        if (dec->nestedMinorsSequenceNumColumns[j] == column)
           separator = '|';
       fprintf(stream, "%c%c", separator, value);
     }
@@ -851,4 +853,116 @@ char* CMRdecConsistency(CMR_DEC* dec, bool recurse)
   }
 
   return NULL;
+}
+
+CMR_GRAPH* CMRdecGraph(CMR_DEC* dec)
+{
+  assert(dec);
+
+  return dec->graph;
+}
+
+CMR_GRAPH_EDGE* CMRdecGraphForest(CMR_DEC* dec)
+{
+  assert(dec);
+
+  return dec->graphForest;
+}
+
+size_t CMRdecGraphSizeForest(CMR_DEC* dec)
+{
+  assert(dec);
+
+  if (dec->matrix)
+    return dec->numRows;
+  else if (dec->transpose)
+    return dec->numColumns;
+  else if (dec->graph)
+    return CMRgraphNumNodes(dec->graph) - 1;
+  else
+    return SIZE_MAX;
+}
+
+CMR_GRAPH_EDGE* CMRdecGraphCoforest(CMR_DEC* dec)
+{
+  assert(dec);
+
+  return dec->graphCoforest;
+}
+
+size_t CMRdecGraphSizeCoforest(CMR_DEC* dec)
+{
+  assert(dec);
+
+  if (dec->matrix)
+    return dec->numColumns;
+  else if (dec->transpose)
+    return dec->numRows;
+  else if (dec->graph)
+    return CMRgraphNumEdges(dec->graph) + 1 - CMRgraphNumNodes(dec->graph);
+  else
+    return SIZE_MAX;
+}
+
+bool* CMRdecGraphArcsReversed(CMR_DEC* dec)
+{
+  assert(dec);
+
+  return dec->graphArcsReversed;
+}
+
+CMR_GRAPH* CMRdecCograph(CMR_DEC* dec)
+{
+  assert(dec);
+
+  return dec->cograph;
+}
+
+CMR_GRAPH_EDGE* CMRdecCographForest(CMR_DEC* dec)
+{
+  assert(dec);
+
+  return dec->cographForest;
+}
+
+CMR_GRAPH_EDGE* CMRdecCographCoforest(CMR_DEC* dec)
+{
+  assert(dec);
+
+  return dec->cographCoforest;
+}
+
+bool* CMRdecCographArcsReversed(CMR_DEC* dec)
+{
+  assert(dec);
+
+  return dec->cographArcsReversed;
+}
+
+size_t CMRdecCographSizeForest(CMR_DEC* dec)
+{
+  assert(dec);
+
+  if (dec->matrix)
+    return dec->numColumns;
+  else if (dec->transpose)
+    return dec->numRows;
+  else if (dec->cograph)
+    return CMRgraphNumNodes(dec->cograph) - 1;
+  else
+    return SIZE_MAX;
+}
+
+size_t CMRdecCographSizeCoforest(CMR_DEC* dec)
+{
+  assert(dec);
+
+  if (dec->matrix)
+    return dec->numRows;
+  else if (dec->transpose)
+    return dec->numColumns;
+  else if (dec->cograph)
+    return CMRgraphNumEdges(dec->cograph) + 1 - CMRgraphNumNodes(dec->cograph);
+  else
+    return SIZE_MAX;
 }

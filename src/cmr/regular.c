@@ -1,4 +1,4 @@
-// #define CMR_DEBUG /** Uncomment to debug this file. */
+#define CMR_DEBUG /** Uncomment to debug this file. */
 
 #include <cmr/regular.h>
 
@@ -23,7 +23,6 @@ CMR_ERROR CMRregularInitParameters(CMR_REGULAR_PARAMETERS* params)
   return CMR_OKAY;
 }
 
-
 static
 CMR_ERROR testRegularThreeConnectedWithSequence(
   CMR* cmr,                       /**< \ref CMR environment. */
@@ -37,13 +36,14 @@ CMR_ERROR testRegularThreeConnectedWithSequence(
   assert(cmr);
   assert(dec);
   assert(dec->matrix);
-  assert(dec-> nestedMinorsMatrix);
-  assert(dec-> nestedMinorsRowsOriginal);
-  assert(dec-> nestedMinorsColumnsOriginal);
-  assert(dec-> nestedMinorsSequence);
-  assert(dec-> nestedMinorsLength > 0);
+  assert(dec->nestedMinorsMatrix);
+  assert(dec->nestedMinorsRowsOriginal);
+  assert(dec->nestedMinorsColumnsOriginal);
+  assert(dec->nestedMinorsSequenceNumRows);
+  assert(dec->nestedMinorsSequenceNumColumns);
+  assert(dec->nestedMinorsLength > 0);
 
-  CMRdbgMsg(2, "Testing binary %dx%d 3-connected matrix with given nested sequence of 3-connected minors for regularity.\n",
+  CMRdbgMsg(6, "Testing binary %dx%d 3-connected matrix with given nested sequence of 3-connected minors for regularity.\n",
     dec->matrix->numRows, dec->matrix->numColumns);
 
 #if defined(CMR_DEBUG)
@@ -51,6 +51,107 @@ CMR_ERROR testRegularThreeConnectedWithSequence(
 #endif /* CMR_DEBUG */
 
   CMRconsistencyAssert( CMRdecConsistency(dec, false) );
+
+  CMR_CHRMAT* nestedMinorsTranspose = NULL;
+  CMR_CALL( CMRchrmatTranspose(cmr, dec->nestedMinorsMatrix, &nestedMinorsTranspose) );
+
+  /* Test sequence for graphicness. */
+  size_t lastGraphicMinor = 0;
+  CMR_GRAPH* graph = NULL;
+  CMR_ELEMENT* graphEdgeLabels = NULL;
+  CMR_CALL( CMRregularSequenceGraphic(cmr, dec->nestedMinorsMatrix, nestedMinorsTranspose,
+    dec->nestedMinorsRowsOriginal, dec->nestedMinorsColumnsOriginal, dec->nestedMinorsLength,
+    dec->nestedMinorsSequenceNumRows, dec->nestedMinorsSequenceNumColumns, &lastGraphicMinor, &graph,
+    &graphEdgeLabels) );
+
+  if (graph)
+  {
+    assert(graphEdgeLabels);
+
+    dec->type = CMR_DEC_GRAPHIC;
+    dec->graph = graph;
+    dec->graphForest = NULL;
+    CMR_CALL( CMRallocBlockArray(cmr, &dec->graphForest, dec->matrix->numRows) );
+    dec->graphCoforest = NULL;
+    CMR_CALL( CMRallocBlockArray(cmr, &dec->graphCoforest, dec->matrix->numColumns) );
+
+    assert(CMRgraphNumEdges(graph) == dec->matrix->numRows + dec->matrix->numColumns);
+    for (CMR_GRAPH_ITER iter = CMRgraphEdgesFirst(graph); CMRgraphEdgesValid(graph, iter);
+      iter = CMRgraphEdgesNext(graph, iter))
+    {
+      CMR_GRAPH_EDGE edge = CMRgraphEdgesEdge(graph, iter);
+      CMR_ELEMENT element = graphEdgeLabels[edge];
+      if (CMRelementIsRow(element))
+        element = dec->nestedMinorsRowsOriginal[CMRelementToRowIndex(element)];
+      else
+        element = dec->nestedMinorsColumnsOriginal[CMRelementToColumnIndex(element)];
+      if (CMRelementIsRow(element))
+        dec->graphForest[CMRelementToRowIndex(element)] = edge;
+      else
+        dec->graphCoforest[CMRelementToColumnIndex(element)] = edge;
+    }
+
+    CMR_CALL( CMRfreeBlockArray(cmr, &graphEdgeLabels) );
+  }
+  else
+  {
+    dec->flags &= ~CMR_DEC_IS_GRAPHIC;
+  }
+
+  size_t lastCographicMinor = 0;
+  if (!dec->graph || params->planarityCheck)
+  {
+    /* Test sequence for cographicness. */
+    CMR_GRAPH* cograph = NULL;
+    CMR_ELEMENT* cographEdgeLabels = NULL;
+    CMR_CALL( CMRregularSequenceGraphic(cmr, nestedMinorsTranspose, dec->nestedMinorsMatrix,
+      dec->nestedMinorsColumnsOriginal, dec->nestedMinorsRowsOriginal, dec->nestedMinorsLength,
+      dec->nestedMinorsSequenceNumColumns, dec->nestedMinorsSequenceNumRows, &lastCographicMinor, &cograph,
+      &cographEdgeLabels) );
+
+    if (cograph)
+    {
+      assert(cographEdgeLabels);
+
+      dec->type = (dec->type == CMR_DEC_GRAPHIC) ? CMR_DEC_PLANAR : CMR_DEC_COGRAPHIC;
+      dec->cograph = cograph;
+      dec->cographForest = NULL;
+      CMR_CALL( CMRallocBlockArray(cmr, &dec->cographForest, dec->matrix->numColumns) );
+      dec->cographCoforest = NULL;
+      CMR_CALL( CMRallocBlockArray(cmr, &dec->cographCoforest, dec->matrix->numRows) );
+
+      assert(CMRgraphNumEdges(cograph) == dec->matrix->numRows + dec->matrix->numColumns);
+      for (CMR_GRAPH_ITER iter = CMRgraphEdgesFirst(cograph); CMRgraphEdgesValid(cograph, iter);
+        iter = CMRgraphEdgesNext(cograph, iter))
+      {
+        CMR_GRAPH_EDGE edge = CMRgraphEdgesEdge(cograph, iter);
+        CMR_ELEMENT element = cographEdgeLabels[edge];
+        if (CMRelementIsRow(element))
+          element = dec->nestedMinorsColumnsOriginal[CMRelementToRowIndex(element)];
+        else
+          element = dec->nestedMinorsRowsOriginal[CMRelementToColumnIndex(element)];
+        if (CMRelementIsRow(element))
+          dec->cographCoforest[CMRelementToRowIndex(element)] = edge;
+        else
+          dec->cographForest[CMRelementToColumnIndex(element)] = edge;
+      }
+
+      CMR_CALL( CMRfreeBlockArray(cmr, &cographEdgeLabels) );
+    }
+    else
+    {
+      dec->flags &= ~CMR_DEC_IS_COGRAPHIC;
+    }
+  }
+
+  if (!dec->graph && !dec->cograph)
+  {
+    CMRdbgMsg(8, "Neither graphic (until %ld) nor cographic (until %ld)!\n", lastGraphicMinor, lastCographicMinor);
+
+//     assert("Not implemented" == 0);
+  }
+
+  CMR_CALL( CMRchrmatFree(cmr, &nestedMinorsTranspose) );
 
   return CMR_OKAY;
 }
