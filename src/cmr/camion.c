@@ -9,6 +9,7 @@
 
 #include <assert.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 /**
  * \brief Graph node for BFS in signing algorithm.
@@ -75,7 +76,7 @@ CMR_ERROR CMRcomputeCamionSignSequentiallyConnected(
   {
     CMRdbgMsg(2, "Before processing row %d:\n", row);
 #if defined(CMR_DEBUG)
-    CMRchrmatPrintDense(cmr, stdout, matrix, ' ', true);
+    CMRchrmatPrintDense(cmr, matrix, stdout, ' ', true);
 #endif
 
     for (int v = 0; v < matrix->numColumns + matrix->numRows; ++v)
@@ -114,7 +115,8 @@ CMR_ERROR CMRcomputeCamionSignSequentiallyConnected(
       if (currentNode >= firstRowNode)
       {
         int r = currentNode - firstRowNode;
-        CMRdbgMsg(4, "Current node is %d (row %d), queue length is %d\n", currentNode, r, bfsQueueEnd - bfsQueueBegin);
+        CMRdbgMsg(4, "Current node is %d (row r%d), queue length is %d\n", currentNode, r+1,
+          bfsQueueEnd - bfsQueueBegin);
 
         /* Iterate over outgoing edges. */
         first = matrix->rowSlice[r];
@@ -134,17 +136,19 @@ CMR_ERROR CMRcomputeCamionSignSequentiallyConnected(
             {
               int length = 2;
               int sum = graphNodes[c].targetValue;
+              CMRdbgMsg(8, "sum = %d\n", sum);
               int pathNode = c;
               do
               {
                 sum += graphNodes[pathNode].predecessorValue;
+                CMRdbgMsg(8, "sum = %d\n", sum);
                 pathNode = graphNodes[pathNode].predecessorNode;
                 ++length;
               }
               while (graphNodes[pathNode].targetValue == 0);
               sum += graphNodes[pathNode].targetValue;
-              CMRdbgMsg(6, "Found a chordless cycle between %d and %d with sum %d of length %d\n", c, pathNode, sum,
-                length);
+              CMRdbgMsg(6, "Found a chordless cycle between c%d and c%d with sum %d of length %d\n", c+1, pathNode+1,
+                sum, length);
 
               if (sum % 4 != 0)
               {
@@ -192,7 +196,7 @@ CMR_ERROR CMRcomputeCamionSignSequentiallyConnected(
       else
       {
         int c = currentNode;
-        CMRdbgMsg(4, "Current node is %d (column %d), queue length is %d\n", currentNode, c,
+        CMRdbgMsg(4, "Current node is %d (column c%d), queue length is %d\n", currentNode, c+1,
           bfsQueueEnd - bfsQueueBegin);
 
         /* Iterate over outgoing edges. */
@@ -224,8 +228,8 @@ CMR_ERROR CMRcomputeCamionSignSequentiallyConnected(
         CMRdbgMsg(4, "Target node ");
       else
         CMRdbgMsg(4, "Node ");
-      CMRdbgMsg(0, "%d is %s%d and has predecessor %d.\n", v, v >= firstRowNode ? "row ": "column ",
-        v >= firstRowNode ? v-firstRowNode : v, graphNodes[v].predecessorNode);
+      CMRdbgMsg(0, "%d is %s%d and has predecessor %d.\n", v, v >= firstRowNode ? "row r": "column c",
+        (v >= firstRowNode ? v-firstRowNode : v) + 1, graphNodes[v].predecessorNode);
     }
 #endif
 
@@ -237,8 +241,15 @@ CMR_ERROR CMRcomputeCamionSignSequentiallyConnected(
       {
         int column = matrix->entryColumns[e];
         if (matrix->entryValues[e] != graphNodes[column].targetValue)
-          CMRdbgMsg(2, "Sign change at %d,%d.\n", row, column);
-        matrix->entryValues[e] = graphNodes[column].targetValue;
+        {
+          CMRdbgMsg(2, "Sign change at r%d,c%d.\n", row+1, column+1);
+          matrix->entryValues[e] = graphNodes[column].targetValue;
+          size_t entry = SIZE_MAX;
+          CMR_CALL( CMRchrmatFindEntry(cmr, transpose, column, row, &entry) );
+          assert(entry < SIZE_MAX);
+          assert(transpose->entryValues[entry] == -graphNodes[column].targetValue);
+          transpose->entryValues[entry] = graphNodes[column].targetValue;
+        }
       }
     }
   }
@@ -247,7 +258,7 @@ CMR_ERROR CMRcomputeCamionSignSequentiallyConnected(
   if (change)
   {
     CMRdbgMsg(2, "After signing:\n");
-    CMR_CALL( CMRchrmatPrintDense(cmr, stdout, matrix, ' ', true) );
+    CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, ' ', true) );
   }
 #endif /* CMR_DEBUG */
 
@@ -281,7 +292,7 @@ CMR_ERROR sign(
 
 #if defined(CMR_DEBUG)
   CMRdbgMsg(0, "sign:\n");
-  CMRchrmatPrintDense(cmr, stdout, matrix, '0', true);
+  CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
 #endif /* CMR_DEBUG */
 
   /* Decompose into 1-connected components. */
@@ -386,7 +397,7 @@ CMR_ERROR sign(
   if (pisCamionSigned && !*pisCamionSigned && change)
   {
     CMRdbgMsg(0, "Modified original matrix:\n");
-    CMRchrmatPrintDense(cmr, stdout, matrix, ' ', true);
+    CMRchrmatPrintDense(cmr, matrix, stdout, ' ', true);
   }
 #endif /* CMR_DEBUG */
 

@@ -817,8 +817,9 @@ CMR_ERROR CMRdblmatFindEntry(
   CMR_DBLMAT* matrix,   /**< Input matrix. */
   size_t row,           /**< A row. */
   size_t column,        /**< A column. */
-  size_t* pentry        /**< The entry at \p row, \p column, or \c SIZE_MAX if it is zero. */
+  size_t* pentry        /**< Pointer for storing the entry at \p row, \p column, or \c SIZE_MAX if it is zero. */
 );
+
 /**
  * \brief Finds a specific entry of an int matrix.
  * 
@@ -831,7 +832,7 @@ CMR_ERROR CMRintmatFindEntry(
   CMR_INTMAT* matrix,   /**< Input matrix. */
   size_t row,           /**< A row. */
   size_t column,        /**< A column. */
-  size_t* pentry        /**< The entry at \p row, \p column, or \c SIZE_MAX if it is zero. */
+  size_t* pentry        /**< Pointer for storing the entry at \p row, \p column, or \c SIZE_MAX if it is zero. */
 );
 
 /**
@@ -846,7 +847,7 @@ CMR_ERROR CMRchrmatFindEntry(
   CMR_CHRMAT* matrix,   /**< Input matrix. */
   size_t row,           /**< A row. */
   size_t column,        /**< A column. */
-  size_t* pentry        /**< The entry at \p row, \p column, or \c SIZE_MAX if it is zero. */
+  size_t* pentry        /**< Pointer for storing the entry at \p row, \p column, or \c SIZE_MAX if it is zero. */
 );
 
 
