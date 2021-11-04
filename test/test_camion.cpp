@@ -63,3 +63,36 @@ TEST(Camion, Change)
 
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
+
+
+TEST(Camion, Issue10)
+{
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "4 4 "
+    "1 1 0 0 "
+    "1 0 1 1 "
+    "0 1 1 0 "
+    "0 0 1 1 "
+  ) );
+  CMR_CHRMAT* check = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &check, "4 4 "
+    "1 1  0  0 "
+    "1 0 -1  1 "
+    "0 1  1  0 "
+    "0 0  1 -1 "
+  ) );
+
+
+  bool alreadySigned;
+  ASSERT_CMR_CALL( CMRcomputeCamionSigned(cmr, matrix, &alreadySigned, NULL) );
+  ASSERT_FALSE(alreadySigned);
+  ASSERT_TRUE(CMRchrmatCheckEqual(matrix, check));
+
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &check) );
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
+}
