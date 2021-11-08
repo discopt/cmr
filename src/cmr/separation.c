@@ -110,16 +110,152 @@ CMR_ERROR CMRsepaInitialize(CMR* cmr, CMR_SEPA* separation, size_t firstExtraRow
 
   CMR_CALL( initialize(cmr, separation) );
 
-  separation->extraRows0[0] = firstExtraRow0;
-  separation->extraColumns1[0] = firstExtraColumn1;
-  separation->extraRows1[0] = firstExtraRow1;
-  separation->extraColumns0[0] = firstExtraColumn0;
-  separation->extraRows0[1] = secondExtraRow0;
-  separation->extraColumns1[1] = secondExtraColumn1;
-  separation->extraRows1[1] = secondExtraRow1;
-  separation->extraColumns0[1] = secondExtraColumn0;
+  separation->extraRows[0][0] = firstExtraRow0;
+  separation->extraColumns[1][0] = firstExtraColumn1;
+  separation->extraRows[1][0] = firstExtraRow1;
+  separation->extraColumns[0][0] = firstExtraColumn0;
+  separation->extraRows[0][1] = secondExtraRow0;
+  separation->extraColumns[1][1] = secondExtraColumn1;
+  separation->extraRows[1][1] = secondExtraRow1;
+  separation->extraColumns[0][1] = secondExtraColumn0;
 
   return CMR_OKAY;
+}
+
+/**
+ * \brief Checks whether the submatrix with rows assigned to \p part and columns assigned to the other has at least
+ *        rank 1.
+ * 
+ * If the rank is at least 1, the row and column of a corresponding nonzero are stored in \p separation.
+ */
+
+static
+bool findRank1(
+  CMR_CHRMAT* matrix,     /**< Matrix. */
+  CMR_SEPA* separation,   /**< Separation. */
+  short part              /**< Part to which the investigated rows belong. */
+)
+{
+  assert(matrix);
+  assert(part >=0 && part < 2);
+
+  for (size_t row = 0; row < matrix->numRows; ++row)
+  {
+    if (separation->rowsToPart[row] == part)
+      continue;
+    size_t entry = matrix->rowSlice[row];
+    size_t beyond = matrix->rowSlice[row + 1];
+    while (entry < beyond)
+    {
+      size_t column = matrix->entryColumns[entry];
+      if (separation->columnsToPart[column] == part)
+      {
+        separation->extraRows[part][0] = row;
+        separation->extraColumns[1-part][0] = column;
+        return true;
+      }
+      ++entry;
+    }
+  }
+
+  return false;
+}
+
+/**
+ * \brief Checks whether the submatrix with rows assigned to \p part and columns assigned to the other has at least
+ *        rank 2.
+ * 
+ * Assumes that \p separation already contains a row and a column of some nonzero.
+ * If the rank is at least 2, the row and column of an nonzero with which the previous one induces a rank-2 submatrix
+ * are stored in \p separation.
+ */
+
+static
+bool findRank2(
+  CMR_CHRMAT* matrix,     /**< Matrix. */
+  CMR_SEPA* separation,   /**< Separation. */
+  short part              /**< Part to which the investigated rows belong. */
+)
+{
+  assert(matrix);
+  assert(separation);
+  assert(part >=0 && part < 2);
+
+  for (size_t row = separation->extraRows[part][0] + 1; row < matrix->numRows; ++row)
+  {
+    if (separation->rowsToPart[row] == part)
+      continue;
+
+    size_t entry = matrix->rowSlice[row];
+    size_t beyond = matrix->rowSlice[row + 1];
+    size_t column = (entry < beyond) ? matrix->entryColumns[entry] : SIZE_MAX;
+    size_t entryRep = matrix->rowSlice[separation->extraRows[part][0]];
+    size_t beyondRep = matrix->rowSlice[separation->extraRows[part][0] + 1];
+    size_t columnRep = (entryRep < beyondRep) ? matrix->entryColumns[entryRep] : SIZE_MAX;
+    bool isZero = true;
+    bool equalRep = true;
+    while (column != SIZE_MAX || columnRep != SIZE_MAX)
+    {
+      if (column < columnRep)
+      {
+        if (separation->columnsToPart[column] == part)
+        {
+          /* New row has a 1-entry but representative does not. */
+          separation->extraRows[part][1] = row;
+          separation->extraColumns[1-part][1] = column;
+          return true;
+        }
+        else
+        {
+          /* We're outside of the submatrix. */
+          ++entry;
+          column = (entry < beyond) ? matrix->entryColumns[entry] : SIZE_MAX;
+        }
+      }
+      else if (columnRep < column)
+      {
+        if (separation->columnsToPart[columnRep] == part)
+        {
+          if (!isZero)
+          {
+            /* We had a common nonzero before, so the 0 here yields rank 2. */
+            separation->extraRows[part][1] = row;
+            separation->extraColumns[1-part][1] = columnRep;
+            return true;
+          }
+          else
+            equalRep = false;
+        }
+
+        /* We're outside of the submatrix or still a zero vector. */
+        ++entryRep;
+        columnRep = (entryRep < beyondRep) ? matrix->entryColumns[entryRep] : SIZE_MAX;
+      }
+      else
+      {
+        if (separation->columnsToPart[column] == part)
+        {
+          if (!equalRep)
+          {
+            /* We had a 1 in rep with a 0 here before, so the two 1s here yield rank 2. */
+            separation->extraRows[part][1] = row;
+            separation->extraColumns[1-part][1] = columnRep;
+            return true;
+          }
+          else
+            isZero = false;
+        }
+
+        /* We're outside of the submatrix. */
+        ++entry;
+        column = (entry < beyond) ? matrix->entryColumns[entry] : SIZE_MAX;
+        ++entryRep;
+        columnRep = (entryRep < beyondRep) ? matrix->entryColumns[entryRep] : SIZE_MAX;
+      }
+    }
+  }
+
+  return false;
 }
 
 CMR_ERROR CMRsepaInitializeMatrix(CMR* cmr, CMR_SEPA* separation, CMR_CHRMAT* matrix, unsigned char totalRank)
@@ -129,53 +265,53 @@ CMR_ERROR CMRsepaInitializeMatrix(CMR* cmr, CMR_SEPA* separation, CMR_CHRMAT* ma
   assert(matrix);
 
   CMR_CALL( initialize(cmr, separation) );
+  separation->extraRows[0][0] = SIZE_MAX;
+  separation->extraRows[0][1] = SIZE_MAX;
+  separation->extraRows[1][0] = SIZE_MAX;
+  separation->extraRows[1][1] = SIZE_MAX;
+  separation->extraColumns[0][0] = SIZE_MAX;
+  separation->extraColumns[0][1] = SIZE_MAX;
+  separation->extraColumns[1][0] = SIZE_MAX;
+  separation->extraColumns[1][1] = SIZE_MAX;
+  unsigned char ranks[2] = { 0, 0 };
 
+#ifdef NDEBUG
   if (totalRank == 0)
     return CMR_OKAY;
+#endif /* In debug mode we verify the rank. */
 
-  assert(totalRank <= 1 || "Not implemented" == 0);
-
-  CMRdbgMsg(4, "Searching for rank-1 submatrix in matrix\n");
-#if defined(CMR_DEBUG)
-  CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', true) );
-#endif /* CMR_DEBUG */
-
-  for (int i = 0; i < 2; ++i)
+  /* Check submatrices for rank (at least) 1. */
+  for (short part = 0; part < 2; ++part)
   {
-    separation->extraRows0[i] = SIZE_MAX;
-    separation->extraRows1[i] = SIZE_MAX;
-    separation->extraColumns0[i] = SIZE_MAX;
-    separation->extraColumns1[i] = SIZE_MAX;
+    if (findRank1(matrix, separation, part))
+      ++ranks[part];
+#ifdef NDEBUG
+    if (ranks[0] + ranks[1] == totalRank)
+      return CMR_OKAY;
+#endif
   }
 
-  for (size_t row = 0; row < matrix->numRows; ++row)
+  /* Check submatrices for rank (at least) 2. */
+  for (short part = 0; part < 2; ++part)
   {
-    unsigned char rowPart = separation->rowsToPart[row];
-    CMRdbgMsg(6, "Row r%ld is in part %d\n", row+1, rowPart);
-    size_t first = matrix->rowSlice[row];
-    size_t beyond = matrix->rowSlice[row + 1];
-    for (size_t e = first; e < beyond; ++e)
-    {
-      size_t column = matrix->entryColumns[e];
-      CMRdbgMsg(6, "Column c%ld is in part %d\n", column+1, separation->columnsToPart[column]);
-      if (rowPart != separation->columnsToPart[column])
-      {
-        if (rowPart == 0)
-        {
-          separation->extraColumns0[0] = column;
-          separation->extraRows1[0] = row;
-        }
-        else
-        {
-          separation->extraRows0[0] = row;
-          separation->extraColumns1[0] = column;
-        }
-        return CMR_OKAY;
-      }
-    }
-  }
+    if (ranks[part] == 0)
+      continue;
 
-  return CMR_OKAY;
+    if (findRank2(matrix, separation, part))
+      ++ranks[part];
+#ifdef NDEBUG
+    if (ranks[0] + ranks[1] == totalRank)
+      return CMR_OKAY;
+#endif
+  }  
+
+  if (ranks[0] + ranks[1] == totalRank)
+    return CMR_OKAY;
+  else
+  {
+    printf("Submatrix ranks are %d and %d, but expected total rank is %d.\n", ranks[0], ranks[1], totalRank);
+    return CMR_ERROR_INVALID;
+  }
 }
 
 
@@ -279,7 +415,7 @@ CMR_ERROR checkTernary(
         }
       }
     }
-    
+
     CMR_CALL( CMRfreeStackArray(cmr, &firstColumnValues) );
     CMR_CALL( CMRfreeStackArray(cmr, &entries) );
   }
@@ -374,7 +510,7 @@ CMR_ERROR CMRtwoSum(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* second, CMR_ELEMENT
     for (size_t row = 0; row < second->numRows; ++row)
     {
       size_t entry;
-      CMR_CALL( CMRchrmatFindEntry(cmr, second, row, secondColumnMarker, &entry) );
+      CMR_CALL( CMRchrmatFindEntry(second, row, secondColumnMarker, &entry) );
       if (entry == SIZE_MAX)
       {
         markerColumn[row] = 0;
@@ -396,7 +532,7 @@ CMR_ERROR CMRtwoSum(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* second, CMR_ELEMENT
     for (size_t row = 0; row < first->numRows; ++row)
     {
       size_t entry;
-      CMR_CALL( CMRchrmatFindEntry(cmr, first, row, firstColumnMarker, &entry) );
+      CMR_CALL( CMRchrmatFindEntry(first, row, firstColumnMarker, &entry) );
       if (entry == SIZE_MAX)
         markerColumn[row] = 0;
       else

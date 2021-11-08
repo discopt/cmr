@@ -1,4 +1,4 @@
-#define CMR_DEBUG /* Uncomment to debug this file. */
+// #define CMR_DEBUG /* Uncomment to debug this file. */
 
 #include "regular_internal.h"
 
@@ -54,7 +54,7 @@ int dfsArticulationPoint(
       if (childEarliestReachableTime < earliestReachableTime)
         earliestReachableTime = childEarliestReachableTime;
       if (parentNode >= 0 && childEarliestReachableTime >= nodesDiscoveryTime[node])
-        nodesArticulationPoint[node] = true;
+        nodesArticulationPoint[node] = 1;
     }
     else if (v != parentNode && nodesDiscoveryTime[v] < earliestReachableTime)
       earliestReachableTime = nodesDiscoveryTime[v];
@@ -63,7 +63,7 @@ int dfsArticulationPoint(
   if (parentNode < 0)
   {
     if (numChildren > 1)
-      nodesArticulationPoint[node] = true;
+      nodesArticulationPoint[node] = 1;
   } 
 
   return earliestReachableTime;
@@ -71,12 +71,12 @@ int dfsArticulationPoint(
 
 static
 CMR_ERROR findArticulationPoints(
-  CMR* cmr,                     /**< \ref CMR environment. */
-  CMR_GRAPH* graph,             /**< Graph. */
-  CMR_GRAPH_EDGE* columnEdges,  /**< Array with with map from columns to edges. */
+  CMR* cmr,                       /**< \ref CMR environment. */
+  CMR_GRAPH* graph,               /**< Graph. */
+  CMR_GRAPH_EDGE* columnEdges,    /**< Array with with map from columns to edges. */
   size_t* nodesArticulationPoint, /**< Node array indicating whether a node is an articulation point. */
-  size_t* nonzeroColumns,       /**< Array with columns containing a nonzero. */
-  size_t numNonzeroColumns      /**< Length of \p nonzeroColumns. */
+  size_t* nonzeroColumns,         /**< Array with columns containing a nonzero. */
+  size_t numNonzeroColumns        /**< Length of \p nonzeroColumns. */
 )
 {
   assert(graph);
@@ -93,7 +93,7 @@ CMR_ERROR findArticulationPoints(
 
   for (CMR_GRAPH_NODE v = CMRgraphNodesFirst(graph); CMRgraphNodesValid(graph, v); v = CMRgraphNodesNext(graph, v))
   {
-    nodesArticulationPoint[v] = false;
+    nodesArticulationPoint[v] = 0;
     nodesVisited[v] = false;
     nodesDiscoveryTime[v] = 0;
   }
@@ -164,6 +164,8 @@ CMR_ERROR findTreeParents(
 
   bool* nodesVisited = NULL;
   CMR_CALL( CMRallocStackArray(cmr, &nodesVisited, CMRgraphMemNodes(graph)) );
+  for (CMR_GRAPH_NODE v = CMRgraphNodesFirst(graph); CMRgraphNodesValid(graph, v); v = CMRgraphNodesNext(graph, v))
+    nodesVisited[v] = false;
 
   bool* edgesTree = NULL;
   CMR_CALL( CMRallocStackArray(cmr, &edgesTree, CMRgraphMemEdges(graph)) );
@@ -376,11 +378,70 @@ CMR_ERROR addToGraph1Row(
   assert(columnEdges);
   assert(numNonzeroColumns <= baseNumColumns);
 
+  
+  /* We first check whether the edges of columns with a nonzero form a star. */
+  CMR_GRAPH_NODE starNode = -1;
+  CMR_GRAPH_NODE u1 = -1;
+  CMR_GRAPH_NODE v1 = -1;
+  for (size_t i = 0; i < numNonzeroColumns; ++i)
+  {
+    size_t column = nonzeroColumns[i];
+    CMR_GRAPH_EDGE e = columnEdges[column];
+    if (i == 0)
+    {
+      u1 = CMRgraphEdgeU(graph, e);
+      v1 = CMRgraphEdgeV(graph, e);
+    }
+    else if (i == 1)
+    {
+      starNode = CMRgraphEdgeU(graph, e);
+      if (starNode == u1 || starNode == v1)
+        continue;
+      starNode = CMRgraphEdgeV(graph, e);
+      if (starNode != u1 && starNode != v1)
+      {
+        starNode = -1;
+        break;
+      }
+    }
+    else
+    {
+      u1 = CMRgraphEdgeU(graph, e);
+      v1 = CMRgraphEdgeV(graph, e);
+      if (u1 != starNode && v1 != starNode)
+      {
+        starNode = -1;
+        break;
+      }
+    }
+  }
+
+  /* The edges form a star. */
+  if (starNode >= 0)
+  {
+    *pisGraphic = true;
+    CMR_GRAPH_NODE newNode;
+    CMR_CALL( CMRgraphAddNode(cmr, graph, &newNode) );
+    CMR_CALL( CMRgraphAddEdge(cmr, graph, starNode, newNode, &rowEdges[baseNumRows]) );
+    for (size_t i = 0; i < numNonzeroColumns; ++i)
+    {
+      CMR_GRAPH_EDGE edge = columnEdges[nonzeroColumns[i]];
+      CMR_GRAPH_NODE u = CMRgraphEdgeU(graph, edge);
+      CMR_GRAPH_EDGE newEdge;
+      if (u == starNode)
+        u = CMRgraphEdgeV(graph, edge);
+      CMR_CALL( CMRgraphDeleteEdge(cmr, graph, edge) );
+      CMR_CALL( CMRgraphAddEdge(cmr, graph, u, newNode, &newEdge) );
+      assert(newEdge == edge);
+    }
+
+    return CMR_OKAY;
+  }
+
   size_t* nodesCandidate = NULL;
   CMR_CALL( CMRallocStackArray(cmr, &nodesCandidate, CMRgraphMemNodes(graph)) );
 
   CMR_CALL( findArticulationPoints(cmr, graph, columnEdges, nodesCandidate, nonzeroColumns, numNonzeroColumns) );
-  // nodesParent
   
   size_t countCandidates = 0;
   for (CMR_GRAPH_NODE v = CMRgraphNodesFirst(graph); CMRgraphNodesValid(graph, v); v = CMRgraphNodesNext(graph, v))
@@ -391,6 +452,7 @@ CMR_ERROR addToGraph1Row(
 
   CMRdbgMsg(12, "Found %ld articulation points.\n", countCandidates);
 
+  *pisGraphic = false;
   if (countCandidates > 0)
   {
     /* We need a rooted arborescence along the row (tree) edges. */
@@ -403,7 +465,6 @@ CMR_ERROR addToGraph1Row(
     CMR_CALL( CMRallocStackArray(cmr, &nodeStacks[0], baseNumRows+1) );
     CMR_CALL( CMRallocStackArray(cmr, &nodeStacks[1], baseNumRows+1) );
     size_t nodeStackSizes[2];
-    CMR_GRAPH_NODE splitNode = -1;
     for (size_t i = 0; i < numNonzeroColumns; ++i)
     {
       CMR_GRAPH_EDGE columnEdge = columnEdges[nonzeroColumns[i]];
@@ -438,7 +499,6 @@ CMR_ERROR addToGraph1Row(
           {
             nodesCandidate[v]++;
             countCandidates++;
-            splitNode = v;
           }
         }
       }
@@ -452,147 +512,141 @@ CMR_ERROR addToGraph1Row(
     CMR_CALL( CMRfreeStackArray(cmr, &nodeStacks[0]) );
     CMR_CALL( CMRfreeStackArray(cmr, &nodesParent) );
 
-    if (countCandidates == 1)
+    if (countCandidates == 1 || countCandidates == 2)
     {
-      CMRdbgMsg(12, "Unique candidate node is %ld.\n", splitNode);
-
-      CMRgraphPrint(stdout, graph);
-      fflush(stdout);
-
-      for (size_t i = 0; i < numNonzeroColumns; ++i)
+      for (CMR_GRAPH_NODE splitNode = CMRgraphNodesFirst(graph); CMRgraphNodesValid(graph, splitNode);
+        splitNode = CMRgraphNodesNext(graph, splitNode))
       {
-        CMR_GRAPH_EDGE columnEdge = columnEdges[nonzeroColumns[i]];
-        CMRdbgMsg(14, "1-edge {%ld,%ld}\n", CMRgraphEdgeU(graph, columnEdge), CMRgraphEdgeV(graph, columnEdge));
-      }
-
-      size_t numComponents;
-      size_t* nodesComponent = NULL;
-      CMR_CALL( CMRallocStackArray(cmr, &nodesComponent, CMRgraphNumNodes(graph)) );
-
-      CMR_CALL( findComponents(cmr, graph, columnEdges, splitNode, nodesComponent, &numComponents, nonzeroColumns,
-        numNonzeroColumns) );
-      for (CMR_GRAPH_NODE v = CMRgraphNodesFirst(graph); CMRgraphNodesValid(graph, v); v = CMRgraphNodesNext(graph, v))
-      {
-        CMRdbgMsg(14, "Node %ld belongs to component %ld of %ld.\n", v, nodesComponent[v], numComponents);
-      }
-      assert(numComponents >= 2);
-
-      CMR_GRAPH* auxiliaryGraph = NULL;
-      CMR_CALL( CMRgraphCreateEmpty(cmr, &auxiliaryGraph, numComponents, numNonzeroColumns) );
-      CMR_GRAPH_NODE* componentAuxiliaryNodes = NULL;
-      CMR_CALL( CMRallocStackArray(cmr, &componentAuxiliaryNodes, numComponents) );
-      for (size_t c = 0; c < numComponents; ++c)
-        CMR_CALL( CMRgraphAddNode(cmr, auxiliaryGraph, &componentAuxiliaryNodes[c]) );
-
-      for (size_t i = 0; i < numNonzeroColumns; ++i)
-      {
-        CMR_GRAPH_EDGE e = columnEdges[nonzeroColumns[i]];
-        size_t components[2] = { nodesComponent[CMRgraphEdgeU(graph, e)], nodesComponent[CMRgraphEdgeV(graph, e)] };
-        if (components[0] < SIZE_MAX && components[1] < SIZE_MAX)
-        {
-          CMR_CALL( CMRgraphAddEdge(cmr, auxiliaryGraph, componentAuxiliaryNodes[components[0]],
-            componentAuxiliaryNodes[components[1]], NULL) );
-        }
-      }
+        if (nodesCandidate[splitNode] != numNonzeroColumns+1)
+          continue;
+      
+        CMRdbgMsg(12, "Candidate node is %ld.\n", splitNode);
 
 #if defined(CMR_DEBUG)
-      CMRdbgMsg(14, "Constructed auxiliary graph.\n");
-      CMRgraphPrint(stdout, auxiliaryGraph);
-      fflush(stdout);
+        CMRgraphPrint(stdout, graph);
+        fflush(stdout);
 #endif /* CMR_DEBUG */
 
-      bool isBipartite;
-      int* bipartition = NULL;
-      CMR_CALL( CMRallocStackArray(cmr, &bipartition, CMRgraphMemNodes(auxiliaryGraph)) );
-
-      CMR_CALL( findBipartition(cmr, auxiliaryGraph, bipartition, &isBipartite) );
-      if (isBipartite)
-      {
-        *pisGraphic = true;
-
-        for (size_t c = 0; c < numComponents; ++c)
-        {
-          CMRdbgMsg(16, "Component %ld belongs to bipartition %d.\n", c, bipartition[componentAuxiliaryNodes[c]]);
-        }
-
-        /* we carry out the re-assignment. */
-
-        CMR_GRAPH_NODE sisterNode;
-        CMR_CALL( CMRgraphAddNode(cmr, graph, &sisterNode) );
-
-        /* We mark the 1-edges. */
-        bool* edges1 = NULL;
-        CMR_CALL( CMRallocStackArray(cmr, &edges1, CMRgraphMemEdges(graph)) );
-        for (CMR_GRAPH_ITER iter = CMRgraphEdgesFirst(graph); CMRgraphEdgesValid(graph, iter);
-          iter = CMRgraphEdgesNext(graph, iter))
-        {
-          edges1[CMRgraphEdgesEdge(graph, iter)] = false;
-        }
         for (size_t i = 0; i < numNonzeroColumns; ++i)
-          edges1[columnEdges[nonzeroColumns[i]]] = true;
-
-        /* We store the incident edges since we change that list. */
-        size_t numIncidentEdges = 0;
-        CMR_GRAPH_EDGE* incidentEdges = NULL;
-        CMR_CALL( CMRallocStackArray(cmr, &incidentEdges, CMRgraphNumNodes(graph)) );
-        for (CMR_GRAPH_ITER iter = CMRgraphIncFirst(graph, splitNode); CMRgraphIncValid(graph, iter);
-          iter = CMRgraphIncNext(graph, iter))
         {
-          incidentEdges[numIncidentEdges++] = CMRgraphIncEdge(graph, iter);
+          CMRdbgMsg(14, "1-edge {%ld,%ld}\n", CMRgraphEdgeU(graph, columnEdges[nonzeroColumns[i]]),
+            CMRgraphEdgeV(graph, columnEdges[nonzeroColumns[i]]));
         }
 
-        for (size_t i = 0; i < numIncidentEdges; ++i)
+        size_t numComponents;
+        size_t* nodesComponent = NULL;
+        CMR_CALL( CMRallocStackArray(cmr, &nodesComponent, CMRgraphNumNodes(graph)) );
+
+        CMR_CALL( findComponents(cmr, graph, columnEdges, splitNode, nodesComponent, &numComponents, nonzeroColumns,
+          numNonzeroColumns) );
+        for (CMR_GRAPH_NODE v = CMRgraphNodesFirst(graph); CMRgraphNodesValid(graph, v); v = CMRgraphNodesNext(graph, v))
         {
-          CMR_GRAPH_EDGE edge = incidentEdges[i];
-          CMR_GRAPH_NODE v = CMRgraphEdgeU(graph, edge);
-          if (v == splitNode)
-            v = CMRgraphEdgeV(graph, edge);
-          int side = bipartition[componentAuxiliaryNodes[nodesComponent[v]]];
-          CMRdbgMsg(16, "Node %ld of edge {%ld,%ld} belongs to bipartition side %d.\n", v, CMRgraphEdgeU(graph, edge),
-            CMRgraphEdgeV(graph, edge), side);
+          CMRdbgMsg(14, "Node %ld belongs to component %ld of %ld.\n", v, nodesComponent[v], numComponents);
+        }
+        assert(numComponents >= 2);
 
-          /* Complement decision for 1-edges. */
-          if (edges1[edge])
-            side = 1-side;
+        CMR_GRAPH* auxiliaryGraph = NULL;
+        CMR_CALL( CMRgraphCreateEmpty(cmr, &auxiliaryGraph, numComponents, numNonzeroColumns) );
+        CMR_GRAPH_NODE* componentAuxiliaryNodes = NULL;
+        CMR_CALL( CMRallocStackArray(cmr, &componentAuxiliaryNodes, numComponents) );
+        for (size_t c = 0; c < numComponents; ++c)
+          CMR_CALL( CMRgraphAddNode(cmr, auxiliaryGraph, &componentAuxiliaryNodes[c]) );
 
-          if (side)
+        for (size_t i = 0; i < numNonzeroColumns; ++i)
+        {
+          CMR_GRAPH_EDGE e = columnEdges[nonzeroColumns[i]];
+          size_t components[2] = { nodesComponent[CMRgraphEdgeU(graph, e)], nodesComponent[CMRgraphEdgeV(graph, e)] };
+          if (components[0] < SIZE_MAX && components[1] < SIZE_MAX)
           {
-            /* Reconnect the edge to the sister node. */
-            CMR_CALL( CMRgraphDeleteEdge(cmr, graph, edge) );
-            CMR_GRAPH_EDGE modifiedEdge;
-            CMR_CALL( CMRgraphAddEdge(cmr, graph, v, sisterNode, &modifiedEdge) );
-            assert(modifiedEdge == edge);
+            CMR_CALL( CMRgraphAddEdge(cmr, auxiliaryGraph, componentAuxiliaryNodes[components[0]],
+              componentAuxiliaryNodes[components[1]], NULL) );
           }
         }
-        
-        /* Finally, connect the split node and the sister node. */
-        CMR_CALL( CMRgraphAddEdge(cmr, graph, splitNode, sisterNode, &rowEdges[baseNumRows]) );
-  
-        CMR_CALL( CMRfreeStackArray(cmr, &incidentEdges) );
-        CMR_CALL( CMRfreeStackArray(cmr, &edges1) );
-      }
-      else
-      {
-        /* Auxiliary graph is not bipartite. */
-        *pisGraphic = false;
-      }
-    
-      CMR_CALL( CMRfreeStackArray(cmr, &bipartition) );
 
-      CMR_CALL( CMRfreeStackArray(cmr, &componentAuxiliaryNodes) );
-      CMR_CALL( CMRfreeStackArray(cmr, &nodesComponent) );
-      CMR_CALL( CMRgraphFree(cmr, &auxiliaryGraph) );
+  #if defined(CMR_DEBUG)
+        CMRdbgMsg(14, "Constructed auxiliary graph.\n");
+        CMRgraphPrint(stdout, auxiliaryGraph);
+        fflush(stdout);
+  #endif /* CMR_DEBUG */
+
+        bool isBipartite;
+        int* bipartition = NULL;
+        CMR_CALL( CMRallocStackArray(cmr, &bipartition, CMRgraphMemNodes(auxiliaryGraph)) );
+
+        CMR_CALL( findBipartition(cmr, auxiliaryGraph, bipartition, &isBipartite) );
+        if (isBipartite)
+        {
+          *pisGraphic = true;
+
+          for (size_t c = 0; c < numComponents; ++c)
+          {
+            CMRdbgMsg(16, "Component %ld belongs to bipartition %d.\n", c, bipartition[componentAuxiliaryNodes[c]]);
+          }
+
+          /* we carry out the re-assignment. */
+
+          CMR_GRAPH_NODE sisterNode;
+          CMR_CALL( CMRgraphAddNode(cmr, graph, &sisterNode) );
+
+          /* We mark the 1-edges. */
+          bool* edges1 = NULL;
+          CMR_CALL( CMRallocStackArray(cmr, &edges1, CMRgraphMemEdges(graph)) );
+          for (CMR_GRAPH_ITER iter = CMRgraphEdgesFirst(graph); CMRgraphEdgesValid(graph, iter);
+            iter = CMRgraphEdgesNext(graph, iter))
+          {
+            edges1[CMRgraphEdgesEdge(graph, iter)] = false;
+          }
+          for (size_t i = 0; i < numNonzeroColumns; ++i)
+            edges1[columnEdges[nonzeroColumns[i]]] = true;
+
+          /* We store the incident edges since we change that list. */
+          size_t numIncidentEdges = 0;
+          CMR_GRAPH_EDGE* incidentEdges = NULL;
+          CMR_CALL( CMRallocStackArray(cmr, &incidentEdges, CMRgraphNumNodes(graph)) );
+          for (CMR_GRAPH_ITER iter = CMRgraphIncFirst(graph, splitNode); CMRgraphIncValid(graph, iter);
+            iter = CMRgraphIncNext(graph, iter))
+          {
+            incidentEdges[numIncidentEdges++] = CMRgraphIncEdge(graph, iter);
+          }
+
+          for (size_t i = 0; i < numIncidentEdges; ++i)
+          {
+            CMR_GRAPH_EDGE edge = incidentEdges[i];
+            CMR_GRAPH_NODE v = CMRgraphEdgeU(graph, edge);
+            if (v == splitNode)
+              v = CMRgraphEdgeV(graph, edge);
+            int side = bipartition[componentAuxiliaryNodes[nodesComponent[v]]];
+            CMRdbgMsg(16, "Node %ld of edge {%ld,%ld} belongs to bipartition side %d.\n", v, CMRgraphEdgeU(graph, edge),
+              CMRgraphEdgeV(graph, edge), side);
+
+            /* Complement decision for 1-edges. */
+            if (edges1[edge])
+              side = 1-side;
+
+            if (side)
+            {
+              /* Reconnect the edge to the sister node. */
+              CMR_CALL( CMRgraphDeleteEdge(cmr, graph, edge) );
+              CMR_GRAPH_EDGE modifiedEdge;
+              CMR_CALL( CMRgraphAddEdge(cmr, graph, v, sisterNode, &modifiedEdge) );
+              assert(modifiedEdge == edge);
+            }
+          }
+          
+          /* Finally, connect the split node and the sister node. */
+          CMR_CALL( CMRgraphAddEdge(cmr, graph, splitNode, sisterNode, &rowEdges[baseNumRows]) );
+    
+          CMR_CALL( CMRfreeStackArray(cmr, &incidentEdges) );
+          CMR_CALL( CMRfreeStackArray(cmr, &edges1) );
+        }
+      
+        CMR_CALL( CMRfreeStackArray(cmr, &bipartition) );
+
+        CMR_CALL( CMRfreeStackArray(cmr, &componentAuxiliaryNodes) );
+        CMR_CALL( CMRfreeStackArray(cmr, &nodesComponent) );
+        CMR_CALL( CMRgraphFree(cmr, &auxiliaryGraph) );
+      }
     }
-    else
-    {
-      /* No articular point is part of all fundamental cycles induced by 1-edges. */
-      *pisGraphic = false;
-    }
-  }
-  else
-  {
-    /* No articular point found. */
-    *pisGraphic = false;
   }
 
   CMR_CALL( CMRfreeStackArray(cmr, &nodesCandidate) );
@@ -801,12 +855,13 @@ CMR_ERROR addToGraph1Row1Column(
     rowEdge = rowEdges[CMRelementToRowIndex(rowParallel)];
   else
     rowEdge = columnEdges[CMRelementToColumnIndex(rowParallel)];
-  CMRdbgMsg(12, "Row edge is {%ld,%ld}.\n", CMRgraphEdgeU(graph, rowEdge), CMRgraphEdgeV(graph, rowEdge));
+  CMRdbgMsg(12, "Existing row edge is {%ld,%ld}.\n", CMRgraphEdgeU(graph, rowEdge), CMRgraphEdgeV(graph, rowEdge));
   if (CMRelementIsRow(columnParallel))
     columnEdge = rowEdges[CMRelementToRowIndex(columnParallel)];
   else
     columnEdge = columnEdges[CMRelementToColumnIndex(columnParallel)];
-  CMRdbgMsg(12, "Column edge is {%ld,%ld}.\n", CMRgraphEdgeU(graph, columnEdge), CMRgraphEdgeV(graph, columnEdge));
+  CMRdbgMsg(12, "Existing column edge is {%ld,%ld}.\n", CMRgraphEdgeU(graph, columnEdge),
+    CMRgraphEdgeV(graph, columnEdge));
 
   CMR_GRAPH_NODE common, rowOther, columnOther;
   if (checkEdgesAdjacent(graph, rowEdge, columnEdge, &common, &rowOther, &columnOther))
@@ -820,8 +875,12 @@ CMR_ERROR addToGraph1Row1Column(
     assert(modifiedRowEdge == rowEdge);
     CMR_CALL( CMRgraphAddEdge(cmr, graph, rowSplit, common, &newRowEdge) );
     rowEdges[baseNumRows] = newRowEdge;
+    CMRdbgMsg(12, "Edge corresponding to row is {%ld,%ld}.\n", CMRgraphEdgeU(graph, newRowEdge),
+      CMRgraphEdgeV(graph, newRowEdge));
     CMR_CALL( CMRgraphAddEdge(cmr, graph, rowSplit, columnOther, &newColumnEdge) );
     columnEdges[baseNumColumns] = newColumnEdge;
+    CMRdbgMsg(12, "Edge corresponding to column is {%ld,%ld}.\n", CMRgraphEdgeU(graph, newColumnEdge),
+      CMRgraphEdgeV(graph, newColumnEdge));
   }
   else
     *pisGraphic = false;
@@ -1108,6 +1167,8 @@ CMR_ERROR createWheel(
   while (nextRow)
   {
     size_t e = matrix->rowSlice[lastRow];
+
+    /* Find next column. */
     if (lastRow == rowWithThree)
     {
       nextColumn = matrix->entryColumns[e];
@@ -1124,6 +1185,8 @@ CMR_ERROR createWheel(
     }
 
     e = transpose->rowSlice[nextColumn];
+
+    /* Find next row. */
     if (nextColumn == columnWithThree)
     {
       nextRow = transpose->entryColumns[e];
@@ -1139,7 +1202,8 @@ CMR_ERROR createWheel(
         nextRow = transpose->entryColumns[e + 1];
     }
 
-    CMRdbgMsg(10, "next column = %ld, next row = %ld\n", nextColumn, nextRow);
+    CMRdbgMsg(10, "Last column is y%ld, last row is x%ld, new column is y%ld and new row is x%ld\n", lastColumn+1,
+      lastRow+1, nextColumn+1, nextRow+1);
 
     CMR_GRAPH_NODE nextRimNode;
     CMR_GRAPH_EDGE rimEdge;
@@ -1150,22 +1214,24 @@ CMR_ERROR createWheel(
       CMR_CALL( CMRgraphAddNode(cmr, graph, &nextRimNode) );
     CMR_CALL( CMRgraphAddEdge(cmr, graph, lastRimNode, nextRimNode, &rimEdge) );
 
-    CMRdbgMsg(10, "Added rim {%ld,%ld} for column %ld.\n", lastRimNode, nextRimNode, lastColumn);
-    
+    CMRdbgMsg(10, "Added rim {%ld,%ld} for column y%ld.\n", lastRimNode, nextRimNode, lastColumn+1);
+
     CMR_CALL( CMRgraphAddEdge(cmr, graph, centerNode, nextRimNode, &spokeEdge) );
+
+    CMRdbgMsg(10, "Added spoke {%ld,%ld} for row x%ld.\n", centerNode, nextRimNode, lastRow+1);
 
     if (rowWithThree < SIZE_MAX && lastRow != rowWithThree && nextRow != rowWithThree)
     {
       columnEdges[lastColumn] = spokeEdge;
       rowEdges[lastRow] = rimEdge;
+      CMRdbgMsg(10, "Spoke is assigned to y%ld and rim to x%ld.\n", lastColumn+1, lastRow+1);
     }
     else
     {
       columnEdges[lastColumn] = rimEdge;
       rowEdges[lastRow] = spokeEdge;
+      CMRdbgMsg(10, "Spoke is assigned to x%ld and rim to y%ld.\n", lastRow+1, lastColumn+1);
     }
-
-    CMRdbgMsg(10, "Added spoke {%ld,%ld} for row %ld.\n", centerNode, nextRimNode, lastRow);
 
     lastRimNode = nextRimNode;
     lastRow = nextRow;
@@ -1239,8 +1305,11 @@ CMR_ERROR CMRregularSequenceGraphic(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT* tr
       CMR_ELEMENT columnParallel = CMRelementTranspose(findParallel(transpose, sequenceNumColumns[extension-1],
         sequenceNumColumns[extension-1], sequenceNumRows[extension-1], columnHashValues, hashVector));
 
-      CMRdbgMsg(10, "The new row is parallel to %s", CMRelementString(rowParallel, 0));
-      CMRdbgMsg(0, " and the new column is parallel to %s.\n", CMRelementString(columnParallel, 0));
+      CMRdbgMsg(10, "The new row is parallel to %c%ld", CMRelementIsRow(rowParallel) ? 'x' : 'y',
+        CMRelementIsRow(rowParallel) ? CMRelementToRowIndex(rowParallel) + 1 : CMRelementToColumnIndex(rowParallel) + 1);
+      CMRdbgMsg(0, " and the new column is parallel to %c%ld.\n", CMRelementIsRow(columnParallel) ? 'x' : 'y',
+        CMRelementIsRow(columnParallel) ? CMRelementToRowIndex(columnParallel) + 1
+        : CMRelementToColumnIndex(columnParallel) + 1);
 
       CMR_CALL( addToGraph1Row1Column(cmr, graph, rowEdges, columnEdges, sequenceNumRows[extension-1],
         sequenceNumColumns[extension-1], rowParallel, columnParallel, &isGraphic) );

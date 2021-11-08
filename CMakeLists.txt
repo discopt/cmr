@@ -52,6 +52,7 @@ add_library(cmr
   src/cmr/regular_nested_minor_sequence.c
   src/cmr/network.c
   src/cmr/regular.c
+  src/cmr/regular_enumerate.c
   src/cmr/regular_graphic.c
   src/cmr/regular_onesum.c
   src/cmr/regular_r10.c

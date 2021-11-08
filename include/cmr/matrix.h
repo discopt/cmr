@@ -867,7 +867,6 @@ CMR_ERROR CMRintmatToChr(
 
 CMR_EXPORT
 CMR_ERROR CMRdblmatFindEntry(
-  CMR* cmr,             /**< \ref CMR environment. */
   CMR_DBLMAT* matrix,   /**< Input matrix. */
   size_t row,           /**< A row. */
   size_t column,        /**< A column. */
@@ -881,7 +880,6 @@ CMR_ERROR CMRdblmatFindEntry(
 
 CMR_EXPORT
 CMR_ERROR CMRintmatFindEntry(
-  CMR* cmr,             /**< \ref CMR environment. */
   CMR_INTMAT* matrix,   /**< Input matrix. */
   size_t row,           /**< A row. */
   size_t column,        /**< A column. */
@@ -897,7 +895,6 @@ CMR_ERROR CMRintmatFindEntry(
 
 CMR_EXPORT
 CMR_ERROR CMRchrmatFindEntry(
-  CMR* cmr,             /**< \ref CMR environment. */
   CMR_CHRMAT* matrix,   /**< Input matrix. */
   size_t row,           /**< A row. */
   size_t column,        /**< A column. */

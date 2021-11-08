@@ -657,86 +657,178 @@ TEST(Regular, R10)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
-// TEST(Regular, RandomMatrix)
-// {
-//   CMR* cmr = NULL;
-//   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
-//   
-//   srand(2);
-//   const int numMatrices = 10000;
-//   const int numRows = 5;
-//   const int numColumns = 5;
-//   const double probability = 0.5;
-// 
-//   for (int i = 0; i < numMatrices; ++i)
-//   {
-//     CMR_CHRMAT* A = NULL;
-//     CMRchrmatCreate(cmr, &A, numRows, numColumns, numRows * numColumns);
-// 
-//     A->numNonzeros = 0;
-//     for (int row = 0; row < numRows; ++row)
-//     {
-//       A->rowSlice[row] = A->numNonzeros;
-//       for (int column = 0; column < numColumns; ++column)
-//       {
-//         if ((rand() * 1.0 / RAND_MAX) < probability)
-//         {
-//           A->entryColumns[A->numNonzeros] = column;
-//           A->entryValues[A->numNonzeros] = 1;
-//           A->numNonzeros++;
-//         }
-//       }
-//     }
-//     A->rowSlice[numRows] = A->numNonzeros;
-// 
-//     printf("\n\n\nTesting the following random matrix:\n");
-//     ASSERT_CMR_CALL( CMRchrmatPrintDense(cmr, A, stdout, '0', false) );
-// 
-//     bool isRegular;
-//     CMR_DEC* dec = NULL;
-//     CMR_REGULAR_PARAMETERS params;
-//     ASSERT_CMR_CALL( CMRregularInitParameters(&params) );
-//     params.fastGraphicness = false;
-//     ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, A, &isRegular, &dec, NULL, &params) );
-//     ASSERT_CMR_CALL( CMRdecFree(cmr, &dec) );
-// 
-//     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &A) );
-//   }
-// 
-//   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
-// }
 
-// TEST(Regular, Playground)
-// {
-//   CMR* cmr = NULL;
-//   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
-// 
-//   CMR_CHRMAT* matrix = NULL;
-//   ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "8 8 "
-//     "1 1 0 0 0 0 0 0 "
-//     "0 0 0 0 0 0 0 0 "
-//     "0 0 0 1 0 0 0 1 "
-//     "0 0 0 0 0 1 1 0 "
-//     "0 1 0 1 0 1 0 1 "
-//     "0 1 0 0 1 0 1 0 "
-//     "1 0 0 0 1 0 0 0 "
-//     "0 1 0 1 0 1 0 0 "
-//   ) );
-// 
-//   CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
-// 
-//   bool isRegular;
-//   CMR_DEC* dec = NULL;
-//   CMR_REGULAR_PARAMETERS params;
-//   ASSERT_CMR_CALL( CMRregularInitParameters(&params) );
-//   params.fastGraphicness = false;
-//   ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, &params) );
-// 
-//   ASSERT_CMR_CALL( CMRdecPrint(cmr, dec, stdout, 0, true, true, true) );
-//   
-//   ASSERT_CMR_CALL( CMRdecFree(cmr, &dec) );
-// 
-//   ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
-// 
-//   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
-// }
+/**
+ * \brief Tests a 3-separable matrix for regularity.
+ */
+
+static
+void testEnumerate(
+  CMR* cmr,           /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix, /**< Matrix to test. */
+  bool knowRegular    /**< Whether the matrix is regular. */
+)
+{
+  printf("Testing matrix for regularity with a 3-separation:\n");
+  ASSERT_CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', true) );
+
+  bool isRegular;
+  CMR_DEC* dec = NULL;
+  CMR_REGULAR_PARAMETERS params;
+  ASSERT_CMR_CALL( CMRregularInitParameters(&params) );
+  params.fastGraphicness = false;
+  ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, &params) );
+
+  if (knowRegular)
+  {
+    ASSERT_TRUE( isRegular );
+  }
+  else
+  {
+    ASSERT_FALSE( isRegular );
+  }
+
+  ASSERT_CMR_CALL( CMRdecPrint(cmr, dec, stdout, 0, true, true, true) );
+
+  ASSERT_CMR_CALL( CMRdecFree(cmr, &dec) );
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+}
+
+TEST(Regular, EnumerateRanksZeroTwo)
+{
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+
+  {
+    CMR_CHRMAT* matrix = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "4 4 "
+      "1 0 1 1 "
+      "1 1 1 0 "
+      "0 0 1 1 "
+      "0 1 1 1 "
+    ) );
+    testEnumerate(cmr, matrix, false);
+  }
+
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
+}
+
+TEST(Regular, EnumerateRanksOneOne)
+{
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+
+  {
+    CMR_CHRMAT* matrix = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "4 4 "
+      "1 1 1 1 "
+      "0 1 1 1 "
+      "1 0 0 1 "
+      "1 1 0 0 "
+    ) );
+    testEnumerate(cmr, matrix, false);
+  }
+
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
+}
+
+TEST(Regular, EnumerateRanksTwoZero)
+{
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+
+  {
+    CMR_CHRMAT* matrix = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "5 5 "
+      "1 1 0 1 0 "
+      "1 1 1 0 1 "
+      "1 1 1 0 0 "
+      "1 1 1 1 1 "
+      "1 0 0 0 1 "
+    ) );
+    testEnumerate(cmr, matrix, false);
+  }
+
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
+}
+
+TEST(Regular, RandomMatrix)
+{
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+  
+  srand(2);
+  const int numMatrices = 100;
+  const int numRows = 30;
+  const int numColumns = 30;
+  const double probability = 0.5;
+
+  for (int i = 0; i < numMatrices; ++i)
+  {
+    CMR_CHRMAT* A = NULL;
+    CMRchrmatCreate(cmr, &A, numRows, numColumns, numRows * numColumns);
+
+    A->numNonzeros = 0;
+    for (int row = 0; row < numRows; ++row)
+    {
+      A->rowSlice[row] = A->numNonzeros;
+      for (int column = 0; column < numColumns; ++column)
+      {
+        if ((rand() * 1.0 / RAND_MAX) < probability)
+        {
+          A->entryColumns[A->numNonzeros] = column;
+          A->entryValues[A->numNonzeros] = 1;
+          A->numNonzeros++;
+        }
+      }
+    }
+    A->rowSlice[numRows] = A->numNonzeros;
+
+    printf("\n\n\nTesting the following random matrix:\n");
+    ASSERT_CMR_CALL( CMRchrmatPrintDense(cmr, A, stdout, '0', false) );
+
+    bool isRegular;
+    CMR_DEC* dec = NULL;
+    CMR_REGULAR_PARAMETERS params;
+    ASSERT_CMR_CALL( CMRregularInitParameters(&params) );
+    params.fastGraphicness = false;
+    ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, A, &isRegular, &dec, NULL, &params) );
+    ASSERT_CMR_CALL( CMRdecFree(cmr, &dec) );
+
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &A) );
+  }
+
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
+}
+
+TEST(Regular, Playground)
+{
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "5 8 "
+    "1 1 0 0 1 1 1 0 "
+    "1 1 1 1 1 1 0 0 "
+    "0 1 1 0 1 0 0 1 "
+    "0 0 0 1 1 1 0 0 "
+    "0 0 0 0 0 0 1 1 "
+  ) );
+
+  CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
+
+  bool isRegular;
+  CMR_DEC* dec = NULL;
+  CMR_REGULAR_PARAMETERS params;
+  ASSERT_CMR_CALL( CMRregularInitParameters(&params) );
+  params.fastGraphicness = false;
+  ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, &params) );
+
+  ASSERT_CMR_CALL( CMRdecPrint(cmr, dec, stdout, 0, true, true, true) );
+  
+  ASSERT_CMR_CALL( CMRdecFree(cmr, &dec) );
+
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
+}

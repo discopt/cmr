@@ -1,4 +1,4 @@
-#define CMR_DEBUG /** Uncomment to debug this file. */
+// #define CMR_DEBUG /** Uncomment to debug this file. */
 
 #include <cmr/regular.h>
 
@@ -22,6 +22,20 @@ CMR_ERROR CMRregularInitParameters(CMR_REGULAR_PARAMETERS* params)
 
   return CMR_OKAY;
 }
+
+/**
+ * \brief Tests a 2-connected binary or ternary matrix for regularity.
+ */
+
+static
+CMR_ERROR testRegularTwoConnected(
+  CMR* cmr,                       /**< \ref CMR environment. */
+  CMR_DEC* dec,                   /**< Decomposition node. */
+  bool ternary,                   /**< Whether signs matter. */
+  bool *pisRegular,               /**< Pointer for storing whether \p matrix is regular. */
+  CMR_MINOR** pminor,             /**< Pointer for storing an \f$ F_7 \f$ or \f$ F_7^\star \f$ minor. */
+  CMR_REGULAR_PARAMETERS* params  /**< Parameters for the computation. */
+);
 
 static
 CMR_ERROR testRegularThreeConnectedWithSequence(
@@ -68,6 +82,7 @@ CMR_ERROR testRegularThreeConnectedWithSequence(
   {
     assert(graphEdgeLabels);
 
+    CMRdbgMsg(8, "Matrix is graphic.\n");
     dec->type = CMR_DEC_GRAPHIC;
     dec->graph = graph;
     dec->graphForest = NULL;
@@ -113,6 +128,7 @@ CMR_ERROR testRegularThreeConnectedWithSequence(
     {
       assert(cographEdgeLabels);
 
+      CMRdbgMsg(8, "Matrix is graphic.\n");
       dec->type = (dec->type == CMR_DEC_GRAPHIC) ? CMR_DEC_PLANAR : CMR_DEC_COGRAPHIC;
       dec->cograph = cograph;
       dec->cographForest = NULL;
@@ -152,10 +168,33 @@ CMR_ERROR testRegularThreeConnectedWithSequence(
 
     if (!isR10)
     {
-      CMRdbgMsg(8, "Neither graphic (until %ld) nor cographic (until %ld), nor R_10!\n", lastGraphicMinor,
-        lastCographicMinor);
-    
-      assert("Not implemented" == 0);
+      CMRdbgMsg(8, "Neither graphic (until %ld) nor cographic (until %ld), nor R_10! First non-graphic and non-cographic minor is %ld.\n",
+        lastGraphicMinor, lastCographicMinor,
+        lastGraphicMinor > lastCographicMinor ? (lastGraphicMinor+1) : (lastCographicMinor + 1) );
+
+      CMR_CALL( CMRregularSearchThreeSeparation(cmr, dec, nestedMinorsTranspose, ternary,
+        lastGraphicMinor > lastCographicMinor ? (lastGraphicMinor+1) : (lastCographicMinor + 1), NULL, params) );
+
+      if (dec->type == CMR_DEC_IRREGULAR)
+      {
+        CMRdbgMsg(8, "Minor determined to be irregular.\n");
+        *pisRegular = false;
+      }
+      else
+      {
+        CMRdbgMsg(8, " Encountered a 3-separation.\n");
+        assert(dec->numChildren == 2);
+
+#if defined(CMR_DEBUG)
+        CMR_CALL( CMRchrmatPrintDense(cmr, dec->children[0]->matrix, stdout, '0', true) );
+        CMR_CALL( CMRchrmatPrintDense(cmr, dec->children[1]->matrix, stdout, '0', true) );
+#endif /* CMR_DEBUG */
+
+        CMR_CALL( testRegularTwoConnected(cmr, dec->children[0], ternary, pisRegular, pminor, params) );
+        
+        if (params->completeTree || *pisRegular)
+          CMR_CALL( testRegularTwoConnected(cmr, dec->children[1], ternary, pisRegular, pminor, params) );
+      }
     }
   }
 
@@ -165,14 +204,8 @@ CMR_ERROR testRegularThreeConnectedWithSequence(
 }
 
 static
-CMR_ERROR testRegularTwoConnected(
-  CMR* cmr,                       /**< \ref CMR environment. */
-  CMR_DEC* dec,                   /**< Decomposition node. */
-  bool ternary,                   /**< Whether signs matter. */
-  bool *pisRegular,               /**< Pointer for storing whether \p matrix is regular. */
-  CMR_MINOR** pminor,             /**< Pointer for storing an \f$ F_7 \f$ or \f$ F_7^\star \f$ minor. */
-  CMR_REGULAR_PARAMETERS* params  /**< Parameters for the computation. */
-)
+CMR_ERROR testRegularTwoConnected(CMR* cmr, CMR_DEC* dec, bool ternary, bool *pisRegular, CMR_MINOR** pminor,
+  CMR_REGULAR_PARAMETERS* params)
 {
   assert(cmr);
   assert(dec);

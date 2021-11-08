@@ -891,7 +891,6 @@ CMR_ERROR extendNestedMinorSequence(
 
       CMR_CALL( CMRsepaInitializeMatrix(cmr, separation, dec->matrix, 1) );
       CMR_CALL( CMRdecApplySeparation(cmr, dec, separation) );
-      CMR_CALL( CMRsepaFree(cmr, &separation) );
 
       /* The computed (incomplete) sequence of nested minors is valid for the first child of the 2-sum.
        * Hence, we create the corresponding objects. */

@@ -28,10 +28,8 @@ typedef struct
   size_t numColumns[2];             /**< \brief Indicates the number of columns of each part. */
   size_t* rows[2];                  /**< \brief Array of sorted rows for each part. */
   size_t* columns[2];               /**< \brief Array of sorted columns for each part. */
-  size_t extraRows0[2];             /**< \brief Extra rows for part 0 or \c SIZE_MAX if bottom-left rank is lower. */
-  size_t extraColumns1[2];          /**< \brief Extra columns for part 1 or \c SIZE_MAX if bottom-left rank is lower. */
-  size_t extraRows1[2];             /**< \brief Extra rows for part 1 or \c SIZE_MAX if top-right rank is lower. */
-  size_t extraColumns0[2];          /**< \brief Extra columns for part 0 or \c SIZE_MAX if top-right rank is lower. */
+  size_t extraRows[2][2];           /**< \brief For each part, array of extra rows; may be \c SIZE_MAX. */
+  size_t extraColumns[2][2];        /**< \brief For each part, array of extra columns; may be \c SIZE_MAX. */
   unsigned char* indicatorMemory;   /**< \brief Memory for \ref rowsToPart and \ref columnsToPart. */
   size_t* elementMemory;            /**< \brief Memory for \ref rows and \ref columns. */
 } CMR_SEPA;
@@ -110,8 +108,8 @@ unsigned char CMRsepaRankBottomLeft(
 {
   assert(sepa);
 
-  return sepa->extraRows0[0] == SIZE_MAX ? 0
-    : (sepa->extraRows0[1] == SIZE_MAX ? 1 : 2);
+  return sepa->extraRows[0][0] == SIZE_MAX ? 0
+    : (sepa->extraRows[0][1] == SIZE_MAX ? 1 : 2);
 }
 
 /**
@@ -123,8 +121,8 @@ unsigned char CMRsepaRankTopRight(
   CMR_SEPA* sepa  /**< Separation. */
 )
 {
-  return sepa->extraRows1[0] == SIZE_MAX ? 0
-    : (sepa->extraRows1[1] == SIZE_MAX ? 1 : 2);
+  return sepa->extraRows[1][0] == SIZE_MAX ? 0
+    : (sepa->extraRows[1][1] == SIZE_MAX ? 1 : 2);
 }
 
 /**

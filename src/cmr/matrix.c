@@ -1537,8 +1537,6 @@ cleanup:
 
   CMR_CALL( CMRfreeStackArray(cmr, &currentColumn1) );
 
-  free(currentColumn1);
-
   return CMR_OKAY;
 }
 
@@ -1583,8 +1581,6 @@ cleanup:
 
   CMR_CALL( CMRfreeStackArray(cmr, &currentColumn1) );
 
-  free(currentColumn1);
-
   return CMR_OKAY;
 }
 
@@ -1628,8 +1624,6 @@ CMR_ERROR CMRchrmatCheckTranspose(CMR* cmr, CMR_CHRMAT* matrix1, CMR_CHRMAT* mat
 cleanup:
 
   CMR_CALL( CMRfreeStackArray(cmr, &currentColumn1) );
-
-  free(currentColumn1);
 
   return CMR_OKAY;
 }
@@ -2325,9 +2319,8 @@ CMR_ERROR CMRintmatToChr(CMR* cmr, CMR_INTMAT* matrix, CMR_CHRMAT** presult)
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRdblmatFindEntry(CMR* cmr, CMR_DBLMAT* matrix, size_t row, size_t column, size_t* pentry)
+CMR_ERROR CMRdblmatFindEntry(CMR_DBLMAT* matrix, size_t row, size_t column, size_t* pentry)
 {
-  assert(cmr);
   CMRconsistencyAssert( CMRdblmatConsistency(matrix) );
   assert(pentry);
 
@@ -2352,9 +2345,8 @@ CMR_ERROR CMRdblmatFindEntry(CMR* cmr, CMR_DBLMAT* matrix, size_t row, size_t co
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRintmatFindEntry(CMR* cmr, CMR_INTMAT* matrix, size_t row, size_t column, size_t* pentry)
+CMR_ERROR CMRintmatFindEntry(CMR_INTMAT* matrix, size_t row, size_t column, size_t* pentry)
 {
-  assert(cmr);
   CMRconsistencyAssert( CMRintmatConsistency(matrix) );
   assert(pentry);
 
@@ -2379,9 +2371,8 @@ CMR_ERROR CMRintmatFindEntry(CMR* cmr, CMR_INTMAT* matrix, size_t row, size_t co
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRchrmatFindEntry(CMR* cmr, CMR_CHRMAT* matrix, size_t row, size_t column, size_t* pentry)
+CMR_ERROR CMRchrmatFindEntry(CMR_CHRMAT* matrix, size_t row, size_t column, size_t* pentry)
 {
-  assert(cmr);
   CMRconsistencyAssert( CMRchrmatConsistency(matrix) );
   assert(pentry);
 

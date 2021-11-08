@@ -34,6 +34,8 @@ struct _CMR_DEC
   CMR_SP_REDUCTION* reductions;             /**< \brief Array of series-parallel reductions. */
   size_t numReductions;                     /**< \brief Length of \p reductions. */
 
+  CMR_SEPA* separation;                     /**< \brief Separation data. */
+  
   CMR_CHRMAT* nestedMinorsMatrix;           /**< \brief Equivalent binary matrix that displays the sequence of nested
                                              **         minors. */
   size_t* nestedMinorsSequenceNumRows;      /**< \brief Number of rows of sequence of nested minors. */
@@ -96,6 +98,8 @@ CMR_ERROR CMRdecTranslateMinorToParent(
 
 /**
  * \brief Turns the given node into one for the given separation.
+ *
+ * The given \p separation is stored in \p dec and will be free'd together with it.
  */
 
 CMR_ERROR CMRdecApplySeparation(

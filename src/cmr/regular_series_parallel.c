@@ -67,10 +67,7 @@ CMR_ERROR CMRregularDecomposeSeriesParallel(CMR* cmr, CMR_DEC** pdec, bool terna
 
   /* Modify the decomposition for the 2-separation. */
   if (separation)
-  {
     CMR_CALL( CMRdecApplySeparation(cmr, dec, separation) );
-    CMR_CALL( CMRsepaFree(cmr, &separation) );
-  }
 
   CMR_CALL( CMRfreeStackArray(cmr, &reductions) );
   CMR_CALL( CMRsubmatFree(cmr, &reducedSubmatrix) );  

@@ -35,7 +35,7 @@ CMR_ERROR CMRcomplementRowColumn(CMR* cmr, CMR_CHRMAT* matrix, size_t complement
     for (size_t row = 0; row < matrix->numRows; ++row)
     {
       size_t e;
-      CMR_CALL( CMRchrmatFindEntry(cmr, matrix, row, complementColumn, &e) );
+      CMR_CALL( CMRchrmatFindEntry(matrix, row, complementColumn, &e) );
       complementColumnEntries[row] = (e == SIZE_MAX) ? 0 : 1;
     }
   }

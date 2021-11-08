@@ -3,6 +3,7 @@
 #include "env_internal.h"
 #include "dec_internal.h"
 #include "matrix_internal.h"
+#include <cmr/separation.h>
 
 #include <string.h>
 
@@ -75,6 +76,7 @@ CMR_ERROR CMRdecFree(CMR* cmr, CMR_DEC** pdec)
   CMR_CALL( CMRfreeBlockArray(cmr, &dec->cographCoforest) );
   CMR_CALL( CMRfreeBlockArray(cmr, &dec->cographArcsReversed) );
   CMR_CALL( CMRfreeBlockArray(cmr, &dec->reductions) );
+  CMR_CALL( CMRsepaFree(cmr, &dec->separation) );
   CMR_CALL( CMRchrmatFree(cmr, &dec->nestedMinorsMatrix) );
   CMR_CALL( CMRfreeBlockArray(cmr, &dec->nestedMinorsSequenceNumColumns) );
   CMR_CALL( CMRfreeBlockArray(cmr, &dec->nestedMinorsSequenceNumRows) );
@@ -374,6 +376,8 @@ CMR_ERROR CMRdecCreate(CMR* cmr, CMR_DEC* parent, size_t numRows, size_t* rowsPa
   dec->reductions = NULL;
   dec->numReductions = 0;
 
+  dec->separation = NULL;
+
   dec->nestedMinorsMatrix = NULL;
   dec->nestedMinorsSequenceNumRows= NULL;
   dec->nestedMinorsSequenceNumColumns = NULL;
@@ -507,6 +511,62 @@ CMR_ERROR CMRdecTranslateMinorToParent(CMR_DEC* node, CMR_MINOR* minor)
   return CMR_OKAY;
 }
 
+/**
+ * \brief Starts a new row.
+ */
+
+static inline
+void startMatrixRow(
+  CMR_CHRMAT* matrix  /**< Matrix. */
+)
+{
+  matrix->rowSlice[matrix->numRows++] = matrix->numNonzeros;
+}
+
+/**
+ * \brief Adds a nonzero entry with \p value in \p column. Assumes that memory is allocated.
+ */
+
+static inline
+void addMatrixEntry(
+  CMR_CHRMAT* childMatrix,  /**< Child matrix. */
+  size_t childColumn,       /**< Column of child matrix. */
+  char value                /**< New value. */
+)
+{
+  assert(value);
+
+  CMRdbgMsg(8, "Creating a nonzero %d in column c%ld.\n", value, childColumn+1);
+
+  childMatrix->entryColumns[childMatrix->numNonzeros] = childColumn;
+  childMatrix->entryValues[childMatrix->numNonzeros] = value;
+  childMatrix->numNonzeros++;
+}
+
+/**
+ * \brief Copies the relevant part of a row from \p parentMatrix to \p childMatrix. Assumes that memory is allocated.
+ */
+
+static
+void copyMatrixRow(
+  CMR_CHRMAT* childMatrix,      /**< Child matrix. */
+  CMR_CHRMAT* parentMatrix,     /**< Parent matrix. */
+  size_t parentRow,             /**< Row of \p parentMatrix to be copied. */
+  unsigned char* columnsToPart, /**< Mapping of columns of \p parentMatrix to target part of separation. */
+  unsigned char part,           /**< Target part of separation. */
+  size_t* columnsToChildColumn  /**< Mapping of columns of \p parentMatrix to columns of \p childMatrix. */
+)
+{
+  size_t first = parentMatrix->rowSlice[ parentRow ];
+  size_t beyond = parentMatrix->rowSlice[ parentRow + 1 ];
+  for (size_t e = first; e < beyond; ++e)
+  {
+    size_t parentColumn = parentMatrix->entryColumns[e];
+    if (columnsToPart[parentColumn] == part)
+      addMatrixEntry(childMatrix, columnsToChildColumn[parentColumn], parentMatrix->entryValues[e]);
+  }
+}
+
 CMR_ERROR CMRdecApplySeparation(CMR* cmr, CMR_DEC* dec, CMR_SEPA* sepa)
 {
   assert(cmr);
@@ -517,11 +577,12 @@ CMR_ERROR CMRdecApplySeparation(CMR* cmr, CMR_DEC* dec, CMR_SEPA* sepa)
   unsigned char rankTopRight = CMRsepaRankTopRight(sepa);
   CMRdbgMsg(4, "Ranks are %d and %d.\n", rankBottomLeft, rankTopRight);
 
+  dec->separation = sepa;
+  
   if (CMRsepaRank(sepa) == 1)
   {
     dec->type = CMR_DEC_TWO_SUM;
     CMR_CALL( CMRdecSetNumChildren(cmr, dec, 2) );
-    
 
     for (size_t child = 0; child < 2; ++child)
     {
@@ -531,8 +592,8 @@ CMR_ERROR CMRdecApplySeparation(CMR* cmr, CMR_DEC* dec, CMR_SEPA* sepa)
       CMRdbgMsg(4, "Child %d has %d+%d rows and %d+%d columns.\n", child, sepa->numRows[child], numExtraRows,
         sepa->numColumns[child], numExtraColumns);
 
-      size_t* extraRows = child == 0 ? sepa->extraRows0 : sepa->extraRows1;
-      size_t* extraColumns = child == 0 ? sepa->extraColumns0 : sepa->extraColumns1;
+      size_t* extraRows = sepa->extraRows[child];
+      size_t* extraColumns = sepa->extraColumns[child];
 
       CMR_CALL( CMRdecCreate(cmr, dec, sepa->numRows[child] + numExtraRows, NULL,
         sepa->numColumns[child] + numExtraColumns, NULL, &dec->children[child]) );
@@ -548,9 +609,283 @@ CMR_ERROR CMRdecApplySeparation(CMR* cmr, CMR_DEC* dec, CMR_SEPA* sepa)
         dec->children[child]->columnsParent[column] = sepa->columns[child][column];
       for (unsigned char extra = 0; extra < numExtraColumns; ++extra)
         dec->children[child]->columnsParent[sepa->numColumns[child] + extra] = extraColumns[extra];
-      
+
       CMR_CALL( CMRdecInheritMatrices(cmr, dec->children[child]) );
     }
+  }
+  else if (CMRsepaRank(sepa) == 2)
+  {
+    assert(dec->matrix);
+    dec->type = CMR_DEC_THREE_SUM;
+    CMR_CALL( CMRdecSetNumChildren(cmr, dec, 2) );
+
+    size_t numExtraRows[2];
+    size_t numExtraColumns[2];
+    for (size_t child = 0; child < 2; ++child)
+    {
+      unsigned char type = 2 * CMRsepaRankBottomLeft(sepa) + child;
+      numExtraRows[child] = (type == 1 || type == 4) ? 2 : 1;
+      numExtraColumns[child] = (type == 1 || type == 4) ? 1 : 2;
+
+      CMRdbgMsg(4, "Child %d has %ld + %ld rows and %ld + %ld columns.\n", child, sepa->numRows[child],
+        numExtraRows[child], sepa->numColumns[child], numExtraColumns[child]);
+
+      assert(sepa->numRows[child] + sepa->numColumns[child] >= 4);
+
+      CMR_CALL( CMRdecCreate(cmr, dec, sepa->numRows[child] + numExtraRows[child], NULL,
+        sepa->numColumns[child] + numExtraColumns[child], NULL, &dec->children[child]) );
+
+      /* rowsParent */
+      CMR_CALL( CMRallocBlockArray(cmr, &dec->children[child]->rowsParent, dec->children[child]->numRows) );
+      CMR_CALL( CMRallocBlockArray(cmr, &dec->children[child]->columnsParent, dec->children[child]->numColumns) );
+      switch(type)
+      {
+      case 0: /* top-left child; top-right has rank 2. */
+        dec->children[0]->rowsParent[sepa->numRows[0]] = SIZE_MAX;
+        dec->children[0]->columnsParent[sepa->numColumns[0]] = sepa->extraColumns[0][0];
+        dec->children[0]->columnsParent[sepa->numColumns[0] + 1] = sepa->extraColumns[0][1];
+      break;
+      case 1: /* bottom-right child; top-right has rank 2. */
+        dec->children[1]->rowsParent[0] = sepa->extraRows[1][0];
+        dec->children[1]->rowsParent[1] = sepa->extraRows[1][1];
+        dec->children[1]->columnsParent[0] = SIZE_MAX;
+      break;
+      case 2: /* top-left child; top-right and bottom-left each have rank 1. */
+        dec->children[0]->rowsParent[sepa->numRows[0]] = SIZE_MAX;
+        dec->children[0]->columnsParent[sepa->numColumns[0]] = sepa->extraColumns[0][0];
+        dec->children[0]->columnsParent[sepa->numColumns[0] + 1] = sepa->extraColumns[0][0];
+      break;
+      case 3: /* bottom-right child; top-right and bottom-left each have rank 1. */
+        dec->children[1]->rowsParent[0] = SIZE_MAX;
+        dec->children[1]->columnsParent[0] = sepa->extraColumns[1][0];
+        dec->children[1]->columnsParent[1] = sepa->extraColumns[1][0];
+      break;
+      case 4: /* top-left child; bottom-left has rank 2. */
+        dec->children[0]->rowsParent[sepa->numRows[0]] = sepa->extraRows[0][0];
+        dec->children[0]->rowsParent[sepa->numRows[0] + 1] = sepa->extraRows[0][1];
+        dec->children[0]->columnsParent[sepa->numColumns[0]] = SIZE_MAX;
+      break;
+      case 5: /* bottom-right child; bottom-left has rank 2. */
+        dec->children[1]->rowsParent[0] = SIZE_MAX;
+        dec->children[1]->columnsParent[0] = sepa->extraColumns[1][0];
+        dec->children[1]->columnsParent[1] = sepa->extraColumns[1][1];
+      break;
+      default:
+        assert(false);
+      }
+    }
+
+    /* Create mapping from child rows to parent rows. */
+    size_t currentRow[2] = {0, numExtraRows[1]};
+    for (size_t row = 0; row < dec->matrix->numRows; ++row)
+    {
+      unsigned char part = sepa->rowsToPart[row];
+      dec->children[part]->rowsParent[currentRow[part]++] = row;
+    }
+
+    /* Create mappings between parent columns and child columns. */
+    size_t currentColumn[2] = { 0, numExtraColumns[1] };
+    size_t* columnsToChildColumn = NULL;
+    CMR_CALL( CMRallocStackArray(cmr, &columnsToChildColumn, dec->matrix->numColumns) );
+    for (size_t column = 0; column < dec->matrix->numColumns; ++column)
+    {
+      unsigned char child = sepa->columnsToPart[column];
+      size_t childColumn = currentColumn[child]++;
+      columnsToChildColumn[column] = childColumn;
+      dec->children[child]->columnsParent[childColumn] = column;      
+    }
+
+    /* Prepare child matrices. */
+    CMR_CALL( CMRchrmatCreate(cmr, &dec->children[0]->matrix, dec->children[0]->numRows, dec->children[0]->numColumns,
+      dec->matrix->numNonzeros + 1000) );
+    CMR_CALL( CMRchrmatCreate(cmr, &dec->children[1]->matrix, dec->children[1]->numRows, dec->children[1]->numColumns,
+      dec->matrix->numNonzeros + 1000) );
+    CMR_CHRMAT* matrix[2] = { dec->children[0]->matrix, dec->children[1]->matrix };
+    matrix[0]->numNonzeros = 0;
+    matrix[0]->numRows = 0;
+    matrix[1]->numNonzeros = 0;
+    matrix[1]->numRows = 0;
+
+    /* Extra rows for child 1 come first. */
+    switch (CMRsepaRankBottomLeft(sepa))
+    {
+    case 0:
+      CMRdbgMsg(6, "Row r1 of child 1 is an extra row from r%ld.\n", sepa->extraRows[1][0]+1);
+      startMatrixRow(matrix[1]);
+      addMatrixEntry(matrix[1], 0, 1); // TODO: Or maybe a -1 in one of the extra columns?
+      copyMatrixRow(matrix[1], dec->matrix, sepa->extraRows[1][0], sepa->columnsToPart, 1, columnsToChildColumn);
+
+      CMRdbgMsg(6, "Row r2 of child 1 is an extra row from r%ld.\n", sepa->extraRows[1][1]+1);
+      startMatrixRow(matrix[1]);
+      addMatrixEntry(matrix[1], 0, 1); // TODO: Or maybe a -1 in one of the extra columns?
+      copyMatrixRow(matrix[1], dec->matrix, sepa->extraRows[1][1], sepa->columnsToPart, 1, columnsToChildColumn);
+    break;
+    case 1:
+      CMRdbgMsg(6, "Row r1 of child 1 is an extra row from r%ld.\n", sepa->extraRows[1][0]+1);
+      startMatrixRow(matrix[1]);
+      addMatrixEntry(matrix[1], 1, 1); // TODO: Or maybe a -1?
+      copyMatrixRow(matrix[1], dec->matrix, sepa->extraRows[1][0], sepa->columnsToPart, 1, columnsToChildColumn);
+    break;
+    case 2:
+      CMRdbgMsg(6, "Row r1 of child 1 is an artificial row.\n");
+      startMatrixRow(matrix[1]);
+      addMatrixEntry(matrix[1], 0, 1); // TODO: Or maybe a -1?
+      addMatrixEntry(matrix[1], 1, 1); // TODO: Or maybe a -1?
+    break;
+    default:
+      assert(false);
+    }
+
+    /* Create dense copies of extra columns. */
+    char* denseExtraColumns[2][2] = { { NULL, NULL }, { NULL, NULL } };
+    for (short part = 0; part < 2; ++part)
+    {
+      for (short extra = 0; extra < 2; ++extra)
+      {
+        if (sepa->extraColumns[part][extra] < SIZE_MAX)
+        {
+          CMRdbgMsg(6, "Part %d has a extra column c%ld.\n", part, sepa->extraColumns[part][extra]+1);
+          CMR_CALL( CMRallocStackArray(cmr, &denseExtraColumns[part][extra], dec->numRows) );
+          for (size_t row = 0; row < dec->numRows; ++row)
+            denseExtraColumns[part][extra][row] = 0; 
+        }
+      }
+    }
+
+    /* Scan matrix once to store extra columns. */
+    for (size_t row = 0; row < dec->numRows; ++row)
+    {
+      size_t first = dec->matrix->rowSlice[row];
+      size_t beyond = dec->matrix->rowSlice[row + 1];
+      for (size_t e = first; e < beyond; ++e)
+      {
+        size_t column = dec->matrix->entryColumns[e];
+        for (short part = 0; part < 2; ++part)
+        {
+          for (short extra = 0; extra < 2; ++extra)
+          {
+            if (column == sepa->extraColumns[part][extra])
+              denseExtraColumns[part][extra][row] = dec->matrix->entryValues[e];
+          }
+        }
+      }
+    }
+
+    /* Now we copy each row to the corresponding child matrix. */
+    for (size_t row = 0; row < dec->matrix->numRows; ++row)
+    {
+      unsigned char child = sepa->rowsToPart[row];
+      CMRdbgMsg(6, "Parent row r%ld corresponds to row r%ld of child %d.\n", row+1, matrix[child]->numRows+1, child);
+      startMatrixRow(matrix[child]);
+
+      /* For child 1 we prepend the nonzeros of extra columns. */
+      if (child == 1)
+      {
+        CMRdbgMsg(8, "Prepending extra columns.\n");
+        switch (CMRsepaRankBottomLeft(sepa))
+        {
+        case 0:
+          /* We do nothing since the only nonzeros in the additional column are those in the extra rows. */
+        break;
+        case 1:
+          assert(denseExtraColumns[1][0]);
+          if (denseExtraColumns[1][0][row])
+          {
+            addMatrixEntry(matrix[1], 0, denseExtraColumns[1][0][row]);
+            addMatrixEntry(matrix[1], 1, denseExtraColumns[1][0][row]);
+          }
+        break;
+        case 2:
+          assert(denseExtraColumns[1][0]);
+          assert(denseExtraColumns[1][1]);
+          if (denseExtraColumns[1][0][row])
+            addMatrixEntry(matrix[1], 0, denseExtraColumns[1][0][row]);
+          if (denseExtraColumns[1][1][row])
+            addMatrixEntry(matrix[1], 1, denseExtraColumns[1][1][row]);
+        break;
+        default:
+          assert(false);
+        }
+      }
+
+      /* We now add the actual row of the submatrix. */
+      copyMatrixRow(matrix[child], dec->matrix, row, sepa->columnsToPart, child, columnsToChildColumn);
+
+      /* For child 0 we append the nonzeros of extra columns. */
+      if (child == 0)
+      {
+        CMRdbgMsg(8, "Appending extra columns.\n");
+        switch (CMRsepaRankBottomLeft(sepa))
+        {
+        case 0:
+          assert(denseExtraColumns[0][0]);
+          assert(denseExtraColumns[0][1]);
+          if (denseExtraColumns[0][0][row])
+            addMatrixEntry(matrix[0], sepa->numColumns[0], denseExtraColumns[0][0][row]);
+          if (denseExtraColumns[0][1][row])
+            addMatrixEntry(matrix[0], sepa->numColumns[0]+1, denseExtraColumns[0][1][row]);
+        break;
+        case 1:
+          assert(denseExtraColumns[0][0]);
+          if (denseExtraColumns[0][0][row])
+          {
+            addMatrixEntry(matrix[0], sepa->numColumns[0], denseExtraColumns[0][0][row]);
+            addMatrixEntry(matrix[0], sepa->numColumns[0]+1, denseExtraColumns[0][0][row]);
+          }
+        break;
+        case 2:
+          /* We do nothing since the only nonzeros in the additional column are those in the extra rows. */
+        break;
+        default:
+          assert(false);
+        }
+      }
+    }
+
+    /* Extra rows for child 0 come last. */
+    switch (CMRsepaRankBottomLeft(sepa))
+    {
+    case 0:
+      CMRdbgMsg(6, "Row r%ld of child 0 is an artificial row.\n", matrix[0]->numRows+1);
+      startMatrixRow(matrix[0]);
+      addMatrixEntry(matrix[0], matrix[0]->numColumns-2, 1); // TODO: Or maybe a -1?
+      addMatrixEntry(matrix[0], matrix[0]->numColumns-1, 1); // TODO: Or maybe a -1?
+    break;
+    case 1:
+      CMRdbgMsg(6, "Row r%ld of child 0 is an extra row from r%ld.\n", matrix[0]->numRows+1, sepa->extraRows[0][0]+1);
+      startMatrixRow(matrix[0]);
+      copyMatrixRow(matrix[0], dec->matrix, sepa->extraRows[0][0], sepa->columnsToPart, 0, columnsToChildColumn);
+      addMatrixEntry(matrix[0], matrix[0]->numColumns-1, 1); // TODO: Or maybe a -1?
+    break;
+    case 2:
+      CMRdbgMsg(6, "Row r%ld of child 0 is an extra row from r%ld.\n", matrix[0]->numRows+1, sepa->extraRows[0][0]+1);
+      startMatrixRow(matrix[0]);
+      copyMatrixRow(matrix[0], dec->matrix, sepa->extraRows[0][0], sepa->columnsToPart, 0, columnsToChildColumn);
+      addMatrixEntry(matrix[0], matrix[0]->numColumns-1, 1); // TODO: Or maybe a -1 in one of the extra columns?
+
+      CMRdbgMsg(6, "Row r%ld of child 0 is an extra row from r%ld.\n", matrix[0]->numRows+1, sepa->extraRows[0][1]+1);
+      startMatrixRow(matrix[0]);
+      copyMatrixRow(matrix[0], dec->matrix, sepa->extraRows[0][1], sepa->columnsToPart, 0, columnsToChildColumn);
+      addMatrixEntry(matrix[0], matrix[0]->numColumns-1, 1); // TODO: Or maybe a -1 in one of the extra columns?
+    break;
+    default:
+      assert(false);
+    }
+
+    /* Finish matrix construction. */
+    matrix[0]->rowSlice[matrix[0]->numRows] = matrix[0]->numNonzeros;
+    matrix[1]->rowSlice[matrix[1]->numRows] = matrix[1]->numNonzeros;
+
+    /* Free temporary memory. */
+    for (short part = 1; part >= 0; --part)
+    {
+      for (short extra = 1; extra >= 0; --extra)
+      {
+        if (sepa->extraColumns[part][extra] < SIZE_MAX)
+          CMR_CALL( CMRfreeStackArray(cmr, &denseExtraColumns[part][extra]) );
+      }
+    }
+    CMR_CALL( CMRfreeStackArray(cmr, &columnsToChildColumn) );
   }
   else
   {
