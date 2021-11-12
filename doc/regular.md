@@ -1,7 +1,7 @@
 # Regular Matroids # {#regular}
 
-A matrix \f$ M \in \{0,1\}^{m \times n} \f$ is **regular** if the binary matroid represented by \f$ M \f$ is representable over *every* field.
-This is equivalent to requiring that the matroid is equal to the ternary matroid represented by the [Camion-signed](\ref camion) version \f$ M' \f$ of \f$ M \f$, and thus equivalent to [total unimodularity](\ref tu) of \f$ M' \f$.
+A matrix \f$ M \in \{0,1\}^{m \times n} \f$ is **regular** if the binary matroid [represented](\ref matroids) by \f$ M \f$ is representable over *every* field.
+This is equivalent to requiring that the matroid is equal to the ternary matroid [represented](\ref matroids) by the [Camion-signed](\ref camion) version \f$ M' \f$ of \f$ M \f$, and thus equivalent to [total unimodularity](\ref tu) of \f$ M' \f$.
 
 
 ## Usage ##

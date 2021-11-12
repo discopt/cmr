@@ -7,7 +7,7 @@ A matrix \f$ A \in \{-1,0,+1\}^{m \times n} \f$ is called **series-parallel** if
   - a (negated) copy of an existing row/column.
 
 The removal of such a row/column is called an **SP-reduction**.
-A matroid is called **series-parallel** if it is represented by a series-parallel matrix.
+A matroid is called **series-parallel** if it is [represented](\ref matroids) by a series-parallel matrix.
 This is equivalent to being the graphic matroid of a series-parallel graph.
 
 **Theorem.** A matrix \f$ A \in \{-1,0,1\}^{m \times n} \f$ is *either* series-parallel or it contains, up to scaling of rows/columns with \f$ -1 \f$,

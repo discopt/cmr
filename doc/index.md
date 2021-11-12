@@ -9,7 +9,7 @@ The following matrix classes can be recognized:
   - \ref ctu
   - \ref k-modular
 
-Moreover, base representation matrices for the following matroid classes can be recognized:
+Moreover, [representation matrices](\ref matroids) for the following matroid classes can be recognized:
 
   - \ref regular
   - \ref graphic

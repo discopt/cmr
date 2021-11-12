@@ -31,6 +31,7 @@ if(DOXYGEN_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/file-formats.md
     ${CMAKE_CURRENT_SOURCE_DIR}/graphic.md
     ${CMAKE_CURRENT_SOURCE_DIR}/k-modular.md
+    ${CMAKE_CURRENT_SOURCE_DIR}/matroids.md
     ${CMAKE_CURRENT_SOURCE_DIR}/max-flow-min-cut.md
     ${CMAKE_CURRENT_SOURCE_DIR}/network.md
     ${CMAKE_CURRENT_SOURCE_DIR}/perfect.md
