@@ -1,15 +1,23 @@
-#include <tu/graph.h>
-#include <tu/matrix.h>
-#include <tu/graphic.h>
+#include <cmr/graph.h>
+#include <cmr/matrix.h>
+#include <cmr/graphic.h>
+#include <time.h>
+#include <sys/time.h>
 
-void printUsage(const char* program)
+int printUsage(const char* program)
 {
-  printf("Usage: %s #ROWS #COLUMNS\n", program);
+  fprintf(stderr, "Usage: %s [OPTIONS] #ROWS #COLUMNS\n\n", program);
+  fputs("Creates a random #ROWS-by-#COLUMNS network matrix.\n", stderr);
+  fputs("Options:\n", stderr);
+  return EXIT_FAILURE;
 }
 
 int main(int argc, const char** argv)
 {
   int numNodes, numEdges;
+  struct timeval time; 
+  gettimeofday(&time, NULL);
+  srand((time.tv_sec * 1000) + (time.tv_usec / 1000));
 
   if (argc != 3)
   {
@@ -32,18 +40,18 @@ int main(int argc, const char** argv)
   ++numNodes;
 
   CMR* cmr = NULL;
-  CMRcreateEnvironment(&cmr);
+  CMR_CALL( CMRcreateEnvironment(&cmr) );
 
   /* Init transpose of matrix. */
   CMR_CHRMAT* transposed = NULL;
-  CMRchrmatCreate(cmr, &transposed, numEdges, numNodes-1, numEdges * (numNodes-1));
+  CMR_CALL( CMRchrmatCreate(cmr, &transposed, numEdges, numNodes-1, numEdges * (numNodes-1)) );
   transposed->numNonzeros = 0;
 
   /* Create random arborescence. */
   int* nextTreeNode = NULL;
   int* treeDistance = NULL;
-  CMRallocBlockArray(cmr, &nextTreeNode, numNodes);
-  CMRallocBlockArray(cmr, &treeDistance, numNodes);
+  CMR_CALL( CMRallocBlockArray(cmr, &nextTreeNode, numNodes) );
+  CMR_CALL( CMRallocBlockArray(cmr, &treeDistance, numNodes) );
   nextTreeNode[0] = 0;
   treeDistance[0] = 0;
   for (int v = 1; v < numNodes; ++v)
@@ -54,7 +62,7 @@ int main(int argc, const char** argv)
   }
 
   int* column = NULL;
-  CMRallocBlockArray(cmr, &column, numNodes - 1);
+  CMR_CALL( CMRallocBlockArray(cmr, &column, numNodes - 1) );
   for (int e = 0; e < numEdges; ++e)
   {
     for (int v = 1; v < numNodes; ++v)
@@ -89,43 +97,44 @@ int main(int argc, const char** argv)
       }
     }
   }
+  transposed->rowSlice[transposed->numRows] = transposed->numNonzeros;
 
-  CMRfreeBlockArray(cmr, &column);
-  CMRfreeBlockArray(cmr, &nextTreeNode);
-  CMRfreeBlockArray(cmr, &treeDistance);
+  CMR_CALL( CMRfreeBlockArray(cmr, &column) );
+  CMR_CALL( CMRfreeBlockArray(cmr, &nextTreeNode) );
+  CMR_CALL( CMRfreeBlockArray(cmr, &treeDistance) );
 
   CMR_CHRMAT* matrix = NULL;
-  CMRchrmatTranspose(cmr, transposed, &matrix);
+  CMR_CALL( CMRchrmatTranspose(cmr, transposed, &matrix) );
 
   /* Print matrix. */
 
-  CMRchrmatPrintDense(stdout, matrix, ' ', true);
+  CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', false) );
 
   /* Check for graphicness. */
 
-  CMR_GRAPH* graph = NULL;
-  CMR_GRAPH_EDGE* basis = NULL;
-  CMR_GRAPH_EDGE* cobasis = NULL;
-  CMR_SUBMAT* submatrix = NULL;
-  bool isGraphic;
-
-  CMR_CALL( CMRtestBinaryGraphic(cmr, transposed, &isGraphic, &graph, &basis, &cobasis, &submatrix) );
-
-  if (graph)
-  {
-    printf("Represented graph:\n");
-    CMRgraphPrint(stdout, graph);
-    if (basis)
-    {
-      for (int r = 0; r < matrix->numRows; ++r)
-        printf("Row %d corresponds to edge %d.\n", r, basis[r]);
-    }
-    if (cobasis)
-    {
-      for (int c = 0; c < matrix->numColumns; ++c)
-        printf("Col %d corresponds to edge %d.\n", c, cobasis[c]);
-    }
-  }
+//   CMR_GRAPH* graph = NULL;
+//   CMR_GRAPH_EDGE* basis = NULL;
+//   CMR_GRAPH_EDGE* cobasis = NULL;
+//   CMR_SUBMAT* submatrix = NULL;
+//   bool isGraphic;
+// 
+//   CMR_CALL( CMRtestGraphicMatrix(cmr, matrix, &isGraphic, &graph, &basis, &cobasis, &submatrix) );
+// 
+//   if (graph)
+//   {
+//     fprintf(stderr, "Represented graph:\n");
+//     CMRgraphPrint(stderr, graph);
+//     if (basis)
+//     {
+//       for (int r = 0; r < matrix->numRows; ++r)
+//         fprintf(stderr, "Row %d corresponds to edge %d.\n", r, basis[r]);
+//     }
+//     if (cobasis)
+//     {
+//       for (int c = 0; c < matrix->numColumns; ++c)
+//         fprintf(stderr, "Col %d corresponds to edge %d.\n", c, cobasis[c]);
+//     }
+//   }
 
   /* Cleanup */
 

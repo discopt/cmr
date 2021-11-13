@@ -76,9 +76,9 @@ CMR_ERROR matrixToGraph(
   clock_t startTime = clock();
 
   if (cographic)
-    CMR_CALL( CMRtestGraphicMatrix(cmr, matrix, &isCoGraphic, &graph, &forestEdges, &coforestEdges, NULL) );
-  else
     CMR_CALL( CMRtestCographicMatrix(cmr, matrix, &isCoGraphic, &graph, &forestEdges, &coforestEdges, NULL) );
+  else
+    CMR_CALL( CMRtestGraphicMatrix(cmr, matrix, &isCoGraphic, &graph, &forestEdges, &coforestEdges, NULL) );
 
   clock_t endTime = clock();
   fprintf(stderr, "Time: %f\n", (endTime - startTime) * 1.0 / CLOCKS_PER_SEC);

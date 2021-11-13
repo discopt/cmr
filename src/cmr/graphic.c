@@ -78,8 +78,8 @@ CMR_ERROR CMRcomputeRepresentationMatrix(CMR* cmr, CMR_GRAPH* digraph, bool tern
   {
     if (forestArcs[b] >= 0)
     {
-      CMRdbgMsg(0, "forest element %d is edge %d = {%d,%d}\n", b, forestEdges[b], CMRgraphEdgeU(graph, forestEdges[b]),
-        CMRgraphEdgeV(graph, forestEdges[b]));
+      CMRdbgMsg(0, "forest element %d is edge %d = {%d,%d}\n", b, forestArcs[b], CMRgraphEdgeU(digraph, forestArcs[b]),
+        CMRgraphEdgeV(digraph, forestArcs[b]));
       lengths[forestArcs[b]] = 0;
     }
   }
@@ -156,7 +156,7 @@ CMR_ERROR CMRcomputeRepresentationMatrix(CMR* cmr, CMR_GRAPH* digraph, bool tern
   {
     CMR_GRAPH_NODE u = CMRgraphEdgeU(digraph, forestArcs[i]);
     CMR_GRAPH_NODE v = CMRgraphEdgeV(digraph, forestArcs[i]);
-    CMRdbgMsg(2, "Forest edge %d = {%d,%d}.\n", forestEdges[i], u, v);
+    CMRdbgMsg(2, "Forest edge %d = {%d,%d}.\n", forestArcs[i], u, v);
     if (nodeData[u].predecessor == v)
     {
       nodesRows[u] = numRows;
@@ -5165,7 +5165,7 @@ CMR_ERROR CMRtestCographicMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisCographi
 
 #if defined(CMR_DEBUG)
   CMRdbgMsg(0, "CMRtestCographicMatrix called for a %dx%d matrix\n", matrix->numRows, matrix->numColumns);
-  CMRchrmatPrintDense(cmr, stdout, transpose, '0', true);
+  CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
 #endif /* CMR_DEBUG */
 
   *pisCographic = true;
@@ -5313,7 +5313,7 @@ CMR_ERROR CMRtestBinaryGraphicColumnSubmatrixGreedy(CMR* cmr, CMR_CHRMAT* transp
 
   CMRdbgMsg(0, "CMRtestBinaryGraphicColumnSubmatrixGreedy for %dx%d matrix with transpose\n", numRows, numColumns);
 #if defined(CMR_DEBUG)
-  CMR_CALL( CMRchrmatPrintDense(stdout, transpose, '0', true) );
+  CMR_CALL( CMRchrmatPrintDense(cmr, transpose, stdout, '0', true) );
 #endif /* CMR_DEBUG */
 
   CMR_CALL( CMRsubmatCreate(cmr, numRows, numColumns, psubmatrix) );

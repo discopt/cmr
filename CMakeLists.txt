@@ -149,6 +149,7 @@ target_link_libraries(cmr_convert_matrix
 set_target_properties(cmr_convert_matrix PROPERTIES OUTPUT_NAME cmr-convert-matrix)
 
 if(GENERATORS)
+  # Target for cmr-generate-series-parallel
   add_executable(cmr_generate_series_parallel
     src/gen/series_parallel_gen.c)
   target_link_libraries(cmr_generate_series_parallel
@@ -157,19 +158,20 @@ if(GENERATORS)
   )
   set_target_properties(cmr_generate_series_parallel PROPERTIES OUTPUT_NAME cmr-generate-series-parallel)
 
-  set(GENERATOR_EXECUTABLES cmr_generate_series_parallel)
+  
+  # Target for cmr-generate-graphic
+  add_executable(cmr_generate_graphic
+    src/gen/graphic_gen.c)
+  target_link_libraries(cmr_generate_graphic
+    PRIVATE
+      CMR::cmr
+  )
+  set_target_properties(cmr_generate_graphic PROPERTIES OUTPUT_NAME cmr-generate-graphic)
+
+  set(GENERATOR_EXECUTABLES cmr_generate_series_parallel cmr_generate_graphic)
 else()
   set(GENERATOR_EXECUTABLES)
 endif()
-
-# Target for the random_network
-#add_executable(random_network
-#   src/main/random_network.c)
-#target_link_libraries(random_network
-#   PRIVATE
-#      CMR::cmr
-#)
-#set_target_properties(random_network PROPERTIES OUTPUT_NAME random-network)
 
 # Write compilation settings to cmr/config.h.
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/include/cmr/config.h.in ${CMAKE_BINARY_DIR}/cmr/config.h @ONLY)
