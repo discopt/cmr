@@ -34,6 +34,8 @@ CMR_ERROR CMRgraphicInitStatistics(CMR_GRAPHIC_STATISTICS* stats)
   stats->checkTime = 0.0;
   stats->applyCount = 0;
   stats->applyTime = 0.0;
+  stats->transposeCount = 0;
+  stats->transposeTime = 0.0;
 
   return CMR_OKAY;
 }
@@ -44,9 +46,10 @@ CMR_ERROR CMRgraphicPrintStatistics(FILE* stream, CMR_GRAPHIC_STATISTICS* stats)
   assert(stats);
 
   fprintf(stream, "Graphicness test (count / time):\n");
-  fprintf(stream, "Check: %ld / %f\n", stats->checkCount, stats->checkTime);
-  fprintf(stream, "Apply: %ld / %f\n", stats->applyCount, stats->applyTime);
-  fprintf(stream, "Total: %ld / %f\n", stats->totalCount, stats->totalTime);
+  fprintf(stream, "Transposition: %ld / %f\n", stats->transposeCount, stats->transposeTime);
+  fprintf(stream, "Check:         %ld / %f\n", stats->checkCount, stats->checkTime);
+  fprintf(stream, "Apply:         %ld / %f\n", stats->applyCount, stats->applyTime);
+  fprintf(stream, "Total:         %ld / %f\n", stats->totalCount, stats->totalTime);
 
   return CMR_OKAY;
 }
@@ -5427,11 +5430,25 @@ CMR_ERROR CMRtestGraphicMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisGraphic, C
   assert(pisGraphic);
 
   /* Create transpose of matrix. */
+  clock_t transposeClock;
+  double transposeTime;
+  if (stats)
+    transposeClock = clock();
   CMR_CHRMAT* transpose = NULL;
   CMR_CALL( CMRchrmatTranspose(cmr, matrix, &transpose) );
 
+  if (stats)
+  {
+    stats->transposeCount++;
+    transposeTime = (clock() - transposeClock) * 1.0 / CLOCKS_PER_SEC;
+    stats->transposeTime += transposeTime;
+  }
+
   CMR_CALL( CMRtestCographicMatrix(cmr, transpose, pisGraphic, pgraph, pforestEdges, pcoforestEdges, psubmatrix,
     stats) );
+
+  if (stats)
+    stats->totalTime += transposeTime;
 
   /* Transpose minimal non-cographic matrix to become a minimal non-graphic matrix. */
   if (psubmatrix && *psubmatrix)

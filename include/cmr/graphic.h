@@ -31,12 +31,14 @@ extern "C" {
 
 typedef struct
 {
-  size_t totalCount;  /**< Total number of invocations. */
-  double totalTime;   /**< Total time of all invocations. */
-  size_t checkCount;  /**< Number of calls to check algorithm. */
-  double checkTime;   /**< Time of check algorithm calls. */
-  size_t applyCount;  /**< Number of column additions. */
-  double applyTime;   /**< Time of column additions. */
+  size_t totalCount;      /**< Total number of invocations. */
+  double totalTime;       /**< Total time of all invocations. */
+  size_t checkCount;      /**< Number of calls to check algorithm. */
+  double checkTime;       /**< Time of check algorithm calls. */
+  size_t applyCount;      /**< Number of column additions. */
+  double applyTime;       /**< Time of column additions. */
+  size_t transposeCount;  /**< Number of matrix transpositions. */
+  double transposeTime;   /**< Time for matrix transpositions. */
 } CMR_GRAPHIC_STATISTICS;
 
 /**
