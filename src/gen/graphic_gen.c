@@ -100,7 +100,7 @@ CMR_ERROR genMatrixGraphic(
         second = nextTreeNode[second];
       }
       transposed->rowSlice[e] = transposed->numNonzeros;
-      for (int v = 1; v < numNodes; ++v)
+      for (size_t v = 1; v < numNodes; ++v)
       {
         if (column[v-1])
         {
