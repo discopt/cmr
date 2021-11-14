@@ -1433,7 +1433,8 @@ CMR_ERROR CMRregularTestGraphic(CMR* cmr, CMR_CHRMAT** pmatrix, CMR_CHRMAT** ptr
   }
   else
   {
-    CMR_CALL( CMRtestCographicMatrix(cmr, transpose, pisGraphic, pgraph, pforest, pcoforest, psubmatrix) );
+    CMR_CALL( CMRtestCographicMatrix(cmr, transpose, pisGraphic, pgraph, pforest, pcoforest, psubmatrix,
+      NULL) );
   }
 
   return CMR_OKAY;

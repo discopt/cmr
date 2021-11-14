@@ -13,6 +13,7 @@
 #include <assert.h>
 #include <limits.h>
 #include <stdlib.h>
+#include <time.h>
 
 #define SWAP_INTS(a, b) \
   do \
@@ -22,6 +23,33 @@
     b = tmp; \
   } \
   while (false)
+
+CMR_ERROR CMRgraphicInitStatistics(CMR_GRAPHIC_STATISTICS* stats)
+{
+  assert(stats);
+
+  stats->totalCount = 0;
+  stats->totalTime = 0.0;
+  stats->checkCount = 0;
+  stats->checkTime = 0.0;
+  stats->applyCount = 0;
+  stats->applyTime = 0.0;
+
+  return CMR_OKAY;
+}
+
+CMR_ERROR CMRgraphicPrintStatistics(FILE* stream, CMR_GRAPHIC_STATISTICS* stats)
+{
+  assert(stream);
+  assert(stats);
+
+  fprintf(stream, "Graphicness test (count / time):\n");
+  fprintf(stream, "Check: %ld / %f\n", stats->checkCount, stats->checkTime);
+  fprintf(stream, "Apply: %ld / %f\n", stats->applyCount, stats->applyTime);
+  fprintf(stream, "Total: %ld / %f\n", stats->totalCount, stats->totalTime);
+
+  return CMR_OKAY;
+}
 
 
 typedef enum
@@ -5154,7 +5182,8 @@ CMR_ERROR addColumnApply(
 }
 
 CMR_ERROR CMRtestCographicMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisCographic, CMR_GRAPH** pgraph,
-  CMR_GRAPH_EDGE** pforestEdges, CMR_GRAPH_EDGE** pcoforestEdges, CMR_SUBMAT** psubmatrix)
+  CMR_GRAPH_EDGE** pforestEdges, CMR_GRAPH_EDGE** pcoforestEdges, CMR_SUBMAT** psubmatrix,
+  CMR_GRAPHIC_STATISTICS* stats)
 {
   assert(cmr);
   assert(matrix);
@@ -5168,6 +5197,10 @@ CMR_ERROR CMRtestCographicMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisCographi
   CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
 #endif /* CMR_DEBUG */
 
+  clock_t totalClock = 0;
+  if (stats)
+    totalClock = clock();
+
   *pisCographic = true;
 
   Dec* dec = NULL;
@@ -5180,15 +5213,33 @@ CMR_ERROR CMRtestCographicMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisCographi
     CMR_CALL( newcolumnCreate(cmr, &newcolumn) );
     for (int column = 0; column < matrix->numRows && *pisCographic; ++column)
     {
+      clock_t checkClock;
+      if (stats)
+        checkClock = clock();
       CMR_CALL( addColumnCheck(dec, newcolumn, &matrix->entryColumns[matrix->rowSlice[column]],
         matrix->rowSlice[column+1] - matrix->rowSlice[column]) );
+      if (stats)
+      {
+        stats->checkCount++;
+        stats->checkTime += (clock() - checkClock) * 1.0 / CLOCKS_PER_SEC;
+      }
 
       debugDot(dec, newcolumn);
 
       if (newcolumn->remainsGraphic)
       {
+        clock_t applyClock;
+        if (stats)
+          applyClock = clock();
+
         CMR_CALL( addColumnApply(dec, newcolumn, column, &matrix->entryColumns[matrix->rowSlice[column]],
           matrix->rowSlice[column+1] - matrix->rowSlice[column]) );
+
+        if (stats)
+        {
+          stats->applyCount++;
+          stats->applyTime += (clock() - applyClock) * 1.0 / CLOCKS_PER_SEC;
+        }
       }
       else
         *pisCographic = false;
@@ -5298,6 +5349,12 @@ CMR_ERROR CMRtestCographicMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisCographi
   if (dec)
     CMR_CALL( decFree(&dec) );
 
+  if (stats)
+  {
+    stats->totalCount++;
+    stats->totalTime += (clock() - totalClock) * 1.0 / CLOCKS_PER_SEC;
+  }
+
   return CMR_OKAY;
 }
 
@@ -5359,7 +5416,8 @@ CMR_ERROR CMRtestBinaryGraphicColumnSubmatrixGreedy(CMR* cmr, CMR_CHRMAT* transp
 }
 
 CMR_ERROR CMRtestGraphicMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisGraphic, CMR_GRAPH** pgraph,
-  CMR_GRAPH_EDGE** pforestEdges, CMR_GRAPH_EDGE** pcoforestEdges, CMR_SUBMAT** psubmatrix)
+  CMR_GRAPH_EDGE** pforestEdges, CMR_GRAPH_EDGE** pcoforestEdges, CMR_SUBMAT** psubmatrix,
+  CMR_GRAPHIC_STATISTICS* stats)
 {
   assert(cmr);
   assert(matrix);
@@ -5372,7 +5430,8 @@ CMR_ERROR CMRtestGraphicMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisGraphic, C
   CMR_CHRMAT* transpose = NULL;
   CMR_CALL( CMRchrmatTranspose(cmr, matrix, &transpose) );
 
-  CMR_CALL( CMRtestCographicMatrix(cmr, transpose, pisGraphic, pgraph, pforestEdges, pcoforestEdges, psubmatrix) );
+  CMR_CALL( CMRtestCographicMatrix(cmr, transpose, pisGraphic, pgraph, pforestEdges, pcoforestEdges, psubmatrix,
+    stats) );
 
   /* Transpose minimal non-cographic matrix to become a minimal non-graphic matrix. */
   if (psubmatrix && *psubmatrix)
