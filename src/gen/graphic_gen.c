@@ -60,11 +60,12 @@ CMR_ERROR genMatrixGraphic(
     clock_t startTime = clock();
 
     /* Init transpose of matrix. */
-    CMR_CHRMAT* transposed = NULL;
-    CMR_CALL( CMRchrmatCreate(cmr, &transposed, numEdges, numNodes-1, numRows * numColumns) );
     size_t transposedMemNonzeros = 1;
     for (size_t x = numRows; x; x >>= 1)
       ++transposedMemNonzeros;
+    transposedMemNonzeros *= numColumns;
+    CMR_CHRMAT* transposed = NULL;
+    CMR_CALL( CMRchrmatCreate(cmr, &transposed, numEdges, numNodes-1, transposedMemNonzeros) );
     transposed->numNonzeros = 0;
 
     /* Create random arborescence. */
