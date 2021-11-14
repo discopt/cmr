@@ -1,146 +1,242 @@
-#include <cmr/graph.h>
-#include <cmr/matrix.h>
-#include <cmr/graphic.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 #include <time.h>
 #include <sys/time.h>
+#include <stdint.h>
+#include <math.h>
+
+#include <cmr/graphic.h>
+
+static inline
+size_t randRange(size_t first, size_t beyond)
+{
+  size_t N = beyond - first;
+  size_t representatives = (RAND_MAX + 1u) / N;
+  size_t firstInvalid = N * representatives;
+  size_t x;
+  do
+  {
+    x = rand();
+  }
+  while (x >= firstInvalid);
+  return first + x / representatives;
+}
 
 int printUsage(const char* program)
 {
-  fprintf(stderr, "Usage: %s [OPTIONS] #ROWS #COLUMNS\n\n", program);
-  fputs("Creates a random #ROWS-by-#COLUMNS network matrix.\n", stderr);
+  fprintf(stderr, "Usage: %s [OPTIONS] ROWS COLS\n\n", program);
+  fputs("Creates a random ROWS-by-COLS 0/1 graphic matrix.\n", stderr);
   fputs("Options:\n", stderr);
+  fputs("  -b NUM       Benchmarks the recognition algorithm for the created matrix with NUM repetitions.\n", stderr);
+  fputs("Notes:", stderr);
+  fputs("  -p and -s cannot be specified at the same time.\n", stderr);
   return EXIT_FAILURE;
 }
 
-int main(int argc, const char** argv)
+CMR_ERROR genMatrixGraphic(
+  size_t numRows,         /**< Number of rows of base matrix. */
+  size_t numColumns,      /**< Number of columns of base matrix. */
+  size_t benchmarkRepetitions /**< Whether to benchmark the recognition algorithm with the matrix instead of printing it. */
+)
 {
-  int numNodes, numEdges;
-  struct timeval time; 
-  gettimeofday(&time, NULL);
-  srand((time.tv_sec * 1000) + (time.tv_usec / 1000));
-
-  if (argc != 3)
-  {
-    puts("Invalid number of arguments.");
-    printUsage(argv[0]);
-    return EXIT_FAILURE;
-  }
-  if (sscanf(argv[1], "%d", &numNodes) != 1)
-  {
-    printf("Error: Invalid first argument <%s>.\n", argv[1]);
-    printUsage(argv[0]);
-    return EXIT_FAILURE;
-  }
-  if (sscanf(argv[2], "%d", &numEdges) != 1)
-  {
-    printf("Error: Invalid second argument <%s>.\n", argv[2]);
-    printUsage(argv[0]);
-    return EXIT_FAILURE;
-  }
-  ++numNodes;
-
   CMR* cmr = NULL;
   CMR_CALL( CMRcreateEnvironment(&cmr) );
 
-  /* Init transpose of matrix. */
-  CMR_CHRMAT* transposed = NULL;
-  CMR_CALL( CMRchrmatCreate(cmr, &transposed, numEdges, numNodes-1, numEdges * (numNodes-1)) );
-  transposed->numNonzeros = 0;
-
-  /* Create random arborescence. */
-  int* nextTreeNode = NULL;
-  int* treeDistance = NULL;
-  CMR_CALL( CMRallocBlockArray(cmr, &nextTreeNode, numNodes) );
-  CMR_CALL( CMRallocBlockArray(cmr, &treeDistance, numNodes) );
-  nextTreeNode[0] = 0;
-  treeDistance[0] = 0;
-  for (int v = 1; v < numNodes; ++v)
+  size_t numBenchmarkNonzeros = 0;
+  size_t numNodes = numRows + 1;
+  size_t numEdges = numColumns;
+  for (size_t benchmark = benchmarkRepetitions ? benchmarkRepetitions : 1; benchmark > 0; --benchmark)
   {
-    int w = (int)(rand() * 1.0 * v / RAND_MAX);
-    nextTreeNode[v] = w;
-    treeDistance[v] = treeDistance[w] + 1;
-  }
+    clock_t startTime = clock();
 
-  int* column = NULL;
-  CMR_CALL( CMRallocBlockArray(cmr, &column, numNodes - 1) );
-  for (int e = 0; e < numEdges; ++e)
-  {
-    for (int v = 1; v < numNodes; ++v)
-      column[v-1] = 0;
-    int first = (int)(rand() * 1.0 * numNodes / RAND_MAX);
-    int second = (int)(rand() * 1.0 * numNodes / RAND_MAX);
-    while (treeDistance[first] > treeDistance[second])
-    {
-      column[first-1] = 1;
-      first = nextTreeNode[first];
-    }
-    while (treeDistance[second] > treeDistance[first])
-    {
-      column[second-1] = 1;
-      second = nextTreeNode[second];
-    }
-    while (first != second && first)
-    {
-      column[first-1] = 1;
-      first = nextTreeNode[first];
-      column[second-1] = 1;
-      second = nextTreeNode[second];
-    }
-    transposed->rowSlice[e] = transposed->numNonzeros;
+    /* Init transpose of matrix. */
+    CMR_CHRMAT* transposed = NULL;
+    CMR_CALL( CMRchrmatCreate(cmr, &transposed, numEdges, numNodes-1, numRows * numColumns) );
+    size_t transposedMemNonzeros = 1;
+    for (size_t x = numRows; x; x >>= 1)
+      ++transposedMemNonzeros;
+    transposed->numNonzeros = 0;
+
+    /* Create random arborescence. */
+    int* nextTreeNode = NULL;
+    int* treeDistance = NULL;
+    CMR_CALL( CMRallocBlockArray(cmr, &nextTreeNode, numNodes) );
+    CMR_CALL( CMRallocBlockArray(cmr, &treeDistance, numNodes) );
+    nextTreeNode[0] = 0;
+    treeDistance[0] = 0;
     for (int v = 1; v < numNodes; ++v)
     {
-      if (column[v-1])
+      int w = (int)(rand() * 1.0 * v / RAND_MAX);
+      nextTreeNode[v] = w;
+      treeDistance[v] = treeDistance[w] + 1;
+    }
+
+    int* column = NULL;
+    CMR_CALL( CMRallocBlockArray(cmr, &column, numNodes - 1) );
+    for (int e = 0; e < numEdges; ++e)
+    {
+      for (int v = 1; v < numNodes; ++v)
+        column[v-1] = 0;
+      int first = (int)(rand() * 1.0 * numNodes / RAND_MAX);
+      int second = (int)(rand() * 1.0 * numNodes / RAND_MAX);
+      while (treeDistance[first] > treeDistance[second])
       {
-        transposed->entryColumns[transposed->numNonzeros] = v-1;
-        transposed->entryValues[transposed->numNonzeros] = 1;
-        transposed->numNonzeros++;
+        column[first-1] = 1;
+        first = nextTreeNode[first];
+      }
+      while (treeDistance[second] > treeDistance[first])
+      {
+        column[second-1] = 1;
+        second = nextTreeNode[second];
+      }
+      while (first != second && first)
+      {
+        column[first-1] = 1;
+        first = nextTreeNode[first];
+        column[second-1] = 1;
+        second = nextTreeNode[second];
+      }
+      transposed->rowSlice[e] = transposed->numNonzeros;
+      for (int v = 1; v < numNodes; ++v)
+      {
+        if (column[v-1])
+        {
+          if (transposed->numNonzeros == transposedMemNonzeros)
+          {
+            transposedMemNonzeros *= 2;
+            CMR_CALL( CMRreallocBlockArray(cmr, &transposed->entryColumns, transposedMemNonzeros) );
+            CMR_CALL( CMRreallocBlockArray(cmr, &transposed->entryValues, transposedMemNonzeros) );
+          }
+          transposed->entryColumns[transposed->numNonzeros] = v-1;
+          transposed->entryValues[transposed->numNonzeros] = 1;
+          transposed->numNonzeros++;
+        }
       }
     }
+    transposed->rowSlice[transposed->numRows] = transposed->numNonzeros;
+
+    CMR_CALL( CMRfreeBlockArray(cmr, &column) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &nextTreeNode) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &treeDistance) );
+
+    CMR_CHRMAT* matrix = NULL;
+    CMR_CALL( CMRchrmatTranspose(cmr, transposed, &matrix) );
+    CMR_CALL( CMRchrmatFree(cmr, &transposed) );
+
+    double generationTime = (clock() - startTime) * 1.0 / CLOCKS_PER_SEC;
+    fprintf(stderr, "Generated a %ldx%ld matrix with %ld nonzeros in %f seconds.\n", numRows, numColumns,
+      matrix->numNonzeros, generationTime);
+
+    if (benchmarkRepetitions)
+    {
+      /* Benchmark */
+
+      startTime = clock();
+      
+      bool isGraphic;
+      CMR_CALL( CMRtestGraphicMatrix(cmr, matrix, &isGraphic, NULL, NULL, NULL, NULL) );
+      
+      double runTime = (clock() - startTime) * 1.0 / CLOCKS_PER_SEC;
+      fprintf(stderr, "Graphic: %s\n", isGraphic ? "yes" : "no");
+      fprintf(stderr, "Graphicness test: %f seconds.\n", runTime);
+    }
+    else
+    {
+      /* Print matrix. */
+      CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', false) );
+    }
+
+    /* Cleanup. */
+    CMR_CALL( CMRchrmatFree(cmr, &matrix) );
   }
-  transposed->rowSlice[transposed->numRows] = transposed->numNonzeros;
 
-  CMR_CALL( CMRfreeBlockArray(cmr, &column) );
-  CMR_CALL( CMRfreeBlockArray(cmr, &nextTreeNode) );
-  CMR_CALL( CMRfreeBlockArray(cmr, &treeDistance) );
+  CMR_CALL( CMRfreeEnvironment(&cmr) );
 
-  CMR_CHRMAT* matrix = NULL;
-  CMR_CALL( CMRchrmatTranspose(cmr, transposed, &matrix) );
+  return CMR_OKAY;
+}
 
-  /* Print matrix. */
+int main(int argc, char** argv)
+{
+  struct timeval curTime;
+  gettimeofday(&curTime, NULL);
+  srand(curTime.tv_usec);
 
-  CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', false) );
+  size_t numRows = SIZE_MAX;
+  size_t numColumns = SIZE_MAX;
+  size_t benchmarkRepetitions = 0;
+  for (int a = 1; a < argc; ++a)
+  {
+    if (!strcmp(argv[a], "-h"))
+    {
+      printUsage(argv[0]);
+      return EXIT_SUCCESS;
+    }
+    else if (!strcmp(argv[a], "-b") && a+1 < argc)
+    {
+      char* p;
+      benchmarkRepetitions = strtoull(argv[a+1], &p, 10);
+      if (*p != '\0' || benchmarkRepetitions == 0)
+      {
+        fprintf(stderr, "Error: invalid number of benchmark repetitions <%s>", argv[a+1]);
+        printUsage(argv[0]);
+        return EXIT_FAILURE;
+      }
+      a++;
+    }
+    else if (numRows == SIZE_MAX)
+    {
+      char* p = NULL;
+      numRows = strtoull(argv[a], &p, 10);
+      if (*p != '\0')
+      {
+        printUsage(argv[0]);
+        return EXIT_FAILURE;
+      }
+    }
+    else if (numColumns == SIZE_MAX)
+    {
+      char* p = NULL;
+      numColumns = strtoull(argv[a], &p, 10);
+      if (*p != '\0')
+      {
+        printUsage(argv[0]);
+        return EXIT_FAILURE;
+      }
+    }
+    else
+    {
+      fprintf(stderr, "Error: more than two size indicators specified: %ld %ld %s\n\n", numRows, numColumns, argv[a]);
+      return printUsage(argv[0]);
+    }
+  }
 
-  /* Check for graphicness. */
+  if (numRows == SIZE_MAX)
+  {
+    fputs("Error: no size indicator specified.\n", stderr);
+    return printUsage(argv[0]);
+  }
+  else if (numColumns == SIZE_MAX)
+  {
+    fputs("Error: only one size indicator specified.\n", stderr);
+    return printUsage(argv[0]);
+  }
+  else if (numRows <= 0 || numColumns <= 0)
+  {
+    fputs("Error: matrix must have at least 1 row and 1 column.\n", stderr);
+    return printUsage(argv[0]);
+  }
 
-//   CMR_GRAPH* graph = NULL;
-//   CMR_GRAPH_EDGE* basis = NULL;
-//   CMR_GRAPH_EDGE* cobasis = NULL;
-//   CMR_SUBMAT* submatrix = NULL;
-//   bool isGraphic;
-// 
-//   CMR_CALL( CMRtestGraphicMatrix(cmr, matrix, &isGraphic, &graph, &basis, &cobasis, &submatrix) );
-// 
-//   if (graph)
-//   {
-//     fprintf(stderr, "Represented graph:\n");
-//     CMRgraphPrint(stderr, graph);
-//     if (basis)
-//     {
-//       for (int r = 0; r < matrix->numRows; ++r)
-//         fprintf(stderr, "Row %d corresponds to edge %d.\n", r, basis[r]);
-//     }
-//     if (cobasis)
-//     {
-//       for (int c = 0; c < matrix->numColumns; ++c)
-//         fprintf(stderr, "Col %d corresponds to edge %d.\n", c, cobasis[c]);
-//     }
-//   }
-
-  /* Cleanup */
-
-  CMRchrmatFree(cmr, &transposed);
-  CMRchrmatFree(cmr, &matrix);
-  CMRfreeEnvironment(&cmr);
-
-  return EXIT_SUCCESS;
+  CMR_ERROR error = genMatrixGraphic(numRows, numColumns, benchmarkRepetitions);
+  switch (error)
+  {
+  case CMR_ERROR_INPUT:
+    puts("Input error.");
+    return EXIT_FAILURE;
+  case CMR_ERROR_MEMORY:
+    puts("Memory error.");
+    return EXIT_FAILURE;
+  default:
+    return EXIT_SUCCESS;
+  }
 }
