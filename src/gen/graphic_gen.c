@@ -34,6 +34,13 @@ int printUsage(const char* program)
   return EXIT_FAILURE;
 }
 
+int compare(const void* pa, const void* pb)
+{
+  size_t a = *((size_t*)(pa));
+  size_t b = *((size_t*)(pb));
+  return a < b ? -1 : (a > b);
+}
+
 CMR_ERROR genMatrixGraphic(
   size_t numRows,         /**< Number of rows of base matrix. */
   size_t numColumns,      /**< Number of columns of base matrix. */
@@ -74,51 +81,51 @@ CMR_ERROR genMatrixGraphic(
       treeDistance[v] = treeDistance[w] + 1;
     }
 
-    int* column = NULL;
-    CMR_CALL( CMRallocBlockArray(cmr, &column, numNodes - 1) );
+    size_t* columnNonzeros = NULL;
+    CMR_CALL( CMRallocBlockArray(cmr, &columnNonzeros, numNodes - 1) );
     for (int e = 0; e < numEdges; ++e)
     {
-      for (int v = 1; v < numNodes; ++v)
-        column[v-1] = 0;
+      size_t numColumNonzeros = 0;
       int first = (int)(rand() * 1.0 * numNodes / RAND_MAX);
       int second = (int)(rand() * 1.0 * numNodes / RAND_MAX);
       while (treeDistance[first] > treeDistance[second])
       {
-        column[first-1] = 1;
+        columnNonzeros[numColumNonzeros++] = first-1;
         first = nextTreeNode[first];
       }
       while (treeDistance[second] > treeDistance[first])
       {
-        column[second-1] = 1;
+        columnNonzeros[numColumNonzeros++] = second-1;
         second = nextTreeNode[second];
       }
       while (first != second && first)
       {
-        column[first-1] = 1;
+        columnNonzeros[numColumNonzeros++] = first-1;
         first = nextTreeNode[first];
-        column[second-1] = 1;
+        columnNonzeros[numColumNonzeros++] = second-1;
         second = nextTreeNode[second];
       }
       transposed->rowSlice[e] = transposed->numNonzeros;
-      for (size_t v = 1; v < numNodes; ++v)
+
+      qsort( columnNonzeros, numColumNonzeros, sizeof(size_t), &compare);
+
+      for (size_t i = 0; i < numColumNonzeros; ++i)
       {
-        if (column[v-1])
+        size_t row = columnNonzeros[i];
+        if (transposed->numNonzeros == transposedMemNonzeros)
         {
-          if (transposed->numNonzeros == transposedMemNonzeros)
-          {
-            transposedMemNonzeros *= 2;
-            CMR_CALL( CMRreallocBlockArray(cmr, &transposed->entryColumns, transposedMemNonzeros) );
-            CMR_CALL( CMRreallocBlockArray(cmr, &transposed->entryValues, transposedMemNonzeros) );
-          }
-          transposed->entryColumns[transposed->numNonzeros] = v-1;
-          transposed->entryValues[transposed->numNonzeros] = 1;
-          transposed->numNonzeros++;
+          transposedMemNonzeros *= 2;
+          CMR_CALL( CMRreallocBlockArray(cmr, &transposed->entryColumns, transposedMemNonzeros) );
+          CMR_CALL( CMRreallocBlockArray(cmr, &transposed->entryValues, transposedMemNonzeros) );
         }
+        transposed->entryColumns[transposed->numNonzeros] = row;
+        transposed->entryValues[transposed->numNonzeros] = 1;
+        transposed->numNonzeros++;
       }
     }
     transposed->rowSlice[transposed->numRows] = transposed->numNonzeros;
 
-    CMR_CALL( CMRfreeBlockArray(cmr, &column) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &columnNonzeros) );
     CMR_CALL( CMRfreeBlockArray(cmr, &nextTreeNode) );
     CMR_CALL( CMRfreeBlockArray(cmr, &treeDistance) );
 
