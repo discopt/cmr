@@ -32,6 +32,7 @@ add_library(cmr
   src/cmr/densematrix.c
   src/cmr/element.c
   src/cmr/env.c
+  src/cmr/hereditary_property.c
   src/cmr/matrix.c
   src/cmr/one_sum.c
   src/cmr/tu.c

@@ -1,4 +1,4 @@
-// #define CMR_DEBUG /* Uncomment to debug this file. */
+#define CMR_DEBUG /* Uncomment to debug this file. */
 
 #include "regular_internal.h"
 
@@ -867,6 +867,8 @@ CMR_ERROR CMRregularSearchThreeSeparation(CMR* cmr, CMR_DEC* dec, CMR_CHRMAT* tr
 
     for (size_t minor = firstMinor+1; minor <= firstNonCoGraphicMinor && !separation; ++minor)
     {
+      printf("minor =  %ld / %ld\n", minor, firstNonCoGraphicMinor);
+
       CMRdbgMsg(8, "Next minor has %ld rows and %ld columns.\n", dec->nestedMinorsSequenceNumRows[minor],
         dec->nestedMinorsSequenceNumColumns[minor]);
 

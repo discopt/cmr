@@ -9,6 +9,7 @@
 #include "one_sum.h"
 #include "heap.h"
 #include "sort.h"
+#include "hereditary_property.h"
 
 #include <assert.h>
 #include <limits.h>
@@ -5184,6 +5185,59 @@ CMR_ERROR addColumnApply(
   return CMR_OKAY;
 }
 
+static
+CMR_ERROR cographicnessTest(
+  CMR* cmr,               /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,     /**< Some matrix to be tested for the cographicness. */
+  void* data,             /**< Additional data (must be \c NULL). */
+  bool* pisCographic,     /**< Pointer for storing whether \p matrix is cographic. */
+  CMR_SUBMAT** psubmatrix /**< Pointer for storing a proper non-cographic submatrix of \p matrix. */
+)
+{
+  assert(cmr);
+  assert(matrix);
+  assert(!data);
+  assert(pisCographic);
+  assert(!psubmatrix || !*psubmatrix);
+
+#if defined(CMR_DEBUG)
+  CMRdbgMsg(0, "cographicnessTest called for a %dx%d matrix\n", matrix->numRows, matrix->numColumns);
+  CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
+#endif /* CMR_DEBUG */
+
+  *pisCographic = true;
+  Dec* dec = NULL;
+  if (matrix->numNonzeros > 0)
+  {
+    CMR_CALL( decCreate(cmr, &dec, 4096, 1024, 256, 256, 256) );
+
+    /* Process each column. */
+    DEC_NEWCOLUMN* newcolumn = NULL;
+    CMR_CALL( newcolumnCreate(cmr, &newcolumn) );
+    for (int column = 0; column < matrix->numRows && *pisCographic; ++column)
+    {
+      CMR_CALL( addColumnCheck(dec, newcolumn, &matrix->entryColumns[matrix->rowSlice[column]],
+        matrix->rowSlice[column+1] - matrix->rowSlice[column]) );
+
+      if (newcolumn->remainsGraphic)
+      {
+        CMR_CALL( addColumnApply(dec, newcolumn, column, &matrix->entryColumns[matrix->rowSlice[column]],
+          matrix->rowSlice[column+1] - matrix->rowSlice[column]) );
+      }
+      else
+        *pisCographic = false;
+    }
+
+    CMR_CALL( newcolumnFree(cmr, &newcolumn) );
+  }
+
+  if (dec)
+    CMR_CALL( decFree(&dec) );
+
+  return CMR_OKAY;
+}
+
+
 CMR_ERROR CMRtestCographicMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisCographic, CMR_GRAPH** pgraph,
   CMR_GRAPH_EDGE** pforestEdges, CMR_GRAPH_EDGE** pcoforestEdges, CMR_SUBMAT** psubmatrix,
   CMR_GRAPHIC_STATISTICS* stats)
@@ -5352,6 +5406,12 @@ CMR_ERROR CMRtestCographicMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisCographi
   if (dec)
     CMR_CALL( decFree(&dec) );
 
+  if (!*pisCographic && psubmatrix)
+  {
+    /* Find submatrix. */
+    CMR_CALL( CMRtestHereditaryPropertySimple(cmr, matrix, cographicnessTest, NULL, psubmatrix) );
+  }
+
   if (stats)
   {
     stats->totalCount++;
@@ -5458,6 +5518,5 @@ CMR_ERROR CMRtestGraphicMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisGraphic, C
 
   return CMR_OKAY;
 }
-
 
 /**@}*/

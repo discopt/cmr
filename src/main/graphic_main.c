@@ -89,31 +89,63 @@ CMR_ERROR matrixToGraph(
   {
     if (outputFormat == FILEFORMAT_GRAPH_EDGELIST)
     {
-      for (size_t row = 0; row < matrix->numRows; ++row)
+      if (cographic)
       {
-        CMR_GRAPH_EDGE e = forestEdges[row];
-        CMR_GRAPH_NODE u = CMRgraphEdgeU(graph, e);
-        CMR_GRAPH_NODE v = CMRgraphEdgeV(graph, e);
-        if (edgesReversed && edgesReversed[e])
+        for (size_t column = 0; column < matrix->numColumns; ++column)
         {
-          CMR_GRAPH_NODE temp = u;
-          u = v;
-          v = temp;
+          CMR_GRAPH_EDGE e = forestEdges[column];
+          CMR_GRAPH_NODE u = CMRgraphEdgeU(graph, e);
+          CMR_GRAPH_NODE v = CMRgraphEdgeV(graph, e);
+          if (edgesReversed && edgesReversed[e])
+          {
+            CMR_GRAPH_NODE temp = u;
+            u = v;
+            v = temp;
+          }
+          printf("%d %d c%ld\n", u, v, column+1);
         }
-        printf("%d %d r%ld\n", u, v, row+1);
+        for (size_t row = 0; row < matrix->numRows; ++row)
+        {
+          CMR_GRAPH_EDGE e = coforestEdges[row];
+          CMR_GRAPH_NODE u = CMRgraphEdgeU(graph, e);
+          CMR_GRAPH_NODE v = CMRgraphEdgeV(graph, e);
+          if (edgesReversed && edgesReversed[e])
+          {
+            CMR_GRAPH_NODE temp = u;
+            u = v;
+            v = temp;
+          }
+          printf("%d %d r%ld\n", u, v, row+1);
+        }
       }
-      for (size_t column = 0; column < matrix->numColumns; ++column)
+      else
       {
-        CMR_GRAPH_EDGE e = coforestEdges[column];
-        CMR_GRAPH_NODE u = CMRgraphEdgeU(graph, e);
-        CMR_GRAPH_NODE v = CMRgraphEdgeV(graph, e);
-        if (edgesReversed && edgesReversed[e])
+        for (size_t row = 0; row < matrix->numRows; ++row)
         {
-          CMR_GRAPH_NODE temp = u;
-          u = v;
-          v = temp;
+          CMR_GRAPH_EDGE e = forestEdges[row];
+          CMR_GRAPH_NODE u = CMRgraphEdgeU(graph, e);
+          CMR_GRAPH_NODE v = CMRgraphEdgeV(graph, e);
+          if (edgesReversed && edgesReversed[e])
+          {
+            CMR_GRAPH_NODE temp = u;
+            u = v;
+            v = temp;
+          }
+          printf("%d %d r%ld\n", u, v, row+1);
         }
-        printf("%d %d c%ld\n", u, v, column+1);
+        for (size_t column = 0; column < matrix->numColumns; ++column)
+        {
+          CMR_GRAPH_EDGE e = coforestEdges[column];
+          CMR_GRAPH_NODE u = CMRgraphEdgeU(graph, e);
+          CMR_GRAPH_NODE v = CMRgraphEdgeV(graph, e);
+          if (edgesReversed && edgesReversed[e])
+          {
+            CMR_GRAPH_NODE temp = u;
+            u = v;
+            v = temp;
+          }
+          printf("%d %d c%ld\n", u, v, column+1);
+        }
       }
     }
     else if (outputFormat == FILEFORMAT_GRAPH_DOT)
@@ -156,6 +188,8 @@ CMR_ERROR matrixToGraph(
     CMR_CALL( CMRfreeBlockArray(cmr, &coforestEdges) );
     CMR_CALL( CMRgraphFree(cmr, &graph) );
   }
+
+  CMR_CALL( CMRchrmatFree(cmr, &matrix) );
 
   /* Cleanup. */
 
