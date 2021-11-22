@@ -295,7 +295,7 @@ CMR_ERROR CMRdecPrint(CMR* cmr, CMR_DEC* dec, FILE* stream, size_t indent, bool 
     {
       for (int i = 0; i < indent; ++i)
         fputc(' ', stream);
-      fprintf(stream, "Matrix:\n");
+      fprintf(stream, "\nMatrix:\n\n");
     }
     if (dec->matrix)
       CMR_CALL( CMRchrmatPrintDense(cmr, dec->matrix, stream, '0', false) );
@@ -319,14 +319,14 @@ CMR_ERROR CMRdecPrint(CMR* cmr, CMR_DEC* dec, FILE* stream, size_t indent, bool 
     {
       for (int i = 0; i < indent; ++i)
         fputc(' ', stream);
-      fprintf(stream, "Graph:\n");
+      fprintf(stream, "\nGraph:\n\n");
       CMR_CALL( CMRgraphPrint(stream, dec->graph) );
     }
     if (dec->cograph)
     {
       for (int i = 0; i < indent; ++i)
         fputc(' ', stream);
-      fprintf(stream, "Cograph:\n");
+      fprintf(stream, "\nCograph:\n\n");
       CMR_CALL( CMRgraphPrint(stream, dec->cograph) );
     }
   }

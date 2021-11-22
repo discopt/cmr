@@ -411,6 +411,7 @@ CMR_ERROR CMRtestBinaryRegular(CMR* cmr, CMR_CHRMAT* matrix, bool *pisRegular, C
 {
   assert(cmr);
   assert(matrix);
+  assert(pisRegular);
 
   CMR_REGULAR_PARAMETERS defaultParams;
   if (!params)
@@ -420,9 +421,11 @@ CMR_ERROR CMRtestBinaryRegular(CMR* cmr, CMR_CHRMAT* matrix, bool *pisRegular, C
   }
 
   CMR_SUBMAT* submatrix = NULL;
-  if (!CMRchrmatIsBinary(cmr, matrix, &submatrix))
+  if (!CMRchrmatIsBinary(cmr, matrix, pminor ? &submatrix : NULL))
   {
-    CMR_CALL( CMRminorCreate(cmr, pminor, 0, submatrix) );
+    *pisRegular = false;
+    if (pminor)
+      CMR_CALL( CMRminorCreate(cmr, pminor, 0, submatrix) );
     return CMR_OKAY;
   }
 

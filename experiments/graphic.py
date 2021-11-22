@@ -43,6 +43,9 @@ def run(numRows, numColumns, repetitions):
   sys.stdout.write(f'{numRows:.0f},{numColumns:.0f},{avgNonzeros:.1f},{timeTranspose},{timeCheck},{timeApply},{timeTotal}\n')
   sys.stdout.flush()
 
+run(numRows, int(4.0*numRows), numRepetitions)
+sys.exit(0)
+
 run(numRows, int(0.5*numRows), numRepetitions)
 run(numRows, int(1.0*numRows), numRepetitions)
 run(numRows, int(1.5*numRows), numRepetitions)
@@ -50,6 +53,7 @@ run(numRows, int(2.0*numRows), numRepetitions)
 run(numRows, int(2.5*numRows), numRepetitions)
 run(numRows, int(3.0*numRows), numRepetitions)
 run(numRows, int(3.5*numRows), numRepetitions)
+run(numRows, int(4.0*numRows), numRepetitions)
 run(numRows, int(4.5*numRows), numRepetitions)
 run(numRows, int(5.0*numRows), numRepetitions)
 run(numRows, int(5.5*numRows), numRepetitions)

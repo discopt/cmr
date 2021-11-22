@@ -1794,7 +1794,7 @@ bool CMRchrmatIsBinary(CMR* cmr, CMR_CHRMAT* matrix, CMR_SUBMAT** psubmatrix)
 {
   assert(cmr);
   CMRconsistencyAssert( CMRchrmatConsistency(matrix) );
-  assert(psubmatrix || !*psubmatrix);
+  assert(!psubmatrix || !*psubmatrix);
 
   for (size_t row = 0; row < matrix->numRows; ++row)
   {

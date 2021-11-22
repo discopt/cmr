@@ -93,7 +93,8 @@ CMR_ERROR testRegularity(
 
   if (decomposition)
   {
-    CMR_CALL( CMRdecPrint(cmr, decomposition, stdout, 2, true, true, true) );
+    if (printTree)
+      CMR_CALL( CMRdecPrint(cmr, decomposition, stdout, 2, true, true, true) );
     CMR_CALL( CMRdecFree(cmr, &decomposition) );
   }
 

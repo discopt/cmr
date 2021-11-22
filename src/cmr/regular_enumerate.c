@@ -18,7 +18,7 @@ typedef struct
 /**
  * \brief Checks whether the submatrix with rows assigned to \p part and columns assigned to the other has at least
  *        rank 1.
- * 
+ *
  * If the rank is at least 1, the row and column of a corresponding nonzero are stored in \p rowRepresentative and
  * \p columnRepresentative, respectively.
  */
@@ -68,7 +68,7 @@ bool findRank1(
 /**
  * \brief Checks whether the submatrix with rows assigned to \p part and columns assigned to the other has at least
  *        rank 2.
- * 
+ *
  * Assumes that \p rowRepresentative already contains the first nonzero row in that matrix.
  * If the rank is at least 2, \p rowRepresentative and \p columnRepresentative are extended as to indicate a rank-2
  * submatrix.
@@ -187,7 +187,7 @@ bool findRank2(
 /**
  * \brief Checks whether the submatrix with rows assigned to \p part and columns assigned to the other has at least
  *        rank 3.
- * 
+ *
  * Assumes that \p rowRepresentative already contains two distinct nonzero rows in that submatrix.
  */
 
@@ -331,7 +331,7 @@ void determineType(
       rowData[row].type[part] = r;
     }
   }
-  
+
   while (column[0] != SIZE_MAX || column[1] != SIZE_MAX || column[2] != SIZE_MAX)
   {
     size_t minColumn = (column[0] < column[1]) ? column[0] : column[1];
@@ -741,7 +741,7 @@ CMR_ERROR transformSeparationNested(
 
   unsigned char* rowsToPart = NULL;
   unsigned char* columnsToPart = NULL;
-  
+
   CMR_CALL( CMRallocStackArray(cmr, &rowsToPart, dec->matrix->numRows) );
   CMR_CALL( CMRallocStackArray(cmr, &columnsToPart, dec->matrix->numColumns) );
 
@@ -928,7 +928,7 @@ CMR_ERROR CMRregularSearchThreeSeparation(CMR* cmr, CMR_DEC* dec, CMR_CHRMAT* tr
           /* Skip this distribution if no new element chosen. */
           CMRdbgMsg(10, "Considering partition in which the first part has %ld rows and %ld columns.\n", partNumRows[0],
             partNumColumns[0]);
-          
+
           CMR_CALL( extendMinorSeparation(cmr, dec->nestedMinorsMatrix, transpose, rowData, columnData, partRows, partNumRows,
             partColumns, partNumColumns, queueMemory, &separation) );
 
@@ -941,7 +941,7 @@ CMR_ERROR CMRregularSearchThreeSeparation(CMR* cmr, CMR_DEC* dec, CMR_CHRMAT* tr
       }
     }
   }
-  
+
   if (separation)
   {
     dec->type = CMR_DEC_THREE_SUM;
