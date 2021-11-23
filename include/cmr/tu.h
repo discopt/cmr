@@ -16,6 +16,22 @@ extern "C" {
 #include <cmr/env.h>
 #include <cmr/regular.h>
 #include <cmr/matrix.h>
+  
+typedef struct
+{
+  CMR_REGULAR_PARAMETERS regular; /**< \brief Parameters for regularity test. */
+} CMR_TU_PARAMETERS;
+
+/**
+ * \brief Initializes the default parameters for TU testing.
+ *
+ * These are selected for minimum running time.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRtuInitParameters(
+  CMR_TU_PARAMETERS* params  /**< Pointer to parameters. */
+);
 
 /**
  * \brief Tests a matrix \f$ M \f$ for being [totally unimodular](\ref tu).
@@ -36,8 +52,7 @@ CMR_ERROR CMRtestTotalUnimodularity(
   bool* pisTotallyUnimodular, /**< Pointer for storing whether \f$ M \f$ is totally unimodular. */
   CMR_DEC** pdec,             /**< Pointer for storing the decomposition tree (may be \c NULL). */
   CMR_SUBMAT** psubmatrix,    /**< Pointer for storing a submatrix with non-ternary determinant (may be \c NULL). */
-  bool checkPlanarity,        /**< Whether graphic minors should be checked for cographicness. */
-  bool completeTree           /**< Whether a complete decomposition tree shall be computed. */
+  CMR_TU_PARAMETERS* params   /**< Parameters for the computation (may be \c NULL for defaults). */
 );
 
 #ifdef __cplusplus
