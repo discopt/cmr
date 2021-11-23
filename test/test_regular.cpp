@@ -758,7 +758,7 @@ TEST(Regular, RandomMatrix)
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
   
   srand(0);
-  const int numMatrices = 10000;
+  const int numMatrices = 1000;
   const int numRows = 30;
   const int numColumns = 30;
   const double probability = 0.5;
