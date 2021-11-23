@@ -1,4 +1,4 @@
-  #include <gtest/gtest.h>
+#include <gtest/gtest.h>
 
 #include "common.h"
 
@@ -756,7 +756,7 @@ TEST(Regular, RandomMatrix)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
-  
+
   srand(0);
   const int numMatrices = 1000;
   const int numRows = 30;
