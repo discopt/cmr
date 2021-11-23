@@ -1882,7 +1882,7 @@ CMR_ERROR removeAllPathEdges(
         continue;
       newcolumn->nodesDegree[tail] = 0;
       newcolumn->nodesDegree[head] = 0;
-      CMRdbgMsg(0, "Set nodesDegree of nodes of edge %d = {%d,%d} to 0.\n", edge, tail, head);
+      CMRdbgMsg(8, "Set nodesDegree of nodes of edge %d = {%d,%d} to 0.\n", edge, tail, head);
     }
   }
   newcolumn->firstPathEdge = NULL;
@@ -2894,17 +2894,22 @@ CMR_ERROR determineTypeRigid(
       }
       else if (numOneEnd == 2)
       {
-        bool matched[2] = { false, false };
+        /* 1 path and 2 child markers, each containing one end. */
+        bool childMarkerNodesMatched[2] = { false, false };
+        bool endNodesMatched[2] = { false, false };
         for (int i = 0; i < 2; ++i)
         {
           for (int j = 0; j < 4; ++j)
           {
             if (reducedMember->rigidEndNodes[i] == childMarkerNodes[j])
-              matched[j/2] = true;
+            {
+              endNodesMatched[i] = true;
+              childMarkerNodesMatched[j/2] = true;
+            }
           }
         }
 
-        if (matched[0] && matched[1])
+        if (childMarkerNodesMatched[0] && childMarkerNodesMatched[1] && endNodesMatched[0] && endNodesMatched[1])
           reducedMember->type = TYPE_ROOT;
         else
         {
