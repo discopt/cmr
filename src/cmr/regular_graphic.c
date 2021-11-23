@@ -1414,6 +1414,7 @@ CMR_ERROR CMRregularTestGraphic(CMR* cmr, CMR_CHRMAT** pmatrix, CMR_CHRMAT** ptr
   assert(pmatrix);
   assert(ptranspose);
   assert(pisGraphic);
+  assert(!psubmatrix || !*psubmatrix);
 
   CMR_CHRMAT* matrix = *pmatrix;
   CMR_CHRMAT* transpose = *ptranspose;
@@ -1435,6 +1436,14 @@ CMR_ERROR CMRregularTestGraphic(CMR* cmr, CMR_CHRMAT** pmatrix, CMR_CHRMAT** ptr
   {
     CMR_CALL( CMRtestCographicMatrix(cmr, transpose, pisGraphic, pgraph, pforest, pcoforest, psubmatrix,
       NULL) );
+  }
+
+  if (psubmatrix && *psubmatrix)
+  {
+    /* We delete the submatrix since it might be a K_3,3 or K_5 (dual) minor. */
+
+    // TODO: If we know that we have a Fano (dual) minor, then we could return that.
+    CMR_CALL( CMRsubmatFree(cmr, psubmatrix) );
   }
 
   return CMR_OKAY;
