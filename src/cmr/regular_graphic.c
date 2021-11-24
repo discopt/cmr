@@ -1427,23 +1427,18 @@ CMR_ERROR CMRregularTestGraphic(CMR* cmr, CMR_CHRMAT** pmatrix, CMR_CHRMAT** ptr
     transpose = *ptranspose;
   }
 
+  // TODO: So far, we do not pass psubmatrix because we cannot use the information as we do not detect
+  // whether we encountered F_7 or F_7* or K_3,3* or K_5*!
+
   if (ternary)
   {
     CMR_CALL( CMRtestConetworkMatrix(cmr, transpose, pisGraphic, pgraph, pforest, pcoforest, parcsReversed,
-      psubmatrix) );
+      NULL) );
   }
   else
   {
-    CMR_CALL( CMRtestCographicMatrix(cmr, transpose, pisGraphic, pgraph, pforest, pcoforest, psubmatrix,
+    CMR_CALL( CMRtestCographicMatrix(cmr, transpose, pisGraphic, pgraph, pforest, pcoforest, NULL,
       NULL) );
-  }
-
-  if (psubmatrix && *psubmatrix)
-  {
-    /* We delete the submatrix since it might be a K_3,3 or K_5 (dual) minor. */
-
-    // TODO: If we know that we have a Fano (dual) minor, then we could return that.
-    CMR_CALL( CMRsubmatFree(cmr, psubmatrix) );
   }
 
   return CMR_OKAY;
