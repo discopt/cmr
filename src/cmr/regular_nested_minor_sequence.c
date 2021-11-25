@@ -7,6 +7,8 @@
 #include "densematrix.h"
 #include "hashtable.h"
 
+#include <time.h>
+
 typedef struct
 {
   long long hashValue;              /**< \brief Hash value of this element. */
@@ -611,7 +613,8 @@ CMR_ERROR extendNestedMinorSequence(
   size_t* nestedMinorsRows,       /**< Mapping of rows of the nested minor sequence to rows of \p dense. */
   size_t* nestedMinorsColumns,    /**< Mapping of columns of the nested minor sequence to columns of \p dense. */
   CMR_SUBMAT** psubmatrix,        /**< Pointer for storing a violator matrix. */
-  CMR_REGULAR_PARAMETERS* params  /**< Parameters for the computation. */
+  CMR_REGULAR_PARAMETERS* params, /**< Parameters for the computation. */
+  CMR_REGULAR_STATISTICS* stats   /**< Statistics for the computation (may be \c NULL). */
 )
 {
   assert(cmr);
@@ -624,6 +627,13 @@ CMR_ERROR extendNestedMinorSequence(
   CMRdbgMsg(4, "Attempting to extend a sequence of 3-connected nested minors of length %ld with last minor of size %dx%d.\n",
     dec->nestedMinorsLength, dec->nestedMinorsSequence[dec->nestedMinorsLength-1].numRows,
     dec->nestedMinorsSequence[dec->nestedMinorsLength-1].numColumns);
+
+  clock_t time = 0;
+  if (stats)
+  {
+    stats->sequenceExtensionCount++;
+    time = clock();
+  }
 
   size_t numRows = dec->matrix->numRows;
   size_t numColumns = dec->matrix->numColumns;
@@ -690,8 +700,10 @@ CMR_ERROR extendNestedMinorSequence(
     hashVector, false) );
 
   while (numProcessedRows < numRows || numProcessedColumns < numColumns)
-  {
+  {  
     CMRdbgMsg(6, "New iteration; processed %ld rows and %ld columns so far.\n", numProcessedRows, numProcessedColumns);
+    if (stats)
+      stats->sequenceExtensionCount++;
     
     CMRdbgMsg(6, "Dense matrix:\n");
     for (size_t row = 0; row < dense->numRows; ++row)
@@ -1029,6 +1041,11 @@ CMR_ERROR extendNestedMinorSequence(
     }
   }
 
+  if (stats)
+  {
+    stats->sequenceExtensionTime += (clock() - time) * 1.0 / CLOCKS_PER_SEC;
+  }
+
   if (dec->type == CMR_DEC_TWO_SUM)
   {
     CMRdbgMsg(6, "Aborting construction of sequence of nested 3-connected minors due to a 2-separation.\n");
@@ -1109,7 +1126,7 @@ CMR_ERROR extendNestedMinorSequence(
 }
 
 CMR_ERROR CMRregularConstructNestedMinorSequence(CMR* cmr, CMR_DEC* dec, bool ternary, CMR_SUBMAT* wheelSubmatrix,
-  CMR_SUBMAT** psubmatrix, CMR_REGULAR_PARAMETERS* params)
+  CMR_SUBMAT** psubmatrix, CMR_REGULAR_PARAMETERS* params, CMR_REGULAR_STATISTICS* stats)
 {
   assert(cmr);
   assert(dec);
@@ -1151,7 +1168,7 @@ CMR_ERROR CMRregularConstructNestedMinorSequence(CMR* cmr, CMR_DEC* dec, bool te
   }
 
   CMR_CALL( extendNestedMinorSequence(cmr, dec, ternary, dense, nestedMinorsRows, nestedMinorsColumns, psubmatrix,
-    params) );
+    params, stats) );
 
   CMR_CALL( CMRdensebinmatrixFreeStack(cmr, &dense) );
 
@@ -1168,7 +1185,7 @@ CMR_ERROR CMRregularConstructNestedMinorSequence(CMR* cmr, CMR_DEC* dec, bool te
 }
 
 CMR_ERROR CMRregularExtendNestedMinorSequence(CMR* cmr, CMR_DEC* dec, bool ternary, CMR_SUBMAT** psubmatrix,
-  CMR_REGULAR_PARAMETERS* params)
+  CMR_REGULAR_PARAMETERS* params, CMR_REGULAR_STATISTICS* stats)
 {
   assert(cmr);
   assert(dec);
@@ -1205,7 +1222,7 @@ CMR_ERROR CMRregularExtendNestedMinorSequence(CMR* cmr, CMR_DEC* dec, bool terna
     }
 
     CMR_CALL( extendNestedMinorSequence(cmr, dec, ternary, dense, nestedMinorsRows, nestedMinorsColumns, psubmatrix,
-      params) );
+      params, stats) );
 
     CMR_CALL( CMRdensebinmatrixFreeStack(cmr, &dense) );
 

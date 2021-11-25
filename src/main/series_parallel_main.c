@@ -74,10 +74,9 @@ CMR_ERROR matrixSeriesParallel2Sums(
     (outputReducedElements || outputReducedMatrix) ? &reducedSubmatrix : NULL,
     (outputNonSPElements || outputNonSPMatrix) ? &violatorSubmatrix : NULL, &stats) );
 
-  fprintf(stderr, "Recognition done in %f seconds with %f for reduction, %f for non-binary search and %f for"
-    " wheel search. Matrix %sseries-parallel; %ld reductions can be applied.\n",
-    stats.totalTime, stats.reduceTime, stats.nonbinaryTime, stats.wheelTime,
+  fprintf(stderr, "Matrix %sseries-parallel. %ld reductions can be applied.\n",
     numReductions == matrix->numRows + matrix->numColumns ? "IS " : "is NOT ", numReductions);
+  CMR_CALL( CMRspPrintStatistics(stderr, &stats) );
 
   if (outputReductions)
   {

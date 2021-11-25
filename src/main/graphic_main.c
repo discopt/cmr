@@ -78,25 +78,23 @@ CMR_ERROR matrixToGraph(
   CMR_GRAPH_EDGE* coforestEdges = NULL;
   bool* edgesReversed = NULL;
 
-  clock_t startTime = clock();
-
   CMR_SUBMAT* submatrix = NULL;
 
+  CMR_GRAPHIC_STATISTICS stats;
+  CMR_CALL( CMRgraphicInitStatistics(&stats) );
   if (cographic)
   {
     CMR_CALL( CMRtestCographicMatrix(cmr, matrix, &isCoGraphic, &graph, &forestEdges, &coforestEdges,
-      (outputNonGraphicElements || outputNonGraphicMatrix) ? &submatrix : NULL, NULL) );
+      (outputNonGraphicElements || outputNonGraphicMatrix) ? &submatrix : NULL, &stats) );
   }
   else
   {
     CMR_CALL( CMRtestGraphicMatrix(cmr, matrix, &isCoGraphic, &graph, &forestEdges, &coforestEdges,
-      (outputNonGraphicElements || outputNonGraphicMatrix) ? &submatrix : NULL, NULL) );
+      (outputNonGraphicElements || outputNonGraphicMatrix) ? &submatrix : NULL, &stats) );
   }
 
-  clock_t endTime = clock();
-  fprintf(stderr, "Time: %f\n", (endTime - startTime) * 1.0 / CLOCKS_PER_SEC);
-
-  fprintf(stderr, "Input matrix is %s%sgraphic.\n", isCoGraphic ? "" : "NOT ", cographic ? "co" : "");
+  fprintf(stderr, "Matrix %s%sgraphic.\n", isCoGraphic ? "IS " : "IS NOT ", cographic ? "co" : "");
+  CMR_CALL( CMRgraphicPrintStatistics(stderr, &stats) );
 
   if (isCoGraphic)
   {

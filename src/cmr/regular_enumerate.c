@@ -5,6 +5,8 @@
 #include "env_internal.h"
 #include "dec_internal.h"
 
+#include <time.h>
+
 /**
  * \brief Element specific data for the enumeration of 3-separations.
  */
@@ -779,7 +781,7 @@ CMR_ERROR transformSeparationNested(
 }
 
 CMR_ERROR CMRregularSearchThreeSeparation(CMR* cmr, CMR_DEC* dec, CMR_CHRMAT* transpose, bool ternary,
-  size_t firstNonCoGraphicMinor, CMR_SUBMAT** psubmatrix, CMR_REGULAR_PARAMETERS* params)
+  size_t firstNonCoGraphicMinor, CMR_SUBMAT** psubmatrix, CMR_REGULAR_PARAMETERS* params, CMR_REGULAR_STATISTICS* stats)
 {
   assert(cmr);
   assert(dec);
@@ -830,6 +832,13 @@ CMR_ERROR CMRregularSearchThreeSeparation(CMR* cmr, CMR_DEC* dec, CMR_CHRMAT* tr
     dec->nestedMinorsSequenceNumRows[firstNonCoGraphicMinor],
     dec->nestedMinorsSequenceNumColumns[firstNonCoGraphicMinor]);
 
+  clock_t time = 0;
+  if (stats)
+  {
+    stats->enumerationCount++;
+    time = clock();
+  }
+
   /* Enumerate all cardinality-at-most-half subsets of the element set of the first minor. */
   short beyondBits = 1 << (firstMinorNumRows + firstMinorNumColumns);
   CMR_SEPA* separation = NULL;
@@ -856,6 +865,8 @@ CMR_ERROR CMRregularSearchThreeSeparation(CMR* cmr, CMR_DEC* dec, CMR_CHRMAT* tr
     CMRdbgMsg(10, "Considering partition in which the first part has %ld rows and %ld columns.\n", partNumRows[0],
       partNumColumns[0]);
 
+    if (stats)
+      stats->enumerationCandidatesCount++;
     CMR_CALL( extendMinorSeparation(cmr, dec->nestedMinorsMatrix, transpose, rowData, columnData, partRows, partNumRows,
       partColumns, partNumColumns, queueMemory, &separation) );
   }
@@ -867,8 +878,6 @@ CMR_ERROR CMRregularSearchThreeSeparation(CMR* cmr, CMR_DEC* dec, CMR_CHRMAT* tr
 
     for (size_t minor = firstMinor+1; minor <= firstNonCoGraphicMinor && !separation; ++minor)
     {
-      printf("minor =  %ld / %ld\n", minor, firstNonCoGraphicMinor);
-
       CMRdbgMsg(8, "Next minor has %ld rows and %ld columns.\n", dec->nestedMinorsSequenceNumRows[minor],
         dec->nestedMinorsSequenceNumColumns[minor]);
 
@@ -931,6 +940,8 @@ CMR_ERROR CMRregularSearchThreeSeparation(CMR* cmr, CMR_DEC* dec, CMR_CHRMAT* tr
           CMRdbgMsg(10, "Considering partition in which the first part has %ld rows and %ld columns.\n", partNumRows[0],
             partNumColumns[0]);
 
+          if (stats)
+            stats->enumerationCandidatesCount++;
           CMR_CALL( extendMinorSeparation(cmr, dec->nestedMinorsMatrix, transpose, rowData, columnData, partRows, partNumRows,
             partColumns, partNumColumns, queueMemory, &separation) );
 
@@ -942,6 +953,11 @@ CMR_ERROR CMRregularSearchThreeSeparation(CMR* cmr, CMR_DEC* dec, CMR_CHRMAT* tr
         }
       }
     }
+  }
+
+  if (stats)
+  {
+    stats->enumerationTime += (clock() - time) * 1.0 / CLOCKS_PER_SEC;
   }
 
   if (separation)

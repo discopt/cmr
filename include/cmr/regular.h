@@ -17,6 +17,8 @@ extern "C" {
 #include <cmr/matrix.h>
 #include <cmr/matroid.h>
 #include <cmr/graph.h>
+#include <cmr/series_parallel.h>
+#include <cmr/graphic.h>
 #include <cmr/dec.h>
 
 typedef enum
@@ -25,6 +27,46 @@ typedef enum
   CMR_DEC_CONSTRUCT_LEAVES = 1,
   CMR_DEC_CONSTRUCT_ALL = 2,
 } CMR_DEC_CONSTRUCT;
+
+
+/**
+ * \brief Statistics for regular matroid recognition algorithm.
+ */
+
+typedef struct
+{
+  size_t totalCount;                  /**< Total number of invocations. */
+  double totalTime;                   /**< Total time of all invocations. */
+  CMR_SP_STATISTICS seriesParallel;   /**< Statistics for series-parallel algorithm. */
+  CMR_GRAPHIC_STATISTICS graphic;     /**< Statistics for direct (co)graphicness checks. */
+  size_t sequenceExtensionCount;      /**< Number of extensions of sequences of nested minors. */
+  double sequenceExtensionTime;       /**< Time of extensions of sequences of nested minors. */
+  size_t sequenceGraphicCount;        /**< Number (co)graphicness tests applied to sequence of nested minors. */
+  double sequenceGraphicTime;         /**< Time of (co)graphicness tests applied to sequence of nested minors. */
+  size_t enumerationCount;            /**< Number of calls to enumeration algorithm for candidate 3-separations. */
+  double enumerationTime;             /**< Time of enumeration of candidate 3-separations. */
+  size_t enumerationCandidatesCount;  /**< Number of enumerated candidates for 3-separations. */
+} CMR_REGULAR_STATISTICS;
+
+
+/**
+ * \brief Initializes all statistics for regularity test computations.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRregularInitStatistics(
+  CMR_REGULAR_STATISTICS* stats /**< Pointer to statistics. */
+);
+
+/**
+ * \brief Prints statistics for regularity test computations.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRregularPrintStatistics(
+  FILE* stream,                 /**< File stream to print to. */
+  CMR_REGULAR_STATISTICS* stats /**< Pointer to statistics. */
+);
 
 typedef struct
 {
@@ -69,7 +111,8 @@ CMR_ERROR CMRtestBinaryRegular(
   bool *pisRegular,               /**< Pointer for storing whether \p matrix is regular. */
   CMR_DEC** pdec,                 /**< Pointer for storing the decomposition tree (may be \c NULL). */
   CMR_MINOR** pminor,             /**< Pointer for storing an \f$ F_7 \f$ or \f$ F_7^\star \f$ minor. */
-  CMR_REGULAR_PARAMETERS* params  /**< Parameters for the computation (may be \c NULL for defaults). */
+  CMR_REGULAR_PARAMETERS* params, /**< Parameters for the computation (may be \c NULL for defaults). */
+  CMR_REGULAR_STATISTICS* stats   /**< Statistics for the computation (may be \c NULL). */
 );
 
 #ifdef __cplusplus

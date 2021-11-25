@@ -9,6 +9,7 @@
 #include "hashtable.h"
 
 #include <stdint.h>
+#include <time.h>
 
 /**
  * \brief Recursive DFS for finding all articulation points of a graph.
@@ -1244,7 +1245,7 @@ CMR_ERROR createWheel(
 
 CMR_ERROR CMRregularSequenceGraphic(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT* transpose, CMR_ELEMENT* rowElements,
   CMR_ELEMENT* columnElements, size_t lengthSequence, size_t* sequenceNumRows, size_t* sequenceNumColumns,
-  size_t* plastGraphicMinor, CMR_GRAPH** pgraph, CMR_ELEMENT** pedgeElements)
+  size_t* plastGraphicMinor, CMR_GRAPH** pgraph, CMR_ELEMENT** pedgeElements, CMR_REGULAR_STATISTICS* stats)
 {
   assert(cmr);
   assert(matrix);
@@ -1260,6 +1261,13 @@ CMR_ERROR CMRregularSequenceGraphic(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT* tr
   assert(!*pedgeElements);
 
   CMRdbgMsg(8, "Testing sequence for (co)graphicness.\n");
+
+  clock_t time;
+  if (stats)
+  {
+    stats->sequenceGraphicCount++;
+    time = clock();
+  }
 
   CMR_CALL( CMRgraphCreateEmpty(cmr, pgraph, matrix->numRows, matrix->numRows + matrix->numColumns) );
   CMR_GRAPH* graph = *pgraph;
@@ -1397,6 +1405,11 @@ CMR_ERROR CMRregularSequenceGraphic(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT* tr
     CMR_CALL( CMRgraphFree(cmr, pgraph) );
   }
 
+  if (stats)
+  {
+    stats->sequenceGraphicTime += (clock() - time) * 1.0 / CLOCKS_PER_SEC;
+  }
+
   CMR_CALL( CMRfreeStackArray(cmr, &columnHashValues) );
   CMR_CALL( CMRfreeStackArray(cmr, &rowHashValues) );
   CMR_CALL( CMRfreeStackArray(cmr, &columnEdges) );
@@ -1408,7 +1421,7 @@ CMR_ERROR CMRregularSequenceGraphic(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT* tr
 
 CMR_ERROR CMRregularTestGraphic(CMR* cmr, CMR_CHRMAT** pmatrix, CMR_CHRMAT** ptranspose, bool ternary, bool* pisGraphic,
   CMR_GRAPH** pgraph, CMR_GRAPH_EDGE** pforest, CMR_GRAPH_EDGE** pcoforest, bool** parcsReversed,
-  CMR_SUBMAT** psubmatrix)
+  CMR_SUBMAT** psubmatrix, CMR_REGULAR_STATISTICS* stats)
 {
   assert(cmr);
   assert(pmatrix);
@@ -1437,8 +1450,7 @@ CMR_ERROR CMRregularTestGraphic(CMR* cmr, CMR_CHRMAT** pmatrix, CMR_CHRMAT** ptr
   }
   else
   {
-    CMR_CALL( CMRtestCographicMatrix(cmr, transpose, pisGraphic, pgraph, pforest, pcoforest, NULL,
-      NULL) );
+    CMR_CALL( CMRtestCographicMatrix(cmr, transpose, pisGraphic, pgraph, pforest, pcoforest, NULL, &stats->graphic) );
   }
 
   return CMR_OKAY;

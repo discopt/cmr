@@ -85,11 +85,13 @@ CMR_ERROR testRegularity(
   params.completeTree = completeTree;
   params.planarityCheck = planarityCheck;
   params.matrices = printTree ? CMR_DEC_CONSTRUCT_ALL : CMR_DEC_CONSTRUCT_NONE;
+  CMR_REGULAR_STATISTICS stats;
+  CMR_CALL( CMRregularInitStatistics(&stats) );
   CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, printTree ? &decomposition : NULL,
-    (printSubmatrix || printSubmatrixElements) ? &minor : NULL, &params) );
+    (printSubmatrix || printSubmatrixElements) ? &minor : NULL, &params, &stats) );
 
-  fprintf(stderr, "Determined in %f seconds that it is %sregular.\n",
-    (clock() - startClock) * 1.0 / CLOCKS_PER_SEC, isRegular ? "" : "NOT ");
+  fprintf(stderr, "Matrix %sregular.\n", isRegular ? "IS " : "IS NOT ");
+  CMR_CALL( CMRregularPrintStatistics(stderr, &stats) );
 
   if (decomposition)
   {

@@ -4,10 +4,46 @@
 
 #include <assert.h>
 #include <stdlib.h>
+#include <time.h>
 
 #include "env_internal.h"
 #include "dec_internal.h"
 #include "regular_internal.h"
+
+CMR_ERROR CMRregularInitStatistics(CMR_REGULAR_STATISTICS* stats)
+{
+  assert(stats);
+
+  stats->totalCount = 0;
+  stats->totalTime = 0.0;
+  CMR_CALL( CMRspInitStatistics(&stats->seriesParallel) );
+  CMR_CALL( CMRgraphicInitStatistics(&stats->graphic) );
+  stats->sequenceExtensionCount = 0;
+  stats->sequenceExtensionTime = 0.0;  
+  stats->sequenceGraphicCount = 0;
+  stats->sequenceGraphicTime = 0.0;
+  stats->enumerationCount = 0;
+  stats->enumerationTime = 0.0;
+  stats->enumerationCandidatesCount = 0;
+
+  return CMR_OKAY;
+}
+
+CMR_ERROR CMRregularPrintStatistics(FILE* stream, CMR_REGULAR_STATISTICS* stats)
+{
+  assert(stream);
+  assert(stats);
+
+  CMR_CALL( CMRspPrintStatistics(stream, &stats->seriesParallel) );
+  CMR_CALL( CMRgraphicPrintStatistics(stream, &stats->graphic) );
+  fprintf(stream, "Regularity sequence extensions:       %ld in %f seconds\n", stats->sequenceExtensionCount, stats->sequenceExtensionTime);
+  fprintf(stream, "Regularity sequence (co)graphicness:  %ld in %f seconds\n", stats->sequenceGraphicCount, stats->sequenceGraphicTime);
+  fprintf(stream, "Regularity enumeration:               %ld in %f seconds\n", stats->enumerationCount, stats->enumerationTime);
+  fprintf(stream, "Regularity 3-separation candidates:   %ld in %f seconds\n", stats->enumerationCandidatesCount, stats->enumerationTime);
+  fprintf(stream, "Regularity in total:                  %ld in %f seconds\n", stats->totalCount, stats->totalTime);
+
+  return CMR_OKAY;
+}
 
 CMR_ERROR CMRregularInitParameters(CMR_REGULAR_PARAMETERS* params)
 {
@@ -34,7 +70,8 @@ CMR_ERROR testRegularTwoConnected(
   bool ternary,                   /**< Whether signs matter. */
   bool *pisRegular,               /**< Pointer for storing whether \p matrix is regular. */
   CMR_MINOR** pminor,             /**< Pointer for storing an \f$ F_7 \f$ or \f$ F_7^\star \f$ minor. */
-  CMR_REGULAR_PARAMETERS* params  /**< Parameters for the computation. */
+  CMR_REGULAR_PARAMETERS* params, /**< Parameters for the computation. */
+  CMR_REGULAR_STATISTICS* stats   /**< Statistics for the computation (may be \c NULL). */
 );
 
 static
@@ -44,7 +81,8 @@ CMR_ERROR testRegularThreeConnectedWithSequence(
   bool ternary,                   /**< Whether signs matter. */
   bool *pisRegular,               /**< Pointer for storing whether \p matrix is regular. */
   CMR_MINOR** pminor,             /**< Pointer for storing an \f$ F_7 \f$ or \f$ F_7^\star \f$ minor. */
-  CMR_REGULAR_PARAMETERS* params  /**< Parameters for the computation. */
+  CMR_REGULAR_PARAMETERS* params, /**< Parameters for the computation. */
+  CMR_REGULAR_STATISTICS* stats   /**< Statistics for the computation (may be \c NULL). */
 )
 {
   assert(cmr);
@@ -76,7 +114,7 @@ CMR_ERROR testRegularThreeConnectedWithSequence(
   CMR_CALL( CMRregularSequenceGraphic(cmr, dec->nestedMinorsMatrix, nestedMinorsTranspose,
     dec->nestedMinorsRowsOriginal, dec->nestedMinorsColumnsOriginal, dec->nestedMinorsLength,
     dec->nestedMinorsSequenceNumRows, dec->nestedMinorsSequenceNumColumns, &lastGraphicMinor, &graph,
-    &graphEdgeLabels) );
+    &graphEdgeLabels, stats) );
 
   if (graph)
   {
@@ -122,7 +160,7 @@ CMR_ERROR testRegularThreeConnectedWithSequence(
     CMR_CALL( CMRregularSequenceGraphic(cmr, nestedMinorsTranspose, dec->nestedMinorsMatrix,
       dec->nestedMinorsColumnsOriginal, dec->nestedMinorsRowsOriginal, dec->nestedMinorsLength,
       dec->nestedMinorsSequenceNumColumns, dec->nestedMinorsSequenceNumRows, &lastCographicMinor, &cograph,
-      &cographEdgeLabels) );
+      &cographEdgeLabels, stats) );
 
     if (cograph)
     {
@@ -173,7 +211,7 @@ CMR_ERROR testRegularThreeConnectedWithSequence(
         lastGraphicMinor > lastCographicMinor ? (lastGraphicMinor+1) : (lastCographicMinor + 1) );
 
       CMR_CALL( CMRregularSearchThreeSeparation(cmr, dec, nestedMinorsTranspose, ternary,
-        lastGraphicMinor > lastCographicMinor ? (lastGraphicMinor+1) : (lastCographicMinor + 1), NULL, params) );
+        lastGraphicMinor > lastCographicMinor ? (lastGraphicMinor+1) : (lastCographicMinor + 1), NULL, params, stats) );
 
       if (dec->type == CMR_DEC_IRREGULAR)
       {
@@ -190,10 +228,10 @@ CMR_ERROR testRegularThreeConnectedWithSequence(
         CMR_CALL( CMRchrmatPrintDense(cmr, dec->children[1]->matrix, stdout, '0', true) );
 #endif /* CMR_DEBUG */
 
-        CMR_CALL( testRegularTwoConnected(cmr, dec->children[0], ternary, pisRegular, pminor, params) );
+        CMR_CALL( testRegularTwoConnected(cmr, dec->children[0], ternary, pisRegular, pminor, params, stats) );
         
         if (params->completeTree || *pisRegular)
-          CMR_CALL( testRegularTwoConnected(cmr, dec->children[1], ternary, pisRegular, pminor, params) );
+          CMR_CALL( testRegularTwoConnected(cmr, dec->children[1], ternary, pisRegular, pminor, params, stats) );
       }
     }
   }
@@ -205,7 +243,7 @@ CMR_ERROR testRegularThreeConnectedWithSequence(
 
 static
 CMR_ERROR testRegularTwoConnected(CMR* cmr, CMR_DEC* dec, bool ternary, bool *pisRegular, CMR_MINOR** pminor,
-  CMR_REGULAR_PARAMETERS* params)
+  CMR_REGULAR_PARAMETERS* params, CMR_REGULAR_STATISTICS* stats)
 {
   assert(cmr);
   assert(dec);
@@ -225,7 +263,7 @@ CMR_ERROR testRegularTwoConnected(CMR* cmr, CMR_DEC* dec, bool ternary, bool *pi
       CMRdbgMsg(4, "Checking for graphicness...");
       bool isGraphic;
       CMR_CALL( CMRregularTestGraphic(cmr, &dec->matrix, &dec->transpose, ternary, &isGraphic, &dec->graph,
-        &dec->graphForest, &dec->graphCoforest, &dec->graphArcsReversed, &submatrix) );
+        &dec->graphForest, &dec->graphCoforest, &dec->graphArcsReversed, &submatrix, stats) );
       if (isGraphic)
       {
         CMRdbgMsg(0, " graphic.\n");
@@ -239,7 +277,7 @@ CMR_ERROR testRegularTwoConnected(CMR* cmr, CMR_DEC* dec, bool ternary, bool *pi
     CMRdbgMsg(4, "Checking for cographicness...");
     bool isCographic;
     CMR_CALL( CMRregularTestGraphic(cmr, &dec->transpose, &dec->matrix, ternary, &isCographic, &dec->cograph,
-      &dec->cographForest, &dec->cographCoforest, &dec->cographArcsReversed, &submatrix) );
+      &dec->cographForest, &dec->cographCoforest, &dec->cographArcsReversed, &submatrix, stats) );
     if (isCographic)
     {
       CMRdbgMsg(0, " cographic.\n");
@@ -260,14 +298,14 @@ CMR_ERROR testRegularTwoConnected(CMR* cmr, CMR_DEC* dec, bool ternary, bool *pi
     CMR_CALL( CMRdecPrintSequenceNested3ConnectedMinors(cmr, dec, stdout) );
 #endif /* CMR_DEBUG */
 
-    CMR_CALL( CMRregularExtendNestedMinorSequence(cmr, dec, ternary, &submatrix, params) );
+    CMR_CALL( CMRregularExtendNestedMinorSequence(cmr, dec, ternary, &submatrix, params, stats) );
     
     /* Handling of the resulting sequence or 2-separation is done at the end. */
   }
   else
   {
     CMRdbgMsg(4, "Splitting off series-parallel elements...");
-    CMR_CALL( CMRregularDecomposeSeriesParallel(cmr, &dec, ternary, &submatrix, params) );
+    CMR_CALL( CMRregularDecomposeSeriesParallel(cmr, &dec, ternary, &submatrix, params, stats) );
 
     if (dec->type == CMR_DEC_IRREGULAR)
     {
@@ -284,10 +322,10 @@ CMR_ERROR testRegularTwoConnected(CMR* cmr, CMR_DEC* dec, bool ternary, bool *pi
     {
       CMRdbgMsg(0, " Encountered a 2-separation.\n");
       assert(dec->numChildren == 2);
-      CMR_CALL( testRegularTwoConnected(cmr, dec->children[0], ternary, pisRegular, pminor, params) );
+      CMR_CALL( testRegularTwoConnected(cmr, dec->children[0], ternary, pisRegular, pminor, params, stats) );
 
       if (params->completeTree || *pisRegular)
-        CMR_CALL( testRegularTwoConnected(cmr, dec->children[1], ternary, pisRegular, pminor, params) );
+        CMR_CALL( testRegularTwoConnected(cmr, dec->children[1], ternary, pisRegular, pminor, params, stats) );
 
       return CMR_OKAY;
     }
@@ -298,7 +336,7 @@ CMR_ERROR testRegularTwoConnected(CMR* cmr, CMR_DEC* dec, bool ternary, bool *pi
 
     /* No 2-sum found, so we have a wheel submatrix. */
 
-    CMR_CALL( CMRregularConstructNestedMinorSequence(cmr, dec, ternary, wheelSubmatrix, &submatrix, params) );
+    CMR_CALL( CMRregularConstructNestedMinorSequence(cmr, dec, ternary, wheelSubmatrix, &submatrix, params, stats) );
     CMR_CALL( CMRsubmatFree(cmr, &wheelSubmatrix) );
   }
 
@@ -313,21 +351,21 @@ CMR_ERROR testRegularTwoConnected(CMR* cmr, CMR_DEC* dec, bool ternary, bool *pi
     CMRdbgMsg(0, " Encountered a 2-separation.\n");
     assert(dec->numChildren == 2);
 
-    CMR_CALL( testRegularTwoConnected(cmr, dec->children[0], ternary, pisRegular, pminor, params) );
+    CMR_CALL( testRegularTwoConnected(cmr, dec->children[0], ternary, pisRegular, pminor, params, stats) );
 
     if (params->completeTree || *pisRegular)
-      CMR_CALL( testRegularTwoConnected(cmr, dec->children[1], ternary, pisRegular, pminor, params) );
+      CMR_CALL( testRegularTwoConnected(cmr, dec->children[1], ternary, pisRegular, pminor, params, stats) );
 
     return CMR_OKAY;
   }
 
-  CMR_CALL( testRegularThreeConnectedWithSequence(cmr, dec, ternary, pisRegular, pminor, params) );
+  CMR_CALL( testRegularThreeConnectedWithSequence(cmr, dec, ternary, pisRegular, pminor, params, stats) );
 
   return CMR_OKAY;
 }
 
 CMR_ERROR CMRtestRegular(CMR* cmr, CMR_CHRMAT* matrix, bool ternary, bool *pisRegular, CMR_DEC** pdec,
-  CMR_MINOR** pminor, CMR_REGULAR_PARAMETERS* params)
+  CMR_MINOR** pminor, CMR_REGULAR_PARAMETERS* params, CMR_REGULAR_STATISTICS* stats)
 {
   assert(cmr);
   assert(matrix);
@@ -335,6 +373,13 @@ CMR_ERROR CMRtestRegular(CMR* cmr, CMR_CHRMAT* matrix, bool ternary, bool *pisRe
 
   CMRdbgMsg(0, "Testing %s %dx%d matrix for regularity.\n", ternary ? "ternary" : "binary", matrix->numRows,
     matrix->numColumns);
+
+  clock_t time = 0;
+  if (stats)
+  {
+    stats->totalCount++;
+    time = clock();
+  }
 
   CMR_DEC* dec = NULL;
   CMR_CALL( CMRdecCreate(cmr, NULL, matrix->numRows, NULL, matrix->numColumns, NULL, &dec) );
@@ -356,7 +401,7 @@ CMR_ERROR CMRtestRegular(CMR* cmr, CMR_CHRMAT* matrix, bool ternary, bool *pisRe
       if (isRegular || params->completeTree)
       {
         bool childIsRegular = true;
-        CMR_CALL( testRegularTwoConnected(cmr, dec->children[c], ternary, &childIsRegular, pminor, params) );
+        CMR_CALL( testRegularTwoConnected(cmr, dec->children[c], ternary, &childIsRegular, pminor, params, stats) );
         if (pminor && *pminor)
           CMR_CALL( CMRdecTranslateMinorToParent(dec->children[c], *pminor) );
 
@@ -366,7 +411,7 @@ CMR_ERROR CMRtestRegular(CMR* cmr, CMR_CHRMAT* matrix, bool ternary, bool *pisRe
   }
   else
   {
-    CMR_CALL( testRegularTwoConnected(cmr, dec, ternary, &isRegular, pminor, params) );
+    CMR_CALL( testRegularTwoConnected(cmr, dec, ternary, &isRegular, pminor, params, stats) );
   }
 
   if (pisRegular)
@@ -375,8 +420,8 @@ CMR_ERROR CMRtestRegular(CMR* cmr, CMR_CHRMAT* matrix, bool ternary, bool *pisRe
   CMR_CALL( CMRdecComputeRegularity(dec) );
 
   /* If the root must have a matrix, we eventually copy the one passed by the user. */
-  if (params->matrices == CMR_DEC_CONSTRUCT_ALL
-    || (params->matrices == CMR_DEC_CONSTRUCT_LEAVES && dec->numChildren == 0))
+  if (pdec && (params->matrices == CMR_DEC_CONSTRUCT_ALL
+    || (params->matrices == CMR_DEC_CONSTRUCT_LEAVES)) && dec->numChildren == 0)
   {
     dec->matrix = NULL;
     CMR_CALL( CMRchrmatCopy(cmr, matrix, &dec->matrix) );
@@ -389,6 +434,11 @@ CMR_ERROR CMRtestRegular(CMR* cmr, CMR_CHRMAT* matrix, bool ternary, bool *pisRe
     *pdec = dec;
   else
     CMR_CALL( CMRdecFree(cmr, &dec) );
+
+  if (stats)
+  {
+    stats->totalTime += (clock() - time) * 1.0 / CLOCKS_PER_SEC;
+  }
 
   return CMR_OKAY;
 }
@@ -407,7 +457,7 @@ CMR_ERROR CMRtestBinaryRegularConnected(CMR* cmr, CMR_DEC* dec, CMR_CHRMAT* matr
 }
 
 CMR_ERROR CMRtestBinaryRegular(CMR* cmr, CMR_CHRMAT* matrix, bool *pisRegular, CMR_DEC** pdec, CMR_MINOR** pminor,
-  CMR_REGULAR_PARAMETERS* params)
+  CMR_REGULAR_PARAMETERS* params, CMR_REGULAR_STATISTICS* stats)
 {
   assert(cmr);
   assert(matrix);
@@ -428,8 +478,9 @@ CMR_ERROR CMRtestBinaryRegular(CMR* cmr, CMR_CHRMAT* matrix, bool *pisRegular, C
       CMR_CALL( CMRminorCreate(cmr, pminor, 0, submatrix) );
     return CMR_OKAY;
   }
+  
+  CMR_CALL( CMRtestRegular(cmr, matrix, false, pisRegular, pdec, pminor, params, stats) );
 
-  CMR_CALL( CMRtestRegular(cmr, matrix, false, pisRegular, pdec, pminor, params) );
 
   return CMR_OKAY;
 }

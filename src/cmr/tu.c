@@ -42,7 +42,7 @@ CMR_ERROR CMRtestTotalUnimodularity(CMR* cmr, CMR_CHRMAT* matrix, bool* pisTotal
   CMR_MINOR* minor = NULL;
   // TODO: run regularity check with ternary = true.
   CMR_CALL( CMRtestRegular(cmr, matrix, false, pisTotallyUnimodular, pdec, psubmatrix ? &minor : NULL,
-    &params->regular) );
+    &params->regular, NULL) );
   if (minor)
   {
     assert(minor->numPivots == 0);

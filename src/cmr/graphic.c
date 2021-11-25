@@ -46,15 +46,13 @@ CMR_ERROR CMRgraphicPrintStatistics(FILE* stream, CMR_GRAPHIC_STATISTICS* stats)
   assert(stream);
   assert(stats);
 
-  fprintf(stream, "Graphicness test (count / time):\n");
-  fprintf(stream, "Transposition: %ld / %f\n", stats->transposeCount, stats->transposeTime);
-  fprintf(stream, "Check:         %ld / %f\n", stats->checkCount, stats->checkTime);
-  fprintf(stream, "Apply:         %ld / %f\n", stats->applyCount, stats->applyTime);
-  fprintf(stream, "Total:         %ld / %f\n", stats->totalCount, stats->totalTime);
+  fprintf(stream, "Graphicness transpositions:           %ld / %f\n", stats->transposeCount, stats->transposeTime);
+  fprintf(stream, "Graphicness column checks:            %ld in %f seconds\n", stats->checkCount, stats->checkTime);
+  fprintf(stream, "Graphicness column additions:         %ld in %f seconds\n", stats->applyCount, stats->applyTime);
+  fprintf(stream, "Graphicness in total:                 %ld in %f seconds\n", stats->totalCount, stats->totalTime);
 
   return CMR_OKAY;
 }
-
 
 typedef enum
 {

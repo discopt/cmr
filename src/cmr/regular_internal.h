@@ -14,7 +14,8 @@ CMR_ERROR CMRregularSearchThreeSeparation(
   bool ternary,                   /**< Whether to consider the signs of the matrix. */
   size_t firstNonCoGraphicMinor,  /**< Index of first nested minor that is neither graphic nor cographic. */
   CMR_SUBMAT** psubmatrix,        /**< Pointer for storing a violator matrix. */
-  CMR_REGULAR_PARAMETERS* params  /**< Parameters for the computation. */
+  CMR_REGULAR_PARAMETERS* params, /**< Parameters for the computation. */
+  CMR_REGULAR_STATISTICS* stats /**< Statistics for the computation (may be \c NULL). */
 );
 
 /**
@@ -42,7 +43,8 @@ CMR_ERROR CMRregularSequenceGraphic(
   size_t* sequenceNumColumns,   /**< Array with number of columns of each minor. */  
   size_t* plastGraphicMinor,    /**< Pointer for storing the last graphic minor. */
   CMR_GRAPH** pgraph,           /**< Pointer for storing the graph. */
-  CMR_ELEMENT** pedgeElements   /**< Pointer for storing the mapping of edges to elements. */
+  CMR_ELEMENT** pedgeElements,  /**< Pointer for storing the mapping of edges to elements. */
+  CMR_REGULAR_STATISTICS* stats /**< Statistics for the computation (may be \c NULL). */
 );
 
 /**
@@ -57,7 +59,8 @@ CMR_ERROR CMRregularExtendNestedMinorSequence(
   CMR_DEC* dec,                   /**< Decomposition node. */
   bool ternary,                   /**< Whether to consider the signs of the matrix. */
   CMR_SUBMAT** psubmatrix,        /**< Pointer for storing a violator matrix. */
-  CMR_REGULAR_PARAMETERS* params  /**< Parameters for the computation. */
+  CMR_REGULAR_PARAMETERS* params, /**< Parameters for the computation. */
+  CMR_REGULAR_STATISTICS* stats   /**< Statistics for the computation (may be \c NULL). */
 );
 
 /**
@@ -73,7 +76,8 @@ CMR_ERROR CMRregularConstructNestedMinorSequence(
   bool ternary,                   /**< Whether to consider the signs of the matrix. */
   CMR_SUBMAT* wheelSubmatrix,     /**< Wheel submatrix to start with. */
   CMR_SUBMAT** psubmatrix,        /**< Pointer for storing a violator matrix. */
-  CMR_REGULAR_PARAMETERS* params  /**< Parameters for the computation. */
+  CMR_REGULAR_PARAMETERS* params, /**< Parameters for the computation. */
+  CMR_REGULAR_STATISTICS* stats   /**< Statistics for the computation (may be \c NULL). */
 );
 
 /**
@@ -81,16 +85,17 @@ CMR_ERROR CMRregularConstructNestedMinorSequence(
  */
 
 CMR_ERROR CMRregularTestGraphic(
-  CMR* cmr,                   /**< \ref CMR environment. */
-  CMR_CHRMAT** pmatrix,       /**< Pointer to matrix. */
-  CMR_CHRMAT** ptranspose,    /**< Pointer to transpose. */
-  bool ternary,               /**< Whether to also check the signs of the matrix. */
-  bool* pisGraphic,           /**< Pointer for storing the result. */
-  CMR_GRAPH** pgraph,         /**< Pointer for storing the graph if the matrix is graph (may be \c NULL). */
-  CMR_GRAPH_EDGE** pforest,   /**< Pointer for storing the mapping of rows to forest edges. */
-  CMR_GRAPH_EDGE** pcoforest, /**< Pointer for storing the mapping of rows to forest edges. */
-  bool** parcsReversed,       /**< Pointer for storing the array indicating which arcs are reversed. */ 
-  CMR_SUBMAT** psubmatrix     /**< Pointer for storing a minimal non-graphic submatrix (may be \c NULL). */
+  CMR* cmr,                     /**< \ref CMR environment. */
+  CMR_CHRMAT** pmatrix,         /**< Pointer to matrix. */
+  CMR_CHRMAT** ptranspose,      /**< Pointer to transpose. */
+  bool ternary,                 /**< Whether to also check the signs of the matrix. */
+  bool* pisGraphic,             /**< Pointer for storing the result. */
+  CMR_GRAPH** pgraph,           /**< Pointer for storing the graph if the matrix is graph (may be \c NULL). */
+  CMR_GRAPH_EDGE** pforest,     /**< Pointer for storing the mapping of rows to forest edges. */
+  CMR_GRAPH_EDGE** pcoforest,   /**< Pointer for storing the mapping of rows to forest edges. */
+  bool** parcsReversed,         /**< Pointer for storing the array indicating which arcs are reversed. */ 
+  CMR_SUBMAT** psubmatrix,      /**< Pointer for storing a minimal non-graphic submatrix (may be \c NULL). */
+  CMR_REGULAR_STATISTICS* stats /**< Statistics for the computation (may be \c NULL). */
 );
 
 /**
@@ -108,7 +113,8 @@ CMR_ERROR CMRregularDecomposeSeriesParallel(
   CMR_DEC** pdec,                 /**< Pointer to decomposition node. */
   bool ternary,                   /**< Whether to consider the signs of the matrix. */
   CMR_SUBMAT** psubmatrix,        /**< Pointer for storing a violator matrix. */
-  CMR_REGULAR_PARAMETERS* params  /**< Parameters for the computation. */
+  CMR_REGULAR_PARAMETERS* params, /**< Parameters for the computation. */
+  CMR_REGULAR_STATISTICS* stats   /**< Statistics for the computation (may be \c NULL). */
 );
 
 /**
@@ -140,7 +146,8 @@ CMR_ERROR CMRtestRegular(
   bool *pisRegular,               /**< Pointer for storing whether \p matrix is regular. */
   CMR_DEC** pdec,                 /**< Pointer for storing the decomposition tree (may be \c NULL). */
   CMR_MINOR** pminor,             /**< Pointer for storing an \f$ F_7 \f$ or \f$ F_7^\star \f$ minor. */
-  CMR_REGULAR_PARAMETERS* params  /**< Parameters for the computation. */
+  CMR_REGULAR_PARAMETERS* params, /**< Parameters for the computation. */
+  CMR_REGULAR_STATISTICS* stats   /**< Statistics for the computation (may be \c NULL). */
 );
 
 #endif /* CMR_REGULAR_INTERNAL_H */

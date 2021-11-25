@@ -55,11 +55,10 @@ CMR_ERROR CMRspPrintStatistics(FILE* stream, CMR_SP_STATISTICS* stats)
   assert(stream);
   assert(stats);
 
-  fprintf(stream, "Series-parallel computations (count / time):\n");
-  fprintf(stream, "Search for reductions:          %ld / %f\n", stats->reduceCount, stats->reduceTime);
-  fprintf(stream, "Search for wheel matrices:      %ld / %f\n", stats->wheelCount, stats->wheelTime);
-  fprintf(stream, "Search for ternary certificate: %ld / %f\n", stats->nonbinaryCount, stats->nonbinaryTime);
-  fprintf(stream, "Total:                          %ld / %f\n", stats->totalCount, stats->totalTime);
+  fprintf(stream, "Series-parallel reductions:           %ld in %f seconds\n", stats->reduceCount, stats->reduceTime);
+  fprintf(stream, "Series-parallel wheel search:         %ld in %f seconds\n", stats->wheelCount, stats->wheelTime);
+  fprintf(stream, "Series-parallel ternary certificates: %ld in %f seconds\n", stats->nonbinaryCount, stats->nonbinaryTime);
+  fprintf(stream, "Series-parallel in total:             %ld in %f seconds\n", stats->totalCount, stats->totalTime);
 
   return CMR_OKAY;
 }
