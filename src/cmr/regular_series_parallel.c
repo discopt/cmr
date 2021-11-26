@@ -8,7 +8,7 @@
 #include "dec_internal.h"
 
 CMR_ERROR CMRregularDecomposeSeriesParallel(CMR* cmr, CMR_DEC** pdec, bool ternary, CMR_SUBMAT** psubmatrix,
-  CMR_REGULAR_PARAMETERS* params)
+  CMR_REGULAR_PARAMETERS* params, CMR_REGULAR_STATISTICS* stats)
 {
   assert(cmr);
   assert(pdec);
@@ -27,12 +27,12 @@ CMR_ERROR CMRregularDecomposeSeriesParallel(CMR* cmr, CMR_DEC** pdec, bool terna
   if (ternary)
   {
     CMR_CALL( CMRdecomposeTernarySeriesParallel(cmr, dec->matrix, &isSeriesParallel, reductions, &numReductions,
-      &reducedSubmatrix, psubmatrix, &separation, NULL) );
+      &reducedSubmatrix, psubmatrix, &separation, stats ? &stats->seriesParallel : NULL) );
   }
   else
   {
     CMR_CALL( CMRdecomposeBinarySeriesParallel(cmr, dec->matrix, &isSeriesParallel, reductions, &numReductions,
-      &reducedSubmatrix, psubmatrix, &separation, NULL) );
+      &reducedSubmatrix, psubmatrix, &separation, stats ? &stats->seriesParallel : NULL) );
   }
 
   /* Did we find a 2-by-2 submatrix? If yes, is has determinant -2 or +2! */
@@ -51,7 +51,15 @@ CMR_ERROR CMRregularDecomposeSeriesParallel(CMR* cmr, CMR_DEC** pdec, bool terna
       CMR_CALL( CMRdecSetNumChildren(cmr, dec, 1) );
       CMR_CALL( CMRdecCreate(cmr, dec, reducedSubmatrix->numRows, reducedSubmatrix->rows, reducedSubmatrix->numColumns,
         reducedSubmatrix->columns, &dec->children[0]) );
-      CMR_CALL( CMRchrmatFilterSubmat(cmr, dec->matrix, reducedSubmatrix, &dec->children[0]->matrix) );
+      CMR_CALL( CMRchrmatZoomSubmat(cmr, dec->matrix, reducedSubmatrix, &dec->children[0]->matrix) );
+      if (psubmatrix && *psubmatrix)
+      {
+        /* Zoom into submatrix. */
+        CMR_SUBMAT* zoomedSubmatrix = NULL;
+        CMR_CALL( CMRsubmatZoomSubmat(cmr, reducedSubmatrix, *psubmatrix, &zoomedSubmatrix));
+        CMR_CALL( CMRsubmatFree(cmr, psubmatrix) );
+        *psubmatrix = zoomedSubmatrix;
+      }
       dec = dec->children[0];
       *pdec = dec;
     }
@@ -59,10 +67,7 @@ CMR_ERROR CMRregularDecomposeSeriesParallel(CMR* cmr, CMR_DEC** pdec, bool terna
 
   /* Modify the decomposition for the 2-separation. */
   if (separation)
-  {
     CMR_CALL( CMRdecApplySeparation(cmr, dec, separation) );
-    CMR_CALL( CMRsepaFree(cmr, &separation) );
-  }
 
   CMR_CALL( CMRfreeStackArray(cmr, &reductions) );
   CMR_CALL( CMRsubmatFree(cmr, &reducedSubmatrix) );  

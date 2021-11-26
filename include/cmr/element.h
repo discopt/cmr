@@ -25,6 +25,18 @@ const char* CMRelementString(
   char* buffer          /**< Buffer of size at least 32. May be \c NULL, in which case a static buffer is used. */
 );
 
+/**
+ * \brief Returns \c true if \p element is a row or a column element.
+ */
+
+static inline
+bool CMRelementIsValid(
+  CMR_ELEMENT element /**< Element to check for validity. */
+)
+{
+  return element != 0;
+}
+
 static inline
 CMR_ELEMENT CMRrowToElement(
   size_t row  /**< Row index. */
@@ -73,6 +85,18 @@ size_t CMRelementToColumnIndex(
 {
   assert(element > 0);
   return -1 + element;
+}
+
+/**
+ * \brief Transposes \p element, i.e., turns rows into columns and vice versa.
+ */
+
+static inline
+CMR_ELEMENT CMRelementTranspose(
+  CMR_ELEMENT element /**< Element to transpose. */
+)
+{
+  return -element;
 }
 
 #ifdef __cplusplus

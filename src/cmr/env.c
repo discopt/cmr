@@ -174,11 +174,14 @@ CMR_ERROR _CMRfreeStack(
   return CMR_OKAY;
 }
 
-void CMRassertStackConsistency(
-  CMR* cmr
-)
+void CMRassertStackConsistency(CMR* cmr)
 {
 
+}
+
+size_t CMRgetStackUsage(CMR* cmr)
+{
+  return 0;
 }
 
 #else
@@ -195,6 +198,8 @@ CMR_ERROR _CMRallocStack(
   assert(cmr);
   assert(ptr);
   assert(*ptr == NULL);
+
+  assert(("Tried to allocate at least 1 TB." == 0) || size < (1L << 40)); /* We should not allocate more than a terabyte. */
 
   /* Avoid allocation of zero bytes. */
   if (size < 4)
@@ -341,7 +346,18 @@ void CMRassertStackConsistency(
 
 #endif /* !NDEBUG */
 
+size_t CMRgetStackUsage(CMR* cmr)
+{ 
+  size_t result = 0;
+  for (size_t stack = 0; stack < cmr->currentStack; ++stack)
+    result += (FIRST_STACK_SIZE << stack);
+  result += (FIRST_STACK_SIZE << cmr->currentStack) - cmr->stacks[cmr->currentStack].top; 
+
+  return result;
+}
+
 #endif /* else REPLACE_STACK_BY_MALLOC */
+
 
 char* CMRconsistencyMessage(const char* format, ...)
 {

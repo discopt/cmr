@@ -14,8 +14,9 @@ Options:
   - `-i FORMAT` Format of input FILE; default: `dense`.
   - `-o FORMAT` Format of output matrices; default: `dense`.
   - `-d`        Output the decomposition tree if \f$ M \f$ is regular.
-  - `-s`        Output the elements of a minimal non-regular submatrix.
-  - `-S`        Output a minimal non-regular submatrix.
+  - `n`         Output the elements of a minimal non-regular submatrix.
+  - `N`         Output a minimal non-regular submatrix.
+  - `s`         Print statistics about the computation to stderr.
 
 Formats for matrices are \ref dense-matrix and \ref sparse-matrix.
 If FILE is `-`, then the input will be read from stdin.

@@ -29,8 +29,9 @@ int printUsage(const char* program)
   puts("  -p         Test graphic matrices also for cographicness (i.e., planarity).");
   puts("  -d         Compute the complete decomposition tree of the matroid.");
   puts("  -D         Output the computed decomposition tree of the matroid.");
-  puts("  -s         Output the elements of a minimal non-regular submatrix.");
-  puts("  -S         Output a minimal non-regular submatrix.");
+  puts("  -n         Output the elements of a minimal non-regular submatrix.");
+  puts("  -N         Output a minimal non-regular submatrix.");
+  puts("  -s         Print statistics about the computation to stderr.");
   puts("Formats for matrices: dense, sparse");
   puts("If FILE is `-', then the input will be read from stdin.");
 
@@ -47,13 +48,14 @@ CMR_ERROR testRegularity(
   FileFormat inputFormat,       /**< Format of the input matrix. */
   FileFormat outputFormat,      /**< Format of the output submatrix. */
   bool completeTree,            /**< Whether to compute the complete decomposition tree. */
-  bool planarityCheck,           /**< Whether to test for planarity. */
+  bool planarityCheck,          /**< Whether to test for planarity. */
   bool printTree,               /**< Whether to print the decomposition tree. */
-  bool printSubmatrixElements,  /**< Whether to print the elements of a minimal submatrix containing an irregular minor. */
-  bool printSubmatrix           /**< Whether to print a minimal submatrix containing an irregular minor. */
+  bool outputSubmatrixElements, /**< Whether to print the elements of a minimal submatrix containing an irregular minor. */
+  bool outputSubmatrix,         /**< Whether to print a minimal submatrix containing an irregular minor. */
+  bool printStats               /**< Whether to print statistics to stderr. */
 )
 {
-  clock_t startClock, endTime;
+  clock_t readClock = clock();
   FILE* instanceFile = strcmp(instanceFileName, "-") ? fopen(instanceFileName, "r") : stdin;
   if (!instanceFile)
     return CMR_ERROR_INPUT;
@@ -63,7 +65,6 @@ CMR_ERROR testRegularity(
 
   /* Read matrix. */
 
-  startClock = clock();
   CMR_CHRMAT* matrix = NULL;
   if (inputFormat == FILEFORMAT_MATRIX_DENSE)
     CMR_CALL( CMRchrmatCreateFromDenseStream(cmr, instanceFile, &matrix) );
@@ -71,29 +72,32 @@ CMR_ERROR testRegularity(
     CMR_CALL( CMRchrmatCreateFromSparseStream(cmr, instanceFile, &matrix) );
   if (instanceFile != stdin)
     fclose(instanceFile);
-  fprintf(stderr, "Read %lux%lu matrix with %lu nonzeros.\n", matrix->numRows, matrix->numColumns,
-    matrix->numNonzeros);
+  fprintf(stderr, "Read %lux%lu matrix with %lu nonzeros in %f seconds.\n", matrix->numRows, matrix->numColumns,
+    matrix->numNonzeros, (clock() - readClock) * 1.0 / CLOCKS_PER_SEC);
 
   /* Actual test. */
 
   bool isRegular;
   CMR_DEC* decomposition = NULL;
   CMR_MINOR* minor = NULL;
-  startClock = clock();
   CMR_REGULAR_PARAMETERS params;
-  CMR_CALL( CMRregularInitParameters(&params) );
+  CMR_CALL( CMRparamsRegularInit(&params) );
   params.completeTree = completeTree;
   params.planarityCheck = planarityCheck;
   params.matrices = printTree ? CMR_DEC_CONSTRUCT_ALL : CMR_DEC_CONSTRUCT_NONE;
+  CMR_REGULAR_STATISTICS stats;
+  CMR_CALL( CMRstatsRegularInit(&stats) );
   CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, printTree ? &decomposition : NULL,
-    (printSubmatrix || printSubmatrixElements) ? &minor : NULL, &params) );
+    (outputSubmatrix || outputSubmatrixElements) ? &minor : NULL, &params, &stats) );
 
-  fprintf(stderr, "Determined in %f seconds that it is %sregular.\n",
-    (clock() - startClock) * 1.0 / CLOCKS_PER_SEC, isRegular ? "" : "NOT ");
+  fprintf(stderr, "Matrix %sregular.\n", isRegular ? "IS " : "IS NOT ");
+  if (printStats)
+    CMR_CALL( CMRstatsRegularPrint(stderr, &stats, NULL) );
 
   if (decomposition)
   {
-    CMR_CALL( CMRdecPrint(cmr, decomposition, stdout, 2, true, true, true) );
+    if (printTree)
+      CMR_CALL( CMRdecPrint(cmr, decomposition, stdout, 2, true, true, true) );
     CMR_CALL( CMRdecFree(cmr, &decomposition) );
   }
 
@@ -117,8 +121,9 @@ int main(int argc, char** argv)
   bool completeTree = false;
   bool planarityCheck = false;
   bool printTree = false;
-  bool printSubmatrixElements = false;
-  bool printSubmatrix = false;
+  bool outputSubmatrixElements = false;
+  bool outputSubmatrix = false;
+  bool printStats = false;
   char* instanceFileName = NULL;
   for (int a = 1; a < argc; ++a)
   {
@@ -133,10 +138,12 @@ int main(int argc, char** argv)
       printTree = true;
     else if (!strcmp(argv[a], "-p"))
       planarityCheck = true;
+    else if (!strcmp(argv[a], "-n"))
+      outputSubmatrixElements = true;
+    else if (!strcmp(argv[a], "-N"))
+      outputSubmatrix = true;
     else if (!strcmp(argv[a], "-s"))
-      printSubmatrixElements = true;
-    else if (!strcmp(argv[a], "-S"))
-      printSubmatrix = true;
+      printStats = true;
     else if (!strcmp(argv[a], "-i") && a+1 < argc)
     {
       if (!strcmp(argv[a+1], "dense"))
@@ -183,7 +190,7 @@ int main(int argc, char** argv)
 
   CMR_ERROR error;
   error = testRegularity(instanceFileName, inputFormat, outputFormat, completeTree, planarityCheck, printTree,
-    printSubmatrixElements, printSubmatrix);
+    outputSubmatrixElements, outputSubmatrix, printStats);
 
   switch (error)
   {

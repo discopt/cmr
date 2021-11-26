@@ -26,6 +26,42 @@ extern "C" {
 #endif
 
 /**
+ * \brief Statistics for graphicness test.
+ */
+
+typedef struct
+{
+  size_t totalCount;      /**< Total number of invocations. */
+  double totalTime;       /**< Total time of all invocations. */
+  size_t checkCount;      /**< Number of calls to check algorithm. */
+  double checkTime;       /**< Time of check algorithm calls. */
+  size_t applyCount;      /**< Number of column additions. */
+  double applyTime;       /**< Time of column additions. */
+  size_t transposeCount;  /**< Number of matrix transpositions. */
+  double transposeTime;   /**< Time for matrix transpositions. */
+} CMR_GRAPHIC_STATISTICS;
+
+/**
+ * \brief Initializes all statistics for graphicness computations.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRstatsGraphicInit(
+  CMR_GRAPHIC_STATISTICS* stats /**< Pointer to statistics. */
+);
+
+/**
+ * \brief Prints statistics for graphicness computations.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRstatsGraphicPrint(
+  FILE* stream,                   /**< File stream to print to. */
+  CMR_GRAPHIC_STATISTICS* stats,  /**< Pointer to statistics. */
+  const char* prefix              /**< Prefix string to prepend to each printed line (may be \c NULL). */
+);
+
+/**
  * \brief Computes the graphic matrix of a given graph \f$ G = (V,E) \f$.
  *
  * Computes the [graphic matrix](\ref graphic) \f$ M := M(G,T) \f$ for given \f$ G \f$ and optionally given spanning
@@ -81,8 +117,9 @@ CMR_ERROR CMRtestGraphicMatrix(
                                      **  is graphic).  */
   CMR_GRAPH_EDGE** pcoforestEdges,  /**< Pointer for storing \f$ E \setminus T \f$, indexed by the columns of \f$ M \f$
                                      **  (if \f$ M \f$ is graphic). */
-  CMR_SUBMAT** psubmatrix           /**< Pointer for storing a minimal non-graphic submatrix (if \f$ M \f$ is not
+  CMR_SUBMAT** psubmatrix,          /**< Pointer for storing a minimal non-graphic submatrix (if \f$ M \f$ is not
                                      **  graphic). */
+  CMR_GRAPHIC_STATISTICS* stats     /**< Pointer to statistics (may be \c NULL). */
 );
 
 /**
@@ -110,8 +147,9 @@ CMR_ERROR CMRtestCographicMatrix(
                                      **  is graphic).  */
   CMR_GRAPH_EDGE** pcoforestEdges,  /**< Pointer for storing \f$ E \setminus T \f$, indexed by the columns of \f$ M \f$
                                      **  (if \f$ M \f$ is graphic). */
-  CMR_SUBMAT** psubmatrix           /**< Pointer for storing a minimal non-graphic submatrix (if \f$ M \f$ is not
+  CMR_SUBMAT** psubmatrix,          /**< Pointer for storing a minimal non-graphic submatrix (if \f$ M \f$ is not
                                      **  graphic). */
+  CMR_GRAPHIC_STATISTICS* stats     /**< Pointer to statistics (may be \c NULL). */
 );
 
 /**

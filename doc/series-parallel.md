@@ -42,6 +42,7 @@ Options:
   - `-R`        Output the reduced matrix.
   - `-n`        Output the elements of a minimal non-series-parallel submatrix.
   - `-N`        Output a minimal non-series-parallel submatrix.
+  - `-s`        Print statistics about the computation to stderr.
 
 Formats for matrices are \ref dense-matrix, \ref sparse-matrix.
 If FILE is `-`, then the input will be read from stdin.

@@ -23,15 +23,35 @@ extern "C" {
 
 typedef struct
 {
-  size_t totalCount;
-  double totalTime;
-  size_t reduceCount;
-  double reduceTime;
-  size_t wheelCount;
-  double wheelTime;
-  size_t nonbinaryCount;
-  double nonbinaryTime;
+  size_t totalCount;      /**< Total number of invocations. */
+  double totalTime;       /**< Total time of all invocations. */
+  size_t reduceCount;     /**< Number of calls to reduction algorithm. */
+  double reduceTime;      /**< Time of reduction algorithm calls. */
+  size_t wheelCount;      /**< Number of wheel matrix searches. */
+  double wheelTime;       /**< Time of wheel matrix searches. */
+  size_t nonbinaryCount;  /**< Number of searches for \f$ M_2 \f$ matrix. */
+  double nonbinaryTime;   /**< Time of searches for \f$ M_2 \f$ matrix. */
 } CMR_SP_STATISTICS;
+
+/**
+ * \brief Initializes all statistics for series-parallel computations.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRstatsSeriesParallelInit(
+  CMR_SP_STATISTICS* stats /**< Pointer to statistics. */
+);
+
+/**
+ * \brief Prints statistics for series-parallel computations.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRstatsSeriesParallelPrint(
+  FILE* stream,             /**< File stream to print to. */
+  CMR_SP_STATISTICS* stats, /**< Pointer to statistics. */
+  const char* prefix        /**< Prefix string to prepend to each printed line (may be \c NULL). */
+);
 
 /**
  * \brief Represents a series-parallel reduction
@@ -42,25 +62,6 @@ typedef struct
   CMR_ELEMENT element; /**< Element (row/column) that is removed. */
   CMR_ELEMENT mate;    /**< Element is parallel to or in series with \ref element, or 0 for a zero row/column. */
 } CMR_SP_REDUCTION;
-
-/**
- * \brief Initializes all statistics for series-parallel computations.
- */
-
-CMR_EXPORT
-CMR_ERROR CMRspInitStatistics(
-  CMR_SP_STATISTICS* stats /**< Pointer to statistics. */
-);
-
-/**
- * \brief Prints statistics for series-parallel computations.
- */
-
-CMR_EXPORT
-CMR_ERROR CMRspPrintStatistics(
-  FILE* stream,             /**< File stream to print to. */
-  CMR_SP_STATISTICS* stats  /**< Pointer to statistics. */
-);
 
 /**
  * Prints the series-parallel \p reduction to \p buffer.
@@ -245,7 +246,11 @@ CMR_ERROR CMRdecomposeBinarySeriesParallel(
  * correspond to an SP reduction is found then such a 2-separation is returned and the algorithm terminates without
  * returning a signed wheel- or \f$ M_2 \f$-submatrix.
  *
+ * \note \p *pviolatorSubmatrix and \p *pseparation refer to \f$ A \f$ and not to the
+ *
  * The running time is \f$ \mathcal{O} (m + n + k) \f$ assuming no hashtable collisions.
+ *
+ * \see CMRsubmatZoomSubmat() for turning \p *pviolatorSubmatrix into a submatrix of the SP-reduced submatrix.
  */
 
 CMR_EXPORT
@@ -260,7 +265,7 @@ CMR_ERROR CMRdecomposeTernarySeriesParallel(
   CMR_SUBMAT** pviolatorSubmatrix,      /**< Pointer for storing a signed wheel- or \f$ M_2 \f$-submatrix (may be
                                          **  \c NULL). */
   CMR_SEPA** pseparation,               /**< Pointer for storing a 2-separation (may be \c NULL). */
-  CMR_SP_STATISTICS* stats              /**< Pointer to statistics (may be \c NULL). */                                          
+  CMR_SP_STATISTICS* stats              /**< Pointer to statistics (may be \c NULL). */
 );
 
 #ifdef __cplusplus

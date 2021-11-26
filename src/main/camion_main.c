@@ -26,8 +26,9 @@ int printUsage(const char* program)
   puts("Options:");
   puts("  -i FORMAT  Format of input FILE; default: `dense'.");
   puts("  -o FORMAT  Format of output; default: `dense'.");
-  puts("  -s         Output the elements of a minimal non-camion submatrix.");
-  puts("  -S         Output a minimal non-camion submatrix.");
+  puts("  -n         Output the elements of a minimal non-Camion submatrix.");
+  puts("  -N         Output a minimal non-Camion submatrix.");
+  puts("  -s         Print statistics about the computation to stderr.");
   puts("Formats for matrices: dense, sparse");
   puts("If FILE is `-', then the input will be read from stdin.");
   return EXIT_FAILURE;
@@ -42,11 +43,12 @@ CMR_ERROR testCamionSigned(
   const char* instanceFileName, /**< File name containing the input matrix (may be `-' for stdin). */
   FileFormat inputFormat,       /**< Format of the input matrix. */
   FileFormat outputFormat,      /**< Format of the output submatrix. */
-  bool printSubmatrixElements,  /**< Whether to print the elements of a non-camion submatrix. */
-  bool printSubmatrix           /**< Whether to print a non-camion submatrix. */
+  bool outputSubmatrixElements, /**< Whether to print the elements of a non-camion submatrix. */
+  bool outputSubmatrix,         /**< Whether to print a non-camion submatrix. */
+  bool printStats               /**< Whether to print statistics to stderr. */
 )
 {
-  clock_t startClock, endTime;
+  clock_t readClock = clock();
   FILE* instanceFile = strcmp(instanceFileName, "-") ? fopen(instanceFileName, "r") : stdin;
   if (!instanceFile)
     return CMR_ERROR_INPUT;
@@ -56,7 +58,6 @@ CMR_ERROR testCamionSigned(
 
   /* Read matrix. */
 
-  startClock = clock();
   CMR_CHRMAT* matrix = NULL;
   if (inputFormat == FILEFORMAT_MATRIX_DENSE)
     CMR_CALL( CMRchrmatCreateFromDenseStream(cmr, instanceFile, &matrix) );
@@ -65,22 +66,24 @@ CMR_ERROR testCamionSigned(
   if (instanceFile != stdin)
     fclose(instanceFile);
   fprintf(stderr, "Read %lux%lu matrix with %lu nonzeros in %f seconds.\n", matrix->numRows, matrix->numColumns,
-    matrix->numNonzeros, (clock() - startClock) * 1.0 / CLOCKS_PER_SEC);
+    matrix->numNonzeros, (clock() - readClock) * 1.0 / CLOCKS_PER_SEC);
 
   /* Actual test. */
 
   bool isCamion;
   CMR_SUBMAT* submatrix = NULL;
-  startClock = clock();
+  CMR_CAMION_STATISTICS stats;
+  CMR_CALL( CMRstatsCamionInit(&stats) );
   CMR_CALL( CMRtestCamionSigned(cmr, matrix, &isCamion,
-    (printSubmatrix || printSubmatrixElements) ? &submatrix : NULL) );
+    (outputFormat || outputSubmatrixElements) ? &submatrix : NULL, printStats ? &stats : NULL) );
 
-  fprintf(stderr, "Determined in %f seconds that it is %sCamion-signed.\n",
-    (clock() - startClock) * 1.0 / CLOCKS_PER_SEC, isCamion ? "" : "NOT ");
+  fprintf(stderr, "Matrix %sCamion-signed.\n", isCamion ? "IS " : "IS NOT ");
+  if (printStats)
+    CMR_CALL( CMRstatsCamionPrint(stderr, &stats, NULL) );
 
   if (submatrix)
   {
-    if (printSubmatrixElements)
+    if (outputSubmatrixElements)
     {
       fprintf(stderr, "\nNon-camion submatrix consists of these elements:\n");
       printf("%ld rows:", submatrix->numRows);
@@ -92,11 +95,10 @@ CMR_ERROR testCamionSigned(
       printf("\n");
     }
 
-    if (printSubmatrix)
+    if (outputSubmatrix)
     {
       CMR_CHRMAT* violatorMatrix = NULL;
-      CMR_CALL( CMRchrmatFilterSubmat(cmr, matrix, submatrix, &violatorMatrix) );
-      endTime = clock();
+      CMR_CALL( CMRchrmatZoomSubmat(cmr, matrix, submatrix, &violatorMatrix) );
       fprintf(stderr, "\nExtracted %lux%lu non-camion submatrix with %lu nonzeros.\n", violatorMatrix->numRows,
         violatorMatrix->numColumns, violatorMatrix->numNonzeros);
       if (outputFormat == FILEFORMAT_MATRIX_DENSE)
@@ -121,8 +123,9 @@ int main(int argc, char** argv)
 {
   FileFormat inputFormat = FILEFORMAT_UNDEFINED;
   FileFormat outputFormat = FILEFORMAT_MATRIX_DENSE;
-  bool printSubmatrixElements = false;
-  bool printSubmatrix = false;
+  bool outputSubmatrixElements = false;
+  bool outputSubmatrix = false;
+  bool printStats = false;
   char* instanceFileName = NULL;
   for (int a = 1; a < argc; ++a)
   {
@@ -131,10 +134,12 @@ int main(int argc, char** argv)
       printUsage(argv[0]);
       return EXIT_SUCCESS;
     }
+    else if (!strcmp(argv[a], "-n"))
+      outputSubmatrixElements = true;
+    else if (!strcmp(argv[a], "-N"))
+      outputSubmatrix = true;
     else if (!strcmp(argv[a], "-s"))
-      printSubmatrixElements = true;
-    else if (!strcmp(argv[a], "-S"))
-      printSubmatrix = true;
+      printStats = true;
     else if (!strcmp(argv[a], "-i") && a+1 < argc)
     {
       if (!strcmp(argv[a+1], "dense"))
@@ -180,7 +185,8 @@ int main(int argc, char** argv)
     inputFormat = FILEFORMAT_MATRIX_DENSE;
 
   CMR_ERROR error;
-  error = testCamionSigned(instanceFileName, inputFormat, outputFormat, printSubmatrixElements, printSubmatrix);
+  error = testCamionSigned(instanceFileName, inputFormat, outputFormat, outputSubmatrixElements, outputFormat,
+    printStats);
 
   switch (error)
   {

@@ -46,6 +46,8 @@ typedef enum
         printf("User input error"); \
       else if (_cmr_error == CMR_ERROR_MEMORY) \
         printf("Memory (re)allocation failed"); \
+      else if (_cmr_error == CMR_ERROR_INVALID) \
+        printf("Invalid input"); \
       else \
         printf("Unknown error"); \
       printf(" in %s:%d.\n", __FILE__, __LINE__); \

@@ -31,6 +31,9 @@ int printUsage(const char* program)
   puts("  -i FORMAT  Format of input FILE; default: `dense'.");
   puts("  -o FORMAT  Format of output; default: `edgelist' if input is a matrix and `dense' if input is a graph.");
   puts("  -t         Tests for being / converts to cographic matrix.");
+  puts("  -n         Output the elements of a minimal non-(co)graphic submatrix.");
+  puts("  -N         Output a minimal non-(co)graphic submatrix.");
+  puts("  -s         Print statistics about the computation to stderr.");
   puts("Formats for matrices: dense, sparse");
   puts("Formats for graphs: edgelist, dot (output only)");
   puts("If FILE is `-', then the input will be read from stdin.");
@@ -42,12 +45,16 @@ int printUsage(const char* program)
  */
 
 CMR_ERROR matrixToGraph(
-  const char* instanceFileName, /**< File name containing the input matrix (may be `-' for stdin). */
-  FileFormat inputFormat,       /**< Format of the input matrix. */
-  FileFormat outputFormat,      /**< Format of the output graph. */
-  bool cographic                /**< Whether the input shall be checked for being cographic instead of graphic. */
+  const char* instanceFileName,   /**< File name containing the input matrix (may be `-' for stdin). */
+  FileFormat inputFormat,         /**< Format of the input matrix. */
+  FileFormat outputFormat,        /**< Format of the output graph. */
+  bool cographic,                 /**< Whether the input shall be checked for being cographic instead of graphic. */
+  bool outputNonGraphicElements,  /**< Whether to print the elements of a minimal non-(co)graphic submatrix. */
+  bool outputNonGraphicMatrix,    /**< Whether to print a minimal non-(co)graphic submatrix. */
+  bool printStats                 /**< Whether to print statistics to stderr. */
 )
 {
+  clock_t readClock = clock();
   FILE* instanceFile = strcmp(instanceFileName, "-") ? fopen(instanceFileName, "r") : stdin;
   if (!instanceFile)
     return CMR_ERROR_INPUT;
@@ -64,6 +71,8 @@ CMR_ERROR matrixToGraph(
     CMR_CALL( CMRchrmatCreateFromSparseStream(cmr, instanceFile, &matrix) );
   if (instanceFile != stdin)
     fclose(instanceFile);
+  fprintf(stderr, "Read %lux%lu matrix with %lu nonzeros in %f seconds.\n", matrix->numRows, matrix->numColumns,
+    matrix->numNonzeros, (clock() - readClock) * 1.0 / CLOCKS_PER_SEC);
 
   /* Test for (co)graphicness. */
 
@@ -73,47 +82,86 @@ CMR_ERROR matrixToGraph(
   CMR_GRAPH_EDGE* coforestEdges = NULL;
   bool* edgesReversed = NULL;
 
-  clock_t startTime = clock();
+  CMR_SUBMAT* submatrix = NULL;
 
+  CMR_GRAPHIC_STATISTICS stats;
+  CMR_CALL( CMRstatsGraphicInit(&stats) );
   if (cographic)
-    CMR_CALL( CMRtestGraphicMatrix(cmr, matrix, &isCoGraphic, &graph, &forestEdges, &coforestEdges, NULL) );
+  {
+    CMR_CALL( CMRtestCographicMatrix(cmr, matrix, &isCoGraphic, &graph, &forestEdges, &coforestEdges,
+      (outputNonGraphicElements || outputNonGraphicMatrix) ? &submatrix : NULL, &stats) );
+  }
   else
-    CMR_CALL( CMRtestCographicMatrix(cmr, matrix, &isCoGraphic, &graph, &forestEdges, &coforestEdges, NULL) );
+  {
+    CMR_CALL( CMRtestGraphicMatrix(cmr, matrix, &isCoGraphic, &graph, &forestEdges, &coforestEdges,
+      (outputNonGraphicElements || outputNonGraphicMatrix) ? &submatrix : NULL, &stats) );
+  }
 
-  clock_t endTime = clock();
-  fprintf(stderr, "Time: %f\n", (endTime - startTime) * 1.0 / CLOCKS_PER_SEC);
-
-  fprintf(stderr, "Input matrix is %s%sgraphic.\n", isCoGraphic ? "" : "NOT ", cographic ? "co" : "");
+  fprintf(stderr, "Matrix %s%sgraphic.\n", isCoGraphic ? "IS " : "IS NOT ", cographic ? "co" : "");
+  if (printStats)
+    CMR_CALL( CMRstatsGraphicPrint(stderr, &stats, NULL) );
 
   if (isCoGraphic)
   {
     if (outputFormat == FILEFORMAT_GRAPH_EDGELIST)
     {
-      for (size_t row = 0; row < matrix->numRows; ++row)
+      if (cographic)
       {
-        CMR_GRAPH_EDGE e = forestEdges[row];
-        CMR_GRAPH_NODE u = CMRgraphEdgeU(graph, e);
-        CMR_GRAPH_NODE v = CMRgraphEdgeV(graph, e);
-        if (edgesReversed && edgesReversed[e])
+        for (size_t column = 0; column < matrix->numColumns; ++column)
         {
-          CMR_GRAPH_NODE temp = u;
-          u = v;
-          v = temp;
+          CMR_GRAPH_EDGE e = forestEdges[column];
+          CMR_GRAPH_NODE u = CMRgraphEdgeU(graph, e);
+          CMR_GRAPH_NODE v = CMRgraphEdgeV(graph, e);
+          if (edgesReversed && edgesReversed[e])
+          {
+            CMR_GRAPH_NODE temp = u;
+            u = v;
+            v = temp;
+          }
+          printf("%d %d c%ld\n", u, v, column+1);
         }
-        printf("%d %d r%ld\n", u, v, row+1);
+        for (size_t row = 0; row < matrix->numRows; ++row)
+        {
+          CMR_GRAPH_EDGE e = coforestEdges[row];
+          CMR_GRAPH_NODE u = CMRgraphEdgeU(graph, e);
+          CMR_GRAPH_NODE v = CMRgraphEdgeV(graph, e);
+          if (edgesReversed && edgesReversed[e])
+          {
+            CMR_GRAPH_NODE temp = u;
+            u = v;
+            v = temp;
+          }
+          printf("%d %d r%ld\n", u, v, row+1);
+        }
       }
-      for (size_t column = 0; column < matrix->numColumns; ++column)
+      else
       {
-        CMR_GRAPH_EDGE e = coforestEdges[column];
-        CMR_GRAPH_NODE u = CMRgraphEdgeU(graph, e);
-        CMR_GRAPH_NODE v = CMRgraphEdgeV(graph, e);
-        if (edgesReversed && edgesReversed[e])
+        for (size_t row = 0; row < matrix->numRows; ++row)
         {
-          CMR_GRAPH_NODE temp = u;
-          u = v;
-          v = temp;
+          CMR_GRAPH_EDGE e = forestEdges[row];
+          CMR_GRAPH_NODE u = CMRgraphEdgeU(graph, e);
+          CMR_GRAPH_NODE v = CMRgraphEdgeV(graph, e);
+          if (edgesReversed && edgesReversed[e])
+          {
+            CMR_GRAPH_NODE temp = u;
+            u = v;
+            v = temp;
+          }
+          printf("%d %d r%ld\n", u, v, row+1);
         }
-        printf("%d %d c%ld\n", u, v, column+1);
+        for (size_t column = 0; column < matrix->numColumns; ++column)
+        {
+          CMR_GRAPH_EDGE e = coforestEdges[column];
+          CMR_GRAPH_NODE u = CMRgraphEdgeU(graph, e);
+          CMR_GRAPH_NODE v = CMRgraphEdgeV(graph, e);
+          if (edgesReversed && edgesReversed[e])
+          {
+            CMR_GRAPH_NODE temp = u;
+            u = v;
+            v = temp;
+          }
+          printf("%d %d c%ld\n", u, v, column+1);
+        }
       }
     }
     else if (outputFormat == FILEFORMAT_GRAPH_DOT)
@@ -156,6 +204,39 @@ CMR_ERROR matrixToGraph(
     CMR_CALL( CMRfreeBlockArray(cmr, &coforestEdges) );
     CMR_CALL( CMRgraphFree(cmr, &graph) );
   }
+
+  if (submatrix && outputNonGraphicElements)
+  {
+    assert(submatrix);
+
+    fprintf(stderr, "\nMinimal non-%sgraphic submatrix consists of these elements of the input matrix:\n",
+      cographic ? "co" : "");
+    printf("%ld rows:", submatrix->numRows);
+    for (size_t r = 0; r < submatrix->numRows; ++r)
+      printf(" %ld", submatrix->rows[r]+1);
+    printf("\n%ld columns: ", submatrix->numColumns);
+    for (size_t c = 0; c < submatrix->numColumns; ++c)
+      printf(" %ld", submatrix->columns[c]+1);
+    printf("\n");
+
+    CMR_CALL( CMRsubmatFree(cmr, &submatrix) );
+  }
+
+  if (submatrix && outputNonGraphicMatrix)
+  {
+    CMR_CHRMAT* violatorMatrix = NULL;
+    CMR_CALL( CMRchrmatZoomSubmat(cmr, matrix, submatrix, &violatorMatrix) );
+    fprintf(stderr, "\nMinimal %lux%lu non-%sgraphic matrix with %lu nonzeros.\n", violatorMatrix->numRows,
+      violatorMatrix->numColumns, cographic ? "co" : "", violatorMatrix->numNonzeros);
+    if (inputFormat == FILEFORMAT_MATRIX_DENSE)
+      CMR_CALL( CMRchrmatPrintDense(cmr, violatorMatrix, stdout, '0', false) );
+    else if (inputFormat == FILEFORMAT_MATRIX_SPARSE)
+      CMR_CALL( CMRchrmatPrintSparse(cmr, violatorMatrix, stdout) );
+    CMR_CALL( CMRchrmatFree(cmr, &violatorMatrix) );
+  }
+
+  CMR_CALL( CMRsubmatFree(cmr, &submatrix) );
+  CMR_CALL( CMRchrmatFree(cmr, &matrix) );
 
   /* Cleanup. */
 
@@ -278,6 +359,9 @@ int main(int argc, char** argv)
   FileFormat outputFormat = FILEFORMAT_UNDEFINED;
   bool transposed = false;
   char* instanceFileName = NULL;
+  bool outputNonGraphicElements = false;
+  bool outputNonGraphicMatrix = false;
+  bool printStats = false;
   for (int a = 1; a < argc; ++a)
   {
     if (!strcmp(argv[a], "-h"))
@@ -286,9 +370,13 @@ int main(int argc, char** argv)
       return EXIT_SUCCESS;
     }
     else if (!strcmp(argv[a], "-t"))
-    {
       transposed = true;
-    }
+    else if (!strcmp(argv[a], "-n"))
+      outputNonGraphicElements = true;
+    else if (!strcmp(argv[a], "-N"))
+      outputNonGraphicMatrix = true;
+    else if (!strcmp(argv[a], "-s"))
+      printStats = true;
     else if (!strcmp(argv[a], "-i") && a+1 < argc)
     {
       if (!strcmp(argv[a+1], "dense"))
@@ -372,7 +460,10 @@ int main(int argc, char** argv)
 
   CMR_ERROR error;
   if (inputFormat == FILEFORMAT_MATRIX_DENSE || inputFormat == FILEFORMAT_MATRIX_SPARSE)
-    error = matrixToGraph(instanceFileName, inputFormat, outputFormat, transposed);
+  {
+    error = matrixToGraph(instanceFileName, inputFormat, outputFormat, transposed, outputNonGraphicElements,
+      outputNonGraphicMatrix, printStats);
+  }
   else
     error = graphToMatrix(instanceFileName, inputFormat, outputFormat, transposed);
 

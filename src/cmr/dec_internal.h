@@ -7,32 +7,43 @@
 
 struct _CMR_DEC
 {
-  CMR_DEC_TYPE type;                /**< \brief Type of this node. */
-  CMR_DEC_FLAGS flags;              /**< \brief Flags for this node. */
-  CMR_CHRMAT* matrix;               /**< \brief Matrix representing this node. */
-  CMR_CHRMAT* transpose;            /**< \brief Tranpose of \ref matrix representing this node. */
-  struct _CMR_DEC* parent;          /**< \brief Parent node (\c NULL for decomposition root). */
-  size_t numChildren;               /**< \brief Number of child nodes. */
-  struct _CMR_DEC** children;       /**< \brief Array of child nodes. */
+  CMR_DEC_TYPE type;                        /**< \brief Type of this node. */
+  CMR_DEC_FLAGS flags;                      /**< \brief Flags for this node. */
+  CMR_CHRMAT* matrix;                       /**< \brief Matrix representing this node. */
+  CMR_CHRMAT* transpose;                    /**< \brief Tranpose of \ref matrix representing this node. */
+  struct _CMR_DEC* parent;                  /**< \brief Parent node (\c NULL for decomposition root). */
+  size_t numChildren;                       /**< \brief Number of child nodes. */
+  struct _CMR_DEC** children;               /**< \brief Array of child nodes. */
 
-  size_t numRows;                   /**< \brief Length of \ref rowsParent. */
-  size_t* rowsParent;               /**< \brief Array for mapping rows to rows of parent. */
+  size_t numRows;                           /**< \brief Length of \ref rowsParent. */
+  size_t* rowsParent;                       /**< \brief Array for mapping rows to rows of parent. */
 
-  size_t numColumns;                /**< \brief Length of \ref columnsParent. */
-  size_t* columnsParent;            /**< \brief Array for mapping columns to columns of parent. */
+  size_t numColumns;                        /**< \brief Length of \ref columnsParent. */
+  size_t* columnsParent;                    /**< \brief Array for mapping columns to columns of parent. */
 
-  CMR_GRAPH* graph;                 /**< \brief Graph represented by this matrix. */
-  CMR_GRAPH_EDGE* graphForest;      /**< \brief Spanning forest of graph. */
-  CMR_GRAPH_EDGE* graphCoforest;    /**< \brief Coforest of graph. */
-  bool* graphArcsReversed;          /**< \brief Array indicating which arcs of the graph are reversed. */
+  CMR_GRAPH* graph;                         /**< \brief Graph represented by this matrix. */
+  CMR_GRAPH_EDGE* graphForest;              /**< \brief Spanning forest of graph. */
+  CMR_GRAPH_EDGE* graphCoforest;            /**< \brief Coforest of graph. */
+  bool* graphArcsReversed;                  /**< \brief Array indicating which arcs of the graph are reversed. */
 
-  CMR_GRAPH* cograph;               /**< \brief Graph represented by the transpose of this matrix. */
-  CMR_GRAPH_EDGE* cographForest;    /**< \brief Spanning forest of cograph. */
-  CMR_GRAPH_EDGE* cographCoforest;  /**< \brief Coforest of cograph. */
-  bool* cographArcsReversed;        /**< \brief Array indicating which arcs of the cograph are reversed. */
+  CMR_GRAPH* cograph;                       /**< \brief Graph represented by the transpose of this matrix. */
+  CMR_GRAPH_EDGE* cographForest;            /**< \brief Spanning forest of cograph. */
+  CMR_GRAPH_EDGE* cographCoforest;          /**< \brief Coforest of cograph. */
+  bool* cographArcsReversed;                /**< \brief Array indicating which arcs of the cograph are reversed. */
 
-  CMR_SP_REDUCTION* reductions;     /**< \brief Array of series-parallel reductions. */
-  size_t numReductions;             /**< \brief Length of \p reductions. */
+  CMR_SP_REDUCTION* reductions;             /**< \brief Array of series-parallel reductions. */
+  size_t numReductions;                     /**< \brief Length of \p reductions. */
+
+  CMR_SEPA* separation;                     /**< \brief Separation data. */
+  
+  CMR_CHRMAT* nestedMinorsMatrix;           /**< \brief Equivalent binary matrix that displays the sequence of nested
+                                             **         minors. */
+  size_t* nestedMinorsSequenceNumRows;      /**< \brief Number of rows of sequence of nested minors. */
+  size_t* nestedMinorsSequenceNumColumns;   /**< \brief Number of columns of sequence of nested minors. */
+  size_t nestedMinorsLength;                /**< \brief Length of sequence of nested minors. */
+  CMR_ELEMENT* nestedMinorsRowsOriginal;    /**< \brief Maps rows of \p nestedMinorsMatrix to elements of \p matrix. */
+  CMR_ELEMENT* nestedMinorsColumnsOriginal; /**< \brief Maps columns of \p nestedMinorsMatrix to elements of 
+                                             **         \p matrix. */
 };
 
 /**
@@ -87,12 +98,24 @@ CMR_ERROR CMRdecTranslateMinorToParent(
 
 /**
  * \brief Turns the given node into one for the given separation.
+ *
+ * The given \p separation is stored in \p dec and will be free'd together with it.
  */
 
 CMR_ERROR CMRdecApplySeparation(
   CMR* cmr,       /**< \ref CMR environment. */
   CMR_DEC* dec,   /**< Decomposition node. */
   CMR_SEPA* sepa  /**< Separation. */
+);
+
+/**
+ * \brief Prints the sequence of nested 3-connected minors for the matrix of a decomposition node.
+ */
+
+CMR_ERROR CMRdecPrintSequenceNested3ConnectedMinors(
+  CMR* cmr,     /**< \ref CMR environment. */
+  CMR_DEC* dec, /**< Decomposition node. */
+  FILE* stream  /**< Stream to print to. */
 );
 
 #endif /* CMR_DEC_INTERNAL_H */

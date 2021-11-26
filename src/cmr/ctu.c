@@ -1,4 +1,4 @@
-// #define CMR_DEBUG
+// #define CMR_DEBUG /* Uncomment to debug this file. */
 
 #include <cmr/ctu.h>
 
@@ -8,6 +8,40 @@
 
 #include <assert.h>
 #include <stdint.h>
+#include <time.h>
+
+CMR_ERROR CMRstatsComplementTotalUnimodularityInit(CMR_CTU_STATISTICS* stats)
+{
+  assert(stats);
+
+  stats->totalCount = 0;
+  stats->totalTime = 0.0;
+  CMR_CALL( CMRstatsTotalUnimodularityInit(&stats->tu) );
+
+  return CMR_OKAY;
+}
+
+CMR_ERROR CMRstatsComplementTotalUnimodularityPrint(FILE* stream, CMR_CTU_STATISTICS* stats, const char* prefix)
+{
+  assert(stream);
+  assert(stats);
+
+  if (!prefix)
+  {
+    fprintf(stream, "Complement total unimodularity recognition:\n");
+    prefix = "  ";
+  }
+
+  char subPrefix[256];
+  snprintf(subPrefix, 256, "%stu ", prefix);
+  CMR_CALL( CMRstatsTotalUnimodularityPrint(stream, &stats->tu, subPrefix) );
+
+  fprintf(stream, "%stotal: %ld in %f seconds\n", prefix, stats->totalCount,
+    stats->totalTime);
+
+  return CMR_OKAY;
+}
+
 
 CMR_ERROR CMRcomplementRowColumn(CMR* cmr, CMR_CHRMAT* matrix, size_t complementRow, size_t complementColumn,
   CMR_CHRMAT** presult)
@@ -35,7 +69,7 @@ CMR_ERROR CMRcomplementRowColumn(CMR* cmr, CMR_CHRMAT* matrix, size_t complement
     for (size_t row = 0; row < matrix->numRows; ++row)
     {
       size_t e;
-      CMR_CALL( CMRchrmatFindEntry(cmr, matrix, row, complementColumn, &e) );
+      CMR_CALL( CMRchrmatFindEntry(matrix, row, complementColumn, &e) );
       complementColumnEntries[row] = (e == SIZE_MAX) ? 0 : 1;
     }
   }
@@ -133,12 +167,16 @@ CMR_ERROR CMRcomplementRowColumn(CMR* cmr, CMR_CHRMAT* matrix, size_t complement
 }
 
 CMR_ERROR CMRtestComplementTotalUnimodularity(CMR* cmr, CMR_CHRMAT* matrix, bool* pisComplementTotallyUnimodular,
-  size_t* pcomplementRow, size_t* pcomplementColumn)
+  size_t* pcomplementRow, size_t* pcomplementColumn, CMR_CTU_STATISTICS* stats)
 {
   assert(cmr);
   CMRconsistencyAssert( CMRchrmatConsistency(matrix) );
   assert(pisComplementTotallyUnimodular);
 
+  clock_t totalClock = 0;
+  if (stats)
+    totalClock = clock();
+  
   /* Create a dense version on the stack. */
 
   size_t numRows = matrix->numRows;
@@ -213,7 +251,8 @@ CMR_ERROR CMRtestComplementTotalUnimodularity(CMR* cmr, CMR_CHRMAT* matrix, bool
       }
 
       bool isTU = false;
-      CMR_CALL( CMRtestTotalUnimodularity(cmr, complementedMatrix, &isTU, NULL, NULL, false, false) );
+      CMR_CALL( CMRtestTotalUnimodularity(cmr, complementedMatrix, &isTU, NULL, NULL, NULL,
+        stats ? &stats->tu : NULL) );
       if (!isTU)
       {
         if (pcomplementRow)
@@ -229,6 +268,12 @@ CMR_ERROR CMRtestComplementTotalUnimodularity(CMR* cmr, CMR_CHRMAT* matrix, bool
   CMR_CALL( CMRchrmatFree(cmr, &complementedMatrix) );
 
   CMR_CALL( CMRfreeStackArray(cmr, &dense) );
+
+  if (stats)
+  {
+    stats->totalCount++;
+    stats->totalTime += (clock() - totalClock) * 1.0 / CLOCKS_PER_SEC;
+  }
 
   return CMR_OKAY;
 }

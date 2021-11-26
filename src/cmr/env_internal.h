@@ -129,6 +129,10 @@ void CMRassertStackConsistency(
 
 #endif /* !NDEBUG */
 
+size_t CMRgetStackUsage(
+  CMR* cmr  /**< \ref CMR environment. */
+);
+
 char* CMRconsistencyMessage(const char* format, ...);
 
 #if !defined(NDEBUG)

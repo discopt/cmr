@@ -79,6 +79,21 @@ CMR_ERROR CMRsubmatTranspose(
 );
 
 /**
+ * \brief Returns the submatrix \p input as a submatrix of the \p reference submatrix.
+ *
+ * Assumes that \p input is a sub-submatrix of \p references, i.e., each row/column of \p input must also appear in
+ * \p reference.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRsubmatZoomSubmat(
+  CMR* cmr,               /**< \ref CMR environment. */
+  CMR_SUBMAT* reference,  /**< Reference submatrix. */
+  CMR_SUBMAT* input,      /**< Input submatrix. */
+  CMR_SUBMAT** poutput    /**< Pointer for storing the output submatrix. */
+);
+
+/**
  * \brief Row-wise representation of sparse double matrix.
  * 
  * The nonzeros of the matrix are stored in the arrays \ref entryColumns and \ref entryValues, each of length
@@ -353,6 +368,45 @@ CMR_ERROR CMRchrmatTranspose(
 );
 
 /**
+ * \brief Creates the double matrix obtained from \p matrix by applying row- and column-permutations.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRdblmatPermute(
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_DBLMAT* matrix,   /**< Given matrix. */
+  size_t* rows,         /**< Mapping from new rows to rows of \p matrix (may be \c NULL for identity). */
+  size_t* columns,      /**< Mapping from new columns to columns of \p matrix (may be \c NULL for identity). */
+  CMR_DBLMAT** presult  /**< Pointer for storing the permuted matrix. */
+);
+
+/**
+ * \brief Creates the int matrix obtained from \p matrix by applying row- and column-permutations.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRintmatPermute(
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_INTMAT* matrix,   /**< Given matrix. */
+  size_t* rows,         /**< Mapping from new rows to rows of \p matrix (may be \c NULL for identity). */
+  size_t* columns,      /**< Mapping from new columns to columns of \p matrix (may be \c NULL for identity). */
+  CMR_INTMAT** presult  /**< Pointer for storing the permuted matrix. */
+);
+
+/**
+ * \brief Creates the char matrix obtained from \p matrix by applying row- and column-permutations.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRchrmatPermute(
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,   /**< Given matrix. */
+  size_t* rows,         /**< Mapping from new rows to rows of \p matrix (may be \c NULL for identity). */
+  size_t* columns,      /**< Mapping from new columns to columns of \p matrix (may be \c NULL for identity). */
+  CMR_CHRMAT** presult  /**< Pointer for storing the permuted matrix. */
+);
+
+/**
  * \brief Prints a double matrix in sparse format.
  */
 
@@ -624,7 +678,7 @@ char* CMRchrmatConsistency(
  */
 
 CMR_EXPORT
-CMR_ERROR CMRdblmatFilterSubmat(
+CMR_ERROR CMRdblmatZoomSubmat(
   CMR* cmr,               /**< \ref CMR environment. */
   CMR_DBLMAT* matrix,     /**< A matrix */
   CMR_SUBMAT* submatrix,  /**< A submatrix of \p matrix. */
@@ -636,7 +690,7 @@ CMR_ERROR CMRdblmatFilterSubmat(
  */
 
 CMR_EXPORT
-CMR_ERROR CMRintmatFilterSubmat(
+CMR_ERROR CMRintmatZoomSubmat(
   CMR* cmr,               /**< \ref CMR environment. */
   CMR_INTMAT* matrix,     /**< A matrix */
   CMR_SUBMAT* submatrix,  /**< A submatrix of \p matrix. */
@@ -648,7 +702,7 @@ CMR_ERROR CMRintmatFilterSubmat(
  */
 
 CMR_EXPORT
-CMR_ERROR CMRchrmatFilterSubmat(
+CMR_ERROR CMRchrmatZoomSubmat(
   CMR* cmr,               /**< \ref CMR environment. */
   CMR_CHRMAT* matrix,     /**< A matrix */
   CMR_SUBMAT* submatrix,  /**< A submatrix of \p matrix. */
@@ -813,7 +867,6 @@ CMR_ERROR CMRintmatToChr(
 
 CMR_EXPORT
 CMR_ERROR CMRdblmatFindEntry(
-  CMR* cmr,             /**< \ref CMR environment. */
   CMR_DBLMAT* matrix,   /**< Input matrix. */
   size_t row,           /**< A row. */
   size_t column,        /**< A column. */
@@ -828,7 +881,6 @@ CMR_ERROR CMRdblmatFindEntry(
 
 CMR_EXPORT
 CMR_ERROR CMRintmatFindEntry(
-  CMR* cmr,             /**< \ref CMR environment. */
   CMR_INTMAT* matrix,   /**< Input matrix. */
   size_t row,           /**< A row. */
   size_t column,        /**< A column. */
@@ -839,11 +891,11 @@ CMR_ERROR CMRintmatFindEntry(
  * \brief Finds a specific entry of a char matrix.
  * 
  * Searches for the entry at (\p row, \p column) using binary search.
+ * If an entry is zero, then \p *pentry is set to \c SIZE_MAX.
  */
 
 CMR_EXPORT
 CMR_ERROR CMRchrmatFindEntry(
-  CMR* cmr,             /**< \ref CMR environment. */
   CMR_CHRMAT* matrix,   /**< Input matrix. */
   size_t row,           /**< A row. */
   size_t column,        /**< A column. */

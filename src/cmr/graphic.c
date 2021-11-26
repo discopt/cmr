@@ -9,10 +9,12 @@
 #include "one_sum.h"
 #include "heap.h"
 #include "sort.h"
+#include "hereditary_property.h"
 
 #include <assert.h>
 #include <limits.h>
 #include <stdlib.h>
+#include <time.h>
 
 #define SWAP_INTS(a, b) \
   do \
@@ -23,6 +25,39 @@
   } \
   while (false)
 
+CMR_ERROR CMRstatsGraphicInit(CMR_GRAPHIC_STATISTICS* stats)
+{
+  assert(stats);
+
+  stats->totalCount = 0;
+  stats->totalTime = 0.0;
+  stats->checkCount = 0;
+  stats->checkTime = 0.0;
+  stats->applyCount = 0;
+  stats->applyTime = 0.0;
+  stats->transposeCount = 0;
+  stats->transposeTime = 0.0;
+
+  return CMR_OKAY;
+}
+
+CMR_ERROR CMRstatsGraphicPrint(FILE* stream, CMR_GRAPHIC_STATISTICS* stats, const char* prefix)
+{
+  assert(stream);
+  assert(stats);
+
+  if (!prefix)
+  {
+    fprintf(stream, "Graphicness recognition:\n");
+    prefix = "  ";
+  }
+  fprintf(stream, "%stranspositions: %ld in %f seconds\n", prefix, stats->transposeCount, stats->transposeTime);
+  fprintf(stream, "%scolumn checks: %ld in %f seconds\n", prefix, stats->checkCount, stats->checkTime);
+  fprintf(stream, "%scolumn additions: %ld in %f seconds\n", prefix, stats->applyCount, stats->applyTime);
+  fprintf(stream, "%stotal: %ld in %f seconds\n", prefix, stats->totalCount, stats->totalTime);
+
+  return CMR_OKAY;
+}
 
 typedef enum
 {
@@ -78,8 +113,8 @@ CMR_ERROR CMRcomputeRepresentationMatrix(CMR* cmr, CMR_GRAPH* digraph, bool tern
   {
     if (forestArcs[b] >= 0)
     {
-      CMRdbgMsg(0, "forest element %d is edge %d = {%d,%d}\n", b, forestEdges[b], CMRgraphEdgeU(graph, forestEdges[b]),
-        CMRgraphEdgeV(graph, forestEdges[b]));
+      CMRdbgMsg(0, "forest element %d is edge %d = {%d,%d}\n", b, forestArcs[b], CMRgraphEdgeU(digraph, forestArcs[b]),
+        CMRgraphEdgeV(digraph, forestArcs[b]));
       lengths[forestArcs[b]] = 0;
     }
   }
@@ -156,7 +191,7 @@ CMR_ERROR CMRcomputeRepresentationMatrix(CMR* cmr, CMR_GRAPH* digraph, bool tern
   {
     CMR_GRAPH_NODE u = CMRgraphEdgeU(digraph, forestArcs[i]);
     CMR_GRAPH_NODE v = CMRgraphEdgeV(digraph, forestArcs[i]);
-    CMRdbgMsg(2, "Forest edge %d = {%d,%d}.\n", forestEdges[i], u, v);
+    CMRdbgMsg(2, "Forest edge %d = {%d,%d}.\n", forestArcs[i], u, v);
     if (nodeData[u].predecessor == v)
     {
       nodesRows[u] = numRows;
@@ -1850,7 +1885,7 @@ CMR_ERROR removeAllPathEdges(
         continue;
       newcolumn->nodesDegree[tail] = 0;
       newcolumn->nodesDegree[head] = 0;
-      CMRdbgMsg(0, "Set nodesDegree of nodes of edge %d = {%d,%d} to 0.\n", edge, tail, head);
+      CMRdbgMsg(8, "Set nodesDegree of nodes of edge %d = {%d,%d} to 0.\n", edge, tail, head);
     }
   }
   newcolumn->firstPathEdge = NULL;
@@ -2862,17 +2897,22 @@ CMR_ERROR determineTypeRigid(
       }
       else if (numOneEnd == 2)
       {
-        bool matched[2] = { false, false };
+        /* 1 path and 2 child markers, each containing one end. */
+        bool childMarkerNodesMatched[2] = { false, false };
+        bool endNodesMatched[2] = { false, false };
         for (int i = 0; i < 2; ++i)
         {
           for (int j = 0; j < 4; ++j)
           {
             if (reducedMember->rigidEndNodes[i] == childMarkerNodes[j])
-              matched[j/2] = true;
+            {
+              endNodesMatched[i] = true;
+              childMarkerNodesMatched[j/2] = true;
+            }
           }
         }
 
-        if (matched[0] && matched[1])
+        if (childMarkerNodesMatched[0] && childMarkerNodesMatched[1] && endNodesMatched[0] && endNodesMatched[1])
           reducedMember->type = TYPE_ROOT;
         else
         {
@@ -5153,23 +5193,27 @@ CMR_ERROR addColumnApply(
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRtestCographicMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisCographic, CMR_GRAPH** pgraph,
-  CMR_GRAPH_EDGE** pforestEdges, CMR_GRAPH_EDGE** pcoforestEdges, CMR_SUBMAT** psubmatrix)
+static
+CMR_ERROR cographicnessTest(
+  CMR* cmr,               /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,     /**< Some matrix to be tested for the cographicness. */
+  void* data,             /**< Additional data (must be \c NULL). */
+  bool* pisCographic,     /**< Pointer for storing whether \p matrix is cographic. */
+  CMR_SUBMAT** psubmatrix /**< Pointer for storing a proper non-cographic submatrix of \p matrix. */
+)
 {
   assert(cmr);
   assert(matrix);
-  assert(!psubmatrix || !*psubmatrix);
-  assert(!pforestEdges || pgraph);
-  assert(!pcoforestEdges || pgraph);
+  assert(!data);
   assert(pisCographic);
+  assert(!psubmatrix || !*psubmatrix);
 
 #if defined(CMR_DEBUG)
-  CMRdbgMsg(0, "CMRtestCographicMatrix called for a %dx%d matrix\n", matrix->numRows, matrix->numColumns);
-  CMRchrmatPrintDense(cmr, stdout, transpose, '0', true);
+  CMRdbgMsg(0, "cographicnessTest called for a %dx%d matrix\n", matrix->numRows, matrix->numColumns);
+  CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
 #endif /* CMR_DEBUG */
 
   *pisCographic = true;
-
   Dec* dec = NULL;
   if (matrix->numNonzeros > 0)
   {
@@ -5183,12 +5227,84 @@ CMR_ERROR CMRtestCographicMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisCographi
       CMR_CALL( addColumnCheck(dec, newcolumn, &matrix->entryColumns[matrix->rowSlice[column]],
         matrix->rowSlice[column+1] - matrix->rowSlice[column]) );
 
-      debugDot(dec, newcolumn);
-
       if (newcolumn->remainsGraphic)
       {
         CMR_CALL( addColumnApply(dec, newcolumn, column, &matrix->entryColumns[matrix->rowSlice[column]],
           matrix->rowSlice[column+1] - matrix->rowSlice[column]) );
+      }
+      else
+        *pisCographic = false;
+    }
+
+    CMR_CALL( newcolumnFree(cmr, &newcolumn) );
+  }
+
+  if (dec)
+    CMR_CALL( decFree(&dec) );
+
+  return CMR_OKAY;
+}
+
+
+CMR_ERROR CMRtestCographicMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisCographic, CMR_GRAPH** pgraph,
+  CMR_GRAPH_EDGE** pforestEdges, CMR_GRAPH_EDGE** pcoforestEdges, CMR_SUBMAT** psubmatrix,
+  CMR_GRAPHIC_STATISTICS* stats)
+{
+  assert(cmr);
+  assert(matrix);
+  assert(!psubmatrix || !*psubmatrix);
+  assert(!pforestEdges || pgraph);
+  assert(!pcoforestEdges || pgraph);
+  assert(pisCographic);
+
+#if defined(CMR_DEBUG)
+  CMRdbgMsg(0, "CMRtestCographicMatrix called for a %dx%d matrix\n", matrix->numRows, matrix->numColumns);
+  CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
+#endif /* CMR_DEBUG */
+
+  clock_t totalClock = 0;
+  if (stats)
+    totalClock = clock();
+
+  *pisCographic = true;
+
+  Dec* dec = NULL;
+  if (matrix->numNonzeros > 0)
+  {
+    CMR_CALL( decCreate(cmr, &dec, 4096, 1024, 256, 256, 256) );
+
+    /* Process each column. */
+    DEC_NEWCOLUMN* newcolumn = NULL;
+    CMR_CALL( newcolumnCreate(cmr, &newcolumn) );
+    for (int column = 0; column < matrix->numRows && *pisCographic; ++column)
+    {
+      clock_t checkClock;
+      if (stats)
+        checkClock = clock();
+      CMR_CALL( addColumnCheck(dec, newcolumn, &matrix->entryColumns[matrix->rowSlice[column]],
+        matrix->rowSlice[column+1] - matrix->rowSlice[column]) );
+      if (stats)
+      {
+        stats->checkCount++;
+        stats->checkTime += (clock() - checkClock) * 1.0 / CLOCKS_PER_SEC;
+      }
+
+      debugDot(dec, newcolumn);
+
+      if (newcolumn->remainsGraphic)
+      {
+        clock_t applyClock;
+        if (stats)
+          applyClock = clock();
+
+        CMR_CALL( addColumnApply(dec, newcolumn, column, &matrix->entryColumns[matrix->rowSlice[column]],
+          matrix->rowSlice[column+1] - matrix->rowSlice[column]) );
+
+        if (stats)
+        {
+          stats->applyCount++;
+          stats->applyTime += (clock() - applyClock) * 1.0 / CLOCKS_PER_SEC;
+        }
       }
       else
         *pisCographic = false;
@@ -5298,6 +5414,18 @@ CMR_ERROR CMRtestCographicMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisCographi
   if (dec)
     CMR_CALL( decFree(&dec) );
 
+  if (!*pisCographic && psubmatrix)
+  {
+    /* Find submatrix. */
+    CMR_CALL( CMRtestHereditaryPropertySimple(cmr, matrix, cographicnessTest, NULL, psubmatrix) );
+  }
+
+  if (stats)
+  {
+    stats->totalCount++;
+    stats->totalTime += (clock() - totalClock) * 1.0 / CLOCKS_PER_SEC;
+  }
+
   return CMR_OKAY;
 }
 
@@ -5313,7 +5441,7 @@ CMR_ERROR CMRtestBinaryGraphicColumnSubmatrixGreedy(CMR* cmr, CMR_CHRMAT* transp
 
   CMRdbgMsg(0, "CMRtestBinaryGraphicColumnSubmatrixGreedy for %dx%d matrix with transpose\n", numRows, numColumns);
 #if defined(CMR_DEBUG)
-  CMR_CALL( CMRchrmatPrintDense(stdout, transpose, '0', true) );
+  CMR_CALL( CMRchrmatPrintDense(cmr, transpose, stdout, '0', true) );
 #endif /* CMR_DEBUG */
 
   CMR_CALL( CMRsubmatCreate(cmr, numRows, numColumns, psubmatrix) );
@@ -5359,7 +5487,8 @@ CMR_ERROR CMRtestBinaryGraphicColumnSubmatrixGreedy(CMR* cmr, CMR_CHRMAT* transp
 }
 
 CMR_ERROR CMRtestGraphicMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisGraphic, CMR_GRAPH** pgraph,
-  CMR_GRAPH_EDGE** pforestEdges, CMR_GRAPH_EDGE** pcoforestEdges, CMR_SUBMAT** psubmatrix)
+  CMR_GRAPH_EDGE** pforestEdges, CMR_GRAPH_EDGE** pcoforestEdges, CMR_SUBMAT** psubmatrix,
+  CMR_GRAPHIC_STATISTICS* stats)
 {
   assert(cmr);
   assert(matrix);
@@ -5369,10 +5498,25 @@ CMR_ERROR CMRtestGraphicMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisGraphic, C
   assert(pisGraphic);
 
   /* Create transpose of matrix. */
+  clock_t transposeClock;
+  double transposeTime;
+  if (stats)
+    transposeClock = clock();
   CMR_CHRMAT* transpose = NULL;
   CMR_CALL( CMRchrmatTranspose(cmr, matrix, &transpose) );
 
-  CMR_CALL( CMRtestCographicMatrix(cmr, transpose, pisGraphic, pgraph, pforestEdges, pcoforestEdges, psubmatrix) );
+  if (stats)
+  {
+    stats->transposeCount++;
+    transposeTime = (clock() - transposeClock) * 1.0 / CLOCKS_PER_SEC;
+    stats->transposeTime += transposeTime;
+  }
+
+  CMR_CALL( CMRtestCographicMatrix(cmr, transpose, pisGraphic, pgraph, pforestEdges, pcoforestEdges, psubmatrix,
+    stats) );
+
+  if (stats)
+    stats->totalTime += transposeTime;
 
   /* Transpose minimal non-cographic matrix to become a minimal non-graphic matrix. */
   if (psubmatrix && *psubmatrix)
@@ -5382,6 +5526,5 @@ CMR_ERROR CMRtestGraphicMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisGraphic, C
 
   return CMR_OKAY;
 }
-
 
 /**@}*/

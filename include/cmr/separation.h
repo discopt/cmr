@@ -3,6 +3,7 @@
 
 #include <cmr/env.h>
 #include <cmr/matrix.h>
+#include <cmr/element.h>
 
 #include <assert.h>
 #include <stdint.h>
@@ -12,7 +13,7 @@
  *
  * \author Matthias Walter
  *
- * \brief Data structures for k-separations.
+ * \brief Data structures for k-separations and k-sums.
  */
 
 #ifdef __cplusplus
@@ -27,10 +28,8 @@ typedef struct
   size_t numColumns[2];             /**< \brief Indicates the number of columns of each part. */
   size_t* rows[2];                  /**< \brief Array of sorted rows for each part. */
   size_t* columns[2];               /**< \brief Array of sorted columns for each part. */
-  size_t extraRows0[2];             /**< \brief Extra rows for part 0 or \c SIZE_MAX if bottom-left rank is lower. */
-  size_t extraColumns1[2];          /**< \brief Extra columns for part 1 or \c SIZE_MAX if bottom-left rank is lower. */
-  size_t extraRows1[2];             /**< \brief Extra rows for part 1 or \c SIZE_MAX if top-right rank is lower. */
-  size_t extraColumns0[2];          /**< \brief Extra columns for part 0 or \c SIZE_MAX if top-right rank is lower. */
+  size_t extraRows[2][2];           /**< \brief For each part, array of extra rows; may be \c SIZE_MAX. */
+  size_t extraColumns[2][2];        /**< \brief For each part, array of extra columns; may be \c SIZE_MAX. */
   unsigned char* indicatorMemory;   /**< \brief Memory for \ref rowsToPart and \ref columnsToPart. */
   size_t* elementMemory;            /**< \brief Memory for \ref rows and \ref columns. */
 } CMR_SEPA;
@@ -55,12 +54,13 @@ CMR_ERROR CMRsepaCreate(
  *
  * Assumes that \p separation was created via \ref CMRsepaCreate and that all entries of \ref rowsToPart and
  * \ref columnsToPart are set to either 0 or 1.
+ * Connecting elements are given by the caller.
  */
 
 CMR_EXPORT
 CMR_ERROR CMRsepaInitialize(
   CMR* cmr,                   /**< \ref CMR environment. */
-  CMR_SEPA* sepa,             /**< Already created separation. */
+  CMR_SEPA* separation,       /**< Already created separation. */
   size_t firstExtraRow0,      /**< First extra row for part 0 or \c SIZE_MAX if bottom-left rank is 0. */
   size_t firstExtraColumn1,   /**< First extra column for part 1 or \c SIZE_MAX if bottom-left rank is 0. */
   size_t firstExtraRow1,      /**< First extra row for part 1 or \c SIZE_MAX if top-right rank is 0. */
@@ -69,6 +69,22 @@ CMR_ERROR CMRsepaInitialize(
   size_t secondExtraColumn1,  /**< Second extra column for part 1 or \c SIZE_MAX if bottom-left rank is at most 1. */
   size_t secondExtraRow1,     /**< Second extra row for part 1 or \c SIZE_MAX if top-right rank is at most 1. */
   size_t secondExtraColumn0   /**< Second extra column for part 0 or \c SIZE_MAX if top-right rank is at most 1. */
+);
+
+/**
+ * \brief Initializes a separation.
+ *
+ * Assumes that \p separation was created via \ref CMRsepaCreate and that all entries of \ref rowsToPart and
+ * \ref columnsToPart are set to either 0 or 1.
+ * Connecting elements will be searched by inspecting \p matrix.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRsepaInitializeMatrix(
+  CMR* cmr,               /**< \ref CMR environment. */
+  CMR_SEPA* separation,   /**< Already created separation. */
+  CMR_CHRMAT* matrix,     /**< Matrix this separation belongs to. */
+  unsigned char totalRank /**< Total rank of separation. */
 );
 
 /**
@@ -92,8 +108,8 @@ unsigned char CMRsepaRankBottomLeft(
 {
   assert(sepa);
 
-  return sepa->extraRows0[0] == SIZE_MAX ? 0
-    : (sepa->extraRows0[1] == SIZE_MAX ? 1 : 2);
+  return sepa->extraRows[0][0] == SIZE_MAX ? 0
+    : (sepa->extraRows[0][1] == SIZE_MAX ? 1 : 2);
 }
 
 /**
@@ -105,8 +121,8 @@ unsigned char CMRsepaRankTopRight(
   CMR_SEPA* sepa  /**< Separation. */
 )
 {
-  return sepa->extraRows1[0] == SIZE_MAX ? 0
-    : (sepa->extraRows1[1] == SIZE_MAX ? 1 : 2);
+  return sepa->extraRows[1][0] == SIZE_MAX ? 0
+    : (sepa->extraRows[1][1] == SIZE_MAX ? 1 : 2);
 }
 
 /**
@@ -139,6 +155,50 @@ CMR_ERROR CMRsepaCheckTernary(
   bool* pisTernary,       /**< Pointer for storing whether the check passed. */
   CMR_SUBMAT** psubmatrix /**< Pointer for storing a violator submatrix (may be \c NULL). */
 );
+
+/**
+ * \brief Constructs the 1-sum of \p first and \p second matrix.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRoneSum(
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_CHRMAT* first,    /**< First matrix. */
+  CMR_CHRMAT* second,   /**< Second matrix. */
+  CMR_CHRMAT** presult  /**< Pointer for storing the result. */
+);
+
+/**
+ * \brief Constructs the 2-sum of \p first and \p second matrix via \p firstMarker and \p secondMarker.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRtwoSum(
+  CMR* cmr,                   /**< \ref CMR environment. */
+  CMR_CHRMAT* first,          /**< First matrix. */
+  CMR_CHRMAT* second,         /**< Second matrix. */
+  CMR_ELEMENT firstMarker,    /**< Marker element of first matrix. */
+  CMR_ELEMENT secondMarker,   /**< Marker element of second matrix. */
+  CMR_CHRMAT** presult        /**< Pointer for storing the result. */
+);
+
+/**
+ * \brief Constructs the 3-sum of \p first and \p second matrix via \p firstMarker1, \p firstMarker2, \p secondMarker1
+ * and \p secondMarker2.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRthreeSum(
+  CMR* cmr,                   /**< \ref CMR environment. */
+  CMR_CHRMAT* first,          /**< First matrix. */
+  CMR_CHRMAT* second,         /**< Second matrix. */
+  CMR_ELEMENT firstMarker1,   /**< First marker element of first matrix. */
+  CMR_ELEMENT secondMarker1,  /**< Second marker element of first matrix. */
+  CMR_ELEMENT firstMarker2,   /**< First marker element of second matrix. */
+  CMR_ELEMENT secondMarker2,  /**< Second marker element of second matrix. */
+  CMR_CHRMAT** presult        /**< Pointer for storing the result. */
+);
+
 
 #ifdef __cplusplus
 }

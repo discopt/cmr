@@ -18,6 +18,8 @@
 #include <cmr/element.h>
 #include <cmr/matrix.h>
 #include <cmr/graph.h>
+#include <cmr/graphic.h>
+#include <cmr/camion.h>
 
 #include <stdio.h>
 
@@ -25,6 +27,38 @@
 extern "C" {
 #endif
 
+/**
+ * \brief Statistics for recognition algorithm for [network matrices](\ref network).
+ */
+
+typedef struct
+{
+  size_t totalCount;              /**< Total number of invocations. */
+  double totalTime;               /**< Total time of all invocations. */
+  CMR_CAMION_STATISTICS camion;   /**< Camion signing. */
+  CMR_GRAPHIC_STATISTICS graphic; /**< Graphicness test. */
+} CMR_NETWORK_STATISTICS;
+
+/**
+ * \brief Initializes all statistics for recognition algorithm for [network matrices](\ref network).
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRstatsNetworkInit(
+  CMR_NETWORK_STATISTICS* stats /**< Pointer to statistics. */
+);
+
+/**
+ * \brief Prints statistics for recognition algorithm for [network matrices](\ref network).
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRstatsNetworkPrint(
+  FILE* stream,                   /**< File stream to print to. */
+  CMR_NETWORK_STATISTICS* stats,  /**< Pointer to statistics. */
+  const char* prefix              /**< Prefix string to prepend to each printed line (may be \c NULL). */
+);
+  
 /**
  * \brief Computes the network matrix of a given digraph \f$ D = (V,A) \f$.
  *
@@ -87,8 +121,9 @@ CMR_ERROR CMRtestNetworkMatrix(
                                    **  (if \f$ M \f$ is network). */
   bool** parcsReversed,           /**< Pointer for storing indicators which arcs are reversed for the correct sign (if
                                    **  \f$ M \f$ is network). */
-  CMR_SUBMAT** psubmatrix         /**< Pointer for storing a minimal non-network submatrix (if \f$ M \f$ is not
+  CMR_SUBMAT** psubmatrix,        /**< Pointer for storing a minimal non-network submatrix (if \f$ M \f$ is not
                                    **  network). */
+  CMR_NETWORK_STATISTICS* stats   /**< Pointer to statistics (may be \c NULL). */
 );
 
 /**
@@ -118,8 +153,9 @@ CMR_ERROR CMRtestConetworkMatrix(
                                    **  (if \f$ M \f$ is conetwork). */
   bool** parcsReversed,           /**< Pointer for storing indicators which arcs are reversed for the correct sign (if
                                    **  \f$ M \f$ is conetwork). */
-  CMR_SUBMAT** psubmatrix         /**< Pointer for storing a minimal non-conetwork submatrix (if \f$ M \f$ is not
+  CMR_SUBMAT** psubmatrix,        /**< Pointer for storing a minimal non-conetwork submatrix (if \f$ M \f$ is not
                                    **  conetwork). */
+  CMR_NETWORK_STATISTICS* stats   /**< Pointer to statistics (may be \c NULL). */
 );
 
 /**@}*/

@@ -12,9 +12,41 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
+  
 #include <cmr/env.h>
 #include <cmr/matrix.h>
+#include <cmr/tu.h>
+
+/**
+ * \brief Statistics for recognition algorithm for [totally unimodular](\ref tu) matrices.
+ */
+
+typedef struct
+{
+  size_t totalCount;    /**< Total number of invocations. */
+  double totalTime;     /**< Total time of all invocations. */
+  CMR_TU_STATISTICS tu; /**< Total unimodularity test. */
+} CMR_CTU_STATISTICS;
+
+/**
+ * \brief Initializes all statistics for recognition algorithm for [complement totally unimodular](\ref ctu) matrices.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRstatsComplementTotalUnimodularityInit(
+  CMR_CTU_STATISTICS* stats /**< Pointer to statistics. */
+);
+
+/**
+ * \brief Prints statistics for recognition algorithm for [complement totally unimodular](\ref ctu) matrices.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRstatsComplementTotalUnimodularityPrint(
+  FILE* stream,             /**< File stream to print to. */
+  CMR_CTU_STATISTICS* stats, /**< Pointer to statistics. */
+  const char* prefix        /**< Prefix string to prepend to each printed line (may be \c NULL). */
+);
 
 /**
  * \brief Carries out a row- and column-complement operations on the binary matrix.
@@ -46,7 +78,8 @@ CMR_ERROR CMRtestComplementTotalUnimodularity(
   CMR_CHRMAT* matrix,                   /**< Matrix \f$ M \f$. */
   bool* pisComplementTotallyUnimodular, /**< Pointer for storing whether \f$ M \f$ is complement totally unimodular. */
   size_t* pcomplementRow,               /**< Pointer for storing the row to be complemented (may be \c NULL). */
-  size_t* pcomplementColumn             /**< Pointer for storing the column to be complemented (may be \c NULL). */
+  size_t* pcomplementColumn,            /**< Pointer for storing the column to be complemented (may be \c NULL). */
+  CMR_CTU_STATISTICS* stats             /**< Statistics for the computation (may be \c NULL). */
 );
 
 #ifdef __cplusplus

@@ -3,9 +3,27 @@
 
 #include "env_internal.h"
 
+#include <limits.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/**
+ * \brief Returns the smallest power of 2 at least as large as \p x.
+ */
+
+static inline
+size_t nextPower2(size_t x)
+{
+  x |= x >> 1;
+  x |= x >> 2;
+  x |= x >> 4;
+  x |= x >> 8;
+  x |= x >> 16;
+  x |= x >> 32;
+  return x + 1;
+}
 
 typedef struct _CMR_LINEARHASHTABLE_ARRAY CMR_LINEARHASHTABLE_ARRAY;
 typedef size_t CMR_LINEARHASHTABLE_BUCKET;
@@ -110,19 +128,30 @@ size_t CMRlisthashtableNumBuckets(
  */
 
 CMR_ERROR CMRlisthashtableInsert(
-  CMR* cmr,                         /**< \ref CMR environment. */
-  CMR_LISTHASHTABLE* hashtable,    /**< Hash table. */
-  CMR_LISTHASHTABLE_HASH hash,     /**< Bucket. */
-  CMR_LISTHASHTABLE_VALUE value,   /**< Value to be set. */
-  CMR_LISTHASHTABLE_ENTRY* pentry  /**< Pointer for storing the new entry. */
+  CMR* cmr,                       /**< \ref CMR environment. */
+  CMR_LISTHASHTABLE* hashtable,   /**< Hash table. */
+  CMR_LISTHASHTABLE_HASH hash,    /**< Hash value. */
+  CMR_LISTHASHTABLE_VALUE value,  /**< Value to be set. */
+  CMR_LISTHASHTABLE_ENTRY* pentry /**< Pointer for storing the new entry. */
 );
 
 CMR_ERROR CMRlisthashtableRemove(
-  CMR* cmr,                       /**< \ref CMR environment. */
-  CMR_LISTHASHTABLE* hashtable,  /**< Hash table. */
-  CMR_LISTHASHTABLE_ENTRY entry  /**< Entry to be removed. */
+  CMR* cmr,                     /**< \ref CMR environment. */
+  CMR_LISTHASHTABLE* hashtable, /**< Hash table. */
+  CMR_LISTHASHTABLE_ENTRY entry /**< Entry to be removed. */
 );
 
+#define RANGE_SIGNED_HASH (LLONG_MAX/2)
+
+/**
+ * \brief Projects \p value into the range [-RANGE_SIGNED_HASH, +RANGE_SIGNED_HASH] via a modulo computation.
+ */
+
+static inline
+long long projectSignedHash(long long value)
+{
+  return ((value + RANGE_SIGNED_HASH - 1) % (2*RANGE_SIGNED_HASH-1)) - (RANGE_SIGNED_HASH-1);
+}
 
 #ifdef __cplusplus
 }

@@ -24,6 +24,9 @@ Options:
   - `-i FORMAT` Format of input FILE; default: `dense`.
   - `-o FORMAT` Format of output; default: `edgelist` if input is a matrix and `dense` if input is a graph.
   - `-t`        Tests for being / converts to conetwork matrix.
+  - `n`         Output the elements of a minimal non-(co)network submatrix.
+  - `N`         Output a minimal non-(co)network submatrix.
+  - `s`         Print statistics about the computation to stderr.
 
 Formats for matrices are \ref dense-matrix and \ref sparse-matrix.
 Formats for graphs are \ref edge-list and \ref dot (output-only).
