@@ -95,11 +95,12 @@ CMR_ERROR testComplementTotalUnimodularity(
   const char* instanceFileName, /**< File name containing the input matrix (may be `-' for stdin). */
   FileFormat inputFormat,       /**< Format of the input matrix. */
   FileFormat outputFormat,      /**< Format of the output submatrix. */
-  bool printComplements,        /**< Whether to print the complement operations leading to a non-TU matrix. */
-  bool printComplemented        /**< Whether to print the complemented non-TU matrix. */
+  bool outputComplements,       /**< Whether to print the complement operations leading to a non-TU matrix. */
+  bool outputComplemented,      /**< Whether to print the complemented non-TU matrix. */
+  bool printStats               /**< Whether to print statistics to stderr. */
 )
 {
-  clock_t startClock, endTime;
+  clock_t readClock = clock();
   FILE* instanceFile = strcmp(instanceFileName, "-") ? fopen(instanceFileName, "r") : stdin;
   if (!instanceFile)
     return CMR_ERROR_INPUT;
@@ -109,7 +110,6 @@ CMR_ERROR testComplementTotalUnimodularity(
 
   /* Read matrix. */
 
-  startClock = clock();
   CMR_CHRMAT* matrix = NULL;
   if (inputFormat == FILEFORMAT_MATRIX_DENSE)
     CMR_CALL( CMRchrmatCreateFromDenseStream(cmr, instanceFile, &matrix) );
@@ -117,23 +117,25 @@ CMR_ERROR testComplementTotalUnimodularity(
     CMR_CALL( CMRchrmatCreateFromSparseStream(cmr, instanceFile, &matrix) );
   if (instanceFile != stdin)
     fclose(instanceFile);
-  fprintf(stderr, "Read %lux%lu matrix with %lu nonzeros.\n", matrix->numRows, matrix->numColumns,
-    matrix->numNonzeros);
+  fprintf(stderr, "Read %lux%lu matrix with %lu nonzeros in %f seconds.\n", matrix->numRows, matrix->numColumns,
+    matrix->numNonzeros, (clock() - readClock) * 1.0 / CLOCKS_PER_SEC);
 
   /* Actual test. */
 
   bool isCTU;
-  startClock = clock();
   size_t complementRow = SIZE_MAX;
   size_t complementColumn = SIZE_MAX;
-  CMR_CALL( CMRtestComplementTotalUnimodularity(cmr, matrix, &isCTU, &complementRow, &complementColumn) );
+  CMR_CTU_STATISTICS stats;
+  CMR_CALL( CMRstatsComplementTotalUnimodularityInit(&stats) );
+  CMR_CALL( CMRtestComplementTotalUnimodularity(cmr, matrix, &isCTU, &complementRow, &complementColumn, &stats) );
 
-  fprintf(stderr, "Determined in %f seconds that it is %scomplement totally unimodular.\n",
-    (clock() - startClock) * 1.0 / CLOCKS_PER_SEC, isCTU ? "" : "NOT ");
+  fprintf(stderr, "Matrix %scomplement totally unimodular.\n", isCTU ? "IS " : "IS NOT ");
+  if (printStats)
+    CMR_CALL( CMRstatsComplementTotalUnimodularityPrint(stderr, &stats, NULL) );
 
   if (complementRow < SIZE_MAX || complementColumn < SIZE_MAX)
   {
-    if (printComplements)
+    if (outputComplements)
     {
       fprintf(stderr, "\nNon-TU matrix is obtained by");
       if (complementRow < SIZE_MAX)
@@ -147,7 +149,7 @@ CMR_ERROR testComplementTotalUnimodularity(
       fprintf(stderr, ".\n");
     }
 
-    if (printComplemented)
+    if (outputComplemented)
     {
       CMR_CHRMAT* complemented = NULL;
       CMR_CALL( CMRcomplementRowColumn(cmr, matrix, complementRow, complementColumn, &complemented) );
@@ -176,8 +178,9 @@ int main(int argc, char** argv)
   FileFormat outputFormat = FILEFORMAT_MATRIX_DENSE;
   size_t complementRow = SIZE_MAX;
   size_t complementColumn = SIZE_MAX;
-  bool printSubmatrixElements = false;
-  bool printSubmatrix = false;
+  bool outputSubmatrixElements = false;
+  bool outputSubmatrix = false;
+  bool printStats = false;
   char* instanceFileName = NULL;
   for (int a = 1; a < argc; ++a)
   {
@@ -211,9 +214,11 @@ int main(int argc, char** argv)
       a++;
     }
     else if (!strcmp(argv[a], "-n"))
-      printSubmatrixElements = true;
+      outputSubmatrixElements = true;
     else if (!strcmp(argv[a], "-N"))
-      printSubmatrix = true;
+      outputSubmatrix = true;
+    else if (!strcmp(argv[a], "-s"))
+      printStats = true;
     else if (!strcmp(argv[a], "-i") && a+1 < argc)
     {
       if (!strcmp(argv[a+1], "dense"))
@@ -254,7 +259,7 @@ int main(int argc, char** argv)
     puts("No input file specified.\n");
     return printUsage(argv[0]);
   }
-  if ((printSubmatrix || printSubmatrixElements) && (complementRow < SIZE_MAX || complementColumn < SIZE_MAX))
+  if ((outputSubmatrix || outputSubmatrixElements) && (complementRow < SIZE_MAX || complementColumn < SIZE_MAX))
   {
     puts("Error: row/column complementing and testing for complement total unimodularity at the same time is not allowed.");
     return printUsage(argv[0]);
@@ -270,8 +275,8 @@ int main(int argc, char** argv)
   }
   else
   {
-    error = testComplementTotalUnimodularity(instanceFileName, inputFormat, outputFormat, printSubmatrixElements,
-      printSubmatrix);
+    error = testComplementTotalUnimodularity(instanceFileName, inputFormat, outputFormat, outputSubmatrixElements,
+      outputSubmatrix, printStats);
   }
 
   switch (error)

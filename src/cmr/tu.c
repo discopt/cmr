@@ -39,7 +39,7 @@ CMR_ERROR CMRstatsTotalUnimodularityPrint(FILE* stream, CMR_TU_STATISTICS* stats
 
   if (!prefix)
   {
-    fprintf(stream, "TU matrix recognition:\n");
+    fprintf(stream, "Total unimodularity recognition:\n");
     prefix = "  ";
   }
 

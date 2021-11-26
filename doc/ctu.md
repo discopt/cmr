@@ -22,6 +22,7 @@ Options:
   - `-c COLUMN` Perform a row complement operation on \f$ M \f$ and do not test for complement total unimodularity.
   - `-n`        Output a complement operations that leads tfile:///home/matthias/code/cmr/develop.git/src/main/tu_main.co a non-totally-unimodular matrix (if \f$ M \f$ is not complement totally unimodular).
   - `-N`        Output a complemented matrix that is non-totally-unimodular (if \f$ M \f$ is not complement totally unimodular).
+  - `-s`        Print statistics about the computation to stderr.
 
 Formats for matrices are \ref dense-matrix and \ref sparse-matrix.
 If FILE is `-`, then the input will be read from stdin.
