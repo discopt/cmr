@@ -87,7 +87,7 @@ TEST(Camion, Issue10)
 
 
   bool alreadySigned;
-  ASSERT_CMR_CALL( CMRcomputeCamionSigned(cmr, matrix, &alreadySigned, NULL) );
+  ASSERT_CMR_CALL( CMRcomputeCamionSigned(cmr, matrix, &alreadySigned, NULL, NULL) );
   ASSERT_FALSE(alreadySigned);
   ASSERT_TRUE(CMRchrmatCheckEqual(matrix, check));
 

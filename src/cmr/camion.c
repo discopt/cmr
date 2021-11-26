@@ -270,7 +270,7 @@ CMR_ERROR CMRcomputeCamionSignSequentiallyConnected(
           CMRdbgMsg(2, "Sign change at r%d,c%d.\n", row+1, column+1);
           matrix->entryValues[e] = graphNodes[column].targetValue;
           size_t entry = SIZE_MAX;
-          CMR_CALL( CMRchrmatFindEntry(cmr, transpose, column, row, &entry) );
+          CMR_CALL( CMRchrmatFindEntry(transpose, column, row, &entry) );
           assert(entry < SIZE_MAX);
           assert(transpose->entryValues[entry] == -graphNodes[column].targetValue);
           transpose->entryValues[entry] = graphNodes[column].targetValue;
