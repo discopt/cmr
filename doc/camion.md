@@ -19,8 +19,9 @@ The executable `cmr-camion` checks whether a given matrix \f$ M \f$ is Camion-si
 Options:
   - `-i FORMAT` Format of input FILE; default: `dense`.
   - `-o FORMAT` Format of output matrices; default: `dense`.
-  - `-s`        Output the elements of a minimal non-camion submatrix.
-  - `-S`        Output a minimal non-camion submatrix.
+  - `-n`        Output the elements of a minimal non-Camion submatrix.
+  - `-N`        Output a minimal non-Camion submatrix.
+  - `-s`        Print statistics about the computation to stderr.
 
 Formats for matrices are \ref dense-matrix and \ref sparse-matrix.
 If FILE is `-`, then the input will be read from stdin.
