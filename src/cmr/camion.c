@@ -10,6 +10,31 @@
 #include <assert.h>
 #include <stdlib.h>
 
+CMR_ERROR CMRstatsCamionInit(CMR_CAMION_STATISTICS* stats)
+{
+  assert(stats);
+
+  stats->totalCount = 0;
+  stats->totalTime = 0.0;
+
+  return CMR_OKAY;
+}
+
+CMR_ERROR CMRstatsCamionPrint(FILE* stream, CMR_CAMION_STATISTICS* stats, const char* prefix)
+{
+  assert(stream);
+  assert(stats);
+
+  if (!prefix)
+  {
+    fprintf(stream, "Camion signing:\n");
+    prefix = "  ";
+  }
+  fprintf(stream, "%stotal: %ld in %f seconds\n", prefix, stats->totalCount, stats->totalTime);
+
+  return CMR_OKAY;
+}
+
 /**
  * \brief Graph node for BFS in signing algorithm.
  */
@@ -263,11 +288,12 @@ CMR_ERROR CMRcomputeCamionSignSequentiallyConnected(
 
 static
 CMR_ERROR sign(
-  CMR* cmr,               /**< \ref CMR environment. */
-  CMR_CHRMAT* matrix,     /**< Matrix \f$ M \f$. */
-  bool change,            /**< Whether the signs of \f$ M \f$ shall be modified. */
-  bool* pisCamionSigned,  /**< Pointer for storing whether \f$ M \f$ was already [Camion-signed](\ref camion). */
-  CMR_SUBMAT** psubmatrix /**< Pointer for storing a non-camion submatrix (may be \c NULL). */
+  CMR* cmr,                     /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,           /**< Matrix \f$ M \f$. */
+  bool change,                  /**< Whether the signs of \f$ M \f$ shall be modified. */
+  bool* pisCamionSigned,        /**< Pointer for storing whether \f$ M \f$ was already [Camion-signed](\ref camion). */
+  CMR_SUBMAT** psubmatrix,      /**< Pointer for storing a non-camion submatrix (may be \c NULL). */
+  CMR_CAMION_STATISTICS* stats  /**< Statistics for the computation (may be \c NULL). */
 )
 {
   assert(cmr);
@@ -404,12 +430,14 @@ CMR_ERROR sign(
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRtestCamionSigned(CMR* cmr, CMR_CHRMAT* matrix, bool* pisCamionSigned, CMR_SUBMAT** psubmatrix)
+CMR_ERROR CMRtestCamionSigned(CMR* cmr, CMR_CHRMAT* matrix, bool* pisCamionSigned, CMR_SUBMAT** psubmatrix,
+  CMR_CAMION_STATISTICS* stats)
 {
-  return sign(cmr, matrix, false, pisCamionSigned, psubmatrix);
+  return sign(cmr, matrix, false, pisCamionSigned, psubmatrix, stats);
 }
 
-CMR_ERROR CMRcomputeCamionSigned(CMR* cmr, CMR_CHRMAT* matrix, bool* pwasCamionSigned, CMR_SUBMAT** psubmatrix)
+CMR_ERROR CMRcomputeCamionSigned(CMR* cmr, CMR_CHRMAT* matrix, bool* pwasCamionSigned, CMR_SUBMAT** psubmatrix,
+  CMR_CAMION_STATISTICS* stats)
 {
-  return sign(cmr, matrix, true, pwasCamionSigned, psubmatrix);
+  return sign(cmr, matrix, true, pwasCamionSigned, psubmatrix, stats);
 }

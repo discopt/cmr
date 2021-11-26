@@ -184,7 +184,7 @@ CMR_ERROR runInt(const char* instanceFileName, Format inputFormat, Format output
   {
     CMR_CHRMAT* result = NULL;
     CMR_CALL( CMRintmatToChr(cmr, matrix, &result) );
-    CMR_CALL( CMRcomputeCamionSigned(cmr, result, NULL, NULL) );
+    CMR_CALL( CMRcomputeCamionSigned(cmr, result, NULL, NULL, NULL) );
     CMR_CALL( printChr(cmr, result, outputFormat, transpose) );
     CMR_CALL( CMRchrmatFree(cmr, &result) );
   }

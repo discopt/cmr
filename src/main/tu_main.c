@@ -29,6 +29,7 @@ int printUsage(const char* program)
   puts("  -d         Output the decomposition tree of the underlying regular matroid.");
   puts("  -n         Output the elements of a minimal non-totally-unimodular submatrix.");
   puts("  -N         Output a minimal non-totally-unimodular submatrix.");
+  puts("  -s         Print statistics about the computation to stderr.");
   puts("Formats for matrices: dense, sparse");
   puts("If FILE is `-', then the input will be read from stdin.");
 
@@ -45,11 +46,12 @@ CMR_ERROR testTotalUnimodularity(
   FileFormat inputFormat,       /**< Format of the input matrix. */
   FileFormat outputFormat,      /**< Format of the output submatrix. */
   bool printTree,               /**< Whether to print the decomposition tree. */
-  bool outputNonTUElements,  /**< Whether to print the elements of a non-TU submatrix. */
-  bool outputNonTUMatrix           /**< Whether to print a non-TU submatrix. */
+  bool outputNonTUElements,     /**< Whether to print the elements of a non-TU submatrix. */
+  bool outputNonTUMatrix,       /**< Whether to print a non-TU submatrix. */
+  bool printStats               /**< Whether to print statistics to stderr. */
 )
 {
-  clock_t startClock, endTime;
+  clock_t readClock = clock();
   FILE* instanceFile = strcmp(instanceFileName, "-") ? fopen(instanceFileName, "r") : stdin;
   if (!instanceFile)
     return CMR_ERROR_INPUT;
@@ -59,7 +61,6 @@ CMR_ERROR testTotalUnimodularity(
 
   /* Read matrix. */
 
-  startClock = clock();
   CMR_CHRMAT* matrix = NULL;
   if (inputFormat == FILEFORMAT_MATRIX_DENSE)
     CMR_CALL( CMRchrmatCreateFromDenseStream(cmr, instanceFile, &matrix) );
@@ -67,20 +68,22 @@ CMR_ERROR testTotalUnimodularity(
     CMR_CALL( CMRchrmatCreateFromSparseStream(cmr, instanceFile, &matrix) );
   if (instanceFile != stdin)
     fclose(instanceFile);
-  fprintf(stderr, "Read %lux%lu matrix with %lu nonzeros.\n", matrix->numRows, matrix->numColumns,
-    matrix->numNonzeros);
+  fprintf(stderr, "Read %lux%lu matrix with %lu nonzeros in %f seconds.\n", matrix->numRows, matrix->numColumns,
+    matrix->numNonzeros, (clock() - readClock) * 1.0 / CLOCKS_PER_SEC);
 
   /* Actual test. */
 
   bool isTU;
   CMR_DEC* decomposition = NULL;
   CMR_SUBMAT* submatrix = NULL;
-  startClock = clock();
+  CMR_TU_STATISTICS stats;
+  CMR_CALL(CMRstatsTotalUnimodularityInit(&stats));
   CMR_CALL( CMRtestTotalUnimodularity(cmr, matrix, &isTU, printTree ? &decomposition : NULL,
-    (outputNonTUMatrix || outputNonTUElements) ? &submatrix : NULL, NULL) );
+    (outputNonTUMatrix || outputNonTUElements) ? &submatrix : NULL, NULL, &stats) );
 
-  fprintf(stderr, "Determined in %f seconds that it is %stotally unimodular.\n",
-    (clock() - startClock) * 1.0 / CLOCKS_PER_SEC, isTU ? "" : "NOT ");
+  fprintf(stderr, "Matrix %stotally unimodular.\n", isTU ? "IS " : "IS NOT ");
+  if (printStats)
+    CMR_CALL( CMRstatsTotalUnimodularityPrint(stderr, &stats, NULL) );
 
   if (decomposition)
   {
@@ -103,10 +106,8 @@ CMR_ERROR testTotalUnimodularity(
 
     if (outputNonTUMatrix)
     {
-      startClock = clock();
       CMR_CHRMAT* violatorMatrix = NULL;
       CMR_CALL( CMRchrmatZoomSubmat(cmr, matrix, submatrix, &violatorMatrix) );
-      endTime = clock();
       fprintf(stderr, "\nExtracted %lux%lu non-TU submatrix with %lu nonzeros.\n", violatorMatrix->numRows,
         violatorMatrix->numColumns, violatorMatrix->numNonzeros);
       if (outputFormat == FILEFORMAT_MATRIX_DENSE)
@@ -134,6 +135,7 @@ int main(int argc, char** argv)
   bool printTree = false;
   bool outputNonTUElements = false;
   bool outputNonTUMatrix = false;
+  bool printStats = false;
   char* instanceFileName = NULL;
   for (int a = 1; a < argc; ++a)
   {
@@ -148,6 +150,8 @@ int main(int argc, char** argv)
       outputNonTUElements = true;
     else if (!strcmp(argv[a], "-N"))
       outputNonTUMatrix = true;
+    else if (!strcmp(argv[a], "-s"))
+      printStats = true;
     else if (!strcmp(argv[a], "-i") && a+1 < argc)
     {
       if (!strcmp(argv[a+1], "dense"))
@@ -193,7 +197,8 @@ int main(int argc, char** argv)
     inputFormat = FILEFORMAT_MATRIX_DENSE;
 
   CMR_ERROR error;
-  error = testTotalUnimodularity(instanceFileName, inputFormat, outputFormat, printTree, outputNonTUElements, outputNonTUMatrix);
+  error = testTotalUnimodularity(instanceFileName, inputFormat, outputFormat, printTree, outputNonTUElements,
+    outputNonTUMatrix, printStats);
 
   switch (error)
   {

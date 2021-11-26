@@ -34,7 +34,7 @@ typedef struct
 } ElementData;
 
 
-CMR_ERROR CMRspInitStatistics(CMR_SP_STATISTICS* stats)
+CMR_ERROR CMRstatsSeriesParallelInit(CMR_SP_STATISTICS* stats)
 {
   assert(stats);
 
@@ -50,15 +50,20 @@ CMR_ERROR CMRspInitStatistics(CMR_SP_STATISTICS* stats)
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRspPrintStatistics(FILE* stream, CMR_SP_STATISTICS* stats)
+CMR_ERROR CMRstatsSeriesParallelPrint(FILE* stream, CMR_SP_STATISTICS* stats, const char* prefix)
 {
   assert(stream);
   assert(stats);
 
-  fprintf(stream, "Series-parallel reductions:           %ld in %f seconds\n", stats->reduceCount, stats->reduceTime);
-  fprintf(stream, "Series-parallel wheel search:         %ld in %f seconds\n", stats->wheelCount, stats->wheelTime);
-  fprintf(stream, "Series-parallel ternary certificates: %ld in %f seconds\n", stats->nonbinaryCount, stats->nonbinaryTime);
-  fprintf(stream, "Series-parallel in total:             %ld in %f seconds\n", stats->totalCount, stats->totalTime);
+  if (!prefix)
+  {
+    fprintf(stream, "Series-parallel recognition:\n");
+    prefix = "  ";
+  }
+  fprintf(stream, "%sreduction calls: %ld in %f seconds\n", prefix, stats->reduceCount, stats->reduceTime);
+  fprintf(stream, "%swheel searches: %ld in %f seconds\n", prefix, stats->wheelCount, stats->wheelTime);
+  fprintf(stream, "%sternary certificates: %ld in %f seconds\n", prefix, stats->nonbinaryCount, stats->nonbinaryTime);
+  fprintf(stream, "%stotal: %ld in %f seconds\n", prefix, stats->totalCount, stats->totalTime);
 
   return CMR_OKAY;
 }

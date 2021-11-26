@@ -10,14 +10,29 @@
 #include "dec_internal.h"
 #include "regular_internal.h"
 
-CMR_ERROR CMRregularInitStatistics(CMR_REGULAR_STATISTICS* stats)
+CMR_ERROR CMRparamsRegularInit(CMR_REGULAR_PARAMETERS* params)
+{
+  assert(params);
+
+  params->fastGraphicness = true;
+  params->planarityCheck = false;
+  params->completeTree = false;
+  params->matrices = CMR_DEC_CONSTRUCT_NONE;
+  params->transposes = CMR_DEC_CONSTRUCT_NONE;
+  params->graphs = CMR_DEC_CONSTRUCT_NONE;
+
+  return CMR_OKAY;
+}
+
+CMR_ERROR CMRstatsRegularInit(CMR_REGULAR_STATISTICS* stats)
 {
   assert(stats);
 
   stats->totalCount = 0;
   stats->totalTime = 0.0;
-  CMR_CALL( CMRspInitStatistics(&stats->seriesParallel) );
-  CMR_CALL( CMRgraphicInitStatistics(&stats->graphic) );
+  CMR_CALL( CMRstatsSeriesParallelInit(&stats->seriesParallel) );
+  CMR_CALL( CMRstatsGraphicInit(&stats->graphic) );
+  CMR_CALL( CMRstatsNetworkInit(&stats->network) );
   stats->sequenceExtensionCount = 0;
   stats->sequenceExtensionTime = 0.0;  
   stats->sequenceGraphicCount = 0;
@@ -29,32 +44,34 @@ CMR_ERROR CMRregularInitStatistics(CMR_REGULAR_STATISTICS* stats)
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRregularPrintStatistics(FILE* stream, CMR_REGULAR_STATISTICS* stats)
+CMR_ERROR CMRstatsRegularPrint(FILE* stream, CMR_REGULAR_STATISTICS* stats, const char* prefix)
 {
   assert(stream);
   assert(stats);
 
-  CMR_CALL( CMRspPrintStatistics(stream, &stats->seriesParallel) );
-  CMR_CALL( CMRgraphicPrintStatistics(stream, &stats->graphic) );
-  fprintf(stream, "Regularity sequence extensions:       %ld in %f seconds\n", stats->sequenceExtensionCount, stats->sequenceExtensionTime);
-  fprintf(stream, "Regularity sequence (co)graphicness:  %ld in %f seconds\n", stats->sequenceGraphicCount, stats->sequenceGraphicTime);
-  fprintf(stream, "Regularity enumeration:               %ld in %f seconds\n", stats->enumerationCount, stats->enumerationTime);
-  fprintf(stream, "Regularity 3-separation candidates:   %ld in %f seconds\n", stats->enumerationCandidatesCount, stats->enumerationTime);
-  fprintf(stream, "Regularity in total:                  %ld in %f seconds\n", stats->totalCount, stats->totalTime);
+  if (!prefix)
+  {
+    fprintf(stream, "Regular matrix recognition:\n");
+    prefix = "  ";
+  }
 
-  return CMR_OKAY;
-}
+  char subPrefix[256];
+  snprintf(subPrefix, 256, "%sseries-parallel ", prefix);
+  CMR_CALL( CMRstatsSeriesParallelPrint(stream, &stats->seriesParallel, subPrefix) );
+  snprintf(subPrefix, 256, "%s(co)graphic ", prefix);
+  CMR_CALL( CMRstatsGraphicPrint(stream, &stats->graphic, subPrefix) );
+  snprintf(subPrefix, 256, "%s(co)network ", prefix);
+  CMR_CALL( CMRstatsNetworkPrint(stream, &stats->network, subPrefix) );
 
-CMR_ERROR CMRregularInitParameters(CMR_REGULAR_PARAMETERS* params)
-{
-  assert(params);
-
-  params->fastGraphicness = true;
-  params->planarityCheck = false;
-  params->completeTree = false;
-  params->matrices = CMR_DEC_CONSTRUCT_NONE;
-  params->transposes = CMR_DEC_CONSTRUCT_NONE;
-  params->graphs = CMR_DEC_CONSTRUCT_NONE;
+  fprintf(stream, "%ssequence extensions: %ld in %f seconds\n", prefix, stats->sequenceExtensionCount,
+    stats->sequenceExtensionTime);
+  fprintf(stream, "%ssequence (co)graphic: %ld in %f seconds\n", prefix, stats->sequenceGraphicCount,
+    stats->sequenceGraphicTime);
+  fprintf(stream, "%senumeration: %ld in %f seconds\n", prefix, stats->enumerationCount,
+    stats->enumerationTime);
+  fprintf(stream, "%s3-separation candidates: %ld in %f seconds\n", prefix, stats->enumerationCandidatesCount,
+    stats->enumerationTime);
+  fprintf(stream, "%stotal: %ld in %f seconds\n", prefix, stats->totalCount, stats->totalTime);
 
   return CMR_OKAY;
 }
@@ -466,7 +483,7 @@ CMR_ERROR CMRtestBinaryRegular(CMR* cmr, CMR_CHRMAT* matrix, bool *pisRegular, C
   CMR_REGULAR_PARAMETERS defaultParams;
   if (!params)
   {
-    CMR_CALL( CMRregularInitParameters(&defaultParams) );
+    CMR_CALL( CMRparamsRegularInit(&defaultParams) );
     params = &defaultParams;
   }
 

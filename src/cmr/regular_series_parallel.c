@@ -27,12 +27,12 @@ CMR_ERROR CMRregularDecomposeSeriesParallel(CMR* cmr, CMR_DEC** pdec, bool terna
   if (ternary)
   {
     CMR_CALL( CMRdecomposeTernarySeriesParallel(cmr, dec->matrix, &isSeriesParallel, reductions, &numReductions,
-      &reducedSubmatrix, psubmatrix, &separation, &stats->seriesParallel) );
+      &reducedSubmatrix, psubmatrix, &separation, stats ? &stats->seriesParallel : NULL) );
   }
   else
   {
     CMR_CALL( CMRdecomposeBinarySeriesParallel(cmr, dec->matrix, &isSeriesParallel, reductions, &numReductions,
-      &reducedSubmatrix, psubmatrix, &separation, &stats->seriesParallel) );
+      &reducedSubmatrix, psubmatrix, &separation, stats ? &stats->seriesParallel : NULL) );
   }
 
   /* Did we find a 2-by-2 submatrix? If yes, is has determinant -2 or +2! */

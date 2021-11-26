@@ -1264,10 +1264,7 @@ CMR_ERROR CMRregularSequenceGraphic(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT* tr
 
   clock_t time;
   if (stats)
-  {
-    stats->sequenceGraphicCount++;
     time = clock();
-  }
 
   CMR_CALL( CMRgraphCreateEmpty(cmr, pgraph, matrix->numRows, matrix->numRows + matrix->numColumns) );
   CMR_GRAPH* graph = *pgraph;
@@ -1407,6 +1404,7 @@ CMR_ERROR CMRregularSequenceGraphic(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT* tr
 
   if (stats)
   {
+    stats->sequenceGraphicCount++;
     stats->sequenceGraphicTime += (clock() - time) * 1.0 / CLOCKS_PER_SEC;
   }
 
@@ -1446,11 +1444,12 @@ CMR_ERROR CMRregularTestGraphic(CMR* cmr, CMR_CHRMAT** pmatrix, CMR_CHRMAT** ptr
   if (ternary)
   {
     CMR_CALL( CMRtestConetworkMatrix(cmr, transpose, pisGraphic, pgraph, pforest, pcoforest, parcsReversed,
-      NULL) );
+      NULL, stats ? &stats->network : NULL) );
   }
   else
   {
-    CMR_CALL( CMRtestCographicMatrix(cmr, transpose, pisGraphic, pgraph, pforest, pcoforest, NULL, &stats->graphic) );
+    CMR_CALL( CMRtestCographicMatrix(cmr, transpose, pisGraphic, pgraph, pforest, pcoforest, NULL,
+      stats ? &stats->graphic : NULL) );
   }
 
   return CMR_OKAY;

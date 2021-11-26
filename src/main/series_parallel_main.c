@@ -25,6 +25,7 @@ int printUsage(const char* program)
   puts("  -R         Output the reduced matrix.");
   puts("  -n         Output the elements of a minimal non-series-parallel submatrix.");
   puts("  -N         Output a minimal non-series-parallel submatrix.");
+  puts("  -s         Print statistics about the computation to stderr.");
   puts("Matrix formats: dense, sparse");
   puts("If FILE is `-', then the input will be read from stdin.");
   return EXIT_FAILURE;
@@ -38,10 +39,11 @@ CMR_ERROR matrixSeriesParallel2Sums(
   bool outputReducedElements,   /**< Whether to output the elements of the reduced matrix. */
   bool outputReducedMatrix,     /**< Whether to output the reduced matrix. */
   bool outputNonSPElements,     /**< Whether to output the elements of a non-SP submatrix if not series-parallel. */
-  bool outputNonSPMatrix        /**< Whether to output a non-SP submatrix if not series-parallel. */
+  bool outputNonSPMatrix,       /**< Whether to output a non-SP submatrix if not series-parallel. */
+  bool printStats               /**< Whether to print statistics to stderr. */
 )
 {
-  clock_t startClock, endTime;
+  clock_t readClock = clock();
   FILE* instanceFile = strcmp(instanceFileName, "-") ? fopen(instanceFileName, "r") : stdin;
   if (!instanceFile)
     return CMR_ERROR_INPUT;
@@ -58,7 +60,8 @@ CMR_ERROR matrixSeriesParallel2Sums(
     CMR_CALL( CMRchrmatCreateFromSparseStream(cmr, instanceFile, &matrix) );
   if (instanceFile != stdin)
     fclose(instanceFile);
-  fprintf(stderr, "Read %lux%lu matrix with %lu nonzeros.\n", matrix->numRows, matrix->numColumns, matrix->numNonzeros);
+  fprintf(stderr, "Read %lux%lu matrix with %lu nonzeros in %f seconds.\n", matrix->numRows, matrix->numColumns,
+    matrix->numNonzeros, (clock() - readClock) * 1.0 / CLOCKS_PER_SEC);
 
   /* Run the search. */
 
@@ -69,14 +72,15 @@ CMR_ERROR matrixSeriesParallel2Sums(
   CMR_SUBMAT* violatorSubmatrix = NULL;
 
   CMR_SP_STATISTICS stats;
-  CMR_CALL( CMRspInitStatistics(&stats) );
+  CMR_CALL( CMRstatsSeriesParallelInit(&stats) );
   CMR_CALL( CMRtestTernarySeriesParallel(cmr, matrix, NULL, reductions, &numReductions,
     (outputReducedElements || outputReducedMatrix) ? &reducedSubmatrix : NULL,
     (outputNonSPElements || outputNonSPMatrix) ? &violatorSubmatrix : NULL, &stats) );
 
   fprintf(stderr, "Matrix %sseries-parallel. %ld reductions can be applied.\n",
     numReductions == matrix->numRows + matrix->numColumns ? "IS " : "is NOT ", numReductions);
-  CMR_CALL( CMRspPrintStatistics(stderr, &stats) );
+  if (printStats)
+    CMR_CALL( CMRstatsSeriesParallelPrint(stderr, &stats, NULL) );
 
   if (outputReductions)
   {
@@ -100,10 +104,8 @@ CMR_ERROR matrixSeriesParallel2Sums(
 
   if (outputReducedMatrix)
   {
-    startClock = clock();
     CMR_CHRMAT* reducedMatrix = NULL;
     CMR_CALL( CMRchrmatZoomSubmat(cmr, matrix, reducedSubmatrix, &reducedMatrix) );
-    endTime = clock();
     fprintf(stderr, "\nExtracted reduced %lux%lu matrix with %lu nonzeros.\n", reducedMatrix->numRows,
       reducedMatrix->numColumns, reducedMatrix->numNonzeros);
     if (outputFormat == FILEFORMAT_MATRIX_DENSE)
@@ -127,10 +129,8 @@ CMR_ERROR matrixSeriesParallel2Sums(
 
   if (violatorSubmatrix && outputNonSPMatrix)
   {
-    startClock = clock();
     CMR_CHRMAT* violatorMatrix = NULL;
     CMR_CALL( CMRchrmatZoomSubmat(cmr, matrix, violatorSubmatrix, &violatorMatrix) );
-    endTime = clock();
     fprintf(stderr, "\nMinimal %lux%lu non-series parallel matrix with %lu nonzeros.\n", violatorMatrix->numRows,
       violatorMatrix->numColumns, violatorMatrix->numNonzeros);
     if (outputFormat == FILEFORMAT_MATRIX_DENSE)
@@ -161,6 +161,7 @@ int main(int argc, char** argv)
   bool outputReducedMatrix = false;
   bool outputNonSPElements = false;
   bool outputNonSPMatrix = false;
+  bool printStats = false;
   for (int a = 1; a < argc; ++a)
   {
     if (!strcmp(argv[a], "-h"))
@@ -178,6 +179,8 @@ int main(int argc, char** argv)
       outputNonSPElements = true;
     else if (!strcmp(argv[a], "-N"))
       outputNonSPMatrix = true;
+    else if (!strcmp(argv[a], "-s"))
+      printStats = true;
     else if (!strcmp(argv[a], "-i") && a+1 < argc)
     {
       if (!strcmp(argv[a+1], "dense"))
@@ -220,7 +223,7 @@ int main(int argc, char** argv)
   }
 
   CMR_ERROR error = matrixSeriesParallel2Sums(instanceFileName, inputFormat, outputFormat, outputReductions,
-    outputReducedElements, outputReducedMatrix, outputNonSPElements, outputNonSPMatrix);
+    outputReducedElements, outputReducedMatrix, outputNonSPElements, outputNonSPMatrix, printStats);
   switch (error)
   {
   case CMR_ERROR_INPUT:

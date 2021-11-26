@@ -25,7 +25,7 @@
   } \
   while (false)
 
-CMR_ERROR CMRgraphicInitStatistics(CMR_GRAPHIC_STATISTICS* stats)
+CMR_ERROR CMRstatsGraphicInit(CMR_GRAPHIC_STATISTICS* stats)
 {
   assert(stats);
 
@@ -41,15 +41,20 @@ CMR_ERROR CMRgraphicInitStatistics(CMR_GRAPHIC_STATISTICS* stats)
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRgraphicPrintStatistics(FILE* stream, CMR_GRAPHIC_STATISTICS* stats)
+CMR_ERROR CMRstatsGraphicPrint(FILE* stream, CMR_GRAPHIC_STATISTICS* stats, const char* prefix)
 {
   assert(stream);
   assert(stats);
 
-  fprintf(stream, "Graphicness transpositions:           %ld / %f\n", stats->transposeCount, stats->transposeTime);
-  fprintf(stream, "Graphicness column checks:            %ld in %f seconds\n", stats->checkCount, stats->checkTime);
-  fprintf(stream, "Graphicness column additions:         %ld in %f seconds\n", stats->applyCount, stats->applyTime);
-  fprintf(stream, "Graphicness in total:                 %ld in %f seconds\n", stats->totalCount, stats->totalTime);
+  if (!prefix)
+  {
+    fprintf(stream, "Graphicness recognition:\n");
+    prefix = "  ";
+  }
+  fprintf(stream, "%stranspositions: %ld in %f seconds\n", prefix, stats->transposeCount, stats->transposeTime);
+  fprintf(stream, "%scolumn checks: %ld in %f seconds\n", prefix, stats->checkCount, stats->checkTime);
+  fprintf(stream, "%scolumn additions: %ld in %f seconds\n", prefix, stats->applyCount, stats->applyTime);
+  fprintf(stream, "%stotal: %ld in %f seconds\n", prefix, stats->totalCount, stats->totalTime);
 
   return CMR_OKAY;
 }

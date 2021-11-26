@@ -31,6 +31,7 @@ int printUsage(const char* program)
   puts("  -c COLUMN  Perform a row complement operation; do not test for complement total unimodularity.");
   puts("  -n         Output a complement operations that leads to a non-totally-unimodular matrix.");
   puts("  -N         Output a complemented matrix that is non-totally-unimodular.");
+  puts("  -s         Print statistics about the computation to stderr.");
   puts("Formats for matrices: dense, sparse");
   puts("If FILE is `-', then the input will be read from stdin.");
 

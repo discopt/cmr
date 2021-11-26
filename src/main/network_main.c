@@ -31,6 +31,9 @@ int printUsage(const char* program)
   puts("  -i FORMAT  Format of input FILE; default: `dense'.");
   puts("  -o FORMAT  Format of output; default: `edgelist' if input is a matrix and `dense' if input is a digraph.");
   puts("  -t         Tests for being / converts to conetwork matrix.");
+  puts("  -n         Output the elements of a minimal non-(co)network submatrix.");
+  puts("  -N         Output a minimal non-(co)network submatrix.");
+  puts("  -s         Print statistics about the computation to stderr.");
   puts("Formats for matrices: dense, sparse");
   puts("Formats for digraphs: edgelist, dot (output only)");
   puts("If FILE is `-', then the input will be read from stdin.");
@@ -43,12 +46,16 @@ int printUsage(const char* program)
  */
 
 CMR_ERROR matrixToDigraph(
-  const char* instanceFileName, /**< File name containing the input matrix (may be `-' for stdin). */
-  FileFormat inputFormat,       /**< Format of the input matrix. */
-  FileFormat outputFormat,      /**< Format of the output digraph. */
-  bool conetwork                /**< Whether the input shall be checked for being conetwork instead of network. */
+  const char* instanceFileName,   /**< File name containing the input matrix (may be `-' for stdin). */
+  FileFormat inputFormat,         /**< Format of the input matrix. */
+  FileFormat outputFormat,        /**< Format of the output digraph. */
+  bool conetwork,                 /**< Whether the input shall be checked for being conetwork instead of network. */
+  bool outputNonNetworkElements,  /**< Whether to print the elements of a minimal non-(co)network submatrix. */
+  bool outputNonNetworkMatrix,    /**< Whether to print a minimal non-(co)network submatrix. */
+  bool printStats                 /**< Whether to print statistics to stderr. */
 )
 {
+  clock_t readClock = clock();
   FILE* instanceFile = strcmp(instanceFileName, "-") ? fopen(instanceFileName, "r") : stdin;
   if (!instanceFile)
     return CMR_ERROR_INPUT;
@@ -65,6 +72,8 @@ CMR_ERROR matrixToDigraph(
     CMR_CALL( CMRchrmatCreateFromSparseStream(cmr, instanceFile, &matrix) );
   if (instanceFile != stdin)
     fclose(instanceFile);
+  fprintf(stderr, "Read %lux%lu matrix with %lu nonzeros in %f seconds.\n", matrix->numRows, matrix->numColumns,
+    matrix->numNonzeros, (clock() - readClock) * 1.0 / CLOCKS_PER_SEC);
 
   /* Transpose it. */
 
@@ -80,22 +89,21 @@ CMR_ERROR matrixToDigraph(
   CMR_GRAPH_EDGE* columnEdges = NULL;
   bool* edgesReversed = NULL;
 
-  clock_t startTime = clock();
-
+  CMR_NETWORK_STATISTICS stats;
+  CMR_CALL( CMRstatsNetworkInit(&stats) );
   if (conetwork)
   {
     CMR_CALL( CMRtestConetworkMatrix(cmr, transpose, &isCoNetwork, &digraph, &rowEdges, &columnEdges, &edgesReversed,
-      NULL) );
+      NULL, &stats) );
   }
   {
     CMR_CALL( CMRtestNetworkMatrix(cmr, transpose, &isCoNetwork, &digraph, &rowEdges, &columnEdges, &edgesReversed,
-      NULL) );
+      NULL, &stats) );
   }
 
-  clock_t endTime = clock();
-  fprintf(stderr, "Time: %f\n", (endTime - startTime) * 1.0 / CLOCKS_PER_SEC);
-
-  fprintf(stderr, "Input matrix is %s%snetwork.\n", isCoNetwork ? "" : "NOT ", conetwork ? "co" : "");
+  fprintf(stderr, "Matrix %s%snetwork.\n", isCoNetwork ? "IS " : "IS NOT ", conetwork ? "co" : "");
+  if (printStats)
+    CMR_CALL( CMRstatsNetworkPrint(stderr, &stats, NULL) );
 
   if (isCoNetwork)
   {
@@ -291,6 +299,9 @@ int main(int argc, char** argv)
   FileFormat outputFormat = FILEFORMAT_UNDEFINED;
   bool transposed = false;
   char* instanceFileName = NULL;
+  bool outputNonNetworkElements = false;
+  bool outputNonNetworkMatrix = false;
+  bool printStats = false;
   for (int a = 1; a < argc; ++a)
   {
     if (!strcmp(argv[a], "-h"))
@@ -300,6 +311,12 @@ int main(int argc, char** argv)
     }
     else if (!strcmp(argv[a], "-t"))
       transposed = true;
+    else if (!strcmp(argv[a], "-n"))
+      outputNonNetworkElements = true;
+    else if (!strcmp(argv[a], "-N"))
+      outputNonNetworkMatrix = true;
+    else if (!strcmp(argv[a], "-s"))
+      printStats = true;
     else if (!strcmp(argv[a], "-i") && a+1 < argc)
     {
       if (!strcmp(argv[a+1], "dense"))
@@ -383,7 +400,10 @@ int main(int argc, char** argv)
 
   CMR_ERROR error;
   if (inputFormat == FILEFORMAT_MATRIX_DENSE || inputFormat == FILEFORMAT_MATRIX_SPARSE)
-    error = matrixToDigraph(instanceFileName, inputFormat, outputFormat, transposed);
+  {
+    error = matrixToDigraph(instanceFileName, inputFormat, outputFormat, transposed, outputNonNetworkElements,
+      outputNonNetworkMatrix, printStats);
+  }
   else
     error = digraphToMatrix(instanceFileName, inputFormat, outputFormat, transposed);
 

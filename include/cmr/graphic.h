@@ -46,7 +46,7 @@ typedef struct
  */
 
 CMR_EXPORT
-CMR_ERROR CMRgraphicInitStatistics(
+CMR_ERROR CMRstatsGraphicInit(
   CMR_GRAPHIC_STATISTICS* stats /**< Pointer to statistics. */
 );
 
@@ -55,9 +55,10 @@ CMR_ERROR CMRgraphicInitStatistics(
  */
 
 CMR_EXPORT
-CMR_ERROR CMRgraphicPrintStatistics(
-  FILE* stream,                 /**< File stream to print to. */
-  CMR_GRAPHIC_STATISTICS* stats /**< Pointer to statistics. */
+CMR_ERROR CMRstatsGraphicPrint(
+  FILE* stream,                   /**< File stream to print to. */
+  CMR_GRAPHIC_STATISTICS* stats,  /**< Pointer to statistics. */
+  const char* prefix              /**< Prefix string to prepend to each printed line (may be \c NULL). */
 );
 
 /**

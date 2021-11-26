@@ -192,7 +192,7 @@ TEST(Regular, NestedMinorPivotsOneRowOneColumn)
   bool isRegular;
   CMR_DEC* dec = NULL;
   CMR_REGULAR_PARAMETERS params;
-  ASSERT_CMR_CALL( CMRregularInitParameters(&params) );
+  ASSERT_CMR_CALL( CMRparamsRegularInit(&params) );
   params.fastGraphicness = false;
   ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, &params, NULL) );
 
@@ -226,7 +226,7 @@ TEST(Regular, NestedMinorPivotsTwoRowsOneColumn)
   bool isRegular;
   CMR_DEC* dec = NULL;
   CMR_REGULAR_PARAMETERS params;
-  ASSERT_CMR_CALL( CMRregularInitParameters(&params) );
+  ASSERT_CMR_CALL( CMRparamsRegularInit(&params) );
   params.fastGraphicness = false;
   ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, &params, NULL) );
 
@@ -259,7 +259,7 @@ TEST(Regular, NestedMinorPivotsOneRowTwoColumns)
   bool isRegular;
   CMR_DEC* dec = NULL;
   CMR_REGULAR_PARAMETERS params;
-  ASSERT_CMR_CALL( CMRregularInitParameters(&params) );
+  ASSERT_CMR_CALL( CMRparamsRegularInit(&params) );
   params.fastGraphicness = false;
   ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, &params, NULL) );
 
@@ -297,7 +297,7 @@ TEST(Regular, NestedMinorPivotsTwoSeparation)
   bool isRegular;
   CMR_DEC* dec = NULL;
   CMR_REGULAR_PARAMETERS params;
-  ASSERT_CMR_CALL( CMRregularInitParameters(&params) );
+  ASSERT_CMR_CALL( CMRparamsRegularInit(&params) );
   params.fastGraphicness = false;
   ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, &params, NULL) );
 
@@ -327,7 +327,7 @@ void testSequenceGraphicness(
   bool isRegular;
   CMR_DEC* dec = NULL;
   CMR_REGULAR_PARAMETERS params;
-  ASSERT_CMR_CALL( CMRregularInitParameters(&params) );
+  ASSERT_CMR_CALL( CMRparamsRegularInit(&params) );
   params.fastGraphicness = false;
   ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, &params, NULL) );
 
@@ -675,7 +675,7 @@ void testEnumerate(
   bool isRegular;
   CMR_DEC* dec = NULL;
   CMR_REGULAR_PARAMETERS params;
-  ASSERT_CMR_CALL( CMRregularInitParameters(&params) );
+  ASSERT_CMR_CALL( CMRparamsRegularInit(&params) );
   params.fastGraphicness = false;
   ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, &params, NULL) );
 
@@ -790,7 +790,7 @@ TEST(Regular, RandomMatrix)
     bool isRegular;
     CMR_DEC* dec = NULL;
     CMR_REGULAR_PARAMETERS params;
-    ASSERT_CMR_CALL( CMRregularInitParameters(&params) );
+    ASSERT_CMR_CALL( CMRparamsRegularInit(&params) );
     params.fastGraphicness = false;
     ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, A, &isRegular, &dec, NULL, &params, NULL) );
     ASSERT_CMR_CALL( CMRdecFree(cmr, &dec) );
@@ -820,7 +820,7 @@ TEST(Regular, Playground)
   bool isRegular;
   CMR_DEC* dec = NULL;
   CMR_REGULAR_PARAMETERS params;
-  ASSERT_CMR_CALL( CMRregularInitParameters(&params) );
+  ASSERT_CMR_CALL( CMRparamsRegularInit(&params) );
   params.fastGraphicness = false;
   ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, &params, NULL) );
 

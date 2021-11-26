@@ -19,6 +19,7 @@ extern "C" {
 #include <cmr/graph.h>
 #include <cmr/series_parallel.h>
 #include <cmr/graphic.h>
+#include <cmr/network.h>
 #include <cmr/dec.h>
 
 typedef enum
@@ -27,46 +28,6 @@ typedef enum
   CMR_DEC_CONSTRUCT_LEAVES = 1,
   CMR_DEC_CONSTRUCT_ALL = 2,
 } CMR_DEC_CONSTRUCT;
-
-
-/**
- * \brief Statistics for regular matroid recognition algorithm.
- */
-
-typedef struct
-{
-  size_t totalCount;                  /**< Total number of invocations. */
-  double totalTime;                   /**< Total time of all invocations. */
-  CMR_SP_STATISTICS seriesParallel;   /**< Statistics for series-parallel algorithm. */
-  CMR_GRAPHIC_STATISTICS graphic;     /**< Statistics for direct (co)graphicness checks. */
-  size_t sequenceExtensionCount;      /**< Number of extensions of sequences of nested minors. */
-  double sequenceExtensionTime;       /**< Time of extensions of sequences of nested minors. */
-  size_t sequenceGraphicCount;        /**< Number (co)graphicness tests applied to sequence of nested minors. */
-  double sequenceGraphicTime;         /**< Time of (co)graphicness tests applied to sequence of nested minors. */
-  size_t enumerationCount;            /**< Number of calls to enumeration algorithm for candidate 3-separations. */
-  double enumerationTime;             /**< Time of enumeration of candidate 3-separations. */
-  size_t enumerationCandidatesCount;  /**< Number of enumerated candidates for 3-separations. */
-} CMR_REGULAR_STATISTICS;
-
-
-/**
- * \brief Initializes all statistics for regularity test computations.
- */
-
-CMR_EXPORT
-CMR_ERROR CMRregularInitStatistics(
-  CMR_REGULAR_STATISTICS* stats /**< Pointer to statistics. */
-);
-
-/**
- * \brief Prints statistics for regularity test computations.
- */
-
-CMR_EXPORT
-CMR_ERROR CMRregularPrintStatistics(
-  FILE* stream,                 /**< File stream to print to. */
-  CMR_REGULAR_STATISTICS* stats /**< Pointer to statistics. */
-);
 
 typedef struct
 {
@@ -89,8 +50,49 @@ typedef struct
  */
 
 CMR_EXPORT
-CMR_ERROR CMRregularInitParameters(
+CMR_ERROR CMRparamsRegularInit(
   CMR_REGULAR_PARAMETERS* params  /**< Pointer to parameters. */
+);
+
+/**
+ * \brief Statistics for regular matroid recognition algorithm.
+ */
+
+typedef struct
+{
+  size_t totalCount;                  /**< Total number of invocations. */
+  double totalTime;                   /**< Total time of all invocations. */
+  CMR_SP_STATISTICS seriesParallel;   /**< Statistics for series-parallel algorithm. */
+  CMR_GRAPHIC_STATISTICS graphic;     /**< Statistics for direct (co)graphic checks. */
+  CMR_NETWORK_STATISTICS network;     /**< Statistics for direct (co)network checks. */
+  size_t sequenceExtensionCount;      /**< Number of extensions of sequences of nested minors. */
+  double sequenceExtensionTime;       /**< Time of extensions of sequences of nested minors. */
+  size_t sequenceGraphicCount;        /**< Number (co)graphicness tests applied to sequence of nested minors. */
+  double sequenceGraphicTime;         /**< Time of (co)graphicness tests applied to sequence of nested minors. */
+  size_t enumerationCount;            /**< Number of calls to enumeration algorithm for candidate 3-separations. */
+  double enumerationTime;             /**< Time of enumeration of candidate 3-separations. */
+  size_t enumerationCandidatesCount;  /**< Number of enumerated candidates for 3-separations. */
+} CMR_REGULAR_STATISTICS;
+
+
+/**
+ * \brief Initializes all statistics for regularity test computations.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRstatsRegularInit(
+  CMR_REGULAR_STATISTICS* stats /**< Pointer to statistics. */
+);
+
+/**
+ * \brief Prints statistics for regularity test computations.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRstatsRegularPrint(
+  FILE* stream,                   /**< File stream to print to. */
+  CMR_REGULAR_STATISTICS* stats,  /**< Pointer to statistics. */
+  const char* prefix              /**< Prefix string to prepend to each printed line (may be \c NULL). */
 );
   
 /**

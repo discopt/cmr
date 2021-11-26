@@ -33,6 +33,7 @@ int printUsage(const char* program)
   puts("  -t         Tests for being / converts to cographic matrix.");
   puts("  -n         Output the elements of a minimal non-(co)graphic submatrix.");
   puts("  -N         Output a minimal non-(co)graphic submatrix.");
+  puts("  -s         Print statistics about the computation to stderr.");
   puts("Formats for matrices: dense, sparse");
   puts("Formats for graphs: edgelist, dot (output only)");
   puts("If FILE is `-', then the input will be read from stdin.");
@@ -49,9 +50,11 @@ CMR_ERROR matrixToGraph(
   FileFormat outputFormat,        /**< Format of the output graph. */
   bool cographic,                 /**< Whether the input shall be checked for being cographic instead of graphic. */
   bool outputNonGraphicElements,  /**< Whether to print the elements of a minimal non-(co)graphic submatrix. */
-  bool outputNonGraphicMatrix     /**< Whether to print a minimal non-(co)graphic submatrix. */
+  bool outputNonGraphicMatrix,    /**< Whether to print a minimal non-(co)graphic submatrix. */
+  bool printStats                 /**< Whether to print statistics to stderr. */
 )
 {
+  clock_t readClock = clock();
   FILE* instanceFile = strcmp(instanceFileName, "-") ? fopen(instanceFileName, "r") : stdin;
   if (!instanceFile)
     return CMR_ERROR_INPUT;
@@ -68,7 +71,8 @@ CMR_ERROR matrixToGraph(
     CMR_CALL( CMRchrmatCreateFromSparseStream(cmr, instanceFile, &matrix) );
   if (instanceFile != stdin)
     fclose(instanceFile);
-  fprintf(stderr, "Read %lux%lu matrix with %lu nonzeros.\n", matrix->numRows, matrix->numColumns, matrix->numNonzeros);
+  fprintf(stderr, "Read %lux%lu matrix with %lu nonzeros in %f seconds.\n", matrix->numRows, matrix->numColumns,
+    matrix->numNonzeros, (clock() - readClock) * 1.0 / CLOCKS_PER_SEC);
 
   /* Test for (co)graphicness. */
 
@@ -81,7 +85,7 @@ CMR_ERROR matrixToGraph(
   CMR_SUBMAT* submatrix = NULL;
 
   CMR_GRAPHIC_STATISTICS stats;
-  CMR_CALL( CMRgraphicInitStatistics(&stats) );
+  CMR_CALL( CMRstatsGraphicInit(&stats) );
   if (cographic)
   {
     CMR_CALL( CMRtestCographicMatrix(cmr, matrix, &isCoGraphic, &graph, &forestEdges, &coforestEdges,
@@ -94,7 +98,8 @@ CMR_ERROR matrixToGraph(
   }
 
   fprintf(stderr, "Matrix %s%sgraphic.\n", isCoGraphic ? "IS " : "IS NOT ", cographic ? "co" : "");
-  CMR_CALL( CMRgraphicPrintStatistics(stderr, &stats) );
+  if (printStats)
+    CMR_CALL( CMRstatsGraphicPrint(stderr, &stats, NULL) );
 
   if (isCoGraphic)
   {
@@ -356,6 +361,7 @@ int main(int argc, char** argv)
   char* instanceFileName = NULL;
   bool outputNonGraphicElements = false;
   bool outputNonGraphicMatrix = false;
+  bool printStats = false;
   for (int a = 1; a < argc; ++a)
   {
     if (!strcmp(argv[a], "-h"))
@@ -369,6 +375,8 @@ int main(int argc, char** argv)
       outputNonGraphicElements = true;
     else if (!strcmp(argv[a], "-N"))
       outputNonGraphicMatrix = true;
+    else if (!strcmp(argv[a], "-s"))
+      printStats = true;
     else if (!strcmp(argv[a], "-i") && a+1 < argc)
     {
       if (!strcmp(argv[a+1], "dense"))
@@ -454,7 +462,7 @@ int main(int argc, char** argv)
   if (inputFormat == FILEFORMAT_MATRIX_DENSE || inputFormat == FILEFORMAT_MATRIX_SPARSE)
   {
     error = matrixToGraph(instanceFileName, inputFormat, outputFormat, transposed, outputNonGraphicElements,
-      outputNonGraphicMatrix);
+      outputNonGraphicMatrix, printStats);
   }
   else
     error = graphToMatrix(instanceFileName, inputFormat, outputFormat, transposed);

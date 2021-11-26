@@ -34,21 +34,11 @@ typedef struct
 } CMR_SP_STATISTICS;
 
 /**
- * \brief Represents a series-parallel reduction
- */
-
-typedef struct
-{
-  CMR_ELEMENT element; /**< Element (row/column) that is removed. */
-  CMR_ELEMENT mate;    /**< Element is parallel to or in series with \ref element, or 0 for a zero row/column. */
-} CMR_SP_REDUCTION;
-
-/**
  * \brief Initializes all statistics for series-parallel computations.
  */
 
 CMR_EXPORT
-CMR_ERROR CMRspInitStatistics(
+CMR_ERROR CMRstatsSeriesParallelInit(
   CMR_SP_STATISTICS* stats /**< Pointer to statistics. */
 );
 
@@ -57,10 +47,21 @@ CMR_ERROR CMRspInitStatistics(
  */
 
 CMR_EXPORT
-CMR_ERROR CMRspPrintStatistics(
+CMR_ERROR CMRstatsSeriesParallelPrint(
   FILE* stream,             /**< File stream to print to. */
-  CMR_SP_STATISTICS* stats  /**< Pointer to statistics. */
+  CMR_SP_STATISTICS* stats, /**< Pointer to statistics. */
+  const char* prefix        /**< Prefix string to prepend to each printed line (may be \c NULL). */
 );
+
+/**
+ * \brief Represents a series-parallel reduction
+ */
+
+typedef struct
+{
+  CMR_ELEMENT element; /**< Element (row/column) that is removed. */
+  CMR_ELEMENT mate;    /**< Element is parallel to or in series with \ref element, or 0 for a zero row/column. */
+} CMR_SP_REDUCTION;
 
 /**
  * Prints the series-parallel \p reduction to \p buffer.
