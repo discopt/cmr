@@ -772,6 +772,10 @@ CMR_ERROR transformSeparationNested(
   CMR_CALL( CMRfreeStackArray(cmr, &columnsToPart) );
   CMR_CALL( CMRfreeStackArray(cmr, &rowsToPart) );
 
+  CMRdbgMsg(12, "Printing matrix and 3-separation:\n");
+#if defined(CMR_DEBUG)
+  CMR_CALL( CMRchrmatPrintDense(cmr, dec->matrix, stdout, '0', true) );
+#endif /* CMR_DEBUG */
   for (size_t row = 0; row < dec->matrix->numRows; ++row)
     CMRdbgMsg(12, "Original row r%ld belongs to part %d.\n", row + 1, separation->rowsToPart[row]);
   for (size_t column = 0; column < dec->matrix->numColumns; ++column)
