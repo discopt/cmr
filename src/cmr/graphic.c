@@ -2176,7 +2176,8 @@ CMR_ERROR computeReducedDecomposition(
     if (entryRows[p] > maxRow)
       maxRow = entryRows[p];
   }
-  size_t requiredNumReducedMembers = dec->numMembers + maxRow;
+  size_t requiredNumReducedMembers = dec->numMembers + maxRow + 1;
+  CMRdbgMsg(6, "Requiring storage for at most %ld reduced members.\n", requiredNumReducedMembers);
   if (requiredNumReducedMembers >= newcolumn->memReducedMembers)
   {
     size_t newSize = 16 + 2 * newcolumn->memReducedMembers;
@@ -2414,7 +2415,8 @@ CMR_ERROR completeReducedDecomposition(
       DEC_EDGE edge = dec->rowEdges[row].edge;
       DEC_MEMBER member = findEdgeMember(dec, edge);
 
-      CMRdbgMsg(4, "Creating reduced member for edge %d of member %d.\n", edge, member);
+      CMRdbgMsg(4, "Creating reduced member %ld for edge %d of member %d.\n", newcolumn->numReducedMembers, edge,
+        member);
 
       assert(newcolumn->numReducedMembers < newcolumn->memReducedMembers);
       ReducedMember* reducedMember = &newcolumn->reducedMembers[newcolumn->numReducedMembers];
@@ -5196,7 +5198,7 @@ CMR_ERROR addColumnApply(
 static
 CMR_ERROR cographicnessTest(
   CMR* cmr,               /**< \ref CMR environment. */
-  CMR_CHRMAT* matrix,     /**< Some matrix to be tested for the cographicness. */
+  CMR_CHRMAT* matrix,     /**< Some matrix to be tested for cographicness. */
   void* data,             /**< Additional data (must be \c NULL). */
   bool* pisCographic,     /**< Pointer for storing whether \p matrix is cographic. */
   CMR_SUBMAT** psubmatrix /**< Pointer for storing a proper non-cographic submatrix of \p matrix. */
@@ -5210,7 +5212,7 @@ CMR_ERROR cographicnessTest(
 
 #if defined(CMR_DEBUG)
   CMRdbgMsg(0, "cographicnessTest called for a %dx%d matrix\n", matrix->numRows, matrix->numColumns);
-  CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
+  CMRchrmatPrintDense(cmr, matrix, stdout, '0', false);
 #endif /* CMR_DEBUG */
 
   *pisCographic = true;
@@ -5245,7 +5247,6 @@ CMR_ERROR cographicnessTest(
   return CMR_OKAY;
 }
 
-
 CMR_ERROR CMRtestCographicMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisCographic, CMR_GRAPH** pgraph,
   CMR_GRAPH_EDGE** pforestEdges, CMR_GRAPH_EDGE** pcoforestEdges, CMR_SUBMAT** psubmatrix,
   CMR_GRAPHIC_STATISTICS* stats)
@@ -5259,7 +5260,7 @@ CMR_ERROR CMRtestCographicMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisCographi
 
 #if defined(CMR_DEBUG)
   CMRdbgMsg(0, "CMRtestCographicMatrix called for a %dx%d matrix\n", matrix->numRows, matrix->numColumns);
-  CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
+  CMRchrmatPrintDense(cmr, matrix, stdout, '0', false);
 #endif /* CMR_DEBUG */
 
   clock_t totalClock = 0;
