@@ -788,3 +788,45 @@ TEST(TotallyUnimodular, R12)
 
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
+
+TEST(TotallyUnimodular, ForbiddenSubmatrix)
+{
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+
+  {
+    CMR_CHRMAT* matrix = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "14 14 "
+      "1 1 1 0 1 0 1 0  1 1 1 1 1 1 "
+      "1 0 1 0 1 0 1 0  1 1 1 1 1 0 "
+      "0 1 1 0 0 0 0 0  0 0 0 0 0 0 "
+      "0 1 1 1 0 0 0 0  0 0 0 0 0 0 "
+      "0 1 1 1 1 0 0 0  0 0 0 0 0 0 "
+      "0 1 1 1 1 1 0 0  0 0 0 0 0 0 "
+      "0 1 1 1 1 1 1 0  0 0 0 0 0 0 "
+      "0 1 1 1 1 1 1 1  0 0 0 0 0 0 "
+      "0 1 1 1 1 1 1 1  1 0 0 0 0 0 "
+      "0 0 0 0 0 0 0 0  1 1 0 0 0 0 "
+      "0 0 0 0 0 0 0 0  0 1 1 0 0 0 "
+      "0 0 0 0 0 0 0 0  0 0 1 1 0 0 "
+      "0 0 0 0 0 0 0 0  0 0 0 1 1 0 "
+      "0 0 0 0 0 0 0 0  0 0 0 0 1 1 "
+    ) );
+
+    CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
+
+    bool isTU;
+    CMR_DEC* dec = NULL;
+    CMR_SUBMAT* forbiddenSubmatrix = NULL;
+    ASSERT_CMR_CALL( CMRtestTotalUnimodularity(cmr, matrix, &isTU, &dec, &forbiddenSubmatrix, NULL, NULL) );
+    ASSERT_FALSE( CMRdecIsRegular(dec) );
+    ASSERT_EQ( forbiddenSubmatrix->numRows, 8 );
+    ASSERT_EQ( forbiddenSubmatrix->numColumns, 8 );
+    // TODO: Compute determinant once implemented.
+    ASSERT_CMR_CALL( CMRsubmatFree(cmr, &forbiddenSubmatrix) );
+    ASSERT_CMR_CALL( CMRdecFree(cmr, &dec) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  }
+
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
+}
