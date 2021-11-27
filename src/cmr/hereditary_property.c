@@ -69,7 +69,7 @@ CMR_ERROR CMRtestHereditaryPropertySimple(CMR* cmr, CMR_CHRMAT* matrix, Heredita
     CMR_SUBMAT* submatrix = NULL;
     CMR_CALL( testFunction(cmr, candidateMatrix, testData, &hasProperty, &submatrix) );
 
-    assert(!submatrix);
+    assert(!submatrix); // TODO: we cannot deal with this, yet.
 
     if (hasProperty)
     {

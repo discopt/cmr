@@ -390,6 +390,9 @@ CMR_ERROR CMRtestRegular(CMR* cmr, CMR_CHRMAT* matrix, bool ternary, bool *pisRe
 
   CMRdbgMsg(0, "Testing %s %dx%d matrix for regularity.\n", ternary ? "ternary" : "binary", matrix->numRows,
     matrix->numColumns);
+#if defined(CMR_DEBUG)
+  CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', false) );
+#endif /* CMR_DEBUG */
 
   clock_t time = 0;
   if (stats)

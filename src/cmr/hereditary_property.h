@@ -16,7 +16,7 @@ typedef CMR_ERROR (*HereditaryPropertyTest)(
   void* data,             /**< Potential additional data for the test function. */
   bool* phasProperty,     /**< Pointer for storing whether \p matrix has the property. */
   CMR_SUBMAT** psubmatrix /**< Pointer for storing a proper submatrix of \p matrix without the property. */
-);  /**< Function pointer for functions that test a hereditary matrix property. */
+); /**< Function pointer for functions that test a hereditary matrix property. */
 
 /**
  * \brief Tests a given \p matrix for the hereditary property defined by a given \p testFunction.

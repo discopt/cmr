@@ -6,6 +6,7 @@
 #include "one_sum.h"
 #include "camion_internal.h"
 #include "regular_internal.h"
+#include "hereditary_property.h"
 
 #include <stdlib.h>
 #include <assert.h>
@@ -55,6 +56,41 @@ CMR_ERROR CMRstatsTotalUnimodularityPrint(FILE* stream, CMR_TU_STATISTICS* stats
   return CMR_OKAY;
 }
 
+static
+CMR_ERROR tuTest(
+  CMR* cmr,                   /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,         /**< Some matrix to be tested for total unimodularity. */
+  void* data,                 /**< Additional data (must be \c NULL). */
+  bool* pisTotallyUnimodular, /**< Pointer for storing whether \p matrix is totally unimodular. */
+  CMR_SUBMAT** psubmatrix     /**< Pointer for storing a proper non-totally unimodular submatrix of \p matrix. */
+)
+{
+  assert(cmr);
+  assert(matrix);
+  assert(pisTotallyUnimodular);
+  assert(!psubmatrix || !*psubmatrix);
+
+  CMR_TU_STATISTICS* stats = (CMR_TU_STATISTICS*) data;
+
+#if defined(CMR_DEBUG)
+  CMRdbgMsg(0, "tuTest called for a %dx%d matrix\n", matrix->numRows, matrix->numColumns);
+  CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
+#endif /* CMR_DEBUG */
+
+  *pisTotallyUnimodular = true;
+
+  CMR_CALL( CMRtestCamionSigned(cmr, matrix, pisTotallyUnimodular, NULL, stats ? &stats->camion : NULL) );
+  if (*pisTotallyUnimodular)
+  {
+    CMR_REGULAR_PARAMETERS params;
+    CMR_CALL( CMRparamsRegularInit(&params) );
+    CMR_CALL( CMRtestRegular(cmr, matrix, false, pisTotallyUnimodular, NULL, NULL, &params,
+      stats ? &stats->regular : NULL) );
+  }
+
+  return CMR_OKAY;
+}
+
 CMR_ERROR CMRtestTotalUnimodularity(CMR* cmr, CMR_CHRMAT* matrix, bool* pisTotallyUnimodular, CMR_DEC** pdec,
   CMR_SUBMAT** psubmatrix, CMR_TU_PARAMETERS* params, CMR_TU_STATISTICS* stats)
 {
@@ -76,18 +112,23 @@ CMR_ERROR CMRtestTotalUnimodularity(CMR* cmr, CMR_CHRMAT* matrix, bool* pisTotal
 
   CMR_CALL( CMRtestCamionSigned(cmr, matrix, pisTotallyUnimodular, psubmatrix, stats ? &stats->camion : NULL) );
   if (!*pisTotallyUnimodular)
-    return CMR_OKAY;
-
-  CMR_MINOR* minor = NULL;
-  // TODO: run regularity check with ternary = true.
-  CMR_CALL( CMRtestRegular(cmr, matrix, false, pisTotallyUnimodular, pdec, psubmatrix ? &minor : NULL,
-    &params->regular, stats ? &stats->regular : NULL) );
-
-  if (minor)
   {
-    assert(minor->numPivots == 0);
-    *psubmatrix = minor->remainingSubmatrix;
-    minor->remainingSubmatrix = NULL;
+    if (stats)
+    {
+      stats->totalCount++;
+      stats->totalTime += (clock() - totalClock) * 1.0 / CLOCKS_PER_SEC;
+    }
+    return CMR_OKAY;
+  }
+
+  // TODO: run regularity check with ternary = true.
+  CMR_CALL( CMRtestRegular(cmr, matrix, false, pisTotallyUnimodular, pdec, NULL, &params->regular,
+    stats ? &stats->regular : NULL) );
+
+  if (!*pisTotallyUnimodular && psubmatrix)
+  {
+    assert(!*psubmatrix);
+    CMR_CALL( CMRtestHereditaryPropertySimple(cmr, matrix, tuTest, stats, psubmatrix) );
   }
 
   if (stats)
