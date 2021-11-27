@@ -2,11 +2,11 @@
 
 #include "common.h"
 
-#include <cmr/regular.h>
+#include <cmr/tu.h>
 #include <cmr/separation.h>
 #include <cmr/graphic.h>
 
-TEST(Regular, OneSum)
+TEST(TotallyUnimodular, OneSum)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -14,38 +14,38 @@ TEST(Regular, OneSum)
   {
     CMR_CHRMAT* K_3_3 = NULL;
     ASSERT_CMR_CALL( stringToCharMatrix(cmr, &K_3_3, "5 4 "
-      " 1 1 0 0 "
-      " 1 1 1 0 "
-      " 1 0 0 1 "
-      " 0 1 1 1 "
-      " 0 0 1 1 "
+      " 1 1 0  0 "
+      " 1 1 1  0 "
+      " 1 0 0 -1 "
+      " 0 1 1  1 "
+      " 0 0 1  1 "
     ) );
 
     CMR_CHRMAT* K_3_3_dual = NULL;
     ASSERT_CMR_CALL( stringToCharMatrix(cmr, &K_3_3_dual, "4 5 "
       " 1 1 1 0 0 "
-      " 1 1 0 1 0 "
-      " 0 1 0 1 1 "
+      " 1 1 0 -1 0 "
+      " 0 1 0 -1 -1 "
       " 0 0 1 1 1 "
     ) );
 
     CMR_CHRMAT* matrix = NULL;
     ASSERT_CMR_CALL( CMRoneSum(cmr, K_3_3, K_3_3_dual, &matrix) );
 
-    bool isRegular;
+    bool isTU;
     CMR_DEC* dec = NULL;
-    ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, NULL, NULL) );
+    ASSERT_CMR_CALL( CMRtestTotalUnimodularity(cmr, matrix, &isTU, &dec, NULL, NULL, NULL) );
 
     ASSERT_CMR_CALL( CMRdecPrint(cmr, dec, stdout, 0, true, true, true) );
-    ASSERT_TRUE( isRegular );
+    ASSERT_TRUE( isTU );
     ASSERT_FALSE( CMRdecHasMatrix(dec) ); /* Default settings should mean that the matrix is not copied. */
     ASSERT_FALSE( CMRdecHasTranspose(dec) ); /* Default settings should mean that the transpose is never computed. */
     ASSERT_EQ( CMRdecIsSum(dec, NULL, NULL), 1 );
     ASSERT_EQ( CMRdecNumChildren(dec), 2 );
-    ASSERT_TRUE( CMRdecIsGraphic(CMRdecChild(dec, 0)) );
-    ASSERT_FALSE( CMRdecIsCographic(CMRdecChild(dec, 0)) );
-    ASSERT_FALSE( CMRdecIsGraphic(CMRdecChild(dec, 1)) );
-    ASSERT_TRUE( CMRdecIsCographic(CMRdecChild(dec, 1)) );
+    ASSERT_FALSE( CMRdecIsGraphic(CMRdecChild(dec, 0)) );
+    ASSERT_TRUE( CMRdecIsCographic(CMRdecChild(dec, 0)) );
+    ASSERT_TRUE( CMRdecIsGraphic(CMRdecChild(dec, 1)) );
+    ASSERT_FALSE( CMRdecIsCographic(CMRdecChild(dec, 1)) );
     
     ASSERT_CMR_CALL( CMRdecFree(cmr, &dec) );
 
@@ -57,7 +57,7 @@ TEST(Regular, OneSum)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
-TEST(Regular, SeriesParallelTwoSeparation)
+TEST(TotallyUnimodular, SeriesParallelTwoSeparation)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -65,19 +65,19 @@ TEST(Regular, SeriesParallelTwoSeparation)
   {
     CMR_CHRMAT* K_3_3 = NULL;
     ASSERT_CMR_CALL( stringToCharMatrix(cmr, &K_3_3, "5 4 "
-      " 1 1 0 0 "
-      " 1 1 1 0 "
-      " 1 0 0 1 "
-      " 0 1 1 1 "
-      " 0 0 1 1 "
+      " 1 1 0  0 "
+      " 1 1 1  0 "
+      " 1 0 0 -1 "
+      " 0 1 1  1 "
+      " 0 0 1  1 "
     ) );
 
     CMR_CHRMAT* K_3_3_dual = NULL;
     ASSERT_CMR_CALL( stringToCharMatrix(cmr, &K_3_3_dual, "4 5 "
-      " 1 1 1 0 0 "
-      " 1 1 0 1 0 "
-      " 0 1 0 1 1 "
-      " 0 0 1 1 1 "
+      " 1 1  1 0 0 "
+      " 1 1  0 1 0 "
+      " 0 1  0 1 1 "
+      " 0 0 -1 1 1 "
     ) );
 
     CMR_CHRMAT* twoSum = NULL;
@@ -92,12 +92,12 @@ TEST(Regular, SeriesParallelTwoSeparation)
     CMRchrmatPrintDense(cmr, K_3_3_dual, stdout, '0', true);
     CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
 
-    bool isRegular;
+    bool isTU;
     CMR_DEC* dec = NULL;
-    ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, NULL, NULL) );
+    ASSERT_CMR_CALL( CMRtestTotalUnimodularity(cmr, matrix, &isTU, &dec, NULL, NULL, NULL) );
 
     ASSERT_CMR_CALL( CMRdecPrint(cmr, dec, stdout, 0, true, true, true) );
-    ASSERT_TRUE( isRegular );
+    ASSERT_TRUE( isTU );
     ASSERT_FALSE( CMRdecHasMatrix(dec) ); /* Default settings should mean that the matrix is not copied. */
     ASSERT_TRUE( CMRdecHasTranspose(dec) ); /* As we test for graphicness, the transpose is constructed. */
     ASSERT_EQ( CMRdecIsSum(dec, NULL, NULL), 2 );
@@ -117,7 +117,7 @@ TEST(Regular, SeriesParallelTwoSeparation)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
-TEST(Regular, NestedMinorSearchTwoSeparation)
+TEST(TotallyUnimodular, NestedMinorSearchTwoSeparation)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -125,34 +125,30 @@ TEST(Regular, NestedMinorSearchTwoSeparation)
   {
     CMR_CHRMAT* K_3_3 = NULL;
     ASSERT_CMR_CALL( stringToCharMatrix(cmr, &K_3_3, "5 4 "
-      " 1 1 0 0 "
-      " 1 1 1 0 "
-      " 1 0 0 1 "
-      " 0 1 1 1 "
-      " 0 0 1 1 "
+      " 1 1 0  0 "
+      " 1 1 1  0 "
+      " 1 0 0 -1 "
+      " 0 1 1  1 "
+      " 0 0 1  1 "
     ) );
 
     CMR_CHRMAT* K_3_3_dual = NULL;
     ASSERT_CMR_CALL( stringToCharMatrix(cmr, &K_3_3_dual, "4 5 "
-      " 1 1 1 0 0 "
-      " 1 1 0 1 0 "
-      " 0 1 0 1 1 "
-      " 0 0 1 1 1 "
+      " 1 1  1 0 0 "
+      " 1 1  0 1 0 "
+      " 0 1  0 1 1 "
+      " 0 0 -1 1 1 "
     ) );
 
     CMR_CHRMAT* matrix = NULL;
     ASSERT_CMR_CALL( CMRtwoSum(cmr, K_3_3, K_3_3_dual, CMRrowToElement(1), CMRcolumnToElement(1), &matrix) );
 
-//     CMRchrmatPrintDense(cmr, K_3_3, stdout, '0', true);
-//     CMRchrmatPrintDense(cmr, K_3_3_dual, stdout, '0', true);
-//     CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
-
-    bool isRegular;
+    bool isTU;
     CMR_DEC* dec = NULL;
-    ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, NULL, NULL) );
+    ASSERT_CMR_CALL( CMRtestTotalUnimodularity(cmr, matrix, &isTU, &dec, NULL, NULL, NULL) );
 
     ASSERT_CMR_CALL( CMRdecPrint(cmr, dec, stdout, 0, true, true, true) );
-    ASSERT_TRUE( isRegular );
+    ASSERT_TRUE( isTU );
     ASSERT_FALSE( CMRdecHasMatrix(dec) ); /* Default settings should mean that the matrix is not copied. */
     ASSERT_TRUE( CMRdecHasTranspose(dec) ); /* As we test for graphicness, the transpose is constructed. */
     ASSERT_EQ( CMRdecIsSum(dec, NULL, NULL), 2 );
@@ -172,7 +168,7 @@ TEST(Regular, NestedMinorSearchTwoSeparation)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
-TEST(Regular, NestedMinorPivotsOneRowOneColumn)
+TEST(TotallyUnimodular, NestedMinorPivotsOneRowOneColumn)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -189,12 +185,12 @@ TEST(Regular, NestedMinorPivotsOneRowOneColumn)
 
   CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
 
-  bool isRegular;
+  bool isTU;
   CMR_DEC* dec = NULL;
-  CMR_REGULAR_PARAMETERS params;
-  ASSERT_CMR_CALL( CMRparamsRegularInit(&params) );
-  params.fastGraphicness = false;
-  ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, &params, NULL) );
+  CMR_TU_PARAMETERS params;
+  ASSERT_CMR_CALL( CMRparamsTotalUnimodularityInit(&params) );
+  params.regular.fastGraphicness = false;
+  ASSERT_CMR_CALL( CMRtestTotalUnimodularity(cmr, matrix, &isTU, &dec, NULL, &params, NULL) );
 
   ASSERT_CMR_CALL( CMRdecPrint(cmr, dec, stdout, 0, true, true, true) );
   
@@ -205,7 +201,7 @@ TEST(Regular, NestedMinorPivotsOneRowOneColumn)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
-TEST(Regular, NestedMinorPivotsTwoRowsOneColumn)
+TEST(TotallyUnimodular, NestedMinorPivotsTwoRowsOneColumn)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -223,12 +219,12 @@ TEST(Regular, NestedMinorPivotsTwoRowsOneColumn)
 
   CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
 
-  bool isRegular;
+  bool isTU;
   CMR_DEC* dec = NULL;
-  CMR_REGULAR_PARAMETERS params;
-  ASSERT_CMR_CALL( CMRparamsRegularInit(&params) );
-  params.fastGraphicness = false;
-  ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, &params, NULL) );
+  CMR_TU_PARAMETERS params;
+  ASSERT_CMR_CALL( CMRparamsTotalUnimodularityInit(&params) );
+  params.regular.fastGraphicness = false;
+  ASSERT_CMR_CALL( CMRtestTotalUnimodularity(cmr, matrix, &isTU, &dec, NULL, &params, NULL) );
 
   ASSERT_CMR_CALL( CMRdecPrint(cmr, dec, stdout, 0, true, true, true) );
   
@@ -239,7 +235,7 @@ TEST(Regular, NestedMinorPivotsTwoRowsOneColumn)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
-TEST(Regular, NestedMinorPivotsOneRowTwoColumns)
+TEST(TotallyUnimodular, NestedMinorPivotsOneRowTwoColumns)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -256,12 +252,12 @@ TEST(Regular, NestedMinorPivotsOneRowTwoColumns)
 
   CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
 
-  bool isRegular;
+  bool isTU;
   CMR_DEC* dec = NULL;
-  CMR_REGULAR_PARAMETERS params;
-  ASSERT_CMR_CALL( CMRparamsRegularInit(&params) );
-  params.fastGraphicness = false;
-  ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, &params, NULL) );
+  CMR_TU_PARAMETERS params;
+  ASSERT_CMR_CALL( CMRparamsTotalUnimodularityInit(&params) );
+  params.regular.fastGraphicness = false;
+  ASSERT_CMR_CALL( CMRtestTotalUnimodularity(cmr, matrix, &isTU, &dec, NULL, &params, NULL) );
 
   ASSERT_CMR_CALL( CMRdecPrint(cmr, dec, stdout, 0, true, true, true) );
   
@@ -272,7 +268,7 @@ TEST(Regular, NestedMinorPivotsOneRowTwoColumns)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
-TEST(Regular, NestedMinorPivotsTwoSeparation)
+TEST(TotallyUnimodular, NestedMinorPivotsTwoSeparation)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -294,12 +290,12 @@ TEST(Regular, NestedMinorPivotsTwoSeparation)
 
   CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
 
-  bool isRegular;
+  bool isTU;
   CMR_DEC* dec = NULL;
-  CMR_REGULAR_PARAMETERS params;
-  ASSERT_CMR_CALL( CMRparamsRegularInit(&params) );
-  params.fastGraphicness = false;
-  ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, &params, NULL) );
+  CMR_TU_PARAMETERS params;
+  ASSERT_CMR_CALL( CMRparamsTotalUnimodularityInit(&params) );
+  params.regular.fastGraphicness = false;
+  ASSERT_CMR_CALL( CMRtestTotalUnimodularity(cmr, matrix, &isTU, &dec, NULL, &params, NULL) );
 
   ASSERT_CMR_CALL( CMRdecPrint(cmr, dec, stdout, 0, true, true, true) );
   
@@ -318,34 +314,37 @@ static
 void testSequenceGraphicness(
   CMR* cmr,           /**< \ref CMR environment. */
   CMR_CHRMAT* matrix, /**< Matrix to test. */
-  bool knowGraphic    /**< Whether the matrix is graphic. */
+  bool knowNetwork    /**< Whether the matrix is graphic. */
 )
 {
   printf("Testing matrix for graphicness via nested minor sequence:\n");
-  ASSERT_CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', true) );
+  ASSERT_CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', false) );
 
-  bool isRegular;
+  bool isTU;
   CMR_DEC* dec = NULL;
-  CMR_REGULAR_PARAMETERS params;
-  ASSERT_CMR_CALL( CMRparamsRegularInit(&params) );
-  params.fastGraphicness = false;
-  ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, &params, NULL) );
+  CMR_TU_PARAMETERS params;
+  ASSERT_CMR_CALL( CMRparamsTotalUnimodularityInit(&params) );
+  params.regular.fastGraphicness = false;
+  ASSERT_CMR_CALL( CMRtestTotalUnimodularity(cmr, matrix, &isTU, &dec, NULL, &params, NULL) );
 
-  if (knowGraphic)
+  if (knowNetwork)
   {
-    ASSERT_TRUE( isRegular );
+    ASSERT_TRUE( isTU );
     ASSERT_TRUE( CMRdecIsGraphic(dec) );
-    CMR_CHRMAT* graphicMatrix = NULL;
+    CMR_CHRMAT* networkMatrix = NULL;
     bool isForest;
-    ASSERT_CMR_CALL( CMRcomputeGraphicMatrix(cmr, CMRdecGraph(dec), &graphicMatrix, NULL, CMRdecGraphSizeForest(dec),
-      CMRdecGraphForest(dec), CMRdecGraphSizeCoforest(dec), CMRdecGraphCoforest(dec), &isForest) );
-    if (!CMRchrmatCheckEqual(matrix, graphicMatrix))
-    {
-      printf("Computed graph with different representation matrix:\n");
-      CMRchrmatPrintDense(cmr, graphicMatrix, stdout, '0', true);
-    }
-    ASSERT_TRUE( CMRchrmatCheckEqual(matrix, graphicMatrix) );
-    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &graphicMatrix) );
+    ASSERT_CMR_CALL( CMRcomputeNetworkMatrix(cmr, CMRdecGraph(dec), &networkMatrix, NULL, CMRdecGraphArcsReversed(dec),
+      CMRdecGraphSizeForest(dec), CMRdecGraphForest(dec), CMRdecGraphSizeCoforest(dec), CMRdecGraphCoforest(dec), &isForest) );
+
+// TODO: Decomposition graph is currently undirected.
+//     if (!CMRchrmatCheckEqual(matrix, networkMatrix))
+//     {
+//       printf("Computed digraph with different representation matrix:\n");
+//       CMRchrmatPrintDense(cmr, networkMatrix, stdout, '0', true);
+//     }
+//     ASSERT_TRUE( CMRchrmatCheckEqual(matrix, networkMatrix) );
+
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &networkMatrix) );
     ASSERT_TRUE(isForest);
   }
   else
@@ -359,7 +358,7 @@ void testSequenceGraphicness(
   ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
 }
 
-TEST(Regular, SequenceGraphicnessWheel)
+TEST(TotallyUnimodular, SequenceGraphicnessWheel)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -380,10 +379,10 @@ TEST(Regular, SequenceGraphicnessWheel)
   {
     CMR_CHRMAT* matrix = NULL;
     ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "4 4 "
-      "1 0 1 0 "
-      "1 1 0 0 "
-      "0 1 1 1 "
-      "0 0 1 1 "
+      "1  0 1 0 "
+      "1 -1 0 0 "
+      "0  1 1 1 "
+      "0  0 1 1 "
     ) );
     testSequenceGraphicness(cmr, matrix, true);
   }
@@ -424,7 +423,7 @@ TEST(Regular, SequenceGraphicnessWheel)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
-TEST(Regular, SequenceGraphicnessOneRowOneColumn)
+TEST(TotallyUnimodular, SequenceGraphicnessOneRowOneColumn)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -449,7 +448,7 @@ TEST(Regular, SequenceGraphicnessOneRowOneColumn)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
-TEST(Regular, SequenceGraphicnessTwoRowsOneColumn)
+TEST(TotallyUnimodular, SequenceGraphicnessTwoRowsOneColumn)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -466,7 +465,7 @@ TEST(Regular, SequenceGraphicnessTwoRowsOneColumn)
       "0 0 1 1   1   0 "
       "                "
       "0 0 0 1   0   1 "
-      "0 0 0 0   1   1 "
+      "0 0 0 0  -1   1 "
     ) );
     testSequenceGraphicness(cmr, matrix, true);
   }
@@ -474,7 +473,7 @@ TEST(Regular, SequenceGraphicnessTwoRowsOneColumn)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
-TEST(Regular, SequenceGraphicnessOneRowTwoColumns)
+TEST(TotallyUnimodular, SequenceGraphicnessOneRowTwoColumns)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -484,7 +483,7 @@ TEST(Regular, SequenceGraphicnessOneRowTwoColumns)
     ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "6 8 "
       "1 0 0 1   0 0   0 0 "
       "1 1 0 0   0 0   0 0 "
-      "0 1 1 0   1 0   1 0 "
+      "0 1 1 0  -1 0  -1 0 "
       "0 0 1 1   0 1   0 1 "
       "                    "
       "0 0 0 0   1 1   1 1 "
@@ -497,7 +496,7 @@ TEST(Regular, SequenceGraphicnessOneRowTwoColumns)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
-TEST(Regular, SequenceGraphicnessOneColumn)
+TEST(TotallyUnimodular, SequenceGraphicnessOneColumn)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -519,7 +518,7 @@ TEST(Regular, SequenceGraphicnessOneColumn)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
-TEST(Regular, SequenceGraphicnessOneRow)
+TEST(TotallyUnimodular, SequenceGraphicnessOneRow)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -527,15 +526,15 @@ TEST(Regular, SequenceGraphicnessOneRow)
   {
     CMR_CHRMAT* matrix = NULL;
     ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "6 5 "
-      "1 1 0   0   0 "
-      "0 1 1   0   1 "
-      "1 0 1   1   0 "
+      "1 1  0   0   0 "
+      "0 1  1   0   1 "
+      "1 0 -1   1   0 "
       "              "
-      "1 0 0   1   0 "
+      "1 0  0   1   0 "
       "              "
-      "0 1 0   0   1 "
+      "0 1  0   0   1 "
       "              "
-      "0 1 1   0   0 "
+      "0 1  1   0   0 "
     ) );
     testSequenceGraphicness(cmr, matrix, true);
   }
@@ -543,13 +542,13 @@ TEST(Regular, SequenceGraphicnessOneRow)
   {
     CMR_CHRMAT* matrix = NULL;
     ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "5 5 "
-      "1 1 0   0  1 " 
-      "0 1 1   1  0 "
-      "1 0 1   0  0 "
+      "1 1  0   0  1 " 
+      "0 1  1   1  0 "
+      "1 0 -1   0  0 "
       "             "
-      "0 1 0   1  1 "
+      "0 1  0   1  1 "
       "             "
-      "0 0 0   1  1 "
+      "0 0  0   1  1 "
     ) );
     testSequenceGraphicness(cmr, matrix, false);
   }
@@ -559,16 +558,16 @@ TEST(Regular, SequenceGraphicnessOneRow)
      * induced by 1-edges. */
     CMR_CHRMAT* matrix = NULL;
     ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "10 9 "
-      "1 1 0 0 0 0 0 0 0 "
-      "0 1 1 1 0 0 0 0 0 "
-      "0 1 1 0 0 0 0 0 0 "
-      "1 0 1 0 0 0 0 0 0 "
-      "0 0 1 1 0 0 0 0 1 "
-      "1 0 1 1 1 0 0 0 0 "
-      "0 0 0 1 0 1 0 0 0 "
-      "0 0 0 0 0 1 1 1 0 "
-      "0 0 0 0 0 1 0 0 0 "
-      "0 0 0 0 0 0 1 0 0 "
+      "1 1  0  0 0 0 0 0 0 "
+      "0 1  1  1 0 0 0 0 0 "
+      "0 1  1  0 0 0 0 0 0 "
+      "1 0 -1  0 0 0 0 0 0 "
+      "0 0  1  1 0 0 0 0 1 "
+      "1 0 -1 -1 1 0 0 0 0 "
+      "0 0  0  1 0 1 0 0 0 "
+      "0 0  0  0 0 1 1 1 0 "
+      "0 0  0  0 0 1 0 0 0 "
+      "0 0  0  0 0 0 1 0 0 "
     ) );
     testSequenceGraphicness(cmr, matrix, false);
   }
@@ -578,14 +577,14 @@ TEST(Regular, SequenceGraphicnessOneRow)
      * bipartite. */
     CMR_CHRMAT* matrix = NULL;
     ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "8 10 "
-      "1 0 1 0 1 0 0 0 0 0 "
-      "1 1 1 1 1 0 0 0 0 0 "
-      "0 0 0 0 1 1 0 0 0 0 "
-      "0 1 0 1 1 0 0 1 1 0 "
-      "0 1 1 0 1 1 1 0 0 0 "
-      "0 0 0 0 0 0 1 1 0 0 "
-      "0 0 0 1 0 0 0 0 0 1 "
-      "0 0 1 0 0 0 0 0 0 1 "
+      "1 0 1 0 1 0 0  0 0  0 "
+      "1 1 1 1 1 0 0  0 0  0 "
+      "0 0 0 0 1 1 0  0 0  0 "
+      "0 1 0 1 1 0 0  1 1  0 "
+      "0 1 1 0 1 1 1  0 0  0 "
+      "0 0 0 0 0 0 1 -1 0  0 "
+      "0 0 0 1 0 0 0  0 0  1 "
+      "0 0 1 0 0 0 0  0 0 -1 "
     ) );
     testSequenceGraphicness(cmr, matrix, false);
   }
@@ -595,11 +594,11 @@ TEST(Regular, SequenceGraphicnessOneRow)
      * 1-edge adjacent to the split node. */
     CMR_CHRMAT* matrix = NULL;
     ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "5 5 "
-      "1 1 0 0 1 "
-      "1 1 1 0 1 "
-      "0 1 1 1 0 "
-      "1 0 0 1 0 "
-      "0 1 1 1 1 "
+      "1 1 0  0 1 "
+      "1 1 1  0 1 "
+      "0 1 1  1 0 "
+      "1 0 0 -1 0 "
+      "0 1 1  1 1 "
     ) );
     testSequenceGraphicness(cmr, matrix, true);
   }
@@ -607,7 +606,7 @@ TEST(Regular, SequenceGraphicnessOneRow)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
-TEST(Regular, R10)
+TEST(TotallyUnimodular, R10)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -624,9 +623,9 @@ TEST(Regular, R10)
 
     CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
 
-    bool isRegular;
+    bool isTU;
     CMR_DEC* dec = NULL;
-    ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, NULL, NULL) );
+    ASSERT_CMR_CALL( CMRtestTotalUnimodularity(cmr, matrix, &isTU, &dec, NULL, NULL, NULL) );
     ASSERT_TRUE( CMRdecIsRegular(dec) );
     ASSERT_EQ( CMRdecNumChildren(dec), 0 );
     ASSERT_CMR_CALL( CMRdecFree(cmr, &dec) );
@@ -636,18 +635,19 @@ TEST(Regular, R10)
   {
     CMR_CHRMAT* matrix = NULL;
     ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "5 5 "
-      "1 1 0 0 1 "
-      "1 1 1 0 0 "
-      "0 1 1 1 0 "
-      "0 0 1 1 1 "
-      "1 0 0 1 1 "
+      "1 1  0  0 1 "
+      "1 1 -1  0 0 "
+      "0 1 -1 -1 0 "
+      "0 0  1  1 1 "
+      "1 0  0  1 1 "
     ) );
 
     CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
 
-    bool isRegular;
+    bool isTU;
     CMR_DEC* dec = NULL;
-    ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, NULL, NULL) );
+    ASSERT_CMR_CALL( CMRtestTotalUnimodularity(cmr, matrix, &isTU, &dec, NULL, NULL, NULL) );
+    ASSERT_TRUE( dec );
     ASSERT_TRUE( CMRdecIsRegular(dec) );
     ASSERT_EQ( CMRdecNumChildren(dec), 0 );
     ASSERT_CMR_CALL( CMRdecFree(cmr, &dec) );
@@ -672,20 +672,20 @@ void testEnumerate(
   printf("Testing matrix for regularity with a 3-separation:\n");
   ASSERT_CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', true) );
 
-  bool isRegular;
+  bool isTU;
   CMR_DEC* dec = NULL;
-  CMR_REGULAR_PARAMETERS params;
-  ASSERT_CMR_CALL( CMRparamsRegularInit(&params) );
-  params.fastGraphicness = false;
-  ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, &params, NULL) );
+  CMR_TU_PARAMETERS params;
+  ASSERT_CMR_CALL( CMRparamsTotalUnimodularityInit(&params) );
+  params.regular.fastGraphicness = false;
+  ASSERT_CMR_CALL( CMRtestTotalUnimodularity(cmr, matrix, &isTU, &dec, NULL, &params, NULL) );
 
   if (knowRegular)
   {
-    ASSERT_TRUE( isRegular );
+    ASSERT_TRUE( isTU );
   }
   else
   {
-    ASSERT_FALSE( isRegular );
+    ASSERT_FALSE( isTU );
   }
 
   ASSERT_CMR_CALL( CMRdecPrint(cmr, dec, stdout, 0, true, true, true) );
@@ -694,7 +694,7 @@ void testEnumerate(
   ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
 }
 
-TEST(Regular, EnumerateRanksZeroTwo)
+TEST(TotallyUnimodular, EnumerateRanksZeroTwo)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -713,7 +713,7 @@ TEST(Regular, EnumerateRanksZeroTwo)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
-TEST(Regular, EnumerateRanksOneOne)
+TEST(TotallyUnimodular, EnumerateRanksOneOne)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -732,7 +732,7 @@ TEST(Regular, EnumerateRanksOneOne)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
-TEST(Regular, EnumerateRanksTwoZero)
+TEST(TotallyUnimodular, EnumerateRanksTwoZero)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -752,7 +752,7 @@ TEST(Regular, EnumerateRanksTwoZero)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
-TEST(Regular, R12)
+TEST(TotallyUnimodular, R12)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -760,19 +760,19 @@ TEST(Regular, R12)
   {
     CMR_CHRMAT* matrix = NULL;
     ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "6 6 "
-      "1 0 1 1 0 0 "
-      "0 1 1 1 0 0 "
-      "1 0 1 0 1 1 "
-      "0 1 0 1 1 1 "
-      "1 0 1 0 1 0 "
-      "0 1 0 1 0 1 "
+      "1  0 1  1 0 0 "
+      "0  1 1  1 0 0 "
+      "1  0 1  0 1 1 "
+      "0 -1 0 -1 1 1 "
+      "1  0 1  0 1 0 "
+      "0 -1 0 -1 0 1 "
     ) );
 
     CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
 
-    bool isRegular;
+    bool isTU;
     CMR_DEC* dec = NULL;
-    ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, NULL, NULL) );
+    ASSERT_CMR_CALL( CMRtestTotalUnimodularity(cmr, matrix, &isTU, &dec, NULL, NULL, NULL) );
     ASSERT_TRUE( CMRdecIsRegular(dec) );
     ASSERT_EQ( CMRdecNumChildren(dec), 2 );
     size_t graphicChildren = (CMRdecIsGraphic(CMRdecChild(dec, 0)) ? 2 : 0)

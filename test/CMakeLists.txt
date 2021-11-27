@@ -19,7 +19,8 @@ add_executable(cmr_gtest
   test_network.cpp
   test_regular.cpp
   test_separation.cpp
-  test_series_parallel.cpp)
+  test_series_parallel.cpp
+  test_tu.cpp)
 
 # Add tests for non-exported functions only for static library.
 if(NOT SHARED)
