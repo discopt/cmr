@@ -791,12 +791,6 @@ CMR_ERROR CMRregularSearchThreeSeparation(CMR* cmr, CMR_DEC* dec, CMR_CHRMAT* tr
   assert(dec);
   assert(params);
 
-  /* Prepare calls to the separation-extension algorithm. */
-  ElementData* rowData = NULL;
-  CMR_CALL( CMRallocStackArray(cmr, &rowData, dec->matrix->numRows) );
-  ElementData* columnData = NULL;
-  CMR_CALL( CMRallocStackArray(cmr, &columnData, dec->matrix->numColumns) );
-
   size_t firstMinor = 1;
   while (dec->nestedMinorsSequenceNumRows[firstMinor] + dec->nestedMinorsSequenceNumColumns[firstMinor] < 8)
   {
@@ -814,6 +808,12 @@ CMR_ERROR CMRregularSearchThreeSeparation(CMR* cmr, CMR_DEC* dec, CMR_CHRMAT* tr
       return CMR_OKAY;
     }
   }
+
+  /* Prepare calls to the separation-extension algorithm. */
+  ElementData* rowData = NULL;
+  CMR_CALL( CMRallocStackArray(cmr, &rowData, dec->matrix->numRows) );
+  ElementData* columnData = NULL;
+  CMR_CALL( CMRallocStackArray(cmr, &columnData, dec->matrix->numColumns) );
 
   assert(firstMinor <= firstNonCoGraphicMinor);
 
