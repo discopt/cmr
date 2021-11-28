@@ -20,7 +20,7 @@ void CMRdbgMsg(int indent, const char* format, ...)
   fflush(stdout);
 }
 
-#else /* CMR_DEBUG */
+#else /* !CMR_DEBUG */
 
 #define CMRdbgMsg(...)
 
