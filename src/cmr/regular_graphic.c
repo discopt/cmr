@@ -1262,7 +1262,7 @@ CMR_ERROR CMRregularSequenceGraphic(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT* tr
 
   CMRdbgMsg(8, "Testing sequence for (co)graphicness.\n");
 
-  clock_t time;
+  clock_t time = 0;
   if (stats)
     time = clock();
 
