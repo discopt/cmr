@@ -22,6 +22,7 @@ make
 ./cmr-graphic         # Graphic binary matroids
 ./cmr-network         # Network matrices
 ./cmr-tu              # Totally unimodular matrices
+./cmr-regular         # Regular matroids
 ./cmr-k-modular       # (Strongly) unimodular and k-modular matrices
 ./cmr-series-parallel # Series-parallel matrices
 
