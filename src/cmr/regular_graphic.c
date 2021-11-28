@@ -534,7 +534,7 @@ CMR_ERROR addToGraph1Row(
             CMRgraphEdgeV(graph, columnEdges[nonzeroColumns[i]]));
         }
 
-        size_t numComponents;
+        size_t numComponents = SIZE_MAX;
         size_t* nodesComponent = NULL;
         CMR_CALL( CMRallocStackArray(cmr, &nodesComponent, CMRgraphNumNodes(graph)) );
 
@@ -570,7 +570,7 @@ CMR_ERROR addToGraph1Row(
         fflush(stdout);
   #endif /* CMR_DEBUG */
 
-        bool isBipartite;
+        bool isBipartite = false;
         int* bipartition = NULL;
         CMR_CALL( CMRallocStackArray(cmr, &bipartition, CMRgraphMemNodes(auxiliaryGraph)) );
 
