@@ -286,7 +286,7 @@ CMR_ERROR decomposeOneSum(CMR* cmr, CMR_MATRIX* matrix, size_t matrixType, size_
 
     /* Compute the slices in the transposed component matrix from the graph. */
     int countNonzeros = 0;
-    for (int compColumn = 0; compColumn < compTranspose->numRows; ++compColumn)
+    for (size_t compColumn = 0; compColumn < compTranspose->numRows; ++compColumn)
     {
       int column = components[comp].columnsToOriginal[compColumn];
       int node = firstColumnNode + column;
@@ -406,7 +406,7 @@ CMR_ERROR decomposeOneSum(CMR* cmr, CMR_MATRIX* matrix, size_t matrixType, size_
 
     /* Compute the slices in the component matrix from the graph. */
     int countNonzeros = 0;
-    for (int compRow = 0; compRow < compMatrix->numRows; ++compRow)
+    for (size_t compRow = 0; compRow < compMatrix->numRows; ++compRow)
     {
       int row = components[comp].rowsToOriginal[compRow];
       int node = row;
@@ -415,7 +415,7 @@ CMR_ERROR decomposeOneSum(CMR* cmr, CMR_MATRIX* matrix, size_t matrixType, size_
     }
 
     /* Fill the slices. To ensure that it is sorted, we iterate column-wise. */
-    for (int compColumn = 0; compColumn < compMatrix->numColumns; ++compColumn)
+    for (size_t compColumn = 0; compColumn < compMatrix->numColumns; ++compColumn)
     {
       int start = compTranspose->rowSlice[compColumn];
       int end = compTranspose->rowSlice[compColumn + 1];
@@ -469,22 +469,22 @@ CMR_ERROR decomposeOneSum(CMR* cmr, CMR_MATRIX* matrix, size_t matrixType, size_
   /* Fill arrays for original matrix viewpoint. */
   if (rowsToComponents)
   {
-    for (int row = 0; row < matrix->numRows; ++row)
+    for (size_t row = 0; row < matrix->numRows; ++row)
       rowsToComponents[row] = graphNodes[row].component;
   }
   if (columnsToComponents)
   {
-    for (int column = 0; column < matrix->numColumns; ++column)
+    for (size_t column = 0; column < matrix->numColumns; ++column)
       columnsToComponents[column] = graphNodes[firstColumnNode + column].component;
   }
   if (rowsToComponentRows)
   {
-    for (int row = 0; row < matrix->numRows; ++row)
+    for (size_t row = 0; row < matrix->numRows; ++row)
       rowsToComponentRows[row] = graphNodes[row].order;
   }
   if (columnsToComponentColumns)
   {
-    for (int column = 0; column < matrix->numColumns; ++column)
+    for (size_t column = 0; column < matrix->numColumns; ++column)
       columnsToComponentColumns[column] = graphNodes[firstColumnNode + column].order;
   }
 

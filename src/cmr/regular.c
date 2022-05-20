@@ -228,7 +228,7 @@ CMR_ERROR testRegularThreeConnectedWithSequence(
         lastGraphicMinor > lastCographicMinor ? (lastGraphicMinor+1) : (lastCographicMinor + 1) );
 
       CMR_CALL( CMRregularSearchThreeSeparation(cmr, dec, nestedMinorsTranspose, ternary,
-        lastGraphicMinor > lastCographicMinor ? (lastGraphicMinor+1) : (lastCographicMinor + 1), NULL, params, stats) );
+        lastGraphicMinor > lastCographicMinor ? (lastGraphicMinor+1) : (lastCographicMinor + 1), /*NULL, */params, stats) );
 
       if (dec->type == CMR_DEC_IRREGULAR)
       {
@@ -459,19 +459,6 @@ CMR_ERROR CMRtestRegular(CMR* cmr, CMR_CHRMAT* matrix, bool ternary, bool *pisRe
   {
     stats->totalTime += (clock() - time) * 1.0 / CLOCKS_PER_SEC;
   }
-
-  return CMR_OKAY;
-}
-
-CMR_ERROR CMRtestBinaryRegularConnected(CMR* cmr, CMR_DEC* dec, CMR_CHRMAT* matrix, CMR_CHRMAT* transpose,
-  bool checkPlanarity, bool certify, bool constructDecomposition, bool* pisRegular)
-{
-  assert(cmr);
-  assert(dec);
-  assert(matrix);
-
-  CMRdbgMsg(2, "Testing binary %dx%d 2-connected matrix for regularity.\n", matrix->numRows, matrix->numColumns);
-
 
   return CMR_OKAY;
 }

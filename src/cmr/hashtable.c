@@ -15,7 +15,7 @@ typedef struct
   size_t keyIndex;                /**< \brief Position of first key byte in \ref CMR_HASHTABLE::keyStorage. */
   size_t keyLength;               /**< \brief Length of key array. */
   CMR_LINEARHASHTABLE_HASH hash;  /**< \brief Hash value of key array. */
-  const void* value;            /**< \brief Stored value. */
+  const void* value;              /**< \brief Stored value. */
 } LinearhashtableArrayBucket;
 
 struct _CMR_LINEARHASHTABLE_ARRAY
@@ -24,7 +24,7 @@ struct _CMR_LINEARHASHTABLE_ARRAY
   LinearhashtableArrayBucket* buckets;  /**< \brief Actual hash table. */
 
   unsigned char* keyStorage;            /**< \brief Storage for keys. */
-  long freeKeyIndex;                    /**< \brief First unused byte in \ref keyStorage. */
+  size_t freeKeyIndex;                  /**< \brief First unused byte in \ref keyStorage. */
   size_t memKeyStorage;                 /**< \brief Length of \ref keyStorage. */
 
   size_t numElements;                   /**< \brief Number of stored key/value pairs. */
@@ -84,7 +84,6 @@ CMR_ERROR CMRlinearhashtableArrayFree(CMR* cmr, CMR_LINEARHASHTABLE_ARRAY** phas
 const void* CMRlinearhashtableArrayKey(CMR_LINEARHASHTABLE_ARRAY* hashtable, CMR_LINEARHASHTABLE_HASH hash, size_t* pKeyLength)
 {
   assert(hashtable);
-  assert(hash >= 0);
   assert(pKeyLength);
 
   LinearhashtableArrayBucket* data = &hashtable->buckets[linearhashtableArrayHashToBucket(hashtable, hash)];
@@ -95,7 +94,6 @@ const void* CMRlinearhashtableArrayKey(CMR_LINEARHASHTABLE_ARRAY* hashtable, CMR
 const void* CMRlinearhashtableArrayValue(CMR_LINEARHASHTABLE_ARRAY* hashtable, CMR_LINEARHASHTABLE_HASH hash)
 {
   assert(hashtable);
-  assert(hash >= 0);
 
   return hashtable->buckets[linearhashtableArrayHashToBucket(hashtable, hash)].value;
 }
@@ -150,8 +148,6 @@ CMR_ERROR CMRlinearhashtableArrayInsertBucketHash(CMR* cmr, CMR_LINEARHASHTABLE_
   assert(cmr);
   assert(hashtable);
   assert(keyArray);
-  assert(keyLength > 0);
-  assert(hash >= 0);
 
   LinearhashtableArrayBucket* bucketData = &hashtable->buckets[bucket];
   if (bucketData->keyLength)

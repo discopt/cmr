@@ -1,4 +1,4 @@
-// #define CMR_DEBUG /* Uncomment to debug graphic. */
+#define CMR_DEBUG /* Uncomment to debug graphic. */
 // #define CMR_DEBUG_DOT /* Uncomment to write dot files of t-decompositions. */
 // #define CMR_DEBUG_CONSISTENCY /* Uncomment to check consistency of t-decompositions. */
 
@@ -14,6 +14,7 @@
 #include <assert.h>
 #include <limits.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <time.h>
 
 #define SWAP_INTS(a, b) \
@@ -73,10 +74,10 @@ typedef enum
 
 typedef struct
 {
-  DIJKSTRA_STAGE stage;   /**< \brief At which stage of the algorithm is this node? */
-  int predecessor;        /**< \brief Predecessor node in shortest-path branching, or -1 for a root. */
-  CMR_GRAPH_EDGE rootEdge; /**< \brief The actual edge towards the predecessor, or -1 for a root./ */
-  bool reversed;          /**< \brief Whether the edge towards the predecessor is reversed. */
+  DIJKSTRA_STAGE stage;     /**< \brief At which stage of the algorithm is this node? */
+  int predecessor;          /**< \brief Predecessor node in shortest-path branching, or -1 for a root. */
+  CMR_GRAPH_EDGE rootEdge;  /**< \brief The actual edge towards the predecessor, or -1 for a root./ */
+  bool reversed;            /**< \brief Whether the edge towards the predecessor is reversed. */
 } DijkstraNodeData;
 
 CMR_ERROR CMRcomputeRepresentationMatrix(CMR* cmr, CMR_GRAPH* digraph, bool ternary, CMR_CHRMAT** ptranspose,
@@ -242,8 +243,8 @@ CMR_ERROR CMRcomputeRepresentationMatrix(CMR* cmr, CMR_GRAPH* digraph, bool tern
   CMR_CALL( CMRchrmatCreate(cmr, ptranspose, CMRgraphNumEdges(digraph) - numRows, numRows,
     16 * numRows) );
   CMR_CHRMAT* transpose = *ptranspose;
-  int numNonzeros = 0; /* Current number of nonzeros. transpose->numNonzeros is the memory. */
-  int numColumns = 0;
+  size_t numNonzeros = 0; /* Current number of nonzeros. transpose->numNonzeros is the memory. */
+  size_t numColumns = 0;
   CMR_GRAPH_EDGE* edgeColumns = NULL;
   CMR_CALL( CMRallocStackArray(cmr, &edgeColumns, CMRgraphMemEdges(digraph)) );
   for (CMR_GRAPH_ITER i = CMRgraphEdgesFirst(digraph); CMRgraphEdgesValid(digraph, i);
@@ -427,9 +428,9 @@ const char* memberTypeString(
   }
 }
 
-typedef int DEC_EDGE;   /**< \brief Type for refering to a decomposition edge. */
-typedef int DEC_NODE;   /**< \brief Type for refering to a decomposition node. */
-typedef int DEC_MEMBER; /**< \brief Type for refering to a decomposition member. */
+typedef size_t DEC_EDGE;   /**< \brief Type for refering to a decomposition edge. */
+typedef size_t DEC_NODE;   /**< \brief Type for refering to a decomposition node. */
+typedef size_t DEC_MEMBER; /**< \brief Type for refering to a decomposition member. */
 
 typedef struct
 {
@@ -475,31 +476,31 @@ typedef struct
 
 typedef struct
 {
-  CMR* cmr;                           /**< \brief \ref CMR environment. */
+  CMR* cmr;                         /**< \brief \ref CMR environment. */
 
-  int memMembers;                   /**< \brief Allocated memory for members. */
-  int numMembers;                   /**< \brief Number of members. */
+  size_t memMembers;                /**< \brief Allocated memory for members. */
+  size_t numMembers;                /**< \brief Number of members. */
   DEC_MEMBER_DATA* members;         /**< \brief Array of members. */
 
-  int memEdges;                     /**< \brief Allocated memory for edges. */
-  int numEdges;                     /**< \brief Number of used edges. */
+  size_t memEdges;                  /**< \brief Allocated memory for edges. */
+  size_t numEdges;                  /**< \brief Number of used edges. */
   DecEdgeData* edges;               /**< \brief Array of edges. */
   DEC_EDGE firstFreeEdge;           /**< \brief First edge in free list or -1. */
 
-  int memNodes;                     /**< \brief Allocated memory for nodes. */
-  int numNodes;                     /**< \brief Number of nodes. */
+  size_t memNodes;                  /**< \brief Allocated memory for nodes. */
+  size_t numNodes;                  /**< \brief Number of nodes. */
   DecNodeData* nodes;               /**< \brief Array of nodes. */
   DEC_NODE firstFreeNode;           /**< \brief First node in free list or -1. */
 
-  int memRows;                      /**< \brief Allocated memory for \c rowEdges. */
-  int numRows;                      /**< \brief Number of rows. */
+  size_t memRows;                   /**< \brief Allocated memory for \c rowEdges. */
+  size_t numRows;                   /**< \brief Number of rows. */
   DecRowData* rowEdges;             /**< \brief Maps each row to its edge. */
 
-  int memColumns;                   /**< \brief Allocated memory for \c columnEdges. */
-  int numColumns;                   /**< \brief Number of columns. */
+  size_t memColumns;                /**< \brief Allocated memory for \c columnEdges. */
+  size_t numColumns;                /**< \brief Number of columns. */
   DecColumnData* columnEdges;       /**< \brief Maps each column to its edge. */
 
-  int numMarkerPairs;               /**< \brief Number of marker edge pairs in t-decomposition. */
+  size_t numMarkerPairs;            /**< \brief Number of marker edge pairs in t-decomposition. */
   size_t parallelParentChildVisit;  /**< \brief Visit counter for \ref parallelParentChildCheckReducedMembers. */
 } Dec;
 
@@ -515,7 +516,7 @@ bool isRepresentativeMember(
 {
   assert(dec);
 
-  return dec->members[member].representativeMember < 0;
+  return dec->members[member].representativeMember == SIZE_MAX;
 }
 
 /**
@@ -530,11 +531,11 @@ DEC_MEMBER findMember(
 {
   DEC_MEMBER current = member;
   DEC_MEMBER next;
-  while ((next = dec->members[current].representativeMember) >= 0)
+  while ((next = dec->members[current].representativeMember) != SIZE_MAX)
     current = next;
   DEC_MEMBER root = current;
   current = member;
-  while ((next = dec->members[current].representativeMember) >= 0)
+  while ((next = dec->members[current].representativeMember) != SIZE_MAX)
   {
     if (next != root)
       dec->members[current].representativeMember = root;
@@ -555,11 +556,10 @@ DEC_MEMBER findMemberParent(
   DEC_MEMBER member /**< Member whose parent shall be returned. */
 )
 {
-  assert(member >= 0);
   assert(isRepresentativeMember(dec, member));
 
   DEC_MEMBER someParent = dec->members[member].parentMember;
-  if (someParent >= 0)
+  if (someParent != SIZE_MAX)
     return findMember(dec, someParent);
   else
     return -1;
@@ -600,13 +600,13 @@ char* consistencyEdges(
 
     DEC_EDGE edge = dec->members[member].firstEdge;
     int countEdges = 0;
-    if (edge >= 0)
+    if (edge != SIZE_MAX)
     {
       do
       {
-        if (edge < 0 || edge >= dec->memEdges)
+        if (edge == SIZE_MAX || edge >= dec->memEdges)
           return CMRconsistencyMessage("edge %d of member %d out of range.", member, edge);
-        if (dec->edges[edge].next < 0 || dec->edges[edge].next > dec->memEdges)
+        if (dec->edges[edge].next == SIZE_MAX || dec->edges[edge].next > dec->memEdges)
           return CMRconsistencyMessage("edge %d of member %d has next out of range", member, edge);
         if (dec->edges[dec->edges[edge].next].prev != edge)
           return CMRconsistencyMessage("member %d has inconsistent edge list", member);
@@ -675,7 +675,7 @@ char* consistencyNodes(
 
     bool isRigid = dec->members[member].type == DEC_MEMBER_TYPE_RIGID;
     DEC_EDGE edge = dec->members[member].firstEdge;
-    if (edge < 0)
+    if (edge == SIZE_MAX)
       continue;
     do
     {
@@ -683,9 +683,9 @@ char* consistencyNodes(
       DEC_NODE tail = dec->edges[edge].tail;
       if (isRigid)
       {
-        if (head < 0)
+        if (head == SIZE_MAX)
           return CMRconsistencyMessage("edge %d of rigid member %d has invalid head node", edge, member);
-        if (tail < 0)
+        if (tail == SIZE_MAX)
           return CMRconsistencyMessage("edge %d of rigid member %d has invalid tail node", edge, member);
         if (head >= dec->memNodes)
           return CMRconsistencyMessage("edge %d of rigid member %d has head node out of range", edge, member);
@@ -720,7 +720,7 @@ char* consistencyTree(
 
     int length = 0;
     DEC_MEMBER current;
-    for (current = dec->members[member].parentMember; current >= 0; current = dec->members[current].parentMember)
+    for (current = dec->members[member].parentMember; current != SIZE_MAX; current = dec->members[current].parentMember)
     {
       ++length;
       if (length > dec->numMembers)
@@ -746,8 +746,6 @@ char* consistencyParentChild(
 
   if (dec->memMembers < dec->numMembers)
     return CMRconsistencyMessage("member count and memory are inconsistent");
-  if (dec->numMembers < 0)
-    return CMRconsistencyMessage("negative member count");
 
   int* countChildren = NULL;
   if (CMRallocStackArray(dec->cmr, &countChildren, dec->memMembers) != CMR_OKAY)
@@ -765,7 +763,7 @@ char* consistencyParentChild(
       CMRfreeStackArray(dec->cmr, &countChildren);
       return CMRconsistencyMessage("parent member of %d is out of range", member);
     }
-    if (dec->members[member].parentMember >= 0)
+    if (dec->members[member].parentMember != SIZE_MAX)
       countChildren[dec->members[member].parentMember]++;
   }
 
@@ -775,11 +773,11 @@ char* consistencyParentChild(
       continue;
 
     DEC_EDGE edge = dec->members[member].firstEdge;
-    if (edge < 0)
+    if (edge == SIZE_MAX)
       continue;
     do
     {
-      if (dec->edges[edge].childMember >= 0)
+      if (dec->edges[edge].childMember != SIZE_MAX)
       {
         countChildren[member]--;
 
@@ -916,30 +914,30 @@ typedef struct
 
 typedef struct
 {
-  bool remainsGraphic;                      /**< \brief Indicator whether adding this column maintains graphicness. */
-  int memReducedMembers;                    /**< \brief Allocated memory for \c reducedMembers. */
-  int numReducedMembers;                    /**< \brief Number of members in \c reducedMembers. */
-  ReducedMember* reducedMembers;            /**< \brief Array of reduced members, sorted by increasing depth. */
-  MemberInfo* memberInfo;                   /**< \brief Additional information for each member. */
+  bool remainsGraphic;                  /**< \brief Indicator whether adding this column maintains graphicness. */
+  size_t memReducedMembers;             /**< \brief Allocated memory for \c reducedMembers. */
+  size_t numReducedMembers;             /**< \brief Number of members in \c reducedMembers. */
+  ReducedMember* reducedMembers;        /**< \brief Array of reduced members, sorted by increasing depth. */
+  MemberInfo* memberInfo;               /**< \brief Additional information for each member. */
 
-  ReducedComponent* reducedComponents;      /**< \brief Array with reduced root members. */
-  int memReducedComponents;                 /**< \brief Allocated memory for \c reducedComponents. */
-  int numReducedComponents;                 /**< \brief Number of reduced root members. */
+  ReducedComponent* reducedComponents;  /**< \brief Array with reduced root members. */
+  size_t memReducedComponents;          /**< \brief Allocated memory for \c reducedComponents. */
+  size_t numReducedComponents;          /**< \brief Number of reduced root members. */
 
-  PathEdge* pathEdges;                      /**< \brief Storage for edge lists of path edges. */
-  int memPathEdges;                         /**< \brief Allocated memory for \c pathEdges. */
-  int numPathEdges;                         /**< \brief Number of stored edges in \c pathEdges. */
+  PathEdge* pathEdges;                  /**< \brief Storage for edge lists of path edges. */
+  size_t memPathEdges;                  /**< \brief Allocated memory for \c pathEdges. */
+  size_t numPathEdges;                  /**< \brief Number of stored edges in \c pathEdges. */
 
-  ReducedMember** childrenStorage;          /**< \brief Storage for reduced members' arrays of children. */
-  int usedChildrenStorage;                  /**< \brief Number of stored children in \c childrenStorage. */
-  int memChildrenStorage;                   /**< \brief Allocated memory for \c childrenStorage. */
+  ReducedMember** childrenStorage;      /**< \brief Storage for reduced members' arrays of children. */
+  size_t usedChildrenStorage;           /**< \brief Number of stored children in \c childrenStorage. */
+  size_t memChildrenStorage;            /**< \brief Allocated memory for \c childrenStorage. */
 
-  int* nodesDegree;                         /**< \brief Map from nodes to degree w.r.t. path edges. */
-  int memNodesDegree;                       /**< \brief Allocated memory for \c nodesDegree. */
+  int* nodesDegree;                     /**< \brief Map from nodes to degree w.r.t. path edges. */
+  size_t memNodesDegree;                /**< \brief Allocated memory for \c nodesDegree. */
 
-  bool* edgesInPath;                        /**< \brief Map from edges to indicator for being in the path. */
-  int memEdgesInPath;                       /**< \brief Allocated memory for \p edgesInPath. */
-  PathEdge* firstPathEdge;                  /**< \brief Root of singly-linked list of all path edges. */
+  bool* edgesInPath;                    /**< \brief Map from edges to indicator for being in the path. */
+  size_t memEdgesInPath;                /**< \brief Allocated memory for \p edgesInPath. */
+  PathEdge* firstPathEdge;              /**< \brief Root of singly-linked list of all path edges. */
 } DEC_NEWCOLUMN;
 
 /**
@@ -954,15 +952,13 @@ DEC_NODE findNode(
   DEC_NODE node
 )
 {
-  assert(node >= 0);
-
   DEC_NODE current = node;
   DEC_NODE next;
-  while ((next = dec->nodes[current].representativeNode) >= 0)
+  while ((next = dec->nodes[current].representativeNode) != SIZE_MAX)
     current = next;
   DEC_NODE root = current;
   current = node;
-  while ((next = dec->nodes[current].representativeNode) >= 0)
+  while ((next = dec->nodes[current].representativeNode) != SIZE_MAX)
   {
     if (next != root)
       dec->nodes[current].representativeNode = root;
@@ -982,9 +978,7 @@ DEC_NODE findEdgeTail(
 )
 {
   assert(dec);
-  assert(edge >= 0);
   assert(edge < dec->memEdges);
-  assert(dec->edges[edge].tail >= 0);
   assert(dec->edges[edge].tail < dec->memNodes);
 
   return findNode(dec, dec->edges[edge].tail);
@@ -1001,9 +995,7 @@ DEC_NODE findEdgeHead(
 )
 {
   assert(dec);
-  assert(edge >= 0);
   assert(edge < dec->memEdges);
-  assert(dec->edges[edge].head >= 0);
   assert(dec->edges[edge].head < dec->memNodes);
 
   return findNode(dec, dec->edges[edge].head);
@@ -1023,7 +1015,7 @@ CMR_ERROR createNode(
   assert(pnode);
 
   DEC_NODE node = dec->firstFreeNode;
-  if (node >= 0)
+  if (node != SIZE_MAX)
   {
     CMRdbgMsg(10, "createNode returns free node %d.\n", node);
     dec->firstFreeNode = dec->nodes[node].representativeNode;
@@ -1061,11 +1053,11 @@ CMR_ERROR addEdgeToMembersEdgeList(
 )
 {
   assert(dec);
-  assert(edge >= 0);
+  assert(edge != SIZE_MAX);
 
   DEC_MEMBER member = findEdgeMember(dec, edge);
   DEC_EDGE first = dec->members[member].firstEdge;
-  if (first >= 0)
+  if (first != SIZE_MAX)
   {
     assert(dec->members[member].numEdges > 0);
     DEC_EDGE last = dec->edges[first].prev;
@@ -1097,7 +1089,6 @@ CMR_ERROR removeEdgeFromMembersEdgeList(
 )
 {
   assert(dec);
-  assert(edge >= 0);
 
   DEC_MEMBER member = findEdgeMember(dec, edge);
   if (dec->members[member].numEdges == 1)
@@ -1133,8 +1124,6 @@ CMR_ERROR replaceEdgeInMembersEdgeList(
 )
 {
   assert(dec);
-  assert(oldEdge >= 0);
-  assert(newEdge >= 0);
 
   DEC_MEMBER member = findEdgeMember(dec, oldEdge);
   assert(findEdgeMember(dec, newEdge) == member);
@@ -1164,10 +1153,10 @@ CMR_ERROR createEdge(
 {
   assert(dec);
   assert(pedge);
-  assert(member < 0 || isRepresentativeMember(dec, member));
+  assert(member == SIZE_MAX || isRepresentativeMember(dec, member));
 
   DEC_EDGE edge = dec->firstFreeEdge;
-  if (edge >= 0)
+  if (edge != SIZE_MAX)
   {
     CMRdbgMsg(12, "Creating edge %d by using a free edge.\n", edge);
     dec->firstFreeEdge = dec->edges[edge].next;
@@ -1296,11 +1285,11 @@ CMR_ERROR createMember(
 CMR_ERROR decCreate(
   CMR* cmr,           /**< \ref CMR environment. */
   Dec** pdec,       /**< Pointer to new decomposition. .*/
-  int memEdges,     /**< Initial memory for edges of the decomposition. */
-  int memNodes,     /**< Initial memory for nodes of the decomposition. */
-  int memMembers,   /**< Initial memory for members of the decomposition. */
-  int memRows,      /**< Initial memory for rows. */
-  int memColumns    /**< Initial memory for columns. */
+  size_t memEdges,     /**< Initial memory for edges of the decomposition. */
+  size_t memNodes,     /**< Initial memory for nodes of the decomposition. */
+  size_t memMembers,   /**< Initial memory for members of the decomposition. */
+  size_t memRows,      /**< Initial memory for rows. */
+  size_t memColumns    /**< Initial memory for columns. */
 )
 {
   assert(cmr);
@@ -1321,7 +1310,7 @@ CMR_ERROR decCreate(
   dec->nodes = NULL;
   CMR_CALL( CMRallocBlockArray(cmr, &dec->nodes, memNodes) );
   dec->numNodes = 0;
-  for (int v = 0; v < memNodes; ++v)
+  for (size_t v = 0; v < memNodes; ++v)
     dec->nodes[v].representativeNode = v+1;
   dec->nodes[memNodes-1].representativeNode = -1;
   dec->firstFreeNode = 0;
@@ -1338,7 +1327,7 @@ CMR_ERROR decCreate(
   /* Initialize free list with unused edges. */
   if (memEdges > dec->numEdges)
   {
-    for (int e = dec->numEdges; e < memEdges; ++e)
+    for (size_t e = dec->numEdges; e < memEdges; ++e)
     {
       dec->edges[e].next = e+1;
       dec->edges[e].member = -1;
@@ -1353,14 +1342,14 @@ CMR_ERROR decCreate(
   dec->memRows = memRows;
   dec->rowEdges = NULL;
   CMR_CALL( CMRallocBlockArray(cmr, &dec->rowEdges, dec->memRows) );
-  for (int r = 0; r < dec->numRows; ++r)
+  for (size_t r = 0; r < dec->numRows; ++r)
     dec->rowEdges[r].edge = -1;
 
   dec->numColumns = 0;
   dec->memColumns = memColumns;
   dec->columnEdges = NULL;
   CMR_CALL( CMRallocBlockArray(cmr, &dec->columnEdges, dec->memColumns) );
-  for (int c = 0; c < dec->numColumns; ++c)
+  for (size_t c = 0; c < dec->numColumns; ++c)
     dec->columnEdges[c].edge = -1;
 
 #if defined(CMR_DEBUG_CONSISTENCY)
@@ -1428,9 +1417,9 @@ CMR_ERROR decToGraph(
   CMR_GRAPH_EDGE* decEdgesToGraphEdges = NULL;
   CMR_CALL( CMRallocStackArray(dec->cmr, &decEdgesToGraphEdges, dec->memEdges) );
 
-  for (int v = 0; v < dec->memNodes; ++v)
+  for (size_t v = 0; v < dec->memNodes; ++v)
   {
-    if (dec->nodes[v].representativeNode < 0)
+    if (dec->nodes[v].representativeNode == SIZE_MAX)
     {
       CMR_CALL( CMRgraphAddNode(dec->cmr, graph, &decNodesToGraphNodes[v]) );
     }
@@ -1438,7 +1427,7 @@ CMR_ERROR decToGraph(
       decNodesToGraphNodes[v] = -1;
   }
 
-  for (DEC_MEMBER member = 0; member < dec->numMembers; ++member)
+  for (DEC_MEMBER member = 0; member < (int)dec->numMembers; ++member)
   {
     if (!isRepresentativeMember(dec, member))
       continue;
@@ -1521,9 +1510,9 @@ CMR_ERROR decToGraph(
     CMRdbgMsg(2, "Before merging, the graph has %d nodes and %d edges.\n", CMRgraphNumNodes(graph),
       CMRgraphNumEdges(graph));
 
-    for (int m = 0; m < dec->numMembers; ++m)
+    for (size_t m = 0; m < dec->numMembers; ++m)
     {
-      if (!isRepresentativeMember(dec, m) || dec->members[m].parentMember < 0)
+      if (!isRepresentativeMember(dec, m) || dec->members[m].parentMember == SIZE_MAX)
         continue;
 
       CMR_GRAPH_EDGE parent = decEdgesToGraphEdges[dec->members[m].markerOfParent];
@@ -1577,9 +1566,9 @@ CMR_ERROR decToGraph(
   {
 #if !defined(NDEBUG)
     /* This is only relevant if a 1-separation exists. */
-    for (int r = 0; r < dec->numRows; ++r)
+    for (size_t r = 0; r < dec->numRows; ++r)
       forestEdges[r] = INT_MIN;
-    for (int c = 0; c < dec->numColumns; ++c)
+    for (size_t c = 0; c < dec->numColumns; ++c)
       coforestEdges[c] = INT_MIN;
 #endif /* !NDEBUG */
 
@@ -1606,10 +1595,10 @@ CMR_ERROR decToGraph(
 
 #if !defined(NDEBUG)
     /* These assertions indicate a 1-separable input matrix. */
-    for (int r = 0; r < dec->numRows; ++r)
-      assert(forestEdges[r] >= 0);
-    for (int c = 0; c < dec->numColumns; ++c)
-      assert(coforestEdges[c] >= 0);
+    for (size_t r = 0; r < dec->numRows; ++r)
+      assert(forestEdges[r] != SIZE_MAX);
+    for (size_t c = 0; c < dec->numColumns; ++c)
+      assert(coforestEdges[c] != SIZE_MAX);
 #endif /* !NDEBUG */
   }
 
@@ -1637,8 +1626,6 @@ void edgeToDot(
 )
 {
   assert(stream);
-  assert(member >= 0);
-  assert(edge >= 0);
 
   member = findMember(dec, member);
 
@@ -1653,7 +1640,7 @@ void edgeToDot(
     fprintf(stream, "    %c_%d_%d [shape=box];\n", type, member, v);
     fprintf(stream, "    %c_p_%d [style=dashed];\n", type, member);
   }
-  else if (dec->edges[edge].childMember >= 0)
+  else if (dec->edges[edge].childMember != SIZE_MAX)
   {
     DEC_MEMBER child = findMember(dec, dec->edges[edge].childMember);
     char childType = (dec->members[child].type == DEC_MEMBER_TYPE_PARALLEL) ?
@@ -1692,7 +1679,7 @@ CMR_ERROR CMRdecToDot(
   fprintf(stream, "// t-decomposition\n");
   fprintf(stream, "graph dec {\n");
   fprintf(stream, "  compound = true;\n");
-  for (DEC_MEMBER member = 0; member < dec->numMembers; ++member)
+  for (DEC_MEMBER member = 0; member < (int) dec->numMembers; ++member)
   {
     if (!isRepresentativeMember(dec, member))
       continue;
@@ -1953,7 +1940,7 @@ CMR_ERROR parallelParentChildCheckMember(
 )
 {
   assert(dec);
-  assert(childMember >= 0);
+  assert(childMember != SIZE_MAX);
   assert(member == findMemberParent(dec, childMember));
 
   /* Stop if childMember was already processed at some point. */
@@ -1963,7 +1950,7 @@ CMR_ERROR parallelParentChildCheckMember(
   dec->members[childMember].lastParallelParentChildVisit = dec->parallelParentChildVisit;
   DEC_MEMBER parentMember = findMemberParent(dec, member);
   CMRdbgMsg(10, "Consider child member %d of %d with parent %d.\n", childMember, member, parentMember);
-  if (parentMember < 0)
+  if (parentMember == SIZE_MAX)
     return CMR_OKAY;
 
   if (dec->members[member].type == DEC_MEMBER_TYPE_RIGID)
@@ -2051,13 +2038,13 @@ CMR_ERROR parallelParentChildCheckReducedMembers(
     if (row >= dec->numRows)
       continue;
     DEC_EDGE edge = dec->rowEdges[row].edge;
-    if (edge < 0)
+    if (edge == SIZE_MAX)
       continue;
     DEC_MEMBER member = findEdgeMember(dec, edge);
     CMRdbgMsg(6, "Entry %d is row %d of %d and corresponds to edge %d of member %d.\n", p, row, dec->numRows, edge,
       member);
     DEC_MEMBER parentMember = findMemberParent(dec, member);
-    if (parentMember >= 0)
+    if (parentMember != SIZE_MAX)
       CMR_CALL( parallelParentChildCheckMember(dec, parentMember, member) );
   }
 
@@ -2078,7 +2065,7 @@ CMR_ERROR createReducedMembers(
 {
   assert(dec);
   assert(newcolumn);
-  assert(member >= 0);
+  assert(member != SIZE_MAX);
   assert(preducedMember);
 
   CMRdbgMsg(8, "Attempting to create reduced member %d.\n", member);
@@ -2115,7 +2102,7 @@ CMR_ERROR createReducedMembers(
     CMRdbgMsg(10, "Reduced member is new.\n");
 
     DEC_MEMBER parentMember = findMemberParent(dec, member);
-    if (parentMember >= 0)
+    if (parentMember != SIZE_MAX)
     {
       ReducedMember* parentReducedMember;
       CMR_CALL( createReducedMembers(dec, newcolumn, parentMember, &parentReducedMember) );
@@ -2199,7 +2186,7 @@ CMR_ERROR computeReducedDecomposition(
     int row = entryRows[p];
     DEC_EDGE edge = (row < dec->numRows) ? dec->rowEdges[row].edge : -1;
     CMRdbgMsg(6, "Entry %d is row %d of %d and corresponds to edge %d.\n", p, row, dec->numRows, edge);
-    if (edge >= 0)
+    if (edge != SIZE_MAX)
     {
       DEC_MEMBER member = findEdgeMember(dec, edge);
       CMRdbgMsg(8, "Edge %d exists and belongs to member %d.\n", edge, member);
@@ -2272,7 +2259,7 @@ CMR_ERROR computeReducedDecomposition(
     }
 
     DEC_MEMBER parentMember = findMemberParent(dec, newcolumn->reducedMembers[m].member);
-    ReducedMember* parentReducedMember = parentMember >= 0 ? newcolumn->memberInfo[parentMember].reducedMember : NULL;
+    ReducedMember* parentReducedMember = parentMember != SIZE_MAX ? newcolumn->memberInfo[parentMember].reducedMember : NULL;
     CMRdbgMsg(6, "Member %d's depth is greater than that of its reduced root. Its parent is %d, and reduced parent %p.\n",
       reducedMember->member, parentMember, parentReducedMember);
 
@@ -2292,7 +2279,6 @@ CMR_ERROR computeReducedDecomposition(
     ReducedMember* reducedMember = &newcolumn->reducedMembers[i];
     assert(reducedMember);
     DEC_MEMBER rootMember = reducedMember->rootMember;
-    assert(rootMember >= 0);
     assert(rootMember < dec->memMembers);
     newcolumn->memberInfo[rootMember].rootDepthMinimizer = NULL;
   }
@@ -2361,18 +2347,17 @@ CMR_ERROR completeReducedDecomposition(
 
   /* Check if we need new rows. */
 
-  int newNumRows = dec->numRows-1;
-  for (int p = 0; p < numRows; ++p)
+  size_t newNumRows = dec->numRows;
+  for (size_t p = 0; p < numRows; ++p)
   {
     int row = rows[p];
     DEC_EDGE edge = (row < dec->numRows) ? dec->rowEdges[row].edge : -1;
-    if (edge < 0)
+    if (edge == SIZE_MAX)
     {
-      if (row > newNumRows)
-        newNumRows = row;
+      if (row >= newNumRows)
+        newNumRows = row + 1;
     }
   }
-  newNumRows++;
 
   CMRdbgMsg(4, "Completing reduced decomposition: increasing #rows from %d to %d.\n", dec->numRows, newNumRows);
 
@@ -2406,7 +2391,7 @@ CMR_ERROR completeReducedDecomposition(
   }
 
   /* Create reduced members. */
-  for (int p = 0; p < numRows; ++p)
+  for (size_t p = 0; p < numRows; ++p)
   {
     int row = rows[p];
     if (row >= dec->numRows)
@@ -2482,18 +2467,18 @@ CMR_ERROR createReducedDecompositionPathEdges(
   }
 
   /* Start with empty lists. */
-  for (int i = 0; i < newcolumn->numReducedMembers; ++i)
+  for (size_t i = 0; i < newcolumn->numReducedMembers; ++i)
     newcolumn->reducedMembers[i].firstPathEdge = NULL;
 
   /* Fill edge lists. */
-  for (int p = 0; p < numRows; ++p)
+  for (size_t p = 0; p < numRows; ++p)
   {
     int row = rows[p];
     DEC_EDGE edge = (row < dec->numRows) ? dec->rowEdges[row].edge : -1;
-    if (edge >= 0)
+    if (edge != SIZE_MAX)
     {
       DEC_MEMBER member = findEdgeMember(dec, edge);
-      assert(member >= 0);
+      assert(member != SIZE_MAX);
       ReducedMember* reducedMember = newcolumn->memberInfo[member].reducedMember;
 
       assert(reducedMember);
@@ -2659,7 +2644,7 @@ CMR_ERROR determineTypeSeries(
   if (depth == 0)
   {
     /* We assume that we are not the root of the whole decomposition. */
-    assert(dec->members[member].parentMember >= 0);
+    assert(dec->members[member].parentMember != SIZE_MAX);
 
     /* Tested in TypingRootSeriesDoubleChild */
     newcolumn->remainsGraphic = (numTwoEnds == 0);
@@ -2733,10 +2718,10 @@ CMR_ERROR determineTypeRigid(
     depth == 0 ? -1 : findEdgeHead(dec, dec->members[member].markerToParent)
   };
   DEC_NODE childMarkerNodes[4] = {
-    childMarkerEdges[0] < 0 ? -1 : findEdgeTail(dec, childMarkerEdges[0]),
-    childMarkerEdges[0] < 0 ? -1 : findEdgeHead(dec, childMarkerEdges[0]),
-    childMarkerEdges[1] < 0 ? -1 : findEdgeTail(dec, childMarkerEdges[1]),
-    childMarkerEdges[1] < 0 ? -1 : findEdgeHead(dec, childMarkerEdges[1])
+    childMarkerEdges[0] == SIZE_MAX ? SIZE_MAX : findEdgeTail(dec, childMarkerEdges[0]),
+    childMarkerEdges[0] == SIZE_MAX ? SIZE_MAX : findEdgeHead(dec, childMarkerEdges[0]),
+    childMarkerEdges[1] == SIZE_MAX ? SIZE_MAX : findEdgeTail(dec, childMarkerEdges[1]),
+    childMarkerEdges[1] == SIZE_MAX ? SIZE_MAX : findEdgeHead(dec, childMarkerEdges[1])
   };
 
   DEC_NODE* pathEndNodes = reducedMember->rigidEndNodes;
@@ -3010,7 +2995,7 @@ CMR_ERROR determineTypeRigid(
         CMRdbgMsg(6 + 2*depth, "No paths, %s, child[0] incident to %d and child[1] incident to %d.\n",
           isParallel ? "parallel" : "not parallel", childMarkerParentNode[0], childMarkerParentNode[1]);
 
-        if (!isParallel && childMarkerParentNode[0] >= 0 && childMarkerParentNode[1] >= 0
+        if (!isParallel && childMarkerParentNode[0] != SIZE_MAX && childMarkerParentNode[1] != SIZE_MAX
           && childMarkerParentNode[0] != childMarkerParentNode[1])
         {
           reducedMember->type = TYPE_DOUBLE_CHILD;
@@ -3420,7 +3405,7 @@ CMR_ERROR addColumnCheck(
    * Each splitting introduces 4 new edges, and we might apply this twice for each series member.
    */
   int maxRow = 0;
-  for (int i = 0; i < numRows; ++i)
+  for (size_t i = 0; i < numRows; ++i)
     maxRow = rows[i] > maxRow ? rows[i] : maxRow;
 
   size_t requiredNumEdgesInPath = dec->memEdges + maxRow + 8*dec->numMembers;
@@ -3487,13 +3472,13 @@ CMR_ERROR addTerminal(
 )
 {
   assert(reducedComponent);
-  assert(member >= 0);
+  assert(member != SIZE_MAX);
   assert(isRepresentativeMember(dec, member));
-  assert(dec->members[member].type == DEC_MEMBER_TYPE_PARALLEL || node >= 0);
+  assert(dec->members[member].type == DEC_MEMBER_TYPE_PARALLEL || node != SIZE_MAX);
 
   /* For parallels we don't need to provide a node. */
-  assert(node >= 0 || dec->members[member].type == DEC_MEMBER_TYPE_PARALLEL);
-  assert(reducedComponent->numTerminals != 1 || node >= 0 || member == reducedComponent->terminalMember[0]);
+  assert(node != SIZE_MAX || dec->members[member].type == DEC_MEMBER_TYPE_PARALLEL);
+  assert(reducedComponent->numTerminals != 1 || node != SIZE_MAX || member == reducedComponent->terminalMember[0]);
 
   CMRdbgMsg(12, "Setting terminal node %d of member %d.\n", node, member);
 
@@ -3615,7 +3600,7 @@ CMR_ERROR moveReducedRoot(
           findEdgeHead(dec, childMarkerEdges[0])
         };
 
-        int numEndNodes = reducedMember->rigidEndNodes[0] < 0 ? 0 : (reducedMember->rigidEndNodes[2] < 0 ? 2 : 4);
+        int numEndNodes = reducedMember->rigidEndNodes[0] == SIZE_MAX ? 0 : (reducedMember->rigidEndNodes[2] == SIZE_MAX ? 2 : 4);
         if (numEndNodes == 0)
         {
           /* Without path edges the child marker would have to be parallel to the parent marker, which is detected
@@ -3684,7 +3669,6 @@ CMR_ERROR setEdgeNodes(
 )
 {
   assert(dec);
-  assert(edge >= 0);
   assert(edge < dec->memEdges);
 
   dec->edges[edge].tail = tail;
@@ -3708,11 +3692,11 @@ CMR_ERROR mergeMemberIntoParent(
 )
 {
   assert(dec);
-  assert(member >= 0);
+  assert(member != SIZE_MAX);
 
   member = findMember(dec, member);
   DEC_MEMBER parentMember = findMemberParent(dec, member);
-  assert(parentMember >= 0);
+  assert(parentMember != SIZE_MAX);
 
   CMRdbgMsg(10, "Merging child member %d into its parent member %d.\n", member, parentMember);
 
@@ -3720,19 +3704,19 @@ CMR_ERROR mergeMemberIntoParent(
   DEC_EDGE edge = dec->members[member].firstEdge;
   do
   {
-    if (dec->edges[edge].head < 0 || dec->edges[edge].tail < 0)
+    if (dec->edges[edge].head == SIZE_MAX || dec->edges[edge].tail == SIZE_MAX)
       CMRdbgMsg(10, "Edge %d of merge member %d does not have nodes.\n", edge, member);
-    assert(dec->edges[edge].tail >= 0);
-    assert(dec->edges[edge].head >= 0);
+    assert(dec->edges[edge].tail != SIZE_MAX);
+    assert(dec->edges[edge].head != SIZE_MAX);
     edge = dec->edges[edge].next;
   }
   while (edge != dec->members[member].firstEdge);
 #endif /* CMR_DEBUG */
 
   DEC_EDGE parentEdge = dec->members[member].markerOfParent;
-  assert(parentEdge >= 0);
+  assert(parentEdge != SIZE_MAX);
   DEC_EDGE childEdge = dec->members[member].markerToParent;
-  assert(childEdge >= 0);
+  assert(childEdge != SIZE_MAX);
 
   DEC_NODE parentEdgeNodes[2] = { findEdgeTail(dec, parentEdge), findEdgeHead(dec, parentEdge) };
   DEC_NODE childEdgeNodes[2] = { findEdgeTail(dec, childEdge), findEdgeHead(dec, childEdge) };
@@ -3777,16 +3761,16 @@ CMR_ERROR createParallelNodes(
 )
 {
   assert(dec);
-  assert(member >= 0);
+  assert(member != SIZE_MAX);
   member = findMember(dec, member);
   assert(dec->members[member].type == DEC_MEMBER_TYPE_PARALLEL);
 
   DEC_EDGE edge = dec->members[member].firstEdge;
-  assert(dec->edges[edge].head < 0);
-  assert(dec->edges[edge].tail < 0);
-  if (dec->edges[edge].head >= 0)
+  assert(dec->edges[edge].head == SIZE_MAX);
+  assert(dec->edges[edge].tail == SIZE_MAX);
+  if (dec->edges[edge].head != SIZE_MAX)
   {
-    assert(dec->edges[edge].tail >= 0);
+    assert(dec->edges[edge].tail != SIZE_MAX);
     return CMR_OKAY;
   }
 
@@ -3796,8 +3780,8 @@ CMR_ERROR createParallelNodes(
 
   do
   {
-    assert(dec->edges[edge].tail < 0);
-    assert(dec->edges[edge].head < 0);
+    assert(dec->edges[edge].tail == SIZE_MAX);
+    assert(dec->edges[edge].head == SIZE_MAX);
 
     dec->edges[edge].tail = tail;
     dec->edges[edge].head = head;
@@ -3822,11 +3806,10 @@ CMR_ERROR splitParallel(
 )
 {
   assert(dec);
-  assert(parallel >= 0);
   assert(parallel < dec->memMembers);
-  assert(edge1 >= 0);
+  assert(edge1 != SIZE_MAX);
   assert(edge1 < dec->memEdges);
-  assert(edge2 >= 0);
+  assert(edge2 != SIZE_MAX);
   assert(edge2 < dec->memEdges);
 
   DEC_MEMBER childParallel;
@@ -3958,7 +3941,6 @@ void flipEdge(
 )
 {
   assert(dec);
-  assert(edge >= 0);
   assert(edge < dec->memEdges);
 
   SWAP_INTS(dec->edges[edge].tail, dec->edges[edge].head);
@@ -3992,24 +3974,24 @@ CMR_ERROR addColumnProcessRigid(
     numTwoEnds, reducedMember->type);
 
   DEC_NODE parentMarkerNodes[2] = {
-    dec->members[member].markerToParent < 0 ? -1 : findEdgeTail(dec, dec->members[member].markerToParent),
-    dec->members[member].markerToParent < 0 ? -1 : findEdgeHead(dec, dec->members[member].markerToParent)
+    dec->members[member].markerToParent == SIZE_MAX ? SIZE_MAX : findEdgeTail(dec, dec->members[member].markerToParent),
+    dec->members[member].markerToParent == SIZE_MAX ? SIZE_MAX : findEdgeHead(dec, dec->members[member].markerToParent)
   };
   DEC_NODE childMarkerNodes[4] = {
-    childMarkerEdges[0] < 0 ? -1 : findEdgeTail(dec, childMarkerEdges[0]),
-    childMarkerEdges[0] < 0 ? -1 : findEdgeHead(dec, childMarkerEdges[0]),
-    childMarkerEdges[1] < 0 ? -1 : findEdgeTail(dec, childMarkerEdges[1]),
-    childMarkerEdges[1] < 0 ? -1 : findEdgeHead(dec, childMarkerEdges[1])
+    childMarkerEdges[0] == SIZE_MAX ? SIZE_MAX : findEdgeTail(dec, childMarkerEdges[0]),
+    childMarkerEdges[0] == SIZE_MAX ? SIZE_MAX : findEdgeHead(dec, childMarkerEdges[0]),
+    childMarkerEdges[1] == SIZE_MAX ? SIZE_MAX : findEdgeTail(dec, childMarkerEdges[1]),
+    childMarkerEdges[1] == SIZE_MAX ? SIZE_MAX : findEdgeHead(dec, childMarkerEdges[1])
   };
 
   DEC_NODE* pathEndNodes = reducedMember->rigidEndNodes;
-  int numPathEndNodes = pathEndNodes[0] < 0 ? 0 : (pathEndNodes[2] < 0 ? 2 : 4 );
+  int numPathEndNodes = pathEndNodes[0] == SIZE_MAX ? 0 : (pathEndNodes[2] == SIZE_MAX ? 2 : 4 );
 
   if (depth == 0)
   {
     /* Root rigid member. */
 
-    if (dec->members[member].markerToParent >= 0 && newcolumn->edgesInPath[dec->members[member].markerToParent])
+    if (dec->members[member].markerToParent != SIZE_MAX && newcolumn->edgesInPath[dec->members[member].markerToParent])
     {
       /* The parent marker is a path edge, so we modify the endNodes array. */
       if (numPathEndNodes == 0)
@@ -4186,7 +4168,7 @@ CMR_ERROR addColumnProcessRigid(
       /* Tested in UpdateLeafRigid. */
 
       assert(reducedMember->firstPathEdge);
-      assert(pathEndNodes[0] >= 0);
+      assert(pathEndNodes[0] != SIZE_MAX);
 
       CMR_CALL( addTerminal(dec, reducedComponent, member, pathEndNodes[1]) );
       if (parentMarkerNodes[0] == pathEndNodes[0])
@@ -4304,7 +4286,6 @@ CMR_ERROR splitSeries(
 )
 {
   assert(dec);
-  assert(member >= 0);
   assert(member < dec->memMembers);
   assert(edgesPredicate);
   assert(dec->members[member].type == DEC_MEMBER_TYPE_SERIES);
@@ -4370,7 +4351,7 @@ CMR_ERROR splitSeries(
     {
 #if defined(CMR_DEBUG_SPLITTING)
       CMRdbgMsg(8, "Edge %d <%d>", edge, dec->edges[edge].name);
-      if (dec->edges[edge].childMember >= 0)
+      if (dec->edges[edge].childMember != SIZE_MAX)
         CMRdbgMsg(0, " (with child %d)", dec->edges[edge].childMember);
       if (edge == dec->members[member].markerToParent)
         CMRdbgMsg(0, " (with parent %d)", dec->members[member].parentMember);
@@ -4409,7 +4390,7 @@ CMR_ERROR splitSeries(
       dec->edges[edge].prev = newPrev;
       dec->edges[edge].next = seriesParentMarker;
       dec->edges[edge].member = series;
-      if (dec->edges[edge].childMember >= 0)
+      if (dec->edges[edge].childMember != SIZE_MAX)
       {
         assert( dec->members[dec->edges[edge].childMember].parentMember == member);
         dec->members[dec->edges[edge].childMember].parentMember = series;
@@ -4526,7 +4507,7 @@ CMR_ERROR addColumnProcessSeries(
 
         DEC_MEMBER parentMember = findMemberParent(dec, member);
         DEC_EDGE markerOfParent = dec->members[member].markerOfParent;
-        assert(parentMember >= 0); /* A series member can only close a cycle if it has a parent. */
+        assert(parentMember != SIZE_MAX); /* A series member can only close a cycle if it has a parent. */
         if (dec->members[parentMember].type == DEC_MEMBER_TYPE_PARALLEL)
         {
           CMR_CALL( addTerminal(dec, reducedComponent, findEdgeMember(dec, markerOfParent), -1 ) );
@@ -4556,9 +4537,9 @@ CMR_ERROR addColumnProcessSeries(
       debugDot(dec, newcolumn);
 
       DEC_EDGE childMember = dec->edges[representativeEdge].childMember;
-      DEC_NODE tail = -1;
-      DEC_NODE head = -1;
-      if (childMember < 0)
+      DEC_NODE tail = SIZE_MAX;
+      DEC_NODE head = SIZE_MAX;
+      if (childMember == SIZE_MAX)
       {
         CMR_CALL( createEdgeParallel(dec, representativeEdge, &childMember) );
         debugDot(dec, newcolumn);
@@ -4623,7 +4604,7 @@ CMR_ERROR addColumnProcessSeries(
          * parallel member to connect it to the remaining series member. */
         DEC_EDGE pathEdge;
         CMR_CALL( splitSeries(dec, member, newcolumn->edgesInPath, true, &pathEdge, NULL, NULL) );
-        if (pathEdge >= 0)
+        if (pathEdge != SIZE_MAX)
         {
           CMR_CALL( createPathEdge(dec, newcolumn, pathEdge, reducedMember) );
         }
@@ -4671,9 +4652,9 @@ CMR_ERROR addColumnProcessSeries(
         /* If there is another non-path edge, we split off the series member consisting of the two relevant child marker
          * edges and possibly the path edge. We then replace the current series member by the new one. */
 
-        if (dec->members[member].numEdges > (pathEdge >= 0 ? 4 : 3))
+        if (dec->members[member].numEdges > (pathEdge != SIZE_MAX ? 4 : 3))
         {
-          if (pathEdge >= 0)
+          if (pathEdge != SIZE_MAX)
           {
             CMR_CALL( createPathEdge(dec, newcolumn, pathEdge, reducedMember) );
           }
@@ -4723,7 +4704,7 @@ CMR_ERROR addColumnProcessSeries(
         pathEdge, nonPathEdge);
       debugDot(dec, newcolumn);
 
-      assert(pathEdge >= 0 || nonPathEdge >= 0);
+      assert(pathEdge != SIZE_MAX || nonPathEdge != SIZE_MAX);
 
       /* a <----- b ---- c -----> d -------- a
        *   child0   path   child1   non-path
@@ -4740,11 +4721,11 @@ CMR_ERROR addColumnProcessSeries(
       DEC_NODE a, b, c, d;
       CMR_CALL( createNode(dec, &a) );
       CMR_CALL( createNode(dec, &b) );
-      if (pathEdge >= 0)
+      if (pathEdge != SIZE_MAX)
         CMR_CALL( createNode(dec, &c) );
       else
         c = b;
-      if (nonPathEdge >= 0)
+      if (nonPathEdge != SIZE_MAX)
         CMR_CALL( createNode(dec, &d) );
       else
         d = a;
@@ -4752,12 +4733,12 @@ CMR_ERROR addColumnProcessSeries(
       CMRdbgMsg(8 + 2*depth, "First child edge %d = {%d, %d}\n", childMarkerEdges[0], a, b);
       CMR_CALL( setEdgeNodes(dec, childMarkerEdges[1], d, c) );
       CMRdbgMsg(8 + 2*depth, "Second child edge %d = {%d, %d}\n", childMarkerEdges[1], d, c);
-      if (pathEdge >= 0)
+      if (pathEdge != SIZE_MAX)
       {
         CMR_CALL( setEdgeNodes(dec, pathEdge, b, c) );
         CMRdbgMsg(8 + 2*depth, "Path edge %d = {%d, %d}\n", pathEdge, b, c);
       }
-      if (nonPathEdge >= 0)
+      if (nonPathEdge != SIZE_MAX)
       {
         CMR_CALL( setEdgeNodes(dec, nonPathEdge, d, a) );
         CMRdbgMsg(8 + 2*depth, "Non-path edge %d = {%d, %d}\n", nonPathEdge, d, a);
@@ -4791,7 +4772,7 @@ CMR_ERROR addColumnProcessSeries(
        * to the remaining series member. */
       DEC_EDGE pathEdge = -1;
       CMR_CALL( splitSeries(dec, member, newcolumn->edgesInPath, true, &pathEdge, NULL, NULL) );
-      assert(pathEdge >= 0);
+      assert(pathEdge != SIZE_MAX);
       CMR_CALL( createPathEdge(dec, newcolumn, pathEdge, reducedMember) );
 
       /* If necessary, we squeeze off the non-path edges as well. */
@@ -4837,7 +4818,7 @@ CMR_ERROR addColumnProcessSeries(
       DEC_EDGE pathEdge = -1;
       CMRdbgMsg(8 + 2*depth, "Splitting of path edges.\n");
       CMR_CALL( splitSeries(dec, member, newcolumn->edgesInPath, true, &pathEdge, NULL, NULL) );
-      if (pathEdge >= 0)
+      if (pathEdge != SIZE_MAX)
       {
         CMR_CALL( createPathEdge(dec, newcolumn, pathEdge, reducedMember) );
       }
@@ -4845,7 +4826,7 @@ CMR_ERROR addColumnProcessSeries(
 
       /* If necessary, we squeeze off the non-path edges as well. */
       assert(dec->members[member].numEdges >= 3);
-      int numNonPathEdges = dec->members[member].numEdges - 2 - (pathEdge >= 0 ? 1 : 0);
+      int numNonPathEdges = dec->members[member].numEdges - 2 - (pathEdge != SIZE_MAX ? 1 : 0);
       CMRdbgMsg(8 + 2*depth, "Number of non-path edges is %d.\n", numNonPathEdges);
       DEC_EDGE nonPathEdge;
       if (numNonPathEdges == 0)
@@ -4987,8 +4968,8 @@ CMR_ERROR doReorderComponent(
 )
 {
   assert(dec);
-  assert(member >= 0);
-  assert(newParent >= 0);
+  assert(member != SIZE_MAX);
+  assert(newParent != SIZE_MAX);
 
   DEC_MEMBER oldParent = findMemberParent(dec, member);
   DEC_EDGE oldMarkerToParent = dec->members[member].markerToParent;
@@ -5002,7 +4983,7 @@ CMR_ERROR doReorderComponent(
   dec->edges[markerOfNewParent].childMember = member;
   dec->edges[newMarkerToParent].childMember = -1;
 
-  if (oldMarkerToParent >= 0)
+  if (oldMarkerToParent != SIZE_MAX)
     CMR_CALL( doReorderComponent(dec, oldParent, member, oldMarkerOfParent, oldMarkerToParent) );
 
   return CMR_OKAY;
@@ -5019,12 +5000,12 @@ CMR_ERROR reorderComponent(
 )
 {
   assert(dec);
-  assert(newRoot >= 0 && newRoot < dec->memMembers);
+  assert(newRoot < dec->memMembers);
   assert(isRepresentativeMember(dec, newRoot));
 
   CMRdbgMsg(4, "Making member %d the new root of its component.\n", newRoot);
 
-  if (dec->members[newRoot].parentMember >= 0)
+  if (dec->members[newRoot].parentMember != SIZE_MAX)
   {
     CMR_CALL( doReorderComponent(dec, findMemberParent(dec, newRoot), newRoot,
       dec->members[newRoot].markerOfParent, dec->members[newRoot].markerToParent) );
@@ -5224,7 +5205,7 @@ CMR_ERROR cographicnessTest(
     /* Process each column. */
     DEC_NEWCOLUMN* newcolumn = NULL;
     CMR_CALL( newcolumnCreate(cmr, &newcolumn) );
-    for (int column = 0; column < matrix->numRows && *pisCographic; ++column)
+    for (size_t column = 0; column < matrix->numRows && *pisCographic; ++column)
     {
       CMR_CALL( addColumnCheck(dec, newcolumn, &matrix->entryColumns[matrix->rowSlice[column]],
         matrix->rowSlice[column+1] - matrix->rowSlice[column]) );
@@ -5277,7 +5258,7 @@ CMR_ERROR CMRtestCographicMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisCographi
     /* Process each column. */
     DEC_NEWCOLUMN* newcolumn = NULL;
     CMR_CALL( newcolumnCreate(cmr, &newcolumn) );
-    for (int column = 0; column < matrix->numRows && *pisCographic; ++column)
+    for (size_t column = 0; column < matrix->numRows && *pisCographic; ++column)
     {
       clock_t checkClock;
       if (stats)
@@ -5359,7 +5340,7 @@ CMR_ERROR CMRtestCographicMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisCographi
           }
 
           /* Add single-edge parallel for each missing row. */
-          for (int r = dec->numRows; r < matrix->numColumns; ++r)
+          for (size_t r = dec->numRows; r < matrix->numColumns; ++r)
           {
             DEC_MEMBER member;
             CMR_CALL( createMember(dec, DEC_MEMBER_TYPE_PARALLEL, &member) );
@@ -5389,14 +5370,14 @@ CMR_ERROR CMRtestCographicMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisCographi
 
         CMR_GRAPH_NODE s;
         CMR_CALL( CMRgraphAddNode(cmr, graph, &s) );
-        for (int c = 0; c < matrix->numRows; ++c)
+        for (size_t c = 0; c < matrix->numRows; ++c)
         {
           CMR_GRAPH_EDGE e;
           CMR_CALL( CMRgraphAddEdge(cmr, graph, s, s, &e) );
           if (coforest)
             *coforest++ = e;
         }
-        for (int r = 0; r < matrix->numColumns; ++r)
+        for (size_t r = 0; r < matrix->numColumns; ++r)
         {
           CMR_GRAPH_NODE t;
           CMR_CALL( CMRgraphAddNode(cmr, graph, &t) );
@@ -5449,7 +5430,7 @@ CMR_ERROR CMRtestBinaryGraphicColumnSubmatrixGreedy(CMR* cmr, CMR_CHRMAT* transp
   CMR_SUBMAT* submatrix = *psubmatrix;
   submatrix->numRows = 0;
   submatrix->numColumns = 0;
-  for (int row = 0; row < numRows; ++row)
+  for (size_t row = 0; row < numRows; ++row)
   {
     submatrix->rows[submatrix->numRows++] = row;
   }
@@ -5461,9 +5442,9 @@ CMR_ERROR CMRtestBinaryGraphicColumnSubmatrixGreedy(CMR* cmr, CMR_CHRMAT* transp
   /* Process each column. */
   DEC_NEWCOLUMN* newcolumn = NULL;
   CMR_CALL( newcolumnCreate(cmr, &newcolumn) );
-  for (int c = 0; c < numColumns; ++c)
+  for (size_t c = 0; c < numColumns; ++c)
   {
-    int column = orderedColumns ? orderedColumns[c] : c;
+    size_t column = orderedColumns ? orderedColumns[c] : c;
 
     CMRdbgMsg(0, "!!! Trying to append column %d.\n", column);
 

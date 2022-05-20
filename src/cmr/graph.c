@@ -322,6 +322,8 @@ CMR_ERROR CMRgraphDeleteNode(CMR* cmr, CMR_GRAPH* graph, CMR_GRAPH_NODE v)
 
 CMR_ERROR CMRgraphDeleteEdge(CMR* cmr, CMR_GRAPH* graph, CMR_GRAPH_EDGE e)
 {
+  CMR_UNUSED(cmr);
+
   CMRdbgMsg(0, "CMRgraphDeleteEdge(|V|=%d, |E|=%d, %d", CMRgraphNumNodes(graph), CMRgraphNumEdges(graph), e);
 
   assert(isValid(e));
@@ -391,6 +393,8 @@ CMR_ERROR CMRgraphPrint(FILE* stream, CMR_GRAPH* graph)
 
 CMR_ERROR CMRgraphMergeNodes(CMR* cmr, CMR_GRAPH* graph, CMR_GRAPH_NODE u, CMR_GRAPH_NODE v)
 {
+  CMR_UNUSED(cmr);
+
   assert(graph);
   assert(u >= 0);
   assert(u < graph->memNodes);
@@ -510,7 +514,7 @@ CMR_ERROR CMRgraphCreateFromEdgeList(CMR* cmr, CMR_GRAPH** pgraph, CMR_ELEMENT**
       /* Add node label. */
       if (pnodeLabels)
       {
-        if (uNode >= memNodeLabels)
+        if (uNode >= (int)memNodeLabels)
         {
           memNodeLabels *= 2;
           CMR_CALL( CMRreallocBlockArray(cmr, pnodeLabels, memNodeLabels) );
@@ -534,7 +538,7 @@ CMR_ERROR CMRgraphCreateFromEdgeList(CMR* cmr, CMR_GRAPH** pgraph, CMR_ELEMENT**
       /* Add node label. */
       if (pnodeLabels)
       {
-        if (vNode >= memNodeLabels)
+        if (vNode >= (int)memNodeLabels)
         {
           memNodeLabels *= 2;
           CMR_CALL( CMRreallocBlockArray(cmr, pnodeLabels, memNodeLabels) );
@@ -565,13 +569,13 @@ CMR_ERROR CMRgraphCreateFromEdgeList(CMR* cmr, CMR_GRAPH** pgraph, CMR_ELEMENT**
 
     if (pedgeElements)
     {
-      if (edge >= memEdgeElements)
+      if (edge >= (int)memEdgeElements)
       {
         do
         {
           memEdgeElements *= 2;
         }
-        while (edge >= memEdgeElements);
+        while (edge >= (int)memEdgeElements);
         CMR_CALL( CMRreallocBlockArray(cmr, pedgeElements, memEdgeElements) );
       }
 

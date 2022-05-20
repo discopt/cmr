@@ -97,14 +97,14 @@ CMR_ERROR CMRcomputeCamionSignSequentiallyConnected(
   CMRallocStackArray(cmr, &bfsQueue, matrix->numColumns + matrix->numRows);
 
   /* Main loop iterates over the rows. */
-  for (int row = 1; row < matrix->numRows; ++row)
+  for (size_t row = 1; row < matrix->numRows; ++row)
   {
     CMRdbgMsg(2, "Before processing row %d:\n", row);
 #if defined(CMR_DEBUG)
     CMRchrmatPrintDense(cmr, matrix, stdout, ' ', true);
 #endif
 
-    for (int v = 0; v < matrix->numColumns + matrix->numRows; ++v)
+    for (size_t v = 0; v < matrix->numColumns + matrix->numRows; ++v)
     {
       graphNodes[v].targetValue = 0;
       graphNodes[v].status = 0;
@@ -123,7 +123,7 @@ CMR_ERROR CMRcomputeCamionSignSequentiallyConnected(
     /* First nonzero in row determines start column node. */
     int startNode = matrix->entryColumns[first];
     /* All columns of the row's nonzeros are target column nodes. */
-    for (int e = first; e < beyond; ++e)
+    for (size_t e = first; e < beyond; ++e)
       graphNodes[matrix->entryColumns[e]].targetValue = matrix->entryValues[e];
     bfsQueue[0] = startNode;
     graphNodes[startNode].status = 1;
@@ -146,7 +146,7 @@ CMR_ERROR CMRcomputeCamionSignSequentiallyConnected(
         /* Iterate over outgoing edges. */
         first = matrix->rowSlice[r];
         beyond = matrix->rowSlice[r + 1];
-        for (int e = first; e < beyond; ++e)
+        for (size_t e = first; e < beyond; ++e)
         {
           int c = matrix->entryColumns[e];
           if (graphNodes[c].status == 0)
@@ -262,7 +262,7 @@ CMR_ERROR CMRcomputeCamionSignSequentiallyConnected(
     {
       first = matrix->rowSlice[row];
       beyond = matrix->rowSlice[row + 1];
-      for (int e = first; e < beyond; ++e)
+      for (size_t e = first; e < beyond; ++e)
       {
         int column = matrix->entryColumns[e];
         if (matrix->entryValues[e] != graphNodes[column].targetValue)
@@ -307,9 +307,12 @@ CMR_ERROR sign(
   CMR_CAMION_STATISTICS* stats  /**< Statistics for the computation (may be \c NULL). */
 )
 {
+  CMR_UNUSED(stats);
+
   assert(cmr);
   assert(matrix);
   assert(!psubmatrix || !*psubmatrix);
+
 
   size_t numComponents;
   CMR_ONESUM_COMPONENT* components = NULL;
@@ -328,7 +331,7 @@ CMR_ERROR sign(
 
   if (pisCamionSigned)
     *pisCamionSigned = true;
-  for (int comp = 0; comp < numComponents; ++comp)
+  for (size_t comp = 0; comp < numComponents; ++comp)
   {
     CMR_SUBMAT* compSubmatrix = NULL;
 
@@ -429,7 +432,7 @@ CMR_ERROR sign(
 
   /* Clean-up */
 
-  for (int c = 0; c < numComponents; ++c)
+  for (size_t c = 0; c < numComponents; ++c)
   {
     CMRchrmatFree(cmr, (CMR_CHRMAT**) &components[c].matrix);
     CMRchrmatFree(cmr, (CMR_CHRMAT**) &components[c].transpose);

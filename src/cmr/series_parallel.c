@@ -27,7 +27,7 @@ typedef struct
   size_t distance;                    /**< \brief Distance in breadth-first search. */
   size_t predecessor;                 /**< \brief Index of predecessor element in breadth-first search. */
   bool inQueue;                       /**< \brief Whether this element is queued. */
-  char lastBFS;                       /**< \brief Last breadth-first search that found this node.
+  int lastBFS;                        /**< \brief Last breadth-first search that found this node.
                                        **< Is 0 initially, positive for search runs, -1 if marked and -2 for SP-reduced
                                        **< element. */
   bool specialBFS;                    /**< \brief Whether this is a special node in breadth-first search. */
@@ -854,7 +854,7 @@ CMR_ERROR extractNonbinarySubmatrix(
 static
 CMR_ERROR breadthFirstSearch(
   CMR* cmr,                           /**< \ref CMR environment. */
-  size_t currentBFS,                  /**< Number of this execution of breadth-first search. */
+  int currentBFS,                     /**< Number of this execution of breadth-first search. */
   ListMatrixElement* rowListData,     /**< Row data. */
   ListMatrixElement* columnListData,  /**< Column data. */
   ElementData* rowData,               /**< Row data. */
@@ -1118,7 +1118,7 @@ CMR_ERROR extractWheelSubmatrix(
   size_t numRows = listmatrix->numRows;
   size_t numColumns = listmatrix->numColumns;
   
-  size_t currentBFS = 0;
+  int currentBFS = 0;
   for (size_t row = 0; row < numRows; ++row)
     rowData[row].specialBFS = false;
   for (size_t column = 0; column < numColumns; ++column)

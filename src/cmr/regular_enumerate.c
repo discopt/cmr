@@ -785,7 +785,7 @@ CMR_ERROR transformSeparationNested(
 }
 
 CMR_ERROR CMRregularSearchThreeSeparation(CMR* cmr, CMR_DEC* dec, CMR_CHRMAT* transpose, bool ternary,
-  size_t firstNonCoGraphicMinor, CMR_SUBMAT** psubmatrix, CMR_REGULAR_PARAMETERS* params, CMR_REGULAR_STATISTICS* stats)
+  size_t firstNonCoGraphicMinor, /*CMR_SUBMAT** psubmatrix, */CMR_REGULAR_PARAMETERS* params, CMR_REGULAR_STATISTICS* stats)
 {
   assert(cmr);
   assert(dec);

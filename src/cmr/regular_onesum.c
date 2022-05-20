@@ -40,19 +40,19 @@ CMR_ERROR CMRregularDecomposeOneSum(CMR* cmr, CMR_DEC* dec)
     /* We create an intermediate array for sorting the components by number of nonzeros. */
     CMR_ONESUM_COMPONENT** orderedComponents = NULL;
     CMR_CALL( CMRallocStackArray(cmr, &orderedComponents, numComponents) );
-    for (int comp = 0; comp < numComponents; ++comp)
+    for (size_t comp = 0; comp < numComponents; ++comp)
       orderedComponents[comp] = &components[comp];
     CMR_CALL( CMRsort(cmr, numComponents, orderedComponents, sizeof(CMR_ONESUM_COMPONENT*), &compareOneSumComponents) );
 
     /* We now create the children. */
     CMR_CALL( CMRdecSetNumChildren(cmr, dec, numComponents) );
-    for (int c = 0; c < numComponents; ++c)
+    for (size_t comp = 0; comp < numComponents; ++comp)
     {
-      CMR_ONESUM_COMPONENT* component = orderedComponents[c];
+      CMR_ONESUM_COMPONENT* component = orderedComponents[comp];
       CMR_CALL( CMRdecCreate(cmr, dec, component->matrix->numRows, component->rowsToOriginal,
-        component->matrix->numColumns, component->columnsToOriginal, &dec->children[c]) );
-      dec->children[c]->matrix = (CMR_CHRMAT*) component->matrix;
-      dec->children[c]->transpose = (CMR_CHRMAT*) component->transpose;
+        component->matrix->numColumns, component->columnsToOriginal, &dec->children[comp]) );
+      dec->children[comp]->matrix = (CMR_CHRMAT*) component->matrix;
+      dec->children[comp]->transpose = (CMR_CHRMAT*) component->transpose;
       CMR_CALL( CMRfreeBlockArray(cmr, &component->rowsToOriginal) );
       CMR_CALL( CMRfreeBlockArray(cmr, &component->columnsToOriginal) );
     }

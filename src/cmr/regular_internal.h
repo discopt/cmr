@@ -13,7 +13,7 @@ CMR_ERROR CMRregularSearchThreeSeparation(
   CMR_CHRMAT* transpose,          /**< Transpose of nested-minors matrix of \p dec. */
   bool ternary,                   /**< Whether to consider the signs of the matrix. */
   size_t firstNonCoGraphicMinor,  /**< Index of first nested minor that is neither graphic nor cographic. */
-  CMR_SUBMAT** psubmatrix,        /**< Pointer for storing a violator matrix. */
+/*  CMR_SUBMAT** psubmatrix,        **< Pointer for storing a violator matrix. */
   CMR_REGULAR_PARAMETERS* params, /**< Parameters for the computation. */
   CMR_REGULAR_STATISTICS* stats /**< Statistics for the computation (may be \c NULL). */
 );

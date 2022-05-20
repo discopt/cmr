@@ -625,8 +625,8 @@ CMR_ERROR extendNestedMinorSequence(
   assert(dec->nestedMinorsSequenceNumColumns[dec->nestedMinorsLength - 1] <= dense->numColumns);
 
   CMRdbgMsg(4, "Attempting to extend a sequence of 3-connected nested minors of length %ld with last minor of size %dx%d.\n",
-    dec->nestedMinorsLength, dec->nestedMinorsSequence[dec->nestedMinorsLength-1].numRows,
-    dec->nestedMinorsSequence[dec->nestedMinorsLength-1].numColumns);
+    dec->nestedMinorsLength, dec->nestedMinorsSequenceNumRows[dec->nestedMinorsLength-1],
+    dec->nestedMinorsSequenceNumColumns[dec->nestedMinorsLength-1]);
 
   clock_t time = 0;
   if (stats)

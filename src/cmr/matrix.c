@@ -1637,8 +1637,8 @@ char* CMRdblmatConsistency(CMR_DBLMAT* matrix)
 
   for (size_t row = 0; row < matrix->numRows; ++row)
   {
-    int first = matrix->rowSlice[row];
-    int beyond = matrix->rowSlice[row + 1];
+    size_t first = matrix->rowSlice[row];
+    size_t beyond = matrix->rowSlice[row + 1];
     for (size_t entry = first; entry < beyond; ++entry)
     {
       if (matrix->entryValues[entry] == 0.0)
@@ -1674,8 +1674,8 @@ char* CMRintmatConsistency(CMR_INTMAT* matrix)
 
   for (size_t row = 0; row < matrix->numRows; ++row)
   {
-    int first = matrix->rowSlice[row];
-    int beyond = matrix->rowSlice[row + 1];
+    size_t first = matrix->rowSlice[row];
+    size_t beyond = matrix->rowSlice[row + 1];
     for (size_t entry = first; entry < beyond; ++entry)
     {
       if (matrix->entryValues[entry] == 0)
@@ -1711,8 +1711,8 @@ char* CMRchrmatConsistency(CMR_CHRMAT* matrix)
 
   for (size_t row = 0; row < matrix->numRows; ++row)
   {
-    int first = matrix->rowSlice[row];
-    int beyond = matrix->rowSlice[row + 1];
+    size_t first = matrix->rowSlice[row];
+    size_t beyond = matrix->rowSlice[row + 1];
     for (size_t entry = first; entry < beyond; ++entry)
     {
       if (matrix->entryValues[entry] == 0)
@@ -1912,7 +1912,7 @@ CMR_ERROR CMRdblmatZoomSubmat(CMR* cmr, CMR_DBLMAT* matrix, CMR_SUBMAT* submatri
   size_t numNonzeros = 0;
   for (size_t i = 0; i < submatrix->numRows; ++i)
   {
-    int r = submatrix->rows[i];
+    size_t r = submatrix->rows[i];
     assert(r < matrix->numRows);
 
     size_t first = matrix->rowSlice[r];
@@ -1981,7 +1981,7 @@ CMR_ERROR CMRintmatZoomSubmat(CMR* cmr, CMR_INTMAT* matrix, CMR_SUBMAT* submatri
   size_t numNonzeros = 0;
   for (size_t i = 0; i < submatrix->numRows; ++i)
   {
-    int r = submatrix->rows[i];
+    size_t r = submatrix->rows[i];
     assert(r < matrix->numRows);
 
     size_t first = matrix->rowSlice[r];
@@ -2050,7 +2050,7 @@ CMR_ERROR CMRchrmatFilter(CMR* cmr, CMR_CHRMAT* matrix, size_t numRows, size_t* 
   size_t numNonzeros = 0;
   for (size_t i = 0; i < numRows; ++i)
   {
-    int r = rows[i];
+    size_t r = rows[i];
     assert(r < matrix->numRows);
 
     size_t first = matrix->rowSlice[r];
@@ -2125,8 +2125,8 @@ CMR_ERROR CMRdblmatSupport(CMR* cmr, CMR_DBLMAT* matrix, double epsilon, CMR_CHR
   for (size_t row = 0; row < matrix->numRows; ++row)
   {
     result->rowSlice[row] = resultEntry;
-    int first = matrix->rowSlice[row];
-    int beyond = matrix->rowSlice[row + 1];
+    size_t first = matrix->rowSlice[row];
+    size_t beyond = matrix->rowSlice[row + 1];
     for (size_t matrixEntry = first; matrixEntry < beyond; ++matrixEntry)
     {
       if (fabs(matrix->entryValues[matrixEntry]) > epsilon)
@@ -2157,8 +2157,8 @@ CMR_ERROR CMRintmatSupport(CMR* cmr, CMR_INTMAT* matrix, CMR_CHRMAT** presult)
   for (size_t row = 0; row < matrix->numRows; ++row)
   {
     result->rowSlice[row] = resultEntry;
-    int first = matrix->rowSlice[row];
-    int beyond = matrix->rowSlice[row + 1];
+    size_t first = matrix->rowSlice[row];
+    size_t beyond = matrix->rowSlice[row + 1];
     for (size_t matrixEntry = first; matrixEntry < beyond; ++matrixEntry)
     {
       result->entryColumns[resultEntry] = matrix->entryColumns[matrixEntry];
@@ -2185,8 +2185,8 @@ CMR_ERROR CMRchrmatSupport(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT** presult)
   for (size_t row = 0; row < matrix->numRows; ++row)
   {
     result->rowSlice[row] = resultEntry;
-    int first = matrix->rowSlice[row];
-    int beyond = matrix->rowSlice[row + 1];
+    size_t first = matrix->rowSlice[row];
+    size_t beyond = matrix->rowSlice[row + 1];
     for (size_t matrixEntry = first; matrixEntry < beyond; ++matrixEntry)
     {
       result->entryColumns[resultEntry] = matrix->entryColumns[matrixEntry];

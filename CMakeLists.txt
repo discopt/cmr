@@ -68,6 +68,10 @@ add_library(cmr
   src/cmr/zero_plus_minus_one.cpp
 )
 
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+  target_compile_options(cmr PRIVATE -Wall -Wextra)
+endif()
+
 # Target for the cmr-camion executable.
 add_executable(cmr_camion
    src/main/camion_main.c) 

@@ -293,7 +293,7 @@ CMR_ERROR CMRdecPrint(CMR* cmr, CMR_DEC* dec, FILE* stream, size_t indent, bool 
   {
     if (dec->matrix || dec->transpose)
     {
-      for (int i = 0; i < indent; ++i)
+      for (size_t i = 0; i < indent; ++i)
         fputc(' ', stream);
       fprintf(stream, "\nMatrix:\n\n");
     }
@@ -308,7 +308,7 @@ CMR_ERROR CMRdecPrint(CMR* cmr, CMR_DEC* dec, FILE* stream, size_t indent, bool 
     }
     else
     {
-      for (int i = 0; i < indent; ++i)
+      for (size_t i = 0; i < indent; ++i)
         fputc(' ', stream);
       fprintf(stream, "No matrix.\n");
     }
@@ -317,14 +317,14 @@ CMR_ERROR CMRdecPrint(CMR* cmr, CMR_DEC* dec, FILE* stream, size_t indent, bool 
   {
     if (dec->graph)
     {
-      for (int i = 0; i < indent; ++i)
+      for (size_t i = 0; i < indent; ++i)
         fputc(' ', stream);
       fprintf(stream, "\nGraph:\n\n");
       CMR_CALL( CMRgraphPrint(stream, dec->graph) );
     }
     if (dec->cograph)
     {
-      for (int i = 0; i < indent; ++i)
+      for (size_t i = 0; i < indent; ++i)
         fputc(' ', stream);
       fprintf(stream, "\nCograph:\n\n");
       CMR_CALL( CMRgraphPrint(stream, dec->cograph) );
@@ -422,7 +422,6 @@ CMR_ERROR CMRdecSetNumChildren(CMR* cmr, CMR_DEC* node, size_t numChildren)
 {
   assert(cmr);
   assert(node);
-  assert(numChildren >= 0);
 
   CMR_CALL( CMRreallocBlockArray(cmr, &node->children, numChildren) );
   for (size_t c = node->numChildren; c < numChildren; ++c)

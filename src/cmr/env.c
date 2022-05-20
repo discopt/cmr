@@ -66,7 +66,7 @@ CMR_ERROR CMRfreeEnvironment(CMR** ptu)
   if (cmr->closeOutput)
     fclose(cmr->output);
 
-  for (int s = 0; s < cmr->numStacks; ++s)
+  for (size_t s = 0; s < cmr->numStacks; ++s)
     free(cmr->stacks[s].memory);
   free(cmr->stacks);
   free(*ptu);
@@ -87,6 +87,8 @@ CMR_ERROR _CMRallocBlock(CMR* cmr, void** ptr, size_t size)
 
 CMR_ERROR _CMRfreeBlock(CMR* cmr, void** ptr, size_t size)
 {
+  CMR_UNUSED(size);
+
   assert(cmr);
   assert(ptr);
   assert(*ptr);
@@ -229,7 +231,7 @@ CMR_ERROR _CMRallocStack(
       {
         cmr->stacks = realloc(cmr->stacks, 2 * cmr->memStacks * sizeof(CMR_STACK));
         size_t newSize = 2*cmr->memStacks;
-        for (int s = cmr->memStacks; s < newSize; ++s)
+        for (size_t s = cmr->memStacks; s < newSize; ++s)
         {
           cmr->stacks[s].memory = NULL;
           cmr->stacks[s].top = FIRST_STACK_SIZE << s;
@@ -325,7 +327,7 @@ void CMRassertStackConsistency(
 {
   assert(cmr);
 
-  for (int s = 0; s <= cmr->currentStack; ++s)
+  for (size_t s = 0; s <= cmr->currentStack; ++s)
   {
     CMR_STACK* stack = &cmr->stacks[s];
 

@@ -5,6 +5,8 @@
 #include <stdbool.h>
 #include <stdarg.h>
 
+#define CMR_UNUSED(x) (void)(x)
+
 #if defined(CMR_DEBUG)
 
 static inline
@@ -22,7 +24,13 @@ void CMRdbgMsg(int indent, const char* format, ...)
 
 #else /* !CMR_DEBUG */
 
-#define CMRdbgMsg(...)
+static inline
+void CMRdbgMsg(int indent, const char* format, ...)
+{
+  CMR_UNUSED(indent);
+  CMR_UNUSED(format);
+}
+/*#define CMRdbgMsg(...) */
 
 #endif /* CMR_DEBUG */
 
