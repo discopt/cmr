@@ -227,14 +227,14 @@ CMR_ERROR CMRdecPrint(CMR* cmr, CMR_DEC* dec, FILE* stream, size_t indent, bool 
     fprintf(stream, "%d-sum with %ld children {", dec->type, dec->numChildren);
   break;
   case CMR_DEC_GRAPHIC:
-    fprintf(stream, "graphic matrix with %d nodes and %d edges {", CMRgraphNumNodes(dec->graph), CMRgraphNumEdges(dec->graph));
+    fprintf(stream, "graphic matrix with %ld nodes and %ld edges {", CMRgraphNumNodes(dec->graph), CMRgraphNumEdges(dec->graph));
   break;
   case CMR_DEC_COGRAPHIC:
-    fprintf(stream, "cographic matrix with %d nodes and %d edges {", CMRgraphNumNodes(dec->cograph), CMRgraphNumEdges(dec->cograph));
+    fprintf(stream, "cographic matrix with %ld nodes and %ld edges {", CMRgraphNumNodes(dec->cograph), CMRgraphNumEdges(dec->cograph));
   break;
   case CMR_DEC_PLANAR:
     assert(CMRgraphNumEdges(dec->graph) == CMRgraphNumEdges(dec->cograph));
-    fprintf(stream, "planar matrix with %d nodes, %d faces and %d edges {", CMRgraphNumNodes(dec->graph),
+    fprintf(stream, "planar matrix with %ld nodes, %ld faces and %ld edges {", CMRgraphNumNodes(dec->graph),
       CMRgraphNumNodes(dec->cograph), CMRgraphNumEdges(dec->graph));
   break;
   case CMR_DEC_SERIES_PARALLEL:

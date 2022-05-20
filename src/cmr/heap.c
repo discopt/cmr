@@ -55,7 +55,7 @@ void debugHeap(CMR_INTHEAP* heap)
 static inline
 void debugHeap(CMR_INTHEAP* heap)
 {
-
+  CMR_UNUSED(heap);
 }
 #endif /* CMR_DEBUG_HEAP_CONTENT */
 

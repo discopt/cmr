@@ -228,7 +228,7 @@ CMR_ERROR testRegularThreeConnectedWithSequence(
         lastGraphicMinor > lastCographicMinor ? (lastGraphicMinor+1) : (lastCographicMinor + 1) );
 
       CMR_CALL( CMRregularSearchThreeSeparation(cmr, dec, nestedMinorsTranspose, ternary,
-        lastGraphicMinor > lastCographicMinor ? (lastGraphicMinor+1) : (lastCographicMinor + 1), /*NULL, */params, stats) );
+        lastGraphicMinor > lastCographicMinor ? (lastGraphicMinor+1) : (lastCographicMinor + 1), NULL, params, stats) );
 
       if (dec->type == CMR_DEC_IRREGULAR)
       {

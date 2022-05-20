@@ -25,7 +25,7 @@ void CMRgraphEnsureConsistent(CMR* cmr, CMR_GRAPH* graph)
 
   /* Count nodes and check prev/next linked lists. */
 
-  int countNodes = 0;
+  size_t countNodes = 0;
 #if !defined(NDEBUG)
   CMR_GRAPH_NODE u = -1;
 #endif /* !NDEBUG */
@@ -52,8 +52,8 @@ void CMRgraphEnsureConsistent(CMR* cmr, CMR_GRAPH* graph)
 
   /* Check outgoing and incoming arcs. */
 
-  int countIncident = 0;
-  int countLoops = 0;
+  size_t countIncident = 0;
+  size_t countLoops = 0;
   for (CMR_GRAPH_NODE v = CMRgraphNodesFirst(graph); CMRgraphNodesValid(graph, v); v = CMRgraphNodesNext(graph, v))
   {
     CMRdbgMsg(0, "First out-arc of node %d is %d\n", v, graph->nodes[v].firstOut);
@@ -110,11 +110,11 @@ CMR_ERROR CMRgraphCreateEmpty(CMR* cmr, CMR_GRAPH** pgraph, int memNodes, int me
   CMR_CALL( CMRallocBlockArray(cmr, &graph->arcs, 2 * memEdges) );
   graph->firstNode = -1;
   graph->freeNode = (memNodes > 0) ? 0 : -1;
-  for (int v = 0; v < graph->memNodes - 1; ++v)
+  for (size_t v = 0; v < graph->memNodes - 1; ++v)
     graph->nodes[v].next = v+1;
   graph->nodes[graph->memNodes-1].next = -1;
   graph->freeEdge = (memEdges > 0) ? 0 : -1;
-  for (int e = 0; e < graph->memEdges - 1; ++e)
+  for (size_t e = 0; e < graph->memEdges - 1; ++e)
     graph->arcs[2*e].next = e+1;
   graph->arcs[2*graph->memEdges-2].next = -1;
 
@@ -157,11 +157,11 @@ CMR_ERROR CMRgraphClear(CMR* cmr, CMR_GRAPH* graph)
   graph->numEdges = 0;
   graph->firstNode = -1;
   graph->freeNode = (graph->memNodes > 0) ? 0 : -1;
-  for (int v = 0; v < graph->memNodes - 1; ++v)
+  for (size_t v = 0; v < graph->memNodes - 1; ++v)
     graph->nodes[v].next = v+1;
   graph->nodes[graph->memNodes-1].next = -1;
   graph->freeEdge = (graph->memEdges > 0) ? 0 : -1;
-  for (int e = 0; e < graph->memEdges - 1; ++e)
+  for (size_t e = 0; e < graph->memEdges - 1; ++e)
     graph->arcs[2*e].next = e+1;
   graph->arcs[2*graph->memEdges-2].next = -1;
 
@@ -227,9 +227,9 @@ CMR_ERROR CMRgraphAddEdge(CMR* cmr, CMR_GRAPH* graph, CMR_GRAPH_NODE u, CMR_GRAP
   CMRgraphEnsureConsistent(cmr, graph);
 #endif /* CMR_DEBUG_CONSISTENCY */
   assert(u >= 0);
-  assert(u < graph->numNodes);
+  assert(u < (long) graph->numNodes);
   assert(v >= 0);
-  assert(v < graph->numNodes);
+  assert(v < (long) graph->numNodes);
 
   /* If the free list is empty, we have reallocate. */
 
@@ -377,7 +377,7 @@ CMR_ERROR CMRgraphPrint(FILE* stream, CMR_GRAPH* graph)
   assert(stream);
   assert(graph);
 
-  printf("Graph with %d nodes and %d edges.\n", CMRgraphNumNodes(graph), CMRgraphNumEdges(graph));
+  printf("Graph with %ld nodes and %ld edges.\n", CMRgraphNumNodes(graph), CMRgraphNumEdges(graph));
   for (CMR_GRAPH_NODE v = CMRgraphNodesFirst(graph); CMRgraphNodesValid(graph, v); v = CMRgraphNodesNext(graph, v))
   {
     fprintf(stream, "Node %d:\n", v);
@@ -397,9 +397,9 @@ CMR_ERROR CMRgraphMergeNodes(CMR* cmr, CMR_GRAPH* graph, CMR_GRAPH_NODE u, CMR_G
 
   assert(graph);
   assert(u >= 0);
-  assert(u < graph->memNodes);
+  assert(u < (long) graph->memNodes);
   assert(v >= 0);
-  assert(v < graph->memNodes);
+  assert(v < (long) graph->memNodes);
   assert(u != v);
 
   int a;

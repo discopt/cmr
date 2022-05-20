@@ -28,13 +28,11 @@ typedef struct
 static
 bool findRank1(
   CMR_CHRMAT* matrix,                 /**< Matrix. */
-  CMR_CHRMAT* transpose,              /**< Transpose of \p matrix. */
   ElementData* rowData,               /**< Row element data. */
   ElementData* columnData,            /**< Column element data. */
   size_t rowRepresentative[2][2],     /**< Row representatives for each part. */
   size_t columnRepresentative[2][2],  /**< Column representatives for each part. */
-  short part,                         /**< Part to which the investigated rows belong. */
-  bool isRow                          /**< Whether we're actually dealing with rows. */
+  short part                          /**< Part to which the investigated rows belong. */
 )
 {
   assert(matrix);
@@ -79,13 +77,11 @@ bool findRank1(
 static
 bool findRank2(
   CMR_CHRMAT* matrix,                 /**< Matrix. */
-  CMR_CHRMAT* transpose,              /**< Transpose of \p matrix. */
   ElementData* rowData,               /**< Row element data. */
   ElementData* columnData,            /**< Column element data. */
   size_t rowRepresentative[2][2],     /**< Row representatives for each part. */
   size_t columnRepresentative[2][2],  /**< Column representatives for each part. */
-  short part,                         /**< Part to which the investigated rows belong. */
-  bool isRow                          /**< Whether we're actually dealing with rows. */
+  short part                          /**< Part to which the investigated rows belong. */
 )
 {
   assert(matrix);
@@ -196,13 +192,11 @@ bool findRank2(
 static
 bool findRank3(
   CMR_CHRMAT* matrix,                 /**< Matrix. */
-  CMR_CHRMAT* transpose,              /**< Transpose of \p matrix. */
   ElementData* rowData,               /**< Row element data. */
   ElementData* columnData,            /**< Column element data. */
   size_t rowRepresentative[2][2],     /**< Row representatives for each part. */
   size_t columnRepresentative[2][2],  /**< Column representatives for each part. */
-  short part,                         /**< Part to which the investigated rows belong. */
-  bool isRow                          /**< Whether we're actually dealing with rows. */
+  short part                          /**< Part to which the investigated rows belong. */
 )
 {
   assert(matrix);
@@ -287,7 +281,6 @@ bool findRank3(
 static
 void determineType(
   CMR_CHRMAT* matrix,                 /**< Matrix. */
-  CMR_CHRMAT* transpose,              /**< Transpose of \p matrix. */
   ElementData* rowData,               /**< Row element data. */
   ElementData* columnData,            /**< Column element data. */
   size_t rowRepresentative[2][2],     /**< Row representatives for each part. */
@@ -393,7 +386,6 @@ bool assignRow(
   CMR_CHRMAT* transpose,              /**< Transpose of \p matrix. */
   ElementData* rowData,               /**< Row element data. */
   ElementData* columnData,            /**< Column element data. */
-  size_t rowRepresentative[2][2],     /**< Row representatives for each part. */
   size_t columnRepresentative[2][2],  /**< Column representatives for each part. */
   CMR_ELEMENT* queue,                 /**< Queue. */
   size_t* pqueueBeyond,               /**< Pointer for the end of the queue. */
@@ -522,13 +514,13 @@ CMR_ERROR extendMinorSeparation(
 //     CMRdbgMsg(14, "Initially, column c%ld belongs to part %d.\n", column+1, columnData[column].part);
 
   size_t totalRank = 0;
-  if (findRank1(matrix, transpose, rowData, columnData, rowRepresentative, columnRepresentative, 0, true))
+  if (findRank1(matrix, rowData, columnData, rowRepresentative, columnRepresentative, 0))
   {
     CMRdbgMsg(12, "Top-right part has rank at least 1.\n");
-    if (findRank2(matrix, transpose, rowData, columnData, rowRepresentative, columnRepresentative, 0, true))
+    if (findRank2(matrix, rowData, columnData, rowRepresentative, columnRepresentative, 0))
     {
       CMRdbgMsg(12, "Top-right part has rank at least 2.\n");
-      if (findRank3(matrix, transpose, rowData, columnData, rowRepresentative, columnRepresentative, 0, true))
+      if (findRank3(matrix, rowData, columnData, rowRepresentative, columnRepresentative, 0))
       {
         CMRdbgMsg(12, "Top-right part has rank at least 3.\n");
         return CMR_OKAY;
@@ -546,19 +538,19 @@ CMR_ERROR extendMinorSeparation(
     CMRdbgMsg(12, "Top-right part has rank 0.\n");
   }
 
-  if (findRank1(matrix, transpose, rowData, columnData, rowRepresentative, columnRepresentative, 1, true))
+  if (findRank1(matrix, rowData, columnData, rowRepresentative, columnRepresentative, 1))
   {
     CMRdbgMsg(12, "Bottom-left part has rank at least 1.\n");
     ++totalRank;
     if (totalRank >= 3)
       return CMR_OKAY;
-    if (findRank2(matrix, transpose, rowData, columnData, rowRepresentative, columnRepresentative, 1, true))
+    if (findRank2(matrix, rowData, columnData, rowRepresentative, columnRepresentative, 1))
     {
       CMRdbgMsg(12, "Bottom-left part has rank at least 2.\n");
       ++totalRank;
       if (totalRank >= 3)
         return CMR_OKAY;
-      if (findRank3(matrix, transpose, rowData, columnData, rowRepresentative, columnRepresentative, 1, true))
+      if (findRank3(matrix, rowData, columnData, rowRepresentative, columnRepresentative, 1))
       {
         CMRdbgMsg(12, "Bottom-left part has rank at least 3.\n");
         return CMR_OKAY;
@@ -592,8 +584,8 @@ CMR_ERROR extendMinorSeparation(
   {
     if (rowData[row].part == -1)
     {
-      determineType(matrix, transpose, rowData, columnData, rowRepresentative, columnRepresentative, row, 0, true);
-      determineType(matrix, transpose, rowData, columnData, rowRepresentative, columnRepresentative, row, 1, true);
+      determineType(matrix, rowData, columnData, rowRepresentative, columnRepresentative, row, 0, true);
+      determineType(matrix, rowData, columnData, rowRepresentative, columnRepresentative, row, 1, true);
       CMRdbgMsg(12, "Row r%ld has type %d for part 0 and type %d for part 1.\n", row+1, rowData[row].type[0],
         rowData[row].type[1]);
       if (rowData[row].type[0] < 0 && rowData[row].type[1] < 0)
@@ -608,8 +600,8 @@ CMR_ERROR extendMinorSeparation(
   {
     if (columnData[column].part == -1)
     {
-      determineType(transpose, matrix, columnData, rowData, columnRepresentative, rowRepresentative, column, 0, false);
-      determineType(transpose, matrix, columnData, rowData, columnRepresentative, rowRepresentative, column, 1, false);
+      determineType(transpose, columnData, rowData, columnRepresentative, rowRepresentative, column, 0, false);
+      determineType(transpose, columnData, rowData, columnRepresentative, rowRepresentative, column, 1, false);
       CMRdbgMsg(12, "Column c%ld has type %d for part 0 and type %d for part 1.\n", column+1,
         columnData[column].type[0], columnData[column].type[1]);
       if (columnData[column].type[0] < 0 && columnData[column].type[1] < 0)
@@ -658,7 +650,7 @@ CMR_ERROR extendMinorSeparation(
       short part = rowData[row].type[0] >= 0 ? 0 : 1;
       assert(rowData[row].type[part] >= 0);
       assert(rowData[row].type[1-part] < 0);
-      if (assignRow(matrix, transpose, rowData, columnData, rowRepresentative, columnRepresentative, queue,
+      if (assignRow(matrix, transpose, rowData, columnData, columnRepresentative, queue,
         &queueBeyond, row, part, true))
       {
         return CMR_OKAY;
@@ -670,7 +662,7 @@ CMR_ERROR extendMinorSeparation(
       short part = columnData[column].type[0] >= 0 ? 0 : 1;
       assert(columnData[column].type[part] >= 0);
       assert(columnData[column].type[1-part] < 0);
-      if (assignRow(transpose, matrix, columnData, rowData, columnRepresentative, rowRepresentative, queue,
+      if (assignRow(transpose, matrix, columnData, rowData, rowRepresentative, queue,
         &queueBeyond, column, part, false))
       {
         return CMR_OKAY;
@@ -785,8 +777,11 @@ CMR_ERROR transformSeparationNested(
 }
 
 CMR_ERROR CMRregularSearchThreeSeparation(CMR* cmr, CMR_DEC* dec, CMR_CHRMAT* transpose, bool ternary,
-  size_t firstNonCoGraphicMinor, /*CMR_SUBMAT** psubmatrix, */CMR_REGULAR_PARAMETERS* params, CMR_REGULAR_STATISTICS* stats)
+  size_t firstNonCoGraphicMinor, CMR_SUBMAT** psubmatrix, CMR_REGULAR_PARAMETERS* params, CMR_REGULAR_STATISTICS* stats)
 {
+  CMR_UNUSED(psubmatrix);
+  CMR_UNUSED(ternary);
+
   assert(cmr);
   assert(dec);
   assert(params);

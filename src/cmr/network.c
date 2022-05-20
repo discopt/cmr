@@ -193,7 +193,7 @@ CMR_ERROR CMRtestConetworkMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisConetwor
     edgeData[e].forestIndex = -1;
     (*parcsReversed)[e] = false;
   }
-  for (int b = 0; b < matrix->numColumns; ++b)
+  for (size_t b = 0; b < matrix->numColumns; ++b)
     edgeData[forestEdges[b]].forestIndex = b;
 
   /* Allocate and initialize a queue for BFS. */
@@ -204,15 +204,15 @@ CMR_ERROR CMRtestConetworkMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisConetwor
   CMRassertStackConsistency(cmr);
 
   /* Process 1-connected components of the (transposed) matrix. */
-  for (int comp = 0; comp < numComponents; ++comp)
+  for (size_t comp = 0; comp < numComponents; ++comp)
   {
     CMR_CHRMAT* componentMatrix = (CMR_CHRMAT*) components[comp].transpose;
 
 #if defined(CMR_DEBUG)
     CMRdbgMsg(2, "Processing component #%d of %d.\n", comp, numComponents);
-    for (int row = 0; row < componentMatrix->numRows; ++row)
+    for (size_t row = 0; row < componentMatrix->numRows; ++row)
       CMRdbgMsg(4, "Component row %d corresponds to original row %d.\n", row, components[comp].columnsToOriginal[row]);
-    for (int column = 0; column < componentMatrix->numColumns; ++column)
+    for (size_t column = 0; column < componentMatrix->numColumns; ++column)
       CMRdbgMsg(4, "Component column %d corresponds to original column %d.\n", column,
         components[comp].rowsToOriginal[column]);
     CMR_CALL( CMRchrmatPrintDense(cmr, stdout, componentMatrix, '0', true) );
@@ -269,7 +269,7 @@ CMR_ERROR CMRtestConetworkMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisConetwor
     }
 
     /* We now go through the columns of the matrix and inspect the signs. */
-    for (int componentColumn = 0; componentColumn < componentMatrix->numColumns; ++componentColumn)
+    for (size_t componentColumn = 0; componentColumn < componentMatrix->numColumns; ++componentColumn)
     {
       size_t column = components[comp].rowsToOriginal[componentColumn];
 
@@ -282,7 +282,7 @@ CMR_ERROR CMRtestConetworkMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisConetwor
       size_t first = matrix->rowSlice[column];
       size_t beyond = matrix->rowSlice[column + 1];
       int minDistance = INT_MAX; /* The depth in the BFS tree that the s-r and t-r paths have in common. */
-      for (int entry = first; entry < beyond; ++entry)
+      for (size_t entry = first; entry < beyond; ++entry)
       {
         CMRdbgMsg(6, "Entry %d is in row %d with value %d.\n", entry, matrix->entryColumns[entry],
           matrix->entryValues[entry]);
@@ -406,7 +406,7 @@ CMR_ERROR CMRtestConetworkMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisConetwor
   CMRassertStackConsistency(cmr);
 
   /* Free memory of 1-sum decomposition. */
-  for (int c = 0; c < numComponents; ++c)
+  for (size_t c = 0; c < numComponents; ++c)
   {
     CMRchrmatFree(cmr, (CMR_CHRMAT**) &components[c].matrix);
     CMRchrmatFree(cmr, (CMR_CHRMAT**) &components[c].transpose);

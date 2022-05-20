@@ -617,6 +617,9 @@ CMR_ERROR extendNestedMinorSequence(
   CMR_REGULAR_STATISTICS* stats   /**< Statistics for the computation (may be \c NULL). */
 )
 {
+  CMR_UNUSED(ternary);
+  CMR_UNUSED(psubmatrix);
+
   assert(cmr);
   assert(dec);
   assert(params);

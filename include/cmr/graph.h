@@ -47,15 +47,15 @@ typedef struct
 
 typedef struct
 {
-  int numNodes;               /**< \brief Number of nodes. */
-  int memNodes;               /**< \brief Number of nodes for which memory is allocated. */
-  CMR_GRAPH_NODE_DATA* nodes;  /**< \brief Array containing node data. */
+  size_t numNodes;            /**< \brief Number of nodes. */
+  size_t memNodes;            /**< \brief Number of nodes for which memory is allocated. */
+  CMR_GRAPH_NODE_DATA* nodes; /**< \brief Array containing node data. */
   int firstNode;              /**< \brief Index of first node. */
   int freeNode;               /**< \brief Beginning of free-list of nodes. */
 
-  int numEdges;               /**< \brief Number of edges. */
-  int memEdges;               /**< \brief Number of edges for which memory is allocated. */
-  CMR_GRAPH_ARC_DATA* arcs;    /**< \brief Array containing arc data. */
+  size_t numEdges;            /**< \brief Number of edges. */
+  size_t memEdges;            /**< \brief Number of edges for which memory is allocated. */
+  CMR_GRAPH_ARC_DATA* arcs;   /**< \brief Array containing arc data. */
   int freeEdge;               /**< \brief Beginning of free-list of arc. */
 } CMR_GRAPH;
 
@@ -78,7 +78,7 @@ size_t CMRgraphMemNodes(
  */
 
 static inline
-int CMRgraphNumNodes(
+size_t CMRgraphNumNodes(
   CMR_GRAPH* graph /**< Graph. */
 )
 {
@@ -106,7 +106,7 @@ size_t CMRgraphMemEdges(
  */
 
 static inline
-int CMRgraphNumEdges(
+size_t CMRgraphNumEdges(
   CMR_GRAPH* graph /**< Graph. */
 )
 {
