@@ -62,6 +62,8 @@ namespace tu
     void create_indirect_matroid(const MatrixType& input_matrix, const matroid_element_set& row_elements, const matroid_element_set& column_elements,
         integer_matroid& sub_matroid, submatrix_indices& sub_indices)
     {
+      CMR_UNUSED(input_matrix);
+
       sub_matroid.resize(row_elements.size(), column_elements.size());
       submatrix_indices::vector_type row_vector(row_elements.size());
       submatrix_indices::vector_type column_vector(column_elements.size());

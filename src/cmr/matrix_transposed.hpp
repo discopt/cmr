@@ -2,6 +2,8 @@
 
 #include <boost/numeric/ublas/matrix_expression.hpp>
 
+#include "env_internal.h"
+
 namespace tu
 {
 
@@ -170,7 +172,10 @@ namespace tu
   template <typename MatrixType>
   inline void matrix_set_value(matrix_transposed <const MatrixType>& matrix, size_t row, size_t column, typename MatrixType::value_type value)
   {
-
+    CMR_UNUSED(matrix);
+    CMR_UNUSED(row);
+    CMR_UNUSED(column);
+    CMR_UNUSED(value);
   }
 
   /**

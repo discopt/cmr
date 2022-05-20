@@ -1,4 +1,4 @@
-#define CMR_DEBUG /* Uncomment to debug graphic. */
+// #define CMR_DEBUG /* Uncomment to debug graphic. */
 // #define CMR_DEBUG_DOT /* Uncomment to write dot files of t-decompositions. */
 // #define CMR_DEBUG_CONSISTENCY /* Uncomment to check consistency of t-decompositions. */
 

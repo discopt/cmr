@@ -11,6 +11,8 @@ namespace tu
   template <typename Matrix>
   bool test_k_modularity(const Matrix& matrix, size_t& rank, unsigned int* pk, bool enforce_unimodularity, log_level level)
   {
+    CMR_UNUSED(level);
+
     typedef boost::numeric::ublas::matrix_indirect <const integer_matrix, submatrix_indices::indirect_array_type> indirect_matrix_t;
 
     integer_matrix transformed;
@@ -272,6 +274,8 @@ namespace tu
 
   unsigned int get_k_modular_integrality(const integer_matrix& matrix, const integer_matrix& rhs)
   {
+    CMR_UNUSED(matrix);
+    CMR_UNUSED(rhs);
     // TODO:
     return 0;
   }
@@ -293,6 +297,8 @@ namespace tu
 
   bool is_complement_total_unimodular(const integer_matrix& matrix, std::size_t& complementedRow, std::size_t& complementedColumn, log_level level)
   {
+    CMR_UNUSED(level);
+
     integer_matrix row_complemented(matrix.size1(), matrix.size2());
     integer_matrix column_complemented(matrix.size1(), matrix.size2());
     std::pair <integer_matrix::size_type, integer_matrix::size_type> position;

@@ -66,6 +66,8 @@ namespace tu
   char find_parallel_or_unit_vector(MatroidType& matroid, MatrixType& matrix, NestedMinorSequenceType& nested_minors,
       RowThreeConnectivity& row_three_connectivity, ColumnThreeConnectivity& column_three_connectivity, size_t& index)
   {
+    CMR_UNUSED(matrix);
+
     bool found_column = false;
     for (size_t row = nested_minors.height(); row < matroid.size1(); ++row)
     {

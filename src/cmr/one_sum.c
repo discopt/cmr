@@ -463,6 +463,10 @@ CMR_ERROR decomposeOneSum(CMR* cmr, CMR_MATRIX* matrix, size_t matrixType, size_
       CMR_CALL( CMRchrmatCheckTranspose(cmr, (CMR_CHRMAT*) components[comp].matrix,
         (CMR_CHRMAT*) components[comp].transpose, &isTranspose) );
     }
+    else
+    {
+      isTranspose = false;
+    }
     assert(isTranspose);
   }
 

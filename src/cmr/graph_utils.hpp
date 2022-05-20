@@ -103,6 +103,8 @@ namespace tu
         template <typename Vertex, typename Graph>
         void operator()(Vertex vertex, const Graph& graph)
         {
+          CMR_UNUSED(graph);
+
           *_iterator++ = vertex;
         }
 
@@ -130,6 +132,8 @@ namespace tu
       template <typename OutputIterator, typename EventTag>
       inline vertex_writer <OutputIterator, EventTag> write_vertex(OutputIterator iterator, EventTag tag)
       {
+        CMR_UNUSED(tag);
+
         return vertex_writer <OutputIterator, EventTag> (iterator);
       }
     }
@@ -215,6 +219,8 @@ namespace tu
     template <typename Graph, typename IndexMap, typename Vertex>
     bool find_star_vertex(const Graph& graph, const IndexMap index_map, Vertex& vertex)
     {
+      CMR_UNUSED(index_map);
+
       typedef boost::graph_traits <Graph> traits;
       typename traits::vertex_iterator vertex_iter, vertex_end;
       typename traits::edge_iterator edge_iter, edge_end;

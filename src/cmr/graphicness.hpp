@@ -545,12 +545,12 @@ namespace tu
     vertex_descriptor border_vertex2 = boost::vertex(2, *graph);
     vertex_descriptor border_vertex3 = boost::vertex(3, *graph);
 
-    boost::add_edge(center_vertex, border_vertex1, matroid.name1(0), *graph).first;
-    boost::add_edge(center_vertex, border_vertex2, matroid.name1(1), *graph).first;
-    boost::add_edge(center_vertex, border_vertex3, matroid.name2(2), *graph).first;
-    boost::add_edge(border_vertex1, border_vertex2, matroid.name2(0), *graph).first;
-    boost::add_edge(border_vertex1, border_vertex3, matroid.name2(1), *graph).first;
-    boost::add_edge(border_vertex2, border_vertex3, matroid.name1(2), *graph).first;
+    boost::add_edge(center_vertex, border_vertex1, matroid.name1(0), *graph);
+    boost::add_edge(center_vertex, border_vertex2, matroid.name1(1), *graph);
+    boost::add_edge(center_vertex, border_vertex3, matroid.name2(2), *graph);
+    boost::add_edge(border_vertex1, border_vertex2, matroid.name2(0), *graph);
+    boost::add_edge(border_vertex1, border_vertex3, matroid.name2(1), *graph);
+    boost::add_edge(border_vertex2, border_vertex3, matroid.name1(2), *graph);
 
     size_t minor_height = 3;
     size_t minor_width = 3;

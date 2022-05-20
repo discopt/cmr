@@ -105,6 +105,8 @@ namespace tu
       NonzeroIterator(const DenseMatrix<V>& matrix, Index major, int dummy)
         : _matrix(matrix), _major(major)
       {
+        CMR_UNUSED(dummy);
+
         if (Row)
           _minor = _matrix.numColumns();
         else
@@ -641,7 +643,7 @@ namespace tu
         : _data(Row ? matrix._rowData : matrix._columnData), _major(major),
         _index(_data.range[major].second)
       {
-
+        CMR_UNUSED(dummy);
       }
 
       /**
@@ -1287,7 +1289,7 @@ namespace tu
       NonzeroIterator(const TransposedMatrix<M>& matrix, Index major, int dummy)
         : _matrix(matrix._matrix), _iterator(typename M::template NonzeroIterator<!Row>(matrix._matrix, major, 0))
       {
-
+        CMR_UNUSED(dummy);
       }
 
       NonzeroIterator<Row>& operator++()
