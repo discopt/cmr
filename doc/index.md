@@ -1,6 +1,6 @@
 # Combinatorial Matrix Recognition Library # {#index}
 
-This C/C++ library contains efficient implementations of various algorithm for recognizing combinatorial matrices.
+This C/C++ library contains efficient implementations of various algorithms for recognizing combinatorial matrices.
 It is the successor of the [TUtest library](\ref TUtest).
 The following matrix classes can be recognized:
 
