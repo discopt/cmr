@@ -39,3 +39,14 @@ Options:
 
 Formats for matrices are \ref dense-matrix, \ref sparse-matrix.
 
+## Random Matrices ##
+
+The executable `cmr-generate-random` creates a random \f$ m \f$-by-\f$ n \f$ binary matrix whose entries are chosen uniformly at random with a given probability \f$ p \f$.
+It can be called as follows, where \f$ m \f$ equals ROWS and \f$ n \f$ equals COLS.
+
+    ./cmr-generate-random [OPTIONS] ROWS COLS p
+
+Options:
+  - `-o FORMAT` Format of output FILE; default: `dense`.
+
+Formats for matrices are \ref dense-matrix, \ref sparse-matrix.

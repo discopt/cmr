@@ -181,7 +181,16 @@ if(GENERATORS)
   )
   set_target_properties(cmr_generate_network PROPERTIES OUTPUT_NAME cmr-generate-network)
 
-  set(GENERATOR_EXECUTABLES cmr_generate_series_parallel cmr_generate_graphic cmr_generate_network)
+  # Target for cmr-generate-random
+  add_executable(cmr_generate_random
+    src/gen/random_gen.c)
+  target_link_libraries(cmr_generate_random
+    PRIVATE
+      CMR::cmr
+  )
+  set_target_properties(cmr_generate_random PROPERTIES OUTPUT_NAME cmr-generate-random)
+
+  set(GENERATOR_EXECUTABLES cmr_generate_series_parallel cmr_generate_graphic cmr_generate_network cmr_generate_random)
 else()
   set(GENERATOR_EXECUTABLES)
 endif()

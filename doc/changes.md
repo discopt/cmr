@@ -6,6 +6,7 @@
   - Added recognition of [(co)graphic](\ref graphic) and [(co)network](\ref network) matrices.
   - Added recognition of [series-parallel matrices](\ref series-parallel).
   - Moved all C++ code to internal implementation. The library interface is only in C.
+  - Added generators for network, graphic and random matrices.
 
 ## Version 1.2 ##
 
