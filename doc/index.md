@@ -20,6 +20,8 @@ The following additional functionality is also part of the library:
   - \ref conversions
   - \ref camion
 
+The library also contains various [instance generators](\ref generators).
+
 The following matrix/matroid classes are **planned**:
 
   - \ref balanced
