@@ -29,8 +29,6 @@ int printUsage(const char* program)
   fputs("Creates a random ROWS-by-COLS 0/1 graphic matrix.\n", stderr);
   fputs("Options:\n", stderr);
   fputs("  -b NUM       Benchmarks the recognition algorithm for the created matrix with NUM repetitions.\n", stderr);
-  fputs("Notes:", stderr);
-  fputs("  -p and -s cannot be specified at the same time.\n", stderr);
   return EXIT_FAILURE;
 }
 
