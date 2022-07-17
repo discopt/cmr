@@ -30,6 +30,7 @@ if(DOXYGEN_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/ctu.md
     ${CMAKE_CURRENT_SOURCE_DIR}/file-formats.md
     ${CMAKE_CURRENT_SOURCE_DIR}/graphic.md
+    ${CMAKE_CURRENT_SOURCE_DIR}/generators.md
     ${CMAKE_CURRENT_SOURCE_DIR}/k-modular.md
     ${CMAKE_CURRENT_SOURCE_DIR}/matroids.md
     ${CMAKE_CURRENT_SOURCE_DIR}/max-flow-min-cut.md
