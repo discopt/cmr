@@ -6,7 +6,7 @@
 #include <stdint.h>
 #include <math.h>
 
-#include <cmr/graphic.h>
+#include <cmr/network.h>
 
 typedef enum
 {
@@ -33,7 +33,7 @@ size_t randRange(size_t first, size_t beyond)
 int printUsage(const char* program)
 {
   printf("Usage: %s [OPTIONS] ROWS COLS\n\n", program);
-  puts("Creates a random ROWS-by-COLS 0/1 graphic matrix.\n");
+  puts("Creates a random ROWS-by-COLS -1/0/1 network matrix.\n");
   puts("Options:\n");
   puts("  -b NUM     Benchmarks the recognition algorithm for the created matrix with NUM repetitions.\n");
   puts("  -o FORMAT  Format of output FILE; default: `dense'.");
@@ -48,7 +48,7 @@ int compare(const void* pa, const void* pb)
   return a < b ? -1 : (a > b);
 }
 
-CMR_ERROR genMatrixGraphic(
+CMR_ERROR genMatrixNetwork(
   size_t numRows,               /**< Number of rows of base matrix. */
   size_t numColumns,            /**< Number of columns of base matrix. */
   size_t benchmarkRepetitions,  /**< Whether to benchmark the recognition algorithm with the matrix instead of printing it. */
@@ -60,8 +60,8 @@ CMR_ERROR genMatrixGraphic(
 
   size_t numNodes = numRows + 1;
   size_t numEdges = numColumns;
-  CMR_GRAPHIC_STATISTICS stats;
-  CMR_CALL( CMRstatsGraphicInit(&stats) );
+  CMR_NETWORK_STATISTICS stats;
+  CMR_CALL( CMRstatsNetworkInit(&stats) );
   for (size_t benchmark = benchmarkRepetitions ? benchmarkRepetitions : 1; benchmark > 0; --benchmark)
   {
     clock_t startTime = clock();
@@ -141,6 +141,9 @@ CMR_ERROR genMatrixGraphic(
     CMR_CALL( CMRchrmatTranspose(cmr, transposed, &matrix) );
     CMR_CALL( CMRchrmatFree(cmr, &transposed) );
 
+    /* Make it a network matrix via Camion's signing algorithm. */
+    CMR_CALL( CMRcomputeCamionSigned(cmr, matrix, NULL, NULL, NULL) );
+
     double generationTime = (clock() - startTime) * 1.0 / CLOCKS_PER_SEC;
     fprintf(stderr, "Generated a %ldx%ld matrix with %ld nonzeros in %f seconds.\n", numRows, numColumns,
       matrix->numNonzeros, generationTime);
@@ -148,8 +151,8 @@ CMR_ERROR genMatrixGraphic(
     if (benchmarkRepetitions)
     {
       /* Benchmark */      
-      bool isGraphic;
-      CMR_CALL( CMRtestGraphicMatrix(cmr, matrix, &isGraphic, NULL, NULL, NULL, NULL, &stats) );
+      bool isNetwork;
+      CMR_CALL( CMRtestNetworkMatrix(cmr, matrix, &isNetwork, NULL, NULL, NULL, NULL, NULL, &stats) );
     }
     else
     {
@@ -164,7 +167,7 @@ CMR_ERROR genMatrixGraphic(
     CMR_CALL( CMRchrmatFree(cmr, &matrix) );
   }
 
-  CMR_CALL( CMRstatsGraphicPrint(stderr, &stats, NULL) );
+  CMR_CALL( CMRstatsNetworkPrint(stderr, &stats, NULL) );
 
   CMR_CALL( CMRfreeEnvironment(&cmr) );
 
@@ -258,7 +261,7 @@ int main(int argc, char** argv)
   if (outputFormat == FILEFORMAT_UNDEFINED)
     outputFormat = FILEFORMAT_MATRIX_DENSE;
 
-  CMR_ERROR error = genMatrixGraphic(numRows, numColumns, benchmarkRepetitions, outputFormat);
+  CMR_ERROR error = genMatrixNetwork(numRows, numColumns, benchmarkRepetitions, outputFormat);
   switch (error)
   {
   case CMR_ERROR_INPUT:

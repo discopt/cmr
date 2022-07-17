@@ -163,7 +163,6 @@ if(GENERATORS)
   )
   set_target_properties(cmr_generate_series_parallel PROPERTIES OUTPUT_NAME cmr-generate-series-parallel)
 
-  
   # Target for cmr-generate-graphic
   add_executable(cmr_generate_graphic
     src/gen/graphic_gen.c)
@@ -173,7 +172,16 @@ if(GENERATORS)
   )
   set_target_properties(cmr_generate_graphic PROPERTIES OUTPUT_NAME cmr-generate-graphic)
 
-  set(GENERATOR_EXECUTABLES cmr_generate_series_parallel cmr_generate_graphic)
+  # Target for cmr-generate-network
+  add_executable(cmr_generate_network
+    src/gen/network_gen.c)
+  target_link_libraries(cmr_generate_network
+    PRIVATE
+      CMR::cmr
+  )
+  set_target_properties(cmr_generate_network PROPERTIES OUTPUT_NAME cmr-generate-network)
+
+  set(GENERATOR_EXECUTABLES cmr_generate_series_parallel cmr_generate_graphic cmr_generate_network)
 else()
   set(GENERATOR_EXECUTABLES)
 endif()
