@@ -118,7 +118,7 @@ CMR_ERROR CMRtestConetworkMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisConetwor
 #if defined(CMR_DEBUG)
   CMRdbgMsg(0, "CMRtestConetworkMatrix called for a %dx%d matrix \n", matrix->numRows,
     matrix->numColumns);
-  CMR_CALL( CMRchrmatPrintDense(cmr, stdout, matrix, '0', true) );
+  CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', true) );
 #endif /* CMR_DEBUG */
 
   clock_t totalClock = 0;
@@ -127,6 +127,10 @@ CMR_ERROR CMRtestConetworkMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisConetwor
 
   bool isCamionSigned;
   CMR_CALL( CMRtestCamionSigned(cmr, matrix, &isCamionSigned, psubmatrix, stats ? &stats->camion : NULL) );
+#if defined(CMR_DEBUG)
+  CMRdbgMsg(2, "CMRtestCamionSigned() returned %s.\n", isCamionSigned ? "TRUE": "FALSE");
+#endif /* CMR_DEBUG */
+
   if (!isCamionSigned)
   {
     *pisConetwork = false;
@@ -137,12 +141,17 @@ CMR_ERROR CMRtestConetworkMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisConetwor
   CMR_GRAPH_EDGE* coforestEdges = NULL;
   CMR_CALL( CMRtestCographicMatrix(cmr, matrix, pisConetwork, pdigraph, &forestEdges, &coforestEdges, psubmatrix,
     stats ? &stats->graphic : NULL) );
+#if defined(CMR_DEBUG)
+  CMRdbgMsg(2, "CMRtestCographicMatrix() returned %s.\n", (*pisConetwork) ? "TRUE": "FALSE");
+#endif /* CMR_DEBUG */
+
   if (pforestArcs)
     *pforestArcs = forestEdges;
   if (pcoforestArcs)
     *pcoforestArcs = coforestEdges;
   if (!*pisConetwork || !pdigraph || !parcsReversed)
   {
+
     /* We have to free (co)forest information if the caller didn't ask for it. */
     if (!pforestArcs)
       CMR_CALL( CMRfreeBlockArray(cmr, &forestEdges) );
@@ -158,9 +167,9 @@ CMR_ERROR CMRtestConetworkMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisConetwor
 
 #if defined(CMR_DEBUG)
   CMRgraphPrint(stdout, *pdigraph);
-  for (int b = 0; b < matrix->numColumns; ++b)
+  for (size_t b = 0; b < matrix->numColumns; ++b)
     CMRdbgMsg(2, "Forest #%d is %d.\n", b, (*pforestArcs)[b]);
-  for (int b = 0; b < matrix->numRows; ++b)
+  for (size_t b = 0; b < matrix->numRows; ++b)
     CMRdbgMsg(2, "Coforest #%d is %d.\n", b, (*pcoforestArcs)[b]);
 #endif /* CMR_DEBUG */
 
@@ -215,7 +224,7 @@ CMR_ERROR CMRtestConetworkMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisConetwor
     for (size_t column = 0; column < componentMatrix->numColumns; ++column)
       CMRdbgMsg(4, "Component column %d corresponds to original column %d.\n", column,
         components[comp].rowsToOriginal[column]);
-    CMR_CALL( CMRchrmatPrintDense(cmr, stdout, componentMatrix, '0', true) );
+    CMR_CALL( CMRchrmatPrintDense(cmr, componentMatrix, stdout, '0', true) );
 #endif /* CMR_DEBUG */
 
     /* If there are no nonzeros then also no signs can be wrong. */
@@ -445,6 +454,12 @@ CMR_ERROR CMRtestNetworkMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisNetwork, C
   /* Create transpose of matrix. */
   CMR_CHRMAT* transpose = NULL;
   CMR_CALL( CMRchrmatTranspose(cmr, matrix, &transpose) );
+  
+#if defined(CMR_DEBUG)
+  CMRdbgMsg(0, "CMRtestNetworkMatrix called for a %dx%d matrix \n", matrix->numRows,
+    matrix->numColumns);
+  CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', true) );
+#endif /* CMR_DEBUG */
 
   CMR_CALL( CMRtestConetworkMatrix(cmr, transpose, pisNetwork, pdigraph, pforestArcs, pcoforestArcs, parcsReversed,
     psubmatrix, stats) );

@@ -5241,7 +5241,7 @@ CMR_ERROR CMRtestCographicMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisCographi
 
 #if defined(CMR_DEBUG)
   CMRdbgMsg(0, "CMRtestCographicMatrix called for a %dx%d matrix\n", matrix->numRows, matrix->numColumns);
-  CMRchrmatPrintDense(cmr, matrix, stdout, '0', false);
+  CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
 #endif /* CMR_DEBUG */
 
   clock_t totalClock = 0;
@@ -5478,6 +5478,12 @@ CMR_ERROR CMRtestGraphicMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisGraphic, C
   assert(!pforestEdges || pgraph);
   assert(!pcoforestEdges || pgraph);
   assert(pisGraphic);
+
+#if defined(CMR_DEBUG)
+  CMRdbgMsg(0, "CMRtestGraphicMatrix called for a %dx%d matrix \n", matrix->numRows,
+    matrix->numColumns);
+  CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', true) );
+#endif /* CMR_DEBUG */
 
   /* Create transpose of matrix. */
   clock_t transposeClock;

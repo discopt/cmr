@@ -78,8 +78,8 @@ CMR_ERROR matrixToGraph(
 
   bool isCoGraphic;
   CMR_GRAPH* graph = NULL;
-  CMR_GRAPH_EDGE* forestEdges = NULL;
-  CMR_GRAPH_EDGE* coforestEdges = NULL;
+  CMR_GRAPH_EDGE* rowEdges = NULL;
+  CMR_GRAPH_EDGE* columnEdges = NULL;
   bool* edgesReversed = NULL;
 
   CMR_SUBMAT* submatrix = NULL;
@@ -88,12 +88,12 @@ CMR_ERROR matrixToGraph(
   CMR_CALL( CMRstatsGraphicInit(&stats) );
   if (cographic)
   {
-    CMR_CALL( CMRtestCographicMatrix(cmr, matrix, &isCoGraphic, &graph, &forestEdges, &coforestEdges,
+    CMR_CALL( CMRtestCographicMatrix(cmr, matrix, &isCoGraphic, &graph, &rowEdges, &columnEdges,
       (outputNonGraphicElements || outputNonGraphicMatrix) ? &submatrix : NULL, &stats) );
   }
   else
   {
-    CMR_CALL( CMRtestGraphicMatrix(cmr, matrix, &isCoGraphic, &graph, &forestEdges, &coforestEdges,
+    CMR_CALL( CMRtestGraphicMatrix(cmr, matrix, &isCoGraphic, &graph, &rowEdges, &columnEdges,
       (outputNonGraphicElements || outputNonGraphicMatrix) ? &submatrix : NULL, &stats) );
   }
 
@@ -109,7 +109,7 @@ CMR_ERROR matrixToGraph(
       {
         for (size_t column = 0; column < matrix->numColumns; ++column)
         {
-          CMR_GRAPH_EDGE e = forestEdges[column];
+          CMR_GRAPH_EDGE e = rowEdges[column];
           CMR_GRAPH_NODE u = CMRgraphEdgeU(graph, e);
           CMR_GRAPH_NODE v = CMRgraphEdgeV(graph, e);
           if (edgesReversed && edgesReversed[e])
@@ -122,7 +122,7 @@ CMR_ERROR matrixToGraph(
         }
         for (size_t row = 0; row < matrix->numRows; ++row)
         {
-          CMR_GRAPH_EDGE e = coforestEdges[row];
+          CMR_GRAPH_EDGE e = columnEdges[row];
           CMR_GRAPH_NODE u = CMRgraphEdgeU(graph, e);
           CMR_GRAPH_NODE v = CMRgraphEdgeV(graph, e);
           if (edgesReversed && edgesReversed[e])
@@ -138,7 +138,7 @@ CMR_ERROR matrixToGraph(
       {
         for (size_t row = 0; row < matrix->numRows; ++row)
         {
-          CMR_GRAPH_EDGE e = forestEdges[row];
+          CMR_GRAPH_EDGE e = rowEdges[row];
           CMR_GRAPH_NODE u = CMRgraphEdgeU(graph, e);
           CMR_GRAPH_NODE v = CMRgraphEdgeV(graph, e);
           if (edgesReversed && edgesReversed[e])
@@ -151,7 +151,7 @@ CMR_ERROR matrixToGraph(
         }
         for (size_t column = 0; column < matrix->numColumns; ++column)
         {
-          CMR_GRAPH_EDGE e = coforestEdges[column];
+          CMR_GRAPH_EDGE e = columnEdges[column];
           CMR_GRAPH_NODE u = CMRgraphEdgeU(graph, e);
           CMR_GRAPH_NODE v = CMRgraphEdgeV(graph, e);
           if (edgesReversed && edgesReversed[e])
@@ -170,7 +170,7 @@ CMR_ERROR matrixToGraph(
       puts("graph G {");
       for (size_t row = 0; row < matrix->numRows; ++row)
       {
-        CMR_GRAPH_EDGE e = forestEdges[row];
+        CMR_GRAPH_EDGE e = rowEdges[row];
         CMR_GRAPH_NODE u = CMRgraphEdgeU(graph, e);
         CMR_GRAPH_NODE v = CMRgraphEdgeV(graph, e);
         if (edgesReversed && edgesReversed[e])
@@ -184,7 +184,7 @@ CMR_ERROR matrixToGraph(
       }
       for (size_t column = 0; column < matrix->numColumns; ++column)
       {
-        CMR_GRAPH_EDGE e = coforestEdges[column];
+        CMR_GRAPH_EDGE e = columnEdges[column];
         CMR_GRAPH_NODE u = CMRgraphEdgeU(graph, e);
         CMR_GRAPH_NODE v = CMRgraphEdgeV(graph, e);
         if (edgesReversed && edgesReversed[e])
@@ -200,8 +200,8 @@ CMR_ERROR matrixToGraph(
 
     if (edgesReversed)
       CMR_CALL( CMRfreeBlockArray(cmr, &edgesReversed) );
-    CMR_CALL( CMRfreeBlockArray(cmr, &forestEdges) );
-    CMR_CALL( CMRfreeBlockArray(cmr, &coforestEdges) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &rowEdges) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &columnEdges) );
     CMR_CALL( CMRgraphFree(cmr, &graph) );
   }
 

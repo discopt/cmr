@@ -75,12 +75,6 @@ CMR_ERROR matrixToDigraph(
   fprintf(stderr, "Read %lux%lu matrix with %lu nonzeros in %f seconds.\n", matrix->numRows, matrix->numColumns,
     matrix->numNonzeros, (clock() - readClock) * 1.0 / CLOCKS_PER_SEC);
 
-  /* Transpose it. */
-
-  CMR_CHRMAT* transpose = NULL;
-  CMR_CALL( CMRchrmatTranspose(cmr, matrix, &transpose) );
-  CMR_CALL( CMRchrmatFree(cmr, &matrix) );
-
   /* Test for network. */
 
   bool isCoNetwork;
@@ -93,11 +87,11 @@ CMR_ERROR matrixToDigraph(
   CMR_CALL( CMRstatsNetworkInit(&stats) );
   if (conetwork)
   {
-    CMR_CALL( CMRtestConetworkMatrix(cmr, transpose, &isCoNetwork, &digraph, &rowEdges, &columnEdges, &edgesReversed,
+    CMR_CALL( CMRtestConetworkMatrix(cmr, matrix, &isCoNetwork, &digraph, &rowEdges, &columnEdges, &edgesReversed,
       NULL, &stats) );
   }
   {
-    CMR_CALL( CMRtestNetworkMatrix(cmr, transpose, &isCoNetwork, &digraph, &rowEdges, &columnEdges, &edgesReversed,
+    CMR_CALL( CMRtestNetworkMatrix(cmr, matrix, &isCoNetwork, &digraph, &rowEdges, &columnEdges, &edgesReversed,
       NULL, &stats) );
   }
 
@@ -109,38 +103,70 @@ CMR_ERROR matrixToDigraph(
   {
     if (outputFormat == FILEFORMAT_GRAPH_EDGELIST)
     {
-      for (size_t row = 0; row < transpose->numColumns; ++row)
+      if (conetwork)
       {
-        CMR_GRAPH_EDGE e = rowEdges[row];
-        CMR_GRAPH_NODE u = CMRgraphEdgeU(digraph, e);
-        CMR_GRAPH_NODE v = CMRgraphEdgeV(digraph, e);
-        if (edgesReversed && edgesReversed[e])
+        for (size_t column = 0; column < matrix->numColumns; ++column)
         {
-          CMR_GRAPH_NODE temp = u;
-          u = v;
-          v = temp;
+          CMR_GRAPH_EDGE e = columnEdges[column];
+          CMR_GRAPH_NODE u = CMRgraphEdgeU(digraph, e);
+          CMR_GRAPH_NODE v = CMRgraphEdgeV(digraph, e);
+          if (edgesReversed && edgesReversed[e])
+          {
+            CMR_GRAPH_NODE temp = u;
+            u = v;
+            v = temp;
+          }
+          printf("%d %d c%ld\n", u, v, column+1);
         }
-        printf("%d %d r%ld\n", u, v, row+1);
+        for (size_t row = 0; row < matrix->numRows; ++row)
+        {
+          CMR_GRAPH_EDGE e = rowEdges[row];
+          CMR_GRAPH_NODE u = CMRgraphEdgeU(digraph, e);
+          CMR_GRAPH_NODE v = CMRgraphEdgeV(digraph, e);
+          if (edgesReversed && edgesReversed[e])
+          {
+            CMR_GRAPH_NODE temp = u;
+            u = v;
+            v = temp;
+          }
+          printf("%d %d r%ld\n", u, v, row+1);
+        }
       }
-      for (size_t column = 0; column < transpose->numRows; ++column)
+      else
       {
-        CMR_GRAPH_EDGE e = columnEdges[column];
-        CMR_GRAPH_NODE u = CMRgraphEdgeU(digraph, e);
-        CMR_GRAPH_NODE v = CMRgraphEdgeV(digraph, e);
-        if (edgesReversed && edgesReversed[e])
+        for (size_t row = 0; row < matrix->numRows; ++row)
         {
-          CMR_GRAPH_NODE temp = u;
-          u = v;
-          v = temp;
+          CMR_GRAPH_EDGE e = rowEdges[row];
+          CMR_GRAPH_NODE u = CMRgraphEdgeU(digraph, e);
+          CMR_GRAPH_NODE v = CMRgraphEdgeV(digraph, e);
+          if (edgesReversed && edgesReversed[e])
+          {
+            CMR_GRAPH_NODE temp = u;
+            u = v;
+            v = temp;
+          }
+          printf("%d %d r%ld\n", u, v, row+1);
         }
-        printf("%d %d c%ld\n", u, v, column+1);
+        for (size_t column = 0; column < matrix->numColumns; ++column)
+        {
+          CMR_GRAPH_EDGE e = columnEdges[column];
+          CMR_GRAPH_NODE u = CMRgraphEdgeU(digraph, e);
+          CMR_GRAPH_NODE v = CMRgraphEdgeV(digraph, e);
+          if (edgesReversed && edgesReversed[e])
+          {
+            CMR_GRAPH_NODE temp = u;
+            u = v;
+            v = temp;
+          }
+          printf("%d %d c%ld\n", u, v, column+1);
+        }
       }
     }
     else if (outputFormat == FILEFORMAT_GRAPH_DOT)
     {
       char buffer[16];
       puts("digraph G {");
-      for (size_t row = 0; row < transpose->numColumns; ++row)
+      for (size_t row = 0; row < matrix->numRows; ++row)
       {
         CMR_GRAPH_EDGE e = rowEdges[row];
         CMR_GRAPH_NODE u = CMRgraphEdgeU(digraph, e);
@@ -154,7 +180,7 @@ CMR_ERROR matrixToDigraph(
         printf(" v_%d -> v_%d [label=\"%s\",style=bold,color=red];\n", u, v,
           CMRelementString(CMRrowToElement(row), buffer));
       }
-      for (size_t column = 0; column < transpose->numRows; ++column)
+      for (size_t column = 0; column < matrix->numColumns; ++column)
       {
         CMR_GRAPH_EDGE e = columnEdges[column];
         CMR_GRAPH_NODE u = CMRgraphEdgeU(digraph, e);
@@ -179,7 +205,6 @@ CMR_ERROR matrixToDigraph(
 
   /* Cleanup. */
 
-  CMR_CALL( CMRchrmatFree(cmr, &transpose) );
   CMR_CALL( CMRfreeEnvironment(&cmr) );
 
   return CMR_OKAY;
