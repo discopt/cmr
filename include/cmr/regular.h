@@ -31,7 +31,9 @@ typedef enum
 
 typedef struct
 {
-  bool fastGraphicness;         /**< \brief Whether to use fast graphicness check; default: \c true */
+  bool directGraphicness;       /**< \brief Whether to use fast graphicness routines; default: \c true */
+  bool seriesParallel;          /**< \brief Whether to allow series-parallel operations in the decomposition tree;
+                                 **         default: \c true */
   bool planarityCheck;          /**< \brief Whether minors identified as graphic should still be checked for
                                  **         cographicness; default: \c false. */
   bool completeTree;            /**< \brief Whether to compute a complete decomposition tree (even if already

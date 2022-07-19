@@ -193,7 +193,7 @@ TEST(Regular, NestedMinorPivotsOneRowOneColumn)
   CMR_DEC* dec = NULL;
   CMR_REGULAR_PARAMETERS params;
   ASSERT_CMR_CALL( CMRparamsRegularInit(&params) );
-  params.fastGraphicness = false;
+  params.directGraphicness = false;
   ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, &params, NULL) );
 
   ASSERT_CMR_CALL( CMRdecPrint(cmr, dec, stdout, 0, true, true, true) );
@@ -227,7 +227,7 @@ TEST(Regular, NestedMinorPivotsTwoRowsOneColumn)
   CMR_DEC* dec = NULL;
   CMR_REGULAR_PARAMETERS params;
   ASSERT_CMR_CALL( CMRparamsRegularInit(&params) );
-  params.fastGraphicness = false;
+  params.directGraphicness = false;
   ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, &params, NULL) );
 
   ASSERT_CMR_CALL( CMRdecPrint(cmr, dec, stdout, 0, true, true, true) );
@@ -260,7 +260,7 @@ TEST(Regular, NestedMinorPivotsOneRowTwoColumns)
   CMR_DEC* dec = NULL;
   CMR_REGULAR_PARAMETERS params;
   ASSERT_CMR_CALL( CMRparamsRegularInit(&params) );
-  params.fastGraphicness = false;
+  params.directGraphicness = false;
   ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, &params, NULL) );
 
   ASSERT_CMR_CALL( CMRdecPrint(cmr, dec, stdout, 0, true, true, true) );
@@ -298,7 +298,7 @@ TEST(Regular, NestedMinorPivotsTwoSeparation)
   CMR_DEC* dec = NULL;
   CMR_REGULAR_PARAMETERS params;
   ASSERT_CMR_CALL( CMRparamsRegularInit(&params) );
-  params.fastGraphicness = false;
+  params.directGraphicness = false;
   ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, &params, NULL) );
 
   ASSERT_CMR_CALL( CMRdecPrint(cmr, dec, stdout, 0, true, true, true) );
@@ -328,7 +328,7 @@ void testSequenceGraphicness(
   CMR_DEC* dec = NULL;
   CMR_REGULAR_PARAMETERS params;
   ASSERT_CMR_CALL( CMRparamsRegularInit(&params) );
-  params.fastGraphicness = false;
+  params.directGraphicness = false;
   ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, &params, NULL) );
 
   if (knowGraphic)
@@ -676,7 +676,7 @@ void testEnumerate(
   CMR_DEC* dec = NULL;
   CMR_REGULAR_PARAMETERS params;
   ASSERT_CMR_CALL( CMRparamsRegularInit(&params) );
-  params.fastGraphicness = false;
+  params.directGraphicness = false;
   ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, &params, NULL) );
 
   if (knowRegular)

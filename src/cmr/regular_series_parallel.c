@@ -16,6 +16,11 @@ CMR_ERROR CMRregularDecomposeSeriesParallel(CMR* cmr, CMR_DEC** pdec, bool terna
   assert(params);
 
   CMR_DEC* dec = *pdec;
+  
+  CMRdbgMsg(0, "\nCMRregularDecomposeSeriesParallel called for matrix\n");
+#if defined(CMR_DEBUG)
+  CMR_CALL( CMRchrmatPrintDense(cmr, dec->matrix, stdout, '0', true) );
+#endif /* CMR_DEBUG */
 
   bool isSeriesParallel = true;
   CMR_SP_REDUCTION* reductions = NULL;
@@ -39,29 +44,63 @@ CMR_ERROR CMRregularDecomposeSeriesParallel(CMR* cmr, CMR_DEC** pdec, bool terna
   if (psubmatrix && *psubmatrix && (*psubmatrix)->numRows == 2)
     dec->type = CMR_DEC_IRREGULAR;
 
+  CMRdbgMsg(0, "[CMRregularDecomposeSeriesParallel -> %ld SP reductions]", numReductions);
+
   /* Modify the decomposition to reflect the SP reductions. */
   if (numReductions > 0 && dec->type != CMR_DEC_IRREGULAR)
   {
-    dec->type = CMR_DEC_SERIES_PARALLEL;
-    dec->numReductions = numReductions;
-    CMR_CALL( CMRduplicateBlockArray(cmr, &dec->reductions, numReductions, reductions) );
-
-    if (!isSeriesParallel)
+    if (params->seriesParallel)
     {
-      CMR_CALL( CMRdecSetNumChildren(cmr, dec, 1) );
-      CMR_CALL( CMRdecCreate(cmr, dec, reducedSubmatrix->numRows, reducedSubmatrix->rows, reducedSubmatrix->numColumns,
-        reducedSubmatrix->columns, &dec->children[0]) );
-      CMR_CALL( CMRchrmatZoomSubmat(cmr, dec->matrix, reducedSubmatrix, &dec->children[0]->matrix) );
-      if (psubmatrix && *psubmatrix)
+      dec->type = CMR_DEC_SERIES_PARALLEL;
+      dec->numReductions = numReductions;
+      CMR_CALL( CMRduplicateBlockArray(cmr, &dec->reductions, numReductions, reductions) );
+
+      if (!isSeriesParallel)
       {
-        /* Zoom into submatrix. */
-        CMR_SUBMAT* zoomedSubmatrix = NULL;
-        CMR_CALL( CMRsubmatZoomSubmat(cmr, reducedSubmatrix, *psubmatrix, &zoomedSubmatrix));
-        CMR_CALL( CMRsubmatFree(cmr, psubmatrix) );
-        *psubmatrix = zoomedSubmatrix;
+        CMR_CALL( CMRdecSetNumChildren(cmr, dec, 1) );
+        CMR_CALL( CMRdecCreate(cmr, dec, reducedSubmatrix->numRows, reducedSubmatrix->rows, reducedSubmatrix->numColumns,
+          reducedSubmatrix->columns, &dec->children[0]) );
+        CMR_CALL( CMRchrmatZoomSubmat(cmr, dec->matrix, reducedSubmatrix, &dec->children[0]->matrix) );
+        if (psubmatrix && *psubmatrix)
+        {
+          /* Zoom into submatrix. */
+          CMR_SUBMAT* zoomedSubmatrix = NULL;
+          CMR_CALL( CMRsubmatZoomSubmat(cmr, reducedSubmatrix, *psubmatrix, &zoomedSubmatrix));
+          CMR_CALL( CMRsubmatFree(cmr, psubmatrix) );
+          *psubmatrix = zoomedSubmatrix;
+        }
+        dec = dec->children[0];
+        *pdec = dec;
       }
-      dec = dec->children[0];
-      *pdec = dec;
+    }
+    else
+    {
+      /* We have to carry out each SP reduction as a 2-separation. */
+      CMRdbgMsg(0, "\n");
+      for (size_t r = 0; r < numReductions; ++r)
+      {
+        char buffer[16];
+        CMRdbgMsg(0, "Reduction %ld is (%s,%s).\n", r, CMRelementString(reductions[r].element, 0),
+          CMRelementString(reductions[r].mate, buffer));
+      }
+
+      assert(!separation);
+      size_t parentNumRows = dec->matrix->numRows;
+      size_t parentNumColumns = dec->matrix->numColumns;
+      CMR_CALL( CMRsepaCreate(cmr, parentNumRows, parentNumColumns, &separation) );
+      for (size_t r = 0; r < parentNumRows; ++r)
+        separation->rowsToPart[r] = 0;
+      for (size_t c = 0; c < parentNumColumns; ++c)
+        separation->columnsToPart[c] = 0;
+      if (CMRspIsRow(reductions[0]))
+        separation->rowsToPart[CMRelementToRowIndex(reductions[0].element)] = 1;
+      else
+        separation->columnsToPart[CMRelementToColumnIndex(reductions[0].element)] = 1;
+      if (CMRelementIsRow(reductions[0].mate))
+        separation->rowsToPart[CMRelementToRowIndex(reductions[0].mate)] = 1;
+      else if (CMRelementIsColumn(reductions[0].mate))
+        separation->columnsToPart[CMRelementToColumnIndex(reductions[0].mate)] = 1;
+      CMR_CALL( CMRsepaInitializeMatrix(cmr, separation, dec->matrix, 1) );
     }
   }
 

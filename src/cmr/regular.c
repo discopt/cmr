@@ -14,7 +14,8 @@ CMR_ERROR CMRparamsRegularInit(CMR_REGULAR_PARAMETERS* params)
 {
   assert(params);
 
-  params->fastGraphicness = true;
+  params->directGraphicness = true;
+  params->seriesParallel = true;
   params->planarityCheck = false;
   params->completeTree = false;
   params->matrices = CMR_DEC_CONSTRUCT_NONE;
@@ -271,11 +272,11 @@ CMR_ERROR testRegularTwoConnected(CMR* cmr, CMR_DEC* dec, bool ternary, bool *pi
 
   CMR_SUBMAT* submatrix = NULL;
 
-  if (params->fastGraphicness || dec->matrix->numRows <= 3 || dec->matrix->numColumns <= 3)
+  if (params->directGraphicness || dec->matrix->numRows <= 3 || dec->matrix->numColumns <= 3)
   {
     /* We run the almost-linear time algorithm. Otherwise, graphicness is checked later for the 3-connected components. */
 
-    if (params->fastGraphicness || params->planarityCheck || dec->matrix->numRows > 3)
+    if (params->directGraphicness || params->planarityCheck || dec->matrix->numRows > 3)
     {
       CMRdbgMsg(4, "Checking for graphicness...");
       bool isGraphic;

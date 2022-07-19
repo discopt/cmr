@@ -54,7 +54,7 @@ CMR_ERROR CMRsepaCreate(
  *
  * Assumes that \p separation was created via \ref CMRsepaCreate and that all entries of \ref rowsToPart and
  * \ref columnsToPart are set to either 0 or 1.
- * Connecting elements are given by the caller.
+ * The connecting elements are given by the caller.
  */
 
 CMR_EXPORT
@@ -76,7 +76,7 @@ CMR_ERROR CMRsepaInitialize(
  *
  * Assumes that \p separation was created via \ref CMRsepaCreate and that all entries of \ref rowsToPart and
  * \ref columnsToPart are set to either 0 or 1.
- * Connecting elements will be searched by inspecting \p matrix.
+ * The connecting elements will be searched by inspecting \p matrix.
  */
 
 CMR_EXPORT

@@ -17,6 +17,9 @@ Options:
   - `n`         Output the elements of a minimal non-totally-unimodular submatrix.
   - `N`         Output a minimal non-totally-unimodular submatrix.
   - `s`         Print statistics about the computation to stderr.
+Parameter options:
+  - `--no-direct-graphic`   Check only 3-connected matrices for regularity.
+  - `--no-series-parallel`  Do not allow series-parallel operations in decomposition tree.
 
 Formats for matrices are \ref dense-matrix and \ref sparse-matrix.
 If FILE is `-`, then the input will be read from stdin.
