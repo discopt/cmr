@@ -492,7 +492,9 @@ CMR_ERROR reduceListMatrix(
   size_t queueMemory,                 /**< Memory allocated for queue. */
   CMR_SP_REDUCTION* reductions,       /**< Array for storing the SP-reductions. Must be sufficiently large, e.g., number
                                        **< of rows + number of columns. */
-  size_t* pnumReductions,             /**< Pointer for storing the number of SP-reductions. */
+  size_t maxNumReductions,            /**< Maximum number of SP-reductions. Stops when this would be exceeded. */
+  size_t* pnumReductions,             /**< Pointer for storing the number of SP-reductions; stores \c SIZE_MAX if
+                                       **< \p maxNumReductions was exceeded.  */
   size_t* pnumRowReductions,          /**< Pointer for storing the number of row reductions (may be \c NULL). */
   size_t* pnumColumnReductions        /**< Pointer for storing the number of column reductions (may be \c NULL). */
 )
@@ -569,6 +571,11 @@ CMR_ERROR reduceListMatrix(
           CMRdbgMsg(6, "Row %d is parallel.\n", row2);
 
           /* We found a parallel row. */
+          if (*pnumReductions == maxNumReductions)
+          {
+            *pnumReductions = SIZE_MAX;
+            return CMR_OKAY;
+          }
           reductions[*pnumReductions].element = CMRrowToElement(row1);
           reductions[*pnumReductions].mate = CMRrowToElement(row2);
           (*pnumReductions)++;
@@ -595,6 +602,12 @@ CMR_ERROR reduceListMatrix(
       else
       {
         /* Zero or unit row vector. */
+        if (*pnumReductions == maxNumReductions)
+        {
+          *pnumReductions = SIZE_MAX;
+          return CMR_OKAY;
+        }
+
         CMRdbgMsg(4, "Processing %s row %d.\n", listmatrix->rowElements[row1].numNonzeros == 0 ? "zero" : "unit", row1);
 
         rowData[row1].inQueue = false;
@@ -642,6 +655,11 @@ CMR_ERROR reduceListMatrix(
           CMRdbgMsg(6, "Column %d is parallel.\n", column2);
 
           /* We found a parallel column. */
+          if (*pnumReductions == maxNumReductions)
+          {
+            *pnumReductions = SIZE_MAX;
+            return CMR_OKAY;
+          }
           reductions[*pnumReductions].element = CMRcolumnToElement(column1);
           reductions[*pnumReductions].mate = CMRcolumnToElement(column2);
           (*pnumReductions)++;
@@ -668,6 +686,12 @@ CMR_ERROR reduceListMatrix(
       else
       {
         /* Zero or unit column vector. */
+        if (*pnumReductions == maxNumReductions)
+        {
+          *pnumReductions = SIZE_MAX;
+          return CMR_OKAY;
+        }
+
         CMRdbgMsg(4, "Processing %s column %d.\n",
           listmatrix->columnElements[column1].numNonzeros == 0 ? "zero" : "unit", column1);
 
@@ -1465,6 +1489,7 @@ CMR_ERROR decomposeBinarySeriesParallel(
   CMR_CHRMAT* matrix,               /**< Sparse char matrix. */
   CMR_SP_REDUCTION* reductions,     /**< Array for storing the SP-reductions. Must have capacity at least number of
                                      **< rows + number of columns. */
+  size_t maxNumReductions,          /**< Maximum number of SP-reductions. Stops when this would be exceeded. */
   size_t* pnumReductions,           /**< Pointer for storing the number of SP-reductions. */
   CMR_SUBMAT** preducedSubmatrix,   /**< Pointer for storing the SP-reduced submatrix (may be \c NULL). */
   CMR_SUBMAT** pviolatorSubmatrix,  /**< Pointer for storing a wheel-submatrix (may be \c NULL). */
@@ -1543,7 +1568,7 @@ CMR_ERROR decomposeBinarySeriesParallel(
     size_t numRowReductions = 0;
     size_t numColumnReductions = 0;
     CMR_CALL( reduceListMatrix(cmr, listmatrix, rowData, columnData, rowHashtable, columnHashtable, hashVector,
-      queue, &queueStart, &queueEnd, queueMemory, reductions, pnumReductions, &numRowReductions,
+      queue, &queueStart, &queueEnd, queueMemory, reductions, maxNumReductions, pnumReductions, &numRowReductions,
       &numColumnReductions) );
 
     if (stats)
@@ -1559,7 +1584,8 @@ CMR_ERROR decomposeBinarySeriesParallel(
         preducedSubmatrix) );
     }
 
-    if ((pviolatorSubmatrix || pseparation) && (*pnumReductions != (matrix->numRows + matrix->numColumns)))
+    if ((pviolatorSubmatrix || pseparation)  && (*pnumReductions != SIZE_MAX)
+      && (*pnumReductions != (matrix->numRows + matrix->numColumns)))
     {
       clock_t wheelClock = 0;
       if (stats)
@@ -1616,7 +1642,7 @@ CMR_ERROR CMRtestBinarySeriesParallel(CMR* cmr, CMR_CHRMAT* matrix, bool* pisSer
   if (!reductions)
     CMR_CALL( CMRallocStackArray(cmr, &localReductions, matrix->numRows + matrix->numColumns) );
 
-  CMR_CALL( decomposeBinarySeriesParallel(cmr, matrix, reductions ? reductions : localReductions,
+  CMR_CALL( decomposeBinarySeriesParallel(cmr, matrix, reductions ? reductions : localReductions, SIZE_MAX,
     &localNumReductions, preducedSubmatrix, pviolatorSubmatrix, NULL, stats) );
 
   if (pisSeriesParallel)
@@ -1631,8 +1657,8 @@ CMR_ERROR CMRtestBinarySeriesParallel(CMR* cmr, CMR_CHRMAT* matrix, bool* pisSer
 
 
 CMR_ERROR CMRdecomposeBinarySeriesParallel(CMR* cmr, CMR_CHRMAT* matrix, bool* pisSeriesParallel,
-  CMR_SP_REDUCTION* reductions, size_t* pnumReductions, CMR_SUBMAT** preducedSubmatrix, CMR_SUBMAT** pviolatorSubmatrix,
-  CMR_SEPA** pseparation, CMR_SP_STATISTICS* stats)
+  CMR_SP_REDUCTION* reductions, size_t maxNumReductions, size_t* pnumReductions, CMR_SUBMAT** preducedSubmatrix,
+  CMR_SUBMAT** pviolatorSubmatrix, CMR_SEPA** pseparation, CMR_SP_STATISTICS* stats)
 {
   assert(cmr);
   assert(matrix);
@@ -1644,7 +1670,7 @@ CMR_ERROR CMRdecomposeBinarySeriesParallel(CMR* cmr, CMR_CHRMAT* matrix, bool* p
   if (!reductions)
     CMR_CALL( CMRallocStackArray(cmr, &localReductions, matrix->numRows + matrix->numColumns) );
 
-  CMR_CALL( decomposeBinarySeriesParallel(cmr, matrix, reductions ? reductions : localReductions,
+  CMR_CALL( decomposeBinarySeriesParallel(cmr, matrix, reductions ? reductions : localReductions, maxNumReductions,
     &localNumReductions, preducedSubmatrix, pviolatorSubmatrix, pseparation, stats) );
 
   if (pisSeriesParallel)
@@ -1663,6 +1689,7 @@ CMR_ERROR decomposeTernarySeriesParallel(
   CMR_CHRMAT* matrix,               /**< Sparse char matrix. */
   CMR_SP_REDUCTION* reductions,     /**< Array for storing the SP-reductions. Must have capacity at least number of
                                      **< rows + number of columns. */
+  size_t maxNumReductions,          /**< Maximum number of SP-reductions. Stops when this would be exceeded. */
   size_t* pnumReductions,           /**< Pointer for storing the number of SP-reductions. */
   CMR_SUBMAT** preducedSubmatrix,   /**< Pointer for storing the SP-reduced submatrix (may be \c NULL). */
   CMR_SUBMAT** pviolatorSubmatrix,  /**< Pointer for storing a wheel-submatrix (may be \c NULL). */
@@ -1739,7 +1766,8 @@ CMR_ERROR decomposeTernarySeriesParallel(
     size_t numRowReductions = 0;
     size_t numColumnReductions = 0;
     CMR_CALL( reduceListMatrix(cmr, listmatrix, rowData, columnData, rowHashtable, columnHashtable, hashVector, queue,
-      &queueStart, &queueEnd, queueMemory, reductions, pnumReductions, &numRowReductions, &numColumnReductions) );
+      &queueStart, &queueEnd, queueMemory, reductions, maxNumReductions, pnumReductions, &numRowReductions,
+      &numColumnReductions) );
 
     if (stats)
     {
@@ -1754,7 +1782,8 @@ CMR_ERROR decomposeTernarySeriesParallel(
         preducedSubmatrix) );
     }
 
-    if ((pviolatorSubmatrix || pseparation) && (*pnumReductions != (matrix->numRows + matrix->numColumns)))
+    if ((pviolatorSubmatrix || pseparation) && (*pnumReductions != SIZE_MAX)
+      && (*pnumReductions != (matrix->numRows + matrix->numColumns)))
     {
       clock_t nonbinaryClock = 0;
       if (stats)
@@ -1882,8 +1911,8 @@ CMR_ERROR CMRtestTernarySeriesParallel(CMR* cmr, CMR_CHRMAT* matrix, bool* pisSe
   if (!reductions)
     CMR_CALL( CMRallocStackArray(cmr, &localReductions, matrix->numRows + matrix->numColumns) );
 
-  CMR_CALL( decomposeTernarySeriesParallel(cmr, matrix, reductions ? reductions : localReductions, &localNumReductions,
-    preducedSubmatrix, pviolatorSubmatrix, NULL, stats) );
+  CMR_CALL( decomposeTernarySeriesParallel(cmr, matrix, reductions ? reductions : localReductions, SIZE_MAX,
+    &localNumReductions, preducedSubmatrix, pviolatorSubmatrix, NULL, stats) );
 
   if (pisSeriesParallel)
     *pisSeriesParallel = (*pnumReductions == matrix->numRows + matrix->numColumns);
@@ -1896,8 +1925,8 @@ CMR_ERROR CMRtestTernarySeriesParallel(CMR* cmr, CMR_CHRMAT* matrix, bool* pisSe
 }
 
 CMR_ERROR CMRdecomposeTernarySeriesParallel(CMR* cmr, CMR_CHRMAT* matrix, bool* pisSeriesParallel,
-  CMR_SP_REDUCTION* reductions, size_t* pnumReductions, CMR_SUBMAT** preducedSubmatrix, CMR_SUBMAT** pviolatorSubmatrix,
-  CMR_SEPA** pseparation, CMR_SP_STATISTICS* stats)
+  CMR_SP_REDUCTION* reductions, size_t maxNumReductions, size_t* pnumReductions, CMR_SUBMAT** preducedSubmatrix,
+  CMR_SUBMAT** pviolatorSubmatrix, CMR_SEPA** pseparation, CMR_SP_STATISTICS* stats)
 {
   assert(cmr);
   assert(matrix);
@@ -1910,7 +1939,7 @@ CMR_ERROR CMRdecomposeTernarySeriesParallel(CMR* cmr, CMR_CHRMAT* matrix, bool* 
     CMR_CALL( CMRallocStackArray(cmr, &localReductions, matrix->numRows + matrix->numColumns) );
 
   CMR_CALL( decomposeTernarySeriesParallel(cmr, matrix, reductions ? reductions : localReductions,
-    &localNumReductions, preducedSubmatrix, pviolatorSubmatrix, pseparation, stats) );
+    maxNumReductions, &localNumReductions, preducedSubmatrix, pviolatorSubmatrix, pseparation, stats) );
 
   if (pisSeriesParallel)
     *pisSeriesParallel = (*pnumReductions == matrix->numRows + matrix->numColumns);

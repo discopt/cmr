@@ -224,7 +224,9 @@ CMR_ERROR CMRdecomposeBinarySeriesParallel(
   bool* pisSeriesParallel,              /**< Pointer for storing the result. */
   CMR_SP_REDUCTION* reductions,         /**< Array for storing the SP-reductions. If not \c NULL, it must have
                                          **  capacity at least number of rows + number of columns. */
-  size_t* pnumReductions,               /**< Pointer for storing the number of SP-reductions. */
+  size_t maxNumReductions,              /**< Maximum number of SP-reductions. Stops when this would be exceeded. */
+  size_t* pnumReductions,               /**< Pointer for storing the number of SP-reductions; stores \c SIZE_MAX if
+                                         **< \p maxNumReductions was exceeded.  */
   CMR_SUBMAT** preducedSubmatrix,       /**< Pointer for storing the SP-reduced submatrix (may be \c NULL). */
   CMR_SUBMAT** pviolatorSubmatrix,      /**< Pointer for storing a wheel-submatrix (may be \c NULL). */
   CMR_SEPA** pseparation,               /**< Pointer for storing a 2-separation (may be \c NULL). */
@@ -260,7 +262,9 @@ CMR_ERROR CMRdecomposeTernarySeriesParallel(
   bool* pisSeriesParallel,              /**< Pointer for storing the result. */
   CMR_SP_REDUCTION* reductions,         /**< Array for storing the SP-reductions. If not \c NULL, it must have
                                          **  capacity at least number of rows + number of columns. */
-  size_t* pnumReductions,               /**< Pointer for storing the number of SP-reductions. */
+  size_t maxNumReductions,              /**< Maximum number of SP-reductions. Stops when this would be exceeded. */
+  size_t* pnumReductions,               /**< Pointer for storing the number of SP-reductions; stores \c SIZE_MAX if
+                                         **< \p maxNumReductions was exceeded.  */
   CMR_SUBMAT** preducedSubmatrix,       /**< Pointer for storing the SP-reduced submatrix (may be \c NULL). */
   CMR_SUBMAT** pviolatorSubmatrix,      /**< Pointer for storing a signed wheel- or \f$ M_2 \f$-submatrix (may be
                                          **  \c NULL). */

@@ -31,20 +31,23 @@ CMR_ERROR CMRregularDecomposeSeriesParallel(CMR* cmr, CMR_DEC** pdec, bool terna
   CMR_SEPA* separation = NULL;
   if (ternary)
   {
-    CMR_CALL( CMRdecomposeTernarySeriesParallel(cmr, dec->matrix, &isSeriesParallel, reductions, &numReductions,
-      &reducedSubmatrix, psubmatrix, &separation, stats ? &stats->seriesParallel : NULL) );
+    CMR_CALL( CMRdecomposeTernarySeriesParallel(cmr, dec->matrix, &isSeriesParallel, reductions,
+      params->seriesParallel ? SIZE_MAX : 1, &numReductions, &reducedSubmatrix, psubmatrix, &separation,
+      stats ? &stats->seriesParallel : NULL) );
   }
   else
   {
-    CMR_CALL( CMRdecomposeBinarySeriesParallel(cmr, dec->matrix, &isSeriesParallel, reductions, &numReductions,
-      &reducedSubmatrix, psubmatrix, &separation, stats ? &stats->seriesParallel : NULL) );
+    CMR_CALL( CMRdecomposeBinarySeriesParallel(cmr, dec->matrix, &isSeriesParallel, reductions,
+      params->seriesParallel ? SIZE_MAX : 1,  &numReductions, &reducedSubmatrix, psubmatrix, &separation,
+      stats ? &stats->seriesParallel : NULL) );
   }
 
   /* Did we find a 2-by-2 submatrix? If yes, is has determinant -2 or +2! */
   if (psubmatrix && *psubmatrix && (*psubmatrix)->numRows == 2)
     dec->type = CMR_DEC_IRREGULAR;
 
-  CMRdbgMsg(0, "[CMRregularDecomposeSeriesParallel -> %ld SP reductions]", numReductions);
+  CMRdbgMsg(0, "[CMRregularDecomposeSeriesParallel -> %s%ld SP reductions]",
+    numReductions == SIZE_MAX ? ">=" : "", numReductions == SIZE_MAX ? 1 : numReductions);
 
   /* Modify the decomposition to reflect the SP reductions. */
   if (numReductions > 0 && dec->type != CMR_DEC_IRREGULAR)
@@ -75,14 +78,12 @@ CMR_ERROR CMRregularDecomposeSeriesParallel(CMR* cmr, CMR_DEC** pdec, bool terna
     }
     else
     {
-      /* We have to carry out each SP reduction as a 2-separation. */
-      CMRdbgMsg(0, "\n");
-      for (size_t r = 0; r < numReductions; ++r)
-      {
-        char buffer[16];
-        CMRdbgMsg(0, "Reduction %ld is (%s,%s).\n", r, CMRelementString(reductions[r].element, 0),
-          CMRelementString(reductions[r].mate, buffer));
-      }
+      /* We carry out the first SP reduction as a 2-separation. */
+      assert(numReductions == SIZE_MAX);
+
+      char buffer[16];
+      CMRdbgMsg(0, "\nReduction 0 is (%s,%s).\n", CMRelementString(reductions[0].element, 0),
+        CMRelementString(reductions[0].mate, buffer));
 
       assert(!separation);
       size_t parentNumRows = dec->matrix->numRows;

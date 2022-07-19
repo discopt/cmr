@@ -310,7 +310,7 @@ TEST(SeriesParallel, BinarySeparationFirstSearch)
   CMR_SUBMAT* wheelSubmatrix = NULL;
   CMR_SEPA* sepa = NULL;
 
-  ASSERT_CMR_CALL( CMRdecomposeBinarySeriesParallel(cmr, matrix, NULL, reductions, &numReductions, NULL,
+  ASSERT_CMR_CALL( CMRdecomposeBinarySeriesParallel(cmr, matrix, NULL, reductions, SIZE_MAX, &numReductions, NULL,
     &wheelSubmatrix, &sepa, NULL) );
   ASSERT_EQ( numReductions, 8 );
   
@@ -376,7 +376,7 @@ TEST(SeriesParallel, BinarySeparationSecondSearch)
   CMR_SUBMAT* wheelSubmatrix = NULL;
   CMR_SEPA* sepa = NULL;
 
-  ASSERT_CMR_CALL( CMRdecomposeBinarySeriesParallel(cmr, matrix, NULL, reductions, &numReductions, NULL,
+  ASSERT_CMR_CALL( CMRdecomposeBinarySeriesParallel(cmr, matrix, NULL, reductions, SIZE_MAX, &numReductions, NULL,
     &wheelSubmatrix, &sepa, NULL) );
   ASSERT_EQ( numReductions, 8 );
 
@@ -636,7 +636,7 @@ TEST(SeriesParallel, TernarySeparation)
   CMR_SUBMAT* violatorSubmatrix = NULL;
   CMR_SEPA* sepa = NULL;
 
-  ASSERT_CMR_CALL( CMRdecomposeTernarySeriesParallel(cmr, matrix, NULL, reductions, &numReductions, NULL,
+  ASSERT_CMR_CALL( CMRdecomposeTernarySeriesParallel(cmr, matrix, NULL, reductions, SIZE_MAX, &numReductions, NULL,
     &violatorSubmatrix, &sepa, NULL) );
 
   ASSERT_FALSE( violatorSubmatrix );
@@ -722,7 +722,7 @@ TEST(SeriesParallel, TernaryBadSeparation)
   CMR_SUBMAT* violatorSubmatrix = NULL;
   CMR_SEPA* sepa = NULL;
 
-  ASSERT_CMR_CALL( CMRdecomposeTernarySeriesParallel(cmr, matrix, NULL, reductions, &numReductions, NULL,
+  ASSERT_CMR_CALL( CMRdecomposeTernarySeriesParallel(cmr, matrix, NULL, reductions, SIZE_MAX, &numReductions, NULL,
     &violatorSubmatrix, &sepa, NULL) );
 
   ASSERT_FALSE( sepa );
