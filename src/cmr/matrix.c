@@ -735,7 +735,7 @@ CMR_ERROR CMRdblmatPrintSparse(CMR* cmr, CMR_DBLMAT* matrix, FILE* stream)
     size_t first = matrix->rowSlice[row];
     size_t beyond = matrix->rowSlice[row+1];
     for (size_t entry = first; entry < beyond; ++entry)
-      fprintf(stream, "%lu %lu  %f\n", row+1, matrix->entryColumns[entry]+1, matrix->entryValues[entry]);
+      fprintf(stream, "%lu %lu %g\n", row+1, matrix->entryColumns[entry]+1, matrix->entryValues[entry]);
   }
 
   return CMR_OKAY;
@@ -806,7 +806,7 @@ CMR_ERROR CMRdblmatPrintDense(CMR* cmr, CMR_DBLMAT* matrix, FILE* stream, char z
       size_t entryColumn = matrix->entryColumns[entry];
       for (; column < entryColumn; ++column)
         fprintf(stream, "%c ", zeroChar);
-      fprintf(stream, "%f ", matrix->entryValues[entry]);
+      fprintf(stream, "%g ", matrix->entryValues[entry]);
       ++column;
     }
     for (; column < matrix->numColumns; ++column)
@@ -1248,8 +1248,8 @@ CMR_ERROR CMRdblmatCreateFromDenseStream(CMR* cmr, FILE* stream, CMR_DBLMAT** pr
   /* Make arrays smaller again. */
   if (entry < memEntries)
   {
-    CMR_CALL( CMRreallocBlockArray(cmr, &entryColumns, entry) );
-    CMR_CALL( CMRreallocBlockArray(cmr, &entryValues, entry) );
+    CMR_CALL( CMRreallocBlockArray(cmr, &entryColumns, entry < 256 ? 256 : entry) );
+    CMR_CALL( CMRreallocBlockArray(cmr, &entryValues, entry < 256 ? 256 : entry) );
   }
 
   result->entryColumns = entryColumns;
@@ -1639,14 +1639,6 @@ char* CMRdblmatConsistency(CMR_DBLMAT* matrix)
   {
     size_t first = matrix->rowSlice[row];
     size_t beyond = matrix->rowSlice[row + 1];
-    for (size_t entry = first; entry < beyond; ++entry)
-    {
-      if (matrix->entryValues[entry] == 0.0)
-      {
-        return CMRconsistencyMessage("CMR_DBLMAT contains zero entry %lu in row %lu, column %lu.\n",
-          entry, row, matrix->entryColumns[entry]);
-      }
-    }
     for (size_t entry = first + 1; entry < beyond; ++entry)
     {
       if (matrix->entryColumns[entry - 1] == matrix->entryColumns[entry])

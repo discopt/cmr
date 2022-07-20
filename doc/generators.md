@@ -50,3 +50,21 @@ Options:
   - `-o FORMAT` Format of output FILE; default: `dense`.
 
 Formats for matrices are \ref dense-matrix, \ref sparse-matrix.
+
+## Random Perturbations ##
+
+The executable `cmr-perturb-random` modifies a matrix by applying a specified number of random perturbations of different types.
+It can be called as follows.
+
+    ./cmr-perturb-random [OPTIONS] MATRIX
+
+Options:
+  - `-i FORMAT` Format of MATRIX file, among {dense, sparse}; default: dense.
+  - `-o FORMAT` Format of output, among {dense, sparse}; default: same as input.
+  - `-0 NUM`    Turn NUM randomly chosen nonzero entries to 0s.
+  - `-1 NUM`    Turn NUM randomly chosen zero entries into 1s.
+  - `--1 NUM`   Turn NUM randomly chosen zero entries into -1s.
+  - `-b NUM`    Flip NUM randomly chosen entries over the binary field.
+  - `-t NUM`    Flip NUM randomly chosen entries over the ternary field.
+
+If MATRIX is `-`, then the matrix will be read from stdin.

@@ -190,7 +190,17 @@ if(GENERATORS)
   )
   set_target_properties(cmr_generate_random PROPERTIES OUTPUT_NAME cmr-generate-random)
 
-  set(GENERATOR_EXECUTABLES cmr_generate_series_parallel cmr_generate_graphic cmr_generate_network cmr_generate_random)
+  # Target for cmr-perturb-random
+  add_executable(cmr_perturb_random
+    src/gen/random_perturb.c)
+  target_link_libraries(cmr_perturb_random
+    PRIVATE
+      CMR::cmr
+  )
+  set_target_properties(cmr_perturb_random PROPERTIES OUTPUT_NAME cmr-perturb-random)
+
+  set(GENERATOR_EXECUTABLES cmr_generate_series_parallel cmr_generate_graphic cmr_generate_network cmr_generate_random
+    cmr_perturb_random)
 else()
   set(GENERATOR_EXECUTABLES)
 endif()

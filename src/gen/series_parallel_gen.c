@@ -404,7 +404,8 @@ CMR_ERROR genMatrixSeriesParallel(
   }
 
   CMR_CALL( CMRstatsSeriesParallelPrint(stdout, &stats, NULL) );
-  printf("Average number of nonzeros:     %f\n", (double)(numBenchmarkNonzeros) * 1.0 / benchmarkRepetitions);
+  if (benchmarkRepetitions > 0)
+    printf("Average number of nonzeros:     %f\n", (double)(numBenchmarkNonzeros) * 1.0 / benchmarkRepetitions);
 
   CMR_CALL( CMRfreeEnvironment(&cmr) );
 
