@@ -9,7 +9,7 @@ find_library( GUROBI_CXX_LIBRARY
               PATH_SUFFIXES linux64/lib lib)
 
 find_library(GUROBI_LIBRARY
-    NAMES gurobi gurobi70 gurobi75 gurobi80 gurobi81
+    NAMES gurobi gurobi70 gurobi75 gurobi80 gurobi81 gurobi90 gurobi95
     HINTS ${GUROBI_DIR} $ENV{GUROBI_DIR}
     PATH_SUFFIXES linux64/lib lib)
 

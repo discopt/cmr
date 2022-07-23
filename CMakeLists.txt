@@ -201,6 +201,24 @@ if(GENERATORS)
 
   set(GENERATOR_EXECUTABLES cmr_generate_series_parallel cmr_generate_graphic cmr_generate_network cmr_generate_random
     cmr_perturb_random)
+
+  find_package(GUROBI)
+  if(GUROBI_FOUND)
+    # Target for cmr-exract-gurobi
+    add_executable(cmr_extract_gurobi
+      src/gen/gurobi_extract.c)
+    target_include_directories(cmr_extract_gurobi
+      PRIVATE
+        ${GUROBI_INCLUDE_DIRS}
+      )
+    target_link_libraries(cmr_extract_gurobi
+      PRIVATE
+        CMR::cmr
+        ${GUROBI_LIBRARIES}
+    )
+    set_target_properties(cmr_extract_gurobi PROPERTIES OUTPUT_NAME cmr-extract-gurobi)
+    set(GENERATOR_EXECUTABLES ${GENERATOR_EXECUTABLES} cmr_extract_gurobi)
+  endif()
 else()
   set(GENERATOR_EXECUTABLES)
 endif()
