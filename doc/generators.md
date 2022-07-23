@@ -72,7 +72,10 @@ Formats for matrices are \ref dense-matrix, \ref sparse-matrix.
 
 ## Gurobi Coefficient Matrix ##
 
-The executable `cmr-extract-gurobi` extracts the coefficient matrix of a mixed-integer program file that can be read by the Gurobi solver.
+The executable `cmr-extract-gurobi` extracts the coefficient matrix of a mixed-integer program file that can be read by the [Gurobi solver](https://www.gurobi.com).
+
+Building it requires that Gurobi is found by cmake.
+To this end, you may need to set the cmake option `-DGUROBI_DIR` to your Gurobi installation directory.
 It can be called as follows.
 
     ./cmr-extract-gurobi [OPTIONS] MIPFILE
