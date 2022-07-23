@@ -241,8 +241,8 @@ int printUsage(const char* program)
   printf("Usage: %s [OPTION]... MATRIX\n\n", program);
   puts("Copies MATRIX after applying perturbations.");
   puts("\nOptions:");
-  puts("  -i FORMAT Format of MATRIX file, among {dense, sparse}; default: dense.");
-  puts("  -o FORMAT Format of output, among {dense, sparse}; default: same as input.");
+  puts("  -i FORMAT Format of input MATRIX file; default: `dense'.");
+  puts("  -o FORMAT Format of output matrix; default: same as input format.");
   puts("  -0 NUM    Turn NUM randomly chosen nonzero entries to 0s.");
   puts("  -1 NUM    Turn NUM randomly chosen zero entries into 1s.");
   puts("  --1 NUM   Turn NUM randomly chosen zero entries into -1s.");

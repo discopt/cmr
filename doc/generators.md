@@ -59,8 +59,8 @@ It can be called as follows.
     ./cmr-perturb-random [OPTIONS] MATRIX
 
 Options:
-  - `-i FORMAT` Format of MATRIX file, among {dense, sparse}; default: dense.
-  - `-o FORMAT` Format of output, among {dense, sparse}; default: same as input.
+  - `-i FORMAT` Format of input MATRIX file; default: `dense`.
+  - `-o FORMAT` Format of output matrix; default: same as input format.
   - `-0 NUM`    Turn NUM randomly chosen nonzero entries to 0s.
   - `-1 NUM`    Turn NUM randomly chosen zero entries into 1s.
   - `--1 NUM`   Turn NUM randomly chosen zero entries into -1s.
@@ -68,3 +68,18 @@ Options:
   - `-t NUM`    Flip NUM randomly chosen entries over the ternary field.
 
 If MATRIX is `-`, then the matrix will be read from stdin.
+Formats for matrices are \ref dense-matrix, \ref sparse-matrix.
+
+## Gurobi Coefficient Matrix ##
+
+The executable `cmr-extract-gurobi` extracts the coefficient matrix of a mixed-integer program file that can be read by the Gurobi solver.
+It can be called as follows.
+
+    ./cmr-extract-gurobi [OPTIONS] MIPFILE
+
+Options:
+  - `-o FORMAT` Format of output matrix; default: `dense`.
+
+Formats for matrices are \ref dense-matrix, \ref sparse-matrix.
+MIPFILE must refer to a file that Gurobi can read.
+
