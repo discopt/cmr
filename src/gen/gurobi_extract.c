@@ -34,7 +34,9 @@ CMR_ERROR extractMatrixGurobi(
   )
 {
   GRBenv* env = NULL;
-  GRBloadenv(&env, NULL);
+  GRBemptyenv(&env);
+  GRB_CALL( GRBsetintparam(env, "outputflag", 0) );
+  GRBstartenv(env);
 
   GRBmodel* model = NULL;
   GRB_CALL( GRBreadmodel(env, mipFileName, &model) );
