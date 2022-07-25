@@ -17,16 +17,17 @@ static const int INITIAL_MEM_STACKS = 16;     /**< Initial number of allocated s
 static const int PROTECTION = INT_MIN / 42;   /**< Protection bytes to detect corruption. */
 #endif /* !NDEBUG */
 
-CMR_ERROR CMRcreateEnvironment(CMR** ptu)
+CMR_ERROR CMRcreateEnvironment(CMR** pcmr)
 {
-  if (!ptu)
+  if (!pcmr)
     return CMR_ERROR_INPUT;
 
-  *ptu = (CMR*) malloc(sizeof(CMR));
-  CMR* cmr = *ptu;
+  *pcmr = (CMR*) malloc(sizeof(CMR));
+  CMR* cmr = *pcmr;
   if (!cmr)
     return CMR_ERROR_MEMORY;
 
+  cmr->errorMessage = NULL;
   cmr->output = stdout;
   cmr->closeOutput = false;
   cmr->numThreads = 1;
@@ -36,8 +37,8 @@ CMR_ERROR CMRcreateEnvironment(CMR** ptu)
   cmr->stacks = malloc(INITIAL_MEM_STACKS * sizeof(CMR_STACK));
   if (!cmr->stacks)
   {
-    free(*ptu);
-    *ptu = NULL;
+    free(*pcmr);
+    *pcmr = NULL;
     return CMR_ERROR_MEMORY;
   }
   cmr->stacks[0].memory = malloc(FIRST_STACK_SIZE * sizeof(char));
@@ -45,7 +46,7 @@ CMR_ERROR CMRcreateEnvironment(CMR** ptu)
   {
     free(cmr->stacks);
     free(cmr);
-    *ptu = NULL;
+    *pcmr = NULL;
     return CMR_ERROR_MEMORY;
   }
   cmr->stacks[0].top = FIRST_STACK_SIZE;
@@ -56,12 +57,15 @@ CMR_ERROR CMRcreateEnvironment(CMR** ptu)
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRfreeEnvironment(CMR** ptu)
+CMR_ERROR CMRfreeEnvironment(CMR** pcmr)
 {
-  if (!ptu)
+  if (!pcmr)
     return CMR_ERROR_INPUT;
 
-  CMR* cmr = *ptu;
+  CMR* cmr = *pcmr;
+
+  if (cmr->errorMessage)
+    free(cmr->errorMessage);
 
   if (cmr->closeOutput)
     fclose(cmr->output);
@@ -69,8 +73,8 @@ CMR_ERROR CMRfreeEnvironment(CMR** ptu)
   for (size_t s = 0; s < cmr->numStacks; ++s)
     free(cmr->stacks[s].memory);
   free(cmr->stacks);
-  free(*ptu);
-  *ptu = NULL;
+  free(*pcmr);
+  *pcmr = NULL;
 
   return CMR_OKAY;
 }
@@ -348,6 +352,39 @@ void CMRassertStackConsistency(
 
 #endif /* !NDEBUG */
 
+void CMRraiseErrorMessage(CMR* cmr, const char* format, ...)
+{
+  va_list args;
+
+  cmr->errorMessage = (char*) realloc(cmr->errorMessage, 256);
+
+  va_start(args, format);
+  int written = vsnprintf(cmr->errorMessage, 256, format, args);
+  va_end(args);
+
+  if (written >= 256)
+  {
+    cmr->errorMessage = (char*) realloc(cmr->errorMessage, written + 1);
+    va_start(args, format);
+    vsnprintf(cmr->errorMessage, written+1, format, args);
+    va_end(args);
+  }
+}
+
+char* CMRgetErrorMessage(CMR* cmr)
+{
+  return cmr->errorMessage;
+}
+
+void CMRclearErrorMessage(CMR* cmr)
+{
+  if (cmr->errorMessage)
+  {
+    free(cmr->errorMessage);
+    cmr->errorMessage = NULL;
+  }
+}
+  
 size_t CMRgetStackUsage(CMR* cmr)
 { 
   size_t result = 0;

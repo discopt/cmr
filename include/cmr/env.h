@@ -191,6 +191,24 @@ CMR_ERROR _CMRduplicateBlockArray(CMR* cmr, void** ptr, size_t size, size_t leng
 CMR_EXPORT
 CMR_ERROR _CMRfreeBlockArray(CMR* cmr, void** ptr);
 
+/**
+ * \brief Returns the error message (or \c NULL if no error with a message occured).
+ */
+
+CMR_EXPORT
+char* CMRgetErrorMessage(
+  CMR* cmr  /**< \ref CMR environment. */
+);
+
+/**
+ * \brief Clears the error message.
+ */
+
+CMR_EXPORT
+void CMRclearErrorMessage(
+  CMR* cmr  /**< \ref CMR environment. */
+);
+
 #ifdef __cplusplus
 }
 #endif

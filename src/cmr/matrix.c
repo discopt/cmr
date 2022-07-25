@@ -930,7 +930,10 @@ CMR_ERROR CMRdblmatCreateFromSparseStream(CMR* cmr, FILE* stream, CMR_DBLMAT** p
   size_t numRows, numColumns, numNonzeros;
   int numRead = fscanf(stream, "%lu %lu %lu", &numRows, &numColumns, &numNonzeros);
   if (numRead < 3)
+  {
+    CMRraiseErrorMessage(cmr, "Could not read number of rows, columns and nonzeros.");
     return CMR_ERROR_INPUT;
+  }
 
   /* Read all nonzeros. */
 
@@ -946,6 +949,7 @@ CMR_ERROR CMRdblmatCreateFromSparseStream(CMR* cmr, FILE* stream, CMR_DBLMAT** p
     if (numRead < 3 || row == 0 || column == 0 || row > numRows || column > numColumns)
     {
       CMR_CALL( CMRfreeStackArray(cmr, &nonzeros) );
+      CMRraiseErrorMessage(cmr, "Could not read nonzero #%uld.", entry);
       return CMR_ERROR_INPUT;
     }
     if (value != 0.0)
@@ -973,6 +977,7 @@ CMR_ERROR CMRdblmatCreateFromSparseStream(CMR* cmr, FILE* stream, CMR_DBLMAT** p
     size_t column = nonzeros[entry].column;
     if (row == previousRow && column == previousColumn)
     {
+      CMRraiseErrorMessage(cmr, "Duplicate nonzero at row %uld and column %uld.", row, column);
       CMR_CALL( CMRfreeStackArray(cmr, &nonzeros) );
       CMR_CALL( CMRdblmatFree(cmr, presult) );
       return CMR_ERROR_INPUT;
@@ -1028,7 +1033,10 @@ CMR_ERROR CMRintmatCreateFromSparseStream(CMR* cmr, FILE* stream, CMR_INTMAT** p
   size_t numRows, numColumns, numNonzeros;
   int numRead = fscanf(stream, "%lu %lu %lu", &numRows, &numColumns, &numNonzeros);
   if (numRead < 3)
+  {
+    CMRraiseErrorMessage(cmr, "Could not read number of rows, columns and nonzeros.");
     return CMR_ERROR_INPUT;
+  }
 
   /* Read all nonzeros. */
 
@@ -1044,6 +1052,7 @@ CMR_ERROR CMRintmatCreateFromSparseStream(CMR* cmr, FILE* stream, CMR_INTMAT** p
     if (numRead < 3 || row == 0 || column == 0 || row > numRows || column > numColumns)
     {
       CMR_CALL( CMRfreeStackArray(cmr, &nonzeros) );
+      CMRraiseErrorMessage(cmr, "Could not read nonzero #%uld.", entry);
       return CMR_ERROR_INPUT;
     }
     if (value != 0)
@@ -1071,6 +1080,7 @@ CMR_ERROR CMRintmatCreateFromSparseStream(CMR* cmr, FILE* stream, CMR_INTMAT** p
     size_t column = nonzeros[entry].column;
     if (row == previousRow && column == previousColumn)
     {
+      CMRraiseErrorMessage(cmr, "Duplicate nonzero at row %uld and column %uld.", row, column);
       CMR_CALL( CMRfreeStackArray(cmr, &nonzeros) );
       CMR_CALL( CMRintmatFree(cmr, presult) );
       return CMR_ERROR_INPUT;
@@ -1126,7 +1136,10 @@ CMR_ERROR CMRchrmatCreateFromSparseStream(CMR* cmr, FILE* stream, CMR_CHRMAT** p
   size_t numRows, numColumns, numNonzeros;
   int numRead = fscanf(stream, "%lu %lu %lu", &numRows, &numColumns, &numNonzeros);
   if (numRead < 3)
+  {
+    CMRraiseErrorMessage(cmr, "Could not read number of rows, columns and nonzeros.");
     return CMR_ERROR_INPUT;
+  }
 
   /* Read all nonzeros. */
 
@@ -1142,6 +1155,7 @@ CMR_ERROR CMRchrmatCreateFromSparseStream(CMR* cmr, FILE* stream, CMR_CHRMAT** p
     if (numRead < 3 || row == 0 || column == 0 || row > numRows || column > numColumns)
     {
       CMR_CALL( CMRfreeStackArray(cmr, &nonzeros) );
+      CMRraiseErrorMessage(cmr, "Could not read nonzero #%uld.", entry);
       return CMR_ERROR_INPUT;
     }
     if (value != 0)
@@ -1169,6 +1183,7 @@ CMR_ERROR CMRchrmatCreateFromSparseStream(CMR* cmr, FILE* stream, CMR_CHRMAT** p
     size_t column = nonzeros[entry].column;
     if (row == previousRow && column == previousColumn)
     {
+      CMRraiseErrorMessage(cmr, "Duplicate nonzero at row %uld and column %uld.", row, column);
       CMR_CALL( CMRfreeStackArray(cmr, &nonzeros) );
       CMR_CALL( CMRchrmatFree(cmr, presult) );
       return CMR_ERROR_INPUT;
@@ -1203,7 +1218,10 @@ CMR_ERROR CMRdblmatCreateFromDenseStream(CMR* cmr, FILE* stream, CMR_DBLMAT** pr
   size_t numRows, numColumns;
   int numRead = fscanf(stream, "%lu %lu", &numRows, &numColumns);
   if (numRead < 2)
+  {
+    CMRraiseErrorMessage(cmr, "Could not read number of rows and columns.");
     return CMR_ERROR_INPUT;
+  }
 
   CMR_CALL( CMRdblmatCreate(cmr, presult, numRows, numColumns, 0) );
   CMR_DBLMAT* result = *presult;
@@ -1226,7 +1244,10 @@ CMR_ERROR CMRdblmatCreateFromDenseStream(CMR* cmr, FILE* stream, CMR_DBLMAT** pr
       double x;
       numRead = fscanf(stream, "%lf", &x);
       if (numRead < 1)
+      {
+        CMRraiseErrorMessage(cmr, "Could not read matrix entry in row %uld and column %uld.", row, column);
         return CMR_ERROR_INPUT;
+      }
 
       if (x == 0.0)
         continue;
@@ -1269,7 +1290,10 @@ CMR_ERROR CMRintmatCreateFromDenseStream(CMR* cmr, FILE* stream, CMR_INTMAT** pr
   size_t numRows, numColumns;
   int numRead = fscanf(stream, "%lu %lu", &numRows, &numColumns);
   if (numRead < 2)
+  {
+    CMRraiseErrorMessage(cmr, "Could not read number of rows and columns.");
     return CMR_ERROR_INPUT;
+  }
 
   CMR_CALL( CMRintmatCreate(cmr, presult, numRows, numColumns, 0) );
   CMR_INTMAT* result = *presult;
@@ -1292,7 +1316,10 @@ CMR_ERROR CMRintmatCreateFromDenseStream(CMR* cmr, FILE* stream, CMR_INTMAT** pr
       int x;
       numRead = fscanf(stream, "%d", &x);
       if (numRead < 1)
+      {
+        CMRraiseErrorMessage(cmr, "Could not read matrix entry in row %uld and column %uld.", row, column);
         return CMR_ERROR_INPUT;
+      }
 
       if (x == 0.0)
         continue;
@@ -1335,7 +1362,10 @@ CMR_ERROR CMRchrmatCreateFromDenseStream(CMR* cmr, FILE* stream, CMR_CHRMAT** pr
   size_t numRows, numColumns;
   int numRead = fscanf(stream, "%lu %lu", &numRows, &numColumns);
   if (numRead < 2)
+  {
+    CMRraiseErrorMessage(cmr, "Could not read number of rows and columns.");
     return CMR_ERROR_INPUT;
+  }
 
   CMR_CALL( CMRchrmatCreate(cmr, presult, numRows, numColumns, 0) );
   CMR_CHRMAT* result = *presult;
@@ -1358,7 +1388,10 @@ CMR_ERROR CMRchrmatCreateFromDenseStream(CMR* cmr, FILE* stream, CMR_CHRMAT** pr
       double x;
       numRead = fscanf(stream, "%lf", &x);
       if (numRead < 1)
+      {
+        CMRraiseErrorMessage(cmr, "Could not read matrix entry in row %uld and column %uld.", row, column);
         return CMR_ERROR_INPUT;
+      }
 
       if (x == 0.0)
         continue;

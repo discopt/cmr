@@ -43,6 +43,8 @@ typedef struct
 
 struct CMR_ENVIRONMENT
 {
+  char* errorMessage;   /**< \brief Error message. */
+
   FILE* output;         /**< \brief Output stream or \c NULL if silent. */
   bool closeOutput;     /**< \brief Whether to close the output stream at the end. */
   int verbosity;        /**< \brief Verbosity level. */
@@ -134,8 +136,12 @@ void CMRassertStackConsistency(
 
 }
 
-
 #endif /* !NDEBUG */
+
+void CMRraiseErrorMessage(
+  CMR* cmr,               /**< \ref CMR environment. */
+  const char* format, ... /**< \ref Variadic arguments in printf-style. */
+);
 
 size_t CMRgetStackUsage(
   CMR* cmr  /**< \ref CMR environment. */

@@ -33,7 +33,10 @@ CMR_ERROR testTotalUnimodularity(
   clock_t readClock = clock();
   FILE* instanceFile = strcmp(instanceFileName, "-") ? fopen(instanceFileName, "r") : stdin;
   if (!instanceFile)
+  {
+    fprintf(stderr, "Unable to open file <%s>\n", instanceFileName);
     return CMR_ERROR_INPUT;
+  }
 
   CMR* cmr = NULL;
   CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -41,15 +44,25 @@ CMR_ERROR testTotalUnimodularity(
   /* Read matrix. */
 
   CMR_CHRMAT* matrix = NULL;
+  CMR_ERROR error;
   if (inputFormat == FILEFORMAT_MATRIX_DENSE)
-    CMR_CALL( CMRchrmatCreateFromDenseStream(cmr, instanceFile, &matrix) );
+  {
+    error = CMRchrmatCreateFromDenseStream(cmr, instanceFile, &matrix);
+    if (error == CMR_ERROR_INPUT)
+      fprintf(stderr, "Error when reading dense matrix from <%s>: %s\n", instanceFileName, CMRgetErrorMessage(cmr));
+  }
   else if (inputFormat == FILEFORMAT_MATRIX_SPARSE)
-    CMR_CALL( CMRchrmatCreateFromSparseStream(cmr, instanceFile, &matrix) );
+  {
+    error = CMRchrmatCreateFromSparseStream(cmr, instanceFile, &matrix);
+    if (error == CMR_ERROR_INPUT)
+      fprintf(stderr, "Error when reading dense matrix from <%s>: %s\n", instanceFileName, CMRgetErrorMessage(cmr));
+  }
   if (instanceFile != stdin)
     fclose(instanceFile);
+  CMR_CALL(error);
   fprintf(stderr, "Read %lux%lu matrix with %lu nonzeros in %f seconds.\n", matrix->numRows, matrix->numColumns,
     matrix->numNonzeros, (clock() - readClock) * 1.0 / CLOCKS_PER_SEC);
-  
+
   /* Actual test. */
 
   bool isTU;
@@ -218,7 +231,6 @@ int main(int argc, char** argv)
   switch (error)
   {
   case CMR_ERROR_INPUT:
-    puts("Input error.");
     return EXIT_FAILURE;
   case CMR_ERROR_MEMORY:
     puts("Memory error.");
