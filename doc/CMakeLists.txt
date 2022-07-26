@@ -28,6 +28,7 @@ if(DOXYGEN_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/consecutive-ones.md
     ${CMAKE_CURRENT_SOURCE_DIR}/conversions.md
     ${CMAKE_CURRENT_SOURCE_DIR}/ctu.md
+    ${CMAKE_CURRENT_SOURCE_DIR}/entries.md
     ${CMAKE_CURRENT_SOURCE_DIR}/file-formats.md
     ${CMAKE_CURRENT_SOURCE_DIR}/graphic.md
     ${CMAKE_CURRENT_SOURCE_DIR}/generators.md
