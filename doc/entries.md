@@ -18,5 +18,6 @@ Options:
   - `-t`         Tests whether the matrix is ternary, i.e., has entries in \f$ \{-1,0,+1\} \f$.
   - `-I`         Tests whether the matrix is integer.
   - `-t EPSILON` Allows rounding of numbers up to tolerance `EPSILON`; default: \f$ 10^{-9} \f$.
+
 Formats for matrices are \ref dense-matrix and \ref sparse-matrix.
 If MATRIX is `-`, then the matrix will be read from stdin.
