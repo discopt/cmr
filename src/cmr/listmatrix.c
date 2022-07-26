@@ -2,14 +2,15 @@
 
 #include <assert.h>
 #include <stdint.h>
+#include <math.h>
 
-CMR_ERROR CMRlistmatrixAlloc(CMR* cmr, size_t memRows, size_t memColumns, size_t memNonzeros, ListMatrix** presult)
+CMR_ERROR CMRlistmatrixAlloc(CMR* cmr, size_t memRows, size_t memColumns, size_t memNonzeros, ChrListMat** presult)
 {
   assert(cmr);
   assert(presult);
 
   CMR_CALL( CMRallocBlock(cmr, presult) );
-  ListMatrix* result = *presult;
+  ChrListMat* result = *presult;
 
   result->numRows = 0;
   result->memRows = memRows;
@@ -29,12 +30,12 @@ CMR_ERROR CMRlistmatrixAlloc(CMR* cmr, size_t memRows, size_t memColumns, size_t
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRlistmatrixFree(CMR* cmr, ListMatrix ** plistmatrix)
+CMR_ERROR CMRchrlistmatFree(CMR* cmr, ChrListMat ** plistmatrix)
 {
   assert(cmr);
   assert(plistmatrix);
 
-  ListMatrix* listmatrix = *plistmatrix;
+  ChrListMat* listmatrix = *plistmatrix;
   if (!listmatrix)
     return CMR_OKAY;
 
@@ -46,7 +47,7 @@ CMR_ERROR CMRlistmatrixFree(CMR* cmr, ListMatrix ** plistmatrix)
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRlistmatrixInitializeZero(CMR* cmr, ListMatrix* listmatrix, size_t numRows, size_t numColumns)
+CMR_ERROR CMRchrlistmatInitializeZero(CMR* cmr, ChrListMat* listmatrix, size_t numRows, size_t numColumns)
 {
   assert(cmr);
   assert(listmatrix);
@@ -144,7 +145,7 @@ CMR_ERROR CMRlistmatrixInitializeZero(CMR* cmr, ListMatrix* listmatrix, size_t n
 }
 
 
-CMR_ERROR CMRlistmatrixInitializeFromMatrix(CMR* cmr, ListMatrix* listmatrix, CMR_CHRMAT* matrix)
+CMR_ERROR CMRchrlistmatInitializeFromMatrix(CMR* cmr, ChrListMat* listmatrix, CMR_CHRMAT* matrix)
 {
   assert(cmr);
   assert(listmatrix);
@@ -159,10 +160,10 @@ CMR_ERROR CMRlistmatrixInitializeFromMatrix(CMR* cmr, ListMatrix* listmatrix, CM
   listmatrix->numNonzeros = matrix->numNonzeros;
 
   /* Initialze the zero matrix. */
-  CMR_CALL( CMRlistmatrixInitializeZero(cmr, listmatrix, matrix->numRows, matrix->numColumns) );
+  CMR_CALL( CMRchrlistmatInitializeZero(cmr, listmatrix, matrix->numRows, matrix->numColumns) );
 
   /* Fill nonzero data. */
-  ListMatrixNonzero* nonzero = &listmatrix->nonzeros[0];
+  ChrListMatNonzero* nonzero = &listmatrix->nonzeros[0];
   for (size_t row = 0; row < matrix->numRows; ++row)
   {
     size_t first = matrix->rowSlice[row];
@@ -183,7 +184,7 @@ CMR_ERROR CMRlistmatrixInitializeFromMatrix(CMR* cmr, ListMatrix* listmatrix, CM
   /* Link the lists of nonzeros (left and above pointers). */
   for (size_t i = 0; i < matrix->numNonzeros; ++i)
   {
-    ListMatrixNonzero* nz = &listmatrix->nonzeros[i];
+    ChrListMatNonzero* nz = &listmatrix->nonzeros[i];
 
     nz->left = listmatrix->rowElements[listmatrix->nonzeros[i].row].head.left;
     listmatrix->rowElements[nz->row].head.left->right = nz;
@@ -203,7 +204,74 @@ CMR_ERROR CMRlistmatrixInitializeFromMatrix(CMR* cmr, ListMatrix* listmatrix, CM
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRlistmatrixInitializeFromSubmatrix(CMR* cmr, ListMatrix* listmatrix, CMR_CHRMAT* matrix,
+CMR_ERROR CMRchrlistmatInitializeFromDoubleMatrix(CMR* cmr, ChrListMat* listmatrix, CMR_DBLMAT* matrix, double epsilon)
+{
+  assert(cmr);
+  assert(listmatrix);
+  assert(matrix);
+  assert(epsilon >= 0);
+
+  /* Reallocate if necessary. */
+  if (listmatrix->memNonzeros < matrix->numNonzeros)
+  {
+    listmatrix->memNonzeros = matrix->numNonzeros;
+    CMR_CALL( CMRreallocBlockArray(cmr, &listmatrix->nonzeros, matrix->numNonzeros) );
+  }
+  listmatrix->numNonzeros = matrix->numNonzeros;
+
+  /* Initialze the zero matrix. */
+  CMR_CALL( CMRchrlistmatInitializeZero(cmr, listmatrix, matrix->numRows, matrix->numColumns) );
+
+  /* Fill nonzero data. */
+  ChrListMatNonzero* nonzero = &listmatrix->nonzeros[0];
+  for (size_t row = 0; row < matrix->numRows; ++row)
+  {
+    size_t first = matrix->rowSlice[row];
+    size_t beyond = matrix->rowSlice[row + 1];
+    for (size_t e = first; e < beyond; ++e)
+    {
+      size_t column = matrix->entryColumns[e];
+      nonzero->row = row;
+      nonzero->column = column;
+      double rounded = round(matrix->entryValues[e]);
+      if (rounded > 127 || rounded < -127 || fabs(rounded - matrix->entryValues[e]) > epsilon)
+        nonzero->value = -128;
+      else
+      {
+        nonzero->value = (char)rounded;
+        assert(nonzero->value != -128);
+      }
+      nonzero->special = 0;
+      nonzero++;
+      listmatrix->rowElements[row].numNonzeros++;
+      listmatrix->columnElements[column].numNonzeros++;
+    }
+  }
+
+  /* Link the lists of nonzeros (left and above pointers). */
+  for (size_t i = 0; i < matrix->numNonzeros; ++i)
+  {
+    ChrListMatNonzero* nz = &listmatrix->nonzeros[i];
+
+    nz->left = listmatrix->rowElements[listmatrix->nonzeros[i].row].head.left;
+    listmatrix->rowElements[nz->row].head.left->right = nz;
+    listmatrix->rowElements[nz->row].head.left = nz;
+
+    nz->above = listmatrix->columnElements[listmatrix->nonzeros[i].column].head.above;
+    listmatrix->columnElements[nz->column].head.above->below = nz;
+    listmatrix->columnElements[nz->column].head.above = nz;
+  }
+
+  /* Set the right and below pointers for nonzeros. */
+  for (size_t row = 0; row < matrix->numRows; ++row)
+    listmatrix->rowElements[row].head.left->right = &listmatrix->rowElements[row].head;
+  for (size_t column = 0; column < matrix->numColumns; ++column)
+    listmatrix->columnElements[column].head.above->below = &listmatrix->columnElements[column].head;
+
+  return CMR_OKAY;
+}
+
+CMR_ERROR CMRchrlistmatInitializeFromSubmatrix(CMR* cmr, ChrListMat* listmatrix, CMR_CHRMAT* matrix,
   CMR_SUBMAT* submatrix)
 {
   assert(cmr);
@@ -211,7 +279,7 @@ CMR_ERROR CMRlistmatrixInitializeFromSubmatrix(CMR* cmr, ListMatrix* listmatrix,
   assert(matrix);
   assert(submatrix);
 
-  CMR_CALL( CMRlistmatrixInitializeZero(cmr, listmatrix, matrix->numRows, matrix->numColumns) );
+  CMR_CALL( CMRchrlistmatInitializeZero(cmr, listmatrix, matrix->numRows, matrix->numColumns) );
 
   bool* rowUsed = NULL;
   CMR_CALL( CMRallocStackArray(cmr, &rowUsed, matrix->numRows) );
@@ -228,7 +296,7 @@ CMR_ERROR CMRlistmatrixInitializeFromSubmatrix(CMR* cmr, ListMatrix* listmatrix,
     columnUsed[submatrix->columns[c]] = true;
 
   /* Fill nonzero data. */
-  ListMatrixNonzero* nonzero = &listmatrix->nonzeros[0];
+  ChrListMatNonzero* nonzero = &listmatrix->nonzeros[0];
   for (size_t row = 0; row < matrix->numRows; ++row)
   {
     if (!rowUsed[row])
@@ -271,7 +339,7 @@ CMR_ERROR CMRlistmatrixInitializeFromSubmatrix(CMR* cmr, ListMatrix* listmatrix,
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRlistmatrixInitializeFromSubmatrixComplement(CMR* cmr, ListMatrix* listmatrix, CMR_CHRMAT* matrix,
+CMR_ERROR CMRchrlistmatInitializeFromSubmatrixComplement(CMR* cmr, ChrListMat* listmatrix, CMR_CHRMAT* matrix,
   CMR_SUBMAT* submatrix)
 {
   assert(cmr);
@@ -279,7 +347,7 @@ CMR_ERROR CMRlistmatrixInitializeFromSubmatrixComplement(CMR* cmr, ListMatrix* l
   assert(matrix);
   assert(submatrix);
 
-  CMR_CALL( CMRlistmatrixInitializeZero(cmr, listmatrix, matrix->numRows, matrix->numColumns) );
+  CMR_CALL( CMRchrlistmatInitializeZero(cmr, listmatrix, matrix->numRows, matrix->numColumns) );
 
   bool* rowUsed = NULL;
   CMR_CALL( CMRallocStackArray(cmr, &rowUsed, matrix->numRows) );
@@ -296,7 +364,7 @@ CMR_ERROR CMRlistmatrixInitializeFromSubmatrixComplement(CMR* cmr, ListMatrix* l
     columnUsed[submatrix->columns[c]] = true;
 
   /* Fill nonzero data. */
-  ListMatrixNonzero* nonzero = &listmatrix->nonzeros[0];
+  ChrListMatNonzero* nonzero = &listmatrix->nonzeros[0];
   for (size_t row = 0; row < matrix->numRows; ++row)
   {
     size_t first = matrix->rowSlice[row];
@@ -335,7 +403,7 @@ CMR_ERROR CMRlistmatrixInitializeFromSubmatrixComplement(CMR* cmr, ListMatrix* l
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRlistmatrixPrintDense(CMR* cmr, ListMatrix* listmatrix, FILE* stream)
+CMR_ERROR CMRchrlistmatPrintDense(CMR* cmr, ChrListMat* listmatrix, FILE* stream)
 {
   assert(cmr);
   assert(listmatrix);
@@ -343,7 +411,7 @@ CMR_ERROR CMRlistmatrixPrintDense(CMR* cmr, ListMatrix* listmatrix, FILE* stream
 
   for (size_t row = 0; row < listmatrix->numRows; ++row)
   {
-    ListMatrixNonzero* nz = listmatrix->rowElements[row].head.right;
+    ChrListMatNonzero* nz = listmatrix->rowElements[row].head.right;
     for (size_t column = 0; column < listmatrix->numColumns; ++column)
     {
       if (column < nz->column)

@@ -144,7 +144,7 @@ target_link_libraries(cmr_series_parallel
 )
 set_target_properties(cmr_series_parallel PROPERTIES OUTPUT_NAME cmr-series-parallel)
 
-# Target for the tu-convert-matrix.
+# Target for the cmr-convert-matrix.
 add_executable(cmr_convert_matrix
   src/main/convert_matrix_main.c)
 target_link_libraries(cmr_convert_matrix
@@ -152,6 +152,16 @@ target_link_libraries(cmr_convert_matrix
     CMR::cmr
 )
 set_target_properties(cmr_convert_matrix PROPERTIES OUTPUT_NAME cmr-convert-matrix)
+
+# Target for the cmr-entries.
+add_executable(cmr_entries
+  src/main/entries_main.c)
+target_link_libraries(cmr_entries
+  PRIVATE
+    CMR::cmr
+    m
+)
+set_target_properties(cmr_entries PROPERTIES OUTPUT_NAME cmr-entries)
 
 if(GENERATORS)
   # Target for cmr-generate-series-parallel
