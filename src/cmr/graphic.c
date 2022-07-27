@@ -4960,11 +4960,11 @@ CMR_ERROR addColumnProcessComponent(
 
 static
 CMR_ERROR doReorderComponent(
-  Dec* dec,                     /**< Decomposition. */
-  DEC_MEMBER member,            /**< Member to be processed. */
-  DEC_MEMBER newParent,         /**< New parent of \p member. */
-  DEC_MEMBER newMarkerToParent, /**< New marker edge linked to new parent of \p member. */
-  DEC_MEMBER markerOfNewParent  /**< Counterpart to \p newMarkerToParent. */
+  Dec* dec,                   /**< Decomposition. */
+  DEC_MEMBER member,          /**< Member to be processed. */
+  DEC_MEMBER newParent,       /**< New parent of \p member. */
+  DEC_EDGE newMarkerToParent, /**< New marker edge linked to new parent of \p member. */
+  DEC_EDGE markerOfNewParent  /**< Counterpart to \p newMarkerToParent. */
 )
 {
   assert(dec);
