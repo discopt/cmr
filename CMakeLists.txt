@@ -8,6 +8,8 @@ option(SHARED "Build shared libraries" ON)
 set(BUILD_SHARED_LIBS ${SHARED})
 message(STATUS "Build shared libraries: " ${SHARED})
 option(GENERATORS "Compile matrix generators" OFF)
+option(TESTS "Compile tests" ON)
+message(STATUS "Build tests: " ${TESTS})
 
 # Add cmake/ to CMAKE_MODULE_PATH.
 list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake)
@@ -339,6 +341,7 @@ export(PACKAGE CMR)
 
 add_subdirectory(doc)
 
-enable_testing()
-add_subdirectory(test)
-
+if(TESTS)
+  enable_testing()
+  add_subdirectory(test)
+endif()
