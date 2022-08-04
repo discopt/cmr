@@ -4,6 +4,7 @@ project(CMR
   VERSION 1.3.0
   LANGUAGES C CXX)
 
+option(LOCAL_GTEST "Install gtest locally if not found" OFF)
 option(SHARED "Build shared libraries" ON)
 set(BUILD_SHARED_LIBS ${SHARED})
 message(STATUS "Build shared libraries: " ${SHARED})
