@@ -244,9 +244,6 @@ generate_export_header(cmr EXPORT_FILE_NAME ${CMAKE_CURRENT_BINARY_DIR}/cmr/expo
 # Add an alias so that library can be used inside the build tree.
 add_library(CMR::cmr ALIAS cmr)
 
-# This is required so that the exported target has the name CMR and not just cmr.
-set_target_properties(cmr PROPERTIES EXPORT_NAME CMR)
-
 # Hide non-exported symbols in shared library.
 set_target_properties(cmr PROPERTIES CXX_VISIBILITY_PRESET hidden)
 set_target_properties(cmr PROPERTIES VISIBILITY_INLINES_HIDDEN 1)
@@ -296,8 +293,11 @@ install(TARGETS cmr
       DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
 
-install(DIRECTORY include
+# Install header files.
+install(DIRECTORY include/cmr
    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+install(FILES ${CMAKE_BINARY_DIR}/cmr/config.h ${CMAKE_BINARY_DIR}/cmr/export.h
+   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/cmr)
 
 # Export the targets to a script.
 set(INSTALL_CONFIGDIR ${CMAKE_INSTALL_LIBDIR}/cmake/cmr/)
