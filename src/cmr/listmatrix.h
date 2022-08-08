@@ -67,7 +67,7 @@ typedef struct
  * \brief Allocates memory for a list matrix.
  */
 
-CMR_ERROR CMRlistmatrixAlloc(
+CMR_ERROR CMRchrlistmatAlloc(
   CMR* cmr,             /**< \ref CMR environment. */
   size_t memRows,       /**< Memory for rows. */
   size_t memColumns,    /**< Memory for columns. */

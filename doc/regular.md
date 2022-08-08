@@ -4,25 +4,26 @@ A matrix \f$ M \in \{0,1\}^{m \times n} \f$ is **regular** if the binary matroid
 This is equivalent to requiring that the matroid is equal to the ternary matroid [represented](\ref matroids) by the [Camion-signed](\ref camion) version \f$ M' \f$ of \f$ M \f$, and thus equivalent to [total unimodularity](\ref tu) of \f$ M' \f$.
 
 
-## Usage ##
+## Recognizing Regular Matroids ##
 
-The executable `cmr-regular` determines whether the support matrix \f$ M \f$ of a given matrix is regular.
+The command
 
-    ./cmr-regular [OPTION]... FILE
+    cmr-regular IN-MAT [OPTION...]
 
-Options:
-  - `-i FORMAT` Format of input FILE; default: `dense`.
-  - `-o FORMAT` Format of output matrices; default: `dense`.
-  - `-d`        Output the decomposition tree if \f$ M \f$ is regular.
-  - `n`         Output the elements of a minimal non-regular submatrix.
-  - `N`         Output a minimal non-regular submatrix.
-  - `s`         Print statistics about the computation to stderr.
-Parameter options:
-  - `--no-direct-graphic`   Check only 3-connected matrices for regularity.
-  - `--no-series-parallel`  Do not allow series-parallel operations in decomposition tree.
+determines whether the matrix given in file `IN-MAT` is regular.
 
-Formats for matrices are \ref dense-matrix and \ref sparse-matrix.
-If FILE is `-`, then the input will be read from stdin.
+**Options:**
+  - `-i FORMAT`    Format of file `IN-MAT`, among `dense` for \ref dense-matrix and `sparse` for \ref sparse-matrix; default: dense.
+  - `-D OUT-DEC`   Write a decomposition tree of the regular matroid to file `OUT-DEC`; default: skip computation.
+  - `-N NON-MINOR` Write a minimal non-regular submatrix to file `NON-SUB`; default: skip computation.
+  - `-s`           Print statistics about the computation to stderr.
+
+**Advanced options:**
+  - `--no-direct-graphic`  Check only 3-connected matrices for regularity.
+  - `--no-series-parallel` Do not allow series-parallel operations in decomposition tree.
+
+If `IN-MAT` is `-` then the matrix is read from stdin.
+If `OUT-DEC` or `NON-SUB` is `-` then the decomposition tree (resp. the submatrix) is written to stdout.
 
 ## Algorithm ##
 
@@ -46,7 +47,8 @@ Please cite the following paper in case the implementation contributed to your r
 
 ## C Interface ##
 
-The functionality is defined in \ref regular.h.
-The main functions are:
+The corresponding function in the library is
 
   - CMRtestBinaryRegular() tests a binary matrix for regularity.
+
+and is defined in \ref regular.h.

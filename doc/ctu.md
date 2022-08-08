@@ -8,30 +8,55 @@ A binary matrix \f$ M \f$ is **complement totally unimodular** if all matrices o
 It turns out that all such matrices can be obtained already by at most one row complement and at most one column complement.
 Hence, complement total unimodularity can be checked by checking \f$ (m+1) \cdot (n+1) \f$ matrices for [total unimodularity](\ref tu).
 
-## Usage ##
+## Recognizing Complement Totally Unimodular Matrices ##
 
-The executable `cmr-ctu` determines whether a given matrix \f$ M \f$ is complement totally unimodular or applies
-row- or column-complement operations (or both at the same time) to \f$ M \f$.
+The command
 
-    ./cmr-ctu [OPTION]... FILE
+    cmr-ctu IN-MAT [OPTION]...
 
-Options:
-  - `-i FORMAT` Format of input FILE; default: `dense`.
-  - `-o FORMAT` Format of output matrices; default: `dense`.
-  - `-r ROW`    Perform a row complement operation on \f$ M \f$ and do not test for complement total unimodularity.
-  - `-c COLUMN` Perform a row complement operation on \f$ M \f$ and do not test for complement total unimodularity.
-  - `-n`        Output a complement operations that leads tfile:///home/matthias/code/cmr/develop.git/src/main/tu_main.co a non-totally-unimodular matrix (if \f$ M \f$ is not complement totally unimodular).
-  - `-N`        Output a complemented matrix that is non-totally-unimodular (if \f$ M \f$ is not complement totally unimodular).
+determines whether the matrix given in file `IN-MAT` is complement totally unimodular.
+
+**Options**:
+  - `-i FORMAT`   Format of file `IN-MAT`, among `dense` for \ref dense-matrix and `sparse` for \ref sparse-matrix; default: dense.
+  - `-o FORMAT`   Format of file `OUT-MAT`, among `dense` for \ref dense-matrix and `sparse` for \ref sparse-matrix; default: same as for `IN-MAT`.
+  - `-n OUT-OPS`  Write complement operations that leads to a non-totally-unimodular matrix to file `OUT-OPS`; default: skip computation.
+  - `-N OUT-MAT`  Write a complemented matrix that is non-totally-unimodular to file `OUT-MAT`; default: skip computation.
+  - `-s`          Print statistics about the computation to stderr.
+
+If `IN-MAT` is `-` then the matrix is read from stdin.
+If `OUT-OPS` or `OUT-MAT` is `-` then the list of operations (resp. the matrix) is written to stdout.
+
+### C Interface ###
+
+The corresponding function in the library is
+
+  - CMRtestComplementTotalUnimodularity() tests a matrix for being complement totally unimodular.
+
+and is defined in \ref ctu.h.
+
+
+## Applying Complement Operations ##
+
+The command
+
+    cmr-ctu IN-MAT OUT-MAT [OPTION]...
+
+applies a sequence of row or column complement operations the matrix given in file `IN-MAT` and writes the result to `OUT-MAT`.
+
+**Options**:
+  - `-i FORMAT` Format of file `IN-MAT`, among `dense` for \ref dense-matrix and `sparse` for \ref sparse-matrix; default: dense.
+  - `-o FORMAT` Format of file `OUT-MAT`, among `dense` for \ref dense-matrix and `sparse` for \ref sparse-matrix; default: same as for `IN-MAT`.
+  - `-r ROW`    Apply row complement operation to row `ROW`.
+  - `-c COLUMN` Apply column complement operation to column `COLUMN`.
   - `-s`        Print statistics about the computation to stderr.
 
-Formats for matrices are \ref dense-matrix and \ref sparse-matrix.
-If FILE is `-`, then the input will be read from stdin.
-If `-r` or `-c` (or both) are specified, then \f$ M \f$ is not tested for complement total unimodularity.
+If `IN-MAT` is `-` then the matrix is read from stdin.
+If `OUT-MAT` is `-` then the matrix is written to stdout.
 
 ## C Interface ##
 
-The functionality is defined in \ref ctu.h.
-The main functions are:
+The corresponding function in the library is
 
-  - CMRcomplementRowColumn() carries out a row- and column-complement operations for a matrix.
-  - CMRtestComplementTotalUnimodularity() tests a matrix for being complement totally unimodular.
+  - CMRcomplementRowColumn() carries out a row- or column-complement operation for a matrix.
+
+and is defined in \ref ctu.h.

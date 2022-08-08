@@ -54,6 +54,34 @@ CMR_ERROR CMRminorFree(
   CMR_MINOR** pminor  /**< Pointer to the minor (may be \c NULL). */
 );
 
+/**
+ * \brief Writes the minor \p minor to the file \fileName by means of lists of row and column indices as well as
+ *        pivot entries.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRminorWriteToStream(
+  CMR* cmr,           /**< \ref CMR environment. */
+  CMR_MINOR* minor,   /**< Minor to write. */
+  size_t numRows,     /**< Number of rows of original matrix. */
+  size_t numColumns,  /**< Number of columns of original matrix. */
+  FILE* stream        /**< File stream to save minor to.. */
+);
+
+/**
+ * \brief Writes the minor \p minor to the file \fileName by means of lists of row and column indices as well as
+ *        pivot entries.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRminorWriteToFile(
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_MINOR* minor,     /**< Minor to write. */
+  size_t numRows,       /**< Number of rows of original matrix. */
+  size_t numColumns,    /**< Number of columns of original matrix. */
+  const char* fileName  /**< File name to save minor to; \c NULL indicates stdout. */
+);
+
 #ifdef __cplusplus
 }
 #endif

@@ -10,54 +10,35 @@
 
 typedef enum
 {
-  FILEFORMAT_UNDEFINED = 0,       /**< Whether the file format of input/output was defined by the user. */
-  FILEFORMAT_MATRIX_DENSE = 1,    /**< Dense matrix format. */
-  FILEFORMAT_MATRIX_SPARSE = 2,   /**< Sparse matrix format. */
-  FILEFORMAT_GRAPH_EDGELIST = 3,  /**< Edge list digraph format. */
-  FILEFORMAT_GRAPH_DOT = 4,       /**< Dot digraph format. */
-} FileFormat;
+  TASK_RECOGNIZE = 0, /**< Determine whether a matrix is graphic. */
+  TASK_COMPUTE = 1    /**< Compute a graphic matrix from a graph (and a tree). */
+} Task;
 
-/**
- * \brief Prints the usage of the \p program to stdout.
- * 
- * \returns \c EXIT_FAILURE.
- */
-
-int printUsage(const char* program)
+typedef enum
 {
-  printf("Usage: %s [OPTION]... FILE\n\n", program);
-  puts("Converts digraph to (co)network matrix or tests if matrix is network, depending on input FILE.");
-  puts("Options:");
-  puts("  -i FORMAT  Format of input FILE; default: `dense'.");
-  puts("  -o FORMAT  Format of output; default: `edgelist' if input is a matrix and `dense' if input is a digraph.");
-  puts("  -t         Tests for being / converts to conetwork matrix.");
-  puts("  -n         Output the elements of a minimal non-(co)network submatrix.");
-  puts("  -N         Output a minimal non-(co)network submatrix.");
-  puts("  -s         Print statistics about the computation to stderr.");
-  puts("Formats for matrices: dense, sparse");
-  puts("Formats for digraphs: edgelist, dot (output only)");
-  puts("If FILE is `-', then the input will be read from stdin.");
-
-  return EXIT_FAILURE;
-}
+  FILEFORMAT_UNDEFINED = 0,     /**< Whether the file format of input/output was defined by the user. */
+  FILEFORMAT_MATRIX_DENSE = 1,  /**< Dense matrix format. */
+  FILEFORMAT_MATRIX_SPARSE = 2, /**< Sparse matrix format. */
+} FileFormat;
 
 /**
  * \brief Converts matrix from a file to a digraph if the former is (co)network.
  */
 
-CMR_ERROR matrixToDigraph(
-  const char* instanceFileName,   /**< File name containing the input matrix (may be `-' for stdin). */
-  FileFormat inputFormat,         /**< Format of the input matrix. */
-  FileFormat outputFormat,        /**< Format of the output digraph. */
-  bool conetwork,                 /**< Whether the input shall be checked for being conetwork instead of network. */
-  bool outputNonNetworkElements,  /**< Whether to print the elements of a minimal non-(co)network submatrix. */
-  bool outputNonNetworkMatrix,    /**< Whether to print a minimal non-(co)network submatrix. */
-  bool printStats                 /**< Whether to print statistics to stderr. */
+CMR_ERROR recognizeNetwork(
+  const char* inputFileName,            /**< File name of the input matrix (may be `-' for stdin). */
+  FileFormat inputFormat,               /**< Format of the input matrix. */
+  bool conetwork,                       /**< Whether the input shall be checked for being conetwork instead of network. */
+  const char* outputGraphFileName,      /**< File name of the output graph (may be NULL; may be `-' for stdout). */
+  const char* outputTreeFileName,       /**< File name of the output tree (may be NULL; may be `-' for stdout). */
+  const char* outputDotFileName,        /**< File name of the output dot file (may be NULL; may be `-' for stdout). */
+  const char* outputSubmatrixFileName,  /**< File name of the output non-(co)network submatrix (may be NULL; may be `-' for stdout). */
+  bool printStats                       /**< Whether to print statistics to stderr. */
 )
 {
   clock_t readClock = clock();
-  FILE* instanceFile = strcmp(instanceFileName, "-") ? fopen(instanceFileName, "r") : stdin;
-  if (!instanceFile)
+  FILE* inputFile = strcmp(inputFileName, "-") ? fopen(inputFileName, "r") : stdin;
+  if (!inputFile)
     return CMR_ERROR_INPUT;
 
   CMR* cmr = NULL;
@@ -67,11 +48,11 @@ CMR_ERROR matrixToDigraph(
 
   CMR_CHRMAT* matrix = NULL;
   if (inputFormat == FILEFORMAT_MATRIX_DENSE)
-    CMR_CALL( CMRchrmatCreateFromDenseStream(cmr, instanceFile, &matrix) );
+    CMR_CALL( CMRchrmatCreateFromDenseStream(cmr, inputFile, &matrix) );
   else if (inputFormat == FILEFORMAT_MATRIX_SPARSE)
-    CMR_CALL( CMRchrmatCreateFromSparseStream(cmr, instanceFile, &matrix) );
-  if (instanceFile != stdin)
-    fclose(instanceFile);
+    CMR_CALL( CMRchrmatCreateFromSparseStream(cmr, inputFile, &matrix) );
+  if (inputFile != stdin)
+    fclose(inputFile);
   fprintf(stderr, "Read %lux%lu matrix with %lu nonzeros in %f seconds.\n", matrix->numRows, matrix->numColumns,
     matrix->numNonzeros, (clock() - readClock) * 1.0 / CLOCKS_PER_SEC);
 
@@ -82,27 +63,33 @@ CMR_ERROR matrixToDigraph(
   CMR_GRAPH_EDGE* rowEdges = NULL;
   CMR_GRAPH_EDGE* columnEdges = NULL;
   bool* edgesReversed = NULL;
+  CMR_SUBMAT* submatrix = NULL;
 
   CMR_NETWORK_STATISTICS stats;
   CMR_CALL( CMRstatsNetworkInit(&stats) );
   if (conetwork)
   {
     CMR_CALL( CMRtestConetworkMatrix(cmr, matrix, &isCoNetwork, &digraph, &rowEdges, &columnEdges, &edgesReversed,
-      NULL, &stats) );
+      outputSubmatrixFileName ? &submatrix : NULL, &stats) );
   }
   {
     CMR_CALL( CMRtestNetworkMatrix(cmr, matrix, &isCoNetwork, &digraph, &rowEdges, &columnEdges, &edgesReversed,
-      NULL, &stats) );
+      outputSubmatrixFileName ? &submatrix : NULL, &stats) );
   }
 
-  fprintf(stderr, "Matrix %s%snetwork.\n", isCoNetwork ? "IS " : "IS NOT ", conetwork ? "co" : "");
+  printf("Matrix %s%snetwork.\n", isCoNetwork ? "IS " : "IS NOT ", conetwork ? "co" : "");
   if (printStats)
     CMR_CALL( CMRstatsNetworkPrint(stderr, &stats, NULL) );
 
   if (isCoNetwork)
   {
-    if (outputFormat == FILEFORMAT_GRAPH_EDGELIST)
+    if (outputGraphFileName)
     {
+      bool outputGraphToFile = strcmp(outputGraphFileName, "-");
+      FILE* outputGraphFile = outputGraphToFile ? fopen(outputGraphFileName, "w") : stdout;
+      fprintf(stderr, "Writing digraph to %s%s%s.\n", outputGraphToFile ? "file <" : "",
+        outputGraphToFile ? outputGraphFileName : "stdout", outputGraphToFile ? ">" : "");
+
       if (conetwork)
       {
         for (size_t column = 0; column < matrix->numColumns; ++column)
@@ -116,7 +103,7 @@ CMR_ERROR matrixToDigraph(
             u = v;
             v = temp;
           }
-          printf("%d %d c%ld\n", u, v, column+1);
+          fprintf(outputGraphFile, "%d %d c%ld\n", u, v, column+1);
         }
         for (size_t row = 0; row < matrix->numRows; ++row)
         {
@@ -129,7 +116,7 @@ CMR_ERROR matrixToDigraph(
             u = v;
             v = temp;
           }
-          printf("%d %d r%ld\n", u, v, row+1);
+          fprintf(outputGraphFile, "%d %d r%ld\n", u, v, row+1);
         }
       }
       else
@@ -145,7 +132,7 @@ CMR_ERROR matrixToDigraph(
             u = v;
             v = temp;
           }
-          printf("%d %d r%ld\n", u, v, row+1);
+          fprintf(outputGraphFile, "%d %d r%ld\n", u, v, row+1);
         }
         for (size_t column = 0; column < matrix->numColumns; ++column)
         {
@@ -158,14 +145,30 @@ CMR_ERROR matrixToDigraph(
             u = v;
             v = temp;
           }
-          printf("%d %d c%ld\n", u, v, column+1);
+          fprintf(outputGraphFile, "%d %d c%ld\n", u, v, column+1);
         }
       }
+      
+      if (outputGraphToFile)
+        fclose(outputGraphFile);
     }
-    else if (outputFormat == FILEFORMAT_GRAPH_DOT)
+
+    if (outputTreeFileName)
     {
+      // TODO: implement
+      assert(!"NOT IMPLEMENTED");
+      exit(EXIT_FAILURE);
+    }
+
+    if (outputDotFileName)
+    {
+      bool outputDotToFile = strcmp(outputDotFileName, "-");
+      FILE* outputDotFile = outputDotToFile ? fopen(outputDotFileName, "w") : stdout;
+      fprintf(stderr, "Writing final decomposition to %s%s%s.\n", outputDotToFile ? "file <" : "",
+        outputDotToFile ? outputDotFileName : "stdout", outputDotToFile ? ">" : "");
+
       char buffer[16];
-      puts("digraph G {");
+      fputs("digraph G {\n", outputDotFile);
       for (size_t row = 0; row < matrix->numRows; ++row)
       {
         CMR_GRAPH_EDGE e = rowEdges[row];
@@ -177,7 +180,7 @@ CMR_ERROR matrixToDigraph(
           u = v;
           v = temp;
         }
-        printf(" v_%d -> v_%d [label=\"%s\",style=bold,color=red];\n", u, v,
+        fprintf(outputDotFile, " v_%d -> v_%d [label=\"%s\",style=bold,color=red];\n", u, v,
           CMRelementString(CMRrowToElement(row), buffer));
       }
       for (size_t column = 0; column < matrix->numColumns; ++column)
@@ -191,9 +194,12 @@ CMR_ERROR matrixToDigraph(
           u = v;
           v = temp;
         }
-        printf(" v_%d -> v_%d [label=\"%s\"];\n", u, v, CMRelementString(CMRcolumnToElement(column), buffer));
+        fprintf(outputDotFile, " v_%d -> v_%d [label=\"%s\"];\n", u, v, CMRelementString(CMRcolumnToElement(column), buffer));
       }
-      puts("}");
+      fputs("}\n", outputDotFile);
+
+      if (outputDotToFile)
+        fclose(outputDotFile);
     }
 
     if (edgesReversed)
@@ -202,27 +208,42 @@ CMR_ERROR matrixToDigraph(
     CMR_CALL( CMRfreeBlockArray(cmr, &columnEdges) );
     CMR_CALL( CMRgraphFree(cmr, &digraph) );
   }
+  else
+  {
+    if (outputSubmatrixFileName)
+    {
+      bool outputSubmatrixToFile = strcmp(outputSubmatrixFileName, "-");
+      fprintf(stderr, "Writing minimal non-%snetwork submatrix to %s%s%s.\n", conetwork ? "co" : "",
+        outputSubmatrixToFile ? "file <" : "", outputSubmatrixToFile ? outputSubmatrixFileName : "stdout",
+        outputSubmatrixToFile ? ">" : "");
 
-  /* Cleanup. */
+      assert(submatrix);
+      CMR_CALL( CMRsubmatWriteToFile(cmr, submatrix, matrix->numRows, matrix->numColumns, outputSubmatrixFileName) );
+    }
+  }
 
+  CMR_CALL( CMRsubmatFree(cmr, &submatrix) );
+  CMR_CALL( CMRchrmatFree(cmr, &matrix) );
   CMR_CALL( CMRfreeEnvironment(&cmr) );
 
   return CMR_OKAY;
 }
 
 /**
- * \brief Converts the given digraph file to the corresponding (co)network matrix.
+ * \brief Converts the given graph file to the corresponding (co)network matrix.
  */
 
-CMR_ERROR digraphToMatrix(
-  const char* instanceFileName, /**< File name containing the input digraph (may be `-' for stdin). */
-  FileFormat inputFormat,       /**< Format of the input digraph. */
-  FileFormat outputFormat,      /**< Format of the output matrix. */
-  bool conetwork                /**< Whether the output shall be the conetwork matrix instead of the network matrix. */
+CMR_ERROR computeNetwork(
+  const char* inputFileName,        /**< File name of input graph (may be `-' for stdin). */
+  const char* outputMatrixFileName, /**< File name of output matrix (may be `-' for stdout). */
+  FileFormat outputFormat,          /**< Matrix format for output. */
+  bool conetwork,                   /**< Whether the output shall be the conetwork matrix instead of the network matrix. */
+  const char* inputTreeFileName,    /**< File name of input tree (may be `-' for stdin). */
+  bool printStats                   /**< Whether to print statistics to stderr. */
 )
 {
-  FILE* instanceFile = strcmp(instanceFileName, "-") ? fopen(instanceFileName, "r") : stdin;
-  if (!instanceFile)
+  FILE* inputFile = strcmp(inputFileName, "-") ? fopen(inputFileName, "r") : stdin;
+  if (!inputFile)
     return CMR_ERROR_INPUT;
 
   CMR* cmr = NULL;
@@ -232,12 +253,16 @@ CMR_ERROR digraphToMatrix(
 
   CMR_GRAPH* digraph = NULL;
   CMR_ELEMENT* edgeElements = NULL;
-  if (inputFormat == FILEFORMAT_GRAPH_EDGELIST)
+  CMR_CALL( CMRgraphCreateFromEdgeList(cmr, &digraph, &edgeElements, NULL, inputFile) );
+  if (inputFile != stdin)
+    fclose(inputFile);
+
+  if (inputTreeFileName)
   {
-    CMR_CALL( CMRgraphCreateFromEdgeList(cmr, &digraph, &edgeElements, NULL, instanceFile) );
+    // TODO: implement
+    assert(!"NOT IMPLEMENTED");
+    return EXIT_FAILURE;
   }
-  if (instanceFile != stdin)
-    fclose(instanceFile);
 
   /* Scan edges for (co)forest edges. */
   size_t numForestEdges = 0;
@@ -296,15 +321,27 @@ CMR_ERROR digraphToMatrix(
       coforestEdges, &isCorrectForest) );
   }
 
-  clock_t endTime = clock();
-  fprintf(stderr, "Time: %f\n", (endTime - startTime) * 1.0 / CLOCKS_PER_SEC);
+  if (printStats)
+  {
+    clock_t endTime = clock();
+    fprintf(stderr, "Time: %f\n", (endTime - startTime) * 1.0 / CLOCKS_PER_SEC);
+  }
+
+  bool outputMatrixToFile = strcmp(outputMatrixFileName, "-");
+  FILE* outputMatrixFile = outputMatrixToFile ? fopen(outputMatrixFileName, "w") : stdout;
+  fprintf(stderr, "Writing %snetwork matrix to %s%s%s in %s format.\n", conetwork ? "co" : "",
+    outputMatrixToFile ? "file <" : "", outputMatrixToFile ? outputMatrixFileName : "stdout",
+    outputMatrixToFile ? ">" : "", outputFormat == FILEFORMAT_MATRIX_DENSE ? "dense" : "sparse");
 
   if (outputFormat == FILEFORMAT_MATRIX_DENSE)
-    CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', false) );
+    CMR_CALL( CMRchrmatPrintDense(cmr, matrix, outputMatrixFile, '0', false) );
   else if (outputFormat == FILEFORMAT_MATRIX_SPARSE)
-    CMR_CALL( CMRchrmatPrintSparse(cmr, matrix, stdout) );
+    CMR_CALL( CMRchrmatPrintSparse(cmr, matrix, outputMatrixFile) );
   else
     assert(false);
+
+  if (outputMatrixToFile)
+    fclose(outputMatrixFile);
 
   CMR_CALL( CMRchrmatFree(cmr, &matrix) );
 
@@ -318,15 +355,53 @@ CMR_ERROR digraphToMatrix(
   return CMR_OKAY;
 }
 
+/**
+ * \brief Prints the usage of the \p program to stdout.
+ * 
+ * \returns \c EXIT_FAILURE.
+ */
+
+int printUsage(const char* program)
+{
+  fputs("Usage:\n", stderr);
+  fprintf(stderr, "%s IN-MAT [OPTION]...\n\n", program);
+  fputs("  (1) determines whether the matrix given in file IN-MAT is (co)network.\n\n", stderr);
+  fprintf(stderr, "%s -c IN-GRAPH OUT-MAT [OPTION]...\n\n", program);
+  fputs("  (2) computes a (co)network matrix corresponding to the digraph from file IN-GRAPH and writes it to OUT-MAT.\n\n\n",
+    stderr);
+  fputs("Options specific to (1):\n", stderr);
+  fputs("  -i FORMAT    Format of file IN-MAT, among `dense' and `sparse'; default: dense.\n", stderr);
+  fputs("  -t           Test for being conetwork; default: test for being network.\n", stderr);
+  fputs("  -G OUT-GRAPH Write a digraph to file OUT-GRAPH; default: skip computation.\n", stderr);
+  fputs("  -T OUT-TREE  Write a directed spanning tree to file OUT-TREE; default: skip computation.\n", stderr);
+  fputs("  -D OUT-DOT   Write a dot file OUT-DOT with the digraph and the directed spanning tree; default: skip computation.\n", stderr);
+  fputs("  -N NON-SUB   Write a minimal non-(co)network submatrix to file NON-SUB; default: skip computation.\n\n", stderr);
+  fputs("Options specific to (2):\n", stderr);
+  fputs("  -o FORMAT    Format of file OUT-MAT, among `dense' and `sparse'; default: dense.\n", stderr);
+  fputs("  -t           Return the transpose of the network matrix.\n", stderr);
+  fputs("  -T IN-TREE   Read a directed tree from file IN-TREE; default: use first specified arcs as tree edges.\n\n", stderr);
+  fputs("Common options:\n", stderr);
+  fputs("  -s           Print statistics about the computation to stderr.\n\n", stderr);
+  fputs("If IN-MAT, IN-GRAPH or IN-TREE is `-' then the matrix (resp. the digraph or directed tree) is read from stdin.\n", stderr);
+  fputs("If OUT-GRAPH, OUT-TREE, OUT-DOT or NON-SUB is `-' then the digraph (resp. the directed tree, dot file or non-(co)network submatrix) is written to stdout.\n",
+    stderr);
+
+  return EXIT_FAILURE;
+}
+
 int main(int argc, char** argv)
 {
+  Task task = TASK_RECOGNIZE;
   FileFormat inputFormat = FILEFORMAT_UNDEFINED;
   FileFormat outputFormat = FILEFORMAT_UNDEFINED;
   bool transposed = false;
-  char* instanceFileName = NULL;
-  bool outputNonNetworkElements = false;
-  bool outputNonNetworkMatrix = false;
   bool printStats = false;
+  char* inputFileName = NULL;
+  char* treeFileName = NULL;
+  char* outputFileName = NULL;
+  char* outputGraphFileName = NULL;
+  char* outputDotFileName = NULL;
+  char* outputSubmatrixFileName = NULL;
   for (int a = 1; a < argc; ++a)
   {
     if (!strcmp(argv[a], "-h"))
@@ -334,12 +409,10 @@ int main(int argc, char** argv)
       printUsage(argv[0]);
       return EXIT_SUCCESS;
     }
+    else if (!strcmp(argv[a], "-c"))
+      task = TASK_COMPUTE;
     else if (!strcmp(argv[a], "-t"))
       transposed = true;
-    else if (!strcmp(argv[a], "-n"))
-      outputNonNetworkElements = true;
-    else if (!strcmp(argv[a], "-N"))
-      outputNonNetworkMatrix = true;
     else if (!strcmp(argv[a], "-s"))
       printStats = true;
     else if (!strcmp(argv[a], "-i") && a+1 < argc)
@@ -348,11 +421,9 @@ int main(int argc, char** argv)
         inputFormat = FILEFORMAT_MATRIX_DENSE;
       else if (!strcmp(argv[a+1], "sparse"))
         inputFormat = FILEFORMAT_MATRIX_SPARSE;
-      else if (!strcmp(argv[a+1], "edgelist"))
-        inputFormat = FILEFORMAT_GRAPH_EDGELIST;
       else
       {
-        printf("Error: unknown input file format <%s>.\n\n", argv[a+1]);
+        fprintf(stderr, "Error: Unknown input file format <%s>.\n\n", argv[a+1]);
         return printUsage(argv[0]);
       }
       ++a;
@@ -363,74 +434,99 @@ int main(int argc, char** argv)
         outputFormat = FILEFORMAT_MATRIX_DENSE;
       else if (!strcmp(argv[a+1], "sparse"))
         outputFormat = FILEFORMAT_MATRIX_SPARSE;
-      else if (!strcmp(argv[a+1], "edgelist"))
-        outputFormat = FILEFORMAT_GRAPH_EDGELIST;
-      else if (!strcmp(argv[a+1], "dot"))
-        outputFormat = FILEFORMAT_GRAPH_DOT;
       else
       {
-        printf("Error: unknown output format <%s>.\n\n", argv[a+1]);
+        fprintf(stderr, "Error: Unknown output format <%s>.\n\n", argv[a+1]);
         return printUsage(argv[0]);
       }
       ++a;
     }
-    else if (!instanceFileName)
-      instanceFileName = argv[a];
+    else if (!strcmp(argv[a], "-G") && a+1 < argc)
+      outputGraphFileName = argv[++a];
+    else if (!strcmp(argv[a], "-T") && a+1 < argc)
+      treeFileName = argv[++a];
+    else if (!strcmp(argv[a], "-D") && a+1 < argc)
+      outputDotFileName = argv[++a];
+    else if (!strcmp(argv[a], "-N") && a+1 < argc)
+      outputSubmatrixFileName = argv[++a];
+    else if (!inputFileName)
+      inputFileName = argv[a];
+    else if (!outputFileName)
+      outputFileName = argv[a];
     else
     {
-      printf("Error: Two input files <%s> and <%s> specified.\n\n", instanceFileName, argv[a]);
-      return printUsage(argv[0]);
-    }
-  }
-
-  if (!instanceFileName)
-  {
-    puts("No input file specified.\n");
-    return printUsage(argv[0]);
-  }
-
-  if (inputFormat == FILEFORMAT_UNDEFINED)
-  {
-    if (outputFormat == FILEFORMAT_UNDEFINED)
-    {
-      inputFormat = FILEFORMAT_MATRIX_DENSE;
-      outputFormat = FILEFORMAT_GRAPH_EDGELIST;
-    }
-    else if (outputFormat == FILEFORMAT_MATRIX_DENSE || outputFormat == FILEFORMAT_MATRIX_SPARSE)
-      inputFormat = FILEFORMAT_GRAPH_EDGELIST;
-    else
-      inputFormat = FILEFORMAT_MATRIX_DENSE;
-  }
-  else if (inputFormat == FILEFORMAT_MATRIX_DENSE || inputFormat == FILEFORMAT_MATRIX_SPARSE)
-  {
-    if (outputFormat == FILEFORMAT_UNDEFINED)
-      outputFormat = FILEFORMAT_GRAPH_EDGELIST;
-    else if (outputFormat == FILEFORMAT_MATRIX_DENSE || outputFormat == FILEFORMAT_MATRIX_SPARSE)
-    {
-      puts("Either input or output must be a graph.\n");
-      return printUsage(argv[0]);
-    }
-  }
-  else
-  {
-    /* Input format is graph format. */
-    if (outputFormat == FILEFORMAT_UNDEFINED)
-      outputFormat = FILEFORMAT_MATRIX_DENSE;
-    else if (!(outputFormat == FILEFORMAT_MATRIX_DENSE || outputFormat == FILEFORMAT_MATRIX_SPARSE))
-    {
-      puts("Either input or output must be a matrix.\n");
+      fprintf(stderr,
+        "Error: Three file names <%s>, <%s> and <%s> specified.\n\n", inputFileName, outputFileName, argv[a]);
       return printUsage(argv[0]);
     }
   }
 
   CMR_ERROR error;
-  if (inputFormat == FILEFORMAT_MATRIX_DENSE || inputFormat == FILEFORMAT_MATRIX_SPARSE)
+  if (!inputFileName)
   {
-    error = matrixToDigraph(instanceFileName, inputFormat, outputFormat, transposed, outputNonNetworkElements,
-      outputNonNetworkMatrix, printStats);
+    fputs("Error: No input file specified.\n", stderr);
+    return printUsage(argv[0]);
+  }
+  else if (task == TASK_RECOGNIZE)
+  {
+    if (outputFileName)
+    {
+      fprintf(stderr,
+        "Error: Two file names <%s> and <%s> specified for recognition.\n\n", inputFileName, outputFileName);
+      return printUsage(argv[0]);
+    }
+    if (outputFormat != FILEFORMAT_UNDEFINED)
+    {
+      fprintf(stderr,
+        "Error: Option -o is invalid for recognition.\n\n");
+      return printUsage(argv[0]);
+    }
+    if (inputFormat == FILEFORMAT_UNDEFINED)
+      inputFormat = FILEFORMAT_MATRIX_DENSE;
+
+    error = recognizeNetwork(inputFileName, inputFormat, transposed, outputGraphFileName, treeFileName, outputDotFileName,
+      outputSubmatrixFileName, printStats);
+  }
+  else if (task == TASK_COMPUTE)
+  {
+    if (!outputFileName)
+    {
+      fputs("Error: No output file specified.\n", stderr);
+      return printUsage(argv[0]);
+    }
+    if (inputFormat != FILEFORMAT_UNDEFINED)
+    {
+      fprintf(stderr,
+        "Error: Option -i is invalid for computation.\n\n");
+      return printUsage(argv[0]);
+    }
+    if (outputGraphFileName)
+    {
+      fprintf(stderr,
+        "Error: Option -G is invalid for computation.\n\n");
+      return printUsage(argv[0]);
+    }
+    if (outputDotFileName)
+    {
+      fprintf(stderr,
+        "Error: Option -D is invalid for computation.\n\n");
+      return printUsage(argv[0]);
+    }
+    if (outputSubmatrixFileName)
+    {
+      fprintf(stderr,
+        "Error: Option -N is invalid for computation.\n\n");
+      return printUsage(argv[0]);
+    }
+    if (outputFormat == FILEFORMAT_UNDEFINED)
+      outputFormat = FILEFORMAT_MATRIX_DENSE;
+
+    error = computeNetwork(inputFileName, outputFileName, outputFormat, transposed, treeFileName, printStats);
   }
   else
-    error = digraphToMatrix(instanceFileName, inputFormat, outputFormat, transposed);
+  {
+    assert(false);
+  }
 
   switch (error)
   {

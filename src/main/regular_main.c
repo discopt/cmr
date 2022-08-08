@@ -8,34 +8,32 @@
 
 typedef enum
 {
-  FILEFORMAT_UNDEFINED = 0,       /**< Whether the file format of input/output was defined by the user. */
   FILEFORMAT_MATRIX_DENSE = 1,    /**< Dense matrix format. */
   FILEFORMAT_MATRIX_SPARSE = 2,   /**< Sparse matrix format. */
 } FileFormat;
 
 /**
- * \brief Tests matrix from a file for total unimodularity.
+ * \brief Tests matrix from a file for regularity.
  */
 
 static
 CMR_ERROR testRegularity(
-  const char* instanceFileName, /**< File name containing the input matrix (may be `-' for stdin). */
-  FileFormat inputFormat,       /**< Format of the input matrix. */
-  FileFormat outputFormat,      /**< Format of the output submatrix. */
-  bool directGraphicness,       /**< Whether to use fast graphicness routines. */
-  bool seriesParallel,          /**< Whether to allow series-parallel operations in the decomposition tree. */
-  bool completeTree,            /**< Whether to compute the complete decomposition tree. */
-  bool planarityCheck,          /**< Whether to test for planarity. */
-  bool printTree,               /**< Whether to print the decomposition tree. */
-  bool outputSubmatrixElements, /**< Whether to print the elements of a minimal submatrix containing an irregular minor. */
-  bool outputSubmatrix,         /**< Whether to print a minimal submatrix containing an irregular minor. */
-  bool printStats               /**< Whether to print statistics to stderr. */
+  const char* inputMatrixFileName,  /**< File name containing the input matrix (may be `-' for stdin). */
+  FileFormat inputFormat,           /**< Format of the input matrix. */
+  const char* outputTreeFileName,   /**< File name to print decomposition tree to, or \c NULL. */
+  const char* outputMinorFileName,  /**< File name to print non-regular minor to, or \c NULL. */
+  bool printStats,                  /**< Whether to print statistics to stderr. */
+  bool directGraphicness,           /**< Whether to use fast graphicness routines. */
+  bool seriesParallel               /**< Whether to allow series-parallel operations in the decomposition tree. */
 )
 {
   clock_t readClock = clock();
-  FILE* instanceFile = strcmp(instanceFileName, "-") ? fopen(instanceFileName, "r") : stdin;
-  if (!instanceFile)
+  FILE* inputMatrixFile = strcmp(inputMatrixFileName, "-") ? fopen(inputMatrixFileName, "r") : stdin;
+  if (!inputMatrixFile)
+  {
+    fprintf(stderr, "Unable to open file <%s>\n", inputMatrixFileName);
     return CMR_ERROR_INPUT;
+  }
 
   CMR* cmr = NULL;
   CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -43,12 +41,27 @@ CMR_ERROR testRegularity(
   /* Read matrix. */
 
   CMR_CHRMAT* matrix = NULL;
+  CMR_ERROR error;
   if (inputFormat == FILEFORMAT_MATRIX_DENSE)
-    CMR_CALL( CMRchrmatCreateFromDenseStream(cmr, instanceFile, &matrix) );
+  {
+    error = CMRchrmatCreateFromDenseStream(cmr, inputMatrixFile, &matrix);
+    if (error == CMR_ERROR_INPUT)
+      fprintf(stderr, "Error when reading dense matrix from <%s>: %s\n", inputMatrixFileName, CMRgetErrorMessage(cmr));
+  }
   else if (inputFormat == FILEFORMAT_MATRIX_SPARSE)
-    CMR_CALL( CMRchrmatCreateFromSparseStream(cmr, instanceFile, &matrix) );
-  if (instanceFile != stdin)
-    fclose(instanceFile);
+  {
+    error = CMRchrmatCreateFromSparseStream(cmr, inputMatrixFile, &matrix);
+    if (error == CMR_ERROR_INPUT)
+      fprintf(stderr, "Error when reading dense matrix from <%s>: %s\n", inputMatrixFileName, CMRgetErrorMessage(cmr));
+  }
+  else
+    assert(false);
+
+  if (inputMatrixFile != stdin)
+    fclose(inputMatrixFile);
+
+  CMR_CALL(error);
+
   fprintf(stderr, "Read %lux%lu matrix with %lu nonzeros in %f seconds.\n", matrix->numRows, matrix->numColumns,
     matrix->numNonzeros, (clock() - readClock) * 1.0 / CLOCKS_PER_SEC);
 
@@ -59,15 +72,14 @@ CMR_ERROR testRegularity(
   CMR_MINOR* minor = NULL;
   CMR_REGULAR_PARAMETERS params;
   CMR_CALL( CMRparamsRegularInit(&params) );
+  params.completeTree = outputTreeFileName;
+  params.matrices = outputTreeFileName ? CMR_DEC_CONSTRUCT_ALL : CMR_DEC_CONSTRUCT_NONE;
   params.directGraphicness = directGraphicness;
   params.seriesParallel = seriesParallel;
-  params.completeTree = completeTree;
-  params.planarityCheck = planarityCheck;
-  params.matrices = printTree ? CMR_DEC_CONSTRUCT_ALL : CMR_DEC_CONSTRUCT_NONE;
   CMR_REGULAR_STATISTICS stats;
   CMR_CALL( CMRstatsRegularInit(&stats) );
-  CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, printTree ? &decomposition : NULL,
-    (outputSubmatrix || outputSubmatrixElements) ? &minor : NULL, &params, &stats) );
+  CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, outputTreeFileName ? &decomposition : NULL,
+    outputMinorFileName ? &minor : NULL, &params, &stats) );
 
   fprintf(stderr, "Matrix %sregular.\n", isRegular ? "IS " : "IS NOT ");
   if (printStats)
@@ -75,24 +87,29 @@ CMR_ERROR testRegularity(
 
   if (decomposition)
   {
-    if (printTree)
-      CMR_CALL( CMRdecPrint(cmr, decomposition, stdout, 2, true, true, true) );
-    CMR_CALL( CMRdecFree(cmr, &decomposition) );
+    // TODO: Write decomposition.
+    assert(!"NOT IMPLEMENTED");
+    exit(EXIT_FAILURE);
   }
 
-  if (minor)
+  if (minor && outputMinorFileName)
   {
-    CMR_CALL( CMRminorFree(cmr, &minor) );
+    bool outputMinorToFile = strcmp(outputMinorFileName, "-");
+    fprintf(stderr, "Writing minimal non-regular submatrix to %s%s%s.\n", outputMinorToFile ? "file <" : "",
+      outputMinorToFile ? outputMinorFileName : "stdout", outputMinorToFile ? ">" : "");    
+
+    CMR_CALL( CMRminorWriteToFile(cmr, minor, matrix->numRows, matrix->numColumns, outputMinorFileName) );
   }
 
   /* Cleanup. */
 
+  CMR_CALL( CMRdecFree(cmr, &decomposition) );
+  CMR_CALL( CMRminorFree(cmr, &minor) );
   CMR_CALL( CMRchrmatFree(cmr, &matrix) );
   CMR_CALL( CMRfreeEnvironment(&cmr) );
 
   return CMR_OKAY;
 }
-
 
 /**
  * \brief Prints the usage of the \p program to stdout.
@@ -102,39 +119,32 @@ CMR_ERROR testRegularity(
 
 int printUsage(const char* program)
 {
-  printf("Usage: %s [OPTION]... FILE\n\n", program);
-  puts("Tests matrix in FILE for total unimodularity.");
-  puts("Options:");
-  puts("  -i FORMAT  Format of input FILE; default: `dense'.");
-  puts("  -o FORMAT  Format of output matrices; default: `dense'.");
-  puts("  -p         Test graphic matrices also for cographicness (i.e., planarity).");
-  puts("  -d         Compute the complete decomposition tree of the matroid.");
-  puts("  -D         Output the computed decomposition tree of the matroid.");
-  puts("  -n         Output the elements of a minimal non-regular submatrix.");
-  puts("  -N         Output a minimal non-regular submatrix.");
-  puts("  -s         Print statistics about the computation to stderr.");
-  puts("Parameter options:");
-  puts("  --no-direct-graphic   Check only 3-connected matrices for regularity.");
-  puts("  --no-series-parallel  Do not allow series-parallel operations in decomposition tree.");
-  puts("Formats for matrices: dense, sparse");
-  puts("If FILE is `-', then the input will be read from stdin.");
+  fputs("Usage:\n", stderr);
+  fprintf(stderr, "%s IN-MAT [OPTION]...\n\n", program);
+  fputs("  determines whether the matrix given in file IN-MAT is regular.\n\n", stderr);
+  fputs("Options:\n", stderr);
+  fputs("  -i FORMAT    Format of file IN-MAT, among `dense' and `sparse'; default: dense.\n", stderr);
+  fputs("  -D OUT-DEC   Write a decomposition tree of the regular matroid to file OUT-DEC; default: skip computation.\n", stderr);
+  fputs("  -N NON-MINOR Write a minimal non-regular minor to file NON-MINOR; default: skip computation.\n", stderr);
+  fputs("  -s           Print statistics about the computation to stderr.\n\n", stderr);
+  fputs("Advanced options:\n", stderr);
+  fputs("  --no-direct-graphic  Check only 3-connected matrices for regularity.\n", stderr);
+  fputs("  --no-series-parallel Do not allow series-parallel operations in decomposition tree.\n\n", stderr);
+  fputs("If IN-MAT is `-' then the matrix is read from stdin.\n", stderr);
+  fputs("If OUT-DEC or NON-MINOR is `-' then the decomposition tree (resp. the minor) is written to stdout.\n", stderr);
 
   return EXIT_FAILURE;
 }
 
 int main(int argc, char** argv)
 {
-  FileFormat inputFormat = FILEFORMAT_UNDEFINED;
-  FileFormat outputFormat = FILEFORMAT_MATRIX_DENSE;
+  char* inputMatrixFileName = NULL;
+  FileFormat inputFormat = FILEFORMAT_MATRIX_DENSE;
+  char* outputTree = NULL;
+  char* outputMinor = NULL;
+  bool printStats = false;
   bool directGraphicness = true;
   bool seriesParallel = true;
-  bool completeTree = false;
-  bool planarityCheck = false;
-  bool printTree = false;
-  bool outputSubmatrixElements = false;
-  bool outputSubmatrix = false;
-  bool printStats = false;
-  char* instanceFileName = NULL;
   for (int a = 1; a < argc; ++a)
   {
     if (!strcmp(argv[a], "-h"))
@@ -142,22 +152,6 @@ int main(int argc, char** argv)
       printUsage(argv[0]);
       return EXIT_SUCCESS;
     }
-    else if (!strcmp(argv[a], "--no-direct-graphic"))
-      directGraphicness = false;
-    else if (!strcmp(argv[a], "--no-series-parallel"))
-      seriesParallel = false;
-    else if (!strcmp(argv[a], "-d"))
-      completeTree = true;
-    else if (!strcmp(argv[a], "-D"))
-      printTree = true;
-    else if (!strcmp(argv[a], "-p"))
-      planarityCheck = true;
-    else if (!strcmp(argv[a], "-n"))
-      outputSubmatrixElements = true;
-    else if (!strcmp(argv[a], "-N"))
-      outputSubmatrix = true;
-    else if (!strcmp(argv[a], "-s"))
-      printStats = true;
     else if (!strcmp(argv[a], "-i") && a+1 < argc)
     {
       if (!strcmp(argv[a+1], "dense"))
@@ -171,40 +165,34 @@ int main(int argc, char** argv)
       }
       ++a;
     }
-    else if (!strcmp(argv[a], "-o") && a+1 < argc)
-    {
-      if (!strcmp(argv[a+1], "dense"))
-        outputFormat = FILEFORMAT_MATRIX_DENSE;
-      else if (!strcmp(argv[a+1], "sparse"))
-        outputFormat = FILEFORMAT_MATRIX_SPARSE;
-      else
-      {
-        printf("Error: unknown output format <%s>.\n\n", argv[a+1]);
-        return printUsage(argv[0]);
-      }
-      ++a;
-    }
-    else if (!instanceFileName)
-      instanceFileName = argv[a];
+    else if (!strcmp(argv[a], "-D") && a+1 < argc)
+      outputTree = argv[++a];
+    else if (!strcmp(argv[a], "-N") && a+1 < argc)
+      outputMinor = argv[++a];
+    else if (!strcmp(argv[a], "-s"))
+      printStats = true;
+    else if (!strcmp(argv[a], "--no-direct-graphic"))
+      directGraphicness = false;
+    else if (!strcmp(argv[a], "--no-series-parallel"))
+      seriesParallel = false;
+    else if (!inputMatrixFileName)
+      inputMatrixFileName = argv[a];
     else
     {
-      printf("Error: Two input files <%s> and <%s> specified.\n\n", instanceFileName, argv[a]);
+      printf("Error: Two input files <%s> and <%s> specified.\n\n", inputMatrixFileName, argv[a]);
       return printUsage(argv[0]);
     }
   }
 
-  if (!instanceFileName)
+  if (!inputMatrixFileName)
   {
-    puts("No input file specified.\n");
+    puts("Error: No input file specified.\n");
     return printUsage(argv[0]);
   }
 
-  if (inputFormat == FILEFORMAT_UNDEFINED)
-    inputFormat = FILEFORMAT_MATRIX_DENSE;
-
   CMR_ERROR error;
-  error = testRegularity(instanceFileName, inputFormat, outputFormat, directGraphicness, seriesParallel, completeTree,
-    planarityCheck, printTree, outputSubmatrixElements, outputSubmatrix, printStats);
+  error = testRegularity(inputMatrixFileName, inputFormat, outputTree, outputMinor, directGraphicness, seriesParallel,
+    printStats);
 
   switch (error)
   {

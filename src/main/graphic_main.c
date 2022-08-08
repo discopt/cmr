@@ -10,53 +10,35 @@
 
 typedef enum
 {
-  FILEFORMAT_UNDEFINED = 0,       /**< Whether the file format of input/output was defined by the user. */
-  FILEFORMAT_MATRIX_DENSE = 1,    /**< Dense matrix format. */
-  FILEFORMAT_MATRIX_SPARSE = 2,   /**< Sparse matrix format. */
-  FILEFORMAT_GRAPH_EDGELIST = 3,  /**< Edge list digraph format. */
-  FILEFORMAT_GRAPH_DOT = 4,       /**< Dot digraph format. */
-} FileFormat;
+  TASK_RECOGNIZE = 0, /**< Determine whether a matrix is graphic. */
+  TASK_COMPUTE = 1    /**< Compute a graphic matrix from a graph (and a tree). */
+} Task;
 
-/**
- * \brief Prints the usage of the \p program to stdout.
- * 
- * \returns \c EXIT_FAILURE.
- */
-
-int printUsage(const char* program)
+typedef enum
 {
-  printf("Usage: %s [OPTION]... FILE\n\n", program);
-  puts("Converts graph to (co)graphic matrix or tests if matrix is (co)graphic, depending on input FILE.");
-  puts("Options:");
-  puts("  -i FORMAT  Format of input FILE; default: `dense'.");
-  puts("  -o FORMAT  Format of output; default: `edgelist' if input is a matrix and `dense' if input is a graph.");
-  puts("  -t         Tests for being / converts to cographic matrix.");
-  puts("  -n         Output the elements of a minimal non-(co)graphic submatrix.");
-  puts("  -N         Output a minimal non-(co)graphic submatrix.");
-  puts("  -s         Print statistics about the computation to stderr.");
-  puts("Formats for matrices: dense, sparse");
-  puts("Formats for graphs: edgelist, dot (output only)");
-  puts("If FILE is `-', then the input will be read from stdin.");
-  return EXIT_FAILURE;
-}
+  FILEFORMAT_UNDEFINED = 0,     /**< Whether the file format of input/output was defined by the user. */
+  FILEFORMAT_MATRIX_DENSE = 1,  /**< Dense matrix format. */
+  FILEFORMAT_MATRIX_SPARSE = 2  /**< Sparse matrix format. */
+} FileFormat;
 
 /**
  * \brief Converts matrix from a file to a graph if the former is (co)graphic.
  */
 
-CMR_ERROR matrixToGraph(
-  const char* instanceFileName,   /**< File name containing the input matrix (may be `-' for stdin). */
-  FileFormat inputFormat,         /**< Format of the input matrix. */
-  FileFormat outputFormat,        /**< Format of the output graph. */
-  bool cographic,                 /**< Whether the input shall be checked for being cographic instead of graphic. */
-  bool outputNonGraphicElements,  /**< Whether to print the elements of a minimal non-(co)graphic submatrix. */
-  bool outputNonGraphicMatrix,    /**< Whether to print a minimal non-(co)graphic submatrix. */
-  bool printStats                 /**< Whether to print statistics to stderr. */
+CMR_ERROR recognizeGraphic(
+  const char* inputFileName,            /**< File name of the input matrix (may be `-' for stdin). */
+  FileFormat inputFormat,               /**< Format of the input matrix. */
+  bool cographic,                       /**< Whether the input shall be checked for being cographic instead of graphic. */
+  const char* outputGraphFileName,      /**< File name of the output graph (may be NULL; may be `-' for stdout). */
+  const char* outputTreeFileName,       /**< File name of the output tree (may be NULL; may be `-' for stdout). */
+  const char* outputDotFileName,        /**< File name of the output dot file (may be NULL; may be `-' for stdout). */
+  const char* outputSubmatrixFileName,  /**< File name of the output non-(co)graphic submatrix (may be NULL; may be `-' for stdout). */
+  bool printStats                       /**< Whether to print statistics to stderr. */
 )
 {
   clock_t readClock = clock();
-  FILE* instanceFile = strcmp(instanceFileName, "-") ? fopen(instanceFileName, "r") : stdin;
-  if (!instanceFile)
+  FILE* inputFile = strcmp(inputFileName, "-") ? fopen(inputFileName, "r") : stdin;
+  if (!inputFile)
     return CMR_ERROR_INPUT;
 
   CMR* cmr = NULL;
@@ -66,11 +48,11 @@ CMR_ERROR matrixToGraph(
 
   CMR_CHRMAT* matrix = NULL;
   if (inputFormat == FILEFORMAT_MATRIX_DENSE)
-    CMR_CALL( CMRchrmatCreateFromDenseStream(cmr, instanceFile, &matrix) );
+    CMR_CALL( CMRchrmatCreateFromDenseStream(cmr, inputFile, &matrix) );
   else if (inputFormat == FILEFORMAT_MATRIX_SPARSE)
-    CMR_CALL( CMRchrmatCreateFromSparseStream(cmr, instanceFile, &matrix) );
-  if (instanceFile != stdin)
-    fclose(instanceFile);
+    CMR_CALL( CMRchrmatCreateFromSparseStream(cmr, inputFile, &matrix) );
+  if (inputFile != stdin)
+    fclose(inputFile);
   fprintf(stderr, "Read %lux%lu matrix with %lu nonzeros in %f seconds.\n", matrix->numRows, matrix->numColumns,
     matrix->numNonzeros, (clock() - readClock) * 1.0 / CLOCKS_PER_SEC);
 
@@ -81,7 +63,6 @@ CMR_ERROR matrixToGraph(
   CMR_GRAPH_EDGE* rowEdges = NULL;
   CMR_GRAPH_EDGE* columnEdges = NULL;
   bool* edgesReversed = NULL;
-
   CMR_SUBMAT* submatrix = NULL;
 
   CMR_GRAPHIC_STATISTICS stats;
@@ -89,22 +70,27 @@ CMR_ERROR matrixToGraph(
   if (cographic)
   {
     CMR_CALL( CMRtestCographicMatrix(cmr, matrix, &isCoGraphic, &graph, &rowEdges, &columnEdges,
-      (outputNonGraphicElements || outputNonGraphicMatrix) ? &submatrix : NULL, &stats) );
+      outputSubmatrixFileName ? &submatrix : NULL, &stats) );
   }
   else
   {
     CMR_CALL( CMRtestGraphicMatrix(cmr, matrix, &isCoGraphic, &graph, &rowEdges, &columnEdges,
-      (outputNonGraphicElements || outputNonGraphicMatrix) ? &submatrix : NULL, &stats) );
+      outputSubmatrixFileName ? &submatrix : NULL, &stats) );
   }
 
-  fprintf(stderr, "Matrix %s%sgraphic.\n", isCoGraphic ? "IS " : "IS NOT ", cographic ? "co" : "");
+  printf("Matrix %s%sgraphic.\n", isCoGraphic ? "IS " : "IS NOT ", cographic ? "co" : "");
   if (printStats)
     CMR_CALL( CMRstatsGraphicPrint(stderr, &stats, NULL) );
 
   if (isCoGraphic)
   {
-    if (outputFormat == FILEFORMAT_GRAPH_EDGELIST)
+    if (outputGraphFileName)
     {
+      bool outputGraphToFile = strcmp(outputGraphFileName, "-");
+      FILE* outputGraphFile = outputGraphToFile ? fopen(outputGraphFileName, "w") : stdout;
+      fprintf(stderr, "Writing graph to %s%s%s.\n", outputGraphToFile ? "file <" : "",
+        outputGraphToFile ? outputGraphFileName : "stdout", outputGraphToFile ? ">" : "");
+
       if (cographic)
       {
         for (size_t column = 0; column < matrix->numColumns; ++column)
@@ -118,7 +104,7 @@ CMR_ERROR matrixToGraph(
             u = v;
             v = temp;
           }
-          printf("%d %d c%ld\n", u, v, column+1);
+          fprintf(outputGraphFile, "%d %d c%ld\n", u, v, column+1);
         }
         for (size_t row = 0; row < matrix->numRows; ++row)
         {
@@ -131,7 +117,7 @@ CMR_ERROR matrixToGraph(
             u = v;
             v = temp;
           }
-          printf("%d %d r%ld\n", u, v, row+1);
+          fprintf(outputGraphFile, "%d %d r%ld\n", u, v, row+1);
         }
       }
       else
@@ -147,7 +133,7 @@ CMR_ERROR matrixToGraph(
             u = v;
             v = temp;
           }
-          printf("%d %d r%ld\n", u, v, row+1);
+          fprintf(outputGraphFile, "%d %d r%ld\n", u, v, row+1);
         }
         for (size_t column = 0; column < matrix->numColumns; ++column)
         {
@@ -160,14 +146,30 @@ CMR_ERROR matrixToGraph(
             u = v;
             v = temp;
           }
-          printf("%d %d c%ld\n", u, v, column+1);
+          fprintf(outputGraphFile, "%d %d c%ld\n", u, v, column+1);
         }
       }
+
+      if (outputGraphToFile)
+        fclose(outputGraphFile);
     }
-    else if (outputFormat == FILEFORMAT_GRAPH_DOT)
+    
+    if (outputTreeFileName)
     {
+      // TODO: implement
+      assert(!"NOT IMPLEMENTED");
+      exit(EXIT_FAILURE);
+    }
+
+    if (outputDotFileName)
+    {
+      bool outputDotToFile = strcmp(outputDotFileName, "-");
+      FILE* outputDotFile = outputDotToFile ? fopen(outputDotFileName, "w") : stdout;
+      fprintf(stderr, "Writing final decomposition to %s%s%s.\n", outputDotToFile ? "file <" : "",
+        outputDotToFile ? outputDotFileName : "stdout", outputDotToFile ? ">" : "");
+
       char buffer[16];
-      puts("graph G {");
+      fputs("graph G {\n", outputDotFile);
       for (size_t row = 0; row < matrix->numRows; ++row)
       {
         CMR_GRAPH_EDGE e = rowEdges[row];
@@ -179,7 +181,7 @@ CMR_ERROR matrixToGraph(
           u = v;
           v = temp;
         }
-        printf(" v_%d -- v_%d [label=\"%s\",style=bold,color=red];\n", u, v,
+        fprintf(outputDotFile, " v_%d -- v_%d [label=\"%s\",style=bold,color=red];\n", u, v,
           CMRelementString(CMRrowToElement(row), buffer));
       }
       for (size_t column = 0; column < matrix->numColumns; ++column)
@@ -193,9 +195,12 @@ CMR_ERROR matrixToGraph(
           u = v;
           v = temp;
         }
-        printf(" v_%d -- v_%d [label=\"%s\"];\n", u, v, CMRelementString(CMRcolumnToElement(column), buffer));
+        fprintf(outputDotFile, " v_%d -- v_%d [label=\"%s\"];\n", u, v, CMRelementString(CMRcolumnToElement(column), buffer));
       }
-      puts("}");
+      fputs("}\n", outputDotFile);
+
+      if (outputDotToFile)
+        fclose(outputDotFile);
     }
 
     if (edgesReversed)
@@ -204,42 +209,22 @@ CMR_ERROR matrixToGraph(
     CMR_CALL( CMRfreeBlockArray(cmr, &columnEdges) );
     CMR_CALL( CMRgraphFree(cmr, &graph) );
   }
-
-  if (submatrix && outputNonGraphicElements)
+  else
   {
-    assert(submatrix);
+    if (outputSubmatrixFileName)
+    {
+      bool outputSubmatrixToFile = strcmp(outputSubmatrixFileName, "-");
+      fprintf(stderr, "Writing minimal non-%sgraphic submatrix to %s%s%s.\n", cographic ? "co" : "",
+        outputSubmatrixToFile ? "file <" : "", outputSubmatrixToFile ? outputSubmatrixFileName : "stdout",
+        outputSubmatrixToFile ? ">" : "");
 
-    fprintf(stderr, "\nMinimal non-%sgraphic submatrix consists of these elements of the input matrix:\n",
-      cographic ? "co" : "");
-    printf("%ld rows:", submatrix->numRows);
-    for (size_t r = 0; r < submatrix->numRows; ++r)
-      printf(" %ld", submatrix->rows[r]+1);
-    printf("\n%ld columns: ", submatrix->numColumns);
-    for (size_t c = 0; c < submatrix->numColumns; ++c)
-      printf(" %ld", submatrix->columns[c]+1);
-    printf("\n");
-
-    CMR_CALL( CMRsubmatFree(cmr, &submatrix) );
-  }
-
-  if (submatrix && outputNonGraphicMatrix)
-  {
-    CMR_CHRMAT* violatorMatrix = NULL;
-    CMR_CALL( CMRchrmatZoomSubmat(cmr, matrix, submatrix, &violatorMatrix) );
-    fprintf(stderr, "\nMinimal %lux%lu non-%sgraphic matrix with %lu nonzeros.\n", violatorMatrix->numRows,
-      violatorMatrix->numColumns, cographic ? "co" : "", violatorMatrix->numNonzeros);
-    if (inputFormat == FILEFORMAT_MATRIX_DENSE)
-      CMR_CALL( CMRchrmatPrintDense(cmr, violatorMatrix, stdout, '0', false) );
-    else if (inputFormat == FILEFORMAT_MATRIX_SPARSE)
-      CMR_CALL( CMRchrmatPrintSparse(cmr, violatorMatrix, stdout) );
-    CMR_CALL( CMRchrmatFree(cmr, &violatorMatrix) );
+      assert(submatrix);
+      CMR_CALL( CMRsubmatWriteToFile(cmr, submatrix, matrix->numRows, matrix->numColumns, outputSubmatrixFileName) );
+    }
   }
 
   CMR_CALL( CMRsubmatFree(cmr, &submatrix) );
   CMR_CALL( CMRchrmatFree(cmr, &matrix) );
-
-  /* Cleanup. */
-
   CMR_CALL( CMRfreeEnvironment(&cmr) );
 
   return CMR_OKAY;
@@ -249,15 +234,17 @@ CMR_ERROR matrixToGraph(
  * \brief Converts the given graph file to the corresponding (co)graphic matrix.
  */
 
-CMR_ERROR graphToMatrix(
-  const char* instanceFileName, /**< File name containing the input graph (may be `-' for stdin). */
-  FileFormat inputFormat,       /**< Format of the input graph. */
-  FileFormat outputFormat,      /**< Format of the output matrix. */
-  bool cographic                /**< Whether the output shall be the cographic matrix instead of the graphic matrix. */
+CMR_ERROR computeGraphic(
+  const char* inputFileName,        /**< File name of input graph (may be `-' for stdin). */
+  const char* outputMatrixFileName, /**< File name of output matrix (may be `-' for stdout). */
+  FileFormat outputFormat,          /**< Matrix format for output. */
+  bool cographic,                   /**< Whether the output shall be the cographic matrix instead of the graphic matrix. */
+  const char* inputTreeFileName,    /**< File name of input tree (may be `-' for stdin). */
+  bool printStats                   /**< Whether to print statistics to stderr. */
 )
 {
-  FILE* instanceFile = strcmp(instanceFileName, "-") ? fopen(instanceFileName, "r") : stdin;
-  if (!instanceFile)
+  FILE* inputFile = strcmp(inputFileName, "-") ? fopen(inputFileName, "r") : stdin;
+  if (!inputFile)
     return CMR_ERROR_INPUT;
 
   CMR* cmr = NULL;
@@ -267,12 +254,16 @@ CMR_ERROR graphToMatrix(
 
   CMR_GRAPH* graph = NULL;
   CMR_ELEMENT* edgeElements = NULL;
-  if (inputFormat == FILEFORMAT_GRAPH_EDGELIST)
+  CMR_CALL( CMRgraphCreateFromEdgeList(cmr, &graph, &edgeElements, NULL, inputFile) );
+  if (inputFile != stdin)
+    fclose(inputFile);
+  
+  if (inputTreeFileName)
   {
-    CMR_CALL( CMRgraphCreateFromEdgeList(cmr, &graph, &edgeElements, NULL, instanceFile) );
+    // TODO: implement
+    assert(!"NOT IMPLEMENTED");
+    return EXIT_FAILURE;
   }
-  if (instanceFile != stdin)
-    fclose(instanceFile);
 
   /* Scan edges for (co)forest edges. */
   size_t numForestEdges = 0;
@@ -331,15 +322,27 @@ CMR_ERROR graphToMatrix(
       coforestEdges, &isCorrectForest) );
   }
 
-  clock_t endTime = clock();
-  fprintf(stderr, "Time: %f\n", (endTime - startTime) * 1.0 / CLOCKS_PER_SEC);
+  if (printStats)
+  {
+    clock_t endTime = clock();
+    fprintf(stderr, "Time: %f\n", (endTime - startTime) * 1.0 / CLOCKS_PER_SEC);
+  }
+
+  bool outputMatrixToFile = strcmp(outputMatrixFileName, "-");
+  FILE* outputMatrixFile = outputMatrixToFile ? fopen(outputMatrixFileName, "w") : stdout;
+  fprintf(stderr, "Writing %sgraphic matrix to %s%s%s in %s format.\n", cographic ? "co" : "",
+    outputMatrixToFile ? "file <" : "", outputMatrixToFile ? outputMatrixFileName : "stdout",
+    outputMatrixToFile ? ">" : "", outputFormat == FILEFORMAT_MATRIX_DENSE ? "dense" : "sparse");
 
   if (outputFormat == FILEFORMAT_MATRIX_DENSE)
-    CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', false) );
+    CMR_CALL( CMRchrmatPrintDense(cmr, matrix, outputMatrixFile, '0', false) );
   else if (outputFormat == FILEFORMAT_MATRIX_SPARSE)
-    CMR_CALL( CMRchrmatPrintSparse(cmr, matrix, stdout) );
+    CMR_CALL( CMRchrmatPrintSparse(cmr, matrix, outputMatrixFile) );
   else
     assert(false);
+
+  if (outputMatrixToFile)
+    fclose(outputMatrixFile);
 
   CMR_CALL( CMRchrmatFree(cmr, &matrix) );
 
@@ -353,15 +356,53 @@ CMR_ERROR graphToMatrix(
   return CMR_OKAY;
 }
 
+/**
+ * \brief Prints the program's usage to stdout.
+ * 
+ * \returns \c EXIT_FAILURE.
+ */
+
+int printUsage(const char* program)
+{
+  fputs("Usage:\n", stderr);
+  fprintf(stderr, "%s IN-MAT [OPTION]...\n\n", program);
+  fputs("  (1) determines whether the matrix given in file IN-MAT is (co)graphic.\n\n", stderr);
+  fprintf(stderr, "%s -c IN-GRAPH OUT-MAT [OPTION]...\n\n", program);
+  fputs("  (2) computes a (co)graphic matrix corresponding to the graph from file IN-GRAPH and writes it to OUT-MAT.\n\n\n",
+    stderr);
+  fputs("Options specific to (1):\n", stderr);
+  fputs("  -i FORMAT    Format of file IN-MAT, among `dense' and `sparse'; default: dense.\n", stderr);
+  fputs("  -t           Test for being cographic; default: test for being graphic.\n", stderr);
+  fputs("  -G OUT-GRAPH Write a graph to file OUT-GRAPH; default: skip computation.\n", stderr);
+  fputs("  -T OUT-TREE  Write a spanning tree to file OUT-TREE; default: skip computation.\n", stderr);
+  fputs("  -D OUT-DOT   Write a dot file OUT-DOT with the graph and the spanning tree; default: skip computation.\n", stderr);
+  fputs("  -N NON-SUB   Write a minimal non-(co)graphic submatrix to file NON-SUB; default: skip computation.\n\n", stderr);
+  fputs("Options specific to (2):\n", stderr);
+  fputs("  -o FORMAT    Format of file OUT-MAT, among `dense' and `sparse'; default: dense.\n", stderr);
+  fputs("  -t           Return the transpose of the graphic matrix.\n", stderr);
+  fputs("  -T IN-TREE   Read a tree from file IN-TREE; default: use first specified edges as tree edges.\n\n", stderr);
+  fputs("Common options:\n", stderr);
+  fputs("  -s           Print statistics about the computation to stderr.\n\n", stderr);
+  fputs("If IN-MAT, IN-GRAPH or IN-TREE is `-' then the matrix (resp. the graph or tree) is read from stdin.\n", stderr);
+  fputs("If OUT-GRAPH, OUT-TREE, OUT-DOT or NON-SUB is `-' then the graph (resp. the tree, dot file or non-(co)graphic submatrix) is written to stdout.\n",
+    stderr);
+
+  return EXIT_FAILURE;
+}
+
 int main(int argc, char** argv)
 {
+  Task task = TASK_RECOGNIZE;
   FileFormat inputFormat = FILEFORMAT_UNDEFINED;
   FileFormat outputFormat = FILEFORMAT_UNDEFINED;
   bool transposed = false;
-  char* instanceFileName = NULL;
-  bool outputNonGraphicElements = false;
-  bool outputNonGraphicMatrix = false;
   bool printStats = false;
+  char* inputFileName = NULL;
+  char* treeFileName = NULL;
+  char* outputFileName = NULL;
+  char* outputGraphFileName = NULL;
+  char* outputDotFileName = NULL;
+  char* outputSubmatrixFileName = NULL;
   for (int a = 1; a < argc; ++a)
   {
     if (!strcmp(argv[a], "-h"))
@@ -369,12 +410,10 @@ int main(int argc, char** argv)
       printUsage(argv[0]);
       return EXIT_SUCCESS;
     }
+    else if (!strcmp(argv[a], "-c"))
+      task = TASK_COMPUTE;
     else if (!strcmp(argv[a], "-t"))
       transposed = true;
-    else if (!strcmp(argv[a], "-n"))
-      outputNonGraphicElements = true;
-    else if (!strcmp(argv[a], "-N"))
-      outputNonGraphicMatrix = true;
     else if (!strcmp(argv[a], "-s"))
       printStats = true;
     else if (!strcmp(argv[a], "-i") && a+1 < argc)
@@ -383,11 +422,9 @@ int main(int argc, char** argv)
         inputFormat = FILEFORMAT_MATRIX_DENSE;
       else if (!strcmp(argv[a+1], "sparse"))
         inputFormat = FILEFORMAT_MATRIX_SPARSE;
-      else if (!strcmp(argv[a+1], "edgelist"))
-        inputFormat = FILEFORMAT_GRAPH_EDGELIST;
       else
       {
-        printf("Error: unknown input file format <%s>.\n\n", argv[a+1]);
+        fprintf(stderr, "Error: Unknown input file format <%s>.\n\n", argv[a+1]);
         return printUsage(argv[0]);
       }
       ++a;
@@ -398,74 +435,99 @@ int main(int argc, char** argv)
         outputFormat = FILEFORMAT_MATRIX_DENSE;
       else if (!strcmp(argv[a+1], "sparse"))
         outputFormat = FILEFORMAT_MATRIX_SPARSE;
-      else if (!strcmp(argv[a+1], "edgelist"))
-        outputFormat = FILEFORMAT_GRAPH_EDGELIST;
-      else if (!strcmp(argv[a+1], "dot"))
-        outputFormat = FILEFORMAT_GRAPH_DOT;
       else
       {
-        printf("Error: unknown output format <%s>.\n\n", argv[a+1]);
+        fprintf(stderr, "Error: Unknown output format <%s>.\n\n", argv[a+1]);
         return printUsage(argv[0]);
       }
       ++a;
     }
-    else if (!instanceFileName)
-      instanceFileName = argv[a];
+    else if (!strcmp(argv[a], "-G") && a+1 < argc)
+      outputGraphFileName = argv[++a];
+    else if (!strcmp(argv[a], "-T") && a+1 < argc)
+      treeFileName = argv[++a];
+    else if (!strcmp(argv[a], "-D") && a+1 < argc)
+      outputDotFileName = argv[++a];
+    else if (!strcmp(argv[a], "-N") && a+1 < argc)
+      outputSubmatrixFileName = argv[++a];
+    else if (!inputFileName)
+      inputFileName = argv[a];
+    else if (!outputFileName)
+      outputFileName = argv[a];
     else
     {
-      printf("Error: Two input files <%s> and <%s> specified.\n\n", instanceFileName, argv[a]);
-      return printUsage(argv[0]);
-    }
-  }
-
-  if (!instanceFileName)
-  {
-    puts("No input file specified.\n");
-    return printUsage(argv[0]);
-  }
-
-  if (inputFormat == FILEFORMAT_UNDEFINED)
-  {
-    if (outputFormat == FILEFORMAT_UNDEFINED)
-    {
-      inputFormat = FILEFORMAT_MATRIX_DENSE;
-      outputFormat = FILEFORMAT_GRAPH_EDGELIST;
-    }
-    else if (outputFormat == FILEFORMAT_MATRIX_DENSE || outputFormat == FILEFORMAT_MATRIX_SPARSE)
-      inputFormat = FILEFORMAT_GRAPH_EDGELIST;
-    else
-      inputFormat = FILEFORMAT_MATRIX_DENSE;
-  }
-  else if (inputFormat == FILEFORMAT_MATRIX_DENSE || inputFormat == FILEFORMAT_MATRIX_SPARSE)
-  {
-    if (outputFormat == FILEFORMAT_UNDEFINED)
-      outputFormat = FILEFORMAT_GRAPH_EDGELIST;
-    else if (outputFormat == FILEFORMAT_MATRIX_DENSE || outputFormat == FILEFORMAT_MATRIX_SPARSE)
-    {
-      puts("Either input or output must be a graph.\n");
-      return printUsage(argv[0]);
-    }
-  }
-  else
-  {
-    /* Input format is graph format. */
-    if (outputFormat == FILEFORMAT_UNDEFINED)
-      outputFormat = FILEFORMAT_MATRIX_DENSE;
-    else if (!(outputFormat == FILEFORMAT_MATRIX_DENSE || outputFormat == FILEFORMAT_MATRIX_SPARSE))
-    {
-      puts("Either input or output must be a matrix.\n");
+      fprintf(stderr,
+        "Error: Three file names <%s>, <%s> and <%s> specified.\n\n", inputFileName, outputFileName, argv[a]);
       return printUsage(argv[0]);
     }
   }
 
   CMR_ERROR error;
-  if (inputFormat == FILEFORMAT_MATRIX_DENSE || inputFormat == FILEFORMAT_MATRIX_SPARSE)
+  if (!inputFileName)
   {
-    error = matrixToGraph(instanceFileName, inputFormat, outputFormat, transposed, outputNonGraphicElements,
-      outputNonGraphicMatrix, printStats);
+    fputs("Error: No input file specified.\n", stderr);
+    return printUsage(argv[0]);
+  }
+  else if (task == TASK_RECOGNIZE)
+  {
+    if (outputFileName)
+    {
+      fprintf(stderr,
+        "Error: Two file names <%s> and <%s> specified for recognition.\n\n", inputFileName, outputFileName);
+      return printUsage(argv[0]);
+    }
+    if (outputFormat != FILEFORMAT_UNDEFINED)
+    {
+      fprintf(stderr,
+        "Error: Option -o is invalid for recognition.\n\n");
+      return printUsage(argv[0]);
+    }
+    if (inputFormat == FILEFORMAT_UNDEFINED)
+      inputFormat = FILEFORMAT_MATRIX_DENSE;
+
+    error = recognizeGraphic(inputFileName, inputFormat, transposed, outputGraphFileName, treeFileName, outputDotFileName,
+      outputSubmatrixFileName, printStats);
+  }
+  else if (task == TASK_COMPUTE)
+  {
+    if (!outputFileName)
+    {
+      fputs("Error: No output file specified.\n", stderr);
+      return printUsage(argv[0]);
+    }
+    if (inputFormat != FILEFORMAT_UNDEFINED)
+    {
+      fprintf(stderr,
+        "Error: Option -i is invalid for computation.\n\n");
+      return printUsage(argv[0]);
+    }
+    if (outputGraphFileName)
+    {
+      fprintf(stderr,
+        "Error: Option -G is invalid for computation.\n\n");
+      return printUsage(argv[0]);
+    }
+    if (outputDotFileName)
+    {
+      fprintf(stderr,
+        "Error: Option -D is invalid for computation.\n\n");
+      return printUsage(argv[0]);
+    }
+    if (outputSubmatrixFileName)
+    {
+      fprintf(stderr,
+        "Error: Option -N is invalid for computation.\n\n");
+      return printUsage(argv[0]);
+    }
+    if (outputFormat == FILEFORMAT_UNDEFINED)
+      outputFormat = FILEFORMAT_MATRIX_DENSE;
+
+    error = computeGraphic(inputFileName, outputFileName, outputFormat, transposed, treeFileName, printStats);
   }
   else
-    error = graphToMatrix(instanceFileName, inputFormat, outputFormat, transposed);
+  {
+    assert(false);
+  }
 
   switch (error)
   {

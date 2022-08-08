@@ -27,9 +27,10 @@ typedef enum
 {
   CMR_OKAY = 0,          /**< No error. */
   CMR_ERROR_INPUT = 1,   /**< Bad user input. */
-  CMR_ERROR_MEMORY = 2,  /**< Error during (re)allocation. */
-  CMR_ERROR_INVALID = 3, /**< Other invalid data. */
-  CMR_ERROR_OVERFLOW = 4 /**< Overflow in numerical computations. */
+  CMR_ERROR_OUTPUT = 2,  /**< Error when writing user output. */
+  CMR_ERROR_MEMORY = 3,  /**< Error during (re)allocation. */
+  CMR_ERROR_INVALID = 4, /**< Other invalid data. */
+  CMR_ERROR_OVERFLOW = 5 /**< Overflow in numerical computations. */
 } CMR_ERROR;
 
 /**
@@ -208,6 +209,7 @@ CMR_EXPORT
 void CMRclearErrorMessage(
   CMR* cmr  /**< \ref CMR environment. */
 );
+
 
 #ifdef __cplusplus
 }

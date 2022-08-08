@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <math.h>
 
-CMR_ERROR CMRlistmatrixAlloc(CMR* cmr, size_t memRows, size_t memColumns, size_t memNonzeros, ChrListMat** presult)
+CMR_ERROR CMRchrlistmatAlloc(CMR* cmr, size_t memRows, size_t memColumns, size_t memNonzeros, ChrListMat** presult)
 {
   assert(cmr);
   assert(presult);

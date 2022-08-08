@@ -1517,7 +1517,7 @@ CMR_ERROR decomposeBinarySeriesParallel(
   
   /* Create list matrix to use numNonzeros. */
   ChrListMat* listmatrix = NULL;
-  CMR_CALL( CMRlistmatrixAlloc(cmr, numRows, numColumns, matrix->numNonzeros, &listmatrix) );
+  CMR_CALL( CMRchrlistmatAlloc(cmr, numRows, numColumns, matrix->numNonzeros, &listmatrix) );
   for (size_t row = 0; row < numRows; ++row)
     listmatrix->rowElements[row].numNonzeros = 0;
   for (size_t column = 0; column < numColumns; ++column)
@@ -1717,7 +1717,7 @@ CMR_ERROR decomposeTernarySeriesParallel(
 
   /* Create list matrix to use numNonzeros. */
   ChrListMat* listmatrix = NULL;
-  CMR_CALL( CMRlistmatrixAlloc(cmr, numRows, numColumns, matrix->numNonzeros, &listmatrix) );
+  CMR_CALL( CMRchrlistmatAlloc(cmr, numRows, numColumns, matrix->numNonzeros, &listmatrix) );
   for (size_t row = 0; row < numRows; ++row)
     listmatrix->rowElements[row].numNonzeros = 0;
   for (size_t column = 0; column < numColumns; ++column)

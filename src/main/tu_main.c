@@ -8,7 +8,6 @@
 
 typedef enum
 {
-  FILEFORMAT_UNDEFINED = 0,       /**< Whether the file format of input/output was defined by the user. */
   FILEFORMAT_MATRIX_DENSE = 1,    /**< Dense matrix format. */
   FILEFORMAT_MATRIX_SPARSE = 2,   /**< Sparse matrix format. */
 } FileFormat;
@@ -19,22 +18,20 @@ typedef enum
 
 static
 CMR_ERROR testTotalUnimodularity(
-  const char* instanceFileName, /**< File name containing the input matrix (may be `-' for stdin). */
-  FileFormat inputFormat,       /**< Format of the input matrix. */
-  FileFormat outputFormat,      /**< Format of the output submatrix. */
-  bool directGraphicness,       /**< Whether to use fast graphicness routines. */
-  bool seriesParallel,          /**< Whether to allow series-parallel operations in the decomposition tree. */
-  bool printTree,               /**< Whether to print the decomposition tree. */
-  bool outputNonTUElements,     /**< Whether to print the elements of a non-TU submatrix. */
-  bool outputNonTUMatrix,       /**< Whether to print a non-TU submatrix. */
-  bool printStats               /**< Whether to print statistics to stderr. */
+  const char* inputMatrixFileName,      /**< File name containing the input matrix (may be `-' for stdin). */
+  FileFormat inputFormat,               /**< Format of the input matrix. */
+  const char* outputTreeFileName,       /**< File name to print decomposition tree to, or \c NULL. */
+  const char* outputSubmatrixFileName,  /**< File name to print non-TU submatrix to, or \c NULL. */
+  bool printStats,                      /**< Whether to print statistics to stderr. */
+  bool directGraphicness,               /**< Whether to use fast graphicness routines. */
+  bool seriesParallel                   /**< Whether to allow series-parallel operations in the decomposition tree. */
 )
 {
   clock_t readClock = clock();
-  FILE* instanceFile = strcmp(instanceFileName, "-") ? fopen(instanceFileName, "r") : stdin;
-  if (!instanceFile)
+  FILE* inputMatrixFile = strcmp(inputMatrixFileName, "-") ? fopen(inputMatrixFileName, "r") : stdin;
+  if (!inputMatrixFile)
   {
-    fprintf(stderr, "Unable to open file <%s>\n", instanceFileName);
+    fprintf(stderr, "Unable to open file <%s>\n", inputMatrixFileName);
     return CMR_ERROR_INPUT;
   }
 
@@ -47,19 +44,24 @@ CMR_ERROR testTotalUnimodularity(
   CMR_ERROR error;
   if (inputFormat == FILEFORMAT_MATRIX_DENSE)
   {
-    error = CMRchrmatCreateFromDenseStream(cmr, instanceFile, &matrix);
+    error = CMRchrmatCreateFromDenseStream(cmr, inputMatrixFile, &matrix);
     if (error == CMR_ERROR_INPUT)
-      fprintf(stderr, "Error when reading dense matrix from <%s>: %s\n", instanceFileName, CMRgetErrorMessage(cmr));
+      fprintf(stderr, "Error when reading dense matrix from <%s>: %s\n", inputMatrixFileName, CMRgetErrorMessage(cmr));
   }
   else if (inputFormat == FILEFORMAT_MATRIX_SPARSE)
   {
-    error = CMRchrmatCreateFromSparseStream(cmr, instanceFile, &matrix);
+    error = CMRchrmatCreateFromSparseStream(cmr, inputMatrixFile, &matrix);
     if (error == CMR_ERROR_INPUT)
-      fprintf(stderr, "Error when reading dense matrix from <%s>: %s\n", instanceFileName, CMRgetErrorMessage(cmr));
+      fprintf(stderr, "Error when reading dense matrix from <%s>: %s\n", inputMatrixFileName, CMRgetErrorMessage(cmr));
   }
-  if (instanceFile != stdin)
-    fclose(instanceFile);
+  else
+    assert(false);
+
+  if (inputMatrixFile != stdin)
+    fclose(inputMatrixFile);
+
   CMR_CALL(error);
+
   fprintf(stderr, "Read %lux%lu matrix with %lu nonzeros in %f seconds.\n", matrix->numRows, matrix->numColumns,
     matrix->numNonzeros, (clock() - readClock) * 1.0 / CLOCKS_PER_SEC);
 
@@ -70,54 +72,39 @@ CMR_ERROR testTotalUnimodularity(
   CMR_SUBMAT* submatrix = NULL;
   CMR_TU_PARAMETERS params;
   CMR_CALL( CMRparamsTotalUnimodularityInit(&params) );
+  params.regular.completeTree = outputTreeFileName;
+  params.regular.matrices = outputTreeFileName ? CMR_DEC_CONSTRUCT_ALL : CMR_DEC_CONSTRUCT_NONE;
   params.regular.directGraphicness = directGraphicness;
   params.regular.seriesParallel = seriesParallel;
   CMR_TU_STATISTICS stats;
-  CMR_CALL(CMRstatsTotalUnimodularityInit(&stats));
-  CMR_CALL( CMRtestTotalUnimodularity(cmr, matrix, &isTU, printTree ? &decomposition : NULL,
-    (outputNonTUMatrix || outputNonTUElements) ? &submatrix : NULL, &params, &stats) );
+  CMR_CALL( CMRstatsTotalUnimodularityInit(&stats));
+  CMR_CALL( CMRtestTotalUnimodularity(cmr, matrix, &isTU, outputTreeFileName ? &decomposition : NULL,
+    outputSubmatrixFileName ? &submatrix : NULL, &params, &stats) );
 
-  fprintf(stderr, "Matrix %stotally unimodular.\n", isTU ? "IS " : "IS NOT ");
+  printf("Matrix %stotally unimodular.\n", isTU ? "IS " : "IS NOT ");
   if (printStats)
     CMR_CALL( CMRstatsTotalUnimodularityPrint(stderr, &stats, NULL) );
 
   if (decomposition)
   {
-    CMR_CALL( CMRdecFree(cmr, &decomposition) );
+    // TODO: Write decomposition.
+    assert(!"NOT IMPLEMENTED");
+    exit(EXIT_FAILURE);
   }
 
-  if (submatrix)
+  if (submatrix && outputSubmatrixFileName)
   {
-    if (outputNonTUElements)
-    {
-      fprintf(stderr, "\nNon-TU submatrix consists of these elements:\n");
-      printf("%ld rows:", submatrix->numRows);
-      for (size_t r = 0; r < submatrix->numRows; ++r)
-        printf(" %ld", submatrix->rows[r]+1);
-      printf("\n%ld columns: ", submatrix->numColumns);
-      for (size_t c = 0; c < submatrix->numColumns; ++c)
-        printf(" %ld", submatrix->columns[c]+1);
-      printf("\n");
-    }
+    bool outputSubmatrixToFile = strcmp(outputSubmatrixFileName, "-");
+    fprintf(stderr, "Writing minimal non-totally-unimodular submatrix to %s%s%s.\n", outputSubmatrixToFile ? "file <" : "",
+      outputSubmatrixToFile ? outputSubmatrixFileName : "stdout", outputSubmatrixToFile ? ">" : "");    
 
-    if (outputNonTUMatrix)
-    {
-      CMR_CHRMAT* violatorMatrix = NULL;
-      CMR_CALL( CMRchrmatZoomSubmat(cmr, matrix, submatrix, &violatorMatrix) );
-      fprintf(stderr, "\nExtracted %lux%lu non-TU submatrix with %lu nonzeros.\n", violatorMatrix->numRows,
-        violatorMatrix->numColumns, violatorMatrix->numNonzeros);
-      if (outputFormat == FILEFORMAT_MATRIX_DENSE)
-        CMR_CALL( CMRchrmatPrintDense(cmr, violatorMatrix, stdout, '0', false) );
-      else if (outputFormat == FILEFORMAT_MATRIX_SPARSE)
-        CMR_CALL( CMRchrmatPrintSparse(cmr, violatorMatrix, stdout) );
-      CMR_CALL( CMRchrmatFree(cmr, &violatorMatrix) );
-    }
-
-    CMR_CALL( CMRsubmatFree(cmr, &submatrix) );
+    CMR_CALL( CMRsubmatWriteToFile(cmr, submatrix, matrix->numRows, matrix->numColumns, outputSubmatrixFileName) );
   }
 
   /* Cleanup. */
 
+  CMR_CALL( CMRdecFree(cmr, &decomposition) );
+  CMR_CALL( CMRsubmatFree(cmr, &submatrix) );
   CMR_CALL( CMRchrmatFree(cmr, &matrix) );
   CMR_CALL( CMRfreeEnvironment(&cmr) );
 
@@ -132,35 +119,32 @@ CMR_ERROR testTotalUnimodularity(
 
 int printUsage(const char* program)
 {
-  printf("Usage: %s [OPTION]... FILE\n\n", program);
-  puts("Tests matrix in FILE for total unimodularity.");
-  puts("Options:");
-  puts("  -i FORMAT  Format of input FILE; default: `dense'.");
-  puts("  -o FORMAT  Format of output matrices; default: `dense'.");
-  puts("  -d         Output the decomposition tree of the underlying regular matroid.");
-  puts("  -n         Output the elements of a minimal non-totally-unimodular submatrix.");
-  puts("  -N         Output a minimal non-totally-unimodular submatrix.");
-  puts("  -s         Print statistics about the computation to stderr.");
-  puts("Parameter options:");
-  puts("  --no-direct-graphic  Check only 3-connected matrices for regularity.");
-  puts("  --no-series-parallel  Do not allow series-parallel operations in decomposition tree.");
-  puts("Formats for matrices: dense, sparse");
-  puts("If FILE is `-', then the input will be read from stdin.");
+  fputs("Usage:\n", stderr);
+  fprintf(stderr, "%s IN-MAT [OPTION]...\n\n", program);
+  fputs("  determines whether the matrix given in file IN-MAT is totally unimodular.\n\n", stderr);
+  fputs("Options:\n", stderr);
+  fputs("  -i FORMAT  Format of file IN-MAT, among `dense' and `sparse'; default: dense.\n", stderr);
+  fputs("  -D OUT-DEC Write a decomposition tree of the underlying regular matroid to file OUT-DEC; default: skip computation.\n", stderr);
+  fputs("  -N NON-SUB Write a minimal non-totally-unimodular submatrix to file NON-SUB; default: skip computation.\n", stderr);
+  fputs("  -s         Print statistics about the computation to stderr.\n\n", stderr);
+  fputs("Advanced options:\n", stderr);
+  fputs("  --no-direct-graphic  Check only 3-connected matrices for regularity.\n", stderr);
+  fputs("  --no-series-parallel Do not allow series-parallel operations in decomposition tree.\n\n", stderr);
+  fputs("If IN-MAT is `-' then the matrix is read from stdin.\n", stderr);
+  fputs("If OUT-DEC or NON-SUB is `-' then the decomposition tree (resp. the submatrix) is written to stdout.\n", stderr);
 
   return EXIT_FAILURE;
 }
 
 int main(int argc, char** argv)
 {
-  FileFormat inputFormat = FILEFORMAT_UNDEFINED;
-  FileFormat outputFormat = FILEFORMAT_MATRIX_DENSE;
+  char* inputMatrixFileName = NULL;
+  FileFormat inputFormat = FILEFORMAT_MATRIX_DENSE;
+  char* outputTree = NULL;
+  char* outputSubmatrix = NULL;
+  bool printStats = false;
   bool directGraphicness = true;
   bool seriesParallel = true;
-  bool printTree = false;
-  bool outputNonTUElements = false;
-  bool outputNonTUMatrix = false;
-  bool printStats = false;
-  char* instanceFileName = NULL;
   for (int a = 1; a < argc; ++a)
   {
     if (!strcmp(argv[a], "-h"))
@@ -168,18 +152,6 @@ int main(int argc, char** argv)
       printUsage(argv[0]);
       return EXIT_SUCCESS;
     }
-    else if (!strcmp(argv[a], "--no-direct-graphic"))
-      directGraphicness = false;
-    else if (!strcmp(argv[a], "--no-series-parallel"))
-      seriesParallel = false;
-    else if (!strcmp(argv[a], "-d"))
-      printTree = true;
-    else if (!strcmp(argv[a], "-n"))
-      outputNonTUElements = true;
-    else if (!strcmp(argv[a], "-N"))
-      outputNonTUMatrix = true;
-    else if (!strcmp(argv[a], "-s"))
-      printStats = true;
     else if (!strcmp(argv[a], "-i") && a+1 < argc)
     {
       if (!strcmp(argv[a+1], "dense"))
@@ -188,45 +160,39 @@ int main(int argc, char** argv)
         inputFormat = FILEFORMAT_MATRIX_SPARSE;
       else
       {
-        printf("Error: unknown input file format <%s>.\n\n", argv[a+1]);
+        fprintf(stderr, "Error: unknown input file format <%s>.\n\n", argv[a+1]);
         return printUsage(argv[0]);
       }
       ++a;
     }
-    else if (!strcmp(argv[a], "-o") && a+1 < argc)
-    {
-      if (!strcmp(argv[a+1], "dense"))
-        outputFormat = FILEFORMAT_MATRIX_DENSE;
-      else if (!strcmp(argv[a+1], "sparse"))
-        outputFormat = FILEFORMAT_MATRIX_SPARSE;
-      else
-      {
-        printf("Error: unknown output format <%s>.\n\n", argv[a+1]);
-        return printUsage(argv[0]);
-      }
-      ++a;
-    }
-    else if (!instanceFileName)
-      instanceFileName = argv[a];
+    else if (!strcmp(argv[a], "-D") && a+1 < argc)
+      outputTree = argv[++a];
+    else if (!strcmp(argv[a], "-N") && a+1 < argc)
+      outputSubmatrix = argv[++a];
+    else if (!strcmp(argv[a], "-s"))
+      printStats = true;
+    else if (!strcmp(argv[a], "--no-direct-graphic"))
+      directGraphicness = false;
+    else if (!strcmp(argv[a], "--no-series-parallel"))
+      seriesParallel = false;
+    else if (!inputMatrixFileName)
+      inputMatrixFileName = argv[a];
     else
     {
-      printf("Error: Two input files <%s> and <%s> specified.\n\n", instanceFileName, argv[a]);
+      fprintf(stderr, "Error: Two input files <%s> and <%s> specified.\n\n", inputMatrixFileName, argv[a]);
       return printUsage(argv[0]);
     }
   }
 
-  if (!instanceFileName)
+  if (!inputMatrixFileName)
   {
-    puts("No input file specified.\n");
+    fputs("Error: No input file specified.\n\n", stderr);
     return printUsage(argv[0]);
   }
 
-  if (inputFormat == FILEFORMAT_UNDEFINED)
-    inputFormat = FILEFORMAT_MATRIX_DENSE;
-
   CMR_ERROR error;
-  error = testTotalUnimodularity(instanceFileName, inputFormat, outputFormat, directGraphicness, seriesParallel,
-    printTree, outputNonTUElements, outputNonTUMatrix, printStats);
+  error = testTotalUnimodularity(inputMatrixFileName, inputFormat, outputTree, outputSubmatrix, printStats,
+    directGraphicness, seriesParallel);
 
   switch (error)
   {

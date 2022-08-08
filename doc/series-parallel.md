@@ -24,28 +24,28 @@ This is equivalent to being the graphic matroid of a series-parallel graph.
     0 & 0 & 0 & 0 & \dotsb & 1 & 1
   \end{pmatrix} \f$ for \f$ k \geq 3 \f$.
 
-The latter two matrices are called **wheel matrices** since they represent wheel graphs.
+The latter two matrices are called **wheel matrices** since their represented matroids are the graphic matroids of wheel graphs.
 
-## Usage ##
 
-The executable `cmr-series-parallel` tests whether a given matrix \f$ A \f$ is series-parallel.
+## Recognizing Series-Parallel Matrices ##
+
+The command
+
+    cmr-series-parallel IN-MAT [OPTION...]
+
+determines whether the matrix given in file `IN-MAT` is series-parallel.
 If this is not the case, then a maximal number of SP-reductions is carried out, leading to the **reduced** matrix.
 Moreover, one can ask for one of the minimal non-series-parallel submatrices above.
 
-    ./cmr-series-parallel [OPTION]... FILE
+**Options:**
+  - `-i FORMAT`       Format of file `IN-MAT`, among `dense` for \ref dense-matrix and `sparse` for \ref sparse-matrix; default: dense.
+  - `-S OUT-SP`       Write the list of series-parallel reductions to file `OUT-SP`; default: skip computation.
+  - `-R OUT-REDUCED`  Write the reduced submatrix to file `OUT-REDUCED`; default: skip computation.
+  - `-N NON-SUB`      Write a minimal non-series-parallel submatrix to file `NON-SUB`; default: skip computation.
+  - `-s`              Print statistics about the computation to stderr.
 
-Options:
-  - `-i FORMAT` Format of input FILE; default: `dense`.
-  - `-o FORMAT` Format of output matrices; default: `dense`.
-  - `-sp`       Output the list of series-parallel reductions.
-  - `-r`        Output the elements of the reduced matrix.
-  - `-R`        Output the reduced matrix.
-  - `-n`        Output the elements of a minimal non-series-parallel submatrix.
-  - `-N`        Output a minimal non-series-parallel submatrix.
-  - `-s`        Print statistics about the computation to stderr.
-
-Formats for matrices are \ref dense-matrix, \ref sparse-matrix.
-If FILE is `-`, then the input will be read from stdin.
+If `IN-MAT` is `-` then the matrix is read from stdin.
+If `OUT-SP`, `OUT-REDUCED` or `NON-SUB` is `-` then the list of reductions (resp. the submatrix) is written to stdout.
 
 ## Algorithm ##
 
@@ -54,7 +54,11 @@ For a matrix \f$ A \in \{0,1\}^{m \times n}\f$ with \f$ k \f$ (sorted) nonzeros 
 
 ## C Interface ##
 
+The corresponding functions in the library are
+
   - CMRtestTernarySeriesParallel() tests a binary matrix for being series-parallel.
   - CMRtestBinarySeriesParallel() tests a binary matrix for being series-parallel.
   - CMRdecomposeBinarySeriesParallel() tests a binary matrix for being series-parallel, but may also terminate early, returning a 2-separation of \f$ A \f$.
   - CMRdecomposeTernarySeriesParallel() tests a ternary matrix for being series-parallel, but may also terminate early, returning a 2-separation of \f$ A \f$.
+  
+and are defined in \ref series_parallel.h.

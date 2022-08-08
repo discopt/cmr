@@ -94,6 +94,32 @@ CMR_ERROR CMRsubmatZoomSubmat(
 );
 
 /**
+ * \brief Writes the submatrix \p submatrix to the file \p stream by means of lists of row and column indices.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRsubmatWriteToStream(
+  CMR* cmr,               /**< \ref CMR environment. */
+  CMR_SUBMAT* submatrix,  /**< Reference submatrix. */
+  size_t numRows,         /**< Number of rows of original matrix. */
+  size_t numColumns,      /**< Number of columns of original matrix. */
+  FILE* stream            /**< File stream to save submatrix to. */
+);
+
+/**
+ * \brief Writes the submatrix \p submatrix to the file \fileName by means of lists of row and column indices.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRsubmatWriteToFile(
+  CMR* cmr,               /**< \ref CMR environment. */
+  CMR_SUBMAT* submatrix,  /**< Reference submatrix. */
+  size_t numRows,         /**< Number of rows of original matrix. */
+  size_t numColumns,      /**< Number of columns of original matrix. */
+  const char* fileName    /**< File name to save submatrix to; \c NULL indicates stdout. */
+);
+
+/**
  * \brief Row-wise representation of sparse double matrix.
  * 
  * The nonzeros of the matrix are stored in the arrays \ref entryColumns and \ref entryValues, each of length
@@ -722,6 +748,18 @@ bool CMRdblmatIsBinary(
 );
 
 /**
+ * \brief Finds a large binary submatrix with absolute error tolerance \p epsilon.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRdblmatFindBinarySubmatrix(
+  CMR* cmr,               /**< \ref CMR environment. */
+  CMR_DBLMAT* matrix,     /**< A matrix. */
+  double epsilon,         /**< Absolute error tolerance. */
+  CMR_SUBMAT** psubmatrix /**< Pointer for storing a large binary submatrix. */
+);
+
+/**
  * \brief Checks if an int matrix has only entries in \f$ \{0,1\} \f$.
  */
 
@@ -753,6 +791,18 @@ bool CMRdblmatIsTernary(
   CMR_DBLMAT* matrix,     /**< A matrix. */
   double epsilon,         /**< Absolute error tolerance. */
   CMR_SUBMAT** psubmatrix /**< Pointer for storing a non-ternary entry as a submatrix (may be \c NULL). */
+);
+
+/**
+ * \brief Finds a large ternary submatrix with absolute error tolerance \p epsilon.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRdblmatFindTernarySubmatrix(
+  CMR* cmr,               /**< \ref CMR environment. */
+  CMR_DBLMAT* matrix,     /**< A matrix. */
+  double epsilon,         /**< Absolute error tolerance. */
+  CMR_SUBMAT** psubmatrix /**< Pointer for storing a large binary submatrix. */
 );
 
 /**

@@ -1,4 +1,4 @@
-// #define CMR_DEBUG /* Uncomment to debug this file. *
+// #define CMR_DEBUG /* Uncomment to debug this file. */
 
 #include <cmr/matrix.h>
 
@@ -7,9 +7,11 @@
 #include <stdint.h>
 #include <math.h>
 #include <limits.h>
+#include <string.h>
 
 #include "sort.h"
 #include "env_internal.h"
+#include "listmatrix.h"
 
 CMR_ERROR CMRsubmatCreate(CMR* cmr, size_t numRows, size_t numColumns, CMR_SUBMAT** psubmatrix)
 {
@@ -143,6 +145,46 @@ CMR_ERROR CMRsubmatZoomSubmat(CMR* cmr, CMR_SUBMAT* reference, CMR_SUBMAT* input
 
   CMR_CALL( CMRfreeStackArray(cmr, &reverseColumns) );
   CMR_CALL( CMRfreeStackArray(cmr, &reverseRows) );
+
+  return CMR_OKAY;
+}
+
+CMR_ERROR CMRsubmatWriteToStream(CMR* cmr, CMR_SUBMAT* submatrix, size_t numRows, size_t numColumns, FILE* stream)
+{
+  assert(cmr);
+  assert(submatrix);
+  assert(stream);
+
+  fprintf(stream, "%lu %lu %lu %lu\n", numRows, numColumns, submatrix->numRows, submatrix->numColumns);
+  for (size_t row = 0; row < submatrix->numRows; ++row)
+    fprintf(stream, "%lu ", submatrix->rows[row]);
+  fputc('\n', stream);
+  for (size_t column = 0; column < submatrix->numColumns; ++column)
+    fprintf(stream, "%lu ", submatrix->columns[column]);
+  fputc('\n', stream);
+
+  return CMR_OKAY;
+}
+
+CMR_ERROR CMRsubmatWriteToFile(CMR* cmr, CMR_SUBMAT* submatrix, size_t numRows, size_t numColumns, const char* fileName)
+{
+  assert(cmr);
+  assert(submatrix);
+
+  FILE* stream;
+  if (!fileName || !strcmp(fileName, "-"))
+    stream = stdout;
+  else
+  {
+    stream = fopen(fileName, "w");
+    if (!stream)
+      return CMR_ERROR_OUTPUT;
+  }
+
+  CMR_CALL( CMRsubmatWriteToStream(cmr, submatrix, numRows, numColumns, stream) );
+
+  if (stream != stdout)
+    fclose(stream);
 
   return CMR_OKAY;
 }
@@ -2421,3 +2463,185 @@ CMR_ERROR CMRchrmatFindEntry(CMR_CHRMAT* matrix, size_t row, size_t column, size
 
   return CMR_OKAY;
 }
+
+static
+size_t findMaximum(size_t* array, size_t length, size_t* pmaxIndex)
+{
+  assert(length > 0);
+
+  size_t maximum = array[0];
+  *pmaxIndex = 0;
+
+  for (size_t i = 1; i < length; ++i)
+  {
+    if (array[i] > maximum)
+    {
+      maximum = array[i];
+      *pmaxIndex = i;
+    }
+  }
+  return maximum;
+}
+
+static
+CMR_ERROR findBadSubmatrixByMaximum(
+  CMR* cmr,
+  ChrListMat* listmatrix,
+  CMR_SUBMAT** psubmatrix
+)
+{
+  size_t* rowNumBadEntries = NULL;
+  size_t* columnNumBadEntries = NULL;
+  CMR_CALL( CMRallocStackArray(cmr, &rowNumBadEntries, listmatrix->numRows) );
+  for (size_t row = 0; row < listmatrix->numRows; ++row)
+    rowNumBadEntries[row] = 0;
+  CMR_CALL( CMRallocStackArray(cmr, &columnNumBadEntries, listmatrix->numColumns) );
+  for (size_t column = 0; column < listmatrix->numColumns; ++column)
+    columnNumBadEntries[column] = 0;
+
+  for (size_t row = 0; row < listmatrix->numRows; ++row)
+  {
+    for (ChrListMatNonzero* nonzero = listmatrix->rowElements[row].head.right;
+      nonzero != &listmatrix->rowElements[row].head; nonzero = nonzero->right)
+    {
+      if (nonzero->special)
+      {
+        nonzero->special = 1;
+        assert(row == nonzero->row);
+        rowNumBadEntries[row]++;
+        columnNumBadEntries[nonzero->column]++;
+      }
+    }
+  }
+
+  size_t rowMaximumIndex;
+  size_t columnMaximumIndex;
+  size_t numRemainingRows = listmatrix->numRows;
+  size_t numRemainingColumns = listmatrix->numColumns;
+  while (true)
+  {
+    size_t rowMaximum = findMaximum(rowNumBadEntries, listmatrix->numRows, &rowMaximumIndex);
+    if (rowMaximum == 0)
+      break;
+
+    size_t columnMaximum = findMaximum(columnNumBadEntries, listmatrix->numColumns, &columnMaximumIndex);
+    
+    CMRdbgMsg(2, "row/column maxima are %lu and %lu\n", rowMaximum, columnMaximum);
+    
+    if (rowMaximum >= columnMaximum)
+    {
+      for (ChrListMatNonzero* nz = listmatrix->rowElements[rowMaximumIndex].head.right;
+        nz != &listmatrix->rowElements[rowMaximumIndex].head; nz = nz->right)
+      {
+        CMRdbgMsg(4, "Removing nonzero at %lu,%lu with special %d.\n", nz->row, nz->column, nz->special);
+        if (nz->special)
+        {
+          assert(columnNumBadEntries[nz->column] > 0);
+          columnNumBadEntries[nz->column]--;
+        }
+        nz->above->below = nz->below;
+        nz->below->above = nz->above;
+      }
+      rowNumBadEntries[rowMaximumIndex] = 0;
+      listmatrix->rowElements[rowMaximumIndex].head.above->below = listmatrix->rowElements[rowMaximumIndex].head.below;
+      listmatrix->rowElements[rowMaximumIndex].head.below->above = listmatrix->rowElements[rowMaximumIndex].head.above;
+      numRemainingRows--;
+    }
+    else
+    {
+      for (ChrListMatNonzero* nz = listmatrix->columnElements[columnMaximumIndex].head.below;
+        nz != &listmatrix->columnElements[columnMaximumIndex].head; nz = nz->below)
+      {
+        CMRdbgMsg(4, "Removing nonzero at %lu,%lu with special %d.\n", nz->row, nz->column, nz->special);
+        if (nz->special)
+        {
+          assert(rowNumBadEntries[nz->row] > 0);
+          rowNumBadEntries[nz->row]--;
+        }
+        nz->left->right = nz->right;
+        nz->right->left = nz->left;
+      }
+      columnNumBadEntries[columnMaximumIndex] = 0;
+      listmatrix->columnElements[columnMaximumIndex].head.left->right = listmatrix->columnElements[columnMaximumIndex].head.right;
+      listmatrix->columnElements[columnMaximumIndex].head.right->left = listmatrix->columnElements[columnMaximumIndex].head.left;
+      numRemainingColumns--;
+    }
+  }
+
+  CMR_CALL( CMRsubmatCreate(cmr, numRemainingRows, numRemainingColumns, psubmatrix) );
+  CMR_SUBMAT* submatrix = *psubmatrix;
+  numRemainingRows = 0;
+  numRemainingColumns = 0;
+  for (ChrListMatNonzero* rowHead = listmatrix->anchor.below; rowHead != &listmatrix->anchor; rowHead = rowHead->below)
+  {
+    submatrix->rows[numRemainingRows++] = rowHead->row;
+  }
+  for (ChrListMatNonzero* columnHead = listmatrix->anchor.right; columnHead != &listmatrix->anchor;
+    columnHead = columnHead->right)
+  {
+    submatrix->columns[numRemainingColumns++] = columnHead->column;
+  }
+
+  CMR_CALL( CMRfreeStackArray(cmr, &columnNumBadEntries) );
+  CMR_CALL( CMRfreeStackArray(cmr, &rowNumBadEntries) );
+  CMR_CALL( CMRchrlistmatFree(cmr, &listmatrix) );
+
+  return CMR_OKAY;
+}
+
+CMR_ERROR CMRdblmatFindBinarySubmatrix(CMR* cmr, CMR_DBLMAT* matrix, double epsilon, CMR_SUBMAT** psubmatrix)
+{
+  assert(cmr);
+  assert(matrix);
+  assert(epsilon >= 0.0);
+  assert(psubmatrix);
+
+  ChrListMat* listmatrix = NULL;
+  CMR_CALL( CMRchrlistmatAlloc(cmr, matrix->numRows, matrix->numColumns, matrix->numNonzeros, &listmatrix) );
+  CMR_CALL( CMRchrlistmatInitializeFromDoubleMatrix(cmr, listmatrix, matrix, epsilon) );
+
+  CMRdbgMsg(2, "List matrix has %d nonzeros.\n", listmatrix->numNonzeros);
+
+  for (size_t row = 0; row < matrix->numRows; ++row)
+  {
+    for (ChrListMatNonzero* nonzero = listmatrix->rowElements[row].head.right;
+      nonzero != &listmatrix->rowElements[row].head; nonzero = nonzero->right)
+    {
+      if (nonzero->value < 0 || nonzero->value > 1)
+        nonzero->special = 1;
+    }
+  }
+  
+  CMR_CALL( findBadSubmatrixByMaximum(cmr, listmatrix, psubmatrix) );
+
+  return CMR_OKAY;
+}
+
+CMR_ERROR CMRdblmatFindTernarySubmatrix(CMR* cmr, CMR_DBLMAT* matrix, double epsilon, CMR_SUBMAT** psubmatrix)
+{
+  assert(cmr);
+  assert(matrix);
+  assert(epsilon >= 0.0);
+  assert(psubmatrix);
+
+  ChrListMat* listmatrix = NULL;
+  CMR_CALL( CMRchrlistmatAlloc(cmr, matrix->numRows, matrix->numColumns, matrix->numNonzeros, &listmatrix) );
+  CMR_CALL( CMRchrlistmatInitializeFromDoubleMatrix(cmr, listmatrix, matrix, epsilon) );
+
+  CMRdbgMsg(2, "List matrix has %d nonzeros.\n", listmatrix->numNonzeros);
+
+  for (size_t row = 0; row < matrix->numRows; ++row)
+  {
+    for (ChrListMatNonzero* nonzero = listmatrix->rowElements[row].head.right;
+      nonzero != &listmatrix->rowElements[row].head; nonzero = nonzero->right)
+    {
+      if (nonzero->value < -1 || nonzero->value > +1)
+        nonzero->special = 1;
+    }
+  }
+  
+  CMR_CALL( findBadSubmatrixByMaximum(cmr, listmatrix, psubmatrix) );
+
+  return CMR_OKAY;
+}
+

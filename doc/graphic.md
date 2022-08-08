@@ -1,4 +1,4 @@
-# Graphic / Cographic / Planar Matroids# {#graphic}
+# Graphic / Cographic / Planar Matrices # {#graphic}
 
 Let \f$ G = (V,E) \f$ be a graph and let \f$ T \f$ be a spanning forest.
 The matrix \f$ M(G,T) \in \{0,1\}^{T \times (E \setminus T)} \f$ defined via
@@ -13,36 +13,63 @@ A binary matrix \f$ M \f$ is called **graphic** if there exists a graph \f$ G \f
 Moreover, \f$ M \f$ is called **cographic** if \f$ M^{\textsf{T}} \f$ is graphic, and 
 it is called **planar** if it is graphic and cographic.
 
-## Usage ##
 
-The executable `cmr-graphic` converts graphs to graphic matrices and vice versa.
-In particular, for a given matrix \f$ M \f$, it determines whether \f$ M \f$ is (co)graphic.
+## Recognizing Graphic Matrices ##
 
-    ./cmr-graphic [OPTION]... FILE
+The command
 
-Options:
-  - `-i FORMAT` Format of input FILE; default: `dense`.
-  - `-o FORMAT` Format of output; default: `edgelist` if input is a matrix and `dense` if input is a graph.
-  - `-t`        Tests for being / converts to cographic matrix.
-  - `n`         Output the elements of a minimal non-(co)graphic submatrix.
-  - `N`         Output a minimal non-(co)graphic submatrix.
-  - `s`         Print statistics about the computation to stderr.
+    cmr-graphic IN-MAT [OPTION]...
 
-Formats for matrices are \ref dense-matrix, \ref sparse-matrix.
-Formats for graphs are \ref edge-list and \ref dot.
-If FILE is `-`, then the input will be read from stdin.
+determines whether the matrix given in file `IN-MAT` is (co)graphic.
 
-## Algorithm ##
+**Options**:
+  - `-i FORMAT`    Format of file `IN-MAT`, among `dense` for \ref dense-matrix and `sparse` for \ref sparse-matrix; default: dense.
+  - `-t`           Test for being cographic; default: test for being graphic.
+  - `-G OUT-GRAPH` Write a graph to file `OUT-GRAPH`; default: skip computation.
+  - `-T OUT-TREE`  Write a spanning tree to file `OUT-TREE`; default: skip computation.
+  - `-D OUT-DOT`   Write a dot file `OUT-DOT` with the graph and the spanning tree; default: skip computation.
+  - `-N NON-SUB`   Write a minimal non-(co)graphic submatrix to file `NON-SUB`; default: skip computation.
+  - `-s`           Print statistics about the computation to stderr.
+
+If `IN-MAT` is `-` then the matrix is read from stdin.
+If `OUT-GRAPH`, `OUT-TREE`, `OUT-DOT` or `NON-SUB` is `-` then the graph (resp. the tree, dot file or non-(co)graphic submatrix) is written to stdout.
+
+### Algorithm ###
 
 The implemented recognition algorithm is based on [An Almost Linear-Time Algorithm for Graph Realization](https://doi.org/10.1287/moor.13.1.99) by Robert E. Bixby and Donald K. Wagner (Mathematics of Operations Research, 1988).
 For a matrix \f$ M \in \{0,1\}^{m \times n}\f$ with \f$ k \f$ nonzeros it runs in \f$ \mathcal{O}( k \cdot \alpha(k, m) ) \f$ time, where \f$ \alpha(\cdot) \f$ denotes the inverse Ackerman function.
 
+### C Interface ###
 
-## C Interface ##
+The corresponding functions in the library are
 
-The functionality is defined in \ref graphic.h.
-The main functions are:
-
-  - CMRcomputeGraphicMatrix() constructs a graphic matrix for a given graph.
   - CMRtestGraphicMatrix() tests a matrix for being graphic.
   - CMRtestCographicMatrix() tests a matrix for being cographic.
+
+and are defined in \ref network.h.
+
+
+## Computing graphic matrices ##
+
+The command
+
+    cmr-graphic -c IN-GRAPH OUT-MAT [OPTION]...
+
+computes a (co)graphic matrix corresponding to the graph from file `IN-GRAPH` and writes it to `OUT-MAT`.
+
+**Options**:
+  - `-o FORMAT`    Format of file `OUT-MAT`, among `dense` for \ref dense-matrix and `sparse` for \ref sparse-matrix; default: dense.
+  - `-t`           Return the transpose of the graphic matrix.
+  - `-T IN-TREE`   Read a tree from file `IN-TREE`; default: use first specified arcs as tree edges.
+  - `-s`           Print statistics about the computation to stderr.
+
+If `IN-GRAPH` or `IN-TREE` is `-` then the graph (resp. tree) is read from stdin.
+If `OUT-MAT` is `-` then the matrix is written to stdout.
+
+### C Interface ###
+
+The corresponding function in the library is
+
+  - CMRcomputeGraphicMatrix() constructs a graphic matrix for a given graph.
+
+and is defined in \ref network.h.

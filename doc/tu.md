@@ -4,26 +4,27 @@ A matrix \f$ M \in \mathbb{Z}^{m \times n} \f$ is **totally unimodular** if all 
 Here, a submatrix does not need to be contiguous, i.e., the matrix \f$M = \begin{pmatrix} 1 & 0 & -1 \\ 1 & 0 & 1 \end{pmatrix} \f$ is not totally unimodular since the submatrix indexed by rows \f$ \{1, 2 \} \f$ and columns \f$ \{ 1,3 \} \f$ has determinant 2.
 In particular, every totally unimodular matrix has only entries in \f$ \{-1,0,+1\} \f$ as these are the 1-by-1 submatrices.
 
-## Usage ##
 
-The executable `cmr-tu` determines whether a given matrix \f$ M \f$ is totally unimodular.
+## Recognizing Totally Unimodular Matrices  ##
 
-    ./cmr-tu [OPTION]... FILE
+The command
 
-Options:
-  - `-i FORMAT` Format of input FILE; default: `dense`.
-  - `-o FORMAT` Format of output matrices; default: `dense`.
-  - `-d`        Output the decomposition tree of the underlying regular matroid.
-  - `n`         Output the elements of a minimal non-totally-unimodular submatrix.
-  - `N`         Output a minimal non-totally-unimodular submatrix.
-  - `s`         Print statistics about the computation to stderr.
-Parameter options:
-  - `--no-direct-graphic`   Check only 3-connected matrices for regularity.
-  - `--no-series-parallel`  Do not allow series-parallel operations in decomposition tree.
+    cmr-tu IN-MAT [OPTION...]
 
-Formats for matrices are \ref dense-matrix and \ref sparse-matrix.
-If FILE is `-`, then the input will be read from stdin.
+determines whether the matrix given in file `IN-MAT` is totally unimodular.
 
+**Options:**
+  - `-i FORMAT`  Format of file `IN-MAT`, among `dense` for \ref dense-matrix and `sparse` for \ref sparse-matrix; default: dense.
+  - `-D OUT-DEC` Write a decomposition tree of the underlying regular matroid to file `OUT-DEC`; default: skip computation.
+  - `-N NON-SUB` Write a minimal non-totally-unimodular submatrix to file `NON-SUB`; default: skip computation.
+  - `-s`         Print statistics about the computation to stderr.
+
+**Advanced options:**
+  - `--no-direct-graphic`  Check only 3-connected matrices for regularity.
+  - `--no-series-parallel` Do not allow series-parallel operations in decomposition tree.
+
+If `IN-MAT` is `-` then the matrix is read from stdin.
+If `OUT-DEC` or `NON-SUB` is `-` then the decomposition tree (resp. the submatrix) is written to stdout.
 
 ## Algorithm ##
 
@@ -46,7 +47,8 @@ Please cite the paper in case the implementation contributed to your research:
 
 ## C Interface ##
 
-The functionality is defined in \ref tu.h.
-The main functions are:
+The corresponding function in the library is
 
   - CMRtestTotalUnimodularity() tests a matrix for being totally unimodular.
+
+and is defined in \ref tu.h.
