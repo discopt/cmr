@@ -2,9 +2,16 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+#include <assert.h>
 
 #include <cmr/matrix.h>
 #include <cmr/camion.h>
+
+typedef enum
+{
+  TASK_CHECK = 1, /**< Check for being Camion-signed. */
+  TASK_SIGN = 2   /**< Camion-sign the matrix. */
+} Task;
 
 typedef enum
 {
@@ -14,43 +21,20 @@ typedef enum
 } FileFormat;
 
 /**
- * \brief Prints the usage of the \p program to stdout.
- * 
- * \returns \c EXIT_FAILURE.
- */
-
-int printUsage(const char* program)
-{
-  printf("Usage: %s [OPTION]... FILE\n\n", program);
-  puts("Checks whether matrix in FILE is Camion-signed.");
-  puts("Options:");
-  puts("  -i FORMAT  Format of input FILE; default: `dense'.");
-  puts("  -o FORMAT  Format of output; default: `dense'.");
-  puts("  -n         Output the elements of a minimal non-Camion submatrix.");
-  puts("  -N         Output a minimal non-Camion submatrix.");
-  puts("  -s         Print statistics about the computation to stderr.");
-  puts("Formats for matrices: dense, sparse");
-  puts("If FILE is `-', then the input will be read from stdin.");
-  return EXIT_FAILURE;
-}
-
-/**
- * \brief Tests matrix from a file for total unimodularity.
+ * \brief Tests matrix from a file for being Camion-signed.
  */
 
 static
-CMR_ERROR testCamionSigned(
-  const char* instanceFileName, /**< File name containing the input matrix (may be `-' for stdin). */
-  FileFormat inputFormat,       /**< Format of the input matrix. */
-  FileFormat outputFormat,      /**< Format of the output submatrix. */
-  bool outputSubmatrixElements, /**< Whether to print the elements of a non-camion submatrix. */
-  bool outputSubmatrix,         /**< Whether to print a non-camion submatrix. */
-  bool printStats               /**< Whether to print statistics to stderr. */
+CMR_ERROR checkCamionSigned(
+  const char* inputMatrixFileName,      /**< File name containing the input matrix (may be `-' for stdin). */
+  FileFormat inputFormat,               /**< Format of the input matrix. */
+  const char* outputSubmatrixFileName,  /**< File name of output file for non-Camion submatrix. */
+  bool printStats                       /**< Whether to print statistics to stderr. */
 )
 {
   clock_t readClock = clock();
-  FILE* instanceFile = strcmp(instanceFileName, "-") ? fopen(instanceFileName, "r") : stdin;
-  if (!instanceFile)
+  FILE* inputMatrixFile = strcmp(inputMatrixFileName, "-") ? fopen(inputMatrixFileName, "r") : stdin;
+  if (!inputMatrixFile)
     return CMR_ERROR_INPUT;
 
   CMR* cmr = NULL;
@@ -60,11 +44,11 @@ CMR_ERROR testCamionSigned(
 
   CMR_CHRMAT* matrix = NULL;
   if (inputFormat == FILEFORMAT_MATRIX_DENSE)
-    CMR_CALL( CMRchrmatCreateFromDenseStream(cmr, instanceFile, &matrix) );
+    CMR_CALL( CMRchrmatCreateFromDenseStream(cmr, inputMatrixFile, &matrix) );
   else if (inputFormat == FILEFORMAT_MATRIX_SPARSE)
-    CMR_CALL( CMRchrmatCreateFromSparseStream(cmr, instanceFile, &matrix) );
-  if (instanceFile != stdin)
-    fclose(instanceFile);
+    CMR_CALL( CMRchrmatCreateFromSparseStream(cmr, inputMatrixFile, &matrix) );
+  if (inputMatrixFile != stdin)
+    fclose(inputMatrixFile);
   fprintf(stderr, "Read %lux%lu matrix with %lu nonzeros in %f seconds.\n", matrix->numRows, matrix->numColumns,
     matrix->numNonzeros, (clock() - readClock) * 1.0 / CLOCKS_PER_SEC);
 
@@ -75,7 +59,7 @@ CMR_ERROR testCamionSigned(
   CMR_CAMION_STATISTICS stats;
   CMR_CALL( CMRstatsCamionInit(&stats) );
   CMR_CALL( CMRtestCamionSigned(cmr, matrix, &isCamion,
-    (outputFormat || outputSubmatrixElements) ? &submatrix : NULL, printStats ? &stats : NULL) );
+    outputSubmatrixFileName ? &submatrix : NULL, printStats ? &stats : NULL) );
 
   fprintf(stderr, "Matrix %sCamion-signed.\n", isCamion ? "IS " : "IS NOT ");
   if (printStats)
@@ -83,33 +67,83 @@ CMR_ERROR testCamionSigned(
 
   if (submatrix)
   {
-    if (outputSubmatrixElements)
+    if (outputSubmatrixFileName)
     {
-      fprintf(stderr, "\nNon-camion submatrix consists of these elements:\n");
-      printf("%ld rows:", submatrix->numRows);
-      for (size_t r = 0; r < submatrix->numRows; ++r)
-        printf(" %ld", submatrix->rows[r]+1);
-      printf("\n%ld columns: ", submatrix->numColumns);
-      for (size_t c = 0; c < submatrix->numColumns; ++c)
-        printf(" %ld", submatrix->columns[c]+1);
-      printf("\n");
-    }
+      bool outputSubmatrixToFile = strcmp(outputSubmatrixFileName, "-");
+      fprintf(stderr, "Writing minimal non-Camion submatrix to %s%s%s.\n", outputSubmatrixToFile ? "file <" : "",
+        outputSubmatrixToFile ? outputSubmatrixFileName : "stdout", outputSubmatrixToFile ? ">" : "");
 
-    if (outputSubmatrix)
-    {
-      CMR_CHRMAT* violatorMatrix = NULL;
-      CMR_CALL( CMRchrmatZoomSubmat(cmr, matrix, submatrix, &violatorMatrix) );
-      fprintf(stderr, "\nExtracted %lux%lu non-camion submatrix with %lu nonzeros.\n", violatorMatrix->numRows,
-        violatorMatrix->numColumns, violatorMatrix->numNonzeros);
-      if (outputFormat == FILEFORMAT_MATRIX_DENSE)
-        CMR_CALL( CMRchrmatPrintDense(cmr, violatorMatrix, stdout, '0', false) );
-      else if (outputFormat == FILEFORMAT_MATRIX_SPARSE)
-        CMR_CALL( CMRchrmatPrintSparse(cmr, violatorMatrix, stdout) );
-      CMR_CALL( CMRchrmatFree(cmr, &violatorMatrix) );
+      assert(submatrix);
+      CMR_CALL( CMRsubmatWriteToFile(cmr, submatrix, matrix->numRows, matrix->numColumns, outputSubmatrixFileName) );
     }
-
-    CMR_CALL( CMRsubmatFree(cmr, &submatrix) );
   }
+
+  /* Cleanup. */
+
+  CMR_CALL( CMRsubmatFree(cmr, &submatrix) );
+  CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  CMR_CALL( CMRfreeEnvironment(&cmr) );
+
+  return CMR_OKAY;
+}
+
+
+/**
+ * \brief Camion-signs a matrix from a file.
+ */
+
+static
+CMR_ERROR computeCamionSigned(
+  const char* inputMatrixFileName,  /**< File name containing the input matrix (may be `-' for stdin). */
+  FileFormat inputFormat,           /**< Format of the input matrix. */
+  const char* outputMatrixFileName, /**< File name of output file for Camion-signed matrix. */
+  FileFormat outputFormat,          /**< Format of the output matrix. */
+  bool printStats                   /**< Whether to print statistics to stderr. */
+)
+{
+  clock_t readClock = clock();
+  FILE* inputMatrixFile = strcmp(inputMatrixFileName, "-") ? fopen(inputMatrixFileName, "r") : stdin;
+  if (!inputMatrixFile)
+    return CMR_ERROR_INPUT;
+
+  CMR* cmr = NULL;
+  CMR_CALL( CMRcreateEnvironment(&cmr) );
+
+  /* Read matrix. */
+
+  CMR_CHRMAT* matrix = NULL;
+  if (inputFormat == FILEFORMAT_MATRIX_DENSE)
+    CMR_CALL( CMRchrmatCreateFromDenseStream(cmr, inputMatrixFile, &matrix) );
+  else if (inputFormat == FILEFORMAT_MATRIX_SPARSE)
+    CMR_CALL( CMRchrmatCreateFromSparseStream(cmr, inputMatrixFile, &matrix) );
+  if (inputMatrixFile != stdin)
+    fclose(inputMatrixFile);
+  fprintf(stderr, "Read %lux%lu matrix with %lu nonzeros in %f seconds.\n", matrix->numRows, matrix->numColumns,
+    matrix->numNonzeros, (clock() - readClock) * 1.0 / CLOCKS_PER_SEC);
+
+  /* Actual signing. */
+  
+  CMR_CAMION_STATISTICS stats;
+  CMR_CALL( CMRstatsCamionInit(&stats) );
+  CMR_CALL( CMRcomputeCamionSigned(cmr, matrix, NULL, NULL, &stats) );
+  if (printStats)
+    CMR_CALL( CMRstatsCamionPrint(stderr, &stats, NULL) );
+
+  /* Write to file. */
+
+  bool outputMatrixToFile = strcmp(outputMatrixFileName, "-");
+  FILE* outputMatrixFile = outputMatrixToFile ? fopen(outputMatrixFileName, "w") : stdout;
+  fprintf(stderr, "Writing Camion-signed matrix to %s%s%s in %s format.\n", outputMatrixToFile ? "file <" : "",
+    outputMatrixToFile ? outputMatrixFileName : "stdout", outputMatrixToFile ? ">" : "",
+    outputFormat == FILEFORMAT_MATRIX_DENSE ? "dense" : "sparse");
+  if (outputFormat == FILEFORMAT_MATRIX_DENSE)
+    CMR_CALL( CMRchrmatPrintDense(cmr, matrix, outputMatrixFile, '0', false) );
+  else if (outputFormat == FILEFORMAT_MATRIX_SPARSE)
+    CMR_CALL( CMRchrmatPrintSparse(cmr, matrix, outputMatrixFile) );
+  else
+    assert(false);
+  if (outputMatrixToFile)
+    fclose(outputMatrixFile);
 
   /* Cleanup. */
 
@@ -119,14 +153,44 @@ CMR_ERROR testCamionSigned(
   return CMR_OKAY;
 }
 
+/**
+ * \brief Prints the usage of the \p program to stdout.
+ * 
+ * \returns \c EXIT_FAILURE.
+ */
+
+int printUsage(const char* program)
+{
+  fputs("Usage:\n", stderr);
+  fprintf(stderr, "%s IN-MAT [OPTION]...\n\n", program);
+  fputs("  (1) determines whether the matrix given in file IN-MAT is Camion-signed.\n\n", stderr);
+  fprintf(stderr, "%s IN-MAT -S OUT-MAT [OPTION]...\n\n", program);
+  fputs("  (2) modifies the signs of the matrix given in file IN-MAT such that it is Camion-signed and writes the resulting new matrix to file OUT-MAT.\n\n\n",
+    stderr);
+  fputs("Options specific to (1):\n", stderr);
+  fputs("  -N NON-SUB   Write a minimal non-Camion submatrix to file NON-SUB; default: skip computation.\n\n", stderr);
+  fputs("Options specific to (2):\n", stderr);
+  fputs("  -o FORMAT    Format of file OUT-MAT, among `dense' and `sparse'; default: same as format of IN-MAT.\n\n",
+    stderr);
+  fputs("Common options:\n", stderr);
+  fputs("  -i FORMAT    Format of file IN-MAT, among `dense' and `sparse'; default: dense.\n", stderr);
+  fputs("  -s           Print statistics about the computation to stderr.\n\n", stderr);
+  fputs("If IN-MAT is `-' then the matrix is read from stdin.\n", stderr);
+  fputs("If NON-SUB or OUT-MAT is `-' then the submatrix (resp. the Camion-signed matrix) is written to stdout.\n",
+    stderr);
+
+  return CMR_OKAY;
+}
+
 int main(int argc, char** argv)
 {
-  FileFormat inputFormat = FILEFORMAT_UNDEFINED;
-  FileFormat outputFormat = FILEFORMAT_MATRIX_DENSE;
-  bool outputSubmatrixElements = false;
-  bool outputSubmatrix = false;
+  Task task = TASK_CHECK;
+  FileFormat inputFormat = FILEFORMAT_MATRIX_DENSE;
+  FileFormat outputFormat = FILEFORMAT_UNDEFINED;
+  char* inputMatrixFileName = NULL;
+  char* outputSubmatrixFileName = NULL;
+  char* outputMatrixFileName = NULL;
   bool printStats = false;
-  char* instanceFileName = NULL;
   for (int a = 1; a < argc; ++a)
   {
     if (!strcmp(argv[a], "-h"))
@@ -134,10 +198,13 @@ int main(int argc, char** argv)
       printUsage(argv[0]);
       return EXIT_SUCCESS;
     }
-    else if (!strcmp(argv[a], "-n"))
-      outputSubmatrixElements = true;
-    else if (!strcmp(argv[a], "-N"))
-      outputSubmatrix = true;
+    else if (!strcmp(argv[a], "-N") && a+1 < argc)
+      outputSubmatrixFileName = argv[++a];
+    else if (!strcmp(argv[a], "-S") && a+1 < argc)
+    {
+      outputMatrixFileName = argv[++a];
+      task = TASK_SIGN;
+    }
     else if (!strcmp(argv[a], "-s"))
       printStats = true;
     else if (!strcmp(argv[a], "-i") && a+1 < argc)
@@ -148,7 +215,7 @@ int main(int argc, char** argv)
         inputFormat = FILEFORMAT_MATRIX_SPARSE;
       else
       {
-        printf("Error: unknown input file format <%s>.\n\n", argv[a+1]);
+        fprintf(stderr, "Error: Unknown input file format <%s>.\n\n", argv[a+1]);
         return printUsage(argv[0]);
       }
       ++a;
@@ -161,32 +228,45 @@ int main(int argc, char** argv)
         outputFormat = FILEFORMAT_MATRIX_SPARSE;
       else
       {
-        printf("Error: unknown output format <%s>.\n\n", argv[a+1]);
+        fprintf(stderr, "Error: Unknown output format <%s>.\n\n", argv[a+1]);
         return printUsage(argv[0]);
       }
       ++a;
     }
-    else if (!instanceFileName)
-      instanceFileName = argv[a];
+    else if (!inputMatrixFileName)
+      inputMatrixFileName = argv[a];
     else
     {
-      printf("Error: Two input files <%s> and <%s> specified.\n\n", instanceFileName, argv[a]);
+      printf("Error: Two input files <%s> and <%s> specified.\n\n", inputMatrixFileName, argv[a]);
       return printUsage(argv[0]);
     }
   }
 
-  if (!instanceFileName)
+  if (!inputMatrixFileName)
   {
-    puts("No input file specified.\n");
+    fputs("Error: No input file specified.\n\n", stderr);
+    return printUsage(argv[0]);
+  }
+  if (outputSubmatrixFileName && outputMatrixFileName)
+  {
+    fputs("Error: Options -S and -N cannot be specified at the same time.\n\n", stderr);
     return printUsage(argv[0]);
   }
 
-  if (inputFormat == FILEFORMAT_UNDEFINED)
-    inputFormat = FILEFORMAT_MATRIX_DENSE;
-
+  if (outputFormat == FILEFORMAT_UNDEFINED)
+    outputFormat = inputFormat;
+  
   CMR_ERROR error;
-  error = testCamionSigned(instanceFileName, inputFormat, outputFormat, outputSubmatrixElements, outputFormat,
-    printStats);
+  if (task == TASK_CHECK)
+  {
+    error = checkCamionSigned(inputMatrixFileName, inputFormat, outputSubmatrixFileName, printStats);
+  }
+  else if (task == TASK_SIGN)
+  {
+    error = computeCamionSigned(inputMatrixFileName, inputFormat, outputMatrixFileName, outputFormat, printStats);
+  }
+  else
+    assert(false);
 
   switch (error)
   {
