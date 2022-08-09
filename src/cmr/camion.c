@@ -10,6 +10,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <time.h>
 
 CMR_ERROR CMRstatsCamionInit(CMR_CAMION_STATISTICS* stats)
 {
@@ -307,12 +308,13 @@ CMR_ERROR sign(
   CMR_CAMION_STATISTICS* stats  /**< Statistics for the computation (may be \c NULL). */
 )
 {
-  CMR_UNUSED(stats);
-
   assert(cmr);
   assert(matrix);
   assert(!psubmatrix || !*psubmatrix);
 
+  clock_t totalClock = 0;
+  if (stats)
+    totalClock = clock();
 
   size_t numComponents;
   CMR_ONESUM_COMPONENT* components = NULL;
@@ -440,6 +442,12 @@ CMR_ERROR sign(
     CMRfreeBlockArray(cmr, &components[c].columnsToOriginal);
   }
   CMRfreeBlockArray(cmr, &components);
+
+  if (stats)
+  {
+    stats->totalCount++;
+    stats->totalTime += (clock() - totalClock) * 1.0 / CLOCKS_PER_SEC;
+  }
 
   return CMR_OKAY;
 }
