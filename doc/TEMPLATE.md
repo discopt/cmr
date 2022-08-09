@@ -18,7 +18,6 @@ reads the input matrix and outputs a submatrix.
   - `-O OUT-MAT` Write the ... matrix to file `OUT-MAT`; default: stdout.
   - `-N OUT-SUB` Write a minimal .. submatrix to file `OUT-SUB`; default: skip computation.
 
-
 If `IN-MAT` or `IN-FOO` is `-` then the matrix (resp. foo) is read from stdin.
 If `OUT-MAT` is `-` then the matrix is written to stdout.
 

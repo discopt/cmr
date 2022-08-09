@@ -4,43 +4,46 @@
 #include <assert.h>
 
 #include <cmr/matrix.h>
-#include <cmr/camion.h>
 
 typedef enum
 {
-  UNDEFINED = 0,
-  DENSE = 1,
-  SPARSE = 2
-} Format;
-
-typedef enum
-{
-  COPY = 0,
-  SUPPORT = 1,
-  SIGNED_SUPPORT = 2,
-  CAMION = 3
+  TASK_COPY = 0,
+  TASK_SUPPORT = 1,
+  TASK_SIGNED_SUPPORT = 2,
 } Task;
 
+typedef enum
+{
+  FILEFORMAT_UNDEFINED = 0,     /**< Whether the file format of input/output was defined by the user. */
+  FILEFORMAT_MATRIX_DENSE = 1,  /**< Dense matrix format. */
+  FILEFORMAT_MATRIX_SPARSE = 2  /**< Sparse matrix format. */
+} FileFormat;
+
 static
-CMR_ERROR printDbl(CMR* cmr, CMR_DBLMAT* matrix, Format outputFormat, bool transpose)
+CMR_ERROR writeToFileDbl(CMR* cmr, CMR_DBLMAT* matrix, FileFormat outputFormat, const char* outputMatrixFileName,
+  bool transpose)
 {
   assert(matrix);
 
   CMR_DBLMAT* output = NULL;
   if (transpose)
-  {
     CMR_CALL( CMRdblmatTranspose(cmr, matrix, &output) );
-  }
   else
     output = matrix;
 
+  bool outputMatrixToFile = strcmp(outputMatrixFileName, "-");
+  FILE* outputMatrixFile = outputMatrixToFile ? fopen(outputMatrixFileName, "w") : stdout;
+
   CMR_ERROR error = CMR_OKAY;
-  if (outputFormat == SPARSE)
-    CMR_CALL( CMRdblmatPrintSparse(cmr, output, stdout) );
-  else if (outputFormat == DENSE)
-    CMR_CALL( CMRdblmatPrintDense(cmr, output, stdout, '0', false) );
+  if (outputFormat == FILEFORMAT_MATRIX_SPARSE)
+    CMR_CALL( CMRdblmatPrintSparse(cmr, output, outputMatrixFile) );
+  else if (outputFormat == FILEFORMAT_MATRIX_DENSE)
+    CMR_CALL( CMRdblmatPrintDense(cmr, output, outputMatrixFile, '0', false) );
   else
     error = CMR_ERROR_INPUT;
+
+  if (outputMatrixToFile)
+    fclose(outputMatrixFile);
 
   if (transpose)
     CMR_CALL( CMRdblmatFree(cmr, &output) );
@@ -49,25 +52,30 @@ CMR_ERROR printDbl(CMR* cmr, CMR_DBLMAT* matrix, Format outputFormat, bool trans
 }
 
 static
-CMR_ERROR printInt(CMR* cmr, CMR_INTMAT* matrix, Format outputFormat, bool transpose)
+CMR_ERROR writeToFileInt(CMR* cmr, CMR_INTMAT* matrix, FileFormat outputFormat, const char* outputMatrixFileName,
+  bool transpose)
 {
   assert(matrix);
 
   CMR_INTMAT* output = NULL;
   if (transpose)
-  {
     CMR_CALL( CMRintmatTranspose(cmr, matrix, &output) );
-  }
   else
     output = matrix;
 
+  bool outputMatrixToFile = strcmp(outputMatrixFileName, "-");
+  FILE* outputMatrixFile = outputMatrixToFile ? fopen(outputMatrixFileName, "w") : stdout;
+
   CMR_ERROR error = CMR_OKAY;
-  if (outputFormat == SPARSE)
-    CMR_CALL( CMRintmatPrintSparse(cmr, output, stdout) );
-  else if (outputFormat == DENSE)
-    CMR_CALL( CMRintmatPrintDense(cmr, output, stdout, '0', false) );
+  if (outputFormat == FILEFORMAT_MATRIX_SPARSE)
+    CMR_CALL( CMRintmatPrintSparse(cmr, output, outputMatrixFile) );
+  else if (outputFormat == FILEFORMAT_MATRIX_DENSE)
+    CMR_CALL( CMRintmatPrintDense(cmr, output, outputMatrixFile, '0', false) );
   else
     error = CMR_ERROR_INPUT;
+
+  if (outputMatrixToFile)
+    fclose(outputMatrixFile);
 
   if (transpose)
     CMR_CALL( CMRintmatFree(cmr, &output) );
@@ -76,25 +84,30 @@ CMR_ERROR printInt(CMR* cmr, CMR_INTMAT* matrix, Format outputFormat, bool trans
 }
 
 static
-CMR_ERROR printChr(CMR* cmr, CMR_CHRMAT* matrix, Format outputFormat, bool transpose)
+CMR_ERROR writeToFileChr(CMR* cmr, CMR_CHRMAT* matrix, FileFormat outputFormat, const char* outputMatrixFileName,
+  bool transpose)
 {
   assert(matrix);
 
   CMR_CHRMAT* output = NULL;
   if (transpose)
-  {
     CMR_CALL( CMRchrmatTranspose(cmr, matrix, &output) );
-  }
   else
     output = matrix;
 
+  bool outputMatrixToFile = strcmp(outputMatrixFileName, "-");
+  FILE* outputMatrixFile = outputMatrixToFile ? fopen(outputMatrixFileName, "w") : stdout;
+
   CMR_ERROR error = CMR_OKAY;
-  if (outputFormat == SPARSE)
-    CMR_CALL( CMRchrmatPrintSparse(cmr, output, stdout) );
-  else if (outputFormat == DENSE)
-    CMR_CALL( CMRchrmatPrintDense(cmr, output, stdout, '0', false) );
+  if (outputFormat == FILEFORMAT_MATRIX_SPARSE)
+    CMR_CALL( CMRchrmatPrintSparse(cmr, output, outputMatrixFile) );
+  else if (outputFormat == FILEFORMAT_MATRIX_DENSE)
+    CMR_CALL( CMRchrmatPrintDense(cmr, output, outputMatrixFile, '0', false) );
   else
     error = CMR_ERROR_INPUT;
+
+  if (outputMatrixToFile)
+    fclose(outputMatrixFile);
 
   if (transpose)
     CMR_CALL( CMRchrmatFree(cmr, &output) );
@@ -102,99 +115,87 @@ CMR_ERROR printChr(CMR* cmr, CMR_CHRMAT* matrix, Format outputFormat, bool trans
   return error;
 }
 
-CMR_ERROR runDbl(const char* instanceFileName, Format inputFormat, Format outputFormat, Task task, bool transpose)
+CMR_ERROR runDbl(const char* inputMatrixFileName, FileFormat inputFormat, FileFormat outputFormat,
+  const char* outputMatrixFileName, Task task, bool transpose)
 {
-  FILE* instanceFile = strcmp(instanceFileName, "-") ? fopen(instanceFileName, "r") : stdin;
-  if (!instanceFile)
+  FILE* inputMatrixFile = strcmp(inputMatrixFileName, "-") ? fopen(inputMatrixFileName, "r") : stdin;
+  if (!inputMatrixFile)
     return CMR_ERROR_INPUT;
 
   CMR* cmr = NULL;
   CMR_CALL( CMRcreateEnvironment(&cmr) );
 
   CMR_DBLMAT* matrix = NULL;
-  if (inputFormat == SPARSE)
-    CMR_CALL( CMRdblmatCreateFromSparseStream(cmr, instanceFile, &matrix) );
-  else if (inputFormat == DENSE)
-    CMR_CALL( CMRdblmatCreateFromDenseStream(cmr, instanceFile, &matrix) );
+  if (inputFormat == FILEFORMAT_MATRIX_SPARSE)
+    CMR_CALL( CMRdblmatCreateFromSparseStream(cmr, inputMatrixFile, &matrix) );
+  else if (inputFormat == FILEFORMAT_MATRIX_DENSE)
+    CMR_CALL( CMRdblmatCreateFromDenseStream(cmr, inputMatrixFile, &matrix) );
   else
     return CMR_ERROR_INPUT;
-  if (instanceFile != stdin)
-    fclose(instanceFile);
+  if (inputMatrixFile != stdin)
+    fclose(inputMatrixFile);
 
-  if (task == SUPPORT)
+  if (task == TASK_SUPPORT)
   {
     CMR_CHRMAT* result = NULL;
     CMR_CALL( CMRdblmatSupport(cmr, matrix, 1.0e-9, &result) );
-    CMR_CALL( printChr(cmr, result, outputFormat, transpose) );
+    CMR_CALL( writeToFileChr(cmr, result, outputFormat, outputMatrixFileName, transpose) );
     CMR_CALL( CMRchrmatFree(cmr, &result) );
   }
-  else if (task == SIGNED_SUPPORT)
+  else if (task == TASK_SIGNED_SUPPORT)
   {
     CMR_CHRMAT* result = NULL;
     CMR_CALL( CMRdblmatSignedSupport(cmr, matrix, 1.0e-9, &result) );
-    CMR_CALL( printChr(cmr, result, outputFormat, transpose) );
+    CMR_CALL( writeToFileChr(cmr, result, outputFormat, outputMatrixFileName, transpose) );
     CMR_CALL( CMRchrmatFree(cmr, &result) );
   }
   else
-  {
-    CMR_CALL( printDbl(cmr, matrix, outputFormat, transpose) );
-  }
+    CMR_CALL( writeToFileDbl(cmr, matrix, outputFormat, outputMatrixFileName, transpose) );
 
   CMR_CALL( CMRdblmatFree(cmr, &matrix) );
-
   CMR_CALL( CMRfreeEnvironment(&cmr) );
 
   return CMR_OKAY;
 }
 
-CMR_ERROR runInt(const char* instanceFileName, Format inputFormat, Format outputFormat, Task task, bool transpose)
+CMR_ERROR runInt(const char* inputMatrixFileName, FileFormat inputFormat, FileFormat outputFormat,
+  const char* outputMatrixFileName, Task task, bool transpose)
 {
-  FILE* instanceFile = strcmp(instanceFileName, "-") ? fopen(instanceFileName, "r") : stdin;
-  if (!instanceFile)
+  FILE* inputMatrixFile = strcmp(inputMatrixFileName, "-") ? fopen(inputMatrixFileName, "r") : stdin;
+  if (!inputMatrixFile)
     return CMR_ERROR_INPUT;
 
   CMR* cmr = NULL;
   CMR_CALL( CMRcreateEnvironment(&cmr) );
 
   CMR_INTMAT* matrix = NULL;
-  if (inputFormat == SPARSE)
-    CMR_CALL( CMRintmatCreateFromSparseStream(cmr, instanceFile, &matrix) );
-  else if (inputFormat == DENSE)
-    CMR_CALL( CMRintmatCreateFromDenseStream(cmr, instanceFile, &matrix) );
+  if (inputFormat == FILEFORMAT_MATRIX_SPARSE)
+    CMR_CALL( CMRintmatCreateFromSparseStream(cmr, inputMatrixFile, &matrix) );
+  else if (inputFormat == FILEFORMAT_MATRIX_DENSE)
+    CMR_CALL( CMRintmatCreateFromDenseStream(cmr, inputMatrixFile, &matrix) );
   else
     return CMR_ERROR_INPUT;
-  if (instanceFile != stdin)
-    fclose(instanceFile);
+  if (inputMatrixFile != stdin)
+    fclose(inputMatrixFile);
 
-  if (task == SUPPORT)
+  if (task == TASK_SUPPORT)
   {
     CMR_CHRMAT* result = NULL;
     CMR_CALL( CMRintmatSupport(cmr, matrix, &result) );
-    CMR_CALL( printChr(cmr, result, outputFormat, transpose) );
+    CMR_CALL( writeToFileChr(cmr, result, outputFormat, outputMatrixFileName, transpose) );
     CMR_CALL( CMRchrmatFree(cmr, &result) );
   }
-  else if (task == SIGNED_SUPPORT)
+  else if (task == TASK_SIGNED_SUPPORT)
   {
     CMR_CHRMAT* result = NULL;
     CMR_CALL( CMRintmatSignedSupport(cmr, matrix, &result) );
-    CMR_CALL( printChr(cmr, result, outputFormat, transpose) );
-    CMR_CALL( CMRchrmatFree(cmr, &result) );
-  }
-  else if (task == CAMION)
-  {
-    CMR_CHRMAT* result = NULL;
-    CMR_CALL( CMRintmatToChr(cmr, matrix, &result) );
-    CMR_CALL( CMRcomputeCamionSigned(cmr, result, NULL, NULL, NULL) );
-    CMR_CALL( printChr(cmr, result, outputFormat, transpose) );
+    CMR_CALL( writeToFileChr(cmr, result, outputFormat, outputMatrixFileName, transpose) );
     CMR_CALL( CMRchrmatFree(cmr, &result) );
   }
   else
-  {
-    CMR_CALL( printInt(cmr, matrix, outputFormat, transpose) );
-  }
+    CMR_CALL( writeToFileInt(cmr, matrix, outputFormat, outputMatrixFileName, transpose) );
 
   CMR_CALL( CMRintmatFree(cmr, &matrix) );
-
   CMR_CALL( CMRfreeEnvironment(&cmr) );
 
   return CMR_OKAY;
@@ -202,30 +203,31 @@ CMR_ERROR runInt(const char* instanceFileName, Format inputFormat, Format output
 
 int printUsage(const char* program)
 {
-  printf("Usage: %s [OPTION]... MATRIX\n\n", program);
-  puts("Copies MATRIX, potentially applying an operation.");
-  puts("\nOptions:");
-  puts("  -i FORMAT Format of MATRIX file, among {dense, sparse}; default: dense.");
-  puts("  -o FORMAT Format of output, among {dense, sparse}; default: same as input.");
-  puts("  -t        Output transposed matrix (can be combined with other operations).");
-  puts("  -s        Create support matrix instead of copying.");
-  puts("  -S        Create signed support matrix instead of copying.");
-  puts("  -c        Creates the Camion-signed version instead of copying.");
-  puts("  -d        Use double arithmetic.");
-  puts("If MATRIX is `-', then the matrix will be read from stdin.");
-  
+  fputs("Usage:\n", stderr);
+  fprintf(stderr, "%s IN-MAT OUT-MAT [OPTION]...\n\n", program);
+  fputs("  copies the matrix from file IN-MAT to file OUT-MAT, potentially applying certain operations.\n\n", stderr);
+  fputs("Options:\n", stderr);
+  fputs("  -i FORMAT Format of file IN-MAT, among `dense' and `sparse'; default: dense.\n", stderr);
+  fputs("  -o FORMAT Format of file OUT-MAT, among `dense' and `sparse'; default: same format as of IN-MAT.\n", stderr);
+  fputs("  -t        Transpose the matrix; can be combined with other operations.\n", stderr);
+  fputs("  -s        Compute the support matrix instead of copying.\n", stderr);
+  fputs("  -S        Compute the signed support matrix instead of copying.\n", stderr);
+  fputs("  -d        Use double arithmetic instead of integers.\n\n", stderr);
+  fputs("If IN-MAT is `-' then the input matrix is read from stdin.\n", stderr);
+  fputs("If OUT-MAT is `-' then the output matrix is written to stdout.\n", stderr);
+
   return EXIT_FAILURE;
 }
 
 int main(int argc, char** argv)
 {
-  /* Parse command line options. */
-  Format inputFormat = DENSE;
-  Format outputFormat = UNDEFINED;
-  Task task = COPY;
+  Task task = TASK_COPY;
+  FileFormat inputFormat = FILEFORMAT_MATRIX_DENSE;
+  FileFormat outputFormat = FILEFORMAT_UNDEFINED;
   bool transpose = false;
   bool doubleArithmetic = false;
-  char* instanceFileName = NULL;
+  char* inputMatrixFileName = NULL;
+  char* outputMatrixFileName = NULL;
   for (int a = 1; a < argc; ++a)
   {
     if (!strcmp(argv[a], "-h"))
@@ -236,12 +238,12 @@ int main(int argc, char** argv)
     else if (!strcmp(argv[a], "-i") && a+1 < argc)
     {
       if (!strcmp(argv[a+1], "dense"))
-        inputFormat = DENSE;
+        inputFormat = FILEFORMAT_MATRIX_DENSE;
       else if (!strcmp(argv[a+1], "sparse"))
-        inputFormat = SPARSE;
+        inputFormat = FILEFORMAT_MATRIX_SPARSE;
       else
       {
-        printf("Error: unknown input format <%s>.\n\n", argv[a+1]);
+        fprintf(stderr, "Error: Unknown input format <%s>.\n\n", argv[a+1]);
         return printUsage(argv[0]);
       }
       ++a;
@@ -249,48 +251,54 @@ int main(int argc, char** argv)
     else if (!strcmp(argv[a], "-o") && a+1 < argc)
     {
       if (!strcmp(argv[a+1], "dense"))
-        outputFormat = DENSE;
+        outputFormat = FILEFORMAT_MATRIX_DENSE;
       else if (!strcmp(argv[a+1], "sparse"))
-        outputFormat = SPARSE;
+        outputFormat = FILEFORMAT_MATRIX_SPARSE;
       else
       {
-        printf("Error: unknown output format <%s>.\n\n", argv[a+1]);
+        fprintf(stderr, "Error: Unknown output format <%s>.\n\n", argv[a+1]);
         return printUsage(argv[0]);
       }
       ++a;
     }
     else if (!strcmp(argv[a], "-s"))
-      task = SUPPORT;
+      task = TASK_SUPPORT;
     else if (!strcmp(argv[a], "-S"))
-      task = SIGNED_SUPPORT;
-    else if (!strcmp(argv[a], "-c"))
-      task = CAMION;
+      task = TASK_SIGNED_SUPPORT;
     else if (!strcmp(argv[a], "-t"))
       transpose = true;
     else if (!strcmp(argv[a], "-d"))
       doubleArithmetic = true;
-    else if (!instanceFileName)
-      instanceFileName = argv[a];
+    else if (!inputMatrixFileName)
+      inputMatrixFileName = argv[a];
+    else if (!outputMatrixFileName)
+      outputMatrixFileName = argv[a];
     else
     {
-      printf("Error: Two input matrix files <%s> and <%s> specified.\n\n", instanceFileName, argv[a]);
+      fprintf(stderr, "Error: Three matrix files <%s>, <%s> and <%s> specified.\n\n", inputMatrixFileName,
+        outputMatrixFileName, argv[a]);
       return printUsage(argv[0]);
     }
   }
 
-  if (!instanceFileName)
+  if (!inputMatrixFileName)
   {
-    puts("No input matrix specified.\n");
+    fputs("Error: No input matrix specified.\n\n", stderr);
     return printUsage(argv[0]);
   }
-  if (outputFormat == UNDEFINED)
+  if (!outputMatrixFileName)
+  {
+    fputs("Error: No output matrix specified.\n\n", stderr);
+    return printUsage(argv[0]);
+  }
+  if (outputFormat == FILEFORMAT_UNDEFINED)
     outputFormat = inputFormat;
 
   CMR_ERROR error;
   if (doubleArithmetic)
-    error = runDbl(instanceFileName, inputFormat, outputFormat, task, transpose);
+    error = runDbl(inputMatrixFileName, inputFormat, outputFormat, outputMatrixFileName, task, transpose);
   else
-    error = runInt(instanceFileName, inputFormat, outputFormat, task, transpose);
+    error = runInt(inputMatrixFileName, inputFormat, outputFormat, outputMatrixFileName, task, transpose);
   switch (error)
   {
   case CMR_ERROR_INPUT:
