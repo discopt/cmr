@@ -146,14 +146,14 @@ target_link_libraries(cmr_series_parallel
 )
 set_target_properties(cmr_series_parallel PROPERTIES OUTPUT_NAME cmr-series-parallel)
 
-# Target for the cmr-convert-matrix.
-add_executable(cmr_convert_matrix
-  src/main/convert_matrix_main.c)
-target_link_libraries(cmr_convert_matrix
+# Target for the cmr-matrix.
+add_executable(cmr_matrix
+  src/main/matrix_main.c)
+target_link_libraries(cmr_matrix
   PRIVATE
     CMR::cmr
 )
-set_target_properties(cmr_convert_matrix PROPERTIES OUTPUT_NAME cmr-convert-matrix)
+set_target_properties(cmr_matrix PROPERTIES OUTPUT_NAME cmr-matrix)
 
 # Target for the cmr-k-ary
 add_executable(cmr_k_ary
@@ -275,10 +275,10 @@ include(GNUInstallDirs)
 
 install(TARGETS
     cmr_camion
-    cmr_convert_matrix
     cmr_ctu
     cmr_graphic
     cmr_k_modular
+    cmr_matrix
     cmr_network
     cmr_series_parallel
     cmr_tu

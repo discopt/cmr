@@ -17,8 +17,8 @@ Moreover, [representation matrices](\ref matroids) for the following matroid cla
 
 The following additional functionality is also part of the library:
 
+  - \ref utilities
   - \ref k_ary
-  - \ref conversions
   - \ref camion
 
 The library also contains various [instance generators](\ref generators).

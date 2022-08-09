@@ -27,7 +27,6 @@ if(DOXYGEN_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/camion.md
     ${CMAKE_CURRENT_SOURCE_DIR}/changes.md
     ${CMAKE_CURRENT_SOURCE_DIR}/consecutive-ones.md
-    ${CMAKE_CURRENT_SOURCE_DIR}/conversions.md
     ${CMAKE_CURRENT_SOURCE_DIR}/ctu.md
     ${CMAKE_CURRENT_SOURCE_DIR}/k_ary.md
     ${CMAKE_CURRENT_SOURCE_DIR}/file-formats.md
@@ -41,6 +40,7 @@ if(DOXYGEN_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/regular.md
     ${CMAKE_CURRENT_SOURCE_DIR}/series-parallel.md
     ${CMAKE_CURRENT_SOURCE_DIR}/tu.md
+    ${CMAKE_CURRENT_SOURCE_DIR}/utilities.md
     ${CMAKE_SOURCE_DIR}/include/cmr
     ${CMAKE_SOURCE_DIR}/src/cmr
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}

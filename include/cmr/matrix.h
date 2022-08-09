@@ -120,6 +120,19 @@ CMR_ERROR CMRsubmatWriteToFile(
 );
 
 /**
+ * \brief Reads the submatrix \p *psubmatrix from the file \p stream.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRsubmatReadFromStream(
+  CMR* cmr,                   /**< \ref CMR environment. */
+  CMR_SUBMAT** psubmatrix,    /**< Pointer for storing the submatrix. */
+  size_t* pnumMatrixRows,     /**< Pointer for storing the number of rows of the original matrix; may be \c NULL. */
+  size_t* pnumMatrixColumns,  /**< Pointer for storing the number of rows of the original matrix; may be \c NULL. */
+  FILE* stream                /**< File stream to save submatrix to. */
+);
+
+/**
  * \brief Row-wise representation of sparse double matrix.
  * 
  * The nonzeros of the matrix are stored in the arrays \ref entryColumns and \ref entryValues, each of length

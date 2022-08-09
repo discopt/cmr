@@ -52,7 +52,7 @@ CMR_ERROR testTotalUnimodularity(
   {
     error = CMRchrmatCreateFromSparseStream(cmr, inputMatrixFile, &matrix);
     if (error == CMR_ERROR_INPUT)
-      fprintf(stderr, "Error when reading dense matrix from <%s>: %s\n", inputMatrixFileName, CMRgetErrorMessage(cmr));
+      fprintf(stderr, "Error when reading sparse matrix from <%s>: %s\n", inputMatrixFileName, CMRgetErrorMessage(cmr));
   }
   else
     assert(false);
