@@ -61,19 +61,20 @@ int compareDblNonzeros(const void* pa, const void* pb)
 }
 
 CMR_ERROR perturbMatrix(
-  char* inputFileName,      /**< Input matrix file name. */
-  FileFormat inputFormat,   /**< Input file format. */
-  FileFormat outputFormat,  /**< Output file format. */
-  size_t makeZero,          /**< Number of nonzeros to be turned into zeros. */
-  size_t makeOne,           /**< Number of zeros to be turned into 1s. */
-  size_t makeMinusOne,      /**< Number of zeros to be turned into -1s. */
-  size_t flipBinary,        /**< Number of entries to be flipped over {0,1}. */
-  size_t flipTernary        /**< Number of entries to be flipped over {-1,0,1}. */
+  const char* inputMatrixFileName,  /**< Input matrix file name. */
+  FileFormat inputFormat,           /**< Input file format. */
+  const char* outputMatrixFileName, /**< Output matrix file name. */
+  FileFormat outputFormat,          /**< Output file format. */
+  size_t makeZero,                  /**< Number of nonzeros to be turned into zeros. */
+  size_t makeOne,                   /**< Number of zeros to be turned into 1s. */
+  size_t makeMinusOne,              /**< Number of zeros to be turned into -1s. */
+  size_t flipBinary,                /**< Number of entries to be flipped over {0,1}. */
+  size_t flipTernary                /**< Number of entries to be flipped over {-1,0,1}. */
 )
 {
   /* Read the matrix. */
-  FILE* instanceFile = strcmp(inputFileName, "-") ? fopen(inputFileName, "r") : stdin;
-  if (!instanceFile)
+  FILE* inputMatrixFile = strcmp(inputMatrixFileName, "-") ? fopen(inputMatrixFileName, "r") : stdin;
+  if (!inputMatrixFile)
     return CMR_ERROR_INPUT;
   
   CMR* cmr = NULL;
@@ -81,13 +82,13 @@ CMR_ERROR perturbMatrix(
 
   CMR_DBLMAT* matrix = NULL;
   if (inputFormat == FILEFORMAT_MATRIX_SPARSE)
-    CMR_CALL( CMRdblmatCreateFromSparseStream(cmr, instanceFile, &matrix) );
+    CMR_CALL( CMRdblmatCreateFromSparseStream(cmr, inputMatrixFile, &matrix) );
   else if (inputFormat == FILEFORMAT_MATRIX_DENSE)
-    CMR_CALL( CMRdblmatCreateFromDenseStream(cmr, instanceFile, &matrix) );
+    CMR_CALL( CMRdblmatCreateFromDenseStream(cmr, inputMatrixFile, &matrix) );
   else
     return CMR_ERROR_INPUT;
-  if (instanceFile != stdin)
-    fclose(instanceFile);
+  if (inputMatrixFile != stdin)
+    fclose(inputMatrixFile);
 
   /* Make zeros. */
   size_t numNonzeros = matrix->numNonzeros;
@@ -222,11 +223,15 @@ CMR_ERROR perturbMatrix(
 
   CMR_CALL( CMRfreeBlockArray(cmr, &nonzeros) );
 
-  /* Print matrix. */
+  /* Output the matrix. */
+  FILE* outputMatrixFile = strcmp(outputMatrixFileName, "-") ? fopen(outputMatrixFileName, "w") : stdout;
+
   if (outputFormat == FILEFORMAT_MATRIX_DENSE)
-    CMR_CALL( CMRdblmatPrintDense(cmr, result, stdout, '0', false) );
+    CMR_CALL( CMRdblmatPrintDense(cmr, result, outputMatrixFile, '0', false) );
   else if (outputFormat == FILEFORMAT_MATRIX_SPARSE)
-    CMR_CALL( CMRdblmatPrintSparse(cmr, result, stdout) );
+    CMR_CALL( CMRdblmatPrintSparse(cmr, result, outputMatrixFile) );
+  if (outputMatrixFile != stdout)
+    fclose(outputMatrixFile);
 
   /* Cleanup. */
   CMR_CALL( CMRdblmatFree(cmr, &result) );
@@ -261,7 +266,8 @@ int main(int argc, char** argv)
   gettimeofday(&curTime, NULL);
   srand(curTime.tv_usec);
 
-  char* inputFileName = NULL;
+  char* inputMatrixFileName = NULL;
+  char* outputMatrixFileName = NULL;
   FileFormat inputFormat = FILEFORMAT_MATRIX_DENSE;
   FileFormat outputFormat = FILEFORMAT_UNDEFINED;
   size_t makeZero = 0;
@@ -357,34 +363,41 @@ int main(int argc, char** argv)
       }
       ++a;
     }
-    else if (!inputFileName)
-    {
-      inputFileName = argv[a];
-    }
+    else if (!inputMatrixFileName)
+      inputMatrixFileName = argv[a];
+    else if (!outputMatrixFileName)
+      outputMatrixFileName = argv[a];
     else
     {
-      printf("Error: more than one input matrix specified: %s %s\n\n", inputFileName, argv[a]);
+      fprintf(stderr, "Error: Three matrix files specified: %s, %s and %s\n\n", inputMatrixFileName,
+        outputMatrixFileName, argv[a]);
       return printUsage(argv[0]);
     }
   }
 
-  if (!inputFileName)
+  if (!inputMatrixFileName)
   {
-    puts("No input matrix specified.\n");
+    fputs("Error: No input matrix specified.\n\n", stderr);
+    return printUsage(argv[0]);
+  }
+  if (!outputMatrixFileName)
+  {
+    fputs("Error: No output matrix specified.\n\n", stderr);
     return printUsage(argv[0]);
   }
   if (outputFormat == FILEFORMAT_UNDEFINED)
     outputFormat = inputFormat;
 
-  CMR_ERROR error = perturbMatrix(inputFileName, inputFormat, outputFormat, makeZero, makeOne, makeMinusOne, flipBinary,
-    flipTernary);
+  CMR_ERROR error = perturbMatrix(inputMatrixFileName, inputFormat, outputMatrixFileName, outputFormat, makeZero,
+    makeOne, makeMinusOne, flipBinary, flipTernary);
+
   switch (error)
   {
   case CMR_ERROR_INPUT:
-    puts("Input error.");
+    fputs("Input error.\n", stderr);
     return EXIT_FAILURE;
   case CMR_ERROR_MEMORY:
-    puts("Memory error.");
+    fputs("Memory error.\n", stderr);
     return EXIT_FAILURE;
   default:
     return EXIT_SUCCESS;
