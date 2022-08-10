@@ -191,8 +191,8 @@ int main(int argc, char** argv)
   }
 
   CMR_ERROR error;
-  error = testRegularity(inputMatrixFileName, inputFormat, outputTree, outputMinor, directGraphicness, seriesParallel,
-    printStats);
+  error = testRegularity(inputMatrixFileName, inputFormat, outputTree, outputMinor, printStats, directGraphicness,
+    seriesParallel);
 
   switch (error)
   {
