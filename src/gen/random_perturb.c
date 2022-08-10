@@ -218,6 +218,7 @@ CMR_ERROR perturbMatrix(
     ++previousRow;
     result->rowSlice[previousRow] = entry;
   }
+  result->numNonzeros = entry;
 
   CMR_CALL( CMRfreeBlockArray(cmr, &nonzeros) );
 
@@ -238,17 +239,18 @@ CMR_ERROR perturbMatrix(
 
 int printUsage(const char* program)
 {
-  printf("Usage: %s [OPTION]... MATRIX\n\n", program);
-  puts("Copies MATRIX after applying perturbations.");
-  puts("\nOptions:");
-  puts("  -i FORMAT Format of input MATRIX file; default: `dense'.");
-  puts("  -o FORMAT Format of output matrix; default: same as input format.");
-  puts("  -0 NUM    Turn NUM randomly chosen nonzero entries to 0s.");
-  puts("  -1 NUM    Turn NUM randomly chosen zero entries into 1s.");
-  puts("  --1 NUM   Turn NUM randomly chosen zero entries into -1s.");
-  puts("  -b NUM    Flip NUM randomly chosen entries over the binary field.");
-  puts("  -t NUM    Flip NUM randomly chosen entries over the ternary field.");
-  puts("If MATRIX is `-', then the matrix will be read from stdin.");
+  fprintf(stderr, "Usage: %s IN-MAT OUT-MAT [OPTION]...\n\n", program);
+  fputs("Copies the matrix from file IN-MAT to the file OUT-MAT after applying perturbations.\n\n", stderr);
+  fputs("Options:\n", stderr);
+  fputs("  -i FORMAT Format of file IN-MAT, among `dense' and `sparse'; default: dense.\n", stderr);
+  fputs("  -o FORMAT Format of file IN-MAT, among `dense' and `sparse'; default: same as format of IN-MAT.\n", stderr);
+  fputs("  -0 NUM    Turn NUM randomly chosen nonzero entries to 0s.\n", stderr);
+  fputs("  -1 NUM    Turn NUM randomly chosen zero entries into 1s.\n", stderr);
+  fputs("  --1 NUM   Turn NUM randomly chosen zero entries into -1s.\n", stderr);
+  fputs("  -b NUM    Flip NUM randomly chosen entries over the binary field.\n", stderr);
+  fputs("  -t NUM    Flip NUM randomly chosen entries over the ternary field.\n\n", stderr);
+  fputs("If IN-MAT is `-' then the input matrix is read from stdin.\n", stderr);
+  fputs("If OUT-MAT is `-' then the output matrix is written to stdout.\n", stderr);
   
   return EXIT_FAILURE;
 }
