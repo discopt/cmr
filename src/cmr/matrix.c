@@ -987,6 +987,7 @@ typedef struct
   double value;
 } DblNonzero;
 
+static
 int compareDblNonzeros(const void* pa, const void* pb)
 {
   size_t aRow = ((const DblNonzero*)pa)->row;
@@ -1093,6 +1094,7 @@ typedef struct
   int value;
 } IntNonzero;
 
+static
 int compareIntNonzeros(const void* pa, const void* pb)
 {
   size_t  aRow = ((const IntNonzero*)pa)->row;
@@ -1199,6 +1201,7 @@ typedef struct
   char value;
 } ChrNonzero;
 
+static
 int compareChrNonzeros(const void* pa, const void* pb)
 {
   size_t  aRow = ((const ChrNonzero*)pa)->row;
@@ -1259,7 +1262,7 @@ CMR_ERROR CMRchrmatCreateFromSparseStream(CMR* cmr, FILE* stream, CMR_CHRMAT** p
   numNonzeros = entry;
 
   /* We sort all nonzeros by row and then by column. */
-  CMR_CALL( CMRsort(cmr, numNonzeros, nonzeros, sizeof(DblNonzero), compareIntNonzeros) );
+  CMR_CALL( CMRsort(cmr, numNonzeros, nonzeros, sizeof(ChrNonzero), compareChrNonzeros) );
 
   CMR_CALL( CMRchrmatCreate(cmr, presult, numRows, numColumns, numNonzeros) );
   CMR_CHRMAT* result = *presult;

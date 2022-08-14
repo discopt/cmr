@@ -38,6 +38,7 @@ typedef struct
   char origin;
 } DblNonzero;
 
+static
 int compareDblNonzeros(const void* pa, const void* pb)
 {
   size_t aRow = ((const DblNonzero*)pa)->row;
