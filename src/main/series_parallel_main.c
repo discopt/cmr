@@ -18,6 +18,7 @@ CMR_ERROR recognizeSeriesParallel(
   const char* outputReductionsFileName, /**< File name for output reductions (may be `-` for stdout). */
   const char* outputReducedFileName,    /**< File name for output of reduced matrix (may be `-` for stdout). */
   const char* outputSubmatrixFileName,  /**< File name for minimal non-series-parallel submatrix (may be `-` for stdout). */
+  bool binary,                          /**< Whether to test for binary series-parallel. */
   bool printStats                       /**< Whether to print statistics to stderr. */
 )
 {
@@ -51,8 +52,12 @@ CMR_ERROR recognizeSeriesParallel(
 
   CMR_SP_STATISTICS stats;
   CMR_CALL( CMRstatsSeriesParallelInit(&stats) );
-  CMR_CALL( CMRtestTernarySeriesParallel(cmr, matrix, NULL, reductions, &numReductions,
-    outputReducedFileName ? &reducedSubmatrix : NULL, outputSubmatrixFileName ? &violatorSubmatrix : NULL, &stats) );
+  if (binary)
+    CMR_CALL( CMRtestBinarySeriesParallel(cmr, matrix, NULL, reductions, &numReductions,
+      outputReducedFileName ? &reducedSubmatrix : NULL, outputSubmatrixFileName ? &violatorSubmatrix : NULL, &stats) );
+  else
+    CMR_CALL( CMRtestTernarySeriesParallel(cmr, matrix, NULL, reductions, &numReductions,
+      outputReducedFileName ? &reducedSubmatrix : NULL, outputSubmatrixFileName ? &violatorSubmatrix : NULL, &stats) );
 
   fprintf(stderr, "Matrix %sseries-parallel. %ld reductions can be applied.\n",
     numReductions == matrix->numRows + matrix->numColumns ? "IS " : "is NOT ", numReductions);
@@ -115,6 +120,7 @@ int printUsage(const char* program)
   fputs("  -S OUT-SP       Write the list of series-parallel reductions to file OUT-SP; default: skip computation.\n", stderr);
   fputs("  -R OUT-REDUCED  Write the reduced submatrix to file `OUT-REDUCED`; default: skip computation.\n", stderr);
   fputs("  -N NON-SUB      Write a minimal non-series-parallel submatrix to file `NON-SUB`; default: skip computation.\n", stderr);
+  fputs("  -b              Test for being binary series-parallel; default: ternary.\n", stderr);
   fputs("  -s`             Print statistics about the computation to stderr.\n\n", stderr);
   fputs("If IN-MAT is `-' then the matrix is read from stdin.\n", stderr);
   fputs("If OUT-SP, OUT-REDUCED or NON-SUB is `-' then the list of reductions (resp. the submatrix) is written to stdout.\n", stderr);
@@ -129,6 +135,7 @@ int main(int argc, char** argv)
   char* outputReductionsFileName = NULL;
   char* outputReducedFileName = NULL;
   char* outputSubmatrixFileName = NULL;
+  bool binary = false;
   bool printStats = false;
   for (int a = 1; a < argc; ++a)
   {
@@ -156,6 +163,8 @@ int main(int argc, char** argv)
       outputReducedFileName = argv[++a];
     else if (!strcmp(argv[a], "-N") && a+1 < argc)
       outputSubmatrixFileName = argv[++a];
+    else if (!strcmp(argv[a], "-b"))
+      binary = true;
     else if (!strcmp(argv[a], "-s"))
       printStats = true;
     else if (!inputMatrixFileName)
@@ -174,7 +183,7 @@ int main(int argc, char** argv)
   }
 
   CMR_ERROR error = recognizeSeriesParallel(inputMatrixFileName, inputFormat, outputReductionsFileName,
-    outputReducedFileName, outputSubmatrixFileName, printStats);
+    outputReducedFileName, outputSubmatrixFileName, binary, printStats);
 
   switch (error)
   {

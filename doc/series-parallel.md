@@ -42,6 +42,7 @@ Moreover, one can ask for one of the minimal non-series-parallel submatrices abo
   - `-S OUT-SP`       Write the list of series-parallel reductions to file `OUT-SP`; default: skip computation.
   - `-R OUT-REDUCED`  Write the reduced submatrix to file `OUT-REDUCED`; default: skip computation.
   - `-N NON-SUB`      Write a minimal non-series-parallel submatrix to file `NON-SUB`; default: skip computation.
+  - `-b`              Test for being binary series-parallel; default: ternary.
   - `-s`              Print statistics about the computation to stderr.
 
 If `IN-MAT` is `-` then the matrix is read from stdin.
