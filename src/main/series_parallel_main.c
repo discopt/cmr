@@ -92,7 +92,8 @@ CMR_ERROR recognizeSeriesParallel(
   if (violatorSubmatrix && outputSubmatrixFileName)
   {
     bool outputSubmatrixToFile = strcmp(outputSubmatrixFileName, "-");
-    fprintf(stderr, "Writing minimal non-series-parallel submatrix to %s%s%s.\n", outputSubmatrixToFile ? "file <" : "",
+    fprintf(stderr, "Writing minimal non-series-parallel submatrix of order %lu to %s%s%s.\n",
+      violatorSubmatrix->numRows, outputSubmatrixToFile ? "file <" : "",
       outputSubmatrixToFile ? outputSubmatrixFileName : "stdout", outputSubmatrixToFile ? ">" : "");    
 
     CMR_CALL( CMRsubmatWriteToFile(cmr, violatorSubmatrix, matrix->numRows, matrix->numColumns,
