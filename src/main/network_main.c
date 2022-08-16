@@ -77,7 +77,7 @@ CMR_ERROR recognizeNetwork(
       outputSubmatrixFileName ? &submatrix : NULL, &stats) );
   }
 
-  printf("Matrix %s%snetwork.\n", isCoNetwork ? "IS " : "IS NOT ", conetwork ? "co" : "");
+  fprintf(stderr, "Matrix %s%snetwork.\n", isCoNetwork ? "IS " : "is NOT ", conetwork ? "co" : "");
   if (printStats)
     CMR_CALL( CMRstatsNetworkPrint(stderr, &stats, NULL) );
 

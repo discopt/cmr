@@ -78,7 +78,7 @@ CMR_ERROR recognizeGraphic(
       outputSubmatrixFileName ? &submatrix : NULL, &stats) );
   }
 
-  printf("Matrix %s%sgraphic.\n", isCoGraphic ? "IS " : "IS NOT ", cographic ? "co" : "");
+  fprintf(stderr, "Matrix %s%sgraphic.\n", isCoGraphic ? "IS " : "is NOT ", cographic ? "co" : "");
   if (printStats)
     CMR_CALL( CMRstatsGraphicPrint(stderr, &stats, NULL) );
 
