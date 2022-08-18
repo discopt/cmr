@@ -209,7 +209,7 @@ CMR_ERROR CMRtestConetworkMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisConetwor
   int* queue = NULL;
   int queueFirst;
   int queueBeyond;
-  CMRallocStackArray(cmr, &queue, matrix->numColumns + matrix->numRows);
+  CMR_CALL(CMRallocStackArray(cmr, &queue, matrix->numColumns + matrix->numRows));
   CMRassertStackConsistency(cmr);
 
   /* Process 1-connected components of the (transposed) matrix. */

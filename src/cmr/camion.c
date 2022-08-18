@@ -94,8 +94,8 @@ CMR_ERROR CMRcomputeCamionSignSequentiallyConnected(
   int bfsQueueBegin = 0;
   int bfsQueueEnd = 0;
 
-  CMRallocStackArray(cmr, &graphNodes, matrix->numColumns + matrix->numRows);
-  CMRallocStackArray(cmr, &bfsQueue, matrix->numColumns + matrix->numRows);
+  CMR_CALL(CMRallocStackArray(cmr, &graphNodes, matrix->numColumns + matrix->numRows));
+  CMR_CALL(CMRallocStackArray(cmr, &bfsQueue, matrix->numColumns + matrix->numRows));
 
   /* Main loop iterates over the rows. */
   for (size_t row = 1; row < matrix->numRows; ++row)
