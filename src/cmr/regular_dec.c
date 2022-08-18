@@ -166,7 +166,7 @@ void CMRcreateDecChild(CMR* cmr, CMR_DEC* dec, int numRows, int* rows, int numCo
   CMR_CHRMAT* childMatrix = result->matrix;
 
   int* columnMap = NULL;
-  CMRallocStackArray(cmr, &columnMap, parentMatrix->numColumns);
+  CMR_CALL(CMRallocStackArray(cmr, &columnMap, parentMatrix->numColumns));
   for (int column = 0; column < parentMatrix->numColumns; ++column)
     columnMap[column] = -1;
   for (int i = 0; i < numColumns; ++i)

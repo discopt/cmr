@@ -2769,7 +2769,7 @@ CMR_ERROR determineTypeRigid(
   if (numPathEndNodes == 4)
   {
     DEC_EDGE* nodeEdges = NULL;
-    CMRallocStackArray(dec->cmr, &nodeEdges, 2*dec->memNodes);
+    CMR_CALL(CMRallocStackArray(dec->cmr, &nodeEdges, 2*dec->memNodes));
 
     /* Initialize relevant entries to -1. */
     for (PathEdge* reducedEdge = reducedMember->firstPathEdge; reducedEdge; reducedEdge = reducedEdge->nextSibling)
