@@ -53,7 +53,7 @@ CMR_ERROR CMRsubmatFree(CMR* cmr, CMR_SUBMAT** psubmatrix)
     CMRfreeBlockArray(cmr, &submatrix->rows);
   if (submatrix->columns)
     CMRfreeBlockArray(cmr, &submatrix->columns);
-  CMRfreeBlockArray(cmr, psubmatrix);
+  CMRfreeBlock(cmr, psubmatrix);
 
   return CMR_OKAY;
 }
