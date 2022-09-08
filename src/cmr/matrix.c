@@ -157,10 +157,10 @@ CMR_ERROR CMRsubmatWriteToStream(CMR* cmr, CMR_SUBMAT* submatrix, size_t numRows
 
   fprintf(stream, "%lu %lu %lu %lu\n", numRows, numColumns, submatrix->numRows, submatrix->numColumns);
   for (size_t row = 0; row < submatrix->numRows; ++row)
-    fprintf(stream, "%lu ", submatrix->rows[row]);
+    fprintf(stream, "%lu ", submatrix->rows[row] + 1);
   fputc('\n', stream);
   for (size_t column = 0; column < submatrix->numColumns; ++column)
-    fprintf(stream, "%lu ", submatrix->columns[column]);
+    fprintf(stream, "%lu ", submatrix->columns[column] + 1);
   fputc('\n', stream);
 
   return CMR_OKAY;
@@ -210,13 +210,25 @@ CMR_ERROR CMRsubmatReadFromStream(CMR* cmr, CMR_SUBMAT ** psubmatrix, size_t* pn
   CMR_SUBMAT* submatrix = *psubmatrix;
   for (size_t r = 0; r < numRows; ++r)
   {
-    if (fscanf(stream, "%lu", &submatrix->rows[r]) != 1)
+    size_t row;
+    if (fscanf(stream, "%lu", &row) != 1)
       return CMR_ERROR_INPUT;
+
+    if (row == 0 || row > numRows)
+      return CMR_ERROR_INPUT;
+
+    submatrix->rows[r] = row - 1;
   }
   for (size_t c = 0; c < numColumns; ++c)
   {
-    if (fscanf(stream, "%lu", &submatrix->columns[c]) != 1)
+    size_t column;
+    if (fscanf(stream, "%lu", &column) != 1)
       return CMR_ERROR_INPUT;
+
+    if (column == 0 || column > numColumns)
+      return CMR_ERROR_INPUT;
+
+    submatrix->columns[c] = column - 1;
   }
 
   if (pnumMatrixRows)
