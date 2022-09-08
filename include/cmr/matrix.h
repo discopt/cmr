@@ -95,6 +95,8 @@ CMR_ERROR CMRsubmatZoomSubmat(
 
 /**
  * \brief Writes the submatrix \p submatrix to the file \p stream by means of lists of row and column indices.
+ *
+ * In the stream, row and column indices start at 1 while they start at 0 in \p submatrix.
  */
 
 CMR_EXPORT
@@ -108,6 +110,8 @@ CMR_ERROR CMRsubmatWriteToStream(
 
 /**
  * \brief Writes the submatrix \p submatrix to the file \fileName by means of lists of row and column indices.
+ *
+ * In the file, row and column indices start at 1 while they start at 0 in \p submatrix.
  */
 
 CMR_EXPORT
@@ -121,6 +125,8 @@ CMR_ERROR CMRsubmatWriteToFile(
 
 /**
  * \brief Reads the submatrix \p *psubmatrix from the file \p stream.
+ *
+ * In the stream, row and column indices start at 1 while they start at 0 in \p submatrix.
  */
 
 CMR_EXPORT
