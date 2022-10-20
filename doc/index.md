@@ -45,10 +45,12 @@ Changes and bug fixes are listed [here](\ref changes).
 The software is released under the [MIT License](https://en.wikipedia.org/wiki/MIT_License).
 Please cite the paper(s) corresponding to the respective tools.
 
-# Authors and Funding #
+# Authors #
 
 - [Rolf van der Hulst](https://people.utwente.nl/r.p.vanderhulst)
 - [Klaus Truemper](https://personal.utdallas.edu/~klaus/)
 - [Matthias Walter](https://people.utwente.nl/m.walter) (maintainer)
+
+# Funding support 
 
 - The software library acknowledges support from the Dutch Research Council (NWO) on grant number OCENW.M20.151 (11/2022-10/2026).
