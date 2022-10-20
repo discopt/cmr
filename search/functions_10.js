@@ -1,0 +1,25 @@
+var searchData=
+[
+  ['random_5fmatrix_5fgenerator',['random_matrix_generator',['../classrandom__matrix__generator.html#a8fe35eeacfa568d14c750d4070dfc0d1',1,'random_matrix_generator']]],
+  ['randomize',['randomize',['../classmatrix__generator.html#a8082f796fc5de6c722d46bf6de1fdf87',1,'matrix_generator']]],
+  ['range',['Range',['../classtu_1_1detail_1_1Range.html#a75d9e23b6bc4c4cc2651519cc7641c77',1,'tu::detail::Range::Range(Iterator begin, Iterator end)'],['../classtu_1_1detail_1_1Range.html#ac4bfcd23a39b843f1113dae8fd8710fd',1,'tu::detail::Range::Range(const Range&lt; Iterator &gt; &amp;other)']]],
+  ['rank',['rank',['../classtu_1_1separation.html#adc25877d318164eddcab2e8407a0fffc',1,'tu::separation']]],
+  ['reconnect_5fedge',['reconnect_edge',['../namespacetu_1_1util.html#ad93b3f44b3b4f5754e590dcdb6e000bf',1,'tu::util']]],
+  ['reconnect_5fedge_5fsource',['reconnect_edge_source',['../namespacetu_1_1util.html#aebc7355356054ad5fed67055e4f7c8a7',1,'tu::util']]],
+  ['reconnect_5fedge_5ftarget',['reconnect_edge_target',['../namespacetu_1_1util.html#a7e07706734a4951251f94e3430669623',1,'tu::util']]],
+  ['reducelistmatrix',['reduceListMatrix',['../series__parallel_8c.html#a25217a1e55a461df410e158cf2e7589a',1,'series_parallel.c']]],
+  ['removeallpathedges',['removeAllPathEdges',['../graphic_8c.html#aed6205c42a53c92d7a24bf0c0523d9a6',1,'graphic.c']]],
+  ['removeedgefrommembersedgelist',['removeEdgeFromMembersEdgeList',['../graphic_8c.html#ade574c776ee9172b77bd1bb0ce061dd0',1,'graphic.c']]],
+  ['reordercomponent',['reorderComponent',['../graphic_8c.html#ae935afcd43f067ac4f9a4ddfa70f4331',1,'graphic.c']]],
+  ['replaceedgeinmembersedgelist',['replaceEdgeInMembersEdgeList',['../graphic_8c.html#af25e2dc4441789e6a0e98fce248192df',1,'graphic.c']]],
+  ['reset',['reset',['../classtu_1_1permutation.html#a50a59b86f9a9ef13c7d24c5b6bcd163b',1,'tu::permutation::reset(size_t new_size)'],['../classtu_1_1permutation.html#afabfb26e0bff7d50c73ece599a164181',1,'tu::permutation::reset()'],['../classtu_1_1vector__three__connectivity.html#a437582ebb23b1927686046f6f000e78f',1,'tu::vector_three_connectivity::reset()']]],
+  ['resize',['resize',['../classtu_1_1matroid.html#a514eca088d8557739c43f7f247b1c356',1,'tu::matroid::resize()'],['../classtu_1_1nested__minor__sequence.html#ac6dd7ff673c49bea396169aa1a5b8126',1,'tu::nested_minor_sequence::resize()'],['../classtu_1_1permutation.html#af08aefe482617a58dd41c38a97e9469b',1,'tu::permutation::resize()']]],
+  ['reverse',['reverse',['../classtu_1_1permutation.html#ad6ceba5eb08eec2bcf113194518a2c05',1,'tu::permutation']]],
+  ['revert',['revert',['../classtu_1_1permutation.html#a132ce27c570150cbcc75d691f36d8ae2',1,'tu::permutation']]],
+  ['row_5fto_5findex',['row_to_index',['../structtu_1_1bipartite__graph__dimensions.html#ad0a581c0643a49eeeadf98158a3b45b0',1,'tu::bipartite_graph_dimensions']]],
+  ['rows',['rows',['../classtu_1_1SubmatrixIndices.html#a93ac47ba88bf857de21a43847b06fa6f',1,'tu::SubmatrixIndices']]],
+  ['rswap',['rswap',['../classtu_1_1permutation.html#af4bff6b573d57ad73207a93f590a9491',1,'tu::permutation']]],
+  ['run_5fcolumn_5fenumeration',['run_column_enumeration',['../tu__compare__main_8cpp.html#ad41f7d3c1d1d923eaefb3cf444bea58b',1,'tu_compare_main.cpp']]],
+  ['run_5fdecomposition',['run_decomposition',['../tu__compare__main_8cpp.html#a07655640c6f8f3ee4cc7833a12328b51',1,'tu_compare_main.cpp']]],
+  ['run_5fsubmatrix',['run_submatrix',['../tu__compare__main_8cpp.html#a6af9e115f540da7065207ba4846913f4',1,'tu_compare_main.cpp']]]
+];
