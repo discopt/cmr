@@ -80,6 +80,7 @@ add_executable(cmr_camion
 target_link_libraries(cmr_camion
    PRIVATE
       CMR::cmr
+      m
 )
 set_target_properties(cmr_camion PROPERTIES OUTPUT_NAME cmr-camion)
 
@@ -89,6 +90,7 @@ add_executable(cmr_tu
 target_link_libraries(cmr_tu
   PRIVATE
     CMR::cmr
+    m
 )
 set_target_properties(cmr_tu PROPERTIES OUTPUT_NAME cmr-tu)
 
@@ -98,6 +100,7 @@ add_executable(cmr_ctu
 target_link_libraries(cmr_ctu
   PRIVATE
     CMR::cmr
+    m
 )
 set_target_properties(cmr_ctu PROPERTIES OUTPUT_NAME cmr-ctu)
 
@@ -107,6 +110,7 @@ add_executable(cmr_graphic
 target_link_libraries(cmr_graphic
    PRIVATE
       CMR::cmr
+      m
 )
 set_target_properties(cmr_graphic PROPERTIES OUTPUT_NAME cmr-graphic)
 
@@ -116,6 +120,7 @@ add_executable(cmr_k_modular
 target_link_libraries(cmr_k_modular
   PRIVATE
     CMR::cmr
+    m
 )
 set_target_properties(cmr_k_modular PROPERTIES OUTPUT_NAME cmr-k-modular)
 
@@ -125,6 +130,7 @@ add_executable(cmr_network
 target_link_libraries(cmr_network
    PRIVATE
       CMR::cmr
+      m
 )
 set_target_properties(cmr_network PROPERTIES OUTPUT_NAME cmr-network)
 
@@ -134,6 +140,7 @@ add_executable(cmr_regular
 target_link_libraries(cmr_regular
   PRIVATE
     CMR::cmr
+    m
 )
 set_target_properties(cmr_regular PROPERTIES OUTPUT_NAME cmr-regular)
 
@@ -143,6 +150,7 @@ add_executable(cmr_series_parallel
 target_link_libraries(cmr_series_parallel
   PRIVATE
     CMR::cmr
+    m
 )
 set_target_properties(cmr_series_parallel PROPERTIES OUTPUT_NAME cmr-series-parallel)
 
@@ -152,6 +160,7 @@ add_executable(cmr_matrix
 target_link_libraries(cmr_matrix
   PRIVATE
     CMR::cmr
+    m
 )
 set_target_properties(cmr_matrix PROPERTIES OUTPUT_NAME cmr-matrix)
 
@@ -172,6 +181,7 @@ if(GENERATORS)
   target_link_libraries(cmr_generate_series_parallel
     PRIVATE
       CMR::cmr
+      m
   )
   set_target_properties(cmr_generate_series_parallel PROPERTIES OUTPUT_NAME cmr-generate-series-parallel)
 
@@ -181,6 +191,7 @@ if(GENERATORS)
   target_link_libraries(cmr_generate_graphic
     PRIVATE
       CMR::cmr
+      m
   )
   set_target_properties(cmr_generate_graphic PROPERTIES OUTPUT_NAME cmr-generate-graphic)
 
@@ -190,6 +201,7 @@ if(GENERATORS)
   target_link_libraries(cmr_generate_network
     PRIVATE
       CMR::cmr
+      m
   )
   set_target_properties(cmr_generate_network PROPERTIES OUTPUT_NAME cmr-generate-network)
 
@@ -199,6 +211,7 @@ if(GENERATORS)
   target_link_libraries(cmr_generate_random
     PRIVATE
       CMR::cmr
+      m
   )
   set_target_properties(cmr_generate_random PROPERTIES OUTPUT_NAME cmr-generate-random)
 
@@ -208,6 +221,7 @@ if(GENERATORS)
   target_link_libraries(cmr_perturb_random
     PRIVATE
       CMR::cmr
+      m
   )
   set_target_properties(cmr_perturb_random PROPERTIES OUTPUT_NAME cmr-perturb-random)
 
@@ -227,6 +241,7 @@ if(GENERATORS)
       PRIVATE
         CMR::cmr
         ${GUROBI_LIBRARIES}
+        m
     )
     set_target_properties(cmr_extract_gurobi PROPERTIES OUTPUT_NAME cmr-extract-gurobi)
     set(GENERATOR_EXECUTABLES ${GENERATOR_EXECUTABLES} cmr_extract_gurobi)
@@ -280,6 +295,7 @@ install(TARGETS
     cmr_k_modular
     cmr_matrix
     cmr_network
+    cmr_regular
     cmr_series_parallel
     cmr_tu
     ${GENERATOR_EXECUTABLES}
