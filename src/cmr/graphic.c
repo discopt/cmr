@@ -5290,9 +5290,7 @@ CMR_ERROR CMRtestCographicMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisCographi
 
       if (newcolumn->remainsGraphic)
       {
-        clock_t applyClock;
-        if (stats)
-          applyClock = clock();
+        clock_t applyClock = (stats ? clock() : 0);
 
         CMR_CALL( addColumnApply(dec, newcolumn, column, &matrix->entryColumns[matrix->rowSlice[column]],
           matrix->rowSlice[column+1] - matrix->rowSlice[column]) );
