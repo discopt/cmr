@@ -76,11 +76,11 @@ endif()
 
 # Target for the cmr-camion executable.
 add_executable(cmr_camion
-   src/main/camion_main.c) 
+  src/main/camion_main.c) 
 target_link_libraries(cmr_camion
-   PRIVATE
-      CMR::cmr
-      m
+  PRIVATE
+    CMR::cmr
+    m
 )
 set_target_properties(cmr_camion PROPERTIES OUTPUT_NAME cmr-camion)
 
@@ -106,11 +106,11 @@ set_target_properties(cmr_ctu PROPERTIES OUTPUT_NAME cmr-ctu)
 
 # Target for the cmr-graphic executable.
 add_executable(cmr_graphic
-   src/main/graphic_main.c)
+  src/main/graphic_main.c)
 target_link_libraries(cmr_graphic
-   PRIVATE
-      CMR::cmr
-      m
+  PRIVATE
+    CMR::cmr
+    m
 )
 set_target_properties(cmr_graphic PROPERTIES OUTPUT_NAME cmr-graphic)
 
@@ -126,11 +126,11 @@ set_target_properties(cmr_k_modular PROPERTIES OUTPUT_NAME cmr-k-modular)
 
 # Target for the cmr-network executable.
 add_executable(cmr_network
-   src/main/network_main.c) 
+  src/main/network_main.c) 
 target_link_libraries(cmr_network
-   PRIVATE
-      CMR::cmr
-      m
+  PRIVATE
+    CMR::cmr
+    m
 )
 set_target_properties(cmr_network PROPERTIES OUTPUT_NAME cmr-network)
 
@@ -267,12 +267,12 @@ set_target_properties(cmr PROPERTIES VISIBILITY_INLINES_HIDDEN 1)
 
 # Set target properties.
 target_include_directories(cmr
-   PUBLIC
-      $<INSTALL_INTERFACE:include> # <PREFIX>/include/ contains all installed headers.
-      $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> # contains all regular headers.
-      $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}> # contains all configured headers such as cmr/config.h and cmr/export.h.
-   PRIVATE
-      ${CMAKE_CURRENT_SOURCE_DIR}/src/cmr/
+  PUBLIC
+    $<INSTALL_INTERFACE:include> # <PREFIX>/include/ contains all installed headers.
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> # contains all regular headers.
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}> # contains all configured headers such as cmr/config.h and cmr/export.h.
+  PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/cmr/
 )
 
 target_compile_features(cmr PRIVATE cxx_auto_type)
@@ -304,18 +304,18 @@ install(TARGETS
 )
 
 install(TARGETS cmr
-   EXPORT cmr-targets
-   LIBRARY
-      DESTINATION ${CMAKE_INSTALL_LIBDIR}
-   ARCHIVE
-      DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  EXPORT cmr-targets
+  LIBRARY
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  ARCHIVE
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
 
 # Install header files.
 install(DIRECTORY include/cmr
-   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 install(FILES ${CMAKE_BINARY_DIR}/cmr/config.h ${CMAKE_BINARY_DIR}/cmr/export.h
-   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/cmr)
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/cmr)
 
 # Export the targets to a script.
 set(INSTALL_CONFIGDIR ${CMAKE_INSTALL_LIBDIR}/cmake/cmr/)
