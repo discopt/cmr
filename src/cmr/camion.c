@@ -50,12 +50,13 @@ typedef struct
 } GRAPH_NODE;
 
 CMR_ERROR CMRcomputeCamionSignSequentiallyConnected(
-  CMR* cmr,               /**< \ref CMR environment. */
-  CMR_CHRMAT* matrix,     /**< The matrix to be signed. */
-  CMR_CHRMAT* transpose,  /**< The transpose of \p matrix. */
-  bool change,            /**< Whether to modify the matrix. */
-  char* pmodification,    /**< Pointer for storing which matrix was modified.*/
-  CMR_SUBMAT** psubmatrix /**< Pointer for storing a submatrix with bad determinant (may be \c NULL). */
+  CMR* cmr,                 /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,       /**< The matrix to be signed. */
+  CMR_CHRMAT* transpose,    /**< The transpose of \p matrix. */
+  bool change,              /**< Whether to modify the matrix. */
+  char* pmodification,      /**< Pointer for storing which matrix was modified.*/
+  CMR_SUBMAT** psubmatrix,  /**< Pointer for storing a submatrix with bad determinant (may be \c NULL). */
+  double timeLimit          /**< Time limit to impose. */
 )
 {
   assert(cmr);
@@ -71,7 +72,8 @@ CMR_ERROR CMRcomputeCamionSignSequentiallyConnected(
   /* If we have more rows than columns, we work with the transpose. */
   if (matrix->numRows > matrix->numColumns)
   {
-    CMR_CALL( CMRcomputeCamionSignSequentiallyConnected(cmr, transpose, matrix, change, pmodification, psubmatrix) );
+    CMR_CALL( CMRcomputeCamionSignSequentiallyConnected(cmr, transpose, matrix, change, pmodification, psubmatrix,
+      timeLimit) );
     assert(*pmodification == 0 || *pmodification == 'm');
     if (psubmatrix && *psubmatrix)
     {
@@ -93,13 +95,22 @@ CMR_ERROR CMRcomputeCamionSignSequentiallyConnected(
   int* bfsQueue = NULL;
   int bfsQueueBegin = 0;
   int bfsQueueEnd = 0;
+  clock_t time = clock();
 
   CMR_CALL(CMRallocStackArray(cmr, &graphNodes, matrix->numColumns + matrix->numRows));
   CMR_CALL(CMRallocStackArray(cmr, &bfsQueue, matrix->numColumns + matrix->numRows));
 
   /* Main loop iterates over the rows. */
+  size_t clockRows = matrix->numRows / 100 + 1;
   for (size_t row = 1; row < matrix->numRows; ++row)
   {
+    if ((row % clockRows) == 0 && ((clock() - time) * 1.0 / CLOCKS_PER_SEC > timeLimit))
+    {
+      CMRfreeStackArray(cmr, &bfsQueue);
+      CMRfreeStackArray(cmr, &graphNodes);
+      return CMR_ERROR_TIMEOUT;
+    }
+    
     CMRdbgMsg(2, "Before processing row %d:\n", row);
 #if defined(CMR_DEBUG)
     CMRchrmatPrintDense(cmr, matrix, stdout, ' ', true);
@@ -305,16 +316,15 @@ CMR_ERROR sign(
   bool change,                  /**< Whether the signs of \f$ M \f$ shall be modified. */
   bool* pisCamionSigned,        /**< Pointer for storing whether \f$ M \f$ was already [Camion-signed](\ref camion). */
   CMR_SUBMAT** psubmatrix,      /**< Pointer for storing a non-camion submatrix (may be \c NULL). */
-  CMR_CAMION_STATISTICS* stats  /**< Statistics for the computation (may be \c NULL). */
+  CMR_CAMION_STATISTICS* stats, /**< Statistics for the computation (may be \c NULL). */
+  double timeLimit              /**< Time limit to impose. */
 )
 {
   assert(cmr);
   assert(matrix);
   assert(!psubmatrix || !*psubmatrix);
 
-  clock_t totalClock = 0;
-  if (stats)
-    totalClock = clock();
+  clock_t totalClock = clock();
 
   size_t numComponents;
   CMR_ONESUM_COMPONENT* components = NULL;
@@ -328,8 +338,8 @@ CMR_ERROR sign(
 
   /* Decompose into 1-connected components. */
 
-  CMR_CALL( decomposeOneSum(cmr, (CMR_MATRIX*) matrix, sizeof(char), sizeof(char), &numComponents, &components, NULL, NULL,
-    NULL, NULL) );
+  CMR_CALL( decomposeOneSum(cmr, (CMR_MATRIX*) matrix, sizeof(char), sizeof(char), &numComponents, &components, NULL,
+    NULL, NULL, NULL) );
 
   if (pisCamionSigned)
     *pisCamionSigned = true;
@@ -340,10 +350,11 @@ CMR_ERROR sign(
     CMRdbgMsg(2, "-> Component %d of size %dx%d\n", comp, components[comp].matrix->numRows,
       components[comp].matrix->numColumns);
 
+    double remainingTime = timeLimit - ((clock() - totalClock) * 1.0 / CLOCKS_PER_SEC);
     char modified;
     CMR_CALL( CMRcomputeCamionSignSequentiallyConnected(cmr, (CMR_CHRMAT*) components[comp].matrix,
       (CMR_CHRMAT*) components[comp].transpose, change, &modified,
-      (psubmatrix && !*psubmatrix) ? &compSubmatrix : NULL) );
+      (psubmatrix && !*psubmatrix) ? &compSubmatrix : NULL, remainingTime) );
 
     CMRdbgMsg(2, "-> Component %d yields: %c\n", comp, modified ? modified : '0');
 
@@ -453,13 +464,13 @@ CMR_ERROR sign(
 }
 
 CMR_ERROR CMRtestCamionSigned(CMR* cmr, CMR_CHRMAT* matrix, bool* pisCamionSigned, CMR_SUBMAT** psubmatrix,
-  CMR_CAMION_STATISTICS* stats)
+  CMR_CAMION_STATISTICS* stats, double timeLimit)
 {
-  return sign(cmr, matrix, false, pisCamionSigned, psubmatrix, stats);
+  return sign(cmr, matrix, false, pisCamionSigned, psubmatrix, stats, timeLimit);
 }
 
 CMR_ERROR CMRcomputeCamionSigned(CMR* cmr, CMR_CHRMAT* matrix, bool* pwasCamionSigned, CMR_SUBMAT** psubmatrix,
-  CMR_CAMION_STATISTICS* stats)
+  CMR_CAMION_STATISTICS* stats, double timeLimit)
 {
-  return sign(cmr, matrix, true, pwasCamionSigned, psubmatrix, stats);
+  return sign(cmr, matrix, true, pwasCamionSigned, psubmatrix, stats, timeLimit);
 }

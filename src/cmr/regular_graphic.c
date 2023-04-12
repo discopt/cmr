@@ -1245,7 +1245,8 @@ CMR_ERROR createWheel(
 
 CMR_ERROR CMRregularSequenceGraphic(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT* transpose, CMR_ELEMENT* rowElements,
   CMR_ELEMENT* columnElements, size_t lengthSequence, size_t* sequenceNumRows, size_t* sequenceNumColumns,
-  size_t* plastGraphicMinor, CMR_GRAPH** pgraph, CMR_ELEMENT** pedgeElements, CMR_REGULAR_STATISTICS* stats)
+  size_t* plastGraphicMinor, CMR_GRAPH** pgraph, CMR_ELEMENT** pedgeElements, CMR_REGULAR_STATISTICS* stats,
+  double timeLimit)
 {
   assert(cmr);
   assert(matrix);
@@ -1262,9 +1263,7 @@ CMR_ERROR CMRregularSequenceGraphic(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT* tr
 
   CMRdbgMsg(8, "Testing sequence for (co)graphicness.\n");
 
-  clock_t time = 0;
-  if (stats)
-    time = clock();
+  clock_t time = clock();
 
   CMR_CALL( CMRgraphCreateEmpty(cmr, pgraph, matrix->numRows, matrix->numRows + matrix->numColumns) );
   CMR_GRAPH* graph = *pgraph;
@@ -1294,8 +1293,19 @@ CMR_ERROR CMRregularSequenceGraphic(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT* tr
   CMR_CALL( updateHashValues(matrix, rowHashValues, columnHashValues, hashVector, 0, sequenceNumRows[0],
     sequenceNumColumns[0]) );
 
+  size_t extensionTimeFactor = lengthSequence / 100 + 1;
   for (size_t extension = 1; extension < lengthSequence; ++extension)
   { 
+    if ((extension % extensionTimeFactor == 0) && (clock() - time) * 1.0 / CLOCKS_PER_SEC > timeLimit)
+    {
+      CMR_CALL( CMRfreeStackArray(cmr, &columnHashValues) );
+      CMR_CALL( CMRfreeStackArray(cmr, &rowHashValues) );
+      CMR_CALL( CMRfreeStackArray(cmr, &columnEdges) );
+      CMR_CALL( CMRfreeStackArray(cmr, &rowEdges) );
+      CMR_CALL( CMRfreeStackArray(cmr, &hashVector) );
+      return CMR_ERROR_TIMEOUT;
+    }
+    
     size_t newRows = sequenceNumRows[extension] - sequenceNumRows[extension-1];
     size_t newColumns = sequenceNumColumns[extension] - sequenceNumColumns[extension-1];
 
@@ -1419,7 +1429,7 @@ CMR_ERROR CMRregularSequenceGraphic(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT* tr
 
 CMR_ERROR CMRregularTestGraphic(CMR* cmr, CMR_CHRMAT** pmatrix, CMR_CHRMAT** ptranspose, bool ternary, bool* pisGraphic,
   CMR_GRAPH** pgraph, CMR_GRAPH_EDGE** pforest, CMR_GRAPH_EDGE** pcoforest, bool** parcsReversed,
-  CMR_SUBMAT** psubmatrix, CMR_REGULAR_STATISTICS* stats)
+  CMR_SUBMAT** psubmatrix, CMR_REGULAR_STATISTICS* stats, double timeLimit)
 {
   assert(cmr);
   assert(pmatrix);
@@ -1444,12 +1454,12 @@ CMR_ERROR CMRregularTestGraphic(CMR* cmr, CMR_CHRMAT** pmatrix, CMR_CHRMAT** ptr
   if (ternary)
   {
     CMR_CALL( CMRtestConetworkMatrix(cmr, transpose, pisGraphic, pgraph, pforest, pcoforest, parcsReversed,
-      NULL, stats ? &stats->network : NULL) );
+      NULL, stats ? &stats->network : NULL, timeLimit) );
   }
   else
   {
     CMR_CALL( CMRtestCographicMatrix(cmr, transpose, pisGraphic, pgraph, pforest, pcoforest, NULL,
-      stats ? &stats->graphic : NULL) );
+      stats ? &stats->graphic : NULL, timeLimit) );
   }
 
   return CMR_OKAY;

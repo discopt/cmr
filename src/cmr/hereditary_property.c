@@ -2,15 +2,17 @@
 
 #include "hereditary_property.h"
 #include <stdint.h>
+#include <time.h>
 
 CMR_ERROR CMRtestHereditaryPropertySimple(CMR* cmr, CMR_CHRMAT* matrix, HereditaryPropertyTest testFunction,
-  void* testData, CMR_SUBMAT** psubmatrix)
+  void* testData, CMR_SUBMAT** psubmatrix, double timeLimit)
 {
   assert(cmr);
   assert(matrix);
   assert(testFunction);
   assert(psubmatrix);
 
+  clock_t time = clock();
   size_t* essentialRows = NULL;
   size_t numEssentialRows = 0;
   CMR_CALL( CMRallocStackArray(cmr, &essentialRows, matrix->numRows) );
@@ -67,7 +69,17 @@ CMR_ERROR CMRtestHereditaryPropertySimple(CMR* cmr, CMR_CHRMAT* matrix, Heredita
     /* Invoke test. */
     bool hasProperty;
     CMR_SUBMAT* submatrix = NULL;
-    CMR_CALL( testFunction(cmr, candidateMatrix, testData, &hasProperty, &submatrix) );
+    double remainingTime = timeLimit - (clock() - time) * 1.0 / CLOCKS_PER_SEC;
+    if (remainingTime < 0)
+    {
+      CMR_CALL( CMRchrmatFree(cmr, &candidateMatrix) );
+      CMR_CALL( CMRchrmatFree(cmr, &current) );
+      CMR_CALL( CMRfreeStackArray(cmr, &candidates) );
+      CMR_CALL( CMRfreeStackArray(cmr, &essentialColumns) );
+      CMR_CALL( CMRfreeStackArray(cmr, &essentialRows) );
+      return CMR_ERROR_TIMEOUT;
+    }
+    CMR_CALL( testFunction(cmr, candidateMatrix, testData, &hasProperty, &submatrix, remainingTime) );
 
     assert(!submatrix); // TODO: we cannot deal with this, yet.
 

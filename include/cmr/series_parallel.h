@@ -171,7 +171,8 @@ CMR_ERROR CMRtestBinarySeriesParallel(
   size_t* pnumReductions,           /**< Pointer for storing the number of SP-reductions. */
   CMR_SUBMAT** preducedSubmatrix,   /**< Pointer for storing the SP-reduced submatrix (may be \c NULL). */
   CMR_SUBMAT** pviolatorSubmatrix,  /**< Pointer for storing a wheel-submatrix (may be \c NULL). */
-  CMR_SP_STATISTICS* stats          /**< Pointer to statistics (may be \c NULL). */
+  CMR_SP_STATISTICS* stats,         /**< Pointer to statistics (may be \c NULL). */
+  double timeLimit                  /**< Time limit to impose. */
 );
 
 /**
@@ -197,7 +198,8 @@ CMR_ERROR CMRtestTernarySeriesParallel(
   size_t* pnumReductions,           /**< Pointer for storing the number of SP-reductions. */
   CMR_SUBMAT** preducedSubmatrix,   /**< Pointer for storing the SP-reduced submatrix (may be \c NULL). */
   CMR_SUBMAT** pviolatorSubmatrix,  /**< Pointer for storing a signed wheel- or \f$ M_2 \f$-submatrix (may be \c NULL). */
-  CMR_SP_STATISTICS* stats          /**< Pointer to statistics (may be \c NULL). */
+  CMR_SP_STATISTICS* stats,         /**< Pointer to statistics (may be \c NULL). */
+  double timeLimit                  /**< Time limit to impose. */
 );
 
 /**
@@ -219,18 +221,19 @@ CMR_ERROR CMRtestTernarySeriesParallel(
 
 CMR_EXPORT
 CMR_ERROR CMRdecomposeBinarySeriesParallel(
-  CMR* cmr,                             /**< \ref CMR environment. */
-  CMR_CHRMAT* matrix,                   /**< Sparse char matrix. */
-  bool* pisSeriesParallel,              /**< Pointer for storing the result. */
-  CMR_SP_REDUCTION* reductions,         /**< Array for storing the SP-reductions. If not \c NULL, it must have
-                                         **  capacity at least number of rows + number of columns. */
-  size_t maxNumReductions,              /**< Maximum number of SP-reductions. Stops when this would be exceeded. */
-  size_t* pnumReductions,               /**< Pointer for storing the number of SP-reductions; stores \c SIZE_MAX if
-                                         **< \p maxNumReductions was exceeded.  */
-  CMR_SUBMAT** preducedSubmatrix,       /**< Pointer for storing the SP-reduced submatrix (may be \c NULL). */
-  CMR_SUBMAT** pviolatorSubmatrix,      /**< Pointer for storing a wheel-submatrix (may be \c NULL). */
-  CMR_SEPA** pseparation,               /**< Pointer for storing a 2-separation (may be \c NULL). */
-  CMR_SP_STATISTICS* stats              /**< Pointer to statistics (may be \c NULL). */
+  CMR* cmr,                         /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,               /**< Sparse char matrix. */
+  bool* pisSeriesParallel,          /**< Pointer for storing the result. */
+  CMR_SP_REDUCTION* reductions,     /**< Array for storing the SP-reductions. If not \c NULL, it must have
+                                     **  capacity at least number of rows + number of columns. */
+  size_t maxNumReductions,          /**< Maximum number of SP-reductions. Stops when this would be exceeded. */
+  size_t* pnumReductions,           /**< Pointer for storing the number of SP-reductions; stores \c SIZE_MAX if
+                                     **< \p maxNumReductions was exceeded.  */
+  CMR_SUBMAT** preducedSubmatrix,   /**< Pointer for storing the SP-reduced submatrix (may be \c NULL). */
+  CMR_SUBMAT** pviolatorSubmatrix,  /**< Pointer for storing a wheel-submatrix (may be \c NULL). */
+  CMR_SEPA** pseparation,           /**< Pointer for storing a 2-separation (may be \c NULL). */
+  CMR_SP_STATISTICS* stats,         /**< Pointer to statistics (may be \c NULL). */
+  double timeLimit                  /**< Time limit to impose. */
 );
 
 
@@ -257,19 +260,20 @@ CMR_ERROR CMRdecomposeBinarySeriesParallel(
 
 CMR_EXPORT
 CMR_ERROR CMRdecomposeTernarySeriesParallel(
-  CMR* cmr,                             /**< \ref CMR environment. */
-  CMR_CHRMAT* matrix,                   /**< Sparse char matrix. */
-  bool* pisSeriesParallel,              /**< Pointer for storing the result. */
-  CMR_SP_REDUCTION* reductions,         /**< Array for storing the SP-reductions. If not \c NULL, it must have
-                                         **  capacity at least number of rows + number of columns. */
-  size_t maxNumReductions,              /**< Maximum number of SP-reductions. Stops when this would be exceeded. */
-  size_t* pnumReductions,               /**< Pointer for storing the number of SP-reductions; stores \c SIZE_MAX if
-                                         **< \p maxNumReductions was exceeded.  */
-  CMR_SUBMAT** preducedSubmatrix,       /**< Pointer for storing the SP-reduced submatrix (may be \c NULL). */
-  CMR_SUBMAT** pviolatorSubmatrix,      /**< Pointer for storing a signed wheel- or \f$ M_2 \f$-submatrix (may be
-                                         **  \c NULL). */
-  CMR_SEPA** pseparation,               /**< Pointer for storing a 2-separation (may be \c NULL). */
-  CMR_SP_STATISTICS* stats              /**< Pointer to statistics (may be \c NULL). */
+  CMR* cmr,                         /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,               /**< Sparse char matrix. */
+  bool* pisSeriesParallel,          /**< Pointer for storing the result. */
+  CMR_SP_REDUCTION* reductions,     /**< Array for storing the SP-reductions. If not \c NULL, it must have
+                                     **  capacity at least number of rows + number of columns. */
+  size_t maxNumReductions,          /**< Maximum number of SP-reductions. Stops when this would be exceeded. */
+  size_t* pnumReductions,           /**< Pointer for storing the number of SP-reductions; stores \c SIZE_MAX if
+                                     **< \p maxNumReductions was exceeded.  */
+  CMR_SUBMAT** preducedSubmatrix,   /**< Pointer for storing the SP-reduced submatrix (may be \c NULL). */
+  CMR_SUBMAT** pviolatorSubmatrix,  /**< Pointer for storing a signed wheel- or \f$ M_2 \f$-submatrix (may be
+                                     **  \c NULL). */
+  CMR_SEPA** pseparation,           /**< Pointer for storing a 2-separation (may be \c NULL). */
+  CMR_SP_STATISTICS* stats,         /**< Pointer to statistics (may be \c NULL). */
+  double timeLimit                  /**< Time limit to impose. */
 );
 
 #ifdef __cplusplus

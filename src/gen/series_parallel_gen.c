@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+#include <float.h>
 #include <sys/time.h>
 #include <stdint.h>
 
@@ -358,12 +359,12 @@ CMR_ERROR genMatrixSeriesParallel(
       if (ternary)
       {
         CMR_CALL( CMRtestTernarySeriesParallel(cmr, matrix, NULL, reductions, &numReductions, NULL, &wheelMatrix,
-          &stats) );
+          &stats, DBL_MAX) );
       }
       else
       {
         CMR_CALL( CMRtestBinarySeriesParallel(cmr, matrix, NULL, reductions, &numReductions, NULL, &wheelMatrix,
-          &stats) );
+          &stats, DBL_MAX) );
       }
       numBenchmarkNonzeros += numTotalNonzeros;
 

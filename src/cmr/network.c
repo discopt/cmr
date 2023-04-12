@@ -105,7 +105,7 @@ typedef struct
 
 CMR_ERROR CMRtestConetworkMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisConetwork, CMR_GRAPH** pdigraph,
   CMR_GRAPH_EDGE** pforestArcs, CMR_GRAPH_EDGE** pcoforestArcs, bool** parcsReversed, CMR_SUBMAT** psubmatrix,
-  CMR_NETWORK_STATISTICS* stats)
+  CMR_NETWORK_STATISTICS* stats, double timeLimit)
 {
   assert(cmr);
   assert(matrix);
@@ -121,12 +121,10 @@ CMR_ERROR CMRtestConetworkMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisConetwor
   CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', true) );
 #endif /* CMR_DEBUG */
 
-  clock_t totalClock = 0;
-  if (stats)
-    totalClock = clock();
+  clock_t totalClock = clock();
 
   bool isCamionSigned;
-  CMR_CALL( CMRtestCamionSigned(cmr, matrix, &isCamionSigned, psubmatrix, stats ? &stats->camion : NULL) );
+  CMR_CALL( CMRtestCamionSigned(cmr, matrix, &isCamionSigned, psubmatrix, stats ? &stats->camion : NULL, timeLimit) );
 #if defined(CMR_DEBUG)
   CMRdbgMsg(2, "CMRtestCamionSigned() returned %s.\n", isCamionSigned ? "TRUE": "FALSE");
 #endif /* CMR_DEBUG */
@@ -137,10 +135,11 @@ CMR_ERROR CMRtestConetworkMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisConetwor
     return CMR_OKAY;
   }
 
+  double remainingTime = timeLimit - (clock() - totalClock) * 1.0 / CLOCKS_PER_SEC;
   CMR_GRAPH_EDGE* forestEdges = NULL;
   CMR_GRAPH_EDGE* coforestEdges = NULL;
   CMR_CALL( CMRtestCographicMatrix(cmr, matrix, pisConetwork, pdigraph, &forestEdges, &coforestEdges, psubmatrix,
-    stats ? &stats->graphic : NULL) );
+    stats ? &stats->graphic : NULL, remainingTime) );
 #if defined(CMR_DEBUG)
   CMRdbgMsg(2, "CMRtestCographicMatrix() returned %s.\n", (*pisConetwork) ? "TRUE": "FALSE");
 #endif /* CMR_DEBUG */
@@ -151,7 +150,6 @@ CMR_ERROR CMRtestConetworkMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisConetwor
     *pcoforestArcs = coforestEdges;
   if (!*pisConetwork || !pdigraph || !parcsReversed)
   {
-
     /* We have to free (co)forest information if the caller didn't ask for it. */
     if (!pforestArcs)
       CMR_CALL( CMRfreeBlockArray(cmr, &forestEdges) );
@@ -441,7 +439,7 @@ CMR_ERROR CMRtestConetworkMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisConetwor
 
 CMR_ERROR CMRtestNetworkMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisNetwork, CMR_GRAPH** pdigraph,
   CMR_GRAPH_EDGE** pforestArcs, CMR_GRAPH_EDGE** pcoforestArcs, bool** parcsReversed, CMR_SUBMAT** psubmatrix,
-  CMR_NETWORK_STATISTICS* stats)
+  CMR_NETWORK_STATISTICS* stats, double timeLimit)
 {
   assert(cmr);
   assert(matrix);
@@ -462,7 +460,7 @@ CMR_ERROR CMRtestNetworkMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisNetwork, C
 #endif /* CMR_DEBUG */
 
   CMR_CALL( CMRtestConetworkMatrix(cmr, transpose, pisNetwork, pdigraph, pforestArcs, pcoforestArcs, parcsReversed,
-    psubmatrix, stats) );
+    psubmatrix, stats, timeLimit) );
 
   /* Transpose minimal non-conetwork matrix to become a minimal non-network matrix. */
   if (psubmatrix && *psubmatrix)

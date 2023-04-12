@@ -1,5 +1,7 @@
 # Change Log # {#changes}
 
+  - Added a `timeLimit` parameter to all potentially time intensive functions.
+
 ## Version 1.3 ##
 
   - Redesigned as [Combinatorial Matrix Recognition](\ref index) Library.

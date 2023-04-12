@@ -4,6 +4,7 @@
 #include <assert.h>
 #include <math.h>
 #include <time.h>
+#include <float.h>
 
 #include <cmr/matrix.h>
 
@@ -163,6 +164,8 @@ int printUsage(const char* program)
   fputs("  -i FORMAT    Format of file IN-MAT, among `dense' and `sparse'; default: dense.\n", stderr);
   fputs("  -s           Print statistics about the computation to stderr.\n", stderr);
   fputs("  -e EPSILON   Allows rounding of numbers up to tolerance EPSILON; default: 1.0e-9.\n\n", stderr);
+  fputs("Advanced options:\n", stderr);
+  fputs("  --time-limit LIMIT   Allow at most LIMIT seconds for the computation.\n\n", stderr);
   fputs("If IN-MAT is `-' then the matrix is read from stdin.\n", stderr);
   fputs("If OUT-SUB is `-' then the submatrix is written to stdout.\n", stderr);
 
@@ -179,6 +182,7 @@ int main(int argc, char** argv)
   char* inputMatrixFileName = NULL;
   char* outputSubmatrixFileName = NULL;
   double epsilon = 1.0e-9;
+  double timeLimit = DBL_MAX;
   for (int a = 1; a < argc; ++a)
   {
     if (!strcmp(argv[a], "-h"))
@@ -220,6 +224,15 @@ int main(int argc, char** argv)
     {
       outputSubmatrixFileName = argv[++a];
       task = TASK_SUBMATRIX;
+    }
+    else if (!strcmp(argv[a], "--time-limit") && (a+1 < argc))
+    {
+      if (sscanf(argv[a+1], "%lf", &timeLimit) == 0 || timeLimit <= 0)
+      {
+        fprintf(stderr, "Error: Invalid time limit <%s> specified.\n\n", argv[a+1]);
+        return printUsage(argv[0]);
+      }
+      ++a;
     }
     else if (!inputMatrixFileName)
       inputMatrixFileName = argv[a];

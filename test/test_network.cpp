@@ -18,7 +18,7 @@ void testNetworkMatrix(
   bool* edgesReversed = NULL;
 
   ASSERT_CMR_CALL( CMRtestNetworkMatrix(cmr, matrix, &isGraphic, &graph, &basis, &cobasis, &edgesReversed, NULL,
-    NULL) );
+    NULL, DBL_MAX) );
 
   ASSERT_TRUE( isGraphic );
   ASSERT_TRUE( basis );

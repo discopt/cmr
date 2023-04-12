@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+#include <float.h>
 
 #include <cmr/matrix.h>
 #include <cmr/series_parallel.h>
@@ -19,7 +20,8 @@ CMR_ERROR recognizeSeriesParallel(
   const char* outputReducedFileName,    /**< File name for output of reduced matrix (may be `-` for stdout). */
   const char* outputSubmatrixFileName,  /**< File name for minimal non-series-parallel submatrix (may be `-` for stdout). */
   bool binary,                          /**< Whether to test for binary series-parallel. */
-  bool printStats                       /**< Whether to print statistics to stderr. */
+  bool printStats,                      /**< Whether to print statistics to stderr. */
+  double timeLimit                  /**< Time limit to impose. */
 )
 {
   clock_t readClock = clock();
@@ -54,10 +56,12 @@ CMR_ERROR recognizeSeriesParallel(
   CMR_CALL( CMRstatsSeriesParallelInit(&stats) );
   if (binary)
     CMR_CALL( CMRtestBinarySeriesParallel(cmr, matrix, NULL, reductions, &numReductions,
-      outputReducedFileName ? &reducedSubmatrix : NULL, outputSubmatrixFileName ? &violatorSubmatrix : NULL, &stats) );
+      outputReducedFileName ? &reducedSubmatrix : NULL, outputSubmatrixFileName ? &violatorSubmatrix : NULL, &stats,
+      timeLimit) );
   else
     CMR_CALL( CMRtestTernarySeriesParallel(cmr, matrix, NULL, reductions, &numReductions,
-      outputReducedFileName ? &reducedSubmatrix : NULL, outputSubmatrixFileName ? &violatorSubmatrix : NULL, &stats) );
+      outputReducedFileName ? &reducedSubmatrix : NULL, outputSubmatrixFileName ? &violatorSubmatrix : NULL, &stats,
+      timeLimit) );
 
   fprintf(stderr, "Matrix %sseries-parallel. %ld reductions can be applied.\n",
     numReductions == matrix->numRows + matrix->numColumns ? "IS " : "is NOT ", numReductions);
@@ -123,6 +127,8 @@ int printUsage(const char* program)
   fputs("  -N NON-SUB      Write a minimal non-series-parallel submatrix to file `NON-SUB`; default: skip computation.\n", stderr);
   fputs("  -b              Test for being binary series-parallel; default: ternary.\n", stderr);
   fputs("  -s`             Print statistics about the computation to stderr.\n\n", stderr);
+  fputs("Advanced options:\n", stderr);
+  fputs("  --time-limit LIMIT   Allow at most LIMIT seconds for the computation.\n\n", stderr);
   fputs("If IN-MAT is `-' then the matrix is read from stdin.\n", stderr);
   fputs("If OUT-SP, OUT-REDUCED or NON-SUB is `-' then the list of reductions (resp. the submatrix) is written to stdout.\n", stderr);
 
@@ -138,6 +144,7 @@ int main(int argc, char** argv)
   char* outputSubmatrixFileName = NULL;
   bool binary = false;
   bool printStats = false;
+  double timeLimit = DBL_MAX;
   for (int a = 1; a < argc; ++a)
   {
     if (!strcmp(argv[a], "-h"))
@@ -168,6 +175,15 @@ int main(int argc, char** argv)
       binary = true;
     else if (!strcmp(argv[a], "-s"))
       printStats = true;
+    else if (!strcmp(argv[a], "--time-limit") && (a+1 < argc))
+    {
+      if (sscanf(argv[a+1], "%lf", &timeLimit) == 0 || timeLimit <= 0)
+      {
+        fprintf(stderr, "Error: Invalid time limit <%s> specified.\n\n", argv[a+1]);
+        return printUsage(argv[0]);
+      }
+      ++a;
+    }
     else if (!inputMatrixFileName)
       inputMatrixFileName = argv[a];
     else
@@ -184,7 +200,7 @@ int main(int argc, char** argv)
   }
 
   CMR_ERROR error = recognizeSeriesParallel(inputMatrixFileName, inputFormat, outputReductionsFileName,
-    outputReducedFileName, outputSubmatrixFileName, binary, printStats);
+    outputReducedFileName, outputSubmatrixFileName, binary, printStats, timeLimit);
 
   switch (error)
   {

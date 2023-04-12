@@ -9,6 +9,7 @@
 #include <assert.h>
 #include <stdint.h>
 #include <time.h>
+#include <float.h>
 
 CMR_ERROR CMRstatsComplementTotalUnimodularityInit(CMR_CTU_STATISTICS* stats)
 {
@@ -252,7 +253,7 @@ CMR_ERROR CMRtestComplementTotalUnimodularity(CMR* cmr, CMR_CHRMAT* matrix, bool
 
       bool isTU = false;
       CMR_CALL( CMRtestTotalUnimodularity(cmr, complementedMatrix, &isTU, NULL, NULL, NULL,
-        stats ? &stats->tu : NULL) );
+        stats ? &stats->tu : NULL, DBL_MAX) ); /* TODO: Properly deal with time limits. */
       if (!isTU)
       {
         if (pcomplementRow)

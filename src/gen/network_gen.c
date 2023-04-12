@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+#include <float.h>
 #include <sys/time.h>
 #include <stdint.h>
 #include <math.h>
@@ -142,7 +143,7 @@ CMR_ERROR genMatrixNetwork(
     CMR_CALL( CMRchrmatFree(cmr, &transposed) );
 
     /* Make it a network matrix via Camion's signing algorithm. */
-    CMR_CALL( CMRcomputeCamionSigned(cmr, matrix, NULL, NULL, NULL) );
+    CMR_CALL( CMRcomputeCamionSigned(cmr, matrix, NULL, NULL, NULL, DBL_MAX) );
 
     double generationTime = (clock() - startTime) * 1.0 / CLOCKS_PER_SEC;
     fprintf(stderr, "Generated a %ldx%ld matrix with %ld nonzeros in %f seconds.\n", numRows, numColumns,
@@ -152,7 +153,7 @@ CMR_ERROR genMatrixNetwork(
     {
       /* Benchmark */      
       bool isNetwork;
-      CMR_CALL( CMRtestNetworkMatrix(cmr, matrix, &isNetwork, NULL, NULL, NULL, NULL, NULL, &stats) );
+      CMR_CALL( CMRtestNetworkMatrix(cmr, matrix, &isNetwork, NULL, NULL, NULL, NULL, NULL, &stats, DBL_MAX) );
     }
     else
     {

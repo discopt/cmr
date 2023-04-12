@@ -34,7 +34,7 @@ TEST(Regular, OneSum)
 
     bool isRegular;
     CMR_DEC* dec = NULL;
-    ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, NULL, NULL) );
+    ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, NULL, NULL, DBL_MAX) );
 
     ASSERT_CMR_CALL( CMRdecPrint(cmr, dec, stdout, 0, true, true, true) );
     ASSERT_TRUE( isRegular );
@@ -94,7 +94,7 @@ TEST(Regular, SeriesParallelTwoSeparation)
 
     bool isRegular;
     CMR_DEC* dec = NULL;
-    ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, NULL, NULL) );
+    ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, NULL, NULL, DBL_MAX) );
 
     ASSERT_CMR_CALL( CMRdecPrint(cmr, dec, stdout, 0, true, true, true) );
     ASSERT_TRUE( isRegular );
@@ -149,7 +149,7 @@ TEST(Regular, NestedMinorSearchTwoSeparation)
 
     bool isRegular;
     CMR_DEC* dec = NULL;
-    ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, NULL, NULL) );
+    ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, NULL, NULL, DBL_MAX) );
 
     ASSERT_CMR_CALL( CMRdecPrint(cmr, dec, stdout, 0, true, true, true) );
     ASSERT_TRUE( isRegular );
@@ -194,7 +194,7 @@ TEST(Regular, NestedMinorPivotsOneRowOneColumn)
   CMR_REGULAR_PARAMETERS params;
   ASSERT_CMR_CALL( CMRparamsRegularInit(&params) );
   params.directGraphicness = false;
-  ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, &params, NULL) );
+  ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, &params, NULL, DBL_MAX) );
 
   ASSERT_CMR_CALL( CMRdecPrint(cmr, dec, stdout, 0, true, true, true) );
   
@@ -228,7 +228,7 @@ TEST(Regular, NestedMinorPivotsTwoRowsOneColumn)
   CMR_REGULAR_PARAMETERS params;
   ASSERT_CMR_CALL( CMRparamsRegularInit(&params) );
   params.directGraphicness = false;
-  ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, &params, NULL) );
+  ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, &params, NULL, DBL_MAX) );
 
   ASSERT_CMR_CALL( CMRdecPrint(cmr, dec, stdout, 0, true, true, true) );
   
@@ -261,7 +261,7 @@ TEST(Regular, NestedMinorPivotsOneRowTwoColumns)
   CMR_REGULAR_PARAMETERS params;
   ASSERT_CMR_CALL( CMRparamsRegularInit(&params) );
   params.directGraphicness = false;
-  ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, &params, NULL) );
+  ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, &params, NULL, DBL_MAX) );
 
   ASSERT_CMR_CALL( CMRdecPrint(cmr, dec, stdout, 0, true, true, true) );
   
@@ -299,7 +299,7 @@ TEST(Regular, NestedMinorPivotsTwoSeparation)
   CMR_REGULAR_PARAMETERS params;
   ASSERT_CMR_CALL( CMRparamsRegularInit(&params) );
   params.directGraphicness = false;
-  ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, &params, NULL) );
+  ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, &params, NULL, DBL_MAX) );
 
   ASSERT_CMR_CALL( CMRdecPrint(cmr, dec, stdout, 0, true, true, true) );
   
@@ -329,7 +329,7 @@ void testSequenceGraphicness(
   CMR_REGULAR_PARAMETERS params;
   ASSERT_CMR_CALL( CMRparamsRegularInit(&params) );
   params.directGraphicness = false;
-  ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, &params, NULL) );
+  ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, &params, NULL, DBL_MAX) );
 
   if (knowGraphic)
   {
@@ -626,7 +626,7 @@ TEST(Regular, R10)
 
     bool isRegular;
     CMR_DEC* dec = NULL;
-    ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, NULL, NULL) );
+    ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, NULL, NULL, DBL_MAX) );
     ASSERT_TRUE( CMRdecIsRegular(dec) );
     ASSERT_EQ( CMRdecNumChildren(dec), 0 );
     ASSERT_CMR_CALL( CMRdecFree(cmr, &dec) );
@@ -647,7 +647,7 @@ TEST(Regular, R10)
 
     bool isRegular;
     CMR_DEC* dec = NULL;
-    ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, NULL, NULL) );
+    ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, NULL, NULL, DBL_MAX) );
     ASSERT_TRUE( CMRdecIsRegular(dec) );
     ASSERT_EQ( CMRdecNumChildren(dec), 0 );
     ASSERT_CMR_CALL( CMRdecFree(cmr, &dec) );
@@ -677,7 +677,7 @@ void testEnumerate(
   CMR_REGULAR_PARAMETERS params;
   ASSERT_CMR_CALL( CMRparamsRegularInit(&params) );
   params.directGraphicness = false;
-  ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, &params, NULL) );
+  ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, &params, NULL, DBL_MAX) );
 
   if (knowRegular)
   {
@@ -772,7 +772,7 @@ TEST(Regular, R12)
 
     bool isRegular;
     CMR_DEC* dec = NULL;
-    ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, NULL, NULL) );
+    ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, NULL, NULL, DBL_MAX) );
     ASSERT_TRUE( CMRdecIsRegular(dec) );
     ASSERT_EQ( CMRdecNumChildren(dec), 2 );
     size_t graphicChildren = (CMRdecIsGraphic(CMRdecChild(dec, 0)) ? 2 : 0)

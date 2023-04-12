@@ -3,6 +3,7 @@
 #include <string.h>
 #include <time.h>
 #include <assert.h>
+#include <float.h>
 
 #include <cmr/matrix.h>
 #include <cmr/camion.h>
@@ -29,7 +30,8 @@ CMR_ERROR checkCamionSigned(
   const char* inputMatrixFileName,      /**< File name containing the input matrix (may be `-' for stdin). */
   FileFormat inputFormat,               /**< Format of the input matrix. */
   const char* outputSubmatrixFileName,  /**< File name of output file for non-Camion submatrix. */
-  bool printStats                       /**< Whether to print statistics to stderr. */
+  bool printStats,                      /**< Whether to print statistics to stderr. */
+  double timeLimit                      /**< Time limit to impose. */
 )
 {
   clock_t readClock = clock();
@@ -59,7 +61,7 @@ CMR_ERROR checkCamionSigned(
   CMR_CAMION_STATISTICS stats;
   CMR_CALL( CMRstatsCamionInit(&stats) );
   CMR_CALL( CMRtestCamionSigned(cmr, matrix, &isCamion,
-    outputSubmatrixFileName ? &submatrix : NULL, printStats ? &stats : NULL) );
+    outputSubmatrixFileName ? &submatrix : NULL, printStats ? &stats : NULL, timeLimit) );
 
   fprintf(stderr, "Matrix %sCamion-signed.\n", isCamion ? "IS " : "IS NOT ");
   if (printStats)
@@ -98,7 +100,8 @@ CMR_ERROR computeCamionSigned(
   FileFormat inputFormat,           /**< Format of the input matrix. */
   const char* outputMatrixFileName, /**< File name of output file for Camion-signed matrix. */
   FileFormat outputFormat,          /**< Format of the output matrix. */
-  bool printStats                   /**< Whether to print statistics to stderr. */
+  bool printStats,                  /**< Whether to print statistics to stderr. */
+  double timeLimit                  /**< Time limit to impose. */
 )
 {
   clock_t readClock = clock();
@@ -125,7 +128,7 @@ CMR_ERROR computeCamionSigned(
   
   CMR_CAMION_STATISTICS stats;
   CMR_CALL( CMRstatsCamionInit(&stats) );
-  CMR_CALL( CMRcomputeCamionSigned(cmr, matrix, NULL, NULL, &stats) );
+  CMR_CALL( CMRcomputeCamionSigned(cmr, matrix, NULL, NULL, &stats, timeLimit) );
   if (printStats)
     CMR_CALL( CMRstatsCamionPrint(stderr, &stats, NULL) );
 
@@ -175,6 +178,8 @@ int printUsage(const char* program)
   fputs("Common options:\n", stderr);
   fputs("  -i FORMAT    Format of file IN-MAT, among `dense' and `sparse'; default: dense.\n", stderr);
   fputs("  -s           Print statistics about the computation to stderr.\n\n", stderr);
+  fputs("Advanced options:\n", stderr);
+  fputs("  --time-limit LIMIT   Allow at most LIMIT seconds for the computation.\n\n", stderr);
   fputs("If IN-MAT is `-' then the matrix is read from stdin.\n", stderr);
   fputs("If NON-SUB or OUT-MAT is `-' then the submatrix (resp. the Camion-signed matrix) is written to stdout.\n",
     stderr);
@@ -191,6 +196,7 @@ int main(int argc, char** argv)
   char* outputSubmatrixFileName = NULL;
   char* outputMatrixFileName = NULL;
   bool printStats = false;
+  double timeLimit = DBL_MAX;
   for (int a = 1; a < argc; ++a)
   {
     if (!strcmp(argv[a], "-h"))
@@ -233,6 +239,15 @@ int main(int argc, char** argv)
       }
       ++a;
     }
+    else if (!strcmp(argv[a], "--time-limit") && (a+1 < argc))
+    {
+      if (sscanf(argv[a+1], "%lf", &timeLimit) == 0 || timeLimit <= 0)
+      {
+        fprintf(stderr, "Error: Invalid time limit <%s> specified.\n\n", argv[a+1]);
+        return printUsage(argv[0]);
+      }
+      ++a;
+    }
     else if (!inputMatrixFileName)
       inputMatrixFileName = argv[a];
     else
@@ -259,11 +274,12 @@ int main(int argc, char** argv)
   CMR_ERROR error;
   if (task == TASK_CHECK)
   {
-    error = checkCamionSigned(inputMatrixFileName, inputFormat, outputSubmatrixFileName, printStats);
+    error = checkCamionSigned(inputMatrixFileName, inputFormat, outputSubmatrixFileName, printStats, timeLimit);
   }
   else if (task == TASK_SIGN)
   {
-    error = computeCamionSigned(inputMatrixFileName, inputFormat, outputMatrixFileName, outputFormat, printStats);
+    error = computeCamionSigned(inputMatrixFileName, inputFormat, outputMatrixFileName, outputFormat, printStats,
+      timeLimit);
   }
   else
     assert(false);

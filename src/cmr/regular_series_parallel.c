@@ -8,7 +8,7 @@
 #include "dec_internal.h"
 
 CMR_ERROR CMRregularDecomposeSeriesParallel(CMR* cmr, CMR_DEC** pdec, bool ternary, CMR_SUBMAT** psubmatrix,
-  CMR_REGULAR_PARAMETERS* params, CMR_REGULAR_STATISTICS* stats)
+  CMR_REGULAR_PARAMETERS* params, CMR_REGULAR_STATISTICS* stats, double timeLimit)
 {
   assert(cmr);
   assert(pdec);
@@ -33,13 +33,13 @@ CMR_ERROR CMRregularDecomposeSeriesParallel(CMR* cmr, CMR_DEC** pdec, bool terna
   {
     CMR_CALL( CMRdecomposeTernarySeriesParallel(cmr, dec->matrix, &isSeriesParallel, reductions,
       params->seriesParallel ? SIZE_MAX : 1, &numReductions, &reducedSubmatrix, psubmatrix, &separation,
-      stats ? &stats->seriesParallel : NULL) );
+      stats ? &stats->seriesParallel : NULL, timeLimit) );
   }
   else
   {
     CMR_CALL( CMRdecomposeBinarySeriesParallel(cmr, dec->matrix, &isSeriesParallel, reductions,
       params->seriesParallel ? SIZE_MAX : 1,  &numReductions, &reducedSubmatrix, psubmatrix, &separation,
-      stats ? &stats->seriesParallel : NULL) );
+      stats ? &stats->seriesParallel : NULL, timeLimit) );
   }
 
   /* Did we find a 2-by-2 submatrix? If yes, is has determinant -2 or +2! */

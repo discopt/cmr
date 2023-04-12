@@ -9,7 +9,7 @@
 
 void testBinaryGraphicMatrix(
   CMR* cmr,           /**< \ref CMR environment. */
-  CMR_CHRMAT* matrix /**< Matrix to be used for testing. */
+  CMR_CHRMAT* matrix  /**< Matrix to be used for testing. */
 )
 {
   bool isGraphic;
@@ -19,7 +19,7 @@ void testBinaryGraphicMatrix(
   CMR_CHRMAT* transpose = NULL;
   ASSERT_CMR_CALL( CMRchrmatTranspose(cmr, matrix, &transpose) );
 
-  ASSERT_CMR_CALL( CMRtestCographicMatrix(cmr, transpose, &isGraphic, &graph, &basis, &cobasis, NULL, NULL) );
+  ASSERT_CMR_CALL( CMRtestCographicMatrix(cmr, transpose, &isGraphic, &graph, &basis, &cobasis, NULL, NULL, DBL_MAX) );
 
   ASSERT_TRUE( isGraphic );
   ASSERT_TRUE( basis );
@@ -73,7 +73,7 @@ void testBinaryNongraphicMatrix(
   bool isGraphic;
   CMR_CHRMAT* transpose = NULL;
   ASSERT_CMR_CALL( CMRchrmatTranspose(cmr, matrix, &transpose) );
-  ASSERT_CMR_CALL( CMRtestCographicMatrix(cmr, transpose, &isGraphic, NULL, NULL, NULL, NULL, NULL) );
+  ASSERT_CMR_CALL( CMRtestCographicMatrix(cmr, transpose, &isGraphic, NULL, NULL, NULL, NULL, NULL, DBL_MAX) );
   ASSERT_FALSE( isGraphic );
   ASSERT_CMR_CALL( CMRchrmatFree(cmr, &transpose) );
 }
@@ -87,7 +87,7 @@ void testBinaryMatrix(
   bool isGraphic;
   CMR_CHRMAT* transpose = NULL;
   ASSERT_CMR_CALL( CMRchrmatTranspose(cmr, matrix, &transpose) );
-  ASSERT_CMR_CALL( CMRtestCographicMatrix(cmr, transpose, &isGraphic, &graph, NULL, NULL, NULL, NULL) );
+  ASSERT_CMR_CALL( CMRtestCographicMatrix(cmr, transpose, &isGraphic, &graph, NULL, NULL, NULL, NULL, DBL_MAX) );
   ASSERT_CMR_CALL( CMRchrmatFree(cmr, &transpose) );
   if (graph)
     ASSERT_CMR_CALL( CMRgraphFree(cmr, &graph) );

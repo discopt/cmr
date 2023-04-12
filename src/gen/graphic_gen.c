@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+#include <float.h>
 #include <sys/time.h>
 #include <stdint.h>
 #include <math.h>
@@ -149,7 +150,7 @@ CMR_ERROR genMatrixGraphic(
     {
       /* Benchmark */      
       bool isGraphic;
-      CMR_CALL( CMRtestGraphicMatrix(cmr, matrix, &isGraphic, NULL, NULL, NULL, NULL, &stats) );
+      CMR_CALL( CMRtestGraphicMatrix(cmr, matrix, &isGraphic, NULL, NULL, NULL, NULL, &stats, DBL_MAX) );
     }
     else
     {

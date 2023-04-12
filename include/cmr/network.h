@@ -123,7 +123,8 @@ CMR_ERROR CMRtestNetworkMatrix(
                                    **  \f$ M \f$ is network). */
   CMR_SUBMAT** psubmatrix,        /**< Pointer for storing a minimal non-network submatrix (if \f$ M \f$ is not
                                    **  network). */
-  CMR_NETWORK_STATISTICS* stats   /**< Pointer to statistics (may be \c NULL). */
+  CMR_NETWORK_STATISTICS* stats,  /**< Pointer to statistics (may be \c NULL). */
+  double timeLimit                /**< Time limit to impose. */
 );
 
 /**
@@ -155,7 +156,8 @@ CMR_ERROR CMRtestConetworkMatrix(
                                    **  \f$ M \f$ is conetwork). */
   CMR_SUBMAT** psubmatrix,        /**< Pointer for storing a minimal non-conetwork submatrix (if \f$ M \f$ is not
                                    **  conetwork). */
-  CMR_NETWORK_STATISTICS* stats   /**< Pointer to statistics (may be \c NULL). */
+  CMR_NETWORK_STATISTICS* stats,  /**< Pointer to statistics (may be \c NULL). */
+  double timeLimit                /**< Time limit to impose. */
 );
 
 /**@}*/

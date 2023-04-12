@@ -119,7 +119,8 @@ CMR_ERROR CMRtestGraphicMatrix(
                                      **  (if \f$ M \f$ is graphic). */
   CMR_SUBMAT** psubmatrix,          /**< Pointer for storing a minimal non-graphic submatrix (if \f$ M \f$ is not
                                      **  graphic). */
-  CMR_GRAPHIC_STATISTICS* stats     /**< Pointer to statistics (may be \c NULL). */
+  CMR_GRAPHIC_STATISTICS* stats,    /**< Pointer to statistics (may be \c NULL). */
+  double timeLimit                  /**< Time limit to impose. */
 );
 
 /**
@@ -149,7 +150,8 @@ CMR_ERROR CMRtestCographicMatrix(
                                      **  (if \f$ M \f$ is graphic). */
   CMR_SUBMAT** psubmatrix,          /**< Pointer for storing a minimal non-graphic submatrix (if \f$ M \f$ is not
                                      **  graphic). */
-  CMR_GRAPHIC_STATISTICS* stats     /**< Pointer to statistics (may be \c NULL). */
+  CMR_GRAPHIC_STATISTICS* stats,    /**< Pointer to statistics (may be \c NULL). */
+  double timeLimit                  /**< Time limit to impose. */
 );
 
 /**

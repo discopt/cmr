@@ -614,7 +614,8 @@ CMR_ERROR extendNestedMinorSequence(
   size_t* nestedMinorsColumns,    /**< Mapping of columns of the nested minor sequence to columns of \p dense. */
   CMR_SUBMAT** psubmatrix,        /**< Pointer for storing a violator matrix. */
   CMR_REGULAR_PARAMETERS* params, /**< Parameters for the computation. */
-  CMR_REGULAR_STATISTICS* stats   /**< Statistics for the computation (may be \c NULL). */
+  CMR_REGULAR_STATISTICS* stats,  /**< Statistics for the computation (may be \c NULL). */
+  double timeLimit                /**< Time limit to impose. */
 )
 {
   CMR_UNUSED(ternary);
@@ -631,12 +632,9 @@ CMR_ERROR extendNestedMinorSequence(
     dec->nestedMinorsLength, dec->nestedMinorsSequenceNumRows[dec->nestedMinorsLength-1],
     dec->nestedMinorsSequenceNumColumns[dec->nestedMinorsLength-1]);
 
-  clock_t time = 0;
+  clock_t time = clock();
   if (stats)
-  {
     stats->sequenceExtensionCount++;
-    time = clock();
-  }
 
   size_t numRows = dec->matrix->numRows;
   size_t numColumns = dec->matrix->numColumns;
@@ -702,8 +700,16 @@ CMR_ERROR extendNestedMinorSequence(
   CMR_CALL( initializeHashing(cmr, dense, columnData, columnHashtable, numColumns, processedRows, numProcessedRows, 
     hashVector, false) );
 
+  size_t elementTimeFactor = (numRows + numColumns) / 100 + 1;
   while (numProcessedRows < numRows || numProcessedColumns < numColumns)
-  {  
+  {
+    if (((numProcessedRows + numProcessedColumns) % elementTimeFactor == 0)
+      && (clock() - time) * 1.0 / CLOCKS_PER_SEC > timeLimit)
+    {
+      return CMR_ERROR_TIMEOUT;
+    }
+
+
     CMRdbgMsg(6, "New iteration; processed %ld rows and %ld columns so far.\n", numProcessedRows, numProcessedColumns);
     if (stats)
       stats->sequenceExtensionCount++;
@@ -1129,13 +1135,14 @@ CMR_ERROR extendNestedMinorSequence(
 }
 
 CMR_ERROR CMRregularConstructNestedMinorSequence(CMR* cmr, CMR_DEC* dec, bool ternary, CMR_SUBMAT* wheelSubmatrix,
-  CMR_SUBMAT** psubmatrix, CMR_REGULAR_PARAMETERS* params, CMR_REGULAR_STATISTICS* stats)
+  CMR_SUBMAT** psubmatrix, CMR_REGULAR_PARAMETERS* params, CMR_REGULAR_STATISTICS* stats, double timeLimit)
 {
   assert(cmr);
   assert(dec);
   assert(wheelSubmatrix);
   assert(params);
 
+  clock_t time = clock();
   size_t numRows = dec->matrix->numRows;
   size_t numColumns = dec->matrix->numColumns;
 
@@ -1170,8 +1177,9 @@ CMR_ERROR CMRregularConstructNestedMinorSequence(CMR* cmr, CMR_DEC* dec, bool te
       CMRdensebinmatrixSet1(dense, row, dec->matrix->entryColumns[e]);
   }
 
+  double remainingTime = timeLimit - (clock() - time) * 1.0 / CLOCKS_PER_SEC;
   CMR_CALL( extendNestedMinorSequence(cmr, dec, ternary, dense, nestedMinorsRows, nestedMinorsColumns, psubmatrix,
-    params, stats) );
+    params, stats, remainingTime) );
 
   CMR_CALL( CMRdensebinmatrixFreeStack(cmr, &dense) );
 
@@ -1188,7 +1196,7 @@ CMR_ERROR CMRregularConstructNestedMinorSequence(CMR* cmr, CMR_DEC* dec, bool te
 }
 
 CMR_ERROR CMRregularExtendNestedMinorSequence(CMR* cmr, CMR_DEC* dec, bool ternary, CMR_SUBMAT** psubmatrix,
-  CMR_REGULAR_PARAMETERS* params, CMR_REGULAR_STATISTICS* stats)
+  CMR_REGULAR_PARAMETERS* params, CMR_REGULAR_STATISTICS* stats, double timeLimit)
 {
   assert(cmr);
   assert(dec);
@@ -1225,7 +1233,7 @@ CMR_ERROR CMRregularExtendNestedMinorSequence(CMR* cmr, CMR_DEC* dec, bool terna
     }
 
     CMR_CALL( extendNestedMinorSequence(cmr, dec, ternary, dense, nestedMinorsRows, nestedMinorsColumns, psubmatrix,
-      params, stats) );
+      params, stats, timeLimit) );
 
     CMR_CALL( CMRdensebinmatrixFreeStack(cmr, &dense) );
 

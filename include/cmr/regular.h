@@ -116,7 +116,8 @@ CMR_ERROR CMRtestBinaryRegular(
   CMR_DEC** pdec,                 /**< Pointer for storing the decomposition tree (may be \c NULL). */
   CMR_MINOR** pminor,             /**< Pointer for storing an \f$ F_7 \f$ or \f$ F_7^\star \f$ minor. */
   CMR_REGULAR_PARAMETERS* params, /**< Parameters for the computation (may be \c NULL for defaults). */
-  CMR_REGULAR_STATISTICS* stats   /**< Statistics for the computation (may be \c NULL). */
+  CMR_REGULAR_STATISTICS* stats,  /**< Statistics for the computation (may be \c NULL). */
+  double timeLimit                /**< Time limit to impose. */
 );
 
 #ifdef __cplusplus

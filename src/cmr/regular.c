@@ -89,7 +89,8 @@ CMR_ERROR testRegularTwoConnected(
   bool *pisRegular,               /**< Pointer for storing whether \p matrix is regular. */
   CMR_MINOR** pminor,             /**< Pointer for storing an \f$ F_7 \f$ or \f$ F_7^\star \f$ minor. */
   CMR_REGULAR_PARAMETERS* params, /**< Parameters for the computation. */
-  CMR_REGULAR_STATISTICS* stats   /**< Statistics for the computation (may be \c NULL). */
+  CMR_REGULAR_STATISTICS* stats,  /**< Statistics for the computation (may be \c NULL). */
+  double timeLimit                /**< Time limit to impose. */
 );
 
 static
@@ -100,7 +101,8 @@ CMR_ERROR testRegularThreeConnectedWithSequence(
   bool *pisRegular,               /**< Pointer for storing whether \p matrix is regular. */
   CMR_MINOR** pminor,             /**< Pointer for storing an \f$ F_7 \f$ or \f$ F_7^\star \f$ minor. */
   CMR_REGULAR_PARAMETERS* params, /**< Parameters for the computation. */
-  CMR_REGULAR_STATISTICS* stats   /**< Statistics for the computation (may be \c NULL). */
+  CMR_REGULAR_STATISTICS* stats,  /**< Statistics for the computation (may be \c NULL). */
+  double timeLimit                /**< Time limit to impose. */
 )
 {
   assert(cmr);
@@ -112,6 +114,8 @@ CMR_ERROR testRegularThreeConnectedWithSequence(
   assert(dec->nestedMinorsSequenceNumRows);
   assert(dec->nestedMinorsSequenceNumColumns);
   assert(dec->nestedMinorsLength > 0);
+
+  clock_t time = clock();
 
   CMRdbgMsg(6, "Testing binary %dx%d 3-connected matrix with given nested sequence of 3-connected minors for regularity.\n",
     dec->matrix->numRows, dec->matrix->numColumns);
@@ -126,13 +130,14 @@ CMR_ERROR testRegularThreeConnectedWithSequence(
   CMR_CALL( CMRchrmatTranspose(cmr, dec->nestedMinorsMatrix, &nestedMinorsTranspose) );
 
   /* Test sequence for graphicness. */
+  double remainingTime = timeLimit - (clock() - time) * 1.0 / CLOCKS_PER_SEC;
   size_t lastGraphicMinor = 0;
   CMR_GRAPH* graph = NULL;
   CMR_ELEMENT* graphEdgeLabels = NULL;
   CMR_CALL( CMRregularSequenceGraphic(cmr, dec->nestedMinorsMatrix, nestedMinorsTranspose,
     dec->nestedMinorsRowsOriginal, dec->nestedMinorsColumnsOriginal, dec->nestedMinorsLength,
     dec->nestedMinorsSequenceNumRows, dec->nestedMinorsSequenceNumColumns, &lastGraphicMinor, &graph,
-    &graphEdgeLabels, stats) );
+    &graphEdgeLabels, stats, remainingTime) );
 
   if (graph)
   {
@@ -175,10 +180,11 @@ CMR_ERROR testRegularThreeConnectedWithSequence(
     /* Test sequence for cographicness. */
     CMR_GRAPH* cograph = NULL;
     CMR_ELEMENT* cographEdgeLabels = NULL;
+    remainingTime = timeLimit - (clock() - time) * 1.0 / CLOCKS_PER_SEC;
     CMR_CALL( CMRregularSequenceGraphic(cmr, nestedMinorsTranspose, dec->nestedMinorsMatrix,
       dec->nestedMinorsColumnsOriginal, dec->nestedMinorsRowsOriginal, dec->nestedMinorsLength,
       dec->nestedMinorsSequenceNumColumns, dec->nestedMinorsSequenceNumRows, &lastCographicMinor, &cograph,
-      &cographEdgeLabels, stats) );
+      &cographEdgeLabels, stats, remainingTime) );
 
     if (cograph)
     {
@@ -228,8 +234,10 @@ CMR_ERROR testRegularThreeConnectedWithSequence(
         lastGraphicMinor, lastCographicMinor,
         lastGraphicMinor > lastCographicMinor ? (lastGraphicMinor+1) : (lastCographicMinor + 1) );
 
+      remainingTime = timeLimit - (clock() - time) * 1.0 / CLOCKS_PER_SEC;
       CMR_CALL( CMRregularSearchThreeSeparation(cmr, dec, nestedMinorsTranspose, ternary,
-        lastGraphicMinor > lastCographicMinor ? (lastGraphicMinor+1) : (lastCographicMinor + 1), NULL, params, stats) );
+        lastGraphicMinor > lastCographicMinor ? (lastGraphicMinor+1) : (lastCographicMinor + 1), NULL, params, stats,
+        remainingTime) );
 
       if (dec->type == CMR_DEC_IRREGULAR)
       {
@@ -246,10 +254,16 @@ CMR_ERROR testRegularThreeConnectedWithSequence(
         CMR_CALL( CMRchrmatPrintDense(cmr, dec->children[1]->matrix, stdout, '0', true) );
 #endif /* CMR_DEBUG */
 
-        CMR_CALL( testRegularTwoConnected(cmr, dec->children[0], ternary, pisRegular, pminor, params, stats) );
+        remainingTime = timeLimit - (clock() - time) * 1.0 / CLOCKS_PER_SEC;
+        CMR_CALL( testRegularTwoConnected(cmr, dec->children[0], ternary, pisRegular, pminor, params, stats,
+          remainingTime) );
         
         if (params->completeTree || *pisRegular)
-          CMR_CALL( testRegularTwoConnected(cmr, dec->children[1], ternary, pisRegular, pminor, params, stats) );
+        {
+          remainingTime = timeLimit - (clock() - time) * 1.0 / CLOCKS_PER_SEC;
+          CMR_CALL( testRegularTwoConnected(cmr, dec->children[1], ternary, pisRegular, pminor, params, stats,
+            remainingTime) );
+        }
       }
     }
   }
@@ -261,7 +275,7 @@ CMR_ERROR testRegularThreeConnectedWithSequence(
 
 static
 CMR_ERROR testRegularTwoConnected(CMR* cmr, CMR_DEC* dec, bool ternary, bool *pisRegular, CMR_MINOR** pminor,
-  CMR_REGULAR_PARAMETERS* params, CMR_REGULAR_STATISTICS* stats)
+  CMR_REGULAR_PARAMETERS* params, CMR_REGULAR_STATISTICS* stats, double timeLimit)
 {
   assert(cmr);
   assert(dec);
@@ -270,6 +284,7 @@ CMR_ERROR testRegularTwoConnected(CMR* cmr, CMR_DEC* dec, bool ternary, bool *pi
   CMRdbgMsg(2, "Testing binary %dx%d 2-connected matrix for regularity.\n", dec->matrix->numRows,
     dec->matrix->numColumns);
 
+  clock_t time = clock();
   CMR_SUBMAT* submatrix = NULL;
 
   if (params->directGraphicness || dec->matrix->numRows <= 3 || dec->matrix->numColumns <= 3)
@@ -281,7 +296,7 @@ CMR_ERROR testRegularTwoConnected(CMR* cmr, CMR_DEC* dec, bool ternary, bool *pi
       CMRdbgMsg(4, "Checking for graphicness...");
       bool isGraphic;
       CMR_CALL( CMRregularTestGraphic(cmr, &dec->matrix, &dec->transpose, ternary, &isGraphic, &dec->graph,
-        &dec->graphForest, &dec->graphCoforest, &dec->graphArcsReversed, &submatrix, stats) );
+        &dec->graphForest, &dec->graphCoforest, &dec->graphArcsReversed, &submatrix, stats, timeLimit) );
       if (isGraphic)
       {
         CMRdbgMsg(0, " graphic.\n");
@@ -294,8 +309,9 @@ CMR_ERROR testRegularTwoConnected(CMR* cmr, CMR_DEC* dec, bool ternary, bool *pi
 
     CMRdbgMsg(4, "Checking for cographicness...");
     bool isCographic;
+    double remainingTime = timeLimit - (clock() - time) * 1.0 / CLOCKS_PER_SEC;
     CMR_CALL( CMRregularTestGraphic(cmr, &dec->transpose, &dec->matrix, ternary, &isCographic, &dec->cograph,
-      &dec->cographForest, &dec->cographCoforest, &dec->cographArcsReversed, &submatrix, stats) );
+      &dec->cographForest, &dec->cographCoforest, &dec->cographArcsReversed, &submatrix, stats, remainingTime) );
     if (isCographic)
     {
       CMRdbgMsg(0, " cographic.\n");
@@ -316,14 +332,16 @@ CMR_ERROR testRegularTwoConnected(CMR* cmr, CMR_DEC* dec, bool ternary, bool *pi
     CMR_CALL( CMRdecPrintSequenceNested3ConnectedMinors(cmr, dec, stdout) );
 #endif /* CMR_DEBUG */
 
-    CMR_CALL( CMRregularExtendNestedMinorSequence(cmr, dec, ternary, &submatrix, params, stats) );
+    double remainingTime = timeLimit - (clock() - time) * 1.0 / CLOCKS_PER_SEC;
+    CMR_CALL( CMRregularExtendNestedMinorSequence(cmr, dec, ternary, &submatrix, params, stats, remainingTime) );
     
     /* Handling of the resulting sequence or 2-separation is done at the end. */
   }
   else
   {
     CMRdbgMsg(4, "Splitting off series-parallel elements...");
-    CMR_CALL( CMRregularDecomposeSeriesParallel(cmr, &dec, ternary, &submatrix, params, stats) );
+    double remainingTime = timeLimit - (clock() - time) * 1.0 / CLOCKS_PER_SEC;
+    CMR_CALL( CMRregularDecomposeSeriesParallel(cmr, &dec, ternary, &submatrix, params, stats, remainingTime) );
 
     if (dec->type == CMR_DEC_IRREGULAR)
     {
@@ -340,10 +358,16 @@ CMR_ERROR testRegularTwoConnected(CMR* cmr, CMR_DEC* dec, bool ternary, bool *pi
     {
       CMRdbgMsg(0, " Encountered a 2-separation.\n");
       assert(dec->numChildren == 2);
-      CMR_CALL( testRegularTwoConnected(cmr, dec->children[0], ternary, pisRegular, pminor, params, stats) );
+      remainingTime = timeLimit - (clock() - time) * 1.0 / CLOCKS_PER_SEC;
+      CMR_CALL( testRegularTwoConnected(cmr, dec->children[0], ternary, pisRegular, pminor, params, stats,
+        remainingTime) );
 
       if (params->completeTree || *pisRegular)
-        CMR_CALL( testRegularTwoConnected(cmr, dec->children[1], ternary, pisRegular, pminor, params, stats) );
+      {
+        remainingTime = timeLimit - (clock() - time) * 1.0 / CLOCKS_PER_SEC;
+        CMR_CALL( testRegularTwoConnected(cmr, dec->children[1], ternary, pisRegular, pminor, params, stats,
+          remainingTime) );
+      }
 
       return CMR_OKAY;
     }
@@ -354,7 +378,9 @@ CMR_ERROR testRegularTwoConnected(CMR* cmr, CMR_DEC* dec, bool ternary, bool *pi
 
     /* No 2-sum found, so we have a wheel submatrix. */
 
-    CMR_CALL( CMRregularConstructNestedMinorSequence(cmr, dec, ternary, wheelSubmatrix, &submatrix, params, stats) );
+    remainingTime = timeLimit - (clock() - time) * 1.0 / CLOCKS_PER_SEC;
+    CMR_CALL( CMRregularConstructNestedMinorSequence(cmr, dec, ternary, wheelSubmatrix, &submatrix, params, stats,
+      remainingTime) );
     CMR_CALL( CMRsubmatFree(cmr, &wheelSubmatrix) );
   }
 
@@ -369,21 +395,29 @@ CMR_ERROR testRegularTwoConnected(CMR* cmr, CMR_DEC* dec, bool ternary, bool *pi
     CMRdbgMsg(0, " Encountered a 2-separation.\n");
     assert(dec->numChildren == 2);
 
-    CMR_CALL( testRegularTwoConnected(cmr, dec->children[0], ternary, pisRegular, pminor, params, stats) );
+    double remainingTime = timeLimit - (clock() - time) * 1.0 / CLOCKS_PER_SEC;
+    CMR_CALL( testRegularTwoConnected(cmr, dec->children[0], ternary, pisRegular, pminor, params, stats,
+      remainingTime) );
 
     if (params->completeTree || *pisRegular)
-      CMR_CALL( testRegularTwoConnected(cmr, dec->children[1], ternary, pisRegular, pminor, params, stats) );
+    {
+      remainingTime = timeLimit - (clock() - time) * 1.0 / CLOCKS_PER_SEC;
+      CMR_CALL( testRegularTwoConnected(cmr, dec->children[1], ternary, pisRegular, pminor, params, stats,
+        remainingTime) );
+    }
 
     return CMR_OKAY;
   }
 
-  CMR_CALL( testRegularThreeConnectedWithSequence(cmr, dec, ternary, pisRegular, pminor, params, stats) );
+  double remainingTime = timeLimit - (clock() - time) * 1.0 / CLOCKS_PER_SEC;
+  CMR_CALL( testRegularThreeConnectedWithSequence(cmr, dec, ternary, pisRegular, pminor, params, stats,
+    remainingTime) );
 
   return CMR_OKAY;
 }
 
 CMR_ERROR CMRtestRegular(CMR* cmr, CMR_CHRMAT* matrix, bool ternary, bool *pisRegular, CMR_DEC** pdec,
-  CMR_MINOR** pminor, CMR_REGULAR_PARAMETERS* params, CMR_REGULAR_STATISTICS* stats)
+  CMR_MINOR** pminor, CMR_REGULAR_PARAMETERS* params, CMR_REGULAR_STATISTICS* stats, double timeLimit)
 {
   assert(cmr);
   assert(matrix);
@@ -395,12 +429,9 @@ CMR_ERROR CMRtestRegular(CMR* cmr, CMR_CHRMAT* matrix, bool ternary, bool *pisRe
   CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', false) );
 #endif /* CMR_DEBUG */
 
-  clock_t time = 0;
+  clock_t time = clock();
   if (stats)
-  {
     stats->totalCount++;
-    time = clock();
-  }
 
   CMR_DEC* dec = NULL;
   CMR_CALL( CMRdecCreate(cmr, NULL, matrix->numRows, NULL, matrix->numColumns, NULL, &dec) );
@@ -415,6 +446,7 @@ CMR_ERROR CMRtestRegular(CMR* cmr, CMR_CHRMAT* matrix, bool ternary, bool *pisRe
 #endif /* CMR_DEBUG */
 
   bool isRegular = true;
+  double remainingTime;
   if (dec->numChildren)
   {
     for (size_t c = 0; c < dec->numChildren; ++c)
@@ -422,7 +454,9 @@ CMR_ERROR CMRtestRegular(CMR* cmr, CMR_CHRMAT* matrix, bool ternary, bool *pisRe
       if (isRegular || params->completeTree)
       {
         bool childIsRegular = true;
-        CMR_CALL( testRegularTwoConnected(cmr, dec->children[c], ternary, &childIsRegular, pminor, params, stats) );
+        remainingTime = timeLimit - (clock() - time) * 1.0 / CLOCKS_PER_SEC;
+        CMR_CALL( testRegularTwoConnected(cmr, dec->children[c], ternary, &childIsRegular, pminor, params, stats,
+          remainingTime) );
         if (pminor && *pminor)
           CMR_CALL( CMRdecTranslateMinorToParent(dec->children[c], *pminor) );
 
@@ -432,7 +466,8 @@ CMR_ERROR CMRtestRegular(CMR* cmr, CMR_CHRMAT* matrix, bool ternary, bool *pisRe
   }
   else
   {
-    CMR_CALL( testRegularTwoConnected(cmr, dec, ternary, &isRegular, pminor, params, stats) );
+    remainingTime = timeLimit - (clock() - time) * 1.0 / CLOCKS_PER_SEC;
+    CMR_CALL( testRegularTwoConnected(cmr, dec, ternary, &isRegular, pminor, params, stats, remainingTime) );
   }
 
   if (pisRegular)
@@ -465,7 +500,7 @@ CMR_ERROR CMRtestRegular(CMR* cmr, CMR_CHRMAT* matrix, bool ternary, bool *pisRe
 }
 
 CMR_ERROR CMRtestBinaryRegular(CMR* cmr, CMR_CHRMAT* matrix, bool *pisRegular, CMR_DEC** pdec, CMR_MINOR** pminor,
-  CMR_REGULAR_PARAMETERS* params, CMR_REGULAR_STATISTICS* stats)
+  CMR_REGULAR_PARAMETERS* params, CMR_REGULAR_STATISTICS* stats, double timeLimit)
 {
   assert(cmr);
   assert(matrix);
@@ -486,9 +521,8 @@ CMR_ERROR CMRtestBinaryRegular(CMR* cmr, CMR_CHRMAT* matrix, bool *pisRegular, C
       CMR_CALL( CMRminorCreate(cmr, pminor, 0, submatrix) );
     return CMR_OKAY;
   }
-  
-  CMR_CALL( CMRtestRegular(cmr, matrix, false, pisRegular, pdec, pminor, params, stats) );
 
+  CMR_CALL( CMRtestRegular(cmr, matrix, false, pisRegular, pdec, pminor, params, stats, timeLimit) );
 
   return CMR_OKAY;
 }

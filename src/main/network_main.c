@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+#include <float.h>
 
 #include <cmr/matrix.h>
 #include <cmr/graphic.h>
@@ -33,7 +34,8 @@ CMR_ERROR recognizeNetwork(
   const char* outputTreeFileName,       /**< File name of the output tree (may be NULL; may be `-' for stdout). */
   const char* outputDotFileName,        /**< File name of the output dot file (may be NULL; may be `-' for stdout). */
   const char* outputSubmatrixFileName,  /**< File name of the output non-(co)network submatrix (may be NULL; may be `-' for stdout). */
-  bool printStats                       /**< Whether to print statistics to stderr. */
+  bool printStats,                      /**< Whether to print statistics to stderr. */
+  double timeLimit                  /**< Time limit to impose. */
 )
 {
   clock_t readClock = clock();
@@ -70,11 +72,11 @@ CMR_ERROR recognizeNetwork(
   if (conetwork)
   {
     CMR_CALL( CMRtestConetworkMatrix(cmr, matrix, &isCoNetwork, &digraph, &rowEdges, &columnEdges, &edgesReversed,
-      outputSubmatrixFileName ? &submatrix : NULL, &stats) );
+      outputSubmatrixFileName ? &submatrix : NULL, &stats, timeLimit) );
   }
   {
     CMR_CALL( CMRtestNetworkMatrix(cmr, matrix, &isCoNetwork, &digraph, &rowEdges, &columnEdges, &edgesReversed,
-      outputSubmatrixFileName ? &submatrix : NULL, &stats) );
+      outputSubmatrixFileName ? &submatrix : NULL, &stats, timeLimit) );
   }
 
   fprintf(stderr, "Matrix %s%snetwork.\n", isCoNetwork ? "IS " : "is NOT ", conetwork ? "co" : "");
@@ -382,6 +384,8 @@ int printUsage(const char* program)
   fputs("  -T IN-TREE   Read a directed tree from file IN-TREE; default: use first specified arcs as tree edges.\n\n", stderr);
   fputs("Common options:\n", stderr);
   fputs("  -s           Print statistics about the computation to stderr.\n\n", stderr);
+  fputs("Advanced options:\n", stderr);
+  fputs("  --time-limit LIMIT   Allow at most LIMIT seconds for the computation.\n\n", stderr);
   fputs("If IN-MAT, IN-GRAPH or IN-TREE is `-' then the matrix (resp. the digraph or directed tree) is read from stdin.\n", stderr);
   fputs("If OUT-GRAPH, OUT-TREE, OUT-DOT or NON-SUB is `-' then the digraph (resp. the directed tree, dot file or non-(co)network submatrix) is written to stdout.\n",
     stderr);
@@ -402,6 +406,7 @@ int main(int argc, char** argv)
   char* outputGraphFileName = NULL;
   char* outputDotFileName = NULL;
   char* outputSubmatrixFileName = NULL;
+  double timeLimit = DBL_MAX;
   for (int a = 1; a < argc; ++a)
   {
     if (!strcmp(argv[a], "-h"))
@@ -449,6 +454,15 @@ int main(int argc, char** argv)
       outputDotFileName = argv[++a];
     else if (!strcmp(argv[a], "-N") && a+1 < argc)
       outputSubmatrixFileName = argv[++a];
+    else if (!strcmp(argv[a], "--time-limit") && (a+1 < argc))
+    {
+      if (sscanf(argv[a+1], "%lf", &timeLimit) == 0 || timeLimit <= 0)
+      {
+        fprintf(stderr, "Error: Invalid time limit <%s> specified.\n\n", argv[a+1]);
+        return printUsage(argv[0]);
+      }
+      ++a;
+    }
     else if (!inputFileName)
       inputFileName = argv[a];
     else if (!outputFileName)
@@ -485,7 +499,7 @@ int main(int argc, char** argv)
       inputFormat = FILEFORMAT_MATRIX_DENSE;
 
     error = recognizeNetwork(inputFileName, inputFormat, transposed, outputGraphFileName, treeFileName, outputDotFileName,
-      outputSubmatrixFileName, printStats);
+      outputSubmatrixFileName, printStats, timeLimit);
   }
   else if (task == TASK_COMPUTE)
   {

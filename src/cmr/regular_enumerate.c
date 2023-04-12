@@ -777,7 +777,8 @@ CMR_ERROR transformSeparationNested(
 }
 
 CMR_ERROR CMRregularSearchThreeSeparation(CMR* cmr, CMR_DEC* dec, CMR_CHRMAT* transpose, bool ternary,
-  size_t firstNonCoGraphicMinor, CMR_SUBMAT** psubmatrix, CMR_REGULAR_PARAMETERS* params, CMR_REGULAR_STATISTICS* stats)
+  size_t firstNonCoGraphicMinor, CMR_SUBMAT** psubmatrix, CMR_REGULAR_PARAMETERS* params, CMR_REGULAR_STATISTICS* stats,
+  double timeLimit)
 {
   CMR_UNUSED(psubmatrix);
   CMR_UNUSED(ternary);
@@ -786,6 +787,7 @@ CMR_ERROR CMRregularSearchThreeSeparation(CMR* cmr, CMR_DEC* dec, CMR_CHRMAT* tr
   assert(dec);
   assert(params);
 
+  clock_t time = clock();
   size_t firstMinor = 1;
   while (dec->nestedMinorsSequenceNumRows[firstMinor] + dec->nestedMinorsSequenceNumColumns[firstMinor] < 8)
   {
@@ -831,12 +833,8 @@ CMR_ERROR CMRregularSearchThreeSeparation(CMR* cmr, CMR_DEC* dec, CMR_CHRMAT* tr
     dec->nestedMinorsSequenceNumRows[firstNonCoGraphicMinor],
     dec->nestedMinorsSequenceNumColumns[firstNonCoGraphicMinor]);
 
-  clock_t time = 0;
   if (stats)
-  {
     stats->enumerationCount++;
-    time = clock();
-  }
 
   /* Enumerate all cardinality-at-most-half subsets of the element set of the first minor. */
   short beyondBits = 1 << (firstMinorNumRows + firstMinorNumColumns);
@@ -877,6 +875,19 @@ CMR_ERROR CMRregularSearchThreeSeparation(CMR* cmr, CMR_DEC* dec, CMR_CHRMAT* tr
 
     for (size_t minor = firstMinor+1; minor <= firstNonCoGraphicMinor && !separation; ++minor)
     {
+      double remainingTime = timeLimit - (clock() - time) * 1.0 / CLOCKS_PER_SEC;
+      if (remainingTime < 0)
+      {
+        CMR_CALL( CMRfreeStackArray(cmr, &queueMemory) );
+        CMR_CALL( CMRfreeStackArray(cmr, &partColumns[1]) );
+        CMR_CALL( CMRfreeStackArray(cmr, &partColumns[0]) );
+        CMR_CALL( CMRfreeStackArray(cmr, &partRows[1]) );
+        CMR_CALL( CMRfreeStackArray(cmr, &partRows[0]) );
+        CMR_CALL( CMRfreeStackArray(cmr, &columnData) );
+        CMR_CALL( CMRfreeStackArray(cmr, &rowData) );
+        return CMR_ERROR_TIMEOUT;
+      }
+      
       CMRdbgMsg(8, "Next minor has %ld rows and %ld columns.\n", dec->nestedMinorsSequenceNumRows[minor],
         dec->nestedMinorsSequenceNumColumns[minor]);
 

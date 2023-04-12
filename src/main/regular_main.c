@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+#include <float.h>
 
 #include <cmr/matrix.h>
 #include <cmr/regular.h>
@@ -24,7 +25,8 @@ CMR_ERROR testRegularity(
   const char* outputMinorFileName,  /**< File name to print non-regular minor to, or \c NULL. */
   bool printStats,                  /**< Whether to print statistics to stderr. */
   bool directGraphicness,           /**< Whether to use fast graphicness routines. */
-  bool seriesParallel               /**< Whether to allow series-parallel operations in the decomposition tree. */
+  bool seriesParallel,              /**< Whether to allow series-parallel operations in the decomposition tree. */
+  double timeLimit                  /**< Time limit to impose. */
 )
 {
   clock_t readClock = clock();
@@ -79,7 +81,7 @@ CMR_ERROR testRegularity(
   CMR_REGULAR_STATISTICS stats;
   CMR_CALL( CMRstatsRegularInit(&stats) );
   CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, outputTreeFileName ? &decomposition : NULL,
-    outputMinorFileName ? &minor : NULL, &params, &stats) );
+    outputMinorFileName ? &minor : NULL, &params, &stats, timeLimit) );
 
   fprintf(stderr, "Matrix %sregular.\n", isRegular ? "IS " : "IS NOT ");
   if (printStats)
@@ -128,6 +130,7 @@ int printUsage(const char* program)
   fputs("  -N NON-MINOR Write a minimal non-regular minor to file NON-MINOR; default: skip computation.\n", stderr);
   fputs("  -s           Print statistics about the computation to stderr.\n\n", stderr);
   fputs("Advanced options:\n", stderr);
+  fputs("  --time-limit LIMIT   Allow at most LIMIT seconds for the computation.\n", stderr);
   fputs("  --no-direct-graphic  Check only 3-connected matrices for regularity.\n", stderr);
   fputs("  --no-series-parallel Do not allow series-parallel operations in decomposition tree.\n\n", stderr);
   fputs("If IN-MAT is `-' then the matrix is read from stdin.\n", stderr);
@@ -145,6 +148,7 @@ int main(int argc, char** argv)
   bool printStats = false;
   bool directGraphicness = true;
   bool seriesParallel = true;
+  double timeLimit = DBL_MAX;
   for (int a = 1; a < argc; ++a)
   {
     if (!strcmp(argv[a], "-h"))
@@ -175,6 +179,15 @@ int main(int argc, char** argv)
       directGraphicness = false;
     else if (!strcmp(argv[a], "--no-series-parallel"))
       seriesParallel = false;
+    else if (!strcmp(argv[a], "--time-limit") && (a+1 < argc))
+    {
+      if (sscanf(argv[a+1], "%lf", &timeLimit) == 0 || timeLimit <= 0)
+      {
+        fprintf(stderr, "Error: Invalid time limit <%s> specified.\n\n", argv[a+1]);
+        return printUsage(argv[0]);
+      }
+      ++a;
+    }
     else if (!inputMatrixFileName)
       inputMatrixFileName = argv[a];
     else
@@ -192,7 +205,7 @@ int main(int argc, char** argv)
 
   CMR_ERROR error;
   error = testRegularity(inputMatrixFileName, inputFormat, outputTree, outputMinor, printStats, directGraphicness,
-    seriesParallel);
+    seriesParallel, timeLimit);
 
   switch (error)
   {

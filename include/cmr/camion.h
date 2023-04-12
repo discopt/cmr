@@ -56,7 +56,8 @@ CMR_ERROR CMRtestCamionSigned(
   CMR_CHRMAT* matrix,           /**< Matrix \f$ M \f$. */
   bool* pisCamionSigned,        /**< Pointer for storing whether \f$ M \f$ is [Camion-signed](\ref camion). */
   CMR_SUBMAT** psubmatrix,      /**< Pointer for storing a non-Camion submatrix (may be \c NULL). */
-  CMR_CAMION_STATISTICS* stats  /**< Statistics for the computation (may be \c NULL). */
+  CMR_CAMION_STATISTICS* stats, /**< Statistics for the computation (may be \c NULL). */
+  double timeLimit              /**< Time limit to impose. */
 );
 
 /**
@@ -69,7 +70,8 @@ CMR_ERROR CMRcomputeCamionSigned(
   CMR_CHRMAT* matrix,           /**< Matrix \f$ M \f$ to be modified. */
   bool* pwasCamionSigned,       /**< Pointer for storing whether \f$ M \f$ was already [Camion-signed](\ref camion). */
   CMR_SUBMAT** psubmatrix,      /**< Pointer for storing a non-Camion submatrix (may be \c NULL). */
-  CMR_CAMION_STATISTICS* stats  /**< Statistics for the computation (may be \c NULL). */
+  CMR_CAMION_STATISTICS* stats, /**< Statistics for the computation (may be \c NULL). */
+  double timeLimit              /**< Time limit to impose. */
 );
 
 #ifdef __cplusplus

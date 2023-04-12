@@ -25,12 +25,13 @@ extern "C" {
 
 typedef enum
 {
-  CMR_OKAY = 0,          /**< No error. */
-  CMR_ERROR_INPUT = 1,   /**< Bad user input. */
-  CMR_ERROR_OUTPUT = 2,  /**< Error when writing user output. */
-  CMR_ERROR_MEMORY = 3,  /**< Error during (re)allocation. */
-  CMR_ERROR_INVALID = 4, /**< Other invalid data. */
-  CMR_ERROR_OVERFLOW = 5 /**< Overflow in numerical computations. */
+  CMR_OKAY = 0,           /**< No error. */
+  CMR_ERROR_INPUT = 1,    /**< Bad user input. */
+  CMR_ERROR_OUTPUT = 2,   /**< Error when writing user output. */
+  CMR_ERROR_MEMORY = 3,   /**< Error during (re)allocation. */
+  CMR_ERROR_INVALID = 4,  /**< Other invalid data. */
+  CMR_ERROR_OVERFLOW = 5, /**< Overflow in numerical computations. */
+  CMR_ERROR_TIMEOUT = 6,  /**< Time limit exceeded. */
 } CMR_ERROR;
 
 /**
@@ -49,6 +50,8 @@ typedef enum
         printf("Memory (re)allocation failed"); \
       else if (_cmr_error == CMR_ERROR_INVALID) \
         printf("Invalid input"); \
+      else if (_cmr_error == CMR_ERROR_TIMEOUT) \
+        printf("Time limit exceeded"); \
       else \
         printf("Unknown error"); \
       printf(" in %s:%d.\n", __FILE__, __LINE__); \

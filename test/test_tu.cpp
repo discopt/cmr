@@ -34,7 +34,7 @@ TEST(TotallyUnimodular, OneSum)
 
     bool isTU;
     CMR_DEC* dec = NULL;
-    ASSERT_CMR_CALL( CMRtestTotalUnimodularity(cmr, matrix, &isTU, &dec, NULL, NULL, NULL) );
+    ASSERT_CMR_CALL( CMRtestTotalUnimodularity(cmr, matrix, &isTU, &dec, NULL, NULL, NULL, DBL_MAX) );
 
     ASSERT_CMR_CALL( CMRdecPrint(cmr, dec, stdout, 0, true, true, true) );
     ASSERT_TRUE( isTU );
@@ -94,7 +94,7 @@ TEST(TotallyUnimodular, SeriesParallelTwoSeparation)
 
     bool isTU;
     CMR_DEC* dec = NULL;
-    ASSERT_CMR_CALL( CMRtestTotalUnimodularity(cmr, matrix, &isTU, &dec, NULL, NULL, NULL) );
+    ASSERT_CMR_CALL( CMRtestTotalUnimodularity(cmr, matrix, &isTU, &dec, NULL, NULL, NULL, DBL_MAX) );
 
     ASSERT_CMR_CALL( CMRdecPrint(cmr, dec, stdout, 0, true, true, true) );
     ASSERT_TRUE( isTU );
@@ -145,7 +145,7 @@ TEST(TotallyUnimodular, NestedMinorSearchTwoSeparation)
 
     bool isTU;
     CMR_DEC* dec = NULL;
-    ASSERT_CMR_CALL( CMRtestTotalUnimodularity(cmr, matrix, &isTU, &dec, NULL, NULL, NULL) );
+    ASSERT_CMR_CALL( CMRtestTotalUnimodularity(cmr, matrix, &isTU, &dec, NULL, NULL, NULL, DBL_MAX) );
 
     ASSERT_CMR_CALL( CMRdecPrint(cmr, dec, stdout, 0, true, true, true) );
     ASSERT_TRUE( isTU );
@@ -190,7 +190,7 @@ TEST(TotallyUnimodular, NestedMinorPivotsOneRowOneColumn)
   CMR_TU_PARAMETERS params;
   ASSERT_CMR_CALL( CMRparamsTotalUnimodularityInit(&params) );
   
-  ASSERT_CMR_CALL( CMRtestTotalUnimodularity(cmr, matrix, &isTU, &dec, NULL, &params, NULL) );
+  ASSERT_CMR_CALL( CMRtestTotalUnimodularity(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
 
   ASSERT_CMR_CALL( CMRdecPrint(cmr, dec, stdout, 0, true, true, true) );
   
@@ -224,7 +224,7 @@ TEST(TotallyUnimodular, NestedMinorPivotsTwoRowsOneColumn)
   CMR_TU_PARAMETERS params;
   ASSERT_CMR_CALL( CMRparamsTotalUnimodularityInit(&params) );
   params.regular.directGraphicness = false;
-  ASSERT_CMR_CALL( CMRtestTotalUnimodularity(cmr, matrix, &isTU, &dec, NULL, &params, NULL) );
+  ASSERT_CMR_CALL( CMRtestTotalUnimodularity(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
 
   ASSERT_CMR_CALL( CMRdecPrint(cmr, dec, stdout, 0, true, true, true) );
   
@@ -257,7 +257,7 @@ TEST(TotallyUnimodular, NestedMinorPivotsOneRowTwoColumns)
   CMR_TU_PARAMETERS params;
   ASSERT_CMR_CALL( CMRparamsTotalUnimodularityInit(&params) );
   params.regular.directGraphicness = false;
-  ASSERT_CMR_CALL( CMRtestTotalUnimodularity(cmr, matrix, &isTU, &dec, NULL, &params, NULL) );
+  ASSERT_CMR_CALL( CMRtestTotalUnimodularity(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
 
   ASSERT_CMR_CALL( CMRdecPrint(cmr, dec, stdout, 0, true, true, true) );
   
@@ -295,7 +295,7 @@ TEST(TotallyUnimodular, NestedMinorPivotsTwoSeparation)
   CMR_TU_PARAMETERS params;
   ASSERT_CMR_CALL( CMRparamsTotalUnimodularityInit(&params) );
   params.regular.directGraphicness = false;
-  ASSERT_CMR_CALL( CMRtestTotalUnimodularity(cmr, matrix, &isTU, &dec, NULL, &params, NULL) );
+  ASSERT_CMR_CALL( CMRtestTotalUnimodularity(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
 
   ASSERT_CMR_CALL( CMRdecPrint(cmr, dec, stdout, 0, true, true, true) );
   
@@ -325,7 +325,7 @@ void testSequenceGraphicness(
   CMR_TU_PARAMETERS params;
   ASSERT_CMR_CALL( CMRparamsTotalUnimodularityInit(&params) );
   params.regular.directGraphicness = false;
-  ASSERT_CMR_CALL( CMRtestTotalUnimodularity(cmr, matrix, &isTU, &dec, NULL, &params, NULL) );
+  ASSERT_CMR_CALL( CMRtestTotalUnimodularity(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
 
   if (knowNetwork)
   {
@@ -625,7 +625,7 @@ TEST(TotallyUnimodular, R10)
 
     bool isTU;
     CMR_DEC* dec = NULL;
-    ASSERT_CMR_CALL( CMRtestTotalUnimodularity(cmr, matrix, &isTU, &dec, NULL, NULL, NULL) );
+    ASSERT_CMR_CALL( CMRtestTotalUnimodularity(cmr, matrix, &isTU, &dec, NULL, NULL, NULL, DBL_MAX) );
     ASSERT_TRUE( CMRdecIsRegular(dec) );
     ASSERT_EQ( CMRdecNumChildren(dec), 0 );
     ASSERT_CMR_CALL( CMRdecFree(cmr, &dec) );
@@ -646,7 +646,7 @@ TEST(TotallyUnimodular, R10)
 
     bool isTU;
     CMR_DEC* dec = NULL;
-    ASSERT_CMR_CALL( CMRtestTotalUnimodularity(cmr, matrix, &isTU, &dec, NULL, NULL, NULL) );
+    ASSERT_CMR_CALL( CMRtestTotalUnimodularity(cmr, matrix, &isTU, &dec, NULL, NULL, NULL, DBL_MAX) );
     ASSERT_TRUE( dec );
     ASSERT_TRUE( CMRdecIsRegular(dec) );
     ASSERT_EQ( CMRdecNumChildren(dec), 0 );
@@ -677,7 +677,7 @@ void testEnumerate(
   CMR_TU_PARAMETERS params;
   ASSERT_CMR_CALL( CMRparamsTotalUnimodularityInit(&params) );
   params.regular.directGraphicness = false;
-  ASSERT_CMR_CALL( CMRtestTotalUnimodularity(cmr, matrix, &isTU, &dec, NULL, &params, NULL) );
+  ASSERT_CMR_CALL( CMRtestTotalUnimodularity(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
 
   if (knowRegular)
   {
@@ -772,7 +772,7 @@ TEST(TotallyUnimodular, R12)
 
     bool isTU;
     CMR_DEC* dec = NULL;
-    ASSERT_CMR_CALL( CMRtestTotalUnimodularity(cmr, matrix, &isTU, &dec, NULL, NULL, NULL) );
+    ASSERT_CMR_CALL( CMRtestTotalUnimodularity(cmr, matrix, &isTU, &dec, NULL, NULL, NULL, DBL_MAX) );
     ASSERT_TRUE( CMRdecIsRegular(dec) );
     ASSERT_EQ( CMRdecNumChildren(dec), 2 );
     size_t graphicChildren = (CMRdecIsGraphic(CMRdecChild(dec, 0)) ? 2 : 0)
@@ -818,7 +818,7 @@ TEST(TotallyUnimodular, ForbiddenSubmatrix)
     bool isTU;
     CMR_DEC* dec = NULL;
     CMR_SUBMAT* forbiddenSubmatrix = NULL;
-    ASSERT_CMR_CALL( CMRtestTotalUnimodularity(cmr, matrix, &isTU, &dec, &forbiddenSubmatrix, NULL, NULL) );
+    ASSERT_CMR_CALL( CMRtestTotalUnimodularity(cmr, matrix, &isTU, &dec, &forbiddenSubmatrix, NULL, NULL, DBL_MAX) );
     ASSERT_FALSE( CMRdecIsRegular(dec) );
     ASSERT_EQ( forbiddenSubmatrix->numRows, 8 );
     ASSERT_EQ( forbiddenSubmatrix->numColumns, 8 );
