@@ -45,16 +45,16 @@ typedef enum
     if (_cmr_error) \
     { \
       if (_cmr_error == CMR_ERROR_INPUT) \
-        printf("User input error"); \
+        fprintf(stderr, "User input error"); \
       else if (_cmr_error == CMR_ERROR_MEMORY) \
-        printf("Memory (re)allocation failed"); \
+        fprintf(stderr, "Memory (re)allocation failed"); \
       else if (_cmr_error == CMR_ERROR_INVALID) \
-        printf("Invalid input"); \
+        fprintf(stderr, "Invalid input"); \
       else if (_cmr_error == CMR_ERROR_TIMEOUT) \
-        printf("Time limit exceeded"); \
+        fprintf(stderr, "Time limit exceeded"); \
       else \
-        printf("Unknown error"); \
-      printf(" in %s:%d.\n", __FILE__, __LINE__); \
+        fprintf(stderr, "Unknown error"); \
+      fprintf(stderr, " in %s:%d.\n", __FILE__, __LINE__); \
       return _cmr_error; \
     } \
   } while (false)
