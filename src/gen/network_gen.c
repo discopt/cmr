@@ -168,7 +168,8 @@ CMR_ERROR genMatrixNetwork(
     CMR_CALL( CMRchrmatFree(cmr, &matrix) );
   }
 
-  CMR_CALL( CMRstatsNetworkPrint(stderr, &stats, NULL) );
+  if (benchmarkRepetitions)
+    CMR_CALL( CMRstatsNetworkPrint(stderr, &stats, NULL) );
 
   CMR_CALL( CMRfreeEnvironment(&cmr) );
 
