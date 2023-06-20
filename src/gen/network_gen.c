@@ -33,12 +33,13 @@ size_t randRange(size_t first, size_t beyond)
 
 int printUsage(const char* program)
 {
-  printf("Usage: %s [OPTIONS] ROWS COLS\n\n", program);
-  puts("Creates a random ROWS-by-COLS -1/0/1 network matrix.\n");
-  puts("Options:\n");
-  puts("  -b NUM     Benchmarks the recognition algorithm for the created matrix with NUM repetitions.\n");
-  puts("  -o FORMAT  Format of output FILE; default: `dense'.");
-  puts("Formats for matrices: dense, sparse");
+  fprintf(stderr, "Usage: %s [OPTIONS] ROWS COLS\n\n", program);
+  fputs("Creates a random ROWS-by-COLS -1/0/1 or 0/1 network matrix.\n", stderr);
+  fputs("Options:\n", stderr);
+  fputs("  -b         Restrict to binary network matrices based on arborescences.\n", stderr);
+  fputs("  -B NUM     Benchmarks the recognition algorithm for the created matrix with NUM repetitions.\n", stderr);
+  fputs("  -o FORMAT  Format of output FILE; default: `dense'.", stderr);
+  fputs("Formats for matrices: dense, sparse\n", stderr);
   return EXIT_FAILURE;
 }
 
@@ -52,6 +53,7 @@ int compare(const void* pa, const void* pb)
 CMR_ERROR genMatrixNetwork(
   size_t numRows,               /**< Number of rows of base matrix. */
   size_t numColumns,            /**< Number of columns of base matrix. */
+  bool binary,                  /**< Whether to generate a binary network matrix. */
   size_t benchmarkRepetitions,  /**< Whether to benchmark the recognition algorithm with the matrix instead of printing it. */
   FileFormat outputFormat       /**< Output file format. */
 )
@@ -85,7 +87,9 @@ CMR_ERROR genMatrixNetwork(
     treeDistance[0] = 0;
     for (int v = 1; v < numNodes; ++v)
     {
-      int w = (int)(rand() * 1.0 * v / RAND_MAX);
+      int w = v;
+      while (w == v)
+        w = (int)(rand() * 1.0 * v / RAND_MAX);
       nextTreeNode[v] = w;
       treeDistance[v] = treeDistance[w] + 1;
     }
@@ -95,17 +99,44 @@ CMR_ERROR genMatrixNetwork(
     for (int e = 0; e < numEdges; ++e)
     {
       size_t numColumNonzeros = 0;
-      int first = (int)(rand() * 1.0 * numNodes / RAND_MAX);
-      int second = (int)(rand() * 1.0 * numNodes / RAND_MAX);
+      int first = numNodes;
+      int second;
+      while (first == numNodes)
+        first = (int)(rand() * 1.0 * numNodes / RAND_MAX);
+
+      if (binary)
+      {
+        int N = treeDistance[first];
+        if (N == 0)
+          second = first;
+        else
+        {
+          /* If we're not the root, then we make at least one step to not produce zero columns. */
+          int steps = N;
+          while (steps == N)
+            steps = (int)(rand() * 1.0 * N / RAND_MAX);
+          ++steps;
+          for (second = first; steps; --steps)
+            second = nextTreeNode[second];
+        }
+      }
+      else
+      {
+        /* second is chosen uniformly at random from all nodes. */
+        second = numNodes;
+        while (second == numNodes)
+          second = (int)(rand() * 1.0 * numNodes / RAND_MAX);
+        while (treeDistance[second] > treeDistance[first])
+        {
+          columnNonzeros[numColumNonzeros++] = second-1;
+          second = nextTreeNode[second];
+        }
+      }
+
       while (treeDistance[first] > treeDistance[second])
       {
         columnNonzeros[numColumNonzeros++] = first-1;
         first = nextTreeNode[first];
-      }
-      while (treeDistance[second] > treeDistance[first])
-      {
-        columnNonzeros[numColumNonzeros++] = second-1;
-        second = nextTreeNode[second];
       }
       while (first != second && first)
       {
@@ -142,8 +173,11 @@ CMR_ERROR genMatrixNetwork(
     CMR_CALL( CMRchrmatTranspose(cmr, transposed, &matrix) );
     CMR_CALL( CMRchrmatFree(cmr, &transposed) );
 
-    /* Make it a network matrix via Camion's signing algorithm. */
-    CMR_CALL( CMRcomputeCamionSigned(cmr, matrix, NULL, NULL, NULL, DBL_MAX) );
+    if (!binary)
+    {
+      /* Make it a network matrix via Camion's signing algorithm. */
+      CMR_CALL( CMRcomputeCamionSigned(cmr, matrix, NULL, NULL, NULL, DBL_MAX) );
+    }
 
     double generationTime = (clock() - startTime) * 1.0 / CLOCKS_PER_SEC;
     fprintf(stderr, "Generated a %ldx%ld matrix with %ld nonzeros in %f seconds.\n", numRows, numColumns,
@@ -151,7 +185,7 @@ CMR_ERROR genMatrixNetwork(
 
     if (benchmarkRepetitions)
     {
-      /* Benchmark */      
+      /* Benchmark */
       bool isNetwork;
       CMR_CALL( CMRtestNetworkMatrix(cmr, matrix, &isNetwork, NULL, NULL, NULL, NULL, NULL, &stats, DBL_MAX) );
     }
@@ -186,6 +220,7 @@ int main(int argc, char** argv)
   size_t numRows = SIZE_MAX;
   size_t numColumns = SIZE_MAX;
   size_t benchmarkRepetitions = 0;
+  bool binary = false;
   for (int a = 1; a < argc; ++a)
   {
     if (!strcmp(argv[a], "-h"))
@@ -193,7 +228,9 @@ int main(int argc, char** argv)
       printUsage(argv[0]);
       return EXIT_SUCCESS;
     }
-    else if (!strcmp(argv[a], "-b") && a+1 < argc)
+    else if (!strcmp(argv[a], "-b"))
+      binary = true;
+    else if (!strcmp(argv[a], "-B") && a+1 < argc)
     {
       char* p;
       benchmarkRepetitions = strtoull(argv[a+1], &p, 10);
@@ -263,7 +300,7 @@ int main(int argc, char** argv)
   if (outputFormat == FILEFORMAT_UNDEFINED)
     outputFormat = FILEFORMAT_MATRIX_DENSE;
 
-  CMR_ERROR error = genMatrixNetwork(numRows, numColumns, benchmarkRepetitions, outputFormat);
+  CMR_ERROR error = genMatrixNetwork(numRows, numColumns, binary, benchmarkRepetitions, outputFormat);
   switch (error)
   {
   case CMR_ERROR_INPUT:
