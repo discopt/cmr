@@ -179,10 +179,6 @@ CMR_ERROR genMatrixNetwork(
       CMR_CALL( CMRcomputeCamionSigned(cmr, matrix, NULL, NULL, NULL, DBL_MAX) );
     }
 
-    double generationTime = (clock() - startTime) * 1.0 / CLOCKS_PER_SEC;
-    fprintf(stderr, "Generated a %ldx%ld matrix with %ld nonzeros in %f seconds.\n", numRows, numColumns,
-      matrix->numNonzeros, generationTime);
-
     if (benchmarkRepetitions)
     {
       /* Benchmark */
@@ -191,6 +187,10 @@ CMR_ERROR genMatrixNetwork(
     }
     else
     {
+      double generationTime = (clock() - startTime) * 1.0 / CLOCKS_PER_SEC;
+      fprintf(stderr, "Generated a %ldx%ld matrix with %ld nonzeros in %f seconds.\n", numRows, numColumns,
+        matrix->numNonzeros, generationTime);
+
       /* Print matrix. */
       if (outputFormat == FILEFORMAT_MATRIX_DENSE)
         CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', false) );

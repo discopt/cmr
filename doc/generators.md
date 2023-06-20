@@ -20,21 +20,24 @@ It can be called as follows, where \f$ m \f$ equals ROWS and \f$ n \f$ equals CO
     ./cmr-generate-graphic [OPTIONS] ROWS COLS
 
 Options:
-  - `-b NUM`    Benchmarks the recognition algorithm for the created matrix with NUM repetitions.
+  - `-B NUM`    Benchmarks the recognition algorithm for the created matrix with NUM repetitions.
   - `-o FORMAT` Format of output FILE; default: `dense`.
 
 Formats for matrices are \ref dense-matrix, \ref sparse-matrix.
 
 ## Network Matrices ##
 
-The executable `cmr-generate-network` creates a random \f$ m \f$-by-\f$n\f$ network matrix.
-To this end, it first constructs a random graphic matrix (see above) and then modifies its signs via \ref camion.
+The executable `cmr-generate-network` creates a random \f$ m \f$-by-\f$n\f$ network matrix, either ternary (default) or binary.
+In order to generate a ternary matrix, it first constructs a random graphic matrix (see above) and then modifies its signs via \ref camion.
+For the binary matrix, a random spanning tree is constructed and oriented to become an arborescence with root.
+For the co-tree edges, only node pairs are considered, where the second node lies on the directed path from the first node to the root.
 It can be called as follows, where \f$ m \f$ equals ROWS and \f$ n \f$ equals COLS.
 
     ./cmr-generate-network [OPTIONS] ROWS COLS
 
 Options:
-  - `-b NUM`    Benchmarks the recognition algorithm for the created matrix with NUM repetitions.
+  - `-b`        Restrict to binary network matrices based on arborescences.
+  - `-B NUM`    Benchmarks the recognition algorithm for the created matrix with NUM repetitions.
   - `-o FORMAT` Format of output FILE; default: `dense`.
 
 Formats for matrices are \ref dense-matrix, \ref sparse-matrix.

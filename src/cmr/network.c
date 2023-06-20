@@ -138,8 +138,8 @@ CMR_ERROR CMRtestConetworkMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisConetwor
   double remainingTime = timeLimit - (clock() - totalClock) * 1.0 / CLOCKS_PER_SEC;
   CMR_GRAPH_EDGE* forestEdges = NULL;
   CMR_GRAPH_EDGE* coforestEdges = NULL;
-  CMR_CALL( CMRtestCographicMatrix(cmr, matrix, pisConetwork, pdigraph, &forestEdges, &coforestEdges, psubmatrix,
-    stats ? &stats->graphic : NULL, remainingTime) );
+  CMR_CALL( CMRtestCographicMatrix(cmr, matrix, pisConetwork, pdigraph, pforestArcs ? &forestEdges : NULL,
+    pcoforestArcs ? &coforestEdges : NULL, psubmatrix, stats ? &stats->graphic : NULL, remainingTime) );
 #if defined(CMR_DEBUG)
   CMRdbgMsg(2, "CMRtestCographicMatrix() returned %s.\n", (*pisConetwork) ? "TRUE": "FALSE");
 #endif /* CMR_DEBUG */

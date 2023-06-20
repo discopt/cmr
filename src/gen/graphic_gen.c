@@ -36,7 +36,7 @@ int printUsage(const char* program)
   printf("Usage: %s [OPTIONS] ROWS COLS\n\n", program);
   puts("Creates a random ROWS-by-COLS 0/1 graphic matrix.\n");
   puts("Options:\n");
-  puts("  -b NUM     Benchmarks the recognition algorithm for the created matrix with NUM repetitions.\n");
+  puts("  -B NUM     Benchmarks the recognition algorithm for the created matrix with NUM repetitions.\n");
   puts("  -o FORMAT  Format of output FILE; default: `dense'.");
   puts("Formats for matrices: dense, sparse");
   return EXIT_FAILURE;
@@ -142,10 +142,6 @@ CMR_ERROR genMatrixGraphic(
     CMR_CALL( CMRchrmatTranspose(cmr, transposed, &matrix) );
     CMR_CALL( CMRchrmatFree(cmr, &transposed) );
 
-    double generationTime = (clock() - startTime) * 1.0 / CLOCKS_PER_SEC;
-    fprintf(stderr, "Generated a %ldx%ld matrix with %ld nonzeros in %f seconds.\n", numRows, numColumns,
-      matrix->numNonzeros, generationTime);
-
     if (benchmarkRepetitions)
     {
       /* Benchmark */      
@@ -154,6 +150,10 @@ CMR_ERROR genMatrixGraphic(
     }
     else
     {
+      double generationTime = (clock() - startTime) * 1.0 / CLOCKS_PER_SEC;
+      fprintf(stderr, "Generated a %ldx%ld matrix with %ld nonzeros in %f seconds.\n", numRows, numColumns,
+        matrix->numNonzeros, generationTime);
+
       /* Print matrix. */
       if (outputFormat == FILEFORMAT_MATRIX_DENSE)
         CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', false) );
@@ -165,7 +165,8 @@ CMR_ERROR genMatrixGraphic(
     CMR_CALL( CMRchrmatFree(cmr, &matrix) );
   }
 
-  CMR_CALL( CMRstatsGraphicPrint(stderr, &stats, NULL) );
+  if (benchmarkRepetitions)
+    CMR_CALL( CMRstatsGraphicPrint(stderr, &stats, NULL) );
 
   CMR_CALL( CMRfreeEnvironment(&cmr) );
 
@@ -189,7 +190,7 @@ int main(int argc, char** argv)
       printUsage(argv[0]);
       return EXIT_SUCCESS;
     }
-    else if (!strcmp(argv[a], "-b") && a+1 < argc)
+    else if (!strcmp(argv[a], "-B") && a+1 < argc)
     {
       char* p;
       benchmarkRepetitions = strtoull(argv[a+1], &p, 10);
