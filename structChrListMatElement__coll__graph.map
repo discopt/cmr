@@ -1,0 +1,4 @@
+<map id="ChrListMatElement" name="ChrListMatElement">
+<area shape="rect" id="node1" title="Row/column information of ListMatrix." alt="" coords="5,127,140,153"/>
+<area shape="rect" id="node2" href="$struct__ListMatrixNonzero.html" title="Nonzero of ListMatrix." alt="" coords="5,21,140,48"/>
+</map>

@@ -1,0 +1,7 @@
+<map id="DEC_NEWCOLUMN" name="DEC_NEWCOLUMN">
+<area shape="rect" id="node1" title="Information for adding a new column." alt="" coords="111,296,259,323"/>
+<area shape="rect" id="node2" href="$struct__PathEdge.html" title="Additional information specific to a path edge." alt="" coords="5,7,92,33"/>
+<area shape="rect" id="node3" href="$struct__ReducedMember.html" title="Additional member information specfic to a given path." alt="" coords="121,99,249,125"/>
+<area shape="rect" id="node4" href="$structMemberInfo.html" title="Additional information for each member (specific to a new column)." alt="" coords="257,205,347,232"/>
+<area shape="rect" id="node5" href="$struct__ReducedComponent.html" title="A component of the reduced decomposition." alt="" coords="372,205,520,232"/>
+</map>

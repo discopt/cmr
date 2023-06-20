@@ -1,0 +1,4 @@
+<map id="CMR_ONESUM_COMPONENT" name="CMR_ONESUM_COMPONENT">
+<area shape="rect" id="node1" title="Information on component of 1&#45;sum of matrices." alt="" coords="5,109,219,136"/>
+<area shape="rect" id="node2" href="$structCMR__MATRIX.html" title="Abstract struct for row&#45;wise representations of sparse matrices." alt="" coords="57,5,167,32"/>
+</map>

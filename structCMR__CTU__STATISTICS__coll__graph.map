@@ -1,0 +1,9 @@
+<map id="CMR_CTU_STATISTICS" name="CMR_CTU_STATISTICS">
+<area shape="rect" id="node1" title="Statistics for recognition algorithm for totally unimodular matrices." alt="" coords="369,363,541,389"/>
+<area shape="rect" id="node2" href="$structCMR__TU__STATISTICS.html" title="Statistics for recognition algorithm for totally unimodular matrices." alt="" coords="374,273,537,300"/>
+<area shape="rect" id="node3" href="$structCMR__REGULAR__STATISTICS.html" title="Statistics for regular matroid recognition algorithm." alt="" coords="148,184,357,211"/>
+<area shape="rect" id="node4" href="$structCMR__GRAPHIC__STATISTICS.html" title="Statistics for graphicness test." alt="" coords="5,5,212,32"/>
+<area shape="rect" id="node6" href="$structCMR__NETWORK__STATISTICS.html" title="Statistics for recognition algorithm for network matrices." alt="" coords="277,95,490,121"/>
+<area shape="rect" id="node5" href="$structCMR__SP__STATISTICS.html" title="Statistics for series&#45;parallel recognition algorithm." alt="" coords="90,95,253,121"/>
+<area shape="rect" id="node7" href="$structCMR__CAMION__STATISTICS.html" title="Statistics for Camion&#45;signing algorithm." alt="" coords="376,5,575,32"/>
+</map>

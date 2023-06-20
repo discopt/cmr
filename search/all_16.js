@@ -1,8 +1,10 @@
 var searchData=
 [
-  ['zero',['ZERO',['../structtu_1_1elaborate__extension__matrix__modifier.html#a1e6797aee74abce66fe0e53c29bbe9b2ae004702b3ef4d2e9f31174f2c55587b3',1,'tu::elaborate_extension_matrix_modifier::ZERO()'],['../series__parallel_8c.html#a16b11be27a8e9362dd122c4d879e01aeae117e3533122c80b262257b49b21cddf',1,'ZERO():&#160;series_parallel.c']]],
-  ['zero_5fblock_5fmatrix_5fmodifier',['zero_block_matrix_modifier',['../structtu_1_1zero__block__matrix__modifier.html#a28f34529b32d3ccd6c2263a3bd5bd5f3',1,'tu::zero_block_matrix_modifier']]],
-  ['zero_5fblock_5fmatrix_5fmodifier',['zero_block_matrix_modifier',['../structtu_1_1zero__block__matrix__modifier.html',1,'tu']]],
-  ['zero_5fplus_5fminus_5fone_2ecpp',['zero_plus_minus_one.cpp',['../zero__plus__minus__one_8cpp.html',1,'']]],
-  ['zero_5fvector',['ZERO_VECTOR',['../classtu_1_1vector__three__connectivity.html#a09518d3f7a5fecda818d615f9d6fbbf9',1,'tu::vector_three_connectivity']]]
+  ['what_1353',['what',['../classtu_1_1last__combination__exception.html#ae3e7f4f28100a9b9a420bc216316948b',1,'tu::last_combination_exception::what()'],['../classtu_1_1permutation__shrink__exception.html#ac23b2e08dc8b1e82099c5a5467f09def',1,'tu::permutation_shrink_exception::what()']]],
+  ['wheelcount_1354',['wheelCount',['../structCMR__SP__STATISTICS.html#a936f71619661840845638b20e1af93fc',1,'CMR_SP_STATISTICS']]],
+  ['wheeltime_1355',['wheelTime',['../structCMR__SP__STATISTICS.html#a2c973212b3f7292951773c86834f6e5b',1,'CMR_SP_STATISTICS']]],
+  ['width_1356',['width',['../structtu_1_1bipartite__graph__dimensions.html#a11227ae93ae0968c272572f996e1b024',1,'tu::bipartite_graph_dimensions::width()'],['../classtu_1_1nested__minor__sequence.html#a42a95f500b046d682190bd285ff58262',1,'tu::nested_minor_sequence::width()'],['../classtu_1_1nested__minor__sequence__transposed.html#a4a3af4b5333d742de228fb02498152bc',1,'tu::nested_minor_sequence_transposed::width()']]],
+  ['witness_1357',['witness',['../classtu_1_1separation.html#a065e912d281847cde4ae9c7ea3724680',1,'tu::separation']]],
+  ['witness_5ftype_1358',['witness_type',['../classtu_1_1separation.html#af2d05bb97bd3f293fa6ee84f9cd63497',1,'tu::separation']]],
+  ['write_5fvertex_1359',['write_vertex',['../namespacetu_1_1util_1_1detail.html#a80ec9abab068de64365f231aa20d7f60',1,'tu::util::detail']]]
 ];

@@ -1,0 +1,9 @@
+<map id="_CMR_DEC" name="_CMR_DEC">
+<area shape="rect" id="node1" title=" " alt="" coords="259,215,355,241"/>
+<area shape="rect" id="node2" href="$structCMR__CHRMAT.html" title="Row&#45;wise representation of sparse char matrix." alt="" coords="5,95,123,121"/>
+<area shape="rect" id="node3" href="$structCMR__SP__REDUCTION.html" title="Represents a series&#45;parallel reduction." alt="" coords="146,95,313,121"/>
+<area shape="rect" id="node4" href="$structCMR__SEPA.html" title=" " alt="" coords="337,95,431,121"/>
+<area shape="rect" id="node5" href="$structCMR__GRAPH.html" title=" " alt="" coords="455,95,563,121"/>
+<area shape="rect" id="node6" href="$structCMR__GRAPH__NODE__DATA.html" title=" " alt="" coords="305,5,500,32"/>
+<area shape="rect" id="node7" href="$structCMR__GRAPH__ARC__DATA.html" title=" " alt="" coords="524,5,708,32"/>
+</map>

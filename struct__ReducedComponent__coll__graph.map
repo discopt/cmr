@@ -1,0 +1,5 @@
+<map id="_ReducedComponent" name="_ReducedComponent">
+<area shape="rect" id="node1" title="A component of the reduced decomposition." alt="" coords="5,189,153,216"/>
+<area shape="rect" id="node2" href="$struct__ReducedMember.html" title="Additional member information specfic to a given path." alt="" coords="15,99,143,125"/>
+<area shape="rect" id="node3" href="$struct__PathEdge.html" title="Additional information specific to a path edge." alt="" coords="36,7,123,33"/>
+</map>

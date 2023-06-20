@@ -1,0 +1,5 @@
+<map id="CMR_NETWORK_STATISTICS" name="CMR_NETWORK_STATISTICS">
+<area shape="rect" id="node1" title="Statistics for recognition algorithm for network matrices." alt="" coords="111,95,325,121"/>
+<area shape="rect" id="node2" href="$structCMR__CAMION__STATISTICS.html" title="Statistics for Camion&#45;signing algorithm." alt="" coords="5,5,204,32"/>
+<area shape="rect" id="node3" href="$structCMR__GRAPHIC__STATISTICS.html" title="Statistics for graphicness test." alt="" coords="228,5,435,32"/>
+</map>

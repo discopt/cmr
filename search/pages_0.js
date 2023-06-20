@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['balanced_20_2f_20balanceable_20matrices',['Balanced / Balanceable Matrices',['../balanced.html',1,'']]],
-  ['basic_20utilities',['Basic Utilities',['../utilities.html',1,'']]]
+  ['_28strongly_29_20k_2dmodular_20and_20unimodular_20matrices_2818',['(Strongly) k-Modular and Unimodular Matrices',['../k-modular.html',1,'']]]
 ];

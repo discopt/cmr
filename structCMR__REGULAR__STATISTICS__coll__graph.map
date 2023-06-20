@@ -1,0 +1,7 @@
+<map id="CMR_REGULAR_STATISTICS" name="CMR_REGULAR_STATISTICS">
+<area shape="rect" id="node1" title="Statistics for regular matroid recognition algorithm." alt="" coords="181,184,391,211"/>
+<area shape="rect" id="node2" href="$structCMR__GRAPHIC__STATISTICS.html" title="Statistics for graphicness test." alt="" coords="5,5,212,32"/>
+<area shape="rect" id="node4" href="$structCMR__NETWORK__STATISTICS.html" title="Statistics for recognition algorithm for network matrices." alt="" coords="179,95,393,121"/>
+<area shape="rect" id="node3" href="$structCMR__SP__STATISTICS.html" title="Statistics for series&#45;parallel recognition algorithm." alt="" coords="417,95,579,121"/>
+<area shape="rect" id="node5" href="$structCMR__CAMION__STATISTICS.html" title="Statistics for Camion&#45;signing algorithm." alt="" coords="236,5,435,32"/>
+</map>

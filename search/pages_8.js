@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['representation_20of_20matroids',['Representation of Matroids',['../matroids.html',1,'']]],
-  ['regular_20matroids',['Regular Matroids',['../regular.html',1,'']]]
+  ['perfect_20matrices_2832',['Perfect Matrices',['../perfect.html',1,'']]]
 ];
