@@ -37,7 +37,7 @@ endif()
 
 # Configure cmr_gtest target.
 target_compile_features(cmr_gtest PRIVATE cxx_auto_type)
-target_link_libraries(cmr_gtest gtest_main CMR::cmr)
+target_link_libraries(cmr_gtest gtest_main gtest CMR::cmr)
    
 include(GoogleTest)
 gtest_discover_tests(cmr_gtest)
