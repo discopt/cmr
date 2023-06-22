@@ -26,11 +26,11 @@ jobs:
         run: cd build-debug-generators && make test
       - name: Create documentation
         run: cd build-debug-generators && make doc
-#      - name: Checkout gh-pages
-#        uses: actions/checkout@v3
-#        with:
-#          ref: "gh-pages"
-#          clean: false
+      - name: Checkout gh-pages
+        uses: actions/checkout@v3
+        with:
+          ref: "gh-pages"
+          clean: false
 #      - name: Move and commit files
 #        run: |
 #          git config --global user.name github-actions
