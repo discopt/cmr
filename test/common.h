@@ -14,7 +14,12 @@ CMR_ERROR stringToIntMatrix(CMR* cmr, CMR_INTMAT** matrix, const char* string);
 CMR_ERROR stringToCharMatrix(CMR* cmr, CMR_CHRMAT** matrix, const char* string);
 
 #define ASSERT_CMR_CALL(x) \
-  ASSERT_FALSE(x)
+  do \
+  { \
+    CMR_ERROR _error = (x); \
+    ASSERT_EQ(_error, CMR_OKAY); \
+  } \
+  while (false)
 
 #ifdef __cplusplus
 }
