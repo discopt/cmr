@@ -87,7 +87,7 @@ CMR_ERROR tuTest(
   {
     CMR_REGULAR_PARAMETERS params;
     CMR_CALL( CMRparamsRegularInit(&params) );
-    double remainingTime = ((clock() - time) * 1.0 / CLOCKS_PER_SEC) - timeLimit;
+    double remainingTime = timeLimit - ((clock() - time) * 1.0 / CLOCKS_PER_SEC);
     CMR_CALL( CMRtestRegular(cmr, matrix, false, pisTotallyUnimodular, NULL, NULL, &params,
       stats ? &stats->regular : NULL, remainingTime) );
   }
