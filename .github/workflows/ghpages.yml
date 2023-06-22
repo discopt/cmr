@@ -24,7 +24,6 @@ jobs:
         env:
           CTEST_OUTPUT_ON_FAILURE: 1
         run: cd build-debug-generators && make test
-make test
       - name: Create documentation
         run: cd build-debug-generators && make doc
 #      - name: Checkout gh-pages
