@@ -21,7 +21,9 @@ jobs:
       - name: Compile
         run: cd build-debug-generators && make
       - name: Test
-        run: cd build-debug-generators && env CTEST_OUTPUT_ON_FAILURE=0 make test
+        env:
+          CTEST_OUTPUT_ON_FAILURE: 1
+        run: cd build-debug-generators && make test
 make test
       - name: Create documentation
         run: cd build-debug-generators && make doc
