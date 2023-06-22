@@ -13,7 +13,7 @@ jobs:
           submodules: true
       - name: Install requirements
         run: |
-          sudo apt-get install -y doxygen
+          sudo apt-get install -y libboost-all-dev cmake doxygen
       - name: Create build directory
         run: mkdir build-debug-generators
       - name: Configure
