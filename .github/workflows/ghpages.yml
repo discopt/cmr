@@ -38,6 +38,7 @@ jobs:
           git remote set-url origin https://x-access-token:${{ secrets.DEPLOY_TOKEN }}@github.com/$GITHUB_REPOSITORY
           cp -rp ./build-debug-generators/doc/html/* .
           rm -rf ./build-debug-generators
+          git submodule deinit -f doc/doxygen-awesome-css
           ls -lah
           git add .
           git commit -m "Documentation for $GITHUB_SHA" ||  true
