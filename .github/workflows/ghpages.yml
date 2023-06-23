@@ -33,14 +33,11 @@ jobs:
           clean: false
       - name: Move and commit files
         run: |
-          ls -la
-#          git config --global user.name github-actions
-#          git config --global user.email '${GITHUB_ACTOR}@users.noreply.github.com'
-#          git remote set-url origin https://x-access-token:${{ secrets.DEPLOY_TOKEN }}@github.com/$GITHUB_REPOSITORY
-#          ls -l 
-          #rm -rf d* && rm *.html && rm *.svg && rm *.map && rm *.md5 && rm *.png && rm *.js && rm *.css
-#git add .
-#          cp -rp ./build/html/* . && rm -rf ./build && ls -lah
-#          git add .
-#          git commit -m "Documentation for $GITHUB_SHA" ||  true
-#          git push --force || true
+          git config --global user.name github-actions
+          git config --global user.email '${GITHUB_ACTOR}@users.noreply.github.com'
+          git remote set-url origin https://x-access-token:${{ secrets.DEPLOY_TOKEN }}@github.com/$GITHUB_REPOSITORY
+          rm -rf d* && rm *.html && rm *.svg && rm *.map && rm *.md5 && rm *.png && rm *.js && rm *.css
+          cp -rp ./build-debug-generators/doc/html/* . && rm -rf /build-debug-generators && ls -lah
+          git add .
+          git commit -m "Documentation for $GITHUB_SHA" ||  true
+          git push --force || true
