@@ -26,6 +26,8 @@ jobs:
         run: cd build-debug-generators && make test
       - name: Create documentation
         run: cd build-debug-generators && make doc
+      - name: Cleanup submodules
+        run: git reset --hard HEAD && git submodule sync && git submodule deinit -f . || true
       - name: Checkout gh-pages
         uses: actions/checkout@v3
         with:
