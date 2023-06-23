@@ -1,0 +1,1 @@
+/usr/bin/cc -g CMakeFiles/cmr_series_parallel.dir/src/main/series_parallel_main.c.o -o cmr-series-parallel  -Wl,-rpath,/home/runner/work/cmr/cmr/build-debug-generators: libcmr.so -lm 

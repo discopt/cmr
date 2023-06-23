@@ -1,0 +1,1 @@
+/usr/bin/cc -g CMakeFiles/cmr_regular.dir/src/main/regular_main.c.o -o cmr-regular  -Wl,-rpath,/home/runner/work/cmr/cmr/build-debug-generators: libcmr.so -lm 

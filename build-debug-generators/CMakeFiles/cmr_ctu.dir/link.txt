@@ -1,0 +1,1 @@
+/usr/bin/cc -g CMakeFiles/cmr_ctu.dir/src/main/ctu_main.c.o -o cmr-ctu  -Wl,-rpath,/home/runner/work/cmr/cmr/build-debug-generators: libcmr.so -lm 

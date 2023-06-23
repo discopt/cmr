@@ -1,0 +1,1 @@
+/usr/bin/cc -g CMakeFiles/cmr_k_ary.dir/src/main/k_ary_main.c.o -o cmr-k-ary  -Wl,-rpath,/home/runner/work/cmr/cmr/build-debug-generators libcmr.so -lm 

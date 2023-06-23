@@ -1,0 +1,46 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/home/runner/work/cmr/cmr/build-debug-generators/gtestgit-control/CMakeFiles/googletest"
+		},
+		{
+			"file" : "/home/runner/work/cmr/cmr/build-debug-generators/gtestgit-control/CMakeFiles/googletest.rule"
+		},
+		{
+			"file" : "/home/runner/work/cmr/cmr/build-debug-generators/gtestgit-control/CMakeFiles/googletest-complete.rule"
+		},
+		{
+			"file" : "/home/runner/work/cmr/cmr/build-debug-generators/gtestgit-control/googletest-prefix/src/googletest-stamp/googletest-build.rule"
+		},
+		{
+			"file" : "/home/runner/work/cmr/cmr/build-debug-generators/gtestgit-control/googletest-prefix/src/googletest-stamp/googletest-configure.rule"
+		},
+		{
+			"file" : "/home/runner/work/cmr/cmr/build-debug-generators/gtestgit-control/googletest-prefix/src/googletest-stamp/googletest-download.rule"
+		},
+		{
+			"file" : "/home/runner/work/cmr/cmr/build-debug-generators/gtestgit-control/googletest-prefix/src/googletest-stamp/googletest-install.rule"
+		},
+		{
+			"file" : "/home/runner/work/cmr/cmr/build-debug-generators/gtestgit-control/googletest-prefix/src/googletest-stamp/googletest-mkdir.rule"
+		},
+		{
+			"file" : "/home/runner/work/cmr/cmr/build-debug-generators/gtestgit-control/googletest-prefix/src/googletest-stamp/googletest-patch.rule"
+		},
+		{
+			"file" : "/home/runner/work/cmr/cmr/build-debug-generators/gtestgit-control/googletest-prefix/src/googletest-stamp/googletest-test.rule"
+		},
+		{
+			"file" : "/home/runner/work/cmr/cmr/build-debug-generators/gtestgit-control/googletest-prefix/src/googletest-stamp/googletest-update.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"googletest"
+		],
+		"name" : "googletest"
+	}
+}
