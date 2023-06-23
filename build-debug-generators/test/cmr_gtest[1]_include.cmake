@@ -1,5 +1,0 @@
-if(EXISTS "/home/runner/work/cmr/cmr/build-debug-generators/test/cmr_gtest[1]_tests.cmake")
-  include("/home/runner/work/cmr/cmr/build-debug-generators/test/cmr_gtest[1]_tests.cmake")
-else()
-  add_test(cmr_gtest_NOT_BUILT cmr_gtest_NOT_BUILT)
-endif()

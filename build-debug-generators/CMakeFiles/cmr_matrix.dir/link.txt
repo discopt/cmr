@@ -1,1 +1,0 @@
-/usr/bin/cc -g CMakeFiles/cmr_matrix.dir/src/main/matrix_main.c.o -o cmr-matrix  -Wl,-rpath,/home/runner/work/cmr/cmr/build-debug-generators: libcmr.so -lm 

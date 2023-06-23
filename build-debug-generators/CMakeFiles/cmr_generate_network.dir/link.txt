@@ -1,1 +1,0 @@
-/usr/bin/cc -g CMakeFiles/cmr_generate_network.dir/src/gen/network_gen.c.o -o cmr-generate-network  -Wl,-rpath,/home/runner/work/cmr/cmr/build-debug-generators: libcmr.so -lm 

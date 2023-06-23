@@ -1,4 +1,0 @@
-#define CMR_CMAKE_BUILD_TYPE "Debug"
-#define CMR_VERSION_MAJOR 1
-#define CMR_VERSION_MINOR 3
-#define CMR_VERSION_PATCH 0

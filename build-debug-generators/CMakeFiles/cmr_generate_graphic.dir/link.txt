@@ -1,1 +1,0 @@
-/usr/bin/cc -g CMakeFiles/cmr_generate_graphic.dir/src/gen/graphic_gen.c.o -o cmr-generate-graphic  -Wl,-rpath,/home/runner/work/cmr/cmr/build-debug-generators: libcmr.so -lm 
