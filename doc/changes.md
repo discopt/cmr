@@ -1,7 +1,7 @@
 # Change Log # {#changes}
 
   - Added a `timeLimit` parameter to all potentially time intensive functions.
-  - Bugfix for `timeLimit` parameter.
+  - Bugfix for the `timeLimit` parameter.
 
 ## Version 1.3 ##
 
