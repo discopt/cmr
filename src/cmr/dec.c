@@ -168,6 +168,20 @@ bool CMRdecIsRegular(CMR_DEC* dec)
   return dec->flags & CMR_DEC_IS_REGULAR;
 }
 
+bool CMRdecIsSeriesParallelReduction(CMR_DEC* dec)
+{
+  assert(dec);
+
+  return dec->type == CMR_DEC_SERIES_PARALLEL;
+}
+
+bool CMRdecIsUnknown(CMR_DEC* dec)
+{
+  assert(dec);
+
+  return dec->type == CMR_DEC_UNKNOWN;
+}
+
 bool CMRdecNumRows(CMR_DEC* dec)
 {
   assert(dec);

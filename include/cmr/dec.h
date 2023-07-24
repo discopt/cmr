@@ -189,6 +189,24 @@ bool CMRdecIsRegular(
 );
 
 /**
+ * \brief Returns \c true if and only if \p dec represents a series-parallel reduction.
+ */
+
+CMR_EXPORT
+bool CMRdecIsSeriesParallelReduction(
+  CMR_DEC* dec  /**< Decomposition. */
+);
+
+/**
+ * \brief Returns \c true if and only if \p dec has yet unknown type.
+ */
+
+CMR_EXPORT
+bool CMRdecIsUnknown(
+  CMR_DEC* dec  /**< Decomposition. */
+);
+
+/**
  * \brief Returns the number of rows.
  */
 
