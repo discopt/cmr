@@ -2,6 +2,7 @@
 
   - Added a `timeLimit` parameter to all potentially time intensive functions.
   - Bugfix for the `timeLimit` parameter.
+  - Added \ref CMRdecIsSeriesParallelReduction and \ref CMRdecIsUnknown to interface for regular matroid decompositions.
 
 ## Version 1.3 ##
 
