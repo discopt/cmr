@@ -165,6 +165,12 @@ Functions</h2></td></tr>
 <tr class="memitem:ga3cbcfc4a65db74cc0393b77df0807542"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga3cbcfc4a65db74cc0393b77df0807542">CMRdecIsRegular</a> (<a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *dec)</td></tr>
 <tr class="memdesc:ga3cbcfc4a65db74cc0393b77df0807542"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns <code>true</code> if and only if <code>dec</code> is regular.  <a href="group__Matroid.html#ga3cbcfc4a65db74cc0393b77df0807542">More...</a><br /></td></tr>
 <tr class="separator:ga3cbcfc4a65db74cc0393b77df0807542"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga82ffc2e3889acd379c959902ce2ae994"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga82ffc2e3889acd379c959902ce2ae994">CMRdecIsSeriesParallelReduction</a> (<a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *dec)</td></tr>
+<tr class="memdesc:ga82ffc2e3889acd379c959902ce2ae994"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns <code>true</code> if and only if <code>dec</code> represents a series-parallel reduction.  <a href="group__Matroid.html#ga82ffc2e3889acd379c959902ce2ae994">More...</a><br /></td></tr>
+<tr class="separator:ga82ffc2e3889acd379c959902ce2ae994"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga423ebe728899e2695a8d1de674e14357"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga423ebe728899e2695a8d1de674e14357">CMRdecIsUnknown</a> (<a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *dec)</td></tr>
+<tr class="memdesc:ga423ebe728899e2695a8d1de674e14357"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns <code>true</code> if and only if <code>dec</code> has yet unknown type.  <a href="group__Matroid.html#ga423ebe728899e2695a8d1de674e14357">More...</a><br /></td></tr>
+<tr class="separator:ga423ebe728899e2695a8d1de674e14357"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga2b17c3460d429b76d973494128a0a2cb"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga2b17c3460d429b76d973494128a0a2cb">CMRdecNumRows</a> (<a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *dec)</td></tr>
 <tr class="memdesc:ga2b17c3460d429b76d973494128a0a2cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of rows.  <a href="group__Matroid.html#ga2b17c3460d429b76d973494128a0a2cb">More...</a><br /></td></tr>
 <tr class="separator:ga2b17c3460d429b76d973494128a0a2cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -970,6 +976,32 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="ga82ffc2e3889acd379c959902ce2ae994"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga82ffc2e3889acd379c959902ce2ae994">&#9670;&nbsp;</a></span>CMRdecIsSeriesParallelReduction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CMR_EXPORT bool CMRdecIsSeriesParallelReduction </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *&#160;</td>
+          <td class="paramname"><em>dec</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns <code>true</code> if and only if <code>dec</code> represents a series-parallel reduction. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">dec</td><td>Decomposition. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="gacc80fe85686da1cbbc7a3b0c797bf21e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#gacc80fe85686da1cbbc7a3b0c797bf21e">&#9670;&nbsp;</a></span>CMRdecIsSpecialLeaf()</h2>
 
@@ -1045,6 +1077,32 @@ Functions</h2></td></tr>
     <tr><td class="paramname">dec</td><td>Decomposition node. </td></tr>
     <tr><td class="paramname">plowerLeftNonzeros</td><td>Pointer for storing the lower-left submatrix of a 2- or 3-sum contains a nonzero (may be <code>NULL</code>). </td></tr>
     <tr><td class="paramname">pupperRightNonzeros</td><td>Pointer for storing the lower-left submatrix of a 2- or 3-sum contains a nonzero (may be <code>NULL</code>). </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga423ebe728899e2695a8d1de674e14357"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga423ebe728899e2695a8d1de674e14357">&#9670;&nbsp;</a></span>CMRdecIsUnknown()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CMR_EXPORT bool CMRdecIsUnknown </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *&#160;</td>
+          <td class="paramname"><em>dec</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns <code>true</code> if and only if <code>dec</code> has yet unknown type. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">dec</td><td>Decomposition. </td></tr>
   </table>
   </dd>
 </dl>
