@@ -211,7 +211,7 @@ bool CMRdecIsUnknown(
  */
 
 CMR_EXPORT
-bool CMRdecNumRows(
+size_t CMRdecNumRows(
   CMR_DEC* dec  /**< Decomposition. */
 );
 
@@ -238,7 +238,7 @@ size_t* CMRdecRowsParent(
  */
 
 CMR_EXPORT
-bool CMRdecNumColumns(
+size_t CMRdecNumColumns(
   CMR_DEC* dec  /**< Decomposition. */
 );
 

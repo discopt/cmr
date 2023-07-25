@@ -182,7 +182,7 @@ bool CMRdecIsUnknown(CMR_DEC* dec)
   return dec->type == CMR_DEC_UNKNOWN;
 }
 
-bool CMRdecNumRows(CMR_DEC* dec)
+size_t CMRdecNumRows(CMR_DEC* dec)
 {
   assert(dec);
 
@@ -196,7 +196,7 @@ size_t* CMRdecRowsParent(CMR_DEC* dec)
   return dec->rowsParent;
 }
 
-bool CMRdecNumColumns(CMR_DEC* dec)
+size_t CMRdecNumColumns(CMR_DEC* dec)
 {
   assert(dec);
 
