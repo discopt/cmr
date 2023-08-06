@@ -124,13 +124,20 @@ CMR_DEC* CMRdecChild(
 
 /**
  * \brief Returns k if \p dec is a k-sum node and 0 otherwise.
+ *
+ * The representation matrices for k-sums can be rearranged so that the first rows and columns consist of all elements that belong only to
+ * the first child and that all other rows / columns correspond to elements that belong only to the second child.
+ * In other words, most of the child information resides in an upper-left and lower-right submatrix.
+ * There exist precisely k-1 common elements, which correspond to nonzeros in the lower-left or upper-right submatrix.
+ * The parameters \p plowerLeftHasNonzeros and \p pupperRightHasNonzeros can be specified to obtain information about 
+ * where to find those.
  */
 
 CMR_EXPORT
 int CMRdecIsSum(
-  CMR_DEC* dec,             /**< Decomposition node. */
-  bool* plowerLeftNonzeros, /**< Pointer for storing the lower-left submatrix of a 2- or 3-sum contains a nonzero (may be \c NULL). */
-  bool* pupperRightNonzeros /**< Pointer for storing the lower-left submatrix of a 2- or 3-sum contains a nonzero (may be \c NULL). */
+  CMR_DEC* dec,                /**< Decomposition node. */
+  bool* plowerLeftHasNonzeros, /**< Pointer for storing if the lower-left submatrix of a 2- or 3-sum contains a nonzero (may be \c NULL). */
+  bool* pupperRightHasNonzeros /**< Pointer for storing if the upper-right submatrix of a 2- or 3-sum contains a nonzero (may be \c NULL). */
 );
 
 /**
