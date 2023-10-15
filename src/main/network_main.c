@@ -74,6 +74,7 @@ CMR_ERROR recognizeNetwork(
     CMR_CALL( CMRtestConetworkMatrix(cmr, matrix, &isCoNetwork, &digraph, &columnEdges, &rowEdges, &edgesReversed,
       outputSubmatrixFileName ? &submatrix : NULL, &stats, timeLimit) );
   }
+  else
   {
     CMR_CALL( CMRtestNetworkMatrix(cmr, matrix, &isCoNetwork, &digraph, &rowEdges, &columnEdges, &edgesReversed,
       outputSubmatrixFileName ? &submatrix : NULL, &stats, timeLimit) );
