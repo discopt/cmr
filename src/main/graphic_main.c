@@ -71,7 +71,7 @@ CMR_ERROR recognizeGraphic(
   CMR_CALL( CMRstatsGraphicInit(&stats) );
   if (cographic)
   {
-    CMR_CALL( CMRtestCographicMatrix(cmr, matrix, &isCoGraphic, &graph, &rowEdges, &columnEdges,
+    CMR_CALL( CMRtestCographicMatrix(cmr, matrix, &isCoGraphic, &graph, &columnEdges, &rowEdges,
       outputSubmatrixFileName ? &submatrix : NULL, &stats, timeLimit) );
   }
   else
@@ -90,14 +90,14 @@ CMR_ERROR recognizeGraphic(
     {
       bool outputGraphToFile = strcmp(outputGraphFileName, "-");
       FILE* outputGraphFile = outputGraphToFile ? fopen(outputGraphFileName, "w") : stdout;
-      fprintf(stderr, "Writing graph to %s%s%s.\n", outputGraphToFile ? "file <" : "",
+      fprintf(stderr, "Writing %sgraph to %s%s%s.\n", cographic ? "co" : "", outputGraphToFile ? "file <" : "",
         outputGraphToFile ? outputGraphFileName : "stdout", outputGraphToFile ? ">" : "");
 
       if (cographic)
       {
         for (size_t column = 0; column < matrix->numColumns; ++column)
         {
-          CMR_GRAPH_EDGE e = rowEdges[column];
+          CMR_GRAPH_EDGE e = columnEdges[column];
           CMR_GRAPH_NODE u = CMRgraphEdgeU(graph, e);
           CMR_GRAPH_NODE v = CMRgraphEdgeV(graph, e);
           if (edgesReversed && edgesReversed[e])
@@ -110,7 +110,7 @@ CMR_ERROR recognizeGraphic(
         }
         for (size_t row = 0; row < matrix->numRows; ++row)
         {
-          CMR_GRAPH_EDGE e = columnEdges[row];
+          CMR_GRAPH_EDGE e = rowEdges[row];
           CMR_GRAPH_NODE u = CMRgraphEdgeU(graph, e);
           CMR_GRAPH_NODE v = CMRgraphEdgeV(graph, e);
           if (edgesReversed && edgesReversed[e])
@@ -167,7 +167,7 @@ CMR_ERROR recognizeGraphic(
     {
       bool outputDotToFile = strcmp(outputDotFileName, "-");
       FILE* outputDotFile = outputDotToFile ? fopen(outputDotFileName, "w") : stdout;
-      fprintf(stderr, "Writing final decomposition to %s%s%s.\n", outputDotToFile ? "file <" : "",
+      fprintf(stderr, "Writing %sgraph to %s%s%s.\n", cographic ? "co" : "", outputDotToFile ? "file <" : "",
         outputDotToFile ? outputDotFileName : "stdout", outputDotToFile ? ">" : "");
 
       char buffer[16];
@@ -183,8 +183,9 @@ CMR_ERROR recognizeGraphic(
           u = v;
           v = temp;
         }
-        fprintf(outputDotFile, " v_%d -- v_%d [label=\"%s\",style=bold,color=red];\n", u, v,
-          CMRelementString(CMRrowToElement(row), buffer));
+        const char* style = cographic ? "" : ",style=bold,color=red";
+        fprintf(outputDotFile, " v_%d -- v_%d [label=\"%s\"%s];\n", u, v,
+          CMRelementString(CMRrowToElement(row), buffer), style);
       }
       for (size_t column = 0; column < matrix->numColumns; ++column)
       {
@@ -197,7 +198,9 @@ CMR_ERROR recognizeGraphic(
           u = v;
           v = temp;
         }
-        fprintf(outputDotFile, " v_%d -- v_%d [label=\"%s\"];\n", u, v, CMRelementString(CMRcolumnToElement(column), buffer));
+        const char* style = cographic ? ",style=bold,color=red" : "";
+        fprintf(outputDotFile, " v_%d -- v_%d [label=\"%s\"%s];\n", u, v,
+          CMRelementString(CMRcolumnToElement(column), buffer), style);
       }
       fputs("}\n", outputDotFile);
 

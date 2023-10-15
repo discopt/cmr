@@ -71,7 +71,7 @@ CMR_ERROR recognizeNetwork(
   CMR_CALL( CMRstatsNetworkInit(&stats) );
   if (conetwork)
   {
-    CMR_CALL( CMRtestConetworkMatrix(cmr, matrix, &isCoNetwork, &digraph, &rowEdges, &columnEdges, &edgesReversed,
+    CMR_CALL( CMRtestConetworkMatrix(cmr, matrix, &isCoNetwork, &digraph, &columnEdges, &rowEdges, &edgesReversed,
       outputSubmatrixFileName ? &submatrix : NULL, &stats, timeLimit) );
   }
   {
@@ -89,7 +89,7 @@ CMR_ERROR recognizeNetwork(
     {
       bool outputGraphToFile = strcmp(outputGraphFileName, "-");
       FILE* outputGraphFile = outputGraphToFile ? fopen(outputGraphFileName, "w") : stdout;
-      fprintf(stderr, "Writing digraph to %s%s%s.\n", outputGraphToFile ? "file <" : "",
+      fprintf(stderr, "Writing %sdigraph to %s%s%s.\n", conetwork ? "co" : "", outputGraphToFile ? "file <" : "",
         outputGraphToFile ? outputGraphFileName : "stdout", outputGraphToFile ? ">" : "");
 
       if (conetwork)
@@ -166,7 +166,7 @@ CMR_ERROR recognizeNetwork(
     {
       bool outputDotToFile = strcmp(outputDotFileName, "-");
       FILE* outputDotFile = outputDotToFile ? fopen(outputDotFileName, "w") : stdout;
-      fprintf(stderr, "Writing final decomposition to %s%s%s.\n", outputDotToFile ? "file <" : "",
+      fprintf(stderr, "Writing %sdigraph to %s%s%s.\n", conetwork ? "co" : "", outputDotToFile ? "file <" : "",
         outputDotToFile ? outputDotFileName : "stdout", outputDotToFile ? ">" : "");
 
       char buffer[16];
@@ -182,8 +182,9 @@ CMR_ERROR recognizeNetwork(
           u = v;
           v = temp;
         }
-        fprintf(outputDotFile, " v_%d -> v_%d [label=\"%s\",style=bold,color=red];\n", u, v,
-          CMRelementString(CMRrowToElement(row), buffer));
+        const char* style = conetwork ? "" : ",style=bold,color=red";
+        fprintf(outputDotFile, " v_%d -> v_%d [label=\"%s\"%s];\n", u, v,
+          CMRelementString(CMRrowToElement(row), buffer), style);
       }
       for (size_t column = 0; column < matrix->numColumns; ++column)
       {
@@ -196,7 +197,9 @@ CMR_ERROR recognizeNetwork(
           u = v;
           v = temp;
         }
-        fprintf(outputDotFile, " v_%d -> v_%d [label=\"%s\"];\n", u, v, CMRelementString(CMRcolumnToElement(column), buffer));
+        const char* style = conetwork ? ",style=bold,color=red" : "";
+        fprintf(outputDotFile, " v_%d -> v_%d [label=\"%s\"%s];\n", u, v,
+          CMRelementString(CMRcolumnToElement(column), buffer), style);
       }
       fputs("}\n", outputDotFile);
 
