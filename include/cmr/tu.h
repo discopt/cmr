@@ -87,7 +87,7 @@ CMR_ERROR CMRtestTotalUnimodularity(
   CMR_SUBMAT** psubmatrix,    /**< Pointer for storing a submatrix with non-ternary determinant (may be \c NULL). */
   CMR_TU_PARAMETERS* params,  /**< Parameters for the computation (may be \c NULL for defaults). */
   CMR_TU_STATISTICS* stats,   /**< Statistics for the computation (may be \c NULL). */
-  double timeLimit                /**< Time limit to impose. */
+  double timeLimit            /**< Time limit to impose. */
 );
 
 #ifdef __cplusplus
