@@ -557,6 +557,51 @@ CMR_ERROR CMRchrmatCreateFromSparseStream(
 );
 
 /**
+ * \brief Reads a double matrix from a file name \p fileName in sparse format.
+ *
+ * Returns \ref CMR_ERROR_INPUT in case of errors. In this case, *\p presult will be \c NULL. Expects that the file
+ * contains only the matrix and no additional data.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRdblmatCreateFromSparseFile(
+  CMR* cmr,               /**< \ref CMR environment. */
+  const char* fileName,   /**< File stream to read from. */
+  const char* stdinName,  /**< If not \c NULL, indicates which file name represents stdin. */
+  CMR_DBLMAT** presult    /**< Pointer for storing the matrix. */
+);
+
+/**
+ * \brief Reads an int matrix from a file name \p fileName in sparse format.
+ *
+ * Returns \ref CMR_ERROR_INPUT in case of errors. In this case, *\p presult will be \c NULL. Expects that the file
+ * contains only the matrix and no additional data.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRintmatCreateFromSparseFile(
+  CMR* cmr,               /**< \ref CMR environment. */
+  const char* fileName,   /**< File stream to read from. */
+  const char* stdinName,  /**< If not \c NULL, indicates which file name represents stdin. */
+  CMR_INTMAT** presult    /**< Pointer for storing the matrix. */
+);
+
+/**
+ * \brief Reads a char matrix from a file name \p fileName in sparse format.
+ *
+ * Returns \ref CMR_ERROR_INPUT in case of errors. In this case, *\p presult will be \c NULL. Expects that the file
+ * contains only the matrix and no additional data.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRchrmatCreateFromSparseFile(
+  CMR* cmr,               /**< \ref CMR environment. */
+  const char* fileName,   /**< File stream to read from. */
+  const char* stdinName,  /**< If not \c NULL, indicates which file name represents stdin. */
+  CMR_CHRMAT** presult    /**< Pointer for storing the matrix. */
+);
+
+/**
  * \brief Reads a double matrix from a file \p stream in dense format.
  *
  * Returns \ref CMR_ERROR_INPUT in case of errors. In this case, *\p presult will be \c NULL.
@@ -593,6 +638,51 @@ CMR_ERROR CMRchrmatCreateFromDenseStream(
   CMR* cmr,             /**< \ref CMR environment. */
   FILE* stream,         /**< File stream to read from. */
   CMR_CHRMAT** presult  /**< Pointer for storing the matrix. */
+);
+
+/**
+ * \brief Reads a double matrix from a file name \p fileName in dense format.
+ *
+ * Returns \ref CMR_ERROR_INPUT in case of errors. In this case, *\p presult will be \c NULL. Expects that the file
+ * contains only the matrix and no additional data.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRdblmatCreateFromDenseFile(
+  CMR* cmr,               /**< \ref CMR environment. */
+  const char* fileName,   /**< File stream to read from. */
+  const char* stdinName,  /**< If not \c NULL, indicates which file name represents stdin. */
+  CMR_DBLMAT** presult    /**< Pointer for storing the matrix. */
+);
+
+/**
+ * \brief Reads an int matrix from a file name \p fileName in dense format.
+ *
+ * Returns \ref CMR_ERROR_INPUT in case of errors. In this case, *\p presult will be \c NULL. Expects that the file
+ * contains only the matrix and no additional data.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRintmatCreateFromDenseFile(
+  CMR* cmr,               /**< \ref CMR environment. */
+  const char* fileName,   /**< File stream to read from. */
+  const char* stdinName,  /**< If not \c NULL, indicates which file name represents stdin. */
+  CMR_INTMAT** presult    /**< Pointer for storing the matrix. */
+);
+
+/**
+ * \brief Reads a char matrix from a file name \p fileName in dense format.
+ *
+ * Returns \ref CMR_ERROR_INPUT in case of errors. In this case, *\p presult will be \c NULL. Expects that the file
+ * contains only the matrix and no additional data.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRchrmatCreateFromDenseFile(
+  CMR* cmr,               /**< \ref CMR environment. */
+  const char* fileName,   /**< File stream to read from. */
+  const char* stdinName,  /**< If not \c NULL, indicates which file name represents stdin. */
+  CMR_CHRMAT** presult    /**< Pointer for storing the matrix. */
 );
 
 /**

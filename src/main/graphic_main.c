@@ -27,36 +27,64 @@ typedef enum
  */
 
 CMR_ERROR recognizeGraphic(
-  const char* inputFileName,            /**< File name of the input matrix (may be `-' for stdin). */
+  const char* inputMatrixFileName,      /**< File name of the input matrix (may be `-' for stdin). */
   FileFormat inputFormat,               /**< Format of the input matrix. */
-  bool cographic,                       /**< Whether the input shall be checked for being cographic instead of graphic. */
+  bool cographic,                       /**< Whether the input shall be checked for being cographic instead of
+                                         **  graphic. */
   const char* outputGraphFileName,      /**< File name of the output graph (may be NULL; may be `-' for stdout). */
   const char* outputTreeFileName,       /**< File name of the output tree (may be NULL; may be `-' for stdout). */
   const char* outputDotFileName,        /**< File name of the output dot file (may be NULL; may be `-' for stdout). */
-  const char* outputSubmatrixFileName,  /**< File name of the output non-(co)graphic submatrix (may be NULL; may be `-' for stdout). */
+  const char* outputSubmatrixFileName,  /**< File name of the output non-(co)graphic submatrix (may be NULL; may be `-'
+                                         **  for stdout). */
   bool printStats,                      /**< Whether to print statistics to stderr. */
-  double timeLimit                  /**< Time limit to impose. */
+  double timeLimit                      /**< Time limit to impose. */
 )
 {
-  clock_t readClock = clock();
-  FILE* inputFile = strcmp(inputFileName, "-") ? fopen(inputFileName, "r") : stdin;
-  if (!inputFile)
-    return CMR_ERROR_INPUT;
-
   CMR* cmr = NULL;
   CMR_CALL( CMRcreateEnvironment(&cmr) );
 
   /* Read matrix. */
 
   CMR_CHRMAT* matrix = NULL;
+  clock_t readClock = clock();
+  CMR_ERROR error = CMR_OKAY;
   if (inputFormat == FILEFORMAT_MATRIX_DENSE)
-    CMR_CALL( CMRchrmatCreateFromDenseStream(cmr, inputFile, &matrix) );
+    error = CMRchrmatCreateFromDenseFile(cmr, inputMatrixFileName, "-", &matrix);
   else if (inputFormat == FILEFORMAT_MATRIX_SPARSE)
-    CMR_CALL( CMRchrmatCreateFromSparseStream(cmr, inputFile, &matrix) );
-  if (inputFile != stdin)
-    fclose(inputFile);
+    error = CMRchrmatCreateFromSparseFile(cmr, inputMatrixFileName, "-", &matrix);
+  else
+    CMR_CALL(CMR_ERROR_INVALID);
+
+  if (error)
+  {
+    fprintf(stderr, "Input error: %s\n", CMRgetErrorMessage(cmr));
+    CMR_CALL( CMRfreeEnvironment(&cmr) );
+    return CMR_ERROR_INPUT;
+  }
+
   fprintf(stderr, "Read %lux%lu matrix with %lu nonzeros in %f seconds.\n", matrix->numRows, matrix->numColumns,
     matrix->numNonzeros, (clock() - readClock) * 1.0 / CLOCKS_PER_SEC);
+
+  /* Test for being binary first. */
+
+  CMR_SUBMAT* submatrix = NULL;
+  if (!CMRchrmatIsBinary(cmr, matrix, &submatrix))
+  {
+    CMR_CHRMAT* mat = NULL;
+    CMR_CALL( CMRchrmatZoomSubmat(cmr, matrix, submatrix, &mat) );
+    assert(mat->numRows == 1);
+    assert(mat->numColumns == 1);
+    assert(mat->numNonzeros == 1);
+    fprintf(stderr, "Matrix is NOT %sgraphic since it is not binary: entry at row %ld, column %ld is %d.\n",
+      cographic ? "co" : "", submatrix->rows[0] + 1, submatrix->columns[0] + 1, mat->entryValues[0]);
+
+    CMR_CALL( CMRchrmatFree(cmr, &mat) );
+    CMR_CALL( CMRsubmatFree(cmr, &submatrix) );
+    CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+    CMR_CALL( CMRfreeEnvironment(&cmr) );
+
+    return CMR_OKAY;
+  }
 
   /* Test for (co)graphicness. */
 
@@ -65,8 +93,6 @@ CMR_ERROR recognizeGraphic(
   CMR_GRAPH_EDGE* rowEdges = NULL;
   CMR_GRAPH_EDGE* columnEdges = NULL;
   bool* edgesReversed = NULL;
-  CMR_SUBMAT* submatrix = NULL;
-
   CMR_GRAPHIC_STATISTICS stats;
   CMR_CALL( CMRstatsGraphicInit(&stats) );
   if (cographic)
@@ -250,7 +276,10 @@ CMR_ERROR computeGraphic(
 {
   FILE* inputFile = strcmp(inputFileName, "-") ? fopen(inputFileName, "r") : stdin;
   if (!inputFile)
+  {
+    fprintf(stderr, "Input error: Could not open file <%s>.\n", inputFileName);
     return CMR_ERROR_INPUT;
+  }
 
   CMR* cmr = NULL;
   CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -502,8 +531,8 @@ int main(int argc, char** argv)
     if (inputFormat == FILEFORMAT_UNDEFINED)
       inputFormat = FILEFORMAT_MATRIX_DENSE;
 
-    error = recognizeGraphic(inputFileName, inputFormat, transposed, outputGraphFileName, treeFileName, outputDotFileName,
-      outputSubmatrixFileName, printStats, timeLimit);
+    error = recognizeGraphic(inputFileName, inputFormat, transposed, outputGraphFileName, treeFileName,
+      outputDotFileName, outputSubmatrixFileName, printStats, timeLimit);
   }
   else if (task == TASK_COMPUTE)
   {
@@ -549,7 +578,7 @@ int main(int argc, char** argv)
   switch (error)
   {
   case CMR_ERROR_INPUT:
-    puts("Input error.");
+    /* The actual function will have reported the details. */
     return EXIT_FAILURE;
   case CMR_ERROR_MEMORY:
     puts("Memory error.");

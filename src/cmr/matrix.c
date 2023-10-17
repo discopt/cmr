@@ -1301,6 +1301,102 @@ CMR_ERROR CMRchrmatCreateFromSparseStream(CMR* cmr, FILE* stream, CMR_CHRMAT** p
   return CMR_OKAY;
 }
 
+CMR_ERROR CMRdblmatCreateFromSparseFile(CMR* cmr, const char* fileName, const char* stdinName, CMR_DBLMAT** presult)
+{
+  FILE* inputFile = (!stdinName || strcmp(fileName, stdinName)) ? fopen(fileName, "r") : stdin;
+  if (!inputFile)
+  {
+    CMRraiseErrorMessage(cmr, "Could not open file <%s>.", fileName);
+    return CMR_ERROR_INPUT;
+  }
+
+  CMR_ERROR error = CMRdblmatCreateFromSparseStream(cmr, inputFile, presult);
+  if (!error)
+  {
+    /* Attempt to read another token. */
+    char token[16+4];
+    size_t numRead = fscanf(inputFile, "%16s", token);
+    if (numRead > 0 && strlen(token))
+    {
+      if (strlen(token) == 16)
+        strcat(token, "...");
+      CMRraiseErrorMessage(cmr, "Found unexpected token \"%s\" after having read a *sparse* %lux%lu matrix with %lu nonzeros.",
+        token, (*presult)->numRows, (*presult)->numColumns, (*presult)->numNonzeros);
+      CMRdblmatFree(cmr, presult);
+      error = CMR_ERROR_INPUT;
+    }
+  }
+
+  if (inputFile != stdin)
+    fclose(inputFile);
+
+  return error;
+}
+
+CMR_ERROR CMRintmatCreateFromSparseFile(CMR* cmr, const char* fileName, const char* stdinName, CMR_INTMAT** presult)
+{
+  FILE* inputFile = (!stdinName || strcmp(fileName, stdinName)) ? fopen(fileName, "r") : stdin;
+  if (!inputFile)
+  {
+    CMRraiseErrorMessage(cmr, "Could not open file <%s>.", fileName);
+    return CMR_ERROR_INPUT;
+  }
+
+  CMR_ERROR error = CMRintmatCreateFromSparseStream(cmr, inputFile, presult);
+  if (!error)
+  {
+    /* Attempt to read another token. */
+    char token[16+4];
+    size_t numRead = fscanf(inputFile, "%16s", token);
+    if (numRead > 0 && strlen(token))
+    {
+      if (strlen(token) == 16)
+        strcat(token, "...");
+      CMRraiseErrorMessage(cmr, "Found unexpected token \"%s\" after having read a *sparse* %lux%lu matrix with %lu nonzeros.",
+        token, (*presult)->numRows, (*presult)->numColumns, (*presult)->numNonzeros);
+      CMRintmatFree(cmr, presult);
+      error = CMR_ERROR_INPUT;
+    }
+  }
+
+  if (inputFile != stdin)
+    fclose(inputFile);
+
+  return error;
+}
+
+CMR_ERROR CMRchrmatCreateFromSparseFile(CMR* cmr, const char* fileName, const char* stdinName, CMR_CHRMAT** presult)
+{
+  FILE* inputFile = (!stdinName || strcmp(fileName, stdinName)) ? fopen(fileName, "r") : stdin;
+  if (!inputFile)
+  {
+    CMRraiseErrorMessage(cmr, "Could not open file <%s>.", fileName);
+    return CMR_ERROR_INPUT;
+  }
+
+  CMR_ERROR error = CMRchrmatCreateFromSparseStream(cmr, inputFile, presult);
+  if (!error)
+  {
+    /* Attempt to read another token. */
+    char token[16+4];
+    size_t numRead = fscanf(inputFile, "%16s", token);
+    if (numRead > 0 && strlen(token))
+    {
+      if (strlen(token) == 16)
+        strcat(token, "...");
+      CMRraiseErrorMessage(cmr, "Found unexpected token \"%s\" after having read a *sparse* %lux%lu matrix with %lu nonzeros.",
+        token, (*presult)->numRows, (*presult)->numColumns, (*presult)->numNonzeros);
+      CMRchrmatFree(cmr, presult);
+      error = CMR_ERROR_INPUT;
+    }
+  }
+
+  if (inputFile != stdin)
+    fclose(inputFile);
+
+  return error;
+}
+
 CMR_ERROR CMRdblmatCreateFromDenseStream(CMR* cmr, FILE* stream, CMR_DBLMAT** presult)
 {
   assert(cmr);
@@ -1515,6 +1611,102 @@ CMR_ERROR CMRchrmatCreateFromDenseStream(CMR* cmr, FILE* stream, CMR_CHRMAT** pr
   result->numNonzeros = entry;
 
   return CMR_OKAY;
+}
+
+CMR_ERROR CMRdblmatCreateFromDenseFile(CMR* cmr, const char* fileName, const char* stdinName, CMR_DBLMAT** presult)
+{
+  FILE* inputFile = (!stdinName || strcmp(fileName, stdinName)) ? fopen(fileName, "r") : stdin;
+  if (!inputFile)
+  {
+    CMRraiseErrorMessage(cmr, "Could not open file <%s>.", fileName);
+    return CMR_ERROR_INPUT;
+  }
+
+  CMR_ERROR error = CMRdblmatCreateFromDenseStream(cmr, inputFile, presult);
+  if (!error)
+  {
+    /* Attempt to read another token. */
+    char token[16+4];
+    size_t numRead = fscanf(inputFile, "%16s", token);
+    if (numRead > 0 && strlen(token))
+    {
+      if (strlen(token) == 16)
+        strcat(token, "...");
+      CMRraiseErrorMessage(cmr, "Found unexpected token \"%s\" after having read a *dense* %lux%lu matrix with %lu nonzeros.",
+        token, (*presult)->numRows, (*presult)->numColumns, (*presult)->numNonzeros);
+      CMRdblmatFree(cmr, presult);
+      error = CMR_ERROR_INPUT;
+    }
+  }
+
+  if (inputFile != stdin)
+    fclose(inputFile);
+
+  return error;
+}
+
+CMR_ERROR CMRintmatCreateFromDenseFile(CMR* cmr, const char* fileName, const char* stdinName, CMR_INTMAT** presult)
+{
+  FILE* inputFile = (!stdinName || strcmp(fileName, stdinName)) ? fopen(fileName, "r") : stdin;
+  if (!inputFile)
+  {
+    CMRraiseErrorMessage(cmr, "Could not open file <%s>.", fileName);
+    return CMR_ERROR_INPUT;
+  }
+
+  CMR_ERROR error = CMRintmatCreateFromDenseStream(cmr, inputFile, presult);
+  if (!error)
+  {
+    /* Attempt to read another token. */
+    char token[16+4];
+    size_t numRead = fscanf(inputFile, "%16s", token);
+    if (numRead > 0 && strlen(token))
+    {
+      if (strlen(token) == 16)
+        strcat(token, "...");
+      CMRraiseErrorMessage(cmr, "Found unexpected token \"%s\" after having read a *dense* %lux%lu matrix with %lu nonzeros.",
+        token, (*presult)->numRows, (*presult)->numColumns, (*presult)->numNonzeros);
+      CMRintmatFree(cmr, presult);
+      error = CMR_ERROR_INPUT;
+    }
+  }
+
+  if (inputFile != stdin)
+    fclose(inputFile);
+
+  return error;
+}
+
+CMR_ERROR CMRchrmatCreateFromDenseFile(CMR* cmr, const char* fileName, const char* stdinName, CMR_CHRMAT** presult)
+{
+  FILE* inputFile = (!stdinName || strcmp(fileName, stdinName)) ? fopen(fileName, "r") : stdin;
+  if (!inputFile)
+  {
+    CMRraiseErrorMessage(cmr, "Could not open file <%s>.", fileName);
+    return CMR_ERROR_INPUT;
+  }
+
+  CMR_ERROR error = CMRchrmatCreateFromDenseStream(cmr, inputFile, presult);
+  if (!error)
+  {
+    /* Attempt to read another token. */
+    char token[16+4];
+    size_t numRead = fscanf(inputFile, "%16s", token);
+    if (numRead > 0 && strlen(token))
+    {
+      if (strlen(token) == 16)
+        strcat(token, "...");
+      CMRraiseErrorMessage(cmr, "Found unexpected token \"%s\" after having read a *dense* %lux%lu matrix with %lu nonzeros.",
+        token, (*presult)->numRows, (*presult)->numColumns, (*presult)->numNonzeros);
+      CMRchrmatFree(cmr, presult);
+      error = CMR_ERROR_INPUT;
+    }
+  }
+
+  if (inputFile != stdin)
+    fclose(inputFile);
+
+  return error;
 }
 
 bool CMRdblmatCheckEqual(CMR_DBLMAT* matrix1, CMR_DBLMAT* matrix2)
