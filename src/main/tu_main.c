@@ -29,40 +29,27 @@ CMR_ERROR testTotalUnimodularity(
   double timeLimit                      /**< Time limit to impose. */
 )
 {
-  clock_t readClock = clock();
-  FILE* inputMatrixFile = strcmp(inputMatrixFileName, "-") ? fopen(inputMatrixFileName, "r") : stdin;
-  if (!inputMatrixFile)
-  {
-    fprintf(stderr, "Unable to open file <%s>\n", inputMatrixFileName);
-    return CMR_ERROR_INPUT;
-  }
-
   CMR* cmr = NULL;
   CMR_CALL( CMRcreateEnvironment(&cmr) );
 
   /* Read matrix. */
 
   CMR_CHRMAT* matrix = NULL;
-  CMR_ERROR error;
+  clock_t readClock = clock();
+  CMR_ERROR error = CMR_OKAY;
   if (inputFormat == FILEFORMAT_MATRIX_DENSE)
-  {
-    error = CMRchrmatCreateFromDenseStream(cmr, inputMatrixFile, &matrix);
-    if (error == CMR_ERROR_INPUT)
-      fprintf(stderr, "Error when reading dense matrix from <%s>: %s\n", inputMatrixFileName, CMRgetErrorMessage(cmr));
-  }
+    error = CMRchrmatCreateFromDenseFile(cmr, inputMatrixFileName, "-", &matrix);
   else if (inputFormat == FILEFORMAT_MATRIX_SPARSE)
-  {
-    error = CMRchrmatCreateFromSparseStream(cmr, inputMatrixFile, &matrix);
-    if (error == CMR_ERROR_INPUT)
-      fprintf(stderr, "Error when reading sparse matrix from <%s>: %s\n", inputMatrixFileName, CMRgetErrorMessage(cmr));
-  }
+    error = CMRchrmatCreateFromSparseFile(cmr, inputMatrixFileName, "-", &matrix);
   else
-    assert(false);
+    CMR_CALL(CMR_ERROR_INVALID);
 
-  if (inputMatrixFile != stdin)
-    fclose(inputMatrixFile);
-
-  CMR_CALL(error);
+  if (error)
+  {
+    fprintf(stderr, "Input error: %s\n", CMRgetErrorMessage(cmr));
+    CMR_CALL( CMRfreeEnvironment(&cmr) );
+    return CMR_ERROR_INPUT;
+  }
 
   fprintf(stderr, "Read %lux%lu matrix with %lu nonzeros in %f seconds.\n", matrix->numRows, matrix->numColumns,
     matrix->numNonzeros, (clock() - readClock) * 1.0 / CLOCKS_PER_SEC);
@@ -210,6 +197,7 @@ int main(int argc, char** argv)
   switch (error)
   {
   case CMR_ERROR_INPUT:
+    /* The actual function will have reported the details. */
     return EXIT_FAILURE;
   case CMR_ERROR_MEMORY:
     puts("Memory error.");
