@@ -26,6 +26,7 @@ The library also contains various [instance generators](\ref generators).
 The following matrix/matroid classes are **planned**:
 
   - \ref balanced
+  - \ref totally balanced
   - \ref perfect
   - \ref consecutive-ones
   - \ref max-flow-min-cut
