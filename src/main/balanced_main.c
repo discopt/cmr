@@ -62,7 +62,6 @@ CMR_ERROR testBalanced(
   /* Actual test. */
 
   bool isBalanced = false; 
-
   CMR_CALL( CMRtestBalanced(cmr, matrix, &isBalanced, NULL, timeLimit) ); 
   
   printf("Matrix %sbalanced.\n", isBalanced ? "IS " : "IS NOT ");
