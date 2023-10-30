@@ -28,6 +28,7 @@ endif()
 
 # Target for the CMR library.
 add_library(cmr
+  src/cmr/balanced.c
   src/cmr/camion.c
   src/cmr/ctu.c
   src/cmr/dec.c
@@ -73,6 +74,16 @@ add_library(cmr
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   target_compile_options(cmr PRIVATE -Wall -Wextra)
 endif()
+
+# Target for the cmr-balanced executable.
+add_executable(cmr_balanced
+  src/main/balanced_main.c)
+target_link_libraries(cmr_balanced
+  PRIVATE
+    CMR::cmr
+    m
+)
+set_target_properties(cmr_balanced PROPERTIES OUTPUT_NAME cmr-balanced)
 
 # Target for the cmr-camion executable.
 add_executable(cmr_camion
@@ -289,6 +300,7 @@ endif()
 include(GNUInstallDirs)
 
 install(TARGETS
+    cmr_balanced
     cmr_camion
     cmr_ctu
     cmr_graphic
