@@ -5,7 +5,7 @@
 #include <float.h>
 
 #include <cmr/matrix.h>
-#include <cmr/tu.h>
+#include <cmr/balanced.h>
 
 typedef enum
 {
@@ -62,7 +62,8 @@ CMR_ERROR testBalanced(
   /* Actual test. */
 
   bool isBalanced = false; 
-  
+
+  CMR_CALL( CMRtestBalanced(cmr, matrix, &isBalanced, NULL, 0) ); 
   
   printf("Matrix %sbalanced.\n", isBalanced ? "IS " : "IS NOT ");
 

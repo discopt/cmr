@@ -1,3 +1,5 @@
+#define CMR_DEBUG /* Uncomment to debug */
+
 #include <cmr/balanced.h>
 
 #include <cmr/camion.h>
@@ -49,6 +51,7 @@ CMR_ERROR CMRtestBalanced(CMR* cmr, CMR_CHRMAT* matrix, bool* pisBalanced, CMR_S
     return CMR_OKAY;
 
   printf("DEBUG: CMRtestBalanced called!\n");
+  CMR_CALL( CMRtestBalancedEnumeration(cmr, matrix, pisBalanced, psubmatrix, timeLimit) );
 
   return CMR_OKAY;
 }
