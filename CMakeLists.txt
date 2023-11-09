@@ -78,6 +78,16 @@ endif()
 # Target for the cmr-balanced executable.
 add_executable(cmr_balanced
   src/main/balanced_main.c)
+
+target_include_directories(cmr_balanced
+  PUBLIC
+    $<INSTALL_INTERFACE:include> # <PREFIX>/include/ contains all installed headers.
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> # contains all regular headers.
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}> # contains all configured headers such as cmr/config.h and cmr/export.h.
+  PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/cmr/
+)
+
 target_link_libraries(cmr_balanced
   PRIVATE
     CMR::cmr
