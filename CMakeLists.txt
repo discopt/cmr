@@ -4,6 +4,7 @@ project(CMR
   VERSION 1.3.0
   LANGUAGES C CXX)
 
+set(CMAKE_C_STANDARD 99)
 option(SHARED "Build shared libraries" ON)
 set(BUILD_SHARED_LIBS ${SHARED})
 message(STATUS "Build shared libraries: " ${SHARED})
