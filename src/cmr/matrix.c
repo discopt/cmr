@@ -1542,8 +1542,8 @@ CMR_ERROR CMRintmatCreateFromDenseStream(CMR* cmr, FILE* stream, CMR_INTMAT** pr
   /* Make arrays smaller again. */
   if (entry < memEntries)
   {
-    CMR_CALL( CMRreallocBlockArray(cmr, &entryColumns, entry) );
-    CMR_CALL( CMRreallocBlockArray(cmr, &entryValues, entry) );
+    CMR_CALL( CMRreallocBlockArray(cmr, &entryColumns, entry < 256 ? 256 : entry) );
+    CMR_CALL( CMRreallocBlockArray(cmr, &entryValues, entry < 256 ? 256 : entry) );
   }
 
   result->entryColumns = entryColumns;
@@ -1614,8 +1614,8 @@ CMR_ERROR CMRchrmatCreateFromDenseStream(CMR* cmr, FILE* stream, CMR_CHRMAT** pr
   /* Make arrays smaller again. */
   if (entry < memEntries)
   {
-    CMR_CALL( CMRreallocBlockArray(cmr, &entryColumns, entry) );
-    CMR_CALL( CMRreallocBlockArray(cmr, &entryValues, entry) );
+    CMR_CALL( CMRreallocBlockArray(cmr, &entryColumns, entry < 256 ? 256 : entry) );
+    CMR_CALL( CMRreallocBlockArray(cmr, &entryValues, entry < 256 ? 256 : entry) );
   }
 
   result->entryColumns = entryColumns;
