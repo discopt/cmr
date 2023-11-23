@@ -1558,7 +1558,7 @@ CMR_ERROR decomposeBinarySeriesParallel(
   if (queueEnd > queueStart || (pviolatorSubmatrix && (numRows + numColumns > 0)))
   {
     /* Initialize list matrix representation. */
-    CMR_CALL( CMRchrlistmatInitializeFromMatrix(cmr, listmatrix, matrix) );
+    CMR_CALL( CMRchrlistmatInitializeFromChrMatrix(cmr, listmatrix, matrix) );
 
     /* We now start main loop. */
     size_t numRowReductions = 0;
@@ -1767,7 +1767,7 @@ CMR_ERROR decomposeTernarySeriesParallel(
   if (queueEnd > queueStart || (pviolatorSubmatrix && (numRows + numColumns > 0)))
   {
     /* Create list matrix representation. */
-    CMR_CALL( CMRchrlistmatInitializeFromMatrix(cmr, listmatrix, matrix) );
+    CMR_CALL( CMRchrlistmatInitializeFromChrMatrix(cmr, listmatrix, matrix) );
 
     /* We now start main loop. */
     size_t numRowReductions = 0;
