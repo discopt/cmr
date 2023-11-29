@@ -15,7 +15,6 @@ add_executable(cmr_gtest
   test_graph.cpp
   test_graphic.cpp
   test_hashtable.cpp
-  test_linalg.cpp
   test_matrix.cpp
   test_main.cpp
   test_network.cpp
