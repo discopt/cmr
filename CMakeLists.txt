@@ -43,8 +43,8 @@ add_library(cmr
   src/cmr/matrix.c
   src/cmr/one_sum.c
   src/cmr/tu.c
-  src/cmr/determinant.cpp
-  src/cmr/ghouila_houri.cpp
+  #src/cmr/determinant.cpp
+  #src/cmr/ghouila_houri.cpp
   src/cmr/graph.c
   src/cmr/graphic.c
   src/cmr/hashtable.c
@@ -55,9 +55,9 @@ add_library(cmr
   src/cmr/logger.cpp
   src/cmr/matrix.cpp
   src/cmr/matroid.c
-  src/cmr/matroid_decomposition.cpp
-  src/cmr/matroid_graph.cpp
-  src/cmr/nested_minor_sequence.cpp
+  #src/cmr/matroid_decomposition.cpp
+  #src/cmr/matroid_graph.cpp
+  #src/cmr/nested_minor_sequence.cpp
   src/cmr/regular_nested_minor_sequence.c
   src/cmr/network.c
   src/cmr/regular.c
@@ -66,14 +66,13 @@ add_library(cmr
   src/cmr/regular_onesum.c
   src/cmr/regular_r10.c
   src/cmr/regular_series_parallel.c
-  src/cmr/separation.cpp
+  #src/cmr/separation.cpp
   src/cmr/separation.c
   src/cmr/series_parallel.c
   src/cmr/sort.c
-  src/cmr/interface.cpp
-  src/cmr/total_unimodularity.cpp
-  src/cmr/unimodularity.cpp
-  src/cmr/zero_plus_minus_one.cpp
+  #src/cmr/total_unimodularity.cpp
+  #src/cmr/unimodularity.cpp
+  #src/cmr/zero_plus_minus_one.cpp
 )
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")

@@ -58,6 +58,8 @@ CMR_ERROR CMRlistmat64Alloc(CMR* cmr, size_t memRows, size_t memColumns, size_t 
   return CMR_OKAY;
 }
 
+#if defined(CMR_WITH_GMP)
+
 CMR_ERROR CMRlistmatGMPAlloc(CMR* cmr, size_t memRows, size_t memColumns, size_t memNonzeros, ListMatGMP** presult)
 {
   assert(cmr);
@@ -85,6 +87,8 @@ CMR_ERROR CMRlistmatGMPAlloc(CMR* cmr, size_t memRows, size_t memColumns, size_t
 
   return CMR_OKAY;
 }
+
+#endif /* CMR_WITH_GMP */
 
 CMR_ERROR CMRlistmat8Free(CMR* cmr, ListMat8** plistmatrix)
 {
@@ -120,6 +124,8 @@ CMR_ERROR CMRlistmat64Free(CMR* cmr, ListMat64** plistmatrix)
   return CMR_OKAY;
 }
 
+#if defined(CMR_WITH_GMP)
+
 CMR_ERROR CMRlistmatGMPFree(CMR* cmr, ListMatGMP** plistmatrix)
 {
   assert(cmr);
@@ -139,6 +145,8 @@ CMR_ERROR CMRlistmatGMPFree(CMR* cmr, ListMatGMP** plistmatrix)
 
   return CMR_OKAY;
 }
+
+#endif /* CMR_WITH_GMP */
 
 CMR_ERROR CMRlistmat8InitializeZero(CMR* cmr, ListMat8* listmatrix, size_t numRows, size_t numColumns)
 {
@@ -360,6 +368,8 @@ CMR_ERROR CMRlistmat64InitializeZero(CMR* cmr, ListMat64* listmatrix, size_t num
   return CMR_OKAY;
 }
 
+#if defined(CMR_WITH_GMP)
+
 CMR_ERROR CMRlistmatGMPInitializeZero(CMR* cmr, ListMatGMP* listmatrix, size_t numRows, size_t numColumns)
 {
   assert(cmr);
@@ -469,6 +479,8 @@ CMR_ERROR CMRlistmatGMPInitializeZero(CMR* cmr, ListMatGMP* listmatrix, size_t n
 
   return CMR_OKAY;
 }
+
+#endif /* CMR_WITH_GMP */
 
 CMR_ERROR CMRlistmat8InitializeFromChrMatrix(CMR* cmr, ListMat8* listmatrix, CMR_CHRMAT* matrix)
 {
@@ -610,6 +622,8 @@ CMR_ERROR CMRlistmat64InitializeFromIntMatrix(CMR* cmr, ListMat64* listmatrix, C
   return CMR_OKAY;
 }
 
+#if defined(CMR_WITH_GMP)
+
 CMR_ERROR CMRlistmatGMPInitializeFromIntMatrix(CMR* cmr, ListMatGMP* listmatrix, CMR_INTMAT* matrix)
 {
   assert(cmr);
@@ -679,6 +693,8 @@ CMR_ERROR CMRlistmatGMPInitializeFromIntMatrix(CMR* cmr, ListMatGMP* listmatrix,
 
   return CMR_OKAY;
 }
+
+#endif /* CMR_WITH_GMP */
 
 CMR_ERROR CMRlistmat8InitializeFromDoubleMatrix(CMR* cmr, ListMat8* listmatrix, CMR_DBLMAT* matrix, double epsilon)
 {
@@ -836,6 +852,8 @@ CMR_ERROR CMRlistmat64InitializeFromDoubleMatrix(CMR* cmr, ListMat64* listmatrix
   return CMR_OKAY;
 }
 
+#if defined(CMR_WITH_GMP)
+
 CMR_ERROR CMRlistmatGMPInitializeFromDoubleMatrix(CMR* cmr, ListMatGMP* listmatrix, CMR_DBLMAT* matrix, double epsilon)
 {
   assert(cmr);
@@ -913,6 +931,8 @@ CMR_ERROR CMRlistmatGMPInitializeFromDoubleMatrix(CMR* cmr, ListMatGMP* listmatr
 
   return CMR_OKAY;
 }
+
+#endif /* CMR_WITH_GMP */
 
 CMR_ERROR CMRlistmat8InitializeFromChrSubmatrix(CMR* cmr, ListMat8* listmatrix, CMR_CHRMAT* matrix,
   CMR_SUBMAT* submatrix)
@@ -1072,6 +1092,8 @@ CMR_ERROR CMRlistmat64InitializeFromIntSubmatrix(CMR* cmr, ListMat64* listmatrix
   return CMR_OKAY;
 }
 
+#if defined(CMR_WITH_GMP)
+
 CMR_ERROR CMRlistmatGMPInitializeFromIntSubmatrix(CMR* cmr, ListMatGMP* listmatrix, CMR_INTMAT* matrix,
   CMR_SUBMAT* submatrix)
 {
@@ -1149,6 +1171,8 @@ CMR_ERROR CMRlistmatGMPInitializeFromIntSubmatrix(CMR* cmr, ListMatGMP* listmatr
 
   return CMR_OKAY;
 }
+
+#endif /* CMR_WITH_GMP */
 
 CMR_ERROR CMRlistmat8InitializeFromChrSubmatrixComplement(CMR* cmr, ListMat8* listmatrix, CMR_CHRMAT* matrix,
   CMR_SUBMAT* submatrix)
@@ -1300,6 +1324,8 @@ CMR_ERROR CMRlistmat64InitializeFromIntSubmatrixComplement(CMR* cmr, ListMat64* 
   return CMR_OKAY;
 }
 
+#if defined(CMR_WITH_GMP)
+
 CMR_ERROR CMRlistmatGMPInitializeFromIntSubmatrixComplement(CMR* cmr, ListMatGMP* listmatrix, CMR_INTMAT* matrix,
   CMR_SUBMAT* submatrix)
 {
@@ -1375,6 +1401,8 @@ CMR_ERROR CMRlistmatGMPInitializeFromIntSubmatrixComplement(CMR* cmr, ListMatGMP
   return CMR_OKAY;
 }
 
+#endif /* CMR_WITH_GMP */
+
 CMR_ERROR CMRlistmat8PrintDense(CMR* cmr, ListMat8* listmatrix, FILE* stream)
 {
   assert(cmr);
@@ -1441,6 +1469,8 @@ CMR_ERROR CMRlistmat64PrintDense(CMR* cmr, ListMat64* listmatrix, FILE* stream)
   return CMR_OKAY;
 }
 
+#if defined(CMR_WITH_GMP)
+
 CMR_ERROR CMRlistmatGMPPrintDense(CMR* cmr, ListMatGMP* listmatrix, FILE* stream)
 {
   assert(cmr);
@@ -1477,6 +1507,8 @@ CMR_ERROR CMRlistmatGMPPrintDense(CMR* cmr, ListMatGMP* listmatrix, FILE* stream
 
   return CMR_OKAY;
 }
+
+#endif /* CMR_WITH_GMP */
 
 CMR_ERROR CMRlistmat8Insert(CMR* cmr, ListMat8* listmatrix, size_t row, size_t column, int8_t value, long special,
   ptrdiff_t* pmemoryShift)
@@ -1675,6 +1707,8 @@ CMR_ERROR CMRlistmat64Insert(CMR* cmr, ListMat64* listmatrix, size_t row, size_t
   return CMR_OKAY;
 }
 
+#if defined(CMR_WITH_GMP)
+
 CMR_ERROR CMRlistmatGMPInsert(CMR* cmr, ListMatGMP* listmatrix, size_t row, size_t column, mpz_srcptr value,
   long special, ptrdiff_t* pmemoryShift)
 {
@@ -1786,6 +1820,7 @@ CMR_ERROR CMRlistmatGMPInsert(CMR* cmr, ListMatGMP* listmatrix, size_t row, size
   return CMR_OKAY;
 }
 
+#endif /* CMR_WITH_GMP */
 
 CMR_ERROR CMRlistmat8Delete(CMR* cmr, ListMat8* listmatrix, ListMat8Nonzero* nz)
 {
@@ -1829,6 +1864,8 @@ CMR_ERROR CMRlistmat64Delete(CMR* cmr, ListMat64* listmatrix, ListMat64Nonzero* 
   return CMR_OKAY;
 }
 
+#if defined(CMR_WITH_GMP)
+
 CMR_ERROR CMRlistmatGMPDelete(CMR* cmr, ListMatGMP* listmatrix, ListMatGMPNonzero* nz)
 {
   assert(cmr);
@@ -1849,3 +1886,5 @@ CMR_ERROR CMRlistmatGMPDelete(CMR* cmr, ListMatGMP* listmatrix, ListMatGMPNonzer
 
   return CMR_OKAY;
 }
+
+#endif /* CMR_WITH_GMP */

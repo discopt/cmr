@@ -81,5 +81,44 @@ TEST(Equimodular, Examples)
     ASSERT_CMR_CALL( CMRintmatFree(cmr, &matrix) );
   }
 
+  /* Numerically difficult example. */
+  {
+    CMR_INTMAT* matrix = NULL;
+    ASSERT_CMR_CALL( stringToIntMatrix(cmr, &matrix, "9 9 "
+      " 1 2 7 3 5 0 2 0 7 "
+      " 0 0 8 1 0 7 0 4 8 "
+      " 0 7 6 0 9 0 7 0 9 "
+      " 2 0 9 0 2 5 8 0 1 "
+      " 0 1 8 5 3 5 1 6 3 "
+      " 0 9 0 4 8 1 5 2 0 "
+      " 7 8 0 2 0 0 9 7 0 "
+      " 4 0 7 0 0 7 5 0 2 "
+      " 0 0 0 8 0 5 5 0 6 "
+    ) );
+
+    bool isEquimodular;
+    int64_t k = 0;
+    CMR_EQUIMODULAR_STATISTICS stats;
+    CMRstatsEquimodularityInit(&stats);
+    CMR_ERROR error = CMRtestEquimodularity(cmr, matrix, &isEquimodular, &k, NULL, &stats, DBL_MAX);
+
+#if defined(CMR_WITH_GMP)
+
+    ASSERT_EQ(error, CMR_OKAY);
+    ASSERT_FALSE(isEquimodular);
+    ASSERT_EQ(k, 0);
+    ASSERT_EQ(stats.totalCount, 1);
+
+#else /* CMR_WITH_GMP */
+
+    ASSERT_EQ(error, CMR_ERROR_OVERFLOW);
+    ASSERT_EQ(k, 0);
+
+#endif /* CMR_WITH_GMP */
+
+    ASSERT_CMR_CALL( CMRintmatFree(cmr, &matrix) );
+  }
+
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
+

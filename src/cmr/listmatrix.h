@@ -204,6 +204,8 @@ CMR_ERROR CMRlistmat64Alloc(
   ListMat64** presult /**< Pointer for storing the created list matrix. */
 );
 
+#if defined(CMR_WITH_GMP)
+
 /**
  * \brief Allocates memory for a GMP list matrix.
  */
@@ -215,6 +217,8 @@ CMR_ERROR CMRlistmatGMPAlloc(
   size_t memNonzeros,   /**< Memory for nonzeros. */
   ListMatGMP** presult  /**< Pointer for storing the created list matrix. */
 );
+
+#endif /* CMR_WITH_GMP */
 
 /**
  * \brief Frees an 8-bit list matrix.
@@ -234,6 +238,8 @@ CMR_ERROR CMRlistmat64Free(
   ListMat64** plistmatrix /**< Pointer to list matrix. */
 );
 
+#if defined(CMR_WITH_GMP)
+
 /**
  * \brief Frees a gmp list matrix.
  */
@@ -242,6 +248,8 @@ CMR_ERROR CMRlistmatGMPFree(
   CMR* cmr,                 /**< \ref CMR environment. */
   ListMatGMP** plistmatrix  /**< Pointer to list matrix. */
 );
+
+#endif /* CMR_WITH_GMP */
 
 /**
  * \brief Initializes a zero 8-bit list matrix.
@@ -265,6 +273,8 @@ CMR_ERROR CMRlistmat64InitializeZero(
   size_t numColumns       /**< Number of columns. */
 );
 
+#if defined(CMR_WITH_GMP)
+
 /**
  * \brief Initializes a zero 64-bit list matrix.
  */
@@ -275,6 +285,8 @@ CMR_ERROR CMRlistmatGMPInitializeZero(
   size_t numRows,         /**< Number of rows. */
   size_t numColumns       /**< Number of columns. */
 );
+
+#endif /* CMR_WITH_GMP */
 
 /**
  * \brief Copies \p matrix into \p listmatrix.
@@ -296,6 +308,8 @@ CMR_ERROR CMRlistmat64InitializeFromIntMatrix(
   CMR_INTMAT* matrix      /**< Matrix to be copied to \p listmatrix. */
 );
 
+#if defined(CMR_WITH_GMP)
+
 /**
  * \brief Copies \p matrix into \p listmatrix.
  */
@@ -305,6 +319,8 @@ CMR_ERROR CMRlistmatGMPInitializeFromIntMatrix(
   ListMatGMP* listmatrix, /**< List matrix. */
   CMR_INTMAT* matrix      /**< Matrix to be copied to \p listmatrix. */
 );
+
+#endif /* CMR_WITH_GMP */
 
 /**
  * \brief Copies \p matrix into \p listmatrix.
@@ -328,6 +344,8 @@ CMR_ERROR CMRlistmat64InitializeFromDoubleMatrix(
   double epsilon          /**< Tolerance to consider as exact integer. */
 );
 
+#if defined(CMR_WITH_GMP)
+
 /**
  * \brief Copies \p matrix into \p listmatrix.
  */
@@ -338,6 +356,8 @@ CMR_ERROR CMRlistmatGMPInitializeFromDoubleMatrix(
   CMR_DBLMAT* matrix,     /**< Matrix to be copied to \p listmatrix. */
   double epsilon          /**< Tolerance to consider as exact integer. */
 );
+
+#endif /* CMR_WITH_GMP */
 
 /**
  * \brief Copies \p submatrix of \p matrix into \p listmatrix.
@@ -361,6 +381,8 @@ CMR_ERROR CMRlistmat64InitializeFromIntSubmatrix(
   CMR_SUBMAT* submatrix   /**< Submatrix of \p matrix. */
 );
 
+#if defined(CMR_WITH_GMP)
+
 /**
  * \brief Copies \p submatrix of \p matrix into \p listmatrix.
  */
@@ -371,6 +393,8 @@ CMR_ERROR CMRlistmatGMPInitializeFromIntSubmatrix(
   CMR_INTMAT* matrix,     /**< Matrix to be copied to \p listmatrix. */
   CMR_SUBMAT* submatrix   /**< Submatrix of \p matrix. */
 );
+
+#endif /* CMR_WITH_GMP */
 
 /**
  * \brief Copies all but \p submatrix of \p matrix into \p listmatrix.
@@ -394,6 +418,8 @@ CMR_ERROR CMRlistmat64InitializeFromIntSubmatrixComplement(
   CMR_SUBMAT* submatrix   /**< Submatrix of \p matrix. */
 );
 
+#if defined(CMR_WITH_GMP)
+
 /**
  * \brief Copies all but \p submatrix of \p matrix into \p listmatrix.
  */
@@ -404,6 +430,8 @@ CMR_ERROR CMRlistmatGMPInitializeFromIntSubmatrixComplement(
   CMR_INTMAT* matrix,     /**< Matrix to be copied to \p listmatrix. */
   CMR_SUBMAT* submatrix   /**< Submatrix of \p matrix. */
 );
+
+#endif /* CMR_WITH_GMP */
 
 /**
  * \brief Prints the 8-bit list matrix as a dense matrix.
@@ -425,6 +453,8 @@ CMR_ERROR CMRlistmat64PrintDense(
   FILE* stream            /**< Stream to print to. */
 );
 
+#if defined(CMR_WITH_GMP)
+
 /**
  * \brief Prints the GMP list matrix as a dense matrix.
  */
@@ -434,6 +464,8 @@ CMR_ERROR CMRlistmatGMPPrintDense(
   ListMatGMP* listmatrix, /**< List matrix. */
   FILE* stream            /**< Stream to print to. */
 );
+
+#endif /* CMR_WITH_GMP */
 
 /**
  * \brief Creates a new element and inserts it into the doubly-linked lists.
@@ -467,6 +499,8 @@ CMR_ERROR CMRlistmat64Insert(
   ptrdiff_t* pmemoryShift /**< If not \c NULL, each nonzero's address is shifted by this value. */
 );
 
+#if defined(CMR_WITH_GMP)
+
 /**
  * \brief Creates a new element and inserts it into the doubly-linked lists.
  *
@@ -482,6 +516,8 @@ CMR_ERROR CMRlistmatGMPInsert(
   long special,           /**< Special entry of new element. */
   ptrdiff_t* pmemoryShift /**< If not \c NULL, each nonzero's address is shifted by this value. */
 );
+
+#endif /* CMR_WITH_GMP */
 
 /**
  * \brief Delete a nonzero element.
@@ -503,6 +539,8 @@ CMR_ERROR CMRlistmat64Delete(
   ListMat64Nonzero* nz    /**< Nonzero to delete. */
 );
 
+#if defined(CMR_WITH_GMP)
+
 /**
  * \brief Delete a nonzero element.
  **/
@@ -512,6 +550,8 @@ CMR_ERROR CMRlistmatGMPDelete(
   ListMatGMP* listmatrix, /**< List matrix. */
   ListMatGMPNonzero* nz   /**< Nonzero to delete. */
 );
+
+#endif /* CMR_WITH_GMP */
 
 #ifdef __cplusplus
 }
