@@ -52,8 +52,8 @@ add_library(cmr
   src/cmr/equimodular.c
   src/cmr/linalg.c
   src/cmr/listmatrix.c
-  src/cmr/logger.cpp
-  src/cmr/matrix.cpp
+  #src/cmr/logger.cpp
+  #src/cmr/matrix.cpp
   src/cmr/matroid.c
   #src/cmr/matroid_decomposition.cpp
   #src/cmr/matroid_graph.cpp
