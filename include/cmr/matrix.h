@@ -1006,9 +1006,20 @@ CMR_ERROR CMRchrmatSignedSupport(
 );
 
 /**
+ * \brief Converts a char matrix to an int matrix.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRchrmatToInt(
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,   /**< Input matrix. */
+  CMR_INTMAT** presult  /**< Pointer for storing the output matrix. */
+);
+
+/**
  * \brief Converts an int matrix to a char matrix.
  *
- * \returns \ref CMR_ERROR_INPUT in case of overflow.
+ * \returns \ref CMR_ERROR_OVERFLOW in case of overflow.
  */
 
 CMR_EXPORT

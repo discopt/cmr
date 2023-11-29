@@ -8,7 +8,7 @@
 #include <time.h>
 
 #include "env_internal.h"
-#include "linalg.h"
+#include "linear_algebra_internal.h"
 
 CMR_ERROR CMRparamsEquimodularityInit(CMR_EQUIMODULAR_PARAMETERS* params)
 {
