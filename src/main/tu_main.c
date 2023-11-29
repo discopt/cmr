@@ -115,8 +115,8 @@ int printUsage(const char* program)
   fputs("  -i FORMAT  Format of file IN-MAT, among `dense' and `sparse'; default: dense.\n", stderr);
   fputs("  -D OUT-DEC Write a decomposition tree of the underlying regular matroid to file OUT-DEC; default: skip computation.\n", stderr);
   fputs("  -N NON-SUB Write a minimal non-totally-unimodular submatrix to file NON-SUB; default: skip computation.\n", stderr);
-  fputs("  -s         Print statistics about the computation to stderr.\n\n", stderr);
   fputs("Advanced options:\n", stderr);
+  fputs("  --stats              Print statistics about the computation to stderr.\n\n", stderr);
   fputs("  --time-limit LIMIT   Allow at most LIMIT seconds for the computation.\n", stderr);
   fputs("  --no-direct-graphic  Check only 3-connected matrices for regularity.\n", stderr);
   fputs("  --no-series-parallel Do not allow series-parallel operations in decomposition tree.\n\n", stderr);
@@ -160,7 +160,7 @@ int main(int argc, char** argv)
       outputTree = argv[++a];
     else if (!strcmp(argv[a], "-N") && a+1 < argc)
       outputSubmatrix = argv[++a];
-    else if (!strcmp(argv[a], "-s"))
+    else if (!strcmp(argv[a], "--stats"))
       printStats = true;
     else if (!strcmp(argv[a], "--no-direct-graphic"))
       directGraphicness = false;

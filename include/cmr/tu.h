@@ -17,7 +17,7 @@ extern "C" {
 #include <cmr/regular.h>
 #include <cmr/matrix.h>
 #include <cmr/camion.h>
-  
+
 typedef struct
 {
   CMR_REGULAR_PARAMETERS regular; /**< \brief Parameters for regularity test. */

@@ -1440,10 +1440,16 @@ CMR_ERROR CMRregularTestGraphic(CMR* cmr, CMR_CHRMAT** pmatrix, CMR_CHRMAT** ptr
   CMR_CHRMAT* matrix = *pmatrix;
   CMR_CHRMAT* transpose = *ptranspose;
 
-  assert(matrix || transpose);
+  if (!matrix)
+  {
+    assert(transpose);
+    CMR_CALL( CMRchrmatTranspose(cmr, transpose, pmatrix) );
+    matrix = *pmatrix;
+  }
 
   if (!transpose)
   {
+    assert(matrix);
     CMR_CALL( CMRchrmatTranspose(cmr, matrix, ptranspose) );
     transpose = *ptranspose;
   }

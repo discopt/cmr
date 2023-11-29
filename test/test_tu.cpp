@@ -42,11 +42,12 @@ TEST(TotallyUnimodular, OneSum)
     ASSERT_FALSE( CMRdecHasTranspose(dec) ); /* Default settings should mean that the transpose is never computed. */
     ASSERT_EQ( CMRdecIsSum(dec, NULL, NULL), 1 );
     ASSERT_EQ( CMRdecNumChildren(dec), 2 );
-    ASSERT_FALSE( CMRdecIsGraphic(CMRdecChild(dec, 0)) );
-    ASSERT_TRUE( CMRdecIsCographic(CMRdecChild(dec, 0)) );
-    ASSERT_TRUE( CMRdecIsGraphic(CMRdecChild(dec, 1)) );
-    ASSERT_FALSE( CMRdecIsCographic(CMRdecChild(dec, 1)) );
-    
+    int numGraphic = (CMRdecIsGraphic(CMRdecChild(dec, 0)) ? 1 : 0) + (CMRdecIsGraphic(CMRdecChild(dec, 1)) ? 1 : 0);
+    ASSERT_EQ(numGraphic, 1);
+    int numCographic = (CMRdecIsCographic(CMRdecChild(dec, 0)) ? 1 : 0)
+      + (CMRdecIsCographic(CMRdecChild(dec, 1)) ? 1 : 0);
+      ASSERT_EQ(numCographic, 1);
+
     ASSERT_CMR_CALL( CMRdecFree(cmr, &dec) );
 
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );

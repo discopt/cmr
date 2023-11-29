@@ -455,7 +455,7 @@ CMR_ERROR CMRdblmatSortNonzeros(CMR* cmr, CMR_DBLMAT* matrix)
 CMR_ERROR CMRintmatSortNonzeros(CMR* cmr, CMR_INTMAT* matrix)
 {
   assert(cmr);
-  CMRconsistencyAssert( CMRintmatConsistency(matrix) );
+  assert(matrix);
 
   for (size_t row = 0; row < matrix->numRows; ++row)
   {
@@ -1639,8 +1639,8 @@ CMR_ERROR CMRdblmatCreateFromDenseFile(CMR* cmr, const char* fileName, const cha
   {
     /* Attempt to read another token. */
     char token[16+4];
-    size_t numRead = fscanf(inputFile, "%16s", token);
-    if (numRead > 0 && strlen(token))
+    int numRead = fscanf(inputFile, "%16s", token);
+    if (numRead != EOF && numRead > 0 && strlen(token))
     {
       if (strlen(token) == 16)
         strcat(token, "...");
@@ -1671,8 +1671,8 @@ CMR_ERROR CMRintmatCreateFromDenseFile(CMR* cmr, const char* fileName, const cha
   {
     /* Attempt to read another token. */
     char token[16+4];
-    size_t numRead = fscanf(inputFile, "%16s", token);
-    if (numRead > 0 && strlen(token))
+    int numRead = fscanf(inputFile, "%16s", token);
+    if (numRead != EOF && numRead > 0 && strlen(token))
     {
       if (strlen(token) == 16)
         strcat(token, "...");
@@ -1703,8 +1703,8 @@ CMR_ERROR CMRchrmatCreateFromDenseFile(CMR* cmr, const char* fileName, const cha
   {
     /* Attempt to read another token. */
     char token[16+4];
-    size_t numRead = fscanf(inputFile, "%16s", token);
-    if (numRead > 0 && strlen(token))
+    int numRead = fscanf(inputFile, "%16s", token);
+    if (numRead != EOF && numRead > 0 && strlen(token))
     {
       if (strlen(token) == 16)
         strcat(token, "...");
@@ -1964,6 +1964,11 @@ char* CMRdblmatConsistency(CMR_DBLMAT* matrix)
     return CMRconsistencyMessage("CMR_DBLMAT is NULL.");
   if (!matrix->rowSlice)
     return CMRconsistencyMessage("CMR_DBLMAT is does not have rowSlice array.");
+  if (matrix->rowSlice[matrix->numRows] != matrix->numNonzeros)
+  {
+    return CMRconsistencyMessage("CMR_DBLMAT has inconsistent last slice index (%ld) and #nonzeros (%ld)",
+      matrix->rowSlice[matrix->numRows], matrix->numNonzeros);
+  }
 
   for (size_t row = 0; row < matrix->numRows; ++row)
   {
@@ -1993,6 +1998,11 @@ char* CMRintmatConsistency(CMR_INTMAT* matrix)
     return CMRconsistencyMessage("CMR_INTMAT is NULL.");
   if (!matrix->rowSlice)
     return CMRconsistencyMessage("CMR_INTMAT is does not have rowSlice array.");
+  if (matrix->rowSlice[matrix->numRows] != matrix->numNonzeros)
+  {
+    return CMRconsistencyMessage("CMR_INTMAT has inconsistent last slice index (%ld) and #nonzeros (%ld)",
+      matrix->rowSlice[matrix->numRows], matrix->numNonzeros);
+  }
 
   for (size_t row = 0; row < matrix->numRows; ++row)
   {
@@ -2030,6 +2040,11 @@ char* CMRchrmatConsistency(CMR_CHRMAT* matrix)
     return CMRconsistencyMessage("CMR_CHRMAT is NULL.");
   if (!matrix->rowSlice)
     return CMRconsistencyMessage("CMR_CHRMAT is does not have rowSlice array.");
+  if (matrix->rowSlice[matrix->numRows] != matrix->numNonzeros)
+  {
+    return CMRconsistencyMessage("CMR_CHRMAT has inconsistent last slice index (%ld) and #nonzeros (%ld)",
+      matrix->rowSlice[matrix->numRows], matrix->numNonzeros);
+  }
 
   for (size_t row = 0; row < matrix->numRows; ++row)
   {
@@ -2741,7 +2756,7 @@ size_t findMaximum(size_t* array, size_t length, size_t* pmaxIndex)
 static
 CMR_ERROR findBadSubmatrixByMaximum(
   CMR* cmr,
-  ChrListMat* listmatrix,
+  ListMat8* listmatrix,
   CMR_SUBMAT** psubmatrix
 )
 {
@@ -2756,7 +2771,7 @@ CMR_ERROR findBadSubmatrixByMaximum(
 
   for (size_t row = 0; row < listmatrix->numRows; ++row)
   {
-    for (ChrListMatNonzero* nonzero = listmatrix->rowElements[row].head.right;
+    for (ListMat8Nonzero* nonzero = listmatrix->rowElements[row].head.right;
       nonzero != &listmatrix->rowElements[row].head; nonzero = nonzero->right)
     {
       if (nonzero->special)
@@ -2785,7 +2800,7 @@ CMR_ERROR findBadSubmatrixByMaximum(
     
     if (rowMaximum >= columnMaximum)
     {
-      for (ChrListMatNonzero* nz = listmatrix->rowElements[rowMaximumIndex].head.right;
+      for (ListMat8Nonzero* nz = listmatrix->rowElements[rowMaximumIndex].head.right;
         nz != &listmatrix->rowElements[rowMaximumIndex].head; nz = nz->right)
       {
         CMRdbgMsg(4, "Removing nonzero at %lu,%lu with special %d.\n", nz->row, nz->column, nz->special);
@@ -2804,7 +2819,7 @@ CMR_ERROR findBadSubmatrixByMaximum(
     }
     else
     {
-      for (ChrListMatNonzero* nz = listmatrix->columnElements[columnMaximumIndex].head.below;
+      for (ListMat8Nonzero* nz = listmatrix->columnElements[columnMaximumIndex].head.below;
         nz != &listmatrix->columnElements[columnMaximumIndex].head; nz = nz->below)
       {
         CMRdbgMsg(4, "Removing nonzero at %lu,%lu with special %d.\n", nz->row, nz->column, nz->special);
@@ -2827,11 +2842,11 @@ CMR_ERROR findBadSubmatrixByMaximum(
   CMR_SUBMAT* submatrix = *psubmatrix;
   numRemainingRows = 0;
   numRemainingColumns = 0;
-  for (ChrListMatNonzero* rowHead = listmatrix->anchor.below; rowHead != &listmatrix->anchor; rowHead = rowHead->below)
+  for (ListMat8Nonzero* rowHead = listmatrix->anchor.below; rowHead != &listmatrix->anchor; rowHead = rowHead->below)
   {
     submatrix->rows[numRemainingRows++] = rowHead->row;
   }
-  for (ChrListMatNonzero* columnHead = listmatrix->anchor.right; columnHead != &listmatrix->anchor;
+  for (ListMat8Nonzero* columnHead = listmatrix->anchor.right; columnHead != &listmatrix->anchor;
     columnHead = columnHead->right)
   {
     submatrix->columns[numRemainingColumns++] = columnHead->column;
@@ -2839,7 +2854,7 @@ CMR_ERROR findBadSubmatrixByMaximum(
 
   CMR_CALL( CMRfreeStackArray(cmr, &columnNumBadEntries) );
   CMR_CALL( CMRfreeStackArray(cmr, &rowNumBadEntries) );
-  CMR_CALL( CMRchrlistmatFree(cmr, &listmatrix) );
+  CMR_CALL( CMRlistmat8Free(cmr, &listmatrix) );
 
   return CMR_OKAY;
 }
@@ -2851,15 +2866,15 @@ CMR_ERROR CMRdblmatFindBinarySubmatrix(CMR* cmr, CMR_DBLMAT* matrix, double epsi
   assert(epsilon >= 0.0);
   assert(psubmatrix);
 
-  ChrListMat* listmatrix = NULL;
-  CMR_CALL( CMRchrlistmatAlloc(cmr, matrix->numRows, matrix->numColumns, matrix->numNonzeros, &listmatrix) );
-  CMR_CALL( CMRchrlistmatInitializeFromDoubleMatrix(cmr, listmatrix, matrix, epsilon) );
+  ListMat8* listmatrix = NULL;
+  CMR_CALL( CMRlistmat8Alloc(cmr, matrix->numRows, matrix->numColumns, matrix->numNonzeros, &listmatrix) );
+  CMR_CALL( CMRlistmat8InitializeFromDoubleMatrix(cmr, listmatrix, matrix, epsilon) );
 
   CMRdbgMsg(2, "List matrix has %d nonzeros.\n", listmatrix->numNonzeros);
 
   for (size_t row = 0; row < matrix->numRows; ++row)
   {
-    for (ChrListMatNonzero* nonzero = listmatrix->rowElements[row].head.right;
+    for (ListMat8Nonzero* nonzero = listmatrix->rowElements[row].head.right;
       nonzero != &listmatrix->rowElements[row].head; nonzero = nonzero->right)
     {
       if (nonzero->value < 0 || nonzero->value > 1)
@@ -2879,15 +2894,15 @@ CMR_ERROR CMRdblmatFindTernarySubmatrix(CMR* cmr, CMR_DBLMAT* matrix, double eps
   assert(epsilon >= 0.0);
   assert(psubmatrix);
 
-  ChrListMat* listmatrix = NULL;
-  CMR_CALL( CMRchrlistmatAlloc(cmr, matrix->numRows, matrix->numColumns, matrix->numNonzeros, &listmatrix) );
-  CMR_CALL( CMRchrlistmatInitializeFromDoubleMatrix(cmr, listmatrix, matrix, epsilon) );
+  ListMat8* listmatrix = NULL;
+  CMR_CALL( CMRlistmat8Alloc(cmr, matrix->numRows, matrix->numColumns, matrix->numNonzeros, &listmatrix) );
+  CMR_CALL( CMRlistmat8InitializeFromDoubleMatrix(cmr, listmatrix, matrix, epsilon) );
 
   CMRdbgMsg(2, "List matrix has %d nonzeros.\n", listmatrix->numNonzeros);
 
   for (size_t row = 0; row < matrix->numRows; ++row)
   {
-    for (ChrListMatNonzero* nonzero = listmatrix->rowElements[row].head.right;
+    for (ListMat8Nonzero* nonzero = listmatrix->rowElements[row].head.right;
       nonzero != &listmatrix->rowElements[row].head; nonzero = nonzero->right)
     {
       if (nonzero->value < -1 || nonzero->value > +1)
