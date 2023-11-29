@@ -18,5 +18,5 @@ jobs:
     - name: compile debug build
       run: cd build-debug && make
     - name: Run debug tests
-      run: cd build-debug && make test
+      run: cd build-debug && ctest && ctest --rerun-failed --output-on-failure
 
