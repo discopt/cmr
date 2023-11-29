@@ -50,8 +50,7 @@ CMR_ERROR CMRstatsTotalUnimodularityPrint(FILE* stream, CMR_TU_STATISTICS* stats
   snprintf(subPrefix, 256, "%sregularity ", prefix);
   CMR_CALL( CMRstatsRegularPrint(stream, &stats->regular, subPrefix) );
 
-  fprintf(stream, "%stotal: %ld in %f seconds\n", prefix, stats->totalCount,
-    stats->totalTime);
+  fprintf(stream, "%stotal: %ld in %f seconds\n", prefix, stats->totalCount, stats->totalTime);
 
   return CMR_OKAY;
 }
@@ -81,7 +80,8 @@ CMR_ERROR tuTest(
   *pisTotallyUnimodular = true;
   clock_t time = clock();
 
-  CMR_CALL( CMRtestCamionSigned(cmr, matrix, pisTotallyUnimodular, NULL, stats ? &stats->camion : NULL, timeLimit) );
+  CMR_CALL( CMRtestCamionSigned(cmr, matrix, pisTotallyUnimodular, NULL, stats ? &stats->camion : NULL,
+    timeLimit) );
 
   if (*pisTotallyUnimodular)
   {
@@ -100,6 +100,7 @@ CMR_ERROR CMRtestTotalUnimodularity(CMR* cmr, CMR_CHRMAT* matrix, bool* pisTotal
 {
   assert(cmr);
   assert(matrix);
+  CMRconsistencyAssert( CMRchrmatConsistency(matrix) );
 
   CMR_TU_PARAMETERS defaultParams;
   if (!params)
