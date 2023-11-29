@@ -56,7 +56,7 @@ add_library(cmr
   src/cmr/hashtable.c
   src/cmr/heap.c
   src/cmr/equimodular.c
-  src/cmr/linalg.c
+  src/cmr/linear_algebra.c
   src/cmr/listmatrix.c
   #src/cmr/logger.cpp
   #src/cmr/matrix.cpp
