@@ -342,8 +342,9 @@ CMR_ERROR CMRcomputeRepresentationMatrix(CMR* cmr, CMR_GRAPH* digraph, bool tern
     ++numColumns;
   }
   transpose->rowSlice[numColumns] = numNonzeros;
+  transpose->numNonzeros = numNonzeros;
 
-  CMRchrmatSortNonzeros(cmr, transpose);
+  CMR_CALL( CMRchrmatSortNonzeros(cmr, transpose) );
 
   CMRassertStackConsistency(cmr);
 
@@ -351,7 +352,6 @@ CMR_ERROR CMRcomputeRepresentationMatrix(CMR* cmr, CMR_GRAPH* digraph, bool tern
   CMR_CALL( CMRfreeStackArray(cmr, &uPath) );
   CMR_CALL( CMRfreeStackArray(cmr, &edgeColumns) );
 
-  transpose->rowSlice[numColumns] = numNonzeros;
   if (numNonzeros == 0 && transpose->numNonzeros > 0)
   {
     CMR_CALL( CMRfreeBlockArray(cmr, &transpose->entryColumns) );

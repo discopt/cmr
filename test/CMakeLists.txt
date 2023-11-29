@@ -11,9 +11,11 @@ add_executable(cmr_gtest
   common.c
   test_camion.cpp
   test_ctu.cpp
+  test_equimodular.cpp
   test_graph.cpp
   test_graphic.cpp
   test_hashtable.cpp
+  test_linalg.cpp
   test_matrix.cpp
   test_main.cpp
   test_network.cpp

@@ -171,7 +171,7 @@ char* CMRconsistencyMessage(const char* format, ...);
       fprintf(stderr, "%s:%d: %s\n", __FILE__, __LINE__, __message); \
       fflush(stderr); \
       free(__message); \
-      exit(1); \
+      assert(!"Consistency assertion raised!"); \
     } \
   } \
   while (false);

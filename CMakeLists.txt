@@ -27,6 +27,9 @@ else()
   message(STATUS "Generators: OFF")
 endif()
 
+find_package(GMP)
+set(CMR_WITH_GMP ${GMP_FOUND})
+
 # Target for the CMR library.
 add_library(cmr
   src/cmr/balanced.c
@@ -46,7 +49,8 @@ add_library(cmr
   src/cmr/graphic.c
   src/cmr/hashtable.c
   src/cmr/heap.c
-  src/cmr/k_modular.c
+  src/cmr/equimodular.c
+  src/cmr/linalg.c
   src/cmr/listmatrix.c
   src/cmr/logger.cpp
   src/cmr/matrix.cpp
@@ -99,6 +103,7 @@ set_target_properties(cmr_balanced PROPERTIES OUTPUT_NAME cmr-balanced)
 # Target for the cmr-camion executable.
 add_executable(cmr_camion
   src/main/camion_main.c) 
+
 target_link_libraries(cmr_camion
   PRIVATE
     CMR::cmr
@@ -136,15 +141,15 @@ target_link_libraries(cmr_graphic
 )
 set_target_properties(cmr_graphic PROPERTIES OUTPUT_NAME cmr-graphic)
 
-# Target for the cmr-k-modular.
-add_executable(cmr_k_modular
-  src/main/k_modular_main.c)
-target_link_libraries(cmr_k_modular
+# Target for the cmr-equimodular.
+add_executable(cmr_equimodular
+  src/main/equimodular_main.c)
+target_link_libraries(cmr_equimodular
   PRIVATE
     CMR::cmr
     m
 )
-set_target_properties(cmr_k_modular PROPERTIES OUTPUT_NAME cmr-k-modular)
+set_target_properties(cmr_equimodular PROPERTIES OUTPUT_NAME cmr-equimodular)
 
 # Target for the cmr-network executable.
 add_executable(cmr_network
@@ -309,6 +314,13 @@ if(Threads_FOUND)
   )
 endif()
 
+if(GMP_FOUND)
+  target_link_libraries(cmr
+    PRIVATE
+      ${GMP_LIBRARIES}
+  )
+endif()
+
 ### Installation ###
 include(GNUInstallDirs)
 
@@ -317,7 +329,7 @@ install(TARGETS
     cmr_camion
     cmr_ctu
     cmr_graphic
-    cmr_k_modular
+    cmr_equimodular
     cmr_matrix
     cmr_network
     cmr_regular

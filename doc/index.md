@@ -7,7 +7,7 @@ The following matrix classes can be recognized:
   - \ref tu
   - \ref network
   - \ref ctu
-  - \ref k-modular
+  - \ref equimodular
 
 Moreover, [representation matrices](\ref matroids) for the following matroid classes can be recognized:
 
