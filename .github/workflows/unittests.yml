@@ -1,0 +1,22 @@
+name: Tests
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Install gtest manually
+      run: sudo apt-get install libgtest-dev && cd /usr/src/gtest && sudo cmake CMakeLists.txt && sudo make && sudo cp lib/*.a /usr/lib && sudo ln -s /usr/lib/libgtest.a /usr/local/lib/libgtest.a && sudo ln -s /usr/lib/libgtest_main.a /usr/local/lib/libgtest_main.a
+    - uses: actions/checkout@v1
+    - name: configure debug build
+      run: mkdir build-debug && cd build-debug && cmake -DCMAKE_BUILD_TYPE=Debug ..
+    - name: compile debug build
+      run: cd build-debug && make
+    - name: Run debug tests
+      run: cd build-debug && make test
+
