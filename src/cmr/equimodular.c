@@ -79,8 +79,11 @@ CMR_ERROR CMRtestEquimodularity(CMR* cmr, CMR_INTMAT* matrix, bool* pisEquimodul
   CMR_SUBMAT* basisPermutation = NULL;
   CMR_INTMAT* transformed_matrix = NULL;
   CMR_INTMAT* transformed_transpose = NULL;
-  CMR_CALL( CMRintmatComputeUpperDiagonal(cmr, matrix, true, &rank, &basisPermutation, &transformed_matrix,
-    &transformed_transpose) );
+  CMR_ERROR error = CMRintmatComputeUpperDiagonal(cmr, matrix, true, &rank, &basisPermutation, &transformed_matrix,
+    &transformed_transpose);
+  if (error == CMR_ERROR_OVERFLOW)
+    return CMR_ERROR_OVERFLOW;
+  CMR_CALL(error);
 
 #if defined(CMR_DEBUG)
   CMRdbgMsg(0, "Transformed matrix has rank %ld.\n", rank);
