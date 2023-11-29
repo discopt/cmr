@@ -1,8 +1,7 @@
 #ifndef CMR_LINALG_INTERNAL_H
 #define CMR_LINALG_INTERNAL_H
 
-#include <cmr/env.h>
-#include <cmr/matrix.h>
+#include <cmr/linear_algebra.h>
 
 #ifdef __cplusplus
 extern "C" {
