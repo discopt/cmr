@@ -118,49 +118,49 @@ Functions</h2></td></tr>
 <tr class="separator:a958b6bc18a386659fe317c9027984506"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac4354c590803297009c5f508ddc34311"><td class="memItemLeft" align="right" valign="top">char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="series__parallel_8c.html#ac4354c590803297009c5f508ddc34311">CMRspReductionString</a> (<a class="el" href="structCMR__SP__REDUCTION.html">CMR_SP_REDUCTION</a> reduction, char *buffer)</td></tr>
 <tr class="separator:ac4354c590803297009c5f508ddc34311"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afa3d371e924020f7bf5c933e315f2f06"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="series__parallel_8c.html#afa3d371e924020f7bf5c933e315f2f06">unlinkNonzero</a> (<a class="el" href="listmatrix_8h.html#a1f1782ae5e3fad378cfd0367d371200b">ChrListMatNonzero</a> *nonzero)</td></tr>
-<tr class="memdesc:afa3d371e924020f7bf5c933e315f2f06"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes the given nonzero from the linked-list representation.  <a href="series__parallel_8c.html#afa3d371e924020f7bf5c933e315f2f06">More...</a><br /></td></tr>
-<tr class="separator:afa3d371e924020f7bf5c933e315f2f06"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acdbefe65768bf543b1d788cf45877532"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="series__parallel_8c.html#acdbefe65768bf543b1d788cf45877532">unlinkNonzero</a> (<a class="el" href="listmatrix_8h.html#a039227a86e632739af10b458ed270ffc">ListMat8Nonzero</a> *nonzero)</td></tr>
+<tr class="memdesc:acdbefe65768bf543b1d788cf45877532"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes the given nonzero from the linked-list representation.  <a href="series__parallel_8c.html#acdbefe65768bf543b1d788cf45877532">More...</a><br /></td></tr>
+<tr class="separator:acdbefe65768bf543b1d788cf45877532"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5c4a21219068cc169f2fac22ed60cc5a"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="series__parallel_8c.html#a5c4a21219068cc169f2fac22ed60cc5a">createElementData</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structElementData.html">ElementData</a> **pelementData, size_t size)</td></tr>
 <tr class="memdesc:a5c4a21219068cc169f2fac22ed60cc5a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocates and initializes element data (on the stack).  <a href="series__parallel_8c.html#a5c4a21219068cc169f2fac22ed60cc5a">More...</a><br /></td></tr>
 <tr class="separator:a5c4a21219068cc169f2fac22ed60cc5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af029b8cab607b828ba0433a4bb758dbc"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="series__parallel_8c.html#af029b8cab607b828ba0433a4bb758dbc">createHashVector</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, long long **phashVector, size_t size)</td></tr>
 <tr class="separator:af029b8cab607b828ba0433a4bb758dbc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a52becd705ddf55964dba000c502f3ec0"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="series__parallel_8c.html#a52becd705ddf55964dba000c502f3ec0">calcNonzeroCountHashFromMatrix</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, <a class="el" href="structChrListMat.html">ChrListMat</a> *listmatrix, <a class="el" href="structElementData.html">ElementData</a> *rowData, <a class="el" href="structElementData.html">ElementData</a> *columnData, long long *hashVector)</td></tr>
-<tr class="memdesc:a52becd705ddf55964dba000c502f3ec0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Scan the matrix to compute the number of nonzeros and the hash of each row and each column.  <a href="series__parallel_8c.html#a52becd705ddf55964dba000c502f3ec0">More...</a><br /></td></tr>
-<tr class="separator:a52becd705ddf55964dba000c502f3ec0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8742b34a2f4c897cdc03d5fd6891da45"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="series__parallel_8c.html#a8742b34a2f4c897cdc03d5fd6891da45">calcBinaryHashFromListMatrix</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structChrListMat.html">ChrListMat</a> *listmatrix, <a class="el" href="structElementData.html">ElementData</a> *rowData, <a class="el" href="structElementData.html">ElementData</a> *columnData, long long *hashVector)</td></tr>
-<tr class="memdesc:a8742b34a2f4c897cdc03d5fd6891da45"><td class="mdescLeft">&#160;</td><td class="mdescRight">Scan the matrix to compute the number of nonzeros and the hash of each row and each column.  <a href="series__parallel_8c.html#a8742b34a2f4c897cdc03d5fd6891da45">More...</a><br /></td></tr>
-<tr class="separator:a8742b34a2f4c897cdc03d5fd6891da45"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4d0bbb649448bf2d67a7071033a22b3a"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="series__parallel_8c.html#a4d0bbb649448bf2d67a7071033a22b3a">initializeQueueHashtableFromMatrix</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="hashtable_8h.html#ae210c3950cdf5bdcf72d7ac3e0329512">CMR_LISTHASHTABLE</a> *hashtable, <a class="el" href="structChrListMatElement.html">ChrListMatElement</a> *listmatrixElements, <a class="el" href="structElementData.html">ElementData</a> *data, size_t sizeData, <a class="el" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a> *queue, size_t *pqueueEnd, bool isRow)</td></tr>
-<tr class="memdesc:a4d0bbb649448bf2d67a7071033a22b3a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Scans the matrix initially in order to add all rows or columns either to the queue or to the hashtable.  <a href="series__parallel_8c.html#a4d0bbb649448bf2d67a7071033a22b3a">More...</a><br /></td></tr>
-<tr class="separator:a4d0bbb649448bf2d67a7071033a22b3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad014afe0604572170c7977bbaf2afb04"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="series__parallel_8c.html#ad014afe0604572170c7977bbaf2afb04">initializeQueueHashtableFromListMatrix</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="hashtable_8h.html#ae210c3950cdf5bdcf72d7ac3e0329512">CMR_LISTHASHTABLE</a> *hashtable, <a class="el" href="structChrListMat.html">ChrListMat</a> *listmatrix, <a class="el" href="structElementData.html">ElementData</a> *data, <a class="el" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a> *queue, size_t *pqueueEnd, bool isRow)</td></tr>
-<tr class="memdesc:ad014afe0604572170c7977bbaf2afb04"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds all rows or columns of the list representation of the matrix either to the queue or to the hashtable.  <a href="series__parallel_8c.html#ad014afe0604572170c7977bbaf2afb04">More...</a><br /></td></tr>
-<tr class="separator:ad014afe0604572170c7977bbaf2afb04"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aec53b050fba082000b8b80e91fa7f896"><td class="memItemLeft" align="right" valign="top">static size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="series__parallel_8c.html#aec53b050fba082000b8b80e91fa7f896">findCopy</a> (<a class="el" href="structChrListMatElement.html">ChrListMatElement</a> *listData, <a class="el" href="structElementData.html">ElementData</a> *data, <a class="el" href="hashtable_8h.html#ae210c3950cdf5bdcf72d7ac3e0329512">CMR_LISTHASHTABLE</a> *hashtable, size_t index, bool isRow, bool support)</td></tr>
-<tr class="memdesc:aec53b050fba082000b8b80e91fa7f896"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks whether the row/column at <code>index</code> is a (negated) copy of a row/column stored in the hashtable.  <a href="series__parallel_8c.html#aec53b050fba082000b8b80e91fa7f896">More...</a><br /></td></tr>
-<tr class="separator:aec53b050fba082000b8b80e91fa7f896"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaa28110738e4480f2a2f0e1a76b945bf"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="series__parallel_8c.html#aaa28110738e4480f2a2f0e1a76b945bf">processNonzero</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="hashtable_8h.html#ae210c3950cdf5bdcf72d7ac3e0329512">CMR_LISTHASHTABLE</a> *hashtable, long long hashChange, size_t index, <a class="el" href="structChrListMatElement.html">ChrListMatElement</a> *indexListData, <a class="el" href="structElementData.html">ElementData</a> *indexData, <a class="el" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a> *queue, size_t *pqueueEnd, size_t queueMemory, bool isRow)</td></tr>
-<tr class="memdesc:aaa28110738e4480f2a2f0e1a76b945bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Processes the deletion of a nonzero from the linked-list representation.  <a href="series__parallel_8c.html#aaa28110738e4480f2a2f0e1a76b945bf">More...</a><br /></td></tr>
-<tr class="separator:aaa28110738e4480f2a2f0e1a76b945bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a25217a1e55a461df410e158cf2e7589a"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="series__parallel_8c.html#a25217a1e55a461df410e158cf2e7589a">reduceListMatrix</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structChrListMat.html">ChrListMat</a> *listmatrix, <a class="el" href="structElementData.html">ElementData</a> *rowData, <a class="el" href="structElementData.html">ElementData</a> *columnData, <a class="el" href="hashtable_8h.html#ae210c3950cdf5bdcf72d7ac3e0329512">CMR_LISTHASHTABLE</a> *rowHashtable, <a class="el" href="hashtable_8h.html#ae210c3950cdf5bdcf72d7ac3e0329512">CMR_LISTHASHTABLE</a> *columnHashtable, long long *entryToHash, <a class="el" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a> *queue, size_t *pqueueStart, size_t *pqueueEnd, size_t queueMemory, <a class="el" href="structCMR__SP__REDUCTION.html">CMR_SP_REDUCTION</a> *reductions, size_t maxNumReductions, size_t *pnumReductions, size_t *pnumRowReductions, size_t *pnumColumnReductions)</td></tr>
-<tr class="memdesc:a25217a1e55a461df410e158cf2e7589a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Carry out the actual reduction algorithm after all data structures are initialized.  <a href="series__parallel_8c.html#a25217a1e55a461df410e158cf2e7589a">More...</a><br /></td></tr>
-<tr class="separator:a25217a1e55a461df410e158cf2e7589a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5f4a5da3dd8d8d7b70937a919bc118f8"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="series__parallel_8c.html#a5f4a5da3dd8d8d7b70937a919bc118f8">extractNonbinarySubmatrix</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structChrListMat.html">ChrListMat</a> *listmatrix, <a class="el" href="structElementData.html">ElementData</a> *rowData, <a class="el" href="structElementData.html">ElementData</a> *columnData, <a class="el" href="hashtable_8h.html#ae210c3950cdf5bdcf72d7ac3e0329512">CMR_LISTHASHTABLE</a> *rowHashtable, <a class="el" href="hashtable_8h.html#ae210c3950cdf5bdcf72d7ac3e0329512">CMR_LISTHASHTABLE</a> *columnHashtable, long long *entryToHash, <a class="el" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a> *queue, size_t *pqueueStart, size_t *pqueueEnd, size_t queueMemory, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **pviolatorSubmatrix)</td></tr>
-<tr class="memdesc:a5f4a5da3dd8d8d7b70937a919bc118f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Try to find an \( M_2 \)-submatrix for a ternary SP-reduced matrix in list representation.  <a href="series__parallel_8c.html#a5f4a5da3dd8d8d7b70937a919bc118f8">More...</a><br /></td></tr>
-<tr class="separator:a5f4a5da3dd8d8d7b70937a919bc118f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afbe10d71fc6bd30b46fa60fd819e0df6"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="series__parallel_8c.html#afbe10d71fc6bd30b46fa60fd819e0df6">breadthFirstSearch</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, int currentBFS, <a class="el" href="structChrListMatElement.html">ChrListMatElement</a> *rowListData, <a class="el" href="structChrListMatElement.html">ChrListMatElement</a> *columnListData, <a class="el" href="structElementData.html">ElementData</a> *rowData, <a class="el" href="structElementData.html">ElementData</a> *columnData, <a class="el" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a> *queue, size_t queueMemory, <a class="el" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a> *sources, size_t numSources, <a class="el" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a> *targets, size_t numTargets, size_t *pfoundTarget, size_t *pnumEdges)</td></tr>
-<tr class="separator:afbe10d71fc6bd30b46fa60fd819e0df6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae4d75745e7fcbefef9fc532ca4a99de9"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="series__parallel_8c.html#ae4d75745e7fcbefef9fc532ca4a99de9">extractRemainingSubmatrix</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, size_t numRowReductions, size_t numColumnReductions, <a class="el" href="structChrListMat.html">ChrListMat</a> *listmatrix, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **preducedSubmatrix)</td></tr>
-<tr class="memdesc:ae4d75745e7fcbefef9fc532ca4a99de9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extract remaining submatrix.  <a href="series__parallel_8c.html#ae4d75745e7fcbefef9fc532ca4a99de9">More...</a><br /></td></tr>
-<tr class="separator:ae4d75745e7fcbefef9fc532ca4a99de9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a626e8bb510203605020867705d1ee2e5"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="series__parallel_8c.html#a626e8bb510203605020867705d1ee2e5">calcNonzeroCountHashFromMatrix</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, <a class="el" href="structListMat8.html">ListMat8</a> *listmatrix, <a class="el" href="structElementData.html">ElementData</a> *rowData, <a class="el" href="structElementData.html">ElementData</a> *columnData, long long *hashVector)</td></tr>
+<tr class="memdesc:a626e8bb510203605020867705d1ee2e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Scan the matrix to compute the number of nonzeros and the hash of each row and each column.  <a href="series__parallel_8c.html#a626e8bb510203605020867705d1ee2e5">More...</a><br /></td></tr>
+<tr class="separator:a626e8bb510203605020867705d1ee2e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc7fd5bf69f8c20ee1d3a1007d210f8e"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="series__parallel_8c.html#abc7fd5bf69f8c20ee1d3a1007d210f8e">calcBinaryHashFromListMatrix</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structListMat8.html">ListMat8</a> *listmatrix, <a class="el" href="structElementData.html">ElementData</a> *rowData, <a class="el" href="structElementData.html">ElementData</a> *columnData, long long *hashVector)</td></tr>
+<tr class="memdesc:abc7fd5bf69f8c20ee1d3a1007d210f8e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Scan the matrix to compute the number of nonzeros and the hash of each row and each column.  <a href="series__parallel_8c.html#abc7fd5bf69f8c20ee1d3a1007d210f8e">More...</a><br /></td></tr>
+<tr class="separator:abc7fd5bf69f8c20ee1d3a1007d210f8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6acee53f75e81e7476b9676311534444"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="series__parallel_8c.html#a6acee53f75e81e7476b9676311534444">initializeQueueHashtableFromMatrix</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="hashtable_8h.html#ae210c3950cdf5bdcf72d7ac3e0329512">CMR_LISTHASHTABLE</a> *hashtable, <a class="el" href="structListMat8Element.html">ListMat8Element</a> *listmatrixElements, <a class="el" href="structElementData.html">ElementData</a> *data, size_t sizeData, <a class="el" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a> *queue, size_t *pqueueEnd, bool isRow)</td></tr>
+<tr class="memdesc:a6acee53f75e81e7476b9676311534444"><td class="mdescLeft">&#160;</td><td class="mdescRight">Scans the matrix initially in order to add all rows or columns either to the queue or to the hashtable.  <a href="series__parallel_8c.html#a6acee53f75e81e7476b9676311534444">More...</a><br /></td></tr>
+<tr class="separator:a6acee53f75e81e7476b9676311534444"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab095159ec887d69bbd663caa9a5c654f"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="series__parallel_8c.html#ab095159ec887d69bbd663caa9a5c654f">initializeQueueHashtableFromListMatrix</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="hashtable_8h.html#ae210c3950cdf5bdcf72d7ac3e0329512">CMR_LISTHASHTABLE</a> *hashtable, <a class="el" href="structListMat8.html">ListMat8</a> *listmatrix, <a class="el" href="structElementData.html">ElementData</a> *data, <a class="el" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a> *queue, size_t *pqueueEnd, bool isRow)</td></tr>
+<tr class="memdesc:ab095159ec887d69bbd663caa9a5c654f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds all rows or columns of the list representation of the matrix either to the queue or to the hashtable.  <a href="series__parallel_8c.html#ab095159ec887d69bbd663caa9a5c654f">More...</a><br /></td></tr>
+<tr class="separator:ab095159ec887d69bbd663caa9a5c654f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2298ea9585ed677e677986aa58cd7755"><td class="memItemLeft" align="right" valign="top">static size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="series__parallel_8c.html#a2298ea9585ed677e677986aa58cd7755">findCopy</a> (<a class="el" href="structListMat8Element.html">ListMat8Element</a> *listData, <a class="el" href="structElementData.html">ElementData</a> *data, <a class="el" href="hashtable_8h.html#ae210c3950cdf5bdcf72d7ac3e0329512">CMR_LISTHASHTABLE</a> *hashtable, size_t index, bool isRow, bool support)</td></tr>
+<tr class="memdesc:a2298ea9585ed677e677986aa58cd7755"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks whether the row/column at <code>index</code> is a (negated) copy of a row/column stored in the hashtable.  <a href="series__parallel_8c.html#a2298ea9585ed677e677986aa58cd7755">More...</a><br /></td></tr>
+<tr class="separator:a2298ea9585ed677e677986aa58cd7755"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f9b0b45ab93dcfd19d59243803b9c3d"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="series__parallel_8c.html#a8f9b0b45ab93dcfd19d59243803b9c3d">processNonzero</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="hashtable_8h.html#ae210c3950cdf5bdcf72d7ac3e0329512">CMR_LISTHASHTABLE</a> *hashtable, long long hashChange, size_t index, <a class="el" href="structListMat8Element.html">ListMat8Element</a> *indexListData, <a class="el" href="structElementData.html">ElementData</a> *indexData, <a class="el" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a> *queue, size_t *pqueueEnd, size_t queueMemory, bool isRow)</td></tr>
+<tr class="memdesc:a8f9b0b45ab93dcfd19d59243803b9c3d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Processes the deletion of a nonzero from the linked-list representation.  <a href="series__parallel_8c.html#a8f9b0b45ab93dcfd19d59243803b9c3d">More...</a><br /></td></tr>
+<tr class="separator:a8f9b0b45ab93dcfd19d59243803b9c3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f170e571e5e1df982b00abc9b7089fa"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="series__parallel_8c.html#a6f170e571e5e1df982b00abc9b7089fa">reduceListMatrix</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structListMat8.html">ListMat8</a> *listmatrix, <a class="el" href="structElementData.html">ElementData</a> *rowData, <a class="el" href="structElementData.html">ElementData</a> *columnData, <a class="el" href="hashtable_8h.html#ae210c3950cdf5bdcf72d7ac3e0329512">CMR_LISTHASHTABLE</a> *rowHashtable, <a class="el" href="hashtable_8h.html#ae210c3950cdf5bdcf72d7ac3e0329512">CMR_LISTHASHTABLE</a> *columnHashtable, long long *entryToHash, <a class="el" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a> *queue, size_t *pqueueStart, size_t *pqueueEnd, size_t queueMemory, <a class="el" href="structCMR__SP__REDUCTION.html">CMR_SP_REDUCTION</a> *reductions, size_t maxNumReductions, size_t *pnumReductions, size_t *pnumRowReductions, size_t *pnumColumnReductions)</td></tr>
+<tr class="memdesc:a6f170e571e5e1df982b00abc9b7089fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Carry out the actual reduction algorithm after all data structures are initialized.  <a href="series__parallel_8c.html#a6f170e571e5e1df982b00abc9b7089fa">More...</a><br /></td></tr>
+<tr class="separator:a6f170e571e5e1df982b00abc9b7089fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a98b3433293e1454c61c8c40b2e76d683"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="series__parallel_8c.html#a98b3433293e1454c61c8c40b2e76d683">extractNonbinarySubmatrix</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structListMat8.html">ListMat8</a> *listmatrix, <a class="el" href="structElementData.html">ElementData</a> *rowData, <a class="el" href="structElementData.html">ElementData</a> *columnData, <a class="el" href="hashtable_8h.html#ae210c3950cdf5bdcf72d7ac3e0329512">CMR_LISTHASHTABLE</a> *rowHashtable, <a class="el" href="hashtable_8h.html#ae210c3950cdf5bdcf72d7ac3e0329512">CMR_LISTHASHTABLE</a> *columnHashtable, long long *entryToHash, <a class="el" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a> *queue, size_t *pqueueStart, size_t *pqueueEnd, size_t queueMemory, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **pviolatorSubmatrix)</td></tr>
+<tr class="memdesc:a98b3433293e1454c61c8c40b2e76d683"><td class="mdescLeft">&#160;</td><td class="mdescRight">Try to find an \( M_2 \)-submatrix for a ternary SP-reduced matrix in list representation.  <a href="series__parallel_8c.html#a98b3433293e1454c61c8c40b2e76d683">More...</a><br /></td></tr>
+<tr class="separator:a98b3433293e1454c61c8c40b2e76d683"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa95db0c1d6833e0309ec1a60d40e2e6"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="series__parallel_8c.html#aaa95db0c1d6833e0309ec1a60d40e2e6">breadthFirstSearch</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, int currentBFS, <a class="el" href="structListMat8Element.html">ListMat8Element</a> *rowListData, <a class="el" href="structListMat8Element.html">ListMat8Element</a> *columnListData, <a class="el" href="structElementData.html">ElementData</a> *rowData, <a class="el" href="structElementData.html">ElementData</a> *columnData, <a class="el" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a> *queue, size_t queueMemory, <a class="el" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a> *sources, size_t numSources, <a class="el" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a> *targets, size_t numTargets, size_t *pfoundTarget, size_t *pnumEdges)</td></tr>
+<tr class="separator:aaa95db0c1d6833e0309ec1a60d40e2e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a55174c85d481c0f8edbbe53ffdaa8e"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="series__parallel_8c.html#a5a55174c85d481c0f8edbbe53ffdaa8e">extractRemainingSubmatrix</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, size_t numRowReductions, size_t numColumnReductions, <a class="el" href="structListMat8.html">ListMat8</a> *listmatrix, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **preducedSubmatrix)</td></tr>
+<tr class="memdesc:a5a55174c85d481c0f8edbbe53ffdaa8e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extract remaining submatrix.  <a href="series__parallel_8c.html#a5a55174c85d481c0f8edbbe53ffdaa8e">More...</a><br /></td></tr>
+<tr class="separator:a5a55174c85d481c0f8edbbe53ffdaa8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac892d0be562ad3d15a264a6b736cd541"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="series__parallel_8c.html#ac892d0be562ad3d15a264a6b736cd541">createFullRemainingMatrix</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **preducedSubmatrix)</td></tr>
 <tr class="memdesc:ac892d0be562ad3d15a264a6b736cd541"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create full matrix as remaining submatrix.  <a href="series__parallel_8c.html#ac892d0be562ad3d15a264a6b736cd541">More...</a><br /></td></tr>
 <tr class="separator:ac892d0be562ad3d15a264a6b736cd541"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abe69259f61bb7a95eeb5308c7797f65b"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="series__parallel_8c.html#abe69259f61bb7a95eeb5308c7797f65b">extractWheelSubmatrix</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structChrListMat.html">ChrListMat</a> *listmatrix, <a class="el" href="structElementData.html">ElementData</a> *rowData, <a class="el" href="structElementData.html">ElementData</a> *columnData, <a class="el" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a> *queue, size_t queueMemory, size_t numReducedRows, size_t numReducedColumns, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **pwheelSubmatrix, <a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> **pseparation)</td></tr>
-<tr class="memdesc:abe69259f61bb7a95eeb5308c7797f65b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Searches for a wheel-submatrix.  <a href="series__parallel_8c.html#abe69259f61bb7a95eeb5308c7797f65b">More...</a><br /></td></tr>
-<tr class="separator:abe69259f61bb7a95eeb5308c7797f65b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa7b976ac28f4f17c6ff6bee21f274b8"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="series__parallel_8c.html#afa7b976ac28f4f17c6ff6bee21f274b8">extractWheelSubmatrix</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structListMat8.html">ListMat8</a> *listmatrix, <a class="el" href="structElementData.html">ElementData</a> *rowData, <a class="el" href="structElementData.html">ElementData</a> *columnData, <a class="el" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a> *queue, size_t queueMemory, size_t numReducedRows, size_t numReducedColumns, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **pwheelSubmatrix, <a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> **pseparation)</td></tr>
+<tr class="memdesc:afa7b976ac28f4f17c6ff6bee21f274b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Searches for a wheel-submatrix.  <a href="series__parallel_8c.html#afa7b976ac28f4f17c6ff6bee21f274b8">More...</a><br /></td></tr>
+<tr class="separator:afa7b976ac28f4f17c6ff6bee21f274b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a25fd6af5b6ea39c254ef3ac175174a3e"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="series__parallel_8c.html#a25fd6af5b6ea39c254ef3ac175174a3e">decomposeBinarySeriesParallel</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, <a class="el" href="structCMR__SP__REDUCTION.html">CMR_SP_REDUCTION</a> *reductions, size_t maxNumReductions, size_t *pnumReductions, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **preducedSubmatrix, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **pviolatorSubmatrix, <a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> **pseparation, <a class="el" href="structCMR__SP__STATISTICS.html">CMR_SP_STATISTICS</a> *stats, double timeLimit)</td></tr>
 <tr class="separator:a25fd6af5b6ea39c254ef3ac175174a3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4d3098cd96afc680d078ea9b737030ae"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="series__parallel_8c.html#a4d3098cd96afc680d078ea9b737030ae">CMRtestBinarySeriesParallel</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, bool *pisSeriesParallel, <a class="el" href="structCMR__SP__REDUCTION.html">CMR_SP_REDUCTION</a> *reductions, size_t *pnumReductions, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **preducedSubmatrix, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **pviolatorSubmatrix, <a class="el" href="structCMR__SP__STATISTICS.html">CMR_SP_STATISTICS</a> *stats, double timeLimit)</td></tr>
@@ -205,8 +205,8 @@ Variables</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="afbe10d71fc6bd30b46fa60fd819e0df6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afbe10d71fc6bd30b46fa60fd819e0df6">&#9670;&nbsp;</a></span>breadthFirstSearch()</h2>
+<a id="aaa95db0c1d6833e0309ec1a60d40e2e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa95db0c1d6833e0309ec1a60d40e2e6">&#9670;&nbsp;</a></span>breadthFirstSearch()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -229,13 +229,13 @@ Variables</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structChrListMatElement.html">ChrListMatElement</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="structListMat8Element.html">ListMat8Element</a> *&#160;</td>
           <td class="paramname"><em>rowListData</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structChrListMatElement.html">ChrListMatElement</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="structListMat8Element.html">ListMat8Element</a> *&#160;</td>
           <td class="paramname"><em>columnListData</em>, </td>
         </tr>
         <tr>
@@ -332,8 +332,8 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="a8742b34a2f4c897cdc03d5fd6891da45"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8742b34a2f4c897cdc03d5fd6891da45">&#9670;&nbsp;</a></span>calcBinaryHashFromListMatrix()</h2>
+<a id="abc7fd5bf69f8c20ee1d3a1007d210f8e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc7fd5bf69f8c20ee1d3a1007d210f8e">&#9670;&nbsp;</a></span>calcBinaryHashFromListMatrix()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -350,7 +350,7 @@ Variables</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structChrListMat.html">ChrListMat</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="structListMat8.html">ListMat8</a> *&#160;</td>
           <td class="paramname"><em>listmatrix</em>, </td>
         </tr>
         <tr>
@@ -398,8 +398,8 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="a52becd705ddf55964dba000c502f3ec0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a52becd705ddf55964dba000c502f3ec0">&#9670;&nbsp;</a></span>calcNonzeroCountHashFromMatrix()</h2>
+<a id="a626e8bb510203605020867705d1ee2e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a626e8bb510203605020867705d1ee2e5">&#9670;&nbsp;</a></span>calcNonzeroCountHashFromMatrix()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -422,7 +422,7 @@ Variables</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structChrListMat.html">ChrListMat</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="structListMat8.html">ListMat8</a> *&#160;</td>
           <td class="paramname"><em>listmatrix</em>, </td>
         </tr>
         <tr>
@@ -1324,8 +1324,8 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="a5f4a5da3dd8d8d7b70937a919bc118f8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5f4a5da3dd8d8d7b70937a919bc118f8">&#9670;&nbsp;</a></span>extractNonbinarySubmatrix()</h2>
+<a id="a98b3433293e1454c61c8c40b2e76d683"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98b3433293e1454c61c8c40b2e76d683">&#9670;&nbsp;</a></span>extractNonbinarySubmatrix()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1342,7 +1342,7 @@ Variables</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structChrListMat.html">ChrListMat</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="structListMat8.html">ListMat8</a> *&#160;</td>
           <td class="paramname"><em>listmatrix</em>, </td>
         </tr>
         <tr>
@@ -1439,8 +1439,8 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="ae4d75745e7fcbefef9fc532ca4a99de9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae4d75745e7fcbefef9fc532ca4a99de9">&#9670;&nbsp;</a></span>extractRemainingSubmatrix()</h2>
+<a id="a5a55174c85d481c0f8edbbe53ffdaa8e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a55174c85d481c0f8edbbe53ffdaa8e">&#9670;&nbsp;</a></span>extractRemainingSubmatrix()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1475,7 +1475,7 @@ Variables</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structChrListMat.html">ChrListMat</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="structListMat8.html">ListMat8</a> *&#160;</td>
           <td class="paramname"><em>listmatrix</em>, </td>
         </tr>
         <tr>
@@ -1512,8 +1512,8 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="abe69259f61bb7a95eeb5308c7797f65b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abe69259f61bb7a95eeb5308c7797f65b">&#9670;&nbsp;</a></span>extractWheelSubmatrix()</h2>
+<a id="afa7b976ac28f4f17c6ff6bee21f274b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa7b976ac28f4f17c6ff6bee21f274b8">&#9670;&nbsp;</a></span>extractWheelSubmatrix()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1530,7 +1530,7 @@ Variables</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structChrListMat.html">ChrListMat</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="structListMat8.html">ListMat8</a> *&#160;</td>
           <td class="paramname"><em>listmatrix</em>, </td>
         </tr>
         <tr>
@@ -1613,8 +1613,8 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="aec53b050fba082000b8b80e91fa7f896"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aec53b050fba082000b8b80e91fa7f896">&#9670;&nbsp;</a></span>findCopy()</h2>
+<a id="a2298ea9585ed677e677986aa58cd7755"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2298ea9585ed677e677986aa58cd7755">&#9670;&nbsp;</a></span>findCopy()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1625,7 +1625,7 @@ Variables</h2></td></tr>
         <tr>
           <td class="memname">static size_t findCopy </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="structChrListMatElement.html">ChrListMatElement</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="structListMat8Element.html">ListMat8Element</a> *&#160;</td>
           <td class="paramname"><em>listData</em>, </td>
         </tr>
         <tr>
@@ -1687,8 +1687,8 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="ad014afe0604572170c7977bbaf2afb04"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad014afe0604572170c7977bbaf2afb04">&#9670;&nbsp;</a></span>initializeQueueHashtableFromListMatrix()</h2>
+<a id="ab095159ec887d69bbd663caa9a5c654f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab095159ec887d69bbd663caa9a5c654f">&#9670;&nbsp;</a></span>initializeQueueHashtableFromListMatrix()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1711,7 +1711,7 @@ Variables</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structChrListMat.html">ChrListMat</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="structListMat8.html">ListMat8</a> *&#160;</td>
           <td class="paramname"><em>listmatrix</em>, </td>
         </tr>
         <tr>
@@ -1767,8 +1767,8 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="a4d0bbb649448bf2d67a7071033a22b3a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4d0bbb649448bf2d67a7071033a22b3a">&#9670;&nbsp;</a></span>initializeQueueHashtableFromMatrix()</h2>
+<a id="a6acee53f75e81e7476b9676311534444"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6acee53f75e81e7476b9676311534444">&#9670;&nbsp;</a></span>initializeQueueHashtableFromMatrix()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1791,7 +1791,7 @@ Variables</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structChrListMatElement.html">ChrListMatElement</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="structListMat8Element.html">ListMat8Element</a> *&#160;</td>
           <td class="paramname"><em>listmatrixElements</em>, </td>
         </tr>
         <tr>
@@ -1854,8 +1854,8 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="aaa28110738e4480f2a2f0e1a76b945bf"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aaa28110738e4480f2a2f0e1a76b945bf">&#9670;&nbsp;</a></span>processNonzero()</h2>
+<a id="a8f9b0b45ab93dcfd19d59243803b9c3d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f9b0b45ab93dcfd19d59243803b9c3d">&#9670;&nbsp;</a></span>processNonzero()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1890,7 +1890,7 @@ Variables</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structChrListMatElement.html">ChrListMatElement</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="structListMat8Element.html">ListMat8Element</a> *&#160;</td>
           <td class="paramname"><em>indexListData</em>, </td>
         </tr>
         <tr>
@@ -1955,8 +1955,8 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="a25217a1e55a461df410e158cf2e7589a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a25217a1e55a461df410e158cf2e7589a">&#9670;&nbsp;</a></span>reduceListMatrix()</h2>
+<a id="a6f170e571e5e1df982b00abc9b7089fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f170e571e5e1df982b00abc9b7089fa">&#9670;&nbsp;</a></span>reduceListMatrix()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1973,7 +1973,7 @@ Variables</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structChrListMat.html">ChrListMat</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="structListMat8.html">ListMat8</a> *&#160;</td>
           <td class="paramname"><em>listmatrix</em>, </td>
         </tr>
         <tr>
@@ -2098,8 +2098,8 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="afa3d371e924020f7bf5c933e315f2f06"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afa3d371e924020f7bf5c933e315f2f06">&#9670;&nbsp;</a></span>unlinkNonzero()</h2>
+<a id="acdbefe65768bf543b1d788cf45877532"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acdbefe65768bf543b1d788cf45877532">&#9670;&nbsp;</a></span>unlinkNonzero()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -2110,7 +2110,7 @@ Variables</h2></td></tr>
         <tr>
           <td class="memname">static void unlinkNonzero </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="listmatrix_8h.html#a1f1782ae5e3fad378cfd0367d371200b">ChrListMatNonzero</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="listmatrix_8h.html#a039227a86e632739af10b458ed270ffc">ListMat8Nonzero</a> *&#160;</td>
           <td class="paramname"><em>nonzero</em></td><td>)</td>
           <td></td>
         </tr>

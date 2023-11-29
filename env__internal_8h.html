@@ -248,7 +248,7 @@ Functions</h2></td></tr>
 <div class="line">      fprintf(stderr, <span class="stringliteral">&quot;%s:%d: %s\n&quot;</span>, __FILE__, __LINE__, __message); \</div>
 <div class="line">      fflush(stderr); \</div>
 <div class="line">      free(__message); \</div>
-<div class="line">      exit(1); \</div>
+<div class="line">      assert(!<span class="stringliteral">&quot;Consistency assertion raised!&quot;</span>); \</div>
 <div class="line">    } \</div>
 <div class="line">  } \</div>
 <div class="line">  while (<span class="keyword">false</span>);</div>

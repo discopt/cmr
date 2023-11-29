@@ -84,7 +84,8 @@ $(function() {
 <div class="title">listmatrix.h File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;<a class="el" href="env_8h_source.html">cmr/env.h</a>&gt;</code><br />
+<div class="textblock"><code>#include &lt;stddef.h&gt;</code><br />
+<code>#include &lt;<a class="el" href="env_8h_source.html">cmr/env.h</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="matrix_8h_source.html">cmr/matrix.h</a>&gt;</code><br />
 <code>#include &quot;<a class="el" href="hashtable_8h_source.html">hashtable.h</a>&quot;</code><br />
 </div>
@@ -92,75 +93,139 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct__ListMatrixNonzero.html">_ListMatrixNonzero</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Nonzero of ListMatrix.  <a href="struct__ListMatrixNonzero.html#details">More...</a><br /></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct__ListMat8Nonzero.html">_ListMat8Nonzero</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Nonzero of a <a class="el" href="structListMat8.html">ListMat8</a>.  <a href="struct__ListMat8Nonzero.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structChrListMatElement.html">ChrListMatElement</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Row/column information of ListMatrix.  <a href="structChrListMatElement.html#details">More...</a><br /></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structListMat8Element.html">ListMat8Element</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Row/column information of a <a class="el" href="structListMat8.html">ListMat8</a>.  <a href="structListMat8Element.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structChrListMat.html">ChrListMat</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Linked-list representation of a matrix.  <a href="structChrListMat.html#details">More...</a><br /></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structListMat8.html">ListMat8</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Linked-list representation of a matrix with 8-bit integer values.  <a href="structListMat8.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct__ListMat64Nonzero.html">_ListMat64Nonzero</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Nonzero of a <a class="el" href="structListMat64.html">ListMat64</a>.  <a href="struct__ListMat64Nonzero.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structListMat64Element.html">ListMat64Element</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Row/column information of a <a class="el" href="structListMat64.html">ListMat64</a>.  <a href="structListMat64Element.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structListMat64.html">ListMat64</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Linked-list representation of a matrix with 64-bit integer values.  <a href="structListMat64.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:a1f1782ae5e3fad378cfd0367d371200b"><td class="memItemLeft" align="right" valign="top">typedef struct <a class="el" href="struct__ListMatrixNonzero.html">_ListMatrixNonzero</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="listmatrix_8h.html#a1f1782ae5e3fad378cfd0367d371200b">ChrListMatNonzero</a></td></tr>
-<tr class="memdesc:a1f1782ae5e3fad378cfd0367d371200b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Nonzero of ListMatrix.  <a href="listmatrix_8h.html#a1f1782ae5e3fad378cfd0367d371200b">More...</a><br /></td></tr>
-<tr class="separator:a1f1782ae5e3fad378cfd0367d371200b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a039227a86e632739af10b458ed270ffc"><td class="memItemLeft" align="right" valign="top">typedef struct <a class="el" href="struct__ListMat8Nonzero.html">_ListMat8Nonzero</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="listmatrix_8h.html#a039227a86e632739af10b458ed270ffc">ListMat8Nonzero</a></td></tr>
+<tr class="memdesc:a039227a86e632739af10b458ed270ffc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Nonzero of a <a class="el" href="structListMat8.html">ListMat8</a>.  <a href="listmatrix_8h.html#a039227a86e632739af10b458ed270ffc">More...</a><br /></td></tr>
+<tr class="separator:a039227a86e632739af10b458ed270ffc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2903fcdce3490983828dc10665718deb"><td class="memItemLeft" align="right" valign="top">typedef struct <a class="el" href="struct__ListMat64Nonzero.html">_ListMat64Nonzero</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="listmatrix_8h.html#a2903fcdce3490983828dc10665718deb">ListMat64Nonzero</a></td></tr>
+<tr class="memdesc:a2903fcdce3490983828dc10665718deb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Nonzero of a <a class="el" href="structListMat64.html">ListMat64</a>.  <a href="listmatrix_8h.html#a2903fcdce3490983828dc10665718deb">More...</a><br /></td></tr>
+<tr class="separator:a2903fcdce3490983828dc10665718deb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a513238b9ff241b797110be0af2e53679"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="listmatrix_8h.html#a513238b9ff241b797110be0af2e53679">CMRchrlistmatAlloc</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, size_t memRows, size_t memColumns, size_t memNonzeros, <a class="el" href="structChrListMat.html">ChrListMat</a> **presult)</td></tr>
-<tr class="memdesc:a513238b9ff241b797110be0af2e53679"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocates memory for a list matrix.  <a href="listmatrix_8h.html#a513238b9ff241b797110be0af2e53679">More...</a><br /></td></tr>
-<tr class="separator:a513238b9ff241b797110be0af2e53679"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1bf01eeaead5db11454376f5a6ad5113"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="listmatrix_8h.html#a1bf01eeaead5db11454376f5a6ad5113">CMRchrlistmatFree</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structChrListMat.html">ChrListMat</a> **plistmatrix)</td></tr>
-<tr class="memdesc:a1bf01eeaead5db11454376f5a6ad5113"><td class="mdescLeft">&#160;</td><td class="mdescRight">Frees a list matrix.  <a href="listmatrix_8h.html#a1bf01eeaead5db11454376f5a6ad5113">More...</a><br /></td></tr>
-<tr class="separator:a1bf01eeaead5db11454376f5a6ad5113"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8d91e5f6dc69e22ce3f59cbe803117b5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="listmatrix_8h.html#a8d91e5f6dc69e22ce3f59cbe803117b5">CMRchrlistmatInitializeZero</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structChrListMat.html">ChrListMat</a> *listmatrix, size_t numRows, size_t numColumns)</td></tr>
-<tr class="memdesc:a8d91e5f6dc69e22ce3f59cbe803117b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a zero matrix.  <a href="listmatrix_8h.html#a8d91e5f6dc69e22ce3f59cbe803117b5">More...</a><br /></td></tr>
-<tr class="separator:a8d91e5f6dc69e22ce3f59cbe803117b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1bcb16272a1c32c9f2623507dbd0429c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="listmatrix_8h.html#a1bcb16272a1c32c9f2623507dbd0429c">CMRchrlistmatInitializeFromMatrix</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structChrListMat.html">ChrListMat</a> *listmatrix, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix)</td></tr>
-<tr class="memdesc:a1bcb16272a1c32c9f2623507dbd0429c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copies <code>matrix</code> into <code>listmatrix</code>.  <a href="listmatrix_8h.html#a1bcb16272a1c32c9f2623507dbd0429c">More...</a><br /></td></tr>
-<tr class="separator:a1bcb16272a1c32c9f2623507dbd0429c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9c3ace424f454738d8c71247325a7ff2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="listmatrix_8h.html#a9c3ace424f454738d8c71247325a7ff2">CMRchrlistmatInitializeFromDoubleMatrix</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structChrListMat.html">ChrListMat</a> *listmatrix, <a class="el" href="structCMR__DBLMAT.html">CMR_DBLMAT</a> *matrix, double epsilon)</td></tr>
-<tr class="memdesc:a9c3ace424f454738d8c71247325a7ff2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copies <code>matrix</code> into <code>listmatrix</code>.  <a href="listmatrix_8h.html#a9c3ace424f454738d8c71247325a7ff2">More...</a><br /></td></tr>
-<tr class="separator:a9c3ace424f454738d8c71247325a7ff2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2d713af2728eb2ebc9bd2fe243a56923"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="listmatrix_8h.html#a2d713af2728eb2ebc9bd2fe243a56923">CMRchrlistmatInitializeFromSubmatrix</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structChrListMat.html">ChrListMat</a> *listmatrix, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> *submatrix)</td></tr>
-<tr class="memdesc:a2d713af2728eb2ebc9bd2fe243a56923"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copies <code>submatrix</code> of <code>matrix</code> into <code>listmatrix</code>.  <a href="listmatrix_8h.html#a2d713af2728eb2ebc9bd2fe243a56923">More...</a><br /></td></tr>
-<tr class="separator:a2d713af2728eb2ebc9bd2fe243a56923"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1430e3fd54e4c8f9920571a8b52b4b3a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="listmatrix_8h.html#a1430e3fd54e4c8f9920571a8b52b4b3a">CMRchrlistmatInitializeFromSubmatrixComplement</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structChrListMat.html">ChrListMat</a> *listmatrix, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> *submatrix)</td></tr>
-<tr class="memdesc:a1430e3fd54e4c8f9920571a8b52b4b3a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copies all but <code>submatrix</code> of <code>matrix</code> into <code>listmatrix</code>.  <a href="listmatrix_8h.html#a1430e3fd54e4c8f9920571a8b52b4b3a">More...</a><br /></td></tr>
-<tr class="separator:a1430e3fd54e4c8f9920571a8b52b4b3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7216c335648438ab1d5b2436fc5deae0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="listmatrix_8h.html#a7216c335648438ab1d5b2436fc5deae0">CMRchrlistmatPrintDense</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structChrListMat.html">ChrListMat</a> *listmatrix, FILE *stream)</td></tr>
-<tr class="memdesc:a7216c335648438ab1d5b2436fc5deae0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints the list matrix as a dense matrix.  <a href="listmatrix_8h.html#a7216c335648438ab1d5b2436fc5deae0">More...</a><br /></td></tr>
-<tr class="separator:a7216c335648438ab1d5b2436fc5deae0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66b0e4a15eb9749e34be62981c895de2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="listmatrix_8h.html#a66b0e4a15eb9749e34be62981c895de2">CMRlistmat8Alloc</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, size_t memRows, size_t memColumns, size_t memNonzeros, <a class="el" href="structListMat8.html">ListMat8</a> **presult)</td></tr>
+<tr class="memdesc:a66b0e4a15eb9749e34be62981c895de2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocates memory for an 8-bit list matrix.  <a href="listmatrix_8h.html#a66b0e4a15eb9749e34be62981c895de2">More...</a><br /></td></tr>
+<tr class="separator:a66b0e4a15eb9749e34be62981c895de2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa52fa4fa04b5fb93ad58a64d1e086d05"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="listmatrix_8h.html#aa52fa4fa04b5fb93ad58a64d1e086d05">CMRlistmat64Alloc</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, size_t memRows, size_t memColumns, size_t memNonzeros, <a class="el" href="structListMat64.html">ListMat64</a> **presult)</td></tr>
+<tr class="memdesc:aa52fa4fa04b5fb93ad58a64d1e086d05"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocates memory for a 64-bit list matrix.  <a href="listmatrix_8h.html#aa52fa4fa04b5fb93ad58a64d1e086d05">More...</a><br /></td></tr>
+<tr class="separator:aa52fa4fa04b5fb93ad58a64d1e086d05"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d3f9d4ad9d8eea9ddde3a24cc9fc38a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="listmatrix_8h.html#a8d3f9d4ad9d8eea9ddde3a24cc9fc38a">CMRlistmat8Free</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structListMat8.html">ListMat8</a> **plistmatrix)</td></tr>
+<tr class="memdesc:a8d3f9d4ad9d8eea9ddde3a24cc9fc38a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Frees an 8-bit list matrix.  <a href="listmatrix_8h.html#a8d3f9d4ad9d8eea9ddde3a24cc9fc38a">More...</a><br /></td></tr>
+<tr class="separator:a8d3f9d4ad9d8eea9ddde3a24cc9fc38a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a30787518e7815ca310d93fcc2451f898"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="listmatrix_8h.html#a30787518e7815ca310d93fcc2451f898">CMRlistmat64Free</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structListMat64.html">ListMat64</a> **plistmatrix)</td></tr>
+<tr class="memdesc:a30787518e7815ca310d93fcc2451f898"><td class="mdescLeft">&#160;</td><td class="mdescRight">Frees a 64-bit list matrix.  <a href="listmatrix_8h.html#a30787518e7815ca310d93fcc2451f898">More...</a><br /></td></tr>
+<tr class="separator:a30787518e7815ca310d93fcc2451f898"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9bff3e3312570d151a8cd7c1afc34aeb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="listmatrix_8h.html#a9bff3e3312570d151a8cd7c1afc34aeb">CMRlistmat8InitializeZero</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structListMat8.html">ListMat8</a> *listmatrix, size_t numRows, size_t numColumns)</td></tr>
+<tr class="memdesc:a9bff3e3312570d151a8cd7c1afc34aeb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a zero 8-bit list matrix.  <a href="listmatrix_8h.html#a9bff3e3312570d151a8cd7c1afc34aeb">More...</a><br /></td></tr>
+<tr class="separator:a9bff3e3312570d151a8cd7c1afc34aeb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adfb23a6382eef42d3809913feaaee64f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="listmatrix_8h.html#adfb23a6382eef42d3809913feaaee64f">CMRlistmat64InitializeZero</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structListMat64.html">ListMat64</a> *listmatrix, size_t numRows, size_t numColumns)</td></tr>
+<tr class="memdesc:adfb23a6382eef42d3809913feaaee64f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a zero 64-bit list matrix.  <a href="listmatrix_8h.html#adfb23a6382eef42d3809913feaaee64f">More...</a><br /></td></tr>
+<tr class="separator:adfb23a6382eef42d3809913feaaee64f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45950a2875a43dbb3af39010e758bc48"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="listmatrix_8h.html#a45950a2875a43dbb3af39010e758bc48">CMRlistmat8InitializeFromChrMatrix</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structListMat8.html">ListMat8</a> *listmatrix, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix)</td></tr>
+<tr class="memdesc:a45950a2875a43dbb3af39010e758bc48"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copies <code>matrix</code> into <code>listmatrix</code>.  <a href="listmatrix_8h.html#a45950a2875a43dbb3af39010e758bc48">More...</a><br /></td></tr>
+<tr class="separator:a45950a2875a43dbb3af39010e758bc48"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abecddda610f0731fac29c0ef1336fbf7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="listmatrix_8h.html#abecddda610f0731fac29c0ef1336fbf7">CMRlistmat64InitializeFromIntMatrix</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structListMat64.html">ListMat64</a> *listmatrix, <a class="el" href="structCMR__INTMAT.html">CMR_INTMAT</a> *matrix)</td></tr>
+<tr class="memdesc:abecddda610f0731fac29c0ef1336fbf7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copies <code>matrix</code> into <code>listmatrix</code>.  <a href="listmatrix_8h.html#abecddda610f0731fac29c0ef1336fbf7">More...</a><br /></td></tr>
+<tr class="separator:abecddda610f0731fac29c0ef1336fbf7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a31ff72451e4048cfe8fd2f2df181eee8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="listmatrix_8h.html#a31ff72451e4048cfe8fd2f2df181eee8">CMRlistmat8InitializeFromDoubleMatrix</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structListMat8.html">ListMat8</a> *listmatrix, <a class="el" href="structCMR__DBLMAT.html">CMR_DBLMAT</a> *matrix, double epsilon)</td></tr>
+<tr class="memdesc:a31ff72451e4048cfe8fd2f2df181eee8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copies <code>matrix</code> into <code>listmatrix</code>.  <a href="listmatrix_8h.html#a31ff72451e4048cfe8fd2f2df181eee8">More...</a><br /></td></tr>
+<tr class="separator:a31ff72451e4048cfe8fd2f2df181eee8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e1f2e9ae83d5d94fa5340dd971514e4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="listmatrix_8h.html#a5e1f2e9ae83d5d94fa5340dd971514e4">CMRlistmat64InitializeFromDoubleMatrix</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structListMat64.html">ListMat64</a> *listmatrix, <a class="el" href="structCMR__DBLMAT.html">CMR_DBLMAT</a> *matrix, double epsilon)</td></tr>
+<tr class="memdesc:a5e1f2e9ae83d5d94fa5340dd971514e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copies <code>matrix</code> into <code>listmatrix</code>.  <a href="listmatrix_8h.html#a5e1f2e9ae83d5d94fa5340dd971514e4">More...</a><br /></td></tr>
+<tr class="separator:a5e1f2e9ae83d5d94fa5340dd971514e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add0b20d9e61ede20a44a9079511cb263"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="listmatrix_8h.html#add0b20d9e61ede20a44a9079511cb263">CMRlistmat8InitializeFromChrSubmatrix</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structListMat8.html">ListMat8</a> *listmatrix, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> *submatrix)</td></tr>
+<tr class="memdesc:add0b20d9e61ede20a44a9079511cb263"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copies <code>submatrix</code> of <code>matrix</code> into <code>listmatrix</code>.  <a href="listmatrix_8h.html#add0b20d9e61ede20a44a9079511cb263">More...</a><br /></td></tr>
+<tr class="separator:add0b20d9e61ede20a44a9079511cb263"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7565939ac31f9f31244589a144a8dbba"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="listmatrix_8h.html#a7565939ac31f9f31244589a144a8dbba">CMRlistmat64InitializeFromIntSubmatrix</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structListMat64.html">ListMat64</a> *listmatrix, <a class="el" href="structCMR__INTMAT.html">CMR_INTMAT</a> *matrix, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> *submatrix)</td></tr>
+<tr class="memdesc:a7565939ac31f9f31244589a144a8dbba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copies <code>submatrix</code> of <code>matrix</code> into <code>listmatrix</code>.  <a href="listmatrix_8h.html#a7565939ac31f9f31244589a144a8dbba">More...</a><br /></td></tr>
+<tr class="separator:a7565939ac31f9f31244589a144a8dbba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4408ebdf1b5c7aed64e39a694d50019c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="listmatrix_8h.html#a4408ebdf1b5c7aed64e39a694d50019c">CMRlistmat8InitializeFromSubmatrixComplement</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structListMat8.html">ListMat8</a> *listmatrix, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> *submatrix)</td></tr>
+<tr class="memdesc:a4408ebdf1b5c7aed64e39a694d50019c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copies all but <code>submatrix</code> of <code>matrix</code> into <code>listmatrix</code>.  <a href="listmatrix_8h.html#a4408ebdf1b5c7aed64e39a694d50019c">More...</a><br /></td></tr>
+<tr class="separator:a4408ebdf1b5c7aed64e39a694d50019c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2fc54895269bae1292de85fe26425a18"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="listmatrix_8h.html#a2fc54895269bae1292de85fe26425a18">CMRlistmat64InitializeFromIntSubmatrixComplement</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structListMat64.html">ListMat64</a> *listmatrix, <a class="el" href="structCMR__INTMAT.html">CMR_INTMAT</a> *matrix, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> *submatrix)</td></tr>
+<tr class="memdesc:a2fc54895269bae1292de85fe26425a18"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copies all but <code>submatrix</code> of <code>matrix</code> into <code>listmatrix</code>.  <a href="listmatrix_8h.html#a2fc54895269bae1292de85fe26425a18">More...</a><br /></td></tr>
+<tr class="separator:a2fc54895269bae1292de85fe26425a18"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a49426d34d5967267285a359f7e88f839"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="listmatrix_8h.html#a49426d34d5967267285a359f7e88f839">CMRlistmat8PrintDense</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structListMat8.html">ListMat8</a> *listmatrix, FILE *stream)</td></tr>
+<tr class="memdesc:a49426d34d5967267285a359f7e88f839"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints the 8-bit list matrix as a dense matrix.  <a href="listmatrix_8h.html#a49426d34d5967267285a359f7e88f839">More...</a><br /></td></tr>
+<tr class="separator:a49426d34d5967267285a359f7e88f839"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54c37f5f37b7816d5d457f836b5bd0af"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="listmatrix_8h.html#a54c37f5f37b7816d5d457f836b5bd0af">CMRlistmat64PrintDense</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structListMat64.html">ListMat64</a> *listmatrix, FILE *stream)</td></tr>
+<tr class="memdesc:a54c37f5f37b7816d5d457f836b5bd0af"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints the 64-bit list matrix as a dense matrix.  <a href="listmatrix_8h.html#a54c37f5f37b7816d5d457f836b5bd0af">More...</a><br /></td></tr>
+<tr class="separator:a54c37f5f37b7816d5d457f836b5bd0af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9f1a7be1870713d4c78bf25b00184e5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="listmatrix_8h.html#ad9f1a7be1870713d4c78bf25b00184e5">CMRlistmat8Insert</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structListMat8.html">ListMat8</a> *listmatrix, size_t row, size_t column, int8_t value, long special, ptrdiff_t *pmemoryShift)</td></tr>
+<tr class="memdesc:ad9f1a7be1870713d4c78bf25b00184e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new element and inserts it into the doubly-linked lists.  <a href="listmatrix_8h.html#ad9f1a7be1870713d4c78bf25b00184e5">More...</a><br /></td></tr>
+<tr class="separator:ad9f1a7be1870713d4c78bf25b00184e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac7341bbf176aebbaecd52663fb205af"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="listmatrix_8h.html#aac7341bbf176aebbaecd52663fb205af">CMRlistmat64Insert</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structListMat64.html">ListMat64</a> *listmatrix, size_t row, size_t column, int64_t value, long special, ptrdiff_t *pmemoryShift)</td></tr>
+<tr class="memdesc:aac7341bbf176aebbaecd52663fb205af"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new element and inserts it into the doubly-linked lists.  <a href="listmatrix_8h.html#aac7341bbf176aebbaecd52663fb205af">More...</a><br /></td></tr>
+<tr class="separator:aac7341bbf176aebbaecd52663fb205af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac636dbd374ae9e1abf67668948552b08"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="listmatrix_8h.html#ac636dbd374ae9e1abf67668948552b08">CMRlistmat8Delete</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structListMat8.html">ListMat8</a> *listmatrix, <a class="el" href="listmatrix_8h.html#a039227a86e632739af10b458ed270ffc">ListMat8Nonzero</a> *nz)</td></tr>
+<tr class="memdesc:ac636dbd374ae9e1abf67668948552b08"><td class="mdescLeft">&#160;</td><td class="mdescRight">Delete a nonzero element.  <a href="listmatrix_8h.html#ac636dbd374ae9e1abf67668948552b08">More...</a><br /></td></tr>
+<tr class="separator:ac636dbd374ae9e1abf67668948552b08"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91d539a09a807ecc82ee4969f320cfb7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="listmatrix_8h.html#a91d539a09a807ecc82ee4969f320cfb7">CMRlistmat64Delete</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structListMat64.html">ListMat64</a> *listmatrix, <a class="el" href="listmatrix_8h.html#a2903fcdce3490983828dc10665718deb">ListMat64Nonzero</a> *nz)</td></tr>
+<tr class="memdesc:a91d539a09a807ecc82ee4969f320cfb7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Delete a nonzero element.  <a href="listmatrix_8h.html#a91d539a09a807ecc82ee4969f320cfb7">More...</a><br /></td></tr>
+<tr class="separator:a91d539a09a807ecc82ee4969f320cfb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Typedef Documentation</h2>
-<a id="a1f1782ae5e3fad378cfd0367d371200b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1f1782ae5e3fad378cfd0367d371200b">&#9670;&nbsp;</a></span>ChrListMatNonzero</h2>
+<a id="a2903fcdce3490983828dc10665718deb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2903fcdce3490983828dc10665718deb">&#9670;&nbsp;</a></span>ListMat64Nonzero</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">typedef struct <a class="el" href="struct__ListMatrixNonzero.html">_ListMatrixNonzero</a> <a class="el" href="listmatrix_8h.html#a1f1782ae5e3fad378cfd0367d371200b">ChrListMatNonzero</a></td>
+          <td class="memname">typedef struct <a class="el" href="struct__ListMat64Nonzero.html">_ListMat64Nonzero</a> <a class="el" href="listmatrix_8h.html#a2903fcdce3490983828dc10665718deb">ListMat64Nonzero</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Nonzero of ListMatrix. </p>
+<p>Nonzero of a <a class="el" href="structListMat64.html">ListMat64</a>. </p>
 
 </div>
 </div>
-<h2 class="groupheader">Function Documentation</h2>
-<a id="a513238b9ff241b797110be0af2e53679"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a513238b9ff241b797110be0af2e53679">&#9670;&nbsp;</a></span>CMRchrlistmatAlloc()</h2>
+<a id="a039227a86e632739af10b458ed270ffc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a039227a86e632739af10b458ed270ffc">&#9670;&nbsp;</a></span>ListMat8Nonzero</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRchrlistmatAlloc </td>
+          <td class="memname">typedef struct <a class="el" href="struct__ListMat8Nonzero.html">_ListMat8Nonzero</a> <a class="el" href="listmatrix_8h.html#a039227a86e632739af10b458ed270ffc">ListMat8Nonzero</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Nonzero of a <a class="el" href="structListMat8.html">ListMat8</a>. </p>
+
+</div>
+</div>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="aa52fa4fa04b5fb93ad58a64d1e086d05"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa52fa4fa04b5fb93ad58a64d1e086d05">&#9670;&nbsp;</a></span>CMRlistmat64Alloc()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRlistmat64Alloc </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
           <td class="paramname"><em>cmr</em>, </td>
@@ -186,7 +251,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structChrListMat.html">ChrListMat</a> **&#160;</td>
+          <td class="paramtype"><a class="el" href="structListMat64.html">ListMat64</a> **&#160;</td>
           <td class="paramname"><em>presult</em>&#160;</td>
         </tr>
         <tr>
@@ -197,7 +262,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Allocates memory for a list matrix. </p>
+<p>Allocates memory for a 64-bit list matrix. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
@@ -211,14 +276,14 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a1bf01eeaead5db11454376f5a6ad5113"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1bf01eeaead5db11454376f5a6ad5113">&#9670;&nbsp;</a></span>CMRchrlistmatFree()</h2>
+<a id="a91d539a09a807ecc82ee4969f320cfb7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a91d539a09a807ecc82ee4969f320cfb7">&#9670;&nbsp;</a></span>CMRlistmat64Delete()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRchrlistmatFree </td>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRlistmat64Delete </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
           <td class="paramname"><em>cmr</em>, </td>
@@ -226,7 +291,51 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structChrListMat.html">ChrListMat</a> **&#160;</td>
+          <td class="paramtype"><a class="el" href="structListMat64.html">ListMat64</a> *&#160;</td>
+          <td class="paramname"><em>listmatrix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="listmatrix_8h.html#a2903fcdce3490983828dc10665718deb">ListMat64Nonzero</a> *&#160;</td>
+          <td class="paramname"><em>nz</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Delete a nonzero element. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">listmatrix</td><td>List matrix. </td></tr>
+    <tr><td class="paramname">nz</td><td>Nonzero to delete. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a30787518e7815ca310d93fcc2451f898"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a30787518e7815ca310d93fcc2451f898">&#9670;&nbsp;</a></span>CMRlistmat64Free()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRlistmat64Free </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structListMat64.html">ListMat64</a> **&#160;</td>
           <td class="paramname"><em>plistmatrix</em>&#160;</td>
         </tr>
         <tr>
@@ -237,7 +346,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Frees a list matrix. </p>
+<p>Frees a 64-bit list matrix. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
@@ -248,14 +357,14 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a9c3ace424f454738d8c71247325a7ff2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9c3ace424f454738d8c71247325a7ff2">&#9670;&nbsp;</a></span>CMRchrlistmatInitializeFromDoubleMatrix()</h2>
+<a id="a5e1f2e9ae83d5d94fa5340dd971514e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e1f2e9ae83d5d94fa5340dd971514e4">&#9670;&nbsp;</a></span>CMRlistmat64InitializeFromDoubleMatrix()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRchrlistmatInitializeFromDoubleMatrix </td>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRlistmat64InitializeFromDoubleMatrix </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
           <td class="paramname"><em>cmr</em>, </td>
@@ -263,7 +372,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structChrListMat.html">ChrListMat</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="structListMat64.html">ListMat64</a> *&#160;</td>
           <td class="paramname"><em>listmatrix</em>, </td>
         </tr>
         <tr>
@@ -299,14 +408,14 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a1bcb16272a1c32c9f2623507dbd0429c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1bcb16272a1c32c9f2623507dbd0429c">&#9670;&nbsp;</a></span>CMRchrlistmatInitializeFromMatrix()</h2>
+<a id="abecddda610f0731fac29c0ef1336fbf7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abecddda610f0731fac29c0ef1336fbf7">&#9670;&nbsp;</a></span>CMRlistmat64InitializeFromIntMatrix()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRchrlistmatInitializeFromMatrix </td>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRlistmat64InitializeFromIntMatrix </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
           <td class="paramname"><em>cmr</em>, </td>
@@ -314,7 +423,460 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structChrListMat.html">ChrListMat</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="structListMat64.html">ListMat64</a> *&#160;</td>
+          <td class="paramname"><em>listmatrix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__INTMAT.html">CMR_INTMAT</a> *&#160;</td>
+          <td class="paramname"><em>matrix</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copies <code>matrix</code> into <code>listmatrix</code>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">listmatrix</td><td>List matrix. </td></tr>
+    <tr><td class="paramname">matrix</td><td>Matrix to be copied to <code>listmatrix</code>. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a7565939ac31f9f31244589a144a8dbba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7565939ac31f9f31244589a144a8dbba">&#9670;&nbsp;</a></span>CMRlistmat64InitializeFromIntSubmatrix()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRlistmat64InitializeFromIntSubmatrix </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structListMat64.html">ListMat64</a> *&#160;</td>
+          <td class="paramname"><em>listmatrix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__INTMAT.html">CMR_INTMAT</a> *&#160;</td>
+          <td class="paramname"><em>matrix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> *&#160;</td>
+          <td class="paramname"><em>submatrix</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copies <code>submatrix</code> of <code>matrix</code> into <code>listmatrix</code>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">listmatrix</td><td>List matrix. </td></tr>
+    <tr><td class="paramname">matrix</td><td>Matrix to be copied to <code>listmatrix</code>. </td></tr>
+    <tr><td class="paramname">submatrix</td><td>Submatrix of <code>matrix</code>. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a2fc54895269bae1292de85fe26425a18"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2fc54895269bae1292de85fe26425a18">&#9670;&nbsp;</a></span>CMRlistmat64InitializeFromIntSubmatrixComplement()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRlistmat64InitializeFromIntSubmatrixComplement </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structListMat64.html">ListMat64</a> *&#160;</td>
+          <td class="paramname"><em>listmatrix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__INTMAT.html">CMR_INTMAT</a> *&#160;</td>
+          <td class="paramname"><em>matrix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> *&#160;</td>
+          <td class="paramname"><em>submatrix</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copies all but <code>submatrix</code> of <code>matrix</code> into <code>listmatrix</code>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">listmatrix</td><td>List matrix. </td></tr>
+    <tr><td class="paramname">matrix</td><td>Matrix to be copied to <code>listmatrix</code>. </td></tr>
+    <tr><td class="paramname">submatrix</td><td>Submatrix of <code>matrix</code>. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="adfb23a6382eef42d3809913feaaee64f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adfb23a6382eef42d3809913feaaee64f">&#9670;&nbsp;</a></span>CMRlistmat64InitializeZero()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRlistmat64InitializeZero </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structListMat64.html">ListMat64</a> *&#160;</td>
+          <td class="paramname"><em>listmatrix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>numRows</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>numColumns</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Initializes a zero 64-bit list matrix. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">listmatrix</td><td>List matrix. </td></tr>
+    <tr><td class="paramname">numRows</td><td>Number of rows. </td></tr>
+    <tr><td class="paramname">numColumns</td><td>Number of columns. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="aac7341bbf176aebbaecd52663fb205af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac7341bbf176aebbaecd52663fb205af">&#9670;&nbsp;</a></span>CMRlistmat64Insert()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRlistmat64Insert </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structListMat64.html">ListMat64</a> *&#160;</td>
+          <td class="paramname"><em>listmatrix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>row</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>column</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">long&#160;</td>
+          <td class="paramname"><em>special</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ptrdiff_t *&#160;</td>
+          <td class="paramname"><em>pmemoryShift</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates a new element and inserts it into the doubly-linked lists. </p>
+<p>The function may reallocate the array of nonzeros. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">listmatrix</td><td>List matrix. </td></tr>
+    <tr><td class="paramname">row</td><td>Row of new element. </td></tr>
+    <tr><td class="paramname">column</td><td>Column of new element. </td></tr>
+    <tr><td class="paramname">value</td><td>Value of new element. </td></tr>
+    <tr><td class="paramname">special</td><td>Special entry of new element. </td></tr>
+    <tr><td class="paramname">pmemoryShift</td><td>If not <code>NULL</code>, each nonzero's address is shifted by this value. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a54c37f5f37b7816d5d457f836b5bd0af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a54c37f5f37b7816d5d457f836b5bd0af">&#9670;&nbsp;</a></span>CMRlistmat64PrintDense()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRlistmat64PrintDense </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structListMat64.html">ListMat64</a> *&#160;</td>
+          <td class="paramname"><em>listmatrix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">FILE *&#160;</td>
+          <td class="paramname"><em>stream</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Prints the 64-bit list matrix as a dense matrix. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">listmatrix</td><td>List matrix. </td></tr>
+    <tr><td class="paramname">stream</td><td>Stream to print to. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a66b0e4a15eb9749e34be62981c895de2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66b0e4a15eb9749e34be62981c895de2">&#9670;&nbsp;</a></span>CMRlistmat8Alloc()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRlistmat8Alloc </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>memRows</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>memColumns</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>memNonzeros</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structListMat8.html">ListMat8</a> **&#160;</td>
+          <td class="paramname"><em>presult</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Allocates memory for an 8-bit list matrix. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">memRows</td><td>Memory for rows. </td></tr>
+    <tr><td class="paramname">memColumns</td><td>Memory for columns. </td></tr>
+    <tr><td class="paramname">memNonzeros</td><td>Memory for nonzeros. </td></tr>
+    <tr><td class="paramname">presult</td><td>Pointer for storing the created list matrix. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ac636dbd374ae9e1abf67668948552b08"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac636dbd374ae9e1abf67668948552b08">&#9670;&nbsp;</a></span>CMRlistmat8Delete()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRlistmat8Delete </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structListMat8.html">ListMat8</a> *&#160;</td>
+          <td class="paramname"><em>listmatrix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="listmatrix_8h.html#a039227a86e632739af10b458ed270ffc">ListMat8Nonzero</a> *&#160;</td>
+          <td class="paramname"><em>nz</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Delete a nonzero element. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">listmatrix</td><td>List matrix. </td></tr>
+    <tr><td class="paramname">nz</td><td>Nonzero to delete. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a8d3f9d4ad9d8eea9ddde3a24cc9fc38a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d3f9d4ad9d8eea9ddde3a24cc9fc38a">&#9670;&nbsp;</a></span>CMRlistmat8Free()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRlistmat8Free </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structListMat8.html">ListMat8</a> **&#160;</td>
+          <td class="paramname"><em>plistmatrix</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Frees an 8-bit list matrix. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">plistmatrix</td><td>Pointer to list matrix. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a45950a2875a43dbb3af39010e758bc48"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a45950a2875a43dbb3af39010e758bc48">&#9670;&nbsp;</a></span>CMRlistmat8InitializeFromChrMatrix()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRlistmat8InitializeFromChrMatrix </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structListMat8.html">ListMat8</a> *&#160;</td>
           <td class="paramname"><em>listmatrix</em>, </td>
         </tr>
         <tr>
@@ -343,14 +905,14 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a2d713af2728eb2ebc9bd2fe243a56923"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2d713af2728eb2ebc9bd2fe243a56923">&#9670;&nbsp;</a></span>CMRchrlistmatInitializeFromSubmatrix()</h2>
+<a id="add0b20d9e61ede20a44a9079511cb263"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add0b20d9e61ede20a44a9079511cb263">&#9670;&nbsp;</a></span>CMRlistmat8InitializeFromChrSubmatrix()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRchrlistmatInitializeFromSubmatrix </td>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRlistmat8InitializeFromChrSubmatrix </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
           <td class="paramname"><em>cmr</em>, </td>
@@ -358,7 +920,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structChrListMat.html">ChrListMat</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="structListMat8.html">ListMat8</a> *&#160;</td>
           <td class="paramname"><em>listmatrix</em>, </td>
         </tr>
         <tr>
@@ -394,14 +956,14 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a1430e3fd54e4c8f9920571a8b52b4b3a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1430e3fd54e4c8f9920571a8b52b4b3a">&#9670;&nbsp;</a></span>CMRchrlistmatInitializeFromSubmatrixComplement()</h2>
+<a id="a31ff72451e4048cfe8fd2f2df181eee8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a31ff72451e4048cfe8fd2f2df181eee8">&#9670;&nbsp;</a></span>CMRlistmat8InitializeFromDoubleMatrix()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRchrlistmatInitializeFromSubmatrixComplement </td>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRlistmat8InitializeFromDoubleMatrix </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
           <td class="paramname"><em>cmr</em>, </td>
@@ -409,7 +971,58 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structChrListMat.html">ChrListMat</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="structListMat8.html">ListMat8</a> *&#160;</td>
+          <td class="paramname"><em>listmatrix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__DBLMAT.html">CMR_DBLMAT</a> *&#160;</td>
+          <td class="paramname"><em>matrix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>epsilon</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copies <code>matrix</code> into <code>listmatrix</code>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">listmatrix</td><td>List matrix. </td></tr>
+    <tr><td class="paramname">matrix</td><td>Matrix to be copied to <code>listmatrix</code>. </td></tr>
+    <tr><td class="paramname">epsilon</td><td>Tolerance to consider as exact integer. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a4408ebdf1b5c7aed64e39a694d50019c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4408ebdf1b5c7aed64e39a694d50019c">&#9670;&nbsp;</a></span>CMRlistmat8InitializeFromSubmatrixComplement()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRlistmat8InitializeFromSubmatrixComplement </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structListMat8.html">ListMat8</a> *&#160;</td>
           <td class="paramname"><em>listmatrix</em>, </td>
         </tr>
         <tr>
@@ -445,14 +1058,14 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a8d91e5f6dc69e22ce3f59cbe803117b5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8d91e5f6dc69e22ce3f59cbe803117b5">&#9670;&nbsp;</a></span>CMRchrlistmatInitializeZero()</h2>
+<a id="a9bff3e3312570d151a8cd7c1afc34aeb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9bff3e3312570d151a8cd7c1afc34aeb">&#9670;&nbsp;</a></span>CMRlistmat8InitializeZero()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRchrlistmatInitializeZero </td>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRlistmat8InitializeZero </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
           <td class="paramname"><em>cmr</em>, </td>
@@ -460,7 +1073,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structChrListMat.html">ChrListMat</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="structListMat8.html">ListMat8</a> *&#160;</td>
           <td class="paramname"><em>listmatrix</em>, </td>
         </tr>
         <tr>
@@ -483,7 +1096,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Initializes a zero matrix. </p>
+<p>Initializes a zero 8-bit list matrix. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
@@ -496,14 +1109,14 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a7216c335648438ab1d5b2436fc5deae0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7216c335648438ab1d5b2436fc5deae0">&#9670;&nbsp;</a></span>CMRchrlistmatPrintDense()</h2>
+<a id="ad9f1a7be1870713d4c78bf25b00184e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9f1a7be1870713d4c78bf25b00184e5">&#9670;&nbsp;</a></span>CMRlistmat8Insert()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRchrlistmatPrintDense </td>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRlistmat8Insert </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
           <td class="paramname"><em>cmr</em>, </td>
@@ -511,7 +1124,80 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structChrListMat.html">ChrListMat</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="structListMat8.html">ListMat8</a> *&#160;</td>
+          <td class="paramname"><em>listmatrix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>row</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>column</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int8_t&#160;</td>
+          <td class="paramname"><em>value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">long&#160;</td>
+          <td class="paramname"><em>special</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ptrdiff_t *&#160;</td>
+          <td class="paramname"><em>pmemoryShift</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates a new element and inserts it into the doubly-linked lists. </p>
+<p>The function may reallocate the array of nonzeros. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">listmatrix</td><td>List matrix. </td></tr>
+    <tr><td class="paramname">row</td><td>Row of new element. </td></tr>
+    <tr><td class="paramname">column</td><td>Column of new element. </td></tr>
+    <tr><td class="paramname">value</td><td>Value of new element. </td></tr>
+    <tr><td class="paramname">special</td><td>Special entry of new element. </td></tr>
+    <tr><td class="paramname">pmemoryShift</td><td>If not <code>NULL</code>, each nonzero's address is shifted by this value. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a49426d34d5967267285a359f7e88f839"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a49426d34d5967267285a359f7e88f839">&#9670;&nbsp;</a></span>CMRlistmat8PrintDense()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRlistmat8PrintDense </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structListMat8.html">ListMat8</a> *&#160;</td>
           <td class="paramname"><em>listmatrix</em>, </td>
         </tr>
         <tr>
@@ -528,7 +1214,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Prints the list matrix as a dense matrix. </p>
+<p>Prints the 8-bit list matrix as a dense matrix. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
