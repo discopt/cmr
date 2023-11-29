@@ -2631,6 +2631,27 @@ CMR_ERROR CMRchrmatSignedSupport(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT** pres
   return CMR_OKAY;
 }
 
+CMR_ERROR CMRchrmatToInt(CMR* cmr, CMR_CHRMAT* matrix, CMR_INTMAT** presult)
+{
+  assert(cmr);
+  CMRconsistencyAssert( CMRchrmatConsistency(matrix) );
+  assert(presult);
+
+  CMR_CALL( CMRintmatCreate(cmr, presult, matrix->numRows, matrix->numColumns, matrix->numNonzeros) );
+  CMR_INTMAT* result = *presult;
+
+  for (size_t row = 0; row <= matrix->numRows; ++row)
+    result->rowSlice[row] = matrix->rowSlice[row];
+
+  for (size_t e = 0; e < matrix->numNonzeros; ++e)
+  {
+    result->entryColumns[e] = matrix->entryColumns[e];
+    result->entryValues[e] = matrix->entryValues[e];
+  }
+
+  return CMR_OKAY;
+}
+
 CMR_ERROR CMRintmatToChr(CMR* cmr, CMR_INTMAT* matrix, CMR_CHRMAT** presult)
 {
   assert(cmr);

@@ -1,6 +1,6 @@
 // #define CMR_DEBUG /* Uncomment to debug this file. */
 
-#include "linalg.h"
+#include "linear_algebra_internal.h"
 #include "listmatrix.h"
 #include "sort.h"
 
@@ -945,4 +945,60 @@ CMR_ERROR CMRintmatComputeUpperDiagonal(CMR* cmr, CMR_INTMAT* matrix, bool inver
 #endif /* CMR_WITH_GMP */
 
   return isIntTooSmall ? CMR_ERROR_OVERFLOW : CMR_OKAY;
+}
+
+CMR_ERROR CMRintmatDeterminant(CMR* cmr, CMR_INTMAT* matrix, int64_t* pdeterminant)
+{
+  assert(cmr);
+  assert(matrix);
+  assert(pdeterminant);
+  CMRconsistencyAssert(CMRintmatConsistency(matrix));
+
+  if (matrix->numRows != matrix->numColumns)
+    return CMR_ERROR_INPUT;
+
+  CMR_INTMAT* transformed = NULL;
+  size_t rank = SIZE_MAX;
+  CMR_CALL( CMRintmatComputeUpperDiagonal(cmr, matrix, false, &rank, NULL, NULL, &transformed) );
+  if (rank < matrix->numRows)
+    *pdeterminant = 0;
+  else
+  {
+    int64_t old;
+    int64_t det = 1;
+    for (size_t row = 0; row < transformed->numRows; ++row)
+    {
+      int64_t x = transformed->entryValues[transformed->rowSlice[row]];
+      old = det;
+      det *= x;
+      if (det / x != old)
+      {
+        CMR_CALL( CMRintmatFree(cmr, &transformed) );
+        return CMR_ERROR_OVERFLOW;
+      }
+    }
+    *pdeterminant = det;
+  }
+
+  CMR_CALL( CMRintmatFree(cmr, &transformed) );
+
+  return CMR_OKAY;
+}
+
+
+CMR_ERROR CMRchrmatDeterminant(CMR* cmr, CMR_CHRMAT* matrix, int64_t* pdeterminant)
+{
+  assert(cmr);
+  assert(matrix);
+  CMRconsistencyAssert(CMRchrmatConsistency(matrix));
+
+  if (matrix->numRows != matrix->numColumns)
+    return CMR_ERROR_INPUT;
+
+  CMR_INTMAT* copy = NULL;
+  CMR_CALL( CMRchrmatToInt(cmr, matrix, &copy) );
+  CMR_CALL( CMRintmatDeterminant(cmr, copy, pdeterminant) );
+  CMR_CALL( CMRintmatFree(cmr, &copy) );
+
+  return CMR_OKAY;
 }
