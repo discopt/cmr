@@ -6,7 +6,7 @@
 #include <cmr/separation.h>
 #include <cmr/graphic.h>
 
-TEST(Z_Im_last_Equimodular, Examples)
+TEST(Equimodular, Examples)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
