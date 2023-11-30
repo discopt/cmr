@@ -6,6 +6,7 @@
 
 #include <cmr/matrix.h>
 #include <cmr/tu.h>
+#include <cmr/linear_algebra.h>
 
 typedef enum
 {
@@ -85,9 +86,17 @@ CMR_ERROR testTotalUnimodularity(
 
   if (submatrix && outputSubmatrixFileName)
   {
+    /* Extract submatrix to compute its determinant. */
+    CMR_CHRMAT* violator = NULL;
+    int64_t determinant = 0;
+    CMR_CALL( CMRchrmatZoomSubmat(cmr, matrix, submatrix, &violator) );
+    CMR_CALL( CMRchrmatDeterminant(cmr, violator, &determinant) );
+    CMR_CALL( CMRchrmatFree(cmr, &violator) );
+
     bool outputSubmatrixToFile = strcmp(outputSubmatrixFileName, "-");
-    fprintf(stderr, "Writing minimal non-totally-unimodular submatrix to %s%s%s.\n", outputSubmatrixToFile ? "file <" : "",
-      outputSubmatrixToFile ? outputSubmatrixFileName : "stdout", outputSubmatrixToFile ? ">" : "");    
+    fprintf(stderr, "Writing minimal non-totally-unimodular submatrix with absolute determinant %ld to %s%s%s.\n", determinant,
+      outputSubmatrixToFile ? "file <" : "", outputSubmatrixToFile ? outputSubmatrixFileName : "stdout",
+      outputSubmatrixToFile ? ">" : "");
 
     CMR_CALL( CMRsubmatWriteToFile(cmr, submatrix, matrix->numRows, matrix->numColumns, outputSubmatrixFileName) );
   }
