@@ -18,14 +18,14 @@ make
 
 ./cmr-camion          # Camion's signing algorithm
 ./cmr-matrix          # Basic matrix utililies (dense <-> sparse, transpose, submatrix, support)
-./cmr-ctu             # Complementary totally unimodular matrices
-./cmr-graphic         # Graphic matrices
-./cmr-network         # Network matrices
-./cmr-tu              # Totally unimodular matrices
-./cmr-regular         # Regular matrices / matroids
+./cmr-ctu             # Recognition of complementary totally unimodular matrices
+./cmr-graphic         # Recognition and construction of graphic matrices
+./cmr-network         # Recognition and construction of network matrices
+./cmr-tu              # Recognition of totally unimodular matrices
+./cmr-regular         # Recognition of regular matrices / matroids
 ./cmr-k-ary           # Extraction of large binary or ternary submatrices.
-./cmr-k-modular       # (Strongly) unimodular and k-modular matrices
-./cmr-series-parallel # Series-parallel matrices
+./cmr-equimodular     # Recognition of (strongly) equimodular and unimodular matrices
+./cmr-series-parallel # Recognition of series-parallel matrices
 
 6. Optionally, you can also install the executables.
 
@@ -37,3 +37,4 @@ If you configure cmake with -DGENERATORS=on then a couple of matrix generators a
 In particular, you can use
 
 ./cmr-extract-gurobi # Extract the coefficient matrix of a mixed-integer program.
+
