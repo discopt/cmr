@@ -6,7 +6,7 @@
 #include <cmr/separation.h>
 #include <cmr/graphic.h>
 
-TEST(Equimodular, Examples)
+TEST(Z_Im_last_Equimodular, Examples)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -109,6 +109,10 @@ TEST(Equimodular, GMP)
     int64_t k = 0;
     CMR_EQUIMODULAR_STATISTICS stats;
     CMRstatsEquimodularityInit(&stats);
+    printf("TESTING stdout\n");
+    fflush(stdout);
+    fprintf("TESTING stderr\n");
+    fflush(stderr);
     CMR_ERROR error = CMRtestEquimodularity(cmr, matrix, &isEquimodular, &k, NULL, &stats, DBL_MAX);
 
     ASSERT_EQ(error, CMR_OKAY);
