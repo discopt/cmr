@@ -111,7 +111,7 @@ TEST(Equimodular, GMP)
     CMRstatsEquimodularityInit(&stats);
     printf("TESTING stdout\n");
     fflush(stdout);
-    fprintf("TESTING stderr\n");
+    fprintf(stderr, "TESTING stderr\n");
     fflush(stderr);
     CMR_ERROR error = CMRtestEquimodularity(cmr, matrix, &isEquimodular, &k, NULL, &stats, DBL_MAX);
 
