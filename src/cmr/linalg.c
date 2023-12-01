@@ -667,9 +667,13 @@ CMR_ERROR CMRintmatComputeUpperDiagonal(CMR* cmr, CMR_INTMAT* matrix, bool inver
 
     /* Update permutations such that rowPermutation[*prank],columnPermutation[*prank] denotes the pivot entry. */
     CMRdbgMsg(2, "Pivoting at %ld,%ld\nResulting permutation is:\n", pivotRow, pivotColumn);
+    CMRdbgMsg(2, "TEST-A\n"); fflush(stderr);
     CMRdbgMsg(2, "pivotPermutedRow = %ld\n", pivotPermutedRow);
+    CMRdbgMsg(2, "TEST-B\n"); fflush(stderr);
     CMRdbgMsg(2, "pivotPermutedColumn = %ld\n", pivotPermutedColumn);
+    CMRdbgMsg(2, "TEST-C\n"); fflush(stderr);
     CMRdbgMsg(2, "rank = %ld\n", *prank);
+    CMRdbgMsg(2, "TEST-D\n"); fflush(stderr);
 
     size_t swap;
     swap = permutations->rows[*prank];
