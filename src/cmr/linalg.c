@@ -666,17 +666,22 @@ CMR_ERROR CMRintmatComputeUpperDiagonal(CMR* cmr, CMR_INTMAT* matrix, bool inver
     size_t pivotPermutedColumn = originalColumnsToPermutedColumns[pivotColumn];
 
     /* Update permutations such that rowPermutation[*prank],columnPermutation[*prank] denotes the pivot entry. */
+    CMRdbgMsg(2, "Test-A\n");
+    CMRdbgMsg(2, "Pivoting at row %ld\n", pivotRow);
+    CMRdbgMsg(2, "Test-B\n");
+    CMRdbgMsg(2, "Pivoting at row %ld\n", pivotColumn);
+    CMRdbgMsg(2, "Test-C\n");
     CMRdbgMsg(2, "Pivoting at %ld,%ld\nResulting permutation is:\n", pivotRow, pivotColumn);
     CMRdbgMsg(2, "Pivoting at %ld,%ld\nResulting permutation is:\n", pivotRow, pivotColumn);
     CMRdbgMsg(2, "Pivoting at %ld,%ld\nResulting permutation is:\n", pivotRow, pivotColumn);
     CMRdbgMsg(2, "Pivoting at %ld,%ld\nResulting permutation is:\n", pivotRow, pivotColumn);
-    CMRdbgMsg(2, "TEST-A\n"); fflush(stderr);
-    CMRdbgMsg(2, "pivotPermutedRow = %ld\n", pivotPermutedRow);
-    CMRdbgMsg(2, "TEST-B\n"); fflush(stderr);
-    CMRdbgMsg(2, "pivotPermutedColumn = %ld\n", pivotPermutedColumn);
-    CMRdbgMsg(2, "TEST-C\n"); fflush(stderr);
-    CMRdbgMsg(2, "rank = %ld\n", *prank);
     CMRdbgMsg(2, "TEST-D\n"); fflush(stderr);
+    CMRdbgMsg(2, "pivotPermutedRow = %ld\n", pivotPermutedRow);
+    CMRdbgMsg(2, "TEST-E\n"); fflush(stderr);
+    CMRdbgMsg(2, "pivotPermutedColumn = %ld\n", pivotPermutedColumn);
+    CMRdbgMsg(2, "TEST-F\n"); fflush(stderr);
+    CMRdbgMsg(2, "rank = %ld\n", *prank);
+    CMRdbgMsg(2, "TEST-G\n"); fflush(stderr);
 
     size_t swap;
     swap = permutations->rows[*prank];
