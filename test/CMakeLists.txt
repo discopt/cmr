@@ -11,6 +11,7 @@ add_executable(cmr_gtest
   common.c
   test_camion.cpp
   test_ctu.cpp
+  test_equimodular.cpp
   test_graph.cpp
   test_graphic.cpp
   test_hashtable.cpp
@@ -21,7 +22,6 @@ add_executable(cmr_gtest
   test_separation.cpp
   test_series_parallel.cpp
   test_tu.cpp
-  test_equimodular.cpp
 )
 
 # Add tests for non-exported functions only for static library.
