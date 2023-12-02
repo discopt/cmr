@@ -29,7 +29,7 @@ typedef struct _ListMat8Nonzero
   size_t row;                     /**< \brief Row. */
   size_t column;                  /**< \brief Column. */
   int8_t value;                   /**< \brief Matrix entry. */
-  long special : 56;              /**< \brief Remaining bits (on 64 bit) may be used for a special purpose. */
+  int64_t special : 56;           /**< \brief Remaining bits (on 64 bit) may be used for a special purpose. */
 } ListMat8Nonzero;
 
 /**
