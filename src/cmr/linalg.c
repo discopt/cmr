@@ -243,10 +243,11 @@ static CMR_ERROR CMRintmatComputeUpperDiagonalGMP(CMR* cmr, CMR_INTMAT* matrix, 
       }
       else if (originalRowsToPermutedRows[nz->row] > *prank)
       {
-        mpz_t s, t;
+        mpz_t s, t, g;
         mpz_init(s);
         mpz_init(t);
-        mpz_gcdext(NULL, s, t, nz->value, pivotValue);
+        mpz_init(g);
+        mpz_gcdext(g, s, t, nz->value, pivotValue);
         if (mpz_sgn(s) == 0)
           otherRowInfos[numOtherRows].priority = 0; /* Highest priority since divisible by pivot value. */
         else
@@ -255,6 +256,7 @@ static CMR_ERROR CMRintmatComputeUpperDiagonalGMP(CMR* cmr, CMR_INTMAT* matrix, 
         mpz_init_set(otherRowInfos[numOtherRows].value, nz->value);
         ++numOtherRows;
         scalePivotRow = false;
+        mpz_clear(g);
         mpz_clear(t);
         mpz_clear(s);
       }
