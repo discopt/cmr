@@ -255,12 +255,16 @@ static CMR_ERROR CMRintmatComputeUpperDiagonalGMP(CMR* cmr, CMR_INTMAT* matrix, 
         mpz_t s, t;
         mpz_init(s);
         mpz_init(t);
+        CMRdbgMsg(6, "Calling mpz_gcdext.\n");
         mpz_gcdext(NULL, s, t, nz->value, pivotValue);
+        CMRdbgMsg(6, "Calling mpz_sgn.\n");
         if (mpz_sgn(s) == 0)
           otherRowInfos[numOtherRows].priority = 0; /* Highest priority since divisible by pivot value. */
         else
           otherRowInfos[numOtherRows].priority = listmatrix->rowElements[nz->row].numNonzeros;
+        CMRdbgMsg(6, "Adding row to list.\n");
         otherRowInfos[numOtherRows].row = nz->row;
+        CMRdbgMsg(6, "Copying nonzero value into sorting structure.\n");
         mpz_init_set(otherRowInfos[numOtherRows].value, nz->value);
         ++numOtherRows;
         scalePivotRow = false;
@@ -275,6 +279,7 @@ static CMR_ERROR CMRintmatComputeUpperDiagonalGMP(CMR* cmr, CMR_INTMAT* matrix, 
         otherRowInfos[numOtherRows].priority = INT32_MAX; /* Lowest priority for top rows. */
         ++numOtherRows;
       }
+      CMRdbgMsg(6, "Iteration complete.\n");
     }
 
     CMRdbgMsg(6, "Increasing the rank.\n");
