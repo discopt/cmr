@@ -252,11 +252,12 @@ static CMR_ERROR CMRintmatComputeUpperDiagonalGMP(CMR* cmr, CMR_INTMAT* matrix, 
       else if (originalRowsToPermutedRows[nz->row] > *prank)
       {
         CMRdbgMsg(6, "This is an unhandled row.\n");
-        mpz_t s, t;
+        mpz_t s, t, g;
         mpz_init(s);
         mpz_init(t);
+        mpz_init(g);
         CMRdbgMsg(6, "Calling mpz_gcdext.\n");
-        mpz_gcdext(NULL, s, t, nz->value, pivotValue);
+        mpz_gcdext(g, s, t, nz->value, pivotValue);
         CMRdbgMsg(6, "Calling mpz_sgn.\n");
         if (mpz_sgn(s) == 0)
           otherRowInfos[numOtherRows].priority = 0; /* Highest priority since divisible by pivot value. */
@@ -268,6 +269,7 @@ static CMR_ERROR CMRintmatComputeUpperDiagonalGMP(CMR* cmr, CMR_INTMAT* matrix, 
         mpz_init_set(otherRowInfos[numOtherRows].value, nz->value);
         ++numOtherRows;
         scalePivotRow = false;
+        mpz_clear(g);
         mpz_clear(t);
         mpz_clear(s);
       }
