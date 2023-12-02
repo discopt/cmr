@@ -158,6 +158,8 @@ static CMR_ERROR CMRintmatComputeUpperDiagonalGMP(CMR* cmr, CMR_INTMAT* matrix, 
   mpz_init(pivotValue);
   while (*prank < maxRank)
   {
+    CMRdbgMsg(2, "Main loop with current rank %ld\n", *prank);
+
     /* TODO: maintain smallest elements instead of searching for them. */
 
     mpz_set_si(minEntryAbs, 0);
@@ -167,7 +169,7 @@ static CMR_ERROR CMRintmatComputeUpperDiagonalGMP(CMR* cmr, CMR_INTMAT* matrix, 
     for (size_t permutedRow = *prank; permutedRow < matrix->numRows; ++permutedRow)
     {
       size_t row = permutations->rows[permutedRow];
-      CMRdbgMsg(4, "Scanning permuted row %ld (row %ld) for good pivot entries.\n", permutedRow, row);
+      CMRdbgMsg(6, "Scanning permuted row %ld (row %ld) for good pivot entries.\n", permutedRow, row);
       for (ListMatGMPNonzero* nz = listmatrix->rowElements[row].head.right; nz != &listmatrix->rowElements[row].head;
         nz = nz->right)
       {
@@ -197,7 +199,7 @@ static CMR_ERROR CMRintmatComputeUpperDiagonalGMP(CMR* cmr, CMR_INTMAT* matrix, 
 
 #if defined(CMR_DEBUG)
     char buffer[1024];
-    CMRdbgMsg(2, "Pivot row %d, column %d has min nonzero %s and fill-in area %ld.\n", minEntryRow, minEntryColumn,
+    CMRdbgMsg(4, "Pivot row %d, column %d has min nonzero %s and fill-in area %ld.\n", minEntryRow, minEntryColumn,
       mpz_get_str(buffer, 10, minEntryValue), minEntryArea, minEntryArea);
     CMR_CALL( CMRlistmatGMPPrintDense(cmr, listmatrix, stdout) );
 #endif /* CMR_DEBUG */
@@ -213,10 +215,10 @@ static CMR_ERROR CMRintmatComputeUpperDiagonalGMP(CMR* cmr, CMR_INTMAT* matrix, 
     size_t pivotPermutedColumn = originalColumnsToPermutedColumns[pivotColumn];
 
     /* Update permutations such that rowPermutation[*prank],columnPermutation[*prank] denotes the pivot entry. */
-    CMRdbgMsg(2, "Pivoting at %ld,%ld\nResulting permutation is:\n", pivotRow, pivotColumn);
-    CMRdbgMsg(2, "pivotPermutedRow = %ld\n", pivotPermutedRow);
-    CMRdbgMsg(2, "pivotPermutedColumn = %ld\n", pivotPermutedColumn);
-    CMRdbgMsg(2, "rank = %ld\n", *prank);
+    CMRdbgMsg(4, "Pivoting at %ld,%ld\nResulting permutation is:\n", pivotRow, pivotColumn);
+    CMRdbgMsg(4, "pivotPermutedRow = %ld\n", pivotPermutedRow);
+    CMRdbgMsg(4, "pivotPermutedColumn = %ld\n", pivotPermutedColumn);
+    CMRdbgMsg(4, "rank = %ld\n", *prank);
     size_t swap;
     swap = permutations->rows[*prank];
     permutations->rows[*prank] = permutations->rows[pivotPermutedRow];
@@ -231,8 +233,9 @@ static CMR_ERROR CMRintmatComputeUpperDiagonalGMP(CMR* cmr, CMR_INTMAT* matrix, 
     originalColumnsToPermutedColumns[permutations->columns[pivotPermutedColumn]] = pivotPermutedColumn;
 
 #if defined(CMR_DEBUG)
-    CMRdbgMsg(2, "Printing row and column permutations %p.\n", permutations);
+    CMRdbgMsg(4, "Printing row and column permutations %p.\n", permutations);
     CMRsubmatWriteToStream(cmr, permutations, matrix->numRows, matrix->numColumns, stdout);
+    fflush(stdout);
 #endif /* CMR_DEBUG */
 
     /* Go through the nonzeros in the pivot column and sort them to prioritize. */
@@ -241,6 +244,7 @@ static CMR_ERROR CMRintmatComputeUpperDiagonalGMP(CMR* cmr, CMR_INTMAT* matrix, 
     for (ListMatGMPNonzero* nz = listmatrix->columnElements[pivotColumn].head.below;
       nz != &listmatrix->columnElements[pivotColumn].head; nz = nz->below)
     {
+      CMRdbgMsg(6, "Considering pivot column entry in row %ld\n", nz->row);
       if (nz->row == pivotRow)
       {
         assert(originalRowsToPermutedRows[nz->row] == *prank);
