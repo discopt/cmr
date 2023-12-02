@@ -244,13 +244,14 @@ static CMR_ERROR CMRintmatComputeUpperDiagonalGMP(CMR* cmr, CMR_INTMAT* matrix, 
     for (ListMatGMPNonzero* nz = listmatrix->columnElements[pivotColumn].head.below;
       nz != &listmatrix->columnElements[pivotColumn].head; nz = nz->below)
     {
-      CMRdbgMsg(6, "Considering pivot column entry in row %ld\n", nz->row);
+      CMRdbgMsg(6, "Considering pivot column entry in row %ld.\n", nz->row);
       if (nz->row == pivotRow)
       {
         assert(originalRowsToPermutedRows[nz->row] == *prank);
       }
       else if (originalRowsToPermutedRows[nz->row] > *prank)
       {
+        CMRdbgMsg(6, "This is an unhandled row.\n");
         mpz_t s, t;
         mpz_init(s);
         mpz_init(t);
@@ -268,12 +269,15 @@ static CMR_ERROR CMRintmatComputeUpperDiagonalGMP(CMR* cmr, CMR_INTMAT* matrix, 
       }
       else if (invert)
       {
+        CMRdbgMsg(6, "This is an already processed row.\n");
         otherRowInfos[numOtherRows].row = nz->row;
         mpz_init_set(otherRowInfos[numOtherRows].value, nz->value);
         otherRowInfos[numOtherRows].priority = INT32_MAX; /* Lowest priority for top rows. */
         ++numOtherRows;
       }
     }
+
+    CMRdbgMsg(6, "Increasing the rank.\n");
 
     /* We can now increase the rank. */
     ++(*prank);
@@ -282,6 +286,7 @@ static CMR_ERROR CMRintmatComputeUpperDiagonalGMP(CMR* cmr, CMR_INTMAT* matrix, 
      * we just scale the entire row. */
     if (scalePivotRow)
     {
+      CMRdbgMsg(6, "Scaling the pivot row.\n");
       for (ListMatGMPNonzero* nz = listmatrix->rowElements[pivotRow].head.right;
         nz != &listmatrix->rowElements[pivotRow].head; nz = nz->right)
       {
@@ -295,10 +300,12 @@ static CMR_ERROR CMRintmatComputeUpperDiagonalGMP(CMR* cmr, CMR_INTMAT* matrix, 
       continue;
     }
 
+    CMRdbgMsg(6, "Sorting the rows.\n");
     /* Sort other rows. */
     CMR_CALL( CMRsort(cmr, numOtherRows, otherRowInfos, sizeof(RowInfoGMP), compareOtherRowsGMP) );
 
     /* Copy pivot row to densePivot array. */
+    CMRdbgMsg(6, "Copying to dense array.\n");
     for (ListMatGMPNonzero* nz = listmatrix->rowElements[pivotRow].head.right;
       nz != &listmatrix->rowElements[pivotRow].head; nz = nz->right)
     {
