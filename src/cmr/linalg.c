@@ -231,6 +231,7 @@ static CMR_ERROR CMRintmatComputeUpperDiagonalGMP(CMR* cmr, CMR_INTMAT* matrix, 
     originalColumnsToPermutedColumns[permutations->columns[pivotPermutedColumn]] = pivotPermutedColumn;
 
 #if defined(CMR_DEBUG)
+    CMRdbgMsg(2, "Printing row and column permutations %p.\n", permutations);
     CMRsubmatWriteToStream(cmr, permutations, matrix->numRows, matrix->numColumns, stdout);
 #endif /* CMR_DEBUG */
 
