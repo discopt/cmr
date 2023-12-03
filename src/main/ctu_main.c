@@ -63,7 +63,8 @@ CMR_ERROR testComplementTotalUnimodularity(
   size_t complementColumn = SIZE_MAX;
   CMR_CTU_STATISTICS stats;
   CMR_CALL( CMRstatsComplementTotalUnimodularityInit(&stats) );
-  CMR_CALL( CMRtestComplementTotalUnimodularity(cmr, matrix, &isCTU, &complementRow, &complementColumn, &stats) );
+  CMR_CALL( CMRtestComplementTotalUnimodularity(cmr, matrix, &isCTU, &complementRow, &complementColumn, &stats,
+    timeLimit) );
 
   fprintf(stderr, "Matrix %scomplement totally unimodular.\n", isCTU ? "IS " : "IS NOT ");
   if (printStats)
@@ -128,11 +129,9 @@ CMR_ERROR complementMatrix(
   FileFormat outputFormat,          /**< Format of the output submatrix. */
   size_t complementRow,             /**< Complement row. */
   size_t complementColumn,          /**< Complement column. */
-  char* outputMatrixFileName,       /**< File name for the matrix; may be `-' for stdout. */
-  bool printStats                   /**< Whether to print statistics to stderr. */
+  char* outputMatrixFileName        /**< File name for the matrix; may be `-' for stdout. */
 )
 {
-  clock_t startClock, endTime;
   FILE* inputMatrixFile = strcmp(inputMatrixFileName, "-") ? fopen(inputMatrixFileName, "r") : stdin;
   if (!inputMatrixFile)
     return CMR_ERROR_INPUT;
@@ -142,7 +141,6 @@ CMR_ERROR complementMatrix(
 
   /* Read matrix. */
 
-  startClock = clock();
   CMR_CHRMAT* matrix = NULL;
   if (inputFormat == FILEFORMAT_MATRIX_DENSE)
     CMR_CALL( CMRchrmatCreateFromDenseStream(cmr, inputMatrixFile, &matrix) );
@@ -340,7 +338,7 @@ int main(int argc, char** argv)
   {
     assert(task == TASK_APPLY);
     error = complementMatrix(inputMatrixFileName, inputFormat, outputFormat, complementRow, complementColumn,
-      outputMatrixFileName, printStats);
+      outputMatrixFileName);
   }
 
   switch (error)
