@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <inttypes.h>
 #include <string.h>
 #include <time.h>
 #include <assert.h>
@@ -54,7 +55,7 @@ CMR_ERROR testEquimodularity(
     return CMR_ERROR_INPUT;
   }
 
-  fprintf(stderr, "Read %lux%lu matrix with %lu nonzeros in %f seconds.\n", matrix->numRows, matrix->numColumns,
+  fprintf(stderr, "Read %zux%zu matrix with %zu nonzeros in %f seconds.\n", matrix->numRows, matrix->numColumns,
     matrix->numNonzeros, (clock() - readClock) * 1.0 / CLOCKS_PER_SEC);
 
   /* Actual test. */
@@ -85,7 +86,7 @@ CMR_ERROR testEquimodularity(
       CMR_CALL( CMRtestEquimodularity(cmr, matrix, &propertyOriginal, &kOriginal, &params, &stats, timeLimit) );
       fprintf(stderr, "Determined in %f seconds that it is ", (clock() - startClock) * 1.0 / CLOCKS_PER_SEC);
       if (propertyOriginal)
-        fprintf(stderr, "equimodular with determinant gcd %lu.\n", kOriginal);
+        fprintf(stderr, "equimodular with determinant gcd %" PRId64 ".\n", kOriginal);
       else
         fprintf(stderr, "NOT equimodular.\n");
     }

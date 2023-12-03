@@ -2,6 +2,7 @@
 #define CMR_LISTMATRIX_INTERNAL_H
 
 #include <stddef.h>
+#include <inttypes.h>
 
 #include <cmr/env.h>
 #include <cmr/matrix.h>

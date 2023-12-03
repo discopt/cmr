@@ -1457,7 +1457,7 @@ CMR_ERROR CMRlistmat64PrintDense(CMR* cmr, ListMat64* listmatrix, FILE* stream)
     }
     for (size_t column = 0; column < listmatrix->numColumns; ++column)
     {
-      fprintf(stream, " %8ld", dense[column]);
+      fprintf(stream, " %" PRId64 "", dense[column]);
       dense[column] = 0;
     }
     fprintf(stream, " (%ld nonzeros)\n", listmatrix->rowElements[row].numNonzeros);

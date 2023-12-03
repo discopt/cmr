@@ -258,7 +258,7 @@ CMR_ERROR runInt(
 
       if (numRows != matrix->numRows)
       {
-        fprintf(stderr, "Error: Number of rows from IN-MAT (%lu) and IN-SUB (%lu) do not match.\n", matrix->numRows,
+        fprintf(stderr, "Error: Number of rows from IN-MAT (%zu) and IN-SUB (%zu) do not match.\n", matrix->numRows,
           numRows);
         CMR_CALL( CMRsubmatFree(cmr, &submatrix) );
         if (inputSubmatrixFileName)
@@ -270,7 +270,7 @@ CMR_ERROR runInt(
 
       if (numColumns != matrix->numColumns)
       {
-        fprintf(stderr, "Error: Number of columns from IN-MAT (%lu) and IN-SUB (%lu) do not match.\n", matrix->numColumns,
+        fprintf(stderr, "Error: Number of columns from IN-MAT (%zu) and IN-SUB (%zu) do not match.\n", matrix->numColumns,
           numColumns);
         CMR_CALL( CMRsubmatFree(cmr, &submatrix) );
         if (inputSubmatrixFileName)
