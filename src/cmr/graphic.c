@@ -52,10 +52,12 @@ CMR_ERROR CMRstatsGraphicPrint(FILE* stream, CMR_GRAPHIC_STATISTICS* stats, cons
     fprintf(stream, "Graphicness recognition:\n");
     prefix = "  ";
   }
-  fprintf(stream, "%stranspositions: %ld in %f seconds\n", prefix, stats->transposeCount, stats->transposeTime);
-  fprintf(stream, "%scolumn checks: %ld in %f seconds\n", prefix, stats->checkCount, stats->checkTime);
-  fprintf(stream, "%scolumn additions: %ld in %f seconds\n", prefix, stats->applyCount, stats->applyTime);
-  fprintf(stream, "%stotal: %ld in %f seconds\n", prefix, stats->totalCount, stats->totalTime);
+  fprintf(stream, "%stranspositions: %lu in %f seconds\n", prefix, (unsigned long)stats->transposeCount,
+    stats->transposeTime);
+  fprintf(stream, "%scolumn checks: %lu in %f seconds\n", prefix, (unsigned long)stats->checkCount, stats->checkTime);
+  fprintf(stream, "%scolumn additions: %lu in %f seconds\n", prefix, (unsigned long)stats->applyCount,
+    stats->applyTime);
+  fprintf(stream, "%stotal: %lu in %f seconds\n", prefix, (unsigned long)stats->totalCount, stats->totalTime);
 
   return CMR_OKAY;
 }

@@ -22,6 +22,7 @@
 #include <cmr/camion.h>
 
 #include <stdio.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -33,7 +34,7 @@ extern "C" {
 
 typedef struct
 {
-  size_t totalCount;              /**< Total number of invocations. */
+  uint32_t totalCount;            /**< Total number of invocations. */
   double totalTime;               /**< Total time of all invocations. */
   CMR_CAMION_STATISTICS camion;   /**< Camion signing. */
   CMR_GRAPHIC_STATISTICS graphic; /**< Graphicness test. */
