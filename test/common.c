@@ -61,10 +61,10 @@ CMR_ERROR stringToIntMatrix(CMR* cmr, CMR_INTMAT** pmatrix, const char* string)
   CMRintmatCreate(cmr, pmatrix, numRows, numColumns, numRows * numColumns);
 
   (*pmatrix)->numNonzeros = 0;
-  for (int row = 0; row < (*pmatrix)->numRows; ++row)
+  for (size_t row = 0; row < (*pmatrix)->numRows; ++row)
   {
     (*pmatrix)->rowSlice[row] = (*pmatrix)->numNonzeros;
-    for (int column = 0; column < (*pmatrix)->numColumns; ++column)
+    for (size_t column = 0; column < (*pmatrix)->numColumns; ++column)
     {
       int x = strtol(string, &end, 10);
       assert(end > string);

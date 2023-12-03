@@ -14,6 +14,7 @@ extern "C" {
 #endif
 
 #include <cmr/matrix.h>
+#include <stdint.h>
 
 /**
  * \brief Statistics for [Camion-signing](\ref camion) algorithm.
@@ -21,8 +22,8 @@ extern "C" {
 
 typedef struct
 {
-  size_t totalCount;      /**< Total number of invocations. */
-  double totalTime;       /**< Total time of all invocations. */
+  uint32_t totalCount;  /**< Total number of invocations. */
+  double totalTime;     /**< Total time of all invocations. */
 } CMR_CAMION_STATISTICS;
 
 /**
