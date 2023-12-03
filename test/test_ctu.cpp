@@ -18,7 +18,7 @@ TEST(ComplementTotalUnimodularity, Examples)
     ) );
 
     bool isCTU;
-    ASSERT_CMR_CALL( CMRtestComplementTotalUnimodularity(cmr, matrix, &isCTU, NULL, NULL, NULL) );
+    ASSERT_CMR_CALL( CMRtestComplementTotalUnimodularity(cmr, matrix, &isCTU, NULL, NULL, NULL, DBL_MAX) );
     
     ASSERT_TRUE(isCTU);
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
@@ -36,7 +36,8 @@ TEST(ComplementTotalUnimodularity, Examples)
     bool isCTU;
     size_t complementRow;
     size_t complementColumn;
-    ASSERT_CMR_CALL( CMRtestComplementTotalUnimodularity(cmr, matrix, &isCTU, &complementRow, &complementColumn, NULL) );
+    ASSERT_CMR_CALL( CMRtestComplementTotalUnimodularity(cmr, matrix, &isCTU, &complementRow, &complementColumn, NULL,
+      DBL_MAX) );
     ASSERT_FALSE(isCTU);
     ASSERT_EQ(complementRow, 0);
     ASSERT_EQ(complementColumn, 0);
