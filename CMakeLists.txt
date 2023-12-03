@@ -27,6 +27,12 @@ else()
   message(STATUS "Generators: OFF")
 endif()
 
+if (MSVC)
+  add_compile_options(/W4)
+else()
+  add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
+
 find_package(GMP)
 set(CMR_WITH_GMP ${GMP_FOUND})
 

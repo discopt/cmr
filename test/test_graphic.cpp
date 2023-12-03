@@ -46,12 +46,12 @@ void testBinaryGraphicMatrix(
     ASSERT_CMR_CALL( CMRchrmatPrintDense(cmr, result, stdout, ' ', true) );
 
     printf("Basis:");
-    for (int r = 0; r < matrix->numRows; ++r)
+    for (size_t r = 0; r < matrix->numRows; ++r)
       printf(" %d", basis[r]);
     printf("\n");
 
     printf("Cobasis:");
-    for (int c = 0; c < matrix->numColumns; ++c)
+    for (size_t c = 0; c < matrix->numColumns; ++c)
       printf(" %d", cobasis[c]);
     printf("\n");
   }
