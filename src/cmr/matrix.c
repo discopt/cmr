@@ -155,12 +155,12 @@ CMR_ERROR CMRsubmatWriteToStream(CMR* cmr, CMR_SUBMAT* submatrix, size_t numRows
   assert(submatrix);
   assert(stream);
 
-  fprintf(stream, "%lu %lu %lu %lu\n", numRows, numColumns, submatrix->numRows, submatrix->numColumns);
+  fprintf(stream, "%zu %zu %zu %zu\n", numRows, numColumns, submatrix->numRows, submatrix->numColumns);
   for (size_t row = 0; row < submatrix->numRows; ++row)
-    fprintf(stream, "%lu ", submatrix->rows[row] + 1);
+    fprintf(stream, "%zu ", submatrix->rows[row] + 1);
   fputc('\n', stream);
   for (size_t column = 0; column < submatrix->numColumns; ++column)
-    fprintf(stream, "%lu ", submatrix->columns[column] + 1);
+    fprintf(stream, "%zu ", submatrix->columns[column] + 1);
   fputc('\n', stream);
 
   return CMR_OKAY;
@@ -200,7 +200,7 @@ CMR_ERROR CMRsubmatReadFromStream(CMR* cmr, CMR_SUBMAT ** psubmatrix, size_t* pn
   size_t numOriginalColumns;
   size_t numRows;
   size_t numColumns;
-  if (fscanf(stream, "%lu %lu %lu %lu", &numOriginalRows, &numOriginalColumns, &numRows, &numColumns) != 4)
+  if (fscanf(stream, "%zu %zu %zu %lu", &numOriginalRows, &numOriginalColumns, &numRows, &numColumns) != 4)
     return CMR_ERROR_INPUT;
 
   if (numRows > numOriginalRows || numColumns > numOriginalColumns)
@@ -822,13 +822,13 @@ CMR_ERROR CMRdblmatPrintSparse(CMR* cmr, CMR_DBLMAT* matrix, FILE* stream)
   assert(matrix);
   assert(stream);
 
-  fprintf(stream, "%lu %lu %lu\n\n", matrix->numRows, matrix->numColumns, matrix->numNonzeros);
+  fprintf(stream, "%zu %zu %zu\n\n", matrix->numRows, matrix->numColumns, matrix->numNonzeros);
   for (size_t row = 0; row < matrix->numRows; ++row)
   {
     size_t first = matrix->rowSlice[row];
     size_t beyond = matrix->rowSlice[row+1];
     for (size_t entry = first; entry < beyond; ++entry)
-      fprintf(stream, "%lu %lu %g\n", row+1, matrix->entryColumns[entry]+1, matrix->entryValues[entry]);
+      fprintf(stream, "%zu %zu %g\n", row+1, matrix->entryColumns[entry]+1, matrix->entryValues[entry]);
   }
 
   return CMR_OKAY;
@@ -840,13 +840,13 @@ CMR_ERROR CMRintmatPrintSparse(CMR* cmr, CMR_INTMAT* matrix, FILE* stream)
   assert(matrix);
   assert(stream);
 
-  fprintf(stream, "%lu %lu %lu\n\n", matrix->numRows, matrix->numColumns, matrix->numNonzeros);
+  fprintf(stream, "%zu %zu %zu\n\n", matrix->numRows, matrix->numColumns, matrix->numNonzeros);
   for (size_t row = 0; row < matrix->numRows; ++row)
   {
     size_t first = matrix->rowSlice[row];
     size_t beyond = matrix->rowSlice[row+1];
     for (size_t entry = first; entry < beyond; ++entry)
-      fprintf(stream, "%lu %lu  %d\n", row+1, matrix->entryColumns[entry]+1, matrix->entryValues[entry]);
+      fprintf(stream, "%zu %zu %d\n", row+1, matrix->entryColumns[entry]+1, matrix->entryValues[entry]);
   }
 
   return CMR_OKAY;
@@ -858,13 +858,13 @@ CMR_ERROR CMRchrmatPrintSparse(CMR* cmr, CMR_CHRMAT* matrix, FILE* stream)
   assert(matrix);
   assert(stream);
 
-  fprintf(stream, "%lu %lu %lu\n\n", matrix->numRows, matrix->numColumns, matrix->numNonzeros);
+  fprintf(stream, "%zu %zu %zu\n\n", matrix->numRows, matrix->numColumns, matrix->numNonzeros);
   for (size_t row = 0; row < matrix->numRows; ++row)
   {
     size_t first = matrix->rowSlice[row];
     size_t beyond = matrix->rowSlice[row+1];
     for (size_t entry = first; entry < beyond; ++entry)
-      fprintf(stream, "%lu %lu  %d\n", row+1, matrix->entryColumns[entry]+1, matrix->entryValues[entry]);
+      fprintf(stream, "%zu %zu %d\n", row+1, matrix->entryColumns[entry]+1, matrix->entryValues[entry]);
   }
 
   return CMR_OKAY;
@@ -1022,7 +1022,7 @@ CMR_ERROR CMRdblmatCreateFromSparseStream(CMR* cmr, FILE* stream, CMR_DBLMAT** p
   assert(stream);
 
   size_t numRows, numColumns, numNonzeros;
-  int numRead = fscanf(stream, "%lu %lu %lu", &numRows, &numColumns, &numNonzeros);
+  int numRead = fscanf(stream, "%zu %zu %zu", &numRows, &numColumns, &numNonzeros);
   if (numRead < 3)
   {
     CMRraiseErrorMessage(cmr, "Could not read number of rows, columns and nonzeros.");
@@ -1129,7 +1129,7 @@ CMR_ERROR CMRintmatCreateFromSparseStream(CMR* cmr, FILE* stream, CMR_INTMAT** p
   assert(stream);
 
   size_t numRows, numColumns, numNonzeros;
-  int numRead = fscanf(stream, "%lu %lu %lu", &numRows, &numColumns, &numNonzeros);
+  int numRead = fscanf(stream, "%zu %zu %zu", &numRows, &numColumns, &numNonzeros);
   if (numRead < 3)
   {
     CMRraiseErrorMessage(cmr, "Could not read number of rows, columns and nonzeros.");
@@ -1236,7 +1236,7 @@ CMR_ERROR CMRchrmatCreateFromSparseStream(CMR* cmr, FILE* stream, CMR_CHRMAT** p
   assert(stream);
 
   size_t numRows, numColumns, numNonzeros;
-  int numRead = fscanf(stream, "%lu %lu %lu", &numRows, &numColumns, &numNonzeros);
+  int numRead = fscanf(stream, "%zu %zu %zu", &numRows, &numColumns, &numNonzeros);
   if (numRead < 3)
   {
     CMRraiseErrorMessage(cmr, "Could not read number of rows, columns and nonzeros.");
