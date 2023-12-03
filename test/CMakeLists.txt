@@ -23,6 +23,9 @@ add_executable(cmr_gtest
   test_series_parallel.cpp
   test_tu.cpp)
 
+# Set standard to C++ 14.
+set_property(TARGET cmr_gtest PROPERTY CXX_STANDARD 14)
+
 # Add tests for non-exported functions only for static library.
 if(NOT SHARED)
   target_sources(cmr_gtest
