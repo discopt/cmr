@@ -16,12 +16,9 @@ extern "C" {
 static inline
 size_t nextPower2(size_t x)
 {
-  x |= x >> 1;
-  x |= x >> 2;
-  x |= x >> 4;
-  x |= x >> 8;
-  x |= x >> 16;
-  x |= x >> 32;
+  --x;
+  for(size_t i = 1; i < sizeof(size_t) * CHAR_BIT; i *= 2)
+    x |= x >> i;
   return x + 1;
 }
 
