@@ -30,7 +30,7 @@ endif()
 if (MSVC)
   add_compile_options(/W4)
 else()
-  add_compile_options(-Wall -Wextra -Wunused)
+  add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
 find_package(GMP)
