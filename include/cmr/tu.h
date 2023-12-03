@@ -18,8 +18,16 @@ extern "C" {
 #include <cmr/matrix.h>
 #include <cmr/camion.h>
 
+typedef enum
+{
+  CMR_TU_ALGORITHM_DECOMPOSITION = 0, /**< \brief Algorithm based on Seymour's decomposition of regular matroids. */
+  CMR_TU_ALGORITHM_SUBMATRIX = 1,     /**< \brief Enumeration algorithm based on submatrices. */
+  CMR_TU_ALGORITHM_PARTITION = 2      /**< \brief Enumeration algorithm based on criterion of Ghouila-Houri. */
+} CMR_TU_ALGORITHM;
+
 typedef struct
 {
+  CMR_TU_ALGORITHM algorithm;     /**< \brief Algorithm to use. */
   CMR_REGULAR_PARAMETERS regular; /**< \brief Parameters for regularity test. */
 } CMR_TU_PARAMETERS;
 
@@ -89,6 +97,7 @@ CMR_ERROR CMRtestTotalUnimodularity(
   CMR_TU_STATISTICS* stats,   /**< Statistics for the computation (may be \c NULL). */
   double timeLimit            /**< Time limit to impose. */
 );
+
 
 #ifdef __cplusplus
 }
