@@ -226,7 +226,7 @@ CMR_ERROR CMRdecPrint(CMR* cmr, CMR_DEC* dec, FILE* stream, size_t indent, bool 
     return CMR_OKAY;
   }
   
-  fprintf(stream, "%ldx%ld ", dec->numRows, dec->numColumns);
+  fprintf(stream, "%zux%zu ", dec->numRows, dec->numColumns);
   switch (dec->type)
   {
   case CMR_DEC_IRREGULAR:
@@ -238,22 +238,22 @@ CMR_ERROR CMRdecPrint(CMR* cmr, CMR_DEC* dec, FILE* stream, size_t indent, bool 
   case CMR_DEC_ONE_SUM:
   case CMR_DEC_TWO_SUM:
   case CMR_DEC_THREE_SUM:
-    fprintf(stream, "%d-sum with %ld children {", dec->type, dec->numChildren);
+    fprintf(stream, "%d-sum with %zu children {", dec->type, dec->numChildren);
   break;
   case CMR_DEC_GRAPHIC:
-    fprintf(stream, "graphic matrix with %ld nodes and %ld edges {", CMRgraphNumNodes(dec->graph), CMRgraphNumEdges(dec->graph));
+    fprintf(stream, "graphic matrix with %zu nodes and %zu edges {", CMRgraphNumNodes(dec->graph), CMRgraphNumEdges(dec->graph));
   break;
   case CMR_DEC_COGRAPHIC:
-    fprintf(stream, "cographic matrix with %ld nodes and %ld edges {", CMRgraphNumNodes(dec->cograph), CMRgraphNumEdges(dec->cograph));
+    fprintf(stream, "cographic matrix with %zu nodes and %zu edges {", CMRgraphNumNodes(dec->cograph), CMRgraphNumEdges(dec->cograph));
   break;
   case CMR_DEC_PLANAR:
     assert(CMRgraphNumEdges(dec->graph) == CMRgraphNumEdges(dec->cograph));
-    fprintf(stream, "planar matrix with %ld nodes, %ld faces and %ld edges {", CMRgraphNumNodes(dec->graph),
+    fprintf(stream, "planar matrix with %zu nodes, %zu faces and %zu edges {", CMRgraphNumNodes(dec->graph),
       CMRgraphNumNodes(dec->cograph), CMRgraphNumEdges(dec->graph));
   break;
   case CMR_DEC_SERIES_PARALLEL:
     if (dec->numChildren)
-      fprintf(stream, "matrix with %ld series-parallel reductions; 1 child {", dec->numReductions);
+      fprintf(stream, "matrix with %zu series-parallel reductions; 1 child {", dec->numReductions);
     else
       fprintf(stream, "series-parallel matrix {");
   break;

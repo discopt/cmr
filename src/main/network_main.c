@@ -62,7 +62,7 @@ CMR_ERROR recognizeNetwork(
     return CMR_ERROR_INPUT;
   }
 
-  fprintf(stderr, "Read %lux%lu matrix with %lu nonzeros in %f seconds.\n", matrix->numRows, matrix->numColumns,
+  fprintf(stderr, "Read %zux%zu matrix with %zu nonzeros in %f seconds.\n", matrix->numRows, matrix->numColumns,
     matrix->numNonzeros, (clock() - readClock) * 1.0 / CLOCKS_PER_SEC);
 
   /* Test for being ternary first. */
@@ -75,7 +75,7 @@ CMR_ERROR recognizeNetwork(
     assert(mat->numRows == 1);
     assert(mat->numColumns == 1);
     assert(mat->numNonzeros == 1);
-    fprintf(stderr, "Matrix is NOT %sgraphic since it is not binary: entry at row %ld, column %ld is %d.\n",
+    fprintf(stderr, "Matrix is NOT %sgraphic since it is not binary: entry at row %zu, column %zu is %d.\n",
       conetwork ? "co" : "", submatrix->rows[0] + 1, submatrix->columns[0] + 1, mat->entryValues[0]);
 
     CMR_CALL( CMRchrmatFree(cmr, &mat) );
