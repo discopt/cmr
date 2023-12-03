@@ -345,10 +345,10 @@ void CMRassertStackConsistency(
   {
     CMR_STACK* stack = &cmr->stacks[s];
 
-    void* ptr = &stack->memory[stack->top];
+    char* ptr = &stack->memory[stack->top];
     CMRdbgMsg(2, "Stack %d of size %d has memory range [%p,%p). top is %p\n", s, STACK_SIZE(s), stack->memory,
       stack->memory + STACK_SIZE(s), ptr);
-    while (ptr < (void*)stack->memory + STACK_SIZE(s))
+    while (ptr < (char*)stack->memory + STACK_SIZE(s))
     {
       CMRdbgMsg(4, "pointer is %p.", ptr);
       size_t size = *((size_t*) ptr);

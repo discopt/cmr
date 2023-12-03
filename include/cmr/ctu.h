@@ -79,7 +79,8 @@ CMR_ERROR CMRtestComplementTotalUnimodularity(
   bool* pisComplementTotallyUnimodular, /**< Pointer for storing whether \f$ M \f$ is complement totally unimodular. */
   size_t* pcomplementRow,               /**< Pointer for storing the row to be complemented (may be \c NULL). */
   size_t* pcomplementColumn,            /**< Pointer for storing the column to be complemented (may be \c NULL). */
-  CMR_CTU_STATISTICS* stats             /**< Statistics for the computation (may be \c NULL). */
+  CMR_CTU_STATISTICS* stats,            /**< Statistics for the computation (may be \c NULL). */
+  double timeLimit                      /**< Time limit to impose. */
 );
 
 #ifdef __cplusplus
