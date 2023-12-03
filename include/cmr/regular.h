@@ -62,18 +62,18 @@ CMR_ERROR CMRparamsRegularInit(
 
 typedef struct
 {
-  size_t totalCount;                  /**< Total number of invocations. */
-  double totalTime;                   /**< Total time of all invocations. */
-  CMR_SP_STATISTICS seriesParallel;   /**< Statistics for series-parallel algorithm. */
-  CMR_GRAPHIC_STATISTICS graphic;     /**< Statistics for direct (co)graphic checks. */
-  CMR_NETWORK_STATISTICS network;     /**< Statistics for direct (co)network checks. */
-  size_t sequenceExtensionCount;      /**< Number of extensions of sequences of nested minors. */
-  double sequenceExtensionTime;       /**< Time of extensions of sequences of nested minors. */
-  size_t sequenceGraphicCount;        /**< Number (co)graphicness tests applied to sequence of nested minors. */
-  double sequenceGraphicTime;         /**< Time of (co)graphicness tests applied to sequence of nested minors. */
-  size_t enumerationCount;            /**< Number of calls to enumeration algorithm for candidate 3-separations. */
-  double enumerationTime;             /**< Time of enumeration of candidate 3-separations. */
-  size_t enumerationCandidatesCount;  /**< Number of enumerated candidates for 3-separations. */
+  uint32_t totalCount;                  /**< Total number of invocations. */
+  double totalTime;                     /**< Total time of all invocations. */
+  CMR_SP_STATISTICS seriesParallel;     /**< Statistics for series-parallel algorithm. */
+  CMR_GRAPHIC_STATISTICS graphic;       /**< Statistics for direct (co)graphic checks. */
+  CMR_NETWORK_STATISTICS network;       /**< Statistics for direct (co)network checks. */
+  uint32_t sequenceExtensionCount;      /**< Number of extensions of sequences of nested minors. */
+  double sequenceExtensionTime;         /**< Time of extensions of sequences of nested minors. */
+  uint32_t sequenceGraphicCount;        /**< Number (co)graphicness tests applied to sequence of nested minors. */
+  double sequenceGraphicTime;           /**< Time of (co)graphicness tests applied to sequence of nested minors. */
+  uint32_t enumerationCount;            /**< Number of calls to enumeration algorithm for candidate 3-separations. */
+  double enumerationTime;               /**< Time of enumeration of candidate 3-separations. */
+  uint32_t enumerationCandidatesCount;  /**< Number of enumerated candidates for 3-separations. */
 } CMR_REGULAR_STATISTICS;
 
 

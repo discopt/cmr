@@ -40,7 +40,7 @@ CMR_ERROR CMRparamsTotalUnimodularityInit(
 
 typedef struct
 {
-  size_t totalCount;              /**< Total number of invocations. */
+  uint32_t totalCount;            /**< Total number of invocations. */
   double totalTime;               /**< Total time of all invocations. */
   CMR_CAMION_STATISTICS camion;   /**< Camion signing. */
   CMR_REGULAR_STATISTICS regular; /**< Regularity test. */

@@ -64,15 +64,15 @@ CMR_ERROR CMRstatsRegularPrint(FILE* stream, CMR_REGULAR_STATISTICS* stats, cons
   snprintf(subPrefix, 256, "%s(co)network ", prefix);
   CMR_CALL( CMRstatsNetworkPrint(stream, &stats->network, subPrefix) );
 
-  fprintf(stream, "%ssequence extensions: %ld in %f seconds\n", prefix, stats->sequenceExtensionCount,
+  fprintf(stream, "%ssequence extensions: %lu in %f seconds\n", prefix, (unsigned long)stats->sequenceExtensionCount,
     stats->sequenceExtensionTime);
-  fprintf(stream, "%ssequence (co)graphic: %ld in %f seconds\n", prefix, stats->sequenceGraphicCount,
+  fprintf(stream, "%ssequence (co)graphic: %lu in %f seconds\n", prefix, (unsigned long)stats->sequenceGraphicCount,
     stats->sequenceGraphicTime);
-  fprintf(stream, "%senumeration: %ld in %f seconds\n", prefix, stats->enumerationCount,
+  fprintf(stream, "%senumeration: %lu in %f seconds\n", prefix, (unsigned long)stats->enumerationCount,
     stats->enumerationTime);
-  fprintf(stream, "%s3-separation candidates: %ld in %f seconds\n", prefix, stats->enumerationCandidatesCount,
-    stats->enumerationTime);
-  fprintf(stream, "%stotal: %ld in %f seconds\n", prefix, stats->totalCount, stats->totalTime);
+  fprintf(stream, "%s3-separation candidates: %lu in %f seconds\n", prefix,
+    (unsigned long)stats->enumerationCandidatesCount, stats->enumerationTime);
+  fprintf(stream, "%stotal: %lu in %f seconds\n", prefix, (unsigned long)stats->totalCount, stats->totalTime);
 
   return CMR_OKAY;
 }

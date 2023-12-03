@@ -45,7 +45,7 @@ CMR_ERROR CMRstatsNetworkPrint(FILE* stream, CMR_NETWORK_STATISTICS* stats, cons
   snprintf(subPrefix, 256, "%sgraphic ", prefix);
   CMR_CALL( CMRstatsGraphicPrint(stream, &stats->graphic, subPrefix) );
 
-  fprintf(stream, "%stotal: %ld in %f seconds\n", prefix, stats->totalCount,
+  fprintf(stream, "%stotal: %lu in %f seconds\n", prefix, (unsigned long)stats->totalCount,
     stats->totalTime);
 
   return CMR_OKAY;

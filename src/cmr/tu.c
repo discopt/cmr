@@ -50,7 +50,7 @@ CMR_ERROR CMRstatsTotalUnimodularityPrint(FILE* stream, CMR_TU_STATISTICS* stats
   snprintf(subPrefix, 256, "%sregularity ", prefix);
   CMR_CALL( CMRstatsRegularPrint(stream, &stats->regular, subPrefix) );
 
-  fprintf(stream, "%stotal: %ld in %f seconds\n", prefix, stats->totalCount, stats->totalTime);
+  fprintf(stream, "%stotal: %lu in %f seconds\n", prefix, (unsigned long) stats->totalCount, stats->totalTime);
 
   return CMR_OKAY;
 }
