@@ -20,6 +20,7 @@
 #include <cmr/graph.h>
 
 #include <stdio.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -31,14 +32,14 @@ extern "C" {
 
 typedef struct
 {
-  size_t totalCount;      /**< Total number of invocations. */
-  double totalTime;       /**< Total time of all invocations. */
-  size_t checkCount;      /**< Number of calls to check algorithm. */
-  double checkTime;       /**< Time of check algorithm calls. */
-  size_t applyCount;      /**< Number of column additions. */
-  double applyTime;       /**< Time of column additions. */
-  size_t transposeCount;  /**< Number of matrix transpositions. */
-  double transposeTime;   /**< Time for matrix transpositions. */
+  uint32_t totalCount;      /**< Total number of invocations. */
+  double totalTime;         /**< Total time of all invocations. */
+  uint32_t checkCount;      /**< Number of calls to check algorithm. */
+  double checkTime;         /**< Time of check algorithm calls. */
+  uint32_t applyCount;      /**< Number of column additions. */
+  double applyTime;         /**< Time of column additions. */
+  uint32_t transposeCount;  /**< Number of matrix transpositions. */
+  double transposeTime;     /**< Time for matrix transpositions. */
 } CMR_GRAPHIC_STATISTICS;
 
 /**
