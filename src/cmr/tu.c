@@ -1,7 +1,5 @@
 #include <cmr/tu.h>
 
-#include <cmr/camion.h>
-
 #include "matrix_internal.h"
 #include "one_sum.h"
 #include "camion_internal.h"
@@ -16,6 +14,7 @@ CMR_ERROR CMRparamsTotalUnimodularityInit(CMR_TU_PARAMETERS* params)
 {
   assert(params);
 
+  params->algorithm = CMR_TU_ALGORITHM_DECOMPOSITION;
   CMR_CALL( CMRparamsRegularInit(&params->regular) );
 
   return CMR_OKAY;
@@ -97,6 +96,165 @@ CMR_ERROR tuTest(
   return CMR_OKAY;
 }
 
+
+/**
+ * \brief Recursively assigns +1 or -1 to each row that is part of the subset to test Ghouila-Houri.
+ *
+ * \return whether a feasible assignment was found.
+ */
+
+static
+bool testPartitionSearch(
+  CMR* cmr,                   /**< \ref CMR environment */
+  CMR_CHRMAT* matrix,         /**< Matrix \f$ M \f$. */
+  int8_t* selection,          /**< Array with selection. */
+  size_t current,             /**< Index to decide for selection. */
+  int* columnSum              /**< Array for computing column sums. */
+)
+{
+  assert(cmr);
+  assert(matrix);
+  assert(selection);
+
+  while (current < matrix->numRows && selection[current] == 0)
+    ++current;
+
+  if (current < matrix->numRows)
+  {
+    /* Recurse by keeping current row a +1. */
+    bool found = testPartitionSearch(cmr, matrix, selection, current + 1, columnSum);
+    if (found)
+      return true;
+
+    /* Recurse by making current row a -1. */
+    size_t first = matrix->rowSlice[current];
+    size_t beyond = matrix->rowSlice[current + 1];
+
+    selection[current] = -1;
+    for (size_t i = first; i < beyond; ++i)
+      columnSum[matrix->entryColumns[i]] -= 2 * matrix->entryValues[i];
+
+    found = testPartitionSearch(cmr, matrix, selection, current + 1, columnSum);
+
+    selection[current] = +1;
+    for (size_t i = first; i < beyond; ++i)
+      columnSum[matrix->entryColumns[i]] += 2 * matrix->entryValues[i];
+
+    return found;
+  }
+  else
+  {
+    for (size_t column = 0; column < matrix->numColumns; ++column)
+    {
+      int sum = columnSum[column];
+      if (sum < -1 || sum > +1)
+        return false;
+    }
+    return true;
+  }
+}
+
+/**
+ * \brief Recursively selects a row subset and tests Ghouila-Houri for each.
+ *
+ * \return 1 if totally unimodular, 0 if not, and -1 if time limit was reached.
+ */
+
+static
+int testPartitionSubset(
+  CMR* cmr,                   /**< \ref CMR environment */
+  CMR_CHRMAT* matrix,         /**< Matrix \f$ M \f$. */
+  int8_t* selection,          /**< Array with selection. */
+  size_t current,             /**< Index to decide for selection. */
+  int* columnSum,             /**< Array for computing column sums. */
+  clock_t stopClock           /**< Clock value for stopping. */
+)
+{
+  assert(cmr);
+  assert(matrix);
+  assert(selection);
+
+  if (current < matrix->numRows)
+  {
+    /* Recurse by not selecting a column. */
+    selection[current] = 0;
+    int result = testPartitionSubset(cmr, matrix, selection, current + 1, columnSum, stopClock);
+    if (result <= 0)
+      return result;
+
+    /* Recurse by selecting a column unless we need to abort. */
+    selection[current] = 1;
+    size_t first = matrix->rowSlice[current];
+    size_t beyond = matrix->rowSlice[current + 1];
+    for (size_t i = first; i < beyond; ++i)
+      columnSum[matrix->entryColumns[i]] += matrix->entryValues[i];
+
+    result = testPartitionSubset(cmr, matrix, selection, current + 1, columnSum, stopClock);
+
+    for (size_t i = first; i < beyond; ++i)
+      columnSum[matrix->entryColumns[i]] -= matrix->entryValues[i];
+
+    return result;
+  }
+  else
+  {
+    if (clock() > stopClock)
+      return -1;
+
+    bool foundPartition = testPartitionSearch(cmr, matrix, selection, 0, columnSum);
+    return foundPartition ? 1 : 0;
+  }
+}
+
+/**
+ * \brief Partition test based on Ghouila-Houri.
+ */
+
+static
+CMR_ERROR  testPartition(
+  CMR* cmr,                   /**< \ref CMR environment */
+  CMR_CHRMAT* matrix,         /**< Matrix \f$ M \f$. */
+  bool* pisTotallyUnimodular, /**< Pointer for storing whether \f$ M \f$ is totally unimodular. */
+  double timeLimit            /**< Time limit to impose. */
+)
+{
+  assert(cmr);
+  assert(matrix);
+  assert(pisTotallyUnimodular);
+
+  CMR_ERROR error = CMR_OKAY;
+
+  /* Consider transpose if this has fewer rows. */
+  if (matrix->numRows > matrix->numColumns)
+  {
+    CMR_CHRMAT* transpose = NULL;
+    CMR_CALL( CMRchrmatTranspose(cmr, matrix, &transpose) );
+    CMR_CALL( testPartition(cmr, transpose, pisTotallyUnimodular, timeLimit) );
+    CMR_CALL( CMRchrmatFree(cmr, &transpose) );
+    return CMR_OKAY;
+  }
+
+  int8_t* selection = NULL;
+  CMR_CALL( CMRallocStackArray(cmr, &selection, matrix->numRows) );
+  int* columnSum = NULL;
+  CMR_CALL( CMRallocStackArray(cmr, &columnSum, matrix->numColumns) );
+  for (size_t column = 0; column < matrix->numColumns; ++column)
+    columnSum[column] = 0;
+
+  clock_t stopClock = clock() + ((clock_t)(CLOCKS_PER_SEC * timeLimit));
+
+  int result = testPartitionSubset(cmr, matrix, selection, 0, columnSum, stopClock);
+  if (result < 0)
+    error = CMR_ERROR_TIMEOUT;
+  else
+    *pisTotallyUnimodular = (result > 0);
+
+  CMR_CALL( CMRfreeStackArray(cmr, &columnSum) );
+  CMR_CALL( CMRfreeStackArray(cmr, &selection) );
+
+  return error;
+}
+
 CMR_ERROR CMRtestTotalUnimodularity(CMR* cmr, CMR_CHRMAT* matrix, bool* pisTotallyUnimodular, CMR_DEC** pdec,
   CMR_SUBMAT** psubmatrix, CMR_TU_PARAMETERS* params, CMR_TU_STATISTICS* stats, double timeLimit)
 {
@@ -128,17 +286,34 @@ CMR_ERROR CMRtestTotalUnimodularity(CMR* cmr, CMR_CHRMAT* matrix, bool* pisTotal
     return CMR_OKAY;
   }
 
-  // TODO: run regularity check with ternary = true.
 
   double remainingTime = timeLimit - ((clock() - totalClock) * 1.0 / CLOCKS_PER_SEC);
-  CMR_CALL( CMRtestRegular(cmr, matrix, false, pisTotallyUnimodular, pdec, NULL, &params->regular,
-    stats ? &stats->regular : NULL, remainingTime) );
 
-  if (!*pisTotallyUnimodular && psubmatrix)
+  if (params->algorithm == CMR_TU_ALGORITHM_DECOMPOSITION)
   {
-    assert(!*psubmatrix);
-    remainingTime = timeLimit - (clock() - totalClock) * 1.0 / CLOCKS_PER_SEC;
-    CMR_CALL( CMRtestHereditaryPropertySimple(cmr, matrix, tuTest, stats, psubmatrix, remainingTime) );
+
+    // TODO: run regularity check with ternary = true.
+    CMR_CALL( CMRtestRegular(cmr, matrix, false, pisTotallyUnimodular, pdec, NULL, &params->regular,
+      stats ? &stats->regular : NULL, remainingTime) );
+
+    if (!*pisTotallyUnimodular && psubmatrix)
+    {
+      assert(!*psubmatrix);
+      remainingTime = timeLimit - (clock() - totalClock) * 1.0 / CLOCKS_PER_SEC;
+      CMR_CALL( CMRtestHereditaryPropertySimple(cmr, matrix, tuTest, stats, psubmatrix, remainingTime) );
+    }
+  }
+  else if (params->algorithm == CMR_TU_ALGORITHM_SUBMATRIX)
+  {
+    assert(!"Not implemented");
+  }
+  else if (params->algorithm == CMR_TU_ALGORITHM_PARTITION)
+  {
+    CMR_CALL( testPartition(cmr, matrix, pisTotallyUnimodular, remainingTime) );
+  }
+  else
+  {
+    return CMR_ERROR_INVALID;
   }
 
   if (stats)
