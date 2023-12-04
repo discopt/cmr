@@ -293,10 +293,10 @@ CMR_ERROR genMatrixSeriesParallel(
       }
     }
 
-    fprintf(stderr, "Generated a %ldx%ld matrix with %ld nonzeros.\n", numTotalRows, numTotalColumns, numTotalNonzeros);
-    fprintf(stderr, "It contains a %ldx%ld base matrix with %ld nonzeros, 1-entries generated with probability %g.\n",
+    fprintf(stderr, "Generated a %zux%zu matrix with %zu nonzeros.\n", numTotalRows, numTotalColumns, numTotalNonzeros);
+    fprintf(stderr, "It contains a %zux%zu base matrix with %zu nonzeros, 1-entries generated with probability %g.\n",
       numBaseRows, numBaseColumns, numBaseNonzeros, probability);
-    fprintf(stderr, "Series-parallel operations: %ldx%ld zero, %ldx%ld unit, %ldx%ld copied\n", numZeroRows,
+    fprintf(stderr, "Series-parallel operations: %zux%zu zero, %zux%zu unit, %zux%zu copied\n", numZeroRows,
       numZeroColumns, numUnitRows, numUnitColumns, numCopiedRows, numCopiedColumns);
     if (randomize)
       fputs("Random row and column permutations were applied.\n", stderr);
@@ -376,12 +376,12 @@ CMR_ERROR genMatrixSeriesParallel(
     {
       /* Print matrix. */
 
-      printf("%ld %ld %ld\n\n", numTotalRows, numTotalColumns, numTotalNonzeros);
+      printf("%zu %zu %zu\n\n", numTotalRows, numTotalColumns, numTotalNonzeros);
       for (size_t row = 0; row < numTotalRows; ++row)
       {
         for (ListNonzero* nz = rowHeads[row].right; nz->column != SIZE_MAX; nz = nz->right)
         {
-          printf("%ld %ld %d\n", rowPermutation[nz->row]+1, columnPermutation[nz->column]+1, nz->value);
+          printf("%zu %zu %d\n", rowPermutation[nz->row]+1, columnPermutation[nz->column]+1, nz->value);
         }
       }
     }
@@ -554,7 +554,7 @@ int main(int argc, char** argv)
     }
     else
     {
-      fprintf(stderr, "Error: more than two size indicators specified: %ld %ld %s\n\n", numBaseRows, numBaseColumns,
+      fprintf(stderr, "Error: more than two size indicators specified: %zu %zu %s\n\n", numBaseRows, numBaseColumns,
         argv[a]);
       return printUsage(argv[0]);
     }

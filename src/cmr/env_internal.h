@@ -5,7 +5,7 @@
 #include <stdbool.h>
 #include <stdarg.h>
 
-#define CMR_UNUSED(x) (void)(x)
+#include <cmr/env.h>
 
 #if defined(CMR_DEBUG)
 
@@ -133,7 +133,8 @@ void CMRassertStackConsistency(
   CMR* cmr  /**< \ref CMR environment. */
 )
 {
-
+  CMR_UNUSED(cmr);
+  assert(cmr);
 }
 
 #endif /* !NDEBUG */

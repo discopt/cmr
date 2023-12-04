@@ -37,7 +37,7 @@ CMR_ERROR CMRstatsComplementTotalUnimodularityPrint(FILE* stream, CMR_CTU_STATIS
   snprintf(subPrefix, 256, "%stu ", prefix);
   CMR_CALL( CMRstatsTotalUnimodularityPrint(stream, &stats->tu, subPrefix) );
 
-  fprintf(stream, "%stotal: %ld in %f seconds\n", prefix, stats->totalCount,
+  fprintf(stream, "%stotal: %ld in %f seconds\n", prefix, (unsigned long) stats->totalCount,
     stats->totalTime);
 
   return CMR_OKAY;
