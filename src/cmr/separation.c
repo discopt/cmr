@@ -36,6 +36,8 @@ CMR_ERROR initialize(
   CMR_SEPA* separation  /**< Already created separation. */
 )
 {
+  CMR_UNUSED(cmr);
+
   assert(cmr);
   assert(separation);
 

@@ -21,6 +21,8 @@
 
 CMR_ERROR CMRsort(CMR* cmr, size_t length, void* array, size_t elementSize, int (*compare)(const void*, const void*))
 {
+  CMR_UNUSED(cmr);
+
   assert(cmr);
 
   qsort(array, length, elementSize, compare);

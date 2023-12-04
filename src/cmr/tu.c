@@ -61,13 +61,15 @@ CMR_ERROR tuTest(
   void* data,                 /**< Additional data (must be \c NULL). */
   bool* pisTotallyUnimodular, /**< Pointer for storing whether \p matrix is totally unimodular. */
   CMR_SUBMAT** psubmatrix,    /**< Pointer for storing a proper non-totally unimodular submatrix of \p matrix. */
-  double timeLimit                /**< Time limit to impose. */
+  double timeLimit            /**< Time limit to impose. */
 )
 {
   assert(cmr);
   assert(matrix);
   assert(pisTotallyUnimodular);
   assert(!psubmatrix || !*psubmatrix);
+
+  CMR_UNUSED(psubmatrix); /* TODO: Make use of submatrices. */
 
   CMR_TU_STATISTICS* stats = (CMR_TU_STATISTICS*) data;
 

@@ -1824,6 +1824,8 @@ CMR_ERROR CMRlistmatGMPInsert(CMR* cmr, ListMatGMP* listmatrix, size_t row, size
 
 CMR_ERROR CMRlistmat8Delete(CMR* cmr, ListMat8* listmatrix, ListMat8Nonzero* nz)
 {
+  CMR_UNUSED(cmr);
+
   assert(cmr);
   assert(listmatrix);
   assert(nz);
@@ -1849,6 +1851,8 @@ CMR_ERROR CMRlistmat8Delete(CMR* cmr, ListMat8* listmatrix, ListMat8Nonzero* nz)
 
 CMR_ERROR CMRlistmat64Delete(CMR* cmr, ListMat64* listmatrix, ListMat64Nonzero* nz)
 {
+  CMR_UNUSED(cmr);
+
   assert(cmr);
   assert(listmatrix);
   assert(nz);
@@ -1875,6 +1879,8 @@ CMR_ERROR CMRlistmat64Delete(CMR* cmr, ListMat64* listmatrix, ListMat64Nonzero* 
 
 CMR_ERROR CMRlistmatGMPDelete(CMR* cmr, ListMatGMP* listmatrix, ListMatGMPNonzero* nz)
 {
+  CMR_UNUSED(cmr);
+
   assert(cmr);
   assert(listmatrix);
   assert(nz);

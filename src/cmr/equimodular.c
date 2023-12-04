@@ -48,7 +48,7 @@ CMR_ERROR CMRstatsEquimodularityPrint(FILE* stream, CMR_EQUIMODULAR_STATISTICS* 
   snprintf(subPrefix, 256, "%stu ", prefix);
   CMR_CALL( CMRstatsTotalUnimodularityPrint(stream, &stats->tu, subPrefix) );
 
-  fprintf(stream, "%stotal: %ld in %f seconds\n", prefix, stats->totalCount, stats->totalTime);
+  fprintf(stream, "%stotal: %ld in %f seconds\n", prefix, (unsigned long) stats->totalCount, stats->totalTime);
 
   return CMR_OKAY;
 }

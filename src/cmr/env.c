@@ -93,6 +93,7 @@ CMR_ERROR _CMRallocBlock(CMR* cmr, void** ptr, size_t size)
 
 CMR_ERROR _CMRfreeBlock(CMR* cmr, void** ptr, size_t size)
 {
+  CMR_UNUSED(cmr);
   CMR_UNUSED(size);
 
   assert(cmr);

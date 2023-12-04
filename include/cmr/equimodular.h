@@ -39,7 +39,7 @@ CMR_ERROR CMRparamsEquimodularityInit(
 
 typedef struct
 {
-  size_t totalCount;      /**< Total number of invocations. */
+  uint32_t totalCount;      /**< Total number of invocations. */
   double totalTime;       /**< Total time of all invocations. */
   double linalgTime;      /**< Time spent on linear algebra. */
   CMR_TU_STATISTICS tu;   /**< Camion signing. */
