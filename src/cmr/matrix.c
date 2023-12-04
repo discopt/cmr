@@ -151,6 +151,8 @@ CMR_ERROR CMRsubmatZoomSubmat(CMR* cmr, CMR_SUBMAT* reference, CMR_SUBMAT* input
 
 CMR_ERROR CMRsubmatWriteToStream(CMR* cmr, CMR_SUBMAT* submatrix, size_t numRows, size_t numColumns, FILE* stream)
 {
+  CMR_UNUSED(cmr);
+
   assert(cmr);
   assert(submatrix);
   assert(stream);
@@ -200,7 +202,7 @@ CMR_ERROR CMRsubmatReadFromStream(CMR* cmr, CMR_SUBMAT ** psubmatrix, size_t* pn
   size_t numOriginalColumns;
   size_t numRows;
   size_t numColumns;
-  if (fscanf(stream, "%zu %zu %zu %lu", &numOriginalRows, &numOriginalColumns, &numRows, &numColumns) != 4)
+  if (fscanf(stream, "%zu %zu %zu %zu", &numOriginalRows, &numOriginalColumns, &numRows, &numColumns) != 4)
     return CMR_ERROR_INPUT;
 
   if (numRows > numOriginalRows || numColumns > numOriginalColumns)
@@ -222,7 +224,7 @@ CMR_ERROR CMRsubmatReadFromStream(CMR* cmr, CMR_SUBMAT ** psubmatrix, size_t* pn
   for (size_t c = 0; c < numColumns; ++c)
   {
     size_t column;
-    if (fscanf(stream, "%lu", &column) != 1)
+    if (fscanf(stream, "%zu", &column) != 1)
       return CMR_ERROR_INPUT;
 
     if (column == 0 || column > numColumns)
@@ -818,6 +820,8 @@ CMR_ERROR CMRchrmatPermute(CMR* cmr, CMR_CHRMAT* matrix, size_t* rows, size_t* c
 
 CMR_ERROR CMRdblmatPrintSparse(CMR* cmr, CMR_DBLMAT* matrix, FILE* stream)
 {
+  CMR_UNUSED(cmr);
+
   assert(cmr);
   assert(matrix);
   assert(stream);
@@ -836,6 +840,8 @@ CMR_ERROR CMRdblmatPrintSparse(CMR* cmr, CMR_DBLMAT* matrix, FILE* stream)
 
 CMR_ERROR CMRintmatPrintSparse(CMR* cmr, CMR_INTMAT* matrix, FILE* stream)
 {
+  CMR_UNUSED(cmr);
+
   assert(cmr);
   assert(matrix);
   assert(stream);
@@ -854,6 +860,8 @@ CMR_ERROR CMRintmatPrintSparse(CMR* cmr, CMR_INTMAT* matrix, FILE* stream)
 
 CMR_ERROR CMRchrmatPrintSparse(CMR* cmr, CMR_CHRMAT* matrix, FILE* stream)
 {
+  CMR_UNUSED(cmr);
+
   assert(cmr);
   assert(matrix);
   assert(stream);
@@ -872,6 +880,8 @@ CMR_ERROR CMRchrmatPrintSparse(CMR* cmr, CMR_CHRMAT* matrix, FILE* stream)
 
 CMR_ERROR CMRdblmatPrintDense(CMR* cmr, CMR_DBLMAT* matrix, FILE* stream, char zeroChar, bool header)
 {
+  CMR_UNUSED(cmr);
+
   assert(cmr);
   assert(matrix);
   assert(stream);
@@ -881,7 +891,7 @@ CMR_ERROR CMRdblmatPrintDense(CMR* cmr, CMR_DBLMAT* matrix, FILE* stream, char z
   {
     fputs("   ", stream);
     for (size_t column = 0; column < matrix->numColumns; ++column)
-      fprintf(stream, "%lu ", (column+1) % 10);
+      fprintf(stream, "%zu ", (column+1) % 10);
     fputs("\n  ", stream);
     for (size_t column = 0; column < matrix->numColumns; ++column)
       fputs("--", stream);
@@ -890,7 +900,7 @@ CMR_ERROR CMRdblmatPrintDense(CMR* cmr, CMR_DBLMAT* matrix, FILE* stream, char z
   for (size_t row = 0; row < matrix->numRows; ++row)
   {
     if (header)
-      fprintf(stream, "%lu| ", (row+1) % 10);
+      fprintf(stream, "%zu| ", (row+1) % 10);
     size_t first = matrix->rowSlice[row];
     size_t beyond = matrix->rowSlice[row + 1];
     size_t column = 0;
@@ -912,6 +922,8 @@ CMR_ERROR CMRdblmatPrintDense(CMR* cmr, CMR_DBLMAT* matrix, FILE* stream, char z
 
 CMR_ERROR CMRintmatPrintDense(CMR* cmr, CMR_INTMAT* matrix, FILE* stream, char zeroChar, bool header)
 {
+  CMR_UNUSED(cmr);
+
   assert(cmr);
   assert(matrix);
   assert(stream);
@@ -921,7 +933,7 @@ CMR_ERROR CMRintmatPrintDense(CMR* cmr, CMR_INTMAT* matrix, FILE* stream, char z
   {
     fputs("   ", stream);
     for (size_t column = 0; column < matrix->numColumns; ++column)
-      fprintf(stream, "%lu ", (column+1) % 10);
+      fprintf(stream, "%zu ", (column+1) % 10);
     fputs("\n  ", stream);
     for (size_t column = 0; column < matrix->numColumns; ++column)
       fputs("--", stream);
@@ -930,7 +942,7 @@ CMR_ERROR CMRintmatPrintDense(CMR* cmr, CMR_INTMAT* matrix, FILE* stream, char z
   for (size_t row = 0; row < matrix->numRows; ++row)
   {
     if (header)
-      fprintf(stream, "%lu| ", (row+1) % 10);
+      fprintf(stream, "%zu| ", (row+1) % 10);
     size_t first = matrix->rowSlice[row];
     size_t beyond = matrix->rowSlice[row + 1];
     size_t column = 0;
@@ -952,6 +964,8 @@ CMR_ERROR CMRintmatPrintDense(CMR* cmr, CMR_INTMAT* matrix, FILE* stream, char z
 
 CMR_ERROR CMRchrmatPrintDense(CMR* cmr, CMR_CHRMAT* matrix, FILE* stream, char zeroChar, bool header)
 {
+  CMR_UNUSED(cmr);
+
   assert(cmr);
   assert(matrix);
   assert(stream);
@@ -961,7 +975,7 @@ CMR_ERROR CMRchrmatPrintDense(CMR* cmr, CMR_CHRMAT* matrix, FILE* stream, char z
   {
     fputs("   ", stream);
     for (size_t column = 0; column < matrix->numColumns; ++column)
-      fprintf(stream, "%lu ", (column+1) % 10);
+      fprintf(stream, "%zu ", (column+1) % 10);
     fputs("\n  ", stream);
     for (size_t column = 0; column < matrix->numColumns; ++column)
       fputs("--", stream);
@@ -970,7 +984,7 @@ CMR_ERROR CMRchrmatPrintDense(CMR* cmr, CMR_CHRMAT* matrix, FILE* stream, char z
   for (size_t row = 0; row < matrix->numRows; ++row)
   {
     if (header)
-      fprintf(stream, "%lu| ", (row+1) % 10);
+      fprintf(stream, "%zu| ", (row+1) % 10);
     size_t first = matrix->rowSlice[row];
     size_t beyond = matrix->rowSlice[row + 1];
     size_t column = 0;

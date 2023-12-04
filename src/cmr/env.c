@@ -81,6 +81,8 @@ CMR_ERROR CMRfreeEnvironment(CMR** pcmr)
 
 CMR_ERROR _CMRallocBlock(CMR* cmr, void** ptr, size_t size)
 {
+  CMR_UNUSED(cmr);
+
   assert(cmr);
   assert(ptr);
   assert(*ptr == NULL);
@@ -104,6 +106,8 @@ CMR_ERROR _CMRfreeBlock(CMR* cmr, void** ptr, size_t size)
 
 CMR_ERROR _CMRallocBlockArray(CMR* cmr, void** ptr, size_t size, size_t length)
 {
+  CMR_UNUSED(cmr);
+
   assert(cmr);
   assert(ptr);
   assert(*ptr == NULL);
@@ -115,6 +119,8 @@ CMR_ERROR _CMRallocBlockArray(CMR* cmr, void** ptr, size_t size, size_t length)
 
 CMR_ERROR _CMRreallocBlockArray(CMR* cmr, void** ptr, size_t size, size_t length)
 {
+  CMR_UNUSED(cmr);
+
   assert(cmr);
   assert(ptr);
   *ptr = realloc(*ptr, size * length);
@@ -138,6 +144,8 @@ CMR_ERROR _CMRduplicateBlockArray(CMR* cmr, void** ptr, size_t size, size_t leng
 
 CMR_ERROR _CMRfreeBlockArray(CMR* cmr, void** ptr)
 {
+  CMR_UNUSED(cmr);
+
   assert(cmr);
   assert(ptr);
   free(*ptr);
@@ -182,11 +190,13 @@ CMR_ERROR _CMRfreeStack(
 
 void CMRassertStackConsistency(CMR* cmr)
 {
-
+  CMR_UNUSED(cmr);
 }
 
 size_t CMRgetStackUsage(CMR* cmr)
 {
+  CMR_UNUSED(cmr);
+
   return 0;
 }
 
