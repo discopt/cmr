@@ -23,7 +23,7 @@ extern "C" {
 
 typedef struct
 {
-  size_t totalCount;    /**< Total number of invocations. */
+  uint32_t totalCount;    /**< Total number of invocations. */
   double totalTime;     /**< Total time of all invocations. */
   CMR_TU_STATISTICS tu; /**< Total unimodularity test. */
 } CMR_CTU_STATISTICS;

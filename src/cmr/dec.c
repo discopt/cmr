@@ -1193,7 +1193,7 @@ char* CMRdecConsistency(CMR_DEC* dec, bool recurse)
       {
         size_t length = strlen(message);
         char* newMessage = (char*) malloc( (length + 16) * sizeof(char));
-        sprintf(newMessage, "child %ld: %s", c, message);
+        sprintf(newMessage, "child %zu: %s", c, message);
         free(message);
         return newMessage;
       }

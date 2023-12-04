@@ -19,6 +19,10 @@ extern "C" {
 #include <stdlib.h>
 #include <stdio.h>
 
+/* Macro for intended non-use of variables. */
+#define CMR_UNUSED(x) (void)(x)
+
+
 /**
  * \brief Type for return codes of library functions.
  **/

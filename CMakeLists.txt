@@ -30,7 +30,7 @@ endif()
 if (MSVC)
   add_compile_options(/W4)
 else()
-  add_compile_options(-Wall -Wextra -Wpedantic)
+  add_compile_options(-Wall -Wextra -Wunused)
 endif()
 
 find_package(GMP)
@@ -82,7 +82,7 @@ add_library(cmr
 )
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-  target_compile_options(cmr PRIVATE -Wall -Wextra)
+  target_compile_options(cmr PRIVATE -Wall -Wextra -pedantic)
 endif()
 
 # Target for the cmr-balanced executable.
