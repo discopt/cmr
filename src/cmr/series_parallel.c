@@ -60,10 +60,10 @@ CMR_ERROR CMRstatsSeriesParallelPrint(FILE* stream, CMR_SP_STATISTICS* stats, co
     fprintf(stream, "Series-parallel recognition:\n");
     prefix = "  ";
   }
-  fprintf(stream, "%sreduction calls: %ld in %f seconds\n", prefix, stats->reduceCount, stats->reduceTime);
-  fprintf(stream, "%swheel searches: %ld in %f seconds\n", prefix, stats->wheelCount, stats->wheelTime);
-  fprintf(stream, "%sternary certificates: %ld in %f seconds\n", prefix, stats->nonbinaryCount, stats->nonbinaryTime);
-  fprintf(stream, "%stotal: %ld in %f seconds\n", prefix, stats->totalCount, stats->totalTime);
+  fprintf(stream, "%sreduction calls: %ld in %f seconds\n", prefix, (unsigned long)stats->reduceCount, stats->reduceTime);
+  fprintf(stream, "%swheel searches: %ld in %f seconds\n", prefix, (unsigned long)stats->wheelCount, stats->wheelTime);
+  fprintf(stream, "%sternary certificates: %ld in %f seconds\n", prefix, (unsigned long)stats->nonbinaryCount, stats->nonbinaryTime);
+  fprintf(stream, "%stotal: %lu in %f seconds\n", prefix, (unsigned long)stats->totalCount, stats->totalTime);
 
   return CMR_OKAY;
 }
@@ -180,6 +180,8 @@ CMR_ERROR calcNonzeroCountHashFromMatrix(
   long long* hashVector     /**< Hash vector. */
 )
 {
+  CMR_UNUSED(cmr);
+
   assert(cmr);
   assert(matrix);
   assert(rowData);
@@ -223,6 +225,8 @@ CMR_ERROR calcBinaryHashFromListMatrix(
   long long* hashVector     /**< Hash vector. */
 )
 {
+  CMR_UNUSED(cmr);
+
   assert(cmr);
   assert(listmatrix);
   assert(rowData);
@@ -737,7 +741,6 @@ CMR_ERROR extractNonbinarySubmatrix(
   ElementData* columnData,            /**< Column data. */
   CMR_LISTHASHTABLE* rowHashtable,    /**< Row hashtable. */
   CMR_LISTHASHTABLE* columnHashtable, /**< Column hashtable. */
-  long long* entryToHash,             /**< Pre-computed hash values of vector entries. */
   CMR_ELEMENT* queue,                 /**< Queue. */
   size_t* pqueueStart,                /**< Pointer to start of queue. */
   size_t* pqueueEnd,                  /**< Pointer to end of queue. */
@@ -751,7 +754,6 @@ CMR_ERROR extractNonbinarySubmatrix(
   assert(columnData);
   assert(rowHashtable);
   assert(columnHashtable);
-  assert(entryToHash);
   assert(queue);
   assert(pviolatorSubmatrix);
 
@@ -893,6 +895,8 @@ CMR_ERROR breadthFirstSearch(
   size_t* pnumEdges                   /**< Pointer for storing the number of traversed edges. */
 )
 {
+  CMR_UNUSED(cmr);
+
   assert(cmr);
   assert(rowData);
   assert(columnData);
@@ -1827,7 +1831,7 @@ CMR_ERROR decomposeTernarySeriesParallel(
 
       CMR_SUBMAT* violatorSubmatrix;
       CMR_CALL( extractNonbinarySubmatrix(cmr, listmatrix, rowData, columnData, rowHashtable, columnHashtable,
-        hashVector, queue, &queueStart, &queueEnd, queueMemory, &violatorSubmatrix) );
+        queue, &queueStart, &queueEnd, queueMemory, &violatorSubmatrix) );
       if (violatorSubmatrix && pviolatorSubmatrix)
         *pviolatorSubmatrix = violatorSubmatrix;
 

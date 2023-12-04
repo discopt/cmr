@@ -132,7 +132,7 @@ CMR_ERROR recognizeNetwork(
             u = v;
             v = temp;
           }
-          fprintf(outputGraphFile, "%d %d c%ld\n", u, v, column+1);
+          fprintf(outputGraphFile, "%d %d c%zu\n", u, v, column+1);
         }
         for (size_t row = 0; row < matrix->numRows; ++row)
         {
@@ -145,7 +145,7 @@ CMR_ERROR recognizeNetwork(
             u = v;
             v = temp;
           }
-          fprintf(outputGraphFile, "%d %d r%ld\n", u, v, row+1);
+          fprintf(outputGraphFile, "%d %d r%zu\n", u, v, row+1);
         }
       }
       else
@@ -161,7 +161,7 @@ CMR_ERROR recognizeNetwork(
             u = v;
             v = temp;
           }
-          fprintf(outputGraphFile, "%d %d r%ld\n", u, v, row+1);
+          fprintf(outputGraphFile, "%d %d r%zu\n", u, v, row+1);
         }
         for (size_t column = 0; column < matrix->numColumns; ++column)
         {
@@ -174,7 +174,7 @@ CMR_ERROR recognizeNetwork(
             u = v;
             v = temp;
           }
-          fprintf(outputGraphFile, "%d %d c%ld\n", u, v, column+1);
+          fprintf(outputGraphFile, "%d %d c%zu\n", u, v, column+1);
         }
       }
       

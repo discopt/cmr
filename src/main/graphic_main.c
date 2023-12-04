@@ -75,7 +75,7 @@ CMR_ERROR recognizeGraphic(
     assert(mat->numRows == 1);
     assert(mat->numColumns == 1);
     assert(mat->numNonzeros == 1);
-    fprintf(stderr, "Matrix is NOT %sgraphic since it is not binary: entry at row %ld, column %ld is %d.\n",
+    fprintf(stderr, "Matrix is NOT %sgraphic since it is not binary: entry at row %zu, column %zu is %d.\n",
       cographic ? "co" : "", submatrix->rows[0] + 1, submatrix->columns[0] + 1, mat->entryValues[0]);
 
     CMR_CALL( CMRchrmatFree(cmr, &mat) );
@@ -132,7 +132,7 @@ CMR_ERROR recognizeGraphic(
             u = v;
             v = temp;
           }
-          fprintf(outputGraphFile, "%d %d c%ld\n", u, v, column+1);
+          fprintf(outputGraphFile, "%d %d c%zu\n", u, v, column+1);
         }
         for (size_t row = 0; row < matrix->numRows; ++row)
         {

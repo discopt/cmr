@@ -80,9 +80,9 @@ CMR_ERROR testComplementTotalUnimodularity(
         outputOperationsToFile ? outputOperationsFileName : "stdout", outputOperationsToFile ? ">" : "");
 
       if (complementRow < SIZE_MAX)
-        fprintf(outputOperationsFile, "Complement row %lu\n", complementRow + 1);
+        fprintf(outputOperationsFile, "Complement row %zu\n", complementRow + 1);
       if (complementColumn < SIZE_MAX)
-        fprintf(outputOperationsFile, "Complement column %lu\n", complementColumn + 1);
+        fprintf(outputOperationsFile, "Complement column %zu\n", complementColumn + 1);
 
       if (outputOperationsFile)
         fclose(outputOperationsFile);
@@ -148,7 +148,7 @@ CMR_ERROR complementMatrix(
     CMR_CALL( CMRchrmatCreateFromSparseStream(cmr, inputMatrixFile, &matrix) );
   if (inputMatrixFile != stdin)
     fclose(inputMatrixFile);
-  fprintf(stderr, "Read %lux%lu matrix with %lu nonzeros.\n", matrix->numRows, matrix->numColumns,
+  fprintf(stderr, "Read %zux%zu matrix with %zu nonzeros.\n", matrix->numRows, matrix->numColumns,
     matrix->numNonzeros);
 
   /* Carry out complementing. */

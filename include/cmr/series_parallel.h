@@ -23,13 +23,13 @@ extern "C" {
 
 typedef struct
 {
-  size_t totalCount;      /**< Total number of invocations. */
+  uint32_t totalCount;      /**< Total number of invocations. */
   double totalTime;       /**< Total time of all invocations. */
-  size_t reduceCount;     /**< Number of calls to reduction algorithm. */
+  uint32_t reduceCount;     /**< Number of calls to reduction algorithm. */
   double reduceTime;      /**< Time of reduction algorithm calls. */
-  size_t wheelCount;      /**< Number of wheel matrix searches. */
+  uint32_t wheelCount;      /**< Number of wheel matrix searches. */
   double wheelTime;       /**< Time of wheel matrix searches. */
-  size_t nonbinaryCount;  /**< Number of searches for \f$ M_2 \f$ matrix. */
+  uint32_t nonbinaryCount;  /**< Number of searches for \f$ M_2 \f$ matrix. */
   double nonbinaryTime;   /**< Time of searches for \f$ M_2 \f$ matrix. */
 } CMR_SP_STATISTICS;
 
