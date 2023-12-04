@@ -256,6 +256,7 @@ bool CMRgraphNodesValid(
 )
 {
   CMR_UNUSED(graph);
+
   assert(graph);
 
   return v >= 0;
@@ -310,6 +311,7 @@ bool CMRgraphIncValid(
 )
 {
   CMR_UNUSED(graph);
+
   assert(graph);
 
   return i >= 0;
@@ -348,6 +350,7 @@ CMR_GRAPH_EDGE CMRgraphIncEdge(
 )
 {
   CMR_UNUSED(graph);
+
   assert(graph);
 
   return i/2;
@@ -443,6 +446,8 @@ bool CMRgraphEdgesValid(
   CMR_GRAPH_ITER i   /**< Iterator for edges incident to a node. */
 )
 {
+  CMR_UNUSED(graph);
+
   assert(graph);
 
   return i >= 0;
@@ -458,6 +463,8 @@ CMR_GRAPH_EDGE CMRgraphEdgesEdge(
   CMR_GRAPH_ITER i   /**< Iterator for edges. */
 )
 {
+  CMR_UNUSED(graph);
+
   assert(graph);
 
   return i/2;
