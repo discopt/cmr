@@ -1192,7 +1192,7 @@ CMR_ERROR CMRintmatCreateFromSparseStream(CMR* cmr, FILE* stream, CMR_INTMAT** p
   CMRdbgMsg(2, "Creating int matrix.\n");
   CMR_CALL( CMRintmatCreate(cmr, presult, numRows, numColumns, numNonzeros) );
   CMR_INTMAT* result = *presult;
-  size_t previousRow = SIZE_MAX;
+  size_t nextRow = 0;
   size_t previousColumn = SIZE_MAX;
   size_t* pentryColumn = result->entryColumns;
   int* pentryValue = result->entryValues;
@@ -1201,28 +1201,22 @@ CMR_ERROR CMRintmatCreateFromSparseStream(CMR* cmr, FILE* stream, CMR_INTMAT** p
     CMRdbgMsg(4, "Copying entry %zu.\n", entry);
     size_t row = nonzeros[entry].row;
     size_t column = nonzeros[entry].column;
-    if (row == previousRow && column == previousColumn)
+    if (row + 1 == nextRow && column == previousColumn)
     {
       CMRraiseErrorMessage(cmr, "Duplicate nonzero at row %zu and column %zu.", row, column);
       CMR_CALL( CMRfreeStackArray(cmr, &nonzeros) );
       CMR_CALL( CMRintmatFree(cmr, presult) );
       return CMR_ERROR_INPUT;
     }
-    while (previousRow < row || previousRow == SIZE_MAX)
-    {
-      ++previousRow;
-      result->rowSlice[previousRow] = entry;
-    }
+    for (; nextRow <= row; ++nextRow)
+      result->rowSlice[nextRow] = entry;
     *pentryColumn++ = nonzeros[entry].column;
     *pentryValue++ = nonzeros[entry].value;
     previousColumn = column;
   }
-  CMRdbgMsg(2, "Adding %zu empty rows.\n", numRows - previousRow);
-  while (previousRow < numRows || previousRow == SIZE_MAX)
-  {
-    ++previousRow;
-    result->rowSlice[previousRow] = numNonzeros;
-  }
+  CMRdbgMsg(2, "nextRow = %zu / %zu.\n", nextRow, numRows);
+  for (; nextRow <= numRows; ++nextRow)
+    result->rowSlice[nextRow] = numNonzeros;
 
   CMRdbgMsg(2, "Freeing stack memory.\n");
   CMR_CALL( CMRfreeStackArray(cmr, &nonzeros) );
