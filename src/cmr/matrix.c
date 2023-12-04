@@ -1,4 +1,4 @@
-// #define CMR_DEBUG /* Uncomment to debug this file. */
+#define CMR_DEBUG /* Uncomment to debug this file. */
 
 #include <cmr/matrix.h>
 
@@ -1153,6 +1153,7 @@ CMR_ERROR CMRintmatCreateFromSparseStream(CMR* cmr, FILE* stream, CMR_INTMAT** p
   /* Read all nonzeros. */
 
   IntNonzero* nonzeros = NULL;
+  CMRdbgMsg(2, "Allocating stack memory for %zu nonzeros.\n", numNonzeros);
   CMR_CALL( CMRallocStackArray(cmr, &nonzeros, numNonzeros) );
   size_t entry = 0;
   for (size_t i = 0; i < numNonzeros; ++i)
@@ -1161,6 +1162,10 @@ CMR_ERROR CMRintmatCreateFromSparseStream(CMR* cmr, FILE* stream, CMR_INTMAT** p
     size_t column;
     int value;
     numRead = fscanf(stream, "%zu %zu %d", &row, &column, &value);
+    CMRdbgMsg(4, "Read %d arguments\n", numRead);
+    CMRdbgMsg(4, "row = %zu\n", row);
+    CMRdbgMsg(4, "col = %zu\n", column);
+    CMRdbgMsg(4, "val = %d\n", value);
     if (numRead < 3 || row == 0 || column == 0 || row > numRows || column > numColumns)
     {
       CMR_CALL( CMRfreeStackArray(cmr, &nonzeros) );
@@ -1181,8 +1186,10 @@ CMR_ERROR CMRintmatCreateFromSparseStream(CMR* cmr, FILE* stream, CMR_INTMAT** p
   numNonzeros = entry;
 
   /* We sort all nonzeros by row and then by column. */
+  CMRdbgMsg(2, "Sorting nonzeros.\n");
   CMR_CALL( CMRsort(cmr, numNonzeros, nonzeros, sizeof(DblNonzero), compareIntNonzeros) );
 
+  CMRdbgMsg(2, "Creating int matrix.\n");
   CMR_CALL( CMRintmatCreate(cmr, presult, numRows, numColumns, numNonzeros) );
   CMR_INTMAT* result = *presult;
   size_t previousRow = SIZE_MAX;
@@ -1191,6 +1198,7 @@ CMR_ERROR CMRintmatCreateFromSparseStream(CMR* cmr, FILE* stream, CMR_INTMAT** p
   int* pentryValue = result->entryValues;
   for (size_t entry = 0; entry < numNonzeros; ++entry)
   {
+    CMRdbgMsg(4, "Copying entry %zu.\n", entry);
     size_t row = nonzeros[entry].row;
     size_t column = nonzeros[entry].column;
     if (row == previousRow && column == previousColumn)
@@ -1209,13 +1217,17 @@ CMR_ERROR CMRintmatCreateFromSparseStream(CMR* cmr, FILE* stream, CMR_INTMAT** p
     *pentryValue++ = nonzeros[entry].value;
     previousColumn = column;
   }
+  CMRdbgMsg(2, "Adding %zu empty rows.\n", numRows - previousRow);
   while (previousRow < numRows || previousRow == SIZE_MAX)
   {
     ++previousRow;
     result->rowSlice[previousRow] = numNonzeros;
   }
 
+  CMRdbgMsg(2, "Freeing stack memory.\n");
   CMR_CALL( CMRfreeStackArray(cmr, &nonzeros) );
+
+  CMRdbgMsg(2, "Returning.\n");
 
   return CMR_OKAY;
 }

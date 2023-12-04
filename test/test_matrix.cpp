@@ -119,7 +119,7 @@ std::cout << "O" << std::endl;
 std::cout << "P" << std::endl;
     CMR_INTMAT* dense = NULL;
     ASSERT_CMR_CALL( CMRintmatCreateFromDenseStream(cmr, stream, &dense) );
-std::cout << "R" << std::endl;
+std::cout << "Q" << std::endl;
     fclose(stream);
 
     const char* sparseInput = "3 3 5 "
@@ -128,14 +128,15 @@ std::cout << "R" << std::endl;
       "2 3 1 "
       "3 1 -1 "
       "3 3 2 ";
-std::cout << "S" << std::endl;
+std::cout << "R" << std::endl;
     stream = fmemopen((char*) sparseInput, strlen(sparseInput), "r");
     CMR_INTMAT* sparse = NULL;
-std::cout << "T" << std::endl;
+std::cout << "S: stream = " << stream << std::endl;
     ASSERT_CMR_CALL( CMRintmatCreateFromSparseStream(cmr, stream, &sparse) );
-std::cout << "U" << std::endl;
+std::cout << "T: stream = " << stream << std::endl;
     fclose(stream);
 
+std::cout << "U" << std::endl;
     ASSERT_TRUE( CMRintmatCheckEqual(dense, sparse) );
 
 std::cout << "V" << std::endl;
