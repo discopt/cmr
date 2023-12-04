@@ -17,23 +17,32 @@ TEST(Matrix, Read)
       "0 0 0 "
       "0 0 0 "
       "0 0 0 ";
+std::cout << "denseInput = [" << denseInput << "]" << std::endl;
     FILE* stream = fmemopen((char*) denseInput, strlen(denseInput), "r");
+std::cout << stream << std::endl;
     CMR_DBLMAT* dense = NULL;
     ASSERT_CMR_CALL( CMRdblmatCreateFromDenseStream(cmr, stream, &dense) );
+std::cout << "dense = " << dense << std::endl;
     fclose(stream);
   
     const char* sparseInput = "3 3 0 ";
+std::cout << "sparseInput = [" << sparseInput << "]" << std::endl;
     stream = fmemopen((char*) sparseInput, strlen(sparseInput), "r");
+std::cout << "stream = " << stream << std::endl;
     CMR_DBLMAT* sparse = NULL;
     ASSERT_CMR_CALL( CMRdblmatCreateFromSparseStream(cmr, stream, &sparse) );
+std::cout << "sparse = " << sparse << std::endl;
     fclose(stream);
 
+std::cout << "Testing for equality." << std::endl;
     ASSERT_TRUE( CMRdblmatCheckEqual(dense, sparse) );
 
+std::cout << "Freeing." << std::endl;
     ASSERT_CMR_CALL( CMRdblmatFree(cmr, &dense) );
     ASSERT_CMR_CALL( CMRdblmatFree(cmr, &sparse) );
   }
 
+std::cout << "A" << std::endl;
   {
     /* Arbitrary matrix */
     const char* denseInput = "3 3 "
@@ -42,7 +51,9 @@ TEST(Matrix, Read)
       "-1 0 2 ";
     FILE* stream = fmemopen((char*) denseInput, strlen(denseInput), "r");
     CMR_DBLMAT* dense = NULL;
+std::cout << "B" << std::endl;
     ASSERT_CMR_CALL( CMRdblmatCreateFromDenseStream(cmr, stream, &dense) );
+std::cout << "C" << std::endl;
     fclose(stream);
 
     const char* sparseInput = "3 3 5 "
@@ -51,12 +62,16 @@ TEST(Matrix, Read)
       "2 3 1 "
       "3 1 -1 "
       "3 3 2 ";
+std::cout << "D" << std::endl;
     stream = fmemopen((char*) sparseInput, strlen(sparseInput), "r");
+std::cout << "E" << std::endl;
     CMR_DBLMAT* sparse = NULL;
     ASSERT_CMR_CALL( CMRdblmatCreateFromSparseStream(cmr, stream, &sparse) );
+std::cout << "F" << std::endl;
     fclose(stream);
 
     ASSERT_TRUE( CMRdblmatCheckEqual(dense, sparse) );
+std::cout << "G" << std::endl;
 
     ASSERT_CMR_CALL( CMRdblmatFree(cmr, &dense) );
     ASSERT_CMR_CALL( CMRdblmatFree(cmr, &sparse) );
@@ -69,18 +84,25 @@ TEST(Matrix, Read)
       "0 0 0 "
       "0 0 0 "
       "0 0 0 ";
+std::cout << "H" << std::endl;
     FILE* stream = fmemopen((char*) denseInput, strlen(denseInput), "r");
+std::cout << "I" << std::endl;
     CMR_INTMAT* dense = NULL;
     ASSERT_CMR_CALL( CMRintmatCreateFromDenseStream(cmr, stream, &dense) );
+std::cout << "J" << std::endl;
     fclose(stream);
   
     const char* sparseInput = "3 3 0 ";
+std::cout << "K" << std::endl;
     stream = fmemopen((char*) sparseInput, strlen(sparseInput), "r");
+std::cout << "L" << std::endl;
     CMR_INTMAT* sparse = NULL;
     ASSERT_CMR_CALL( CMRintmatCreateFromSparseStream(cmr, stream, &sparse) );
+std::cout << "M" << std::endl;
     fclose(stream);
 
     ASSERT_TRUE( CMRintmatCheckEqual(dense, sparse) );
+std::cout << "N" << std::endl;
 
     ASSERT_CMR_CALL( CMRintmatFree(cmr, &dense) );
     ASSERT_CMR_CALL( CMRintmatFree(cmr, &sparse) );
@@ -92,9 +114,12 @@ TEST(Matrix, Read)
       "1 0 0 "
       "0 1 1 "
       "-1 0 2 ";
+std::cout << "O" << std::endl;
     FILE* stream = fmemopen((char*) denseInput, strlen(denseInput), "r");
+std::cout << "P" << std::endl;
     CMR_INTMAT* dense = NULL;
     ASSERT_CMR_CALL( CMRintmatCreateFromDenseStream(cmr, stream, &dense) );
+std::cout << "R" << std::endl;
     fclose(stream);
 
     const char* sparseInput = "3 3 5 "
@@ -103,13 +128,17 @@ TEST(Matrix, Read)
       "2 3 1 "
       "3 1 -1 "
       "3 3 2 ";
+std::cout << "S" << std::endl;
     stream = fmemopen((char*) sparseInput, strlen(sparseInput), "r");
     CMR_INTMAT* sparse = NULL;
+std::cout << "T" << std::endl;
     ASSERT_CMR_CALL( CMRintmatCreateFromSparseStream(cmr, stream, &sparse) );
+std::cout << "U" << std::endl;
     fclose(stream);
 
     ASSERT_TRUE( CMRintmatCheckEqual(dense, sparse) );
 
+std::cout << "V" << std::endl;
     ASSERT_CMR_CALL( CMRintmatFree(cmr, &dense) );
     ASSERT_CMR_CALL( CMRintmatFree(cmr, &sparse) );
   }
@@ -121,18 +150,24 @@ TEST(Matrix, Read)
       "0 0 0 "
       "0 0 0 "
       "0 0 0 ";
+std::cout << "W" << std::endl;
     FILE* stream = fmemopen((char*) denseInput, strlen(denseInput), "r");
+std::cout << "X" << std::endl;
     CMR_CHRMAT* dense = NULL;
     ASSERT_CMR_CALL( CMRchrmatCreateFromDenseStream(cmr, stream, &dense) );
+std::cout << "Y" << std::endl;
     fclose(stream);
   
     const char* sparseInput = "3 3 0 ";
     stream = fmemopen((char*) sparseInput, strlen(sparseInput), "r");
+std::cout << "Z" << std::endl;
     CMR_CHRMAT* sparse = NULL;
     ASSERT_CMR_CALL( CMRchrmatCreateFromSparseStream(cmr, stream, &sparse) );
+std::cout << "A" << std::endl;
     fclose(stream);
 
     ASSERT_TRUE( CMRchrmatCheckEqual(dense, sparse) );
+std::cout << "B" << std::endl;
 
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &dense) );
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &sparse) );
@@ -144,9 +179,12 @@ TEST(Matrix, Read)
       "1 0 0 "
       "0 1 1 "
       "-1 0 2 ";
+std::cout << "C" << std::endl;
     FILE* stream = fmemopen((char*) denseInput, strlen(denseInput), "r");
+std::cout << "D" << std::endl;
     CMR_CHRMAT* dense = NULL;
     ASSERT_CMR_CALL( CMRchrmatCreateFromDenseStream(cmr, stream, &dense) );
+std::cout << "E" << std::endl;
     fclose(stream);
 
     const char* sparseInput = "3 3 5 "
@@ -155,18 +193,24 @@ TEST(Matrix, Read)
       "2 3 1 "
       "3 1 -1 "
       "3 3 2 ";
+std::cout << "F" << std::endl;
     stream = fmemopen((char*) sparseInput, strlen(sparseInput), "r");
+std::cout << "G" << std::endl;
     CMR_CHRMAT* sparse = NULL;
     ASSERT_CMR_CALL( CMRchrmatCreateFromSparseStream(cmr, stream, &sparse) );
+std::cout << "H" << std::endl;
     fclose(stream);
 
+std::cout << "I" << std::endl;
     ASSERT_TRUE( CMRchrmatCheckEqual(dense, sparse) );
 
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &dense) );
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &sparse) );
+std::cout << "J" << std::endl;
   }
 
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
+std::cout << "K" << std::endl;
 }
 
 TEST(Matrix, Transpose)
