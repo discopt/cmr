@@ -151,7 +151,7 @@ CMR_ERROR genMatrixGraphic(
     else
     {
       double generationTime = (clock() - startTime) * 1.0 / CLOCKS_PER_SEC;
-      fprintf(stderr, "Generated a %ldx%ld matrix with %ld nonzeros in %f seconds.\n", numRows, numColumns,
+      fprintf(stderr, "Generated a %zux%zu matrix with %zu nonzeros in %f seconds.\n", numRows, numColumns,
         matrix->numNonzeros, generationTime);
 
       /* Print matrix. */
