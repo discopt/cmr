@@ -365,7 +365,6 @@ CMR_ERROR addToGraph1Row(
   CMR_GRAPH_EDGE* rowEdges,     /**< Array to be filled with map from rows to edges. */
   CMR_GRAPH_EDGE* columnEdges,  /**< Array to be filled with map from columns to edges. */
   size_t baseNumRows,           /**< Number of rows already processed. */
-  size_t baseNumColumns,        /**< Number of columns already processed. */
   size_t* nonzeroColumns,       /**< Array with columns containing a nonzero. */
   size_t numNonzeroColumns,     /**< Length of \p nonzeroColumns. */
   bool* pisGraphic              /**< Pointer for storing whether this extension was graphic. */
@@ -374,10 +373,8 @@ CMR_ERROR addToGraph1Row(
   assert(cmr);
   assert(graph);
   assert(baseNumRows >= 3);
-  assert(baseNumColumns >= 3);
   assert(rowEdges);
   assert(columnEdges);
-  assert(numNonzeroColumns <= baseNumColumns);
 
   
   /* We first check whether the edges of columns with a nonzero form a star. */
@@ -836,7 +833,7 @@ CMR_ERROR addToGraph1Row1Column(
   CMR_GRAPH_EDGE* rowEdges,     /**< Array to be filled with map from rows to edges. */
   CMR_GRAPH_EDGE* columnEdges,  /**< Array to be filled with map from columns to edges. */
   size_t baseNumRows,           /**< Number of rows already processed. */
-  size_t baseNumColumns,        /**< Number of columns already processed. */    
+  size_t baseNumColumns,        /**< Number of columns already processed. */
   CMR_ELEMENT rowParallel,      /**< Element to which the row is parallel. */
   CMR_ELEMENT columnParallel,   /**< Element to which the column is parallel. */
   bool* pisGraphic              /**< Pointer for storing whether this extension was graphic. */
@@ -1025,7 +1022,6 @@ CMR_ERROR addToGraph1Column(
   CMR_GRAPH* graph,             /**< Empty graph to be filled. */
   CMR_GRAPH_EDGE* rowEdges,     /**< Array to be filled with map from rows to edges. */
   CMR_GRAPH_EDGE* columnEdges,  /**< Array to be filled with map from columns to edges. */
-  size_t baseNumRows,           /**< Number of rows already processed. */
   size_t baseNumColumns,        /**< Number of columns already processed. */
   size_t* nonzeroRows,          /**< Array with rows containing a nonzero. */
   size_t numNonzeroRows,        /**< Length of \p nonzeroRows. */
@@ -1034,11 +1030,9 @@ CMR_ERROR addToGraph1Column(
 {
   assert(cmr);
   assert(graph);
-  assert(baseNumRows >= 3);
   assert(baseNumColumns >= 3);
   assert(rowEdges);
   assert(columnEdges);
-  assert(numNonzeroRows <= baseNumRows);
 
   size_t* nodeDegrees = NULL;
   CMR_CALL( CMRallocStackArray(cmr, &nodeDegrees, CMRgraphMemNodes(graph)) );
@@ -1243,16 +1237,13 @@ CMR_ERROR createWheel(
 }
 
 
-CMR_ERROR CMRregularSequenceGraphic(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT* transpose, CMR_ELEMENT* rowElements,
-  CMR_ELEMENT* columnElements, size_t lengthSequence, size_t* sequenceNumRows, size_t* sequenceNumColumns,
-  size_t* plastGraphicMinor, CMR_GRAPH** pgraph, CMR_ELEMENT** pedgeElements, CMR_REGULAR_STATISTICS* stats,
-  double timeLimit)
+CMR_ERROR CMRregularSequenceGraphic(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT* transpose, size_t lengthSequence,
+  size_t* sequenceNumRows, size_t* sequenceNumColumns, size_t* plastGraphicMinor, CMR_GRAPH** pgraph,
+  CMR_ELEMENT** pedgeElements, CMR_REGULAR_STATISTICS* stats, double timeLimit)
 {
   assert(cmr);
   assert(matrix);
   assert(transpose);
-  assert(rowElements);
-  assert(columnElements);
   assert(sequenceNumRows);
   assert(sequenceNumColumns);
   assert(plastGraphicMinor);
@@ -1364,9 +1355,8 @@ CMR_ERROR CMRregularSequenceGraphic(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT* tr
         if (transpose->entryColumns[e] >= sequenceNumRows[extension-1])
           beyond = e;
       }
-      CMR_CALL( addToGraph1Column(cmr, graph, rowEdges, columnEdges, sequenceNumRows[extension-1],
-        sequenceNumColumns[extension-1], &transpose->entryColumns[first], beyond-first,
-        &isGraphic) );
+      CMR_CALL( addToGraph1Column(cmr, graph, rowEdges, columnEdges, sequenceNumColumns[extension-1],
+        &transpose->entryColumns[first], beyond-first, &isGraphic) );
     }
     else
     {
@@ -1380,8 +1370,7 @@ CMR_ERROR CMRregularSequenceGraphic(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT* tr
           beyond = e;
       }
       CMR_CALL( addToGraph1Row(cmr, graph, rowEdges, columnEdges, sequenceNumRows[extension-1],
-        sequenceNumColumns[extension-1], &matrix->entryColumns[first], beyond-first,
-        &isGraphic) );
+        &matrix->entryColumns[first], beyond-first, &isGraphic) );
     }
 
     if (isGraphic)
@@ -1431,6 +1420,8 @@ CMR_ERROR CMRregularTestGraphic(CMR* cmr, CMR_CHRMAT** pmatrix, CMR_CHRMAT** ptr
   CMR_GRAPH** pgraph, CMR_GRAPH_EDGE** pforest, CMR_GRAPH_EDGE** pcoforest, bool** parcsReversed,
   CMR_SUBMAT** psubmatrix, CMR_REGULAR_STATISTICS* stats, double timeLimit)
 {
+  CMR_UNUSED(psubmatrix); /* TODO: Implement search for violator submatrix containing forbidden minor. */
+
   assert(cmr);
   assert(pmatrix);
   assert(ptranspose);

@@ -39,8 +39,8 @@ TEST(ComplementTotalUnimodularity, Examples)
     ASSERT_CMR_CALL( CMRtestComplementTotalUnimodularity(cmr, matrix, &isCTU, &complementRow, &complementColumn, NULL,
       DBL_MAX) );
     ASSERT_FALSE(isCTU);
-    ASSERT_EQ(complementRow, 0);
-    ASSERT_EQ(complementColumn, 0);
+    ASSERT_EQ(complementRow, 0UL);
+    ASSERT_EQ(complementColumn, 0UL);
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
   }
 

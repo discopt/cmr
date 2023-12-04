@@ -910,6 +910,8 @@ CMR_ERROR CMRdecApplySeparation(CMR* cmr, CMR_DEC* dec, CMR_SEPA* sepa)
 
 CMR_ERROR CMRdecPrintSequenceNested3ConnectedMinors(CMR* cmr, CMR_DEC* dec, FILE* stream)
 {
+  CMR_UNUSED(cmr);
+
   assert(cmr);
   assert(dec);
   assert(stream);
