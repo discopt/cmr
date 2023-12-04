@@ -23,6 +23,10 @@ extern "C" {
 /* Macro for intended non-use of variables. */
 #define CMR_UNUSED(x) (void)(x)
 
+/* Macro for intended non-use of variables. */
+#define CMR_UNUSED(x) (void)(x)
+
+
 /**
  * \brief Type for return codes of library functions.
  **/
