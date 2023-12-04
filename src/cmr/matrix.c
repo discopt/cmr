@@ -1188,8 +1188,11 @@ CMR_ERROR CMRintmatCreateFromSparseStream(CMR* cmr, FILE* stream, CMR_INTMAT** p
   /* We sort all nonzeros by row and then by column. */
   CMRdbgMsg(2, "Sorting nonzeros.\n");
   CMR_CALL( CMRsort(cmr, numNonzeros, nonzeros, sizeof(DblNonzero), compareIntNonzeros) );
+  for (size_t entry = 0; entry < numNonzeros; ++entry)
+    CMRdbgMsg(4, "Sorted entry %zu has row=%zu, col=%zu\n", entry, nonzeros[entry].row, nonzeros[entry].column);
 
-  CMRdbgMsg(2, "Creating int matrix.\n");
+  CMRdbgMsg(2, "Creating int matrix with numRows=%zu, numColumns=%zu, numNonzeros=%zu.\n", numRows, numColumns,
+    numNonzeros);
   CMR_CALL( CMRintmatCreate(cmr, presult, numRows, numColumns, numNonzeros) );
   CMR_INTMAT* result = *presult;
   size_t nextRow = 0;
@@ -1208,13 +1211,14 @@ CMR_ERROR CMRintmatCreateFromSparseStream(CMR* cmr, FILE* stream, CMR_INTMAT** p
       CMR_CALL( CMRintmatFree(cmr, presult) );
       return CMR_ERROR_INPUT;
     }
+    CMRdbgMsg(4, "Increasing nextRow=%zu as longs as it is at most row=%zu.\n", nextRow, row);
     for (; nextRow <= row; ++nextRow)
       result->rowSlice[nextRow] = entry;
     *pentryColumn++ = nonzeros[entry].column;
     *pentryValue++ = nonzeros[entry].value;
     previousColumn = column;
   }
-  CMRdbgMsg(2, "nextRow = %zu / %zu.\n", nextRow, numRows);
+  CMRdbgMsg(4, "Increasing nextRow=%zu as longs as it is at most numNonzeros=%zu.\n", nextRow, numNonzeros);
   for (; nextRow <= numRows; ++nextRow)
     result->rowSlice[nextRow] = numNonzeros;
 
