@@ -1647,8 +1647,8 @@ void edgeToDot(
     DEC_MEMBER child = findMember(dec, dec->edges[edge].childMember);
     char childType = (dec->members[child].type == DEC_MEMBER_TYPE_PARALLEL) ?
       'P' : (dec->members[child].type == DEC_MEMBER_TYPE_SERIES ? 'S' : 'R');
-    fprintf(stream, "    %c_%zu_%d -- %c_c_%ld [label=\"%zu\",style=dotted%s];\n", type, member, u, type, child, edge, redStyle);
-    fprintf(stream, "    %c_c_%zu -- %c_%ld_%d [label=\"%zu\",style=dotted%s];\n", type, child, type, member, v, edge, redStyle);
+    fprintf(stream, "    %c_%zu_%d -- %c_c_%zu [label=\"%zu\",style=dotted%s];\n", type, member, u, type, child, edge, redStyle);
+    fprintf(stream, "    %c_c_%zu -- %c_%zu_%d [label=\"%zu\",style=dotted%s];\n", type, child, type, member, v, edge, redStyle);
     fprintf(stream, "    %c_%zu_%d [shape=box];\n", type, member, u);
     fprintf(stream, "    %c_%zu_%d [shape=box];\n", type, member, v);
     fprintf(stream, "    %c_c_%zu [style=dotted];\n", type, child);
@@ -1686,7 +1686,7 @@ CMR_ERROR CMRdecToDot(
     if (!isRepresentativeMember(dec, member))
       continue;
 
-    fprintf(stream, "  subgraph member%ld {\n", member);
+    fprintf(stream, "  subgraph member%zu {\n", member);
     if (dec->members[member].type == DEC_MEMBER_TYPE_PARALLEL)
     {
       DEC_EDGE edge = dec->members[member].firstEdge;
@@ -1748,6 +1748,9 @@ void debugDot(
   DEC_NEWCOLUMN* newcolumn  /**< new column. */
 )
 {
+  CMR_UNUSED(dec);
+  CMR_UNUSED(newcolumn);
+
   assert(dec);
   assert(newcolumn || !newcolumn);
 
@@ -2569,22 +2572,20 @@ static
 CMR_ERROR determineTypeParallel(
   Dec* dec,                           /**< Decomposition. */
   DEC_NEWCOLUMN* newcolumn,           /**< newcolumn. */
-  ReducedComponent* reducedComponent, /**< Reduced component. */
   ReducedMember* reducedMember,       /**< Reduced member. */
   int numOneEnd,                      /**< Number of child markers containing one path end. */
   int numTwoEnds,                     /**< Number of child markers containing two path ends. */
-  DEC_EDGE childMarkerEdges[2],       /**< Marker edges of children containing one/two path ends. */
   int depth                           /**< Depth of member in reduced decomposition. */
 )
 {
+  CMR_UNUSED(dec);
+
   assert(dec);
   assert(newcolumn);
-  assert(reducedComponent);
   assert(reducedMember);
   assert(numOneEnd >= 0);
   assert(numTwoEnds >= 0);
   assert(numOneEnd + 2*numTwoEnds <= 2);
-  assert(childMarkerEdges);
   assert(dec->members[findMember(dec, reducedMember->member)].type == DEC_MEMBER_TYPE_PARALLEL);
 
   if (depth == 0)
@@ -2627,7 +2628,6 @@ static
 CMR_ERROR determineTypeSeries(
   Dec* dec,                           /**< Decomposition. */
   DEC_NEWCOLUMN* newcolumn,           /**< newcolumn. */
-  ReducedComponent* reducedComponent, /**< Reduced component. */
   ReducedMember* reducedMember,       /**< Reduced member. */
   int numOneEnd,                      /**< Number of child markers containing one path end. */
   int numTwoEnds,                     /**< Number of child markers containing two path ends. */
@@ -2636,7 +2636,6 @@ CMR_ERROR determineTypeSeries(
 {
   assert(dec);
   assert(newcolumn);
-  assert(reducedComponent);
   assert(reducedMember);
   assert(numOneEnd >= 0);
   assert(numTwoEnds >= 0);
@@ -3334,12 +3333,11 @@ CMR_ERROR determineTypes(
   DEC_MEMBER member = findMember(dec, reducedMember->member);
   if (dec->members[member].type == DEC_MEMBER_TYPE_PARALLEL)
   {
-    CMR_CALL( determineTypeParallel(dec, newcolumn, reducedComponent, reducedMember, numOneEnd, numTwoEnds,
-      childMarkerEdges, depth) );
+    CMR_CALL( determineTypeParallel(dec, newcolumn, reducedMember, numOneEnd, numTwoEnds, depth) );
   }
   else if (dec->members[member].type == DEC_MEMBER_TYPE_SERIES)
   {
-    CMR_CALL( determineTypeSeries(dec, newcolumn, reducedComponent, reducedMember, numOneEnd, numTwoEnds, depth) );
+    CMR_CALL( determineTypeSeries(dec, newcolumn, reducedMember, numOneEnd, numTwoEnds, depth) );
   }
   else
   {
@@ -3483,6 +3481,8 @@ CMR_ERROR addTerminal(
   DEC_NODE node                       /**< New terminal node. */
 )
 {
+  CMR_UNUSED(dec);
+
   assert(reducedComponent);
   assert(member != SIZE_MAX);
   assert(isRepresentativeMember(dec, member));
@@ -5198,6 +5198,8 @@ CMR_ERROR cographicnessTest(
   double timeLimit          /**< Time limit to impose. */
 )
 {
+  CMR_UNUSED(cmr);
+
   assert(cmr);
   assert(matrix);
   assert(!data);

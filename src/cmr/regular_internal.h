@@ -14,7 +14,6 @@ CMR_ERROR CMRregularSearchThreeSeparation(
   bool ternary,                   /**< Whether to consider the signs of the matrix. */
   size_t firstNonCoGraphicMinor,  /**< Index of first nested minor that is neither graphic nor cographic. */
   CMR_SUBMAT** psubmatrix,        /**< Pointer for storing a violator matrix. */
-  CMR_REGULAR_PARAMETERS* params, /**< Parameters for the computation. */
   CMR_REGULAR_STATISTICS* stats,  /**< Statistics for the computation (may be \c NULL). */
   double timeLimit                /**< Time limit to impose. */
 );
@@ -37,8 +36,6 @@ CMR_ERROR CMRregularSequenceGraphic(
   CMR* cmr,                       /**< \ref CMR environment. */
   CMR_CHRMAT* matrix,             /**< Matrix. */
   CMR_CHRMAT* transpose,          /**< Transpose. */
-  CMR_ELEMENT* rowElements,       /**< Mapping from matrix rows to original elements. */
-  CMR_ELEMENT* columnElements,    /**< Mapping from matrix columns to original elements. */
   size_t lengthSequence,          /**< Length of the sequence of nested minors. */
   size_t* sequenceNumRows,        /**< Array with number of rows of each minor. */  
   size_t* sequenceNumColumns,     /**< Array with number of columns of each minor. */  
@@ -61,7 +58,6 @@ CMR_ERROR CMRregularExtendNestedMinorSequence(
   CMR_DEC* dec,                   /**< Decomposition node. */
   bool ternary,                   /**< Whether to consider the signs of the matrix. */
   CMR_SUBMAT** psubmatrix,        /**< Pointer for storing a violator matrix. */
-  CMR_REGULAR_PARAMETERS* params, /**< Parameters for the computation. */
   CMR_REGULAR_STATISTICS* stats,  /**< Statistics for the computation (may be \c NULL). */
   double timeLimit                /**< Time limit to impose. */
 );
@@ -79,7 +75,6 @@ CMR_ERROR CMRregularConstructNestedMinorSequence(
   bool ternary,                   /**< Whether to consider the signs of the matrix. */
   CMR_SUBMAT* wheelSubmatrix,     /**< Wheel submatrix to start with. */
   CMR_SUBMAT** psubmatrix,        /**< Pointer for storing a violator matrix. */
-  CMR_REGULAR_PARAMETERS* params, /**< Parameters for the computation. */
   CMR_REGULAR_STATISTICS* stats,  /**< Statistics for the computation (may be \c NULL). */
   double timeLimit                /**< Time limit to impose. */
 );
