@@ -5199,6 +5199,7 @@ CMR_ERROR cographicnessTest(
 )
 {
   CMR_UNUSED(cmr);
+  CMR_UNUSED(data);
 
   assert(cmr);
   assert(matrix);
