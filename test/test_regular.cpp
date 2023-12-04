@@ -41,7 +41,7 @@ TEST(Regular, OneSum)
     ASSERT_FALSE( CMRdecHasMatrix(dec) ); /* Default settings should mean that the matrix is not copied. */
     ASSERT_FALSE( CMRdecHasTranspose(dec) ); /* Default settings should mean that the transpose is never computed. */
     ASSERT_EQ( CMRdecIsSum(dec, NULL, NULL), 1 );
-    ASSERT_EQ( CMRdecNumChildren(dec), 2 );
+    ASSERT_EQ( CMRdecNumChildren(dec), 2UL );
     ASSERT_TRUE( CMRdecIsGraphic(CMRdecChild(dec, 0)) );
     ASSERT_FALSE( CMRdecIsCographic(CMRdecChild(dec, 0)) );
     ASSERT_FALSE( CMRdecIsGraphic(CMRdecChild(dec, 1)) );
