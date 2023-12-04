@@ -18,6 +18,7 @@ extern "C" {
 #include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <assert.h>
 
 /* Macro for intended non-use of variables. */
 #define CMR_UNUSED(x) (void)(x)
