@@ -6,6 +6,7 @@
 #include <assert.h>
 #include <float.h>
 #include <time.h>
+#include <inttypes.h>
 
 #include "env_internal.h"
 #include "linear_algebra_internal.h"
@@ -112,7 +113,7 @@ CMR_ERROR CMRtestEquimodularity(CMR* cmr, CMR_INTMAT* matrix, bool* pisEquimodul
   }
 
   /* Test for a particular determinant gcd if requested. */
-  CMRdbgMsg(2, "The determinant gcd is %ld.\n", gcdDet);
+  CMRdbgMsg(2, "The determinant gcd is %" PRId64 ".\n", gcdDet);
   if (pgcdDet && *pgcdDet && *pgcdDet != gcdDet)
   {
     *pisEquimodular = false;
