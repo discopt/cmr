@@ -135,9 +135,8 @@ CMR_ERROR testRegularThreeConnectedWithSequence(
   CMR_GRAPH* graph = NULL;
   CMR_ELEMENT* graphEdgeLabels = NULL;
   CMR_CALL( CMRregularSequenceGraphic(cmr, dec->nestedMinorsMatrix, nestedMinorsTranspose,
-    dec->nestedMinorsRowsOriginal, dec->nestedMinorsColumnsOriginal, dec->nestedMinorsLength,
-    dec->nestedMinorsSequenceNumRows, dec->nestedMinorsSequenceNumColumns, &lastGraphicMinor, &graph,
-    &graphEdgeLabels, stats, remainingTime) );
+    dec->nestedMinorsLength, dec->nestedMinorsSequenceNumRows, dec->nestedMinorsSequenceNumColumns,
+    &lastGraphicMinor, &graph, &graphEdgeLabels, stats, remainingTime) );
 
   if (graph)
   {
@@ -182,9 +181,8 @@ CMR_ERROR testRegularThreeConnectedWithSequence(
     CMR_ELEMENT* cographEdgeLabels = NULL;
     remainingTime = timeLimit - (clock() - time) * 1.0 / CLOCKS_PER_SEC;
     CMR_CALL( CMRregularSequenceGraphic(cmr, nestedMinorsTranspose, dec->nestedMinorsMatrix,
-      dec->nestedMinorsColumnsOriginal, dec->nestedMinorsRowsOriginal, dec->nestedMinorsLength,
-      dec->nestedMinorsSequenceNumColumns, dec->nestedMinorsSequenceNumRows, &lastCographicMinor, &cograph,
-      &cographEdgeLabels, stats, remainingTime) );
+      dec->nestedMinorsLength, dec->nestedMinorsSequenceNumColumns, dec->nestedMinorsSequenceNumRows,
+      &lastCographicMinor, &cograph, &cographEdgeLabels, stats, remainingTime) );
 
     if (cograph)
     {
@@ -236,7 +234,7 @@ CMR_ERROR testRegularThreeConnectedWithSequence(
 
       remainingTime = timeLimit - (clock() - time) * 1.0 / CLOCKS_PER_SEC;
       CMR_CALL( CMRregularSearchThreeSeparation(cmr, dec, nestedMinorsTranspose, ternary,
-        lastGraphicMinor > lastCographicMinor ? (lastGraphicMinor+1) : (lastCographicMinor + 1), NULL, params, stats,
+        lastGraphicMinor > lastCographicMinor ? (lastGraphicMinor+1) : (lastCographicMinor + 1), NULL, stats,
         remainingTime) );
 
       if (dec->type == CMR_DEC_IRREGULAR)
@@ -333,7 +331,7 @@ CMR_ERROR testRegularTwoConnected(CMR* cmr, CMR_DEC* dec, bool ternary, bool *pi
 #endif /* CMR_DEBUG */
 
     double remainingTime = timeLimit - (clock() - time) * 1.0 / CLOCKS_PER_SEC;
-    CMR_CALL( CMRregularExtendNestedMinorSequence(cmr, dec, ternary, &submatrix, params, stats, remainingTime) );
+    CMR_CALL( CMRregularExtendNestedMinorSequence(cmr, dec, ternary, &submatrix, stats, remainingTime) );
     
     /* Handling of the resulting sequence or 2-separation is done at the end. */
   }
@@ -379,7 +377,7 @@ CMR_ERROR testRegularTwoConnected(CMR* cmr, CMR_DEC* dec, bool ternary, bool *pi
     /* No 2-sum found, so we have a wheel submatrix. */
 
     remainingTime = timeLimit - (clock() - time) * 1.0 / CLOCKS_PER_SEC;
-    CMR_CALL( CMRregularConstructNestedMinorSequence(cmr, dec, ternary, wheelSubmatrix, &submatrix, params, stats,
+    CMR_CALL( CMRregularConstructNestedMinorSequence(cmr, dec, ternary, wheelSubmatrix, &submatrix, stats,
       remainingTime) );
     CMR_CALL( CMRsubmatFree(cmr, &wheelSubmatrix) );
   }

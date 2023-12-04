@@ -83,7 +83,7 @@ CMR_ERROR genMatrixGraphic(
     CMR_CALL( CMRallocBlockArray(cmr, &treeDistance, numNodes) );
     nextTreeNode[0] = 0;
     treeDistance[0] = 0;
-    for (int v = 1; v < numNodes; ++v)
+    for (int v = 1; v < (int) numNodes; ++v)
     {
       int w = (int)(rand() * 1.0 * v / RAND_MAX);
       nextTreeNode[v] = w;
@@ -237,7 +237,7 @@ int main(int argc, char** argv)
     }
     else
     {
-      printf("Error: more than two size indicators specified: %ld %ld %s\n\n", numRows, numColumns, argv[a]);
+      printf("Error: more than two size indicators specified: %zu %zu %s\n\n", numRows, numColumns, argv[a]);
       return printUsage(argv[0]);
     }
   }

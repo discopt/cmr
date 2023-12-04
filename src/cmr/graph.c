@@ -17,6 +17,8 @@
 
 void CMRgraphEnsureConsistent(CMR* cmr, CMR_GRAPH* graph)
 {
+  CMR_UNUSED(cmr);
+
   assert(cmr);
   assert(graph);
 
@@ -127,6 +129,8 @@ CMR_ERROR CMRgraphCreateEmpty(CMR* cmr, CMR_GRAPH** pgraph, int memNodes, int me
 
 CMR_ERROR CMRgraphFree(CMR* cmr, CMR_GRAPH** pgraph)
 {
+  CMR_UNUSED(cmr);
+
   assert(pgraph);
 
   CMR_GRAPH* graph = *pgraph;
@@ -377,7 +381,7 @@ CMR_ERROR CMRgraphPrint(FILE* stream, CMR_GRAPH* graph)
   assert(stream);
   assert(graph);
 
-  printf("Graph with %ld nodes and %ld edges.\n", CMRgraphNumNodes(graph), CMRgraphNumEdges(graph));
+  printf("Graph with %zu nodes and %zu edges.\n", CMRgraphNumNodes(graph), CMRgraphNumEdges(graph));
   for (CMR_GRAPH_NODE v = CMRgraphNodesFirst(graph); CMRgraphNodesValid(graph, v); v = CMRgraphNodesNext(graph, v))
   {
     fprintf(stream, "Node %d:\n", v);

@@ -6,6 +6,8 @@
 
 CMR_ERROR CMRregularThreeConnectedIsR10(CMR* cmr, CMR_DEC* dec, bool* pisR10)
 {
+  CMR_UNUSED(cmr);
+
   assert(cmr);
   assert(dec);
   assert(pisR10);
