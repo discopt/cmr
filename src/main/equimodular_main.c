@@ -111,7 +111,7 @@ CMR_ERROR testEquimodularity(
         timeLimit - stats.totalTime) );
       fprintf(stderr, "Determined in %f seconds that its transpose is ", (clock() - startClock) * 1.0 / CLOCKS_PER_SEC);
       if (propertyOriginal)
-        fprintf(stderr, "equimodular with determinant gcd " PRId64 ".\n", kTranspose);
+        fprintf(stderr, "equimodular with determinant gcd %" PRId64 ".\n", kTranspose);
       else
         fprintf(stderr, "NOT equimodular.\n");
     }
