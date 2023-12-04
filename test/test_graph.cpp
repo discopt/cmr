@@ -25,10 +25,10 @@ TEST(Graph, Modifications)
   CMRgraphAddEdge(cmr, graph, b, d, &bd);
   CMRgraphAddEdge(cmr, graph, c, d, &cd);
 
-  ASSERT_EQ(CMRgraphNumNodes(graph), 4);
-  ASSERT_EQ(CMRgraphNumEdges(graph), 6);
+  ASSERT_EQ(CMRgraphNumNodes(graph), 4UL);
+  ASSERT_EQ(CMRgraphNumEdges(graph), 6UL);
 
-  int countNodes = 0;
+  size_t countNodes = 0;
   for (CMR_GRAPH_NODE v = CMRgraphNodesFirst(graph); CMRgraphNodesValid(graph, v);
     v = CMRgraphNodesNext(graph, v))
   {
@@ -42,7 +42,7 @@ TEST(Graph, Modifications)
   {
     CMR_GRAPH_EDGE e = CMRgraphIncEdge(graph, i);
     ASSERT_GE(e, 0);
-    ASSERT_LT(e, graph->memEdges);
+    ASSERT_LT(e, (int) graph->memEdges);
     ++countIncidentEdges;
   }
   ASSERT_EQ(countIncidentEdges, 3);
@@ -51,8 +51,8 @@ TEST(Graph, Modifications)
 
   CMRgraphDeleteNode(cmr, graph, a);
 
-  ASSERT_EQ(CMRgraphNumNodes(graph), 3);
-  ASSERT_EQ(CMRgraphNumEdges(graph), 2);
+  ASSERT_EQ(CMRgraphNumNodes(graph), 3UL);
+  ASSERT_EQ(CMRgraphNumEdges(graph), 2UL);
 
   CMRgraphFree(cmr, &graph);
   

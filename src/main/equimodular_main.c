@@ -130,7 +130,7 @@ CMR_ERROR testEquimodularity(
       if (propertyOriginal && propertyTranspose)
       {
         assert(kOriginal == kTranspose);
-        fprintf(stderr, "The matrix is strongly equimodular with k = %ld.\n", kOriginal);
+        fprintf(stderr, "The matrix is strongly equimodular with k = %" PRId64 ".\n", kOriginal);
       }
       else
         fprintf(stderr, "The matrix is NOT strongly equimodular.\n");

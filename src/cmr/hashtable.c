@@ -401,6 +401,8 @@ CMR_ERROR CMRlisthashtableInsert(CMR* cmr, CMR_LISTHASHTABLE* hashtable, CMR_LIS
 
 CMR_ERROR CMRlisthashtableRemove(CMR* cmr, CMR_LISTHASHTABLE* hashtable, CMR_LISTHASHTABLE_ENTRY entry)
 {
+  CMR_UNUSED(cmr);
+
   assert(cmr);
   assert(hashtable);
 
