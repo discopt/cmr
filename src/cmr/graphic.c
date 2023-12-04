@@ -1647,13 +1647,8 @@ void edgeToDot(
     DEC_MEMBER child = findMember(dec, dec->edges[edge].childMember);
     char childType = (dec->members[child].type == DEC_MEMBER_TYPE_PARALLEL) ?
       'P' : (dec->members[child].type == DEC_MEMBER_TYPE_SERIES ? 'S' : 'R');
-<<<<<<< HEAD
     fprintf(stream, "    %c_%zu_%d -- %c_c_%zu [label=\"%zu\",style=dotted%s];\n", type, member, u, type, child, edge, redStyle);
     fprintf(stream, "    %c_c_%zu -- %c_%zu_%d [label=\"%zu\",style=dotted%s];\n", type, child, type, member, v, edge, redStyle);
-=======
-    fprintf(stream, "    %c_%zu_%d -- %c_c_%ld [label=\"%zu\",style=dotted%s];\n", type, member, u, type, child, edge, redStyle);
-    fprintf(stream, "    %c_c_%zu -- %c_%ld_%d [label=\"%zu\",style=dotted%s];\n", type, child, type, member, v, edge, redStyle);
->>>>>>> 5c039f9 (Took care of unused parameters (and warnings).)
     fprintf(stream, "    %c_%zu_%d [shape=box];\n", type, member, u);
     fprintf(stream, "    %c_%zu_%d [shape=box];\n", type, member, v);
     fprintf(stream, "    %c_c_%zu [style=dotted];\n", type, child);
@@ -3342,11 +3337,7 @@ CMR_ERROR determineTypes(
   }
   else if (dec->members[member].type == DEC_MEMBER_TYPE_SERIES)
   {
-<<<<<<< HEAD
     CMR_CALL( determineTypeSeries(dec, newcolumn, reducedMember, numOneEnd, numTwoEnds, depth) );
-=======
-    CMR_CALL( determineTypeSeries(dec, newcolumn, reducedComponent, reducedMember, numOneEnd, numTwoEnds, depth) );
->>>>>>> 5c039f9 (Took care of unused parameters (and warnings).)
   }
   else
   {
