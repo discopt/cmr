@@ -85,7 +85,7 @@ CMR_ERROR genMatrixNetwork(
     CMR_CALL( CMRallocBlockArray(cmr, &treeDistance, numNodes) );
     nextTreeNode[0] = 0;
     treeDistance[0] = 0;
-    for (int v = 1; v < numNodes; ++v)
+    for (int v = 1; v < (int)numNodes; ++v)
     {
       int w = v;
       while (w == v)
@@ -96,12 +96,12 @@ CMR_ERROR genMatrixNetwork(
 
     size_t* columnNonzeros = NULL;
     CMR_CALL( CMRallocBlockArray(cmr, &columnNonzeros, numNodes - 1) );
-    for (int e = 0; e < numEdges; ++e)
+    for (int e = 0; e < (int) numEdges; ++e)
     {
       size_t numColumNonzeros = 0;
-      int first = numNodes;
+      int first = (int) numNodes;
       int second;
-      while (first == numNodes)
+      while (first == (int) numNodes)
         first = (int)(rand() * 1.0 * numNodes / RAND_MAX);
 
       if (binary)
@@ -124,7 +124,7 @@ CMR_ERROR genMatrixNetwork(
       {
         /* second is chosen uniformly at random from all nodes. */
         second = numNodes;
-        while (second == numNodes)
+        while (second == (int) numNodes)
           second = (int)(rand() * 1.0 * numNodes / RAND_MAX);
         while (treeDistance[second] > treeDistance[first])
         {
@@ -188,7 +188,7 @@ CMR_ERROR genMatrixNetwork(
     else
     {
       double generationTime = (clock() - startTime) * 1.0 / CLOCKS_PER_SEC;
-      fprintf(stderr, "Generated a %ldx%ld matrix with %ld nonzeros in %f seconds.\n", numRows, numColumns,
+      fprintf(stderr, "Generated a %zux%zu matrix with %zu nonzeros in %f seconds.\n", numRows, numColumns,
         matrix->numNonzeros, generationTime);
 
       /* Print matrix. */
@@ -277,7 +277,7 @@ int main(int argc, char** argv)
     }
     else
     {
-      printf("Error: more than two size indicators specified: %ld %ld %s\n\n", numRows, numColumns, argv[a]);
+      printf("Error: more than two size indicators specified: %zu %zu %s\n\n", numRows, numColumns, argv[a]);
       return printUsage(argv[0]);
     }
   }
