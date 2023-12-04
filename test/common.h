@@ -2,6 +2,7 @@
 #define CMR_TEST_COMMON_H
 
 #include <cmr/matrix.h>
+#include <assert.h>
 
 #ifdef __cplusplus
 extern "C" {

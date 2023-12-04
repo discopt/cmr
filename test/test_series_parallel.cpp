@@ -17,11 +17,11 @@ TEST(SeriesParallel, Empty)
 
     ASSERT_CMR_CALL( CMRtestBinarySeriesParallel(cmr, mat0x0, NULL, reductions, &numReductions, NULL, NULL,
       NULL, DBL_MAX) );
-    ASSERT_EQ( numReductions, 0 );
+    ASSERT_EQ( numReductions, 0UL );
 
     ASSERT_CMR_CALL( CMRtestTernarySeriesParallel(cmr, mat0x0, NULL, reductions, &numReductions, NULL, NULL,
       NULL, DBL_MAX) );
-    ASSERT_EQ( numReductions, 0 );
+    ASSERT_EQ( numReductions, 0UL );
 
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &mat0x0) );
   }
