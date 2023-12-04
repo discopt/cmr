@@ -154,6 +154,8 @@ CMR_ERROR CMRgraphFree(CMR* cmr, CMR_GRAPH** pgraph)
 
 CMR_ERROR CMRgraphClear(CMR* cmr, CMR_GRAPH* graph)
 {
+  CMR_UNUSED(cmr);
+
   assert(cmr);
   assert(graph);
 
