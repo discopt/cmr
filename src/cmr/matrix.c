@@ -213,7 +213,7 @@ CMR_ERROR CMRsubmatReadFromStream(CMR* cmr, CMR_SUBMAT ** psubmatrix, size_t* pn
   for (size_t r = 0; r < numRows; ++r)
   {
     size_t row;
-    if (fscanf(stream, "%lu", &row) != 1)
+    if (fscanf(stream, "%zu", &row) != 1)
       return CMR_ERROR_INPUT;
 
     if (row == 0 || row > numRows)
@@ -478,7 +478,7 @@ CMR_ERROR CMRchrmatSortNonzeros(CMR* cmr, CMR_CHRMAT* matrix)
   {
     size_t first = matrix->rowSlice[row];
     size_t beyond = matrix->rowSlice[row + 1];
-    CMRdbgMsg(2, "Sorting nonzero entries in range [%ld,%ld).\n", first, beyond);
+    CMRdbgMsg(2, "Sorting nonzero entries in range [%zu,%zu).\n", first, beyond);
     CMR_CALL( CMRsort2(cmr, beyond - first, &matrix->entryColumns[first], sizeof(size_t), &matrix->entryValues[first],
       sizeof(char), compareEntries) );
   }
@@ -703,7 +703,7 @@ CMR_ERROR CMRdblmatPermute(CMR* cmr, CMR_DBLMAT* matrix, size_t* rows, size_t* c
     result->rowSlice[resultRow] = resultEntry;
 
     size_t row = rows ? rows[resultRow] : resultRow;
-    CMRdbgMsg(0, "New row %ld is old row %ld.\n", resultRow, row);
+    CMRdbgMsg(0, "New row %zu is old row %zu.\n", resultRow, row);
     size_t first = matrix->rowSlice[row];
     size_t beyond = matrix->rowSlice[row+1];
     for (size_t e = first; e < beyond; ++e)
@@ -711,7 +711,7 @@ CMR_ERROR CMRdblmatPermute(CMR* cmr, CMR_DBLMAT* matrix, size_t* rows, size_t* c
       result->entryValues[resultEntry] = matrix->entryValues[e];
       result->entryColumns[resultEntry] =
         columnsToResultColumns ? columnsToResultColumns[matrix->entryColumns[e]] : matrix->entryColumns[e];
-      CMRdbgMsg(2, "Entry in old column %ld is now in column %ld; value = %d\n", matrix->entryColumns[e],
+      CMRdbgMsg(2, "Entry in old column %zu is now in column %zu; value = %d\n", matrix->entryColumns[e],
         result->entryColumns[resultEntry], result->entryValues[resultEntry]);
       ++resultEntry;
     }
@@ -749,7 +749,7 @@ CMR_ERROR CMRintmatPermute(CMR* cmr, CMR_INTMAT* matrix, size_t* rows, size_t* c
     result->rowSlice[resultRow] = resultEntry;
 
     size_t row = rows ? rows[resultRow] : resultRow;
-    CMRdbgMsg(0, "New row %ld is old row %ld.\n", resultRow, row);
+    CMRdbgMsg(0, "New row %zu is old row %zu.\n", resultRow, row);
     size_t first = matrix->rowSlice[row];
     size_t beyond = matrix->rowSlice[row+1];
     for (size_t e = first; e < beyond; ++e)
@@ -757,7 +757,7 @@ CMR_ERROR CMRintmatPermute(CMR* cmr, CMR_INTMAT* matrix, size_t* rows, size_t* c
       result->entryValues[resultEntry] = matrix->entryValues[e];
       result->entryColumns[resultEntry] =
         columnsToResultColumns ? columnsToResultColumns[matrix->entryColumns[e]] : matrix->entryColumns[e];
-      CMRdbgMsg(2, "Entry in old column %ld is now in column %ld; value = %d\n", matrix->entryColumns[e],
+      CMRdbgMsg(2, "Entry in old column %zu is now in column %zu; value = %d\n", matrix->entryColumns[e],
         result->entryColumns[resultEntry], result->entryValues[resultEntry]);
       ++resultEntry;
     }
@@ -795,7 +795,7 @@ CMR_ERROR CMRchrmatPermute(CMR* cmr, CMR_CHRMAT* matrix, size_t* rows, size_t* c
     result->rowSlice[resultRow] = resultEntry;
 
     size_t row = rows ? rows[resultRow] : resultRow;
-    CMRdbgMsg(0, "New row %ld is old row %ld.\n", resultRow, row);
+    CMRdbgMsg(0, "New row %zu is old row %zu.\n", resultRow, row);
     size_t first = matrix->rowSlice[row];
     size_t beyond = matrix->rowSlice[row+1];
     for (size_t e = first; e < beyond; ++e)
@@ -803,7 +803,7 @@ CMR_ERROR CMRchrmatPermute(CMR* cmr, CMR_CHRMAT* matrix, size_t* rows, size_t* c
       result->entryValues[resultEntry] = matrix->entryValues[e];
       result->entryColumns[resultEntry] =
         columnsToResultColumns ? columnsToResultColumns[matrix->entryColumns[e]] : matrix->entryColumns[e];
-      CMRdbgMsg(2, "Entry in old column %ld is now in column %ld; value = %d\n", matrix->entryColumns[e],
+      CMRdbgMsg(2, "Entry in old column %zu is now in column %zu; value = %d\n", matrix->entryColumns[e],
         result->entryColumns[resultEntry], result->entryValues[resultEntry]);
       ++resultEntry;
     }
@@ -886,7 +886,7 @@ CMR_ERROR CMRdblmatPrintDense(CMR* cmr, CMR_DBLMAT* matrix, FILE* stream, char z
   assert(matrix);
   assert(stream);
 
-  fprintf(stream, "%lu %lu\n", matrix->numRows, matrix->numColumns);
+  fprintf(stream, "%zu %zu\n", matrix->numRows, matrix->numColumns);
   if (header)
   {
     fputs("   ", stream);
@@ -928,7 +928,7 @@ CMR_ERROR CMRintmatPrintDense(CMR* cmr, CMR_INTMAT* matrix, FILE* stream, char z
   assert(matrix);
   assert(stream);
 
-  fprintf(stream, "%lu %lu\n", matrix->numRows, matrix->numColumns);
+  fprintf(stream, "%zu %zu\n", matrix->numRows, matrix->numColumns);
   if (header)
   {
     fputs("   ", stream);
@@ -970,7 +970,7 @@ CMR_ERROR CMRchrmatPrintDense(CMR* cmr, CMR_CHRMAT* matrix, FILE* stream, char z
   assert(matrix);
   assert(stream);
 
-  fprintf(stream, "%lu %lu\n", matrix->numRows, matrix->numColumns);
+  fprintf(stream, "%zu %zu\n", matrix->numRows, matrix->numColumns);
   if (header)
   {
     fputs("   ", stream);
@@ -1053,14 +1053,14 @@ CMR_ERROR CMRdblmatCreateFromSparseStream(CMR* cmr, FILE* stream, CMR_DBLMAT** p
     size_t row;
     size_t column;
     double value;
-    numRead = fscanf(stream, "%lu %lu %lf", &row, &column, &value);
+    numRead = fscanf(stream, "%zu %zu %lf", &row, &column, &value);
     if (numRead < 3 || row == 0 || column == 0 || row > numRows || column > numColumns)
     {
       CMR_CALL( CMRfreeStackArray(cmr, &nonzeros) );
       if (numRead == 2)
-        CMRraiseErrorMessage(cmr, "Could not read a double value of nonzero #%lu.", entry);
+        CMRraiseErrorMessage(cmr, "Could not read a double value of nonzero #%zu.", entry);
       else
-        CMRraiseErrorMessage(cmr, "Could not read nonzero #%lu.", entry);
+        CMRraiseErrorMessage(cmr, "Could not read nonzero #%zu.", entry);
       return CMR_ERROR_INPUT;
     }
     if (value != 0.0)
@@ -1088,7 +1088,7 @@ CMR_ERROR CMRdblmatCreateFromSparseStream(CMR* cmr, FILE* stream, CMR_DBLMAT** p
     size_t column = nonzeros[entry].column;
     if (row == previousRow && column == previousColumn)
     {
-      CMRraiseErrorMessage(cmr, "Duplicate nonzero at row %lu and column %lu.", row, column);
+      CMRraiseErrorMessage(cmr, "Duplicate nonzero at row %zu and column %zu.", row, column);
       CMR_CALL( CMRfreeStackArray(cmr, &nonzeros) );
       CMR_CALL( CMRdblmatFree(cmr, presult) );
       return CMR_ERROR_INPUT;
@@ -1160,14 +1160,14 @@ CMR_ERROR CMRintmatCreateFromSparseStream(CMR* cmr, FILE* stream, CMR_INTMAT** p
     size_t row;
     size_t column;
     int value;
-    numRead = fscanf(stream, "%lu %lu %d", &row, &column, &value);
+    numRead = fscanf(stream, "%zu %zu %d", &row, &column, &value);
     if (numRead < 3 || row == 0 || column == 0 || row > numRows || column > numColumns)
     {
       CMR_CALL( CMRfreeStackArray(cmr, &nonzeros) );
       if (numRead == 2)
-        CMRraiseErrorMessage(cmr, "Could not read an integer value of nonzero #%lu.", entry);
+        CMRraiseErrorMessage(cmr, "Could not read an integer value of nonzero #%zu.", entry);
       else
-        CMRraiseErrorMessage(cmr, "Could not read nonzero #%lu.", entry);
+        CMRraiseErrorMessage(cmr, "Could not read nonzero #%zu.", entry);
       return CMR_ERROR_INPUT;
     }
     if (value != 0)
@@ -1195,7 +1195,7 @@ CMR_ERROR CMRintmatCreateFromSparseStream(CMR* cmr, FILE* stream, CMR_INTMAT** p
     size_t column = nonzeros[entry].column;
     if (row == previousRow && column == previousColumn)
     {
-      CMRraiseErrorMessage(cmr, "Duplicate nonzero at row %lu and column %lu.", row, column);
+      CMRraiseErrorMessage(cmr, "Duplicate nonzero at row %zu and column %zu.", row, column);
       CMR_CALL( CMRfreeStackArray(cmr, &nonzeros) );
       CMR_CALL( CMRintmatFree(cmr, presult) );
       return CMR_ERROR_INPUT;
@@ -1267,14 +1267,14 @@ CMR_ERROR CMRchrmatCreateFromSparseStream(CMR* cmr, FILE* stream, CMR_CHRMAT** p
     size_t row;
     size_t column;
     int value;
-    numRead = fscanf(stream, "%lu %lu %d", &row, &column, &value);
+    numRead = fscanf(stream, "%zu %zu %d", &row, &column, &value);
     if (numRead < 3 || row == 0 || column == 0 || row > numRows || column > numColumns)
     {
       CMR_CALL( CMRfreeStackArray(cmr, &nonzeros) );
       if (numRead == 2)
-        CMRraiseErrorMessage(cmr, "Could not read an integer value of nonzero #%lu.", entry);
+        CMRraiseErrorMessage(cmr, "Could not read an integer value of nonzero #%zu.", entry);
       else
-        CMRraiseErrorMessage(cmr, "Could not read nonzero #%lu.", entry);
+        CMRraiseErrorMessage(cmr, "Could not read nonzero #%zu.", entry);
       return CMR_ERROR_INPUT;
     }
     if (value != 0)
@@ -1302,7 +1302,7 @@ CMR_ERROR CMRchrmatCreateFromSparseStream(CMR* cmr, FILE* stream, CMR_CHRMAT** p
     size_t column = nonzeros[entry].column;
     if (row == previousRow && column == previousColumn)
     {
-      CMRraiseErrorMessage(cmr, "Duplicate nonzero at row %lu and column %lu.", row, column);
+      CMRraiseErrorMessage(cmr, "Duplicate nonzero at row %zu and column %zu.", row, column);
       CMR_CALL( CMRfreeStackArray(cmr, &nonzeros) );
       CMR_CALL( CMRchrmatFree(cmr, presult) );
       return CMR_ERROR_INPUT;
@@ -1346,7 +1346,7 @@ CMR_ERROR CMRdblmatCreateFromSparseFile(CMR* cmr, const char* fileName, const ch
     {
       if (strlen(token) == 16)
         strcat(token, "...");
-      CMRraiseErrorMessage(cmr, "Found unexpected token \"%s\" after having read a *sparse* %lux%lu matrix with %lu nonzeros.",
+      CMRraiseErrorMessage(cmr, "Found unexpected token \"%s\" after having read a *sparse* %zux%zu matrix with %zu nonzeros.",
         token, (*presult)->numRows, (*presult)->numColumns, (*presult)->numNonzeros);
       CMRdblmatFree(cmr, presult);
       error = CMR_ERROR_INPUT;
@@ -1378,7 +1378,7 @@ CMR_ERROR CMRintmatCreateFromSparseFile(CMR* cmr, const char* fileName, const ch
     {
       if (strlen(token) == 16)
         strcat(token, "...");
-      CMRraiseErrorMessage(cmr, "Found unexpected token \"%s\" after having read a *sparse* %lux%lu matrix with %lu nonzeros.",
+      CMRraiseErrorMessage(cmr, "Found unexpected token \"%s\" after having read a *sparse* %zux%zu matrix with %zu nonzeros.",
         token, (*presult)->numRows, (*presult)->numColumns, (*presult)->numNonzeros);
       CMRintmatFree(cmr, presult);
       error = CMR_ERROR_INPUT;
@@ -1410,7 +1410,7 @@ CMR_ERROR CMRchrmatCreateFromSparseFile(CMR* cmr, const char* fileName, const ch
     {
       if (strlen(token) == 16)
         strcat(token, "...");
-      CMRraiseErrorMessage(cmr, "Found unexpected token \"%s\" after having read a *sparse* %lux%lu matrix with %lu nonzeros.",
+      CMRraiseErrorMessage(cmr, "Found unexpected token \"%s\" after having read a *sparse* %zux%zu matrix with %zu nonzeros.",
         token, (*presult)->numRows, (*presult)->numColumns, (*presult)->numNonzeros);
       CMRchrmatFree(cmr, presult);
       error = CMR_ERROR_INPUT;
@@ -1431,7 +1431,7 @@ CMR_ERROR CMRdblmatCreateFromDenseStream(CMR* cmr, FILE* stream, CMR_DBLMAT** pr
   assert(stream);
 
   size_t numRows, numColumns;
-  int numRead = fscanf(stream, "%lu %lu", &numRows, &numColumns);
+  int numRead = fscanf(stream, "%zu %zu", &numRows, &numColumns);
   if (numRead < 2)
   {
     CMRraiseErrorMessage(cmr, "Could not read number of rows and columns.");
@@ -1460,7 +1460,7 @@ CMR_ERROR CMRdblmatCreateFromDenseStream(CMR* cmr, FILE* stream, CMR_DBLMAT** pr
       numRead = fscanf(stream, "%lf", &x);
       if (numRead < 1)
       {
-        CMRraiseErrorMessage(cmr, "Could not read matrix entry in row %lu and column %lu.", row, column);
+        CMRraiseErrorMessage(cmr, "Could not read matrix entry in row %zu and column %zu.", row, column);
         return CMR_ERROR_INPUT;
       }
 
@@ -1503,7 +1503,7 @@ CMR_ERROR CMRintmatCreateFromDenseStream(CMR* cmr, FILE* stream, CMR_INTMAT** pr
   assert(stream);
 
   size_t numRows, numColumns;
-  int numRead = fscanf(stream, "%lu %lu", &numRows, &numColumns);
+  int numRead = fscanf(stream, "%zu %zu", &numRows, &numColumns);
   if (numRead < 2)
   {
     CMRraiseErrorMessage(cmr, "Could not read number of rows and columns.");
@@ -1532,7 +1532,7 @@ CMR_ERROR CMRintmatCreateFromDenseStream(CMR* cmr, FILE* stream, CMR_INTMAT** pr
       numRead = fscanf(stream, "%d", &x);
       if (numRead < 1)
       {
-        CMRraiseErrorMessage(cmr, "Could not read matrix entry in row %lu and column %lu.", row, column);
+        CMRraiseErrorMessage(cmr, "Could not read matrix entry in row %zu and column %zu.", row, column);
         return CMR_ERROR_INPUT;
       }
 
@@ -1575,7 +1575,7 @@ CMR_ERROR CMRchrmatCreateFromDenseStream(CMR* cmr, FILE* stream, CMR_CHRMAT** pr
   assert(stream);
 
   size_t numRows, numColumns;
-  int numRead = fscanf(stream, "%lu %lu", &numRows, &numColumns);
+  int numRead = fscanf(stream, "%zu %zu", &numRows, &numColumns);
   if (numRead < 2)
   {
     CMRraiseErrorMessage(cmr, "Could not read number of rows and columns.");
@@ -1604,7 +1604,7 @@ CMR_ERROR CMRchrmatCreateFromDenseStream(CMR* cmr, FILE* stream, CMR_CHRMAT** pr
       numRead = fscanf(stream, "%lf", &x);
       if (numRead < 1)
       {
-        CMRraiseErrorMessage(cmr, "Could not read matrix entry in row %lu and column %lu.", row, column);
+        CMRraiseErrorMessage(cmr, "Could not read matrix entry in row %zu and column %zu.", row, column);
         return CMR_ERROR_INPUT;
       }
 
@@ -1658,7 +1658,7 @@ CMR_ERROR CMRdblmatCreateFromDenseFile(CMR* cmr, const char* fileName, const cha
     {
       if (strlen(token) == 16)
         strcat(token, "...");
-      CMRraiseErrorMessage(cmr, "Found unexpected token \"%s\" after having read a *dense* %lux%lu matrix with %lu nonzeros.",
+      CMRraiseErrorMessage(cmr, "Found unexpected token \"%s\" after having read a *dense* %zux%zu matrix with %zu nonzeros.",
         token, (*presult)->numRows, (*presult)->numColumns, (*presult)->numNonzeros);
       CMRdblmatFree(cmr, presult);
       error = CMR_ERROR_INPUT;
@@ -1690,7 +1690,7 @@ CMR_ERROR CMRintmatCreateFromDenseFile(CMR* cmr, const char* fileName, const cha
     {
       if (strlen(token) == 16)
         strcat(token, "...");
-      CMRraiseErrorMessage(cmr, "Found unexpected token \"%s\" after having read a *dense* %lux%lu matrix with %lu nonzeros.",
+      CMRraiseErrorMessage(cmr, "Found unexpected token \"%s\" after having read a *dense* %zux%zu matrix with %zu nonzeros.",
         token, (*presult)->numRows, (*presult)->numColumns, (*presult)->numNonzeros);
       CMRintmatFree(cmr, presult);
       error = CMR_ERROR_INPUT;
@@ -1722,7 +1722,7 @@ CMR_ERROR CMRchrmatCreateFromDenseFile(CMR* cmr, const char* fileName, const cha
     {
       if (strlen(token) == 16)
         strcat(token, "...");
-      CMRraiseErrorMessage(cmr, "Found unexpected token \"%s\" after having read a *dense* %lux%lu matrix with %lu nonzeros.",
+      CMRraiseErrorMessage(cmr, "Found unexpected token \"%s\" after having read a *dense* %zux%zu matrix with %zu nonzeros.",
         token, (*presult)->numRows, (*presult)->numColumns, (*presult)->numNonzeros);
       CMRchrmatFree(cmr, presult);
       error = CMR_ERROR_INPUT;
@@ -1980,7 +1980,7 @@ char* CMRdblmatConsistency(CMR_DBLMAT* matrix)
     return CMRconsistencyMessage("CMR_DBLMAT is does not have rowSlice array.");
   if (matrix->rowSlice[matrix->numRows] != matrix->numNonzeros)
   {
-    return CMRconsistencyMessage("CMR_DBLMAT has inconsistent last slice index (%ld) and #nonzeros (%ld)",
+    return CMRconsistencyMessage("CMR_DBLMAT has inconsistent last slice index (%zu) and #nonzeros (%zu)",
       matrix->rowSlice[matrix->numRows], matrix->numNonzeros);
   }
 
@@ -1992,12 +1992,12 @@ char* CMRdblmatConsistency(CMR_DBLMAT* matrix)
     {
       if (matrix->entryColumns[entry - 1] == matrix->entryColumns[entry])
       {
-        return CMRconsistencyMessage("CMR_DBLMAT contains duplicate nonzeros in row %lu, column %lu, entries %lu and %lu.\n",
+        return CMRconsistencyMessage("CMR_DBLMAT contains duplicate nonzeros in row %zu, column %zu, entries %zu and %zu.\n",
           row, matrix->entryColumns[entry], entry - 1, entry);
       }
       if (matrix->entryColumns[entry - 1] > matrix->entryColumns[entry])
       {
-        return CMRconsistencyMessage("CMR_DBLMAT contains nonzeros in row %lu in wrong order: entry %lu has column %lu and entry %lu has column %lu.\n",
+        return CMRconsistencyMessage("CMR_DBLMAT contains nonzeros in row %zu in wrong order: entry %zu has column %zu and entry %zu has column %zu.\n",
           row, entry - 1, matrix->entryColumns[entry - 1], entry, matrix->entryColumns[entry]);
       }
     }
@@ -2014,7 +2014,7 @@ char* CMRintmatConsistency(CMR_INTMAT* matrix)
     return CMRconsistencyMessage("CMR_INTMAT is does not have rowSlice array.");
   if (matrix->rowSlice[matrix->numRows] != matrix->numNonzeros)
   {
-    return CMRconsistencyMessage("CMR_INTMAT has inconsistent last slice index (%ld) and #nonzeros (%ld)",
+    return CMRconsistencyMessage("CMR_INTMAT has inconsistent last slice index (%zu) and #nonzeros (%zu)",
       matrix->rowSlice[matrix->numRows], matrix->numNonzeros);
   }
 
@@ -2026,7 +2026,7 @@ char* CMRintmatConsistency(CMR_INTMAT* matrix)
     {
       if (matrix->entryValues[entry] == 0)
       {
-        return CMRconsistencyMessage("CMR_INTMAT contains zero entry %lu in row %lu, column %lu.\n",
+        return CMRconsistencyMessage("CMR_INTMAT contains zero entry %zu in row %zu, column %zu.\n",
           entry, row, matrix->entryColumns[entry]);
       }
     }
@@ -2034,12 +2034,12 @@ char* CMRintmatConsistency(CMR_INTMAT* matrix)
     {
       if (matrix->entryColumns[entry - 1] == matrix->entryColumns[entry])
       {
-        return CMRconsistencyMessage("CMR_INTMAT contains duplicate nonzeros in row %lu, column %lu, entries %lu and %lu.\n",
+        return CMRconsistencyMessage("CMR_INTMAT contains duplicate nonzeros in row %zu, column %zu, entries %zu and %zu.\n",
           row, matrix->entryColumns[entry], entry - 1, entry);
       }
       if (matrix->entryColumns[entry - 1] > matrix->entryColumns[entry])
       {
-        return CMRconsistencyMessage("CMR_INTMAT contains nonzeros in row %lu in wrong order: entry %lu has column %lu and entry %lu has column %lu.\n",
+        return CMRconsistencyMessage("CMR_INTMAT contains nonzeros in row %zu in wrong order: entry %zu has column %zu and entry %zu has column %zu.\n",
           row, entry - 1, matrix->entryColumns[entry - 1], entry, matrix->entryColumns[entry]);
       }
     }
@@ -2056,7 +2056,7 @@ char* CMRchrmatConsistency(CMR_CHRMAT* matrix)
     return CMRconsistencyMessage("CMR_CHRMAT is does not have rowSlice array.");
   if (matrix->rowSlice[matrix->numRows] != matrix->numNonzeros)
   {
-    return CMRconsistencyMessage("CMR_CHRMAT has inconsistent last slice index (%ld) and #nonzeros (%ld)",
+    return CMRconsistencyMessage("CMR_CHRMAT has inconsistent last slice index (%zu) and #nonzeros (%zuf)",
       matrix->rowSlice[matrix->numRows], matrix->numNonzeros);
   }
 
@@ -2068,7 +2068,7 @@ char* CMRchrmatConsistency(CMR_CHRMAT* matrix)
     {
       if (matrix->entryValues[entry] == 0)
       {
-        return CMRconsistencyMessage("CMR_CHRMAT contains zero entry %lu in row %lu, column %lu.\n",
+        return CMRconsistencyMessage("CMR_CHRMAT contains zero entry %zu in row %zu, column %zu.\n",
           entry, row, matrix->entryColumns[entry]);
       }
     }
@@ -2076,12 +2076,12 @@ char* CMRchrmatConsistency(CMR_CHRMAT* matrix)
     {
       if (matrix->entryColumns[entry - 1] == matrix->entryColumns[entry])
       {
-        return CMRconsistencyMessage("CMR_CHRMAT contains duplicate nonzeros in row %lu, column %lu, entries %lu and %lu.\n",
+        return CMRconsistencyMessage("CMR_CHRMAT contains duplicate nonzeros in row %zu, column %zu, entries %zu and %zu.\n",
           row, matrix->entryColumns[entry], entry - 1, entry);
       }
       if (matrix->entryColumns[entry - 1] > matrix->entryColumns[entry])
       {
-        return CMRconsistencyMessage("CMR_CHRMAT contains nonzeros in row %lu in wrong order: entry %lu has column %lu and entry %lu has column %lu.\n",
+        return CMRconsistencyMessage("CMR_CHRMAT contains nonzeros in row %zu in wrong order: entry %zu has column %zu and entry %zu has column %zu.\n",
           row, entry - 1, matrix->entryColumns[entry - 1], entry, matrix->entryColumns[entry]);
       }
     }
@@ -2810,14 +2810,14 @@ CMR_ERROR findBadSubmatrixByMaximum(
 
     size_t columnMaximum = findMaximum(columnNumBadEntries, listmatrix->numColumns, &columnMaximumIndex);
     
-    CMRdbgMsg(2, "row/column maxima are %lu and %lu\n", rowMaximum, columnMaximum);
+    CMRdbgMsg(2, "row/column maxima are %zu and %zu\n", rowMaximum, columnMaximum);
     
     if (rowMaximum >= columnMaximum)
     {
       for (ListMat8Nonzero* nz = listmatrix->rowElements[rowMaximumIndex].head.right;
         nz != &listmatrix->rowElements[rowMaximumIndex].head; nz = nz->right)
       {
-        CMRdbgMsg(4, "Removing nonzero at %lu,%lu with special %d.\n", nz->row, nz->column, nz->special);
+        CMRdbgMsg(4, "Removing nonzero at %zu,%zu with special %d.\n", nz->row, nz->column, nz->special);
         if (nz->special)
         {
           assert(columnNumBadEntries[nz->column] > 0);
@@ -2836,7 +2836,7 @@ CMR_ERROR findBadSubmatrixByMaximum(
       for (ListMat8Nonzero* nz = listmatrix->columnElements[columnMaximumIndex].head.below;
         nz != &listmatrix->columnElements[columnMaximumIndex].head; nz = nz->below)
       {
-        CMRdbgMsg(4, "Removing nonzero at %lu,%lu with special %d.\n", nz->row, nz->column, nz->special);
+        CMRdbgMsg(4, "Removing nonzero at %zu,%zu with special %d.\n", nz->row, nz->column, nz->special);
         if (nz->special)
         {
           assert(rowNumBadEntries[nz->row] > 0);
@@ -2884,7 +2884,7 @@ CMR_ERROR CMRdblmatFindBinarySubmatrix(CMR* cmr, CMR_DBLMAT* matrix, double epsi
   CMR_CALL( CMRlistmat8Alloc(cmr, matrix->numRows, matrix->numColumns, matrix->numNonzeros, &listmatrix) );
   CMR_CALL( CMRlistmat8InitializeFromDoubleMatrix(cmr, listmatrix, matrix, epsilon) );
 
-  CMRdbgMsg(2, "List matrix has %d nonzeros.\n", listmatrix->numNonzeros);
+  CMRdbgMsg(2, "List matrix has %zu nonzeros.\n", listmatrix->numNonzeros);
 
   for (size_t row = 0; row < matrix->numRows; ++row)
   {
@@ -2912,7 +2912,7 @@ CMR_ERROR CMRdblmatFindTernarySubmatrix(CMR* cmr, CMR_DBLMAT* matrix, double eps
   CMR_CALL( CMRlistmat8Alloc(cmr, matrix->numRows, matrix->numColumns, matrix->numNonzeros, &listmatrix) );
   CMR_CALL( CMRlistmat8InitializeFromDoubleMatrix(cmr, listmatrix, matrix, epsilon) );
 
-  CMRdbgMsg(2, "List matrix has %d nonzeros.\n", listmatrix->numNonzeros);
+  CMRdbgMsg(2, "List matrix has %zu nonzeros.\n", listmatrix->numNonzeros);
 
   for (size_t row = 0; row < matrix->numRows; ++row)
   {

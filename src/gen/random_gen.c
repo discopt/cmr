@@ -157,7 +157,7 @@ int main(int argc, char** argv)
     }
     else
     {
-      printf("Error: more than two size indicators specified: %ld %ld %s\n\n", numRows, numColumns, argv[a]);
+      printf("Error: more than two size indicators specified: %zu %zu %s\n\n", numRows, numColumns, argv[a]);
       return printUsage(argv[0]);
     }
   }
