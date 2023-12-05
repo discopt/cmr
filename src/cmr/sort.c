@@ -1,4 +1,4 @@
-// #define CMR_DEBUG /* Uncomment to debug the sorting. */
+#define CMR_DEBUG /* Uncomment to debug the sorting. */
 
 #include "sort.h"
 
