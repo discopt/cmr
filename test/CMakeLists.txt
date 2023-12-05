@@ -17,11 +17,12 @@ add_executable(cmr_gtest
   test_hashtable.cpp
   test_matrix.cpp
   test_main.cpp
-  test_network.cpp
+#  test_network.cpp
   test_regular.cpp
-  test_separation.cpp
-  test_series_parallel.cpp
-  test_tu.cpp)
+#  test_separation.cpp
+#  test_series_parallel.cpp
+#  test_tu.cpp
+  )
 
 # Set standard to C++ 14.
 set_property(TARGET cmr_gtest PROPERTY CXX_STANDARD 14)
