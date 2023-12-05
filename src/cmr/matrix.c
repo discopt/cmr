@@ -1181,7 +1181,7 @@ CMR_ERROR CMRintmatCreateFromSparseStream(CMR* cmr, FILE* stream, CMR_INTMAT** p
   numNonzeros = entry;
 
   /* We sort all nonzeros by row and then by column. */
-  CMR_CALL( CMRsort(cmr, numNonzeros, nonzeros, sizeof(DblNonzero), compareIntNonzeros) );
+  CMR_CALL( CMRsort(cmr, numNonzeros, nonzeros, sizeof(IntNonzero), compareIntNonzeros) );
 
   CMR_CALL( CMRintmatCreate(cmr, presult, numRows, numColumns, numNonzeros) );
   CMR_INTMAT* result = *presult;
