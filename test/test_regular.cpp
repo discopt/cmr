@@ -156,7 +156,7 @@ TEST(Regular, NestedMinorSearchTwoSeparation)
     ASSERT_FALSE( CMRdecHasMatrix(dec) ); /* Default settings should mean that the matrix is not copied. */
     ASSERT_TRUE( CMRdecHasTranspose(dec) ); /* As we test for graphicness, the transpose is constructed. */
     ASSERT_EQ( CMRdecIsSum(dec, NULL, NULL), 2 );
-    ASSERT_EQ( CMRdecNumChildren(dec), 2 );
+    ASSERT_EQ( CMRdecNumChildren(dec), 2UL );
     ASSERT_TRUE( CMRdecIsGraphic(CMRdecChild(dec, 0)) );
     ASSERT_FALSE( CMRdecIsCographic(CMRdecChild(dec, 0)) );
     ASSERT_FALSE( CMRdecIsGraphic(CMRdecChild(dec, 1)) );
@@ -628,7 +628,7 @@ TEST(Regular, R10)
     CMR_DEC* dec = NULL;
     ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, NULL, NULL, DBL_MAX) );
     ASSERT_TRUE( CMRdecIsRegular(dec) );
-    ASSERT_EQ( CMRdecNumChildren(dec), 0 );
+    ASSERT_EQ( CMRdecNumChildren(dec), 0UL );
     ASSERT_CMR_CALL( CMRdecFree(cmr, &dec) );
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
   }
@@ -774,14 +774,14 @@ TEST(Regular, R12)
     CMR_DEC* dec = NULL;
     ASSERT_CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, &dec, NULL, NULL, NULL, DBL_MAX) );
     ASSERT_TRUE( CMRdecIsRegular(dec) );
-    ASSERT_EQ( CMRdecNumChildren(dec), 2 );
+    ASSERT_EQ( CMRdecNumChildren(dec), 2UL );
     size_t graphicChildren = (CMRdecIsGraphic(CMRdecChild(dec, 0)) ? 2 : 0)
       + (CMRdecIsGraphic(CMRdecChild(dec, 1)) ? 1 : 0);
     size_t cographicChildren = (CMRdecIsCographic(CMRdecChild(dec, 0)) ? 2 : 0)
       + (CMRdecIsCographic(CMRdecChild(dec, 1)) ? 1 : 0);
-    ASSERT_EQ( CMRdecNumChildren(CMRdecChild(dec, 0)), 0 );
-    ASSERT_EQ( CMRdecNumChildren(CMRdecChild(dec, 1)), 0 );
-    ASSERT_EQ( graphicChildren + cographicChildren, 3 );
+    ASSERT_EQ( CMRdecNumChildren(CMRdecChild(dec, 0)), 0UL );
+    ASSERT_EQ( CMRdecNumChildren(CMRdecChild(dec, 1)), 0UL );
+    ASSERT_EQ( graphicChildren + cographicChildren, 3UL );
     ASSERT_CMR_CALL( CMRdecFree(cmr, &dec) );
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
   }
