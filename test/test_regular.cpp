@@ -101,7 +101,7 @@ TEST(Regular, SeriesParallelTwoSeparation)
     ASSERT_FALSE( CMRdecHasMatrix(dec) ); /* Default settings should mean that the matrix is not copied. */
     ASSERT_TRUE( CMRdecHasTranspose(dec) ); /* As we test for graphicness, the transpose is constructed. */
     ASSERT_EQ( CMRdecIsSum(dec, NULL, NULL), 2 );
-    ASSERT_EQ( CMRdecNumChildren(dec), 2 );
+    ASSERT_EQ( CMRdecNumChildren(dec), 2UL );
     ASSERT_FALSE( CMRdecIsGraphic(CMRdecChild(dec, 0)) );
     ASSERT_TRUE( CMRdecIsCographic(CMRdecChild(dec, 0)) );
     ASSERT_TRUE( CMRdecIsGraphic(CMRdecChild(dec, 1)) );

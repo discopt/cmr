@@ -53,7 +53,7 @@ TEST(Equimodular, Examples)
 
     ASSERT_FALSE(isEquimodular);
     ASSERT_EQ(k, 0);
-    ASSERT_EQ(stats.totalCount, 1);
+    ASSERT_EQ(stats.totalCount, 1UL);
 
     ASSERT_CMR_CALL( CMRintmatFree(cmr, &matrix) );
   }
