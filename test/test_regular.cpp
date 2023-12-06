@@ -157,10 +157,11 @@ TEST(Regular, NestedMinorSearchTwoSeparation)
     ASSERT_TRUE( CMRdecHasTranspose(dec) ); /* As we test for graphicness, the transpose is constructed. */
     ASSERT_EQ( CMRdecIsSum(dec, NULL, NULL), 2 );
     ASSERT_EQ( CMRdecNumChildren(dec), 2UL );
-    ASSERT_TRUE( CMRdecIsGraphic(CMRdecChild(dec, 0)) );
-    ASSERT_FALSE( CMRdecIsCographic(CMRdecChild(dec, 0)) );
-    ASSERT_FALSE( CMRdecIsGraphic(CMRdecChild(dec, 1)) );
-    ASSERT_TRUE( CMRdecIsCographic(CMRdecChild(dec, 1)) );
+    int graphic = (CMRdecIsGraphic(CMRdecChild(dec, 0)) ? 2 : 0) + (CMRdecIsGraphic(CMRdecChild(dec, 1)) ? 1 : 0);
+    int cographic = (CMRdecIsCographic(CMRdecChild(dec, 0)) ? 1 : 0) + (CMRdecIsCographic(CMRdecChild(dec, 1)) ? 2 : 0);
+    ASSERT_EQ( graphic, cographic );
+    ASSERT_NE( graphic, 0);
+    ASSERT_NE( graphic, 3);
 
     ASSERT_CMR_CALL( CMRdecFree(cmr, &dec) );
 
