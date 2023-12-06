@@ -1,7 +1,10 @@
+#define CMR_DEBUG
+
 #ifndef CMR_DENSEMATRIX_INTERNAL_H
 #define CMR_DENSEMATRIX_INTERNAL_H
 
-#include <cmr/env.h>
+#include "env_internal.h"
+
 #include <cmr/matrix.h>
 
 #ifdef __cplusplus
@@ -39,6 +42,8 @@ bool CMRdensebinmatrixGet(
 )
 {
   size_t index = row * matrix->numColumns + column;
+  CMRdbgMsg(8, "CMRdensebinmatrixGet(%zu,%zu) uses index %zu in block %zu at %zu\n", row, column, index,
+    index / (8 * sizeof(unsigned long long)), (index % (8 * sizeof(unsigned long long))));
   unsigned long long block = matrix->data[index / (8 * sizeof(unsigned long long))];
   return block & (1UL << (index % (8 * sizeof(unsigned long long))));
 }
@@ -51,6 +56,8 @@ void CMRdensebinmatrixSet0(
 )
 {
   size_t index = row * matrix->numColumns + column;
+  CMRdbgMsg(8, "CMRdensebinmatrixSet0(%zu,%zu) uses index %zu in block %zu at %zu.\n", row, column, index,
+    index / (8 * sizeof(unsigned long long)), (index % (8 * sizeof(unsigned long long))));
   unsigned long long* pblock = &matrix->data[index / (8 * sizeof(unsigned long long))];
   *pblock &= ~(1UL << (index % (8 * sizeof(unsigned long long))));
 }
@@ -63,6 +70,8 @@ void CMRdensebinmatrixSet1(
 )
 {
   size_t index = row * matrix->numColumns + column;
+  CMRdbgMsg(8, "CMRdensebinmatrixSet1(%zu,%zu) uses index %zu in block %zu at %zu.\n", row, column, index,
+    index / (8 * sizeof(unsigned long long)), (index % (8 * sizeof(unsigned long long))));
   unsigned long long* pblock = &matrix->data[index / (8 * sizeof(unsigned long long))];
   *pblock |= (1UL << (index % (8 * sizeof(unsigned long long))));
 }
@@ -76,6 +85,8 @@ void CMRdensebinmatrixSet(
 )
 {
   size_t index = row * matrix->numColumns + column;
+  CMRdbgMsg(8, "CMRdensebinmatrixSet(%zu,%zu,%d) uses index %zu in block %zu at %zu.\n", row, column, value ? 1 : 0, index,
+    index / (8 * sizeof(unsigned long long)), (index % (8 * sizeof(unsigned long long))));
   unsigned long long* pblock = &matrix->data[index / (8 * sizeof(unsigned long long))];
   size_t mask = (1UL << (index % (8 * sizeof(unsigned long long))));
   if (value)
@@ -93,6 +104,8 @@ void CMRdensebinmatrixFlip(
 )
 {
   size_t index = row * matrix->numColumns + column;
+  CMRdbgMsg(8, "CMRdensebinmatrixFlip(%zu,%zu) uses index %zu in block %zu at %zu.\n", row, column, index,
+    index / (8 * sizeof(unsigned long long)), (index % (8 * sizeof(unsigned long long))));
   unsigned long long* pblock = &matrix->data[index / (8 * sizeof(unsigned long long))];
   size_t mask = (1UL << (index % (8 * sizeof(unsigned long long))));
   if (*pblock & mask)
