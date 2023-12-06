@@ -1145,8 +1145,11 @@ CMR_ERROR CMRregularConstructNestedMinorSequence(CMR* cmr, CMR_DEC* dec, bool te
   size_t numRows = dec->matrix->numRows;
   size_t numColumns = dec->matrix->numColumns;
 
-  CMRdbgMsg(4, "Attempting to construct a sequence of 3-connected nested minors for a %dx%d matrix.\n", numRows,
-    numColumns);
+  CMRdbgMsg(4, "Attempting to construct a sequence of 3-connected nested minors for the following %zux%zu matrix.\n",
+    numRows, numColumns);
+#if defined(CMR_DEBUG)
+  CMR_CALL( CMRchrmatPrintDense(cmr, dec->matrix, stdout, '0', true) );
+#endif /* CMR_DEBUG */
 
   size_t* nestedMinorsRows = NULL;
   CMR_CALL( CMRallocStackArray(cmr, &nestedMinorsRows, numRows) );

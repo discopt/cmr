@@ -46,7 +46,7 @@ CMR_ERROR CMRregularDecomposeSeriesParallel(CMR* cmr, CMR_DEC** pdec, bool terna
   if (psubmatrix && *psubmatrix && (*psubmatrix)->numRows == 2)
     dec->type = CMR_DEC_IRREGULAR;
 
-  CMRdbgMsg(0, "[CMRregularDecomposeSeriesParallel -> %s%ld SP reductions]",
+  CMRdbgMsg(0, "[CMRregularDecomposeSeriesParallel -> %s%zu SP reductions]",
     numReductions == SIZE_MAX ? ">=" : "", numReductions == SIZE_MAX ? 1 : numReductions);
 
   /* Modify the decomposition to reflect the SP reductions. */
