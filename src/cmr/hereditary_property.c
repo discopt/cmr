@@ -1,4 +1,4 @@
-#define CMR_DEBUG /* Uncomment to debug. */
+// #define CMR_DEBUG /* Uncomment to debug. */
 
 #include "hereditary_property.h"
 #include <stdint.h>
