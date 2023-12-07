@@ -46,8 +46,9 @@ Please cite the paper in case the implementation contributed to your research:
     }
 
 In order to repeat experiments described in the paper above, the function can be parameterized as to use exponential-time algorithms.
-The first is based on the criterion of Ghouila-Houri and runs in time \f$ \mathcal{O}( (m + n) 3^{\min(m, n)}) \f$.
-The second enumerates square [Eulerian submatrices](https://www.ams.org/journals/proc/1965-016-05/S0002-9939-1965-0180568-2/) and runs in time \f$ \mathcal{O}( (m+n) 2^{ m + n } ) \f$.
+
+  - The first is based on the criterion of Ghouila-Houri and runs in time \f$ \mathcal{O}( (m + n) \cdot 3^{\min(m, n)}) \f$.
+  - The second enumerates square [Eulerian submatrices](https://www.ams.org/journals/proc/1965-016-05/S0002-9939-1965-0180568-2/) and runs in time \f$ \mathcal{O}( (m+n) \cdot 2^{ m + n } ) \f$.
 
 ## C Interface ##
 
