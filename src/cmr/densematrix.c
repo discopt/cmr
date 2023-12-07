@@ -1,11 +1,11 @@
-#define CMR_DEBUG /* Uncomment to debug this file. */
+// #define CMR_DEBUG /* Uncomment to debug this file. */
 
+#include "env_internal.h"
 #include "densematrix.h"
 
 #include <assert.h>
 #include <stdint.h>
 
-#include "env_internal.h"
 
 CMR_ERROR CMRdensebinmatrixCreateStack(CMR* cmr, size_t numRows, size_t numColumns, DenseBinaryMatrix** presult)
 {
