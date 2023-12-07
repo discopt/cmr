@@ -91,82 +91,83 @@ $(function() {
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="camion_8h.html">cmr/camion.h</a>&gt;</span></div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160; </div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor">#include &lt;stdio.h&gt;</span></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160; </div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span> {</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160; </div>
-<div class="line"><a name="l00034"></a><span class="lineno"><a class="line" href="structCMR__NETWORK__STATISTICS.html">   34</a></span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct</span></div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;{</div>
-<div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="structCMR__NETWORK__STATISTICS.html#ae9e9ee8c5ac68e877d4c7af4e4561bc2">   36</a></span>&#160;  <span class="keywordtype">size_t</span> <a class="code" href="structCMR__NETWORK__STATISTICS.html#ae9e9ee8c5ac68e877d4c7af4e4561bc2">totalCount</a>;              </div>
-<div class="line"><a name="l00037"></a><span class="lineno"><a class="line" href="structCMR__NETWORK__STATISTICS.html#a07b4ba0cb1e1f1a851b15c32cf5aa9c8">   37</a></span>&#160;  <span class="keywordtype">double</span> <a class="code" href="structCMR__NETWORK__STATISTICS.html#a07b4ba0cb1e1f1a851b15c32cf5aa9c8">totalTime</a>;               </div>
-<div class="line"><a name="l00038"></a><span class="lineno"><a class="line" href="structCMR__NETWORK__STATISTICS.html#a3daaf034b7ebe781a26f0eb4929a9fc4">   38</a></span>&#160;  <a class="code" href="structCMR__CAMION__STATISTICS.html">CMR_CAMION_STATISTICS</a> <a class="code" href="structCMR__NETWORK__STATISTICS.html#a3daaf034b7ebe781a26f0eb4929a9fc4">camion</a>;   </div>
-<div class="line"><a name="l00039"></a><span class="lineno"><a class="line" href="structCMR__NETWORK__STATISTICS.html#a551a7a7ee749e26f73bf728cd72b3ad7">   39</a></span>&#160;  <a class="code" href="structCMR__GRAPHIC__STATISTICS.html">CMR_GRAPHIC_STATISTICS</a> <a class="code" href="structCMR__NETWORK__STATISTICS.html#a551a7a7ee749e26f73bf728cd72b3ad7">graphic</a>; </div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;} <a class="code" href="structCMR__NETWORK__STATISTICS.html">CMR_NETWORK_STATISTICS</a>;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160; </div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;CMR_EXPORT</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="network_8h.html#a89295bf19c98d914e7376c6ff8fd3559">CMRstatsNetworkInit</a>(</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  <a class="code" href="structCMR__NETWORK__STATISTICS.html">CMR_NETWORK_STATISTICS</a>* stats </div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;);</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160; </div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;CMR_EXPORT</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="network_8h.html#a1e6711a007335a8e6e1e1ccb08a6fc99">CMRstatsNetworkPrint</a>(</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  FILE* stream,                   </div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  <a class="code" href="structCMR__NETWORK__STATISTICS.html">CMR_NETWORK_STATISTICS</a>* stats,  </div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">char</span>* prefix              </div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;);</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  </div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;CMR_EXPORT</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="network_8h.html#a15bdae67dd33094b2a6981ef25f012ac">CMRcomputeNetworkMatrix</a>(</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,                       </div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  <a class="code" href="structCMR__GRAPH.html">CMR_GRAPH</a>* digraph,             </div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <a class="code" href="structCMR__CHRMAT.html">CMR_CHRMAT</a>** pmatrix,           </div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  <a class="code" href="structCMR__CHRMAT.html">CMR_CHRMAT</a>** ptranspose,        </div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  <span class="keywordtype">bool</span>* arcsReversed,             </div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  <span class="keywordtype">int</span> numForestArcs,              </div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  <a class="code" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a>* forestArcs,     </div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  <span class="keywordtype">int</span> numCoforestArcs,            </div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  <a class="code" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a>* coforestArcs,   </div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  <span class="keywordtype">bool</span>* pisCorrectForest          </div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;);</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160; </div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;CMR_EXPORT</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="network_8h.html#af770aa54b7e7608d0d4a02708da04939">CMRtestNetworkMatrix</a>(</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,                       </div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;  <a class="code" href="structCMR__CHRMAT.html">CMR_CHRMAT</a>* matrix,             </div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;  <span class="keywordtype">bool</span>* pisNetwork,               </div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;  <a class="code" href="structCMR__GRAPH.html">CMR_GRAPH</a>** pdigraph,           </div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;  <a class="code" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a>** pforestArcs,   </div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;  <a class="code" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a>** pcoforestArcs, </div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;  <span class="keywordtype">bool</span>** parcsReversed,           </div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;  <a class="code" href="structCMR__SUBMAT.html">CMR_SUBMAT</a>** psubmatrix,        </div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;  <a class="code" href="structCMR__NETWORK__STATISTICS.html">CMR_NETWORK_STATISTICS</a>* stats,  </div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;  <span class="keywordtype">double</span> timeLimit                </div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;);</div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160; </div>
-<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;CMR_EXPORT</div>
-<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="network_8h.html#a3bbe7e307161e6e5264663c60ff3c051">CMRtestConetworkMatrix</a>(</div>
-<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,                       </div>
-<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;  <a class="code" href="structCMR__CHRMAT.html">CMR_CHRMAT</a>* matrix,             </div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;  <span class="keywordtype">bool</span>* pisConetwork,             </div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;  <a class="code" href="structCMR__GRAPH.html">CMR_GRAPH</a>** pdigraph,           </div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;  <a class="code" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a>** pforestArcs,   </div>
-<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;  <a class="code" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a>** pcoforestArcs, </div>
-<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;  <span class="keywordtype">bool</span>** parcsReversed,           </div>
-<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;  <a class="code" href="structCMR__SUBMAT.html">CMR_SUBMAT</a>** psubmatrix,        </div>
-<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;  <a class="code" href="structCMR__NETWORK__STATISTICS.html">CMR_NETWORK_STATISTICS</a>* stats,  </div>
-<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;  <span class="keywordtype">double</span> timeLimit                </div>
-<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;);</div>
-<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160; </div>
-<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
-<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;}</div>
-<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160; </div>
-<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* CMR_NETWORK_H */</span><span class="preprocessor"></span></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">#include &lt;stdint.h&gt;</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160; </div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span> {</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160; </div>
+<div class="line"><a name="l00035"></a><span class="lineno"><a class="line" href="structCMR__NETWORK__STATISTICS.html">   35</a></span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct</span></div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;{</div>
+<div class="line"><a name="l00037"></a><span class="lineno"><a class="line" href="structCMR__NETWORK__STATISTICS.html#a8124f9bf0935a01460ff07945dcaa1f3">   37</a></span>&#160;  uint32_t <a class="code" href="structCMR__NETWORK__STATISTICS.html#a8124f9bf0935a01460ff07945dcaa1f3">totalCount</a>;            </div>
+<div class="line"><a name="l00038"></a><span class="lineno"><a class="line" href="structCMR__NETWORK__STATISTICS.html#a07b4ba0cb1e1f1a851b15c32cf5aa9c8">   38</a></span>&#160;  <span class="keywordtype">double</span> <a class="code" href="structCMR__NETWORK__STATISTICS.html#a07b4ba0cb1e1f1a851b15c32cf5aa9c8">totalTime</a>;               </div>
+<div class="line"><a name="l00039"></a><span class="lineno"><a class="line" href="structCMR__NETWORK__STATISTICS.html#a3daaf034b7ebe781a26f0eb4929a9fc4">   39</a></span>&#160;  <a class="code" href="structCMR__CAMION__STATISTICS.html">CMR_CAMION_STATISTICS</a> <a class="code" href="structCMR__NETWORK__STATISTICS.html#a3daaf034b7ebe781a26f0eb4929a9fc4">camion</a>;   </div>
+<div class="line"><a name="l00040"></a><span class="lineno"><a class="line" href="structCMR__NETWORK__STATISTICS.html#a551a7a7ee749e26f73bf728cd72b3ad7">   40</a></span>&#160;  <a class="code" href="structCMR__GRAPHIC__STATISTICS.html">CMR_GRAPHIC_STATISTICS</a> <a class="code" href="structCMR__NETWORK__STATISTICS.html#a551a7a7ee749e26f73bf728cd72b3ad7">graphic</a>; </div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;} <a class="code" href="structCMR__NETWORK__STATISTICS.html">CMR_NETWORK_STATISTICS</a>;</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160; </div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;CMR_EXPORT</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="network_8h.html#a89295bf19c98d914e7376c6ff8fd3559">CMRstatsNetworkInit</a>(</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  <a class="code" href="structCMR__NETWORK__STATISTICS.html">CMR_NETWORK_STATISTICS</a>* stats </div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;);</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160; </div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;CMR_EXPORT</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="network_8h.html#a1e6711a007335a8e6e1e1ccb08a6fc99">CMRstatsNetworkPrint</a>(</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  FILE* stream,                   </div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  <a class="code" href="structCMR__NETWORK__STATISTICS.html">CMR_NETWORK_STATISTICS</a>* stats,  </div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">char</span>* prefix              </div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;);</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  </div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;CMR_EXPORT</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="network_8h.html#a15bdae67dd33094b2a6981ef25f012ac">CMRcomputeNetworkMatrix</a>(</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,                       </div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <a class="code" href="structCMR__GRAPH.html">CMR_GRAPH</a>* digraph,             </div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  <a class="code" href="structCMR__CHRMAT.html">CMR_CHRMAT</a>** pmatrix,           </div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  <a class="code" href="structCMR__CHRMAT.html">CMR_CHRMAT</a>** ptranspose,        </div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  <span class="keywordtype">bool</span>* arcsReversed,             </div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  <span class="keywordtype">int</span> numForestArcs,              </div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  <a class="code" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a>* forestArcs,     </div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  <span class="keywordtype">int</span> numCoforestArcs,            </div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  <a class="code" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a>* coforestArcs,   </div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  <span class="keywordtype">bool</span>* pisCorrectForest          </div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;);</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160; </div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;CMR_EXPORT</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="network_8h.html#af770aa54b7e7608d0d4a02708da04939">CMRtestNetworkMatrix</a>(</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,                       </div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;  <a class="code" href="structCMR__CHRMAT.html">CMR_CHRMAT</a>* matrix,             </div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;  <span class="keywordtype">bool</span>* pisNetwork,               </div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;  <a class="code" href="structCMR__GRAPH.html">CMR_GRAPH</a>** pdigraph,           </div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;  <a class="code" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a>** pforestArcs,   </div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;  <a class="code" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a>** pcoforestArcs, </div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;  <span class="keywordtype">bool</span>** parcsReversed,           </div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;  <a class="code" href="structCMR__SUBMAT.html">CMR_SUBMAT</a>** psubmatrix,        </div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;  <a class="code" href="structCMR__NETWORK__STATISTICS.html">CMR_NETWORK_STATISTICS</a>* stats,  </div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;  <span class="keywordtype">double</span> timeLimit                </div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;);</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160; </div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;CMR_EXPORT</div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="network_8h.html#a3bbe7e307161e6e5264663c60ff3c051">CMRtestConetworkMatrix</a>(</div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,                       </div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;  <a class="code" href="structCMR__CHRMAT.html">CMR_CHRMAT</a>* matrix,             </div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;  <span class="keywordtype">bool</span>* pisConetwork,             </div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;  <a class="code" href="structCMR__GRAPH.html">CMR_GRAPH</a>** pdigraph,           </div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;  <a class="code" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a>** pforestArcs,   </div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;  <a class="code" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a>** pcoforestArcs, </div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;  <span class="keywordtype">bool</span>** parcsReversed,           </div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;  <a class="code" href="structCMR__SUBMAT.html">CMR_SUBMAT</a>** psubmatrix,        </div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;  <a class="code" href="structCMR__NETWORK__STATISTICS.html">CMR_NETWORK_STATISTICS</a>* stats,  </div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;  <span class="keywordtype">double</span> timeLimit                </div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;);</div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160; </div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;}</div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160; </div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* CMR_NETWORK_H */</span><span class="preprocessor"></span></div>
 <div class="ttc" id="acamion_8h_html"><div class="ttname"><a href="camion_8h.html">camion.h</a></div><div class="ttdoc">Testing whether a matrix is Camion-signed.</div></div>
 <div class="ttc" id="aelement_8h_html"><div class="ttname"><a href="element_8h.html">element.h</a></div><div class="ttdoc">Functionality for the row and column elements of a matrix.</div></div>
 <div class="ttc" id="aenv_8h_html"><div class="ttname"><a href="env_8h.html">env.h</a></div><div class="ttdoc">Basic functionality of the software library.</div></div>
-<div class="ttc" id="aenv_8h_html_ae2f4ad54b976c2b9a099246c6dc0be87"><div class="ttname"><a href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a></div><div class="ttdeci">CMR_ERROR</div><div class="ttdoc">Type for return codes of library functions.</div><div class="ttdef"><b>Definition:</b> env.h:27</div></div>
+<div class="ttc" id="aenv_8h_html_ae2f4ad54b976c2b9a099246c6dc0be87"><div class="ttname"><a href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a></div><div class="ttdeci">CMR_ERROR</div><div class="ttdoc">Type for return codes of library functions.</div><div class="ttdef"><b>Definition:</b> env.h:32</div></div>
 <div class="ttc" id="agraph_8h_html"><div class="ttname"><a href="graph_8h.html">graph.h</a></div><div class="ttdoc">Functionality for graphs.</div></div>
 <div class="ttc" id="agraphic_8h_html"><div class="ttname"><a href="graphic_8h.html">graphic.h</a></div><div class="ttdoc">Computation and recognition of graphic matrices and cographic matrices.</div></div>
 <div class="ttc" id="agroup__Graph_html_gae955029839563f0561720dee39c85f0a"><div class="ttname"><a href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a></div><div class="ttdeci">int CMR_GRAPH_EDGE</div><div class="ttdoc">Reference to an edge of CMR_GRAPH.</div><div class="ttdef"><b>Definition:</b> graph.h:31</div></div>
@@ -176,16 +177,16 @@ $(function() {
 <div class="ttc" id="anetwork_8h_html_a3bbe7e307161e6e5264663c60ff3c051"><div class="ttname"><a href="network_8h.html#a3bbe7e307161e6e5264663c60ff3c051">CMRtestConetworkMatrix</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRtestConetworkMatrix(CMR *cmr, CMR_CHRMAT *matrix, bool *pisConetwork, CMR_GRAPH **pdigraph, CMR_GRAPH_EDGE **pforestArcs, CMR_GRAPH_EDGE **pcoforestArcs, bool **parcsReversed, CMR_SUBMAT **psubmatrix, CMR_NETWORK_STATISTICS *stats, double timeLimit)</div><div class="ttdoc">Tests a matrix  for being a conetwork matrix.</div><div class="ttdef"><b>Definition:</b> network.c:106</div></div>
 <div class="ttc" id="anetwork_8h_html_a89295bf19c98d914e7376c6ff8fd3559"><div class="ttname"><a href="network_8h.html#a89295bf19c98d914e7376c6ff8fd3559">CMRstatsNetworkInit</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRstatsNetworkInit(CMR_NETWORK_STATISTICS *stats)</div><div class="ttdoc">Initializes all statistics for recognition algorithm for network matrices.</div><div class="ttdef"><b>Definition:</b> network.c:19</div></div>
 <div class="ttc" id="anetwork_8h_html_af770aa54b7e7608d0d4a02708da04939"><div class="ttname"><a href="network_8h.html#af770aa54b7e7608d0d4a02708da04939">CMRtestNetworkMatrix</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRtestNetworkMatrix(CMR *cmr, CMR_CHRMAT *matrix, bool *pisNetwork, CMR_GRAPH **pdigraph, CMR_GRAPH_EDGE **pforestArcs, CMR_GRAPH_EDGE **pcoforestArcs, bool **parcsReversed, CMR_SUBMAT **psubmatrix, CMR_NETWORK_STATISTICS *stats, double timeLimit)</div><div class="ttdoc">Tests a matrix  for being a network matrix.</div><div class="ttdef"><b>Definition:</b> network.c:440</div></div>
-<div class="ttc" id="astructCMR__CAMION__STATISTICS_html"><div class="ttname"><a href="structCMR__CAMION__STATISTICS.html">CMR_CAMION_STATISTICS</a></div><div class="ttdoc">Statistics for Camion-signing algorithm.</div><div class="ttdef"><b>Definition:</b> camion.h:23</div></div>
+<div class="ttc" id="astructCMR__CAMION__STATISTICS_html"><div class="ttname"><a href="structCMR__CAMION__STATISTICS.html">CMR_CAMION_STATISTICS</a></div><div class="ttdoc">Statistics for Camion-signing algorithm.</div><div class="ttdef"><b>Definition:</b> camion.h:24</div></div>
 <div class="ttc" id="astructCMR__CHRMAT_html"><div class="ttname"><a href="structCMR__CHRMAT.html">CMR_CHRMAT</a></div><div class="ttdoc">Row-wise representation of sparse char matrix.</div><div class="ttdef"><b>Definition:</b> matrix.h:204</div></div>
 <div class="ttc" id="astructCMR__ENVIRONMENT_html"><div class="ttname"><a href="structCMR__ENVIRONMENT.html">CMR_ENVIRONMENT</a></div><div class="ttdef"><b>Definition:</b> env_internal.h:45</div></div>
-<div class="ttc" id="astructCMR__GRAPHIC__STATISTICS_html"><div class="ttname"><a href="structCMR__GRAPHIC__STATISTICS.html">CMR_GRAPHIC_STATISTICS</a></div><div class="ttdoc">Statistics for graphicness test.</div><div class="ttdef"><b>Definition:</b> graphic.h:33</div></div>
+<div class="ttc" id="astructCMR__GRAPHIC__STATISTICS_html"><div class="ttname"><a href="structCMR__GRAPHIC__STATISTICS.html">CMR_GRAPHIC_STATISTICS</a></div><div class="ttdoc">Statistics for graphicness test.</div><div class="ttdef"><b>Definition:</b> graphic.h:34</div></div>
 <div class="ttc" id="astructCMR__GRAPH_html"><div class="ttname"><a href="structCMR__GRAPH.html">CMR_GRAPH</a></div><div class="ttdef"><b>Definition:</b> graph.h:49</div></div>
-<div class="ttc" id="astructCMR__NETWORK__STATISTICS_html"><div class="ttname"><a href="structCMR__NETWORK__STATISTICS.html">CMR_NETWORK_STATISTICS</a></div><div class="ttdoc">Statistics for recognition algorithm for network matrices.</div><div class="ttdef"><b>Definition:</b> network.h:35</div></div>
-<div class="ttc" id="astructCMR__NETWORK__STATISTICS_html_a07b4ba0cb1e1f1a851b15c32cf5aa9c8"><div class="ttname"><a href="structCMR__NETWORK__STATISTICS.html#a07b4ba0cb1e1f1a851b15c32cf5aa9c8">CMR_NETWORK_STATISTICS::totalTime</a></div><div class="ttdeci">double totalTime</div><div class="ttdef"><b>Definition:</b> network.h:37</div></div>
-<div class="ttc" id="astructCMR__NETWORK__STATISTICS_html_a3daaf034b7ebe781a26f0eb4929a9fc4"><div class="ttname"><a href="structCMR__NETWORK__STATISTICS.html#a3daaf034b7ebe781a26f0eb4929a9fc4">CMR_NETWORK_STATISTICS::camion</a></div><div class="ttdeci">CMR_CAMION_STATISTICS camion</div><div class="ttdef"><b>Definition:</b> network.h:38</div></div>
-<div class="ttc" id="astructCMR__NETWORK__STATISTICS_html_a551a7a7ee749e26f73bf728cd72b3ad7"><div class="ttname"><a href="structCMR__NETWORK__STATISTICS.html#a551a7a7ee749e26f73bf728cd72b3ad7">CMR_NETWORK_STATISTICS::graphic</a></div><div class="ttdeci">CMR_GRAPHIC_STATISTICS graphic</div><div class="ttdef"><b>Definition:</b> network.h:39</div></div>
-<div class="ttc" id="astructCMR__NETWORK__STATISTICS_html_ae9e9ee8c5ac68e877d4c7af4e4561bc2"><div class="ttname"><a href="structCMR__NETWORK__STATISTICS.html#ae9e9ee8c5ac68e877d4c7af4e4561bc2">CMR_NETWORK_STATISTICS::totalCount</a></div><div class="ttdeci">size_t totalCount</div><div class="ttdef"><b>Definition:</b> network.h:36</div></div>
+<div class="ttc" id="astructCMR__NETWORK__STATISTICS_html"><div class="ttname"><a href="structCMR__NETWORK__STATISTICS.html">CMR_NETWORK_STATISTICS</a></div><div class="ttdoc">Statistics for recognition algorithm for network matrices.</div><div class="ttdef"><b>Definition:</b> network.h:36</div></div>
+<div class="ttc" id="astructCMR__NETWORK__STATISTICS_html_a07b4ba0cb1e1f1a851b15c32cf5aa9c8"><div class="ttname"><a href="structCMR__NETWORK__STATISTICS.html#a07b4ba0cb1e1f1a851b15c32cf5aa9c8">CMR_NETWORK_STATISTICS::totalTime</a></div><div class="ttdeci">double totalTime</div><div class="ttdef"><b>Definition:</b> network.h:38</div></div>
+<div class="ttc" id="astructCMR__NETWORK__STATISTICS_html_a3daaf034b7ebe781a26f0eb4929a9fc4"><div class="ttname"><a href="structCMR__NETWORK__STATISTICS.html#a3daaf034b7ebe781a26f0eb4929a9fc4">CMR_NETWORK_STATISTICS::camion</a></div><div class="ttdeci">CMR_CAMION_STATISTICS camion</div><div class="ttdef"><b>Definition:</b> network.h:39</div></div>
+<div class="ttc" id="astructCMR__NETWORK__STATISTICS_html_a551a7a7ee749e26f73bf728cd72b3ad7"><div class="ttname"><a href="structCMR__NETWORK__STATISTICS.html#a551a7a7ee749e26f73bf728cd72b3ad7">CMR_NETWORK_STATISTICS::graphic</a></div><div class="ttdeci">CMR_GRAPHIC_STATISTICS graphic</div><div class="ttdef"><b>Definition:</b> network.h:40</div></div>
+<div class="ttc" id="astructCMR__NETWORK__STATISTICS_html_a8124f9bf0935a01460ff07945dcaa1f3"><div class="ttname"><a href="structCMR__NETWORK__STATISTICS.html#a8124f9bf0935a01460ff07945dcaa1f3">CMR_NETWORK_STATISTICS::totalCount</a></div><div class="ttdeci">uint32_t totalCount</div><div class="ttdef"><b>Definition:</b> network.h:37</div></div>
 <div class="ttc" id="astructCMR__SUBMAT_html"><div class="ttname"><a href="structCMR__SUBMAT.html">CMR_SUBMAT</a></div><div class="ttdoc">Row and column indices for a submatrix.</div><div class="ttdef"><b>Definition:</b> matrix.h:28</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->

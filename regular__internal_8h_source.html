@@ -85,117 +85,112 @@ $(function() {
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160; </div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="regular_8h.html">cmr/regular.h</a>&gt;</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160; </div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="regular__internal_8h.html#a311d7fd8b90d1593279be9774508b6a4">CMRregularSearchThreeSeparation</a>(</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="regular__internal_8h.html#ab1991a422f3bfe7a314f2cc21120187e">CMRregularSearchThreeSeparation</a>(</div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,                       </div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;  <a class="code" href="struct__CMR__DEC.html">CMR_DEC</a>* dec,                   </div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;  <a class="code" href="structCMR__CHRMAT.html">CMR_CHRMAT</a>* transpose,          </div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;  <span class="keywordtype">bool</span> ternary,                   </div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;  <span class="keywordtype">size_t</span> firstNonCoGraphicMinor,  </div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;  <a class="code" href="structCMR__SUBMAT.html">CMR_SUBMAT</a>** psubmatrix,        </div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;  <a class="code" href="structCMR__REGULAR__PARAMETERS.html">CMR_REGULAR_PARAMETERS</a>* params, </div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;  <a class="code" href="structCMR__REGULAR__STATISTICS.html">CMR_REGULAR_STATISTICS</a>* stats,  </div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  <span class="keywordtype">double</span> timeLimit                </div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;);</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160; </div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="regular__internal_8h.html#ad1ac004192e9323ac725e9078adc42de">CMRregularThreeConnectedIsR10</a>(</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,     </div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  <a class="code" href="struct__CMR__DEC.html">CMR_DEC</a>* dec, </div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;  <span class="keywordtype">bool</span>* pisR10  </div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;);</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160; </div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="regular__internal_8h.html#a11a4efbae860e7fc56e8780369e13ea8">CMRregularSequenceGraphic</a>(</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,                       </div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  <a class="code" href="structCMR__CHRMAT.html">CMR_CHRMAT</a>* matrix,             </div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  <a class="code" href="structCMR__CHRMAT.html">CMR_CHRMAT</a>* transpose,          </div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  <a class="code" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a>* rowElements,       </div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  <a class="code" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a>* columnElements,    </div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  <span class="keywordtype">size_t</span> lengthSequence,          </div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  <span class="keywordtype">size_t</span>* sequenceNumRows,        </div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  <span class="keywordtype">size_t</span>* sequenceNumColumns,     </div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  <span class="keywordtype">size_t</span>* plastGraphicMinor,      </div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  <a class="code" href="structCMR__GRAPH.html">CMR_GRAPH</a>** pgraph,             </div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  <a class="code" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a>** pedgeElements,    </div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  <a class="code" href="structCMR__REGULAR__STATISTICS.html">CMR_REGULAR_STATISTICS</a>* stats,  </div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  <span class="keywordtype">double</span> timeLimit                </div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;);</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160; </div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="regular__internal_8h.html#abcceaa7c17df264655cf0fc5e57f1fc2">CMRregularExtendNestedMinorSequence</a>(</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,                       </div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <a class="code" href="struct__CMR__DEC.html">CMR_DEC</a>* dec,                   </div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  <span class="keywordtype">bool</span> ternary,                   </div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  <a class="code" href="structCMR__SUBMAT.html">CMR_SUBMAT</a>** psubmatrix,        </div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  <a class="code" href="structCMR__REGULAR__PARAMETERS.html">CMR_REGULAR_PARAMETERS</a>* params, </div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  <a class="code" href="structCMR__REGULAR__STATISTICS.html">CMR_REGULAR_STATISTICS</a>* stats,  </div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <span class="keywordtype">double</span> timeLimit                </div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;);</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160; </div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="regular__internal_8h.html#aee1efc0537f743d9f46bd860c5bd9aea">CMRregularConstructNestedMinorSequence</a>(</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,                       </div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  <a class="code" href="struct__CMR__DEC.html">CMR_DEC</a>* dec,                   </div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  <span class="keywordtype">bool</span> ternary,                   </div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <a class="code" href="structCMR__SUBMAT.html">CMR_SUBMAT</a>* wheelSubmatrix,     </div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  <a class="code" href="structCMR__SUBMAT.html">CMR_SUBMAT</a>** psubmatrix,        </div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  <a class="code" href="structCMR__REGULAR__PARAMETERS.html">CMR_REGULAR_PARAMETERS</a>* params, </div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  <a class="code" href="structCMR__REGULAR__STATISTICS.html">CMR_REGULAR_STATISTICS</a>* stats,  </div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  <span class="keywordtype">double</span> timeLimit                </div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;);</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160; </div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="regular__internal_8h.html#a90d6897413204e4f5a7bb816cd7e9cb8">CMRregularTestGraphic</a>(</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,                       </div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;  <a class="code" href="structCMR__CHRMAT.html">CMR_CHRMAT</a>** pmatrix,           </div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;  <a class="code" href="structCMR__CHRMAT.html">CMR_CHRMAT</a>** ptranspose,        </div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;  <span class="keywordtype">bool</span> ternary,                   </div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;  <span class="keywordtype">bool</span>* pisGraphic,               </div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;  <a class="code" href="structCMR__GRAPH.html">CMR_GRAPH</a>** pgraph,             </div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  <a class="code" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a>** pforest,       </div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;  <a class="code" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a>** pcoforest,     </div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  <span class="keywordtype">bool</span>** parcsReversed,           </div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;  <a class="code" href="structCMR__SUBMAT.html">CMR_SUBMAT</a>** psubmatrix,        </div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  <a class="code" href="structCMR__REGULAR__STATISTICS.html">CMR_REGULAR_STATISTICS</a>* stats,  </div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  <span class="keywordtype">double</span> timeLimit                </div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;);</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160; </div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="regular__internal_8h.html#a3e5aa65b2a094726c2baed454bf1d2c4">CMRregularDecomposeSeriesParallel</a>(</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,                       </div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;  <a class="code" href="struct__CMR__DEC.html">CMR_DEC</a>** pdec,                 </div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;  <span class="keywordtype">bool</span> ternary,                   </div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;  <a class="code" href="structCMR__SUBMAT.html">CMR_SUBMAT</a>** psubmatrix,        </div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;  <a class="code" href="structCMR__REGULAR__PARAMETERS.html">CMR_REGULAR_PARAMETERS</a>* params, </div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;  <a class="code" href="structCMR__REGULAR__STATISTICS.html">CMR_REGULAR_STATISTICS</a>* stats,  </div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;  <span class="keywordtype">double</span> timeLimit                </div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;);</div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160; </div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="regular__internal_8h.html#a17ff4174e115d3bd1a2c205138fffcdb">CMRregularDecomposeOneSum</a>(</div>
-<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,     </div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;  <a class="code" href="struct__CMR__DEC.html">CMR_DEC</a>* dec  </div>
-<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;);</div>
-<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160; </div>
-<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="regular__internal_8h.html#a5fa9a7e49bf221642cd400ffb2053a15">CMRtestRegular</a>(</div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,                       </div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;  <a class="code" href="structCMR__CHRMAT.html">CMR_CHRMAT</a>* matrix,             </div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;  <span class="keywordtype">bool</span> ternary,                   </div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;  <span class="keywordtype">bool</span> *pisRegular,               </div>
-<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;  <a class="code" href="struct__CMR__DEC.html">CMR_DEC</a>** pdec,                 </div>
-<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;  <a class="code" href="structCMR__MINOR.html">CMR_MINOR</a>** pminor,             </div>
-<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;  <a class="code" href="structCMR__REGULAR__PARAMETERS.html">CMR_REGULAR_PARAMETERS</a>* params, </div>
-<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;  <a class="code" href="structCMR__REGULAR__STATISTICS.html">CMR_REGULAR_STATISTICS</a>* stats,  </div>
-<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;  <span class="keywordtype">double</span> timeLimit                </div>
-<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;);</div>
-<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160; </div>
-<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* CMR_REGULAR_INTERNAL_H */</span><span class="preprocessor"></span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;  <a class="code" href="structCMR__REGULAR__STATISTICS.html">CMR_REGULAR_STATISTICS</a>* stats,  </div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;  <span class="keywordtype">double</span> timeLimit                </div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;);</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160; </div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="regular__internal_8h.html#ad1ac004192e9323ac725e9078adc42de">CMRregularThreeConnectedIsR10</a>(</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,     </div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  <a class="code" href="struct__CMR__DEC.html">CMR_DEC</a>* dec, </div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  <span class="keywordtype">bool</span>* pisR10  </div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;);</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160; </div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="regular__internal_8h.html#a94dc1cb2cc08106758c3ecdd5415e6a4">CMRregularSequenceGraphic</a>(</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,                       </div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  <a class="code" href="structCMR__CHRMAT.html">CMR_CHRMAT</a>* matrix,             </div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  <a class="code" href="structCMR__CHRMAT.html">CMR_CHRMAT</a>* transpose,          </div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  <span class="keywordtype">size_t</span> lengthSequence,          </div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  <span class="keywordtype">size_t</span>* sequenceNumRows,        </div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  <span class="keywordtype">size_t</span>* sequenceNumColumns,     </div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  <span class="keywordtype">size_t</span>* plastGraphicMinor,      </div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  <a class="code" href="structCMR__GRAPH.html">CMR_GRAPH</a>** pgraph,             </div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  <a class="code" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a>** pedgeElements,    </div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  <a class="code" href="structCMR__REGULAR__STATISTICS.html">CMR_REGULAR_STATISTICS</a>* stats,  </div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  <span class="keywordtype">double</span> timeLimit                </div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;);</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160; </div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="regular__internal_8h.html#ad77e1ad5dfd274ebe64f45c95cc06e72">CMRregularExtendNestedMinorSequence</a>(</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,                       </div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  <a class="code" href="struct__CMR__DEC.html">CMR_DEC</a>* dec,                   </div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  <span class="keywordtype">bool</span> ternary,                   </div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  <a class="code" href="structCMR__SUBMAT.html">CMR_SUBMAT</a>** psubmatrix,        </div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <a class="code" href="structCMR__REGULAR__STATISTICS.html">CMR_REGULAR_STATISTICS</a>* stats,  </div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  <span class="keywordtype">double</span> timeLimit                </div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;);</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160; </div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="regular__internal_8h.html#a4536225f95a540d927dd4d09b6cc3ce6">CMRregularConstructNestedMinorSequence</a>(</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,                       </div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  <a class="code" href="struct__CMR__DEC.html">CMR_DEC</a>* dec,                   </div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  <span class="keywordtype">bool</span> ternary,                   </div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  <a class="code" href="structCMR__SUBMAT.html">CMR_SUBMAT</a>* wheelSubmatrix,     </div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  <a class="code" href="structCMR__SUBMAT.html">CMR_SUBMAT</a>** psubmatrix,        </div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  <a class="code" href="structCMR__REGULAR__STATISTICS.html">CMR_REGULAR_STATISTICS</a>* stats,  </div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  <span class="keywordtype">double</span> timeLimit                </div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;);</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160; </div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="regular__internal_8h.html#a90d6897413204e4f5a7bb816cd7e9cb8">CMRregularTestGraphic</a>(</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,                       </div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  <a class="code" href="structCMR__CHRMAT.html">CMR_CHRMAT</a>** pmatrix,           </div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  <a class="code" href="structCMR__CHRMAT.html">CMR_CHRMAT</a>** ptranspose,        </div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  <span class="keywordtype">bool</span> ternary,                   </div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  <span class="keywordtype">bool</span>* pisGraphic,               </div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  <a class="code" href="structCMR__GRAPH.html">CMR_GRAPH</a>** pgraph,             </div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;  <a class="code" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a>** pforest,       </div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;  <a class="code" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a>** pcoforest,     </div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;  <span class="keywordtype">bool</span>** parcsReversed,           </div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;  <a class="code" href="structCMR__SUBMAT.html">CMR_SUBMAT</a>** psubmatrix,        </div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;  <a class="code" href="structCMR__REGULAR__STATISTICS.html">CMR_REGULAR_STATISTICS</a>* stats,  </div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  <span class="keywordtype">double</span> timeLimit                </div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;);</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160; </div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="regular__internal_8h.html#a3e5aa65b2a094726c2baed454bf1d2c4">CMRregularDecomposeSeriesParallel</a>(</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,                       </div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;  <a class="code" href="struct__CMR__DEC.html">CMR_DEC</a>** pdec,                 </div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;  <span class="keywordtype">bool</span> ternary,                   </div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;  <a class="code" href="structCMR__SUBMAT.html">CMR_SUBMAT</a>** psubmatrix,        </div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;  <a class="code" href="structCMR__REGULAR__PARAMETERS.html">CMR_REGULAR_PARAMETERS</a>* params, </div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;  <a class="code" href="structCMR__REGULAR__STATISTICS.html">CMR_REGULAR_STATISTICS</a>* stats,  </div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;  <span class="keywordtype">double</span> timeLimit                </div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;);</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160; </div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="regular__internal_8h.html#a17ff4174e115d3bd1a2c205138fffcdb">CMRregularDecomposeOneSum</a>(</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,     </div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;  <a class="code" href="struct__CMR__DEC.html">CMR_DEC</a>* dec  </div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;);</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160; </div>
+<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="regular__internal_8h.html#a5fa9a7e49bf221642cd400ffb2053a15">CMRtestRegular</a>(</div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,                       </div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;  <a class="code" href="structCMR__CHRMAT.html">CMR_CHRMAT</a>* matrix,             </div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;  <span class="keywordtype">bool</span> ternary,                   </div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;  <span class="keywordtype">bool</span> *pisRegular,               </div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;  <a class="code" href="struct__CMR__DEC.html">CMR_DEC</a>** pdec,                 </div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;  <a class="code" href="structCMR__MINOR.html">CMR_MINOR</a>** pminor,             </div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;  <a class="code" href="structCMR__REGULAR__PARAMETERS.html">CMR_REGULAR_PARAMETERS</a>* params, </div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;  <a class="code" href="structCMR__REGULAR__STATISTICS.html">CMR_REGULAR_STATISTICS</a>* stats,  </div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;  <span class="keywordtype">double</span> timeLimit                </div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;);</div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160; </div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* CMR_REGULAR_INTERNAL_H */</span><span class="preprocessor"></span></div>
 <div class="ttc" id="aelement_8h_html_a27b924582353437788c8d49c28a89142"><div class="ttname"><a href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a></div><div class="ttdeci">int CMR_ELEMENT</div><div class="ttdef"><b>Definition:</b> element.h:20</div></div>
-<div class="ttc" id="aenv_8h_html_ae2f4ad54b976c2b9a099246c6dc0be87"><div class="ttname"><a href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a></div><div class="ttdeci">CMR_ERROR</div><div class="ttdoc">Type for return codes of library functions.</div><div class="ttdef"><b>Definition:</b> env.h:27</div></div>
+<div class="ttc" id="aenv_8h_html_ae2f4ad54b976c2b9a099246c6dc0be87"><div class="ttname"><a href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a></div><div class="ttdeci">CMR_ERROR</div><div class="ttdoc">Type for return codes of library functions.</div><div class="ttdef"><b>Definition:</b> env.h:32</div></div>
 <div class="ttc" id="agroup__Graph_html_gae955029839563f0561720dee39c85f0a"><div class="ttname"><a href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a></div><div class="ttdeci">int CMR_GRAPH_EDGE</div><div class="ttdoc">Reference to an edge of CMR_GRAPH.</div><div class="ttdef"><b>Definition:</b> graph.h:31</div></div>
 <div class="ttc" id="aregular_8h_html"><div class="ttname"><a href="regular_8h.html">regular.h</a></div><div class="ttdoc">Recognition of regular matrices.</div></div>
-<div class="ttc" id="aregular__internal_8h_html_a11a4efbae860e7fc56e8780369e13ea8"><div class="ttname"><a href="regular__internal_8h.html#a11a4efbae860e7fc56e8780369e13ea8">CMRregularSequenceGraphic</a></div><div class="ttdeci">CMR_ERROR CMRregularSequenceGraphic(CMR *cmr, CMR_CHRMAT *matrix, CMR_CHRMAT *transpose, CMR_ELEMENT *rowElements, CMR_ELEMENT *columnElements, size_t lengthSequence, size_t *sequenceNumRows, size_t *sequenceNumColumns, size_t *plastGraphicMinor, CMR_GRAPH **pgraph, CMR_ELEMENT **pedgeElements, CMR_REGULAR_STATISTICS *stats, double timeLimit)</div><div class="ttdoc">Tests sequence of nested 3-connected minors for graphicness.</div><div class="ttdef"><b>Definition:</b> regular_graphic.c:1246</div></div>
 <div class="ttc" id="aregular__internal_8h_html_a17ff4174e115d3bd1a2c205138fffcdb"><div class="ttname"><a href="regular__internal_8h.html#a17ff4174e115d3bd1a2c205138fffcdb">CMRregularDecomposeOneSum</a></div><div class="ttdeci">CMR_ERROR CMRregularDecomposeOneSum(CMR *cmr, CMR_DEC *dec)</div><div class="ttdoc">Performs a 1-sum decomposition of matrix and stores it in dec.</div><div class="ttdef"><b>Definition:</b> regular_onesum.c:18</div></div>
-<div class="ttc" id="aregular__internal_8h_html_a311d7fd8b90d1593279be9774508b6a4"><div class="ttname"><a href="regular__internal_8h.html#a311d7fd8b90d1593279be9774508b6a4">CMRregularSearchThreeSeparation</a></div><div class="ttdeci">CMR_ERROR CMRregularSearchThreeSeparation(CMR *cmr, CMR_DEC *dec, CMR_CHRMAT *transpose, bool ternary, size_t firstNonCoGraphicMinor, CMR_SUBMAT **psubmatrix, CMR_REGULAR_PARAMETERS *params, CMR_REGULAR_STATISTICS *stats, double timeLimit)</div><div class="ttdoc">Enumerates 3-separations for a 3-connected matrix.</div><div class="ttdef"><b>Definition:</b> regular_enumerate.c:779</div></div>
 <div class="ttc" id="aregular__internal_8h_html_a3e5aa65b2a094726c2baed454bf1d2c4"><div class="ttname"><a href="regular__internal_8h.html#a3e5aa65b2a094726c2baed454bf1d2c4">CMRregularDecomposeSeriesParallel</a></div><div class="ttdeci">CMR_ERROR CMRregularDecomposeSeriesParallel(CMR *cmr, CMR_DEC **pdec, bool ternary, CMR_SUBMAT **psubmatrix, CMR_REGULAR_PARAMETERS *params, CMR_REGULAR_STATISTICS *stats, double timeLimit)</div><div class="ttdoc">Splits off series-parallel elements from the matrix of a decomposition node.</div><div class="ttdef"><b>Definition:</b> regular_series_parallel.c:10</div></div>
-<div class="ttc" id="aregular__internal_8h_html_a5fa9a7e49bf221642cd400ffb2053a15"><div class="ttname"><a href="regular__internal_8h.html#a5fa9a7e49bf221642cd400ffb2053a15">CMRtestRegular</a></div><div class="ttdeci">CMR_ERROR CMRtestRegular(CMR *cmr, CMR_CHRMAT *matrix, bool ternary, bool *pisRegular, CMR_DEC **pdec, CMR_MINOR **pminor, CMR_REGULAR_PARAMETERS *params, CMR_REGULAR_STATISTICS *stats, double timeLimit)</div><div class="ttdoc">Tests ternary or binary linear matroid for regularity.</div><div class="ttdef"><b>Definition:</b> regular.c:419</div></div>
-<div class="ttc" id="aregular__internal_8h_html_a90d6897413204e4f5a7bb816cd7e9cb8"><div class="ttname"><a href="regular__internal_8h.html#a90d6897413204e4f5a7bb816cd7e9cb8">CMRregularTestGraphic</a></div><div class="ttdeci">CMR_ERROR CMRregularTestGraphic(CMR *cmr, CMR_CHRMAT **pmatrix, CMR_CHRMAT **ptranspose, bool ternary, bool *pisGraphic, CMR_GRAPH **pgraph, CMR_GRAPH_EDGE **pforest, CMR_GRAPH_EDGE **pcoforest, bool **parcsReversed, CMR_SUBMAT **psubmatrix, CMR_REGULAR_STATISTICS *stats, double timeLimit)</div><div class="ttdoc">Tests matrix for graphicness.</div><div class="ttdef"><b>Definition:</b> regular_graphic.c:1430</div></div>
-<div class="ttc" id="aregular__internal_8h_html_abcceaa7c17df264655cf0fc5e57f1fc2"><div class="ttname"><a href="regular__internal_8h.html#abcceaa7c17df264655cf0fc5e57f1fc2">CMRregularExtendNestedMinorSequence</a></div><div class="ttdeci">CMR_ERROR CMRregularExtendNestedMinorSequence(CMR *cmr, CMR_DEC *dec, bool ternary, CMR_SUBMAT **psubmatrix, CMR_REGULAR_PARAMETERS *params, CMR_REGULAR_STATISTICS *stats, double timeLimit)</div><div class="ttdoc">Extends an incomplete sequence of nested 3-connected minors for the matrix of a decomposition node.</div><div class="ttdef"><b>Definition:</b> regular_nested_minor_sequence.c:1198</div></div>
+<div class="ttc" id="aregular__internal_8h_html_a4536225f95a540d927dd4d09b6cc3ce6"><div class="ttname"><a href="regular__internal_8h.html#a4536225f95a540d927dd4d09b6cc3ce6">CMRregularConstructNestedMinorSequence</a></div><div class="ttdeci">CMR_ERROR CMRregularConstructNestedMinorSequence(CMR *cmr, CMR_DEC *dec, bool ternary, CMR_SUBMAT *wheelSubmatrix, CMR_SUBMAT **psubmatrix, CMR_REGULAR_STATISTICS *stats, double timeLimit)</div><div class="ttdoc">Constructs a sequence of nested 3-connected minors for the matrix of a decomposition node.</div><div class="ttdef"><b>Definition:</b> regular_nested_minor_sequence.c:1137</div></div>
+<div class="ttc" id="aregular__internal_8h_html_a5fa9a7e49bf221642cd400ffb2053a15"><div class="ttname"><a href="regular__internal_8h.html#a5fa9a7e49bf221642cd400ffb2053a15">CMRtestRegular</a></div><div class="ttdeci">CMR_ERROR CMRtestRegular(CMR *cmr, CMR_CHRMAT *matrix, bool ternary, bool *pisRegular, CMR_DEC **pdec, CMR_MINOR **pminor, CMR_REGULAR_PARAMETERS *params, CMR_REGULAR_STATISTICS *stats, double timeLimit)</div><div class="ttdoc">Tests ternary or binary linear matroid for regularity.</div><div class="ttdef"><b>Definition:</b> regular.c:417</div></div>
+<div class="ttc" id="aregular__internal_8h_html_a90d6897413204e4f5a7bb816cd7e9cb8"><div class="ttname"><a href="regular__internal_8h.html#a90d6897413204e4f5a7bb816cd7e9cb8">CMRregularTestGraphic</a></div><div class="ttdeci">CMR_ERROR CMRregularTestGraphic(CMR *cmr, CMR_CHRMAT **pmatrix, CMR_CHRMAT **ptranspose, bool ternary, bool *pisGraphic, CMR_GRAPH **pgraph, CMR_GRAPH_EDGE **pforest, CMR_GRAPH_EDGE **pcoforest, bool **parcsReversed, CMR_SUBMAT **psubmatrix, CMR_REGULAR_STATISTICS *stats, double timeLimit)</div><div class="ttdoc">Tests matrix for graphicness.</div><div class="ttdef"><b>Definition:</b> regular_graphic.c:1419</div></div>
+<div class="ttc" id="aregular__internal_8h_html_a94dc1cb2cc08106758c3ecdd5415e6a4"><div class="ttname"><a href="regular__internal_8h.html#a94dc1cb2cc08106758c3ecdd5415e6a4">CMRregularSequenceGraphic</a></div><div class="ttdeci">CMR_ERROR CMRregularSequenceGraphic(CMR *cmr, CMR_CHRMAT *matrix, CMR_CHRMAT *transpose, size_t lengthSequence, size_t *sequenceNumRows, size_t *sequenceNumColumns, size_t *plastGraphicMinor, CMR_GRAPH **pgraph, CMR_ELEMENT **pedgeElements, CMR_REGULAR_STATISTICS *stats, double timeLimit)</div><div class="ttdoc">Tests sequence of nested 3-connected minors for graphicness.</div><div class="ttdef"><b>Definition:</b> regular_graphic.c:1240</div></div>
+<div class="ttc" id="aregular__internal_8h_html_ab1991a422f3bfe7a314f2cc21120187e"><div class="ttname"><a href="regular__internal_8h.html#ab1991a422f3bfe7a314f2cc21120187e">CMRregularSearchThreeSeparation</a></div><div class="ttdeci">CMR_ERROR CMRregularSearchThreeSeparation(CMR *cmr, CMR_DEC *dec, CMR_CHRMAT *transpose, bool ternary, size_t firstNonCoGraphicMinor, CMR_SUBMAT **psubmatrix, CMR_REGULAR_STATISTICS *stats, double timeLimit)</div><div class="ttdoc">Enumerates 3-separations for a 3-connected matrix.</div><div class="ttdef"><b>Definition:</b> regular_enumerate.c:771</div></div>
 <div class="ttc" id="aregular__internal_8h_html_ad1ac004192e9323ac725e9078adc42de"><div class="ttname"><a href="regular__internal_8h.html#ad1ac004192e9323ac725e9078adc42de">CMRregularThreeConnectedIsR10</a></div><div class="ttdeci">CMR_ERROR CMRregularThreeConnectedIsR10(CMR *cmr, CMR_DEC *dec, bool *pisR10)</div><div class="ttdoc">Tests whether given 3-connected matrix represents .</div><div class="ttdef"><b>Definition:</b> regular_r10.c:7</div></div>
-<div class="ttc" id="aregular__internal_8h_html_aee1efc0537f743d9f46bd860c5bd9aea"><div class="ttname"><a href="regular__internal_8h.html#aee1efc0537f743d9f46bd860c5bd9aea">CMRregularConstructNestedMinorSequence</a></div><div class="ttdeci">CMR_ERROR CMRregularConstructNestedMinorSequence(CMR *cmr, CMR_DEC *dec, bool ternary, CMR_SUBMAT *wheelSubmatrix, CMR_SUBMAT **psubmatrix, CMR_REGULAR_PARAMETERS *params, CMR_REGULAR_STATISTICS *stats, double timeLimit)</div><div class="ttdoc">Constructs a sequence of nested 3-connected minors for the matrix of a decomposition node.</div><div class="ttdef"><b>Definition:</b> regular_nested_minor_sequence.c:1137</div></div>
+<div class="ttc" id="aregular__internal_8h_html_ad77e1ad5dfd274ebe64f45c95cc06e72"><div class="ttname"><a href="regular__internal_8h.html#ad77e1ad5dfd274ebe64f45c95cc06e72">CMRregularExtendNestedMinorSequence</a></div><div class="ttdeci">CMR_ERROR CMRregularExtendNestedMinorSequence(CMR *cmr, CMR_DEC *dec, bool ternary, CMR_SUBMAT **psubmatrix, CMR_REGULAR_STATISTICS *stats, double timeLimit)</div><div class="ttdoc">Extends an incomplete sequence of nested 3-connected minors for the matrix of a decomposition node.</div><div class="ttdef"><b>Definition:</b> regular_nested_minor_sequence.c:1197</div></div>
 <div class="ttc" id="astructCMR__CHRMAT_html"><div class="ttname"><a href="structCMR__CHRMAT.html">CMR_CHRMAT</a></div><div class="ttdoc">Row-wise representation of sparse char matrix.</div><div class="ttdef"><b>Definition:</b> matrix.h:204</div></div>
 <div class="ttc" id="astructCMR__ENVIRONMENT_html"><div class="ttname"><a href="structCMR__ENVIRONMENT.html">CMR_ENVIRONMENT</a></div><div class="ttdef"><b>Definition:</b> env_internal.h:45</div></div>
 <div class="ttc" id="astructCMR__GRAPH_html"><div class="ttname"><a href="structCMR__GRAPH.html">CMR_GRAPH</a></div><div class="ttdef"><b>Definition:</b> graph.h:49</div></div>

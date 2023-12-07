@@ -147,9 +147,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a6f170e571e5e1df982b00abc9b7089fa"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="series__parallel_8c.html#a6f170e571e5e1df982b00abc9b7089fa">reduceListMatrix</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structListMat8.html">ListMat8</a> *listmatrix, <a class="el" href="structElementData.html">ElementData</a> *rowData, <a class="el" href="structElementData.html">ElementData</a> *columnData, <a class="el" href="hashtable_8h.html#ae210c3950cdf5bdcf72d7ac3e0329512">CMR_LISTHASHTABLE</a> *rowHashtable, <a class="el" href="hashtable_8h.html#ae210c3950cdf5bdcf72d7ac3e0329512">CMR_LISTHASHTABLE</a> *columnHashtable, long long *entryToHash, <a class="el" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a> *queue, size_t *pqueueStart, size_t *pqueueEnd, size_t queueMemory, <a class="el" href="structCMR__SP__REDUCTION.html">CMR_SP_REDUCTION</a> *reductions, size_t maxNumReductions, size_t *pnumReductions, size_t *pnumRowReductions, size_t *pnumColumnReductions)</td></tr>
 <tr class="memdesc:a6f170e571e5e1df982b00abc9b7089fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Carry out the actual reduction algorithm after all data structures are initialized.  <a href="series__parallel_8c.html#a6f170e571e5e1df982b00abc9b7089fa">More...</a><br /></td></tr>
 <tr class="separator:a6f170e571e5e1df982b00abc9b7089fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a98b3433293e1454c61c8c40b2e76d683"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="series__parallel_8c.html#a98b3433293e1454c61c8c40b2e76d683">extractNonbinarySubmatrix</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structListMat8.html">ListMat8</a> *listmatrix, <a class="el" href="structElementData.html">ElementData</a> *rowData, <a class="el" href="structElementData.html">ElementData</a> *columnData, <a class="el" href="hashtable_8h.html#ae210c3950cdf5bdcf72d7ac3e0329512">CMR_LISTHASHTABLE</a> *rowHashtable, <a class="el" href="hashtable_8h.html#ae210c3950cdf5bdcf72d7ac3e0329512">CMR_LISTHASHTABLE</a> *columnHashtable, long long *entryToHash, <a class="el" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a> *queue, size_t *pqueueStart, size_t *pqueueEnd, size_t queueMemory, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **pviolatorSubmatrix)</td></tr>
-<tr class="memdesc:a98b3433293e1454c61c8c40b2e76d683"><td class="mdescLeft">&#160;</td><td class="mdescRight">Try to find an \( M_2 \)-submatrix for a ternary SP-reduced matrix in list representation.  <a href="series__parallel_8c.html#a98b3433293e1454c61c8c40b2e76d683">More...</a><br /></td></tr>
-<tr class="separator:a98b3433293e1454c61c8c40b2e76d683"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af3c1cd98f8c84dd72cc12243804b9b8d"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="series__parallel_8c.html#af3c1cd98f8c84dd72cc12243804b9b8d">extractNonbinarySubmatrix</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structListMat8.html">ListMat8</a> *listmatrix, <a class="el" href="structElementData.html">ElementData</a> *rowData, <a class="el" href="structElementData.html">ElementData</a> *columnData, <a class="el" href="hashtable_8h.html#ae210c3950cdf5bdcf72d7ac3e0329512">CMR_LISTHASHTABLE</a> *rowHashtable, <a class="el" href="hashtable_8h.html#ae210c3950cdf5bdcf72d7ac3e0329512">CMR_LISTHASHTABLE</a> *columnHashtable, <a class="el" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a> *queue, size_t *pqueueStart, size_t *pqueueEnd, size_t queueMemory, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **pviolatorSubmatrix)</td></tr>
+<tr class="memdesc:af3c1cd98f8c84dd72cc12243804b9b8d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Try to find an \( M_2 \)-submatrix for a ternary SP-reduced matrix in list representation.  <a href="series__parallel_8c.html#af3c1cd98f8c84dd72cc12243804b9b8d">More...</a><br /></td></tr>
+<tr class="separator:af3c1cd98f8c84dd72cc12243804b9b8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaa95db0c1d6833e0309ec1a60d40e2e6"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="series__parallel_8c.html#aaa95db0c1d6833e0309ec1a60d40e2e6">breadthFirstSearch</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, int currentBFS, <a class="el" href="structListMat8Element.html">ListMat8Element</a> *rowListData, <a class="el" href="structListMat8Element.html">ListMat8Element</a> *columnListData, <a class="el" href="structElementData.html">ElementData</a> *rowData, <a class="el" href="structElementData.html">ElementData</a> *columnData, <a class="el" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a> *queue, size_t queueMemory, <a class="el" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a> *sources, size_t numSources, <a class="el" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a> *targets, size_t numTargets, size_t *pfoundTarget, size_t *pnumEdges)</td></tr>
 <tr class="separator:aaa95db0c1d6833e0309ec1a60d40e2e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5a55174c85d481c0f8edbbe53ffdaa8e"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="series__parallel_8c.html#a5a55174c85d481c0f8edbbe53ffdaa8e">extractRemainingSubmatrix</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, size_t numRowReductions, size_t numColumnReductions, <a class="el" href="structListMat8.html">ListMat8</a> *listmatrix, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **preducedSubmatrix)</td></tr>
@@ -1324,8 +1324,8 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="a98b3433293e1454c61c8c40b2e76d683"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a98b3433293e1454c61c8c40b2e76d683">&#9670;&nbsp;</a></span>extractNonbinarySubmatrix()</h2>
+<a id="af3c1cd98f8c84dd72cc12243804b9b8d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af3c1cd98f8c84dd72cc12243804b9b8d">&#9670;&nbsp;</a></span>extractNonbinarySubmatrix()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1368,12 +1368,6 @@ Variables</h2></td></tr>
           <td></td>
           <td class="paramtype"><a class="el" href="hashtable_8h.html#ae210c3950cdf5bdcf72d7ac3e0329512">CMR_LISTHASHTABLE</a> *&#160;</td>
           <td class="paramname"><em>columnHashtable</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">long long *&#160;</td>
-          <td class="paramname"><em>entryToHash</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1427,7 +1421,6 @@ Variables</h2></td></tr>
     <tr><td class="paramname">columnData</td><td>Column data. </td></tr>
     <tr><td class="paramname">rowHashtable</td><td>Row hashtable. </td></tr>
     <tr><td class="paramname">columnHashtable</td><td>Column hashtable. </td></tr>
-    <tr><td class="paramname">entryToHash</td><td>Pre-computed hash values of vector entries. </td></tr>
     <tr><td class="paramname">queue</td><td>Queue. </td></tr>
     <tr><td class="paramname">pqueueStart</td><td>Pointer to start of queue. </td></tr>
     <tr><td class="paramname">pqueueEnd</td><td>Pointer to end of queue. </td></tr>

@@ -109,9 +109,9 @@ Functions</h2></td></tr>
 <tr class="memitem:af29a79df573ecc19b48d1f6d8577cd2f"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ctu_8h.html#af29a79df573ecc19b48d1f6d8577cd2f">CMRcomplementRowColumn</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, size_t complementRow, size_t complementColumn, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> **presult)</td></tr>
 <tr class="memdesc:af29a79df573ecc19b48d1f6d8577cd2f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Carries out a row- and column-complement operations on the binary matrix.  <a href="ctu_8h.html#af29a79df573ecc19b48d1f6d8577cd2f">More...</a><br /></td></tr>
 <tr class="separator:af29a79df573ecc19b48d1f6d8577cd2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af2d496045d34646078469ea6a7175d81"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ctu_8h.html#af2d496045d34646078469ea6a7175d81">CMRtestComplementTotalUnimodularity</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, bool *pisComplementTotallyUnimodular, size_t *pcomplementRow, size_t *pcomplementColumn, <a class="el" href="structCMR__CTU__STATISTICS.html">CMR_CTU_STATISTICS</a> *stats)</td></tr>
-<tr class="memdesc:af2d496045d34646078469ea6a7175d81"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tests a matrix \( M \) for being <a class="el" href="ctu.html">complement totally unimodular</a>.  <a href="ctu_8h.html#af2d496045d34646078469ea6a7175d81">More...</a><br /></td></tr>
-<tr class="separator:af2d496045d34646078469ea6a7175d81"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd5745cf32f527a0401940044b1326a2"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="ctu_8h.html#acd5745cf32f527a0401940044b1326a2">CMRtestComplementTotalUnimodularity</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, bool *pisComplementTotallyUnimodular, size_t *pcomplementRow, size_t *pcomplementColumn, <a class="el" href="structCMR__CTU__STATISTICS.html">CMR_CTU_STATISTICS</a> *stats, double timeLimit)</td></tr>
+<tr class="memdesc:acd5745cf32f527a0401940044b1326a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tests a matrix \( M \) for being <a class="el" href="ctu.html">complement totally unimodular</a>.  <a href="ctu_8h.html#acd5745cf32f527a0401940044b1326a2">More...</a><br /></td></tr>
+<tr class="separator:acd5745cf32f527a0401940044b1326a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Recognition of <a class="el" href="ctu.html">complement totally unimodular matrices</a>. </p>
@@ -245,8 +245,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="af2d496045d34646078469ea6a7175d81"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af2d496045d34646078469ea6a7175d81">&#9670;&nbsp;</a></span>CMRtestComplementTotalUnimodularity()</h2>
+<a id="acd5745cf32f527a0401940044b1326a2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd5745cf32f527a0401940044b1326a2">&#9670;&nbsp;</a></span>CMRtestComplementTotalUnimodularity()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -285,7 +285,13 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype"><a class="el" href="structCMR__CTU__STATISTICS.html">CMR_CTU_STATISTICS</a> *&#160;</td>
-          <td class="paramname"><em>stats</em>&#160;</td>
+          <td class="paramname"><em>stats</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>timeLimit</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -306,6 +312,7 @@ Functions</h2></td></tr>
     <tr><td class="paramname">pcomplementRow</td><td>Pointer for storing the row to be complemented (may be <code>NULL</code>). </td></tr>
     <tr><td class="paramname">pcomplementColumn</td><td>Pointer for storing the column to be complemented (may be <code>NULL</code>). </td></tr>
     <tr><td class="paramname">stats</td><td>Statistics for the computation (may be <code>NULL</code>). </td></tr>
+    <tr><td class="paramname">timeLimit</td><td>Time limit to impose. </td></tr>
   </table>
   </dd>
 </dl>

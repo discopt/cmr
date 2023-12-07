@@ -250,232 +250,243 @@ $(function() {
 <div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;  <a class="code" href="group__Graph.html#ga1005ffc33d6eb26dcd65eb9ca1ea74f3">CMR_GRAPH_NODE</a> v   </div>
 <div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;)</div>
 <div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;{</div>
-<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;  assert(graph);</div>
+<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;  <a class="code" href="env_8h.html#a4460b6013023896e1cfd0e1e65ffe418">CMR_UNUSED</a>(graph);</div>
 <div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160; </div>
-<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;  <span class="keywordflow">return</span> v &gt;= 0;</div>
-<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;}</div>
-<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160; </div>
-<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span></div>
-<div class="line"><a name="l00268"></a><span class="lineno"><a class="line" href="group__Graph.html#ga5dd947c7f177e3072654251906177bcd">  268</a></span>&#160;<a class="code" href="group__Graph.html#ga1005ffc33d6eb26dcd65eb9ca1ea74f3">CMR_GRAPH_NODE</a> <a class="code" href="group__Graph.html#ga5dd947c7f177e3072654251906177bcd">CMRgraphNodesNext</a>(</div>
-<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;  <a class="code" href="structCMR__GRAPH.html">CMR_GRAPH</a>* graph,  </div>
-<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;  <a class="code" href="group__Graph.html#ga1005ffc33d6eb26dcd65eb9ca1ea74f3">CMR_GRAPH_NODE</a> v   </div>
-<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;)</div>
-<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;{</div>
-<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;  assert(graph);</div>
-<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160; </div>
-<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;  <span class="keywordflow">return</span> graph-&gt;<a class="code" href="structCMR__GRAPH.html#a69b2210f3574044b53512f0ccea7dbe2">nodes</a>[v].<a class="code" href="structCMR__GRAPH__NODE__DATA.html#aed47c6778029472d8b67dd16c5109e7e">next</a>;</div>
-<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;}</div>
-<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160; </div>
-<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span></div>
-<div class="line"><a name="l00283"></a><span class="lineno"><a class="line" href="group__Graph.html#gafc7dc5283fe61a21008955615199bfd3">  283</a></span>&#160;<a class="code" href="group__Graph.html#gae0c5c5a9a545aac00234dff0669d1b4a">CMR_GRAPH_ITER</a> <a class="code" href="group__Graph.html#gafc7dc5283fe61a21008955615199bfd3">CMRgraphIncFirst</a>(</div>
-<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;  <a class="code" href="structCMR__GRAPH.html">CMR_GRAPH</a>* graph,  </div>
-<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;  <a class="code" href="group__Graph.html#ga1005ffc33d6eb26dcd65eb9ca1ea74f3">CMR_GRAPH_NODE</a> v   </div>
-<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;)</div>
-<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;{</div>
-<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;  assert(graph);</div>
-<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160; </div>
-<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;  <a class="code" href="group__Graph.html#gae0c5c5a9a545aac00234dff0669d1b4a">CMR_GRAPH_ITER</a> i = graph-&gt;<a class="code" href="structCMR__GRAPH.html#a69b2210f3574044b53512f0ccea7dbe2">nodes</a>[v].<a class="code" href="structCMR__GRAPH__NODE__DATA.html#abf310baaaed06f8859d36423b6628776">firstOut</a>;</div>
-<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;  <span class="keywordflow">while</span> (<span class="keyword">true</span>)</div>
-<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;  {</div>
-<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;    <span class="keywordflow">if</span> (i &lt; 0)</div>
-<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;      <span class="keywordflow">return</span> -1;</div>
-<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;    <span class="keywordflow">if</span> ((graph-&gt;<a class="code" href="structCMR__GRAPH.html#a11cddc52c6b985460139577b6a68de8d">arcs</a>[i].<a class="code" href="structCMR__GRAPH__ARC__DATA.html#ae08c25ebe8b224185c4da0a9788aee87">target</a> != (graph)-&gt;arcs[i ^ 1].target) || !(i &amp; 0x1))</div>
-<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;      <span class="keywordflow">return</span> i;</div>
-<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;    i = graph-&gt;<a class="code" href="structCMR__GRAPH.html#a11cddc52c6b985460139577b6a68de8d">arcs</a>[i].<a class="code" href="structCMR__GRAPH__ARC__DATA.html#abf8346cfceb6a115ce8f78067fde03db">next</a>;</div>
-<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;  }</div>
-<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;}</div>
-<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160; </div>
-<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span></div>
-<div class="line"><a name="l00306"></a><span class="lineno"><a class="line" href="group__Graph.html#ga5a7a67eac7a419dfcfbaf12745afaa3d">  306</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="group__Graph.html#ga5a7a67eac7a419dfcfbaf12745afaa3d">CMRgraphIncValid</a>(</div>
-<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;  <a class="code" href="structCMR__GRAPH.html">CMR_GRAPH</a>* graph,  </div>
-<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;  <a class="code" href="group__Graph.html#gae0c5c5a9a545aac00234dff0669d1b4a">CMR_GRAPH_ITER</a> i   </div>
-<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;)</div>
-<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;{</div>
-<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;  assert(graph);</div>
-<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160; </div>
-<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;  <span class="keywordflow">return</span> i &gt;= 0;</div>
-<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;}</div>
-<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160; </div>
-<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span></div>
-<div class="line"><a name="l00321"></a><span class="lineno"><a class="line" href="group__Graph.html#ga8ccc7dc84fdb649dba60a65d12b5b68a">  321</a></span>&#160;<a class="code" href="group__Graph.html#gae0c5c5a9a545aac00234dff0669d1b4a">CMR_GRAPH_ITER</a> <a class="code" href="group__Graph.html#ga8ccc7dc84fdb649dba60a65d12b5b68a">CMRgraphIncNext</a>(</div>
-<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;  <a class="code" href="structCMR__GRAPH.html">CMR_GRAPH</a>* graph,  </div>
-<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;  <a class="code" href="group__Graph.html#gae0c5c5a9a545aac00234dff0669d1b4a">CMR_GRAPH_ITER</a> i   </div>
-<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;)</div>
-<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;{</div>
-<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;  assert(graph);</div>
-<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160; </div>
-<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;  <span class="keywordflow">while</span> (<span class="keyword">true</span>)</div>
-<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;  {</div>
-<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;    i = graph-&gt;<a class="code" href="structCMR__GRAPH.html#a11cddc52c6b985460139577b6a68de8d">arcs</a>[i].<a class="code" href="structCMR__GRAPH__ARC__DATA.html#abf8346cfceb6a115ce8f78067fde03db">next</a>;</div>
-<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;    <span class="keywordflow">if</span> (i &lt; 0)</div>
-<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;      <span class="keywordflow">return</span> -1;</div>
-<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;    <span class="keywordflow">if</span> (((graph)-&gt;arcs[i].target != (graph)-&gt;arcs[i ^ 1].target) || !(i &amp; 0x1))</div>
-<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;      <span class="keywordflow">return</span> i;</div>
-<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;  }</div>
-<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;}</div>
-<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160; </div>
-<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span></div>
-<div class="line"><a name="l00343"></a><span class="lineno"><a class="line" href="group__Graph.html#ga2fd3b52e45a819b66dba8e2182654e9f">  343</a></span>&#160;<a class="code" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> <a class="code" href="group__Graph.html#ga2fd3b52e45a819b66dba8e2182654e9f">CMRgraphIncEdge</a>(</div>
-<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;  <a class="code" href="structCMR__GRAPH.html">CMR_GRAPH</a>* graph,  </div>
-<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;  <a class="code" href="group__Graph.html#gae0c5c5a9a545aac00234dff0669d1b4a">CMR_GRAPH_ITER</a> i   </div>
-<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;)</div>
-<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;{</div>
-<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;  assert(graph);</div>
-<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160; </div>
-<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;  <span class="keywordflow">return</span> i/2;</div>
-<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;}</div>
-<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160; </div>
-<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span></div>
-<div class="line"><a name="l00358"></a><span class="lineno"><a class="line" href="group__Graph.html#gaff8873337b9aa1e9d9265052e549cd85">  358</a></span>&#160;<a class="code" href="group__Graph.html#ga1005ffc33d6eb26dcd65eb9ca1ea74f3">CMR_GRAPH_NODE</a> <a class="code" href="group__Graph.html#gaff8873337b9aa1e9d9265052e549cd85">CMRgraphIncSource</a>(</div>
-<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;  <a class="code" href="structCMR__GRAPH.html">CMR_GRAPH</a>* graph,  </div>
-<div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;  <a class="code" href="group__Graph.html#gae0c5c5a9a545aac00234dff0669d1b4a">CMR_GRAPH_ITER</a> i   </div>
-<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;)</div>
-<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;{</div>
-<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;  <span class="keywordflow">return</span> graph-&gt;<a class="code" href="structCMR__GRAPH.html#a11cddc52c6b985460139577b6a68de8d">arcs</a>[i^1].<a class="code" href="structCMR__GRAPH__ARC__DATA.html#ae08c25ebe8b224185c4da0a9788aee87">target</a>;</div>
-<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;}</div>
-<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160; </div>
-<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span></div>
-<div class="line"><a name="l00371"></a><span class="lineno"><a class="line" href="group__Graph.html#ga4b7114888b4d47bdd68225f94aa62926">  371</a></span>&#160;<a class="code" href="group__Graph.html#ga1005ffc33d6eb26dcd65eb9ca1ea74f3">CMR_GRAPH_NODE</a> <a class="code" href="group__Graph.html#ga4b7114888b4d47bdd68225f94aa62926">CMRgraphIncTarget</a>(</div>
-<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;  <a class="code" href="structCMR__GRAPH.html">CMR_GRAPH</a>* graph,  </div>
-<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;  <a class="code" href="group__Graph.html#gae0c5c5a9a545aac00234dff0669d1b4a">CMR_GRAPH_ITER</a> i   </div>
-<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;)</div>
-<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;{</div>
-<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;  <span class="keywordflow">return</span> graph-&gt;<a class="code" href="structCMR__GRAPH.html#a11cddc52c6b985460139577b6a68de8d">arcs</a>[i].<a class="code" href="structCMR__GRAPH__ARC__DATA.html#ae08c25ebe8b224185c4da0a9788aee87">target</a>;</div>
-<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;}</div>
-<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160; </div>
-<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span></div>
-<div class="line"><a name="l00384"></a><span class="lineno"><a class="line" href="group__Graph.html#ga60174d929bb0a1c91293f259839e7b81">  384</a></span>&#160;<a class="code" href="group__Graph.html#gae0c5c5a9a545aac00234dff0669d1b4a">CMR_GRAPH_ITER</a> <a class="code" href="group__Graph.html#ga60174d929bb0a1c91293f259839e7b81">CMRgraphEdgesNext</a>(</div>
-<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;  <a class="code" href="structCMR__GRAPH.html">CMR_GRAPH</a>* graph,  </div>
-<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;  <a class="code" href="group__Graph.html#gae0c5c5a9a545aac00234dff0669d1b4a">CMR_GRAPH_ITER</a> i   </div>
-<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;)</div>
-<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;{</div>
-<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;  <a class="code" href="group__Graph.html#ga1005ffc33d6eb26dcd65eb9ca1ea74f3">CMR_GRAPH_NODE</a> source = graph-&gt;<a class="code" href="structCMR__GRAPH.html#a11cddc52c6b985460139577b6a68de8d">arcs</a>[i ^ 1].<a class="code" href="structCMR__GRAPH__ARC__DATA.html#ae08c25ebe8b224185c4da0a9788aee87">target</a>;</div>
-<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;  <a class="code" href="group__Graph.html#gae0c5c5a9a545aac00234dff0669d1b4a">CMR_GRAPH_ITER</a> j = graph-&gt;<a class="code" href="structCMR__GRAPH.html#a11cddc52c6b985460139577b6a68de8d">arcs</a>[i].<a class="code" href="structCMR__GRAPH__ARC__DATA.html#abf8346cfceb6a115ce8f78067fde03db">next</a>;</div>
-<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;  <span class="keywordflow">while</span> (<span class="keyword">true</span>)</div>
-<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;  {</div>
-<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;    <span class="keywordflow">while</span> (j &gt;= 0)</div>
-<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;    {</div>
-<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;      <span class="keywordflow">if</span> (!(j &amp; 0x1))</div>
-<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;        <span class="keywordflow">return</span> j;</div>
-<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;      j = graph-&gt;<a class="code" href="structCMR__GRAPH.html#a11cddc52c6b985460139577b6a68de8d">arcs</a>[j].<a class="code" href="structCMR__GRAPH__ARC__DATA.html#abf8346cfceb6a115ce8f78067fde03db">next</a>;</div>
-<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;    }</div>
-<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;    source = graph-&gt;<a class="code" href="structCMR__GRAPH.html#a69b2210f3574044b53512f0ccea7dbe2">nodes</a>[source].<a class="code" href="structCMR__GRAPH__NODE__DATA.html#aed47c6778029472d8b67dd16c5109e7e">next</a>;</div>
-<div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;    <span class="keywordflow">if</span> (source &lt; 0)</div>
-<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;      <span class="keywordflow">return</span> -1;</div>
-<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160; </div>
-<div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;    j = graph-&gt;<a class="code" href="structCMR__GRAPH.html#a69b2210f3574044b53512f0ccea7dbe2">nodes</a>[source].<a class="code" href="structCMR__GRAPH__NODE__DATA.html#abf310baaaed06f8859d36423b6628776">firstOut</a>;</div>
-<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;  }</div>
-<div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160;}</div>
-<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160; </div>
-<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span></div>
-<div class="line"><a name="l00412"></a><span class="lineno"><a class="line" href="group__Graph.html#ga72d7e7263df321ef764d8ac528b92d0c">  412</a></span>&#160;<a class="code" href="group__Graph.html#gae0c5c5a9a545aac00234dff0669d1b4a">CMR_GRAPH_ITER</a> <a class="code" href="group__Graph.html#ga72d7e7263df321ef764d8ac528b92d0c">CMRgraphEdgesFirst</a>(</div>
-<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;  <a class="code" href="structCMR__GRAPH.html">CMR_GRAPH</a>* graph </div>
-<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;)</div>
-<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;{</div>
-<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;  assert(graph);</div>
-<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160; </div>
-<div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;  <span class="keywordflow">for</span> (<a class="code" href="group__Graph.html#ga1005ffc33d6eb26dcd65eb9ca1ea74f3">CMR_GRAPH_NODE</a> v = <a class="code" href="group__Graph.html#gad2966dc6e2cd66fd7d47ce657243efda">CMRgraphNodesFirst</a>(graph); <a class="code" href="group__Graph.html#gae693e33ed728c5aa2d2d9d0f63740cf0">CMRgraphNodesValid</a>(graph, v);</div>
-<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;    v = <a class="code" href="group__Graph.html#ga5dd947c7f177e3072654251906177bcd">CMRgraphNodesNext</a>(graph, v))</div>
-<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;  {</div>
-<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;    <a class="code" href="group__Graph.html#gae0c5c5a9a545aac00234dff0669d1b4a">CMR_GRAPH_ITER</a> i = graph-&gt;<a class="code" href="structCMR__GRAPH.html#a69b2210f3574044b53512f0ccea7dbe2">nodes</a>[v].<a class="code" href="structCMR__GRAPH__NODE__DATA.html#abf310baaaed06f8859d36423b6628776">firstOut</a>;</div>
-<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;    <span class="keywordflow">if</span> (i &gt;= 0)</div>
-<div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;    {</div>
-<div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160;      <span class="comment">/* We found some node with an incident edge. */</span></div>
-<div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160;      <span class="keywordflow">if</span> (i &amp; 0x1)</div>
-<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;        i = <a class="code" href="group__Graph.html#ga60174d929bb0a1c91293f259839e7b81">CMRgraphEdgesNext</a>(graph, i);</div>
-<div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;      <span class="keywordflow">return</span> i;</div>
-<div class="line"><a name="l00428"></a><span class="lineno">  428</span>&#160;    }</div>
-<div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160;  }</div>
-<div class="line"><a name="l00430"></a><span class="lineno">  430</span>&#160;  <span class="keywordflow">return</span> -1;</div>
-<div class="line"><a name="l00431"></a><span class="lineno">  431</span>&#160;}</div>
-<div class="line"><a name="l00432"></a><span class="lineno">  432</span>&#160; </div>
-<div class="line"><a name="l00437"></a><span class="lineno">  437</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span></div>
-<div class="line"><a name="l00438"></a><span class="lineno"><a class="line" href="group__Graph.html#ga5354c94f201de138a4b48e31df92cce9">  438</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="group__Graph.html#ga5354c94f201de138a4b48e31df92cce9">CMRgraphEdgesValid</a>(</div>
-<div class="line"><a name="l00439"></a><span class="lineno">  439</span>&#160;  <a class="code" href="structCMR__GRAPH.html">CMR_GRAPH</a>* graph,  </div>
-<div class="line"><a name="l00440"></a><span class="lineno">  440</span>&#160;  <a class="code" href="group__Graph.html#gae0c5c5a9a545aac00234dff0669d1b4a">CMR_GRAPH_ITER</a> i   </div>
-<div class="line"><a name="l00441"></a><span class="lineno">  441</span>&#160;)</div>
-<div class="line"><a name="l00442"></a><span class="lineno">  442</span>&#160;{</div>
-<div class="line"><a name="l00443"></a><span class="lineno">  443</span>&#160;  assert(graph);</div>
-<div class="line"><a name="l00444"></a><span class="lineno">  444</span>&#160; </div>
-<div class="line"><a name="l00445"></a><span class="lineno">  445</span>&#160;  <span class="keywordflow">return</span> i &gt;= 0;</div>
-<div class="line"><a name="l00446"></a><span class="lineno">  446</span>&#160;}</div>
-<div class="line"><a name="l00447"></a><span class="lineno">  447</span>&#160; </div>
-<div class="line"><a name="l00452"></a><span class="lineno">  452</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span></div>
-<div class="line"><a name="l00453"></a><span class="lineno"><a class="line" href="group__Graph.html#ga25c2fd95ffb93f768758ac645038ed9f">  453</a></span>&#160;<a class="code" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> <a class="code" href="group__Graph.html#ga25c2fd95ffb93f768758ac645038ed9f">CMRgraphEdgesEdge</a>(</div>
-<div class="line"><a name="l00454"></a><span class="lineno">  454</span>&#160;  <a class="code" href="structCMR__GRAPH.html">CMR_GRAPH</a>* graph,  </div>
-<div class="line"><a name="l00455"></a><span class="lineno">  455</span>&#160;  <a class="code" href="group__Graph.html#gae0c5c5a9a545aac00234dff0669d1b4a">CMR_GRAPH_ITER</a> i   </div>
-<div class="line"><a name="l00456"></a><span class="lineno">  456</span>&#160;)</div>
-<div class="line"><a name="l00457"></a><span class="lineno">  457</span>&#160;{</div>
-<div class="line"><a name="l00458"></a><span class="lineno">  458</span>&#160;  assert(graph);</div>
-<div class="line"><a name="l00459"></a><span class="lineno">  459</span>&#160; </div>
-<div class="line"><a name="l00460"></a><span class="lineno">  460</span>&#160;  <span class="keywordflow">return</span> i/2;</div>
-<div class="line"><a name="l00461"></a><span class="lineno">  461</span>&#160;}</div>
-<div class="line"><a name="l00462"></a><span class="lineno">  462</span>&#160; </div>
-<div class="line"><a name="l00467"></a><span class="lineno">  467</span>&#160;CMR_EXPORT</div>
-<div class="line"><a name="l00468"></a><span class="lineno">  468</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="group__Graph.html#ga0e8737af216dc30a53a7bf8dc8adc23d">CMRgraphPrint</a>(</div>
-<div class="line"><a name="l00469"></a><span class="lineno">  469</span>&#160;  FILE* stream,   </div>
-<div class="line"><a name="l00470"></a><span class="lineno">  470</span>&#160;  <a class="code" href="structCMR__GRAPH.html">CMR_GRAPH</a>* graph </div>
-<div class="line"><a name="l00471"></a><span class="lineno">  471</span>&#160;);</div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;  assert(graph);</div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160; </div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;  <span class="keywordflow">return</span> v &gt;= 0;</div>
+<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;}</div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160; </div>
+<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span></div>
+<div class="line"><a name="l00270"></a><span class="lineno"><a class="line" href="group__Graph.html#ga5dd947c7f177e3072654251906177bcd">  270</a></span>&#160;<a class="code" href="group__Graph.html#ga1005ffc33d6eb26dcd65eb9ca1ea74f3">CMR_GRAPH_NODE</a> <a class="code" href="group__Graph.html#ga5dd947c7f177e3072654251906177bcd">CMRgraphNodesNext</a>(</div>
+<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;  <a class="code" href="structCMR__GRAPH.html">CMR_GRAPH</a>* graph,  </div>
+<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;  <a class="code" href="group__Graph.html#ga1005ffc33d6eb26dcd65eb9ca1ea74f3">CMR_GRAPH_NODE</a> v   </div>
+<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;)</div>
+<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;{</div>
+<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;  assert(graph);</div>
+<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160; </div>
+<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;  <span class="keywordflow">return</span> graph-&gt;<a class="code" href="structCMR__GRAPH.html#a69b2210f3574044b53512f0ccea7dbe2">nodes</a>[v].<a class="code" href="structCMR__GRAPH__NODE__DATA.html#aed47c6778029472d8b67dd16c5109e7e">next</a>;</div>
+<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;}</div>
+<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160; </div>
+<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span></div>
+<div class="line"><a name="l00285"></a><span class="lineno"><a class="line" href="group__Graph.html#gafc7dc5283fe61a21008955615199bfd3">  285</a></span>&#160;<a class="code" href="group__Graph.html#gae0c5c5a9a545aac00234dff0669d1b4a">CMR_GRAPH_ITER</a> <a class="code" href="group__Graph.html#gafc7dc5283fe61a21008955615199bfd3">CMRgraphIncFirst</a>(</div>
+<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;  <a class="code" href="structCMR__GRAPH.html">CMR_GRAPH</a>* graph,  </div>
+<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;  <a class="code" href="group__Graph.html#ga1005ffc33d6eb26dcd65eb9ca1ea74f3">CMR_GRAPH_NODE</a> v   </div>
+<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;)</div>
+<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;{</div>
+<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;  assert(graph);</div>
+<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160; </div>
+<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;  <a class="code" href="group__Graph.html#gae0c5c5a9a545aac00234dff0669d1b4a">CMR_GRAPH_ITER</a> i = graph-&gt;<a class="code" href="structCMR__GRAPH.html#a69b2210f3574044b53512f0ccea7dbe2">nodes</a>[v].<a class="code" href="structCMR__GRAPH__NODE__DATA.html#abf310baaaed06f8859d36423b6628776">firstOut</a>;</div>
+<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;  <span class="keywordflow">while</span> (<span class="keyword">true</span>)</div>
+<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;  {</div>
+<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;    <span class="keywordflow">if</span> (i &lt; 0)</div>
+<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;      <span class="keywordflow">return</span> -1;</div>
+<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;    <span class="keywordflow">if</span> ((graph-&gt;<a class="code" href="structCMR__GRAPH.html#a11cddc52c6b985460139577b6a68de8d">arcs</a>[i].<a class="code" href="structCMR__GRAPH__ARC__DATA.html#ae08c25ebe8b224185c4da0a9788aee87">target</a> != (graph)-&gt;arcs[i ^ 1].target) || !(i &amp; 0x1))</div>
+<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;      <span class="keywordflow">return</span> i;</div>
+<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;    i = graph-&gt;<a class="code" href="structCMR__GRAPH.html#a11cddc52c6b985460139577b6a68de8d">arcs</a>[i].<a class="code" href="structCMR__GRAPH__ARC__DATA.html#abf8346cfceb6a115ce8f78067fde03db">next</a>;</div>
+<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;  }</div>
+<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;}</div>
+<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160; </div>
+<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span></div>
+<div class="line"><a name="l00308"></a><span class="lineno"><a class="line" href="group__Graph.html#ga5a7a67eac7a419dfcfbaf12745afaa3d">  308</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="group__Graph.html#ga5a7a67eac7a419dfcfbaf12745afaa3d">CMRgraphIncValid</a>(</div>
+<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;  <a class="code" href="structCMR__GRAPH.html">CMR_GRAPH</a>* graph,  </div>
+<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;  <a class="code" href="group__Graph.html#gae0c5c5a9a545aac00234dff0669d1b4a">CMR_GRAPH_ITER</a> i   </div>
+<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;)</div>
+<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;{</div>
+<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;  <a class="code" href="env_8h.html#a4460b6013023896e1cfd0e1e65ffe418">CMR_UNUSED</a>(graph);</div>
+<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160; </div>
+<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;  assert(graph);</div>
+<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160; </div>
+<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;  <span class="keywordflow">return</span> i &gt;= 0;</div>
+<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;}</div>
+<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160; </div>
+<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span></div>
+<div class="line"><a name="l00325"></a><span class="lineno"><a class="line" href="group__Graph.html#ga8ccc7dc84fdb649dba60a65d12b5b68a">  325</a></span>&#160;<a class="code" href="group__Graph.html#gae0c5c5a9a545aac00234dff0669d1b4a">CMR_GRAPH_ITER</a> <a class="code" href="group__Graph.html#ga8ccc7dc84fdb649dba60a65d12b5b68a">CMRgraphIncNext</a>(</div>
+<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;  <a class="code" href="structCMR__GRAPH.html">CMR_GRAPH</a>* graph,  </div>
+<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;  <a class="code" href="group__Graph.html#gae0c5c5a9a545aac00234dff0669d1b4a">CMR_GRAPH_ITER</a> i   </div>
+<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;)</div>
+<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;{</div>
+<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;  assert(graph);</div>
+<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160; </div>
+<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;  <span class="keywordflow">while</span> (<span class="keyword">true</span>)</div>
+<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;  {</div>
+<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;    i = graph-&gt;<a class="code" href="structCMR__GRAPH.html#a11cddc52c6b985460139577b6a68de8d">arcs</a>[i].<a class="code" href="structCMR__GRAPH__ARC__DATA.html#abf8346cfceb6a115ce8f78067fde03db">next</a>;</div>
+<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;    <span class="keywordflow">if</span> (i &lt; 0)</div>
+<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;      <span class="keywordflow">return</span> -1;</div>
+<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;    <span class="keywordflow">if</span> (((graph)-&gt;arcs[i].target != (graph)-&gt;arcs[i ^ 1].target) || !(i &amp; 0x1))</div>
+<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;      <span class="keywordflow">return</span> i;</div>
+<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;  }</div>
+<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;}</div>
+<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160; </div>
+<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span></div>
+<div class="line"><a name="l00347"></a><span class="lineno"><a class="line" href="group__Graph.html#ga2fd3b52e45a819b66dba8e2182654e9f">  347</a></span>&#160;<a class="code" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> <a class="code" href="group__Graph.html#ga2fd3b52e45a819b66dba8e2182654e9f">CMRgraphIncEdge</a>(</div>
+<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;  <a class="code" href="structCMR__GRAPH.html">CMR_GRAPH</a>* graph,  </div>
+<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;  <a class="code" href="group__Graph.html#gae0c5c5a9a545aac00234dff0669d1b4a">CMR_GRAPH_ITER</a> i   </div>
+<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;)</div>
+<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;{</div>
+<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;  <a class="code" href="env_8h.html#a4460b6013023896e1cfd0e1e65ffe418">CMR_UNUSED</a>(graph);</div>
+<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160; </div>
+<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;  assert(graph);</div>
+<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160; </div>
+<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;  <span class="keywordflow">return</span> i/2;</div>
+<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;}</div>
+<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160; </div>
+<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span></div>
+<div class="line"><a name="l00364"></a><span class="lineno"><a class="line" href="group__Graph.html#gaff8873337b9aa1e9d9265052e549cd85">  364</a></span>&#160;<a class="code" href="group__Graph.html#ga1005ffc33d6eb26dcd65eb9ca1ea74f3">CMR_GRAPH_NODE</a> <a class="code" href="group__Graph.html#gaff8873337b9aa1e9d9265052e549cd85">CMRgraphIncSource</a>(</div>
+<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;  <a class="code" href="structCMR__GRAPH.html">CMR_GRAPH</a>* graph,  </div>
+<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;  <a class="code" href="group__Graph.html#gae0c5c5a9a545aac00234dff0669d1b4a">CMR_GRAPH_ITER</a> i   </div>
+<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;)</div>
+<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;{</div>
+<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;  <span class="keywordflow">return</span> graph-&gt;<a class="code" href="structCMR__GRAPH.html#a11cddc52c6b985460139577b6a68de8d">arcs</a>[i^1].<a class="code" href="structCMR__GRAPH__ARC__DATA.html#ae08c25ebe8b224185c4da0a9788aee87">target</a>;</div>
+<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;}</div>
+<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160; </div>
+<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span></div>
+<div class="line"><a name="l00377"></a><span class="lineno"><a class="line" href="group__Graph.html#ga4b7114888b4d47bdd68225f94aa62926">  377</a></span>&#160;<a class="code" href="group__Graph.html#ga1005ffc33d6eb26dcd65eb9ca1ea74f3">CMR_GRAPH_NODE</a> <a class="code" href="group__Graph.html#ga4b7114888b4d47bdd68225f94aa62926">CMRgraphIncTarget</a>(</div>
+<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;  <a class="code" href="structCMR__GRAPH.html">CMR_GRAPH</a>* graph,  </div>
+<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;  <a class="code" href="group__Graph.html#gae0c5c5a9a545aac00234dff0669d1b4a">CMR_GRAPH_ITER</a> i   </div>
+<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;)</div>
+<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;{</div>
+<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;  <span class="keywordflow">return</span> graph-&gt;<a class="code" href="structCMR__GRAPH.html#a11cddc52c6b985460139577b6a68de8d">arcs</a>[i].<a class="code" href="structCMR__GRAPH__ARC__DATA.html#ae08c25ebe8b224185c4da0a9788aee87">target</a>;</div>
+<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;}</div>
+<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160; </div>
+<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span></div>
+<div class="line"><a name="l00390"></a><span class="lineno"><a class="line" href="group__Graph.html#ga60174d929bb0a1c91293f259839e7b81">  390</a></span>&#160;<a class="code" href="group__Graph.html#gae0c5c5a9a545aac00234dff0669d1b4a">CMR_GRAPH_ITER</a> <a class="code" href="group__Graph.html#ga60174d929bb0a1c91293f259839e7b81">CMRgraphEdgesNext</a>(</div>
+<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;  <a class="code" href="structCMR__GRAPH.html">CMR_GRAPH</a>* graph,  </div>
+<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;  <a class="code" href="group__Graph.html#gae0c5c5a9a545aac00234dff0669d1b4a">CMR_GRAPH_ITER</a> i   </div>
+<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;)</div>
+<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;{</div>
+<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;  <a class="code" href="group__Graph.html#ga1005ffc33d6eb26dcd65eb9ca1ea74f3">CMR_GRAPH_NODE</a> source = graph-&gt;<a class="code" href="structCMR__GRAPH.html#a11cddc52c6b985460139577b6a68de8d">arcs</a>[i ^ 1].<a class="code" href="structCMR__GRAPH__ARC__DATA.html#ae08c25ebe8b224185c4da0a9788aee87">target</a>;</div>
+<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;  <a class="code" href="group__Graph.html#gae0c5c5a9a545aac00234dff0669d1b4a">CMR_GRAPH_ITER</a> j = graph-&gt;<a class="code" href="structCMR__GRAPH.html#a11cddc52c6b985460139577b6a68de8d">arcs</a>[i].<a class="code" href="structCMR__GRAPH__ARC__DATA.html#abf8346cfceb6a115ce8f78067fde03db">next</a>;</div>
+<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;  <span class="keywordflow">while</span> (<span class="keyword">true</span>)</div>
+<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;  {</div>
+<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;    <span class="keywordflow">while</span> (j &gt;= 0)</div>
+<div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;    {</div>
+<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;      <span class="keywordflow">if</span> (!(j &amp; 0x1))</div>
+<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;        <span class="keywordflow">return</span> j;</div>
+<div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;      j = graph-&gt;<a class="code" href="structCMR__GRAPH.html#a11cddc52c6b985460139577b6a68de8d">arcs</a>[j].<a class="code" href="structCMR__GRAPH__ARC__DATA.html#abf8346cfceb6a115ce8f78067fde03db">next</a>;</div>
+<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;    }</div>
+<div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160;    source = graph-&gt;<a class="code" href="structCMR__GRAPH.html#a69b2210f3574044b53512f0ccea7dbe2">nodes</a>[source].<a class="code" href="structCMR__GRAPH__NODE__DATA.html#aed47c6778029472d8b67dd16c5109e7e">next</a>;</div>
+<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;    <span class="keywordflow">if</span> (source &lt; 0)</div>
+<div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160;      <span class="keywordflow">return</span> -1;</div>
+<div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160; </div>
+<div class="line"><a name="l00409"></a><span class="lineno">  409</span>&#160;    j = graph-&gt;<a class="code" href="structCMR__GRAPH.html#a69b2210f3574044b53512f0ccea7dbe2">nodes</a>[source].<a class="code" href="structCMR__GRAPH__NODE__DATA.html#abf310baaaed06f8859d36423b6628776">firstOut</a>;</div>
+<div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;  }</div>
+<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;}</div>
+<div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160; </div>
+<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span></div>
+<div class="line"><a name="l00418"></a><span class="lineno"><a class="line" href="group__Graph.html#ga72d7e7263df321ef764d8ac528b92d0c">  418</a></span>&#160;<a class="code" href="group__Graph.html#gae0c5c5a9a545aac00234dff0669d1b4a">CMR_GRAPH_ITER</a> <a class="code" href="group__Graph.html#ga72d7e7263df321ef764d8ac528b92d0c">CMRgraphEdgesFirst</a>(</div>
+<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;  <a class="code" href="structCMR__GRAPH.html">CMR_GRAPH</a>* graph </div>
+<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;)</div>
+<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;{</div>
+<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;  assert(graph);</div>
+<div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160; </div>
+<div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160;  <span class="keywordflow">for</span> (<a class="code" href="group__Graph.html#ga1005ffc33d6eb26dcd65eb9ca1ea74f3">CMR_GRAPH_NODE</a> v = <a class="code" href="group__Graph.html#gad2966dc6e2cd66fd7d47ce657243efda">CMRgraphNodesFirst</a>(graph); <a class="code" href="group__Graph.html#gae693e33ed728c5aa2d2d9d0f63740cf0">CMRgraphNodesValid</a>(graph, v);</div>
+<div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160;    v = <a class="code" href="group__Graph.html#ga5dd947c7f177e3072654251906177bcd">CMRgraphNodesNext</a>(graph, v))</div>
+<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;  {</div>
+<div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;    <a class="code" href="group__Graph.html#gae0c5c5a9a545aac00234dff0669d1b4a">CMR_GRAPH_ITER</a> i = graph-&gt;<a class="code" href="structCMR__GRAPH.html#a69b2210f3574044b53512f0ccea7dbe2">nodes</a>[v].<a class="code" href="structCMR__GRAPH__NODE__DATA.html#abf310baaaed06f8859d36423b6628776">firstOut</a>;</div>
+<div class="line"><a name="l00428"></a><span class="lineno">  428</span>&#160;    <span class="keywordflow">if</span> (i &gt;= 0)</div>
+<div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160;    {</div>
+<div class="line"><a name="l00430"></a><span class="lineno">  430</span>&#160;      <span class="comment">/* We found some node with an incident edge. */</span></div>
+<div class="line"><a name="l00431"></a><span class="lineno">  431</span>&#160;      <span class="keywordflow">if</span> (i &amp; 0x1)</div>
+<div class="line"><a name="l00432"></a><span class="lineno">  432</span>&#160;        i = <a class="code" href="group__Graph.html#ga60174d929bb0a1c91293f259839e7b81">CMRgraphEdgesNext</a>(graph, i);</div>
+<div class="line"><a name="l00433"></a><span class="lineno">  433</span>&#160;      <span class="keywordflow">return</span> i;</div>
+<div class="line"><a name="l00434"></a><span class="lineno">  434</span>&#160;    }</div>
+<div class="line"><a name="l00435"></a><span class="lineno">  435</span>&#160;  }</div>
+<div class="line"><a name="l00436"></a><span class="lineno">  436</span>&#160;  <span class="keywordflow">return</span> -1;</div>
+<div class="line"><a name="l00437"></a><span class="lineno">  437</span>&#160;}</div>
+<div class="line"><a name="l00438"></a><span class="lineno">  438</span>&#160; </div>
+<div class="line"><a name="l00443"></a><span class="lineno">  443</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span></div>
+<div class="line"><a name="l00444"></a><span class="lineno"><a class="line" href="group__Graph.html#ga5354c94f201de138a4b48e31df92cce9">  444</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="group__Graph.html#ga5354c94f201de138a4b48e31df92cce9">CMRgraphEdgesValid</a>(</div>
+<div class="line"><a name="l00445"></a><span class="lineno">  445</span>&#160;  <a class="code" href="structCMR__GRAPH.html">CMR_GRAPH</a>* graph,  </div>
+<div class="line"><a name="l00446"></a><span class="lineno">  446</span>&#160;  <a class="code" href="group__Graph.html#gae0c5c5a9a545aac00234dff0669d1b4a">CMR_GRAPH_ITER</a> i   </div>
+<div class="line"><a name="l00447"></a><span class="lineno">  447</span>&#160;)</div>
+<div class="line"><a name="l00448"></a><span class="lineno">  448</span>&#160;{</div>
+<div class="line"><a name="l00449"></a><span class="lineno">  449</span>&#160;  <a class="code" href="env_8h.html#a4460b6013023896e1cfd0e1e65ffe418">CMR_UNUSED</a>(graph);</div>
+<div class="line"><a name="l00450"></a><span class="lineno">  450</span>&#160; </div>
+<div class="line"><a name="l00451"></a><span class="lineno">  451</span>&#160;  assert(graph);</div>
+<div class="line"><a name="l00452"></a><span class="lineno">  452</span>&#160; </div>
+<div class="line"><a name="l00453"></a><span class="lineno">  453</span>&#160;  <span class="keywordflow">return</span> i &gt;= 0;</div>
+<div class="line"><a name="l00454"></a><span class="lineno">  454</span>&#160;}</div>
+<div class="line"><a name="l00455"></a><span class="lineno">  455</span>&#160; </div>
+<div class="line"><a name="l00460"></a><span class="lineno">  460</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span></div>
+<div class="line"><a name="l00461"></a><span class="lineno"><a class="line" href="group__Graph.html#ga25c2fd95ffb93f768758ac645038ed9f">  461</a></span>&#160;<a class="code" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> <a class="code" href="group__Graph.html#ga25c2fd95ffb93f768758ac645038ed9f">CMRgraphEdgesEdge</a>(</div>
+<div class="line"><a name="l00462"></a><span class="lineno">  462</span>&#160;  <a class="code" href="structCMR__GRAPH.html">CMR_GRAPH</a>* graph,  </div>
+<div class="line"><a name="l00463"></a><span class="lineno">  463</span>&#160;  <a class="code" href="group__Graph.html#gae0c5c5a9a545aac00234dff0669d1b4a">CMR_GRAPH_ITER</a> i   </div>
+<div class="line"><a name="l00464"></a><span class="lineno">  464</span>&#160;)</div>
+<div class="line"><a name="l00465"></a><span class="lineno">  465</span>&#160;{</div>
+<div class="line"><a name="l00466"></a><span class="lineno">  466</span>&#160;  <a class="code" href="env_8h.html#a4460b6013023896e1cfd0e1e65ffe418">CMR_UNUSED</a>(graph);</div>
+<div class="line"><a name="l00467"></a><span class="lineno">  467</span>&#160; </div>
+<div class="line"><a name="l00468"></a><span class="lineno">  468</span>&#160;  assert(graph);</div>
+<div class="line"><a name="l00469"></a><span class="lineno">  469</span>&#160; </div>
+<div class="line"><a name="l00470"></a><span class="lineno">  470</span>&#160;  <span class="keywordflow">return</span> i/2;</div>
+<div class="line"><a name="l00471"></a><span class="lineno">  471</span>&#160;}</div>
 <div class="line"><a name="l00472"></a><span class="lineno">  472</span>&#160; </div>
 <div class="line"><a name="l00477"></a><span class="lineno">  477</span>&#160;CMR_EXPORT</div>
-<div class="line"><a name="l00478"></a><span class="lineno">  478</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="group__Graph.html#ga4deabb1189df643e909a8e4b168e601f">CMRgraphMergeNodes</a>(</div>
-<div class="line"><a name="l00479"></a><span class="lineno">  479</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,           </div>
-<div class="line"><a name="l00480"></a><span class="lineno">  480</span>&#160;  <a class="code" href="structCMR__GRAPH.html">CMR_GRAPH</a>* graph,  </div>
-<div class="line"><a name="l00481"></a><span class="lineno">  481</span>&#160;  <a class="code" href="group__Graph.html#ga1005ffc33d6eb26dcd65eb9ca1ea74f3">CMR_GRAPH_NODE</a> u,  </div>
-<div class="line"><a name="l00482"></a><span class="lineno">  482</span>&#160;  <a class="code" href="group__Graph.html#ga1005ffc33d6eb26dcd65eb9ca1ea74f3">CMR_GRAPH_NODE</a> v   </div>
-<div class="line"><a name="l00483"></a><span class="lineno">  483</span>&#160;);</div>
-<div class="line"><a name="l00484"></a><span class="lineno">  484</span>&#160; </div>
-<div class="line"><a name="l00485"></a><span class="lineno">  485</span>&#160; </div>
-<div class="line"><a name="l00486"></a><span class="lineno">  486</span>&#160;CMR_EXPORT</div>
-<div class="line"><a name="l00487"></a><span class="lineno">  487</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="group__Graph.html#gac49309ba0df89e6fb1b7c754a53b7d59">CMRgraphCreateFromEdgeList</a>(</div>
-<div class="line"><a name="l00488"></a><span class="lineno">  488</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,                   </div>
-<div class="line"><a name="l00489"></a><span class="lineno">  489</span>&#160;  <a class="code" href="structCMR__GRAPH.html">CMR_GRAPH</a>** pgraph,        </div>
-<div class="line"><a name="l00490"></a><span class="lineno">  490</span>&#160;  <a class="code" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a>** pedgeElements,  </div>
-<div class="line"><a name="l00491"></a><span class="lineno">  491</span>&#160;  <span class="keywordtype">char</span>*** pnodeLabels,      </div>
-<div class="line"><a name="l00492"></a><span class="lineno">  492</span>&#160;  FILE* stream              </div>
+<div class="line"><a name="l00478"></a><span class="lineno">  478</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="group__Graph.html#ga0e8737af216dc30a53a7bf8dc8adc23d">CMRgraphPrint</a>(</div>
+<div class="line"><a name="l00479"></a><span class="lineno">  479</span>&#160;  FILE* stream,   </div>
+<div class="line"><a name="l00480"></a><span class="lineno">  480</span>&#160;  <a class="code" href="structCMR__GRAPH.html">CMR_GRAPH</a>* graph </div>
+<div class="line"><a name="l00481"></a><span class="lineno">  481</span>&#160;);</div>
+<div class="line"><a name="l00482"></a><span class="lineno">  482</span>&#160; </div>
+<div class="line"><a name="l00487"></a><span class="lineno">  487</span>&#160;CMR_EXPORT</div>
+<div class="line"><a name="l00488"></a><span class="lineno">  488</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="group__Graph.html#ga4deabb1189df643e909a8e4b168e601f">CMRgraphMergeNodes</a>(</div>
+<div class="line"><a name="l00489"></a><span class="lineno">  489</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,           </div>
+<div class="line"><a name="l00490"></a><span class="lineno">  490</span>&#160;  <a class="code" href="structCMR__GRAPH.html">CMR_GRAPH</a>* graph,  </div>
+<div class="line"><a name="l00491"></a><span class="lineno">  491</span>&#160;  <a class="code" href="group__Graph.html#ga1005ffc33d6eb26dcd65eb9ca1ea74f3">CMR_GRAPH_NODE</a> u,  </div>
+<div class="line"><a name="l00492"></a><span class="lineno">  492</span>&#160;  <a class="code" href="group__Graph.html#ga1005ffc33d6eb26dcd65eb9ca1ea74f3">CMR_GRAPH_NODE</a> v   </div>
 <div class="line"><a name="l00493"></a><span class="lineno">  493</span>&#160;);</div>
 <div class="line"><a name="l00494"></a><span class="lineno">  494</span>&#160; </div>
-<div class="line"><a name="l00497"></a><span class="lineno">  497</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
-<div class="line"><a name="l00498"></a><span class="lineno">  498</span>&#160;}</div>
-<div class="line"><a name="l00499"></a><span class="lineno">  499</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00500"></a><span class="lineno">  500</span>&#160; </div>
-<div class="line"><a name="l00501"></a><span class="lineno">  501</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* CMR_GRAPH_H */</span><span class="preprocessor"></span></div>
+<div class="line"><a name="l00495"></a><span class="lineno">  495</span>&#160; </div>
+<div class="line"><a name="l00496"></a><span class="lineno">  496</span>&#160;CMR_EXPORT</div>
+<div class="line"><a name="l00497"></a><span class="lineno">  497</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="group__Graph.html#gac49309ba0df89e6fb1b7c754a53b7d59">CMRgraphCreateFromEdgeList</a>(</div>
+<div class="line"><a name="l00498"></a><span class="lineno">  498</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,                   </div>
+<div class="line"><a name="l00499"></a><span class="lineno">  499</span>&#160;  <a class="code" href="structCMR__GRAPH.html">CMR_GRAPH</a>** pgraph,        </div>
+<div class="line"><a name="l00500"></a><span class="lineno">  500</span>&#160;  <a class="code" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a>** pedgeElements,  </div>
+<div class="line"><a name="l00501"></a><span class="lineno">  501</span>&#160;  <span class="keywordtype">char</span>*** pnodeLabels,      </div>
+<div class="line"><a name="l00502"></a><span class="lineno">  502</span>&#160;  FILE* stream              </div>
+<div class="line"><a name="l00503"></a><span class="lineno">  503</span>&#160;);</div>
+<div class="line"><a name="l00504"></a><span class="lineno">  504</span>&#160; </div>
+<div class="line"><a name="l00507"></a><span class="lineno">  507</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
+<div class="line"><a name="l00508"></a><span class="lineno">  508</span>&#160;}</div>
+<div class="line"><a name="l00509"></a><span class="lineno">  509</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00510"></a><span class="lineno">  510</span>&#160; </div>
+<div class="line"><a name="l00511"></a><span class="lineno">  511</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* CMR_GRAPH_H */</span><span class="preprocessor"></span></div>
 <div class="ttc" id="aelement_8h_html"><div class="ttname"><a href="element_8h.html">element.h</a></div><div class="ttdoc">Functionality for the row and column elements of a matrix.</div></div>
 <div class="ttc" id="aelement_8h_html_a27b924582353437788c8d49c28a89142"><div class="ttname"><a href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a></div><div class="ttdeci">int CMR_ELEMENT</div><div class="ttdef"><b>Definition:</b> element.h:20</div></div>
 <div class="ttc" id="aenv_8h_html"><div class="ttname"><a href="env_8h.html">env.h</a></div><div class="ttdoc">Basic functionality of the software library.</div></div>
-<div class="ttc" id="aenv_8h_html_ae2f4ad54b976c2b9a099246c6dc0be87"><div class="ttname"><a href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a></div><div class="ttdeci">CMR_ERROR</div><div class="ttdoc">Type for return codes of library functions.</div><div class="ttdef"><b>Definition:</b> env.h:27</div></div>
-<div class="ttc" id="agroup__Graph_html_ga0e8737af216dc30a53a7bf8dc8adc23d"><div class="ttname"><a href="group__Graph.html#ga0e8737af216dc30a53a7bf8dc8adc23d">CMRgraphPrint</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRgraphPrint(FILE *stream, CMR_GRAPH *graph)</div><div class="ttdoc">Prints the graph, writing to stream.</div><div class="ttdef"><b>Definition:</b> graph.c:375</div></div>
+<div class="ttc" id="aenv_8h_html_a4460b6013023896e1cfd0e1e65ffe418"><div class="ttname"><a href="env_8h.html#a4460b6013023896e1cfd0e1e65ffe418">CMR_UNUSED</a></div><div class="ttdeci">#define CMR_UNUSED(x)</div><div class="ttdef"><b>Definition:</b> env.h:24</div></div>
+<div class="ttc" id="aenv_8h_html_ae2f4ad54b976c2b9a099246c6dc0be87"><div class="ttname"><a href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a></div><div class="ttdeci">CMR_ERROR</div><div class="ttdoc">Type for return codes of library functions.</div><div class="ttdef"><b>Definition:</b> env.h:32</div></div>
+<div class="ttc" id="agroup__Graph_html_ga0e8737af216dc30a53a7bf8dc8adc23d"><div class="ttname"><a href="group__Graph.html#ga0e8737af216dc30a53a7bf8dc8adc23d">CMRgraphPrint</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRgraphPrint(FILE *stream, CMR_GRAPH *graph)</div><div class="ttdoc">Prints the graph, writing to stream.</div><div class="ttdef"><b>Definition:</b> graph.c:381</div></div>
 <div class="ttc" id="agroup__Graph_html_ga1005ffc33d6eb26dcd65eb9ca1ea74f3"><div class="ttname"><a href="group__Graph.html#ga1005ffc33d6eb26dcd65eb9ca1ea74f3">CMR_GRAPH_NODE</a></div><div class="ttdeci">int CMR_GRAPH_NODE</div><div class="ttdoc">Reference to a node of CMR_GRAPH.</div><div class="ttdef"><b>Definition:</b> graph.h:30</div></div>
-<div class="ttc" id="agroup__Graph_html_ga25c2fd95ffb93f768758ac645038ed9f"><div class="ttname"><a href="group__Graph.html#ga25c2fd95ffb93f768758ac645038ed9f">CMRgraphEdgesEdge</a></div><div class="ttdeci">static CMR_GRAPH_EDGE CMRgraphEdgesEdge(CMR_GRAPH *graph, CMR_GRAPH_ITER i)</div><div class="ttdoc">Returns the actual edge, iterator i represents.</div><div class="ttdef"><b>Definition:</b> graph.h:453</div></div>
-<div class="ttc" id="agroup__Graph_html_ga2d16c14374ede0ec33073ebe8bd71770"><div class="ttname"><a href="group__Graph.html#ga2d16c14374ede0ec33073ebe8bd71770">CMRgraphCreateEmpty</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRgraphCreateEmpty(CMR *cmr, CMR_GRAPH **pgraph, int memNodes, int memEdges)</div><div class="ttdoc">Creates an empty graph.</div><div class="ttdef"><b>Definition:</b> graph.c:91</div></div>
-<div class="ttc" id="agroup__Graph_html_ga2fd3b52e45a819b66dba8e2182654e9f"><div class="ttname"><a href="group__Graph.html#ga2fd3b52e45a819b66dba8e2182654e9f">CMRgraphIncEdge</a></div><div class="ttdeci">static CMR_GRAPH_EDGE CMRgraphIncEdge(CMR_GRAPH *graph, CMR_GRAPH_ITER i)</div><div class="ttdoc">Converts an iterator for edges incident to a node to the actual edge.</div><div class="ttdef"><b>Definition:</b> graph.h:343</div></div>
+<div class="ttc" id="agroup__Graph_html_ga25c2fd95ffb93f768758ac645038ed9f"><div class="ttname"><a href="group__Graph.html#ga25c2fd95ffb93f768758ac645038ed9f">CMRgraphEdgesEdge</a></div><div class="ttdeci">static CMR_GRAPH_EDGE CMRgraphEdgesEdge(CMR_GRAPH *graph, CMR_GRAPH_ITER i)</div><div class="ttdoc">Returns the actual edge, iterator i represents.</div><div class="ttdef"><b>Definition:</b> graph.h:461</div></div>
+<div class="ttc" id="agroup__Graph_html_ga2d16c14374ede0ec33073ebe8bd71770"><div class="ttname"><a href="group__Graph.html#ga2d16c14374ede0ec33073ebe8bd71770">CMRgraphCreateEmpty</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRgraphCreateEmpty(CMR *cmr, CMR_GRAPH **pgraph, int memNodes, int memEdges)</div><div class="ttdoc">Creates an empty graph.</div><div class="ttdef"><b>Definition:</b> graph.c:93</div></div>
+<div class="ttc" id="agroup__Graph_html_ga2fd3b52e45a819b66dba8e2182654e9f"><div class="ttname"><a href="group__Graph.html#ga2fd3b52e45a819b66dba8e2182654e9f">CMRgraphIncEdge</a></div><div class="ttdeci">static CMR_GRAPH_EDGE CMRgraphIncEdge(CMR_GRAPH *graph, CMR_GRAPH_ITER i)</div><div class="ttdoc">Converts an iterator for edges incident to a node to the actual edge.</div><div class="ttdef"><b>Definition:</b> graph.h:347</div></div>
 <div class="ttc" id="agroup__Graph_html_ga3784d48ce0959096584422f4fa85168a"><div class="ttname"><a href="group__Graph.html#ga3784d48ce0959096584422f4fa85168a">CMRgraphNumNodes</a></div><div class="ttdeci">static size_t CMRgraphNumNodes(CMR_GRAPH *graph)</div><div class="ttdoc">Returns number of nodes.</div><div class="ttdef"><b>Definition:</b> graph.h:81</div></div>
 <div class="ttc" id="agroup__Graph_html_ga38c18de77580e775c23b25b8166baaf1"><div class="ttname"><a href="group__Graph.html#ga38c18de77580e775c23b25b8166baaf1">CMRgraphMemEdges</a></div><div class="ttdeci">static size_t CMRgraphMemEdges(CMR_GRAPH *graph)</div><div class="ttdoc">Returns number of edges for which memory is allocated.</div><div class="ttdef"><b>Definition:</b> graph.h:95</div></div>
 <div class="ttc" id="agroup__Graph_html_ga48bcc85104dd3ba28712734c927616e4"><div class="ttname"><a href="group__Graph.html#ga48bcc85104dd3ba28712734c927616e4">CMRgraphMemNodes</a></div><div class="ttdeci">static size_t CMRgraphMemNodes(CMR_GRAPH *graph)</div><div class="ttdoc">Returns number of nodes for which memory is allocated.</div><div class="ttdef"><b>Definition:</b> graph.h:67</div></div>
-<div class="ttc" id="agroup__Graph_html_ga4b7114888b4d47bdd68225f94aa62926"><div class="ttname"><a href="group__Graph.html#ga4b7114888b4d47bdd68225f94aa62926">CMRgraphIncTarget</a></div><div class="ttdeci">static CMR_GRAPH_NODE CMRgraphIncTarget(CMR_GRAPH *graph, CMR_GRAPH_ITER i)</div><div class="ttdoc">Returns the end node of the edge corresponding to this iterator i.</div><div class="ttdef"><b>Definition:</b> graph.h:371</div></div>
-<div class="ttc" id="agroup__Graph_html_ga4deabb1189df643e909a8e4b168e601f"><div class="ttname"><a href="group__Graph.html#ga4deabb1189df643e909a8e4b168e601f">CMRgraphMergeNodes</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRgraphMergeNodes(CMR *cmr, CMR_GRAPH *graph, CMR_GRAPH_NODE u, CMR_GRAPH_NODE v)</div><div class="ttdoc">Merges two nodes u and v of graph.</div><div class="ttdef"><b>Definition:</b> graph.c:394</div></div>
-<div class="ttc" id="agroup__Graph_html_ga5354c94f201de138a4b48e31df92cce9"><div class="ttname"><a href="group__Graph.html#ga5354c94f201de138a4b48e31df92cce9">CMRgraphEdgesValid</a></div><div class="ttdeci">static bool CMRgraphEdgesValid(CMR_GRAPH *graph, CMR_GRAPH_ITER i)</div><div class="ttdoc">Returns true if and only if iterator i for all edges is valid.</div><div class="ttdef"><b>Definition:</b> graph.h:438</div></div>
-<div class="ttc" id="agroup__Graph_html_ga5a7a67eac7a419dfcfbaf12745afaa3d"><div class="ttname"><a href="group__Graph.html#ga5a7a67eac7a419dfcfbaf12745afaa3d">CMRgraphIncValid</a></div><div class="ttdeci">static bool CMRgraphIncValid(CMR_GRAPH *graph, CMR_GRAPH_ITER i)</div><div class="ttdoc">Returns true if iterator i for all incident edges of some node is valid.</div><div class="ttdef"><b>Definition:</b> graph.h:306</div></div>
-<div class="ttc" id="agroup__Graph_html_ga5dd947c7f177e3072654251906177bcd"><div class="ttname"><a href="group__Graph.html#ga5dd947c7f177e3072654251906177bcd">CMRgraphNodesNext</a></div><div class="ttdeci">static CMR_GRAPH_NODE CMRgraphNodesNext(CMR_GRAPH *graph, CMR_GRAPH_NODE v)</div><div class="ttdoc">Returns the next node after v.</div><div class="ttdef"><b>Definition:</b> graph.h:268</div></div>
-<div class="ttc" id="agroup__Graph_html_ga60174d929bb0a1c91293f259839e7b81"><div class="ttname"><a href="group__Graph.html#ga60174d929bb0a1c91293f259839e7b81">CMRgraphEdgesNext</a></div><div class="ttdeci">static CMR_GRAPH_ITER CMRgraphEdgesNext(CMR_GRAPH *graph, CMR_GRAPH_ITER i)</div><div class="ttdoc">Returns iterator of next edge in list of all edges.</div><div class="ttdef"><b>Definition:</b> graph.h:384</div></div>
-<div class="ttc" id="agroup__Graph_html_ga72d7e7263df321ef764d8ac528b92d0c"><div class="ttname"><a href="group__Graph.html#ga72d7e7263df321ef764d8ac528b92d0c">CMRgraphEdgesFirst</a></div><div class="ttdeci">static CMR_GRAPH_ITER CMRgraphEdgesFirst(CMR_GRAPH *graph)</div><div class="ttdoc">Returns iterator for all edges of graph.</div><div class="ttdef"><b>Definition:</b> graph.h:412</div></div>
-<div class="ttc" id="agroup__Graph_html_ga73d43a2e1ccc266eaf2d5c87f93f4a3a"><div class="ttname"><a href="group__Graph.html#ga73d43a2e1ccc266eaf2d5c87f93f4a3a">CMRgraphAddNode</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRgraphAddNode(CMR *cmr, CMR_GRAPH *graph, CMR_GRAPH_NODE *pnode)</div><div class="ttdoc">Adds a node to a graph.</div><div class="ttdef"><b>Definition:</b> graph.c:175</div></div>
-<div class="ttc" id="agroup__Graph_html_ga8ccc7dc84fdb649dba60a65d12b5b68a"><div class="ttname"><a href="group__Graph.html#ga8ccc7dc84fdb649dba60a65d12b5b68a">CMRgraphIncNext</a></div><div class="ttdeci">static CMR_GRAPH_ITER CMRgraphIncNext(CMR_GRAPH *graph, CMR_GRAPH_ITER i)</div><div class="ttdoc">Returns the iterator following iterator i for all edges incident to some node.</div><div class="ttdef"><b>Definition:</b> graph.h:321</div></div>
-<div class="ttc" id="agroup__Graph_html_ga999ca3f3bfcd60bed76ea25b268a77ba"><div class="ttname"><a href="group__Graph.html#ga999ca3f3bfcd60bed76ea25b268a77ba">CMRgraphAddEdge</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRgraphAddEdge(CMR *cmr, CMR_GRAPH *graph, CMR_GRAPH_NODE u, CMR_GRAPH_NODE v, CMR_GRAPH_EDGE *pedge)</div><div class="ttdoc">Adds an edge to a graph.</div><div class="ttdef"><b>Definition:</b> graph.c:221</div></div>
-<div class="ttc" id="agroup__Graph_html_ga9c663e1e6f43acb7e4ba96bc223a943d"><div class="ttname"><a href="group__Graph.html#ga9c663e1e6f43acb7e4ba96bc223a943d">CMRgraphDeleteEdge</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRgraphDeleteEdge(CMR *cmr, CMR_GRAPH *graph, CMR_GRAPH_EDGE e)</div><div class="ttdoc">Removes edge e from graph.</div><div class="ttdef"><b>Definition:</b> graph.c:323</div></div>
+<div class="ttc" id="agroup__Graph_html_ga4b7114888b4d47bdd68225f94aa62926"><div class="ttname"><a href="group__Graph.html#ga4b7114888b4d47bdd68225f94aa62926">CMRgraphIncTarget</a></div><div class="ttdeci">static CMR_GRAPH_NODE CMRgraphIncTarget(CMR_GRAPH *graph, CMR_GRAPH_ITER i)</div><div class="ttdoc">Returns the end node of the edge corresponding to this iterator i.</div><div class="ttdef"><b>Definition:</b> graph.h:377</div></div>
+<div class="ttc" id="agroup__Graph_html_ga4deabb1189df643e909a8e4b168e601f"><div class="ttname"><a href="group__Graph.html#ga4deabb1189df643e909a8e4b168e601f">CMRgraphMergeNodes</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRgraphMergeNodes(CMR *cmr, CMR_GRAPH *graph, CMR_GRAPH_NODE u, CMR_GRAPH_NODE v)</div><div class="ttdoc">Merges two nodes u and v of graph.</div><div class="ttdef"><b>Definition:</b> graph.c:400</div></div>
+<div class="ttc" id="agroup__Graph_html_ga5354c94f201de138a4b48e31df92cce9"><div class="ttname"><a href="group__Graph.html#ga5354c94f201de138a4b48e31df92cce9">CMRgraphEdgesValid</a></div><div class="ttdeci">static bool CMRgraphEdgesValid(CMR_GRAPH *graph, CMR_GRAPH_ITER i)</div><div class="ttdoc">Returns true if and only if iterator i for all edges is valid.</div><div class="ttdef"><b>Definition:</b> graph.h:444</div></div>
+<div class="ttc" id="agroup__Graph_html_ga5a7a67eac7a419dfcfbaf12745afaa3d"><div class="ttname"><a href="group__Graph.html#ga5a7a67eac7a419dfcfbaf12745afaa3d">CMRgraphIncValid</a></div><div class="ttdeci">static bool CMRgraphIncValid(CMR_GRAPH *graph, CMR_GRAPH_ITER i)</div><div class="ttdoc">Returns true if iterator i for all incident edges of some node is valid.</div><div class="ttdef"><b>Definition:</b> graph.h:308</div></div>
+<div class="ttc" id="agroup__Graph_html_ga5dd947c7f177e3072654251906177bcd"><div class="ttname"><a href="group__Graph.html#ga5dd947c7f177e3072654251906177bcd">CMRgraphNodesNext</a></div><div class="ttdeci">static CMR_GRAPH_NODE CMRgraphNodesNext(CMR_GRAPH *graph, CMR_GRAPH_NODE v)</div><div class="ttdoc">Returns the next node after v.</div><div class="ttdef"><b>Definition:</b> graph.h:270</div></div>
+<div class="ttc" id="agroup__Graph_html_ga60174d929bb0a1c91293f259839e7b81"><div class="ttname"><a href="group__Graph.html#ga60174d929bb0a1c91293f259839e7b81">CMRgraphEdgesNext</a></div><div class="ttdeci">static CMR_GRAPH_ITER CMRgraphEdgesNext(CMR_GRAPH *graph, CMR_GRAPH_ITER i)</div><div class="ttdoc">Returns iterator of next edge in list of all edges.</div><div class="ttdef"><b>Definition:</b> graph.h:390</div></div>
+<div class="ttc" id="agroup__Graph_html_ga72d7e7263df321ef764d8ac528b92d0c"><div class="ttname"><a href="group__Graph.html#ga72d7e7263df321ef764d8ac528b92d0c">CMRgraphEdgesFirst</a></div><div class="ttdeci">static CMR_GRAPH_ITER CMRgraphEdgesFirst(CMR_GRAPH *graph)</div><div class="ttdoc">Returns iterator for all edges of graph.</div><div class="ttdef"><b>Definition:</b> graph.h:418</div></div>
+<div class="ttc" id="agroup__Graph_html_ga73d43a2e1ccc266eaf2d5c87f93f4a3a"><div class="ttname"><a href="group__Graph.html#ga73d43a2e1ccc266eaf2d5c87f93f4a3a">CMRgraphAddNode</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRgraphAddNode(CMR *cmr, CMR_GRAPH *graph, CMR_GRAPH_NODE *pnode)</div><div class="ttdoc">Adds a node to a graph.</div><div class="ttdef"><b>Definition:</b> graph.c:181</div></div>
+<div class="ttc" id="agroup__Graph_html_ga8ccc7dc84fdb649dba60a65d12b5b68a"><div class="ttname"><a href="group__Graph.html#ga8ccc7dc84fdb649dba60a65d12b5b68a">CMRgraphIncNext</a></div><div class="ttdeci">static CMR_GRAPH_ITER CMRgraphIncNext(CMR_GRAPH *graph, CMR_GRAPH_ITER i)</div><div class="ttdoc">Returns the iterator following iterator i for all edges incident to some node.</div><div class="ttdef"><b>Definition:</b> graph.h:325</div></div>
+<div class="ttc" id="agroup__Graph_html_ga999ca3f3bfcd60bed76ea25b268a77ba"><div class="ttname"><a href="group__Graph.html#ga999ca3f3bfcd60bed76ea25b268a77ba">CMRgraphAddEdge</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRgraphAddEdge(CMR *cmr, CMR_GRAPH *graph, CMR_GRAPH_NODE u, CMR_GRAPH_NODE v, CMR_GRAPH_EDGE *pedge)</div><div class="ttdoc">Adds an edge to a graph.</div><div class="ttdef"><b>Definition:</b> graph.c:227</div></div>
+<div class="ttc" id="agroup__Graph_html_ga9c663e1e6f43acb7e4ba96bc223a943d"><div class="ttname"><a href="group__Graph.html#ga9c663e1e6f43acb7e4ba96bc223a943d">CMRgraphDeleteEdge</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRgraphDeleteEdge(CMR *cmr, CMR_GRAPH *graph, CMR_GRAPH_EDGE e)</div><div class="ttdoc">Removes edge e from graph.</div><div class="ttdef"><b>Definition:</b> graph.c:329</div></div>
 <div class="ttc" id="agroup__Graph_html_gaa77c68c46c033c741870271c317ed11c"><div class="ttname"><a href="group__Graph.html#gaa77c68c46c033c741870271c317ed11c">CMRgraphEdgeU</a></div><div class="ttdeci">static CMR_GRAPH_NODE CMRgraphEdgeU(CMR_GRAPH *graph, CMR_GRAPH_EDGE e)</div><div class="ttdoc">Returns node u of edge e.</div><div class="ttdef"><b>Definition:</b> graph.h:123</div></div>
 <div class="ttc" id="agroup__Graph_html_gaaf446b117436ddf586e772e8f4ce1d7b"><div class="ttname"><a href="group__Graph.html#gaaf446b117436ddf586e772e8f4ce1d7b">CMRgraphNumEdges</a></div><div class="ttdeci">static size_t CMRgraphNumEdges(CMR_GRAPH *graph)</div><div class="ttdoc">Returns number of edges.</div><div class="ttdef"><b>Definition:</b> graph.h:109</div></div>
-<div class="ttc" id="agroup__Graph_html_gac49309ba0df89e6fb1b7c754a53b7d59"><div class="ttname"><a href="group__Graph.html#gac49309ba0df89e6fb1b7c754a53b7d59">CMRgraphCreateFromEdgeList</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRgraphCreateFromEdgeList(CMR *cmr, CMR_GRAPH **pgraph, CMR_ELEMENT **pedgeElements, char ***pnodeLabels, FILE *stream)</div><div class="ttdef"><b>Definition:</b> graph.c:424</div></div>
+<div class="ttc" id="agroup__Graph_html_gac49309ba0df89e6fb1b7c754a53b7d59"><div class="ttname"><a href="group__Graph.html#gac49309ba0df89e6fb1b7c754a53b7d59">CMRgraphCreateFromEdgeList</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRgraphCreateFromEdgeList(CMR *cmr, CMR_GRAPH **pgraph, CMR_ELEMENT **pedgeElements, char ***pnodeLabels, FILE *stream)</div><div class="ttdef"><b>Definition:</b> graph.c:430</div></div>
 <div class="ttc" id="agroup__Graph_html_gad2966dc6e2cd66fd7d47ce657243efda"><div class="ttname"><a href="group__Graph.html#gad2966dc6e2cd66fd7d47ce657243efda">CMRgraphNodesFirst</a></div><div class="ttdeci">static CMR_GRAPH_NODE CMRgraphNodesFirst(CMR_GRAPH *graph)</div><div class="ttdoc">Returns a node iterator for iterating over all nodes.</div><div class="ttdef"><b>Definition:</b> graph.h:239</div></div>
 <div class="ttc" id="agroup__Graph_html_gad6db80fa0beaf8cd14fbb192f13e60f7"><div class="ttname"><a href="group__Graph.html#gad6db80fa0beaf8cd14fbb192f13e60f7">CMRgraphEdgeV</a></div><div class="ttdeci">static CMR_GRAPH_NODE CMRgraphEdgeV(CMR_GRAPH *graph, CMR_GRAPH_EDGE e)</div><div class="ttdoc">Returns node v of edge e.</div><div class="ttdef"><b>Definition:</b> graph.h:138</div></div>
 <div class="ttc" id="agroup__Graph_html_gae0c5c5a9a545aac00234dff0669d1b4a"><div class="ttname"><a href="group__Graph.html#gae0c5c5a9a545aac00234dff0669d1b4a">CMR_GRAPH_ITER</a></div><div class="ttdeci">int CMR_GRAPH_ITER</div><div class="ttdoc">Reference to an edge iterator of CMR_GRAPH.</div><div class="ttdef"><b>Definition:</b> graph.h:32</div></div>
-<div class="ttc" id="agroup__Graph_html_gae4a2f2442fb47d6bbcbab2eedae3260b"><div class="ttname"><a href="group__Graph.html#gae4a2f2442fb47d6bbcbab2eedae3260b">CMRgraphClear</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRgraphClear(CMR *cmr, CMR_GRAPH *graph)</div><div class="ttdoc">Removes all nodes and columns, keeping the memory.</div><div class="ttdef"><b>Definition:</b> graph.c:151</div></div>
-<div class="ttc" id="agroup__Graph_html_gae65c445ee519379ec2cc1a00f27b2248"><div class="ttname"><a href="group__Graph.html#gae65c445ee519379ec2cc1a00f27b2248">CMRgraphDeleteNode</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRgraphDeleteNode(CMR *cmr, CMR_GRAPH *graph, CMR_GRAPH_NODE v)</div><div class="ttdoc">Removes node v and all its incident edges from graph.</div><div class="ttdef"><b>Definition:</b> graph.c:286</div></div>
+<div class="ttc" id="agroup__Graph_html_gae4a2f2442fb47d6bbcbab2eedae3260b"><div class="ttname"><a href="group__Graph.html#gae4a2f2442fb47d6bbcbab2eedae3260b">CMRgraphClear</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRgraphClear(CMR *cmr, CMR_GRAPH *graph)</div><div class="ttdoc">Removes all nodes and columns, keeping the memory.</div><div class="ttdef"><b>Definition:</b> graph.c:155</div></div>
+<div class="ttc" id="agroup__Graph_html_gae65c445ee519379ec2cc1a00f27b2248"><div class="ttname"><a href="group__Graph.html#gae65c445ee519379ec2cc1a00f27b2248">CMRgraphDeleteNode</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRgraphDeleteNode(CMR *cmr, CMR_GRAPH *graph, CMR_GRAPH_NODE v)</div><div class="ttdoc">Removes node v and all its incident edges from graph.</div><div class="ttdef"><b>Definition:</b> graph.c:292</div></div>
 <div class="ttc" id="agroup__Graph_html_gae693e33ed728c5aa2d2d9d0f63740cf0"><div class="ttname"><a href="group__Graph.html#gae693e33ed728c5aa2d2d9d0f63740cf0">CMRgraphNodesValid</a></div><div class="ttdeci">static bool CMRgraphNodesValid(CMR_GRAPH *graph, CMR_GRAPH_NODE v)</div><div class="ttdoc">Return true if and only if this v is not the last node in node iteration.</div><div class="ttdef"><b>Definition:</b> graph.h:253</div></div>
 <div class="ttc" id="agroup__Graph_html_gae955029839563f0561720dee39c85f0a"><div class="ttname"><a href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a></div><div class="ttdeci">int CMR_GRAPH_EDGE</div><div class="ttdoc">Reference to an edge of CMR_GRAPH.</div><div class="ttdef"><b>Definition:</b> graph.h:31</div></div>
-<div class="ttc" id="agroup__Graph_html_gaeadec814a44e89c3b729fdeb70c26593"><div class="ttname"><a href="group__Graph.html#gaeadec814a44e89c3b729fdeb70c26593">CMRgraphFree</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRgraphFree(CMR *cmr, CMR_GRAPH **pgraph)</div><div class="ttdoc">Frees a graph.</div><div class="ttdef"><b>Definition:</b> graph.c:128</div></div>
-<div class="ttc" id="agroup__Graph_html_gafc7dc5283fe61a21008955615199bfd3"><div class="ttname"><a href="group__Graph.html#gafc7dc5283fe61a21008955615199bfd3">CMRgraphIncFirst</a></div><div class="ttdeci">static CMR_GRAPH_ITER CMRgraphIncFirst(CMR_GRAPH *graph, CMR_GRAPH_NODE v)</div><div class="ttdoc">Returns an iterator for all edges incident to node v.</div><div class="ttdef"><b>Definition:</b> graph.h:283</div></div>
-<div class="ttc" id="agroup__Graph_html_gaff8873337b9aa1e9d9265052e549cd85"><div class="ttname"><a href="group__Graph.html#gaff8873337b9aa1e9d9265052e549cd85">CMRgraphIncSource</a></div><div class="ttdeci">static CMR_GRAPH_NODE CMRgraphIncSource(CMR_GRAPH *graph, CMR_GRAPH_ITER i)</div><div class="ttdoc">Returns the node of which iterator i traverses through incident edges.</div><div class="ttdef"><b>Definition:</b> graph.h:358</div></div>
+<div class="ttc" id="agroup__Graph_html_gaeadec814a44e89c3b729fdeb70c26593"><div class="ttname"><a href="group__Graph.html#gaeadec814a44e89c3b729fdeb70c26593">CMRgraphFree</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRgraphFree(CMR *cmr, CMR_GRAPH **pgraph)</div><div class="ttdoc">Frees a graph.</div><div class="ttdef"><b>Definition:</b> graph.c:130</div></div>
+<div class="ttc" id="agroup__Graph_html_gafc7dc5283fe61a21008955615199bfd3"><div class="ttname"><a href="group__Graph.html#gafc7dc5283fe61a21008955615199bfd3">CMRgraphIncFirst</a></div><div class="ttdeci">static CMR_GRAPH_ITER CMRgraphIncFirst(CMR_GRAPH *graph, CMR_GRAPH_NODE v)</div><div class="ttdoc">Returns an iterator for all edges incident to node v.</div><div class="ttdef"><b>Definition:</b> graph.h:285</div></div>
+<div class="ttc" id="agroup__Graph_html_gaff8873337b9aa1e9d9265052e549cd85"><div class="ttname"><a href="group__Graph.html#gaff8873337b9aa1e9d9265052e549cd85">CMRgraphIncSource</a></div><div class="ttdeci">static CMR_GRAPH_NODE CMRgraphIncSource(CMR_GRAPH *graph, CMR_GRAPH_ITER i)</div><div class="ttdoc">Returns the node of which iterator i traverses through incident edges.</div><div class="ttdef"><b>Definition:</b> graph.h:364</div></div>
 <div class="ttc" id="astructCMR__ENVIRONMENT_html"><div class="ttname"><a href="structCMR__ENVIRONMENT.html">CMR_ENVIRONMENT</a></div><div class="ttdef"><b>Definition:</b> env_internal.h:45</div></div>
 <div class="ttc" id="astructCMR__GRAPH__ARC__DATA_html"><div class="ttname"><a href="structCMR__GRAPH__ARC__DATA.html">CMR_GRAPH_ARC_DATA</a></div><div class="ttdef"><b>Definition:</b> graph.h:42</div></div>
 <div class="ttc" id="astructCMR__GRAPH__ARC__DATA_html_a8ec6795833855e5fdee47f1acd45864c"><div class="ttname"><a href="structCMR__GRAPH__ARC__DATA.html#a8ec6795833855e5fdee47f1acd45864c">CMR_GRAPH_ARC_DATA::prev</a></div><div class="ttdeci">int prev</div><div class="ttdoc">Next arc in out-arc list of source node.</div><div class="ttdef"><b>Definition:</b> graph.h:44</div></div>

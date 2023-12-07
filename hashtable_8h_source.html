@@ -94,164 +94,161 @@ $(function() {
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span></div>
 <div class="line"><a name="l00017"></a><span class="lineno"><a class="line" href="hashtable_8h.html#ab9cd1eda250ff113c5e23f4688d0a521">   17</a></span>&#160;<span class="keywordtype">size_t</span> <a class="code" href="hashtable_8h.html#a74f5423f933344225351c5f71a607434">nextPower2</a>(<span class="keywordtype">size_t</span> x)</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;{</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  x |= x &gt;&gt; 1;</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;  x |= x &gt;&gt; 2;</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;  x |= x &gt;&gt; 4;</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;  x |= x &gt;&gt; 8;</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  x |= x &gt;&gt; 16;</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;  x |= x &gt;&gt; 32;</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  <span class="keywordflow">return</span> x + 1;</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;}</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160; </div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code" href="struct__CMR__LINEARHASHTABLE__ARRAY.html">_CMR_LINEARHASHTABLE_ARRAY</a> <a class="code" href="struct__CMR__LINEARHASHTABLE__ARRAY.html">CMR_LINEARHASHTABLE_ARRAY</a>;</div>
-<div class="line"><a name="l00029"></a><span class="lineno"><a class="line" href="hashtable_8h.html#a9f799e4e6a41fb251c1d54cf044c0c3e">   29</a></span>&#160;<span class="keyword">typedef</span> <span class="keywordtype">size_t</span> <a class="code" href="hashtable_8h.html#a9f799e4e6a41fb251c1d54cf044c0c3e">CMR_LINEARHASHTABLE_BUCKET</a>;</div>
-<div class="line"><a name="l00030"></a><span class="lineno"><a class="line" href="hashtable_8h.html#a2e9b9210b788a803d9c6ee7206ab8476">   30</a></span>&#160;<span class="keyword">typedef</span> <span class="keywordtype">size_t</span> <a class="code" href="hashtable_8h.html#a2e9b9210b788a803d9c6ee7206ab8476">CMR_LINEARHASHTABLE_HASH</a>;</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160; </div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="hashtable_8h.html#ac6ca93e4f20c309125904703aadb943f">CMRlinearhashtableArrayCreate</a>(</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,                     </div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  <a class="code" href="struct__CMR__LINEARHASHTABLE__ARRAY.html">CMR_LINEARHASHTABLE_ARRAY</a>** phashtable,  </div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  <span class="keywordtype">size_t</span> initialSize,         </div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  <span class="keywordtype">size_t</span> initialKeyMemory     </div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;);</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160; </div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="hashtable_8h.html#ace6d5fc7e139f381bb7e32363f693b59">CMRlinearhashtableArrayFree</a>(</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,                   </div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  <a class="code" href="struct__CMR__LINEARHASHTABLE__ARRAY.html">CMR_LINEARHASHTABLE_ARRAY</a>** phashtable </div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;);</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160; </div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="keywordtype">bool</span> <a class="code" href="hashtable_8h.html#afe72665e87fd4e53f1bb2cbf6989d0eb">CMRlinearhashtableArrayFind</a>(</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  <a class="code" href="struct__CMR__LINEARHASHTABLE__ARRAY.html">CMR_LINEARHASHTABLE_ARRAY</a>* hashtable,  </div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">void</span>* keyArray,               </div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  <span class="keywordtype">size_t</span> keyLength,                   </div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  <a class="code" href="hashtable_8h.html#a9f799e4e6a41fb251c1d54cf044c0c3e">CMR_LINEARHASHTABLE_BUCKET</a>* pbucket,   </div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  <a class="code" href="hashtable_8h.html#a2e9b9210b788a803d9c6ee7206ab8476">CMR_LINEARHASHTABLE_HASH</a>* phash        </div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;);</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160; </div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="keyword">const</span> <span class="keywordtype">void</span>* <a class="code" href="hashtable_8h.html#afd0894beb619c448bc416a6fedbee5e6">CMRlinearhashtableArrayKey</a>(</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  <a class="code" href="struct__CMR__LINEARHASHTABLE__ARRAY.html">CMR_LINEARHASHTABLE_ARRAY</a>* hashtable,  </div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  <a class="code" href="hashtable_8h.html#a9f799e4e6a41fb251c1d54cf044c0c3e">CMR_LINEARHASHTABLE_BUCKET</a> bucket,     </div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  <span class="keywordtype">size_t</span>* pKeyLength                  </div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;);</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160; </div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="keyword">const</span> <span class="keywordtype">void</span>* <a class="code" href="hashtable_8h.html#ac9af6c7868b95d550651e3f9a00008ee">CMRlinearhashtableArrayValue</a>(</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  <a class="code" href="struct__CMR__LINEARHASHTABLE__ARRAY.html">CMR_LINEARHASHTABLE_ARRAY</a>* hashtable,  </div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  <a class="code" href="hashtable_8h.html#a9f799e4e6a41fb251c1d54cf044c0c3e">CMR_LINEARHASHTABLE_BUCKET</a> bucket      </div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;);</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160; </div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="hashtable_8h.html#a569ebfc098e89e2970355d3f5bf59857">CMRlinearhashtableArrayInsertBucketHash</a>(</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,                             </div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  <a class="code" href="struct__CMR__LINEARHASHTABLE__ARRAY.html">CMR_LINEARHASHTABLE_ARRAY</a>* hashtable,  </div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">void</span>* keyArray,               </div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  <span class="keywordtype">size_t</span> keyLength,                   </div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  <a class="code" href="hashtable_8h.html#a9f799e4e6a41fb251c1d54cf044c0c3e">CMR_LINEARHASHTABLE_BUCKET</a> bucket,     </div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  <a class="code" href="hashtable_8h.html#a2e9b9210b788a803d9c6ee7206ab8476">CMR_LINEARHASHTABLE_HASH</a> hash,         </div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">void</span>* value                   </div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;);</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160; </div>
-<div class="line"><a name="l00073"></a><span class="lineno"><a class="line" href="hashtable_8h.html#ae210c3950cdf5bdcf72d7ac3e0329512">   73</a></span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="hashtable_8h.html#a49b63ae8c450df8d69164517bf9dd912">CMRlinearhashtableArrayInsert</a>(</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,                   </div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  <a class="code" href="struct__CMR__LINEARHASHTABLE__ARRAY.html">CMR_LINEARHASHTABLE_ARRAY</a>* hashtable,  </div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">void</span>* keyArray,     </div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  <span class="keywordtype">size_t</span> keyLength,         </div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">void</span>* value         </div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;);</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160; </div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160; </div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160; </div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code" href="struct__CMR__LISTHASHTABLE.html">_CMR_LISTHASHTABLE</a> <a class="code" href="struct__CMR__LISTHASHTABLE.html">CMR_LISTHASHTABLE</a>;</div>
-<div class="line"><a name="l00084"></a><span class="lineno"><a class="line" href="hashtable_8h.html#a216ed1f268a02a943f8dff64a6b90612">   84</a></span>&#160;<span class="keyword">typedef</span> <span class="keywordtype">size_t</span> <a class="code" href="hashtable_8h.html#a216ed1f268a02a943f8dff64a6b90612">CMR_LISTHASHTABLE_VALUE</a>;</div>
-<div class="line"><a name="l00085"></a><span class="lineno"><a class="line" href="hashtable_8h.html#af461c6e19d9081abe0912a972e7736c4">   85</a></span>&#160;<span class="keyword">typedef</span> <span class="keywordtype">size_t</span> <a class="code" href="hashtable_8h.html#af461c6e19d9081abe0912a972e7736c4">CMR_LISTHASHTABLE_HASH</a>;</div>
-<div class="line"><a name="l00086"></a><span class="lineno"><a class="line" href="hashtable_8h.html#a9c0de97fa464bc73465a479bf4244e98">   86</a></span>&#160;<span class="keyword">typedef</span> <span class="keywordtype">size_t</span> <a class="code" href="hashtable_8h.html#a9c0de97fa464bc73465a479bf4244e98">CMR_LISTHASHTABLE_BUCKET</a>;</div>
-<div class="line"><a name="l00087"></a><span class="lineno"><a class="line" href="hashtable_8h.html#a25652b5aedd8dfa374ec3d1322e636fb">   87</a></span>&#160;<span class="keyword">typedef</span> <span class="keywordtype">size_t</span> <a class="code" href="hashtable_8h.html#a25652b5aedd8dfa374ec3d1322e636fb">CMR_LISTHASHTABLE_ENTRY</a>;</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160; </div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="hashtable_8h.html#a12f10ded9acf72a3832e78fec61f70a1">CMRlisthashtableCreate</a>(</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,                         </div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  <a class="code" href="struct__CMR__LISTHASHTABLE.html">CMR_LISTHASHTABLE</a>** phashtable,  </div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  <span class="keywordtype">size_t</span> initialNumBuckets,       </div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;  <span class="keywordtype">size_t</span> initialMemNodes          </div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;);</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160; </div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="hashtable_8h.html#acafe60e2080b1febd40dd275a0cbdbe7">CMRlisthashtableFree</a>(</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,                       </div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  <a class="code" href="struct__CMR__LISTHASHTABLE.html">CMR_LISTHASHTABLE</a>** phashtable </div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;);</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160; </div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;<a class="code" href="hashtable_8h.html#a25652b5aedd8dfa374ec3d1322e636fb">CMR_LISTHASHTABLE_ENTRY</a> <a class="code" href="hashtable_8h.html#ae04093b20f05307de00161543b45bade">CMRlisthashtableFindFirst</a>(</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  <a class="code" href="struct__CMR__LISTHASHTABLE.html">CMR_LISTHASHTABLE</a>* hashtable,  </div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  <a class="code" href="hashtable_8h.html#af461c6e19d9081abe0912a972e7736c4">CMR_LISTHASHTABLE_HASH</a> hash    </div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;);</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160; </div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;<a class="code" href="hashtable_8h.html#a25652b5aedd8dfa374ec3d1322e636fb">CMR_LISTHASHTABLE_ENTRY</a> <a class="code" href="hashtable_8h.html#a655fa2796ef69674e198d665e8a47382">CMRlisthashtableFindNext</a>(</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  <a class="code" href="struct__CMR__LISTHASHTABLE.html">CMR_LISTHASHTABLE</a>* hashtable,  </div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  <a class="code" href="hashtable_8h.html#af461c6e19d9081abe0912a972e7736c4">CMR_LISTHASHTABLE_HASH</a> hash,   </div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  <a class="code" href="hashtable_8h.html#a25652b5aedd8dfa374ec3d1322e636fb">CMR_LISTHASHTABLE_ENTRY</a> entry  </div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;);</div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160; </div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;<a class="code" href="hashtable_8h.html#a216ed1f268a02a943f8dff64a6b90612">CMR_LISTHASHTABLE_VALUE</a> <a class="code" href="hashtable_8h.html#a9f089e91f7ac165916eaa2f44a68cd40">CMRlisthashtableValue</a>(</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;  <a class="code" href="struct__CMR__LISTHASHTABLE.html">CMR_LISTHASHTABLE</a>* hashtable,  </div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;  <a class="code" href="hashtable_8h.html#a25652b5aedd8dfa374ec3d1322e636fb">CMR_LISTHASHTABLE_ENTRY</a> entry  </div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;);</div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160; </div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;<a class="code" href="hashtable_8h.html#af461c6e19d9081abe0912a972e7736c4">CMR_LISTHASHTABLE_HASH</a> <a class="code" href="hashtable_8h.html#a67d8b5a31ddce6758ed00cb5b2f019ff">CMRlisthashtableHash</a>(</div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;  <a class="code" href="struct__CMR__LISTHASHTABLE.html">CMR_LISTHASHTABLE</a>* hashtable,  </div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;  <a class="code" href="hashtable_8h.html#a25652b5aedd8dfa374ec3d1322e636fb">CMR_LISTHASHTABLE_ENTRY</a> entry  </div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;);</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160; </div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;<span class="keywordtype">size_t</span> <a class="code" href="hashtable_8h.html#a0da0af3e69ddc6f1e467cef5ebcaaf3b">CMRlisthashtableNumBuckets</a>(</div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;  <a class="code" href="struct__CMR__LISTHASHTABLE.html">CMR_LISTHASHTABLE</a>* hashtable </div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;);</div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160; </div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="hashtable_8h.html#a5c6afeb01d6e654d9cbc3095913ed15e">CMRlisthashtableInsert</a>(</div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,                       </div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;  <a class="code" href="struct__CMR__LISTHASHTABLE.html">CMR_LISTHASHTABLE</a>* hashtable,   </div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;  <a class="code" href="hashtable_8h.html#af461c6e19d9081abe0912a972e7736c4">CMR_LISTHASHTABLE_HASH</a> hash,    </div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;  <a class="code" href="hashtable_8h.html#a216ed1f268a02a943f8dff64a6b90612">CMR_LISTHASHTABLE_VALUE</a> value,  </div>
-<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;  <a class="code" href="hashtable_8h.html#a25652b5aedd8dfa374ec3d1322e636fb">CMR_LISTHASHTABLE_ENTRY</a>* pentry </div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;);</div>
-<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160; </div>
-<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="hashtable_8h.html#afb068a0639dc1ac7311559b4b22a3c8a">CMRlisthashtableRemove</a>(</div>
-<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,                     </div>
-<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;  <a class="code" href="struct__CMR__LISTHASHTABLE.html">CMR_LISTHASHTABLE</a>* hashtable, </div>
-<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;  <a class="code" href="hashtable_8h.html#a25652b5aedd8dfa374ec3d1322e636fb">CMR_LISTHASHTABLE_ENTRY</a> entry </div>
-<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;);</div>
-<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160; </div>
-<div class="line"><a name="l00144"></a><span class="lineno"><a class="line" href="hashtable_8h.html#adb76d28fe03c41ea4f37819dc9f82d19">  144</a></span>&#160;<span class="preprocessor">#define RANGE_SIGNED_HASH (LLONG_MAX/2)</span></div>
-<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160; </div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span></div>
-<div class="line"><a name="l00151"></a><span class="lineno"><a class="line" href="hashtable_8h.html#ad4500b14debe0cc5f2bcb5d9ede2720b">  151</a></span>&#160;<span class="keywordtype">long</span> <span class="keywordtype">long</span> <a class="code" href="hashtable_8h.html#ad4500b14debe0cc5f2bcb5d9ede2720b">projectSignedHash</a>(<span class="keywordtype">long</span> <span class="keywordtype">long</span> value)</div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;{</div>
-<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;  <span class="keywordflow">return</span> ((value + <a class="code" href="hashtable_8h.html#adb76d28fe03c41ea4f37819dc9f82d19">RANGE_SIGNED_HASH</a> - 1) % (2*<a class="code" href="hashtable_8h.html#adb76d28fe03c41ea4f37819dc9f82d19">RANGE_SIGNED_HASH</a>-1)) - (<a class="code" href="hashtable_8h.html#adb76d28fe03c41ea4f37819dc9f82d19">RANGE_SIGNED_HASH</a>-1);</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  --x;</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;  <span class="keywordflow">for</span>(<span class="keywordtype">size_t</span> i = 1; i &lt; <span class="keyword">sizeof</span>(size_t) * CHAR_BIT; i *= 2)</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    x |= x &gt;&gt; i;</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;  <span class="keywordflow">return</span> x + 1;</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;}</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160; </div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code" href="struct__CMR__LINEARHASHTABLE__ARRAY.html">_CMR_LINEARHASHTABLE_ARRAY</a> <a class="code" href="struct__CMR__LINEARHASHTABLE__ARRAY.html">CMR_LINEARHASHTABLE_ARRAY</a>;</div>
+<div class="line"><a name="l00026"></a><span class="lineno"><a class="line" href="hashtable_8h.html#a9f799e4e6a41fb251c1d54cf044c0c3e">   26</a></span>&#160;<span class="keyword">typedef</span> <span class="keywordtype">size_t</span> <a class="code" href="hashtable_8h.html#a9f799e4e6a41fb251c1d54cf044c0c3e">CMR_LINEARHASHTABLE_BUCKET</a>;</div>
+<div class="line"><a name="l00027"></a><span class="lineno"><a class="line" href="hashtable_8h.html#a2e9b9210b788a803d9c6ee7206ab8476">   27</a></span>&#160;<span class="keyword">typedef</span> <span class="keywordtype">size_t</span> <a class="code" href="hashtable_8h.html#a2e9b9210b788a803d9c6ee7206ab8476">CMR_LINEARHASHTABLE_HASH</a>;</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160; </div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="hashtable_8h.html#ac6ca93e4f20c309125904703aadb943f">CMRlinearhashtableArrayCreate</a>(</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,                     </div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;  <a class="code" href="struct__CMR__LINEARHASHTABLE__ARRAY.html">CMR_LINEARHASHTABLE_ARRAY</a>** phashtable,  </div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  <span class="keywordtype">size_t</span> initialSize,         </div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  <span class="keywordtype">size_t</span> initialKeyMemory     </div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;);</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160; </div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="hashtable_8h.html#ace6d5fc7e139f381bb7e32363f693b59">CMRlinearhashtableArrayFree</a>(</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,                   </div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  <a class="code" href="struct__CMR__LINEARHASHTABLE__ARRAY.html">CMR_LINEARHASHTABLE_ARRAY</a>** phashtable </div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;);</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160; </div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="keywordtype">bool</span> <a class="code" href="hashtable_8h.html#afe72665e87fd4e53f1bb2cbf6989d0eb">CMRlinearhashtableArrayFind</a>(</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  <a class="code" href="struct__CMR__LINEARHASHTABLE__ARRAY.html">CMR_LINEARHASHTABLE_ARRAY</a>* hashtable,  </div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">void</span>* keyArray,               </div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  <span class="keywordtype">size_t</span> keyLength,                   </div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  <a class="code" href="hashtable_8h.html#a9f799e4e6a41fb251c1d54cf044c0c3e">CMR_LINEARHASHTABLE_BUCKET</a>* pbucket,   </div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  <a class="code" href="hashtable_8h.html#a2e9b9210b788a803d9c6ee7206ab8476">CMR_LINEARHASHTABLE_HASH</a>* phash        </div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;);</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160; </div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="keyword">const</span> <span class="keywordtype">void</span>* <a class="code" href="hashtable_8h.html#afd0894beb619c448bc416a6fedbee5e6">CMRlinearhashtableArrayKey</a>(</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  <a class="code" href="struct__CMR__LINEARHASHTABLE__ARRAY.html">CMR_LINEARHASHTABLE_ARRAY</a>* hashtable,  </div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  <a class="code" href="hashtable_8h.html#a9f799e4e6a41fb251c1d54cf044c0c3e">CMR_LINEARHASHTABLE_BUCKET</a> bucket,     </div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  <span class="keywordtype">size_t</span>* pKeyLength                  </div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;);</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160; </div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="keyword">const</span> <span class="keywordtype">void</span>* <a class="code" href="hashtable_8h.html#ac9af6c7868b95d550651e3f9a00008ee">CMRlinearhashtableArrayValue</a>(</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  <a class="code" href="struct__CMR__LINEARHASHTABLE__ARRAY.html">CMR_LINEARHASHTABLE_ARRAY</a>* hashtable,  </div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  <a class="code" href="hashtable_8h.html#a9f799e4e6a41fb251c1d54cf044c0c3e">CMR_LINEARHASHTABLE_BUCKET</a> bucket      </div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;);</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160; </div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="hashtable_8h.html#a569ebfc098e89e2970355d3f5bf59857">CMRlinearhashtableArrayInsertBucketHash</a>(</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,                             </div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  <a class="code" href="struct__CMR__LINEARHASHTABLE__ARRAY.html">CMR_LINEARHASHTABLE_ARRAY</a>* hashtable,  </div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">void</span>* keyArray,               </div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  <span class="keywordtype">size_t</span> keyLength,                   </div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  <a class="code" href="hashtable_8h.html#a9f799e4e6a41fb251c1d54cf044c0c3e">CMR_LINEARHASHTABLE_BUCKET</a> bucket,     </div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <a class="code" href="hashtable_8h.html#a2e9b9210b788a803d9c6ee7206ab8476">CMR_LINEARHASHTABLE_HASH</a> hash,         </div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">void</span>* value                   </div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;);</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160; </div>
+<div class="line"><a name="l00070"></a><span class="lineno"><a class="line" href="hashtable_8h.html#ae210c3950cdf5bdcf72d7ac3e0329512">   70</a></span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="hashtable_8h.html#a49b63ae8c450df8d69164517bf9dd912">CMRlinearhashtableArrayInsert</a>(</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,                   </div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  <a class="code" href="struct__CMR__LINEARHASHTABLE__ARRAY.html">CMR_LINEARHASHTABLE_ARRAY</a>* hashtable,  </div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">void</span>* keyArray,     </div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  <span class="keywordtype">size_t</span> keyLength,         </div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">void</span>* value         </div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;);</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160; </div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160; </div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160; </div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code" href="struct__CMR__LISTHASHTABLE.html">_CMR_LISTHASHTABLE</a> <a class="code" href="struct__CMR__LISTHASHTABLE.html">CMR_LISTHASHTABLE</a>;</div>
+<div class="line"><a name="l00081"></a><span class="lineno"><a class="line" href="hashtable_8h.html#a216ed1f268a02a943f8dff64a6b90612">   81</a></span>&#160;<span class="keyword">typedef</span> <span class="keywordtype">size_t</span> <a class="code" href="hashtable_8h.html#a216ed1f268a02a943f8dff64a6b90612">CMR_LISTHASHTABLE_VALUE</a>;</div>
+<div class="line"><a name="l00082"></a><span class="lineno"><a class="line" href="hashtable_8h.html#af461c6e19d9081abe0912a972e7736c4">   82</a></span>&#160;<span class="keyword">typedef</span> <span class="keywordtype">size_t</span> <a class="code" href="hashtable_8h.html#af461c6e19d9081abe0912a972e7736c4">CMR_LISTHASHTABLE_HASH</a>;</div>
+<div class="line"><a name="l00083"></a><span class="lineno"><a class="line" href="hashtable_8h.html#a9c0de97fa464bc73465a479bf4244e98">   83</a></span>&#160;<span class="keyword">typedef</span> <span class="keywordtype">size_t</span> <a class="code" href="hashtable_8h.html#a9c0de97fa464bc73465a479bf4244e98">CMR_LISTHASHTABLE_BUCKET</a>;</div>
+<div class="line"><a name="l00084"></a><span class="lineno"><a class="line" href="hashtable_8h.html#a25652b5aedd8dfa374ec3d1322e636fb">   84</a></span>&#160;<span class="keyword">typedef</span> <span class="keywordtype">size_t</span> <a class="code" href="hashtable_8h.html#a25652b5aedd8dfa374ec3d1322e636fb">CMR_LISTHASHTABLE_ENTRY</a>;</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160; </div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="hashtable_8h.html#a12f10ded9acf72a3832e78fec61f70a1">CMRlisthashtableCreate</a>(</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,                         </div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  <a class="code" href="struct__CMR__LISTHASHTABLE.html">CMR_LISTHASHTABLE</a>** phashtable,  </div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  <span class="keywordtype">size_t</span> initialNumBuckets,       </div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  <span class="keywordtype">size_t</span> initialMemNodes          </div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;);</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160; </div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="hashtable_8h.html#acafe60e2080b1febd40dd275a0cbdbe7">CMRlisthashtableFree</a>(</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,                       </div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;  <a class="code" href="struct__CMR__LISTHASHTABLE.html">CMR_LISTHASHTABLE</a>** phashtable </div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;);</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160; </div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;<a class="code" href="hashtable_8h.html#a25652b5aedd8dfa374ec3d1322e636fb">CMR_LISTHASHTABLE_ENTRY</a> <a class="code" href="hashtable_8h.html#ae04093b20f05307de00161543b45bade">CMRlisthashtableFindFirst</a>(</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;  <a class="code" href="struct__CMR__LISTHASHTABLE.html">CMR_LISTHASHTABLE</a>* hashtable,  </div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  <a class="code" href="hashtable_8h.html#af461c6e19d9081abe0912a972e7736c4">CMR_LISTHASHTABLE_HASH</a> hash    </div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;);</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160; </div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;<a class="code" href="hashtable_8h.html#a25652b5aedd8dfa374ec3d1322e636fb">CMR_LISTHASHTABLE_ENTRY</a> <a class="code" href="hashtable_8h.html#a655fa2796ef69674e198d665e8a47382">CMRlisthashtableFindNext</a>(</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;  <a class="code" href="struct__CMR__LISTHASHTABLE.html">CMR_LISTHASHTABLE</a>* hashtable,  </div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  <a class="code" href="hashtable_8h.html#af461c6e19d9081abe0912a972e7736c4">CMR_LISTHASHTABLE_HASH</a> hash,   </div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  <a class="code" href="hashtable_8h.html#a25652b5aedd8dfa374ec3d1322e636fb">CMR_LISTHASHTABLE_ENTRY</a> entry  </div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;);</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160; </div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;<a class="code" href="hashtable_8h.html#a216ed1f268a02a943f8dff64a6b90612">CMR_LISTHASHTABLE_VALUE</a> <a class="code" href="hashtable_8h.html#a9f089e91f7ac165916eaa2f44a68cd40">CMRlisthashtableValue</a>(</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;  <a class="code" href="struct__CMR__LISTHASHTABLE.html">CMR_LISTHASHTABLE</a>* hashtable,  </div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;  <a class="code" href="hashtable_8h.html#a25652b5aedd8dfa374ec3d1322e636fb">CMR_LISTHASHTABLE_ENTRY</a> entry  </div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;);</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160; </div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;<a class="code" href="hashtable_8h.html#af461c6e19d9081abe0912a972e7736c4">CMR_LISTHASHTABLE_HASH</a> <a class="code" href="hashtable_8h.html#a67d8b5a31ddce6758ed00cb5b2f019ff">CMRlisthashtableHash</a>(</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;  <a class="code" href="struct__CMR__LISTHASHTABLE.html">CMR_LISTHASHTABLE</a>* hashtable,  </div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;  <a class="code" href="hashtable_8h.html#a25652b5aedd8dfa374ec3d1322e636fb">CMR_LISTHASHTABLE_ENTRY</a> entry  </div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;);</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160; </div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;<span class="keywordtype">size_t</span> <a class="code" href="hashtable_8h.html#a0da0af3e69ddc6f1e467cef5ebcaaf3b">CMRlisthashtableNumBuckets</a>(</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;  <a class="code" href="struct__CMR__LISTHASHTABLE.html">CMR_LISTHASHTABLE</a>* hashtable </div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;);</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160; </div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="hashtable_8h.html#a5c6afeb01d6e654d9cbc3095913ed15e">CMRlisthashtableInsert</a>(</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,                       </div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;  <a class="code" href="struct__CMR__LISTHASHTABLE.html">CMR_LISTHASHTABLE</a>* hashtable,   </div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;  <a class="code" href="hashtable_8h.html#af461c6e19d9081abe0912a972e7736c4">CMR_LISTHASHTABLE_HASH</a> hash,    </div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;  <a class="code" href="hashtable_8h.html#a216ed1f268a02a943f8dff64a6b90612">CMR_LISTHASHTABLE_VALUE</a> value,  </div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;  <a class="code" href="hashtable_8h.html#a25652b5aedd8dfa374ec3d1322e636fb">CMR_LISTHASHTABLE_ENTRY</a>* pentry </div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;);</div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160; </div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="hashtable_8h.html#afb068a0639dc1ac7311559b4b22a3c8a">CMRlisthashtableRemove</a>(</div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,                     </div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;  <a class="code" href="struct__CMR__LISTHASHTABLE.html">CMR_LISTHASHTABLE</a>* hashtable, </div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;  <a class="code" href="hashtable_8h.html#a25652b5aedd8dfa374ec3d1322e636fb">CMR_LISTHASHTABLE_ENTRY</a> entry </div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;);</div>
+<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160; </div>
+<div class="line"><a name="l00141"></a><span class="lineno"><a class="line" href="hashtable_8h.html#adb76d28fe03c41ea4f37819dc9f82d19">  141</a></span>&#160;<span class="preprocessor">#define RANGE_SIGNED_HASH (LLONG_MAX/2)</span></div>
+<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160; </div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span></div>
+<div class="line"><a name="l00148"></a><span class="lineno"><a class="line" href="hashtable_8h.html#ad4500b14debe0cc5f2bcb5d9ede2720b">  148</a></span>&#160;<span class="keywordtype">long</span> <span class="keywordtype">long</span> <a class="code" href="hashtable_8h.html#ad4500b14debe0cc5f2bcb5d9ede2720b">projectSignedHash</a>(<span class="keywordtype">long</span> <span class="keywordtype">long</span> value)</div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;{</div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;  <span class="keywordflow">return</span> ((value + <a class="code" href="hashtable_8h.html#adb76d28fe03c41ea4f37819dc9f82d19">RANGE_SIGNED_HASH</a> - 1) % (2*<a class="code" href="hashtable_8h.html#adb76d28fe03c41ea4f37819dc9f82d19">RANGE_SIGNED_HASH</a>-1)) - (<a class="code" href="hashtable_8h.html#adb76d28fe03c41ea4f37819dc9f82d19">RANGE_SIGNED_HASH</a>-1);</div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;}</div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160; </div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
 <div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;}</div>
-<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160; </div>
-<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
-<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;}</div>
-<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160; </div>
-<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* CMR_HASHTABLE_INTERNAL_H */</span><span class="preprocessor"></span></div>
-<div class="ttc" id="aenv_8h_html_ae2f4ad54b976c2b9a099246c6dc0be87"><div class="ttname"><a href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a></div><div class="ttdeci">CMR_ERROR</div><div class="ttdoc">Type for return codes of library functions.</div><div class="ttdef"><b>Definition:</b> env.h:27</div></div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160; </div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* CMR_HASHTABLE_INTERNAL_H */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="aenv_8h_html_ae2f4ad54b976c2b9a099246c6dc0be87"><div class="ttname"><a href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a></div><div class="ttdeci">CMR_ERROR</div><div class="ttdoc">Type for return codes of library functions.</div><div class="ttdef"><b>Definition:</b> env.h:32</div></div>
 <div class="ttc" id="aenv__internal_8h_html"><div class="ttname"><a href="env__internal_8h.html">env_internal.h</a></div></div>
 <div class="ttc" id="ahashtable_8h_html_a0da0af3e69ddc6f1e467cef5ebcaaf3b"><div class="ttname"><a href="hashtable_8h.html#a0da0af3e69ddc6f1e467cef5ebcaaf3b">CMRlisthashtableNumBuckets</a></div><div class="ttdeci">size_t CMRlisthashtableNumBuckets(CMR_LISTHASHTABLE *hashtable)</div><div class="ttdef"><b>Definition:</b> hashtable.c:365</div></div>
 <div class="ttc" id="ahashtable_8h_html_a12f10ded9acf72a3832e78fec61f70a1"><div class="ttname"><a href="hashtable_8h.html#a12f10ded9acf72a3832e78fec61f70a1">CMRlisthashtableCreate</a></div><div class="ttdeci">CMR_ERROR CMRlisthashtableCreate(CMR *cmr, CMR_LISTHASHTABLE **phashtable, size_t initialNumBuckets, size_t initialMemNodes)</div><div class="ttdef"><b>Definition:</b> hashtable.c:264</div></div>
-<div class="ttc" id="ahashtable_8h_html_a216ed1f268a02a943f8dff64a6b90612"><div class="ttname"><a href="hashtable_8h.html#a216ed1f268a02a943f8dff64a6b90612">CMR_LISTHASHTABLE_VALUE</a></div><div class="ttdeci">size_t CMR_LISTHASHTABLE_VALUE</div><div class="ttdef"><b>Definition:</b> hashtable.h:84</div></div>
-<div class="ttc" id="ahashtable_8h_html_a25652b5aedd8dfa374ec3d1322e636fb"><div class="ttname"><a href="hashtable_8h.html#a25652b5aedd8dfa374ec3d1322e636fb">CMR_LISTHASHTABLE_ENTRY</a></div><div class="ttdeci">size_t CMR_LISTHASHTABLE_ENTRY</div><div class="ttdef"><b>Definition:</b> hashtable.h:87</div></div>
-<div class="ttc" id="ahashtable_8h_html_a2e9b9210b788a803d9c6ee7206ab8476"><div class="ttname"><a href="hashtable_8h.html#a2e9b9210b788a803d9c6ee7206ab8476">CMR_LINEARHASHTABLE_HASH</a></div><div class="ttdeci">size_t CMR_LINEARHASHTABLE_HASH</div><div class="ttdef"><b>Definition:</b> hashtable.h:30</div></div>
+<div class="ttc" id="ahashtable_8h_html_a216ed1f268a02a943f8dff64a6b90612"><div class="ttname"><a href="hashtable_8h.html#a216ed1f268a02a943f8dff64a6b90612">CMR_LISTHASHTABLE_VALUE</a></div><div class="ttdeci">size_t CMR_LISTHASHTABLE_VALUE</div><div class="ttdef"><b>Definition:</b> hashtable.h:81</div></div>
+<div class="ttc" id="ahashtable_8h_html_a25652b5aedd8dfa374ec3d1322e636fb"><div class="ttname"><a href="hashtable_8h.html#a25652b5aedd8dfa374ec3d1322e636fb">CMR_LISTHASHTABLE_ENTRY</a></div><div class="ttdeci">size_t CMR_LISTHASHTABLE_ENTRY</div><div class="ttdef"><b>Definition:</b> hashtable.h:84</div></div>
+<div class="ttc" id="ahashtable_8h_html_a2e9b9210b788a803d9c6ee7206ab8476"><div class="ttname"><a href="hashtable_8h.html#a2e9b9210b788a803d9c6ee7206ab8476">CMR_LINEARHASHTABLE_HASH</a></div><div class="ttdeci">size_t CMR_LINEARHASHTABLE_HASH</div><div class="ttdef"><b>Definition:</b> hashtable.h:27</div></div>
 <div class="ttc" id="ahashtable_8h_html_a49b63ae8c450df8d69164517bf9dd912"><div class="ttname"><a href="hashtable_8h.html#a49b63ae8c450df8d69164517bf9dd912">CMRlinearhashtableArrayInsert</a></div><div class="ttdeci">CMR_ERROR CMRlinearhashtableArrayInsert(CMR *cmr, CMR_LINEARHASHTABLE_ARRAY *hashtable, const void *keyArray, size_t keyLength, const void *value)</div><div class="ttdef"><b>Definition:</b> hashtable.c:228</div></div>
 <div class="ttc" id="ahashtable_8h_html_a569ebfc098e89e2970355d3f5bf59857"><div class="ttname"><a href="hashtable_8h.html#a569ebfc098e89e2970355d3f5bf59857">CMRlinearhashtableArrayInsertBucketHash</a></div><div class="ttdeci">CMR_ERROR CMRlinearhashtableArrayInsertBucketHash(CMR *cmr, CMR_LINEARHASHTABLE_ARRAY *hashtable, const void *keyArray, size_t keyLength, CMR_LINEARHASHTABLE_BUCKET bucket, CMR_LINEARHASHTABLE_HASH hash, const void *value)</div><div class="ttdef"><b>Definition:</b> hashtable.c:145</div></div>
 <div class="ttc" id="ahashtable_8h_html_a5c6afeb01d6e654d9cbc3095913ed15e"><div class="ttname"><a href="hashtable_8h.html#a5c6afeb01d6e654d9cbc3095913ed15e">CMRlisthashtableInsert</a></div><div class="ttdeci">CMR_ERROR CMRlisthashtableInsert(CMR *cmr, CMR_LISTHASHTABLE *hashtable, CMR_LISTHASHTABLE_HASH hash, CMR_LISTHASHTABLE_VALUE value, CMR_LISTHASHTABLE_ENTRY *pentry)</div><div class="ttdoc">Inserts value with hash into the hash table, even if an entry with the same hash exists.</div><div class="ttdef"><b>Definition:</b> hashtable.c:370</div></div>
 <div class="ttc" id="ahashtable_8h_html_a655fa2796ef69674e198d665e8a47382"><div class="ttname"><a href="hashtable_8h.html#a655fa2796ef69674e198d665e8a47382">CMRlisthashtableFindNext</a></div><div class="ttdeci">CMR_LISTHASHTABLE_ENTRY CMRlisthashtableFindNext(CMR_LISTHASHTABLE *hashtable, CMR_LISTHASHTABLE_HASH hash, CMR_LISTHASHTABLE_ENTRY entry)</div><div class="ttdef"><b>Definition:</b> hashtable.c:334</div></div>
 <div class="ttc" id="ahashtable_8h_html_a67d8b5a31ddce6758ed00cb5b2f019ff"><div class="ttname"><a href="hashtable_8h.html#a67d8b5a31ddce6758ed00cb5b2f019ff">CMRlisthashtableHash</a></div><div class="ttdeci">CMR_LISTHASHTABLE_HASH CMRlisthashtableHash(CMR_LISTHASHTABLE *hashtable, CMR_LISTHASHTABLE_ENTRY entry)</div><div class="ttdef"><b>Definition:</b> hashtable.c:358</div></div>
 <div class="ttc" id="ahashtable_8h_html_a74f5423f933344225351c5f71a607434"><div class="ttname"><a href="hashtable_8h.html#a74f5423f933344225351c5f71a607434">nextPower2</a></div><div class="ttdeci">static size_t nextPower2(size_t x)</div><div class="ttdoc">Returns the smallest power of 2 at least as large as x.</div><div class="ttdef"><b>Definition:</b> hashtable.h:17</div></div>
-<div class="ttc" id="ahashtable_8h_html_a9c0de97fa464bc73465a479bf4244e98"><div class="ttname"><a href="hashtable_8h.html#a9c0de97fa464bc73465a479bf4244e98">CMR_LISTHASHTABLE_BUCKET</a></div><div class="ttdeci">size_t CMR_LISTHASHTABLE_BUCKET</div><div class="ttdef"><b>Definition:</b> hashtable.h:86</div></div>
+<div class="ttc" id="ahashtable_8h_html_a9c0de97fa464bc73465a479bf4244e98"><div class="ttname"><a href="hashtable_8h.html#a9c0de97fa464bc73465a479bf4244e98">CMR_LISTHASHTABLE_BUCKET</a></div><div class="ttdeci">size_t CMR_LISTHASHTABLE_BUCKET</div><div class="ttdef"><b>Definition:</b> hashtable.h:83</div></div>
 <div class="ttc" id="ahashtable_8h_html_a9f089e91f7ac165916eaa2f44a68cd40"><div class="ttname"><a href="hashtable_8h.html#a9f089e91f7ac165916eaa2f44a68cd40">CMRlisthashtableValue</a></div><div class="ttdeci">CMR_LISTHASHTABLE_VALUE CMRlisthashtableValue(CMR_LISTHASHTABLE *hashtable, CMR_LISTHASHTABLE_ENTRY entry)</div><div class="ttdef"><b>Definition:</b> hashtable.c:351</div></div>
-<div class="ttc" id="ahashtable_8h_html_a9f799e4e6a41fb251c1d54cf044c0c3e"><div class="ttname"><a href="hashtable_8h.html#a9f799e4e6a41fb251c1d54cf044c0c3e">CMR_LINEARHASHTABLE_BUCKET</a></div><div class="ttdeci">size_t CMR_LINEARHASHTABLE_BUCKET</div><div class="ttdef"><b>Definition:</b> hashtable.h:29</div></div>
+<div class="ttc" id="ahashtable_8h_html_a9f799e4e6a41fb251c1d54cf044c0c3e"><div class="ttname"><a href="hashtable_8h.html#a9f799e4e6a41fb251c1d54cf044c0c3e">CMR_LINEARHASHTABLE_BUCKET</a></div><div class="ttdeci">size_t CMR_LINEARHASHTABLE_BUCKET</div><div class="ttdef"><b>Definition:</b> hashtable.h:26</div></div>
 <div class="ttc" id="ahashtable_8h_html_ac6ca93e4f20c309125904703aadb943f"><div class="ttname"><a href="hashtable_8h.html#ac6ca93e4f20c309125904703aadb943f">CMRlinearhashtableArrayCreate</a></div><div class="ttdeci">CMR_ERROR CMRlinearhashtableArrayCreate(CMR *cmr, CMR_LINEARHASHTABLE_ARRAY **phashtable, size_t initialSize, size_t initialKeyMemory)</div><div class="ttdef"><b>Definition:</b> hashtable.c:41</div></div>
 <div class="ttc" id="ahashtable_8h_html_ac9af6c7868b95d550651e3f9a00008ee"><div class="ttname"><a href="hashtable_8h.html#ac9af6c7868b95d550651e3f9a00008ee">CMRlinearhashtableArrayValue</a></div><div class="ttdeci">const void * CMRlinearhashtableArrayValue(CMR_LINEARHASHTABLE_ARRAY *hashtable, CMR_LINEARHASHTABLE_BUCKET bucket)</div><div class="ttdef"><b>Definition:</b> hashtable.c:94</div></div>
 <div class="ttc" id="ahashtable_8h_html_acafe60e2080b1febd40dd275a0cbdbe7"><div class="ttname"><a href="hashtable_8h.html#acafe60e2080b1febd40dd275a0cbdbe7">CMRlisthashtableFree</a></div><div class="ttdeci">CMR_ERROR CMRlisthashtableFree(CMR *cmr, CMR_LISTHASHTABLE **phashtable)</div><div class="ttdef"><b>Definition:</b> hashtable.c:294</div></div>
 <div class="ttc" id="ahashtable_8h_html_ace6d5fc7e139f381bb7e32363f693b59"><div class="ttname"><a href="hashtable_8h.html#ace6d5fc7e139f381bb7e32363f693b59">CMRlinearhashtableArrayFree</a></div><div class="ttdeci">CMR_ERROR CMRlinearhashtableArrayFree(CMR *cmr, CMR_LINEARHASHTABLE_ARRAY **phashtable)</div><div class="ttdef"><b>Definition:</b> hashtable.c:68</div></div>
-<div class="ttc" id="ahashtable_8h_html_ad4500b14debe0cc5f2bcb5d9ede2720b"><div class="ttname"><a href="hashtable_8h.html#ad4500b14debe0cc5f2bcb5d9ede2720b">projectSignedHash</a></div><div class="ttdeci">static long long projectSignedHash(long long value)</div><div class="ttdoc">Projects value into the range [-RANGE_SIGNED_HASH, +RANGE_SIGNED_HASH] via a modulo computation.</div><div class="ttdef"><b>Definition:</b> hashtable.h:151</div></div>
-<div class="ttc" id="ahashtable_8h_html_adb76d28fe03c41ea4f37819dc9f82d19"><div class="ttname"><a href="hashtable_8h.html#adb76d28fe03c41ea4f37819dc9f82d19">RANGE_SIGNED_HASH</a></div><div class="ttdeci">#define RANGE_SIGNED_HASH</div><div class="ttdef"><b>Definition:</b> hashtable.h:144</div></div>
+<div class="ttc" id="ahashtable_8h_html_ad4500b14debe0cc5f2bcb5d9ede2720b"><div class="ttname"><a href="hashtable_8h.html#ad4500b14debe0cc5f2bcb5d9ede2720b">projectSignedHash</a></div><div class="ttdeci">static long long projectSignedHash(long long value)</div><div class="ttdoc">Projects value into the range [-RANGE_SIGNED_HASH, +RANGE_SIGNED_HASH] via a modulo computation.</div><div class="ttdef"><b>Definition:</b> hashtable.h:148</div></div>
+<div class="ttc" id="ahashtable_8h_html_adb76d28fe03c41ea4f37819dc9f82d19"><div class="ttname"><a href="hashtable_8h.html#adb76d28fe03c41ea4f37819dc9f82d19">RANGE_SIGNED_HASH</a></div><div class="ttdeci">#define RANGE_SIGNED_HASH</div><div class="ttdef"><b>Definition:</b> hashtable.h:141</div></div>
 <div class="ttc" id="ahashtable_8h_html_ae04093b20f05307de00161543b45bade"><div class="ttname"><a href="hashtable_8h.html#ae04093b20f05307de00161543b45bade">CMRlisthashtableFindFirst</a></div><div class="ttdeci">CMR_LISTHASHTABLE_ENTRY CMRlisthashtableFindFirst(CMR_LISTHASHTABLE *hashtable, CMR_LISTHASHTABLE_HASH hash)</div><div class="ttdef"><b>Definition:</b> hashtable.c:318</div></div>
-<div class="ttc" id="ahashtable_8h_html_af461c6e19d9081abe0912a972e7736c4"><div class="ttname"><a href="hashtable_8h.html#af461c6e19d9081abe0912a972e7736c4">CMR_LISTHASHTABLE_HASH</a></div><div class="ttdeci">size_t CMR_LISTHASHTABLE_HASH</div><div class="ttdef"><b>Definition:</b> hashtable.h:85</div></div>
+<div class="ttc" id="ahashtable_8h_html_af461c6e19d9081abe0912a972e7736c4"><div class="ttname"><a href="hashtable_8h.html#af461c6e19d9081abe0912a972e7736c4">CMR_LISTHASHTABLE_HASH</a></div><div class="ttdeci">size_t CMR_LISTHASHTABLE_HASH</div><div class="ttdef"><b>Definition:</b> hashtable.h:82</div></div>
 <div class="ttc" id="ahashtable_8h_html_afb068a0639dc1ac7311559b4b22a3c8a"><div class="ttname"><a href="hashtable_8h.html#afb068a0639dc1ac7311559b4b22a3c8a">CMRlisthashtableRemove</a></div><div class="ttdeci">CMR_ERROR CMRlisthashtableRemove(CMR *cmr, CMR_LISTHASHTABLE *hashtable, CMR_LISTHASHTABLE_ENTRY entry)</div><div class="ttdef"><b>Definition:</b> hashtable.c:402</div></div>
 <div class="ttc" id="ahashtable_8h_html_afd0894beb619c448bc416a6fedbee5e6"><div class="ttname"><a href="hashtable_8h.html#afd0894beb619c448bc416a6fedbee5e6">CMRlinearhashtableArrayKey</a></div><div class="ttdeci">const void * CMRlinearhashtableArrayKey(CMR_LINEARHASHTABLE_ARRAY *hashtable, CMR_LINEARHASHTABLE_BUCKET bucket, size_t *pKeyLength)</div><div class="ttdef"><b>Definition:</b> hashtable.c:84</div></div>
 <div class="ttc" id="ahashtable_8h_html_afe72665e87fd4e53f1bb2cbf6989d0eb"><div class="ttname"><a href="hashtable_8h.html#afe72665e87fd4e53f1bb2cbf6989d0eb">CMRlinearhashtableArrayFind</a></div><div class="ttdeci">bool CMRlinearhashtableArrayFind(CMR_LINEARHASHTABLE_ARRAY *hashtable, const void *keyArray, size_t keyLength, CMR_LINEARHASHTABLE_BUCKET *pbucket, CMR_LINEARHASHTABLE_HASH *phash)</div><div class="ttdef"><b>Definition:</b> hashtable.c:101</div></div>

@@ -92,7 +92,7 @@ $(function() {
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160; </div>
 <div class="line"><a name="l00015"></a><span class="lineno"><a class="line" href="structDenseBinaryMatrix.html">   15</a></span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct</span></div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;{</div>
-<div class="line"><a name="l00017"></a><span class="lineno"><a class="line" href="structDenseBinaryMatrix.html#ac61be62b874760f2c1bf43582f7f35cc">   17</a></span>&#160;  <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> <span class="keywordtype">long</span>* <a class="code" href="structDenseBinaryMatrix.html#ac61be62b874760f2c1bf43582f7f35cc">data</a>;</div>
+<div class="line"><a name="l00017"></a><span class="lineno"><a class="line" href="structDenseBinaryMatrix.html#a8babd0f6869eb1a5b2603b87667bf36d">   17</a></span>&#160;  <span class="keywordtype">size_t</span>* <a class="code" href="structDenseBinaryMatrix.html#a8babd0f6869eb1a5b2603b87667bf36d">data</a>;</div>
 <div class="line"><a name="l00018"></a><span class="lineno"><a class="line" href="structDenseBinaryMatrix.html#a1dbba6fc0b7ef7a05c038915ec2f1c3c">   18</a></span>&#160;  <span class="keywordtype">size_t</span> <a class="code" href="structDenseBinaryMatrix.html#a1dbba6fc0b7ef7a05c038915ec2f1c3c">numRows</a>;</div>
 <div class="line"><a name="l00019"></a><span class="lineno"><a class="line" href="structDenseBinaryMatrix.html#aa6c4e49cc97b03e3bf093bc26f561172">   19</a></span>&#160;  <span class="keywordtype">size_t</span> <a class="code" href="structDenseBinaryMatrix.html#aa6c4e49cc97b03e3bf093bc26f561172">numColumns</a>;</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;} <a class="code" href="structDenseBinaryMatrix.html">DenseBinaryMatrix</a>;</div>
@@ -117,88 +117,100 @@ $(function() {
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;)</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;{</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  <span class="keywordtype">size_t</span> index = row * matrix-&gt;<a class="code" href="structDenseBinaryMatrix.html#aa6c4e49cc97b03e3bf093bc26f561172">numColumns</a> + column;</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> <span class="keywordtype">long</span> block = matrix-&gt;<a class="code" href="structDenseBinaryMatrix.html#ac61be62b874760f2c1bf43582f7f35cc">data</a>[index / (8 * <span class="keyword">sizeof</span>(<span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> long))];</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  <span class="keywordflow">return</span> block &amp; (1UL &lt;&lt; (index % (8 * <span class="keyword">sizeof</span>(<span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> long))));</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;}</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160; </div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span></div>
-<div class="line"><a name="l00047"></a><span class="lineno"><a class="line" href="densematrix_8h.html#aaae4827f66efe6e659668ab65a531ecc">   47</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="densematrix_8h.html#aaae4827f66efe6e659668ab65a531ecc">CMRdensebinmatrixSet0</a>(</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  <a class="code" href="structDenseBinaryMatrix.html">DenseBinaryMatrix</a>* matrix,  </div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  <span class="keywordtype">size_t</span> row,                 </div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  <span class="keywordtype">size_t</span> column               </div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;)</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;{</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  <span class="keywordtype">size_t</span> index = row * matrix-&gt;<a class="code" href="structDenseBinaryMatrix.html#aa6c4e49cc97b03e3bf093bc26f561172">numColumns</a> + column;</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> <span class="keywordtype">long</span>* pblock = &amp;matrix-&gt;<a class="code" href="structDenseBinaryMatrix.html#ac61be62b874760f2c1bf43582f7f35cc">data</a>[index / (8 * <span class="keyword">sizeof</span>(<span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> long))];</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  *pblock &amp;= ~(1UL &lt;&lt; (index % (8 * <span class="keyword">sizeof</span>(<span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> long))));</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;}</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160; </div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span></div>
-<div class="line"><a name="l00059"></a><span class="lineno"><a class="line" href="densematrix_8h.html#adef1c46d4131ecfa1ec76e17ef68ce2e">   59</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="densematrix_8h.html#adef1c46d4131ecfa1ec76e17ef68ce2e">CMRdensebinmatrixSet1</a>(</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  <a class="code" href="structDenseBinaryMatrix.html">DenseBinaryMatrix</a>* matrix,  </div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <span class="keywordtype">size_t</span> row,                 </div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  <span class="keywordtype">size_t</span> column               </div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;)</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;{</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  <span class="keywordtype">size_t</span> index = row * matrix-&gt;<a class="code" href="structDenseBinaryMatrix.html#aa6c4e49cc97b03e3bf093bc26f561172">numColumns</a> + column;</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> <span class="keywordtype">long</span>* pblock = &amp;matrix-&gt;<a class="code" href="structDenseBinaryMatrix.html#ac61be62b874760f2c1bf43582f7f35cc">data</a>[index / (8 * <span class="keyword">sizeof</span>(<span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> long))];</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  *pblock |= (1UL &lt;&lt; (index % (8 * <span class="keyword">sizeof</span>(<span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> long))));</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;}</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160; </div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span></div>
-<div class="line"><a name="l00071"></a><span class="lineno"><a class="line" href="densematrix_8h.html#adfd07da9d5934254b9d5047a79ec4807">   71</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="densematrix_8h.html#adfd07da9d5934254b9d5047a79ec4807">CMRdensebinmatrixSet</a>(</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  <a class="code" href="structDenseBinaryMatrix.html">DenseBinaryMatrix</a>* matrix,  </div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  <span class="keywordtype">size_t</span> row,                 </div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  <span class="keywordtype">size_t</span> column,              </div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  <span class="keywordtype">bool</span> value                  </div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;)</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;{</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  <span class="keywordtype">size_t</span> index = row * matrix-&gt;<a class="code" href="structDenseBinaryMatrix.html#aa6c4e49cc97b03e3bf093bc26f561172">numColumns</a> + column;</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> <span class="keywordtype">long</span>* pblock = &amp;matrix-&gt;<a class="code" href="structDenseBinaryMatrix.html#ac61be62b874760f2c1bf43582f7f35cc">data</a>[index / (8 * <span class="keyword">sizeof</span>(<span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> long))];</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <span class="keywordtype">size_t</span> mask = (1UL &lt;&lt; (index % (8 * <span class="keyword">sizeof</span>(<span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> long))));</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  <span class="keywordflow">if</span> (value)</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    *pblock |= mask;</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  <span class="keywordflow">else</span></div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    *pblock &amp;= ~mask;</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;}</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160; </div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160; </div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span></div>
-<div class="line"><a name="l00089"></a><span class="lineno"><a class="line" href="densematrix_8h.html#a14f994c004116ba262eeac8536019714">   89</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="densematrix_8h.html#a14f994c004116ba262eeac8536019714">CMRdensebinmatrixFlip</a>(</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  <a class="code" href="structDenseBinaryMatrix.html">DenseBinaryMatrix</a>* matrix,  </div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  <span class="keywordtype">size_t</span> row,                 </div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  <span class="keywordtype">size_t</span> column               </div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;)</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;{</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;  <span class="keywordtype">size_t</span> index = row * matrix-&gt;<a class="code" href="structDenseBinaryMatrix.html#aa6c4e49cc97b03e3bf093bc26f561172">numColumns</a> + column;</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;  <span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> <span class="keywordtype">long</span>* pblock = &amp;matrix-&gt;<a class="code" href="structDenseBinaryMatrix.html#ac61be62b874760f2c1bf43582f7f35cc">data</a>[index / (8 * <span class="keyword">sizeof</span>(<span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> long))];</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;  <span class="keywordtype">size_t</span> mask = (1UL &lt;&lt; (index % (8 * <span class="keyword">sizeof</span>(<span class="keywordtype">unsigned</span> <span class="keywordtype">long</span> long))));</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  <span class="keywordflow">if</span> (*pblock &amp; mask)</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    *pblock &amp;= ~mask;</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  <span class="keywordflow">else</span></div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    *pblock |= mask;</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;}</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160; </div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;}</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160; </div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* CMR_LISTMATRIX_INTERNAL_H */</span><span class="preprocessor"></span></div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  <span class="keywordtype">size_t</span> block = matrix-&gt;<a class="code" href="structDenseBinaryMatrix.html#a8babd0f6869eb1a5b2603b87667bf36d">data</a>[index / (8 * <span class="keyword">sizeof</span>(size_t))];</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  <a class="code" href="env__internal_8h.html#abc81f0ffd985cdce7c84a07ff8741518">CMRdbgMsg</a>(8, <span class="stringliteral">&quot;CMRdensebinmatrixGet(%zu,%zu) uses index %zu in block %zu at %zu -&gt; %d\n&quot;</span>, row, column, index,</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    index / (8 * <span class="keyword">sizeof</span>(<span class="keywordtype">size_t</span>)), (index % (8 * <span class="keyword">sizeof</span>(<span class="keywordtype">size_t</span>))),</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    (block &amp; (1UL &lt;&lt; (index % (8 * <span class="keyword">sizeof</span>(<span class="keywordtype">size_t</span>))))) ? 1 : 0);</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  <span class="keywordflow">return</span> block &amp; (1UL &lt;&lt; (index % (8 * <span class="keyword">sizeof</span>(size_t))));</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;}</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160; </div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span></div>
+<div class="line"><a name="l00050"></a><span class="lineno"><a class="line" href="densematrix_8h.html#aaae4827f66efe6e659668ab65a531ecc">   50</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="densematrix_8h.html#aaae4827f66efe6e659668ab65a531ecc">CMRdensebinmatrixSet0</a>(</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  <a class="code" href="structDenseBinaryMatrix.html">DenseBinaryMatrix</a>* matrix,  </div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  <span class="keywordtype">size_t</span> row,                 </div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  <span class="keywordtype">size_t</span> column               </div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;)</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;{</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  <span class="keywordtype">size_t</span> index = row * matrix-&gt;<a class="code" href="structDenseBinaryMatrix.html#aa6c4e49cc97b03e3bf093bc26f561172">numColumns</a> + column;</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  <a class="code" href="env__internal_8h.html#abc81f0ffd985cdce7c84a07ff8741518">CMRdbgMsg</a>(8, <span class="stringliteral">&quot;CMRdensebinmatrixSet0(%zu,%zu) uses index %zu in block %zu at %zu.\n&quot;</span>, row, column, index,</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    index / (8 * <span class="keyword">sizeof</span>(<span class="keywordtype">size_t</span>)), (index % (8 * <span class="keyword">sizeof</span>(<span class="keywordtype">size_t</span>))));</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  <span class="keywordtype">size_t</span>* pblock = &amp;matrix-&gt;<a class="code" href="structDenseBinaryMatrix.html#a8babd0f6869eb1a5b2603b87667bf36d">data</a>[index / (8 * <span class="keyword">sizeof</span>(size_t))];</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  *pblock &amp;= ~(1UL &lt;&lt; (index % (8 * <span class="keyword">sizeof</span>(size_t))));</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;}</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160; </div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span></div>
+<div class="line"><a name="l00064"></a><span class="lineno"><a class="line" href="densematrix_8h.html#adef1c46d4131ecfa1ec76e17ef68ce2e">   64</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="densematrix_8h.html#adef1c46d4131ecfa1ec76e17ef68ce2e">CMRdensebinmatrixSet1</a>(</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  <a class="code" href="structDenseBinaryMatrix.html">DenseBinaryMatrix</a>* matrix,  </div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <span class="keywordtype">size_t</span> row,                 </div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  <span class="keywordtype">size_t</span> column               </div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;)</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;{</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  <span class="keywordtype">size_t</span> index = row * matrix-&gt;<a class="code" href="structDenseBinaryMatrix.html#aa6c4e49cc97b03e3bf093bc26f561172">numColumns</a> + column;</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  <a class="code" href="env__internal_8h.html#abc81f0ffd985cdce7c84a07ff8741518">CMRdbgMsg</a>(8, <span class="stringliteral">&quot;CMRdensebinmatrixSet1(%zu,%zu) uses index %zu in block %zu at %zu.\n&quot;</span>, row, column, index,</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    index / (8 * <span class="keyword">sizeof</span>(<span class="keywordtype">size_t</span>)), (index % (8 * <span class="keyword">sizeof</span>(<span class="keywordtype">size_t</span>))));</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  <span class="keywordtype">size_t</span>* pblock = &amp;matrix-&gt;<a class="code" href="structDenseBinaryMatrix.html#a8babd0f6869eb1a5b2603b87667bf36d">data</a>[index / (8 * <span class="keyword">sizeof</span>(size_t))];</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  *pblock |= (1UL &lt;&lt; (index % (8 * <span class="keyword">sizeof</span>(size_t))));</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;}</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160; </div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span></div>
+<div class="line"><a name="l00078"></a><span class="lineno"><a class="line" href="densematrix_8h.html#adfd07da9d5934254b9d5047a79ec4807">   78</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="densematrix_8h.html#adfd07da9d5934254b9d5047a79ec4807">CMRdensebinmatrixSet</a>(</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  <a class="code" href="structDenseBinaryMatrix.html">DenseBinaryMatrix</a>* matrix,  </div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <span class="keywordtype">size_t</span> row,                 </div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  <span class="keywordtype">size_t</span> column,              </div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  <span class="keywordtype">bool</span> value                  </div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;)</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;{</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  <span class="keywordtype">size_t</span> index = row * matrix-&gt;<a class="code" href="structDenseBinaryMatrix.html#aa6c4e49cc97b03e3bf093bc26f561172">numColumns</a> + column;</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  <a class="code" href="env__internal_8h.html#abc81f0ffd985cdce7c84a07ff8741518">CMRdbgMsg</a>(8, <span class="stringliteral">&quot;CMRdensebinmatrixSet(%zu,%zu,%d) uses index %zu in block %zu at %zu.\n&quot;</span>, row, column, value ? 1 : 0, index,</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    index / (8 * <span class="keyword">sizeof</span>(<span class="keywordtype">size_t</span>)), (index % (8 * <span class="keyword">sizeof</span>(<span class="keywordtype">size_t</span>))));</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  <span class="keywordtype">size_t</span>* pblock = &amp;matrix-&gt;<a class="code" href="structDenseBinaryMatrix.html#a8babd0f6869eb1a5b2603b87667bf36d">data</a>[index / (8 * <span class="keyword">sizeof</span>(size_t))];</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  <span class="keywordtype">size_t</span> mask = (1UL &lt;&lt; (index % (8 * <span class="keyword">sizeof</span>(size_t))));</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  <span class="keywordflow">if</span> (value)</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    *pblock |= mask;</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    *pblock &amp;= ~mask;</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;}</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160; </div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160; </div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;<span class="keyword">static</span> <span class="keyword">inline</span></div>
+<div class="line"><a name="l00098"></a><span class="lineno"><a class="line" href="densematrix_8h.html#a14f994c004116ba262eeac8536019714">   98</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="densematrix_8h.html#a14f994c004116ba262eeac8536019714">CMRdensebinmatrixFlip</a>(</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;  <a class="code" href="structDenseBinaryMatrix.html">DenseBinaryMatrix</a>* matrix,  </div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  <span class="keywordtype">size_t</span> row,                 </div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;  <span class="keywordtype">size_t</span> column               </div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;)</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;{</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;  <span class="keywordtype">size_t</span> index = row * matrix-&gt;<a class="code" href="structDenseBinaryMatrix.html#aa6c4e49cc97b03e3bf093bc26f561172">numColumns</a> + column;</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  <a class="code" href="env__internal_8h.html#abc81f0ffd985cdce7c84a07ff8741518">CMRdbgMsg</a>(8, <span class="stringliteral">&quot;CMRdensebinmatrixFlip(%zu,%zu) uses index %zu in block %zu at %zu.\n&quot;</span>, row, column, index,</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;    index / (8 * <span class="keyword">sizeof</span>(<span class="keywordtype">size_t</span>)), (index % (8 * <span class="keyword">sizeof</span>(<span class="keywordtype">size_t</span>))));</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  <span class="keywordtype">size_t</span>* pblock = &amp;matrix-&gt;<a class="code" href="structDenseBinaryMatrix.html#a8babd0f6869eb1a5b2603b87667bf36d">data</a>[index / (8 * <span class="keyword">sizeof</span>(size_t))];</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  <span class="keywordtype">size_t</span> mask = (1UL &lt;&lt; (index % (8 * <span class="keyword">sizeof</span>(size_t))));</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  <span class="keywordflow">if</span> (*pblock &amp; mask)</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;    *pblock &amp;= ~mask;</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;  <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;    *pblock |= mask;</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;}</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160; </div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;}</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160; </div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* CMR_LISTMATRIX_INTERNAL_H */</span><span class="preprocessor"></span></div>
 <div class="ttc" id="adensematrix_8h_html_a0a818316205982fb9faf67eeb24020a2"><div class="ttname"><a href="densematrix_8h.html#a0a818316205982fb9faf67eeb24020a2">CMRdensebinmatrixGet</a></div><div class="ttdeci">static bool CMRdensebinmatrixGet(DenseBinaryMatrix *matrix, size_t row, size_t column)</div><div class="ttdef"><b>Definition:</b> densematrix.h:35</div></div>
-<div class="ttc" id="adensematrix_8h_html_a0d15c7d3ba2cd0f0f35bcbfbf2ebe145"><div class="ttname"><a href="densematrix_8h.html#a0d15c7d3ba2cd0f0f35bcbfbf2ebe145">CMRdensebinmatrixFreeStack</a></div><div class="ttdeci">CMR_ERROR CMRdensebinmatrixFreeStack(CMR *cmr, DenseBinaryMatrix **pmatrix)</div><div class="ttdef"><b>Definition:</b> densematrix.c:26</div></div>
-<div class="ttc" id="adensematrix_8h_html_a14f994c004116ba262eeac8536019714"><div class="ttname"><a href="densematrix_8h.html#a14f994c004116ba262eeac8536019714">CMRdensebinmatrixFlip</a></div><div class="ttdeci">static void CMRdensebinmatrixFlip(DenseBinaryMatrix *matrix, size_t row, size_t column)</div><div class="ttdef"><b>Definition:</b> densematrix.h:89</div></div>
-<div class="ttc" id="adensematrix_8h_html_a4d676d2a9ae7d5f9ca4a66ec09ba4853"><div class="ttname"><a href="densematrix_8h.html#a4d676d2a9ae7d5f9ca4a66ec09ba4853">CMRdensebinmatrixCreateStack</a></div><div class="ttdeci">CMR_ERROR CMRdensebinmatrixCreateStack(CMR *cmr, size_t numRows, size_t numColumns, DenseBinaryMatrix **presult)</div><div class="ttdef"><b>Definition:</b> densematrix.c:8</div></div>
-<div class="ttc" id="adensematrix_8h_html_aaae4827f66efe6e659668ab65a531ecc"><div class="ttname"><a href="densematrix_8h.html#aaae4827f66efe6e659668ab65a531ecc">CMRdensebinmatrixSet0</a></div><div class="ttdeci">static void CMRdensebinmatrixSet0(DenseBinaryMatrix *matrix, size_t row, size_t column)</div><div class="ttdef"><b>Definition:</b> densematrix.h:47</div></div>
-<div class="ttc" id="adensematrix_8h_html_adef1c46d4131ecfa1ec76e17ef68ce2e"><div class="ttname"><a href="densematrix_8h.html#adef1c46d4131ecfa1ec76e17ef68ce2e">CMRdensebinmatrixSet1</a></div><div class="ttdeci">static void CMRdensebinmatrixSet1(DenseBinaryMatrix *matrix, size_t row, size_t column)</div><div class="ttdef"><b>Definition:</b> densematrix.h:59</div></div>
-<div class="ttc" id="adensematrix_8h_html_adfd07da9d5934254b9d5047a79ec4807"><div class="ttname"><a href="densematrix_8h.html#adfd07da9d5934254b9d5047a79ec4807">CMRdensebinmatrixSet</a></div><div class="ttdeci">static void CMRdensebinmatrixSet(DenseBinaryMatrix *matrix, size_t row, size_t column, bool value)</div><div class="ttdef"><b>Definition:</b> densematrix.h:71</div></div>
+<div class="ttc" id="adensematrix_8h_html_a0d15c7d3ba2cd0f0f35bcbfbf2ebe145"><div class="ttname"><a href="densematrix_8h.html#a0d15c7d3ba2cd0f0f35bcbfbf2ebe145">CMRdensebinmatrixFreeStack</a></div><div class="ttdeci">CMR_ERROR CMRdensebinmatrixFreeStack(CMR *cmr, DenseBinaryMatrix **pmatrix)</div><div class="ttdef"><b>Definition:</b> densematrix.c:30</div></div>
+<div class="ttc" id="adensematrix_8h_html_a14f994c004116ba262eeac8536019714"><div class="ttname"><a href="densematrix_8h.html#a14f994c004116ba262eeac8536019714">CMRdensebinmatrixFlip</a></div><div class="ttdeci">static void CMRdensebinmatrixFlip(DenseBinaryMatrix *matrix, size_t row, size_t column)</div><div class="ttdef"><b>Definition:</b> densematrix.h:98</div></div>
+<div class="ttc" id="adensematrix_8h_html_a4d676d2a9ae7d5f9ca4a66ec09ba4853"><div class="ttname"><a href="densematrix_8h.html#a4d676d2a9ae7d5f9ca4a66ec09ba4853">CMRdensebinmatrixCreateStack</a></div><div class="ttdeci">CMR_ERROR CMRdensebinmatrixCreateStack(CMR *cmr, size_t numRows, size_t numColumns, DenseBinaryMatrix **presult)</div><div class="ttdef"><b>Definition:</b> densematrix.c:10</div></div>
+<div class="ttc" id="adensematrix_8h_html_aaae4827f66efe6e659668ab65a531ecc"><div class="ttname"><a href="densematrix_8h.html#aaae4827f66efe6e659668ab65a531ecc">CMRdensebinmatrixSet0</a></div><div class="ttdeci">static void CMRdensebinmatrixSet0(DenseBinaryMatrix *matrix, size_t row, size_t column)</div><div class="ttdef"><b>Definition:</b> densematrix.h:50</div></div>
+<div class="ttc" id="adensematrix_8h_html_adef1c46d4131ecfa1ec76e17ef68ce2e"><div class="ttname"><a href="densematrix_8h.html#adef1c46d4131ecfa1ec76e17ef68ce2e">CMRdensebinmatrixSet1</a></div><div class="ttdeci">static void CMRdensebinmatrixSet1(DenseBinaryMatrix *matrix, size_t row, size_t column)</div><div class="ttdef"><b>Definition:</b> densematrix.h:64</div></div>
+<div class="ttc" id="adensematrix_8h_html_adfd07da9d5934254b9d5047a79ec4807"><div class="ttname"><a href="densematrix_8h.html#adfd07da9d5934254b9d5047a79ec4807">CMRdensebinmatrixSet</a></div><div class="ttdeci">static void CMRdensebinmatrixSet(DenseBinaryMatrix *matrix, size_t row, size_t column, bool value)</div><div class="ttdef"><b>Definition:</b> densematrix.h:78</div></div>
 <div class="ttc" id="aenv_8h_html"><div class="ttname"><a href="env_8h.html">env.h</a></div><div class="ttdoc">Basic functionality of the software library.</div></div>
-<div class="ttc" id="aenv_8h_html_ae2f4ad54b976c2b9a099246c6dc0be87"><div class="ttname"><a href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a></div><div class="ttdeci">CMR_ERROR</div><div class="ttdoc">Type for return codes of library functions.</div><div class="ttdef"><b>Definition:</b> env.h:27</div></div>
+<div class="ttc" id="aenv_8h_html_ae2f4ad54b976c2b9a099246c6dc0be87"><div class="ttname"><a href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a></div><div class="ttdeci">CMR_ERROR</div><div class="ttdoc">Type for return codes of library functions.</div><div class="ttdef"><b>Definition:</b> env.h:32</div></div>
+<div class="ttc" id="aenv__internal_8h_html_abc81f0ffd985cdce7c84a07ff8741518"><div class="ttname"><a href="env__internal_8h.html#abc81f0ffd985cdce7c84a07ff8741518">CMRdbgMsg</a></div><div class="ttdeci">static void CMRdbgMsg(int indent, const char *format,...)</div><div class="ttdef"><b>Definition:</b> env_internal.h:28</div></div>
 <div class="ttc" id="amatrix_8h_html"><div class="ttname"><a href="matrix_8h.html">matrix.h</a></div><div class="ttdoc">Functionality for sparse matrices.</div></div>
 <div class="ttc" id="astructCMR__ENVIRONMENT_html"><div class="ttname"><a href="structCMR__ENVIRONMENT.html">CMR_ENVIRONMENT</a></div><div class="ttdef"><b>Definition:</b> env_internal.h:45</div></div>
 <div class="ttc" id="astructDenseBinaryMatrix_html"><div class="ttname"><a href="structDenseBinaryMatrix.html">DenseBinaryMatrix</a></div><div class="ttdoc">Dense matrix.</div><div class="ttdef"><b>Definition:</b> densematrix.h:16</div></div>
 <div class="ttc" id="astructDenseBinaryMatrix_html_a1dbba6fc0b7ef7a05c038915ec2f1c3c"><div class="ttname"><a href="structDenseBinaryMatrix.html#a1dbba6fc0b7ef7a05c038915ec2f1c3c">DenseBinaryMatrix::numRows</a></div><div class="ttdeci">size_t numRows</div><div class="ttdef"><b>Definition:</b> densematrix.h:18</div></div>
+<div class="ttc" id="astructDenseBinaryMatrix_html_a8babd0f6869eb1a5b2603b87667bf36d"><div class="ttname"><a href="structDenseBinaryMatrix.html#a8babd0f6869eb1a5b2603b87667bf36d">DenseBinaryMatrix::data</a></div><div class="ttdeci">size_t * data</div><div class="ttdef"><b>Definition:</b> densematrix.h:17</div></div>
 <div class="ttc" id="astructDenseBinaryMatrix_html_aa6c4e49cc97b03e3bf093bc26f561172"><div class="ttname"><a href="structDenseBinaryMatrix.html#aa6c4e49cc97b03e3bf093bc26f561172">DenseBinaryMatrix::numColumns</a></div><div class="ttdeci">size_t numColumns</div><div class="ttdef"><b>Definition:</b> densematrix.h:19</div></div>
-<div class="ttc" id="astructDenseBinaryMatrix_html_ac61be62b874760f2c1bf43582f7f35cc"><div class="ttname"><a href="structDenseBinaryMatrix.html#ac61be62b874760f2c1bf43582f7f35cc">DenseBinaryMatrix::data</a></div><div class="ttdeci">unsigned long long * data</div><div class="ttdef"><b>Definition:</b> densematrix.h:17</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
