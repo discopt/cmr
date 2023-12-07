@@ -75,7 +75,7 @@ add_library(cmr
 )
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-  target_compile_options(cmr PRIVATE -Wall -Wextra)
+  target_compile_options(cmr PRIVATE -Wall -Wextra -pedantic)
 endif()
 
 # Target for the cmr-camion executable.
