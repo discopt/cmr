@@ -1,3 +1,5 @@
+#define CMR_DEBUG /* Uncomment to debug this file. */
+
 #include <cmr/tu.h>
 
 #include "matrix_internal.h"
@@ -162,12 +164,13 @@ bool testPartitionSearch(
 
 static
 int testPartitionSubset(
-  CMR* cmr,                   /**< \ref CMR environment */
-  CMR_CHRMAT* matrix,         /**< Matrix \f$ M \f$. */
-  int8_t* selection,          /**< Array with selection. */
-  size_t current,             /**< Index to decide for selection. */
-  int* columnSum,             /**< Array for computing column sums. */
-  clock_t stopClock           /**< Clock value for stopping. */
+  CMR* cmr,           /**< \ref CMR environment */
+  CMR_CHRMAT* matrix, /**< Matrix \f$ M \f$. */
+  int8_t* selection,  /**< Array with selection. */
+  size_t current,     /**< Index to decide for selection. */
+  int* columnSum,     /**< Array for computing column sums. */
+  clock_t startClock, /**< Clock for start for computation. */
+  double timeLimit    /**< Time limit for computation. */
 )
 {
   assert(cmr);
@@ -178,7 +181,7 @@ int testPartitionSubset(
   {
     /* Recurse by not selecting a column. */
     selection[current] = 0;
-    int result = testPartitionSubset(cmr, matrix, selection, current + 1, columnSum, stopClock);
+    int result = testPartitionSubset(cmr, matrix, selection, current + 1, columnSum, startClock, timeLimit);
     if (result <= 0)
       return result;
 
@@ -189,7 +192,7 @@ int testPartitionSubset(
     for (size_t i = first; i < beyond; ++i)
       columnSum[matrix->entryColumns[i]] += matrix->entryValues[i];
 
-    result = testPartitionSubset(cmr, matrix, selection, current + 1, columnSum, stopClock);
+    result = testPartitionSubset(cmr, matrix, selection, current + 1, columnSum, startClock, timeLimit);
 
     for (size_t i = first; i < beyond; ++i)
       columnSum[matrix->entryColumns[i]] -= matrix->entryValues[i];
@@ -198,7 +201,7 @@ int testPartitionSubset(
   }
   else
   {
-    if (clock() > stopClock)
+    if (((clock() * 1.0 / CLOCKS_PER_SEC) - startClock) > timeLimit)
       return -1;
 
     bool foundPartition = testPartitionSearch(cmr, matrix, selection, 0, columnSum);
@@ -211,7 +214,7 @@ int testPartitionSubset(
  */
 
 static
-CMR_ERROR  testPartition(
+CMR_ERROR testPartition(
   CMR* cmr,                   /**< \ref CMR environment */
   CMR_CHRMAT* matrix,         /**< Matrix \f$ M \f$. */
   bool* pisTotallyUnimodular, /**< Pointer for storing whether \f$ M \f$ is totally unimodular. */
@@ -241,9 +244,8 @@ CMR_ERROR  testPartition(
   for (size_t column = 0; column < matrix->numColumns; ++column)
     columnSum[column] = 0;
 
-  clock_t stopClock = clock() + ((clock_t)(CLOCKS_PER_SEC * timeLimit));
-
-  int result = testPartitionSubset(cmr, matrix, selection, 0, columnSum, stopClock);
+  clock_t startClock = clock();
+  int result = testPartitionSubset(cmr, matrix, selection, 0, columnSum, startClock, timeLimit);
   if (result < 0)
     error = CMR_ERROR_TIMEOUT;
   else
