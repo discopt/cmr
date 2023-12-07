@@ -1,7 +1,6 @@
 // #define CMR_DEBUG /* Uncomment to debug this file. */
 
 #include "env_internal.h"
-
 #include "densematrix.h"
 
 #include <assert.h>
