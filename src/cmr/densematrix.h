@@ -1,5 +1,3 @@
-#define CMR_DEBUG
-
 #ifndef CMR_DENSEMATRIX_INTERNAL_H
 #define CMR_DENSEMATRIX_INTERNAL_H
 
@@ -17,7 +15,7 @@ extern "C" {
 
 typedef struct
 {
-  unsigned long long* data;
+  size_t* data;
   size_t numRows;
   size_t numColumns;
 } DenseBinaryMatrix;
@@ -42,10 +40,11 @@ bool CMRdensebinmatrixGet(
 )
 {
   size_t index = row * matrix->numColumns + column;
-  CMRdbgMsg(8, "CMRdensebinmatrixGet(%zu,%zu) uses index %zu in block %zu at %zu\n", row, column, index,
-    index / (8 * sizeof(unsigned long long)), (index % (8 * sizeof(unsigned long long))));
-  unsigned long long block = matrix->data[index / (8 * sizeof(unsigned long long))];
-  return block & (1UL << (index % (8 * sizeof(unsigned long long))));
+  size_t block = matrix->data[index / (8 * sizeof(size_t))];
+  CMRdbgMsg(8, "CMRdensebinmatrixGet(%zu,%zu) uses index %zu in block %zu at %zu -> %d\n", row, column, index,
+    index / (8 * sizeof(size_t)), (index % (8 * sizeof(size_t))),
+    (block & (1UL << (index % (8 * sizeof(size_t))))) ? 1 : 0);
+  return block & (1UL << (index % (8 * sizeof(size_t))));
 }
 
 static inline
@@ -57,9 +56,9 @@ void CMRdensebinmatrixSet0(
 {
   size_t index = row * matrix->numColumns + column;
   CMRdbgMsg(8, "CMRdensebinmatrixSet0(%zu,%zu) uses index %zu in block %zu at %zu.\n", row, column, index,
-    index / (8 * sizeof(unsigned long long)), (index % (8 * sizeof(unsigned long long))));
-  unsigned long long* pblock = &matrix->data[index / (8 * sizeof(unsigned long long))];
-  *pblock &= ~(1UL << (index % (8 * sizeof(unsigned long long))));
+    index / (8 * sizeof(size_t)), (index % (8 * sizeof(size_t))));
+  size_t* pblock = &matrix->data[index / (8 * sizeof(size_t))];
+  *pblock &= ~(1UL << (index % (8 * sizeof(size_t))));
 }
 
 static inline
@@ -71,9 +70,9 @@ void CMRdensebinmatrixSet1(
 {
   size_t index = row * matrix->numColumns + column;
   CMRdbgMsg(8, "CMRdensebinmatrixSet1(%zu,%zu) uses index %zu in block %zu at %zu.\n", row, column, index,
-    index / (8 * sizeof(unsigned long long)), (index % (8 * sizeof(unsigned long long))));
-  unsigned long long* pblock = &matrix->data[index / (8 * sizeof(unsigned long long))];
-  *pblock |= (1UL << (index % (8 * sizeof(unsigned long long))));
+    index / (8 * sizeof(size_t)), (index % (8 * sizeof(size_t))));
+  size_t* pblock = &matrix->data[index / (8 * sizeof(size_t))];
+  *pblock |= (1UL << (index % (8 * sizeof(size_t))));
 }
 
 static inline
@@ -86,9 +85,9 @@ void CMRdensebinmatrixSet(
 {
   size_t index = row * matrix->numColumns + column;
   CMRdbgMsg(8, "CMRdensebinmatrixSet(%zu,%zu,%d) uses index %zu in block %zu at %zu.\n", row, column, value ? 1 : 0, index,
-    index / (8 * sizeof(unsigned long long)), (index % (8 * sizeof(unsigned long long))));
-  unsigned long long* pblock = &matrix->data[index / (8 * sizeof(unsigned long long))];
-  size_t mask = (1UL << (index % (8 * sizeof(unsigned long long))));
+    index / (8 * sizeof(size_t)), (index % (8 * sizeof(size_t))));
+  size_t* pblock = &matrix->data[index / (8 * sizeof(size_t))];
+  size_t mask = (1UL << (index % (8 * sizeof(size_t))));
   if (value)
     *pblock |= mask;
   else
@@ -105,9 +104,9 @@ void CMRdensebinmatrixFlip(
 {
   size_t index = row * matrix->numColumns + column;
   CMRdbgMsg(8, "CMRdensebinmatrixFlip(%zu,%zu) uses index %zu in block %zu at %zu.\n", row, column, index,
-    index / (8 * sizeof(unsigned long long)), (index % (8 * sizeof(unsigned long long))));
-  unsigned long long* pblock = &matrix->data[index / (8 * sizeof(unsigned long long))];
-  size_t mask = (1UL << (index % (8 * sizeof(unsigned long long))));
+    index / (8 * sizeof(size_t)), (index % (8 * sizeof(size_t))));
+  size_t* pblock = &matrix->data[index / (8 * sizeof(size_t))];
+  size_t mask = (1UL << (index % (8 * sizeof(size_t))));
   if (*pblock & mask)
     *pblock &= ~mask;
   else
