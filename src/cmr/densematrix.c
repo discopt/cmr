@@ -1,3 +1,5 @@
+#define CMR_DEBUG /* Uncomment to debug this file. */
+
 #include "densematrix.h"
 
 #include <assert.h>
@@ -12,7 +14,9 @@ CMR_ERROR CMRdensebinmatrixCreateStack(CMR* cmr, size_t numRows, size_t numColum
   CMR_CALL( CMRallocStack(cmr, presult) );
   DenseBinaryMatrix* matrix = *presult;
   
-  size_t size = (numRows * numColumns + (8 * sizeof(unsigned long long)) - 1) / (8 * sizeof(unsigned long long));
+  size_t size = (numRows * numColumns + (8 * sizeof(size_t)) - 1) / (8 * sizeof(size_t));
+  CMRdbgMsg(10, "Creating %zux%zu DenseBinaryMatrix on the stack using %zu blocks each of which having %zu bytes.\n",
+    numRows, numColumns, size, sizeof(size_t));
   matrix->numRows = numRows;
   matrix->numColumns = numColumns;
   matrix->data = NULL;
