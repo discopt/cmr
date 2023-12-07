@@ -26,9 +26,9 @@ determines whether the matrix given in file `IN-MAT` is totally unimodular.
 If `IN-MAT` is `-` then the matrix is read from stdin.
 If `OUT-DEC` or `NON-SUB` is `-` then the decomposition tree (resp. the submatrix) is written to stdout.
 
-## Algorithm ##
+## Algorithms ##
 
-The implemented recognition algorithm is based on [Implementation of a unimodularity test](https://doi.org/10.1007/s12532-012-0048-x) by Matthias Walter and Klaus Truemper (Mathematical Programming Computation, 2013).
+The implemented default recognition algorithm is based on [Implementation of a unimodularity test](https://doi.org/10.1007/s12532-012-0048-x) by Matthias Walter and Klaus Truemper (Mathematical Programming Computation, 2013).
 It first runs \ref camion to reduce the question to that of [recognizing regular matroids](\ref regular).
 Please cite the paper in case the implementation contributed to your research:
 
@@ -44,6 +44,10 @@ Please cite the paper in case the implementation contributed to your research:
       doi       = {10.1007/s12532-012-0048-x},
       publisher = {Springer-Verlag},
     }
+
+In order to repeat experiments described in the paper above, the function can be parameterized as to use exponential-time algorithms.
+The first is based on the criterion of Ghouila-Houri and runs in time \f$ \mathcal{O}( (m + n) 3^{\min(m, n)}) \f$.
+The second enumerates square [Eulerian submatrices](https://www.ams.org/journals/proc/1965-016-05/S0002-9939-1965-0180568-2/) and runs in time \f$ \mathcal{O}( (m+n) 2^{ m + n } ) \f$.
 
 ## C Interface ##
 
