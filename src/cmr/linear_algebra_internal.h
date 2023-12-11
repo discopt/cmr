@@ -1,8 +1,7 @@
 #ifndef CMR_LINALG_INTERNAL_H
 #define CMR_LINALG_INTERNAL_H
 
-#include <cmr/env.h>
-#include <cmr/matrix.h>
+#include <cmr/linear_algebra.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -23,7 +22,8 @@ CMR_ERROR CMRintmatComputeUpperDiagonal(
   CMR_INTMAT* matrix,         /**< A matrix */
   bool invert,                /**< Whether the transformed basis columns shall be strictly diagonally dominant. */
   size_t* prank,              /**< Pointer for storing the rank of the basis matrix. */
-  CMR_SUBMAT** ppermutations, /**< Pointer for storing the row- and column permutations applied to \p matrix. */
+  CMR_SUBMAT** ppermutations, /**< Pointer for storing the row- and column permutations applied to \p matrix
+                               **  (may be \c NULL). */
   CMR_INTMAT** presult,       /**< Pointer for storing the resulting int matrix (may be \c NULL). */
   CMR_INTMAT** ptranspose     /**< Pointer for storing the transpose of the result int matrix (may be \c NULL). */
 );

@@ -1,6 +1,6 @@
 // #define CMR_DEBUG /* Uncomment to debug this file. */
 
-#include "linalg.h"
+#include "linear_algebra_internal.h"
 #include "listmatrix.h"
 #include "sort.h"
 
@@ -571,7 +571,6 @@ CMR_ERROR CMRintmatComputeUpperDiagonal(CMR* cmr, CMR_INTMAT* matrix, bool inver
 {
   assert(cmr);
   assert(matrix);
-  assert(ppermutations);
   assert(prank);
 
   bool isIntTooSmall = false;
@@ -581,8 +580,10 @@ CMR_ERROR CMRintmatComputeUpperDiagonal(CMR* cmr, CMR_INTMAT* matrix, bool inver
   CMRintmatPrintDense(cmr, matrix, stdout, '0', true);
 #endif /* CMR_DEBUG */
 
-  CMR_CALL( CMRsubmatCreate(cmr, matrix->numRows, matrix->numColumns, ppermutations) );
-  CMR_SUBMAT* permutations = *ppermutations;
+  CMR_SUBMAT* permutations = NULL;
+  CMR_CALL( CMRsubmatCreate(cmr, matrix->numRows, matrix->numColumns, &permutations) );
+  if (ppermutations)
+    *ppermutations = permutations;
   assert(permutations);
 
   for (size_t row = 0; row < matrix->numRows; ++row)
@@ -631,7 +632,7 @@ CMR_ERROR CMRintmatComputeUpperDiagonal(CMR* cmr, CMR_INTMAT* matrix, bool inver
     for (size_t permutedRow = *prank; permutedRow < matrix->numRows; ++permutedRow)
     {
       size_t row = permutations->rows[permutedRow];
-      CMRdbgMsg(4, "Permuted row %ld is row %ld\n", permutedRow, row);
+      CMRdbgMsg(4, "Permuted row %ld is original row %ld\n", permutedRow, row);
       for (ListMat64Nonzero* nz = listmatrix->rowElements[row].head.right; nz != &listmatrix->rowElements[row].head;
         nz = nz->right)
       {
@@ -639,6 +640,8 @@ CMR_ERROR CMRintmatComputeUpperDiagonal(CMR* cmr, CMR_INTMAT* matrix, bool inver
         if (x > llabs(minEntryValue))
           continue;
 
+        CMRdbgMsg(6, "Area for potential pivot row %ld with column %ld (abs value %ld) is %ldx%ld.\n", row, nz->column, x,
+          (listmatrix->rowElements[row].numNonzeros - 1), (listmatrix->columnElements[nz->column].numNonzeros - 1));
         size_t area = (listmatrix->rowElements[row].numNonzeros - 1)
           * (listmatrix->columnElements[nz->column].numNonzeros - 1);
         if (x < llabs(minEntryValue) || (x == llabs(minEntryValue) && area < minEntryArea))
@@ -940,11 +943,84 @@ CMR_ERROR CMRintmatComputeUpperDiagonal(CMR* cmr, CMR_INTMAT* matrix, bool inver
   if (isIntTooSmall)
   {
     CMR_CALL( CMRintmatComputeUpperDiagonalGMP(cmr, matrix, invert, prank, *ppermutations, presult, ptranspose) );
-
-    return CMR_OKAY;
+    isIntTooSmall = false;
   }
 
 #endif /* CMR_WITH_GMP */
 
+  if (!ppermutations)
+    CMR_CALL( CMRsubmatFree(cmr, &permutations) );
+
+#if defined(CMR_DEBUG)
+
+  if (presult)
+  {
+    CMRdbgMsg(0, "CMRintmatComputeUpperDiagonal computed the following transformed matrix:\n");
+    CMRintmatPrintDense(cmr, *presult, stdout, '0', true);
+  }
+  else if (ptranspose)
+  {
+    CMRdbgMsg(0, "CMRintmatComputeUpperDiagonal computed the following transposed transformed matrix:\n");
+    CMRintmatPrintDense(cmr, *ptranspose, stdout, '0', true);
+  }
+
+#endif /* CMR_DEBUG */
+
   return isIntTooSmall ? CMR_ERROR_OVERFLOW : CMR_OKAY;
+}
+
+CMR_ERROR CMRintmatDeterminant(CMR* cmr, CMR_INTMAT* matrix, int64_t* pdeterminant)
+{
+  assert(cmr);
+  assert(matrix);
+  assert(pdeterminant);
+  CMRconsistencyAssert(CMRintmatConsistency(matrix));
+
+  if (matrix->numRows != matrix->numColumns)
+    return CMR_ERROR_INPUT;
+
+  CMR_INTMAT* transformed = NULL;
+  size_t rank = SIZE_MAX;
+  CMR_CALL( CMRintmatComputeUpperDiagonal(cmr, matrix, false, &rank, NULL, &transformed, NULL) );
+  if (rank < matrix->numRows)
+    *pdeterminant = 0;
+  else
+  {
+    int64_t old;
+    int64_t det = 1;
+    for (size_t row = 0; row < transformed->numRows; ++row)
+    {
+      int64_t x = transformed->entryValues[transformed->rowSlice[row]];
+      old = det;
+      det *= x;
+      if (det / x != old)
+      {
+        CMR_CALL( CMRintmatFree(cmr, &transformed) );
+        return CMR_ERROR_OVERFLOW;
+      }
+    }
+    *pdeterminant = det;
+  }
+
+  CMR_CALL( CMRintmatFree(cmr, &transformed) );
+
+  return CMR_OKAY;
+}
+
+
+CMR_ERROR CMRchrmatDeterminant(CMR* cmr, CMR_CHRMAT* matrix, int64_t* pdeterminant)
+{
+  assert(cmr);
+  assert(matrix);
+  CMRconsistencyAssert(CMRchrmatConsistency(matrix));
+
+  if (matrix->numRows != matrix->numColumns)
+    return CMR_ERROR_INPUT;
+
+  CMR_INTMAT* copy = NULL;
+  CMR_CALL( CMRchrmatToInt(cmr, matrix, &copy) );
+  CMR_CALL( CMRintmatDeterminant(cmr, copy, pdeterminant) );
+  CMR_CALL( CMRintmatFree(cmr, &copy) );
+
+  return CMR_OKAY;
 }

@@ -1460,7 +1460,7 @@ CMR_ERROR CMRlistmat64PrintDense(CMR* cmr, ListMat64* listmatrix, FILE* stream)
       fprintf(stream, " %" PRId64 "", dense[column]);
       dense[column] = 0;
     }
-    fprintf(stream, "\n");
+    fprintf(stream, " (%ld nonzeros)\n", listmatrix->rowElements[row].numNonzeros);
   }
   fflush(stream);
 
@@ -1834,6 +1834,10 @@ CMR_ERROR CMRlistmat8Delete(CMR* cmr, ListMat8* listmatrix, ListMat8Nonzero* nz)
   assert(nz != &listmatrix->rowElements[nz->row].head);
   assert(nz != &listmatrix->columnElements[nz->column].head);
 
+  listmatrix->numNonzeros--;
+  listmatrix->rowElements[nz->row].numNonzeros--;
+  listmatrix->columnElements[nz->column].numNonzeros--;
+
   nz->left->right = nz->right;
   nz->right->left = nz->left;
   nz->above->below = nz->below;
@@ -1857,13 +1861,16 @@ CMR_ERROR CMRlistmat64Delete(CMR* cmr, ListMat64* listmatrix, ListMat64Nonzero* 
   assert(nz != &listmatrix->rowElements[nz->row].head);
   assert(nz != &listmatrix->columnElements[nz->column].head);
 
+  listmatrix->numNonzeros--;
+  listmatrix->rowElements[nz->row].numNonzeros--;
+  listmatrix->columnElements[nz->column].numNonzeros--;
+
   nz->left->right = nz->right;
   nz->right->left = nz->left;
   nz->above->below = nz->below;
   nz->below->above = nz->above;
   nz->right = listmatrix->firstFreeNonzero;
   listmatrix->firstFreeNonzero = nz;
-  listmatrix->numNonzeros--;
 
   return CMR_OKAY;
 }
@@ -1882,13 +1889,16 @@ CMR_ERROR CMRlistmatGMPDelete(CMR* cmr, ListMatGMP* listmatrix, ListMatGMPNonzer
   assert(nz != &listmatrix->rowElements[nz->row].head);
   assert(nz != &listmatrix->columnElements[nz->column].head);
 
+  listmatrix->numNonzeros--;
+  listmatrix->rowElements[nz->row].numNonzeros--;
+  listmatrix->columnElements[nz->column].numNonzeros--;
+
   nz->left->right = nz->right;
   nz->right->left = nz->left;
   nz->above->below = nz->below;
   nz->below->above = nz->above;
   nz->right = listmatrix->firstFreeNonzero;
   listmatrix->firstFreeNonzero = nz;
-  listmatrix->numNonzeros--;
 
   return CMR_OKAY;
 }

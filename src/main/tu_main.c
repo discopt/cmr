@@ -6,6 +6,7 @@
 
 #include <cmr/matrix.h>
 #include <cmr/tu.h>
+#include <cmr/linear_algebra.h>
 
 typedef enum
 {
@@ -26,6 +27,7 @@ CMR_ERROR testTotalUnimodularity(
   bool printStats,                      /**< Whether to print statistics to stderr. */
   bool directGraphicness,               /**< Whether to use fast graphicness routines. */
   bool seriesParallel,                  /**< Whether to allow series-parallel operations in the decomposition tree. */
+  CMR_TU_ALGORITHM algorithm,           /**< Algorithm to use for TU test. */
   double timeLimit                      /**< Time limit to impose. */
 )
 {
@@ -61,6 +63,7 @@ CMR_ERROR testTotalUnimodularity(
   CMR_SUBMAT* submatrix = NULL;
   CMR_TU_PARAMETERS params;
   CMR_CALL( CMRparamsTotalUnimodularityInit(&params) );
+  params.algorithm = algorithm;
   params.regular.completeTree = outputTreeFileName;
   params.regular.matrices = outputTreeFileName ? CMR_DEC_CONSTRUCT_ALL : CMR_DEC_CONSTRUCT_NONE;
   params.regular.directGraphicness = directGraphicness;
@@ -83,9 +86,17 @@ CMR_ERROR testTotalUnimodularity(
 
   if (submatrix && outputSubmatrixFileName)
   {
+    /* Extract submatrix to compute its determinant. */
+    CMR_CHRMAT* violator = NULL;
+    int64_t determinant = 0;
+    CMR_CALL( CMRchrmatZoomSubmat(cmr, matrix, submatrix, &violator) );
+    CMR_CALL( CMRchrmatDeterminant(cmr, violator, &determinant) );
+    CMR_CALL( CMRchrmatFree(cmr, &violator) );
+
     bool outputSubmatrixToFile = strcmp(outputSubmatrixFileName, "-");
-    fprintf(stderr, "Writing minimal non-totally-unimodular submatrix to %s%s%s.\n", outputSubmatrixToFile ? "file <" : "",
-      outputSubmatrixToFile ? outputSubmatrixFileName : "stdout", outputSubmatrixToFile ? ">" : "");    
+    fprintf(stderr, "Writing minimal non-totally-unimodular submatrix with absolute determinant %ld to %s%s%s.\n", determinant,
+      outputSubmatrixToFile ? "file <" : "", outputSubmatrixToFile ? outputSubmatrixFileName : "stdout",
+      outputSubmatrixToFile ? ">" : "");
 
     CMR_CALL( CMRsubmatWriteToFile(cmr, submatrix, matrix->numRows, matrix->numColumns, outputSubmatrixFileName) );
   }
@@ -113,15 +124,20 @@ int printUsage(const char* program)
   fputs("  determines whether the matrix given in file IN-MAT is totally unimodular.\n\n", stderr);
   fputs("Options:\n", stderr);
   fputs("  -i FORMAT  Format of file IN-MAT, among `dense' and `sparse'; default: dense.\n", stderr);
-  fputs("  -D OUT-DEC Write a decomposition tree of the underlying regular matroid to file OUT-DEC; default: skip computation.\n", stderr);
-  fputs("  -N NON-SUB Write a minimal non-totally-unimodular submatrix to file NON-SUB; default: skip computation.\n", stderr);
+  fputs("  -D OUT-DEC Write a decomposition tree of the underlying regular matroid to file OUT-DEC; "
+    "default: skip computation.\n", stderr);
+  fputs("  -N NON-SUB Write a minimal non-totally-unimodular submatrix to file NON-SUB; default: skip computation.\n",
+    stderr);
   fputs("Advanced options:\n", stderr);
   fputs("  --stats              Print statistics about the computation to stderr.\n\n", stderr);
   fputs("  --time-limit LIMIT   Allow at most LIMIT seconds for the computation.\n", stderr);
   fputs("  --no-direct-graphic  Check only 3-connected matrices for regularity.\n", stderr);
   fputs("  --no-series-parallel Do not allow series-parallel operations in decomposition tree.\n\n", stderr);
+  fputs("  --algo ALGO          Use algorithm from {decomposition, submatrix, partition}; default: decomposition.\n\n",
+    stderr);
   fputs("If IN-MAT is `-' then the matrix is read from stdin.\n", stderr);
-  fputs("If OUT-DEC or NON-SUB is `-' then the decomposition tree (resp. the submatrix) is written to stdout.\n", stderr);
+  fputs("If OUT-DEC or NON-SUB is `-' then the decomposition tree (resp. the submatrix) is written to stdout.\n",
+    stderr);
 
   return EXIT_FAILURE;
 }
@@ -136,6 +152,7 @@ int main(int argc, char** argv)
   bool directGraphicness = true;
   bool seriesParallel = true;
   double timeLimit = DBL_MAX;
+  CMR_TU_ALGORITHM algorithm = CMR_TU_ALGORITHM_DECOMPOSITION;
   for (int a = 1; a < argc; ++a)
   {
     if (!strcmp(argv[a], "-h"))
@@ -175,6 +192,21 @@ int main(int argc, char** argv)
       }
       ++a;
     }
+    else if (!strcmp(argv[a], "--algo") && (a+1 < argc))
+    {
+      if (!strcmp(argv[a+1], "decomposition"))
+        algorithm = CMR_TU_ALGORITHM_DECOMPOSITION;
+      else if (!strcmp(argv[a+1], "submatrix"))
+        algorithm = CMR_TU_ALGORITHM_SUBMATRIX;
+      else if (!strcmp(argv[a+1], "partition"))
+        algorithm = CMR_TU_ALGORITHM_PARTITION;
+      else
+      {
+        fprintf(stderr, "Error: Invalid algorithm <%s> specified.\n\n", argv[a+1]);
+        return printUsage(argv[0]);
+      }
+      ++a;
+    }
     else if (!inputMatrixFileName)
       inputMatrixFileName = argv[a];
     else
@@ -192,7 +224,7 @@ int main(int argc, char** argv)
 
   CMR_ERROR error;
   error = testTotalUnimodularity(inputMatrixFileName, inputFormat, outputTree, outputSubmatrix, printStats,
-    directGraphicness, seriesParallel, timeLimit);
+    directGraphicness, seriesParallel, algorithm, timeLimit);
 
   switch (error)
   {
