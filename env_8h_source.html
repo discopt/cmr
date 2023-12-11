@@ -97,106 +97,105 @@ $(function() {
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="comment">/* Macro for intended non-use of variables. */</span></div>
 <div class="line"><a name="l00024"></a><span class="lineno"><a class="line" href="env_8h.html#a4460b6013023896e1cfd0e1e65ffe418">   24</a></span>&#160;<span class="preprocessor">#define CMR_UNUSED(x) (void)(x)</span></div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160; </div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160; </div>
-<div class="line"><a name="l00031"></a><span class="lineno"><a class="line" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">   31</a></span>&#160;<span class="keyword">typedef</span> <span class="keyword">enum</span></div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;{</div>
-<div class="line"><a name="l00033"></a><span class="lineno"><a class="line" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87a66f57491cfa9354580858e4d5286842a">   33</a></span>&#160;  <a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87a66f57491cfa9354580858e4d5286842a">CMR_OKAY</a> = 0,           </div>
-<div class="line"><a name="l00034"></a><span class="lineno"><a class="line" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87a7db4598810ed8bae95b3ec9bae8a051d">   34</a></span>&#160;  <a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87a7db4598810ed8bae95b3ec9bae8a051d">CMR_ERROR_INPUT</a> = 1,    </div>
-<div class="line"><a name="l00035"></a><span class="lineno"><a class="line" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87abf871702ed73e3007d1dfea92473b1b7">   35</a></span>&#160;  <a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87abf871702ed73e3007d1dfea92473b1b7">CMR_ERROR_OUTPUT</a> = 2,   </div>
-<div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87a15ada77a9e903795a562c60d1f9bafe1">   36</a></span>&#160;  <a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87a15ada77a9e903795a562c60d1f9bafe1">CMR_ERROR_MEMORY</a> = 3,   </div>
-<div class="line"><a name="l00037"></a><span class="lineno"><a class="line" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87a1f785f7c78ce1a174f7c97d1e3ce138e">   37</a></span>&#160;  <a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87a1f785f7c78ce1a174f7c97d1e3ce138e">CMR_ERROR_INVALID</a> = 4,  </div>
-<div class="line"><a name="l00038"></a><span class="lineno"><a class="line" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87a02cd1e3f281e537183375597e4f06659">   38</a></span>&#160;  <a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87a02cd1e3f281e537183375597e4f06659">CMR_ERROR_OVERFLOW</a> = 5, </div>
-<div class="line"><a name="l00039"></a><span class="lineno"><a class="line" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87a0af5d18869e21701a04678a9db066833">   39</a></span>&#160;  <a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87a0af5d18869e21701a04678a9db066833">CMR_ERROR_TIMEOUT</a> = 6,  </div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;} <a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160; </div>
-<div class="line"><a name="l00046"></a><span class="lineno"><a class="line" href="env_8h.html#a5105050775aa58ba2d9ff8dd81e5a99e">   46</a></span>&#160;<span class="preprocessor">#define CMR_CALL(call) \</span></div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="preprocessor">  do \</span></div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<span class="preprocessor">  { \</span></div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="preprocessor">    CMR_ERROR _cmr_error = call; \</span></div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="preprocessor">    if (_cmr_error) \</span></div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="preprocessor">    { \</span></div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="preprocessor">      if (_cmr_error == CMR_ERROR_INPUT) \</span></div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="preprocessor">        fprintf(stderr, &quot;User input error&quot;</span>); \</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;      else if (_cmr_error == CMR_ERROR_MEMORY) \</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;        fprintf(stderr, &quot;Memory (re)allocation failed&quot;); \</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;      else if (_cmr_error == CMR_ERROR_INVALID) \</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;        fprintf(stderr, &quot;Invalid input&quot;); \</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;      else if (_cmr_error == CMR_ERROR_TIMEOUT) \</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;        fprintf(stderr, &quot;Time limit exceeded&quot;); \</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;      else \</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;        fprintf(stderr, &quot;Unknown error&quot;); \</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;      fprintf(stderr, &quot; in %s:%d.\n&quot;, __FILE__, __LINE__); \</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;      return _cmr_error; \</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    } \</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  } while (false)</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160; </div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;<span class="keyword">struct </span><a class="code" href="structCMR__ENVIRONMENT.html">CMR_ENVIRONMENT</a>;</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160; </div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code" href="structCMR__ENVIRONMENT.html">CMR_ENVIRONMENT</a> <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160; </div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;CMR_EXPORT</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="env_8h.html#ab8e50fde1e09f9b10d2fd67c1f3363f8">CMRcreateEnvironment</a>(</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>** pcmr  </div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;);</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160; </div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;CMR_EXPORT</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="env_8h.html#a1a1eb8d8192040917997e1bda4a216b4">CMRfreeEnvironment</a>(</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>** pcmr  </div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;);</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160; </div>
-<div class="line"><a name="l00104"></a><span class="lineno"><a class="line" href="env_8h.html#a85b020189d0ab0cd72a0110decd9e74a">  104</a></span>&#160;<span class="preprocessor">#define CMRallocBlock(cmr, ptr) \</span></div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;<span class="preprocessor">  _CMRallocBlock(cmr, (void**) ptr, sizeof(**ptr))</span></div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160; </div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;CMR_EXPORT</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="env_8h.html#a8f73fd2e0d43447fe72566df0b184d6d">_CMRallocBlock</a>(<a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr, <span class="keywordtype">void</span>** ptr, <span class="keywordtype">size_t</span> size);</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160; </div>
-<div class="line"><a name="l00120"></a><span class="lineno"><a class="line" href="env_8h.html#ae17506229ad852e5b7e15c53ea8d3cf4">  120</a></span>&#160;<span class="preprocessor">#define CMRfreeBlock(cmr, ptr) \</span></div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;<span class="preprocessor">  _CMRfreeBlock(cmr, (void**) ptr, sizeof(**ptr))</span></div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160; </div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;CMR_EXPORT</div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="env_8h.html#a181c39242e18829b81661ba843e5e869">_CMRfreeBlock</a>(<a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr, <span class="keywordtype">void</span>** ptr, <span class="keywordtype">size_t</span> size);</div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160; </div>
-<div class="line"><a name="l00140"></a><span class="lineno"><a class="line" href="env_8h.html#ac3a20b0cc458706e1f49c510a6c4410b">  140</a></span>&#160;<span class="preprocessor">#define CMRallocBlockArray(cmr, ptr, length) \</span></div>
-<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;<span class="preprocessor">  _CMRallocBlockArray(cmr, (void**) ptr, sizeof(**ptr), length)</span></div>
-<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160; </div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;CMR_EXPORT</div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="env_8h.html#a934c241342485712d69d6379227bd213">_CMRallocBlockArray</a>(<a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr, <span class="keywordtype">void</span>** ptr, <span class="keywordtype">size_t</span> size, <span class="keywordtype">size_t</span> length);</div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160; </div>
-<div class="line"><a name="l00159"></a><span class="lineno"><a class="line" href="env_8h.html#ad63a105144c7ed99d83d51a535fdada7">  159</a></span>&#160;<span class="preprocessor">#define CMRreallocBlockArray(cmr, ptr, length) \</span></div>
-<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;<span class="preprocessor">  _CMRreallocBlockArray(cmr, (void**) ptr, sizeof(**ptr), length)</span></div>
-<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160; </div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;CMR_EXPORT</div>
-<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="env_8h.html#a8d73cc51254b1935d7a3bb440b019113">_CMRreallocBlockArray</a>(<a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr, <span class="keywordtype">void</span>** ptr, <span class="keywordtype">size_t</span> size, <span class="keywordtype">size_t</span> length);</div>
-<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160; </div>
-<div class="line"><a name="l00179"></a><span class="lineno"><a class="line" href="env_8h.html#a8ec789c303cdb25a82aa006a4283717e">  179</a></span>&#160;<span class="preprocessor">#define CMRduplicateBlockArray(cmr, ptr, length, source) \</span></div>
-<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;<span class="preprocessor">  _CMRduplicateBlockArray(cmr, (void**) ptr, sizeof(**ptr), length, source)</span></div>
-<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160; </div>
-<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;CMR_EXPORT</div>
-<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="env_8h.html#aea905e6f54634a0bfbeac2e9dd13a6eb">_CMRduplicateBlockArray</a>(<a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr, <span class="keywordtype">void</span>** ptr, <span class="keywordtype">size_t</span> size, <span class="keywordtype">size_t</span> length, <span class="keywordtype">void</span>* source);</div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160; </div>
-<div class="line"><a name="l00197"></a><span class="lineno"><a class="line" href="env_8h.html#a8e025417fc4487f0354a013693fb6df3">  197</a></span>&#160;<span class="preprocessor">#define CMRfreeBlockArray(cmr, ptr) \</span></div>
-<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;<span class="preprocessor">  _CMRfreeBlockArray(cmr, (void**) ptr)</span></div>
-<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160; </div>
-<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;CMR_EXPORT</div>
-<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="env_8h.html#aecb801fc75777269af76015356111575">_CMRfreeBlockArray</a>(<a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr, <span class="keywordtype">void</span>** ptr);</div>
-<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160; </div>
-<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;CMR_EXPORT</div>
-<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;<span class="keywordtype">char</span>* <a class="code" href="env_8h.html#a674917ae8939eca25cb2136df146407e">CMRgetErrorMessage</a>(</div>
-<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr  </div>
-<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;);</div>
-<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160; </div>
-<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;CMR_EXPORT</div>
-<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;<span class="keywordtype">void</span> <a class="code" href="env_8h.html#a5600aab7ea62b1951b556cec481dd01e">CMRclearErrorMessage</a>(</div>
-<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr  </div>
-<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;);</div>
+<div class="line"><a name="l00030"></a><span class="lineno"><a class="line" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">   30</a></span>&#160;<span class="keyword">typedef</span> <span class="keyword">enum</span></div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;{</div>
+<div class="line"><a name="l00032"></a><span class="lineno"><a class="line" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87a66f57491cfa9354580858e4d5286842a">   32</a></span>&#160;  <a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87a66f57491cfa9354580858e4d5286842a">CMR_OKAY</a> = 0,           </div>
+<div class="line"><a name="l00033"></a><span class="lineno"><a class="line" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87a7db4598810ed8bae95b3ec9bae8a051d">   33</a></span>&#160;  <a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87a7db4598810ed8bae95b3ec9bae8a051d">CMR_ERROR_INPUT</a> = 1,    </div>
+<div class="line"><a name="l00034"></a><span class="lineno"><a class="line" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87abf871702ed73e3007d1dfea92473b1b7">   34</a></span>&#160;  <a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87abf871702ed73e3007d1dfea92473b1b7">CMR_ERROR_OUTPUT</a> = 2,   </div>
+<div class="line"><a name="l00035"></a><span class="lineno"><a class="line" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87a15ada77a9e903795a562c60d1f9bafe1">   35</a></span>&#160;  <a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87a15ada77a9e903795a562c60d1f9bafe1">CMR_ERROR_MEMORY</a> = 3,   </div>
+<div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87a1f785f7c78ce1a174f7c97d1e3ce138e">   36</a></span>&#160;  <a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87a1f785f7c78ce1a174f7c97d1e3ce138e">CMR_ERROR_INVALID</a> = 4,  </div>
+<div class="line"><a name="l00037"></a><span class="lineno"><a class="line" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87a02cd1e3f281e537183375597e4f06659">   37</a></span>&#160;  <a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87a02cd1e3f281e537183375597e4f06659">CMR_ERROR_OVERFLOW</a> = 5, </div>
+<div class="line"><a name="l00038"></a><span class="lineno"><a class="line" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87a0af5d18869e21701a04678a9db066833">   38</a></span>&#160;  <a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87a0af5d18869e21701a04678a9db066833">CMR_ERROR_TIMEOUT</a> = 6,  </div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;} <a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>;</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160; </div>
+<div class="line"><a name="l00045"></a><span class="lineno"><a class="line" href="env_8h.html#a5105050775aa58ba2d9ff8dd81e5a99e">   45</a></span>&#160;<span class="preprocessor">#define CMR_CALL(call) \</span></div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="preprocessor">  do \</span></div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="preprocessor">  { \</span></div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<span class="preprocessor">    CMR_ERROR _cmr_error = call; \</span></div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="preprocessor">    if (_cmr_error) \</span></div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="preprocessor">    { \</span></div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="preprocessor">      if (_cmr_error == CMR_ERROR_INPUT) \</span></div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="preprocessor">        fprintf(stderr, &quot;User input error&quot;</span>); \</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;      else if (_cmr_error == CMR_ERROR_MEMORY) \</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;        fprintf(stderr, &quot;Memory (re)allocation failed&quot;); \</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;      else if (_cmr_error == CMR_ERROR_INVALID) \</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;        fprintf(stderr, &quot;Invalid input&quot;); \</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;      else if (_cmr_error == CMR_ERROR_TIMEOUT) \</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;        fprintf(stderr, &quot;Time limit exceeded&quot;); \</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;      else \</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;        fprintf(stderr, &quot;Unknown error&quot;); \</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;      fprintf(stderr, &quot; in %s:%d.\n&quot;, __FILE__, __LINE__); \</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;      return _cmr_error; \</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    } \</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  } while (false)</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160; </div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;<span class="keyword">struct </span><a class="code" href="structCMR__ENVIRONMENT.html">CMR_ENVIRONMENT</a>;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160; </div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code" href="structCMR__ENVIRONMENT.html">CMR_ENVIRONMENT</a> <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>;</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160; </div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;CMR_EXPORT</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="env_8h.html#ab8e50fde1e09f9b10d2fd67c1f3363f8">CMRcreateEnvironment</a>(</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>** pcmr  </div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;);</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160; </div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;CMR_EXPORT</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="env_8h.html#a1a1eb8d8192040917997e1bda4a216b4">CMRfreeEnvironment</a>(</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>** pcmr  </div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;);</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160; </div>
+<div class="line"><a name="l00103"></a><span class="lineno"><a class="line" href="env_8h.html#a85b020189d0ab0cd72a0110decd9e74a">  103</a></span>&#160;<span class="preprocessor">#define CMRallocBlock(cmr, ptr) \</span></div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;<span class="preprocessor">  _CMRallocBlock(cmr, (void**) ptr, sizeof(**ptr))</span></div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160; </div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;CMR_EXPORT</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="env_8h.html#a8f73fd2e0d43447fe72566df0b184d6d">_CMRallocBlock</a>(<a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr, <span class="keywordtype">void</span>** ptr, <span class="keywordtype">size_t</span> size);</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160; </div>
+<div class="line"><a name="l00119"></a><span class="lineno"><a class="line" href="env_8h.html#ae17506229ad852e5b7e15c53ea8d3cf4">  119</a></span>&#160;<span class="preprocessor">#define CMRfreeBlock(cmr, ptr) \</span></div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;<span class="preprocessor">  _CMRfreeBlock(cmr, (void**) ptr, sizeof(**ptr))</span></div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160; </div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;CMR_EXPORT</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="env_8h.html#a181c39242e18829b81661ba843e5e869">_CMRfreeBlock</a>(<a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr, <span class="keywordtype">void</span>** ptr, <span class="keywordtype">size_t</span> size);</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160; </div>
+<div class="line"><a name="l00139"></a><span class="lineno"><a class="line" href="env_8h.html#ac3a20b0cc458706e1f49c510a6c4410b">  139</a></span>&#160;<span class="preprocessor">#define CMRallocBlockArray(cmr, ptr, length) \</span></div>
+<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;<span class="preprocessor">  _CMRallocBlockArray(cmr, (void**) ptr, sizeof(**ptr), length)</span></div>
+<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160; </div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;CMR_EXPORT</div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="env_8h.html#a934c241342485712d69d6379227bd213">_CMRallocBlockArray</a>(<a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr, <span class="keywordtype">void</span>** ptr, <span class="keywordtype">size_t</span> size, <span class="keywordtype">size_t</span> length);</div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160; </div>
+<div class="line"><a name="l00158"></a><span class="lineno"><a class="line" href="env_8h.html#ad63a105144c7ed99d83d51a535fdada7">  158</a></span>&#160;<span class="preprocessor">#define CMRreallocBlockArray(cmr, ptr, length) \</span></div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;<span class="preprocessor">  _CMRreallocBlockArray(cmr, (void**) ptr, sizeof(**ptr), length)</span></div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160; </div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;CMR_EXPORT</div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="env_8h.html#a8d73cc51254b1935d7a3bb440b019113">_CMRreallocBlockArray</a>(<a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr, <span class="keywordtype">void</span>** ptr, <span class="keywordtype">size_t</span> size, <span class="keywordtype">size_t</span> length);</div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160; </div>
+<div class="line"><a name="l00178"></a><span class="lineno"><a class="line" href="env_8h.html#a8ec789c303cdb25a82aa006a4283717e">  178</a></span>&#160;<span class="preprocessor">#define CMRduplicateBlockArray(cmr, ptr, length, source) \</span></div>
+<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;<span class="preprocessor">  _CMRduplicateBlockArray(cmr, (void**) ptr, sizeof(**ptr), length, source)</span></div>
+<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160; </div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;CMR_EXPORT</div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="env_8h.html#aea905e6f54634a0bfbeac2e9dd13a6eb">_CMRduplicateBlockArray</a>(<a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr, <span class="keywordtype">void</span>** ptr, <span class="keywordtype">size_t</span> size, <span class="keywordtype">size_t</span> length, <span class="keywordtype">void</span>* source);</div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160; </div>
+<div class="line"><a name="l00196"></a><span class="lineno"><a class="line" href="env_8h.html#a8e025417fc4487f0354a013693fb6df3">  196</a></span>&#160;<span class="preprocessor">#define CMRfreeBlockArray(cmr, ptr) \</span></div>
+<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;<span class="preprocessor">  _CMRfreeBlockArray(cmr, (void**) ptr)</span></div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160; </div>
+<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;CMR_EXPORT</div>
+<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="env_8h.html#aecb801fc75777269af76015356111575">_CMRfreeBlockArray</a>(<a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr, <span class="keywordtype">void</span>** ptr);</div>
+<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160; </div>
+<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;CMR_EXPORT</div>
+<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;<span class="keywordtype">char</span>* <a class="code" href="env_8h.html#a674917ae8939eca25cb2136df146407e">CMRgetErrorMessage</a>(</div>
+<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr  </div>
+<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;);</div>
+<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160; </div>
+<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;CMR_EXPORT</div>
+<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;<span class="keywordtype">void</span> <a class="code" href="env_8h.html#a5600aab7ea62b1951b556cec481dd01e">CMRclearErrorMessage</a>(</div>
+<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr  </div>
+<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;);</div>
+<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160; </div>
 <div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160; </div>
-<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160; </div>
-<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
-<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;}</div>
-<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160; </div>
-<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* CMR_ENV_H */</span><span class="preprocessor"></span></div>
-<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160; </div>
+<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
+<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;}</div>
+<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160; </div>
+<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* CMR_ENV_H */</span><span class="preprocessor"></span></div>
+<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160; </div>
 <div class="ttc" id="aenv_8h_html_a181c39242e18829b81661ba843e5e869"><div class="ttname"><a href="env_8h.html#a181c39242e18829b81661ba843e5e869">_CMRfreeBlock</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR _CMRfreeBlock(CMR *cmr, void **ptr, size_t size)</div><div class="ttdoc">Carries out the deallocation for CMRfreeBlock.</div><div class="ttdef"><b>Definition:</b> env.c:94</div></div>
 <div class="ttc" id="aenv_8h_html_a1a1eb8d8192040917997e1bda4a216b4"><div class="ttname"><a href="env_8h.html#a1a1eb8d8192040917997e1bda4a216b4">CMRfreeEnvironment</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRfreeEnvironment(CMR **pcmr)</div><div class="ttdoc">Frees a CMR environment.</div><div class="ttdef"><b>Definition:</b> env.c:60</div></div>
 <div class="ttc" id="aenv_8h_html_a5600aab7ea62b1951b556cec481dd01e"><div class="ttname"><a href="env_8h.html#a5600aab7ea62b1951b556cec481dd01e">CMRclearErrorMessage</a></div><div class="ttdeci">CMR_EXPORT void CMRclearErrorMessage(CMR *cmr)</div><div class="ttdoc">Clears the error message.</div><div class="ttdef"><b>Definition:</b> env.c:390</div></div>
@@ -205,14 +204,14 @@ $(function() {
 <div class="ttc" id="aenv_8h_html_a8f73fd2e0d43447fe72566df0b184d6d"><div class="ttname"><a href="env_8h.html#a8f73fd2e0d43447fe72566df0b184d6d">_CMRallocBlock</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR _CMRallocBlock(CMR *cmr, void **ptr, size_t size)</div><div class="ttdoc">Carries out the allocation for CMRallocBlock.</div><div class="ttdef"><b>Definition:</b> env.c:82</div></div>
 <div class="ttc" id="aenv_8h_html_a934c241342485712d69d6379227bd213"><div class="ttname"><a href="env_8h.html#a934c241342485712d69d6379227bd213">_CMRallocBlockArray</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR _CMRallocBlockArray(CMR *cmr, void **ptr, size_t size, size_t length)</div><div class="ttdoc">Carries out the allocation for CMRallocBlockArray.</div><div class="ttdef"><b>Definition:</b> env.c:108</div></div>
 <div class="ttc" id="aenv_8h_html_ab8e50fde1e09f9b10d2fd67c1f3363f8"><div class="ttname"><a href="env_8h.html#ab8e50fde1e09f9b10d2fd67c1f3363f8">CMRcreateEnvironment</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRcreateEnvironment(CMR **pcmr)</div><div class="ttdoc">Allocates and initializes a default CMR environment.</div><div class="ttdef"><b>Definition:</b> env.c:20</div></div>
-<div class="ttc" id="aenv_8h_html_ae2f4ad54b976c2b9a099246c6dc0be87"><div class="ttname"><a href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a></div><div class="ttdeci">CMR_ERROR</div><div class="ttdoc">Type for return codes of library functions.</div><div class="ttdef"><b>Definition:</b> env.h:32</div></div>
-<div class="ttc" id="aenv_8h_html_ae2f4ad54b976c2b9a099246c6dc0be87a02cd1e3f281e537183375597e4f06659"><div class="ttname"><a href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87a02cd1e3f281e537183375597e4f06659">CMR_ERROR_OVERFLOW</a></div><div class="ttdeci">@ CMR_ERROR_OVERFLOW</div><div class="ttdef"><b>Definition:</b> env.h:38</div></div>
-<div class="ttc" id="aenv_8h_html_ae2f4ad54b976c2b9a099246c6dc0be87a0af5d18869e21701a04678a9db066833"><div class="ttname"><a href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87a0af5d18869e21701a04678a9db066833">CMR_ERROR_TIMEOUT</a></div><div class="ttdeci">@ CMR_ERROR_TIMEOUT</div><div class="ttdef"><b>Definition:</b> env.h:39</div></div>
-<div class="ttc" id="aenv_8h_html_ae2f4ad54b976c2b9a099246c6dc0be87a15ada77a9e903795a562c60d1f9bafe1"><div class="ttname"><a href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87a15ada77a9e903795a562c60d1f9bafe1">CMR_ERROR_MEMORY</a></div><div class="ttdeci">@ CMR_ERROR_MEMORY</div><div class="ttdef"><b>Definition:</b> env.h:36</div></div>
-<div class="ttc" id="aenv_8h_html_ae2f4ad54b976c2b9a099246c6dc0be87a1f785f7c78ce1a174f7c97d1e3ce138e"><div class="ttname"><a href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87a1f785f7c78ce1a174f7c97d1e3ce138e">CMR_ERROR_INVALID</a></div><div class="ttdeci">@ CMR_ERROR_INVALID</div><div class="ttdef"><b>Definition:</b> env.h:37</div></div>
-<div class="ttc" id="aenv_8h_html_ae2f4ad54b976c2b9a099246c6dc0be87a66f57491cfa9354580858e4d5286842a"><div class="ttname"><a href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87a66f57491cfa9354580858e4d5286842a">CMR_OKAY</a></div><div class="ttdeci">@ CMR_OKAY</div><div class="ttdef"><b>Definition:</b> env.h:33</div></div>
-<div class="ttc" id="aenv_8h_html_ae2f4ad54b976c2b9a099246c6dc0be87a7db4598810ed8bae95b3ec9bae8a051d"><div class="ttname"><a href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87a7db4598810ed8bae95b3ec9bae8a051d">CMR_ERROR_INPUT</a></div><div class="ttdeci">@ CMR_ERROR_INPUT</div><div class="ttdef"><b>Definition:</b> env.h:34</div></div>
-<div class="ttc" id="aenv_8h_html_ae2f4ad54b976c2b9a099246c6dc0be87abf871702ed73e3007d1dfea92473b1b7"><div class="ttname"><a href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87abf871702ed73e3007d1dfea92473b1b7">CMR_ERROR_OUTPUT</a></div><div class="ttdeci">@ CMR_ERROR_OUTPUT</div><div class="ttdef"><b>Definition:</b> env.h:35</div></div>
+<div class="ttc" id="aenv_8h_html_ae2f4ad54b976c2b9a099246c6dc0be87"><div class="ttname"><a href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a></div><div class="ttdeci">CMR_ERROR</div><div class="ttdoc">Type for return codes of library functions.</div><div class="ttdef"><b>Definition:</b> env.h:31</div></div>
+<div class="ttc" id="aenv_8h_html_ae2f4ad54b976c2b9a099246c6dc0be87a02cd1e3f281e537183375597e4f06659"><div class="ttname"><a href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87a02cd1e3f281e537183375597e4f06659">CMR_ERROR_OVERFLOW</a></div><div class="ttdeci">@ CMR_ERROR_OVERFLOW</div><div class="ttdef"><b>Definition:</b> env.h:37</div></div>
+<div class="ttc" id="aenv_8h_html_ae2f4ad54b976c2b9a099246c6dc0be87a0af5d18869e21701a04678a9db066833"><div class="ttname"><a href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87a0af5d18869e21701a04678a9db066833">CMR_ERROR_TIMEOUT</a></div><div class="ttdeci">@ CMR_ERROR_TIMEOUT</div><div class="ttdef"><b>Definition:</b> env.h:38</div></div>
+<div class="ttc" id="aenv_8h_html_ae2f4ad54b976c2b9a099246c6dc0be87a15ada77a9e903795a562c60d1f9bafe1"><div class="ttname"><a href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87a15ada77a9e903795a562c60d1f9bafe1">CMR_ERROR_MEMORY</a></div><div class="ttdeci">@ CMR_ERROR_MEMORY</div><div class="ttdef"><b>Definition:</b> env.h:35</div></div>
+<div class="ttc" id="aenv_8h_html_ae2f4ad54b976c2b9a099246c6dc0be87a1f785f7c78ce1a174f7c97d1e3ce138e"><div class="ttname"><a href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87a1f785f7c78ce1a174f7c97d1e3ce138e">CMR_ERROR_INVALID</a></div><div class="ttdeci">@ CMR_ERROR_INVALID</div><div class="ttdef"><b>Definition:</b> env.h:36</div></div>
+<div class="ttc" id="aenv_8h_html_ae2f4ad54b976c2b9a099246c6dc0be87a66f57491cfa9354580858e4d5286842a"><div class="ttname"><a href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87a66f57491cfa9354580858e4d5286842a">CMR_OKAY</a></div><div class="ttdeci">@ CMR_OKAY</div><div class="ttdef"><b>Definition:</b> env.h:32</div></div>
+<div class="ttc" id="aenv_8h_html_ae2f4ad54b976c2b9a099246c6dc0be87a7db4598810ed8bae95b3ec9bae8a051d"><div class="ttname"><a href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87a7db4598810ed8bae95b3ec9bae8a051d">CMR_ERROR_INPUT</a></div><div class="ttdeci">@ CMR_ERROR_INPUT</div><div class="ttdef"><b>Definition:</b> env.h:33</div></div>
+<div class="ttc" id="aenv_8h_html_ae2f4ad54b976c2b9a099246c6dc0be87abf871702ed73e3007d1dfea92473b1b7"><div class="ttname"><a href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87abf871702ed73e3007d1dfea92473b1b7">CMR_ERROR_OUTPUT</a></div><div class="ttdeci">@ CMR_ERROR_OUTPUT</div><div class="ttdef"><b>Definition:</b> env.h:34</div></div>
 <div class="ttc" id="aenv_8h_html_aea905e6f54634a0bfbeac2e9dd13a6eb"><div class="ttname"><a href="env_8h.html#aea905e6f54634a0bfbeac2e9dd13a6eb">_CMRduplicateBlockArray</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR _CMRduplicateBlockArray(CMR *cmr, void **ptr, size_t size, size_t length, void *source)</div><div class="ttdoc">Carries out the duplication for CMRduplicateBlockArray.</div><div class="ttdef"><b>Definition:</b> env.c:132</div></div>
 <div class="ttc" id="aenv_8h_html_aecb801fc75777269af76015356111575"><div class="ttname"><a href="env_8h.html#aecb801fc75777269af76015356111575">_CMRfreeBlockArray</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR _CMRfreeBlockArray(CMR *cmr, void **ptr)</div><div class="ttdef"><b>Definition:</b> env.c:146</div></div>
 <div class="ttc" id="astructCMR__ENVIRONMENT_html"><div class="ttname"><a href="structCMR__ENVIRONMENT.html">CMR_ENVIRONMENT</a></div><div class="ttdef"><b>Definition:</b> env_internal.h:45</div></div>

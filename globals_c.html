@@ -93,6 +93,9 @@ $(function() {
 <li>CMR_CALL
 : <a class="el" href="env_8h.html#a5105050775aa58ba2d9ff8dd81e5a99e">env.h</a>
 </li>
+<li>CMR_DEBUG
+: <a class="el" href="tu_8c.html#aaf4503422b8ef76e6591c97a9b3499d0">tu.c</a>
+</li>
 <li>CMR_DEC
 : <a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">dec.h</a>
 </li>
@@ -240,6 +243,18 @@ $(function() {
 <li>CMR_OKAY
 : <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87a66f57491cfa9354580858e4d5286842a">env.h</a>
 </li>
+<li>CMR_TU_ALGORITHM
+: <a class="el" href="tu_8h.html#a699a1093f03178ea66b72cb38443f700">tu.h</a>
+</li>
+<li>CMR_TU_ALGORITHM_DECOMPOSITION
+: <a class="el" href="tu_8h.html#a699a1093f03178ea66b72cb38443f700af9bbe5517a2fb244c83a45e702e9f15e">tu.h</a>
+</li>
+<li>CMR_TU_ALGORITHM_PARTITION
+: <a class="el" href="tu_8h.html#a699a1093f03178ea66b72cb38443f700a033e747bee171bc43440106442cd1ba3">tu.h</a>
+</li>
+<li>CMR_TU_ALGORITHM_SUBMATRIX
+: <a class="el" href="tu_8h.html#a699a1093f03178ea66b72cb38443f700aba2233c627d264c8e0edba9ef4337a02">tu.h</a>
+</li>
 <li>CMR_UNUSED
 : <a class="el" href="env_8h.html#a4460b6013023896e1cfd0e1e65ffe418">env.h</a>
 </li>
@@ -256,8 +271,8 @@ $(function() {
 : <a class="el" href="env__internal_8h.html#a01ad5c9860d4ec696394b6b164940ccf">env_internal.h</a>
 </li>
 <li>CMRassertStackConsistency()
-: <a class="el" href="env_8c.html#a4bed1076f8fcbbf0e422ec2777565d46">env.c</a>
-, <a class="el" href="env__internal_8h.html#a4bed1076f8fcbbf0e422ec2777565d46">env_internal.h</a>
+: <a class="el" href="env__internal_8h.html#a4bed1076f8fcbbf0e422ec2777565d46">env_internal.h</a>
+, <a class="el" href="env_8c.html#a4bed1076f8fcbbf0e422ec2777565d46">env.c</a>
 </li>
 <li>CMRchrmatChangeNumNonzeros()
 : <a class="el" href="matrix_8h.html#aa00518590e86268723168d60fd76c13f">matrix.h</a>
@@ -268,16 +283,16 @@ $(function() {
 , <a class="el" href="matrix_8c.html#a29adabba57f701b092b202a216f07bf8">matrix.c</a>
 </li>
 <li>CMRchrmatCheckTranspose()
-: <a class="el" href="matrix_8c.html#a7062e80dcc13bee8055cdbb94edc5f89">matrix.c</a>
-, <a class="el" href="matrix_8h.html#a34f9189258f5d24b75137cfa681bad3c">matrix.h</a>
+: <a class="el" href="matrix_8h.html#a34f9189258f5d24b75137cfa681bad3c">matrix.h</a>
+, <a class="el" href="matrix_8c.html#a7062e80dcc13bee8055cdbb94edc5f89">matrix.c</a>
 </li>
 <li>CMRchrmatConsistency()
 : <a class="el" href="matrix_8h.html#a27449ff350eee2a0c834f2c260b2b6d0">matrix.h</a>
 , <a class="el" href="matrix_8c.html#a8fcaba2b97524fd526e03d9bdb57e1ea">matrix.c</a>
 </li>
 <li>CMRchrmatCopy()
-: <a class="el" href="matrix_8h.html#abe4b65160a2b4704a16261b9b7a31b0d">matrix.h</a>
-, <a class="el" href="matrix_8c.html#ae5da4d662e86a9dcb4b07b47a34346af">matrix.c</a>
+: <a class="el" href="matrix_8c.html#ae5da4d662e86a9dcb4b07b47a34346af">matrix.c</a>
+, <a class="el" href="matrix_8h.html#abe4b65160a2b4704a16261b9b7a31b0d">matrix.h</a>
 </li>
 <li>CMRchrmatCreate()
 : <a class="el" href="matrix_8h.html#a976733c6c47f784caa292f5c9afdef3d">matrix.h</a>
@@ -288,16 +303,20 @@ $(function() {
 , <a class="el" href="matrix_8c.html#acfa9220a76f07b390853a6b09a3a1fb8">matrix.c</a>
 </li>
 <li>CMRchrmatCreateFromDenseStream()
-: <a class="el" href="matrix_8c.html#a50d51323e80cb31c56f35aadf91395a2">matrix.c</a>
-, <a class="el" href="matrix_8h.html#ac050831021e1196b3bf31d56f899b4bf">matrix.h</a>
+: <a class="el" href="matrix_8h.html#ac050831021e1196b3bf31d56f899b4bf">matrix.h</a>
+, <a class="el" href="matrix_8c.html#a50d51323e80cb31c56f35aadf91395a2">matrix.c</a>
 </li>
 <li>CMRchrmatCreateFromSparseFile()
 : <a class="el" href="matrix_8h.html#aaf11fcc259093a060c10b09ff1760c20">matrix.h</a>
 , <a class="el" href="matrix_8c.html#af686721b80f2c3f5ed4934bbc45c30ff">matrix.c</a>
 </li>
 <li>CMRchrmatCreateFromSparseStream()
-: <a class="el" href="matrix_8h.html#a78ce9f037292a40d9adee1869f823372">matrix.h</a>
-, <a class="el" href="matrix_8c.html#a4b4f4772ada6b3ee4e7e90358e9eaaca">matrix.c</a>
+: <a class="el" href="matrix_8c.html#a4b4f4772ada6b3ee4e7e90358e9eaaca">matrix.c</a>
+, <a class="el" href="matrix_8h.html#a78ce9f037292a40d9adee1869f823372">matrix.h</a>
+</li>
+<li>CMRchrmatDeterminant()
+: <a class="el" href="linear__algebra_8h.html#a4d7f08c9b6ce4a8321d313a027634706">linear_algebra.h</a>
+, <a class="el" href="linear__algebra_8c.html#ab9aec8570f6052ee99ae01e783270009">linear_algebra.c</a>
 </li>
 <li>CMRchrmatFilter()
 : <a class="el" href="matrix_8c.html#a6974e0cec8a19d31282ce8d86b28f8f2">matrix.c</a>
@@ -342,6 +361,10 @@ $(function() {
 <li>CMRchrmatSupport()
 : <a class="el" href="matrix_8h.html#a4e3251921611a755d49c11b4832725d3">matrix.h</a>
 , <a class="el" href="matrix_8c.html#aeb6950cd716b38d1825051737016f515">matrix.c</a>
+</li>
+<li>CMRchrmatToInt()
+: <a class="el" href="matrix_8h.html#a0737559a6f70fa9b0876217227b6c248">matrix.h</a>
+, <a class="el" href="matrix_8c.html#a17a04660ce8f7f143a0aac5073569750">matrix.c</a>
 </li>
 <li>CMRchrmatTranspose()
 : <a class="el" href="matrix_8h.html#a7dbc7a507584a602d40b5a9de90f23fa">matrix.h</a>
@@ -396,8 +419,8 @@ $(function() {
 : <a class="el" href="regular__dec_8c.html#a8c8efc769878ccd0c94adc06d6f9a1b5">regular_dec.c</a>
 </li>
 <li>CMRcreateEnvironment()
-: <a class="el" href="env_8c.html#a29444d37b0b7bbae8dc183dff759714e">env.c</a>
-, <a class="el" href="env_8h.html#ab8e50fde1e09f9b10d2fd67c1f3363f8">env.h</a>
+: <a class="el" href="env_8h.html#ab8e50fde1e09f9b10d2fd67c1f3363f8">env.h</a>
+, <a class="el" href="env_8c.html#a29444d37b0b7bbae8dc183dff759714e">env.c</a>
 </li>
 <li>CMRdbgMsg()
 : <a class="el" href="env__internal_8h.html#abc81f0ffd985cdce7c84a07ff8741518">env_internal.h</a>
@@ -435,12 +458,12 @@ $(function() {
 , <a class="el" href="matrix_8c.html#a67b464dfc761093a1db5ca2fcc78f56a">matrix.c</a>
 </li>
 <li>CMRdblmatCreateFromSparseFile()
-: <a class="el" href="matrix_8c.html#a97581c5d5b8b1b1d91eab0c192dfda5d">matrix.c</a>
-, <a class="el" href="matrix_8h.html#a4861e22677d07a7695e8ba1a7db9f4c0">matrix.h</a>
+: <a class="el" href="matrix_8h.html#a4861e22677d07a7695e8ba1a7db9f4c0">matrix.h</a>
+, <a class="el" href="matrix_8c.html#a97581c5d5b8b1b1d91eab0c192dfda5d">matrix.c</a>
 </li>
 <li>CMRdblmatCreateFromSparseStream()
-: <a class="el" href="matrix_8h.html#adf1d1cc7046691964b8a26df7daaf8cb">matrix.h</a>
-, <a class="el" href="matrix_8c.html#af814eb04e109afbdf9e10806bed14bcd">matrix.c</a>
+: <a class="el" href="matrix_8c.html#af814eb04e109afbdf9e10806bed14bcd">matrix.c</a>
+, <a class="el" href="matrix_8h.html#adf1d1cc7046691964b8a26df7daaf8cb">matrix.h</a>
 </li>
 <li>CMRdblmatFindBinarySubmatrix()
 : <a class="el" href="matrix_8h.html#a97996b51fb5213c2cfab593be65e49cb">matrix.h</a>
@@ -455,12 +478,12 @@ $(function() {
 , <a class="el" href="matrix_8c.html#ae478ff969b746309c5d12c6c04384eba">matrix.c</a>
 </li>
 <li>CMRdblmatFree()
-: <a class="el" href="matrix_8c.html#a013f428ccbdaf1866a1651896b66c794">matrix.c</a>
-, <a class="el" href="matrix_8h.html#a7182170e37f91cdf2937a774df431981">matrix.h</a>
+: <a class="el" href="matrix_8h.html#a7182170e37f91cdf2937a774df431981">matrix.h</a>
+, <a class="el" href="matrix_8c.html#a013f428ccbdaf1866a1651896b66c794">matrix.c</a>
 </li>
 <li>CMRdblmatIsBinary()
-: <a class="el" href="matrix_8h.html#a2d980300402eaafeb1265aeaae936188">matrix.h</a>
-, <a class="el" href="matrix_8c.html#ad2190588f03e5d1d3264efa78fe2f58e">matrix.c</a>
+: <a class="el" href="matrix_8c.html#ad2190588f03e5d1d3264efa78fe2f58e">matrix.c</a>
+, <a class="el" href="matrix_8h.html#a2d980300402eaafeb1265aeaae936188">matrix.h</a>
 </li>
 <li>CMRdblmatIsTernary()
 : <a class="el" href="matrix_8h.html#a4bc37865ec4f5881d0e23bdf222c497b">matrix.h</a>
@@ -507,8 +530,8 @@ $(function() {
 , <a class="el" href="group__Matroid.html#ga649da1a1bf86d2ecd10da029b6afd05c">dec.c</a>
 </li>
 <li>CMRdecCograph()
-: <a class="el" href="group__Matroid.html#gabf5d7e49edcc0247144ca883fa985699">dec.h</a>
-, <a class="el" href="group__Matroid.html#gabf5d7e49edcc0247144ca883fa985699">dec.c</a>
+: <a class="el" href="group__Matroid.html#gabf5d7e49edcc0247144ca883fa985699">dec.c</a>
+, <a class="el" href="group__Matroid.html#gabf5d7e49edcc0247144ca883fa985699">dec.h</a>
 </li>
 <li>CMRdecCographArcsReversed()
 : <a class="el" href="group__Matroid.html#ga59aa7ba1e71c5a86c0cbb02f2b1f059c">dec.h</a>
@@ -544,13 +567,13 @@ $(function() {
 , <a class="el" href="group__Matroid.html#ga964884f601b3241478fac70c5857ee85">dec.c</a>
 </li>
 <li>CMRdecCreate()
-: <a class="el" href="dec__internal_8h.html#aac3fed7bd2a55c8a7193165d5b635e47">dec_internal.h</a>
-, <a class="el" href="dec_8c.html#aac3fed7bd2a55c8a7193165d5b635e47">dec.c</a>
+: <a class="el" href="dec_8c.html#aac3fed7bd2a55c8a7193165d5b635e47">dec.c</a>
+, <a class="el" href="dec__internal_8h.html#aac3fed7bd2a55c8a7193165d5b635e47">dec_internal.h</a>
 </li>
 <li>CMRdecFree()
-: <a class="el" href="group__Matroid.html#ga1a2c0babc8fb7cf1f75c4be5f7e534aa">dec.h</a>
+: <a class="el" href="group__Matroid.html#ga1a2c0babc8fb7cf1f75c4be5f7e534aa">regular_dec.c</a>
 , <a class="el" href="group__Matroid.html#ga1a2c0babc8fb7cf1f75c4be5f7e534aa">dec.c</a>
-, <a class="el" href="group__Matroid.html#ga1a2c0babc8fb7cf1f75c4be5f7e534aa">regular_dec.c</a>
+, <a class="el" href="group__Matroid.html#ga1a2c0babc8fb7cf1f75c4be5f7e534aa">dec.h</a>
 </li>
 <li>CMRdecGetMatrix()
 : <a class="el" href="group__Matroid.html#gabd2e9444f47e08f28002854dce96ca38">dec.h</a>
@@ -561,8 +584,8 @@ $(function() {
 , <a class="el" href="group__Matroid.html#gad7f81f996d35a43552b347ff3ef0e0f3">dec.c</a>
 </li>
 <li>CMRdecGraph()
-: <a class="el" href="group__Matroid.html#gaac2e7870e95a3af11d4e7d1417637c8c">dec.c</a>
-, <a class="el" href="group__Matroid.html#gaac2e7870e95a3af11d4e7d1417637c8c">dec.h</a>
+: <a class="el" href="group__Matroid.html#gaac2e7870e95a3af11d4e7d1417637c8c">dec.h</a>
+, <a class="el" href="group__Matroid.html#gaac2e7870e95a3af11d4e7d1417637c8c">dec.c</a>
 </li>
 <li>CMRdecGraphArcsReversed()
 : <a class="el" href="group__Matroid.html#ga7407477eee0a8ae88219b2bbd21fd0f9">dec.h</a>
@@ -589,8 +612,8 @@ $(function() {
 , <a class="el" href="group__Matroid.html#ga91a1aaeff87e2369a5b87eca79433b1f">dec.c</a>
 </li>
 <li>CMRdecHasTranspose()
-: <a class="el" href="group__Matroid.html#ga772b33477778135b6ce0fa8fa221baee">dec.h</a>
-, <a class="el" href="group__Matroid.html#ga772b33477778135b6ce0fa8fa221baee">dec.c</a>
+: <a class="el" href="group__Matroid.html#ga772b33477778135b6ce0fa8fa221baee">dec.c</a>
+, <a class="el" href="group__Matroid.html#ga772b33477778135b6ce0fa8fa221baee">dec.h</a>
 </li>
 <li>CMRdecInheritMatrices()
 : <a class="el" href="dec_8c.html#a32846d3c05c459130a454dfb8de530d2">dec.c</a>
@@ -606,9 +629,9 @@ $(function() {
 , <a class="el" href="group__Matroid.html#gac0850a1b6e6cc11809acc17fc011586c">dec.c</a>
 </li>
 <li>CMRdecIsGraphic()
-: <a class="el" href="group__Matroid.html#ga56f9c8dab81a2c1028f6ab84a285d8f6">dec.h</a>
+: <a class="el" href="group__Matroid.html#ga56f9c8dab81a2c1028f6ab84a285d8f6">regular_dec.c</a>
 , <a class="el" href="group__Matroid.html#ga56f9c8dab81a2c1028f6ab84a285d8f6">dec.c</a>
-, <a class="el" href="group__Matroid.html#ga56f9c8dab81a2c1028f6ab84a285d8f6">regular_dec.c</a>
+, <a class="el" href="group__Matroid.html#ga56f9c8dab81a2c1028f6ab84a285d8f6">dec.h</a>
 </li>
 <li>CMRdecIsGraphicLeaf()
 : <a class="el" href="group__Matroid.html#ga283dded43116edc8c8b7bd01c977ae1c">dec.h</a>
@@ -627,13 +650,13 @@ $(function() {
 , <a class="el" href="group__Matroid.html#ga82ffc2e3889acd379c959902ce2ae994">dec.c</a>
 </li>
 <li>CMRdecIsSpecialLeaf()
-: <a class="el" href="group__Matroid.html#gacc80fe85686da1cbbc7a3b0c797bf21e">dec.h</a>
-, <a class="el" href="group__Matroid.html#gacc80fe85686da1cbbc7a3b0c797bf21e">dec.c</a>
+: <a class="el" href="group__Matroid.html#gacc80fe85686da1cbbc7a3b0c797bf21e">dec.c</a>
+, <a class="el" href="group__Matroid.html#gacc80fe85686da1cbbc7a3b0c797bf21e">dec.h</a>
 </li>
 <li>CMRdecIsSum()
 : <a class="el" href="group__Matroid.html#ga99a311ee30fa3f781eb152cf00474307">dec.h</a>
-, <a class="el" href="group__Matroid.html#ga99a311ee30fa3f781eb152cf00474307">dec.c</a>
 , <a class="el" href="regular__dec_8c.html#a93e3270bf2a02124b6cbaf9f52f4c3f6">regular_dec.c</a>
+, <a class="el" href="group__Matroid.html#ga99a311ee30fa3f781eb152cf00474307">dec.c</a>
 </li>
 <li>CMRdecIsUnknown()
 : <a class="el" href="group__Matroid.html#ga423ebe728899e2695a8d1de674e14357">dec.h</a>
@@ -645,13 +668,13 @@ $(function() {
 </li>
 <li>CMRdecNumColumns()
 : <a class="el" href="group__Matroid.html#ga4321e8d02778ae6dd83ccbef1c44b03a">dec.h</a>
-, <a class="el" href="group__Matroid.html#ga4321e8d02778ae6dd83ccbef1c44b03a">regular_dec.c</a>
 , <a class="el" href="group__Matroid.html#ga4321e8d02778ae6dd83ccbef1c44b03a">dec.c</a>
+, <a class="el" href="group__Matroid.html#ga4321e8d02778ae6dd83ccbef1c44b03a">regular_dec.c</a>
 </li>
 <li>CMRdecNumRows()
 : <a class="el" href="group__Matroid.html#ga62dedbfa27ee155495660f4cf2971462">dec.h</a>
-, <a class="el" href="group__Matroid.html#ga62dedbfa27ee155495660f4cf2971462">regular_dec.c</a>
 , <a class="el" href="group__Matroid.html#ga62dedbfa27ee155495660f4cf2971462">dec.c</a>
+, <a class="el" href="group__Matroid.html#ga62dedbfa27ee155495660f4cf2971462">regular_dec.c</a>
 </li>
 <li>CMRdecomposeBinarySeriesParallel()
 : <a class="el" href="series__parallel_8h.html#a0b5115995be4eb1f9d22c192b0801786">series_parallel.h</a>
@@ -684,8 +707,8 @@ $(function() {
 : <a class="el" href="graphic_8c.html#a8b5c16dfc5847f415e792dc9bd9d73ad">graphic.c</a>
 </li>
 <li>CMRdecTranslateMinorToParent()
-: <a class="el" href="dec__internal_8h.html#a58966dea5392be6980b553f17daef2c3">dec_internal.h</a>
-, <a class="el" href="dec_8c.html#a58966dea5392be6980b553f17daef2c3">dec.c</a>
+: <a class="el" href="dec_8c.html#a58966dea5392be6980b553f17daef2c3">dec.c</a>
+, <a class="el" href="dec__internal_8h.html#a58966dea5392be6980b553f17daef2c3">dec_internal.h</a>
 </li>
 <li>CMRdensebinmatrixCreateStack()
 : <a class="el" href="densematrix_8c.html#a4d676d2a9ae7d5f9ca4a66ec09ba4853">densematrix.c</a>
@@ -723,8 +746,8 @@ $(function() {
 : <a class="el" href="element_8h.html#aa6ff4d87d3a38da6760db4bea0b905cb">element.h</a>
 </li>
 <li>CMRelementString()
-: <a class="el" href="element_8h.html#a74d8a048b30c02fa7b94a8a3210e9277">element.h</a>
-, <a class="el" href="element_8c.html#a74d8a048b30c02fa7b94a8a3210e9277">element.c</a>
+: <a class="el" href="element_8c.html#a74d8a048b30c02fa7b94a8a3210e9277">element.c</a>
+, <a class="el" href="element_8h.html#a74d8a048b30c02fa7b94a8a3210e9277">element.h</a>
 </li>
 <li>CMRelementToColumnIndex()
 : <a class="el" href="element_8h.html#ab3740235d69b84ae244f4c223c688ebe">element.h</a>
@@ -742,8 +765,8 @@ $(function() {
 : <a class="el" href="env_8h.html#a8e025417fc4487f0354a013693fb6df3">env.h</a>
 </li>
 <li>CMRfreeEnvironment()
-: <a class="el" href="env_8c.html#a3c6209dc4a97db21aa5118a30ee66bf8">env.c</a>
-, <a class="el" href="env_8h.html#a1a1eb8d8192040917997e1bda4a216b4">env.h</a>
+: <a class="el" href="env_8h.html#a1a1eb8d8192040917997e1bda4a216b4">env.h</a>
+, <a class="el" href="env_8c.html#a3c6209dc4a97db21aa5118a30ee66bf8">env.c</a>
 </li>
 <li>CMRfreeStack
 : <a class="el" href="env__internal_8h.html#a569a779528fad36934354027b23a740c">env_internal.h</a>
@@ -762,16 +785,16 @@ $(function() {
 , <a class="el" href="env_8c.html#a05f246d223a84c3caed0e43acb409ca9">env.c</a>
 </li>
 <li>CMRgetStackUsage()
-: <a class="el" href="env__internal_8h.html#a173c2e2328c5404ee49b7f0c9b643eb4">env_internal.h</a>
-, <a class="el" href="env_8c.html#a173c2e2328c5404ee49b7f0c9b643eb4">env.c</a>
+: <a class="el" href="env_8c.html#a173c2e2328c5404ee49b7f0c9b643eb4">env.c</a>
+, <a class="el" href="env__internal_8h.html#a173c2e2328c5404ee49b7f0c9b643eb4">env_internal.h</a>
 </li>
 <li>CMRgraphAddEdge()
 : <a class="el" href="group__Graph.html#ga999ca3f3bfcd60bed76ea25b268a77ba">graph.h</a>
 , <a class="el" href="group__Graph.html#ga999ca3f3bfcd60bed76ea25b268a77ba">graph.c</a>
 </li>
 <li>CMRgraphAddNode()
-: <a class="el" href="group__Graph.html#ga73d43a2e1ccc266eaf2d5c87f93f4a3a">graph.h</a>
-, <a class="el" href="group__Graph.html#ga73d43a2e1ccc266eaf2d5c87f93f4a3a">graph.c</a>
+: <a class="el" href="group__Graph.html#ga73d43a2e1ccc266eaf2d5c87f93f4a3a">graph.c</a>
+, <a class="el" href="group__Graph.html#ga73d43a2e1ccc266eaf2d5c87f93f4a3a">graph.h</a>
 </li>
 <li>CMRgraphClear()
 : <a class="el" href="group__Graph.html#gae4a2f2442fb47d6bbcbab2eedae3260b">graph.h</a>
@@ -790,8 +813,8 @@ $(function() {
 , <a class="el" href="group__Graph.html#ga9c663e1e6f43acb7e4ba96bc223a943d">graph.c</a>
 </li>
 <li>CMRgraphDeleteNode()
-: <a class="el" href="group__Graph.html#gae65c445ee519379ec2cc1a00f27b2248">graph.h</a>
-, <a class="el" href="group__Graph.html#gae65c445ee519379ec2cc1a00f27b2248">graph.c</a>
+: <a class="el" href="group__Graph.html#gae65c445ee519379ec2cc1a00f27b2248">graph.c</a>
+, <a class="el" href="group__Graph.html#gae65c445ee519379ec2cc1a00f27b2248">graph.h</a>
 </li>
 <li>CMRgraphEdgesEdge()
 : <a class="el" href="group__Graph.html#ga25c2fd95ffb93f768758ac645038ed9f">graph.h</a>
@@ -873,8 +896,8 @@ $(function() {
 : <a class="el" href="heap_8h.html#aa1f8e6cd3bcae1f3a4dfe96dea6053b4">heap.h</a>
 </li>
 <li>CMRintheapDecrease()
-: <a class="el" href="heap_8h.html#a777da55f38a45290de3c316ec1963232">heap.h</a>
-, <a class="el" href="heap_8c.html#a777da55f38a45290de3c316ec1963232">heap.c</a>
+: <a class="el" href="heap_8c.html#a777da55f38a45290de3c316ec1963232">heap.c</a>
+, <a class="el" href="heap_8h.html#a777da55f38a45290de3c316ec1963232">heap.h</a>
 </li>
 <li>CMRintheapDecreaseInsert()
 : <a class="el" href="heap_8c.html#a621a0204eab5f951f8b71b2693c9f82a">heap.c</a>
@@ -884,8 +907,8 @@ $(function() {
 : <a class="el" href="heap_8h.html#af06a4c959756dfa8f39fac92b196cc4f">heap.h</a>
 </li>
 <li>CMRintheapExtractMinimum()
-: <a class="el" href="heap_8c.html#a677665b99daedf7fdf9cc28a10719bd3">heap.c</a>
-, <a class="el" href="heap_8h.html#a677665b99daedf7fdf9cc28a10719bd3">heap.h</a>
+: <a class="el" href="heap_8h.html#a677665b99daedf7fdf9cc28a10719bd3">heap.h</a>
+, <a class="el" href="heap_8c.html#a677665b99daedf7fdf9cc28a10719bd3">heap.c</a>
 </li>
 <li>CMRintheapGetValue()
 : <a class="el" href="heap_8h.html#a1048e4e3c36d38275e3145ccb84103e3">heap.h</a>
@@ -908,8 +931,8 @@ $(function() {
 : <a class="el" href="heap_8h.html#ab5c5ba112d8dcd6ea09d28c92047c3a7">heap.h</a>
 </li>
 <li>CMRintmatChangeNumNonzeros()
-: <a class="el" href="matrix_8h.html#a6bf1ba014e6bfd5d6a05df77962fe662">matrix.h</a>
-, <a class="el" href="matrix_8c.html#a7de9bdca47d5da2131b49e0c588fce24">matrix.c</a>
+: <a class="el" href="matrix_8c.html#a7de9bdca47d5da2131b49e0c588fce24">matrix.c</a>
+, <a class="el" href="matrix_8h.html#a6bf1ba014e6bfd5d6a05df77962fe662">matrix.h</a>
 </li>
 <li>CMRintmatCheckEqual()
 : <a class="el" href="matrix_8h.html#a34df0940decede69bae966216efebae9">matrix.h</a>
@@ -920,8 +943,8 @@ $(function() {
 , <a class="el" href="matrix_8c.html#a4e6b80b34f2278c56c6f83533b4138c1">matrix.c</a>
 </li>
 <li>CMRintmatComputeUpperDiagonal()
-: <a class="el" href="linalg_8c.html#a9dfa4efc28c931d03546f5f90f7779e2">linalg.c</a>
-, <a class="el" href="linalg_8h.html#a9dfa4efc28c931d03546f5f90f7779e2">linalg.h</a>
+: <a class="el" href="linear__algebra_8c.html#a9dfa4efc28c931d03546f5f90f7779e2">linear_algebra.c</a>
+, <a class="el" href="linear__algebra__internal_8h.html#a9dfa4efc28c931d03546f5f90f7779e2">linear_algebra_internal.h</a>
 </li>
 <li>CMRintmatConsistency()
 : <a class="el" href="matrix_8h.html#aef71673b9675a317e2ca05100bc7f040">matrix.h</a>
@@ -932,8 +955,8 @@ $(function() {
 , <a class="el" href="matrix_8c.html#ad829e193aaf5e4218bde1c116365da68">matrix.c</a>
 </li>
 <li>CMRintmatCreate()
-: <a class="el" href="matrix_8c.html#a45db8252fe4488ffe1106090fd61d17d">matrix.c</a>
-, <a class="el" href="matrix_8h.html#a9c8c86c6974e84906994af9dbe85a679">matrix.h</a>
+: <a class="el" href="matrix_8h.html#a9c8c86c6974e84906994af9dbe85a679">matrix.h</a>
+, <a class="el" href="matrix_8c.html#a45db8252fe4488ffe1106090fd61d17d">matrix.c</a>
 </li>
 <li>CMRintmatCreateFromDenseFile()
 : <a class="el" href="matrix_8h.html#ab589474c95476a3b0d6d0bdc5bc34282">matrix.h</a>
@@ -951,6 +974,10 @@ $(function() {
 : <a class="el" href="matrix_8h.html#acd9f8a214ce0a53d0bdbf36537f90e78">matrix.h</a>
 , <a class="el" href="matrix_8c.html#ac11a33f6bd65e908fcdef9a31760aed6">matrix.c</a>
 </li>
+<li>CMRintmatDeterminant()
+: <a class="el" href="linear__algebra_8h.html#a2d1f902d5560981d1ba1517f3b8eaccd">linear_algebra.h</a>
+, <a class="el" href="linear__algebra_8c.html#afb5587a9c599249bf9e751f586118085">linear_algebra.c</a>
+</li>
 <li>CMRintmatFindEntry()
 : <a class="el" href="matrix_8h.html#a3719cfedc2bad4dadd438491bfe46f9a">matrix.h</a>
 , <a class="el" href="matrix_8c.html#a817aa9624c3072bb4cbeda6f9ff97f21">matrix.c</a>
@@ -964,16 +991,16 @@ $(function() {
 , <a class="el" href="matrix_8c.html#a211664c0d1b10b688826c1ffca564892">matrix.c</a>
 </li>
 <li>CMRintmatIsTernary()
-: <a class="el" href="matrix_8h.html#a7751fd56995072c2db90cf1a5d449b1b">matrix.h</a>
-, <a class="el" href="matrix_8c.html#ad03cfdf5fb78ef100ed318471ea08efc">matrix.c</a>
+: <a class="el" href="matrix_8c.html#ad03cfdf5fb78ef100ed318471ea08efc">matrix.c</a>
+, <a class="el" href="matrix_8h.html#a7751fd56995072c2db90cf1a5d449b1b">matrix.h</a>
 </li>
 <li>CMRintmatPermute()
 : <a class="el" href="matrix_8h.html#a653214b0b4dc2f2fb3352899fdda6e39">matrix.h</a>
 , <a class="el" href="matrix_8c.html#ac48f1a371c514e78aed9d2b788b080d0">matrix.c</a>
 </li>
 <li>CMRintmatPrintDense()
-: <a class="el" href="matrix_8c.html#ac1a543f0cb69ef3d4ca0ceb9e314ac6b">matrix.c</a>
-, <a class="el" href="matrix_8h.html#a48b667d3d745a25255813a74017d1f63">matrix.h</a>
+: <a class="el" href="matrix_8h.html#a48b667d3d745a25255813a74017d1f63">matrix.h</a>
+, <a class="el" href="matrix_8c.html#ac1a543f0cb69ef3d4ca0ceb9e314ac6b">matrix.c</a>
 </li>
 <li>CMRintmatPrintSparse()
 : <a class="el" href="matrix_8h.html#ab08bf26d809024ef7a9ba7a6c24fd6a7">matrix.h</a>
@@ -984,16 +1011,16 @@ $(function() {
 , <a class="el" href="matrix_8c.html#a25ac3361025482d8555ff6d6cfc12313">matrix.c</a>
 </li>
 <li>CMRintmatSortNonzeros()
-: <a class="el" href="matrix_8h.html#a5231f36a43ea444de4ace7ecd7f83d6f">matrix.h</a>
-, <a class="el" href="matrix_8c.html#ab2b2ed5761fb5d22c06cfc22c5464272">matrix.c</a>
+: <a class="el" href="matrix_8c.html#ab2b2ed5761fb5d22c06cfc22c5464272">matrix.c</a>
+, <a class="el" href="matrix_8h.html#a5231f36a43ea444de4ace7ecd7f83d6f">matrix.h</a>
 </li>
 <li>CMRintmatSupport()
 : <a class="el" href="matrix_8h.html#a0be8b4ef57ed913b5ca1a76bc0687d61">matrix.h</a>
 , <a class="el" href="matrix_8c.html#aa381240e7102539d62e00c4bb2c50327">matrix.c</a>
 </li>
 <li>CMRintmatToChr()
-: <a class="el" href="matrix_8c.html#ab6e29d377cbe344aea9277f35036fbf0">matrix.c</a>
-, <a class="el" href="matrix_8h.html#a4930e1f7dc237014baa380b7f5d13f62">matrix.h</a>
+: <a class="el" href="matrix_8h.html#a4930e1f7dc237014baa380b7f5d13f62">matrix.h</a>
+, <a class="el" href="matrix_8c.html#ab6e29d377cbe344aea9277f35036fbf0">matrix.c</a>
 </li>
 <li>CMRintmatTranspose()
 : <a class="el" href="matrix_8h.html#ac772882112ce553bb1cdc75d0c82e290">matrix.h</a>
@@ -1004,16 +1031,16 @@ $(function() {
 , <a class="el" href="matrix_8c.html#ad77ff52b0683e86e692f2d09af11dab7">matrix.c</a>
 </li>
 <li>CMRlinearhashtableArrayCreate()
-: <a class="el" href="hashtable_8c.html#ac6ca93e4f20c309125904703aadb943f">hashtable.c</a>
-, <a class="el" href="hashtable_8h.html#ac6ca93e4f20c309125904703aadb943f">hashtable.h</a>
+: <a class="el" href="hashtable_8h.html#ac6ca93e4f20c309125904703aadb943f">hashtable.h</a>
+, <a class="el" href="hashtable_8c.html#ac6ca93e4f20c309125904703aadb943f">hashtable.c</a>
 </li>
 <li>CMRlinearhashtableArrayFind()
 : <a class="el" href="hashtable_8c.html#afe72665e87fd4e53f1bb2cbf6989d0eb">hashtable.c</a>
 , <a class="el" href="hashtable_8h.html#afe72665e87fd4e53f1bb2cbf6989d0eb">hashtable.h</a>
 </li>
 <li>CMRlinearhashtableArrayFree()
-: <a class="el" href="hashtable_8h.html#ace6d5fc7e139f381bb7e32363f693b59">hashtable.h</a>
-, <a class="el" href="hashtable_8c.html#ace6d5fc7e139f381bb7e32363f693b59">hashtable.c</a>
+: <a class="el" href="hashtable_8c.html#ace6d5fc7e139f381bb7e32363f693b59">hashtable.c</a>
+, <a class="el" href="hashtable_8h.html#ace6d5fc7e139f381bb7e32363f693b59">hashtable.h</a>
 </li>
 <li>CMRlinearhashtableArrayInsert()
 : <a class="el" href="hashtable_8c.html#a49b63ae8c450df8d69164517bf9dd912">hashtable.c</a>
@@ -1048,16 +1075,16 @@ $(function() {
 , <a class="el" href="hashtable_8h.html#acafe60e2080b1febd40dd275a0cbdbe7">hashtable.h</a>
 </li>
 <li>CMRlisthashtableHash()
-: <a class="el" href="hashtable_8c.html#a67d8b5a31ddce6758ed00cb5b2f019ff">hashtable.c</a>
-, <a class="el" href="hashtable_8h.html#a67d8b5a31ddce6758ed00cb5b2f019ff">hashtable.h</a>
+: <a class="el" href="hashtable_8h.html#a67d8b5a31ddce6758ed00cb5b2f019ff">hashtable.h</a>
+, <a class="el" href="hashtable_8c.html#a67d8b5a31ddce6758ed00cb5b2f019ff">hashtable.c</a>
 </li>
 <li>CMRlisthashtableInsert()
 : <a class="el" href="hashtable_8c.html#a5c6afeb01d6e654d9cbc3095913ed15e">hashtable.c</a>
 , <a class="el" href="hashtable_8h.html#a5c6afeb01d6e654d9cbc3095913ed15e">hashtable.h</a>
 </li>
 <li>CMRlisthashtableNumBuckets()
-: <a class="el" href="hashtable_8h.html#a0da0af3e69ddc6f1e467cef5ebcaaf3b">hashtable.h</a>
-, <a class="el" href="hashtable_8c.html#a0da0af3e69ddc6f1e467cef5ebcaaf3b">hashtable.c</a>
+: <a class="el" href="hashtable_8c.html#a0da0af3e69ddc6f1e467cef5ebcaaf3b">hashtable.c</a>
+, <a class="el" href="hashtable_8h.html#a0da0af3e69ddc6f1e467cef5ebcaaf3b">hashtable.h</a>
 </li>
 <li>CMRlisthashtableRemove()
 : <a class="el" href="hashtable_8c.html#afb068a0639dc1ac7311559b4b22a3c8a">hashtable.c</a>
@@ -1068,16 +1095,16 @@ $(function() {
 , <a class="el" href="hashtable_8h.html#a9f089e91f7ac165916eaa2f44a68cd40">hashtable.h</a>
 </li>
 <li>CMRlistmat64Alloc()
-: <a class="el" href="listmatrix_8c.html#aa52fa4fa04b5fb93ad58a64d1e086d05">listmatrix.c</a>
-, <a class="el" href="listmatrix_8h.html#aa52fa4fa04b5fb93ad58a64d1e086d05">listmatrix.h</a>
+: <a class="el" href="listmatrix_8h.html#aa52fa4fa04b5fb93ad58a64d1e086d05">listmatrix.h</a>
+, <a class="el" href="listmatrix_8c.html#aa52fa4fa04b5fb93ad58a64d1e086d05">listmatrix.c</a>
 </li>
 <li>CMRlistmat64Delete()
 : <a class="el" href="listmatrix_8c.html#a91d539a09a807ecc82ee4969f320cfb7">listmatrix.c</a>
 , <a class="el" href="listmatrix_8h.html#a91d539a09a807ecc82ee4969f320cfb7">listmatrix.h</a>
 </li>
 <li>CMRlistmat64Free()
-: <a class="el" href="listmatrix_8h.html#a30787518e7815ca310d93fcc2451f898">listmatrix.h</a>
-, <a class="el" href="listmatrix_8c.html#a30787518e7815ca310d93fcc2451f898">listmatrix.c</a>
+: <a class="el" href="listmatrix_8c.html#a30787518e7815ca310d93fcc2451f898">listmatrix.c</a>
+, <a class="el" href="listmatrix_8h.html#a30787518e7815ca310d93fcc2451f898">listmatrix.h</a>
 </li>
 <li>CMRlistmat64InitializeFromDoubleMatrix()
 : <a class="el" href="listmatrix_8c.html#a5e1f2e9ae83d5d94fa5340dd971514e4">listmatrix.c</a>
@@ -1088,8 +1115,8 @@ $(function() {
 , <a class="el" href="listmatrix_8h.html#abecddda610f0731fac29c0ef1336fbf7">listmatrix.h</a>
 </li>
 <li>CMRlistmat64InitializeFromIntSubmatrix()
-: <a class="el" href="listmatrix_8c.html#a7565939ac31f9f31244589a144a8dbba">listmatrix.c</a>
-, <a class="el" href="listmatrix_8h.html#a7565939ac31f9f31244589a144a8dbba">listmatrix.h</a>
+: <a class="el" href="listmatrix_8h.html#a7565939ac31f9f31244589a144a8dbba">listmatrix.h</a>
+, <a class="el" href="listmatrix_8c.html#a7565939ac31f9f31244589a144a8dbba">listmatrix.c</a>
 </li>
 <li>CMRlistmat64InitializeFromIntSubmatrixComplement()
 : <a class="el" href="listmatrix_8c.html#a2fc54895269bae1292de85fe26425a18">listmatrix.c</a>
@@ -1131,15 +1158,15 @@ $(function() {
 : <a class="el" href="listmatrix_8c.html#aa3e44776b68ad28c46574afab5c80355">listmatrix.c</a>
 </li>
 <li>CMRlistmat8InitializeFromDoubleMatrix()
-: <a class="el" href="listmatrix_8c.html#a31ff72451e4048cfe8fd2f2df181eee8">listmatrix.c</a>
-, <a class="el" href="listmatrix_8h.html#a31ff72451e4048cfe8fd2f2df181eee8">listmatrix.h</a>
+: <a class="el" href="listmatrix_8h.html#a31ff72451e4048cfe8fd2f2df181eee8">listmatrix.h</a>
+, <a class="el" href="listmatrix_8c.html#a31ff72451e4048cfe8fd2f2df181eee8">listmatrix.c</a>
 </li>
 <li>CMRlistmat8InitializeFromSubmatrixComplement()
 : <a class="el" href="listmatrix_8h.html#a4408ebdf1b5c7aed64e39a694d50019c">listmatrix.h</a>
 </li>
 <li>CMRlistmat8InitializeZero()
-: <a class="el" href="listmatrix_8h.html#a9bff3e3312570d151a8cd7c1afc34aeb">listmatrix.h</a>
-, <a class="el" href="listmatrix_8c.html#a9bff3e3312570d151a8cd7c1afc34aeb">listmatrix.c</a>
+: <a class="el" href="listmatrix_8c.html#a9bff3e3312570d151a8cd7c1afc34aeb">listmatrix.c</a>
+, <a class="el" href="listmatrix_8h.html#a9bff3e3312570d151a8cd7c1afc34aeb">listmatrix.h</a>
 </li>
 <li>CMRlistmat8Insert()
 : <a class="el" href="listmatrix_8c.html#ad9f1a7be1870713d4c78bf25b00184e5">listmatrix.c</a>
@@ -1158,8 +1185,8 @@ $(function() {
 , <a class="el" href="matroid_8c.html#a9c89b966fd0e9f888ce4e827878428c1">matroid.c</a>
 </li>
 <li>CMRminorWriteToFile()
-: <a class="el" href="matroid_8c.html#a6c5c1667aa2e0c5105080fa6fa60d861">matroid.c</a>
-, <a class="el" href="matroid_8h.html#a703b8a270ba387dd7f4c31e418762bba">matroid.h</a>
+: <a class="el" href="matroid_8h.html#a703b8a270ba387dd7f4c31e418762bba">matroid.h</a>
+, <a class="el" href="matroid_8c.html#a6c5c1667aa2e0c5105080fa6fa60d861">matroid.c</a>
 </li>
 <li>CMRminorWriteToStream()
 : <a class="el" href="matroid_8h.html#a0aec2beecd6bb286c5132eb287645a56">matroid.h</a>
@@ -1178,8 +1205,8 @@ $(function() {
 , <a class="el" href="regular_8c.html#adb0ba07cbf71c9aaebd3a2d6ecb630d9">regular.c</a>
 </li>
 <li>CMRparamsTotalUnimodularityInit()
-: <a class="el" href="tu_8c.html#ab5adbd26175ffe27c3da56365da83e71">tu.c</a>
-, <a class="el" href="tu_8h.html#aecb80dad9b4ab39828eebc52fa1ec41b">tu.h</a>
+: <a class="el" href="tu_8h.html#aecb80dad9b4ab39828eebc52fa1ec41b">tu.h</a>
+, <a class="el" href="tu_8c.html#ab5adbd26175ffe27c3da56365da83e71">tu.c</a>
 </li>
 <li>CMRraiseErrorMessage()
 : <a class="el" href="env_8c.html#acb9a513ceabcd595e8b005d534d43598">env.c</a>
@@ -1193,8 +1220,8 @@ $(function() {
 , <a class="el" href="regular__internal_8h.html#a4536225f95a540d927dd4d09b6cc3ce6">regular_internal.h</a>
 </li>
 <li>CMRregularDecomposeOneSum()
-: <a class="el" href="regular__onesum_8c.html#a17ff4174e115d3bd1a2c205138fffcdb">regular_onesum.c</a>
-, <a class="el" href="regular__internal_8h.html#a17ff4174e115d3bd1a2c205138fffcdb">regular_internal.h</a>
+: <a class="el" href="regular__internal_8h.html#a17ff4174e115d3bd1a2c205138fffcdb">regular_internal.h</a>
+, <a class="el" href="regular__onesum_8c.html#a17ff4174e115d3bd1a2c205138fffcdb">regular_onesum.c</a>
 </li>
 <li>CMRregularDecomposeSeriesParallel()
 : <a class="el" href="regular__internal_8h.html#a3e5aa65b2a094726c2baed454bf1d2c4">regular_internal.h</a>
@@ -1205,12 +1232,12 @@ $(function() {
 , <a class="el" href="regular__nested__minor__sequence_8c.html#ad77e1ad5dfd274ebe64f45c95cc06e72">regular_nested_minor_sequence.c</a>
 </li>
 <li>CMRregularSearchThreeSeparation()
-: <a class="el" href="regular__enumerate_8c.html#ab1991a422f3bfe7a314f2cc21120187e">regular_enumerate.c</a>
-, <a class="el" href="regular__internal_8h.html#ab1991a422f3bfe7a314f2cc21120187e">regular_internal.h</a>
+: <a class="el" href="regular__internal_8h.html#ab1991a422f3bfe7a314f2cc21120187e">regular_internal.h</a>
+, <a class="el" href="regular__enumerate_8c.html#ab1991a422f3bfe7a314f2cc21120187e">regular_enumerate.c</a>
 </li>
 <li>CMRregularSequenceGraphic()
-: <a class="el" href="regular__internal_8h.html#a94dc1cb2cc08106758c3ecdd5415e6a4">regular_internal.h</a>
-, <a class="el" href="regular__graphic_8c.html#a94dc1cb2cc08106758c3ecdd5415e6a4">regular_graphic.c</a>
+: <a class="el" href="regular__graphic_8c.html#a94dc1cb2cc08106758c3ecdd5415e6a4">regular_graphic.c</a>
+, <a class="el" href="regular__internal_8h.html#a94dc1cb2cc08106758c3ecdd5415e6a4">regular_internal.h</a>
 </li>
 <li>CMRregularTestGraphic()
 : <a class="el" href="regular__graphic_8c.html#a90d6897413204e4f5a7bb816cd7e9cb8">regular_graphic.c</a>
@@ -1224,8 +1251,8 @@ $(function() {
 : <a class="el" href="element_8h.html#a4218469afc75ddf94a4bba909093f75d">element.h</a>
 </li>
 <li>CMRsepaCheckTernary()
-: <a class="el" href="separation_8h.html#a0ec8bf72dc33c83aee50f173d434cddb">separation.h</a>
-, <a class="el" href="separation_8c.html#aeb847af17aa870fb3199baa54383bc6d">separation.c</a>
+: <a class="el" href="separation_8c.html#aeb847af17aa870fb3199baa54383bc6d">separation.c</a>
+, <a class="el" href="separation_8h.html#a0ec8bf72dc33c83aee50f173d434cddb">separation.h</a>
 </li>
 <li>CMRsepaCreate()
 : <a class="el" href="separation_8h.html#ab368dd519148f0a7d5e4b046607744a3">separation.h</a>
@@ -1354,8 +1381,8 @@ $(function() {
 , <a class="el" href="tu_8c.html#a30bbf88347fb983bb2a1ab87a73eb1a0">tu.c</a>
 </li>
 <li>CMRsubmatCreate()
-: <a class="el" href="matrix_8c.html#a90c4c9293d9aeab58ea88108d868bd3d">matrix.c</a>
-, <a class="el" href="matrix_8h.html#ae49cdc6fbc785fdc224845fbd27f15ed">matrix.h</a>
+: <a class="el" href="matrix_8h.html#ae49cdc6fbc785fdc224845fbd27f15ed">matrix.h</a>
+, <a class="el" href="matrix_8c.html#a90c4c9293d9aeab58ea88108d868bd3d">matrix.c</a>
 </li>
 <li>CMRsubmatCreate1x1()
 : <a class="el" href="matrix_8h.html#a54305057051b0c7c0ad1993f3e1ad2a4">matrix.h</a>
@@ -1485,7 +1512,7 @@ $(function() {
 : <a class="el" href="regular__onesum_8c.html#a534ff7e59a454bcc3f885700b1c396f2">regular_onesum.c</a>
 </li>
 <li>compareOtherRows64()
-: <a class="el" href="linalg_8c.html#ad308e6614d36169803c4f748178b6afa">linalg.c</a>
+: <a class="el" href="linear__algebra_8c.html#ad308e6614d36169803c4f748178b6afa">linear_algebra.c</a>
 </li>
 <li>COMPLETED
 : <a class="el" href="network_8c.html#a0b43147a4952faed75bf16e0f483ca0aa3549811efddf16048f4b8f6a3b960b41">network.c</a>

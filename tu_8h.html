@@ -78,6 +78,7 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
+<a href="#enum-members">Enumerations</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">tu.h File Reference</div>  </div>
@@ -101,6 +102,14 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Statistics for recognition algorithm for <a class="el" href="tu.html">totally unimodular</a> matrices.  <a href="structCMR__TU__STATISTICS.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
+Enumerations</h2></td></tr>
+<tr class="memitem:a699a1093f03178ea66b72cb38443f700"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tu_8h.html#a699a1093f03178ea66b72cb38443f700">CMR_TU_ALGORITHM</a> { <a class="el" href="tu_8h.html#a699a1093f03178ea66b72cb38443f700af9bbe5517a2fb244c83a45e702e9f15e">CMR_TU_ALGORITHM_DECOMPOSITION</a> = 0
+, <a class="el" href="tu_8h.html#a699a1093f03178ea66b72cb38443f700aba2233c627d264c8e0edba9ef4337a02">CMR_TU_ALGORITHM_SUBMATRIX</a> = 1
+, <a class="el" href="tu_8h.html#a699a1093f03178ea66b72cb38443f700a033e747bee171bc43440106442cd1ba3">CMR_TU_ALGORITHM_PARTITION</a> = 2
+ }</td></tr>
+<tr class="separator:a699a1093f03178ea66b72cb38443f700"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:aecb80dad9b4ab39828eebc52fa1ec41b"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tu_8h.html#aecb80dad9b4ab39828eebc52fa1ec41b">CMRparamsTotalUnimodularityInit</a> (<a class="el" href="structCMR__TU__PARAMETERS.html">CMR_TU_PARAMETERS</a> *params)</td></tr>
@@ -119,7 +128,30 @@ Functions</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Recognition of <a class="el" href="tu.html">totally unimodular matrices</a>. </p>
 <dl class="section author"><dt>Author</dt><dd>Matthias Walter and Klaus Truemper </dd></dl>
-</div><h2 class="groupheader">Function Documentation</h2>
+</div><h2 class="groupheader">Enumeration Type Documentation</h2>
+<a id="a699a1093f03178ea66b72cb38443f700"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a699a1093f03178ea66b72cb38443f700">&#9670;&nbsp;</a></span>CMR_TU_ALGORITHM</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="tu_8h.html#a699a1093f03178ea66b72cb38443f700">CMR_TU_ALGORITHM</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a699a1093f03178ea66b72cb38443f700af9bbe5517a2fb244c83a45e702e9f15e"></a>CMR_TU_ALGORITHM_DECOMPOSITION&#160;</td><td class="fielddoc"><p>Algorithm based on Seymour's decomposition of regular matroids. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a699a1093f03178ea66b72cb38443f700aba2233c627d264c8e0edba9ef4337a02"></a>CMR_TU_ALGORITHM_SUBMATRIX&#160;</td><td class="fielddoc"><p>Enumeration algorithm based on submatrices. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a699a1093f03178ea66b72cb38443f700a033e747bee171bc43440106442cd1ba3"></a>CMR_TU_ALGORITHM_PARTITION&#160;</td><td class="fielddoc"><p>Enumeration algorithm based on criterion of Ghouila-Houri. </p>
+</td></tr>
+</table>
+
+</div>
+</div>
+<h2 class="groupheader">Function Documentation</h2>
 <a id="aecb80dad9b4ab39828eebc52fa1ec41b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aecb80dad9b4ab39828eebc52fa1ec41b">&#9670;&nbsp;</a></span>CMRparamsTotalUnimodularityInit()</h2>
 

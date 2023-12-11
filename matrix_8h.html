@@ -327,6 +327,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a4d360aaaf55b5873e509ccaba9d123e0"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="matrix_8h.html#a4d360aaaf55b5873e509ccaba9d123e0">CMRchrmatSignedSupport</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> **presult)</td></tr>
 <tr class="memdesc:a4d360aaaf55b5873e509ccaba9d123e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates the (ternary) signed support matrix of a char matrix as a char matrix.  <a href="matrix_8h.html#a4d360aaaf55b5873e509ccaba9d123e0">More...</a><br /></td></tr>
 <tr class="separator:a4d360aaaf55b5873e509ccaba9d123e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0737559a6f70fa9b0876217227b6c248"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="matrix_8h.html#a0737559a6f70fa9b0876217227b6c248">CMRchrmatToInt</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, <a class="el" href="structCMR__INTMAT.html">CMR_INTMAT</a> **presult)</td></tr>
+<tr class="memdesc:a0737559a6f70fa9b0876217227b6c248"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a char matrix to an int matrix.  <a href="matrix_8h.html#a0737559a6f70fa9b0876217227b6c248">More...</a><br /></td></tr>
+<tr class="separator:a0737559a6f70fa9b0876217227b6c248"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4930e1f7dc237014baa380b7f5d13f62"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="matrix_8h.html#a4930e1f7dc237014baa380b7f5d13f62">CMRintmatToChr</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__INTMAT.html">CMR_INTMAT</a> *matrix, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> **presult)</td></tr>
 <tr class="memdesc:a4930e1f7dc237014baa380b7f5d13f62"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts an int matrix to a char matrix.  <a href="matrix_8h.html#a4930e1f7dc237014baa380b7f5d13f62">More...</a><br /></td></tr>
 <tr class="separator:a4930e1f7dc237014baa380b7f5d13f62"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1257,6 +1260,50 @@ Functions</h2></td></tr>
     <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
     <tr><td class="paramname">matrix</td><td>Double matrix </td></tr>
     <tr><td class="paramname">presult</td><td>Pointer for storing the support matrix of <code>matrix</code>. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a0737559a6f70fa9b0876217227b6c248"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0737559a6f70fa9b0876217227b6c248">&#9670;&nbsp;</a></span>CMRchrmatToInt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRchrmatToInt </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *&#160;</td>
+          <td class="paramname"><em>matrix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__INTMAT.html">CMR_INTMAT</a> **&#160;</td>
+          <td class="paramname"><em>presult</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Converts a char matrix to an int matrix. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">matrix</td><td>Input matrix. </td></tr>
+    <tr><td class="paramname">presult</td><td>Pointer for storing the output matrix. </td></tr>
   </table>
   </dd>
 </dl>
@@ -3454,7 +3501,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Converts an int matrix to a char matrix. </p>
-<dl class="section return"><dt>Returns</dt><dd><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87a7db4598810ed8bae95b3ec9bae8a051d">CMR_ERROR_INPUT</a> in case of overflow. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87a02cd1e3f281e537183375597e4f06659">CMR_ERROR_OVERFLOW</a> in case of overflow. </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>

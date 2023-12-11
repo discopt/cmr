@@ -18,13 +18,14 @@ var searchData=
   ['addtograph1row2columns_55',['addToGraph1Row2Columns',['../regular__graphic_8c.html#a6898f4bcf1e2f0b7874718714cb0973c',1,'regular_graphic.c']]],
   ['addtograph2rows1column_56',['addToGraph2Rows1Column',['../regular__graphic_8c.html#adf675379a7a963378512fdeb80eee624',1,'regular_graphic.c']]],
   ['adjacencystart_57',['adjacencyStart',['../structGraphNode.html#a881861a93c3ac824fc14ce8c97bc0ee0',1,'GraphNode']]],
-  ['algorithm_2ehpp_58',['algorithm.hpp',['../algorithm_8hpp.html',1,'']]],
-  ['anchor_59',['anchor',['../structListMat64.html#ac1a7cf93962809267261cd27533755d5',1,'ListMat64::anchor()'],['../structListMat8.html#a1cc3415456bdb3e8e979460d0b23cc05',1,'ListMat8::anchor()']]],
-  ['apply_5fmapping_60',['apply_mapping',['../namespacetu_1_1detail.html#ae8e9d9373be45224685c3c116d9ba80c',1,'tu::detail']]],
-  ['applycount_61',['applyCount',['../structCMR__GRAPHIC__STATISTICS.html#aca2c64f663d55083755dcf85ee436bb7',1,'CMR_GRAPHIC_STATISTICS']]],
-  ['applypivots_62',['applyPivots',['../regular__nested__minor__sequence_8c.html#a1b3c0754de7e637edbbb61ebc06b00ef',1,'regular_nested_minor_sequence.c']]],
-  ['applytime_63',['applyTime',['../structCMR__GRAPHIC__STATISTICS.html#a9986b3134321440d810ce9940c9942e6',1,'CMR_GRAPHIC_STATISTICS']]],
-  ['arcs_64',['arcs',['../structCMR__GRAPH.html#a11cddc52c6b985460139577b6a68de8d',1,'CMR_GRAPH']]],
-  ['articulation_5fedge_5ffilter_65',['articulation_edge_filter',['../structtu_1_1articulation__edge__filter.html#a0f2c47e83408b55e713ca4e6a0a96b72',1,'tu::articulation_edge_filter::articulation_edge_filter(const Graph *graph, const vertex_descriptor *articulation_vertex, const edge_set *evil_edges)'],['../structtu_1_1articulation__edge__filter.html#a57f6e774042bc697eb7a7dfa8fa89938',1,'tu::articulation_edge_filter::articulation_edge_filter()'],['../structtu_1_1articulation__edge__filter.html',1,'tu::articulation_edge_filter&lt; Graph &gt;']]],
-  ['assignrow_66',['assignRow',['../regular__enumerate_8c.html#ad077a8a3d9ad84ce79f35cccca8d3c08',1,'regular_enumerate.c']]]
+  ['algorithm_58',['algorithm',['../structCMR__TU__PARAMETERS.html#a7f4c143d8b8e1c0b849939064f8ef999',1,'CMR_TU_PARAMETERS']]],
+  ['algorithm_2ehpp_59',['algorithm.hpp',['../algorithm_8hpp.html',1,'']]],
+  ['anchor_60',['anchor',['../structListMat64.html#ac1a7cf93962809267261cd27533755d5',1,'ListMat64::anchor()'],['../structListMat8.html#a1cc3415456bdb3e8e979460d0b23cc05',1,'ListMat8::anchor()']]],
+  ['apply_5fmapping_61',['apply_mapping',['../namespacetu_1_1detail.html#ae8e9d9373be45224685c3c116d9ba80c',1,'tu::detail']]],
+  ['applycount_62',['applyCount',['../structCMR__GRAPHIC__STATISTICS.html#aca2c64f663d55083755dcf85ee436bb7',1,'CMR_GRAPHIC_STATISTICS']]],
+  ['applypivots_63',['applyPivots',['../regular__nested__minor__sequence_8c.html#a1b3c0754de7e637edbbb61ebc06b00ef',1,'regular_nested_minor_sequence.c']]],
+  ['applytime_64',['applyTime',['../structCMR__GRAPHIC__STATISTICS.html#a9986b3134321440d810ce9940c9942e6',1,'CMR_GRAPHIC_STATISTICS']]],
+  ['arcs_65',['arcs',['../structCMR__GRAPH.html#a11cddc52c6b985460139577b6a68de8d',1,'CMR_GRAPH']]],
+  ['articulation_5fedge_5ffilter_66',['articulation_edge_filter',['../structtu_1_1articulation__edge__filter.html#a0f2c47e83408b55e713ca4e6a0a96b72',1,'tu::articulation_edge_filter::articulation_edge_filter(const Graph *graph, const vertex_descriptor *articulation_vertex, const edge_set *evil_edges)'],['../structtu_1_1articulation__edge__filter.html#a57f6e774042bc697eb7a7dfa8fa89938',1,'tu::articulation_edge_filter::articulation_edge_filter()'],['../structtu_1_1articulation__edge__filter.html',1,'tu::articulation_edge_filter&lt; Graph &gt;']]],
+  ['assignrow_67',['assignRow',['../regular__enumerate_8c.html#ad077a8a3d9ad84ce79f35cccca8d3c08',1,'regular_enumerate.c']]]
 ];
