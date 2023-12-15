@@ -724,13 +724,13 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Constructs the 2-sum of the two matrices <code>first</code> and <code>second</code> via <code>firstMarker</code> and <code>secondMarker</code>. </p>
-<p>Let \( A \) and \( B \) denote the matrices given by <code>first</code> and <code>second</code>. If <code>firstMarker</code> indexes a row vector \( a^\intercal \) of \( A \) then <code>secondMarker</code> must index a column vector \( b \) of \( B \). Then the 2-sum is the matrix </p><p class="formulaDsp">
-\[ \begin{pmatrix} A &amp; \mathbb{O} \\ b a^\intercal &amp; B \end{pmatrix}. \]
+<p>Let \( A \) and \( B \) denote the matrices given by <code>first</code> and <code>second</code> and let \( A&#39; \) and \( B&#39; \) be these matrices without the row or column indexed by <code>firstMarker</code> and <code>secondMarker</code>, respectively. If <code>firstMarker</code> indexes a row vector \( a^{\textsf{T}} \) of \( A \) then <code>secondMarker</code> must index a column vector \( b \) of \( B \). In this case the 2-sum is the matrix </p><p class="formulaDsp">
+\[ C := \begin{pmatrix} A&#39; &amp; \mathbb{O} \\ b a^{\textsf{T}} &amp; B&#39; \end{pmatrix}. \]
 </p>
-<p> Otherwise, <code>firstMarker</code> must index a column vector \( a \) of \( A \) and <code>secondMarker</code> must index a row vector \( b^\intercal \) of \( B \), and the 2-sum is the matrix </p><p class="formulaDsp">
-\[ \begin{pmatrix} A &amp; a b^\intercal \\ \mathbb{O} &amp; B \end{pmatrix}. \]
+<p> Otherwise, <code>firstMarker</code> must index a column vector \( a \) of \( A \) and <code>secondMarker</code> must index a row vector \( b^{\textsf{T}} \) of \( B \), and the 2-sum is the matrix </p><p class="formulaDsp">
+\[ C := \begin{pmatrix} A&#39; &amp; a b^{\textsf{T}} \\ \mathbb{O} &amp; B&#39; \end{pmatrix}. \]
 </p>
-<p> The resulting matrix is created and stored in <code>*presult</code>. </p>
+<p> The resulting matrix \( C \) is created and stored in <code>*presult</code>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
