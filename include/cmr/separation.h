@@ -169,7 +169,26 @@ CMR_ERROR CMRoneSum(
 );
 
 /**
- * \brief Constructs the 2-sum of \p first and \p second matrix via \p firstMarker and \p secondMarker.
+ * \brief Constructs the 2-sum of the two matrices \p first and \p second via \p firstMarker and \p secondMarker.
+ *
+ * Let \f$ A \f$ and \f$ B \f$ denote the matrices given by \p first and \p second.
+ * If \p firstMarker indexes a row vector \f$ a^\intercal \f$ of \f$ A \f$ then \p secondMarker must index a column
+ * vector \f$ b \f$ of \f$ B \f$. Then the 2-sum is the matrix
+ * \f[
+ *   \begin{pmatrix}
+ *     A & \mathbb{O} \\
+ *     b a^\intercal & B
+ *   \end{pmatrix}.
+ * \f]
+ * Otherwise, \p firstMarker must index a column vector \f$ a \f$ of \f$ A \f$ and \p secondMarker must index a row
+ * vector \f$ b^\intercal \f$ of \f$ B \f$, and the 2-sum is the matrix
+ * \f[
+ *   \begin{pmatrix}
+ *     A & a b^\intercal \\
+ *     \mathbb{O} & B
+ *   \end{pmatrix}.
+ * \f]
+ * The resulting matrix is created and stored in \p *presult.
  */
 
 CMR_EXPORT
