@@ -129,7 +129,7 @@ Functions</h2></td></tr>
 <tr class="memdesc:a3f00debfc9da1ea00ab3767d9bd4b8ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs the 1-sum of <code>first</code> and <code>second</code> matrix.  <a href="separation_8h.html#a3f00debfc9da1ea00ab3767d9bd4b8ae">More...</a><br /></td></tr>
 <tr class="separator:a3f00debfc9da1ea00ab3767d9bd4b8ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a843db522eb5bf87eee3aa15e851d9859"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="separation_8h.html#a843db522eb5bf87eee3aa15e851d9859">CMRtwoSum</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *first, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *second, <a class="el" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a> firstMarker, <a class="el" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a> secondMarker, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> **presult)</td></tr>
-<tr class="memdesc:a843db522eb5bf87eee3aa15e851d9859"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs the 2-sum of <code>first</code> and <code>second</code> matrix via <code>firstMarker</code> and <code>secondMarker</code>.  <a href="separation_8h.html#a843db522eb5bf87eee3aa15e851d9859">More...</a><br /></td></tr>
+<tr class="memdesc:a843db522eb5bf87eee3aa15e851d9859"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs the 2-sum of the two matrices <code>first</code> and <code>second</code> via <code>firstMarker</code> and <code>secondMarker</code>.  <a href="separation_8h.html#a843db522eb5bf87eee3aa15e851d9859">More...</a><br /></td></tr>
 <tr class="separator:a843db522eb5bf87eee3aa15e851d9859"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeddda64dd4991ca27585c7c9876840db"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="separation_8h.html#aeddda64dd4991ca27585c7c9876840db">CMRthreeSum</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *first, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *second, <a class="el" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a> firstMarker1, <a class="el" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a> secondMarker1, <a class="el" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a> firstMarker2, <a class="el" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a> secondMarker2, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> **presult)</td></tr>
 <tr class="memdesc:aeddda64dd4991ca27585c7c9876840db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs the 3-sum of <code>first</code> and <code>second</code> matrix via <code>firstMarker1</code>, <code>firstMarker2</code>, <code>secondMarker1</code> and <code>secondMarker2</code>.  <a href="separation_8h.html#aeddda64dd4991ca27585c7c9876840db">More...</a><br /></td></tr>
@@ -723,7 +723,14 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Constructs the 2-sum of <code>first</code> and <code>second</code> matrix via <code>firstMarker</code> and <code>secondMarker</code>. </p>
+<p>Constructs the 2-sum of the two matrices <code>first</code> and <code>second</code> via <code>firstMarker</code> and <code>secondMarker</code>. </p>
+<p>Let \( A \) and \( B \) denote the matrices given by <code>first</code> and <code>second</code>. If <code>firstMarker</code> indexes a row vector \( a^\intercal \) of \( A \) then <code>secondMarker</code> must index a column vector \( b \) of \( B \). Then the 2-sum is the matrix </p><p class="formulaDsp">
+\[ \begin{pmatrix} A &amp; \mathbb{O} \\ b a^\intercal &amp; B \end{pmatrix}. \]
+</p>
+<p> Otherwise, <code>firstMarker</code> must index a column vector \( a \) of \( A \) and <code>secondMarker</code> must index a row vector \( b^\intercal \) of \( B \), and the 2-sum is the matrix </p><p class="formulaDsp">
+\[ \begin{pmatrix} A &amp; a b^\intercal \\ \mathbb{O} &amp; B \end{pmatrix}. \]
+</p>
+<p> The resulting matrix is created and stored in <code>*presult</code>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
