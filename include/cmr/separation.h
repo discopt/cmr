@@ -157,7 +157,17 @@ CMR_ERROR CMRsepaCheckTernary(
 );
 
 /**
- * \brief Constructs the 1-sum of \p first and \p second matrix.
+ * \brief Constructs the 1-sum of the two matrices \p first and \p second.
+ *
+ * Let \f$ A \f$ and \f$ B \f$ denote the matrices given by \p first and \p second.
+ * Their 2-sum is the matrix
+ * \f[
+ *   C := \begin{pmatrix}
+ *     A & \mathbb{O} \\
+ *     \mathbb{O} & B
+ *   \end{pmatrix}.
+ * \f]
+ * The resulting matrix \f$ C \f$ is created and stored in \p *presult.
  */
 
 CMR_EXPORT
