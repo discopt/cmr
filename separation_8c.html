@@ -115,7 +115,7 @@ Functions</h2></td></tr>
 <tr class="memdesc:aeb847af17aa870fb3199baa54383bc6d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks for a given matrix whether the binary k-separation is also a ternary one.  <a href="separation_8c.html#aeb847af17aa870fb3199baa54383bc6d">More...</a><br /></td></tr>
 <tr class="separator:aeb847af17aa870fb3199baa54383bc6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6a613163fc2eeb1f07c2bb33c0b81932"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="separation_8c.html#a6a613163fc2eeb1f07c2bb33c0b81932">CMRoneSum</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *first, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *second, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> **presult)</td></tr>
-<tr class="memdesc:a6a613163fc2eeb1f07c2bb33c0b81932"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs the 1-sum of <code>first</code> and <code>second</code> matrix.  <a href="separation_8c.html#a6a613163fc2eeb1f07c2bb33c0b81932">More...</a><br /></td></tr>
+<tr class="memdesc:a6a613163fc2eeb1f07c2bb33c0b81932"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs the 1-sum of the two matrices <code>first</code> and <code>second</code>.  <a href="separation_8c.html#a6a613163fc2eeb1f07c2bb33c0b81932">More...</a><br /></td></tr>
 <tr class="separator:a6a613163fc2eeb1f07c2bb33c0b81932"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af476c824784383d90c68cf24666144ca"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="separation_8c.html#af476c824784383d90c68cf24666144ca">CMRtwoSum</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *first, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *second, <a class="el" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a> firstMarker, <a class="el" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a> secondMarker, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> **presult)</td></tr>
 <tr class="memdesc:af476c824784383d90c68cf24666144ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs the 2-sum of the two matrices <code>first</code> and <code>second</code> via <code>firstMarker</code> and <code>secondMarker</code>.  <a href="separation_8c.html#af476c824784383d90c68cf24666144ca">More...</a><br /></td></tr>
@@ -247,7 +247,11 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Constructs the 1-sum of <code>first</code> and <code>second</code> matrix. </p>
+<p>Constructs the 1-sum of the two matrices <code>first</code> and <code>second</code>. </p>
+<p>Let \( A \) and \( B \) denote the matrices given by <code>first</code> and <code>second</code>. Their 2-sum is the matrix </p><p class="formulaDsp">
+\[ C := \begin{pmatrix} A &amp; \mathbb{O} \\ \mathbb{O} &amp; B \end{pmatrix}. \]
+</p>
+<p> The resulting matrix \( C \) is created and stored in <code>*presult</code>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
