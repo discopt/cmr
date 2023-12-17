@@ -1997,7 +1997,7 @@ char* CMRdblmatConsistency(CMR_DBLMAT* matrix)
       }
       if (matrix->entryColumns[entry - 1] > matrix->entryColumns[entry])
       {
-        return CMRconsistencyMessage("CMR_DBLMAT contains nonzeros in row %zu in wrong order: entry %zu has column %zu and entry %zu has column %zu.\n",
+        return CMRconsistencyMessage("CMR_DBLMAT contains nonzeros in row %zu in wrong order: entry #%zu has column %zu and entry #%zu has column %zu.\n",
           row, entry - 1, matrix->entryColumns[entry - 1], entry, matrix->entryColumns[entry]);
       }
     }
@@ -2026,7 +2026,7 @@ char* CMRintmatConsistency(CMR_INTMAT* matrix)
     {
       if (matrix->entryValues[entry] == 0)
       {
-        return CMRconsistencyMessage("CMR_INTMAT contains zero entry %zu in row %zu, column %zu.\n",
+        return CMRconsistencyMessage("CMR_INTMAT contains zero entry #%zu in row %zu, column %zu.\n",
           entry, row, matrix->entryColumns[entry]);
       }
     }
@@ -2039,7 +2039,7 @@ char* CMRintmatConsistency(CMR_INTMAT* matrix)
       }
       if (matrix->entryColumns[entry - 1] > matrix->entryColumns[entry])
       {
-        return CMRconsistencyMessage("CMR_INTMAT contains nonzeros in row %zu in wrong order: entry %zu has column %zu and entry %zu has column %zu.\n",
+        return CMRconsistencyMessage("CMR_INTMAT contains nonzeros in row %zu in wrong order: entry #%zu has column %zu and entry #%zu has column %zu.\n",
           row, entry - 1, matrix->entryColumns[entry - 1], entry, matrix->entryColumns[entry]);
       }
     }
@@ -2068,7 +2068,7 @@ char* CMRchrmatConsistency(CMR_CHRMAT* matrix)
     {
       if (matrix->entryValues[entry] == 0)
       {
-        return CMRconsistencyMessage("CMR_CHRMAT contains zero entry %zu in row %zu, column %zu.\n",
+        return CMRconsistencyMessage("CMR_CHRMAT contains zero entry #%zu in row %zu, column %zu.\n",
           entry, row, matrix->entryColumns[entry]);
       }
     }
@@ -2081,7 +2081,7 @@ char* CMRchrmatConsistency(CMR_CHRMAT* matrix)
       }
       if (matrix->entryColumns[entry - 1] > matrix->entryColumns[entry])
       {
-        return CMRconsistencyMessage("CMR_CHRMAT contains nonzeros in row %zu in wrong order: entry %zu has column %zu and entry %zu has column %zu.\n",
+        return CMRconsistencyMessage("CMR_CHRMAT contains nonzeros in row %zu in wrong order: entry #%zu has column %zu and entry #%zu has column %zu.\n",
           row, entry - 1, matrix->entryColumns[entry - 1], entry, matrix->entryColumns[entry]);
       }
     }
