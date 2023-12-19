@@ -1713,7 +1713,7 @@ CMR_ERROR CMRchrmatCreateFromDenseFile(CMR* cmr, const char* fileName, const cha
   }
 
   CMR_ERROR error = CMRchrmatCreateFromDenseStream(cmr, inputFile, presult);
-  if (!error && false) /* TODO: fix reading from file. */
+  if (!error)
   {
     /* Attempt to read another token. */
     char token[16+4];
