@@ -4,6 +4,7 @@ project(CMR
   VERSION 1.3.0
   LANGUAGES C CXX)
 
+set(CMAKE_C_STANDARD 99)
 option(SHARED "Build shared libraries" ON)
 set(BUILD_SHARED_LIBS ${SHARED})
 message(STATUS "Build shared libraries: " ${SHARED})
@@ -296,7 +297,9 @@ target_include_directories(cmr
     ${CMAKE_CURRENT_SOURCE_DIR}/src/cmr/
 )
 
+# CHANGED AS TEST !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 target_compile_features(cmr PRIVATE cxx_auto_type)
+# target_compile_features(cmr PRIVATE c_std_11)
 target_compile_options(cmr PRIVATE $<$<CXX_COMPILER_ID:GNU>:-Wall>)
 
 if(Threads_FOUND)
