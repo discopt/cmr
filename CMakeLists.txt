@@ -298,11 +298,6 @@ target_include_directories(cmr
     ${CMAKE_CURRENT_SOURCE_DIR}/src/cmr/
 )
 
-# CHANGED AS TEST !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-target_compile_features(cmr PRIVATE cxx_auto_type)
-# target_compile_features(cmr PRIVATE c_std_11)
-target_compile_options(cmr PRIVATE $<$<CXX_COMPILER_ID:GNU>:-Wall>)
-
 if(Threads_FOUND)
   target_link_libraries(cmr
     PRIVATE
