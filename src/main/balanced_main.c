@@ -21,7 +21,7 @@ typedef enum
 } Algorithm;
 
 /**
- * \brief Tests matrix from a file for total unimodularity.
+ * \brief Tests matrix from a file for balancedness.
  */
 
 static
@@ -63,7 +63,7 @@ CMR_ERROR testBalanced(
 
   bool isBalanced = false; 
 
-  CMR_CALL( CMRtestBalanced(cmr, matrix, &isBalanced, NULL, 0) ); 
+  CMR_CALL( CMRtestBalanced(cmr, matrix, &isBalanced, NULL, timeLimit) ); 
   
   printf("Matrix %sbalanced.\n", isBalanced ? "IS " : "IS NOT ");
 
