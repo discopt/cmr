@@ -1,4 +1,4 @@
-#define CMR_DEBUG /* Uncomment to debug */
+// #define CMR_DEBUG /* Uncomment to debug */
 
 #include <cmr/balanced.h>
 

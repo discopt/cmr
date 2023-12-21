@@ -9,6 +9,7 @@ endif()
 # Target for the googletest.
 add_executable(cmr_gtest
   common.c
+  test_balanced.cpp
   test_camion.cpp
   test_ctu.cpp
   test_equimodular.cpp
