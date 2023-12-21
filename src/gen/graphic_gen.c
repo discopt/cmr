@@ -92,7 +92,7 @@ CMR_ERROR genMatrixGraphic(
 
     size_t* columnNonzeros = NULL;
     CMR_CALL( CMRallocBlockArray(cmr, &columnNonzeros, numNodes - 1) );
-    for (int e = 0; e < numEdges; ++e)
+    for (int e = 0; e < (int)numEdges; ++e)
     {
       size_t numColumNonzeros = 0;
       int first = (int)(rand() * 1.0 * numNodes / RAND_MAX);
