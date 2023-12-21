@@ -1941,7 +1941,7 @@ CMR_ERROR CMRtestTernarySeriesParallel(CMR* cmr, CMR_CHRMAT* matrix, bool* pisSe
     &localNumReductions, preducedSubmatrix, pviolatorSubmatrix, NULL, stats, timeLimit) );
 
   if (pisSeriesParallel)
-    *pisSeriesParallel = (*pnumReductions == matrix->numRows + matrix->numColumns);
+    *pisSeriesParallel = (localNumReductions == matrix->numRows + matrix->numColumns);
   if (reductions)
     *pnumReductions = localNumReductions;
   else

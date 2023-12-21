@@ -13,13 +13,6 @@ typedef enum
   FILEFORMAT_MATRIX_SPARSE = 2,   /**< Sparse matrix format. */
 } FileFormat;
 
-typedef enum
-{
-  ALGORITHM_DEFAULT = 0,          /**< Default algorithm. */
-  ALGORITHM_ENUMERATE = 1,        /**< Enumeration algorithm. */
-  ALGORITHM_GRAPH = 2,            /**< Graph-based algorithm. */
-} Algorithm;
-
 /**
  * \brief Tests matrix from a file for balancedness.
  */
@@ -30,7 +23,8 @@ CMR_ERROR testBalanced(
   FileFormat inputFormat,               /**< Format of the input matrix. */
   const char* outputSubmatrixFileName,  /**< File name of output file for non-balanced submatrix. */
   bool printStats,                      /**< Whether to print statistics to stderr. */
-  Algorithm algorithm,                  /**< Algorithm to use. */
+  CMR_BALANCED_ALGORITHM algorithm,     /**< Algorithm to use. */
+  bool seriesParallel,                  /**< Whether to carry out series-parallel reductions. */
   double timeLimit                      /**< Time limit to impose. */
 )
 {
@@ -61,10 +55,30 @@ CMR_ERROR testBalanced(
 
   /* Actual test. */
 
-  bool isBalanced = false; 
-  CMR_CALL( CMRtestBalanced(cmr, matrix, &isBalanced, NULL, timeLimit) ); 
+  bool isBalanced = false;
+  CMR_SUBMAT* submatrix = NULL;
+  CMR_BALANCED_PARAMS params;
+  CMR_CALL( CMRbalancedParamsInit(&params) );
+  params.algorithm = algorithm;
+  params.seriesParallel = seriesParallel;
+  CMR_BALANCED_STATS stats;
+  CMR_CALL( CMRbalancedStatsInit(&stats));
+
+  CMR_CALL( CMRbalancedTest(cmr, matrix, &isBalanced, &submatrix, &params, &stats, timeLimit) );
   
   printf("Matrix %sbalanced.\n", isBalanced ? "IS " : "IS NOT ");
+
+  if (printStats)
+    CMR_CALL( CMRbalancedStatsPrint(stderr, &stats, NULL) );
+
+  if (submatrix && outputSubmatrixFileName)
+  {
+    bool outputSubmatrixToFile = strcmp(outputSubmatrixFileName, "-");
+    fprintf(stderr, "Writing minimal non-balanced submatrix to %s%s%s.\n", outputSubmatrixToFile ? "file <" : "",
+      outputSubmatrixToFile ? outputSubmatrixFileName : "stdout", outputSubmatrixToFile ? ">" : "");
+
+    CMR_CALL( CMRsubmatWriteToFile(cmr, submatrix, matrix->numRows, matrix->numColumns, outputSubmatrixFileName) );
+  }
 
   /* Cleanup. */
 
@@ -90,8 +104,9 @@ int printUsage(const char* program)
   fputs("  -N NON-SUB Write a minimal non-balanced submatrix to file NON-SUB; default: skip computation.\n", stderr);
   fputs("  -s         Print statistics about the computation to stderr.\n\n", stderr);
   fputs("Advanced options:\n", stderr);
-  fputs("  --time-limit LIMIT Allow at most LIMIT seconds for the computation.\n", stderr);
-  fputs("  --algorithm ALGO   Algorithm to use, among `enumerate` and `graph`; default: choose best.\n\n", stderr);
+  fputs("  --time-limit LIMIT   Allow at most LIMIT seconds for the computation.\n", stderr);
+  fputs("  --algorithm ALGO     Algorithm to use, among `submatrix` and `graph`; default: choose best.\n", stderr);
+  fputs("  --no-series-parallel Do not try series-parallel operations for preprocessing.\n\n", stderr);
   fputs("If IN-MAT is `-' then the matrix is read from stdin.\n", stderr);
   fputs("If NON-SUB is `-' then the submatrix is written to stdout.\n", stderr);
 
@@ -104,8 +119,9 @@ int main(int argc, char** argv)
   FileFormat inputFormat = FILEFORMAT_MATRIX_DENSE;
   char* outputSubmatrix = NULL;
   bool printStats = false;
-  Algorithm algorithm = ALGORITHM_DEFAULT;
+  CMR_BALANCED_ALGORITHM algorithm = CMR_BALANCED_ALGORITHM_AUTO;
   double timeLimit = DBL_MAX;
+  bool seriesParallel = true;
   for (int a = 1; a < argc; ++a)
   {
     if (!strcmp(argv[a], "-h"))
@@ -130,12 +146,14 @@ int main(int argc, char** argv)
       outputSubmatrix = argv[++a];
     else if (!strcmp(argv[a], "-s"))
       printStats = true;
+    else if (!strcmp(argv[a], "--no-series-parallel"))
+      seriesParallel = false;
     else if (!strcmp(argv[a], "--algorithm") && a+1 < argc)
     {
-      if (!strcmp(argv[a+1], "enumerate"))
-        algorithm = ALGORITHM_ENUMERATE;
+      if (!strcmp(argv[a+1], "submatrix"))
+        algorithm = CMR_BALANCED_ALGORITHM_SUBMATRIX;
       else if (!strcmp(argv[a+1], "graph"))
-        algorithm = ALGORITHM_GRAPH;
+        algorithm = CMR_BALANCED_ALGORITHM_GRAPH;
       else
       {
         fprintf(stderr, "Error: Invalid algorithm <%s> specified.\n\n", argv[a+1]);
@@ -168,7 +186,8 @@ int main(int argc, char** argv)
   }
 
   CMR_ERROR error;
-  error = testBalanced(inputMatrixFileName, inputFormat, outputSubmatrix, printStats, algorithm, timeLimit);
+  error = testBalanced(inputMatrixFileName, inputFormat, outputSubmatrix, printStats, algorithm, seriesParallel,
+    timeLimit);
 
   switch (error)
   {
