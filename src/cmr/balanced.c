@@ -291,6 +291,8 @@ CMR_ERROR balancedTestEnumerate(
   assert(pisBalanced);
   assert(timeLimit > 0);
 
+  CMRassertStackConsistency(cmr);
+
   CMR_ERROR error = CMR_OKAY;
 
   /* Transpose if more rows than columns. */
@@ -330,7 +332,7 @@ CMR_ERROR balancedTestEnumerate(
   enumeration.sumEntries = 0;
 
   CMR_CALL( CMRallocStackArray(cmr, &enumeration.subsetRows, matrix->numRows) );
-  CMR_CALL( CMRallocStackArray(cmr, &enumeration.usableColumns, matrix->numRows) );
+  CMR_CALL( CMRallocStackArray(cmr, &enumeration.usableColumns, matrix->numColumns) );
   CMR_CALL( CMRallocStackArray(cmr, &enumeration.subsetUsable, matrix->numColumns) );
   CMR_CALL( CMRallocStackArray(cmr, &enumeration.rowsNumNonzeros, matrix->numRows) );
   CMR_CALL( CMRallocStackArray(cmr, &enumeration.columnsNumNonzeros, matrix->numColumns) );
@@ -341,19 +343,27 @@ CMR_ERROR balancedTestEnumerate(
 
   CMRdbgMsg(6, "Starting enumeration algorithm with a time limit of %g.\n", timeLimit);
 
+  CMRassertStackConsistency(cmr);
+
   for (enumeration.cardinality = 2; enumeration.cardinality <= matrix->numRows; enumeration.cardinality++)
   {
+    CMRassertStackConsistency(cmr);
     CMRdbgMsg(8, "Considering submatrices of size %zux%zu.\n", enumeration.cardinality, enumeration.cardinality);
+    CMRassertStackConsistency(cmr);
     CMR_CALL( balancedTestEnumerateRows(&enumeration, 0) );
     if (!*pisBalanced || enumeration.timeLimit <= 0)
       break;
   }
+
+  CMRassertStackConsistency(cmr);
 
   CMR_CALL( CMRfreeStackArray(cmr, &enumeration.columnsNumNonzeros) );
   CMR_CALL( CMRfreeStackArray(cmr, &enumeration.rowsNumNonzeros) );
   CMR_CALL( CMRfreeStackArray(cmr, &enumeration.subsetUsable) );
   CMR_CALL( CMRfreeStackArray(cmr, &enumeration.usableColumns) );
   CMR_CALL( CMRfreeStackArray(cmr, &enumeration.subsetRows) );
+
+  CMRassertStackConsistency(cmr);
 
   if (enumeration.timeLimit <= 0)
     return CMR_ERROR_TIMEOUT;
