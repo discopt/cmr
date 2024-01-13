@@ -17,7 +17,7 @@ CMR_ERROR CMRstatsComplementTotalUnimodularityInit(CMR_CTU_STATISTICS* stats)
 
   stats->totalCount = 0;
   stats->totalTime = 0.0;
-  CMR_CALL( CMRstatsTotalUnimodularityInit(&stats->tu) );
+  CMR_CALL( CMRtuStatsInit(&stats->tu) );
 
   return CMR_OKAY;
 }
@@ -35,7 +35,7 @@ CMR_ERROR CMRstatsComplementTotalUnimodularityPrint(FILE* stream, CMR_CTU_STATIS
 
   char subPrefix[256];
   snprintf(subPrefix, 256, "%stu ", prefix);
-  CMR_CALL( CMRstatsTotalUnimodularityPrint(stream, &stats->tu, subPrefix) );
+  CMR_CALL( CMRtuStatsPrint(stream, &stats->tu, subPrefix) );
 
   fprintf(stream, "%stotal: %ld in %f seconds\n", prefix, (unsigned long) stats->totalCount,
     stats->totalTime);
@@ -258,7 +258,7 @@ CMR_ERROR CMRtestComplementTotalUnimodularity(CMR* cmr, CMR_CHRMAT* matrix, bool
       }
 
       bool isTU = false;
-      CMR_CALL( CMRtestTotalUnimodularity(cmr, complementedMatrix, &isTU, NULL, NULL, NULL,
+      CMR_CALL( CMRtuTest(cmr, complementedMatrix, &isTU, NULL, NULL, NULL,
         stats ? &stats->tu : NULL, remainingTime) );
       if (!isTU)
       {

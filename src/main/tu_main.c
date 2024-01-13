@@ -59,30 +59,26 @@ CMR_ERROR testTotalUnimodularity(
   /* Actual test. */
 
   bool isTU;
-  CMR_DEC* decomposition = NULL;
+  CMR_MATROID_DEC* decomposition = NULL;
   CMR_SUBMAT* submatrix = NULL;
-  CMR_TU_PARAMETERS params;
-  CMR_CALL( CMRparamsTotalUnimodularityInit(&params) );
+  CMR_TU_PARAMS params;
+  CMR_CALL( CMRtuParamsInit(&params) );
   params.algorithm = algorithm;
   params.regular.completeTree = outputTreeFileName;
   params.regular.matrices = outputTreeFileName ? CMR_DEC_CONSTRUCT_ALL : CMR_DEC_CONSTRUCT_NONE;
   params.regular.directGraphicness = directGraphicness;
   params.regular.seriesParallel = seriesParallel;
-  CMR_TU_STATISTICS stats;
-  CMR_CALL( CMRstatsTotalUnimodularityInit(&stats));
-  CMR_CALL( CMRtestTotalUnimodularity(cmr, matrix, &isTU, outputTreeFileName ? &decomposition : NULL,
+  CMR_TU_STATS stats;
+  CMR_CALL( CMRtuStatsInit(&stats));
+  CMR_CALL( CMRtuTest(cmr, matrix, &isTU, outputTreeFileName ? &decomposition : NULL,
     outputSubmatrixFileName ? &submatrix : NULL, &params, &stats, timeLimit) );
 
   printf("Matrix %stotally unimodular.\n", isTU ? "IS " : "IS NOT ");
   if (printStats)
-    CMR_CALL( CMRstatsTotalUnimodularityPrint(stderr, &stats, NULL) );
+    CMR_CALL( CMRtuStatsPrint(stderr, &stats, NULL) );
 
   if (decomposition)
-  {
-    // TODO: Write decomposition.
-    assert(!"NOT IMPLEMENTED");
-    exit(EXIT_FAILURE);
-  }
+    CMR_CALL( CMRmatroiddecPrint(cmr, decomposition, stderr, 0, true, true, true) );
 
   if (submatrix && outputSubmatrixFileName)
   {
@@ -103,7 +99,7 @@ CMR_ERROR testTotalUnimodularity(
 
   /* Cleanup. */
 
-  CMR_CALL( CMRdecFree(cmr, &decomposition) );
+  CMR_CALL( CMRmatroiddecFree(cmr, &decomposition) );
   CMR_CALL( CMRsubmatFree(cmr, &submatrix) );
   CMR_CALL( CMRchrmatFree(cmr, &matrix) );
   CMR_CALL( CMRfreeEnvironment(&cmr) );
