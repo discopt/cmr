@@ -5,36 +5,36 @@
 #include "matrix_internal.h"
 #include "one_sum.h"
 #include "camion_internal.h"
-#include "regular_internal.h"
+#include "regularity_internal.h"
 #include "hereditary_property.h"
 
 #include <stdlib.h>
 #include <assert.h>
 #include <time.h>
 
-CMR_ERROR CMRparamsTotalUnimodularityInit(CMR_TU_PARAMETERS* params)
+CMR_ERROR CMRtuParamsInit(CMR_TU_PARAMS* params)
 {
   assert(params);
 
   params->algorithm = CMR_TU_ALGORITHM_DECOMPOSITION;
-  CMR_CALL( CMRparamsRegularInit(&params->regular) );
+  CMR_CALL( CMRregularParamsInit(&params->regular) );
 
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRstatsTotalUnimodularityInit(CMR_TU_STATISTICS* stats)
+CMR_ERROR CMRtuStatsInit(CMR_TU_STATS* stats)
 {
   assert(stats);
 
   stats->totalCount = 0;
   stats->totalTime = 0.0;
   CMR_CALL( CMRstatsCamionInit(&stats->camion) );
-  CMR_CALL( CMRstatsRegularInit(&stats->regular) );
+  CMR_CALL( CMRregularStatsInit(&stats->regular) );
 
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRstatsTotalUnimodularityPrint(FILE* stream, CMR_TU_STATISTICS* stats, const char* prefix)
+CMR_ERROR CMRtuStatsPrint(FILE* stream, CMR_TU_STATS* stats, const char* prefix)
 {
   assert(stream);
   assert(stats);
@@ -49,7 +49,7 @@ CMR_ERROR CMRstatsTotalUnimodularityPrint(FILE* stream, CMR_TU_STATISTICS* stats
   snprintf(subPrefix, 256, "%scamion ", prefix);
   CMR_CALL( CMRstatsCamionPrint(stream, &stats->camion, subPrefix) );
   snprintf(subPrefix, 256, "%sregularity ", prefix);
-  CMR_CALL( CMRstatsRegularPrint(stream, &stats->regular, subPrefix) );
+  CMR_CALL( CMRregularStatsPrint(stream, &stats->regular, subPrefix) );
 
   fprintf(stream, "%stotal: %lu in %f seconds\n", prefix, (unsigned long) stats->totalCount, stats->totalTime);
 
@@ -73,7 +73,7 @@ CMR_ERROR tuTest(
 
   CMR_UNUSED(psubmatrix); /* TODO: Make use of submatrices. */
 
-  CMR_TU_STATISTICS* stats = (CMR_TU_STATISTICS*) data;
+  CMR_TU_STATS* stats = (CMR_TU_STATS*) data;
 
 #if defined(CMR_DEBUG)
   CMRdbgMsg(0, "tuTest called for a %dx%d matrix\n", matrix->numRows, matrix->numColumns);
@@ -88,10 +88,10 @@ CMR_ERROR tuTest(
 
   if (*pisTotallyUnimodular)
   {
-    CMR_REGULAR_PARAMETERS params;
-    CMR_CALL( CMRparamsRegularInit(&params) );
+    CMR_REGULAR_PARAMS params;
+    CMR_CALL( CMRregularParamsInit(&params) );
     double remainingTime = timeLimit - ((clock() - time) * 1.0 / CLOCKS_PER_SEC);
-    CMR_CALL( CMRtestRegular(cmr, matrix, false, pisTotallyUnimodular, NULL, NULL, &params,
+    CMR_CALL( CMRregularityTest(cmr, matrix, false, pisTotallyUnimodular, NULL, NULL, &params,
       stats ? &stats->regular : NULL, remainingTime) );
   }
 
@@ -257,45 +257,45 @@ CMR_ERROR testPartition(
   return error;
 }
 
-CMR_ERROR CMRtestTotalUnimodularity(CMR* cmr, CMR_CHRMAT* matrix, bool* pisTotallyUnimodular, CMR_DEC** pdec,
-  CMR_SUBMAT** psubmatrix, CMR_TU_PARAMETERS* params, CMR_TU_STATISTICS* stats, double timeLimit)
+CMR_ERROR CMRtuTest(CMR* cmr, CMR_CHRMAT* matrix, bool* pisTotallyUnimodular, CMR_MATROID_DEC** pdec,
+  CMR_SUBMAT** psubmatrix, CMR_TU_PARAMS* params, CMR_TU_STATS* stats, double timeLimit)
 {
   assert(cmr);
   assert(matrix);
   CMRconsistencyAssert( CMRchrmatConsistency(matrix) );
 
-  CMR_TU_PARAMETERS defaultParams;
+  CMR_TU_PARAMS defaultParams;
   if (!params)
   {
-    CMR_CALL( CMRparamsTotalUnimodularityInit(&defaultParams) );
+    CMR_CALL( CMRtuParamsInit(&defaultParams) );
     params = &defaultParams;
   }
 
   clock_t totalClock = clock();
+
   if (!CMRchrmatIsTernary(cmr, matrix, psubmatrix))
     return CMR_OKAY;
-
-  CMR_CALL( CMRtestCamionSigned(cmr, matrix, pisTotallyUnimodular, psubmatrix, stats ? &stats->camion : NULL,
-    timeLimit) );
-
-  if (!*pisTotallyUnimodular)
-  {
-    if (stats)
-    {
-      stats->totalCount++;
-      stats->totalTime += (clock() - totalClock) * 1.0 / CLOCKS_PER_SEC;
-    }
-    return CMR_OKAY;
-  }
-
 
   double remainingTime = timeLimit - ((clock() - totalClock) * 1.0 / CLOCKS_PER_SEC);
 
   if (params->algorithm == CMR_TU_ALGORITHM_DECOMPOSITION)
   {
+    CMR_CALL( CMRtestCamionSigned(cmr, matrix, pisTotallyUnimodular, psubmatrix, stats ? &stats->camion : NULL,
+      remainingTime) );
 
-    // TODO: run regularity check with ternary = true.
-    CMR_CALL( CMRtestRegular(cmr, matrix, false, pisTotallyUnimodular, pdec, NULL, &params->regular,
+    if (!*pisTotallyUnimodular)
+    {
+      if (stats)
+      {
+        stats->totalCount++;
+        stats->totalTime += (clock() - totalClock) * 1.0 / CLOCKS_PER_SEC;
+      }
+      return CMR_OKAY;
+    }
+
+    double remainingTime = timeLimit - ((clock() - totalClock) * 1.0 / CLOCKS_PER_SEC);
+
+    CMR_CALL( CMRregularityTest(cmr, matrix, true, pisTotallyUnimodular, pdec, NULL, &params->regular,
       stats ? &stats->regular : NULL, remainingTime) );
 
     if (!*pisTotallyUnimodular && psubmatrix)

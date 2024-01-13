@@ -19,7 +19,7 @@ extern "C" {
 
 typedef struct
 {
-  CMR_TU_PARAMETERS tu; /**< \brief Parameters for TU test. */
+  CMR_TU_PARAMS tu; /**< \brief Parameters for TU test. */
 } CMR_EQUIMODULAR_PARAMETERS;
 
 /**
@@ -39,10 +39,10 @@ CMR_ERROR CMRparamsEquimodularityInit(
 
 typedef struct
 {
-  uint32_t totalCount;      /**< Total number of invocations. */
-  double totalTime;       /**< Total time of all invocations. */
-  double linalgTime;      /**< Time spent on linear algebra. */
-  CMR_TU_STATISTICS tu;   /**< Camion signing. */
+  uint32_t totalCount;  /**< Total number of invocations. */
+  double totalTime;     /**< Total time of all invocations. */
+  double linalgTime;    /**< Time spent on linear algebra. */
+  CMR_TU_STATS tu;      /**< Total unimodularity test. */
 } CMR_EQUIMODULAR_STATISTICS;
 
 /**

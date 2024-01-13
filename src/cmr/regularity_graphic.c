@@ -1,6 +1,6 @@
-// #define CMR_DEBUG /* Uncomment to debug this file. */
+#define CMR_DEBUG /* Uncomment to debug this file. */
 
-#include "regular_internal.h"
+#include "regularity_internal.h"
 
 #include <cmr/graphic.h>
 #include <cmr/network.h>
@@ -1239,7 +1239,7 @@ CMR_ERROR createWheel(
 
 CMR_ERROR CMRregularSequenceGraphic(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT* transpose, size_t lengthSequence,
   size_t* sequenceNumRows, size_t* sequenceNumColumns, size_t* plastGraphicMinor, CMR_GRAPH** pgraph,
-  CMR_ELEMENT** pedgeElements, CMR_REGULAR_STATISTICS* stats, double timeLimit)
+  CMR_ELEMENT** pedgeElements, CMR_REGULAR_STATS* stats, double timeLimit)
 {
   assert(cmr);
   assert(matrix);
@@ -1416,47 +1416,114 @@ CMR_ERROR CMRregularSequenceGraphic(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT* tr
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRregularTestGraphic(CMR* cmr, CMR_CHRMAT** pmatrix, CMR_CHRMAT** ptranspose, bool ternary, bool* pisGraphic,
-  CMR_GRAPH** pgraph, CMR_GRAPH_EDGE** pforest, CMR_GRAPH_EDGE** pcoforest, bool** parcsReversed,
-  CMR_SUBMAT** psubmatrix, CMR_REGULAR_STATISTICS* stats, double timeLimit)
+CMR_ERROR CMRregularityTestGraphicness(CMR* cmr, DecompositionTask* task, DecompositionTask** punprocessed)
 {
-  CMR_UNUSED(psubmatrix); /* TODO: Implement search for violator submatrix containing forbidden minor. */
-
   assert(cmr);
-  assert(pmatrix);
-  assert(ptranspose);
-  assert(pisGraphic);
-  assert(!psubmatrix || !*psubmatrix);
+  assert(task);
+  assert(punprocessed);
 
-  CMR_CHRMAT* matrix = *pmatrix;
-  CMR_CHRMAT* transpose = *ptranspose;
+  CMR_MATROID_DEC* dec = task->dec;
+  assert(dec);
 
-  if (!matrix)
+#if defined(CMR_DEBUG)
+  CMRdbgMsg(2, "Testing for %s.\n", dec->isTernary ? "being network" : "graphicness");
+  CMR_CALL( CMRchrmatPrintDense(cmr, dec->matrix, stdout, '0', true) );
+#endif /* CMR_DEBUG */
+
+  if (!dec->transpose)
   {
-    assert(transpose);
-    CMR_CALL( CMRchrmatTranspose(cmr, transpose, pmatrix) );
-    matrix = *pmatrix;
+    assert(dec->matrix);
+    CMR_CALL( CMRchrmatTranspose(cmr, dec->matrix, &dec->transpose) );
   }
 
-  if (!transpose)
+  double remainingTime = task->timeLimit - (clock() - task->startClock) * 1.0 / CLOCKS_PER_SEC;
+  bool isGraphic;
+  if (dec->isTernary)
   {
-    assert(matrix);
-    CMR_CALL( CMRchrmatTranspose(cmr, matrix, ptranspose) );
-    transpose = *ptranspose;
-  }
-
-  // TODO: So far, we do not pass psubmatrix because we cannot use the information as we do not detect
-  // whether we encountered F_7 or F_7* or K_3,3* or K_5*!
-
-  if (ternary)
-  {
-    CMR_CALL( CMRtestConetworkMatrix(cmr, transpose, pisGraphic, pgraph, pforest, pcoforest, parcsReversed,
-      NULL, stats ? &stats->network : NULL, timeLimit) );
+    CMR_CALL( CMRtestConetworkMatrix(cmr, dec->transpose, &isGraphic, &dec->graph, &dec->graphForest,
+      &dec->graphCoforest, &dec->graphArcsReversed, NULL, task->stats ? &task->stats->network : NULL, remainingTime) );
   }
   else
   {
-    CMR_CALL( CMRtestCographicMatrix(cmr, transpose, pisGraphic, pgraph, pforest, pcoforest, NULL,
-      stats ? &stats->graphic : NULL, timeLimit) );
+    CMR_CALL( CMRtestCographicMatrix(cmr, dec->transpose, &isGraphic, &dec->graph, &dec->graphForest,
+      &dec->graphCoforest, NULL, task->stats ? &task->stats->graphic : NULL, remainingTime) );
+  }
+
+  CMRdbgMsg(2, "-> %s%s\n", isGraphic ? "" : "NOT ", dec->isTernary ? "network" : "graphic");
+
+  dec->graphicness = isGraphic ? 1 : -1;
+  if (isGraphic)
+    dec->type = (dec->type == CMR_MATROID_DEC_TYPE_COGRAPH) ? CMR_MATROID_DEC_TYPE_PLANAR : CMR_MATROID_DEC_TYPE_GRAPH;
+
+  if ((isGraphic && (!task->params->planarityCheck || dec->cographicness)) || dec->cographicness > 0)
+  {
+    CMRdbgMsg(2, "Marking task as complete.\n");
+
+    /* Task is done. */
+    CMR_CALL( CMRregularityTaskFree(cmr, &task) );
+  }
+  else
+  {
+    /* Re-insert task. */
+    task->next = *punprocessed;
+    *punprocessed = task;
+  }
+
+  return CMR_OKAY;
+}
+
+CMR_ERROR CMRregularityTestCographicness(CMR* cmr, DecompositionTask* task, DecompositionTask** punprocessed)
+{
+  assert(cmr);
+  assert(task);
+  assert(punprocessed);
+
+  CMR_MATROID_DEC* dec = task->dec;
+  assert(dec);
+
+#if defined(CMR_DEBUG)
+  CMRdbgMsg(2, "Testing for %s.\n", dec->isTernary ? "being conetwork" : "cographicness");
+  CMR_CALL( CMRchrmatPrintDense(cmr, dec->matrix, stdout, '0', true) );
+#endif /* CMR_DEBUG */
+
+  if (!dec->matrix)
+  {
+    assert(dec->transpose);
+    CMR_CALL( CMRchrmatTranspose(cmr, dec->transpose, &dec->matrix) );
+  }
+
+  double remainingTime = task->timeLimit - (clock() - task->startClock) * 1.0 / CLOCKS_PER_SEC;
+  bool isCographic;
+  if (dec->isTernary)
+  {
+    CMR_CALL( CMRtestConetworkMatrix(cmr, dec->matrix, &isCographic, &dec->cograph, &dec->cographForest,
+      &dec->cographCoforest, &dec->cographArcsReversed, NULL, task->stats ? &task->stats->network : NULL,
+      remainingTime) );
+  }
+  else
+  {
+    CMR_CALL( CMRtestCographicMatrix(cmr, dec->matrix, &isCographic, &dec->cograph, &dec->cographForest,
+      &dec->cographCoforest, NULL, task->stats ? &task->stats->graphic : NULL, remainingTime) );
+  }
+
+  CMRdbgMsg(2, "-> %s%s\n", isCographic ? "" : "NOT ", dec->isTernary ? "conetwork" : "cographic");
+
+  dec->cographicness = isCographic ? 1 : -1;
+  if (isCographic)
+    dec->type = (dec->type == CMR_MATROID_DEC_TYPE_GRAPH) ? CMR_MATROID_DEC_TYPE_PLANAR : CMR_MATROID_DEC_TYPE_COGRAPH;
+
+  if ((isCographic && (!task->params->planarityCheck || dec->graphicness)) || dec->graphicness > 0)
+  {
+    CMRdbgMsg(2, "Marking task as complete.\n");
+
+    /* Task is done. */
+    CMR_CALL( CMRregularityTaskFree(cmr, &task) );
+  }
+  else
+  {
+    /* Re-insert task. */
+    task->next = *punprocessed;
+    *punprocessed = task;
   }
 
   return CMR_OKAY;

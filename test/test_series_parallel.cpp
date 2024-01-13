@@ -311,31 +311,25 @@ TEST(SeriesParallel, BinarySeparationFirstSearch)
   CMR_SUBMAT* wheelSubmatrix = NULL;
   CMR_SEPA* sepa = NULL;
 
-  ASSERT_CMR_CALL( CMRdecomposeBinarySeriesParallel(cmr, matrix, NULL, reductions, SIZE_MAX, &numReductions, NULL,
-    &wheelSubmatrix, &sepa, NULL, DBL_MAX) );
+
+  CMR_SUBMAT* reducedSubmatrix = NULL;
+  CMR_CHRMAT* reducedMatrix = NULL;
+
+  ASSERT_CMR_CALL( CMRdecomposeBinarySeriesParallel(cmr, matrix, NULL, reductions, SIZE_MAX, &numReductions,
+    &reducedSubmatrix, &wheelSubmatrix, &sepa, NULL, DBL_MAX) );
   ASSERT_EQ( numReductions, 8UL );
-  
-  ASSERT_EQ( sepa->numRows[0], 3UL );
-  ASSERT_EQ( sepa->rows[0][0], 0UL );
-  ASSERT_EQ( sepa->rows[0][1], 1UL );
-  ASSERT_EQ( sepa->rows[0][2], 2UL );
-  
-  ASSERT_EQ( sepa->numColumns[0], 3UL );
-  ASSERT_EQ( sepa->columns[0][0], 1UL );
-  ASSERT_EQ( sepa->columns[0][1], 2UL );
-  ASSERT_EQ( sepa->columns[0][2], 3UL );
 
-  ASSERT_EQ( sepa->numRows[1], 4UL );
-  ASSERT_EQ( sepa->rows[1][0], 3UL );
-  ASSERT_EQ( sepa->rows[1][1], 4UL );
-  ASSERT_EQ( sepa->rows[1][2], 5UL );
-  ASSERT_EQ( sepa->rows[1][3], 6UL );
 
-  ASSERT_EQ( sepa->numColumns[1], 4UL );
-  ASSERT_EQ( sepa->columns[1][0], 0UL );
-  ASSERT_EQ( sepa->columns[1][1], 4UL );
-  ASSERT_EQ( sepa->columns[1][2], 5UL );
-  ASSERT_EQ( sepa->columns[1][3], 6UL );
+  ASSERT_CMR_CALL( CMRchrmatZoomSubmat(cmr, matrix, reducedSubmatrix, &reducedMatrix) );
+
+  CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
+
+  CMRchrmatPrintDense(cmr, reducedMatrix, stdout, '0', true);
+
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &reducedMatrix) );
+  ASSERT_CMR_CALL( CMRsubmatFree(cmr, &reducedSubmatrix) );
+
+  // TODO: CHECK flags.
 
   ASSERT_CMR_CALL( CMRsepaFree(cmr, &sepa) );
   ASSERT_CMR_CALL( CMRsubmatFree(cmr, &wheelSubmatrix) );
@@ -381,45 +375,8 @@ TEST(SeriesParallel, BinarySeparationSecondSearch)
     &wheelSubmatrix, &sepa, NULL, DBL_MAX) );
   ASSERT_EQ( numReductions, 8UL );
 
-  ASSERT_EQ( sepa->numRows[0], 9UL );
-  ASSERT_EQ( sepa->rows[0][0], 0UL );
-  ASSERT_EQ( sepa->rows[0][1], 1UL );
-  ASSERT_EQ( sepa->rows[0][2], 2UL );
-  ASSERT_EQ( sepa->rows[0][3], 3UL );
-  ASSERT_EQ( sepa->rows[0][4], 4UL );
-  ASSERT_EQ( sepa->rows[0][5], 5UL );
-  ASSERT_EQ( sepa->rows[0][6], 6UL );
-  ASSERT_EQ( sepa->rows[0][7], 7UL );
-  ASSERT_EQ( sepa->rows[0][8], 8UL );
+  // TODO: CHECK flags.
 
-  ASSERT_EQ( sepa->numColumns[0], 8UL );
-  ASSERT_EQ( sepa->columns[0][0], 8UL );
-  ASSERT_EQ( sepa->columns[0][1], 9UL );
-  ASSERT_EQ( sepa->columns[0][2], 10UL );
-  ASSERT_EQ( sepa->columns[0][3], 11UL );
-  ASSERT_EQ( sepa->columns[0][4], 12UL );
-  ASSERT_EQ( sepa->columns[0][5], 13UL );
-  ASSERT_EQ( sepa->columns[0][6], 14UL );
-  ASSERT_EQ( sepa->columns[0][7], 15UL );
-
-  ASSERT_EQ( sepa->numRows[1], 7UL );
-  ASSERT_EQ( sepa->rows[1][0], 9UL );
-  ASSERT_EQ( sepa->rows[1][1], 10UL );
-  ASSERT_EQ( sepa->rows[1][2], 11UL );
-  ASSERT_EQ( sepa->rows[1][3], 12UL );
-  ASSERT_EQ( sepa->rows[1][4], 13UL );
-  ASSERT_EQ( sepa->rows[1][5], 14UL );
-  ASSERT_EQ( sepa->rows[1][6], 15UL );
-
-  ASSERT_EQ( sepa->numColumns[1], 8UL );
-  ASSERT_EQ( sepa->columns[1][0], 0UL );
-  ASSERT_EQ( sepa->columns[1][1], 1UL );
-  ASSERT_EQ( sepa->columns[1][2], 2UL );
-  ASSERT_EQ( sepa->columns[1][3], 3UL );
-  ASSERT_EQ( sepa->columns[1][4], 4UL );
-  ASSERT_EQ( sepa->columns[1][5], 5UL );
-  ASSERT_EQ( sepa->columns[1][6], 6UL );
-  ASSERT_EQ( sepa->columns[1][7], 7UL );
 
   ASSERT_CMR_CALL( CMRsepaFree(cmr, &sepa) );
   ASSERT_CMR_CALL( CMRsubmatFree(cmr, &wheelSubmatrix) );
@@ -643,45 +600,7 @@ TEST(SeriesParallel, TernarySeparation)
 
   ASSERT_FALSE( violatorSubmatrix );
 
-  ASSERT_EQ( sepa->numRows[0], 9UL );
-  ASSERT_EQ( sepa->rows[0][0], 0UL );
-  ASSERT_EQ( sepa->rows[0][1], 1UL );
-  ASSERT_EQ( sepa->rows[0][2], 2UL );
-  ASSERT_EQ( sepa->rows[0][3], 3UL );
-  ASSERT_EQ( sepa->rows[0][4], 4UL );
-  ASSERT_EQ( sepa->rows[0][5], 5UL );
-  ASSERT_EQ( sepa->rows[0][6], 6UL );
-  ASSERT_EQ( sepa->rows[0][7], 7UL );
-  ASSERT_EQ( sepa->rows[0][8], 8UL );
-
-  ASSERT_EQ( sepa->numColumns[0], 8UL );
-  ASSERT_EQ( sepa->columns[0][0], 8UL );
-  ASSERT_EQ( sepa->columns[0][1], 9UL );
-  ASSERT_EQ( sepa->columns[0][2], 10UL );
-  ASSERT_EQ( sepa->columns[0][3], 11UL );
-  ASSERT_EQ( sepa->columns[0][4], 12UL );
-  ASSERT_EQ( sepa->columns[0][5], 13UL );
-  ASSERT_EQ( sepa->columns[0][6], 14UL );
-  ASSERT_EQ( sepa->columns[0][7], 15UL );
-
-  ASSERT_EQ( sepa->numRows[1], 7UL );
-  ASSERT_EQ( sepa->rows[1][0], 9UL );
-  ASSERT_EQ( sepa->rows[1][1], 10UL );
-  ASSERT_EQ( sepa->rows[1][2], 11UL );
-  ASSERT_EQ( sepa->rows[1][3], 12UL );
-  ASSERT_EQ( sepa->rows[1][4], 13UL );
-  ASSERT_EQ( sepa->rows[1][5], 14UL );
-  ASSERT_EQ( sepa->rows[1][6], 15UL );
-
-  ASSERT_EQ( sepa->numColumns[1], 8UL );
-  ASSERT_EQ( sepa->columns[1][0], 0UL );
-  ASSERT_EQ( sepa->columns[1][1], 1UL );
-  ASSERT_EQ( sepa->columns[1][2], 2UL );
-  ASSERT_EQ( sepa->columns[1][3], 3UL );
-  ASSERT_EQ( sepa->columns[1][4], 4UL );
-  ASSERT_EQ( sepa->columns[1][5], 5UL );
-  ASSERT_EQ( sepa->columns[1][6], 6UL );
-  ASSERT_EQ( sepa->columns[1][7], 7UL );
+  // TODO: CHECK flags.
 
   ASSERT_CMR_CALL( CMRsepaFree(cmr, &sepa) );
   ASSERT_CMR_CALL( CMRsubmatFree(cmr, &violatorSubmatrix) );
@@ -727,6 +646,7 @@ TEST(SeriesParallel, TernaryBadSeparation)
   ASSERT_CMR_CALL( CMRdecomposeTernarySeriesParallel(cmr, matrix, NULL, reductions, SIZE_MAX, &numReductions, NULL,
     &violatorSubmatrix, &sepa, NULL, DBL_MAX) );
 
+  ASSERT_TRUE( violatorSubmatrix );
   ASSERT_FALSE( sepa );
   CMR_CHRMAT* violatorMatrix = NULL;
   ASSERT_CMR_CALL( CMRchrmatZoomSubmat(cmr, matrix, violatorSubmatrix, &violatorMatrix) );

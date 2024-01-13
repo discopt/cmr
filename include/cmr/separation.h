@@ -20,25 +20,47 @@
 extern "C" {
 #endif
 
+typedef enum
+{
+  CMR_SEPA_FIRST = 0,
+    /**< This row/column belongs to the first child. */
+  CMR_SEPA_SECOND = 1,
+    /**< This row/column belongs to the second child. */
+  CMR_SEPA_FLAG_RANK1 = 2,
+    /**< This bit flag indicates that the row/column also belongs to the other child. */
+  CMR_SEPA_FLAG_RANK2 = 4,
+    /**< This bit flag indicates that the row/column also belongs to the other child and is independent of the one
+     *   from CMR_SEPA_FLAG_RANK1. */
+
+  CMR_SEPA_MASK_CHILD = 1,
+    /**< Bit mask for the ownership. */
+  CMR_SEPA_MASK_EXTRA = CMR_SEPA_FLAG_RANK1 | CMR_SEPA_FLAG_RANK2
+    /**< Bit mask extra belongings. */
+} CMR_SEPA_FLAGS;
+
+typedef enum
+{
+  CMR_SEPA_TYPE_TWO,
+    /**< 2-separation whose bottom-left part has rank 1. */
+  CMR_SEPA_TYPE_THREE_DISTRIBUTED_RANKS,
+    /**< 3-separation with distributed ranks. */
+  CMR_SEPA_TYPE_THREE_RANK2
+    /**< 3-separation whose botom-left part has rank 2. */
+} CMR_SEPA_TYPE;
+
 typedef struct
 {
-  unsigned char* rowsToPart;        /**< \brief Indicates to which block each row belongs. Values above 1 are ignored. */
-  unsigned char* columnsToPart;     /**< \brief Indicates to which block each column belongs. Values above 1 are ignored. */
-  size_t numRows[2];                /**< \brief Indicates the number of rows of each part. */
-  size_t numColumns[2];             /**< \brief Indicates the number of columns of each part. */
-  size_t* rows[2];                  /**< \brief Array of sorted rows for each part. */
-  size_t* columns[2];               /**< \brief Array of sorted columns for each part. */
-  size_t extraRows[2][2];           /**< \brief For each part, array of extra rows; may be \c SIZE_MAX. */
-  size_t extraColumns[2][2];        /**< \brief For each part, array of extra columns; may be \c SIZE_MAX. */
-  unsigned char* indicatorMemory;   /**< \brief Memory for \ref rowsToPart and \ref columnsToPart. */
-  size_t* elementMemory;            /**< \brief Memory for \ref rows and \ref columns. */
+  size_t numRows;               /**< \brief Number of rows of the matrix. */
+  size_t numColumns;            /**< \brief Number of columns of the matrix. */
+  CMR_SEPA_FLAGS* rowsFlags;    /**< \brief Array with each row's flags. */
+  CMR_SEPA_FLAGS* columnsFlags; /**< \brief Array with each column's flags. */
+  CMR_SEPA_TYPE type;           /**< \brief Type of separation. */
 } CMR_SEPA;
 
 /**
- * \brief Creates a separation.
+ * \brief Creates a 2- or 3-separation.
  *
- * Only the memory is allocated. The usualy way to initialize it is to fill the arrays \ref rowsToPart and
- * \ref columnsToPart and then call \ref CMRsepaInitialize.
+ * Only the memory is allocated. The rowsFlags and columnsFlags arrays must be filled properly.
  */
 
 CMR_EXPORT
@@ -46,45 +68,8 @@ CMR_ERROR CMRsepaCreate(
   CMR* cmr,           /**< \ref CMR environment. */
   size_t numRows,     /**< Number of rows. */
   size_t numColumns,  /**< Number of columns. */
+  CMR_SEPA_TYPE type, /**< Type of separation. */
   CMR_SEPA** psepa    /**< Pointer for storing the created separation. */
-);
-
-/**
- * \brief Initializes a separation.
- *
- * Assumes that \p separation was created via \ref CMRsepaCreate and that all entries of \ref rowsToPart and
- * \ref columnsToPart are set to either 0 or 1.
- * The connecting elements are given by the caller.
- */
-
-CMR_EXPORT
-CMR_ERROR CMRsepaInitialize(
-  CMR* cmr,                   /**< \ref CMR environment. */
-  CMR_SEPA* separation,       /**< Already created separation. */
-  size_t firstExtraRow0,      /**< First extra row for part 0 or \c SIZE_MAX if bottom-left rank is 0. */
-  size_t firstExtraColumn1,   /**< First extra column for part 1 or \c SIZE_MAX if bottom-left rank is 0. */
-  size_t firstExtraRow1,      /**< First extra row for part 1 or \c SIZE_MAX if top-right rank is 0. */
-  size_t firstExtraColumn0,   /**< First extra column for part 0 or \c SIZE_MAX if top-right rank is 0. */
-  size_t secondExtraRow0,     /**< Second extra row for part 0 or \c SIZE_MAX if bottom-left rank is at most 1. */
-  size_t secondExtraColumn1,  /**< Second extra column for part 1 or \c SIZE_MAX if bottom-left rank is at most 1. */
-  size_t secondExtraRow1,     /**< Second extra row for part 1 or \c SIZE_MAX if top-right rank is at most 1. */
-  size_t secondExtraColumn0   /**< Second extra column for part 0 or \c SIZE_MAX if top-right rank is at most 1. */
-);
-
-/**
- * \brief Initializes a separation.
- *
- * Assumes that \p separation was created via \ref CMRsepaCreate and that all entries of \ref rowsToPart and
- * \ref columnsToPart are set to either 0 or 1.
- * The connecting elements will be searched by inspecting \p matrix.
- */
-
-CMR_EXPORT
-CMR_ERROR CMRsepaInitializeMatrix(
-  CMR* cmr,               /**< \ref CMR environment. */
-  CMR_SEPA* separation,   /**< Already created separation. */
-  CMR_CHRMAT* matrix,     /**< Matrix this separation belongs to. */
-  unsigned char totalRank /**< Total rank of separation. */
 );
 
 /**
@@ -98,44 +83,44 @@ CMR_ERROR CMRsepaFree(
 );
 
 /**
- * \brief Returns rank of bottom-left submatrix.
+ * \brief Computes the sizes of the top-left and bottom-right parts.
  */
 
-static inline
-unsigned char CMRsepaRankBottomLeft(
-  CMR_SEPA* sepa  /**< Separation. */
-)
-{
-  assert(sepa);
-
-  return sepa->extraRows[0][0] == SIZE_MAX ? 0
-    : (sepa->extraRows[0][1] == SIZE_MAX ? 1 : 2);
-}
+CMR_EXPORT
+CMR_ERROR CMRsepaComputeSizes(
+  CMR_SEPA* sepa,                 /**< Separation. */
+  size_t* pnumRowsTopLeft,        /**< Pointer for storing the number of rows of the top-left part. */
+  size_t* pnumColumnsTopLeft,     /**< Pointer for storing the number of columns of the top-left part. */
+  size_t* pnumRowsBottomRight,    /**< Pointer for storing the number of rows of the bottom-right part. */
+  size_t* pnumColumnsBottomRight  /**< Pointer for storing the number of columns of the bottom-right part. */
+);
 
 /**
- * \brief Returns rank of top-right submatrix.
+ * \brief Scans the \p matrix to compute all representative rows/columns for \p sepa.
+ *
+ * Sets the rowsFlags and columnsFlags attributes accordingly.
  */
 
-static inline
-unsigned char CMRsepaRankTopRight(
-  CMR_SEPA* sepa  /**< Separation. */
-)
-{
-  return sepa->extraRows[1][0] == SIZE_MAX ? 0
-    : (sepa->extraRows[1][1] == SIZE_MAX ? 1 : 2);
-}
+CMR_EXPORT
+CMR_ERROR CMRsepaFindRepresentatives(
+  CMR* cmr,           /**< \ref CMR environment. */
+  CMR_SEPA* sepa,     /**< Separation. */
+  CMR_CHRMAT* matrix  /**< Matrix. */
+);
 
 /**
- * \brief Returns rank sum of bottom-left and top-right submatrices.
+ * \brief Scans the \p submatrix of \p matrix to compute all representative rows/columns for \p sepa.
+ *
+ * Sets the rowsFlags and columnsFlags attributes accordingly.
  */
 
-static inline
-unsigned char CMRsepaRank(
-  CMR_SEPA* sepa  /**< Separation. */
-)
-{
-  return CMRsepaRankBottomLeft(sepa) + CMRsepaRankTopRight(sepa);
-}
+CMR_EXPORT
+CMR_ERROR CMRsepaFindRepresentativesSubmatrix(
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_SEPA* sepa,       /**< Separation. */
+  CMR_CHRMAT* matrix,   /**< Matrix. */
+  CMR_SUBMAT* submatrix /**< Submatrix of \p matrix. */
+);
 
 /**
  * \brief Checks for a given matrix whether the binary k-separation is also a ternary one.
@@ -151,9 +136,28 @@ CMR_ERROR CMRsepaCheckTernary(
   CMR* cmr,               /**< \ref CMR environment. */
   CMR_SEPA* sepa,         /**< Separation. */
   CMR_CHRMAT* matrix,     /**< Matrix. */
-  CMR_SUBMAT* submatrix,  /**< Submatrix of \p matrix to consider (may be \c NULL). */
   bool* pisTernary,       /**< Pointer for storing whether the check passed. */
-  CMR_SUBMAT** psubmatrix /**< Pointer for storing a violator submatrix (may be \c NULL). */
+  CMR_SUBMAT** pviolator  /**< Pointer for storing a violator submatrix (may be \c NULL). */
+);
+
+/**
+ * \brief Checks for a submatrix of a given matrix whether the binary k-separation is also a ternary one.
+ *
+ * Checks, for a ternary input matrix \f$ M \f$ and a k-separation (\f$ k \in \{1,2,3\} \f$) of the (binary) support
+ * matrix of \f$ M \f$, whether it is also a k-separation of \f$ M \f$ itself. The result is stored in \p *pisTernary.
+ *
+ * If the check fails, a certifying submatrix is returned in \p *pviolator. Its row/column indices refer to
+ * \p submatrix.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRsepaCheckTernarySubmatrix(
+  CMR* cmr,               /**< \ref CMR environment. */
+  CMR_SEPA* sepa,         /**< Separation. */
+  CMR_CHRMAT* matrix,     /**< Matrix. */
+  CMR_SUBMAT* submatrix,  /**< Submatrix to consider. */
+  bool* pisTernary,       /**< Pointer for storing whether the check passed. */
+  CMR_SUBMAT** pviolator  /**< Pointer for storing a violator submatrix (may be \c NULL). */
 );
 
 /**

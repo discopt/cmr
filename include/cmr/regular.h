@@ -20,7 +20,6 @@ extern "C" {
 #include <cmr/series_parallel.h>
 #include <cmr/graphic.h>
 #include <cmr/network.h>
-#include <cmr/dec.h>
 
 typedef enum
 {
@@ -43,7 +42,7 @@ typedef struct
   CMR_DEC_CONSTRUCT transposes; /**< \brief Which transposed matrices of the decomposition to construct; default:
                                  **         \ref CMR_DEC_CONSTRUCT_NONE. */
   CMR_DEC_CONSTRUCT graphs;     /**< \brief Which (co)graphs to construct; default: \ref CMR_DEC_CONSTRUCT_NONE. */
-} CMR_REGULAR_PARAMETERS;
+} CMR_REGULAR_PARAMS;
 
 /**
  * \brief Initializes the default parameters for regularity testing.
@@ -52,8 +51,8 @@ typedef struct
  */
 
 CMR_EXPORT
-CMR_ERROR CMRparamsRegularInit(
-  CMR_REGULAR_PARAMETERS* params  /**< Pointer to parameters. */
+CMR_ERROR CMRregularParamsInit(
+  CMR_REGULAR_PARAMS* params  /**< Pointer to parameters. */
 );
 
 /**
@@ -74,7 +73,7 @@ typedef struct
   uint32_t enumerationCount;            /**< Number of calls to enumeration algorithm for candidate 3-separations. */
   double enumerationTime;               /**< Time of enumeration of candidate 3-separations. */
   uint32_t enumerationCandidatesCount;  /**< Number of enumerated candidates for 3-separations. */
-} CMR_REGULAR_STATISTICS;
+} CMR_REGULAR_STATS;
 
 
 /**
@@ -82,8 +81,8 @@ typedef struct
  */
 
 CMR_EXPORT
-CMR_ERROR CMRstatsRegularInit(
-  CMR_REGULAR_STATISTICS* stats /**< Pointer to statistics. */
+CMR_ERROR CMRregularStatsInit(
+  CMR_REGULAR_STATS* stats /**< Pointer to statistics. */
 );
 
 /**
@@ -91,10 +90,10 @@ CMR_ERROR CMRstatsRegularInit(
  */
 
 CMR_EXPORT
-CMR_ERROR CMRstatsRegularPrint(
-  FILE* stream,                   /**< File stream to print to. */
-  CMR_REGULAR_STATISTICS* stats,  /**< Pointer to statistics. */
-  const char* prefix              /**< Prefix string to prepend to each printed line (may be \c NULL). */
+CMR_ERROR CMRregularStatsPrint(
+  FILE* stream,             /**< File stream to print to. */
+  CMR_REGULAR_STATS* stats, /**< Pointer to statistics. */
+  const char* prefix        /**< Prefix string to prepend to each printed line (may be \c NULL). */
 );
   
 /**
@@ -109,15 +108,15 @@ CMR_ERROR CMRstatsRegularPrint(
  */
 
 CMR_EXPORT
-CMR_ERROR CMRtestBinaryRegular(
-  CMR* cmr,                       /**< \ref CMR environment. */
-  CMR_CHRMAT* matrix,             /**< Input matrix. */
-  bool *pisRegular,               /**< Pointer for storing whether \p matrix is regular. */
-  CMR_DEC** pdec,                 /**< Pointer for storing the decomposition tree (may be \c NULL). */
-  CMR_MINOR** pminor,             /**< Pointer for storing an \f$ F_7 \f$ or \f$ F_7^\star \f$ minor. */
-  CMR_REGULAR_PARAMETERS* params, /**< Parameters for the computation (may be \c NULL for defaults). */
-  CMR_REGULAR_STATISTICS* stats,  /**< Statistics for the computation (may be \c NULL). */
-  double timeLimit                /**< Time limit to impose. */
+CMR_ERROR CMRregularTest(
+  CMR* cmr,                   /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,         /**< Input matrix. */
+  bool *pisRegular,           /**< Pointer for storing whether \p matrix is regular. */
+  CMR_MATROID_DEC** pdec,     /**< Pointer for storing the decomposition tree (may be \c NULL). */
+  CMR_MINOR** pminor,         /**< Pointer for storing an \f$ F_7 \f$ or \f$ F_7^\star \f$ minor. */
+  CMR_REGULAR_PARAMS* params, /**< Parameters for the computation (may be \c NULL for defaults). */
+  CMR_REGULAR_STATS* stats,   /**< Statistics for the computation (may be \c NULL). */
+  double timeLimit            /**< Time limit to impose. */
 );
 
 #ifdef __cplusplus

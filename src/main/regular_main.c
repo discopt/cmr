@@ -57,29 +57,25 @@ CMR_ERROR testRegularity(
   /* Actual test. */
 
   bool isRegular;
-  CMR_DEC* decomposition = NULL;
+  CMR_MATROID_DEC* decomposition = NULL;
   CMR_MINOR* minor = NULL;
-  CMR_REGULAR_PARAMETERS params;
-  CMR_CALL( CMRparamsRegularInit(&params) );
+  CMR_REGULAR_PARAMS params;
+  CMR_CALL( CMRregularParamsInit(&params) );
   params.completeTree = outputTreeFileName;
   params.matrices = outputTreeFileName ? CMR_DEC_CONSTRUCT_ALL : CMR_DEC_CONSTRUCT_NONE;
   params.directGraphicness = directGraphicness;
   params.seriesParallel = seriesParallel;
-  CMR_REGULAR_STATISTICS stats;
-  CMR_CALL( CMRstatsRegularInit(&stats) );
-  CMR_CALL( CMRtestBinaryRegular(cmr, matrix, &isRegular, outputTreeFileName ? &decomposition : NULL,
+  CMR_REGULAR_STATS stats;
+  CMR_CALL( CMRregularStatsInit(&stats) );
+  CMR_CALL( CMRregularTest(cmr, matrix, &isRegular, outputTreeFileName ? &decomposition : NULL,
     outputMinorFileName ? &minor : NULL, &params, &stats, timeLimit) );
 
   fprintf(stderr, "Matrix %sregular.\n", isRegular ? "IS " : "IS NOT ");
   if (printStats)
-    CMR_CALL( CMRstatsRegularPrint(stderr, &stats, NULL) );
+    CMR_CALL( CMRregularStatsPrint(stderr, &stats, NULL) );
 
   if (decomposition)
-  {
-    // TODO: Write decomposition.
-    assert(!"NOT IMPLEMENTED");
-    exit(EXIT_FAILURE);
-  }
+    CMR_CALL( CMRmatroiddecPrint(cmr, decomposition, stderr, 0, true, true, true) );
 
   if (minor && outputMinorFileName)
   {
@@ -92,7 +88,7 @@ CMR_ERROR testRegularity(
 
   /* Cleanup. */
 
-  CMR_CALL( CMRdecFree(cmr, &decomposition) );
+  CMR_CALL( CMRmatroiddecFree(cmr, &decomposition) );
   CMR_CALL( CMRminorFree(cmr, &minor) );
   CMR_CALL( CMRchrmatFree(cmr, &matrix) );
   CMR_CALL( CMRfreeEnvironment(&cmr) );

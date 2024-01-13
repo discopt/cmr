@@ -19,14 +19,14 @@ typedef struct
   size_t numColumns;
 } DenseBinaryMatrix;
 
-CMR_ERROR CMRdensebinmatrixCreateStack(
+CMR_ERROR CMRdensebinmatrixCreate(
   CMR* cmr,                   /**< \ref CMR environment. */
   size_t numRows,             /**< Number of rows. */
   size_t numColumns,          /**< Number of columns. */
   DenseBinaryMatrix** presult /**< Pointer for storing the result. */
 );
 
-CMR_ERROR CMRdensebinmatrixFreeStack(
+CMR_ERROR CMRdensebinmatrixFree(
   CMR* cmr,                   /**< \ref CMR environment. */
   DenseBinaryMatrix** pmatrix /**< Pointer for storing the result. */
 );

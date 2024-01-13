@@ -15,7 +15,7 @@ CMR_ERROR CMRparamsEquimodularityInit(CMR_EQUIMODULAR_PARAMETERS* params)
 {
   assert(params);
 
-  CMR_CALL( CMRparamsTotalUnimodularityInit(&params->tu) );
+  CMR_CALL( CMRtuParamsInit(&params->tu) );
 
   return CMR_OKAY;
 }
@@ -27,7 +27,7 @@ CMR_ERROR CMRstatsEquimodularityInit(CMR_EQUIMODULAR_STATISTICS* stats)
   stats->totalCount = 0;
   stats->totalTime = 0.0;
   stats->linalgTime = 0.0;
-  CMR_CALL( CMRstatsTotalUnimodularityInit(&stats->tu) );
+  CMR_CALL( CMRtuStatsInit(&stats->tu) );
 
   return CMR_OKAY;
 }
@@ -47,7 +47,7 @@ CMR_ERROR CMRstatsEquimodularityPrint(FILE* stream, CMR_EQUIMODULAR_STATISTICS* 
 
   char subPrefix[256];
   snprintf(subPrefix, 256, "%stu ", prefix);
-  CMR_CALL( CMRstatsTotalUnimodularityPrint(stream, &stats->tu, subPrefix) );
+  CMR_CALL( CMRtuStatsPrint(stream, &stats->tu, subPrefix) );
 
   fprintf(stream, "%stotal: %ld in %f seconds\n", prefix, (unsigned long) stats->totalCount, stats->totalTime);
 
@@ -217,7 +217,7 @@ CMR_ERROR CMRtestEquimodularity(CMR* cmr, CMR_INTMAT* matrix, bool* pisEquimodul
     goto cleanup;
   }
 
-  CMR_CALL( CMRtestTotalUnimodularity(cmr, transposed_pseudo_inverse, pisEquimodular, NULL, NULL, &params->tu,
+  CMR_CALL( CMRtuTest(cmr, transposed_pseudo_inverse, pisEquimodular, NULL, NULL, &params->tu,
     stats ? &stats->tu : NULL, remainingTime) );
 
   if (pgcdDet)
