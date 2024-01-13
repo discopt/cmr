@@ -27,9 +27,9 @@ typedef enum
 
 typedef struct
 {
-  CMR_TU_ALGORITHM algorithm;     /**< \brief Algorithm to use. */
-  CMR_REGULAR_PARAMETERS regular; /**< \brief Parameters for regularity test. */
-} CMR_TU_PARAMETERS;
+  CMR_TU_ALGORITHM algorithm; /**< \brief Algorithm to use. */
+  CMR_REGULAR_PARAMS regular; /**< \brief Parameters for regularity test. */
+} CMR_TU_PARAMS;
 
 /**
  * \brief Initializes the default parameters for recognition of [totally unimodular](\ref tu) matrices.
@@ -38,8 +38,8 @@ typedef struct
  */
 
 CMR_EXPORT
-CMR_ERROR CMRparamsTotalUnimodularityInit(
-  CMR_TU_PARAMETERS* params  /**< Pointer to parameters. */
+CMR_ERROR CMRtuParamsInit(
+  CMR_TU_PARAMS* params  /**< Pointer to parameters. */
 );
 
 /**
@@ -48,19 +48,19 @@ CMR_ERROR CMRparamsTotalUnimodularityInit(
 
 typedef struct
 {
-  uint32_t totalCount;            /**< Total number of invocations. */
-  double totalTime;               /**< Total time of all invocations. */
-  CMR_CAMION_STATISTICS camion;   /**< Camion signing. */
-  CMR_REGULAR_STATISTICS regular; /**< Regularity test. */
-} CMR_TU_STATISTICS;
+  uint32_t totalCount;          /**< Total number of invocations. */
+  double totalTime;             /**< Total time of all invocations. */
+  CMR_CAMION_STATISTICS camion; /**< Camion signing. */
+  CMR_REGULAR_STATS regular;    /**< Regularity test. */
+} CMR_TU_STATS;
 
 /**
  * \brief Initializes all statistics for recognition algorithm for [totally unimodular](\ref tu) matrices.
  */
 
 CMR_EXPORT
-CMR_ERROR CMRstatsTotalUnimodularityInit(
-  CMR_TU_STATISTICS* stats /**< Pointer to statistics. */
+CMR_ERROR CMRtuStatsInit(
+  CMR_TU_STATS* stats /**< Pointer to statistics. */
 );
 
 /**
@@ -68,9 +68,9 @@ CMR_ERROR CMRstatsTotalUnimodularityInit(
  */
 
 CMR_EXPORT
-CMR_ERROR CMRstatsTotalUnimodularityPrint(
+CMR_ERROR CMRtuStatsPrint(
   FILE* stream,             /**< File stream to print to. */
-  CMR_TU_STATISTICS* stats, /**< Pointer to statistics. */
+  CMR_TU_STATS* stats, /**< Pointer to statistics. */
   const char* prefix        /**< Prefix string to prepend to each printed line (may be \c NULL). */
 );
 
@@ -87,17 +87,16 @@ CMR_ERROR CMRstatsTotalUnimodularityPrint(
  */
 
 CMR_EXPORT
-CMR_ERROR CMRtestTotalUnimodularity(
+CMR_ERROR CMRtuTest(
   CMR* cmr,                   /**< \ref CMR environment */
   CMR_CHRMAT* matrix,         /**< Matrix \f$ M \f$. */
   bool* pisTotallyUnimodular, /**< Pointer for storing whether \f$ M \f$ is totally unimodular. */
-  CMR_DEC** pdec,             /**< Pointer for storing the decomposition tree (may be \c NULL). */
+  CMR_MATROID_DEC** pdec,     /**< Pointer for storing the decomposition tree (may be \c NULL). */
   CMR_SUBMAT** psubmatrix,    /**< Pointer for storing a submatrix with non-ternary determinant (may be \c NULL). */
-  CMR_TU_PARAMETERS* params,  /**< Parameters for the computation (may be \c NULL for defaults). */
-  CMR_TU_STATISTICS* stats,   /**< Statistics for the computation (may be \c NULL). */
+  CMR_TU_PARAMS* params,      /**< Parameters for the computation (may be \c NULL for defaults). */
+  CMR_TU_STATS* stats,        /**< Statistics for the computation (may be \c NULL). */
   double timeLimit            /**< Time limit to impose. */
 );
-
 
 #ifdef __cplusplus
 }

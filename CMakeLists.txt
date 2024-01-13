@@ -63,14 +63,16 @@ add_library(cmr
   #src/cmr/matroid_decomposition.cpp
   #src/cmr/matroid_graph.cpp
   #src/cmr/nested_minor_sequence.cpp
-  src/cmr/regular_nested_minor_sequence.c
+  #src/cmr/regular_nested_minor_sequence.c
   src/cmr/network.c
   src/cmr/regular.c
-  src/cmr/regular_enumerate.c
-  src/cmr/regular_graphic.c
-  src/cmr/regular_onesum.c
-  src/cmr/regular_r10.c
-  src/cmr/regular_series_parallel.c
+  src/cmr/regularity.c
+  src/cmr/regularity_partition.c
+  src/cmr/regularity_graphic.c
+  src/cmr/regularity_nested_minor_sequence.c
+  src/cmr/regularity_onesum.c
+  src/cmr/regularity_r10.c
+  src/cmr/regularity_series_parallel.c
   #src/cmr/separation.cpp
   src/cmr/separation.c
   src/cmr/series_parallel.c

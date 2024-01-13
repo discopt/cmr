@@ -1,4 +1,4 @@
-// #define CMR_DEBUG /* Uncomment to debug this file. */
+#define CMR_DEBUG /* Uncomment to debug this file. */
 
 #include <cmr/separation.h>
 
@@ -7,313 +7,22 @@
 #include <stdint.h>
 #include <assert.h>
 
-CMR_ERROR CMRsepaCreate(CMR* cmr, size_t numRows, size_t numColumns, CMR_SEPA** psepa)
+CMR_ERROR CMRsepaCreate(CMR* cmr, size_t numRows, size_t numColumns, CMR_SEPA_TYPE type, CMR_SEPA** psepa)
 {
   assert(cmr);
   assert(psepa);
 
-  size_t numElements = numRows + numColumns;
-
   CMR_CALL( CMRallocBlock(cmr, psepa) );
   CMR_SEPA* sepa = *psepa;
-  sepa->indicatorMemory = NULL;
-  CMR_CALL( CMRallocBlockArray(cmr, &sepa->indicatorMemory, numElements) );
-  sepa->elementMemory = NULL;
-  CMR_CALL( CMRallocBlockArray(cmr, &sepa->elementMemory, numElements) );
-  sepa->numRows[0] = 0;
-  sepa->numRows[1] = numRows;
-  sepa->numColumns[0] = 0;
-  sepa->numColumns[1] = numColumns;
-  sepa->rowsToPart = &sepa->indicatorMemory[0];
-  sepa->columnsToPart = &sepa->indicatorMemory[numRows];
+  sepa->type = type;
+  sepa->numRows = numRows;
+  sepa->numColumns = numColumns;
+  sepa->rowsFlags = NULL;
+  CMR_CALL( CMRallocBlockArray(cmr, &sepa->rowsFlags, numRows) );
+  sepa->columnsFlags = NULL;
+  CMR_CALL( CMRallocBlockArray(cmr, &sepa->columnsFlags, numColumns) );
 
   return CMR_OKAY;
-}
-
-static
-CMR_ERROR initialize(
-  CMR* cmr,             /**< \ref CMR environment. */
-  CMR_SEPA* separation  /**< Already created separation. */
-)
-{
-  CMR_UNUSED(cmr);
-
-  assert(cmr);
-  assert(separation);
-
-  size_t numRows = separation->numRows[0] + separation->numRows[1];
-  size_t numColumns = separation->numColumns[0] + separation->numColumns[1];
-
-  /* Count sizes of parts. */
-  separation->numRows[0] = 0;
-  separation->numRows[1] = 0;
-  for (size_t row = 0; row < numRows; ++row)
-  {
-    unsigned char part = separation->rowsToPart[row];
-    if (part >= 2)
-      continue;
-    separation->numRows[part]++;
-  }
-  separation->numColumns[0] = 0;
-  separation->numColumns[1] = 0;
-  for (size_t column = 0; column < numColumns; ++column)
-  {
-    unsigned char part = separation->columnsToPart[column];
-    if (part >= 2)
-      continue;
-    separation->numColumns[part]++;
-  }
-
-  /* Set array pointers. */
-  separation->rows[0] = &separation->elementMemory[0];
-  separation->rows[1] = &separation->elementMemory[separation->numRows[0]];
-  separation->columns[0] = &separation->elementMemory[numRows];
-  separation->columns[1] = &separation->elementMemory[numRows + separation->numColumns[0]];
-
-  /* Fill arrays. */
-  separation->numRows[0] = 0;
-  separation->numRows[1] = 0;
-  for (size_t row = 0; row < numRows; ++row)
-  {
-    unsigned char part = separation->rowsToPart[row];
-    if (part >= 2)
-      continue;
-    separation->rows[part][separation->numRows[part]] = row;
-    separation->numRows[part]++;
-  }
-  separation->numColumns[0] = 0;
-  separation->numColumns[1] = 0;
-  for (size_t column = 0; column < numColumns; ++column)
-  {
-    unsigned char part = separation->columnsToPart[column];
-    if (part >= 2)
-      continue;
-    separation->columns[part][separation->numColumns[part]] = column;
-    separation->numColumns[part]++;
-  }
-
-  return CMR_OKAY;
-}
-
-CMR_ERROR CMRsepaInitialize(CMR* cmr, CMR_SEPA* separation, size_t firstExtraRow0, size_t firstExtraColumn1,
-  size_t firstExtraRow1, size_t firstExtraColumn0, size_t secondExtraRow0, size_t secondExtraColumn1,
-  size_t secondExtraRow1, size_t secondExtraColumn0)
-{
-  assert(cmr);
-  assert(separation);
-  assert((firstExtraRow0 < SIZE_MAX && firstExtraColumn1 < SIZE_MAX)
-    || (firstExtraRow0 == SIZE_MAX && firstExtraColumn1 == SIZE_MAX));
-  assert((firstExtraRow1 < SIZE_MAX && firstExtraColumn0 < SIZE_MAX)
-    || (firstExtraRow1 == SIZE_MAX && firstExtraColumn0 == SIZE_MAX));
-  assert((secondExtraRow0 < SIZE_MAX && secondExtraColumn1 < SIZE_MAX)
-    || (secondExtraRow0 == SIZE_MAX && secondExtraColumn1 == SIZE_MAX));
-  assert((secondExtraRow1 < SIZE_MAX && secondExtraColumn0 < SIZE_MAX)
-    || (secondExtraRow1 == SIZE_MAX && secondExtraColumn0 == SIZE_MAX));
-
-  CMR_CALL( initialize(cmr, separation) );
-
-  separation->extraRows[0][0] = firstExtraRow0;
-  separation->extraColumns[1][0] = firstExtraColumn1;
-  separation->extraRows[1][0] = firstExtraRow1;
-  separation->extraColumns[0][0] = firstExtraColumn0;
-  separation->extraRows[0][1] = secondExtraRow0;
-  separation->extraColumns[1][1] = secondExtraColumn1;
-  separation->extraRows[1][1] = secondExtraRow1;
-  separation->extraColumns[0][1] = secondExtraColumn0;
-
-  return CMR_OKAY;
-}
-
-/**
- * \brief Checks whether the submatrix with rows assigned to \p part and columns assigned to the other has at least
- *        rank 1.
- * 
- * If the rank is at least 1, the row and column of a corresponding nonzero are stored in \p separation.
- */
-
-static
-bool findRank1(
-  CMR_CHRMAT* matrix,     /**< Matrix. */
-  CMR_SEPA* separation,   /**< Separation. */
-  short part              /**< Part to which the investigated rows belong. */
-)
-{
-  assert(matrix);
-  assert(part >=0 && part < 2);
-
-  for (size_t row = 0; row < matrix->numRows; ++row)
-  {
-    if (separation->rowsToPart[row] == part)
-      continue;
-    size_t entry = matrix->rowSlice[row];
-    size_t beyond = matrix->rowSlice[row + 1];
-    while (entry < beyond)
-    {
-      size_t column = matrix->entryColumns[entry];
-      if (separation->columnsToPart[column] == part)
-      {
-        separation->extraRows[part][0] = row;
-        separation->extraColumns[1-part][0] = column;
-        return true;
-      }
-      ++entry;
-    }
-  }
-
-  return false;
-}
-
-/**
- * \brief Checks whether the submatrix with rows assigned to \p part and columns assigned to the other has at least
- *        rank 2.
- * 
- * Assumes that \p separation already contains a row and a column of some nonzero.
- * If the rank is at least 2, the row and column of an nonzero with which the previous one induces a rank-2 submatrix
- * are stored in \p separation.
- */
-
-static
-bool findRank2(
-  CMR_CHRMAT* matrix,     /**< Matrix. */
-  CMR_SEPA* separation,   /**< Separation. */
-  short part              /**< Part to which the investigated rows belong. */
-)
-{
-  assert(matrix);
-  assert(separation);
-  assert(part >=0 && part < 2);
-
-  for (size_t row = separation->extraRows[part][0] + 1; row < matrix->numRows; ++row)
-  {
-    if (separation->rowsToPart[row] == part)
-      continue;
-
-    size_t entry = matrix->rowSlice[row];
-    size_t beyond = matrix->rowSlice[row + 1];
-    size_t column = (entry < beyond) ? matrix->entryColumns[entry] : SIZE_MAX;
-    size_t entryRep = matrix->rowSlice[separation->extraRows[part][0]];
-    size_t beyondRep = matrix->rowSlice[separation->extraRows[part][0] + 1];
-    size_t columnRep = (entryRep < beyondRep) ? matrix->entryColumns[entryRep] : SIZE_MAX;
-    bool isZero = true;
-    bool equalRep = true;
-    while (column != SIZE_MAX || columnRep != SIZE_MAX)
-    {
-      if (column < columnRep)
-      {
-        if (separation->columnsToPart[column] == part)
-        {
-          /* New row has a 1-entry but representative does not. */
-          separation->extraRows[part][1] = row;
-          separation->extraColumns[1-part][1] = column;
-          return true;
-        }
-        else
-        {
-          /* We're outside of the submatrix. */
-          ++entry;
-          column = (entry < beyond) ? matrix->entryColumns[entry] : SIZE_MAX;
-        }
-      }
-      else if (columnRep < column)
-      {
-        if (separation->columnsToPart[columnRep] == part)
-        {
-          if (!isZero)
-          {
-            /* We had a common nonzero before, so the 0 here yields rank 2. */
-            separation->extraRows[part][1] = row;
-            separation->extraColumns[1-part][1] = columnRep;
-            return true;
-          }
-          else
-            equalRep = false;
-        }
-
-        /* We're outside of the submatrix or still a zero vector. */
-        ++entryRep;
-        columnRep = (entryRep < beyondRep) ? matrix->entryColumns[entryRep] : SIZE_MAX;
-      }
-      else
-      {
-        if (separation->columnsToPart[column] == part)
-        {
-          if (!equalRep)
-          {
-            /* We had a 1 in rep with a 0 here before, so the two 1s here yield rank 2. */
-            separation->extraRows[part][1] = row;
-            separation->extraColumns[1-part][1] = columnRep;
-            return true;
-          }
-          else
-            isZero = false;
-        }
-
-        /* We're outside of the submatrix. */
-        ++entry;
-        column = (entry < beyond) ? matrix->entryColumns[entry] : SIZE_MAX;
-        ++entryRep;
-        columnRep = (entryRep < beyondRep) ? matrix->entryColumns[entryRep] : SIZE_MAX;
-      }
-    }
-  }
-
-  return false;
-}
-
-CMR_ERROR CMRsepaInitializeMatrix(CMR* cmr, CMR_SEPA* separation, CMR_CHRMAT* matrix, unsigned char totalRank)
-{
-  assert(cmr);
-  assert(separation);
-  assert(matrix);
-
-  CMR_CALL( initialize(cmr, separation) );
-  separation->extraRows[0][0] = SIZE_MAX;
-  separation->extraRows[0][1] = SIZE_MAX;
-  separation->extraRows[1][0] = SIZE_MAX;
-  separation->extraRows[1][1] = SIZE_MAX;
-  separation->extraColumns[0][0] = SIZE_MAX;
-  separation->extraColumns[0][1] = SIZE_MAX;
-  separation->extraColumns[1][0] = SIZE_MAX;
-  separation->extraColumns[1][1] = SIZE_MAX;
-  unsigned char ranks[2] = { 0, 0 };
-
-#ifdef NDEBUG
-  if (totalRank == 0)
-    return CMR_OKAY;
-#endif /* In debug mode we verify the rank. */
-
-  /* Check submatrices for rank (at least) 1. */
-  for (short part = 0; part < 2; ++part)
-  {
-    if (findRank1(matrix, separation, part))
-      ++ranks[part];
-#ifdef NDEBUG
-    if (ranks[0] + ranks[1] == totalRank)
-      return CMR_OKAY;
-#endif
-  }
-
-  /* Check submatrices for rank (at least) 2. */
-  for (short part = 0; part < 2; ++part)
-  {
-    if (ranks[part] == 0)
-      continue;
-
-    if (findRank2(matrix, separation, part))
-      ++ranks[part];
-#ifdef NDEBUG
-    if (ranks[0] + ranks[1] == totalRank)
-      return CMR_OKAY;
-#endif
-  }  
-
-  if (ranks[0] + ranks[1] == totalRank)
-    return CMR_OKAY;
-  else
-  {
-    printf("Submatrix ranks are %d and %d, but expected total rank is %d.\n", ranks[0], ranks[1], totalRank);
-    return CMR_ERROR_INVALID;
-  }
 }
 
 
@@ -325,126 +34,620 @@ CMR_ERROR CMRsepaFree(CMR* cmr, CMR_SEPA** psepa)
   if (*psepa)
   {
     CMR_SEPA* sepa = *psepa;
-    CMR_CALL( CMRfreeBlockArray(cmr, &sepa->elementMemory) );
-    CMR_CALL( CMRfreeBlockArray(cmr, &sepa->indicatorMemory) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &sepa->rowsFlags) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &sepa->columnsFlags) );
     CMR_CALL( CMRfreeBlock(cmr, psepa) );
   }
 
   return CMR_OKAY;
 }
 
+CMR_ERROR CMRsepaComputeSizes(CMR_SEPA* sepa, size_t* pnumRowsTopLeft, size_t* pnumColumnsTopLeft,
+  size_t* pnumRowsBottomRight, size_t* pnumColumnsBottomRight)
+{
+  assert(sepa);
+
+  size_t numRowsTopLeft = 0;
+  size_t numColumnsTopLeft = 0;
+  size_t numRowsBottomRight = 0;
+  size_t numColumnsBottomRight = 0;
+
+  for (size_t row = 0; row < sepa->numRows; ++row)
+  {
+    if ((sepa->rowsFlags[row] & CMR_SEPA_MASK_CHILD) == CMR_SEPA_FIRST)
+      ++numRowsTopLeft;
+    else
+      ++numRowsBottomRight;
+  }
+
+  for (size_t column = 0; column < sepa->numColumns; ++column)
+  {
+    if ((sepa->columnsFlags[column] & CMR_SEPA_MASK_CHILD) == CMR_SEPA_FIRST)
+      ++numColumnsTopLeft;
+    else
+      ++numColumnsBottomRight;
+  }
+
+  if (pnumRowsTopLeft)
+    *pnumRowsTopLeft = numRowsTopLeft;
+  if (pnumColumnsTopLeft)
+    *pnumColumnsTopLeft = numColumnsTopLeft;
+  if (pnumRowsBottomRight)
+    *pnumRowsBottomRight = numRowsBottomRight;
+  if (pnumColumnsBottomRight)
+    *pnumColumnsBottomRight = numColumnsBottomRight;
+
+  return CMR_OKAY;
+}
+
+
+
+// static
+// CMR_ERROR initialize(
+//   CMR* cmr,             /**< \ref CMR environment. */
+//   CMR_SEPA* separation  /**< Already created separation. */
+// )
+// {
+//   CMR_UNUSED(cmr);
+//
+//   assert(cmr);
+//   assert(separation);
+//
+//   size_t numRows = separation->numRows[0] + separation->numRows[1];
+//   size_t numColumns = separation->numColumns[0] + separation->numColumns[1];
+//
+//   /* Count sizes of parts. */
+//   separation->numRows[0] = 0;
+//   separation->numRows[1] = 0;
+//   for (size_t row = 0; row < numRows; ++row)
+//   {
+//     unsigned char part = separation->rowsToPart[row];
+//     if (part >= 2)
+//       continue;
+//     separation->numRows[part]++;
+//   }
+//   separation->numColumns[0] = 0;
+//   separation->numColumns[1] = 0;
+//   for (size_t column = 0; column < numColumns; ++column)
+//   {
+//     unsigned char part = separation->columnsToPart[column];
+//     if (part >= 2)
+//       continue;
+//     separation->numColumns[part]++;
+//   }
+//
+//   /* Set array pointers. */
+//   separation->rows[0] = &separation->elementMemory[0];
+//   separation->rows[1] = &separation->elementMemory[separation->numRows[0]];
+//   separation->columns[0] = &separation->elementMemory[numRows];
+//   separation->columns[1] = &separation->elementMemory[numRows + separation->numColumns[0]];
+//
+//   /* Fill arrays. */
+//   separation->numRows[0] = 0;
+//   separation->numRows[1] = 0;
+//   for (size_t row = 0; row < numRows; ++row)
+//   {
+//     unsigned char part = separation->rowsToPart[row];
+//     if (part >= 2)
+//       continue;
+//     separation->rows[part][separation->numRows[part]] = row;
+//     separation->numRows[part]++;
+//   }
+//   separation->numColumns[0] = 0;
+//   separation->numColumns[1] = 0;
+//   for (size_t column = 0; column < numColumns; ++column)
+//   {
+//     unsigned char part = separation->columnsToPart[column];
+//     if (part >= 2)
+//       continue;
+//     separation->columns[part][separation->numColumns[part]] = column;
+//     separation->numColumns[part]++;
+//   }
+//
+//   return CMR_OKAY;
+// }
+
+// CMR_ERROR CMRsepaInitialize(CMR* cmr, CMR_SEPA* separation, size_t firstExtraRow0, size_t firstExtraColumn1,
+//   size_t firstExtraRow1, size_t firstExtraColumn0, size_t secondExtraRow0, size_t secondExtraColumn1,
+//   size_t secondExtraRow1, size_t secondExtraColumn0)
+// {
+//   assert(cmr);
+//   assert(separation);
+//   assert((firstExtraRow0 < SIZE_MAX && firstExtraColumn1 < SIZE_MAX)
+//     || (firstExtraRow0 == SIZE_MAX && firstExtraColumn1 == SIZE_MAX));
+//   assert((firstExtraRow1 < SIZE_MAX && firstExtraColumn0 < SIZE_MAX)
+//     || (firstExtraRow1 == SIZE_MAX && firstExtraColumn0 == SIZE_MAX));
+//   assert((secondExtraRow0 < SIZE_MAX && secondExtraColumn1 < SIZE_MAX)
+//     || (secondExtraRow0 == SIZE_MAX && secondExtraColumn1 == SIZE_MAX));
+//   assert((secondExtraRow1 < SIZE_MAX && secondExtraColumn0 < SIZE_MAX)
+//     || (secondExtraRow1 == SIZE_MAX && secondExtraColumn0 == SIZE_MAX));
+//
+//   CMR_CALL( initialize(cmr, separation) );
+//
+//   separation->extraRows[0][0] = firstExtraRow0;
+//   separation->extraColumns[1][0] = firstExtraColumn1;
+//   separation->extraRows[1][0] = firstExtraRow1;
+//   separation->extraColumns[0][0] = firstExtraColumn0;
+//   separation->extraRows[0][1] = secondExtraRow0;
+//   separation->extraColumns[1][1] = secondExtraColumn1;
+//   separation->extraRows[1][1] = secondExtraRow1;
+//   separation->extraColumns[0][1] = secondExtraColumn0;
+//
+//   return CMR_OKAY;
+// }
+
+/**
+ * \brief Checks whether the submatrix with rows assigned to \p part and columns assigned to the other has at least
+ *        rank 1.
+ * 
+ * If the rank is at least 1, the row and column of a corresponding nonzero are stored in \p separation.
+ */
+
+// static
+// bool findRank1(
+//   CMR_CHRMAT* matrix,     /**< Matrix. */
+//   CMR_SEPA* separation,   /**< Separation. */
+//   short part              /**< Part to which the investigated rows belong. */
+// )
+// {
+//   assert(matrix);
+//   assert(part >=0 && part < 2);
+//
+//   for (size_t row = 0; row < matrix->numRows; ++row)
+//   {
+//     if (separation->rowsToPart[row] == part)
+//       continue;
+//     size_t entry = matrix->rowSlice[row];
+//     size_t beyond = matrix->rowSlice[row + 1];
+//     while (entry < beyond)
+//     {
+//       size_t column = matrix->entryColumns[entry];
+//       if (separation->columnsToPart[column] == part)
+//       {
+//         separation->extraRows[part][0] = row;
+//         separation->extraColumns[1-part][0] = column;
+//         return true;
+//       }
+//       ++entry;
+//     }
+//   }
+//
+//   return false;
+// }
+
+/**
+ * \brief Checks whether the submatrix with rows assigned to \p part and columns assigned to the other has at least
+ *        rank 2.
+ * 
+ * Assumes that \p separation already contains a row and a column of some nonzero.
+ * If the rank is at least 2, the row and column of an nonzero with which the previous one induces a rank-2 submatrix
+ * are stored in \p separation.
+ */
+
+// static
+// bool findRank2(
+//   CMR_CHRMAT* matrix,     /**< Matrix. */
+//   CMR_SEPA* separation,   /**< Separation. */
+//   short part              /**< Part to which the investigated rows belong. */
+// )
+// {
+//   assert(matrix);
+//   assert(separation);
+//   assert(part >=0 && part < 2);
+//
+//   for (size_t row = separation->extraRows[part][0] + 1; row < matrix->numRows; ++row)
+//   {
+//     if (separation->rowsToPart[row] == part)
+//       continue;
+//
+//     size_t entry = matrix->rowSlice[row];
+//     size_t beyond = matrix->rowSlice[row + 1];
+//     size_t column = (entry < beyond) ? matrix->entryColumns[entry] : SIZE_MAX;
+//     size_t entryRep = matrix->rowSlice[separation->extraRows[part][0]];
+//     size_t beyondRep = matrix->rowSlice[separation->extraRows[part][0] + 1];
+//     size_t columnRep = (entryRep < beyondRep) ? matrix->entryColumns[entryRep] : SIZE_MAX;
+//     bool isZero = true;
+//     bool equalRep = true;
+//     while (column != SIZE_MAX || columnRep != SIZE_MAX)
+//     {
+//       if (column < columnRep)
+//       {
+//         if (separation->columnsToPart[column] == part)
+//         {
+//           /* New row has a 1-entry but representative does not. */
+//           separation->extraRows[part][1] = row;
+//           separation->extraColumns[1-part][1] = column;
+//           return true;
+//         }
+//         else
+//         {
+//           /* We're outside of the submatrix. */
+//           ++entry;
+//           column = (entry < beyond) ? matrix->entryColumns[entry] : SIZE_MAX;
+//         }
+//       }
+//       else if (columnRep < column)
+//       {
+//         if (separation->columnsToPart[columnRep] == part)
+//         {
+//           if (!isZero)
+//           {
+//             /* We had a common nonzero before, so the 0 here yields rank 2. */
+//             separation->extraRows[part][1] = row;
+//             separation->extraColumns[1-part][1] = columnRep;
+//             return true;
+//           }
+//           else
+//             equalRep = false;
+//         }
+//
+//         /* We're outside of the submatrix or still a zero vector. */
+//         ++entryRep;
+//         columnRep = (entryRep < beyondRep) ? matrix->entryColumns[entryRep] : SIZE_MAX;
+//       }
+//       else
+//       {
+//         if (separation->columnsToPart[column] == part)
+//         {
+//           if (!equalRep)
+//           {
+//             /* We had a 1 in rep with a 0 here before, so the two 1s here yield rank 2. */
+//             separation->extraRows[part][1] = row;
+//             separation->extraColumns[1-part][1] = columnRep;
+//             return true;
+//           }
+//           else
+//             isZero = false;
+//         }
+//
+//         /* We're outside of the submatrix. */
+//         ++entry;
+//         column = (entry < beyond) ? matrix->entryColumns[entry] : SIZE_MAX;
+//         ++entryRep;
+//         columnRep = (entryRep < beyondRep) ? matrix->entryColumns[entryRep] : SIZE_MAX;
+//       }
+//     }
+//   }
+//
+//   return false;
+// }
+
+// CMR_ERROR CMRsepaInitializeMatrix(CMR* cmr, CMR_SEPA* separation, CMR_CHRMAT* matrix, unsigned char totalRank)
+// {
+//   assert(cmr);
+//   assert(separation);
+//   assert(matrix);
+//
+//   CMR_CALL( initialize(cmr, separation) );
+//   separation->extraRows[0][0] = SIZE_MAX;
+//   separation->extraRows[0][1] = SIZE_MAX;
+//   separation->extraRows[1][0] = SIZE_MAX;
+//   separation->extraRows[1][1] = SIZE_MAX;
+//   separation->extraColumns[0][0] = SIZE_MAX;
+//   separation->extraColumns[0][1] = SIZE_MAX;
+//   separation->extraColumns[1][0] = SIZE_MAX;
+//   separation->extraColumns[1][1] = SIZE_MAX;
+//   unsigned char ranks[2] = { 0, 0 };
+//
+// #ifdef NDEBUG
+//   if (totalRank == 0)
+//     return CMR_OKAY;
+// #endif /* In debug mode we verify the rank. */
+//
+//   /* Check submatrices for rank (at least) 1. */
+//   for (short part = 0; part < 2; ++part)
+//   {
+//     if (findRank1(matrix, separation, part))
+//       ++ranks[part];
+// #ifdef NDEBUG
+//     if (ranks[0] + ranks[1] == totalRank)
+//       return CMR_OKAY;
+// #endif
+//   }
+//
+//   /* Check submatrices for rank (at least) 2. */
+//   for (short part = 0; part < 2; ++part)
+//   {
+//     if (ranks[part] == 0)
+//       continue;
+//
+//     if (findRank2(matrix, separation, part))
+//       ++ranks[part];
+// #ifdef NDEBUG
+//     if (ranks[0] + ranks[1] == totalRank)
+//       return CMR_OKAY;
+// #endif
+//   }
+//
+//   if (ranks[0] + ranks[1] == totalRank)
+//     return CMR_OKAY;
+//   else
+//   {
+//     printf("Submatrix ranks are %d and %d, but expected total rank is %d.\n", ranks[0], ranks[1], totalRank);
+//     return CMR_ERROR_INVALID;
+//   }
+// }
+
+
+/**
+ * \brief Implementation of \ref CMRsepaFindRepresentatives and \ref CMRsepaFindRepresentativesSubmatrix.
+ */
+
 static
-CMR_ERROR checkTernary(
-  CMR* cmr,
-  size_t numBlockRows,
-  size_t* blockRows,
-  size_t numBlockColumns,
-  size_t* blockColumns,
-  unsigned char rank,
-  CMR_CHRMAT* matrix,
-  CMR_SUBMAT* submatrix,
-  bool* pisTernary,
-  CMR_SUBMAT** psubmatrix
+CMR_ERROR findRepresentatives(
+  CMR* cmr,                         /**< \ref CMR environment. */
+  CMR_SEPA* sepa,                   /**< Separation. */
+  CMR_CHRMAT* matrix,               /**< Matrix. */
+  size_t* submatrixRows,            /**< Array mapping a submatrix row to a row of \p matrix. */
+  size_t* columnsToSubmatrixColumn  /**< Array mapping a column of \p matrix to a column of the submatrix or \c NULL. */
 )
 {
   assert(cmr);
-  assert(blockRows);
-  assert(blockColumns);
-  assert(rank <= 3);
+  assert(sepa);
   assert(matrix);
-  assert(pisTernary);
+  assert(submatrixRows);
+  assert(columnsToSubmatrixColumn);
+  assert(sepa->numRows <= matrix->numRows);
+  assert(sepa->numColumns <= matrix->numColumns);
 
-  *pisTernary = true;
-  if (rank == 0)
-    return CMR_OKAY;
+  CMRdbgMsg(8, "Finding representatives of low-rank submatrices.\n");
 
-  if (rank == 1)
+  assert(sepa->type == CMR_SEPA_TYPE_TWO); // TODO: Implement for rank sum 2.
+
+  for (size_t submatrixRow = 0; submatrixRow < sepa->numRows; ++submatrixRow)
   {
-    CMRdbgMsg(2, "Checking a binary rank-1 %ldx%ld submatrix for ternary rank 1.\n", numBlockRows, numBlockColumns);
+    size_t row = submatrixRows[submatrixRow];
+    if ((sepa->rowsFlags[submatrixRow] & CMR_SEPA_MASK_CHILD) == CMR_SEPA_FIRST)
+      continue;
 
-    size_t* entries = NULL;
-    CMR_CALL( CMRallocStackArray(cmr, &entries, numBlockRows) );
-    for (size_t i = 0; i < numBlockRows; ++i)
+    size_t first = matrix->rowSlice[row];
+    size_t beyond = matrix->rowSlice[row + 1];
+    for (size_t e = first; e < beyond; ++e)
     {
-      size_t blockRow = submatrix ? submatrix->rows[blockRows[i]] : blockRows[i];
-      entries[i] = matrix->rowSlice[blockRow];
-    }
+      size_t column = matrix->entryColumns[e];
+      size_t submatrixColumn = columnsToSubmatrixColumn[column];
+      if (submatrixColumn == SIZE_MAX)
+        continue;
 
-    size_t firstRow = SIZE_MAX;
-    size_t firstColumn = SIZE_MAX;
-    char* firstColumnValues = NULL;
-    CMR_CALL( CMRallocStackArray(cmr, &firstColumnValues, numBlockRows) );
-    for (size_t i = 0; i < numBlockRows; ++i)
-      firstColumnValues[i] = 0;
+      CMRdbgMsg(10, "Considering row %zu, column %zu\n", row, column);
 
-    for (size_t j = 0; j < numBlockColumns && *pisTernary; ++j)
-    {
-      size_t column = submatrix ? submatrix->columns[blockColumns[j]] : blockColumns[j];
-      bool negated;
-      for (size_t i = 0; i < numBlockRows && *pisTernary; ++i)
+      if ((sepa->columnsFlags[submatrixColumn] & CMR_SEPA_MASK_CHILD) == CMR_SEPA_FIRST)
       {
-        size_t row = blockRows[i];
-        while (matrix->entryColumns[entries[i]] < column)
-          ++entries[i];
-        if (matrix->entryColumns[entries[i]] == column)
-        {
-          if (firstColumn == SIZE_MAX)
-          {
-            firstRow = row;
-            firstColumn = column;
-          }
-
-          if (column == firstColumn)
-          {
-            firstColumnValues[i] = matrix->entryValues[entries[i]];
-          }
-          else if (row == firstRow)
-            negated = firstColumnValues[i] != matrix->entryValues[entries[i]];
-          else
-          {
-            bool neg = firstColumnValues[i] != matrix->entryValues[entries[i]];
-            if (negated != neg)
-            {
-              CMR_CALL( CMRsubmatCreate(cmr, 2, 2, psubmatrix) );
-              CMR_SUBMAT* submatrix = *psubmatrix;
-              submatrix->rows[0] = firstRow;
-              submatrix->rows[1] = row;
-              submatrix->columns[0] = firstColumn;
-              submatrix->columns[1] = column;
-              *pisTernary = false;
-            }
-          }
-        }
+        sepa->rowsFlags[submatrixRow] |= CMR_SEPA_FLAG_RANK1;
+        CMRdbgMsg(10, "Submatrix row %zu (row %zu) spans rank 1 submatrix.\n", submatrixRow, row);
+        sepa->columnsFlags[submatrixColumn] |= CMR_SEPA_FLAG_RANK1;
+        CMRdbgMsg(10, "Submatrix column %zu (column %zu) spans rank 1 submatrix.\n", submatrixColumn, column);
       }
     }
-
-    CMR_CALL( CMRfreeStackArray(cmr, &firstColumnValues) );
-    CMR_CALL( CMRfreeStackArray(cmr, &entries) );
-  }
-  else
-  {
-    assert("Checking separation for being ternary is not implemented for rank 2." == 0);
   }
 
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRsepaCheckTernary(CMR* cmr, CMR_SEPA* sepa, CMR_CHRMAT* matrix, CMR_SUBMAT* submatrix, bool* pisTernary,
-  CMR_SUBMAT** psubmatrix)
+CMR_ERROR CMRsepaFindRepresentatives(CMR* cmr, CMR_SEPA* sepa, CMR_CHRMAT* matrix)
+{
+  assert(cmr);
+  assert(sepa);
+  assert(matrix);
+
+  size_t* submatrixRows = NULL;
+  CMR_CALL( CMRallocStackArray(cmr, &submatrixRows, matrix->numRows) );
+  for (size_t row = 0; row < matrix->numRows; ++row)
+    submatrixRows[row] = row;
+
+  size_t* columnsSubmatrixColumn = NULL;
+  CMR_CALL( CMRallocStackArray(cmr, &columnsSubmatrixColumn, matrix->numColumns) );
+  for (size_t column = 0; column < matrix->numColumns; ++column)
+    columnsSubmatrixColumn[column] = column;
+
+  CMR_CALL( findRepresentatives(cmr, sepa, matrix, submatrixRows, columnsSubmatrixColumn) );
+
+  CMR_CALL( CMRfreeStackArray(cmr, &columnsSubmatrixColumn) );
+  CMR_CALL( CMRfreeStackArray(cmr, &submatrixRows) );
+
+  return CMR_OKAY;
+}
+
+CMR_ERROR CMRsepaFindRepresentativesSubmatrix(CMR* cmr, CMR_SEPA* sepa, CMR_CHRMAT* matrix, CMR_SUBMAT* submatrix)
+{
+  assert(cmr);
+  assert(sepa);
+  assert(matrix);
+  assert(submatrix);
+
+  assert(sepa->numRows <= matrix->numRows);
+  assert(sepa->numColumns <= matrix->numColumns);
+  assert(sepa->numRows == submatrix->numRows);
+  assert(sepa->numColumns == submatrix->numColumns);
+
+  size_t* columnsSubmatrixColumn = NULL;
+  CMR_CALL( CMRallocStackArray(cmr, &columnsSubmatrixColumn, matrix->numColumns) );
+  for (size_t column = 0; column < matrix->numColumns; ++column)
+    columnsSubmatrixColumn[column] = SIZE_MAX;
+  for (size_t submatrixColumn = 0; submatrixColumn < submatrix->numColumns; ++submatrixColumn)
+    columnsSubmatrixColumn[submatrix->columns[submatrixColumn]] = submatrixColumn;
+
+  CMR_CALL( findRepresentatives(cmr, sepa, matrix, submatrix->rows, columnsSubmatrixColumn) );
+
+  CMR_CALL( CMRfreeStackArray(cmr, &columnsSubmatrixColumn) );
+
+  return CMR_OKAY;
+}
+
+
+
+/**
+ * \brief Implementation of \p CMRsepaCheckTernary and \p CMRsepaCheckTernarySubmatrix.
+ */
+
+static
+CMR_ERROR checkTernary(
+  CMR* cmr,                         /**< \ref CMR environment. */
+  CMR_SEPA* sepa,                   /**< Separation. */
+  CMR_CHRMAT* matrix,               /**< Matrix. */
+  size_t* submatrixRows,            /**< Array mapping a submatrix row to a row of \p matrix. */
+  size_t* columnsToSubmatrixColumn, /**< Array mapping a column of \p matrix to a column of the submatrix or \c NULL. */
+  bool* pisTernary,                 /**< Pointer for storing whether the check passed. */
+  CMR_SUBMAT** pviolator            /**< Pointer for storing a violator submatrix (may be \c NULL). */
+)
 {
   assert(cmr);
   assert(sepa);
   assert(matrix);
   assert(pisTernary);
-  assert(!psubmatrix || !*psubmatrix);
 
-  CMR_CALL( checkTernary(cmr, sepa->numRows[0], sepa->rows[0], sepa->numColumns[1], sepa->columns[1],
-    CMRsepaRankTopRight(sepa), matrix, submatrix, pisTernary, psubmatrix) );
-  if (*pisTernary)
+  assert(sepa->type == CMR_SEPA_TYPE_TWO); // TODO: Implement for rank sum 2.
+
+  CMRdbgMsg(4, "Checking separation for being ternary.\n");
+
+  *pisTernary = true;
+
+  /* We find a row belonging to the rank-1 submatrix. */
+  size_t representativeSubmatrixRow = SIZE_MAX;
+  for (size_t submatrixRow = 0; submatrixRow < sepa->numRows; ++submatrixRow)
   {
-    CMR_CALL( checkTernary(cmr, sepa->numRows[1], sepa->rows[1], sepa->numColumns[0], sepa->columns[0],
-      CMRsepaRankBottomLeft(sepa), matrix, submatrix, pisTernary, psubmatrix) );
+    CMR_SEPA_FLAGS flags = sepa->rowsFlags[submatrixRow];
+    /* Skip top-left rows. */
+    if ((flags & CMR_SEPA_MASK_CHILD) == CMR_SEPA_FIRST)
+      continue;
+
+    if ((flags & CMR_SEPA_MASK_EXTRA) == CMR_SEPA_FLAG_RANK1)
+    {
+      representativeSubmatrixRow = submatrixRow;
+      break;
+    }
   }
+  assert(representativeSubmatrixRow < SIZE_MAX);
+
+  /* We then copy the nonzeros of that rank-1 subpart. */
+  int8_t* representativeSubmatrixDense = NULL;
+  size_t representativeSubmatrixColumn = SIZE_MAX;
+  CMR_CALL( CMRallocStackArray(cmr, &representativeSubmatrixDense, sepa->numColumns) );
+  for (size_t submatrixColumn = 0; submatrixColumn < sepa->numColumns; ++submatrixColumn)
+    representativeSubmatrixDense[submatrixColumn] = 0;
+  size_t first = matrix->rowSlice[submatrixRows[representativeSubmatrixRow]];
+  size_t beyond = matrix->rowSlice[submatrixRows[representativeSubmatrixRow] + 1];
+  for (size_t e = first; e < beyond; ++e)
+  {
+    size_t column = matrix->entryColumns[e];
+    size_t submatrixColumn = columnsToSubmatrixColumn[column];
+    if (submatrixColumn == SIZE_MAX)
+      continue;
+
+    if ((sepa->columnsFlags[submatrixColumn] & CMR_SEPA_MASK_CHILD) == CMR_SEPA_FIRST)
+    {
+      representativeSubmatrixDense[submatrixColumn] = matrix->entryValues[e];
+      if (representativeSubmatrixColumn == SIZE_MAX)
+        representativeSubmatrixColumn = submatrixColumn;
+    }
+  }
+
+  /* We now go through all rows of that part and compare to the dense. */
+  for (size_t submatrixRow = 0; submatrixRow < sepa->numRows; ++submatrixRow)
+  {
+    CMR_SEPA_FLAGS flags = sepa->rowsFlags[submatrixRow];
+
+    /* Skip top-left rows, zero rows and the representative row. */
+    if ((flags != (CMR_SEPA_SECOND | CMR_SEPA_FLAG_RANK1)) || (submatrixRow == representativeSubmatrixRow))
+      continue;
+
+    size_t row = submatrixRows[submatrixRow];
+    int8_t scaling = 0;
+    first = matrix->rowSlice[row];
+    beyond = matrix->rowSlice[row + 1];
+    for (size_t e = first; e < beyond; ++e)
+    {
+      size_t column = matrix->entryColumns[e];
+      size_t submatrixColumn = columnsToSubmatrixColumn[column];
+      if (submatrixColumn == SIZE_MAX)
+        continue;
+
+      if ((sepa->columnsFlags[submatrixColumn] & CMR_SEPA_MASK_CHILD) == CMR_SEPA_SECOND)
+        continue;
+
+      assert(representativeSubmatrixDense[submatrixColumn] != 0); /* Rank > 1 ??? */
+      if (!scaling)
+        scaling = representativeSubmatrixDense[submatrixColumn] * matrix->entryValues[e];
+
+      if (matrix->entryValues[e] * scaling != representativeSubmatrixDense[submatrixColumn])
+      {
+        if (pviolator)
+        {
+          CMRdbgMsg(6, "-> not ternary!\n");
+          CMR_CALL( CMRsubmatCreate(cmr, 2, 2, pviolator) );
+          CMR_SUBMAT* violator = *pviolator;
+          violator->rows[0] = representativeSubmatrixRow;
+          violator->rows[1] = submatrixRow;
+          violator->columns[0] = representativeSubmatrixColumn;
+          violator->columns[1] = submatrixColumn;
+        }
+        *pisTernary = false;
+        goto cleanup;
+      }
+    }
+  }
+
+cleanup:
+
+  CMR_CALL( CMRfreeStackArray(cmr, &representativeSubmatrixDense) );
+
+  return CMR_OKAY;
+}
+
+CMR_ERROR CMRsepaCheckTernary(CMR* cmr, CMR_SEPA* sepa, CMR_CHRMAT* matrix, bool* pisTernary,
+  CMR_SUBMAT** pviolator)
+{
+  assert(cmr);
+  assert(sepa);
+  assert(matrix);
+  assert(pisTernary);
+  assert(!pviolator || !*pviolator);
+
+  assert(matrix->numRows == sepa->numRows);
+  assert(matrix->numColumns == sepa->numColumns);
+
+  size_t* submatrixRows = NULL;
+  CMR_CALL( CMRallocStackArray(cmr, &submatrixRows, matrix->numRows) );
+  for (size_t row = 0; row < matrix->numRows; ++row)
+    submatrixRows[row] = row;
+
+  size_t* columnsSubmatrixColumn = NULL;
+  CMR_CALL( CMRallocStackArray(cmr, &columnsSubmatrixColumn, matrix->numColumns) );
+  for (size_t column = 0; column < matrix->numColumns; ++column)
+    columnsSubmatrixColumn[column] = column;
+
+  CMR_CALL( checkTernary(cmr, sepa, matrix, submatrixRows, columnsSubmatrixColumn, pisTernary, pviolator) );
+
+  CMR_CALL( CMRfreeStackArray(cmr, &columnsSubmatrixColumn) );
+  CMR_CALL( CMRfreeStackArray(cmr, &submatrixRows) );
+
+  return CMR_OKAY;
+}
+
+CMR_ERROR CMRsepaCheckTernarySubmatrix(CMR* cmr, CMR_SEPA* sepa, CMR_CHRMAT* matrix, CMR_SUBMAT* submatrix,
+  bool* pisTernary, CMR_SUBMAT** pviolator)
+{
+  assert(cmr);
+  assert(sepa);
+  assert(matrix);
+  assert(pisTernary);
+  assert(!pviolator || !*pviolator);
+
+  assert(sepa->numRows <= matrix->numRows);
+  assert(sepa->numColumns <= matrix->numColumns);
+  assert(sepa->numRows == submatrix->numRows);
+  assert(sepa->numColumns == submatrix->numColumns);
+
+  size_t* columnsSubmatrixColumn = NULL;
+  CMR_CALL( CMRallocStackArray(cmr, &columnsSubmatrixColumn, matrix->numColumns) );
+  for (size_t column = 0; column < matrix->numColumns; ++column)
+    columnsSubmatrixColumn[column] = SIZE_MAX;
+  for (size_t submatrixColumn = 0; submatrixColumn < submatrix->numColumns; ++submatrixColumn)
+    columnsSubmatrixColumn[submatrix->columns[submatrixColumn]] = submatrixColumn;
+
+  CMR_CALL( checkTernary(cmr, sepa, matrix, submatrix->rows, columnsSubmatrixColumn, pisTernary, pviolator) );
+
+  CMR_CALL( CMRfreeStackArray(cmr, &columnsSubmatrixColumn) );
 
   return CMR_OKAY;
 }

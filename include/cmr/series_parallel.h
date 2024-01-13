@@ -153,7 +153,8 @@ bool CMRspIsValid(
  *
  * Let \f$ A \in \{-1,0,1\}^{m \times n} \f$ with \f$ k \f$ nonzeros.
  *
- * If \p premainingSubmatrix is not \c NULL, then the SP-reduced submatrix is stored.
+ * Denote by \f$ A' \f$ the (maximum) SP-reduced submatrix of \f$ A \f$.
+ * If \p premainingSubmatrix is not \c NULL, then the rows and columns of \f$ A' \f$ are stored.
  *
  * If \p pviolatorSubmatrix is not \c NULL and \p matrix is not binary series-parallel, then a wheel-submatrix is
  * stored.
@@ -180,7 +181,8 @@ CMR_ERROR CMRtestBinarySeriesParallel(
  *
  * Let \f$ A \in \{-1,0,+1\}^{m \times n} \f$ with \f$ k \f$ nonzeros.
  *
- * If \p premainingSubmatrix is not \c NULL, then the SP-reduced submatrix is stored.
+ * Denote by \f$ A' \f$ the (maximum) SP-reduced submatrix of \f$ A \f$.
+ * If \p premainingSubmatrix is not \c NULL, then the rows and columns of \f$ A' \f$ are stored.
  *
  * If \p pviolatorSubmatrix is not \c NULL and \p matrix is not ternary series-parallel, then a signed wheel- or
  * \f$ M_2 \f$-submatrix is stored.
@@ -207,14 +209,15 @@ CMR_ERROR CMRtestTernarySeriesParallel(
  *
  * Let \f$ A \in \{0,1\}^{m \times n} \f$ with \f$ k \f$ nonzeros.
  *
- * If \p premainingSubmatrix is not \c NULL, then the SP-reduced submatrix is stored.
+ * Denote by \f$ A' \f$ the (maximum) SP-reduced submatrix of \f$ A \f$.
+ * If \p premainingSubmatrix is not \c NULL, then the rows and columns of \f$ A' \f$ are stored.
  *
  * If \p pviolatorSubmatrix is not \c NULL and \p matrix is not binary series-parallel, then a wheel-submatrix is
- * stored (unless a 2-separation is found; see below).
+ * stored (unless a 2-separation is found; see below). Note that the row/column indices refer to \f$ A \f$.
  *
  * If \p pseparation is not \c NULL and during the search for a wheel-submatrix a 2-separation that does not correspond
  * to an SP reduction is found then such a 2-separation is returned and the algorithm terminates without returning a
- * wheel-submatrix.
+ * wheel-submatrix. Note that \p *pseparation then contains row/column indices relative to \f$ A' \f$.
  *
  * The running time is \f$ \mathcal{O} (m + n + k) \f$ assuming no hashtable collisions.
  */
@@ -242,16 +245,17 @@ CMR_ERROR CMRdecomposeBinarySeriesParallel(
  *
  * Let \f$ A \in \{-1,0,+1\}^{m \times n} \f$ with \f$ k \f$ nonzeros.
  *
- * If \p premainingSubmatrix is not \c NULL, then the SP-reduced submatrix is stored.
+ * Denote by \f$ A' \f$ the (maximum) SP-reduced submatrix of \f$ A \f$.
+ * If \p premainingSubmatrix is not \c NULL, then the rows and columns of \f$ A' \f$ are stored.
  *
  * If \p pviolatorSubmatrix is not \c NULL and \p matrix is not ternary series-parallel, then a signed wheel- or
- * \f$ M_2 \f$-submatrix is stored (unless a 2-separation is found; see below).
+ * \f$ M_2 \f$-submatrix is stored (unless a 2-separation is found; see below). Note that the row/column indices refer
+ * to \f$ A \f$.
  *
  * If \p pseparation is not \c NULL and during the search for a signed wheel-submatrix a 2-separation that does not
  * correspond to an SP reduction is found then such a 2-separation is returned and the algorithm terminates without
- * returning a signed wheel- or \f$ M_2 \f$-submatrix.
- *
- * \note \p *pviolatorSubmatrix and \p *pseparation refer to \f$ A \f$ and not to the
+ * returning a signed wheel- or \f$ M_2 \f$-submatrix. Note that \p *pseparation then contains row/column indices
+ * relative to \f$ A' \f$.
  *
  * The running time is \f$ \mathcal{O} (m + n + k) \f$ assuming no hashtable collisions.
  *

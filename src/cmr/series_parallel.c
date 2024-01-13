@@ -1,4 +1,4 @@
-// #define CMR_DEBUG /* Uncomment to debug this file. */
+#define CMR_DEBUG /* Uncomment to debug this file. */
 
 // TODO: Try to not fill the hashtable in initialScan but just add all elements to the queue.
 
@@ -510,7 +510,7 @@ CMR_ERROR reduceListMatrix(
   {
 #if defined(CMR_DEBUG)
     CMRdbgMsg(0, "\n    Status:\n");
-    for (ListMatrixNonzero* nz = listmatrix->anchor.below; nz != &listmatrix->anchor; nz = nz->below)
+    for (ListMat8Nonzero* nz = listmatrix->anchor.below; nz != &listmatrix->anchor; nz = nz->below)
     {
       size_t row = nz->row;
       CMRdbgMsg(6, "Row r%d: %d nonzeros, hashed = %s, hash = %ld", row+1, listmatrix->rowElements[row].numNonzeros,
@@ -523,7 +523,7 @@ CMR_ERROR reduceListMatrix(
       }
       CMRdbgMsg(0, "\n");
     }
-    for (ListMatrixNonzero* nz = listmatrix->anchor.right; nz != &listmatrix->anchor; nz = nz->right)
+    for (ListMat8Nonzero* nz = listmatrix->anchor.right; nz != &listmatrix->anchor; nz = nz->right)
     {
       size_t column = nz->column;
       CMRdbgMsg(6, "Column c%d: %d nonzeros, hashed = %s, hash = %ld", column+1,
@@ -1121,7 +1121,7 @@ CMR_ERROR createFullRemainingMatrix(
 }
 
 /**
- * \brief Searches for a wheel-submatrix.
+ * \brief Searches for a wheel-submatrix; may also encounter and return a 2-separation.
  */
 
 static
@@ -1179,7 +1179,7 @@ CMR_ERROR extractWheelSubmatrix(
       columnData, queue, queueMemory, sources, 1, targets, 1, &foundTarget, 0) );
     listmatrix->rowElements[sourceRow].head.right->special = 0;
     size_t length = (foundTarget == SIZE_MAX) ? SIZE_MAX : columnData[targetColumn].distance + 1;
-    CMRdbgMsg(4, "Length of cycle is %d.\n", length);
+    CMRdbgMsg(4, "Length of cycle is %zu.\n", length);
      
     if (foundTarget < SIZE_MAX && length > 4)
     {
@@ -1201,8 +1201,8 @@ CMR_ERROR extractWheelSubmatrix(
       break;
     }
 
-    size_t numSources = SIZE_MAX;
-    size_t numTargets = SIZE_MAX;
+    size_t numSources = 1;
+    size_t numTargets = 1;
     size_t numTraversedEdges = SIZE_MAX;
     if (foundTarget < SIZE_MAX)
     {
@@ -1215,8 +1215,8 @@ CMR_ERROR extractWheelSubmatrix(
         targetColumn+1, rowData[row2].predecessor+1);
 
       /* Go trough the two nonzeros of the two rows simultaneously. */
-            ListMat8Nonzero* nz1 = listmatrix->rowElements[row1].head.right;
-            ListMat8Nonzero* nz2 = listmatrix->rowElements[row2].head.right;
+      ListMat8Nonzero* nz1 = listmatrix->rowElements[row1].head.right;
+      ListMat8Nonzero* nz2 = listmatrix->rowElements[row2].head.right;
       numTargets = 0;
       while (nz1->column != SIZE_MAX)
       {
@@ -1265,7 +1265,7 @@ CMR_ERROR extractWheelSubmatrix(
         currentIndex = (currentIndex + 1) % numTargets;
       }
 
-      CMRdbgMsg(4, "Identified %d source rows.\n", numSources);
+      CMRdbgMsg(4, "Identified %zu source rows.\n", numSources);
       assert(numSources >= 2);
 
       currentBFS++;
@@ -1358,46 +1358,40 @@ CMR_ERROR extractWheelSubmatrix(
     {
       CMRdbgMsg(4, "No path found. Extracting 2-separation.\n");
 
-      CMR_CALL( CMRsepaCreate(cmr, numReducedRows, numReducedColumns, pseparation) );
+      CMR_CALL( CMRsepaCreate(cmr, numReducedRows, numReducedColumns, CMR_SEPA_TYPE_TWO, pseparation) );
       CMR_SEPA* sepa = *pseparation;
 
       /* Collect all reduced reachable rows/columns. */
       size_t reducedRow = 0;
-      size_t reducedSourceRow = 0;
       for (size_t row = 0; row < numRows; ++row)
       {
-        if (rowData[row].lastBFS == -2)
+        if (listmatrix->rowElements[row].numNonzeros == 0)
           continue;
 
-        sepa->rowsToPart[reducedRow] = (rowData[row].lastBFS == currentBFS) ? 0 : 1;
-        CMRdbgMsg(6, "Assigning row r%ld = reduced row r%ld to part %d.\n", row+1, reducedRow+1,
-          sepa->rowsToPart[reducedRow]);
-        if (row == sourceRow)
-          reducedSourceRow = reducedRow;
+        if (rowData[row].lastBFS != -2)
+        {
+          sepa->rowsFlags[reducedRow] = (rowData[row].lastBFS == currentBFS) ? CMR_SEPA_SECOND : CMR_SEPA_FIRST;
+          CMRdbgMsg(6, "Assigning row r%zu = reduced row r%zu to part %d.\n", row+1, reducedRow+1,
+            sepa->rowsFlags[reducedRow] & CMR_SEPA_MASK_CHILD);
+        }
         ++reducedRow;
       }
 
       /* Collect all reduced columns that are not reachable. */
       size_t reducedColumn = 0;
-      size_t reducedTargetColumn = 0;
       for (size_t column = 0; column < numColumns; ++column)
       {
-        if (columnData[column].lastBFS == -2)
+        if (listmatrix->columnElements[column].numNonzeros == 0)
           continue;
 
-        sepa->columnsToPart[reducedColumn] = (columnData[column].lastBFS == currentBFS) ? 0 : 1;
-        CMRdbgMsg(6, "Assigning column c%ld = reduced column c%ld to part %d.\n", column+1, reducedColumn+1,
-          sepa->columnsToPart[column]);
-        if (column == targetColumn)
-          reducedTargetColumn = reducedColumn;
+        if (columnData[column].lastBFS != -2)
+        {
+          sepa->columnsFlags[reducedColumn] = (columnData[column].lastBFS == currentBFS) ? CMR_SEPA_SECOND : CMR_SEPA_FIRST;
+          CMRdbgMsg(6, "Assigning column c%ld = reduced column c%ld to part %d.\n", column+1, reducedColumn+1,
+            sepa->columnsFlags[reducedColumn]);
+        }
         ++reducedColumn;
       }
-
-      CMRdbgMsg(6, "Extra row r%ld = reduced row r%ld for part 1 and extra column c%ld = reduced column c%ld for part 0.\n",
-        sourceRow + 1, reducedSourceRow + 1, targetColumn + 1, reducedTargetColumn + 1);
-
-      CMR_CALL( CMRsepaInitialize(cmr, sepa, SIZE_MAX, SIZE_MAX, reducedSourceRow, reducedTargetColumn, SIZE_MAX,
-        SIZE_MAX, SIZE_MAX, SIZE_MAX) );
 
       break;
     }
@@ -1471,7 +1465,7 @@ CMR_ERROR extractWheelSubmatrix(
           listmatrix->rowElements[row].head.right->left = listmatrix->rowElements[row].head.left;
         }
       }
-      
+
       /* Mark all target columns and the single remaining source row as non-special again. */
       for (size_t t = 0; t < numTargets; ++t)
         columnData[CMRelementToColumnIndex(targets[t])].specialBFS = false;
@@ -1592,14 +1586,18 @@ CMR_ERROR decomposeBinarySeriesParallel(
       stats->reduceTime += (now - reduceClock) * 1.0 / CLOCKS_PER_SEC;
     }
 
-    /* Extract remaining submatrix. */
-    if (preducedSubmatrix)
+    /* Extract SP-reduced submatrix. */
+    CMR_SUBMAT* reducedSubmatrix = NULL;
+    if (preducedSubmatrix || ((pviolatorSubmatrix || pseparation) && (*pnumReductions != SIZE_MAX)
+      && (*pnumReductions != (matrix->numRows + matrix->numColumns))))
     {
       CMR_CALL( extractRemainingSubmatrix(cmr, matrix, numRowReductions, numColumnReductions, listmatrix,
-        preducedSubmatrix) );
+        &reducedSubmatrix) );
     }
+    if (preducedSubmatrix)
+      *preducedSubmatrix = reducedSubmatrix;
 
-    if ((pviolatorSubmatrix || pseparation)  && (*pnumReductions != SIZE_MAX)
+    if ((pviolatorSubmatrix || pseparation) && (*pnumReductions != SIZE_MAX)
       && (*pnumReductions != (matrix->numRows + matrix->numColumns)))
     {
       clock_t wheelClock = 0;
@@ -1609,12 +1607,18 @@ CMR_ERROR decomposeBinarySeriesParallel(
       CMR_CALL( extractWheelSubmatrix(cmr, listmatrix, rowData, columnData, queue, queueMemory,
         numRows - numRowReductions, numColumns - numColumnReductions, pviolatorSubmatrix, pseparation) );
 
+      if (pseparation && *pseparation)
+        CMR_CALL( CMRsepaFindRepresentativesSubmatrix(cmr, *pseparation, matrix, reducedSubmatrix) );
+
       if (stats)
       {
         stats->wheelCount++;
         stats->wheelTime += (clock() - wheelClock) * 1.0 / CLOCKS_PER_SEC;
       }
     }
+
+    if (reducedSubmatrix && !preducedSubmatrix)
+      CMR_CALL( CMRsubmatFree(cmr, &reducedSubmatrix) );
   }
   else
   {
@@ -1801,12 +1805,16 @@ CMR_ERROR decomposeTernarySeriesParallel(
       stats->reduceTime += (now - reduceClock) * 1.0 / CLOCKS_PER_SEC;
     }
 
-    /* Extract remaining submatrix. */
-    if (preducedSubmatrix)
+    /* Extract SP-reduced submatrix. */
+    CMR_SUBMAT* reducedSubmatrix = NULL;
+    if (preducedSubmatrix || ((pviolatorSubmatrix || pseparation) && (*pnumReductions != SIZE_MAX)
+      && (*pnumReductions != (matrix->numRows + matrix->numColumns))))
     {
       CMR_CALL( extractRemainingSubmatrix(cmr, matrix, numRowReductions, numColumnReductions, listmatrix,
-        preducedSubmatrix) );
+        &reducedSubmatrix) );
     }
+    if (preducedSubmatrix)
+      *preducedSubmatrix = reducedSubmatrix;
 
     if ((pviolatorSubmatrix || pseparation) && (*pnumReductions != SIZE_MAX)
       && (*pnumReductions != (matrix->numRows + matrix->numColumns)))
@@ -1854,29 +1862,18 @@ CMR_ERROR decomposeTernarySeriesParallel(
         CMR_CALL( extractWheelSubmatrix(cmr, listmatrix, rowData, columnData, queue, queueMemory,
           numRows - numRowReductions, numColumns - numColumnReductions, pviolatorSubmatrix, pseparation) );
 
+        if (pseparation && *pseparation)
+          CMR_CALL( CMRsepaFindRepresentativesSubmatrix(cmr, *pseparation, matrix, reducedSubmatrix) );
+
         /* Check whether the rank-1 part also has ternary rank 1. */
         if (pseparation)
         {
           CMRdbgMsg(2, "Checking block of -1/+1s for ternary rank 1.\n");
 
-          CMRdbgMsg(2, "Separation has part 0 (%ldx%ld) and part 1 (%ldx%ld) and ranks %d + %d.\n",
-            (*pseparation)->numRows[0], (*pseparation)->numColumns[0], (*pseparation)->numRows[1],
-            (*pseparation)->numColumns[1], CMRsepaRankTopRight(*pseparation), CMRsepaRank(*pseparation));
-
           bool sepaIsTernary;
-          CMR_SUBMAT* reducedMatrix = NULL;
-          if (preducedSubmatrix)
-            reducedMatrix = *preducedSubmatrix;
-          else
-          {
-            CMR_CALL( extractRemainingSubmatrix(cmr, matrix, numRowReductions, numColumnReductions, listmatrix,
-              &reducedMatrix) );
-          }
 
-          CMR_CALL( CMRsepaCheckTernary(cmr, *pseparation, matrix, reducedMatrix, &sepaIsTernary, pviolatorSubmatrix) );
-          
-          if (!preducedSubmatrix)
-            CMR_CALL( CMRsubmatFree(cmr, &reducedMatrix) );
+          CMR_CALL( CMRsepaCheckTernarySubmatrix(cmr, *pseparation, matrix, reducedSubmatrix, &sepaIsTernary,
+            pviolatorSubmatrix) );
           
           if (!sepaIsTernary)
             CMR_CALL( CMRsepaFree(cmr, pseparation) );
@@ -1895,6 +1892,9 @@ CMR_ERROR decomposeTernarySeriesParallel(
         CMR_CALL( CMRsubmatFree(cmr, &violatorSubmatrix) );
       }
     }
+
+    if (reducedSubmatrix && !preducedSubmatrix)
+      CMR_CALL( CMRsubmatFree(cmr, &reducedSubmatrix) );
   }
   else
   {

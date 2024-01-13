@@ -1,9 +1,9 @@
 // #define CMR_DEBUG /* Uncomment to debug this file. */
 
-#include "regular_internal.h"
+#include "regularity_internal.h"
 
 #include "env_internal.h"
-#include "dec_internal.h"
+#include "matroid_internal.h"
 
 #include <time.h>
 
@@ -696,12 +696,12 @@ CMR_ERROR extendMinorSeparation(
   if (countElements[0] < 4 || countElements[1] < 4)
     return CMR_OKAY;
 
-  CMR_CALL( CMRsepaCreate(cmr, matrix->numRows, matrix->numColumns, pseparation) );
-  CMR_SEPA* separation = *pseparation;
-  for (size_t row = 0; row < matrix->numRows; ++row)
-    separation->rowsToPart[row] = rowData[row].part < 0 ? -1 : rowData[row].part;
-  for (size_t column = 0; column < matrix->numColumns; ++column)
-    separation->columnsToPart[column] = columnData[column].part < 0 ? -1 : columnData[column].part;
+  CMR_CALL( CMRsepaCreate(cmr, matrix->numRows, matrix->numColumns, CMR_SEPA_TYPE_THREE_DISTRIBUTED_RANKS, pseparation) );
+//   CMR_SEPA* separation = *pseparation;
+//   for (size_t row = 0; row < matrix->numRows; ++row)
+//     separation->rowsToPart[row] = rowData[row].part < 0 ? -1 : rowData[row].part;
+//   for (size_t column = 0; column < matrix->numColumns; ++column)
+//     separation->columnsToPart[column] = columnData[column].part < 0 ? -1 : columnData[column].part;
 
   return CMR_OKAY;
 }
@@ -715,7 +715,7 @@ CMR_ERROR extendMinorSeparation(
 static
 CMR_ERROR transformSeparationNested(
   CMR* cmr,             /**< \ref CMR environment. */
-  CMR_DEC* dec,         /**< Decomposition node. */
+  CMR_MATROID_DEC* dec, /**< Decomposition node. */
   CMR_SEPA* separation  /**< 3-separation. */
 )
 {
@@ -731,26 +731,26 @@ CMR_ERROR transformSeparationNested(
   CMR_CALL( CMRallocStackArray(cmr, &rowsToPart, dec->matrix->numRows) );
   CMR_CALL( CMRallocStackArray(cmr, &columnsToPart, dec->matrix->numColumns) );
 
-  for (size_t row = 0; row < dec->matrix->numRows; ++row)
-    rowsToPart[row] = separation->rowsToPart[row];
-  for (size_t column = 0; column < dec->matrix->numColumns; ++column)
-    columnsToPart[column] = separation->columnsToPart[column];
+//   for (size_t row = 0; row < dec->matrix->numRows; ++row)
+//     rowsToPart[row] = separation->rowsToPart[row];
+//   for (size_t column = 0; column < dec->matrix->numColumns; ++column)
+//     columnsToPart[column] = separation->columnsToPart[column];
 
   for (size_t nestedRow = 0; nestedRow < dec->matrix->numRows; ++nestedRow)
   {
-    CMR_ELEMENT element = dec->nestedMinorsRowsOriginal[nestedRow];
-    if (CMRelementIsRow(element))
-      separation->rowsToPart[CMRelementToRowIndex(element)] = rowsToPart[nestedRow];
-    else
-      separation->columnsToPart[CMRelementToColumnIndex(element)] = rowsToPart[nestedRow];
+//     CMR_ELEMENT element = dec->nestedMinorsRowsOriginal[nestedRow];
+//     if (CMRelementIsRow(element))
+//       separation->rowsToPart[CMRelementToRowIndex(element)] = rowsToPart[nestedRow];
+//     else
+//       separation->columnsToPart[CMRelementToColumnIndex(element)] = rowsToPart[nestedRow];
   }
   for (size_t nestedColumn = 0; nestedColumn < dec->matrix->numColumns; ++nestedColumn)
   {
-    CMR_ELEMENT element = dec->nestedMinorsColumnsOriginal[nestedColumn];
-    if (CMRelementIsRow(element))
-      separation->rowsToPart[CMRelementToRowIndex(element)] = columnsToPart[nestedColumn];
-    else
-      separation->columnsToPart[CMRelementToColumnIndex(element)] = columnsToPart[nestedColumn];
+//     CMR_ELEMENT element = dec->nestedMinorsColumnsOriginal[nestedColumn];
+//     if (CMRelementIsRow(element))
+//       separation->rowsToPart[CMRelementToRowIndex(element)] = columnsToPart[nestedColumn];
+//     else
+//       separation->columnsToPart[CMRelementToColumnIndex(element)] = columnsToPart[nestedColumn];
   }
 
   CMR_CALL( CMRfreeStackArray(cmr, &columnsToPart) );
@@ -760,16 +760,16 @@ CMR_ERROR transformSeparationNested(
 #if defined(CMR_DEBUG)
   CMR_CALL( CMRchrmatPrintDense(cmr, dec->matrix, stdout, '0', true) );
 #endif /* CMR_DEBUG */
-  for (size_t row = 0; row < dec->matrix->numRows; ++row)
-    CMRdbgMsg(12, "Original row r%ld belongs to part %d.\n", row + 1, separation->rowsToPart[row]);
-  for (size_t column = 0; column < dec->matrix->numColumns; ++column)
-    CMRdbgMsg(12, "Original column c%ld belongs to part %d.\n", column + 1, separation->columnsToPart[column]);
+//   for (size_t row = 0; row < dec->matrix->numRows; ++row)
+//     CMRdbgMsg(12, "Original row r%ld belongs to part %d.\n", row + 1, separation->rowsToPart[row]);
+//   for (size_t column = 0; column < dec->matrix->numColumns; ++column)
+//     CMRdbgMsg(12, "Original column c%ld belongs to part %d.\n", column + 1, separation->columnsToPart[column]);
 
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRregularSearchThreeSeparation(CMR* cmr, CMR_DEC* dec, CMR_CHRMAT* transpose, bool ternary,
-  size_t firstNonCoGraphicMinor, CMR_SUBMAT** psubmatrix, CMR_REGULAR_STATISTICS* stats, double timeLimit)
+CMR_ERROR CMRregularSearchThreeSeparation(CMR* cmr, CMR_MATROID_DEC* dec, CMR_CHRMAT* transpose, bool ternary,
+  size_t firstNonCoGraphicMinor, CMR_SUBMAT** psubmatrix, CMR_REGULAR_STATS* stats, double timeLimit)
 {
   CMR_UNUSED(psubmatrix);
   CMR_UNUSED(ternary);
@@ -779,19 +779,19 @@ CMR_ERROR CMRregularSearchThreeSeparation(CMR* cmr, CMR_DEC* dec, CMR_CHRMAT* tr
 
   clock_t time = clock();
   size_t firstMinor = 1;
-  while (dec->nestedMinorsSequenceNumRows[firstMinor] + dec->nestedMinorsSequenceNumColumns[firstMinor] < 8)
+//   while (dec->nestedMinorsSequenceNumRows[firstMinor] + dec->nestedMinorsSequenceNumColumns[firstMinor] < 8)
   {
     ++firstMinor;
-    if (firstMinor == dec->nestedMinorsLength)
+//     if (firstMinor == dec->nestedMinorsLength)
     {
       CMRdbgMsg(8, "Number of elements is below 8.\n");
-      dec->type = CMR_DEC_IRREGULAR;
+//       dec->type = CMR_DEC_IRREGULAR;
       return CMR_OKAY;
     }
     if (firstMinor > firstNonCoGraphicMinor)
     {
       CMRdbgMsg(8, "Immediately found an F_7 or F_7*.\n");
-      dec->type = CMR_DEC_IRREGULAR;
+//       dec->type = CMR_DEC_IRREGULAR;
       return CMR_OKAY;
     }
   }
@@ -809,19 +809,19 @@ CMR_ERROR CMRregularSearchThreeSeparation(CMR* cmr, CMR_DEC* dec, CMR_CHRMAT* tr
   size_t* partColumns[2] = { NULL, NULL };;
   size_t partNumColumns[2];
   CMR_ELEMENT* queueMemory = NULL;
-  CMR_CALL( CMRallocStackArray(cmr, &partRows[0], dec->nestedMinorsSequenceNumRows[firstNonCoGraphicMinor]) );
-  CMR_CALL( CMRallocStackArray(cmr, &partRows[1], dec->nestedMinorsSequenceNumRows[firstNonCoGraphicMinor]) );
-  CMR_CALL( CMRallocStackArray(cmr, &partColumns[0], dec->nestedMinorsSequenceNumColumns[firstNonCoGraphicMinor]) );
-  CMR_CALL( CMRallocStackArray(cmr, &partColumns[1], dec->nestedMinorsSequenceNumColumns[firstNonCoGraphicMinor]) );
+//   CMR_CALL( CMRallocStackArray(cmr, &partRows[0], dec->nestedMinorsSequenceNumRows[firstNonCoGraphicMinor]) );
+//   CMR_CALL( CMRallocStackArray(cmr, &partRows[1], dec->nestedMinorsSequenceNumRows[firstNonCoGraphicMinor]) );
+//   CMR_CALL( CMRallocStackArray(cmr, &partColumns[0], dec->nestedMinorsSequenceNumColumns[firstNonCoGraphicMinor]) );
+//   CMR_CALL( CMRallocStackArray(cmr, &partColumns[1], dec->nestedMinorsSequenceNumColumns[firstNonCoGraphicMinor]) );
   CMR_CALL( CMRallocStackArray(cmr, &queueMemory, dec->matrix->numRows + dec->matrix->numColumns) );
 
-  size_t firstMinorNumRows = dec->nestedMinorsSequenceNumRows[firstMinor];
-  size_t firstMinorNumColumns = dec->nestedMinorsSequenceNumColumns[firstMinor];
+  size_t firstMinorNumRows = 0;//dec->nestedMinorsSequenceNumRows[firstMinor];
+  size_t firstMinorNumColumns = 0;//dec->nestedMinorsSequenceNumColumns[firstMinor];
 
   CMRdbgMsg(8, "Initial minor has %ld rows and %ld columns.\n", firstMinorNumRows, firstMinorNumColumns);
-  CMRdbgMsg(8, "First non-(co)graphic minor has %ld rows and %ld columns.\n",
-    dec->nestedMinorsSequenceNumRows[firstNonCoGraphicMinor],
-    dec->nestedMinorsSequenceNumColumns[firstNonCoGraphicMinor]);
+//   CMRdbgMsg(8, "First non-(co)graphic minor has %ld rows and %ld columns.\n",
+//     dec->nestedMinorsSequenceNumRows[firstNonCoGraphicMinor],
+//     dec->nestedMinorsSequenceNumColumns[firstNonCoGraphicMinor]);
 
   if (stats)
     stats->enumerationCount++;
@@ -854,8 +854,8 @@ CMR_ERROR CMRregularSearchThreeSeparation(CMR* cmr, CMR_DEC* dec, CMR_CHRMAT* tr
 
     if (stats)
       stats->enumerationCandidatesCount++;
-    CMR_CALL( extendMinorSeparation(cmr, dec->nestedMinorsMatrix, transpose, rowData, columnData, partRows, partNumRows,
-      partColumns, partNumColumns, queueMemory, &separation) );
+//     CMR_CALL( extendMinorSeparation(cmr, dec->nestedMinorsMatrix, transpose, rowData, columnData, partRows, partNumRows,
+//       partColumns, partNumColumns, queueMemory, &separation) );
   }
 
   if (!separation)
@@ -878,11 +878,11 @@ CMR_ERROR CMRregularSearchThreeSeparation(CMR* cmr, CMR_DEC* dec, CMR_CHRMAT* tr
         return CMR_ERROR_TIMEOUT;
       }
       
-      CMRdbgMsg(8, "Next minor has %ld rows and %ld columns.\n", dec->nestedMinorsSequenceNumRows[minor],
-        dec->nestedMinorsSequenceNumColumns[minor]);
+//       CMRdbgMsg(8, "Next minor has %ld rows and %ld columns.\n", dec->nestedMinorsSequenceNumRows[minor],
+//         dec->nestedMinorsSequenceNumColumns[minor]);
 
-      size_t numOldRows = dec->nestedMinorsSequenceNumRows[minor-1];
-      size_t numOldColumns = dec->nestedMinorsSequenceNumColumns[minor-1];
+      size_t numOldRows = 0;//dec->nestedMinorsSequenceNumRows[minor-1];
+      size_t numOldColumns = 0;//dec->nestedMinorsSequenceNumColumns[minor-1];
       for (size_t old = 0; (old <= numOldRows + numOldColumns) && !separation; ++old)
       {
         partNumRows[0] = 0;
@@ -917,21 +917,21 @@ CMR_ERROR CMRregularSearchThreeSeparation(CMR* cmr, CMR_DEC* dec, CMR_CHRMAT* tr
         /* Enumerate distribution of new elements. We store the distribution of the old elements to skip recalculation. */
         size_t savedPartNumRows[2] = { partNumRows[0], partNumRows[1] };
         size_t savedPartNumColumns[2] = { partNumColumns[0], partNumColumns[1] };
-        size_t numNewRows = dec->nestedMinorsSequenceNumRows[minor] - dec->nestedMinorsSequenceNumRows[minor-1];
-        size_t numNewColumns = dec->nestedMinorsSequenceNumColumns[minor] - dec->nestedMinorsSequenceNumColumns[minor-1];
+        size_t numNewRows = 0;//dec->nestedMinorsSequenceNumRows[minor] - dec->nestedMinorsSequenceNumRows[minor-1];
+        size_t numNewColumns = 0;//dec->nestedMinorsSequenceNumColumns[minor] - dec->nestedMinorsSequenceNumColumns[minor-1];
         short beyondBits = (1 << (numNewRows + numNewColumns)) - 1; /* Subtracting 1 ensures that part 0 is non-empty. */
         for (short bits = 0; bits < beyondBits && !separation; ++bits)
         {
           for (size_t newRow = 0; newRow < numNewRows; ++newRow)
           {
-            size_t row = dec->nestedMinorsSequenceNumRows[minor-1] + newRow;
+            size_t row = 0;//dec->nestedMinorsSequenceNumRows[minor-1] + newRow;
             short part = (bits & (1 << newRow)) ? 1 : 0;
             partRows[part][partNumRows[part]++] = row;
           }
 
           for (size_t newColumn = 0; newColumn < numNewColumns; ++newColumn)
           {
-            size_t column = dec->nestedMinorsSequenceNumColumns[minor-1] + newColumn;
+            size_t column = 0;//dec->nestedMinorsSequenceNumColumns[minor-1] + newColumn;
             short part = (bits & (1 << (numNewRows + newColumn))) ? 1 : 0;
             partColumns[part][partNumColumns[part]++] = column;
           }
@@ -942,8 +942,8 @@ CMR_ERROR CMRregularSearchThreeSeparation(CMR* cmr, CMR_DEC* dec, CMR_CHRMAT* tr
 
           if (stats)
             stats->enumerationCandidatesCount++;
-          CMR_CALL( extendMinorSeparation(cmr, dec->nestedMinorsMatrix, transpose, rowData, columnData, partRows, partNumRows,
-            partColumns, partNumColumns, queueMemory, &separation) );
+//           CMR_CALL( extendMinorSeparation(cmr, dec->nestedMinorsMatrix, transpose, rowData, columnData, partRows, partNumRows,
+//             partColumns, partNumColumns, queueMemory, &separation) );
 
           /* Restore distribution of previous minors. */
           partNumRows[0] = savedPartNumRows[0];
@@ -962,14 +962,14 @@ CMR_ERROR CMRregularSearchThreeSeparation(CMR* cmr, CMR_DEC* dec, CMR_CHRMAT* tr
 
   if (separation)
   {
-    dec->type = CMR_DEC_THREE_SUM;
-    dec->separation = separation;
+    dec->type = CMR_MATROID_DEC_TYPE_THREE_SUM;
+//     dec->separation = separation;
     CMR_CALL( transformSeparationNested(cmr, dec, separation) );
     CMR_CALL( CMRsepaInitializeMatrix(cmr, separation, dec->matrix, 2) );
     CMR_CALL( CMRdecApplySeparation(cmr, dec, separation) );
   }
-  else
-    dec->type = CMR_DEC_IRREGULAR;
+//   else
+//     dec->type = CMR_DEC_IRREGULAR;
 
   CMR_CALL( CMRfreeStackArray(cmr, &queueMemory) );
   CMR_CALL( CMRfreeStackArray(cmr, &partColumns[1]) );
