@@ -30,6 +30,10 @@ CMR_ERROR CMRdensebinmatrixCreate(CMR* cmr, size_t numRows, size_t numColumns, D
 CMR_ERROR CMRdensebinmatrixFree(CMR* cmr, DenseBinaryMatrix** pmatrix)
 {
   assert(cmr);
+  assert(pmatrix);
+
+  if (!*pmatrix)
+    return CMR_OKAY;
 
   CMR_CALL( CMRfreeBlockArray(cmr, &(*pmatrix)->data) );
   CMR_CALL( CMRfreeBlockArray(cmr, pmatrix) );

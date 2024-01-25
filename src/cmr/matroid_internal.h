@@ -1,8 +1,16 @@
 #ifndef CMR_MATROID_DEC_INTERNAL_H
 #define CMR_MATROID_DEC_INTERNAL_H
 
+#include "densematrix.h"
+
 #include <cmr/matroid.h>
 #include <cmr/series_parallel.h>
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 
 struct _CMR_MATROID_DEC
 {
@@ -17,9 +25,7 @@ struct _CMR_MATROID_DEC
                                                **         (negative), or not determined if zero. */
   bool testedR10;                             /**< \brief Matrix does not represent \f$ R_{10} \f$ unless \p type
                                                **         indicates this. */
-  CMR_MATROID_DEC_THREESUM_TYPE threesumType; /**< \brief Type of 3-sum; an AND with
-                                               **         \c CMR_MATROID_DEC_THREESUM_TYPE_DISTRIBUTED_RANKS
-                                               **         indicates that the 3-sum has distributed ranks. */
+  CMR_MATROID_DEC_THREESUM_FLAG threesumFlags;/**< \brief Type of 3-sum. */
   CMR_CHRMAT* matrix;                         /**< \brief Matrix representing this node. */
   CMR_CHRMAT* transpose;                      /**< \brief Tranpose of \ref matrix representing this node. */
   struct _CMR_MATROID_DEC* parent;            /**< \brief Parent node (\c NULL for decomposition root). */
@@ -56,15 +62,28 @@ struct _CMR_MATROID_DEC
   size_t* pivotColumns;                       /**< \brief Columns of pivots. */
   size_t numPivots;                           /**< \brief Number of pivots. */
 
-  CMR_CHRMAT* nestedMinorsMatrix;             /**< \brief Equivalent binary matrix that displays the sequence of nested
-                                               **         minors. */
+  DenseBinaryMatrix* denseMatrix;             /**< \brief Dense support matrix for nested minors search. Rows and
+                                               **         columns are not permuted, but pivots are applied. */
+  CMR_ELEMENT* denseRowsOriginal;             /**< \brief Maps rows of \p denseMatrix to elements of \p matrix. */
+  CMR_ELEMENT* denseColumnsOriginal;          /**< \brief Maps columns of \p denseMatrix to elements of \p matrix. */
+  size_t* nestedMinorsRowsDense;              /**< \brief Maps rows of nested minor sequence to rows of \p dense. */
+  size_t* nestedMinorsColumnsDense;           /**< \brief Maps columns of nested minor sequence to columns of
+                                               **         \p dense. */
+
+  size_t nestedMinorsLength;                  /**< \brief Length of sequence of nested minors. */
   size_t* nestedMinorsSequenceNumRows;        /**< \brief Number of rows of sequence of nested minors. */
   size_t* nestedMinorsSequenceNumColumns;     /**< \brief Number of columns of sequence of nested minors. */
-  size_t nestedMinorsLength;                  /**< \brief Length of sequence of nested minors. */
+
+  CMR_CHRMAT* nestedMinorsMatrix;             /**< \brief Sparse support matrix that displays the sequence of nested
+                                               **         minors. Rows and columns are permuted accordingly. */
+  CMR_CHRMAT* nestedMinorsTranspose;          /**< \brief Transpose of \p nestedMinorsMatrix. */
   CMR_ELEMENT* nestedMinorsRowsOriginal;      /**< \brief Maps rows of \p nestedMinorsMatrix to elements of
-                                               **        \p matrix. */
-  CMR_ELEMENT* nestedMinorsColumnsOriginal;   /**< \brief Maps columns of \p nestedMinorsMatrix to elements of
-                                               **        \p matrix. */
+                                               **         \p matrix. */
+  CMR_ELEMENT* nestedMinorsColumnsOriginal;   /**< \brief Maps columns of \p nestedMinorsDense to elements of
+                                               **         \p matrix. */
+
+  size_t nestedMinorsLastGraphic;             /**< \brief Last minor in sequence of nested minors that is graphic. */
+  size_t nestedMinorsLastCographic;           /**< \brief Last minor in sequence of nested minors that is cographic. */
 };
 
 /**
@@ -122,11 +141,84 @@ CMR_ERROR CMRmatroiddecUpdateTwoSum(
 );
 
 /**
+ * \brief Initialize an existing unknown decomposition node as a pivot node according to the given arrays of pivots.
+ *
+ * The unique child node will be of type \ref CMR_MATROID_DEC_TYPE_UNKNOWN.
+ */
+
+CMR_ERROR CMRmatroiddecUpdatePivots(
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_MATROID_DEC* dec, /**< Decomposition node. */
+  size_t numPivots,     /**< Number of pivots. */
+  size_t* pivotRows,    /**< Array with pivot rows. */
+  size_t* pivotColumns, /**< Array with pivot columns. */
+  CMR_CHRMAT* matrix,   /**< New matrix. */
+  CMR_CHRMAT* transpose /**< Transpose of \p matrix. */
+);
+
+/**
+ * \brief Initialize an existing unknown decomposition node as a 3-sum node.
+ *
+ * The two child nodes remain uninitialized.
+ */
+
+CMR_ERROR CMRmatroiddecUpdateThreeSumInit(
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_MATROID_DEC* dec  /**< Decomposition node. */
+);
+
+/**
+ * \brief Creates wide first child of an initialized 3-sum node.
+ *
+ * A nonzero \p extraEntry indicates the bottom-right nonzero entry. If it is zero, then its sign will be
+ * computed.
+ */
+
+CMR_ERROR CMRmatroiddecUpdateThreeSumCreateWideFirstChild(
+  CMR* cmr,                   /**< \ref CMR environment. */
+  CMR_MATROID_DEC* dec,       /**< Decomposition node (initialized with \ref CMRmatroiddecUpdateThreeSumInit). */
+  CMR_SEPA* separation,       /**< Separation. */
+  size_t* rowsToChild,        /**< Array mapping rows to child rows. */
+  size_t* columnsToChild,     /**< Array mapping columns to child columns. */
+  size_t numChildBaseRows,    /**< Number of base rows of this child. */
+  size_t numChildBaseColumns, /**< Number of base rows of this child. */
+  size_t extraRow,            /**< Index of the extra row. */
+  size_t extraColumn1,        /**< Index of 1st extra column. */
+  size_t extraColumn2,        /**< Index of 2nd extra column, parallel to \p extraColumn1; equality is allowed. */
+  int8_t extraEntry           /**< Sign of the extra entry, if known. */
+);
+
+/**
+ * \brief Creates wide second child of an initialized 3-sum node.
+ *
+ * A nonzero \p extraEntry indicates the bottom-right nonzero entry. If it is zero, then its sign will be
+ * computed.
+ */
+
+CMR_ERROR CMRmatroiddecUpdateThreeSumCreateWideSecondChild(
+  CMR* cmr,                   /**< \ref CMR environment. */
+  CMR_MATROID_DEC* dec,       /**< Decomposition node (initialized with \ref CMRmatroiddecUpdateThreeSumInit). */
+  CMR_SEPA* separation,       /**< Separation. */
+  size_t* rowsToChild,        /**< Array mapping rows to child rows. */
+  size_t* columnsToChild,     /**< Array mapping columns to child columns. */
+  size_t numChildBaseRows,    /**< Number of base rows of this child. */
+  size_t numChildBaseColumns, /**< Number of base rows of this child. */
+  size_t extraRow,            /**< Index of the extra row. */
+  size_t extraColumn1,        /**< Index of 1st extra column. */
+  size_t extraColumn2,        /**< Index of 2nd extra column, parallel to \p extraColumn1; equality is allowed. */
+  int8_t extraEntry           /**< Sign of the extra entry, if known. */
+);
+
+/**
  * \brief Set regularity and (co)graphicness attributes of a decomposition tree.
  */
 
 CMR_ERROR CMRmatroiddecSetAttributes(
   CMR_MATROID_DEC* dec  /**< Decomposition node. */
 );
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* CMR_MATROID_DEC_INTERNAL_H */

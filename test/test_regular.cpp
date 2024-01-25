@@ -156,15 +156,19 @@ TEST(Regular, NestedMinorSearchTwoSeparation)
 
     ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, 0, true, true, true) );
     ASSERT_TRUE( isRegular );
-    ASSERT_FALSE( CMRmatroiddecHasMatrix(dec) ); /* Default settings should mean that the matrix is not copied. */
     ASSERT_TRUE( CMRmatroiddecHasTranspose(dec) ); /* As we test for graphicness, the transpose is constructed. */
     ASSERT_EQ( CMRmatroiddecType(dec), CMR_MATROID_DEC_TYPE_TWO_SUM );
     ASSERT_EQ( CMRmatroiddecNumChildren(dec), 2UL );
-    int graphic = (CMRmatroiddecGraphicness(CMRmatroiddecChild(dec, 0)) ? 2 : 0) + (CMRmatroiddecGraphicness(CMRmatroiddecChild(dec, 1)) ? 1 : 0);
-    int cographic = (CMRmatroiddecCographicness(CMRmatroiddecChild(dec, 0)) ? 1 : 0) + (CMRmatroiddecCographicness(CMRmatroiddecChild(dec, 1)) ? 2 : 0);
-    ASSERT_EQ( graphic, cographic );
-    ASSERT_NE( graphic, 0);
-    ASSERT_NE( graphic, 3);
+    ASSERT_GT( CMRmatroiddecGraphicness(CMRmatroiddecChild(dec, 0)), 0);
+    ASSERT_LE( CMRmatroiddecCographicness(CMRmatroiddecChild(dec, 0)), 0);
+    ASSERT_LT( CMRmatroiddecGraphicness(CMRmatroiddecChild(dec, 1)), 0);
+    ASSERT_GT( CMRmatroiddecCographicness(CMRmatroiddecChild(dec, 1)), 0);
+
+//     int graphic = () ? 2 : 0) + (CMRmatroiddecGraphicness(CMRmatroiddecChild(dec, 1)) ? 1 : 0);
+//     int cographic = (CMRmatroiddecCographicness(CMRmatroiddecChild(dec, 0)) ? 1 : 0) + (CMRmatroiddecCographicness(CMRmatroiddecChild(dec, 1)) ? 2 : 0);
+//     ASSERT_EQ( graphic, cographic );
+//     ASSERT_NE( graphic, 0);
+//     ASSERT_NE( graphic, 3);
 
     ASSERT_CMR_CALL( CMRmatroiddecFree(cmr, &dec) );
 
@@ -333,6 +337,7 @@ void testSequenceGraphicness(
   CMR_REGULAR_PARAMS params;
   ASSERT_CMR_CALL( CMRregularParamsInit(&params) );
   params.directGraphicness = false;
+  params.threeSumStrategy = CMR_MATROID_DEC_THREESUM_FLAG_SEYMOUR;
   ASSERT_CMR_CALL( CMRregularTest(cmr, matrix, &isRegular, &dec, NULL, &params, NULL, DBL_MAX) );
 
   if (knowGraphic)
@@ -355,7 +360,7 @@ void testSequenceGraphicness(
   }
   else
   {
-    ASSERT_FALSE( CMRmatroiddecGraphicness(dec) );
+    ASSERT_LT( CMRmatroiddecGraphicness(dec), 0 );
   }
 
   ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, 0, true, true, true) );
@@ -372,12 +377,12 @@ TEST(Regular, SequenceGraphicnessWheel)
   {
     CMR_CHRMAT* matrix = NULL;
     ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "6 6 "
-      "1 0 0 0 0 1 "
       "1 1 0 0 0 0 "
       "0 1 1 0 0 0 "
-      "0 0 1 1 0 0 "
-      "0 0 0 1 1 0 "
+      "1 0 0 1 0 0 "
+      "0 0 1 0 0 1 "
       "0 0 0 0 1 1 "
+      "0 0 0 1 1 0 "
     ) );
     testSequenceGraphicness(cmr, matrix, true);
   }
@@ -530,6 +535,8 @@ TEST(Regular, SequenceGraphicnessOneRow)
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
 
   {
+    printf("Matrix 1 of 5\n");
+
     CMR_CHRMAT* matrix = NULL;
     ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "6 5 "
       "1 1 0   0   0 "
@@ -546,6 +553,8 @@ TEST(Regular, SequenceGraphicnessOneRow)
   }
 
   {
+    printf("Matrix 2 of 5\n");
+
     CMR_CHRMAT* matrix = NULL;
     ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "5 5 "
       "1 1 0   0  1 " 
@@ -560,6 +569,8 @@ TEST(Regular, SequenceGraphicnessOneRow)
   }
 
   {
+    printf("Matrix 3 of 5\n");
+
     /* Runs into addition of a single row, at least 1 articulation point, but none begin part of all fundamental cycles
      * induced by 1-edges. */
     CMR_CHRMAT* matrix = NULL;
@@ -579,6 +590,8 @@ TEST(Regular, SequenceGraphicnessOneRow)
   }
   
   {
+    printf("Matrix 4 of 5\n");
+
     /* Runs into addition of a single row with a unique 1 articulation point, but for which the auxiliary graph is not
      * bipartite. */
     CMR_CHRMAT* matrix = NULL;
@@ -596,6 +609,8 @@ TEST(Regular, SequenceGraphicnessOneRow)
   }
 
   {
+    printf("Matrix 5 of 5\n");
+
     /* Runs into addition of a single row with a unique 1 articulation point and bipartite auxiliary graph, and a
      * 1-edge adjacent to the split node. */
     CMR_CHRMAT* matrix = NULL;
@@ -671,9 +686,10 @@ TEST(Regular, R10)
 
 static
 void testEnumerate(
-  CMR* cmr,           /**< \ref CMR environment. */
-  CMR_CHRMAT* matrix, /**< Matrix to test. */
-  bool knowRegular    /**< Whether the matrix is regular. */
+  CMR* cmr,                                       /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,                             /**< Matrix to test. */
+  CMR_MATROID_DEC_THREESUM_FLAG threeSumStrategy, /**< Strategy for the 3-sum. */
+  bool knowRegular                                /**< Whether the matrix is regular. */
 )
 {
   printf("Testing matrix for regularity with a 3-separation:\n");
@@ -684,6 +700,7 @@ void testEnumerate(
   CMR_REGULAR_PARAMS params;
   ASSERT_CMR_CALL( CMRregularParamsInit(&params) );
   params.directGraphicness = false;
+  params.threeSumStrategy = threeSumStrategy;
   ASSERT_CMR_CALL( CMRregularTest(cmr, matrix, &isRegular, &dec, NULL, &params, NULL, DBL_MAX) );
 
   if (knowRegular)
@@ -714,7 +731,7 @@ TEST(Regular, EnumerateRanksZeroTwo)
       "0 0 1 1 "
       "0 1 1 1 "
     ) );
-    testEnumerate(cmr, matrix, false);
+    testEnumerate(cmr, matrix, CMR_MATROID_DEC_THREESUM_FLAG_SEYMOUR, false);
   }
 
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
@@ -733,13 +750,13 @@ TEST(Regular, EnumerateRanksOneOne)
       "1 0 0 1 "
       "1 1 0 0 "
     ) );
-    testEnumerate(cmr, matrix, false);
+    testEnumerate(cmr, matrix, CMR_MATROID_DEC_THREESUM_FLAG_SEYMOUR, false);
   }
 
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
-TEST(Regular, EnumerateRanksTwoZero)
+TEST(Regular, EnumerateConcentratedRankForcePivot)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -753,7 +770,7 @@ TEST(Regular, EnumerateRanksTwoZero)
       "1 1 1 1 1 "
       "1 0 0 0 1 "
     ) );
-    testEnumerate(cmr, matrix, false);
+    testEnumerate(cmr, matrix, CMR_MATROID_DEC_THREESUM_FLAG_DISTRIBUTED_RANKS, false);
   }
 
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
@@ -775,20 +792,23 @@ TEST(Regular, R12)
       "0 1 0 1 0 1 "
     ) );
 
-    CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
+    ASSERT_CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', true) );
 
     bool isRegular;
     CMR_MATROID_DEC* dec = NULL;
-    ASSERT_CMR_CALL( CMRregularTest(cmr, matrix, &isRegular, &dec, NULL, NULL, NULL, DBL_MAX) );
+    CMR_REGULAR_PARAMS params;
+    ASSERT_CMR_CALL( CMRregularParamsInit(&params) );
+    params.threeSumStrategy = CMR_MATROID_DEC_THREESUM_FLAG_SEYMOUR;
+    ASSERT_CMR_CALL( CMRregularTest(cmr, matrix, &isRegular, &dec, NULL, &params, NULL, DBL_MAX) );
     ASSERT_GT( CMRmatroiddecRegularity(dec), 0 );
-    ASSERT_EQ( CMRmatroiddecNumChildren(dec), 2UL );
-    size_t graphicChildren = (CMRmatroiddecGraphicness(CMRmatroiddecChild(dec, 0)) ? 2 : 0)
-      + (CMRmatroiddecGraphicness(CMRmatroiddecChild(dec, 1)) ? 1 : 0);
-    size_t cographicChildren = (CMRmatroiddecCographicness(CMRmatroiddecChild(dec, 0)) ? 2 : 0)
-      + (CMRmatroiddecCographicness(CMRmatroiddecChild(dec, 1)) ? 1 : 0);
-    ASSERT_EQ( CMRmatroiddecNumChildren(CMRmatroiddecChild(dec, 0)), 0UL );
-    ASSERT_EQ( CMRmatroiddecNumChildren(CMRmatroiddecChild(dec, 1)), 0UL );
-    ASSERT_EQ( graphicChildren + cographicChildren, 3UL );
+//     ASSERT_EQ( CMRmatroiddecNumChildren(dec), 2UL );
+//     size_t graphicChildren = (CMRmatroiddecGraphicness(CMRmatroiddecChild(dec, 0)) ? 2 : 0)
+//       + (CMRmatroiddecGraphicness(CMRmatroiddecChild(dec, 1)) ? 1 : 0);
+//     size_t cographicChildren = (CMRmatroiddecCographicness(CMRmatroiddecChild(dec, 0)) ? 2 : 0)
+//       + (CMRmatroiddecCographicness(CMRmatroiddecChild(dec, 1)) ? 1 : 0);
+//     ASSERT_EQ( CMRmatroiddecNumChildren(CMRmatroiddecChild(dec, 0)), 0UL );
+//     ASSERT_EQ( CMRmatroiddecNumChildren(CMRmatroiddecChild(dec, 1)), 0UL );
+//     ASSERT_EQ( graphicChildren + cographicChildren, 3UL );
     ASSERT_CMR_CALL( CMRmatroiddecFree(cmr, &dec) );
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
   }

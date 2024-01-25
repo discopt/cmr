@@ -26,6 +26,68 @@ extern "C" {
  */
 
 /**
+ * \brief Applie a pivot to \p matrix and returns the resulting matrix in \p *presult.
+ *
+ * Calculations are done over the binary field.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRchrmatBinaryPivot(
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,   /**< Matrix to work with. */
+  size_t pivotRow,      /**< Row of the pivot. */
+  size_t pivotColumn,   /**< Column of the pivot. */
+  CMR_CHRMAT** presult  /**< Pointer for storing the resulting matrix. */
+);
+
+/**
+ * \brief Applies a sequence of pivots to \p matrix and returns the resulting matrix in \p *presult.
+ *
+ * Calculations are done over the ternary field.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRchrmatTernaryPivot(
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,   /**< Matrix to work with. */
+  size_t pivotRow,      /**< Row of the pivot. */
+  size_t pivotColumn,   /**< Column of the pivot. */
+  CMR_CHRMAT** presult  /**< Pointer for storing the resulting matrix. */
+);
+
+/**
+ * \brief Applies a sequence of pivots to \p matrix and returns the resulting matrix in \p *presult.
+ *
+ * Calculations are done over the binary field.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRchrmatBinaryPivots(
+  CMR* cmr,               /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,     /**< Matrix to work with. */
+  size_t numPivots,       /**< Number of pivots to carry out. */
+  size_t* pivotRows,      /**< Array with rows of the pivots. */
+  size_t* pivotColumns,   /**< Array with columns of the pivots. */
+  CMR_CHRMAT** presult    /**< Pointer for storing the resulting matrix. */
+);
+
+/**
+ * \brief Applies a sequence of pivots to \p matrix and returns the resulting matrix in \p *presult.
+ *
+ * Calculations are done over the ternary field.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRchrmatTernaryPivots(
+  CMR* cmr,               /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,     /**< Matrix to work with. */
+  size_t numPivots,       /**< Number of pivots to carry out. */
+  size_t* pivotRows,      /**< Array with rows of the pivots. */
+  size_t* pivotColumns,   /**< Array with columns of the pivots. */
+  CMR_CHRMAT** presult    /**< Pointer for storing the resulting matrix. */
+);
+
+/**
  * \brief A minor of a matroid.
  *
  * Specified by a sequence of pivots and a submatrix.
@@ -97,59 +159,103 @@ typedef struct _CMR_MATROID_DEC CMR_MATROID_DEC;
 typedef enum
 {
   CMR_MATROID_DEC_TYPE_IRREGULAR = -1,
-    /**< Node represents 3-connected irregular minor. */
+    /**< Node represents 3-connected irregular minor. \see \ref matroid_decomposition. */
   CMR_MATROID_DEC_TYPE_UNKNOWN = 0,
     /**< Type of node is not yet determined. */
   CMR_MATROID_DEC_TYPE_ONE_SUM = 1,
-    /**< Node represents a 1-sum of matrices; arbitrary number of child nodes. */
+    /**< Node represents a \f$ 1 \f$-sum of matrices with an arbitrary number of child nodes.
+     ** \see \ref matroid_decomposition.
+     **/
   CMR_MATROID_DEC_TYPE_TWO_SUM = 2,
-    /**< Node represents a 2-sum of matrices; two child nodes. */
+    /**< Node represents a 2-sum of matrices; has two child nodes. \see \ref matroid_decomposition. */
   CMR_MATROID_DEC_TYPE_THREE_SUM = 3,
-    /**< Node represents a 3-sum of matrices; two child nodes. */
+    /**< Node represents a 3-sum of matrices; has two child nodes. \see \ref matroid_decomposition. */
   CMR_MATROID_DEC_TYPE_SERIES_PARALLEL = 4,
-    /**< Node represents a series-parallel reduction; one child node. */
+    /**< Node represents a series-parallel reduction; one child node. \see \ref matroid_decomposition. */
   CMR_MATROID_DEC_TYPE_PIVOTS = 5,
-    /**< Node represents an application of pivots; one child node. */
+    /**< Node represents an application of pivots; one child node. \see \ref matroid_decomposition. */
   CMR_MATROID_DEC_TYPE_SUBMATRIX = 6,
-    /**< Node represents the consideration of a submatrix; one child node. */
+    /**< Node represents the consideration of a submatrix; one child node. \see \ref matroid_decomposition. */
 
   CMR_MATROID_DEC_TYPE_GRAPH = 7,
-    /**< Node represents a graphic leaf minor; one optional child node for non-cographic minor. */
+    /**< Node represents a graphic leaf minor; one optional child node for non-cographic minor. \see \ref matroid_decomposition. */
   CMR_MATROID_DEC_TYPE_COGRAPH = 8,
-    /**< Node represents a cographic leaf minor; one optional child node for non-graphic minor. */
+    /**< Node represents a cographic leaf minor; one optional child node for non-graphic minor. \see \ref matroid_decomposition. */
   CMR_MATROID_DEC_TYPE_PLANAR = 9,
-    /**< Node represents a planar (graphic and cographic) leaf minor; no child nodes. */
+    /**< Node represents a planar (graphic and cographic) leaf minor; no child nodes. \see \ref matroid_decomposition. */
 
   CMR_MATROID_DEC_TYPE_R10 = -2,
-    /**< Node represents a representation matrix of \f$ R_{10} \f$. */
+    /**< Node represents a representation matrix of \f$ R_{10} \f$. \see \ref matroid_decomposition. */
   CMR_MATROID_DEC_TYPE_FANO = -3,
-    /**< Node represents a representation matrix of \f$ F_7 \f$. */
+    /**< Node represents a representation matrix of \f$ F_7 \f$. \see \ref matroid_decomposition. */
   CMR_MATROID_DEC_TYPE_FANO_DUAL = -4,
-    /**< Node represents a representation matrix of \f$ F_7^\star \f$. */
+    /**< Node represents a representation matrix of \f$ F_7^\star \f$. \see \ref matroid_decomposition. */
   CMR_MATROID_DEC_TYPE_K5 = -5,
-    /**< Node represents a representation matrix of \f$ M(K_5) \f$. */
+    /**< Node represents a representation matrix of \f$ M(K_5) \f$. \see \ref matroid_decomposition. */
   CMR_MATROID_DEC_TYPE_K5_DUAL = -6,
-    /**< Node represents a representation matrix of \f$ M(K_5)^\star \f$. */
+    /**< Node represents a representation matrix of \f$ M(K_5)^\star \f$. \see \ref matroid_decomposition. */
   CMR_MATROID_DEC_TYPE_K33 = -7,
-    /**< Node represents a representation matrix of \f$ M(K_{3,3}) \f$. */
+    /**< Node represents a representation matrix of \f$ M(K_{3,3}) \f$. \see \ref matroid_decomposition. */
   CMR_MATROID_DEC_TYPE_K33_DUAL = -8,
-    /**< Node represents a representation matrix of \f$ M(K_{3,3})^\star \f$. */
+    /**< Node represents a representation matrix of \f$ M(K_{3,3})^\star \f$. \see \ref matroid_decomposition. */
   CMR_MATROID_DEC_TYPE_DETERMINANT = -9,
-    /**< Node represents a square matrix \f$ M \f$ with \f$ |\det(M)| = 2 \f$. */
+    /**< Node represents a square matrix \f$ M \f$ with \f$ |\det(M)| = 2 \f$. \see \ref matroid_decomposition. */
 } CMR_MATROID_DEC_TYPE;
+
+/**
+ * \brief Flags that indicate the type of \f$ 3 \f$-separation.
+ *
+ * \see The desired types can be set by modifying \ref CMR_REGULAR_PARAMS.threeSumStrategy.
+ **/
 
 typedef enum
 {
-  CMR_MATROID_DEC_THREESUM_TYPE_FIRST_WIDE = 0 + 1,
-  CMR_MATROID_DEC_THREESUM_TYPE_FIRST_TALL = 2 + 1,
-  CMR_MATROID_DEC_THREESUM_TYPE_SECOND_WIDE = 4 + 1,
-  CMR_MATROID_DEC_THREESUM_TYPE_SECOND_TALL = 8 + 1,
-  CMR_MATROID_DEC_THREESUM_TYPE_FIRST_MIXED = 16,
-  CMR_MATROID_DEC_THREESUM_TYPE_FIRST_ALL = 32,
-  CMR_MATROID_DEC_THREESUM_TYPE_SECOND_MIXED = 64,
-  CMR_MATROID_DEC_THREESUM_TYPE_SECOND_ALL = 128,
-  CMR_MATROID_DEC_THREESUM_TYPE_DISTRIBUTED_RANKS = 1
-} CMR_MATROID_DEC_THREESUM_TYPE;
+  CMR_MATROID_DEC_THREESUM_FLAG_NO_PIVOTS = 0,
+    /**< Indicate to not change the rank distribution; only serves as an option; each constructed node will have either
+     **  \ref CMR_MATROID_DEC_THREESUM_FLAG_DISTRIBUTED_RANKS or
+     **  \ref CMR_MATROID_DEC_THREESUM_FLAG_CONCENTRATED_RANK set. */
+  CMR_MATROID_DEC_THREESUM_FLAG_DISTRIBUTED_RANKS = 1,
+    /**< The two off-diagonal submatrices both have rank 1.
+     **  \see \ref matroid_decomposition. */
+  CMR_MATROID_DEC_THREESUM_FLAG_CONCENTRATED_RANK = 2,
+    /**< The bottom-left submatrix has rank 2 and the top-right submatrix has rank 0.
+     **  \see \ref matroid_decomposition. */
+
+  CMR_MATROID_DEC_THREESUM_FLAG_FIRST_WIDE = 4,
+    /**< The first child node is of the form \f$ M_1^{\text{wide}} \f$; valid for distributed ranks.
+     **  \see \ref matroid_decomposition. */
+  CMR_MATROID_DEC_THREESUM_FLAG_FIRST_TALL = 8,
+    /**< The first child node is of the form \f$ M_1^{\text{tall}} \f$; valid for distributed ranks.
+     **  \see \ref matroid_decomposition. */
+  CMR_MATROID_DEC_THREESUM_FLAG_FIRST_MIXED = 64,
+    /**< The first child node is of the form \f$ M_1^{\text{mixed}} \f$; valid for concentrated rank.
+     **  \see \ref matroid_decomposition. */
+  CMR_MATROID_DEC_THREESUM_FLAG_FIRST_ALLREPR = 128,
+    /**< The first child node is of the form \f$ M_1^{\text{all-repr}} \f$; valid for concentrated rank.
+     **  \see \ref matroid_decomposition. */
+
+  CMR_MATROID_DEC_THREESUM_FLAG_SECOND_WIDE = 16,
+    /**< The second child node is of the form \f$ M_2^{\text{wide}} \f$; valid for distributed ranks.
+     **  \see \ref matroid_decomposition. */
+  CMR_MATROID_DEC_THREESUM_FLAG_SECOND_TALL = 32,
+    /**< The second child node is of the form \f$ M_2^{\text{tall}} \f$; valid for distributed ranks.
+     **  \see \ref matroid_decomposition. */
+  CMR_MATROID_DEC_THREESUM_FLAG_SECOND_MIXED = 256,
+    /**< The second child node is of the form \f$ M_2^{\text{mixed}} \f$; valid for concentrated rank.
+     **  \see \ref matroid_decomposition. */
+  CMR_MATROID_DEC_THREESUM_FLAG_SECOND_ALLREPR = 512,
+    /**< The second child node is of the form \f$ M_2^{\text{all-repr}} \f$; valid for concentrated rank.
+     **  \see \ref matroid_decomposition. */
+
+  CMR_MATROID_DEC_THREESUM_FLAG_SEYMOUR = CMR_MATROID_DEC_THREESUM_FLAG_DISTRIBUTED_RANKS
+    | CMR_MATROID_DEC_THREESUM_FLAG_FIRST_WIDE | CMR_MATROID_DEC_THREESUM_FLAG_SECOND_WIDE,
+    /**< This combination of flags indicates a \f$ 3 \f$-sum as defined by Seymour.
+     **  \see \ref matroid_decomposition. */
+  CMR_MATROID_DEC_THREESUM_FLAG_TRUEMPER = CMR_MATROID_DEC_THREESUM_FLAG_CONCENTRATED_RANK
+    | CMR_MATROID_DEC_THREESUM_FLAG_FIRST_MIXED | CMR_MATROID_DEC_THREESUM_FLAG_SECOND_MIXED,
+    /**< This combination of flags indicates a \f$ 3 \f$-sum as defined by Truemper.
+     **  \see \ref matroid_decomposition. */
+} CMR_MATROID_DEC_THREESUM_FLAG;
 
 /**
  * \brief Returns \c true iff the decomposition is over \f$ \mathbb{F}_3 \f$.
@@ -161,20 +267,20 @@ bool CMRmatroiddecIsTernary(
 );
 
 /**
- * \brief Returns \c true iff the 3-sum decomposition node has 3-separation with two rank-1 matrices.
+ * \brief Returns \c true iff the 3-sum decomposition node has \f$ 3 \f$-separation with two rank-1 matrices.
  */
 
 CMR_EXPORT
-bool CMRmatroiddecThreeSumRanksDistributed(
+bool CMRmatroiddecThreeSumDistributedRanks(
   CMR_MATROID_DEC* dec  /**< Decomposition node. */
 );
 
 /**
- * \brief Returns \c true iff the matrix of the decomposition node \p dec is stored.
+ * \brief Returns \c true iff the 3-sum decomposition node has \f$ 3 \f$-separation with one rank-2 matrix.
  */
 
 CMR_EXPORT
-bool CMRmatroiddecHasMatrix(
+bool CMRmatroiddecThreeSumConcentratedRank(
   CMR_MATROID_DEC* dec  /**< Decomposition node. */
 );
 

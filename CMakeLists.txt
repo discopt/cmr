@@ -63,6 +63,7 @@ add_library(cmr
   src/cmr/regularity_graphic.c
   src/cmr/regularity_nested_minor_sequence.c
   src/cmr/regularity_onesum.c
+  src/cmr/regularity_threesum.c
   src/cmr/regularity_r10.c
   src/cmr/regularity_series_parallel.c
   src/cmr/separation.c
