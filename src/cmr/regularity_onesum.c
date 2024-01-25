@@ -26,7 +26,7 @@ CMR_ERROR CMRregularitySearchOneSum(CMR* cmr, DecompositionTask* task, Decomposi
   assert(task->dec->matrix);
 
 #if defined(CMR_DEBUG)
-  CMRdbgMsg(2, "Searching for 1-separations.\n");
+  CMRdbgMsg(6, "Searching for 1-separations for the following matrix:\n");
   CMR_CALL( CMRchrmatPrintDense(cmr, task->dec->matrix, stdout, '0', true) );
 #endif /* CMR_DEBUG */
 
@@ -39,9 +39,7 @@ CMR_ERROR CMRregularitySearchOneSum(CMR* cmr, DecompositionTask* task, Decomposi
 
   if (numComponents == 1)
   {
-#if defined(CMR_DEBUG)
-    CMRdbgMsg(4, "Matrix is 2-connected.\n", numComponents);
-#endif /* CMR_DEBUG */
+    CMRdbgMsg(6, "Matrix is 2-connected.\n", numComponents);
 
     CMR_CALL( CMRchrmatFree(cmr, (CMR_CHRMAT**) &components[0].matrix) );
     CMR_CALL( CMRchrmatFree(cmr, (CMR_CHRMAT**) &components[0].transpose) );
@@ -55,9 +53,7 @@ CMR_ERROR CMRregularitySearchOneSum(CMR* cmr, DecompositionTask* task, Decomposi
   }
   else if (numComponents >= 2)
   {
-#if defined(CMR_DEBUG)
-    CMRdbgMsg(4, "The 1-sum consists of %zu components.\n", numComponents);
-#endif /* CMR_DEBUG */
+    CMRdbgMsg(6, "The 1-sum consists of %zu components.\n", numComponents);
 
     /* We create an intermediate array for sorting the components in descending order by number of nonzeros. */
 

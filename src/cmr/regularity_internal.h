@@ -32,39 +32,53 @@ CMR_ERROR CMRregularityTaskFree(
   DecompositionTask** ptask       /**< Pointer to task. */
 );
 
-
-
 /**
- * \brief Enumerates 3-separations for a 3-connected matrix.
+ * \brief Applies a 3-sum decomposition.
  */
 
-CMR_ERROR CMRregularSearchThreeSeparation(
-  CMR* cmr,                       /**< \ref CMR environment. */
-  CMR_MATROID_DEC* dec,           /**< Decomposition node. */
-  CMR_CHRMAT* transpose,          /**< Transpose of nested-minors matrix of \p dec. */
-  bool ternary,                   /**< Whether to consider the signs of the matrix. */
-  size_t firstNonCoGraphicMinor,  /**< Index of first nested minor that is neither graphic nor cographic. */
-  CMR_SUBMAT** psubmatrix,        /**< Pointer for storing a violator matrix. */
-  CMR_REGULAR_STATS* stats,       /**< Statistics for the computation (may be \c NULL). */
-  double timeLimit                /**< Time limit to impose. */
+CMR_ERROR
+CMRregularityDecomposeThreeSum(
+  CMR* cmr,                         /**< \ref CMR environment. */
+  DecompositionTask* task,          /**< Task to be processed; already removed from the list of unprocessed tasks. */
+  DecompositionTask** punprocessed, /**< Pointer to head of list of unprocessed tasks. */
+  CMR_SEPA* separation              /**< 3-separation. */
 );
 
 /**
- * \brief Tests sequence of nested 3-connected minors for graphicness.
+ * \brief Searches for 3-separations along the sequence of nested minors and decomposes as a 3-sum.
  */
 
-CMR_ERROR CMRregularSequenceGraphic(
-  CMR* cmr,                     /**< \ref CMR environment. */
-  CMR_CHRMAT* matrix,           /**< Matrix. */
-  CMR_CHRMAT* transpose,        /**< Transpose. */
-  size_t lengthSequence,        /**< Length of the sequence of nested minors. */
-  size_t* sequenceNumRows,      /**< Array with number of rows of each minor. */
-  size_t* sequenceNumColumns,   /**< Array with number of columns of each minor. */
-  size_t* plastGraphicMinor,    /**< Pointer for storing the last graphic minor. */
-  CMR_GRAPH** pgraph,           /**< Pointer for storing the graph. */
-  CMR_ELEMENT** pedgeElements,  /**< Pointer for storing the mapping of edges to elements. */
-  CMR_REGULAR_STATS* stats,     /**< Statistics for the computation (may be \c NULL). */
-  double timeLimit              /**< Time limit to impose. */
+CMR_ERROR
+CMRregularityNestedMinorSequenceSearchThreeSeparation(
+  CMR* cmr,                         /**< \ref CMR environment. */
+  DecompositionTask* task,          /**< Task to be processed; already removed from the list of unprocessed tasks. */
+  DecompositionTask** punprocessed  /**< Pointer to head of list of unprocessed tasks. */
+);
+
+/**
+ * \brief Tests each minor of the sequence of nested 3-connected minors for graphicness.
+ *
+ * Sets \c task->dec->CMRregularityNestedMinorSequenceGraphicness accordingly.
+ */
+
+CMR_ERROR
+CMRregularityNestedMinorSequenceGraphicness(
+  CMR* cmr,                         /**< \ref CMR environment. */
+  DecompositionTask* task,          /**< Task to be processed; already removed from the list of unprocessed tasks. */
+  DecompositionTask** punprocessed  /**< Pointer to head of list of unprocessed tasks. */
+);
+
+/**
+ * \brief Tests each minor of the sequence of nested 3-connected minors for graphicness.
+ *
+ * Sets \c task->dec->CMRregularityNestedMinorSequenceCographicness accordingly.
+ */
+
+CMR_ERROR
+CMRregularityNestedMinorSequenceCographicness(
+  CMR* cmr,                         /**< \ref CMR environment. */
+  DecompositionTask* task,          /**< Task to be processed; already removed from the list of unprocessed tasks. */
+  DecompositionTask** punprocessed  /**< Pointer to head of list of unprocessed tasks. */
 );
 
 /**
@@ -74,30 +88,11 @@ CMR_ERROR CMRregularSequenceGraphic(
  * the relevant variables of \p dec.
  */
 
-CMR_ERROR CMRregularExtendNestedMinorSequence(
-  CMR* cmr,                 /**< \ref CMR environment. */
-  CMR_MATROID_DEC* dec,     /**< Decomposition node. */
-  bool ternary,             /**< Whether to consider the signs of the matrix. */
-  CMR_SUBMAT** psubmatrix,  /**< Pointer for storing a violator matrix. */
-  CMR_REGULAR_STATS* stats, /**< Statistics for the computation (may be \c NULL). */
-  double timeLimit          /**< Time limit to impose. */
-);
-
-/**
- * \brief Constructs a sequence of nested 3-connected minors for the matrix of a decomposition node.
- *
- * In case the matrix is not 3-connected, a 2-separation is applied to \p dec and the function terminates, filling
- * the relevant variables of \p dec.
- */
-
-CMR_ERROR CMRregularConstructNestedMinorSequence(
-  CMR* cmr,                   /**< \ref CMR environment. */
-  CMR_MATROID_DEC* dec,       /**< Decomposition node. */
-  bool ternary,               /**< Whether to consider the signs of the matrix. */
-  CMR_SUBMAT* wheelSubmatrix, /**< Wheel submatrix to start with. */
-  CMR_SUBMAT** psubmatrix,    /**< Pointer for storing a violator matrix. */
-  CMR_REGULAR_STATS* stats,   /**< Statistics for the computation (may be \c NULL). */
-  double timeLimit            /**< Time limit to impose. */
+CMR_ERROR
+CMRregularityExtendNestedMinorSequence(
+  CMR* cmr,                         /**< \ref CMR environment. */
+  DecompositionTask* task,          /**< Task to be processed; already removed from the list of unprocessed tasks. */
+  DecompositionTask** punprocessed  /**< Pointer to head of list of unprocessed tasks. */
 );
 
 /**

@@ -1072,7 +1072,6 @@ CMR_ERROR CMRchrmatFindEntry(
   size_t* pentry        /**< Pointer for storing the entry at \p row, \p column, or \c SIZE_MAX if it is zero. */
 );
 
-
 #ifdef __cplusplus
 }
 #endif

@@ -18,8 +18,10 @@ CMR_ERROR CMRregularParamsInit(CMR_REGULAR_PARAMS* params)
   params->seriesParallel = true;
   params->planarityCheck = false;
   params->completeTree = false;
-  params->matrices = CMR_DEC_CONSTRUCT_NONE;
-  params->transposes = CMR_DEC_CONSTRUCT_NONE;
+  params->threeSumPivotChildren = false;
+  params->threeSumStrategy = CMR_MATROID_DEC_THREESUM_FLAG_NO_PIVOTS
+    | CMR_MATROID_DEC_THREESUM_FLAG_FIRST_WIDE | CMR_MATROID_DEC_THREESUM_FLAG_FIRST_MIXED
+    | CMR_MATROID_DEC_THREESUM_FLAG_SECOND_WIDE | CMR_MATROID_DEC_THREESUM_FLAG_SECOND_MIXED;
   params->graphs = CMR_DEC_CONSTRUCT_NONE;
 
   return CMR_OKAY;

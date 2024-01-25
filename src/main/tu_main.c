@@ -65,7 +65,6 @@ CMR_ERROR testTotalUnimodularity(
   CMR_CALL( CMRtuParamsInit(&params) );
   params.algorithm = algorithm;
   params.regular.completeTree = outputTreeFileName;
-  params.regular.matrices = outputTreeFileName ? CMR_DEC_CONSTRUCT_ALL : CMR_DEC_CONSTRUCT_NONE;
   params.regular.directGraphicness = directGraphicness;
   params.regular.seriesParallel = seriesParallel;
   CMR_TU_STATS stats;

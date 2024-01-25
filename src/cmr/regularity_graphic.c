@@ -1416,6 +1416,326 @@ CMR_ERROR CMRregularSequenceGraphic(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT* tr
   return CMR_OKAY;
 }
 
+/**
+ * \brief Tests each minor of the sequence of nested 3-connected minors for graphicness.
+ */
+
+static
+CMR_ERROR sequenceGraphicness(
+  CMR* cmr,                     /**< \ref CMR environment. */
+  DecompositionTask* task,      /**< Task to be processed; already removed from the list of unprocessed tasks. */
+  CMR_CHRMAT* matrix,           /**< Matrix that displays the nested minor sequences. */
+  CMR_CHRMAT* transpose,        /**< Transpose of \p matrix. */
+  size_t length,                /**< Length of sequence of nested minors. */
+  size_t* sequenceNumRows,      /**< Number of rows of sequence of nested minors. */
+  size_t* sequenceNumColumns,   /**< Number of columns of sequence of nested minors. */
+  CMR_ELEMENT* rowsOriginal,    /**< Maps rows of \p matrix to elements of original matrix. */
+  CMR_ELEMENT* columnsOriginal, /**< Maps columns of \p matrix to elements of original matrix. */
+  bool cographicness,           /**< Whether we actually received the transpose as input. */
+  CMR_GRAPH** pgraph,           /**< Pointer for storing the constructed graph. */
+  CMR_ELEMENT** pedgeElements,  /**< Pointer for storing the mapping from edges to elements. */
+  size_t* plastGraphicMinor     /**< Pointer for storing the last graphic minor. */
+)
+{
+  assert(cmr);
+  assert(task);
+  assert(matrix);
+  assert(transpose);
+  assert(sequenceNumRows);
+  assert(sequenceNumColumns);
+  assert(rowsOriginal);
+  assert(columnsOriginal);
+  assert(pgraph);
+  assert(pedgeElements);
+  assert(plastGraphicMinor);
+
+  CMRdbgMsg(6, "Testing sequence of nested minors of length %zu for %sgraphicness.\n", length,
+    cographicness ? "co" : "");
+
+  CMR_CALL( CMRgraphCreateEmpty(cmr, pgraph, matrix->numRows, matrix->numRows + matrix->numColumns) );
+  CMR_GRAPH* graph = *pgraph;
+
+  long long* hashVector = NULL;
+  CMR_CALL( createHashVector(cmr, &hashVector,
+    matrix->numRows > matrix->numColumns ? matrix->numRows : matrix->numColumns) );
+  CMR_GRAPH_EDGE* rowEdges = NULL;
+  CMR_CALL( CMRallocStackArray(cmr, &rowEdges, matrix->numRows) );
+  CMR_GRAPH_EDGE* columnEdges = NULL;
+  CMR_CALL( CMRallocStackArray(cmr, &columnEdges, matrix->numColumns) );
+  long long* rowHashValues = NULL;
+  CMR_CALL( CMRallocStackArray(cmr, &rowHashValues, matrix->numRows) );
+  for (size_t row = 0; row < matrix->numRows; ++row)
+    rowHashValues[row] = 0;
+  long long* columnHashValues = NULL;
+  CMR_CALL( CMRallocStackArray(cmr, &columnHashValues, matrix->numColumns) );
+  for (size_t column = 0; column < matrix->numColumns; ++column)
+    columnHashValues[column] = 0;
+
+  /* Create graph for first minor. */
+
+  assert(sequenceNumRows[0] == sequenceNumColumns[0]);
+  CMR_CALL( createWheel(cmr, graph, matrix, transpose, sequenceNumRows[0], rowEdges, columnEdges) );
+  *plastGraphicMinor = 0;
+
+  CMR_CALL( updateHashValues(matrix, rowHashValues, columnHashValues, hashVector, 0, sequenceNumRows[0],
+    sequenceNumColumns[0]) );
+
+//   size_t extensionTimeFactor = length / 100 + 1;
+  for (size_t extension = 1; extension < length; ++extension)
+  {
+//     if ((extension % extensionTimeFactor == 0) && (clock() - time) * 1.0 / CLOCKS_PER_SEC > timeLimit)
+//     {
+//       CMR_CALL( CMRfreeStackArray(cmr, &columnHashValues) );
+//       CMR_CALL( CMRfreeStackArray(cmr, &rowHashValues) );
+//       CMR_CALL( CMRfreeStackArray(cmr, &columnEdges) );
+//       CMR_CALL( CMRfreeStackArray(cmr, &rowEdges) );
+//       CMR_CALL( CMRfreeStackArray(cmr, &hashVector) );
+//       return CMR_ERROR_TIMEOUT;
+//     }
+
+    size_t newRows = sequenceNumRows[extension] - sequenceNumRows[extension-1];
+    size_t newColumns = sequenceNumColumns[extension] - sequenceNumColumns[extension-1];
+
+    CMRdbgMsg(8, "Processing extension step %zu with %zu new rows and %zu new columns.\n", extension, newRows,
+      newColumns);
+
+    bool isGraphic;
+    if (newRows == 1 && newColumns == 1)
+    {
+      CMR_ELEMENT rowParallel = findParallel(matrix, sequenceNumRows[extension-1], sequenceNumRows[extension-1],
+        sequenceNumColumns[extension-1], rowHashValues, hashVector);
+      CMR_ELEMENT columnParallel = CMRelementTranspose(findParallel(transpose, sequenceNumColumns[extension-1],
+        sequenceNumColumns[extension-1], sequenceNumRows[extension-1], columnHashValues, hashVector));
+
+      CMRdbgMsg(10, "The new row is parallel to %c%zu", CMRelementIsRow(rowParallel) ? 'x' : 'y',
+        CMRelementIsRow(rowParallel) ? CMRelementToRowIndex(rowParallel) + 1 : CMRelementToColumnIndex(rowParallel) + 1);
+      CMRdbgMsg(0, " and the new column is parallel to %c%zu.\n", CMRelementIsRow(columnParallel) ? 'x' : 'y',
+        CMRelementIsRow(columnParallel) ? CMRelementToRowIndex(columnParallel) + 1
+        : CMRelementToColumnIndex(columnParallel) + 1);
+
+      CMR_CALL( addToGraph1Row1Column(cmr, graph, rowEdges, columnEdges, sequenceNumRows[extension-1],
+        sequenceNumColumns[extension-1], rowParallel, columnParallel, &isGraphic) );
+    }
+    else if (newRows == 2 && newColumns == 1)
+    {
+      CMR_ELEMENT row1Parallel = findParallel(matrix, sequenceNumRows[extension-1], sequenceNumRows[extension-1],
+        sequenceNumColumns[extension-1], rowHashValues, hashVector);
+      CMR_ELEMENT row2Parallel = findParallel(matrix, sequenceNumRows[extension-1] + 1, sequenceNumRows[extension-1],
+        sequenceNumColumns[extension-1], rowHashValues, hashVector);
+
+      CMRdbgMsg(10, "Row 1 is parallel to %s", CMRelementString(row1Parallel, 0));
+      CMRdbgMsg(0, " and row 2 is parallel to %s.\n", CMRelementString(row2Parallel, 0));
+
+      CMR_CALL( addToGraph2Rows1Column(cmr, graph, rowEdges, columnEdges, sequenceNumRows[extension-1],
+        sequenceNumColumns[extension-1], row1Parallel, row2Parallel, &isGraphic) );
+    }
+    else if (newRows == 1 && newColumns == 2)
+    {
+      CMR_ELEMENT column1Parallel = CMRelementTranspose(findParallel(transpose, sequenceNumColumns[extension-1],
+        sequenceNumColumns[extension-1], sequenceNumRows[extension-1], columnHashValues, hashVector));
+      CMR_ELEMENT column2Parallel = CMRelementTranspose(findParallel(transpose, sequenceNumColumns[extension-1] + 1,
+        sequenceNumColumns[extension-1], sequenceNumRows[extension-1], columnHashValues, hashVector));
+
+      CMRdbgMsg(10, "Column 1 is parallel to %s", CMRelementString(column1Parallel, 0));
+      CMRdbgMsg(0, " and column 2 is parallel to %s.\n", CMRelementString(column2Parallel, 0));
+
+      CMR_CALL( addToGraph1Row2Columns(cmr, graph, rowEdges, columnEdges, sequenceNumRows[extension-1],
+        sequenceNumColumns[extension-1], column1Parallel, column2Parallel, &isGraphic) );
+    }
+    else if (newRows == 0 && newColumns == 1)
+    {
+      size_t first = transpose->rowSlice[sequenceNumColumns[extension-1]];
+      size_t beyond = transpose->rowSlice[sequenceNumColumns[extension-1] + 1];
+      for (size_t e = first; e < beyond; ++e)
+      {
+        if (transpose->entryColumns[e] >= sequenceNumRows[extension-1])
+          beyond = e;
+      }
+      CMR_CALL( addToGraph1Column(cmr, graph, rowEdges, columnEdges, sequenceNumColumns[extension-1],
+        &transpose->entryColumns[first], beyond-first, &isGraphic) );
+    }
+    else
+    {
+      assert(newRows == 1 && newColumns == 0);
+
+      size_t first = matrix->rowSlice[sequenceNumRows[extension-1]];
+      size_t beyond = matrix->rowSlice[sequenceNumRows[extension-1] + 1];
+      for (size_t e = first; e < beyond; ++e)
+      {
+        if (matrix->entryColumns[e] >= sequenceNumColumns[extension-1])
+          beyond = e;
+      }
+      CMR_CALL( addToGraph1Row(cmr, graph, rowEdges, columnEdges, sequenceNumRows[extension-1],
+        &matrix->entryColumns[first], beyond-first, &isGraphic) );
+    }
+
+    if (isGraphic)
+      *plastGraphicMinor = extension;
+    else
+      break;
+
+    CMR_CALL( updateHashValues(matrix, rowHashValues, columnHashValues, hashVector, sequenceNumRows[extension-1],
+      sequenceNumRows[extension], sequenceNumColumns[extension - 1]) );
+    CMR_CALL( updateHashValues(transpose, columnHashValues, rowHashValues, hashVector, sequenceNumColumns[extension-1],
+      sequenceNumColumns[extension], sequenceNumRows[extension]) );
+  }
+
+  if (*plastGraphicMinor == length - 1)
+  {
+    CMR_CALL( CMRallocBlockArray(cmr, pedgeElements, matrix->numRows + matrix->numColumns) );
+    CMR_ELEMENT* edgeElements = *pedgeElements;
+    for (size_t e = 0; e < matrix->numRows + matrix->numColumns; ++e)
+      edgeElements[e] = 0;
+
+    if (cographicness)
+    {
+      for (size_t row = 0; row < matrix->numRows; ++row)
+        edgeElements[rowEdges[row]] = task->dec->nestedMinorsColumnsOriginal[row];
+      for (size_t column = 0; column < matrix->numColumns; ++column)
+        edgeElements[columnEdges[column]] = task->dec->nestedMinorsRowsOriginal[column];
+    }
+    else
+    {
+      for (size_t row = 0; row < matrix->numRows; ++row)
+        edgeElements[rowEdges[row]] = task->dec->nestedMinorsRowsOriginal[row];
+      for (size_t column = 0; column < matrix->numColumns; ++column)
+        edgeElements[columnEdges[column]] = task->dec->nestedMinorsColumnsOriginal[column];
+    }
+  }
+  else
+  {
+    CMR_CALL( CMRgraphFree(cmr, pgraph) );
+  }
+
+  if (task->stats)
+  {
+    task->stats->sequenceGraphicCount++;
+//     task->stats->sequenceGraphicTime += (clock() - time) * 1.0 / CLOCKS_PER_SEC;
+  }
+
+  CMR_CALL( CMRfreeStackArray(cmr, &columnHashValues) );
+  CMR_CALL( CMRfreeStackArray(cmr, &rowHashValues) );
+  CMR_CALL( CMRfreeStackArray(cmr, &columnEdges) );
+  CMR_CALL( CMRfreeStackArray(cmr, &rowEdges) );
+  CMR_CALL( CMRfreeStackArray(cmr, &hashVector) );
+
+  CMRdbgMsg(8, "Sequence of nested minors is %sgraphic up to and including minor 0 <= %zu <= %zu.\n",
+    cographicness ? "co" : "", *plastGraphicMinor, length - 1);
+
+  return CMR_OKAY;
+}
+
+CMR_ERROR CMRregularityNestedMinorSequenceGraphicness(CMR* cmr, DecompositionTask* task,
+  DecompositionTask** punprocessed)
+{
+  assert(cmr);
+  assert(task);
+  assert(punprocessed);
+
+  CMR_MATROID_DEC* dec = task->dec;
+  assert(dec);
+
+  CMR_GRAPH* graph = NULL;
+  CMR_ELEMENT* edgeElements = NULL;
+
+  CMR_CALL( sequenceGraphicness(cmr, task, dec->nestedMinorsMatrix, dec->nestedMinorsTranspose, dec->nestedMinorsLength,
+    dec->nestedMinorsSequenceNumRows, dec->nestedMinorsSequenceNumColumns, dec->nestedMinorsRowsOriginal,
+    dec->nestedMinorsColumnsOriginal, false, &graph, &edgeElements, &dec->nestedMinorsLastGraphic) );
+
+  if (dec->nestedMinorsLastGraphic + 1 == dec->nestedMinorsLength)
+  {
+    dec->type = (dec->type == CMR_MATROID_DEC_TYPE_COGRAPH) ? CMR_MATROID_DEC_TYPE_PLANAR : CMR_MATROID_DEC_TYPE_GRAPH;
+    CMRdbgMsg(8, "Whole sequence is %s.\n", dec->type == CMR_MATROID_DEC_TYPE_PLANAR ? "planar" : "graphic");
+    dec->graph = graph;
+    dec->graphForest = NULL;
+    CMR_CALL( CMRallocBlockArray(cmr, &dec->graphForest, dec->matrix->numRows) );
+    dec->graphCoforest = NULL;
+    CMR_CALL( CMRallocBlockArray(cmr, &dec->graphCoforest, dec->matrix->numColumns) );
+
+    assert(CMRgraphNumEdges(graph) == dec->matrix->numRows + dec->matrix->numColumns);
+    for (CMR_GRAPH_ITER iter = CMRgraphEdgesFirst(graph); CMRgraphEdgesValid(graph, iter);
+      iter = CMRgraphEdgesNext(graph, iter))
+    {
+      CMR_GRAPH_EDGE edge = CMRgraphEdgesEdge(graph, iter);
+      CMR_ELEMENT element = edgeElements[edge];
+      if (CMRelementIsRow(element))
+        dec->graphForest[CMRelementToRowIndex(element)] = edge;
+      else
+        dec->graphCoforest[CMRelementToColumnIndex(element)] = edge;
+    }
+
+    CMR_CALL( CMRfreeBlockArray(cmr, &edgeElements) );
+
+    CMR_CALL( CMRregularityTaskFree(cmr, &task) );
+  }
+  else
+  {
+    dec->graphicness = -1;
+
+    /* Add task back to list of unprocessed tasks to test cographicness. */
+    task->next = *punprocessed;
+    *punprocessed = task;
+  }
+
+  return CMR_OKAY;
+}
+
+CMR_ERROR CMRregularityNestedMinorSequenceCographicness(CMR* cmr, DecompositionTask* task,
+  DecompositionTask** punprocessed)
+{
+  assert(cmr);
+  assert(task);
+  assert(punprocessed);
+
+  CMR_MATROID_DEC* dec = task->dec;
+  assert(dec);
+
+  CMR_GRAPH* cograph = NULL;
+  CMR_ELEMENT* edgeElements = NULL;
+
+  CMR_CALL( sequenceGraphicness(cmr, task, dec->nestedMinorsTranspose, dec->nestedMinorsMatrix, dec->nestedMinorsLength,
+    dec->nestedMinorsSequenceNumColumns, dec->nestedMinorsSequenceNumRows, dec->nestedMinorsColumnsOriginal,
+    dec->nestedMinorsRowsOriginal, true, &cograph, &edgeElements, &dec->nestedMinorsLastCographic) );
+
+  if (dec->nestedMinorsLastCographic + 1 == dec->nestedMinorsLength)
+  {
+    dec->type = (dec->type == CMR_MATROID_DEC_TYPE_GRAPH) ? CMR_MATROID_DEC_TYPE_PLANAR : CMR_MATROID_DEC_TYPE_COGRAPH;
+    CMRdbgMsg(8, "Whole sequence is %s.\n", dec->type == CMR_MATROID_DEC_TYPE_PLANAR ? "planar" : "cographic");
+    dec->cograph = cograph;
+    dec->cographForest = NULL;
+    CMR_CALL( CMRallocBlockArray(cmr, &dec->cographForest, dec->matrix->numRows) );
+    dec->cographCoforest = NULL;
+    CMR_CALL( CMRallocBlockArray(cmr, &dec->cographCoforest, dec->matrix->numColumns) );
+
+    assert(CMRgraphNumEdges(cograph) == dec->matrix->numRows + dec->matrix->numColumns);
+    for (CMR_GRAPH_ITER iter = CMRgraphEdgesFirst(cograph); CMRgraphEdgesValid(cograph, iter);
+      iter = CMRgraphEdgesNext(cograph, iter))
+    {
+      CMR_GRAPH_EDGE edge = CMRgraphEdgesEdge(cograph, iter);
+      CMR_ELEMENT element = edgeElements[edge];
+      if (CMRelementIsRow(element))
+        dec->cographForest[CMRelementToRowIndex(element)] = edge;
+      else
+        dec->cographCoforest[CMRelementToColumnIndex(element)] = edge;
+    }
+
+    CMR_CALL( CMRfreeBlockArray(cmr, &edgeElements) );
+
+    CMR_CALL( CMRregularityTaskFree(cmr, &task) );
+  }
+  else
+  {
+    dec->cographicness = -1;
+
+    /* Add task back to list of unprocessed tasks to search for 3-separations. */
+    task->next = *punprocessed;
+    *punprocessed = task;
+  }
+
+  return CMR_OKAY;
+}
+
+
 CMR_ERROR CMRregularityTestGraphicness(CMR* cmr, DecompositionTask* task, DecompositionTask** punprocessed)
 {
   assert(cmr);
@@ -1426,7 +1746,7 @@ CMR_ERROR CMRregularityTestGraphicness(CMR* cmr, DecompositionTask* task, Decomp
   assert(dec);
 
 #if defined(CMR_DEBUG)
-  CMRdbgMsg(2, "Testing for %s.\n", dec->isTernary ? "being network" : "graphicness");
+  CMRdbgMsg(6, "Testing the following matrix for %s:\n", dec->isTernary ? "being network" : "graphicness");
   CMR_CALL( CMRchrmatPrintDense(cmr, dec->matrix, stdout, '0', true) );
 #endif /* CMR_DEBUG */
 
@@ -1449,7 +1769,7 @@ CMR_ERROR CMRregularityTestGraphicness(CMR* cmr, DecompositionTask* task, Decomp
       &dec->graphCoforest, NULL, task->stats ? &task->stats->graphic : NULL, remainingTime) );
   }
 
-  CMRdbgMsg(2, "-> %s%s\n", isGraphic ? "" : "NOT ", dec->isTernary ? "network" : "graphic");
+  CMRdbgMsg(8, "-> %s%s\n", isGraphic ? "" : "NOT ", dec->isTernary ? "network" : "graphic");
 
   dec->graphicness = isGraphic ? 1 : -1;
   if (isGraphic)
@@ -1457,7 +1777,7 @@ CMR_ERROR CMRregularityTestGraphicness(CMR* cmr, DecompositionTask* task, Decomp
 
   if ((isGraphic && (!task->params->planarityCheck || dec->cographicness)) || dec->cographicness > 0)
   {
-    CMRdbgMsg(2, "Marking task as complete.\n");
+    CMRdbgMsg(8, "Marking task as complete.\n");
 
     /* Task is done. */
     CMR_CALL( CMRregularityTaskFree(cmr, &task) );
@@ -1482,7 +1802,7 @@ CMR_ERROR CMRregularityTestCographicness(CMR* cmr, DecompositionTask* task, Deco
   assert(dec);
 
 #if defined(CMR_DEBUG)
-  CMRdbgMsg(2, "Testing for %s.\n", dec->isTernary ? "being conetwork" : "cographicness");
+  CMRdbgMsg(6, "Testing the following matrix for %s:\n", dec->isTernary ? "being conetwork" : "cographicness");
   CMR_CALL( CMRchrmatPrintDense(cmr, dec->matrix, stdout, '0', true) );
 #endif /* CMR_DEBUG */
 
@@ -1506,7 +1826,7 @@ CMR_ERROR CMRregularityTestCographicness(CMR* cmr, DecompositionTask* task, Deco
       &dec->cographCoforest, NULL, task->stats ? &task->stats->graphic : NULL, remainingTime) );
   }
 
-  CMRdbgMsg(2, "-> %s%s\n", isCographic ? "" : "NOT ", dec->isTernary ? "conetwork" : "cographic");
+  CMRdbgMsg(8, "-> %s%s\n", isCographic ? "" : "NOT ", dec->isTernary ? "conetwork" : "cographic");
 
   dec->cographicness = isCographic ? 1 : -1;
   if (isCographic)
@@ -1514,7 +1834,7 @@ CMR_ERROR CMRregularityTestCographicness(CMR* cmr, DecompositionTask* task, Deco
 
   if ((isCographic && (!task->params->planarityCheck || dec->graphicness)) || dec->graphicness > 0)
   {
-    CMRdbgMsg(2, "Marking task as complete.\n");
+    CMRdbgMsg(8, "Marking task as complete.\n");
 
     /* Task is done. */
     CMR_CALL( CMRregularityTaskFree(cmr, &task) );
