@@ -150,20 +150,55 @@ TEST(TotallyUnimodular, NestedMinorSearchTwoSeparation)
 
     ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, 0, true, true, true) );
     ASSERT_TRUE( isTU );
-    ASSERT_FALSE( CMRmatroiddecHasMatrix(dec) ); /* Default settings should mean that the matrix is not copied. */
     ASSERT_TRUE( CMRmatroiddecHasTranspose(dec) ); /* As we test for graphicness, the transpose is constructed. */
     ASSERT_EQ( CMRmatroiddecType(dec), CMR_MATROID_DEC_TYPE_TWO_SUM );
     ASSERT_EQ( CMRmatroiddecNumChildren(dec), 2UL );
-    ASSERT_TRUE( CMRmatroiddecGraphicness(CMRmatroiddecChild(dec, 0)) );
-    ASSERT_FALSE( CMRmatroiddecCographicness(CMRmatroiddecChild(dec, 0)) );
-    ASSERT_FALSE( CMRmatroiddecGraphicness(CMRmatroiddecChild(dec, 1)) );
-    ASSERT_TRUE( CMRmatroiddecCographicness(CMRmatroiddecChild(dec, 1)) );
+    ASSERT_GT( CMRmatroiddecGraphicness(CMRmatroiddecChild(dec, 0)), 0 );
+    ASSERT_LE( CMRmatroiddecCographicness(CMRmatroiddecChild(dec, 0)), 0 );
+    ASSERT_LT( CMRmatroiddecGraphicness(CMRmatroiddecChild(dec, 1)), 0 );
+    ASSERT_GT( CMRmatroiddecCographicness(CMRmatroiddecChild(dec, 1)), 0 );
     
     ASSERT_CMR_CALL( CMRmatroiddecFree(cmr, &dec) );
 
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &K_3_3) );
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &K_3_3_dual) );
+  }
+
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
+}
+
+TEST(TotallyUnimodular, NestedMinorSearchTwoSeparationViolator)
+{
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+
+  {
+    CMR_CHRMAT* matrix = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "8 8 "
+      " 1 1  0  0 0  0 0 0 "
+      " 1 0  0 -1 0  0 0 0 "
+      " 0 1  1  1 0  0 0 0 "
+      " 0 0  1  1 0  0 0 0 "
+      " 1 1  1  0 1  1 0 0 "
+      " 1 1  1  0 1  0 1 0 "
+      " 1 1 -1  0 0  0 1 1 "
+      " 0 0  0  0 0 -1 1 1 "
+    ) );
+
+    bool isTU;
+    CMR_MATROID_DEC* dec = NULL;
+    ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, NULL, NULL, DBL_MAX) );
+
+    ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, 0, true, true, true) );
+    ASSERT_FALSE( isTU );
+    ASSERT_EQ( CMRmatroiddecType(dec), CMR_MATROID_DEC_TYPE_SUBMATRIX );
+    ASSERT_EQ( CMRmatroiddecNumChildren(dec), 1UL );
+    ASSERT_EQ( CMRmatroiddecType(CMRmatroiddecChild(dec, 0)), CMR_MATROID_DEC_TYPE_DETERMINANT );
+
+    ASSERT_CMR_CALL( CMRmatroiddecFree(cmr, &dec) );
+
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
   }
 
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );

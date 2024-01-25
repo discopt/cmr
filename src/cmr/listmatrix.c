@@ -1420,7 +1420,7 @@ CMR_ERROR CMRlistmat8PrintDense(CMR* cmr, ListMat8* listmatrix, FILE* stream)
       nz != &listmatrix->rowElements[row].head; nz = nz->right)
     {
       assert(nz->row == row);
-      dense[nz->column] = nz->value;
+      dense[nz->column] += nz->value;
     }
     for (size_t column = 0; column < listmatrix->numColumns; ++column)
     {
@@ -1453,7 +1453,7 @@ CMR_ERROR CMRlistmat64PrintDense(CMR* cmr, ListMat64* listmatrix, FILE* stream)
       nz != &listmatrix->rowElements[row].head; nz = nz->right)
     {
       assert(nz->row == row);
-      dense[nz->column] = nz->value;
+      dense[nz->column] += nz->value;
     }
     for (size_t column = 0; column < listmatrix->numColumns; ++column)
     {
@@ -1488,7 +1488,7 @@ CMR_ERROR CMRlistmatGMPPrintDense(CMR* cmr, ListMatGMP* listmatrix, FILE* stream
       nz != &listmatrix->rowElements[row].head; nz = nz->right)
     {
       assert(nz->row == row);
-      mpz_set(dense[nz->column], nz->value);
+      mpz_add(dense[nz->column], dense[nz->column], nz->value);
     }
     for (size_t column = 0; column < listmatrix->numColumns; ++column)
     {
@@ -1524,7 +1524,7 @@ CMR_ERROR CMRlistmat8Insert(CMR* cmr, ListMat8* listmatrix, size_t row, size_t c
     size_t newSize = 2 * listmatrix->memNonzeros;
     if (newSize < 256)
       newSize = 256;
-        ListMat8Nonzero* newNonzeros = NULL;
+    ListMat8Nonzero* newNonzeros = NULL;
     CMR_CALL( CMRallocBlockArray(cmr, &newNonzeros, newSize) );
     ptrdiff_t memoryShift = newNonzeros - listmatrix->nonzeros;
 

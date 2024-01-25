@@ -1358,7 +1358,7 @@ CMR_ERROR extractWheelSubmatrix(
     {
       CMRdbgMsg(4, "No path found. Extracting 2-separation.\n");
 
-      CMR_CALL( CMRsepaCreate(cmr, numReducedRows, numReducedColumns, CMR_SEPA_TYPE_TWO, pseparation) );
+      CMR_CALL( CMRsepaCreate(cmr, numReducedRows, numReducedColumns, pseparation) );
       CMR_SEPA* sepa = *pseparation;
 
       /* Collect all reduced reachable rows/columns. */
@@ -1608,7 +1608,10 @@ CMR_ERROR decomposeBinarySeriesParallel(
         numRows - numRowReductions, numColumns - numColumnReductions, pviolatorSubmatrix, pseparation) );
 
       if (pseparation && *pseparation)
-        CMR_CALL( CMRsepaFindRepresentativesSubmatrix(cmr, *pseparation, matrix, reducedSubmatrix) );
+      {
+        CMR_CALL( CMRsepaFindBinaryRepresentativesSubmatrix(cmr, *pseparation, matrix, NULL, reducedSubmatrix, NULL) );
+        assert((*pseparation)->type == CMR_SEPA_TYPE_TWO);
+      }
 
       if (stats)
       {
@@ -1863,11 +1866,12 @@ CMR_ERROR decomposeTernarySeriesParallel(
           numRows - numRowReductions, numColumns - numColumnReductions, pviolatorSubmatrix, pseparation) );
 
         if (pseparation && *pseparation)
-          CMR_CALL( CMRsepaFindRepresentativesSubmatrix(cmr, *pseparation, matrix, reducedSubmatrix) );
-
-        /* Check whether the rank-1 part also has ternary rank 1. */
-        if (pseparation)
         {
+          CMR_CALL( CMRsepaFindBinaryRepresentativesSubmatrix(cmr, *pseparation, matrix, NULL, reducedSubmatrix, NULL) );
+          assert((*pseparation)->type == CMR_SEPA_TYPE_TWO);
+
+          /* Check whether the rank-1 part also has ternary rank 1. */
+
           CMRdbgMsg(2, "Checking block of -1/+1s for ternary rank 1.\n");
 
           bool sepaIsTernary;

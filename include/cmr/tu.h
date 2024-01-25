@@ -28,6 +28,7 @@ typedef enum
 typedef struct
 {
   CMR_TU_ALGORITHM algorithm; /**< \brief Algorithm to use. */
+  bool directCamion;          /**< \brief Whether to directly test signing of matrix (default: \c false). */
   CMR_REGULAR_PARAMS regular; /**< \brief Parameters for regularity test. */
 } CMR_TU_PARAMS;
 

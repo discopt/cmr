@@ -30,18 +30,50 @@ typedef enum
 
 typedef struct
 {
-  bool directGraphicness;       /**< \brief Whether to use fast graphicness routines; default: \c true */
-  bool seriesParallel;          /**< \brief Whether to allow series-parallel operations in the decomposition tree;
-                                 **         default: \c true */
-  bool planarityCheck;          /**< \brief Whether minors identified as graphic should still be checked for
-                                 **         cographicness; default: \c false. */
-  bool completeTree;            /**< \brief Whether to compute a complete decomposition tree (even if already
-                                 **         non-regular; default: \c false. */
-  CMR_DEC_CONSTRUCT matrices;   /**< \brief Which matrices of the decomposition to construct; default:
-                                 **         \ref CMR_DEC_CONSTRUCT_NONE. */
-  CMR_DEC_CONSTRUCT transposes; /**< \brief Which transposed matrices of the decomposition to construct; default:
-                                 **         \ref CMR_DEC_CONSTRUCT_NONE. */
-  CMR_DEC_CONSTRUCT graphs;     /**< \brief Which (co)graphs to construct; default: \ref CMR_DEC_CONSTRUCT_NONE. */
+  bool directGraphicness;
+  /**< \brief Whether to use fast graphicness routines; default: \c true */
+  bool seriesParallel;
+  /**< \brief Whether to allow series-parallel operations in the decomposition tree; default: \c true */
+  bool planarityCheck;
+  /**< \brief Whether minors identified as graphic should still be checked for cographicness; default: \c false. */
+  bool completeTree;
+  /**< \brief Whether to compute a complete decomposition tree (even if already non-regular; default: \c false. */
+  bool threeSumPivotChildren;
+  /**< \brief Whether pivots for 3-sums shall be applied such that the matrix contains both child matrices as
+   **         submatrices, if possible. */
+  CMR_MATROID_DEC_THREESUM_FLAG threeSumStrategy;
+  /**< \brief Whether to perform pivots to change the rank distribution, and how to construct the children.
+   **
+   ** The value is a bit-wise or of three decisions. The first decision is that of the **rank distribution**:
+   **   - \ref CMR_MATROID_DEC_THREESUM_FLAG_NO_PIVOTS to not change the rank distribution (default), or
+   **   - \ref CMR_MATROID_DEC_THREESUM_FLAG_DISTRIBUTED_RANKS to enforce distributed ranks (1 + 1), or
+   **   - \ref CMR_MATROID_DEC_THREESUM_FLAG_CONCENTRATED_RANK to enforce concentrated ranks (2 + 0).
+   **
+   **  The second decision determines the layout of the **first child** matrix:
+   **   - \ref CMR_MATROID_DEC_THREESUM_FLAG_FIRST_WIDE for a wide first child (default) in case of distributed ranks,
+   **     or
+   **   - \ref CMR_MATROID_DEC_THREESUM_FLAG_FIRST_TALL for a tall first child in that case.
+   **   - \ref CMR_MATROID_DEC_THREESUM_FLAG_FIRST_MIXED for a mixed first child (default) in case of concentrated
+   **     ranks, or
+   **   - \ref CMR_MATROID_DEC_THREESUM_FLAG_FIRST_ALLREPR for a first child with all representing rows in that case.
+   **
+   **  Similarly, the third decision determines the layout of the **second child** matrix:
+   **   - \ref CMR_MATROID_DEC_THREESUM_FLAG_SECOND_WIDE for a wide second child (default) in case of distributed ranks,
+   **     or
+   **   - \ref CMR_MATROID_DEC_THREESUM_FLAG_SECOND_TALL for a tall second child in that case.
+   **   - \ref CMR_MATROID_DEC_THREESUM_FLAG_SECOND_MIXED for a mixed second child (default) in case of concentrated
+   **     ranks, or
+   **   - \ref CMR_MATROID_DEC_THREESUM_FLAG_SECOND_ALLREPR for a first second with all representing rows in that case.
+   **
+   ** \see \ref matroid_decomposition for a description of these layouts.
+   **
+   ** A decomposition as described by Seymour can be selected via \ref CMR_MATROID_DEC_THREESUM_FLAG_SEYMOUR.
+   ** A decomposition as used by Truemper can be selected via \ref CMR_MATROID_DEC_THREESUM_FLAG_TRUEMPER.
+   ** The default is to not carry out any pivots and choose Seymour's or Truemper's definition depending on the rank
+   ** distribution. */
+
+  CMR_DEC_CONSTRUCT graphs;
+  /**< \brief Which (co)graphs to construct; default: \ref CMR_DEC_CONSTRUCT_NONE. */
 } CMR_REGULAR_PARAMS;
 
 /**

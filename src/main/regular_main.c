@@ -62,7 +62,6 @@ CMR_ERROR testRegularity(
   CMR_REGULAR_PARAMS params;
   CMR_CALL( CMRregularParamsInit(&params) );
   params.completeTree = outputTreeFileName;
-  params.matrices = outputTreeFileName ? CMR_DEC_CONSTRUCT_ALL : CMR_DEC_CONSTRUCT_NONE;
   params.directGraphicness = directGraphicness;
   params.seriesParallel = seriesParallel;
   CMR_REGULAR_STATS stats;

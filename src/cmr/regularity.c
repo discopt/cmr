@@ -393,27 +393,54 @@ CMR_ERROR CMRregularityTaskRun(
   assert(task);
   assert(punprocessed);
 
+  CMRdbgMsg(2, "Processing %p.\n", task);
+
   if (!task->dec->testedTwoConnected)
   {
+    CMRdbgMsg(4, "Searching for 1-separations.\n");
     CMR_CALL( CMRregularitySearchOneSum(cmr, task, punprocessed) );
   }
   else if (!task->dec->graphicness
     && (task->params->directGraphicness || task->dec->matrix->numRows <= 3 || task->dec->matrix->numColumns <= 3))
   {
+    CMRdbgMsg(4, "Testing directly for %s.\n", task->dec->isTernary ? "being network" : "graphicness");
     CMR_CALL( CMRregularityTestGraphicness(cmr, task, punprocessed) );
   }
   else if (!task->dec->cographicness
     && (task->params->directGraphicness || task->dec->matrix->numRows <= 3 || task->dec->matrix->numColumns <= 3))
   {
+    CMRdbgMsg(4, "Testing directly for %s.\n", task->dec->isTernary ? "being conetwork" : "cographicness");
     CMR_CALL( CMRregularityTestCographicness(cmr, task, punprocessed) );
   }
   else if (!task->dec->testedR10)
   {
+    CMRdbgMsg(4, "Testing for being R_10.\n");
     CMR_CALL( CMRregularityTestR10(cmr, task, punprocessed) );
   }
-  else if (!task->dec->testedSeriesParallel && task->params->seriesParallel)
+  else if (!task->dec->testedSeriesParallel)
   {
+    CMRdbgMsg(4, "Testing for series-parallel reductions.\n");
     CMR_CALL( CMRregularityDecomposeSeriesParallel(cmr, task, punprocessed) );
+  }
+  else if (task->dec->denseMatrix)
+  {
+    CMRdbgMsg(4, "Attempting to construct a sequence of nested minors.\n");
+    CMR_CALL( CMRregularityExtendNestedMinorSequence(cmr, task, punprocessed) );
+  }
+  else if (task->dec->nestedMinorsMatrix && (task->dec->nestedMinorsLastGraphic == SIZE_MAX))
+  {
+    CMRdbgMsg(4, "Testing along the sequence for %s.\n", task->dec->isTernary ? "being network" : "graphicness");
+    CMR_CALL( CMRregularityNestedMinorSequenceGraphicness(cmr, task, punprocessed) );
+  }
+  else if (task->dec->nestedMinorsMatrix && (task->dec->nestedMinorsLastCographic == SIZE_MAX))
+  {
+    CMRdbgMsg(4, "Testing for %s along the sequence.\n", task->dec->isTernary ? "being conetwork" : "cographicness");
+    CMR_CALL( CMRregularityNestedMinorSequenceCographicness(cmr, task, punprocessed) );
+  }
+  else
+  {
+    CMRdbgMsg(4, "Searching for 3-separations along the sequence.\n");
+    CMR_CALL( CMRregularityNestedMinorSequenceSearchThreeSeparation(cmr, task, punprocessed) );
   }
 
   return CMR_OKAY;
