@@ -640,22 +640,29 @@ TEST(SeriesParallel, TernaryBadSeparation)
 
   CMR_SP_REDUCTION reductions[20];
   size_t numReductions;
+  CMR_SUBMAT* reducedSubmatrix = NULL;
   CMR_SUBMAT* violatorSubmatrix = NULL;
   CMR_SEPA* sepa = NULL;
 
-  ASSERT_CMR_CALL( CMRdecomposeTernarySeriesParallel(cmr, matrix, NULL, reductions, SIZE_MAX, &numReductions, NULL,
-    &violatorSubmatrix, &sepa, NULL, DBL_MAX) );
+  ASSERT_CMR_CALL( CMRdecomposeTernarySeriesParallel(cmr, matrix, NULL, reductions, SIZE_MAX, &numReductions,
+    &reducedSubmatrix, &violatorSubmatrix, &sepa, NULL, DBL_MAX) );
 
   ASSERT_TRUE( violatorSubmatrix );
   ASSERT_FALSE( sepa );
+  CMR_CHRMAT* reducedMatrix = NULL;
   CMR_CHRMAT* violatorMatrix = NULL;
-  ASSERT_CMR_CALL( CMRchrmatZoomSubmat(cmr, matrix, violatorSubmatrix, &violatorMatrix) );
+
+  ASSERT_CMR_CALL( CMRchrmatZoomSubmat(cmr, matrix, reducedSubmatrix, &reducedMatrix) );
+
+  ASSERT_CMR_CALL( CMRchrmatZoomSubmat(cmr, reducedMatrix, violatorSubmatrix, &violatorMatrix) );
 
   CMRchrmatPrintDense(cmr, violatorMatrix, stdout, '0', true);
 
   ASSERT_CMR_CALL( CMRchrmatFree(cmr, &violatorMatrix) );
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &reducedMatrix) );
   ASSERT_CMR_CALL( CMRsepaFree(cmr, &sepa) );
   ASSERT_CMR_CALL( CMRsubmatFree(cmr, &violatorSubmatrix) );
+  ASSERT_CMR_CALL( CMRsubmatFree(cmr, &reducedSubmatrix) );
   ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }

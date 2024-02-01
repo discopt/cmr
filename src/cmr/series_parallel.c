@@ -1609,7 +1609,8 @@ CMR_ERROR decomposeBinarySeriesParallel(
 
       if (pseparation && *pseparation)
       {
-        CMR_CALL( CMRsepaFindBinaryRepresentativesSubmatrix(cmr, *pseparation, matrix, NULL, reducedSubmatrix, NULL) );
+        CMR_CALL( CMRsepaFindBinaryRepresentativesSubmatrix(cmr, *pseparation, matrix, NULL, reducedSubmatrix, NULL,
+          NULL) );
         assert((*pseparation)->type == CMR_SEPA_TYPE_TWO);
       }
 
@@ -1863,25 +1864,21 @@ CMR_ERROR decomposeTernarySeriesParallel(
           wheelClock = clock();
 
         CMR_CALL( extractWheelSubmatrix(cmr, listmatrix, rowData, columnData, queue, queueMemory,
-          numRows - numRowReductions, numColumns - numColumnReductions, pviolatorSubmatrix, pseparation) );
+          numRows - numRowReductions, numColumns - numColumnReductions, &violatorSubmatrix, pseparation) );
 
         if (pseparation && *pseparation)
         {
-          CMR_CALL( CMRsepaFindBinaryRepresentativesSubmatrix(cmr, *pseparation, matrix, NULL, reducedSubmatrix, NULL) );
-          assert((*pseparation)->type == CMR_SEPA_TYPE_TWO);
+          CMR_CALL( CMRsepaFindBinaryRepresentativesSubmatrix(cmr, *pseparation, matrix, NULL, reducedSubmatrix, NULL,
+            &violatorSubmatrix) );
 
-          /* Check whether the rank-1 part also has ternary rank 1. */
-
-          CMRdbgMsg(2, "Checking block of -1/+1s for ternary rank 1.\n");
-
-          bool sepaIsTernary;
-
-          CMR_CALL( CMRsepaCheckTernarySubmatrix(cmr, *pseparation, matrix, reducedSubmatrix, &sepaIsTernary,
-            pviolatorSubmatrix) );
-          
-          if (!sepaIsTernary)
+          if (violatorSubmatrix)
             CMR_CALL( CMRsepaFree(cmr, pseparation) );
+          else
+            assert((*pseparation)->type == CMR_SEPA_TYPE_TWO);
         }
+
+        if (violatorSubmatrix && pviolatorSubmatrix)
+          *pviolatorSubmatrix = violatorSubmatrix;
 
         if (stats)
         {
@@ -1892,7 +1889,7 @@ CMR_ERROR decomposeTernarySeriesParallel(
       else
       {
         /* We found a violator but the user doesn't want it. */
-        assert(!violatorSubmatrix);
+        assert(violatorSubmatrix);
         CMR_CALL( CMRsubmatFree(cmr, &violatorSubmatrix) );
       }
     }

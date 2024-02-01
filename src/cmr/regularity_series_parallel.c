@@ -134,7 +134,7 @@ CMR_ERROR CMRregularityDecomposeSeriesParallel(CMR* cmr, DecompositionTask* task
         separation->columnsFlags[CMRelementToColumnIndex(reductions[0].mate)] = CMR_SEPA_FIRST;
       }
 
-      CMR_CALL( CMRsepaFindBinaryRepresentatives(cmr, separation, dec->matrix, dec->transpose, NULL) );
+      CMR_CALL( CMRsepaFindBinaryRepresentatives(cmr, separation, dec->matrix, dec->transpose, NULL, NULL) );
       assert(separation->type == CMR_SEPA_TYPE_TWO);
     }
   }
