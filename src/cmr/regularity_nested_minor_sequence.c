@@ -1073,7 +1073,6 @@ CMR_ERROR CMRregularityExtendNestedMinorSequence(CMR* cmr, DecompositionTask* ta
       CMR_SEPA* separation = NULL;
       CMR_CALL( CMRsepaCreate(cmr, numRows, numColumns, &separation) );
 
-
       for (size_t row = 0; row < numRows; ++row)
       {
         CMR_SEPA_FLAGS flag = (CMRelementIsValid(rowData[row].predecessor) || rowData[row].isSource
@@ -1100,28 +1099,24 @@ CMR_ERROR CMRregularityExtendNestedMinorSequence(CMR* cmr, DecompositionTask* ta
           separation->columnsFlags[CMRelementToColumnIndex(originalElement)] = flag;
       }
 
-      CMR_CALL( CMRsepaFindBinaryRepresentatives(cmr, separation, dec->matrix, dec->transpose, NULL) );
-      assert(separation->type == CMR_SEPA_TYPE_TWO);
+      CMR_SUBMAT* violatorSubmatrix = NULL;
+      CMR_CALL( CMRsepaFindBinaryRepresentatives(cmr, separation, dec->matrix, dec->transpose, NULL,
+        dec->isTernary ? &violatorSubmatrix : NULL) );
 
-      if (dec->isTernary)
+      if (violatorSubmatrix)
       {
-        bool isTernary;
-        CMR_SUBMAT* violatorSubmatrix = NULL;
-        CMR_CALL( CMRsepaCheckTernary(cmr, separation, dec->matrix, &isTernary, &violatorSubmatrix) );
+        CMRdbgMsg(8, "-> 2x2 submatrix with bad determinant.\n");
 
-        if (!isTernary)
-        {
-          CMRdbgMsg(8, "-> 2x2 submatrix with bad determinant.\n");
+        CMR_CALL( CMRmatroiddecUpdateSubmatrix(cmr, dec, violatorSubmatrix, CMR_MATROID_DEC_TYPE_DETERMINANT) );
+        assert(dec->type != CMR_MATROID_DEC_TYPE_DETERMINANT);
 
-          CMR_CALL( CMRmatroiddecUpdateSubmatrix(cmr, dec, violatorSubmatrix, CMR_MATROID_DEC_TYPE_DETERMINANT) );
-          assert(dec->type != CMR_MATROID_DEC_TYPE_DETERMINANT);
+        CMR_CALL( CMRsubmatFree(cmr, &violatorSubmatrix) );
+        CMR_CALL( CMRsepaFree(cmr, &separation) );
 
-          CMR_CALL( CMRsubmatFree(cmr, &violatorSubmatrix) );
-          CMR_CALL( CMRsepaFree(cmr, &separation) );
-
-          break;
-        }
+        break;
       }
+
+      assert(separation->type == CMR_SEPA_TYPE_TWO);
 
       /* Carry out 2-sum decomposition. */
 

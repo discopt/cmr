@@ -138,6 +138,10 @@ CMR_ERROR computePivots(CMR* cmr, CMR_CHRMAT* matrix, size_t numPivots, size_t* 
     {
       if (pivotValue == 2 && nz->row != pivotRow)
         nz->value *= 2;
+      else if (nz->row == pivotRow)
+      {
+        nz->value *= -1;
+      }
       denseColumn[nz->row] = INT_MIN;
     }
 

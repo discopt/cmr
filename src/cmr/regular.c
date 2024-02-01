@@ -19,7 +19,7 @@ CMR_ERROR CMRregularParamsInit(CMR_REGULAR_PARAMS* params)
   params->planarityCheck = false;
   params->completeTree = false;
   params->threeSumPivotChildren = false;
-  params->threeSumStrategy = CMR_MATROID_DEC_THREESUM_FLAG_NO_PIVOTS
+  params->threeSumStrategy = CMR_MATROID_DEC_THREESUM_FLAG_DISTRIBUTED_RANKS /* TODO: Later no pivots. */
     | CMR_MATROID_DEC_THREESUM_FLAG_FIRST_WIDE | CMR_MATROID_DEC_THREESUM_FLAG_FIRST_MIXED
     | CMR_MATROID_DEC_THREESUM_FLAG_SECOND_WIDE | CMR_MATROID_DEC_THREESUM_FLAG_SECOND_MIXED;
   params->graphs = CMR_DEC_CONSTRUCT_NONE;

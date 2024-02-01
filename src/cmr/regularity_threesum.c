@@ -23,6 +23,8 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
 
   CMR_MATROID_DEC* dec = task->dec;
   assert(dec);
+  size_t* rowsToChild = NULL;
+  size_t* columnsToChild = NULL;
 
 #if defined(CMR_DEBUG)
   CMRdbgMsg(8, "Processing 3-separation to produce a 3-sum for the following matrix:\n");
@@ -110,7 +112,22 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
       separation->columnsFlags[pivotColumn] = CMR_SEPA_FIRST;
 
     /* We recompute all representatives of the low-rank submatrices. */
-    CMR_CALL( CMRsepaFindBinaryRepresentatives(cmr, separation, goodRankMatrix, goodRankTranspose, NULL) );
+    CMR_SUBMAT* violatorSubmatrix = NULL;
+    CMR_CALL( CMRsepaFindBinaryRepresentatives(cmr, separation, goodRankMatrix, goodRankTranspose, NULL,
+      dec->isTernary ? &violatorSubmatrix : NULL) );
+
+    if (violatorSubmatrix)
+    {
+      CMRdbgMsg(8, "-> 2x2 submatrix with bad determinant.\n");
+
+      CMR_CALL( CMRmatroiddecUpdateSubmatrix(cmr, dec, violatorSubmatrix, CMR_MATROID_DEC_TYPE_DETERMINANT) );
+      assert(dec->type != CMR_MATROID_DEC_TYPE_DETERMINANT);
+
+      CMR_CALL( CMRsubmatFree(cmr, &violatorSubmatrix) );
+
+      goto cleanup;
+    }
+
     CMR_CALL( CMRsepaGetRepresentatives(cmr, separation, extraRows, extraColumns) );
   }
   else
@@ -142,9 +159,7 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
 
   /* Initialize the 3-sum node. */
   CMR_CALL( CMRmatroiddecUpdateThreeSumInit(cmr, dec) );
-  size_t* rowsToChild = NULL;
   CMR_CALL( CMRallocStackArray(cmr, &rowsToChild, dec->numRows) );
-  size_t* columnsToChild = NULL;
   CMR_CALL( CMRallocStackArray(cmr, &columnsToChild, dec->numColumns) );
   size_t numChildBaseRows;
   size_t numChildBaseColumns;
@@ -201,8 +216,13 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
     }
   }
 
-  CMR_CALL( CMRfreeStackArray(cmr, &columnsToChild) );
-  CMR_CALL( CMRfreeStackArray(cmr, &rowsToChild) );
+cleanup:
+
+  if (rowsToChild)
+  {
+    CMR_CALL( CMRfreeStackArray(cmr, &columnsToChild) );
+    CMR_CALL( CMRfreeStackArray(cmr, &rowsToChild) );
+  }
 
   /* Free the good-rank matrices if they were created explicitly but are not needed due to further pivots. */
 
@@ -218,18 +238,25 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
     CMR_CALL( CMRfreeStackArray(cmr, &pivotRows) );
   }
 
-  DecompositionTask* childTasks[2] = { task, NULL };
-  CMR_CALL( CMRregularityTaskCreateRoot(cmr, dec->children[1], &childTasks[1], task->params, task->stats,
-    task->startClock, task->timeLimit) );
+  if (dec->type == CMR_MATROID_DEC_TYPE_THREE_SUM)
+  {
+    DecompositionTask* childTasks[2] = { task, NULL };
+    CMR_CALL( CMRregularityTaskCreateRoot(cmr, dec->children[1], &childTasks[1], task->params, task->stats,
+      task->startClock, task->timeLimit) );
 
-  childTasks[0]->dec = dec->children[0];
-  dec->children[0]->testedSeriesParallel = false;
-  dec->children[1]->testedSeriesParallel = false;
+    childTasks[0]->dec = dec->children[0];
+    dec->children[0]->testedSeriesParallel = false;
+    dec->children[1]->testedSeriesParallel = false;
 
-  /* Add both child tasks to the list. */
-  childTasks[0]->next = childTasks[1];
-  childTasks[1]->next = *punprocessed;
-  *punprocessed = childTasks[0];
+    /* Add both child tasks to the list. */
+    childTasks[0]->next = childTasks[1];
+    childTasks[1]->next = *punprocessed;
+    *punprocessed = childTasks[0];
+  }
+  else
+  {
+    assert(!"UNIMPLEMENTED"); /* TODO: Tasks? */
+  }
 
   return CMR_OKAY;
 }
