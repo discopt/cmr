@@ -108,7 +108,8 @@ CMR_ERROR CMRsepaFindBinaryRepresentatives(
   CMR_SEPA* sepa,         /**< Separation. */
   CMR_CHRMAT* matrix,     /**< Matrix. */
   CMR_CHRMAT* transpose,  /**< Transpose of \p matrix. */
-  bool* pswapped          /**< Pointer for storing whether parts were swapped (may be \c NULL). */
+  bool* pswapped,         /**< Pointer for storing whether parts were swapped (may be \c NULL). */
+  CMR_SUBMAT** pviolator  /**< Pointer for storing a violator submatrix if the ternary rank differs (may be \c NULL). */
 );
 
 /**
@@ -127,7 +128,8 @@ CMR_ERROR CMRsepaFindBinaryRepresentativesSubmatrix(
   CMR_CHRMAT* matrix,     /**< Matrix. */
   CMR_CHRMAT* transpose,  /**< Transpose of \p matrix. */
   CMR_SUBMAT* submatrix,  /**< Submatrix of \p matrix. */
-  bool* pswapped          /**< Pointer for storing whether parts were swapped (may be \c NULL). */
+  bool* pswapped,         /**< Pointer for storing whether parts were swapped (may be \c NULL). */
+  CMR_SUBMAT** pviolator  /**< Pointer for storing a violator submatrix if the ternary rank differs (may be \c NULL). */
 );
 
 /**
@@ -138,8 +140,8 @@ CMR_EXPORT
 CMR_ERROR CMRsepaGetRepresentatives(
   CMR* cmr,                 /**< \ref CMR environment. */
   CMR_SEPA* sepa,           /**< Separation. */
-  size_t extraRows[2][3],   /**< Array mapping child to arrays of (at most 3) different representative rows. */
-  size_t extraColumns[2][3] /**< Array mapping child to arrays of (at most 3) different representative columns. */
+  size_t reprRows[2][3],    /**< Array mapping child to arrays of (at most 3) different representative rows. */
+  size_t reprColumns[2][3]  /**< Array mapping child to arrays of (at most 3) different representative columns. */
 );
 
 /**
