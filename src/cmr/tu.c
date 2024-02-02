@@ -84,17 +84,11 @@ CMR_ERROR tuTest(
   *pisTotallyUnimodular = true;
   clock_t time = clock();
 
-  CMR_CALL( CMRtestCamionSigned(cmr, matrix, pisTotallyUnimodular, NULL, stats ? &stats->camion : NULL,
-    timeLimit) );
-
-  if (*pisTotallyUnimodular)
-  {
-    CMR_REGULAR_PARAMS params;
-    CMR_CALL( CMRregularParamsInit(&params) );
-    double remainingTime = timeLimit - ((clock() - time) * 1.0 / CLOCKS_PER_SEC);
-    CMR_CALL( CMRregularityTest(cmr, matrix, false, pisTotallyUnimodular, NULL, NULL, &params,
-      stats ? &stats->regular : NULL, remainingTime) );
-  }
+  CMR_TU_PARAMS params; /* TODO: We should supply some params?! */
+  CMR_CALL( CMRtuParamsInit(&params) );
+  double remainingTime = timeLimit - ((clock() - time) * 1.0 / CLOCKS_PER_SEC);
+  CMR_CALL( CMRtuTest(cmr, matrix, pisTotallyUnimodular, NULL, NULL, &params,
+    stats ? stats : NULL, remainingTime) );
 
   return CMR_OKAY;
 }

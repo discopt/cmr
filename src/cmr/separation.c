@@ -1,4 +1,4 @@
-#define CMR_DEBUG /* Uncomment to debug this file. */
+// #define CMR_DEBUG /* Uncomment to debug this file. */
 
 #include <cmr/separation.h>
 
@@ -523,7 +523,7 @@ int computeTernaryRank(
 
   int rank = 0;
   size_t beyondRepr = 0;
-  size_t reprNumNonzeros[8];
+  size_t reprNumNonzeros[8] = {0, 0, 0, 0, 0, 0, 0, 0};
   for (size_t r = 0; r < numRows; ++r)
   {
     size_t row = rows[r];
@@ -551,7 +551,7 @@ int computeTernaryRank(
         int y = columnsConsidered[column].reprNonzero[rep];
         if (x != y)
         {
-          CMRdbgMsg(16, "-> incompatible with rep #%zu (value: %d).\n", rep, y);
+          CMRdbgMsg(16, "-> incompatible with rep #%zu (x: %d, y: %d).\n", rep, x, y);
           reprCompatible[rep] = false;
         }
       }
@@ -579,7 +579,7 @@ int computeTernaryRank(
     independentRepr[rank] = r;
     ++rank;
     CMRdbgMsg(14, "Increasing rank to %d.\n", rank);
-    beyondRepr = 6 * beyondRepr + 2;
+    beyondRepr = 3 * beyondRepr + 2;
     if (rank == 3)
       return 3;
 
@@ -599,6 +599,7 @@ int computeTernaryRank(
         if (!columnsConsidered[column].considered)
           continue;
         int x = matrix->entryValues[e];
+
         columnsConsidered[column].reprNonzero[0] = x;
         columnsConsidered[column].reprNonzero[1] = -x;
         columnsConsidered[column].reprNonzero[4] = x;
@@ -618,8 +619,10 @@ int computeTernaryRank(
         size_t column = matrix->entryColumns[e];
         if (!columnsConsidered[column].considered)
           continue;
+
         int x = columnsConsidered[column].reprNonzero[0];
         int y = matrix->entryValues[e];
+
         columnsConsidered[column].reprNonzero[2] = y;
         columnsConsidered[column].reprNonzero[3] = -y;
 
@@ -638,17 +641,17 @@ int computeTernaryRank(
         }
 
         z = x - y;
-        columnsConsidered[column].reprNonzero[4] = z;
-        columnsConsidered[column].reprNonzero[5] = -z;
+        columnsConsidered[column].reprNonzero[6] = z;
+        columnsConsidered[column].reprNonzero[7] = -z;
         if (z == 0)
         {
-          reprNumNonzeros[4]--;
-          reprNumNonzeros[5]--;
+          reprNumNonzeros[6]--;
+          reprNumNonzeros[7]--;
         }
         else if (x == 0)
         {
-          reprNumNonzeros[4]++;
-          reprNumNonzeros[5]++;
+          reprNumNonzeros[6]++;
+          reprNumNonzeros[7]++;
         }
       }
     }
