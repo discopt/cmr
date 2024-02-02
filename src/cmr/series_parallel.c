@@ -1,4 +1,4 @@
-#define CMR_DEBUG /* Uncomment to debug this file. */
+// #define CMR_DEBUG /* Uncomment to debug this file. */
 
 // TODO: Try to not fill the hashtable in initialScan but just add all elements to the queue.
 
@@ -1969,7 +1969,8 @@ CMR_ERROR CMRdecomposeTernarySeriesParallel(CMR* cmr, CMR_CHRMAT* matrix, bool* 
     maxNumReductions, &localNumReductions, preducedSubmatrix, pviolatorSubmatrix, pseparation, stats, timeLimit) );
 
   if (pisSeriesParallel)
-    *pisSeriesParallel = (*pnumReductions == matrix->numRows + matrix->numColumns);
+    *pisSeriesParallel = (localNumReductions == matrix->numRows + matrix->numColumns);
+
   if (reductions)
     *pnumReductions = localNumReductions;
   else

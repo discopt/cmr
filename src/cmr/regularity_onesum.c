@@ -1,4 +1,4 @@
-#define CMR_DEBUG /** Uncomment to debug this file. */
+// #define CMR_DEBUG /** Uncomment to debug this file. */
 
 #include <cmr/regular.h>
 
@@ -87,6 +87,8 @@ CMR_ERROR CMRregularitySearchOneSum(CMR* cmr, DecompositionTask* task, Decomposi
       childTask->next = *punprocessed;
       *punprocessed = childTask;
     }
+
+    CMR_CALL( CMRregularityTaskFree(cmr, &task) );
   }
 
   CMR_CALL( CMRfreeBlockArray(cmr, &components) );

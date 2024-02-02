@@ -6,7 +6,7 @@
 #include <cmr/separation.h>
 #include <cmr/graphic.h>
 
-TEST(TotallyUnimodular, OneSum)
+TEST(TU, OneSum)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -59,7 +59,7 @@ TEST(TotallyUnimodular, OneSum)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
-TEST(TotallyUnimodular, SeriesParallelTwoSeparation)
+TEST(TU, SeriesParallelTwoSeparation)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -118,7 +118,7 @@ TEST(TotallyUnimodular, SeriesParallelTwoSeparation)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
-TEST(TotallyUnimodular, NestedMinorSearchTwoSeparation)
+TEST(TU, NestedMinorSearchTwoSeparation)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -168,7 +168,7 @@ TEST(TotallyUnimodular, NestedMinorSearchTwoSeparation)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
-TEST(TotallyUnimodular, NestedMinorSearchTwoSeparationViolator)
+TEST(TU, NestedMinorSearchTwoSeparationViolator)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -204,7 +204,7 @@ TEST(TotallyUnimodular, NestedMinorSearchTwoSeparationViolator)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
-TEST(TotallyUnimodular, NestedMinorPivotsOneRowOneColumn)
+TEST(TU, NestedMinorPivotsOneRowOneColumn)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -237,7 +237,7 @@ TEST(TotallyUnimodular, NestedMinorPivotsOneRowOneColumn)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
-TEST(TotallyUnimodular, NestedMinorPivotsTwoRowsOneColumn)
+TEST(TU, NestedMinorPivotsTwoRowsOneColumn)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -271,7 +271,7 @@ TEST(TotallyUnimodular, NestedMinorPivotsTwoRowsOneColumn)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
-TEST(TotallyUnimodular, NestedMinorPivotsOneRowTwoColumns)
+TEST(TU, NestedMinorPivotsOneRowTwoColumns)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -304,7 +304,7 @@ TEST(TotallyUnimodular, NestedMinorPivotsOneRowTwoColumns)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
-TEST(TotallyUnimodular, NestedMinorPivotsTwoSeparation)
+TEST(TU, NestedMinorPivotsTwoSeparation)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -366,7 +366,7 @@ void testSequenceGraphicness(
   if (knowNetwork)
   {
     ASSERT_TRUE( isTU );
-    ASSERT_TRUE( CMRmatroiddecGraphicness(dec) );
+    ASSERT_GT( CMRmatroiddecGraphicness(dec), 0 );
     CMR_CHRMAT* networkMatrix = NULL;
     bool isForest;
     ASSERT_CMR_CALL( CMRcomputeNetworkMatrix(cmr, CMRmatroiddecGraph(dec), &networkMatrix, NULL,
@@ -386,16 +386,16 @@ void testSequenceGraphicness(
   }
   else
   {
-    ASSERT_FALSE( CMRmatroiddecGraphicness(dec) );
+    ASSERT_LT( CMRmatroiddecGraphicness(dec), 0 );
   }
 
-  ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, 0, true, true, true) );
+//   ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, 0, true, true, true) );
 
   ASSERT_CMR_CALL( CMRmatroiddecFree(cmr, &dec) );
   ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
 }
 
-TEST(TotallyUnimodular, SequenceGraphicnessWheel)
+TEST(TU, SeqGraphicWheel)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -460,7 +460,7 @@ TEST(TotallyUnimodular, SequenceGraphicnessWheel)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
-TEST(TotallyUnimodular, SequenceGraphicnessOneRowOneColumn)
+TEST(TU, SeqGraphicOneRowOneColumn)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -485,7 +485,7 @@ TEST(TotallyUnimodular, SequenceGraphicnessOneRowOneColumn)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
-TEST(TotallyUnimodular, SequenceGraphicnessTwoRowsOneColumn)
+TEST(TU, SeqGraphicTwoRowsOneColumn)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -510,7 +510,7 @@ TEST(TotallyUnimodular, SequenceGraphicnessTwoRowsOneColumn)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
-TEST(TotallyUnimodular, SequenceGraphicnessOneRowTwoColumns)
+TEST(TU, SeqGraphicOneRowTwoColumns)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -533,7 +533,7 @@ TEST(TotallyUnimodular, SequenceGraphicnessOneRowTwoColumns)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
-TEST(TotallyUnimodular, SequenceGraphicnessOneColumn)
+TEST(TU, SeqGraphicnOneColumn)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -555,7 +555,7 @@ TEST(TotallyUnimodular, SequenceGraphicnessOneColumn)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
-TEST(TotallyUnimodular, SequenceGraphicnessOneRow)
+TEST(TU, SeqGraphicOneRow)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -643,7 +643,7 @@ TEST(TotallyUnimodular, SequenceGraphicnessOneRow)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
-TEST(TotallyUnimodular, R10)
+TEST(TU, R10)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -733,7 +733,7 @@ void testEnumerate(
   ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
 }
 
-TEST(TotallyUnimodular, EnumerateRanksZeroTwo)
+TEST(TU, EnumerateRanksZeroTwo)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -752,7 +752,7 @@ TEST(TotallyUnimodular, EnumerateRanksZeroTwo)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
-TEST(TotallyUnimodular, EnumerateRanksOneOne)
+TEST(TU, EnumerateRanksOneOne)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -771,7 +771,7 @@ TEST(TotallyUnimodular, EnumerateRanksOneOne)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
-TEST(TotallyUnimodular, EnumerateRanksTwoZero)
+TEST(TU, EnumerateRanksTwoZero)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -791,7 +791,7 @@ TEST(TotallyUnimodular, EnumerateRanksTwoZero)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
-TEST(TotallyUnimodular, R12)
+TEST(TU, ThreeSumWideWideR12)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -811,16 +811,32 @@ TEST(TotallyUnimodular, R12)
 
     bool isTU;
     CMR_MATROID_DEC* dec = NULL;
-    ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, NULL, NULL, DBL_MAX) );
+    CMR_TU_PARAMS params;
+    ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
+    params.regular.threeSumStrategy = CMR_MATROID_DEC_THREESUM_FLAG_DISTRIBUTED_RANKS
+      | CMR_MATROID_DEC_THREESUM_FLAG_FIRST_WIDE | CMR_MATROID_DEC_THREESUM_FLAG_SECOND_WIDE;
+
+    ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
+
     ASSERT_GT( CMRmatroiddecRegularity(dec), 0 );
-    ASSERT_EQ( CMRmatroiddecNumChildren(dec), 2UL );
-    size_t graphicChildren = (CMRmatroiddecGraphicness(CMRmatroiddecChild(dec, 0)) ? 2 : 0)
-      + (CMRmatroiddecGraphicness(CMRmatroiddecChild(dec, 1)) ? 1 : 0);
-    size_t cographicChildren = (CMRmatroiddecCographicness(CMRmatroiddecChild(dec, 0)) ? 2 : 0)
-      + (CMRmatroiddecCographicness(CMRmatroiddecChild(dec, 1)) ? 1 : 0);
-    ASSERT_EQ( CMRmatroiddecNumChildren(CMRmatroiddecChild(dec, 0)), 0UL );
-    ASSERT_EQ( CMRmatroiddecNumChildren(CMRmatroiddecChild(dec, 1)), 0UL );
-    ASSERT_EQ( graphicChildren + cographicChildren, 3UL );
+    ASSERT_LT( CMRmatroiddecGraphicness(dec), 0 );
+    ASSERT_EQ( CMRmatroiddecType(dec), CMR_MATROID_DEC_TYPE_PIVOTS );
+    ASSERT_EQ( CMRmatroiddecNumPivots(dec), 1UL );
+    ASSERT_EQ( CMRmatroiddecNumChildren(dec), 1UL );
+
+    CMR_MATROID_DEC* child = CMRmatroiddecChild(dec, 0);
+
+    ASSERT_EQ( CMRmatroiddecType(child), CMR_MATROID_DEC_TYPE_THREE_SUM );
+    ASSERT_EQ( CMRmatroiddecNumChildren(child), 2UL );
+
+    CMR_MATROID_DEC* grandChild1 = CMRmatroiddecChild(child, 0);
+    CMR_MATROID_DEC* grandChild2 = CMRmatroiddecChild(child, 1);
+
+    ASSERT_LT( CMRmatroiddecGraphicness(grandChild1), 0 );
+    ASSERT_GT( CMRmatroiddecCographicness(grandChild1), 0 );
+
+    ASSERT_GT( CMRmatroiddecGraphicness(grandChild2), 0 );
+
     ASSERT_CMR_CALL( CMRmatroiddecFree(cmr, &dec) );
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
   }
@@ -828,7 +844,7 @@ TEST(TotallyUnimodular, R12)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
-TEST(TotallyUnimodular, ForbiddenSubmatrix)
+TEST(TU, ForbiddenSubmatrixWideWide)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -857,7 +873,13 @@ TEST(TotallyUnimodular, ForbiddenSubmatrix)
     bool isTU;
     CMR_MATROID_DEC* dec = NULL;
     CMR_SUBMAT* forbiddenSubmatrix = NULL;
-    ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, &forbiddenSubmatrix, NULL, NULL, DBL_MAX) );
+    CMR_TU_PARAMS params;
+    ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
+    params.regular.threeSumStrategy = CMR_MATROID_DEC_THREESUM_FLAG_DISTRIBUTED_RANKS
+      | CMR_MATROID_DEC_THREESUM_FLAG_FIRST_WIDE | CMR_MATROID_DEC_THREESUM_FLAG_SECOND_WIDE;
+
+    ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, &forbiddenSubmatrix, &params, NULL, DBL_MAX) );
+
     ASSERT_LT( CMRmatroiddecRegularity(dec), 0 );
     ASSERT_EQ( forbiddenSubmatrix->numRows, 8UL );
     ASSERT_EQ( forbiddenSubmatrix->numColumns, 8UL );
@@ -870,7 +892,7 @@ TEST(TotallyUnimodular, ForbiddenSubmatrix)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
-TEST(TotallyUnimodular, PartitionAlgorithm)
+TEST(TU, PartitionAlgorithm)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );

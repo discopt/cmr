@@ -1,7 +1,6 @@
-#define CMR_DEBUG /* Uncomment to debug this file. */
+// #define CMR_DEBUG /* Uncomment to debug this file. */
 
 #include <cmr/matroid.h>
-
 
 #include "env_internal.h"
 #include "matroid_internal.h"
@@ -575,6 +574,32 @@ bool* CMRmatroiddecCographArcsReversed(CMR_MATROID_DEC* dec)
 
   return dec->cographArcsReversed;
 }
+
+size_t CMRmatroiddecNumPivots(CMR_MATROID_DEC* dec)
+{
+  assert(dec);
+
+  return dec->numPivots;
+}
+
+size_t * CMRmatroiddecPivotRows(CMR_MATROID_DEC* dec)
+{
+  assert(dec);
+
+  return dec->pivotRows;
+}
+
+size_t * CMRmatroiddecPivotColumns(CMR_MATROID_DEC* dec)
+{
+  assert(dec);
+
+  return dec->pivotColumns;
+}
+
+
+
+
+
 
 CMR_ERROR CMRmatroiddecPrint(CMR* cmr, CMR_MATROID_DEC* dec, FILE* stream, size_t indent, bool printMatrices,
   bool printGraphs, bool printReductions)

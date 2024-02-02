@@ -1,4 +1,4 @@
-#define CMR_DEBUG /** Uncomment to debug this file. */
+// #define CMR_DEBUG /** Uncomment to debug this file. */
 
 #include <cmr/regular.h>
 
@@ -8,6 +8,198 @@
 #include "env_internal.h"
 #include "matroid_internal.h"
 #include "regularity_internal.h"
+
+typedef enum
+{
+  ELEMENT_TYPE_NONE,    /**< Row/column does not belong to the submatrix. */
+  ELEMENT_TYPE_NORMAL,  /**< Row/column belongs to the submatrix. */
+  ELEMENT_TYPE_SOURCE,  /**< Row/column is a source. */
+  ELEMENT_TYPE_TARGET   /**< Row/column is a target. */
+} ElementType;
+
+typedef struct
+{
+  size_t predecessor; /**< Predecessor node (row or column index). */
+  int8_t status;      /**< 0: unknown, 1: in queue, 2: processed. */
+  int8_t edgeValue;   /**< Matrix entry of the edge to the predecessor. */
+} GraphNode;
+
+/**
+ * \brief Finds a shortest path from any source to any target element.
+ */
+
+static
+CMR_ERROR findSubmatrixCycle(
+  CMR* cmr,                 /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,       /**< Matrix. */
+  CMR_CHRMAT* transpose,    /**< Transpose of \p matrix. */
+  ElementType* rowTypes,    /**< Array with rows' types. */
+  ElementType* columnTypes, /**< Array with columns' types. */
+  CMR_ELEMENT* ppathSource, /**< Pointer for storing the source row/column. */
+  CMR_ELEMENT* ppathTarget, /**< Pointer for storing the target row/column. */
+  int* pentrySum            /**< Pointer for storing the sum of the path's entries. */
+)
+{
+  assert(cmr);
+  assert(matrix);
+  assert(transpose);
+  assert(rowTypes);
+  assert(columnTypes);
+  assert(ppathSource);
+  assert(ppathTarget);
+  assert(pentrySum);
+
+  size_t numRows = matrix->numRows;
+  size_t numColumns = matrix->numColumns;
+
+  /* Initialize row / column arrays. */
+
+  GraphNode* rowData = NULL;
+  CMR_CALL( CMRallocStackArray(cmr, &rowData, numRows) );
+  GraphNode* columnData = NULL;
+  CMR_CALL( CMRallocStackArray(cmr, &columnData, numColumns) );
+
+  /* Initialize queue. */
+  CMR_ELEMENT* queue = NULL;
+  CMR_CALL( CMRallocStackArray(cmr, &queue, numRows + numColumns) );
+  size_t firstQueued = 0;
+  size_t beyondQueued = 0;
+  for (size_t row = 0; row < numRows; ++row)
+  {
+    rowData[row].predecessor = SIZE_MAX;
+    if (rowTypes[row] == ELEMENT_TYPE_SOURCE)
+    {
+      queue[beyondQueued++] = CMRrowToElement(row);
+      rowData[row].status = 1;
+    }
+    else
+      rowData[row].status = 0;
+  }
+  for (size_t column = 0; column < numColumns; ++column)
+  {
+    columnData[column].predecessor = SIZE_MAX;
+    if (columnTypes[column] == ELEMENT_TYPE_SOURCE)
+    {
+      queue[beyondQueued++] = CMRcolumnToElement(column);
+      columnData[column].status = 1;
+    }
+    else
+      columnData[column].status = 0;
+  }
+
+  /* Start BFS. */
+  bool done = false;
+  while (!done && firstQueued < beyondQueued)
+  {
+    CMR_ELEMENT current = queue[firstQueued++];
+    if (CMRelementIsRow(current))
+    {
+      size_t row = CMRelementToRowIndex(current);
+      rowData[row].status = 2;
+
+      size_t first = matrix->rowSlice[row];
+      size_t beyond = matrix->rowSlice[row + 1];
+      for (size_t e = first; e < beyond; ++e)
+      {
+        size_t column = matrix->entryColumns[e];
+        ElementType type = columnTypes[column];
+        if (type == ELEMENT_TYPE_NONE || columnData[column].status)
+          continue;
+
+        columnData[column].predecessor = row;
+        columnData[column].edgeValue = matrix->entryValues[e];
+
+        if (type == ELEMENT_TYPE_TARGET)
+        {
+          done = true;
+          *ppathTarget = CMRcolumnToElement(column);
+          break;
+        }
+        columnData[column].status = 1;
+        queue[beyondQueued++] = CMRcolumnToElement(column);
+      }
+    }
+    else
+    {
+      size_t column = CMRelementToColumnIndex(current);
+      columnData[column].status = 2;
+
+      size_t first = transpose->rowSlice[column];
+      size_t beyond = transpose->rowSlice[column + 1];
+      for (size_t e = first; e < beyond; ++e)
+      {
+        size_t row = transpose->entryColumns[e];
+        ElementType type = rowTypes[row];
+        if (type == ELEMENT_TYPE_NONE || rowData[row].status)
+          continue;
+
+        rowData[row].predecessor = column;
+        rowData[row].edgeValue = transpose->entryValues[e];
+
+        if (type == ELEMENT_TYPE_TARGET)
+        {
+          done = true;
+          *ppathTarget = CMRrowToElement(column);
+          break;
+        }
+        rowData[row].status = 1;
+        queue[beyondQueued++] = CMRrowToElement(row);
+      }
+    }
+  }
+
+  /* Trace back the path. */
+  assert(done);
+  CMR_ELEMENT current = *ppathTarget;
+  *pentrySum = 0;
+  while (true)
+  {
+    if (CMRelementIsRow(current))
+    {
+      size_t row = CMRelementToRowIndex(current);
+      size_t column = rowData[row].predecessor;
+      CMRdbgMsg(12, "Predecessor of r%zu is c%zu.\n", row + 1, column + 1);
+      if (column < SIZE_MAX)
+      {
+        (*pentrySum) += rowData[row].edgeValue;
+        current = CMRcolumnToElement(column);
+      }
+      else
+      {
+        *ppathSource = current;
+        break;
+      }
+    }
+    else
+    {
+      size_t column = CMRelementToColumnIndex(current);
+      size_t row = columnData[column].predecessor;
+      CMRdbgMsg(12, "Predecessor of c%zu is r%zu.\n", column + 1, row + 1);
+      if (row < SIZE_MAX)
+      {
+        (*pentrySum) += columnData[column].edgeValue;
+        current = CMRrowToElement(row);
+      }
+      else
+      {
+        *ppathSource = current;
+        break;
+      }
+    }
+  }
+
+  char buffer[16];
+  CMRdbgMsg(10, "findSubmatrixCycle found a path from %s to %s with entry sum %d.\n",
+    CMRelementString(*ppathSource, NULL), CMRelementString(*ppathTarget, buffer), *pentrySum);
+
+  /* Cleanup */
+
+  CMR_CALL( CMRfreeStackArray(cmr, &queue) );
+  CMR_CALL( CMRfreeStackArray(cmr, &columnData) );
+  CMR_CALL( CMRfreeStackArray(cmr, &rowData) );
+
+  return CMR_OKAY;
+}
 
 CMR_ERROR CMRregularityDecomposeThreeSum(
   CMR* cmr,
@@ -66,7 +258,18 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
     pivotRow = extraRows[1][0];
     assert(pivotRow != SIZE_MAX);
 
-    pivotColumn = extraColumns[0][0];
+    size_t first = dec->matrix->rowSlice[pivotRow];
+    size_t beyond = dec->matrix->rowSlice[pivotRow + 1];
+    for (size_t e = first; e < beyond; ++e)
+    {
+      size_t column = dec->matrix->entryColumns[e];
+      int flags = separation->columnsFlags[column];
+      if ((flags & CMR_SEPA_MASK_CHILD) == CMR_SEPA_SECOND)
+      {
+        pivotColumn = column;
+        break;
+      }
+    }
     assert(pivotColumn != SIZE_MAX);
   }
 
@@ -77,7 +280,18 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
     pivotRow = extraRows[0][0];
     assert(pivotRow != SIZE_MAX);
 
-    pivotColumn = extraColumns[1][0];
+    size_t first = dec->matrix->rowSlice[pivotRow];
+    size_t beyond = dec->matrix->rowSlice[pivotRow + 1];
+    for (size_t e = first; e < beyond; ++e)
+    {
+      size_t column = dec->matrix->entryColumns[e];
+      int flags = separation->columnsFlags[column];
+      if ((flags & CMR_SEPA_MASK_CHILD) == CMR_SEPA_FIRST)
+      {
+        pivotColumn = column;
+        break;
+      }
+    }
     assert(pivotColumn != SIZE_MAX);
   }
 
@@ -164,6 +378,11 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
   size_t numChildBaseRows;
   size_t numChildBaseColumns;
 
+  ElementType* rowTypes = NULL;
+  CMR_CALL( CMRallocStackArray(cmr, &rowTypes, dec->numRows) );
+  ElementType* columnTypes = NULL;
+  CMR_CALL( CMRallocStackArray(cmr, &columnTypes, dec->numColumns) );
+
   if (separation->type == CMR_SEPA_TYPE_THREE_DISTRIBUTED_RANKS)
   {
     CMR_CALL( CMRsepaGetProjection(separation, 0, rowsToChild, columnsToChild, &numChildBaseRows,
@@ -177,9 +396,52 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
     }
     else
     {
+      /* Prepare shortest-path search in bottom-right submatrix. */
+      CMR_ELEMENT sourceRowElement;
+      CMR_ELEMENT targetColumnElement;
+      int extraEntry;
+      if (dec->isTernary)
+      {
+        for (size_t row = 0; row < dec->numRows; ++row)
+        {
+          CMR_SEPA_FLAGS flags = separation->rowsFlags[row];
+          if ((flags & CMR_SEPA_MASK_CHILD) == CMR_SEPA_FIRST)
+            rowTypes[row] = ELEMENT_TYPE_NONE;
+          else if ((flags & CMR_SEPA_MASK_EXTRA) == CMR_SEPA_FLAG_RANK1)
+            rowTypes[row] = ELEMENT_TYPE_SOURCE;
+          else
+            rowTypes[row] = ELEMENT_TYPE_NORMAL;
+        }
+        for (size_t column = 0; column < dec->numColumns; ++column)
+        {
+          CMR_SEPA_FLAGS flags = separation->columnsFlags[column];
+          if ((flags & CMR_SEPA_MASK_CHILD) == CMR_SEPA_FIRST)
+            columnTypes[column] = ELEMENT_TYPE_NONE;
+          else if ((flags & CMR_SEPA_MASK_EXTRA) == CMR_SEPA_FLAG_RANK1)
+            columnTypes[column] = ELEMENT_TYPE_TARGET;
+          else
+            columnTypes[column] = ELEMENT_TYPE_NORMAL;
+        }
+        int sumEntries;
+        CMR_CALL( findSubmatrixCycle(cmr, dec->matrix, dec->transpose, rowTypes, columnTypes, &sourceRowElement,
+          &targetColumnElement, &sumEntries) );
+        sumEntries = ((sumEntries % 4) + 4) % 4;
+        assert(sumEntries == 1 || sumEntries == 3);
+        extraEntry = (sumEntries == 1) ? +1 : -1;
+      }
+      else
+      {
+        sourceRowElement = CMRrowToElement(extraRows[0][0]);
+        targetColumnElement = CMRcolumnToElement(extraColumns[0][0]);
+        extraEntry = 1;
+      }
+
+      assert( CMRelementIsRow(sourceRowElement) );
+      assert( CMRelementIsColumn(targetColumnElement) );
+
       CMR_CALL( CMRmatroiddecUpdateThreeSumCreateWideFirstChild(cmr, dec, separation, rowsToChild, columnsToChild,
-        numChildBaseRows, numChildBaseColumns, extraRows[0][0], extraColumns[0][0], extraColumns[0][0],
-        dec->isTernary ? 0 : 1) );
+        numChildBaseRows, numChildBaseColumns, CMRelementToRowIndex(sourceRowElement),
+        CMRelementToColumnIndex(targetColumnElement), CMRelementToColumnIndex(targetColumnElement), extraEntry) );
     }
 
     CMR_CALL( CMRsepaGetProjection(separation, 1, rowsToChild, columnsToChild, &numChildBaseRows,
@@ -193,9 +455,52 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
     }
     else
     {
+      /* Prepare shortest-path search in top-left submatrix. */
+      CMR_ELEMENT sourceRowElement;
+      CMR_ELEMENT targetColumnElement;
+      int extraEntry;
+      if (dec->isTernary)
+      {
+        for (size_t row = 0; row < dec->numRows; ++row)
+        {
+          CMR_SEPA_FLAGS flags = separation->rowsFlags[row];
+          if ((flags & CMR_SEPA_MASK_CHILD) == CMR_SEPA_SECOND)
+            rowTypes[row] = ELEMENT_TYPE_NONE;
+          else if ((flags & CMR_SEPA_MASK_EXTRA) == CMR_SEPA_FLAG_RANK1)
+            rowTypes[row] = ELEMENT_TYPE_SOURCE;
+          else
+            rowTypes[row] = ELEMENT_TYPE_NORMAL;
+        }
+        for (size_t column = 0; column < dec->numColumns; ++column)
+        {
+          CMR_SEPA_FLAGS flags = separation->columnsFlags[column];
+          if ((flags & CMR_SEPA_MASK_CHILD) == CMR_SEPA_SECOND)
+            columnTypes[column] = ELEMENT_TYPE_NONE;
+          else if ((flags & CMR_SEPA_MASK_EXTRA) == CMR_SEPA_FLAG_RANK1)
+            columnTypes[column] = ELEMENT_TYPE_TARGET;
+          else
+            columnTypes[column] = ELEMENT_TYPE_NORMAL;
+        }
+        int sumEntries;
+        CMR_CALL( findSubmatrixCycle(cmr, dec->matrix, dec->transpose, rowTypes, columnTypes, &sourceRowElement,
+          &targetColumnElement, &sumEntries) );
+        sumEntries = ((sumEntries % 4) + 4) % 4;
+        assert(sumEntries == 1 || sumEntries == 3);
+        extraEntry = (sumEntries == 1) ? +1 : -1;
+      }
+      else
+      {
+        sourceRowElement = CMRrowToElement(extraRows[1][0]);
+        targetColumnElement = CMRcolumnToElement(extraColumns[1][0]);
+        extraEntry = 1;
+      }
+
+      assert( CMRelementIsRow(sourceRowElement) );
+      assert( CMRelementIsColumn(targetColumnElement) );
+
       CMR_CALL( CMRmatroiddecUpdateThreeSumCreateWideSecondChild(cmr, dec, separation, rowsToChild, columnsToChild,
-        numChildBaseRows, numChildBaseColumns, extraRows[1][0], extraColumns[1][0], extraColumns[1][0],
-        dec->isTernary ? 0 : 1) );
+        numChildBaseRows, numChildBaseColumns, CMRelementToRowIndex(sourceRowElement),
+        CMRelementToColumnIndex(targetColumnElement), CMRelementToColumnIndex(targetColumnElement), extraEntry) );
     }
   }
   else
@@ -220,6 +525,8 @@ cleanup:
 
   if (rowsToChild)
   {
+    CMR_CALL( CMRfreeStackArray(cmr, &columnTypes) );
+    CMR_CALL( CMRfreeStackArray(cmr, &rowTypes) );
     CMR_CALL( CMRfreeStackArray(cmr, &columnsToChild) );
     CMR_CALL( CMRfreeStackArray(cmr, &rowsToChild) );
   }

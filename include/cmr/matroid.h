@@ -540,6 +540,33 @@ bool* CMRmatroiddecCographArcsReversed(
 );
 
 /**
+ * \brief Returns the number of pivots (if available).
+ */
+
+CMR_EXPORT
+size_t CMRmatroiddecNumPivots(
+  CMR_MATROID_DEC* dec  /**< Decomposition node. */
+);
+
+/**
+ * \brief Returns the array with the pivot rows (if available).
+ */
+
+CMR_EXPORT
+size_t* CMRmatroiddecPivotRows(
+  CMR_MATROID_DEC* dec  /**< Decomposition node. */
+);
+
+/**
+ * \brief Returns the array with the pivot columns (if available).
+ */
+
+CMR_EXPORT
+size_t* CMRmatroiddecPivotColumns(
+  CMR_MATROID_DEC* dec  /**< Decomposition node. */
+);
+
+/**
  * \brief Prints the decomposition \p dec to \p stream.
  */
 

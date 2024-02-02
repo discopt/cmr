@@ -1001,7 +1001,7 @@ CMR_ERROR CMRregularityNestedMinorSequenceSearchThreeSeparation(CMR* cmr, Decomp
   }
   else
   {
-    assert(!"NOT TESTED"); // TODO: Add a unittest.
+    // TODO: Add a dedicated unittest.
     task->dec->type = CMR_MATROID_DEC_TYPE_IRREGULAR;
 
     /* Free the task. */
