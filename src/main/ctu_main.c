@@ -61,10 +61,11 @@ CMR_ERROR testComplementTotalUnimodularity(
   bool isCTU;
   size_t complementRow = SIZE_MAX;
   size_t complementColumn = SIZE_MAX;
+  CMR_CTU_PARAMS params;
+  CMR_CALL( CMRctuParamsInit(&params) );
   CMR_CTU_STATISTICS stats;
   CMR_CALL( CMRstatsComplementTotalUnimodularityInit(&stats) );
-  CMR_CALL( CMRtestComplementTotalUnimodularity(cmr, matrix, &isCTU, &complementRow, &complementColumn, &stats,
-    timeLimit) );
+  CMR_CALL( CMRctuTest(cmr, matrix, &isCTU, &complementRow, &complementColumn, &params, &stats, timeLimit) );
 
   fprintf(stderr, "Matrix %scomplement totally unimodular.\n", isCTU ? "IS " : "IS NOT ");
   if (printStats)

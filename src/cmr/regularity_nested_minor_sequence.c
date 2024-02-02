@@ -1,4 +1,4 @@
-#define CMR_DEBUG /* Uncomment to debug this file. */
+// #define CMR_DEBUG /* Uncomment to debug this file. */
 
 #include "matroid_internal.h"
 #include "regularity_internal.h"
@@ -30,6 +30,9 @@ CMR_ERROR dbgPrintDenseSequence(
   CMR_MATROID_DEC* dec  /**< \brief Decomposition node whose dense matrix to print. */
 )
 {
+  CMR_UNUSED(cmr);
+  CMR_UNUSED(dec);
+
 #if defined(CMR_DEBUG)
 
   assert(dec);

@@ -41,7 +41,7 @@ typedef struct
   bool threeSumPivotChildren;
   /**< \brief Whether pivots for 3-sums shall be applied such that the matrix contains both child matrices as
    **         submatrices, if possible. */
-  CMR_MATROID_DEC_THREESUM_FLAG threeSumStrategy;
+  int threeSumStrategy;
   /**< \brief Whether to perform pivots to change the rank distribution, and how to construct the children.
    **
    ** The value is a bit-wise or of three decisions. The first decision is that of the **rank distribution**:

@@ -1,9 +1,9 @@
-  #include <gtest/gtest.h>
+#include <gtest/gtest.h>
 
 #include "common.h"
 #include <cmr/ctu.h>
 
-TEST(ComplementTotalUnimodularity, Examples)
+TEST(CTU, ExamplesWideWide)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -18,7 +18,12 @@ TEST(ComplementTotalUnimodularity, Examples)
     ) );
 
     bool isCTU;
-    ASSERT_CMR_CALL( CMRtestComplementTotalUnimodularity(cmr, matrix, &isCTU, NULL, NULL, NULL, DBL_MAX) );
+    CMR_CTU_PARAMS params;
+    ASSERT_CMR_CALL( CMRctuParamsInit(&params) );
+    params.tu.regular.threeSumStrategy = CMR_MATROID_DEC_THREESUM_FLAG_DISTRIBUTED_RANKS
+      | CMR_MATROID_DEC_THREESUM_FLAG_FIRST_WIDE | CMR_MATROID_DEC_THREESUM_FLAG_SECOND_WIDE;
+
+    ASSERT_CMR_CALL( CMRctuTest(cmr, matrix, &isCTU, NULL, NULL, &params, NULL, DBL_MAX) );
     
     ASSERT_TRUE(isCTU);
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
@@ -36,11 +41,15 @@ TEST(ComplementTotalUnimodularity, Examples)
     bool isCTU;
     size_t complementRow;
     size_t complementColumn;
-    ASSERT_CMR_CALL( CMRtestComplementTotalUnimodularity(cmr, matrix, &isCTU, &complementRow, &complementColumn, NULL,
-      DBL_MAX) );
+    CMR_CTU_PARAMS params;
+    ASSERT_CMR_CALL( CMRctuParamsInit(&params) );
+    params.tu.regular.threeSumStrategy = CMR_MATROID_DEC_THREESUM_FLAG_DISTRIBUTED_RANKS
+      | CMR_MATROID_DEC_THREESUM_FLAG_FIRST_WIDE | CMR_MATROID_DEC_THREESUM_FLAG_SECOND_WIDE;
+
+    ASSERT_CMR_CALL( CMRctuTest(cmr, matrix, &isCTU, &complementRow, &complementColumn, &params, NULL, DBL_MAX) );
     ASSERT_FALSE(isCTU);
     ASSERT_EQ(complementRow, 0UL);
-    ASSERT_EQ(complementColumn, 0UL);
+    ASSERT_EQ(complementColumn, 1UL);
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
   }
 
