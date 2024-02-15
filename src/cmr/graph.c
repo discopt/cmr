@@ -378,7 +378,7 @@ CMR_ERROR CMRgraphDeleteEdge(CMR* cmr, CMR_GRAPH* graph, CMR_GRAPH_EDGE e)
 }
 
 
-CMR_ERROR CMRgraphPrint(FILE* stream, CMR_GRAPH* graph)
+CMR_ERROR CMRgraphPrint(CMR_GRAPH* graph, FILE* stream)
 {
   assert(stream);
   assert(graph);

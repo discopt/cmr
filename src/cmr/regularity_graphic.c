@@ -1651,6 +1651,9 @@ CMR_ERROR CMRregularityNestedMinorSequenceGraphicness(CMR* cmr, DecompositionTas
     CMR_CALL( CMRallocBlockArray(cmr, &dec->graphForest, dec->matrix->numRows) );
     dec->graphCoforest = NULL;
     CMR_CALL( CMRallocBlockArray(cmr, &dec->graphCoforest, dec->matrix->numColumns) );
+    dec->graphArcsReversed = NULL;
+    if (dec->isTernary)
+      CMR_CALL( CMRallocBlockArray(cmr, &dec->graphArcsReversed, CMRgraphMemEdges(dec->graph)) );
 
     assert(CMRgraphNumEdges(graph) == dec->matrix->numRows + dec->matrix->numColumns);
     for (CMR_GRAPH_ITER iter = CMRgraphEdgesFirst(graph); CMRgraphEdgesValid(graph, iter);
@@ -1665,6 +1668,37 @@ CMR_ERROR CMRregularityNestedMinorSequenceGraphicness(CMR* cmr, DecompositionTas
     }
 
     CMR_CALL( CMRfreeBlockArray(cmr, &edgeElements) );
+
+    if (dec->isTernary)
+    {
+      /* Check Camion signs. */
+
+      if (dec->transpose == NULL)
+        CMR_CALL( CMRchrmatTranspose(cmr, dec->matrix, &dec->transpose) );
+
+      bool isCamionSigned;
+      CMR_SUBMAT* violatorSubmatrix = NULL;
+      CMR_CALL( CMRcamionCographicOrient(cmr, dec->transpose, dec->graph, dec->graphForest,
+        dec->graphCoforest, dec->graphArcsReversed, &isCamionSigned, &violatorSubmatrix,
+        task->stats ? &task->stats->camion : NULL) );
+
+      if (violatorSubmatrix)
+      {
+        CMR_CALL( CMRsubmatTranspose(violatorSubmatrix) );
+
+        CMRdbgMsg(8, "-> %zux%zu submatrix with bad determinant.\n", violatorSubmatrix->numRows,
+          violatorSubmatrix->numColumns);
+
+        CMR_CALL( CMRmatroiddecUpdateSubmatrix(cmr, dec, violatorSubmatrix, CMR_MATROID_DEC_TYPE_DETERMINANT) );
+        assert(dec->type != CMR_MATROID_DEC_TYPE_DETERMINANT);
+
+        CMR_CALL( CMRgraphFree(cmr, &dec->graph) );
+        CMR_CALL( CMRfreeBlockArray(cmr, &dec->graphForest) );
+        CMR_CALL( CMRfreeBlockArray(cmr, &dec->graphCoforest) );
+        CMR_CALL( CMRfreeBlockArray(cmr, &dec->graphArcsReversed) );
+        CMR_CALL( CMRsubmatFree(cmr, &violatorSubmatrix) );
+      }
+    }
 
     CMR_CALL( CMRregularityTaskFree(cmr, &task) );
   }
@@ -1703,9 +1737,12 @@ CMR_ERROR CMRregularityNestedMinorSequenceCographicness(CMR* cmr, DecompositionT
     CMRdbgMsg(8, "Whole sequence is %s.\n", dec->type == CMR_MATROID_DEC_TYPE_PLANAR ? "planar" : "cographic");
     dec->cograph = cograph;
     dec->cographForest = NULL;
-    CMR_CALL( CMRallocBlockArray(cmr, &dec->cographForest, dec->matrix->numRows) );
+    CMR_CALL( CMRallocBlockArray(cmr, &dec->cographForest, dec->matrix->numColumns) );
     dec->cographCoforest = NULL;
-    CMR_CALL( CMRallocBlockArray(cmr, &dec->cographCoforest, dec->matrix->numColumns) );
+    CMR_CALL( CMRallocBlockArray(cmr, &dec->cographCoforest, dec->matrix->numRows) );
+    dec->graphArcsReversed = NULL;
+    if (dec->isTernary)
+      CMR_CALL( CMRallocBlockArray(cmr, &dec->cographArcsReversed, CMRgraphMemEdges(dec->cograph)) );
 
     assert(CMRgraphNumEdges(cograph) == dec->matrix->numRows + dec->matrix->numColumns);
     for (CMR_GRAPH_ITER iter = CMRgraphEdgesFirst(cograph); CMRgraphEdgesValid(cograph, iter);
@@ -1713,13 +1750,39 @@ CMR_ERROR CMRregularityNestedMinorSequenceCographicness(CMR* cmr, DecompositionT
     {
       CMR_GRAPH_EDGE edge = CMRgraphEdgesEdge(cograph, iter);
       CMR_ELEMENT element = edgeElements[edge];
-      if (CMRelementIsRow(element))
-        dec->cographForest[CMRelementToRowIndex(element)] = edge;
+      if (CMRelementIsColumn(element))
+        dec->cographForest[CMRelementToColumnIndex(element)] = edge;
       else
-        dec->cographCoforest[CMRelementToColumnIndex(element)] = edge;
+        dec->cographCoforest[CMRelementToRowIndex(element)] = edge;
     }
 
     CMR_CALL( CMRfreeBlockArray(cmr, &edgeElements) );
+
+    if (dec->isTernary)
+    {
+      /* Check Camion signs. */
+
+      bool isCamionSigned;
+      CMR_SUBMAT* violatorSubmatrix = NULL;
+      CMR_CALL( CMRcamionCographicOrient(cmr, dec->matrix, dec->cograph, dec->cographForest,
+        dec->cographCoforest, dec->cographArcsReversed, &isCamionSigned, &violatorSubmatrix,
+        task->stats ? &task->stats->camion : NULL) );
+
+      if (violatorSubmatrix)
+      {
+        CMRdbgMsg(8, "-> %zux%zu submatrix with bad determinant.\n", violatorSubmatrix->numRows,
+          violatorSubmatrix->numColumns);
+
+        CMR_CALL( CMRmatroiddecUpdateSubmatrix(cmr, dec, violatorSubmatrix, CMR_MATROID_DEC_TYPE_DETERMINANT) );
+        assert(dec->type != CMR_MATROID_DEC_TYPE_DETERMINANT);
+
+        CMR_CALL( CMRgraphFree(cmr, &dec->cograph) );
+        CMR_CALL( CMRfreeBlockArray(cmr, &dec->cographForest) );
+        CMR_CALL( CMRfreeBlockArray(cmr, &dec->cographCoforest) );
+        CMR_CALL( CMRfreeBlockArray(cmr, &dec->cographArcsReversed) );
+        CMR_CALL( CMRsubmatFree(cmr, &violatorSubmatrix) );
+      }
+    }
 
     CMR_CALL( CMRregularityTaskFree(cmr, &task) );
   }
@@ -1760,12 +1823,12 @@ CMR_ERROR CMRregularityTestGraphicness(CMR* cmr, DecompositionTask* task, Decomp
   bool isGraphic;
   if (dec->isTernary)
   {
-    CMR_CALL( CMRtestConetworkMatrix(cmr, dec->transpose, &isGraphic, &dec->graph, &dec->graphForest,
+    CMR_CALL( CMRnetworkTestTranspose(cmr, dec->transpose, &isGraphic, &dec->graph, &dec->graphForest,
       &dec->graphCoforest, &dec->graphArcsReversed, NULL, task->stats ? &task->stats->network : NULL, remainingTime) );
   }
   else
   {
-    CMR_CALL( CMRtestCographicMatrix(cmr, dec->transpose, &isGraphic, &dec->graph, &dec->graphForest,
+    CMR_CALL( CMRgraphicTestTranspose(cmr, dec->transpose, &isGraphic, &dec->graph, &dec->graphForest,
       &dec->graphCoforest, NULL, task->stats ? &task->stats->graphic : NULL, remainingTime) );
   }
 
@@ -1816,13 +1879,13 @@ CMR_ERROR CMRregularityTestCographicness(CMR* cmr, DecompositionTask* task, Deco
   bool isCographic;
   if (dec->isTernary)
   {
-    CMR_CALL( CMRtestConetworkMatrix(cmr, dec->matrix, &isCographic, &dec->cograph, &dec->cographForest,
+    CMR_CALL( CMRnetworkTestTranspose(cmr, dec->matrix, &isCographic, &dec->cograph, &dec->cographForest,
       &dec->cographCoforest, &dec->cographArcsReversed, NULL, task->stats ? &task->stats->network : NULL,
       remainingTime) );
   }
   else
   {
-    CMR_CALL( CMRtestCographicMatrix(cmr, dec->matrix, &isCographic, &dec->cograph, &dec->cographForest,
+    CMR_CALL( CMRgraphicTestTranspose(cmr, dec->matrix, &isCographic, &dec->cograph, &dec->cographForest,
       &dec->cographCoforest, NULL, task->stats ? &task->stats->graphic : NULL, remainingTime) );
   }
 

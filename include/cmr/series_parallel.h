@@ -38,7 +38,7 @@ typedef struct
  */
 
 CMR_EXPORT
-CMR_ERROR CMRstatsSeriesParallelInit(
+CMR_ERROR CMRspStatsInit(
   CMR_SP_STATISTICS* stats /**< Pointer to statistics. */
 );
 
@@ -47,7 +47,7 @@ CMR_ERROR CMRstatsSeriesParallelInit(
  */
 
 CMR_EXPORT
-CMR_ERROR CMRstatsSeriesParallelPrint(
+CMR_ERROR CMRspStatsPrint(
   FILE* stream,             /**< File stream to print to. */
   CMR_SP_STATISTICS* stats, /**< Pointer to statistics. */
   const char* prefix        /**< Prefix string to prepend to each printed line (may be \c NULL). */

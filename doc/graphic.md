@@ -43,8 +43,8 @@ For a matrix \f$ M \in \{0,1\}^{m \times n}\f$ with \f$ k \f$ nonzeros it runs i
 
 The corresponding functions in the library are
 
-  - CMRtestGraphicMatrix() tests a matrix for being graphic.
-  - CMRtestCographicMatrix() tests a matrix for being cographic.
+  - CMRgraphicTestMatrix() tests a matrix for being graphic.
+  - CMRgraphicTestTranspose() tests a matrix for being cographic.
 
 and are defined in \ref network.h.
 
@@ -70,6 +70,6 @@ If `OUT-MAT` is `-` then the matrix is written to stdout.
 
 The corresponding function in the library is
 
-  - CMRcomputeGraphicMatrix() constructs a graphic matrix for a given graph.
+  - CMRgraphicComputeMatrix() constructs a graphic matrix for a given graph.
 
 and is defined in \ref network.h.

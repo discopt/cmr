@@ -339,7 +339,7 @@ CMR_ERROR CMRdblmatFree(CMR* cmr, CMR_DBLMAT** pmatrix)
   assert(matrix->numNonzeros == 0 || matrix->entryValues);
 
   CMR_CALL( CMRfreeBlockArray(cmr, &matrix->rowSlice) );
-  if (matrix->numNonzeros > 0)
+  if (matrix->entryColumns)
   {
     CMR_CALL( CMRfreeBlockArray(cmr, &matrix->entryColumns) );
     CMR_CALL( CMRfreeBlockArray(cmr, &matrix->entryValues) );
@@ -361,7 +361,7 @@ CMR_ERROR CMRintmatFree(CMR* cmr, CMR_INTMAT** pmatrix)
   assert(matrix->numNonzeros == 0 || matrix->entryValues);
 
   CMR_CALL( CMRfreeBlockArray(cmr, &matrix->rowSlice) );
-  if (matrix->numNonzeros > 0)
+  if (matrix->entryColumns)
   {
     CMR_CALL( CMRfreeBlockArray(cmr, &matrix->entryColumns) );
     CMR_CALL( CMRfreeBlockArray(cmr, &matrix->entryValues) );
@@ -383,7 +383,7 @@ CMR_ERROR CMRchrmatFree(CMR* cmr, CMR_CHRMAT** pmatrix)
   assert(matrix->numNonzeros == 0 || matrix->entryValues);
 
   CMR_CALL( CMRfreeBlockArray(cmr, &matrix->rowSlice) );
-  if (matrix->numNonzeros > 0)
+  if (matrix->entryColumns)
   {
     CMR_CALL( CMRfreeBlockArray(cmr, &matrix->entryColumns) );
     CMR_CALL( CMRfreeBlockArray(cmr, &matrix->entryValues) );
@@ -1000,6 +1000,7 @@ CMR_ERROR CMRchrmatPrintDense(CMR* cmr, CMR_CHRMAT* matrix, FILE* stream, char z
       fprintf(stream, "%c ", zeroChar);
     fputc('\n', stream);
   }
+  fflush(stream);
 
   return CMR_OKAY;
 }

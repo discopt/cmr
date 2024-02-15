@@ -34,7 +34,7 @@ typedef struct
 } ElementData;
 
 
-CMR_ERROR CMRstatsSeriesParallelInit(CMR_SP_STATISTICS* stats)
+CMR_ERROR CMRspStatsInit(CMR_SP_STATISTICS* stats)
 {
   assert(stats);
 
@@ -50,7 +50,7 @@ CMR_ERROR CMRstatsSeriesParallelInit(CMR_SP_STATISTICS* stats)
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRstatsSeriesParallelPrint(FILE* stream, CMR_SP_STATISTICS* stats, const char* prefix)
+CMR_ERROR CMRspStatsPrint(FILE* stream, CMR_SP_STATISTICS* stats, const char* prefix)
 {
   assert(stream);
   assert(stats);
@@ -1870,6 +1870,13 @@ CMR_ERROR decomposeTernarySeriesParallel(
         {
           CMR_CALL( CMRsepaFindBinaryRepresentativesSubmatrix(cmr, *pseparation, matrix, NULL, reducedSubmatrix, NULL,
             &violatorSubmatrix) );
+
+          if (violatorSubmatrix)
+          {
+            CMRdbgMsg(4, "Extracted a violator submatrix.\n");
+            CMRsubmatWriteToStream(cmr, violatorSubmatrix, matrix->numRows, matrix->numColumns, stdout);
+            fflush(stdout);
+          }
 
           if (violatorSubmatrix)
             CMR_CALL( CMRsepaFree(cmr, pseparation) );

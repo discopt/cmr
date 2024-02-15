@@ -1,28 +1,36 @@
-// #define CMR_DEBUG /* Uncomment to debug this file. */
+#define CMR_DEBUG /* Uncomment to debug this file. */
 
 #include <cmr/camion.h>
 
 #include "camion_internal.h"
 #include "matrix_internal.h"
-#include "one_sum.h"
+#include "block_decomposition.h"
 #include "env_internal.h"
+
+#if defined(CMR_DEBUG)
+#include <cmr/graphic.h>
+#endif /* CMR_DEBUG */
 
 #include <assert.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <time.h>
 
-CMR_ERROR CMRstatsCamionInit(CMR_CAMION_STATISTICS* stats)
+CMR_ERROR CMRcamionStatsInit(CMR_CAMION_STATISTICS* stats)
 {
   assert(stats);
 
+  stats->generalCount = 0;
+  stats->generalTime = 0.0;
+  stats->graphCount = 0;
+  stats->graphTime = 0.0;
   stats->totalCount = 0;
   stats->totalTime = 0.0;
 
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRstatsCamionPrint(FILE* stream, CMR_CAMION_STATISTICS* stats, const char* prefix)
+CMR_ERROR CMRcamionStatsPrint(FILE* stream, CMR_CAMION_STATISTICS* stats, const char* prefix)
 {
   assert(stream);
   assert(stats);
@@ -32,6 +40,8 @@ CMR_ERROR CMRstatsCamionPrint(FILE* stream, CMR_CAMION_STATISTICS* stats, const 
     fprintf(stream, "Camion signing:\n");
     prefix = "  ";
   }
+  fprintf(stream, "%sgeneral: %lu in %f seconds\n", prefix, (unsigned long)stats->generalCount, stats->generalTime);
+  fprintf(stream, "%sgraph: %lu in %f seconds\n", prefix, (unsigned long)stats->graphCount, stats->graphTime);
   fprintf(stream, "%stotal: %lu in %f seconds\n", prefix, (unsigned long)stats->totalCount, stats->totalTime);
 
   return CMR_OKAY;
@@ -49,7 +59,7 @@ typedef struct
   char targetValue;       /**< \brief Entry in current row if a target node, and 0 otherwise. */
 } GRAPH_NODE;
 
-CMR_ERROR CMRcomputeCamionSignSequentiallyConnected(
+CMR_ERROR CMRcamionComputeSignSequentiallyConnected(
   CMR* cmr,                 /**< \ref CMR environment. */
   CMR_CHRMAT* matrix,       /**< The matrix to be signed. */
   CMR_CHRMAT* transpose,    /**< The transpose of \p matrix. */
@@ -72,7 +82,7 @@ CMR_ERROR CMRcomputeCamionSignSequentiallyConnected(
   /* If we have more rows than columns, we work with the transpose. */
   if (matrix->numRows > matrix->numColumns)
   {
-    CMR_CALL( CMRcomputeCamionSignSequentiallyConnected(cmr, transpose, matrix, change, pmodification, psubmatrix,
+    CMR_CALL( CMRcamionComputeSignSequentiallyConnected(cmr, transpose, matrix, change, pmodification, psubmatrix,
       timeLimit) );
     assert(*pmodification == 0 || *pmodification == 'm');
     if (psubmatrix && *psubmatrix)
@@ -90,7 +100,7 @@ CMR_ERROR CMRcomputeCamionSignSequentiallyConnected(
   CMRdbgMsg(2, "signSequentiallyConnected.\n");
 
   *pmodification = 0;
-  const int firstRowNode = matrix->numColumns;
+  const size_t firstRowNode = matrix->numColumns;
   GRAPH_NODE* graphNodes = NULL;
   int* bfsQueue = NULL;
   int bfsQueueBegin = 0;
@@ -133,7 +143,7 @@ CMR_ERROR CMRcomputeCamionSignSequentiallyConnected(
     }
 
     /* First nonzero in row determines start column node. */
-    int startNode = matrix->entryColumns[first];
+    size_t startNode = matrix->entryColumns[first];
     /* All columns of the row's nonzeros are target column nodes. */
     for (size_t e = first; e < beyond; ++e)
       graphNodes[matrix->entryColumns[e]].targetValue = matrix->entryValues[e];
@@ -144,7 +154,7 @@ CMR_ERROR CMRcomputeCamionSignSequentiallyConnected(
 
     while (bfsQueueBegin < bfsQueueEnd)
     {
-      int currentNode = bfsQueue[bfsQueueBegin];
+      size_t currentNode = bfsQueue[bfsQueueBegin];
       assert(graphNodes[currentNode].status == 1);
       graphNodes[currentNode].status = 2;
       ++bfsQueueBegin;
@@ -174,7 +184,7 @@ CMR_ERROR CMRcomputeCamionSignSequentiallyConnected(
               int length = 2;
               int sum = graphNodes[c].targetValue;
               CMRdbgMsg(8, "sum = %d\n", sum);
-              int pathNode = c;
+              size_t pathNode = c;
               do
               {
                 sum += graphNodes[pathNode].predecessorValue;
@@ -257,7 +267,7 @@ CMR_ERROR CMRcomputeCamionSignSequentiallyConnected(
     }
 
 #if defined(CMR_DEBUG)
-    for (int v = 0; v < matrix->numColumns + row; ++v)
+    for (size_t v = 0; v < matrix->numColumns + row; ++v)
     {
       if (v == startNode)
         CMRdbgMsg(4, "Source node ");
@@ -310,7 +320,7 @@ CMR_ERROR CMRcomputeCamionSignSequentiallyConnected(
  */
 
 static
-CMR_ERROR sign(
+CMR_ERROR signCamion(
   CMR* cmr,                     /**< \ref CMR environment. */
   CMR_CHRMAT* matrix,           /**< Matrix \f$ M \f$. */
   bool change,                  /**< Whether the signs of \f$ M \f$ shall be modified. */
@@ -326,37 +336,37 @@ CMR_ERROR sign(
 
   clock_t totalClock = clock();
 
-  size_t numComponents;
-  CMR_ONESUM_COMPONENT* components = NULL;
+  size_t numBlocks;
+  CMR_BLOCK* blocks = NULL;
 
   assert(CMRchrmatIsTernary(cmr, matrix, NULL));
 
 #if defined(CMR_DEBUG)
-  CMRdbgMsg(0, "sign:\n");
+  CMRdbgMsg(0, "signCamion:\n");
   CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
 #endif /* CMR_DEBUG */
 
   /* Decompose into 1-connected components. */
 
-  CMR_CALL( decomposeOneSum(cmr, (CMR_MATRIX*) matrix, sizeof(char), sizeof(char), &numComponents, &components, NULL,
+  CMR_CALL( CMRdecomposeBlocks(cmr, (CMR_MATRIX*) matrix, sizeof(char), sizeof(char), &numBlocks, &blocks, NULL,
     NULL, NULL, NULL) );
 
   if (pisCamionSigned)
     *pisCamionSigned = true;
-  for (size_t comp = 0; comp < numComponents; ++comp)
+  for (size_t comp = 0; comp < numBlocks; ++comp)
   {
     CMR_SUBMAT* compSubmatrix = NULL;
 
-    CMRdbgMsg(2, "-> Component %d of size %dx%d\n", comp, components[comp].matrix->numRows,
-      components[comp].matrix->numColumns);
+    CMRdbgMsg(2, "-> Block %d of size %dx%d\n", comp, blocks[comp].matrix->numRows,
+      blocks[comp].matrix->numColumns);
 
     double remainingTime = timeLimit - ((clock() - totalClock) * 1.0 / CLOCKS_PER_SEC);
     char modified;
-    CMR_CALL( CMRcomputeCamionSignSequentiallyConnected(cmr, (CMR_CHRMAT*) components[comp].matrix,
-      (CMR_CHRMAT*) components[comp].transpose, change, &modified,
+    CMR_CALL( CMRcamionComputeSignSequentiallyConnected(cmr, (CMR_CHRMAT*) blocks[comp].matrix,
+      (CMR_CHRMAT*) blocks[comp].transpose, change, &modified,
       (psubmatrix && !*psubmatrix) ? &compSubmatrix : NULL, remainingTime) );
 
-    CMRdbgMsg(2, "-> Component %d yields: %c\n", comp, modified ? modified : '0');
+    CMRdbgMsg(2, "-> Block %d yields: %c\n", comp, modified ? modified : '0');
 
     if (modified == 0)
     {
@@ -373,9 +383,9 @@ CMR_ERROR sign(
       assert(psubmatrix && !*psubmatrix);
       /* Translate component indices to indices of whole matrix and sort them again. */
       for (size_t r = 0; r < compSubmatrix->numRows; ++r)
-        compSubmatrix->rows[r] = components[comp].rowsToOriginal[compSubmatrix->rows[r]];
+        compSubmatrix->rows[r] = blocks[comp].rowsToOriginal[compSubmatrix->rows[r]];
       for (size_t c = 0; c < compSubmatrix->numColumns; ++c)
-        compSubmatrix->columns[c] = components[comp].columnsToOriginal[compSubmatrix->columns[c]];
+        compSubmatrix->columns[c] = blocks[comp].columnsToOriginal[compSubmatrix->columns[c]];
       CMRsortSubmatrix(cmr, compSubmatrix);
       *psubmatrix = compSubmatrix;
     }
@@ -392,8 +402,8 @@ CMR_ERROR sign(
 
     /* Either the matrix or its transposed was modified. */
     CMR_CHRMAT* sourceMatrix = copyTranspose ?
-      (CMR_CHRMAT*) components[comp].transpose :
-      (CMR_CHRMAT*) components[comp].matrix;
+      (CMR_CHRMAT*) blocks[comp].transpose :
+      (CMR_CHRMAT*) blocks[comp].matrix;
 
     /* We have to copy the changes back to the original matrix. */
     for (size_t sourceRow = 0; sourceRow < sourceMatrix->numRows; ++sourceRow)
@@ -405,8 +415,8 @@ CMR_ERROR sign(
         size_t sourceColumn = sourceMatrix->entryColumns[sourceEntry];
         size_t compRow = copyTranspose ? sourceColumn : sourceRow;
         size_t compColumn = copyTranspose ? sourceRow : sourceColumn;
-        size_t row = components[comp].rowsToOriginal[compRow];
-        size_t column = components[comp].columnsToOriginal[compColumn];
+        size_t row = blocks[comp].rowsToOriginal[compRow];
+        size_t column = blocks[comp].columnsToOriginal[compColumn];
 
         CMRdbgMsg(4, "Searching entry for row %d and column %d.\n", row, column);
 
@@ -445,32 +455,482 @@ CMR_ERROR sign(
 
   /* Clean-up */
 
-  for (size_t c = 0; c < numComponents; ++c)
+  for (size_t c = 0; c < numBlocks; ++c)
   {
-    CMRchrmatFree(cmr, (CMR_CHRMAT**) &components[c].matrix);
-    CMRchrmatFree(cmr, (CMR_CHRMAT**) &components[c].transpose);
-    CMRfreeBlockArray(cmr, &components[c].rowsToOriginal);
-    CMRfreeBlockArray(cmr, &components[c].columnsToOriginal);
+    CMRchrmatFree(cmr, (CMR_CHRMAT**) &blocks[c].matrix);
+    CMRchrmatFree(cmr, (CMR_CHRMAT**) &blocks[c].transpose);
+    CMRfreeBlockArray(cmr, &blocks[c].rowsToOriginal);
+    CMRfreeBlockArray(cmr, &blocks[c].columnsToOriginal);
   }
-  CMRfreeBlockArray(cmr, &components);
+  CMRfreeBlockArray(cmr, &blocks);
 
   if (stats)
   {
+    double time = (clock() - totalClock) * 1.0 / CLOCKS_PER_SEC;
+    stats->generalCount++;
+    stats->generalTime += time;
     stats->totalCount++;
-    stats->totalTime += (clock() - totalClock) * 1.0 / CLOCKS_PER_SEC;
+    stats->totalTime += time;
   }
 
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRtestCamionSigned(CMR* cmr, CMR_CHRMAT* matrix, bool* pisCamionSigned, CMR_SUBMAT** psubmatrix,
+CMR_ERROR CMRcamionTestSigns(CMR* cmr, CMR_CHRMAT* matrix, bool* pisCamionSigned, CMR_SUBMAT** psubmatrix,
   CMR_CAMION_STATISTICS* stats, double timeLimit)
 {
-  return sign(cmr, matrix, false, pisCamionSigned, psubmatrix, stats, timeLimit);
+  return signCamion(cmr, matrix, false, pisCamionSigned, psubmatrix, stats, timeLimit);
 }
 
-CMR_ERROR CMRcomputeCamionSigned(CMR* cmr, CMR_CHRMAT* matrix, bool* pwasCamionSigned, CMR_SUBMAT** psubmatrix,
+CMR_ERROR CMRcamionComputeSigns(CMR* cmr, CMR_CHRMAT* matrix, bool* pwasCamionSigned, CMR_SUBMAT** psubmatrix,
   CMR_CAMION_STATISTICS* stats, double timeLimit)
 {
-  return sign(cmr, matrix, true, pwasCamionSigned, psubmatrix, stats, timeLimit);
+  return signCamion(cmr, matrix, true, pwasCamionSigned, psubmatrix, stats, timeLimit);
 }
+
+typedef struct
+{
+  size_t column;              /**< Column (or index of tree edge) of this edge (\c SIZE_MAX if cotree edge). */
+  CMR_GRAPH_EDGE causingEdge; /**< Another edge that triggered the fixation of this edge (-1 if not fixed). */
+} OrientationSearchEdgeData;
+
+typedef enum
+{
+  UNKNOWN = 0,    /**< \brief The node was not considered by the shortest-path, yet. */
+  SEEN = 1,       /**< \brief Some path to the node is known. */
+  COMPLETED = 2,  /**< \brief The shortest path to the node is known. */
+  BASIC = 3,      /**< \brief The rootEdge of that node belongs to the spanning forest. */
+} OrientationSearchStage;
+
+typedef struct
+{
+  OrientationSearchStage stage; /**< Stage in BFS. */
+  CMR_GRAPH_NODE predecessor;   /**< Predecessor node (\c SIZE_MAX if not present). */
+  CMR_GRAPH_EDGE edge;          /**< Edge connecting to predecessor node. */
+  size_t distance;              /**< Combinatorial distance to the BFS root. */
+  int8_t sign;                  /**< Sign of this tree edge with respect to current column. */
+  bool fixed;                   /**< Whether the orientation of this edge is already fixed. */
+} OrientationSearchNodeData;
+
+
+CMR_ERROR CMRcamionCographicOrient(CMR* cmr, CMR_CHRMAT* matrix, CMR_GRAPH* cograph, CMR_GRAPH_EDGE* forestEdges,
+  CMR_GRAPH_EDGE* coforestEdges, bool* arcsReversed, bool* pisCamionSigned, CMR_SUBMAT** psubmatrix,
+  CMR_CAMION_STATISTICS* stats)
+{
+  assert(cmr);
+  assert(matrix);
+  assert(cograph);
+  assert(forestEdges);
+  assert(coforestEdges);
+  assert(arcsReversed);
+  assert(pisCamionSigned);
+  assert(!psubmatrix || !*psubmatrix);
+
+  clock_t totalClock = clock();
+
+#if defined(CMR_DEBUG)
+
+  CMRdbgMsg(2, "CMRcamionCographicOrient for matrix:\n");
+  CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', true) );
+  CMRdbgMsg(4, "Given cograph:\n");
+  CMRgraphPrint(cograph, stdout);
+  CMRdbgMsg(4, "Forest edges (in order):");
+  for (size_t i = 0; i < CMRgraphNumNodes(cograph)-1; ++i)
+    CMRdbgMsg(0, " e%d", forestEdges[i]);
+  CMRdbgMsg(0, "\n");
+  CMRdbgMsg(4, "Coforest edges (in order):");
+  for (size_t i = 0; i < CMRgraphNumEdges(cograph) - CMRgraphNumNodes(cograph) + 1; ++i)
+    CMRdbgMsg(0, " e%d", coforestEdges[i]);
+  CMRdbgMsg(0, "\n");
+
+  CMR_CHRMAT* graph_transpose = NULL;
+  bool isCorrectForest;
+  CMR_CALL( CMRgraphicComputeMatrix(cmr, cograph, NULL, &graph_transpose, CMRgraphNumNodes(cograph)-1,
+    forestEdges, CMRgraphNumEdges(cograph) - CMRgraphNumNodes(cograph) + 1, coforestEdges, &isCorrectForest) );
+
+  bool same = matrix->numNonzeros == graph_transpose->numNonzeros;
+  if (same)
+  {
+    for (size_t row = 0; row <= matrix->numRows; ++row)
+    {
+      if (matrix->rowSlice[row] != graph_transpose->rowSlice[row])
+      {
+        same = false;
+        break;
+      }
+    }
+  }
+  if (same)
+  {
+    for (size_t e = 0; e < matrix->numNonzeros; ++e)
+    {
+      if (matrix->entryColumns[e] != graph_transpose->entryColumns[e])
+        same = false;
+    }
+  }
+  if (!same)
+  {
+    CMRdbgMsg(4, "Error: the given cograph represents the following *different* matrix:\n");
+    CMR_CALL( CMRchrmatPrintDense(cmr, graph_transpose, stdout, '0', true) );
+    assert(same);
+  }
+  else
+  {
+    CMRdbgMsg(4, "-> Confirmed that the given graph/tree pair has the same representation matrix up to signs.\n");
+  }
+
+  CMR_CALL( CMRchrmatFree(cmr, &graph_transpose) );
+
+#endif /* CMR_DEBUG */
+
+  /* Decompose into blocks. */
+  size_t numBlocks;
+  CMR_BLOCK* blocks = NULL;
+  CMR_CALL( CMRdecomposeBlocks(cmr, (CMR_MATRIX*) matrix, sizeof(char), sizeof(char), &numBlocks, &blocks, NULL,
+    NULL, NULL, NULL) );
+
+  /* Allocate and initialize auxiliary data for nodes. */
+  OrientationSearchNodeData* nodeData = NULL;
+  CMR_CALL( CMRallocStackArray(cmr, &nodeData, CMRgraphMemNodes(cograph)) );
+  for (CMR_GRAPH_NODE v = CMRgraphNodesFirst(cograph); CMRgraphNodesValid(cograph, v);
+    v = CMRgraphNodesNext(cograph, v))
+  {
+    nodeData[v].stage = UNKNOWN;
+    nodeData[v].fixed = false;
+    nodeData[v].predecessor = -1;
+    nodeData[v].distance = 0;
+    nodeData[v].sign = 0;
+    nodeData[v].edge = -1;
+  }
+
+  /* Allocate and initialize auxiliary data for edges. */
+  OrientationSearchEdgeData* edgeData = NULL;
+  CMR_CALL( CMRallocStackArray(cmr, &edgeData, CMRgraphMemEdges(cograph)) );
+  CMRassertStackConsistency(cmr);
+  for (CMR_GRAPH_ITER i = CMRgraphEdgesFirst(cograph); CMRgraphEdgesValid(cograph, i);
+    i = CMRgraphEdgesNext(cograph, i))
+  {
+    CMR_GRAPH_EDGE e = CMRgraphEdgesEdge(cograph, i);
+    edgeData[e].column = SIZE_MAX;
+    edgeData[e].causingEdge = -1;
+    arcsReversed[e] = false;
+  }
+  for (size_t column = 0; column < matrix->numColumns; ++column)
+    edgeData[forestEdges[column]].column = column;
+
+  /* Allocate and initialize a queue for BFS. */
+  CMR_GRAPH_NODE* queue = NULL;
+  size_t queueFirst;
+  size_t queueBeyond;
+  CMR_CALL(CMRallocStackArray(cmr, &queue, matrix->numColumns + matrix->numRows));
+  CMRassertStackConsistency(cmr);
+
+  /* Process each block separately. */
+  for (size_t b = 0; b < numBlocks; ++b)
+  {
+    CMR_CHRMAT* blockMatrix = (CMR_CHRMAT*) blocks[b].matrix;
+
+#if defined(CMR_DEBUG)
+    CMRdbgMsg(2, "Processing block #%zu of %zu.\n", b, numBlocks);
+    for (size_t row = 0; row < blockMatrix->numRows; ++row)
+      CMRdbgMsg(4, "Component row %zu corresponds to original row %zu.\n", row, blocks[b].rowsToOriginal[row]);
+    for (size_t column = 0; column < blockMatrix->numColumns; ++column)
+    {
+      CMRdbgMsg(4, "Component column %zu corresponds to original column %zu.\n", column,
+        blocks[b].columnsToOriginal[column]);
+    }
+    CMR_CALL( CMRchrmatPrintDense(cmr, blockMatrix, stdout, '0', true) );
+#endif /* CMR_DEBUG */
+
+    /* If there are no nonzeros then also nothing must be signed. */
+    if (blockMatrix->numNonzeros == 0)
+      continue;
+
+    assert(blockMatrix->numRows > 0);
+    assert(blockMatrix->numColumns > 0);
+
+    /* Run BFS on the component of the graph induced by this matrix block.
+     * We use some node from one of the columns as a starting node. */
+    size_t componentColumn = blocks[b].columnsToOriginal[0];
+    CMR_GRAPH_EDGE e = forestEdges[componentColumn];
+    CMR_GRAPH_NODE start = CMRgraphEdgeU(cograph, e);
+    CMRdbgMsg(4, "Starting BFS at node %d.\n", start);
+    queue[0] = start;
+    queueFirst = 0;
+    queueBeyond = 1;
+    assert(nodeData[start].stage == UNKNOWN);
+    nodeData[start].stage = SEEN;
+
+    /* Process BFS queue until it is empty. */
+    while (queueFirst < queueBeyond)
+    {
+      CMR_GRAPH_NODE v = queue[queueFirst];
+      ++queueFirst;
+      CMRdbgMsg(6, "Processing node %d.\n", v);
+      nodeData[v].stage = COMPLETED;
+      for (CMR_GRAPH_ITER i = CMRgraphIncFirst(cograph, v); CMRgraphIncValid(cograph, i);
+        i = CMRgraphIncNext(cograph, i))
+      {
+        assert(CMRgraphIncSource(cograph, i) == v);
+        CMR_GRAPH_NODE w = CMRgraphIncTarget(cograph, i);
+
+        /* Skip if already completed. */
+        if (nodeData[w].stage == COMPLETED)
+          continue;
+
+        CMR_GRAPH_EDGE e = CMRgraphIncEdge(cograph, i);
+        if (edgeData[e].column == SIZE_MAX)
+          continue;
+
+        if (nodeData[w].stage == UNKNOWN)
+        {
+          CMRdbgMsg(6, "Found new node via tree arc (%d,%d).\n", v, w);
+          nodeData[w].stage = SEEN;
+          nodeData[w].predecessor = v;
+          nodeData[w].distance = nodeData[v].distance + 1;
+          nodeData[w].edge = e;
+          queue[queueBeyond] = w;
+          ++queueBeyond;
+        }
+      }
+    }
+
+    /* We now go through the rows of the matrix and inspect the signs. */
+    for (size_t componentRow = 0; componentRow < blockMatrix->numRows; ++componentRow)
+    {
+      size_t row = blocks[b].rowsToOriginal[componentRow];
+
+      CMR_GRAPH_EDGE rowEdge = coforestEdges[row];
+      CMR_GRAPH_NODE s = CMRgraphEdgeU(cograph, rowEdge);
+      CMR_GRAPH_NODE t = CMRgraphEdgeV(cograph, rowEdge);
+
+      CMRdbgMsg(4, "Inspecting signs of row r%zu corresponding to %d={%d,%d}.\n", row+1, rowEdge, s, t);
+
+      size_t first = matrix->rowSlice[row];
+      size_t beyond = matrix->rowSlice[row + 1];
+      size_t minDistance = SIZE_MAX; /* The depth in the BFS tree that the s-r and t-r paths have in common. */
+      for (size_t entry = first; entry < beyond; ++entry)
+      {
+        CMRdbgMsg(6, "Entry #%zu is in column c%zu with value %d.\n", entry, matrix->entryColumns[entry]+1,
+          matrix->entryValues[entry]);
+
+        CMR_GRAPH_EDGE rowEdge = forestEdges[matrix->entryColumns[entry]];
+        CMR_GRAPH_NODE u = CMRgraphEdgeU(cograph, rowEdge);
+        CMR_GRAPH_NODE v = CMRgraphEdgeV(cograph, rowEdge);
+        if (nodeData[v].predecessor == u)
+        {
+          /* (u,v) */
+          if (nodeData[u].distance < minDistance)
+            minDistance = nodeData[u].distance;
+          nodeData[v].sign = matrix->entryValues[entry];
+        }
+        else
+        {
+          /* (v,u) */
+          assert(nodeData[u].predecessor == v);
+          if (nodeData[v].distance < minDistance)
+            minDistance = nodeData[v].distance;
+          nodeData[u].sign = matrix->entryValues[entry];
+        }
+      }
+
+      CMRdbgMsg(6, "Minimum distance is %d.\n", minDistance);
+
+      /* Follow s-r path up to minDistance. If we encounter a fixed edge, then we decide whether we have to revert the
+       * row edge. */
+      CMR_GRAPH_NODE v = s;
+      bool foundFixed = false;
+      bool reversedRowEdge = false;
+      while (nodeData[v].distance > minDistance)
+      {
+        if (nodeData[v].fixed)
+        {
+          int8_t currentSign = CMRgraphEdgeU(cograph, nodeData[v].edge) == v ? 1 : -1;
+          if (arcsReversed[nodeData[v].edge])
+            currentSign *= -1;
+          foundFixed = true;
+          reversedRowEdge = currentSign != nodeData[v].sign;
+          edgeData[rowEdge].causingEdge = nodeData[v].edge;
+          break;
+        }
+        v = nodeData[v].predecessor;
+      }
+
+      if (!foundFixed)
+      {
+        /* Since we were not successful with the s-r path, we now follow the t-r path up to minDistance. Again, if we
+         * encounter a fixed edge, then we decide whether we have to revert the column edge. */
+        v = t;
+        while (nodeData[v].distance > minDistance)
+        {
+          if (nodeData[v].fixed)
+          {
+            int8_t currentSign = CMRgraphEdgeU(cograph, nodeData[v].edge) == v ? -1 : 1;
+            if (arcsReversed[nodeData[v].edge])
+              currentSign *= -1;
+            foundFixed = true;
+            reversedRowEdge = currentSign != nodeData[v].sign;
+            edgeData[rowEdge].causingEdge = nodeData[v].edge;
+            break;
+          }
+          v = nodeData[v].predecessor;
+        }
+      }
+
+      /* Store whether we reversed the row edge. */
+      arcsReversed[rowEdge] = reversedRowEdge;
+      CMRdbgMsg(6, "Found a fixed tree edge: %s. Row edge reversed = %s\n", foundFixed ? "yes" : "no",
+        reversedRowEdge ? "yes" : "no");
+
+      /* Again we follow the s-r path up to minDistance to reorder the tree edges. */
+      v = s;
+      while (nodeData[v].distance > minDistance)
+      {
+        char currentSign = CMRgraphEdgeU(cograph, nodeData[v].edge) == v ? 1 : -1;
+
+        if (reversedRowEdge)
+          currentSign *= -1;
+
+        bool shouldBeReversed = currentSign != nodeData[v].sign;
+        if (nodeData[v].fixed)
+        {
+          if (arcsReversed[nodeData[v].edge] != shouldBeReversed)
+          {
+            CMRdbgMsg(6, "Found a contradiction in the orientation, i.e., the matrix is not a network matrix.\n");
+
+            *pisCamionSigned = false;
+            if (psubmatrix)
+            {
+              /* Extract a non-Camion submatrix. */
+              CMR_GRAPH_EDGE reason = rowEdge;
+              while (reason != -1)
+              {
+                CMRdbgMsg(8, "Reason edge for %d is %d.\n", reason, edgeData[reason].causingEdge);
+                reason = edgeData[reason].causingEdge;
+              }
+
+              assert(!"NOT IMPLEMENTED: contradiction in orientation.");
+            }
+
+            goto cleanup;
+          }
+        }
+        else
+        {
+          arcsReversed[nodeData[v].edge] = shouldBeReversed;
+          CMRdbgMsg(6, "Path from %d towards root: tree edge (%d,%d) is edge {%d,%d}; graph imposed sign"
+            " (with row edge reverting) is %d; matrix sign is %d; reversed = %s\n", s, nodeData[v].predecessor, v,
+            CMRgraphEdgeU(cograph, nodeData[v].edge), CMRgraphEdgeV(cograph, nodeData[v].edge),
+            currentSign, nodeData[v].sign, shouldBeReversed ? "yes" : "no");
+          nodeData[v].fixed = true;
+          edgeData[nodeData[v].edge].causingEdge = rowEdge;
+        }
+
+#if !defined(NDEBUG)
+        nodeData[v].sign = 0; /* For debugging we make all signs 0 again. */
+#endif /* !NDEBUG */
+
+        v = nodeData[v].predecessor;
+      }
+
+      /* Finally, we follow the t-r path up to minDistance to reorder the tree edges. */
+      v = t;
+      while (nodeData[v].distance > minDistance)
+      {
+        char currentSign = CMRgraphEdgeU(cograph, nodeData[v].edge) == v ? -1 : 1;
+        if (reversedRowEdge)
+          currentSign *= -1;
+
+        bool shouldBeReversed = currentSign != nodeData[v].sign;
+        if (nodeData[v].fixed)
+        {
+          if (arcsReversed[nodeData[v].edge] != shouldBeReversed)
+          {
+            CMRdbgMsg(6, "Found a contradiction in the orientation, i.e., the matrix is not a network matrix.\n");
+
+            *pisCamionSigned = false;
+            if (psubmatrix)
+            {
+              /* Extract a non-Camion submatrix. */
+              CMR_GRAPH_EDGE reason = rowEdge;
+              while (reason != -1)
+              {
+                CMRdbgMsg(8, "1: Reason edge for edge %d is edge %d.\n", reason, edgeData[reason].causingEdge);
+                reason = edgeData[reason].causingEdge;
+              }
+              reason = nodeData[v].edge;
+              while (reason != -1)
+              {
+                CMRdbgMsg(8, "2: Reason edge for edge %d is edge %d.\n", reason, edgeData[reason].causingEdge);
+                reason = edgeData[reason].causingEdge;
+              }
+
+              assert(!"NOT IMPLEMENTED: contradiction in orientation.");
+            }
+
+            goto cleanup;
+          }
+        }
+        else
+        {
+          arcsReversed[nodeData[v].edge] = shouldBeReversed;
+          CMRdbgMsg(6, "Path from %d towards root: tree edge (%d,%d) is edge {%d,%d}; graph imposed sign"
+            " (with row edge reverting) is %d; matrix sign is %d; reversed = %s\n", t, nodeData[v].predecessor, v,
+            CMRgraphEdgeU(cograph, nodeData[v].edge), CMRgraphEdgeV(cograph, nodeData[v].edge),
+            currentSign, nodeData[v].sign, shouldBeReversed ? "yes" : "no");
+          nodeData[v].fixed = true;
+          edgeData[nodeData[v].edge].causingEdge = rowEdge;
+        }
+
+#if !defined(NDEBUG)
+          nodeData[v].sign = 0; /* For debugging we make all signs 0 again. */
+#endif /* !NDEBUG */
+
+        v = nodeData[v].predecessor;
+      }
+    }
+  }
+
+#if defined(CMR_DEBUG)
+  for (CMR_GRAPH_ITER i = CMRgraphEdgesFirst(cograph); CMRgraphEdgesValid(cograph, i);
+    i = CMRgraphEdgesNext(cograph, i))
+  {
+    CMR_GRAPH_EDGE e = CMRgraphEdgesEdge(cograph, i);
+    CMRdbgMsg(2, "Edge %d={%d,%d} reversed = %s\n", e, CMRgraphEdgeU(cograph, e), CMRgraphEdgeV(cograph, e),
+      arcsReversed[e] ? "yes" : "no");
+  }
+#endif /* CMR_DEBUG */
+
+  *pisCamionSigned = true;
+
+cleanup:
+
+  /* Free search data. */
+  CMRassertStackConsistency(cmr);
+  CMR_CALL( CMRfreeStackArray(cmr, &queue) );
+  CMR_CALL( CMRfreeStackArray(cmr, &edgeData) );
+  CMR_CALL( CMRfreeStackArray(cmr, &nodeData) );
+  CMRassertStackConsistency(cmr);
+
+  /* Free memory of block decomposition. */
+  for (size_t c = 0; c < numBlocks; ++c)
+  {
+    CMRchrmatFree(cmr, (CMR_CHRMAT**) &blocks[c].matrix);
+    CMRchrmatFree(cmr, (CMR_CHRMAT**) &blocks[c].transpose);
+    CMRfreeBlockArray(cmr, &blocks[c].rowsToOriginal);
+    CMRfreeBlockArray(cmr, &blocks[c].columnsToOriginal);
+  }
+  CMRfreeBlockArray(cmr, &blocks);
+
+  if (stats)
+  {
+    double time = (clock() - totalClock) * 1.0 / CLOCKS_PER_SEC;
+    stats->graphCount++;
+    stats->graphTime += time;
+    stats->totalCount++;
+    stats->totalTime += time;
+  }
+
+  return CMR_OKAY;
+}
+

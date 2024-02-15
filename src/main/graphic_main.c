@@ -94,21 +94,21 @@ CMR_ERROR recognizeGraphic(
   CMR_GRAPH_EDGE* columnEdges = NULL;
   bool* edgesReversed = NULL;
   CMR_GRAPHIC_STATISTICS stats;
-  CMR_CALL( CMRstatsGraphicInit(&stats) );
+  CMR_CALL( CMRgraphicStatsInit(&stats) );
   if (cographic)
   {
-    CMR_CALL( CMRtestCographicMatrix(cmr, matrix, &isCoGraphic, &graph, &columnEdges, &rowEdges,
+    CMR_CALL( CMRgraphicTestTranspose(cmr, matrix, &isCoGraphic, &graph, &columnEdges, &rowEdges,
       outputSubmatrixFileName ? &submatrix : NULL, &stats, timeLimit) );
   }
   else
   {
-    CMR_CALL( CMRtestGraphicMatrix(cmr, matrix, &isCoGraphic, &graph, &rowEdges, &columnEdges,
+    CMR_CALL( CMRgraphicTestMatrix(cmr, matrix, &isCoGraphic, &graph, &rowEdges, &columnEdges,
       outputSubmatrixFileName ? &submatrix : NULL, &stats, timeLimit) );
   }
 
   fprintf(stderr, "Matrix %s%sgraphic.\n", isCoGraphic ? "IS " : "is NOT ", cographic ? "co" : "");
   if (printStats)
-    CMR_CALL( CMRstatsGraphicPrint(stderr, &stats, NULL) );
+    CMR_CALL( CMRgraphicStatsPrint(stderr, &stats, NULL) );
 
   if (isCoGraphic)
   {
@@ -347,12 +347,12 @@ CMR_ERROR computeGraphic(
 
   if (cographic)
   {
-    CMR_CALL( CMRcomputeGraphicMatrix(cmr, graph, NULL, &matrix, numForestEdges, forestEdges, numCoforestEdges,
+    CMR_CALL( CMRgraphicComputeMatrix(cmr, graph, NULL, &matrix, numForestEdges, forestEdges, numCoforestEdges,
       coforestEdges, &isCorrectForest) );
   }
   else
   {
-    CMR_CALL( CMRcomputeGraphicMatrix(cmr, graph, &matrix, NULL, numForestEdges, forestEdges, numCoforestEdges,
+    CMR_CALL( CMRgraphicComputeMatrix(cmr, graph, &matrix, NULL, numForestEdges, forestEdges, numCoforestEdges,
       coforestEdges, &isCorrectForest) );
   }
 

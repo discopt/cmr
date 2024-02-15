@@ -1,4 +1,4 @@
-// #define CMR_DEBUG /* Uncomment to debug this file. */
+#define CMR_DEBUG /* Uncomment to debug this file. */
 
 #include <cmr/matroid.h>
 
@@ -21,8 +21,9 @@ CMR_ERROR computePivots(CMR* cmr, CMR_CHRMAT* matrix, size_t numPivots, size_t* 
   assert(!numPivots || pivotColumns);
 
 #if defined(CMR_DEBUG)
-  CMRdbgMsg(2, "Applying %zu pivots to %zux%zu matrix.\n", numPivots, matrix->numRows, matrix->numColumns);
+  CMRdbgMsg(2, "Applying %zu pivots to a %zux%zu matrix.\n", numPivots, matrix->numRows, matrix->numColumns);
   CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
+  fflush(stdout);
 #endif /* CMR_DEBUG */
 
   ListMat8* listmat = NULL;
@@ -596,13 +597,8 @@ size_t * CMRmatroiddecPivotColumns(CMR_MATROID_DEC* dec)
   return dec->pivotColumns;
 }
 
-
-
-
-
-
-CMR_ERROR CMRmatroiddecPrint(CMR* cmr, CMR_MATROID_DEC* dec, FILE* stream, size_t indent, bool printMatrices,
-  bool printGraphs, bool printReductions)
+CMR_ERROR CMRmatroiddecPrint(CMR* cmr, CMR_MATROID_DEC* dec, FILE* stream, size_t indent, bool printChildren,
+  bool printMatrices, bool printGraphs, bool printReductions, bool printPivots)
 {
   assert(cmr);
   assert(stream);
@@ -621,19 +617,19 @@ CMR_ERROR CMRmatroiddecPrint(CMR* cmr, CMR_MATROID_DEC* dec, FILE* stream, size_
   switch (dec->type)
   {
   case CMR_MATROID_DEC_TYPE_IRREGULAR:
-    fprintf(stream, "irregular {");
+    fprintf(stream, "irregular node {");
   break;
   case CMR_MATROID_DEC_TYPE_UNKNOWN:
-    fprintf(stream, "unknown {");
+    fprintf(stream, "unknown node {");
   break;
   case CMR_MATROID_DEC_TYPE_ONE_SUM:
-    fprintf(stream, "1-sum with %zu children {", dec->numChildren);
+    fprintf(stream, "1-sum node with %zu children {", dec->numChildren);
   break;
   case CMR_MATROID_DEC_TYPE_TWO_SUM:
-    fprintf(stream, "2-sum {");
+    fprintf(stream, "2-sum node {");
     break;
   case CMR_MATROID_DEC_TYPE_THREE_SUM:
-    fprintf(stream, "3-sum {");
+    fprintf(stream, "3-sum node {");
   break;
   case CMR_MATROID_DEC_TYPE_GRAPH:
     fprintf(stream, "graphic matrix with %zu nodes and %zu edges {", CMRgraphNumNodes(dec->graph), CMRgraphNumEdges(dec->graph));
@@ -674,10 +670,10 @@ CMR_ERROR CMRmatroiddecPrint(CMR* cmr, CMR_MATROID_DEC* dec, FILE* stream, size_
     fprintf(stream, "matrix representing K_{3,3}^* {");
   break;
   case CMR_MATROID_DEC_TYPE_SUBMATRIX:
-    fprintf(stream, "submatrix {");
+    fprintf(stream, "submatrix node {");
   break;
   case CMR_MATROID_DEC_TYPE_PIVOTS:
-    fprintf(stream, "pivot {");
+    fprintf(stream, "pivot node {");
   break;
   case CMR_MATROID_DEC_TYPE_DETERMINANT:
     fprintf(stream, "bad determinant {");
@@ -706,6 +702,26 @@ CMR_ERROR CMRmatroiddecPrint(CMR* cmr, CMR_MATROID_DEC* dec, FILE* stream, size_
     isFirst = false;
   }
   fprintf(stream, "}\n");
+
+  if (printReductions && dec->type == CMR_MATROID_DEC_TYPE_SERIES_PARALLEL)
+  {
+    for (size_t i = 0; i < indent; ++i)
+      fputc(' ', stream);
+    fprintf(stream, "with series-parallel reductions:\n");
+    for (size_t i = 0; i < dec->numSeriesParallelReductions; ++i)
+      fprintf(stream, " %s", CMRspReductionString(dec->seriesParallelReductions[i], NULL) );
+    fputc('\n', stream);
+  }
+
+  if (printPivots && dec->type == CMR_MATROID_DEC_TYPE_PIVOTS)
+  {
+    for (size_t i = 0; i < indent; ++i)
+      fputc(' ', stream);
+    fprintf(stream, "with %zu pivot%s:", dec->numPivots, dec->numPivots == 1 ? "" : "s");
+    for (size_t i = 0; i < dec->numPivots; ++i)
+      fprintf(stream, "%s r%zu,c%zu", i == 0 ? "" : ",", dec->pivotRows[i]+1, dec->pivotColumns[i]+1);
+    fputc('\n', stream);
+  }
 
   if (printMatrices)
   {
@@ -739,31 +755,30 @@ CMR_ERROR CMRmatroiddecPrint(CMR* cmr, CMR_MATROID_DEC* dec, FILE* stream, size_
       for (size_t i = 0; i < indent; ++i)
         fputc(' ', stream);
       fprintf(stream, "with graph:\n\n");
-      CMR_CALL( CMRgraphPrint(stream, dec->graph) );
+      CMR_CALL( CMRgraphPrint(dec->graph, stream) );
     }
     if (dec->cograph)
     {
       for (size_t i = 0; i < indent; ++i)
         fputc(' ', stream);
       fprintf(stream, "with cograph:\n\n");
-      CMR_CALL( CMRgraphPrint(stream, dec->cograph) );
+      CMR_CALL( CMRgraphPrint(dec->cograph, stream) );
     }
   }
 
-  if (printReductions && dec->type == CMR_MATROID_DEC_TYPE_SERIES_PARALLEL)
+  if (printChildren)
   {
-    for (size_t i = 0; i < indent; ++i)
-      fputc(' ', stream);
-    fprintf(stream, "with series-parallel reductions:\n");
-    for (size_t i = 0; i < dec->numSeriesParallelReductions; ++i)
-      fprintf(stream, " %s", CMRspReductionString(dec->seriesParallelReductions[i], NULL) );
-    fputc('\n', stream);
-  }
-
-  for (size_t c = 0; c < dec->numChildren; ++c)
-  {
-    CMR_CALL( CMRmatroiddecPrint(cmr, dec->children[c], stream, indent + 2, printMatrices, printGraphs,
-      printReductions) );
+    for (size_t c = 0; c < dec->numChildren; ++c)
+    {
+      for (size_t i = 0; i < indent; ++i)
+          fputc(' ', stream);
+      if (dec->numChildren == 1)
+        fprintf(stream, "Unique child:\n");
+      else
+        fprintf(stream, "Child #%zu:\n", c+1);
+      CMR_CALL( CMRmatroiddecPrint(cmr, dec->children[c], stream, indent + 2, printChildren, printMatrices, printGraphs,
+        printReductions, printPivots) );
+    }
   }
 
   return CMR_OKAY;
@@ -1252,6 +1267,7 @@ CMR_ERROR CMRmatroiddecUpdatePivots(CMR* cmr, CMR_MATROID_DEC* dec, size_t numPi
 
   dec->type = CMR_MATROID_DEC_TYPE_PIVOTS;
   dec->numChildren = 1;
+  assert(dec->children == NULL);
   CMR_CALL( CMRallocBlockArray(cmr, &dec->children, 1) );
   dec->children[0] = NULL;
   CMR_CALL( createNode(cmr, &dec->children[0], dec->isTernary, CMR_MATROID_DEC_TYPE_UNKNOWN, dec, dec->numRows,
@@ -1598,7 +1614,6 @@ CMR_ERROR CMRmatroiddecSetAttributes(CMR_MATROID_DEC* dec)
     dec->graphicness = 0;
     dec->cographicness = 0;
   break;
-  case CMR_MATROID_DEC_TYPE_SERIES_PARALLEL:
   case CMR_MATROID_DEC_TYPE_PLANAR:
     dec->regularity = 1;
     dec->graphicness = 1;
@@ -1612,6 +1627,20 @@ CMR_ERROR CMRmatroiddecSetAttributes(CMR_MATROID_DEC* dec)
     dec->graphicness = -1;
     dec->cographicness = -1;
   break;
+  case CMR_MATROID_DEC_TYPE_SERIES_PARALLEL:
+    if (dec->numChildren)
+    {
+      dec->regularity = dec->children[0]->regularity;
+      dec->graphicness = dec->children[0]->graphicness;
+      dec->cographicness = dec->children[0]->cographicness;
+    }
+    else
+    {
+      dec->regularity = 1;
+      dec->graphicness = 1;
+      dec->cographicness = 1;
+    }
+    break;
   case CMR_MATROID_DEC_TYPE_PIVOTS:
   case CMR_MATROID_DEC_TYPE_SUBMATRIX:
   case CMR_MATROID_DEC_TYPE_ONE_SUM:
@@ -1665,6 +1694,8 @@ CMR_ERROR CMRmatroiddecSetAttributes(CMR_MATROID_DEC* dec)
   default:
     assert(0 != "Handling of matroid decomposition type not implemented!");
   }
+
+  CMRdbgMsg(4, "Finalizing attributes to r=%d,g=%d,c=%d.\n", dec->regularity, dec->graphicness, dec->cographicness);
 
   return CMR_OKAY;
 }

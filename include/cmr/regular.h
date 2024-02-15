@@ -98,6 +98,7 @@ typedef struct
   CMR_SP_STATISTICS seriesParallel;     /**< Statistics for series-parallel algorithm. */
   CMR_GRAPHIC_STATISTICS graphic;       /**< Statistics for direct (co)graphic checks. */
   CMR_NETWORK_STATISTICS network;       /**< Statistics for direct (co)network checks. */
+  CMR_CAMION_STATISTICS camion;         /**< Statistics for Camion signing. */
   uint32_t sequenceExtensionCount;      /**< Number of extensions of sequences of nested minors. */
   double sequenceExtensionTime;         /**< Time of extensions of sequences of nested minors. */
   uint32_t sequenceGraphicCount;        /**< Number (co)graphicness tests applied to sequence of nested minors. */

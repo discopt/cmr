@@ -35,7 +35,7 @@ For a matrix \f$ M \in \{-1,0,1\}^{m \times n} \f$ it runs in \f$ \mathcal{O}( \
 
 The corresponding function in the library is
 
-  - CMRtestCamionSigned() tests a matrix for being Camion-signed.
+  - CMRcamionTestSigns() tests a matrix for being Camion-signed.
 
 and is defined in \ref camion.h.
 
@@ -65,6 +65,6 @@ For a matrix \f$ M \in \{-1,0,1\}^{m \times n} \f$ it runs in \f$ \mathcal{O}( \
 
 The corresponding function in the library is
 
-  - CMRcomputeCamionSigned() Computes a Camion-signed version of a given ternary matrix.
+  - CMRcamionComputeSigns() Computes a Camion-signed version of a given ternary matrix.
 
 and is defined in \ref camion.h.
