@@ -576,9 +576,11 @@ CMR_ERROR CMRmatroiddecPrint(
   CMR_MATROID_DEC* dec, /**< Decomposition node. */
   FILE* stream,         /**< Stream to write to. */
   size_t indent,        /**< Indentation of this node. */
+  bool printChildren,   /**< Whether to recurse. */
   bool printMatrices,   /**< Whether to print matrices. */
   bool printGraphs,     /**< Whether to print graphs. */
-  bool printReductions  /**< Whether to print series-parallel reductions. */
+  bool printReductions, /**< Whether to print series-parallel reductions. */
+  bool printPivots      /**< Whether to print pivots. */
 );
 
 /**

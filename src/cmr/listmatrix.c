@@ -1516,7 +1516,7 @@ CMR_ERROR CMRlistmat8Insert(CMR* cmr, ListMat8* listmatrix, size_t row, size_t c
   assert(cmr);
   assert(listmatrix);
   assert(row < listmatrix->numRows);
-  assert(row < listmatrix->numColumns);
+  assert(column < listmatrix->numColumns);
 
   if (!listmatrix->firstFreeNonzero)
   {

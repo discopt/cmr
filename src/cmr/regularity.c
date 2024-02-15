@@ -1,10 +1,9 @@
-// #define CMR_DEBUG /** Uncomment to debug this file. */
+#define CMR_DEBUG /** Uncomment to debug this file. */
 
 #include "env_internal.h"
 #include "regularity_internal.h"
 
 #include <time.h>
-
 
 CMR_ERROR CMRregularityTaskCreateRoot(CMR* cmr, CMR_MATROID_DEC* dec, DecompositionTask** ptask,
   CMR_REGULAR_PARAMS* params, CMR_REGULAR_STATS* stats, clock_t startClock, double timeLimit)

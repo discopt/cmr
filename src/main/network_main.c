@@ -94,21 +94,21 @@ CMR_ERROR recognizeNetwork(
   CMR_GRAPH_EDGE* columnEdges = NULL;
   bool* edgesReversed = NULL;
   CMR_NETWORK_STATISTICS stats;
-  CMR_CALL( CMRstatsNetworkInit(&stats) );
+  CMR_CALL( CMRnetworkStatsInit(&stats) );
   if (conetwork)
   {
-    CMR_CALL( CMRtestConetworkMatrix(cmr, matrix, &isCoNetwork, &digraph, &columnEdges, &rowEdges, &edgesReversed,
+    CMR_CALL( CMRnetworkTestTranspose(cmr, matrix, &isCoNetwork, &digraph, &columnEdges, &rowEdges, &edgesReversed,
       outputSubmatrixFileName ? &submatrix : NULL, &stats, timeLimit) );
   }
   else
   {
-    CMR_CALL( CMRtestNetworkMatrix(cmr, matrix, &isCoNetwork, &digraph, &rowEdges, &columnEdges, &edgesReversed,
+    CMR_CALL( CMRnetworkTestMatrix(cmr, matrix, &isCoNetwork, &digraph, &rowEdges, &columnEdges, &edgesReversed,
       outputSubmatrixFileName ? &submatrix : NULL, &stats, timeLimit) );
   }
 
   fprintf(stderr, "Matrix %s%snetwork.\n", isCoNetwork ? "IS " : "is NOT ", conetwork ? "co" : "");
   if (printStats)
-    CMR_CALL( CMRstatsNetworkPrint(stderr, &stats, NULL) );
+    CMR_CALL( CMRnetworkStatsPrint(stderr, &stats, NULL) );
 
   if (isCoNetwork)
   {
@@ -347,12 +347,12 @@ CMR_ERROR computeNetwork(
 
   if (conetwork)
   {
-    CMR_CALL( CMRcomputeNetworkMatrix(cmr, digraph, NULL, &matrix, NULL, numForestEdges, forestEdges, numCoforestEdges,
+    CMR_CALL( CMRnetworkComputeMatrix(cmr, digraph, NULL, &matrix, NULL, numForestEdges, forestEdges, numCoforestEdges,
       coforestEdges, &isCorrectForest) );
   }
   else
   {
-    CMR_CALL( CMRcomputeNetworkMatrix(cmr, digraph, &matrix, NULL, NULL, numForestEdges, forestEdges, numCoforestEdges,
+    CMR_CALL( CMRnetworkComputeMatrix(cmr, digraph, &matrix, NULL, NULL, numForestEdges, forestEdges, numCoforestEdges,
       coforestEdges, &isCorrectForest) );
   }
 

@@ -126,7 +126,7 @@ CMR_ERROR genMatrixSeriesParallel(
   size_t numTotalColumns = numBaseColumns + numZeroColumns + numUnitColumns + numCopiedColumns;
 
   CMR_SP_STATISTICS stats;
-  CMR_CALL( CMRstatsSeriesParallelInit(&stats) );
+  CMR_CALL( CMRspStatsInit(&stats) );
   size_t numBenchmarkNonzeros = 0;
   for (size_t benchmark = benchmarkRepetitions ? benchmarkRepetitions : 1; benchmark > 0; --benchmark)
   {
@@ -406,7 +406,7 @@ CMR_ERROR genMatrixSeriesParallel(
 
   if (benchmarkRepetitions > 0)
   {
-    CMR_CALL( CMRstatsSeriesParallelPrint(stderr, &stats, NULL) );
+    CMR_CALL( CMRspStatsPrint(stderr, &stats, NULL) );
     printf("Average number of nonzeros:     %f\n", (double)(numBenchmarkNonzeros) * 1.0 / benchmarkRepetitions);
   }
 

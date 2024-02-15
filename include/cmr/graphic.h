@@ -47,7 +47,7 @@ typedef struct
  */
 
 CMR_EXPORT
-CMR_ERROR CMRstatsGraphicInit(
+CMR_ERROR CMRgraphicStatsInit(
   CMR_GRAPHIC_STATISTICS* stats /**< Pointer to statistics. */
 );
 
@@ -56,7 +56,7 @@ CMR_ERROR CMRstatsGraphicInit(
  */
 
 CMR_EXPORT
-CMR_ERROR CMRstatsGraphicPrint(
+CMR_ERROR CMRgraphicStatsPrint(
   FILE* stream,                   /**< File stream to print to. */
   CMR_GRAPHIC_STATISTICS* stats,  /**< Pointer to statistics. */
   const char* prefix              /**< Prefix string to prepend to each printed line (may be \c NULL). */
@@ -76,7 +76,7 @@ CMR_ERROR CMRstatsGraphicPrint(
  */
 
 CMR_EXPORT
-CMR_ERROR CMRcomputeGraphicMatrix(
+CMR_ERROR CMRgraphicComputeMatrix(
   CMR* cmr,                       /**< \ref CMR environment. */
   CMR_GRAPH* graph,               /**< Graph \f$ G = (V,E) \f$. */
   CMR_CHRMAT** pmatrix,           /**< Pointer for storing \f$ M \f$ (may be \c NULL). */
@@ -109,7 +109,7 @@ CMR_ERROR CMRcomputeGraphicMatrix(
  */
 
 CMR_EXPORT
-CMR_ERROR CMRtestGraphicMatrix(
+CMR_ERROR CMRgraphicTestMatrix(
   CMR* cmr,                         /**< \ref CMR environment. */
   CMR_CHRMAT* matrix,               /**< Matrix \f$ M \f$. */
   bool* pisGraphic,                 /**< Pointer for storing \c true if and only if \f$ M \f$ is a graphic matrix. */
@@ -140,7 +140,7 @@ CMR_ERROR CMRtestGraphicMatrix(
  */
 
 CMR_EXPORT
-CMR_ERROR CMRtestCographicMatrix(
+CMR_ERROR CMRgraphicTestTranspose(
   CMR* cmr,                         /**< \ref CMR environment. */
   CMR_CHRMAT* matrix,               /**< Matrix \f$ M \f$ */
   bool* pisCographic,               /**< Returns true if and only if \f$ M \f$ is a cographic matrix. */
@@ -164,7 +164,7 @@ CMR_ERROR CMRtestCographicMatrix(
  */
 
 CMR_EXPORT
-CMR_ERROR CMRtestGraphicColumnSubmatrixGreedy(
+CMR_ERROR CMRgraphicTestColumnSubmatrixGreedy(
   CMR* cmr,                 /**< \ref CMR environment. */
   CMR_CHRMAT* transpose,   /**< \f$ M^{\mathsf{T}} \f$ */
   size_t* orderedColumns, /**< Permutation of column indices of \f$ M \f$. */

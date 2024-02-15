@@ -62,13 +62,13 @@ CMR_ERROR checkCamionSigned(
   bool isCamion;
   CMR_SUBMAT* submatrix = NULL;
   CMR_CAMION_STATISTICS stats;
-  CMR_CALL( CMRstatsCamionInit(&stats) );
-  CMR_CALL( CMRtestCamionSigned(cmr, matrix, &isCamion,
+  CMR_CALL( CMRcamionStatsInit(&stats) );
+  CMR_CALL( CMRcamionTestSigns(cmr, matrix, &isCamion,
     outputSubmatrixFileName ? &submatrix : NULL, printStats ? &stats : NULL, timeLimit) );
 
   fprintf(stderr, "Matrix %sCamion-signed.\n", isCamion ? "IS " : "IS NOT ");
   if (printStats)
-    CMR_CALL( CMRstatsCamionPrint(stderr, &stats, NULL) );
+    CMR_CALL( CMRcamionStatsPrint(stderr, &stats, NULL) );
 
   if (submatrix)
   {
@@ -135,10 +135,10 @@ CMR_ERROR computeCamionSigned(
   /* Actual signing. */
 
   CMR_CAMION_STATISTICS stats;
-  CMR_CALL( CMRstatsCamionInit(&stats) );
-  CMR_CALL( CMRcomputeCamionSigned(cmr, matrix, NULL, NULL, &stats, timeLimit) );
+  CMR_CALL( CMRcamionStatsInit(&stats) );
+  CMR_CALL( CMRcamionComputeSigns(cmr, matrix, NULL, NULL, &stats, timeLimit) );
   if (printStats)
-    CMR_CALL( CMRstatsCamionPrint(stderr, &stats, NULL) );
+    CMR_CALL( CMRcamionStatsPrint(stderr, &stats, NULL) );
 
   /* Write to file. */
 

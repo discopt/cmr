@@ -45,7 +45,7 @@ typedef struct
  */
 
 CMR_EXPORT
-CMR_ERROR CMRstatsNetworkInit(
+CMR_ERROR CMRnetworkStatsInit(
   CMR_NETWORK_STATISTICS* stats /**< Pointer to statistics. */
 );
 
@@ -54,7 +54,7 @@ CMR_ERROR CMRstatsNetworkInit(
  */
 
 CMR_EXPORT
-CMR_ERROR CMRstatsNetworkPrint(
+CMR_ERROR CMRnetworkStatsPrint(
   FILE* stream,                   /**< File stream to print to. */
   CMR_NETWORK_STATISTICS* stats,  /**< Pointer to statistics. */
   const char* prefix              /**< Prefix string to prepend to each printed line (may be \c NULL). */
@@ -75,7 +75,7 @@ CMR_ERROR CMRstatsNetworkPrint(
  */
 
 CMR_EXPORT
-CMR_ERROR CMRcomputeNetworkMatrix(
+CMR_ERROR CMRnetworkComputeMatrix(
   CMR* cmr,                       /**< \ref CMR environment. */
   CMR_GRAPH* digraph,             /**< Digraph \f$ D = (V,A) \f$. */
   CMR_CHRMAT** pmatrix,           /**< Pointer for storing \f$ M \f$ (may be \c NULL). */
@@ -111,7 +111,7 @@ CMR_ERROR CMRcomputeNetworkMatrix(
  */
 
 CMR_EXPORT
-CMR_ERROR CMRtestNetworkMatrix(
+CMR_ERROR CMRnetworkTestMatrix(
   CMR* cmr,                       /**< \ref CMR environment. */
   CMR_CHRMAT* matrix,             /**< Matrix \f$ M \f$. */
   bool* pisNetwork,               /**< Pointer for storing \c true if and only if \f$ M \f$ is a network matrix. */
@@ -144,7 +144,7 @@ CMR_ERROR CMRtestNetworkMatrix(
  */
 
 CMR_EXPORT
-CMR_ERROR CMRtestConetworkMatrix(
+CMR_ERROR CMRnetworkTestTranspose(
   CMR* cmr,                       /**< \ref CMR environment. */
   CMR_CHRMAT* matrix,             /**< Matrix \f$ M \f$. */
   bool* pisConetwork,             /**< Returns true if and only if \f$ M \f$ is a conetwork matrix. */

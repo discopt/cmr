@@ -9,12 +9,12 @@
 #include "matroid_internal.h"
 #include "regularity_internal.h"
 #include "sort.h"
-#include "one_sum.h"
+#include "block_decomposition.h"
 
 int compareOneSumComponents(const void* a, const void* b)
 {
-  return ((CMR_ONESUM_COMPONENT*)b)->matrix->numNonzeros -
-    ((CMR_ONESUM_COMPONENT*)a)->matrix->numNonzeros;
+  return ((CMR_BLOCK*)b)->matrix->numNonzeros -
+    ((CMR_BLOCK*)a)->matrix->numNonzeros;
 }
 
 
@@ -33,9 +33,9 @@ CMR_ERROR CMRregularitySearchOneSum(CMR* cmr, DecompositionTask* task, Decomposi
   /* Perform 1-sum decomposition. */
 
   size_t numComponents;
-  CMR_ONESUM_COMPONENT* components = NULL;
-  CMR_CALL( decomposeOneSum(cmr, (CMR_MATRIX*) task->dec->matrix, sizeof(char), sizeof(char), &numComponents,
-    &components, NULL, NULL, NULL, NULL) );
+  CMR_BLOCK* components = NULL;
+  CMR_CALL( CMRdecomposeBlocks(cmr, (CMR_MATRIX*) task->dec->matrix, sizeof(char), sizeof(char), &numComponents, &components,
+    NULL, NULL, NULL, NULL) );
 
   if (numComponents == 1)
   {
@@ -57,17 +57,17 @@ CMR_ERROR CMRregularitySearchOneSum(CMR* cmr, DecompositionTask* task, Decomposi
 
     /* We create an intermediate array for sorting the components in descending order by number of nonzeros. */
 
-    CMR_ONESUM_COMPONENT** orderedComponents = NULL;
+    CMR_BLOCK** orderedComponents = NULL;
     CMR_CALL( CMRallocStackArray(cmr, &orderedComponents, numComponents) );
     for (size_t comp = 0; comp < numComponents; ++comp)
       orderedComponents[comp] = &components[comp];
-    CMR_CALL( CMRsort(cmr, numComponents, orderedComponents, sizeof(CMR_ONESUM_COMPONENT*), &compareOneSumComponents) );
+    CMR_CALL( CMRsort(cmr, numComponents, orderedComponents, sizeof(CMR_BLOCK*), &compareOneSumComponents) );
 
     /* We now create the children. */
     CMR_CALL( CMRmatroiddecUpdateOneSum(cmr, task->dec, numComponents) );
     for (size_t comp = 0; comp < numComponents; ++comp)
     {
-      CMR_ONESUM_COMPONENT* component = orderedComponents[comp];
+            CMR_BLOCK* component = orderedComponents[comp];
       CMR_CALL( CMRmatroiddecCreateChildFromMatrices(cmr, task->dec, comp, (CMR_CHRMAT*) component->matrix,
         (CMR_CHRMAT*) component->transpose, component->rowsToOriginal, component->columnsToOriginal) );
 

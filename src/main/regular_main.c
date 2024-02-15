@@ -74,7 +74,7 @@ CMR_ERROR testRegularity(
     CMR_CALL( CMRregularStatsPrint(stderr, &stats, NULL) );
 
   if (decomposition)
-    CMR_CALL( CMRmatroiddecPrint(cmr, decomposition, stderr, 0, true, true, true) );
+    CMR_CALL( CMRmatroiddecPrint(cmr, decomposition, stderr, 0, true, true, true, true, true) );
 
   if (minor && outputMinorFileName)
   {

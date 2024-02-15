@@ -5,6 +5,7 @@
 #include "env_internal.h"
 
 #include <stdint.h>
+#include <stdlib.h>
 #include <assert.h>
 
 CMR_ERROR CMRsepaCreate(CMR* cmr, size_t numRows, size_t numColumns, CMR_SEPA** psepa)
@@ -661,99 +662,171 @@ int computeTernaryRank(
 }
 
 /**
- * \brief Finds columns for a 2-by-2 violator in rows \p row1 and \p row2.
+ * \brief Finds columns for a 3-by-3 violator in rows \p row1, \p row2 and \p row3.
  *
  * Returns \c true upon success.
  */
 
 static
-bool findTernaryViolator(
+CMR_ERROR extractTernaryViolator(
+  CMR* cmr,                         /**< \ref CMR environment. */
   CMR_CHRMAT* matrix,               /**< Matrix. */
+  size_t rowsStore[3],              /**< Rows to store in \p *pviolator. */
   size_t* columnsToSubmatrixColumn, /**< Array from columns to submatrix columns or \c SIZE_MAX. */
   size_t row1,                      /**< First row */
   size_t row2,                      /**< Second row */
-  size_t* pcolumn1,                 /**< Pointer for storing the first column. */
-  size_t* pcolumn2                  /**< Pointer for storing the second column. */
+  size_t row3,                      /**< Third row */
+  CMR_SUBMAT** pviolator            /**< Pointer for storing the violator submatrix. */
 )
 {
+  assert(cmr);
   assert(matrix);
-  assert(pcolumn1);
-  assert(pcolumn2);
+  assert(rowsStore);
+  assert(pviolator);
 
-  size_t beyond1 = matrix->rowSlice[row1 + 1];
-  size_t beyond2 = matrix->rowSlice[row2 + 1];
-  size_t e1 = matrix->rowSlice[row1];
-  size_t e2 = matrix->rowSlice[row2];
-  if (e1 == beyond1 || e2 == beyond2)
-    return false;
+  size_t beyond[3] = { matrix->rowSlice[row1 + 1], matrix->rowSlice[row2 + 1], matrix->rowSlice[row3 + 1] };
+  size_t e[3] = { matrix->rowSlice[row1], matrix->rowSlice[row2], matrix->rowSlice[row3] };
 
-  size_t c1 = matrix->entryColumns[e1];
-  size_t c2 = matrix->entryColumns[e2];
-  bool hasSame = false;
-  bool hasDiff = false;
-  while (true)
+  size_t c[3] = { matrix->entryColumns[e[0]], matrix->entryColumns[e[1]], matrix->entryColumns[e[2]] };
+  int vectors[3][3];
+  size_t rank = 0;
+  size_t basisColumns[3];
+
+  for (size_t r = 0; r < 3; ++r)
   {
-    if (c1 < c2)
+    for (size_t i = 0; i < 3; ++i)
+      vectors[i][r] = 0;
+  }
+
+  CMRdbgMsg(14, "extractTernaryViolator for rows r%zu, r%zu, r%zu.\n", row1+1, row2+1, row3+1);
+
+  while (rank < 3)
+  {
+    CMRdbgMsg(16, "Iteration: entries are %zu < %zu (c%zu), %zu < %zu (c%zu) and %zu < %zu (c%zu).\n",
+      e[0], beyond[0], c[0]+1, e[1], beyond[1], c[1]+1, e[2], beyond[2], c[2]+1);
+
+    /* Which column are we looking at? */
+    size_t currentColumn = SIZE_MAX;
+    for (size_t r = 0; r < 3; ++r)
     {
-      ++e1;
-      if (e1 == beyond1)
-        return false;
-      c1 = matrix->entryColumns[e1];
+      if (e[r] < beyond[r] && c[r] < currentColumn)
+        currentColumn = c[r];
     }
-    else if (c1 > c2)
+    if (currentColumn == SIZE_MAX)
+      break;
+
+    CMRdbgMsg(16, "-> current column c%zu -> %zu.\n", currentColumn+1, columnsToSubmatrixColumn[currentColumn]);
+
+    if (columnsToSubmatrixColumn[currentColumn] < SIZE_MAX)
     {
-      ++e2;
-      if (e2 == beyond2)
-        return false;
-      c2 = matrix->entryColumns[e2];
-    }
-    else
-    {
-      if (columnsToSubmatrixColumn[c1] != SIZE_MAX)
+      /* Fill vectors[rank] with the corresponding column entries. */
+      for (size_t r = 0; r < 3; ++r)
+        vectors[rank][r] = (e[r] < beyond[r] && c[r] == currentColumn) ? matrix->entryValues[e[r]] : 0;
+
+      /* Test if the vector is equal to (the negative of) a known vector. */
+      bool isSame = false;
+      bool isNegated = false;
+      for (size_t i = 0; i < rank && !isSame && !isNegated; ++i)
       {
-        int8_t x1 = matrix->entryValues[e1];
-        int8_t x2 = matrix->entryValues[e2];
-        if (x1 == x2)
+        isSame = true;
+        isNegated = true;
+        for (size_t r = 0; r < 3; ++r)
         {
-          if (!hasSame && !hasDiff)
-          {
-            *pcolumn1 = columnsToSubmatrixColumn[c1];
-            hasSame = true;
-          }
-          else if (hasDiff)
-          {
-            *pcolumn2 = columnsToSubmatrixColumn[c1];
-            return true;
-          }
+          if (vectors[i][r] != vectors[rank][r])
+            isSame = false;
+          if (vectors[i][r] != -vectors[rank][r])
+            isNegated = false;
         }
-        else
-        {
-          if (!hasSame && !hasDiff)
-          {
-            *pcolumn1 = columnsToSubmatrixColumn[c1];
-            hasDiff = true;
-          }
-          else if (hasSame)
-          {
-            *pcolumn2 = columnsToSubmatrixColumn[c1];
-            return true;
-          }
-        }
+        if (isSame || isNegated)
+          break;
       }
 
-      ++e1;
-      if (e1 == beyond1)
-        return false;
-      c1 = matrix->entryColumns[e1];
+      /* Test if the vector is equal to (the negative of) the sum of the two known vectors. */
+      bool isSum = false;
+      bool isNegatedSum = false;
+      bool isDiff = false;
+      bool isNegatedDiff = false;
+      if (!isSame && !isNegated && rank == 2)
+      {
+        isSum = (vectors[0][0] + vectors[1][0] == vectors[2][0]) && (vectors[0][1] + vectors[1][1] == vectors[2][1])
+          && (vectors[0][2] + vectors[1][2] == vectors[2][2]);
+        isNegatedSum = (vectors[0][0] + vectors[1][0] == -vectors[2][0])
+          && (vectors[0][1] + vectors[1][1] == -vectors[2][1]) && (vectors[0][2] + vectors[1][2] == -vectors[2][2]);
+        isDiff = (vectors[0][0] - vectors[1][0] == vectors[2][0]) && (vectors[0][1] - vectors[1][1] == vectors[2][1])
+          && (vectors[0][2] - vectors[1][2] == vectors[2][2]);
+        isNegatedDiff = (-vectors[0][0] + vectors[1][0] == vectors[2][0])
+          && (-vectors[0][1] + vectors[1][1] == vectors[2][1]) && (-vectors[0][2] + vectors[1][2] == vectors[2][2]);
+      }
 
-      ++e2;
-      if (e2 == beyond2)
-        return false;
-      c2 = matrix->entryColumns[e2];
+      /* Test if the current column vector increases the rank. */
+      if (!isSame && !isNegated && !isSum && !isNegatedSum && !isDiff && !isNegatedDiff)
+      {
+        basisColumns[rank++] = columnsToSubmatrixColumn[currentColumn];
+      }
+    }
+
+    /* Advance all entries that are at equality. */
+    for (size_t r = 0; r < 3; ++r)
+    {
+      if (e[r] < beyond[r] && c[r] == currentColumn)
+      {
+        e[r]++;
+        c[r] = (e[r] < beyond[r]) ? matrix->entryColumns[e[r]] : SIZE_MAX;
+      }
     }
   }
 
-  return false;
+  CMRdbgMsg(16, "rank = %d\n", rank);
+  CMRdbgMsg(16, "First vector is (%d,%d,%d)\n", vectors[0][0], vectors[0][1], vectors[0][2]);
+  CMRdbgMsg(16, "Second vector is (%d,%d,%d)\n", vectors[1][0], vectors[1][1], vectors[1][2]);
+  CMRdbgMsg(16, "Third vector is (%d,%d,%d)\n", vectors[2][0], vectors[2][1], vectors[2][2]);
+
+  if (rank == 2)
+  {
+    CMR_CALL( CMRsubmatCreate(cmr, 2, 2, pviolator) );
+    CMR_SUBMAT* violatorSubmatrix = *pviolator;
+    violatorSubmatrix->rows[0] = rowsStore[0];
+    violatorSubmatrix->rows[1] = rowsStore[1];
+    violatorSubmatrix->columns[0] = basisColumns[0];
+    violatorSubmatrix->columns[1] = basisColumns[1];
+  }
+  else
+  {
+    for (size_t rowFirst = 0; rowFirst < 2; ++rowFirst)
+    {
+      for (size_t rowSecond = rowFirst + 1; rowSecond < 3; ++rowSecond)
+      {
+        for (size_t columnFirst = 0; columnFirst < 2; ++columnFirst)
+        {
+          for (size_t columnSecond = columnFirst + 1; columnSecond < 3; ++columnSecond)
+          {
+            if (abs(vectors[columnFirst][rowFirst] * vectors[columnSecond][rowSecond]
+              - vectors[columnFirst][rowSecond] * vectors[columnSecond][rowFirst]) >= 2)
+            {
+              CMR_CALL( CMRsubmatCreate(cmr, 2, 2, pviolator) );
+              CMR_SUBMAT* violatorSubmatrix = *pviolator;
+              violatorSubmatrix->rows[0] = rowFirst;
+              violatorSubmatrix->rows[1] = rowSecond;
+              violatorSubmatrix->columns[0] = basisColumns[columnFirst];
+              violatorSubmatrix->columns[1] = basisColumns[columnSecond];
+              return CMR_OKAY;
+            }
+          }
+        }
+      }
+    }
+
+    CMR_CALL( CMRsubmatCreate(cmr, 3, 3, pviolator) );
+    CMR_SUBMAT* violatorSubmatrix = *pviolator;
+    violatorSubmatrix->rows[0] = rowsStore[0];
+    violatorSubmatrix->rows[1] = rowsStore[1];
+    violatorSubmatrix->rows[2] = rowsStore[2];
+    violatorSubmatrix->columns[0] = basisColumns[0];
+    violatorSubmatrix->columns[1] = basisColumns[1];
+    violatorSubmatrix->columns[2] = basisColumns[2];
+  }
+
+  return CMR_OKAY;
 }
 
 /**
@@ -858,24 +931,39 @@ CMR_ERROR findRepresentatives(
     CMRdbgMsg(10, "Bottom-left ternary rank is %zu.\n", ternaryRank);
     if (rankBottomLeft == 1 && ternaryRank > 1)
     {
-      CMR_CALL( CMRsubmatCreate(cmr, 2, 2, pviolator) );
+      ternaryRepr[2] = ternaryRepr[1];
+      CMR_CALL( extractTernaryViolator(cmr, matrix, ternaryRepr, columnsToSubmatrixColumn, majors[ternaryRepr[0]],
+        majors[ternaryRepr[1]], majors[ternaryRepr[2]], pviolator) );
       CMR_SUBMAT* violatorSubmatrix = *pviolator;
-      violatorSubmatrix->rows[0] = ternaryRepr[0];
-      violatorSubmatrix->rows[1] = ternaryRepr[1];
-      bool found = findTernaryViolator(matrix, columnsToSubmatrixColumn, majors[ternaryRepr[0]], majors[ternaryRepr[1]],
-        &violatorSubmatrix->columns[0], &violatorSubmatrix->columns[1]);
 
-      CMRdbgMsg(12, "Violator has reduced rows %zu and %zu and reduced columns %zu and %zu.\n",
-        violatorSubmatrix->rows[0], violatorSubmatrix->rows[1], violatorSubmatrix->columns[0],
-        violatorSubmatrix->columns[1]);
-      assert(found);
+      CMRdbgMsg(12, "Violator has reduced rows r%zu and r%zu and reduced columns c%zu and c%zu.\n",
+        violatorSubmatrix->rows[0]+1, violatorSubmatrix->rows[1]+1, violatorSubmatrix->columns[0]+1,
+        violatorSubmatrix->columns[1]+1);
 
       goto cleanup;
     }
     else if (ternaryRank != rankBottomLeft)
     {
       assert(rankBottomLeft == 2 && ternaryRank == 3);
-      assert(!"NOT IMPLEMENTED");
+
+      CMR_CALL( extractTernaryViolator(cmr, matrix, ternaryRepr, columnsToSubmatrixColumn, majors[ternaryRepr[0]],
+        majors[ternaryRepr[1]], majors[ternaryRepr[2]], pviolator) );
+      CMR_SUBMAT* violatorSubmatrix = *pviolator;
+
+      if (violatorSubmatrix->numRows == 2)
+      {
+        CMRdbgMsg(12, "Violator has reduced rows r%zu and r%zu and reduced columns c%zu and c%zu.\n",
+          violatorSubmatrix->rows[0]+1, violatorSubmatrix->rows[1]+1, violatorSubmatrix->columns[0]+1,
+          violatorSubmatrix->columns[1]+1);
+      }
+      else
+      {
+        CMRdbgMsg(12, "Violator has reduced rows r%zu, r%zu and r%zu and reduced columns c%zu, c%zu and c%zu.\n",
+          violatorSubmatrix->rows[0]+1, violatorSubmatrix->rows[1]+1, violatorSubmatrix->rows[2]+1,
+          violatorSubmatrix->columns[0]+1, violatorSubmatrix->columns[1]+1, violatorSubmatrix->columns[2]+1);
+      }
+
+      goto cleanup;
     }
   }
 
@@ -918,24 +1006,37 @@ CMR_ERROR findRepresentatives(
     CMRdbgMsg(10, "Top-right ternary rank is %zu.\n", ternaryRank);
     if (rankTopRight == 1 && ternaryRank > 1)
     {
-      CMR_CALL( CMRsubmatCreate(cmr, 2, 2, pviolator) );
+      ternaryRepr[2] = ternaryRepr[1];
+      CMR_CALL( extractTernaryViolator(cmr, matrix, ternaryRepr, columnsToSubmatrixColumn, majors[ternaryRepr[0]],
+        majors[ternaryRepr[1]], majors[ternaryRepr[2]], pviolator) );
       CMR_SUBMAT* violatorSubmatrix = *pviolator;
-      violatorSubmatrix->rows[0] = ternaryRepr[0];
-      violatorSubmatrix->rows[1] = ternaryRepr[1];
-      bool found = findTernaryViolator(matrix, columnsToSubmatrixColumn, majors[ternaryRepr[0]], majors[ternaryRepr[1]],
-        &violatorSubmatrix->columns[0], &violatorSubmatrix->columns[1]);
 
-      CMRdbgMsg(12, "Violator has reduced rows %zu and %zu and reduced columns %zu and %zu.\n",
-        violatorSubmatrix->rows[0], violatorSubmatrix->rows[1], violatorSubmatrix->columns[0],
-        violatorSubmatrix->columns[1]);
-      assert(found);
+      CMRdbgMsg(12, "Violator has reduced rows r%zu and r%zu and reduced columns c%zu and c%zu.\n",
+        violatorSubmatrix->rows[0]+1, violatorSubmatrix->rows[1]+1, violatorSubmatrix->columns[0]+1,
+        violatorSubmatrix->columns[1]+1);
 
       goto cleanup;
     }
     else if (rankTopRight != ternaryRank)
     {
       assert(rankTopRight == 2 && ternaryRank == 3);
-      assert(!"NOT IMPLEMENTED");
+
+      CMR_CALL( extractTernaryViolator(cmr, matrix, ternaryRepr, columnsToSubmatrixColumn, majors[ternaryRepr[0]],
+        majors[ternaryRepr[1]], majors[ternaryRepr[2]], pviolator) );
+      CMR_SUBMAT* violatorSubmatrix = *pviolator;
+
+      if (violatorSubmatrix->numRows == 2)
+      {
+        CMRdbgMsg(12, "Violator has reduced rows r%zu and r%zu and reduced columns c%zu and c%zu.\n",
+          violatorSubmatrix->rows[0]+1, violatorSubmatrix->rows[1]+1, violatorSubmatrix->columns[0]+1,
+          violatorSubmatrix->columns[1]+1);
+      }
+      else
+      {
+        CMRdbgMsg(12, "Violator has reduced rows r%zu, r%zu and r%zu and reduced columns c%zu, c%zu and c%zu.\n",
+          violatorSubmatrix->rows[0]+1, violatorSubmatrix->rows[1]+1, violatorSubmatrix->rows[2]+1,
+          violatorSubmatrix->columns[0]+1, violatorSubmatrix->columns[1]+1, violatorSubmatrix->columns[2]+1);
+      }
     }
   }
 

@@ -77,7 +77,7 @@ CMR_ERROR testTotalUnimodularity(
     CMR_CALL( CMRtuStatsPrint(stderr, &stats, NULL) );
 
   if (decomposition)
-    CMR_CALL( CMRmatroiddecPrint(cmr, decomposition, stderr, 0, true, true, true) );
+    CMR_CALL( CMRmatroiddecPrint(cmr, decomposition, stderr, 0, true, true, true, true, true) );
 
   if (submatrix && outputSubmatrixFileName)
   {
