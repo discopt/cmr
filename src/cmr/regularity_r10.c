@@ -64,7 +64,7 @@ CMR_ERROR CMRregularityTestR10(CMR* cmr, DecompositionTask* task, DecompositionT
   {
     bool isCamion;
     CMR_SUBMAT* violatorSubmatrix = NULL;
-    CMR_CALL( CMRtestCamionSigned(cmr, dec->matrix, &isCamion, &violatorSubmatrix,
+    CMR_CALL( CMRcamionTestSigns(cmr, dec->matrix, &isCamion, &violatorSubmatrix,
       task->stats ? &task->stats->network.camion : NULL, DBL_MAX) );
 
     if (violatorSubmatrix)

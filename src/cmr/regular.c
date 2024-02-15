@@ -33,9 +33,10 @@ CMR_ERROR CMRregularStatsInit(CMR_REGULAR_STATS* stats)
 
   stats->totalCount = 0;
   stats->totalTime = 0.0;
-  CMR_CALL( CMRstatsSeriesParallelInit(&stats->seriesParallel) );
-  CMR_CALL( CMRstatsGraphicInit(&stats->graphic) );
-  CMR_CALL( CMRstatsNetworkInit(&stats->network) );
+  CMR_CALL( CMRspStatsInit(&stats->seriesParallel) );
+  CMR_CALL( CMRgraphicStatsInit(&stats->graphic) );
+  CMR_CALL( CMRnetworkStatsInit(&stats->network) );
+  CMR_CALL( CMRcamionStatsInit(&stats->camion) );
   stats->sequenceExtensionCount = 0;
   stats->sequenceExtensionTime = 0.0;  
   stats->sequenceGraphicCount = 0;
@@ -60,11 +61,13 @@ CMR_ERROR CMRregularStatsPrint(FILE* stream, CMR_REGULAR_STATS* stats, const cha
 
   char subPrefix[256];
   snprintf(subPrefix, 256, "%sseries-parallel ", prefix);
-  CMR_CALL( CMRstatsSeriesParallelPrint(stream, &stats->seriesParallel, subPrefix) );
+  CMR_CALL( CMRspStatsPrint(stream, &stats->seriesParallel, subPrefix) );
   snprintf(subPrefix, 256, "%s(co)graphic ", prefix);
-  CMR_CALL( CMRstatsGraphicPrint(stream, &stats->graphic, subPrefix) );
+  CMR_CALL( CMRgraphicStatsPrint(stream, &stats->graphic, subPrefix) );
   snprintf(subPrefix, 256, "%s(co)network ", prefix);
-  CMR_CALL( CMRstatsNetworkPrint(stream, &stats->network, subPrefix) );
+  CMR_CALL( CMRnetworkStatsPrint(stream, &stats->network, subPrefix) );
+  snprintf(subPrefix, 256, "%scamion ", prefix);
+  CMR_CALL( CMRcamionStatsPrint(stream, &stats->camion, subPrefix) );
 
   fprintf(stream, "%ssequence extensions: %lu in %f seconds\n", prefix, (unsigned long)stats->sequenceExtensionCount,
     stats->sequenceExtensionTime);

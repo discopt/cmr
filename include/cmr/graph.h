@@ -476,8 +476,8 @@ CMR_GRAPH_EDGE CMRgraphEdgesEdge(
 
 CMR_EXPORT
 CMR_ERROR CMRgraphPrint(
-  FILE* stream,   /**< Stream. */
-  CMR_GRAPH* graph /**< Graph structure. */
+  CMR_GRAPH* graph, /**< Graph structure. */
+  FILE* stream      /**< Stream. */
 );
 
 /**

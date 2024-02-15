@@ -58,7 +58,7 @@ CMR_ERROR recognizeSeriesParallel(
   CMR_SUBMAT* violatorSubmatrix = NULL;
 
   CMR_SP_STATISTICS stats;
-  CMR_CALL( CMRstatsSeriesParallelInit(&stats) );
+  CMR_CALL( CMRspStatsInit(&stats) );
   if (binary)
     CMR_CALL( CMRtestBinarySeriesParallel(cmr, matrix, NULL, reductions, &numReductions,
       outputReducedFileName ? &reducedSubmatrix : NULL, outputSubmatrixFileName ? &violatorSubmatrix : NULL, &stats,
@@ -71,7 +71,7 @@ CMR_ERROR recognizeSeriesParallel(
   fprintf(stderr, "Matrix %sseries-parallel. %zu reductions can be applied.\n",
     numReductions == matrix->numRows + matrix->numColumns ? "IS " : "is NOT ", numReductions);
   if (printStats)
-    CMR_CALL( CMRstatsSeriesParallelPrint(stderr, &stats, NULL) );
+    CMR_CALL( CMRspStatsPrint(stderr, &stats, NULL) );
 
   if (outputReductionsFileName)
   {

@@ -498,12 +498,14 @@ CMR_ERROR extendMinorSeparation(
   size_t rowRepresentative[2][2] = { {SIZE_MAX, SIZE_MAX}, {SIZE_MAX, SIZE_MAX} };
   size_t columnRepresentative[2][2] = { {SIZE_MAX, SIZE_MAX}, {SIZE_MAX, SIZE_MAX} };
 
+#if defined(CMR_DEBUG)
   CMRdbgMsg(12, "Checking the ranks for the following matrix:\n");
   CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', true) );
   for (size_t row = 0; row < numRows; ++row)
     CMRdbgMsg(14, "Initially, row r%ld belongs to part %d.\n", row+1, rowData[row].part);
   for (size_t column = 0; column < numColumns; ++column)
     CMRdbgMsg(14, "Initially, column c%ld belongs to part %d.\n", column+1, columnData[column].part);
+#endif /* CMR_DEBUG */
 
   size_t totalRank = 0;
   if (findRank1(matrix, rowData, columnData, rowRepresentative, columnRepresentative, 0))
@@ -747,8 +749,6 @@ CMR_ERROR CMRregularityNestedMinorSequenceSearchThreeSeparation(CMR* cmr, Decomp
   {
     CMRdbgMsg(8, "-> irregular since fewer than 8 elements in total.\n");
 
-    assert(false); /* TODO: add a test. */
-
     dec->type = CMR_MATROID_DEC_TYPE_IRREGULAR;
 
     /* Free the task. */
@@ -991,6 +991,7 @@ CMR_ERROR CMRregularityNestedMinorSequenceSearchThreeSeparation(CMR* cmr, Decomp
 
       CMR_CALL( CMRsubmatFree(cmr, &violatorSubmatrix) );
       CMR_CALL( CMRsepaFree(cmr, &originalSeparation) );
+      CMR_CALL( CMRregularityTaskFree(cmr, &task) );
 
       goto cleanupSearch;
     }

@@ -6,7 +6,7 @@
 
 #include "env_internal.h"
 #include "matrix_internal.h"
-#include "one_sum.h"
+#include "block_decomposition.h"
 #include "heap.h"
 #include "sort.h"
 #include "hereditary_property.h"
@@ -26,7 +26,7 @@
   } \
   while (false)
 
-CMR_ERROR CMRstatsGraphicInit(CMR_GRAPHIC_STATISTICS* stats)
+CMR_ERROR CMRgraphicStatsInit(CMR_GRAPHIC_STATISTICS* stats)
 {
   assert(stats);
 
@@ -42,7 +42,7 @@ CMR_ERROR CMRstatsGraphicInit(CMR_GRAPHIC_STATISTICS* stats)
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRstatsGraphicPrint(FILE* stream, CMR_GRAPHIC_STATISTICS* stats, const char* prefix)
+CMR_ERROR CMRgraphicStatsPrint(FILE* stream, CMR_GRAPHIC_STATISTICS* stats, const char* prefix)
 {
   assert(stream);
   assert(stats);
@@ -375,7 +375,7 @@ CMR_ERROR CMRcomputeRepresentationMatrix(CMR* cmr, CMR_GRAPH* digraph, bool tern
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRcomputeGraphicMatrix(CMR* cmr, CMR_GRAPH* graph, CMR_CHRMAT** pmatrix, CMR_CHRMAT** ptranspose,
+CMR_ERROR CMRgraphicComputeMatrix(CMR* cmr, CMR_GRAPH* graph, CMR_CHRMAT** pmatrix, CMR_CHRMAT** ptranspose,
   int numForestEdges, CMR_GRAPH_EDGE* forestEdges, int numCoforestEdges, CMR_GRAPH_EDGE* coforestEdges,
   bool* pisCorrectForest)
 {
@@ -5257,7 +5257,7 @@ CMR_ERROR cographicnessTest(
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRtestCographicMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisCographic, CMR_GRAPH** pgraph,
+CMR_ERROR CMRgraphicTestTranspose(CMR* cmr, CMR_CHRMAT* matrix, bool* pisCographic, CMR_GRAPH** pgraph,
   CMR_GRAPH_EDGE** pforestEdges, CMR_GRAPH_EDGE** pcoforestEdges, CMR_SUBMAT** psubmatrix,
   CMR_GRAPHIC_STATISTICS* stats, double timeLimit)
 {
@@ -5269,7 +5269,7 @@ CMR_ERROR CMRtestCographicMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisCographi
   assert(pisCographic);
 
 #if defined(CMR_DEBUG)
-  CMRdbgMsg(0, "CMRtestCographicMatrix called for a %dx%d matrix\n", matrix->numRows, matrix->numColumns);
+  CMRdbgMsg(0, "CMRgraphicTestTranspose called for a %dx%d matrix\n", matrix->numRows, matrix->numColumns);
   CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
 #endif /* CMR_DEBUG */
 
@@ -5499,7 +5499,7 @@ CMR_ERROR CMRtestBinaryGraphicColumnSubmatrixGreedy(CMR* cmr, CMR_CHRMAT* transp
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRtestGraphicMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisGraphic, CMR_GRAPH** pgraph,
+CMR_ERROR CMRgraphicTestMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisGraphic, CMR_GRAPH** pgraph,
   CMR_GRAPH_EDGE** pforestEdges, CMR_GRAPH_EDGE** pcoforestEdges, CMR_SUBMAT** psubmatrix,
   CMR_GRAPHIC_STATISTICS* stats, double timeLimit)
 {
@@ -5511,8 +5511,7 @@ CMR_ERROR CMRtestGraphicMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisGraphic, C
   assert(pisGraphic);
 
 #if defined(CMR_DEBUG)
-  CMRdbgMsg(0, "CMRtestGraphicMatrix called for a %dx%d matrix \n", matrix->numRows,
-    matrix->numColumns);
+  CMRdbgMsg(0, "CMRgraphicTestMatrix called for a %zux%zu matrix \n", matrix->numRows, matrix->numColumns);
   CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', true) );
 #endif /* CMR_DEBUG */
 
@@ -5531,7 +5530,7 @@ CMR_ERROR CMRtestGraphicMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisGraphic, C
     stats->transposeTime += transposeTime;
   }
 
-  CMR_CALL( CMRtestCographicMatrix(cmr, transpose, pisGraphic, pgraph, pforestEdges, pcoforestEdges, psubmatrix,
+  CMR_CALL( CMRgraphicTestTranspose(cmr, transpose, pisGraphic, pgraph, pforestEdges, pcoforestEdges, psubmatrix,
     stats, timeLimit) );
 
   if (stats)

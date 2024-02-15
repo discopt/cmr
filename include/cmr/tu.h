@@ -47,13 +47,7 @@ CMR_ERROR CMRtuParamsInit(
  * \brief Statistics for recognition algorithm for [totally unimodular](\ref tu) matrices.
  */
 
-typedef struct
-{
-  uint32_t totalCount;          /**< Total number of invocations. */
-  double totalTime;             /**< Total time of all invocations. */
-  CMR_CAMION_STATISTICS camion; /**< Camion signing. */
-  CMR_REGULAR_STATS regular;    /**< Regularity test. */
-} CMR_TU_STATS;
+typedef CMR_REGULAR_STATS CMR_TU_STATS;
 
 /**
  * \brief Initializes all statistics for recognition algorithm for [totally unimodular](\ref tu) matrices.

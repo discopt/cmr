@@ -62,7 +62,7 @@ CMR_ERROR genMatrixGraphic(
   size_t numNodes = numRows + 1;
   size_t numEdges = numColumns;
   CMR_GRAPHIC_STATISTICS stats;
-  CMR_CALL( CMRstatsGraphicInit(&stats) );
+  CMR_CALL( CMRgraphicStatsInit(&stats) );
   for (size_t benchmark = benchmarkRepetitions ? benchmarkRepetitions : 1; benchmark > 0; --benchmark)
   {
     clock_t startTime = clock();
@@ -146,7 +146,7 @@ CMR_ERROR genMatrixGraphic(
     {
       /* Benchmark */      
       bool isGraphic;
-      CMR_CALL( CMRtestGraphicMatrix(cmr, matrix, &isGraphic, NULL, NULL, NULL, NULL, &stats, DBL_MAX) );
+      CMR_CALL( CMRgraphicTestMatrix(cmr, matrix, &isGraphic, NULL, NULL, NULL, NULL, &stats, DBL_MAX) );
     }
     else
     {
@@ -166,7 +166,7 @@ CMR_ERROR genMatrixGraphic(
   }
 
   if (benchmarkRepetitions)
-    CMR_CALL( CMRstatsGraphicPrint(stderr, &stats, NULL) );
+    CMR_CALL( CMRgraphicStatsPrint(stderr, &stats, NULL) );
 
   CMR_CALL( CMRfreeEnvironment(&cmr) );
 

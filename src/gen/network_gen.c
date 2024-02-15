@@ -64,7 +64,7 @@ CMR_ERROR genMatrixNetwork(
   size_t numNodes = numRows + 1;
   size_t numEdges = numColumns;
   CMR_NETWORK_STATISTICS stats;
-  CMR_CALL( CMRstatsNetworkInit(&stats) );
+  CMR_CALL( CMRnetworkStatsInit(&stats) );
   for (size_t benchmark = benchmarkRepetitions ? benchmarkRepetitions : 1; benchmark > 0; --benchmark)
   {
     clock_t startTime = clock();
@@ -176,14 +176,14 @@ CMR_ERROR genMatrixNetwork(
     if (!binary)
     {
       /* Make it a network matrix via Camion's signing algorithm. */
-      CMR_CALL( CMRcomputeCamionSigned(cmr, matrix, NULL, NULL, NULL, DBL_MAX) );
+      CMR_CALL( CMRcamionComputeSigns(cmr, matrix, NULL, NULL, NULL, DBL_MAX) );
     }
 
     if (benchmarkRepetitions)
     {
       /* Benchmark */
       bool isNetwork;
-      CMR_CALL( CMRtestNetworkMatrix(cmr, matrix, &isNetwork, NULL, NULL, NULL, NULL, NULL, &stats, DBL_MAX) );
+      CMR_CALL( CMRnetworkTestMatrix(cmr, matrix, &isNetwork, NULL, NULL, NULL, NULL, NULL, &stats, DBL_MAX) );
     }
     else
     {
@@ -203,7 +203,7 @@ CMR_ERROR genMatrixNetwork(
   }
 
   if (benchmarkRepetitions)
-    CMR_CALL( CMRstatsNetworkPrint(stderr, &stats, NULL) );
+    CMR_CALL( CMRnetworkStatsPrint(stderr, &stats, NULL) );
 
   CMR_CALL( CMRfreeEnvironment(&cmr) );
 

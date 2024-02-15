@@ -42,8 +42,8 @@ The implemented recognition algorithm first tests the support matrix of \f$ M \f
 
 The corresponding functions in the library are
 
-  - CMRtestNetworkMatrix() tests a matrix for being network.
-  - CMRtestConetworkMatrix() tests a matrix for being conetwork.
+  - CMRnetworkTestMatrix() tests a matrix for being network.
+  - CMRnetworkTestTranspose() tests a matrix for being conetwork.
 
 and are defined in \ref network.h.
 
@@ -69,6 +69,6 @@ If `OUT-MAT` is `-` then the matrix is written to stdout.
 
 The corresponding function in the library is
 
-  - CMRcomputeNetworkMatrix() constructs a network matrix for a given digraph.
+  - CMRnetworkComputeMatrix() constructs a network matrix for a given digraph.
 
 and is defined in \ref network.h.

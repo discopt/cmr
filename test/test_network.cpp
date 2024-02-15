@@ -17,7 +17,7 @@ void testNetworkMatrix(
   CMR_GRAPH_EDGE* cobasis = NULL;
   bool* edgesReversed = NULL;
 
-  ASSERT_CMR_CALL( CMRtestNetworkMatrix(cmr, matrix, &isGraphic, &graph, &basis, &cobasis, &edgesReversed, NULL,
+  ASSERT_CMR_CALL( CMRnetworkTestMatrix(cmr, matrix, &isGraphic, &graph, &basis, &cobasis, &edgesReversed, NULL,
     NULL, DBL_MAX) );
 
   ASSERT_TRUE( isGraphic );
@@ -26,7 +26,7 @@ void testNetworkMatrix(
 
   CMR_CHRMAT* result = NULL;
   bool isCorrectBasis;
-  ASSERT_CMR_CALL( CMRcomputeNetworkMatrix(cmr, graph, &result, NULL, edgesReversed, matrix->numRows,
+  ASSERT_CMR_CALL( CMRnetworkComputeMatrix(cmr, graph, &result, NULL, edgesReversed, matrix->numRows,
     basis, matrix->numColumns, cobasis, &isCorrectBasis) );
   ASSERT_TRUE( isCorrectBasis );
   ASSERT_TRUE( result );
@@ -37,7 +37,7 @@ void testNetworkMatrix(
     ASSERT_CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', true) );
   
     printf("Graph:\n");
-    ASSERT_CMR_CALL( CMRgraphPrint(stdout, graph) );
+    ASSERT_CMR_CALL( CMRgraphPrint(graph, stdout) );
 
     printf("Representation matrix:\n");
     ASSERT_CMR_CALL( CMRchrmatPrintDense(cmr, result, stdout, '0', true) );
@@ -79,6 +79,26 @@ TEST(Network, Basic)
 
   testNetworkMatrix(cmr, matrix);
   
+  ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
+}
+
+TEST(Network, NonCamion)
+{
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "6 7 "
+    "-1  0  0  0  1 -1  0 "
+    " 1  0  0  1 -1  1  0 "
+    " 0 -1  0 -1  1 -1  0 "
+    " 0  1  0  0  0  0 -1 "
+    " 0  0  1 -1  1  0  1 "
+    " 0  0 -1  1 -1  0  0 "
+  ) );
+
+  testNetworkMatrix(cmr, matrix);
+
   ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }

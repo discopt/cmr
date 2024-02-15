@@ -84,6 +84,7 @@ CMR_ERROR CMRregularityDecomposeSeriesParallel(CMR* cmr, DecompositionTask* task
 
         CMR_CALL( CMRmatroiddecUpdateSubmatrix(cmr, dec, reducedSubmatrix, CMR_MATROID_DEC_TYPE_UNKNOWN) );
         assert(dec->numChildren == 1);
+        dec->type = CMR_MATROID_DEC_TYPE_SERIES_PARALLEL;
         task->dec = dec->children[0];
         task->dec->testedSeriesParallel = true;
       }
