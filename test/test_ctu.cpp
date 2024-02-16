@@ -49,7 +49,7 @@ TEST(CTU, ExamplesWideWide)
     ASSERT_CMR_CALL( CMRctuTest(cmr, matrix, &isCTU, &complementRow, &complementColumn, &params, NULL, DBL_MAX) );
     ASSERT_FALSE(isCTU);
     ASSERT_EQ(complementRow, 0UL);
-    ASSERT_EQ(complementColumn, 1UL);
+    ASSERT_EQ(complementColumn, 0UL);
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
   }
 

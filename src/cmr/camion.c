@@ -1,4 +1,4 @@
-#define CMR_DEBUG /* Uncomment to debug this file. */
+// #define CMR_DEBUG /* Uncomment to debug this file. */
 
 #include <cmr/camion.h>
 
@@ -490,7 +490,7 @@ CMR_ERROR CMRcamionComputeSigns(CMR* cmr, CMR_CHRMAT* matrix, bool* pwasCamionSi
 
 typedef struct
 {
-  size_t column;              /**< Column (or index of tree edge) of this edge (\c SIZE_MAX if cotree edge). */
+  CMR_ELEMENT element;        /**< Row or column of this edge. */
   CMR_GRAPH_EDGE causingEdge; /**< Another edge that triggered the fixation of this edge (-1 if not fixed). */
 } OrientationSearchEdgeData;
 
@@ -512,6 +512,85 @@ typedef struct
   bool fixed;                   /**< Whether the orientation of this edge is already fixed. */
 } OrientationSearchNodeData;
 
+static
+CMR_ERROR constructNonCamionSubmatrix(
+  CMR* cmr,                             /**< \ref CMR environment. */
+  CMR_GRAPH* cograph,                   /**< Cograph we consider. */
+  OrientationSearchEdgeData* edgeData,  /**< Edge data array. */
+  CMR_GRAPH_EDGE conflictEdge1,         /**< First edge of conflict. */
+  CMR_GRAPH_EDGE conflictEdge2,         /**< Second edge of conflict. */
+  CMR_SUBMAT** psubmatrix               /**< Pointer for storing the submatrix. */
+)
+{
+  assert(cmr);
+  assert(edgeData);
+  assert(psubmatrix);
+
+  CMRdbgMsg(6, "Extracting a non-Camion submatrix from an orientation conflict.\n");
+
+  /* Trace back from first edge. */
+
+  CMR_GRAPH_EDGE* trace1 = NULL;
+  CMR_CALL( CMRallocStackArray(cmr, &trace1, CMRgraphMemEdges(cograph)) );
+  size_t sizeTrace1 = 0;
+  CMR_GRAPH_EDGE reason = conflictEdge1;
+  while (reason != -1)
+  {
+    CMRdbgMsg(8, "1: Reason edge for edge %d is edge %d.\n", reason, edgeData[reason].causingEdge);
+    trace1[sizeTrace1++] = reason;
+    reason = edgeData[reason].causingEdge;
+  }
+
+  /* Trace back from second edge. */
+
+  CMR_GRAPH_EDGE* trace2 = NULL;
+  CMR_CALL( CMRallocStackArray(cmr, &trace2, CMRgraphMemEdges(cograph)) );
+  size_t sizeTrace2 = 0;
+  reason = conflictEdge2;
+  while (reason != -1)
+  {
+    CMRdbgMsg(8, "2: Reason edge for edge %d is edge %d.\n", reason, edgeData[reason].causingEdge);
+    trace2[sizeTrace2++] = reason;
+    reason = edgeData[reason].causingEdge;
+  }
+
+  /* Remove common end of traces. */
+  while (sizeTrace1 > 0 && sizeTrace2 > 0 && trace1[sizeTrace1-1] == trace2[sizeTrace2-1])
+  {
+    --sizeTrace1;
+    --sizeTrace2;
+  }
+  ++sizeTrace1; /* The last joint element must also participate (once). */
+
+  assert((sizeTrace1 + sizeTrace2) % 2 == 0);
+
+  size_t size = (sizeTrace1 + sizeTrace2) / 2;
+  CMR_CALL( CMRsubmatCreate(cmr, size, size, psubmatrix) );
+  CMR_SUBMAT* submatrix = *psubmatrix;
+  submatrix->numRows = 0;
+  submatrix->numColumns = 0;
+  for (size_t i = 0; i < sizeTrace1; ++i)
+  {
+    CMR_ELEMENT element = edgeData[trace1[i]].element;
+    if (CMRelementIsRow(element))
+      submatrix->rows[submatrix->numRows++] = CMRelementToRowIndex(element);
+    else
+      submatrix->columns[submatrix->numColumns++] = CMRelementToColumnIndex(element);
+  }
+  for (size_t i = 0; i < sizeTrace2; ++i)
+  {
+    CMR_ELEMENT element = edgeData[trace2[i]].element;
+    if (CMRelementIsRow(element))
+      submatrix->rows[submatrix->numRows++] = CMRelementToRowIndex(element);
+    else
+      submatrix->columns[submatrix->numColumns++] = CMRelementToColumnIndex(element);
+  }
+
+  CMR_CALL( CMRfreeStackArray(cmr, &trace2) );
+  CMR_CALL( CMRfreeStackArray(cmr, &trace1) );
+
+  return CMR_OKAY;
+}
 
 CMR_ERROR CMRcamionCographicOrient(CMR* cmr, CMR_CHRMAT* matrix, CMR_GRAPH* cograph, CMR_GRAPH_EDGE* forestEdges,
   CMR_GRAPH_EDGE* coforestEdges, bool* arcsReversed, bool* pisCamionSigned, CMR_SUBMAT** psubmatrix,
@@ -611,12 +690,13 @@ CMR_ERROR CMRcamionCographicOrient(CMR* cmr, CMR_CHRMAT* matrix, CMR_GRAPH* cogr
     i = CMRgraphEdgesNext(cograph, i))
   {
     CMR_GRAPH_EDGE e = CMRgraphEdgesEdge(cograph, i);
-    edgeData[e].column = SIZE_MAX;
     edgeData[e].causingEdge = -1;
     arcsReversed[e] = false;
   }
+  for (size_t row = 0; row < matrix->numRows; ++row)
+    edgeData[coforestEdges[row]].element = CMRrowToElement(row);
   for (size_t column = 0; column < matrix->numColumns; ++column)
-    edgeData[forestEdges[column]].column = column;
+    edgeData[forestEdges[column]].element = CMRcolumnToElement(column);
 
   /* Allocate and initialize a queue for BFS. */
   CMR_GRAPH_NODE* queue = NULL;
@@ -679,7 +759,9 @@ CMR_ERROR CMRcamionCographicOrient(CMR* cmr, CMR_CHRMAT* matrix, CMR_GRAPH* cogr
           continue;
 
         CMR_GRAPH_EDGE e = CMRgraphIncEdge(cograph, i);
-        if (edgeData[e].column == SIZE_MAX)
+
+        /* We skip cotree edges. */
+        if (CMRelementIsRow(edgeData[e].element))
           continue;
 
         if (nodeData[w].stage == UNKNOWN)
@@ -796,21 +878,8 @@ CMR_ERROR CMRcamionCographicOrient(CMR* cmr, CMR_CHRMAT* matrix, CMR_GRAPH* cogr
         {
           if (arcsReversed[nodeData[v].edge] != shouldBeReversed)
           {
-            CMRdbgMsg(6, "Found a contradiction in the orientation, i.e., the matrix is not a network matrix.\n");
-
-            *pisCamionSigned = false;
             if (psubmatrix)
-            {
-              /* Extract a non-Camion submatrix. */
-              CMR_GRAPH_EDGE reason = rowEdge;
-              while (reason != -1)
-              {
-                CMRdbgMsg(8, "Reason edge for %d is %d.\n", reason, edgeData[reason].causingEdge);
-                reason = edgeData[reason].causingEdge;
-              }
-
-              assert(!"NOT IMPLEMENTED: contradiction in orientation.");
-            }
+              CMR_CALL( constructNonCamionSubmatrix(cmr, cograph, edgeData, rowEdge, nodeData[v].edge, psubmatrix) );
 
             goto cleanup;
           }
@@ -850,23 +919,7 @@ CMR_ERROR CMRcamionCographicOrient(CMR* cmr, CMR_CHRMAT* matrix, CMR_GRAPH* cogr
 
             *pisCamionSigned = false;
             if (psubmatrix)
-            {
-              /* Extract a non-Camion submatrix. */
-              CMR_GRAPH_EDGE reason = rowEdge;
-              while (reason != -1)
-              {
-                CMRdbgMsg(8, "1: Reason edge for edge %d is edge %d.\n", reason, edgeData[reason].causingEdge);
-                reason = edgeData[reason].causingEdge;
-              }
-              reason = nodeData[v].edge;
-              while (reason != -1)
-              {
-                CMRdbgMsg(8, "2: Reason edge for edge %d is edge %d.\n", reason, edgeData[reason].causingEdge);
-                reason = edgeData[reason].causingEdge;
-              }
-
-              assert(!"NOT IMPLEMENTED: contradiction in orientation.");
-            }
+              CMR_CALL( constructNonCamionSubmatrix(cmr, cograph, edgeData, rowEdge, nodeData[v].edge, psubmatrix) );
 
             goto cleanup;
           }

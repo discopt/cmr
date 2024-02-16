@@ -1,4 +1,4 @@
-#define CMR_DEBUG /* Uncomment to debug this file. */
+// #define CMR_DEBUG /* Uncomment to debug this file. */
 
 #include <cmr/matroid.h>
 
@@ -303,13 +303,13 @@ CMR_ERROR CMRminorFree(CMR* cmr, CMR_MINOR** pminor)
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRminorWriteToStream(CMR* cmr, CMR_MINOR* minor, size_t numRows, size_t numColumns, FILE* stream)
+CMR_ERROR CMRminorPrint(CMR* cmr, CMR_MINOR* minor, size_t numRows, size_t numColumns, FILE* stream)
 {
   assert(cmr);
   assert(minor);
   assert(stream);
 
-  CMR_CALL( CMRsubmatWriteToStream(cmr, minor->remainingSubmatrix, numRows, numColumns, stream) );
+  CMR_CALL( CMRsubmatPrint(cmr, minor->remainingSubmatrix, numRows, numColumns, stream) );
 
   return CMR_OKAY;
 }
@@ -330,7 +330,7 @@ CMR_ERROR CMRminorWriteToFile(CMR* cmr, CMR_MINOR* minor, size_t numRows, size_t
       return CMR_ERROR_OUTPUT;
   }
 
-  CMR_CALL( CMRminorWriteToStream(cmr, minor, numRows, numColumns, stream) );
+  CMR_CALL( CMRminorPrint(cmr, minor, numRows, numColumns, stream) );
 
   if (stream != stdout)
     fclose(stream);

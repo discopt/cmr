@@ -1690,7 +1690,7 @@ CMR_ERROR CMRregularityNestedMinorSequenceGraphicness(CMR* cmr, DecompositionTas
           violatorSubmatrix->numColumns);
 
         CMR_CALL( CMRmatroiddecUpdateSubmatrix(cmr, dec, violatorSubmatrix, CMR_MATROID_DEC_TYPE_DETERMINANT) );
-        assert(dec->type != CMR_MATROID_DEC_TYPE_DETERMINANT);
+        assert(dec->type == CMR_MATROID_DEC_TYPE_SUBMATRIX || dec->type == CMR_MATROID_DEC_TYPE_DETERMINANT);
 
         CMR_CALL( CMRgraphFree(cmr, &dec->graph) );
         CMR_CALL( CMRfreeBlockArray(cmr, &dec->graphForest) );
