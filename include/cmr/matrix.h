@@ -100,7 +100,7 @@ CMR_ERROR CMRsubmatZoomSubmat(
  */
 
 CMR_EXPORT
-CMR_ERROR CMRsubmatWriteToStream(
+CMR_ERROR CMRsubmatPrint(
   CMR* cmr,               /**< \ref CMR environment. */
   CMR_SUBMAT* submatrix,  /**< Reference submatrix. */
   size_t numRows,         /**< Number of rows of original matrix. */

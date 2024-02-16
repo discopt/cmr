@@ -149,7 +149,7 @@ CMR_ERROR CMRsubmatZoomSubmat(CMR* cmr, CMR_SUBMAT* reference, CMR_SUBMAT* input
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRsubmatWriteToStream(CMR* cmr, CMR_SUBMAT* submatrix, size_t numRows, size_t numColumns, FILE* stream)
+CMR_ERROR CMRsubmatPrint(CMR* cmr, CMR_SUBMAT* submatrix, size_t numRows, size_t numColumns, FILE* stream)
 {
   CMR_UNUSED(cmr);
 
@@ -183,7 +183,7 @@ CMR_ERROR CMRsubmatWriteToFile(CMR* cmr, CMR_SUBMAT* submatrix, size_t numRows, 
       return CMR_ERROR_OUTPUT;
   }
 
-  CMR_CALL( CMRsubmatWriteToStream(cmr, submatrix, numRows, numColumns, stream) );
+  CMR_CALL( CMRsubmatPrint(cmr, submatrix, numRows, numColumns, stream) );
 
   if (stream != stdout)
     fclose(stream);
