@@ -1874,7 +1874,7 @@ CMR_ERROR decomposeTernarySeriesParallel(
           if (violatorSubmatrix)
           {
             CMRdbgMsg(4, "Extracted a violator submatrix.\n");
-            CMRsubmatWriteToStream(cmr, violatorSubmatrix, matrix->numRows, matrix->numColumns, stdout);
+            CMRsubmatPrint(cmr, violatorSubmatrix, matrix->numRows, matrix->numColumns, stdout);
             fflush(stdout);
           }
 

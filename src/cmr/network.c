@@ -4,6 +4,10 @@
 #include <cmr/network.h>
 #include <cmr/camion.h>
 
+#if defined(CMR_DEBUG)
+#include <cmr/linear_algebra.h>
+#endif /* CMR_DEBUG */
+
 #include "graphic_internal.h"
 #include "env_internal.h"
 #include "matrix_internal.h"
@@ -126,47 +130,67 @@ CMR_ERROR CMRnetworkTestTranspose(CMR* cmr, CMR_CHRMAT* matrix, bool* pisConetwo
   double remainingTime = timeLimit - (clock() - totalClock) * 1.0 / CLOCKS_PER_SEC;
   CMR_GRAPH_EDGE* forestEdges = NULL;
   CMR_GRAPH_EDGE* coforestEdges = NULL;
-  CMR_CALL( CMRgraphicTestTranspose(cmr, matrix, pisConetwork, pdigraph, pforestArcs ? &forestEdges : NULL,
-    pcoforestArcs ? &coforestEdges : NULL, psubmatrix, stats ? &stats->graphic : NULL, remainingTime) );
+  CMR_GRAPH* graph = NULL;
+  bool isConetwork;
+  CMR_CALL( CMRgraphicTestTranspose(cmr, matrix, &isConetwork, &graph, &forestEdges, &coforestEdges,
+    psubmatrix, stats ? &stats->graphic : NULL, remainingTime) );
+
 #if defined(CMR_DEBUG)
-  CMRdbgMsg(2, "CMRtestCographicMatrix() returned %s.\n", (*pisConetwork) ? "TRUE": "FALSE");
+  CMRdbgMsg(2, "CMRtestCographicMatrix() returned %s.\n", isConetwork ? "TRUE": "FALSE");
 #endif /* CMR_DEBUG */
 
-  if (pforestArcs)
-    *pforestArcs = forestEdges;
-  if (pcoforestArcs)
-    *pcoforestArcs = coforestEdges;
-  if (!*pisConetwork || !pdigraph || !parcsReversed)
+  bool* arcsReversed = NULL;
+  if (isConetwork)
   {
-    /* We have to free (co)forest information if the caller didn't ask for it. */
-    if (!pforestArcs)
-      CMR_CALL( CMRfreeBlockArray(cmr, &forestEdges) );
-    if (!pcoforestArcs)
-      CMR_CALL( CMRfreeBlockArray(cmr, &coforestEdges) );
-    return CMR_OKAY;
+    /* We have to find out which edges are reversed. */
+    CMRdbgMsg(0, "Matrix is graphic. Trying to compute reversed edges.");
+    CMR_CALL( CMRallocBlockArray(cmr, &arcsReversed, CMRgraphMemEdges(graph)) );
+
+#if defined(CMR_DEBUG)
+    CMRgraphPrint(graph, stdout);
+    for (size_t b = 0; b < matrix->numColumns; ++b)
+      CMRdbgMsg(2, "Forest #%zu is %d.\n", b, forestEdges[b]);
+    for (size_t b = 0; b < matrix->numRows; ++b)
+      CMRdbgMsg(2, "Coforest #%zu is %d.\n", b, coforestEdges[b]);
+#endif /* CMR_DEBUG */
+
+    CMR_CALL( CMRcamionCographicOrient(cmr, matrix, graph, forestEdges, coforestEdges, arcsReversed, &isConetwork,
+      psubmatrix, stats ? &stats->camion : NULL) );
   }
 
-  /* We have to find out which edges are reversed. */
-  CMR_GRAPH* graph = *pdigraph;
-  CMRdbgMsg(0, "Matrix is graphic. Trying to compute reversed edges.");
-  CMR_CALL( CMRallocBlockArray(cmr, parcsReversed, CMRgraphMemEdges(graph)) );
-
 #if defined(CMR_DEBUG)
-  CMRgraphPrint(stdout, *pdigraph);
-  for (size_t b = 0; b < matrix->numColumns; ++b)
-    CMRdbgMsg(2, "Forest #%zu is %d.\n", b, (*pforestArcs)[b]);
-  for (size_t b = 0; b < matrix->numRows; ++b)
-    CMRdbgMsg(2, "Coforest #%zu is %d.\n", b, (*pcoforestArcs)[b]);
+  if (psubmatrix && *psubmatrix)
+  {
+    CMR_CHRMAT* submatrix = NULL;
+    CMR_CALL( CMRchrmatZoomSubmat(cmr, matrix, *psubmatrix, &submatrix) );
+    CMR_CALL( CMRchrmatPrintDense(cmr, submatrix, stdout, '0', true) );
+
+    int64_t determinant;
+    CMR_CALL( CMRchrmatDeterminant(cmr, submatrix, &determinant) );
+    CMRdbgMsg(2, "-> Returned submatrix has determinant %ld.\n", determinant);
+
+    CMR_CALL( CMRchrmatFree(cmr, &submatrix) );
+  }
 #endif /* CMR_DEBUG */
 
-  CMR_CALL( CMRcamionCographicOrient(cmr, matrix, *pdigraph, forestEdges, coforestEdges, *parcsReversed, pisConetwork,
-    psubmatrix, stats ? &stats->camion : NULL) );
-
-  /* We have to free (co)forest information if the caller didn't ask for it. */
-  if (!pforestArcs)
+  if (pisConetwork)
+    *pisConetwork = isConetwork;
+  if (isConetwork && pdigraph)
+    *pdigraph = graph;
+  else
+    CMR_CALL( CMRgraphFree(cmr, &graph) );
+  if (isConetwork && pforestArcs)
+    *pforestArcs = forestEdges;
+  else
     CMR_CALL( CMRfreeBlockArray(cmr, &forestEdges) );
-  if (!pcoforestArcs)
+  if (isConetwork && pcoforestArcs)
+    *pcoforestArcs = coforestEdges;
+  else
     CMR_CALL( CMRfreeBlockArray(cmr, &coforestEdges) );
+  if (isConetwork && parcsReversed)
+    *parcsReversed = arcsReversed;
+  else
+    CMR_CALL( CMRfreeBlockArray(cmr, &arcsReversed) );
 
   if (stats)
   {

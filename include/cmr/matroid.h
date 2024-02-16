@@ -129,7 +129,7 @@ CMR_ERROR CMRminorFree(
  */
 
 CMR_EXPORT
-CMR_ERROR CMRminorWriteToStream(
+CMR_ERROR CMRminorPrint(
   CMR* cmr,           /**< \ref CMR environment. */
   CMR_MINOR* minor,   /**< Minor to write. */
   size_t numRows,     /**< Number of rows of original matrix. */
