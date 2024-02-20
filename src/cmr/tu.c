@@ -1,4 +1,4 @@
-// #define CMR_DEBUG /* Uncomment to debug this file. */
+#define CMR_DEBUG /* Uncomment to debug this file. */
 
 #include <cmr/tu.h>
 
@@ -197,6 +197,33 @@ int testPartitionSubset(
 }
 
 /**
+ * \brief Submatrix test.
+ */
+
+static
+CMR_ERROR testSubmatrix(
+  CMR* cmr,                   /**< \ref CMR environment */
+  CMR_CHRMAT* matrix,         /**< Matrix \f$ M \f$. */
+  bool* pisTotallyUnimodular, /**< Pointer for storing whether \f$ M \f$ is totally unimodular. */
+  double timeLimit            /**< Time limit to impose. */
+)
+{
+  assert(cmr);
+  assert(matrix);
+  assert(pisTotallyUnimodular);
+
+#if defined(CMR_DEBUG)
+  CMRdbgMsg(2, "testSubmatrix called for a %zux%zu matrix\n", matrix->numRows, matrix->numColumns);
+  CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
+  fflush(stdout);
+#endif /* CMR_DEBUG */
+
+  assert(false);
+
+  return CMR_OKAY;
+}
+
+/**
  * \brief Partition test based on Ghouila-Houri.
  */
 
@@ -305,7 +332,7 @@ CMR_ERROR CMRtuTest(CMR* cmr, CMR_CHRMAT* matrix, bool* pisTotallyUnimodular, CM
   }
   else if (params->algorithm == CMR_TU_ALGORITHM_SUBMATRIX)
   {
-    assert(!"Not implemented");
+    CMR_CALL( testSubmatrix(cmr, matrix, pisTotallyUnimodular, remainingTime) );
   }
   else if (params->algorithm == CMR_TU_ALGORITHM_PARTITION)
   {
