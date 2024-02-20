@@ -30,7 +30,7 @@ endif()
 if (MSVC)
   add_compile_options(/W4)
 else()
-  add_compile_options(-Wall -Wextra -Wunused)
+  add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
 find_package(GMP)
@@ -48,8 +48,6 @@ add_library(cmr
   src/cmr/matrix.c
   src/cmr/one_sum.c
   src/cmr/tu.c
-  #src/cmr/determinant.cpp
-  #src/cmr/ghouila_houri.cpp
   src/cmr/graph.c
   src/cmr/graphic.c
   src/cmr/hashtable.c
@@ -57,12 +55,7 @@ add_library(cmr
   src/cmr/equimodular.c
   src/cmr/linear_algebra.c
   src/cmr/listmatrix.c
-  #src/cmr/logger.cpp
-  #src/cmr/matrix.cpp
   src/cmr/matroid.c
-  #src/cmr/matroid_decomposition.cpp
-  #src/cmr/matroid_graph.cpp
-  #src/cmr/nested_minor_sequence.cpp
   src/cmr/regular_nested_minor_sequence.c
   src/cmr/network.c
   src/cmr/regular.c
@@ -71,13 +64,9 @@ add_library(cmr
   src/cmr/regular_onesum.c
   src/cmr/regular_r10.c
   src/cmr/regular_series_parallel.c
-  #src/cmr/separation.cpp
   src/cmr/separation.c
   src/cmr/series_parallel.c
   src/cmr/sort.c
-  #src/cmr/total_unimodularity.cpp
-  #src/cmr/unimodularity.cpp
-  #src/cmr/zero_plus_minus_one.cpp
 )
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
