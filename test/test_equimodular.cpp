@@ -147,7 +147,7 @@ TEST(Equimodular, Overflow)
     int64_t k = 0;
     CMR_EQUIMODULAR_STATISTICS stats;
     CMRstatsEquimodularityInit(&stats);
-    CMR_ERROR error = CMRtestEquimodularity(cmr, matrix, &isEquimodular, &k, NULL, &stats, DBL_MAX);
+    CMR_ERROR error = CMRequimodularTest(cmr, matrix, &isEquimodular, &k, NULL, &stats, DBL_MAX);
 
     ASSERT_EQ(error, CMR_ERROR_OVERFLOW);
     ASSERT_EQ(k, 0);
