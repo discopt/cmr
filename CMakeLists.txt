@@ -40,7 +40,6 @@ set(CMR_WITH_GMP ${GMP_FOUND})
 add_library(cmr
   src/cmr/camion.c
   src/cmr/ctu.c
-  src/cmr/dec.c
   src/cmr/densematrix.c
   src/cmr/element.c
   src/cmr/env.c
