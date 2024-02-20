@@ -1161,7 +1161,7 @@ TEST(TU, FanoDual)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
   
-TEST(TotallyUnimodular, SubmatrixAlgorithm)
+TEST(TU, SubmatrixAlgorithm)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
