@@ -24,9 +24,9 @@ TEST(Equimodular, Examples)
 
     bool isEquimodular;
     int64_t k = 0;
-    CMR_EQUIMODULAR_STATISTICS stats;
-    CMRstatsEquimodularityInit(&stats);
-    ASSERT_CMR_CALL( CMRtestEquimodularity(cmr, matrix, &isEquimodular, &k, NULL, &stats, DBL_MAX) );
+    CMR_EQUIMODULAR_STATS stats;
+    CMRequimodularStatsInit(&stats);
+    ASSERT_CMR_CALL( CMRequimodularTest(cmr, matrix, &isEquimodular, &k, NULL, &stats, DBL_MAX) );
 
     ASSERT_TRUE(isEquimodular);
     ASSERT_EQ(k, 1);
@@ -47,9 +47,9 @@ TEST(Equimodular, Examples)
 
     bool isEquimodular;
     int64_t k = 0;
-    CMR_EQUIMODULAR_STATISTICS stats;
-    CMRstatsEquimodularityInit(&stats);
-    ASSERT_CMR_CALL( CMRtestEquimodularity(cmr, matrix, &isEquimodular, &k, NULL, &stats, DBL_MAX) );
+    CMR_EQUIMODULAR_STATS stats;
+    CMRequimodularStatsInit(&stats);
+    ASSERT_CMR_CALL( CMRequimodularTest(cmr, matrix, &isEquimodular, &k, NULL, &stats, DBL_MAX) );
 
     ASSERT_FALSE(isEquimodular);
     ASSERT_EQ(k, 0);
@@ -70,9 +70,9 @@ TEST(Equimodular, Examples)
 
     bool isEquimodular;
     int64_t k = 0;
-    CMR_EQUIMODULAR_STATISTICS stats;
-    CMRstatsEquimodularityInit(&stats);
-    ASSERT_CMR_CALL( CMRtestEquimodularity(cmr, matrix, &isEquimodular, &k, NULL, &stats, DBL_MAX) );
+    CMR_EQUIMODULAR_STATS stats;
+    CMRequimodularStatsInit(&stats);
+    ASSERT_CMR_CALL( CMRequimodularTest(cmr, matrix, &isEquimodular, &k, NULL, &stats, DBL_MAX) );
 
     ASSERT_TRUE(isEquimodular);
     ASSERT_EQ(k, 2);
@@ -107,9 +107,9 @@ TEST(Equimodular, GMP)
 
     bool isEquimodular;
     int64_t k = 0;
-    CMR_EQUIMODULAR_STATISTICS stats;
-    CMRstatsEquimodularityInit(&stats);
-    CMR_ERROR error = CMRtestEquimodularity(cmr, matrix, &isEquimodular, &k, NULL, &stats, DBL_MAX);
+    CMR_EQUIMODULAR_STATS stats;
+    CMRequimodularStatsInit(&stats);
+    CMR_ERROR error = CMRequimodularTest(cmr, matrix, &isEquimodular, &k, NULL, &stats, DBL_MAX);
 
     ASSERT_EQ(error, CMR_OKAY);
     ASSERT_FALSE(isEquimodular);

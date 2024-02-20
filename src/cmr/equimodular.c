@@ -11,7 +11,7 @@
 #include "env_internal.h"
 #include "linear_algebra_internal.h"
 
-CMR_ERROR CMRparamsEquimodularityInit(CMR_EQUIMODULAR_PARAMETERS* params)
+CMR_ERROR CMRequimodularParamsInit(CMR_EQUIMODULAR_PARAMS* params)
 {
   assert(params);
 
@@ -20,7 +20,7 @@ CMR_ERROR CMRparamsEquimodularityInit(CMR_EQUIMODULAR_PARAMETERS* params)
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRstatsEquimodularityInit(CMR_EQUIMODULAR_STATISTICS* stats)
+CMR_ERROR CMRequimodularStatsInit(CMR_EQUIMODULAR_STATS* stats)
 {
   assert(stats);
 
@@ -32,7 +32,7 @@ CMR_ERROR CMRstatsEquimodularityInit(CMR_EQUIMODULAR_STATISTICS* stats)
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRstatsEquimodularityPrint(FILE* stream, CMR_EQUIMODULAR_STATISTICS* stats, const char* prefix)
+CMR_ERROR CMRequimodularStatsPrint(FILE* stream, CMR_EQUIMODULAR_STATS* stats, const char* prefix)
 {
   assert(stream);
   assert(stats);
@@ -54,18 +54,18 @@ CMR_ERROR CMRstatsEquimodularityPrint(FILE* stream, CMR_EQUIMODULAR_STATISTICS* 
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRtestEquimodularity(CMR* cmr, CMR_INTMAT* matrix, bool* pisEquimodular, int64_t* pgcdDet,
-  CMR_EQUIMODULAR_PARAMETERS* params, CMR_EQUIMODULAR_STATISTICS* stats, double timeLimit)
+CMR_ERROR CMRequimodularTest(CMR* cmr, CMR_INTMAT* matrix, bool* pisEquimodular, int64_t* pgcdDet,
+  CMR_EQUIMODULAR_PARAMS* params, CMR_EQUIMODULAR_STATS* stats, double timeLimit)
 {
   assert(cmr);
   assert(matrix);
   assert(pisEquimodular);
   CMRconsistencyAssert( CMRintmatConsistency(matrix) );
 
-  CMR_EQUIMODULAR_PARAMETERS defaultParams;
+  CMR_EQUIMODULAR_PARAMS defaultParams;
   if (!params)
   {
-    CMR_CALL( CMRparamsEquimodularityInit(&defaultParams) );
+    CMR_CALL( CMRequimodularParamsInit(&defaultParams) );
     params = &defaultParams;
   }
   if (stats)
@@ -238,8 +238,8 @@ cleanup:
   
 }
 
-CMR_ERROR CMRtestStrongEquimodularity(CMR* cmr, CMR_INTMAT* matrix, bool* pisStronglyEquimodular, int64_t* pgcdDet,
-  CMR_EQUIMODULAR_PARAMETERS* params, CMR_EQUIMODULAR_STATISTICS* stats, double timeLimit)
+CMR_ERROR CMRequimodularTestStrong(CMR* cmr, CMR_INTMAT* matrix, bool* pisStronglyEquimodular, int64_t* pgcdDet,
+  CMR_EQUIMODULAR_PARAMS* params, CMR_EQUIMODULAR_STATS* stats, double timeLimit)
 {
   assert(cmr);
   assert(matrix);
@@ -254,7 +254,7 @@ CMR_ERROR CMRtestStrongEquimodularity(CMR* cmr, CMR_INTMAT* matrix, bool* pisStr
     pgcdDet = &gcdDet;
 
   clock_t startClock = clock();
-  CMR_CALL( CMRtestEquimodularity(cmr, matrix, pisStronglyEquimodular, pgcdDet, params, stats, timeLimit) );
+  CMR_CALL( CMRequimodularTest(cmr, matrix, pisStronglyEquimodular, pgcdDet, params, stats, timeLimit) );
   double remainingTime = timeLimit - ((clock() - startClock) * 1.0 / CLOCKS_PER_SEC);
   if (remainingTime <= 0)
     return CMR_ERROR_TIMEOUT;
@@ -264,7 +264,7 @@ CMR_ERROR CMRtestStrongEquimodularity(CMR* cmr, CMR_INTMAT* matrix, bool* pisStr
   {
     CMR_INTMAT* transpose = NULL;
     CMR_CALL( CMRintmatTranspose(cmr, matrix, &transpose) );
-    CMR_CALL( CMRtestEquimodularity(cmr, transpose, pisStronglyEquimodular, pgcdDet, params, stats, remainingTime) );
+    CMR_CALL( CMRequimodularTest(cmr, transpose, pisStronglyEquimodular, pgcdDet, params, stats, remainingTime) );
     CMR_CALL( CMRintmatFree(cmr, &transpose) );
   }
 
@@ -273,8 +273,8 @@ CMR_ERROR CMRtestStrongEquimodularity(CMR* cmr, CMR_INTMAT* matrix, bool* pisStr
 
 
 CMR_EXPORT
-CMR_ERROR CMRtestUnimodularity(CMR* cmr, CMR_INTMAT* matrix, bool* pisUnimodular, CMR_EQUIMODULAR_PARAMETERS* params,
-  CMR_EQUIMODULAR_STATISTICS* stats, double timeLimit)
+CMR_ERROR CMRunimodularTest(CMR* cmr, CMR_INTMAT* matrix, bool* pisUnimodular, CMR_EQUIMODULAR_PARAMS* params,
+  CMR_EQUIMODULAR_STATS* stats, double timeLimit)
 {
   assert(cmr);
   assert(matrix);
@@ -284,14 +284,14 @@ CMR_ERROR CMRtestUnimodularity(CMR* cmr, CMR_INTMAT* matrix, bool* pisUnimodular
   CMRconsistencyAssert( CMRintmatConsistency(matrix) );
 
   int64_t gcdDet = 1;
-  CMR_CALL( CMRtestEquimodularity(cmr, matrix, pisUnimodular, &gcdDet, params, stats, timeLimit) );
+  CMR_CALL( CMRequimodularTest(cmr, matrix, pisUnimodular, &gcdDet, params, stats, timeLimit) );
 
   return CMR_OKAY;
 }
 
 CMR_EXPORT
-CMR_ERROR CMRtestStrongUnimodularity(CMR* cmr, CMR_INTMAT* matrix, bool* pisStronglyUnimodular,
-  CMR_EQUIMODULAR_PARAMETERS* params, CMR_EQUIMODULAR_STATISTICS* stats, double timeLimit)
+CMR_ERROR CMRunimodularTestStrong(CMR* cmr, CMR_INTMAT* matrix, bool* pisStronglyUnimodular,
+  CMR_EQUIMODULAR_PARAMS* params, CMR_EQUIMODULAR_STATS* stats, double timeLimit)
 {
   assert(cmr);
   assert(matrix);
@@ -301,7 +301,7 @@ CMR_ERROR CMRtestStrongUnimodularity(CMR* cmr, CMR_INTMAT* matrix, bool* pisStro
   CMRconsistencyAssert( CMRintmatConsistency(matrix) );
 
   int64_t gcdDet = 1;
-  CMR_CALL( CMRtestStrongEquimodularity(cmr, matrix, pisStronglyUnimodular, &gcdDet, params, stats, timeLimit) );
+  CMR_CALL( CMRequimodularTestStrong(cmr, matrix, pisStronglyUnimodular, &gcdDet, params, stats, timeLimit) );
 
   return CMR_OKAY;
 }
