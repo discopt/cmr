@@ -6,10 +6,10 @@ The matrix \f$ M \f$ is called **equimodular** *with determinant gcd* \f$ k \in 
   - for some column basis \f$ B \subseteq \{1,2,\dotsc,n\} \f$ of \f$ M \f$, the greatest common divisor of the determinants of all \f$r \f$-by-\f$ r \f$ submatrices of \f$ M_{\star,B} \f$ is equal to \f$ k \f$.
   - The matrix \f$ X \f$ such that \f$ M = M_{\star,B} X \f$ is [totally unimodular](\ref tu).
 
-In case \f$ M \f$ has full row-rank, the first property requires that the determinant of any basis matrix shall be \f$ k \f$, while the second property requires that \f$ M_{\star,B}^{-1} M \f$ is [totally unimodular](\ref tu).
-Otherwise, \f$ M_{\star,B} \f$ is singular, and hence the property is more technical.
+In case \f$ M \f$ has full row-rank, the first property requires that the determinant of any basis matrix shall be \f$ \pm k \f$, while the second property requires that \f$ M_{\star,B}^{-1} M \f$ is [totally unimodular](\ref tu).
+Otherwise, \f$ M_{\star,B} \f$ is not square, and hence the property is more technical.
 
-\note equimodularity is independent of the choice of the column basis \f$ B \f$.
+\note Equimodularity is independent of the choice of the column basis \f$ B \f$.
 
 Additionally, \f$ M \f$ is called **strongly equimodular** if \f$ M \f$ and \f$ M^{\textsf{T}} \f$ are both equimodular, which implies that they are equimodular for the same gcd determinants.
 The special cases with \f$ k = 1 \f$ are called **unimodular** and **strongly unimodular**, respectively.
@@ -34,7 +34,7 @@ If FILE is `-`, then the input will be read from stdin.
 The functionality is defined in \ref equimodular.h.
 The main functions are:
 
-  - CMRtestEquimodularity() tests a matrix for being equimodular.
-  - CMRtestStrongEquimodularity() tests a matrix for being strongly equimodular.
-  - CMRtestUnimodularity() tests a matrix for being unimodular.
-  - CMRtestStrongUnimodularity() tests a matrix for being strongly unimodular.
+  - CMRequimodularTest() tests a matrix for being equimodular.
+  - CMRequimodularTestStrong() tests a matrix for being strongly equimodular.
+  - CMRunimodularTest() tests a matrix for being unimodular.
+  - CMRunimodularTestStrong() tests a matrix for being strongly unimodular.

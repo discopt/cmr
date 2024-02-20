@@ -20,7 +20,7 @@ extern "C" {
 typedef struct
 {
   CMR_TU_PARAMS tu; /**< \brief Parameters for TU test. */
-} CMR_EQUIMODULAR_PARAMETERS;
+} CMR_EQUIMODULAR_PARAMS;
 
 /**
  * \brief Initializes the default parameters for recognition of [equimodular](\ref equimodular) matrices.
@@ -29,8 +29,8 @@ typedef struct
  */
 
 CMR_EXPORT
-CMR_ERROR CMRparamsEquimodularityInit(
-  CMR_EQUIMODULAR_PARAMETERS* params  /**< Pointer to parameters. */
+CMR_ERROR CMRequimodularParamsInit(
+    CMR_EQUIMODULAR_PARAMS* params  /**< Pointer to parameters. */
 );
 
 /**
@@ -43,15 +43,15 @@ typedef struct
   double totalTime;     /**< Total time of all invocations. */
   double linalgTime;    /**< Time spent on linear algebra. */
   CMR_TU_STATS tu;      /**< Total unimodularity test. */
-} CMR_EQUIMODULAR_STATISTICS;
+} CMR_EQUIMODULAR_STATS;
 
 /**
  * \brief Initializes all statistics for recognition algorithm for [equimodular](\ref equimodular) matrices.
  */
 
 CMR_EXPORT
-CMR_ERROR CMRstatsEquimodularityInit(
-  CMR_EQUIMODULAR_STATISTICS* stats /**< Pointer to statistics. */
+CMR_ERROR CMRequimodularStatsInit(
+    CMR_EQUIMODULAR_STATS* stats /**< Pointer to statistics. */
 );
 
 /**
@@ -59,9 +59,9 @@ CMR_ERROR CMRstatsEquimodularityInit(
  */
 
 CMR_EXPORT
-CMR_ERROR CMRstatsEquimodularityPrint(
+CMR_ERROR CMRequimodularStatsPrint(
   FILE* stream,                       /**< File stream to print to. */
-  CMR_EQUIMODULAR_STATISTICS* stats,  /**< Pointer to statistics. */
+    CMR_EQUIMODULAR_STATS* stats,  /**< Pointer to statistics. */
   const char* prefix                  /**< Prefix string to prepend to each printed line (may be \c NULL). */
 );
 
@@ -75,14 +75,14 @@ CMR_ERROR CMRstatsEquimodularityPrint(
  */
 
 CMR_EXPORT
-CMR_ERROR CMRtestEquimodularity(
-  CMR* cmr,                           /**< \ref CMR environment */
-  CMR_INTMAT* matrix,                 /**< Matrix \f$ M \f$. */
-  bool* pisEquimodular,               /**< Pointer for storing whether \f$ M \f$ is equimodular. */
-  int64_t* pgcdDet,                   /**< Pointer for supplying/storing the determinant gcd (may be \c NULL). */
-  CMR_EQUIMODULAR_PARAMETERS* params, /**< Parameters for the computation (may be \c NULL for defaults). */
-  CMR_EQUIMODULAR_STATISTICS* stats,  /**< Statistics for the computation (may be \c NULL). */
-  double timeLimit                    /**< Time limit to impose. */
+CMR_ERROR CMRequimodularTest(
+  CMR* cmr,                       /**< \ref CMR environment */
+  CMR_INTMAT* matrix,             /**< Matrix \f$ M \f$. */
+  bool* pisEquimodular,           /**< Pointer for storing whether \f$ M \f$ is equimodular. */
+  int64_t* pgcdDet,               /**< Pointer for supplying/storing the determinant gcd (may be \c NULL). */
+  CMR_EQUIMODULAR_PARAMS* params, /**< Parameters for the computation (may be \c NULL for defaults). */
+  CMR_EQUIMODULAR_STATS* stats,   /**< Statistics for the computation (may be \c NULL). */
+  double timeLimit                /**< Time limit to impose. */
 );
 
 /**
@@ -96,14 +96,14 @@ CMR_ERROR CMRtestEquimodularity(
  */
 
 CMR_EXPORT
-CMR_ERROR CMRtestStrongEquimodularity(
-  CMR* cmr,                           /**< \ref CMR environment */
-  CMR_INTMAT* matrix,                 /**< Matrix \f$ M \f$. */
-  bool* pisStronglyEquimodular,       /**< Pointer for storing whether \f$ M \f$ is strongly equimodular. */
-  int64_t* pgcdDet,                   /**< Pointer for supplying/storing the determinant gcd (may be \c NULL). */
-  CMR_EQUIMODULAR_PARAMETERS* params, /**< Parameters for the computation (may be \c NULL for defaults). */
-  CMR_EQUIMODULAR_STATISTICS* stats,  /**< Statistics for the computation (may be \c NULL). */
-  double timeLimit                    /**< Time limit to impose. */
+CMR_ERROR CMRequimodularTestStrong(
+  CMR* cmr,                       /**< \ref CMR environment */
+  CMR_INTMAT* matrix,             /**< Matrix \f$ M \f$. */
+  bool* pisStronglyEquimodular,   /**< Pointer for storing whether \f$ M \f$ is strongly equimodular. */
+  int64_t* pgcdDet,               /**< Pointer for supplying/storing the determinant gcd (may be \c NULL). */
+  CMR_EQUIMODULAR_PARAMS* params, /**< Parameters for the computation (may be \c NULL for defaults). */
+  CMR_EQUIMODULAR_STATS* stats,   /**< Statistics for the computation (may be \c NULL). */
+  double timeLimit                /**< Time limit to impose. */
 );
 
 /**
@@ -113,13 +113,13 @@ CMR_ERROR CMRtestStrongEquimodularity(
  */
 
 CMR_EXPORT
-CMR_ERROR CMRtestUnimodularity(
-  CMR* cmr,                           /**< \ref CMR environment */
-  CMR_INTMAT* matrix,                 /**< Matrix \f$ M \f$. */
-  bool* pisUnimodular,                /**< Pointer for storing whether \f$ M \f$ is unimodular. */
-  CMR_EQUIMODULAR_PARAMETERS* params, /**< Parameters for the computation (may be \c NULL for defaults). */
-  CMR_EQUIMODULAR_STATISTICS* stats,  /**< Statistics for the computation (may be \c NULL). */
-  double timeLimit                    /**< Time limit to impose. */
+CMR_ERROR CMRunimodularTest(
+  CMR* cmr,                       /**< \ref CMR environment */
+  CMR_INTMAT* matrix,             /**< Matrix \f$ M \f$. */
+  bool* pisUnimodular,            /**< Pointer for storing whether \f$ M \f$ is unimodular. */
+  CMR_EQUIMODULAR_PARAMS* params, /**< Parameters for the computation (may be \c NULL for defaults). */
+  CMR_EQUIMODULAR_STATS* stats,   /**< Statistics for the computation (may be \c NULL). */
+  double timeLimit                /**< Time limit to impose. */
 );
 
 /**
@@ -129,13 +129,13 @@ CMR_ERROR CMRtestUnimodularity(
  */
 
 CMR_EXPORT
-CMR_ERROR CMRtestStrongUnimodularity(
-  CMR* cmr,                           /**< \ref CMR environment */
-  CMR_INTMAT* matrix,                 /**< Matrix \f$ M \f$. */
-  bool* pisStronglyUnimodular,        /**< Pointer for storing whether \f$ M \f$ is strongly unimodular. */
-  CMR_EQUIMODULAR_PARAMETERS* params, /**< Parameters for the computation (may be \c NULL for defaults). */
-  CMR_EQUIMODULAR_STATISTICS* stats,  /**< Statistics for the computation (may be \c NULL). */
-  double timeLimit                    /**< Time limit to impose. */
+CMR_ERROR CMRunimodularTestStrong(
+  CMR* cmr,                       /**< \ref CMR environment */
+  CMR_INTMAT* matrix,             /**< Matrix \f$ M \f$. */
+  bool* pisStronglyUnimodular,    /**< Pointer for storing whether \f$ M \f$ is strongly unimodular. */
+  CMR_EQUIMODULAR_PARAMS* params, /**< Parameters for the computation (may be \c NULL for defaults). */
+  CMR_EQUIMODULAR_STATS* stats,   /**< Statistics for the computation (may be \c NULL). */
+  double timeLimit                /**< Time limit to impose. */
 );
 
 #ifdef __cplusplus

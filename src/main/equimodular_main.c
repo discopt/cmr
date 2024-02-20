@@ -67,24 +67,24 @@ CMR_ERROR testEquimodularity(
   bool checkTranspose = transpose || strong;
   time_t startClock;
 
-  CMR_EQUIMODULAR_PARAMETERS params;
-  CMR_CALL( CMRparamsEquimodularityInit(&params) );
-  CMR_EQUIMODULAR_STATISTICS stats;
-  CMR_CALL( CMRstatsEquimodularityInit(&stats));
+  CMR_EQUIMODULAR_PARAMS params;
+  CMR_CALL( CMRequimodularParamsInit(&params) );
+  CMR_EQUIMODULAR_STATS stats;
+  CMR_CALL( CMRequimodularStatsInit(&stats));
 
   if (checkOriginal)
   {
     startClock = clock();
     if (unimodular)
     {
-      CMR_CALL( CMRtestUnimodularity(cmr, matrix, &propertyOriginal, &params, &stats, timeLimit) );
+      CMR_CALL( CMRunimodularTest(cmr, matrix, &propertyOriginal, &params, &stats, timeLimit) );
       fprintf(stderr, "Determined in %f seconds that it is %sunimodular.\n",
         (clock() - startClock) * 1.0 / CLOCKS_PER_SEC, propertyOriginal ? "" : "NOT ");
     }
     else
     {
       kOriginal = 0;
-      CMR_CALL( CMRtestEquimodularity(cmr, matrix, &propertyOriginal, &kOriginal, &params, &stats, timeLimit) );
+      CMR_CALL( CMRequimodularTest(cmr, matrix, &propertyOriginal, &kOriginal, &params, &stats, timeLimit) );
       fprintf(stderr, "Determined in %f seconds that it is ", (clock() - startClock) * 1.0 / CLOCKS_PER_SEC);
       if (propertyOriginal)
         fprintf(stderr, "equimodular with determinant gcd %" PRId64 ".\n", kOriginal);
@@ -101,14 +101,14 @@ CMR_ERROR testEquimodularity(
 
     if (unimodular)
     {
-      CMR_CALL( CMRtestUnimodularity(cmr, transposed, &propertyTranspose, &params, &stats, timeLimit - stats.totalTime) );
+      CMR_CALL( CMRunimodularTest(cmr, transposed, &propertyTranspose, &params, &stats, timeLimit - stats.totalTime) );
       fprintf(stderr, "Determined in %f seconds that its transpose is %sunimodular.\n",
         (clock() - startClock) * 1.0 / CLOCKS_PER_SEC, propertyTranspose ? "" : "NOT ");
     }
     else
     {
       kTranspose = 0;
-      CMR_CALL( CMRtestEquimodularity(cmr, transposed, &propertyOriginal, &kTranspose, &params, &stats,
+      CMR_CALL( CMRequimodularTest(cmr, transposed, &propertyOriginal, &kTranspose, &params, &stats,
         timeLimit - stats.totalTime) );
       fprintf(stderr, "Determined in %f seconds that its transpose is ", (clock() - startClock) * 1.0 / CLOCKS_PER_SEC);
       if (propertyOriginal)
@@ -139,7 +139,7 @@ CMR_ERROR testEquimodularity(
   }
 
   if (printStats)
-    CMR_CALL( CMRstatsEquimodularityPrint(stderr, &stats, "") );
+    CMR_CALL( CMRequimodularStatsPrint(stderr, &stats, "") );
 
   /* Cleanup. */
 
