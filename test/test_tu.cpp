@@ -1130,7 +1130,7 @@ TEST(TU, Fano)
 
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
-
+  
 TEST(TU, FanoDual)
 {
   CMR* cmr = NULL;
@@ -1155,6 +1155,87 @@ TEST(TU, FanoDual)
     ASSERT_EQ( CMRmatroiddecType(dec), CMR_MATROID_DEC_TYPE_IRREGULAR );
 
     ASSERT_CMR_CALL( CMRmatroiddecFree(cmr, &dec) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  }
+
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
+}
+  
+TEST(TotallyUnimodular, SubmatrixAlgorithm)
+{
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+
+  {
+    CMR_CHRMAT* K_3_3 = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &K_3_3, "5 4 "
+      " 1 1 0  0 "
+      " 1 1 1  0 "
+      " 1 0 0 -1 "
+      " 0 1 1  1 "
+      " 0 0 1  1 "
+    ) );
+
+    CMR_CHRMAT* K_3_3_dual = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &K_3_3_dual, "4 5 "
+      " 1 1  1 0 0 "
+      " 1 1  0 1 0 "
+      " 0 1  0 1 1 "
+      " 0 0 -1 1 1 "
+    ) );
+
+    CMR_CHRMAT* twoSum = NULL;
+    ASSERT_CMR_CALL( CMRtwoSum(cmr, K_3_3, K_3_3_dual, CMRrowToElement(1), CMRcolumnToElement(1), 3, &twoSum) );
+
+    size_t rowPermutations[] = { 4, 6, 5, 7, 0, 1, 2, 3 };
+    CMR_CHRMAT* matrix = NULL;
+    ASSERT_CMR_CALL( CMRchrmatPermute(cmr, twoSum, rowPermutations, NULL, &matrix) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &twoSum) );
+
+    CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
+
+    bool isTU;
+    CMR_MATROID_DEC* dec = NULL;
+    CMR_TU_PARAMS params;
+    ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
+    params.algorithm = CMR_TU_ALGORITHM_SUBMATRIX;
+    ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
+    ASSERT_EQ( dec, (CMR_MATROID_DEC*) NULL );
+
+    ASSERT_TRUE( isTU );
+
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &K_3_3) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &K_3_3_dual) );
+  }
+
+  {
+    CMR_CHRMAT* matrix = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "14 14 "
+      "1 1 1 0 1 0 1 0  1 1 1 1 1 1 "
+      "1 0 1 0 1 0 1 0  1 1 1 1 1 0 "
+      "0 1 1 0 0 0 0 0  0 0 0 0 0 0 "
+      "0 1 1 1 0 0 0 0  0 0 0 0 0 0 "
+      "0 1 1 1 1 0 0 0  0 0 0 0 0 0 "
+      "0 1 1 1 1 1 0 0  0 0 0 0 0 0 "
+      "0 1 1 1 1 1 1 0  0 0 0 0 0 0 "
+      "0 1 1 1 1 1 1 1  0 0 0 0 0 0 "
+      "0 1 1 1 1 1 1 1  1 0 0 0 0 0 "
+      "0 0 0 0 0 0 0 0  1 1 0 0 0 0 "
+      "0 0 0 0 0 0 0 0  0 1 1 0 0 0 "
+      "0 0 0 0 0 0 0 0  0 0 1 1 0 0 "
+      "0 0 0 0 0 0 0 0  0 0 0 1 1 0 "
+      "0 0 0 0 0 0 0 0  0 0 0 0 1 1 "
+    ) );
+
+    CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
+
+    bool isTU;
+    CMR_TU_PARAMS params;
+    ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
+    params.algorithm = CMR_TU_ALGORITHM_SUBMATRIX;
+    ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, NULL, NULL, &params, NULL, DBL_MAX) );
+    ASSERT_FALSE( isTU );
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
   }
 
