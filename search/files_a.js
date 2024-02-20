@@ -1,8 +1,11 @@
 var searchData=
 [
-  ['linear_5falgebra_2ec_1171',['linear_algebra.c',['../linear__algebra_8c.html',1,'']]],
-  ['linear_5falgebra_2eh_1172',['linear_algebra.h',['../linear__algebra_8h.html',1,'']]],
-  ['linear_5falgebra_5finternal_2eh_1173',['linear_algebra_internal.h',['../linear__algebra__internal_8h.html',1,'']]],
-  ['listmatrix_2ec_1174',['listmatrix.c',['../listmatrix_8c.html',1,'']]],
-  ['listmatrix_2eh_1175',['listmatrix.h',['../listmatrix_8h.html',1,'']]]
+  ['matrix_2ec_1137',['matrix.c',['../matrix_8c.html',1,'']]],
+  ['matrix_2eh_1138',['matrix.h',['../matrix_8h.html',1,'']]],
+  ['matrix_5finternal_2eh_1139',['matrix_internal.h',['../matrix__internal_8h.html',1,'']]],
+  ['matroid_2ec_1140',['matroid.c',['../matroid_8c.html',1,'']]],
+  ['matroid_2eh_1141',['matroid.h',['../matroid_8h.html',1,'']]],
+  ['matroid_5finternal_2eh_1142',['matroid_internal.h',['../matroid__internal_8h.html',1,'']]],
+  ['matroids_2emd_1143',['matroids.md',['../matroids_8md.html',1,'']]],
+  ['max_2dflow_2dmin_2dcut_2emd_1144',['max-flow-min-cut.md',['../max-flow-min-cut_8md.html',1,'']]]
 ];

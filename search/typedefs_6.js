@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['listmat64nonzero_1997',['ListMat64Nonzero',['../listmatrix_8h.html#a2903fcdce3490983828dc10665718deb',1,'listmatrix.h']]],
-  ['listmat8nonzero_1998',['ListMat8Nonzero',['../listmatrix_8h.html#a039227a86e632739af10b458ed270ffc',1,'listmatrix.h']]]
+  ['pathedge_1932',['PathEdge',['../graphic_8c.html#a1dee28b4cf2848304658028991b0c743',1,'graphic.c']]]
 ];

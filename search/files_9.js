@@ -1,4 +1,8 @@
 var searchData=
 [
-  ['k_5fary_2emd_1170',['k_ary.md',['../k__ary_8md.html',1,'']]]
+  ['linear_5falgebra_2ec_1132',['linear_algebra.c',['../linear__algebra_8c.html',1,'']]],
+  ['linear_5falgebra_2eh_1133',['linear_algebra.h',['../linear__algebra_8h.html',1,'']]],
+  ['linear_5falgebra_5finternal_2eh_1134',['linear_algebra_internal.h',['../linear__algebra__internal_8h.html',1,'']]],
+  ['listmatrix_2ec_1135',['listmatrix.c',['../listmatrix_8c.html',1,'']]],
+  ['listmatrix_2eh_1136',['listmatrix.h',['../listmatrix_8h.html',1,'']]]
 ];

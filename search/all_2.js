@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['above_19',['above',['../struct__ListMat8Nonzero.html#a2b58eaf4ddb04c1efc67448dee1dec50',1,'_ListMat8Nonzero::above()'],['../struct__ListMat64Nonzero.html#a013e99dba3c46a8d9d14bc8a113accb1',1,'_ListMat64Nonzero::above()']]],
+  ['above_19',['above',['../struct__ListMat64Nonzero.html#a013e99dba3c46a8d9d14bc8a113accb1',1,'_ListMat64Nonzero::above()'],['../struct__ListMat8Nonzero.html#a2b58eaf4ddb04c1efc67448dee1dec50',1,'_ListMat8Nonzero::above()']]],
   ['addcolumnapply_20',['addColumnApply',['../graphic_8c.html#a8b16b64c3ec0974080975216458a0e21',1,'graphic.c']]],
   ['addcolumncheck_21',['addColumnCheck',['../graphic_8c.html#a607e9ff8df548a99cb891a61eba62365',1,'graphic.c']]],
   ['addcolumnprocesscomponent_22',['addColumnProcessComponent',['../graphic_8c.html#a7aa313b2bc5619f13e25a7e24d1ca79f',1,'graphic.c']]],
@@ -17,11 +17,10 @@ var searchData=
   ['addtograph2rows1column_33',['addToGraph2Rows1Column',['../regularity__graphic_8c.html#adf675379a7a963378512fdeb80eee624',1,'regularity_graphic.c']]],
   ['adjacencystart_34',['adjacencyStart',['../structGraphNode.html#a881861a93c3ac824fc14ce8c97bc0ee0',1,'GraphNode']]],
   ['algorithm_35',['algorithm',['../structCMR__TU__PARAMS.html#abc986c127db9b7f737c1abe74ba7db95',1,'CMR_TU_PARAMS']]],
-  ['algorithm_2ehpp_36',['algorithm.hpp',['../algorithm_8hpp.html',1,'']]],
-  ['anchor_37',['anchor',['../structListMat64.html#ac1a7cf93962809267261cd27533755d5',1,'ListMat64::anchor()'],['../structListMat8.html#a1cc3415456bdb3e8e979460d0b23cc05',1,'ListMat8::anchor()']]],
-  ['applycount_38',['applyCount',['../structCMR__GRAPHIC__STATISTICS.html#aca2c64f663d55083755dcf85ee436bb7',1,'CMR_GRAPHIC_STATISTICS']]],
-  ['applypivots_39',['applyPivots',['../regularity__nested__minor__sequence_8c.html#a316ec31203a0cd5c415a04ca724fd15f',1,'regularity_nested_minor_sequence.c']]],
-  ['applytime_40',['applyTime',['../structCMR__GRAPHIC__STATISTICS.html#a9986b3134321440d810ce9940c9942e6',1,'CMR_GRAPHIC_STATISTICS']]],
-  ['arcs_41',['arcs',['../structCMR__GRAPH.html#a11cddc52c6b985460139577b6a68de8d',1,'CMR_GRAPH']]],
-  ['assignrow_42',['assignRow',['../regularity__partition_8c.html#ad077a8a3d9ad84ce79f35cccca8d3c08',1,'regularity_partition.c']]]
+  ['anchor_36',['anchor',['../structListMat8.html#a1cc3415456bdb3e8e979460d0b23cc05',1,'ListMat8::anchor()'],['../structListMat64.html#ac1a7cf93962809267261cd27533755d5',1,'ListMat64::anchor()']]],
+  ['applycount_37',['applyCount',['../structCMR__GRAPHIC__STATISTICS.html#aca2c64f663d55083755dcf85ee436bb7',1,'CMR_GRAPHIC_STATISTICS']]],
+  ['applypivots_38',['applyPivots',['../regularity__nested__minor__sequence_8c.html#a316ec31203a0cd5c415a04ca724fd15f',1,'regularity_nested_minor_sequence.c']]],
+  ['applytime_39',['applyTime',['../structCMR__GRAPHIC__STATISTICS.html#a9986b3134321440d810ce9940c9942e6',1,'CMR_GRAPHIC_STATISTICS']]],
+  ['arcs_40',['arcs',['../structCMR__GRAPH.html#a11cddc52c6b985460139577b6a68de8d',1,'CMR_GRAPH']]],
+  ['assignrow_41',['assignRow',['../regularity__partition_8c.html#ad077a8a3d9ad84ce79f35cccca8d3c08',1,'regularity_partition.c']]]
 ];

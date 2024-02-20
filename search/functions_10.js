@@ -1,10 +1,10 @@
 var searchData=
 [
-  ['searchshortestpath_1700',['searchShortestPath',['../regularity__nested__minor__sequence_8c.html#af5172e2078cd12ad9f0cf00fc37ee06e',1,'regularity_nested_minor_sequence.c']]],
-  ['sequencegraphicness_1701',['sequenceGraphicness',['../regularity__graphic_8c.html#adf25bb08868fed39cde56af67ef4ad93',1,'regularity_graphic.c']]],
-  ['setedgenodes_1702',['setEdgeNodes',['../graphic_8c.html#a49171e2a93c0d7b37285405acbd59959',1,'graphic.c']]],
-  ['signcamion_1703',['signCamion',['../camion_8c.html#a7db2423fec567db74b168939f1653662',1,'camion.c']]],
-  ['size_1704',['size',['../structtu_1_1bipartite__graph__dimensions.html#a36451066634e17fc581e9525577c5c22',1,'tu::bipartite_graph_dimensions']]],
-  ['splitparallel_1705',['splitParallel',['../graphic_8c.html#ac2dc2d0751e34686f5343d8b2df9a527',1,'graphic.c']]],
-  ['splitseries_1706',['splitSeries',['../graphic_8c.html#aa2c6b8af5f6528b0177c7a603e22b6f2',1,'graphic.c']]]
+  ['unlinknonzero_1648',['unlinkNonzero',['../series__parallel_8c.html#acdbefe65768bf543b1d788cf45877532',1,'series_parallel.c']]],
+  ['updatehashtable_1649',['updateHashtable',['../regularity__nested__minor__sequence_8c.html#a0e6fd0c69b9fc76506813dbde5369b4b',1,'regularity_nested_minor_sequence.c']]],
+  ['updatehashvalues_1650',['updateHashValues',['../regularity__graphic_8c.html#a77757a18acfcffde64c55965290752a9',1,'regularity_graphic.c']]],
+  ['updatematrix_1651',['updateMatrix',['../matroid_8c.html#abc5505e1952d8e993d8b1e169152a517',1,'matroid.c']]],
+  ['updaterepresentative_1652',['updateRepresentative',['../regularity__nested__minor__sequence_8c.html#af5cf4ac4434ab20d597d65a1d3b0e679',1,'regularity_nested_minor_sequence.c']]],
+  ['updaterowscolumnsfromparent_1653',['updateRowsColumnsFromParent',['../matroid_8c.html#afb79e9775c9bea96085341606c466f8a',1,'matroid.c']]],
+  ['updaterowscolumnstoparent_1654',['updateRowsColumnsToParent',['../matroid_8c.html#a6099e78521412cc8c404ca0d07a8c793',1,'matroid.c']]]
 ];

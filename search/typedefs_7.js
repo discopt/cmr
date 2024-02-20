@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['pathedge_1999',['PathEdge',['../graphic_8c.html#a1dee28b4cf2848304658028991b0c743',1,'graphic.c']]]
+  ['reducedcomponent_1933',['ReducedComponent',['../graphic_8c.html#a4ce9d1ae7896d5080fb4766f0fe9ca35',1,'graphic.c']]],
+  ['reducedmember_1934',['ReducedMember',['../graphic_8c.html#a2c826277f4006325880fb996ebc1813f',1,'graphic.c']]],
+  ['rowinfo64_1935',['RowInfo64',['../linear__algebra_8c.html#aabd8627115cec8a58eca7da51bebacff',1,'linear_algebra.c']]]
 ];

@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['memberinfo_1124',['MemberInfo',['../structMemberInfo.html',1,'']]]
+  ['networkedgedata_1090',['NetworkEdgeData',['../structNetworkEdgeData.html',1,'']]],
+  ['networknodedata_1091',['NetworkNodeData',['../structNetworkNodeData.html',1,'']]]
 ];
