@@ -1,8 +1,13 @@
 var searchData=
 [
-  ['data_2519',['data',['../structDenseBinaryMatrix.html#a8babd0f6869eb1a5b2603b87667bf36d',1,'DenseBinaryMatrix::data()'],['../structCMR__INTHEAP.html#a4c6ba202af8784c9ea3e88ea6113b9e5',1,'CMR_INTHEAP::data()']]],
-  ['degree_2520',['degree',['../structGraphNode.html#ad663f584fa34a26da98af881b8526702',1,'GraphNode']]],
-  ['depth_2521',['depth',['../struct__ReducedMember.html#aa158b882a975e8e3fac44940bb331ce0',1,'_ReducedMember']]],
-  ['directgraphicness_2522',['directGraphicness',['../structCMR__REGULAR__PARAMETERS.html#a6ed025d3b5b54ca3197c889e0947f43e',1,'CMR_REGULAR_PARAMETERS']]],
-  ['distance_2523',['distance',['../structtu_1_1bipartite__graph__bfs__node.html#a770bc26a347b84eaf6be2d420cc23047',1,'tu::bipartite_graph_bfs_node::distance()'],['../structNetworkNodeData.html#aafab2f1a371527374193931c8b62b862',1,'NetworkNodeData::distance()'],['../structElementData.html#acb52ee2563ce5fb6cc3a8978029e8648',1,'ElementData::distance()']]]
+  ['data_2639',['data',['../structDenseBinaryMatrix.html#a8babd0f6869eb1a5b2603b87667bf36d',1,'DenseBinaryMatrix::data()'],['../structCMR__INTHEAP.html#a4c6ba202af8784c9ea3e88ea6113b9e5',1,'CMR_INTHEAP::data()']]],
+  ['dec_2640',['dec',['../structDecompositionTask.html#a898cd1bd4e9ca19b07e231f02c6f7da4',1,'DecompositionTask']]],
+  ['degree_2641',['degree',['../structGraphNode.html#ad663f584fa34a26da98af881b8526702',1,'GraphNode']]],
+  ['densecolumnsoriginal_2642',['denseColumnsOriginal',['../struct__CMR__MATROID__DEC.html#a73cf09cae472139c6d6074025298a296',1,'_CMR_MATROID_DEC']]],
+  ['densematrix_2643',['denseMatrix',['../struct__CMR__MATROID__DEC.html#a6a2b9a7968fad23ac02fa54721ce5477',1,'_CMR_MATROID_DEC']]],
+  ['denserowsoriginal_2644',['denseRowsOriginal',['../struct__CMR__MATROID__DEC.html#a2190071e552ba78aab3e093a956f63b3',1,'_CMR_MATROID_DEC']]],
+  ['depth_2645',['depth',['../struct__ReducedMember.html#aa158b882a975e8e3fac44940bb331ce0',1,'_ReducedMember']]],
+  ['directcamion_2646',['directCamion',['../structCMR__TU__PARAMS.html#ab2f41107765fd9bd08bf380c3d2eaebe',1,'CMR_TU_PARAMS']]],
+  ['directgraphicness_2647',['directGraphicness',['../structCMR__REGULAR__PARAMS.html#ad370fd3187bb506c766ddccd392b2003',1,'CMR_REGULAR_PARAMS']]],
+  ['distance_2648',['distance',['../structtu_1_1bipartite__graph__bfs__node.html#a770bc26a347b84eaf6be2d420cc23047',1,'tu::bipartite_graph_bfs_node::distance()'],['../structOrientationSearchNodeData.html#aa4a54817e405c8357d4220b247c81719',1,'OrientationSearchNodeData::distance()'],['../structNetworkNodeData.html#aafab2f1a371527374193931c8b62b862',1,'NetworkNodeData::distance()'],['../structElementData.html#acb52ee2563ce5fb6cc3a8978029e8648',1,'ElementData::distance()']]]
 ];

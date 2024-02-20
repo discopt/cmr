@@ -103,12 +103,12 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a82838a31ecc91a039bc974f6e7d384ef"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="series__parallel_8h.html#a82838a31ecc91a039bc974f6e7d384ef">CMRstatsSeriesParallelInit</a> (<a class="el" href="structCMR__SP__STATISTICS.html">CMR_SP_STATISTICS</a> *stats)</td></tr>
-<tr class="memdesc:a82838a31ecc91a039bc974f6e7d384ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes all statistics for series-parallel computations.  <a href="series__parallel_8h.html#a82838a31ecc91a039bc974f6e7d384ef">More...</a><br /></td></tr>
-<tr class="separator:a82838a31ecc91a039bc974f6e7d384ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a24e8c323c84ed42e797467e6c729f252"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="series__parallel_8h.html#a24e8c323c84ed42e797467e6c729f252">CMRstatsSeriesParallelPrint</a> (FILE *stream, <a class="el" href="structCMR__SP__STATISTICS.html">CMR_SP_STATISTICS</a> *stats, const char *prefix)</td></tr>
-<tr class="memdesc:a24e8c323c84ed42e797467e6c729f252"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints statistics for series-parallel computations.  <a href="series__parallel_8h.html#a24e8c323c84ed42e797467e6c729f252">More...</a><br /></td></tr>
-<tr class="separator:a24e8c323c84ed42e797467e6c729f252"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b441b8c020a3e62f521abe04a14de70"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="series__parallel_8h.html#a0b441b8c020a3e62f521abe04a14de70">CMRspStatsInit</a> (<a class="el" href="structCMR__SP__STATISTICS.html">CMR_SP_STATISTICS</a> *stats)</td></tr>
+<tr class="memdesc:a0b441b8c020a3e62f521abe04a14de70"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes all statistics for series-parallel computations.  <a href="series__parallel_8h.html#a0b441b8c020a3e62f521abe04a14de70">More...</a><br /></td></tr>
+<tr class="separator:a0b441b8c020a3e62f521abe04a14de70"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa1d101a7c4e095d1053bc889f2ff82b9"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="series__parallel_8h.html#aa1d101a7c4e095d1053bc889f2ff82b9">CMRspStatsPrint</a> (FILE *stream, <a class="el" href="structCMR__SP__STATISTICS.html">CMR_SP_STATISTICS</a> *stats, const char *prefix)</td></tr>
+<tr class="memdesc:aa1d101a7c4e095d1053bc889f2ff82b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints statistics for series-parallel computations.  <a href="series__parallel_8h.html#aa1d101a7c4e095d1053bc889f2ff82b9">More...</a><br /></td></tr>
+<tr class="separator:aa1d101a7c4e095d1053bc889f2ff82b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a63d419875fe1a52043ac7d2e15e23601"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="series__parallel_8h.html#a63d419875fe1a52043ac7d2e15e23601">CMRspReductionString</a> (<a class="el" href="structCMR__SP__REDUCTION.html">CMR_SP_REDUCTION</a> reduction, char *buffer)</td></tr>
 <tr class="separator:a63d419875fe1a52043ac7d2e15e23601"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7475793b422c236ca0850005a3128f2e"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="series__parallel_8h.html#a7475793b422c236ca0850005a3128f2e">CMRspIsRow</a> (<a class="el" href="structCMR__SP__REDUCTION.html">CMR_SP_REDUCTION</a> reduction)</td></tr>
@@ -228,9 +228,9 @@ Functions</h2></td></tr>
 
 <p>Finds all series-parallel reductions for the binary <code>matrix</code> \( A \). </p>
 <p>Let \( A \in \{0,1\}^{m \times n} \) with \( k \) nonzeros.</p>
-<p>If <code>premainingSubmatrix</code> is not <code>NULL</code>, then the SP-reduced submatrix is stored.</p>
-<p>If <code>pviolatorSubmatrix</code> is not <code>NULL</code> and <code>matrix</code> is not binary series-parallel, then a wheel-submatrix is stored (unless a 2-separation is found; see below).</p>
-<p>If <code>pseparation</code> is not <code>NULL</code> and during the search for a wheel-submatrix a 2-separation that does not correspond to an SP reduction is found then such a 2-separation is returned and the algorithm terminates without returning a wheel-submatrix.</p>
+<p>Denote by \( A&#39; \) the (maximum) SP-reduced submatrix of \( A \). If <code>premainingSubmatrix</code> is not <code>NULL</code>, then the rows and columns of \( A&#39; \) are stored.</p>
+<p>If <code>pviolatorSubmatrix</code> is not <code>NULL</code> and <code>matrix</code> is not binary series-parallel, then a wheel-submatrix is stored (unless a 2-separation is found; see below). Note that the row/column indices refer to \( A \).</p>
+<p>If <code>pseparation</code> is not <code>NULL</code> and during the search for a wheel-submatrix a 2-separation that does not correspond to an SP reduction is found then such a 2-separation is returned and the algorithm terminates without returning a wheel-submatrix. Note that <code>*pseparation</code> then contains row/column indices relative to \( A&#39; \).</p>
 <p>The running time is \( \mathcal{O} (m + n + k) \) assuming no hashtable collisions. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -333,10 +333,9 @@ Functions</h2></td></tr>
 
 <p>Finds all series-parallel reductions for the ternary <code>matrix</code> \( A \). </p>
 <p>Let \( A \in \{-1,0,+1\}^{m \times n} \) with \( k \) nonzeros.</p>
-<p>If <code>premainingSubmatrix</code> is not <code>NULL</code>, then the SP-reduced submatrix is stored.</p>
-<p>If <code>pviolatorSubmatrix</code> is not <code>NULL</code> and <code>matrix</code> is not ternary series-parallel, then a signed wheel- or \( M_2 \)-submatrix is stored (unless a 2-separation is found; see below).</p>
-<p>If <code>pseparation</code> is not <code>NULL</code> and during the search for a signed wheel-submatrix a 2-separation that does not correspond to an SP reduction is found then such a 2-separation is returned and the algorithm terminates without returning a signed wheel- or \( M_2 \)-submatrix.</p>
-<dl class="section note"><dt>Note</dt><dd><code>*pviolatorSubmatrix</code> and <code>*pseparation</code> refer to \( A \) and not to the</dd></dl>
+<p>Denote by \( A&#39; \) the (maximum) SP-reduced submatrix of \( A \). If <code>premainingSubmatrix</code> is not <code>NULL</code>, then the rows and columns of \( A&#39; \) are stored.</p>
+<p>If <code>pviolatorSubmatrix</code> is not <code>NULL</code> and <code>matrix</code> is not ternary series-parallel, then a signed wheel- or \( M_2 \)-submatrix is stored (unless a 2-separation is found; see below). Note that the row/column indices refer to \( A \).</p>
+<p>If <code>pseparation</code> is not <code>NULL</code> and during the search for a signed wheel-submatrix a 2-separation that does not correspond to an SP reduction is found then such a 2-separation is returned and the algorithm terminates without returning a signed wheel- or \( M_2 \)-submatrix. Note that <code>*pseparation</code> then contains row/column indices relative to \( A&#39; \).</p>
 <p>The running time is \( \mathcal{O} (m + n + k) \) assuming no hashtable collisions.</p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="matrix_8h.html#a3936260ba193f5e3e383aa5df3298b83" title="Returns the submatrix input as a submatrix of the reference submatrix.">CMRsubmatZoomSubmat()</a> for turning <code>*pviolatorSubmatrix</code> into a submatrix of the SP-reduced submatrix. </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -601,14 +600,14 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a82838a31ecc91a039bc974f6e7d384ef"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a82838a31ecc91a039bc974f6e7d384ef">&#9670;&nbsp;</a></span>CMRstatsSeriesParallelInit()</h2>
+<a id="a0b441b8c020a3e62f521abe04a14de70"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b441b8c020a3e62f521abe04a14de70">&#9670;&nbsp;</a></span>CMRspStatsInit()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRstatsSeriesParallelInit </td>
+          <td class="memname">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRspStatsInit </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structCMR__SP__STATISTICS.html">CMR_SP_STATISTICS</a> *&#160;</td>
           <td class="paramname"><em>stats</em></td><td>)</td>
@@ -627,14 +626,14 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a24e8c323c84ed42e797467e6c729f252"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a24e8c323c84ed42e797467e6c729f252">&#9670;&nbsp;</a></span>CMRstatsSeriesParallelPrint()</h2>
+<a id="aa1d101a7c4e095d1053bc889f2ff82b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa1d101a7c4e095d1053bc889f2ff82b9">&#9670;&nbsp;</a></span>CMRspStatsPrint()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRstatsSeriesParallelPrint </td>
+          <td class="memname">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRspStatsPrint </td>
           <td>(</td>
           <td class="paramtype">FILE *&#160;</td>
           <td class="paramname"><em>stream</em>, </td>
@@ -741,7 +740,7 @@ Functions</h2></td></tr>
 
 <p>Finds all series-parallel reductions for the binary <code>matrix</code> \( A \). </p>
 <p>Let \( A \in \{-1,0,1\}^{m \times n} \) with \( k \) nonzeros.</p>
-<p>If <code>premainingSubmatrix</code> is not <code>NULL</code>, then the SP-reduced submatrix is stored.</p>
+<p>Denote by \( A&#39; \) the (maximum) SP-reduced submatrix of \( A \). If <code>premainingSubmatrix</code> is not <code>NULL</code>, then the rows and columns of \( A&#39; \) are stored.</p>
 <p>If <code>pviolatorSubmatrix</code> is not <code>NULL</code> and <code>matrix</code> is not binary series-parallel, then a wheel-submatrix is stored.</p>
 <p>The running time is \( \mathcal{O} (m + n + k) \) assuming no hashtable collisions. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -831,7 +830,7 @@ Functions</h2></td></tr>
 
 <p>Finds all series-parallel reductions for the ternary <code>matrix</code> \( A \). </p>
 <p>Let \( A \in \{-1,0,+1\}^{m \times n} \) with \( k \) nonzeros.</p>
-<p>If <code>premainingSubmatrix</code> is not <code>NULL</code>, then the SP-reduced submatrix is stored.</p>
+<p>Denote by \( A&#39; \) the (maximum) SP-reduced submatrix of \( A \). If <code>premainingSubmatrix</code> is not <code>NULL</code>, then the rows and columns of \( A&#39; \) are stored.</p>
 <p>If <code>pviolatorSubmatrix</code> is not <code>NULL</code> and <code>matrix</code> is not ternary series-parallel, then a signed wheel- or \( M_2 \)-submatrix is stored.</p>
 <p>The running time is \( \mathcal{O} (m + n + k) \) assuming no hashtable collisions. </p>
 <dl class="params"><dt>Parameters</dt><dd>

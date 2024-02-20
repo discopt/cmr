@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['vector_5fless_1545',['vector_less',['../structtu_1_1vector__less.html',1,'tu']]],
-  ['vector_5fthree_5fconnectivity_1546',['vector_three_connectivity',['../classtu_1_1vector__three__connectivity.html',1,'tu']]],
-  ['vertex_5fwriter_1547',['vertex_writer',['../structtu_1_1util_1_1detail_1_1vertex__writer.html',1,'tu::util::detail']]],
-  ['violator_5fstrategy_1548',['violator_strategy',['../classtu_1_1detail_1_1violator__strategy.html',1,'tu::detail']]]
+  ['transpose_5forientation_1630',['transpose_orientation',['../structtu_1_1detail_1_1transpose__orientation.html',1,'tu::detail']]],
+  ['transpose_5forientation_3c_20boost_3a_3anumeric_3a_3aublas_3a_3acolumn_5fmajor_5ftag_20_3e_1631',['transpose_orientation&lt; boost::numeric::ublas::column_major_tag &gt;',['../structtu_1_1detail_1_1transpose__orientation_3_01boost_1_1numeric_1_1ublas_1_1column__major__tag_01_4.html',1,'tu::detail']]],
+  ['transpose_5forientation_3c_20boost_3a_3anumeric_3a_3aublas_3a_3arow_5fmajor_5ftag_20_3e_1632',['transpose_orientation&lt; boost::numeric::ublas::row_major_tag &gt;',['../structtu_1_1detail_1_1transpose__orientation_3_01boost_1_1numeric_1_1ublas_1_1row__major__tag_01_4.html',1,'tu::detail']]],
+  ['transposedmatrix_1633',['TransposedMatrix',['../classtu_1_1TransposedMatrix.html',1,'tu']]]
 ];

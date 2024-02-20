@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['vector_5fthree_5fconnectivity_2ehpp_1687',['vector_three_connectivity.hpp',['../vector__three__connectivity_8hpp.html',1,'']]],
-  ['violator_5fsearch_2ehpp_1688',['violator_search.hpp',['../violator__search_8hpp.html',1,'']]]
+  ['zero_5fplus_5fminus_5fone_2ecpp_1779',['zero_plus_minus_one.cpp',['../zero__plus__minus__one_8cpp.html',1,'']]]
 ];

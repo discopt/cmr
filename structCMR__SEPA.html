@@ -84,195 +84,100 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a2437e9ad0a77cd0a201067f3480bb01d"><td class="memItemLeft" align="right" valign="top">unsigned char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structCMR__SEPA.html#a2437e9ad0a77cd0a201067f3480bb01d">rowsToPart</a></td></tr>
-<tr class="memdesc:a2437e9ad0a77cd0a201067f3480bb01d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indicates to which block each row belongs. Values above 1 are ignored.  <a href="structCMR__SEPA.html#a2437e9ad0a77cd0a201067f3480bb01d">More...</a><br /></td></tr>
-<tr class="separator:a2437e9ad0a77cd0a201067f3480bb01d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5538462dac108a77ed0e5ed65ce5830b"><td class="memItemLeft" align="right" valign="top">unsigned char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structCMR__SEPA.html#a5538462dac108a77ed0e5ed65ce5830b">columnsToPart</a></td></tr>
-<tr class="memdesc:a5538462dac108a77ed0e5ed65ce5830b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indicates to which block each column belongs. Values above 1 are ignored.  <a href="structCMR__SEPA.html#a5538462dac108a77ed0e5ed65ce5830b">More...</a><br /></td></tr>
-<tr class="separator:a5538462dac108a77ed0e5ed65ce5830b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab91598d68ac9f46581bae4d6e335d580"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structCMR__SEPA.html#ab91598d68ac9f46581bae4d6e335d580">numRows</a> [2]</td></tr>
-<tr class="memdesc:ab91598d68ac9f46581bae4d6e335d580"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indicates the number of rows of each part.  <a href="structCMR__SEPA.html#ab91598d68ac9f46581bae4d6e335d580">More...</a><br /></td></tr>
-<tr class="separator:ab91598d68ac9f46581bae4d6e335d580"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a515d84c76dc5816ed4c2bc5dce61b43c"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structCMR__SEPA.html#a515d84c76dc5816ed4c2bc5dce61b43c">numColumns</a> [2]</td></tr>
-<tr class="memdesc:a515d84c76dc5816ed4c2bc5dce61b43c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indicates the number of columns of each part.  <a href="structCMR__SEPA.html#a515d84c76dc5816ed4c2bc5dce61b43c">More...</a><br /></td></tr>
-<tr class="separator:a515d84c76dc5816ed4c2bc5dce61b43c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aadf718558efa7300ef566ece59f14874"><td class="memItemLeft" align="right" valign="top">size_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structCMR__SEPA.html#aadf718558efa7300ef566ece59f14874">rows</a> [2]</td></tr>
-<tr class="memdesc:aadf718558efa7300ef566ece59f14874"><td class="mdescLeft">&#160;</td><td class="mdescRight">Array of sorted rows for each part.  <a href="structCMR__SEPA.html#aadf718558efa7300ef566ece59f14874">More...</a><br /></td></tr>
-<tr class="separator:aadf718558efa7300ef566ece59f14874"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af8c6b781f10cdd6075bce304950e9776"><td class="memItemLeft" align="right" valign="top">size_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structCMR__SEPA.html#af8c6b781f10cdd6075bce304950e9776">columns</a> [2]</td></tr>
-<tr class="memdesc:af8c6b781f10cdd6075bce304950e9776"><td class="mdescLeft">&#160;</td><td class="mdescRight">Array of sorted columns for each part.  <a href="structCMR__SEPA.html#af8c6b781f10cdd6075bce304950e9776">More...</a><br /></td></tr>
-<tr class="separator:af8c6b781f10cdd6075bce304950e9776"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6e40bdf81993ead52c1943e363fab325"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structCMR__SEPA.html#a6e40bdf81993ead52c1943e363fab325">extraRows</a> [2][2]</td></tr>
-<tr class="memdesc:a6e40bdf81993ead52c1943e363fab325"><td class="mdescLeft">&#160;</td><td class="mdescRight">For each part, array of extra rows; may be <code>SIZE_MAX</code>.  <a href="structCMR__SEPA.html#a6e40bdf81993ead52c1943e363fab325">More...</a><br /></td></tr>
-<tr class="separator:a6e40bdf81993ead52c1943e363fab325"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2c6b07d699c3e9511a0da55ad2f0ad8c"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structCMR__SEPA.html#a2c6b07d699c3e9511a0da55ad2f0ad8c">extraColumns</a> [2][2]</td></tr>
-<tr class="memdesc:a2c6b07d699c3e9511a0da55ad2f0ad8c"><td class="mdescLeft">&#160;</td><td class="mdescRight">For each part, array of extra columns; may be <code>SIZE_MAX</code>.  <a href="structCMR__SEPA.html#a2c6b07d699c3e9511a0da55ad2f0ad8c">More...</a><br /></td></tr>
-<tr class="separator:a2c6b07d699c3e9511a0da55ad2f0ad8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae826827836707a71bc2b11a064ceca0c"><td class="memItemLeft" align="right" valign="top">unsigned char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structCMR__SEPA.html#ae826827836707a71bc2b11a064ceca0c">indicatorMemory</a></td></tr>
-<tr class="memdesc:ae826827836707a71bc2b11a064ceca0c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Memory for <a class="el" href="structCMR__SEPA.html#a2437e9ad0a77cd0a201067f3480bb01d">rowsToPart</a> and <a class="el" href="structCMR__SEPA.html#a5538462dac108a77ed0e5ed65ce5830b">columnsToPart</a>.  <a href="structCMR__SEPA.html#ae826827836707a71bc2b11a064ceca0c">More...</a><br /></td></tr>
-<tr class="separator:ae826827836707a71bc2b11a064ceca0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aecc3bacce77cacb082acd377cd78a5b0"><td class="memItemLeft" align="right" valign="top">size_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structCMR__SEPA.html#aecc3bacce77cacb082acd377cd78a5b0">elementMemory</a></td></tr>
-<tr class="memdesc:aecc3bacce77cacb082acd377cd78a5b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Memory for <a class="el" href="structCMR__SEPA.html#aadf718558efa7300ef566ece59f14874">rows</a> and <a class="el" href="structCMR__SEPA.html#af8c6b781f10cdd6075bce304950e9776">columns</a>.  <a href="structCMR__SEPA.html#aecc3bacce77cacb082acd377cd78a5b0">More...</a><br /></td></tr>
-<tr class="separator:aecc3bacce77cacb082acd377cd78a5b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89a1b62093f84ebeb5dc0103eb76ea24"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structCMR__SEPA.html#a89a1b62093f84ebeb5dc0103eb76ea24">numRows</a></td></tr>
+<tr class="memdesc:a89a1b62093f84ebeb5dc0103eb76ea24"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of rows of the matrix.  <a href="structCMR__SEPA.html#a89a1b62093f84ebeb5dc0103eb76ea24">More...</a><br /></td></tr>
+<tr class="separator:a89a1b62093f84ebeb5dc0103eb76ea24"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa45206ccb0fa80b1b062708d5880cf8b"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structCMR__SEPA.html#aa45206ccb0fa80b1b062708d5880cf8b">numColumns</a></td></tr>
+<tr class="memdesc:aa45206ccb0fa80b1b062708d5880cf8b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of columns of the matrix.  <a href="structCMR__SEPA.html#aa45206ccb0fa80b1b062708d5880cf8b">More...</a><br /></td></tr>
+<tr class="separator:aa45206ccb0fa80b1b062708d5880cf8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0acba51a1b2b24107c30063ec2303ad2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="separation_8h.html#aa06a64b71cbe46753d9cc04b57a0659d">CMR_SEPA_FLAGS</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structCMR__SEPA.html#a0acba51a1b2b24107c30063ec2303ad2">rowsFlags</a></td></tr>
+<tr class="memdesc:a0acba51a1b2b24107c30063ec2303ad2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Array with each row's flags.  <a href="structCMR__SEPA.html#a0acba51a1b2b24107c30063ec2303ad2">More...</a><br /></td></tr>
+<tr class="separator:a0acba51a1b2b24107c30063ec2303ad2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91668d18ec3e08d817020dcfff2df719"><td class="memItemLeft" align="right" valign="top"><a class="el" href="separation_8h.html#aa06a64b71cbe46753d9cc04b57a0659d">CMR_SEPA_FLAGS</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structCMR__SEPA.html#a91668d18ec3e08d817020dcfff2df719">columnsFlags</a></td></tr>
+<tr class="memdesc:a91668d18ec3e08d817020dcfff2df719"><td class="mdescLeft">&#160;</td><td class="mdescRight">Array with each column's flags.  <a href="structCMR__SEPA.html#a91668d18ec3e08d817020dcfff2df719">More...</a><br /></td></tr>
+<tr class="separator:a91668d18ec3e08d817020dcfff2df719"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae92757c84bef634c317984b1493f9284"><td class="memItemLeft" align="right" valign="top"><a class="el" href="separation_8h.html#a6e385b09b26e8295496aa001b1111389">CMR_SEPA_TYPE</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structCMR__SEPA.html#ae92757c84bef634c317984b1493f9284">type</a></td></tr>
+<tr class="memdesc:ae92757c84bef634c317984b1493f9284"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type of separation.  <a href="structCMR__SEPA.html#ae92757c84bef634c317984b1493f9284">More...</a><br /></td></tr>
+<tr class="separator:ae92757c84bef634c317984b1493f9284"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Data Documentation</h2>
-<a id="af8c6b781f10cdd6075bce304950e9776"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af8c6b781f10cdd6075bce304950e9776">&#9670;&nbsp;</a></span>columns</h2>
+<a id="a91668d18ec3e08d817020dcfff2df719"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a91668d18ec3e08d817020dcfff2df719">&#9670;&nbsp;</a></span>columnsFlags</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">size_t* CMR_SEPA::columns[2]</td>
+          <td class="memname"><a class="el" href="separation_8h.html#aa06a64b71cbe46753d9cc04b57a0659d">CMR_SEPA_FLAGS</a>* CMR_SEPA::columnsFlags</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Array of sorted columns for each part. </p>
+<p>Array with each column's flags. </p>
 
 </div>
 </div>
-<a id="a5538462dac108a77ed0e5ed65ce5830b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5538462dac108a77ed0e5ed65ce5830b">&#9670;&nbsp;</a></span>columnsToPart</h2>
+<a id="aa45206ccb0fa80b1b062708d5880cf8b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa45206ccb0fa80b1b062708d5880cf8b">&#9670;&nbsp;</a></span>numColumns</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">unsigned char* CMR_SEPA::columnsToPart</td>
+          <td class="memname">size_t CMR_SEPA::numColumns</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Indicates to which block each column belongs. Values above 1 are ignored. </p>
+<p>Number of columns of the matrix. </p>
 
 </div>
 </div>
-<a id="aecc3bacce77cacb082acd377cd78a5b0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aecc3bacce77cacb082acd377cd78a5b0">&#9670;&nbsp;</a></span>elementMemory</h2>
+<a id="a89a1b62093f84ebeb5dc0103eb76ea24"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89a1b62093f84ebeb5dc0103eb76ea24">&#9670;&nbsp;</a></span>numRows</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">size_t* CMR_SEPA::elementMemory</td>
+          <td class="memname">size_t CMR_SEPA::numRows</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Memory for <a class="el" href="structCMR__SEPA.html#aadf718558efa7300ef566ece59f14874">rows</a> and <a class="el" href="structCMR__SEPA.html#af8c6b781f10cdd6075bce304950e9776">columns</a>. </p>
+<p>Number of rows of the matrix. </p>
 
 </div>
 </div>
-<a id="a2c6b07d699c3e9511a0da55ad2f0ad8c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2c6b07d699c3e9511a0da55ad2f0ad8c">&#9670;&nbsp;</a></span>extraColumns</h2>
+<a id="a0acba51a1b2b24107c30063ec2303ad2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0acba51a1b2b24107c30063ec2303ad2">&#9670;&nbsp;</a></span>rowsFlags</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">size_t CMR_SEPA::extraColumns[2][2]</td>
+          <td class="memname"><a class="el" href="separation_8h.html#aa06a64b71cbe46753d9cc04b57a0659d">CMR_SEPA_FLAGS</a>* CMR_SEPA::rowsFlags</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>For each part, array of extra columns; may be <code>SIZE_MAX</code>. </p>
+<p>Array with each row's flags. </p>
 
 </div>
 </div>
-<a id="a6e40bdf81993ead52c1943e363fab325"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6e40bdf81993ead52c1943e363fab325">&#9670;&nbsp;</a></span>extraRows</h2>
+<a id="ae92757c84bef634c317984b1493f9284"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae92757c84bef634c317984b1493f9284">&#9670;&nbsp;</a></span>type</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">size_t CMR_SEPA::extraRows[2][2]</td>
+          <td class="memname"><a class="el" href="separation_8h.html#a6e385b09b26e8295496aa001b1111389">CMR_SEPA_TYPE</a> CMR_SEPA::type</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>For each part, array of extra rows; may be <code>SIZE_MAX</code>. </p>
-
-</div>
-</div>
-<a id="ae826827836707a71bc2b11a064ceca0c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae826827836707a71bc2b11a064ceca0c">&#9670;&nbsp;</a></span>indicatorMemory</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">unsigned char* CMR_SEPA::indicatorMemory</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Memory for <a class="el" href="structCMR__SEPA.html#a2437e9ad0a77cd0a201067f3480bb01d">rowsToPart</a> and <a class="el" href="structCMR__SEPA.html#a5538462dac108a77ed0e5ed65ce5830b">columnsToPart</a>. </p>
-
-</div>
-</div>
-<a id="a515d84c76dc5816ed4c2bc5dce61b43c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a515d84c76dc5816ed4c2bc5dce61b43c">&#9670;&nbsp;</a></span>numColumns</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">size_t CMR_SEPA::numColumns[2]</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Indicates the number of columns of each part. </p>
-
-</div>
-</div>
-<a id="ab91598d68ac9f46581bae4d6e335d580"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab91598d68ac9f46581bae4d6e335d580">&#9670;&nbsp;</a></span>numRows</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">size_t CMR_SEPA::numRows[2]</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Indicates the number of rows of each part. </p>
-
-</div>
-</div>
-<a id="aadf718558efa7300ef566ece59f14874"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aadf718558efa7300ef566ece59f14874">&#9670;&nbsp;</a></span>rows</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">size_t* CMR_SEPA::rows[2]</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Array of sorted rows for each part. </p>
-
-</div>
-</div>
-<a id="a2437e9ad0a77cd0a201067f3480bb01d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2437e9ad0a77cd0a201067f3480bb01d">&#9670;&nbsp;</a></span>rowsToPart</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">unsigned char* CMR_SEPA::rowsToPart</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Indicates to which block each row belongs. Values above 1 are ignored. </p>
+<p>Type of separation. </p>
 
 </div>
 </div>

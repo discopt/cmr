@@ -1,10 +1,14 @@
 var searchData=
 [
-  ['givenelement_2554',['givenElement',['../structElementData.html#a752b9049c21a796df1865aadbb221568',1,'ElementData']]],
-  ['graph_2555',['graph',['../struct__CMR__DEC.html#a86f6e3fba87890f1235ae1385bff36b3',1,'_CMR_DEC']]],
-  ['grapharcsreversed_2556',['graphArcsReversed',['../struct__CMR__DEC.html#a59f1c333bd9720d5f55b3106d9324884',1,'_CMR_DEC']]],
-  ['graphcoforest_2557',['graphCoforest',['../struct__CMR__DEC.html#a7b580e8878f2a59be29855f7aadb86e9',1,'_CMR_DEC']]],
-  ['graphforest_2558',['graphForest',['../struct__CMR__DEC.html#ab0a4d8746e5bbe58ecfabaa9d57709db',1,'_CMR_DEC']]],
-  ['graphic_2559',['graphic',['../structCMR__NETWORK__STATISTICS.html#a551a7a7ee749e26f73bf728cd72b3ad7',1,'CMR_NETWORK_STATISTICS::graphic()'],['../structCMR__REGULAR__STATISTICS.html#a13a50c4f713fbd23e08d62fc65b020d8',1,'CMR_REGULAR_STATISTICS::graphic()']]],
-  ['graphs_2560',['graphs',['../structCMR__REGULAR__PARAMETERS.html#af41ae122400fa55c49159619610ee820',1,'CMR_REGULAR_PARAMETERS']]]
+  ['generalcount_2676',['generalCount',['../structCMR__CAMION__STATISTICS.html#aadedebed16e982aff050856203a5c8a2',1,'CMR_CAMION_STATISTICS']]],
+  ['generaltime_2677',['generalTime',['../structCMR__CAMION__STATISTICS.html#a71e2580d9db61fe85bc13243f98066fc',1,'CMR_CAMION_STATISTICS']]],
+  ['graph_2678',['graph',['../struct__CMR__MATROID__DEC.html#a8c8dc640e80ad7931520d571320614a4',1,'_CMR_MATROID_DEC']]],
+  ['grapharcsreversed_2679',['graphArcsReversed',['../struct__CMR__MATROID__DEC.html#ac9772eb96670b5a5d244eb24dc0eefca',1,'_CMR_MATROID_DEC']]],
+  ['graphcoforest_2680',['graphCoforest',['../struct__CMR__MATROID__DEC.html#a52823a3349e619a764f8e9293af53c9c',1,'_CMR_MATROID_DEC']]],
+  ['graphcount_2681',['graphCount',['../structCMR__CAMION__STATISTICS.html#aa06e0f30dee6da827346a1e4b32acea9',1,'CMR_CAMION_STATISTICS']]],
+  ['graphforest_2682',['graphForest',['../struct__CMR__MATROID__DEC.html#ac32756fa10e30114d79e89290b79a194',1,'_CMR_MATROID_DEC']]],
+  ['graphic_2683',['graphic',['../structCMR__NETWORK__STATISTICS.html#a551a7a7ee749e26f73bf728cd72b3ad7',1,'CMR_NETWORK_STATISTICS::graphic()'],['../structCMR__REGULAR__STATS.html#a09802e6d08a24b2a76de10364e8a08be',1,'CMR_REGULAR_STATS::graphic()']]],
+  ['graphicness_2684',['graphicness',['../struct__CMR__MATROID__DEC.html#a6333cf5fe1f1c9e7d122b965295a112a',1,'_CMR_MATROID_DEC']]],
+  ['graphs_2685',['graphs',['../structCMR__REGULAR__PARAMS.html#a12dd030a765e7197017258f9d04e2290',1,'CMR_REGULAR_PARAMS']]],
+  ['graphtime_2686',['graphTime',['../structCMR__CAMION__STATISTICS.html#ab616cdaf58924f21069f3e6e8cc76db3',1,'CMR_CAMION_STATISTICS']]]
 ];

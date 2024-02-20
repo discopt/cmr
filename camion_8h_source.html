@@ -88,63 +88,92 @@ $(function() {
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160; </div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="matrix_8h.html">cmr/matrix.h</a>&gt;</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &lt;stdint.h&gt;</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="graph_8h.html">cmr/graph.h</a>&gt;</span></div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160; </div>
-<div class="line"><a name="l00023"></a><span class="lineno"><a class="line" href="structCMR__CAMION__STATISTICS.html">   23</a></span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct</span></div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;{</div>
-<div class="line"><a name="l00025"></a><span class="lineno"><a class="line" href="structCMR__CAMION__STATISTICS.html#a0e2e41bbaf683b787579e2ff16623f01">   25</a></span>&#160;  uint32_t <a class="code" href="structCMR__CAMION__STATISTICS.html#a0e2e41bbaf683b787579e2ff16623f01">totalCount</a>;  </div>
-<div class="line"><a name="l00026"></a><span class="lineno"><a class="line" href="structCMR__CAMION__STATISTICS.html#a528ff7b31dfa453af257df274287cda9">   26</a></span>&#160;  <span class="keywordtype">double</span> <a class="code" href="structCMR__CAMION__STATISTICS.html#a528ff7b31dfa453af257df274287cda9">totalTime</a>;     </div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;} <a class="code" href="structCMR__CAMION__STATISTICS.html">CMR_CAMION_STATISTICS</a>;</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160; </div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;CMR_EXPORT</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="camion_8h.html#afc690153cde94a02376a1f26a143deb8">CMRstatsCamionInit</a>(</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  <a class="code" href="structCMR__CAMION__STATISTICS.html">CMR_CAMION_STATISTICS</a>* stats  </div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;);</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160; </div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;CMR_EXPORT</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="camion_8h.html#aa1abfe5017b2e18dfc45ce0c9ca9fb10">CMRstatsCamionPrint</a>(</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  FILE* stream,                 </div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  <a class="code" href="structCMR__CAMION__STATISTICS.html">CMR_CAMION_STATISTICS</a>* stats, </div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">char</span>* prefix            </div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;);</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160; </div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160; </div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;CMR_EXPORT</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="camion_8h.html#a10a9e36eb401f7ea016700777168e1bd">CMRtestCamionSigned</a>(</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,                     </div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  <a class="code" href="structCMR__CHRMAT.html">CMR_CHRMAT</a>* matrix,           </div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  <span class="keywordtype">bool</span>* pisCamionSigned,        </div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  <a class="code" href="structCMR__SUBMAT.html">CMR_SUBMAT</a>** psubmatrix,      </div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  <a class="code" href="structCMR__CAMION__STATISTICS.html">CMR_CAMION_STATISTICS</a>* stats, </div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <span class="keywordtype">double</span> timeLimit              </div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;);</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160; </div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;CMR_EXPORT</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="camion_8h.html#a208f1fda8dd2462086af05b6945d4d4d">CMRcomputeCamionSigned</a>(</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,                     </div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  <a class="code" href="structCMR__CHRMAT.html">CMR_CHRMAT</a>* matrix,           </div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  <span class="keywordtype">bool</span>* pwasCamionSigned,       </div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  <a class="code" href="structCMR__SUBMAT.html">CMR_SUBMAT</a>** psubmatrix,      </div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  <a class="code" href="structCMR__CAMION__STATISTICS.html">CMR_CAMION_STATISTICS</a>* stats, </div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  <span class="keywordtype">double</span> timeLimit              </div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;);</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160; </div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;}</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160; </div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* CMR_CAMION_H */</span><span class="preprocessor"></span></div>
-<div class="ttc" id="acamion_8h_html_a10a9e36eb401f7ea016700777168e1bd"><div class="ttname"><a href="camion_8h.html#a10a9e36eb401f7ea016700777168e1bd">CMRtestCamionSigned</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRtestCamionSigned(CMR *cmr, CMR_CHRMAT *matrix, bool *pisCamionSigned, CMR_SUBMAT **psubmatrix, CMR_CAMION_STATISTICS *stats, double timeLimit)</div><div class="ttdoc">Tests a matrix  for being a Camion-signed.</div><div class="ttdef"><b>Definition:</b> camion.c:466</div></div>
-<div class="ttc" id="acamion_8h_html_a208f1fda8dd2462086af05b6945d4d4d"><div class="ttname"><a href="camion_8h.html#a208f1fda8dd2462086af05b6945d4d4d">CMRcomputeCamionSigned</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRcomputeCamionSigned(CMR *cmr, CMR_CHRMAT *matrix, bool *pwasCamionSigned, CMR_SUBMAT **psubmatrix, CMR_CAMION_STATISTICS *stats, double timeLimit)</div><div class="ttdoc">Computes a Camion-signed version of a given ternary matrix .</div><div class="ttdef"><b>Definition:</b> camion.c:472</div></div>
-<div class="ttc" id="acamion_8h_html_aa1abfe5017b2e18dfc45ce0c9ca9fb10"><div class="ttname"><a href="camion_8h.html#aa1abfe5017b2e18dfc45ce0c9ca9fb10">CMRstatsCamionPrint</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRstatsCamionPrint(FILE *stream, CMR_CAMION_STATISTICS *stats, const char *prefix)</div><div class="ttdoc">Prints statistics for Camion-signing algorithm.</div><div class="ttdef"><b>Definition:</b> camion.c:25</div></div>
-<div class="ttc" id="acamion_8h_html_afc690153cde94a02376a1f26a143deb8"><div class="ttname"><a href="camion_8h.html#afc690153cde94a02376a1f26a143deb8">CMRstatsCamionInit</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRstatsCamionInit(CMR_CAMION_STATISTICS *stats)</div><div class="ttdoc">Initializes all statistics for Camion-signing algorithm.</div><div class="ttdef"><b>Definition:</b> camion.c:15</div></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#include &lt;stdint.h&gt;</span></div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160; </div>
+<div class="line"><a name="l00025"></a><span class="lineno"><a class="line" href="structCMR__CAMION__STATISTICS.html">   25</a></span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;{</div>
+<div class="line"><a name="l00027"></a><span class="lineno"><a class="line" href="structCMR__CAMION__STATISTICS.html#aadedebed16e982aff050856203a5c8a2">   27</a></span>&#160;  uint32_t <a class="code" href="structCMR__CAMION__STATISTICS.html#aadedebed16e982aff050856203a5c8a2">generalCount</a>;  </div>
+<div class="line"><a name="l00028"></a><span class="lineno"><a class="line" href="structCMR__CAMION__STATISTICS.html#a71e2580d9db61fe85bc13243f98066fc">   28</a></span>&#160;  <span class="keywordtype">double</span> <a class="code" href="structCMR__CAMION__STATISTICS.html#a71e2580d9db61fe85bc13243f98066fc">generalTime</a>;     </div>
+<div class="line"><a name="l00029"></a><span class="lineno"><a class="line" href="structCMR__CAMION__STATISTICS.html#aa06e0f30dee6da827346a1e4b32acea9">   29</a></span>&#160;  uint32_t <a class="code" href="structCMR__CAMION__STATISTICS.html#aa06e0f30dee6da827346a1e4b32acea9">graphCount</a>;    </div>
+<div class="line"><a name="l00030"></a><span class="lineno"><a class="line" href="structCMR__CAMION__STATISTICS.html#ab616cdaf58924f21069f3e6e8cc76db3">   30</a></span>&#160;  <span class="keywordtype">double</span> <a class="code" href="structCMR__CAMION__STATISTICS.html#ab616cdaf58924f21069f3e6e8cc76db3">graphTime</a>;       </div>
+<div class="line"><a name="l00031"></a><span class="lineno"><a class="line" href="structCMR__CAMION__STATISTICS.html#a0e2e41bbaf683b787579e2ff16623f01">   31</a></span>&#160;  uint32_t <a class="code" href="structCMR__CAMION__STATISTICS.html#a0e2e41bbaf683b787579e2ff16623f01">totalCount</a>;    </div>
+<div class="line"><a name="l00032"></a><span class="lineno"><a class="line" href="structCMR__CAMION__STATISTICS.html#a528ff7b31dfa453af257df274287cda9">   32</a></span>&#160;  <span class="keywordtype">double</span> <a class="code" href="structCMR__CAMION__STATISTICS.html#a528ff7b31dfa453af257df274287cda9">totalTime</a>;       </div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;} <a class="code" href="structCMR__CAMION__STATISTICS.html">CMR_CAMION_STATISTICS</a>;</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160; </div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;CMR_EXPORT</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="camion_8h.html#abe03831a97456abf18696eb673057582">CMRcamionStatsInit</a>(</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  <a class="code" href="structCMR__CAMION__STATISTICS.html">CMR_CAMION_STATISTICS</a>* stats  </div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;);</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160; </div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;CMR_EXPORT</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="camion_8h.html#a2ae87851f94c5fa85b49329e63f53553">CMRcamionStatsPrint</a>(</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  FILE* stream,                 </div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  <a class="code" href="structCMR__CAMION__STATISTICS.html">CMR_CAMION_STATISTICS</a>* stats, </div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">char</span>* prefix            </div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;);</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160; </div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160; </div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;CMR_EXPORT</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="camion_8h.html#a56eb1190a40b4df0936153038ef12117">CMRcamionTestSigns</a>(</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,                     </div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  <a class="code" href="structCMR__CHRMAT.html">CMR_CHRMAT</a>* matrix,           </div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  <span class="keywordtype">bool</span>* pisCamionSigned,        </div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  <a class="code" href="structCMR__SUBMAT.html">CMR_SUBMAT</a>** psubmatrix,      </div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <a class="code" href="structCMR__CAMION__STATISTICS.html">CMR_CAMION_STATISTICS</a>* stats, </div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  <span class="keywordtype">double</span> timeLimit              </div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;);</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160; </div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;CMR_EXPORT</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="camion_8h.html#a5b5844d61bb9afd67f443b16e1294521">CMRcamionComputeSigns</a>(</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,                     </div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  <a class="code" href="structCMR__CHRMAT.html">CMR_CHRMAT</a>* matrix,           </div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  <span class="keywordtype">bool</span>* pwasCamionSigned,       </div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  <a class="code" href="structCMR__SUBMAT.html">CMR_SUBMAT</a>** psubmatrix,      </div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <a class="code" href="structCMR__CAMION__STATISTICS.html">CMR_CAMION_STATISTICS</a>* stats, </div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  <span class="keywordtype">double</span> timeLimit              </div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;);</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160; </div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160; </div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;CMR_EXPORT</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="camion_8h.html#a36d6b7a41b8957a804d8c2040dfa6f94">CMRcamionCographicOrient</a>(</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,                       </div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  <a class="code" href="structCMR__CHRMAT.html">CMR_CHRMAT</a>* matrix,             </div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;  <a class="code" href="structCMR__GRAPH.html">CMR_GRAPH</a>* cograph,             </div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  <a class="code" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a>* forestEdges,    </div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  <a class="code" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a>* coforestEdges,  </div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;  <span class="keywordtype">bool</span>* arcsReversed,             </div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  <span class="keywordtype">bool</span>* pisCamionSigned,          </div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  <a class="code" href="structCMR__SUBMAT.html">CMR_SUBMAT</a>** psubmatrix,        </div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  <a class="code" href="structCMR__CAMION__STATISTICS.html">CMR_CAMION_STATISTICS</a>* stats    </div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;);</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160; </div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160; </div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;}</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160; </div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* CMR_CAMION_H */</span><span class="preprocessor"></span></div>
+<div class="ttc" id="acamion_8h_html_a2ae87851f94c5fa85b49329e63f53553"><div class="ttname"><a href="camion_8h.html#a2ae87851f94c5fa85b49329e63f53553">CMRcamionStatsPrint</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRcamionStatsPrint(FILE *stream, CMR_CAMION_STATISTICS *stats, const char *prefix)</div><div class="ttdoc">Prints statistics for Camion-signing algorithm.</div><div class="ttdef"><b>Definition:</b> camion.c:33</div></div>
+<div class="ttc" id="acamion_8h_html_a36d6b7a41b8957a804d8c2040dfa6f94"><div class="ttname"><a href="camion_8h.html#a36d6b7a41b8957a804d8c2040dfa6f94">CMRcamionCographicOrient</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRcamionCographicOrient(CMR *cmr, CMR_CHRMAT *matrix, CMR_GRAPH *cograph, CMR_GRAPH_EDGE *forestEdges, CMR_GRAPH_EDGE *coforestEdges, bool *arcsReversed, bool *pisCamionSigned, CMR_SUBMAT **psubmatrix, CMR_CAMION_STATISTICS *stats)</div><div class="ttdoc">Orients the edges of the graph cograph such that the matrix matrix  is the corresponding network matr...</div><div class="ttdef"><b>Definition:</b> camion.c:595</div></div>
+<div class="ttc" id="acamion_8h_html_a56eb1190a40b4df0936153038ef12117"><div class="ttname"><a href="camion_8h.html#a56eb1190a40b4df0936153038ef12117">CMRcamionTestSigns</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRcamionTestSigns(CMR *cmr, CMR_CHRMAT *matrix, bool *pisCamionSigned, CMR_SUBMAT **psubmatrix, CMR_CAMION_STATISTICS *stats, double timeLimit)</div><div class="ttdoc">Tests a matrix  for being a Camion-signed.</div><div class="ttdef"><b>Definition:</b> camion.c:479</div></div>
+<div class="ttc" id="acamion_8h_html_a5b5844d61bb9afd67f443b16e1294521"><div class="ttname"><a href="camion_8h.html#a5b5844d61bb9afd67f443b16e1294521">CMRcamionComputeSigns</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRcamionComputeSigns(CMR *cmr, CMR_CHRMAT *matrix, bool *pwasCamionSigned, CMR_SUBMAT **psubmatrix, CMR_CAMION_STATISTICS *stats, double timeLimit)</div><div class="ttdoc">Computes a Camion-signed version of a given ternary matrix .</div><div class="ttdef"><b>Definition:</b> camion.c:485</div></div>
+<div class="ttc" id="acamion_8h_html_abe03831a97456abf18696eb673057582"><div class="ttname"><a href="camion_8h.html#abe03831a97456abf18696eb673057582">CMRcamionStatsInit</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRcamionStatsInit(CMR_CAMION_STATISTICS *stats)</div><div class="ttdoc">Initializes all statistics for Camion-signing algorithm.</div><div class="ttdef"><b>Definition:</b> camion.c:19</div></div>
 <div class="ttc" id="aenv_8h_html_ae2f4ad54b976c2b9a099246c6dc0be87"><div class="ttname"><a href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a></div><div class="ttdeci">CMR_ERROR</div><div class="ttdoc">Type for return codes of library functions.</div><div class="ttdef"><b>Definition:</b> env.h:31</div></div>
+<div class="ttc" id="agraph_8h_html"><div class="ttname"><a href="graph_8h.html">graph.h</a></div><div class="ttdoc">Functionality for graphs.</div></div>
+<div class="ttc" id="agroup__Graph_html_gae955029839563f0561720dee39c85f0a"><div class="ttname"><a href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a></div><div class="ttdeci">int CMR_GRAPH_EDGE</div><div class="ttdoc">Reference to an edge of CMR_GRAPH.</div><div class="ttdef"><b>Definition:</b> graph.h:31</div></div>
 <div class="ttc" id="amatrix_8h_html"><div class="ttname"><a href="matrix_8h.html">matrix.h</a></div><div class="ttdoc">Functionality for sparse matrices.</div></div>
-<div class="ttc" id="astructCMR__CAMION__STATISTICS_html"><div class="ttname"><a href="structCMR__CAMION__STATISTICS.html">CMR_CAMION_STATISTICS</a></div><div class="ttdoc">Statistics for Camion-signing algorithm.</div><div class="ttdef"><b>Definition:</b> camion.h:24</div></div>
-<div class="ttc" id="astructCMR__CAMION__STATISTICS_html_a0e2e41bbaf683b787579e2ff16623f01"><div class="ttname"><a href="structCMR__CAMION__STATISTICS.html#a0e2e41bbaf683b787579e2ff16623f01">CMR_CAMION_STATISTICS::totalCount</a></div><div class="ttdeci">uint32_t totalCount</div><div class="ttdef"><b>Definition:</b> camion.h:25</div></div>
-<div class="ttc" id="astructCMR__CAMION__STATISTICS_html_a528ff7b31dfa453af257df274287cda9"><div class="ttname"><a href="structCMR__CAMION__STATISTICS.html#a528ff7b31dfa453af257df274287cda9">CMR_CAMION_STATISTICS::totalTime</a></div><div class="ttdeci">double totalTime</div><div class="ttdef"><b>Definition:</b> camion.h:26</div></div>
+<div class="ttc" id="astructCMR__CAMION__STATISTICS_html"><div class="ttname"><a href="structCMR__CAMION__STATISTICS.html">CMR_CAMION_STATISTICS</a></div><div class="ttdoc">Statistics for Camion-signing algorithm.</div><div class="ttdef"><b>Definition:</b> camion.h:26</div></div>
+<div class="ttc" id="astructCMR__CAMION__STATISTICS_html_a0e2e41bbaf683b787579e2ff16623f01"><div class="ttname"><a href="structCMR__CAMION__STATISTICS.html#a0e2e41bbaf683b787579e2ff16623f01">CMR_CAMION_STATISTICS::totalCount</a></div><div class="ttdeci">uint32_t totalCount</div><div class="ttdef"><b>Definition:</b> camion.h:31</div></div>
+<div class="ttc" id="astructCMR__CAMION__STATISTICS_html_a528ff7b31dfa453af257df274287cda9"><div class="ttname"><a href="structCMR__CAMION__STATISTICS.html#a528ff7b31dfa453af257df274287cda9">CMR_CAMION_STATISTICS::totalTime</a></div><div class="ttdeci">double totalTime</div><div class="ttdef"><b>Definition:</b> camion.h:32</div></div>
+<div class="ttc" id="astructCMR__CAMION__STATISTICS_html_a71e2580d9db61fe85bc13243f98066fc"><div class="ttname"><a href="structCMR__CAMION__STATISTICS.html#a71e2580d9db61fe85bc13243f98066fc">CMR_CAMION_STATISTICS::generalTime</a></div><div class="ttdeci">double generalTime</div><div class="ttdef"><b>Definition:</b> camion.h:28</div></div>
+<div class="ttc" id="astructCMR__CAMION__STATISTICS_html_aa06e0f30dee6da827346a1e4b32acea9"><div class="ttname"><a href="structCMR__CAMION__STATISTICS.html#aa06e0f30dee6da827346a1e4b32acea9">CMR_CAMION_STATISTICS::graphCount</a></div><div class="ttdeci">uint32_t graphCount</div><div class="ttdef"><b>Definition:</b> camion.h:29</div></div>
+<div class="ttc" id="astructCMR__CAMION__STATISTICS_html_aadedebed16e982aff050856203a5c8a2"><div class="ttname"><a href="structCMR__CAMION__STATISTICS.html#aadedebed16e982aff050856203a5c8a2">CMR_CAMION_STATISTICS::generalCount</a></div><div class="ttdeci">uint32_t generalCount</div><div class="ttdef"><b>Definition:</b> camion.h:27</div></div>
+<div class="ttc" id="astructCMR__CAMION__STATISTICS_html_ab616cdaf58924f21069f3e6e8cc76db3"><div class="ttname"><a href="structCMR__CAMION__STATISTICS.html#ab616cdaf58924f21069f3e6e8cc76db3">CMR_CAMION_STATISTICS::graphTime</a></div><div class="ttdeci">double graphTime</div><div class="ttdef"><b>Definition:</b> camion.h:30</div></div>
 <div class="ttc" id="astructCMR__CHRMAT_html"><div class="ttname"><a href="structCMR__CHRMAT.html">CMR_CHRMAT</a></div><div class="ttdoc">Row-wise representation of sparse char matrix.</div><div class="ttdef"><b>Definition:</b> matrix.h:204</div></div>
 <div class="ttc" id="astructCMR__ENVIRONMENT_html"><div class="ttname"><a href="structCMR__ENVIRONMENT.html">CMR_ENVIRONMENT</a></div><div class="ttdef"><b>Definition:</b> env_internal.h:45</div></div>
+<div class="ttc" id="astructCMR__GRAPH_html"><div class="ttname"><a href="structCMR__GRAPH.html">CMR_GRAPH</a></div><div class="ttdef"><b>Definition:</b> graph.h:49</div></div>
 <div class="ttc" id="astructCMR__SUBMAT_html"><div class="ttname"><a href="structCMR__SUBMAT.html">CMR_SUBMAT</a></div><div class="ttdoc">Row and column indices for a submatrix.</div><div class="ttdef"><b>Definition:</b> matrix.h:28</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->

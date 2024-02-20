@@ -77,6 +77,8 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#define-members">Macros</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">separation.c File Reference</div>  </div>
@@ -85,35 +87,58 @@ $(function() {
 <div class="textblock"><code>#include &lt;<a class="el" href="separation_8h_source.html">cmr/separation.h</a>&gt;</code><br />
 <code>#include &quot;<a class="el" href="env__internal_8h_source.html">env_internal.h</a>&quot;</code><br />
 <code>#include &lt;stdint.h&gt;</code><br />
+<code>#include &lt;stdlib.h&gt;</code><br />
 <code>#include &lt;assert.h&gt;</code><br />
 </div><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structElementData.html">ElementData</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Element specific data for the enumeration of 3-separations.  <a href="structElementData.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
+Macros</h2></td></tr>
+<tr class="memitem:aaf4503422b8ef76e6591c97a9b3499d0"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="separation_8c.html#aaf4503422b8ef76e6591c97a9b3499d0">CMR_DEBUG</a>&#160;&#160;&#160;/* Uncomment to debug this file. */</td></tr>
+<tr class="separator:aaf4503422b8ef76e6591c97a9b3499d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a8146064cd1156ddde1731293361e39f5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="separation_8c.html#a8146064cd1156ddde1731293361e39f5">CMRsepaCreate</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, size_t numRows, size_t numColumns, <a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> **psepa)</td></tr>
-<tr class="memdesc:a8146064cd1156ddde1731293361e39f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a separation.  <a href="separation_8c.html#a8146064cd1156ddde1731293361e39f5">More...</a><br /></td></tr>
+<tr class="memdesc:a8146064cd1156ddde1731293361e39f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a 2- or 3-separation.  <a href="separation_8c.html#a8146064cd1156ddde1731293361e39f5">More...</a><br /></td></tr>
 <tr class="separator:a8146064cd1156ddde1731293361e39f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a61feb00ae963475c7f9855affe6d9834"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="separation_8c.html#a61feb00ae963475c7f9855affe6d9834">initialize</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *separation)</td></tr>
-<tr class="separator:a61feb00ae963475c7f9855affe6d9834"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6e831a27e45ebb24ce72f865c23d7d79"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="separation_8c.html#a6e831a27e45ebb24ce72f865c23d7d79">CMRsepaInitialize</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *separation, size_t firstExtraRow0, size_t firstExtraColumn1, size_t firstExtraRow1, size_t firstExtraColumn0, size_t secondExtraRow0, size_t secondExtraColumn1, size_t secondExtraRow1, size_t secondExtraColumn0)</td></tr>
-<tr class="memdesc:a6e831a27e45ebb24ce72f865c23d7d79"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a separation.  <a href="separation_8c.html#a6e831a27e45ebb24ce72f865c23d7d79">More...</a><br /></td></tr>
-<tr class="separator:a6e831a27e45ebb24ce72f865c23d7d79"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a415d35fc7d42dd91ac375df84e04010f"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="separation_8c.html#a415d35fc7d42dd91ac375df84e04010f">findRank1</a> (<a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, <a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *separation, short part)</td></tr>
-<tr class="memdesc:a415d35fc7d42dd91ac375df84e04010f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks whether the submatrix with rows assigned to <code>part</code> and columns assigned to the other has at least rank 1.  <a href="separation_8c.html#a415d35fc7d42dd91ac375df84e04010f">More...</a><br /></td></tr>
-<tr class="separator:a415d35fc7d42dd91ac375df84e04010f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad2ce082b5822520417aab4adf4e5340f"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="separation_8c.html#ad2ce082b5822520417aab4adf4e5340f">findRank2</a> (<a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, <a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *separation, short part)</td></tr>
-<tr class="memdesc:ad2ce082b5822520417aab4adf4e5340f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks whether the submatrix with rows assigned to <code>part</code> and columns assigned to the other has at least rank 2.  <a href="separation_8c.html#ad2ce082b5822520417aab4adf4e5340f">More...</a><br /></td></tr>
-<tr class="separator:ad2ce082b5822520417aab4adf4e5340f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a92fcd27061aa703ec33614b2bc557571"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="separation_8c.html#a92fcd27061aa703ec33614b2bc557571">CMRsepaInitializeMatrix</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *separation, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, unsigned char totalRank)</td></tr>
-<tr class="memdesc:a92fcd27061aa703ec33614b2bc557571"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a separation.  <a href="separation_8c.html#a92fcd27061aa703ec33614b2bc557571">More...</a><br /></td></tr>
-<tr class="separator:a92fcd27061aa703ec33614b2bc557571"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a55151bb2f6124b7a413e33e557eb8d9b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="separation_8c.html#a55151bb2f6124b7a413e33e557eb8d9b">CMRsepaFree</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> **psepa)</td></tr>
 <tr class="memdesc:a55151bb2f6124b7a413e33e557eb8d9b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Frees a separation.  <a href="separation_8c.html#a55151bb2f6124b7a413e33e557eb8d9b">More...</a><br /></td></tr>
 <tr class="separator:a55151bb2f6124b7a413e33e557eb8d9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a11df541c5090b2cfd9be0e91dd1b0f22"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="separation_8c.html#a11df541c5090b2cfd9be0e91dd1b0f22">checkTernary</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, size_t numBlockRows, size_t *blockRows, size_t numBlockColumns, size_t *blockColumns, unsigned char rank, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> *submatrix, bool *pisTernary, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **psubmatrix)</td></tr>
-<tr class="separator:a11df541c5090b2cfd9be0e91dd1b0f22"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeb847af17aa870fb3199baa54383bc6d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="separation_8c.html#aeb847af17aa870fb3199baa54383bc6d">CMRsepaCheckTernary</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *sepa, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> *submatrix, bool *pisTernary, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **psubmatrix)</td></tr>
-<tr class="memdesc:aeb847af17aa870fb3199baa54383bc6d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks for a given matrix whether the binary k-separation is also a ternary one.  <a href="separation_8c.html#aeb847af17aa870fb3199baa54383bc6d">More...</a><br /></td></tr>
-<tr class="separator:aeb847af17aa870fb3199baa54383bc6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1877d526e7cefb577509a9a81ad74773"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="separation_8c.html#a1877d526e7cefb577509a9a81ad74773">CMRsepaComputeSizes</a> (<a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *sepa, size_t *pnumRowsTopLeft, size_t *pnumColumnsTopLeft, size_t *pnumRowsBottomRight, size_t *pnumColumnsBottomRight)</td></tr>
+<tr class="memdesc:a1877d526e7cefb577509a9a81ad74773"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the sizes of the top-left and bottom-right parts.  <a href="separation_8c.html#a1877d526e7cefb577509a9a81ad74773">More...</a><br /></td></tr>
+<tr class="separator:a1877d526e7cefb577509a9a81ad74773"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab442a939ace2db9bdfc0c536d01309fd"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="separation_8c.html#ab442a939ace2db9bdfc0c536d01309fd">computeSubmatrixRank</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, size_t numRows, size_t *rows, bool *columnsConsidered, <a class="el" href="separation_8h.html#aa06a64b71cbe46753d9cc04b57a0659d">CMR_SEPA_FLAGS</a> *rowsFlags, size_t *prank, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **pviolatorSubmatrix)</td></tr>
+<tr class="memdesc:ab442a939ace2db9bdfc0c536d01309fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the binary and ternary of a submatrix of <code>matrix</code> (if at most 2).  <a href="separation_8c.html#ab442a939ace2db9bdfc0c536d01309fd">More...</a><br /></td></tr>
+<tr class="separator:ab442a939ace2db9bdfc0c536d01309fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a07dd854cbda2e8337fc19948be9d52b9"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="separation_8c.html#a07dd854cbda2e8337fc19948be9d52b9">findRepresentatives</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *sepa, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *transpose, size_t *submatrixRows, size_t *submatrixColumns, bool *pswapped, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **pviolatorSubmatrix)</td></tr>
+<tr class="memdesc:a07dd854cbda2e8337fc19948be9d52b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Implementation of <a class="el" href="separation_8c.html#acf2df487c38fa22f43521a69fd9f6ee5">CMRsepaFindBinaryRepresentatives</a> and <a class="el" href="separation_8c.html#abe10a2b462a3aae2f16967c93ea3626d">CMRsepaFindBinaryRepresentativesSubmatrix</a>.  <a href="separation_8c.html#a07dd854cbda2e8337fc19948be9d52b9">More...</a><br /></td></tr>
+<tr class="separator:a07dd854cbda2e8337fc19948be9d52b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf2df487c38fa22f43521a69fd9f6ee5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="separation_8c.html#acf2df487c38fa22f43521a69fd9f6ee5">CMRsepaFindBinaryRepresentatives</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *sepa, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *transpose, bool *pswapped, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **pviolator)</td></tr>
+<tr class="memdesc:acf2df487c38fa22f43521a69fd9f6ee5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Scans the support of <code>matrix</code> to compute all representative rows/columns for <code>sepa</code> and sets the type.  <a href="separation_8c.html#acf2df487c38fa22f43521a69fd9f6ee5">More...</a><br /></td></tr>
+<tr class="separator:acf2df487c38fa22f43521a69fd9f6ee5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe10a2b462a3aae2f16967c93ea3626d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="separation_8c.html#abe10a2b462a3aae2f16967c93ea3626d">CMRsepaFindBinaryRepresentativesSubmatrix</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *sepa, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *transpose, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> *submatrix, bool *pswapped, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **pviolator)</td></tr>
+<tr class="memdesc:abe10a2b462a3aae2f16967c93ea3626d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Scans the support of <code>submatrix</code> of <code>matrix</code> to compute all representative rows/columns for <code>sepa</code> and sets the type.  <a href="separation_8c.html#abe10a2b462a3aae2f16967c93ea3626d">More...</a><br /></td></tr>
+<tr class="separator:abe10a2b462a3aae2f16967c93ea3626d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d4816875f3156c25a003e09de2de149"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="separation_8c.html#a3d4816875f3156c25a003e09de2de149">CMRsepaGetRepresentatives</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *sepa, size_t reprRows[2][3], size_t reprColumns[2][3])</td></tr>
+<tr class="memdesc:a3d4816875f3156c25a003e09de2de149"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns representative rows/columns of the low-rank submatrices.  <a href="separation_8c.html#a3d4816875f3156c25a003e09de2de149">More...</a><br /></td></tr>
+<tr class="separator:a3d4816875f3156c25a003e09de2de149"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a27b621e22868edb47a01c5045cb6fe"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="separation_8c.html#a3a27b621e22868edb47a01c5045cb6fe">CMRsepaGetProjection</a> (<a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *sepa, size_t part, size_t *rowsToPart, size_t *columnsToPart, size_t *pnumPartRows, size_t *pnumPartColumns)</td></tr>
+<tr class="memdesc:a3a27b621e22868edb47a01c5045cb6fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates mappings from rows/columns to those of <code>part</code>; also maps up to 3 representative rows/columns.  <a href="separation_8c.html#a3a27b621e22868edb47a01c5045cb6fe">More...</a><br /></td></tr>
+<tr class="separator:a3a27b621e22868edb47a01c5045cb6fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d3f5359524882feaaf0f788b16ea92e"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="separation_8c.html#a5d3f5359524882feaaf0f788b16ea92e">checkTernary</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *sepa, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, size_t *submatrixRows, size_t *columnsToSubmatrixColumn, bool *pisTernary, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **pviolator)</td></tr>
+<tr class="memdesc:a5d3f5359524882feaaf0f788b16ea92e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Implementation of <code>CMRsepaCheckTernary</code> and <code>CMRsepaCheckTernarySubmatrix</code>.  <a href="separation_8c.html#a5d3f5359524882feaaf0f788b16ea92e">More...</a><br /></td></tr>
+<tr class="separator:a5d3f5359524882feaaf0f788b16ea92e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af74a65e81249970642afe933b1bdb5c0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="separation_8c.html#af74a65e81249970642afe933b1bdb5c0">CMRsepaCheckTernary</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *sepa, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, bool *pisTernary, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **pviolator)</td></tr>
+<tr class="memdesc:af74a65e81249970642afe933b1bdb5c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks for a given matrix whether the binary k-separation is also a ternary one.  <a href="separation_8c.html#af74a65e81249970642afe933b1bdb5c0">More...</a><br /></td></tr>
+<tr class="separator:af74a65e81249970642afe933b1bdb5c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c52c09007ebc2fda1bc140ccf773ad5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="separation_8c.html#a7c52c09007ebc2fda1bc140ccf773ad5">CMRsepaCheckTernarySubmatrix</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *sepa, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> *submatrix, bool *pisTernary, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **pviolator)</td></tr>
+<tr class="memdesc:a7c52c09007ebc2fda1bc140ccf773ad5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks for a submatrix of a given matrix whether the binary k-separation is also a ternary one.  <a href="separation_8c.html#a7c52c09007ebc2fda1bc140ccf773ad5">More...</a><br /></td></tr>
+<tr class="separator:a7c52c09007ebc2fda1bc140ccf773ad5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6a613163fc2eeb1f07c2bb33c0b81932"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="separation_8c.html#a6a613163fc2eeb1f07c2bb33c0b81932">CMRoneSum</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *first, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *second, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> **presult)</td></tr>
 <tr class="memdesc:a6a613163fc2eeb1f07c2bb33c0b81932"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs the 1-sum of the two matrices <code>first</code> and <code>second</code>.  <a href="separation_8c.html#a6a613163fc2eeb1f07c2bb33c0b81932">More...</a><br /></td></tr>
 <tr class="separator:a6a613163fc2eeb1f07c2bb33c0b81932"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -124,9 +149,24 @@ Functions</h2></td></tr>
 <tr class="memdesc:a915aff670e93428bf598a45e04521c06"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs the 3-sum of the two matrices <code>first</code> and <code>second</code> via <code>firstMarker1</code>, <code>firstMarker2</code>, <code>secondMarker1</code> and <code>secondMarker2</code>.  <a href="separation_8c.html#a915aff670e93428bf598a45e04521c06">More...</a><br /></td></tr>
 <tr class="separator:a915aff670e93428bf598a45e04521c06"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Macro Definition Documentation</h2>
+<a id="aaf4503422b8ef76e6591c97a9b3499d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf4503422b8ef76e6591c97a9b3499d0">&#9670;&nbsp;</a></span>CMR_DEBUG</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define CMR_DEBUG&#160;&#160;&#160;/* Uncomment to debug this file. */</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="a11df541c5090b2cfd9be0e91dd1b0f22"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a11df541c5090b2cfd9be0e91dd1b0f22">&#9670;&nbsp;</a></span>checkTernary()</h2>
+<a id="a5d3f5359524882feaaf0f788b16ea92e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d3f5359524882feaaf0f788b16ea92e">&#9670;&nbsp;</a></span>checkTernary()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -143,32 +183,8 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>numBlockRows</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t *&#160;</td>
-          <td class="paramname"><em>blockRows</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>numBlockColumns</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t *&#160;</td>
-          <td class="paramname"><em>blockColumns</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">unsigned char&#160;</td>
-          <td class="paramname"><em>rank</em>, </td>
+          <td class="paramtype"><a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *&#160;</td>
+          <td class="paramname"><em>sepa</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -179,8 +195,14 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> *&#160;</td>
-          <td class="paramname"><em>submatrix</em>, </td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>submatrixRows</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>columnsToSubmatrixColumn</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -192,7 +214,7 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype"><a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **&#160;</td>
-          <td class="paramname"><em>psubmatrix</em>&#160;</td>
+          <td class="paramname"><em>pviolator</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -206,6 +228,20 @@ Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Implementation of <code>CMRsepaCheckTernary</code> and <code>CMRsepaCheckTernarySubmatrix</code>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">sepa</td><td>Separation. </td></tr>
+    <tr><td class="paramname">matrix</td><td>Matrix. </td></tr>
+    <tr><td class="paramname">submatrixRows</td><td>Array mapping a submatrix row to a row of <code>matrix</code>. </td></tr>
+    <tr><td class="paramname">columnsToSubmatrixColumn</td><td>Array mapping a column of <code>matrix</code> to a column of the submatrix or <code>NULL</code>. </td></tr>
+    <tr><td class="paramname">pisTernary</td><td>Pointer for storing whether the check passed. </td></tr>
+    <tr><td class="paramname">pviolator</td><td>Pointer for storing a violator submatrix (may be <code>NULL</code>). </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -264,14 +300,74 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="aeb847af17aa870fb3199baa54383bc6d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aeb847af17aa870fb3199baa54383bc6d">&#9670;&nbsp;</a></span>CMRsepaCheckTernary()</h2>
+<a id="af74a65e81249970642afe933b1bdb5c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af74a65e81249970642afe933b1bdb5c0">&#9670;&nbsp;</a></span>CMRsepaCheckTernary()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRsepaCheckTernary </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *&#160;</td>
+          <td class="paramname"><em>sepa</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *&#160;</td>
+          <td class="paramname"><em>matrix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool *&#160;</td>
+          <td class="paramname"><em>pisTernary</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **&#160;</td>
+          <td class="paramname"><em>pviolator</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Checks for a given matrix whether the binary k-separation is also a ternary one. </p>
+<p>Checks, for a ternary input matrix \( M \) and a k-separation ( \( k \in \{2,3\} \)) of the (binary) support matrix of \( M \), whether it is also a k-separation of \( M \) itself. The result is stored in <code>*pisTernary</code>.</p>
+<p>If the check fails, a violating 2-by-2 submatrix is returned. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">sepa</td><td>Separation. </td></tr>
+    <tr><td class="paramname">matrix</td><td>Matrix. </td></tr>
+    <tr><td class="paramname">pisTernary</td><td>Pointer for storing whether the check passed. </td></tr>
+    <tr><td class="paramname">pviolator</td><td>Pointer for storing a violator submatrix (may be <code>NULL</code>). </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a7c52c09007ebc2fda1bc140ccf773ad5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c52c09007ebc2fda1bc140ccf773ad5">&#9670;&nbsp;</a></span>CMRsepaCheckTernarySubmatrix()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRsepaCheckTernarySubmatrix </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
           <td class="paramname"><em>cmr</em>, </td>
@@ -304,7 +400,7 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype"><a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **&#160;</td>
-          <td class="paramname"><em>psubmatrix</em>&#160;</td>
+          <td class="paramname"><em>pviolator</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -314,17 +410,75 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Checks for a given matrix whether the binary k-separation is also a ternary one. </p>
-<p>Checks, for a ternary input matrix \( M \) and a k-separation ( \( k \in \{1,2,3\} \)) of the (binary) support matrix of \( M \), whether it is also a k-separation of \( M \) itself. The result is stored in <code>*pisTernary</code>.</p>
-<p>If the check fails, a certifying submatrix is returned. </p>
+<p>Checks for a submatrix of a given matrix whether the binary k-separation is also a ternary one. </p>
+<p>Checks, for a ternary input matrix \( M \) and a k-separation ( \( k \in \{2,3\} \)) of the (binary) support matrix of \( M \), whether it is also a k-separation of \( M \) itself. The result is stored in <code>*pisTernary</code>.</p>
+<p>If the check fails, a certifying submatrix is returned in <code>*pviolator</code>. Its row/column indices refer to <code>submatrix</code>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
     <tr><td class="paramname">sepa</td><td>Separation. </td></tr>
     <tr><td class="paramname">matrix</td><td>Matrix. </td></tr>
-    <tr><td class="paramname">submatrix</td><td>Submatrix of <code>matrix</code> to consider (may be <code>NULL</code>). </td></tr>
+    <tr><td class="paramname">submatrix</td><td>Submatrix to consider. </td></tr>
     <tr><td class="paramname">pisTernary</td><td>Pointer for storing whether the check passed. </td></tr>
-    <tr><td class="paramname">psubmatrix</td><td>Pointer for storing a violator submatrix (may be <code>NULL</code>). </td></tr>
+    <tr><td class="paramname">pviolator</td><td>Pointer for storing a violator submatrix (may be <code>NULL</code>). </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a1877d526e7cefb577509a9a81ad74773"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1877d526e7cefb577509a9a81ad74773">&#9670;&nbsp;</a></span>CMRsepaComputeSizes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRsepaComputeSizes </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *&#160;</td>
+          <td class="paramname"><em>sepa</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>pnumRowsTopLeft</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>pnumColumnsTopLeft</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>pnumRowsBottomRight</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>pnumColumnsBottomRight</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Computes the sizes of the top-left and bottom-right parts. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">sepa</td><td>Separation. </td></tr>
+    <tr><td class="paramname">pnumRowsTopLeft</td><td>Pointer for storing the number of rows of the top-left part. </td></tr>
+    <tr><td class="paramname">pnumColumnsTopLeft</td><td>Pointer for storing the number of columns of the top-left part. </td></tr>
+    <tr><td class="paramname">pnumRowsBottomRight</td><td>Pointer for storing the number of rows of the bottom-right part. </td></tr>
+    <tr><td class="paramname">pnumColumnsBottomRight</td><td>Pointer for storing the number of columns of the bottom-right part. </td></tr>
   </table>
   </dd>
 </dl>
@@ -369,14 +523,153 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Creates a separation. </p>
-<p>Only the memory is allocated. The usualy way to initialize it is to fill the arrays rowsToPart and columnsToPart and then call <a class="el" href="separation_8c.html#a6e831a27e45ebb24ce72f865c23d7d79">CMRsepaInitialize</a>. </p>
+<p>Creates a 2- or 3-separation. </p>
+<p>Only the memory is allocated. The rowsFlags and columnsFlags arrays must be filled properly. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
     <tr><td class="paramname">numRows</td><td>Number of rows. </td></tr>
     <tr><td class="paramname">numColumns</td><td>Number of columns. </td></tr>
     <tr><td class="paramname">psepa</td><td>Pointer for storing the created separation. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="acf2df487c38fa22f43521a69fd9f6ee5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf2df487c38fa22f43521a69fd9f6ee5">&#9670;&nbsp;</a></span>CMRsepaFindBinaryRepresentatives()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRsepaFindBinaryRepresentatives </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *&#160;</td>
+          <td class="paramname"><em>sepa</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *&#160;</td>
+          <td class="paramname"><em>matrix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *&#160;</td>
+          <td class="paramname"><em>transpose</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool *&#160;</td>
+          <td class="paramname"><em>pswapped</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **&#160;</td>
+          <td class="paramname"><em>pviolator</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Scans the support of <code>matrix</code> to compute all representative rows/columns for <code>sepa</code> and sets the type. </p>
+<p>Assumes that the sum of the ranks of the off-diagonal blocks is at most 2. Potentially swaps parts to ensure that the rank of the bottom-left submatrix is at least that of the top-right submatrix. Sets the rowsFlags and columnsFlags attributes accordingly. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">sepa</td><td>Separation. </td></tr>
+    <tr><td class="paramname">matrix</td><td>Matrix. </td></tr>
+    <tr><td class="paramname">transpose</td><td>Transpose of <code>matrix</code>. </td></tr>
+    <tr><td class="paramname">pswapped</td><td>Pointer for storing whether parts were swapped (may be <code>NULL</code>). </td></tr>
+    <tr><td class="paramname">pviolator</td><td>Pointer for storing a violator submatrix if the ternary rank differs (may be <code>NULL</code>). </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="abe10a2b462a3aae2f16967c93ea3626d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe10a2b462a3aae2f16967c93ea3626d">&#9670;&nbsp;</a></span>CMRsepaFindBinaryRepresentativesSubmatrix()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRsepaFindBinaryRepresentativesSubmatrix </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *&#160;</td>
+          <td class="paramname"><em>sepa</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *&#160;</td>
+          <td class="paramname"><em>matrix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *&#160;</td>
+          <td class="paramname"><em>transpose</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> *&#160;</td>
+          <td class="paramname"><em>submatrix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool *&#160;</td>
+          <td class="paramname"><em>pswapped</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **&#160;</td>
+          <td class="paramname"><em>pviolator</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Scans the support of <code>submatrix</code> of <code>matrix</code> to compute all representative rows/columns for <code>sepa</code> and sets the type. </p>
+<p>Assumes that the sum of the ranks of the off-diagonal blocks is at most 2. Potentially swaps parts to ensure that the rank of the bottom-left submatrix is at least that of the top-right submatrix. Sets the rowsFlags and columnsFlags attributes accordingly. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">sepa</td><td>Separation. </td></tr>
+    <tr><td class="paramname">matrix</td><td>Matrix. </td></tr>
+    <tr><td class="paramname">transpose</td><td>Transpose of <code>matrix</code>. </td></tr>
+    <tr><td class="paramname">submatrix</td><td>Submatrix of <code>matrix</code>. </td></tr>
+    <tr><td class="paramname">pswapped</td><td>Pointer for storing whether parts were swapped (may be <code>NULL</code>). </td></tr>
+    <tr><td class="paramname">pviolator</td><td>Pointer for storing a violator submatrix if the ternary rank differs (may be <code>NULL</code>). </td></tr>
   </table>
   </dd>
 </dl>
@@ -420,71 +713,47 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a6e831a27e45ebb24ce72f865c23d7d79"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6e831a27e45ebb24ce72f865c23d7d79">&#9670;&nbsp;</a></span>CMRsepaInitialize()</h2>
+<a id="a3a27b621e22868edb47a01c5045cb6fe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a27b621e22868edb47a01c5045cb6fe">&#9670;&nbsp;</a></span>CMRsepaGetProjection()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRsepaInitialize </td>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRsepaGetProjection </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
-          <td class="paramname"><em>cmr</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
           <td class="paramtype"><a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *&#160;</td>
-          <td class="paramname"><em>separation</em>, </td>
+          <td class="paramname"><em>sepa</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>firstExtraRow0</em>, </td>
+          <td class="paramname"><em>part</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>firstExtraColumn1</em>, </td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>rowsToPart</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>firstExtraRow1</em>, </td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>columnsToPart</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>firstExtraColumn0</em>, </td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>pnumPartRows</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>secondExtraRow0</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>secondExtraColumn1</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>secondExtraRow1</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>secondExtraColumn0</em>&#160;</td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>pnumPartColumns</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -494,34 +763,29 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Initializes a separation. </p>
-<p>Assumes that <code>separation</code> was created via <a class="el" href="separation_8c.html#a8146064cd1156ddde1731293361e39f5">CMRsepaCreate</a> and that all entries of rowsToPart and columnsToPart are set to either 0 or 1. The connecting elements are given by the caller. </p>
+<p>Creates mappings from rows/columns to those of <code>part</code>; also maps up to 3 representative rows/columns. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
-    <tr><td class="paramname">separation</td><td>Already created separation. </td></tr>
-    <tr><td class="paramname">firstExtraRow0</td><td>First extra row for part 0 or <code>SIZE_MAX</code> if bottom-left rank is 0. </td></tr>
-    <tr><td class="paramname">firstExtraColumn1</td><td>First extra column for part 1 or <code>SIZE_MAX</code> if bottom-left rank is 0. </td></tr>
-    <tr><td class="paramname">firstExtraRow1</td><td>First extra row for part 1 or <code>SIZE_MAX</code> if top-right rank is 0. </td></tr>
-    <tr><td class="paramname">firstExtraColumn0</td><td>First extra column for part 0 or <code>SIZE_MAX</code> if top-right rank is 0. </td></tr>
-    <tr><td class="paramname">secondExtraRow0</td><td>Second extra row for part 0 or <code>SIZE_MAX</code> if bottom-left rank is at most 1. </td></tr>
-    <tr><td class="paramname">secondExtraColumn1</td><td>Second extra column for part 1 or <code>SIZE_MAX</code> if bottom-left rank is at most 1. </td></tr>
-    <tr><td class="paramname">secondExtraRow1</td><td>Second extra row for part 1 or <code>SIZE_MAX</code> if top-right rank is at most 1. </td></tr>
-    <tr><td class="paramname">secondExtraColumn0</td><td>Second extra column for part 0 or <code>SIZE_MAX</code> if top-right rank is at most 1. </td></tr>
+    <tr><td class="paramname">sepa</td><td>Separation. </td></tr>
+    <tr><td class="paramname">part</td><td>Part to project. </td></tr>
+    <tr><td class="paramname">rowsToPart</td><td>Array for storing the mapping from rows to those of <code>part</code>. </td></tr>
+    <tr><td class="paramname">columnsToPart</td><td>Array for storing the mapping from columns to those of <code>part</code>. </td></tr>
+    <tr><td class="paramname">pnumPartRows</td><td>Pointer for storing the number of rows of <code>part</code> (excluding representatives). </td></tr>
+    <tr><td class="paramname">pnumPartColumns</td><td>Pointer for storing the number of columns of <code>part</code> (excluding representatives). </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a id="a92fcd27061aa703ec33614b2bc557571"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a92fcd27061aa703ec33614b2bc557571">&#9670;&nbsp;</a></span>CMRsepaInitializeMatrix()</h2>
+<a id="a3d4816875f3156c25a003e09de2de149"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d4816875f3156c25a003e09de2de149">&#9670;&nbsp;</a></span>CMRsepaGetRepresentatives()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRsepaInitializeMatrix </td>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRsepaGetRepresentatives </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
           <td class="paramname"><em>cmr</em>, </td>
@@ -530,19 +794,19 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype"><a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *&#160;</td>
-          <td class="paramname"><em>separation</em>, </td>
+          <td class="paramname"><em>sepa</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *&#160;</td>
-          <td class="paramname"><em>matrix</em>, </td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>reprRows</em>[2][3], </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">unsigned char&#160;</td>
-          <td class="paramname"><em>totalRank</em>&#160;</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>reprColumns</em>[2][3]&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -552,14 +816,13 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Initializes a separation. </p>
-<p>Assumes that <code>separation</code> was created via <a class="el" href="separation_8c.html#a8146064cd1156ddde1731293361e39f5">CMRsepaCreate</a> and that all entries of rowsToPart and columnsToPart are set to either 0 or 1. The connecting elements will be searched by inspecting <code>matrix</code>. </p>
+<p>Returns representative rows/columns of the low-rank submatrices. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
-    <tr><td class="paramname">separation</td><td>Already created separation. </td></tr>
-    <tr><td class="paramname">matrix</td><td>Matrix this separation belongs to. </td></tr>
-    <tr><td class="paramname">totalRank</td><td>Total rank of separation. </td></tr>
+    <tr><td class="paramname">sepa</td><td>Separation. </td></tr>
+    <tr><td class="paramname">reprRows</td><td>Array mapping child to arrays of (at most 3) different representative rows. </td></tr>
+    <tr><td class="paramname">reprColumns</td><td>Array mapping child to arrays of (at most 3) different representative columns. </td></tr>
   </table>
   </dd>
 </dl>
@@ -743,8 +1006,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a415d35fc7d42dd91ac375df84e04010f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a415d35fc7d42dd91ac375df84e04010f">&#9670;&nbsp;</a></span>findRank1()</h2>
+<a id="ab442a939ace2db9bdfc0c536d01309fd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab442a939ace2db9bdfc0c536d01309fd">&#9670;&nbsp;</a></span>computeSubmatrixRank()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -753,22 +1016,52 @@ Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static bool findRank1 </td>
+          <td class="memname">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> computeSubmatrixRank </td>
           <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *&#160;</td>
           <td class="paramname"><em>matrix</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *&#160;</td>
-          <td class="paramname"><em>separation</em>, </td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>numRows</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">short&#160;</td>
-          <td class="paramname"><em>part</em>&#160;</td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>rows</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool *&#160;</td>
+          <td class="paramname"><em>columnsConsidered</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="separation_8h.html#aa06a64b71cbe46753d9cc04b57a0659d">CMR_SEPA_FLAGS</a> *&#160;</td>
+          <td class="paramname"><em>rowsFlags</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>prank</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **&#160;</td>
+          <td class="paramname"><em>pviolatorSubmatrix</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -783,21 +1076,26 @@ Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Checks whether the submatrix with rows assigned to <code>part</code> and columns assigned to the other has at least rank 1. </p>
-<p>If the rank is at least 1, the row and column of a corresponding nonzero are stored in <code>separation</code>. </p>
+<p>Compute the binary and ternary of a submatrix of <code>matrix</code> (if at most 2). </p>
+<p>Update indicator columns.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
     <tr><td class="paramname">matrix</td><td>Matrix. </td></tr>
-    <tr><td class="paramname">separation</td><td>Separation. </td></tr>
-    <tr><td class="paramname">part</td><td>Part to which the investigated rows belong. </td></tr>
+    <tr><td class="paramname">numRows</td><td>Number of rows. </td></tr>
+    <tr><td class="paramname">rows</td><td>Array with row indices. </td></tr>
+    <tr><td class="paramname">columnsConsidered</td><td>Array indicating for each column of <code>matrix</code> whether it shall be considered. </td></tr>
+    <tr><td class="paramname">rowsFlags</td><td>Array of length <code>numRows</code> for storing the flags for representatives. </td></tr>
+    <tr><td class="paramname">prank</td><td>Pointer for storing the computed rank. </td></tr>
+    <tr><td class="paramname">pviolatorSubmatrix</td><td>Pointer for storing a submatrix of absolute determinant 2 (or <code>NULL</code>). </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a id="ad2ce082b5822520417aab4adf4e5340f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad2ce082b5822520417aab4adf4e5340f">&#9670;&nbsp;</a></span>findRank2()</h2>
+<a id="a07dd854cbda2e8337fc19948be9d52b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a07dd854cbda2e8337fc19948be9d52b9">&#9670;&nbsp;</a></span>findRepresentatives()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -806,60 +1104,7 @@ Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static bool findRank2 </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *&#160;</td>
-          <td class="paramname"><em>matrix</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *&#160;</td>
-          <td class="paramname"><em>separation</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">short&#160;</td>
-          <td class="paramname"><em>part</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Checks whether the submatrix with rows assigned to <code>part</code> and columns assigned to the other has at least rank 2. </p>
-<p>Assumes that <code>separation</code> already contains a row and a column of some nonzero. If the rank is at least 2, the row and column of an nonzero with which the previous one induces a rank-2 submatrix are stored in <code>separation</code>. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">matrix</td><td>Matrix. </td></tr>
-    <tr><td class="paramname">separation</td><td>Separation. </td></tr>
-    <tr><td class="paramname">part</td><td>Part to which the investigated rows belong. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a61feb00ae963475c7f9855affe6d9834"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a61feb00ae963475c7f9855affe6d9834">&#9670;&nbsp;</a></span>initialize()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> initialize </td>
+          <td class="memname">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> findRepresentatives </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
           <td class="paramname"><em>cmr</em>, </td>
@@ -868,7 +1113,43 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype"><a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *&#160;</td>
-          <td class="paramname"><em>separation</em>&#160;</td>
+          <td class="paramname"><em>sepa</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *&#160;</td>
+          <td class="paramname"><em>matrix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *&#160;</td>
+          <td class="paramname"><em>transpose</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>submatrixRows</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>submatrixColumns</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool *&#160;</td>
+          <td class="paramname"><em>pswapped</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **&#160;</td>
+          <td class="paramname"><em>pviolatorSubmatrix</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -882,10 +1163,18 @@ Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Implementation of <a class="el" href="separation_8c.html#acf2df487c38fa22f43521a69fd9f6ee5">CMRsepaFindBinaryRepresentatives</a> and <a class="el" href="separation_8c.html#abe10a2b462a3aae2f16967c93ea3626d">CMRsepaFindBinaryRepresentativesSubmatrix</a>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
-    <tr><td class="paramname">separation</td><td>Already created separation. </td></tr>
+    <tr><td class="paramname">sepa</td><td>Separation. </td></tr>
+    <tr><td class="paramname">matrix</td><td>Matrix. </td></tr>
+    <tr><td class="paramname">transpose</td><td>Transpose of <code>matrix</code>. </td></tr>
+    <tr><td class="paramname">submatrixRows</td><td>Array mapping a submatrix row to a row of <code>matrix</code>. </td></tr>
+    <tr><td class="paramname">submatrixColumns</td><td>Array mapping a submatrix column to a column of <code>matrix</code>. </td></tr>
+    <tr><td class="paramname">pswapped</td><td>Pointer for storing whether parts were swapped (may be <code>NULL</code>). </td></tr>
+    <tr><td class="paramname">pviolatorSubmatrix</td><td>Pointer for storing a violator submatrix if the ternary rank differs **&lt; (may be <code>NULL</code>). </td></tr>
   </table>
   </dd>
 </dl>

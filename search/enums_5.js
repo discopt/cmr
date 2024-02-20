@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['type_2816',['Type',['../graphic_8c.html#a1d1cfd8ffb84e947f82999c682b666a7',1,'graphic.c']]]
+  ['rank_5fdistribution_2962',['rank_distribution',['../namespacetu.html#a5c6c696e8b23f6a209337a8ac51f5796',1,'tu']]]
 ];

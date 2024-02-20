@@ -1,7 +1,9 @@
 var searchData=
 [
-  ['transpose_5forientation_1541',['transpose_orientation',['../structtu_1_1detail_1_1transpose__orientation.html',1,'tu::detail']]],
-  ['transpose_5forientation_3c_20boost_3a_3anumeric_3a_3aublas_3a_3acolumn_5fmajor_5ftag_20_3e_1542',['transpose_orientation&lt; boost::numeric::ublas::column_major_tag &gt;',['../structtu_1_1detail_1_1transpose__orientation_3_01boost_1_1numeric_1_1ublas_1_1column__major__tag_01_4.html',1,'tu::detail']]],
-  ['transpose_5forientation_3c_20boost_3a_3anumeric_3a_3aublas_3a_3arow_5fmajor_5ftag_20_3e_1543',['transpose_orientation&lt; boost::numeric::ublas::row_major_tag &gt;',['../structtu_1_1detail_1_1transpose__orientation_3_01boost_1_1numeric_1_1ublas_1_1row__major__tag_01_4.html',1,'tu::detail']]],
-  ['transposedmatrix_1544',['TransposedMatrix',['../classtu_1_1TransposedMatrix.html',1,'tu']]]
+  ['separation_1624',['separation',['../classtu_1_1separation.html',1,'tu']]],
+  ['single_5fviolator_5fstrategy_1625',['single_violator_strategy',['../classtu_1_1detail_1_1single__violator__strategy.html',1,'tu::detail']]],
+  ['sparsematrix_1626',['SparseMatrix',['../classtu_1_1SparseMatrix.html',1,'tu']]],
+  ['submatrix_1627',['Submatrix',['../classtu_1_1Submatrix.html',1,'tu']]],
+  ['submatrix_5findices_1628',['submatrix_indices',['../structtu_1_1submatrix__indices.html',1,'tu']]],
+  ['submatrixindices_1629',['SubmatrixIndices',['../classtu_1_1SubmatrixIndices.html',1,'tu']]]
 ];

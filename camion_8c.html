@@ -78,6 +78,7 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
+<a href="#enum-members">Enumerations</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">camion.c File Reference</div>  </div>
@@ -86,7 +87,7 @@ $(function() {
 <div class="textblock"><code>#include &lt;<a class="el" href="camion_8h_source.html">cmr/camion.h</a>&gt;</code><br />
 <code>#include &quot;<a class="el" href="camion__internal_8h_source.html">camion_internal.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="matrix__internal_8h_source.html">matrix_internal.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="one__sum_8h_source.html">one_sum.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="block__decomposition_8h_source.html">block_decomposition.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="env__internal_8h_source.html">env_internal.h</a>&quot;</code><br />
 <code>#include &lt;assert.h&gt;</code><br />
 <code>#include &lt;stdlib.h&gt;</code><br />
@@ -98,37 +99,167 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGRAPH__NODE.html">GRAPH_NODE</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Graph node for BFS in signing algorithm.  <a href="structGRAPH__NODE.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structOrientationSearchEdgeData.html">OrientationSearchEdgeData</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structOrientationSearchNodeData.html">OrientationSearchNodeData</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
+Enumerations</h2></td></tr>
+<tr class="memitem:a8c18c29838f9a0be38b68ad81f79c7b1"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="camion_8c.html#a8c18c29838f9a0be38b68ad81f79c7b1">OrientationSearchStage</a> { <a class="el" href="camion_8c.html#a8c18c29838f9a0be38b68ad81f79c7b1a6ce26a62afab55d7606ad4e92428b30c">UNKNOWN</a> = 0
+, <a class="el" href="camion_8c.html#a8c18c29838f9a0be38b68ad81f79c7b1a3c3d10a0aac8eaf750a0943620d8dee2">SEEN</a> = 1
+, <a class="el" href="camion_8c.html#a8c18c29838f9a0be38b68ad81f79c7b1a3549811efddf16048f4b8f6a3b960b41">COMPLETED</a> = 2
+, <a class="el" href="camion_8c.html#a8c18c29838f9a0be38b68ad81f79c7b1a13c45196813cb44e6e81e9c48a5ec1b4">BASIC</a> = 3
+ }</td></tr>
+<tr class="separator:a8c18c29838f9a0be38b68ad81f79c7b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a9e3ae72acb74d68560e2670d28d18aac"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="camion_8c.html#a9e3ae72acb74d68560e2670d28d18aac">CMRstatsCamionInit</a> (<a class="el" href="structCMR__CAMION__STATISTICS.html">CMR_CAMION_STATISTICS</a> *stats)</td></tr>
-<tr class="memdesc:a9e3ae72acb74d68560e2670d28d18aac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes all statistics for <a class="el" href="camion.html">Camion-signing</a> algorithm.  <a href="camion_8c.html#a9e3ae72acb74d68560e2670d28d18aac">More...</a><br /></td></tr>
-<tr class="separator:a9e3ae72acb74d68560e2670d28d18aac"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a577c4186a1c7b5ff9b1da83844ba8ee1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="camion_8c.html#a577c4186a1c7b5ff9b1da83844ba8ee1">CMRstatsCamionPrint</a> (FILE *stream, <a class="el" href="structCMR__CAMION__STATISTICS.html">CMR_CAMION_STATISTICS</a> *stats, const char *prefix)</td></tr>
-<tr class="memdesc:a577c4186a1c7b5ff9b1da83844ba8ee1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints statistics for <a class="el" href="camion.html">Camion-signing</a> algorithm.  <a href="camion_8c.html#a577c4186a1c7b5ff9b1da83844ba8ee1">More...</a><br /></td></tr>
-<tr class="separator:a577c4186a1c7b5ff9b1da83844ba8ee1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab82f8c3cd592049c8b61841f8b538f9b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="camion_8c.html#ab82f8c3cd592049c8b61841f8b538f9b">CMRcomputeCamionSignSequentiallyConnected</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *transpose, bool change, char *pmodification, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **psubmatrix, double timeLimit)</td></tr>
-<tr class="memdesc:ab82f8c3cd592049c8b61841f8b538f9b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ensures that sequentially connected matrix \( M \) is <a class="el" href="camion.html">Camion-signed</a>.  <a href="camion_8c.html#ab82f8c3cd592049c8b61841f8b538f9b">More...</a><br /></td></tr>
-<tr class="separator:ab82f8c3cd592049c8b61841f8b538f9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af2cf7668beb480856f5b34a02a19e1b1"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="camion_8c.html#af2cf7668beb480856f5b34a02a19e1b1">sign</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, bool change, bool *pisCamionSigned, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **psubmatrix, <a class="el" href="structCMR__CAMION__STATISTICS.html">CMR_CAMION_STATISTICS</a> *stats, double timeLimit)</td></tr>
-<tr class="memdesc:af2cf7668beb480856f5b34a02a19e1b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Signs a given matrix.  <a href="camion_8c.html#af2cf7668beb480856f5b34a02a19e1b1">More...</a><br /></td></tr>
-<tr class="separator:af2cf7668beb480856f5b34a02a19e1b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a75b988ef5112c32a8a8dba4a0bd7f94e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="camion_8c.html#a75b988ef5112c32a8a8dba4a0bd7f94e">CMRtestCamionSigned</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, bool *pisCamionSigned, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **psubmatrix, <a class="el" href="structCMR__CAMION__STATISTICS.html">CMR_CAMION_STATISTICS</a> *stats, double timeLimit)</td></tr>
-<tr class="memdesc:a75b988ef5112c32a8a8dba4a0bd7f94e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tests a matrix \( M \) for being a <a class="el" href="camion.html">Camion-signed</a>.  <a href="camion_8c.html#a75b988ef5112c32a8a8dba4a0bd7f94e">More...</a><br /></td></tr>
-<tr class="separator:a75b988ef5112c32a8a8dba4a0bd7f94e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae093359a081c4c754e399185c08b50d3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="camion_8c.html#ae093359a081c4c754e399185c08b50d3">CMRcomputeCamionSigned</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, bool *pwasCamionSigned, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **psubmatrix, <a class="el" href="structCMR__CAMION__STATISTICS.html">CMR_CAMION_STATISTICS</a> *stats, double timeLimit)</td></tr>
-<tr class="memdesc:ae093359a081c4c754e399185c08b50d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes a <a class="el" href="camion.html">Camion-signed</a> version of a given ternary matrix \( M \).  <a href="camion_8c.html#ae093359a081c4c754e399185c08b50d3">More...</a><br /></td></tr>
-<tr class="separator:ae093359a081c4c754e399185c08b50d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70d5d70b76e0bafa209a34c10c2443ae"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="camion_8c.html#a70d5d70b76e0bafa209a34c10c2443ae">CMRcamionStatsInit</a> (<a class="el" href="structCMR__CAMION__STATISTICS.html">CMR_CAMION_STATISTICS</a> *stats)</td></tr>
+<tr class="memdesc:a70d5d70b76e0bafa209a34c10c2443ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes all statistics for <a class="el" href="camion.html">Camion-signing</a> algorithm.  <a href="camion_8c.html#a70d5d70b76e0bafa209a34c10c2443ae">More...</a><br /></td></tr>
+<tr class="separator:a70d5d70b76e0bafa209a34c10c2443ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9addd7479f1f21502312ea88773a4c6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="camion_8c.html#ad9addd7479f1f21502312ea88773a4c6">CMRcamionStatsPrint</a> (FILE *stream, <a class="el" href="structCMR__CAMION__STATISTICS.html">CMR_CAMION_STATISTICS</a> *stats, const char *prefix)</td></tr>
+<tr class="memdesc:ad9addd7479f1f21502312ea88773a4c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints statistics for <a class="el" href="camion.html">Camion-signing</a> algorithm.  <a href="camion_8c.html#ad9addd7479f1f21502312ea88773a4c6">More...</a><br /></td></tr>
+<tr class="separator:ad9addd7479f1f21502312ea88773a4c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a07a9ba27ec9c7d521ec78f4f577f98cd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="camion_8c.html#a07a9ba27ec9c7d521ec78f4f577f98cd">CMRcamionComputeSignSequentiallyConnected</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *transpose, bool change, char *pmodification, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **psubmatrix, double timeLimit)</td></tr>
+<tr class="memdesc:a07a9ba27ec9c7d521ec78f4f577f98cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ensures that sequentially connected matrix \( M \) is <a class="el" href="camion.html">Camion-signed</a>.  <a href="camion_8c.html#a07a9ba27ec9c7d521ec78f4f577f98cd">More...</a><br /></td></tr>
+<tr class="separator:a07a9ba27ec9c7d521ec78f4f577f98cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7db2423fec567db74b168939f1653662"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="camion_8c.html#a7db2423fec567db74b168939f1653662">signCamion</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, bool change, bool *pisCamionSigned, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **psubmatrix, <a class="el" href="structCMR__CAMION__STATISTICS.html">CMR_CAMION_STATISTICS</a> *stats, double timeLimit)</td></tr>
+<tr class="memdesc:a7db2423fec567db74b168939f1653662"><td class="mdescLeft">&#160;</td><td class="mdescRight">Signs a given matrix.  <a href="camion_8c.html#a7db2423fec567db74b168939f1653662">More...</a><br /></td></tr>
+<tr class="separator:a7db2423fec567db74b168939f1653662"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b0f16f6439dc250686d0958e7bf5408"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="camion_8c.html#a8b0f16f6439dc250686d0958e7bf5408">CMRcamionTestSigns</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, bool *pisCamionSigned, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **psubmatrix, <a class="el" href="structCMR__CAMION__STATISTICS.html">CMR_CAMION_STATISTICS</a> *stats, double timeLimit)</td></tr>
+<tr class="memdesc:a8b0f16f6439dc250686d0958e7bf5408"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tests a matrix \( M \) for being a <a class="el" href="camion.html">Camion-signed</a>.  <a href="camion_8c.html#a8b0f16f6439dc250686d0958e7bf5408">More...</a><br /></td></tr>
+<tr class="separator:a8b0f16f6439dc250686d0958e7bf5408"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abbcff4aa3702a9627b97660d919d9687"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="camion_8c.html#abbcff4aa3702a9627b97660d919d9687">CMRcamionComputeSigns</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, bool *pwasCamionSigned, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **psubmatrix, <a class="el" href="structCMR__CAMION__STATISTICS.html">CMR_CAMION_STATISTICS</a> *stats, double timeLimit)</td></tr>
+<tr class="memdesc:abbcff4aa3702a9627b97660d919d9687"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes a <a class="el" href="camion.html">Camion-signed</a> version of a given ternary matrix \( M \).  <a href="camion_8c.html#abbcff4aa3702a9627b97660d919d9687">More...</a><br /></td></tr>
+<tr class="separator:abbcff4aa3702a9627b97660d919d9687"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a910def185378c786320bd59fb8d6ac5d"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="camion_8c.html#a910def185378c786320bd59fb8d6ac5d">constructNonCamionSubmatrix</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__GRAPH.html">CMR_GRAPH</a> *cograph, <a class="el" href="structOrientationSearchEdgeData.html">OrientationSearchEdgeData</a> *edgeData, <a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> conflictEdge1, <a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> conflictEdge2, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **psubmatrix)</td></tr>
+<tr class="separator:a910def185378c786320bd59fb8d6ac5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af8eaf0a4ef001df2477caadd566a12c4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="camion_8c.html#af8eaf0a4ef001df2477caadd566a12c4">CMRcamionCographicOrient</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, <a class="el" href="structCMR__GRAPH.html">CMR_GRAPH</a> *cograph, <a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> *forestEdges, <a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> *coforestEdges, bool *arcsReversed, bool *pisCamionSigned, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **psubmatrix, <a class="el" href="structCMR__CAMION__STATISTICS.html">CMR_CAMION_STATISTICS</a> *stats)</td></tr>
+<tr class="memdesc:af8eaf0a4ef001df2477caadd566a12c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Orients the edges of the graph <code>cograph</code> such that the matrix <code>matrix</code> \( M \) is the corresponding network matrix, which implicitly tests if <code>matrix</code> is <a class="el" href="camion.html">Camion-signed</a>.  <a href="camion_8c.html#af8eaf0a4ef001df2477caadd566a12c4">More...</a><br /></td></tr>
+<tr class="separator:af8eaf0a4ef001df2477caadd566a12c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Function Documentation</h2>
-<a id="ae093359a081c4c754e399185c08b50d3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae093359a081c4c754e399185c08b50d3">&#9670;&nbsp;</a></span>CMRcomputeCamionSigned()</h2>
+<h2 class="groupheader">Enumeration Type Documentation</h2>
+<a id="a8c18c29838f9a0be38b68ad81f79c7b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8c18c29838f9a0be38b68ad81f79c7b1">&#9670;&nbsp;</a></span>OrientationSearchStage</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRcomputeCamionSigned </td>
+          <td class="memname">enum <a class="el" href="camion_8c.html#a8c18c29838f9a0be38b68ad81f79c7b1">OrientationSearchStage</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a8c18c29838f9a0be38b68ad81f79c7b1a6ce26a62afab55d7606ad4e92428b30c"></a>UNKNOWN&#160;</td><td class="fielddoc"><p>The node was not considered by the shortest-path, yet. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a8c18c29838f9a0be38b68ad81f79c7b1a3c3d10a0aac8eaf750a0943620d8dee2"></a>SEEN&#160;</td><td class="fielddoc"><p>Some path to the node is known. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a8c18c29838f9a0be38b68ad81f79c7b1a3549811efddf16048f4b8f6a3b960b41"></a>COMPLETED&#160;</td><td class="fielddoc"><p>The shortest path to the node is known. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a8c18c29838f9a0be38b68ad81f79c7b1a13c45196813cb44e6e81e9c48a5ec1b4"></a>BASIC&#160;</td><td class="fielddoc"><p>The rootEdge of that node belongs to the spanning forest. </p>
+</td></tr>
+</table>
+
+</div>
+</div>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="af8eaf0a4ef001df2477caadd566a12c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af8eaf0a4ef001df2477caadd566a12c4">&#9670;&nbsp;</a></span>CMRcamionCographicOrient()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRcamionCographicOrient </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *&#160;</td>
+          <td class="paramname"><em>matrix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__GRAPH.html">CMR_GRAPH</a> *&#160;</td>
+          <td class="paramname"><em>cograph</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> *&#160;</td>
+          <td class="paramname"><em>forestEdges</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> *&#160;</td>
+          <td class="paramname"><em>coforestEdges</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool *&#160;</td>
+          <td class="paramname"><em>arcsReversed</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool *&#160;</td>
+          <td class="paramname"><em>pisCamionSigned</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **&#160;</td>
+          <td class="paramname"><em>psubmatrix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__CAMION__STATISTICS.html">CMR_CAMION_STATISTICS</a> *&#160;</td>
+          <td class="paramname"><em>stats</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Orients the edges of the graph <code>cograph</code> such that the matrix <code>matrix</code> \( M \) is the corresponding network matrix, which implicitly tests if <code>matrix</code> is <a class="el" href="camion.html">Camion-signed</a>. </p>
+<p>The cograph \( G = (V,E) \) has a spanning tree \( T \subseteq E \) indexed by the columns of \( M \). Its complement \( E \setminus T \) is indexed by the rows of \( M \). The function assumes that \( supp(M) = M(G,T)^\textsf{T} \) holds and attempts to compute an orientation \( A \) of the edges \( E \) (which is stored in <code>arcsReversed</code>) that corresponds to the signs of \( M \). <code>*pisCamionSigned</code> indicates success. If successful, \( M \) is the network matrix of the digraph \( D = (V,A) \). Otherwise, <code>*psubmatrix</code> will indicate a violating submatrix (if not <code>NULL</code>). </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">matrix</td><td>Matrix \( M \). </td></tr>
+    <tr><td class="paramname">cograph</td><td>Cograph \( G = (V,E) \) claimed to correspond to \( M \). </td></tr>
+    <tr><td class="paramname">forestEdges</td><td>\( T \), ordered by the columns of \( M \). </td></tr>
+    <tr><td class="paramname">coforestEdges</td><td>\( E \setminus T \), ordered by the rows of \( M \). </td></tr>
+    <tr><td class="paramname">arcsReversed</td><td>Indicates, for each edge \( \{u, v\} \in E\), whether \( (u,v) \in A \) (if <code>false</code>) or \( (v,u) \in A \) (if <code>true</code>). </td></tr>
+    <tr><td class="paramname">pisCamionSigned</td><td>Pointer for storing whether \( M \) is [Camion-signed](<a class="el" href="camion.html">Camion's Signing Algorithm</a>). </td></tr>
+    <tr><td class="paramname">psubmatrix</td><td>Pointer for storing a non-Camion submatrix (may be <code>NULL</code>). </td></tr>
+    <tr><td class="paramname">stats</td><td>Statistics for the computation (may be <code>NULL</code>). </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="abbcff4aa3702a9627b97660d919d9687"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abbcff4aa3702a9627b97660d919d9687">&#9670;&nbsp;</a></span>CMRcamionComputeSigns()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRcamionComputeSigns </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
           <td class="paramname"><em>cmr</em>, </td>
@@ -186,14 +317,14 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ab82f8c3cd592049c8b61841f8b538f9b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab82f8c3cd592049c8b61841f8b538f9b">&#9670;&nbsp;</a></span>CMRcomputeCamionSignSequentiallyConnected()</h2>
+<a id="a07a9ba27ec9c7d521ec78f4f577f98cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a07a9ba27ec9c7d521ec78f4f577f98cd">&#9670;&nbsp;</a></span>CMRcamionComputeSignSequentiallyConnected()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRcomputeCamionSignSequentiallyConnected </td>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRcamionComputeSignSequentiallyConnected </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
           <td class="paramname"><em>cmr</em>, </td>
@@ -260,14 +391,14 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a9e3ae72acb74d68560e2670d28d18aac"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9e3ae72acb74d68560e2670d28d18aac">&#9670;&nbsp;</a></span>CMRstatsCamionInit()</h2>
+<a id="a70d5d70b76e0bafa209a34c10c2443ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70d5d70b76e0bafa209a34c10c2443ae">&#9670;&nbsp;</a></span>CMRcamionStatsInit()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRstatsCamionInit </td>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRcamionStatsInit </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structCMR__CAMION__STATISTICS.html">CMR_CAMION_STATISTICS</a> *&#160;</td>
           <td class="paramname"><em>stats</em></td><td>)</td>
@@ -286,14 +417,14 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a577c4186a1c7b5ff9b1da83844ba8ee1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a577c4186a1c7b5ff9b1da83844ba8ee1">&#9670;&nbsp;</a></span>CMRstatsCamionPrint()</h2>
+<a id="ad9addd7479f1f21502312ea88773a4c6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9addd7479f1f21502312ea88773a4c6">&#9670;&nbsp;</a></span>CMRcamionStatsPrint()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRstatsCamionPrint </td>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRcamionStatsPrint </td>
           <td>(</td>
           <td class="paramtype">FILE *&#160;</td>
           <td class="paramname"><em>stream</em>, </td>
@@ -330,14 +461,14 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a75b988ef5112c32a8a8dba4a0bd7f94e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a75b988ef5112c32a8a8dba4a0bd7f94e">&#9670;&nbsp;</a></span>CMRtestCamionSigned()</h2>
+<a id="a8b0f16f6439dc250686d0958e7bf5408"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b0f16f6439dc250686d0958e7bf5408">&#9670;&nbsp;</a></span>CMRcamionTestSigns()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRtestCamionSigned </td>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRcamionTestSigns </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
           <td class="paramname"><em>cmr</em>, </td>
@@ -395,8 +526,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="af2cf7668beb480856f5b34a02a19e1b1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af2cf7668beb480856f5b34a02a19e1b1">&#9670;&nbsp;</a></span>sign()</h2>
+<a id="a910def185378c786320bd59fb8d6ac5d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a910def185378c786320bd59fb8d6ac5d">&#9670;&nbsp;</a></span>constructNonCamionSubmatrix()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -405,7 +536,78 @@ Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> sign </td>
+          <td class="memname">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> constructNonCamionSubmatrix </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__GRAPH.html">CMR_GRAPH</a> *&#160;</td>
+          <td class="paramname"><em>cograph</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structOrientationSearchEdgeData.html">OrientationSearchEdgeData</a> *&#160;</td>
+          <td class="paramname"><em>edgeData</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a>&#160;</td>
+          <td class="paramname"><em>conflictEdge1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a>&#160;</td>
+          <td class="paramname"><em>conflictEdge2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **&#160;</td>
+          <td class="paramname"><em>psubmatrix</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">cograph</td><td>Cograph we consider. </td></tr>
+    <tr><td class="paramname">edgeData</td><td>Edge data array. </td></tr>
+    <tr><td class="paramname">conflictEdge1</td><td>First edge of conflict. </td></tr>
+    <tr><td class="paramname">conflictEdge2</td><td>Second edge of conflict. </td></tr>
+    <tr><td class="paramname">psubmatrix</td><td>Pointer for storing the submatrix. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a7db2423fec567db74b168939f1653662"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7db2423fec567db74b168939f1653662">&#9670;&nbsp;</a></span>signCamion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> signCamion </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
           <td class="paramname"><em>cmr</em>, </td>

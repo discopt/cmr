@@ -123,9 +123,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a3936260ba193f5e3e383aa5df3298b83"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="matrix_8h.html#a3936260ba193f5e3e383aa5df3298b83">CMRsubmatZoomSubmat</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> *reference, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> *input, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **poutput)</td></tr>
 <tr class="memdesc:a3936260ba193f5e3e383aa5df3298b83"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the submatrix <code>input</code> as a submatrix of the <code>reference</code> submatrix.  <a href="matrix_8h.html#a3936260ba193f5e3e383aa5df3298b83">More...</a><br /></td></tr>
 <tr class="separator:a3936260ba193f5e3e383aa5df3298b83"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a586f9d93993cb72dddb2c25aea0e838e"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="matrix_8h.html#a586f9d93993cb72dddb2c25aea0e838e">CMRsubmatWriteToStream</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> *submatrix, size_t numRows, size_t numColumns, FILE *stream)</td></tr>
-<tr class="memdesc:a586f9d93993cb72dddb2c25aea0e838e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes the submatrix <code>submatrix</code> to the file <code>stream</code> by means of lists of row and column indices.  <a href="matrix_8h.html#a586f9d93993cb72dddb2c25aea0e838e">More...</a><br /></td></tr>
-<tr class="separator:a586f9d93993cb72dddb2c25aea0e838e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe84fc04957a3c5b6ea3ad6325585cbd"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="matrix_8h.html#afe84fc04957a3c5b6ea3ad6325585cbd">CMRsubmatPrint</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> *submatrix, size_t numRows, size_t numColumns, FILE *stream)</td></tr>
+<tr class="memdesc:afe84fc04957a3c5b6ea3ad6325585cbd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes the submatrix <code>submatrix</code> to the file <code>stream</code> by means of lists of row and column indices.  <a href="matrix_8h.html#afe84fc04957a3c5b6ea3ad6325585cbd">More...</a><br /></td></tr>
+<tr class="separator:afe84fc04957a3c5b6ea3ad6325585cbd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad8c479d82806175a40b4ba2d2a4ce047"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="matrix_8h.html#ad8c479d82806175a40b4ba2d2a4ce047">CMRsubmatWriteToFile</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> *submatrix, size_t numRows, size_t numColumns, const char *fileName)</td></tr>
 <tr class="memdesc:ad8c479d82806175a40b4ba2d2a4ce047"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes the submatrix <code>submatrix</code> to the file \fileName by means of lists of row and column indices.  <a href="matrix_8h.html#ad8c479d82806175a40b4ba2d2a4ce047">More...</a><br /></td></tr>
 <tr class="separator:ad8c479d82806175a40b4ba2d2a4ce047"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -3748,6 +3748,65 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="afe84fc04957a3c5b6ea3ad6325585cbd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afe84fc04957a3c5b6ea3ad6325585cbd">&#9670;&nbsp;</a></span>CMRsubmatPrint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRsubmatPrint </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> *&#160;</td>
+          <td class="paramname"><em>submatrix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>numRows</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>numColumns</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">FILE *&#160;</td>
+          <td class="paramname"><em>stream</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Writes the submatrix <code>submatrix</code> to the file <code>stream</code> by means of lists of row and column indices. </p>
+<p>In the stream, row and column indices start at 1 while they start at 0 in <code>submatrix</code>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">submatrix</td><td>Reference submatrix. </td></tr>
+    <tr><td class="paramname">numRows</td><td>Number of rows of original matrix. </td></tr>
+    <tr><td class="paramname">numColumns</td><td>Number of columns of original matrix. </td></tr>
+    <tr><td class="paramname">stream</td><td>File stream to save submatrix to. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="ad73794c88eadbd31f64f7cfe391c5cd4"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad73794c88eadbd31f64f7cfe391c5cd4">&#9670;&nbsp;</a></span>CMRsubmatReadFromStream()</h2>
 
@@ -3886,65 +3945,6 @@ Functions</h2></td></tr>
     <tr><td class="paramname">numRows</td><td>Number of rows of original matrix. </td></tr>
     <tr><td class="paramname">numColumns</td><td>Number of columns of original matrix. </td></tr>
     <tr><td class="paramname">fileName</td><td>File name to save submatrix to; <code>NULL</code> indicates stdout. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a586f9d93993cb72dddb2c25aea0e838e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a586f9d93993cb72dddb2c25aea0e838e">&#9670;&nbsp;</a></span>CMRsubmatWriteToStream()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRsubmatWriteToStream </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
-          <td class="paramname"><em>cmr</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> *&#160;</td>
-          <td class="paramname"><em>submatrix</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>numRows</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>numColumns</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">FILE *&#160;</td>
-          <td class="paramname"><em>stream</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Writes the submatrix <code>submatrix</code> to the file <code>stream</code> by means of lists of row and column indices. </p>
-<p>In the stream, row and column indices start at 1 while they start at 0 in <code>submatrix</code>. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
-    <tr><td class="paramname">submatrix</td><td>Reference submatrix. </td></tr>
-    <tr><td class="paramname">numRows</td><td>Number of rows of original matrix. </td></tr>
-    <tr><td class="paramname">numColumns</td><td>Number of columns of original matrix. </td></tr>
-    <tr><td class="paramname">stream</td><td>File stream to save submatrix to. </td></tr>
   </table>
   </dd>
 </dl>

@@ -94,6 +94,12 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:a43b23b54daedaba4859169af7c148c48"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGraphNode.html#a43b23b54daedaba4859169af7c148c48">order</a></td></tr>
 <tr class="memdesc:a43b23b54daedaba4859169af7c148c48"><td class="mdescLeft">&#160;</td><td class="mdescRight">Corresponding row/column in component.  <a href="structGraphNode.html#a43b23b54daedaba4859169af7c148c48">More...</a><br /></td></tr>
 <tr class="separator:a43b23b54daedaba4859169af7c148c48"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7aaebb0d021615d55a1d3bea96127e12"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGraphNode.html#a7aaebb0d021615d55a1d3bea96127e12">predecessor</a></td></tr>
+<tr class="separator:a7aaebb0d021615d55a1d3bea96127e12"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a06cc0c3a0fabeac3d9fbebb0ad01df93"><td class="memItemLeft" align="right" valign="top">int8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGraphNode.html#a06cc0c3a0fabeac3d9fbebb0ad01df93">status</a></td></tr>
+<tr class="separator:a06cc0c3a0fabeac3d9fbebb0ad01df93"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f0c398d41f16901b34cec5f5c30979a"><td class="memItemLeft" align="right" valign="top">int8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structGraphNode.html#a9f0c398d41f16901b34cec5f5c30979a">edgeValue</a></td></tr>
+<tr class="separator:a9f0c398d41f16901b34cec5f5c30979a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Data Documentation</h2>
 <a id="a881861a93c3ac824fc14ce8c97bc0ee0"></a>
@@ -144,6 +150,21 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="a9f0c398d41f16901b34cec5f5c30979a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9f0c398d41f16901b34cec5f5c30979a">&#9670;&nbsp;</a></span>edgeValue</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int8_t GraphNode::edgeValue</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Matrix entry of the edge to the predecessor. </p>
+
+</div>
+</div>
 <a id="a43b23b54daedaba4859169af7c148c48"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a43b23b54daedaba4859169af7c148c48">&#9670;&nbsp;</a></span>order</h2>
 
@@ -160,8 +181,39 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
-<hr/>The documentation for this struct was generated from the following file:<ul>
-<li>/home/runner/work/cmr/cmr/src/cmr/<a class="el" href="one__sum_8c.html">one_sum.c</a></li>
+<a id="a7aaebb0d021615d55a1d3bea96127e12"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7aaebb0d021615d55a1d3bea96127e12">&#9670;&nbsp;</a></span>predecessor</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t GraphNode::predecessor</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Predecessor node (row or column index). </p>
+
+</div>
+</div>
+<a id="a06cc0c3a0fabeac3d9fbebb0ad01df93"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a06cc0c3a0fabeac3d9fbebb0ad01df93">&#9670;&nbsp;</a></span>status</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int8_t GraphNode::status</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>0: unknown, 1: in queue, 2: processed. </p>
+
+</div>
+</div>
+<hr/>The documentation for this struct was generated from the following files:<ul>
+<li>/home/runner/work/cmr/cmr/src/cmr/<a class="el" href="block__decomposition_8c.html">block_decomposition.c</a></li>
+<li>/home/runner/work/cmr/cmr/src/cmr/<a class="el" href="regularity__threesum_8c.html">regularity_threesum.c</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

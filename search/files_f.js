@@ -1,15 +1,15 @@
 var searchData=
 [
-  ['r10_2ehpp_1653',['r10.hpp',['../r10_8hpp.html',1,'']]],
-  ['regular_2ec_1654',['regular.c',['../regular_8c.html',1,'']]],
-  ['regular_2eh_1655',['regular.h',['../regular_8h.html',1,'']]],
-  ['regular_2emd_1656',['regular.md',['../regular_8md.html',1,'']]],
-  ['regular_5fdec_2ec_1657',['regular_dec.c',['../regular__dec_8c.html',1,'']]],
-  ['regular_5fenumerate_2ec_1658',['regular_enumerate.c',['../regular__enumerate_8c.html',1,'']]],
-  ['regular_5fgraphic_2ec_1659',['regular_graphic.c',['../regular__graphic_8c.html',1,'']]],
-  ['regular_5finternal_2eh_1660',['regular_internal.h',['../regular__internal_8h.html',1,'']]],
-  ['regular_5fnested_5fminor_5fsequence_2ec_1661',['regular_nested_minor_sequence.c',['../regular__nested__minor__sequence_8c.html',1,'']]],
-  ['regular_5fonesum_2ec_1662',['regular_onesum.c',['../regular__onesum_8c.html',1,'']]],
-  ['regular_5fr10_2ec_1663',['regular_r10.c',['../regular__r10_8c.html',1,'']]],
-  ['regular_5fseries_5fparallel_2ec_1664',['regular_series_parallel.c',['../regular__series__parallel_8c.html',1,'']]]
+  ['separation_2ec_1755',['separation.c',['../separation_8c.html',1,'']]],
+  ['separation_2ecpp_1756',['separation.cpp',['../separation_8cpp.html',1,'']]],
+  ['separation_2eh_1757',['separation.h',['../separation_8h.html',1,'']]],
+  ['separation_2ehpp_1758',['separation.hpp',['../separation_8hpp.html',1,'']]],
+  ['series_2dparallel_2emd_1759',['series-parallel.md',['../series-parallel_8md.html',1,'']]],
+  ['series_5fparallel_2ec_1760',['series_parallel.c',['../series__parallel_8c.html',1,'']]],
+  ['series_5fparallel_2eh_1761',['series_parallel.h',['../series__parallel_8h.html',1,'']]],
+  ['sign_2ec_1762',['sign.c',['../sign_8c.html',1,'']]],
+  ['signing_2ehpp_1763',['signing.hpp',['../signing_8hpp.html',1,'']]],
+  ['smith_5fnormal_5fform_2ehpp_1764',['smith_normal_form.hpp',['../smith__normal__form_8hpp.html',1,'']]],
+  ['sort_2ec_1765',['sort.c',['../sort_8c.html',1,'']]],
+  ['sort_2eh_1766',['sort.h',['../sort_8h.html',1,'']]]
 ];

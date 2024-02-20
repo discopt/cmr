@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['representation_20matrices_20of_20matroids_2912',['Representation matrices of matroids',['../group__Matroid.html',1,'']]]
+  ['matroid_20decomposition_3084',['Matroid decomposition',['../group__Matroid.html',1,'']]]
 ];

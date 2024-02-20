@@ -1,9 +1,9 @@
 var searchData=
 [
-  ['_5fcmr_5fdec_1',['_CMR_DEC',['../struct__CMR__DEC.html',1,'']]],
-  ['_5fcmr_5flinearhashtable_5farray_2',['_CMR_LINEARHASHTABLE_ARRAY',['../struct__CMR__LINEARHASHTABLE__ARRAY.html',1,'']]],
-  ['_5fcmr_5flisthashtable_3',['_CMR_LISTHASHTABLE',['../struct__CMR__LISTHASHTABLE.html',1,'']]],
-  ['_5fcmr_5flisthashtable_5fnode_4',['_CMR_LISTHASHTABLE_NODE',['../hashtable_8c.html#a4ee89e14d6e34f7aba75cb1128187a53',1,'hashtable.c']]],
+  ['_5fcmr_5flinearhashtable_5farray_1',['_CMR_LINEARHASHTABLE_ARRAY',['../struct__CMR__LINEARHASHTABLE__ARRAY.html',1,'']]],
+  ['_5fcmr_5flisthashtable_2',['_CMR_LISTHASHTABLE',['../struct__CMR__LISTHASHTABLE.html',1,'']]],
+  ['_5fcmr_5flisthashtable_5fnode_3',['_CMR_LISTHASHTABLE_NODE',['../hashtable_8c.html#a4ee89e14d6e34f7aba75cb1128187a53',1,'hashtable.c']]],
+  ['_5fcmr_5fmatroid_5fdec_4',['_CMR_MATROID_DEC',['../struct__CMR__MATROID__DEC.html',1,'']]],
   ['_5fcmrallocblock_5',['_CMRallocBlock',['../env_8c.html#a78888a48f6bd116e023b05e37877710c',1,'_CMRallocBlock(CMR *cmr, void **ptr, size_t size):&#160;env.c'],['../env_8h.html#a8f73fd2e0d43447fe72566df0b184d6d',1,'_CMRallocBlock(CMR *cmr, void **ptr, size_t size):&#160;env.c']]],
   ['_5fcmrallocblockarray_6',['_CMRallocBlockArray',['../env_8c.html#aa39966dbc922530ad394b1699fed20df',1,'_CMRallocBlockArray(CMR *cmr, void **ptr, size_t size, size_t length):&#160;env.c'],['../env_8h.html#a934c241342485712d69d6379227bd213',1,'_CMRallocBlockArray(CMR *cmr, void **ptr, size_t size, size_t length):&#160;env.c']]],
   ['_5fcmrallocstack_7',['_CMRallocStack',['../env__internal_8h.html#a9be66b443559c8c3784d453715e97e1f',1,'_CMRallocStack(CMR *cmr, void **ptr, size_t size):&#160;env.c'],['../env_8c.html#abd0825218a522bfcf1b0e714bfa7fe1c',1,'_CMRallocStack(CMR *cmr, void **ptr, size_t size):&#160;env.c']]],
@@ -11,7 +11,7 @@ var searchData=
   ['_5fcmrfreeblock_9',['_CMRfreeBlock',['../env_8c.html#a75f88c527e4b6e3c2be4b7f8d010af91',1,'_CMRfreeBlock(CMR *cmr, void **ptr, size_t size):&#160;env.c'],['../env_8h.html#a181c39242e18829b81661ba843e5e869',1,'_CMRfreeBlock(CMR *cmr, void **ptr, size_t size):&#160;env.c']]],
   ['_5fcmrfreeblockarray_10',['_CMRfreeBlockArray',['../env_8c.html#a969711cdd5f9b0ac338f003e1a7ee571',1,'_CMRfreeBlockArray(CMR *cmr, void **ptr):&#160;env.c'],['../env_8h.html#aecb801fc75777269af76015356111575',1,'_CMRfreeBlockArray(CMR *cmr, void **ptr):&#160;env.c']]],
   ['_5fcmrfreestack_11',['_CMRfreeStack',['../env__internal_8h.html#a62376f606739357ba337c8b03dc84759',1,'_CMRfreeStack(CMR *cmr, void **ptr):&#160;env.c'],['../env_8c.html#a527bfea7b3f8a8cb0ce88d340dbef5f6',1,'_CMRfreeStack(CMR *cmr, void **ptr):&#160;env.c']]],
-  ['_5fcmrreallocblockarray_12',['_CMRreallocBlockArray',['../env_8h.html#a8d73cc51254b1935d7a3bb440b019113',1,'_CMRreallocBlockArray(CMR *cmr, void **ptr, size_t size, size_t length):&#160;env.c'],['../env_8c.html#a848a99ebee6bd489a13911ca924c1c67',1,'_CMRreallocBlockArray(CMR *cmr, void **ptr, size_t size, size_t length):&#160;env.c']]],
+  ['_5fcmrreallocblockarray_12',['_CMRreallocBlockArray',['../env_8c.html#a848a99ebee6bd489a13911ca924c1c67',1,'_CMRreallocBlockArray(CMR *cmr, void **ptr, size_t size, size_t length):&#160;env.c'],['../env_8h.html#a8d73cc51254b1935d7a3bb440b019113',1,'_CMRreallocBlockArray(CMR *cmr, void **ptr, size_t size, size_t length):&#160;env.c']]],
   ['_5fcograph_13',['_cograph',['../classtu_1_1decomposed__matroid__leaf.html#a24bcd471e660e25feefefe0064ae2874',1,'tu::decomposed_matroid_leaf']]],
   ['_5fcolumn_5felements_14',['_column_elements',['../classtu_1_1detail_1_1violator__strategy.html#aebd30a80bd04f56d18e0da90468eeab5',1,'tu::detail::violator_strategy']]],
   ['_5fdata_15',['_data',['../classtu_1_1combination.html#a57af397110988b2b1df978a81d325bdb',1,'tu::combination::_data()'],['../classtu_1_1DenseMatrix.html#a83f4b4adc305f607bb2b424599ae8822',1,'tu::DenseMatrix::_data()'],['../classtu_1_1permutation.html#a17d98412d1fa48da1c78d330f63b91e7',1,'tu::permutation::_data()']]],

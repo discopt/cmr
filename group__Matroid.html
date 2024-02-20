@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>CMR: Representation matrices of matroids</title>
+<title>CMR: Matroid decomposition</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -73,169 +73,225 @@ $(function() {
 
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
 <a href="#enum-members">Enumerations</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
-<div class="title">Representation matrices of matroids</div>  </div>
+<div class="title">Matroid decomposition</div>  </div>
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structCMR__MINOR.html">CMR_MINOR</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A minor of a matroid.  <a href="structCMR__MINOR.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:gad87465d6d8c4f975e49ee4fd28b45d3a"><td class="memItemLeft" align="right" valign="top">typedef struct <a class="el" href="struct__CMR__DEC.html">_CMR_DEC</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a></td></tr>
-<tr class="separator:gad87465d6d8c4f975e49ee4fd28b45d3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gab228ae503112b00552f1bc0a3fe1752f"><td class="memItemLeft" align="right" valign="top">typedef struct <a class="el" href="struct__CMR__MATROID__DEC.html">_CMR_MATROID_DEC</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a></td></tr>
+<tr class="separator:gab228ae503112b00552f1bc0a3fe1752f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
-<tr class="memitem:ga28390a3a6bfff1cd1910902ca4412165"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga28390a3a6bfff1cd1910902ca4412165">CMR_DEC_TYPE</a> { <br />
-&#160;&#160;<a class="el" href="group__Matroid.html#gga28390a3a6bfff1cd1910902ca4412165a84c4b418ad7bf9fd71472a92a023b877">CMR_DEC_IRREGULAR</a> = -1
-, <a class="el" href="group__Matroid.html#gga28390a3a6bfff1cd1910902ca4412165a06714c0496e69a39cd73f5d57d042c16">CMR_DEC_UNKNOWN</a> = 0
-, <a class="el" href="group__Matroid.html#gga28390a3a6bfff1cd1910902ca4412165a5274e7d3999b03d479a088f6a78d10ed">CMR_DEC_ONE_SUM</a> = 1
-, <a class="el" href="group__Matroid.html#gga28390a3a6bfff1cd1910902ca4412165aea79b27483979a3bc308f3168b054b18">CMR_DEC_TWO_SUM</a> = 2
+<tr class="memitem:ga4b1935a1f27e71f4c67083e0865d3971"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga4b1935a1f27e71f4c67083e0865d3971">CMR_MATROID_DEC_TYPE</a> { <br />
+&#160;&#160;<a class="el" href="group__Matroid.html#gga4b1935a1f27e71f4c67083e0865d3971a96c5a561f06813efe035b4476e8d4cdf">CMR_MATROID_DEC_TYPE_IRREGULAR</a> = -1
+, <a class="el" href="group__Matroid.html#gga4b1935a1f27e71f4c67083e0865d3971ab2582b85ac2738f1c16b6830d9d1a9bf">CMR_MATROID_DEC_TYPE_UNKNOWN</a> = 0
+, <a class="el" href="group__Matroid.html#gga4b1935a1f27e71f4c67083e0865d3971aae86a0514d749f183046400f9f0706c6">CMR_MATROID_DEC_TYPE_ONE_SUM</a> = 1
+, <a class="el" href="group__Matroid.html#gga4b1935a1f27e71f4c67083e0865d3971acffc7b65d8fe99b7ee5c88ab43709795">CMR_MATROID_DEC_TYPE_TWO_SUM</a> = 2
 , <br />
-&#160;&#160;<a class="el" href="group__Matroid.html#gga28390a3a6bfff1cd1910902ca4412165a77aa8fc21adb3b79e6d08703e99ca567">CMR_DEC_THREE_SUM</a> = 3
-, <a class="el" href="group__Matroid.html#gga28390a3a6bfff1cd1910902ca4412165a0ccd372aa5a06219d43b6a11ce9abf4d">CMR_DEC_GRAPHIC</a> = 4
-, <a class="el" href="group__Matroid.html#gga28390a3a6bfff1cd1910902ca4412165a961b9c7398d56e709224b3f724fd1237">CMR_DEC_COGRAPHIC</a> = 5
-, <a class="el" href="group__Matroid.html#gga28390a3a6bfff1cd1910902ca4412165af067cf091f3a2c818d236b5aaa234133">CMR_DEC_PLANAR</a> = 6
+&#160;&#160;<a class="el" href="group__Matroid.html#gga4b1935a1f27e71f4c67083e0865d3971af3e10d42bcae87549291575e81e34ae4">CMR_MATROID_DEC_TYPE_THREE_SUM</a> = 3
+, <a class="el" href="group__Matroid.html#gga4b1935a1f27e71f4c67083e0865d3971a713fa313a89e22ad2361d6ca6da59b54">CMR_MATROID_DEC_TYPE_SERIES_PARALLEL</a> = 4
+, <a class="el" href="group__Matroid.html#gga4b1935a1f27e71f4c67083e0865d3971ad31c5b50df7b80a28b28935d67af17a4">CMR_MATROID_DEC_TYPE_PIVOTS</a> = 5
+, <a class="el" href="group__Matroid.html#gga4b1935a1f27e71f4c67083e0865d3971a84b7111a8c8c33e391d930de9f447090">CMR_MATROID_DEC_TYPE_SUBMATRIX</a> = 6
 , <br />
-&#160;&#160;<a class="el" href="group__Matroid.html#gga28390a3a6bfff1cd1910902ca4412165ac10f679204977b6525dec617350cfa57">CMR_DEC_SERIES_PARALLEL</a> = 7
-, <a class="el" href="group__Matroid.html#gga28390a3a6bfff1cd1910902ca4412165aa1c78afb8a721b957b3c08e68192c8ff">CMR_DEC_SPECIAL_R10</a> = 16
-, <a class="el" href="group__Matroid.html#gga28390a3a6bfff1cd1910902ca4412165a92139854ab923b96b1f161379f37aeab">CMR_DEC_SPECIAL_FANO</a> = 17
-, <a class="el" href="group__Matroid.html#gga28390a3a6bfff1cd1910902ca4412165a263a5289ea1150f32ec10fa232221129">CMR_DEC_SPECIAL_FANO_DUAL</a> = 18
+&#160;&#160;<a class="el" href="group__Matroid.html#gga4b1935a1f27e71f4c67083e0865d3971abafe499b84dea94d57e795aced1ca678">CMR_MATROID_DEC_TYPE_GRAPH</a> = 7
+, <a class="el" href="group__Matroid.html#gga4b1935a1f27e71f4c67083e0865d3971a5d5def325fedebf71c6c1c7be1baf26d">CMR_MATROID_DEC_TYPE_COGRAPH</a> = 8
+, <a class="el" href="group__Matroid.html#gga4b1935a1f27e71f4c67083e0865d3971af8e03d54564cbad918d16200744f7543">CMR_MATROID_DEC_TYPE_PLANAR</a> = 9
+, <a class="el" href="group__Matroid.html#gga4b1935a1f27e71f4c67083e0865d3971a732c9e9e59305c943e9d5342f4e642e4">CMR_MATROID_DEC_TYPE_R10</a> = -2
 , <br />
-&#160;&#160;<a class="el" href="group__Matroid.html#gga28390a3a6bfff1cd1910902ca4412165a9264520564e5f80d6704b76768aff486">CMR_DEC_SPECIAL_K_5</a> = 19
-, <a class="el" href="group__Matroid.html#gga28390a3a6bfff1cd1910902ca4412165a985400d6b1322ba0358a8f666f18b177">CMR_DEC_SPECIAL_K_5_DUAL</a> = 20
-, <a class="el" href="group__Matroid.html#gga28390a3a6bfff1cd1910902ca4412165ab44a1f531113545761319afc9f20b260">CMR_DEC_SPECIAL_K_3_3</a> = 21
-, <a class="el" href="group__Matroid.html#gga28390a3a6bfff1cd1910902ca4412165af65c2b672188b10bc25cc2e6e6fd4fd1">CMR_DEC_SPECIAL_K_3_3_DUAL</a> = 22
+&#160;&#160;<a class="el" href="group__Matroid.html#gga4b1935a1f27e71f4c67083e0865d3971accc00490496ac4f58c9a9aa38d20cf6a">CMR_MATROID_DEC_TYPE_FANO</a> = -3
+, <a class="el" href="group__Matroid.html#gga4b1935a1f27e71f4c67083e0865d3971a3a79c3fc83606759d279f6bfdadf6942">CMR_MATROID_DEC_TYPE_FANO_DUAL</a> = -4
+, <a class="el" href="group__Matroid.html#gga4b1935a1f27e71f4c67083e0865d3971a7b7f4752d193d6b767836b2fd174846a">CMR_MATROID_DEC_TYPE_K5</a> = -5
+, <a class="el" href="group__Matroid.html#gga4b1935a1f27e71f4c67083e0865d3971a18de003108c467d579313d54c8edfadd">CMR_MATROID_DEC_TYPE_K5_DUAL</a> = -6
+, <br />
+&#160;&#160;<a class="el" href="group__Matroid.html#gga4b1935a1f27e71f4c67083e0865d3971aabfaf7c9e9ee89a4e85e5c088816ac80">CMR_MATROID_DEC_TYPE_K33</a> = -7
+, <a class="el" href="group__Matroid.html#gga4b1935a1f27e71f4c67083e0865d3971ab7a77e9293c5b764b6e4c9a201ae6954">CMR_MATROID_DEC_TYPE_K33_DUAL</a> = -8
+, <a class="el" href="group__Matroid.html#gga4b1935a1f27e71f4c67083e0865d3971adc6a93c3810559d4f050547753fb7e80">CMR_MATROID_DEC_TYPE_DETERMINANT</a> = -9
 <br />
  }</td></tr>
-<tr class="separator:ga28390a3a6bfff1cd1910902ca4412165"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga8da9d34f85e480a1c344a89b85e5b633"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga8da9d34f85e480a1c344a89b85e5b633">CMR_DEC_FLAGS</a> { <br />
-&#160;&#160;<a class="el" href="group__Matroid.html#gga8da9d34f85e480a1c344a89b85e5b633a8101f648242ceee32824dbb4734d15fb">CMR_DEC_MASK_REPRESENTATION</a> = 3
-, <a class="el" href="group__Matroid.html#gga8da9d34f85e480a1c344a89b85e5b633acc55e835d2cb545b31bade7d3a11da84">CMR_DEC_IS_GRAPHIC</a> = 4
-, <a class="el" href="group__Matroid.html#gga8da9d34f85e480a1c344a89b85e5b633aaa1feabf3a43a9ae84aa233e7208c2dd">CMR_DEC_IS_COGRAPHIC</a> = 8
-, <a class="el" href="group__Matroid.html#gga8da9d34f85e480a1c344a89b85e5b633af18c3e42ad6f0ea412557a6206ddb978">CMR_DEC_IS_REGULAR</a> = 16
+<tr class="separator:ga4b1935a1f27e71f4c67083e0865d3971"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga584220cef1cff2b9d72c54c0cc50fe5e"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga584220cef1cff2b9d72c54c0cc50fe5e">CMR_MATROID_DEC_THREESUM_FLAG</a> { <br />
+&#160;&#160;<a class="el" href="group__Matroid.html#gga584220cef1cff2b9d72c54c0cc50fe5ead95af87f90a84e38749e83e7828296cc">CMR_MATROID_DEC_THREESUM_FLAG_NO_PIVOTS</a> = 0
+, <a class="el" href="group__Matroid.html#gga584220cef1cff2b9d72c54c0cc50fe5ea91de82495d73c64e2059d644fb641902">CMR_MATROID_DEC_THREESUM_FLAG_DISTRIBUTED_RANKS</a> = 1
+, <a class="el" href="group__Matroid.html#gga584220cef1cff2b9d72c54c0cc50fe5eabf816bc71d80f450b7f6feeae3fbedc0">CMR_MATROID_DEC_THREESUM_FLAG_CONCENTRATED_RANK</a> = 2
+, <a class="el" href="group__Matroid.html#gga584220cef1cff2b9d72c54c0cc50fe5eac99bbb1fa8d3269cacbcdb506609f5ea">CMR_MATROID_DEC_THREESUM_FLAG_FIRST_WIDE</a> = 4
 , <br />
-&#160;&#160;<a class="el" href="group__Matroid.html#gga8da9d34f85e480a1c344a89b85e5b633a65654f4f473c9be357db0b39d11f0a58">CMR_DEC_HAS_LOWER_LEFT_NONZEROS</a> = 32
-, <a class="el" href="group__Matroid.html#gga8da9d34f85e480a1c344a89b85e5b633a1cab264d7678a66be49d8740df3491cf">CMR_DEC_HAS_UPPER_RIGHT_NONZEROS</a> = 64
+&#160;&#160;<a class="el" href="group__Matroid.html#gga584220cef1cff2b9d72c54c0cc50fe5ea6ad2c36865c260c0e9fb8fd2add17b20">CMR_MATROID_DEC_THREESUM_FLAG_FIRST_TALL</a> = 8
+, <a class="el" href="group__Matroid.html#gga584220cef1cff2b9d72c54c0cc50fe5ea435bea38fded8ff4e7d986d3ce42269f">CMR_MATROID_DEC_THREESUM_FLAG_FIRST_MIXED</a> = 64
+, <a class="el" href="group__Matroid.html#gga584220cef1cff2b9d72c54c0cc50fe5ea2c65e3528db6cde861007f764e968766">CMR_MATROID_DEC_THREESUM_FLAG_FIRST_ALLREPR</a> = 128
+, <a class="el" href="group__Matroid.html#gga584220cef1cff2b9d72c54c0cc50fe5ead238c50d4c18df1d33807d83bee09fe6">CMR_MATROID_DEC_THREESUM_FLAG_SECOND_WIDE</a> = 16
+, <br />
+&#160;&#160;<a class="el" href="group__Matroid.html#gga584220cef1cff2b9d72c54c0cc50fe5ea083a69918d037604ba6435a6ae95a0ea">CMR_MATROID_DEC_THREESUM_FLAG_SECOND_TALL</a> = 32
+, <a class="el" href="group__Matroid.html#gga584220cef1cff2b9d72c54c0cc50fe5ea56e1029a033e09a78f040fcc982c462b">CMR_MATROID_DEC_THREESUM_FLAG_SECOND_MIXED</a> = 256
+, <a class="el" href="group__Matroid.html#gga584220cef1cff2b9d72c54c0cc50fe5eacc920f345ab88eff314728b9f435bc38">CMR_MATROID_DEC_THREESUM_FLAG_SECOND_ALLREPR</a> = 512
+, <a class="el" href="group__Matroid.html#gga584220cef1cff2b9d72c54c0cc50fe5eaf785362596f282aced164e0ce45c4c91">CMR_MATROID_DEC_THREESUM_FLAG_SEYMOUR</a>
+, <br />
+&#160;&#160;<a class="el" href="group__Matroid.html#gga584220cef1cff2b9d72c54c0cc50fe5ea63ca8b6891bd4c3cc37aec6152420cf1">CMR_MATROID_DEC_THREESUM_FLAG_TRUEMPER</a>
 <br />
  }</td></tr>
-<tr class="separator:ga8da9d34f85e480a1c344a89b85e5b633"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memdesc:ga584220cef1cff2b9d72c54c0cc50fe5e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flags that indicate the type of \( 3 \)-separation.  <a href="group__Matroid.html#ga584220cef1cff2b9d72c54c0cc50fe5e">More...</a><br /></td></tr>
+<tr class="separator:ga584220cef1cff2b9d72c54c0cc50fe5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ga1a2c0babc8fb7cf1f75c4be5f7e534aa"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga1a2c0babc8fb7cf1f75c4be5f7e534aa">CMRdecFree</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> **pdec)</td></tr>
-<tr class="separator:ga1a2c0babc8fb7cf1f75c4be5f7e534aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga91a1aaeff87e2369a5b87eca79433b1f"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga91a1aaeff87e2369a5b87eca79433b1f">CMRdecHasMatrix</a> (<a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *dec)</td></tr>
-<tr class="memdesc:ga91a1aaeff87e2369a5b87eca79433b1f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns <code>true</code> iff the matrix of the decomposition node is stored.  <a href="group__Matroid.html#ga91a1aaeff87e2369a5b87eca79433b1f">More...</a><br /></td></tr>
-<tr class="separator:ga91a1aaeff87e2369a5b87eca79433b1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga772b33477778135b6ce0fa8fa221baee"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga772b33477778135b6ce0fa8fa221baee">CMRdecHasTranspose</a> (<a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *dec)</td></tr>
-<tr class="memdesc:ga772b33477778135b6ce0fa8fa221baee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns <code>true</code> iff the transposed matrix of the decomposition node is stored.  <a href="group__Matroid.html#ga772b33477778135b6ce0fa8fa221baee">More...</a><br /></td></tr>
-<tr class="separator:ga772b33477778135b6ce0fa8fa221baee"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gabd2e9444f47e08f28002854dce96ca38"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#gabd2e9444f47e08f28002854dce96ca38">CMRdecGetMatrix</a> (<a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *dec)</td></tr>
-<tr class="memdesc:gabd2e9444f47e08f28002854dce96ca38"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the matrix of the decomposition node (or <code>NULL</code> if it is not stored).  <a href="group__Matroid.html#gabd2e9444f47e08f28002854dce96ca38">More...</a><br /></td></tr>
-<tr class="separator:gabd2e9444f47e08f28002854dce96ca38"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gad7f81f996d35a43552b347ff3ef0e0f3"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#gad7f81f996d35a43552b347ff3ef0e0f3">CMRdecGetTranspose</a> (<a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *dec)</td></tr>
-<tr class="memdesc:gad7f81f996d35a43552b347ff3ef0e0f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the transposed matrix of the decomposition node (or <code>NULL</code> if it is not stored).  <a href="group__Matroid.html#gad7f81f996d35a43552b347ff3ef0e0f3">More...</a><br /></td></tr>
-<tr class="separator:gad7f81f996d35a43552b347ff3ef0e0f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga2771b96fb59eab2865d52f7645929b79"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga2771b96fb59eab2865d52f7645929b79">CMRdecNumChildren</a> (<a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *dec)</td></tr>
-<tr class="memdesc:ga2771b96fb59eab2865d52f7645929b79"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of children of the decomposition node.  <a href="group__Matroid.html#ga2771b96fb59eab2865d52f7645929b79">More...</a><br /></td></tr>
-<tr class="separator:ga2771b96fb59eab2865d52f7645929b79"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga649da1a1bf86d2ecd10da029b6afd05c"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga649da1a1bf86d2ecd10da029b6afd05c">CMRdecChild</a> (<a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *dec, size_t childIndex)</td></tr>
-<tr class="separator:ga649da1a1bf86d2ecd10da029b6afd05c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga99a311ee30fa3f781eb152cf00474307"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga99a311ee30fa3f781eb152cf00474307">CMRdecIsSum</a> (<a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *dec, bool *plowerLeftHasNonzeros, bool *pupperRightHasNonzeros)</td></tr>
-<tr class="memdesc:ga99a311ee30fa3f781eb152cf00474307"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns k if <code>dec</code> is a k-sum node and 0 otherwise.  <a href="group__Matroid.html#ga99a311ee30fa3f781eb152cf00474307">More...</a><br /></td></tr>
-<tr class="separator:ga99a311ee30fa3f781eb152cf00474307"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gacc80fe85686da1cbbc7a3b0c797bf21e"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="group__Matroid.html#ga28390a3a6bfff1cd1910902ca4412165">CMR_DEC_TYPE</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#gacc80fe85686da1cbbc7a3b0c797bf21e">CMRdecIsSpecialLeaf</a> (<a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *dec, int *prepresentationMatrix)</td></tr>
-<tr class="memdesc:gacc80fe85686da1cbbc7a3b0c797bf21e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the corresponding flag if <code>dec</code> is a special matrix node and 0 otherwise.  <a href="group__Matroid.html#gacc80fe85686da1cbbc7a3b0c797bf21e">More...</a><br /></td></tr>
-<tr class="separator:gacc80fe85686da1cbbc7a3b0c797bf21e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga283dded43116edc8c8b7bd01c977ae1c"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga283dded43116edc8c8b7bd01c977ae1c">CMRdecIsGraphicLeaf</a> (<a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *dec)</td></tr>
-<tr class="memdesc:ga283dded43116edc8c8b7bd01c977ae1c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns <code>true</code> if and only if <code>dec</code> is a graphic leaf node.  <a href="group__Matroid.html#ga283dded43116edc8c8b7bd01c977ae1c">More...</a><br /></td></tr>
-<tr class="separator:ga283dded43116edc8c8b7bd01c977ae1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gac0850a1b6e6cc11809acc17fc011586c"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#gac0850a1b6e6cc11809acc17fc011586c">CMRdecIsCographicLeaf</a> (<a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *dec)</td></tr>
-<tr class="memdesc:gac0850a1b6e6cc11809acc17fc011586c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns <code>true</code> if and only if <code>dec</code> is a cographic leaf node.  <a href="group__Matroid.html#gac0850a1b6e6cc11809acc17fc011586c">More...</a><br /></td></tr>
-<tr class="separator:gac0850a1b6e6cc11809acc17fc011586c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga56f9c8dab81a2c1028f6ab84a285d8f6"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga56f9c8dab81a2c1028f6ab84a285d8f6">CMRdecIsGraphic</a> (<a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *dec)</td></tr>
-<tr class="memdesc:ga56f9c8dab81a2c1028f6ab84a285d8f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns <code>true</code> if and only if <code>dec</code> is graphic.  <a href="group__Matroid.html#ga56f9c8dab81a2c1028f6ab84a285d8f6">More...</a><br /></td></tr>
-<tr class="separator:ga56f9c8dab81a2c1028f6ab84a285d8f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga856104ae9ad2d93f42459af47963288f"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga856104ae9ad2d93f42459af47963288f">CMRdecIsCographic</a> (<a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *dec)</td></tr>
-<tr class="memdesc:ga856104ae9ad2d93f42459af47963288f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns <code>true</code> if and only if <code>dec</code> is cographic.  <a href="group__Matroid.html#ga856104ae9ad2d93f42459af47963288f">More...</a><br /></td></tr>
-<tr class="separator:ga856104ae9ad2d93f42459af47963288f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga3cbcfc4a65db74cc0393b77df0807542"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga3cbcfc4a65db74cc0393b77df0807542">CMRdecIsRegular</a> (<a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *dec)</td></tr>
-<tr class="memdesc:ga3cbcfc4a65db74cc0393b77df0807542"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns <code>true</code> if and only if <code>dec</code> is regular.  <a href="group__Matroid.html#ga3cbcfc4a65db74cc0393b77df0807542">More...</a><br /></td></tr>
-<tr class="separator:ga3cbcfc4a65db74cc0393b77df0807542"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga82ffc2e3889acd379c959902ce2ae994"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga82ffc2e3889acd379c959902ce2ae994">CMRdecIsSeriesParallelReduction</a> (<a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *dec)</td></tr>
-<tr class="memdesc:ga82ffc2e3889acd379c959902ce2ae994"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns <code>true</code> if and only if <code>dec</code> represents a series-parallel reduction.  <a href="group__Matroid.html#ga82ffc2e3889acd379c959902ce2ae994">More...</a><br /></td></tr>
-<tr class="separator:ga82ffc2e3889acd379c959902ce2ae994"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga423ebe728899e2695a8d1de674e14357"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga423ebe728899e2695a8d1de674e14357">CMRdecIsUnknown</a> (<a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *dec)</td></tr>
-<tr class="memdesc:ga423ebe728899e2695a8d1de674e14357"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns <code>true</code> if and only if <code>dec</code> has yet unknown type.  <a href="group__Matroid.html#ga423ebe728899e2695a8d1de674e14357">More...</a><br /></td></tr>
-<tr class="separator:ga423ebe728899e2695a8d1de674e14357"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga62dedbfa27ee155495660f4cf2971462"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga62dedbfa27ee155495660f4cf2971462">CMRdecNumRows</a> (<a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *dec)</td></tr>
-<tr class="memdesc:ga62dedbfa27ee155495660f4cf2971462"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of rows.  <a href="group__Matroid.html#ga62dedbfa27ee155495660f4cf2971462">More...</a><br /></td></tr>
-<tr class="separator:ga62dedbfa27ee155495660f4cf2971462"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga538a6ebdb392f0ebde1d8f15d56a4d45"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga538a6ebdb392f0ebde1d8f15d56a4d45">CMRdecRowElements</a> (<a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *dec)</td></tr>
-<tr class="memdesc:ga538a6ebdb392f0ebde1d8f15d56a4d45"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the row elements.  <a href="group__Matroid.html#ga538a6ebdb392f0ebde1d8f15d56a4d45">More...</a><br /></td></tr>
-<tr class="separator:ga538a6ebdb392f0ebde1d8f15d56a4d45"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaa2e2a798ff32448c883da77c77a7b191"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT size_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#gaa2e2a798ff32448c883da77c77a7b191">CMRdecRowsParent</a> (<a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *dec)</td></tr>
-<tr class="memdesc:gaa2e2a798ff32448c883da77c77a7b191"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the mapping of rows to rows of parent.  <a href="group__Matroid.html#gaa2e2a798ff32448c883da77c77a7b191">More...</a><br /></td></tr>
-<tr class="separator:gaa2e2a798ff32448c883da77c77a7b191"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga4321e8d02778ae6dd83ccbef1c44b03a"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga4321e8d02778ae6dd83ccbef1c44b03a">CMRdecNumColumns</a> (<a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *dec)</td></tr>
-<tr class="memdesc:ga4321e8d02778ae6dd83ccbef1c44b03a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of columns.  <a href="group__Matroid.html#ga4321e8d02778ae6dd83ccbef1c44b03a">More...</a><br /></td></tr>
-<tr class="separator:ga4321e8d02778ae6dd83ccbef1c44b03a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gab30d408e358cc1bd79a38f22c4e95d7b"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#gab30d408e358cc1bd79a38f22c4e95d7b">CMRdecColumnElements</a> (<a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *dec)</td></tr>
-<tr class="memdesc:gab30d408e358cc1bd79a38f22c4e95d7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the column elements.  <a href="group__Matroid.html#gab30d408e358cc1bd79a38f22c4e95d7b">More...</a><br /></td></tr>
-<tr class="separator:gab30d408e358cc1bd79a38f22c4e95d7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga0307f203375a176551d5dba8502850da"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT size_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga0307f203375a176551d5dba8502850da">CMRdecColumnsParent</a> (<a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *dec)</td></tr>
-<tr class="memdesc:ga0307f203375a176551d5dba8502850da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the mapping of columns to columns of parent.  <a href="group__Matroid.html#ga0307f203375a176551d5dba8502850da">More...</a><br /></td></tr>
-<tr class="separator:ga0307f203375a176551d5dba8502850da"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga87f87586babda10bdebaa1041e73b7be"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga87f87586babda10bdebaa1041e73b7be">CMRdecPrint</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *dec, FILE *stream, size_t indent, bool printMatrices, bool printGraphs, bool printReductions)</td></tr>
-<tr class="memdesc:ga87f87586babda10bdebaa1041e73b7be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints the decomposition <code>dec</code> to <code>stream</code>.  <a href="group__Matroid.html#ga87f87586babda10bdebaa1041e73b7be">More...</a><br /></td></tr>
-<tr class="separator:ga87f87586babda10bdebaa1041e73b7be"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga964884f601b3241478fac70c5857ee85"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga964884f601b3241478fac70c5857ee85">CMRdecConsistency</a> (<a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *dec, bool recurse)</td></tr>
-<tr class="memdesc:ga964884f601b3241478fac70c5857ee85"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks a decomposition for consistency.  <a href="group__Matroid.html#ga964884f601b3241478fac70c5857ee85">More...</a><br /></td></tr>
-<tr class="separator:ga964884f601b3241478fac70c5857ee85"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaac2e7870e95a3af11d4e7d1417637c8c"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="structCMR__GRAPH.html">CMR_GRAPH</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#gaac2e7870e95a3af11d4e7d1417637c8c">CMRdecGraph</a> (<a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *dec)</td></tr>
-<tr class="memdesc:gaac2e7870e95a3af11d4e7d1417637c8c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the graph (if available).  <a href="group__Matroid.html#gaac2e7870e95a3af11d4e7d1417637c8c">More...</a><br /></td></tr>
-<tr class="separator:gaac2e7870e95a3af11d4e7d1417637c8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga953e1b1a7a1cb85f373a5b8c6e0dd931"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga953e1b1a7a1cb85f373a5b8c6e0dd931">CMRdecGraphForest</a> (<a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *dec)</td></tr>
-<tr class="memdesc:ga953e1b1a7a1cb85f373a5b8c6e0dd931"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the forest of the graph (if available).  <a href="group__Matroid.html#ga953e1b1a7a1cb85f373a5b8c6e0dd931">More...</a><br /></td></tr>
-<tr class="separator:ga953e1b1a7a1cb85f373a5b8c6e0dd931"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga86040825a525ad2dd7244c84430e6f50"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga86040825a525ad2dd7244c84430e6f50">CMRdecGraphSizeForest</a> (<a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *dec)</td></tr>
-<tr class="memdesc:ga86040825a525ad2dd7244c84430e6f50"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of edges of the graph's forest (if available).  <a href="group__Matroid.html#ga86040825a525ad2dd7244c84430e6f50">More...</a><br /></td></tr>
-<tr class="separator:ga86040825a525ad2dd7244c84430e6f50"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga390ed8eb6942ca8d367d67cfab24bd87"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga390ed8eb6942ca8d367d67cfab24bd87">CMRdecGraphCoforest</a> (<a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *dec)</td></tr>
-<tr class="memdesc:ga390ed8eb6942ca8d367d67cfab24bd87"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the coforest of the graph (if available).  <a href="group__Matroid.html#ga390ed8eb6942ca8d367d67cfab24bd87">More...</a><br /></td></tr>
-<tr class="separator:ga390ed8eb6942ca8d367d67cfab24bd87"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga27fe9ee4482a3f9d30465b60553075c8"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga27fe9ee4482a3f9d30465b60553075c8">CMRdecGraphSizeCoforest</a> (<a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *dec)</td></tr>
-<tr class="memdesc:ga27fe9ee4482a3f9d30465b60553075c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of edges of the graph's coforest (if available).  <a href="group__Matroid.html#ga27fe9ee4482a3f9d30465b60553075c8">More...</a><br /></td></tr>
-<tr class="separator:ga27fe9ee4482a3f9d30465b60553075c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga7407477eee0a8ae88219b2bbd21fd0f9"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT bool *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga7407477eee0a8ae88219b2bbd21fd0f9">CMRdecGraphArcsReversed</a> (<a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *dec)</td></tr>
-<tr class="memdesc:ga7407477eee0a8ae88219b2bbd21fd0f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns an array that indicates for the graph's edges whether they must be reversed (if available).  <a href="group__Matroid.html#ga7407477eee0a8ae88219b2bbd21fd0f9">More...</a><br /></td></tr>
-<tr class="separator:ga7407477eee0a8ae88219b2bbd21fd0f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gabf5d7e49edcc0247144ca883fa985699"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="structCMR__GRAPH.html">CMR_GRAPH</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#gabf5d7e49edcc0247144ca883fa985699">CMRdecCograph</a> (<a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *dec)</td></tr>
-<tr class="memdesc:gabf5d7e49edcc0247144ca883fa985699"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the cograph (if available).  <a href="group__Matroid.html#gabf5d7e49edcc0247144ca883fa985699">More...</a><br /></td></tr>
-<tr class="separator:gabf5d7e49edcc0247144ca883fa985699"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga30379b43e8a2245882f2f16a772b0d7b"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga30379b43e8a2245882f2f16a772b0d7b">CMRdecCographForest</a> (<a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *dec)</td></tr>
-<tr class="memdesc:ga30379b43e8a2245882f2f16a772b0d7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the forest of the cograph (if available).  <a href="group__Matroid.html#ga30379b43e8a2245882f2f16a772b0d7b">More...</a><br /></td></tr>
-<tr class="separator:ga30379b43e8a2245882f2f16a772b0d7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga0fb545f3b42b6441f5f0d5f95a4c5eb7"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga0fb545f3b42b6441f5f0d5f95a4c5eb7">CMRdecCographCoforest</a> (<a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *dec)</td></tr>
-<tr class="memdesc:ga0fb545f3b42b6441f5f0d5f95a4c5eb7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the coforest of the cograph (if available).  <a href="group__Matroid.html#ga0fb545f3b42b6441f5f0d5f95a4c5eb7">More...</a><br /></td></tr>
-<tr class="separator:ga0fb545f3b42b6441f5f0d5f95a4c5eb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga59aa7ba1e71c5a86c0cbb02f2b1f059c"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT bool *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga59aa7ba1e71c5a86c0cbb02f2b1f059c">CMRdecCographArcsReversed</a> (<a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *dec)</td></tr>
-<tr class="memdesc:ga59aa7ba1e71c5a86c0cbb02f2b1f059c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns an array that indicates for the cograph's edges whether they must be reversed (if available).  <a href="group__Matroid.html#ga59aa7ba1e71c5a86c0cbb02f2b1f059c">More...</a><br /></td></tr>
-<tr class="separator:ga59aa7ba1e71c5a86c0cbb02f2b1f059c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga4de2e3af85ef1c2f6884f76f12f8f95c"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga4de2e3af85ef1c2f6884f76f12f8f95c">CMRchrmatBinaryPivot</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, size_t pivotRow, size_t pivotColumn, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> **presult)</td></tr>
+<tr class="memdesc:ga4de2e3af85ef1c2f6884f76f12f8f95c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Applie a pivot to <code>matrix</code> and returns the resulting matrix in <code>*presult</code>.  <a href="group__Matroid.html#ga4de2e3af85ef1c2f6884f76f12f8f95c">More...</a><br /></td></tr>
+<tr class="separator:ga4de2e3af85ef1c2f6884f76f12f8f95c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga0754f81cbac6af4b5ed1bed21f0a3b0b"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga0754f81cbac6af4b5ed1bed21f0a3b0b">CMRchrmatTernaryPivot</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, size_t pivotRow, size_t pivotColumn, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> **presult)</td></tr>
+<tr class="memdesc:ga0754f81cbac6af4b5ed1bed21f0a3b0b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Applies a sequence of pivots to <code>matrix</code> and returns the resulting matrix in <code>*presult</code>.  <a href="group__Matroid.html#ga0754f81cbac6af4b5ed1bed21f0a3b0b">More...</a><br /></td></tr>
+<tr class="separator:ga0754f81cbac6af4b5ed1bed21f0a3b0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga0c6656404a01b5fdda888e1e1700b8e0"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga0c6656404a01b5fdda888e1e1700b8e0">CMRchrmatBinaryPivots</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, size_t numPivots, size_t *pivotRows, size_t *pivotColumns, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> **presult)</td></tr>
+<tr class="memdesc:ga0c6656404a01b5fdda888e1e1700b8e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Applies a sequence of pivots to <code>matrix</code> and returns the resulting matrix in <code>*presult</code>.  <a href="group__Matroid.html#ga0c6656404a01b5fdda888e1e1700b8e0">More...</a><br /></td></tr>
+<tr class="separator:ga0c6656404a01b5fdda888e1e1700b8e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga2654fbbfa9e6a99072fd03de8298f4b1"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga2654fbbfa9e6a99072fd03de8298f4b1">CMRchrmatTernaryPivots</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, size_t numPivots, size_t *pivotRows, size_t *pivotColumns, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> **presult)</td></tr>
+<tr class="memdesc:ga2654fbbfa9e6a99072fd03de8298f4b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Applies a sequence of pivots to <code>matrix</code> and returns the resulting matrix in <code>*presult</code>.  <a href="group__Matroid.html#ga2654fbbfa9e6a99072fd03de8298f4b1">More...</a><br /></td></tr>
+<tr class="separator:ga2654fbbfa9e6a99072fd03de8298f4b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga71c643265a977dd9b2f2a2cd875083ee"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga71c643265a977dd9b2f2a2cd875083ee">CMRminorCreate</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__MINOR.html">CMR_MINOR</a> **pminor, size_t numPivots, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> *submatrix)</td></tr>
+<tr class="memdesc:ga71c643265a977dd9b2f2a2cd875083ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a minor, allocating space for <code>numPivots</code> pivots and a remaining <code>submatrix</code>.  <a href="group__Matroid.html#ga71c643265a977dd9b2f2a2cd875083ee">More...</a><br /></td></tr>
+<tr class="separator:ga71c643265a977dd9b2f2a2cd875083ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga8c75374c5907acc89d7efa90112af7e1"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga8c75374c5907acc89d7efa90112af7e1">CMRminorFree</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__MINOR.html">CMR_MINOR</a> **pminor)</td></tr>
+<tr class="memdesc:ga8c75374c5907acc89d7efa90112af7e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Frees the minor <code>*pminor</code> (if <code>pminor</code> is not <code>NULL</code>).  <a href="group__Matroid.html#ga8c75374c5907acc89d7efa90112af7e1">More...</a><br /></td></tr>
+<tr class="separator:ga8c75374c5907acc89d7efa90112af7e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga5308d3a8511b8d0b5c2e48fedad515da"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga5308d3a8511b8d0b5c2e48fedad515da">CMRminorPrint</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__MINOR.html">CMR_MINOR</a> *minor, size_t numRows, size_t numColumns, FILE *stream)</td></tr>
+<tr class="memdesc:ga5308d3a8511b8d0b5c2e48fedad515da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes the minor <code>minor</code> to the file \fileName by means of lists of row and column indices as well as pivot entries.  <a href="group__Matroid.html#ga5308d3a8511b8d0b5c2e48fedad515da">More...</a><br /></td></tr>
+<tr class="separator:ga5308d3a8511b8d0b5c2e48fedad515da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga703b8a270ba387dd7f4c31e418762bba"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga703b8a270ba387dd7f4c31e418762bba">CMRminorWriteToFile</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__MINOR.html">CMR_MINOR</a> *minor, size_t numRows, size_t numColumns, const char *fileName)</td></tr>
+<tr class="memdesc:ga703b8a270ba387dd7f4c31e418762bba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes the minor <code>minor</code> to the file \fileName by means of lists of row and column indices as well as pivot entries.  <a href="group__Matroid.html#ga703b8a270ba387dd7f4c31e418762bba">More...</a><br /></td></tr>
+<tr class="separator:ga703b8a270ba387dd7f4c31e418762bba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga260910d114ded66317c24740bff8b4e6"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga260910d114ded66317c24740bff8b4e6">CMRmatroiddecIsTernary</a> (<a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec)</td></tr>
+<tr class="memdesc:ga260910d114ded66317c24740bff8b4e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns <code>true</code> iff the decomposition is over \( \mathbb{F}_3 \).  <a href="group__Matroid.html#ga260910d114ded66317c24740bff8b4e6">More...</a><br /></td></tr>
+<tr class="separator:ga260910d114ded66317c24740bff8b4e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga1b3341524e160338dcb2b22712e17524"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga1b3341524e160338dcb2b22712e17524">CMRmatroiddecThreeSumDistributedRanks</a> (<a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec)</td></tr>
+<tr class="memdesc:ga1b3341524e160338dcb2b22712e17524"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns <code>true</code> iff the 3-sum decomposition node has \( 3 \)-separation with two rank-1 matrices.  <a href="group__Matroid.html#ga1b3341524e160338dcb2b22712e17524">More...</a><br /></td></tr>
+<tr class="separator:ga1b3341524e160338dcb2b22712e17524"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaf5158234a2597b958d1b8b131ab1d3ee"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#gaf5158234a2597b958d1b8b131ab1d3ee">CMRmatroiddecThreeSumConcentratedRank</a> (<a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec)</td></tr>
+<tr class="memdesc:gaf5158234a2597b958d1b8b131ab1d3ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns <code>true</code> iff the 3-sum decomposition node has \( 3 \)-separation with one rank-2 matrix.  <a href="group__Matroid.html#gaf5158234a2597b958d1b8b131ab1d3ee">More...</a><br /></td></tr>
+<tr class="separator:gaf5158234a2597b958d1b8b131ab1d3ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga0e805a88782720994b06906f309d04b5"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga0e805a88782720994b06906f309d04b5">CMRmatroiddecHasTranspose</a> (<a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec)</td></tr>
+<tr class="memdesc:ga0e805a88782720994b06906f309d04b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns <code>true</code> iff the transposed matrix of the decomposition node <code>dec</code> is stored.  <a href="group__Matroid.html#ga0e805a88782720994b06906f309d04b5">More...</a><br /></td></tr>
+<tr class="separator:ga0e805a88782720994b06906f309d04b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga54b8a651ce82e49c02d2fbdb02c77a08"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga54b8a651ce82e49c02d2fbdb02c77a08">CMRmatroiddecGetMatrix</a> (<a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec)</td></tr>
+<tr class="memdesc:ga54b8a651ce82e49c02d2fbdb02c77a08"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the matrix of the decomposition node <code>dec</code> (or <code>NULL</code> if it is not stored).  <a href="group__Matroid.html#ga54b8a651ce82e49c02d2fbdb02c77a08">More...</a><br /></td></tr>
+<tr class="separator:ga54b8a651ce82e49c02d2fbdb02c77a08"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gafc2fac01f956d292a6a35af4aa9f4883"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#gafc2fac01f956d292a6a35af4aa9f4883">CMRmatroiddecGetTranspose</a> (<a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec)</td></tr>
+<tr class="memdesc:gafc2fac01f956d292a6a35af4aa9f4883"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the transposed matrix of the decomposition node <code>dec</code> (or <code>NULL</code> if it is not stored).  <a href="group__Matroid.html#gafc2fac01f956d292a6a35af4aa9f4883">More...</a><br /></td></tr>
+<tr class="separator:gafc2fac01f956d292a6a35af4aa9f4883"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga8fb41f36b0af63e5168dd328e1d379e1"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga8fb41f36b0af63e5168dd328e1d379e1">CMRmatroiddecNumChildren</a> (<a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec)</td></tr>
+<tr class="memdesc:ga8fb41f36b0af63e5168dd328e1d379e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of children of the decomposition node <code>dec</code>.  <a href="group__Matroid.html#ga8fb41f36b0af63e5168dd328e1d379e1">More...</a><br /></td></tr>
+<tr class="separator:ga8fb41f36b0af63e5168dd328e1d379e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gadc18d37f1867d6b88d5d97c4f3cc3668"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#gadc18d37f1867d6b88d5d97c4f3cc3668">CMRmatroiddecChild</a> (<a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec, size_t childIndex)</td></tr>
+<tr class="memdesc:gadc18d37f1867d6b88d5d97c4f3cc3668"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a child of the decomposition node <code>dec</code>.  <a href="group__Matroid.html#gadc18d37f1867d6b88d5d97c4f3cc3668">More...</a><br /></td></tr>
+<tr class="separator:gadc18d37f1867d6b88d5d97c4f3cc3668"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga9efeffdeb7c6743aee7da2f674cf2333"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="group__Matroid.html#ga4b1935a1f27e71f4c67083e0865d3971">CMR_MATROID_DEC_TYPE</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga9efeffdeb7c6743aee7da2f674cf2333">CMRmatroiddecType</a> (<a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec)</td></tr>
+<tr class="memdesc:ga9efeffdeb7c6743aee7da2f674cf2333"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the type of a decomposition node <code>dec</code>.  <a href="group__Matroid.html#ga9efeffdeb7c6743aee7da2f674cf2333">More...</a><br /></td></tr>
+<tr class="separator:ga9efeffdeb7c6743aee7da2f674cf2333"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga2a50a7f22f71b4388f210cc74c22044f"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT int8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga2a50a7f22f71b4388f210cc74c22044f">CMRmatroiddecGraphicness</a> (<a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec)</td></tr>
+<tr class="memdesc:ga2a50a7f22f71b4388f210cc74c22044f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indicates graphicness/being network.  <a href="group__Matroid.html#ga2a50a7f22f71b4388f210cc74c22044f">More...</a><br /></td></tr>
+<tr class="separator:ga2a50a7f22f71b4388f210cc74c22044f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga3740c4cefa02b85f34c8fab65d9d4cc5"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT int8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga3740c4cefa02b85f34c8fab65d9d4cc5">CMRmatroiddecCographicness</a> (<a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec)</td></tr>
+<tr class="memdesc:ga3740c4cefa02b85f34c8fab65d9d4cc5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indicates cographicness/being conetwork.  <a href="group__Matroid.html#ga3740c4cefa02b85f34c8fab65d9d4cc5">More...</a><br /></td></tr>
+<tr class="separator:ga3740c4cefa02b85f34c8fab65d9d4cc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga47d19be12f810b0218227ee9bd5d21bf"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT int8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga47d19be12f810b0218227ee9bd5d21bf">CMRmatroiddecRegularity</a> (<a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec)</td></tr>
+<tr class="memdesc:ga47d19be12f810b0218227ee9bd5d21bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indicates regularity/total unimodularity.  <a href="group__Matroid.html#ga47d19be12f810b0218227ee9bd5d21bf">More...</a><br /></td></tr>
+<tr class="separator:ga47d19be12f810b0218227ee9bd5d21bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga980bdcc93f4241b2302f44f55522603d"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga980bdcc93f4241b2302f44f55522603d">CMRmatroiddecNumRows</a> (<a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec)</td></tr>
+<tr class="memdesc:ga980bdcc93f4241b2302f44f55522603d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of rows.  <a href="group__Matroid.html#ga980bdcc93f4241b2302f44f55522603d">More...</a><br /></td></tr>
+<tr class="separator:ga980bdcc93f4241b2302f44f55522603d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gafea3f380b8c6182ae0d4e4868ce5ad49"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#gafea3f380b8c6182ae0d4e4868ce5ad49">CMRmatroiddecRowsRootElement</a> (<a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec)</td></tr>
+<tr class="memdesc:gafea3f380b8c6182ae0d4e4868ce5ad49"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the elements of the root matrix that correspond to this node matrix' rows.  <a href="group__Matroid.html#gafea3f380b8c6182ae0d4e4868ce5ad49">More...</a><br /></td></tr>
+<tr class="separator:gafea3f380b8c6182ae0d4e4868ce5ad49"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gafddebda712c5402924325423985f39a5"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT size_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#gafddebda712c5402924325423985f39a5">CMRmatroiddecRowsParent</a> (<a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec)</td></tr>
+<tr class="memdesc:gafddebda712c5402924325423985f39a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the mapping of rows to rows of parent.  <a href="group__Matroid.html#gafddebda712c5402924325423985f39a5">More...</a><br /></td></tr>
+<tr class="separator:gafddebda712c5402924325423985f39a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga36a170c2c1ae46852fe0304f038d9192"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga36a170c2c1ae46852fe0304f038d9192">CMRmatroiddecNumColumns</a> (<a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec)</td></tr>
+<tr class="memdesc:ga36a170c2c1ae46852fe0304f038d9192"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of columns.  <a href="group__Matroid.html#ga36a170c2c1ae46852fe0304f038d9192">More...</a><br /></td></tr>
+<tr class="separator:ga36a170c2c1ae46852fe0304f038d9192"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga944c5daa0f9f2ccaf9b6d180748ec5c7"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga944c5daa0f9f2ccaf9b6d180748ec5c7">CMRmatroiddecColumnsRootElement</a> (<a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec)</td></tr>
+<tr class="memdesc:ga944c5daa0f9f2ccaf9b6d180748ec5c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the elements of the root matrix that correspond to this node matrix' columns.  <a href="group__Matroid.html#ga944c5daa0f9f2ccaf9b6d180748ec5c7">More...</a><br /></td></tr>
+<tr class="separator:ga944c5daa0f9f2ccaf9b6d180748ec5c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga69bbe4422073157389533068f3ccb1bb"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT size_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga69bbe4422073157389533068f3ccb1bb">CMRmatroiddecColumnsParent</a> (<a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec)</td></tr>
+<tr class="memdesc:ga69bbe4422073157389533068f3ccb1bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the mapping of columns to columns of the parent.  <a href="group__Matroid.html#ga69bbe4422073157389533068f3ccb1bb">More...</a><br /></td></tr>
+<tr class="separator:ga69bbe4422073157389533068f3ccb1bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gacc02b26993e4d2598ea84139b55b0405"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="structCMR__GRAPH.html">CMR_GRAPH</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#gacc02b26993e4d2598ea84139b55b0405">CMRmatroiddecGraph</a> (<a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec)</td></tr>
+<tr class="memdesc:gacc02b26993e4d2598ea84139b55b0405"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the graph (if available).  <a href="group__Matroid.html#gacc02b26993e4d2598ea84139b55b0405">More...</a><br /></td></tr>
+<tr class="separator:gacc02b26993e4d2598ea84139b55b0405"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga5121fa54aded3030f30171f5412bb9be"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga5121fa54aded3030f30171f5412bb9be">CMRmatroiddecGraphForest</a> (<a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec)</td></tr>
+<tr class="memdesc:ga5121fa54aded3030f30171f5412bb9be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the forest of the graph (if available).  <a href="group__Matroid.html#ga5121fa54aded3030f30171f5412bb9be">More...</a><br /></td></tr>
+<tr class="separator:ga5121fa54aded3030f30171f5412bb9be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga8e1e28c1f13f0f5ea90308918aea339b"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga8e1e28c1f13f0f5ea90308918aea339b">CMRmatroiddecGraphSizeForest</a> (<a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec)</td></tr>
+<tr class="memdesc:ga8e1e28c1f13f0f5ea90308918aea339b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of edges of the graph's forest (if available).  <a href="group__Matroid.html#ga8e1e28c1f13f0f5ea90308918aea339b">More...</a><br /></td></tr>
+<tr class="separator:ga8e1e28c1f13f0f5ea90308918aea339b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaee7fd9ce4e0c5df0160f2bdc79028373"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#gaee7fd9ce4e0c5df0160f2bdc79028373">CMRmatroiddecGraphCoforest</a> (<a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec)</td></tr>
+<tr class="memdesc:gaee7fd9ce4e0c5df0160f2bdc79028373"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the coforest of the graph (if available).  <a href="group__Matroid.html#gaee7fd9ce4e0c5df0160f2bdc79028373">More...</a><br /></td></tr>
+<tr class="separator:gaee7fd9ce4e0c5df0160f2bdc79028373"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga04d3779c683d3cf3e605f6bf18344738"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga04d3779c683d3cf3e605f6bf18344738">CMRmatroiddecGraphSizeCoforest</a> (<a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec)</td></tr>
+<tr class="memdesc:ga04d3779c683d3cf3e605f6bf18344738"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of edges of the graph's coforest (if available).  <a href="group__Matroid.html#ga04d3779c683d3cf3e605f6bf18344738">More...</a><br /></td></tr>
+<tr class="separator:ga04d3779c683d3cf3e605f6bf18344738"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga831ba7e7238a0642f1a1b8350d16be6f"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT bool *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga831ba7e7238a0642f1a1b8350d16be6f">CMRmatroiddecGraphArcsReversed</a> (<a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec)</td></tr>
+<tr class="memdesc:ga831ba7e7238a0642f1a1b8350d16be6f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns an array that indicates for the graph's edges whether they must be reversed (if available).  <a href="group__Matroid.html#ga831ba7e7238a0642f1a1b8350d16be6f">More...</a><br /></td></tr>
+<tr class="separator:ga831ba7e7238a0642f1a1b8350d16be6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga3647e15c80cc6b8a0147fec7872ddd3a"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="structCMR__GRAPH.html">CMR_GRAPH</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga3647e15c80cc6b8a0147fec7872ddd3a">CMRmatroiddecCograph</a> (<a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec)</td></tr>
+<tr class="memdesc:ga3647e15c80cc6b8a0147fec7872ddd3a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the cograph (if available).  <a href="group__Matroid.html#ga3647e15c80cc6b8a0147fec7872ddd3a">More...</a><br /></td></tr>
+<tr class="separator:ga3647e15c80cc6b8a0147fec7872ddd3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga2e056655433bccad461afee3b69a7e1b"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga2e056655433bccad461afee3b69a7e1b">CMRmatroiddecCographSizeForest</a> (<a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec)</td></tr>
+<tr class="memdesc:ga2e056655433bccad461afee3b69a7e1b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of edges of the cograph's forest (if available).  <a href="group__Matroid.html#ga2e056655433bccad461afee3b69a7e1b">More...</a><br /></td></tr>
+<tr class="separator:ga2e056655433bccad461afee3b69a7e1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gabdca640dc2157c9e583370aa9095ac25"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#gabdca640dc2157c9e583370aa9095ac25">CMRmatroiddecCographForest</a> (<a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec)</td></tr>
+<tr class="memdesc:gabdca640dc2157c9e583370aa9095ac25"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the forest of the cograph (if available).  <a href="group__Matroid.html#gabdca640dc2157c9e583370aa9095ac25">More...</a><br /></td></tr>
+<tr class="separator:gabdca640dc2157c9e583370aa9095ac25"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga0b2e9bdf7dfb379c1047105b0e5ea503"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga0b2e9bdf7dfb379c1047105b0e5ea503">CMRmatroiddecCographSizeCoforest</a> (<a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec)</td></tr>
+<tr class="memdesc:ga0b2e9bdf7dfb379c1047105b0e5ea503"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of edges of the cograph's coforest (if available).  <a href="group__Matroid.html#ga0b2e9bdf7dfb379c1047105b0e5ea503">More...</a><br /></td></tr>
+<tr class="separator:ga0b2e9bdf7dfb379c1047105b0e5ea503"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gad64c92e1f9076c0804061d13d833050f"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#gad64c92e1f9076c0804061d13d833050f">CMRmatroiddecCographCoforest</a> (<a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec)</td></tr>
+<tr class="memdesc:gad64c92e1f9076c0804061d13d833050f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the coforest of the cograph (if available).  <a href="group__Matroid.html#gad64c92e1f9076c0804061d13d833050f">More...</a><br /></td></tr>
+<tr class="separator:gad64c92e1f9076c0804061d13d833050f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga81dd14689e11d7503e6b8180359d9133"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT bool *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga81dd14689e11d7503e6b8180359d9133">CMRmatroiddecCographArcsReversed</a> (<a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec)</td></tr>
+<tr class="memdesc:ga81dd14689e11d7503e6b8180359d9133"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns an array that indicates for the cograph's edges whether they must be reversed (if available).  <a href="group__Matroid.html#ga81dd14689e11d7503e6b8180359d9133">More...</a><br /></td></tr>
+<tr class="separator:ga81dd14689e11d7503e6b8180359d9133"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga789c1d85f2991096ab1968758700e024"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga789c1d85f2991096ab1968758700e024">CMRmatroiddecNumPivots</a> (<a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec)</td></tr>
+<tr class="memdesc:ga789c1d85f2991096ab1968758700e024"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of pivots (if available).  <a href="group__Matroid.html#ga789c1d85f2991096ab1968758700e024">More...</a><br /></td></tr>
+<tr class="separator:ga789c1d85f2991096ab1968758700e024"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gae35bb29d3e0b6f2d5af02826d46389ff"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT size_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#gae35bb29d3e0b6f2d5af02826d46389ff">CMRmatroiddecPivotRows</a> (<a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec)</td></tr>
+<tr class="memdesc:gae35bb29d3e0b6f2d5af02826d46389ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the array with the pivot rows (if available).  <a href="group__Matroid.html#gae35bb29d3e0b6f2d5af02826d46389ff">More...</a><br /></td></tr>
+<tr class="separator:gae35bb29d3e0b6f2d5af02826d46389ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gac4197fe953f40ba1eea22fe390db0adb"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT size_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#gac4197fe953f40ba1eea22fe390db0adb">CMRmatroiddecPivotColumns</a> (<a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec)</td></tr>
+<tr class="memdesc:gac4197fe953f40ba1eea22fe390db0adb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the array with the pivot columns (if available).  <a href="group__Matroid.html#gac4197fe953f40ba1eea22fe390db0adb">More...</a><br /></td></tr>
+<tr class="separator:gac4197fe953f40ba1eea22fe390db0adb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaff1da6fd09a664a16e0e3aaa2cac485a"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#gaff1da6fd09a664a16e0e3aaa2cac485a">CMRmatroiddecPrint</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec, FILE *stream, size_t indent, bool printChildren, bool printParentRowsColumns, bool printMatrices, bool printGraphs, bool printReductions, bool printPivots)</td></tr>
+<tr class="memdesc:gaff1da6fd09a664a16e0e3aaa2cac485a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints the decomposition <code>dec</code> to <code>stream</code>.  <a href="group__Matroid.html#gaff1da6fd09a664a16e0e3aaa2cac485a">More...</a><br /></td></tr>
+<tr class="separator:gaff1da6fd09a664a16e0e3aaa2cac485a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gab5e0e2eaa25c7f48f039b0572b1d1998"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#gab5e0e2eaa25c7f48f039b0572b1d1998">CMRmatroiddecFree</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> **pdec)</td></tr>
+<tr class="memdesc:gab5e0e2eaa25c7f48f039b0572b1d1998"><td class="mdescLeft">&#160;</td><td class="mdescRight">Frees a decomposition node and all its (grand-)children.  <a href="group__Matroid.html#gab5e0e2eaa25c7f48f039b0572b1d1998">More...</a><br /></td></tr>
+<tr class="separator:gab5e0e2eaa25c7f48f039b0572b1d1998"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga25eb6d8dbdcc99ae19517406d8c017d4"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga25eb6d8dbdcc99ae19517406d8c017d4">CMRmatroiddecCreateMatrixRoot</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> **pdec, bool isTernary, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix)</td></tr>
+<tr class="memdesc:ga25eb6d8dbdcc99ae19517406d8c017d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an unknown decomposition node as a root.  <a href="group__Matroid.html#ga25eb6d8dbdcc99ae19517406d8c017d4">More...</a><br /></td></tr>
+<tr class="separator:ga25eb6d8dbdcc99ae19517406d8c017d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaafd018d541f3a085872167a650e69f38"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#gaafd018d541f3a085872167a650e69f38">CMRmatroiddecUpdateOneSum</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec, size_t numChildren)</td></tr>
+<tr class="memdesc:gaafd018d541f3a085872167a650e69f38"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize an existing unknown decomposition node as a 1-sum.  <a href="group__Matroid.html#gaafd018d541f3a085872167a650e69f38">More...</a><br /></td></tr>
+<tr class="separator:gaafd018d541f3a085872167a650e69f38"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <h2 class="groupheader">Typedef Documentation</h2>
-<a id="gad87465d6d8c4f975e49ee4fd28b45d3a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gad87465d6d8c4f975e49ee4fd28b45d3a">&#9670;&nbsp;</a></span>CMR_DEC</h2>
+<a id="gab228ae503112b00552f1bc0a3fe1752f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gab228ae503112b00552f1bc0a3fe1752f">&#9670;&nbsp;</a></span>CMR_MATROID_DEC</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">typedef struct <a class="el" href="struct__CMR__DEC.html">_CMR_DEC</a> <a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a></td>
+          <td class="memname">typedef struct <a class="el" href="struct__CMR__MATROID__DEC.html">_CMR_MATROID_DEC</a> <a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -243,93 +299,366 @@ Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Enumeration Type Documentation</h2>
-<a id="ga8da9d34f85e480a1c344a89b85e5b633"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga8da9d34f85e480a1c344a89b85e5b633">&#9670;&nbsp;</a></span>CMR_DEC_FLAGS</h2>
+<a id="ga584220cef1cff2b9d72c54c0cc50fe5e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga584220cef1cff2b9d72c54c0cc50fe5e">&#9670;&nbsp;</a></span>CMR_MATROID_DEC_THREESUM_FLAG</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">enum <a class="el" href="group__Matroid.html#ga8da9d34f85e480a1c344a89b85e5b633">CMR_DEC_FLAGS</a></td>
+          <td class="memname">enum <a class="el" href="group__Matroid.html#ga584220cef1cff2b9d72c54c0cc50fe5e">CMR_MATROID_DEC_THREESUM_FLAG</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Flags that indicate the type of \( 3 \)-separation. </p>
+<dl class="section see"><dt>See also</dt><dd>The desired types can be set by modifying <a class="el" href="structCMR__REGULAR__PARAMS.html#abfa132dc74db26bb2bd2544503ac394c">CMR_REGULAR_PARAMS::threeSumStrategy</a>. </dd></dl>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga8da9d34f85e480a1c344a89b85e5b633a8101f648242ceee32824dbb4734d15fb"></a>CMR_DEC_MASK_REPRESENTATION&#160;</td><td class="fielddoc"><p>Bit mask for a specific representation matrix of a minor. </p>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga584220cef1cff2b9d72c54c0cc50fe5ead95af87f90a84e38749e83e7828296cc"></a>CMR_MATROID_DEC_THREESUM_FLAG_NO_PIVOTS&#160;</td><td class="fielddoc"><p>Indicate to not change the rank distribution; only serves as an option; each constructed node will have either <a class="el" href="group__Matroid.html#gga584220cef1cff2b9d72c54c0cc50fe5ea91de82495d73c64e2059d644fb641902">CMR_MATROID_DEC_THREESUM_FLAG_DISTRIBUTED_RANKS</a> or <a class="el" href="group__Matroid.html#gga584220cef1cff2b9d72c54c0cc50fe5eabf816bc71d80f450b7f6feeae3fbedc0">CMR_MATROID_DEC_THREESUM_FLAG_CONCENTRATED_RANK</a> set. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="gga8da9d34f85e480a1c344a89b85e5b633acc55e835d2cb545b31bade7d3a11da84"></a>CMR_DEC_IS_GRAPHIC&#160;</td><td class="fielddoc"><p>Minor is graphic. </p>
+<tr><td class="fieldname"><a id="gga584220cef1cff2b9d72c54c0cc50fe5ea91de82495d73c64e2059d644fb641902"></a>CMR_MATROID_DEC_THREESUM_FLAG_DISTRIBUTED_RANKS&#160;</td><td class="fielddoc"><p>The two off-diagonal submatrices both have rank 1. </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="matroids.html#matroid_decomposition">Decomposition of matroids</a>. </dd></dl>
 </td></tr>
-<tr><td class="fieldname"><a id="gga8da9d34f85e480a1c344a89b85e5b633aaa1feabf3a43a9ae84aa233e7208c2dd"></a>CMR_DEC_IS_COGRAPHIC&#160;</td><td class="fielddoc"><p>Minor is cographic. </p>
+<tr><td class="fieldname"><a id="gga584220cef1cff2b9d72c54c0cc50fe5eabf816bc71d80f450b7f6feeae3fbedc0"></a>CMR_MATROID_DEC_THREESUM_FLAG_CONCENTRATED_RANK&#160;</td><td class="fielddoc"><p>The bottom-left submatrix has rank 2 and the top-right submatrix has rank 0. </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="matroids.html#matroid_decomposition">Decomposition of matroids</a>. </dd></dl>
 </td></tr>
-<tr><td class="fieldname"><a id="gga8da9d34f85e480a1c344a89b85e5b633af18c3e42ad6f0ea412557a6206ddb978"></a>CMR_DEC_IS_REGULAR&#160;</td><td class="fielddoc"><p>Minor is regular. </p>
+<tr><td class="fieldname"><a id="gga584220cef1cff2b9d72c54c0cc50fe5eac99bbb1fa8d3269cacbcdb506609f5ea"></a>CMR_MATROID_DEC_THREESUM_FLAG_FIRST_WIDE&#160;</td><td class="fielddoc"><p>The first child node is of the form \( M_1^{\text{wide}} \); valid for distributed ranks. </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="matroids.html#matroid_decomposition">Decomposition of matroids</a>. </dd></dl>
 </td></tr>
-<tr><td class="fieldname"><a id="gga8da9d34f85e480a1c344a89b85e5b633a65654f4f473c9be357db0b39d11f0a58"></a>CMR_DEC_HAS_LOWER_LEFT_NONZEROS&#160;</td><td class="fielddoc"><p>The 2- or 3-sum has nonzeros in lower-left. </p>
+<tr><td class="fieldname"><a id="gga584220cef1cff2b9d72c54c0cc50fe5ea6ad2c36865c260c0e9fb8fd2add17b20"></a>CMR_MATROID_DEC_THREESUM_FLAG_FIRST_TALL&#160;</td><td class="fielddoc"><p>The first child node is of the form \( M_1^{\text{tall}} \); valid for distributed ranks. </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="matroids.html#matroid_decomposition">Decomposition of matroids</a>. </dd></dl>
 </td></tr>
-<tr><td class="fieldname"><a id="gga8da9d34f85e480a1c344a89b85e5b633a1cab264d7678a66be49d8740df3491cf"></a>CMR_DEC_HAS_UPPER_RIGHT_NONZEROS&#160;</td><td class="fielddoc"><p>The 2- or 3-sum has nonzeros in upper-right. </p>
+<tr><td class="fieldname"><a id="gga584220cef1cff2b9d72c54c0cc50fe5ea435bea38fded8ff4e7d986d3ce42269f"></a>CMR_MATROID_DEC_THREESUM_FLAG_FIRST_MIXED&#160;</td><td class="fielddoc"><p>The first child node is of the form \( M_1^{\text{mixed}} \); valid for concentrated rank. </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="matroids.html#matroid_decomposition">Decomposition of matroids</a>. </dd></dl>
+</td></tr>
+<tr><td class="fieldname"><a id="gga584220cef1cff2b9d72c54c0cc50fe5ea2c65e3528db6cde861007f764e968766"></a>CMR_MATROID_DEC_THREESUM_FLAG_FIRST_ALLREPR&#160;</td><td class="fielddoc"><p>The first child node is of the form \( M_1^{\text{all-repr}} \); valid for concentrated rank. </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="matroids.html#matroid_decomposition">Decomposition of matroids</a>. </dd></dl>
+</td></tr>
+<tr><td class="fieldname"><a id="gga584220cef1cff2b9d72c54c0cc50fe5ead238c50d4c18df1d33807d83bee09fe6"></a>CMR_MATROID_DEC_THREESUM_FLAG_SECOND_WIDE&#160;</td><td class="fielddoc"><p>The second child node is of the form \( M_2^{\text{wide}} \); valid for distributed ranks. </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="matroids.html#matroid_decomposition">Decomposition of matroids</a>. </dd></dl>
+</td></tr>
+<tr><td class="fieldname"><a id="gga584220cef1cff2b9d72c54c0cc50fe5ea083a69918d037604ba6435a6ae95a0ea"></a>CMR_MATROID_DEC_THREESUM_FLAG_SECOND_TALL&#160;</td><td class="fielddoc"><p>The second child node is of the form \( M_2^{\text{tall}} \); valid for distributed ranks. </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="matroids.html#matroid_decomposition">Decomposition of matroids</a>. </dd></dl>
+</td></tr>
+<tr><td class="fieldname"><a id="gga584220cef1cff2b9d72c54c0cc50fe5ea56e1029a033e09a78f040fcc982c462b"></a>CMR_MATROID_DEC_THREESUM_FLAG_SECOND_MIXED&#160;</td><td class="fielddoc"><p>The second child node is of the form \( M_2^{\text{mixed}} \); valid for concentrated rank. </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="matroids.html#matroid_decomposition">Decomposition of matroids</a>. </dd></dl>
+</td></tr>
+<tr><td class="fieldname"><a id="gga584220cef1cff2b9d72c54c0cc50fe5eacc920f345ab88eff314728b9f435bc38"></a>CMR_MATROID_DEC_THREESUM_FLAG_SECOND_ALLREPR&#160;</td><td class="fielddoc"><p>The second child node is of the form \( M_2^{\text{all-repr}} \); valid for concentrated rank. </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="matroids.html#matroid_decomposition">Decomposition of matroids</a>. </dd></dl>
+</td></tr>
+<tr><td class="fieldname"><a id="gga584220cef1cff2b9d72c54c0cc50fe5eaf785362596f282aced164e0ce45c4c91"></a>CMR_MATROID_DEC_THREESUM_FLAG_SEYMOUR&#160;</td><td class="fielddoc"><p>This combination of flags indicates a \( 3 \)-sum as defined by Seymour. </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="matroids.html#matroid_decomposition">Decomposition of matroids</a>. </dd></dl>
+</td></tr>
+<tr><td class="fieldname"><a id="gga584220cef1cff2b9d72c54c0cc50fe5ea63ca8b6891bd4c3cc37aec6152420cf1"></a>CMR_MATROID_DEC_THREESUM_FLAG_TRUEMPER&#160;</td><td class="fielddoc"><p>This combination of flags indicates a \( 3 \)-sum as defined by Truemper. </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="matroids.html#matroid_decomposition">Decomposition of matroids</a>. </dd></dl>
 </td></tr>
 </table>
 
 </div>
 </div>
-<a id="ga28390a3a6bfff1cd1910902ca4412165"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga28390a3a6bfff1cd1910902ca4412165">&#9670;&nbsp;</a></span>CMR_DEC_TYPE</h2>
+<a id="ga4b1935a1f27e71f4c67083e0865d3971"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga4b1935a1f27e71f4c67083e0865d3971">&#9670;&nbsp;</a></span>CMR_MATROID_DEC_TYPE</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">enum <a class="el" href="group__Matroid.html#ga28390a3a6bfff1cd1910902ca4412165">CMR_DEC_TYPE</a></td>
+          <td class="memname">enum <a class="el" href="group__Matroid.html#ga4b1935a1f27e71f4c67083e0865d3971">CMR_MATROID_DEC_TYPE</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga28390a3a6bfff1cd1910902ca4412165a84c4b418ad7bf9fd71472a92a023b877"></a>CMR_DEC_IRREGULAR&#160;</td><td class="fielddoc"><p>Node represents 3-connected irregular minor. </p>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga4b1935a1f27e71f4c67083e0865d3971a96c5a561f06813efe035b4476e8d4cdf"></a>CMR_MATROID_DEC_TYPE_IRREGULAR&#160;</td><td class="fielddoc"><p>Node represents 3-connected irregular minor. </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="matroids.html#matroid_decomposition">Decomposition of matroids</a>. </dd></dl>
 </td></tr>
-<tr><td class="fieldname"><a id="gga28390a3a6bfff1cd1910902ca4412165a06714c0496e69a39cd73f5d57d042c16"></a>CMR_DEC_UNKNOWN&#160;</td><td class="fielddoc"><p>Type of node is not yet determined. </p>
+<tr><td class="fieldname"><a id="gga4b1935a1f27e71f4c67083e0865d3971ab2582b85ac2738f1c16b6830d9d1a9bf"></a>CMR_MATROID_DEC_TYPE_UNKNOWN&#160;</td><td class="fielddoc"><p>Type of node is not yet determined. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="gga28390a3a6bfff1cd1910902ca4412165a5274e7d3999b03d479a088f6a78d10ed"></a>CMR_DEC_ONE_SUM&#160;</td><td class="fielddoc"><p>Node represents a 1-sum of minors; arbitrary number of child nodes. </p>
+<tr><td class="fieldname"><a id="gga4b1935a1f27e71f4c67083e0865d3971aae86a0514d749f183046400f9f0706c6"></a>CMR_MATROID_DEC_TYPE_ONE_SUM&#160;</td><td class="fielddoc"><p>Node represents a \( 1 \)-sum of matrices with an arbitrary number of child nodes. </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="matroids.html#matroid_decomposition">Decomposition of matroids</a>. </dd></dl>
 </td></tr>
-<tr><td class="fieldname"><a id="gga28390a3a6bfff1cd1910902ca4412165aea79b27483979a3bc308f3168b054b18"></a>CMR_DEC_TWO_SUM&#160;</td><td class="fielddoc"><p>Node represents a 2-sum of minors; two child nodes. </p>
+<tr><td class="fieldname"><a id="gga4b1935a1f27e71f4c67083e0865d3971acffc7b65d8fe99b7ee5c88ab43709795"></a>CMR_MATROID_DEC_TYPE_TWO_SUM&#160;</td><td class="fielddoc"><p>Node represents a 2-sum of matrices; has two child nodes. </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="matroids.html#matroid_decomposition">Decomposition of matroids</a>. </dd></dl>
 </td></tr>
-<tr><td class="fieldname"><a id="gga28390a3a6bfff1cd1910902ca4412165a77aa8fc21adb3b79e6d08703e99ca567"></a>CMR_DEC_THREE_SUM&#160;</td><td class="fielddoc"><p>Node represents a 3-sum of minors; two child nodes. </p>
+<tr><td class="fieldname"><a id="gga4b1935a1f27e71f4c67083e0865d3971af3e10d42bcae87549291575e81e34ae4"></a>CMR_MATROID_DEC_TYPE_THREE_SUM&#160;</td><td class="fielddoc"><p>Node represents a 3-sum of matrices; has two child nodes. </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="matroids.html#matroid_decomposition">Decomposition of matroids</a>. </dd></dl>
 </td></tr>
-<tr><td class="fieldname"><a id="gga28390a3a6bfff1cd1910902ca4412165a0ccd372aa5a06219d43b6a11ce9abf4d"></a>CMR_DEC_GRAPHIC&#160;</td><td class="fielddoc"><p>Node represents a graphic leaf minor; no child nodes. </p>
+<tr><td class="fieldname"><a id="gga4b1935a1f27e71f4c67083e0865d3971a713fa313a89e22ad2361d6ca6da59b54"></a>CMR_MATROID_DEC_TYPE_SERIES_PARALLEL&#160;</td><td class="fielddoc"><p>Node represents a series-parallel reduction; one child node. </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="matroids.html#matroid_decomposition">Decomposition of matroids</a>. </dd></dl>
 </td></tr>
-<tr><td class="fieldname"><a id="gga28390a3a6bfff1cd1910902ca4412165a961b9c7398d56e709224b3f724fd1237"></a>CMR_DEC_COGRAPHIC&#160;</td><td class="fielddoc"><p>Node represents a cographic leaf minor; no child nodes. </p>
+<tr><td class="fieldname"><a id="gga4b1935a1f27e71f4c67083e0865d3971ad31c5b50df7b80a28b28935d67af17a4"></a>CMR_MATROID_DEC_TYPE_PIVOTS&#160;</td><td class="fielddoc"><p>Node represents an application of pivots; one child node. </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="matroids.html#matroid_decomposition">Decomposition of matroids</a>. </dd></dl>
 </td></tr>
-<tr><td class="fieldname"><a id="gga28390a3a6bfff1cd1910902ca4412165af067cf091f3a2c818d236b5aaa234133"></a>CMR_DEC_PLANAR&#160;</td><td class="fielddoc"><p>Node represents a planar (graphic and cographic) leaf minor; no child nodes. </p>
+<tr><td class="fieldname"><a id="gga4b1935a1f27e71f4c67083e0865d3971a84b7111a8c8c33e391d930de9f447090"></a>CMR_MATROID_DEC_TYPE_SUBMATRIX&#160;</td><td class="fielddoc"><p>Node represents the consideration of a submatrix; one child node. </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="matroids.html#matroid_decomposition">Decomposition of matroids</a>. </dd></dl>
 </td></tr>
-<tr><td class="fieldname"><a id="gga28390a3a6bfff1cd1910902ca4412165ac10f679204977b6525dec617350cfa57"></a>CMR_DEC_SERIES_PARALLEL&#160;</td><td class="fielddoc"><p>Node represents a series-parallel reduction; one child node. </p>
+<tr><td class="fieldname"><a id="gga4b1935a1f27e71f4c67083e0865d3971abafe499b84dea94d57e795aced1ca678"></a>CMR_MATROID_DEC_TYPE_GRAPH&#160;</td><td class="fielddoc"><p>Node represents a graphic leaf minor; one optional child node for non-cographic minor. </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="matroids.html#matroid_decomposition">Decomposition of matroids</a>. </dd></dl>
 </td></tr>
-<tr><td class="fieldname"><a id="gga28390a3a6bfff1cd1910902ca4412165aa1c78afb8a721b957b3c08e68192c8ff"></a>CMR_DEC_SPECIAL_R10&#160;</td><td class="fielddoc"><p>Node represents a minor isomorphic to \( R_{10} \). </p>
+<tr><td class="fieldname"><a id="gga4b1935a1f27e71f4c67083e0865d3971a5d5def325fedebf71c6c1c7be1baf26d"></a>CMR_MATROID_DEC_TYPE_COGRAPH&#160;</td><td class="fielddoc"><p>Node represents a cographic leaf minor; one optional child node for non-graphic minor. </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="matroids.html#matroid_decomposition">Decomposition of matroids</a>. </dd></dl>
 </td></tr>
-<tr><td class="fieldname"><a id="gga28390a3a6bfff1cd1910902ca4412165a92139854ab923b96b1f161379f37aeab"></a>CMR_DEC_SPECIAL_FANO&#160;</td><td class="fielddoc"><p>Node represents a minor isomorphic to \( F_7 \). </p>
+<tr><td class="fieldname"><a id="gga4b1935a1f27e71f4c67083e0865d3971af8e03d54564cbad918d16200744f7543"></a>CMR_MATROID_DEC_TYPE_PLANAR&#160;</td><td class="fielddoc"><p>Node represents a planar (graphic and cographic) leaf minor; no child nodes. </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="matroids.html#matroid_decomposition">Decomposition of matroids</a>. </dd></dl>
 </td></tr>
-<tr><td class="fieldname"><a id="gga28390a3a6bfff1cd1910902ca4412165a263a5289ea1150f32ec10fa232221129"></a>CMR_DEC_SPECIAL_FANO_DUAL&#160;</td><td class="fielddoc"><p>Node represents a minor isomorphic to \( F_7^\star \). </p>
+<tr><td class="fieldname"><a id="gga4b1935a1f27e71f4c67083e0865d3971a732c9e9e59305c943e9d5342f4e642e4"></a>CMR_MATROID_DEC_TYPE_R10&#160;</td><td class="fielddoc"><p>Node represents a representation matrix of \( R_{10} \). </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="matroids.html#matroid_decomposition">Decomposition of matroids</a>. </dd></dl>
 </td></tr>
-<tr><td class="fieldname"><a id="gga28390a3a6bfff1cd1910902ca4412165a9264520564e5f80d6704b76768aff486"></a>CMR_DEC_SPECIAL_K_5&#160;</td><td class="fielddoc"><p>Node represents a minor isomorphic to \( M(K_5) \). </p>
+<tr><td class="fieldname"><a id="gga4b1935a1f27e71f4c67083e0865d3971accc00490496ac4f58c9a9aa38d20cf6a"></a>CMR_MATROID_DEC_TYPE_FANO&#160;</td><td class="fielddoc"><p>Node represents a representation matrix of \( F_7 \). </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="matroids.html#matroid_decomposition">Decomposition of matroids</a>. </dd></dl>
 </td></tr>
-<tr><td class="fieldname"><a id="gga28390a3a6bfff1cd1910902ca4412165a985400d6b1322ba0358a8f666f18b177"></a>CMR_DEC_SPECIAL_K_5_DUAL&#160;</td><td class="fielddoc"><p>Node represents a minor isomorphic to \( M(K_5)^\star \). </p>
+<tr><td class="fieldname"><a id="gga4b1935a1f27e71f4c67083e0865d3971a3a79c3fc83606759d279f6bfdadf6942"></a>CMR_MATROID_DEC_TYPE_FANO_DUAL&#160;</td><td class="fielddoc"><p>Node represents a representation matrix of \( F_7^\star \). </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="matroids.html#matroid_decomposition">Decomposition of matroids</a>. </dd></dl>
 </td></tr>
-<tr><td class="fieldname"><a id="gga28390a3a6bfff1cd1910902ca4412165ab44a1f531113545761319afc9f20b260"></a>CMR_DEC_SPECIAL_K_3_3&#160;</td><td class="fielddoc"><p>Node represents a minor isomorphic to \( M(K_{3,3}) \). </p>
+<tr><td class="fieldname"><a id="gga4b1935a1f27e71f4c67083e0865d3971a7b7f4752d193d6b767836b2fd174846a"></a>CMR_MATROID_DEC_TYPE_K5&#160;</td><td class="fielddoc"><p>Node represents a representation matrix of \( M(K_5) \). </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="matroids.html#matroid_decomposition">Decomposition of matroids</a>. </dd></dl>
 </td></tr>
-<tr><td class="fieldname"><a id="gga28390a3a6bfff1cd1910902ca4412165af65c2b672188b10bc25cc2e6e6fd4fd1"></a>CMR_DEC_SPECIAL_K_3_3_DUAL&#160;</td><td class="fielddoc"><p>Node represents a minor isomorphic to \( M(K_{3,3})^\star \). </p>
+<tr><td class="fieldname"><a id="gga4b1935a1f27e71f4c67083e0865d3971a18de003108c467d579313d54c8edfadd"></a>CMR_MATROID_DEC_TYPE_K5_DUAL&#160;</td><td class="fielddoc"><p>Node represents a representation matrix of \( M(K_5)^\star \). </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="matroids.html#matroid_decomposition">Decomposition of matroids</a>. </dd></dl>
+</td></tr>
+<tr><td class="fieldname"><a id="gga4b1935a1f27e71f4c67083e0865d3971aabfaf7c9e9ee89a4e85e5c088816ac80"></a>CMR_MATROID_DEC_TYPE_K33&#160;</td><td class="fielddoc"><p>Node represents a representation matrix of \( M(K_{3,3}) \). </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="matroids.html#matroid_decomposition">Decomposition of matroids</a>. </dd></dl>
+</td></tr>
+<tr><td class="fieldname"><a id="gga4b1935a1f27e71f4c67083e0865d3971ab7a77e9293c5b764b6e4c9a201ae6954"></a>CMR_MATROID_DEC_TYPE_K33_DUAL&#160;</td><td class="fielddoc"><p>Node represents a representation matrix of \( M(K_{3,3})^\star \). </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="matroids.html#matroid_decomposition">Decomposition of matroids</a>. </dd></dl>
+</td></tr>
+<tr><td class="fieldname"><a id="gga4b1935a1f27e71f4c67083e0865d3971adc6a93c3810559d4f050547753fb7e80"></a>CMR_MATROID_DEC_TYPE_DETERMINANT&#160;</td><td class="fielddoc"><p>Node represents a square matrix \( M \) with \( |\det(M)| = 2 \). </p><dl class="section see"><dt>See also</dt><dd><a class="el" href="matroids.html#matroid_decomposition">Decomposition of matroids</a>. </dd></dl>
 </td></tr>
 </table>
 
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="ga649da1a1bf86d2ecd10da029b6afd05c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga649da1a1bf86d2ecd10da029b6afd05c">&#9670;&nbsp;</a></span>CMRdecChild()</h2>
+<a id="ga4de2e3af85ef1c2f6884f76f12f8f95c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga4de2e3af85ef1c2f6884f76f12f8f95c">&#9670;&nbsp;</a></span>CMRchrmatBinaryPivot()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">CMR_EXPORT <a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a>* CMRdecChild </td>
+          <td class="memname">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRchrmatBinaryPivot </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *&#160;</td>
+          <td class="paramname"><em>matrix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>pivotRow</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>pivotColumn</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> **&#160;</td>
+          <td class="paramname"><em>presult</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Applie a pivot to <code>matrix</code> and returns the resulting matrix in <code>*presult</code>. </p>
+<p>Calculations are done over the binary field. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">matrix</td><td>Matrix to work with. </td></tr>
+    <tr><td class="paramname">pivotRow</td><td>Row of the pivot. </td></tr>
+    <tr><td class="paramname">pivotColumn</td><td>Column of the pivot. </td></tr>
+    <tr><td class="paramname">presult</td><td>Pointer for storing the resulting matrix. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga0c6656404a01b5fdda888e1e1700b8e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga0c6656404a01b5fdda888e1e1700b8e0">&#9670;&nbsp;</a></span>CMRchrmatBinaryPivots()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRchrmatBinaryPivots </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *&#160;</td>
+          <td class="paramname"><em>matrix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>numPivots</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>pivotRows</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>pivotColumns</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> **&#160;</td>
+          <td class="paramname"><em>presult</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Applies a sequence of pivots to <code>matrix</code> and returns the resulting matrix in <code>*presult</code>. </p>
+<p>Calculations are done over the binary field. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">matrix</td><td>Matrix to work with. </td></tr>
+    <tr><td class="paramname">numPivots</td><td>Number of pivots to carry out. </td></tr>
+    <tr><td class="paramname">pivotRows</td><td>Array with rows of the pivots. </td></tr>
+    <tr><td class="paramname">pivotColumns</td><td>Array with columns of the pivots. </td></tr>
+    <tr><td class="paramname">presult</td><td>Pointer for storing the resulting matrix. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga0754f81cbac6af4b5ed1bed21f0a3b0b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga0754f81cbac6af4b5ed1bed21f0a3b0b">&#9670;&nbsp;</a></span>CMRchrmatTernaryPivot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRchrmatTernaryPivot </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *&#160;</td>
+          <td class="paramname"><em>matrix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>pivotRow</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>pivotColumn</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> **&#160;</td>
+          <td class="paramname"><em>presult</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Applies a sequence of pivots to <code>matrix</code> and returns the resulting matrix in <code>*presult</code>. </p>
+<p>Calculations are done over the ternary field. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">matrix</td><td>Matrix to work with. </td></tr>
+    <tr><td class="paramname">pivotRow</td><td>Row of the pivot. </td></tr>
+    <tr><td class="paramname">pivotColumn</td><td>Column of the pivot. </td></tr>
+    <tr><td class="paramname">presult</td><td>Pointer for storing the resulting matrix. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga2654fbbfa9e6a99072fd03de8298f4b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga2654fbbfa9e6a99072fd03de8298f4b1">&#9670;&nbsp;</a></span>CMRchrmatTernaryPivots()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRchrmatTernaryPivots </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *&#160;</td>
+          <td class="paramname"><em>matrix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>numPivots</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>pivotRows</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>pivotColumns</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> **&#160;</td>
+          <td class="paramname"><em>presult</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Applies a sequence of pivots to <code>matrix</code> and returns the resulting matrix in <code>*presult</code>. </p>
+<p>Calculations are done over the ternary field. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">matrix</td><td>Matrix to work with. </td></tr>
+    <tr><td class="paramname">numPivots</td><td>Number of pivots to carry out. </td></tr>
+    <tr><td class="paramname">pivotRows</td><td>Array with rows of the pivots. </td></tr>
+    <tr><td class="paramname">pivotColumns</td><td>Array with columns of the pivots. </td></tr>
+    <tr><td class="paramname">presult</td><td>Pointer for storing the resulting matrix. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="gadc18d37f1867d6b88d5d97c4f3cc3668"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gadc18d37f1867d6b88d5d97c4f3cc3668">&#9670;&nbsp;</a></span>CMRmatroiddecChild()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CMR_EXPORT <a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a>* CMRmatroiddecChild </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *&#160;</td>
           <td class="paramname"><em>dec</em>, </td>
         </tr>
         <tr>
@@ -345,6 +674,8 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Returns a child of the decomposition node <code>dec</code>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">dec</td><td>Decomposition node. </td></tr>
@@ -355,16 +686,16 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="gabf5d7e49edcc0247144ca883fa985699"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gabf5d7e49edcc0247144ca883fa985699">&#9670;&nbsp;</a></span>CMRdecCograph()</h2>
+<a id="ga3647e15c80cc6b8a0147fec7872ddd3a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga3647e15c80cc6b8a0147fec7872ddd3a">&#9670;&nbsp;</a></span>CMRmatroiddecCograph()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">CMR_EXPORT <a class="el" href="structCMR__GRAPH.html">CMR_GRAPH</a>* CMRdecCograph </td>
+          <td class="memname">CMR_EXPORT <a class="el" href="structCMR__GRAPH.html">CMR_GRAPH</a>* CMRmatroiddecCograph </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *&#160;</td>
           <td class="paramname"><em>dec</em></td><td>)</td>
           <td></td>
         </tr>
@@ -374,23 +705,23 @@ Functions</h2></td></tr>
 <p>Returns the cograph (if available). </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">dec</td><td>Decomposition. </td></tr>
+    <tr><td class="paramname">dec</td><td>Decomposition node. </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a id="ga59aa7ba1e71c5a86c0cbb02f2b1f059c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga59aa7ba1e71c5a86c0cbb02f2b1f059c">&#9670;&nbsp;</a></span>CMRdecCographArcsReversed()</h2>
+<a id="ga81dd14689e11d7503e6b8180359d9133"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga81dd14689e11d7503e6b8180359d9133">&#9670;&nbsp;</a></span>CMRmatroiddecCographArcsReversed()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">CMR_EXPORT bool* CMRdecCographArcsReversed </td>
+          <td class="memname">CMR_EXPORT bool* CMRmatroiddecCographArcsReversed </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *&#160;</td>
           <td class="paramname"><em>dec</em></td><td>)</td>
           <td></td>
         </tr>
@@ -400,23 +731,23 @@ Functions</h2></td></tr>
 <p>Returns an array that indicates for the cograph's edges whether they must be reversed (if available). </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">dec</td><td>Decomposition. </td></tr>
+    <tr><td class="paramname">dec</td><td>Decomposition node. </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a id="ga0fb545f3b42b6441f5f0d5f95a4c5eb7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga0fb545f3b42b6441f5f0d5f95a4c5eb7">&#9670;&nbsp;</a></span>CMRdecCographCoforest()</h2>
+<a id="gad64c92e1f9076c0804061d13d833050f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gad64c92e1f9076c0804061d13d833050f">&#9670;&nbsp;</a></span>CMRmatroiddecCographCoforest()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">CMR_EXPORT <a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a>* CMRdecCographCoforest </td>
+          <td class="memname">CMR_EXPORT <a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a>* CMRmatroiddecCographCoforest </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *&#160;</td>
           <td class="paramname"><em>dec</em></td><td>)</td>
           <td></td>
         </tr>
@@ -426,23 +757,23 @@ Functions</h2></td></tr>
 <p>Returns the coforest of the cograph (if available). </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">dec</td><td>Decomposition. </td></tr>
+    <tr><td class="paramname">dec</td><td>Decomposition node. </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a id="ga30379b43e8a2245882f2f16a772b0d7b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga30379b43e8a2245882f2f16a772b0d7b">&#9670;&nbsp;</a></span>CMRdecCographForest()</h2>
+<a id="gabdca640dc2157c9e583370aa9095ac25"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gabdca640dc2157c9e583370aa9095ac25">&#9670;&nbsp;</a></span>CMRmatroiddecCographForest()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">CMR_EXPORT <a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a>* CMRdecCographForest </td>
+          <td class="memname">CMR_EXPORT <a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a>* CMRmatroiddecCographForest </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *&#160;</td>
           <td class="paramname"><em>dec</em></td><td>)</td>
           <td></td>
         </tr>
@@ -452,82 +783,174 @@ Functions</h2></td></tr>
 <p>Returns the forest of the cograph (if available). </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">dec</td><td>Decomposition. </td></tr>
+    <tr><td class="paramname">dec</td><td>Decomposition node. </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a id="gab30d408e358cc1bd79a38f22c4e95d7b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gab30d408e358cc1bd79a38f22c4e95d7b">&#9670;&nbsp;</a></span>CMRdecColumnElements()</h2>
+<a id="ga3740c4cefa02b85f34c8fab65d9d4cc5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga3740c4cefa02b85f34c8fab65d9d4cc5">&#9670;&nbsp;</a></span>CMRmatroiddecCographicness()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">CMR_EXPORT <a class="el" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a>* CMRdecColumnElements </td>
+          <td class="memname">CMR_EXPORT int8_t CMRmatroiddecCographicness </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *&#160;</td>
           <td class="paramname"><em>dec</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Returns the column elements. </p>
+<p>Indicates cographicness/being conetwork. </p>
+<p>Returns a positive value if the matrix corresponding to <code>dec</code> is cographic/conetwork, zero if it is not known and a negative value otherwise. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">dec</td><td>Decomposition. </td></tr>
+    <tr><td class="paramname">dec</td><td>Decomposition node. </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a id="ga0307f203375a176551d5dba8502850da"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga0307f203375a176551d5dba8502850da">&#9670;&nbsp;</a></span>CMRdecColumnsParent()</h2>
+<a id="ga0b2e9bdf7dfb379c1047105b0e5ea503"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga0b2e9bdf7dfb379c1047105b0e5ea503">&#9670;&nbsp;</a></span>CMRmatroiddecCographSizeCoforest()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">CMR_EXPORT size_t* CMRdecColumnsParent </td>
+          <td class="memname">CMR_EXPORT size_t CMRmatroiddecCographSizeCoforest </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *&#160;</td>
           <td class="paramname"><em>dec</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Returns the mapping of columns to columns of parent. </p>
+<p>Returns the number of edges of the cograph's coforest (if available). </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">dec</td><td>Decomposition. </td></tr>
+    <tr><td class="paramname">dec</td><td>Decomposition node. </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a id="ga964884f601b3241478fac70c5857ee85"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga964884f601b3241478fac70c5857ee85">&#9670;&nbsp;</a></span>CMRdecConsistency()</h2>
+<a id="ga2e056655433bccad461afee3b69a7e1b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga2e056655433bccad461afee3b69a7e1b">&#9670;&nbsp;</a></span>CMRmatroiddecCographSizeForest()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">CMR_EXPORT char* CMRdecConsistency </td>
+          <td class="memname">CMR_EXPORT size_t CMRmatroiddecCographSizeForest </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *&#160;</td>
-          <td class="paramname"><em>dec</em>, </td>
+          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *&#160;</td>
+          <td class="paramname"><em>dec</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the number of edges of the cograph's forest (if available). </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">dec</td><td>Decomposition node. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga69bbe4422073157389533068f3ccb1bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga69bbe4422073157389533068f3ccb1bb">&#9670;&nbsp;</a></span>CMRmatroiddecColumnsParent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CMR_EXPORT size_t* CMRmatroiddecColumnsParent </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *&#160;</td>
+          <td class="paramname"><em>dec</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the mapping of columns to columns of the parent. </p>
+<p>Can only be called for a non-root node. A column is mapped to <code>SIZE_MAX</code> if it is not mapped </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">dec</td><td>Decomposition node. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga944c5daa0f9f2ccaf9b6d180748ec5c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga944c5daa0f9f2ccaf9b6d180748ec5c7">&#9670;&nbsp;</a></span>CMRmatroiddecColumnsRootElement()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CMR_EXPORT <a class="el" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a>* CMRmatroiddecColumnsRootElement </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *&#160;</td>
+          <td class="paramname"><em>dec</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the elements of the root matrix that correspond to this node matrix' columns. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">dec</td><td>Decomposition node. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga25eb6d8dbdcc99ae19517406d8c017d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga25eb6d8dbdcc99ae19517406d8c017d4">&#9670;&nbsp;</a></span>CMRmatroiddecCreateMatrixRoot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRmatroiddecCreateMatrixRoot </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> **&#160;</td>
+          <td class="paramname"><em>pdec</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>recurse</em>&#160;</td>
+          <td class="paramname"><em>isTernary</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *&#160;</td>
+          <td class="paramname"><em>matrix</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -537,28 +960,28 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Checks a decomposition for consistency. </p>
-<p>Checks whether a potentially stored alternative matrix (exhibiting a sequence of nested 3-connected minors) correctly corresponds to the stored matrix.</p>
-<dl class="section return"><dt>Returns</dt><dd><code>NULL</code> if consistent. Otherwise, an explanation string is returned, which must free'd with <code>free()</code>.</dd></dl>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="env__internal_8h.html#a4704e1cd2f1b46c1f6ffaf0d1233410f">CMRconsistencyAssert()</a> for checking the returned string and aborting in case of inconsistency. </dd></dl>
+<p>Creates an unknown decomposition node as a root. </p>
+<p>Copies <code>matrix</code> into the node. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">dec</td><td>Decomposition. </td></tr>
-    <tr><td class="paramname">recurse</td><td>Whether all (grand-)children shall be checked, too. </td></tr>
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">pdec</td><td>Pointer for storing the decomposition node. </td></tr>
+    <tr><td class="paramname">isTernary</td><td>Whether we consider ternary matrices. </td></tr>
+    <tr><td class="paramname">matrix</td><td>The matrix corresponding to this node; will be copied. </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a id="ga1a2c0babc8fb7cf1f75c4be5f7e534aa"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga1a2c0babc8fb7cf1f75c4be5f7e534aa">&#9670;&nbsp;</a></span>CMRdecFree()</h2>
+<a id="gab5e0e2eaa25c7f48f039b0572b1d1998"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gab5e0e2eaa25c7f48f039b0572b1d1998">&#9670;&nbsp;</a></span>CMRmatroiddecFree()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRdecFree </td>
+          <td class="memname">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRmatroiddecFree </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
           <td class="paramname"><em>cmr</em>, </td>
@@ -566,7 +989,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> **&#160;</td>
+          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> **&#160;</td>
           <td class="paramname"><em>pdec</em>&#160;</td>
         </tr>
         <tr>
@@ -576,6 +999,8 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Frees a decomposition node and all its (grand-)children. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
@@ -586,23 +1011,23 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="gabd2e9444f47e08f28002854dce96ca38"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gabd2e9444f47e08f28002854dce96ca38">&#9670;&nbsp;</a></span>CMRdecGetMatrix()</h2>
+<a id="ga54b8a651ce82e49c02d2fbdb02c77a08"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga54b8a651ce82e49c02d2fbdb02c77a08">&#9670;&nbsp;</a></span>CMRmatroiddecGetMatrix()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">CMR_EXPORT <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a>* CMRdecGetMatrix </td>
+          <td class="memname">CMR_EXPORT <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a>* CMRmatroiddecGetMatrix </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *&#160;</td>
           <td class="paramname"><em>dec</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Returns the matrix of the decomposition node (or <code>NULL</code> if it is not stored). </p>
+<p>Returns the matrix of the decomposition node <code>dec</code> (or <code>NULL</code> if it is not stored). </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">dec</td><td>Decomposition node. </td></tr>
@@ -612,23 +1037,23 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="gad7f81f996d35a43552b347ff3ef0e0f3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gad7f81f996d35a43552b347ff3ef0e0f3">&#9670;&nbsp;</a></span>CMRdecGetTranspose()</h2>
+<a id="gafc2fac01f956d292a6a35af4aa9f4883"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gafc2fac01f956d292a6a35af4aa9f4883">&#9670;&nbsp;</a></span>CMRmatroiddecGetTranspose()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">CMR_EXPORT <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a>* CMRdecGetTranspose </td>
+          <td class="memname">CMR_EXPORT <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a>* CMRmatroiddecGetTranspose </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *&#160;</td>
           <td class="paramname"><em>dec</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Returns the transposed matrix of the decomposition node (or <code>NULL</code> if it is not stored). </p>
+<p>Returns the transposed matrix of the decomposition node <code>dec</code> (or <code>NULL</code> if it is not stored). </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">dec</td><td>Decomposition node. </td></tr>
@@ -638,16 +1063,16 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="gaac2e7870e95a3af11d4e7d1417637c8c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gaac2e7870e95a3af11d4e7d1417637c8c">&#9670;&nbsp;</a></span>CMRdecGraph()</h2>
+<a id="gacc02b26993e4d2598ea84139b55b0405"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gacc02b26993e4d2598ea84139b55b0405">&#9670;&nbsp;</a></span>CMRmatroiddecGraph()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">CMR_EXPORT <a class="el" href="structCMR__GRAPH.html">CMR_GRAPH</a>* CMRdecGraph </td>
+          <td class="memname">CMR_EXPORT <a class="el" href="structCMR__GRAPH.html">CMR_GRAPH</a>* CMRmatroiddecGraph </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *&#160;</td>
           <td class="paramname"><em>dec</em></td><td>)</td>
           <td></td>
         </tr>
@@ -657,23 +1082,23 @@ Functions</h2></td></tr>
 <p>Returns the graph (if available). </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">dec</td><td>Decomposition. </td></tr>
+    <tr><td class="paramname">dec</td><td>Decomposition node. </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a id="ga7407477eee0a8ae88219b2bbd21fd0f9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga7407477eee0a8ae88219b2bbd21fd0f9">&#9670;&nbsp;</a></span>CMRdecGraphArcsReversed()</h2>
+<a id="ga831ba7e7238a0642f1a1b8350d16be6f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga831ba7e7238a0642f1a1b8350d16be6f">&#9670;&nbsp;</a></span>CMRmatroiddecGraphArcsReversed()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">CMR_EXPORT bool* CMRdecGraphArcsReversed </td>
+          <td class="memname">CMR_EXPORT bool* CMRmatroiddecGraphArcsReversed </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *&#160;</td>
           <td class="paramname"><em>dec</em></td><td>)</td>
           <td></td>
         </tr>
@@ -683,23 +1108,23 @@ Functions</h2></td></tr>
 <p>Returns an array that indicates for the graph's edges whether they must be reversed (if available). </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">dec</td><td>Decomposition. </td></tr>
+    <tr><td class="paramname">dec</td><td>Decomposition node. </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a id="ga390ed8eb6942ca8d367d67cfab24bd87"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga390ed8eb6942ca8d367d67cfab24bd87">&#9670;&nbsp;</a></span>CMRdecGraphCoforest()</h2>
+<a id="gaee7fd9ce4e0c5df0160f2bdc79028373"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaee7fd9ce4e0c5df0160f2bdc79028373">&#9670;&nbsp;</a></span>CMRmatroiddecGraphCoforest()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">CMR_EXPORT <a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a>* CMRdecGraphCoforest </td>
+          <td class="memname">CMR_EXPORT <a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a>* CMRmatroiddecGraphCoforest </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *&#160;</td>
           <td class="paramname"><em>dec</em></td><td>)</td>
           <td></td>
         </tr>
@@ -709,23 +1134,23 @@ Functions</h2></td></tr>
 <p>Returns the coforest of the graph (if available). </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">dec</td><td>Decomposition. </td></tr>
+    <tr><td class="paramname">dec</td><td>Decomposition node. </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a id="ga953e1b1a7a1cb85f373a5b8c6e0dd931"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga953e1b1a7a1cb85f373a5b8c6e0dd931">&#9670;&nbsp;</a></span>CMRdecGraphForest()</h2>
+<a id="ga5121fa54aded3030f30171f5412bb9be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga5121fa54aded3030f30171f5412bb9be">&#9670;&nbsp;</a></span>CMRmatroiddecGraphForest()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">CMR_EXPORT <a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a>* CMRdecGraphForest </td>
+          <td class="memname">CMR_EXPORT <a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a>* CMRmatroiddecGraphForest </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *&#160;</td>
           <td class="paramname"><em>dec</em></td><td>)</td>
           <td></td>
         </tr>
@@ -735,23 +1160,50 @@ Functions</h2></td></tr>
 <p>Returns the forest of the graph (if available). </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">dec</td><td>Decomposition. </td></tr>
+    <tr><td class="paramname">dec</td><td>Decomposition node. </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a id="ga27fe9ee4482a3f9d30465b60553075c8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga27fe9ee4482a3f9d30465b60553075c8">&#9670;&nbsp;</a></span>CMRdecGraphSizeCoforest()</h2>
+<a id="ga2a50a7f22f71b4388f210cc74c22044f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga2a50a7f22f71b4388f210cc74c22044f">&#9670;&nbsp;</a></span>CMRmatroiddecGraphicness()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">CMR_EXPORT size_t CMRdecGraphSizeCoforest </td>
+          <td class="memname">CMR_EXPORT int8_t CMRmatroiddecGraphicness </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *&#160;</td>
+          <td class="paramname"><em>dec</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Indicates graphicness/being network. </p>
+<p>Returns a positive value if the matrix corresponding to <code>dec</code> is graphic/network, zero if it is not known and a negative value otherwise. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">dec</td><td>Decomposition node. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga04d3779c683d3cf3e605f6bf18344738"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga04d3779c683d3cf3e605f6bf18344738">&#9670;&nbsp;</a></span>CMRmatroiddecGraphSizeCoforest()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CMR_EXPORT size_t CMRmatroiddecGraphSizeCoforest </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *&#160;</td>
           <td class="paramname"><em>dec</em></td><td>)</td>
           <td></td>
         </tr>
@@ -761,23 +1213,23 @@ Functions</h2></td></tr>
 <p>Returns the number of edges of the graph's coforest (if available). </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">dec</td><td>Decomposition. </td></tr>
+    <tr><td class="paramname">dec</td><td>Decomposition node. </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a id="ga86040825a525ad2dd7244c84430e6f50"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga86040825a525ad2dd7244c84430e6f50">&#9670;&nbsp;</a></span>CMRdecGraphSizeForest()</h2>
+<a id="ga8e1e28c1f13f0f5ea90308918aea339b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga8e1e28c1f13f0f5ea90308918aea339b">&#9670;&nbsp;</a></span>CMRmatroiddecGraphSizeForest()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">CMR_EXPORT size_t CMRdecGraphSizeForest </td>
+          <td class="memname">CMR_EXPORT size_t CMRmatroiddecGraphSizeForest </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *&#160;</td>
           <td class="paramname"><em>dec</em></td><td>)</td>
           <td></td>
         </tr>
@@ -787,30 +1239,30 @@ Functions</h2></td></tr>
 <p>Returns the number of edges of the graph's forest (if available). </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">dec</td><td>Decomposition. </td></tr>
+    <tr><td class="paramname">dec</td><td>Decomposition node. </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a id="ga91a1aaeff87e2369a5b87eca79433b1f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga91a1aaeff87e2369a5b87eca79433b1f">&#9670;&nbsp;</a></span>CMRdecHasMatrix()</h2>
+<a id="ga0e805a88782720994b06906f309d04b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga0e805a88782720994b06906f309d04b5">&#9670;&nbsp;</a></span>CMRmatroiddecHasTranspose()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">CMR_EXPORT bool CMRdecHasMatrix </td>
+          <td class="memname">CMR_EXPORT bool CMRmatroiddecHasTranspose </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *&#160;</td>
           <td class="paramname"><em>dec</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Returns <code>true</code> iff the matrix of the decomposition node is stored. </p>
+<p>Returns <code>true</code> iff the transposed matrix of the decomposition node <code>dec</code> is stored. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">dec</td><td>Decomposition node. </td></tr>
@@ -820,23 +1272,23 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ga772b33477778135b6ce0fa8fa221baee"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga772b33477778135b6ce0fa8fa221baee">&#9670;&nbsp;</a></span>CMRdecHasTranspose()</h2>
+<a id="ga260910d114ded66317c24740bff8b4e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga260910d114ded66317c24740bff8b4e6">&#9670;&nbsp;</a></span>CMRmatroiddecIsTernary()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">CMR_EXPORT bool CMRdecHasTranspose </td>
+          <td class="memname">CMR_EXPORT bool CMRmatroiddecIsTernary </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *&#160;</td>
           <td class="paramname"><em>dec</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Returns <code>true</code> iff the transposed matrix of the decomposition node is stored. </p>
+<p>Returns <code>true</code> iff the decomposition is over \( \mathbb{F}_3 \). </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">dec</td><td>Decomposition node. </td></tr>
@@ -846,288 +1298,23 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ga856104ae9ad2d93f42459af47963288f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga856104ae9ad2d93f42459af47963288f">&#9670;&nbsp;</a></span>CMRdecIsCographic()</h2>
+<a id="ga8fb41f36b0af63e5168dd328e1d379e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga8fb41f36b0af63e5168dd328e1d379e1">&#9670;&nbsp;</a></span>CMRmatroiddecNumChildren()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">CMR_EXPORT bool CMRdecIsCographic </td>
+          <td class="memname">CMR_EXPORT size_t CMRmatroiddecNumChildren </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *&#160;</td>
           <td class="paramname"><em>dec</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Returns <code>true</code> if and only if <code>dec</code> is cographic. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">dec</td><td>Decomposition. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="gac0850a1b6e6cc11809acc17fc011586c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gac0850a1b6e6cc11809acc17fc011586c">&#9670;&nbsp;</a></span>CMRdecIsCographicLeaf()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">CMR_EXPORT bool CMRdecIsCographicLeaf </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *&#160;</td>
-          <td class="paramname"><em>dec</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Returns <code>true</code> if and only if <code>dec</code> is a cographic leaf node. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">dec</td><td>Decomposition. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="ga56f9c8dab81a2c1028f6ab84a285d8f6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga56f9c8dab81a2c1028f6ab84a285d8f6">&#9670;&nbsp;</a></span>CMRdecIsGraphic()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">CMR_EXPORT bool CMRdecIsGraphic </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *&#160;</td>
-          <td class="paramname"><em>dec</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Returns <code>true</code> if and only if <code>dec</code> is graphic. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">dec</td><td>Decomposition. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="ga283dded43116edc8c8b7bd01c977ae1c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga283dded43116edc8c8b7bd01c977ae1c">&#9670;&nbsp;</a></span>CMRdecIsGraphicLeaf()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">CMR_EXPORT bool CMRdecIsGraphicLeaf </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *&#160;</td>
-          <td class="paramname"><em>dec</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Returns <code>true</code> if and only if <code>dec</code> is a graphic leaf node. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">dec</td><td>Decomposition. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="ga3cbcfc4a65db74cc0393b77df0807542"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga3cbcfc4a65db74cc0393b77df0807542">&#9670;&nbsp;</a></span>CMRdecIsRegular()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">CMR_EXPORT bool CMRdecIsRegular </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *&#160;</td>
-          <td class="paramname"><em>dec</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Returns <code>true</code> if and only if <code>dec</code> is regular. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">dec</td><td>Decomposition. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="ga82ffc2e3889acd379c959902ce2ae994"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga82ffc2e3889acd379c959902ce2ae994">&#9670;&nbsp;</a></span>CMRdecIsSeriesParallelReduction()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">CMR_EXPORT bool CMRdecIsSeriesParallelReduction </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *&#160;</td>
-          <td class="paramname"><em>dec</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Returns <code>true</code> if and only if <code>dec</code> represents a series-parallel reduction. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">dec</td><td>Decomposition. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="gacc80fe85686da1cbbc7a3b0c797bf21e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gacc80fe85686da1cbbc7a3b0c797bf21e">&#9670;&nbsp;</a></span>CMRdecIsSpecialLeaf()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">CMR_EXPORT <a class="el" href="group__Matroid.html#ga28390a3a6bfff1cd1910902ca4412165">CMR_DEC_TYPE</a> CMRdecIsSpecialLeaf </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *&#160;</td>
-          <td class="paramname"><em>dec</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int *&#160;</td>
-          <td class="paramname"><em>prepresentationMatrix</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Returns the corresponding flag if <code>dec</code> is a special matrix node and 0 otherwise. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">dec</td><td>Decomposition. </td></tr>
-    <tr><td class="paramname">prepresentationMatrix</td><td>Pointer for storing the id of the actual representation matrix (may be <code>NULL</code>). </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="ga99a311ee30fa3f781eb152cf00474307"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga99a311ee30fa3f781eb152cf00474307">&#9670;&nbsp;</a></span>CMRdecIsSum()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">CMR_EXPORT int CMRdecIsSum </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *&#160;</td>
-          <td class="paramname"><em>dec</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">bool *&#160;</td>
-          <td class="paramname"><em>plowerLeftHasNonzeros</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">bool *&#160;</td>
-          <td class="paramname"><em>pupperRightHasNonzeros</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Returns k if <code>dec</code> is a k-sum node and 0 otherwise. </p>
-<p>The representation matrices for k-sums can be rearranged so that the first rows and columns consist of all elements that belong only to the first child and that all other rows / columns correspond to elements that belong only to the second child. In other words, most of the child information resides in an upper-left and lower-right submatrix. There exist precisely k-1 common elements, which correspond to nonzeros in the lower-left or upper-right submatrix. The parameters <code>plowerLeftHasNonzeros</code> and <code>pupperRightHasNonzeros</code> can be specified to obtain information about where to find those.</p>
-<p>In order to determine which rows/columns belong to which child, one can use <a class="el" href="group__Matroid.html#ga2771b96fb59eab2865d52f7645929b79">CMRdecNumChildren</a> and <a class="el" href="group__Matroid.html#ga649da1a1bf86d2ecd10da029b6afd05c">CMRdecChild</a> to access each child and then use <a class="el" href="group__Matroid.html#ga62dedbfa27ee155495660f4cf2971462">CMRdecNumRows</a>, <a class="el" href="group__Matroid.html#gaa2e2a798ff32448c883da77c77a7b191">CMRdecRowsParent</a> as well as <a class="el" href="group__Matroid.html#ga4321e8d02778ae6dd83ccbef1c44b03a">CMRdecNumColumns</a> and <a class="el" href="group__Matroid.html#ga0307f203375a176551d5dba8502850da">CMRdecColumnsParent</a>. Note that for a k-sum there will be (k-1) rows and (k-1) columns that belong to both children. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">dec</td><td>Decomposition node. </td></tr>
-    <tr><td class="paramname">plowerLeftHasNonzeros</td><td>Pointer for storing if the lower-left submatrix of a 2- or 3-sum contains a nonzero (may be <code>NULL</code>). </td></tr>
-    <tr><td class="paramname">pupperRightHasNonzeros</td><td>Pointer for storing if the upper-right submatrix of a 2- or 3-sum contains a nonzero (may be <code>NULL</code>). </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="ga423ebe728899e2695a8d1de674e14357"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga423ebe728899e2695a8d1de674e14357">&#9670;&nbsp;</a></span>CMRdecIsUnknown()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">CMR_EXPORT bool CMRdecIsUnknown </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *&#160;</td>
-          <td class="paramname"><em>dec</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Returns <code>true</code> if and only if <code>dec</code> has yet unknown type. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">dec</td><td>Decomposition. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="ga2771b96fb59eab2865d52f7645929b79"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga2771b96fb59eab2865d52f7645929b79">&#9670;&nbsp;</a></span>CMRdecNumChildren()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">CMR_EXPORT size_t CMRdecNumChildren </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *&#160;</td>
-          <td class="paramname"><em>dec</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Returns the number of children of the decomposition node. </p>
+<p>Returns the number of children of the decomposition node <code>dec</code>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">dec</td><td>Decomposition node. </td></tr>
@@ -1137,16 +1324,16 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ga4321e8d02778ae6dd83ccbef1c44b03a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga4321e8d02778ae6dd83ccbef1c44b03a">&#9670;&nbsp;</a></span>CMRdecNumColumns()</h2>
+<a id="ga36a170c2c1ae46852fe0304f038d9192"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga36a170c2c1ae46852fe0304f038d9192">&#9670;&nbsp;</a></span>CMRmatroiddecNumColumns()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">CMR_EXPORT size_t CMRdecNumColumns </td>
+          <td class="memname">CMR_EXPORT size_t CMRmatroiddecNumColumns </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *&#160;</td>
           <td class="paramname"><em>dec</em></td><td>)</td>
           <td></td>
         </tr>
@@ -1156,23 +1343,49 @@ Functions</h2></td></tr>
 <p>Returns the number of columns. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">dec</td><td>Decomposition. </td></tr>
+    <tr><td class="paramname">dec</td><td>Decomposition node. </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a id="ga62dedbfa27ee155495660f4cf2971462"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga62dedbfa27ee155495660f4cf2971462">&#9670;&nbsp;</a></span>CMRdecNumRows()</h2>
+<a id="ga789c1d85f2991096ab1968758700e024"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga789c1d85f2991096ab1968758700e024">&#9670;&nbsp;</a></span>CMRmatroiddecNumPivots()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">CMR_EXPORT size_t CMRdecNumRows </td>
+          <td class="memname">CMR_EXPORT size_t CMRmatroiddecNumPivots </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *&#160;</td>
+          <td class="paramname"><em>dec</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the number of pivots (if available). </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">dec</td><td>Decomposition node. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga980bdcc93f4241b2302f44f55522603d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga980bdcc93f4241b2302f44f55522603d">&#9670;&nbsp;</a></span>CMRmatroiddecNumRows()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CMR_EXPORT size_t CMRmatroiddecNumRows </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *&#160;</td>
           <td class="paramname"><em>dec</em></td><td>)</td>
           <td></td>
         </tr>
@@ -1182,21 +1395,73 @@ Functions</h2></td></tr>
 <p>Returns the number of rows. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">dec</td><td>Decomposition. </td></tr>
+    <tr><td class="paramname">dec</td><td>Decomposition node. </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a id="ga87f87586babda10bdebaa1041e73b7be"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga87f87586babda10bdebaa1041e73b7be">&#9670;&nbsp;</a></span>CMRdecPrint()</h2>
+<a id="gac4197fe953f40ba1eea22fe390db0adb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gac4197fe953f40ba1eea22fe390db0adb">&#9670;&nbsp;</a></span>CMRmatroiddecPivotColumns()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRdecPrint </td>
+          <td class="memname">CMR_EXPORT size_t* CMRmatroiddecPivotColumns </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *&#160;</td>
+          <td class="paramname"><em>dec</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the array with the pivot columns (if available). </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">dec</td><td>Decomposition node. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="gae35bb29d3e0b6f2d5af02826d46389ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gae35bb29d3e0b6f2d5af02826d46389ff">&#9670;&nbsp;</a></span>CMRmatroiddecPivotRows()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CMR_EXPORT size_t* CMRmatroiddecPivotRows </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *&#160;</td>
+          <td class="paramname"><em>dec</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the array with the pivot rows (if available). </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">dec</td><td>Decomposition node. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="gaff1da6fd09a664a16e0e3aaa2cac485a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaff1da6fd09a664a16e0e3aaa2cac485a">&#9670;&nbsp;</a></span>CMRmatroiddecPrint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRmatroiddecPrint </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
           <td class="paramname"><em>cmr</em>, </td>
@@ -1204,7 +1469,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *&#160;</td>
           <td class="paramname"><em>dec</em>, </td>
         </tr>
         <tr>
@@ -1223,6 +1488,18 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>printChildren</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>printParentRowsColumns</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
           <td class="paramname"><em>printMatrices</em>, </td>
         </tr>
         <tr>
@@ -1235,7 +1512,13 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>printReductions</em>&#160;</td>
+          <td class="paramname"><em>printReductions</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>printPivots</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1252,51 +1535,55 @@ Functions</h2></td></tr>
     <tr><td class="paramname">dec</td><td>Decomposition node. </td></tr>
     <tr><td class="paramname">stream</td><td>Stream to write to. </td></tr>
     <tr><td class="paramname">indent</td><td>Indentation of this node. </td></tr>
+    <tr><td class="paramname">printChildren</td><td>Whether to recurse. </td></tr>
+    <tr><td class="paramname">printParentRowsColumns</td><td>Whether to print mapping of rows/columns to parent rows/columns. </td></tr>
     <tr><td class="paramname">printMatrices</td><td>Whether to print matrices. </td></tr>
     <tr><td class="paramname">printGraphs</td><td>Whether to print graphs. </td></tr>
     <tr><td class="paramname">printReductions</td><td>Whether to print series-parallel reductions. </td></tr>
+    <tr><td class="paramname">printPivots</td><td>Whether to print pivots. </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a id="ga538a6ebdb392f0ebde1d8f15d56a4d45"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga538a6ebdb392f0ebde1d8f15d56a4d45">&#9670;&nbsp;</a></span>CMRdecRowElements()</h2>
+<a id="ga47d19be12f810b0218227ee9bd5d21bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga47d19be12f810b0218227ee9bd5d21bf">&#9670;&nbsp;</a></span>CMRmatroiddecRegularity()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">CMR_EXPORT <a class="el" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a>* CMRdecRowElements </td>
+          <td class="memname">CMR_EXPORT int8_t CMRmatroiddecRegularity </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *&#160;</td>
           <td class="paramname"><em>dec</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Returns the row elements. </p>
+<p>Indicates regularity/total unimodularity. </p>
+<p>Returns a positive value if the matrix corresponding to <code>dec</code> is regular/totally unimodular, zero if it is not known and a negative value otherwise. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">dec</td><td>Decomposition. </td></tr>
+    <tr><td class="paramname">dec</td><td>Decomposition node. </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a id="gaa2e2a798ff32448c883da77c77a7b191"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gaa2e2a798ff32448c883da77c77a7b191">&#9670;&nbsp;</a></span>CMRdecRowsParent()</h2>
+<a id="gafddebda712c5402924325423985f39a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gafddebda712c5402924325423985f39a5">&#9670;&nbsp;</a></span>CMRmatroiddecRowsParent()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">CMR_EXPORT size_t* CMRdecRowsParent </td>
+          <td class="memname">CMR_EXPORT size_t* CMRmatroiddecRowsParent </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *&#160;</td>
           <td class="paramname"><em>dec</em></td><td>)</td>
           <td></td>
         </tr>
@@ -1306,7 +1593,360 @@ Functions</h2></td></tr>
 <p>Returns the mapping of rows to rows of parent. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">dec</td><td>Decomposition. </td></tr>
+    <tr><td class="paramname">dec</td><td>Decomposition node. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="gafea3f380b8c6182ae0d4e4868ce5ad49"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gafea3f380b8c6182ae0d4e4868ce5ad49">&#9670;&nbsp;</a></span>CMRmatroiddecRowsRootElement()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CMR_EXPORT <a class="el" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a>* CMRmatroiddecRowsRootElement </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *&#160;</td>
+          <td class="paramname"><em>dec</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the elements of the root matrix that correspond to this node matrix' rows. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">dec</td><td>Decomposition node. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="gaf5158234a2597b958d1b8b131ab1d3ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaf5158234a2597b958d1b8b131ab1d3ee">&#9670;&nbsp;</a></span>CMRmatroiddecThreeSumConcentratedRank()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CMR_EXPORT bool CMRmatroiddecThreeSumConcentratedRank </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *&#160;</td>
+          <td class="paramname"><em>dec</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns <code>true</code> iff the 3-sum decomposition node has \( 3 \)-separation with one rank-2 matrix. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">dec</td><td>Decomposition node. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga1b3341524e160338dcb2b22712e17524"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga1b3341524e160338dcb2b22712e17524">&#9670;&nbsp;</a></span>CMRmatroiddecThreeSumDistributedRanks()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CMR_EXPORT bool CMRmatroiddecThreeSumDistributedRanks </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *&#160;</td>
+          <td class="paramname"><em>dec</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns <code>true</code> iff the 3-sum decomposition node has \( 3 \)-separation with two rank-1 matrices. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">dec</td><td>Decomposition node. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga9efeffdeb7c6743aee7da2f674cf2333"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga9efeffdeb7c6743aee7da2f674cf2333">&#9670;&nbsp;</a></span>CMRmatroiddecType()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CMR_EXPORT <a class="el" href="group__Matroid.html#ga4b1935a1f27e71f4c67083e0865d3971">CMR_MATROID_DEC_TYPE</a> CMRmatroiddecType </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *&#160;</td>
+          <td class="paramname"><em>dec</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the type of a decomposition node <code>dec</code>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">dec</td><td>Decomposition node. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="gaafd018d541f3a085872167a650e69f38"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaafd018d541f3a085872167a650e69f38">&#9670;&nbsp;</a></span>CMRmatroiddecUpdateOneSum()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRmatroiddecUpdateOneSum </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *&#160;</td>
+          <td class="paramname"><em>dec</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>numChildren</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Initialize an existing unknown decomposition node as a 1-sum. </p>
+<p>The partition into <code>numChildren</code> many components is indicated for each row and column by <code>rowsChild</code> and <code>columnsChild</code>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">dec</td><td>Decomposition node. </td></tr>
+    <tr><td class="paramname">numChildren</td><td>Number of child nodes. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga71c643265a977dd9b2f2a2cd875083ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga71c643265a977dd9b2f2a2cd875083ee">&#9670;&nbsp;</a></span>CMRminorCreate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRminorCreate </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__MINOR.html">CMR_MINOR</a> **&#160;</td>
+          <td class="paramname"><em>pminor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>numPivots</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> *&#160;</td>
+          <td class="paramname"><em>submatrix</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates a minor, allocating space for <code>numPivots</code> pivots and a remaining <code>submatrix</code>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">pminor</td><td>Pointer for storing the minor. </td></tr>
+    <tr><td class="paramname">numPivots</td><td>Number of pivots. </td></tr>
+    <tr><td class="paramname">submatrix</td><td>Submatrix (may be <code>NULL</code>; is not copied). </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga8c75374c5907acc89d7efa90112af7e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga8c75374c5907acc89d7efa90112af7e1">&#9670;&nbsp;</a></span>CMRminorFree()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRminorFree </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__MINOR.html">CMR_MINOR</a> **&#160;</td>
+          <td class="paramname"><em>pminor</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Frees the minor <code>*pminor</code> (if <code>pminor</code> is not <code>NULL</code>). </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">pminor</td><td>Pointer to the minor (may be <code>NULL</code>). </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga5308d3a8511b8d0b5c2e48fedad515da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga5308d3a8511b8d0b5c2e48fedad515da">&#9670;&nbsp;</a></span>CMRminorPrint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRminorPrint </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__MINOR.html">CMR_MINOR</a> *&#160;</td>
+          <td class="paramname"><em>minor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>numRows</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>numColumns</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">FILE *&#160;</td>
+          <td class="paramname"><em>stream</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Writes the minor <code>minor</code> to the file \fileName by means of lists of row and column indices as well as pivot entries. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">minor</td><td>Minor to write. </td></tr>
+    <tr><td class="paramname">numRows</td><td>Number of rows of original matrix. </td></tr>
+    <tr><td class="paramname">numColumns</td><td>Number of columns of original matrix. </td></tr>
+    <tr><td class="paramname">stream</td><td>File stream to save minor to.. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga703b8a270ba387dd7f4c31e418762bba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga703b8a270ba387dd7f4c31e418762bba">&#9670;&nbsp;</a></span>CMRminorWriteToFile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRminorWriteToFile </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__MINOR.html">CMR_MINOR</a> *&#160;</td>
+          <td class="paramname"><em>minor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>numRows</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>numColumns</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>fileName</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Writes the minor <code>minor</code> to the file \fileName by means of lists of row and column indices as well as pivot entries. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">minor</td><td>Minor to write. </td></tr>
+    <tr><td class="paramname">numRows</td><td>Number of rows of original matrix. </td></tr>
+    <tr><td class="paramname">numColumns</td><td>Number of columns of original matrix. </td></tr>
+    <tr><td class="paramname">fileName</td><td>File name to save minor to; <code>NULL</code> indicates stdout. </td></tr>
   </table>
   </dd>
 </dl>

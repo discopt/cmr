@@ -105,21 +105,21 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a89295bf19c98d914e7376c6ff8fd3559"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="network_8h.html#a89295bf19c98d914e7376c6ff8fd3559">CMRstatsNetworkInit</a> (<a class="el" href="structCMR__NETWORK__STATISTICS.html">CMR_NETWORK_STATISTICS</a> *stats)</td></tr>
-<tr class="memdesc:a89295bf19c98d914e7376c6ff8fd3559"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes all statistics for recognition algorithm for <a class="el" href="network.html">network matrices</a>.  <a href="network_8h.html#a89295bf19c98d914e7376c6ff8fd3559">More...</a><br /></td></tr>
-<tr class="separator:a89295bf19c98d914e7376c6ff8fd3559"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1e6711a007335a8e6e1e1ccb08a6fc99"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="network_8h.html#a1e6711a007335a8e6e1e1ccb08a6fc99">CMRstatsNetworkPrint</a> (FILE *stream, <a class="el" href="structCMR__NETWORK__STATISTICS.html">CMR_NETWORK_STATISTICS</a> *stats, const char *prefix)</td></tr>
-<tr class="memdesc:a1e6711a007335a8e6e1e1ccb08a6fc99"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints statistics for recognition algorithm for <a class="el" href="network.html">network matrices</a>.  <a href="network_8h.html#a1e6711a007335a8e6e1e1ccb08a6fc99">More...</a><br /></td></tr>
-<tr class="separator:a1e6711a007335a8e6e1e1ccb08a6fc99"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a15bdae67dd33094b2a6981ef25f012ac"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="network_8h.html#a15bdae67dd33094b2a6981ef25f012ac">CMRcomputeNetworkMatrix</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__GRAPH.html">CMR_GRAPH</a> *digraph, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> **pmatrix, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> **ptranspose, bool *arcsReversed, int numForestArcs, <a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> *forestArcs, int numCoforestArcs, <a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> *coforestArcs, bool *pisCorrectForest)</td></tr>
-<tr class="memdesc:a15bdae67dd33094b2a6981ef25f012ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the network matrix of a given digraph \( D = (V,A) \).  <a href="network_8h.html#a15bdae67dd33094b2a6981ef25f012ac">More...</a><br /></td></tr>
-<tr class="separator:a15bdae67dd33094b2a6981ef25f012ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af770aa54b7e7608d0d4a02708da04939"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="network_8h.html#af770aa54b7e7608d0d4a02708da04939">CMRtestNetworkMatrix</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, bool *pisNetwork, <a class="el" href="structCMR__GRAPH.html">CMR_GRAPH</a> **pdigraph, <a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> **pforestArcs, <a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> **pcoforestArcs, bool **parcsReversed, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **psubmatrix, <a class="el" href="structCMR__NETWORK__STATISTICS.html">CMR_NETWORK_STATISTICS</a> *stats, double timeLimit)</td></tr>
-<tr class="memdesc:af770aa54b7e7608d0d4a02708da04939"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tests a matrix \( M \) for being a <a class="el" href="network.html">network matrix</a>.  <a href="network_8h.html#af770aa54b7e7608d0d4a02708da04939">More...</a><br /></td></tr>
-<tr class="separator:af770aa54b7e7608d0d4a02708da04939"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3bbe7e307161e6e5264663c60ff3c051"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="network_8h.html#a3bbe7e307161e6e5264663c60ff3c051">CMRtestConetworkMatrix</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, bool *pisConetwork, <a class="el" href="structCMR__GRAPH.html">CMR_GRAPH</a> **pdigraph, <a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> **pforestArcs, <a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> **pcoforestArcs, bool **parcsReversed, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **psubmatrix, <a class="el" href="structCMR__NETWORK__STATISTICS.html">CMR_NETWORK_STATISTICS</a> *stats, double timeLimit)</td></tr>
-<tr class="memdesc:a3bbe7e307161e6e5264663c60ff3c051"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tests a matrix \( M \) for being a <a class="el" href="network.html">conetwork matrix</a>.  <a href="network_8h.html#a3bbe7e307161e6e5264663c60ff3c051">More...</a><br /></td></tr>
-<tr class="separator:a3bbe7e307161e6e5264663c60ff3c051"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a49b294fe2bcc25ae020074149922928c"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="network_8h.html#a49b294fe2bcc25ae020074149922928c">CMRnetworkStatsInit</a> (<a class="el" href="structCMR__NETWORK__STATISTICS.html">CMR_NETWORK_STATISTICS</a> *stats)</td></tr>
+<tr class="memdesc:a49b294fe2bcc25ae020074149922928c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes all statistics for recognition algorithm for <a class="el" href="network.html">network matrices</a>.  <a href="network_8h.html#a49b294fe2bcc25ae020074149922928c">More...</a><br /></td></tr>
+<tr class="separator:a49b294fe2bcc25ae020074149922928c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa227162c965c1c158eacf96b32bc290"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="network_8h.html#aaa227162c965c1c158eacf96b32bc290">CMRnetworkStatsPrint</a> (FILE *stream, <a class="el" href="structCMR__NETWORK__STATISTICS.html">CMR_NETWORK_STATISTICS</a> *stats, const char *prefix)</td></tr>
+<tr class="memdesc:aaa227162c965c1c158eacf96b32bc290"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints statistics for recognition algorithm for <a class="el" href="network.html">network matrices</a>.  <a href="network_8h.html#aaa227162c965c1c158eacf96b32bc290">More...</a><br /></td></tr>
+<tr class="separator:aaa227162c965c1c158eacf96b32bc290"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a3a28b7f989822a8f0ada0b0285d2cb"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="network_8h.html#a3a3a28b7f989822a8f0ada0b0285d2cb">CMRnetworkComputeMatrix</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__GRAPH.html">CMR_GRAPH</a> *digraph, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> **pmatrix, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> **ptranspose, bool *arcsReversed, int numForestArcs, <a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> *forestArcs, int numCoforestArcs, <a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> *coforestArcs, bool *pisCorrectForest)</td></tr>
+<tr class="memdesc:a3a3a28b7f989822a8f0ada0b0285d2cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the network matrix of a given digraph \( D = (V,A) \).  <a href="network_8h.html#a3a3a28b7f989822a8f0ada0b0285d2cb">More...</a><br /></td></tr>
+<tr class="separator:a3a3a28b7f989822a8f0ada0b0285d2cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af16f6a7db9dae47848994e36cbccf1bd"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="network_8h.html#af16f6a7db9dae47848994e36cbccf1bd">CMRnetworkTestMatrix</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, bool *pisNetwork, <a class="el" href="structCMR__GRAPH.html">CMR_GRAPH</a> **pdigraph, <a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> **pforestArcs, <a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> **pcoforestArcs, bool **parcsReversed, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **psubmatrix, <a class="el" href="structCMR__NETWORK__STATISTICS.html">CMR_NETWORK_STATISTICS</a> *stats, double timeLimit)</td></tr>
+<tr class="memdesc:af16f6a7db9dae47848994e36cbccf1bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tests a matrix \( M \) for being a <a class="el" href="network.html">network matrix</a>.  <a href="network_8h.html#af16f6a7db9dae47848994e36cbccf1bd">More...</a><br /></td></tr>
+<tr class="separator:af16f6a7db9dae47848994e36cbccf1bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47150656a93b84db2c90dfa12c7bfab9"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="network_8h.html#a47150656a93b84db2c90dfa12c7bfab9">CMRnetworkTestTranspose</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, bool *pisConetwork, <a class="el" href="structCMR__GRAPH.html">CMR_GRAPH</a> **pdigraph, <a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> **pforestArcs, <a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> **pcoforestArcs, bool **parcsReversed, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **psubmatrix, <a class="el" href="structCMR__NETWORK__STATISTICS.html">CMR_NETWORK_STATISTICS</a> *stats, double timeLimit)</td></tr>
+<tr class="memdesc:a47150656a93b84db2c90dfa12c7bfab9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tests a matrix \( M \) for being a <a class="el" href="network.html">conetwork matrix</a>.  <a href="network_8h.html#a47150656a93b84db2c90dfa12c7bfab9">More...</a><br /></td></tr>
+<tr class="separator:a47150656a93b84db2c90dfa12c7bfab9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Computation and recognition of <a class="el" href="network.html">network matrices</a> and <a class="el" href="network.html">conetwork matrices</a>. </p>
@@ -130,14 +130,14 @@ Functions</h2></td></tr>
 <li>\( M \) for the (potential) <a class="el" href="network.html">(co)network matrix</a>. </li>
 </ul>
 </div><h2 class="groupheader">Function Documentation</h2>
-<a id="a15bdae67dd33094b2a6981ef25f012ac"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a15bdae67dd33094b2a6981ef25f012ac">&#9670;&nbsp;</a></span>CMRcomputeNetworkMatrix()</h2>
+<a id="a3a3a28b7f989822a8f0ada0b0285d2cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a3a28b7f989822a8f0ada0b0285d2cb">&#9670;&nbsp;</a></span>CMRnetworkComputeMatrix()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRcomputeNetworkMatrix </td>
+          <td class="memname">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRnetworkComputeMatrix </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
           <td class="paramname"><em>cmr</em>, </td>
@@ -225,14 +225,14 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a89295bf19c98d914e7376c6ff8fd3559"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a89295bf19c98d914e7376c6ff8fd3559">&#9670;&nbsp;</a></span>CMRstatsNetworkInit()</h2>
+<a id="a49b294fe2bcc25ae020074149922928c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a49b294fe2bcc25ae020074149922928c">&#9670;&nbsp;</a></span>CMRnetworkStatsInit()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRstatsNetworkInit </td>
+          <td class="memname">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRnetworkStatsInit </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structCMR__NETWORK__STATISTICS.html">CMR_NETWORK_STATISTICS</a> *&#160;</td>
           <td class="paramname"><em>stats</em></td><td>)</td>
@@ -251,14 +251,14 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a1e6711a007335a8e6e1e1ccb08a6fc99"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1e6711a007335a8e6e1e1ccb08a6fc99">&#9670;&nbsp;</a></span>CMRstatsNetworkPrint()</h2>
+<a id="aaa227162c965c1c158eacf96b32bc290"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa227162c965c1c158eacf96b32bc290">&#9670;&nbsp;</a></span>CMRnetworkStatsPrint()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRstatsNetworkPrint </td>
+          <td class="memname">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRnetworkStatsPrint </td>
           <td>(</td>
           <td class="paramtype">FILE *&#160;</td>
           <td class="paramname"><em>stream</em>, </td>
@@ -295,14 +295,111 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a3bbe7e307161e6e5264663c60ff3c051"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3bbe7e307161e6e5264663c60ff3c051">&#9670;&nbsp;</a></span>CMRtestConetworkMatrix()</h2>
+<a id="af16f6a7db9dae47848994e36cbccf1bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af16f6a7db9dae47848994e36cbccf1bd">&#9670;&nbsp;</a></span>CMRnetworkTestMatrix()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRtestConetworkMatrix </td>
+          <td class="memname">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRnetworkTestMatrix </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *&#160;</td>
+          <td class="paramname"><em>matrix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool *&#160;</td>
+          <td class="paramname"><em>pisNetwork</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__GRAPH.html">CMR_GRAPH</a> **&#160;</td>
+          <td class="paramname"><em>pdigraph</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> **&#160;</td>
+          <td class="paramname"><em>pforestArcs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> **&#160;</td>
+          <td class="paramname"><em>pcoforestArcs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool **&#160;</td>
+          <td class="paramname"><em>parcsReversed</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **&#160;</td>
+          <td class="paramname"><em>psubmatrix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__NETWORK__STATISTICS.html">CMR_NETWORK_STATISTICS</a> *&#160;</td>
+          <td class="paramname"><em>stats</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>timeLimit</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Tests a matrix \( M \) for being a <a class="el" href="network.html">network matrix</a>. </p>
+<p>Tests if \( M = M(D,T) \) for some digraph \( D = (V,A) \) and some (directed) spanning forest \( T \subseteq A \) of \( D \) and sets <code>*pisNetwork</code> accordingly.</p>
+<dl class="section note"><dt>Note</dt><dd>If a column-wise representation of \( M \) is available, it is recommended to call CMRtestConetworkMatrix() for that. In fact, the implementation explicitly constructs \( M^{\mathsf{T}} \) before calling this function.</dd></dl>
+<p>If \( M \) is a network matrix and <code>pdigraph</code> != <code>NULL</code>, then one possible digraph \( D \) is computed and stored in <code>*pdigraph</code>. The caller must release its memory via <a class="el" href="group__Graph.html#gaeadec814a44e89c3b729fdeb70c26593">CMRgraphFree</a>. If in addition to <code>pdigraph</code> also <code>pforestArcs</code> != <code>NULL</code> (resp. <code>pcoforestArcs</code> != <code>NULL</code>), then a corresponding (directed) spanning forest \( T \) (resp. its complement \( A \setminus T \)) is stored in <code>*pforestArcs</code> (resp. <code>*pcoforestArcs</code>). The caller must release this memory via <a class="el" href="env_8h.html#a8e025417fc4487f0354a013693fb6df3">CMRfreeBlockArray</a>.</p>
+<dl class="section note"><dt>Note</dt><dd>Retrieval of minimal non-network submatrices via <code>*psubmatrix</code> is not implemented, yet. </dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">matrix</td><td>Matrix \( M \). </td></tr>
+    <tr><td class="paramname">pisNetwork</td><td>Pointer for storing <code>true</code> if and only if \( M \) is a network matrix. </td></tr>
+    <tr><td class="paramname">pdigraph</td><td>Pointer for storing the digraph \( D \) (if \( M \) is network). </td></tr>
+    <tr><td class="paramname">pforestArcs</td><td>Pointer for storing \( T \), indexed by the rows of \( M \) (if \( M \) is network). </td></tr>
+    <tr><td class="paramname">pcoforestArcs</td><td>Pointer for storing \( A \setminus T \), indexed by the columns of \( M \) (if \( M \) is network). </td></tr>
+    <tr><td class="paramname">parcsReversed</td><td>Pointer for storing indicators which arcs are reversed for the correct sign (if \( M \) is network). </td></tr>
+    <tr><td class="paramname">psubmatrix</td><td>Pointer for storing a minimal non-network submatrix (if \( M \) is not network). </td></tr>
+    <tr><td class="paramname">stats</td><td>Pointer to statistics (may be <code>NULL</code>). </td></tr>
+    <tr><td class="paramname">timeLimit</td><td>Time limit to impose. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a47150656a93b84db2c90dfa12c7bfab9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a47150656a93b84db2c90dfa12c7bfab9">&#9670;&nbsp;</a></span>CMRnetworkTestTranspose()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRnetworkTestTranspose </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
           <td class="paramname"><em>cmr</em>, </td>
@@ -383,103 +480,6 @@ Functions</h2></td></tr>
     <tr><td class="paramname">pcoforestArcs</td><td>Pointer for storing \( A \setminus T \), indexed by the rows of \( M \) (if \( M \) is conetwork). </td></tr>
     <tr><td class="paramname">parcsReversed</td><td>Pointer for storing indicators which arcs are reversed for the correct sign (if \( M \) is conetwork). </td></tr>
     <tr><td class="paramname">psubmatrix</td><td>Pointer for storing a minimal non-conetwork submatrix (if \( M \) is not conetwork). </td></tr>
-    <tr><td class="paramname">stats</td><td>Pointer to statistics (may be <code>NULL</code>). </td></tr>
-    <tr><td class="paramname">timeLimit</td><td>Time limit to impose. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="af770aa54b7e7608d0d4a02708da04939"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af770aa54b7e7608d0d4a02708da04939">&#9670;&nbsp;</a></span>CMRtestNetworkMatrix()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRtestNetworkMatrix </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
-          <td class="paramname"><em>cmr</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *&#160;</td>
-          <td class="paramname"><em>matrix</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">bool *&#160;</td>
-          <td class="paramname"><em>pisNetwork</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="structCMR__GRAPH.html">CMR_GRAPH</a> **&#160;</td>
-          <td class="paramname"><em>pdigraph</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> **&#160;</td>
-          <td class="paramname"><em>pforestArcs</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> **&#160;</td>
-          <td class="paramname"><em>pcoforestArcs</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">bool **&#160;</td>
-          <td class="paramname"><em>parcsReversed</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **&#160;</td>
-          <td class="paramname"><em>psubmatrix</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="structCMR__NETWORK__STATISTICS.html">CMR_NETWORK_STATISTICS</a> *&#160;</td>
-          <td class="paramname"><em>stats</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>timeLimit</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Tests a matrix \( M \) for being a <a class="el" href="network.html">network matrix</a>. </p>
-<p>Tests if \( M = M(D,T) \) for some digraph \( D = (V,A) \) and some (directed) spanning forest \( T \subseteq A \) of \( D \) and sets <code>*pisNetwork</code> accordingly.</p>
-<dl class="section note"><dt>Note</dt><dd>If a column-wise representation of \( M \) is available, it is recommended to call <a class="el" href="network_8h.html#a3bbe7e307161e6e5264663c60ff3c051">CMRtestConetworkMatrix()</a> for that. In fact, the implementation explicitly constructs \( M^{\mathsf{T}} \) before calling this function.</dd></dl>
-<p>If \( M \) is a network matrix and <code>pdigraph</code> != <code>NULL</code>, then one possible digraph \( D \) is computed and stored in <code>*pdigraph</code>. The caller must release its memory via <a class="el" href="group__Graph.html#gaeadec814a44e89c3b729fdeb70c26593">CMRgraphFree</a>. If in addition to <code>pdigraph</code> also <code>pforestArcs</code> != <code>NULL</code> (resp. <code>pcoforestArcs</code> != <code>NULL</code>), then a corresponding (directed) spanning forest \( T \) (resp. its complement \( A \setminus T \)) is stored in <code>*pforestArcs</code> (resp. <code>*pcoforestArcs</code>). The caller must release this memory via <a class="el" href="env_8h.html#a8e025417fc4487f0354a013693fb6df3">CMRfreeBlockArray</a>.</p>
-<dl class="section note"><dt>Note</dt><dd>Retrieval of minimal non-network submatrices via <code>*psubmatrix</code> is not implemented, yet. </dd></dl>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
-    <tr><td class="paramname">matrix</td><td>Matrix \( M \). </td></tr>
-    <tr><td class="paramname">pisNetwork</td><td>Pointer for storing <code>true</code> if and only if \( M \) is a network matrix. </td></tr>
-    <tr><td class="paramname">pdigraph</td><td>Pointer for storing the digraph \( D \) (if \( M \) is network). </td></tr>
-    <tr><td class="paramname">pforestArcs</td><td>Pointer for storing \( T \), indexed by the rows of \( M \) (if \( M \) is network). </td></tr>
-    <tr><td class="paramname">pcoforestArcs</td><td>Pointer for storing \( A \setminus T \), indexed by the columns of \( M \) (if \( M \) is network). </td></tr>
-    <tr><td class="paramname">parcsReversed</td><td>Pointer for storing indicators which arcs are reversed for the correct sign (if \( M \) is network). </td></tr>
-    <tr><td class="paramname">psubmatrix</td><td>Pointer for storing a minimal non-network submatrix (if \( M \) is not network). </td></tr>
     <tr><td class="paramname">stats</td><td>Pointer to statistics (may be <code>NULL</code>). </td></tr>
     <tr><td class="paramname">timeLimit</td><td>Time limit to impose. </td></tr>
   </table>

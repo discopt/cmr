@@ -89,7 +89,7 @@ $(function() {
 <div class="textblock"><code>#include &lt;<a class="el" href="graphic_8h_source.html">cmr/graphic.h</a>&gt;</code><br />
 <code>#include &quot;<a class="el" href="env__internal_8h_source.html">env_internal.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="matrix__internal_8h_source.html">matrix_internal.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="one__sum_8h_source.html">one_sum.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="block__decomposition_8h_source.html">block_decomposition.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="heap_8h_source.html">heap.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="sort_8h_source.html">sort.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="hereditary__property_8h_source.html">hereditary_property.h</a>&quot;</code><br />
@@ -192,18 +192,18 @@ Enumerations</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a6d13f737b9110eada38662f147686efa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="graphic_8c.html#a6d13f737b9110eada38662f147686efa">CMRstatsGraphicInit</a> (<a class="el" href="structCMR__GRAPHIC__STATISTICS.html">CMR_GRAPHIC_STATISTICS</a> *stats)</td></tr>
-<tr class="memdesc:a6d13f737b9110eada38662f147686efa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes all statistics for graphicness computations.  <a href="graphic_8c.html#a6d13f737b9110eada38662f147686efa">More...</a><br /></td></tr>
-<tr class="separator:a6d13f737b9110eada38662f147686efa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a80d9c0696ffea914bc512448e3a8f2a3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="graphic_8c.html#a80d9c0696ffea914bc512448e3a8f2a3">CMRstatsGraphicPrint</a> (FILE *stream, <a class="el" href="structCMR__GRAPHIC__STATISTICS.html">CMR_GRAPHIC_STATISTICS</a> *stats, const char *prefix)</td></tr>
-<tr class="memdesc:a80d9c0696ffea914bc512448e3a8f2a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints statistics for graphicness computations.  <a href="graphic_8c.html#a80d9c0696ffea914bc512448e3a8f2a3">More...</a><br /></td></tr>
-<tr class="separator:a80d9c0696ffea914bc512448e3a8f2a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63a8d3508e8cbabbc6b47e2b4baf329d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="graphic_8c.html#a63a8d3508e8cbabbc6b47e2b4baf329d">CMRgraphicStatsInit</a> (<a class="el" href="structCMR__GRAPHIC__STATISTICS.html">CMR_GRAPHIC_STATISTICS</a> *stats)</td></tr>
+<tr class="memdesc:a63a8d3508e8cbabbc6b47e2b4baf329d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes all statistics for graphicness computations.  <a href="graphic_8c.html#a63a8d3508e8cbabbc6b47e2b4baf329d">More...</a><br /></td></tr>
+<tr class="separator:a63a8d3508e8cbabbc6b47e2b4baf329d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5dfc387c90958ef58f32a0f5d9fca1ed"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="graphic_8c.html#a5dfc387c90958ef58f32a0f5d9fca1ed">CMRgraphicStatsPrint</a> (FILE *stream, <a class="el" href="structCMR__GRAPHIC__STATISTICS.html">CMR_GRAPHIC_STATISTICS</a> *stats, const char *prefix)</td></tr>
+<tr class="memdesc:a5dfc387c90958ef58f32a0f5d9fca1ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints statistics for graphicness computations.  <a href="graphic_8c.html#a5dfc387c90958ef58f32a0f5d9fca1ed">More...</a><br /></td></tr>
+<tr class="separator:a5dfc387c90958ef58f32a0f5d9fca1ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a05b083d204d292467e723c41e21e9f54"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="graphic_8c.html#a05b083d204d292467e723c41e21e9f54">CMRcomputeRepresentationMatrix</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__GRAPH.html">CMR_GRAPH</a> *digraph, bool ternary, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> **ptranspose, bool *arcsReversed, int numForestArcs, <a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> *forestArcs, int numCoforestArcs, <a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> *coforestArcs, bool *pisCorrectForest)</td></tr>
 <tr class="memdesc:a05b083d204d292467e723c41e21e9f54"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the network or graphic matrix of a given (di)graph \( D = (V,A) \).  <a href="graphic_8c.html#a05b083d204d292467e723c41e21e9f54">More...</a><br /></td></tr>
 <tr class="separator:a05b083d204d292467e723c41e21e9f54"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae6a5b7550184d4baaff0bb108ef6ac83"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="graphic_8c.html#ae6a5b7550184d4baaff0bb108ef6ac83">CMRcomputeGraphicMatrix</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__GRAPH.html">CMR_GRAPH</a> *graph, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> **pmatrix, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> **ptranspose, int numForestEdges, <a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> *forestEdges, int numCoforestEdges, <a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> *coforestEdges, bool *pisCorrectForest)</td></tr>
-<tr class="memdesc:ae6a5b7550184d4baaff0bb108ef6ac83"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the graphic matrix of a given graph \( G = (V,E) \).  <a href="graphic_8c.html#ae6a5b7550184d4baaff0bb108ef6ac83">More...</a><br /></td></tr>
-<tr class="separator:ae6a5b7550184d4baaff0bb108ef6ac83"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aebda112b5fd2cf6d318abd08ea941595"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="graphic_8c.html#aebda112b5fd2cf6d318abd08ea941595">CMRgraphicComputeMatrix</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__GRAPH.html">CMR_GRAPH</a> *graph, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> **pmatrix, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> **ptranspose, int numForestEdges, <a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> *forestEdges, int numCoforestEdges, <a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> *coforestEdges, bool *pisCorrectForest)</td></tr>
+<tr class="memdesc:aebda112b5fd2cf6d318abd08ea941595"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the graphic matrix of a given graph \( G = (V,E) \).  <a href="graphic_8c.html#aebda112b5fd2cf6d318abd08ea941595">More...</a><br /></td></tr>
+<tr class="separator:aebda112b5fd2cf6d318abd08ea941595"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a630c3721f004193f84e8104dcad96e98"><td class="memItemLeft" align="right" valign="top">static const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="graphic_8c.html#a630c3721f004193f84e8104dcad96e98">memberTypeString</a> (<a class="el" href="graphic_8c.html#ae7c60eeb707b94d553b7a354cf75d173">DEC_MEMBER_TYPE</a> type)</td></tr>
 <tr class="separator:a630c3721f004193f84e8104dcad96e98"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9154d0f85f98a0ec9fc828af5d570e14"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="graphic_8c.html#a9154d0f85f98a0ec9fc828af5d570e14">isRepresentativeMember</a> (<a class="el" href="structDec.html">Dec</a> *dec, <a class="el" href="graphic_8c.html#afd6ee25ffcf9afc54a4dbe0547f99c1b">DEC_MEMBER</a> member)</td></tr>
@@ -364,14 +364,14 @@ Functions</h2></td></tr>
 <tr class="separator:a8b16b64c3ec0974080975216458a0e21"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad9f3a9df011594b92821f3765e948b2f"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="graphic_8c.html#ad9f3a9df011594b92821f3765e948b2f">cographicnessTest</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, void *data, bool *pisCographic, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **psubmatrix, double timeLimit)</td></tr>
 <tr class="separator:ad9f3a9df011594b92821f3765e948b2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a09fc7935d29c31e9d275970bf2a4828f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="graphic_8c.html#a09fc7935d29c31e9d275970bf2a4828f">CMRtestCographicMatrix</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, bool *pisCographic, <a class="el" href="structCMR__GRAPH.html">CMR_GRAPH</a> **pgraph, <a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> **pforestEdges, <a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> **pcoforestEdges, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **psubmatrix, <a class="el" href="structCMR__GRAPHIC__STATISTICS.html">CMR_GRAPHIC_STATISTICS</a> *stats, double timeLimit)</td></tr>
-<tr class="memdesc:a09fc7935d29c31e9d275970bf2a4828f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tests a matrix \( M \) for being a <a class="el" href="graphic.html">cographic matrix</a>.  <a href="graphic_8c.html#a09fc7935d29c31e9d275970bf2a4828f">More...</a><br /></td></tr>
-<tr class="separator:a09fc7935d29c31e9d275970bf2a4828f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e1ff4c758761f3abe1123328b65d601"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="graphic_8c.html#a1e1ff4c758761f3abe1123328b65d601">CMRgraphicTestTranspose</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, bool *pisCographic, <a class="el" href="structCMR__GRAPH.html">CMR_GRAPH</a> **pgraph, <a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> **pforestEdges, <a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> **pcoforestEdges, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **psubmatrix, <a class="el" href="structCMR__GRAPHIC__STATISTICS.html">CMR_GRAPHIC_STATISTICS</a> *stats, double timeLimit)</td></tr>
+<tr class="memdesc:a1e1ff4c758761f3abe1123328b65d601"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tests a matrix \( M \) for being a <a class="el" href="graphic.html">cographic matrix</a>.  <a href="graphic_8c.html#a1e1ff4c758761f3abe1123328b65d601">More...</a><br /></td></tr>
+<tr class="separator:a1e1ff4c758761f3abe1123328b65d601"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a125d94b6a1b4eb6a177d486c99f5fa36"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="graphic_8c.html#a125d94b6a1b4eb6a177d486c99f5fa36">CMRtestBinaryGraphicColumnSubmatrixGreedy</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *transpose, size_t *orderedColumns, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **psubmatrix)</td></tr>
 <tr class="separator:a125d94b6a1b4eb6a177d486c99f5fa36"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5b74b4ea816f6526dfd9d63386b0cfa4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="graphic_8c.html#a5b74b4ea816f6526dfd9d63386b0cfa4">CMRtestGraphicMatrix</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, bool *pisGraphic, <a class="el" href="structCMR__GRAPH.html">CMR_GRAPH</a> **pgraph, <a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> **pforestEdges, <a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> **pcoforestEdges, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **psubmatrix, <a class="el" href="structCMR__GRAPHIC__STATISTICS.html">CMR_GRAPHIC_STATISTICS</a> *stats, double timeLimit)</td></tr>
-<tr class="memdesc:a5b74b4ea816f6526dfd9d63386b0cfa4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tests a matrix \( M \) for being a <a class="el" href="graphic.html">graphic matrix</a>.  <a href="graphic_8c.html#a5b74b4ea816f6526dfd9d63386b0cfa4">More...</a><br /></td></tr>
-<tr class="separator:a5b74b4ea816f6526dfd9d63386b0cfa4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a014d9e498bbb2056114b386946f6d23e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="graphic_8c.html#a014d9e498bbb2056114b386946f6d23e">CMRgraphicTestMatrix</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, bool *pisGraphic, <a class="el" href="structCMR__GRAPH.html">CMR_GRAPH</a> **pgraph, <a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> **pforestEdges, <a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> **pcoforestEdges, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **psubmatrix, <a class="el" href="structCMR__GRAPHIC__STATISTICS.html">CMR_GRAPHIC_STATISTICS</a> *stats, double timeLimit)</td></tr>
+<tr class="memdesc:a014d9e498bbb2056114b386946f6d23e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tests a matrix \( M \) for being a <a class="el" href="graphic.html">graphic matrix</a>.  <a href="graphic_8c.html#a014d9e498bbb2056114b386946f6d23e">More...</a><br /></td></tr>
+<tr class="separator:a014d9e498bbb2056114b386946f6d23e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
 <a id="ac90a98399246f978c34cdc8e23f5f179"></a>
@@ -1073,94 +1073,6 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ae6a5b7550184d4baaff0bb108ef6ac83"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae6a5b7550184d4baaff0bb108ef6ac83">&#9670;&nbsp;</a></span>CMRcomputeGraphicMatrix()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRcomputeGraphicMatrix </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
-          <td class="paramname"><em>cmr</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="structCMR__GRAPH.html">CMR_GRAPH</a> *&#160;</td>
-          <td class="paramname"><em>graph</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> **&#160;</td>
-          <td class="paramname"><em>pmatrix</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> **&#160;</td>
-          <td class="paramname"><em>ptranspose</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>numForestEdges</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> *&#160;</td>
-          <td class="paramname"><em>forestEdges</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>numCoforestEdges</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> *&#160;</td>
-          <td class="paramname"><em>coforestEdges</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">bool *&#160;</td>
-          <td class="paramname"><em>pisCorrectForest</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Computes the graphic matrix of a given graph \( G = (V,E) \). </p>
-<p>Computes the <a class="el" href="graphic.html">graphic matrix</a> \( M := M(G,T) \) for given \( G \) and optionally given spanning forest \( T \subseteq E \). If \( T \) is not given, an arbitrary spanning forest of \( G \) is used. If <code>forestEdges</code> is <code>NULL</code>, an arbitrary spanning forest \( T \) of \( G \) is computed. The ordering of the columns can be specified via <code>coforestEdges</code>.</p>
-<dl class="section note"><dt>Note</dt><dd>The function computes a graphic matrix of \( G \) (and \( T \)) regardless of whether <code>forestEdges</code> is a correct spanning forest. Whether this was the case is indicated via <code>*pisCorrectForest</code>. </dd></dl>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
-    <tr><td class="paramname">graph</td><td>Graph \( G = (V,E) \). </td></tr>
-    <tr><td class="paramname">pmatrix</td><td>Pointer for storing \( M \) (may be <code>NULL</code>). </td></tr>
-    <tr><td class="paramname">ptranspose</td><td>Pointer for storing \( M^{\mathsf{T}} \) (may be <code>NULL</code>). </td></tr>
-    <tr><td class="paramname">numForestEdges</td><td>\( |T| \) (0 if <code>forestEdges</code> is <code>NULL</code>). </td></tr>
-    <tr><td class="paramname">forestEdges</td><td>\( T \), ordered by the rows of \( M \) (may be <code>NULL</code>). </td></tr>
-    <tr><td class="paramname">numCoforestEdges</td><td>\( |E \setminus T| \) (0 if <code>coforestEdges</code> is <code>NULL</code>). </td></tr>
-    <tr><td class="paramname">coforestEdges</td><td>\( E \setminus T \), ordered by the columns of \( M \) (may be <code>NULL</code>). </td></tr>
-    <tr><td class="paramname">pisCorrectForest</td><td>Pointer for storing whether <code>forestEdges</code> is a spanning forest of \( G \) (may be <code>NULL</code>). </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
 <a id="a05b083d204d292467e723c41e21e9f54"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a05b083d204d292467e723c41e21e9f54">&#9670;&nbsp;</a></span>CMRcomputeRepresentationMatrix()</h2>
 
@@ -1302,14 +1214,102 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a6d13f737b9110eada38662f147686efa"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6d13f737b9110eada38662f147686efa">&#9670;&nbsp;</a></span>CMRstatsGraphicInit()</h2>
+<a id="aebda112b5fd2cf6d318abd08ea941595"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aebda112b5fd2cf6d318abd08ea941595">&#9670;&nbsp;</a></span>CMRgraphicComputeMatrix()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRstatsGraphicInit </td>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRgraphicComputeMatrix </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__GRAPH.html">CMR_GRAPH</a> *&#160;</td>
+          <td class="paramname"><em>graph</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> **&#160;</td>
+          <td class="paramname"><em>pmatrix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> **&#160;</td>
+          <td class="paramname"><em>ptranspose</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>numForestEdges</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> *&#160;</td>
+          <td class="paramname"><em>forestEdges</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>numCoforestEdges</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> *&#160;</td>
+          <td class="paramname"><em>coforestEdges</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool *&#160;</td>
+          <td class="paramname"><em>pisCorrectForest</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Computes the graphic matrix of a given graph \( G = (V,E) \). </p>
+<p>Computes the <a class="el" href="graphic.html">graphic matrix</a> \( M := M(G,T) \) for given \( G \) and optionally given spanning forest \( T \subseteq E \). If \( T \) is not given, an arbitrary spanning forest of \( G \) is used. If <code>forestEdges</code> is <code>NULL</code>, an arbitrary spanning forest \( T \) of \( G \) is computed. The ordering of the columns can be specified via <code>coforestEdges</code>.</p>
+<dl class="section note"><dt>Note</dt><dd>The function computes a graphic matrix of \( G \) (and \( T \)) regardless of whether <code>forestEdges</code> is a correct spanning forest. Whether this was the case is indicated via <code>*pisCorrectForest</code>. </dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">graph</td><td>Graph \( G = (V,E) \). </td></tr>
+    <tr><td class="paramname">pmatrix</td><td>Pointer for storing \( M \) (may be <code>NULL</code>). </td></tr>
+    <tr><td class="paramname">ptranspose</td><td>Pointer for storing \( M^{\mathsf{T}} \) (may be <code>NULL</code>). </td></tr>
+    <tr><td class="paramname">numForestEdges</td><td>\( |T| \) (0 if <code>forestEdges</code> is <code>NULL</code>). </td></tr>
+    <tr><td class="paramname">forestEdges</td><td>\( T \), ordered by the rows of \( M \) (may be <code>NULL</code>). </td></tr>
+    <tr><td class="paramname">numCoforestEdges</td><td>\( |E \setminus T| \) (0 if <code>coforestEdges</code> is <code>NULL</code>). </td></tr>
+    <tr><td class="paramname">coforestEdges</td><td>\( E \setminus T \), ordered by the columns of \( M \) (may be <code>NULL</code>). </td></tr>
+    <tr><td class="paramname">pisCorrectForest</td><td>Pointer for storing whether <code>forestEdges</code> is a spanning forest of \( G \) (may be <code>NULL</code>). </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a63a8d3508e8cbabbc6b47e2b4baf329d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a63a8d3508e8cbabbc6b47e2b4baf329d">&#9670;&nbsp;</a></span>CMRgraphicStatsInit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRgraphicStatsInit </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="structCMR__GRAPHIC__STATISTICS.html">CMR_GRAPHIC_STATISTICS</a> *&#160;</td>
           <td class="paramname"><em>stats</em></td><td>)</td>
@@ -1328,14 +1328,14 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a80d9c0696ffea914bc512448e3a8f2a3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a80d9c0696ffea914bc512448e3a8f2a3">&#9670;&nbsp;</a></span>CMRstatsGraphicPrint()</h2>
+<a id="a5dfc387c90958ef58f32a0f5d9fca1ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5dfc387c90958ef58f32a0f5d9fca1ed">&#9670;&nbsp;</a></span>CMRgraphicStatsPrint()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRstatsGraphicPrint </td>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRgraphicStatsPrint </td>
           <td>(</td>
           <td class="paramtype">FILE *&#160;</td>
           <td class="paramname"><em>stream</em>, </td>
@@ -1372,14 +1372,14 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a125d94b6a1b4eb6a177d486c99f5fa36"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a125d94b6a1b4eb6a177d486c99f5fa36">&#9670;&nbsp;</a></span>CMRtestBinaryGraphicColumnSubmatrixGreedy()</h2>
+<a id="a014d9e498bbb2056114b386946f6d23e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a014d9e498bbb2056114b386946f6d23e">&#9670;&nbsp;</a></span>CMRgraphicTestMatrix()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRtestBinaryGraphicColumnSubmatrixGreedy </td>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRgraphicTestMatrix </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
           <td class="paramname"><em>cmr</em>, </td>
@@ -1388,19 +1388,49 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *&#160;</td>
-          <td class="paramname"><em>transpose</em>, </td>
+          <td class="paramname"><em>matrix</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">size_t *&#160;</td>
-          <td class="paramname"><em>orderedColumns</em>, </td>
+          <td class="paramtype">bool *&#160;</td>
+          <td class="paramname"><em>pisGraphic</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__GRAPH.html">CMR_GRAPH</a> **&#160;</td>
+          <td class="paramname"><em>pgraph</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> **&#160;</td>
+          <td class="paramname"><em>pforestEdges</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> **&#160;</td>
+          <td class="paramname"><em>pcoforestEdges</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype"><a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **&#160;</td>
-          <td class="paramname"><em>psubmatrix</em>&#160;</td>
+          <td class="paramname"><em>psubmatrix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__GRAPHIC__STATISTICS.html">CMR_GRAPHIC_STATISTICS</a> *&#160;</td>
+          <td class="paramname"><em>stats</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>timeLimit</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1410,16 +1440,36 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Tests a matrix \( M \) for being a <a class="el" href="graphic.html">graphic matrix</a>. </p>
+<p>Tests if \( M = M(G,T) \) for some graph \( G = (V,E) \) and some spanning forest \( T \subseteq E \) of \( G \) and sets <code>*pisGraphic</code> accordingly.</p>
+<dl class="section note"><dt>Note</dt><dd>If a column-wise representation of \( M \) is available, it is recommended to call CMRtestCographicMatrix() for that. In fact, the implementation explicitly constructs \( M^{\mathsf{T}} \) before calling this function.</dd></dl>
+<p>If \( M \) is a graphic matrix and <code>pgraph</code> != <code>NULL</code>, then one possible graph \( G \) is computed and stored in <code>*pgraph</code>. The caller must release its memory via <a class="el" href="group__Graph.html#gaeadec814a44e89c3b729fdeb70c26593">CMRgraphFree</a>. If in addition to <code>pgraph</code> also <code>pforestEdges</code> != <code>NULL</code> (resp. <code>pcoforestEdges</code> != <code>NULL</code>), then a corresponding spanning forest \( T \) (resp. its complement \( E \setminus T \)) is stored in <code>*pforestEdges</code> (resp. <code>*pcoforestEdges</code>). The caller must release this memory via <a class="el" href="env_8h.html#a8e025417fc4487f0354a013693fb6df3">CMRfreeBlockArray</a>.</p>
+<dl class="section note"><dt>Note</dt><dd>Retrieval of minimal non-graphic submatrices via <code>*psubmatrix</code> is not implemented, yet. </dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">matrix</td><td>Matrix \( M \). </td></tr>
+    <tr><td class="paramname">pisGraphic</td><td>Pointer for storing <code>true</code> if and only if \( M \) is a graphic matrix. </td></tr>
+    <tr><td class="paramname">pgraph</td><td>Pointer for storing the graph \( G \) (if \( M \) is graphic). </td></tr>
+    <tr><td class="paramname">pforestEdges</td><td>Pointer for storing \( T \), indexed by the rows of \( M \) (if \( M \) is graphic). </td></tr>
+    <tr><td class="paramname">pcoforestEdges</td><td>Pointer for storing \( E \setminus T \), indexed by the columns of \( M \) (if \( M \) is graphic). </td></tr>
+    <tr><td class="paramname">psubmatrix</td><td>Pointer for storing a minimal non-graphic submatrix (if \( M \) is not graphic). </td></tr>
+    <tr><td class="paramname">stats</td><td>Pointer to statistics (may be <code>NULL</code>). </td></tr>
+    <tr><td class="paramname">timeLimit</td><td>Time limit to impose. </td></tr>
+  </table>
+  </dd>
+</dl>
+
 </div>
 </div>
-<a id="a09fc7935d29c31e9d275970bf2a4828f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a09fc7935d29c31e9d275970bf2a4828f">&#9670;&nbsp;</a></span>CMRtestCographicMatrix()</h2>
+<a id="a1e1ff4c758761f3abe1123328b65d601"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e1ff4c758761f3abe1123328b65d601">&#9670;&nbsp;</a></span>CMRgraphicTestTranspose()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRtestCographicMatrix </td>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRgraphicTestTranspose </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
           <td class="paramname"><em>cmr</em>, </td>
@@ -1501,14 +1551,14 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a5b74b4ea816f6526dfd9d63386b0cfa4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5b74b4ea816f6526dfd9d63386b0cfa4">&#9670;&nbsp;</a></span>CMRtestGraphicMatrix()</h2>
+<a id="a125d94b6a1b4eb6a177d486c99f5fa36"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a125d94b6a1b4eb6a177d486c99f5fa36">&#9670;&nbsp;</a></span>CMRtestBinaryGraphicColumnSubmatrixGreedy()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRtestGraphicMatrix </td>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRtestBinaryGraphicColumnSubmatrixGreedy </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
           <td class="paramname"><em>cmr</em>, </td>
@@ -1517,49 +1567,19 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *&#160;</td>
-          <td class="paramname"><em>matrix</em>, </td>
+          <td class="paramname"><em>transpose</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">bool *&#160;</td>
-          <td class="paramname"><em>pisGraphic</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="structCMR__GRAPH.html">CMR_GRAPH</a> **&#160;</td>
-          <td class="paramname"><em>pgraph</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> **&#160;</td>
-          <td class="paramname"><em>pforestEdges</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> **&#160;</td>
-          <td class="paramname"><em>pcoforestEdges</em>, </td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>orderedColumns</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype"><a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **&#160;</td>
-          <td class="paramname"><em>psubmatrix</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="structCMR__GRAPHIC__STATISTICS.html">CMR_GRAPHIC_STATISTICS</a> *&#160;</td>
-          <td class="paramname"><em>stats</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>timeLimit</em>&#160;</td>
+          <td class="paramname"><em>psubmatrix</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1568,26 +1588,6 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-<p>Tests a matrix \( M \) for being a <a class="el" href="graphic.html">graphic matrix</a>. </p>
-<p>Tests if \( M = M(G,T) \) for some graph \( G = (V,E) \) and some spanning forest \( T \subseteq E \) of \( G \) and sets <code>*pisGraphic</code> accordingly.</p>
-<dl class="section note"><dt>Note</dt><dd>If a column-wise representation of \( M \) is available, it is recommended to call <a class="el" href="graphic_8h.html#af1cdcc79cbab48d0c5d707311262b75d">CMRtestCographicMatrix()</a> for that. In fact, the implementation explicitly constructs \( M^{\mathsf{T}} \) before calling this function.</dd></dl>
-<p>If \( M \) is a graphic matrix and <code>pgraph</code> != <code>NULL</code>, then one possible graph \( G \) is computed and stored in <code>*pgraph</code>. The caller must release its memory via <a class="el" href="group__Graph.html#gaeadec814a44e89c3b729fdeb70c26593">CMRgraphFree</a>. If in addition to <code>pgraph</code> also <code>pforestEdges</code> != <code>NULL</code> (resp. <code>pcoforestEdges</code> != <code>NULL</code>), then a corresponding spanning forest \( T \) (resp. its complement \( E \setminus T \)) is stored in <code>*pforestEdges</code> (resp. <code>*pcoforestEdges</code>). The caller must release this memory via <a class="el" href="env_8h.html#a8e025417fc4487f0354a013693fb6df3">CMRfreeBlockArray</a>.</p>
-<dl class="section note"><dt>Note</dt><dd>Retrieval of minimal non-graphic submatrices via <code>*psubmatrix</code> is not implemented, yet. </dd></dl>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
-    <tr><td class="paramname">matrix</td><td>Matrix \( M \). </td></tr>
-    <tr><td class="paramname">pisGraphic</td><td>Pointer for storing <code>true</code> if and only if \( M \) is a graphic matrix. </td></tr>
-    <tr><td class="paramname">pgraph</td><td>Pointer for storing the graph \( G \) (if \( M \) is graphic). </td></tr>
-    <tr><td class="paramname">pforestEdges</td><td>Pointer for storing \( T \), indexed by the rows of \( M \) (if \( M \) is graphic). </td></tr>
-    <tr><td class="paramname">pcoforestEdges</td><td>Pointer for storing \( E \setminus T \), indexed by the columns of \( M \) (if \( M \) is graphic). </td></tr>
-    <tr><td class="paramname">psubmatrix</td><td>Pointer for storing a minimal non-graphic submatrix (if \( M \) is not graphic). </td></tr>
-    <tr><td class="paramname">stats</td><td>Pointer to statistics (may be <code>NULL</code>). </td></tr>
-    <tr><td class="paramname">timeLimit</td><td>Time limit to impose. </td></tr>
-  </table>
-  </dd>
-</dl>
 
 </div>
 </div>

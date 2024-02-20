@@ -87,43 +87,35 @@ $(function() {
 <code>#include &lt;stdlib.h&gt;</code><br />
 <code>#include &lt;time.h&gt;</code><br />
 <code>#include &quot;<a class="el" href="env__internal_8h_source.html">env_internal.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="dec__internal_8h_source.html">dec_internal.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="regular__internal_8h_source.html">regular_internal.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="matroid__internal_8h_source.html">matroid_internal.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="regularity__internal_8h_source.html">regularity_internal.h</a>&quot;</code><br />
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:adb0ba07cbf71c9aaebd3a2d6ecb630d9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="regular_8c.html#adb0ba07cbf71c9aaebd3a2d6ecb630d9">CMRparamsRegularInit</a> (<a class="el" href="structCMR__REGULAR__PARAMETERS.html">CMR_REGULAR_PARAMETERS</a> *params)</td></tr>
-<tr class="memdesc:adb0ba07cbf71c9aaebd3a2d6ecb630d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the default parameters for regularity testing.  <a href="regular_8c.html#adb0ba07cbf71c9aaebd3a2d6ecb630d9">More...</a><br /></td></tr>
-<tr class="separator:adb0ba07cbf71c9aaebd3a2d6ecb630d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a032125c872caf57f9d113a79c8e796fb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="regular_8c.html#a032125c872caf57f9d113a79c8e796fb">CMRstatsRegularInit</a> (<a class="el" href="structCMR__REGULAR__STATISTICS.html">CMR_REGULAR_STATISTICS</a> *stats)</td></tr>
-<tr class="memdesc:a032125c872caf57f9d113a79c8e796fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes all statistics for regularity test computations.  <a href="regular_8c.html#a032125c872caf57f9d113a79c8e796fb">More...</a><br /></td></tr>
-<tr class="separator:a032125c872caf57f9d113a79c8e796fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aad5233250a4af69667544f95fca92aac"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="regular_8c.html#aad5233250a4af69667544f95fca92aac">CMRstatsRegularPrint</a> (FILE *stream, <a class="el" href="structCMR__REGULAR__STATISTICS.html">CMR_REGULAR_STATISTICS</a> *stats, const char *prefix)</td></tr>
-<tr class="memdesc:aad5233250a4af69667544f95fca92aac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints statistics for regularity test computations.  <a href="regular_8c.html#aad5233250a4af69667544f95fca92aac">More...</a><br /></td></tr>
-<tr class="separator:aad5233250a4af69667544f95fca92aac"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a745641bf9d5477871856bf488013f55a"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="regular_8c.html#a745641bf9d5477871856bf488013f55a">testRegularTwoConnected</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *dec, bool ternary, bool *pisRegular, <a class="el" href="structCMR__MINOR.html">CMR_MINOR</a> **pminor, <a class="el" href="structCMR__REGULAR__PARAMETERS.html">CMR_REGULAR_PARAMETERS</a> *params, <a class="el" href="structCMR__REGULAR__STATISTICS.html">CMR_REGULAR_STATISTICS</a> *stats, double timeLimit)</td></tr>
-<tr class="memdesc:a745641bf9d5477871856bf488013f55a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tests a 2-connected binary or ternary matrix for regularity.  <a href="regular_8c.html#a745641bf9d5477871856bf488013f55a">More...</a><br /></td></tr>
-<tr class="separator:a745641bf9d5477871856bf488013f55a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4025756819658b43f842d9198a268555"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="regular_8c.html#a4025756819658b43f842d9198a268555">testRegularThreeConnectedWithSequence</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *dec, bool ternary, bool *pisRegular, <a class="el" href="structCMR__MINOR.html">CMR_MINOR</a> **pminor, <a class="el" href="structCMR__REGULAR__PARAMETERS.html">CMR_REGULAR_PARAMETERS</a> *params, <a class="el" href="structCMR__REGULAR__STATISTICS.html">CMR_REGULAR_STATISTICS</a> *stats, double timeLimit)</td></tr>
-<tr class="separator:a4025756819658b43f842d9198a268555"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5fa9a7e49bf221642cd400ffb2053a15"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="regular_8c.html#a5fa9a7e49bf221642cd400ffb2053a15">CMRtestRegular</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, bool ternary, bool *pisRegular, <a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> **pdec, <a class="el" href="structCMR__MINOR.html">CMR_MINOR</a> **pminor, <a class="el" href="structCMR__REGULAR__PARAMETERS.html">CMR_REGULAR_PARAMETERS</a> *params, <a class="el" href="structCMR__REGULAR__STATISTICS.html">CMR_REGULAR_STATISTICS</a> *stats, double timeLimit)</td></tr>
-<tr class="memdesc:a5fa9a7e49bf221642cd400ffb2053a15"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tests ternary or binary linear matroid for regularity.  <a href="regular_8c.html#a5fa9a7e49bf221642cd400ffb2053a15">More...</a><br /></td></tr>
-<tr class="separator:a5fa9a7e49bf221642cd400ffb2053a15"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae14ced997b2e44508183bcc3d44196fe"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="regular_8c.html#ae14ced997b2e44508183bcc3d44196fe">CMRtestBinaryRegular</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, bool *pisRegular, <a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> **pdec, <a class="el" href="structCMR__MINOR.html">CMR_MINOR</a> **pminor, <a class="el" href="structCMR__REGULAR__PARAMETERS.html">CMR_REGULAR_PARAMETERS</a> *params, <a class="el" href="structCMR__REGULAR__STATISTICS.html">CMR_REGULAR_STATISTICS</a> *stats, double timeLimit)</td></tr>
-<tr class="memdesc:ae14ced997b2e44508183bcc3d44196fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tests binary linear matroid for regularity.  <a href="regular_8c.html#ae14ced997b2e44508183bcc3d44196fe">More...</a><br /></td></tr>
-<tr class="separator:ae14ced997b2e44508183bcc3d44196fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e3aaf353cfaf396af7ef80984139530"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="regular_8c.html#a8e3aaf353cfaf396af7ef80984139530">CMRregularParamsInit</a> (<a class="el" href="structCMR__REGULAR__PARAMS.html">CMR_REGULAR_PARAMS</a> *params)</td></tr>
+<tr class="memdesc:a8e3aaf353cfaf396af7ef80984139530"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the default parameters for regularity testing.  <a href="regular_8c.html#a8e3aaf353cfaf396af7ef80984139530">More...</a><br /></td></tr>
+<tr class="separator:a8e3aaf353cfaf396af7ef80984139530"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51069e9800ebe2e0b036d135e0fe4d25"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="regular_8c.html#a51069e9800ebe2e0b036d135e0fe4d25">CMRregularStatsInit</a> (<a class="el" href="structCMR__REGULAR__STATS.html">CMR_REGULAR_STATS</a> *stats)</td></tr>
+<tr class="memdesc:a51069e9800ebe2e0b036d135e0fe4d25"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes all statistics for regularity test computations.  <a href="regular_8c.html#a51069e9800ebe2e0b036d135e0fe4d25">More...</a><br /></td></tr>
+<tr class="separator:a51069e9800ebe2e0b036d135e0fe4d25"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a281fa58ccc0d64d6a9c69e2eac5d4c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="regular_8c.html#a3a281fa58ccc0d64d6a9c69e2eac5d4c">CMRregularStatsPrint</a> (FILE *stream, <a class="el" href="structCMR__REGULAR__STATS.html">CMR_REGULAR_STATS</a> *stats, const char *prefix)</td></tr>
+<tr class="memdesc:a3a281fa58ccc0d64d6a9c69e2eac5d4c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints statistics for regularity test computations.  <a href="regular_8c.html#a3a281fa58ccc0d64d6a9c69e2eac5d4c">More...</a><br /></td></tr>
+<tr class="separator:a3a281fa58ccc0d64d6a9c69e2eac5d4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aafc9753927f9f27a6ac4b69f82b56cd4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="regular_8c.html#aafc9753927f9f27a6ac4b69f82b56cd4">CMRregularTest</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, bool *pisRegular, <a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> **pdec, <a class="el" href="structCMR__MINOR.html">CMR_MINOR</a> **pminor, <a class="el" href="structCMR__REGULAR__PARAMS.html">CMR_REGULAR_PARAMS</a> *params, <a class="el" href="structCMR__REGULAR__STATS.html">CMR_REGULAR_STATS</a> *stats, double timeLimit)</td></tr>
+<tr class="memdesc:aafc9753927f9f27a6ac4b69f82b56cd4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tests binary linear matroid for regularity.  <a href="regular_8c.html#aafc9753927f9f27a6ac4b69f82b56cd4">More...</a><br /></td></tr>
+<tr class="separator:aafc9753927f9f27a6ac4b69f82b56cd4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="adb0ba07cbf71c9aaebd3a2d6ecb630d9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adb0ba07cbf71c9aaebd3a2d6ecb630d9">&#9670;&nbsp;</a></span>CMRparamsRegularInit()</h2>
+<a id="a8e3aaf353cfaf396af7ef80984139530"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e3aaf353cfaf396af7ef80984139530">&#9670;&nbsp;</a></span>CMRregularParamsInit()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRparamsRegularInit </td>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRregularParamsInit </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="structCMR__REGULAR__PARAMETERS.html">CMR_REGULAR_PARAMETERS</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="structCMR__REGULAR__PARAMS.html">CMR_REGULAR_PARAMS</a> *&#160;</td>
           <td class="paramname"><em>params</em></td><td>)</td>
           <td></td>
         </tr>
@@ -141,16 +133,16 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a032125c872caf57f9d113a79c8e796fb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a032125c872caf57f9d113a79c8e796fb">&#9670;&nbsp;</a></span>CMRstatsRegularInit()</h2>
+<a id="a51069e9800ebe2e0b036d135e0fe4d25"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51069e9800ebe2e0b036d135e0fe4d25">&#9670;&nbsp;</a></span>CMRregularStatsInit()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRstatsRegularInit </td>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRregularStatsInit </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="structCMR__REGULAR__STATISTICS.html">CMR_REGULAR_STATISTICS</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="structCMR__REGULAR__STATS.html">CMR_REGULAR_STATS</a> *&#160;</td>
           <td class="paramname"><em>stats</em></td><td>)</td>
           <td></td>
         </tr>
@@ -167,14 +159,14 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="aad5233250a4af69667544f95fca92aac"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aad5233250a4af69667544f95fca92aac">&#9670;&nbsp;</a></span>CMRstatsRegularPrint()</h2>
+<a id="a3a281fa58ccc0d64d6a9c69e2eac5d4c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a281fa58ccc0d64d6a9c69e2eac5d4c">&#9670;&nbsp;</a></span>CMRregularStatsPrint()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRstatsRegularPrint </td>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRregularStatsPrint </td>
           <td>(</td>
           <td class="paramtype">FILE *&#160;</td>
           <td class="paramname"><em>stream</em>, </td>
@@ -182,7 +174,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structCMR__REGULAR__STATISTICS.html">CMR_REGULAR_STATISTICS</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="structCMR__REGULAR__STATS.html">CMR_REGULAR_STATS</a> *&#160;</td>
           <td class="paramname"><em>stats</em>, </td>
         </tr>
         <tr>
@@ -211,14 +203,14 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ae14ced997b2e44508183bcc3d44196fe"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae14ced997b2e44508183bcc3d44196fe">&#9670;&nbsp;</a></span>CMRtestBinaryRegular()</h2>
+<a id="aafc9753927f9f27a6ac4b69f82b56cd4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aafc9753927f9f27a6ac4b69f82b56cd4">&#9670;&nbsp;</a></span>CMRregularTest()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRtestBinaryRegular </td>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRregularTest </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
           <td class="paramname"><em>cmr</em>, </td>
@@ -238,7 +230,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> **&#160;</td>
+          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> **&#160;</td>
           <td class="paramname"><em>pdec</em>, </td>
         </tr>
         <tr>
@@ -250,13 +242,13 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structCMR__REGULAR__PARAMETERS.html">CMR_REGULAR_PARAMETERS</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="structCMR__REGULAR__PARAMS.html">CMR_REGULAR_PARAMS</a> *&#160;</td>
           <td class="paramname"><em>params</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structCMR__REGULAR__STATISTICS.html">CMR_REGULAR_STATISTICS</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="structCMR__REGULAR__STATS.html">CMR_REGULAR_STATS</a> *&#160;</td>
           <td class="paramname"><em>stats</em>, </td>
         </tr>
         <tr>
@@ -284,266 +276,6 @@ Functions</h2></td></tr>
     <tr><td class="paramname">pdec</td><td>Pointer for storing the decomposition tree (may be <code>NULL</code>). </td></tr>
     <tr><td class="paramname">pminor</td><td>Pointer for storing an \( F_7 \) or \( F_7^\star \) minor. </td></tr>
     <tr><td class="paramname">params</td><td>Parameters for the computation (may be <code>NULL</code> for defaults). </td></tr>
-    <tr><td class="paramname">stats</td><td>Statistics for the computation (may be <code>NULL</code>). </td></tr>
-    <tr><td class="paramname">timeLimit</td><td>Time limit to impose. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a5fa9a7e49bf221642cd400ffb2053a15"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5fa9a7e49bf221642cd400ffb2053a15">&#9670;&nbsp;</a></span>CMRtestRegular()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRtestRegular </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
-          <td class="paramname"><em>cmr</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *&#160;</td>
-          <td class="paramname"><em>matrix</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>ternary</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">bool *&#160;</td>
-          <td class="paramname"><em>pisRegular</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> **&#160;</td>
-          <td class="paramname"><em>pdec</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="structCMR__MINOR.html">CMR_MINOR</a> **&#160;</td>
-          <td class="paramname"><em>pminor</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="structCMR__REGULAR__PARAMETERS.html">CMR_REGULAR_PARAMETERS</a> *&#160;</td>
-          <td class="paramname"><em>params</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="structCMR__REGULAR__STATISTICS.html">CMR_REGULAR_STATISTICS</a> *&#160;</td>
-          <td class="paramname"><em>stats</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>timeLimit</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Tests ternary or binary linear matroid for regularity. </p>
-<p>If <code>pdec</code> is not <code>NULL</code>, <code>*pdec</code> will be a (partial) decomposition tree.</p>
-<p>If <code>pminor</code> is not <code>NULL</code> and <code>matrix</code> is not regular, then an \( F_7 \) or \( F_7^\star \) minor or a submatrix with non-ternary determinant is searched. This causes additional computational effort! </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
-    <tr><td class="paramname">matrix</td><td>Input matrix. </td></tr>
-    <tr><td class="paramname">ternary</td><td>Whether signs of <code>matrix</code> play a role. </td></tr>
-    <tr><td class="paramname">pisRegular</td><td>Pointer for storing whether <code>matrix</code> is regular. </td></tr>
-    <tr><td class="paramname">pdec</td><td>Pointer for storing the decomposition tree (may be <code>NULL</code>). </td></tr>
-    <tr><td class="paramname">pminor</td><td>Pointer for storing an \( F_7 \) or \( F_7^\star \) minor. </td></tr>
-    <tr><td class="paramname">params</td><td>Parameters for the computation. </td></tr>
-    <tr><td class="paramname">stats</td><td>Statistics for the computation (may be <code>NULL</code>). </td></tr>
-    <tr><td class="paramname">timeLimit</td><td>Time limit to impose. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a4025756819658b43f842d9198a268555"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4025756819658b43f842d9198a268555">&#9670;&nbsp;</a></span>testRegularThreeConnectedWithSequence()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> testRegularThreeConnectedWithSequence </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
-          <td class="paramname"><em>cmr</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *&#160;</td>
-          <td class="paramname"><em>dec</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>ternary</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">bool *&#160;</td>
-          <td class="paramname"><em>pisRegular</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="structCMR__MINOR.html">CMR_MINOR</a> **&#160;</td>
-          <td class="paramname"><em>pminor</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="structCMR__REGULAR__PARAMETERS.html">CMR_REGULAR_PARAMETERS</a> *&#160;</td>
-          <td class="paramname"><em>params</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="structCMR__REGULAR__STATISTICS.html">CMR_REGULAR_STATISTICS</a> *&#160;</td>
-          <td class="paramname"><em>stats</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>timeLimit</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
-    <tr><td class="paramname">dec</td><td>Decomposition node. </td></tr>
-    <tr><td class="paramname">ternary</td><td>Whether signs matter. </td></tr>
-    <tr><td class="paramname">pisRegular</td><td>Pointer for storing whether <code>matrix</code> is regular. </td></tr>
-    <tr><td class="paramname">pminor</td><td>Pointer for storing an \( F_7 \) or \( F_7^\star \) minor. </td></tr>
-    <tr><td class="paramname">params</td><td>Parameters for the computation. </td></tr>
-    <tr><td class="paramname">stats</td><td>Statistics for the computation (may be <code>NULL</code>). </td></tr>
-    <tr><td class="paramname">timeLimit</td><td>Time limit to impose. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a745641bf9d5477871856bf488013f55a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a745641bf9d5477871856bf488013f55a">&#9670;&nbsp;</a></span>testRegularTwoConnected()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> testRegularTwoConnected </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
-          <td class="paramname"><em>cmr</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="group__Matroid.html#gad87465d6d8c4f975e49ee4fd28b45d3a">CMR_DEC</a> *&#160;</td>
-          <td class="paramname"><em>dec</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>ternary</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">bool *&#160;</td>
-          <td class="paramname"><em>pisRegular</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="structCMR__MINOR.html">CMR_MINOR</a> **&#160;</td>
-          <td class="paramname"><em>pminor</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="structCMR__REGULAR__PARAMETERS.html">CMR_REGULAR_PARAMETERS</a> *&#160;</td>
-          <td class="paramname"><em>params</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="structCMR__REGULAR__STATISTICS.html">CMR_REGULAR_STATISTICS</a> *&#160;</td>
-          <td class="paramname"><em>stats</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>timeLimit</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Tests a 2-connected binary or ternary matrix for regularity. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
-    <tr><td class="paramname">dec</td><td>Decomposition node. </td></tr>
-    <tr><td class="paramname">ternary</td><td>Whether signs matter. </td></tr>
-    <tr><td class="paramname">pisRegular</td><td>Pointer for storing whether <code>matrix</code> is regular. </td></tr>
-    <tr><td class="paramname">pminor</td><td>Pointer for storing an \( F_7 \) or \( F_7^\star \) minor. </td></tr>
-    <tr><td class="paramname">params</td><td>Parameters for the computation. </td></tr>
     <tr><td class="paramname">stats</td><td>Statistics for the computation (may be <code>NULL</code>). </td></tr>
     <tr><td class="paramname">timeLimit</td><td>Time limit to impose. </td></tr>
   </table>
