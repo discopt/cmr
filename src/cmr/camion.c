@@ -878,6 +878,9 @@ CMR_ERROR CMRcamionCographicOrient(CMR* cmr, CMR_CHRMAT* matrix, CMR_GRAPH* cogr
         {
           if (arcsReversed[nodeData[v].edge] != shouldBeReversed)
           {
+            CMRdbgMsg(6, "Found a contradiction in the orientation, i.e., the matrix is not a network matrix.\n");
+
+            *pisCamionSigned = false;
             if (psubmatrix)
               CMR_CALL( constructNonCamionSubmatrix(cmr, cograph, edgeData, rowEdge, nodeData[v].edge, psubmatrix) );
 

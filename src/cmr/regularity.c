@@ -433,7 +433,7 @@ CMR_ERROR CMRregularityTaskRun(
   }
   else if (task->dec->nestedMinorsMatrix && (task->dec->nestedMinorsLastCographic == SIZE_MAX))
   {
-    CMRdbgMsg(4, "Testing for %s along the sequence.\n", task->dec->isTernary ? "being conetwork" : "cographicness");
+    CMRdbgMsg(4, "Testing along the sequence for %s.\n", task->dec->isTernary ? "being conetwork" : "cographicness");
     CMR_CALL( CMRregularityNestedMinorSequenceCographicness(cmr, task, punprocessed) );
   }
   else

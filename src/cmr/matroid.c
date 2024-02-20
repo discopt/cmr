@@ -598,7 +598,7 @@ size_t * CMRmatroiddecPivotColumns(CMR_MATROID_DEC* dec)
 }
 
 CMR_ERROR CMRmatroiddecPrint(CMR* cmr, CMR_MATROID_DEC* dec, FILE* stream, size_t indent, bool printChildren,
-  bool printMatrices, bool printGraphs, bool printReductions, bool printPivots)
+  bool printParentRowsColumns, bool printMatrices, bool printGraphs, bool printReductions, bool printPivots)
 {
   assert(cmr);
   assert(stream);
@@ -708,8 +708,10 @@ CMR_ERROR CMRmatroiddecPrint(CMR* cmr, CMR_MATROID_DEC* dec, FILE* stream, size_
     for (size_t i = 0; i < indent; ++i)
       fputc(' ', stream);
     fprintf(stream, "with series-parallel reductions:\n");
+    for (size_t i = 0; i < indent; ++i)
+      fputc(' ', stream);
     for (size_t i = 0; i < dec->numSeriesParallelReductions; ++i)
-      fprintf(stream, " %s", CMRspReductionString(dec->seriesParallelReductions[i], NULL) );
+      fprintf(stream, "%s%s", (i == 0) ? " " : ", ", CMRspReductionString(dec->seriesParallelReductions[i], NULL) );
     fputc('\n', stream);
   }
 
@@ -723,13 +725,45 @@ CMR_ERROR CMRmatroiddecPrint(CMR* cmr, CMR_MATROID_DEC* dec, FILE* stream, size_
     fputc('\n', stream);
   }
 
+  if (printParentRowsColumns)
+  {
+    if (dec->rowsParent)
+    {
+      for (size_t i = 0; i < indent; ++i)
+        fputc(' ', stream);
+      fprintf(stream, "with mapping of rows to parent's rows:");
+      for (size_t row = 0; row < dec->numRows; ++row)
+      {
+        if (dec->rowsParent[row] == SIZE_MAX)
+          fprintf(stream, " N/A");
+        else
+          fprintf(stream, " r%zu", dec->rowsParent[row]+1);
+      }
+      fprintf(stream, "\n");
+    }
+    if (dec->columnsParent)
+    {
+      for (size_t i = 0; i < indent; ++i)
+        fputc(' ', stream);
+      fprintf(stream, "with mapping of columns to parent's columns:");
+      for (size_t column = 0; column < dec->numColumns; ++column)
+      {
+        if (dec->columnsParent[column] == SIZE_MAX)
+          fprintf(stream, " N/A");
+        else
+          fprintf(stream, " c%zu", dec->columnsParent[column]+1);
+      }
+      fprintf(stream, "\n");
+    }
+  }
+
   if (printMatrices)
   {
     if (dec->matrix || dec->transpose)
     {
       for (size_t i = 0; i < indent; ++i)
         fputc(' ', stream);
-      fprintf(stream, "with matrix:\n\n");
+      fprintf(stream, "with matrix:\n");
     }
     if (dec->matrix)
       CMR_CALL( CMRchrmatPrintDense(cmr, dec->matrix, stream, '0', false) );
@@ -776,8 +810,8 @@ CMR_ERROR CMRmatroiddecPrint(CMR* cmr, CMR_MATROID_DEC* dec, FILE* stream, size_
         fprintf(stream, "Unique child:\n");
       else
         fprintf(stream, "Child #%zu:\n", c+1);
-      CMR_CALL( CMRmatroiddecPrint(cmr, dec->children[c], stream, indent + 2, printChildren, printMatrices, printGraphs,
-        printReductions, printPivots) );
+      CMR_CALL( CMRmatroiddecPrint(cmr, dec->children[c], stream, indent + 2, printChildren, printParentRowsColumns,
+        printMatrices, printGraphs, printReductions, printPivots) );
     }
   }
 
@@ -1181,6 +1215,7 @@ CMR_ERROR CMRmatroiddecUpdateTwoSum(CMR* cmr, CMR_MATROID_DEC* dec, CMR_SEPA* se
 
   dec->type = CMR_MATROID_DEC_TYPE_TWO_SUM;
   dec->numChildren = 2;
+  dec->children = NULL;
   CMR_CALL( CMRallocBlockArray(cmr, &dec->children, 2) );
   for (size_t childIndex = 0; childIndex < 2; ++childIndex)
   {
@@ -1278,6 +1313,16 @@ CMR_ERROR CMRmatroiddecUpdatePivots(CMR* cmr, CMR_MATROID_DEC* dec, size_t numPi
   dec->numPivots = numPivots;
   CMR_CALL( CMRduplicateBlockArray(cmr, &dec->pivotRows, numPivots, pivotRows) );
   CMR_CALL( CMRduplicateBlockArray(cmr, &dec->pivotColumns, numPivots, pivotColumns) );
+
+  for (size_t row = 0; row < dec->numRows; ++row)
+    dec->children[0]->rowsParent[row] = row;
+  for (size_t column = 0; column < dec->numColumns; ++column)
+    dec->children[0]->columnsParent[column] = column;
+  for (size_t pivot = 0; pivot < numPivots; ++pivot)
+  {
+    dec->children[0]->rowsParent[pivotRows[pivot]] = SIZE_MAX;
+    dec->children[0]->columnsParent[pivotColumns[pivot]] = SIZE_MAX;
+  }
 
   return CMR_OKAY;
 }

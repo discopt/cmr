@@ -17,13 +17,13 @@
 
 static
 int dfsArticulationPoint(
-  CMR_GRAPH* graph,             /**< Graph. */
-  bool* edgesEnabled,           /**< Edge array indicating whether an edge is enabled. */
-  CMR_GRAPH_NODE node,          /**< Current node. */
-  bool* nodesVisited,           /**< Node array indicating whether a node was already visited. */
-  int* nodesDiscoveryTime,      /**< Node array indicating at which time a node was visited. */
-  int* ptime,                   /**< Pointer to current time. */
-  CMR_GRAPH_NODE parentNode,    /**< Parent node in DFS arborescence. */
+  CMR_GRAPH* graph,               /**< Graph. */
+  bool* edgesEnabled,             /**< Edge array indicating whether an edge is enabled. */
+  CMR_GRAPH_NODE node,            /**< Current node. */
+  bool* nodesVisited,             /**< Node array indicating whether a node was already visited. */
+  int* nodesDiscoveryTime,        /**< Node array indicating at which time a node was visited. */
+  int* ptime,                     /**< Pointer to current time. */
+  CMR_GRAPH_NODE parentNode,      /**< Parent node in DFS arborescence. */
   size_t* nodesArticulationPoint  /**< Node array indicating whether a node is an articulation point. */
 )
 {
@@ -521,7 +521,7 @@ CMR_ERROR addToGraph1Row(
         CMRdbgMsg(12, "Candidate node is %ld.\n", splitNode);
 
 #if defined(CMR_DEBUG)
-        CMRgraphPrint(stdout, graph);
+        CMRgraphPrint(graph, stdout);
         fflush(stdout);
 #endif /* CMR_DEBUG */
 
@@ -563,7 +563,7 @@ CMR_ERROR addToGraph1Row(
 
   #if defined(CMR_DEBUG)
         CMRdbgMsg(14, "Constructed auxiliary graph.\n");
-        CMRgraphPrint(stdout, auxiliaryGraph);
+        CMRgraphPrint(auxiliaryGraph, stdout);
         fflush(stdout);
   #endif /* CMR_DEBUG */
 

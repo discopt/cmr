@@ -16,6 +16,7 @@ CMR_ERROR CMRregularityDecomposeSeriesParallel(CMR* cmr, DecompositionTask* task
   assert(punprocessed);
 
   CMR_MATROID_DEC* dec = task->dec;
+  CMR_MATROID_DEC* decReduced = dec;
   assert(dec);
 
 #if defined(CMR_DEBUG)
@@ -85,7 +86,8 @@ CMR_ERROR CMRregularityDecomposeSeriesParallel(CMR* cmr, DecompositionTask* task
         CMR_CALL( CMRmatroiddecUpdateSubmatrix(cmr, dec, reducedSubmatrix, CMR_MATROID_DEC_TYPE_UNKNOWN) );
         assert(dec->numChildren == 1);
         dec->type = CMR_MATROID_DEC_TYPE_SERIES_PARALLEL;
-        task->dec = dec->children[0];
+        decReduced = dec->children[0];
+        task->dec = decReduced;
         task->dec->testedSeriesParallel = true;
       }
     }
@@ -145,20 +147,24 @@ CMR_ERROR CMRregularityDecomposeSeriesParallel(CMR* cmr, DecompositionTask* task
     task->dec->testedSeriesParallel = true;
   }
 
+  /* Note: decReduced is the node for the SP-reduced submatrix (equal to dec if there are no SP-reductions). */
+
   /* Modify the decomposition for the 2-separation. */
   if (separation)
   {
     CMRdbgMsg(8, "-> 2-separation found.\n");
-    CMR_CALL( CMRmatroiddecUpdateTwoSum(cmr, dec, separation) );
+    CMR_CALL( CMRmatroiddecUpdateTwoSum(cmr, decReduced, separation) );
     CMR_CALL( CMRsepaFree(cmr, &separation) );
 
     DecompositionTask* childTasks[2] = { task, NULL };
-    CMR_CALL( CMRregularityTaskCreateRoot(cmr, dec->children[1], &childTasks[1], task->params, task->stats,
+    CMR_CALL( CMRregularityTaskCreateRoot(cmr, decReduced->children[1], &childTasks[1], task->params, task->stats,
       task->startClock, task->timeLimit) );
 
-    childTasks[0]->dec = dec->children[0];
-    dec->children[0]->testedSeriesParallel = dec->testedSeriesParallel;
-    dec->children[1]->testedSeriesParallel = dec->testedSeriesParallel;
+    childTasks[0]->dec = decReduced->children[0];
+
+    /* We mark the children as not SP-tested because we did not find a W_3 minor. */
+    decReduced->children[0]->testedSeriesParallel = false;
+    decReduced->children[1]->testedSeriesParallel = false;
 
     /* Add both child tasks to the list. */
     childTasks[0]->next = childTasks[1];
@@ -183,6 +189,7 @@ CMR_ERROR CMRregularityDecomposeSeriesParallel(CMR* cmr, DecompositionTask* task
       for (size_t row = 0; row < dec->numRows; ++row)
         originalToReduced[row] = SIZE_MAX;
 #endif /* !NDEBUG */
+
       for (size_t reducedRow = 0; reducedRow < reducedSubmatrix->numRows; ++reducedRow)
         originalToReduced[reducedSubmatrix->rows[reducedRow]] = reducedRow;
       for (size_t violatorRow = 0; violatorRow < violatorSubmatrix->numRows; ++violatorRow)
@@ -196,6 +203,7 @@ CMR_ERROR CMRregularityDecomposeSeriesParallel(CMR* cmr, DecompositionTask* task
       for (size_t column = 0; column < dec->numColumns; ++column)
         originalToReduced[column] = SIZE_MAX;
 #endif /* !NDEBUG */
+
       for (size_t reducedColumn = 0; reducedColumn < reducedSubmatrix->numColumns; ++reducedColumn)
         originalToReduced[reducedSubmatrix->columns[reducedColumn]] = reducedColumn;
       for (size_t violatorColumn = 0; violatorColumn < violatorSubmatrix->numColumns; ++violatorColumn)
@@ -208,6 +216,10 @@ CMR_ERROR CMRregularityDecomposeSeriesParallel(CMR* cmr, DecompositionTask* task
     }
 
     remainingTime = task->timeLimit - (clock() - task->startClock) * 1.0 / CLOCKS_PER_SEC;
+    task->dec = decReduced;
+    decReduced->testedTwoConnected = true;
+    decReduced->graphicness = dec->graphicness;
+    decReduced->cographicness = dec->cographicness;
     CMR_CALL( CMRregularityInitNestedMinorSequence(cmr, task, violatorSubmatrix) );
 
     /* Just mark the current task as SP-reduced and add it back to the list of unprocessed tasks. */
