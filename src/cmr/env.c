@@ -362,6 +362,19 @@ void CMRassertStackConsistency(
 }
 
 #endif /* !NDEBUG */
+  
+size_t CMRgetStackUsage(CMR* cmr)
+{ 
+  size_t result = 0;
+  for (size_t stack = 0; stack < cmr->currentStack; ++stack)
+    result += (FIRST_STACK_SIZE << stack);
+  result += (FIRST_STACK_SIZE << cmr->currentStack) - cmr->stacks[cmr->currentStack].top; 
+
+  return result;
+}
+
+#endif /* else REPLACE_STACK_BY_MALLOC */
+
 
 void CMRraiseErrorMessage(CMR* cmr, const char* format, ...)
 {
@@ -395,19 +408,6 @@ void CMRclearErrorMessage(CMR* cmr)
     cmr->errorMessage = NULL;
   }
 }
-  
-size_t CMRgetStackUsage(CMR* cmr)
-{ 
-  size_t result = 0;
-  for (size_t stack = 0; stack < cmr->currentStack; ++stack)
-    result += (FIRST_STACK_SIZE << stack);
-  result += (FIRST_STACK_SIZE << cmr->currentStack) - cmr->stacks[cmr->currentStack].top; 
-
-  return result;
-}
-
-#endif /* else REPLACE_STACK_BY_MALLOC */
-
 
 char* CMRconsistencyMessage(const char* format, ...)
 {

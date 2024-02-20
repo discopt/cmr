@@ -4,6 +4,7 @@
 #include <time.h>
 #include <float.h>
 
+#include <cmr/env.h>
 #include <cmr/matrix.h>
 #include <cmr/series_parallel.h>
 

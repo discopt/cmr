@@ -6,6 +6,7 @@
 #include <assert.h>
 #include <float.h>
 
+#include <cmr/env.h>
 #include <cmr/matrix.h>
 #include <cmr/equimodular.h>
 

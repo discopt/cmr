@@ -99,12 +99,12 @@ typedef struct
 
 typedef struct
 {
-  DIJKSTRA_STAGE stage; /* Stage in BFS. */
-  int predecessor;      /* Predecessor node. */
-  CMR_GRAPH_EDGE edge;   /* Edge connecting to predecessor node. */
-  int distance;         /* Combinatorial distance to the BFS root. */
-  char sign;            /* Sign of this tree edge with respect to current column. */
-  bool fixed;           /* Whether the orientation of this edge is already fixed. */
+  DIJKSTRA_STAGE stage; /**< Stage in BFS. */
+  int predecessor;      /**< Predecessor node. */
+  CMR_GRAPH_EDGE edge;  /**< Edge connecting to predecessor node. */
+  int distance;         /**< Combinatorial distance to the BFS root. */
+  char sign;            /**< Sign of this tree edge with respect to current column. */
+  bool fixed;           /**< Whether the orientation of this edge is already fixed. */
 } NetworkNodeData;
 
 CMR_ERROR CMRnetworkTestTranspose(CMR* cmr, CMR_CHRMAT* matrix, bool* pisConetwork, CMR_GRAPH** pdigraph,
@@ -143,7 +143,7 @@ CMR_ERROR CMRnetworkTestTranspose(CMR* cmr, CMR_CHRMAT* matrix, bool* pisConetwo
   if (isConetwork)
   {
     /* We have to find out which edges are reversed. */
-    CMRdbgMsg(0, "Matrix is graphic. Trying to compute reversed edges.");
+    CMRdbgMsg(0, "Matrix is graphic. Trying to compute reversed edges.\n");
     CMR_CALL( CMRallocBlockArray(cmr, &arcsReversed, CMRgraphMemEdges(graph)) );
 
 #if defined(CMR_DEBUG)
