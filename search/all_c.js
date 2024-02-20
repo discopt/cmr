@@ -7,7 +7,7 @@ var searchData=
   ['length_974',['length',['../classtu_1_1binary__linear__space.html#a3e861b7a44832b7903631dbdd3b431c6',1,'tu::binary_linear_space']]],
   ['less_5f_975',['less_',['../structtu_1_1matrix__reorder__row__less.html#a9eec408e7094c58583fd306f0a6eb04e',1,'tu::matrix_reorder_row_less']]],
   ['level_976',['level',['../classtu_1_1logger.html#ad383daeb6adf0bb25b8ff9cb744dec59',1,'tu::logger']]],
-  ['linalgtime_977',['linalgTime',['../structCMR__EQUIMODULAR__STATISTICS.html#aad5ac29ec2b10ac925920504a7655453',1,'CMR_EQUIMODULAR_STATISTICS']]],
+  ['linalgtime_977',['linalgTime',['../structCMR__EQUIMODULAR__STATS.html#a46801156bc4133618358179a6bd77fd2',1,'CMR_EQUIMODULAR_STATS']]],
   ['line_978',['line',['../classtu_1_1logger.html#a5b0698b259827fd4051859c3146a20bd',1,'tu::logger::line() const'],['../classtu_1_1logger.html#a584f6e285406cc1501076f467edc7fc7',1,'tu::logger::line()']]],
   ['linear_5falgebra_2ec_979',['linear_algebra.c',['../linear__algebra_8c.html',1,'']]],
   ['linear_5falgebra_2eh_980',['linear_algebra.h',['../linear__algebra_8h.html',1,'']]],

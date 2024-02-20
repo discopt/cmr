@@ -81,8 +81,8 @@ $(function() {
 <li>for some column basis \( B \subseteq \{1,2,\dotsc,n\} \) of \( M \), the greatest common divisor of the determinants of all \(r \)-by- \( r \) submatrices of \( M_{\star,B} \) is equal to \( k \).</li>
 <li>The matrix \( X \) such that \( M = M_{\star,B} X \) is <a class="el" href="tu.html">totally unimodular</a>.</li>
 </ul>
-<p>In case \( M \) has full row-rank, the first property requires that the determinant of any basis matrix shall be \( k \), while the second property requires that \( M_{\star,B}^{-1} M \) is <a class="el" href="tu.html">totally unimodular</a>. Otherwise, \( M_{\star,B} \) is singular, and hence the property is more technical.</p>
-<dl class="section note"><dt>Note</dt><dd>equimodularity is independent of the choice of the column basis \( B \).</dd></dl>
+<p>In case \( M \) has full row-rank, the first property requires that the determinant of any basis matrix shall be \( \pm k \), while the second property requires that \( M_{\star,B}^{-1} M \) is <a class="el" href="tu.html">totally unimodular</a>. Otherwise, \( M_{\star,B} \) is not square, and hence the property is more technical.</p>
+<dl class="section note"><dt>Note</dt><dd>Equimodularity is independent of the choice of the column basis \( B \).</dd></dl>
 <p>Additionally, \( M \) is called <b>strongly equimodular</b> if \( M \) and \( M^{\textsf{T}} \) are both equimodular, which implies that they are equimodular for the same gcd determinants. The special cases with \( k = 1 \) are called <b>unimodular</b> and <b>strongly unimodular</b>, respectively.</p>
 <h1><a class="anchor" id="autotoc_md46"></a>
 Usage</h1>
@@ -98,10 +98,10 @@ Usage</h1>
 C Interface</h1>
 <p>The functionality is defined in <a class="el" href="equimodular_8h.html">equimodular.h</a>. The main functions are:</p>
 <ul>
-<li><a class="el" href="equimodular_8h.html#ae875f222ebd8c80fe90d75a1020164a7" title="Tests a matrix  for being equimodular (for determinant gcd ).">CMRtestEquimodularity()</a> tests a matrix for being equimodular.</li>
-<li><a class="el" href="equimodular_8h.html#aab51051131d78615eda2281d9b040a3c" title="Tests a matrix  for being strongly equimodular.">CMRtestStrongEquimodularity()</a> tests a matrix for being strongly equimodular.</li>
-<li><a class="el" href="equimodular_8h.html#ae485f63343d62a7e60828b86e8a20b48" title="Tests a matrix  for being unimodular.">CMRtestUnimodularity()</a> tests a matrix for being unimodular.</li>
-<li><a class="el" href="equimodular_8h.html#ae2e8e8516ef714cb82fda5d3b63014b4" title="Tests a matrix  for being strongly unimodular.">CMRtestStrongUnimodularity()</a> tests a matrix for being strongly unimodular. </li>
+<li><a class="el" href="equimodular_8h.html#a33bbe39c490bfabdb6e0628e3e4a6c33" title="Tests a matrix  for being equimodular (for determinant gcd ).">CMRequimodularTest()</a> tests a matrix for being equimodular.</li>
+<li><a class="el" href="equimodular_8h.html#a7d0b4c770d4a117c8e194e625b6d33d6" title="Tests a matrix  for being strongly equimodular.">CMRequimodularTestStrong()</a> tests a matrix for being strongly equimodular.</li>
+<li><a class="el" href="equimodular_8h.html#a1aa2723e7cd92b40b4884bf337926e28" title="Tests a matrix  for being unimodular.">CMRunimodularTest()</a> tests a matrix for being unimodular.</li>
+<li><a class="el" href="equimodular_8h.html#aa61af3b25b529aa770c8450a81503586" title="Tests a matrix  for being strongly unimodular.">CMRunimodularTestStrong()</a> tests a matrix for being strongly unimodular. </li>
 </ul>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
