@@ -1,25 +1,8 @@
 var searchData=
 [
-  ['edgetodot_2234',['edgeToDot',['../graphic_8c.html#aca17c0b0d24622f60919bbcfef0cfbe1',1,'graphic.c']]],
-  ['elaborate_5fextension_5fmatrix_5fmodifier_2235',['elaborate_extension_matrix_modifier',['../structtu_1_1elaborate__extension__matrix__modifier.html#af8b9fe26cfbc3dc3225c3a44e2eb2334',1,'tu::elaborate_extension_matrix_modifier']]],
-  ['elements_2236',['elements',['../classtu_1_1decomposed__matroid.html#abd6c8590383950ccf61dd405808187d1',1,'tu::decomposed_matroid']]],
-  ['empty_2237',['empty',['../classtu_1_1permutation__enumerator.html#a8779169413b3a21f07e3720200eda1e8',1,'tu::permutation_enumerator']]],
-  ['empty_5fbottom_5fleft_5fmodifier_2238',['empty_bottom_left_modifier',['../structtu_1_1detail_1_1empty__bottom__left__modifier.html#a007ceba415e062d569de68056e30c5a2',1,'tu::detail::empty_bottom_left_modifier']]],
-  ['end_2239',['end',['../classtu_1_1detail_1_1Range.html#add58aee547d02f146889b095768e8dfd',1,'tu::detail::Range']]],
-  ['enlarge_5fbase_2240',['enlarge_base',['../classtu_1_1vector__three__connectivity.html#a6569e3c23a31c04ff96a26aa7cfdc3a9',1,'tu::vector_three_connectivity']]],
-  ['enlarge_5fdimension_2241',['enlarge_dimension',['../classtu_1_1vector__three__connectivity.html#ab6c5c5baa5c2166c6346764f73ef3c4b',1,'tu::vector_three_connectivity']]],
-  ['ensureconsistency_2242',['ensureConsistency',['../classtu_1_1SparseMatrix.html#a30c423f9bb72a68af8eb3f07b616e07a',1,'tu::SparseMatrix::ensureConsistency()'],['../classtu_1_1Submatrix.html#af9d1d76e911c456b2a0a5f8d86e1dda6',1,'tu::Submatrix::ensureConsistency()'],['../classtu_1_1TransposedMatrix.html#a5fcab8ae49ebb44d5619d76e895bf4a6',1,'tu::TransposedMatrix::ensureConsistency()'],['../structtu_1_1SparseMatrix_1_1Data.html#abb151580843aab442296087441eb5a12',1,'tu::SparseMatrix::Data::ensureConsistency()'],['../classtu_1_1DenseMatrix.html#a706d276517d92bf029bff3f03cc565a2',1,'tu::DenseMatrix::ensureConsistency()']]],
-  ['enumerate_2243',['enumerate',['../classtu_1_1permutation__enumerator.html#aad1a6f2560e6fb0d47554296a042dc61',1,'tu::permutation_enumerator']]],
-  ['enumerate_5fextension_2244',['enumerate_extension',['../namespacetu_1_1detail.html#addcb30b6871682de3ccbf1df141604de',1,'tu::detail']]],
-  ['enumerate_5fseparations_2245',['enumerate_separations',['../namespacetu.html#ad8f5f90eefad3e223ac96267ef95021f',1,'tu']]],
-  ['equals_2246',['equals',['../namespacetu.html#a103f99424b1c64d8bf8e6e5a54f5960b',1,'tu']]],
-  ['erase_2247',['erase',['../classtu_1_1logger.html#a9c40b114f3de39285215bc501782b145',1,'tu::logger']]],
-  ['extend_5fgraph_2248',['extend_graph',['../namespacetu.html#a74e1927795650067577af26c183de607',1,'tu']]],
-  ['extend_5fto_5f3_5f4_5fseparation_2249',['extend_to_3_4_separation',['../namespacetu_1_1detail.html#a5cd9b6f57efbd4d79dd306ca6a1e24e9',1,'tu::detail']]],
-  ['extendminorseparation_2250',['extendMinorSeparation',['../regularity__partition_8c.html#a24a0d6ac353fd4cca25e9bd13846576a',1,'regularity_partition.c']]],
-  ['extra_5felements_2251',['extra_elements',['../classtu_1_1decomposed__matroid.html#a7a0dcf51d7d0b8c6315206c2ecfa13a6',1,'tu::decomposed_matroid']]],
-  ['extract_5foption_2252',['extract_option',['../matrix__gen__main_8cpp.html#adc26751ea45e25b85449014f58209bc6',1,'extract_option(char c, bool &amp;randomize, bool &amp;sign, tu::log_level &amp;level, bool &amp;help):&#160;matrix_gen_main.cpp'],['../tu__compare__main_8cpp.html#a79caeeffeed748e384faa0700dd1490a',1,'extract_option(char c, char &amp;algorithm, bool &amp;certs, tu::log_level &amp;level, bool &amp;help):&#160;tu_compare_main.cpp']]],
-  ['extractnonbinarysubmatrix_2253',['extractNonbinarySubmatrix',['../series__parallel_8c.html#af3c1cd98f8c84dd72cc12243804b9b8d',1,'series_parallel.c']]],
-  ['extractremainingsubmatrix_2254',['extractRemainingSubmatrix',['../series__parallel_8c.html#a5a55174c85d481c0f8edbbe53ffdaa8e',1,'series_parallel.c']]],
-  ['extractwheelsubmatrix_2255',['extractWheelSubmatrix',['../series__parallel_8c.html#afa7b976ac28f4f17c6ff6bee21f274b8',1,'series_parallel.c']]]
+  ['edgetodot_1635',['edgeToDot',['../graphic_8c.html#aca17c0b0d24622f60919bbcfef0cfbe1',1,'graphic.c']]],
+  ['extendminorseparation_1636',['extendMinorSeparation',['../regularity__partition_8c.html#a24a0d6ac353fd4cca25e9bd13846576a',1,'regularity_partition.c']]],
+  ['extractnonbinarysubmatrix_1637',['extractNonbinarySubmatrix',['../series__parallel_8c.html#af3c1cd98f8c84dd72cc12243804b9b8d',1,'series_parallel.c']]],
+  ['extractremainingsubmatrix_1638',['extractRemainingSubmatrix',['../series__parallel_8c.html#a5a55174c85d481c0f8edbbe53ffdaa8e',1,'series_parallel.c']]],
+  ['extractwheelsubmatrix_1639',['extractWheelSubmatrix',['../series__parallel_8c.html#afa7b976ac28f4f17c6ff6bee21f274b8',1,'series_parallel.c']]]
 ];

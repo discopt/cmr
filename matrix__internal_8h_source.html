@@ -121,7 +121,7 @@ $(function() {
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160; </div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160; </div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="matrix__transposed_8hpp.html">matrix_transposed.hpp</a>&quot;</span></div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="preprocessor">#include &quot;matrix_transposed.hpp&quot;</span></div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160; </div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacetu.html">tu</a></div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;{</div>
@@ -136,13 +136,13 @@ $(function() {
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  };</div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160; </div>
 <div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  <span class="keyword">template</span> &lt;<span class="keyword">typename</span> MatrixType&gt;</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  <span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code" href="namespacetu.html#ac5c5c987011d24988a1207e92dbee669">matrix_set_value</a>(MatrixType&amp; matrix, <span class="keywordtype">size_t</span> row, <span class="keywordtype">size_t</span> column, <span class="keyword">typename</span> MatrixType::value_type value)</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  <span class="keyword">inline</span> <span class="keywordtype">void</span> matrix_set_value(MatrixType&amp; matrix, <span class="keywordtype">size_t</span> row, <span class="keywordtype">size_t</span> column, <span class="keyword">typename</span> MatrixType::value_type value)</div>
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  {</div>
 <div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    matrix(row, column) = value;</div>
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  }</div>
 <div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160; </div>
 <div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  <span class="keyword">template</span> &lt;<span class="keyword">typename</span> MatrixType&gt;</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;  <span class="keyword">inline</span> <span class="keywordtype">void</span> <a class="code" href="namespacetu.html#ac5c5c987011d24988a1207e92dbee669">matrix_set_value</a>(<span class="keyword">const</span> MatrixType&amp; matrix, <span class="keywordtype">size_t</span> row, <span class="keywordtype">size_t</span> column, <span class="keyword">typename</span> MatrixType::value_type value)</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;  <span class="keyword">inline</span> <span class="keywordtype">void</span> matrix_set_value(<span class="keyword">const</span> MatrixType&amp; matrix, <span class="keywordtype">size_t</span> row, <span class="keywordtype">size_t</span> column, <span class="keyword">typename</span> MatrixType::value_type value)</div>
 <div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;  {</div>
 <div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    <a class="code" href="env_8h.html#a4460b6013023896e1cfd0e1e65ffe418">CMR_UNUSED</a>(matrix);</div>
 <div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    <a class="code" href="env_8h.html#a4460b6013023896e1cfd0e1e65ffe418">CMR_UNUSED</a>(row);</div>
@@ -153,7 +153,7 @@ $(function() {
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160; </div>
 <div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160; </div>
 <div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;  <span class="keyword">template</span> &lt;<span class="keyword">typename</span> MatrixType&gt;</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="namespacetu.html#ace2c4bdd197c82b8d2a1f933cea069ae">matrix_binary_pivot</a>(MatrixType&amp; matrix, <span class="keywordtype">size_t</span> i, <span class="keywordtype">size_t</span> j)</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;  <span class="keywordtype">void</span> matrix_binary_pivot(MatrixType&amp; matrix, <span class="keywordtype">size_t</span> i, <span class="keywordtype">size_t</span> j)</div>
 <div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;  {</div>
 <div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;    <span class="keyword">typedef</span> <span class="keyword">typename</span> MatrixType::value_type value_type;</div>
 <div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;    <span class="keyword">const</span> value_type&amp; base_value = matrix(i, j);</div>
@@ -300,10 +300,7 @@ $(function() {
 <div class="ttc" id="amatrix_8h_html"><div class="ttname"><a href="matrix_8h.html">matrix.h</a></div><div class="ttdoc">Functionality for sparse matrices.</div></div>
 <div class="ttc" id="amatrix__internal_8h_html_a63215a62d9fea2345cc426b6949829ea"><div class="ttname"><a href="matrix__internal_8h.html#a63215a62d9fea2345cc426b6949829ea">CMRsortSubmatrix</a></div><div class="ttdeci">CMR_ERROR CMRsortSubmatrix(CMR *cmr, CMR_SUBMAT *submatrix)</div><div class="ttdoc">Sorts the row and column indices of submatrix.</div><div class="ttdef"><b>Definition:</b> matrix.c:250</div></div>
 <div class="ttc" id="amatrix__internal_8h_html_a6974e0cec8a19d31282ce8d86b28f8f2"><div class="ttname"><a href="matrix__internal_8h.html#a6974e0cec8a19d31282ce8d86b28f8f2">CMRchrmatFilter</a></div><div class="ttdeci">CMR_ERROR CMRchrmatFilter(CMR *cmr, CMR_CHRMAT *matrix, size_t numRows, size_t *rows, size_t numColumns, size_t *columns, CMR_CHRMAT **presult)</div><div class="ttdoc">Creates a numRows  numColumns submatrix of the char matrix indexed by rows and columns.</div><div class="ttdef"><b>Definition:</b> matrix.c:2402</div></div>
-<div class="ttc" id="amatrix__transposed_8hpp_html"><div class="ttname"><a href="matrix__transposed_8hpp.html">matrix_transposed.hpp</a></div></div>
 <div class="ttc" id="anamespacetu_html"><div class="ttname"><a href="namespacetu.html">tu</a></div><div class="ttdef"><b>Definition:</b> algorithm.hpp:14</div></div>
-<div class="ttc" id="anamespacetu_html_ac5c5c987011d24988a1207e92dbee669"><div class="ttname"><a href="namespacetu.html#ac5c5c987011d24988a1207e92dbee669">tu::matrix_set_value</a></div><div class="ttdeci">void matrix_set_value(matrix_permuted&lt; MatrixType &gt; &amp;matrix, size_t row, size_t column, typename MatrixType::value_type value)</div><div class="ttdef"><b>Definition:</b> matrix_permuted.hpp:168</div></div>
-<div class="ttc" id="anamespacetu_html_ace2c4bdd197c82b8d2a1f933cea069ae"><div class="ttname"><a href="namespacetu.html#ace2c4bdd197c82b8d2a1f933cea069ae">tu::matrix_binary_pivot</a></div><div class="ttdeci">void matrix_binary_pivot(matrix_permuted&lt; MatrixType &gt; &amp;matrix, size_t i, size_t j)</div><div class="ttdef"><b>Definition:</b> matrix_permuted.hpp:224</div></div>
 <div class="ttc" id="astructCMR__CHRMAT_html"><div class="ttname"><a href="structCMR__CHRMAT.html">CMR_CHRMAT</a></div><div class="ttdoc">Row-wise representation of sparse char matrix.</div><div class="ttdef"><b>Definition:</b> matrix.h:204</div></div>
 <div class="ttc" id="astructCMR__ENVIRONMENT_html"><div class="ttname"><a href="structCMR__ENVIRONMENT.html">CMR_ENVIRONMENT</a></div><div class="ttdef"><b>Definition:</b> env_internal.h:45</div></div>
 <div class="ttc" id="astructCMR__MATRIX_html"><div class="ttname"><a href="structCMR__MATRIX.html">CMR_MATRIX</a></div><div class="ttdoc">Abstract struct for row-wise representations of sparse matrices.</div><div class="ttdef"><b>Definition:</b> matrix_internal.h:15</div></div>

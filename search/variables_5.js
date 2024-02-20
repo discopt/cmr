@@ -1,16 +1,17 @@
 var searchData=
 [
-  ['edge_2649',['edge',['../structDecRowData.html#a2479d912f27892b4ad3eef6f4ac42598',1,'DecRowData::edge()'],['../structDecColumnData.html#aa9fc7897bbacf1ec6414cc018d6dddf9',1,'DecColumnData::edge()'],['../struct__PathEdge.html#a9a4926c9d5870d369db3874183513da1',1,'_PathEdge::edge()'],['../structNetworkNodeData.html#af412e71ed90c175908468a8a1a349eaa',1,'NetworkNodeData::edge()'],['../structOrientationSearchNodeData.html#acd6b49bc1fc6c95cb93d132290c56753',1,'OrientationSearchNodeData::edge()']]],
-  ['edges_2650',['edges',['../structDec.html#af5393e109c5ef9faa45000f767dbfe5e',1,'Dec']]],
-  ['edgesinpath_2651',['edgesInPath',['../structDEC__NEWCOLUMN.html#ab2ed8d9a353774639e70b0ce8df7b418',1,'DEC_NEWCOLUMN']]],
-  ['edgevalue_2652',['edgeValue',['../structGraphNode.html#a9f0c398d41f16901b34cec5f5c30979a',1,'GraphNode']]],
-  ['element_2653',['element',['../structCMR__SP__REDUCTION.html#ae6520052297590d8cf47a430a79b5907',1,'CMR_SP_REDUCTION::element()'],['../structOrientationSearchEdgeData.html#a61fddf2a775b96a288c78cb16577576b',1,'OrientationSearchEdgeData::element()'],['../structDecEdgeData.html#a324b1b68cdd6764041ed7db1c7411eaf',1,'DecEdgeData::element()']]],
-  ['elementstringbuffer_2654',['elementStringBuffer',['../element_8c.html#a12910c94a76f0436e84ea25a85f06b38',1,'element.c']]],
-  ['entries_2655',['entries',['../structtu_1_1SparseMatrix_1_1Data.html#a4337420bd091756f37304f7e8c1f5b2e',1,'tu::SparseMatrix::Data']]],
-  ['entrycolumns_2656',['entryColumns',['../structCMR__DBLMAT.html#ad8c49e4b3245b47cc3963439ed734b05',1,'CMR_DBLMAT::entryColumns()'],['../structCMR__INTMAT.html#a3d4e0478a7589cb86dae23b78c64dd8e',1,'CMR_INTMAT::entryColumns()'],['../structCMR__CHRMAT.html#a58123b5f36c3710f62a7aecdfe5ab758',1,'CMR_CHRMAT::entryColumns()'],['../structCMR__MATRIX.html#a2c07192dd90ec99c89b71915260a3d12',1,'CMR_MATRIX::entryColumns()']]],
-  ['entryvalues_2657',['entryValues',['../structCMR__DBLMAT.html#a185041953ac1e1be3e036a22595b11d1',1,'CMR_DBLMAT::entryValues()'],['../structCMR__INTMAT.html#a4e3b1ad84a907d6016d9c857e19e5c56',1,'CMR_INTMAT::entryValues()'],['../structCMR__CHRMAT.html#aa35929276a23324ed86a9792fead47d9',1,'CMR_CHRMAT::entryValues()'],['../structCMR__MATRIX.html#ac3877a4be945756f93ad30a9918dbdbc',1,'CMR_MATRIX::entryValues()']]],
-  ['enumerationcandidatescount_2658',['enumerationCandidatesCount',['../structCMR__REGULAR__STATS.html#aa1c8995544229e7f79823f89aa2e2fde',1,'CMR_REGULAR_STATS']]],
-  ['enumerationcount_2659',['enumerationCount',['../structCMR__REGULAR__STATS.html#a005215fedda86a823c9ef3bf5ff77971',1,'CMR_REGULAR_STATS']]],
-  ['enumerationtime_2660',['enumerationTime',['../structCMR__REGULAR__STATS.html#a66ce90b629beea0598236017557fa88e',1,'CMR_REGULAR_STATS']]],
-  ['errormessage_2661',['errorMessage',['../structCMR__ENVIRONMENT.html#a6810f6b1869e45369cde843430098254',1,'CMR_ENVIRONMENT']]]
+  ['first_5fstack_5fsize_1779',['FIRST_STACK_SIZE',['../env_8c.html#a115f8aa0987e6a2c19f191ec35b74997',1,'env.c']]],
+  ['firstedge_1780',['firstEdge',['../structDEC__MEMBER__DATA.html#a2d916f6f3e821ecfff6a49e4cc047a50',1,'DEC_MEMBER_DATA']]],
+  ['firstfree_1781',['firstFree',['../struct__CMR__LISTHASHTABLE.html#a1a3cf687ff86daa01e7faaa4c782a75b',1,'_CMR_LISTHASHTABLE']]],
+  ['firstfreeedge_1782',['firstFreeEdge',['../structDec.html#a1ef9cc8680c99e0ac9b62dc3bf6a4da9',1,'Dec']]],
+  ['firstfreenode_1783',['firstFreeNode',['../structDec.html#a0b5ee32ec7c7d7dfbf0c9e22df18542b',1,'Dec']]],
+  ['firstfreenonzero_1784',['firstFreeNonzero',['../structListMat8.html#a465709793426781b86cc25a152013546',1,'ListMat8::firstFreeNonzero()'],['../structListMat64.html#a3236d992f27c8b24f1ad45342e5cdd6f',1,'ListMat64::firstFreeNonzero()']]],
+  ['firstnode_1785',['firstNode',['../structCMR__GRAPH.html#af83b0b0f5ad9da4121706d074dc43e33',1,'CMR_GRAPH']]],
+  ['firstout_1786',['firstOut',['../structCMR__GRAPH__NODE__DATA.html#abf310baaaed06f8859d36423b6628776',1,'CMR_GRAPH_NODE_DATA']]],
+  ['firstpathedge_1787',['firstPathEdge',['../struct__ReducedMember.html#ad730ed3d52033f7c246ae8d5ae543c93',1,'_ReducedMember::firstPathEdge()'],['../structDEC__NEWCOLUMN.html#a5ba393b131ffc80d87d79d403403c596',1,'DEC_NEWCOLUMN::firstPathEdge()']]],
+  ['fixed_1788',['fixed',['../structOrientationSearchNodeData.html#a97e11ddea56bd8bad9ac6847038d725d',1,'OrientationSearchNodeData::fixed()'],['../structNetworkNodeData.html#a85316df3868679cfeb97b9850b59e355',1,'NetworkNodeData::fixed()']]],
+  ['forestindex_1789',['forestIndex',['../structNetworkEdgeData.html#ae674c9e99cfdacef0438535ae0ae7915',1,'NetworkEdgeData']]],
+  ['freeedge_1790',['freeEdge',['../structCMR__GRAPH.html#aa9696c4302d867faf1013809360ebc17',1,'CMR_GRAPH']]],
+  ['freekeyindex_1791',['freeKeyIndex',['../struct__CMR__LINEARHASHTABLE__ARRAY.html#a4f5064aa92c86009e6c93f0a18a4e98c',1,'_CMR_LINEARHASHTABLE_ARRAY']]],
+  ['freenode_1792',['freeNode',['../structCMR__GRAPH.html#abf0219cefa2b9132f19d398f7e0b86d3',1,'CMR_GRAPH']]]
 ];

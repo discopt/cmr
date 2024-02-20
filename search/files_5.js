@@ -1,6 +1,4 @@
 var searchData=
 [
-  ['file_2dformats_2emd_1674',['file-formats.md',['../file-formats_8md.html',1,'']]],
-  ['find_5fminor_5fsequence_2ehpp_1675',['find_minor_sequence.hpp',['../find__minor__sequence_8hpp.html',1,'']]],
-  ['find_5fwheel_5fminor_2ehpp_1676',['find_wheel_minor.hpp',['../find__wheel__minor_8hpp.html',1,'']]]
+  ['file_2dformats_2emd_1155',['file-formats.md',['../file-formats_8md.html',1,'']]]
 ];

@@ -1,19 +1,13 @@
 var searchData=
 [
-  ['unimodularity_2ecpp_1453',['unimodularity.cpp',['../unimodularity_8cpp.html',1,'']]],
-  ['unimodularity_2ehpp_1454',['unimodularity.hpp',['../unimodularity_8hpp.html',1,'']]],
-  ['unindent_1455',['unindent',['../classtu_1_1logger.html#a773c48eec1f9fcdda19bbc49725bc404',1,'tu::logger']]],
-  ['unit_5fvector_1456',['UNIT_VECTOR',['../classtu_1_1vector__three__connectivity.html#ac1b4ff4f64affc17c8a670382d92aade',1,'tu::vector_three_connectivity']]],
-  ['unknown_1457',['UNKNOWN',['../network_8c.html#a0b43147a4952faed75bf16e0f483ca0aa6ce26a62afab55d7606ad4e92428b30c',1,'UNKNOWN():&#160;network.c'],['../graphic_8c.html#a0b43147a4952faed75bf16e0f483ca0aa6ce26a62afab55d7606ad4e92428b30c',1,'UNKNOWN():&#160;graphic.c'],['../camion_8c.html#a8c18c29838f9a0be38b68ad81f79c7b1a6ce26a62afab55d7606ad4e92428b30c',1,'UNKNOWN():&#160;camion.c']]],
-  ['unlinknonzero_1458',['unlinkNonzero',['../series__parallel_8c.html#acdbefe65768bf543b1d788cf45877532',1,'series_parallel.c']]],
-  ['updatehashtable_1459',['updateHashtable',['../regularity__nested__minor__sequence_8c.html#a0e6fd0c69b9fc76506813dbde5369b4b',1,'regularity_nested_minor_sequence.c']]],
-  ['updatehashvalues_1460',['updateHashValues',['../regularity__graphic_8c.html#a77757a18acfcffde64c55965290752a9',1,'regularity_graphic.c']]],
-  ['updatematrix_1461',['updateMatrix',['../matroid_8c.html#abc5505e1952d8e993d8b1e169152a517',1,'matroid.c']]],
-  ['updaterepresentative_1462',['updateRepresentative',['../regularity__nested__minor__sequence_8c.html#af5cf4ac4434ab20d597d65a1d3b0e679',1,'regularity_nested_minor_sequence.c']]],
-  ['updaterowscolumnsfromparent_1463',['updateRowsColumnsFromParent',['../matroid_8c.html#afb79e9775c9bea96085341606c466f8a',1,'matroid.c']]],
-  ['updaterowscolumnstoparent_1464',['updateRowsColumnsToParent',['../matroid_8c.html#a6099e78521412cc8c404ca0d07a8c793',1,'matroid.c']]],
-  ['upper_5fright_5frank_1465',['upper_right_rank',['../classtu_1_1separation.html#a66117abb724c5ef8f66f76f31e8bfc62',1,'tu::separation']]],
-  ['used_5fvertices_1466',['used_vertices',['../namespacetu_1_1util.html#a43d726bda2d6615732f7adfa8486ffdf',1,'tu::util']]],
-  ['usedchildrenstorage_1467',['usedChildrenStorage',['../structDEC__NEWCOLUMN.html#a5614ef40d31f09d31e10a4023e15fbec',1,'DEC_NEWCOLUMN']]],
-  ['utilities_2emd_1468',['utilities.md',['../utilities_8md.html',1,'']]]
+  ['unknown_1044',['UNKNOWN',['../camion_8c.html#a8c18c29838f9a0be38b68ad81f79c7b1a6ce26a62afab55d7606ad4e92428b30c',1,'UNKNOWN():&#160;camion.c'],['../graphic_8c.html#a0b43147a4952faed75bf16e0f483ca0aa6ce26a62afab55d7606ad4e92428b30c',1,'UNKNOWN():&#160;graphic.c'],['../network_8c.html#a0b43147a4952faed75bf16e0f483ca0aa6ce26a62afab55d7606ad4e92428b30c',1,'UNKNOWN():&#160;network.c']]],
+  ['unlinknonzero_1045',['unlinkNonzero',['../series__parallel_8c.html#acdbefe65768bf543b1d788cf45877532',1,'series_parallel.c']]],
+  ['updatehashtable_1046',['updateHashtable',['../regularity__nested__minor__sequence_8c.html#a0e6fd0c69b9fc76506813dbde5369b4b',1,'regularity_nested_minor_sequence.c']]],
+  ['updatehashvalues_1047',['updateHashValues',['../regularity__graphic_8c.html#a77757a18acfcffde64c55965290752a9',1,'regularity_graphic.c']]],
+  ['updatematrix_1048',['updateMatrix',['../matroid_8c.html#abc5505e1952d8e993d8b1e169152a517',1,'matroid.c']]],
+  ['updaterepresentative_1049',['updateRepresentative',['../regularity__nested__minor__sequence_8c.html#af5cf4ac4434ab20d597d65a1d3b0e679',1,'regularity_nested_minor_sequence.c']]],
+  ['updaterowscolumnsfromparent_1050',['updateRowsColumnsFromParent',['../matroid_8c.html#afb79e9775c9bea96085341606c466f8a',1,'matroid.c']]],
+  ['updaterowscolumnstoparent_1051',['updateRowsColumnsToParent',['../matroid_8c.html#a6099e78521412cc8c404ca0d07a8c793',1,'matroid.c']]],
+  ['usedchildrenstorage_1052',['usedChildrenStorage',['../structDEC__NEWCOLUMN.html#a5614ef40d31f09d31e10a4023e15fbec',1,'DEC_NEWCOLUMN']]],
+  ['utilities_2emd_1053',['utilities.md',['../utilities_8md.html',1,'']]]
 ];

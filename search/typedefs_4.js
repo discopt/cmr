@@ -1,6 +1,4 @@
 var searchData=
 [
-  ['graph_5fnode_2899',['GRAPH_NODE',['../block__decomposition_8c.html#a2e628ca6aaadd8c61b7439c92e9ff92d',1,'block_decomposition.c']]],
-  ['graph_5ft_2900',['graph_t',['../classtu_1_1bipartite__r10__graphs.html#ad45f6393157176e308ec6a8b1ddae4e5',1,'tu::bipartite_r10_graphs']]],
-  ['groupinfo_5ftype_2901',['groupinfo_type',['../classtu_1_1permutation__enumerator.html#a5e8372c613e162192662e6e61a3e356b',1,'tu::permutation_enumerator']]]
+  ['hereditarypropertytest_1995',['HereditaryPropertyTest',['../hereditary__property_8h.html#a07a2a3f3148ca5bde7156065264d9d9e',1,'hereditary_property.h']]]
 ];
