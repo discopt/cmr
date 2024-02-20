@@ -6,7 +6,7 @@
 #include <cmr/series_parallel.h>
 
 #include "env_internal.h"
-#include "one_sum.h"
+#include "block_decomposition.h"
 #include "sort.h"
 #include "matrix_internal.h"
 #include "camion_internal.h"
@@ -30,7 +30,7 @@ CMR_ERROR CMRbalancedStatsInit(CMR_BALANCED_STATS* stats)
 {
   assert(stats);
 
-  CMR_CALL( CMRstatsSeriesParallelInit(&stats->seriesParallel) );
+  CMR_CALL( CMRspStatsInit(&stats->seriesParallel) );
   stats->totalCount = 0;
   stats->totalTime = 0.0;
   stats->enumeratedColumnSubsets = 0;
@@ -52,7 +52,7 @@ CMR_ERROR CMRbalancedStatsPrint(FILE* stream, CMR_BALANCED_STATS* stats, const c
 
   char subPrefix[256];
   snprintf(subPrefix, 256, "%sseries-parallel ", prefix);
-  CMR_CALL( CMRstatsSeriesParallelPrint(stream, &stats->seriesParallel, subPrefix) );
+  CMR_CALL( CMRspStatsPrint(stream, &stats->seriesParallel, subPrefix) );
 
   fprintf(stream, "%senumerated row subsets: %lu\n", prefix, (unsigned long)stats->enumeratedRowSubsets);
   fprintf(stream, "%senumerated column subsets: %lu\n", prefix, (unsigned long)stats->enumeratedColumnSubsets);
@@ -613,8 +613,8 @@ CMR_ERROR balancedTestConnected(
 
 int compareBlockComponents(const void* a, const void* b)
 {
-  CMR_ONESUM_COMPONENT* ca = (CMR_ONESUM_COMPONENT*)a;
-  CMR_ONESUM_COMPONENT* cb = (CMR_ONESUM_COMPONENT*)b;
+  CMR_BLOCK* ca = (CMR_BLOCK*)a;
+  CMR_BLOCK* cb = (CMR_BLOCK*)b;
   int min_a = (int)(ca->matrix->numRows < ca->matrix->numColumns ? ca->matrix->numRows : ca->matrix->numColumns);
   int min_b = (int)(cb->matrix->numRows < cb->matrix->numColumns ? cb->matrix->numRows : cb->matrix->numColumns);
   return min_a - min_b;
@@ -651,24 +651,24 @@ CMR_ERROR CMRbalancedTest(CMR* cmr, CMR_CHRMAT* matrix, bool* pisBalanced, CMR_S
   /* Perform a block decomposition. */
 
   size_t numComponents;
-  CMR_ONESUM_COMPONENT* components = NULL;
-  CMR_CALL( decomposeOneSum(cmr, (CMR_MATRIX*) matrix, sizeof(char), sizeof(char), &numComponents, &components, NULL,
+  CMR_BLOCK* components = NULL;
+  CMR_CALL( CMRdecomposeBlocks(cmr, (CMR_MATRIX*) matrix, sizeof(char), sizeof(char), &numComponents, &components, NULL,
     NULL, NULL, NULL) );
 
   CMRdbgMsg(2, "Found %zu blocks.\n", numComponents);
 
   /* We create an intermediate array for sorting the components by number of nonzeros. */
 
-  CMR_ONESUM_COMPONENT** orderedComponents = NULL;
+  CMR_BLOCK** orderedComponents = NULL;
   CMR_CALL( CMRallocStackArray(cmr, &orderedComponents, numComponents) );
   for (size_t comp = 0; comp < numComponents; ++comp)
     orderedComponents[comp] = &components[comp];
-  CMR_CALL( CMRsort(cmr, numComponents, orderedComponents, sizeof(CMR_ONESUM_COMPONENT*), &compareBlockComponents) );
+  CMR_CALL( CMRsort(cmr, numComponents, orderedComponents, sizeof(CMR_BLOCK*), &compareBlockComponents) );
 
   *pisBalanced = true;
   for (size_t comp = 0; comp < numComponents; ++comp)
   {
-    CMR_ONESUM_COMPONENT* component = orderedComponents[comp];
+    CMR_BLOCK* component = orderedComponents[comp];
     CMR_CHRMAT* matrix = (CMR_CHRMAT*) component->matrix;
     CMR_CHRMAT* transpose = (CMR_CHRMAT*) component->transpose;
 
