@@ -49,6 +49,7 @@ Please cite the paper(s) corresponding to the respective tools.
 # Authors #
 
 - [Rolf van der Hulst](https://people.utwente.nl/r.p.vanderhulst)
+- Henk Kraaij
 - [Klaus Truemper](https://personal.utdallas.edu/~klaus/)
 - [Matthias Walter](https://people.utwente.nl/m.walter) (maintainer)
 

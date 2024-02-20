@@ -38,6 +38,7 @@ set(CMR_WITH_GMP ${GMP_FOUND})
 
 # Target for the CMR library.
 add_library(cmr
+  src/cmr/balanced.c
   src/cmr/camion.c
   src/cmr/ctu.c
   src/cmr/densematrix.c
@@ -73,6 +74,17 @@ add_library(cmr
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   target_compile_options(cmr PRIVATE -Wall -Wextra -pedantic)
 endif()
+
+# Target for the cmr-balanced executable.
+add_executable(cmr_balanced
+  src/main/balanced_main.c)
+
+target_link_libraries(cmr_balanced
+  PRIVATE
+    CMR::cmr
+    m
+)
+set_target_properties(cmr_balanced PROPERTIES OUTPUT_NAME cmr-balanced)
 
 # Target for the cmr-camion executable.
 add_executable(cmr_camion
@@ -276,9 +288,6 @@ target_include_directories(cmr
     ${CMAKE_CURRENT_SOURCE_DIR}/src/cmr/
 )
 
-target_compile_features(cmr PRIVATE cxx_auto_type)
-target_compile_options(cmr PRIVATE $<$<CXX_COMPILER_ID:GNU>:-Wall>)
-
 if(Threads_FOUND)
   target_link_libraries(cmr
     PRIVATE
@@ -297,6 +306,7 @@ endif()
 include(GNUInstallDirs)
 
 install(TARGETS
+    cmr_balanced
     cmr_camion
     cmr_ctu
     cmr_graphic
