@@ -3,6 +3,7 @@
 #include <string.h>
 #include <assert.h>
 
+#include <cmr/env.h>
 #include <cmr/matrix.h>
 
 typedef enum

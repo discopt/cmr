@@ -4,6 +4,7 @@
 #include <time.h>
 #include <float.h>
 
+#include <cmr/env.h>
 #include <cmr/matrix.h>
 #include <cmr/tu.h>
 #include <cmr/linear_algebra.h>
@@ -77,7 +78,7 @@ CMR_ERROR testTotalUnimodularity(
     CMR_CALL( CMRtuStatsPrint(stderr, &stats, NULL) );
 
   if (decomposition)
-    CMR_CALL( CMRmatroiddecPrint(cmr, decomposition, stderr, 0, true, true, true, true, true) );
+    CMR_CALL( CMRmatroiddecPrint(cmr, decomposition, stderr, 0, true, true, true, true, true, true) );
 
   if (submatrix && outputSubmatrixFileName)
   {

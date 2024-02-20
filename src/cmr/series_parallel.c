@@ -1609,8 +1609,12 @@ CMR_ERROR decomposeBinarySeriesParallel(
 
       if (pseparation && *pseparation)
       {
-        CMR_CALL( CMRsepaFindBinaryRepresentativesSubmatrix(cmr, *pseparation, matrix, NULL, reducedSubmatrix, NULL,
-          NULL) );
+        CMR_CHRMAT* transpose = NULL;
+        CMR_CALL( CMRchrmatTranspose(cmr, matrix, &transpose) );
+        CMR_CALL( CMRsepaFindBinaryRepresentativesSubmatrix(cmr, *pseparation, matrix, transpose, reducedSubmatrix,
+          NULL, NULL) );
+        CMR_CALL( CMRchrmatFree(cmr, &transpose) );
+
         assert((*pseparation)->type == CMR_SEPA_TYPE_TWO);
       }
 
@@ -1868,8 +1872,12 @@ CMR_ERROR decomposeTernarySeriesParallel(
 
         if (pseparation && *pseparation)
         {
-          CMR_CALL( CMRsepaFindBinaryRepresentativesSubmatrix(cmr, *pseparation, matrix, NULL, reducedSubmatrix, NULL,
-            &violatorSubmatrix) );
+          CMR_CHRMAT* transpose = NULL;
+          CMR_CALL( CMRchrmatTranspose(cmr, matrix, &transpose) );
+
+          CMR_CALL( CMRsepaFindBinaryRepresentativesSubmatrix(cmr, *pseparation, matrix, transpose, reducedSubmatrix,
+            NULL, &violatorSubmatrix) );
+          CMR_CALL( CMRchrmatFree(cmr, &transpose) );
 
           if (violatorSubmatrix)
           {
