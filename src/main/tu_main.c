@@ -129,7 +129,7 @@ int printUsage(const char* program)
   fputs("  --time-limit LIMIT   Allow at most LIMIT seconds for the computation.\n", stderr);
   fputs("  --no-direct-graphic  Check only 3-connected matrices for regularity.\n", stderr);
   fputs("  --no-series-parallel Do not allow series-parallel operations in decomposition tree.\n\n", stderr);
-  fputs("  --algo ALGO          Use algorithm from {decomposition, submatrix, partition}; default: decomposition.\n\n",
+  fputs("  --algo ALGO          Use algorithm from {decomposition, eulerian, partition}; default: decomposition.\n\n",
     stderr);
   fputs("If IN-MAT is `-' then the matrix is read from stdin.\n", stderr);
   fputs("If OUT-DEC or NON-SUB is `-' then the decomposition tree (resp. the submatrix) is written to stdout.\n",
@@ -192,8 +192,8 @@ int main(int argc, char** argv)
     {
       if (!strcmp(argv[a+1], "decomposition"))
         algorithm = CMR_TU_ALGORITHM_DECOMPOSITION;
-      else if (!strcmp(argv[a+1], "submatrix"))
-        algorithm = CMR_TU_ALGORITHM_SUBMATRIX;
+      else if (!strcmp(argv[a+1], "eulerian"))
+        algorithm = CMR_TU_ALGORITHM_EULERIAN;
       else if (!strcmp(argv[a+1], "partition"))
         algorithm = CMR_TU_ALGORITHM_PARTITION;
       else

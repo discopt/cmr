@@ -9,6 +9,8 @@
 #include <cmr/graphic.h>
 #include <cmr/linear_algebra.h>
 
+#if defined(MASSIVE_RANDOM)
+
 static
 CMR_ERROR checkDecompositionTreePartition(
   CMR* cmr,             /**< \ref CMR environment. */
@@ -47,6 +49,7 @@ CMR_ERROR checkDecompositionTreePartition(
   return CMR_OKAY;
 }
 
+#endif /* MASSIVE_RANDOM */
 
 TEST(TU, OneSum)
 {
@@ -1074,7 +1077,7 @@ TEST(TU, FanoDual)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
   
-TEST(TU, SubmatrixAlgorithm)
+TEST(TU, EulerianAlgorithm)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -1111,7 +1114,7 @@ TEST(TU, SubmatrixAlgorithm)
     CMR_MATROID_DEC* dec = NULL;
     CMR_TU_PARAMS params;
     ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
-    params.algorithm = CMR_TU_ALGORITHM_SUBMATRIX;
+    params.algorithm = CMR_TU_ALGORITHM_EULERIAN;
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
     ASSERT_EQ( dec, (CMR_MATROID_DEC*) NULL );
 
@@ -1124,21 +1127,19 @@ TEST(TU, SubmatrixAlgorithm)
 
   {
     CMR_CHRMAT* matrix = NULL;
-    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "14 14 "
-      "1 1 1 0 1 0 1 0  1 1 1 1 1 1 "
-      "1 0 1 0 1 0 1 0  1 1 1 1 1 0 "
-      "0 1 1 0 0 0 0 0  0 0 0 0 0 0 "
-      "0 1 1 1 0 0 0 0  0 0 0 0 0 0 "
-      "0 1 1 1 1 0 0 0  0 0 0 0 0 0 "
-      "0 1 1 1 1 1 0 0  0 0 0 0 0 0 "
-      "0 1 1 1 1 1 1 0  0 0 0 0 0 0 "
-      "0 1 1 1 1 1 1 1  0 0 0 0 0 0 "
-      "0 1 1 1 1 1 1 1  1 0 0 0 0 0 "
-      "0 0 0 0 0 0 0 0  1 1 0 0 0 0 "
-      "0 0 0 0 0 0 0 0  0 1 1 0 0 0 "
-      "0 0 0 0 0 0 0 0  0 0 1 1 0 0 "
-      "0 0 0 0 0 0 0 0  0 0 0 1 1 0 "
-      "0 0 0 0 0 0 0 0  0 0 0 0 1 1 "
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "12 12 "
+      "1 1 1 0 1 0 1 1 1 1 1 1 "
+      "1 0 1 0 1 0 1 1 1 1 1 0 "
+      "0 1 1 0 0 0 0 0 0 0 0 0 "
+      "0 1 1 1 0 0 0 0 0 0 0 0 "
+      "0 1 1 1 1 0 0 0 0 0 0 0 "
+      "0 1 1 1 1 1 0 0 0 0 0 0 "
+      "0 1 1 1 1 1 1 0 0 0 0 0 "
+      "0 0 0 0 0 0 1 1 0 0 0 0 "
+      "0 0 0 0 0 0 0 1 1 0 0 0 "
+      "0 0 0 0 0 0 0 0 1 1 0 0 "
+      "0 0 0 0 0 0 0 0 0 1 1 0 "
+      "0 0 0 0 0 0 0 0 0 0 1 1 "
     ) );
 
     CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
@@ -1146,7 +1147,7 @@ TEST(TU, SubmatrixAlgorithm)
     bool isTU;
     CMR_TU_PARAMS params;
     ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
-    params.algorithm = CMR_TU_ALGORITHM_SUBMATRIX;
+    params.algorithm = CMR_TU_ALGORITHM_EULERIAN;
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, NULL, NULL, &params, NULL, DBL_MAX) );
     ASSERT_FALSE( isTU );
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );

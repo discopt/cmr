@@ -17,11 +17,13 @@ determines whether the matrix given in file `IN-MAT` is totally unimodular.
   - `-i FORMAT`  Format of file `IN-MAT`, among `dense` for \ref dense-matrix and `sparse` for \ref sparse-matrix; default: dense.
   - `-D OUT-DEC` Write a decomposition tree of the underlying regular matroid to file `OUT-DEC`; default: skip computation.
   - `-N NON-SUB` Write a minimal non-totally-unimodular submatrix to file `NON-SUB`; default: skip computation.
-  - `-s`         Print statistics about the computation to stderr.
 
 **Advanced options:**
+  - `--stats`              Print statistics about the computation to stderr.
+  - `--time-limit LIMIT`   Allow at most LIMIT seconds for the computation.
   - `--no-direct-graphic`  Check only 3-connected matrices for regularity.
   - `--no-series-parallel` Do not allow series-parallel operations in decomposition tree.
+  - `--algo ALGO`          Use algorithm from {decomposition, submatrix, partition}; default: decomposition.
 
 If `IN-MAT` is `-` then the matrix is read from stdin.
 If `OUT-DEC` or `NON-SUB` is `-` then the decomposition tree (resp. the submatrix) is written to stdout.
@@ -54,6 +56,8 @@ In order to repeat experiments described in the paper above, the function can be
 
 The corresponding function in the library is
 
-  - CMRtestTotalUnimodularity() tests a matrix for being totally unimodular.
+  - CMRtuTest() tests a matrix for being totally unimodular.
 
 and is defined in \ref tu.h.
+Its parameters also allow to choose one of the enumeration algorithms with exponential running time instead of the decomposition algorithm.
+

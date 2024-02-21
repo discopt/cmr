@@ -21,7 +21,7 @@ extern "C" {
 typedef enum
 {
   CMR_TU_ALGORITHM_DECOMPOSITION = 0, /**< \brief Algorithm based on Seymour's decomposition of regular matroids. */
-  CMR_TU_ALGORITHM_SUBMATRIX = 1,     /**< \brief Enumeration algorithm based on submatrices. */
+  CMR_TU_ALGORITHM_EULERIAN = 1,      /**< \brief Enumeration algorithm based on Eulerian submatrices. */
   CMR_TU_ALGORITHM_PARTITION = 2      /**< \brief Enumeration algorithm based on criterion of Ghouila-Houri. */
 } CMR_TU_ALGORITHM;
 
@@ -47,7 +47,19 @@ CMR_ERROR CMRtuParamsInit(
  * \brief Statistics for recognition algorithm for [totally unimodular](\ref tu) matrices.
  */
 
-typedef CMR_REGULAR_STATS CMR_TU_STATS;
+typedef struct
+{
+  CMR_REGULAR_STATS decomposition;    /**< Statistics for regular matroid decomposition algorithm. */
+
+  uint32_t enumerationRowSubsets;     /**< Number of considered row subsets in enumeration algorithm. */
+  uint32_t enumerationColumnSubsets;  /**< Number of considered column subsets in enumeration algorithm. */
+  double enumerationTime;             /**< Total time of enumeration algorithm. */
+
+  uint32_t partitionRowSubsets;       /**< Number of considered row subsets in partition algorithm. */
+  uint32_t partitionColumnSubsets;    /**< Number of considered column subsets in partition algorithm. */
+  double partitionTime;               /**< Total time of partition algorithm. */
+
+} CMR_TU_STATS;
 
 /**
  * \brief Initializes all statistics for recognition algorithm for [totally unimodular](\ref tu) matrices.
