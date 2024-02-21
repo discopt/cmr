@@ -8,6 +8,7 @@ set(CMAKE_C_STANDARD 99)
 option(SHARED "Build shared libraries" ON)
 set(BUILD_SHARED_LIBS ${SHARED})
 message(STATUS "Build shared libraries: " ${SHARED})
+option(GMP "Compile with GMP" ON)
 option(GENERATORS "Compile matrix generators" OFF)
 option(TESTS "Compile tests" ON)
 message(STATUS "Build tests: " ${TESTS})
@@ -33,8 +34,12 @@ else()
   add_compile_options(-Wall -Wextra -Wunused)
 endif()
 
-find_package(GMP)
-set(CMR_WITH_GMP ${GMP_FOUND})
+if(GMP)
+  find_package(GMP)
+  set(CMR_WITH_GMP ${GMP_FOUND})
+else()
+  set(CMR_WITH_GMP FALSE)
+endif()
 
 # Target for the CMR library.
 add_library(cmr
