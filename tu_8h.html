@@ -78,7 +78,6 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
-<a href="#typedef-members">Typedefs</a> &#124;
 <a href="#enum-members">Enumerations</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
@@ -99,17 +98,14 @@ $(function() {
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structCMR__TU__PARAMS.html">CMR_TU_PARAMS</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
-Typedefs</h2></td></tr>
-<tr class="memitem:a68bf2e4b8c97dcf451fc3db7d9c3a64a"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="structCMR__REGULAR__STATS.html">CMR_REGULAR_STATS</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tu_8h.html#a68bf2e4b8c97dcf451fc3db7d9c3a64a">CMR_TU_STATS</a></td></tr>
-<tr class="memdesc:a68bf2e4b8c97dcf451fc3db7d9c3a64a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Statistics for recognition algorithm for <a class="el" href="tu.html">totally unimodular</a> matrices.  <a href="tu_8h.html#a68bf2e4b8c97dcf451fc3db7d9c3a64a">More...</a><br /></td></tr>
-<tr class="separator:a68bf2e4b8c97dcf451fc3db7d9c3a64a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structCMR__TU__STATS.html">CMR_TU_STATS</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Statistics for recognition algorithm for <a class="el" href="tu.html">totally unimodular</a> matrices.  <a href="structCMR__TU__STATS.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
 <tr class="memitem:a699a1093f03178ea66b72cb38443f700"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tu_8h.html#a699a1093f03178ea66b72cb38443f700">CMR_TU_ALGORITHM</a> { <a class="el" href="tu_8h.html#a699a1093f03178ea66b72cb38443f700af9bbe5517a2fb244c83a45e702e9f15e">CMR_TU_ALGORITHM_DECOMPOSITION</a> = 0
-, <a class="el" href="tu_8h.html#a699a1093f03178ea66b72cb38443f700aba2233c627d264c8e0edba9ef4337a02">CMR_TU_ALGORITHM_SUBMATRIX</a> = 1
+, <a class="el" href="tu_8h.html#a699a1093f03178ea66b72cb38443f700a3b0fbec61058325fedc3487b8ebf2871">CMR_TU_ALGORITHM_EULERIAN</a> = 1
 , <a class="el" href="tu_8h.html#a699a1093f03178ea66b72cb38443f700a033e747bee171bc43440106442cd1ba3">CMR_TU_ALGORITHM_PARTITION</a> = 2
  }</td></tr>
 <tr class="separator:a699a1093f03178ea66b72cb38443f700"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -119,37 +115,20 @@ Functions</h2></td></tr>
 <tr class="memitem:a096c54b490e8be7d33f942a325f0b781"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tu_8h.html#a096c54b490e8be7d33f942a325f0b781">CMRtuParamsInit</a> (<a class="el" href="structCMR__TU__PARAMS.html">CMR_TU_PARAMS</a> *params)</td></tr>
 <tr class="memdesc:a096c54b490e8be7d33f942a325f0b781"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the default parameters for recognition of <a class="el" href="tu.html">totally unimodular</a> matrices.  <a href="tu_8h.html#a096c54b490e8be7d33f942a325f0b781">More...</a><br /></td></tr>
 <tr class="separator:a096c54b490e8be7d33f942a325f0b781"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6b8b2f832aa1d0e1dbfd58a38280df90"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tu_8h.html#a6b8b2f832aa1d0e1dbfd58a38280df90">CMRtuStatsInit</a> (<a class="el" href="tu_8h.html#a68bf2e4b8c97dcf451fc3db7d9c3a64a">CMR_TU_STATS</a> *stats)</td></tr>
+<tr class="memitem:a6b8b2f832aa1d0e1dbfd58a38280df90"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tu_8h.html#a6b8b2f832aa1d0e1dbfd58a38280df90">CMRtuStatsInit</a> (<a class="el" href="structCMR__TU__STATS.html">CMR_TU_STATS</a> *stats)</td></tr>
 <tr class="memdesc:a6b8b2f832aa1d0e1dbfd58a38280df90"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes all statistics for recognition algorithm for <a class="el" href="tu.html">totally unimodular</a> matrices.  <a href="tu_8h.html#a6b8b2f832aa1d0e1dbfd58a38280df90">More...</a><br /></td></tr>
 <tr class="separator:a6b8b2f832aa1d0e1dbfd58a38280df90"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a875e4b3746561c6d36ca6034676b31be"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tu_8h.html#a875e4b3746561c6d36ca6034676b31be">CMRtuStatsPrint</a> (FILE *stream, <a class="el" href="tu_8h.html#a68bf2e4b8c97dcf451fc3db7d9c3a64a">CMR_TU_STATS</a> *stats, const char *prefix)</td></tr>
+<tr class="memitem:a875e4b3746561c6d36ca6034676b31be"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tu_8h.html#a875e4b3746561c6d36ca6034676b31be">CMRtuStatsPrint</a> (FILE *stream, <a class="el" href="structCMR__TU__STATS.html">CMR_TU_STATS</a> *stats, const char *prefix)</td></tr>
 <tr class="memdesc:a875e4b3746561c6d36ca6034676b31be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints statistics for recognition algorithm for <a class="el" href="tu.html">totally unimodular</a> matrices.  <a href="tu_8h.html#a875e4b3746561c6d36ca6034676b31be">More...</a><br /></td></tr>
 <tr class="separator:a875e4b3746561c6d36ca6034676b31be"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab8b767d0680291efd99703b84dc64537"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tu_8h.html#ab8b767d0680291efd99703b84dc64537">CMRtuTest</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, bool *pisTotallyUnimodular, <a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> **pdec, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **psubmatrix, <a class="el" href="structCMR__TU__PARAMS.html">CMR_TU_PARAMS</a> *params, <a class="el" href="tu_8h.html#a68bf2e4b8c97dcf451fc3db7d9c3a64a">CMR_TU_STATS</a> *stats, double timeLimit)</td></tr>
+<tr class="memitem:ab8b767d0680291efd99703b84dc64537"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tu_8h.html#ab8b767d0680291efd99703b84dc64537">CMRtuTest</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, bool *pisTotallyUnimodular, <a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> **pdec, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **psubmatrix, <a class="el" href="structCMR__TU__PARAMS.html">CMR_TU_PARAMS</a> *params, <a class="el" href="structCMR__TU__STATS.html">CMR_TU_STATS</a> *stats, double timeLimit)</td></tr>
 <tr class="memdesc:ab8b767d0680291efd99703b84dc64537"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tests a matrix \( M \) for being <a class="el" href="tu.html">totally unimodular</a>.  <a href="tu_8h.html#ab8b767d0680291efd99703b84dc64537">More...</a><br /></td></tr>
 <tr class="separator:ab8b767d0680291efd99703b84dc64537"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Recognition of <a class="el" href="tu.html">totally unimodular matrices</a>. </p>
 <dl class="section author"><dt>Author</dt><dd>Matthias Walter and Klaus Truemper </dd></dl>
-</div><h2 class="groupheader">Typedef Documentation</h2>
-<a id="a68bf2e4b8c97dcf451fc3db7d9c3a64a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a68bf2e4b8c97dcf451fc3db7d9c3a64a">&#9670;&nbsp;</a></span>CMR_TU_STATS</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef <a class="el" href="structCMR__REGULAR__STATS.html">CMR_REGULAR_STATS</a> <a class="el" href="tu_8h.html#a68bf2e4b8c97dcf451fc3db7d9c3a64a">CMR_TU_STATS</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Statistics for recognition algorithm for <a class="el" href="tu.html">totally unimodular</a> matrices. </p>
-
-</div>
-</div>
-<h2 class="groupheader">Enumeration Type Documentation</h2>
+</div><h2 class="groupheader">Enumeration Type Documentation</h2>
 <a id="a699a1093f03178ea66b72cb38443f700"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a699a1093f03178ea66b72cb38443f700">&#9670;&nbsp;</a></span>CMR_TU_ALGORITHM</h2>
 
@@ -164,7 +143,7 @@ Functions</h2></td></tr>
 <table class="fieldtable">
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a699a1093f03178ea66b72cb38443f700af9bbe5517a2fb244c83a45e702e9f15e"></a>CMR_TU_ALGORITHM_DECOMPOSITION&#160;</td><td class="fielddoc"><p>Algorithm based on Seymour's decomposition of regular matroids. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="a699a1093f03178ea66b72cb38443f700aba2233c627d264c8e0edba9ef4337a02"></a>CMR_TU_ALGORITHM_SUBMATRIX&#160;</td><td class="fielddoc"><p>Enumeration algorithm based on submatrices. </p>
+<tr><td class="fieldname"><a id="a699a1093f03178ea66b72cb38443f700a3b0fbec61058325fedc3487b8ebf2871"></a>CMR_TU_ALGORITHM_EULERIAN&#160;</td><td class="fielddoc"><p>Enumeration algorithm based on Eulerian submatrices. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="a699a1093f03178ea66b72cb38443f700a033e747bee171bc43440106442cd1ba3"></a>CMR_TU_ALGORITHM_PARTITION&#160;</td><td class="fielddoc"><p>Enumeration algorithm based on criterion of Ghouila-Houri. </p>
 </td></tr>
@@ -209,7 +188,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRtuStatsInit </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="tu_8h.html#a68bf2e4b8c97dcf451fc3db7d9c3a64a">CMR_TU_STATS</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="structCMR__TU__STATS.html">CMR_TU_STATS</a> *&#160;</td>
           <td class="paramname"><em>stats</em></td><td>)</td>
           <td></td>
         </tr>
@@ -241,7 +220,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="tu_8h.html#a68bf2e4b8c97dcf451fc3db7d9c3a64a">CMR_TU_STATS</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="structCMR__TU__STATS.html">CMR_TU_STATS</a> *&#160;</td>
           <td class="paramname"><em>stats</em>, </td>
         </tr>
         <tr>
@@ -315,7 +294,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="tu_8h.html#a68bf2e4b8c97dcf451fc3db7d9c3a64a">CMR_TU_STATS</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="structCMR__TU__STATS.html">CMR_TU_STATS</a> *&#160;</td>
           <td class="paramname"><em>stats</em>, </td>
         </tr>
         <tr>

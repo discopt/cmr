@@ -82,7 +82,7 @@ $(function() {
 <li>Test if the input matrix is ternary, i.e, it has only entries in \( \{-1,0,+1\} \).</li>
 <li>Test if the input matrix is binary, i.e, it has only entries in \( \{0,+1\} \).</li>
 </ul>
-<h1><a class="anchor" id="autotoc_md27"></a>
+<h1><a class="anchor" id="autotoc_md30"></a>
 Recognizing Binary and Ternary Matrices</h1>
 <p>The command </p><pre class="fragment">cmr-k-ary IN-MAT [OPTION...]
 </pre><p> determines whether the matrix given in file <code>IN-MAT</code> is integer (resp. binary or ternary).</p>
@@ -94,7 +94,7 @@ Recognizing Binary and Ternary Matrices</h1>
 <li><code>-e EPSILON</code> Allows rounding of numbers up to tolerance <code>EPSILON</code>; default: \( 10^{-9} \).</li>
 </ul>
 <p>If <code>IN-MAT</code> is <code>-</code> then the matrix is read from stdin.</p>
-<h1><a class="anchor" id="autotoc_md28"></a>
+<h1><a class="anchor" id="autotoc_md31"></a>
 Finding Large Binary or Ternary Submatrices</h1>
 <p>The command </p><pre class="fragment">cmr-k-ary IN-MAT -R OUT-SUB [OPTION...]
 </pre><p> finds a large binary (resp. ternary) submatrix of the matrix given in file <code>IN-MAT</code>.</p>
@@ -105,7 +105,7 @@ Finding Large Binary or Ternary Submatrices</h1>
 <li><code>-e EPSILON</code> Allows rounding of numbers up to tolerance <code>EPSILON</code>; default: \( 10^{-9} \).</li>
 </ul>
 <p>If <code>IN-MAT</code> is <code>-</code> then the matrix is read from stdin. If <code>OUT-SUB</code> is <code>-</code> then the submatrix is written to stdout.</p>
-<h1><a class="anchor" id="autotoc_md29"></a>
+<h1><a class="anchor" id="autotoc_md32"></a>
 Algorithm</h1>
 <p>The implemented algorithm successively removes a row or a column with the maximum number of forbidden entries. </p>
 </div></div><!-- contents -->

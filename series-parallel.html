@@ -90,7 +90,7 @@ $(function() {
 <li>a \( k \)-by- \( k \)-submatrix \( M_k := \begin{pmatrix} 1 &amp; 0 &amp; 0 &amp; 0 &amp; \dotsb &amp; 0 &amp; 1 \\ 1 &amp; 1 &amp; 0 &amp; 0 &amp; \dotsb &amp; 0 &amp; 0 \\ 0 &amp; 1 &amp; 1 &amp; 0 &amp; \dotsb &amp; 0 &amp; 0 \\ 0 &amp; 0 &amp; 1 &amp; 1 &amp; \ddots &amp; 0 &amp; 0 \\ \vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \ddots &amp; \vdots &amp; \vdots \\ 0 &amp; 0 &amp; 0 &amp; 0 &amp; \dotsb &amp; 1 &amp; 0 \\ 0 &amp; 0 &amp; 0 &amp; 0 &amp; \dotsb &amp; 1 &amp; 1 \end{pmatrix} \) for \( k \geq 3 \).</li>
 </ul>
 <p>The latter two matrices are called <b>wheel matrices</b> since their represented matroids are the graphic matroids of wheel graphs.</p>
-<h1><a class="anchor" id="autotoc_md56"></a>
+<h1><a class="anchor" id="autotoc_md59"></a>
 Recognizing Series-Parallel Matrices</h1>
 <p>The command </p><pre class="fragment">cmr-series-parallel IN-MAT [OPTION...]
 </pre><p> determines whether the matrix given in file <code>IN-MAT</code> is series-parallel. If this is not the case, then a maximal number of SP-reductions is carried out, leading to the <b>reduced</b> matrix. Moreover, one can ask for one of the minimal non-series-parallel submatrices above.</p>
@@ -103,10 +103,10 @@ Recognizing Series-Parallel Matrices</h1>
 <li><code>-s</code> Print statistics about the computation to stderr.</li>
 </ul>
 <p>If <code>IN-MAT</code> is <code>-</code> then the matrix is read from stdin. If <code>OUT-SP</code>, <code>OUT-REDUCED</code> or <code>NON-SUB</code> is <code>-</code> then the list of reductions (resp. the submatrix) is written to stdout.</p>
-<h1><a class="anchor" id="autotoc_md57"></a>
+<h1><a class="anchor" id="autotoc_md60"></a>
 Algorithm</h1>
 <p>The implemented algorithm is not yet published. For a matrix \( A \in \{0,1\}^{m \times n}\) with \( k \) (sorted) nonzeros it runs in \( \mathcal{O}( m + n + k ) \) time assuming no hashtable collisions.</p>
-<h1><a class="anchor" id="autotoc_md58"></a>
+<h1><a class="anchor" id="autotoc_md61"></a>
 C Interface</h1>
 <p>The corresponding functions in the library are</p>
 <ul>
