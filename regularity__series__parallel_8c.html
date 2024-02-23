@@ -90,13 +90,13 @@ $(function() {
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:abf1bfe5c4f259471de862ee20ae9791f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="regularity__series__parallel_8c.html#abf1bfe5c4f259471de862ee20ae9791f">CMRregularityDecomposeSeriesParallel</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structDecompositionTask.html">DecompositionTask</a> *task, <a class="el" href="structDecompositionTask.html">DecompositionTask</a> **punprocessed)</td></tr>
-<tr class="memdesc:abf1bfe5c4f259471de862ee20ae9791f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Splits off series-parallel elements from the matrix of the decomposition node.  <a href="regularity__series__parallel_8c.html#abf1bfe5c4f259471de862ee20ae9791f">More...</a><br /></td></tr>
-<tr class="separator:abf1bfe5c4f259471de862ee20ae9791f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc0cbf8380ff5a4b08d8095704ef1bad"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="regularity__series__parallel_8c.html#afc0cbf8380ff5a4b08d8095704ef1bad">CMRregularityDecomposeSeriesParallel</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structDecompositionTask.html">DecompositionTask</a> *task, <a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> *queue)</td></tr>
+<tr class="memdesc:afc0cbf8380ff5a4b08d8095704ef1bad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Splits off series-parallel elements from the matrix of the decomposition node.  <a href="regularity__series__parallel_8c.html#afc0cbf8380ff5a4b08d8095704ef1bad">More...</a><br /></td></tr>
+<tr class="separator:afc0cbf8380ff5a4b08d8095704ef1bad"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="abf1bfe5c4f259471de862ee20ae9791f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abf1bfe5c4f259471de862ee20ae9791f">&#9670;&nbsp;</a></span>CMRregularityDecomposeSeriesParallel()</h2>
+<a id="afc0cbf8380ff5a4b08d8095704ef1bad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc0cbf8380ff5a4b08d8095704ef1bad">&#9670;&nbsp;</a></span>CMRregularityDecomposeSeriesParallel()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -116,8 +116,8 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structDecompositionTask.html">DecompositionTask</a> **&#160;</td>
-          <td class="paramname"><em>punprocessed</em>&#160;</td>
+          <td class="paramtype"><a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> *&#160;</td>
+          <td class="paramname"><em>queue</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -134,7 +134,7 @@ Functions</h2></td></tr>
   <table class="params">
     <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
     <tr><td class="paramname">task</td><td>Task to be processed; already removed from the list of unprocessed tasks. </td></tr>
-    <tr><td class="paramname">punprocessed</td><td>Pointer to head of list of unprocessed tasks. </td></tr>
+    <tr><td class="paramname">queue</td><td>Queue of unprocessed nodes. </td></tr>
   </table>
   </dd>
 </dl>

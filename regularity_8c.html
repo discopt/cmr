@@ -77,6 +77,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#define-members">Macros</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">regularity.c File Reference</div>  </div>
@@ -86,20 +87,220 @@ $(function() {
 <code>#include &quot;<a class="el" href="regularity__internal_8h_source.html">regularity_internal.h</a>&quot;</code><br />
 <code>#include &lt;time.h&gt;</code><br />
 </div><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
+Macros</h2></td></tr>
+<tr class="memitem:aaf4503422b8ef76e6591c97a9b3499d0"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="regularity_8c.html#aaf4503422b8ef76e6591c97a9b3499d0">CMR_DEBUG</a>&#160;&#160;&#160;/** Uncomment to debug this file. */</td></tr>
+<tr class="separator:aaf4503422b8ef76e6591c97a9b3499d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:ad9ea4370aa383c6c2f9e004e19518a5e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="regularity_8c.html#ad9ea4370aa383c6c2f9e004e19518a5e">CMRregularityTaskCreateRoot</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec, <a class="el" href="structDecompositionTask.html">DecompositionTask</a> **ptask, <a class="el" href="structCMR__REGULAR__PARAMS.html">CMR_REGULAR_PARAMS</a> *params, <a class="el" href="structCMR__REGULAR__STATS.html">CMR_REGULAR_STATS</a> *stats, clock_t startClock, double timeLimit)</td></tr>
+<tr class="memdesc:ad9ea4370aa383c6c2f9e004e19518a5e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a decomposition task for the root of the decomposition.  <a href="regularity_8c.html#ad9ea4370aa383c6c2f9e004e19518a5e">More...</a><br /></td></tr>
 <tr class="separator:ad9ea4370aa383c6c2f9e004e19518a5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae59201633f2dbbbcb5b2b48784f5133f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="regularity_8c.html#ae59201633f2dbbbcb5b2b48784f5133f">CMRregularityTaskFree</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structDecompositionTask.html">DecompositionTask</a> **ptask)</td></tr>
+<tr class="memdesc:ae59201633f2dbbbcb5b2b48784f5133f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Frees a decomposition task.  <a href="regularity_8c.html#ae59201633f2dbbbcb5b2b48784f5133f">More...</a><br /></td></tr>
 <tr class="separator:ae59201633f2dbbbcb5b2b48784f5133f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a750433d73d42de1d25b2f23275f9f091"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="regularity_8c.html#a750433d73d42de1d25b2f23275f9f091">CMRregularityTaskRun</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structDecompositionTask.html">DecompositionTask</a> *task, <a class="el" href="structDecompositionTask.html">DecompositionTask</a> **punprocessed)</td></tr>
-<tr class="memdesc:a750433d73d42de1d25b2f23275f9f091"><td class="mdescLeft">&#160;</td><td class="mdescRight">Runs a task for processing the associated decomposition node.  <a href="regularity_8c.html#a750433d73d42de1d25b2f23275f9f091">More...</a><br /></td></tr>
-<tr class="separator:a750433d73d42de1d25b2f23275f9f091"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c6fec41431573de8983fb06608cf887"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="regularity_8c.html#a9c6fec41431573de8983fb06608cf887">CMRregularityQueueCreate</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> **pqueue)</td></tr>
+<tr class="memdesc:a9c6fec41431573de8983fb06608cf887"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a decomposition queue.  <a href="regularity_8c.html#a9c6fec41431573de8983fb06608cf887">More...</a><br /></td></tr>
+<tr class="separator:a9c6fec41431573de8983fb06608cf887"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa591de2f5c7b052e7550fdb0c3e97e96"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="regularity_8c.html#aa591de2f5c7b052e7550fdb0c3e97e96">CMRregularityQueueFree</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> **pqueue)</td></tr>
+<tr class="memdesc:aa591de2f5c7b052e7550fdb0c3e97e96"><td class="mdescLeft">&#160;</td><td class="mdescRight">Frees the decomposition queue.  <a href="regularity_8c.html#aa591de2f5c7b052e7550fdb0c3e97e96">More...</a><br /></td></tr>
+<tr class="separator:aa591de2f5c7b052e7550fdb0c3e97e96"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade1d1ba9548c4cae04782ee1ff59e0ef"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="regularity_8c.html#ade1d1ba9548c4cae04782ee1ff59e0ef">CMRregularityQueueEmpty</a> (<a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> *queue)</td></tr>
+<tr class="memdesc:ade1d1ba9548c4cae04782ee1ff59e0ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns whether a queue is empty.  <a href="regularity_8c.html#ade1d1ba9548c4cae04782ee1ff59e0ef">More...</a><br /></td></tr>
+<tr class="separator:ade1d1ba9548c4cae04782ee1ff59e0ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8424afed0c6938c4beee2529c9c3f710"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structDecompositionTask.html">DecompositionTask</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="regularity_8c.html#a8424afed0c6938c4beee2529c9c3f710">CMRregularityQueueRemove</a> (<a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> *queue)</td></tr>
+<tr class="memdesc:a8424afed0c6938c4beee2529c9c3f710"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes a task from a decomposition queue.  <a href="regularity_8c.html#a8424afed0c6938c4beee2529c9c3f710">More...</a><br /></td></tr>
+<tr class="separator:a8424afed0c6938c4beee2529c9c3f710"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6494e9e5e7fe62af26f34c1df368bc3e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="regularity_8c.html#a6494e9e5e7fe62af26f34c1df368bc3e">CMRregularityQueueAdd</a> (<a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> *queue, <a class="el" href="structDecompositionTask.html">DecompositionTask</a> *task)</td></tr>
+<tr class="memdesc:a6494e9e5e7fe62af26f34c1df368bc3e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a task to a decomposition queue.  <a href="regularity_8c.html#a6494e9e5e7fe62af26f34c1df368bc3e">More...</a><br /></td></tr>
+<tr class="separator:a6494e9e5e7fe62af26f34c1df368bc3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a95390568d3ce1a539749970030501127"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="regularity_8c.html#a95390568d3ce1a539749970030501127">CMRregularityTaskRun</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structDecompositionTask.html">DecompositionTask</a> *task, <a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> *queue)</td></tr>
+<tr class="memdesc:a95390568d3ce1a539749970030501127"><td class="mdescLeft">&#160;</td><td class="mdescRight">Runs a task for processing the associated decomposition node.  <a href="regularity_8c.html#a95390568d3ce1a539749970030501127">More...</a><br /></td></tr>
+<tr class="separator:a95390568d3ce1a539749970030501127"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a11814f004c625f0763ecf8dbde79378e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="regularity_8c.html#a11814f004c625f0763ecf8dbde79378e">CMRregularityTest</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, bool ternary, bool *pisRegular, <a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> **pdec, <a class="el" href="structCMR__MINOR.html">CMR_MINOR</a> **pminor, <a class="el" href="structCMR__REGULAR__PARAMS.html">CMR_REGULAR_PARAMS</a> *params, <a class="el" href="structCMR__REGULAR__STATS.html">CMR_REGULAR_STATS</a> *stats, double timeLimit)</td></tr>
 <tr class="memdesc:a11814f004c625f0763ecf8dbde79378e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tests ternary or binary linear matroid for regularity.  <a href="regularity_8c.html#a11814f004c625f0763ecf8dbde79378e">More...</a><br /></td></tr>
 <tr class="separator:a11814f004c625f0763ecf8dbde79378e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Macro Definition Documentation</h2>
+<a id="aaf4503422b8ef76e6591c97a9b3499d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf4503422b8ef76e6591c97a9b3499d0">&#9670;&nbsp;</a></span>CMR_DEBUG</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define CMR_DEBUG&#160;&#160;&#160;/** Uncomment to debug this file. */</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <h2 class="groupheader">Function Documentation</h2>
+<a id="a6494e9e5e7fe62af26f34c1df368bc3e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6494e9e5e7fe62af26f34c1df368bc3e">&#9670;&nbsp;</a></span>CMRregularityQueueAdd()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void CMRregularityQueueAdd </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> *&#160;</td>
+          <td class="paramname"><em>queue</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structDecompositionTask.html">DecompositionTask</a> *&#160;</td>
+          <td class="paramname"><em>task</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Adds a task to a decomposition queue. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">queue</td><td>Queue. </td></tr>
+    <tr><td class="paramname">task</td><td>Task. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a9c6fec41431573de8983fb06608cf887"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c6fec41431573de8983fb06608cf887">&#9670;&nbsp;</a></span>CMRregularityQueueCreate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRregularityQueueCreate </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> **&#160;</td>
+          <td class="paramname"><em>pqueue</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Initializes a decomposition queue. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">pqueue</td><td>Pointer for storing the queue. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ade1d1ba9548c4cae04782ee1ff59e0ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade1d1ba9548c4cae04782ee1ff59e0ef">&#9670;&nbsp;</a></span>CMRregularityQueueEmpty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool CMRregularityQueueEmpty </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> *&#160;</td>
+          <td class="paramname"><em>queue</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns whether a queue is empty. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">queue</td><td>Queue. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="aa591de2f5c7b052e7550fdb0c3e97e96"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa591de2f5c7b052e7550fdb0c3e97e96">&#9670;&nbsp;</a></span>CMRregularityQueueFree()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRregularityQueueFree </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> **&#160;</td>
+          <td class="paramname"><em>pqueue</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Frees the decomposition queue. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">pqueue</td><td>Pointer to queue. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a8424afed0c6938c4beee2529c9c3f710"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8424afed0c6938c4beee2529c9c3f710">&#9670;&nbsp;</a></span>CMRregularityQueueRemove()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structDecompositionTask.html">DecompositionTask</a>* CMRregularityQueueRemove </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> *&#160;</td>
+          <td class="paramname"><em>queue</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Removes a task from a decomposition queue. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">queue</td><td>Queue. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="ad9ea4370aa383c6c2f9e004e19518a5e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad9ea4370aa383c6c2f9e004e19518a5e">&#9670;&nbsp;</a></span>CMRregularityTaskCreateRoot()</h2>
 
@@ -155,6 +356,8 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Creates a decomposition task for the root of the decomposition. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
@@ -195,6 +398,8 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Frees a decomposition task. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
@@ -205,8 +410,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a750433d73d42de1d25b2f23275f9f091"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a750433d73d42de1d25b2f23275f9f091">&#9670;&nbsp;</a></span>CMRregularityTaskRun()</h2>
+<a id="a95390568d3ce1a539749970030501127"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a95390568d3ce1a539749970030501127">&#9670;&nbsp;</a></span>CMRregularityTaskRun()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -229,8 +434,8 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structDecompositionTask.html">DecompositionTask</a> **&#160;</td>
-          <td class="paramname"><em>punprocessed</em>&#160;</td>
+          <td class="paramtype"><a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> *&#160;</td>
+          <td class="paramname"><em>queue</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -250,7 +455,7 @@ Functions</h2></td></tr>
   <table class="params">
     <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
     <tr><td class="paramname">task</td><td>Task to be processed; already removed from the list of unprocessed tasks. </td></tr>
-    <tr><td class="paramname">punprocessed</td><td>Pointer to head of list of unprocessed tasks. </td></tr>
+    <tr><td class="paramname">queue</td><td>Queue of unprocessed tasks. </td></tr>
   </table>
   </dd>
 </dl>
