@@ -7,15 +7,17 @@
 
 typedef struct DecompositionTask
 {
-  CMR_MATROID_DEC* dec;                     /**< \brief Decomposition node that shall be processed. */
-
-  struct DecompositionTask* next;           /**< \brief Next task in queue. */
-
-  CMR_REGULAR_PARAMS* params;               /**< Parameters for the computation. */
-  CMR_REGULAR_STATS* stats;                 /**< \brief Statistics for the computation (may be \c NULL). */
-  clock_t startClock;                       /**< \brief Clock for the start time. */
-  double timeLimit;                         /**< \brief Time limit to impose. */
+  CMR_MATROID_DEC* dec;           /**< \brief Decomposition node that shall be processed. */
+  struct DecompositionTask* next; /**< \brief Next task in queue. */
+  CMR_REGULAR_PARAMS* params;     /**< \brief Parameters for the computation. */
+  CMR_REGULAR_STATS* stats;       /**< \brief Statistics for the computation (may be \c NULL). */
+  clock_t startClock;             /**< \brief Clock for the start time. */
+  double timeLimit;               /**< \brief Time limit to impose. */
 } DecompositionTask;
+
+/**
+ * \brief Creates a decomposition task for the root of the decomposition.
+ */
 
 CMR_ERROR CMRregularityTaskCreateRoot(
   CMR* cmr,                       /**< \ref CMR environment. */
@@ -27,9 +29,63 @@ CMR_ERROR CMRregularityTaskCreateRoot(
   double timeLimit                /**< Time limit to impose. */
 );
 
+/**
+ * \brief Frees a decomposition task.
+ */
+
 CMR_ERROR CMRregularityTaskFree(
   CMR* cmr,                       /**< \ref CMR environment. */
   DecompositionTask** ptask       /**< Pointer to task. */
+);
+
+typedef struct DecompositionQueue
+{
+  DecompositionTask* head;  /**< \brief Next task to be processed. */
+  bool foundIrregularity;   /**< \brief Whether irregularity was detected for some node. */
+} DecompositionQueue;
+
+/**
+ * \brief Initializes a decomposition queue.
+ */
+
+CMR_ERROR CMRregularityQueueCreate(
+  CMR* cmr,                   /**< \ref CMR environment. */
+  DecompositionQueue** pqueue /**< Pointer for storing the queue. */
+);
+
+/**
+ * \brief Frees the decomposition queue.
+ */
+
+CMR_ERROR CMRregularityQueueFree(
+  CMR* cmr,                   /**< \ref CMR environment. */
+  DecompositionQueue** pqueue /**< Pointer to queue. */
+);
+
+/**
+ * \brief Returns whether a queue is empty.
+ */
+
+bool CMRregularityQueueEmpty(
+  DecompositionQueue* queue /**< Queue. */
+);
+
+/**
+ * \brief Removes a task from a decomposition queue.
+ */
+
+DecompositionTask* CMRregularityQueueRemove(
+  DecompositionQueue* queue /**< Queue. */
+);
+
+
+/**
+ * \brief Adds a task to a decomposition queue.
+ */
+
+void CMRregularityQueueAdd(
+  DecompositionQueue* queue,  /**< Queue. */
+  DecompositionTask* task     /**< Task. */
 );
 
 /**
@@ -38,10 +94,10 @@ CMR_ERROR CMRregularityTaskFree(
 
 CMR_ERROR
 CMRregularityDecomposeThreeSum(
-  CMR* cmr,                         /**< \ref CMR environment. */
-  DecompositionTask* task,          /**< Task to be processed; already removed from the list of unprocessed tasks. */
-  DecompositionTask** punprocessed, /**< Pointer to head of list of unprocessed tasks. */
-  CMR_SEPA* separation              /**< 3-separation. */
+  CMR* cmr,                   /**< \ref CMR environment. */
+  DecompositionTask* task,    /**< Task to be processed; already removed from the list of unprocessed tasks. */
+  DecompositionQueue* queue,  /**< Queue of unprocessed nodes. */
+  CMR_SEPA* separation        /**< 3-separation. */
 );
 
 /**
@@ -50,9 +106,9 @@ CMRregularityDecomposeThreeSum(
 
 CMR_ERROR
 CMRregularityNestedMinorSequenceSearchThreeSeparation(
-  CMR* cmr,                         /**< \ref CMR environment. */
-  DecompositionTask* task,          /**< Task to be processed; already removed from the list of unprocessed tasks. */
-  DecompositionTask** punprocessed  /**< Pointer to head of list of unprocessed tasks. */
+  CMR* cmr,                 /**< \ref CMR environment. */
+  DecompositionTask* task,  /**< Task to be processed; already removed from the list of unprocessed tasks. */
+  DecompositionQueue* queue /**< Queue of unprocessed nodes. */
 );
 
 /**
@@ -63,9 +119,9 @@ CMRregularityNestedMinorSequenceSearchThreeSeparation(
 
 CMR_ERROR
 CMRregularityNestedMinorSequenceGraphicness(
-  CMR* cmr,                         /**< \ref CMR environment. */
-  DecompositionTask* task,          /**< Task to be processed; already removed from the list of unprocessed tasks. */
-  DecompositionTask** punprocessed  /**< Pointer to head of list of unprocessed tasks. */
+  CMR* cmr,                 /**< \ref CMR environment. */
+  DecompositionTask* task,  /**< Task to be processed; already removed from the list of unprocessed tasks. */
+  DecompositionQueue* queue /**< Queue of unprocessed nodes. */
 );
 
 /**
@@ -76,9 +132,9 @@ CMRregularityNestedMinorSequenceGraphicness(
 
 CMR_ERROR
 CMRregularityNestedMinorSequenceCographicness(
-  CMR* cmr,                         /**< \ref CMR environment. */
-  DecompositionTask* task,          /**< Task to be processed; already removed from the list of unprocessed tasks. */
-  DecompositionTask** punprocessed  /**< Pointer to head of list of unprocessed tasks. */
+  CMR* cmr,                 /**< \ref CMR environment. */
+  DecompositionTask* task,  /**< Task to be processed; already removed from the list of unprocessed tasks. */
+  DecompositionQueue* queue /**< Queue of unprocessed nodes. */
 );
 
 /**
@@ -90,9 +146,9 @@ CMRregularityNestedMinorSequenceCographicness(
 
 CMR_ERROR
 CMRregularityExtendNestedMinorSequence(
-  CMR* cmr,                         /**< \ref CMR environment. */
-  DecompositionTask* task,          /**< Task to be processed; already removed from the list of unprocessed tasks. */
-  DecompositionTask** punprocessed  /**< Pointer to head of list of unprocessed tasks. */
+  CMR* cmr,                 /**< \ref CMR environment. */
+  DecompositionTask* task,  /**< Task to be processed; already removed from the list of unprocessed tasks. */
+  DecompositionQueue* queue /**< Queue of unprocessed nodes. */
 );
 
 /**
@@ -100,9 +156,9 @@ CMRregularityExtendNestedMinorSequence(
  */
 
 CMR_ERROR CMRregularityTestR10(
-  CMR* cmr,                         /**< \ref CMR environment. */
-  DecompositionTask* task,          /**< Task to be processed; already removed from the list of unprocessed tasks. */
-  DecompositionTask** punprocessed  /**< Pointer to head of list of unprocessed tasks. */
+  CMR* cmr,                 /**< \ref CMR environment. */
+  DecompositionTask* task,  /**< Task to be processed; already removed from the list of unprocessed tasks. */
+  DecompositionQueue* queue /**< Queue of unprocessed nodes. */
 );
 
 /**
@@ -126,9 +182,9 @@ CMR_ERROR CMRregularityInitNestedMinorSequence(
  */
 
 CMR_ERROR CMRregularityDecomposeSeriesParallel(
-  CMR* cmr,                         /**< \ref CMR environment. */
-  DecompositionTask* task,          /**< Task to be processed; already removed from the list of unprocessed tasks. */
-  DecompositionTask** punprocessed  /**< Pointer to head of list of unprocessed tasks. */
+  CMR* cmr,                 /**< \ref CMR environment. */
+  DecompositionTask* task,  /**< Task to be processed; already removed from the list of unprocessed tasks. */
+  DecompositionQueue* queue /**< Queue of unprocessed nodes. */
 );
 
 /**
@@ -136,9 +192,9 @@ CMR_ERROR CMRregularityDecomposeSeriesParallel(
  */
 
 CMR_ERROR CMRregularityTestGraphicness(
-  CMR* cmr,                         /**< \ref CMR environment. */
-  DecompositionTask* task,          /**< Task to be processed; already removed from the list of unprocessed tasks. */
-  DecompositionTask** punprocessed  /**< Pointer to head of list of unprocessed tasks. */
+  CMR* cmr,                 /**< \ref CMR environment. */
+  DecompositionTask* task,  /**< Task to be processed; already removed from the list of unprocessed tasks. */
+  DecompositionQueue* queue /**< Queue of unprocessed nodes. */
 );
 
 /**
@@ -146,9 +202,9 @@ CMR_ERROR CMRregularityTestGraphicness(
  */
 
 CMR_ERROR CMRregularityTestCographicness(
-  CMR* cmr,                         /**< \ref CMR environment. */
-  DecompositionTask* task,          /**< Task to be processed; already removed from the list of unprocessed tasks. */
-  DecompositionTask** punprocessed  /**< Pointer to head of list of unprocessed tasks. */
+  CMR* cmr,                 /**< \ref CMR environment. */
+  DecompositionTask* task,  /**< Task to be processed; already removed from the list of unprocessed tasks. */
+  DecompositionQueue* queue /**< Queue of unprocessed nodes. */
 );
 
 /**
@@ -160,9 +216,9 @@ CMR_ERROR CMRregularityTestCographicness(
  */
 
 CMR_ERROR CMRregularitySearchOneSum(
-  CMR* cmr,                         /**< \ref CMR environment. */
-  DecompositionTask* task,          /**< Task to be processed; already removed from the list of unprocessed tasks. */
-  DecompositionTask** punprocessed  /**< Pointer to head of list of unprocessed tasks. */
+  CMR* cmr,                 /**< \ref CMR environment. */
+  DecompositionTask* task,  /**< Task to be processed; already removed from the list of unprocessed tasks. */
+  DecompositionQueue* queue /**< Queue of unprocessed nodes. */
 );
 
 /**

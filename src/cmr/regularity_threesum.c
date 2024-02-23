@@ -204,13 +204,13 @@ CMR_ERROR findSubmatrixCycle(
 CMR_ERROR CMRregularityDecomposeThreeSum(
   CMR* cmr,
   DecompositionTask* task,
-  DecompositionTask** punprocessed,
+  DecompositionQueue* queue,
   CMR_SEPA* separation
 )
 {
   assert(cmr);
   assert(task);
-  assert(punprocessed);
+  assert(queue);
   assert(separation);
 
   CMR_MATROID_DEC* dec = task->dec;
@@ -338,6 +338,9 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
       assert(dec->type != CMR_MATROID_DEC_TYPE_DETERMINANT);
 
       CMR_CALL( CMRsubmatFree(cmr, &violatorSubmatrix) );
+
+      /* TODO: Add as unittest. */
+      queue->foundIrregularity = true;
 
       goto cleanup;
     }
@@ -556,9 +559,8 @@ cleanup:
     dec->children[1]->testedSeriesParallel = false;
 
     /* Add both child tasks to the list. */
-    childTasks[0]->next = childTasks[1];
-    childTasks[1]->next = *punprocessed;
-    *punprocessed = childTasks[0];
+    CMRregularityQueueAdd(queue, childTasks[0]);
+    CMRregularityQueueAdd(queue, childTasks[1]);
   }
   else
   {

@@ -1625,12 +1625,11 @@ CMR_ERROR sequenceGraphicness(
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRregularityNestedMinorSequenceGraphicness(CMR* cmr, DecompositionTask* task,
-  DecompositionTask** punprocessed)
+CMR_ERROR CMRregularityNestedMinorSequenceGraphicness(CMR* cmr, DecompositionTask* task, DecompositionQueue* queue)
 {
   assert(cmr);
   assert(task);
-  assert(punprocessed);
+  assert(queue);
 
   CMR_MATROID_DEC* dec = task->dec;
   assert(dec);
@@ -1697,6 +1696,7 @@ CMR_ERROR CMRregularityNestedMinorSequenceGraphicness(CMR* cmr, DecompositionTas
         CMR_CALL( CMRfreeBlockArray(cmr, &dec->graphCoforest) );
         CMR_CALL( CMRfreeBlockArray(cmr, &dec->graphArcsReversed) );
         CMR_CALL( CMRsubmatFree(cmr, &violatorSubmatrix) );
+        queue->foundIrregularity = true;
       }
     }
 
@@ -1707,19 +1707,17 @@ CMR_ERROR CMRregularityNestedMinorSequenceGraphicness(CMR* cmr, DecompositionTas
     dec->graphicness = -1;
 
     /* Add task back to list of unprocessed tasks to test cographicness. */
-    task->next = *punprocessed;
-    *punprocessed = task;
+    CMRregularityQueueAdd(queue, task);
   }
 
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRregularityNestedMinorSequenceCographicness(CMR* cmr, DecompositionTask* task,
-  DecompositionTask** punprocessed)
+CMR_ERROR CMRregularityNestedMinorSequenceCographicness(CMR* cmr, DecompositionTask* task, DecompositionQueue* queue)
 {
   assert(cmr);
   assert(task);
-  assert(punprocessed);
+  assert(queue);
 
   CMR_MATROID_DEC* dec = task->dec;
   assert(dec);
@@ -1781,6 +1779,7 @@ CMR_ERROR CMRregularityNestedMinorSequenceCographicness(CMR* cmr, DecompositionT
         CMR_CALL( CMRfreeBlockArray(cmr, &dec->cographCoforest) );
         CMR_CALL( CMRfreeBlockArray(cmr, &dec->cographArcsReversed) );
         CMR_CALL( CMRsubmatFree(cmr, &violatorSubmatrix) );
+        queue->foundIrregularity = true;
       }
     }
 
@@ -1791,19 +1790,18 @@ CMR_ERROR CMRregularityNestedMinorSequenceCographicness(CMR* cmr, DecompositionT
     dec->cographicness = -1;
 
     /* Add task back to list of unprocessed tasks to search for 3-separations. */
-    task->next = *punprocessed;
-    *punprocessed = task;
+    CMRregularityQueueAdd(queue, task);
   }
 
   return CMR_OKAY;
 }
 
 
-CMR_ERROR CMRregularityTestGraphicness(CMR* cmr, DecompositionTask* task, DecompositionTask** punprocessed)
+CMR_ERROR CMRregularityTestGraphicness(CMR* cmr, DecompositionTask* task, DecompositionQueue* queue)
 {
   assert(cmr);
   assert(task);
-  assert(punprocessed);
+  assert(queue);
 
   CMR_MATROID_DEC* dec = task->dec;
   assert(dec);
@@ -1823,8 +1821,33 @@ CMR_ERROR CMRregularityTestGraphicness(CMR* cmr, DecompositionTask* task, Decomp
   bool isGraphic;
   if (dec->isTernary)
   {
-    CMR_CALL( CMRnetworkTestTranspose(cmr, dec->transpose, &isGraphic, &dec->graph, &dec->graphForest,
-      &dec->graphCoforest, &dec->graphArcsReversed, NULL, task->stats ? &task->stats->network : NULL, remainingTime) );
+    CMR_SUBMAT* violatorSubmatrix = NULL;
+    bool supportGraphic;
+
+    CMR_CALL( CMRnetworkTestTranspose(cmr, dec->transpose, &isGraphic, &supportGraphic, &dec->graph, &dec->graphForest,
+      &dec->graphCoforest, &dec->graphArcsReversed, &violatorSubmatrix, task->stats ? &task->stats->network : NULL,
+      remainingTime) );
+
+    if (violatorSubmatrix)
+    {
+      if (supportGraphic)
+      {
+        CMR_CALL( CMRsubmatTranspose(violatorSubmatrix) );
+
+        CMRdbgMsg(8, "-> %zux%zu submatrix with bad determinant.\n", violatorSubmatrix->numRows,
+          violatorSubmatrix->numColumns);
+
+        CMR_CALL( CMRmatroiddecUpdateSubmatrix(cmr, dec, violatorSubmatrix, CMR_MATROID_DEC_TYPE_DETERMINANT) );
+        assert(dec->type == CMR_MATROID_DEC_TYPE_DETERMINANT || dec->type == CMR_MATROID_DEC_TYPE_SUBMATRIX);
+
+        CMR_CALL( CMRsubmatFree(cmr, &violatorSubmatrix) );
+        CMR_CALL( CMRregularityTaskFree(cmr, &task) );
+        queue->foundIrregularity = true;
+        return CMR_OKAY;
+      }
+
+      CMR_CALL( CMRsubmatFree(cmr, &violatorSubmatrix) );
+    }
   }
   else
   {
@@ -1840,26 +1863,24 @@ CMR_ERROR CMRregularityTestGraphicness(CMR* cmr, DecompositionTask* task, Decomp
 
   if ((isGraphic && (!task->params->planarityCheck || dec->cographicness)) || dec->cographicness > 0)
   {
-    CMRdbgMsg(8, "Marking task as complete.\n");
-
     /* Task is done. */
+    CMRdbgMsg(8, "Marking task as complete.\n");
     CMR_CALL( CMRregularityTaskFree(cmr, &task) );
   }
   else
   {
     /* Re-insert task. */
-    task->next = *punprocessed;
-    *punprocessed = task;
+    CMRregularityQueueAdd(queue, task);
   }
 
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRregularityTestCographicness(CMR* cmr, DecompositionTask* task, DecompositionTask** punprocessed)
+CMR_ERROR CMRregularityTestCographicness(CMR* cmr, DecompositionTask* task, DecompositionQueue* queue)
 {
   assert(cmr);
   assert(task);
-  assert(punprocessed);
+  assert(queue);
 
   CMR_MATROID_DEC* dec = task->dec;
   assert(dec);
@@ -1879,9 +1900,31 @@ CMR_ERROR CMRregularityTestCographicness(CMR* cmr, DecompositionTask* task, Deco
   bool isCographic;
   if (dec->isTernary)
   {
-    CMR_CALL( CMRnetworkTestTranspose(cmr, dec->matrix, &isCographic, &dec->cograph, &dec->cographForest,
-      &dec->cographCoforest, &dec->cographArcsReversed, NULL, task->stats ? &task->stats->network : NULL,
-      remainingTime) );
+    CMR_SUBMAT* violatorSubmatrix = NULL;
+    bool supportCographic;
+
+    CMR_CALL( CMRnetworkTestTranspose(cmr, dec->matrix, &isCographic, &supportCographic, &dec->cograph,
+      &dec->cographForest, &dec->cographCoforest, &dec->cographArcsReversed, &violatorSubmatrix,
+      task->stats ? &task->stats->network : NULL, remainingTime) );
+
+    if (violatorSubmatrix)
+    {
+      if (supportCographic)
+      {
+        CMRdbgMsg(8, "-> %zux%zu submatrix with bad determinant.\n", violatorSubmatrix->numRows,
+          violatorSubmatrix->numColumns);
+
+        CMR_CALL( CMRmatroiddecUpdateSubmatrix(cmr, dec, violatorSubmatrix, CMR_MATROID_DEC_TYPE_DETERMINANT) );
+        assert(dec->type == CMR_MATROID_DEC_TYPE_DETERMINANT || dec->type == CMR_MATROID_DEC_TYPE_SUBMATRIX);
+
+        CMR_CALL( CMRsubmatFree(cmr, &violatorSubmatrix) );
+        CMR_CALL( CMRregularityTaskFree(cmr, &task) );
+        queue->foundIrregularity = true;
+        return CMR_OKAY;
+      }
+
+      CMR_CALL( CMRsubmatFree(cmr, &violatorSubmatrix) );
+    }
   }
   else
   {
@@ -1905,8 +1948,7 @@ CMR_ERROR CMRregularityTestCographicness(CMR* cmr, DecompositionTask* task, Deco
   else
   {
     /* Re-insert task. */
-    task->next = *punprocessed;
-    *punprocessed = task;
+    CMRregularityQueueAdd(queue, task);
   }
 
   return CMR_OKAY;

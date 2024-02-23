@@ -1,4 +1,4 @@
-// #define CMR_DEBUG /** Uncomment to debug this file. */
+#define CMR_DEBUG /** Uncomment to debug this file. */
 
 #include "env_internal.h"
 #include "regularity_internal.h"
@@ -39,6 +39,68 @@ CMR_ERROR CMRregularityTaskFree(CMR* cmr, DecompositionTask** ptask)
 
   return CMR_OKAY;
 }
+
+CMR_ERROR CMRregularityQueueCreate(CMR* cmr, DecompositionQueue** pqueue)
+{
+  assert(cmr);
+  assert(pqueue);
+
+  CMR_CALL( CMRallocBlock(cmr, pqueue) );
+  DecompositionQueue* queue = *pqueue;
+  queue->head = NULL;
+  queue->foundIrregularity = false;
+
+  return CMR_OKAY;
+}
+
+CMR_ERROR CMRregularityQueueFree(CMR* cmr, DecompositionQueue** pqueue)
+{
+  assert(cmr);
+  assert(pqueue);
+
+  DecompositionQueue* queue = *pqueue;
+  if (queue == NULL)
+    return CMR_OKAY;
+
+  while (queue->head)
+  {
+    DecompositionTask* task = queue->head;
+    queue->head = task->next;
+    CMR_CALL( CMRregularityTaskFree(cmr, &task) );
+  }
+
+  CMR_CALL( CMRfreeBlock(cmr, pqueue) );
+
+  return CMR_OKAY;
+}
+
+bool CMRregularityQueueEmpty(DecompositionQueue* queue)
+{
+  assert(queue);
+
+  return queue->head == NULL;
+}
+
+DecompositionTask* CMRregularityQueueRemove(DecompositionQueue* queue)
+{
+  assert(queue);
+
+  DecompositionTask* task = queue->head;
+  queue->head = task->next;
+  task->next = NULL;
+  return task;
+}
+
+void CMRregularityQueueAdd(DecompositionQueue* queue, DecompositionTask* task)
+{
+  assert(queue);
+
+  task->next = queue->head;
+  queue->head = task;
+}
+
+
+
 
 // /**
 //  * \brief Tests a 2-connected binary or ternary matrix for regularity.
@@ -383,63 +445,63 @@ CMR_ERROR CMRregularityTaskFree(CMR* cmr, DecompositionTask** ptask)
 
 static
 CMR_ERROR CMRregularityTaskRun(
-  CMR* cmr,                         /**< \ref CMR environment. */
-  DecompositionTask* task,          /**< Task to be processed; already removed from the list of unprocessed tasks. */
-  DecompositionTask** punprocessed  /**< Pointer to head of list of unprocessed tasks. */
+  CMR* cmr,                 /**< \ref CMR environment. */
+  DecompositionTask* task,  /**< Task to be processed; already removed from the list of unprocessed tasks. */
+  DecompositionQueue* queue /**< Queue of unprocessed tasks. */
 )
 {
   assert(cmr);
   assert(task);
-  assert(punprocessed);
+  assert(queue);
 
   CMRdbgMsg(2, "Processing %p.\n", task);
 
   if (!task->dec->testedTwoConnected)
   {
     CMRdbgMsg(4, "Searching for 1-separations.\n");
-    CMR_CALL( CMRregularitySearchOneSum(cmr, task, punprocessed) );
+    CMR_CALL( CMRregularitySearchOneSum(cmr, task, queue) );
   }
   else if (!task->dec->graphicness
     && (task->params->directGraphicness || task->dec->matrix->numRows <= 3 || task->dec->matrix->numColumns <= 3))
   {
     CMRdbgMsg(4, "Testing directly for %s.\n", task->dec->isTernary ? "being network" : "graphicness");
-    CMR_CALL( CMRregularityTestGraphicness(cmr, task, punprocessed) );
+    CMR_CALL( CMRregularityTestGraphicness(cmr, task, queue) );
   }
   else if (!task->dec->cographicness
     && (task->params->directGraphicness || task->dec->matrix->numRows <= 3 || task->dec->matrix->numColumns <= 3))
   {
     CMRdbgMsg(4, "Testing directly for %s.\n", task->dec->isTernary ? "being conetwork" : "cographicness");
-    CMR_CALL( CMRregularityTestCographicness(cmr, task, punprocessed) );
+    CMR_CALL( CMRregularityTestCographicness(cmr, task, queue) );
   }
   else if (!task->dec->testedR10)
   {
     CMRdbgMsg(4, "Testing for being R_10.\n");
-    CMR_CALL( CMRregularityTestR10(cmr, task, punprocessed) );
+    CMR_CALL( CMRregularityTestR10(cmr, task, queue) );
   }
   else if (!task->dec->testedSeriesParallel)
   {
     CMRdbgMsg(4, "Testing for series-parallel reductions.\n");
-    CMR_CALL( CMRregularityDecomposeSeriesParallel(cmr, task, punprocessed) );
+    CMR_CALL( CMRregularityDecomposeSeriesParallel(cmr, task, queue) );
   }
   else if (task->dec->denseMatrix)
   {
     CMRdbgMsg(4, "Attempting to construct a sequence of nested minors.\n");
-    CMR_CALL( CMRregularityExtendNestedMinorSequence(cmr, task, punprocessed) );
+    CMR_CALL( CMRregularityExtendNestedMinorSequence(cmr, task, queue) );
   }
   else if (task->dec->nestedMinorsMatrix && (task->dec->nestedMinorsLastGraphic == SIZE_MAX))
   {
     CMRdbgMsg(4, "Testing along the sequence for %s.\n", task->dec->isTernary ? "being network" : "graphicness");
-    CMR_CALL( CMRregularityNestedMinorSequenceGraphicness(cmr, task, punprocessed) );
+    CMR_CALL( CMRregularityNestedMinorSequenceGraphicness(cmr, task, queue) );
   }
   else if (task->dec->nestedMinorsMatrix && (task->dec->nestedMinorsLastCographic == SIZE_MAX))
   {
     CMRdbgMsg(4, "Testing along the sequence for %s.\n", task->dec->isTernary ? "being conetwork" : "cographicness");
-    CMR_CALL( CMRregularityNestedMinorSequenceCographicness(cmr, task, punprocessed) );
+    CMR_CALL( CMRregularityNestedMinorSequenceCographicness(cmr, task, queue) );
   }
   else
   {
     CMRdbgMsg(4, "Searching for 3-separations along the sequence.\n");
-    CMR_CALL( CMRregularityNestedMinorSequenceSearchThreeSeparation(cmr, task, punprocessed) );
+    CMR_CALL( CMRregularityNestedMinorSequenceSearchThreeSeparation(cmr, task, queue) );
   }
 
   return CMR_OKAY;
@@ -466,15 +528,19 @@ CMR_ERROR CMRregularityTest(CMR* cmr, CMR_CHRMAT* matrix, bool ternary, bool *pi
   CMR_CALL( CMRmatroiddecCreateMatrixRoot(cmr, &root, ternary, matrix) );
   assert(root);
 
-  DecompositionTask* headUnprocessedTasks = NULL;
-  CMR_CALL( CMRregularityTaskCreateRoot(cmr, root, &headUnprocessedTasks, params, stats, time, timeLimit) );
-  while (headUnprocessedTasks)
-  {
-    DecompositionTask* task = headUnprocessedTasks;
-    headUnprocessedTasks = task->next;
+  DecompositionQueue* queue = NULL;
+  CMR_CALL( CMRregularityQueueCreate(cmr, &queue) );
+  DecompositionTask* rootTask = NULL;
+  CMR_CALL( CMRregularityTaskCreateRoot(cmr, root, &rootTask, params, stats, time, timeLimit) );
+  CMRregularityQueueAdd(queue, rootTask);
 
-    CMR_CALL( CMRregularityTaskRun(cmr, task, &headUnprocessedTasks) );
+  while (!CMRregularityQueueEmpty(queue) && (params->completeTree || !queue->foundIrregularity))
+  {
+    DecompositionTask* task = CMRregularityQueueRemove(queue);
+    CMR_CALL( CMRregularityTaskRun(cmr, task, queue) );
   }
+
+  CMR_CALL( CMRregularityQueueFree(cmr, &queue) );
 
   CMR_CALL( CMRmatroiddecSetAttributes(root) );
   assert(root->regularity != 0);

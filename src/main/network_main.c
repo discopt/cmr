@@ -98,12 +98,12 @@ CMR_ERROR recognizeNetwork(
   CMR_CALL( CMRnetworkStatsInit(&stats) );
   if (conetwork)
   {
-    CMR_CALL( CMRnetworkTestTranspose(cmr, matrix, &isCoNetwork, &digraph, &columnEdges, &rowEdges, &edgesReversed,
-      outputSubmatrixFileName ? &submatrix : NULL, &stats, timeLimit) );
+    CMR_CALL( CMRnetworkTestTranspose(cmr, matrix, &isCoNetwork, NULL, &digraph, &columnEdges, &rowEdges,
+      &edgesReversed, outputSubmatrixFileName ? &submatrix : NULL, &stats, timeLimit) );
   }
   else
   {
-    CMR_CALL( CMRnetworkTestMatrix(cmr, matrix, &isCoNetwork, &digraph, &rowEdges, &columnEdges, &edgesReversed,
+    CMR_CALL( CMRnetworkTestMatrix(cmr, matrix, &isCoNetwork, NULL, &digraph, &rowEdges, &columnEdges, &edgesReversed,
       outputSubmatrixFileName ? &submatrix : NULL, &stats, timeLimit) );
   }
 

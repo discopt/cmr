@@ -115,6 +115,7 @@ CMR_ERROR CMRnetworkTestMatrix(
   CMR* cmr,                       /**< \ref CMR environment. */
   CMR_CHRMAT* matrix,             /**< Matrix \f$ M \f$. */
   bool* pisNetwork,               /**< Pointer for storing \c true if and only if \f$ M \f$ is a network matrix. */
+  bool* psupportIsGraphic,        /**< Pointer for storing \c true if and only if the support matrix is graphic. */
   CMR_GRAPH** pdigraph,           /**< Pointer for storing the digraph \f$ D \f$ (if \f$ M \f$ is network). */
   CMR_GRAPH_EDGE** pforestArcs,   /**< Pointer for storing \f$ T \f$, indexed by the rows of \f$ M \f$ (if \f$ M \f$
                                    **  is network).  */
@@ -148,6 +149,7 @@ CMR_ERROR CMRnetworkTestTranspose(
   CMR* cmr,                       /**< \ref CMR environment. */
   CMR_CHRMAT* matrix,             /**< Matrix \f$ M \f$. */
   bool* pisConetwork,             /**< Returns true if and only if \f$ M \f$ is a conetwork matrix. */
+  bool* psupportIsCographic,      /**< Pointer for storing \c true if and only if the support matrix is cographic. */
   CMR_GRAPH** pdigraph,           /**< Pointer for storing \c true if and only if \f$ M \f$ is conetwork. */
   CMR_GRAPH_EDGE** pforestArcs,   /**< Pointer for storing \f$ T \f$, indexed by the columns of \f$ M \f$ (if \f$ M \f$
                                    **  is network).  */

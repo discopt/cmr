@@ -6,10 +6,10 @@
 
 #include <float.h>
 
-CMR_ERROR CMRregularityTestR10(CMR* cmr, DecompositionTask* task, DecompositionTask** punprocessed)
+CMR_ERROR CMRregularityTestR10(CMR* cmr, DecompositionTask* task, DecompositionQueue* queue)
 {
   assert(task);
-  assert(punprocessed);
+  assert(queue);
 
   CMR_MATROID_DEC* dec = task->dec;
   assert(dec);
@@ -77,8 +77,9 @@ CMR_ERROR CMRregularityTestR10(CMR* cmr, DecompositionTask* task, DecompositionT
 
       /* Task is done. */
       CMR_CALL( CMRregularityTaskFree(cmr, &task) );
+      queue->foundIrregularity = true;
 
-      goto cleanup;
+      return CMR_OKAY;
     }
     else
     {
@@ -96,8 +97,7 @@ cleanup:
   }
   else
   {
-    task->next = *punprocessed;
-    *punprocessed = task;
+    CMRregularityQueueAdd(queue, task);
   }
 
   return CMR_OKAY;

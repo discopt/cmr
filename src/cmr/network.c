@@ -107,9 +107,9 @@ typedef struct
   bool fixed;           /**< Whether the orientation of this edge is already fixed. */
 } NetworkNodeData;
 
-CMR_ERROR CMRnetworkTestTranspose(CMR* cmr, CMR_CHRMAT* matrix, bool* pisConetwork, CMR_GRAPH** pdigraph,
-  CMR_GRAPH_EDGE** pforestArcs, CMR_GRAPH_EDGE** pcoforestArcs, bool** parcsReversed, CMR_SUBMAT** psubmatrix,
-  CMR_NETWORK_STATISTICS* stats, double timeLimit)
+CMR_ERROR CMRnetworkTestTranspose(CMR* cmr, CMR_CHRMAT* matrix, bool* pisConetwork, bool* psupportIsCographic,
+  CMR_GRAPH** pdigraph, CMR_GRAPH_EDGE** pforestArcs, CMR_GRAPH_EDGE** pcoforestArcs, bool** parcsReversed,
+  CMR_SUBMAT** psubmatrix, CMR_NETWORK_STATISTICS* stats, double timeLimit)
 {
   assert(cmr);
   assert(matrix);
@@ -139,6 +139,9 @@ CMR_ERROR CMRnetworkTestTranspose(CMR* cmr, CMR_CHRMAT* matrix, bool* pisConetwo
   CMRdbgMsg(2, "CMRtestCographicMatrix() returned %s.\n", isConetwork ? "TRUE": "FALSE");
 #endif /* CMR_DEBUG */
 
+  if (psupportIsCographic)
+    *psupportIsCographic = isConetwork;
+
   bool* arcsReversed = NULL;
   if (isConetwork)
   {
@@ -156,22 +159,22 @@ CMR_ERROR CMRnetworkTestTranspose(CMR* cmr, CMR_CHRMAT* matrix, bool* pisConetwo
 
     CMR_CALL( CMRcamionCographicOrient(cmr, matrix, graph, forestEdges, coforestEdges, arcsReversed, &isConetwork,
       psubmatrix, stats ? &stats->camion : NULL) );
-  }
 
 #if defined(CMR_DEBUG)
-  if (psubmatrix && *psubmatrix)
-  {
-    CMR_CHRMAT* submatrix = NULL;
-    CMR_CALL( CMRchrmatZoomSubmat(cmr, matrix, *psubmatrix, &submatrix) );
-    CMR_CALL( CMRchrmatPrintDense(cmr, submatrix, stdout, '0', true) );
+    if (psubmatrix && *psubmatrix)
+    {
+      CMR_CHRMAT* submatrix = NULL;
+      CMR_CALL( CMRchrmatZoomSubmat(cmr, matrix, *psubmatrix, &submatrix) );
+      CMR_CALL( CMRchrmatPrintDense(cmr, submatrix, stdout, '0', true) );
 
-    int64_t determinant;
-    CMR_CALL( CMRchrmatDeterminant(cmr, submatrix, &determinant) );
-    CMRdbgMsg(2, "-> Returned submatrix has determinant %ld.\n", determinant);
+      int64_t determinant;
+      CMR_CALL( CMRchrmatDeterminant(cmr, submatrix, &determinant) );
+      CMRdbgMsg(2, "-> Returned submatrix has determinant %ld.\n", determinant);
 
-    CMR_CALL( CMRchrmatFree(cmr, &submatrix) );
-  }
+      CMR_CALL( CMRchrmatFree(cmr, &submatrix) );
+    }
 #endif /* CMR_DEBUG */
+  }
 
   if (pisConetwork)
     *pisConetwork = isConetwork;
@@ -201,9 +204,9 @@ CMR_ERROR CMRnetworkTestTranspose(CMR* cmr, CMR_CHRMAT* matrix, bool* pisConetwo
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRnetworkTestMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisNetwork, CMR_GRAPH** pdigraph,
-  CMR_GRAPH_EDGE** pforestArcs, CMR_GRAPH_EDGE** pcoforestArcs, bool** parcsReversed, CMR_SUBMAT** psubmatrix,
-  CMR_NETWORK_STATISTICS* stats, double timeLimit)
+CMR_ERROR CMRnetworkTestMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisNetwork, bool* psupportIsCographic,
+  CMR_GRAPH** pdigraph, CMR_GRAPH_EDGE** pforestArcs, CMR_GRAPH_EDGE** pcoforestArcs, bool** parcsReversed,
+  CMR_SUBMAT** psubmatrix, CMR_NETWORK_STATISTICS* stats, double timeLimit)
 {
   assert(cmr);
   assert(matrix);
@@ -223,20 +226,12 @@ CMR_ERROR CMRnetworkTestMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisNetwork, C
   CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', true) );
 #endif /* CMR_DEBUG */
 
-  CMR_CALL( CMRnetworkTestTranspose(cmr, transpose, pisNetwork, pdigraph, pforestArcs, pcoforestArcs, parcsReversed,
-    psubmatrix, stats, timeLimit) );
+  CMR_CALL( CMRnetworkTestTranspose(cmr, transpose, pisNetwork, psupportIsCographic, pdigraph, pforestArcs,
+    pcoforestArcs, parcsReversed, psubmatrix, stats, timeLimit) );
 
   /* Transpose minimal non-conetwork matrix to become a minimal non-network matrix. */
   if (psubmatrix && *psubmatrix)
-  {
-    size_t* temp = (*psubmatrix)->rows;
-    (*psubmatrix)->rows = (*psubmatrix)->columns;
-    (*psubmatrix)->columns = temp;
-
-    size_t n = (*psubmatrix)->numRows;
-    (*psubmatrix)->numRows = (*psubmatrix)->numColumns;
-    (*psubmatrix)->numColumns = n;
-  }
+    CMR_CALL( CMRsubmatTranspose(*psubmatrix) );
 
   CMR_CALL( CMRchrmatFree(cmr, &transpose) );
 

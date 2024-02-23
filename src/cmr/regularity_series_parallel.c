@@ -9,11 +9,11 @@
 
 #include <time.h>
 
-CMR_ERROR CMRregularityDecomposeSeriesParallel(CMR* cmr, DecompositionTask* task, DecompositionTask** punprocessed)
+CMR_ERROR CMRregularityDecomposeSeriesParallel(CMR* cmr, DecompositionTask* task, DecompositionQueue* queue)
 {
   assert(cmr);
   assert(task);
-  assert(punprocessed);
+  assert(queue);
 
   CMR_MATROID_DEC* dec = task->dec;
   CMR_MATROID_DEC* decReduced = dec;
@@ -21,7 +21,7 @@ CMR_ERROR CMRregularityDecomposeSeriesParallel(CMR* cmr, DecompositionTask* task
 
 #if defined(CMR_DEBUG)
   CMRdbgMsg(6, "Testing the following matrix for series-parallel reductions:\n");
-  CMR_CALL( CMRchrmatPrintDense(cmr, dec->matrix, stdout, '0', true) );
+  CMR_CALL( CMRchrmatPrintDense(cmr, dec->matrix, stndout, '0', true) );
 #endif /* CMR_DEBUG */
 
   double remainingTime = task->timeLimit - (clock() - task->startClock) * 1.0 / CLOCKS_PER_SEC;
@@ -55,7 +55,6 @@ CMR_ERROR CMRregularityDecomposeSeriesParallel(CMR* cmr, DecompositionTask* task
     CMRdbgMsg(8, "-> 2x2 violator.\n");
     assert(dec->isTernary);
 
-    /* TODO: Do we actually need the child node or just the irregularity information? */
     CMR_CALL( CMRmatroiddecUpdateSubmatrix(cmr, dec, violatorSubmatrix, CMR_MATROID_DEC_TYPE_DETERMINANT) );
 
     /* Task is done. */
@@ -64,6 +63,7 @@ CMR_ERROR CMRregularityDecomposeSeriesParallel(CMR* cmr, DecompositionTask* task
     CMR_CALL( CMRfreeStackArray(cmr, &reductions) );
     CMR_CALL( CMRsubmatFree(cmr, &reducedSubmatrix) );
     CMR_CALL( CMRsubmatFree(cmr, &violatorSubmatrix) );
+    queue->foundIrregularity = true;
 
     return CMR_OKAY;
   }
@@ -167,9 +167,8 @@ CMR_ERROR CMRregularityDecomposeSeriesParallel(CMR* cmr, DecompositionTask* task
     decReduced->children[1]->testedSeriesParallel = false;
 
     /* Add both child tasks to the list. */
-    childTasks[0]->next = childTasks[1];
-    childTasks[1]->next = *punprocessed;
-    *punprocessed = childTasks[0];
+    CMRregularityQueueAdd(queue, childTasks[0]);
+    CMRregularityQueueAdd(queue, childTasks[1]);
   }
   else
   {
@@ -223,8 +222,7 @@ CMR_ERROR CMRregularityDecomposeSeriesParallel(CMR* cmr, DecompositionTask* task
     CMR_CALL( CMRregularityInitNestedMinorSequence(cmr, task, violatorSubmatrix) );
 
     /* Just mark the current task as SP-reduced and add it back to the list of unprocessed tasks. */
-    task->next = *punprocessed;
-    *punprocessed = task;
+    CMRregularityQueueAdd(queue, task);
   }
 
   CMR_CALL( CMRfreeStackArray(cmr, &reductions) );

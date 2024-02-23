@@ -890,6 +890,8 @@ CMR_ERROR createNode(
   assert(cmr);
   assert(pdec);
 
+  CMRdbgMsg(10, "Creating a node for a %zu-by-%zu matrix.\n", numRows, numColumns);
+
   CMR_CALL( CMRallocBlock(cmr, pdec) );
   CMR_MATROID_DEC* dec = *pdec;
   dec->type = type;

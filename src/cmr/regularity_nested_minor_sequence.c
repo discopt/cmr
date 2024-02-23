@@ -624,11 +624,11 @@ CMR_ERROR addElement(
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRregularityExtendNestedMinorSequence(CMR* cmr, DecompositionTask* task, DecompositionTask** punprocessed)
+CMR_ERROR CMRregularityExtendNestedMinorSequence(CMR* cmr, DecompositionTask* task, DecompositionQueue* queue)
 {
   assert(cmr);
   assert(task);
-  assert(punprocessed);
+  assert(queue);
 
   CMR_MATROID_DEC* dec = task->dec;
   assert(dec);
@@ -920,6 +920,7 @@ CMR_ERROR CMRregularityExtendNestedMinorSequence(CMR* cmr, DecompositionTask* ta
 
         CMR_CALL( CMRsubmatFree(cmr, &violatorSubmatrix) );
         CMR_CALL( CMRsepaFree(cmr, &separation) );
+        queue->foundIrregularity = true;
 
         break;
       }
@@ -941,9 +942,8 @@ CMR_ERROR CMRregularityExtendNestedMinorSequence(CMR* cmr, DecompositionTask* ta
       dec->children[1]->testedSeriesParallel = false;
 
       /* Add both child tasks to the list. */
-      childTasks[0]->next = childTasks[1];
-      childTasks[1]->next = *punprocessed;
-      *punprocessed = childTasks[0];
+      CMRregularityQueueAdd(queue, childTasks[0]);
+      CMRregularityQueueAdd(queue, childTasks[1]);
 
       break;
     }
@@ -1028,8 +1028,7 @@ CMR_ERROR CMRregularityExtendNestedMinorSequence(CMR* cmr, DecompositionTask* ta
     CMR_CALL( CMRfreeBlockArray(cmr, &dec->nestedMinorsColumnsDense) );
 
     /* Add the task back to the list of unprocessed tasks in order to check how far the sequence is (co)graphic. */
-    task->next = *punprocessed;
-    *punprocessed = task;
+    CMRregularityQueueAdd(queue, task);
   }
 
 cleanup:

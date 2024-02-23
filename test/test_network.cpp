@@ -19,7 +19,7 @@ void testNetworkMatrix(
   bool* edgesReversed = NULL;
   CMR_SUBMAT* violatorSubmatrix = NULL;
 
-  ASSERT_CMR_CALL( CMRnetworkTestMatrix(cmr, matrix, &isNetwork, &graph, &basis, &cobasis, &edgesReversed,
+  ASSERT_CMR_CALL( CMRnetworkTestMatrix(cmr, matrix, &isNetwork, NULL, &graph, &basis, &cobasis, &edgesReversed,
     &violatorSubmatrix, NULL, DBL_MAX) );
 
   ASSERT_EQ( isNetwork, knownNetwork );

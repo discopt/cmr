@@ -1,4 +1,7 @@
 // #define MASSIVE_RANDOM /* Uncomment to test a large number of random matrices. */
+#define MASSIVE_RANDOM_REPETITIONS 100000
+#define MASSIVE_RANDOM_WIDTH 10
+#define MASSIVE_RANDOM_HEIGHT 10
 
 #include <gtest/gtest.h>
 
@@ -8,6 +11,166 @@
 #include <cmr/separation.h>
 #include <cmr/graphic.h>
 #include <cmr/linear_algebra.h>
+
+TEST(TU, EulerianAlgorithm)
+{
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+
+  {
+    CMR_CHRMAT* K_3_3 = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &K_3_3, "5 4 "
+      " 1 1 0  0 "
+      " 1 1 1  0 "
+      " 1 0 0 -1 "
+      " 0 1 1  1 "
+      " 0 0 1  1 "
+    ) );
+
+    CMR_CHRMAT* K_3_3_dual = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &K_3_3_dual, "4 5 "
+      " 1 1  1 0 0 "
+      " 1 1  0 1 0 "
+      " 0 1  0 1 1 "
+      " 0 0 -1 1 1 "
+    ) );
+
+    CMR_CHRMAT* twoSum = NULL;
+    ASSERT_CMR_CALL( CMRtwoSum(cmr, K_3_3, K_3_3_dual, CMRrowToElement(1), CMRcolumnToElement(1), 3, &twoSum) );
+
+    size_t rowPermutations[] = { 4, 6, 5, 7, 0, 1, 2, 3 };
+    CMR_CHRMAT* matrix = NULL;
+    ASSERT_CMR_CALL( CMRchrmatPermute(cmr, twoSum, rowPermutations, NULL, &matrix) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &twoSum) );
+
+    CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
+
+    bool isTU;
+    CMR_MATROID_DEC* dec = NULL;
+    CMR_TU_PARAMS params;
+    ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
+    params.algorithm = CMR_TU_ALGORITHM_EULERIAN;
+    ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
+    ASSERT_EQ( dec, (CMR_MATROID_DEC*) NULL );
+
+    ASSERT_TRUE( isTU );
+
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &K_3_3) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &K_3_3_dual) );
+  }
+
+  {
+    CMR_CHRMAT* matrix = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "12 12 "
+      "1 1 1 0 1 0 1 1 1 1 1 1 "
+      "1 0 1 0 1 0 1 1 1 1 1 0 "
+      "0 1 1 0 0 0 0 0 0 0 0 0 "
+      "0 1 1 1 0 0 0 0 0 0 0 0 "
+      "0 1 1 1 1 0 0 0 0 0 0 0 "
+      "0 1 1 1 1 1 0 0 0 0 0 0 "
+      "0 1 1 1 1 1 1 0 0 0 0 0 "
+      "0 0 0 0 0 0 1 1 0 0 0 0 "
+      "0 0 0 0 0 0 0 1 1 0 0 0 "
+      "0 0 0 0 0 0 0 0 1 1 0 0 "
+      "0 0 0 0 0 0 0 0 0 1 1 0 "
+      "0 0 0 0 0 0 0 0 0 0 1 1 "
+    ) );
+
+    CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
+
+    bool isTU;
+    CMR_TU_PARAMS params;
+    ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
+    params.algorithm = CMR_TU_ALGORITHM_EULERIAN;
+    ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, NULL, NULL, &params, NULL, DBL_MAX) );
+    ASSERT_FALSE( isTU );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  }
+
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
+}
+
+TEST(TU, PartitionAlgorithm)
+{
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+
+  {
+    CMR_CHRMAT* K_3_3 = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &K_3_3, "5 4 "
+      " 1 1 0  0 "
+      " 1 1 1  0 "
+      " 1 0 0 -1 "
+      " 0 1 1  1 "
+      " 0 0 1  1 "
+    ) );
+
+    CMR_CHRMAT* K_3_3_dual = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &K_3_3_dual, "4 5 "
+      " 1 1  1 0 0 "
+      " 1 1  0 1 0 "
+      " 0 1  0 1 1 "
+      " 0 0 -1 1 1 "
+    ) );
+
+    CMR_CHRMAT* twoSum = NULL;
+    ASSERT_CMR_CALL( CMRtwoSum(cmr, K_3_3, K_3_3_dual, CMRrowToElement(1), CMRcolumnToElement(1), 3, &twoSum) );
+
+    size_t rowPermutations[] = { 4, 6, 5, 7, 0, 1, 2, 3 };
+    CMR_CHRMAT* matrix = NULL;
+    ASSERT_CMR_CALL( CMRchrmatPermute(cmr, twoSum, rowPermutations, NULL, &matrix) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &twoSum) );
+
+    CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
+
+    bool isTU;
+    CMR_MATROID_DEC* dec = NULL;
+    CMR_TU_PARAMS params;
+    ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
+    params.algorithm = CMR_TU_ALGORITHM_PARTITION;
+    ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
+    ASSERT_EQ( dec, (CMR_MATROID_DEC*) NULL );
+
+    ASSERT_TRUE( isTU );
+
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &K_3_3) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &K_3_3_dual) );
+  }
+
+  {
+    CMR_CHRMAT* matrix = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "14 14 "
+      "1 1 1 0 1 0 1 0  1 1 1 1 1 1 "
+      "1 0 1 0 1 0 1 0  1 1 1 1 1 0 "
+      "0 1 1 0 0 0 0 0  0 0 0 0 0 0 "
+      "0 1 1 1 0 0 0 0  0 0 0 0 0 0 "
+      "0 1 1 1 1 0 0 0  0 0 0 0 0 0 "
+      "0 1 1 1 1 1 0 0  0 0 0 0 0 0 "
+      "0 1 1 1 1 1 1 0  0 0 0 0 0 0 "
+      "0 1 1 1 1 1 1 1  0 0 0 0 0 0 "
+      "0 1 1 1 1 1 1 1  1 0 0 0 0 0 "
+      "0 0 0 0 0 0 0 0  1 1 0 0 0 0 "
+      "0 0 0 0 0 0 0 0  0 1 1 0 0 0 "
+      "0 0 0 0 0 0 0 0  0 0 1 1 0 0 "
+      "0 0 0 0 0 0 0 0  0 0 0 1 1 0 "
+      "0 0 0 0 0 0 0 0  0 0 0 0 1 1 "
+    ) );
+
+    CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
+
+    bool isTU;
+    CMR_TU_PARAMS params;
+    ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
+    params.algorithm = CMR_TU_ALGORITHM_PARTITION;
+    ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, NULL, NULL, &params, NULL, DBL_MAX) );
+    ASSERT_FALSE( isTU );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  }
+
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
+}
 
 #if defined(MASSIVE_RANDOM)
 
@@ -938,87 +1101,6 @@ TEST(TU, ForbiddenSubmatrixWideWide)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
-TEST(TU, PartitionAlgorithm)
-{
-  CMR* cmr = NULL;
-  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
-
-  {
-    CMR_CHRMAT* K_3_3 = NULL;
-    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &K_3_3, "5 4 "
-      " 1 1 0  0 "
-      " 1 1 1  0 "
-      " 1 0 0 -1 "
-      " 0 1 1  1 "
-      " 0 0 1  1 "
-    ) );
-
-    CMR_CHRMAT* K_3_3_dual = NULL;
-    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &K_3_3_dual, "4 5 "
-      " 1 1  1 0 0 "
-      " 1 1  0 1 0 "
-      " 0 1  0 1 1 "
-      " 0 0 -1 1 1 "
-    ) );
-
-    CMR_CHRMAT* twoSum = NULL;
-    ASSERT_CMR_CALL( CMRtwoSum(cmr, K_3_3, K_3_3_dual, CMRrowToElement(1), CMRcolumnToElement(1), 3, &twoSum) );
-
-    size_t rowPermutations[] = { 4, 6, 5, 7, 0, 1, 2, 3 };
-    CMR_CHRMAT* matrix = NULL;
-    ASSERT_CMR_CALL( CMRchrmatPermute(cmr, twoSum, rowPermutations, NULL, &matrix) );
-    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &twoSum) );
-
-    CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
-
-    bool isTU;
-    CMR_MATROID_DEC* dec = NULL;
-    CMR_TU_PARAMS params;
-    ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
-    params.algorithm = CMR_TU_ALGORITHM_PARTITION;
-    ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
-    ASSERT_EQ( dec, (CMR_MATROID_DEC*) NULL );
-
-    ASSERT_TRUE( isTU );
-
-    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
-    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &K_3_3) );
-    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &K_3_3_dual) );
-  }
-
-  {
-    CMR_CHRMAT* matrix = NULL;
-    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "14 14 "
-      "1 1 1 0 1 0 1 0  1 1 1 1 1 1 "
-      "1 0 1 0 1 0 1 0  1 1 1 1 1 0 "
-      "0 1 1 0 0 0 0 0  0 0 0 0 0 0 "
-      "0 1 1 1 0 0 0 0  0 0 0 0 0 0 "
-      "0 1 1 1 1 0 0 0  0 0 0 0 0 0 "
-      "0 1 1 1 1 1 0 0  0 0 0 0 0 0 "
-      "0 1 1 1 1 1 1 0  0 0 0 0 0 0 "
-      "0 1 1 1 1 1 1 1  0 0 0 0 0 0 "
-      "0 1 1 1 1 1 1 1  1 0 0 0 0 0 "
-      "0 0 0 0 0 0 0 0  1 1 0 0 0 0 "
-      "0 0 0 0 0 0 0 0  0 1 1 0 0 0 "
-      "0 0 0 0 0 0 0 0  0 0 1 1 0 0 "
-      "0 0 0 0 0 0 0 0  0 0 0 1 1 0 "
-      "0 0 0 0 0 0 0 0  0 0 0 0 1 1 "
-    ) );
-
-    CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
-
-    bool isTU;
-    CMR_TU_PARAMS params;
-    ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
-    params.algorithm = CMR_TU_ALGORITHM_PARTITION;
-    ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, NULL, NULL, &params, NULL, DBL_MAX) );
-    ASSERT_FALSE( isTU );
-    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
-  }
-
-  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
-}
-
 TEST(TU, Fano)
 {
   CMR* cmr = NULL;
@@ -1046,7 +1128,7 @@ TEST(TU, Fano)
 
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
-  
+
 TEST(TU, FanoDual)
 {
   CMR* cmr = NULL;
@@ -1076,37 +1158,24 @@ TEST(TU, FanoDual)
 
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
-  
-TEST(TU, EulerianAlgorithm)
+
+TEST(TU, CompleteTree)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
 
   {
-    CMR_CHRMAT* K_3_3 = NULL;
-    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &K_3_3, "5 4 "
-      " 1 1 0  0 "
-      " 1 1 1  0 "
-      " 1 0 0 -1 "
-      " 0 1 1  1 "
-      " 0 0 1  1 "
-    ) );
-
-    CMR_CHRMAT* K_3_3_dual = NULL;
-    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &K_3_3_dual, "4 5 "
-      " 1 1  1 0 0 "
-      " 1 1  0 1 0 "
-      " 0 1  0 1 1 "
-      " 0 0 -1 1 1 "
-    ) );
-
-    CMR_CHRMAT* twoSum = NULL;
-    ASSERT_CMR_CALL( CMRtwoSum(cmr, K_3_3, K_3_3_dual, CMRrowToElement(1), CMRcolumnToElement(1), 3, &twoSum) );
-
-    size_t rowPermutations[] = { 4, 6, 5, 7, 0, 1, 2, 3 };
     CMR_CHRMAT* matrix = NULL;
-    ASSERT_CMR_CALL( CMRchrmatPermute(cmr, twoSum, rowPermutations, NULL, &matrix) );
-    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &twoSum) );
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "8 8 "
+      "1 1  0 1 0 0  0 0 "
+      "0 1  1 1 0 0  0 0 "
+      "1 0 -1 1 0 0  0 0 "
+      "1 1  1 0 0 0  0 0 "
+      "0 0  0 0 1 0  1 1 "
+      "0 0  0 0 1 1  0 1 "
+      "0 0  0 0 0 1 -1 1 "
+      "0 0  0 0 1 1  1 0 "
+    ) );
 
     CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
 
@@ -1114,47 +1183,304 @@ TEST(TU, EulerianAlgorithm)
     CMR_MATROID_DEC* dec = NULL;
     CMR_TU_PARAMS params;
     ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
-    params.algorithm = CMR_TU_ALGORITHM_EULERIAN;
+    params.regular.completeTree = true;
+
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
-    ASSERT_EQ( dec, (CMR_MATROID_DEC*) NULL );
 
-    ASSERT_TRUE( isTU );
+    ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, 0, true, true, true, true, true, true) );
 
+    ASSERT_EQ( CMRmatroiddecRegularity(dec), -1 );
+    ASSERT_EQ( CMRmatroiddecType(dec), CMR_MATROID_DEC_TYPE_ONE_SUM );
+    CMR_MATROID_DEC* child0 = CMRmatroiddecChild(dec, 0);
+    CMR_MATROID_DEC* child1 = CMRmatroiddecChild(dec, 1);
+    ASSERT_EQ( CMRmatroiddecType(child0), CMR_MATROID_DEC_TYPE_IRREGULAR );
+    ASSERT_EQ( CMRmatroiddecType(child1), CMR_MATROID_DEC_TYPE_IRREGULAR );
+
+    ASSERT_CMR_CALL( CMRmatroiddecFree(cmr, &dec) );
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
-    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &K_3_3) );
-    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &K_3_3_dual) );
   }
 
+  /* 1-sum of two irregular ones, the top-left is detected in direct network test. */
   {
     CMR_CHRMAT* matrix = NULL;
-    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "12 12 "
-      "1 1 1 0 1 0 1 1 1 1 1 1 "
-      "1 0 1 0 1 0 1 1 1 1 1 0 "
-      "0 1 1 0 0 0 0 0 0 0 0 0 "
-      "0 1 1 1 0 0 0 0 0 0 0 0 "
-      "0 1 1 1 1 0 0 0 0 0 0 0 "
-      "0 1 1 1 1 1 0 0 0 0 0 0 "
-      "0 1 1 1 1 1 1 0 0 0 0 0 "
-      "0 0 0 0 0 0 1 1 0 0 0 0 "
-      "0 0 0 0 0 0 0 1 1 0 0 0 "
-      "0 0 0 0 0 0 0 0 1 1 0 0 "
-      "0 0 0 0 0 0 0 0 0 1 1 0 "
-      "0 0 0 0 0 0 0 0 0 0 1 1 "
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "8 8 "
+      "1 1  0 1 0 0  0 0 "
+      "0 1  1 0 0 0  0 0 "
+      "1 0  1 0 0 0  0 0 "
+      "1 0  0 0 0 0  0 0 "
+      "0 0  0 0 1 0  1 1 "
+      "0 0  0 0 1 1  0 1 "
+      "0 0  0 0 0 1 -1 1 "
+      "0 0  0 0 1 1  1 0 "
     ) );
 
     CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
 
     bool isTU;
+    CMR_MATROID_DEC* dec = NULL;
     CMR_TU_PARAMS params;
     ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
-    params.algorithm = CMR_TU_ALGORITHM_EULERIAN;
-    ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, NULL, NULL, &params, NULL, DBL_MAX) );
-    ASSERT_FALSE( isTU );
+    ASSERT_FALSE( params.regular.completeTree );
+
+    ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
+
+    ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, 0, true, true, true, true, true, true) );
+
+    ASSERT_EQ( CMRmatroiddecRegularity(dec), -1 );
+    ASSERT_EQ( CMRmatroiddecType(dec), CMR_MATROID_DEC_TYPE_ONE_SUM );
+    CMR_MATROID_DEC* child0 = CMRmatroiddecChild(dec, 0);
+    CMR_MATROID_DEC* child1 = CMRmatroiddecChild(dec, 1);
+
+    int numIrregular = 0;
+    numIrregular += (CMRmatroiddecRegularity(child0) < 0) ? 1 : 0;
+    numIrregular += (CMRmatroiddecRegularity(child1) < 0) ? 1 : 0;
+    ASSERT_EQ( numIrregular, 1);
+
+    int numUnknown = 0;
+    numUnknown += CMRmatroiddecType(child0) == CMR_MATROID_DEC_TYPE_UNKNOWN ? 1 : 0;
+    numUnknown += CMRmatroiddecType(child1) == CMR_MATROID_DEC_TYPE_UNKNOWN ? 1 : 0;
+    ASSERT_EQ( numUnknown, 1);
+
+    ASSERT_CMR_CALL( CMRmatroiddecFree(cmr, &dec) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  }
+
+  /* 1-sum of two irregular ones, the top-left is detected in sequence network test. */
+  {
+    CMR_CHRMAT* matrix = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "8 8 "
+      "1 1  0 0 0 0  0 0 "
+      "0 1  1 0 0 0  0 0 "
+      "0 0 -1 1 0 0  0 0 "
+      "1 0  0 1 0 0  0 0 "
+      "0 0  0 0 1 0  1 1 "
+      "0 0  0 0 1 1  0 1 "
+      "0 0  0 0 0 1 -1 1 "
+      "0 0  0 0 1 1  1 0 "
+    ) );
+
+    CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
+
+    bool isTU;
+    CMR_MATROID_DEC* dec = NULL;
+    CMR_TU_PARAMS params;
+    ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
+    ASSERT_FALSE( params.regular.completeTree );
+    params.regular.directGraphicness = false;
+
+    ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
+
+    ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, 0, true, true, true, true, true, true) );
+
+    ASSERT_EQ( CMRmatroiddecRegularity(dec), -1 );
+    ASSERT_EQ( CMRmatroiddecType(dec), CMR_MATROID_DEC_TYPE_ONE_SUM );
+    CMR_MATROID_DEC* child0 = CMRmatroiddecChild(dec, 0);
+    CMR_MATROID_DEC* child1 = CMRmatroiddecChild(dec, 1);
+
+    int numIrregular = 0;
+    numIrregular += (CMRmatroiddecRegularity(child0) < 0) ? 1 : 0;
+    numIrregular += (CMRmatroiddecRegularity(child1) < 0) ? 1 : 0;
+    ASSERT_EQ( numIrregular, 1);
+
+    int numUnknown = 0;
+    numUnknown += CMRmatroiddecType(child0) == CMR_MATROID_DEC_TYPE_UNKNOWN ? 1 : 0;
+    numUnknown += CMRmatroiddecType(child1) == CMR_MATROID_DEC_TYPE_UNKNOWN ? 1 : 0;
+    ASSERT_EQ( numUnknown, 1);
+
+    ASSERT_CMR_CALL( CMRmatroiddecFree(cmr, &dec) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  }
+
+  /* 1-sum of two irregular ones, the top-left is binary series-parallel but not TU. */
+  {
+    CMR_CHRMAT* matrix = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "8 8 "
+      "1 0  1 1 0 0  0 0 "
+      "1 1  0 0 0 0  0 0 "
+      "0 1 -1 1 0 0  0 0 "
+      "1 1  1 1 0 0  0 0 "
+      "0 0  0 0 1 0  1 1 "
+      "0 0  0 0 1 1  0 1 "
+      "0 0  0 0 0 1 -1 1 "
+      "0 0  0 0 1 1  1 0 "
+    ) );
+
+    CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
+
+    bool isTU;
+    CMR_MATROID_DEC* dec = NULL;
+    CMR_TU_PARAMS params;
+    ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
+    ASSERT_FALSE( params.regular.completeTree );
+
+    ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
+
+    ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, 0, true, true, true, true, true, true) );
+
+    ASSERT_EQ( CMRmatroiddecRegularity(dec), -1 );
+    ASSERT_EQ( CMRmatroiddecType(dec), CMR_MATROID_DEC_TYPE_ONE_SUM );
+    CMR_MATROID_DEC* child0 = CMRmatroiddecChild(dec, 0);
+    CMR_MATROID_DEC* child1 = CMRmatroiddecChild(dec, 1);
+
+    int numIrregular = 0;
+    numIrregular += (CMRmatroiddecRegularity(child0) < 0) ? 1 : 0;
+    numIrregular += (CMRmatroiddecRegularity(child1) < 0) ? 1 : 0;
+    ASSERT_EQ( numIrregular, 1);
+
+    int numUnknown = 0;
+    numUnknown += CMRmatroiddecType(child0) == CMR_MATROID_DEC_TYPE_UNKNOWN ? 1 : 0;
+    numUnknown += CMRmatroiddecType(child1) == CMR_MATROID_DEC_TYPE_UNKNOWN ? 1 : 0;
+    ASSERT_EQ( numUnknown, 1);
+
+    ASSERT_CMR_CALL( CMRmatroiddecFree(cmr, &dec) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  }
+
+  /* 1-sum of two irregular ones, triggers something I forgot :-) */
+  {
+    CMR_CHRMAT* matrix = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "12 10 "
+      " 1 1  0  0 0  0 0  0  0 0 "
+      " 1 0  0 -1 0  0 0  0  0 0 "
+      " 0 1  1  1 0  0 0  0  0 0 "
+      " 0 0  1  1 0  0 0  0  0 0 "
+      " 1 1  1  0 1  0 0  0  0 0 "
+      " 1 1  1  0 1  1 0  0  0 0 "
+      " 1 1 -1  0 0  1 0  0  0 0 "
+      " 0 0  0  0 0  0 0 -1  1 1 "
+      " 0 0  0  0 0  0 1  0  1 1 "
+      " 0 0  0  0 0  0 1  1  0 1 "
+      " 0 0  0  0 0  0 0  1 -1 1 "
+      " 0 0  0  0 0  0 1  1  1 0 "
+    ) );
+
+    CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
+
+    bool isTU;
+    CMR_MATROID_DEC* dec = NULL;
+    CMR_TU_PARAMS params;
+    ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
+    ASSERT_FALSE( params.regular.completeTree );
+    params.regular.directGraphicness = false;
+
+    ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
+
+    ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, 0, true, true, true, true, true, true) );
+
+    ASSERT_EQ( CMRmatroiddecRegularity(dec), -1 );
+    ASSERT_EQ( CMRmatroiddecType(dec), CMR_MATROID_DEC_TYPE_ONE_SUM );
+    CMR_MATROID_DEC* child0 = CMRmatroiddecChild(dec, 0);
+    CMR_MATROID_DEC* child1 = CMRmatroiddecChild(dec, 1);
+
+    int numIrregular = 0;
+    numIrregular += (CMRmatroiddecRegularity(child0) < 0) ? 1 : 0;
+    numIrregular += (CMRmatroiddecRegularity(child1) < 0) ? 1 : 0;
+    ASSERT_EQ( numIrregular, 1);
+
+    int numUnknown = 0;
+    numUnknown += CMRmatroiddecType(child0) == CMR_MATROID_DEC_TYPE_UNKNOWN ? 1 : 0;
+    numUnknown += CMRmatroiddecType(child1) == CMR_MATROID_DEC_TYPE_UNKNOWN ? 1 : 0;
+    ASSERT_EQ( numUnknown, 1);
+
+    ASSERT_CMR_CALL( CMRmatroiddecFree(cmr, &dec) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  }
+
+  /* 1-sum of two irregular ones, the top-left is 4-connected but irregular. */
+  if (false)
+  {
+    CMR_CHRMAT* matrix = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "8 8 "
+      "1 1  0 1 0 0  0 0 "
+      "0 1  1 1 0 0  0 0 "
+      "1 0  1 1 0 0  0 0 "
+      "1 1  1 0 0 0  0 0 "
+      "0 0  0 0 1 0  1 1 "
+      "0 0  0 0 1 1  0 1 "
+      "0 0  0 0 0 1 -1 1 "
+      "0 0  0 0 1 1  1 0 "
+    ) );
+
+    CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
+
+    bool isTU;
+    CMR_MATROID_DEC* dec = NULL;
+    CMR_TU_PARAMS params;
+    ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
+    ASSERT_FALSE( params.regular.completeTree );
+
+    ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
+
+    ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, 0, true, true, true, true, true, true) );
+
+    ASSERT_EQ( CMRmatroiddecRegularity(dec), -1 );
+    ASSERT_EQ( CMRmatroiddecType(dec), CMR_MATROID_DEC_TYPE_ONE_SUM );
+    CMR_MATROID_DEC* child0 = CMRmatroiddecChild(dec, 0);
+    CMR_MATROID_DEC* child1 = CMRmatroiddecChild(dec, 1);
+
+    int numIrregular = 0;
+    numIrregular += (CMRmatroiddecRegularity(child0) < 0) ? 1 : 0;
+    numIrregular += (CMRmatroiddecRegularity(child1) < 0) ? 1 : 0;
+    ASSERT_EQ( numIrregular, 1);
+
+    int numUnknown = 0;
+    numUnknown += CMRmatroiddecType(child0) == CMR_MATROID_DEC_TYPE_UNKNOWN ? 1 : 0;
+    numUnknown += CMRmatroiddecType(child1) == CMR_MATROID_DEC_TYPE_UNKNOWN ? 1 : 0;
+    ASSERT_EQ( numUnknown, 1);
+
+    ASSERT_CMR_CALL( CMRmatroiddecFree(cmr, &dec) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  }
+
+  /* 1-sum of two irregular ones, triggers something I forgot :-) */
+  {
+    CMR_CHRMAT* matrix = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "9 9 "
+      "-1 0 0 1 1 0 0  0 0 "
+      " 1 1 0 0 1 0 0  0 0 "
+      " 0 1 1 0 1 0 0  0 0 "
+      " 0 0 1 1 1 0 0  0 0 "
+      " 1 1 1 1 1 0 0  0 0 "
+      " 0 0 0 0 0 1 0  1 1 "
+      " 0 0 0 0 0 1 1  0 1 "
+      " 0 0 0 0 0 0 1 -1 1 "
+      " 0 0 0 0 0 1 1  1 0 "
+    ) );
+
+    CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
+
+    bool isTU;
+    CMR_MATROID_DEC* dec = NULL;
+    CMR_TU_PARAMS params;
+    ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
+    ASSERT_FALSE( params.regular.completeTree );
+
+    ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
+
+    ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, 0, true, true, true, true, true, true) );
+
+    ASSERT_EQ( CMRmatroiddecRegularity(dec), -1 );
+    ASSERT_EQ( CMRmatroiddecType(dec), CMR_MATROID_DEC_TYPE_ONE_SUM );
+    CMR_MATROID_DEC* child0 = CMRmatroiddecChild(dec, 0);
+    CMR_MATROID_DEC* child1 = CMRmatroiddecChild(dec, 1);
+
+    int numIrregular = 0;
+    numIrregular += (CMRmatroiddecRegularity(child0) < 0) ? 1 : 0;
+    numIrregular += (CMRmatroiddecRegularity(child1) < 0) ? 1 : 0;
+    ASSERT_EQ( numIrregular, 1);
+
+    int numUnknown = 0;
+    numUnknown += CMRmatroiddecType(child0) == CMR_MATROID_DEC_TYPE_UNKNOWN ? 1 : 0;
+    numUnknown += CMRmatroiddecType(child1) == CMR_MATROID_DEC_TYPE_UNKNOWN ? 1 : 0;
+    ASSERT_EQ( numUnknown, 1);
+
+    ASSERT_CMR_CALL( CMRmatroiddecFree(cmr, &dec) );
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
   }
 
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
+
 
 #if defined(MASSIVE_RANDOM)
 
@@ -1165,20 +1491,18 @@ TEST(TU, Random)
 
   CMR_CHRMAT* matrix = NULL;
   ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix,
-"8 8 "
-"0 0 1 1 0 0 0 0 "
-"0 0 1 1 1 1 0 0 "
-"0 0 0 0 0 0 1 0 "
-"0 0 1 1 0 0 1 0 "
-"0 0 0 1 0 0 1 0 "
-"0 1 1 1 0 0 0 0 "
-"0 1 0 0 0 0 -1 0 "
-"0 1 0 0 -1 -1 1 0 "
+"6 6 "
+"1 0 1 0 0 1 "
+"0 1 0 0 1 1 "
+"0 0 0 0 0 0 "
+"0 -1 1 0 0 0 "
+"1 1 0 1 0 1 "
+"1 0 0 1 0 1 "
   ) );
 
-  size_t repetitions = 10000;
-  size_t numRows = 20;
-  size_t numColumns = 20;
+  size_t repetitions = MASSIVE_RANDOM_REPETITIONS;
+  size_t numRows = MASSIVE_RANDOM_HEIGHT;
+  size_t numColumns = MASSIVE_RANDOM_WIDTH;
   double probability1 = 0.2;
   size_t maxSizePartition = 100;
 
@@ -1224,6 +1548,7 @@ TEST(TU, Random)
     CMR_SUBMAT* violatorSubmatrix = NULL;
     CMR_TU_PARAMS params;
     ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
+    params.regular.completeTree = true;
     params.regular.threeSumStrategy = CMR_MATROID_DEC_THREESUM_FLAG_SEYMOUR;
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
 

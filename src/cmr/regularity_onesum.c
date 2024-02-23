@@ -18,7 +18,7 @@ int compareOneSumComponents(const void* a, const void* b)
 }
 
 
-CMR_ERROR CMRregularitySearchOneSum(CMR* cmr, DecompositionTask* task, DecompositionTask** punprocessed)
+CMR_ERROR CMRregularitySearchOneSum(CMR* cmr, DecompositionTask* task, DecompositionQueue* queue)
 {
   assert(cmr);
   assert(task);
@@ -48,8 +48,7 @@ CMR_ERROR CMRregularitySearchOneSum(CMR* cmr, DecompositionTask* task, Decomposi
 
     /* Just mark it as 2-connected and add it back to the list of unprocessed tasks. */
     task->dec->testedTwoConnected = true;
-    task->next = *punprocessed;
-    *punprocessed = task;
+    CMRregularityQueueAdd(queue, task);
   }
   else if (numComponents >= 2)
   {
@@ -67,7 +66,7 @@ CMR_ERROR CMRregularitySearchOneSum(CMR* cmr, DecompositionTask* task, Decomposi
     CMR_CALL( CMRmatroiddecUpdateOneSum(cmr, task->dec, numComponents) );
     for (size_t comp = 0; comp < numComponents; ++comp)
     {
-            CMR_BLOCK* component = orderedComponents[comp];
+      CMR_BLOCK* component = orderedComponents[comp];
       CMR_CALL( CMRmatroiddecCreateChildFromMatrices(cmr, task->dec, comp, (CMR_CHRMAT*) component->matrix,
         (CMR_CHRMAT*) component->transpose, component->rowsToOriginal, component->columnsToOriginal) );
 
@@ -84,8 +83,7 @@ CMR_ERROR CMRregularitySearchOneSum(CMR* cmr, DecompositionTask* task, Decomposi
       DecompositionTask* childTask = NULL;
       CMR_CALL( CMRregularityTaskCreateRoot(cmr, task->dec->children[child], &childTask, task->params, task->stats,
         task->startClock, task->timeLimit) );
-      childTask->next = *punprocessed;
-      *punprocessed = childTask;
+      CMRregularityQueueAdd(queue, childTask);
     }
 
     CMR_CALL( CMRregularityTaskFree(cmr, &task) );

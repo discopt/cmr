@@ -641,8 +641,9 @@ CMR_ERROR CMRtuTest(CMR* cmr, CMR_CHRMAT* matrix, bool* pisTotallyUnimodular, CM
   {
     if (params->directCamion)
     {
-      CMR_CALL( CMRcamionTestSigns(cmr, matrix, pisTotallyUnimodular, psubmatrix, stats ? &stats->decomposition.camion : NULL,
-        remainingTime) );
+      CMRdbgMsg(2, "Testing Camion signs directly.\n");
+      CMR_CALL( CMRcamionTestSigns(cmr, matrix, pisTotallyUnimodular, psubmatrix,
+        stats ? &stats->decomposition.camion : NULL, remainingTime) );
 
       if (!*pisTotallyUnimodular)
       {

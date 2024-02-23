@@ -183,7 +183,7 @@ CMR_ERROR genMatrixNetwork(
     {
       /* Benchmark */
       bool isNetwork;
-      CMR_CALL( CMRnetworkTestMatrix(cmr, matrix, &isNetwork, NULL, NULL, NULL, NULL, NULL, &stats, DBL_MAX) );
+      CMR_CALL( CMRnetworkTestMatrix(cmr, matrix, &isNetwork, NULL, NULL, NULL, NULL, NULL, NULL, &stats, DBL_MAX) );
     }
     else
     {

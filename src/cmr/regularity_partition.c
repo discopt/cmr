@@ -715,11 +715,11 @@ CMR_ERROR extendMinorSeparation(
 }
 
 CMR_ERROR CMRregularityNestedMinorSequenceSearchThreeSeparation(CMR* cmr, DecompositionTask* task,
-  DecompositionTask** punprocessed)
+  DecompositionQueue* queue)
 {
   assert(cmr);
   assert(task);
-  assert(punprocessed);
+  assert(queue);
 
   CMR_MATROID_DEC* dec = task->dec;
   assert(dec);
@@ -753,6 +753,7 @@ CMR_ERROR CMRregularityNestedMinorSequenceSearchThreeSeparation(CMR* cmr, Decomp
 
     /* Free the task. */
     CMR_CALL( CMRregularityTaskFree(cmr, &task) );
+    queue->foundIrregularity = true;
 
     goto cleanupSequence;
   }
@@ -766,6 +767,7 @@ CMR_ERROR CMRregularityNestedMinorSequenceSearchThreeSeparation(CMR* cmr, Decomp
       firstNonCoGraphicMinorSize);
 
     dec->type = CMR_MATROID_DEC_TYPE_IRREGULAR;
+    queue->foundIrregularity = true;
 
     /* Free the task. */
     CMR_CALL( CMRregularityTaskFree(cmr, &task) );
@@ -996,7 +998,7 @@ CMR_ERROR CMRregularityNestedMinorSequenceSearchThreeSeparation(CMR* cmr, Decomp
       goto cleanupSearch;
     }
 
-    CMR_CALL( CMRregularityDecomposeThreeSum(cmr, task, punprocessed, originalSeparation) );
+    CMR_CALL( CMRregularityDecomposeThreeSum(cmr, task, queue, originalSeparation) );
 
     CMR_CALL( CMRsepaFree(cmr, &originalSeparation) );
   }
@@ -1007,6 +1009,7 @@ CMR_ERROR CMRregularityNestedMinorSequenceSearchThreeSeparation(CMR* cmr, Decomp
 
     /* Free the task. */
     CMR_CALL( CMRregularityTaskFree(cmr, &task) );
+    queue->foundIrregularity = true;
   }
 
 cleanupSearch:
