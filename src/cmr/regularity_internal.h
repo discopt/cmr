@@ -1,6 +1,8 @@
 #ifndef CMR_REGULAR_INTERNAL_H
 #define CMR_REGULAR_INTERNAL_H
 
+#include <time.h>
+
 #include <cmr/regular.h>
 
 #include "matroid_internal.h"
