@@ -127,6 +127,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a905e6d308e619090a7efe987abf91898"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="regular_8h.html#a905e6d308e619090a7efe987abf91898">CMRregularTest</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, bool *pisRegular, <a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> **pdec, <a class="el" href="structCMR__MINOR.html">CMR_MINOR</a> **pminor, <a class="el" href="structCMR__REGULAR__PARAMS.html">CMR_REGULAR_PARAMS</a> *params, <a class="el" href="structCMR__REGULAR__STATS.html">CMR_REGULAR_STATS</a> *stats, double timeLimit)</td></tr>
 <tr class="memdesc:a905e6d308e619090a7efe987abf91898"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tests binary linear matroid for regularity.  <a href="regular_8h.html#a905e6d308e619090a7efe987abf91898">More...</a><br /></td></tr>
 <tr class="separator:a905e6d308e619090a7efe987abf91898"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d95ed4a507ae9b4d92180540176206c"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="regular_8h.html#a3d95ed4a507ae9b4d92180540176206c">CMRregularCompleteDecomposition</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec, <a class="el" href="structCMR__REGULAR__PARAMS.html">CMR_REGULAR_PARAMS</a> *params, <a class="el" href="structCMR__REGULAR__STATS.html">CMR_REGULAR_STATS</a> *stats, double timeLimit)</td></tr>
+<tr class="memdesc:a3d95ed4a507ae9b4d92180540176206c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Completes a subtree of an existing decomposition tree.  <a href="regular_8h.html#a3d95ed4a507ae9b4d92180540176206c">More...</a><br /></td></tr>
+<tr class="separator:a3d95ed4a507ae9b4d92180540176206c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Recognition of <a class="el" href="regular.html">regular matrices</a>. </p>
@@ -152,6 +155,65 @@ Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
+<a id="a3d95ed4a507ae9b4d92180540176206c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d95ed4a507ae9b4d92180540176206c">&#9670;&nbsp;</a></span>CMRregularCompleteDecomposition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRregularCompleteDecomposition </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *&#160;</td>
+          <td class="paramname"><em>dec</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__REGULAR__PARAMS.html">CMR_REGULAR_PARAMS</a> *&#160;</td>
+          <td class="paramname"><em>params</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__REGULAR__STATS.html">CMR_REGULAR_STATS</a> *&#160;</td>
+          <td class="paramname"><em>stats</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>timeLimit</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Completes a subtree of an existing decomposition tree. </p>
+<p>Replace the node's subtree by a new one even if it exists. Note that different parameters may yield a different subtree.s </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">dec</td><td>Pointer to the decomposition node that is the root of the new subtree. </td></tr>
+    <tr><td class="paramname">params</td><td>Parameters for the computation. </td></tr>
+    <tr><td class="paramname">stats</td><td>Statistics for the computation (may be <code>NULL</code>). </td></tr>
+    <tr><td class="paramname">timeLimit</td><td>Time limit to impose. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a3186ba46881ab42941b6eb8f211a892b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a3186ba46881ab42941b6eb8f211a892b">&#9670;&nbsp;</a></span>CMRregularParamsInit()</h2>
 

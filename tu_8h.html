@@ -124,6 +124,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ab8b767d0680291efd99703b84dc64537"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tu_8h.html#ab8b767d0680291efd99703b84dc64537">CMRtuTest</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, bool *pisTotallyUnimodular, <a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> **pdec, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **psubmatrix, <a class="el" href="structCMR__TU__PARAMS.html">CMR_TU_PARAMS</a> *params, <a class="el" href="structCMR__TU__STATS.html">CMR_TU_STATS</a> *stats, double timeLimit)</td></tr>
 <tr class="memdesc:ab8b767d0680291efd99703b84dc64537"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tests a matrix \( M \) for being <a class="el" href="tu.html">totally unimodular</a>.  <a href="tu_8h.html#ab8b767d0680291efd99703b84dc64537">More...</a><br /></td></tr>
 <tr class="separator:ab8b767d0680291efd99703b84dc64537"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a9ec69a092730aab35ed16debb82ba3"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tu_8h.html#a4a9ec69a092730aab35ed16debb82ba3">CMRtuCompleteDecomposition</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec, <a class="el" href="structCMR__TU__PARAMS.html">CMR_TU_PARAMS</a> *params, <a class="el" href="structCMR__TU__STATS.html">CMR_TU_STATS</a> *stats, double timeLimit)</td></tr>
+<tr class="memdesc:a4a9ec69a092730aab35ed16debb82ba3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Completes a subtree of an existing decomposition tree.  <a href="tu_8h.html#a4a9ec69a092730aab35ed16debb82ba3">More...</a><br /></td></tr>
+<tr class="separator:a4a9ec69a092730aab35ed16debb82ba3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Recognition of <a class="el" href="tu.html">totally unimodular matrices</a>. </p>
@@ -152,6 +155,66 @@ Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
+<a id="a4a9ec69a092730aab35ed16debb82ba3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a9ec69a092730aab35ed16debb82ba3">&#9670;&nbsp;</a></span>CMRtuCompleteDecomposition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRtuCompleteDecomposition </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *&#160;</td>
+          <td class="paramname"><em>dec</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__TU__PARAMS.html">CMR_TU_PARAMS</a> *&#160;</td>
+          <td class="paramname"><em>params</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__TU__STATS.html">CMR_TU_STATS</a> *&#160;</td>
+          <td class="paramname"><em>stats</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>timeLimit</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Completes a subtree of an existing decomposition tree. </p>
+<p>Replace the node's subtree by a new one even if it exists. Note that different parameters may yield a different subtree.</p>
+<dl class="section note"><dt>Note</dt><dd>Requires <code>params.algorithm</code> to be <a class="el" href="tu_8h.html#a699a1093f03178ea66b72cb38443f700af9bbe5517a2fb244c83a45e702e9f15e">CMR_TU_ALGORITHM_DECOMPOSITION</a>. </dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">dec</td><td>Pointer to the decomposition node that is the root of the new subtree. </td></tr>
+    <tr><td class="paramname">params</td><td>Parameters for the computation. </td></tr>
+    <tr><td class="paramname">stats</td><td>Statistics for the computation (may be <code>NULL</code>). </td></tr>
+    <tr><td class="paramname">timeLimit</td><td>Time limit to impose. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a096c54b490e8be7d33f942a325f0b781"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a096c54b490e8be7d33f942a325f0b781">&#9670;&nbsp;</a></span>CMRtuParamsInit()</h2>
 

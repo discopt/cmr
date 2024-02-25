@@ -146,11 +146,20 @@ $(function() {
 <div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  <span class="keywordtype">double</span> timeLimit            </div>
 <div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;);</div>
 <div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160; </div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;}</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160; </div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* CMR_TU_H */</span><span class="preprocessor"></span></div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;CMR_EXPORT</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="tu_8h.html#a4a9ec69a092730aab35ed16debb82ba3">CMRtuCompleteDecomposition</a>(</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,               </div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;  <a class="code" href="struct__CMR__MATROID__DEC.html">CMR_MATROID_DEC</a>* dec,   </div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;  <a class="code" href="structCMR__TU__PARAMS.html">CMR_TU_PARAMS</a>* params,  </div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;  <a class="code" href="structCMR__TU__STATS.html">CMR_TU_STATS</a>* stats,    </div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;  <span class="keywordtype">double</span> timeLimit        </div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;);</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160; </div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;}</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160; </div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* CMR_TU_H */</span><span class="preprocessor"></span></div>
 <div class="ttc" id="acamion_8h_html"><div class="ttname"><a href="camion_8h.html">camion.h</a></div><div class="ttdoc">Testing whether a matrix is Camion-signed.</div></div>
 <div class="ttc" id="aenv_8h_html"><div class="ttname"><a href="env_8h.html">env.h</a></div><div class="ttdoc">Basic functionality of the software library.</div></div>
 <div class="ttc" id="aenv_8h_html_ae2f4ad54b976c2b9a099246c6dc0be87"><div class="ttname"><a href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a></div><div class="ttdeci">CMR_ERROR</div><div class="ttdoc">Type for return codes of library functions.</div><div class="ttdef"><b>Definition:</b> env.h:32</div></div>
@@ -175,6 +184,7 @@ $(function() {
 <div class="ttc" id="astructCMR__TU__STATS_html_aebc3c60326721abba54fc8b5fb09a1bb"><div class="ttname"><a href="structCMR__TU__STATS.html#aebc3c60326721abba54fc8b5fb09a1bb">CMR_TU_STATS::partitionColumnSubsets</a></div><div class="ttdeci">uint32_t partitionColumnSubsets</div><div class="ttdef"><b>Definition:</b> tu.h:59</div></div>
 <div class="ttc" id="astruct__CMR__MATROID__DEC_html"><div class="ttname"><a href="struct__CMR__MATROID__DEC.html">_CMR_MATROID_DEC</a></div><div class="ttdef"><b>Definition:</b> matroid_internal.h:16</div></div>
 <div class="ttc" id="atu_8h_html_a096c54b490e8be7d33f942a325f0b781"><div class="ttname"><a href="tu_8h.html#a096c54b490e8be7d33f942a325f0b781">CMRtuParamsInit</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRtuParamsInit(CMR_TU_PARAMS *params)</div><div class="ttdoc">Initializes the default parameters for recognition of totally unimodular matrices.</div><div class="ttdef"><b>Definition:</b> tu.c:15</div></div>
+<div class="ttc" id="atu_8h_html_a4a9ec69a092730aab35ed16debb82ba3"><div class="ttname"><a href="tu_8h.html#a4a9ec69a092730aab35ed16debb82ba3">CMRtuCompleteDecomposition</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRtuCompleteDecomposition(CMR *cmr, CMR_MATROID_DEC *dec, CMR_TU_PARAMS *params, CMR_TU_STATS *stats, double timeLimit)</div><div class="ttdoc">Completes a subtree of an existing decomposition tree.</div><div class="ttdef"><b>Definition:</b> tu.c:693</div></div>
 <div class="ttc" id="atu_8h_html_a699a1093f03178ea66b72cb38443f700"><div class="ttname"><a href="tu_8h.html#a699a1093f03178ea66b72cb38443f700">CMR_TU_ALGORITHM</a></div><div class="ttdeci">CMR_TU_ALGORITHM</div><div class="ttdef"><b>Definition:</b> tu.h:22</div></div>
 <div class="ttc" id="atu_8h_html_a699a1093f03178ea66b72cb38443f700a033e747bee171bc43440106442cd1ba3"><div class="ttname"><a href="tu_8h.html#a699a1093f03178ea66b72cb38443f700a033e747bee171bc43440106442cd1ba3">CMR_TU_ALGORITHM_PARTITION</a></div><div class="ttdeci">@ CMR_TU_ALGORITHM_PARTITION</div><div class="ttdoc">Enumeration algorithm based on criterion of Ghouila-Houri.</div><div class="ttdef"><b>Definition:</b> tu.h:25</div></div>
 <div class="ttc" id="atu_8h_html_a699a1093f03178ea66b72cb38443f700a3b0fbec61058325fedc3487b8ebf2871"><div class="ttname"><a href="tu_8h.html#a699a1093f03178ea66b72cb38443f700a3b0fbec61058325fedc3487b8ebf2871">CMR_TU_ALGORITHM_EULERIAN</a></div><div class="ttdeci">@ CMR_TU_ALGORITHM_EULERIAN</div><div class="ttdoc">Enumeration algorithm based on Eulerian submatrices.</div><div class="ttdef"><b>Definition:</b> tu.h:24</div></div>

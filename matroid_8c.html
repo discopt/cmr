@@ -223,6 +223,9 @@ Functions</h2></td></tr>
 <tr class="memitem:gaff1da6fd09a664a16e0e3aaa2cac485a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#gaff1da6fd09a664a16e0e3aaa2cac485a">CMRmatroiddecPrint</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec, FILE *stream, size_t indent, bool printChildren, bool printParentRowsColumns, bool printMatrices, bool printGraphs, bool printReductions, bool printPivots)</td></tr>
 <tr class="memdesc:gaff1da6fd09a664a16e0e3aaa2cac485a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints the decomposition <code>dec</code> to <code>stream</code>.  <a href="group__Matroid.html#gaff1da6fd09a664a16e0e3aaa2cac485a">More...</a><br /></td></tr>
 <tr class="separator:gaff1da6fd09a664a16e0e3aaa2cac485a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gad9e1ee24c174d3dd24114549848253a5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#gad9e1ee24c174d3dd24114549848253a5">CMRmatroiddecFreeNode</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> **pdec)</td></tr>
+<tr class="memdesc:gad9e1ee24c174d3dd24114549848253a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Frees only the decomposition node and no children.  <a href="group__Matroid.html#gad9e1ee24c174d3dd24114549848253a5">More...</a><br /></td></tr>
+<tr class="separator:gad9e1ee24c174d3dd24114549848253a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gab5e0e2eaa25c7f48f039b0572b1d1998"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#gab5e0e2eaa25c7f48f039b0572b1d1998">CMRmatroiddecFree</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> **pdec)</td></tr>
 <tr class="memdesc:gab5e0e2eaa25c7f48f039b0572b1d1998"><td class="mdescLeft">&#160;</td><td class="mdescRight">Frees a decomposition node and all its (grand-)children.  <a href="group__Matroid.html#gab5e0e2eaa25c7f48f039b0572b1d1998">More...</a><br /></td></tr>
 <tr class="separator:gab5e0e2eaa25c7f48f039b0572b1d1998"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -237,15 +240,15 @@ Functions</h2></td></tr>
 <tr class="memitem:abc5505e1952d8e993d8b1e169152a517"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="matroid_8c.html#abc5505e1952d8e993d8b1e169152a517">updateMatrix</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec)</td></tr>
 <tr class="memdesc:abc5505e1952d8e993d8b1e169152a517"><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates matrix of <code>dec</code> from parent using rowsParent and columnsParent arrays.  <a href="matroid_8c.html#abc5505e1952d8e993d8b1e169152a517">More...</a><br /></td></tr>
 <tr class="separator:abc5505e1952d8e993d8b1e169152a517"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga25eb6d8dbdcc99ae19517406d8c017d4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga25eb6d8dbdcc99ae19517406d8c017d4">CMRmatroiddecCreateMatrixRoot</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> **pdec, bool isTernary, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix)</td></tr>
-<tr class="memdesc:ga25eb6d8dbdcc99ae19517406d8c017d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an unknown decomposition node as a root.  <a href="group__Matroid.html#ga25eb6d8dbdcc99ae19517406d8c017d4">More...</a><br /></td></tr>
-<tr class="separator:ga25eb6d8dbdcc99ae19517406d8c017d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e46789581a569e7520ee356149f8c1d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="matroid_8c.html#a3e46789581a569e7520ee356149f8c1d">CMRmatroiddecCreateMatrixRoot</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> **pdec, bool isTernary, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix)</td></tr>
+<tr class="memdesc:a3e46789581a569e7520ee356149f8c1d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates an unknown decomposition node as a root.  <a href="matroid_8c.html#a3e46789581a569e7520ee356149f8c1d">More...</a><br /></td></tr>
+<tr class="separator:a3e46789581a569e7520ee356149f8c1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abb94bc81c1a1d015d11b702e40b59eae"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="matroid_8c.html#abb94bc81c1a1d015d11b702e40b59eae">CMRmatroiddecCreateChildFromMatrices</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *parent, size_t childIndex, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *transpose, size_t *rowsParent, size_t *columnsParent)</td></tr>
 <tr class="memdesc:abb94bc81c1a1d015d11b702e40b59eae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a decomposition node as a child.  <a href="matroid_8c.html#abb94bc81c1a1d015d11b702e40b59eae">More...</a><br /></td></tr>
 <tr class="separator:abb94bc81c1a1d015d11b702e40b59eae"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaafd018d541f3a085872167a650e69f38"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#gaafd018d541f3a085872167a650e69f38">CMRmatroiddecUpdateOneSum</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec, size_t numChildren)</td></tr>
-<tr class="memdesc:gaafd018d541f3a085872167a650e69f38"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize an existing unknown decomposition node as a 1-sum.  <a href="group__Matroid.html#gaafd018d541f3a085872167a650e69f38">More...</a><br /></td></tr>
-<tr class="separator:gaafd018d541f3a085872167a650e69f38"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a686bec71a0c12d461614893dad5c811c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="matroid_8c.html#a686bec71a0c12d461614893dad5c811c">CMRmatroiddecUpdateOneSum</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec, size_t numChildren)</td></tr>
+<tr class="memdesc:a686bec71a0c12d461614893dad5c811c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize an existing unknown decomposition node as a 1-sum with <code>numChildren</code> children.  <a href="matroid_8c.html#a686bec71a0c12d461614893dad5c811c">More...</a><br /></td></tr>
+<tr class="separator:a686bec71a0c12d461614893dad5c811c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5b0645708da09ee09eb8425e7da6c9da"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="matroid_8c.html#a5b0645708da09ee09eb8425e7da6c9da">CMRmatroiddecInitializeParent</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec, size_t parentsChildIndex, size_t *rowsToParentRow, size_t *columnsToParentColumn)</td></tr>
 <tr class="separator:a5b0645708da09ee09eb8425e7da6c9da"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a71aa8a7217cbd5bab15f92c7fc83f128"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="matroid_8c.html#a71aa8a7217cbd5bab15f92c7fc83f128">CMRmatroiddecUpdateSubmatrix</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> *submatrix, <a class="el" href="group__Matroid.html#ga4b1935a1f27e71f4c67083e0865d3971">CMR_MATROID_DEC_TYPE</a> type)</td></tr>
@@ -383,6 +386,58 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="a3e46789581a569e7520ee356149f8c1d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e46789581a569e7520ee356149f8c1d">&#9670;&nbsp;</a></span>CMRmatroiddecCreateMatrixRoot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRmatroiddecCreateMatrixRoot </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> **&#160;</td>
+          <td class="paramname"><em>pdec</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>isTernary</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *&#160;</td>
+          <td class="paramname"><em>matrix</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates an unknown decomposition node as a root. </p>
+<p>Copies <code>matrix</code> into the node. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">pdec</td><td>Pointer for storing the decomposition node. </td></tr>
+    <tr><td class="paramname">isTernary</td><td>Whether we consider ternary matrices. </td></tr>
+    <tr><td class="paramname">matrix</td><td>The matrix corresponding to this node; will be copied. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a5b0645708da09ee09eb8425e7da6c9da"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a5b0645708da09ee09eb8425e7da6c9da">&#9670;&nbsp;</a></span>CMRmatroiddecInitializeParent()</h2>
 
@@ -449,6 +504,50 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">dec</td><td>Decomposition node. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a686bec71a0c12d461614893dad5c811c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a686bec71a0c12d461614893dad5c811c">&#9670;&nbsp;</a></span>CMRmatroiddecUpdateOneSum()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRmatroiddecUpdateOneSum </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *&#160;</td>
+          <td class="paramname"><em>dec</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>numChildren</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Initialize an existing unknown decomposition node as a 1-sum with <code>numChildren</code> children. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">dec</td><td>Decomposition node. </td></tr>
+    <tr><td class="paramname">numChildren</td><td>Number of child nodes. </td></tr>
   </table>
   </dd>
 </dl>

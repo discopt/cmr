@@ -160,12 +160,21 @@ $(function() {
 <div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;  <span class="keywordtype">double</span> timeLimit            </div>
 <div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;);</div>
 <div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160; </div>
-<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
-<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;}</div>
-<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160; </div>
-<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* CMR_REGULAR_H */</span><span class="preprocessor"></span></div>
-<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160; </div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;CMR_EXPORT</div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="regular_8h.html#a3d95ed4a507ae9b4d92180540176206c">CMRregularCompleteDecomposition</a>(</div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,                   </div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;  <a class="code" href="struct__CMR__MATROID__DEC.html">CMR_MATROID_DEC</a>* dec,       </div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;  <a class="code" href="structCMR__REGULAR__PARAMS.html">CMR_REGULAR_PARAMS</a>* params, </div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;  <a class="code" href="structCMR__REGULAR__STATS.html">CMR_REGULAR_STATS</a>* stats,   </div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;  <span class="keywordtype">double</span> timeLimit            </div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;);</div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160; </div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;}</div>
+<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160; </div>
+<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* CMR_REGULAR_H */</span><span class="preprocessor"></span></div>
+<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160; </div>
 <div class="ttc" id="aenv_8h_html"><div class="ttname"><a href="env_8h.html">env.h</a></div><div class="ttdoc">Basic functionality of the software library.</div></div>
 <div class="ttc" id="aenv_8h_html_ae2f4ad54b976c2b9a099246c6dc0be87"><div class="ttname"><a href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a></div><div class="ttdeci">CMR_ERROR</div><div class="ttdoc">Type for return codes of library functions.</div><div class="ttdef"><b>Definition:</b> env.h:32</div></div>
 <div class="ttc" id="agraph_8h_html"><div class="ttname"><a href="graph_8h.html">graph.h</a></div><div class="ttdoc">Functionality for graphs.</div></div>
@@ -174,6 +183,7 @@ $(function() {
 <div class="ttc" id="amatroid_8h_html"><div class="ttname"><a href="matroid_8h.html">matroid.h</a></div><div class="ttdoc">Functionality for matroids.</div></div>
 <div class="ttc" id="anetwork_8h_html"><div class="ttname"><a href="network_8h.html">network.h</a></div><div class="ttdoc">Computation and recognition of network matrices and conetwork matrices.</div></div>
 <div class="ttc" id="aregular_8h_html_a3186ba46881ab42941b6eb8f211a892b"><div class="ttname"><a href="regular_8h.html#a3186ba46881ab42941b6eb8f211a892b">CMRregularParamsInit</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRregularParamsInit(CMR_REGULAR_PARAMS *params)</div><div class="ttdoc">Initializes the default parameters for regularity testing.</div><div class="ttdef"><b>Definition:</b> regular.c:13</div></div>
+<div class="ttc" id="aregular_8h_html_a3d95ed4a507ae9b4d92180540176206c"><div class="ttname"><a href="regular_8h.html#a3d95ed4a507ae9b4d92180540176206c">CMRregularCompleteDecomposition</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRregularCompleteDecomposition(CMR *cmr, CMR_MATROID_DEC *dec, CMR_REGULAR_PARAMS *params, CMR_REGULAR_STATS *stats, double timeLimit)</div><div class="ttdoc">Completes a subtree of an existing decomposition tree.</div><div class="ttdef"><b>Definition:</b> regular.c:114</div></div>
 <div class="ttc" id="aregular_8h_html_a8dea73037c98714cd54c549196326d5a"><div class="ttname"><a href="regular_8h.html#a8dea73037c98714cd54c549196326d5a">CMRregularStatsPrint</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRregularStatsPrint(FILE *stream, CMR_REGULAR_STATS *stats, const char *prefix)</div><div class="ttdoc">Prints statistics for regularity test computations.</div><div class="ttdef"><b>Definition:</b> regular.c:51</div></div>
 <div class="ttc" id="aregular_8h_html_a905e6d308e619090a7efe987abf91898"><div class="ttname"><a href="regular_8h.html#a905e6d308e619090a7efe987abf91898">CMRregularTest</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRregularTest(CMR *cmr, CMR_CHRMAT *matrix, bool *pisRegular, CMR_MATROID_DEC **pdec, CMR_MINOR **pminor, CMR_REGULAR_PARAMS *params, CMR_REGULAR_STATS *stats, double timeLimit)</div><div class="ttdoc">Tests binary linear matroid for regularity.</div><div class="ttdef"><b>Definition:</b> regular.c:86</div></div>
 <div class="ttc" id="aregular_8h_html_aeccbe55066120106479247c36c6225a9"><div class="ttname"><a href="regular_8h.html#aeccbe55066120106479247c36c6225a9">CMRregularStatsInit</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRregularStatsInit(CMR_REGULAR_STATS *stats)</div><div class="ttdoc">Initializes all statistics for regularity test computations.</div><div class="ttdef"><b>Definition:</b> regular.c:30</div></div>
