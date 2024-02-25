@@ -595,31 +595,13 @@ CMR_ERROR CMRmatroiddecFree(
 );
 
 /**
- * \brief Creates an unknown decomposition node as a root.
- *
- * Copies \p matrix into the node.
+ * \brief Frees only the decomposition node and no children.
  */
 
 CMR_EXPORT
-CMR_ERROR CMRmatroiddecCreateMatrixRoot(
-  CMR* cmr,                 /**< \ref CMR environment. */
-  CMR_MATROID_DEC** pdec,   /**< Pointer for storing the decomposition node. */
-  bool isTernary,           /**< Whether we consider ternary matrices. */
-  CMR_CHRMAT* matrix        /**< The matrix corresponding to this node; will be copied. */
-);
-
-/**
- * \brief Initialize an existing unknown decomposition node as a 1-sum.
- *
- * The partition into \p numChildren many components is indicated for each row and column by \p rowsChild and
- * \p columnsChild.
- */
-
-CMR_EXPORT
-CMR_ERROR CMRmatroiddecUpdateOneSum(
-  CMR* cmr,             /**< \ref CMR environment. */
-  CMR_MATROID_DEC* dec, /**< Decomposition node. */
-  size_t numChildren    /**< Number of child nodes. */
+CMR_ERROR CMRmatroiddecFreeNode(
+  CMR* cmr,               /**< \ref CMR environment. */
+  CMR_MATROID_DEC** pdec  /**< Pointer to the decomposition node. */
 );
 
 /**@}*/

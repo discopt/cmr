@@ -818,7 +818,7 @@ CMR_ERROR CMRmatroiddecPrint(CMR* cmr, CMR_MATROID_DEC* dec, FILE* stream, size_
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRmatroiddecFree(CMR* cmr, CMR_MATROID_DEC** pdec)
+CMR_ERROR CMRmatroiddecFreeNode(CMR* cmr, CMR_MATROID_DEC** pdec)
 {
   assert(cmr);
   assert(pdec);
@@ -826,9 +826,6 @@ CMR_ERROR CMRmatroiddecFree(CMR* cmr, CMR_MATROID_DEC** pdec)
   CMR_MATROID_DEC* dec = *pdec;
   if (!dec)
     return CMR_OKAY;
-
-  for (size_t c = 0; c < dec->numChildren; ++c)
-    CMR_CALL( CMRmatroiddecFree(cmr, &dec->children[c]) );
 
   CMR_CALL( CMRchrmatFree(cmr, &dec->matrix) );
   CMR_CALL( CMRchrmatFree(cmr, &dec->transpose) );
@@ -872,6 +869,25 @@ CMR_ERROR CMRmatroiddecFree(CMR* cmr, CMR_MATROID_DEC** pdec)
   CMR_CALL( CMRfreeBlockArray(cmr, &dec->nestedMinorsColumnsOriginal) );
 
   CMR_CALL( CMRfreeBlock(cmr, pdec) );
+
+  return CMR_OKAY;
+}
+
+
+CMR_ERROR CMRmatroiddecFree(CMR* cmr, CMR_MATROID_DEC** pdec)
+{
+  assert(cmr);
+  assert(pdec);
+
+  CMR_MATROID_DEC* dec = *pdec;
+  if (!dec)
+    return CMR_OKAY;
+
+  /* Free (grand-)children recursively. */
+  for (size_t c = 0; c < dec->numChildren; ++c)
+    CMR_CALL( CMRmatroiddecFree(cmr, &dec->children[c]) );
+
+  CMR_CALL( CMRmatroiddecFreeNode(cmr, pdec) );
 
   return CMR_OKAY;
 }

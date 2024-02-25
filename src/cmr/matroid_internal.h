@@ -102,6 +102,31 @@ char* CMRmatroiddecConsistency(
 );
 
 /**
+ * \brief Creates an unknown decomposition node as a root.
+ *
+ * Copies \p matrix into the node.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRmatroiddecCreateMatrixRoot(
+  CMR* cmr,                 /**< \ref CMR environment. */
+  CMR_MATROID_DEC** pdec,   /**< Pointer for storing the decomposition node. */
+  bool isTernary,           /**< Whether we consider ternary matrices. */
+  CMR_CHRMAT* matrix        /**< The matrix corresponding to this node; will be copied. */
+);
+
+/**
+ * \brief Initialize an existing unknown decomposition node as a 1-sum with \p numChildren children.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRmatroiddecUpdateOneSum(
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_MATROID_DEC* dec, /**< Decomposition node. */
+  size_t numChildren    /**< Number of child nodes. */
+);
+
+/**
  * \brief Creates a decomposition node as a child.
  *
  * Copies \p matrix and \p transpose into the node.
