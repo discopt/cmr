@@ -244,4 +244,16 @@ CMR_ERROR CMRregularityTest(
   double timeLimit            /**< Time limit to impose. */
 );
 
+/**
+ * \brief Replaces the subtree of a matroid decomposition tree by a new one.
+ */
+
+CMR_ERROR CMRregularityCompleteDecomposition(
+  CMR* cmr,                   /**< \ref CMR environment. */
+  CMR_MATROID_DEC* dec,       /**< Decomposition node of the subtree root. */
+  CMR_REGULAR_PARAMS* params, /**< Parameters for the computation. */
+  CMR_REGULAR_STATS* stats,   /**< Statistics for the computation (may be \c NULL). */
+  double timeLimit            /**< Time limit to impose. */
+);
+
 #endif /* CMR_REGULAR_INTERNAL_H */

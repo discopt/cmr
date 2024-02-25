@@ -689,3 +689,30 @@ CMR_ERROR CMRtuTest(CMR* cmr, CMR_CHRMAT* matrix, bool* pisTotallyUnimodular, CM
 
   return CMR_OKAY;
 }
+
+CMR_ERROR CMRtuCompleteDecomposition(CMR* cmr, CMR_MATROID_DEC* dec, CMR_TU_PARAMS* params, CMR_TU_STATS* stats,
+  double timeLimit)
+{
+  assert(cmr);
+  assert(dec);
+  assert(timeLimit > 0);
+
+  CMR_TU_PARAMS defaultParams;
+  if (!params)
+  {
+    CMR_CALL( CMRtuParamsInit(&defaultParams) );
+    params = &defaultParams;
+  }
+
+  if (params->algorithm != CMR_TU_ALGORITHM_DECOMPOSITION)
+    return CMR_ERROR_INPUT;
+
+  if (!CMRmatroiddecIsTernary(dec))
+    return CMR_ERROR_INPUT;
+
+  CMR_CALL( CMRregularityCompleteDecomposition(cmr, dec, &params->regular, stats ? &stats->decomposition : NULL,
+    timeLimit) );
+
+  return CMR_OKAY;
+}
+

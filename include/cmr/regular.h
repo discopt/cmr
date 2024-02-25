@@ -152,6 +152,22 @@ CMR_ERROR CMRregularTest(
   double timeLimit            /**< Time limit to impose. */
 );
 
+/**
+ * \brief Completes a subtree of an existing decomposition tree.
+ *
+ * Replace the node's subtree by a new one even if it exists. Note that different parameters may yield a different
+ * subtree.s
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRregularCompleteDecomposition(
+  CMR* cmr,                   /**< \ref CMR environment. */
+  CMR_MATROID_DEC* dec,       /**< Pointer to the decomposition node that is the root of the new subtree. */
+  CMR_REGULAR_PARAMS* params, /**< Parameters for the computation. */
+  CMR_REGULAR_STATS* stats,   /**< Statistics for the computation (may be \c NULL). */
+  double timeLimit            /**< Time limit to impose. */
+);
+
 #ifdef __cplusplus
 }
 #endif

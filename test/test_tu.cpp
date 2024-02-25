@@ -1478,6 +1478,53 @@ TEST(TU, CompleteTree)
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
   }
 
+  /* 1-sum of two irregular ones, the top-left is detected in direct network test, and the second will is completed
+   * later. */
+  {
+    CMR_CHRMAT* matrix = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "8 8 "
+      "1 1  0 1 0 0  0 0 "
+      "0 1  1 0 0 0  0 0 "
+      "1 0  1 0 0 0  0 0 "
+      "1 0  0 0 0 0  0 0 "
+      "0 0  0 0 1 0  1 1 "
+      "0 0  0 0 1 1  0 1 "
+      "0 0  0 0 0 1  1 1 "
+      "0 0  0 0 1 1  1 0 "
+    ) );
+
+    printf("TU.Complete for 1-sum with completion:\n");
+    CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
+
+    bool isTU;
+    CMR_MATROID_DEC* dec = NULL;
+    CMR_TU_PARAMS params;
+    ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
+    ASSERT_FALSE( params.regular.completeTree );
+
+    ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
+
+    ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, 0, true, true, true, true, true, true) );
+
+    ASSERT_EQ( CMRmatroiddecRegularity(dec), -1 );
+    ASSERT_EQ( CMRmatroiddecType(dec), CMR_MATROID_DEC_TYPE_ONE_SUM );
+    CMR_MATROID_DEC* child0 = CMRmatroiddecChild(dec, 0);
+    CMR_MATROID_DEC* child1 = CMRmatroiddecChild(dec, 1);
+
+    ASSERT_EQ( CMRmatroiddecRegularity(child0), 0 );
+    ASSERT_LT( CMRmatroiddecRegularity(child1), 0 );
+
+    ASSERT_CMR_CALL( CMRtuCompleteDecomposition(cmr, child0, &params, NULL, DBL_MAX) );
+
+    ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, 0, true, true, true, true, true, true) );
+
+    ASSERT_LT( CMRmatroiddecRegularity(child0), 0 );
+    ASSERT_EQ( CMRmatroiddecType(child0), CMR_MATROID_DEC_TYPE_IRREGULAR );
+
+    ASSERT_CMR_CALL( CMRmatroiddecFree(cmr, &dec) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  }
+
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
@@ -1541,7 +1588,6 @@ TEST(TU, Random)
 
     printf("TU.Random matrix:\n");
     ASSERT_CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', false) );
-    fflush(stdout);
 
     bool isTU;
     CMR_MATROID_DEC* dec = NULL;
