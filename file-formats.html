@@ -77,18 +77,18 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p><a class="anchor" id="md__home_runner_work_cmr_cmr_doc_file_formats"></a> </p>
-<h1><a class="anchor" id="autotoc_md33"></a>
+<h1><a class="anchor" id="autotoc_md32"></a>
 Matrix File Formats</h1>
 <p>There are two accepted file formats for matrices.</p>
 <p><a class="anchor" id="dense-matrix"></a></p>
-<h2><a class="anchor" id="autotoc_md34"></a>
+<h2><a class="anchor" id="autotoc_md33"></a>
 Dense Matrix</h2>
 <p>The format <b>dense</b> is a text format in which a matrix \( A \in \mathbb{Z}^{m \times n} \) is represented as a whitespace-delimited list of \( m \), \( n \), and the \( m \cdot n \) entries \( A_{1,1} \), \( A_{1,2} \), etc.. The matrix \( A = \begin{pmatrix} 1 &amp; -1 &amp; 0 \\ 0 &amp; 1 &amp; 1 \end{pmatrix} \) is represented as follows: </p><pre class="fragment">2 3
 
 1 -1 0
 0  1 1
 </pre><p> <a class="anchor" id="sparse-matrix"></a></p>
-<h2><a class="anchor" id="autotoc_md35"></a>
+<h2><a class="anchor" id="autotoc_md34"></a>
 Sparse Matrix</h2>
 <p>The format <b>sparse</b> is a text format in which a matrix \( A \in \mathbb{Z}^{m \times n} \) with \( k \) non-zeros are represented as a whitespace-delimited list of \( m \), \( n \), \( k \) and \( k \) triples \( (r,c,v) \) for each nonzero value \( v \) in row \( r \) and column \( c \). Note that \( r \in \{1,2,\dotsc,m\} \) and \( c \in \{1,2,\dotsc,n\} \). The matrix \( A = \begin{pmatrix} 1 &amp; -1 &amp; 0 \\ 0 &amp; 1 &amp; 1 \end{pmatrix} \) is represented as follows: </p><pre class="fragment">2 3 4
 
@@ -96,11 +96,11 @@ Sparse Matrix</h2>
 1 2 -1
 2 2 1
 2 3 1
-</pre> <h1><a class="anchor" id="autotoc_md36"></a>
+</pre> <h1><a class="anchor" id="autotoc_md35"></a>
 Graph File Formats</h1>
 <p>Currently, graphs can only be specified by means of edge lists.</p>
 <p><a class="anchor" id="edge-list"></a></p>
-<h2><a class="anchor" id="autotoc_md37"></a>
+<h2><a class="anchor" id="autotoc_md36"></a>
 Edge List</h2>
 <p>The format <b>edgelist</b> is a text format in which a graph \( G = (V,E) \) is represented as a line-separated list of edges. The line for each edge contains two or three tokens, separated by whitespace. The first two are names of nodes and the optional third specifies a row/column element. The graph \( G = (V,E) \) with nodes \( V = \{v,x,y,z\} \) and edges \( E = \{ \{v,x\}, \{v,y\}, \{v,z\}, \{x,y\}, \{y,z\}, \{z,x\} \} \), labeled as \( r_1, r_2, r_3, c_1, c_2, c_3 \), respectively, is represented as follows: </p><pre class="fragment">v x r1
 v y r2
@@ -110,7 +110,7 @@ y z c2
 z x c3
 </pre><p> Row/column element labels are useful for <a class="el" href="graphic.html">Graphic / Cographic / Planar Matrices</a>. In fact, the format represents a digraph, which is useful for <a class="el" href="network.html">Network Matrices</a>.</p>
 <p><a class="anchor" id="dot"></a></p>
-<h2><a class="anchor" id="autotoc_md38"></a>
+<h2><a class="anchor" id="autotoc_md37"></a>
 Dot</h2>
 <p>The format <b>dot</b> is a text format for drawing graphs, e.g., via the <a href="https://graphviz.org">GraphViz</a> toolbox. See <a href="https://graphviz.org/doc/info/lang.html">here</a> for the language specification. </p>
 </div></div><!-- contents -->

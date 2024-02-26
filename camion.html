@@ -78,7 +78,7 @@ $(function() {
 <div class="contents">
 <div class="textblock"><p><a class="anchor" id="md__home_runner_work_cmr_cmr_doc_camion"></a> A key tool for the recognition of <a class="el" href="network.html">network matrices</a>, <a class="el" href="tu.html">totally unimodular matrices</a> and <a class="el" href="balanced.html">balanceable matrices</a> is Camion's signing algorithm. Its input is a binary matrix \( M \in \{0,1\}^{m \times n} \) and it computes a ternary matrix \( M&#39; \in \{-1,0,+1\}^{m \times n} \) with the same support, i.e., the same nonzero entries. The output matrix \( M&#39; \) is guaranteed to be <a class="el" href="balanced.html">balanced</a> if (and only if) \( M \) was <a class="el" href="balanced.html">balanceable</a>. This means that for every square submatrix of \( M&#39; \) with two nonzero entries per row and per column the the sum of all entries is divisible by 4. The algorithm always outputs a <b>Camion-signed matrix</b>, regardless of whether the input matrix was balanceable. In particular, it does not recognize whether it deals with a balanceable matrix or not.</p>
 <p>If \( M \) is balanceable, then \( M&#39; \) is unique up to scaling rows/columns with \( -1 \).</p>
-<h1><a class="anchor" id="autotoc_md7"></a>
+<h1><a class="anchor" id="autotoc_md6"></a>
 Checking for being Camion-signed</h1>
 <p>The command </p><pre class="fragment">cmr-camion IN-MAT [OPTION]...
 </pre><p> determines whether the matrix given in file <code>IN-MAT</code> is Camion-signed.</p>
@@ -88,17 +88,17 @@ Checking for being Camion-signed</h1>
 <li><code>-s</code> Print statistics about the computation to stderr.</li>
 </ul>
 <p>If <code>IN-MAT</code> is <code>-</code> then the matrix is read from stdin. If <code>NON-SUB</code> is <code>-</code> then the submatrix is written to stdout.</p>
-<h2><a class="anchor" id="autotoc_md8"></a>
+<h2><a class="anchor" id="autotoc_md7"></a>
 Algorithm</h2>
 <p>The implemented recognition algorithm is based on Section 18 of <a href="https://doi.org/10.1016/0095-8956(90)90030-4">A decomposition theory for matroids. V. Testing of matrix total unimodularity</a> by Klaus Truemper (Journal of Combinatorial Theory, Series B, 1990). For a matrix \( M \in \{-1,0,1\}^{m \times n} \) it runs in \( \mathcal{O}( \min(m^2 \cdot n, m \cdot n^2) ) \) time.</p>
-<h2><a class="anchor" id="autotoc_md9"></a>
+<h2><a class="anchor" id="autotoc_md8"></a>
 C Interface</h2>
 <p>The corresponding function in the library is</p>
 <ul>
 <li><a class="el" href="camion_8h.html#a56eb1190a40b4df0936153038ef12117" title="Tests a matrix  for being a Camion-signed.">CMRcamionTestSigns()</a> tests a matrix for being Camion-signed.</li>
 </ul>
 <p>and is defined in <a class="el" href="camion_8h.html">camion.h</a>.</p>
-<h1><a class="anchor" id="autotoc_md10"></a>
+<h1><a class="anchor" id="autotoc_md9"></a>
 Camion-signing a Matrix</h1>
 <p>The command </p><pre class="fragment">cmr-camion IN-MAT -S OUT-MAT [OPTION]...
 </pre><p> modifies the signs of the matrix given in file <code>IN-MAT</code> such that it is Camion-signed and writes the resulting new matrix to file <code>OUT-MAT</code>.</p>
@@ -108,10 +108,10 @@ Camion-signing a Matrix</h1>
 <li><code>-s</code> Print statistics about the computation to stderr.</li>
 </ul>
 <p>If <code>IN-MAT</code> is <code>-</code> then the matrix is read from stdin. If <code>OUT-MAT</code> is <code>-</code> then the matrix is written to stdout.</p>
-<h2><a class="anchor" id="autotoc_md11"></a>
+<h2><a class="anchor" id="autotoc_md10"></a>
 Algorithm</h2>
 <p>The implemented algorithm is based on Section 18 of <a href="https://doi.org/10.1016/0095-8956(90)90030-4">A decomposition theory for matroids. V. Testing of matrix total unimodularity</a> by Klaus Truemper (Journal of Combinatorial Theory, Series B, 1990). For a matrix \( M \in \{-1,0,1\}^{m \times n} \) it runs in \( \mathcal{O}( \min(m^2 \cdot n, m \cdot n^2) ) \) time.</p>
-<h2><a class="anchor" id="autotoc_md12"></a>
+<h2><a class="anchor" id="autotoc_md11"></a>
 C Interface</h2>
 <p>The corresponding function in the library is</p>
 <ul>

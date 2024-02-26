@@ -80,7 +80,7 @@ $(function() {
 \[ M(D,T)_{a,(v,w)} := \begin{cases} +1 &amp; \text{if the unique $v$-$w$-path in $T$ passes through $a$ forwardly}, \\ -1 &amp; \text{if the unique $v$-$w$-path in $T$ passes through $a$ backwardly}, \\ 0 &amp; \text{otherwise} \end{cases} \]
 </p>
 <p> is called the <b>network matrix</b> of \( D \) with respect to \( T \). A matrix \( M \) is called <b>network matrix</b> if there exists a digraph \( D \) with a directed spanning forest \( T \) such that \( M = M(D,T) \). Moreover, \( M \) is called <b>conetwork matrix</b> if \( M^{\textsf{T}} \) is a network matrix.</p>
-<h1><a class="anchor" id="autotoc_md51"></a>
+<h1><a class="anchor" id="autotoc_md50"></a>
 Recognizing Network Matrices</h1>
 <p>The command </p><pre class="fragment">cmr-network IN-MAT [OPTION]...
 </pre><p> determines whether the matrix given in file <code>IN-MAT</code> is (co)network.</p>
@@ -94,10 +94,10 @@ Recognizing Network Matrices</h1>
 <li><code>-s</code> Print statistics about the computation to stderr.</li>
 </ul>
 <p>If <code>IN-MAT</code> is <code>-</code> then the matrix is read from stdin. If <code>OUT-GRAPH</code>, <code>OUT-TREE</code>, <code>OUT-DOT</code> or <code>NON-SUB</code> is <code>-</code> then the graph (resp. the tree, dot file or non-(co)network submatrix) is written to stdout.</p>
-<h2><a class="anchor" id="autotoc_md52"></a>
+<h2><a class="anchor" id="autotoc_md51"></a>
 Algorithm</h2>
 <p>The implemented recognition algorithm first tests the support matrix of \( M \) for being <a class="el" href="graphic.html">(co)graphic</a> and uses <a class="el" href="camion.html">Camion's Signing Algorithm</a> for testing whether \( M \) is signed correctly.</p>
-<h2><a class="anchor" id="autotoc_md53"></a>
+<h2><a class="anchor" id="autotoc_md52"></a>
 C Interface</h2>
 <p>The corresponding functions in the library are</p>
 <ul>
@@ -105,7 +105,7 @@ C Interface</h2>
 <li><a class="el" href="network_8h.html#a58dbe7e752236472094b38e96e0b5049" title="Tests a matrix  for being a conetwork matrix.">CMRnetworkTestTranspose()</a> tests a matrix for being conetwork.</li>
 </ul>
 <p>and are defined in <a class="el" href="network_8h.html">network.h</a>.</p>
-<h1><a class="anchor" id="autotoc_md54"></a>
+<h1><a class="anchor" id="autotoc_md53"></a>
 Computing network matrices</h1>
 <p>The command </p><pre class="fragment">cmr-network -c IN-GRAPH OUT-MAT [OPTION]...
 </pre><p> computes a (co)network matrix corresponding to the digraph from file <code>IN-GRAPH</code> and writes it to <code>OUT-MAT</code>.</p>
@@ -116,7 +116,7 @@ Computing network matrices</h1>
 <li><code>-s</code> Print statistics about the computation to stderr.</li>
 </ul>
 <p>If <code>IN-GRAPH</code> or <code>IN-TREE</code> is <code>-</code> then the digraph (resp. directed tree) is read from stdin. If <code>OUT-MAT</code> is <code>-</code> then the matrix is written to stdout.</p>
-<h2><a class="anchor" id="autotoc_md55"></a>
+<h2><a class="anchor" id="autotoc_md54"></a>
 C Interface</h2>
 <p>The corresponding function in the library is</p>
 <ul>
