@@ -46,7 +46,7 @@ Changes and bug fixes are listed [here](\ref changes).
 The software is released under the [MIT License](https://en.wikipedia.org/wiki/MIT_License).
 Please cite the paper(s) corresponding to the respective tools.
 
-# Authors # (#authors)
+# Authors # {#authors}
 
 - [Rolf van der Hulst](https://people.utwente.nl/r.p.vanderhulst)
 - Henk Kraaij
