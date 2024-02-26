@@ -1,7 +1,7 @@
 var searchData=
 [
   ['cmr_5fcall_2134',['CMR_CALL',['../env_8h.html#a5105050775aa58ba2d9ff8dd81e5a99e',1,'env.h']]],
-  ['cmr_5fdebug_2135',['CMR_DEBUG',['../regular_8c.html#aaf4503422b8ef76e6591c97a9b3499d0',1,'CMR_DEBUG():&#160;regular.c'],['../regularity_8c.html#aaf4503422b8ef76e6591c97a9b3499d0',1,'CMR_DEBUG():&#160;regularity.c'],['../separation_8c.html#aaf4503422b8ef76e6591c97a9b3499d0',1,'CMR_DEBUG():&#160;separation.c']]],
+  ['cmr_5fdebug_2135',['CMR_DEBUG',['../regularity_8c.html#aaf4503422b8ef76e6591c97a9b3499d0',1,'regularity.c']]],
   ['cmr_5funused_2136',['CMR_UNUSED',['../env_8h.html#a4460b6013023896e1cfd0e1e65ffe418',1,'env.h']]],
   ['cmrallocblock_2137',['CMRallocBlock',['../env_8h.html#a85b020189d0ab0cd72a0110decd9e74a',1,'env.h']]],
   ['cmrallocblockarray_2138',['CMRallocBlockArray',['../env_8h.html#ac3a20b0cc458706e1f49c510a6c4410b',1,'env.h']]],
