@@ -505,6 +505,8 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
         numChildBaseRows, numChildBaseColumns, CMRelementToRowIndex(sourceRowElement),
         CMRelementToColumnIndex(targetColumnElement), CMRelementToColumnIndex(targetColumnElement), extraEntry) );
     }
+
+    dec->threesumFlags = CMR_MATROID_DEC_THREESUM_FLAG_DISTRIBUTED_RANKS;
   }
   else
   {
@@ -522,6 +524,8 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
 
       assert(false);
     }
+
+    dec->threesumFlags = CMR_MATROID_DEC_THREESUM_FLAG_CONCENTRATED_RANK;
   }
 
 cleanup:

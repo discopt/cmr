@@ -1037,6 +1037,8 @@ TEST(TU, ThreeSumWideWideR12)
     CMR_MATROID_DEC* child = CMRmatroiddecChild(dec, 0);
 
     ASSERT_EQ( CMRmatroiddecType(child), CMR_MATROID_DEC_TYPE_THREE_SUM );
+    ASSERT_TRUE( CMRmatroiddecThreeSumDistributedRanks(child) );
+    ASSERT_FALSE( CMRmatroiddecThreeSumConcentratedRank(child) );
     ASSERT_EQ( CMRmatroiddecNumChildren(child), 2UL );
 
     CMR_MATROID_DEC* grandChild1 = CMRmatroiddecChild(child, 0);
