@@ -132,7 +132,7 @@ CMR_ERROR CMRdecomposeBlocks(CMR* cmr, CMR_MATRIX* matrix, size_t matrixType, si
   for (int node = 0; node < numNodes; ++node)
     assert(graphNodes[node].degree == 0);
 
-  /* Run DFS. */
+  /* Run BFS. */
   for (int startNode = 0; startNode < numNodes; ++startNode)
   {
     if (graphNodes[startNode].component < 0)
@@ -178,7 +178,7 @@ CMR_ERROR CMRdecomposeBlocks(CMR* cmr, CMR_MATRIX* matrix, size_t matrixType, si
   *pnumBlocks = countBlocks;
 
 #if defined(CMR_DEBUG)
-  printf("DFS found %d components.\n", countBlocks);
+  printf("BFS found %d components.\n", countBlocks);
   for (int node = 0; node < numNodes; ++node)
   {
     printf("Node %d has component %d.\n", node, graphNodes[node].component);
@@ -207,11 +207,11 @@ CMR_ERROR CMRdecomposeBlocks(CMR* cmr, CMR_MATRIX* matrix, size_t matrixType, si
     assert(comp >= 0);
     if (node < firstColumnNode)
     {
-            blocks[comp].matrix->numRows++;
-            blocks[comp].matrix->numNonzeros += end - start;
+      blocks[comp].matrix->numRows++;
+      blocks[comp].matrix->numNonzeros += end - start;
     }
     else
-            blocks[comp].matrix->numColumns++;
+      blocks[comp].matrix->numColumns++;
   }
 
   /* Allocate memory */
@@ -260,9 +260,9 @@ CMR_ERROR CMRdecomposeBlocks(CMR* cmr, CMR_MATRIX* matrix, size_t matrixType, si
     int comp = graphNodes[node].component;
     int order = graphNodes[node].order;
     if (node < firstColumnNode)
-            blocks[comp].rowsToOriginal[order] = node;
+      blocks[comp].rowsToOriginal[order] = node;
     else
-            blocks[comp].columnsToOriginal[order] = node - firstColumnNode;
+      blocks[comp].columnsToOriginal[order] = node - firstColumnNode;
   }
 
 #if defined(CMR_DEBUG)

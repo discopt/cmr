@@ -54,19 +54,11 @@ CMR_ERROR CMRregularitySearchOneSum(CMR* cmr, DecompositionTask* task, Decomposi
   {
     CMRdbgMsg(6, "The 1-sum consists of %zu components.\n", numComponents);
 
-    /* We create an intermediate array for sorting the components in descending order by number of nonzeros. */
-
-    CMR_BLOCK** orderedComponents = NULL;
-    CMR_CALL( CMRallocStackArray(cmr, &orderedComponents, numComponents) );
-    for (size_t comp = 0; comp < numComponents; ++comp)
-      orderedComponents[comp] = &components[comp];
-    CMR_CALL( CMRsort(cmr, numComponents, orderedComponents, sizeof(CMR_BLOCK*), &compareOneSumComponents) );
-
     /* We now create the children. */
     CMR_CALL( CMRmatroiddecUpdateOneSum(cmr, task->dec, numComponents) );
     for (size_t comp = 0; comp < numComponents; ++comp)
     {
-      CMR_BLOCK* component = orderedComponents[comp];
+      CMR_BLOCK* component = &components[comp];
       CMR_CALL( CMRmatroiddecCreateChildFromMatrices(cmr, task->dec, comp, (CMR_CHRMAT*) component->matrix,
         (CMR_CHRMAT*) component->transpose, component->rowsToOriginal, component->columnsToOriginal) );
 
@@ -75,10 +67,9 @@ CMR_ERROR CMRregularitySearchOneSum(CMR* cmr, DecompositionTask* task, Decomposi
     }
     task->dec->type = CMR_MATROID_DEC_TYPE_ONE_SUM;
 
-    CMR_CALL( CMRfreeStackArray(cmr, &orderedComponents) );
-
-    for (size_t child = 0; child < numComponents; ++child)
+    for (size_t c = numComponents; c > 0; --c)
     {
+      size_t child = c - 1;
       task->dec->children[child]->testedTwoConnected = true;
       DecompositionTask* childTask = NULL;
       CMR_CALL( CMRregularityTaskCreateRoot(cmr, task->dec->children[child], &childTask, task->params, task->stats,

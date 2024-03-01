@@ -1511,15 +1511,15 @@ TEST(TU, CompleteTree)
     CMR_MATROID_DEC* child0 = CMRmatroiddecChild(dec, 0);
     CMR_MATROID_DEC* child1 = CMRmatroiddecChild(dec, 1);
 
-    ASSERT_EQ( CMRmatroiddecRegularity(child0), 0 );
-    ASSERT_LT( CMRmatroiddecRegularity(child1), 0 );
+    ASSERT_LT( CMRmatroiddecRegularity(child0), 0 );
+    ASSERT_EQ( CMRmatroiddecRegularity(child1), 0 );
 
-    ASSERT_CMR_CALL( CMRtuCompleteDecomposition(cmr, child0, &params, NULL, DBL_MAX) );
+    ASSERT_CMR_CALL( CMRtuCompleteDecomposition(cmr, child1, &params, NULL, DBL_MAX) );
 
     ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, 0, true, true, true, true, true, true) );
 
-    ASSERT_LT( CMRmatroiddecRegularity(child0), 0 );
-    ASSERT_EQ( CMRmatroiddecType(child0), CMR_MATROID_DEC_TYPE_IRREGULAR );
+    ASSERT_LT( CMRmatroiddecRegularity(child1), 0 );
+    ASSERT_EQ( CMRmatroiddecType(child1), CMR_MATROID_DEC_TYPE_IRREGULAR );
 
     ASSERT_CMR_CALL( CMRmatroiddecFree(cmr, &dec) );
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
