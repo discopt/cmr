@@ -1026,6 +1026,8 @@ TEST(TU, ThreeSumWideWideR12)
 
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
 
+    ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, 0, true, true, true, true, true, true) );
+
     ASSERT_GT( CMRmatroiddecRegularity(dec), 0 );
     ASSERT_LT( CMRmatroiddecGraphicness(dec), 0 );
     ASSERT_EQ( CMRmatroiddecType(dec), CMR_MATROID_DEC_TYPE_PIVOTS );
