@@ -36,13 +36,11 @@ struct _CMR_MATROID_DEC
   size_t* rowsChild;                          /**< \brief Array for mapping each row to a row of the child (if
                                                **         applicable). */
   size_t* rowsParent;                         /**< \brief Array for mapping rows to rows of parent (or \c SIZE_MAX). */
-  CMR_ELEMENT* rowsRootElement;               /**< \brief Array for mapping rows to elements of the root matrix. */
 
   size_t numColumns;                          /**< \brief Length of \ref columnsParent. */
   size_t* columnsChild;                       /**< \brief Array for mapping each column to a column of the child (if
                                                **         applicable). */
   size_t* columnsParent;                      /**< \brief Array for mapping columns to columns of parent (or \c SIZE_MAX). */
-  CMR_ELEMENT* columnsRootElement;            /**< \brief Array for mapping rows to elements of the root matrix. */
 
   CMR_GRAPH* graph;                           /**< \brief Graph represented by this matrix. */
   CMR_GRAPH_EDGE* graphForest;                /**< \brief Array with edges of spanning forest of graph. */

@@ -450,13 +450,6 @@ size_t CMRmatroiddecNumColumns(CMR_MATROID_DEC* dec)
   return dec->numColumns;
 }
 
-CMR_ELEMENT * CMRmatroiddecColumnsRootElement(CMR_MATROID_DEC* dec)
-{
-  assert(dec);
-
-  return dec->columnsRootElement;
-}
-
 size_t* CMRmatroiddecColumnsParent(CMR_MATROID_DEC* dec)
 {
   assert(dec);
@@ -833,11 +826,9 @@ CMR_ERROR CMRmatroiddecFreeNode(CMR* cmr, CMR_MATROID_DEC** pdec)
 
   CMR_CALL( CMRfreeBlockArray(cmr, &dec->rowsChild) );
   CMR_CALL( CMRfreeBlockArray(cmr, &dec->rowsParent) );
-  CMR_CALL( CMRfreeBlockArray(cmr, &dec->rowsRootElement) );
 
   CMR_CALL( CMRfreeBlockArray(cmr, &dec->columnsChild) );
   CMR_CALL( CMRfreeBlockArray(cmr, &dec->columnsParent) );
-  CMR_CALL( CMRfreeBlockArray(cmr, &dec->columnsRootElement) );
 
   CMR_CALL( CMRgraphFree(cmr, &dec->graph) );
   CMR_CALL( CMRfreeBlockArray(cmr, &dec->graphForest) );
@@ -927,12 +918,10 @@ CMR_ERROR createNode(
   dec->numRows = numRows;
   dec->rowsChild = NULL;
   dec->rowsParent = NULL;
-  dec->rowsRootElement = NULL;
   if (numRows)
   {
     CMR_CALL( CMRallocBlockArray(cmr, &dec->rowsChild, numRows) );
     CMR_CALL( CMRallocBlockArray(cmr, &dec->rowsParent, numRows) );
-    CMR_CALL( CMRallocBlockArray(cmr, &dec->rowsRootElement, numRows) );
     for (size_t row = 0; row < numRows; ++row)
     {
       dec->rowsChild[row] = SIZE_MAX;
@@ -943,12 +932,10 @@ CMR_ERROR createNode(
   dec->numColumns = numColumns;
   dec->columnsChild = NULL;
   dec->columnsParent = NULL;
-  dec->columnsRootElement = NULL;
   if (numColumns)
   {
     CMR_CALL( CMRallocBlockArray(cmr, &dec->columnsChild, numColumns) );
     CMR_CALL( CMRallocBlockArray(cmr, &dec->columnsParent, numColumns) );
-    CMR_CALL( CMRallocBlockArray(cmr, &dec->columnsRootElement, numColumns) );
     for (size_t column = 0; column < numColumns; ++column)
     {
       dec->columnsChild[column] = SIZE_MAX;
@@ -1172,7 +1159,6 @@ CMR_ERROR CMRmatroiddecInitializeParent(CMR* cmr, CMR_MATROID_DEC* dec, size_t p
     size_t parentRow = rowsToParentRow[row];
     dec->rowsParent[row] = parentRow;
     dec->parent->rowsChild[parentRow] = parentsChildIndex;
-    dec->rowsRootElement[row] = dec->parent->rowsRootElement[parentRow];
   }
 
   for (size_t column = 0; column < dec->numColumns; ++column)
@@ -1180,7 +1166,6 @@ CMR_ERROR CMRmatroiddecInitializeParent(CMR* cmr, CMR_MATROID_DEC* dec, size_t p
     size_t parentColumn = columnsToParentColumn[column];
     dec->columnsParent[column] = parentColumn;
     dec->parent->columnsChild[parentColumn] = parentsChildIndex;
-    dec->columnsRootElement[column] = dec->parent->columnsRootElement[parentColumn];
   }
 
   return CMR_OKAY;

@@ -385,15 +385,6 @@ size_t CMRmatroiddecNumRows(
 );
 
 /**
- * \brief Returns the elements of the root matrix that correspond to this node matrix' rows.
- */
-
-CMR_EXPORT
-CMR_ELEMENT* CMRmatroiddecRowsRootElement(
-  CMR_MATROID_DEC* dec  /**< Decomposition node. */
-);
-
-/**
  * \brief Returns the mapping of rows to rows of parent.
  */
 
@@ -408,15 +399,6 @@ size_t* CMRmatroiddecRowsParent(
 
 CMR_EXPORT
 size_t CMRmatroiddecNumColumns(
-  CMR_MATROID_DEC* dec  /**< Decomposition node. */
-);
-
-/**
- * \brief Returns the elements of the root matrix that correspond to this node matrix' columns.
- */
-
-CMR_EXPORT
-CMR_ELEMENT* CMRmatroiddecColumnsRootElement(
   CMR_MATROID_DEC* dec  /**< Decomposition node. */
 );
 
