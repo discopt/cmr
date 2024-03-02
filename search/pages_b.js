@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['totally_20balanced_20matrices_2172',['Totally Balanced Matrices',['../totally-balanced.html',1,'']]],
-  ['totally_20unimodular_20matrices_2173',['Totally Unimodular Matrices',['../tu.html',1,'']]]
+  ['totally_20balanced_20matrices_2164',['Totally Balanced Matrices',['../totally-balanced.html',1,'']]],
+  ['totally_20unimodular_20matrices_2165',['Totally Unimodular Matrices',['../tu.html',1,'']]]
 ];
