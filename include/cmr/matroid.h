@@ -389,7 +389,7 @@ size_t CMRmatroiddecNumRows(
  */
 
 CMR_EXPORT
-size_t* CMRmatroiddecRowsParent(
+CMR_ELEMENT* CMRmatroiddecRowsParent(
   CMR_MATROID_DEC* dec  /**< Decomposition node. */
 );
 
@@ -409,7 +409,7 @@ size_t CMRmatroiddecNumColumns(
  */
 
 CMR_EXPORT
-size_t* CMRmatroiddecColumnsParent(
+CMR_ELEMENT* CMRmatroiddecColumnsParent(
   CMR_MATROID_DEC* dec  /**< Decomposition node. */
 );
 
@@ -554,16 +554,16 @@ size_t* CMRmatroiddecPivotColumns(
 
 CMR_EXPORT
 CMR_ERROR CMRmatroiddecPrint(
-  CMR* cmr,                     /**< \ref CMR environment. */
-  CMR_MATROID_DEC* dec,         /**< Decomposition node. */
-  FILE* stream,                 /**< Stream to write to. */
-  size_t indent,                /**< Indentation of this node. */
-  bool printChildren,           /**< Whether to recurse. */
-  bool printParentRowsColumns,  /**< Whether to print mapping of rows/columns to parent rows/columns. */
-  bool printMatrices,           /**< Whether to print matrices. */
-  bool printGraphs,             /**< Whether to print graphs. */
-  bool printReductions,         /**< Whether to print series-parallel reductions. */
-  bool printPivots              /**< Whether to print pivots. */
+  CMR* cmr,                 /**< \ref CMR environment. */
+  CMR_MATROID_DEC* dec,     /**< Decomposition node. */
+  FILE* stream,             /**< Stream to write to. */
+  size_t indent,            /**< Indentation of this node. */
+  bool printChildren,       /**< Whether to recurse. */
+  bool printParentElements, /**< Whether to print mapping of rows/columns to parent elements. */
+  bool printMatrices,       /**< Whether to print matrices. */
+  bool printGraphs,         /**< Whether to print graphs. */
+  bool printReductions,     /**< Whether to print series-parallel reductions. */
+  bool printPivots          /**< Whether to print pivots. */
 );
 
 /**

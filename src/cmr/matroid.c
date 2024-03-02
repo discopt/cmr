@@ -435,7 +435,7 @@ size_t CMRmatroiddecNumRows(CMR_MATROID_DEC* dec)
   return dec->numRows;
 }
 
-size_t* CMRmatroiddecRowsParent(CMR_MATROID_DEC* dec)
+CMR_ELEMENT* CMRmatroiddecRowsParent(CMR_MATROID_DEC* dec)
 {
   assert(dec);
 
@@ -450,7 +450,7 @@ size_t CMRmatroiddecNumColumns(CMR_MATROID_DEC* dec)
   return dec->numColumns;
 }
 
-size_t* CMRmatroiddecColumnsParent(CMR_MATROID_DEC* dec)
+CMR_ELEMENT* CMRmatroiddecColumnsParent(CMR_MATROID_DEC* dec)
 {
   assert(dec);
 
@@ -591,7 +591,7 @@ size_t * CMRmatroiddecPivotColumns(CMR_MATROID_DEC* dec)
 }
 
 CMR_ERROR CMRmatroiddecPrint(CMR* cmr, CMR_MATROID_DEC* dec, FILE* stream, size_t indent, bool printChildren,
-  bool printParentRowsColumns, bool printMatrices, bool printGraphs, bool printReductions, bool printPivots)
+  bool printParentElements, bool printMatrices, bool printGraphs, bool printReductions, bool printPivots)
 {
   assert(cmr);
   assert(stream);
@@ -718,19 +718,21 @@ CMR_ERROR CMRmatroiddecPrint(CMR* cmr, CMR_MATROID_DEC* dec, FILE* stream, size_
     fputc('\n', stream);
   }
 
-  if (printParentRowsColumns)
+  if (printParentElements)
   {
     if (dec->rowsParent)
     {
       for (size_t i = 0; i < indent; ++i)
         fputc(' ', stream);
-      fprintf(stream, "with mapping of rows to parent's rows:");
+      fprintf(stream, "with mapping of rows to parent:");
       for (size_t row = 0; row < dec->numRows; ++row)
       {
-        if (dec->rowsParent[row] == SIZE_MAX)
-          fprintf(stream, " N/A");
+        if (CMRelementIsRow(dec->rowsParent[row]))
+          fprintf(stream, " r%zu", CMRelementToRowIndex(dec->rowsParent[row])+1);
+        else if (CMRelementIsColumn(dec->rowsParent[row]))
+          fprintf(stream, " c%zu", CMRelementToColumnIndex(dec->rowsParent[row])+1);
         else
-          fprintf(stream, " r%zu", dec->rowsParent[row]+1);
+          fprintf(stream, " N/A");
       }
       fprintf(stream, "\n");
     }
@@ -741,10 +743,12 @@ CMR_ERROR CMRmatroiddecPrint(CMR* cmr, CMR_MATROID_DEC* dec, FILE* stream, size_
       fprintf(stream, "with mapping of columns to parent's columns:");
       for (size_t column = 0; column < dec->numColumns; ++column)
       {
-        if (dec->columnsParent[column] == SIZE_MAX)
-          fprintf(stream, " N/A");
+        if (CMRelementIsRow(dec->columnsParent[column]))
+          fprintf(stream, " r%zu", CMRelementToRowIndex(dec->columnsParent[column])+1);
+        else if (CMRelementIsColumn(dec->columnsParent[column]))
+          fprintf(stream, " c%zu", CMRelementToColumnIndex(dec->columnsParent[column])+1);
         else
-          fprintf(stream, " c%zu", dec->columnsParent[column]+1);
+          fprintf(stream, " N/A");
       }
       fprintf(stream, "\n");
     }
@@ -803,7 +807,7 @@ CMR_ERROR CMRmatroiddecPrint(CMR* cmr, CMR_MATROID_DEC* dec, FILE* stream, size_
         fprintf(stream, "Unique child:\n");
       else
         fprintf(stream, "Child #%zu:\n", c+1);
-      CMR_CALL( CMRmatroiddecPrint(cmr, dec->children[c], stream, indent + 2, printChildren, printParentRowsColumns,
+      CMR_CALL( CMRmatroiddecPrint(cmr, dec->children[c], stream, indent + 2, printChildren, printParentElements,
         printMatrices, printGraphs, printReductions, printPivots) );
     }
   }
@@ -925,7 +929,7 @@ CMR_ERROR createNode(
     for (size_t row = 0; row < numRows; ++row)
     {
       dec->rowsChild[row] = SIZE_MAX;
-      dec->rowsParent[row] = SIZE_MAX;
+      dec->rowsParent[row] = 0;
     }
   }
 
@@ -939,7 +943,7 @@ CMR_ERROR createNode(
     for (size_t column = 0; column < numColumns; ++column)
     {
       dec->columnsChild[column] = SIZE_MAX;
-      dec->columnsParent[column] = SIZE_MAX;
+      dec->columnsParent[column] = 0;
     }
   }
 
@@ -1003,13 +1007,13 @@ CMR_ERROR updateRowsColumnsToParent(
   for (size_t row = 0; row < dec->numRows; ++row)
   {
     size_t parentRow = parentRows[row];
-    dec->rowsParent[row] = parentRow;
+    dec->rowsParent[row] = CMRrowToElement(parentRow);
   }
 
   for (size_t column = 0; column < dec->numColumns; ++column)
   {
     size_t parentColumn = parentColumns[column];
-    dec->columnsParent[column] = parentColumn;
+    dec->columnsParent[column] = CMRcolumnToElement(parentColumn);
   }
 
   return CMR_OKAY;
@@ -1067,8 +1071,26 @@ CMR_ERROR updateMatrix(
   assert(dec->parent);
   assert(dec->parent->matrix);
 
-  CMR_CALL( CMRchrmatFilter(cmr, dec->parent->matrix, dec->numRows, dec->rowsParent, dec->numColumns,
-    dec->columnsParent, &dec->matrix) );
+  size_t* rows = NULL;
+  CMR_CALL( CMRallocStackArray(cmr, &rows, dec->numRows) );
+  for (size_t row = 0; row < dec->numRows; ++row)
+  {
+    assert(CMRelementIsRow(dec->rowsParent[row]));
+    rows[row] = CMRelementToRowIndex(dec->rowsParent[row]);
+  }
+
+  size_t* columns = NULL;
+  CMR_CALL( CMRallocStackArray(cmr, &columns, dec->numColumns) );
+  for (size_t column = 0; column < dec->numColumns; ++column)
+  {
+    assert(CMRelementIsColumn(dec->columnsParent[column]));
+    columns[column] = CMRelementToColumnIndex(dec->columnsParent[column]);
+  }
+
+  CMR_CALL( CMRchrmatFilter(cmr, dec->parent->matrix, dec->numRows, rows, dec->numColumns, columns, &dec->matrix) );
+
+  CMR_CALL( CMRfreeStackArray(cmr, &columns) );
+  CMR_CALL( CMRfreeStackArray(cmr, &rows) );
 
   return CMR_OKAY;
 }
@@ -1092,7 +1114,7 @@ CMR_ERROR CMRmatroiddecCreateMatrixRoot(CMR* cmr, CMR_MATROID_DEC** pdec, bool i
 }
 
 CMR_ERROR CMRmatroiddecCreateChildFromMatrices(CMR* cmr, CMR_MATROID_DEC* parent, size_t childIndex, CMR_CHRMAT* matrix,
-  CMR_CHRMAT* transpose, size_t* rowsParent, size_t* columnsParent)
+  CMR_CHRMAT* transpose, CMR_ELEMENT* rowsParent, CMR_ELEMENT* columnsParent)
 {
   assert(cmr);
   assert(parent);
@@ -1109,18 +1131,22 @@ CMR_ERROR CMRmatroiddecCreateChildFromMatrices(CMR* cmr, CMR_MATROID_DEC* parent
 
   for (size_t row = 0; row < matrix->numRows; ++row)
   {
-    size_t parentRow = rowsParent[row];
-    dec->rowsParent[row] = parentRow;
-    if (parentRow != SIZE_MAX)
-      parent->rowsChild[parentRow] = childIndex;
+    CMR_ELEMENT parentElement = rowsParent[row];
+    dec->rowsParent[row] = parentElement;
+    if (CMRelementIsRow(parentElement))
+      parent->rowsChild[CMRelementToRowIndex(parentElement)] = childIndex;
+    else if (CMRelementIsColumn(parentElement))
+      parent->columnsChild[CMRelementToColumnIndex(parentElement)] = childIndex;
   }
 
   for (size_t column = 0; column < matrix->numColumns; ++column)
   {
-    size_t parentColumn = columnsParent[column];
-    dec->columnsParent[column] = parentColumn;
-    if (parentColumn != SIZE_MAX)
-      parent->columnsChild[parentColumn] = childIndex;
+    CMR_ELEMENT parentElement = columnsParent[column];
+    dec->columnsParent[column] = parentElement;
+    if (CMRelementIsRow(parentElement))
+      parent->rowsChild[CMRelementToRowIndex(parentElement)] = childIndex;
+    else if (CMRelementIsColumn(parentElement))
+      parent->columnsChild[CMRelementToColumnIndex(parentElement)] = childIndex;
   }
 
   return CMR_OKAY;
@@ -1157,14 +1183,14 @@ CMR_ERROR CMRmatroiddecInitializeParent(CMR* cmr, CMR_MATROID_DEC* dec, size_t p
   for (size_t row = 0; row < dec->numRows; ++row)
   {
     size_t parentRow = rowsToParentRow[row];
-    dec->rowsParent[row] = parentRow;
+    dec->rowsParent[row] = CMRrowToElement(parentRow);
     dec->parent->rowsChild[parentRow] = parentsChildIndex;
   }
 
   for (size_t column = 0; column < dec->numColumns; ++column)
   {
     size_t parentColumn = columnsToParentColumn[column];
-    dec->columnsParent[column] = parentColumn;
+    dec->columnsParent[column] = CMRcolumnToElement(parentColumn);
     dec->parent->columnsChild[parentColumn] = parentsChildIndex;
   }
 
@@ -1318,13 +1344,13 @@ CMR_ERROR CMRmatroiddecUpdatePivots(CMR* cmr, CMR_MATROID_DEC* dec, size_t numPi
   CMR_CALL( CMRduplicateBlockArray(cmr, &dec->pivotColumns, numPivots, pivotColumns) );
 
   for (size_t row = 0; row < dec->numRows; ++row)
-    dec->children[0]->rowsParent[row] = row;
+    dec->children[0]->rowsParent[row] = CMRrowToElement(row);
   for (size_t column = 0; column < dec->numColumns; ++column)
-    dec->children[0]->columnsParent[column] = column;
+    dec->children[0]->columnsParent[column] = CMRcolumnToElement(column);
   for (size_t pivot = 0; pivot < numPivots; ++pivot)
   {
-    dec->children[0]->rowsParent[pivotRows[pivot]] = SIZE_MAX;
-    dec->children[0]->columnsParent[pivotColumns[pivot]] = SIZE_MAX;
+    dec->children[0]->rowsParent[pivotRows[pivot]] = CMRcolumnToElement(pivotColumns[pivot]);
+    dec->children[0]->columnsParent[pivotColumns[pivot]] = CMRrowToElement(pivotRows[pivot]);
   }
 
   return CMR_OKAY;

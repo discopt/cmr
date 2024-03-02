@@ -35,12 +35,12 @@ struct _CMR_MATROID_DEC
   size_t numRows;                             /**< \brief Length of \ref rowsParent. */
   size_t* rowsChild;                          /**< \brief Array for mapping each row to a row of the child (if
                                                **         applicable). */
-  size_t* rowsParent;                         /**< \brief Array for mapping rows to rows of parent (or \c SIZE_MAX). */
+  CMR_ELEMENT* rowsParent;                    /**< \brief Array for mapping rows to elements of parent (or 0). */
 
   size_t numColumns;                          /**< \brief Length of \ref columnsParent. */
   size_t* columnsChild;                       /**< \brief Array for mapping each column to a column of the child (if
                                                **         applicable). */
-  size_t* columnsParent;                      /**< \brief Array for mapping columns to columns of parent (or \c SIZE_MAX). */
+  CMR_ELEMENT* columnsParent;                 /**< \brief Array for mapping columns to elements of parent (or 0). */
 
   CMR_GRAPH* graph;                           /**< \brief Graph represented by this matrix. */
   CMR_GRAPH_EDGE* graphForest;                /**< \brief Array with edges of spanning forest of graph. */
@@ -131,13 +131,13 @@ CMR_ERROR CMRmatroiddecUpdateOneSum(
  */
 
 CMR_ERROR CMRmatroiddecCreateChildFromMatrices(
-  CMR* cmr,                 /**< \ref CMR environment. */
-  CMR_MATROID_DEC* parent,  /**< Parent node. */
-  size_t childIndex,        /**< Child index of parent. */
-  CMR_CHRMAT* matrix,       /**< The matrix corresponding to this node. */
-  CMR_CHRMAT* transpose,    /**< The transpose matrix corresponding to this node. */
-  size_t* rowsParent,       /**< Array for mapping rows to rows of parent. */
-  size_t* columnsParent     /**< Array for mapping columns to columns of parent. */
+  CMR* cmr,                   /**< \ref CMR environment. */
+  CMR_MATROID_DEC* parent,    /**< Parent node. */
+  size_t childIndex,          /**< Child index of parent. */
+  CMR_CHRMAT* matrix,         /**< The matrix corresponding to this node. */
+  CMR_CHRMAT* transpose,      /**< The transpose matrix corresponding to this node. */
+  CMR_ELEMENT* rowsParent,    /**< Array for mapping rows to elements of parent. */
+  CMR_ELEMENT* columnsParent  /**< Array for mapping columns to elements of parent. */
 );
 
 /**
