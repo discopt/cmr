@@ -54,18 +54,31 @@ CMR_ERROR CMRregularitySearchOneSum(CMR* cmr, DecompositionTask* task, Decomposi
   {
     CMRdbgMsg(6, "The 1-sum consists of %zu components.\n", numComponents);
 
+    /* Space for mapping of rows/columns to rows. */
+    CMR_ELEMENT* rowsToParent = NULL;
+    CMR_CALL( CMRallocStackArray(cmr, &rowsToParent, task->dec->numRows) );
+    CMR_ELEMENT* columnsToParent = NULL;
+    CMR_CALL( CMRallocStackArray(cmr, &columnsToParent, task->dec->numColumns) );
+
     /* We now create the children. */
     CMR_CALL( CMRmatroiddecUpdateOneSum(cmr, task->dec, numComponents) );
     for (size_t comp = 0; comp < numComponents; ++comp)
     {
       CMR_BLOCK* component = &components[comp];
+      for (size_t row = 0; row < component->matrix->numRows; ++row)
+        rowsToParent[row] = CMRrowToElement(component->rowsToOriginal[row]);
+      for (size_t column = 0; column < component->matrix->numColumns; ++column)
+        columnsToParent[column] = CMRcolumnToElement(component->columnsToOriginal[column]);
       CMR_CALL( CMRmatroiddecCreateChildFromMatrices(cmr, task->dec, comp, (CMR_CHRMAT*) component->matrix,
-        (CMR_CHRMAT*) component->transpose, component->rowsToOriginal, component->columnsToOriginal) );
+        (CMR_CHRMAT*) component->transpose, rowsToParent, columnsToParent) );
 
       CMR_CALL( CMRfreeBlockArray(cmr, &component->rowsToOriginal) );
       CMR_CALL( CMRfreeBlockArray(cmr, &component->columnsToOriginal) );
     }
     task->dec->type = CMR_MATROID_DEC_TYPE_ONE_SUM;
+
+    CMR_CALL( CMRfreeStackArray(cmr, &columnsToParent) );
+    CMR_CALL( CMRfreeStackArray(cmr, &rowsToParent) );
 
     for (size_t c = numComponents; c > 0; --c)
     {
