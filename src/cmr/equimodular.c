@@ -83,7 +83,10 @@ CMR_ERROR CMRequimodularTest(CMR* cmr, CMR_INTMAT* matrix, bool* pisEquimodular,
   CMR_ERROR error = CMRintmatComputeUpperDiagonal(cmr, matrix, true, &rank, &basisPermutation, &transformed_matrix,
     &transformed_transpose);
   if (error == CMR_ERROR_OVERFLOW)
+  {
+    CMR_CALL( CMRsubmatFree(cmr, &basisPermutation) );
     return CMR_ERROR_OVERFLOW;
+  }
   CMR_CALL(error);
 
 #if defined(CMR_DEBUG)
