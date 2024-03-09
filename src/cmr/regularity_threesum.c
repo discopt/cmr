@@ -1,4 +1,4 @@
-// #define CMR_DEBUG /** Uncomment to debug this file. */
+#define CMR_DEBUG /** Uncomment to debug this file. */
 
 #include <cmr/regular.h>
 
@@ -52,6 +52,8 @@ CMR_ERROR findSubmatrixCycle(
   size_t numRows = matrix->numRows;
   size_t numColumns = matrix->numColumns;
 
+  CMRdbgMsg(12, "findSubmatrixCycle.\n");
+
   /* Initialize row / column arrays. */
 
   GraphNode* rowData = NULL;
@@ -74,6 +76,7 @@ CMR_ERROR findSubmatrixCycle(
     }
     else
       rowData[row].status = 0;
+    CMRdbgMsg(14, "r%zu has status %d and type %d.\n", row+1, rowData[row].status, rowTypes[row]);
   }
   for (size_t column = 0; column < numColumns; ++column)
   {
@@ -85,6 +88,7 @@ CMR_ERROR findSubmatrixCycle(
     }
     else
       columnData[column].status = 0;
+    CMRdbgMsg(14, "c%zu has status %d and type %d.\n", column+1, columnData[column].status, columnTypes[column]);
   }
 
   /* Start BFS. */
@@ -92,6 +96,9 @@ CMR_ERROR findSubmatrixCycle(
   while (!done && firstQueued < beyondQueued)
   {
     CMR_ELEMENT current = queue[firstQueued++];
+
+    CMRdbgMsg(12, "findSubmatrixCycle processes %s.\n", CMRelementString(current, NULL));
+
     if (CMRelementIsRow(current))
     {
       size_t row = CMRelementToRowIndex(current);
@@ -139,7 +146,7 @@ CMR_ERROR findSubmatrixCycle(
         if (type == ELEMENT_TYPE_TARGET)
         {
           done = true;
-          *ppathTarget = CMRrowToElement(column);
+          *ppathTarget = CMRrowToElement(row);
           break;
         }
         rowData[row].status = 1;
@@ -437,6 +444,9 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
         sourceRowElement = CMRrowToElement(extraRows[0][0]);
         targetColumnElement = CMRcolumnToElement(extraColumns[0][0]);
         extraEntry = 1;
+
+        /* TODO: Is there always a path between these particular representatives that does not use any other
+         * representative? */
       }
 
       assert( CMRelementIsRow(sourceRowElement) );
@@ -496,6 +506,9 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
         sourceRowElement = CMRrowToElement(extraRows[1][0]);
         targetColumnElement = CMRcolumnToElement(extraColumns[1][0]);
         extraEntry = 1;
+
+        /* TODO: Is there always a path between these particular representatives that does not use any other
+         * representative? */
       }
 
       assert( CMRelementIsRow(sourceRowElement) );
@@ -512,6 +525,9 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
   {
     assert(separation->type == CMR_SEPA_TYPE_THREE_CONCENTRATED_RANK);
 
+    CMR_CALL( CMRsepaGetProjection(separation, 0, rowsToChild, columnsToChild, &numChildBaseRows,
+      &numChildBaseColumns) );
+
     if (task->params->threeSumStrategy & CMR_MATROID_DEC_THREESUM_FLAG_FIRST_ALLREPR)
     {
       /* First child is all-repr`. */
@@ -522,7 +538,96 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
     {
       /* First child is mixed. */
 
+      /* Prepare shortest-path search in bottom-right submatrix. */
+      CMR_ELEMENT sourceRowElement;
+      CMR_ELEMENT targetRowElement;
+      int extraEntry;
+
+      for (size_t row = 0; row < dec->numRows; ++row)
+      {
+        CMR_SEPA_FLAGS flags = separation->rowsFlags[row];
+        if ((flags & CMR_SEPA_MASK_CHILD) == CMR_SEPA_FIRST)
+          rowTypes[row] = ELEMENT_TYPE_NONE;
+        else if ((flags & CMR_SEPA_MASK_EXTRA) == CMR_SEPA_FLAG_RANK1)
+          rowTypes[row] = ELEMENT_TYPE_SOURCE;
+        else if ((flags & CMR_SEPA_MASK_EXTRA) & CMR_SEPA_FLAG_RANK2)
+          rowTypes[row] = ELEMENT_TYPE_TARGET;
+        else
+          rowTypes[row] = ELEMENT_TYPE_NORMAL;
+      }
+      for (size_t column = 0; column < dec->numColumns; ++column)
+      {
+        CMR_SEPA_FLAGS flags = separation->columnsFlags[column];
+        if ((flags & CMR_SEPA_MASK_CHILD) == CMR_SEPA_FIRST)
+          columnTypes[column] = ELEMENT_TYPE_NONE;
+        else
+          columnTypes[column] = ELEMENT_TYPE_NORMAL;
+      }
+      int sumEntries;
+      CMR_CALL( findSubmatrixCycle(cmr, dec->matrix, dec->transpose, rowTypes, columnTypes, &sourceRowElement,
+        &targetRowElement, &sumEntries) );
+      sumEntries = ((sumEntries % 4) + 4) % 4;
+      assert(sumEntries == 0 || sumEntries == 2);
+      extraEntry = (sumEntries == 2) ? +1 : -1;
+
+      assert( CMRelementIsRow(sourceRowElement) );
+      assert( CMRelementIsRow(targetRowElement) );
+
+      CMR_CALL( CMRmatroiddecUpdateThreeSumCreateMixedFirstChild(cmr, dec, separation, rowsToChild, columnsToChild,
+        numChildBaseRows, numChildBaseColumns, CMRelementToRowIndex(sourceRowElement),
+        CMRelementToRowIndex(targetRowElement), extraEntry) );
+    }
+
+    CMR_CALL( CMRsepaGetProjection(separation, 1, rowsToChild, columnsToChild, &numChildBaseRows,
+      &numChildBaseColumns) );
+
+    if (task->params->threeSumStrategy & CMR_MATROID_DEC_THREESUM_FLAG_SECOND_ALLREPR)
+    {
+      /* Second child is all-repr. */
+
       assert(false);
+    }
+    else
+    {
+      /* Prepare shortest-path search in top-left submatrix. */
+      CMR_ELEMENT sourceColumnElement;
+      CMR_ELEMENT targetColumnElement;
+      int extraEntry;
+
+      for (size_t row = 0; row < dec->numRows; ++row)
+      {
+        CMR_SEPA_FLAGS flags = separation->rowsFlags[row];
+        if ((flags & CMR_SEPA_MASK_CHILD) == CMR_SEPA_SECOND)
+          rowTypes[row] = ELEMENT_TYPE_NONE;
+        else
+          rowTypes[row] = ELEMENT_TYPE_NORMAL;
+
+      }
+      for (size_t column = 0; column < dec->numColumns; ++column)
+      {
+        CMR_SEPA_FLAGS flags = separation->columnsFlags[column];
+        if ((flags & CMR_SEPA_MASK_CHILD) == CMR_SEPA_SECOND)
+          columnTypes[column] = ELEMENT_TYPE_NONE;
+        else if ((flags & CMR_SEPA_MASK_EXTRA) == CMR_SEPA_FLAG_RANK1)
+          columnTypes[column] = ELEMENT_TYPE_SOURCE;
+        else if ((flags & CMR_SEPA_MASK_EXTRA) & CMR_SEPA_FLAG_RANK2)
+          columnTypes[column] = ELEMENT_TYPE_TARGET;
+        else
+          columnTypes[column] = ELEMENT_TYPE_NORMAL;
+      }
+      int sumEntries;
+      CMR_CALL( findSubmatrixCycle(cmr, dec->matrix, dec->transpose, rowTypes, columnTypes, &sourceColumnElement,
+        &targetColumnElement, &sumEntries) );
+      sumEntries = ((sumEntries % 4) + 4) % 4;
+      assert(sumEntries == 0 || sumEntries == 2);
+      extraEntry = (sumEntries == 2) ? +1 : -1;
+
+      assert( CMRelementIsColumn(sourceColumnElement) );
+      assert( CMRelementIsColumn(targetColumnElement) );
+
+      CMR_CALL( CMRmatroiddecUpdateThreeSumCreateMixedSecondChild(cmr, dec, separation, rowsToChild, columnsToChild,
+        numChildBaseRows, numChildBaseColumns, CMRelementToColumnIndex(sourceColumnElement),
+        CMRelementToColumnIndex(targetColumnElement), extraEntry) );
     }
 
     dec->threesumFlags = CMR_MATROID_DEC_THREESUM_FLAG_CONCENTRATED_RANK;
@@ -565,10 +670,6 @@ cleanup:
     /* Add both child tasks to the list. */
     CMRregularityQueueAdd(queue, childTasks[0]);
     CMRregularityQueueAdd(queue, childTasks[1]);
-  }
-  else
-  {
-    assert(!"UNIMPLEMENTED"); /* TODO: Tasks? */
   }
 
   return CMR_OKAY;

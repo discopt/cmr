@@ -1056,6 +1056,58 @@ TEST(TU, ThreeSumWideWideR12)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
+TEST(TU, ThreeSumMixedMixedR12)
+{
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+
+  {
+    CMR_CHRMAT* matrix = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "6 6 "
+      "1  0 1  1 0 0 "
+      "0  1 1  1 0 0 "
+      "1  0 1  0 1 1 "
+      "0 -1 0 -1 1 1 "
+      "1  0 1  0 1 0 "
+      "0 -1 0 -1 0 1 "
+    ) );
+
+    CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
+
+    bool isTU;
+    CMR_MATROID_DEC* dec = NULL;
+    CMR_TU_PARAMS params;
+    ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
+    params.regular.threeSumStrategy = CMR_MATROID_DEC_THREESUM_FLAG_CONCENTRATED_RANK
+      | CMR_MATROID_DEC_THREESUM_FLAG_FIRST_MIXED | CMR_MATROID_DEC_THREESUM_FLAG_SECOND_MIXED;
+
+    ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
+
+    ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, 0, true, true, true, true, true, true) );
+
+    ASSERT_GT( CMRmatroiddecRegularity(dec), 0 );
+    ASSERT_LT( CMRmatroiddecGraphicness(dec), 0 );
+
+    ASSERT_EQ( CMRmatroiddecType(dec), CMR_MATROID_DEC_TYPE_THREE_SUM );
+    ASSERT_FALSE( CMRmatroiddecThreeSumDistributedRanks(dec) );
+    ASSERT_TRUE( CMRmatroiddecThreeSumConcentratedRank(dec) );
+    ASSERT_EQ( CMRmatroiddecNumChildren(dec), 2UL );
+
+    CMR_MATROID_DEC* child1 = CMRmatroiddecChild(dec, 0);
+    CMR_MATROID_DEC* child2 = CMRmatroiddecChild(dec, 1);
+
+    ASSERT_LT( CMRmatroiddecGraphicness(child1), 0 );
+    ASSERT_GT( CMRmatroiddecCographicness(child1), 0 );
+
+    ASSERT_GT( CMRmatroiddecGraphicness(child2), 0 );
+
+    ASSERT_CMR_CALL( CMRmatroiddecFree(cmr, &dec) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  }
+
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
+}
+
 
 TEST(TU, ForbiddenSubmatrixWideWide)
 {
@@ -1090,6 +1142,54 @@ TEST(TU, ForbiddenSubmatrixWideWide)
     ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
     params.regular.threeSumStrategy = CMR_MATROID_DEC_THREESUM_FLAG_DISTRIBUTED_RANKS
       | CMR_MATROID_DEC_THREESUM_FLAG_FIRST_WIDE | CMR_MATROID_DEC_THREESUM_FLAG_SECOND_WIDE;
+
+    ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, &forbiddenSubmatrix, &params, NULL, DBL_MAX) );
+
+    ASSERT_LT( CMRmatroiddecRegularity(dec), 0 );
+    ASSERT_EQ( forbiddenSubmatrix->numRows, 8UL );
+    ASSERT_EQ( forbiddenSubmatrix->numColumns, 8UL );
+    // TODO: Compute determinant once implemented.
+    ASSERT_CMR_CALL( CMRsubmatFree(cmr, &forbiddenSubmatrix) );
+    ASSERT_CMR_CALL( CMRmatroiddecFree(cmr, &dec) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  }
+
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
+}
+
+TEST(TU, ForbiddenSubmatrixMixedMixed)
+{
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+
+  {
+    CMR_CHRMAT* matrix = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "14 14 "
+      "1 1 1 0 1 0 1 0  1 1 1 1 1 1 "
+      "1 0 1 0 1 0 1 0  1 1 1 1 1 0 "
+      "0 1 1 0 0 0 0 0  0 0 0 0 0 0 "
+      "0 1 1 1 0 0 0 0  0 0 0 0 0 0 "
+      "0 1 1 1 1 0 0 0  0 0 0 0 0 0 "
+      "0 1 1 1 1 1 0 0  0 0 0 0 0 0 "
+      "0 1 1 1 1 1 1 0  0 0 0 0 0 0 "
+      "0 1 1 1 1 1 1 1  0 0 0 0 0 0 "
+      "0 1 1 1 1 1 1 1  1 0 0 0 0 0 "
+      "0 0 0 0 0 0 0 0  1 1 0 0 0 0 "
+      "0 0 0 0 0 0 0 0  0 1 1 0 0 0 "
+      "0 0 0 0 0 0 0 0  0 0 1 1 0 0 "
+      "0 0 0 0 0 0 0 0  0 0 0 1 1 0 "
+      "0 0 0 0 0 0 0 0  0 0 0 0 1 1 "
+    ) );
+
+    CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
+
+    bool isTU;
+    CMR_MATROID_DEC* dec = NULL;
+    CMR_SUBMAT* forbiddenSubmatrix = NULL;
+    CMR_TU_PARAMS params;
+    ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
+    params.regular.threeSumStrategy = CMR_MATROID_DEC_THREESUM_FLAG_CONCENTRATED_RANK
+      | CMR_MATROID_DEC_THREESUM_FLAG_FIRST_MIXED | CMR_MATROID_DEC_THREESUM_FLAG_SECOND_MIXED;
 
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, &forbiddenSubmatrix, &params, NULL, DBL_MAX) );
 
