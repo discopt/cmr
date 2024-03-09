@@ -193,8 +193,7 @@ CMR_ERROR CMRmatroiddecUpdateThreeSumInit(
 /**
  * \brief Creates wide first child of an initialized 3-sum node.
  *
- * A nonzero \p extraEntry indicates the bottom-right nonzero entry. If it is zero, then its sign will be
- * computed.
+ * A nonzero \p extraEntry indicates the bottom-right nonzero entry.
  */
 
 CMR_ERROR CMRmatroiddecUpdateThreeSumCreateWideFirstChild(
@@ -208,14 +207,13 @@ CMR_ERROR CMRmatroiddecUpdateThreeSumCreateWideFirstChild(
   size_t extraRow,            /**< Index of the extra row. */
   size_t extraColumn1,        /**< Index of 1st extra column. */
   size_t extraColumn2,        /**< Index of 2nd extra column, parallel to \p extraColumn1; equality is allowed. */
-  int8_t extraEntry           /**< Sign of the extra entry, if known. */
+  int8_t extraEntry           /**< Sign of the extra entry. */
 );
 
 /**
  * \brief Creates wide second child of an initialized 3-sum node.
  *
- * A nonzero \p extraEntry indicates the bottom-right nonzero entry. If it is zero, then its sign will be
- * computed.
+ * A nonzero \p extraEntry indicates the bottom-right nonzero entry.
  */
 
 CMR_ERROR CMRmatroiddecUpdateThreeSumCreateWideSecondChild(
@@ -230,6 +228,44 @@ CMR_ERROR CMRmatroiddecUpdateThreeSumCreateWideSecondChild(
   size_t extraColumn1,        /**< Index of 1st extra column. */
   size_t extraColumn2,        /**< Index of 2nd extra column, parallel to \p extraColumn1; equality is allowed. */
   int8_t extraEntry           /**< Sign of the extra entry, if known. */
+);
+
+/**
+ * \brief Creates mixed first child of an initialized 3-sum node.
+ *
+ * A nonzero \p extraEntry indicates the bottom-right nonzero entry.
+ */
+
+CMR_ERROR CMRmatroiddecUpdateThreeSumCreateMixedFirstChild(
+  CMR* cmr,                   /**< \ref CMR environment. */
+  CMR_MATROID_DEC* dec,       /**< Decomposition node (initialized with \ref CMRmatroiddecUpdateThreeSumInit). */
+  CMR_SEPA* separation,       /**< Separation. */
+  size_t* rowsToChild,        /**< Array mapping rows to child rows. */
+  size_t* columnsToChild,     /**< Array mapping columns to child columns. */
+  size_t numChildBaseRows,    /**< Number of base rows of this child. */
+  size_t numChildBaseColumns, /**< Number of base rows of this child. */
+  size_t extraRow1,           /**< Index of the first extra row. */
+  size_t extraRow2,           /**< Index of the second extra row. */
+  int8_t extraEntry           /**< Sign of the extra entry. */
+);
+
+/**
+ * \brief Creates mixed second child of an initialized 3-sum node.
+ *
+ * A nonzero \p extraEntry indicates the top-left nonzero entry.
+ */
+
+CMR_ERROR CMRmatroiddecUpdateThreeSumCreateMixedSecondChild(
+  CMR* cmr,                   /**< \ref CMR environment. */
+  CMR_MATROID_DEC* dec,       /**< Decomposition node (initialized with \ref CMRmatroiddecUpdateThreeSumInit). */
+  CMR_SEPA* separation,       /**< Separation. */
+  size_t* rowsToChild,        /**< Array mapping rows to child rows. */
+  size_t* columnsToChild,     /**< Array mapping columns to child columns. */
+  size_t numChildBaseRows,    /**< Number of base rows of this child. */
+  size_t numChildBaseColumns, /**< Number of base rows of this child. */
+  size_t extraColumn1,        /**< Index of the first extra column. */
+  size_t extraColumn2,        /**< Index of the second extra column. */
+  int8_t extraEntry           /**< Sign of the extra entry. */
 );
 
 /**
