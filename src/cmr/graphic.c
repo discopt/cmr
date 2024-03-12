@@ -90,7 +90,7 @@ CMR_ERROR CMRcomputeRepresentationMatrix(CMR* cmr, CMR_GRAPH* digraph, bool tern
   assert(digraph);
   assert(ptranspose && !*ptranspose);
   assert(numForestArcs == 0 || forestArcs);
-  assert(numForestArcs == 0 || coforestArcs);
+  assert(numCoforestArcs == 0 || coforestArcs);
   CMRassertStackConsistency(cmr);
 
   CMRdbgMsg(0, "Computing %s representation matrix.\n", ternary ? "ternary" : "binary");
