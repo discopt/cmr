@@ -247,8 +247,6 @@ CMR_ERROR CMRequimodularTestStrong(CMR* cmr, CMR_INTMAT* matrix, bool* pisStrong
   assert(cmr);
   assert(matrix);
   assert(pisStronglyEquimodular);
-  assert(params);
-  assert(stats);
   CMRconsistencyAssert( CMRintmatConsistency(matrix) );
 
   /* If not supplied, we maintain a local gcd determinant variable. */
@@ -282,8 +280,6 @@ CMR_ERROR CMRunimodularTest(CMR* cmr, CMR_INTMAT* matrix, bool* pisUnimodular, C
   assert(cmr);
   assert(matrix);
   assert(pisUnimodular);
-  assert(params);
-  assert(stats);
   CMRconsistencyAssert( CMRintmatConsistency(matrix) );
 
   int64_t gcdDet = 1;
@@ -299,8 +295,6 @@ CMR_ERROR CMRunimodularTestStrong(CMR* cmr, CMR_INTMAT* matrix, bool* pisStrongl
   assert(cmr);
   assert(matrix);
   assert(pisStronglyUnimodular);
-  assert(params);
-  assert(stats);
   CMRconsistencyAssert( CMRintmatConsistency(matrix) );
 
   int64_t gcdDet = 1;
