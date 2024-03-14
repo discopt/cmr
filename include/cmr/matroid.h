@@ -385,15 +385,6 @@ size_t CMRmatroiddecNumRows(
 );
 
 /**
- * \brief Returns the mapping of rows to rows of parent.
- */
-
-CMR_EXPORT
-CMR_ELEMENT* CMRmatroiddecRowsParent(
-  CMR_MATROID_DEC* dec  /**< Decomposition node. */
-);
-
-/**
  * \brief Returns the number of columns.
  */
 
@@ -403,14 +394,23 @@ size_t CMRmatroiddecNumColumns(
 );
 
 /**
- * \brief Returns the mapping of columns to columns of the parent.
- *
- * Can only be called for a non-root node. A column is mapped to \c SIZE_MAX if it is not mapped
+ * \brief Returns the mapping of rows of child \p childIndex to this node's elements.
  */
 
 CMR_EXPORT
-CMR_ELEMENT* CMRmatroiddecColumnsParent(
-  CMR_MATROID_DEC* dec  /**< Decomposition node. */
+CMR_ELEMENT* CMRmatroiddecChildRowsToParent(
+  CMR_MATROID_DEC* dec, /**< Decomposition node. */
+  size_t childIndex     /**< Index of child to consider. */
+);
+
+/**
+ * \brief Returns the mapping of columns of child \p childIndex to this node's elements.
+ */
+
+CMR_EXPORT
+CMR_ELEMENT* CMRmatroiddecChildColumnsToParent(
+  CMR_MATROID_DEC* dec, /**< Decomposition node. */
+  size_t childIndex     /**< Index of child to consider. */
 );
 
 /**
@@ -557,7 +557,6 @@ CMR_ERROR CMRmatroiddecPrint(
   CMR* cmr,                 /**< \ref CMR environment. */
   CMR_MATROID_DEC* dec,     /**< Decomposition node. */
   FILE* stream,             /**< Stream to write to. */
-  size_t indent,            /**< Indentation of this node. */
   bool printChildren,       /**< Whether to recurse. */
   bool printParentElements, /**< Whether to print mapping of rows/columns to parent elements. */
   bool printMatrices,       /**< Whether to print matrices. */
@@ -567,23 +566,26 @@ CMR_ERROR CMRmatroiddecPrint(
 );
 
 /**
- * \brief Frees a decomposition node and all its (grand-)children.
+ * \brief Increases the reference counter by 1.
  */
 
 CMR_EXPORT
-CMR_ERROR CMRmatroiddecFree(
-  CMR* cmr,               /**< \ref CMR environment. */
-  CMR_MATROID_DEC** pdec  /**< Pointer to the decomposition node. */
+CMR_ERROR CMRmatroiddecCapture(
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_MATROID_DEC* dec  /**< Pointer to the decomposition node. */
 );
 
 /**
- * \brief Frees only the decomposition node and no children.
+ * \brief Releases a decomposition node, freeing it if this was the last reference.
+ *
+ * Decreases the reference counter by 1. If it reaches zero then it is freed. In that case, it is also called
+ * recursively for the child nodes.
  */
 
 CMR_EXPORT
-CMR_ERROR CMRmatroiddecFreeNode(
+CMR_ERROR CMRmatroiddecRelease(
   CMR* cmr,               /**< \ref CMR environment. */
-  CMR_MATROID_DEC** pdec  /**< Pointer to the decomposition node. */
+  CMR_MATROID_DEC** pdec  /**< Pointer to decomposition node. \p *pdec is set to \c NULL to prevent accidental usage. */
 );
 
 /**@}*/

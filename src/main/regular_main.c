@@ -75,7 +75,7 @@ CMR_ERROR testRegularity(
     CMR_CALL( CMRregularStatsPrint(stderr, &stats, NULL) );
 
   if (decomposition)
-    CMR_CALL( CMRmatroiddecPrint(cmr, decomposition, stderr, 0, true, true, true, true, true, true) );
+    CMR_CALL( CMRmatroiddecPrint(cmr, decomposition, stderr, true, true, true, true, true, true) );
 
   if (minor && outputMinorFileName)
   {
@@ -88,7 +88,7 @@ CMR_ERROR testRegularity(
 
   /* Cleanup. */
 
-  CMR_CALL( CMRmatroiddecFree(cmr, &decomposition) );
+  CMR_CALL( CMRmatroiddecRelease(cmr, &decomposition) );
   CMR_CALL( CMRminorFree(cmr, &minor) );
   CMR_CALL( CMRchrmatFree(cmr, &matrix) );
   CMR_CALL( CMRfreeEnvironment(&cmr) );

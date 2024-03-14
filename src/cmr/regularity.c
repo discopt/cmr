@@ -211,7 +211,7 @@ CMR_ERROR CMRregularityTest(CMR* cmr, CMR_CHRMAT* matrix, bool ternary, bool *pi
   if (pdec)
     *pdec = root;
   else
-    CMR_CALL( CMRmatroiddecFree(cmr, &root) );
+    CMR_CALL( CMRmatroiddecRelease(cmr, &root) );
 
   if (stats)
     stats->totalTime += (clock() - time) * 1.0 / CLOCKS_PER_SEC;
@@ -219,17 +219,12 @@ CMR_ERROR CMRregularityTest(CMR* cmr, CMR_CHRMAT* matrix, bool ternary, bool *pi
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRregularityCompleteDecomposition(CMR* cmr, CMR_MATROID_DEC* dec, CMR_REGULAR_PARAMS* params,
+CMR_ERROR CMRregularityCompleteDecomposition(CMR* cmr, CMR_MATROID_DEC* subtree, CMR_REGULAR_PARAMS* params,
   CMR_REGULAR_STATS* stats, double timeLimit)
 {
   assert(cmr);
-  assert(dec);
+  assert(subtree);
   assert(params);
-
-  /* Compute the root of the decomposition tree. */
-  CMR_MATROID_DEC* root = dec;
-  while (root->parent != NULL)
-    root = root->parent;
 
 #if defined(CMR_DEBUG)
   CMRdbgMsg(0, "Completing decomposition tree for a %s %zux%zu matrix.\n",
@@ -243,15 +238,19 @@ CMR_ERROR CMRregularityCompleteDecomposition(CMR* cmr, CMR_MATROID_DEC* dec, CMR
   if (stats)
     stats->totalCount++;
 
-  for (size_t c = 0; c < dec->numChildren; ++c)
-    CMR_CALL( CMRmatroiddecFree(cmr, &dec->children[c]) );
+  for (size_t c = 0; c < subtree->numChildren; ++c)
+  {
+    CMR_CALL( CMRmatroiddecRelease(cmr, &subtree->children[c]) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &subtree->childRowsToParent[c]) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &subtree->childColumnsToParent[c]) );
+  }
 
-  dec->type = CMR_MATROID_DEC_TYPE_UNKNOWN;
+  subtree->type = CMR_MATROID_DEC_TYPE_UNKNOWN;
 
   DecompositionQueue* queue = NULL;
   CMR_CALL( CMRregularityQueueCreate(cmr, &queue) );
   DecompositionTask* decTask = NULL;
-  CMR_CALL( CMRregularityTaskCreateRoot(cmr, dec, &decTask, params, stats, time, timeLimit) );
+  CMR_CALL( CMRregularityTaskCreateRoot(cmr, subtree, &decTask, params, stats, time, timeLimit) );
   CMRregularityQueueAdd(queue, decTask);
 
   while (!CMRregularityQueueEmpty(queue) && (params->completeTree || !queue->foundIrregularity))
@@ -262,8 +261,8 @@ CMR_ERROR CMRregularityCompleteDecomposition(CMR* cmr, CMR_MATROID_DEC* dec, CMR
 
   CMR_CALL( CMRregularityQueueFree(cmr, &queue) );
 
-  CMR_CALL( CMRmatroiddecSetAttributes(root) );
-  assert(root->regularity != 0);
+  CMR_CALL( CMRmatroiddecSetAttributes(subtree) );
+  assert(subtree->regularity != 0);
 
   if (stats)
     stats->totalTime += (clock() - time) * 1.0 / CLOCKS_PER_SEC;

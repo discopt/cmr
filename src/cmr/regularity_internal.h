@@ -250,7 +250,7 @@ CMR_ERROR CMRregularityTest(
 
 CMR_ERROR CMRregularityCompleteDecomposition(
   CMR* cmr,                   /**< \ref CMR environment. */
-  CMR_MATROID_DEC* dec,       /**< Decomposition node of the subtree root. */
+  CMR_MATROID_DEC* subtree,   /**< Decomposition node of the subtree root. */
   CMR_REGULAR_PARAMS* params, /**< Parameters for the computation. */
   CMR_REGULAR_STATS* stats,   /**< Statistics for the computation (may be \c NULL). */
   double timeLimit            /**< Time limit to impose. */
