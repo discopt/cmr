@@ -39,7 +39,7 @@ TEST(Regular, OneSum)
     params.planarityCheck = true;
     ASSERT_CMR_CALL( CMRregularTest(cmr, matrix, &isRegular, &dec, NULL, &params, NULL, DBL_MAX) );
 
-    ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, 0, true, true, true, true, true, true) );
+    ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, true, true, true, true, true, true) );
     ASSERT_TRUE( isRegular );
     ASSERT_FALSE( CMRmatroiddecHasTranspose(dec) ); /* Default settings should mean that the transpose is never computed. */
     ASSERT_EQ( CMRmatroiddecType(dec), CMR_MATROID_DEC_TYPE_ONE_SUM );
@@ -49,7 +49,7 @@ TEST(Regular, OneSum)
     ASSERT_LT( CMRmatroiddecCographicness(CMRmatroiddecChild(dec, 0))
       * CMRmatroiddecCographicness(CMRmatroiddecChild(dec, 1)), 0 );
     
-    ASSERT_CMR_CALL( CMRmatroiddecFree(cmr, &dec) );
+    ASSERT_CMR_CALL( CMRmatroiddecRelease(cmr, &dec) );
 
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &K_3_3) );
@@ -98,7 +98,7 @@ TEST(Regular, SeriesParallelTwoSeparation)
     CMR_MATROID_DEC* dec = NULL;
     ASSERT_CMR_CALL( CMRregularTest(cmr, matrix, &isRegular, &dec, NULL, NULL, NULL, DBL_MAX) );
 
-    ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, 0, true, true, true, true, true, true) );
+    ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, true, true, true, true, true, true) );
     ASSERT_TRUE( isRegular );
     ASSERT_TRUE( CMRmatroiddecHasTranspose(dec) ); /* As we test for graphicness, the transpose is constructed. */
     ASSERT_EQ( CMRmatroiddecType(dec), CMR_MATROID_DEC_TYPE_TWO_SUM );
@@ -110,7 +110,7 @@ TEST(Regular, SeriesParallelTwoSeparation)
     ASSERT_LT( CMRmatroiddecGraphicness(CMRmatroiddecChild(dec, 1)), 0 );
     ASSERT_GT( CMRmatroiddecCographicness(CMRmatroiddecChild(dec, 1)), 0 );
 
-    ASSERT_CMR_CALL( CMRmatroiddecFree(cmr, &dec) );
+    ASSERT_CMR_CALL( CMRmatroiddecRelease(cmr, &dec) );
 
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &K_3_3) );
@@ -154,7 +154,7 @@ TEST(Regular, NestedMinorSearchTwoSeparation)
     CMR_MATROID_DEC* dec = NULL;
     ASSERT_CMR_CALL( CMRregularTest(cmr, matrix, &isRegular, &dec, NULL, NULL, NULL, DBL_MAX) );
 
-    ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, 0, true, true, true, true, true, true) );
+    ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, true, true, true, true, true, true) );
     ASSERT_TRUE( isRegular );
     ASSERT_TRUE( CMRmatroiddecHasTranspose(dec) ); /* As we test for graphicness, the transpose is constructed. */
     ASSERT_EQ( CMRmatroiddecType(dec), CMR_MATROID_DEC_TYPE_TWO_SUM );
@@ -170,7 +170,7 @@ TEST(Regular, NestedMinorSearchTwoSeparation)
 //     ASSERT_NE( graphic, 0);
 //     ASSERT_NE( graphic, 3);
 
-    ASSERT_CMR_CALL( CMRmatroiddecFree(cmr, &dec) );
+    ASSERT_CMR_CALL( CMRmatroiddecRelease(cmr, &dec) );
 
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &K_3_3) );
@@ -204,9 +204,9 @@ TEST(Regular, NestedMinorPivotsOneRowOneColumn)
   params.directGraphicness = false;
   ASSERT_CMR_CALL( CMRregularTest(cmr, matrix, &isRegular, &dec, NULL, &params, NULL, DBL_MAX) );
 
-  ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, 0, true, true, true, true, true, true) );
+  ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, true, true, true, true, true, true) );
   
-  ASSERT_CMR_CALL( CMRmatroiddecFree(cmr, &dec) );
+  ASSERT_CMR_CALL( CMRmatroiddecRelease(cmr, &dec) );
 
   ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
 
@@ -238,9 +238,9 @@ TEST(Regular, NestedMinorPivotsTwoRowsOneColumn)
   params.directGraphicness = false;
   ASSERT_CMR_CALL( CMRregularTest(cmr, matrix, &isRegular, &dec, NULL, &params, NULL, DBL_MAX) );
 
-  ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, 0, true, true, true, true, true, true) );
+  ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, true, true, true, true, true, true) );
   
-  ASSERT_CMR_CALL( CMRmatroiddecFree(cmr, &dec) );
+  ASSERT_CMR_CALL( CMRmatroiddecRelease(cmr, &dec) );
 
   ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
 
@@ -271,9 +271,9 @@ TEST(Regular, NestedMinorPivotsOneRowTwoColumns)
   params.directGraphicness = false;
   ASSERT_CMR_CALL( CMRregularTest(cmr, matrix, &isRegular, &dec, NULL, &params, NULL, DBL_MAX) );
 
-  ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, 0, true, true, true, true, true, true) );
+  ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, true, true, true, true, true, true) );
   
-  ASSERT_CMR_CALL( CMRmatroiddecFree(cmr, &dec) );
+  ASSERT_CMR_CALL( CMRmatroiddecRelease(cmr, &dec) );
 
   ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
 
@@ -309,9 +309,9 @@ TEST(Regular, NestedMinorPivotsTwoSeparation)
   params.directGraphicness = false;
   ASSERT_CMR_CALL( CMRregularTest(cmr, matrix, &isRegular, &dec, NULL, &params, NULL, DBL_MAX) );
 
-  ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, 0, true, true, true, true, true, true) );
+  ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, true, true, true, true, true, true) );
   
-  ASSERT_CMR_CALL( CMRmatroiddecFree(cmr, &dec) );
+  ASSERT_CMR_CALL( CMRmatroiddecRelease(cmr, &dec) );
 
   ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
 
@@ -340,7 +340,7 @@ void testSequenceGraphicness(
   params.threeSumStrategy = CMR_MATROID_DEC_THREESUM_FLAG_SEYMOUR;
   ASSERT_CMR_CALL( CMRregularTest(cmr, matrix, &isRegular, &dec, NULL, &params, NULL, DBL_MAX) );
 
-  ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, 2, true, false, false, false, false, false) );
+  ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, true, false, false, false, false, false) );
 
   if (knowGraphic)
   {
@@ -365,9 +365,9 @@ void testSequenceGraphicness(
     ASSERT_LT( CMRmatroiddecGraphicness(dec), 0 );
   }
 
-  ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, 0, true, true, true, true, true, true) );
+  ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, true, true, true, true, true, true) );
 
-  ASSERT_CMR_CALL( CMRmatroiddecFree(cmr, &dec) );
+  ASSERT_CMR_CALL( CMRmatroiddecRelease(cmr, &dec) );
   ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
 }
 
@@ -656,7 +656,7 @@ TEST(Regular, R10)
     ASSERT_CMR_CALL( CMRregularTest(cmr, matrix, &isRegular, &dec, NULL, NULL, NULL, DBL_MAX) );
     ASSERT_GT( CMRmatroiddecRegularity(dec), 0 );
     ASSERT_EQ( CMRmatroiddecNumChildren(dec), 0UL );
-    ASSERT_CMR_CALL( CMRmatroiddecFree(cmr, &dec) );
+    ASSERT_CMR_CALL( CMRmatroiddecRelease(cmr, &dec) );
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
   }
 
@@ -679,7 +679,7 @@ TEST(Regular, R10)
     ASSERT_CMR_CALL( CMRregularTest(cmr, matrix, &isRegular, &dec, NULL, NULL, NULL, DBL_MAX) );
     ASSERT_GT( CMRmatroiddecRegularity(dec), 0 );
     ASSERT_EQ( CMRmatroiddecNumChildren(dec), 0 );
-    ASSERT_CMR_CALL( CMRmatroiddecFree(cmr, &dec) );
+    ASSERT_CMR_CALL( CMRmatroiddecRelease(cmr, &dec) );
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
   }
 
@@ -719,9 +719,9 @@ void testEnumerate(
     ASSERT_FALSE( isRegular );
   }
 
-  ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, 0, true, true, true, true, true, true) );
+  ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, true, true, true, true, true, true) );
 
-  ASSERT_CMR_CALL( CMRmatroiddecFree(cmr, &dec) );
+  ASSERT_CMR_CALL( CMRmatroiddecRelease(cmr, &dec) );
   ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
 }
 
@@ -816,7 +816,7 @@ TEST(Regular, R12)
 //     ASSERT_EQ( CMRmatroiddecNumChildren(CMRmatroiddecChild(dec, 0)), 0UL );
 //     ASSERT_EQ( CMRmatroiddecNumChildren(CMRmatroiddecChild(dec, 1)), 0UL );
 //     ASSERT_EQ( graphicChildren + cographicChildren, 3UL );
-    ASSERT_CMR_CALL( CMRmatroiddecFree(cmr, &dec) );
+    ASSERT_CMR_CALL( CMRmatroiddecRelease(cmr, &dec) );
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
   }
 

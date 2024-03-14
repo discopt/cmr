@@ -14,6 +14,7 @@ extern "C" {
 
 struct _CMR_MATROID_DEC
 {
+  size_t used;                                /**< \brief Reference counter. */
   CMR_MATROID_DEC_TYPE type;                  /**< \brief Type of this node. */
   bool isTernary;                             /**< \brief Indicates whether this node belongs to a ternary matrix. */
   bool testedTwoConnected;                    /**< \brief Indicates that no 1-separation exists. */
@@ -28,19 +29,20 @@ struct _CMR_MATROID_DEC
   CMR_MATROID_DEC_THREESUM_FLAG threesumFlags;/**< \brief Type of 3-sum. */
   CMR_CHRMAT* matrix;                         /**< \brief Matrix representing this node. */
   CMR_CHRMAT* transpose;                      /**< \brief Tranpose of \ref matrix representing this node. */
-  struct _CMR_MATROID_DEC* parent;            /**< \brief Parent node (\c NULL for decomposition root). */
   size_t numChildren;                         /**< \brief Number of child nodes. */
   struct _CMR_MATROID_DEC** children;         /**< \brief Array of child nodes. */
+  CMR_ELEMENT** childRowsToParent;            /**< \brief Array for mapping a child index to array of child rows to
+                                               **         elements of this node. */
+  CMR_ELEMENT** childColumnsToParent;         /**< \brief Array for mapping a child index to array of child columns to
+                                               **         elements of this node. */
 
   size_t numRows;                             /**< \brief Length of \ref rowsParent. */
-  size_t* rowsChild;                          /**< \brief Array for mapping each row to a row of the child (if
+  size_t* rowsToChild;                          /**< \brief Array for mapping each row to a row of the child (if
                                                **         applicable). */
-  CMR_ELEMENT* rowsParent;                    /**< \brief Array for mapping rows to elements of parent (or 0). */
 
   size_t numColumns;                          /**< \brief Length of \ref columnsParent. */
-  size_t* columnsChild;                       /**< \brief Array for mapping each column to a column of the child (if
+  size_t* columnsToChild;                       /**< \brief Array for mapping each column to a column of the child (if
                                                **         applicable). */
-  CMR_ELEMENT* columnsParent;                 /**< \brief Array for mapping columns to elements of parent (or 0). */
 
   CMR_GRAPH* graph;                           /**< \brief Graph represented by this matrix. */
   CMR_GRAPH_EDGE* graphForest;                /**< \brief Array with edges of spanning forest of graph. */
@@ -100,12 +102,31 @@ char* CMRmatroiddecConsistency(
 );
 
 /**
+ * \brief Prints the decomposition \p child to \p stream.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRmatroiddecPrintChild(
+  CMR* cmr,                 /**< \ref CMR environment. */
+  CMR_MATROID_DEC* child,   /**< Decomposition node of parent. */
+  CMR_MATROID_DEC* parent,  /**< Decomposition node of parent. */
+  size_t childIndex,        /**< Index of \p child as a child of \p parent. */
+  FILE* stream,             /**< Stream to write to. */
+  size_t indent,            /**< Indentation of this node. */
+  bool printChildren,       /**< Whether to recurse. */
+  bool printParentElements, /**< Whether to print mapping of rows/columns to parent elements (if \p parent is not \c NULL). */
+  bool printMatrices,       /**< Whether to print matrices. */
+  bool printGraphs,         /**< Whether to print graphs. */
+  bool printReductions,     /**< Whether to print series-parallel reductions. */
+  bool printPivots          /**< Whether to print pivots. */
+);
+
+/**
  * \brief Creates an unknown decomposition node as a root.
  *
  * Copies \p matrix into the node.
  */
 
-CMR_EXPORT
 CMR_ERROR CMRmatroiddecCreateMatrixRoot(
   CMR* cmr,                 /**< \ref CMR environment. */
   CMR_MATROID_DEC** pdec,   /**< Pointer for storing the decomposition node. */
@@ -114,10 +135,19 @@ CMR_ERROR CMRmatroiddecCreateMatrixRoot(
 );
 
 /**
+ * \brief Sets the number of children and allocates memory accordingly.
+ */
+
+CMR_ERROR CMRmatroiddecSetNumChildren(
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_MATROID_DEC* dec, /**< Decomposition node. */
+  size_t numChildren    /**< Number of children. */
+);
+
+/**
  * \brief Initialize an existing unknown decomposition node as a 1-sum with \p numChildren children.
  */
 
-CMR_EXPORT
 CMR_ERROR CMRmatroiddecUpdateOneSum(
   CMR* cmr,             /**< \ref CMR environment. */
   CMR_MATROID_DEC* dec, /**< Decomposition node. */
@@ -131,13 +161,13 @@ CMR_ERROR CMRmatroiddecUpdateOneSum(
  */
 
 CMR_ERROR CMRmatroiddecCreateChildFromMatrices(
-  CMR* cmr,                   /**< \ref CMR environment. */
-  CMR_MATROID_DEC* parent,    /**< Parent node. */
-  size_t childIndex,          /**< Child index of parent. */
-  CMR_CHRMAT* matrix,         /**< The matrix corresponding to this node. */
-  CMR_CHRMAT* transpose,      /**< The transpose matrix corresponding to this node. */
-  CMR_ELEMENT* rowsParent,    /**< Array for mapping rows to elements of parent. */
-  CMR_ELEMENT* columnsParent  /**< Array for mapping columns to elements of parent. */
+  CMR* cmr,                     /**< \ref CMR environment. */
+  CMR_MATROID_DEC* parent,      /**< Parent node. */
+  size_t childIndex,            /**< Child index of parent. */
+  CMR_CHRMAT* matrix,           /**< The matrix corresponding to this node. */
+  CMR_CHRMAT* transpose,        /**< The transpose matrix corresponding to this node. */
+  CMR_ELEMENT* rowsToParent,    /**< Array for mapping rows to elements of parent. */
+  CMR_ELEMENT* columnsToParent  /**< Array for mapping columns to elements of parent. */
 );
 
 /**
