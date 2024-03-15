@@ -209,15 +209,15 @@ Functions</h2></td></tr>
 <tr class="memitem:ga980bdcc93f4241b2302f44f55522603d"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga980bdcc93f4241b2302f44f55522603d">CMRmatroiddecNumRows</a> (<a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec)</td></tr>
 <tr class="memdesc:ga980bdcc93f4241b2302f44f55522603d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of rows.  <a href="group__Matroid.html#ga980bdcc93f4241b2302f44f55522603d">More...</a><br /></td></tr>
 <tr class="separator:ga980bdcc93f4241b2302f44f55522603d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga06f03f737c8f562473154bde13ac4e5d"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga06f03f737c8f562473154bde13ac4e5d">CMRmatroiddecRowsParent</a> (<a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec)</td></tr>
-<tr class="memdesc:ga06f03f737c8f562473154bde13ac4e5d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the mapping of rows to rows of parent.  <a href="group__Matroid.html#ga06f03f737c8f562473154bde13ac4e5d">More...</a><br /></td></tr>
-<tr class="separator:ga06f03f737c8f562473154bde13ac4e5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga36a170c2c1ae46852fe0304f038d9192"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga36a170c2c1ae46852fe0304f038d9192">CMRmatroiddecNumColumns</a> (<a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec)</td></tr>
 <tr class="memdesc:ga36a170c2c1ae46852fe0304f038d9192"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of columns.  <a href="group__Matroid.html#ga36a170c2c1ae46852fe0304f038d9192">More...</a><br /></td></tr>
 <tr class="separator:ga36a170c2c1ae46852fe0304f038d9192"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga2822f5595ccdf8e6d65e141ce2ffdc06"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga2822f5595ccdf8e6d65e141ce2ffdc06">CMRmatroiddecColumnsParent</a> (<a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec)</td></tr>
-<tr class="memdesc:ga2822f5595ccdf8e6d65e141ce2ffdc06"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the mapping of columns to columns of the parent.  <a href="group__Matroid.html#ga2822f5595ccdf8e6d65e141ce2ffdc06">More...</a><br /></td></tr>
-<tr class="separator:ga2822f5595ccdf8e6d65e141ce2ffdc06"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga60486951115080c3164c86ecc48b090c"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga60486951115080c3164c86ecc48b090c">CMRmatroiddecChildRowsToParent</a> (<a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec, size_t childIndex)</td></tr>
+<tr class="memdesc:ga60486951115080c3164c86ecc48b090c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the mapping of rows of child <code>childIndex</code> to this node's elements.  <a href="group__Matroid.html#ga60486951115080c3164c86ecc48b090c">More...</a><br /></td></tr>
+<tr class="separator:ga60486951115080c3164c86ecc48b090c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga424767cd94979e8f60d2957252f85463"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga424767cd94979e8f60d2957252f85463">CMRmatroiddecChildColumnsToParent</a> (<a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec, size_t childIndex)</td></tr>
+<tr class="memdesc:ga424767cd94979e8f60d2957252f85463"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the mapping of columns of child <code>childIndex</code> to this node's elements.  <a href="group__Matroid.html#ga424767cd94979e8f60d2957252f85463">More...</a><br /></td></tr>
+<tr class="separator:ga424767cd94979e8f60d2957252f85463"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gacc02b26993e4d2598ea84139b55b0405"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="structCMR__GRAPH.html">CMR_GRAPH</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#gacc02b26993e4d2598ea84139b55b0405">CMRmatroiddecGraph</a> (<a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec)</td></tr>
 <tr class="memdesc:gacc02b26993e4d2598ea84139b55b0405"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the graph (if available).  <a href="group__Matroid.html#gacc02b26993e4d2598ea84139b55b0405">More...</a><br /></td></tr>
 <tr class="separator:gacc02b26993e4d2598ea84139b55b0405"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -263,15 +263,15 @@ Functions</h2></td></tr>
 <tr class="memitem:gac4197fe953f40ba1eea22fe390db0adb"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT size_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#gac4197fe953f40ba1eea22fe390db0adb">CMRmatroiddecPivotColumns</a> (<a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec)</td></tr>
 <tr class="memdesc:gac4197fe953f40ba1eea22fe390db0adb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the array with the pivot columns (if available).  <a href="group__Matroid.html#gac4197fe953f40ba1eea22fe390db0adb">More...</a><br /></td></tr>
 <tr class="separator:gac4197fe953f40ba1eea22fe390db0adb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga814670f6f97a6fb86870f59ca02b0f6d"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga814670f6f97a6fb86870f59ca02b0f6d">CMRmatroiddecPrint</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec, FILE *stream, size_t indent, bool printChildren, bool printParentElements, bool printMatrices, bool printGraphs, bool printReductions, bool printPivots)</td></tr>
-<tr class="memdesc:ga814670f6f97a6fb86870f59ca02b0f6d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints the decomposition <code>dec</code> to <code>stream</code>.  <a href="group__Matroid.html#ga814670f6f97a6fb86870f59ca02b0f6d">More...</a><br /></td></tr>
-<tr class="separator:ga814670f6f97a6fb86870f59ca02b0f6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gab5e0e2eaa25c7f48f039b0572b1d1998"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#gab5e0e2eaa25c7f48f039b0572b1d1998">CMRmatroiddecFree</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> **pdec)</td></tr>
-<tr class="memdesc:gab5e0e2eaa25c7f48f039b0572b1d1998"><td class="mdescLeft">&#160;</td><td class="mdescRight">Frees a decomposition node and all its (grand-)children.  <a href="group__Matroid.html#gab5e0e2eaa25c7f48f039b0572b1d1998">More...</a><br /></td></tr>
-<tr class="separator:gab5e0e2eaa25c7f48f039b0572b1d1998"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gad9e1ee24c174d3dd24114549848253a5"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#gad9e1ee24c174d3dd24114549848253a5">CMRmatroiddecFreeNode</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> **pdec)</td></tr>
-<tr class="memdesc:gad9e1ee24c174d3dd24114549848253a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Frees only the decomposition node and no children.  <a href="group__Matroid.html#gad9e1ee24c174d3dd24114549848253a5">More...</a><br /></td></tr>
-<tr class="separator:gad9e1ee24c174d3dd24114549848253a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga206020b997ba56a3cface17ea439017a"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga206020b997ba56a3cface17ea439017a">CMRmatroiddecPrint</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec, FILE *stream, bool printChildren, bool printParentElements, bool printMatrices, bool printGraphs, bool printReductions, bool printPivots)</td></tr>
+<tr class="memdesc:ga206020b997ba56a3cface17ea439017a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints the decomposition <code>dec</code> to <code>stream</code>.  <a href="group__Matroid.html#ga206020b997ba56a3cface17ea439017a">More...</a><br /></td></tr>
+<tr class="separator:ga206020b997ba56a3cface17ea439017a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaea8e18fb15f8f09060a7c25e1138030f"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#gaea8e18fb15f8f09060a7c25e1138030f">CMRmatroiddecCapture</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec)</td></tr>
+<tr class="memdesc:gaea8e18fb15f8f09060a7c25e1138030f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Increases the reference counter by 1.  <a href="group__Matroid.html#gaea8e18fb15f8f09060a7c25e1138030f">More...</a><br /></td></tr>
+<tr class="separator:gaea8e18fb15f8f09060a7c25e1138030f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga3ec9cb97a5c539077ab3f9b5914566b9"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga3ec9cb97a5c539077ab3f9b5914566b9">CMRmatroiddecRelease</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> **pdec)</td></tr>
+<tr class="memdesc:ga3ec9cb97a5c539077ab3f9b5914566b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases a decomposition node, freeing it if this was the last reference.  <a href="group__Matroid.html#ga3ec9cb97a5c539077ab3f9b5914566b9">More...</a><br /></td></tr>
+<tr class="separator:ga3ec9cb97a5c539077ab3f9b5914566b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <h2 class="groupheader">Typedef Documentation</h2>
@@ -640,6 +640,43 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="gaea8e18fb15f8f09060a7c25e1138030f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaea8e18fb15f8f09060a7c25e1138030f">&#9670;&nbsp;</a></span>CMRmatroiddecCapture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRmatroiddecCapture </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *&#160;</td>
+          <td class="paramname"><em>dec</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Increases the reference counter by 1. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">dec</td><td>Pointer to the decomposition node. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="gadc18d37f1867d6b88d5d97c4f3cc3668"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#gadc18d37f1867d6b88d5d97c4f3cc3668">&#9670;&nbsp;</a></span>CMRmatroiddecChild()</h2>
 
@@ -671,6 +708,80 @@ Functions</h2></td></tr>
   <table class="params">
     <tr><td class="paramname">dec</td><td>Decomposition node. </td></tr>
     <tr><td class="paramname">childIndex</td><td>Index of child. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga424767cd94979e8f60d2957252f85463"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga424767cd94979e8f60d2957252f85463">&#9670;&nbsp;</a></span>CMRmatroiddecChildColumnsToParent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CMR_EXPORT <a class="el" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a>* CMRmatroiddecChildColumnsToParent </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *&#160;</td>
+          <td class="paramname"><em>dec</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>childIndex</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the mapping of columns of child <code>childIndex</code> to this node's elements. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">dec</td><td>Decomposition node. </td></tr>
+    <tr><td class="paramname">childIndex</td><td>Index of child to consider. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga60486951115080c3164c86ecc48b090c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga60486951115080c3164c86ecc48b090c">&#9670;&nbsp;</a></span>CMRmatroiddecChildRowsToParent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CMR_EXPORT <a class="el" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a>* CMRmatroiddecChildRowsToParent </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *&#160;</td>
+          <td class="paramname"><em>dec</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>childIndex</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the mapping of rows of child <code>childIndex</code> to this node's elements. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">dec</td><td>Decomposition node. </td></tr>
+    <tr><td class="paramname">childIndex</td><td>Index of child to consider. </td></tr>
   </table>
   </dd>
 </dl>
@@ -854,107 +965,6 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">dec</td><td>Decomposition node. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="ga2822f5595ccdf8e6d65e141ce2ffdc06"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga2822f5595ccdf8e6d65e141ce2ffdc06">&#9670;&nbsp;</a></span>CMRmatroiddecColumnsParent()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">CMR_EXPORT <a class="el" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a>* CMRmatroiddecColumnsParent </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *&#160;</td>
-          <td class="paramname"><em>dec</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Returns the mapping of columns to columns of the parent. </p>
-<p>Can only be called for a non-root node. A column is mapped to <code>SIZE_MAX</code> if it is not mapped </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">dec</td><td>Decomposition node. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="gab5e0e2eaa25c7f48f039b0572b1d1998"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gab5e0e2eaa25c7f48f039b0572b1d1998">&#9670;&nbsp;</a></span>CMRmatroiddecFree()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRmatroiddecFree </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
-          <td class="paramname"><em>cmr</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> **&#160;</td>
-          <td class="paramname"><em>pdec</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Frees a decomposition node and all its (grand-)children. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
-    <tr><td class="paramname">pdec</td><td>Pointer to the decomposition node. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="gad9e1ee24c174d3dd24114549848253a5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gad9e1ee24c174d3dd24114549848253a5">&#9670;&nbsp;</a></span>CMRmatroiddecFreeNode()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRmatroiddecFreeNode </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
-          <td class="paramname"><em>cmr</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> **&#160;</td>
-          <td class="paramname"><em>pdec</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Frees only the decomposition node and no children. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
-    <tr><td class="paramname">pdec</td><td>Pointer to the decomposition node. </td></tr>
   </table>
   </dd>
 </dl>
@@ -1404,8 +1414,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ga814670f6f97a6fb86870f59ca02b0f6d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga814670f6f97a6fb86870f59ca02b0f6d">&#9670;&nbsp;</a></span>CMRmatroiddecPrint()</h2>
+<a id="ga206020b997ba56a3cface17ea439017a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga206020b997ba56a3cface17ea439017a">&#9670;&nbsp;</a></span>CMRmatroiddecPrint()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1427,12 +1437,6 @@ Functions</h2></td></tr>
           <td></td>
           <td class="paramtype">FILE *&#160;</td>
           <td class="paramname"><em>stream</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>indent</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1484,7 +1488,6 @@ Functions</h2></td></tr>
     <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
     <tr><td class="paramname">dec</td><td>Decomposition node. </td></tr>
     <tr><td class="paramname">stream</td><td>Stream to write to. </td></tr>
-    <tr><td class="paramname">indent</td><td>Indentation of this node. </td></tr>
     <tr><td class="paramname">printChildren</td><td>Whether to recurse. </td></tr>
     <tr><td class="paramname">printParentElements</td><td>Whether to print mapping of rows/columns to parent elements. </td></tr>
     <tr><td class="paramname">printMatrices</td><td>Whether to print matrices. </td></tr>
@@ -1524,26 +1527,38 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ga06f03f737c8f562473154bde13ac4e5d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga06f03f737c8f562473154bde13ac4e5d">&#9670;&nbsp;</a></span>CMRmatroiddecRowsParent()</h2>
+<a id="ga3ec9cb97a5c539077ab3f9b5914566b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga3ec9cb97a5c539077ab3f9b5914566b9">&#9670;&nbsp;</a></span>CMRmatroiddecRelease()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">CMR_EXPORT <a class="el" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a>* CMRmatroiddecRowsParent </td>
+          <td class="memname">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRmatroiddecRelease </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *&#160;</td>
-          <td class="paramname"><em>dec</em></td><td>)</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> **&#160;</td>
+          <td class="paramname"><em>pdec</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Returns the mapping of rows to rows of parent. </p>
+<p>Releases a decomposition node, freeing it if this was the last reference. </p>
+<p>Decreases the reference counter by 1. If it reaches zero then it is freed. In that case, it is also called recursively for the child nodes. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">dec</td><td>Decomposition node. </td></tr>
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">pdec</td><td>Pointer to decomposition node. <code>*pdec</code> is set to <code>NULL</code> to prevent accidental usage. </td></tr>
   </table>
   </dd>
 </dl>

@@ -1,10 +1,10 @@
 var searchData=
 [
-  ['unlinknonzero_1731',['unlinkNonzero',['../series__parallel_8c.html#acdbefe65768bf543b1d788cf45877532',1,'series_parallel.c']]],
-  ['updatehashtable_1732',['updateHashtable',['../regularity__nested__minor__sequence_8c.html#a0e6fd0c69b9fc76506813dbde5369b4b',1,'regularity_nested_minor_sequence.c']]],
-  ['updatehashvalues_1733',['updateHashValues',['../regularity__graphic_8c.html#a77757a18acfcffde64c55965290752a9',1,'regularity_graphic.c']]],
-  ['updatematrix_1734',['updateMatrix',['../matroid_8c.html#abc5505e1952d8e993d8b1e169152a517',1,'matroid.c']]],
-  ['updaterepresentative_1735',['updateRepresentative',['../regularity__nested__minor__sequence_8c.html#af5cf4ac4434ab20d597d65a1d3b0e679',1,'regularity_nested_minor_sequence.c']]],
-  ['updaterowscolumnsfromparent_1736',['updateRowsColumnsFromParent',['../matroid_8c.html#afb79e9775c9bea96085341606c466f8a',1,'matroid.c']]],
-  ['updaterowscolumnstoparent_1737',['updateRowsColumnsToParent',['../matroid_8c.html#a6099e78521412cc8c404ca0d07a8c793',1,'matroid.c']]]
+  ['unlinknonzero_1734',['unlinkNonzero',['../series__parallel_8c.html#acdbefe65768bf543b1d788cf45877532',1,'series_parallel.c']]],
+  ['updatechildmatrix_1735',['updateChildMatrix',['../matroid_8c.html#a3fb27fc3dbc2b803f618ec0268c591c1',1,'matroid.c']]],
+  ['updatehashtable_1736',['updateHashtable',['../regularity__nested__minor__sequence_8c.html#a0e6fd0c69b9fc76506813dbde5369b4b',1,'regularity_nested_minor_sequence.c']]],
+  ['updatehashvalues_1737',['updateHashValues',['../regularity__graphic_8c.html#a77757a18acfcffde64c55965290752a9',1,'regularity_graphic.c']]],
+  ['updaterepresentative_1738',['updateRepresentative',['../regularity__nested__minor__sequence_8c.html#af5cf4ac4434ab20d597d65a1d3b0e679',1,'regularity_nested_minor_sequence.c']]],
+  ['updaterowscolumnstochild_1739',['updateRowsColumnsToChild',['../matroid_8c.html#adf77f4ec7485e24f247d2bc382eb5790',1,'matroid.c']]],
+  ['updaterowscolumnstoparent_1740',['updateRowsColumnsToParent',['../matroid_8c.html#a94402d02cce10502bc90d43ca151f7a0',1,'matroid.c']]]
 ];
