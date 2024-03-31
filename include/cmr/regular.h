@@ -28,6 +28,29 @@ typedef enum
   CMR_DEC_CONSTRUCT_ALL = 2,
 } CMR_DEC_CONSTRUCT;
 
+/**
+ * \brief Flags that control termination of the regular matroid decomposition algorithm.
+ *
+ * \see The desired types can be set by modifying \ref CMR_REGULAR_PARAMS.treeFlags.
+ */
+
+typedef enum
+{
+  CMR_REGULAR_TREE_FLAGS_RECURSE = 1,
+    /**< Do not process child nodes. */
+  CMR_REGULAR_TREE_FLAGS_STOP_IRREGULAR = 2,
+    /**< Stop if a (grand-)child is irregular. */
+  CMR_REGULAR_TREE_FLAGS_STOP_NONGRAPHIC = 4,
+    /**< Stop if a (grand-)child is non-graphic. */
+  CMR_REGULAR_TREE_FLAGS_STOP_NONCOGRAPHIC = 8,
+    /**< Stop if a (grand-)child is non-cographic. */
+  CMR_REGULAR_TREE_FLAGS_STOP_NONGRAPHIC_NONCOGRAPHIC = 16,
+    /**< Stop if a (grand-)child is non-graphic **and** non-cographic. */
+
+  CMR_REGULAR_TREE_FLAGS_DEFAULT = CMR_REGULAR_TREE_FLAGS_RECURSE | CMR_REGULAR_TREE_FLAGS_STOP_IRREGULAR
+
+} CMR_REGULAR_TREE_FLAGS;
+
 typedef struct
 {
   bool directGraphicness;
@@ -36,7 +59,10 @@ typedef struct
   /**< \brief Whether to allow series-parallel operations in the decomposition tree; default: \c true */
   bool planarityCheck;
   /**< \brief Whether minors identified as graphic should still be checked for cographicness; default: \c false. */
-  bool completeTree;
+
+  int treeFlags;
+  /**< \brief Flags controlling the decomposition algorithm. See \ref  */
+
   /**< \brief Whether to compute a complete decomposition tree (even if already non-regular; default: \c false. */
   bool threeSumPivotChildren;
   /**< \brief Whether pivots for 3-sums shall be applied such that the matrix contains both child matrices as

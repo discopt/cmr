@@ -1705,6 +1705,7 @@ CMR_ERROR CMRregularityNestedMinorSequenceGraphicness(CMR* cmr, DecompositionTas
   else
   {
     dec->graphicness = -1;
+    queue->foundNongraphicness = true;
 
     /* Add task back to list of unprocessed tasks to test cographicness. */
     CMRregularityQueueAdd(queue, task);
@@ -1788,6 +1789,7 @@ CMR_ERROR CMRregularityNestedMinorSequenceCographicness(CMR* cmr, DecompositionT
   else
   {
     dec->cographicness = -1;
+    queue->foundNoncographicness = true;
 
     /* Add task back to list of unprocessed tasks to search for 3-separations. */
     CMRregularityQueueAdd(queue, task);
@@ -1860,6 +1862,8 @@ CMR_ERROR CMRregularityTestGraphicness(CMR* cmr, DecompositionTask* task, Decomp
   dec->graphicness = isGraphic ? 1 : -1;
   if (isGraphic)
     dec->type = (dec->type == CMR_MATROID_DEC_TYPE_COGRAPH) ? CMR_MATROID_DEC_TYPE_PLANAR : CMR_MATROID_DEC_TYPE_GRAPH;
+  else
+    queue->foundNongraphicness = true;
 
   if ((isGraphic && (!task->params->planarityCheck || dec->cographicness)) || dec->cographicness > 0)
   {
@@ -1937,6 +1941,8 @@ CMR_ERROR CMRregularityTestCographicness(CMR* cmr, DecompositionTask* task, Deco
   dec->cographicness = isCographic ? 1 : -1;
   if (isCographic)
     dec->type = (dec->type == CMR_MATROID_DEC_TYPE_GRAPH) ? CMR_MATROID_DEC_TYPE_PLANAR : CMR_MATROID_DEC_TYPE_COGRAPH;
+  else
+    queue->foundNoncographicness = true;
 
   if ((isCographic && (!task->params->planarityCheck || dec->graphicness)) || dec->graphicness > 0)
   {

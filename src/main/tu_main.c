@@ -65,7 +65,8 @@ CMR_ERROR testTotalUnimodularity(
   CMR_TU_PARAMS params;
   CMR_CALL( CMRtuParamsInit(&params) );
   params.algorithm = algorithm;
-  params.regular.completeTree = outputTreeFileName;
+  params.regular.treeFlags = outputTreeFileName ? (CMR_REGULAR_TREE_FLAGS_RECURSE)
+    : (CMR_REGULAR_TREE_FLAGS_RECURSE | CMR_REGULAR_TREE_FLAGS_STOP_IRREGULAR);
   params.regular.directGraphicness = directGraphicness;
   params.regular.seriesParallel = seriesParallel;
   CMR_TU_STATS stats;

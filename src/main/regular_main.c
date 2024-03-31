@@ -62,7 +62,8 @@ CMR_ERROR testRegularity(
   CMR_MINOR* minor = NULL;
   CMR_REGULAR_PARAMS params;
   CMR_CALL( CMRregularParamsInit(&params) );
-  params.completeTree = outputTreeFileName;
+  params.treeFlags = outputTreeFileName ? (CMR_REGULAR_TREE_FLAGS_RECURSE)
+    : (CMR_REGULAR_TREE_FLAGS_RECURSE | CMR_REGULAR_TREE_FLAGS_STOP_IRREGULAR);
   params.directGraphicness = directGraphicness;
   params.seriesParallel = seriesParallel;
   CMR_REGULAR_STATS stats;
