@@ -566,6 +566,18 @@ CMR_ERROR CMRmatroiddecPrint(
 );
 
 /**
+ * \brief Clones a decomposition node \p dec into \p *pclone which represents the same matrix but has type
+ *        \ref CMR_MATROID_DEC_TYPE_UNKNOWN type.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRmatroiddecCloneUnknown(
+  CMR* cmr,                 /**< \ref CMR environment. */
+  CMR_MATROID_DEC* dec,     /**< The decomposition node. */
+  CMR_MATROID_DEC** pclone  /**< Pointer for storing the clone. */
+);
+
+/**
  * \brief Increases the reference counter by 1.
  */
 

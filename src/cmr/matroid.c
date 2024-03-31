@@ -1010,6 +1010,20 @@ CMR_ERROR createNode(
   return CMR_OKAY;
 }
 
+CMR_ERROR CMRmatroiddecCloneUnknown(CMR* cmr, CMR_MATROID_DEC* dec, CMR_MATROID_DEC** pclone)
+{
+  assert(cmr);
+  assert(dec);
+  assert(pclone);
+
+  CMR_CALL( createNode(cmr, pclone, dec->isTernary, CMR_MATROID_DEC_TYPE_UNKNOWN, dec->numRows, dec->numColumns) );
+  CMR_MATROID_DEC* clone = *pclone;
+
+  CMR_CALL( CMRchrmatCopy(cmr, dec->matrix, &clone->matrix) );
+
+  return CMR_OKAY;
+}
+
 /**
  * \brief Allocates and sets childRowsToParent and childColumnsToParent of the child of \p parent indicated by
  *        \p childIndex.
