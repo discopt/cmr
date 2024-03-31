@@ -88,6 +88,8 @@ CMR_ERROR CMRregularityTestR10(CMR* cmr, DecompositionTask* task, DecompositionQ
   }
 
   dec->type = CMR_MATROID_DEC_TYPE_R10;
+  queue->foundNongraphicness = true;
+  queue->foundNoncographicness = true;
 
 cleanup:
 

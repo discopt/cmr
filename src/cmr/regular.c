@@ -17,7 +17,7 @@ CMR_ERROR CMRregularParamsInit(CMR_REGULAR_PARAMS* params)
   params->directGraphicness = true;
   params->seriesParallel = true;
   params->planarityCheck = false;
-  params->completeTree = false;
+  params->treeFlags = CMR_REGULAR_TREE_FLAGS_DEFAULT;
   params->threeSumPivotChildren = false;
   params->threeSumStrategy = CMR_MATROID_DEC_THREESUM_FLAG_DISTRIBUTED_RANKS /* TODO: Later no pivots. */
     | CMR_MATROID_DEC_THREESUM_FLAG_FIRST_WIDE | CMR_MATROID_DEC_THREESUM_FLAG_FIRST_MIXED
@@ -88,7 +88,6 @@ CMR_ERROR CMRregularTest(CMR* cmr, CMR_CHRMAT* matrix, bool *pisRegular, CMR_MAT
 {
   assert(cmr);
   assert(matrix);
-  assert(pisRegular);
 
   CMR_REGULAR_PARAMS defaultParams;
   if (!params)
@@ -100,7 +99,8 @@ CMR_ERROR CMRregularTest(CMR* cmr, CMR_CHRMAT* matrix, bool *pisRegular, CMR_MAT
   CMR_SUBMAT* submatrix = NULL;
   if (!CMRchrmatIsBinary(cmr, matrix, pminor ? &submatrix : NULL))
   {
-    *pisRegular = false;
+    if (pisRegular)
+      *pisRegular = false;
     if (pminor)
       CMR_CALL( CMRminorCreate(cmr, pminor, 0, submatrix) );
     return CMR_OKAY;

@@ -1287,7 +1287,7 @@ TEST(TU, CompleteTree)
     CMR_MATROID_DEC* dec = NULL;
     CMR_TU_PARAMS params;
     ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
-    params.regular.completeTree = true;
+    params.regular.treeFlags = CMR_REGULAR_TREE_FLAGS_RECURSE;
 
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
 
@@ -1324,7 +1324,6 @@ TEST(TU, CompleteTree)
     CMR_MATROID_DEC* dec = NULL;
     CMR_TU_PARAMS params;
     ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
-    ASSERT_FALSE( params.regular.completeTree );
 
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
 
@@ -1369,7 +1368,6 @@ TEST(TU, CompleteTree)
     CMR_MATROID_DEC* dec = NULL;
     CMR_TU_PARAMS params;
     ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
-    ASSERT_FALSE( params.regular.completeTree );
     params.regular.directGraphicness = false;
 
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
@@ -1415,7 +1413,6 @@ TEST(TU, CompleteTree)
     CMR_MATROID_DEC* dec = NULL;
     CMR_TU_PARAMS params;
     ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
-    ASSERT_FALSE( params.regular.completeTree );
 
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
 
@@ -1464,7 +1461,6 @@ TEST(TU, CompleteTree)
     CMR_MATROID_DEC* dec = NULL;
     CMR_TU_PARAMS params;
     ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
-    ASSERT_FALSE( params.regular.completeTree );
     params.regular.directGraphicness = false;
 
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
@@ -1511,7 +1507,6 @@ TEST(TU, CompleteTree)
     CMR_MATROID_DEC* dec = NULL;
     CMR_TU_PARAMS params;
     ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
-    ASSERT_FALSE( params.regular.completeTree );
 
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
 
@@ -1557,7 +1552,6 @@ TEST(TU, CompleteTree)
     CMR_MATROID_DEC* dec = NULL;
     CMR_TU_PARAMS params;
     ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
-    ASSERT_FALSE( params.regular.completeTree );
 
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
 
@@ -1604,7 +1598,6 @@ TEST(TU, CompleteTree)
     CMR_MATROID_DEC* dec = NULL;
     CMR_TU_PARAMS params;
     ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
-    ASSERT_FALSE( params.regular.completeTree );
 
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
 

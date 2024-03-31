@@ -2023,8 +2023,7 @@ CMR_ERROR CMRmatroiddecSetAttributes(CMR_MATROID_DEC* dec)
   {
   case CMR_MATROID_DEC_TYPE_UNKNOWN:
     dec->regularity = 0;
-    dec->graphicness = 0;
-    dec->cographicness = 0;
+    /* We do not set (co)graphicness because its absense may have been determined without setting the type. */
   break;
   case CMR_MATROID_DEC_TYPE_PLANAR:
     dec->regularity = 1;

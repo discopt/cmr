@@ -49,6 +49,8 @@ CMR_ERROR CMRregularityQueueCreate(CMR* cmr, DecompositionQueue** pqueue)
   DecompositionQueue* queue = *pqueue;
   queue->head = NULL;
   queue->foundIrregularity = false;
+  queue->foundNongraphicness = false;
+  queue->foundNoncographicness = false;
 
   return CMR_OKAY;
 }
@@ -180,41 +182,16 @@ CMR_ERROR CMRregularityTest(CMR* cmr, CMR_CHRMAT* matrix, bool ternary, bool *pi
   CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', false) );
 #endif /* CMR_DEBUG */
 
-  clock_t time = clock();
-  if (stats)
-    stats->totalCount++;
-
   CMR_MATROID_DEC* root = NULL;
   CMR_CALL( CMRmatroiddecCreateMatrixRoot(cmr, &root, ternary, matrix) );
   assert(root);
 
-  DecompositionQueue* queue = NULL;
-  CMR_CALL( CMRregularityQueueCreate(cmr, &queue) );
-  DecompositionTask* rootTask = NULL;
-  CMR_CALL( CMRregularityTaskCreateRoot(cmr, root, &rootTask, params, stats, time, timeLimit) );
-  CMRregularityQueueAdd(queue, rootTask);
+  CMR_CALL( CMRregularityCompleteDecomposition(cmr, root, params, stats, timeLimit) );
 
-  while (!CMRregularityQueueEmpty(queue) && (params->completeTree || !queue->foundIrregularity))
-  {
-    DecompositionTask* task = CMRregularityQueueRemove(queue);
-    CMR_CALL( CMRregularityTaskRun(cmr, task, queue) );
-  }
-
-  CMR_CALL( CMRregularityQueueFree(cmr, &queue) );
-
-  CMR_CALL( CMRmatroiddecSetAttributes(root) );
-  assert(root->regularity != 0);
-  if (pisRegular)
+  if (root->regularity && pisRegular)
     *pisRegular = root->regularity > 0;
-
-  /* Either store or free the decomposition. */
   if (pdec)
     *pdec = root;
-  else
-    CMR_CALL( CMRmatroiddecRelease(cmr, &root) );
-
-  if (stats)
-    stats->totalTime += (clock() - time) * 1.0 / CLOCKS_PER_SEC;
 
   return CMR_OKAY;
 }
@@ -228,10 +205,10 @@ CMR_ERROR CMRregularityCompleteDecomposition(CMR* cmr, CMR_MATROID_DEC* subtree,
 
 #if defined(CMR_DEBUG)
   CMRdbgMsg(0, "Completing decomposition tree for a %s %zux%zu matrix.\n",
-    dec->isTernary ? "ternary" : "binary", root->matrix->numRows, root->matrix->numColumns);
+    subtree->isTernary ? "ternary" : "binary", subtree->matrix->numRows, subtree->matrix->numColumns);
   CMRdbgMsg(0, "Considered subtree belongs to the %zux%zu matrix.\n",
-    dec->matrix->numRows, dec->matrix->numColumns);
-  CMR_CALL( CMRchrmatPrintDense(cmr, dec->matrix, stdout, '0', false) );
+    subtree->matrix->numRows, subtree->matrix->numColumns);
+  CMR_CALL( CMRchrmatPrintDense(cmr, subtree->matrix, stdout, '0', false) );
 #endif /* CMR_DEBUG */
 
   clock_t time = clock();
@@ -253,16 +230,56 @@ CMR_ERROR CMRregularityCompleteDecomposition(CMR* cmr, CMR_MATROID_DEC* subtree,
   CMR_CALL( CMRregularityTaskCreateRoot(cmr, subtree, &decTask, params, stats, time, timeLimit) );
   CMRregularityQueueAdd(queue, decTask);
 
-  while (!CMRregularityQueueEmpty(queue) && (params->completeTree || !queue->foundIrregularity))
+  while (!CMRregularityQueueEmpty(queue))
   {
     DecompositionTask* task = CMRregularityQueueRemove(queue);
+
+    if (!(params->treeFlags & CMR_REGULAR_TREE_FLAGS_RECURSE) && (task->dec != subtree))
+    {
+      CMRdbgMsg(2, "Skipping task for decomposition node %p of size %zux%zu.\n", task->dec, task->dec->numRows,
+        task->dec->numColumns);
+      CMR_CALL( CMRregularityTaskFree(cmr, &task) );
+      continue;
+    }
+
+    if ((params->treeFlags & CMR_REGULAR_TREE_FLAGS_STOP_IRREGULAR) && queue->foundIrregularity)
+    {
+      CMRdbgMsg(2, "Clearing task queue due to an irregular node.\n");
+      CMR_CALL( CMRregularityTaskFree(cmr, &task) );
+      continue;
+    }
+    else if ((params->treeFlags & CMR_REGULAR_TREE_FLAGS_STOP_IRREGULAR) && queue->foundIrregularity)
+    {
+      CMRdbgMsg(2, "Clearing task queue due to an irregular node.\n");
+      CMR_CALL( CMRregularityTaskFree(cmr, &task) );
+      continue;
+    }
+    else if ((params->treeFlags & CMR_REGULAR_TREE_FLAGS_STOP_NONGRAPHIC) && queue->foundNongraphicness)
+    {
+      CMRdbgMsg(2, "Clearing task queue due to a nongraphic node.\n");
+      CMR_CALL( CMRregularityTaskFree(cmr, &task) );
+      continue;
+    }
+    else if ((params->treeFlags & CMR_REGULAR_TREE_FLAGS_STOP_NONCOGRAPHIC) && queue->foundNoncographicness)
+    {
+      CMRdbgMsg(2, "Clearing task queue due to a noncographic node.\n");
+      CMR_CALL( CMRregularityTaskFree(cmr, &task) );
+      continue;
+    }
+    else if ((params->treeFlags & CMR_REGULAR_TREE_FLAGS_STOP_NONGRAPHIC_NONCOGRAPHIC) && queue->foundNongraphicness
+      && queue->foundNoncographicness)
+    {
+      CMRdbgMsg(2, "Clearing task queue due to a nongraphic node and a noncographic node.\n");
+      CMR_CALL( CMRregularityTaskFree(cmr, &task) );
+      continue;
+    }
+
     CMR_CALL( CMRregularityTaskRun(cmr, task, queue) );
   }
 
   CMR_CALL( CMRregularityQueueFree(cmr, &queue) );
 
   CMR_CALL( CMRmatroiddecSetAttributes(subtree) );
-  assert(subtree->regularity != 0);
 
   if (stats)
     stats->totalTime += (clock() - time) * 1.0 / CLOCKS_PER_SEC;

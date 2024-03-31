@@ -822,3 +822,121 @@ TEST(Regular, R12)
 
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
+
+TEST(Regular, TreeFlagsNorecurse)
+{
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+
+  {
+    CMR_CHRMAT* matrix = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "9 9 "
+      " 1 1 0 0 0 0 0 0 0 "
+      " 1 1 1 0 0 0 0 0 0 "
+      " 1 0 0 1 0 0 0 0 0 "
+      " 0 1 1 1 0 0 0 0 0 "
+      " 0 0 1 1 0 0 0 0 0 "
+      " 0 0 0 0 1 1 1 0 0 "
+      " 0 0 0 0 1 1 0 1 0 "
+      " 0 0 0 0 0 1 0 1 1 "
+      " 0 0 0 0 0 0 1 1 1 "
+    ) );
+
+    ASSERT_CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', true) );
+
+    CMR_MATROID_DEC* dec = NULL;
+    CMR_REGULAR_PARAMS params;
+    ASSERT_CMR_CALL( CMRregularParamsInit(&params) );
+    params.treeFlags = CMR_REGULAR_TREE_FLAGS_STOP_IRREGULAR;
+
+    ASSERT_CMR_CALL( CMRregularTest(cmr, matrix, NULL, &dec, NULL, &params, NULL, DBL_MAX) );
+    ASSERT_EQ( CMRmatroiddecType(dec), CMR_MATROID_DEC_TYPE_ONE_SUM );
+    ASSERT_EQ( CMRmatroiddecType(CMRmatroiddecChild(dec, 0)), CMR_MATROID_DEC_TYPE_UNKNOWN );
+    ASSERT_EQ( CMRmatroiddecType(CMRmatroiddecChild(dec, 1)), CMR_MATROID_DEC_TYPE_UNKNOWN );
+
+    ASSERT_CMR_CALL( CMRmatroiddecRelease(cmr, &dec) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  }
+
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
+}
+
+TEST(Regular, TreeFlagsStopNoncographic)
+{
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+
+  {
+    CMR_CHRMAT* matrix = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "9 9 "
+      " 1 1 0 0 0 0 0 0 0 "
+      " 1 1 1 0 0 0 0 0 0 "
+      " 1 0 0 1 0 0 0 0 0 "
+      " 0 1 1 1 0 0 0 0 0 "
+      " 0 0 1 1 0 0 0 0 0 "
+      " 0 0 0 0 1 1 1 0 0 "
+      " 0 0 0 0 1 1 0 1 0 "
+      " 0 0 0 0 0 1 0 1 1 "
+      " 0 0 0 0 0 0 1 1 1 "
+    ) );
+
+    ASSERT_CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', true) );
+
+    CMR_MATROID_DEC* dec = NULL;
+    CMR_REGULAR_PARAMS params;
+    ASSERT_CMR_CALL( CMRregularParamsInit(&params) );
+    params.treeFlags = CMR_REGULAR_TREE_FLAGS_RECURSE | CMR_REGULAR_TREE_FLAGS_STOP_NONCOGRAPHIC;
+    params.planarityCheck = true;
+
+    ASSERT_CMR_CALL( CMRregularTest(cmr, matrix, NULL, &dec, NULL, &params, NULL, DBL_MAX) );
+    ASSERT_EQ( CMRmatroiddecType(dec), CMR_MATROID_DEC_TYPE_ONE_SUM );
+    ASSERT_EQ( CMRmatroiddecType(CMRmatroiddecChild(dec, 0)), CMR_MATROID_DEC_TYPE_GRAPH );
+    ASSERT_EQ( CMRmatroiddecType(CMRmatroiddecChild(dec, 1)), CMR_MATROID_DEC_TYPE_UNKNOWN );
+    ASSERT_LT( CMRmatroiddecCographicness(dec), 0 );
+
+    ASSERT_CMR_CALL( CMRmatroiddecRelease(cmr, &dec) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  }
+
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
+}
+
+
+TEST(Regular, TreeFlagsStopNongraphic)
+{
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+
+  {
+    CMR_CHRMAT* matrix = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "9 9 "
+      " 1 1 1 0 0 0 0 0 0 "
+      " 1 1 0 1 0 0 0 0 0 "
+      " 0 1 0 1 1 0 0 0 0 "
+      " 0 0 1 1 1 0 0 0 0 "
+      " 0 0 0 0 0 1 1 0 0 "
+      " 0 0 0 0 0 1 1 1 0 "
+      " 0 0 0 0 0 1 0 0 1 "
+      " 0 0 0 0 0 0 1 1 1 "
+      " 0 0 0 0 0 0 0 1 1 "
+    ) );
+
+    ASSERT_CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', true) );
+
+    CMR_MATROID_DEC* dec = NULL;
+    CMR_REGULAR_PARAMS params;
+    ASSERT_CMR_CALL( CMRregularParamsInit(&params) );
+    params.treeFlags = CMR_REGULAR_TREE_FLAGS_RECURSE | CMR_REGULAR_TREE_FLAGS_STOP_NONGRAPHIC;
+    params.planarityCheck = true;
+
+    ASSERT_CMR_CALL( CMRregularTest(cmr, matrix, NULL, &dec, NULL, &params, NULL, DBL_MAX) );
+    ASSERT_EQ( CMRmatroiddecType(dec), CMR_MATROID_DEC_TYPE_ONE_SUM );
+    ASSERT_LT( CMRmatroiddecGraphicness(dec), 0 );
+
+    ASSERT_CMR_CALL( CMRmatroiddecRelease(cmr, &dec) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  }
+
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
+}
+

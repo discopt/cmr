@@ -42,8 +42,10 @@ CMR_ERROR CMRregularityTaskFree(
 
 typedef struct DecompositionQueue
 {
-  DecompositionTask* head;  /**< \brief Next task to be processed. */
-  bool foundIrregularity;   /**< \brief Whether irregularity was detected for some node. */
+  DecompositionTask* head;    /**< \brief Next task to be processed. */
+  bool foundIrregularity;     /**< \brief Whether irregularity was detected for some node. */
+  bool foundNongraphicness;   /**< \brief Whether non-graphiness was detected for some node. */
+  bool foundNoncographicness; /**< \brief Whether non-cographiness was detected for some node. */
 } DecompositionQueue;
 
 /**
