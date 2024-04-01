@@ -389,23 +389,30 @@ $(function() {
 <div class="line"><a name="l00565"></a><span class="lineno">  565</span>&#160;  <span class="keywordtype">bool</span> printPivots          </div>
 <div class="line"><a name="l00566"></a><span class="lineno">  566</span>&#160;);</div>
 <div class="line"><a name="l00567"></a><span class="lineno">  567</span>&#160; </div>
-<div class="line"><a name="l00572"></a><span class="lineno">  572</span>&#160;CMR_EXPORT</div>
-<div class="line"><a name="l00573"></a><span class="lineno">  573</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="group__Matroid.html#gaea8e18fb15f8f09060a7c25e1138030f">CMRmatroiddecCapture</a>(</div>
-<div class="line"><a name="l00574"></a><span class="lineno">  574</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,             </div>
-<div class="line"><a name="l00575"></a><span class="lineno">  575</span>&#160;  <a class="code" href="struct__CMR__MATROID__DEC.html">CMR_MATROID_DEC</a>* dec  </div>
-<div class="line"><a name="l00576"></a><span class="lineno">  576</span>&#160;);</div>
-<div class="line"><a name="l00577"></a><span class="lineno">  577</span>&#160; </div>
-<div class="line"><a name="l00585"></a><span class="lineno">  585</span>&#160;CMR_EXPORT</div>
-<div class="line"><a name="l00586"></a><span class="lineno">  586</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="group__Matroid.html#ga3ec9cb97a5c539077ab3f9b5914566b9">CMRmatroiddecRelease</a>(</div>
-<div class="line"><a name="l00587"></a><span class="lineno">  587</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,               </div>
-<div class="line"><a name="l00588"></a><span class="lineno">  588</span>&#160;  <a class="code" href="struct__CMR__MATROID__DEC.html">CMR_MATROID_DEC</a>** pdec  </div>
-<div class="line"><a name="l00589"></a><span class="lineno">  589</span>&#160;);</div>
-<div class="line"><a name="l00590"></a><span class="lineno">  590</span>&#160; </div>
-<div class="line"><a name="l00593"></a><span class="lineno">  593</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
-<div class="line"><a name="l00594"></a><span class="lineno">  594</span>&#160;}</div>
-<div class="line"><a name="l00595"></a><span class="lineno">  595</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00596"></a><span class="lineno">  596</span>&#160; </div>
-<div class="line"><a name="l00597"></a><span class="lineno">  597</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* CMR_MATROID_H */</span><span class="preprocessor"></span></div>
+<div class="line"><a name="l00573"></a><span class="lineno">  573</span>&#160;CMR_EXPORT</div>
+<div class="line"><a name="l00574"></a><span class="lineno">  574</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="group__Matroid.html#gaba9f00ef1e11d27e16e6bbd7592efbb5">CMRmatroiddecCloneUnknown</a>(</div>
+<div class="line"><a name="l00575"></a><span class="lineno">  575</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,                 </div>
+<div class="line"><a name="l00576"></a><span class="lineno">  576</span>&#160;  <a class="code" href="struct__CMR__MATROID__DEC.html">CMR_MATROID_DEC</a>* dec,     </div>
+<div class="line"><a name="l00577"></a><span class="lineno">  577</span>&#160;  <a class="code" href="struct__CMR__MATROID__DEC.html">CMR_MATROID_DEC</a>** pclone  </div>
+<div class="line"><a name="l00578"></a><span class="lineno">  578</span>&#160;);</div>
+<div class="line"><a name="l00579"></a><span class="lineno">  579</span>&#160; </div>
+<div class="line"><a name="l00584"></a><span class="lineno">  584</span>&#160;CMR_EXPORT</div>
+<div class="line"><a name="l00585"></a><span class="lineno">  585</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="group__Matroid.html#gaea8e18fb15f8f09060a7c25e1138030f">CMRmatroiddecCapture</a>(</div>
+<div class="line"><a name="l00586"></a><span class="lineno">  586</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,             </div>
+<div class="line"><a name="l00587"></a><span class="lineno">  587</span>&#160;  <a class="code" href="struct__CMR__MATROID__DEC.html">CMR_MATROID_DEC</a>* dec  </div>
+<div class="line"><a name="l00588"></a><span class="lineno">  588</span>&#160;);</div>
+<div class="line"><a name="l00589"></a><span class="lineno">  589</span>&#160; </div>
+<div class="line"><a name="l00597"></a><span class="lineno">  597</span>&#160;CMR_EXPORT</div>
+<div class="line"><a name="l00598"></a><span class="lineno">  598</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="group__Matroid.html#ga3ec9cb97a5c539077ab3f9b5914566b9">CMRmatroiddecRelease</a>(</div>
+<div class="line"><a name="l00599"></a><span class="lineno">  599</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,               </div>
+<div class="line"><a name="l00600"></a><span class="lineno">  600</span>&#160;  <a class="code" href="struct__CMR__MATROID__DEC.html">CMR_MATROID_DEC</a>** pdec  </div>
+<div class="line"><a name="l00601"></a><span class="lineno">  601</span>&#160;);</div>
+<div class="line"><a name="l00602"></a><span class="lineno">  602</span>&#160; </div>
+<div class="line"><a name="l00605"></a><span class="lineno">  605</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
+<div class="line"><a name="l00606"></a><span class="lineno">  606</span>&#160;}</div>
+<div class="line"><a name="l00607"></a><span class="lineno">  607</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00608"></a><span class="lineno">  608</span>&#160; </div>
+<div class="line"><a name="l00609"></a><span class="lineno">  609</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* CMR_MATROID_H */</span><span class="preprocessor"></span></div>
 <div class="ttc" id="aelement_8h_html_a27b924582353437788c8d49c28a89142"><div class="ttname"><a href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a></div><div class="ttdeci">int CMR_ELEMENT</div><div class="ttdef"><b>Definition:</b> element.h:20</div></div>
 <div class="ttc" id="aenv_8h_html"><div class="ttname"><a href="env_8h.html">env.h</a></div><div class="ttdoc">Basic functionality of the software library.</div></div>
 <div class="ttc" id="aenv_8h_html_ae2f4ad54b976c2b9a099246c6dc0be87"><div class="ttname"><a href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a></div><div class="ttdeci">CMR_ERROR</div><div class="ttdoc">Type for return codes of library functions.</div><div class="ttdef"><b>Definition:</b> env.h:32</div></div>
@@ -445,6 +452,7 @@ $(function() {
 <div class="ttc" id="agroup__Matroid_html_ga8fb41f36b0af63e5168dd328e1d379e1"><div class="ttname"><a href="group__Matroid.html#ga8fb41f36b0af63e5168dd328e1d379e1">CMRmatroiddecNumChildren</a></div><div class="ttdeci">CMR_EXPORT size_t CMRmatroiddecNumChildren(CMR_MATROID_DEC *dec)</div><div class="ttdoc">Returns the number of children of the decomposition node dec.</div><div class="ttdef"><b>Definition:</b> matroid.c:388</div></div>
 <div class="ttc" id="agroup__Matroid_html_ga980bdcc93f4241b2302f44f55522603d"><div class="ttname"><a href="group__Matroid.html#ga980bdcc93f4241b2302f44f55522603d">CMRmatroiddecNumRows</a></div><div class="ttdeci">CMR_EXPORT size_t CMRmatroiddecNumRows(CMR_MATROID_DEC *dec)</div><div class="ttdoc">Returns the number of rows.</div><div class="ttdef"><b>Definition:</b> matroid.c:431</div></div>
 <div class="ttc" id="agroup__Matroid_html_ga9efeffdeb7c6743aee7da2f674cf2333"><div class="ttname"><a href="group__Matroid.html#ga9efeffdeb7c6743aee7da2f674cf2333">CMRmatroiddecType</a></div><div class="ttdeci">CMR_EXPORT CMR_MATROID_DEC_TYPE CMRmatroiddecType(CMR_MATROID_DEC *dec)</div><div class="ttdoc">Returns the type of a decomposition node dec.</div><div class="ttdef"><b>Definition:</b> matroid.c:403</div></div>
+<div class="ttc" id="agroup__Matroid_html_gaba9f00ef1e11d27e16e6bbd7592efbb5"><div class="ttname"><a href="group__Matroid.html#gaba9f00ef1e11d27e16e6bbd7592efbb5">CMRmatroiddecCloneUnknown</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRmatroiddecCloneUnknown(CMR *cmr, CMR_MATROID_DEC *dec, CMR_MATROID_DEC **pclone)</div><div class="ttdoc">Clones a decomposition node dec into *pclone which represents the same matrix but has type CMR_MATROI...</div><div class="ttdef"><b>Definition:</b> matroid.c:1013</div></div>
 <div class="ttc" id="agroup__Matroid_html_gabdca640dc2157c9e583370aa9095ac25"><div class="ttname"><a href="group__Matroid.html#gabdca640dc2157c9e583370aa9095ac25">CMRmatroiddecCographForest</a></div><div class="ttdeci">CMR_EXPORT CMR_GRAPH_EDGE * CMRmatroiddecCographForest(CMR_MATROID_DEC *dec)</div><div class="ttdoc">Returns the forest of the cograph (if available).</div><div class="ttdef"><b>Definition:</b> matroid.c:542</div></div>
 <div class="ttc" id="agroup__Matroid_html_gac4197fe953f40ba1eea22fe390db0adb"><div class="ttname"><a href="group__Matroid.html#gac4197fe953f40ba1eea22fe390db0adb">CMRmatroiddecPivotColumns</a></div><div class="ttdeci">CMR_EXPORT size_t * CMRmatroiddecPivotColumns(CMR_MATROID_DEC *dec)</div><div class="ttdoc">Returns the array with the pivot columns (if available).</div><div class="ttdef"><b>Definition:</b> matroid.c:591</div></div>
 <div class="ttc" id="agroup__Matroid_html_gacc02b26993e4d2598ea84139b55b0405"><div class="ttname"><a href="group__Matroid.html#gacc02b26993e4d2598ea84139b55b0405">CMRmatroiddecGraph</a></div><div class="ttdeci">CMR_EXPORT CMR_GRAPH * CMRmatroiddecGraph(CMR_MATROID_DEC *dec)</div><div class="ttdoc">Returns the graph (if available).</div><div class="ttdef"><b>Definition:</b> matroid.c:465</div></div>
