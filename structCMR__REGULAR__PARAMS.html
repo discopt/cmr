@@ -93,9 +93,10 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:a5cd4b610db78a92185d6b1f824cb2da1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structCMR__REGULAR__PARAMS.html#a5cd4b610db78a92185d6b1f824cb2da1">planarityCheck</a></td></tr>
 <tr class="memdesc:a5cd4b610db78a92185d6b1f824cb2da1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether minors identified as graphic should still be checked for cographicness; default: <code>false</code>.  <a href="structCMR__REGULAR__PARAMS.html#a5cd4b610db78a92185d6b1f824cb2da1">More...</a><br /></td></tr>
 <tr class="separator:a5cd4b610db78a92185d6b1f824cb2da1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a89dff947829620751e861a2e2e148844"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structCMR__REGULAR__PARAMS.html#a89dff947829620751e861a2e2e148844">completeTree</a></td></tr>
-<tr class="memdesc:a89dff947829620751e861a2e2e148844"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether to compute a complete decomposition tree (even if already non-regular; default: <code>false</code>.  <a href="structCMR__REGULAR__PARAMS.html#a89dff947829620751e861a2e2e148844">More...</a><br /></td></tr>
-<tr class="separator:a89dff947829620751e861a2e2e148844"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76e001cb852371a4d74f56852ae6eca4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structCMR__REGULAR__PARAMS.html#a76e001cb852371a4d74f56852ae6eca4">treeFlags</a></td></tr>
+<tr class="memdesc:a76e001cb852371a4d74f56852ae6eca4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flags controlling the decomposition algorithm. See <br  />
+  <a href="structCMR__REGULAR__PARAMS.html#a76e001cb852371a4d74f56852ae6eca4">More...</a><br /></td></tr>
+<tr class="separator:a76e001cb852371a4d74f56852ae6eca4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a76633c1cf853ec33ef6b24d9f5275ef2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structCMR__REGULAR__PARAMS.html#a76633c1cf853ec33ef6b24d9f5275ef2">threeSumPivotChildren</a></td></tr>
 <tr class="memdesc:a76633c1cf853ec33ef6b24d9f5275ef2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether pivots for 3-sums shall be applied such that the matrix contains both child matrices as submatrices, if possible.  <a href="structCMR__REGULAR__PARAMS.html#a76633c1cf853ec33ef6b24d9f5275ef2">More...</a><br /></td></tr>
 <tr class="separator:a76633c1cf853ec33ef6b24d9f5275ef2"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -107,22 +108,6 @@ Public Attributes</h2></td></tr>
 <tr class="separator:a12dd030a765e7197017258f9d04e2290"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Data Documentation</h2>
-<a id="a89dff947829620751e861a2e2e148844"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a89dff947829620751e861a2e2e148844">&#9670;&nbsp;</a></span>completeTree</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool CMR_REGULAR_PARAMS::completeTree</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Whether to compute a complete decomposition tree (even if already non-regular; default: <code>false</code>. </p>
-
-</div>
-</div>
 <a id="ad370fd3187bb506c766ddccd392b2003"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad370fd3187bb506c766ddccd392b2003">&#9670;&nbsp;</a></span>directGraphicness</h2>
 
@@ -235,6 +220,24 @@ Public Attributes</h2></td></tr>
 </ul>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="matroids.html#matroid_decomposition">Decomposition of matroids</a> for a description of these layouts.</dd></dl>
 <p>A decomposition as described by Seymour can be selected via <a class="el" href="group__Matroid.html#gga584220cef1cff2b9d72c54c0cc50fe5eaf785362596f282aced164e0ce45c4c91">CMR_MATROID_DEC_THREESUM_FLAG_SEYMOUR</a>. A decomposition as used by Truemper can be selected via <a class="el" href="group__Matroid.html#gga584220cef1cff2b9d72c54c0cc50fe5ea63ca8b6891bd4c3cc37aec6152420cf1">CMR_MATROID_DEC_THREESUM_FLAG_TRUEMPER</a>. The default is to not carry out any pivots and choose Seymour's or Truemper's definition depending on the rank distribution. </p>
+
+</div>
+</div>
+<a id="a76e001cb852371a4d74f56852ae6eca4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76e001cb852371a4d74f56852ae6eca4">&#9670;&nbsp;</a></span>treeFlags</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int CMR_REGULAR_PARAMS::treeFlags</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Flags controlling the decomposition algorithm. See <br  />
+ </p>
+<p>Whether to compute a complete decomposition tree (even if already non-regular; default: <code>false</code>. </p>
 
 </div>
 </div>
