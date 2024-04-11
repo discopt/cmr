@@ -125,9 +125,6 @@ CMR_ERROR CMRregularCompleteDecomposition(CMR* cmr, CMR_MATROID_DEC* dec, CMR_RE
     params = &defaultParams;
   }
 
-  if (!CMRmatroiddecIsTernary(dec))
-    return CMR_ERROR_INPUT;
-
   CMR_CALL( CMRregularityCompleteDecomposition(cmr, dec, params, stats, timeLimit) );
 
   return CMR_OKAY;
