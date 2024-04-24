@@ -122,19 +122,6 @@ CMR_ERROR CMRmatroiddecPrintChild(
 );
 
 /**
- * \brief Creates an unknown decomposition node as a root.
- *
- * Copies \p matrix into the node.
- */
-
-CMR_ERROR CMRmatroiddecCreateMatrixRoot(
-  CMR* cmr,                 /**< \ref CMR environment. */
-  CMR_MATROID_DEC** pdec,   /**< Pointer for storing the decomposition node. */
-  bool isTernary,           /**< Whether we consider ternary matrices. */
-  CMR_CHRMAT* matrix        /**< The matrix corresponding to this node; will be copied. */
-);
-
-/**
  * \brief Sets the number of children and allocates memory accordingly.
  */
 
