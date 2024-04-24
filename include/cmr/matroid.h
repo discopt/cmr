@@ -600,6 +600,19 @@ CMR_ERROR CMRmatroiddecRelease(
   CMR_MATROID_DEC** pdec  /**< Pointer to decomposition node. \p *pdec is set to \c NULL to prevent accidental usage. */
 );
 
+/**
+ * \brief Creates an unknown decomposition node as a root.
+ *
+ * Copies \p matrix into the node.
+ */
+
+CMR_ERROR CMRmatroiddecCreateMatrixRoot(
+  CMR* cmr,                 /**< \ref CMR environment. */
+  CMR_MATROID_DEC** pdec,   /**< Pointer for storing the decomposition node. */
+  bool isTernary,           /**< Whether we consider ternary matrices. */
+  CMR_CHRMAT* matrix        /**< The matrix corresponding to this node; will be copied. */
+);
+
 /**@}*/
 
 #ifdef __cplusplus
