@@ -2124,3 +2124,142 @@ CMR_ERROR CMRmatroiddecSetAttributes(CMR_MATROID_DEC* dec)
 
   return CMR_OKAY;
 }
+
+
+typedef struct
+{
+  CMR_MATROID_DEC* origin;
+  CMR_MATROID_DEC* clone;
+} ClonePair;
+
+static
+CMR_ERROR cloneRecursively(
+  CMR* cmr,
+  CMR_MATROID_DEC* dec,
+  CMR_MATROID_DEC** pclone,
+  CMR_LISTHASHTABLE* nodesToClonesHashtable,
+  ClonePair** pclonePairs,
+  size_t* pmemClonePairs,
+  size_t* pnumClonePairs
+)
+{
+  assert(cmr);
+  assert(dec);
+  assert(pclone);
+  assert(nodesToClonesHashtable);
+  assert(pclonePairs);
+  assert(pmemClonePairs);
+  assert(pnumClonePairs);
+
+  assert(*pnumClonePairs <= *pmemClonePairs);
+
+  ClonePair* clonePairs = *pclonePairs;
+  assert(clonePairs);
+
+  /* Check if node was already cloned. */
+  CMR_LISTHASHTABLE_HASH hash = (CMR_LISTHASHTABLE_HASH) dec;
+  for (CMR_LISTHASHTABLE_ENTRY entry = CMRlisthashtableFindFirst(nodesToClonesHashtable, hash);
+    entry != SIZE_MAX; entry = CMRlisthashtableFindNext(nodesToClonesHashtable, hash, entry))
+  {
+    size_t clonePairIndex = CMRlisthashtableValue(nodesToClonesHashtable, entry);
+    if (clonePairs[clonePairIndex].origin == dec)
+    {
+      *pclone = clonePairs[clonePairIndex].clone;
+      return CMR_OKAY;
+    }
+  }
+
+  /* It was not, so we create a clone. */
+  CMR_MATROID_DEC* clone = NULL;
+  CMR_CALL( createNode(cmr, &clone, dec->isTernary, dec->type, dec->numRows, dec->numColumns) );
+  CMR_CALL( CMRchrmatCopy(cmr, dec->matrix, &clone->matrix) );
+  if (dec->graph)
+    CMR_CALL( CMRgraphCopy(cmr, dec->graph, &clone->graph) );
+  if (dec->graphForest)
+    CMR_CALL( CMRduplicateBlockArray(cmr, &clone->graphForest, CMRgraphNumNodes(dec->graph) - 1, dec->graphForest) );
+  if (dec->graphCoforest)
+  {
+    CMR_CALL( CMRduplicateBlockArray(cmr, &clone->graphCoforest,
+      CMRgraphNumEdges(dec->graph) - CMRgraphNumNodes(dec->graph) + 1, dec->graphCoforest) );
+  }
+  if (dec->graphArcsReversed)
+  {
+    CMR_CALL( CMRduplicateBlockArray(cmr, &clone->graphArcsReversed, CMRgraphMemEdges(dec->graph),
+      dec->graphArcsReversed) );
+  }
+  if (dec->cograph)
+    CMR_CALL( CMRgraphCopy(cmr, dec->graph, &clone->graph) );
+  if (dec->cographForest)
+  {
+    CMR_CALL( CMRduplicateBlockArray(cmr, &clone->cographForest, CMRgraphNumNodes(dec->cograph) - 1,
+      dec->cographForest) );
+  }
+  if (dec->cographCoforest)
+  {
+    CMR_CALL( CMRduplicateBlockArray(cmr, &clone->cographCoforest,
+      CMRgraphNumEdges(dec->cograph) - CMRgraphNumNodes(dec->cograph) + 1, dec->cographCoforest) );
+  }
+  if (dec->cographArcsReversed)
+  {
+    CMR_CALL( CMRduplicateBlockArray(cmr, &clone->cographArcsReversed, CMRgraphMemEdges(dec->cograph),
+      dec->cographArcsReversed) );
+  }
+
+  if (pclone)
+    *pclone = clone;
+
+  /* Possibly enlarge the list of clone pairs. */
+  if (*pnumClonePairs == *pmemClonePairs)
+  {
+    *pmemClonePairs *= 2;
+    CMR_CALL( CMRreallocBlockArray(cmr, pclonePairs, *pmemClonePairs) );
+    clonePairs = *pclonePairs;
+  }
+
+  /* Add it to the hash table and to the list of clone pairs. */
+  CMR_CALL( CMRlisthashtableInsert(cmr, nodesToClonesHashtable, hash, *pnumClonePairs, NULL) );
+  assert(*pnumClonePairs < *pmemClonePairs);
+  clonePairs[*pnumClonePairs].origin = dec;
+  clonePairs[*pnumClonePairs].clone = clone;
+  ++(*pnumClonePairs);
+
+  /* Recursively treat the children. */
+  CMR_CALL( CMRmatroiddecSetNumChildren(cmr, clone, dec->numChildren) );
+  for (size_t c = 0; c < dec->numChildren; ++c)
+  {
+    /* Clone the child. */
+    CMR_CALL( cloneRecursively(cmr, dec->children[c], NULL, nodesToClonesHashtable, pclonePairs, pmemClonePairs,
+      pnumClonePairs) );
+
+    /* Then add linking data. */
+  }
+
+  return CMR_OKAY;
+}
+
+CMR_ERROR CMRregularityCloneSubtrees(CMR* cmr, size_t numSubtrees, CMR_MATROID_DEC** subtreeRoots,
+  CMR_MATROID_DEC** clonedSubtrees)
+{
+  assert(cmr);
+  assert(subtreeRoots);
+
+  CMR_LISTHASHTABLE* nodesToClonesHashtable = NULL;
+  CMR_CALL( CMRlisthashtableCreate(cmr, &nodesToClonesHashtable, 1024, 256) );
+
+  ClonePair* clonePairs = NULL;
+  size_t memClonePairs = (numSubtrees > 32) ? 2 * numSubtrees : 32;
+  CMR_CALL( CMRallocBlockArray(cmr, &clonePairs, memClonePairs) );
+  size_t numClonePairs = 0;
+
+  /* We call the recursive cloning function. */
+  for (size_t i = 0; i < numSubtrees; ++i)
+  {
+    CMR_CALL( cloneRecursively(cmr, subtreeRoots[i], &clonedSubtrees[i], nodesToClonesHashtable, &clonePairs,
+      &memClonePairs, &numClonePairs) );
+  }
+
+  CMR_CALL( CMRfreeBlockArray(cmr, &clonePairs) );
+  CMR_CALL( CMRlisthashtableFree(cmr, &nodesToClonesHashtable) );
+
+  return CMR_OKAY;
+}

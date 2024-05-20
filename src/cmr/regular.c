@@ -129,3 +129,4 @@ CMR_ERROR CMRregularCompleteDecomposition(CMR* cmr, CMR_MATROID_DEC* dec, CMR_RE
 
   return CMR_OKAY;
 }
+

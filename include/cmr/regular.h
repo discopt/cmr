@@ -182,7 +182,7 @@ CMR_ERROR CMRregularTest(
  * \brief Completes a subtree of an existing decomposition tree.
  *
  * Replace the node's subtree by a new one even if it exists. Note that different parameters may yield a different
- * subtree.s
+ * subtree.
  */
 
 CMR_EXPORT
