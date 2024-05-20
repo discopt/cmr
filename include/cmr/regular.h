@@ -189,7 +189,23 @@ CMR_EXPORT
 CMR_ERROR CMRregularCompleteDecomposition(
   CMR* cmr,                   /**< \ref CMR environment. */
   CMR_MATROID_DEC* dec,       /**< Pointer to the decomposition node that is the root of the new subtree. */
-  CMR_REGULAR_PARAMS* params, /**< Parameters for the computation. */
+  CMR_REGULAR_PARAMS* params, /**< Parameters for the computation (may be \c NULL). */
+  CMR_REGULAR_STATS* stats,   /**< Statistics for the computation (may be \c NULL). */
+  double timeLimit            /**< Time limit to impose. */
+);
+
+/**
+ * \brief Refines a list of decomposition nodes.
+ *
+ * Replace the nodes' subtrees by new ones even if they exist.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRregularRefineDecomposition(
+  CMR* cmr,                   /**< \ref CMR environment. */
+  size_t numNodes,            /**< Number of nodes to refine. */
+  CMR_MATROID_DEC** nodes,    /**< Array of decomposition nodes to refine. */
+  CMR_REGULAR_PARAMS* params, /**< Parameters for the computation (may be \c NULL). */
   CMR_REGULAR_STATS* stats,   /**< Statistics for the computation (may be \c NULL). */
   double timeLimit            /**< Time limit to impose. */
 );

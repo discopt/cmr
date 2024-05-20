@@ -258,4 +258,17 @@ CMR_ERROR CMRregularityCompleteDecomposition(
   double timeLimit            /**< Time limit to impose. */
 );
 
+/**
+ * \brief Replaces the subtrees of several nodes of a matroid decomposition tree by new ones.
+ */
+
+CMR_ERROR CMRregularityRefineDecomposition(
+  CMR* cmr,                   /**< \ref CMR environment. */
+  size_t numNodes,            /**< Number of nodes to refine. */
+  CMR_MATROID_DEC** nodes,    /**< Array of decomposition nodes to refine. */
+  CMR_REGULAR_PARAMS* params, /**< Parameters for the computation. */
+  CMR_REGULAR_STATS* stats,   /**< Statistics for the computation (may be \c NULL). */
+  double timeLimit            /**< Time limit to impose. */
+);
+
 #endif /* CMR_REGULAR_INTERNAL_H */
