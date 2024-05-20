@@ -130,3 +130,25 @@ CMR_ERROR CMRregularCompleteDecomposition(CMR* cmr, CMR_MATROID_DEC* dec, CMR_RE
   return CMR_OKAY;
 }
 
+CMR_ERROR CMRregularRefineDecomposition(CMR* cmr, size_t numNodes, CMR_MATROID_DEC** nodes, CMR_REGULAR_PARAMS* params,
+  CMR_REGULAR_STATS* stats, double timeLimit)
+{
+  assert(cmr);
+  assert(timeLimit > 0);
+
+  if (numNodes == 0)
+    return CMR_OKAY;
+  assert(nodes);
+
+  CMR_REGULAR_PARAMS defaultParams;
+  if (!params)
+  {
+    CMR_CALL( CMRregularParamsInit(&defaultParams) );
+    params = &defaultParams;
+  }
+
+  CMR_CALL( CMRregularityRefineDecomposition(cmr, numNodes, nodes, params, stats, timeLimit) );
+
+  return CMR_OKAY;
+}
+
