@@ -594,3 +594,27 @@ CMR_ERROR CMRgraphCreateFromEdgeList(CMR* cmr, CMR_GRAPH** pgraph, CMR_ELEMENT**
 
   return CMR_OKAY;
 }
+
+CMR_ERROR CMRgraphCopy(CMR* cmr, CMR_GRAPH* graph, CMR_GRAPH** pcopy)
+{
+  assert(cmr);
+  assert(graph);
+  assert(pcopy);
+
+  size_t n = CMRgraphMemNodes(graph);
+  size_t m = CMRgraphMemEdges(graph);
+  CMR_CALL( CMRgraphCreateEmpty(cmr, pcopy, n, m) );
+  CMR_GRAPH* copy = *pcopy;
+  assert(copy);
+
+  copy->firstNode = graph->firstNode;
+  copy->freeEdge = graph->freeEdge;
+  copy->freeNode = graph->freeNode;
+  for (size_t v = 0; v < n; ++v)
+    copy->nodes[v] = graph->nodes[v];
+  for (size_t a = 0; a < 2 * m; ++m)
+    copy->arcs[a] = graph->arcs[a];
+
+  return CMR_OKAY;
+}
+

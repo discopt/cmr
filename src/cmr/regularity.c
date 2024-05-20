@@ -2,6 +2,7 @@
 
 #include "env_internal.h"
 #include "regularity_internal.h"
+#include "hashtable.h"
 
 #include <time.h>
 
@@ -286,4 +287,3 @@ CMR_ERROR CMRregularityCompleteDecomposition(CMR* cmr, CMR_MATROID_DEC* subtree,
 
   return CMR_OKAY;
 }
-
