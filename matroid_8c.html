@@ -77,6 +77,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
 <a href="#define-members">Macros</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
@@ -91,6 +92,11 @@ $(function() {
 <code>#include &lt;assert.h&gt;</code><br />
 <code>#include &lt;string.h&gt;</code><br />
 </div><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structClonePair.html">ClonePair</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
 <tr class="memitem:a8f5e5cc89d9ecb5adcab4dda48a00070"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="matroid_8c.html#a8f5e5cc89d9ecb5adcab4dda48a00070">MIN_IF_EXISTS</a>(currentValue,  child,  childValue)</td></tr>
@@ -282,6 +288,10 @@ Functions</h2></td></tr>
 <tr class="memitem:abf9975348a3c7bd85d9614a62fa07358"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="matroid_8c.html#abf9975348a3c7bd85d9614a62fa07358">CMRmatroiddecSetAttributes</a> (<a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec)</td></tr>
 <tr class="memdesc:abf9975348a3c7bd85d9614a62fa07358"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set regularity and (co)graphicness attributes of a decomposition tree.  <a href="matroid_8c.html#abf9975348a3c7bd85d9614a62fa07358">More...</a><br /></td></tr>
 <tr class="separator:abf9975348a3c7bd85d9614a62fa07358"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5402d5088a83a30fdac3d1b6a6dbda8a"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="matroid_8c.html#a5402d5088a83a30fdac3d1b6a6dbda8a">cloneRecursively</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec, <a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> **pclone, <a class="el" href="hashtable_8h.html#ae210c3950cdf5bdcf72d7ac3e0329512">CMR_LISTHASHTABLE</a> *nodesToClonesHashtable, <a class="el" href="structClonePair.html">ClonePair</a> **pclonePairs, size_t *pmemClonePairs, size_t *pnumClonePairs)</td></tr>
+<tr class="separator:a5402d5088a83a30fdac3d1b6a6dbda8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a30f2c892231a84822b1e6c14003cae94"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="matroid_8c.html#a30f2c892231a84822b1e6c14003cae94">CMRregularityCloneSubtrees</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, size_t numSubtrees, <a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> **subtreeRoots, <a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> **clonedSubtrees)</td></tr>
+<tr class="separator:a30f2c892231a84822b1e6c14003cae94"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
 <a id="a8f5e5cc89d9ecb5adcab4dda48a00070"></a>
@@ -323,6 +333,72 @@ Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
+<a id="a5402d5088a83a30fdac3d1b6a6dbda8a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5402d5088a83a30fdac3d1b6a6dbda8a">&#9670;&nbsp;</a></span>cloneRecursively()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> cloneRecursively </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *&#160;</td>
+          <td class="paramname"><em>dec</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> **&#160;</td>
+          <td class="paramname"><em>pclone</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="hashtable_8h.html#ae210c3950cdf5bdcf72d7ac3e0329512">CMR_LISTHASHTABLE</a> *&#160;</td>
+          <td class="paramname"><em>nodesToClonesHashtable</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structClonePair.html">ClonePair</a> **&#160;</td>
+          <td class="paramname"><em>pclonePairs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>pmemClonePairs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>pnumClonePairs</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="abb7aaa5ad806e6b375fb2c0aea60baff"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#abb7aaa5ad806e6b375fb2c0aea60baff">&#9670;&nbsp;</a></span>CMRmatroiddecCreateChildFromMatrices()</h2>
 
@@ -1211,6 +1287,46 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="a30f2c892231a84822b1e6c14003cae94"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a30f2c892231a84822b1e6c14003cae94">&#9670;&nbsp;</a></span>CMRregularityCloneSubtrees()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRregularityCloneSubtrees </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>numSubtrees</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> **&#160;</td>
+          <td class="paramname"><em>subtreeRoots</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> **&#160;</td>
+          <td class="paramname"><em>clonedSubtrees</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
 
 </div>
 </div>

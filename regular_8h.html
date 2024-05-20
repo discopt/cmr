@@ -142,6 +142,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a3d95ed4a507ae9b4d92180540176206c"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="regular_8h.html#a3d95ed4a507ae9b4d92180540176206c">CMRregularCompleteDecomposition</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec, <a class="el" href="structCMR__REGULAR__PARAMS.html">CMR_REGULAR_PARAMS</a> *params, <a class="el" href="structCMR__REGULAR__STATS.html">CMR_REGULAR_STATS</a> *stats, double timeLimit)</td></tr>
 <tr class="memdesc:a3d95ed4a507ae9b4d92180540176206c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Completes a subtree of an existing decomposition tree.  <a href="regular_8h.html#a3d95ed4a507ae9b4d92180540176206c">More...</a><br /></td></tr>
 <tr class="separator:a3d95ed4a507ae9b4d92180540176206c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa133ef01169b9dead45b54b968bf2840"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="regular_8h.html#aa133ef01169b9dead45b54b968bf2840">CMRregularRefineDecomposition</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, size_t numNodes, <a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> **nodes, <a class="el" href="structCMR__REGULAR__PARAMS.html">CMR_REGULAR_PARAMS</a> *params, <a class="el" href="structCMR__REGULAR__STATS.html">CMR_REGULAR_STATS</a> *stats, double timeLimit)</td></tr>
+<tr class="memdesc:aa133ef01169b9dead45b54b968bf2840"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refines a list of decomposition nodes.  <a href="regular_8h.html#aa133ef01169b9dead45b54b968bf2840">More...</a><br /></td></tr>
+<tr class="separator:aa133ef01169b9dead45b54b968bf2840"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Recognition of <a class="el" href="regular.html">regular matrices</a>. </p>
@@ -242,12 +245,12 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Completes a subtree of an existing decomposition tree. </p>
-<p>Replace the node's subtree by a new one even if it exists. Note that different parameters may yield a different subtree.s </p>
+<p>Replace the node's subtree by a new one even if it exists. Note that different parameters may yield a different subtree. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
     <tr><td class="paramname">dec</td><td>Pointer to the decomposition node that is the root of the new subtree. </td></tr>
-    <tr><td class="paramname">params</td><td>Parameters for the computation. </td></tr>
+    <tr><td class="paramname">params</td><td>Parameters for the computation (may be <code>NULL</code>). </td></tr>
     <tr><td class="paramname">stats</td><td>Statistics for the computation (may be <code>NULL</code>). </td></tr>
     <tr><td class="paramname">timeLimit</td><td>Time limit to impose. </td></tr>
   </table>
@@ -277,6 +280,72 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">params</td><td>Pointer to parameters. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="aa133ef01169b9dead45b54b968bf2840"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa133ef01169b9dead45b54b968bf2840">&#9670;&nbsp;</a></span>CMRregularRefineDecomposition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRregularRefineDecomposition </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>numNodes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> **&#160;</td>
+          <td class="paramname"><em>nodes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__REGULAR__PARAMS.html">CMR_REGULAR_PARAMS</a> *&#160;</td>
+          <td class="paramname"><em>params</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__REGULAR__STATS.html">CMR_REGULAR_STATS</a> *&#160;</td>
+          <td class="paramname"><em>stats</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>timeLimit</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Refines a list of decomposition nodes. </p>
+<p>Replace the nodes' subtrees by new ones even if they exist. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">numNodes</td><td>Number of nodes to refine. </td></tr>
+    <tr><td class="paramname">nodes</td><td>Array of decomposition nodes to refine. </td></tr>
+    <tr><td class="paramname">params</td><td>Parameters for the computation (may be <code>NULL</code>). </td></tr>
+    <tr><td class="paramname">stats</td><td>Statistics for the computation (may be <code>NULL</code>). </td></tr>
+    <tr><td class="paramname">timeLimit</td><td>Time limit to impose. </td></tr>
   </table>
   </dd>
 </dl>
