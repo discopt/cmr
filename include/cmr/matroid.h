@@ -606,12 +606,24 @@ CMR_ERROR CMRmatroiddecRelease(
  * Copies \p matrix into the node.
  */
 
+CMR_EXPORT
 CMR_ERROR CMRmatroiddecCreateMatrixRoot(
   CMR* cmr,                 /**< \ref CMR environment. */
   CMR_MATROID_DEC** pdec,   /**< Pointer for storing the decomposition node. */
   bool isTernary,           /**< Whether we consider ternary matrices. */
   CMR_CHRMAT* matrix        /**< The matrix corresponding to this node; will be copied. */
 );
+
+/**
+ * \brief Clones the union of subtrees, returning the copies.
+ *
+ * The set of decomposition nodes that are (grand-)children of any of the \p numSubtrees nodes \p subtreeRoots is cloned.
+ * The respective clones are returned in \p clonedSubtrees.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRregularityCloneSubtrees(CMR* cmr, size_t numSubtrees, CMR_MATROID_DEC** subtreeRoots,
+  CMR_MATROID_DEC** clonedSubtrees);
 
 /**@}*/
 
