@@ -22,8 +22,8 @@ CMR_ERROR CMRregularitySearchOneSum(CMR* cmr, DecompositionTask* task, Decomposi
 {
   assert(cmr);
   assert(task);
-  assert(task->dec);
-  assert(task->dec->matrix);
+  assert(task->node);
+  assert(task->node->matrix);
 
 #if defined(CMR_DEBUG)
   CMRdbgMsg(6, "Searching for 1-separations for the following matrix:\n");
@@ -34,7 +34,7 @@ CMR_ERROR CMRregularitySearchOneSum(CMR* cmr, DecompositionTask* task, Decomposi
 
   size_t numComponents;
   CMR_BLOCK* components = NULL;
-  CMR_CALL( CMRdecomposeBlocks(cmr, (CMR_MATRIX*) task->dec->matrix, sizeof(char), sizeof(char), &numComponents, &components,
+  CMR_CALL( CMRdecomposeBlocks(cmr, (CMR_MATRIX*) task->node->matrix, sizeof(char), sizeof(char), &numComponents, &components,
     NULL, NULL, NULL, NULL) );
 
   if (numComponents == 1)
@@ -47,7 +47,7 @@ CMR_ERROR CMRregularitySearchOneSum(CMR* cmr, DecompositionTask* task, Decomposi
     CMR_CALL( CMRfreeBlockArray(cmr, &components[0].columnsToOriginal) );
 
     /* Just mark it as 2-connected and add it back to the list of unprocessed tasks. */
-    task->dec->testedTwoConnected = true;
+    task->node->testedTwoConnected = true;
     CMRregularityQueueAdd(queue, task);
   }
   else if (numComponents >= 2)
@@ -56,12 +56,12 @@ CMR_ERROR CMRregularitySearchOneSum(CMR* cmr, DecompositionTask* task, Decomposi
 
     /* Space for mapping of rows/columns to rows. */
     CMR_ELEMENT* rowsToParent = NULL;
-    CMR_CALL( CMRallocStackArray(cmr, &rowsToParent, task->dec->numRows) );
+    CMR_CALL( CMRallocStackArray(cmr, &rowsToParent, task->node->numRows) );
     CMR_ELEMENT* columnsToParent = NULL;
-    CMR_CALL( CMRallocStackArray(cmr, &columnsToParent, task->dec->numColumns) );
+    CMR_CALL( CMRallocStackArray(cmr, &columnsToParent, task->node->numColumns) );
 
     /* We now create the children. */
-    CMR_CALL( CMRmatroiddecUpdateOneSum(cmr, task->dec, numComponents) );
+    CMR_CALL( CMRseymourUpdateOneSum(cmr, task->node, numComponents) );
     for (size_t comp = 0; comp < numComponents; ++comp)
     {
       CMR_BLOCK* component = &components[comp];
@@ -69,13 +69,13 @@ CMR_ERROR CMRregularitySearchOneSum(CMR* cmr, DecompositionTask* task, Decomposi
         rowsToParent[row] = CMRrowToElement(component->rowsToOriginal[row]);
       for (size_t column = 0; column < component->matrix->numColumns; ++column)
         columnsToParent[column] = CMRcolumnToElement(component->columnsToOriginal[column]);
-      CMR_CALL( CMRmatroiddecCreateChildFromMatrices(cmr, task->dec, comp, (CMR_CHRMAT*) component->matrix,
+      CMR_CALL( CMRseymourCreateChildFromMatrices(cmr, task->node, comp, (CMR_CHRMAT*) component->matrix,
         (CMR_CHRMAT*) component->transpose, rowsToParent, columnsToParent) );
 
       CMR_CALL( CMRfreeBlockArray(cmr, &component->rowsToOriginal) );
       CMR_CALL( CMRfreeBlockArray(cmr, &component->columnsToOriginal) );
     }
-    task->dec->type = CMR_SEYMOUR_NODE_TYPE_ONE_SUM;
+    task->node->type = CMR_SEYMOUR_NODE_TYPE_ONE_SUM;
 
     CMR_CALL( CMRfreeStackArray(cmr, &columnsToParent) );
     CMR_CALL( CMRfreeStackArray(cmr, &rowsToParent) );
@@ -83,9 +83,9 @@ CMR_ERROR CMRregularitySearchOneSum(CMR* cmr, DecompositionTask* task, Decomposi
     for (size_t c = numComponents; c > 0; --c)
     {
       size_t child = c - 1;
-      task->dec->children[child]->testedTwoConnected = true;
+      task->node->children[child]->testedTwoConnected = true;
       DecompositionTask* childTask = NULL;
-      CMR_CALL( CMRregularityTaskCreateRoot(cmr, task->dec->children[child], &childTask, task->params, task->stats,
+      CMR_CALL( CMRregularityTaskCreateRoot(cmr, task->node->children[child], &childTask, task->params, task->stats,
         task->startClock, task->timeLimit) );
       CMRregularityQueueAdd(queue, childTask);
     }

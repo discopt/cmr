@@ -630,7 +630,7 @@ CMR_ERROR CMRregularityExtendNestedMinorSequence(CMR* cmr, DecompositionTask* ta
   assert(task);
   assert(queue);
 
-    CMR_SEYMOUR_NODE* dec = task->dec;
+    CMR_SEYMOUR_NODE* dec = task->node;
   assert(dec);
 
   CMRdbgMsg(6, "Attempting to extend a sequence of 3-connected nested minors of length %zu with "
@@ -915,7 +915,7 @@ CMR_ERROR CMRregularityExtendNestedMinorSequence(CMR* cmr, DecompositionTask* ta
       {
         CMRdbgMsg(8, "-> 2x2 submatrix with bad determinant.\n");
 
-        CMR_CALL( CMRmatroiddecUpdateSubmatrix(cmr, dec, violatorSubmatrix, CMR_SEYMOUR_NODE_TYPE_DETERMINANT) );
+        CMR_CALL( CMRseymourUpdateSubmatrix(cmr, dec, violatorSubmatrix, CMR_SEYMOUR_NODE_TYPE_DETERMINANT) );
         assert(dec->type != CMR_SEYMOUR_NODE_TYPE_DETERMINANT);
 
         CMR_CALL( CMRsubmatFree(cmr, &violatorSubmatrix) );
@@ -930,14 +930,14 @@ CMR_ERROR CMRregularityExtendNestedMinorSequence(CMR* cmr, DecompositionTask* ta
       /* Carry out 2-sum decomposition. */
 
       CMRdbgMsg(8, "-> 2-separation found.\n");
-      CMR_CALL( CMRmatroiddecUpdateTwoSum(cmr, dec, separation) );
+      CMR_CALL( CMRseymourUpdateTwoSum(cmr, dec, separation) );
       CMR_CALL( CMRsepaFree(cmr, &separation) );
 
       DecompositionTask* childTasks[2] = { task, NULL };
       CMR_CALL( CMRregularityTaskCreateRoot(cmr, dec->children[1], &childTasks[1], task->params, task->stats,
         task->startClock, task->timeLimit) );
 
-      childTasks[0]->dec = dec->children[0];
+      childTasks[0]->node = dec->children[0];
       dec->children[0]->testedSeriesParallel = false; /* TODO: we may carry over the found sequence including W_k. */
       dec->children[1]->testedSeriesParallel = false;
 
@@ -1052,7 +1052,7 @@ CMR_ERROR CMRregularityInitNestedMinorSequence(CMR* cmr, DecompositionTask* task
   assert(task);
   assert(wheelSubmatrix);
 
-    CMR_SEYMOUR_NODE* dec = task->dec;
+    CMR_SEYMOUR_NODE* dec = task->node;
   assert(dec);
 
 #if defined(CMR_DEBUG)

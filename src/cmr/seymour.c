@@ -10,14 +10,14 @@
 #include <assert.h>
 #include <string.h>
 
-bool CMRmatroiddecIsTernary(CMR_SEYMOUR_NODE* node)
+bool CMRseymourIsTernary(CMR_SEYMOUR_NODE* node)
 {
   assert(node);
 
   return node->isTernary;
 }
 
-bool CMRmatroiddecThreeSumDistributedRanks(CMR_SEYMOUR_NODE* node)
+bool CMRseymourThreeSumDistributedRanks(CMR_SEYMOUR_NODE* node)
 {
   assert(node);
   assert(node->type == CMR_SEYMOUR_NODE_TYPE_THREE_SUM);
@@ -25,7 +25,7 @@ bool CMRmatroiddecThreeSumDistributedRanks(CMR_SEYMOUR_NODE* node)
   return node->threesumFlags & CMR_SEYMOUR_NODE_THREESUM_FLAG_DISTRIBUTED_RANKS;
 }
 
-bool CMRmatroiddecThreeSumConcentratedRank(CMR_SEYMOUR_NODE* node)
+bool CMRseymourThreeSumConcentratedRank(CMR_SEYMOUR_NODE* node)
 {
   assert(node);
   assert(node->type == CMR_SEYMOUR_NODE_TYPE_THREE_SUM);
@@ -33,21 +33,21 @@ bool CMRmatroiddecThreeSumConcentratedRank(CMR_SEYMOUR_NODE* node)
   return node->threesumFlags & CMR_SEYMOUR_NODE_THREESUM_FLAG_CONCENTRATED_RANK;
 }
 
-CMR_CHRMAT* CMRmatroiddecGetMatrix(CMR_SEYMOUR_NODE* node)
+CMR_CHRMAT* CMRseymourGetMatrix(CMR_SEYMOUR_NODE* node)
 {
   assert(node);
 
   return node->matrix;
 }
 
-bool CMRmatroiddecHasTranspose(CMR_SEYMOUR_NODE* node)
+bool CMRseymourHasTranspose(CMR_SEYMOUR_NODE* node)
 {
   assert(node);
 
   return node->transpose != NULL;
 }
 
-CMR_CHRMAT* CMRmatroiddecGetTranspose(CMR_SEYMOUR_NODE* node)
+CMR_CHRMAT* CMRseymourGetTranspose(CMR_SEYMOUR_NODE* node)
 {
   assert(node);
 
@@ -55,14 +55,14 @@ CMR_CHRMAT* CMRmatroiddecGetTranspose(CMR_SEYMOUR_NODE* node)
 }
 
 
-size_t CMRmatroiddecNumChildren(CMR_SEYMOUR_NODE* node)
+size_t CMRseymourNumChildren(CMR_SEYMOUR_NODE* node)
 {
   assert(node);
 
   return node->numChildren;
 }
 
-CMR_SEYMOUR_NODE* CMRmatroiddecChild(CMR_SEYMOUR_NODE* node, size_t childIndex)
+CMR_SEYMOUR_NODE* CMRseymourChild(CMR_SEYMOUR_NODE* node, size_t childIndex)
 {
   assert(node);
   assert(childIndex < node->numChildren);
@@ -70,42 +70,42 @@ CMR_SEYMOUR_NODE* CMRmatroiddecChild(CMR_SEYMOUR_NODE* node, size_t childIndex)
   return node->children[childIndex];
 }
 
-CMR_SEYMOUR_NODE_TYPE CMRmatroiddecType(CMR_SEYMOUR_NODE* node)
+CMR_SEYMOUR_NODE_TYPE CMRseymourType(CMR_SEYMOUR_NODE* node)
 {
   assert(node);
 
   return node->type;
 }
 
-int8_t CMRmatroiddecGraphicness(CMR_SEYMOUR_NODE* node)
+int8_t CMRseymourGraphicness(CMR_SEYMOUR_NODE* node)
 {
   assert(node);
 
   return node->graphicness;
 }
 
-int8_t CMRmatroiddecCographicness(CMR_SEYMOUR_NODE* node)
+int8_t CMRseymourCographicness(CMR_SEYMOUR_NODE* node)
 {
   assert(node);
 
   return node->cographicness;
 }
 
-int8_t CMRmatroiddecRegularity(CMR_SEYMOUR_NODE* node)
+int8_t CMRseymourRegularity(CMR_SEYMOUR_NODE* node)
 {
   assert(node);
 
   return node->regularity;
 }
 
-size_t CMRmatroiddecNumRows(CMR_SEYMOUR_NODE* node)
+size_t CMRseymourNumRows(CMR_SEYMOUR_NODE* node)
 {
   assert(node);
 
   return node->numRows;
 }
 
-CMR_ELEMENT* CMRmatroiddecChildRowsToParent(CMR_SEYMOUR_NODE* node, size_t childIndex)
+CMR_ELEMENT* CMRseymourChildRowsToParent(CMR_SEYMOUR_NODE* node, size_t childIndex)
 {
   assert(node);
   assert(childIndex < node->numChildren);
@@ -115,7 +115,7 @@ CMR_ELEMENT* CMRmatroiddecChildRowsToParent(CMR_SEYMOUR_NODE* node, size_t child
   return NULL;
 }
 
-CMR_ELEMENT* CMRmatroiddecChildColumnsToParent(CMR_SEYMOUR_NODE* node, size_t childIndex)
+CMR_ELEMENT* CMRseymourChildColumnsToParent(CMR_SEYMOUR_NODE* node, size_t childIndex)
 {
   assert(node);
   assert(childIndex < node->numChildren);
@@ -125,28 +125,28 @@ CMR_ELEMENT* CMRmatroiddecChildColumnsToParent(CMR_SEYMOUR_NODE* node, size_t ch
   return NULL;
 }
 
-size_t CMRmatroiddecNumColumns(CMR_SEYMOUR_NODE* node)
+size_t CMRseymourNumColumns(CMR_SEYMOUR_NODE* node)
 {
   assert(node);
 
   return node->numColumns;
 }
 
-CMR_GRAPH* CMRmatroiddecGraph(CMR_SEYMOUR_NODE* node)
+CMR_GRAPH* CMRseymourGraph(CMR_SEYMOUR_NODE* node)
 {
   assert(node);
 
   return node->graph;
 }
 
-CMR_GRAPH_EDGE* CMRmatroiddecGraphForest(CMR_SEYMOUR_NODE* node)
+CMR_GRAPH_EDGE* CMRseymourGraphForest(CMR_SEYMOUR_NODE* node)
 {
   assert(node);
 
   return node->graphForest;
 }
 
-size_t CMRmatroiddecGraphSizeForest(CMR_SEYMOUR_NODE* node)
+size_t CMRseymourGraphSizeForest(CMR_SEYMOUR_NODE* node)
 {
   assert(node);
 
@@ -160,14 +160,14 @@ size_t CMRmatroiddecGraphSizeForest(CMR_SEYMOUR_NODE* node)
     return SIZE_MAX;
 }
 
-CMR_GRAPH_EDGE* CMRmatroiddecGraphCoforest(CMR_SEYMOUR_NODE* node)
+CMR_GRAPH_EDGE* CMRseymourGraphCoforest(CMR_SEYMOUR_NODE* node)
 {
   assert(node);
 
   return node->graphCoforest;
 }
 
-size_t CMRmatroiddecGraphSizeCoforest(CMR_SEYMOUR_NODE* node)
+size_t CMRseymourGraphSizeCoforest(CMR_SEYMOUR_NODE* node)
 {
   assert(node);
 
@@ -181,21 +181,21 @@ size_t CMRmatroiddecGraphSizeCoforest(CMR_SEYMOUR_NODE* node)
     return SIZE_MAX;
 }
 
-bool* CMRmatroiddecGraphArcsReversed(CMR_SEYMOUR_NODE* node)
+bool* CMRseymourGraphArcsReversed(CMR_SEYMOUR_NODE* node)
 {
   assert(node);
 
   return node->graphArcsReversed;
 }
 
-CMR_GRAPH* CMRmatroiddecCograph(CMR_SEYMOUR_NODE* node)
+CMR_GRAPH* CMRseymourCograph(CMR_SEYMOUR_NODE* node)
 {
   assert(node);
 
   return node->cograph;
 }
 
-size_t CMRmatroiddecCographSizeForest(CMR_SEYMOUR_NODE* node)
+size_t CMRseymourCographSizeForest(CMR_SEYMOUR_NODE* node)
 {
   assert(node);
 
@@ -209,14 +209,14 @@ size_t CMRmatroiddecCographSizeForest(CMR_SEYMOUR_NODE* node)
     return SIZE_MAX;
 }
 
-CMR_GRAPH_EDGE* CMRmatroiddecCographForest(CMR_SEYMOUR_NODE* node)
+CMR_GRAPH_EDGE* CMRseymourCographForest(CMR_SEYMOUR_NODE* node)
 {
   assert(node);
 
   return node->cographForest;
 }
 
-size_t CMRmatroiddecCographSizeCoforest(CMR_SEYMOUR_NODE* node)
+size_t CMRseymourCographSizeCoforest(CMR_SEYMOUR_NODE* node)
 {
   assert(node);
 
@@ -230,42 +230,42 @@ size_t CMRmatroiddecCographSizeCoforest(CMR_SEYMOUR_NODE* node)
     return SIZE_MAX;
 }
 
-CMR_GRAPH_EDGE* CMRmatroiddecCographCoforest(CMR_SEYMOUR_NODE* node)
+CMR_GRAPH_EDGE* CMRseymourCographCoforest(CMR_SEYMOUR_NODE* node)
 {
   assert(node);
 
   return node->cographCoforest;
 }
 
-bool* CMRmatroiddecCographArcsReversed(CMR_SEYMOUR_NODE* node)
+bool* CMRseymourCographArcsReversed(CMR_SEYMOUR_NODE* node)
 {
   assert(node);
 
   return node->cographArcsReversed;
 }
 
-size_t CMRmatroiddecNumPivots(CMR_SEYMOUR_NODE* node)
+size_t CMRseymourNumPivots(CMR_SEYMOUR_NODE* node)
 {
   assert(node);
 
   return node->numPivots;
 }
 
-size_t * CMRmatroiddecPivotRows(CMR_SEYMOUR_NODE* node)
+size_t * CMRseymourPivotRows(CMR_SEYMOUR_NODE* node)
 {
   assert(node);
 
   return node->pivotRows;
 }
 
-size_t * CMRmatroiddecPivotColumns(CMR_SEYMOUR_NODE* node)
+size_t * CMRseymourPivotColumns(CMR_SEYMOUR_NODE* node)
 {
   assert(node);
 
   return node->pivotColumns;
 }
 
-CMR_ERROR CMRmatroiddecPrintChild(CMR* cmr, CMR_SEYMOUR_NODE* child, CMR_SEYMOUR_NODE* parent, size_t childIndex,
+CMR_ERROR CMRseymourPrintChild(CMR* cmr, CMR_SEYMOUR_NODE* child, CMR_SEYMOUR_NODE* parent, size_t childIndex,
   FILE* stream, size_t indent, bool printChildren, bool printParentElements, bool printMatrices, bool printGraphs,
   bool printReductions, bool printPivots)
 {
@@ -491,7 +491,7 @@ CMR_ERROR CMRmatroiddecPrintChild(CMR* cmr, CMR_SEYMOUR_NODE* child, CMR_SEYMOUR
         fprintf(stream, "Unique child:\n");
       else
         fprintf(stream, "Child #%zu:\n", c+1);
-      CMR_CALL( CMRmatroiddecPrintChild(cmr, child->children[c], child, c, stream, indent + 2, printChildren,
+      CMR_CALL( CMRseymourPrintChild(cmr, child->children[c], child, c, stream, indent + 2, printChildren,
         printParentElements, printMatrices, printGraphs, printReductions, printPivots) );
     }
   }
@@ -499,19 +499,19 @@ CMR_ERROR CMRmatroiddecPrintChild(CMR* cmr, CMR_SEYMOUR_NODE* child, CMR_SEYMOUR
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRmatroiddecPrint(CMR* cmr, CMR_SEYMOUR_NODE* node, FILE* stream, bool printChildren, bool printParentElements,
+CMR_ERROR CMRseymourPrint(CMR* cmr, CMR_SEYMOUR_NODE* node, FILE* stream, bool printChildren, bool printParentElements,
   bool printMatrices, bool printGraphs, bool printReductions, bool printPivots)
 {
   assert(cmr);
   assert(stream);
 
-  CMR_CALL( CMRmatroiddecPrintChild(cmr, node, NULL, SIZE_MAX, stream, 0, printChildren, printParentElements,
+  CMR_CALL( CMRseymourPrintChild(cmr, node, NULL, SIZE_MAX, stream, 0, printChildren, printParentElements,
     printMatrices, printGraphs, printReductions, printPivots) );
 
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRmatroiddecCapture(CMR* cmr, CMR_SEYMOUR_NODE* node)
+CMR_ERROR CMRseymourCapture(CMR* cmr, CMR_SEYMOUR_NODE* node)
 {
   assert(cmr);
   assert(node);
@@ -521,14 +521,14 @@ CMR_ERROR CMRmatroiddecCapture(CMR* cmr, CMR_SEYMOUR_NODE* node)
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRmatroiddecRelease(CMR* cmr, CMR_SEYMOUR_NODE** pnode)
+CMR_ERROR CMRseymourRelease(CMR* cmr, CMR_SEYMOUR_NODE** pnode)
 {
   assert(pnode);
 
   CMR_SEYMOUR_NODE* node = *pnode;
   assert(node);
 
-  CMRdbgMsg(0, "CMRmatroiddecRelease called for a node with usage %zu.\n", node->used);
+  CMRdbgMsg(0, "CMRseymourRelease called for a node with usage %zu.\n", node->used);
 
   node->used--;
   if (!node->used)
@@ -536,7 +536,7 @@ CMR_ERROR CMRmatroiddecRelease(CMR* cmr, CMR_SEYMOUR_NODE** pnode)
     /* Release recursively. */
     for (size_t c = 0; c < node->numChildren; ++c)
     {
-      CMR_CALL( CMRmatroiddecRelease(cmr, &node->children[c]) );
+      CMR_CALL( CMRseymourRelease(cmr, &node->children[c]) );
       CMR_CALL( CMRfreeBlockArray(cmr, &node->childRowsToParent[c]) );
       CMR_CALL( CMRfreeBlockArray(cmr, &node->childColumnsToParent[c]) );
     }
@@ -680,7 +680,7 @@ CMR_ERROR createNode(
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRmatroiddecCloneUnknown(CMR* cmr, CMR_SEYMOUR_NODE* node, CMR_SEYMOUR_NODE** pclone)
+CMR_ERROR CMRseymourCloneUnknown(CMR* cmr, CMR_SEYMOUR_NODE* node, CMR_SEYMOUR_NODE** pclone)
 {
   assert(cmr);
   assert(node);
@@ -816,7 +816,7 @@ CMR_ERROR updateChildMatrix(
 }
 
 
-CMR_ERROR CMRmatroiddecCreateMatrixRoot(CMR* cmr, CMR_SEYMOUR_NODE** pnode, bool isTernary, CMR_CHRMAT* matrix)
+CMR_ERROR CMRseymourCreateMatrixRoot(CMR* cmr, CMR_SEYMOUR_NODE** pnode, bool isTernary, CMR_CHRMAT* matrix)
 {
   assert(cmr);
   assert(pnode);
@@ -833,7 +833,7 @@ CMR_ERROR CMRmatroiddecCreateMatrixRoot(CMR* cmr, CMR_SEYMOUR_NODE** pnode, bool
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRmatroiddecSetNumChildren(CMR* cmr, CMR_SEYMOUR_NODE* node, size_t numChildren)
+CMR_ERROR CMRseymourSetNumChildren(CMR* cmr, CMR_SEYMOUR_NODE* node, size_t numChildren)
 {
   assert(cmr);
   assert(node);
@@ -854,7 +854,7 @@ CMR_ERROR CMRmatroiddecSetNumChildren(CMR* cmr, CMR_SEYMOUR_NODE* node, size_t n
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRmatroiddecCreateChildFromMatrices(CMR* cmr, CMR_SEYMOUR_NODE* parent, size_t childIndex, CMR_CHRMAT* matrix,
+CMR_ERROR CMRseymourCreateChildFromMatrices(CMR* cmr, CMR_SEYMOUR_NODE* parent, size_t childIndex, CMR_CHRMAT* matrix,
   CMR_CHRMAT* transpose, CMR_ELEMENT* rowsToParent, CMR_ELEMENT* columnsToParent)
 {
   assert(cmr);
@@ -897,7 +897,7 @@ CMR_ERROR CMRmatroiddecCreateChildFromMatrices(CMR* cmr, CMR_SEYMOUR_NODE* paren
 }
 
 
-CMR_ERROR CMRmatroiddecUpdateOneSum (CMR* cmr, CMR_SEYMOUR_NODE* node, size_t numChildren)
+CMR_ERROR CMRseymourUpdateOneSum (CMR* cmr, CMR_SEYMOUR_NODE* node, size_t numChildren)
 {
   assert(cmr);
   assert(node);
@@ -906,13 +906,13 @@ CMR_ERROR CMRmatroiddecUpdateOneSum (CMR* cmr, CMR_SEYMOUR_NODE* node, size_t nu
 
   node->type = CMR_SEYMOUR_NODE_TYPE_ONE_SUM;
 
-  CMR_CALL( CMRmatroiddecSetNumChildren(cmr, node, numChildren) );
+  CMR_CALL( CMRseymourSetNumChildren(cmr, node, numChildren) );
 
   return CMR_OKAY;
 }
 
 
-// CMR_ERROR CMRmatroiddecInitializeParent(CMR* cmr, CMR_MATROID_DEC* dec, CMR_MATROID_DEC* parent, size_t childIndex,
+// CMR_ERROR CMRseymourInitializeParent(CMR* cmr, CMR_MATROID_DEC* dec, CMR_MATROID_DEC* parent, size_t childIndex,
 //   size_t* rowsToParentRow, size_t* columnsToParentColumn)
 // {
 //   assert(cmr);
@@ -939,7 +939,7 @@ CMR_ERROR CMRmatroiddecUpdateOneSum (CMR* cmr, CMR_SEYMOUR_NODE* node, size_t nu
 //   return CMR_OKAY;
 // }
 
-CMR_ERROR CMRmatroiddecUpdateSubmatrix(CMR* cmr, CMR_SEYMOUR_NODE* dec, CMR_SUBMAT* submatrix,
+CMR_ERROR CMRseymourUpdateSubmatrix(CMR* cmr, CMR_SEYMOUR_NODE* dec, CMR_SUBMAT* submatrix,
                                        CMR_SEYMOUR_NODE_TYPE type)
 {
   assert(cmr);
@@ -956,7 +956,7 @@ CMR_ERROR CMRmatroiddecUpdateSubmatrix(CMR* cmr, CMR_SEYMOUR_NODE* dec, CMR_SUBM
   else
   {
     dec->type = CMR_SEYMOUR_NODE_TYPE_SUBMATRIX;
-    CMR_CALL( CMRmatroiddecSetNumChildren(cmr, dec, 1) );
+    CMR_CALL( CMRseymourSetNumChildren(cmr, dec, 1) );
 
     CMR_CHRMAT* childMatrix = NULL;
     CMR_CALL( CMRchrmatZoomSubmat(cmr, dec->matrix, submatrix, &childMatrix) );
@@ -972,7 +972,7 @@ CMR_ERROR CMRmatroiddecUpdateSubmatrix(CMR* cmr, CMR_SEYMOUR_NODE* dec, CMR_SUBM
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRmatroiddecUpdateTwoSum(CMR* cmr, CMR_SEYMOUR_NODE* node, CMR_SEPA* separation)
+CMR_ERROR CMRseymourUpdateTwoSum(CMR* cmr, CMR_SEYMOUR_NODE* node, CMR_SEPA* separation)
 {
   assert(cmr);
   assert(node);
@@ -983,7 +983,7 @@ CMR_ERROR CMRmatroiddecUpdateTwoSum(CMR* cmr, CMR_SEYMOUR_NODE* node, CMR_SEPA* 
   CMR_CALL( CMRsepaComputeSizes(separation, &numBaseRows[0], &numBaseColumns[0], &numBaseRows[1], &numBaseColumns[1]) );
 
   node->type = CMR_SEYMOUR_NODE_TYPE_TWO_SUM;
-  CMR_CALL( CMRmatroiddecSetNumChildren(cmr, node, 2) );
+  CMR_CALL( CMRseymourSetNumChildren(cmr, node, 2) );
   for (size_t childIndex = 0; childIndex < 2; ++childIndex)
   {
     size_t numExtraRows = 1 - childIndex;
@@ -1055,7 +1055,7 @@ CMR_ERROR CMRmatroiddecUpdateTwoSum(CMR* cmr, CMR_SEYMOUR_NODE* node, CMR_SEPA* 
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRmatroiddecUpdatePivots(CMR* cmr, CMR_SEYMOUR_NODE* node, size_t numPivots, size_t* pivotRows,
+CMR_ERROR CMRseymourUpdatePivots(CMR* cmr, CMR_SEYMOUR_NODE* node, size_t numPivots, size_t* pivotRows,
   size_t* pivotColumns, CMR_CHRMAT* matrix, CMR_CHRMAT* transpose)
 {
   assert(cmr);
@@ -1066,7 +1066,7 @@ CMR_ERROR CMRmatroiddecUpdatePivots(CMR* cmr, CMR_SEYMOUR_NODE* node, size_t num
   assert(matrix);
 
   node->type = CMR_SEYMOUR_NODE_TYPE_PIVOTS;
-  CMR_CALL( CMRmatroiddecSetNumChildren(cmr, node, 1) );
+  CMR_CALL( CMRseymourSetNumChildren(cmr, node, 1) );
   CMR_CALL( createNode(cmr, &node->children[0], node->isTernary, CMR_SEYMOUR_NODE_TYPE_UNKNOWN, node->numRows,
                          node->numColumns) );
   node->children[0]->matrix = matrix;
@@ -1091,18 +1091,18 @@ CMR_ERROR CMRmatroiddecUpdatePivots(CMR* cmr, CMR_SEYMOUR_NODE* node, size_t num
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRmatroiddecUpdateThreeSumInit(CMR* cmr, CMR_SEYMOUR_NODE* node)
+CMR_ERROR CMRseymourUpdateThreeSumInit(CMR* cmr, CMR_SEYMOUR_NODE* node)
 {
   assert(cmr);
   assert(node);
 
   node->type = CMR_SEYMOUR_NODE_TYPE_THREE_SUM;
-  CMR_CALL( CMRmatroiddecSetNumChildren(cmr, node, 2) );
+  CMR_CALL( CMRseymourSetNumChildren(cmr, node, 2) );
 
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRmatroiddecUpdateThreeSumCreateWideFirstChild(CMR* cmr, CMR_SEYMOUR_NODE* node, CMR_SEPA* separation,
+CMR_ERROR CMRseymourUpdateThreeSumCreateWideFirstChild(CMR* cmr, CMR_SEYMOUR_NODE* node, CMR_SEPA* separation,
   size_t* rowsToChild, size_t* columnsToChild, size_t numChildBaseRows, size_t numChildBaseColumns, size_t extraRow,
   size_t extraColumn1, size_t extraColumn2, int8_t extraEntry)
 {
@@ -1245,7 +1245,7 @@ CMR_ERROR CMRmatroiddecUpdateThreeSumCreateWideFirstChild(CMR* cmr, CMR_SEYMOUR_
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRmatroiddecUpdateThreeSumCreateWideSecondChild(CMR* cmr, CMR_SEYMOUR_NODE* node, CMR_SEPA* separation,
+CMR_ERROR CMRseymourUpdateThreeSumCreateWideSecondChild(CMR* cmr, CMR_SEYMOUR_NODE* node, CMR_SEPA* separation,
   size_t* rowsToChild, size_t* columnsToChild, size_t numChildBaseRows, size_t numChildBaseColumns, size_t extraRow,
   size_t extraColumn1, size_t extraColumn2, int8_t extraEntry)
 {
@@ -1392,7 +1392,7 @@ CMR_ERROR CMRmatroiddecUpdateThreeSumCreateWideSecondChild(CMR* cmr, CMR_SEYMOUR
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRmatroiddecUpdateThreeSumCreateMixedFirstChild(CMR* cmr, CMR_SEYMOUR_NODE* node, CMR_SEPA* separation,
+CMR_ERROR CMRseymourUpdateThreeSumCreateMixedFirstChild(CMR* cmr, CMR_SEYMOUR_NODE* node, CMR_SEPA* separation,
   size_t* rowsToChild, size_t* columnsToChild, size_t numChildBaseRows, size_t numChildBaseColumns, size_t extraRow1,
   size_t extraRow2, int8_t extraEntry)
 {
@@ -1526,7 +1526,7 @@ CMR_ERROR CMRmatroiddecUpdateThreeSumCreateMixedFirstChild(CMR* cmr, CMR_SEYMOUR
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRmatroiddecUpdateThreeSumCreateMixedSecondChild(CMR* cmr, CMR_SEYMOUR_NODE* node, CMR_SEPA* separation,
+CMR_ERROR CMRseymourUpdateThreeSumCreateMixedSecondChild(CMR* cmr, CMR_SEYMOUR_NODE* node, CMR_SEPA* separation,
   size_t* rowsToChild, size_t* columnsToChild, size_t numChildBaseRows, size_t numChildBaseColumns, size_t extraColumn1,
   size_t extraColumn2, int8_t extraEntry)
 {
@@ -1685,7 +1685,7 @@ CMR_ERROR CMRmatroiddecUpdateThreeSumCreateMixedSecondChild(CMR* cmr, CMR_SEYMOU
     : ( (0 < (currentValue)) ? 0 : (currentValue) ) \
   )
 
-CMR_ERROR CMRmatroiddecSetAttributes(CMR_SEYMOUR_NODE* node)
+CMR_ERROR CMRseymourSetAttributes(CMR_SEYMOUR_NODE* node)
 {
   assert(node);
 
@@ -1696,7 +1696,7 @@ CMR_ERROR CMRmatroiddecSetAttributes(CMR_SEYMOUR_NODE* node)
   {
     if (node->children[childIndex])
     {
-      CMR_CALL( CMRmatroiddecSetAttributes(node->children[childIndex]) );
+      CMR_CALL( CMRseymourSetAttributes(node->children[childIndex]) );
       CMRdbgMsg(4, "Child %zu of type %d has flags r=%d,g=%d,c=%d.\n", childIndex, node->children[childIndex]->type,
         node->children[childIndex]->regularity, node->children[childIndex]->graphicness,
         node->children[childIndex]->cographicness);
@@ -1894,7 +1894,7 @@ CMR_ERROR cloneRecursively(
   ++(*pnumClonePairs);
 
   /* Recursively treat the children. */
-  CMR_CALL( CMRmatroiddecSetNumChildren(cmr, clone, node->numChildren) );
+  CMR_CALL( CMRseymourSetNumChildren(cmr, clone, node->numChildren) );
   for (size_t c = 0; c < node->numChildren; ++c)
   {
     /* Clone the child. */

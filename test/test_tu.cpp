@@ -185,28 +185,28 @@ CMR_ERROR checkDecompositionTreePartition(
   assert(dec);
   assert(psuccess);
 
-  if (!CMRmatroiddecIsTernary(dec))
+  if (!CMRseymourIsTernary(dec))
     return CMR_OKAY;
 
-  if (CMRmatroiddecRegularity(dec) != 0)
+  if (CMRseymourRegularity(dec) != 0)
   {
     CMR_TU_PARAMS params;
     CMR_CALL( CMRtuParamsInit(&params) );
     params.algorithm = CMR_TU_ALGORITHM_PARTITION;
     bool isTU;
-    CMR_CALL( CMRtuTest(cmr, CMRmatroiddecGetMatrix(dec), &isTU, NULL, NULL, &params, NULL, DBL_MAX) );
+    CMR_CALL( CMRtuTest(cmr, CMRseymourGetMatrix(dec), &isTU, NULL, NULL, &params, NULL, DBL_MAX) );
 
-    if (isTU != (CMRmatroiddecRegularity(dec) > 0))
+    if (isTU != (CMRseymourRegularity(dec) > 0))
     {
       printf("========== The following node has wrong regularity status! ==========\n");
-      CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, 2, false, true, true, true, true, true) );
+      CMR_CALL( CMRseymourPrint(cmr, dec, stdout, 2, false, true, true, true, true, true) );
       *psuccess = false;
     }
   }
 
-  for (size_t c = 0; c < CMRmatroiddecNumChildren(dec); ++c)
+  for (size_t c = 0; c < CMRseymourNumChildren(dec); ++c)
   {
-    CMR_CALL( checkDecompositionTreePartition(cmr, CMRmatroiddecChild(dec, c), psuccess) );
+    CMR_CALL( checkDecompositionTreePartition(cmr, CMRseymourChild(dec, c), psuccess) );
   }
 
   return CMR_OKAY;
@@ -247,17 +247,17 @@ TEST(TU, OneSum)
     params.regular.planarityCheck = true;
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
 
-    ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, true, true, true, true, true, true) );
+    ASSERT_CMR_CALL( CMRseymourPrint(cmr, dec, stdout, true, true, true, true, true, true) );
     ASSERT_TRUE( isTU );
-    ASSERT_FALSE( CMRmatroiddecHasTranspose(dec) ); /* Default settings should mean that the transpose is never computed. */
-    ASSERT_EQ( CMRmatroiddecType(dec), CMR_SEYMOUR_NODE_TYPE_ONE_SUM );
-    ASSERT_EQ( CMRmatroiddecNumChildren(dec), 2UL );
-    ASSERT_LT( CMRmatroiddecGraphicness(CMRmatroiddecChild(dec, 0))
-      * CMRmatroiddecGraphicness(CMRmatroiddecChild(dec, 1)), 0);
-    ASSERT_LT( CMRmatroiddecCographicness(CMRmatroiddecChild(dec, 0))
-      * CMRmatroiddecCographicness(CMRmatroiddecChild(dec, 1)), 0);
+    ASSERT_FALSE( CMRseymourHasTranspose(dec) ); /* Default settings should mean that the transpose is never computed. */
+    ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_ONE_SUM );
+    ASSERT_EQ( CMRseymourNumChildren(dec), 2UL );
+    ASSERT_LT( CMRseymourGraphicness(CMRseymourChild(dec, 0))
+      * CMRseymourGraphicness(CMRseymourChild(dec, 1)), 0);
+    ASSERT_LT( CMRseymourCographicness(CMRseymourChild(dec, 0))
+      * CMRseymourCographicness(CMRseymourChild(dec, 1)), 0);
 
-    ASSERT_CMR_CALL( CMRmatroiddecRelease(cmr, &dec) );
+    ASSERT_CMR_CALL( CMRseymourRelease(cmr, &dec) );
 
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &K_3_3) );
@@ -306,17 +306,17 @@ TEST(TU, SeriesParallelTwoSeparation)
         CMR_SEYMOUR_NODE* dec = NULL;
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, NULL, NULL, DBL_MAX) );
 
-    ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, true, true, true, true, true, true) );
+    ASSERT_CMR_CALL( CMRseymourPrint(cmr, dec, stdout, true, true, true, true, true, true) );
     ASSERT_TRUE( isTU );
-    ASSERT_TRUE( CMRmatroiddecHasTranspose(dec) ); /* As we test for graphicness, the transpose is constructed. */
-    ASSERT_EQ( CMRmatroiddecType(dec), CMR_SEYMOUR_NODE_TYPE_TWO_SUM );
-    ASSERT_EQ( CMRmatroiddecNumChildren(dec), 2UL );
-    ASSERT_GT( CMRmatroiddecGraphicness(CMRmatroiddecChild(dec, 0)), 0 );
-    ASSERT_LT( CMRmatroiddecCographicness(CMRmatroiddecChild(dec, 0)), 1 );
-    ASSERT_LT( CMRmatroiddecGraphicness(CMRmatroiddecChild(dec, 1)), 0 );
-    ASSERT_GT( CMRmatroiddecCographicness(CMRmatroiddecChild(dec, 1)), 0 );
+    ASSERT_TRUE( CMRseymourHasTranspose(dec) ); /* As we test for graphicness, the transpose is constructed. */
+    ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_TWO_SUM );
+    ASSERT_EQ( CMRseymourNumChildren(dec), 2UL );
+    ASSERT_GT( CMRseymourGraphicness(CMRseymourChild(dec, 0)), 0 );
+    ASSERT_LT( CMRseymourCographicness(CMRseymourChild(dec, 0)), 1 );
+    ASSERT_LT( CMRseymourGraphicness(CMRseymourChild(dec, 1)), 0 );
+    ASSERT_GT( CMRseymourCographicness(CMRseymourChild(dec, 1)), 0 );
 
-    ASSERT_CMR_CALL( CMRmatroiddecRelease(cmr, &dec) );
+    ASSERT_CMR_CALL( CMRseymourRelease(cmr, &dec) );
 
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &K_3_3) );
@@ -356,17 +356,17 @@ TEST(TU, NestedMinorSearchTwoSeparation)
         CMR_SEYMOUR_NODE* dec = NULL;
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, NULL, NULL, DBL_MAX) );
 
-    ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, true, true, true, true, true, true) );
+    ASSERT_CMR_CALL( CMRseymourPrint(cmr, dec, stdout, true, true, true, true, true, true) );
     ASSERT_TRUE( isTU );
-    ASSERT_TRUE( CMRmatroiddecHasTranspose(dec) ); /* As we test for graphicness, the transpose is constructed. */
-    ASSERT_EQ( CMRmatroiddecType(dec), CMR_SEYMOUR_NODE_TYPE_TWO_SUM );
-    ASSERT_EQ( CMRmatroiddecNumChildren(dec), 2UL );
-    ASSERT_GT( CMRmatroiddecGraphicness(CMRmatroiddecChild(dec, 0)), 0 );
-    ASSERT_LE( CMRmatroiddecCographicness(CMRmatroiddecChild(dec, 0)), 0 );
-    ASSERT_LT( CMRmatroiddecGraphicness(CMRmatroiddecChild(dec, 1)), 0 );
-    ASSERT_GT( CMRmatroiddecCographicness(CMRmatroiddecChild(dec, 1)), 0 );
+    ASSERT_TRUE( CMRseymourHasTranspose(dec) ); /* As we test for graphicness, the transpose is constructed. */
+    ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_TWO_SUM );
+    ASSERT_EQ( CMRseymourNumChildren(dec), 2UL );
+    ASSERT_GT( CMRseymourGraphicness(CMRseymourChild(dec, 0)), 0 );
+    ASSERT_LE( CMRseymourCographicness(CMRseymourChild(dec, 0)), 0 );
+    ASSERT_LT( CMRseymourGraphicness(CMRseymourChild(dec, 1)), 0 );
+    ASSERT_GT( CMRseymourCographicness(CMRseymourChild(dec, 1)), 0 );
     
-    ASSERT_CMR_CALL( CMRmatroiddecRelease(cmr, &dec) );
+    ASSERT_CMR_CALL( CMRseymourRelease(cmr, &dec) );
 
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &K_3_3) );
@@ -398,13 +398,13 @@ TEST(TU, NestedMinorSearchTwoSeparationViolator)
         CMR_SEYMOUR_NODE* dec = NULL;
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, NULL, NULL, DBL_MAX) );
 
-    ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, true, true, true, true, true, true) );
+    ASSERT_CMR_CALL( CMRseymourPrint(cmr, dec, stdout, true, true, true, true, true, true) );
     ASSERT_FALSE( isTU );
-    ASSERT_EQ( CMRmatroiddecType(dec), CMR_SEYMOUR_NODE_TYPE_SUBMATRIX );
-    ASSERT_EQ( CMRmatroiddecNumChildren(dec), 1UL );
-    ASSERT_EQ( CMRmatroiddecType(CMRmatroiddecChild(dec, 0)), CMR_SEYMOUR_NODE_TYPE_DETERMINANT );
+    ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_SUBMATRIX );
+    ASSERT_EQ( CMRseymourNumChildren(dec), 1UL );
+    ASSERT_EQ( CMRseymourType(CMRseymourChild(dec, 0)), CMR_SEYMOUR_NODE_TYPE_DETERMINANT );
 
-    ASSERT_CMR_CALL( CMRmatroiddecRelease(cmr, &dec) );
+    ASSERT_CMR_CALL( CMRseymourRelease(cmr, &dec) );
 
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
   }
@@ -436,9 +436,9 @@ TEST(TU, NestedMinorPivotsOneRowOneColumn)
   
   ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
 
-  ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, true, true, true, true, true, true) );
+  ASSERT_CMR_CALL( CMRseymourPrint(cmr, dec, stdout, true, true, true, true, true, true) );
   
-  ASSERT_CMR_CALL( CMRmatroiddecRelease(cmr, &dec) );
+  ASSERT_CMR_CALL( CMRseymourRelease(cmr, &dec) );
 
   ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
 
@@ -470,9 +470,9 @@ TEST(TU, NestedMinorPivotsTwoRowsOneColumn)
   params.regular.directGraphicness = false;
   ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
 
-  ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, true, true, true, true, true, true) );
+  ASSERT_CMR_CALL( CMRseymourPrint(cmr, dec, stdout, true, true, true, true, true, true) );
   
-  ASSERT_CMR_CALL( CMRmatroiddecRelease(cmr, &dec) );
+  ASSERT_CMR_CALL( CMRseymourRelease(cmr, &dec) );
 
   ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
 
@@ -503,9 +503,9 @@ TEST(TU, NestedMinorPivotsOneRowTwoColumns)
   params.regular.directGraphicness = false;
   ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
 
-  ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, true, true, true, true, true, true) );
+  ASSERT_CMR_CALL( CMRseymourPrint(cmr, dec, stdout, true, true, true, true, true, true) );
   
-  ASSERT_CMR_CALL( CMRmatroiddecRelease(cmr, &dec) );
+  ASSERT_CMR_CALL( CMRseymourRelease(cmr, &dec) );
 
   ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
 
@@ -541,9 +541,9 @@ TEST(TU, NestedMinorPivotsTwoSeparation)
   params.regular.directGraphicness = false;
   ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
 
-  ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, true, true, true, true, true, true) );
+  ASSERT_CMR_CALL( CMRseymourPrint(cmr, dec, stdout, true, true, true, true, true, true) );
   
-  ASSERT_CMR_CALL( CMRmatroiddecRelease(cmr, &dec) );
+  ASSERT_CMR_CALL( CMRseymourRelease(cmr, &dec) );
 
   ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
 
@@ -574,12 +574,12 @@ void testSequenceGraphicness(
   if (knowNetwork)
   {
     ASSERT_TRUE( isTU );
-    ASSERT_GT( CMRmatroiddecGraphicness(dec), 0 );
+    ASSERT_GT( CMRseymourGraphicness(dec), 0 );
     CMR_CHRMAT* networkMatrix = NULL;
     bool isForest;
-    ASSERT_CMR_CALL( CMRnetworkComputeMatrix(cmr, CMRmatroiddecGraph(dec), &networkMatrix, NULL,
-      CMRmatroiddecGraphArcsReversed(dec), CMRmatroiddecGraphSizeForest(dec), CMRmatroiddecGraphForest(dec),
-      CMRmatroiddecGraphSizeCoforest(dec), CMRmatroiddecGraphCoforest(dec), &isForest) );
+    ASSERT_CMR_CALL( CMRnetworkComputeMatrix(cmr, CMRseymourGraph(dec), &networkMatrix, NULL,
+      CMRseymourGraphArcsReversed(dec), CMRseymourGraphSizeForest(dec), CMRseymourGraphForest(dec),
+      CMRseymourGraphSizeCoforest(dec), CMRseymourGraphCoforest(dec), &isForest) );
 
 // TODO: Decomposition graph is currently undirected.
 //     if (!CMRchrmatCheckEqual(matrix, networkMatrix))
@@ -594,12 +594,12 @@ void testSequenceGraphicness(
   }
   else
   {
-    ASSERT_LT( CMRmatroiddecGraphicness(dec), 0 );
+    ASSERT_LT( CMRseymourGraphicness(dec), 0 );
   }
 
-//   ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, 0, true, true, true) );
+//   ASSERT_CMR_CALL( CMRseymourPrint(cmr, dec, stdout, 0, true, true, true) );
 
-  ASSERT_CMR_CALL( CMRmatroiddecRelease(cmr, &dec) );
+  ASSERT_CMR_CALL( CMRseymourRelease(cmr, &dec) );
   ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
 }
 
@@ -871,9 +871,9 @@ TEST(TU, R10)
     bool isTU;
         CMR_SEYMOUR_NODE* dec = NULL;
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, NULL, NULL, DBL_MAX) );
-    ASSERT_GT( CMRmatroiddecRegularity(dec), 0 );
-    ASSERT_EQ( CMRmatroiddecNumChildren(dec), 0UL );
-    ASSERT_CMR_CALL( CMRmatroiddecRelease(cmr, &dec) );
+    ASSERT_GT( CMRseymourRegularity(dec), 0 );
+    ASSERT_EQ( CMRseymourNumChildren(dec), 0UL );
+    ASSERT_CMR_CALL( CMRseymourRelease(cmr, &dec) );
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
   }
 
@@ -895,9 +895,9 @@ TEST(TU, R10)
         CMR_SEYMOUR_NODE* dec = NULL;
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, NULL, NULL, DBL_MAX) );
     ASSERT_TRUE( dec );
-    ASSERT_GT( CMRmatroiddecRegularity(dec), 0 );
-    ASSERT_EQ( CMRmatroiddecNumChildren(dec), 0UL );
-    ASSERT_CMR_CALL( CMRmatroiddecRelease(cmr, &dec) );
+    ASSERT_GT( CMRseymourRegularity(dec), 0 );
+    ASSERT_EQ( CMRseymourNumChildren(dec), 0UL );
+    ASSERT_CMR_CALL( CMRseymourRelease(cmr, &dec) );
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
   }
 
@@ -935,9 +935,9 @@ void testEnumerate(
     ASSERT_FALSE( isTU );
   }
 
-  ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, true, true, true, true, true, true) );
+  ASSERT_CMR_CALL( CMRseymourPrint(cmr, dec, stdout, true, true, true, true, true, true) );
 
-  ASSERT_CMR_CALL( CMRmatroiddecRelease(cmr, &dec) );
+  ASSERT_CMR_CALL( CMRseymourRelease(cmr, &dec) );
   ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
 }
 
@@ -1026,30 +1026,30 @@ TEST(TU, ThreeSumWideWideR12)
 
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
 
-    ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, true, true, true, true, true, true) );
+    ASSERT_CMR_CALL( CMRseymourPrint(cmr, dec, stdout, true, true, true, true, true, true) );
 
-    ASSERT_GT( CMRmatroiddecRegularity(dec), 0 );
-    ASSERT_LT( CMRmatroiddecGraphicness(dec), 0 );
-    ASSERT_EQ( CMRmatroiddecType(dec), CMR_SEYMOUR_NODE_TYPE_PIVOTS );
-    ASSERT_EQ( CMRmatroiddecNumPivots(dec), 1UL );
-    ASSERT_EQ( CMRmatroiddecNumChildren(dec), 1UL );
+    ASSERT_GT( CMRseymourRegularity(dec), 0 );
+    ASSERT_LT( CMRseymourGraphicness(dec), 0 );
+    ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_PIVOTS );
+    ASSERT_EQ( CMRseymourNumPivots(dec), 1UL );
+    ASSERT_EQ( CMRseymourNumChildren(dec), 1UL );
 
-        CMR_SEYMOUR_NODE* child = CMRmatroiddecChild(dec, 0);
+        CMR_SEYMOUR_NODE* child = CMRseymourChild(dec, 0);
 
-    ASSERT_EQ( CMRmatroiddecType(child), CMR_SEYMOUR_NODE_TYPE_THREE_SUM );
-    ASSERT_TRUE( CMRmatroiddecThreeSumDistributedRanks(child) );
-    ASSERT_FALSE( CMRmatroiddecThreeSumConcentratedRank(child) );
-    ASSERT_EQ( CMRmatroiddecNumChildren(child), 2UL );
+    ASSERT_EQ( CMRseymourType(child), CMR_SEYMOUR_NODE_TYPE_THREE_SUM );
+    ASSERT_TRUE( CMRseymourThreeSumDistributedRanks(child) );
+    ASSERT_FALSE( CMRseymourThreeSumConcentratedRank(child) );
+    ASSERT_EQ( CMRseymourNumChildren(child), 2UL );
 
-        CMR_SEYMOUR_NODE* grandChild1 = CMRmatroiddecChild(child, 0);
-        CMR_SEYMOUR_NODE* grandChild2 = CMRmatroiddecChild(child, 1);
+        CMR_SEYMOUR_NODE* grandChild1 = CMRseymourChild(child, 0);
+        CMR_SEYMOUR_NODE* grandChild2 = CMRseymourChild(child, 1);
 
-    ASSERT_LT( CMRmatroiddecGraphicness(grandChild1), 0 );
-    ASSERT_GT( CMRmatroiddecCographicness(grandChild1), 0 );
+    ASSERT_LT( CMRseymourGraphicness(grandChild1), 0 );
+    ASSERT_GT( CMRseymourCographicness(grandChild1), 0 );
 
-    ASSERT_GT( CMRmatroiddecGraphicness(grandChild2), 0 );
+    ASSERT_GT( CMRseymourGraphicness(grandChild2), 0 );
 
-    ASSERT_CMR_CALL( CMRmatroiddecRelease(cmr, &dec) );
+    ASSERT_CMR_CALL( CMRseymourRelease(cmr, &dec) );
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
   }
 
@@ -1083,25 +1083,25 @@ TEST(TU, ThreeSumMixedMixedR12)
 
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
 
-    ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, true, true, true, true, true, true) );
+    ASSERT_CMR_CALL( CMRseymourPrint(cmr, dec, stdout, true, true, true, true, true, true) );
 
-    ASSERT_GT( CMRmatroiddecRegularity(dec), 0 );
-    ASSERT_LT( CMRmatroiddecGraphicness(dec), 0 );
+    ASSERT_GT( CMRseymourRegularity(dec), 0 );
+    ASSERT_LT( CMRseymourGraphicness(dec), 0 );
 
-    ASSERT_EQ( CMRmatroiddecType(dec), CMR_SEYMOUR_NODE_TYPE_THREE_SUM );
-    ASSERT_FALSE( CMRmatroiddecThreeSumDistributedRanks(dec) );
-    ASSERT_TRUE( CMRmatroiddecThreeSumConcentratedRank(dec) );
-    ASSERT_EQ( CMRmatroiddecNumChildren(dec), 2UL );
+    ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_THREE_SUM );
+    ASSERT_FALSE( CMRseymourThreeSumDistributedRanks(dec) );
+    ASSERT_TRUE( CMRseymourThreeSumConcentratedRank(dec) );
+    ASSERT_EQ( CMRseymourNumChildren(dec), 2UL );
 
-        CMR_SEYMOUR_NODE* child1 = CMRmatroiddecChild(dec, 0);
-        CMR_SEYMOUR_NODE* child2 = CMRmatroiddecChild(dec, 1);
+        CMR_SEYMOUR_NODE* child1 = CMRseymourChild(dec, 0);
+        CMR_SEYMOUR_NODE* child2 = CMRseymourChild(dec, 1);
 
-    ASSERT_LT( CMRmatroiddecGraphicness(child1), 0 );
-    ASSERT_GT( CMRmatroiddecCographicness(child1), 0 );
+    ASSERT_LT( CMRseymourGraphicness(child1), 0 );
+    ASSERT_GT( CMRseymourCographicness(child1), 0 );
 
-    ASSERT_GT( CMRmatroiddecGraphicness(child2), 0 );
+    ASSERT_GT( CMRseymourGraphicness(child2), 0 );
 
-    ASSERT_CMR_CALL( CMRmatroiddecRelease(cmr, &dec) );
+    ASSERT_CMR_CALL( CMRseymourRelease(cmr, &dec) );
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
   }
 
@@ -1145,12 +1145,12 @@ TEST(TU, ForbiddenSubmatrixWideWide)
 
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, &forbiddenSubmatrix, &params, NULL, DBL_MAX) );
 
-    ASSERT_LT( CMRmatroiddecRegularity(dec), 0 );
+    ASSERT_LT( CMRseymourRegularity(dec), 0 );
     ASSERT_EQ( forbiddenSubmatrix->numRows, 8UL );
     ASSERT_EQ( forbiddenSubmatrix->numColumns, 8UL );
     // TODO: Compute determinant once implemented.
     ASSERT_CMR_CALL( CMRsubmatFree(cmr, &forbiddenSubmatrix) );
-    ASSERT_CMR_CALL( CMRmatroiddecRelease(cmr, &dec) );
+    ASSERT_CMR_CALL( CMRseymourRelease(cmr, &dec) );
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
   }
 
@@ -1193,12 +1193,12 @@ TEST(TU, ForbiddenSubmatrixMixedMixed)
 
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, &forbiddenSubmatrix, &params, NULL, DBL_MAX) );
 
-    ASSERT_LT( CMRmatroiddecRegularity(dec), 0 );
+    ASSERT_LT( CMRseymourRegularity(dec), 0 );
     ASSERT_EQ( forbiddenSubmatrix->numRows, 8UL );
     ASSERT_EQ( forbiddenSubmatrix->numColumns, 8UL );
     // TODO: Compute determinant once implemented.
     ASSERT_CMR_CALL( CMRsubmatFree(cmr, &forbiddenSubmatrix) );
-    ASSERT_CMR_CALL( CMRmatroiddecRelease(cmr, &dec) );
+    ASSERT_CMR_CALL( CMRseymourRelease(cmr, &dec) );
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
   }
 
@@ -1224,9 +1224,9 @@ TEST(TU, Fano)
         CMR_SEYMOUR_NODE* dec = NULL;
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, NULL, NULL, DBL_MAX) );
 
-    ASSERT_EQ( CMRmatroiddecType(dec), CMR_SEYMOUR_NODE_TYPE_IRREGULAR );
+    ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_IRREGULAR );
 
-    ASSERT_CMR_CALL( CMRmatroiddecRelease(cmr, &dec) );
+    ASSERT_CMR_CALL( CMRseymourRelease(cmr, &dec) );
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
   }
 
@@ -1254,9 +1254,9 @@ TEST(TU, FanoDual)
 
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, NULL, NULL, DBL_MAX) );
 
-    ASSERT_EQ( CMRmatroiddecType(dec), CMR_SEYMOUR_NODE_TYPE_IRREGULAR );
+    ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_IRREGULAR );
 
-    ASSERT_CMR_CALL( CMRmatroiddecRelease(cmr, &dec) );
+    ASSERT_CMR_CALL( CMRseymourRelease(cmr, &dec) );
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
   }
 
@@ -1291,16 +1291,16 @@ TEST(TU, CompleteTree)
 
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
 
-    ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, true, true, true, true, true, true) );
+    ASSERT_CMR_CALL( CMRseymourPrint(cmr, dec, stdout, true, true, true, true, true, true) );
 
-    ASSERT_EQ( CMRmatroiddecRegularity(dec), -1 );
-    ASSERT_EQ( CMRmatroiddecType(dec), CMR_SEYMOUR_NODE_TYPE_ONE_SUM );
-        CMR_SEYMOUR_NODE* child0 = CMRmatroiddecChild(dec, 0);
-        CMR_SEYMOUR_NODE* child1 = CMRmatroiddecChild(dec, 1);
-    ASSERT_EQ( CMRmatroiddecType(child0), CMR_SEYMOUR_NODE_TYPE_IRREGULAR );
-    ASSERT_EQ( CMRmatroiddecType(child1), CMR_SEYMOUR_NODE_TYPE_IRREGULAR );
+    ASSERT_EQ( CMRseymourRegularity(dec), -1 );
+    ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_ONE_SUM );
+        CMR_SEYMOUR_NODE* child0 = CMRseymourChild(dec, 0);
+        CMR_SEYMOUR_NODE* child1 = CMRseymourChild(dec, 1);
+    ASSERT_EQ( CMRseymourType(child0), CMR_SEYMOUR_NODE_TYPE_IRREGULAR );
+    ASSERT_EQ( CMRseymourType(child1), CMR_SEYMOUR_NODE_TYPE_IRREGULAR );
 
-    ASSERT_CMR_CALL( CMRmatroiddecRelease(cmr, &dec) );
+    ASSERT_CMR_CALL( CMRseymourRelease(cmr, &dec) );
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
   }
 
@@ -1327,24 +1327,24 @@ TEST(TU, CompleteTree)
 
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
 
-    ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, true, true, true, true, true, true) );
+    ASSERT_CMR_CALL( CMRseymourPrint(cmr, dec, stdout, true, true, true, true, true, true) );
 
-    ASSERT_EQ( CMRmatroiddecRegularity(dec), -1 );
-    ASSERT_EQ( CMRmatroiddecType(dec), CMR_SEYMOUR_NODE_TYPE_ONE_SUM );
-        CMR_SEYMOUR_NODE* child0 = CMRmatroiddecChild(dec, 0);
-        CMR_SEYMOUR_NODE* child1 = CMRmatroiddecChild(dec, 1);
+    ASSERT_EQ( CMRseymourRegularity(dec), -1 );
+    ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_ONE_SUM );
+        CMR_SEYMOUR_NODE* child0 = CMRseymourChild(dec, 0);
+        CMR_SEYMOUR_NODE* child1 = CMRseymourChild(dec, 1);
 
     int numIrregular = 0;
-    numIrregular += (CMRmatroiddecRegularity(child0) < 0) ? 1 : 0;
-    numIrregular += (CMRmatroiddecRegularity(child1) < 0) ? 1 : 0;
+    numIrregular += (CMRseymourRegularity(child0) < 0) ? 1 : 0;
+    numIrregular += (CMRseymourRegularity(child1) < 0) ? 1 : 0;
     ASSERT_EQ( numIrregular, 1);
 
     int numUnknown = 0;
-    numUnknown += CMRmatroiddecType(child0) == CMR_SEYMOUR_NODE_TYPE_UNKNOWN ? 1 : 0;
-    numUnknown += CMRmatroiddecType(child1) == CMR_SEYMOUR_NODE_TYPE_UNKNOWN ? 1 : 0;
+    numUnknown += CMRseymourType(child0) == CMR_SEYMOUR_NODE_TYPE_UNKNOWN ? 1 : 0;
+    numUnknown += CMRseymourType(child1) == CMR_SEYMOUR_NODE_TYPE_UNKNOWN ? 1 : 0;
     ASSERT_EQ( numUnknown, 1);
 
-    ASSERT_CMR_CALL( CMRmatroiddecRelease(cmr, &dec) );
+    ASSERT_CMR_CALL( CMRseymourRelease(cmr, &dec) );
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
   }
 
@@ -1372,24 +1372,24 @@ TEST(TU, CompleteTree)
 
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
 
-    ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, true, true, true, true, true, true) );
+    ASSERT_CMR_CALL( CMRseymourPrint(cmr, dec, stdout, true, true, true, true, true, true) );
 
-    ASSERT_EQ( CMRmatroiddecRegularity(dec), -1 );
-    ASSERT_EQ( CMRmatroiddecType(dec), CMR_SEYMOUR_NODE_TYPE_ONE_SUM );
-        CMR_SEYMOUR_NODE* child0 = CMRmatroiddecChild(dec, 0);
-        CMR_SEYMOUR_NODE* child1 = CMRmatroiddecChild(dec, 1);
+    ASSERT_EQ( CMRseymourRegularity(dec), -1 );
+    ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_ONE_SUM );
+        CMR_SEYMOUR_NODE* child0 = CMRseymourChild(dec, 0);
+        CMR_SEYMOUR_NODE* child1 = CMRseymourChild(dec, 1);
 
     int numIrregular = 0;
-    numIrregular += (CMRmatroiddecRegularity(child0) < 0) ? 1 : 0;
-    numIrregular += (CMRmatroiddecRegularity(child1) < 0) ? 1 : 0;
+    numIrregular += (CMRseymourRegularity(child0) < 0) ? 1 : 0;
+    numIrregular += (CMRseymourRegularity(child1) < 0) ? 1 : 0;
     ASSERT_EQ( numIrregular, 1);
 
     int numUnknown = 0;
-    numUnknown += CMRmatroiddecType(child0) == CMR_SEYMOUR_NODE_TYPE_UNKNOWN ? 1 : 0;
-    numUnknown += CMRmatroiddecType(child1) == CMR_SEYMOUR_NODE_TYPE_UNKNOWN ? 1 : 0;
+    numUnknown += CMRseymourType(child0) == CMR_SEYMOUR_NODE_TYPE_UNKNOWN ? 1 : 0;
+    numUnknown += CMRseymourType(child1) == CMR_SEYMOUR_NODE_TYPE_UNKNOWN ? 1 : 0;
     ASSERT_EQ( numUnknown, 1);
 
-    ASSERT_CMR_CALL( CMRmatroiddecRelease(cmr, &dec) );
+    ASSERT_CMR_CALL( CMRseymourRelease(cmr, &dec) );
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
   }
 
@@ -1416,24 +1416,24 @@ TEST(TU, CompleteTree)
 
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
 
-    ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, true, true, true, true, true, true) );
+    ASSERT_CMR_CALL( CMRseymourPrint(cmr, dec, stdout, true, true, true, true, true, true) );
 
-    ASSERT_EQ( CMRmatroiddecRegularity(dec), -1 );
-    ASSERT_EQ( CMRmatroiddecType(dec), CMR_SEYMOUR_NODE_TYPE_ONE_SUM );
-        CMR_SEYMOUR_NODE* child0 = CMRmatroiddecChild(dec, 0);
-        CMR_SEYMOUR_NODE* child1 = CMRmatroiddecChild(dec, 1);
+    ASSERT_EQ( CMRseymourRegularity(dec), -1 );
+    ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_ONE_SUM );
+        CMR_SEYMOUR_NODE* child0 = CMRseymourChild(dec, 0);
+        CMR_SEYMOUR_NODE* child1 = CMRseymourChild(dec, 1);
 
     int numIrregular = 0;
-    numIrregular += (CMRmatroiddecRegularity(child0) < 0) ? 1 : 0;
-    numIrregular += (CMRmatroiddecRegularity(child1) < 0) ? 1 : 0;
+    numIrregular += (CMRseymourRegularity(child0) < 0) ? 1 : 0;
+    numIrregular += (CMRseymourRegularity(child1) < 0) ? 1 : 0;
     ASSERT_EQ( numIrregular, 1);
 
     int numUnknown = 0;
-    numUnknown += CMRmatroiddecType(child0) == CMR_SEYMOUR_NODE_TYPE_UNKNOWN ? 1 : 0;
-    numUnknown += CMRmatroiddecType(child1) == CMR_SEYMOUR_NODE_TYPE_UNKNOWN ? 1 : 0;
+    numUnknown += CMRseymourType(child0) == CMR_SEYMOUR_NODE_TYPE_UNKNOWN ? 1 : 0;
+    numUnknown += CMRseymourType(child1) == CMR_SEYMOUR_NODE_TYPE_UNKNOWN ? 1 : 0;
     ASSERT_EQ( numUnknown, 1);
 
-    ASSERT_CMR_CALL( CMRmatroiddecRelease(cmr, &dec) );
+    ASSERT_CMR_CALL( CMRseymourRelease(cmr, &dec) );
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
   }
 
@@ -1465,24 +1465,24 @@ TEST(TU, CompleteTree)
 
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
 
-    ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, true, true, true, true, true, true) );
+    ASSERT_CMR_CALL( CMRseymourPrint(cmr, dec, stdout, true, true, true, true, true, true) );
 
-    ASSERT_EQ( CMRmatroiddecRegularity(dec), -1 );
-    ASSERT_EQ( CMRmatroiddecType(dec), CMR_SEYMOUR_NODE_TYPE_ONE_SUM );
-        CMR_SEYMOUR_NODE* child0 = CMRmatroiddecChild(dec, 0);
-        CMR_SEYMOUR_NODE* child1 = CMRmatroiddecChild(dec, 1);
+    ASSERT_EQ( CMRseymourRegularity(dec), -1 );
+    ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_ONE_SUM );
+        CMR_SEYMOUR_NODE* child0 = CMRseymourChild(dec, 0);
+        CMR_SEYMOUR_NODE* child1 = CMRseymourChild(dec, 1);
 
     int numIrregular = 0;
-    numIrregular += (CMRmatroiddecRegularity(child0) < 0) ? 1 : 0;
-    numIrregular += (CMRmatroiddecRegularity(child1) < 0) ? 1 : 0;
+    numIrregular += (CMRseymourRegularity(child0) < 0) ? 1 : 0;
+    numIrregular += (CMRseymourRegularity(child1) < 0) ? 1 : 0;
     ASSERT_EQ( numIrregular, 1);
 
     int numUnknown = 0;
-    numUnknown += CMRmatroiddecType(child0) == CMR_SEYMOUR_NODE_TYPE_UNKNOWN ? 1 : 0;
-    numUnknown += CMRmatroiddecType(child1) == CMR_SEYMOUR_NODE_TYPE_UNKNOWN ? 1 : 0;
+    numUnknown += CMRseymourType(child0) == CMR_SEYMOUR_NODE_TYPE_UNKNOWN ? 1 : 0;
+    numUnknown += CMRseymourType(child1) == CMR_SEYMOUR_NODE_TYPE_UNKNOWN ? 1 : 0;
     ASSERT_EQ( numUnknown, 1);
 
-    ASSERT_CMR_CALL( CMRmatroiddecRelease(cmr, &dec) );
+    ASSERT_CMR_CALL( CMRseymourRelease(cmr, &dec) );
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
   }
 
@@ -1510,24 +1510,24 @@ TEST(TU, CompleteTree)
 
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
 
-    ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, true, true, true, true, true, true) );
+    ASSERT_CMR_CALL( CMRseymourPrint(cmr, dec, stdout, true, true, true, true, true, true) );
 
-    ASSERT_EQ( CMRmatroiddecRegularity(dec), -1 );
-    ASSERT_EQ( CMRmatroiddecType(dec), CMR_SEYMOUR_NODE_TYPE_ONE_SUM );
-        CMR_SEYMOUR_NODE* child0 = CMRmatroiddecChild(dec, 0);
-        CMR_SEYMOUR_NODE* child1 = CMRmatroiddecChild(dec, 1);
+    ASSERT_EQ( CMRseymourRegularity(dec), -1 );
+    ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_ONE_SUM );
+        CMR_SEYMOUR_NODE* child0 = CMRseymourChild(dec, 0);
+        CMR_SEYMOUR_NODE* child1 = CMRseymourChild(dec, 1);
 
     int numIrregular = 0;
-    numIrregular += (CMRmatroiddecRegularity(child0) < 0) ? 1 : 0;
-    numIrregular += (CMRmatroiddecRegularity(child1) < 0) ? 1 : 0;
+    numIrregular += (CMRseymourRegularity(child0) < 0) ? 1 : 0;
+    numIrregular += (CMRseymourRegularity(child1) < 0) ? 1 : 0;
     ASSERT_EQ( numIrregular, 1);
 
     int numUnknown = 0;
-    numUnknown += CMRmatroiddecType(child0) == CMR_SEYMOUR_NODE_TYPE_UNKNOWN ? 1 : 0;
-    numUnknown += CMRmatroiddecType(child1) == CMR_SEYMOUR_NODE_TYPE_UNKNOWN ? 1 : 0;
+    numUnknown += CMRseymourType(child0) == CMR_SEYMOUR_NODE_TYPE_UNKNOWN ? 1 : 0;
+    numUnknown += CMRseymourType(child1) == CMR_SEYMOUR_NODE_TYPE_UNKNOWN ? 1 : 0;
     ASSERT_EQ( numUnknown, 1);
 
-    ASSERT_CMR_CALL( CMRmatroiddecRelease(cmr, &dec) );
+    ASSERT_CMR_CALL( CMRseymourRelease(cmr, &dec) );
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
   }
 
@@ -1555,24 +1555,24 @@ TEST(TU, CompleteTree)
 
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
 
-    ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, true, true, true, true, true, true) );
+    ASSERT_CMR_CALL( CMRseymourPrint(cmr, dec, stdout, true, true, true, true, true, true) );
 
-    ASSERT_EQ( CMRmatroiddecRegularity(dec), -1 );
-    ASSERT_EQ( CMRmatroiddecType(dec), CMR_SEYMOUR_NODE_TYPE_ONE_SUM );
-        CMR_SEYMOUR_NODE* child0 = CMRmatroiddecChild(dec, 0);
-        CMR_SEYMOUR_NODE* child1 = CMRmatroiddecChild(dec, 1);
+    ASSERT_EQ( CMRseymourRegularity(dec), -1 );
+    ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_ONE_SUM );
+        CMR_SEYMOUR_NODE* child0 = CMRseymourChild(dec, 0);
+        CMR_SEYMOUR_NODE* child1 = CMRseymourChild(dec, 1);
 
     int numIrregular = 0;
-    numIrregular += (CMRmatroiddecRegularity(child0) < 0) ? 1 : 0;
-    numIrregular += (CMRmatroiddecRegularity(child1) < 0) ? 1 : 0;
+    numIrregular += (CMRseymourRegularity(child0) < 0) ? 1 : 0;
+    numIrregular += (CMRseymourRegularity(child1) < 0) ? 1 : 0;
     ASSERT_EQ( numIrregular, 1);
 
     int numUnknown = 0;
-    numUnknown += CMRmatroiddecType(child0) == CMR_SEYMOUR_NODE_TYPE_UNKNOWN ? 1 : 0;
-    numUnknown += CMRmatroiddecType(child1) == CMR_SEYMOUR_NODE_TYPE_UNKNOWN ? 1 : 0;
+    numUnknown += CMRseymourType(child0) == CMR_SEYMOUR_NODE_TYPE_UNKNOWN ? 1 : 0;
+    numUnknown += CMRseymourType(child1) == CMR_SEYMOUR_NODE_TYPE_UNKNOWN ? 1 : 0;
     ASSERT_EQ( numUnknown, 1);
 
-    ASSERT_CMR_CALL( CMRmatroiddecRelease(cmr, &dec) );
+    ASSERT_CMR_CALL( CMRseymourRelease(cmr, &dec) );
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
   }
 
@@ -1601,24 +1601,24 @@ TEST(TU, CompleteTree)
 
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
 
-    ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, true, true, true, true, true, true) );
+    ASSERT_CMR_CALL( CMRseymourPrint(cmr, dec, stdout, true, true, true, true, true, true) );
 
-    ASSERT_EQ( CMRmatroiddecRegularity(dec), -1 );
-    ASSERT_EQ( CMRmatroiddecType(dec), CMR_SEYMOUR_NODE_TYPE_ONE_SUM );
-        CMR_SEYMOUR_NODE* child0 = CMRmatroiddecChild(dec, 0);
-        CMR_SEYMOUR_NODE* child1 = CMRmatroiddecChild(dec, 1);
+    ASSERT_EQ( CMRseymourRegularity(dec), -1 );
+    ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_ONE_SUM );
+        CMR_SEYMOUR_NODE* child0 = CMRseymourChild(dec, 0);
+        CMR_SEYMOUR_NODE* child1 = CMRseymourChild(dec, 1);
 
-    ASSERT_LT( CMRmatroiddecRegularity(child0), 0 );
-    ASSERT_EQ( CMRmatroiddecRegularity(child1), 0 );
+    ASSERT_LT( CMRseymourRegularity(child0), 0 );
+    ASSERT_EQ( CMRseymourRegularity(child1), 0 );
 
     ASSERT_CMR_CALL( CMRtuCompleteDecomposition(cmr, child1, &params, NULL, DBL_MAX) );
 
-    ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, true, true, true, true, true, true) );
+    ASSERT_CMR_CALL( CMRseymourPrint(cmr, dec, stdout, true, true, true, true, true, true) );
 
-    ASSERT_LT( CMRmatroiddecRegularity(child1), 0 );
-    ASSERT_EQ( CMRmatroiddecType(child1), CMR_SEYMOUR_NODE_TYPE_IRREGULAR );
+    ASSERT_LT( CMRseymourRegularity(child1), 0 );
+    ASSERT_EQ( CMRseymourType(child1), CMR_SEYMOUR_NODE_TYPE_IRREGULAR );
 
-    ASSERT_CMR_CALL( CMRmatroiddecRelease(cmr, &dec) );
+    ASSERT_CMR_CALL( CMRseymourRelease(cmr, &dec) );
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
   }
 
@@ -1700,10 +1700,10 @@ TEST(TU, Random)
     if (!matroidDecompositionCorrect)
     {
       printf("Matroid decomposition tree:\n");
-      ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, 2, true, true, true, false, true, true) );
+      ASSERT_CMR_CALL( CMRseymourPrint(cmr, dec, stdout, 2, true, true, true, false, true, true) );
     }
     ASSERT_TRUE( matroidDecompositionCorrect );
-    ASSERT_CMR_CALL( CMRmatroiddecRelease(cmr, &dec) );
+    ASSERT_CMR_CALL( CMRseymourRelease(cmr, &dec) );
 
     printf("-> %stotally unimodular.\n", isTU ? "" : "NOT ");
 

@@ -721,7 +721,7 @@ CMR_ERROR CMRregularityNestedMinorSequenceSearchThreeSeparation(CMR* cmr, Decomp
   assert(task);
   assert(queue);
 
-    CMR_SEYMOUR_NODE* dec = task->dec;
+    CMR_SEYMOUR_NODE* dec = task->node;
   assert(dec);
   assert(dec->matrix);
   assert(dec->nestedMinorsMatrix);
@@ -988,7 +988,7 @@ CMR_ERROR CMRregularityNestedMinorSequenceSearchThreeSeparation(CMR* cmr, Decomp
     {
       CMRdbgMsg(8, "-> 2x2 submatrix with bad determinant.\n");
 
-      CMR_CALL( CMRmatroiddecUpdateSubmatrix(cmr, dec, violatorSubmatrix, CMR_SEYMOUR_NODE_TYPE_DETERMINANT) );
+      CMR_CALL( CMRseymourUpdateSubmatrix(cmr, dec, violatorSubmatrix, CMR_SEYMOUR_NODE_TYPE_DETERMINANT) );
       assert(dec->type != CMR_SEYMOUR_NODE_TYPE_DETERMINANT);
 
       CMR_CALL( CMRsubmatFree(cmr, &violatorSubmatrix) );
@@ -1005,7 +1005,7 @@ CMR_ERROR CMRregularityNestedMinorSequenceSearchThreeSeparation(CMR* cmr, Decomp
   else
   {
     // TODO: Add a dedicated unittest.
-    task->dec->type = CMR_SEYMOUR_NODE_TYPE_IRREGULAR;
+    task->node->type = CMR_SEYMOUR_NODE_TYPE_IRREGULAR;
 
     /* Free the task. */
     CMR_CALL( CMRregularityTaskFree(cmr, &task) );

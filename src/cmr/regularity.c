@@ -17,7 +17,7 @@ CMR_ERROR CMRregularityTaskCreateRoot(CMR* cmr, CMR_SEYMOUR_NODE* dec, Decomposi
   CMR_CALL( CMRallocBlock(cmr, ptask) );
   DecompositionTask* task = *ptask;
 
-  task->dec = dec;
+  task->node = dec;
   task->next = NULL;
 
   task->params = params;
@@ -119,46 +119,46 @@ CMR_ERROR CMRregularityTaskRun(
 
   CMRdbgMsg(2, "Processing %p.\n", task);
 
-  if (!task->dec->testedTwoConnected)
+  if (!task->node->testedTwoConnected)
   {
     CMRdbgMsg(4, "Searching for 1-separations.\n");
     CMR_CALL( CMRregularitySearchOneSum(cmr, task, queue) );
   }
-  else if (!task->dec->graphicness
-    && (task->params->directGraphicness || task->dec->matrix->numRows <= 3 || task->dec->matrix->numColumns <= 3))
+  else if (!task->node->graphicness
+    && (task->params->directGraphicness || task->node->matrix->numRows <= 3 || task->node->matrix->numColumns <= 3))
   {
-    CMRdbgMsg(4, "Testing directly for %s.\n", task->dec->isTernary ? "being network" : "graphicness");
+    CMRdbgMsg(4, "Testing directly for %s.\n", task->node->isTernary ? "being network" : "graphicness");
     CMR_CALL( CMRregularityTestGraphicness(cmr, task, queue) );
   }
-  else if (!task->dec->cographicness
-    && (task->params->directGraphicness || task->dec->matrix->numRows <= 3 || task->dec->matrix->numColumns <= 3))
+  else if (!task->node->cographicness
+    && (task->params->directGraphicness || task->node->matrix->numRows <= 3 || task->node->matrix->numColumns <= 3))
   {
-    CMRdbgMsg(4, "Testing directly for %s.\n", task->dec->isTernary ? "being conetwork" : "cographicness");
+    CMRdbgMsg(4, "Testing directly for %s.\n", task->node->isTernary ? "being conetwork" : "cographicness");
     CMR_CALL( CMRregularityTestCographicness(cmr, task, queue) );
   }
-  else if (!task->dec->testedR10)
+  else if (!task->node->testedR10)
   {
     CMRdbgMsg(4, "Testing for being R_10.\n");
     CMR_CALL( CMRregularityTestR10(cmr, task, queue) );
   }
-  else if (!task->dec->testedSeriesParallel)
+  else if (!task->node->testedSeriesParallel)
   {
     CMRdbgMsg(4, "Testing for series-parallel reductions.\n");
     CMR_CALL( CMRregularityDecomposeSeriesParallel(cmr, task, queue) );
   }
-  else if (task->dec->denseMatrix)
+  else if (task->node->denseMatrix)
   {
     CMRdbgMsg(4, "Attempting to construct a sequence of nested minors.\n");
     CMR_CALL( CMRregularityExtendNestedMinorSequence(cmr, task, queue) );
   }
-  else if (task->dec->nestedMinorsMatrix && (task->dec->nestedMinorsLastGraphic == SIZE_MAX))
+  else if (task->node->nestedMinorsMatrix && (task->node->nestedMinorsLastGraphic == SIZE_MAX))
   {
-    CMRdbgMsg(4, "Testing along the sequence for %s.\n", task->dec->isTernary ? "being network" : "graphicness");
+    CMRdbgMsg(4, "Testing along the sequence for %s.\n", task->node->isTernary ? "being network" : "graphicness");
     CMR_CALL( CMRregularityNestedMinorSequenceGraphicness(cmr, task, queue) );
   }
-  else if (task->dec->nestedMinorsMatrix && (task->dec->nestedMinorsLastCographic == SIZE_MAX))
+  else if (task->node->nestedMinorsMatrix && (task->node->nestedMinorsLastCographic == SIZE_MAX))
   {
-    CMRdbgMsg(4, "Testing along the sequence for %s.\n", task->dec->isTernary ? "being conetwork" : "cographicness");
+    CMRdbgMsg(4, "Testing along the sequence for %s.\n", task->node->isTernary ? "being conetwork" : "cographicness");
     CMR_CALL( CMRregularityNestedMinorSequenceCographicness(cmr, task, queue) );
   }
   else
@@ -184,7 +184,7 @@ CMR_ERROR CMRregularityTest(CMR* cmr, CMR_CHRMAT* matrix, bool ternary, bool *pi
 #endif /* CMR_DEBUG */
 
     CMR_SEYMOUR_NODE* root = NULL;
-  CMR_CALL( CMRmatroiddecCreateMatrixRoot(cmr, &root, ternary, matrix) );
+  CMR_CALL( CMRseymourCreateMatrixRoot(cmr, &root, ternary, matrix) );
   assert(root);
 
   CMR_CALL( CMRregularityCompleteDecomposition(cmr, root, params, stats, timeLimit) );
@@ -218,7 +218,7 @@ CMR_ERROR CMRregularityCompleteDecomposition(CMR* cmr, CMR_SEYMOUR_NODE* subtree
 
   for (size_t c = 0; c < subtree->numChildren; ++c)
   {
-    CMR_CALL( CMRmatroiddecRelease(cmr, &subtree->children[c]) );
+    CMR_CALL( CMRseymourRelease(cmr, &subtree->children[c]) );
     CMR_CALL( CMRfreeBlockArray(cmr, &subtree->childRowsToParent[c]) );
     CMR_CALL( CMRfreeBlockArray(cmr, &subtree->childColumnsToParent[c]) );
   }
@@ -235,10 +235,10 @@ CMR_ERROR CMRregularityCompleteDecomposition(CMR* cmr, CMR_SEYMOUR_NODE* subtree
   {
     DecompositionTask* task = CMRregularityQueueRemove(queue);
 
-    if (!(params->treeFlags & CMR_REGULAR_TREE_FLAGS_RECURSE) && (task->dec != subtree))
+    if (!(params->treeFlags & CMR_REGULAR_TREE_FLAGS_RECURSE) && (task->node != subtree))
     {
-      CMRdbgMsg(2, "Skipping task for decomposition node %p of size %zux%zu.\n", task->dec, task->dec->numRows,
-        task->dec->numColumns);
+      CMRdbgMsg(2, "Skipping task for decomposition node %p of size %zux%zu.\n", task->node, task->node->numRows,
+        task->node->numColumns);
       CMR_CALL( CMRregularityTaskFree(cmr, &task) );
       continue;
     }
@@ -280,7 +280,7 @@ CMR_ERROR CMRregularityCompleteDecomposition(CMR* cmr, CMR_SEYMOUR_NODE* subtree
 
   CMR_CALL( CMRregularityQueueFree(cmr, &queue) );
 
-  CMR_CALL( CMRmatroiddecSetAttributes(subtree) );
+  CMR_CALL( CMRseymourSetAttributes(subtree) );
 
   if (stats)
     stats->totalTime += (clock() - time) * 1.0 / CLOCKS_PER_SEC;
@@ -313,7 +313,7 @@ CMR_ERROR CMRregularityRefineDecomposition(CMR* cmr, size_t numNodes, CMR_SEYMOU
         CMR_SEYMOUR_NODE* subtree = nodes[i];
     for (size_t c = 0; c < subtree->numChildren; ++c)
     {
-      CMR_CALL( CMRmatroiddecRelease(cmr, &subtree->children[c]) );
+      CMR_CALL( CMRseymourRelease(cmr, &subtree->children[c]) );
       CMR_CALL( CMRfreeBlockArray(cmr, &subtree->childRowsToParent[c]) );
       CMR_CALL( CMRfreeBlockArray(cmr, &subtree->childColumnsToParent[c]) );
     }
@@ -366,7 +366,7 @@ CMR_ERROR CMRregularityRefineDecomposition(CMR* cmr, size_t numNodes, CMR_SEYMOU
   CMR_CALL( CMRregularityQueueFree(cmr, &queue) );
 
   for (size_t i = 0; i < numNodes; ++i)
-    CMR_CALL( CMRmatroiddecSetAttributes(nodes[i]) );
+    CMR_CALL( CMRseymourSetAttributes(nodes[i]) );
 
   if (stats)
     stats->totalTime += (clock() - time) * 1.0 / CLOCKS_PER_SEC;

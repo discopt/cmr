@@ -79,7 +79,7 @@ CMR_ERROR testTotalUnimodularity(
     CMR_CALL( CMRtuStatsPrint(stderr, &stats, NULL) );
 
   if (decomposition)
-    CMR_CALL( CMRmatroiddecPrint(cmr, decomposition, stderr, true, true, true, true, true, true) );
+    CMR_CALL( CMRseymourPrint(cmr, decomposition, stderr, true, true, true, true, true, true) );
 
   if (submatrix && outputSubmatrixFileName)
   {
@@ -100,7 +100,7 @@ CMR_ERROR testTotalUnimodularity(
 
   /* Cleanup. */
 
-  CMR_CALL( CMRmatroiddecRelease(cmr, &decomposition) );
+  CMR_CALL( CMRseymourRelease(cmr, &decomposition) );
   CMR_CALL( CMRsubmatFree(cmr, &submatrix) );
   CMR_CALL( CMRchrmatFree(cmr, &matrix) );
   CMR_CALL( CMRfreeEnvironment(&cmr) );

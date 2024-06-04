@@ -97,7 +97,7 @@ struct _CMR_SEYMOUR_NODE
  * \see \ref CMRconsistencyAssert() for checking the returned string and aborting in case of inconsistency.
  */
 
-char* CMRmatroiddecConsistency(
+char* CMRseymourConsistency(
   CMR_SEYMOUR_NODE* node, /**< Seymour decomposition node. */
   bool recurse            /**< Whether all (grand-)children shall be checked, too. */
 );
@@ -107,7 +107,7 @@ char* CMRmatroiddecConsistency(
  */
 
 CMR_EXPORT
-CMR_ERROR CMRmatroiddecPrintChild(
+CMR_ERROR CMRseymourPrintChild(
   CMR* cmr,                 /**< \ref CMR environment. */
   CMR_SEYMOUR_NODE* child,  /**< Seymour decomposition child node. */
   CMR_SEYMOUR_NODE* parent, /**< Seymour decomposition parent node. */
@@ -126,7 +126,7 @@ CMR_ERROR CMRmatroiddecPrintChild(
  * \brief Sets the number of children and allocates memory accordingly.
  */
 
-CMR_ERROR CMRmatroiddecSetNumChildren(
+CMR_ERROR CMRseymourSetNumChildren(
   CMR* cmr,               /**< \ref CMR environment. */
   CMR_SEYMOUR_NODE* node, /**< Seymour decomposition node. */
   size_t numChildren      /**< Number of children. */
@@ -136,7 +136,7 @@ CMR_ERROR CMRmatroiddecSetNumChildren(
  * \brief Initialize an existing unknown decomposition node as a 1-sum with \p numChildren children.
  */
 
-CMR_ERROR CMRmatroiddecUpdateOneSum(
+CMR_ERROR CMRseymourUpdateOneSum(
   CMR* cmr,               /**< \ref CMR environment. */
   CMR_SEYMOUR_NODE* node, /**< Seymour decomposition node. */
   size_t numChildren      /**< Number of child nodes. */
@@ -148,7 +148,7 @@ CMR_ERROR CMRmatroiddecUpdateOneSum(
  * Copies \p matrix and \p transpose into the node.
  */
 
-CMR_ERROR CMRmatroiddecCreateChildFromMatrices(
+CMR_ERROR CMRseymourCreateChildFromMatrices(
   CMR* cmr,                     /**< \ref CMR environment. */
   CMR_SEYMOUR_NODE* parent,     /**< Seymour decomposition parent node. */
   size_t childIndex,            /**< Child index of parent. */
@@ -162,7 +162,7 @@ CMR_ERROR CMRmatroiddecCreateChildFromMatrices(
  * \brief Initialize an existing unknown decomposition node as a submatrix node whose child is of given \p type.
  */
 
-CMR_ERROR CMRmatroiddecUpdateSubmatrix(
+CMR_ERROR CMRseymourUpdateSubmatrix(
   CMR* cmr,                   /**< \ref CMR environment. */
   CMR_SEYMOUR_NODE* node,     /**< Seymour decomposition node. */
   CMR_SUBMAT* submatrix,      /**< Submatrix. */
@@ -175,7 +175,7 @@ CMR_ERROR CMRmatroiddecUpdateSubmatrix(
  * The two child nodes will be of type \ref CMR_SEYMOUR_NODE_TYPE_UNKNOWN.
  */
 
-CMR_ERROR CMRmatroiddecUpdateTwoSum(
+CMR_ERROR CMRseymourUpdateTwoSum(
   CMR* cmr,               /**< \ref CMR environment. */
   CMR_SEYMOUR_NODE* node, /**< Seymour decomposition node. */
   CMR_SEPA* separation    /**< 2-separation. */
@@ -187,7 +187,7 @@ CMR_ERROR CMRmatroiddecUpdateTwoSum(
  * The unique child node will be of type \ref CMR_SEYMOUR_NODE_TYPE_UNKNOWN.
  */
 
-CMR_ERROR CMRmatroiddecUpdatePivots(
+CMR_ERROR CMRseymourUpdatePivots(
   CMR* cmr,               /**< \ref CMR environment. */
   CMR_SEYMOUR_NODE* node, /**< Seymour decomposition node. */
   size_t numPivots,       /**< Number of pivots. */
@@ -203,7 +203,7 @@ CMR_ERROR CMRmatroiddecUpdatePivots(
  * The two child nodes remain uninitialized.
  */
 
-CMR_ERROR CMRmatroiddecUpdateThreeSumInit(
+CMR_ERROR CMRseymourUpdateThreeSumInit(
   CMR* cmr,               /**< \ref CMR environment. */
   CMR_SEYMOUR_NODE* node  /**< Seymour decomposition node. */
 );
@@ -214,9 +214,9 @@ CMR_ERROR CMRmatroiddecUpdateThreeSumInit(
  * A nonzero \p extraEntry indicates the bottom-right nonzero entry.
  */
 
-CMR_ERROR CMRmatroiddecUpdateThreeSumCreateWideFirstChild(
+CMR_ERROR CMRseymourUpdateThreeSumCreateWideFirstChild(
   CMR* cmr,                   /**< \ref CMR environment. */
-  CMR_SEYMOUR_NODE* node,     /**< Seymour decomposition node (initialized with \ref CMRmatroiddecUpdateThreeSumInit). */
+  CMR_SEYMOUR_NODE* node,     /**< Seymour decomposition node (initialized with \ref CMRseymourUpdateThreeSumInit). */
   CMR_SEPA* separation,       /**< Separation. */
   size_t* rowsToChild,        /**< Array mapping rows to child rows. */
   size_t* columnsToChild,     /**< Array mapping columns to child columns. */
@@ -234,9 +234,9 @@ CMR_ERROR CMRmatroiddecUpdateThreeSumCreateWideFirstChild(
  * A nonzero \p extraEntry indicates the bottom-right nonzero entry.
  */
 
-CMR_ERROR CMRmatroiddecUpdateThreeSumCreateWideSecondChild(
+CMR_ERROR CMRseymourUpdateThreeSumCreateWideSecondChild(
   CMR* cmr,                   /**< \ref CMR environment. */
-  CMR_SEYMOUR_NODE* node,     /**< Seymour decomposition node (initialized with \ref CMRmatroiddecUpdateThreeSumInit). */
+  CMR_SEYMOUR_NODE* node,     /**< Seymour decomposition node (initialized with \ref CMRseymourUpdateThreeSumInit). */
   CMR_SEPA* separation,       /**< Separation. */
   size_t* rowsToChild,        /**< Array mapping rows to child rows. */
   size_t* columnsToChild,     /**< Array mapping columns to child columns. */
@@ -254,9 +254,9 @@ CMR_ERROR CMRmatroiddecUpdateThreeSumCreateWideSecondChild(
  * A nonzero \p extraEntry indicates the bottom-right nonzero entry.
  */
 
-CMR_ERROR CMRmatroiddecUpdateThreeSumCreateMixedFirstChild(
+CMR_ERROR CMRseymourUpdateThreeSumCreateMixedFirstChild(
   CMR* cmr,                   /**< \ref CMR environment. */
-  CMR_SEYMOUR_NODE* node,     /**< Seymour decomposition node (initialized with \ref CMRmatroiddecUpdateThreeSumInit). */
+  CMR_SEYMOUR_NODE* node,     /**< Seymour decomposition node (initialized with \ref CMRseymourUpdateThreeSumInit). */
   CMR_SEPA* separation,       /**< Separation. */
   size_t* rowsToChild,        /**< Array mapping rows to child rows. */
   size_t* columnsToChild,     /**< Array mapping columns to child columns. */
@@ -273,9 +273,9 @@ CMR_ERROR CMRmatroiddecUpdateThreeSumCreateMixedFirstChild(
  * A nonzero \p extraEntry indicates the top-left nonzero entry.
  */
 
-CMR_ERROR CMRmatroiddecUpdateThreeSumCreateMixedSecondChild(
+CMR_ERROR CMRseymourUpdateThreeSumCreateMixedSecondChild(
   CMR* cmr,                   /**< \ref CMR environment. */
-  CMR_SEYMOUR_NODE* node,     /**< Seymour decomposition node (initialized with \ref CMRmatroiddecUpdateThreeSumInit). */
+  CMR_SEYMOUR_NODE* node,     /**< Seymour decomposition node (initialized with \ref CMRseymourUpdateThreeSumInit). */
   CMR_SEPA* separation,       /**< Separation. */
   size_t* rowsToChild,        /**< Array mapping rows to child rows. */
   size_t* columnsToChild,     /**< Array mapping columns to child columns. */
@@ -290,7 +290,7 @@ CMR_ERROR CMRmatroiddecUpdateThreeSumCreateMixedSecondChild(
  * \brief Set regularity and (co)graphicness attributes of a decomposition tree.
  */
 
-CMR_ERROR CMRmatroiddecSetAttributes(
+CMR_ERROR CMRseymourSetAttributes(
   CMR_SEYMOUR_NODE* node  /**< Seymour decomposition node. */
 );
 

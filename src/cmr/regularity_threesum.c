@@ -220,8 +220,8 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
   assert(queue);
   assert(separation);
 
-    CMR_SEYMOUR_NODE* dec = task->dec;
-  assert(dec);
+  CMR_SEYMOUR_NODE* node = task->node;
+  assert(node);
   size_t* rowsToChild = NULL;
   size_t* columnsToChild = NULL;
 
@@ -247,7 +247,7 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
   size_t numPivots = 0;
   size_t* pivotRows = NULL;
   size_t* pivotColumns = NULL;
-  size_t maxNumPivots = dec->numRows < dec->numColumns ? dec->numRows : dec->numColumns;
+  size_t maxNumPivots = node->numRows < node->numColumns ? node->numRows : node->numColumns;
   CMR_CALL( CMRallocStackArray(cmr, &pivotRows, maxNumPivots) );
   CMR_CALL( CMRallocStackArray(cmr, &pivotColumns, maxNumPivots) );
 
@@ -265,11 +265,11 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
     pivotRow = extraRows[1][0];
     assert(pivotRow != SIZE_MAX);
 
-    size_t first = dec->matrix->rowSlice[pivotRow];
-    size_t beyond = dec->matrix->rowSlice[pivotRow + 1];
+    size_t first = node->matrix->rowSlice[pivotRow];
+    size_t beyond = node->matrix->rowSlice[pivotRow + 1];
     for (size_t e = first; e < beyond; ++e)
     {
-      size_t column = dec->matrix->entryColumns[e];
+      size_t column = node->matrix->entryColumns[e];
       int flags = separation->columnsFlags[column];
       if ((flags & CMR_SEPA_MASK_CHILD) == CMR_SEPA_SECOND)
       {
@@ -287,11 +287,11 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
     pivotRow = extraRows[0][0];
     assert(pivotRow != SIZE_MAX);
 
-    size_t first = dec->matrix->rowSlice[pivotRow];
-    size_t beyond = dec->matrix->rowSlice[pivotRow + 1];
+    size_t first = node->matrix->rowSlice[pivotRow];
+    size_t beyond = node->matrix->rowSlice[pivotRow + 1];
     for (size_t e = first; e < beyond; ++e)
     {
-      size_t column = dec->matrix->entryColumns[e];
+      size_t column = node->matrix->entryColumns[e];
       int flags = separation->columnsFlags[column];
       if ((flags & CMR_SEPA_MASK_CHILD) == CMR_SEPA_FIRST)
       {
@@ -315,10 +315,10 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
       ++numPivots;
     }
 
-    if (dec->isTernary)
-      CMR_CALL( CMRchrmatTernaryPivot(cmr, dec->matrix, pivotRow, pivotColumn, &goodRankMatrix) );
+    if (node->isTernary)
+      CMR_CALL( CMRchrmatTernaryPivot(cmr, node->matrix, pivotRow, pivotColumn, &goodRankMatrix) );
     else
-      CMR_CALL( CMRchrmatBinaryPivot(cmr, dec->matrix, pivotRow, pivotColumn, &goodRankMatrix) );
+      CMR_CALL( CMRchrmatBinaryPivot(cmr, node->matrix, pivotRow, pivotColumn, &goodRankMatrix) );
 
     CMR_CALL( CMRchrmatTranspose(cmr, goodRankMatrix, &goodRankTranspose) );
 
@@ -335,14 +335,14 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
     /* We recompute all representatives of the low-rank submatrices. */
     CMR_SUBMAT* violatorSubmatrix = NULL;
     CMR_CALL( CMRsepaFindBinaryRepresentatives(cmr, separation, goodRankMatrix, goodRankTranspose, NULL,
-      dec->isTernary ? &violatorSubmatrix : NULL) );
+                  node->isTernary ? &violatorSubmatrix : NULL) );
 
     if (violatorSubmatrix)
     {
       CMRdbgMsg(8, "-> 2x2 submatrix with bad determinant.\n");
 
-      CMR_CALL( CMRmatroiddecUpdateSubmatrix(cmr, dec, violatorSubmatrix, CMR_SEYMOUR_NODE_TYPE_DETERMINANT) );
-      assert(dec->type != CMR_SEYMOUR_NODE_TYPE_DETERMINANT);
+      CMR_CALL( CMRseymourUpdateSubmatrix(cmr, node, violatorSubmatrix, CMR_SEYMOUR_NODE_TYPE_DETERMINANT) );
+      assert(node->type != CMR_SEYMOUR_NODE_TYPE_DETERMINANT);
 
       CMR_CALL( CMRsubmatFree(cmr, &violatorSubmatrix) );
 
@@ -357,8 +357,8 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
   else
   {
     CMRdbgMsg(10, "-> No need to pivot.\n");
-    goodRankMatrix = dec->matrix;
-    goodRankTranspose = dec->transpose;
+    goodRankMatrix = node->matrix;
+    goodRankTranspose = node->transpose;
   }
 
   /* Now the ranks are good for goodRankMatrix and goodRankTranspose, aligned with separation. */
@@ -377,21 +377,21 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
 
   if (numPivots > 0)
   {
-    CMR_CALL( CMRmatroiddecUpdatePivots(cmr, dec, numPivots, pivotRows, pivotColumns, pivotedMatrix, pivotedTranspose) );
-    dec = dec->children[0];
+    CMR_CALL( CMRseymourUpdatePivots(cmr, node, numPivots, pivotRows, pivotColumns, pivotedMatrix, pivotedTranspose) );
+        node = node->children[0];
   }
 
   /* Initialize the 3-sum node. */
-  CMR_CALL( CMRmatroiddecUpdateThreeSumInit(cmr, dec) );
-  CMR_CALL( CMRallocStackArray(cmr, &rowsToChild, dec->numRows) );
-  CMR_CALL( CMRallocStackArray(cmr, &columnsToChild, dec->numColumns) );
+  CMR_CALL( CMRseymourUpdateThreeSumInit(cmr, node) );
+  CMR_CALL( CMRallocStackArray(cmr, &rowsToChild, node->numRows) );
+  CMR_CALL( CMRallocStackArray(cmr, &columnsToChild, node->numColumns) );
   size_t numChildBaseRows;
   size_t numChildBaseColumns;
 
   ElementType* rowTypes = NULL;
-  CMR_CALL( CMRallocStackArray(cmr, &rowTypes, dec->numRows) );
+  CMR_CALL( CMRallocStackArray(cmr, &rowTypes, node->numRows) );
   ElementType* columnTypes = NULL;
-  CMR_CALL( CMRallocStackArray(cmr, &columnTypes, dec->numColumns) );
+  CMR_CALL( CMRallocStackArray(cmr, &columnTypes, node->numColumns) );
 
   if (separation->type == CMR_SEPA_TYPE_THREE_DISTRIBUTED_RANKS)
   {
@@ -410,9 +410,9 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
       CMR_ELEMENT sourceRowElement;
       CMR_ELEMENT targetColumnElement;
       int extraEntry;
-      if (dec->isTernary)
+      if (node->isTernary)
       {
-        for (size_t row = 0; row < dec->numRows; ++row)
+        for (size_t row = 0; row < node->numRows; ++row)
         {
           CMR_SEPA_FLAGS flags = separation->rowsFlags[row];
           if ((flags & CMR_SEPA_MASK_CHILD) == CMR_SEPA_FIRST)
@@ -422,7 +422,7 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
           else
             rowTypes[row] = ELEMENT_TYPE_NORMAL;
         }
-        for (size_t column = 0; column < dec->numColumns; ++column)
+        for (size_t column = 0; column < node->numColumns; ++column)
         {
           CMR_SEPA_FLAGS flags = separation->columnsFlags[column];
           if ((flags & CMR_SEPA_MASK_CHILD) == CMR_SEPA_FIRST)
@@ -433,7 +433,7 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
             columnTypes[column] = ELEMENT_TYPE_NORMAL;
         }
         int sumEntries;
-        CMR_CALL( findSubmatrixCycle(cmr, dec->matrix, dec->transpose, rowTypes, columnTypes, &sourceRowElement,
+        CMR_CALL( findSubmatrixCycle(cmr, node->matrix, node->transpose, rowTypes, columnTypes, &sourceRowElement,
           &targetColumnElement, &sumEntries) );
         sumEntries = ((sumEntries % 4) + 4) % 4;
         assert(sumEntries == 1 || sumEntries == 3);
@@ -452,7 +452,7 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
       assert( CMRelementIsRow(sourceRowElement) );
       assert( CMRelementIsColumn(targetColumnElement) );
 
-      CMR_CALL( CMRmatroiddecUpdateThreeSumCreateWideFirstChild(cmr, dec, separation, rowsToChild, columnsToChild,
+      CMR_CALL( CMRseymourUpdateThreeSumCreateWideFirstChild(cmr, node, separation, rowsToChild, columnsToChild,
         numChildBaseRows, numChildBaseColumns, CMRelementToRowIndex(sourceRowElement),
         CMRelementToColumnIndex(targetColumnElement), CMRelementToColumnIndex(targetColumnElement), extraEntry) );
     }
@@ -472,9 +472,9 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
       CMR_ELEMENT sourceRowElement;
       CMR_ELEMENT targetColumnElement;
       int extraEntry;
-      if (dec->isTernary)
+      if (node->isTernary)
       {
-        for (size_t row = 0; row < dec->numRows; ++row)
+        for (size_t row = 0; row < node->numRows; ++row)
         {
           CMR_SEPA_FLAGS flags = separation->rowsFlags[row];
           if ((flags & CMR_SEPA_MASK_CHILD) == CMR_SEPA_SECOND)
@@ -484,7 +484,7 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
           else
             rowTypes[row] = ELEMENT_TYPE_NORMAL;
         }
-        for (size_t column = 0; column < dec->numColumns; ++column)
+        for (size_t column = 0; column < node->numColumns; ++column)
         {
           CMR_SEPA_FLAGS flags = separation->columnsFlags[column];
           if ((flags & CMR_SEPA_MASK_CHILD) == CMR_SEPA_SECOND)
@@ -495,7 +495,7 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
             columnTypes[column] = ELEMENT_TYPE_NORMAL;
         }
         int sumEntries;
-        CMR_CALL( findSubmatrixCycle(cmr, dec->matrix, dec->transpose, rowTypes, columnTypes, &sourceRowElement,
+        CMR_CALL( findSubmatrixCycle(cmr, node->matrix, node->transpose, rowTypes, columnTypes, &sourceRowElement,
           &targetColumnElement, &sumEntries) );
         sumEntries = ((sumEntries % 4) + 4) % 4;
         assert(sumEntries == 1 || sumEntries == 3);
@@ -514,12 +514,12 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
       assert( CMRelementIsRow(sourceRowElement) );
       assert( CMRelementIsColumn(targetColumnElement) );
 
-      CMR_CALL( CMRmatroiddecUpdateThreeSumCreateWideSecondChild(cmr, dec, separation, rowsToChild, columnsToChild,
+      CMR_CALL( CMRseymourUpdateThreeSumCreateWideSecondChild(cmr, node, separation, rowsToChild, columnsToChild,
         numChildBaseRows, numChildBaseColumns, CMRelementToRowIndex(sourceRowElement),
         CMRelementToColumnIndex(targetColumnElement), CMRelementToColumnIndex(targetColumnElement), extraEntry) );
     }
 
-    dec->threesumFlags = CMR_SEYMOUR_NODE_THREESUM_FLAG_DISTRIBUTED_RANKS;
+        node->threesumFlags = CMR_SEYMOUR_NODE_THREESUM_FLAG_DISTRIBUTED_RANKS;
   }
   else
   {
@@ -543,7 +543,7 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
       CMR_ELEMENT targetRowElement;
       int extraEntry;
 
-      for (size_t row = 0; row < dec->numRows; ++row)
+      for (size_t row = 0; row < node->numRows; ++row)
       {
         CMR_SEPA_FLAGS flags = separation->rowsFlags[row];
         if ((flags & CMR_SEPA_MASK_CHILD) == CMR_SEPA_FIRST)
@@ -555,7 +555,7 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
         else
           rowTypes[row] = ELEMENT_TYPE_NORMAL;
       }
-      for (size_t column = 0; column < dec->numColumns; ++column)
+      for (size_t column = 0; column < node->numColumns; ++column)
       {
         CMR_SEPA_FLAGS flags = separation->columnsFlags[column];
         if ((flags & CMR_SEPA_MASK_CHILD) == CMR_SEPA_FIRST)
@@ -564,7 +564,7 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
           columnTypes[column] = ELEMENT_TYPE_NORMAL;
       }
       int sumEntries;
-      CMR_CALL( findSubmatrixCycle(cmr, dec->matrix, dec->transpose, rowTypes, columnTypes, &sourceRowElement,
+      CMR_CALL( findSubmatrixCycle(cmr, node->matrix, node->transpose, rowTypes, columnTypes, &sourceRowElement,
         &targetRowElement, &sumEntries) );
       sumEntries = ((sumEntries % 4) + 4) % 4;
       assert(sumEntries == 0 || sumEntries == 2);
@@ -573,7 +573,7 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
       assert( CMRelementIsRow(sourceRowElement) );
       assert( CMRelementIsRow(targetRowElement) );
 
-      CMR_CALL( CMRmatroiddecUpdateThreeSumCreateMixedFirstChild(cmr, dec, separation, rowsToChild, columnsToChild,
+      CMR_CALL( CMRseymourUpdateThreeSumCreateMixedFirstChild(cmr, node, separation, rowsToChild, columnsToChild,
         numChildBaseRows, numChildBaseColumns, CMRelementToRowIndex(sourceRowElement),
         CMRelementToRowIndex(targetRowElement), extraEntry) );
     }
@@ -594,7 +594,7 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
       CMR_ELEMENT targetColumnElement;
       int extraEntry;
 
-      for (size_t row = 0; row < dec->numRows; ++row)
+      for (size_t row = 0; row < node->numRows; ++row)
       {
         CMR_SEPA_FLAGS flags = separation->rowsFlags[row];
         if ((flags & CMR_SEPA_MASK_CHILD) == CMR_SEPA_SECOND)
@@ -603,7 +603,7 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
           rowTypes[row] = ELEMENT_TYPE_NORMAL;
 
       }
-      for (size_t column = 0; column < dec->numColumns; ++column)
+      for (size_t column = 0; column < node->numColumns; ++column)
       {
         CMR_SEPA_FLAGS flags = separation->columnsFlags[column];
         if ((flags & CMR_SEPA_MASK_CHILD) == CMR_SEPA_SECOND)
@@ -616,7 +616,7 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
           columnTypes[column] = ELEMENT_TYPE_NORMAL;
       }
       int sumEntries;
-      CMR_CALL( findSubmatrixCycle(cmr, dec->matrix, dec->transpose, rowTypes, columnTypes, &sourceColumnElement,
+      CMR_CALL( findSubmatrixCycle(cmr, node->matrix, node->transpose, rowTypes, columnTypes, &sourceColumnElement,
         &targetColumnElement, &sumEntries) );
       sumEntries = ((sumEntries % 4) + 4) % 4;
       assert(sumEntries == 0 || sumEntries == 2);
@@ -625,12 +625,12 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
       assert( CMRelementIsColumn(sourceColumnElement) );
       assert( CMRelementIsColumn(targetColumnElement) );
 
-      CMR_CALL( CMRmatroiddecUpdateThreeSumCreateMixedSecondChild(cmr, dec, separation, rowsToChild, columnsToChild,
+      CMR_CALL( CMRseymourUpdateThreeSumCreateMixedSecondChild(cmr, node, separation, rowsToChild, columnsToChild,
         numChildBaseRows, numChildBaseColumns, CMRelementToColumnIndex(sourceColumnElement),
         CMRelementToColumnIndex(targetColumnElement), extraEntry) );
     }
 
-    dec->threesumFlags = CMR_SEYMOUR_NODE_THREESUM_FLAG_CONCENTRATED_RANK;
+        node->threesumFlags = CMR_SEYMOUR_NODE_THREESUM_FLAG_CONCENTRATED_RANK;
   }
 
 cleanup:
@@ -657,15 +657,15 @@ cleanup:
     CMR_CALL( CMRfreeStackArray(cmr, &pivotRows) );
   }
 
-  if (dec->type == CMR_SEYMOUR_NODE_TYPE_THREE_SUM)
+  if (node->type == CMR_SEYMOUR_NODE_TYPE_THREE_SUM)
   {
     DecompositionTask* childTasks[2] = { task, NULL };
-    CMR_CALL( CMRregularityTaskCreateRoot(cmr, dec->children[1], &childTasks[1], task->params, task->stats,
+    CMR_CALL( CMRregularityTaskCreateRoot(cmr, node->children[1], &childTasks[1], task->params, task->stats,
       task->startClock, task->timeLimit) );
 
-    childTasks[0]->dec = dec->children[0];
-    dec->children[0]->testedSeriesParallel = false;
-    dec->children[1]->testedSeriesParallel = false;
+    childTasks[0]->node = node->children[0];
+        node->children[0]->testedSeriesParallel = false;
+        node->children[1]->testedSeriesParallel = false;
 
     /* Add both child tasks to the list. */
     CMRregularityQueueAdd(queue, childTasks[0]);

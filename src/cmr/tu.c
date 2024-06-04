@@ -707,7 +707,7 @@ CMR_ERROR CMRtuCompleteDecomposition(CMR* cmr, CMR_SEYMOUR_NODE* dec, CMR_TU_PAR
   if (params->algorithm != CMR_TU_ALGORITHM_DECOMPOSITION)
     return CMR_ERROR_INPUT;
 
-  if (!CMRmatroiddecIsTernary(dec))
+  if (!CMRseymourIsTernary(dec))
     return CMR_ERROR_INPUT;
 
   CMR_CALL( CMRregularityCompleteDecomposition(cmr, dec, &params->regular, stats ? &stats->decomposition : NULL,

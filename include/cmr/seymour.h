@@ -135,7 +135,7 @@ typedef enum
  */
 
 CMR_EXPORT
-bool CMRmatroiddecIsTernary(
+bool CMRseymourIsTernary(
     CMR_SEYMOUR_NODE* dec  /**< Decomposition node. */
 );
 
@@ -144,7 +144,7 @@ bool CMRmatroiddecIsTernary(
  */
 
 CMR_EXPORT
-bool CMRmatroiddecThreeSumDistributedRanks(
+bool CMRseymourThreeSumDistributedRanks(
     CMR_SEYMOUR_NODE* dec  /**< Decomposition node. */
 );
 
@@ -153,7 +153,7 @@ bool CMRmatroiddecThreeSumDistributedRanks(
  */
 
 CMR_EXPORT
-bool CMRmatroiddecThreeSumConcentratedRank(
+bool CMRseymourThreeSumConcentratedRank(
     CMR_SEYMOUR_NODE* dec  /**< Decomposition node. */
 );
 
@@ -162,7 +162,7 @@ bool CMRmatroiddecThreeSumConcentratedRank(
  */
 
 CMR_EXPORT
-bool CMRmatroiddecHasTranspose(
+bool CMRseymourHasTranspose(
     CMR_SEYMOUR_NODE* dec  /**< Decomposition node. */
 );
 
@@ -171,7 +171,7 @@ bool CMRmatroiddecHasTranspose(
  */
 
 CMR_EXPORT
-CMR_CHRMAT* CMRmatroiddecGetMatrix(
+CMR_CHRMAT* CMRseymourGetMatrix(
     CMR_SEYMOUR_NODE* dec  /**< Decomposition node. */
 );
 
@@ -180,7 +180,7 @@ CMR_CHRMAT* CMRmatroiddecGetMatrix(
  */
 
 CMR_EXPORT
-CMR_CHRMAT* CMRmatroiddecGetTranspose(
+CMR_CHRMAT* CMRseymourGetTranspose(
     CMR_SEYMOUR_NODE* dec  /**< Decomposition node. */
 );
 
@@ -189,7 +189,7 @@ CMR_CHRMAT* CMRmatroiddecGetTranspose(
  */
 
 CMR_EXPORT
-size_t CMRmatroiddecNumChildren(
+size_t CMRseymourNumChildren(
     CMR_SEYMOUR_NODE* dec  /**< Decomposition node. */
 );
 
@@ -198,7 +198,7 @@ size_t CMRmatroiddecNumChildren(
  */
 
 CMR_EXPORT
-CMR_SEYMOUR_NODE* CMRmatroiddecChild(
+CMR_SEYMOUR_NODE* CMRseymourChild(
     CMR_SEYMOUR_NODE* dec,   /**< Decomposition node. */
   size_t childIndex       /**< Index of child. */
 );
@@ -208,7 +208,7 @@ CMR_SEYMOUR_NODE* CMRmatroiddecChild(
  */
 
 CMR_EXPORT
-CMR_SEYMOUR_NODE_TYPE CMRmatroiddecType(
+CMR_SEYMOUR_NODE_TYPE CMRseymourType(
     CMR_SEYMOUR_NODE* dec    /**< Decomposition node. */
 );
 
@@ -220,7 +220,7 @@ CMR_SEYMOUR_NODE_TYPE CMRmatroiddecType(
  */
 
 CMR_EXPORT
-int8_t CMRmatroiddecGraphicness(
+int8_t CMRseymourGraphicness(
     CMR_SEYMOUR_NODE* dec  /**< Decomposition node. */
 );
 
@@ -232,7 +232,7 @@ int8_t CMRmatroiddecGraphicness(
  */
 
 CMR_EXPORT
-int8_t CMRmatroiddecCographicness(
+int8_t CMRseymourCographicness(
     CMR_SEYMOUR_NODE* dec  /**< Decomposition node. */
 );
 
@@ -244,7 +244,7 @@ int8_t CMRmatroiddecCographicness(
  */
 
 CMR_EXPORT
-int8_t CMRmatroiddecRegularity(
+int8_t CMRseymourRegularity(
     CMR_SEYMOUR_NODE* dec  /**< Decomposition node. */
 );
 
@@ -253,7 +253,7 @@ int8_t CMRmatroiddecRegularity(
  */
 
 CMR_EXPORT
-size_t CMRmatroiddecNumRows(
+size_t CMRseymourNumRows(
     CMR_SEYMOUR_NODE* dec  /**< Decomposition node. */
 );
 
@@ -262,7 +262,7 @@ size_t CMRmatroiddecNumRows(
  */
 
 CMR_EXPORT
-size_t CMRmatroiddecNumColumns(
+size_t CMRseymourNumColumns(
     CMR_SEYMOUR_NODE* dec  /**< Decomposition node. */
 );
 
@@ -271,7 +271,7 @@ size_t CMRmatroiddecNumColumns(
  */
 
 CMR_EXPORT
-CMR_ELEMENT* CMRmatroiddecChildRowsToParent(
+CMR_ELEMENT* CMRseymourChildRowsToParent(
     CMR_SEYMOUR_NODE* dec, /**< Decomposition node. */
   size_t childIndex     /**< Index of child to consider. */
 );
@@ -281,7 +281,7 @@ CMR_ELEMENT* CMRmatroiddecChildRowsToParent(
  */
 
 CMR_EXPORT
-CMR_ELEMENT* CMRmatroiddecChildColumnsToParent(
+CMR_ELEMENT* CMRseymourChildColumnsToParent(
     CMR_SEYMOUR_NODE* dec, /**< Decomposition node. */
   size_t childIndex     /**< Index of child to consider. */
 );
@@ -291,7 +291,7 @@ CMR_ELEMENT* CMRmatroiddecChildColumnsToParent(
  */
 
 CMR_EXPORT
-CMR_GRAPH* CMRmatroiddecGraph(
+CMR_GRAPH* CMRseymourGraph(
     CMR_SEYMOUR_NODE* dec  /**< Decomposition node. */
 );
 
@@ -300,7 +300,7 @@ CMR_GRAPH* CMRmatroiddecGraph(
  */
 
 CMR_EXPORT
-CMR_GRAPH_EDGE* CMRmatroiddecGraphForest(
+CMR_GRAPH_EDGE* CMRseymourGraphForest(
     CMR_SEYMOUR_NODE* dec  /**< Decomposition node. */
 );
 
@@ -309,7 +309,7 @@ CMR_GRAPH_EDGE* CMRmatroiddecGraphForest(
  */
 
 CMR_EXPORT
-size_t CMRmatroiddecGraphSizeForest(
+size_t CMRseymourGraphSizeForest(
     CMR_SEYMOUR_NODE* dec  /**< Decomposition node. */
 );
 
@@ -318,7 +318,7 @@ size_t CMRmatroiddecGraphSizeForest(
  */
 
 CMR_EXPORT
-CMR_GRAPH_EDGE* CMRmatroiddecGraphCoforest(
+CMR_GRAPH_EDGE* CMRseymourGraphCoforest(
     CMR_SEYMOUR_NODE* dec  /**< Decomposition node. */
 );
 
@@ -327,7 +327,7 @@ CMR_GRAPH_EDGE* CMRmatroiddecGraphCoforest(
  */
 
 CMR_EXPORT
-size_t CMRmatroiddecGraphSizeCoforest(
+size_t CMRseymourGraphSizeCoforest(
     CMR_SEYMOUR_NODE* dec  /**< Decomposition node. */
 );
 
@@ -336,7 +336,7 @@ size_t CMRmatroiddecGraphSizeCoforest(
  */
 
 CMR_EXPORT
-bool* CMRmatroiddecGraphArcsReversed(
+bool* CMRseymourGraphArcsReversed(
     CMR_SEYMOUR_NODE* dec  /**< Decomposition node. */
 );
 
@@ -345,7 +345,7 @@ bool* CMRmatroiddecGraphArcsReversed(
  */
 
 CMR_EXPORT
-CMR_GRAPH* CMRmatroiddecCograph(
+CMR_GRAPH* CMRseymourCograph(
     CMR_SEYMOUR_NODE* dec  /**< Decomposition node. */
 );
 
@@ -354,7 +354,7 @@ CMR_GRAPH* CMRmatroiddecCograph(
  */
 
 CMR_EXPORT
-size_t CMRmatroiddecCographSizeForest(
+size_t CMRseymourCographSizeForest(
     CMR_SEYMOUR_NODE* dec  /**< Decomposition node. */
 );
 
@@ -363,7 +363,7 @@ size_t CMRmatroiddecCographSizeForest(
  */
 
 CMR_EXPORT
-CMR_GRAPH_EDGE* CMRmatroiddecCographForest(
+CMR_GRAPH_EDGE* CMRseymourCographForest(
     CMR_SEYMOUR_NODE* dec  /**< Decomposition node. */
 );
 
@@ -372,7 +372,7 @@ CMR_GRAPH_EDGE* CMRmatroiddecCographForest(
  */
 
 CMR_EXPORT
-size_t CMRmatroiddecCographSizeCoforest(
+size_t CMRseymourCographSizeCoforest(
     CMR_SEYMOUR_NODE* dec  /**< Decomposition node. */
 );
 
@@ -381,7 +381,7 @@ size_t CMRmatroiddecCographSizeCoforest(
  */
 
 CMR_EXPORT
-CMR_GRAPH_EDGE* CMRmatroiddecCographCoforest(
+CMR_GRAPH_EDGE* CMRseymourCographCoforest(
     CMR_SEYMOUR_NODE* dec  /**< Decomposition node. */
 );
 
@@ -390,7 +390,7 @@ CMR_GRAPH_EDGE* CMRmatroiddecCographCoforest(
  */
 
 CMR_EXPORT
-bool* CMRmatroiddecCographArcsReversed(
+bool* CMRseymourCographArcsReversed(
     CMR_SEYMOUR_NODE* dec  /**< Decomposition node. */
 );
 
@@ -399,7 +399,7 @@ bool* CMRmatroiddecCographArcsReversed(
  */
 
 CMR_EXPORT
-size_t CMRmatroiddecNumPivots(
+size_t CMRseymourNumPivots(
     CMR_SEYMOUR_NODE* dec  /**< Decomposition node. */
 );
 
@@ -408,7 +408,7 @@ size_t CMRmatroiddecNumPivots(
  */
 
 CMR_EXPORT
-size_t* CMRmatroiddecPivotRows(
+size_t* CMRseymourPivotRows(
     CMR_SEYMOUR_NODE* dec  /**< Decomposition node. */
 );
 
@@ -417,7 +417,7 @@ size_t* CMRmatroiddecPivotRows(
  */
 
 CMR_EXPORT
-size_t* CMRmatroiddecPivotColumns(
+size_t* CMRseymourPivotColumns(
     CMR_SEYMOUR_NODE* dec  /**< Decomposition node. */
 );
 
@@ -426,7 +426,7 @@ size_t* CMRmatroiddecPivotColumns(
  */
 
 CMR_EXPORT
-CMR_ERROR CMRmatroiddecPrint(
+CMR_ERROR CMRseymourPrint(
   CMR* cmr,                 /**< \ref CMR environment. */
     CMR_SEYMOUR_NODE* dec,     /**< Decomposition node. */
   FILE* stream,             /**< Stream to write to. */
@@ -444,7 +444,7 @@ CMR_ERROR CMRmatroiddecPrint(
  */
 
 CMR_EXPORT
-CMR_ERROR CMRmatroiddecCloneUnknown(
+CMR_ERROR CMRseymourCloneUnknown(
   CMR* cmr,                 /**< \ref CMR environment. */
     CMR_SEYMOUR_NODE* dec,     /**< The decomposition node. */
     CMR_SEYMOUR_NODE** pclone  /**< Pointer for storing the clone. */
@@ -455,7 +455,7 @@ CMR_ERROR CMRmatroiddecCloneUnknown(
  */
 
 CMR_EXPORT
-CMR_ERROR CMRmatroiddecCapture(
+CMR_ERROR CMRseymourCapture(
   CMR* cmr,             /**< \ref CMR environment. */
     CMR_SEYMOUR_NODE* dec  /**< Pointer to the decomposition node. */
 );
@@ -468,7 +468,7 @@ CMR_ERROR CMRmatroiddecCapture(
  */
 
 CMR_EXPORT
-CMR_ERROR CMRmatroiddecRelease(
+CMR_ERROR CMRseymourRelease(
   CMR* cmr,               /**< \ref CMR environment. */
     CMR_SEYMOUR_NODE** pdec  /**< Pointer to decomposition node. \p *pdec is set to \c NULL to prevent accidental usage. */
 );
@@ -480,7 +480,7 @@ CMR_ERROR CMRmatroiddecRelease(
  */
 
 CMR_EXPORT
-CMR_ERROR CMRmatroiddecCreateMatrixRoot(
+CMR_ERROR CMRseymourCreateMatrixRoot(
   CMR* cmr,                 /**< \ref CMR environment. */
     CMR_SEYMOUR_NODE** pdec,   /**< Pointer for storing the decomposition node. */
   bool isTernary,           /**< Whether we consider ternary matrices. */

@@ -9,7 +9,7 @@
 
 typedef struct DecompositionTask
 {
-    CMR_SEYMOUR_NODE* dec;           /**< \brief Decomposition node that shall be processed. */
+  CMR_SEYMOUR_NODE* node;         /**< \brief Decomposition node that shall be processed. */
   struct DecompositionTask* next; /**< \brief Next task in queue. */
   CMR_REGULAR_PARAMS* params;     /**< \brief Parameters for the computation. */
   CMR_REGULAR_STATS* stats;       /**< \brief Statistics for the computation (may be \c NULL). */
