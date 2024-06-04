@@ -5,7 +5,7 @@
 
 #include <cmr/regular.h>
 
-#include "matroid_internal.h"
+#include "seymour_internal.h"
 
 typedef struct DecompositionTask
 {

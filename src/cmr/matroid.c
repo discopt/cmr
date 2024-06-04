@@ -3,7 +3,7 @@
 #include <cmr/matroid.h>
 
 #include "env_internal.h"
-#include "matroid_internal.h"
+#include "seymour_internal.h"
 #include "matrix_internal.h"
 #include "listmatrix.h"
 

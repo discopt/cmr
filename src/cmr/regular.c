@@ -7,7 +7,7 @@
 #include <time.h>
 
 #include "env_internal.h"
-#include "matroid_internal.h"
+#include "seymour_internal.h"
 #include "regularity_internal.h"
 
 CMR_ERROR CMRregularParamsInit(CMR_REGULAR_PARAMS* params)

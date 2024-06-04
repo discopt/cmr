@@ -5,7 +5,7 @@
 #include <cmr/series_parallel.h>
 
 #include "env_internal.h"
-#include "matroid_internal.h"
+#include "seymour_internal.h"
 
 #include <time.h>
 
