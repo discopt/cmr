@@ -1,5 +1,5 @@
-#ifndef CMR_MATROID_DEC_INTERNAL_H
-#define CMR_MATROID_DEC_INTERNAL_H
+#ifndef CMR_SEYMOUR_INTERNAL_H
+#define CMR_SEYMOUR_INTERNAL_H
 
 #include "densematrix.h"
 
@@ -88,7 +88,7 @@ struct _CMR_SEYMOUR_NODE
 };
 
 /**
- * \brief Checks a matroid decomposition node for consistency.
+ * \brief Checks a Seymour decomposition node for consistency.
  *
  * Checks all requirements defined in \ref matroids.
  *
@@ -298,4 +298,4 @@ CMR_ERROR CMRseymourSetAttributes(
 }
 #endif
 
-#endif /* CMR_MATROID_DEC_INTERNAL_H */
+#endif /* CMR_SEYMOUR_INTERNAL_H */
