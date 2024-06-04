@@ -915,8 +915,8 @@ CMR_ERROR CMRregularityExtendNestedMinorSequence(CMR* cmr, DecompositionTask* ta
       {
         CMRdbgMsg(8, "-> 2x2 submatrix with bad determinant.\n");
 
-        CMR_CALL( CMRmatroiddecUpdateSubmatrix(cmr, dec, violatorSubmatrix, CMR_MATROID_DEC_TYPE_DETERMINANT) );
-        assert(dec->type != CMR_MATROID_DEC_TYPE_DETERMINANT);
+        CMR_CALL( CMRmatroiddecUpdateSubmatrix(cmr, dec, violatorSubmatrix, CMR_SEYMOUR_NODE_TYPE_DETERMINANT) );
+        assert(dec->type != CMR_SEYMOUR_NODE_TYPE_DETERMINANT);
 
         CMR_CALL( CMRsubmatFree(cmr, &violatorSubmatrix) );
         CMR_CALL( CMRsepaFree(cmr, &separation) );
@@ -954,11 +954,11 @@ CMR_ERROR CMRregularityExtendNestedMinorSequence(CMR* cmr, DecompositionTask* ta
     task->stats->sequenceExtensionTime += (clock() - task->startClock) * 1.0 / CLOCKS_PER_SEC;
   }
 
-  if (dec->type == CMR_MATROID_DEC_TYPE_TWO_SUM)
+  if (dec->type == CMR_SEYMOUR_NODE_TYPE_TWO_SUM)
   {
     CMRdbgMsg(8, "Aborting construction of sequence of nested 3-connected minors due to a 2-separation.\n");
   }
-  else if (dec->type == CMR_MATROID_DEC_TYPE_SUBMATRIX)
+  else if (dec->type == CMR_SEYMOUR_NODE_TYPE_SUBMATRIX)
   {
     CMRdbgMsg(8, "Aborting construction of sequence of nested 3-connected minors due to a violating submatrix.\n");
 
@@ -968,7 +968,7 @@ CMR_ERROR CMRregularityExtendNestedMinorSequence(CMR* cmr, DecompositionTask* ta
   else
   {
     CMRdbgMsg(8, "Successfully constructed sequence of nested 3-connected minors.\n");
-    assert(dec->type != CMR_MATROID_DEC_TYPE_SUBMATRIX);
+    assert(dec->type != CMR_SEYMOUR_NODE_TYPE_SUBMATRIX);
 
     assert(dec->nestedMinorsMatrix == NULL);
     assert(dec->nestedMinorsTranspose == NULL);

@@ -55,7 +55,7 @@ CMR_ERROR CMRregularityDecomposeSeriesParallel(CMR* cmr, DecompositionTask* task
     CMRdbgMsg(8, "-> 2x2 violator.\n");
     assert(dec->isTernary);
 
-    CMR_CALL( CMRmatroiddecUpdateSubmatrix(cmr, dec, violatorSubmatrix, CMR_MATROID_DEC_TYPE_DETERMINANT) );
+    CMR_CALL( CMRmatroiddecUpdateSubmatrix(cmr, dec, violatorSubmatrix, CMR_SEYMOUR_NODE_TYPE_DETERMINANT) );
 
     /* Task is done. */
     CMR_CALL( CMRregularityTaskFree(cmr, &task) );
@@ -75,7 +75,7 @@ CMR_ERROR CMRregularityDecomposeSeriesParallel(CMR* cmr, DecompositionTask* task
     {
       CMRdbgMsg(8, "-> %zu series-parallel reductions.\n", numReductions);
 
-      dec->type = CMR_MATROID_DEC_TYPE_SERIES_PARALLEL;
+      dec->type = CMR_SEYMOUR_NODE_TYPE_SERIES_PARALLEL;
       dec->numSeriesParallelReductions = numReductions;
       CMR_CALL( CMRduplicateBlockArray(cmr, &dec->seriesParallelReductions, numReductions, reductions) );
 
@@ -83,9 +83,9 @@ CMR_ERROR CMRregularityDecomposeSeriesParallel(CMR* cmr, DecompositionTask* task
       {
         CMRdbgMsg(8, "-> replacing current node by submatrix child.\n", numReductions);
 
-        CMR_CALL( CMRmatroiddecUpdateSubmatrix(cmr, dec, reducedSubmatrix, CMR_MATROID_DEC_TYPE_UNKNOWN) );
+        CMR_CALL( CMRmatroiddecUpdateSubmatrix(cmr, dec, reducedSubmatrix, CMR_SEYMOUR_NODE_TYPE_UNKNOWN) );
         assert(dec->numChildren == 1);
-        dec->type = CMR_MATROID_DEC_TYPE_SERIES_PARALLEL;
+        dec->type = CMR_SEYMOUR_NODE_TYPE_SERIES_PARALLEL;
         decReduced = dec->children[0];
         task->dec = decReduced;
         task->dec->testedSeriesParallel = true;

@@ -1643,8 +1643,8 @@ CMR_ERROR CMRregularityNestedMinorSequenceGraphicness(CMR* cmr, DecompositionTas
 
   if (dec->nestedMinorsLastGraphic + 1 == dec->nestedMinorsLength)
   {
-    dec->type = (dec->type == CMR_MATROID_DEC_TYPE_COGRAPH) ? CMR_MATROID_DEC_TYPE_PLANAR : CMR_MATROID_DEC_TYPE_GRAPH;
-    CMRdbgMsg(8, "Whole sequence is %s.\n", dec->type == CMR_MATROID_DEC_TYPE_PLANAR ? "planar" : "graphic");
+    dec->type = (dec->type == CMR_SEYMOUR_NODE_TYPE_COGRAPH) ? CMR_SEYMOUR_NODE_TYPE_PLANAR : CMR_SEYMOUR_NODE_TYPE_GRAPH;
+    CMRdbgMsg(8, "Whole sequence is %s.\n", dec->type == CMR_SEYMOUR_NODE_TYPE_PLANAR ? "planar" : "graphic");
     dec->graph = graph;
     dec->graphForest = NULL;
     CMR_CALL( CMRallocBlockArray(cmr, &dec->graphForest, dec->matrix->numRows) );
@@ -1688,8 +1688,8 @@ CMR_ERROR CMRregularityNestedMinorSequenceGraphicness(CMR* cmr, DecompositionTas
         CMRdbgMsg(8, "-> %zux%zu submatrix with bad determinant.\n", violatorSubmatrix->numRows,
           violatorSubmatrix->numColumns);
 
-        CMR_CALL( CMRmatroiddecUpdateSubmatrix(cmr, dec, violatorSubmatrix, CMR_MATROID_DEC_TYPE_DETERMINANT) );
-        assert(dec->type == CMR_MATROID_DEC_TYPE_SUBMATRIX || dec->type == CMR_MATROID_DEC_TYPE_DETERMINANT);
+        CMR_CALL( CMRmatroiddecUpdateSubmatrix(cmr, dec, violatorSubmatrix, CMR_SEYMOUR_NODE_TYPE_DETERMINANT) );
+        assert(dec->type == CMR_SEYMOUR_NODE_TYPE_SUBMATRIX || dec->type == CMR_SEYMOUR_NODE_TYPE_DETERMINANT);
 
         CMR_CALL( CMRgraphFree(cmr, &dec->graph) );
         CMR_CALL( CMRfreeBlockArray(cmr, &dec->graphForest) );
@@ -1732,8 +1732,8 @@ CMR_ERROR CMRregularityNestedMinorSequenceCographicness(CMR* cmr, DecompositionT
 
   if (dec->nestedMinorsLastCographic + 1 == dec->nestedMinorsLength)
   {
-    dec->type = (dec->type == CMR_MATROID_DEC_TYPE_GRAPH) ? CMR_MATROID_DEC_TYPE_PLANAR : CMR_MATROID_DEC_TYPE_COGRAPH;
-    CMRdbgMsg(8, "Whole sequence is %s.\n", dec->type == CMR_MATROID_DEC_TYPE_PLANAR ? "planar" : "cographic");
+    dec->type = (dec->type == CMR_SEYMOUR_NODE_TYPE_GRAPH) ? CMR_SEYMOUR_NODE_TYPE_PLANAR : CMR_SEYMOUR_NODE_TYPE_COGRAPH;
+    CMRdbgMsg(8, "Whole sequence is %s.\n", dec->type == CMR_SEYMOUR_NODE_TYPE_PLANAR ? "planar" : "cographic");
     dec->cograph = cograph;
     dec->cographForest = NULL;
     CMR_CALL( CMRallocBlockArray(cmr, &dec->cographForest, dec->matrix->numColumns) );
@@ -1772,8 +1772,8 @@ CMR_ERROR CMRregularityNestedMinorSequenceCographicness(CMR* cmr, DecompositionT
         CMRdbgMsg(8, "-> %zux%zu submatrix with bad determinant.\n", violatorSubmatrix->numRows,
           violatorSubmatrix->numColumns);
 
-        CMR_CALL( CMRmatroiddecUpdateSubmatrix(cmr, dec, violatorSubmatrix, CMR_MATROID_DEC_TYPE_DETERMINANT) );
-        assert(dec->type != CMR_MATROID_DEC_TYPE_DETERMINANT);
+        CMR_CALL( CMRmatroiddecUpdateSubmatrix(cmr, dec, violatorSubmatrix, CMR_SEYMOUR_NODE_TYPE_DETERMINANT) );
+        assert(dec->type != CMR_SEYMOUR_NODE_TYPE_DETERMINANT);
 
         CMR_CALL( CMRgraphFree(cmr, &dec->cograph) );
         CMR_CALL( CMRfreeBlockArray(cmr, &dec->cographForest) );
@@ -1839,8 +1839,8 @@ CMR_ERROR CMRregularityTestGraphicness(CMR* cmr, DecompositionTask* task, Decomp
         CMRdbgMsg(8, "-> %zux%zu submatrix with bad determinant.\n", violatorSubmatrix->numRows,
           violatorSubmatrix->numColumns);
 
-        CMR_CALL( CMRmatroiddecUpdateSubmatrix(cmr, dec, violatorSubmatrix, CMR_MATROID_DEC_TYPE_DETERMINANT) );
-        assert(dec->type == CMR_MATROID_DEC_TYPE_DETERMINANT || dec->type == CMR_MATROID_DEC_TYPE_SUBMATRIX);
+        CMR_CALL( CMRmatroiddecUpdateSubmatrix(cmr, dec, violatorSubmatrix, CMR_SEYMOUR_NODE_TYPE_DETERMINANT) );
+        assert(dec->type == CMR_SEYMOUR_NODE_TYPE_DETERMINANT || dec->type == CMR_SEYMOUR_NODE_TYPE_SUBMATRIX);
 
         CMR_CALL( CMRsubmatFree(cmr, &violatorSubmatrix) );
         CMR_CALL( CMRregularityTaskFree(cmr, &task) );
@@ -1861,7 +1861,7 @@ CMR_ERROR CMRregularityTestGraphicness(CMR* cmr, DecompositionTask* task, Decomp
 
   dec->graphicness = isGraphic ? 1 : -1;
   if (isGraphic)
-    dec->type = (dec->type == CMR_MATROID_DEC_TYPE_COGRAPH) ? CMR_MATROID_DEC_TYPE_PLANAR : CMR_MATROID_DEC_TYPE_GRAPH;
+    dec->type = (dec->type == CMR_SEYMOUR_NODE_TYPE_COGRAPH) ? CMR_SEYMOUR_NODE_TYPE_PLANAR : CMR_SEYMOUR_NODE_TYPE_GRAPH;
   else
     queue->foundNongraphicness = true;
 
@@ -1918,8 +1918,8 @@ CMR_ERROR CMRregularityTestCographicness(CMR* cmr, DecompositionTask* task, Deco
         CMRdbgMsg(8, "-> %zux%zu submatrix with bad determinant.\n", violatorSubmatrix->numRows,
           violatorSubmatrix->numColumns);
 
-        CMR_CALL( CMRmatroiddecUpdateSubmatrix(cmr, dec, violatorSubmatrix, CMR_MATROID_DEC_TYPE_DETERMINANT) );
-        assert(dec->type == CMR_MATROID_DEC_TYPE_DETERMINANT || dec->type == CMR_MATROID_DEC_TYPE_SUBMATRIX);
+        CMR_CALL( CMRmatroiddecUpdateSubmatrix(cmr, dec, violatorSubmatrix, CMR_SEYMOUR_NODE_TYPE_DETERMINANT) );
+        assert(dec->type == CMR_SEYMOUR_NODE_TYPE_DETERMINANT || dec->type == CMR_SEYMOUR_NODE_TYPE_SUBMATRIX);
 
         CMR_CALL( CMRsubmatFree(cmr, &violatorSubmatrix) );
         CMR_CALL( CMRregularityTaskFree(cmr, &task) );
@@ -1940,7 +1940,7 @@ CMR_ERROR CMRregularityTestCographicness(CMR* cmr, DecompositionTask* task, Deco
 
   dec->cographicness = isCographic ? 1 : -1;
   if (isCographic)
-    dec->type = (dec->type == CMR_MATROID_DEC_TYPE_GRAPH) ? CMR_MATROID_DEC_TYPE_PLANAR : CMR_MATROID_DEC_TYPE_COGRAPH;
+    dec->type = (dec->type == CMR_SEYMOUR_NODE_TYPE_GRAPH) ? CMR_SEYMOUR_NODE_TYPE_PLANAR : CMR_SEYMOUR_NODE_TYPE_COGRAPH;
   else
     queue->foundNoncographicness = true;
 

@@ -223,7 +223,7 @@ CMR_ERROR CMRregularityCompleteDecomposition(CMR* cmr, CMR_SEYMOUR_NODE* subtree
     CMR_CALL( CMRfreeBlockArray(cmr, &subtree->childColumnsToParent[c]) );
   }
 
-  subtree->type = CMR_MATROID_DEC_TYPE_UNKNOWN;
+  subtree->type = CMR_SEYMOUR_NODE_TYPE_UNKNOWN;
 
   DecompositionQueue* queue = NULL;
   CMR_CALL( CMRregularityQueueCreate(cmr, &queue) );
@@ -318,7 +318,7 @@ CMR_ERROR CMRregularityRefineDecomposition(CMR* cmr, size_t numNodes, CMR_SEYMOU
       CMR_CALL( CMRfreeBlockArray(cmr, &subtree->childColumnsToParent[c]) );
     }
 
-    subtree->type = CMR_MATROID_DEC_TYPE_UNKNOWN;
+    subtree->type = CMR_SEYMOUR_NODE_TYPE_UNKNOWN;
 
     CMR_CALL( CMRregularityTaskCreateRoot(cmr, subtree, &decTask, params, stats, time, timeLimit) );
     CMRregularityQueueAdd(queue, decTask);

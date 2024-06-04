@@ -749,7 +749,7 @@ CMR_ERROR CMRregularityNestedMinorSequenceSearchThreeSeparation(CMR* cmr, Decomp
   {
     CMRdbgMsg(8, "-> irregular since fewer than 8 elements in total.\n");
 
-    dec->type = CMR_MATROID_DEC_TYPE_IRREGULAR;
+    dec->type = CMR_SEYMOUR_NODE_TYPE_IRREGULAR;
 
     /* Free the task. */
     CMR_CALL( CMRregularityTaskFree(cmr, &task) );
@@ -766,7 +766,7 @@ CMR_ERROR CMRregularityNestedMinorSequenceSearchThreeSeparation(CMR* cmr, Decomp
     CMRdbgMsg(8, "-> irregular since minor with %zu elements is neither graphic nor cographic.\n",
       firstNonCoGraphicMinorSize);
 
-    dec->type = CMR_MATROID_DEC_TYPE_IRREGULAR;
+    dec->type = CMR_SEYMOUR_NODE_TYPE_IRREGULAR;
     queue->foundIrregularity = true;
 
     /* Free the task. */
@@ -988,8 +988,8 @@ CMR_ERROR CMRregularityNestedMinorSequenceSearchThreeSeparation(CMR* cmr, Decomp
     {
       CMRdbgMsg(8, "-> 2x2 submatrix with bad determinant.\n");
 
-      CMR_CALL( CMRmatroiddecUpdateSubmatrix(cmr, dec, violatorSubmatrix, CMR_MATROID_DEC_TYPE_DETERMINANT) );
-      assert(dec->type != CMR_MATROID_DEC_TYPE_DETERMINANT);
+      CMR_CALL( CMRmatroiddecUpdateSubmatrix(cmr, dec, violatorSubmatrix, CMR_SEYMOUR_NODE_TYPE_DETERMINANT) );
+      assert(dec->type != CMR_SEYMOUR_NODE_TYPE_DETERMINANT);
 
       CMR_CALL( CMRsubmatFree(cmr, &violatorSubmatrix) );
       CMR_CALL( CMRsepaFree(cmr, &originalSeparation) );
@@ -1005,7 +1005,7 @@ CMR_ERROR CMRregularityNestedMinorSequenceSearchThreeSeparation(CMR* cmr, Decomp
   else
   {
     // TODO: Add a dedicated unittest.
-    task->dec->type = CMR_MATROID_DEC_TYPE_IRREGULAR;
+    task->dec->type = CMR_SEYMOUR_NODE_TYPE_IRREGULAR;
 
     /* Free the task. */
     CMR_CALL( CMRregularityTaskFree(cmr, &task) );

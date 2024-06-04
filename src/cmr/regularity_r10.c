@@ -72,7 +72,7 @@ CMR_ERROR CMRregularityTestR10(CMR* cmr, DecompositionTask* task, DecompositionQ
       assert(!isCamion);
 
       /* TODO: Do we actually need the child node or just the irregularity information? */
-      CMR_CALL( CMRmatroiddecUpdateSubmatrix(cmr, dec, violatorSubmatrix, CMR_MATROID_DEC_TYPE_DETERMINANT) );
+      CMR_CALL( CMRmatroiddecUpdateSubmatrix(cmr, dec, violatorSubmatrix, CMR_SEYMOUR_NODE_TYPE_DETERMINANT) );
       CMR_CALL( CMRsubmatFree(cmr, &violatorSubmatrix) );
 
       /* Task is done. */
@@ -87,13 +87,13 @@ CMR_ERROR CMRregularityTestR10(CMR* cmr, DecompositionTask* task, DecompositionQ
     }
   }
 
-  dec->type = CMR_MATROID_DEC_TYPE_R10;
+  dec->type = CMR_SEYMOUR_NODE_TYPE_R10;
   queue->foundNongraphicness = true;
   queue->foundNoncographicness = true;
 
 cleanup:
 
-  if (dec->type == CMR_MATROID_DEC_TYPE_R10)
+  if (dec->type == CMR_SEYMOUR_NODE_TYPE_R10)
   {
     CMR_CALL( CMRregularityTaskFree(cmr, &task) );
   }

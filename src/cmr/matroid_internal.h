@@ -27,7 +27,7 @@ struct _CMR_SEYMOUR_NODE
                                                **         (negative), or not determined if zero. */
   bool testedR10;                             /**< \brief Matrix does not represent \f$ R_{10} \f$ unless \p type
                                                **         indicates this. */
-  CMR_MATROID_DEC_THREESUM_FLAG threesumFlags;/**< \brief Type of 3-sum. */
+    CMR_SEYMOUR_NODE_THREESUM_FLAG threesumFlags;/**< \brief Type of 3-sum. */
   CMR_CHRMAT* matrix;                         /**< \brief Matrix representing this node. */
   CMR_CHRMAT* transpose;                      /**< \brief Tranpose of \ref matrix representing this node. */
   size_t numChildren;                         /**< \brief Number of child nodes. */
@@ -172,7 +172,7 @@ CMR_ERROR CMRmatroiddecUpdateSubmatrix(
 /**
  * \brief Initialize an existing unknown decomposition node as a 2-separation node according to the given \p separation.
  *
- * The two child nodes will be of type \ref CMR_MATROID_DEC_TYPE_UNKNOWN.
+ * The two child nodes will be of type \ref CMR_SEYMOUR_NODE_TYPE_UNKNOWN.
  */
 
 CMR_ERROR CMRmatroiddecUpdateTwoSum(
@@ -184,7 +184,7 @@ CMR_ERROR CMRmatroiddecUpdateTwoSum(
 /**
  * \brief Initialize an existing unknown decomposition node as a pivot node according to the given arrays of pivots.
  *
- * The unique child node will be of type \ref CMR_MATROID_DEC_TYPE_UNKNOWN.
+ * The unique child node will be of type \ref CMR_SEYMOUR_NODE_TYPE_UNKNOWN.
  */
 
 CMR_ERROR CMRmatroiddecUpdatePivots(

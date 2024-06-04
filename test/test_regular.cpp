@@ -42,7 +42,7 @@ TEST(Regular, OneSum)
     ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, true, true, true, true, true, true) );
     ASSERT_TRUE( isRegular );
     ASSERT_FALSE( CMRmatroiddecHasTranspose(dec) ); /* Default settings should mean that the transpose is never computed. */
-    ASSERT_EQ( CMRmatroiddecType(dec), CMR_MATROID_DEC_TYPE_ONE_SUM );
+    ASSERT_EQ( CMRmatroiddecType(dec), CMR_SEYMOUR_NODE_TYPE_ONE_SUM );
     ASSERT_EQ( CMRmatroiddecNumChildren(dec), 2UL );
     ASSERT_LT( CMRmatroiddecGraphicness(CMRmatroiddecChild(dec, 0))
       * CMRmatroiddecGraphicness(CMRmatroiddecChild(dec, 1)), 0 );
@@ -101,10 +101,10 @@ TEST(Regular, SeriesParallelTwoSeparation)
     ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, true, true, true, true, true, true) );
     ASSERT_TRUE( isRegular );
     ASSERT_TRUE( CMRmatroiddecHasTranspose(dec) ); /* As we test for graphicness, the transpose is constructed. */
-    ASSERT_EQ( CMRmatroiddecType(dec), CMR_MATROID_DEC_TYPE_TWO_SUM );
+    ASSERT_EQ( CMRmatroiddecType(dec), CMR_SEYMOUR_NODE_TYPE_TWO_SUM );
     ASSERT_EQ( CMRmatroiddecNumChildren(dec), 2UL );
-    ASSERT_EQ( CMRmatroiddecType(CMRmatroiddecChild(dec, 0)), CMR_MATROID_DEC_TYPE_GRAPH );
-    ASSERT_EQ( CMRmatroiddecType(CMRmatroiddecChild(dec, 1)), CMR_MATROID_DEC_TYPE_COGRAPH );
+    ASSERT_EQ( CMRmatroiddecType(CMRmatroiddecChild(dec, 0)), CMR_SEYMOUR_NODE_TYPE_GRAPH );
+    ASSERT_EQ( CMRmatroiddecType(CMRmatroiddecChild(dec, 1)), CMR_SEYMOUR_NODE_TYPE_COGRAPH );
     ASSERT_GT( CMRmatroiddecGraphicness(CMRmatroiddecChild(dec, 0)), 0 );
     ASSERT_LT( CMRmatroiddecCographicness(CMRmatroiddecChild(dec, 0)), 1 );
     ASSERT_LT( CMRmatroiddecGraphicness(CMRmatroiddecChild(dec, 1)), 0 );
@@ -157,7 +157,7 @@ TEST(Regular, NestedMinorSearchTwoSeparation)
     ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, true, true, true, true, true, true) );
     ASSERT_TRUE( isRegular );
     ASSERT_TRUE( CMRmatroiddecHasTranspose(dec) ); /* As we test for graphicness, the transpose is constructed. */
-    ASSERT_EQ( CMRmatroiddecType(dec), CMR_MATROID_DEC_TYPE_TWO_SUM );
+    ASSERT_EQ( CMRmatroiddecType(dec), CMR_SEYMOUR_NODE_TYPE_TWO_SUM );
     ASSERT_EQ( CMRmatroiddecNumChildren(dec), 2UL );
     ASSERT_GT( CMRmatroiddecGraphicness(CMRmatroiddecChild(dec, 0)), 0);
     ASSERT_LE( CMRmatroiddecCographicness(CMRmatroiddecChild(dec, 0)), 0);
@@ -337,7 +337,7 @@ void testSequenceGraphicness(
   CMR_REGULAR_PARAMS params;
   ASSERT_CMR_CALL( CMRregularParamsInit(&params) );
   params.directGraphicness = false;
-  params.threeSumStrategy = CMR_MATROID_DEC_THREESUM_FLAG_SEYMOUR;
+  params.threeSumStrategy = CMR_SEYMOUR_NODE_THREESUM_FLAG_SEYMOUR;
   ASSERT_CMR_CALL( CMRregularTest(cmr, matrix, &isRegular, &dec, NULL, &params, NULL, DBL_MAX) );
 
   ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, true, false, false, false, false, false) );
@@ -693,10 +693,10 @@ TEST(Regular, R10)
 
 static
 void testEnumerate(
-  CMR* cmr,                                       /**< \ref CMR environment. */
-  CMR_CHRMAT* matrix,                             /**< Matrix to test. */
-  CMR_MATROID_DEC_THREESUM_FLAG threeSumStrategy, /**< Strategy for the 3-sum. */
-  bool knowRegular                                /**< Whether the matrix is regular. */
+  CMR* cmr,                                         /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,                               /**< Matrix to test. */
+  CMR_SEYMOUR_NODE_THREESUM_FLAG threeSumStrategy,  /**< Strategy for the 3-sum. */
+  bool knowRegular                                  /**< Whether the matrix is regular. */
 )
 {
   printf("Testing matrix for regularity with a 3-separation:\n");
@@ -738,7 +738,7 @@ TEST(Regular, EnumerateRanksZeroTwo)
       "0 0 1 1 "
       "0 1 1 1 "
     ) );
-    testEnumerate(cmr, matrix, CMR_MATROID_DEC_THREESUM_FLAG_SEYMOUR, false);
+    testEnumerate(cmr, matrix, CMR_SEYMOUR_NODE_THREESUM_FLAG_SEYMOUR, false);
   }
 
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
@@ -757,7 +757,7 @@ TEST(Regular, EnumerateRanksOneOne)
       "1 0 0 1 "
       "1 1 0 0 "
     ) );
-    testEnumerate(cmr, matrix, CMR_MATROID_DEC_THREESUM_FLAG_SEYMOUR, false);
+    testEnumerate(cmr, matrix, CMR_SEYMOUR_NODE_THREESUM_FLAG_SEYMOUR, false);
   }
 
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
@@ -777,7 +777,7 @@ TEST(Regular, EnumerateConcentratedRankForcePivot)
       "1 1 1 1 1 "
       "1 0 0 0 1 "
     ) );
-    testEnumerate(cmr, matrix, CMR_MATROID_DEC_THREESUM_FLAG_DISTRIBUTED_RANKS, false);
+    testEnumerate(cmr, matrix, CMR_SEYMOUR_NODE_THREESUM_FLAG_DISTRIBUTED_RANKS, false);
   }
 
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
@@ -805,7 +805,7 @@ TEST(Regular, R12)
         CMR_SEYMOUR_NODE* dec = NULL;
     CMR_REGULAR_PARAMS params;
     ASSERT_CMR_CALL( CMRregularParamsInit(&params) );
-    params.threeSumStrategy = CMR_MATROID_DEC_THREESUM_FLAG_SEYMOUR;
+    params.threeSumStrategy = CMR_SEYMOUR_NODE_THREESUM_FLAG_SEYMOUR;
     ASSERT_CMR_CALL( CMRregularTest(cmr, matrix, &isRegular, &dec, NULL, &params, NULL, DBL_MAX) );
     ASSERT_GT( CMRmatroiddecRegularity(dec), 0 );
 //     ASSERT_EQ( CMRmatroiddecNumChildren(dec), 2UL );
@@ -850,9 +850,9 @@ TEST(Regular, TreeFlagsNorecurse)
     params.treeFlags = CMR_REGULAR_TREE_FLAGS_STOP_IRREGULAR;
 
     ASSERT_CMR_CALL( CMRregularTest(cmr, matrix, NULL, &dec, NULL, &params, NULL, DBL_MAX) );
-    ASSERT_EQ( CMRmatroiddecType(dec), CMR_MATROID_DEC_TYPE_ONE_SUM );
-    ASSERT_EQ( CMRmatroiddecType(CMRmatroiddecChild(dec, 0)), CMR_MATROID_DEC_TYPE_UNKNOWN );
-    ASSERT_EQ( CMRmatroiddecType(CMRmatroiddecChild(dec, 1)), CMR_MATROID_DEC_TYPE_UNKNOWN );
+    ASSERT_EQ( CMRmatroiddecType(dec), CMR_SEYMOUR_NODE_TYPE_ONE_SUM );
+    ASSERT_EQ( CMRmatroiddecType(CMRmatroiddecChild(dec, 0)), CMR_SEYMOUR_NODE_TYPE_UNKNOWN );
+    ASSERT_EQ( CMRmatroiddecType(CMRmatroiddecChild(dec, 1)), CMR_SEYMOUR_NODE_TYPE_UNKNOWN );
 
     ASSERT_CMR_CALL( CMRmatroiddecRelease(cmr, &dec) );
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
@@ -889,9 +889,9 @@ TEST(Regular, TreeFlagsStopNoncographic)
     params.planarityCheck = true;
 
     ASSERT_CMR_CALL( CMRregularTest(cmr, matrix, NULL, &dec, NULL, &params, NULL, DBL_MAX) );
-    ASSERT_EQ( CMRmatroiddecType(dec), CMR_MATROID_DEC_TYPE_ONE_SUM );
-    ASSERT_EQ( CMRmatroiddecType(CMRmatroiddecChild(dec, 0)), CMR_MATROID_DEC_TYPE_GRAPH );
-    ASSERT_EQ( CMRmatroiddecType(CMRmatroiddecChild(dec, 1)), CMR_MATROID_DEC_TYPE_UNKNOWN );
+    ASSERT_EQ( CMRmatroiddecType(dec), CMR_SEYMOUR_NODE_TYPE_ONE_SUM );
+    ASSERT_EQ( CMRmatroiddecType(CMRmatroiddecChild(dec, 0)), CMR_SEYMOUR_NODE_TYPE_GRAPH );
+    ASSERT_EQ( CMRmatroiddecType(CMRmatroiddecChild(dec, 1)), CMR_SEYMOUR_NODE_TYPE_UNKNOWN );
     ASSERT_LT( CMRmatroiddecCographicness(dec), 0 );
 
     ASSERT_CMR_CALL( CMRmatroiddecRelease(cmr, &dec) );
@@ -930,7 +930,7 @@ TEST(Regular, TreeFlagsStopNongraphic)
     params.planarityCheck = true;
 
     ASSERT_CMR_CALL( CMRregularTest(cmr, matrix, NULL, &dec, NULL, &params, NULL, DBL_MAX) );
-    ASSERT_EQ( CMRmatroiddecType(dec), CMR_MATROID_DEC_TYPE_ONE_SUM );
+    ASSERT_EQ( CMRmatroiddecType(dec), CMR_SEYMOUR_NODE_TYPE_ONE_SUM );
     ASSERT_LT( CMRmatroiddecGraphicness(dec), 0 );
 
     ASSERT_CMR_CALL( CMRmatroiddecRelease(cmr, &dec) );

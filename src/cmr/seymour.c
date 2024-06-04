@@ -20,17 +20,17 @@ bool CMRmatroiddecIsTernary(CMR_SEYMOUR_NODE* node)
 bool CMRmatroiddecThreeSumDistributedRanks(CMR_SEYMOUR_NODE* node)
 {
   assert(node);
-  assert(node->type == CMR_MATROID_DEC_TYPE_THREE_SUM);
+  assert(node->type == CMR_SEYMOUR_NODE_TYPE_THREE_SUM);
 
-  return node->threesumFlags & CMR_MATROID_DEC_THREESUM_FLAG_DISTRIBUTED_RANKS;
+  return node->threesumFlags & CMR_SEYMOUR_NODE_THREESUM_FLAG_DISTRIBUTED_RANKS;
 }
 
 bool CMRmatroiddecThreeSumConcentratedRank(CMR_SEYMOUR_NODE* node)
 {
   assert(node);
-  assert(node->type == CMR_MATROID_DEC_TYPE_THREE_SUM);
+  assert(node->type == CMR_SEYMOUR_NODE_TYPE_THREE_SUM);
 
-  return node->threesumFlags & CMR_MATROID_DEC_THREESUM_FLAG_CONCENTRATED_RANK;
+  return node->threesumFlags & CMR_SEYMOUR_NODE_THREESUM_FLAG_CONCENTRATED_RANK;
 }
 
 CMR_CHRMAT* CMRmatroiddecGetMatrix(CMR_SEYMOUR_NODE* node)
@@ -285,68 +285,68 @@ CMR_ERROR CMRmatroiddecPrintChild(CMR* cmr, CMR_SEYMOUR_NODE* child, CMR_SEYMOUR
   fprintf(stream, "%zux%zu ", child->numRows, child->numColumns);
   switch (child->type)
   {
-  case CMR_MATROID_DEC_TYPE_IRREGULAR:
+  case CMR_SEYMOUR_NODE_TYPE_IRREGULAR:
     fprintf(stream, "irregular node {");
   break;
-  case CMR_MATROID_DEC_TYPE_UNKNOWN:
+  case CMR_SEYMOUR_NODE_TYPE_UNKNOWN:
     fprintf(stream, "unknown node {");
   break;
-  case CMR_MATROID_DEC_TYPE_ONE_SUM:
+  case CMR_SEYMOUR_NODE_TYPE_ONE_SUM:
     fprintf(stream, "1-sum node with %zu children {", child->numChildren);
   break;
-  case CMR_MATROID_DEC_TYPE_TWO_SUM:
+  case CMR_SEYMOUR_NODE_TYPE_TWO_SUM:
     fprintf(stream, "2-sum node {");
     break;
-  case CMR_MATROID_DEC_TYPE_THREE_SUM:
+  case CMR_SEYMOUR_NODE_TYPE_THREE_SUM:
     fprintf(stream, "3-sum node {");
   break;
-  case CMR_MATROID_DEC_TYPE_GRAPH:
+  case CMR_SEYMOUR_NODE_TYPE_GRAPH:
     fprintf(stream, "graphic matrix with %zu nodes and %zu edges {", CMRgraphNumNodes(child->graph),
       CMRgraphNumEdges(child->graph));
   break;
-  case CMR_MATROID_DEC_TYPE_COGRAPH:
+  case CMR_SEYMOUR_NODE_TYPE_COGRAPH:
     fprintf(stream, "cographic matrix with %zu nodes and %zu edges {", CMRgraphNumNodes(child->cograph),
       CMRgraphNumEdges(child->cograph));
   break;
-  case CMR_MATROID_DEC_TYPE_PLANAR:
+  case CMR_SEYMOUR_NODE_TYPE_PLANAR:
     assert(CMRgraphNumEdges(child->graph) == CMRgraphNumEdges(child->cograph));
     fprintf(stream, "planar matrix with %zu nodes, %zu faces and %zu edges {", CMRgraphNumNodes(child->graph),
       CMRgraphNumNodes(child->cograph), CMRgraphNumEdges(child->graph));
   break;
-  case CMR_MATROID_DEC_TYPE_SERIES_PARALLEL:
+  case CMR_SEYMOUR_NODE_TYPE_SERIES_PARALLEL:
     if (child->numChildren)
       fprintf(stream, "matrix with %zu series-parallel reductions; 1 child {", child->numSeriesParallelReductions);
     else
       fprintf(stream, "series-parallel matrix {");
   break;
-  case CMR_MATROID_DEC_TYPE_R10:
+  case CMR_SEYMOUR_NODE_TYPE_R10:
     fprintf(stream, "matrix representing R10 {");
   break;
-  case CMR_MATROID_DEC_TYPE_FANO:
+  case CMR_SEYMOUR_NODE_TYPE_FANO:
     fprintf(stream, "matrix representing F_7 {");
   break;
-  case CMR_MATROID_DEC_TYPE_FANO_DUAL:
+  case CMR_SEYMOUR_NODE_TYPE_FANO_DUAL:
     fprintf(stream, "matrix representing F_7^* {");
   break;
-  case CMR_MATROID_DEC_TYPE_K5:
+  case CMR_SEYMOUR_NODE_TYPE_K5:
     fprintf(stream, "matrix representing K_5 {");
   break;
-  case CMR_MATROID_DEC_TYPE_K5_DUAL:
+  case CMR_SEYMOUR_NODE_TYPE_K5_DUAL:
     fprintf(stream, "matrix representing K_5^* {");
   break;
-  case CMR_MATROID_DEC_TYPE_K33:
+  case CMR_SEYMOUR_NODE_TYPE_K33:
     fprintf(stream, "matrix representing K_{3,3} {");
   break;
-  case CMR_MATROID_DEC_TYPE_K33_DUAL:
+  case CMR_SEYMOUR_NODE_TYPE_K33_DUAL:
     fprintf(stream, "matrix representing K_{3,3}^* {");
   break;
-  case CMR_MATROID_DEC_TYPE_SUBMATRIX:
+  case CMR_SEYMOUR_NODE_TYPE_SUBMATRIX:
     fprintf(stream, "submatrix node {");
   break;
-  case CMR_MATROID_DEC_TYPE_PIVOTS:
+  case CMR_SEYMOUR_NODE_TYPE_PIVOTS:
     fprintf(stream, "pivot node {");
   break;
-  case CMR_MATROID_DEC_TYPE_DETERMINANT:
+  case CMR_SEYMOUR_NODE_TYPE_DETERMINANT:
     fprintf(stream, "bad determinant {");
   break;
   default:
@@ -374,7 +374,7 @@ CMR_ERROR CMRmatroiddecPrintChild(CMR* cmr, CMR_SEYMOUR_NODE* child, CMR_SEYMOUR
   }
   fprintf(stream, "}\n");
 
-  if (printReductions && child->type == CMR_MATROID_DEC_TYPE_SERIES_PARALLEL)
+  if (printReductions && child->type == CMR_SEYMOUR_NODE_TYPE_SERIES_PARALLEL)
   {
     for (size_t i = 0; i < indent; ++i)
       fputc(' ', stream);
@@ -386,7 +386,7 @@ CMR_ERROR CMRmatroiddecPrintChild(CMR* cmr, CMR_SEYMOUR_NODE* child, CMR_SEYMOUR
     fputc('\n', stream);
   }
 
-  if (printPivots && child->type == CMR_MATROID_DEC_TYPE_PIVOTS)
+  if (printPivots && child->type == CMR_SEYMOUR_NODE_TYPE_PIVOTS)
   {
     for (size_t i = 0; i < indent; ++i)
       fputc(' ', stream);
@@ -686,7 +686,7 @@ CMR_ERROR CMRmatroiddecCloneUnknown(CMR* cmr, CMR_SEYMOUR_NODE* node, CMR_SEYMOU
   assert(node);
   assert(pclone);
 
-  CMR_CALL( createNode(cmr, pclone, node->isTernary, CMR_MATROID_DEC_TYPE_UNKNOWN, node->numRows, node->numColumns) );
+  CMR_CALL( createNode(cmr, pclone, node->isTernary, CMR_SEYMOUR_NODE_TYPE_UNKNOWN, node->numRows, node->numColumns) );
     CMR_SEYMOUR_NODE* clone = *pclone;
 
   CMR_CALL( CMRchrmatCopy(cmr, node->matrix, &clone->matrix) );
@@ -822,7 +822,7 @@ CMR_ERROR CMRmatroiddecCreateMatrixRoot(CMR* cmr, CMR_SEYMOUR_NODE** pnode, bool
   assert(pnode);
   assert(matrix);
 
-  CMR_CALL( createNode(cmr, pnode, isTernary, CMR_MATROID_DEC_TYPE_UNKNOWN, matrix->numRows, matrix->numColumns) );
+  CMR_CALL( createNode(cmr, pnode, isTernary, CMR_SEYMOUR_NODE_TYPE_UNKNOWN, matrix->numRows, matrix->numColumns) );
   CMR_SEYMOUR_NODE* node = *pnode;
 
   CMR_CALL( CMRchrmatCopy(cmr, matrix, &node->matrix) );
@@ -864,7 +864,7 @@ CMR_ERROR CMRmatroiddecCreateChildFromMatrices(CMR* cmr, CMR_SEYMOUR_NODE* paren
   assert(rowsToParent);
   assert(columnsToParent);
 
-  CMR_CALL( createNode(cmr, &parent->children[childIndex], parent->isTernary, CMR_MATROID_DEC_TYPE_UNKNOWN,
+  CMR_CALL( createNode(cmr, &parent->children[childIndex], parent->isTernary, CMR_SEYMOUR_NODE_TYPE_UNKNOWN,
     matrix->numRows, matrix->numColumns) );
   CMR_SEYMOUR_NODE* node = parent->children[childIndex];
   node->matrix = matrix;
@@ -901,10 +901,10 @@ CMR_ERROR CMRmatroiddecUpdateOneSum (CMR* cmr, CMR_SEYMOUR_NODE* node, size_t nu
 {
   assert(cmr);
   assert(node);
-  assert(node->type == CMR_MATROID_DEC_TYPE_UNKNOWN);
+  assert(node->type == CMR_SEYMOUR_NODE_TYPE_UNKNOWN);
   assert(numChildren >= 2);
 
-  node->type = CMR_MATROID_DEC_TYPE_ONE_SUM;
+  node->type = CMR_SEYMOUR_NODE_TYPE_ONE_SUM;
 
   CMR_CALL( CMRmatroiddecSetNumChildren(cmr, node, numChildren) );
 
@@ -955,7 +955,7 @@ CMR_ERROR CMRmatroiddecUpdateSubmatrix(CMR* cmr, CMR_SEYMOUR_NODE* dec, CMR_SUBM
   }
   else
   {
-    dec->type = CMR_MATROID_DEC_TYPE_SUBMATRIX;
+    dec->type = CMR_SEYMOUR_NODE_TYPE_SUBMATRIX;
     CMR_CALL( CMRmatroiddecSetNumChildren(cmr, dec, 1) );
 
     CMR_CHRMAT* childMatrix = NULL;
@@ -982,14 +982,14 @@ CMR_ERROR CMRmatroiddecUpdateTwoSum(CMR* cmr, CMR_SEYMOUR_NODE* node, CMR_SEPA* 
   size_t numBaseColumns[2];
   CMR_CALL( CMRsepaComputeSizes(separation, &numBaseRows[0], &numBaseColumns[0], &numBaseRows[1], &numBaseColumns[1]) );
 
-  node->type = CMR_MATROID_DEC_TYPE_TWO_SUM;
+  node->type = CMR_SEYMOUR_NODE_TYPE_TWO_SUM;
   CMR_CALL( CMRmatroiddecSetNumChildren(cmr, node, 2) );
   for (size_t childIndex = 0; childIndex < 2; ++childIndex)
   {
     size_t numExtraRows = 1 - childIndex;
     size_t numExtraColumns = childIndex;
 
-    CMR_CALL( createNode(cmr, &node->children[childIndex], node->isTernary, CMR_MATROID_DEC_TYPE_UNKNOWN,
+    CMR_CALL( createNode(cmr, &node->children[childIndex], node->isTernary, CMR_SEYMOUR_NODE_TYPE_UNKNOWN,
       numBaseRows[childIndex] + numExtraRows, numBaseColumns[childIndex] + numExtraColumns) );
 
     /* Compute parent rows of child. */
@@ -1065,9 +1065,9 @@ CMR_ERROR CMRmatroiddecUpdatePivots(CMR* cmr, CMR_SEYMOUR_NODE* node, size_t num
   assert(pivotColumns);
   assert(matrix);
 
-  node->type = CMR_MATROID_DEC_TYPE_PIVOTS;
+  node->type = CMR_SEYMOUR_NODE_TYPE_PIVOTS;
   CMR_CALL( CMRmatroiddecSetNumChildren(cmr, node, 1) );
-  CMR_CALL( createNode(cmr, &node->children[0], node->isTernary, CMR_MATROID_DEC_TYPE_UNKNOWN, node->numRows,
+  CMR_CALL( createNode(cmr, &node->children[0], node->isTernary, CMR_SEYMOUR_NODE_TYPE_UNKNOWN, node->numRows,
                          node->numColumns) );
   node->children[0]->matrix = matrix;
   node->children[0]->transpose = transpose;
@@ -1096,7 +1096,7 @@ CMR_ERROR CMRmatroiddecUpdateThreeSumInit(CMR* cmr, CMR_SEYMOUR_NODE* node)
   assert(cmr);
   assert(node);
 
-  node->type = CMR_MATROID_DEC_TYPE_THREE_SUM;
+  node->type = CMR_SEYMOUR_NODE_TYPE_THREE_SUM;
   CMR_CALL( CMRmatroiddecSetNumChildren(cmr, node, 2) );
 
   return CMR_OKAY;
@@ -1215,7 +1215,7 @@ CMR_ERROR CMRmatroiddecUpdateThreeSumCreateWideFirstChild(CMR* cmr, CMR_SEYMOUR_
   childMatrix->numNonzeros = childEntry;
 
   /* Create the actual decomposition node. */
-  CMR_CALL( createNode(cmr, &node->children[0], node->isTernary, CMR_MATROID_DEC_TYPE_UNKNOWN, childMatrix->numRows,
+  CMR_CALL( createNode(cmr, &node->children[0], node->isTernary, CMR_SEYMOUR_NODE_TYPE_UNKNOWN, childMatrix->numRows,
     childMatrix->numColumns) );
   CMR_SEYMOUR_NODE* child = node->children[0];
   child->matrix = childMatrix;
@@ -1361,7 +1361,7 @@ CMR_ERROR CMRmatroiddecUpdateThreeSumCreateWideSecondChild(CMR* cmr, CMR_SEYMOUR
   childMatrix->numNonzeros = childEntry;
 
   /* Create the actual decomposition node. */
-  CMR_CALL( createNode(cmr, &node->children[1], node->isTernary, CMR_MATROID_DEC_TYPE_UNKNOWN, childMatrix->numRows,
+  CMR_CALL( createNode(cmr, &node->children[1], node->isTernary, CMR_SEYMOUR_NODE_TYPE_UNKNOWN, childMatrix->numRows,
     childMatrix->numColumns) );
   CMR_SEYMOUR_NODE* child = node->children[1];
   child->matrix = childMatrix;
@@ -1497,7 +1497,7 @@ CMR_ERROR CMRmatroiddecUpdateThreeSumCreateMixedFirstChild(CMR* cmr, CMR_SEYMOUR
   childMatrix->numNonzeros = childEntry;
 
   /* Create the actual decomposition node. */
-  CMR_CALL( createNode(cmr, &node->children[0], node->isTernary, CMR_MATROID_DEC_TYPE_UNKNOWN, childMatrix->numRows,
+  CMR_CALL( createNode(cmr, &node->children[0], node->isTernary, CMR_SEYMOUR_NODE_TYPE_UNKNOWN, childMatrix->numRows,
     childMatrix->numColumns) );
   CMR_SEYMOUR_NODE* child = node->children[0];
   child->matrix = childMatrix;
@@ -1647,7 +1647,7 @@ CMR_ERROR CMRmatroiddecUpdateThreeSumCreateMixedSecondChild(CMR* cmr, CMR_SEYMOU
   childMatrix->numNonzeros = childEntry;
 
   /* Create the actual decomposition node. */
-  CMR_CALL( createNode(cmr, &node->children[1], node->isTernary, CMR_MATROID_DEC_TYPE_UNKNOWN, childMatrix->numRows,
+  CMR_CALL( createNode(cmr, &node->children[1], node->isTernary, CMR_SEYMOUR_NODE_TYPE_UNKNOWN, childMatrix->numRows,
     childMatrix->numColumns) );
   CMR_SEYMOUR_NODE* child = node->children[1];
   child->matrix = childMatrix;
@@ -1705,24 +1705,24 @@ CMR_ERROR CMRmatroiddecSetAttributes(CMR_SEYMOUR_NODE* node)
 
   switch(node->type)
   {
-  case CMR_MATROID_DEC_TYPE_UNKNOWN:
+  case CMR_SEYMOUR_NODE_TYPE_UNKNOWN:
     node->regularity = 0;
     /* We do not set (co)graphicness because its absense may have been determined without setting the type. */
   break;
-  case CMR_MATROID_DEC_TYPE_PLANAR:
+  case CMR_SEYMOUR_NODE_TYPE_PLANAR:
     node->regularity = 1;
     node->graphicness = 1;
     node->cographicness = 1;
   break;
-  case CMR_MATROID_DEC_TYPE_IRREGULAR:
-  case CMR_MATROID_DEC_TYPE_FANO:
-  case CMR_MATROID_DEC_TYPE_FANO_DUAL:
-  case CMR_MATROID_DEC_TYPE_DETERMINANT:
+  case CMR_SEYMOUR_NODE_TYPE_IRREGULAR:
+  case CMR_SEYMOUR_NODE_TYPE_FANO:
+  case CMR_SEYMOUR_NODE_TYPE_FANO_DUAL:
+  case CMR_SEYMOUR_NODE_TYPE_DETERMINANT:
     node->regularity = -1;
     node->graphicness = -1;
     node->cographicness = -1;
   break;
-  case CMR_MATROID_DEC_TYPE_SERIES_PARALLEL:
+  case CMR_SEYMOUR_NODE_TYPE_SERIES_PARALLEL:
     if (node->numChildren)
     {
       node->regularity = node->children[0]->regularity;
@@ -1736,11 +1736,11 @@ CMR_ERROR CMRmatroiddecSetAttributes(CMR_SEYMOUR_NODE* node)
       node->cographicness = 1;
     }
     break;
-  case CMR_MATROID_DEC_TYPE_PIVOTS:
-  case CMR_MATROID_DEC_TYPE_SUBMATRIX:
-  case CMR_MATROID_DEC_TYPE_ONE_SUM:
-  case CMR_MATROID_DEC_TYPE_TWO_SUM:
-  case CMR_MATROID_DEC_TYPE_THREE_SUM:
+  case CMR_SEYMOUR_NODE_TYPE_PIVOTS:
+  case CMR_SEYMOUR_NODE_TYPE_SUBMATRIX:
+  case CMR_SEYMOUR_NODE_TYPE_ONE_SUM:
+  case CMR_SEYMOUR_NODE_TYPE_TWO_SUM:
+  case CMR_SEYMOUR_NODE_TYPE_THREE_SUM:
     if (node->regularity == 0)
     {
       node->regularity = 1;
@@ -1769,19 +1769,19 @@ CMR_ERROR CMRmatroiddecSetAttributes(CMR_SEYMOUR_NODE* node)
       }
     }
   break;
-  case CMR_MATROID_DEC_TYPE_GRAPH:
-  case CMR_MATROID_DEC_TYPE_K5:
-  case CMR_MATROID_DEC_TYPE_K33:
+  case CMR_SEYMOUR_NODE_TYPE_GRAPH:
+  case CMR_SEYMOUR_NODE_TYPE_K5:
+  case CMR_SEYMOUR_NODE_TYPE_K33:
     node->regularity = 1;
     node->graphicness = 1;
   break;
-  case CMR_MATROID_DEC_TYPE_COGRAPH:
-  case CMR_MATROID_DEC_TYPE_K5_DUAL:
-  case CMR_MATROID_DEC_TYPE_K33_DUAL:
+  case CMR_SEYMOUR_NODE_TYPE_COGRAPH:
+  case CMR_SEYMOUR_NODE_TYPE_K5_DUAL:
+  case CMR_SEYMOUR_NODE_TYPE_K33_DUAL:
     node->regularity = 1;
     node->cographicness = 1;
   break;
-  case CMR_MATROID_DEC_TYPE_R10:
+  case CMR_SEYMOUR_NODE_TYPE_R10:
     node->regularity = 1;
     node->graphicness = -1;
     node->cographicness = -1;

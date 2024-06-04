@@ -75,7 +75,7 @@ CMR_ERROR CMRregularitySearchOneSum(CMR* cmr, DecompositionTask* task, Decomposi
       CMR_CALL( CMRfreeBlockArray(cmr, &component->rowsToOriginal) );
       CMR_CALL( CMRfreeBlockArray(cmr, &component->columnsToOriginal) );
     }
-    task->dec->type = CMR_MATROID_DEC_TYPE_ONE_SUM;
+    task->dec->type = CMR_SEYMOUR_NODE_TYPE_ONE_SUM;
 
     CMR_CALL( CMRfreeStackArray(cmr, &columnsToParent) );
     CMR_CALL( CMRfreeStackArray(cmr, &rowsToParent) );
