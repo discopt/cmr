@@ -58,7 +58,7 @@ CMR_ERROR testRegularity(
   /* Actual test. */
 
   bool isRegular;
-  CMR_MATROID_DEC* decomposition = NULL;
+    CMR_SEYMOUR_NODE* decomposition = NULL;
   CMR_MINOR* minor = NULL;
   CMR_REGULAR_PARAMS params;
   CMR_CALL( CMRregularParamsInit(&params) );

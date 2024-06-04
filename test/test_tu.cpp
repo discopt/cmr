@@ -46,12 +46,12 @@ TEST(TU, EulerianAlgorithm)
     CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
 
     bool isTU;
-    CMR_MATROID_DEC* dec = NULL;
+        CMR_SEYMOUR_NODE* dec = NULL;
     CMR_TU_PARAMS params;
     ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
     params.algorithm = CMR_TU_ALGORITHM_EULERIAN;
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
-    ASSERT_EQ( dec, (CMR_MATROID_DEC*) NULL );
+    ASSERT_EQ( dec, (CMR_SEYMOUR_NODE*) NULL );
 
     ASSERT_TRUE( isTU );
 
@@ -125,12 +125,12 @@ TEST(TU, PartitionAlgorithm)
     CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
 
     bool isTU;
-    CMR_MATROID_DEC* dec = NULL;
+        CMR_SEYMOUR_NODE* dec = NULL;
     CMR_TU_PARAMS params;
     ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
     params.algorithm = CMR_TU_ALGORITHM_PARTITION;
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
-    ASSERT_EQ( dec, (CMR_MATROID_DEC*) NULL );
+    ASSERT_EQ( dec, (CMR_SEYMOUR_NODE*) NULL );
 
     ASSERT_TRUE( isTU );
 
@@ -241,7 +241,7 @@ TEST(TU, OneSum)
     ASSERT_CMR_CALL( CMRoneSum(cmr, K_3_3, K_3_3_dual, &matrix) );
 
     bool isTU;
-    CMR_MATROID_DEC* dec = NULL;
+        CMR_SEYMOUR_NODE* dec = NULL;
     CMR_TU_PARAMS params;
     ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
     params.regular.planarityCheck = true;
@@ -303,7 +303,7 @@ TEST(TU, SeriesParallelTwoSeparation)
     CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
 
     bool isTU;
-    CMR_MATROID_DEC* dec = NULL;
+        CMR_SEYMOUR_NODE* dec = NULL;
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, NULL, NULL, DBL_MAX) );
 
     ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, true, true, true, true, true, true) );
@@ -353,7 +353,7 @@ TEST(TU, NestedMinorSearchTwoSeparation)
     ASSERT_CMR_CALL( CMRtwoSum(cmr, K_3_3, K_3_3_dual, CMRrowToElement(1), CMRcolumnToElement(1), 3, &matrix) );
 
     bool isTU;
-    CMR_MATROID_DEC* dec = NULL;
+        CMR_SEYMOUR_NODE* dec = NULL;
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, NULL, NULL, DBL_MAX) );
 
     ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, true, true, true, true, true, true) );
@@ -395,7 +395,7 @@ TEST(TU, NestedMinorSearchTwoSeparationViolator)
     ) );
 
     bool isTU;
-    CMR_MATROID_DEC* dec = NULL;
+        CMR_SEYMOUR_NODE* dec = NULL;
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, NULL, NULL, DBL_MAX) );
 
     ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, true, true, true, true, true, true) );
@@ -430,7 +430,7 @@ TEST(TU, NestedMinorPivotsOneRowOneColumn)
   CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
 
   bool isTU;
-  CMR_MATROID_DEC* dec = NULL;
+    CMR_SEYMOUR_NODE* dec = NULL;
   CMR_TU_PARAMS params;
   ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
   
@@ -464,7 +464,7 @@ TEST(TU, NestedMinorPivotsTwoRowsOneColumn)
   CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
 
   bool isTU;
-  CMR_MATROID_DEC* dec = NULL;
+    CMR_SEYMOUR_NODE* dec = NULL;
   CMR_TU_PARAMS params;
   ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
   params.regular.directGraphicness = false;
@@ -497,7 +497,7 @@ TEST(TU, NestedMinorPivotsOneRowTwoColumns)
   CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
 
   bool isTU;
-  CMR_MATROID_DEC* dec = NULL;
+    CMR_SEYMOUR_NODE* dec = NULL;
   CMR_TU_PARAMS params;
   ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
   params.regular.directGraphicness = false;
@@ -535,7 +535,7 @@ TEST(TU, NestedMinorPivotsTwoSeparation)
   CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
 
   bool isTU;
-  CMR_MATROID_DEC* dec = NULL;
+    CMR_SEYMOUR_NODE* dec = NULL;
   CMR_TU_PARAMS params;
   ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
   params.regular.directGraphicness = false;
@@ -565,7 +565,7 @@ void testSequenceGraphicness(
   ASSERT_CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', false) );
 
   bool isTU;
-  CMR_MATROID_DEC* dec = NULL;
+    CMR_SEYMOUR_NODE* dec = NULL;
   CMR_TU_PARAMS params;
   ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
   params.regular.directGraphicness = false;
@@ -869,7 +869,7 @@ TEST(TU, R10)
     CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
 
     bool isTU;
-    CMR_MATROID_DEC* dec = NULL;
+        CMR_SEYMOUR_NODE* dec = NULL;
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, NULL, NULL, DBL_MAX) );
     ASSERT_GT( CMRmatroiddecRegularity(dec), 0 );
     ASSERT_EQ( CMRmatroiddecNumChildren(dec), 0UL );
@@ -892,7 +892,7 @@ TEST(TU, R10)
     CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
 
     bool isTU;
-    CMR_MATROID_DEC* dec = NULL;
+        CMR_SEYMOUR_NODE* dec = NULL;
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, NULL, NULL, DBL_MAX) );
     ASSERT_TRUE( dec );
     ASSERT_GT( CMRmatroiddecRegularity(dec), 0 );
@@ -920,7 +920,7 @@ void testEnumerate(
   ASSERT_CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', true) );
 
   bool isTU;
-  CMR_MATROID_DEC* dec = NULL;
+    CMR_SEYMOUR_NODE* dec = NULL;
   CMR_TU_PARAMS params;
   ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
   params.regular.directGraphicness = false;
@@ -1018,7 +1018,7 @@ TEST(TU, ThreeSumWideWideR12)
     CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
 
     bool isTU;
-    CMR_MATROID_DEC* dec = NULL;
+        CMR_SEYMOUR_NODE* dec = NULL;
     CMR_TU_PARAMS params;
     ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
     params.regular.threeSumStrategy = CMR_MATROID_DEC_THREESUM_FLAG_DISTRIBUTED_RANKS
@@ -1034,15 +1034,15 @@ TEST(TU, ThreeSumWideWideR12)
     ASSERT_EQ( CMRmatroiddecNumPivots(dec), 1UL );
     ASSERT_EQ( CMRmatroiddecNumChildren(dec), 1UL );
 
-    CMR_MATROID_DEC* child = CMRmatroiddecChild(dec, 0);
+        CMR_SEYMOUR_NODE* child = CMRmatroiddecChild(dec, 0);
 
     ASSERT_EQ( CMRmatroiddecType(child), CMR_MATROID_DEC_TYPE_THREE_SUM );
     ASSERT_TRUE( CMRmatroiddecThreeSumDistributedRanks(child) );
     ASSERT_FALSE( CMRmatroiddecThreeSumConcentratedRank(child) );
     ASSERT_EQ( CMRmatroiddecNumChildren(child), 2UL );
 
-    CMR_MATROID_DEC* grandChild1 = CMRmatroiddecChild(child, 0);
-    CMR_MATROID_DEC* grandChild2 = CMRmatroiddecChild(child, 1);
+        CMR_SEYMOUR_NODE* grandChild1 = CMRmatroiddecChild(child, 0);
+        CMR_SEYMOUR_NODE* grandChild2 = CMRmatroiddecChild(child, 1);
 
     ASSERT_LT( CMRmatroiddecGraphicness(grandChild1), 0 );
     ASSERT_GT( CMRmatroiddecCographicness(grandChild1), 0 );
@@ -1075,7 +1075,7 @@ TEST(TU, ThreeSumMixedMixedR12)
     CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
 
     bool isTU;
-    CMR_MATROID_DEC* dec = NULL;
+        CMR_SEYMOUR_NODE* dec = NULL;
     CMR_TU_PARAMS params;
     ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
     params.regular.threeSumStrategy = CMR_MATROID_DEC_THREESUM_FLAG_CONCENTRATED_RANK
@@ -1093,8 +1093,8 @@ TEST(TU, ThreeSumMixedMixedR12)
     ASSERT_TRUE( CMRmatroiddecThreeSumConcentratedRank(dec) );
     ASSERT_EQ( CMRmatroiddecNumChildren(dec), 2UL );
 
-    CMR_MATROID_DEC* child1 = CMRmatroiddecChild(dec, 0);
-    CMR_MATROID_DEC* child2 = CMRmatroiddecChild(dec, 1);
+        CMR_SEYMOUR_NODE* child1 = CMRmatroiddecChild(dec, 0);
+        CMR_SEYMOUR_NODE* child2 = CMRmatroiddecChild(dec, 1);
 
     ASSERT_LT( CMRmatroiddecGraphicness(child1), 0 );
     ASSERT_GT( CMRmatroiddecCographicness(child1), 0 );
@@ -1136,7 +1136,7 @@ TEST(TU, ForbiddenSubmatrixWideWide)
     CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
 
     bool isTU;
-    CMR_MATROID_DEC* dec = NULL;
+        CMR_SEYMOUR_NODE* dec = NULL;
     CMR_SUBMAT* forbiddenSubmatrix = NULL;
     CMR_TU_PARAMS params;
     ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
@@ -1184,7 +1184,7 @@ TEST(TU, ForbiddenSubmatrixMixedMixed)
     CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
 
     bool isTU;
-    CMR_MATROID_DEC* dec = NULL;
+        CMR_SEYMOUR_NODE* dec = NULL;
     CMR_SUBMAT* forbiddenSubmatrix = NULL;
     CMR_TU_PARAMS params;
     ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
@@ -1221,7 +1221,7 @@ TEST(TU, Fano)
     CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
 
     bool isTU;
-    CMR_MATROID_DEC* dec = NULL;
+        CMR_SEYMOUR_NODE* dec = NULL;
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, NULL, NULL, DBL_MAX) );
 
     ASSERT_EQ( CMRmatroiddecType(dec), CMR_MATROID_DEC_TYPE_IRREGULAR );
@@ -1250,7 +1250,7 @@ TEST(TU, FanoDual)
     CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
 
     bool isTU;
-    CMR_MATROID_DEC* dec = NULL;
+        CMR_SEYMOUR_NODE* dec = NULL;
 
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, NULL, NULL, DBL_MAX) );
 
@@ -1284,7 +1284,7 @@ TEST(TU, CompleteTree)
     CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
 
     bool isTU;
-    CMR_MATROID_DEC* dec = NULL;
+        CMR_SEYMOUR_NODE* dec = NULL;
     CMR_TU_PARAMS params;
     ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
     params.regular.treeFlags = CMR_REGULAR_TREE_FLAGS_RECURSE;
@@ -1295,8 +1295,8 @@ TEST(TU, CompleteTree)
 
     ASSERT_EQ( CMRmatroiddecRegularity(dec), -1 );
     ASSERT_EQ( CMRmatroiddecType(dec), CMR_MATROID_DEC_TYPE_ONE_SUM );
-    CMR_MATROID_DEC* child0 = CMRmatroiddecChild(dec, 0);
-    CMR_MATROID_DEC* child1 = CMRmatroiddecChild(dec, 1);
+        CMR_SEYMOUR_NODE* child0 = CMRmatroiddecChild(dec, 0);
+        CMR_SEYMOUR_NODE* child1 = CMRmatroiddecChild(dec, 1);
     ASSERT_EQ( CMRmatroiddecType(child0), CMR_MATROID_DEC_TYPE_IRREGULAR );
     ASSERT_EQ( CMRmatroiddecType(child1), CMR_MATROID_DEC_TYPE_IRREGULAR );
 
@@ -1321,7 +1321,7 @@ TEST(TU, CompleteTree)
     CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
 
     bool isTU;
-    CMR_MATROID_DEC* dec = NULL;
+        CMR_SEYMOUR_NODE* dec = NULL;
     CMR_TU_PARAMS params;
     ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
 
@@ -1331,8 +1331,8 @@ TEST(TU, CompleteTree)
 
     ASSERT_EQ( CMRmatroiddecRegularity(dec), -1 );
     ASSERT_EQ( CMRmatroiddecType(dec), CMR_MATROID_DEC_TYPE_ONE_SUM );
-    CMR_MATROID_DEC* child0 = CMRmatroiddecChild(dec, 0);
-    CMR_MATROID_DEC* child1 = CMRmatroiddecChild(dec, 1);
+        CMR_SEYMOUR_NODE* child0 = CMRmatroiddecChild(dec, 0);
+        CMR_SEYMOUR_NODE* child1 = CMRmatroiddecChild(dec, 1);
 
     int numIrregular = 0;
     numIrregular += (CMRmatroiddecRegularity(child0) < 0) ? 1 : 0;
@@ -1365,7 +1365,7 @@ TEST(TU, CompleteTree)
     CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
 
     bool isTU;
-    CMR_MATROID_DEC* dec = NULL;
+        CMR_SEYMOUR_NODE* dec = NULL;
     CMR_TU_PARAMS params;
     ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
     params.regular.directGraphicness = false;
@@ -1376,8 +1376,8 @@ TEST(TU, CompleteTree)
 
     ASSERT_EQ( CMRmatroiddecRegularity(dec), -1 );
     ASSERT_EQ( CMRmatroiddecType(dec), CMR_MATROID_DEC_TYPE_ONE_SUM );
-    CMR_MATROID_DEC* child0 = CMRmatroiddecChild(dec, 0);
-    CMR_MATROID_DEC* child1 = CMRmatroiddecChild(dec, 1);
+        CMR_SEYMOUR_NODE* child0 = CMRmatroiddecChild(dec, 0);
+        CMR_SEYMOUR_NODE* child1 = CMRmatroiddecChild(dec, 1);
 
     int numIrregular = 0;
     numIrregular += (CMRmatroiddecRegularity(child0) < 0) ? 1 : 0;
@@ -1410,7 +1410,7 @@ TEST(TU, CompleteTree)
     CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
 
     bool isTU;
-    CMR_MATROID_DEC* dec = NULL;
+        CMR_SEYMOUR_NODE* dec = NULL;
     CMR_TU_PARAMS params;
     ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
 
@@ -1420,8 +1420,8 @@ TEST(TU, CompleteTree)
 
     ASSERT_EQ( CMRmatroiddecRegularity(dec), -1 );
     ASSERT_EQ( CMRmatroiddecType(dec), CMR_MATROID_DEC_TYPE_ONE_SUM );
-    CMR_MATROID_DEC* child0 = CMRmatroiddecChild(dec, 0);
-    CMR_MATROID_DEC* child1 = CMRmatroiddecChild(dec, 1);
+        CMR_SEYMOUR_NODE* child0 = CMRmatroiddecChild(dec, 0);
+        CMR_SEYMOUR_NODE* child1 = CMRmatroiddecChild(dec, 1);
 
     int numIrregular = 0;
     numIrregular += (CMRmatroiddecRegularity(child0) < 0) ? 1 : 0;
@@ -1458,7 +1458,7 @@ TEST(TU, CompleteTree)
     CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
 
     bool isTU;
-    CMR_MATROID_DEC* dec = NULL;
+        CMR_SEYMOUR_NODE* dec = NULL;
     CMR_TU_PARAMS params;
     ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
     params.regular.directGraphicness = false;
@@ -1469,8 +1469,8 @@ TEST(TU, CompleteTree)
 
     ASSERT_EQ( CMRmatroiddecRegularity(dec), -1 );
     ASSERT_EQ( CMRmatroiddecType(dec), CMR_MATROID_DEC_TYPE_ONE_SUM );
-    CMR_MATROID_DEC* child0 = CMRmatroiddecChild(dec, 0);
-    CMR_MATROID_DEC* child1 = CMRmatroiddecChild(dec, 1);
+        CMR_SEYMOUR_NODE* child0 = CMRmatroiddecChild(dec, 0);
+        CMR_SEYMOUR_NODE* child1 = CMRmatroiddecChild(dec, 1);
 
     int numIrregular = 0;
     numIrregular += (CMRmatroiddecRegularity(child0) < 0) ? 1 : 0;
@@ -1504,7 +1504,7 @@ TEST(TU, CompleteTree)
     CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
 
     bool isTU;
-    CMR_MATROID_DEC* dec = NULL;
+        CMR_SEYMOUR_NODE* dec = NULL;
     CMR_TU_PARAMS params;
     ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
 
@@ -1514,8 +1514,8 @@ TEST(TU, CompleteTree)
 
     ASSERT_EQ( CMRmatroiddecRegularity(dec), -1 );
     ASSERT_EQ( CMRmatroiddecType(dec), CMR_MATROID_DEC_TYPE_ONE_SUM );
-    CMR_MATROID_DEC* child0 = CMRmatroiddecChild(dec, 0);
-    CMR_MATROID_DEC* child1 = CMRmatroiddecChild(dec, 1);
+        CMR_SEYMOUR_NODE* child0 = CMRmatroiddecChild(dec, 0);
+        CMR_SEYMOUR_NODE* child1 = CMRmatroiddecChild(dec, 1);
 
     int numIrregular = 0;
     numIrregular += (CMRmatroiddecRegularity(child0) < 0) ? 1 : 0;
@@ -1549,7 +1549,7 @@ TEST(TU, CompleteTree)
     CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
 
     bool isTU;
-    CMR_MATROID_DEC* dec = NULL;
+        CMR_SEYMOUR_NODE* dec = NULL;
     CMR_TU_PARAMS params;
     ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
 
@@ -1559,8 +1559,8 @@ TEST(TU, CompleteTree)
 
     ASSERT_EQ( CMRmatroiddecRegularity(dec), -1 );
     ASSERT_EQ( CMRmatroiddecType(dec), CMR_MATROID_DEC_TYPE_ONE_SUM );
-    CMR_MATROID_DEC* child0 = CMRmatroiddecChild(dec, 0);
-    CMR_MATROID_DEC* child1 = CMRmatroiddecChild(dec, 1);
+        CMR_SEYMOUR_NODE* child0 = CMRmatroiddecChild(dec, 0);
+        CMR_SEYMOUR_NODE* child1 = CMRmatroiddecChild(dec, 1);
 
     int numIrregular = 0;
     numIrregular += (CMRmatroiddecRegularity(child0) < 0) ? 1 : 0;
@@ -1595,7 +1595,7 @@ TEST(TU, CompleteTree)
     CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
 
     bool isTU;
-    CMR_MATROID_DEC* dec = NULL;
+        CMR_SEYMOUR_NODE* dec = NULL;
     CMR_TU_PARAMS params;
     ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
 
@@ -1605,8 +1605,8 @@ TEST(TU, CompleteTree)
 
     ASSERT_EQ( CMRmatroiddecRegularity(dec), -1 );
     ASSERT_EQ( CMRmatroiddecType(dec), CMR_MATROID_DEC_TYPE_ONE_SUM );
-    CMR_MATROID_DEC* child0 = CMRmatroiddecChild(dec, 0);
-    CMR_MATROID_DEC* child1 = CMRmatroiddecChild(dec, 1);
+        CMR_SEYMOUR_NODE* child0 = CMRmatroiddecChild(dec, 0);
+        CMR_SEYMOUR_NODE* child1 = CMRmatroiddecChild(dec, 1);
 
     ASSERT_LT( CMRmatroiddecRegularity(child0), 0 );
     ASSERT_EQ( CMRmatroiddecRegularity(child1), 0 );

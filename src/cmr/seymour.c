@@ -10,262 +10,262 @@
 #include <assert.h>
 #include <string.h>
 
-bool CMRmatroiddecIsTernary(CMR_MATROID_DEC* dec)
+bool CMRmatroiddecIsTernary(CMR_SEYMOUR_NODE* node)
 {
-  assert(dec);
+  assert(node);
 
-  return dec->isTernary;
+  return node->isTernary;
 }
 
-bool CMRmatroiddecThreeSumDistributedRanks(CMR_MATROID_DEC* dec)
+bool CMRmatroiddecThreeSumDistributedRanks(CMR_SEYMOUR_NODE* node)
 {
-  assert(dec);
-  assert(dec->type == CMR_MATROID_DEC_TYPE_THREE_SUM);
+  assert(node);
+  assert(node->type == CMR_MATROID_DEC_TYPE_THREE_SUM);
 
-  return dec->threesumFlags & CMR_MATROID_DEC_THREESUM_FLAG_DISTRIBUTED_RANKS;
+  return node->threesumFlags & CMR_MATROID_DEC_THREESUM_FLAG_DISTRIBUTED_RANKS;
 }
 
-bool CMRmatroiddecThreeSumConcentratedRank(CMR_MATROID_DEC* dec)
+bool CMRmatroiddecThreeSumConcentratedRank(CMR_SEYMOUR_NODE* node)
 {
-  assert(dec);
-  assert(dec->type == CMR_MATROID_DEC_TYPE_THREE_SUM);
+  assert(node);
+  assert(node->type == CMR_MATROID_DEC_TYPE_THREE_SUM);
 
-  return dec->threesumFlags & CMR_MATROID_DEC_THREESUM_FLAG_CONCENTRATED_RANK;
+  return node->threesumFlags & CMR_MATROID_DEC_THREESUM_FLAG_CONCENTRATED_RANK;
 }
 
-CMR_CHRMAT* CMRmatroiddecGetMatrix(CMR_MATROID_DEC* dec)
+CMR_CHRMAT* CMRmatroiddecGetMatrix(CMR_SEYMOUR_NODE* node)
 {
-  assert(dec);
+  assert(node);
 
-  return dec->matrix;
+  return node->matrix;
 }
 
-bool CMRmatroiddecHasTranspose(CMR_MATROID_DEC* dec)
+bool CMRmatroiddecHasTranspose(CMR_SEYMOUR_NODE* node)
 {
-  assert(dec);
+  assert(node);
 
-  return dec->transpose != NULL;
+  return node->transpose != NULL;
 }
 
-CMR_CHRMAT* CMRmatroiddecGetTranspose(CMR_MATROID_DEC* dec)
+CMR_CHRMAT* CMRmatroiddecGetTranspose(CMR_SEYMOUR_NODE* node)
 {
-  assert(dec);
+  assert(node);
 
-  return dec->transpose;
+  return node->transpose;
 }
 
 
-size_t CMRmatroiddecNumChildren(CMR_MATROID_DEC* dec)
+size_t CMRmatroiddecNumChildren(CMR_SEYMOUR_NODE* node)
 {
-  assert(dec);
+  assert(node);
 
-  return dec->numChildren;
+  return node->numChildren;
 }
 
-CMR_MATROID_DEC* CMRmatroiddecChild(CMR_MATROID_DEC* dec, size_t childIndex)
+CMR_SEYMOUR_NODE* CMRmatroiddecChild(CMR_SEYMOUR_NODE* node, size_t childIndex)
 {
-  assert(dec);
-  assert(childIndex < dec->numChildren);
+  assert(node);
+  assert(childIndex < node->numChildren);
 
-  return dec->children[childIndex];
+  return node->children[childIndex];
 }
 
-CMR_MATROID_DEC_TYPE CMRmatroiddecType(CMR_MATROID_DEC* dec)
+CMR_SEYMOUR_NODE_TYPE CMRmatroiddecType(CMR_SEYMOUR_NODE* node)
 {
-  assert(dec);
+  assert(node);
 
-  return dec->type;
+  return node->type;
 }
 
-int8_t CMRmatroiddecGraphicness(CMR_MATROID_DEC* dec)
+int8_t CMRmatroiddecGraphicness(CMR_SEYMOUR_NODE* node)
 {
-  assert(dec);
+  assert(node);
 
-  return dec->graphicness;
+  return node->graphicness;
 }
 
-int8_t CMRmatroiddecCographicness(CMR_MATROID_DEC* dec)
+int8_t CMRmatroiddecCographicness(CMR_SEYMOUR_NODE* node)
 {
-  assert(dec);
+  assert(node);
 
-  return dec->cographicness;
+  return node->cographicness;
 }
 
-int8_t CMRmatroiddecRegularity(CMR_MATROID_DEC* dec)
+int8_t CMRmatroiddecRegularity(CMR_SEYMOUR_NODE* node)
 {
-  assert(dec);
+  assert(node);
 
-  return dec->regularity;
+  return node->regularity;
 }
 
-size_t CMRmatroiddecNumRows(CMR_MATROID_DEC* dec)
+size_t CMRmatroiddecNumRows(CMR_SEYMOUR_NODE* node)
 {
-  assert(dec);
+  assert(node);
 
-  return dec->numRows;
+  return node->numRows;
 }
 
-CMR_ELEMENT* CMRmatroiddecChildRowsToParent(CMR_MATROID_DEC* dec, size_t childIndex)
+CMR_ELEMENT* CMRmatroiddecChildRowsToParent(CMR_SEYMOUR_NODE* node, size_t childIndex)
 {
-  assert(dec);
-  assert(childIndex < dec->numChildren);
+  assert(node);
+  assert(childIndex < node->numChildren);
 
-  return dec->childRowsToParent[childIndex];
+  return node->childRowsToParent[childIndex];
 
   return NULL;
 }
 
-CMR_ELEMENT* CMRmatroiddecChildColumnsToParent(CMR_MATROID_DEC* dec, size_t childIndex)
+CMR_ELEMENT* CMRmatroiddecChildColumnsToParent(CMR_SEYMOUR_NODE* node, size_t childIndex)
 {
-  assert(dec);
-  assert(childIndex < dec->numChildren);
+  assert(node);
+  assert(childIndex < node->numChildren);
 
-  return dec->childColumnsToParent[childIndex];
+  return node->childColumnsToParent[childIndex];
 
   return NULL;
 }
 
-size_t CMRmatroiddecNumColumns(CMR_MATROID_DEC* dec)
+size_t CMRmatroiddecNumColumns(CMR_SEYMOUR_NODE* node)
 {
-  assert(dec);
+  assert(node);
 
-  return dec->numColumns;
+  return node->numColumns;
 }
 
-CMR_GRAPH* CMRmatroiddecGraph(CMR_MATROID_DEC* dec)
+CMR_GRAPH* CMRmatroiddecGraph(CMR_SEYMOUR_NODE* node)
 {
-  assert(dec);
+  assert(node);
 
-  return dec->graph;
+  return node->graph;
 }
 
-CMR_GRAPH_EDGE* CMRmatroiddecGraphForest(CMR_MATROID_DEC* dec)
+CMR_GRAPH_EDGE* CMRmatroiddecGraphForest(CMR_SEYMOUR_NODE* node)
 {
-  assert(dec);
+  assert(node);
 
-  return dec->graphForest;
+  return node->graphForest;
 }
 
-size_t CMRmatroiddecGraphSizeForest(CMR_MATROID_DEC* dec)
+size_t CMRmatroiddecGraphSizeForest(CMR_SEYMOUR_NODE* node)
 {
-  assert(dec);
+  assert(node);
 
-  if (dec->matrix)
-    return dec->numRows;
-  else if (dec->transpose)
-    return dec->numColumns;
-  else if (dec->graph)
-    return CMRgraphNumNodes(dec->graph) - 1;
+  if (node->matrix)
+    return node->numRows;
+  else if (node->transpose)
+    return node->numColumns;
+  else if (node->graph)
+    return CMRgraphNumNodes(node->graph) - 1;
   else
     return SIZE_MAX;
 }
 
-CMR_GRAPH_EDGE* CMRmatroiddecGraphCoforest(CMR_MATROID_DEC* dec)
+CMR_GRAPH_EDGE* CMRmatroiddecGraphCoforest(CMR_SEYMOUR_NODE* node)
 {
-  assert(dec);
+  assert(node);
 
-  return dec->graphCoforest;
+  return node->graphCoforest;
 }
 
-size_t CMRmatroiddecGraphSizeCoforest(CMR_MATROID_DEC* dec)
+size_t CMRmatroiddecGraphSizeCoforest(CMR_SEYMOUR_NODE* node)
 {
-  assert(dec);
+  assert(node);
 
-  if (dec->matrix)
-    return dec->numColumns;
-  else if (dec->transpose)
-    return dec->numRows;
-  else if (dec->graph)
-    return CMRgraphNumEdges(dec->graph) + 1 - CMRgraphNumNodes(dec->graph);
+  if (node->matrix)
+    return node->numColumns;
+  else if (node->transpose)
+    return node->numRows;
+  else if (node->graph)
+    return CMRgraphNumEdges(node->graph) + 1 - CMRgraphNumNodes(node->graph);
   else
     return SIZE_MAX;
 }
 
-bool* CMRmatroiddecGraphArcsReversed(CMR_MATROID_DEC* dec)
+bool* CMRmatroiddecGraphArcsReversed(CMR_SEYMOUR_NODE* node)
 {
-  assert(dec);
+  assert(node);
 
-  return dec->graphArcsReversed;
+  return node->graphArcsReversed;
 }
 
-CMR_GRAPH* CMRmatroiddecCograph(CMR_MATROID_DEC* dec)
+CMR_GRAPH* CMRmatroiddecCograph(CMR_SEYMOUR_NODE* node)
 {
-  assert(dec);
+  assert(node);
 
-  return dec->cograph;
+  return node->cograph;
 }
 
-size_t CMRmatroiddecCographSizeForest(CMR_MATROID_DEC* dec)
+size_t CMRmatroiddecCographSizeForest(CMR_SEYMOUR_NODE* node)
 {
-  assert(dec);
+  assert(node);
 
-  if (dec->matrix)
-    return dec->numColumns;
-  else if (dec->transpose)
-    return dec->numRows;
-  else if (dec->cograph)
-    return CMRgraphNumNodes(dec->cograph) - 1;
+  if (node->matrix)
+    return node->numColumns;
+  else if (node->transpose)
+    return node->numRows;
+  else if (node->cograph)
+    return CMRgraphNumNodes(node->cograph) - 1;
   else
     return SIZE_MAX;
 }
 
-CMR_GRAPH_EDGE* CMRmatroiddecCographForest(CMR_MATROID_DEC* dec)
+CMR_GRAPH_EDGE* CMRmatroiddecCographForest(CMR_SEYMOUR_NODE* node)
 {
-  assert(dec);
+  assert(node);
 
-  return dec->cographForest;
+  return node->cographForest;
 }
 
-size_t CMRmatroiddecCographSizeCoforest(CMR_MATROID_DEC* dec)
+size_t CMRmatroiddecCographSizeCoforest(CMR_SEYMOUR_NODE* node)
 {
-  assert(dec);
+  assert(node);
 
-  if (dec->matrix)
-    return dec->numRows;
-  else if (dec->transpose)
-    return dec->numColumns;
-  else if (dec->cograph)
-    return CMRgraphNumEdges(dec->cograph) + 1 - CMRgraphNumNodes(dec->cograph);
+  if (node->matrix)
+    return node->numRows;
+  else if (node->transpose)
+    return node->numColumns;
+  else if (node->cograph)
+    return CMRgraphNumEdges(node->cograph) + 1 - CMRgraphNumNodes(node->cograph);
   else
     return SIZE_MAX;
 }
 
-CMR_GRAPH_EDGE* CMRmatroiddecCographCoforest(CMR_MATROID_DEC* dec)
+CMR_GRAPH_EDGE* CMRmatroiddecCographCoforest(CMR_SEYMOUR_NODE* node)
 {
-  assert(dec);
+  assert(node);
 
-  return dec->cographCoforest;
+  return node->cographCoforest;
 }
 
-bool* CMRmatroiddecCographArcsReversed(CMR_MATROID_DEC* dec)
+bool* CMRmatroiddecCographArcsReversed(CMR_SEYMOUR_NODE* node)
 {
-  assert(dec);
+  assert(node);
 
-  return dec->cographArcsReversed;
+  return node->cographArcsReversed;
 }
 
-size_t CMRmatroiddecNumPivots(CMR_MATROID_DEC* dec)
+size_t CMRmatroiddecNumPivots(CMR_SEYMOUR_NODE* node)
 {
-  assert(dec);
+  assert(node);
 
-  return dec->numPivots;
+  return node->numPivots;
 }
 
-size_t * CMRmatroiddecPivotRows(CMR_MATROID_DEC* dec)
+size_t * CMRmatroiddecPivotRows(CMR_SEYMOUR_NODE* node)
 {
-  assert(dec);
+  assert(node);
 
-  return dec->pivotRows;
+  return node->pivotRows;
 }
 
-size_t * CMRmatroiddecPivotColumns(CMR_MATROID_DEC* dec)
+size_t * CMRmatroiddecPivotColumns(CMR_SEYMOUR_NODE* node)
 {
-  assert(dec);
+  assert(node);
 
-  return dec->pivotColumns;
+  return node->pivotColumns;
 }
 
-CMR_ERROR CMRmatroiddecPrintChild(CMR* cmr, CMR_MATROID_DEC* child, CMR_MATROID_DEC* parent, size_t childIndex,
+CMR_ERROR CMRmatroiddecPrintChild(CMR* cmr, CMR_SEYMOUR_NODE* child, CMR_SEYMOUR_NODE* parent, size_t childIndex,
   FILE* stream, size_t indent, bool printChildren, bool printParentElements, bool printMatrices, bool printGraphs,
   bool printReductions, bool printPivots)
 {
@@ -499,89 +499,89 @@ CMR_ERROR CMRmatroiddecPrintChild(CMR* cmr, CMR_MATROID_DEC* child, CMR_MATROID_
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRmatroiddecPrint(CMR* cmr, CMR_MATROID_DEC* dec, FILE* stream, bool printChildren, bool printParentElements,
+CMR_ERROR CMRmatroiddecPrint(CMR* cmr, CMR_SEYMOUR_NODE* node, FILE* stream, bool printChildren, bool printParentElements,
   bool printMatrices, bool printGraphs, bool printReductions, bool printPivots)
 {
   assert(cmr);
   assert(stream);
 
-  CMR_CALL( CMRmatroiddecPrintChild(cmr, dec, NULL, SIZE_MAX, stream, 0, printChildren, printParentElements,
+  CMR_CALL( CMRmatroiddecPrintChild(cmr, node, NULL, SIZE_MAX, stream, 0, printChildren, printParentElements,
     printMatrices, printGraphs, printReductions, printPivots) );
 
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRmatroiddecCapture(CMR* cmr, CMR_MATROID_DEC* dec)
+CMR_ERROR CMRmatroiddecCapture(CMR* cmr, CMR_SEYMOUR_NODE* node)
 {
   assert(cmr);
-  assert(dec);
+  assert(node);
 
-  dec->used++;
+  node->used++;
 
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRmatroiddecRelease(CMR* cmr, CMR_MATROID_DEC** pdec)
+CMR_ERROR CMRmatroiddecRelease(CMR* cmr, CMR_SEYMOUR_NODE** pnode)
 {
-  assert(pdec);
+  assert(pnode);
 
-  CMR_MATROID_DEC* dec = *pdec;
-  assert(dec);
+  CMR_SEYMOUR_NODE* node = *pnode;
+  assert(node);
 
-  CMRdbgMsg(0, "CMRmatroiddecRelease called for a node with usage %zu.\n", dec->used);
+  CMRdbgMsg(0, "CMRmatroiddecRelease called for a node with usage %zu.\n", node->used);
 
-  dec->used--;
-  if (!dec->used)
+  node->used--;
+  if (!node->used)
   {
     /* Release recursively. */
-    for (size_t c = 0; c < dec->numChildren; ++c)
+    for (size_t c = 0; c < node->numChildren; ++c)
     {
-      CMR_CALL( CMRmatroiddecRelease(cmr, &dec->children[c]) );
-      CMR_CALL( CMRfreeBlockArray(cmr, &dec->childRowsToParent[c]) );
-      CMR_CALL( CMRfreeBlockArray(cmr, &dec->childColumnsToParent[c]) );
+      CMR_CALL( CMRmatroiddecRelease(cmr, &node->children[c]) );
+      CMR_CALL( CMRfreeBlockArray(cmr, &node->childRowsToParent[c]) );
+      CMR_CALL( CMRfreeBlockArray(cmr, &node->childColumnsToParent[c]) );
     }
 
-    CMR_CALL( CMRchrmatFree(cmr, &dec->matrix) );
-    CMR_CALL( CMRchrmatFree(cmr, &dec->transpose) );
-    CMR_CALL( CMRfreeBlockArray(cmr, &dec->children) );
-    CMR_CALL( CMRfreeBlockArray(cmr, &dec->childRowsToParent) );
-    CMR_CALL( CMRfreeBlockArray(cmr, &dec->childColumnsToParent) );
+    CMR_CALL( CMRchrmatFree(cmr, &node->matrix) );
+    CMR_CALL( CMRchrmatFree(cmr, &node->transpose) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &node->children) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &node->childRowsToParent) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &node->childColumnsToParent) );
 
-    CMR_CALL( CMRfreeBlockArray(cmr, &dec->rowsToChild) );
-    CMR_CALL( CMRfreeBlockArray(cmr, &dec->columnsToChild) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &node->rowsToChild) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &node->columnsToChild) );
 
-    CMR_CALL( CMRgraphFree(cmr, &dec->graph) );
-    CMR_CALL( CMRfreeBlockArray(cmr, &dec->graphForest) );
-    CMR_CALL( CMRfreeBlockArray(cmr, &dec->graphCoforest) );
-    CMR_CALL( CMRfreeBlockArray(cmr, &dec->graphArcsReversed) );
+    CMR_CALL( CMRgraphFree(cmr, &node->graph) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &node->graphForest) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &node->graphCoforest) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &node->graphArcsReversed) );
 
-    CMR_CALL( CMRgraphFree(cmr, &dec->cograph) );
-    CMR_CALL( CMRfreeBlockArray(cmr, &dec->cographForest) );
-    CMR_CALL( CMRfreeBlockArray(cmr, &dec->cographCoforest) );
-    CMR_CALL( CMRfreeBlockArray(cmr, &dec->cographArcsReversed) );
+    CMR_CALL( CMRgraphFree(cmr, &node->cograph) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &node->cographForest) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &node->cographCoforest) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &node->cographArcsReversed) );
 
-    CMR_CALL( CMRfreeBlockArray(cmr, &dec->seriesParallelReductions) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &node->seriesParallelReductions) );
 
-    CMR_CALL( CMRfreeBlockArray(cmr, &dec->pivotRows) );
-    CMR_CALL( CMRfreeBlockArray(cmr, &dec->pivotColumns) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &node->pivotRows) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &node->pivotColumns) );
 
-    CMR_CALL( CMRdensebinmatrixFree(cmr, &dec->denseMatrix) );
-    CMR_CALL( CMRfreeBlockArray(cmr, &dec->denseRowsOriginal) );
-    CMR_CALL( CMRfreeBlockArray(cmr, &dec->denseColumnsOriginal) );
-    CMR_CALL( CMRfreeBlockArray(cmr, &dec->nestedMinorsRowsDense) );
-    CMR_CALL( CMRfreeBlockArray(cmr, &dec->nestedMinorsColumnsDense) );
+    CMR_CALL( CMRdensebinmatrixFree(cmr, &node->denseMatrix) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &node->denseRowsOriginal) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &node->denseColumnsOriginal) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &node->nestedMinorsRowsDense) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &node->nestedMinorsColumnsDense) );
 
-    CMR_CALL( CMRfreeBlockArray(cmr, &dec->nestedMinorsSequenceNumRows) );
-    CMR_CALL( CMRfreeBlockArray(cmr, &dec->nestedMinorsSequenceNumColumns) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &node->nestedMinorsSequenceNumRows) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &node->nestedMinorsSequenceNumColumns) );
 
-    CMR_CALL( CMRchrmatFree(cmr, &dec->nestedMinorsMatrix) );
-    CMR_CALL( CMRchrmatFree(cmr, &dec->nestedMinorsTranspose) );
-    CMR_CALL( CMRfreeBlockArray(cmr, &dec->nestedMinorsRowsOriginal) );
-    CMR_CALL( CMRfreeBlockArray(cmr, &dec->nestedMinorsColumnsOriginal) );
+    CMR_CALL( CMRchrmatFree(cmr, &node->nestedMinorsMatrix) );
+    CMR_CALL( CMRchrmatFree(cmr, &node->nestedMinorsTranspose) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &node->nestedMinorsRowsOriginal) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &node->nestedMinorsColumnsOriginal) );
 
-    CMR_CALL( CMRfreeBlock(cmr, pdec) );
+    CMR_CALL( CMRfreeBlock(cmr, pnode) );
   }
-  *pdec = NULL;
+  *pnode = NULL;
 
   return CMR_OKAY;
 }
@@ -589,107 +589,107 @@ CMR_ERROR CMRmatroiddecRelease(CMR* cmr, CMR_MATROID_DEC** pdec)
 
 static
 CMR_ERROR createNode(
-  CMR* cmr,
-  CMR_MATROID_DEC** pdec,
-  bool isTernary,
-  CMR_MATROID_DEC_TYPE type,
-  size_t numRows,
-  size_t numColumns
+  CMR* cmr,                     /**< \ref CMR environment. */
+  CMR_SEYMOUR_NODE** pnode,     /**< Pointer for storing the new Seymour decomposition node. */
+  bool isTernary,               /**< Whether the node is ternary. */
+  CMR_SEYMOUR_NODE_TYPE type,   /**< Type of the new node. */
+  size_t numRows,               /**< Number of rows. */
+  size_t numColumns             /**< Number of columns. */
 )
 {
   assert(cmr);
-  assert(pdec);
+  assert(pnode);
 
   CMRdbgMsg(10, "Creating a node for a %zu-by-%zu matrix.\n", numRows, numColumns);
 
-  CMR_CALL( CMRallocBlock(cmr, pdec) );
-  CMR_MATROID_DEC* dec = *pdec;
-  dec->type = type;
-  dec->isTernary = isTernary;
-  dec->used = 1;
+  CMR_CALL( CMRallocBlock(cmr, pnode) );
+  CMR_SEYMOUR_NODE* node = *pnode;
+  node->type = type;
+  node->isTernary = isTernary;
+  node->used = 1;
 
-  dec->regularity = 0;
-  dec->graphicness = 0;
-  dec->cographicness = 0;
+  node->regularity = 0;
+  node->graphicness = 0;
+  node->cographicness = 0;
 
-  dec->matrix = NULL;
-  dec->transpose = NULL;
+  node->matrix = NULL;
+  node->transpose = NULL;
 
-  dec->numChildren = 0;
-  dec->children = NULL;
-  dec->childRowsToParent = NULL;
-  dec->childColumnsToParent = NULL;
+  node->numChildren = 0;
+  node->children = NULL;
+  node->childRowsToParent = NULL;
+  node->childColumnsToParent = NULL;
 
-  dec->numRows = numRows;
-  dec->rowsToChild = NULL;
+  node->numRows = numRows;
+  node->rowsToChild = NULL;
   if (numRows)
   {
-    CMR_CALL( CMRallocBlockArray(cmr, &dec->rowsToChild, numRows) );
+    CMR_CALL( CMRallocBlockArray(cmr, &node->rowsToChild, numRows) );
     for (size_t row = 0; row < numRows; ++row)
-      dec->rowsToChild[row] = SIZE_MAX;
+      node->rowsToChild[row] = SIZE_MAX;
   }
 
-  dec->numColumns = numColumns;
-  dec->columnsToChild = NULL;
+  node->numColumns = numColumns;
+  node->columnsToChild = NULL;
   if (numColumns)
   {
-    CMR_CALL( CMRallocBlockArray(cmr, &dec->columnsToChild, numColumns) );
+    CMR_CALL( CMRallocBlockArray(cmr, &node->columnsToChild, numColumns) );
     for (size_t column = 0; column < numColumns; ++column)
-      dec->columnsToChild[column] = SIZE_MAX;
+      node->columnsToChild[column] = SIZE_MAX;
   }
 
-  dec->testedTwoConnected = false;
-  dec->testedR10 = false;
+  node->testedTwoConnected = false;
+  node->testedR10 = false;
 
-  dec->graph = NULL;
-  dec->graphForest = NULL;
-  dec->graphCoforest = NULL;
-  dec->graphArcsReversed = NULL;
+  node->graph = NULL;
+  node->graphForest = NULL;
+  node->graphCoforest = NULL;
+  node->graphArcsReversed = NULL;
 
-  dec->cograph = NULL;
-  dec->cographForest = NULL;
-  dec->cographCoforest = NULL;
-  dec->cographArcsReversed = NULL;
+  node->cograph = NULL;
+  node->cographForest = NULL;
+  node->cographCoforest = NULL;
+  node->cographArcsReversed = NULL;
 
-  dec->testedSeriesParallel = false;
-  dec->seriesParallelReductions = NULL;
-  dec->numSeriesParallelReductions = 0;
+  node->testedSeriesParallel = false;
+  node->seriesParallelReductions = NULL;
+  node->numSeriesParallelReductions = 0;
 
-  dec->numPivots = 0;
-  dec->pivotRows = NULL;
-  dec->pivotColumns = NULL;
+  node->numPivots = 0;
+  node->pivotRows = NULL;
+  node->pivotColumns = NULL;
 
-  dec->denseMatrix = NULL;
-  dec->denseRowsOriginal = NULL;
-  dec->denseColumnsOriginal = NULL;
-  dec->nestedMinorsRowsDense = NULL;
-  dec->nestedMinorsColumnsDense = NULL;
+  node->denseMatrix = NULL;
+  node->denseRowsOriginal = NULL;
+  node->denseColumnsOriginal = NULL;
+  node->nestedMinorsRowsDense = NULL;
+  node->nestedMinorsColumnsDense = NULL;
 
-  dec->nestedMinorsLength = 0;
-  dec->nestedMinorsSequenceNumRows = NULL;
-  dec->nestedMinorsSequenceNumColumns = NULL;
+  node->nestedMinorsLength = 0;
+  node->nestedMinorsSequenceNumRows = NULL;
+  node->nestedMinorsSequenceNumColumns = NULL;
 
-  dec->nestedMinorsMatrix = NULL;
-  dec->nestedMinorsTranspose = NULL;
-  dec->nestedMinorsRowsOriginal = NULL;
-  dec->nestedMinorsColumnsOriginal = NULL;
+  node->nestedMinorsMatrix = NULL;
+  node->nestedMinorsTranspose = NULL;
+  node->nestedMinorsRowsOriginal = NULL;
+  node->nestedMinorsColumnsOriginal = NULL;
 
-  dec->nestedMinorsLastGraphic = SIZE_MAX;
-  dec->nestedMinorsLastCographic = SIZE_MAX;
+  node->nestedMinorsLastGraphic = SIZE_MAX;
+  node->nestedMinorsLastCographic = SIZE_MAX;
 
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRmatroiddecCloneUnknown(CMR* cmr, CMR_MATROID_DEC* dec, CMR_MATROID_DEC** pclone)
+CMR_ERROR CMRmatroiddecCloneUnknown(CMR* cmr, CMR_SEYMOUR_NODE* node, CMR_SEYMOUR_NODE** pclone)
 {
   assert(cmr);
-  assert(dec);
+  assert(node);
   assert(pclone);
 
-  CMR_CALL( createNode(cmr, pclone, dec->isTernary, CMR_MATROID_DEC_TYPE_UNKNOWN, dec->numRows, dec->numColumns) );
-  CMR_MATROID_DEC* clone = *pclone;
+  CMR_CALL( createNode(cmr, pclone, node->isTernary, CMR_MATROID_DEC_TYPE_UNKNOWN, node->numRows, node->numColumns) );
+    CMR_SEYMOUR_NODE* clone = *pclone;
 
-  CMR_CALL( CMRchrmatCopy(cmr, dec->matrix, &clone->matrix) );
+  CMR_CALL( CMRchrmatCopy(cmr, node->matrix, &clone->matrix) );
 
   return CMR_OKAY;
 }
@@ -701,11 +701,11 @@ CMR_ERROR CMRmatroiddecCloneUnknown(CMR* cmr, CMR_MATROID_DEC* dec, CMR_MATROID_
 
 static
 CMR_ERROR updateRowsColumnsToParent(
-  CMR* cmr,                 /**< \ref CMR environment. */
-  CMR_MATROID_DEC* parent,  /**< Parent node. */
-  size_t childIndex,        /**< Child index. */
-  size_t* parentRows,       /**< Array indicating parent row of each row of the child. */
-  size_t* parentColumns     /**< Array indicating parent column of each column of the child. */
+  CMR* cmr,                   /**< \ref CMR environment. */
+  CMR_SEYMOUR_NODE* parent,   /**< Seymour decomposition parent node. */
+  size_t childIndex,          /**< Child index. */
+  size_t* parentRows,         /**< Array indicating parent row of each row of the child. */
+  size_t* parentColumns       /**< Array indicating parent column of each column of the child. */
 )
 {
   assert(parent);
@@ -714,7 +714,7 @@ CMR_ERROR updateRowsColumnsToParent(
   assert(parent->children);
   assert(childIndex < parent->numChildren);
 
-  CMR_MATROID_DEC* child = parent->children[childIndex];
+    CMR_SEYMOUR_NODE* child = parent->children[childIndex];
   assert(child);
   assert(parent->childRowsToParent[childIndex] == NULL);
   assert(parent->childColumnsToParent[childIndex] == NULL);
@@ -743,7 +743,7 @@ CMR_ERROR updateRowsColumnsToParent(
 
 static
 CMR_ERROR updateRowsColumnsToChild(
-  CMR_MATROID_DEC* parent,  /**< Decomposition node of parent. */
+  CMR_SEYMOUR_NODE* parent, /**< Seymour decomposition node of parent. */
   size_t childIndex,        /**< An index of a child of \p parent. */
   size_t* parentRows,       /**< Array indicating parent row of each row of the child. */
   size_t firstRow,          /**< First index of \p parentRows to consider. */
@@ -781,7 +781,7 @@ CMR_ERROR updateRowsColumnsToChild(
 static
 CMR_ERROR updateChildMatrix(
   CMR* cmr,                 /**< \ref CMR environment. */
-  CMR_MATROID_DEC* parent,  /**< Decomposition node. */
+  CMR_SEYMOUR_NODE* parent, /**< Parent node in Seymour decomposition. */
   size_t childIndex         /**< Index of child to update. */
 )
 {
@@ -789,7 +789,7 @@ CMR_ERROR updateChildMatrix(
   assert(parent);
   assert(childIndex < parent->numChildren);
 
-  CMR_MATROID_DEC* child = parent->children[childIndex];
+  CMR_SEYMOUR_NODE* child = parent->children[childIndex];
 
   size_t* rows = NULL;
   CMR_CALL( CMRallocStackArray(cmr, &rows, child->numRows) );
@@ -816,45 +816,45 @@ CMR_ERROR updateChildMatrix(
 }
 
 
-CMR_ERROR CMRmatroiddecCreateMatrixRoot(CMR* cmr, CMR_MATROID_DEC** pdec, bool isTernary, CMR_CHRMAT* matrix)
+CMR_ERROR CMRmatroiddecCreateMatrixRoot(CMR* cmr, CMR_SEYMOUR_NODE** pnode, bool isTernary, CMR_CHRMAT* matrix)
 {
   assert(cmr);
-  assert(pdec);
+  assert(pnode);
   assert(matrix);
 
-  CMR_CALL( createNode(cmr, pdec, isTernary, CMR_MATROID_DEC_TYPE_UNKNOWN, matrix->numRows, matrix->numColumns) );
-  CMR_MATROID_DEC* dec = *pdec;
+  CMR_CALL( createNode(cmr, pnode, isTernary, CMR_MATROID_DEC_TYPE_UNKNOWN, matrix->numRows, matrix->numColumns) );
+  CMR_SEYMOUR_NODE* node = *pnode;
 
-  CMR_CALL( CMRchrmatCopy(cmr, matrix, &dec->matrix) );
+  CMR_CALL( CMRchrmatCopy(cmr, matrix, &node->matrix) );
 
-  assert(matrix->numRows == dec->numRows);
-  assert(matrix->numColumns == dec->numColumns);
+  assert(matrix->numRows == node->numRows);
+  assert(matrix->numColumns == node->numColumns);
 
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRmatroiddecSetNumChildren(CMR* cmr, CMR_MATROID_DEC* dec, size_t numChildren)
+CMR_ERROR CMRmatroiddecSetNumChildren(CMR* cmr, CMR_SEYMOUR_NODE* node, size_t numChildren)
 {
   assert(cmr);
-  assert(dec);
+  assert(node);
 
-  assert(dec->numChildren == 0); /* We assume that there were no children so far. */
+  assert(node->numChildren == 0); /* We assume that there were no children so far. */
 
-  dec->numChildren = numChildren;
-  CMR_CALL( CMRallocBlockArray(cmr, &dec->children, numChildren) );
-  CMR_CALL( CMRallocBlockArray(cmr, &dec->childRowsToParent, numChildren) );
-  CMR_CALL( CMRallocBlockArray(cmr, &dec->childColumnsToParent, numChildren) );
+  node->numChildren = numChildren;
+  CMR_CALL( CMRallocBlockArray(cmr, &node->children, numChildren) );
+  CMR_CALL( CMRallocBlockArray(cmr, &node->childRowsToParent, numChildren) );
+  CMR_CALL( CMRallocBlockArray(cmr, &node->childColumnsToParent, numChildren) );
   for (size_t c = 0; c < numChildren; ++c)
   {
-    dec->children[c] = NULL;
-    dec->childRowsToParent[c] = NULL;
-    dec->childColumnsToParent[c] = NULL;
+    node->children[c] = NULL;
+    node->childRowsToParent[c] = NULL;
+    node->childColumnsToParent[c] = NULL;
   }
 
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRmatroiddecCreateChildFromMatrices(CMR* cmr, CMR_MATROID_DEC* parent, size_t childIndex, CMR_CHRMAT* matrix,
+CMR_ERROR CMRmatroiddecCreateChildFromMatrices(CMR* cmr, CMR_SEYMOUR_NODE* parent, size_t childIndex, CMR_CHRMAT* matrix,
   CMR_CHRMAT* transpose, CMR_ELEMENT* rowsToParent, CMR_ELEMENT* columnsToParent)
 {
   assert(cmr);
@@ -866,12 +866,12 @@ CMR_ERROR CMRmatroiddecCreateChildFromMatrices(CMR* cmr, CMR_MATROID_DEC* parent
 
   CMR_CALL( createNode(cmr, &parent->children[childIndex], parent->isTernary, CMR_MATROID_DEC_TYPE_UNKNOWN,
     matrix->numRows, matrix->numColumns) );
-  CMR_MATROID_DEC* dec = parent->children[childIndex];
-  dec->matrix = matrix;
-  dec->transpose = transpose;
+  CMR_SEYMOUR_NODE* node = parent->children[childIndex];
+  node->matrix = matrix;
+  node->transpose = transpose;
 
-  CMR_CALL( CMRallocBlockArray(cmr, &parent->childRowsToParent[childIndex], dec->numRows) );
-  CMR_CALL( CMRallocBlockArray(cmr, &parent->childColumnsToParent[childIndex], dec->numColumns) );
+  CMR_CALL( CMRallocBlockArray(cmr, &parent->childRowsToParent[childIndex], node->numRows) );
+  CMR_CALL( CMRallocBlockArray(cmr, &parent->childColumnsToParent[childIndex], node->numColumns) );
 
   for (size_t row = 0; row < matrix->numRows; ++row)
   {
@@ -897,16 +897,16 @@ CMR_ERROR CMRmatroiddecCreateChildFromMatrices(CMR* cmr, CMR_MATROID_DEC* parent
 }
 
 
-CMR_ERROR CMRmatroiddecUpdateOneSum (CMR* cmr, CMR_MATROID_DEC* dec, size_t numChildren)
+CMR_ERROR CMRmatroiddecUpdateOneSum (CMR* cmr, CMR_SEYMOUR_NODE* node, size_t numChildren)
 {
   assert(cmr);
-  assert(dec);
-  assert(dec->type == CMR_MATROID_DEC_TYPE_UNKNOWN);
+  assert(node);
+  assert(node->type == CMR_MATROID_DEC_TYPE_UNKNOWN);
   assert(numChildren >= 2);
 
-  dec->type = CMR_MATROID_DEC_TYPE_ONE_SUM;
+  node->type = CMR_MATROID_DEC_TYPE_ONE_SUM;
 
-  CMR_CALL( CMRmatroiddecSetNumChildren(cmr, dec, numChildren) );
+  CMR_CALL( CMRmatroiddecSetNumChildren(cmr, node, numChildren) );
 
   return CMR_OKAY;
 }
@@ -939,8 +939,8 @@ CMR_ERROR CMRmatroiddecUpdateOneSum (CMR* cmr, CMR_MATROID_DEC* dec, size_t numC
 //   return CMR_OKAY;
 // }
 
-CMR_ERROR CMRmatroiddecUpdateSubmatrix(CMR* cmr, CMR_MATROID_DEC* dec, CMR_SUBMAT* submatrix,
-  CMR_MATROID_DEC_TYPE type)
+CMR_ERROR CMRmatroiddecUpdateSubmatrix(CMR* cmr, CMR_SEYMOUR_NODE* dec, CMR_SUBMAT* submatrix,
+                                       CMR_SEYMOUR_NODE_TYPE type)
 {
   assert(cmr);
   assert(dec);
@@ -972,24 +972,24 @@ CMR_ERROR CMRmatroiddecUpdateSubmatrix(CMR* cmr, CMR_MATROID_DEC* dec, CMR_SUBMA
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRmatroiddecUpdateTwoSum(CMR* cmr, CMR_MATROID_DEC* dec, CMR_SEPA* separation)
+CMR_ERROR CMRmatroiddecUpdateTwoSum(CMR* cmr, CMR_SEYMOUR_NODE* node, CMR_SEPA* separation)
 {
   assert(cmr);
-  assert(dec);
+  assert(node);
   assert(separation);
 
   size_t numBaseRows[2];
   size_t numBaseColumns[2];
   CMR_CALL( CMRsepaComputeSizes(separation, &numBaseRows[0], &numBaseColumns[0], &numBaseRows[1], &numBaseColumns[1]) );
 
-  dec->type = CMR_MATROID_DEC_TYPE_TWO_SUM;
-  CMR_CALL( CMRmatroiddecSetNumChildren(cmr, dec, 2) );
+  node->type = CMR_MATROID_DEC_TYPE_TWO_SUM;
+  CMR_CALL( CMRmatroiddecSetNumChildren(cmr, node, 2) );
   for (size_t childIndex = 0; childIndex < 2; ++childIndex)
   {
     size_t numExtraRows = 1 - childIndex;
     size_t numExtraColumns = childIndex;
 
-    CMR_CALL( createNode(cmr, &dec->children[childIndex], dec->isTernary, CMR_MATROID_DEC_TYPE_UNKNOWN,
+    CMR_CALL( createNode(cmr, &node->children[childIndex], node->isTernary, CMR_MATROID_DEC_TYPE_UNKNOWN,
       numBaseRows[childIndex] + numExtraRows, numBaseColumns[childIndex] + numExtraColumns) );
 
     /* Compute parent rows of child. */
@@ -1042,82 +1042,82 @@ CMR_ERROR CMRmatroiddecUpdateTwoSum(CMR* cmr, CMR_MATROID_DEC* dec, CMR_SEPA* se
     }
     assert(childColumn == numBaseColumns[childIndex] + numExtraColumns);
 
-    CMR_CALL( updateRowsColumnsToParent(cmr, dec, childIndex, parentRows, parentColumns) );
-    CMR_CALL( updateRowsColumnsToChild(dec, childIndex, parentRows, 0, numBaseRows[childIndex], parentColumns,
+    CMR_CALL( updateRowsColumnsToParent(cmr, node, childIndex, parentRows, parentColumns) );
+    CMR_CALL( updateRowsColumnsToChild(node, childIndex, parentRows, 0, numBaseRows[childIndex], parentColumns,
       childIndex, numBaseColumns[childIndex] + childIndex) );
 
     CMR_CALL( CMRfreeStackArray(cmr, &parentColumns) );
     CMR_CALL( CMRfreeStackArray(cmr, &parentRows) );
 
-    CMR_CALL( updateChildMatrix(cmr, dec, childIndex) );
+    CMR_CALL( updateChildMatrix(cmr, node, childIndex) );
   }
 
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRmatroiddecUpdatePivots(CMR* cmr, CMR_MATROID_DEC* dec, size_t numPivots, size_t* pivotRows,
+CMR_ERROR CMRmatroiddecUpdatePivots(CMR* cmr, CMR_SEYMOUR_NODE* node, size_t numPivots, size_t* pivotRows,
   size_t* pivotColumns, CMR_CHRMAT* matrix, CMR_CHRMAT* transpose)
 {
   assert(cmr);
-  assert(dec);
+  assert(node);
   assert(numPivots > 0);
   assert(pivotRows);
   assert(pivotColumns);
   assert(matrix);
 
-  dec->type = CMR_MATROID_DEC_TYPE_PIVOTS;
-  CMR_CALL( CMRmatroiddecSetNumChildren(cmr, dec, 1) );
-  CMR_CALL( createNode(cmr, &dec->children[0], dec->isTernary, CMR_MATROID_DEC_TYPE_UNKNOWN, dec->numRows,
-    dec->numColumns) );
-  dec->children[0]->matrix = matrix;
-  dec->children[0]->transpose = transpose;
+  node->type = CMR_MATROID_DEC_TYPE_PIVOTS;
+  CMR_CALL( CMRmatroiddecSetNumChildren(cmr, node, 1) );
+  CMR_CALL( createNode(cmr, &node->children[0], node->isTernary, CMR_MATROID_DEC_TYPE_UNKNOWN, node->numRows,
+                         node->numColumns) );
+  node->children[0]->matrix = matrix;
+  node->children[0]->transpose = transpose;
 
-  dec->numPivots = numPivots;
-  CMR_CALL( CMRduplicateBlockArray(cmr, &dec->pivotRows, numPivots, pivotRows) );
-  CMR_CALL( CMRduplicateBlockArray(cmr, &dec->pivotColumns, numPivots, pivotColumns) );
+  node->numPivots = numPivots;
+  CMR_CALL( CMRduplicateBlockArray(cmr, &node->pivotRows, numPivots, pivotRows) );
+  CMR_CALL( CMRduplicateBlockArray(cmr, &node->pivotColumns, numPivots, pivotColumns) );
 
-  CMR_CALL( CMRallocBlockArray(cmr, &dec->childRowsToParent[0], dec->numRows) );
-  CMR_CALL( CMRallocBlockArray(cmr, &dec->childColumnsToParent[0], dec->numColumns) );
-  for (size_t row = 0; row < dec->numRows; ++row)
-    dec->childRowsToParent[0][row] = CMRrowToElement(row);
-  for (size_t column = 0; column < dec->numColumns; ++column)
-    dec->childColumnsToParent[0][column] = CMRcolumnToElement(column);
+  CMR_CALL( CMRallocBlockArray(cmr, &node->childRowsToParent[0], node->numRows) );
+  CMR_CALL( CMRallocBlockArray(cmr, &node->childColumnsToParent[0], node->numColumns) );
+  for (size_t row = 0; row < node->numRows; ++row)
+    node->childRowsToParent[0][row] = CMRrowToElement(row);
+  for (size_t column = 0; column < node->numColumns; ++column)
+    node->childColumnsToParent[0][column] = CMRcolumnToElement(column);
   for (size_t pivot = 0; pivot < numPivots; ++pivot)
   {
-    dec->childRowsToParent[0][pivotRows[pivot]] = CMRcolumnToElement(pivotColumns[pivot]);
-    dec->childColumnsToParent[0][pivotColumns[pivot]] = CMRrowToElement(pivotRows[pivot]);
+    node->childRowsToParent[0][pivotRows[pivot]] = CMRcolumnToElement(pivotColumns[pivot]);
+    node->childColumnsToParent[0][pivotColumns[pivot]] = CMRrowToElement(pivotRows[pivot]);
   }
 
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRmatroiddecUpdateThreeSumInit(CMR* cmr, CMR_MATROID_DEC* dec)
+CMR_ERROR CMRmatroiddecUpdateThreeSumInit(CMR* cmr, CMR_SEYMOUR_NODE* node)
 {
   assert(cmr);
-  assert(dec);
+  assert(node);
 
-  dec->type = CMR_MATROID_DEC_TYPE_THREE_SUM;
-  CMR_CALL( CMRmatroiddecSetNumChildren(cmr, dec, 2) );
+  node->type = CMR_MATROID_DEC_TYPE_THREE_SUM;
+  CMR_CALL( CMRmatroiddecSetNumChildren(cmr, node, 2) );
 
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRmatroiddecUpdateThreeSumCreateWideFirstChild(CMR* cmr, CMR_MATROID_DEC* dec, CMR_SEPA* separation,
+CMR_ERROR CMRmatroiddecUpdateThreeSumCreateWideFirstChild(CMR* cmr, CMR_SEYMOUR_NODE* node, CMR_SEPA* separation,
   size_t* rowsToChild, size_t* columnsToChild, size_t numChildBaseRows, size_t numChildBaseColumns, size_t extraRow,
   size_t extraColumn1, size_t extraColumn2, int8_t extraEntry)
 {
   assert(cmr);
-  assert(dec);
-  assert(dec->matrix);
-  assert(dec->transpose);
+  assert(node);
+  assert(node->matrix);
+  assert(node->transpose);
   assert(separation);
   assert(rowsToChild);
   assert(columnsToChild);
-  assert(numChildBaseRows < dec->numRows);
-  assert(numChildBaseColumns < dec->numColumns);
-  assert(extraRow < dec->numRows);
-  assert(extraColumn1 < dec->numColumns);
-  assert(extraColumn2 < dec->numColumns);
+  assert(numChildBaseRows < node->numRows);
+  assert(numChildBaseColumns < node->numColumns);
+  assert(extraRow < node->numRows);
+  assert(extraColumn1 < node->numColumns);
+  assert(extraColumn2 < node->numColumns);
   assert(extraEntry == -1 || extraEntry == 1);
 
   /* We first create the extra column densely. */
@@ -1129,22 +1129,22 @@ CMR_ERROR CMRmatroiddecUpdateThreeSumCreateWideFirstChild(CMR* cmr, CMR_MATROID_
   CMR_CALL( CMRallocStackArray(cmr, &denseExtraColumn, numChildBaseRows) );
   for (size_t column = 0; column < numChildBaseRows; ++column)
     denseExtraColumn[column] = 0;
-  size_t first = dec->transpose->rowSlice[extraColumn1];
-  size_t beyond = dec->transpose->rowSlice[extraColumn1 + 1];
+  size_t first = node->transpose->rowSlice[extraColumn1];
+  size_t beyond = node->transpose->rowSlice[extraColumn1 + 1];
   for (size_t e = first; e < beyond; ++e)
   {
-    size_t row = dec->transpose->entryColumns[e];
+    size_t row = node->transpose->entryColumns[e];
     size_t childRow = rowsToChild[row];
     if (childRow < numChildBaseRows)
-      denseExtraColumn[childRow] = dec->transpose->entryValues[e];
+      denseExtraColumn[childRow] = node->transpose->entryValues[e];
   }
 
   /* Main matrix. */
   size_t childEntry = 0;
   CMR_CHRMAT* childMatrix = NULL;
   CMR_CALL( CMRchrmatCreate(cmr, &childMatrix, numChildBaseRows + 1, numChildBaseColumns + 2,
-    dec->matrix->numNonzeros + dec->matrix->numRows) );
-  for (size_t row = 0; row < dec->numRows; ++row)
+    node->matrix->numNonzeros + node->matrix->numRows) );
+  for (size_t row = 0; row < node->numRows; ++row)
   {
     size_t childRow = rowsToChild[row];
     if (childRow >= numChildBaseRows)
@@ -1154,17 +1154,17 @@ CMR_ERROR CMRmatroiddecUpdateThreeSumCreateWideFirstChild(CMR* cmr, CMR_MATROID_
     childMatrix->rowSlice[childRow] = childEntry;
 
     /* Main entries. */
-    size_t first = dec->matrix->rowSlice[row];
-    size_t beyond = dec->matrix->rowSlice[row + 1];
+    size_t first = node->matrix->rowSlice[row];
+    size_t beyond = node->matrix->rowSlice[row + 1];
     for (size_t e = first; e < beyond; ++e)
     {
-      size_t column = dec->matrix->entryColumns[e];
+      size_t column = node->matrix->entryColumns[e];
       size_t childColumn = columnsToChild[column];
       if (childColumn >= numChildBaseColumns)
         continue;
 
       childMatrix->entryColumns[childEntry] = childColumn;
-      childMatrix->entryValues[childEntry] = dec->matrix->entryValues[e];
+      childMatrix->entryValues[childEntry] = node->matrix->entryValues[e];
       ++childEntry;
     }
 
@@ -1182,23 +1182,23 @@ CMR_ERROR CMRmatroiddecUpdateThreeSumCreateWideFirstChild(CMR* cmr, CMR_MATROID_
   childMatrix->rowSlice[numChildBaseRows] = childEntry;
 
   /* Extra row */
-  first = dec->matrix->rowSlice[extraRow];
-  beyond = dec->matrix->rowSlice[extraRow + 1];
+  first = node->matrix->rowSlice[extraRow];
+  beyond = node->matrix->rowSlice[extraRow + 1];
   for (size_t e = first; e < beyond; ++e)
   {
-    size_t column = dec->matrix->entryColumns[e];
+    size_t column = node->matrix->entryColumns[e];
     size_t childColumn = columnsToChild[column];
     if (childColumn >= numChildBaseColumns)
       continue;
 
     childMatrix->entryColumns[childEntry] = childColumn;
-    childMatrix->entryValues[childEntry] = dec->matrix->entryValues[e];
+    childMatrix->entryValues[childEntry] = node->matrix->entryValues[e];
     ++childEntry;
   }
   parentRows[numChildBaseRows] = extraRow;
   parentColumns[numChildBaseColumns] = extraColumn1;
   parentColumns[numChildBaseColumns + 1] = extraColumn2;
-  for (size_t column = 0; column < dec->numColumns; ++column)
+  for (size_t column = 0; column < node->numColumns; ++column)
   {
     size_t childColumn = columnsToChild[column];
     if (childColumn < numChildBaseColumns)
@@ -1215,13 +1215,13 @@ CMR_ERROR CMRmatroiddecUpdateThreeSumCreateWideFirstChild(CMR* cmr, CMR_MATROID_
   childMatrix->numNonzeros = childEntry;
 
   /* Create the actual decomposition node. */
-  CMR_CALL( createNode(cmr, &dec->children[0], dec->isTernary, CMR_MATROID_DEC_TYPE_UNKNOWN, childMatrix->numRows,
+  CMR_CALL( createNode(cmr, &node->children[0], node->isTernary, CMR_MATROID_DEC_TYPE_UNKNOWN, childMatrix->numRows,
     childMatrix->numColumns) );
-  CMR_MATROID_DEC* child = dec->children[0];
+  CMR_SEYMOUR_NODE* child = node->children[0];
   child->matrix = childMatrix;
 
-  CMR_CALL( updateRowsColumnsToParent(cmr, dec, 0, parentRows, parentColumns) );
-  CMR_CALL( updateRowsColumnsToChild(dec, 0, parentRows, 0, numChildBaseRows, parentColumns, 0, numChildBaseColumns) );
+  CMR_CALL( updateRowsColumnsToParent(cmr, node, 0, parentRows, parentColumns) );
+  CMR_CALL( updateRowsColumnsToChild(node, 0, parentRows, 0, numChildBaseRows, parentColumns, 0, numChildBaseColumns) );
 
   CMR_CALL( CMRfreeStackArray(cmr, &denseExtraColumn) );
   CMR_CALL( CMRfreeStackArray(cmr, &parentColumns) );
@@ -1245,22 +1245,22 @@ CMR_ERROR CMRmatroiddecUpdateThreeSumCreateWideFirstChild(CMR* cmr, CMR_MATROID_
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRmatroiddecUpdateThreeSumCreateWideSecondChild(CMR* cmr, CMR_MATROID_DEC* dec, CMR_SEPA* separation,
+CMR_ERROR CMRmatroiddecUpdateThreeSumCreateWideSecondChild(CMR* cmr, CMR_SEYMOUR_NODE* node, CMR_SEPA* separation,
   size_t* rowsToChild, size_t* columnsToChild, size_t numChildBaseRows, size_t numChildBaseColumns, size_t extraRow,
   size_t extraColumn1, size_t extraColumn2, int8_t extraEntry)
 {
   assert(cmr);
-  assert(dec);
-  assert(dec->matrix);
-  assert(dec->transpose);
+  assert(node);
+  assert(node->matrix);
+  assert(node->transpose);
   assert(separation);
   assert(rowsToChild);
   assert(columnsToChild);
-  assert(numChildBaseRows < dec->numRows);
-  assert(numChildBaseColumns < dec->numColumns);
-  assert(extraRow < dec->numRows);
-  assert(extraColumn1 < dec->numColumns);
-  assert(extraColumn2 < dec->numColumns);
+  assert(numChildBaseRows < node->numRows);
+  assert(numChildBaseColumns < node->numColumns);
+  assert(extraRow < node->numRows);
+  assert(extraColumn1 < node->numColumns);
+  assert(extraColumn2 < node->numColumns);
   assert(extraEntry == -1 || extraEntry == 1);
 
   /* We first create the extra column densely. */
@@ -1272,21 +1272,21 @@ CMR_ERROR CMRmatroiddecUpdateThreeSumCreateWideSecondChild(CMR* cmr, CMR_MATROID
   CMR_CALL( CMRallocStackArray(cmr, &denseExtraColumn, numChildBaseRows) );
   for (size_t column = 0; column < numChildBaseRows; ++column)
     denseExtraColumn[column] = 0;
-  size_t first = dec->transpose->rowSlice[extraColumn1];
-  size_t beyond = dec->transpose->rowSlice[extraColumn1 + 1];
+  size_t first = node->transpose->rowSlice[extraColumn1];
+  size_t beyond = node->transpose->rowSlice[extraColumn1 + 1];
   for (size_t e = first; e < beyond; ++e)
   {
-    size_t row = dec->transpose->entryColumns[e];
+    size_t row = node->transpose->entryColumns[e];
     size_t childRow = rowsToChild[row];
     if (childRow < numChildBaseRows)
-      denseExtraColumn[childRow] = dec->transpose->entryValues[e];
+      denseExtraColumn[childRow] = node->transpose->entryValues[e];
   }
 
   /* Main matrix. */
   size_t childEntry = 0;
   CMR_CHRMAT* childMatrix = NULL;
   CMR_CALL( CMRchrmatCreate(cmr, &childMatrix, numChildBaseRows + 1, numChildBaseColumns + 2,
-    dec->matrix->numNonzeros + dec->matrix->numRows) );
+    node->matrix->numNonzeros + node->matrix->numRows) );
 
   /* Extra entry */
   childMatrix->entryColumns[childEntry] = 0;
@@ -1295,21 +1295,21 @@ CMR_ERROR CMRmatroiddecUpdateThreeSumCreateWideSecondChild(CMR* cmr, CMR_MATROID
 
   /* Extra row */
   childMatrix->rowSlice[0] = 0;
-  first = dec->matrix->rowSlice[extraRow];
-  beyond = dec->matrix->rowSlice[extraRow + 1];
+  first = node->matrix->rowSlice[extraRow];
+  beyond = node->matrix->rowSlice[extraRow + 1];
   for (size_t e = first; e < beyond; ++e)
   {
-    size_t column = dec->matrix->entryColumns[e];
+    size_t column = node->matrix->entryColumns[e];
     size_t childColumn = columnsToChild[column];
     if (childColumn >= numChildBaseColumns)
       continue;
 
     childMatrix->entryColumns[childEntry] = childColumn + 2;
-    childMatrix->entryValues[childEntry] = dec->matrix->entryValues[e];
+    childMatrix->entryValues[childEntry] = node->matrix->entryValues[e];
     ++childEntry;
   }
 
-  for (size_t row = 0; row < dec->numRows; ++row)
+  for (size_t row = 0; row < node->numRows; ++row)
   {
     size_t childRow = rowsToChild[row];
     if (childRow >= numChildBaseRows)
@@ -1330,17 +1330,17 @@ CMR_ERROR CMRmatroiddecUpdateThreeSumCreateWideSecondChild(CMR* cmr, CMR_MATROID
     }
 
     /* Main entries. */
-    size_t first = dec->matrix->rowSlice[row];
-    size_t beyond = dec->matrix->rowSlice[row + 1];
+    size_t first = node->matrix->rowSlice[row];
+    size_t beyond = node->matrix->rowSlice[row + 1];
     for (size_t e = first; e < beyond; ++e)
     {
-      size_t column = dec->matrix->entryColumns[e];
+      size_t column = node->matrix->entryColumns[e];
       size_t childColumn = columnsToChild[column];
       if (childColumn >= numChildBaseColumns)
         continue;
 
       childMatrix->entryColumns[childEntry] = childColumn + 2;
-      childMatrix->entryValues[childEntry] = dec->matrix->entryValues[e];
+      childMatrix->entryValues[childEntry] = node->matrix->entryValues[e];
       ++childEntry;
     }
   }
@@ -1349,7 +1349,7 @@ CMR_ERROR CMRmatroiddecUpdateThreeSumCreateWideSecondChild(CMR* cmr, CMR_MATROID
   parentRows[0] = extraRow;
   parentColumns[0] = extraColumn1;
   parentColumns[1] = extraColumn2;
-  for (size_t column = 0; column < dec->numColumns; ++column)
+  for (size_t column = 0; column < node->numColumns; ++column)
   {
     size_t childColumn = columnsToChild[column];
     if (childColumn < numChildBaseColumns)
@@ -1361,13 +1361,13 @@ CMR_ERROR CMRmatroiddecUpdateThreeSumCreateWideSecondChild(CMR* cmr, CMR_MATROID
   childMatrix->numNonzeros = childEntry;
 
   /* Create the actual decomposition node. */
-  CMR_CALL( createNode(cmr, &dec->children[1], dec->isTernary, CMR_MATROID_DEC_TYPE_UNKNOWN, childMatrix->numRows,
+  CMR_CALL( createNode(cmr, &node->children[1], node->isTernary, CMR_MATROID_DEC_TYPE_UNKNOWN, childMatrix->numRows,
     childMatrix->numColumns) );
-  CMR_MATROID_DEC* child = dec->children[1];
+  CMR_SEYMOUR_NODE* child = node->children[1];
   child->matrix = childMatrix;
 
-  CMR_CALL( updateRowsColumnsToParent(cmr, dec, 1, parentRows, parentColumns) );
-  CMR_CALL( updateRowsColumnsToChild(dec, 1, parentRows, 1, numChildBaseRows + 1, parentColumns, 2,
+  CMR_CALL( updateRowsColumnsToParent(cmr, node, 1, parentRows, parentColumns) );
+  CMR_CALL( updateRowsColumnsToChild(node, 1, parentRows, 1, numChildBaseRows + 1, parentColumns, 2,
     numChildBaseColumns + 2) );
 
   CMR_CALL( CMRfreeStackArray(cmr, &denseExtraColumn) );
@@ -1392,21 +1392,21 @@ CMR_ERROR CMRmatroiddecUpdateThreeSumCreateWideSecondChild(CMR* cmr, CMR_MATROID
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRmatroiddecUpdateThreeSumCreateMixedFirstChild(CMR* cmr, CMR_MATROID_DEC* dec, CMR_SEPA* separation,
+CMR_ERROR CMRmatroiddecUpdateThreeSumCreateMixedFirstChild(CMR* cmr, CMR_SEYMOUR_NODE* node, CMR_SEPA* separation,
   size_t* rowsToChild, size_t* columnsToChild, size_t numChildBaseRows, size_t numChildBaseColumns, size_t extraRow1,
   size_t extraRow2, int8_t extraEntry)
 {
   assert(cmr);
-  assert(dec);
-  assert(dec->matrix);
-  assert(dec->transpose);
+  assert(node);
+  assert(node->matrix);
+  assert(node->transpose);
   assert(separation);
   assert(rowsToChild);
   assert(columnsToChild);
-  assert(numChildBaseRows < dec->numRows);
-  assert(numChildBaseColumns < dec->numColumns);
-  assert(extraRow1 < dec->numRows);
-  assert(extraRow2 < dec->numRows);
+  assert(numChildBaseRows < node->numRows);
+  assert(numChildBaseColumns < node->numColumns);
+  assert(extraRow1 < node->numRows);
+  assert(extraRow2 < node->numRows);
   assert(extraEntry == -1 || extraEntry == 1);
 
   /* Mapping from child rows/columns to parent rows/columns. */
@@ -1419,8 +1419,8 @@ CMR_ERROR CMRmatroiddecUpdateThreeSumCreateMixedFirstChild(CMR* cmr, CMR_MATROID
   size_t childEntry = 0;
   CMR_CHRMAT* childMatrix = NULL;
   CMR_CALL( CMRchrmatCreate(cmr, &childMatrix, numChildBaseRows + 2, numChildBaseColumns + 1,
-    dec->matrix->numNonzeros) );
-  for (size_t row = 0; row < dec->numRows; ++row)
+    node->matrix->numNonzeros) );
+  for (size_t row = 0; row < node->numRows; ++row)
   {
     size_t childRow = rowsToChild[row];
     if (childRow >= numChildBaseRows)
@@ -1430,34 +1430,34 @@ CMR_ERROR CMRmatroiddecUpdateThreeSumCreateMixedFirstChild(CMR* cmr, CMR_MATROID
     childMatrix->rowSlice[childRow] = childEntry;
 
     /* Main entries. */
-    size_t first = dec->matrix->rowSlice[row];
-    size_t beyond = dec->matrix->rowSlice[row + 1];
+    size_t first = node->matrix->rowSlice[row];
+    size_t beyond = node->matrix->rowSlice[row + 1];
     for (size_t e = first; e < beyond; ++e)
     {
-      size_t column = dec->matrix->entryColumns[e];
+      size_t column = node->matrix->entryColumns[e];
       size_t childColumn = columnsToChild[column];
       if (childColumn >= numChildBaseColumns)
         continue;
 
       childMatrix->entryColumns[childEntry] = childColumn;
-      childMatrix->entryValues[childEntry] = dec->matrix->entryValues[e];
+      childMatrix->entryValues[childEntry] = node->matrix->entryValues[e];
       ++childEntry;
     }
   }
   childMatrix->rowSlice[numChildBaseRows] = childEntry;
 
   /* Extra row 1 with a +1 at the end. */
-  size_t first = dec->matrix->rowSlice[extraRow1];
-  size_t beyond = dec->matrix->rowSlice[extraRow1 + 1];
+  size_t first = node->matrix->rowSlice[extraRow1];
+  size_t beyond = node->matrix->rowSlice[extraRow1 + 1];
   for (size_t e = first; e < beyond; ++e)
   {
-    size_t column = dec->matrix->entryColumns[e];
+    size_t column = node->matrix->entryColumns[e];
     size_t childColumn = columnsToChild[column];
     if (childColumn >= numChildBaseColumns)
       continue;
 
     childMatrix->entryColumns[childEntry] = childColumn;
-    childMatrix->entryValues[childEntry] = dec->matrix->entryValues[e];
+    childMatrix->entryValues[childEntry] = node->matrix->entryValues[e];
     ++childEntry;
   }
   childMatrix->entryColumns[childEntry] = numChildBaseColumns;
@@ -1467,24 +1467,24 @@ CMR_ERROR CMRmatroiddecUpdateThreeSumCreateMixedFirstChild(CMR* cmr, CMR_MATROID
   childMatrix->rowSlice[numChildBaseRows + 1] = childEntry;
 
   /* Extra row 2 with extra entry at the end. */
-  first = dec->matrix->rowSlice[extraRow2];
-  beyond = dec->matrix->rowSlice[extraRow2 + 1];
+  first = node->matrix->rowSlice[extraRow2];
+  beyond = node->matrix->rowSlice[extraRow2 + 1];
   for (size_t e = first; e < beyond; ++e)
   {
-    size_t column = dec->matrix->entryColumns[e];
+    size_t column = node->matrix->entryColumns[e];
     size_t childColumn = columnsToChild[column];
     if (childColumn >= numChildBaseColumns)
       continue;
 
     childMatrix->entryColumns[childEntry] = childColumn;
-    childMatrix->entryValues[childEntry] = dec->matrix->entryValues[e];
+    childMatrix->entryValues[childEntry] = node->matrix->entryValues[e];
     ++childEntry;
   }
   childMatrix->entryColumns[childEntry] = numChildBaseColumns;
   childMatrix->entryValues[childEntry] =  extraEntry;
   ++childEntry;
   parentRows[numChildBaseRows + 1] = extraRow2;
-  for (size_t column = 0; column < dec->numColumns; ++column)
+  for (size_t column = 0; column < node->numColumns; ++column)
   {
     size_t childColumn = columnsToChild[column];
     if (childColumn < numChildBaseColumns)
@@ -1497,13 +1497,13 @@ CMR_ERROR CMRmatroiddecUpdateThreeSumCreateMixedFirstChild(CMR* cmr, CMR_MATROID
   childMatrix->numNonzeros = childEntry;
 
   /* Create the actual decomposition node. */
-  CMR_CALL( createNode(cmr, &dec->children[0], dec->isTernary, CMR_MATROID_DEC_TYPE_UNKNOWN, childMatrix->numRows,
+  CMR_CALL( createNode(cmr, &node->children[0], node->isTernary, CMR_MATROID_DEC_TYPE_UNKNOWN, childMatrix->numRows,
     childMatrix->numColumns) );
-  CMR_MATROID_DEC* child = dec->children[0];
+  CMR_SEYMOUR_NODE* child = node->children[0];
   child->matrix = childMatrix;
 
-  CMR_CALL( updateRowsColumnsToParent(cmr, dec, 0, parentRows, parentColumns) );
-  CMR_CALL( updateRowsColumnsToChild(dec, 0, parentRows, 0, numChildBaseRows, parentColumns, 0, numChildBaseColumns) );
+  CMR_CALL( updateRowsColumnsToParent(cmr, node, 0, parentRows, parentColumns) );
+  CMR_CALL( updateRowsColumnsToChild(node, 0, parentRows, 0, numChildBaseRows, parentColumns, 0, numChildBaseColumns) );
 
   CMR_CALL( CMRfreeStackArray(cmr, &parentColumns) );
   CMR_CALL( CMRfreeStackArray(cmr, &parentRows) );
@@ -1526,21 +1526,21 @@ CMR_ERROR CMRmatroiddecUpdateThreeSumCreateMixedFirstChild(CMR* cmr, CMR_MATROID
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRmatroiddecUpdateThreeSumCreateMixedSecondChild(CMR* cmr, CMR_MATROID_DEC* dec, CMR_SEPA* separation,
+CMR_ERROR CMRmatroiddecUpdateThreeSumCreateMixedSecondChild(CMR* cmr, CMR_SEYMOUR_NODE* node, CMR_SEPA* separation,
   size_t* rowsToChild, size_t* columnsToChild, size_t numChildBaseRows, size_t numChildBaseColumns, size_t extraColumn1,
   size_t extraColumn2, int8_t extraEntry)
 {
   assert(cmr);
-  assert(dec);
-  assert(dec->matrix);
-  assert(dec->transpose);
+  assert(node);
+  assert(node->matrix);
+  assert(node->transpose);
   assert(separation);
   assert(rowsToChild);
   assert(columnsToChild);
-  assert(numChildBaseRows < dec->numRows);
-  assert(numChildBaseColumns < dec->numColumns);
-  assert(extraColumn1 < dec->numColumns);
-  assert(extraColumn2 < dec->numColumns);
+  assert(numChildBaseRows < node->numRows);
+  assert(numChildBaseColumns < node->numColumns);
+  assert(extraColumn1 < node->numColumns);
+  assert(extraColumn2 < node->numColumns);
   assert(extraEntry == -1 || extraEntry == 1);
 
   /* We first create the two extra columns densely. */
@@ -1558,30 +1558,30 @@ CMR_ERROR CMRmatroiddecUpdateThreeSumCreateMixedSecondChild(CMR* cmr, CMR_MATROI
     denseExtraColumn1[column] = 0;
     denseExtraColumn2[column] = 0;
   }
-  size_t first = dec->transpose->rowSlice[extraColumn1];
-  size_t beyond = dec->transpose->rowSlice[extraColumn1 + 1];
+  size_t first = node->transpose->rowSlice[extraColumn1];
+  size_t beyond = node->transpose->rowSlice[extraColumn1 + 1];
   for (size_t e = first; e < beyond; ++e)
   {
-    size_t row = dec->transpose->entryColumns[e];
+    size_t row = node->transpose->entryColumns[e];
     size_t childRow = rowsToChild[row];
     if (childRow < numChildBaseRows)
-      denseExtraColumn1[childRow] = dec->transpose->entryValues[e];
+      denseExtraColumn1[childRow] = node->transpose->entryValues[e];
   }
-  first = dec->transpose->rowSlice[extraColumn2];
-  beyond = dec->transpose->rowSlice[extraColumn2 + 1];
+  first = node->transpose->rowSlice[extraColumn2];
+  beyond = node->transpose->rowSlice[extraColumn2 + 1];
   for (size_t e = first; e < beyond; ++e)
   {
-    size_t row = dec->transpose->entryColumns[e];
+    size_t row = node->transpose->entryColumns[e];
     size_t childRow = rowsToChild[row];
     if (childRow < numChildBaseRows)
-      denseExtraColumn2[childRow] = dec->transpose->entryValues[e];
+      denseExtraColumn2[childRow] = node->transpose->entryValues[e];
   }
 
   /* Main matrix. */
   size_t childEntry = 0;
   CMR_CHRMAT* childMatrix = NULL;
   CMR_CALL( CMRchrmatCreate(cmr, &childMatrix, numChildBaseRows + 1, numChildBaseColumns + 2,
-    dec->matrix->numNonzeros) );
+    node->matrix->numNonzeros) );
 
   /* Only entries in first row are the extra entry and a +1. */
   childMatrix->rowSlice[0] = 0;
@@ -1592,7 +1592,7 @@ CMR_ERROR CMRmatroiddecUpdateThreeSumCreateMixedSecondChild(CMR* cmr, CMR_MATROI
   childMatrix->entryValues[childEntry] = +1;
   ++childEntry;
 
-  for (size_t row = 0; row < dec->numRows; ++row)
+  for (size_t row = 0; row < node->numRows; ++row)
   {
     size_t childRow = rowsToChild[row];
     if (childRow >= numChildBaseRows)
@@ -1616,17 +1616,17 @@ CMR_ERROR CMRmatroiddecUpdateThreeSumCreateMixedSecondChild(CMR* cmr, CMR_MATROI
     }
 
     /* Main entries. */
-    size_t first = dec->matrix->rowSlice[row];
-    size_t beyond = dec->matrix->rowSlice[row + 1];
+    size_t first = node->matrix->rowSlice[row];
+    size_t beyond = node->matrix->rowSlice[row + 1];
     for (size_t e = first; e < beyond; ++e)
     {
-      size_t column = dec->matrix->entryColumns[e];
+      size_t column = node->matrix->entryColumns[e];
       size_t childColumn = columnsToChild[column];
       if (childColumn >= numChildBaseColumns)
         continue;
 
       childMatrix->entryColumns[childEntry] = childColumn + 2;
-      childMatrix->entryValues[childEntry] = dec->matrix->entryValues[e];
+      childMatrix->entryValues[childEntry] = node->matrix->entryValues[e];
       ++childEntry;
     }
   }
@@ -1635,7 +1635,7 @@ CMR_ERROR CMRmatroiddecUpdateThreeSumCreateMixedSecondChild(CMR* cmr, CMR_MATROI
   parentRows[0] = SIZE_MAX;
   parentColumns[0] = extraColumn1;
   parentColumns[1] = extraColumn2;
-  for (size_t column = 0; column < dec->numColumns; ++column)
+  for (size_t column = 0; column < node->numColumns; ++column)
   {
     size_t childColumn = columnsToChild[column];
     if (childColumn < numChildBaseColumns)
@@ -1647,13 +1647,13 @@ CMR_ERROR CMRmatroiddecUpdateThreeSumCreateMixedSecondChild(CMR* cmr, CMR_MATROI
   childMatrix->numNonzeros = childEntry;
 
   /* Create the actual decomposition node. */
-  CMR_CALL( createNode(cmr, &dec->children[1], dec->isTernary, CMR_MATROID_DEC_TYPE_UNKNOWN, childMatrix->numRows,
+  CMR_CALL( createNode(cmr, &node->children[1], node->isTernary, CMR_MATROID_DEC_TYPE_UNKNOWN, childMatrix->numRows,
     childMatrix->numColumns) );
-  CMR_MATROID_DEC* child = dec->children[1];
+  CMR_SEYMOUR_NODE* child = node->children[1];
   child->matrix = childMatrix;
 
-  CMR_CALL( updateRowsColumnsToParent(cmr, dec, 1, parentRows, parentColumns) );
-  CMR_CALL( updateRowsColumnsToChild(dec, 1, parentRows, 1, numChildBaseRows + 1, parentColumns, 2,
+  CMR_CALL( updateRowsColumnsToParent(cmr, node, 1, parentRows, parentColumns) );
+  CMR_CALL( updateRowsColumnsToChild(node, 1, parentRows, 1, numChildBaseRows + 1, parentColumns, 2,
     numChildBaseColumns + 2) );
 
   CMR_CALL( CMRfreeStackArray(cmr, &denseExtraColumn2) );
@@ -1685,55 +1685,55 @@ CMR_ERROR CMRmatroiddecUpdateThreeSumCreateMixedSecondChild(CMR* cmr, CMR_MATROI
     : ( (0 < (currentValue)) ? 0 : (currentValue) ) \
   )
 
-CMR_ERROR CMRmatroiddecSetAttributes(CMR_MATROID_DEC* dec)
+CMR_ERROR CMRmatroiddecSetAttributes(CMR_SEYMOUR_NODE* node)
 {
-  assert(dec);
+  assert(node);
 
-  CMRdbgMsg(2, "Setting regularity/(co)graphicness attributes for a node of type %d.\n", dec->type);
+  CMRdbgMsg(2, "Setting regularity/(co)graphicness attributes for a node of type %d.\n", node->type);
 
   /* Recursively set attributes first. */
-  for (size_t childIndex = 0; childIndex < dec->numChildren; ++childIndex)
+  for (size_t childIndex = 0; childIndex < node->numChildren; ++childIndex)
   {
-    if (dec->children[childIndex])
+    if (node->children[childIndex])
     {
-      CMR_CALL( CMRmatroiddecSetAttributes(dec->children[childIndex]) );
-      CMRdbgMsg(4, "Child %zu of type %d has flags r=%d,g=%d,c=%d.\n", childIndex, dec->children[childIndex]->type,
-        dec->children[childIndex]->regularity, dec->children[childIndex]->graphicness,
-        dec->children[childIndex]->cographicness);
+      CMR_CALL( CMRmatroiddecSetAttributes(node->children[childIndex]) );
+      CMRdbgMsg(4, "Child %zu of type %d has flags r=%d,g=%d,c=%d.\n", childIndex, node->children[childIndex]->type,
+        node->children[childIndex]->regularity, node->children[childIndex]->graphicness,
+        node->children[childIndex]->cographicness);
     }
   }
 
-  switch(dec->type)
+  switch(node->type)
   {
   case CMR_MATROID_DEC_TYPE_UNKNOWN:
-    dec->regularity = 0;
+    node->regularity = 0;
     /* We do not set (co)graphicness because its absense may have been determined without setting the type. */
   break;
   case CMR_MATROID_DEC_TYPE_PLANAR:
-    dec->regularity = 1;
-    dec->graphicness = 1;
-    dec->cographicness = 1;
+    node->regularity = 1;
+    node->graphicness = 1;
+    node->cographicness = 1;
   break;
   case CMR_MATROID_DEC_TYPE_IRREGULAR:
   case CMR_MATROID_DEC_TYPE_FANO:
   case CMR_MATROID_DEC_TYPE_FANO_DUAL:
   case CMR_MATROID_DEC_TYPE_DETERMINANT:
-    dec->regularity = -1;
-    dec->graphicness = -1;
-    dec->cographicness = -1;
+    node->regularity = -1;
+    node->graphicness = -1;
+    node->cographicness = -1;
   break;
   case CMR_MATROID_DEC_TYPE_SERIES_PARALLEL:
-    if (dec->numChildren)
+    if (node->numChildren)
     {
-      dec->regularity = dec->children[0]->regularity;
-      dec->graphicness = dec->children[0]->graphicness;
-      dec->cographicness = dec->children[0]->cographicness;
+      node->regularity = node->children[0]->regularity;
+      node->graphicness = node->children[0]->graphicness;
+      node->cographicness = node->children[0]->cographicness;
     }
     else
     {
-      dec->regularity = 1;
-      dec->graphicness = 1;
-      dec->cographicness = 1;
+      node->regularity = 1;
+      node->graphicness = 1;
+      node->cographicness = 1;
     }
     break;
   case CMR_MATROID_DEC_TYPE_PIVOTS:
@@ -1741,56 +1741,56 @@ CMR_ERROR CMRmatroiddecSetAttributes(CMR_MATROID_DEC* dec)
   case CMR_MATROID_DEC_TYPE_ONE_SUM:
   case CMR_MATROID_DEC_TYPE_TWO_SUM:
   case CMR_MATROID_DEC_TYPE_THREE_SUM:
-    if (dec->regularity == 0)
+    if (node->regularity == 0)
     {
-      dec->regularity = 1;
-      for (size_t childIndex = 0; childIndex < dec->numChildren; ++childIndex)
+      node->regularity = 1;
+      for (size_t childIndex = 0; childIndex < node->numChildren; ++childIndex)
       {
-        CMR_MATROID_DEC* child = dec->children[childIndex];
-        dec->regularity = MIN_IF_EXISTS(dec->regularity, child, child->regularity);
+        CMR_SEYMOUR_NODE* child = node->children[childIndex];
+        node->regularity = MIN_IF_EXISTS(node->regularity, child, child->regularity);
       }
     }
-    if (dec->graphicness == 0)
+    if (node->graphicness == 0)
     {
-      dec->graphicness = 1;
-      for (size_t childIndex = 0; childIndex < dec->numChildren; ++childIndex)
+      node->graphicness = 1;
+      for (size_t childIndex = 0; childIndex < node->numChildren; ++childIndex)
       {
-        CMR_MATROID_DEC* child = dec->children[childIndex];
-        dec->graphicness = MIN_IF_EXISTS(dec->graphicness, child, child->graphicness);
+        CMR_SEYMOUR_NODE* child = node->children[childIndex];
+        node->graphicness = MIN_IF_EXISTS(node->graphicness, child, child->graphicness);
       }
     }
-    if (dec->cographicness == 0)
+    if (node->cographicness == 0)
     {
-      dec->cographicness = 1;
-      for (size_t childIndex = 0; childIndex < dec->numChildren; ++childIndex)
+      node->cographicness = 1;
+      for (size_t childIndex = 0; childIndex < node->numChildren; ++childIndex)
       {
-        CMR_MATROID_DEC* child = dec->children[childIndex];
-        dec->cographicness = MIN_IF_EXISTS(dec->cographicness, child, child->cographicness);
+        CMR_SEYMOUR_NODE* child = node->children[childIndex];
+        node->cographicness = MIN_IF_EXISTS(node->cographicness, child, child->cographicness);
       }
     }
   break;
   case CMR_MATROID_DEC_TYPE_GRAPH:
   case CMR_MATROID_DEC_TYPE_K5:
   case CMR_MATROID_DEC_TYPE_K33:
-    dec->regularity = 1;
-    dec->graphicness = 1;
+    node->regularity = 1;
+    node->graphicness = 1;
   break;
   case CMR_MATROID_DEC_TYPE_COGRAPH:
   case CMR_MATROID_DEC_TYPE_K5_DUAL:
   case CMR_MATROID_DEC_TYPE_K33_DUAL:
-    dec->regularity = 1;
-    dec->cographicness = 1;
+    node->regularity = 1;
+    node->cographicness = 1;
   break;
   case CMR_MATROID_DEC_TYPE_R10:
-    dec->regularity = 1;
-    dec->graphicness = -1;
-    dec->cographicness = -1;
+    node->regularity = 1;
+    node->graphicness = -1;
+    node->cographicness = -1;
   break;
   default:
     assert(0 != "Handling of matroid decomposition type not implemented!");
   }
 
-  CMRdbgMsg(4, "Finalizing attributes to r=%d,g=%d,c=%d.\n", dec->regularity, dec->graphicness, dec->cographicness);
+  CMRdbgMsg(4, "Finalizing attributes to r=%d,g=%d,c=%d.\n", node->regularity, node->graphicness, node->cographicness);
 
   return CMR_OKAY;
 }
@@ -1798,23 +1798,23 @@ CMR_ERROR CMRmatroiddecSetAttributes(CMR_MATROID_DEC* dec)
 
 typedef struct
 {
-  CMR_MATROID_DEC* origin;
-  CMR_MATROID_DEC* clone;
+    CMR_SEYMOUR_NODE* origin;
+    CMR_SEYMOUR_NODE* clone;
 } ClonePair;
 
 static
 CMR_ERROR cloneRecursively(
-  CMR* cmr,
-  CMR_MATROID_DEC* dec,
-  CMR_MATROID_DEC** pclone,
-  CMR_LISTHASHTABLE* nodesToClonesHashtable,
-  ClonePair** pclonePairs,
-  size_t* pmemClonePairs,
-  size_t* pnumClonePairs
+  CMR* cmr,                                   /**< \ref CMR environment. */
+  CMR_SEYMOUR_NODE* node,                     /**< Seymour decomposition node. */
+  CMR_SEYMOUR_NODE** pclone,                  /**< Pointer for storing the cloned Seymour decomposition node. */
+  CMR_LISTHASHTABLE* nodesToClonesHashtable,  /**< Hashtable for the mapping from nodes to cloned nodes. */
+  ClonePair** pclonePairs,                    /**< Pointer to array of cloned pairs. */
+  size_t* pmemClonePairs,                     /**< Allocated size of \p *pclonePairs. */
+  size_t* pnumClonePairs                      /**< Length of \p *pclonePairs. */
 )
 {
   assert(cmr);
-  assert(dec);
+  assert(node);
   assert(pclone);
   assert(nodesToClonesHashtable);
   assert(pclonePairs);
@@ -1827,12 +1827,12 @@ CMR_ERROR cloneRecursively(
   assert(clonePairs);
 
   /* Check if node was already cloned. */
-  CMR_LISTHASHTABLE_HASH hash = (CMR_LISTHASHTABLE_HASH) dec;
+  CMR_LISTHASHTABLE_HASH hash = (CMR_LISTHASHTABLE_HASH) node;
   for (CMR_LISTHASHTABLE_ENTRY entry = CMRlisthashtableFindFirst(nodesToClonesHashtable, hash);
     entry != SIZE_MAX; entry = CMRlisthashtableFindNext(nodesToClonesHashtable, hash, entry))
   {
     size_t clonePairIndex = CMRlisthashtableValue(nodesToClonesHashtable, entry);
-    if (clonePairs[clonePairIndex].origin == dec)
+    if (clonePairs[clonePairIndex].origin == node)
     {
       *pclone = clonePairs[clonePairIndex].clone;
       return CMR_OKAY;
@@ -1840,39 +1840,39 @@ CMR_ERROR cloneRecursively(
   }
 
   /* It was not, so we create a clone. */
-  CMR_MATROID_DEC* clone = NULL;
-  CMR_CALL( createNode(cmr, &clone, dec->isTernary, dec->type, dec->numRows, dec->numColumns) );
-  CMR_CALL( CMRchrmatCopy(cmr, dec->matrix, &clone->matrix) );
-  if (dec->graph)
-    CMR_CALL( CMRgraphCopy(cmr, dec->graph, &clone->graph) );
-  if (dec->graphForest)
-    CMR_CALL( CMRduplicateBlockArray(cmr, &clone->graphForest, CMRgraphNumNodes(dec->graph) - 1, dec->graphForest) );
-  if (dec->graphCoforest)
+    CMR_SEYMOUR_NODE* clone = NULL;
+  CMR_CALL( createNode(cmr, &clone, node->isTernary, node->type, node->numRows, node->numColumns) );
+  CMR_CALL( CMRchrmatCopy(cmr, node->matrix, &clone->matrix) );
+  if (node->graph)
+    CMR_CALL( CMRgraphCopy(cmr, node->graph, &clone->graph) );
+  if (node->graphForest)
+    CMR_CALL( CMRduplicateBlockArray(cmr, &clone->graphForest, CMRgraphNumNodes(node->graph) - 1, node->graphForest) );
+  if (node->graphCoforest)
   {
     CMR_CALL( CMRduplicateBlockArray(cmr, &clone->graphCoforest,
-      CMRgraphNumEdges(dec->graph) - CMRgraphNumNodes(dec->graph) + 1, dec->graphCoforest) );
+      CMRgraphNumEdges(node->graph) - CMRgraphNumNodes(node->graph) + 1, node->graphCoforest) );
   }
-  if (dec->graphArcsReversed)
+  if (node->graphArcsReversed)
   {
-    CMR_CALL( CMRduplicateBlockArray(cmr, &clone->graphArcsReversed, CMRgraphMemEdges(dec->graph),
-      dec->graphArcsReversed) );
+    CMR_CALL( CMRduplicateBlockArray(cmr, &clone->graphArcsReversed, CMRgraphMemEdges(node->graph),
+                                         node->graphArcsReversed) );
   }
-  if (dec->cograph)
-    CMR_CALL( CMRgraphCopy(cmr, dec->graph, &clone->graph) );
-  if (dec->cographForest)
+  if (node->cograph)
+    CMR_CALL( CMRgraphCopy(cmr, node->graph, &clone->graph) );
+  if (node->cographForest)
   {
-    CMR_CALL( CMRduplicateBlockArray(cmr, &clone->cographForest, CMRgraphNumNodes(dec->cograph) - 1,
-      dec->cographForest) );
+    CMR_CALL( CMRduplicateBlockArray(cmr, &clone->cographForest, CMRgraphNumNodes(node->cograph) - 1,
+                                         node->cographForest) );
   }
-  if (dec->cographCoforest)
+  if (node->cographCoforest)
   {
     CMR_CALL( CMRduplicateBlockArray(cmr, &clone->cographCoforest,
-      CMRgraphNumEdges(dec->cograph) - CMRgraphNumNodes(dec->cograph) + 1, dec->cographCoforest) );
+      CMRgraphNumEdges(node->cograph) - CMRgraphNumNodes(node->cograph) + 1, node->cographCoforest) );
   }
-  if (dec->cographArcsReversed)
+  if (node->cographArcsReversed)
   {
-    CMR_CALL( CMRduplicateBlockArray(cmr, &clone->cographArcsReversed, CMRgraphMemEdges(dec->cograph),
-      dec->cographArcsReversed) );
+    CMR_CALL( CMRduplicateBlockArray(cmr, &clone->cographArcsReversed, CMRgraphMemEdges(node->cograph),
+                                         node->cographArcsReversed) );
   }
 
   if (pclone)
@@ -1889,16 +1889,16 @@ CMR_ERROR cloneRecursively(
   /* Add it to the hash table and to the list of clone pairs. */
   CMR_CALL( CMRlisthashtableInsert(cmr, nodesToClonesHashtable, hash, *pnumClonePairs, NULL) );
   assert(*pnumClonePairs < *pmemClonePairs);
-  clonePairs[*pnumClonePairs].origin = dec;
+  clonePairs[*pnumClonePairs].origin = node;
   clonePairs[*pnumClonePairs].clone = clone;
   ++(*pnumClonePairs);
 
   /* Recursively treat the children. */
-  CMR_CALL( CMRmatroiddecSetNumChildren(cmr, clone, dec->numChildren) );
-  for (size_t c = 0; c < dec->numChildren; ++c)
+  CMR_CALL( CMRmatroiddecSetNumChildren(cmr, clone, node->numChildren) );
+  for (size_t c = 0; c < node->numChildren; ++c)
   {
     /* Clone the child. */
-    CMR_CALL( cloneRecursively(cmr, dec->children[c], NULL, nodesToClonesHashtable, pclonePairs, pmemClonePairs,
+    CMR_CALL( cloneRecursively(cmr, node->children[c], NULL, nodesToClonesHashtable, pclonePairs, pmemClonePairs,
       pnumClonePairs) );
 
     /* Then add linking data. */
@@ -1907,8 +1907,8 @@ CMR_ERROR cloneRecursively(
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRregularityCloneSubtrees(CMR* cmr, size_t numSubtrees, CMR_MATROID_DEC** subtreeRoots,
-  CMR_MATROID_DEC** clonedSubtrees)
+CMR_ERROR CMRregularityCloneSubtrees(CMR* cmr, size_t numSubtrees, CMR_SEYMOUR_NODE** subtreeRoots,
+  CMR_SEYMOUR_NODE** clonedSubtrees)
 {
   assert(cmr);
   assert(subtreeRoots);

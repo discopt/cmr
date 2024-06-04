@@ -220,7 +220,7 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
   assert(queue);
   assert(separation);
 
-  CMR_MATROID_DEC* dec = task->dec;
+    CMR_SEYMOUR_NODE* dec = task->dec;
   assert(dec);
   size_t* rowsToChild = NULL;
   size_t* columnsToChild = NULL;

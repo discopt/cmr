@@ -1631,7 +1631,7 @@ CMR_ERROR CMRregularityNestedMinorSequenceGraphicness(CMR* cmr, DecompositionTas
   assert(task);
   assert(queue);
 
-  CMR_MATROID_DEC* dec = task->dec;
+    CMR_SEYMOUR_NODE* dec = task->dec;
   assert(dec);
 
   CMR_GRAPH* graph = NULL;
@@ -1720,7 +1720,7 @@ CMR_ERROR CMRregularityNestedMinorSequenceCographicness(CMR* cmr, DecompositionT
   assert(task);
   assert(queue);
 
-  CMR_MATROID_DEC* dec = task->dec;
+    CMR_SEYMOUR_NODE* dec = task->dec;
   assert(dec);
 
   CMR_GRAPH* cograph = NULL;
@@ -1805,7 +1805,7 @@ CMR_ERROR CMRregularityTestGraphicness(CMR* cmr, DecompositionTask* task, Decomp
   assert(task);
   assert(queue);
 
-  CMR_MATROID_DEC* dec = task->dec;
+    CMR_SEYMOUR_NODE* dec = task->dec;
   assert(dec);
 
 #if defined(CMR_DEBUG)
@@ -1886,7 +1886,7 @@ CMR_ERROR CMRregularityTestCographicness(CMR* cmr, DecompositionTask* task, Deco
   assert(task);
   assert(queue);
 
-  CMR_MATROID_DEC* dec = task->dec;
+    CMR_SEYMOUR_NODE* dec = task->dec;
   assert(dec);
 
 #if defined(CMR_DEBUG)

@@ -172,7 +172,7 @@ CMR_ERROR CMRregularTest(
   CMR* cmr,                   /**< \ref CMR environment. */
   CMR_CHRMAT* matrix,         /**< Input matrix. */
   bool *pisRegular,           /**< Pointer for storing whether \p matrix is regular. */
-  CMR_MATROID_DEC** pdec,     /**< Pointer for storing the decomposition tree (may be \c NULL). */
+    CMR_SEYMOUR_NODE** pdec,     /**< Pointer for storing the decomposition tree (may be \c NULL). */
   CMR_MINOR** pminor,         /**< Pointer for storing an \f$ F_7 \f$ or \f$ F_7^\star \f$ minor. */
   CMR_REGULAR_PARAMS* params, /**< Parameters for the computation (may be \c NULL for defaults). */
   CMR_REGULAR_STATS* stats,   /**< Statistics for the computation (may be \c NULL). */
@@ -189,7 +189,7 @@ CMR_ERROR CMRregularTest(
 CMR_EXPORT
 CMR_ERROR CMRregularCompleteDecomposition(
   CMR* cmr,                   /**< \ref CMR environment. */
-  CMR_MATROID_DEC* dec,       /**< Pointer to the decomposition node that is the root of the new subtree. */
+    CMR_SEYMOUR_NODE* dec,       /**< Pointer to the decomposition node that is the root of the new subtree. */
   CMR_REGULAR_PARAMS* params, /**< Parameters for the computation (may be \c NULL). */
   CMR_REGULAR_STATS* stats,   /**< Statistics for the computation (may be \c NULL). */
   double timeLimit            /**< Time limit to impose. */
@@ -205,7 +205,7 @@ CMR_EXPORT
 CMR_ERROR CMRregularRefineDecomposition(
   CMR* cmr,                   /**< \ref CMR environment. */
   size_t numNodes,            /**< Number of nodes to refine. */
-  CMR_MATROID_DEC** nodes,    /**< Array of decomposition nodes to refine. */
+    CMR_SEYMOUR_NODE** nodes,    /**< Array of decomposition nodes to refine. */
   CMR_REGULAR_PARAMS* params, /**< Parameters for the computation (may be \c NULL). */
   CMR_REGULAR_STATS* stats,   /**< Statistics for the computation (may be \c NULL). */
   double timeLimit            /**< Time limit to impose. */

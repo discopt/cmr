@@ -83,7 +83,7 @@ CMR_ERROR CMRregularStatsPrint(FILE* stream, CMR_REGULAR_STATS* stats, const cha
 }
 
 
-CMR_ERROR CMRregularTest(CMR* cmr, CMR_CHRMAT* matrix, bool *pisRegular, CMR_MATROID_DEC** pdec,
+CMR_ERROR CMRregularTest(CMR* cmr, CMR_CHRMAT* matrix, bool *pisRegular, CMR_SEYMOUR_NODE** pdec,
   CMR_MINOR** pminor, CMR_REGULAR_PARAMS* params, CMR_REGULAR_STATS* stats, double timeLimit)
 {
   assert(cmr);
@@ -111,7 +111,7 @@ CMR_ERROR CMRregularTest(CMR* cmr, CMR_CHRMAT* matrix, bool *pisRegular, CMR_MAT
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRregularCompleteDecomposition(CMR* cmr, CMR_MATROID_DEC* dec, CMR_REGULAR_PARAMS* params,
+CMR_ERROR CMRregularCompleteDecomposition(CMR* cmr, CMR_SEYMOUR_NODE* dec, CMR_REGULAR_PARAMS* params,
   CMR_REGULAR_STATS* stats, double timeLimit)
 {
   assert(cmr);
@@ -130,7 +130,7 @@ CMR_ERROR CMRregularCompleteDecomposition(CMR* cmr, CMR_MATROID_DEC* dec, CMR_RE
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRregularRefineDecomposition(CMR* cmr, size_t numNodes, CMR_MATROID_DEC** nodes, CMR_REGULAR_PARAMS* params,
+CMR_ERROR CMRregularRefineDecomposition(CMR* cmr, size_t numNodes, CMR_SEYMOUR_NODE** nodes, CMR_REGULAR_PARAMS* params,
   CMR_REGULAR_STATS* stats, double timeLimit)
 {
   assert(cmr);

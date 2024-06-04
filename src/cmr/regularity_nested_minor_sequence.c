@@ -27,7 +27,7 @@ typedef struct
 static
 CMR_ERROR dbgPrintDenseSequence(
   CMR* cmr,             /**< \brief \ref CMR environment. */
-  CMR_MATROID_DEC* dec  /**< \brief Decomposition node whose dense matrix to print. */
+    CMR_SEYMOUR_NODE* dec  /**< \brief Decomposition node whose dense matrix to print. */
 )
 {
   CMR_UNUSED(cmr);
@@ -447,7 +447,7 @@ CMR_ERROR searchShortestPath(
 static
 CMR_ERROR pivot(
   CMR* cmr,                 /**< \ref CMR environment. */
-  CMR_MATROID_DEC* dec,     /**< decomposition node. */
+    CMR_SEYMOUR_NODE* dec,     /**< decomposition node. */
   size_t pivotRow,          /**< Pivot row. */
   size_t pivotColumn        /**< Pivot column. */
 )
@@ -498,7 +498,7 @@ CMR_ERROR pivot(
 static
 CMR_ERROR applyPivots(
   CMR* cmr,                   /**< \ref CMR environment. */
-  CMR_MATROID_DEC* dec,       /**< Decomposition node. */
+    CMR_SEYMOUR_NODE* dec,       /**< Decomposition node. */
   ElementData* rowData,       /**< Row data. */
   ElementData* columnData,    /**< Column data. */
   CMR_ELEMENT reachedTarget,  /**< Reached target row/column. */
@@ -565,7 +565,7 @@ CMR_ERROR applyPivots(
 static
 CMR_ERROR addElement(
   CMR* cmr,                           /**< \ref CMR environment. */
-  CMR_MATROID_DEC* dec,               /**< Decomposition node. */
+    CMR_SEYMOUR_NODE* dec,               /**< Decomposition node. */
   ElementData* majorData,             /**< Major index data. */
   ElementData* minorData,             /**< Minor index data. */
   CMR_LISTHASHTABLE* minorHashtable,  /**< Minor index hashtable. */
@@ -630,7 +630,7 @@ CMR_ERROR CMRregularityExtendNestedMinorSequence(CMR* cmr, DecompositionTask* ta
   assert(task);
   assert(queue);
 
-  CMR_MATROID_DEC* dec = task->dec;
+    CMR_SEYMOUR_NODE* dec = task->dec;
   assert(dec);
 
   CMRdbgMsg(6, "Attempting to extend a sequence of 3-connected nested minors of length %zu with "
@@ -1052,7 +1052,7 @@ CMR_ERROR CMRregularityInitNestedMinorSequence(CMR* cmr, DecompositionTask* task
   assert(task);
   assert(wheelSubmatrix);
 
-  CMR_MATROID_DEC* dec = task->dec;
+    CMR_SEYMOUR_NODE* dec = task->dec;
   assert(dec);
 
 #if defined(CMR_DEBUG)

@@ -33,7 +33,7 @@ TEST(Regular, OneSum)
     ASSERT_CMR_CALL( CMRoneSum(cmr, K_3_3, K_3_3_dual, &matrix) );
 
     bool isRegular;
-    CMR_MATROID_DEC* dec = NULL;
+        CMR_SEYMOUR_NODE* dec = NULL;
     CMR_REGULAR_PARAMS params;
     ASSERT_CMR_CALL( CMRregularParamsInit(&params) );
     params.planarityCheck = true;
@@ -95,7 +95,7 @@ TEST(Regular, SeriesParallelTwoSeparation)
     CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
 
     bool isRegular;
-    CMR_MATROID_DEC* dec = NULL;
+        CMR_SEYMOUR_NODE* dec = NULL;
     ASSERT_CMR_CALL( CMRregularTest(cmr, matrix, &isRegular, &dec, NULL, NULL, NULL, DBL_MAX) );
 
     ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, true, true, true, true, true, true) );
@@ -151,7 +151,7 @@ TEST(Regular, NestedMinorSearchTwoSeparation)
 //     CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
 
     bool isRegular;
-    CMR_MATROID_DEC* dec = NULL;
+        CMR_SEYMOUR_NODE* dec = NULL;
     ASSERT_CMR_CALL( CMRregularTest(cmr, matrix, &isRegular, &dec, NULL, NULL, NULL, DBL_MAX) );
 
     ASSERT_CMR_CALL( CMRmatroiddecPrint(cmr, dec, stdout, true, true, true, true, true, true) );
@@ -198,7 +198,7 @@ TEST(Regular, NestedMinorPivotsOneRowOneColumn)
   CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
 
   bool isRegular;
-  CMR_MATROID_DEC* dec = NULL;
+    CMR_SEYMOUR_NODE* dec = NULL;
   CMR_REGULAR_PARAMS params;
   ASSERT_CMR_CALL( CMRregularParamsInit(&params) );
   params.directGraphicness = false;
@@ -232,7 +232,7 @@ TEST(Regular, NestedMinorPivotsTwoRowsOneColumn)
   CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
 
   bool isRegular;
-  CMR_MATROID_DEC* dec = NULL;
+    CMR_SEYMOUR_NODE* dec = NULL;
   CMR_REGULAR_PARAMS params;
   ASSERT_CMR_CALL( CMRregularParamsInit(&params) );
   params.directGraphicness = false;
@@ -265,7 +265,7 @@ TEST(Regular, NestedMinorPivotsOneRowTwoColumns)
   CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
 
   bool isRegular;
-  CMR_MATROID_DEC* dec = NULL;
+    CMR_SEYMOUR_NODE* dec = NULL;
   CMR_REGULAR_PARAMS params;
   ASSERT_CMR_CALL( CMRregularParamsInit(&params) );
   params.directGraphicness = false;
@@ -303,7 +303,7 @@ TEST(Regular, NestedMinorPivotsTwoSeparation)
   CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
 
   bool isRegular;
-  CMR_MATROID_DEC* dec = NULL;
+    CMR_SEYMOUR_NODE* dec = NULL;
   CMR_REGULAR_PARAMS params;
   ASSERT_CMR_CALL( CMRregularParamsInit(&params) );
   params.directGraphicness = false;
@@ -333,7 +333,7 @@ void testSequenceGraphicness(
   ASSERT_CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', true) );
 
   bool isRegular;
-  CMR_MATROID_DEC* dec = NULL;
+    CMR_SEYMOUR_NODE* dec = NULL;
   CMR_REGULAR_PARAMS params;
   ASSERT_CMR_CALL( CMRregularParamsInit(&params) );
   params.directGraphicness = false;
@@ -652,7 +652,7 @@ TEST(Regular, R10)
     CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
 
     bool isRegular;
-    CMR_MATROID_DEC* dec = NULL;
+        CMR_SEYMOUR_NODE* dec = NULL;
     ASSERT_CMR_CALL( CMRregularTest(cmr, matrix, &isRegular, &dec, NULL, NULL, NULL, DBL_MAX) );
     ASSERT_GT( CMRmatroiddecRegularity(dec), 0 );
     ASSERT_EQ( CMRmatroiddecNumChildren(dec), 0UL );
@@ -675,7 +675,7 @@ TEST(Regular, R10)
     CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
 
     bool isRegular;
-    CMR_MATROID_DEC* dec = NULL;
+        CMR_SEYMOUR_NODE* dec = NULL;
     ASSERT_CMR_CALL( CMRregularTest(cmr, matrix, &isRegular, &dec, NULL, NULL, NULL, DBL_MAX) );
     ASSERT_GT( CMRmatroiddecRegularity(dec), 0 );
     ASSERT_EQ( CMRmatroiddecNumChildren(dec), 0 );
@@ -703,7 +703,7 @@ void testEnumerate(
   ASSERT_CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', true) );
 
   bool isRegular;
-  CMR_MATROID_DEC* dec = NULL;
+    CMR_SEYMOUR_NODE* dec = NULL;
   CMR_REGULAR_PARAMS params;
   ASSERT_CMR_CALL( CMRregularParamsInit(&params) );
   params.directGraphicness = false;
@@ -802,7 +802,7 @@ TEST(Regular, R12)
     ASSERT_CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', true) );
 
     bool isRegular;
-    CMR_MATROID_DEC* dec = NULL;
+        CMR_SEYMOUR_NODE* dec = NULL;
     CMR_REGULAR_PARAMS params;
     ASSERT_CMR_CALL( CMRregularParamsInit(&params) );
     params.threeSumStrategy = CMR_MATROID_DEC_THREESUM_FLAG_SEYMOUR;
@@ -844,7 +844,7 @@ TEST(Regular, TreeFlagsNorecurse)
 
     ASSERT_CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', true) );
 
-    CMR_MATROID_DEC* dec = NULL;
+        CMR_SEYMOUR_NODE* dec = NULL;
     CMR_REGULAR_PARAMS params;
     ASSERT_CMR_CALL( CMRregularParamsInit(&params) );
     params.treeFlags = CMR_REGULAR_TREE_FLAGS_STOP_IRREGULAR;
@@ -882,7 +882,7 @@ TEST(Regular, TreeFlagsStopNoncographic)
 
     ASSERT_CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', true) );
 
-    CMR_MATROID_DEC* dec = NULL;
+        CMR_SEYMOUR_NODE* dec = NULL;
     CMR_REGULAR_PARAMS params;
     ASSERT_CMR_CALL( CMRregularParamsInit(&params) );
     params.treeFlags = CMR_REGULAR_TREE_FLAGS_RECURSE | CMR_REGULAR_TREE_FLAGS_STOP_NONCOGRAPHIC;
@@ -923,7 +923,7 @@ TEST(Regular, TreeFlagsStopNongraphic)
 
     ASSERT_CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', true) );
 
-    CMR_MATROID_DEC* dec = NULL;
+        CMR_SEYMOUR_NODE* dec = NULL;
     CMR_REGULAR_PARAMS params;
     ASSERT_CMR_CALL( CMRregularParamsInit(&params) );
     params.treeFlags = CMR_REGULAR_TREE_FLAGS_RECURSE | CMR_REGULAR_TREE_FLAGS_STOP_NONGRAPHIC;

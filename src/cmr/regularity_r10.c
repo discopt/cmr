@@ -11,7 +11,7 @@ CMR_ERROR CMRregularityTestR10(CMR* cmr, DecompositionTask* task, DecompositionQ
   assert(task);
   assert(queue);
 
-  CMR_MATROID_DEC* dec = task->dec;
+    CMR_SEYMOUR_NODE* dec = task->dec;
   assert(dec);
 
 #if defined(CMR_DEBUG)

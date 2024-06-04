@@ -6,7 +6,7 @@
 
 #include <time.h>
 
-CMR_ERROR CMRregularityTaskCreateRoot(CMR* cmr, CMR_MATROID_DEC* dec, DecompositionTask** ptask,
+CMR_ERROR CMRregularityTaskCreateRoot(CMR* cmr, CMR_SEYMOUR_NODE* dec, DecompositionTask** ptask,
   CMR_REGULAR_PARAMS* params, CMR_REGULAR_STATS* stats, clock_t startClock, double timeLimit)
 {
   assert(cmr);
@@ -170,7 +170,7 @@ CMR_ERROR CMRregularityTaskRun(
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRregularityTest(CMR* cmr, CMR_CHRMAT* matrix, bool ternary, bool *pisRegular, CMR_MATROID_DEC** pdec,
+CMR_ERROR CMRregularityTest(CMR* cmr, CMR_CHRMAT* matrix, bool ternary, bool *pisRegular, CMR_SEYMOUR_NODE** pdec,
   CMR_MINOR** pminor, CMR_REGULAR_PARAMS* params, CMR_REGULAR_STATS* stats, double timeLimit)
 {
   assert(cmr);
@@ -183,7 +183,7 @@ CMR_ERROR CMRregularityTest(CMR* cmr, CMR_CHRMAT* matrix, bool ternary, bool *pi
   CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', false) );
 #endif /* CMR_DEBUG */
 
-  CMR_MATROID_DEC* root = NULL;
+    CMR_SEYMOUR_NODE* root = NULL;
   CMR_CALL( CMRmatroiddecCreateMatrixRoot(cmr, &root, ternary, matrix) );
   assert(root);
 
@@ -197,7 +197,7 @@ CMR_ERROR CMRregularityTest(CMR* cmr, CMR_CHRMAT* matrix, bool ternary, bool *pi
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRregularityCompleteDecomposition(CMR* cmr, CMR_MATROID_DEC* subtree, CMR_REGULAR_PARAMS* params,
+CMR_ERROR CMRregularityCompleteDecomposition(CMR* cmr, CMR_SEYMOUR_NODE* subtree, CMR_REGULAR_PARAMS* params,
   CMR_REGULAR_STATS* stats, double timeLimit)
 {
   assert(cmr);
@@ -288,7 +288,7 @@ CMR_ERROR CMRregularityCompleteDecomposition(CMR* cmr, CMR_MATROID_DEC* subtree,
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRregularityRefineDecomposition(CMR* cmr, size_t numNodes, CMR_MATROID_DEC** nodes,
+CMR_ERROR CMRregularityRefineDecomposition(CMR* cmr, size_t numNodes, CMR_SEYMOUR_NODE** nodes,
   CMR_REGULAR_PARAMS* params, CMR_REGULAR_STATS* stats, double timeLimit)
 {
   assert(cmr);
@@ -310,7 +310,7 @@ CMR_ERROR CMRregularityRefineDecomposition(CMR* cmr, size_t numNodes, CMR_MATROI
 
   for (size_t i = 0; i < numNodes; ++i)
   {
-    CMR_MATROID_DEC* subtree = nodes[i];
+        CMR_SEYMOUR_NODE* subtree = nodes[i];
     for (size_t c = 0; c < subtree->numChildren; ++c)
     {
       CMR_CALL( CMRmatroiddecRelease(cmr, &subtree->children[c]) );

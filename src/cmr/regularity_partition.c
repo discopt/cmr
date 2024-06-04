@@ -721,7 +721,7 @@ CMR_ERROR CMRregularityNestedMinorSequenceSearchThreeSeparation(CMR* cmr, Decomp
   assert(task);
   assert(queue);
 
-  CMR_MATROID_DEC* dec = task->dec;
+    CMR_SEYMOUR_NODE* dec = task->dec;
   assert(dec);
   assert(dec->matrix);
   assert(dec->nestedMinorsMatrix);

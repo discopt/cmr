@@ -98,7 +98,7 @@ CMR_ERROR CMRtuTest(
   CMR* cmr,                   /**< \ref CMR environment */
   CMR_CHRMAT* matrix,         /**< Matrix \f$ M \f$. */
   bool* pisTotallyUnimodular, /**< Pointer for storing whether \f$ M \f$ is totally unimodular. */
-  CMR_MATROID_DEC** pdec,     /**< Pointer for storing the decomposition tree (may be \c NULL). */
+    CMR_SEYMOUR_NODE** pdec,     /**< Pointer for storing the decomposition tree (may be \c NULL). */
   CMR_SUBMAT** psubmatrix,    /**< Pointer for storing a submatrix with non-ternary determinant (may be \c NULL). */
   CMR_TU_PARAMS* params,      /**< Parameters for the computation (may be \c NULL for defaults). */
   CMR_TU_STATS* stats,        /**< Statistics for the computation (may be \c NULL). */
@@ -117,7 +117,7 @@ CMR_ERROR CMRtuTest(
 CMR_EXPORT
 CMR_ERROR CMRtuCompleteDecomposition(
   CMR* cmr,               /**< \ref CMR environment. */
-  CMR_MATROID_DEC* dec,   /**< Pointer to the decomposition node that is the root of the new subtree. */
+    CMR_SEYMOUR_NODE* dec,   /**< Pointer to the decomposition node that is the root of the new subtree. */
   CMR_TU_PARAMS* params,  /**< Parameters for the computation. */
   CMR_TU_STATS* stats,    /**< Statistics for the computation (may be \c NULL). */
   double timeLimit        /**< Time limit to impose. */

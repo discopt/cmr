@@ -60,7 +60,7 @@ CMR_ERROR testTotalUnimodularity(
   /* Actual test. */
 
   bool isTU;
-  CMR_MATROID_DEC* decomposition = NULL;
+    CMR_SEYMOUR_NODE* decomposition = NULL;
   CMR_SUBMAT* submatrix = NULL;
   CMR_TU_PARAMS params;
   CMR_CALL( CMRtuParamsInit(&params) );

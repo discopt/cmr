@@ -15,8 +15,8 @@ CMR_ERROR CMRregularityDecomposeSeriesParallel(CMR* cmr, DecompositionTask* task
   assert(task);
   assert(queue);
 
-  CMR_MATROID_DEC* dec = task->dec;
-  CMR_MATROID_DEC* decReduced = dec;
+    CMR_SEYMOUR_NODE* dec = task->dec;
+    CMR_SEYMOUR_NODE* decReduced = dec;
   assert(dec);
 
 #if defined(CMR_DEBUG)

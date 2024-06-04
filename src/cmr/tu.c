@@ -614,7 +614,7 @@ CMR_ERROR tuPartition(
   return error;
 }
 
-CMR_ERROR CMRtuTest(CMR* cmr, CMR_CHRMAT* matrix, bool* pisTotallyUnimodular, CMR_MATROID_DEC** pdec,
+CMR_ERROR CMRtuTest(CMR* cmr, CMR_CHRMAT* matrix, bool* pisTotallyUnimodular, CMR_SEYMOUR_NODE** pdec,
   CMR_SUBMAT** psubmatrix, CMR_TU_PARAMS* params, CMR_TU_STATS* stats, double timeLimit)
 {
   assert(cmr);
@@ -690,7 +690,7 @@ CMR_ERROR CMRtuTest(CMR* cmr, CMR_CHRMAT* matrix, bool* pisTotallyUnimodular, CM
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRtuCompleteDecomposition(CMR* cmr, CMR_MATROID_DEC* dec, CMR_TU_PARAMS* params, CMR_TU_STATS* stats,
+CMR_ERROR CMRtuCompleteDecomposition(CMR* cmr, CMR_SEYMOUR_NODE* dec, CMR_TU_PARAMS* params, CMR_TU_STATS* stats,
   double timeLimit)
 {
   assert(cmr);

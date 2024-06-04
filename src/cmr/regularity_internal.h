@@ -9,7 +9,7 @@
 
 typedef struct DecompositionTask
 {
-  CMR_MATROID_DEC* dec;           /**< \brief Decomposition node that shall be processed. */
+    CMR_SEYMOUR_NODE* dec;           /**< \brief Decomposition node that shall be processed. */
   struct DecompositionTask* next; /**< \brief Next task in queue. */
   CMR_REGULAR_PARAMS* params;     /**< \brief Parameters for the computation. */
   CMR_REGULAR_STATS* stats;       /**< \brief Statistics for the computation (may be \c NULL). */
@@ -23,7 +23,7 @@ typedef struct DecompositionTask
 
 CMR_ERROR CMRregularityTaskCreateRoot(
   CMR* cmr,                       /**< \ref CMR environment. */
-  CMR_MATROID_DEC* dec,           /**< Decomposition node. */
+    CMR_SEYMOUR_NODE* dec,           /**< Decomposition node. */
   DecompositionTask** ptask,      /**< Pointer for storing the new task. */
   CMR_REGULAR_PARAMS* params,     /**< Parameters for the computation. */
   CMR_REGULAR_STATS* stats,       /**< Statistics for the computation (may be \c NULL). */
@@ -239,7 +239,7 @@ CMR_ERROR CMRregularityTest(
   CMR_CHRMAT* matrix,         /**< Input matrix. */
   bool ternary,               /**< Whether the matrix shall be considered ternary. */
   bool *pisRegular,           /**< Pointer for storing whether \p matrix is regular. */
-  CMR_MATROID_DEC** pdec,     /**< Pointer for storing the decomposition tree (may be \c NULL). */
+    CMR_SEYMOUR_NODE** pdec,     /**< Pointer for storing the decomposition tree (may be \c NULL). */
   CMR_MINOR** pminor,         /**< Pointer for storing an \f$ F_7 \f$ or \f$ F_7^\star \f$ minor. */
   CMR_REGULAR_PARAMS* params, /**< Parameters for the computation. */
   CMR_REGULAR_STATS* stats,   /**< Statistics for the computation (may be \c NULL). */
@@ -252,7 +252,7 @@ CMR_ERROR CMRregularityTest(
 
 CMR_ERROR CMRregularityCompleteDecomposition(
   CMR* cmr,                   /**< \ref CMR environment. */
-  CMR_MATROID_DEC* subtree,   /**< Decomposition node of the subtree root. */
+    CMR_SEYMOUR_NODE* subtree,   /**< Decomposition node of the subtree root. */
   CMR_REGULAR_PARAMS* params, /**< Parameters for the computation. */
   CMR_REGULAR_STATS* stats,   /**< Statistics for the computation (may be \c NULL). */
   double timeLimit            /**< Time limit to impose. */
@@ -265,7 +265,7 @@ CMR_ERROR CMRregularityCompleteDecomposition(
 CMR_ERROR CMRregularityRefineDecomposition(
   CMR* cmr,                   /**< \ref CMR environment. */
   size_t numNodes,            /**< Number of nodes to refine. */
-  CMR_MATROID_DEC** nodes,    /**< Array of decomposition nodes to refine. */
+    CMR_SEYMOUR_NODE** nodes,    /**< Array of decomposition nodes to refine. */
   CMR_REGULAR_PARAMS* params, /**< Parameters for the computation. */
   CMR_REGULAR_STATS* stats,   /**< Statistics for the computation (may be \c NULL). */
   double timeLimit            /**< Time limit to impose. */
