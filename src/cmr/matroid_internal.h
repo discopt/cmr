@@ -4,6 +4,7 @@
 #include "densematrix.h"
 
 #include <cmr/matroid.h>
+#include <cmr/seymour.h>
 #include <cmr/series_parallel.h>
 
 

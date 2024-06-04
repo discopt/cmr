@@ -73,6 +73,7 @@ add_library(cmr
   src/cmr/regularity_series_parallel.c
   src/cmr/separation.c
   src/cmr/series_parallel.c
+  src/cmr/seymour.c
   src/cmr/sort.c
 )
 

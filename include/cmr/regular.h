@@ -16,6 +16,7 @@ extern "C" {
 #include <cmr/env.h>
 #include <cmr/matrix.h>
 #include <cmr/matroid.h>
+#include <cmr/seymour.h>
 #include <cmr/graph.h>
 #include <cmr/series_parallel.h>
 #include <cmr/graphic.h>
