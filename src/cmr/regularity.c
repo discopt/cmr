@@ -183,8 +183,8 @@ CMR_ERROR CMRregularityTest(CMR* cmr, CMR_CHRMAT* matrix, bool ternary, bool *pi
   CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', false) );
 #endif /* CMR_DEBUG */
 
-    CMR_SEYMOUR_NODE* root = NULL;
-  CMR_CALL( CMRseymourCreateMatrixRoot(cmr, &root, ternary, matrix) );
+  CMR_SEYMOUR_NODE* root = NULL;
+  CMR_CALL( CMRseymourCreate(cmr, &root, ternary, matrix) );
   assert(root);
 
   CMR_CALL( CMRregularityCompleteDecomposition(cmr, root, params, stats, timeLimit) );

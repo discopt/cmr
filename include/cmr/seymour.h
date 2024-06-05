@@ -481,7 +481,7 @@ CMR_ERROR CMRseymourRelease(
  */
 
 CMR_EXPORT
-CMR_ERROR CMRseymourCreateMatrixRoot(
+CMR_ERROR CMRseymourCreate(
   CMR* cmr,                 /**< \ref CMR environment. */
   CMR_SEYMOUR_NODE** pnode, /**< Pointer for storing the Seymour decomposition node. */
   bool isTernary,           /**< Whether we consider ternary matrices. */

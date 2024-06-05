@@ -800,7 +800,7 @@ CMR_ERROR updateChildMatrix(
 }
 
 
-CMR_ERROR CMRseymourCreateMatrixRoot(CMR* cmr, CMR_SEYMOUR_NODE** pnode, bool isTernary, CMR_CHRMAT* matrix)
+CMR_ERROR CMRseymourCreate(CMR* cmr, CMR_SEYMOUR_NODE** pnode, bool isTernary, CMR_CHRMAT* matrix)
 {
   assert(cmr);
   assert(pnode);
