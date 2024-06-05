@@ -102,7 +102,7 @@ CMR_ERROR CMRregularTest(CMR* cmr, CMR_CHRMAT* matrix, bool *pisRegular, CMR_SEY
     if (pisRegular)
       *pisRegular = false;
     if (pminor)
-      CMR_CALL( CMRminorCreate(cmr, pminor, 0, submatrix) );
+      CMR_CALL( CMRminorCreate(cmr, pminor, 0, submatrix, CMR_MINOR_TYPE_CUSTOM) );
     return CMR_OKAY;
   }
 

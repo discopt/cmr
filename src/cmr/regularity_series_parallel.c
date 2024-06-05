@@ -55,14 +55,13 @@ CMR_ERROR CMRregularityDecomposeSeriesParallel(CMR* cmr, DecompositionTask* task
     CMRdbgMsg(8, "-> 2x2 violator.\n");
     assert(dec->isTernary);
 
-    CMR_CALL( CMRseymourUpdateSubmatrix(cmr, dec, violatorSubmatrix, CMR_SEYMOUR_NODE_TYPE_DETERMINANT) );
+    CMR_CALL( CMRseymourUpdateViolator(cmr, dec, violatorSubmatrix) );
 
     /* Task is done. */
     CMR_CALL( CMRregularityTaskFree(cmr, &task) );
 
     CMR_CALL( CMRfreeStackArray(cmr, &reductions) );
     CMR_CALL( CMRsubmatFree(cmr, &reducedSubmatrix) );
-    CMR_CALL( CMRsubmatFree(cmr, &violatorSubmatrix) );
     queue->foundIrregularity = true;
 
     return CMR_OKAY;
@@ -83,9 +82,8 @@ CMR_ERROR CMRregularityDecomposeSeriesParallel(CMR* cmr, DecompositionTask* task
       {
         CMRdbgMsg(8, "-> replacing current node by submatrix child.\n", numReductions);
 
-        CMR_CALL( CMRseymourUpdateSubmatrix(cmr, dec, reducedSubmatrix, CMR_SEYMOUR_NODE_TYPE_UNKNOWN) );
+        CMR_CALL( CMRseymourUpdateSeriesParallel(cmr, dec, reducedSubmatrix) );
         assert(dec->numChildren == 1);
-        dec->type = CMR_SEYMOUR_NODE_TYPE_SERIES_PARALLEL;
         decReduced = dec->children[0];
         task->node = decReduced;
         task->node->testedSeriesParallel = true;

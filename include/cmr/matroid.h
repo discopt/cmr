@@ -87,6 +87,28 @@ CMR_ERROR CMRchrmatTernaryPivots(
   CMR_CHRMAT** presult    /**< Pointer for storing the resulting matrix. */
 );
 
+typedef enum
+{
+  CMR_MINOR_TYPE_DETERMINANT = -1,
+    /**< A submatrix \f$ M \f$ with \f$ |\det(M)| = 2 \f$. */
+  CMR_MINOR_TYPE_CUSTOM = 0,
+    /**< A custom minor. */
+  CMR_MINOR_TYPE_U24 = 1,
+    /**< A minor representing \f$ U^2_4 \f$. */
+  CMR_MINOR_TYPE_FANO = 2,
+    /**< A minor representing \f$ F_7 \f$. */
+  CMR_MINOR_TYPE_FANO_DUAL = 3,
+    /**< A minor representing \f$ F_7^\star \f$. */
+  CMR_MINOR_TYPE_K5 = 4,
+    /**< A minor representing \f$ M(K_5) \f$. */
+  CMR_MINOR_TYPE_K5_DUAL = 5,
+    /**< A minor representing \f$ M(K_5)^\star \f$. */
+  CMR_MINOR_TYPE_K33 = 6,
+    /**< A minor representing \f$ M(K_{3,3}) \f$. */
+  CMR_MINOR_TYPE_K33_DUAL = 7,
+    /**< A minor representing \f$ M(K_{3,3})^\star \f$. */
+} CMR_MINOR_TYPE;
+
 /**
  * \brief A minor of a matroid.
  *
@@ -99,6 +121,7 @@ typedef struct
   size_t* pivotRows;              /**< Array with pivot rows. */
   size_t* pivotColumns;           /**< Array with pivot columns. */
   CMR_SUBMAT* remainingSubmatrix; /**< Submatrix that one finally needs to look at. */
+  CMR_MINOR_TYPE type;            /**< Type of minor. */
 } CMR_MINOR;
 
 /**
@@ -107,10 +130,11 @@ typedef struct
 
 CMR_EXPORT
 CMR_ERROR CMRminorCreate(
-  CMR* cmr,             /**< \ref CMR environment. */
-  CMR_MINOR** pminor,   /**< Pointer for storing the minor. */
-  size_t numPivots,     /**< Number of pivots. */
-  CMR_SUBMAT* submatrix /**< Submatrix (may be \c NULL; is not copied). */
+  CMR* cmr,               /**< \ref CMR environment. */
+  CMR_MINOR** pminor,     /**< Pointer for storing the minor. */
+  size_t numPivots,       /**< Number of pivots. */
+  CMR_SUBMAT* submatrix,  /**< Submatrix (may be \c NULL; is not copied). */
+  CMR_MINOR_TYPE type     /**< Type of minor. */
 );
 
 /**
@@ -121,6 +145,15 @@ CMR_EXPORT
 CMR_ERROR CMRminorFree(
   CMR* cmr,           /**< \ref CMR environment. */
   CMR_MINOR** pminor  /**< Pointer to the minor (may be \c NULL). */
+);
+
+/**
+ * \brief Returns the type of \p minor.
+ */
+
+CMR_EXPORT
+CMR_MINOR_TYPE CMRminorType(
+  CMR_MINOR* minor  /**< Minor. */
 );
 
 /**

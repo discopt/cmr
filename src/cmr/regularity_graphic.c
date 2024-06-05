@@ -1688,14 +1688,13 @@ CMR_ERROR CMRregularityNestedMinorSequenceGraphicness(CMR* cmr, DecompositionTas
         CMRdbgMsg(8, "-> %zux%zu submatrix with bad determinant.\n", violatorSubmatrix->numRows,
           violatorSubmatrix->numColumns);
 
-        CMR_CALL( CMRseymourUpdateSubmatrix(cmr, dec, violatorSubmatrix, CMR_SEYMOUR_NODE_TYPE_DETERMINANT) );
-        assert(dec->type == CMR_SEYMOUR_NODE_TYPE_SUBMATRIX || dec->type == CMR_SEYMOUR_NODE_TYPE_DETERMINANT);
+        CMR_CALL( CMRseymourUpdateViolator(cmr, dec, violatorSubmatrix) );
+        assert(dec->type == CMR_SEYMOUR_NODE_TYPE_IRREGULAR);
 
         CMR_CALL( CMRgraphFree(cmr, &dec->graph) );
         CMR_CALL( CMRfreeBlockArray(cmr, &dec->graphForest) );
         CMR_CALL( CMRfreeBlockArray(cmr, &dec->graphCoforest) );
         CMR_CALL( CMRfreeBlockArray(cmr, &dec->graphArcsReversed) );
-        CMR_CALL( CMRsubmatFree(cmr, &violatorSubmatrix) );
         queue->foundIrregularity = true;
       }
     }
@@ -1772,14 +1771,12 @@ CMR_ERROR CMRregularityNestedMinorSequenceCographicness(CMR* cmr, DecompositionT
         CMRdbgMsg(8, "-> %zux%zu submatrix with bad determinant.\n", violatorSubmatrix->numRows,
           violatorSubmatrix->numColumns);
 
-        CMR_CALL( CMRseymourUpdateSubmatrix(cmr, dec, violatorSubmatrix, CMR_SEYMOUR_NODE_TYPE_DETERMINANT) );
-        assert(dec->type != CMR_SEYMOUR_NODE_TYPE_DETERMINANT);
+        CMR_CALL( CMRseymourUpdateViolator(cmr, dec, violatorSubmatrix) );
 
         CMR_CALL( CMRgraphFree(cmr, &dec->cograph) );
         CMR_CALL( CMRfreeBlockArray(cmr, &dec->cographForest) );
         CMR_CALL( CMRfreeBlockArray(cmr, &dec->cographCoforest) );
         CMR_CALL( CMRfreeBlockArray(cmr, &dec->cographArcsReversed) );
-        CMR_CALL( CMRsubmatFree(cmr, &violatorSubmatrix) );
         queue->foundIrregularity = true;
       }
     }
@@ -1839,10 +1836,9 @@ CMR_ERROR CMRregularityTestGraphicness(CMR* cmr, DecompositionTask* task, Decomp
         CMRdbgMsg(8, "-> %zux%zu submatrix with bad determinant.\n", violatorSubmatrix->numRows,
           violatorSubmatrix->numColumns);
 
-        CMR_CALL( CMRseymourUpdateSubmatrix(cmr, dec, violatorSubmatrix, CMR_SEYMOUR_NODE_TYPE_DETERMINANT) );
-        assert(dec->type == CMR_SEYMOUR_NODE_TYPE_DETERMINANT || dec->type == CMR_SEYMOUR_NODE_TYPE_SUBMATRIX);
+        CMR_CALL( CMRseymourUpdateViolator(cmr, dec, violatorSubmatrix) );
+        assert(dec->type == CMR_SEYMOUR_NODE_TYPE_IRREGULAR);
 
-        CMR_CALL( CMRsubmatFree(cmr, &violatorSubmatrix) );
         CMR_CALL( CMRregularityTaskFree(cmr, &task) );
         queue->foundIrregularity = true;
         return CMR_OKAY;
@@ -1918,10 +1914,9 @@ CMR_ERROR CMRregularityTestCographicness(CMR* cmr, DecompositionTask* task, Deco
         CMRdbgMsg(8, "-> %zux%zu submatrix with bad determinant.\n", violatorSubmatrix->numRows,
           violatorSubmatrix->numColumns);
 
-        CMR_CALL( CMRseymourUpdateSubmatrix(cmr, dec, violatorSubmatrix, CMR_SEYMOUR_NODE_TYPE_DETERMINANT) );
-        assert(dec->type == CMR_SEYMOUR_NODE_TYPE_DETERMINANT || dec->type == CMR_SEYMOUR_NODE_TYPE_SUBMATRIX);
+        CMR_CALL( CMRseymourUpdateViolator(cmr, dec, violatorSubmatrix) );
+        assert(dec->type == CMR_SEYMOUR_NODE_TYPE_IRREGULAR);
 
-        CMR_CALL( CMRsubmatFree(cmr, &violatorSubmatrix) );
         CMR_CALL( CMRregularityTaskFree(cmr, &task) );
         queue->foundIrregularity = true;
         return CMR_OKAY;

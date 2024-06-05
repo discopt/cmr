@@ -54,7 +54,6 @@ CMR_CHRMAT* CMRseymourGetTranspose(CMR_SEYMOUR_NODE* node)
   return node->transpose;
 }
 
-
 size_t CMRseymourNumChildren(CMR_SEYMOUR_NODE* node)
 {
   assert(node);
@@ -76,6 +75,7 @@ CMR_SEYMOUR_NODE_TYPE CMRseymourType(CMR_SEYMOUR_NODE* node)
 
   return node->type;
 }
+
 
 int8_t CMRseymourGraphicness(CMR_SEYMOUR_NODE* node)
 {
@@ -322,32 +322,8 @@ CMR_ERROR CMRseymourPrintChild(CMR* cmr, CMR_SEYMOUR_NODE* child, CMR_SEYMOUR_NO
   case CMR_SEYMOUR_NODE_TYPE_R10:
     fprintf(stream, "matrix representing R10 {");
   break;
-  case CMR_SEYMOUR_NODE_TYPE_FANO:
-    fprintf(stream, "matrix representing F_7 {");
-  break;
-  case CMR_SEYMOUR_NODE_TYPE_FANO_DUAL:
-    fprintf(stream, "matrix representing F_7^* {");
-  break;
-  case CMR_SEYMOUR_NODE_TYPE_K5:
-    fprintf(stream, "matrix representing K_5 {");
-  break;
-  case CMR_SEYMOUR_NODE_TYPE_K5_DUAL:
-    fprintf(stream, "matrix representing K_5^* {");
-  break;
-  case CMR_SEYMOUR_NODE_TYPE_K33:
-    fprintf(stream, "matrix representing K_{3,3} {");
-  break;
-  case CMR_SEYMOUR_NODE_TYPE_K33_DUAL:
-    fprintf(stream, "matrix representing K_{3,3}^* {");
-  break;
-  case CMR_SEYMOUR_NODE_TYPE_SUBMATRIX:
-    fprintf(stream, "submatrix node {");
-  break;
   case CMR_SEYMOUR_NODE_TYPE_PIVOTS:
     fprintf(stream, "pivot node {");
-  break;
-  case CMR_SEYMOUR_NODE_TYPE_DETERMINANT:
-    fprintf(stream, "bad determinant {");
   break;
   default:
     fprintf(stream, "[invalid CMR_MATROID_DEC type]");
@@ -550,6 +526,10 @@ CMR_ERROR CMRseymourRelease(CMR* cmr, CMR_SEYMOUR_NODE** pnode)
     CMR_CALL( CMRfreeBlockArray(cmr, &node->rowsToChild) );
     CMR_CALL( CMRfreeBlockArray(cmr, &node->columnsToChild) );
 
+    for (size_t m = 0; m < node->numMinors; ++m)
+      CMR_CALL( CMRminorFree(cmr, &node->minors[m]) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &node->minors) );
+
     CMR_CALL( CMRgraphFree(cmr, &node->graph) );
     CMR_CALL( CMRfreeBlockArray(cmr, &node->graphForest) );
     CMR_CALL( CMRfreeBlockArray(cmr, &node->graphCoforest) );
@@ -637,6 +617,10 @@ CMR_ERROR createNode(
     for (size_t column = 0; column < numColumns; ++column)
       node->columnsToChild[column] = SIZE_MAX;
   }
+
+  node->memMinors = 0;
+  node->numMinors = 0;
+  node->minors = NULL;
 
   node->testedTwoConnected = false;
   node->testedR10 = false;
@@ -833,6 +817,38 @@ CMR_ERROR CMRseymourCreateMatrixRoot(CMR* cmr, CMR_SEYMOUR_NODE** pnode, bool is
   return CMR_OKAY;
 }
 
+CMR_ERROR CMRseymourAddMinor(CMR* cmr, CMR_SEYMOUR_NODE* node, CMR_MINOR* minor)
+{
+  assert(cmr);
+  assert(node);
+  assert(minor);
+
+  if (node->numMinors == node->memMinors)
+  {
+    node->memMinors = node->memMinors ? 2 * node->memMinors : 4;
+    CMR_CALL( CMRreallocBlockArray(cmr, &node->minors, node->memMinors) );
+  }
+
+  node->minors[node->numMinors++] = minor;
+
+  return CMR_OKAY;
+}
+
+size_t CMRseymourNumMinors(CMR_SEYMOUR_NODE* node)
+{
+  assert(node);
+
+  return node->numMinors;
+}
+
+CMR_MINOR* CMRseymourMinor(CMR_SEYMOUR_NODE* node, size_t minorIndex)
+{
+  assert(node);
+  assert(minorIndex < node->numMinors);
+
+  return node->minors[minorIndex];
+}
+
 CMR_ERROR CMRseymourSetNumChildren(CMR* cmr, CMR_SEYMOUR_NODE* node, size_t numChildren)
 {
   assert(cmr);
@@ -939,35 +955,41 @@ CMR_ERROR CMRseymourUpdateOneSum (CMR* cmr, CMR_SEYMOUR_NODE* node, size_t numCh
 //   return CMR_OKAY;
 // }
 
-CMR_ERROR CMRseymourUpdateSubmatrix(CMR* cmr, CMR_SEYMOUR_NODE* dec, CMR_SUBMAT* submatrix,
-                                       CMR_SEYMOUR_NODE_TYPE type)
+CMR_ERROR CMRseymourUpdateViolator(CMR* cmr, CMR_SEYMOUR_NODE* node, CMR_SUBMAT* violator)
 {
   assert(cmr);
-  assert(dec);
-  assert(submatrix);
-  assert(dec->matrix);
-  assert(submatrix->numRows <= dec->matrix->numRows);
-  assert(submatrix->numColumns <= dec->matrix->numColumns);
+  assert(node);
+  assert(violator);
+  assert(node->matrix);
+  assert(violator->numRows <= node->matrix->numRows);
+  assert(violator->numColumns <= node->matrix->numColumns);
 
-  if (submatrix->numRows == dec->matrix->numRows && submatrix->numColumns == dec->matrix->numColumns)
-  {
-    dec->type = type;
-  }
-  else
-  {
-    dec->type = CMR_SEYMOUR_NODE_TYPE_SUBMATRIX;
-    CMR_CALL( CMRseymourSetNumChildren(cmr, dec, 1) );
+  node->type = CMR_SEYMOUR_NODE_TYPE_IRREGULAR;
+  CMR_MINOR* minor = NULL;
+  CMR_CALL( CMRminorCreate(cmr, &minor, 0, violator, CMR_MINOR_TYPE_DETERMINANT) );
+  CMR_CALL( CMRseymourAddMinor(cmr, node, minor) );
 
-    CMR_CHRMAT* childMatrix = NULL;
-    CMR_CALL( CMRchrmatZoomSubmat(cmr, dec->matrix, submatrix, &childMatrix) );
-    CMR_CALL( createNode(cmr, &dec->children[0], dec->isTernary, type, childMatrix->numRows,
-      childMatrix->numColumns) );
-    dec->children[0]->matrix = childMatrix;
+  return CMR_OKAY;
+}
 
-    CMR_CALL( updateRowsColumnsToParent(cmr, dec, 0, submatrix->rows, submatrix->columns) );
-    CMR_CALL( updateRowsColumnsToChild(dec, 0, submatrix->rows, 0, childMatrix->numRows,
-      submatrix->columns, 0, childMatrix->numColumns) );
-  }
+CMR_ERROR CMRseymourUpdateSeriesParallel(CMR* cmr, CMR_SEYMOUR_NODE* node, CMR_SUBMAT* reducedSubmatrix)
+{
+  assert(cmr);
+  assert(node);
+  assert(node->matrix);
+
+  node->type = CMR_SEYMOUR_NODE_TYPE_SERIES_PARALLEL;
+  CMR_CALL( CMRseymourSetNumChildren(cmr, node, 1) );
+
+  CMR_CHRMAT* childMatrix = NULL;
+  CMR_CALL( CMRchrmatZoomSubmat(cmr, node->matrix, reducedSubmatrix, &childMatrix) );
+  CMR_CALL( createNode(cmr, &node->children[0], node->isTernary, CMR_SEYMOUR_NODE_TYPE_UNKNOWN, childMatrix->numRows,
+    childMatrix->numColumns) );
+  node->children[0]->matrix = childMatrix;
+
+  CMR_CALL( updateRowsColumnsToParent(cmr, node, 0, reducedSubmatrix->rows, reducedSubmatrix->columns) );
+  CMR_CALL( updateRowsColumnsToChild(node, 0, reducedSubmatrix->rows, 0, childMatrix->numRows,
+    reducedSubmatrix->columns, 0, childMatrix->numColumns) );
 
   return CMR_OKAY;
 }
@@ -1715,9 +1737,6 @@ CMR_ERROR CMRseymourSetAttributes(CMR_SEYMOUR_NODE* node)
     node->cographicness = 1;
   break;
   case CMR_SEYMOUR_NODE_TYPE_IRREGULAR:
-  case CMR_SEYMOUR_NODE_TYPE_FANO:
-  case CMR_SEYMOUR_NODE_TYPE_FANO_DUAL:
-  case CMR_SEYMOUR_NODE_TYPE_DETERMINANT:
     node->regularity = -1;
     node->graphicness = -1;
     node->cographicness = -1;
@@ -1737,7 +1756,6 @@ CMR_ERROR CMRseymourSetAttributes(CMR_SEYMOUR_NODE* node)
     }
     break;
   case CMR_SEYMOUR_NODE_TYPE_PIVOTS:
-  case CMR_SEYMOUR_NODE_TYPE_SUBMATRIX:
   case CMR_SEYMOUR_NODE_TYPE_ONE_SUM:
   case CMR_SEYMOUR_NODE_TYPE_TWO_SUM:
   case CMR_SEYMOUR_NODE_TYPE_THREE_SUM:
@@ -1770,14 +1788,10 @@ CMR_ERROR CMRseymourSetAttributes(CMR_SEYMOUR_NODE* node)
     }
   break;
   case CMR_SEYMOUR_NODE_TYPE_GRAPH:
-  case CMR_SEYMOUR_NODE_TYPE_K5:
-  case CMR_SEYMOUR_NODE_TYPE_K33:
     node->regularity = 1;
     node->graphicness = 1;
   break;
   case CMR_SEYMOUR_NODE_TYPE_COGRAPH:
-  case CMR_SEYMOUR_NODE_TYPE_K5_DUAL:
-  case CMR_SEYMOUR_NODE_TYPE_K33_DUAL:
     node->regularity = 1;
     node->cographicness = 1;
   break;
@@ -1787,7 +1801,7 @@ CMR_ERROR CMRseymourSetAttributes(CMR_SEYMOUR_NODE* node)
     node->cographicness = -1;
   break;
   default:
-    assert(0 != "Handling of matroid decomposition type not implemented!");
+    assert(0 != "Handling of Seymour decomposition type not implemented!");
   }
 
   CMRdbgMsg(4, "Finalizing attributes to r=%d,g=%d,c=%d.\n", node->regularity, node->graphicness, node->cographicness);
@@ -1798,8 +1812,8 @@ CMR_ERROR CMRseymourSetAttributes(CMR_SEYMOUR_NODE* node)
 
 typedef struct
 {
-    CMR_SEYMOUR_NODE* origin;
-    CMR_SEYMOUR_NODE* clone;
+  CMR_SEYMOUR_NODE* origin;
+  CMR_SEYMOUR_NODE* clone;
 } ClonePair;
 
 static

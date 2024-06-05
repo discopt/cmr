@@ -988,10 +988,8 @@ CMR_ERROR CMRregularityNestedMinorSequenceSearchThreeSeparation(CMR* cmr, Decomp
     {
       CMRdbgMsg(8, "-> 2x2 submatrix with bad determinant.\n");
 
-      CMR_CALL( CMRseymourUpdateSubmatrix(cmr, dec, violatorSubmatrix, CMR_SEYMOUR_NODE_TYPE_DETERMINANT) );
-      assert(dec->type != CMR_SEYMOUR_NODE_TYPE_DETERMINANT);
+      CMR_CALL( CMRseymourUpdateViolator(cmr, dec, violatorSubmatrix) );
 
-      CMR_CALL( CMRsubmatFree(cmr, &violatorSubmatrix) );
       CMR_CALL( CMRsepaFree(cmr, &originalSeparation) );
       CMR_CALL( CMRregularityTaskFree(cmr, &task) );
 

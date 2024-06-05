@@ -72,8 +72,7 @@ CMR_ERROR CMRregularityTestR10(CMR* cmr, DecompositionTask* task, DecompositionQ
       assert(!isCamion);
 
       /* TODO: Do we actually need the child node or just the irregularity information? */
-      CMR_CALL( CMRseymourUpdateSubmatrix(cmr, dec, violatorSubmatrix, CMR_SEYMOUR_NODE_TYPE_DETERMINANT) );
-      CMR_CALL( CMRsubmatFree(cmr, &violatorSubmatrix) );
+      CMR_CALL( CMRseymourUpdateViolator(cmr, dec, violatorSubmatrix) );
 
       /* Task is done. */
       CMR_CALL( CMRregularityTaskFree(cmr, &task) );

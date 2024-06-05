@@ -400,9 +400,9 @@ TEST(TU, NestedMinorSearchTwoSeparationViolator)
 
     ASSERT_CMR_CALL( CMRseymourPrint(cmr, dec, stdout, true, true, true, true, true, true) );
     ASSERT_FALSE( isTU );
-    ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_SUBMATRIX );
-    ASSERT_EQ( CMRseymourNumChildren(dec), 1UL );
-    ASSERT_EQ( CMRseymourType(CMRseymourChild(dec, 0)), CMR_SEYMOUR_NODE_TYPE_DETERMINANT );
+    ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_IRREGULAR );
+    ASSERT_EQ( CMRseymourNumMinors(dec), 1UL );
+    ASSERT_EQ( CMRminorType(CMRseymourMinor(dec, 0)), CMR_MINOR_TYPE_DETERMINANT );
 
     ASSERT_CMR_CALL( CMRseymourRelease(cmr, &dec) );
 

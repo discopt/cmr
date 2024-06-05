@@ -11,6 +11,7 @@
 
 #include <cmr/env.h>
 #include <cmr/matrix.h>
+#include <cmr/matroid.h>
 #include <cmr/graph.h>
 
 #include <stdio.h>
@@ -32,47 +33,28 @@ typedef struct _CMR_SEYMOUR_NODE CMR_SEYMOUR_NODE;
 typedef enum
 {
   CMR_SEYMOUR_NODE_TYPE_IRREGULAR = -1,
-    /**< Node represents 3-connected irregular minor. \see \ref matroid_decomposition. */
+    /**< Node represents 3-connected irregular matrix. \see \ref seymour_decomposition. */
   CMR_SEYMOUR_NODE_TYPE_UNKNOWN = 0,
     /**< Type of node is not yet determined. */
   CMR_SEYMOUR_NODE_TYPE_ONE_SUM = 1,
-    /**< Node represents a \f$ 1 \f$-sum of matrices with an arbitrary number of child nodes.
-     ** \see \ref matroid_decomposition.
-     **/
+    /**< Node represents a \f$ 1 \f$-sum of matrices; has at least 2 child nodes. \see \ref seymour_decomposition. */
   CMR_SEYMOUR_NODE_TYPE_TWO_SUM = 2,
-    /**< Node represents a 2-sum of matrices; has two child nodes. \see \ref matroid_decomposition. */
+    /**< Node represents a 2-sum of matrices; has two child nodes. \see \ref seymour_decomposition. */
   CMR_SEYMOUR_NODE_TYPE_THREE_SUM = 3,
-    /**< Node represents a 3-sum of matrices; has two child nodes. \see \ref matroid_decomposition. */
+    /**< Node represents a 3-sum of matrices; has two child nodes. \see \ref seymour_decomposition. */
   CMR_SEYMOUR_NODE_TYPE_SERIES_PARALLEL = 4,
-    /**< Node represents a series-parallel reduction; one child node. \see \ref matroid_decomposition. */
+    /**< Node represents a series-parallel reduction; has one child node. \see \ref seymour_decomposition. */
   CMR_SEYMOUR_NODE_TYPE_PIVOTS = 5,
-    /**< Node represents an application of pivots; one child node. \see \ref matroid_decomposition. */
-  CMR_SEYMOUR_NODE_TYPE_SUBMATRIX = 6,
-    /**< Node represents the consideration of a submatrix; one child node. \see \ref matroid_decomposition. */
+    /**< Node represents an application of pivots; has one child node. \see \ref seymour_decomposition. */
 
-  CMR_SEYMOUR_NODE_TYPE_GRAPH = 7,
-    /**< Node represents a graphic leaf minor; one optional child node for non-cographic minor. \see \ref matroid_decomposition. */
-  CMR_SEYMOUR_NODE_TYPE_COGRAPH = 8,
-    /**< Node represents a cographic leaf minor; one optional child node for non-graphic minor. \see \ref matroid_decomposition. */
-  CMR_SEYMOUR_NODE_TYPE_PLANAR = 9,
-    /**< Node represents a planar (graphic and cographic) leaf minor; no child nodes. \see \ref matroid_decomposition. */
-
-  CMR_SEYMOUR_NODE_TYPE_R10 = -2,
-    /**< Node represents a representation matrix of \f$ R_{10} \f$. \see \ref matroid_decomposition. */
-  CMR_SEYMOUR_NODE_TYPE_FANO = -3,
-    /**< Node represents a representation matrix of \f$ F_7 \f$. \see \ref matroid_decomposition. */
-  CMR_SEYMOUR_NODE_TYPE_FANO_DUAL = -4,
-    /**< Node represents a representation matrix of \f$ F_7^\star \f$. \see \ref matroid_decomposition. */
-  CMR_SEYMOUR_NODE_TYPE_K5 = -5,
-    /**< Node represents a representation matrix of \f$ M(K_5) \f$. \see \ref matroid_decomposition. */
-  CMR_SEYMOUR_NODE_TYPE_K5_DUAL = -6,
-    /**< Node represents a representation matrix of \f$ M(K_5)^\star \f$. \see \ref matroid_decomposition. */
-  CMR_SEYMOUR_NODE_TYPE_K33 = -7,
-    /**< Node represents a representation matrix of \f$ M(K_{3,3}) \f$. \see \ref matroid_decomposition. */
-  CMR_SEYMOUR_NODE_TYPE_K33_DUAL = -8,
-    /**< Node represents a representation matrix of \f$ M(K_{3,3})^\star \f$. \see \ref matroid_decomposition. */
-  CMR_SEYMOUR_NODE_TYPE_DETERMINANT = -9,
-    /**< Node represents a square matrix \f$ M \f$ with \f$ |\det(M)| = 2 \f$. \see \ref matroid_decomposition. */
+  CMR_SEYMOUR_NODE_TYPE_GRAPH = 6,
+    /**< Node represents a graphic or network leaf. \see \ref seymour_decomposition. */
+  CMR_SEYMOUR_NODE_TYPE_COGRAPH = 7,
+    /**< Node represents a cographic or conetwork leaf. \see \ref seymour_decomposition. */
+  CMR_SEYMOUR_NODE_TYPE_PLANAR = 8,
+    /**< Node represents a graphic and cographic (network and conetwork) leaf.  \see \ref seymour_decomposition. */
+  CMR_SEYMOUR_NODE_TYPE_R10 = 9,
+    /**< Node represents a representation matrix of \f$ R_{10} \f$.  \see \ref seymour_decomposition. */
 } CMR_SEYMOUR_NODE_TYPE;
 
 /**
@@ -136,7 +118,7 @@ typedef enum
 
 CMR_EXPORT
 bool CMRseymourIsTernary(
-    CMR_SEYMOUR_NODE* dec  /**< Decomposition node. */
+  CMR_SEYMOUR_NODE* node  /**< Seymour decomposition node. */
 );
 
 /**
@@ -145,7 +127,7 @@ bool CMRseymourIsTernary(
 
 CMR_EXPORT
 bool CMRseymourThreeSumDistributedRanks(
-    CMR_SEYMOUR_NODE* dec  /**< Decomposition node. */
+  CMR_SEYMOUR_NODE* node  /**< Seymour decomposition node. */
 );
 
 /**
@@ -154,7 +136,7 @@ bool CMRseymourThreeSumDistributedRanks(
 
 CMR_EXPORT
 bool CMRseymourThreeSumConcentratedRank(
-    CMR_SEYMOUR_NODE* dec  /**< Decomposition node. */
+  CMR_SEYMOUR_NODE* node  /**< Seymour decomposition node. */
 );
 
 /**
@@ -163,7 +145,7 @@ bool CMRseymourThreeSumConcentratedRank(
 
 CMR_EXPORT
 bool CMRseymourHasTranspose(
-    CMR_SEYMOUR_NODE* dec  /**< Decomposition node. */
+  CMR_SEYMOUR_NODE* node  /**< Seymour decomposition node. */
 );
 
 /**
@@ -172,7 +154,7 @@ bool CMRseymourHasTranspose(
 
 CMR_EXPORT
 CMR_CHRMAT* CMRseymourGetMatrix(
-    CMR_SEYMOUR_NODE* dec  /**< Decomposition node. */
+  CMR_SEYMOUR_NODE* node  /**< Seymour decomposition node. */
 );
 
 /**
@@ -181,7 +163,7 @@ CMR_CHRMAT* CMRseymourGetMatrix(
 
 CMR_EXPORT
 CMR_CHRMAT* CMRseymourGetTranspose(
-    CMR_SEYMOUR_NODE* dec  /**< Decomposition node. */
+  CMR_SEYMOUR_NODE* node  /**< Seymour decomposition node. */
 );
 
 /**
@@ -190,7 +172,7 @@ CMR_CHRMAT* CMRseymourGetTranspose(
 
 CMR_EXPORT
 size_t CMRseymourNumChildren(
-    CMR_SEYMOUR_NODE* dec  /**< Decomposition node. */
+  CMR_SEYMOUR_NODE* node  /**< Seymour decomposition node. */
 );
 
 /**
@@ -199,8 +181,8 @@ size_t CMRseymourNumChildren(
 
 CMR_EXPORT
 CMR_SEYMOUR_NODE* CMRseymourChild(
-    CMR_SEYMOUR_NODE* dec,   /**< Decomposition node. */
-  size_t childIndex       /**< Index of child. */
+  CMR_SEYMOUR_NODE* node, /**< Seymour decomposition node. */
+  size_t childIndex         /**< Index of child. */
 );
 
 /**
@@ -209,7 +191,26 @@ CMR_SEYMOUR_NODE* CMRseymourChild(
 
 CMR_EXPORT
 CMR_SEYMOUR_NODE_TYPE CMRseymourType(
-    CMR_SEYMOUR_NODE* dec    /**< Decomposition node. */
+  CMR_SEYMOUR_NODE* node  /**< Seymour decomposition node. */
+);
+
+/**
+ * \brief Returns the number of minors of the decomposition node.
+ */
+
+CMR_EXPORT
+size_t CMRseymourNumMinors(
+  CMR_SEYMOUR_NODE* node  /**< Seymour decomposition node. */
+);
+
+/**
+ * \brief Returns a minor of the decomposition node.
+ */
+
+CMR_EXPORT
+CMR_MINOR* CMRseymourMinor(
+  CMR_SEYMOUR_NODE* node, /**< Seymour decomposition node. */
+  size_t minorIndex         /**< Index of minor. */
 );
 
 /**
@@ -221,7 +222,7 @@ CMR_SEYMOUR_NODE_TYPE CMRseymourType(
 
 CMR_EXPORT
 int8_t CMRseymourGraphicness(
-    CMR_SEYMOUR_NODE* dec  /**< Decomposition node. */
+  CMR_SEYMOUR_NODE* node  /**< Seymour decomposition node. */
 );
 
 /**
@@ -233,7 +234,7 @@ int8_t CMRseymourGraphicness(
 
 CMR_EXPORT
 int8_t CMRseymourCographicness(
-    CMR_SEYMOUR_NODE* dec  /**< Decomposition node. */
+  CMR_SEYMOUR_NODE* node  /**< Seymour decomposition node. */
 );
 
 /**
@@ -245,7 +246,7 @@ int8_t CMRseymourCographicness(
 
 CMR_EXPORT
 int8_t CMRseymourRegularity(
-    CMR_SEYMOUR_NODE* dec  /**< Decomposition node. */
+  CMR_SEYMOUR_NODE* node  /**< Seymour decomposition node. */
 );
 
 /**
@@ -254,7 +255,7 @@ int8_t CMRseymourRegularity(
 
 CMR_EXPORT
 size_t CMRseymourNumRows(
-    CMR_SEYMOUR_NODE* dec  /**< Decomposition node. */
+  CMR_SEYMOUR_NODE* node  /**< Seymour decomposition node. */
 );
 
 /**
@@ -263,7 +264,7 @@ size_t CMRseymourNumRows(
 
 CMR_EXPORT
 size_t CMRseymourNumColumns(
-    CMR_SEYMOUR_NODE* dec  /**< Decomposition node. */
+  CMR_SEYMOUR_NODE* node  /**< Seymour decomposition node. */
 );
 
 /**
@@ -272,8 +273,8 @@ size_t CMRseymourNumColumns(
 
 CMR_EXPORT
 CMR_ELEMENT* CMRseymourChildRowsToParent(
-    CMR_SEYMOUR_NODE* dec, /**< Decomposition node. */
-  size_t childIndex     /**< Index of child to consider. */
+  CMR_SEYMOUR_NODE* node, /**< Seymour decomposition node. */
+  size_t childIndex       /**< Index of child to consider. */
 );
 
 /**
@@ -282,8 +283,8 @@ CMR_ELEMENT* CMRseymourChildRowsToParent(
 
 CMR_EXPORT
 CMR_ELEMENT* CMRseymourChildColumnsToParent(
-    CMR_SEYMOUR_NODE* dec, /**< Decomposition node. */
-  size_t childIndex     /**< Index of child to consider. */
+  CMR_SEYMOUR_NODE* node, /**< Seymour decomposition node. */
+  size_t childIndex       /**< Index of child to consider. */
 );
 
 /**
@@ -292,7 +293,7 @@ CMR_ELEMENT* CMRseymourChildColumnsToParent(
 
 CMR_EXPORT
 CMR_GRAPH* CMRseymourGraph(
-    CMR_SEYMOUR_NODE* dec  /**< Decomposition node. */
+  CMR_SEYMOUR_NODE* node  /**< Seymour decomposition node. */
 );
 
 /**
@@ -301,7 +302,7 @@ CMR_GRAPH* CMRseymourGraph(
 
 CMR_EXPORT
 CMR_GRAPH_EDGE* CMRseymourGraphForest(
-    CMR_SEYMOUR_NODE* dec  /**< Decomposition node. */
+  CMR_SEYMOUR_NODE* node  /**< Seymour decomposition node. */
 );
 
 /**
@@ -319,7 +320,7 @@ size_t CMRseymourGraphSizeForest(
 
 CMR_EXPORT
 CMR_GRAPH_EDGE* CMRseymourGraphCoforest(
-    CMR_SEYMOUR_NODE* dec  /**< Decomposition node. */
+  CMR_SEYMOUR_NODE* node  /**< Seymour decomposition node. */
 );
 
 /**
@@ -328,7 +329,7 @@ CMR_GRAPH_EDGE* CMRseymourGraphCoforest(
 
 CMR_EXPORT
 size_t CMRseymourGraphSizeCoforest(
-    CMR_SEYMOUR_NODE* dec  /**< Decomposition node. */
+  CMR_SEYMOUR_NODE* node  /**< Seymour decomposition node. */
 );
 
 /**
@@ -337,7 +338,7 @@ size_t CMRseymourGraphSizeCoforest(
 
 CMR_EXPORT
 bool* CMRseymourGraphArcsReversed(
-    CMR_SEYMOUR_NODE* dec  /**< Decomposition node. */
+  CMR_SEYMOUR_NODE* node  /**< Seymour decomposition node. */
 );
 
 /**
@@ -346,7 +347,7 @@ bool* CMRseymourGraphArcsReversed(
 
 CMR_EXPORT
 CMR_GRAPH* CMRseymourCograph(
-    CMR_SEYMOUR_NODE* dec  /**< Decomposition node. */
+  CMR_SEYMOUR_NODE* node  /**< Seymour decomposition node. */
 );
 
 /**
@@ -355,7 +356,7 @@ CMR_GRAPH* CMRseymourCograph(
 
 CMR_EXPORT
 size_t CMRseymourCographSizeForest(
-    CMR_SEYMOUR_NODE* dec  /**< Decomposition node. */
+  CMR_SEYMOUR_NODE* node  /**< Seymour decomposition node. */
 );
 
 /**
@@ -364,7 +365,7 @@ size_t CMRseymourCographSizeForest(
 
 CMR_EXPORT
 CMR_GRAPH_EDGE* CMRseymourCographForest(
-    CMR_SEYMOUR_NODE* dec  /**< Decomposition node. */
+  CMR_SEYMOUR_NODE* node  /**< Seymour decomposition node. */
 );
 
 /**
@@ -373,7 +374,7 @@ CMR_GRAPH_EDGE* CMRseymourCographForest(
 
 CMR_EXPORT
 size_t CMRseymourCographSizeCoforest(
-    CMR_SEYMOUR_NODE* dec  /**< Decomposition node. */
+  CMR_SEYMOUR_NODE* node  /**< Seymour decomposition node. */
 );
 
 /**
@@ -382,7 +383,7 @@ size_t CMRseymourCographSizeCoforest(
 
 CMR_EXPORT
 CMR_GRAPH_EDGE* CMRseymourCographCoforest(
-    CMR_SEYMOUR_NODE* dec  /**< Decomposition node. */
+  CMR_SEYMOUR_NODE* node  /**< Seymour decomposition node. */
 );
 
 /**
@@ -391,7 +392,7 @@ CMR_GRAPH_EDGE* CMRseymourCographCoforest(
 
 CMR_EXPORT
 bool* CMRseymourCographArcsReversed(
-    CMR_SEYMOUR_NODE* dec  /**< Decomposition node. */
+  CMR_SEYMOUR_NODE* node  /**< Seymour decomposition node. */
 );
 
 /**
@@ -400,7 +401,7 @@ bool* CMRseymourCographArcsReversed(
 
 CMR_EXPORT
 size_t CMRseymourNumPivots(
-    CMR_SEYMOUR_NODE* dec  /**< Decomposition node. */
+  CMR_SEYMOUR_NODE* node  /**< Seymour decomposition node. */
 );
 
 /**
@@ -409,7 +410,7 @@ size_t CMRseymourNumPivots(
 
 CMR_EXPORT
 size_t* CMRseymourPivotRows(
-    CMR_SEYMOUR_NODE* dec  /**< Decomposition node. */
+  CMR_SEYMOUR_NODE* node  /**< Seymour decomposition node. */
 );
 
 /**
@@ -418,7 +419,7 @@ size_t* CMRseymourPivotRows(
 
 CMR_EXPORT
 size_t* CMRseymourPivotColumns(
-    CMR_SEYMOUR_NODE* dec  /**< Decomposition node. */
+  CMR_SEYMOUR_NODE* node  /**< Seymour decomposition node. */
 );
 
 /**
@@ -428,7 +429,7 @@ size_t* CMRseymourPivotColumns(
 CMR_EXPORT
 CMR_ERROR CMRseymourPrint(
   CMR* cmr,                 /**< \ref CMR environment. */
-    CMR_SEYMOUR_NODE* dec,     /**< Decomposition node. */
+  CMR_SEYMOUR_NODE* node,   /**< Seymour decomposition node. */
   FILE* stream,             /**< Stream to write to. */
   bool printChildren,       /**< Whether to recurse. */
   bool printParentElements, /**< Whether to print mapping of rows/columns to parent elements. */
@@ -446,8 +447,8 @@ CMR_ERROR CMRseymourPrint(
 CMR_EXPORT
 CMR_ERROR CMRseymourCloneUnknown(
   CMR* cmr,                 /**< \ref CMR environment. */
-    CMR_SEYMOUR_NODE* dec,     /**< The decomposition node. */
-    CMR_SEYMOUR_NODE** pclone  /**< Pointer for storing the clone. */
+  CMR_SEYMOUR_NODE* node,   /**< Seymour decomposition node. */
+  CMR_SEYMOUR_NODE** pclone /**< Pointer for storing the clone. */
 );
 
 /**
@@ -457,20 +458,20 @@ CMR_ERROR CMRseymourCloneUnknown(
 CMR_EXPORT
 CMR_ERROR CMRseymourCapture(
   CMR* cmr,             /**< \ref CMR environment. */
-    CMR_SEYMOUR_NODE* dec  /**< Pointer to the decomposition node. */
+  CMR_SEYMOUR_NODE* node  /**< Seymour decomposition node. */
 );
 
 /**
  * \brief Releases a decomposition node, freeing it if this was the last reference.
  *
  * Decreases the reference counter by 1. If it reaches zero then it is freed. In that case, it is also called
- * recursively for the child nodes.
+ * recursively for the child nodes. Sets \p *pnode to \c NULL to prevent accidental usage.
  */
 
 CMR_EXPORT
 CMR_ERROR CMRseymourRelease(
-  CMR* cmr,               /**< \ref CMR environment. */
-    CMR_SEYMOUR_NODE** pdec  /**< Pointer to decomposition node. \p *pdec is set to \c NULL to prevent accidental usage. */
+  CMR* cmr,                 /**< \ref CMR environment. */
+  CMR_SEYMOUR_NODE** pnode  /**< Pointer to Seymour decomposition node. \p *pnode is set to \c NULL. */
 );
 
 /**
@@ -482,7 +483,7 @@ CMR_ERROR CMRseymourRelease(
 CMR_EXPORT
 CMR_ERROR CMRseymourCreateMatrixRoot(
   CMR* cmr,                 /**< \ref CMR environment. */
-    CMR_SEYMOUR_NODE** pdec,   /**< Pointer for storing the decomposition node. */
+  CMR_SEYMOUR_NODE** pnode, /**< Pointer for storing the Seymour decomposition node. */
   bool isTernary,           /**< Whether we consider ternary matrices. */
   CMR_CHRMAT* matrix        /**< The matrix corresponding to this node; will be copied. */
 );
@@ -496,7 +497,7 @@ CMR_ERROR CMRseymourCreateMatrixRoot(
 
 CMR_EXPORT
 CMR_ERROR CMRregularityCloneSubtrees(CMR* cmr, size_t numSubtrees, CMR_SEYMOUR_NODE** subtreeRoots,
-                                     CMR_SEYMOUR_NODE** clonedSubtrees);
+  CMR_SEYMOUR_NODE** clonedSubtrees);
 
 /**@}*/
 

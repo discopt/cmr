@@ -270,7 +270,7 @@ CMR_ERROR CMRchrmatTernaryPivots(CMR* cmr, CMR_CHRMAT* matrix, size_t numPivots,
 
 
 
-CMR_ERROR CMRminorCreate(CMR* cmr, CMR_MINOR** pminor, size_t numPivots, CMR_SUBMAT* submatrix)
+CMR_ERROR CMRminorCreate(CMR* cmr, CMR_MINOR** pminor, size_t numPivots, CMR_SUBMAT* submatrix, CMR_MINOR_TYPE type)
 {
   assert(cmr);
   assert(pminor);
@@ -279,9 +279,15 @@ CMR_ERROR CMRminorCreate(CMR* cmr, CMR_MINOR** pminor, size_t numPivots, CMR_SUB
   CMR_CALL( CMRallocBlock(cmr, pminor) );
   CMR_MINOR* minor = *pminor;
   minor->numPivots = numPivots;
-  CMR_CALL( CMRallocBlockArray(cmr, &minor->pivotRows, numPivots) );
-  CMR_CALL( CMRallocBlockArray(cmr, &minor->pivotColumns, numPivots) );
+  minor->pivotRows = NULL;
+  minor->pivotColumns = NULL;
+  if (numPivots)
+  {
+    CMR_CALL( CMRallocBlockArray(cmr, &minor->pivotRows, numPivots) );
+    CMR_CALL( CMRallocBlockArray(cmr, &minor->pivotColumns, numPivots) );
+  }
   minor->remainingSubmatrix = submatrix;
+  minor->type = type;
 
   return CMR_OKAY;
 }
@@ -302,6 +308,14 @@ CMR_ERROR CMRminorFree(CMR* cmr, CMR_MINOR** pminor)
 
   return CMR_OKAY;
 }
+
+CMR_MINOR_TYPE CMRminorType(CMR_MINOR* minor)
+{
+  assert(minor);
+
+  return minor->type;
+}
+
 
 CMR_ERROR CMRminorPrint(CMR* cmr, CMR_MINOR* minor, size_t numRows, size_t numColumns, FILE* stream)
 {

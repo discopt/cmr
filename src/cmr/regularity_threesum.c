@@ -341,10 +341,8 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
     {
       CMRdbgMsg(8, "-> 2x2 submatrix with bad determinant.\n");
 
-      CMR_CALL( CMRseymourUpdateSubmatrix(cmr, node, violatorSubmatrix, CMR_SEYMOUR_NODE_TYPE_DETERMINANT) );
-      assert(node->type != CMR_SEYMOUR_NODE_TYPE_DETERMINANT);
-
-      CMR_CALL( CMRsubmatFree(cmr, &violatorSubmatrix) );
+      CMR_CALL( CMRseymourUpdateViolator(cmr, node, violatorSubmatrix) );
+      assert(node->type == CMR_SEYMOUR_NODE_TYPE_IRREGULAR);
 
       /* TODO: Add as unittest. */
       queue->foundIrregularity = true;
