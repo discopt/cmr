@@ -3,7 +3,7 @@ var searchData=
   ['_5fcmr_5flinearhashtable_5farray_1',['_CMR_LINEARHASHTABLE_ARRAY',['../struct__CMR__LINEARHASHTABLE__ARRAY.html',1,'']]],
   ['_5fcmr_5flisthashtable_2',['_CMR_LISTHASHTABLE',['../struct__CMR__LISTHASHTABLE.html',1,'']]],
   ['_5fcmr_5flisthashtable_5fnode_3',['_CMR_LISTHASHTABLE_NODE',['../hashtable_8c.html#a4ee89e14d6e34f7aba75cb1128187a53',1,'hashtable.c']]],
-  ['_5fcmr_5fmatroid_5fdec_4',['_CMR_MATROID_DEC',['../struct__CMR__MATROID__DEC.html',1,'']]],
+  ['_5fcmr_5fseymour_5fnode_4',['_CMR_SEYMOUR_NODE',['../struct__CMR__SEYMOUR__NODE.html',1,'']]],
   ['_5fcmrallocblock_5',['_CMRallocBlock',['../env_8c.html#a78888a48f6bd116e023b05e37877710c',1,'_CMRallocBlock(CMR *cmr, void **ptr, size_t size):&#160;env.c'],['../env_8h.html#a8f73fd2e0d43447fe72566df0b184d6d',1,'_CMRallocBlock(CMR *cmr, void **ptr, size_t size):&#160;env.c']]],
   ['_5fcmrallocblockarray_6',['_CMRallocBlockArray',['../env_8c.html#aa39966dbc922530ad394b1699fed20df',1,'_CMRallocBlockArray(CMR *cmr, void **ptr, size_t size, size_t length):&#160;env.c'],['../env_8h.html#a934c241342485712d69d6379227bd213',1,'_CMRallocBlockArray(CMR *cmr, void **ptr, size_t size, size_t length):&#160;env.c']]],
   ['_5fcmrallocstack_7',['_CMRallocStack',['../env_8c.html#abd0825218a522bfcf1b0e714bfa7fe1c',1,'_CMRallocStack(CMR *cmr, void **ptr, size_t size):&#160;env.c'],['../env__internal_8h.html#a9be66b443559c8c3784d453715e97e1f',1,'_CMRallocStack(CMR *cmr, void **ptr, size_t size):&#160;env.c']]],

@@ -90,6 +90,7 @@ $(function() {
 <div class="textblock"><code>#include &lt;<a class="el" href="env_8h_source.html">cmr/env.h</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="matrix_8h_source.html">cmr/matrix.h</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="matroid_8h_source.html">cmr/matroid.h</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="seymour_8h_source.html">cmr/seymour.h</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="graph_8h_source.html">cmr/graph.h</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="series__parallel_8h_source.html">cmr/series_parallel.h</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="graphic_8h_source.html">cmr/graphic.h</a>&gt;</code><br />
@@ -136,15 +137,15 @@ Functions</h2></td></tr>
 <tr class="memitem:a8dea73037c98714cd54c549196326d5a"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="regular_8h.html#a8dea73037c98714cd54c549196326d5a">CMRregularStatsPrint</a> (FILE *stream, <a class="el" href="structCMR__REGULAR__STATS.html">CMR_REGULAR_STATS</a> *stats, const char *prefix)</td></tr>
 <tr class="memdesc:a8dea73037c98714cd54c549196326d5a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints statistics for regularity test computations.  <a href="regular_8h.html#a8dea73037c98714cd54c549196326d5a">More...</a><br /></td></tr>
 <tr class="separator:a8dea73037c98714cd54c549196326d5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a905e6d308e619090a7efe987abf91898"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="regular_8h.html#a905e6d308e619090a7efe987abf91898">CMRregularTest</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, bool *pisRegular, <a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> **pdec, <a class="el" href="structCMR__MINOR.html">CMR_MINOR</a> **pminor, <a class="el" href="structCMR__REGULAR__PARAMS.html">CMR_REGULAR_PARAMS</a> *params, <a class="el" href="structCMR__REGULAR__STATS.html">CMR_REGULAR_STATS</a> *stats, double timeLimit)</td></tr>
-<tr class="memdesc:a905e6d308e619090a7efe987abf91898"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tests binary linear matroid for regularity.  <a href="regular_8h.html#a905e6d308e619090a7efe987abf91898">More...</a><br /></td></tr>
-<tr class="separator:a905e6d308e619090a7efe987abf91898"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3d95ed4a507ae9b4d92180540176206c"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="regular_8h.html#a3d95ed4a507ae9b4d92180540176206c">CMRregularCompleteDecomposition</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec, <a class="el" href="structCMR__REGULAR__PARAMS.html">CMR_REGULAR_PARAMS</a> *params, <a class="el" href="structCMR__REGULAR__STATS.html">CMR_REGULAR_STATS</a> *stats, double timeLimit)</td></tr>
-<tr class="memdesc:a3d95ed4a507ae9b4d92180540176206c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Completes a subtree of an existing decomposition tree.  <a href="regular_8h.html#a3d95ed4a507ae9b4d92180540176206c">More...</a><br /></td></tr>
-<tr class="separator:a3d95ed4a507ae9b4d92180540176206c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa133ef01169b9dead45b54b968bf2840"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="regular_8h.html#aa133ef01169b9dead45b54b968bf2840">CMRregularRefineDecomposition</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, size_t numNodes, <a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> **nodes, <a class="el" href="structCMR__REGULAR__PARAMS.html">CMR_REGULAR_PARAMS</a> *params, <a class="el" href="structCMR__REGULAR__STATS.html">CMR_REGULAR_STATS</a> *stats, double timeLimit)</td></tr>
-<tr class="memdesc:aa133ef01169b9dead45b54b968bf2840"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refines a list of decomposition nodes.  <a href="regular_8h.html#aa133ef01169b9dead45b54b968bf2840">More...</a><br /></td></tr>
-<tr class="separator:aa133ef01169b9dead45b54b968bf2840"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec425262cf8e20b0e5c1fc5aa45dd3fd"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="regular_8h.html#aec425262cf8e20b0e5c1fc5aa45dd3fd">CMRregularTest</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, bool *pisRegular, <a class="el" href="group__Seymour.html#ga224ccb2a42c4bda6ae69b0e800bb69a5">CMR_SEYMOUR_NODE</a> **pdec, <a class="el" href="structCMR__MINOR.html">CMR_MINOR</a> **pminor, <a class="el" href="structCMR__REGULAR__PARAMS.html">CMR_REGULAR_PARAMS</a> *params, <a class="el" href="structCMR__REGULAR__STATS.html">CMR_REGULAR_STATS</a> *stats, double timeLimit)</td></tr>
+<tr class="memdesc:aec425262cf8e20b0e5c1fc5aa45dd3fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tests binary linear matroid for regularity.  <a href="regular_8h.html#aec425262cf8e20b0e5c1fc5aa45dd3fd">More...</a><br /></td></tr>
+<tr class="separator:aec425262cf8e20b0e5c1fc5aa45dd3fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a02350624af3a4b824bfc97bd3c38fede"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="regular_8h.html#a02350624af3a4b824bfc97bd3c38fede">CMRregularCompleteDecomposition</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="group__Seymour.html#ga224ccb2a42c4bda6ae69b0e800bb69a5">CMR_SEYMOUR_NODE</a> *dec, <a class="el" href="structCMR__REGULAR__PARAMS.html">CMR_REGULAR_PARAMS</a> *params, <a class="el" href="structCMR__REGULAR__STATS.html">CMR_REGULAR_STATS</a> *stats, double timeLimit)</td></tr>
+<tr class="memdesc:a02350624af3a4b824bfc97bd3c38fede"><td class="mdescLeft">&#160;</td><td class="mdescRight">Completes a subtree of an existing decomposition tree.  <a href="regular_8h.html#a02350624af3a4b824bfc97bd3c38fede">More...</a><br /></td></tr>
+<tr class="separator:a02350624af3a4b824bfc97bd3c38fede"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2951c9949fc70399d680fe520f4a451"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="regular_8h.html#ae2951c9949fc70399d680fe520f4a451">CMRregularRefineDecomposition</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, size_t numNodes, <a class="el" href="group__Seymour.html#ga224ccb2a42c4bda6ae69b0e800bb69a5">CMR_SEYMOUR_NODE</a> **nodes, <a class="el" href="structCMR__REGULAR__PARAMS.html">CMR_REGULAR_PARAMS</a> *params, <a class="el" href="structCMR__REGULAR__STATS.html">CMR_REGULAR_STATS</a> *stats, double timeLimit)</td></tr>
+<tr class="memdesc:ae2951c9949fc70399d680fe520f4a451"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refines a list of decomposition nodes.  <a href="regular_8h.html#ae2951c9949fc70399d680fe520f4a451">More...</a><br /></td></tr>
+<tr class="separator:ae2951c9949fc70399d680fe520f4a451"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Recognition of <a class="el" href="regular.html">regular matrices</a>. </p>
@@ -200,8 +201,8 @@ Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="a3d95ed4a507ae9b4d92180540176206c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3d95ed4a507ae9b4d92180540176206c">&#9670;&nbsp;</a></span>CMRregularCompleteDecomposition()</h2>
+<a id="a02350624af3a4b824bfc97bd3c38fede"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a02350624af3a4b824bfc97bd3c38fede">&#9670;&nbsp;</a></span>CMRregularCompleteDecomposition()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -215,7 +216,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="group__Seymour.html#ga224ccb2a42c4bda6ae69b0e800bb69a5">CMR_SEYMOUR_NODE</a> *&#160;</td>
           <td class="paramname"><em>dec</em>, </td>
         </tr>
         <tr>
@@ -286,8 +287,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="aa133ef01169b9dead45b54b968bf2840"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa133ef01169b9dead45b54b968bf2840">&#9670;&nbsp;</a></span>CMRregularRefineDecomposition()</h2>
+<a id="ae2951c9949fc70399d680fe520f4a451"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2951c9949fc70399d680fe520f4a451">&#9670;&nbsp;</a></span>CMRregularRefineDecomposition()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -307,7 +308,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> **&#160;</td>
+          <td class="paramtype"><a class="el" href="group__Seymour.html#ga224ccb2a42c4bda6ae69b0e800bb69a5">CMR_SEYMOUR_NODE</a> **&#160;</td>
           <td class="paramname"><em>nodes</em>, </td>
         </tr>
         <tr>
@@ -422,8 +423,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a905e6d308e619090a7efe987abf91898"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a905e6d308e619090a7efe987abf91898">&#9670;&nbsp;</a></span>CMRregularTest()</h2>
+<a id="aec425262cf8e20b0e5c1fc5aa45dd3fd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec425262cf8e20b0e5c1fc5aa45dd3fd">&#9670;&nbsp;</a></span>CMRregularTest()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -449,7 +450,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> **&#160;</td>
+          <td class="paramtype"><a class="el" href="group__Seymour.html#ga224ccb2a42c4bda6ae69b0e800bb69a5">CMR_SEYMOUR_NODE</a> **&#160;</td>
           <td class="paramname"><em>pdec</em>, </td>
         </tr>
         <tr>

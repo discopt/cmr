@@ -83,7 +83,7 @@ $(function() {
 <div class="title">regularity_nested_minor_sequence.c File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;<a class="el" href="matroid__internal_8h_source.html">matroid_internal.h</a>&quot;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="seymour__internal_8h_source.html">seymour_internal.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="regularity__internal_8h_source.html">regularity_internal.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="env__internal_8h_source.html">env_internal.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="densematrix_8h_source.html">densematrix.h</a>&quot;</code><br />
@@ -98,8 +98,8 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a06f6f00b2aaead43848c11c5798bf2c1"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="regularity__nested__minor__sequence_8c.html#a06f6f00b2aaead43848c11c5798bf2c1">dbgPrintDenseSequence</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec)</td></tr>
-<tr class="separator:a06f6f00b2aaead43848c11c5798bf2c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a35355ee0a710fc74ff3d54f3a0406e7a"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="regularity__nested__minor__sequence_8c.html#a35355ee0a710fc74ff3d54f3a0406e7a">dbgPrintDenseSequence</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="group__Seymour.html#ga224ccb2a42c4bda6ae69b0e800bb69a5">CMR_SEYMOUR_NODE</a> *dec)</td></tr>
+<tr class="separator:a35355ee0a710fc74ff3d54f3a0406e7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af029b8cab607b828ba0433a4bb758dbc"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="regularity__nested__minor__sequence_8c.html#af029b8cab607b828ba0433a4bb758dbc">createHashVector</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, long long **phashVector, size_t size)</td></tr>
 <tr class="separator:af029b8cab607b828ba0433a4bb758dbc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6f8aea80b8a276cc66f73bb9acc31180"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="regularity__nested__minor__sequence_8c.html#a6f8aea80b8a276cc66f73bb9acc31180">initializeHashing</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structDenseBinaryMatrix.html">DenseBinaryMatrix</a> *dense, <a class="el" href="structElementData.html">ElementData</a> *majorData, <a class="el" href="hashtable_8h.html#ae210c3950cdf5bdcf72d7ac3e0329512">CMR_LISTHASHTABLE</a> *majorHashtable, size_t numMajors, size_t *processedMinors, size_t numProcessedMinors, long long *hashVector, bool isRow)</td></tr>
@@ -114,13 +114,13 @@ Functions</h2></td></tr>
 <tr class="separator:aba97369d4efb3edbf5b10d29e141dec0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af5172e2078cd12ad9f0cf00fc37ee06e"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="regularity__nested__minor__sequence_8c.html#af5172e2078cd12ad9f0cf00fc37ee06e">searchShortestPath</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structDenseBinaryMatrix.html">DenseBinaryMatrix</a> *dense, <a class="el" href="structElementData.html">ElementData</a> *rowData, <a class="el" href="structElementData.html">ElementData</a> *columnData, <a class="el" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a> *preachedTarget)</td></tr>
 <tr class="separator:af5172e2078cd12ad9f0cf00fc37ee06e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0a6b20e55e5fb725b612e5d555f986bb"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="regularity__nested__minor__sequence_8c.html#a0a6b20e55e5fb725b612e5d555f986bb">pivot</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec, size_t pivotRow, size_t pivotColumn)</td></tr>
-<tr class="memdesc:a0a6b20e55e5fb725b612e5d555f986bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Carries out a pivot in the dense matrix of <code>dec</code>.  <a href="regularity__nested__minor__sequence_8c.html#a0a6b20e55e5fb725b612e5d555f986bb">More...</a><br /></td></tr>
-<tr class="separator:a0a6b20e55e5fb725b612e5d555f986bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a316ec31203a0cd5c415a04ca724fd15f"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="regularity__nested__minor__sequence_8c.html#a316ec31203a0cd5c415a04ca724fd15f">applyPivots</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec, <a class="el" href="structElementData.html">ElementData</a> *rowData, <a class="el" href="structElementData.html">ElementData</a> *columnData, <a class="el" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a> reachedTarget, <a class="el" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a> *newElements)</td></tr>
-<tr class="separator:a316ec31203a0cd5c415a04ca724fd15f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a59b0ba2c4cd74809b6dae9f9b41602e0"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="regularity__nested__minor__sequence_8c.html#a59b0ba2c4cd74809b6dae9f9b41602e0">addElement</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *dec, <a class="el" href="structElementData.html">ElementData</a> *majorData, <a class="el" href="structElementData.html">ElementData</a> *minorData, <a class="el" href="hashtable_8h.html#ae210c3950cdf5bdcf72d7ac3e0329512">CMR_LISTHASHTABLE</a> *minorHashtable, long long *hashVector, size_t numMinor, size_t *processedMajors, size_t *pnumProcessedMajors, size_t newMajor, size_t *nestedMinorsElements, bool isRow)</td></tr>
-<tr class="separator:a59b0ba2c4cd74809b6dae9f9b41602e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a22d346c267aaa9ad8411c9e0410ed5d1"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="regularity__nested__minor__sequence_8c.html#a22d346c267aaa9ad8411c9e0410ed5d1">pivot</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="group__Seymour.html#ga224ccb2a42c4bda6ae69b0e800bb69a5">CMR_SEYMOUR_NODE</a> *dec, size_t pivotRow, size_t pivotColumn)</td></tr>
+<tr class="memdesc:a22d346c267aaa9ad8411c9e0410ed5d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Carries out a pivot in the dense matrix of <code>dec</code>.  <a href="regularity__nested__minor__sequence_8c.html#a22d346c267aaa9ad8411c9e0410ed5d1">More...</a><br /></td></tr>
+<tr class="separator:a22d346c267aaa9ad8411c9e0410ed5d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0cc2651479f08f2dee5fe345587502f4"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="regularity__nested__minor__sequence_8c.html#a0cc2651479f08f2dee5fe345587502f4">applyPivots</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="group__Seymour.html#ga224ccb2a42c4bda6ae69b0e800bb69a5">CMR_SEYMOUR_NODE</a> *dec, <a class="el" href="structElementData.html">ElementData</a> *rowData, <a class="el" href="structElementData.html">ElementData</a> *columnData, <a class="el" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a> reachedTarget, <a class="el" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a> *newElements)</td></tr>
+<tr class="separator:a0cc2651479f08f2dee5fe345587502f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6dedd620cec42fa5fed03958bb47d76a"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="regularity__nested__minor__sequence_8c.html#a6dedd620cec42fa5fed03958bb47d76a">addElement</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="group__Seymour.html#ga224ccb2a42c4bda6ae69b0e800bb69a5">CMR_SEYMOUR_NODE</a> *dec, <a class="el" href="structElementData.html">ElementData</a> *majorData, <a class="el" href="structElementData.html">ElementData</a> *minorData, <a class="el" href="hashtable_8h.html#ae210c3950cdf5bdcf72d7ac3e0329512">CMR_LISTHASHTABLE</a> *minorHashtable, long long *hashVector, size_t numMinor, size_t *processedMajors, size_t *pnumProcessedMajors, size_t newMajor, size_t *nestedMinorsElements, bool isRow)</td></tr>
+<tr class="separator:a6dedd620cec42fa5fed03958bb47d76a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa3d90ea3c23e22b8e828d26bbc413d61"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="regularity__nested__minor__sequence_8c.html#aa3d90ea3c23e22b8e828d26bbc413d61">CMRregularityExtendNestedMinorSequence</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structDecompositionTask.html">DecompositionTask</a> *task, <a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> *queue)</td></tr>
 <tr class="memdesc:aa3d90ea3c23e22b8e828d26bbc413d61"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extends an incomplete sequence of nested 3-connected minors for the matrix of a decomposition node.  <a href="regularity__nested__minor__sequence_8c.html#aa3d90ea3c23e22b8e828d26bbc413d61">More...</a><br /></td></tr>
 <tr class="separator:aa3d90ea3c23e22b8e828d26bbc413d61"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -129,8 +129,8 @@ Functions</h2></td></tr>
 <tr class="separator:a44a99782f1b7c95c3e0dcb012ea71191"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="a59b0ba2c4cd74809b6dae9f9b41602e0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a59b0ba2c4cd74809b6dae9f9b41602e0">&#9670;&nbsp;</a></span>addElement()</h2>
+<a id="a6dedd620cec42fa5fed03958bb47d76a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6dedd620cec42fa5fed03958bb47d76a">&#9670;&nbsp;</a></span>addElement()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -147,7 +147,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="group__Seymour.html#ga224ccb2a42c4bda6ae69b0e800bb69a5">CMR_SEYMOUR_NODE</a> *&#160;</td>
           <td class="paramname"><em>dec</em>, </td>
         </tr>
         <tr>
@@ -242,8 +242,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a316ec31203a0cd5c415a04ca724fd15f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a316ec31203a0cd5c415a04ca724fd15f">&#9670;&nbsp;</a></span>applyPivots()</h2>
+<a id="a0cc2651479f08f2dee5fe345587502f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0cc2651479f08f2dee5fe345587502f4">&#9670;&nbsp;</a></span>applyPivots()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -260,7 +260,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="group__Seymour.html#ga224ccb2a42c4bda6ae69b0e800bb69a5">CMR_SEYMOUR_NODE</a> *&#160;</td>
           <td class="paramname"><em>dec</em>, </td>
         </tr>
         <tr>
@@ -452,8 +452,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a06f6f00b2aaead43848c11c5798bf2c1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a06f6f00b2aaead43848c11c5798bf2c1">&#9670;&nbsp;</a></span>dbgPrintDenseSequence()</h2>
+<a id="a35355ee0a710fc74ff3d54f3a0406e7a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a35355ee0a710fc74ff3d54f3a0406e7a">&#9670;&nbsp;</a></span>dbgPrintDenseSequence()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -470,7 +470,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="group__Seymour.html#ga224ccb2a42c4bda6ae69b0e800bb69a5">CMR_SEYMOUR_NODE</a> *&#160;</td>
           <td class="paramname"><em>dec</em>&#160;</td>
         </tr>
         <tr>
@@ -590,8 +590,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a0a6b20e55e5fb725b612e5d555f986bb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0a6b20e55e5fb725b612e5d555f986bb">&#9670;&nbsp;</a></span>pivot()</h2>
+<a id="a22d346c267aaa9ad8411c9e0410ed5d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a22d346c267aaa9ad8411c9e0410ed5d1">&#9670;&nbsp;</a></span>pivot()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -608,7 +608,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="group__Matroid.html#gab228ae503112b00552f1bc0a3fe1752f">CMR_MATROID_DEC</a> *&#160;</td>
+          <td class="paramtype"><a class="el" href="group__Seymour.html#ga224ccb2a42c4bda6ae69b0e800bb69a5">CMR_SEYMOUR_NODE</a> *&#160;</td>
           <td class="paramname"><em>dec</em>, </td>
         </tr>
         <tr>

@@ -8,7 +8,7 @@ var searchData=
   ['addcolumnprocessrigid_24',['addColumnProcessRigid',['../graphic_8c.html#a171f0c837e7e42f5d3887b2b8e4eb4be',1,'graphic.c']]],
   ['addcolumnprocessseries_25',['addColumnProcessSeries',['../graphic_8c.html#a68960ea2404d3dd8f533a3fa2026ac8f',1,'graphic.c']]],
   ['addedgetomembersedgelist_26',['addEdgeToMembersEdgeList',['../graphic_8c.html#a3621931aa6b04a33ba12540e19a19bb9',1,'graphic.c']]],
-  ['addelement_27',['addElement',['../regularity__nested__minor__sequence_8c.html#a59b0ba2c4cd74809b6dae9f9b41602e0',1,'regularity_nested_minor_sequence.c']]],
+  ['addelement_27',['addElement',['../regularity__nested__minor__sequence_8c.html#a6dedd620cec42fa5fed03958bb47d76a',1,'regularity_nested_minor_sequence.c']]],
   ['addterminal_28',['addTerminal',['../graphic_8c.html#adc4046c28d1b41f2faaa164f62122671',1,'graphic.c']]],
   ['addtograph1column_29',['addToGraph1Column',['../regularity__graphic_8c.html#a7b5cba60af7484b0d6d3da15bbf882c5',1,'regularity_graphic.c']]],
   ['addtograph1row_30',['addToGraph1Row',['../regularity__graphic_8c.html#aa27b1eaaa55f09b353923289ad6953d6',1,'regularity_graphic.c']]],
@@ -19,7 +19,7 @@ var searchData=
   ['algorithm_35',['algorithm',['../structCMR__TU__PARAMS.html#abc986c127db9b7f737c1abe74ba7db95',1,'CMR_TU_PARAMS::algorithm()'],['../structCMR__BALANCED__PARAMS.html#a6545c5a6e13d1109b27e8b1b3d47f34b',1,'CMR_BALANCED_PARAMS::algorithm()']]],
   ['anchor_36',['anchor',['../structListMat64.html#ac1a7cf93962809267261cd27533755d5',1,'ListMat64::anchor()'],['../structListMat8.html#a1cc3415456bdb3e8e979460d0b23cc05',1,'ListMat8::anchor()']]],
   ['applycount_37',['applyCount',['../structCMR__GRAPHIC__STATISTICS.html#aca2c64f663d55083755dcf85ee436bb7',1,'CMR_GRAPHIC_STATISTICS']]],
-  ['applypivots_38',['applyPivots',['../regularity__nested__minor__sequence_8c.html#a316ec31203a0cd5c415a04ca724fd15f',1,'regularity_nested_minor_sequence.c']]],
+  ['applypivots_38',['applyPivots',['../regularity__nested__minor__sequence_8c.html#a0cc2651479f08f2dee5fe345587502f4',1,'regularity_nested_minor_sequence.c']]],
   ['applytime_39',['applyTime',['../structCMR__GRAPHIC__STATISTICS.html#a9986b3134321440d810ce9940c9942e6',1,'CMR_GRAPHIC_STATISTICS']]],
   ['arcs_40',['arcs',['../structCMR__GRAPH.html#a11cddc52c6b985460139577b6a68de8d',1,'CMR_GRAPH']]],
   ['assignrow_41',['assignRow',['../regularity__partition_8c.html#ad077a8a3d9ad84ce79f35cccca8d3c08',1,'regularity_partition.c']]]

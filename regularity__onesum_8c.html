@@ -86,7 +86,7 @@ $(function() {
 <code>#include &lt;assert.h&gt;</code><br />
 <code>#include &lt;stdlib.h&gt;</code><br />
 <code>#include &quot;<a class="el" href="env__internal_8h_source.html">env_internal.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="matroid__internal_8h_source.html">matroid_internal.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="seymour__internal_8h_source.html">seymour_internal.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="regularity__internal_8h_source.html">regularity_internal.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="sort_8h_source.html">sort.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="block__decomposition_8h_source.html">block_decomposition.h</a>&quot;</code><br />
@@ -133,7 +133,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Performs a 1-sum decomposition of <code>matrix</code> and stores it in <code>dec</code>. </p>
-<p>If <code>matrix</code> is 1-connected, then <code>dec</code> remains unchanged. Otherwise, <code>dec</code> will become a <a class="el" href="group__Matroid.html#gga4b1935a1f27e71f4c67083e0865d3971aae86a0514d749f183046400f9f0706c6">CMR_MATROID_DEC_TYPE_ONE_SUM</a> node with children that are initialized to the 1-connected components. In this case, the <code>matrix</code> and <code>transpose</code> members of the child nodes are set. </p>
+<p>If <code>matrix</code> is 1-connected, then <code>dec</code> remains unchanged. Otherwise, <code>dec</code> will become a CMR_MATROID_DEC_TYPE_ONE_SUM node with children that are initialized to the 1-connected components. In this case, the <code>matrix</code> and <code>transpose</code> members of the child nodes are set. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
