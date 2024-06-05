@@ -440,18 +440,6 @@ CMR_ERROR CMRseymourPrint(
 );
 
 /**
- * \brief Clones a decomposition node \p dec into \p *pclone which represents the same matrix but has type
- *        \ref CMR_SEYMOUR_NODE_TYPE_UNKNOWN type.
- */
-
-CMR_EXPORT
-CMR_ERROR CMRseymourCloneUnknown(
-  CMR* cmr,                 /**< \ref CMR environment. */
-  CMR_SEYMOUR_NODE* node,   /**< Seymour decomposition node. */
-  CMR_SEYMOUR_NODE** pclone /**< Pointer for storing the clone. */
-);
-
-/**
  * \brief Increases the reference counter by 1.
  */
 
@@ -489,14 +477,26 @@ CMR_ERROR CMRseymourCreate(
 );
 
 /**
- * \brief Clones the union of subtrees, returning the copies.
- *
- * The set of decomposition nodes that are (grand-)children of any of the \p numSubtrees nodes \p subtreeRoots is cloned.
- * The respective clones are returned in \p clonedSubtrees.
+ * \brief Clones a decomposition node \p node into \p *pclone which represents the same matrix but has type
+ *        \ref CMR_SEYMOUR_NODE_TYPE_UNKNOWN type and no child nodes.
  */
 
 CMR_EXPORT
-CMR_ERROR CMRregularityCloneSubtrees(CMR* cmr, size_t numSubtrees, CMR_SEYMOUR_NODE** subtreeRoots,
+CMR_ERROR CMRseymourCloneUnknown(
+  CMR* cmr,                 /**< \ref CMR environment. */
+  CMR_SEYMOUR_NODE* node,   /**< Seymour decomposition node. */
+  CMR_SEYMOUR_NODE** pclone /**< Pointer for storing the clone. */
+);
+
+/**
+ * \brief Clones the union of subtrees of a Seymour decomposition, returning the copies.
+ *
+ * The set of Seymour decomposition nodes that are (grand-)children of any of the \p numSubtrees nodes \p subtreeRoots
+ * is cloned. The respective clones are returned in \p clonedSubtrees.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRseymourCloneSubtrees(CMR* cmr, size_t numSubtrees, CMR_SEYMOUR_NODE** subtreeRoots,
   CMR_SEYMOUR_NODE** clonedSubtrees);
 
 /**@}*/

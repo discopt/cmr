@@ -1809,12 +1809,21 @@ CMR_ERROR CMRseymourSetAttributes(CMR_SEYMOUR_NODE* node)
   return CMR_OKAY;
 }
 
+/**
+ * \brief Pair of a given Seymour decomposition node and its clone.
+ */
 
 typedef struct
 {
   CMR_SEYMOUR_NODE* origin;
   CMR_SEYMOUR_NODE* clone;
 } ClonePair;
+
+/**
+ * \brief Clones \p node to \p *pclone, updates cloning data structures and calls itself recursively.
+ *
+ * Inserts it into \p nodesToClonesHashtable, and updates the array \p *pclonePairs with the cloned pairs.
+ */
 
 static
 CMR_ERROR cloneRecursively(
@@ -1921,7 +1930,7 @@ CMR_ERROR cloneRecursively(
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRregularityCloneSubtrees(CMR* cmr, size_t numSubtrees, CMR_SEYMOUR_NODE** subtreeRoots,
+CMR_ERROR CMRseymourCloneSubtrees(CMR* cmr, size_t numSubtrees, CMR_SEYMOUR_NODE** subtreeRoots,
   CMR_SEYMOUR_NODE** clonedSubtrees)
 {
   assert(cmr);
