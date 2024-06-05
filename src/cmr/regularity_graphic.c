@@ -1,10 +1,9 @@
 // #define CMR_DEBUG /* Uncomment to debug this file. */
 
-#include "regularity_internal.h"
-
 #include <cmr/graphic.h>
 #include <cmr/network.h>
 
+#include "seymour_internal.h"
 #include "env_internal.h"
 #include "hashtable.h"
 

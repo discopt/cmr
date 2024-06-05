@@ -1,7 +1,5 @@
 // #define CMR_DEBUG /* Uncomment to debug this file. */
 
-#include "regularity_internal.h"
-
 #include "env_internal.h"
 #include "seymour_internal.h"
 

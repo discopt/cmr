@@ -155,7 +155,7 @@ CMR_ERROR CMRregularStatsPrint(
   CMR_REGULAR_STATS* stats, /**< Pointer to statistics. */
   const char* prefix        /**< Prefix string to prepend to each printed line (may be \c NULL). */
 );
-  
+
 /**
  * \brief Tests binary linear matroid for regularity.
  *

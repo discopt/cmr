@@ -63,7 +63,6 @@ add_library(cmr
   src/cmr/matroid.c
   src/cmr/network.c
   src/cmr/regular.c
-  src/cmr/regularity.c
   src/cmr/regularity_partition.c
   src/cmr/regularity_graphic.c
   src/cmr/regularity_nested_minor_sequence.c

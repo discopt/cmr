@@ -5,8 +5,8 @@
 #include "matrix_internal.h"
 #include "block_decomposition.h"
 #include "camion_internal.h"
-#include "regularity_internal.h"
 #include "hereditary_property.h"
+#include "seymour_internal.h"
 
 #include <stdlib.h>
 #include <assert.h>
