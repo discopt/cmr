@@ -258,7 +258,7 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
   CMR_CALL( CMRsepaGetRepresentatives(cmr, separation, extraRows, extraColumns) );
 
   if (separation->type == CMR_SEPA_TYPE_THREE_DISTRIBUTED_RANKS &&
-    (task->params->threeSumStrategy & CMR_SEYMOUR_NODE_THREESUM_FLAG_CONCENTRATED_RANK))
+    (task->params->threeSumStrategy & CMR_SEYMOUR_THREESUM_FLAG_CONCENTRATED_RANK))
   {
     /* We have distributed ranks but requested concentrated rank; we find a top-right nonzero. */
     pivotRow = extraRows[1][0];
@@ -280,7 +280,7 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
   }
 
   if (separation->type == CMR_SEPA_TYPE_THREE_CONCENTRATED_RANK &&
-    (task->params->threeSumStrategy & CMR_SEYMOUR_NODE_THREESUM_FLAG_DISTRIBUTED_RANKS))
+    (task->params->threeSumStrategy & CMR_SEYMOUR_THREESUM_FLAG_DISTRIBUTED_RANKS))
   {
     /* We have concentrated rank but requested distributed ranks; we find a bottom-left nonzero. */
     pivotRow = extraRows[0][0];
@@ -395,7 +395,7 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
     CMR_CALL( CMRsepaGetProjection(separation, 0, rowsToChild, columnsToChild, &numChildBaseRows,
       &numChildBaseColumns) );
 
-    if (task->params->threeSumStrategy & CMR_SEYMOUR_NODE_THREESUM_FLAG_FIRST_TALL)
+    if (task->params->threeSumStrategy & CMR_SEYMOUR_THREESUM_FLAG_FIRST_TALL)
     {
       /* First child is tall. */
 
@@ -457,7 +457,7 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
     CMR_CALL( CMRsepaGetProjection(separation, 1, rowsToChild, columnsToChild, &numChildBaseRows,
       &numChildBaseColumns) );
 
-    if (task->params->threeSumStrategy & CMR_SEYMOUR_NODE_THREESUM_FLAG_SECOND_TALL)
+    if (task->params->threeSumStrategy & CMR_SEYMOUR_THREESUM_FLAG_SECOND_TALL)
     {
       /* Second child is tall. */
 
@@ -516,7 +516,7 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
         CMRelementToColumnIndex(targetColumnElement), CMRelementToColumnIndex(targetColumnElement), extraEntry) );
     }
 
-        node->threesumFlags = CMR_SEYMOUR_NODE_THREESUM_FLAG_DISTRIBUTED_RANKS;
+        node->threesumFlags = CMR_SEYMOUR_THREESUM_FLAG_DISTRIBUTED_RANKS;
   }
   else
   {
@@ -525,7 +525,7 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
     CMR_CALL( CMRsepaGetProjection(separation, 0, rowsToChild, columnsToChild, &numChildBaseRows,
       &numChildBaseColumns) );
 
-    if (task->params->threeSumStrategy & CMR_SEYMOUR_NODE_THREESUM_FLAG_FIRST_ALLREPR)
+    if (task->params->threeSumStrategy & CMR_SEYMOUR_THREESUM_FLAG_FIRST_ALLREPR)
     {
       /* First child is all-repr`. */
 
@@ -578,7 +578,7 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
     CMR_CALL( CMRsepaGetProjection(separation, 1, rowsToChild, columnsToChild, &numChildBaseRows,
       &numChildBaseColumns) );
 
-    if (task->params->threeSumStrategy & CMR_SEYMOUR_NODE_THREESUM_FLAG_SECOND_ALLREPR)
+    if (task->params->threeSumStrategy & CMR_SEYMOUR_THREESUM_FLAG_SECOND_ALLREPR)
     {
       /* Second child is all-repr. */
 
@@ -627,7 +627,7 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
         CMRelementToColumnIndex(targetColumnElement), extraEntry) );
     }
 
-        node->threesumFlags = CMR_SEYMOUR_NODE_THREESUM_FLAG_CONCENTRATED_RANK;
+        node->threesumFlags = CMR_SEYMOUR_THREESUM_FLAG_CONCENTRATED_RANK;
   }
 
 cleanup:

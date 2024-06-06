@@ -1,4 +1,4 @@
-// #define CMR_DEBUG /* Uncomment to debug this file. */
+#define CMR_DEBUG /* Uncomment to debug this file. */
 
 #include <cmr/tu.h>
 
@@ -17,8 +17,9 @@ CMR_ERROR CMRtuParamsInit(CMR_TU_PARAMS* params)
   assert(params);
 
   params->algorithm = CMR_TU_ALGORITHM_DECOMPOSITION;
-  params->directCamion = false;
-  CMR_CALL( CMRregularParamsInit(&params->regular) );
+  params->ternary = true;
+  params->camionFirst = true;
+  CMR_CALL( CMRseymourParamsInit(&params->seymour) );
 
   return CMR_OKAY;
 }
@@ -27,7 +28,7 @@ CMR_ERROR CMRtuStatsInit(CMR_TU_STATS* stats)
 {
   assert(stats);
 
-  CMR_CALL( CMRregularStatsInit(&stats->decomposition) );
+  CMR_CALL( CMRseymourStatsInit(&stats->seymour) );
 
   stats->enumerationRowSubsets = 0;
   stats->enumerationColumnSubsets = 0;
@@ -52,8 +53,10 @@ CMR_ERROR CMRtuStatsPrint(FILE* stream, CMR_TU_STATS* stats, const char* prefix)
   }
 
   char subPrefix[256];
-  snprintf(subPrefix, 256, "%sregularity ", prefix);
-  CMR_CALL( CMRregularStatsPrint(stream, &stats->decomposition, subPrefix) );
+  snprintf(subPrefix, 256, "%sseymour ", prefix);
+  CMR_CALL( CMRseymourStatsPrint(stream, &stats->seymour, subPrefix) );
+  snprintf(subPrefix, 256, "%scamion ", prefix);
+  CMR_CALL( CMRcamionStatsPrint(stream, &stats->camion, subPrefix) );
 
   fprintf(stream, "%senumeration row subsets: %lu\n", prefix, (unsigned long)stats->enumerationRowSubsets);
   fprintf(stream, "%senumeration column subsets: %lu\n", prefix, (unsigned long)stats->enumerationColumnSubsets);
@@ -614,7 +617,7 @@ CMR_ERROR tuPartition(
   return error;
 }
 
-CMR_ERROR CMRtuTest(CMR* cmr, CMR_CHRMAT* matrix, bool* pisTotallyUnimodular, CMR_SEYMOUR_NODE** pdec,
+CMR_ERROR CMRtuTest(CMR* cmr, CMR_CHRMAT* matrix, bool* pisTotallyUnimodular, CMR_SEYMOUR_NODE** proot,
   CMR_SUBMAT** psubmatrix, CMR_TU_PARAMS* params, CMR_TU_STATS* stats, double timeLimit)
 {
   assert(cmr);
@@ -639,34 +642,45 @@ CMR_ERROR CMRtuTest(CMR* cmr, CMR_CHRMAT* matrix, bool* pisTotallyUnimodular, CM
 
   if (params->algorithm == CMR_TU_ALGORITHM_DECOMPOSITION)
   {
-    if (params->directCamion)
+    if (!params->ternary && params->camionFirst)
     {
-      CMRdbgMsg(2, "Testing Camion signs directly.\n");
+      CMRdbgMsg(2, "Testing Camion signs before constructing a Seymour decomposition.\n");
       CMR_CALL( CMRcamionTestSigns(cmr, matrix, pisTotallyUnimodular, psubmatrix,
-        stats ? &stats->decomposition.camion : NULL, remainingTime) );
+        stats ? &stats->camion : NULL, remainingTime) );
 
       if (!*pisTotallyUnimodular)
-      {
-        if (stats)
-        {
-          stats->decomposition.totalCount++;
-          stats->decomposition.totalTime += (clock() - totalClock) * 1.0 / CLOCKS_PER_SEC;
-        }
         return CMR_OKAY;
-      }
     }
 
     double remainingTime = timeLimit - ((clock() - totalClock) * 1.0 / CLOCKS_PER_SEC);
 
-    CMR_CALL( CMRregularityTest(cmr, matrix, !params->directCamion, pisTotallyUnimodular, pdec, NULL, &params->regular,
-      stats ? &stats->decomposition : NULL, remainingTime) );
+    CMR_SEYMOUR_NODE* root = NULL;
+    CMR_CALL( CMRseymourDecompose(cmr, matrix, !!params->ternary, &root, &(params->seymour),
+      stats ? &stats->seymour : NULL, remainingTime) );
+    int8_t regularity = CMRseymourRegularity(root);
+    if (regularity != 0)
+      *pisTotallyUnimodular = regularity > 0;
+    if (proot)
+      *proot = root;
+    else
+      CMR_CALL( CMRseymourRelease(cmr, &root) );
 
-    if (!*pisTotallyUnimodular && psubmatrix)
+    if (regularity < 0 && psubmatrix)
     {
       assert(!*psubmatrix);
       remainingTime = timeLimit - (clock() - totalClock) * 1.0 / CLOCKS_PER_SEC;
       CMR_CALL( CMRtestHereditaryPropertySimple(cmr, matrix, tuDecomposition, stats, psubmatrix, remainingTime) );
+
+      return CMR_OKAY;
     }
+
+    if (regularity > 0 && !params->ternary && !params->camionFirst)
+    {
+      CMRdbgMsg(2, "Testing Camion signs afterward constructing a Seymour decomposition.\n");
+      CMR_CALL( CMRcamionTestSigns(cmr, matrix, pisTotallyUnimodular, psubmatrix,
+        stats ? &stats->camion : NULL, remainingTime) );
+    }
+
   }
   else if (params->algorithm == CMR_TU_ALGORITHM_EULERIAN)
   {
@@ -683,8 +697,8 @@ CMR_ERROR CMRtuTest(CMR* cmr, CMR_CHRMAT* matrix, bool* pisTotallyUnimodular, CM
 
   if (stats)
   {
-    stats->decomposition.totalCount++;
-    stats->decomposition.totalTime += (clock() - totalClock) * 1.0 / CLOCKS_PER_SEC;
+    stats->seymour.totalCount++;
+    stats->seymour.totalTime += (clock() - totalClock) * 1.0 / CLOCKS_PER_SEC;
   }
 
   return CMR_OKAY;
@@ -710,7 +724,7 @@ CMR_ERROR CMRtuCompleteDecomposition(CMR* cmr, CMR_SEYMOUR_NODE* dec, CMR_TU_PAR
   if (!CMRseymourIsTernary(dec))
     return CMR_ERROR_INPUT;
 
-  CMR_CALL( CMRregularityCompleteDecomposition(cmr, dec, &params->regular, stats ? &stats->decomposition : NULL,
+  CMR_CALL( CMRregularityCompleteDecomposition(cmr, dec, &params->seymour, stats ? &stats->seymour : NULL,
     timeLimit) );
 
   return CMR_OKAY;

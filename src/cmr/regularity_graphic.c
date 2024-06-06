@@ -1238,7 +1238,7 @@ CMR_ERROR createWheel(
 
 CMR_ERROR CMRregularSequenceGraphic(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT* transpose, size_t lengthSequence,
   size_t* sequenceNumRows, size_t* sequenceNumColumns, size_t* plastGraphicMinor, CMR_GRAPH** pgraph,
-  CMR_ELEMENT** pedgeElements, CMR_REGULAR_STATS* stats, double timeLimit)
+  CMR_ELEMENT** pedgeElements, CMR_SEYMOUR_STATS* stats, double timeLimit)
 {
   assert(cmr);
   assert(matrix);
@@ -1677,8 +1677,7 @@ CMR_ERROR CMRregularityNestedMinorSequenceGraphicness(CMR* cmr, DecompositionTas
       bool isCamionSigned;
       CMR_SUBMAT* violatorSubmatrix = NULL;
       CMR_CALL( CMRcamionCographicOrient(cmr, dec->transpose, dec->graph, dec->graphForest,
-        dec->graphCoforest, dec->graphArcsReversed, &isCamionSigned, &violatorSubmatrix,
-        task->stats ? &task->stats->camion : NULL) );
+        dec->graphCoforest, dec->graphArcsReversed, &isCamionSigned, &violatorSubmatrix, NULL) );
 
       if (violatorSubmatrix)
       {
@@ -1762,8 +1761,7 @@ CMR_ERROR CMRregularityNestedMinorSequenceCographicness(CMR* cmr, DecompositionT
       bool isCamionSigned;
       CMR_SUBMAT* violatorSubmatrix = NULL;
       CMR_CALL( CMRcamionCographicOrient(cmr, dec->matrix, dec->cograph, dec->cographForest,
-        dec->cographCoforest, dec->cographArcsReversed, &isCamionSigned, &violatorSubmatrix,
-        task->stats ? &task->stats->camion : NULL) );
+        dec->cographCoforest, dec->cographArcsReversed, &isCamionSigned, &violatorSubmatrix, NULL) );
 
       if (violatorSubmatrix)
       {

@@ -13,8 +13,11 @@
 #include <cmr/matrix.h>
 #include <cmr/matroid.h>
 #include <cmr/graph.h>
+#include <cmr/network.h>
+#include <cmr/series_parallel.h>
 
 #include <stdio.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -25,6 +28,181 @@ extern "C" {
  *
  * @{
  */
+
+
+/**
+ * \brief Flags that indicate the type of \f$ 3 \f$-separation.
+ *
+ * \see The desired types can be set by modifying \ref CMR_REGULAR_PARAMS.threeSumStrategy.
+ **/
+
+typedef enum
+{
+  CMR_SEYMOUR_THREESUM_FLAG_NO_PIVOTS = 0,
+    /**< Indicate to not change the rank distribution; only serves as an option; each constructed node will have either
+     **  \ref CMR_SEYMOUR_THREESUM_FLAG_DISTRIBUTED_RANKS or
+     **  \ref CMR_SEYMOUR_THREESUM_FLAG_CONCENTRATED_RANK set. */
+  CMR_SEYMOUR_THREESUM_FLAG_DISTRIBUTED_RANKS = 1,
+    /**< The two off-diagonal submatrices both have rank 1.
+     **  \see \ref matroid_decomposition. */
+  CMR_SEYMOUR_THREESUM_FLAG_CONCENTRATED_RANK = 2,
+    /**< The bottom-left submatrix has rank 2 and the top-right submatrix has rank 0.
+     **  \see \ref matroid_decomposition. */
+
+  CMR_SEYMOUR_THREESUM_FLAG_FIRST_WIDE = 4,
+    /**< The first child node is of the form \f$ M_1^{\text{wide}} \f$; valid for distributed ranks.
+     **  \see \ref matroid_decomposition. */
+  CMR_SEYMOUR_THREESUM_FLAG_FIRST_TALL = 8,
+    /**< The first child node is of the form \f$ M_1^{\text{tall}} \f$; valid for distributed ranks.
+     **  \see \ref matroid_decomposition. */
+  CMR_SEYMOUR_THREESUM_FLAG_FIRST_MIXED = 64,
+    /**< The first child node is of the form \f$ M_1^{\text{mixed}} \f$; valid for concentrated rank.
+     **  \see \ref matroid_decomposition. */
+  CMR_SEYMOUR_THREESUM_FLAG_FIRST_ALLREPR = 128,
+    /**< The first child node is of the form \f$ M_1^{\text{all-repr}} \f$; valid for concentrated rank.
+     **  \see \ref matroid_decomposition. */
+
+  CMR_SEYMOUR_THREESUM_FLAG_SECOND_WIDE = 16,
+    /**< The second child node is of the form \f$ M_2^{\text{wide}} \f$; valid for distributed ranks.
+     **  \see \ref matroid_decomposition. */
+  CMR_SEYMOUR_THREESUM_FLAG_SECOND_TALL = 32,
+    /**< The second child node is of the form \f$ M_2^{\text{tall}} \f$; valid for distributed ranks.
+     **  \see \ref matroid_decomposition. */
+  CMR_SEYMOUR_THREESUM_FLAG_SECOND_MIXED = 256,
+    /**< The second child node is of the form \f$ M_2^{\text{mixed}} \f$; valid for concentrated rank.
+     **  \see \ref matroid_decomposition. */
+  CMR_SEYMOUR_THREESUM_FLAG_SECOND_ALLREPR = 512,
+    /**< The second child node is of the form \f$ M_2^{\text{all-repr}} \f$; valid for concentrated rank.
+     **  \see \ref matroid_decomposition. */
+
+  CMR_SEYMOUR_THREESUM_FLAG_SEYMOUR = CMR_SEYMOUR_THREESUM_FLAG_DISTRIBUTED_RANKS
+    | CMR_SEYMOUR_THREESUM_FLAG_FIRST_WIDE | CMR_SEYMOUR_THREESUM_FLAG_SECOND_WIDE,
+    /**< This combination of flags indicates a \f$ 3 \f$-sum as defined by Seymour.
+     **  \see \ref matroid_decomposition. */
+  CMR_SEYMOUR_THREESUM_FLAG_TRUEMPER = CMR_SEYMOUR_THREESUM_FLAG_CONCENTRATED_RANK
+    | CMR_SEYMOUR_THREESUM_FLAG_FIRST_MIXED | CMR_SEYMOUR_THREESUM_FLAG_SECOND_MIXED,
+    /**< This combination of flags indicates a \f$ 3 \f$-sum as defined by Truemper.
+     **  \see \ref matroid_decomposition. */
+} CMR_SEYMOUR_THREESUM_FLAG;
+
+/**
+ * \brief Parameters for Seymour decomposition algorithm.
+ */
+
+typedef struct
+{
+  bool stopWhenIrregular;
+  /**< \brief Whether to stop decomposing once irregularity is determined. */
+  bool stopWhenNongraphic;
+  /**< \brief Whether to stop decomposing once non-graphicness (or being non-network) is determined. */
+  bool stopWhenNoncographic;
+  /**< \brief Whether to stop decomposing once non-cographicness (or being non-conetwork) is determined. */
+  bool stopWhenNeitherGraphicNorCoGraphic;
+  /**< \brief Whether to stop decomposing once non-graphicness and non-cographicness (or not being network and not
+   *          being conetwork) is determined. */
+
+  bool seriesParallel;
+  /**< \brief Whether to allow series-parallel operations in the decomposition tree; default: \c true */
+  bool planarityCheck;
+  /**< \brief Whether minors identified as graphic should still be checked for cographicness; default: \c false. */
+  bool directGraphicness;
+  /**< \brief Whether to use fast graphicness routines; default: \c true */
+  bool preferGraphicness;
+  /**< \brief Whether to first test for (co)graphicness (or being (co)network) before applying series-parallel
+   *          reductions. */
+  bool threeSumPivotChildren;
+  /**< \brief Whether pivots for 3-sums shall be applied such that the matrix contains both child matrices as
+   **         submatrices, if possible. */
+  int threeSumStrategy;
+  /**< \brief Whether to perform pivots to change the rank distribution, and how to construct the children.
+   **
+   ** The value is a bit-wise or of three decisions. The first decision is that of the **rank distribution**:
+   **   - \ref CMR_SEYMOUR_THREESUM_FLAG_NO_PIVOTS to not change the rank distribution (default), or
+   **   - \ref CMR_SEYMOUR_THREESUM_FLAG_DISTRIBUTED_RANKS to enforce distributed ranks (1 + 1), or
+   **   - \ref CMR_SEYMOUR_THREESUM_FLAG_CONCENTRATED_RANK to enforce concentrated ranks (2 + 0).
+   **
+   **  The second decision determines the layout of the **first child** matrix:
+   **   - \ref CMR_SEYMOUR_THREESUM_FLAG_FIRST_WIDE for a wide first child (default) in case of distributed ranks,
+   **     or
+   **   - \ref CMR_SEYMOUR_THREESUM_FLAG_FIRST_TALL for a tall first child in that case.
+   **   - \ref CMR_SEYMOUR_THREESUM_FLAG_FIRST_MIXED for a mixed first child (default) in case of concentrated
+   **     ranks, or
+   **   - \ref CMR_SEYMOUR_THREESUM_FLAG_FIRST_ALLREPR for a first child with all representing rows in that case.
+   **
+   **  Similarly, the third decision determines the layout of the **second child** matrix:
+   **   - \ref CMR_SEYMOUR_THREESUM_FLAG_SECOND_WIDE for a wide second child (default) in case of distributed ranks,
+   **     or
+   **   - \ref CMR_SEYMOUR_THREESUM_FLAG_SECOND_TALL for a tall second child in that case.
+   **   - \ref CMR_SEYMOUR_THREESUM_FLAG_SECOND_MIXED for a mixed second child (default) in case of concentrated
+   **     ranks, or
+   **   - \ref CMR_SEYMOUR_THREESUM_FLAG_SECOND_ALLREPR for a first second with all representing rows in that case.
+   **
+   ** \see \ref seymour_decomposition for a description of these layouts.
+   **
+   ** A decomposition as described by Seymour can be selected via \ref CMR_SEYMOUR_THREESUM_FLAG_SEYMOUR.
+   ** A decomposition as used by Truemper can be selected via \ref CMR_SEYMOUR_THREESUM_FLAG_TRUEMPER.
+   ** The default is to not carry out any pivots and choose Seymour's or Truemper's definition depending on the rank
+   ** distribution. */
+
+  bool constructLeafGraphs;
+  /**< \brief Whether to construct (co)graphs for all leaf nodes that are (co)graphic or (co)network. */
+  bool constructAllGraphs;
+  /**< \brief Whether to construct (co)graphs for all nodes that are (co)graphic or (co)network. */
+} CMR_SEYMOUR_PARAMS;
+
+/**
+ * \brief Initializes the default parameters for regularity testing.
+ *
+ * These are selected for minimum running time.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRseymourParamsInit(
+  CMR_SEYMOUR_PARAMS* params  /**< Pointer to parameters. */
+);
+
+/**
+ * \brief Statistics for Seymour decomposition algorithm.
+ */
+
+typedef struct
+{
+  uint32_t totalCount;                  /**< Total number of invocations. */
+  double totalTime;                     /**< Total time of all invocations. */
+  CMR_SP_STATISTICS seriesParallel;     /**< Statistics for series-parallel algorithm. */
+  CMR_GRAPHIC_STATISTICS graphic;       /**< Statistics for direct (co)graphic checks. */
+  CMR_NETWORK_STATISTICS network;       /**< Statistics for direct (co)network checks. */
+  uint32_t sequenceExtensionCount;      /**< Number of extensions of sequences of nested minors. */
+  double sequenceExtensionTime;         /**< Time of extensions of sequences of nested minors. */
+  uint32_t sequenceGraphicCount;        /**< Number (co)graphicness tests applied to sequence of nested minors. */
+  double sequenceGraphicTime;           /**< Time of (co)graphicness tests applied to sequence of nested minors. */
+  uint32_t enumerationCount;            /**< Number of calls to enumeration algorithm for candidate 3-separations. */
+  double enumerationTime;               /**< Time of enumeration of candidate 3-separations. */
+  uint32_t enumerationCandidatesCount;  /**< Number of enumerated candidates for 3-separations. */
+} CMR_SEYMOUR_STATS;
+
+
+/**
+ * \brief Initializes all statistics for Seymour decomposition computations.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRseymourStatsInit(
+  CMR_SEYMOUR_STATS* stats /**< Pointer to statistics. */
+);
+
+/**
+ * \brief Prints statistics for Seymour decomposition computations.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRseymourStatsPrint(
+  FILE* stream,             /**< File stream to print to. */
+  CMR_SEYMOUR_STATS* stats, /**< Pointer to statistics. */
+  const char* prefix        /**< Prefix string to prepend to each printed line (may be \c NULL). */
+);
+
+
 
 struct _CMR_SEYMOUR_NODE;
 
@@ -57,60 +235,6 @@ typedef enum
     /**< Node represents a representation matrix of \f$ R_{10} \f$.  \see \ref seymour_decomposition. */
 } CMR_SEYMOUR_NODE_TYPE;
 
-/**
- * \brief Flags that indicate the type of \f$ 3 \f$-separation.
- *
- * \see The desired types can be set by modifying \ref CMR_REGULAR_PARAMS.threeSumStrategy.
- **/
-
-typedef enum
-{
-  CMR_SEYMOUR_NODE_THREESUM_FLAG_NO_PIVOTS = 0,
-    /**< Indicate to not change the rank distribution; only serves as an option; each constructed node will have either
-     **  \ref CMR_SEYMOUR_NODE_THREESUM_FLAG_DISTRIBUTED_RANKS or
-     **  \ref CMR_SEYMOUR_NODE_THREESUM_FLAG_CONCENTRATED_RANK set. */
-  CMR_SEYMOUR_NODE_THREESUM_FLAG_DISTRIBUTED_RANKS = 1,
-    /**< The two off-diagonal submatrices both have rank 1.
-     **  \see \ref matroid_decomposition. */
-  CMR_SEYMOUR_NODE_THREESUM_FLAG_CONCENTRATED_RANK = 2,
-    /**< The bottom-left submatrix has rank 2 and the top-right submatrix has rank 0.
-     **  \see \ref matroid_decomposition. */
-
-  CMR_SEYMOUR_NODE_THREESUM_FLAG_FIRST_WIDE = 4,
-    /**< The first child node is of the form \f$ M_1^{\text{wide}} \f$; valid for distributed ranks.
-     **  \see \ref matroid_decomposition. */
-  CMR_SEYMOUR_NODE_THREESUM_FLAG_FIRST_TALL = 8,
-    /**< The first child node is of the form \f$ M_1^{\text{tall}} \f$; valid for distributed ranks.
-     **  \see \ref matroid_decomposition. */
-  CMR_SEYMOUR_NODE_THREESUM_FLAG_FIRST_MIXED = 64,
-    /**< The first child node is of the form \f$ M_1^{\text{mixed}} \f$; valid for concentrated rank.
-     **  \see \ref matroid_decomposition. */
-  CMR_SEYMOUR_NODE_THREESUM_FLAG_FIRST_ALLREPR = 128,
-    /**< The first child node is of the form \f$ M_1^{\text{all-repr}} \f$; valid for concentrated rank.
-     **  \see \ref matroid_decomposition. */
-
-  CMR_SEYMOUR_NODE_THREESUM_FLAG_SECOND_WIDE = 16,
-    /**< The second child node is of the form \f$ M_2^{\text{wide}} \f$; valid for distributed ranks.
-     **  \see \ref matroid_decomposition. */
-  CMR_SEYMOUR_NODE_THREESUM_FLAG_SECOND_TALL = 32,
-    /**< The second child node is of the form \f$ M_2^{\text{tall}} \f$; valid for distributed ranks.
-     **  \see \ref matroid_decomposition. */
-  CMR_SEYMOUR_NODE_THREESUM_FLAG_SECOND_MIXED = 256,
-    /**< The second child node is of the form \f$ M_2^{\text{mixed}} \f$; valid for concentrated rank.
-     **  \see \ref matroid_decomposition. */
-  CMR_SEYMOUR_NODE_THREESUM_FLAG_SECOND_ALLREPR = 512,
-    /**< The second child node is of the form \f$ M_2^{\text{all-repr}} \f$; valid for concentrated rank.
-     **  \see \ref matroid_decomposition. */
-
-  CMR_SEYMOUR_NODE_THREESUM_FLAG_SEYMOUR = CMR_SEYMOUR_NODE_THREESUM_FLAG_DISTRIBUTED_RANKS
-    | CMR_SEYMOUR_NODE_THREESUM_FLAG_FIRST_WIDE | CMR_SEYMOUR_NODE_THREESUM_FLAG_SECOND_WIDE,
-    /**< This combination of flags indicates a \f$ 3 \f$-sum as defined by Seymour.
-     **  \see \ref matroid_decomposition. */
-  CMR_SEYMOUR_NODE_THREESUM_FLAG_TRUEMPER = CMR_SEYMOUR_NODE_THREESUM_FLAG_CONCENTRATED_RANK
-    | CMR_SEYMOUR_NODE_THREESUM_FLAG_FIRST_MIXED | CMR_SEYMOUR_NODE_THREESUM_FLAG_SECOND_MIXED,
-    /**< This combination of flags indicates a \f$ 3 \f$-sum as defined by Truemper.
-     **  \see \ref matroid_decomposition. */
-} CMR_SEYMOUR_NODE_THREESUM_FLAG;
 
 /**
  * \brief Returns \c true iff the decomposition is over \f$ \mathbb{F}_3 \f$.
@@ -419,6 +543,15 @@ size_t* CMRseymourPivotRows(
 
 CMR_EXPORT
 size_t* CMRseymourPivotColumns(
+  CMR_SEYMOUR_NODE* node  /**< Seymour decomposition node. */
+);
+
+/**
+ * \brief Returns node's reference counter.
+ */
+
+CMR_EXPORT
+size_t CMRseymourGetUsed(
   CMR_SEYMOUR_NODE* node  /**< Seymour decomposition node. */
 );
 

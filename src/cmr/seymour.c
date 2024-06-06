@@ -11,6 +11,80 @@
 #include <string.h>
 #include <time.h>
 
+CMR_ERROR CMRseymourParamsInit(CMR_SEYMOUR_PARAMS* params)
+{
+  assert(params);
+
+  params->stopWhenIrregular = false;
+  params->stopWhenNongraphic = false;
+  params->stopWhenNoncographic = false;
+  params->stopWhenNeitherGraphicNorCoGraphic = false;
+  params->seriesParallel = true;
+  params->planarityCheck = false;
+  params->directGraphicness = true;
+  params->preferGraphicness = true;
+  params->threeSumPivotChildren = false;
+  params->threeSumStrategy = CMR_SEYMOUR_THREESUM_FLAG_DISTRIBUTED_RANKS /* TODO: Later no pivots. */
+    | CMR_SEYMOUR_THREESUM_FLAG_FIRST_WIDE | CMR_SEYMOUR_THREESUM_FLAG_FIRST_MIXED
+    | CMR_SEYMOUR_THREESUM_FLAG_SECOND_WIDE | CMR_SEYMOUR_THREESUM_FLAG_SECOND_MIXED;
+  params->constructLeafGraphs = false;
+  params->constructAllGraphs = false;
+
+  return CMR_OKAY;
+}
+
+CMR_ERROR CMRseymourStatsInit(CMR_SEYMOUR_STATS* stats)
+{
+  assert(stats);
+
+  stats->totalCount = 0;
+  stats->totalTime = 0.0;
+  CMR_CALL( CMRspStatsInit(&stats->seriesParallel) );
+  CMR_CALL( CMRgraphicStatsInit(&stats->graphic) );
+  CMR_CALL( CMRnetworkStatsInit(&stats->network) );
+  stats->sequenceExtensionCount = 0;
+  stats->sequenceExtensionTime = 0.0;
+  stats->sequenceGraphicCount = 0;
+  stats->sequenceGraphicTime = 0.0;
+  stats->enumerationCount = 0;
+  stats->enumerationTime = 0.0;
+  stats->enumerationCandidatesCount = 0;
+
+  return CMR_OKAY;
+}
+
+CMR_ERROR CMRseymourStatsPrint(FILE* stream, CMR_SEYMOUR_STATS* stats, const char* prefix)
+{
+  assert(stream);
+  assert(stats);
+
+  if (!prefix)
+  {
+    fprintf(stream, "Seymour decomposition:\n");
+    prefix = "  ";
+  }
+
+  char subPrefix[256];
+  snprintf(subPrefix, 256, "%sseries-parallel ", prefix);
+  CMR_CALL( CMRspStatsPrint(stream, &stats->seriesParallel, subPrefix) );
+  snprintf(subPrefix, 256, "%s(co)graphic ", prefix);
+  CMR_CALL( CMRgraphicStatsPrint(stream, &stats->graphic, subPrefix) );
+  snprintf(subPrefix, 256, "%s(co)network ", prefix);
+  CMR_CALL( CMRnetworkStatsPrint(stream, &stats->network, subPrefix) );
+
+  fprintf(stream, "%ssequence extensions: %lu in %f seconds\n", prefix, (unsigned long)stats->sequenceExtensionCount,
+    stats->sequenceExtensionTime);
+  fprintf(stream, "%ssequence (co)graphic: %lu in %f seconds\n", prefix, (unsigned long)stats->sequenceGraphicCount,
+    stats->sequenceGraphicTime);
+  fprintf(stream, "%senumeration: %lu in %f seconds\n", prefix, (unsigned long)stats->enumerationCount,
+    stats->enumerationTime);
+  fprintf(stream, "%s3-separation candidates: %lu in %f seconds\n", prefix,
+    (unsigned long)stats->enumerationCandidatesCount, stats->enumerationTime);
+  fprintf(stream, "%stotal: %lu in %f seconds\n", prefix, (unsigned long)stats->totalCount, stats->totalTime);
+
+  return CMR_OKAY;
+}
+
 bool CMRseymourIsTernary(CMR_SEYMOUR_NODE* node)
 {
   assert(node);
@@ -23,7 +97,7 @@ bool CMRseymourThreeSumDistributedRanks(CMR_SEYMOUR_NODE* node)
   assert(node);
   assert(node->type == CMR_SEYMOUR_NODE_TYPE_THREE_SUM);
 
-  return node->threesumFlags & CMR_SEYMOUR_NODE_THREESUM_FLAG_DISTRIBUTED_RANKS;
+  return node->threesumFlags & CMR_SEYMOUR_THREESUM_FLAG_DISTRIBUTED_RANKS;
 }
 
 bool CMRseymourThreeSumConcentratedRank(CMR_SEYMOUR_NODE* node)
@@ -31,7 +105,7 @@ bool CMRseymourThreeSumConcentratedRank(CMR_SEYMOUR_NODE* node)
   assert(node);
   assert(node->type == CMR_SEYMOUR_NODE_TYPE_THREE_SUM);
 
-  return node->threesumFlags & CMR_SEYMOUR_NODE_THREESUM_FLAG_CONCENTRATED_RANK;
+  return node->threesumFlags & CMR_SEYMOUR_THREESUM_FLAG_CONCENTRATED_RANK;
 }
 
 CMR_CHRMAT* CMRseymourGetMatrix(CMR_SEYMOUR_NODE* node)
@@ -265,6 +339,14 @@ size_t * CMRseymourPivotColumns(CMR_SEYMOUR_NODE* node)
 
   return node->pivotColumns;
 }
+
+size_t CMRseymourGetUsed(CMR_SEYMOUR_NODE* node)
+{
+  assert(node);
+
+  return node->used;
+}
+
 
 CMR_ERROR CMRseymourPrintChild(CMR* cmr, CMR_SEYMOUR_NODE* child, CMR_SEYMOUR_NODE* parent, size_t childIndex,
   FILE* stream, size_t indent, bool printChildren, bool printParentElements, bool printMatrices, bool printGraphs,
@@ -1960,7 +2042,7 @@ CMR_ERROR CMRseymourCloneSubtrees(CMR* cmr, size_t numSubtrees, CMR_SEYMOUR_NODE
 
 
 CMR_ERROR CMRregularityTaskCreateRoot(CMR* cmr, CMR_SEYMOUR_NODE* dec, DecompositionTask** ptask,
-  CMR_REGULAR_PARAMS* params, CMR_REGULAR_STATS* stats, clock_t startClock, double timeLimit)
+  CMR_SEYMOUR_PARAMS* params, CMR_SEYMOUR_STATS* stats, clock_t startClock, double timeLimit)
 {
   assert(cmr);
   assert(dec);
@@ -2123,10 +2205,11 @@ CMR_ERROR CMRregularityTaskRun(
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRregularityTest(CMR* cmr, CMR_CHRMAT* matrix, bool ternary, bool *pisRegular, CMR_SEYMOUR_NODE** pdec,
-  CMR_MINOR** pminor, CMR_REGULAR_PARAMS* params, CMR_REGULAR_STATS* stats, double timeLimit)
+CMR_ERROR CMRseymourDecompose(CMR* cmr, CMR_CHRMAT* matrix, bool ternary, CMR_SEYMOUR_NODE** proot,
+  CMR_SEYMOUR_PARAMS* params, CMR_SEYMOUR_STATS* stats, double timeLimit)
 {
   assert(cmr);
+  assert(proot);
   assert(matrix);
   assert(params);
 
@@ -2136,22 +2219,15 @@ CMR_ERROR CMRregularityTest(CMR* cmr, CMR_CHRMAT* matrix, bool ternary, bool *pi
   CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', false) );
 #endif /* CMR_DEBUG */
 
-  CMR_SEYMOUR_NODE* root = NULL;
-  CMR_CALL( CMRseymourCreate(cmr, &root, ternary, matrix) );
-  assert(root);
-
-  CMR_CALL( CMRregularityCompleteDecomposition(cmr, root, params, stats, timeLimit) );
-
-  if (root->regularity && pisRegular)
-    *pisRegular = root->regularity > 0;
-  if (pdec)
-    *pdec = root;
+  CMR_CALL( CMRseymourCreate(cmr, proot, ternary, matrix) );
+  assert(*proot);
+  CMR_CALL( CMRregularityCompleteDecomposition(cmr, *proot, params, stats, timeLimit) );
 
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRregularityCompleteDecomposition(CMR* cmr, CMR_SEYMOUR_NODE* subtree, CMR_REGULAR_PARAMS* params,
-  CMR_REGULAR_STATS* stats, double timeLimit)
+CMR_ERROR CMRregularityCompleteDecomposition(CMR* cmr, CMR_SEYMOUR_NODE* subtree, CMR_SEYMOUR_PARAMS* params,
+  CMR_SEYMOUR_STATS* stats, double timeLimit)
 {
   assert(cmr);
   assert(subtree);
@@ -2188,40 +2264,25 @@ CMR_ERROR CMRregularityCompleteDecomposition(CMR* cmr, CMR_SEYMOUR_NODE* subtree
   {
     DecompositionTask* task = CMRregularityQueueRemove(queue);
 
-    if (!(params->treeFlags & CMR_REGULAR_TREE_FLAGS_RECURSE) && (task->node != subtree))
-    {
-      CMRdbgMsg(2, "Skipping task for decomposition node %p of size %zux%zu.\n", task->node, task->node->numRows,
-        task->node->numColumns);
-      CMR_CALL( CMRregularityTaskFree(cmr, &task) );
-      continue;
-    }
-
-    if ((params->treeFlags & CMR_REGULAR_TREE_FLAGS_STOP_IRREGULAR) && queue->foundIrregularity)
+    if (params->stopWhenIrregular && queue->foundIrregularity)
     {
       CMRdbgMsg(2, "Clearing task queue due to an irregular node.\n");
       CMR_CALL( CMRregularityTaskFree(cmr, &task) );
       continue;
     }
-    else if ((params->treeFlags & CMR_REGULAR_TREE_FLAGS_STOP_IRREGULAR) && queue->foundIrregularity)
-    {
-      CMRdbgMsg(2, "Clearing task queue due to an irregular node.\n");
-      CMR_CALL( CMRregularityTaskFree(cmr, &task) );
-      continue;
-    }
-    else if ((params->treeFlags & CMR_REGULAR_TREE_FLAGS_STOP_NONGRAPHIC) && queue->foundNongraphicness)
+    else if (params->stopWhenNongraphic && queue->foundNongraphicness)
     {
       CMRdbgMsg(2, "Clearing task queue due to a nongraphic node.\n");
       CMR_CALL( CMRregularityTaskFree(cmr, &task) );
       continue;
     }
-    else if ((params->treeFlags & CMR_REGULAR_TREE_FLAGS_STOP_NONCOGRAPHIC) && queue->foundNoncographicness)
+    else if (params->stopWhenNoncographic && queue->foundNoncographicness)
     {
       CMRdbgMsg(2, "Clearing task queue due to a noncographic node.\n");
       CMR_CALL( CMRregularityTaskFree(cmr, &task) );
       continue;
     }
-    else if ((params->treeFlags & CMR_REGULAR_TREE_FLAGS_STOP_NONGRAPHIC_NONCOGRAPHIC) && queue->foundNongraphicness
-      && queue->foundNoncographicness)
+    else if (params->stopWhenNeitherGraphicNorCoGraphic && queue->foundNongraphicness && queue->foundNoncographicness)
     {
       CMRdbgMsg(2, "Clearing task queue due to a nongraphic node and a noncographic node.\n");
       CMR_CALL( CMRregularityTaskFree(cmr, &task) );
@@ -2242,7 +2303,7 @@ CMR_ERROR CMRregularityCompleteDecomposition(CMR* cmr, CMR_SEYMOUR_NODE* subtree
 }
 
 CMR_ERROR CMRregularityRefineDecomposition(CMR* cmr, size_t numNodes, CMR_SEYMOUR_NODE** nodes,
-  CMR_REGULAR_PARAMS* params, CMR_REGULAR_STATS* stats, double timeLimit)
+  CMR_SEYMOUR_PARAMS* params, CMR_SEYMOUR_STATS* stats, double timeLimit)
 {
   assert(cmr);
   assert(nodes);
@@ -2281,32 +2342,25 @@ CMR_ERROR CMRregularityRefineDecomposition(CMR* cmr, size_t numNodes, CMR_SEYMOU
   {
     DecompositionTask* task = CMRregularityQueueRemove(queue);
 
-    if ((params->treeFlags & CMR_REGULAR_TREE_FLAGS_STOP_IRREGULAR) && queue->foundIrregularity)
+    if (params->stopWhenIrregular && queue->foundIrregularity)
     {
       CMRdbgMsg(2, "Clearing task queue due to an irregular node.\n");
       CMR_CALL( CMRregularityTaskFree(cmr, &task) );
       continue;
     }
-    else if ((params->treeFlags & CMR_REGULAR_TREE_FLAGS_STOP_IRREGULAR) && queue->foundIrregularity)
-    {
-      CMRdbgMsg(2, "Clearing task queue due to an irregular node.\n");
-      CMR_CALL( CMRregularityTaskFree(cmr, &task) );
-      continue;
-    }
-    else if ((params->treeFlags & CMR_REGULAR_TREE_FLAGS_STOP_NONGRAPHIC) && queue->foundNongraphicness)
+    else if (params->stopWhenNongraphic && queue->foundNongraphicness)
     {
       CMRdbgMsg(2, "Clearing task queue due to a nongraphic node.\n");
       CMR_CALL( CMRregularityTaskFree(cmr, &task) );
       continue;
     }
-    else if ((params->treeFlags & CMR_REGULAR_TREE_FLAGS_STOP_NONCOGRAPHIC) && queue->foundNoncographicness)
+    else if (params->stopWhenNoncographic && queue->foundNoncographicness)
     {
       CMRdbgMsg(2, "Clearing task queue due to a noncographic node.\n");
       CMR_CALL( CMRregularityTaskFree(cmr, &task) );
       continue;
     }
-    else if ((params->treeFlags & CMR_REGULAR_TREE_FLAGS_STOP_NONGRAPHIC_NONCOGRAPHIC) && queue->foundNongraphicness
-      && queue->foundNoncographicness)
+    else if (params->stopWhenNeitherGraphicNorCoGraphic && queue->foundNongraphicness && queue->foundNoncographicness)
     {
       CMRdbgMsg(2, "Clearing task queue due to a nongraphic node and a noncographic node.\n");
       CMR_CALL( CMRregularityTaskFree(cmr, &task) );

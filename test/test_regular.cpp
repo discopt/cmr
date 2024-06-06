@@ -33,10 +33,10 @@ TEST(Regular, OneSum)
     ASSERT_CMR_CALL( CMRoneSum(cmr, K_3_3, K_3_3_dual, &matrix) );
 
     bool isRegular;
-        CMR_SEYMOUR_NODE* dec = NULL;
+    CMR_SEYMOUR_NODE* dec = NULL;
     CMR_REGULAR_PARAMS params;
     ASSERT_CMR_CALL( CMRregularParamsInit(&params) );
-    params.planarityCheck = true;
+    params.seymour.planarityCheck = true;
     ASSERT_CMR_CALL( CMRregularTest(cmr, matrix, &isRegular, &dec, NULL, &params, NULL, DBL_MAX) );
 
     ASSERT_CMR_CALL( CMRseymourPrint(cmr, dec, stdout, true, true, true, true, true, true) );
@@ -95,7 +95,7 @@ TEST(Regular, SeriesParallelTwoSeparation)
     CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
 
     bool isRegular;
-        CMR_SEYMOUR_NODE* dec = NULL;
+    CMR_SEYMOUR_NODE* dec = NULL;
     ASSERT_CMR_CALL( CMRregularTest(cmr, matrix, &isRegular, &dec, NULL, NULL, NULL, DBL_MAX) );
 
     ASSERT_CMR_CALL( CMRseymourPrint(cmr, dec, stdout, true, true, true, true, true, true) );
@@ -151,7 +151,7 @@ TEST(Regular, NestedMinorSearchTwoSeparation)
 //     CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
 
     bool isRegular;
-        CMR_SEYMOUR_NODE* dec = NULL;
+    CMR_SEYMOUR_NODE* dec = NULL;
     ASSERT_CMR_CALL( CMRregularTest(cmr, matrix, &isRegular, &dec, NULL, NULL, NULL, DBL_MAX) );
 
     ASSERT_CMR_CALL( CMRseymourPrint(cmr, dec, stdout, true, true, true, true, true, true) );
@@ -201,7 +201,7 @@ TEST(Regular, NestedMinorPivotsOneRowOneColumn)
     CMR_SEYMOUR_NODE* dec = NULL;
   CMR_REGULAR_PARAMS params;
   ASSERT_CMR_CALL( CMRregularParamsInit(&params) );
-  params.directGraphicness = false;
+  params.seymour.directGraphicness = false;
   ASSERT_CMR_CALL( CMRregularTest(cmr, matrix, &isRegular, &dec, NULL, &params, NULL, DBL_MAX) );
 
   ASSERT_CMR_CALL( CMRseymourPrint(cmr, dec, stdout, true, true, true, true, true, true) );
@@ -235,7 +235,7 @@ TEST(Regular, NestedMinorPivotsTwoRowsOneColumn)
     CMR_SEYMOUR_NODE* dec = NULL;
   CMR_REGULAR_PARAMS params;
   ASSERT_CMR_CALL( CMRregularParamsInit(&params) );
-  params.directGraphicness = false;
+  params.seymour.directGraphicness = false;
   ASSERT_CMR_CALL( CMRregularTest(cmr, matrix, &isRegular, &dec, NULL, &params, NULL, DBL_MAX) );
 
   ASSERT_CMR_CALL( CMRseymourPrint(cmr, dec, stdout, true, true, true, true, true, true) );
@@ -268,7 +268,7 @@ TEST(Regular, NestedMinorPivotsOneRowTwoColumns)
     CMR_SEYMOUR_NODE* dec = NULL;
   CMR_REGULAR_PARAMS params;
   ASSERT_CMR_CALL( CMRregularParamsInit(&params) );
-  params.directGraphicness = false;
+  params.seymour.directGraphicness = false;
   ASSERT_CMR_CALL( CMRregularTest(cmr, matrix, &isRegular, &dec, NULL, &params, NULL, DBL_MAX) );
 
   ASSERT_CMR_CALL( CMRseymourPrint(cmr, dec, stdout, true, true, true, true, true, true) );
@@ -306,7 +306,7 @@ TEST(Regular, NestedMinorPivotsTwoSeparation)
     CMR_SEYMOUR_NODE* dec = NULL;
   CMR_REGULAR_PARAMS params;
   ASSERT_CMR_CALL( CMRregularParamsInit(&params) );
-  params.directGraphicness = false;
+  params.seymour.directGraphicness = false;
   ASSERT_CMR_CALL( CMRregularTest(cmr, matrix, &isRegular, &dec, NULL, &params, NULL, DBL_MAX) );
 
   ASSERT_CMR_CALL( CMRseymourPrint(cmr, dec, stdout, true, true, true, true, true, true) );
@@ -336,8 +336,8 @@ void testSequenceGraphicness(
     CMR_SEYMOUR_NODE* dec = NULL;
   CMR_REGULAR_PARAMS params;
   ASSERT_CMR_CALL( CMRregularParamsInit(&params) );
-  params.directGraphicness = false;
-  params.threeSumStrategy = CMR_SEYMOUR_NODE_THREESUM_FLAG_SEYMOUR;
+  params.seymour.directGraphicness = false;
+  params.seymour.threeSumStrategy = CMR_SEYMOUR_THREESUM_FLAG_SEYMOUR;
   ASSERT_CMR_CALL( CMRregularTest(cmr, matrix, &isRegular, &dec, NULL, &params, NULL, DBL_MAX) );
 
   ASSERT_CMR_CALL( CMRseymourPrint(cmr, dec, stdout, true, false, false, false, false, false) );
@@ -652,7 +652,7 @@ TEST(Regular, R10)
     CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
 
     bool isRegular;
-        CMR_SEYMOUR_NODE* dec = NULL;
+    CMR_SEYMOUR_NODE* dec = NULL;
     ASSERT_CMR_CALL( CMRregularTest(cmr, matrix, &isRegular, &dec, NULL, NULL, NULL, DBL_MAX) );
     ASSERT_GT( CMRseymourRegularity(dec), 0 );
     ASSERT_EQ( CMRseymourNumChildren(dec), 0UL );
@@ -675,7 +675,7 @@ TEST(Regular, R10)
     CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
 
     bool isRegular;
-        CMR_SEYMOUR_NODE* dec = NULL;
+    CMR_SEYMOUR_NODE* dec = NULL;
     ASSERT_CMR_CALL( CMRregularTest(cmr, matrix, &isRegular, &dec, NULL, NULL, NULL, DBL_MAX) );
     ASSERT_GT( CMRseymourRegularity(dec), 0 );
     ASSERT_EQ( CMRseymourNumChildren(dec), 0 );
@@ -693,10 +693,10 @@ TEST(Regular, R10)
 
 static
 void testEnumerate(
-  CMR* cmr,                                         /**< \ref CMR environment. */
-  CMR_CHRMAT* matrix,                               /**< Matrix to test. */
-  CMR_SEYMOUR_NODE_THREESUM_FLAG threeSumStrategy,  /**< Strategy for the 3-sum. */
-  bool knowRegular                                  /**< Whether the matrix is regular. */
+  CMR* cmr,                                   /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,                         /**< Matrix to test. */
+  CMR_SEYMOUR_THREESUM_FLAG threeSumStrategy, /**< Strategy for the 3-sum. */
+  bool knowRegular                            /**< Whether the matrix is regular. */
 )
 {
   printf("Testing matrix for regularity with a 3-separation:\n");
@@ -706,8 +706,8 @@ void testEnumerate(
     CMR_SEYMOUR_NODE* dec = NULL;
   CMR_REGULAR_PARAMS params;
   ASSERT_CMR_CALL( CMRregularParamsInit(&params) );
-  params.directGraphicness = false;
-  params.threeSumStrategy = threeSumStrategy;
+  params.seymour.directGraphicness = false;
+  params.seymour.threeSumStrategy = threeSumStrategy;
   ASSERT_CMR_CALL( CMRregularTest(cmr, matrix, &isRegular, &dec, NULL, &params, NULL, DBL_MAX) );
 
   if (knowRegular)
@@ -738,7 +738,7 @@ TEST(Regular, EnumerateRanksZeroTwo)
       "0 0 1 1 "
       "0 1 1 1 "
     ) );
-    testEnumerate(cmr, matrix, CMR_SEYMOUR_NODE_THREESUM_FLAG_SEYMOUR, false);
+    testEnumerate(cmr, matrix, CMR_SEYMOUR_THREESUM_FLAG_SEYMOUR, false);
   }
 
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
@@ -757,7 +757,7 @@ TEST(Regular, EnumerateRanksOneOne)
       "1 0 0 1 "
       "1 1 0 0 "
     ) );
-    testEnumerate(cmr, matrix, CMR_SEYMOUR_NODE_THREESUM_FLAG_SEYMOUR, false);
+    testEnumerate(cmr, matrix, CMR_SEYMOUR_THREESUM_FLAG_SEYMOUR, false);
   }
 
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
@@ -777,7 +777,7 @@ TEST(Regular, EnumerateConcentratedRankForcePivot)
       "1 1 1 1 1 "
       "1 0 0 0 1 "
     ) );
-    testEnumerate(cmr, matrix, CMR_SEYMOUR_NODE_THREESUM_FLAG_DISTRIBUTED_RANKS, false);
+    testEnumerate(cmr, matrix, CMR_SEYMOUR_THREESUM_FLAG_DISTRIBUTED_RANKS, false);
   }
 
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
@@ -802,10 +802,10 @@ TEST(Regular, R12)
     ASSERT_CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', true) );
 
     bool isRegular;
-        CMR_SEYMOUR_NODE* dec = NULL;
+    CMR_SEYMOUR_NODE* dec = NULL;
     CMR_REGULAR_PARAMS params;
     ASSERT_CMR_CALL( CMRregularParamsInit(&params) );
-    params.threeSumStrategy = CMR_SEYMOUR_NODE_THREESUM_FLAG_SEYMOUR;
+    params.seymour.threeSumStrategy = CMR_SEYMOUR_THREESUM_FLAG_SEYMOUR;
     ASSERT_CMR_CALL( CMRregularTest(cmr, matrix, &isRegular, &dec, NULL, &params, NULL, DBL_MAX) );
     ASSERT_GT( CMRseymourRegularity(dec), 0 );
 //     ASSERT_EQ( CMRseymourNumChildren(dec), 2UL );
@@ -816,44 +816,6 @@ TEST(Regular, R12)
 //     ASSERT_EQ( CMRseymourNumChildren(CMRseymourChild(dec, 0)), 0UL );
 //     ASSERT_EQ( CMRseymourNumChildren(CMRseymourChild(dec, 1)), 0UL );
 //     ASSERT_EQ( graphicChildren + cographicChildren, 3UL );
-    ASSERT_CMR_CALL( CMRseymourRelease(cmr, &dec) );
-    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
-  }
-
-  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
-}
-
-TEST(Regular, TreeFlagsNorecurse)
-{
-  CMR* cmr = NULL;
-  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
-
-  {
-    CMR_CHRMAT* matrix = NULL;
-    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "9 9 "
-      " 1 1 0 0 0 0 0 0 0 "
-      " 1 1 1 0 0 0 0 0 0 "
-      " 1 0 0 1 0 0 0 0 0 "
-      " 0 1 1 1 0 0 0 0 0 "
-      " 0 0 1 1 0 0 0 0 0 "
-      " 0 0 0 0 1 1 1 0 0 "
-      " 0 0 0 0 1 1 0 1 0 "
-      " 0 0 0 0 0 1 0 1 1 "
-      " 0 0 0 0 0 0 1 1 1 "
-    ) );
-
-    ASSERT_CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', true) );
-
-        CMR_SEYMOUR_NODE* dec = NULL;
-    CMR_REGULAR_PARAMS params;
-    ASSERT_CMR_CALL( CMRregularParamsInit(&params) );
-    params.treeFlags = CMR_REGULAR_TREE_FLAGS_STOP_IRREGULAR;
-
-    ASSERT_CMR_CALL( CMRregularTest(cmr, matrix, NULL, &dec, NULL, &params, NULL, DBL_MAX) );
-    ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_ONE_SUM );
-    ASSERT_EQ( CMRseymourType(CMRseymourChild(dec, 0)), CMR_SEYMOUR_NODE_TYPE_UNKNOWN );
-    ASSERT_EQ( CMRseymourType(CMRseymourChild(dec, 1)), CMR_SEYMOUR_NODE_TYPE_UNKNOWN );
-
     ASSERT_CMR_CALL( CMRseymourRelease(cmr, &dec) );
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
   }
@@ -882,11 +844,11 @@ TEST(Regular, TreeFlagsStopNoncographic)
 
     ASSERT_CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', true) );
 
-        CMR_SEYMOUR_NODE* dec = NULL;
+    CMR_SEYMOUR_NODE* dec = NULL;
     CMR_REGULAR_PARAMS params;
     ASSERT_CMR_CALL( CMRregularParamsInit(&params) );
-    params.treeFlags = CMR_REGULAR_TREE_FLAGS_RECURSE | CMR_REGULAR_TREE_FLAGS_STOP_NONCOGRAPHIC;
-    params.planarityCheck = true;
+    params.seymour.stopWhenNoncographic = true;
+    params.seymour.planarityCheck = true;
 
     ASSERT_CMR_CALL( CMRregularTest(cmr, matrix, NULL, &dec, NULL, &params, NULL, DBL_MAX) );
     ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_ONE_SUM );
@@ -923,11 +885,11 @@ TEST(Regular, TreeFlagsStopNongraphic)
 
     ASSERT_CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', true) );
 
-        CMR_SEYMOUR_NODE* dec = NULL;
+    CMR_SEYMOUR_NODE* dec = NULL;
     CMR_REGULAR_PARAMS params;
     ASSERT_CMR_CALL( CMRregularParamsInit(&params) );
-    params.treeFlags = CMR_REGULAR_TREE_FLAGS_RECURSE | CMR_REGULAR_TREE_FLAGS_STOP_NONGRAPHIC;
-    params.planarityCheck = true;
+    params.seymour.stopWhenNongraphic = true;
+    params.seymour.planarityCheck = true;
 
     ASSERT_CMR_CALL( CMRregularTest(cmr, matrix, NULL, &dec, NULL, &params, NULL, DBL_MAX) );
     ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_ONE_SUM );

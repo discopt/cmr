@@ -62,10 +62,9 @@ CMR_ERROR testRegularity(
   CMR_MINOR* minor = NULL;
   CMR_REGULAR_PARAMS params;
   CMR_CALL( CMRregularParamsInit(&params) );
-  params.treeFlags = outputTreeFileName ? (CMR_REGULAR_TREE_FLAGS_RECURSE)
-    : (CMR_REGULAR_TREE_FLAGS_RECURSE | CMR_REGULAR_TREE_FLAGS_STOP_IRREGULAR);
-  params.directGraphicness = directGraphicness;
-  params.seriesParallel = seriesParallel;
+  params.seymour.stopWhenIrregular = !outputTreeFileName;
+  params.seymour.directGraphicness = directGraphicness;
+  params.seymour.seriesParallel = seriesParallel;
   CMR_REGULAR_STATS stats;
   CMR_CALL( CMRregularStatsInit(&stats) );
   CMR_CALL( CMRregularTest(cmr, matrix, &isRegular, outputTreeFileName ? &decomposition : NULL,

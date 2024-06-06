@@ -6,7 +6,6 @@
 #include <cmr/matroid.h>
 #include <cmr/seymour.h>
 #include <cmr/series_parallel.h>
-#include <cmr/regular.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -27,7 +26,7 @@ struct _CMR_SEYMOUR_NODE
                                                  **         (negative), or not determined if zero. */
   bool testedR10;                               /**< \brief Matrix does not represent \f$ R_{10} \f$ unless \p type
                                                  **         indicates this. */
-  CMR_SEYMOUR_NODE_THREESUM_FLAG threesumFlags; /**< \brief Type of 3-sum. */
+  CMR_SEYMOUR_THREESUM_FLAG threesumFlags;      /**< \brief Type of 3-sum. */
   CMR_CHRMAT* matrix;                           /**< \brief Matrix representing this node. */
   CMR_CHRMAT* transpose;                        /**< \brief Tranpose of \ref matrix representing this node. */
   size_t numChildren;                           /**< \brief Number of child nodes. */
@@ -95,8 +94,8 @@ typedef struct DecompositionTask
 {
   CMR_SEYMOUR_NODE* node;         /**< \brief Decomposition node that shall be processed. */
   struct DecompositionTask* next; /**< \brief Next task in queue. */
-  CMR_REGULAR_PARAMS* params;     /**< \brief Parameters for the computation. */
-  CMR_REGULAR_STATS* stats;       /**< \brief Statistics for the computation (may be \c NULL). */
+  CMR_SEYMOUR_PARAMS* params;     /**< \brief Parameters for the computation. */
+  CMR_SEYMOUR_STATS* stats;       /**< \brief Statistics for the computation (may be \c NULL). */
   clock_t startClock;             /**< \brief Clock for the start time. */
   double timeLimit;               /**< \brief Time limit to impose. */
 } DecompositionTask;
@@ -338,8 +337,8 @@ CMR_ERROR CMRregularityTaskCreateRoot(
   CMR* cmr,                       /**< \ref CMR environment. */
     CMR_SEYMOUR_NODE* dec,           /**< Decomposition node. */
   DecompositionTask** ptask,      /**< Pointer for storing the new task. */
-  CMR_REGULAR_PARAMS* params,     /**< Parameters for the computation. */
-  CMR_REGULAR_STATS* stats,       /**< Statistics for the computation (may be \c NULL). */
+  CMR_SEYMOUR_PARAMS* params,     /**< Parameters for the computation. */
+  CMR_SEYMOUR_STATS* stats,       /**< Statistics for the computation (may be \c NULL). */
   clock_t startClock,             /**< Clock for the start time. */
   double timeLimit                /**< Time limit to impose. */
 );
@@ -547,15 +546,13 @@ CMR_ERROR CMRregularitySearchOneSum(
  * submatrix with non-ternary determinant is searched. This causes additional computational effort!
  */
 
-CMR_ERROR CMRregularityTest(
+CMR_ERROR CMRseymourDecompose(
   CMR* cmr,                   /**< \ref CMR environment. */
   CMR_CHRMAT* matrix,         /**< Input matrix. */
   bool ternary,               /**< Whether the matrix shall be considered ternary. */
-  bool *pisRegular,           /**< Pointer for storing whether \p matrix is regular. */
-    CMR_SEYMOUR_NODE** pdec,     /**< Pointer for storing the decomposition tree (may be \c NULL). */
-  CMR_MINOR** pminor,         /**< Pointer for storing an \f$ F_7 \f$ or \f$ F_7^\star \f$ minor. */
-  CMR_REGULAR_PARAMS* params, /**< Parameters for the computation. */
-  CMR_REGULAR_STATS* stats,   /**< Statistics for the computation (may be \c NULL). */
+  CMR_SEYMOUR_NODE** proot,   /**< Pointer for storing the root of the Seymour decomposition. */
+  CMR_SEYMOUR_PARAMS* params, /**< Parameters for the computation. */
+  CMR_SEYMOUR_STATS* stats,   /**< Statistics for the computation (may be \c NULL). */
   double timeLimit            /**< Time limit to impose. */
 );
 
@@ -566,8 +563,8 @@ CMR_ERROR CMRregularityTest(
 CMR_ERROR CMRregularityCompleteDecomposition(
   CMR* cmr,                   /**< \ref CMR environment. */
     CMR_SEYMOUR_NODE* subtree,   /**< Decomposition node of the subtree root. */
-  CMR_REGULAR_PARAMS* params, /**< Parameters for the computation. */
-  CMR_REGULAR_STATS* stats,   /**< Statistics for the computation (may be \c NULL). */
+  CMR_SEYMOUR_PARAMS* params, /**< Parameters for the computation. */
+  CMR_SEYMOUR_STATS* stats,   /**< Statistics for the computation (may be \c NULL). */
   double timeLimit            /**< Time limit to impose. */
 );
 
@@ -579,8 +576,8 @@ CMR_ERROR CMRregularityRefineDecomposition(
   CMR* cmr,                   /**< \ref CMR environment. */
   size_t numNodes,            /**< Number of nodes to refine. */
     CMR_SEYMOUR_NODE** nodes,    /**< Array of decomposition nodes to refine. */
-  CMR_REGULAR_PARAMS* params, /**< Parameters for the computation. */
-  CMR_REGULAR_STATS* stats,   /**< Statistics for the computation (may be \c NULL). */
+  CMR_SEYMOUR_PARAMS* params, /**< Parameters for the computation. */
+  CMR_SEYMOUR_STATS* stats,   /**< Statistics for the computation (may be \c NULL). */
   double timeLimit            /**< Time limit to impose. */
 );
 

@@ -28,8 +28,9 @@ typedef enum
 typedef struct
 {
   CMR_TU_ALGORITHM algorithm; /**< \brief Algorithm to use. */
-  bool directCamion;          /**< \brief Whether to directly test signing of matrix (default: \c false). */
-  CMR_REGULAR_PARAMS regular; /**< \brief Parameters for regularity test. */
+  CMR_SEYMOUR_PARAMS seymour; /**< \brief Parameters for testing via Seymour decomposition. */
+  bool ternary;               /**< \brief Whether to create a ternary Seymour decomposition tree (default: \c true). */
+  bool camionFirst;           /**< \brief If \c ternary is \c false, then then whether to run the Camion test first. */
 } CMR_TU_PARAMS;
 
 /**
@@ -49,7 +50,8 @@ CMR_ERROR CMRtuParamsInit(
 
 typedef struct
 {
-  CMR_REGULAR_STATS decomposition;    /**< Statistics for regular matroid decomposition algorithm. */
+  CMR_SEYMOUR_STATS seymour;          /**< Statistics for Seymour decomposition computation. */
+  CMR_CAMION_STATISTICS camion;       /**< Statistics for Camion signing. */
 
   uint32_t enumerationRowSubsets;     /**< Number of considered row subsets in enumeration algorithm. */
   uint32_t enumerationColumnSubsets;  /**< Number of considered column subsets in enumeration algorithm. */
@@ -58,7 +60,6 @@ typedef struct
   uint32_t partitionRowSubsets;       /**< Number of considered row subsets in partition algorithm. */
   uint32_t partitionColumnSubsets;    /**< Number of considered column subsets in partition algorithm. */
   double partitionTime;               /**< Total time of partition algorithm. */
-
 } CMR_TU_STATS;
 
 /**
@@ -98,7 +99,7 @@ CMR_ERROR CMRtuTest(
   CMR* cmr,                   /**< \ref CMR environment */
   CMR_CHRMAT* matrix,         /**< Matrix \f$ M \f$. */
   bool* pisTotallyUnimodular, /**< Pointer for storing whether \f$ M \f$ is totally unimodular. */
-    CMR_SEYMOUR_NODE** pdec,     /**< Pointer for storing the decomposition tree (may be \c NULL). */
+  CMR_SEYMOUR_NODE** proot,   /**< Pointer for storing the decomposition tree (may be \c NULL). */
   CMR_SUBMAT** psubmatrix,    /**< Pointer for storing a submatrix with non-ternary determinant (may be \c NULL). */
   CMR_TU_PARAMS* params,      /**< Parameters for the computation (may be \c NULL for defaults). */
   CMR_TU_STATS* stats,        /**< Statistics for the computation (may be \c NULL). */

@@ -89,8 +89,10 @@ CMR_ERROR CMRchrmatTernaryPivots(
 
 typedef enum
 {
-  CMR_MINOR_TYPE_DETERMINANT = -1,
+  CMR_MINOR_TYPE_DETERMINANT = -2,
     /**< A submatrix \f$ M \f$ with \f$ |\det(M)| = 2 \f$. */
+  CMR_MINOR_TYPE_ENTRY = -1,
+    /**< A submatrix \f$ M \f$ of size 1-by-1 exhibiting a bad entry. */
   CMR_MINOR_TYPE_CUSTOM = 0,
     /**< A custom minor. */
   CMR_MINOR_TYPE_U24 = 1,

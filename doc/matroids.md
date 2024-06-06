@@ -3,7 +3,7 @@
 The matroid **represented** by a matrix \f$ M \in \mathbb{F}^{m \times n} \f$ has \f$ m + n \f$ elements that correspond to the columns of \f$ [ \mathbb{I} \mid M ] \f$.
 A subset of these columns is independent if and only if it is linearly independent over the field \f$ \mathbb{F} \f$.
 
-## Decomposition of matroids {#matroid_decomposition}
+## Decomposition of matroids {#seymour_decomposition}
 
 In CMR, the matroid represented by a matrix can be decomposed, which is essential for testing for [total unimodularity](\ref tu) and [regularity](\ref regular).
 The internal representation is a decomposition tree whose nodes are references to \ref CMR_MATROID_DEC.
