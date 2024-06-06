@@ -26,11 +26,13 @@ var searchData=
   ['cmr_5fregular_5fparams_1149',['CMR_REGULAR_PARAMS',['../structCMR__REGULAR__PARAMS.html',1,'']]],
   ['cmr_5fregular_5fstats_1150',['CMR_REGULAR_STATS',['../structCMR__REGULAR__STATS.html',1,'']]],
   ['cmr_5fsepa_1151',['CMR_SEPA',['../structCMR__SEPA.html',1,'']]],
-  ['cmr_5fsp_5freduction_1152',['CMR_SP_REDUCTION',['../structCMR__SP__REDUCTION.html',1,'']]],
-  ['cmr_5fsp_5fstatistics_1153',['CMR_SP_STATISTICS',['../structCMR__SP__STATISTICS.html',1,'']]],
-  ['cmr_5fstack_1154',['CMR_STACK',['../structCMR__STACK.html',1,'']]],
-  ['cmr_5fsubmat_1155',['CMR_SUBMAT',['../structCMR__SUBMAT.html',1,'']]],
-  ['cmr_5ftu_5fenumeration_1156',['CMR_TU_ENUMERATION',['../structCMR__TU__ENUMERATION.html',1,'']]],
-  ['cmr_5ftu_5fparams_1157',['CMR_TU_PARAMS',['../structCMR__TU__PARAMS.html',1,'']]],
-  ['cmr_5ftu_5fstats_1158',['CMR_TU_STATS',['../structCMR__TU__STATS.html',1,'']]]
+  ['cmr_5fseymour_5fparams_1152',['CMR_SEYMOUR_PARAMS',['../structCMR__SEYMOUR__PARAMS.html',1,'']]],
+  ['cmr_5fseymour_5fstats_1153',['CMR_SEYMOUR_STATS',['../structCMR__SEYMOUR__STATS.html',1,'']]],
+  ['cmr_5fsp_5freduction_1154',['CMR_SP_REDUCTION',['../structCMR__SP__REDUCTION.html',1,'']]],
+  ['cmr_5fsp_5fstatistics_1155',['CMR_SP_STATISTICS',['../structCMR__SP__STATISTICS.html',1,'']]],
+  ['cmr_5fstack_1156',['CMR_STACK',['../structCMR__STACK.html',1,'']]],
+  ['cmr_5fsubmat_1157',['CMR_SUBMAT',['../structCMR__SUBMAT.html',1,'']]],
+  ['cmr_5ftu_5fenumeration_1158',['CMR_TU_ENUMERATION',['../structCMR__TU__ENUMERATION.html',1,'']]],
+  ['cmr_5ftu_5fparams_1159',['CMR_TU_PARAMS',['../structCMR__TU__PARAMS.html',1,'']]],
+  ['cmr_5ftu_5fstats_1160',['CMR_TU_STATS',['../structCMR__TU__STATS.html',1,'']]]
 ];

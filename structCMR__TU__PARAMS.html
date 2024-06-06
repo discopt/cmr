@@ -87,12 +87,15 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:abc986c127db9b7f737c1abe74ba7db95"><td class="memItemLeft" align="right" valign="top"><a class="el" href="tu_8h.html#a699a1093f03178ea66b72cb38443f700">CMR_TU_ALGORITHM</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structCMR__TU__PARAMS.html#abc986c127db9b7f737c1abe74ba7db95">algorithm</a></td></tr>
 <tr class="memdesc:abc986c127db9b7f737c1abe74ba7db95"><td class="mdescLeft">&#160;</td><td class="mdescRight">Algorithm to use.  <a href="structCMR__TU__PARAMS.html#abc986c127db9b7f737c1abe74ba7db95">More...</a><br /></td></tr>
 <tr class="separator:abc986c127db9b7f737c1abe74ba7db95"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab2f41107765fd9bd08bf380c3d2eaebe"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structCMR__TU__PARAMS.html#ab2f41107765fd9bd08bf380c3d2eaebe">directCamion</a></td></tr>
-<tr class="memdesc:ab2f41107765fd9bd08bf380c3d2eaebe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether to directly test signing of matrix (default: <code>false</code>).  <a href="structCMR__TU__PARAMS.html#ab2f41107765fd9bd08bf380c3d2eaebe">More...</a><br /></td></tr>
-<tr class="separator:ab2f41107765fd9bd08bf380c3d2eaebe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7ceab65cb5a183ec929c2602be120676"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structCMR__REGULAR__PARAMS.html">CMR_REGULAR_PARAMS</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structCMR__TU__PARAMS.html#a7ceab65cb5a183ec929c2602be120676">regular</a></td></tr>
-<tr class="memdesc:a7ceab65cb5a183ec929c2602be120676"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parameters for regularity test.  <a href="structCMR__TU__PARAMS.html#a7ceab65cb5a183ec929c2602be120676">More...</a><br /></td></tr>
-<tr class="separator:a7ceab65cb5a183ec929c2602be120676"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab06dde70c3a4101e752f31d9e3aa99b2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structCMR__SEYMOUR__PARAMS.html">CMR_SEYMOUR_PARAMS</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structCMR__TU__PARAMS.html#ab06dde70c3a4101e752f31d9e3aa99b2">seymour</a></td></tr>
+<tr class="memdesc:ab06dde70c3a4101e752f31d9e3aa99b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parameters for testing via Seymour decomposition.  <a href="structCMR__TU__PARAMS.html#ab06dde70c3a4101e752f31d9e3aa99b2">More...</a><br /></td></tr>
+<tr class="separator:ab06dde70c3a4101e752f31d9e3aa99b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af7cbc44343aa0cadfedec1546bcecdcc"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structCMR__TU__PARAMS.html#af7cbc44343aa0cadfedec1546bcecdcc">ternary</a></td></tr>
+<tr class="memdesc:af7cbc44343aa0cadfedec1546bcecdcc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether to create a ternary Seymour decomposition tree (default: <code>true</code>).  <a href="structCMR__TU__PARAMS.html#af7cbc44343aa0cadfedec1546bcecdcc">More...</a><br /></td></tr>
+<tr class="separator:af7cbc44343aa0cadfedec1546bcecdcc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a952fd0d7a6b667a22fdb540c79ca4683"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structCMR__TU__PARAMS.html#a952fd0d7a6b667a22fdb540c79ca4683">camionFirst</a></td></tr>
+<tr class="memdesc:a952fd0d7a6b667a22fdb540c79ca4683"><td class="mdescLeft">&#160;</td><td class="mdescRight">If <code>ternary</code> is <code>false</code>, then then whether to run the Camion test first.  <a href="structCMR__TU__PARAMS.html#a952fd0d7a6b667a22fdb540c79ca4683">More...</a><br /></td></tr>
+<tr class="separator:a952fd0d7a6b667a22fdb540c79ca4683"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Data Documentation</h2>
 <a id="abc986c127db9b7f737c1abe74ba7db95"></a>
@@ -111,35 +114,51 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="ab2f41107765fd9bd08bf380c3d2eaebe"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab2f41107765fd9bd08bf380c3d2eaebe">&#9670;&nbsp;</a></span>directCamion</h2>
+<a id="a952fd0d7a6b667a22fdb540c79ca4683"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a952fd0d7a6b667a22fdb540c79ca4683">&#9670;&nbsp;</a></span>camionFirst</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">bool CMR_TU_PARAMS::directCamion</td>
+          <td class="memname">bool CMR_TU_PARAMS::camionFirst</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Whether to directly test signing of matrix (default: <code>false</code>). </p>
+<p>If <code>ternary</code> is <code>false</code>, then then whether to run the Camion test first. </p>
 
 </div>
 </div>
-<a id="a7ceab65cb5a183ec929c2602be120676"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7ceab65cb5a183ec929c2602be120676">&#9670;&nbsp;</a></span>regular</h2>
+<a id="ab06dde70c3a4101e752f31d9e3aa99b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab06dde70c3a4101e752f31d9e3aa99b2">&#9670;&nbsp;</a></span>seymour</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structCMR__REGULAR__PARAMS.html">CMR_REGULAR_PARAMS</a> CMR_TU_PARAMS::regular</td>
+          <td class="memname"><a class="el" href="structCMR__SEYMOUR__PARAMS.html">CMR_SEYMOUR_PARAMS</a> CMR_TU_PARAMS::seymour</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Parameters for regularity test. </p>
+<p>Parameters for testing via Seymour decomposition. </p>
+
+</div>
+</div>
+<a id="af7cbc44343aa0cadfedec1546bcecdcc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af7cbc44343aa0cadfedec1546bcecdcc">&#9670;&nbsp;</a></span>ternary</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool CMR_TU_PARAMS::ternary</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Whether to create a ternary Seymour decomposition tree (default: <code>true</code>). </p>
 
 </div>
 </div>

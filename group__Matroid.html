@@ -90,17 +90,18 @@ Classes</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
 <tr class="memitem:gaf4fa5a65acf0f77b366c30e9dfb0b07e"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#gaf4fa5a65acf0f77b366c30e9dfb0b07e">CMR_MINOR_TYPE</a> { <br />
-&#160;&#160;<a class="el" href="group__Matroid.html#ggaf4fa5a65acf0f77b366c30e9dfb0b07ea83e75fcc77f5581cac234233d82807b4">CMR_MINOR_TYPE_DETERMINANT</a> = -1
+&#160;&#160;<a class="el" href="group__Matroid.html#ggaf4fa5a65acf0f77b366c30e9dfb0b07ea83e75fcc77f5581cac234233d82807b4">CMR_MINOR_TYPE_DETERMINANT</a> = -2
+, <a class="el" href="group__Matroid.html#ggaf4fa5a65acf0f77b366c30e9dfb0b07ea23d5eb901b3cdf52600b4171a97faa40">CMR_MINOR_TYPE_ENTRY</a> = -1
 , <a class="el" href="group__Matroid.html#ggaf4fa5a65acf0f77b366c30e9dfb0b07eaea0abf0036fda715159c4c4ccc9c840c">CMR_MINOR_TYPE_CUSTOM</a> = 0
 , <a class="el" href="group__Matroid.html#ggaf4fa5a65acf0f77b366c30e9dfb0b07ea11c8ced44d4fcd2555f0013b01f329d7">CMR_MINOR_TYPE_U24</a> = 1
-, <a class="el" href="group__Matroid.html#ggaf4fa5a65acf0f77b366c30e9dfb0b07eaee85f64baaa2f8ea625efb2a13ee2eb5">CMR_MINOR_TYPE_FANO</a> = 2
 , <br />
-&#160;&#160;<a class="el" href="group__Matroid.html#ggaf4fa5a65acf0f77b366c30e9dfb0b07ea35f83c2282a7d342b5c1211ad2f86a42">CMR_MINOR_TYPE_FANO_DUAL</a> = 3
+&#160;&#160;<a class="el" href="group__Matroid.html#ggaf4fa5a65acf0f77b366c30e9dfb0b07eaee85f64baaa2f8ea625efb2a13ee2eb5">CMR_MINOR_TYPE_FANO</a> = 2
+, <a class="el" href="group__Matroid.html#ggaf4fa5a65acf0f77b366c30e9dfb0b07ea35f83c2282a7d342b5c1211ad2f86a42">CMR_MINOR_TYPE_FANO_DUAL</a> = 3
 , <a class="el" href="group__Matroid.html#ggaf4fa5a65acf0f77b366c30e9dfb0b07ea715ff67fef0b0c5817a85310d39a457a">CMR_MINOR_TYPE_K5</a> = 4
 , <a class="el" href="group__Matroid.html#ggaf4fa5a65acf0f77b366c30e9dfb0b07ea19e537f9d2f161bd708a3cc0afa44e1d">CMR_MINOR_TYPE_K5_DUAL</a> = 5
-, <a class="el" href="group__Matroid.html#ggaf4fa5a65acf0f77b366c30e9dfb0b07ea7f4cbd6f92cf2aa9c57f4c446a76b32a">CMR_MINOR_TYPE_K33</a> = 6
 , <br />
-&#160;&#160;<a class="el" href="group__Matroid.html#ggaf4fa5a65acf0f77b366c30e9dfb0b07ead9f52bfbe78a94936dc5ee894f8a4372">CMR_MINOR_TYPE_K33_DUAL</a> = 7
+&#160;&#160;<a class="el" href="group__Matroid.html#ggaf4fa5a65acf0f77b366c30e9dfb0b07ea7f4cbd6f92cf2aa9c57f4c446a76b32a">CMR_MINOR_TYPE_K33</a> = 6
+, <a class="el" href="group__Matroid.html#ggaf4fa5a65acf0f77b366c30e9dfb0b07ead9f52bfbe78a94936dc5ee894f8a4372">CMR_MINOR_TYPE_K33_DUAL</a> = 7
 <br />
  }</td></tr>
 <tr class="separator:gaf4fa5a65acf0f77b366c30e9dfb0b07e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -150,6 +151,8 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 <table class="fieldtable">
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ggaf4fa5a65acf0f77b366c30e9dfb0b07ea83e75fcc77f5581cac234233d82807b4"></a>CMR_MINOR_TYPE_DETERMINANT&#160;</td><td class="fielddoc"><p>A submatrix \( M \) with \( |\det(M)| = 2 \). </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ggaf4fa5a65acf0f77b366c30e9dfb0b07ea23d5eb901b3cdf52600b4171a97faa40"></a>CMR_MINOR_TYPE_ENTRY&#160;</td><td class="fielddoc"><p>A submatrix \( M \) of size 1-by-1 exhibiting a bad entry. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="ggaf4fa5a65acf0f77b366c30e9dfb0b07eaea0abf0036fda715159c4c4ccc9c840c"></a>CMR_MINOR_TYPE_CUSTOM&#160;</td><td class="fielddoc"><p>A custom minor. </p>
 </td></tr>

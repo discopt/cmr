@@ -78,6 +78,7 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
+<a href="#typedef-members">Typedefs</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">seymour_internal.h File Reference</div>  </div>
@@ -94,6 +95,17 @@ $(function() {
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct__CMR__SEYMOUR__NODE.html">_CMR_SEYMOUR_NODE</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structDecompositionTask.html">DecompositionTask</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structDecompositionQueue.html">DecompositionQueue</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
+Typedefs</h2></td></tr>
+<tr class="memitem:ae03ae5c12d892c253969c297f89b9a85"><td class="memItemLeft" align="right" valign="top">typedef struct <a class="el" href="structDecompositionTask.html">DecompositionTask</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="seymour__internal_8h.html#ae03ae5c12d892c253969c297f89b9a85">DecompositionTask</a></td></tr>
+<tr class="separator:ae03ae5c12d892c253969c297f89b9a85"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34051ee0ed2888713c77b6a8d09e31ba"><td class="memItemLeft" align="right" valign="top">typedef struct <a class="el" href="structDecompositionQueue.html">DecompositionQueue</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="seymour__internal_8h.html#a34051ee0ed2888713c77b6a8d09e31ba">DecompositionQueue</a></td></tr>
+<tr class="separator:a34051ee0ed2888713c77b6a8d09e31ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
@@ -145,8 +157,992 @@ Functions</h2></td></tr>
 <tr class="memitem:abfd82d2c37ac75182152ff85419939ab"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="seymour__internal_8h.html#abfd82d2c37ac75182152ff85419939ab">CMRseymourSetAttributes</a> (<a class="el" href="group__Seymour.html#ga224ccb2a42c4bda6ae69b0e800bb69a5">CMR_SEYMOUR_NODE</a> *node)</td></tr>
 <tr class="memdesc:abfd82d2c37ac75182152ff85419939ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set regularity and (co)graphicness attributes of a decomposition tree.  <a href="seymour__internal_8h.html#abfd82d2c37ac75182152ff85419939ab">More...</a><br /></td></tr>
 <tr class="separator:abfd82d2c37ac75182152ff85419939ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9814402fe62f203f8aef455692d4585f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="seymour__internal_8h.html#a9814402fe62f203f8aef455692d4585f">CMRregularityTaskCreateRoot</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="group__Seymour.html#ga224ccb2a42c4bda6ae69b0e800bb69a5">CMR_SEYMOUR_NODE</a> *dec, <a class="el" href="structDecompositionTask.html">DecompositionTask</a> **ptask, <a class="el" href="structCMR__SEYMOUR__PARAMS.html">CMR_SEYMOUR_PARAMS</a> *params, <a class="el" href="structCMR__SEYMOUR__STATS.html">CMR_SEYMOUR_STATS</a> *stats, clock_t startClock, double timeLimit)</td></tr>
+<tr class="memdesc:a9814402fe62f203f8aef455692d4585f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a decomposition task for the root of the decomposition.  <a href="seymour__internal_8h.html#a9814402fe62f203f8aef455692d4585f">More...</a><br /></td></tr>
+<tr class="separator:a9814402fe62f203f8aef455692d4585f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae59201633f2dbbbcb5b2b48784f5133f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="seymour__internal_8h.html#ae59201633f2dbbbcb5b2b48784f5133f">CMRregularityTaskFree</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structDecompositionTask.html">DecompositionTask</a> **ptask)</td></tr>
+<tr class="memdesc:ae59201633f2dbbbcb5b2b48784f5133f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Frees a decomposition task.  <a href="seymour__internal_8h.html#ae59201633f2dbbbcb5b2b48784f5133f">More...</a><br /></td></tr>
+<tr class="separator:ae59201633f2dbbbcb5b2b48784f5133f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c6fec41431573de8983fb06608cf887"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="seymour__internal_8h.html#a9c6fec41431573de8983fb06608cf887">CMRregularityQueueCreate</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> **pqueue)</td></tr>
+<tr class="memdesc:a9c6fec41431573de8983fb06608cf887"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a decomposition queue.  <a href="seymour__internal_8h.html#a9c6fec41431573de8983fb06608cf887">More...</a><br /></td></tr>
+<tr class="separator:a9c6fec41431573de8983fb06608cf887"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa591de2f5c7b052e7550fdb0c3e97e96"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="seymour__internal_8h.html#aa591de2f5c7b052e7550fdb0c3e97e96">CMRregularityQueueFree</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> **pqueue)</td></tr>
+<tr class="memdesc:aa591de2f5c7b052e7550fdb0c3e97e96"><td class="mdescLeft">&#160;</td><td class="mdescRight">Frees the decomposition queue.  <a href="seymour__internal_8h.html#aa591de2f5c7b052e7550fdb0c3e97e96">More...</a><br /></td></tr>
+<tr class="separator:aa591de2f5c7b052e7550fdb0c3e97e96"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade1d1ba9548c4cae04782ee1ff59e0ef"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="seymour__internal_8h.html#ade1d1ba9548c4cae04782ee1ff59e0ef">CMRregularityQueueEmpty</a> (<a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> *queue)</td></tr>
+<tr class="memdesc:ade1d1ba9548c4cae04782ee1ff59e0ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns whether a queue is empty.  <a href="seymour__internal_8h.html#ade1d1ba9548c4cae04782ee1ff59e0ef">More...</a><br /></td></tr>
+<tr class="separator:ade1d1ba9548c4cae04782ee1ff59e0ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8424afed0c6938c4beee2529c9c3f710"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structDecompositionTask.html">DecompositionTask</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="seymour__internal_8h.html#a8424afed0c6938c4beee2529c9c3f710">CMRregularityQueueRemove</a> (<a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> *queue)</td></tr>
+<tr class="memdesc:a8424afed0c6938c4beee2529c9c3f710"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes a task from a decomposition queue.  <a href="seymour__internal_8h.html#a8424afed0c6938c4beee2529c9c3f710">More...</a><br /></td></tr>
+<tr class="separator:a8424afed0c6938c4beee2529c9c3f710"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6494e9e5e7fe62af26f34c1df368bc3e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="seymour__internal_8h.html#a6494e9e5e7fe62af26f34c1df368bc3e">CMRregularityQueueAdd</a> (<a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> *queue, <a class="el" href="structDecompositionTask.html">DecompositionTask</a> *task)</td></tr>
+<tr class="memdesc:a6494e9e5e7fe62af26f34c1df368bc3e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a task to a decomposition queue.  <a href="seymour__internal_8h.html#a6494e9e5e7fe62af26f34c1df368bc3e">More...</a><br /></td></tr>
+<tr class="separator:a6494e9e5e7fe62af26f34c1df368bc3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a23e16dfe96d426266aef89dce922cb45"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="seymour__internal_8h.html#a23e16dfe96d426266aef89dce922cb45">CMRregularityDecomposeThreeSum</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structDecompositionTask.html">DecompositionTask</a> *task, <a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> *queue, <a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *separation)</td></tr>
+<tr class="memdesc:a23e16dfe96d426266aef89dce922cb45"><td class="mdescLeft">&#160;</td><td class="mdescRight">Applies a 3-sum decomposition.  <a href="seymour__internal_8h.html#a23e16dfe96d426266aef89dce922cb45">More...</a><br /></td></tr>
+<tr class="separator:a23e16dfe96d426266aef89dce922cb45"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a027c6b3fcba97ef2064f1ba457983e40"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="seymour__internal_8h.html#a027c6b3fcba97ef2064f1ba457983e40">CMRregularityNestedMinorSequenceSearchThreeSeparation</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structDecompositionTask.html">DecompositionTask</a> *task, <a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> *queue)</td></tr>
+<tr class="memdesc:a027c6b3fcba97ef2064f1ba457983e40"><td class="mdescLeft">&#160;</td><td class="mdescRight">Searches for 3-separations along the sequence of nested minors and decomposes as a 3-sum.  <a href="seymour__internal_8h.html#a027c6b3fcba97ef2064f1ba457983e40">More...</a><br /></td></tr>
+<tr class="separator:a027c6b3fcba97ef2064f1ba457983e40"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab65e119948cf763a8cd359059f5d70a2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="seymour__internal_8h.html#ab65e119948cf763a8cd359059f5d70a2">CMRregularityNestedMinorSequenceGraphicness</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structDecompositionTask.html">DecompositionTask</a> *task, <a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> *queue)</td></tr>
+<tr class="memdesc:ab65e119948cf763a8cd359059f5d70a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tests each minor of the sequence of nested 3-connected minors for graphicness.  <a href="seymour__internal_8h.html#ab65e119948cf763a8cd359059f5d70a2">More...</a><br /></td></tr>
+<tr class="separator:ab65e119948cf763a8cd359059f5d70a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac5c9c8bd7f8ea518d5c84f9e0778fca2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="seymour__internal_8h.html#ac5c9c8bd7f8ea518d5c84f9e0778fca2">CMRregularityNestedMinorSequenceCographicness</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structDecompositionTask.html">DecompositionTask</a> *task, <a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> *queue)</td></tr>
+<tr class="memdesc:ac5c9c8bd7f8ea518d5c84f9e0778fca2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tests each minor of the sequence of nested 3-connected minors for graphicness.  <a href="seymour__internal_8h.html#ac5c9c8bd7f8ea518d5c84f9e0778fca2">More...</a><br /></td></tr>
+<tr class="separator:ac5c9c8bd7f8ea518d5c84f9e0778fca2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa3d90ea3c23e22b8e828d26bbc413d61"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="seymour__internal_8h.html#aa3d90ea3c23e22b8e828d26bbc413d61">CMRregularityExtendNestedMinorSequence</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structDecompositionTask.html">DecompositionTask</a> *task, <a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> *queue)</td></tr>
+<tr class="memdesc:aa3d90ea3c23e22b8e828d26bbc413d61"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extends an incomplete sequence of nested 3-connected minors for the matrix of a decomposition node.  <a href="seymour__internal_8h.html#aa3d90ea3c23e22b8e828d26bbc413d61">More...</a><br /></td></tr>
+<tr class="separator:aa3d90ea3c23e22b8e828d26bbc413d61"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a15c3df5a1a1d8cef0d6d7bdbbf423110"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="seymour__internal_8h.html#a15c3df5a1a1d8cef0d6d7bdbbf423110">CMRregularityTestR10</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structDecompositionTask.html">DecompositionTask</a> *task, <a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> *queue)</td></tr>
+<tr class="memdesc:a15c3df5a1a1d8cef0d6d7bdbbf423110"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tests <code>matrix</code> for representing \( R_{10} \).  <a href="seymour__internal_8h.html#a15c3df5a1a1d8cef0d6d7bdbbf423110">More...</a><br /></td></tr>
+<tr class="separator:a15c3df5a1a1d8cef0d6d7bdbbf423110"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a44a99782f1b7c95c3e0dcb012ea71191"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="seymour__internal_8h.html#a44a99782f1b7c95c3e0dcb012ea71191">CMRregularityInitNestedMinorSequence</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structDecompositionTask.html">DecompositionTask</a> *task, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> *wheelSubmatrix)</td></tr>
+<tr class="memdesc:a44a99782f1b7c95c3e0dcb012ea71191"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a sequence of nested minors with one minor, for a given <code>wheelSubmatrix</code>.  <a href="seymour__internal_8h.html#a44a99782f1b7c95c3e0dcb012ea71191">More...</a><br /></td></tr>
+<tr class="separator:a44a99782f1b7c95c3e0dcb012ea71191"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc0cbf8380ff5a4b08d8095704ef1bad"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="seymour__internal_8h.html#afc0cbf8380ff5a4b08d8095704ef1bad">CMRregularityDecomposeSeriesParallel</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structDecompositionTask.html">DecompositionTask</a> *task, <a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> *queue)</td></tr>
+<tr class="memdesc:afc0cbf8380ff5a4b08d8095704ef1bad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Splits off series-parallel elements from the matrix of the decomposition node.  <a href="seymour__internal_8h.html#afc0cbf8380ff5a4b08d8095704ef1bad">More...</a><br /></td></tr>
+<tr class="separator:afc0cbf8380ff5a4b08d8095704ef1bad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a02ad707eae1c57e14fa82cd20a74083e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="seymour__internal_8h.html#a02ad707eae1c57e14fa82cd20a74083e">CMRregularityTestGraphicness</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structDecompositionTask.html">DecompositionTask</a> *task, <a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> *queue)</td></tr>
+<tr class="memdesc:a02ad707eae1c57e14fa82cd20a74083e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tests <code>matrix</code> for graphicness/network and stores it in <code>dec</code>.  <a href="seymour__internal_8h.html#a02ad707eae1c57e14fa82cd20a74083e">More...</a><br /></td></tr>
+<tr class="separator:a02ad707eae1c57e14fa82cd20a74083e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad3ce8dc2d961304700af271c4e458d0d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="seymour__internal_8h.html#ad3ce8dc2d961304700af271c4e458d0d">CMRregularityTestCographicness</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structDecompositionTask.html">DecompositionTask</a> *task, <a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> *queue)</td></tr>
+<tr class="memdesc:ad3ce8dc2d961304700af271c4e458d0d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tests <code>matrix</code> for cographicness/conetwork and stores it in <code>dec</code>.  <a href="seymour__internal_8h.html#ad3ce8dc2d961304700af271c4e458d0d">More...</a><br /></td></tr>
+<tr class="separator:ad3ce8dc2d961304700af271c4e458d0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e8d0c1c14371528b2b68c30424b76b9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="seymour__internal_8h.html#a4e8d0c1c14371528b2b68c30424b76b9">CMRregularitySearchOneSum</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structDecompositionTask.html">DecompositionTask</a> *task, <a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> *queue)</td></tr>
+<tr class="memdesc:a4e8d0c1c14371528b2b68c30424b76b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs a 1-sum decomposition of <code>matrix</code> and stores it in <code>dec</code>.  <a href="seymour__internal_8h.html#a4e8d0c1c14371528b2b68c30424b76b9">More...</a><br /></td></tr>
+<tr class="separator:a4e8d0c1c14371528b2b68c30424b76b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9bbf25b3725e4b6ac61aafc660a5b2f7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="seymour__internal_8h.html#a9bbf25b3725e4b6ac61aafc660a5b2f7">CMRseymourDecompose</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, bool ternary, <a class="el" href="group__Seymour.html#ga224ccb2a42c4bda6ae69b0e800bb69a5">CMR_SEYMOUR_NODE</a> **proot, <a class="el" href="structCMR__SEYMOUR__PARAMS.html">CMR_SEYMOUR_PARAMS</a> *params, <a class="el" href="structCMR__SEYMOUR__STATS.html">CMR_SEYMOUR_STATS</a> *stats, double timeLimit)</td></tr>
+<tr class="memdesc:a9bbf25b3725e4b6ac61aafc660a5b2f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tests ternary or binary linear matroid for regularity.  <a href="seymour__internal_8h.html#a9bbf25b3725e4b6ac61aafc660a5b2f7">More...</a><br /></td></tr>
+<tr class="separator:a9bbf25b3725e4b6ac61aafc660a5b2f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad66ec470aa63a24494fb75d367e99249"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="seymour__internal_8h.html#ad66ec470aa63a24494fb75d367e99249">CMRregularityCompleteDecomposition</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="group__Seymour.html#ga224ccb2a42c4bda6ae69b0e800bb69a5">CMR_SEYMOUR_NODE</a> *subtree, <a class="el" href="structCMR__SEYMOUR__PARAMS.html">CMR_SEYMOUR_PARAMS</a> *params, <a class="el" href="structCMR__SEYMOUR__STATS.html">CMR_SEYMOUR_STATS</a> *stats, double timeLimit)</td></tr>
+<tr class="memdesc:ad66ec470aa63a24494fb75d367e99249"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replaces the subtree of a matroid decomposition tree by a new one.  <a href="seymour__internal_8h.html#ad66ec470aa63a24494fb75d367e99249">More...</a><br /></td></tr>
+<tr class="separator:ad66ec470aa63a24494fb75d367e99249"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a66bbd7b95650d964abc94fe72d97e1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="seymour__internal_8h.html#a4a66bbd7b95650d964abc94fe72d97e1">CMRregularityRefineDecomposition</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, size_t numNodes, <a class="el" href="group__Seymour.html#ga224ccb2a42c4bda6ae69b0e800bb69a5">CMR_SEYMOUR_NODE</a> **nodes, <a class="el" href="structCMR__SEYMOUR__PARAMS.html">CMR_SEYMOUR_PARAMS</a> *params, <a class="el" href="structCMR__SEYMOUR__STATS.html">CMR_SEYMOUR_STATS</a> *stats, double timeLimit)</td></tr>
+<tr class="memdesc:a4a66bbd7b95650d964abc94fe72d97e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replaces the subtrees of several nodes of a matroid decomposition tree by new ones.  <a href="seymour__internal_8h.html#a4a66bbd7b95650d964abc94fe72d97e1">More...</a><br /></td></tr>
+<tr class="separator:a4a66bbd7b95650d964abc94fe72d97e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Typedef Documentation</h2>
+<a id="a34051ee0ed2888713c77b6a8d09e31ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34051ee0ed2888713c77b6a8d09e31ba">&#9670;&nbsp;</a></span>DecompositionQueue</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef struct <a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> <a class="el" href="structDecompositionQueue.html">DecompositionQueue</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae03ae5c12d892c253969c297f89b9a85"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae03ae5c12d892c253969c297f89b9a85">&#9670;&nbsp;</a></span>DecompositionTask</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef struct <a class="el" href="structDecompositionTask.html">DecompositionTask</a> <a class="el" href="structDecompositionTask.html">DecompositionTask</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <h2 class="groupheader">Function Documentation</h2>
+<a id="ad66ec470aa63a24494fb75d367e99249"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad66ec470aa63a24494fb75d367e99249">&#9670;&nbsp;</a></span>CMRregularityCompleteDecomposition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRregularityCompleteDecomposition </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__Seymour.html#ga224ccb2a42c4bda6ae69b0e800bb69a5">CMR_SEYMOUR_NODE</a> *&#160;</td>
+          <td class="paramname"><em>subtree</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SEYMOUR__PARAMS.html">CMR_SEYMOUR_PARAMS</a> *&#160;</td>
+          <td class="paramname"><em>params</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SEYMOUR__STATS.html">CMR_SEYMOUR_STATS</a> *&#160;</td>
+          <td class="paramname"><em>stats</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>timeLimit</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Replaces the subtree of a matroid decomposition tree by a new one. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">subtree</td><td>Decomposition node of the subtree root. </td></tr>
+    <tr><td class="paramname">params</td><td>Parameters for the computation. </td></tr>
+    <tr><td class="paramname">stats</td><td>Statistics for the computation (may be <code>NULL</code>). </td></tr>
+    <tr><td class="paramname">timeLimit</td><td>Time limit to impose. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="afc0cbf8380ff5a4b08d8095704ef1bad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc0cbf8380ff5a4b08d8095704ef1bad">&#9670;&nbsp;</a></span>CMRregularityDecomposeSeriesParallel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRregularityDecomposeSeriesParallel </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structDecompositionTask.html">DecompositionTask</a> *&#160;</td>
+          <td class="paramname"><em>task</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> *&#160;</td>
+          <td class="paramname"><em>queue</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Splits off series-parallel elements from the matrix of the decomposition node. </p>
+<p>In case the matrix is <a class="el" href="series-parallel.html">Series-Parallel Matroids</a>, then the node is declared to be planar.</p>
+<p>In case the matrix does not admit series-parallel reductions, then the node remains remain unchanged. Otherwise, a child node is created whose matrix is the series-parallel-reduced one. For that child node, a 2-separation may be found, and corresponding children will be created. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">task</td><td>Task to be processed; already removed from the list of unprocessed tasks. </td></tr>
+    <tr><td class="paramname">queue</td><td>Queue of unprocessed nodes. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a23e16dfe96d426266aef89dce922cb45"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a23e16dfe96d426266aef89dce922cb45">&#9670;&nbsp;</a></span>CMRregularityDecomposeThreeSum()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRregularityDecomposeThreeSum </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structDecompositionTask.html">DecompositionTask</a> *&#160;</td>
+          <td class="paramname"><em>task</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> *&#160;</td>
+          <td class="paramname"><em>queue</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *&#160;</td>
+          <td class="paramname"><em>separation</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Applies a 3-sum decomposition. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">task</td><td>Task to be processed; already removed from the list of unprocessed tasks. </td></tr>
+    <tr><td class="paramname">queue</td><td>Queue of unprocessed nodes. </td></tr>
+    <tr><td class="paramname">separation</td><td>3-separation. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="aa3d90ea3c23e22b8e828d26bbc413d61"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa3d90ea3c23e22b8e828d26bbc413d61">&#9670;&nbsp;</a></span>CMRregularityExtendNestedMinorSequence()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRregularityExtendNestedMinorSequence </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structDecompositionTask.html">DecompositionTask</a> *&#160;</td>
+          <td class="paramname"><em>task</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> *&#160;</td>
+          <td class="paramname"><em>queue</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Extends an incomplete sequence of nested 3-connected minors for the matrix of a decomposition node. </p>
+<p>In case the matrix is not 3-connected, a 2-separation is applied to <code>dec</code> and the function terminates, filling the relevant variables of <code>dec</code>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">task</td><td>Task to be processed; already removed from the list of unprocessed tasks. </td></tr>
+    <tr><td class="paramname">queue</td><td>Queue of unprocessed nodes. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a44a99782f1b7c95c3e0dcb012ea71191"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a44a99782f1b7c95c3e0dcb012ea71191">&#9670;&nbsp;</a></span>CMRregularityInitNestedMinorSequence()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRregularityInitNestedMinorSequence </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structDecompositionTask.html">DecompositionTask</a> *&#160;</td>
+          <td class="paramname"><em>task</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> *&#160;</td>
+          <td class="paramname"><em>wheelSubmatrix</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Initializes a sequence of nested minors with one minor, for a given <code>wheelSubmatrix</code>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">task</td><td>Task to be processed; already removed from the list of unprocessed tasks. </td></tr>
+    <tr><td class="paramname">wheelSubmatrix</td><td>Wheel submatrix of <code>task-&gt;dec</code>. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ac5c9c8bd7f8ea518d5c84f9e0778fca2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac5c9c8bd7f8ea518d5c84f9e0778fca2">&#9670;&nbsp;</a></span>CMRregularityNestedMinorSequenceCographicness()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRregularityNestedMinorSequenceCographicness </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structDecompositionTask.html">DecompositionTask</a> *&#160;</td>
+          <td class="paramname"><em>task</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> *&#160;</td>
+          <td class="paramname"><em>queue</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Tests each minor of the sequence of nested 3-connected minors for graphicness. </p>
+<p>Sets <code>task-&gt;dec-&gt;CMRregularityNestedMinorSequenceCographicness</code> accordingly. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">task</td><td>Task to be processed; already removed from the list of unprocessed tasks. </td></tr>
+    <tr><td class="paramname">queue</td><td>Queue of unprocessed nodes. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ab65e119948cf763a8cd359059f5d70a2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab65e119948cf763a8cd359059f5d70a2">&#9670;&nbsp;</a></span>CMRregularityNestedMinorSequenceGraphicness()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRregularityNestedMinorSequenceGraphicness </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structDecompositionTask.html">DecompositionTask</a> *&#160;</td>
+          <td class="paramname"><em>task</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> *&#160;</td>
+          <td class="paramname"><em>queue</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Tests each minor of the sequence of nested 3-connected minors for graphicness. </p>
+<p>Sets <code>task-&gt;dec-&gt;CMRregularityNestedMinorSequenceGraphicness</code> accordingly. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">task</td><td>Task to be processed; already removed from the list of unprocessed tasks. </td></tr>
+    <tr><td class="paramname">queue</td><td>Queue of unprocessed nodes. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a027c6b3fcba97ef2064f1ba457983e40"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a027c6b3fcba97ef2064f1ba457983e40">&#9670;&nbsp;</a></span>CMRregularityNestedMinorSequenceSearchThreeSeparation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRregularityNestedMinorSequenceSearchThreeSeparation </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structDecompositionTask.html">DecompositionTask</a> *&#160;</td>
+          <td class="paramname"><em>task</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> *&#160;</td>
+          <td class="paramname"><em>queue</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Searches for 3-separations along the sequence of nested minors and decomposes as a 3-sum. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">task</td><td>Task to be processed; already removed from the list of unprocessed tasks. </td></tr>
+    <tr><td class="paramname">queue</td><td>Queue of unprocessed nodes. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a6494e9e5e7fe62af26f34c1df368bc3e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6494e9e5e7fe62af26f34c1df368bc3e">&#9670;&nbsp;</a></span>CMRregularityQueueAdd()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void CMRregularityQueueAdd </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> *&#160;</td>
+          <td class="paramname"><em>queue</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structDecompositionTask.html">DecompositionTask</a> *&#160;</td>
+          <td class="paramname"><em>task</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Adds a task to a decomposition queue. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">queue</td><td>Queue. </td></tr>
+    <tr><td class="paramname">task</td><td>Task. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a9c6fec41431573de8983fb06608cf887"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c6fec41431573de8983fb06608cf887">&#9670;&nbsp;</a></span>CMRregularityQueueCreate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRregularityQueueCreate </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> **&#160;</td>
+          <td class="paramname"><em>pqueue</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Initializes a decomposition queue. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">pqueue</td><td>Pointer for storing the queue. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ade1d1ba9548c4cae04782ee1ff59e0ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade1d1ba9548c4cae04782ee1ff59e0ef">&#9670;&nbsp;</a></span>CMRregularityQueueEmpty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool CMRregularityQueueEmpty </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> *&#160;</td>
+          <td class="paramname"><em>queue</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns whether a queue is empty. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">queue</td><td>Queue. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="aa591de2f5c7b052e7550fdb0c3e97e96"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa591de2f5c7b052e7550fdb0c3e97e96">&#9670;&nbsp;</a></span>CMRregularityQueueFree()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRregularityQueueFree </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> **&#160;</td>
+          <td class="paramname"><em>pqueue</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Frees the decomposition queue. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">pqueue</td><td>Pointer to queue. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a8424afed0c6938c4beee2529c9c3f710"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8424afed0c6938c4beee2529c9c3f710">&#9670;&nbsp;</a></span>CMRregularityQueueRemove()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structDecompositionTask.html">DecompositionTask</a>* CMRregularityQueueRemove </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> *&#160;</td>
+          <td class="paramname"><em>queue</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Removes a task from a decomposition queue. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">queue</td><td>Queue. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a4a66bbd7b95650d964abc94fe72d97e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a66bbd7b95650d964abc94fe72d97e1">&#9670;&nbsp;</a></span>CMRregularityRefineDecomposition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRregularityRefineDecomposition </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>numNodes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__Seymour.html#ga224ccb2a42c4bda6ae69b0e800bb69a5">CMR_SEYMOUR_NODE</a> **&#160;</td>
+          <td class="paramname"><em>nodes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SEYMOUR__PARAMS.html">CMR_SEYMOUR_PARAMS</a> *&#160;</td>
+          <td class="paramname"><em>params</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SEYMOUR__STATS.html">CMR_SEYMOUR_STATS</a> *&#160;</td>
+          <td class="paramname"><em>stats</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>timeLimit</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Replaces the subtrees of several nodes of a matroid decomposition tree by new ones. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">numNodes</td><td>Number of nodes to refine. </td></tr>
+    <tr><td class="paramname">nodes</td><td>Array of decomposition nodes to refine. </td></tr>
+    <tr><td class="paramname">params</td><td>Parameters for the computation. </td></tr>
+    <tr><td class="paramname">stats</td><td>Statistics for the computation (may be <code>NULL</code>). </td></tr>
+    <tr><td class="paramname">timeLimit</td><td>Time limit to impose. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a4e8d0c1c14371528b2b68c30424b76b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e8d0c1c14371528b2b68c30424b76b9">&#9670;&nbsp;</a></span>CMRregularitySearchOneSum()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRregularitySearchOneSum </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structDecompositionTask.html">DecompositionTask</a> *&#160;</td>
+          <td class="paramname"><em>task</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> *&#160;</td>
+          <td class="paramname"><em>queue</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Performs a 1-sum decomposition of <code>matrix</code> and stores it in <code>dec</code>. </p>
+<p>If <code>matrix</code> is 1-connected, then <code>dec</code> remains unchanged. Otherwise, <code>dec</code> will become a CMR_MATROID_DEC_TYPE_ONE_SUM node with children that are initialized to the 1-connected components. In this case, the <code>matrix</code> and <code>transpose</code> members of the child nodes are set. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">task</td><td>Task to be processed; already removed from the list of unprocessed tasks. </td></tr>
+    <tr><td class="paramname">queue</td><td>Queue of unprocessed nodes. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a9814402fe62f203f8aef455692d4585f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9814402fe62f203f8aef455692d4585f">&#9670;&nbsp;</a></span>CMRregularityTaskCreateRoot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRregularityTaskCreateRoot </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__Seymour.html#ga224ccb2a42c4bda6ae69b0e800bb69a5">CMR_SEYMOUR_NODE</a> *&#160;</td>
+          <td class="paramname"><em>dec</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structDecompositionTask.html">DecompositionTask</a> **&#160;</td>
+          <td class="paramname"><em>ptask</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SEYMOUR__PARAMS.html">CMR_SEYMOUR_PARAMS</a> *&#160;</td>
+          <td class="paramname"><em>params</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SEYMOUR__STATS.html">CMR_SEYMOUR_STATS</a> *&#160;</td>
+          <td class="paramname"><em>stats</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">clock_t&#160;</td>
+          <td class="paramname"><em>startClock</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>timeLimit</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates a decomposition task for the root of the decomposition. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">dec</td><td>Decomposition node. </td></tr>
+    <tr><td class="paramname">ptask</td><td>Pointer for storing the new task. </td></tr>
+    <tr><td class="paramname">params</td><td>Parameters for the computation. </td></tr>
+    <tr><td class="paramname">stats</td><td>Statistics for the computation (may be <code>NULL</code>). </td></tr>
+    <tr><td class="paramname">startClock</td><td>Clock for the start time. </td></tr>
+    <tr><td class="paramname">timeLimit</td><td>Time limit to impose. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ae59201633f2dbbbcb5b2b48784f5133f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae59201633f2dbbbcb5b2b48784f5133f">&#9670;&nbsp;</a></span>CMRregularityTaskFree()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRregularityTaskFree </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structDecompositionTask.html">DecompositionTask</a> **&#160;</td>
+          <td class="paramname"><em>ptask</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Frees a decomposition task. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">ptask</td><td>Pointer to task. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ad3ce8dc2d961304700af271c4e458d0d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad3ce8dc2d961304700af271c4e458d0d">&#9670;&nbsp;</a></span>CMRregularityTestCographicness()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRregularityTestCographicness </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structDecompositionTask.html">DecompositionTask</a> *&#160;</td>
+          <td class="paramname"><em>task</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> *&#160;</td>
+          <td class="paramname"><em>queue</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Tests <code>matrix</code> for cographicness/conetwork and stores it in <code>dec</code>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">task</td><td>Task to be processed; already removed from the list of unprocessed tasks. </td></tr>
+    <tr><td class="paramname">queue</td><td>Queue of unprocessed nodes. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a02ad707eae1c57e14fa82cd20a74083e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a02ad707eae1c57e14fa82cd20a74083e">&#9670;&nbsp;</a></span>CMRregularityTestGraphicness()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRregularityTestGraphicness </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structDecompositionTask.html">DecompositionTask</a> *&#160;</td>
+          <td class="paramname"><em>task</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> *&#160;</td>
+          <td class="paramname"><em>queue</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Tests <code>matrix</code> for graphicness/network and stores it in <code>dec</code>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">task</td><td>Task to be processed; already removed from the list of unprocessed tasks. </td></tr>
+    <tr><td class="paramname">queue</td><td>Queue of unprocessed nodes. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a15c3df5a1a1d8cef0d6d7bdbbf423110"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a15c3df5a1a1d8cef0d6d7bdbbf423110">&#9670;&nbsp;</a></span>CMRregularityTestR10()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRregularityTestR10 </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structDecompositionTask.html">DecompositionTask</a> *&#160;</td>
+          <td class="paramname"><em>task</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> *&#160;</td>
+          <td class="paramname"><em>queue</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Tests <code>matrix</code> for representing \( R_{10} \). </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">task</td><td>Task to be processed; already removed from the list of unprocessed tasks. </td></tr>
+    <tr><td class="paramname">queue</td><td>Queue of unprocessed nodes. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a1c9eb5692289333b42bc2306cba720be"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a1c9eb5692289333b42bc2306cba720be">&#9670;&nbsp;</a></span>CMRseymourAddMinor()</h2>
 
@@ -299,6 +1295,80 @@ Functions</h2></td></tr>
     <tr><td class="paramname">transpose</td><td>The transpose matrix corresponding to this node. </td></tr>
     <tr><td class="paramname">rowsToParent</td><td>Array for mapping rows to elements of parent. </td></tr>
     <tr><td class="paramname">columnsToParent</td><td>Array for mapping columns to elements of parent. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a9bbf25b3725e4b6ac61aafc660a5b2f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9bbf25b3725e4b6ac61aafc660a5b2f7">&#9670;&nbsp;</a></span>CMRseymourDecompose()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRseymourDecompose </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *&#160;</td>
+          <td class="paramname"><em>matrix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>ternary</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__Seymour.html#ga224ccb2a42c4bda6ae69b0e800bb69a5">CMR_SEYMOUR_NODE</a> **&#160;</td>
+          <td class="paramname"><em>proot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SEYMOUR__PARAMS.html">CMR_SEYMOUR_PARAMS</a> *&#160;</td>
+          <td class="paramname"><em>params</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SEYMOUR__STATS.html">CMR_SEYMOUR_STATS</a> *&#160;</td>
+          <td class="paramname"><em>stats</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>timeLimit</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Tests ternary or binary linear matroid for regularity. </p>
+<p>If <code>pdec</code> is not <code>NULL</code>, <code>*pdec</code> will be a (partial) decomposition tree.</p>
+<p>If <code>pminor</code> is not <code>NULL</code> and <code>matrix</code> is not regular, then an \( F_7 \) or \( F_7^\star \) minor or a submatrix with non-ternary determinant is searched. This causes additional computational effort! </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">matrix</td><td>Input matrix. </td></tr>
+    <tr><td class="paramname">ternary</td><td>Whether the matrix shall be considered ternary. </td></tr>
+    <tr><td class="paramname">proot</td><td>Pointer for storing the root of the Seymour decomposition. </td></tr>
+    <tr><td class="paramname">params</td><td>Parameters for the computation. </td></tr>
+    <tr><td class="paramname">stats</td><td>Statistics for the computation (may be <code>NULL</code>). </td></tr>
+    <tr><td class="paramname">timeLimit</td><td>Time limit to impose. </td></tr>
   </table>
   </dd>
 </dl>

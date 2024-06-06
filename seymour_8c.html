@@ -91,10 +91,12 @@ $(function() {
 <code>#include &quot;<a class="el" href="listmatrix_8h_source.html">listmatrix.h</a>&quot;</code><br />
 <code>#include &lt;assert.h&gt;</code><br />
 <code>#include &lt;string.h&gt;</code><br />
+<code>#include &lt;time.h&gt;</code><br />
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structClonePair.html">ClonePair</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pair of a given Seymour decomposition node and its clone.  <a href="structClonePair.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
@@ -104,6 +106,15 @@ Macros</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:gabc84b408b1ea027c73ff4b463cb41500"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Seymour.html#gabc84b408b1ea027c73ff4b463cb41500">CMRseymourParamsInit</a> (<a class="el" href="structCMR__SEYMOUR__PARAMS.html">CMR_SEYMOUR_PARAMS</a> *params)</td></tr>
+<tr class="memdesc:gabc84b408b1ea027c73ff4b463cb41500"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the default parameters for regularity testing.  <a href="group__Seymour.html#gabc84b408b1ea027c73ff4b463cb41500">More...</a><br /></td></tr>
+<tr class="separator:gabc84b408b1ea027c73ff4b463cb41500"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gabc16244e4c1886d414262a649b6c0ff9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Seymour.html#gabc16244e4c1886d414262a649b6c0ff9">CMRseymourStatsInit</a> (<a class="el" href="structCMR__SEYMOUR__STATS.html">CMR_SEYMOUR_STATS</a> *stats)</td></tr>
+<tr class="memdesc:gabc16244e4c1886d414262a649b6c0ff9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes all statistics for Seymour decomposition computations.  <a href="group__Seymour.html#gabc16244e4c1886d414262a649b6c0ff9">More...</a><br /></td></tr>
+<tr class="separator:gabc16244e4c1886d414262a649b6c0ff9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gac49fd92d1a7c8d369236ef6b4455ab4d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Seymour.html#gac49fd92d1a7c8d369236ef6b4455ab4d">CMRseymourStatsPrint</a> (FILE *stream, <a class="el" href="structCMR__SEYMOUR__STATS.html">CMR_SEYMOUR_STATS</a> *stats, const char *prefix)</td></tr>
+<tr class="memdesc:gac49fd92d1a7c8d369236ef6b4455ab4d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints statistics for Seymour decomposition computations.  <a href="group__Seymour.html#gac49fd92d1a7c8d369236ef6b4455ab4d">More...</a><br /></td></tr>
+<tr class="separator:gac49fd92d1a7c8d369236ef6b4455ab4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga2c93b798a2d05c50d5ec3a75a0d3e494"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Seymour.html#ga2c93b798a2d05c50d5ec3a75a0d3e494">CMRseymourIsTernary</a> (<a class="el" href="group__Seymour.html#ga224ccb2a42c4bda6ae69b0e800bb69a5">CMR_SEYMOUR_NODE</a> *node)</td></tr>
 <tr class="memdesc:ga2c93b798a2d05c50d5ec3a75a0d3e494"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns <code>true</code> iff the decomposition is over \( \mathbb{F}_3 \).  <a href="group__Seymour.html#ga2c93b798a2d05c50d5ec3a75a0d3e494">More...</a><br /></td></tr>
 <tr class="separator:ga2c93b798a2d05c50d5ec3a75a0d3e494"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -197,6 +208,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ga87cd2d90ce7d79301ef89451edf0092f"><td class="memItemLeft" align="right" valign="top">size_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Seymour.html#ga87cd2d90ce7d79301ef89451edf0092f">CMRseymourPivotColumns</a> (<a class="el" href="group__Seymour.html#ga224ccb2a42c4bda6ae69b0e800bb69a5">CMR_SEYMOUR_NODE</a> *node)</td></tr>
 <tr class="memdesc:ga87cd2d90ce7d79301ef89451edf0092f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the array with the pivot columns (if available).  <a href="group__Seymour.html#ga87cd2d90ce7d79301ef89451edf0092f">More...</a><br /></td></tr>
 <tr class="separator:ga87cd2d90ce7d79301ef89451edf0092f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga227d06172522829a3456a0c1c51fd004"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Seymour.html#ga227d06172522829a3456a0c1c51fd004">CMRseymourGetUsed</a> (<a class="el" href="group__Seymour.html#ga224ccb2a42c4bda6ae69b0e800bb69a5">CMR_SEYMOUR_NODE</a> *node)</td></tr>
+<tr class="memdesc:ga227d06172522829a3456a0c1c51fd004"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns node's reference counter.  <a href="group__Seymour.html#ga227d06172522829a3456a0c1c51fd004">More...</a><br /></td></tr>
+<tr class="separator:ga227d06172522829a3456a0c1c51fd004"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab3fd7edc7868b2f2cc2203aaaee53c16"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="seymour_8c.html#ab3fd7edc7868b2f2cc2203aaaee53c16">CMRseymourPrintChild</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="group__Seymour.html#ga224ccb2a42c4bda6ae69b0e800bb69a5">CMR_SEYMOUR_NODE</a> *child, <a class="el" href="group__Seymour.html#ga224ccb2a42c4bda6ae69b0e800bb69a5">CMR_SEYMOUR_NODE</a> *parent, size_t childIndex, FILE *stream, size_t indent, bool printChildren, bool printParentElements, bool printMatrices, bool printGraphs, bool printReductions, bool printPivots)</td></tr>
 <tr class="memdesc:ab3fd7edc7868b2f2cc2203aaaee53c16"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints the decomposition <code>child</code> to <code>stream</code>.  <a href="seymour_8c.html#ab3fd7edc7868b2f2cc2203aaaee53c16">More...</a><br /></td></tr>
 <tr class="separator:ab3fd7edc7868b2f2cc2203aaaee53c16"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -212,7 +226,7 @@ Functions</h2></td></tr>
 <tr class="memitem:a79ecd46abeb69bbd56a7a4a4a446fcc4"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="seymour_8c.html#a79ecd46abeb69bbd56a7a4a4a446fcc4">createNode</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="group__Seymour.html#ga224ccb2a42c4bda6ae69b0e800bb69a5">CMR_SEYMOUR_NODE</a> **pnode, bool isTernary, <a class="el" href="group__Seymour.html#gaa9a8578d9fd369bf6fe1ca73dba0f14b">CMR_SEYMOUR_NODE_TYPE</a> type, size_t numRows, size_t numColumns)</td></tr>
 <tr class="separator:a79ecd46abeb69bbd56a7a4a4a446fcc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gab969a6f1a8989d199742bd26ef04b790"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Seymour.html#gab969a6f1a8989d199742bd26ef04b790">CMRseymourCloneUnknown</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="group__Seymour.html#ga224ccb2a42c4bda6ae69b0e800bb69a5">CMR_SEYMOUR_NODE</a> *node, <a class="el" href="group__Seymour.html#ga224ccb2a42c4bda6ae69b0e800bb69a5">CMR_SEYMOUR_NODE</a> **pclone)</td></tr>
-<tr class="memdesc:gab969a6f1a8989d199742bd26ef04b790"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clones a decomposition node <code>dec</code> into <code>*pclone</code> which represents the same matrix but has type <a class="el" href="group__Seymour.html#ggaa9a8578d9fd369bf6fe1ca73dba0f14ba139e2d8f5e83ffb706446e868c9fe70f">CMR_SEYMOUR_NODE_TYPE_UNKNOWN</a> type.  <a href="group__Seymour.html#gab969a6f1a8989d199742bd26ef04b790">More...</a><br /></td></tr>
+<tr class="memdesc:gab969a6f1a8989d199742bd26ef04b790"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clones a decomposition node <code>node</code> into <code>*pclone</code> which represents the same matrix but has type <a class="el" href="group__Seymour.html#ggaa9a8578d9fd369bf6fe1ca73dba0f14ba139e2d8f5e83ffb706446e868c9fe70f">CMR_SEYMOUR_NODE_TYPE_UNKNOWN</a> type and no child nodes.  <a href="group__Seymour.html#gab969a6f1a8989d199742bd26ef04b790">More...</a><br /></td></tr>
 <tr class="separator:gab969a6f1a8989d199742bd26ef04b790"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aed935f8b30709100947b083de85ce101"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="seymour_8c.html#aed935f8b30709100947b083de85ce101">updateRowsColumnsToParent</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="group__Seymour.html#ga224ccb2a42c4bda6ae69b0e800bb69a5">CMR_SEYMOUR_NODE</a> *parent, size_t childIndex, size_t *parentRows, size_t *parentColumns)</td></tr>
 <tr class="memdesc:aed935f8b30709100947b083de85ce101"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocates and sets childRowsToParent and childColumnsToParent of the child of <code>parent</code> indicated by <code>childIndex</code>.  <a href="seymour_8c.html#aed935f8b30709100947b083de85ce101">More...</a><br /></td></tr>
@@ -275,10 +289,44 @@ Functions</h2></td></tr>
 <tr class="memdesc:abfd82d2c37ac75182152ff85419939ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set regularity and (co)graphicness attributes of a decomposition tree.  <a href="seymour_8c.html#abfd82d2c37ac75182152ff85419939ab">More...</a><br /></td></tr>
 <tr class="separator:abfd82d2c37ac75182152ff85419939ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8f7564246bc3e4dc61b36c10121df096"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="seymour_8c.html#a8f7564246bc3e4dc61b36c10121df096">cloneRecursively</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="group__Seymour.html#ga224ccb2a42c4bda6ae69b0e800bb69a5">CMR_SEYMOUR_NODE</a> *node, <a class="el" href="group__Seymour.html#ga224ccb2a42c4bda6ae69b0e800bb69a5">CMR_SEYMOUR_NODE</a> **pclone, <a class="el" href="hashtable_8h.html#ae210c3950cdf5bdcf72d7ac3e0329512">CMR_LISTHASHTABLE</a> *nodesToClonesHashtable, <a class="el" href="structClonePair.html">ClonePair</a> **pclonePairs, size_t *pmemClonePairs, size_t *pnumClonePairs)</td></tr>
+<tr class="memdesc:a8f7564246bc3e4dc61b36c10121df096"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clones <code>node</code> to <code>*pclone</code>, updates cloning data structures and calls itself recursively.  <a href="seymour_8c.html#a8f7564246bc3e4dc61b36c10121df096">More...</a><br /></td></tr>
 <tr class="separator:a8f7564246bc3e4dc61b36c10121df096"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga13c9ccf0ebcc5d8fe927329080581864"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Seymour.html#ga13c9ccf0ebcc5d8fe927329080581864">CMRregularityCloneSubtrees</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, size_t numSubtrees, <a class="el" href="group__Seymour.html#ga224ccb2a42c4bda6ae69b0e800bb69a5">CMR_SEYMOUR_NODE</a> **subtreeRoots, <a class="el" href="group__Seymour.html#ga224ccb2a42c4bda6ae69b0e800bb69a5">CMR_SEYMOUR_NODE</a> **clonedSubtrees)</td></tr>
-<tr class="memdesc:ga13c9ccf0ebcc5d8fe927329080581864"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clones the union of subtrees, returning the copies.  <a href="group__Seymour.html#ga13c9ccf0ebcc5d8fe927329080581864">More...</a><br /></td></tr>
-<tr class="separator:ga13c9ccf0ebcc5d8fe927329080581864"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaef0278ef9c7427a1f3f0303bffe58f63"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Seymour.html#gaef0278ef9c7427a1f3f0303bffe58f63">CMRseymourCloneSubtrees</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, size_t numSubtrees, <a class="el" href="group__Seymour.html#ga224ccb2a42c4bda6ae69b0e800bb69a5">CMR_SEYMOUR_NODE</a> **subtreeRoots, <a class="el" href="group__Seymour.html#ga224ccb2a42c4bda6ae69b0e800bb69a5">CMR_SEYMOUR_NODE</a> **clonedSubtrees)</td></tr>
+<tr class="memdesc:gaef0278ef9c7427a1f3f0303bffe58f63"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clones the union of subtrees of a Seymour decomposition, returning the copies.  <a href="group__Seymour.html#gaef0278ef9c7427a1f3f0303bffe58f63">More...</a><br /></td></tr>
+<tr class="separator:gaef0278ef9c7427a1f3f0303bffe58f63"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9814402fe62f203f8aef455692d4585f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="seymour_8c.html#a9814402fe62f203f8aef455692d4585f">CMRregularityTaskCreateRoot</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="group__Seymour.html#ga224ccb2a42c4bda6ae69b0e800bb69a5">CMR_SEYMOUR_NODE</a> *dec, <a class="el" href="structDecompositionTask.html">DecompositionTask</a> **ptask, <a class="el" href="structCMR__SEYMOUR__PARAMS.html">CMR_SEYMOUR_PARAMS</a> *params, <a class="el" href="structCMR__SEYMOUR__STATS.html">CMR_SEYMOUR_STATS</a> *stats, clock_t startClock, double timeLimit)</td></tr>
+<tr class="memdesc:a9814402fe62f203f8aef455692d4585f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a decomposition task for the root of the decomposition.  <a href="seymour_8c.html#a9814402fe62f203f8aef455692d4585f">More...</a><br /></td></tr>
+<tr class="separator:a9814402fe62f203f8aef455692d4585f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae59201633f2dbbbcb5b2b48784f5133f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="seymour_8c.html#ae59201633f2dbbbcb5b2b48784f5133f">CMRregularityTaskFree</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structDecompositionTask.html">DecompositionTask</a> **ptask)</td></tr>
+<tr class="memdesc:ae59201633f2dbbbcb5b2b48784f5133f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Frees a decomposition task.  <a href="seymour_8c.html#ae59201633f2dbbbcb5b2b48784f5133f">More...</a><br /></td></tr>
+<tr class="separator:ae59201633f2dbbbcb5b2b48784f5133f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c6fec41431573de8983fb06608cf887"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="seymour_8c.html#a9c6fec41431573de8983fb06608cf887">CMRregularityQueueCreate</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> **pqueue)</td></tr>
+<tr class="memdesc:a9c6fec41431573de8983fb06608cf887"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a decomposition queue.  <a href="seymour_8c.html#a9c6fec41431573de8983fb06608cf887">More...</a><br /></td></tr>
+<tr class="separator:a9c6fec41431573de8983fb06608cf887"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa591de2f5c7b052e7550fdb0c3e97e96"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="seymour_8c.html#aa591de2f5c7b052e7550fdb0c3e97e96">CMRregularityQueueFree</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> **pqueue)</td></tr>
+<tr class="memdesc:aa591de2f5c7b052e7550fdb0c3e97e96"><td class="mdescLeft">&#160;</td><td class="mdescRight">Frees the decomposition queue.  <a href="seymour_8c.html#aa591de2f5c7b052e7550fdb0c3e97e96">More...</a><br /></td></tr>
+<tr class="separator:aa591de2f5c7b052e7550fdb0c3e97e96"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade1d1ba9548c4cae04782ee1ff59e0ef"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="seymour_8c.html#ade1d1ba9548c4cae04782ee1ff59e0ef">CMRregularityQueueEmpty</a> (<a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> *queue)</td></tr>
+<tr class="memdesc:ade1d1ba9548c4cae04782ee1ff59e0ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns whether a queue is empty.  <a href="seymour_8c.html#ade1d1ba9548c4cae04782ee1ff59e0ef">More...</a><br /></td></tr>
+<tr class="separator:ade1d1ba9548c4cae04782ee1ff59e0ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8424afed0c6938c4beee2529c9c3f710"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structDecompositionTask.html">DecompositionTask</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="seymour_8c.html#a8424afed0c6938c4beee2529c9c3f710">CMRregularityQueueRemove</a> (<a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> *queue)</td></tr>
+<tr class="memdesc:a8424afed0c6938c4beee2529c9c3f710"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes a task from a decomposition queue.  <a href="seymour_8c.html#a8424afed0c6938c4beee2529c9c3f710">More...</a><br /></td></tr>
+<tr class="separator:a8424afed0c6938c4beee2529c9c3f710"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6494e9e5e7fe62af26f34c1df368bc3e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="seymour_8c.html#a6494e9e5e7fe62af26f34c1df368bc3e">CMRregularityQueueAdd</a> (<a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> *queue, <a class="el" href="structDecompositionTask.html">DecompositionTask</a> *task)</td></tr>
+<tr class="memdesc:a6494e9e5e7fe62af26f34c1df368bc3e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a task to a decomposition queue.  <a href="seymour_8c.html#a6494e9e5e7fe62af26f34c1df368bc3e">More...</a><br /></td></tr>
+<tr class="separator:a6494e9e5e7fe62af26f34c1df368bc3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a95390568d3ce1a539749970030501127"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="seymour_8c.html#a95390568d3ce1a539749970030501127">CMRregularityTaskRun</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structDecompositionTask.html">DecompositionTask</a> *task, <a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> *queue)</td></tr>
+<tr class="memdesc:a95390568d3ce1a539749970030501127"><td class="mdescLeft">&#160;</td><td class="mdescRight">Runs a task for processing the associated decomposition node.  <a href="seymour_8c.html#a95390568d3ce1a539749970030501127">More...</a><br /></td></tr>
+<tr class="separator:a95390568d3ce1a539749970030501127"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9bbf25b3725e4b6ac61aafc660a5b2f7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="seymour_8c.html#a9bbf25b3725e4b6ac61aafc660a5b2f7">CMRseymourDecompose</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, bool ternary, <a class="el" href="group__Seymour.html#ga224ccb2a42c4bda6ae69b0e800bb69a5">CMR_SEYMOUR_NODE</a> **proot, <a class="el" href="structCMR__SEYMOUR__PARAMS.html">CMR_SEYMOUR_PARAMS</a> *params, <a class="el" href="structCMR__SEYMOUR__STATS.html">CMR_SEYMOUR_STATS</a> *stats, double timeLimit)</td></tr>
+<tr class="memdesc:a9bbf25b3725e4b6ac61aafc660a5b2f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tests ternary or binary linear matroid for regularity.  <a href="seymour_8c.html#a9bbf25b3725e4b6ac61aafc660a5b2f7">More...</a><br /></td></tr>
+<tr class="separator:a9bbf25b3725e4b6ac61aafc660a5b2f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad66ec470aa63a24494fb75d367e99249"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="seymour_8c.html#ad66ec470aa63a24494fb75d367e99249">CMRregularityCompleteDecomposition</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="group__Seymour.html#ga224ccb2a42c4bda6ae69b0e800bb69a5">CMR_SEYMOUR_NODE</a> *subtree, <a class="el" href="structCMR__SEYMOUR__PARAMS.html">CMR_SEYMOUR_PARAMS</a> *params, <a class="el" href="structCMR__SEYMOUR__STATS.html">CMR_SEYMOUR_STATS</a> *stats, double timeLimit)</td></tr>
+<tr class="memdesc:ad66ec470aa63a24494fb75d367e99249"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replaces the subtree of a matroid decomposition tree by a new one.  <a href="seymour_8c.html#ad66ec470aa63a24494fb75d367e99249">More...</a><br /></td></tr>
+<tr class="separator:ad66ec470aa63a24494fb75d367e99249"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a66bbd7b95650d964abc94fe72d97e1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="seymour_8c.html#a4a66bbd7b95650d964abc94fe72d97e1">CMRregularityRefineDecomposition</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, size_t numNodes, <a class="el" href="group__Seymour.html#ga224ccb2a42c4bda6ae69b0e800bb69a5">CMR_SEYMOUR_NODE</a> **nodes, <a class="el" href="structCMR__SEYMOUR__PARAMS.html">CMR_SEYMOUR_PARAMS</a> *params, <a class="el" href="structCMR__SEYMOUR__STATS.html">CMR_SEYMOUR_STATS</a> *stats, double timeLimit)</td></tr>
+<tr class="memdesc:a4a66bbd7b95650d964abc94fe72d97e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replaces the subtrees of several nodes of a matroid decomposition tree by new ones.  <a href="seymour_8c.html#a4a66bbd7b95650d964abc94fe72d97e1">More...</a><br /></td></tr>
+<tr class="separator:a4a66bbd7b95650d964abc94fe72d97e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
 <a id="a8f5e5cc89d9ecb5adcab4dda48a00070"></a>
@@ -383,6 +431,9 @@ Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Clones <code>node</code> to <code>*pclone</code>, updates cloning data structures and calls itself recursively. </p>
+<p>Inserts it into <code>nodesToClonesHashtable</code>, and updates the array <code>*pclonePairs</code> with the cloned pairs. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
@@ -392,6 +443,453 @@ Functions</h2></td></tr>
     <tr><td class="paramname">pclonePairs</td><td>Pointer to array of cloned pairs. </td></tr>
     <tr><td class="paramname">pmemClonePairs</td><td>Allocated size of <code>*pclonePairs</code>. </td></tr>
     <tr><td class="paramname">pnumClonePairs</td><td>Length of <code>*pclonePairs</code>. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ad66ec470aa63a24494fb75d367e99249"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad66ec470aa63a24494fb75d367e99249">&#9670;&nbsp;</a></span>CMRregularityCompleteDecomposition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRregularityCompleteDecomposition </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__Seymour.html#ga224ccb2a42c4bda6ae69b0e800bb69a5">CMR_SEYMOUR_NODE</a> *&#160;</td>
+          <td class="paramname"><em>subtree</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SEYMOUR__PARAMS.html">CMR_SEYMOUR_PARAMS</a> *&#160;</td>
+          <td class="paramname"><em>params</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SEYMOUR__STATS.html">CMR_SEYMOUR_STATS</a> *&#160;</td>
+          <td class="paramname"><em>stats</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>timeLimit</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Replaces the subtree of a matroid decomposition tree by a new one. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">subtree</td><td>Decomposition node of the subtree root. </td></tr>
+    <tr><td class="paramname">params</td><td>Parameters for the computation. </td></tr>
+    <tr><td class="paramname">stats</td><td>Statistics for the computation (may be <code>NULL</code>). </td></tr>
+    <tr><td class="paramname">timeLimit</td><td>Time limit to impose. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a6494e9e5e7fe62af26f34c1df368bc3e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6494e9e5e7fe62af26f34c1df368bc3e">&#9670;&nbsp;</a></span>CMRregularityQueueAdd()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void CMRregularityQueueAdd </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> *&#160;</td>
+          <td class="paramname"><em>queue</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structDecompositionTask.html">DecompositionTask</a> *&#160;</td>
+          <td class="paramname"><em>task</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Adds a task to a decomposition queue. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">queue</td><td>Queue. </td></tr>
+    <tr><td class="paramname">task</td><td>Task. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a9c6fec41431573de8983fb06608cf887"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c6fec41431573de8983fb06608cf887">&#9670;&nbsp;</a></span>CMRregularityQueueCreate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRregularityQueueCreate </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> **&#160;</td>
+          <td class="paramname"><em>pqueue</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Initializes a decomposition queue. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">pqueue</td><td>Pointer for storing the queue. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ade1d1ba9548c4cae04782ee1ff59e0ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade1d1ba9548c4cae04782ee1ff59e0ef">&#9670;&nbsp;</a></span>CMRregularityQueueEmpty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool CMRregularityQueueEmpty </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> *&#160;</td>
+          <td class="paramname"><em>queue</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns whether a queue is empty. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">queue</td><td>Queue. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="aa591de2f5c7b052e7550fdb0c3e97e96"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa591de2f5c7b052e7550fdb0c3e97e96">&#9670;&nbsp;</a></span>CMRregularityQueueFree()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRregularityQueueFree </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> **&#160;</td>
+          <td class="paramname"><em>pqueue</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Frees the decomposition queue. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">pqueue</td><td>Pointer to queue. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a8424afed0c6938c4beee2529c9c3f710"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8424afed0c6938c4beee2529c9c3f710">&#9670;&nbsp;</a></span>CMRregularityQueueRemove()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structDecompositionTask.html">DecompositionTask</a>* CMRregularityQueueRemove </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> *&#160;</td>
+          <td class="paramname"><em>queue</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Removes a task from a decomposition queue. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">queue</td><td>Queue. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a4a66bbd7b95650d964abc94fe72d97e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a66bbd7b95650d964abc94fe72d97e1">&#9670;&nbsp;</a></span>CMRregularityRefineDecomposition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRregularityRefineDecomposition </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>numNodes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__Seymour.html#ga224ccb2a42c4bda6ae69b0e800bb69a5">CMR_SEYMOUR_NODE</a> **&#160;</td>
+          <td class="paramname"><em>nodes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SEYMOUR__PARAMS.html">CMR_SEYMOUR_PARAMS</a> *&#160;</td>
+          <td class="paramname"><em>params</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SEYMOUR__STATS.html">CMR_SEYMOUR_STATS</a> *&#160;</td>
+          <td class="paramname"><em>stats</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>timeLimit</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Replaces the subtrees of several nodes of a matroid decomposition tree by new ones. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">numNodes</td><td>Number of nodes to refine. </td></tr>
+    <tr><td class="paramname">nodes</td><td>Array of decomposition nodes to refine. </td></tr>
+    <tr><td class="paramname">params</td><td>Parameters for the computation. </td></tr>
+    <tr><td class="paramname">stats</td><td>Statistics for the computation (may be <code>NULL</code>). </td></tr>
+    <tr><td class="paramname">timeLimit</td><td>Time limit to impose. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a9814402fe62f203f8aef455692d4585f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9814402fe62f203f8aef455692d4585f">&#9670;&nbsp;</a></span>CMRregularityTaskCreateRoot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRregularityTaskCreateRoot </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__Seymour.html#ga224ccb2a42c4bda6ae69b0e800bb69a5">CMR_SEYMOUR_NODE</a> *&#160;</td>
+          <td class="paramname"><em>dec</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structDecompositionTask.html">DecompositionTask</a> **&#160;</td>
+          <td class="paramname"><em>ptask</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SEYMOUR__PARAMS.html">CMR_SEYMOUR_PARAMS</a> *&#160;</td>
+          <td class="paramname"><em>params</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SEYMOUR__STATS.html">CMR_SEYMOUR_STATS</a> *&#160;</td>
+          <td class="paramname"><em>stats</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">clock_t&#160;</td>
+          <td class="paramname"><em>startClock</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>timeLimit</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates a decomposition task for the root of the decomposition. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">dec</td><td>Decomposition node. </td></tr>
+    <tr><td class="paramname">ptask</td><td>Pointer for storing the new task. </td></tr>
+    <tr><td class="paramname">params</td><td>Parameters for the computation. </td></tr>
+    <tr><td class="paramname">stats</td><td>Statistics for the computation (may be <code>NULL</code>). </td></tr>
+    <tr><td class="paramname">startClock</td><td>Clock for the start time. </td></tr>
+    <tr><td class="paramname">timeLimit</td><td>Time limit to impose. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ae59201633f2dbbbcb5b2b48784f5133f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae59201633f2dbbbcb5b2b48784f5133f">&#9670;&nbsp;</a></span>CMRregularityTaskFree()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRregularityTaskFree </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structDecompositionTask.html">DecompositionTask</a> **&#160;</td>
+          <td class="paramname"><em>ptask</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Frees a decomposition task. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">ptask</td><td>Pointer to task. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a95390568d3ce1a539749970030501127"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a95390568d3ce1a539749970030501127">&#9670;&nbsp;</a></span>CMRregularityTaskRun()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRregularityTaskRun </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structDecompositionTask.html">DecompositionTask</a> *&#160;</td>
+          <td class="paramname"><em>task</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structDecompositionQueue.html">DecompositionQueue</a> *&#160;</td>
+          <td class="paramname"><em>queue</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Runs a task for processing the associated decomposition node. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">task</td><td>Task to be processed; already removed from the list of unprocessed tasks. </td></tr>
+    <tr><td class="paramname">queue</td><td>Queue of unprocessed tasks. </td></tr>
   </table>
   </dd>
 </dl>
@@ -510,6 +1008,80 @@ Functions</h2></td></tr>
     <tr><td class="paramname">transpose</td><td>The transpose matrix corresponding to this node. </td></tr>
     <tr><td class="paramname">rowsToParent</td><td>Array for mapping rows to elements of parent. </td></tr>
     <tr><td class="paramname">columnsToParent</td><td>Array for mapping columns to elements of parent. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a9bbf25b3725e4b6ac61aafc660a5b2f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9bbf25b3725e4b6ac61aafc660a5b2f7">&#9670;&nbsp;</a></span>CMRseymourDecompose()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRseymourDecompose </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *&#160;</td>
+          <td class="paramname"><em>matrix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>ternary</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__Seymour.html#ga224ccb2a42c4bda6ae69b0e800bb69a5">CMR_SEYMOUR_NODE</a> **&#160;</td>
+          <td class="paramname"><em>proot</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SEYMOUR__PARAMS.html">CMR_SEYMOUR_PARAMS</a> *&#160;</td>
+          <td class="paramname"><em>params</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SEYMOUR__STATS.html">CMR_SEYMOUR_STATS</a> *&#160;</td>
+          <td class="paramname"><em>stats</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>timeLimit</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Tests ternary or binary linear matroid for regularity. </p>
+<p>If <code>pdec</code> is not <code>NULL</code>, <code>*pdec</code> will be a (partial) decomposition tree.</p>
+<p>If <code>pminor</code> is not <code>NULL</code> and <code>matrix</code> is not regular, then an \( F_7 \) or \( F_7^\star \) minor or a submatrix with non-ternary determinant is searched. This causes additional computational effort! </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">matrix</td><td>Input matrix. </td></tr>
+    <tr><td class="paramname">ternary</td><td>Whether the matrix shall be considered ternary. </td></tr>
+    <tr><td class="paramname">proot</td><td>Pointer for storing the root of the Seymour decomposition. </td></tr>
+    <tr><td class="paramname">params</td><td>Parameters for the computation. </td></tr>
+    <tr><td class="paramname">stats</td><td>Statistics for the computation (may be <code>NULL</code>). </td></tr>
+    <tr><td class="paramname">timeLimit</td><td>Time limit to impose. </td></tr>
   </table>
   </dd>
 </dl>

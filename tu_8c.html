@@ -78,6 +78,7 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
+<a href="#define-members">Macros</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">tu.c File Reference</div>  </div>
@@ -87,8 +88,8 @@ $(function() {
 <code>#include &quot;<a class="el" href="matrix__internal_8h_source.html">matrix_internal.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="block__decomposition_8h_source.html">block_decomposition.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="camion__internal_8h_source.html">camion_internal.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="regularity__internal_8h_source.html">regularity_internal.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="hereditary__property_8h_source.html">hereditary_property.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="seymour__internal_8h_source.html">seymour_internal.h</a>&quot;</code><br />
 <code>#include &lt;stdlib.h&gt;</code><br />
 <code>#include &lt;assert.h&gt;</code><br />
 <code>#include &lt;time.h&gt;</code><br />
@@ -98,6 +99,11 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structCMR__TU__ENUMERATION.html">CMR_TU_ENUMERATION</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Data for enumeration.  <a href="structCMR__TU__ENUMERATION.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
+Macros</h2></td></tr>
+<tr class="memitem:aaf4503422b8ef76e6591c97a9b3499d0"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tu_8c.html#aaf4503422b8ef76e6591c97a9b3499d0">CMR_DEBUG</a>&#160;&#160;&#160;/* Uncomment to debug this file. */</td></tr>
+<tr class="separator:aaf4503422b8ef76e6591c97a9b3499d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
@@ -130,13 +136,28 @@ Functions</h2></td></tr>
 <tr class="memitem:a1db0c23fb55990401899634da0eac600"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tu_8c.html#a1db0c23fb55990401899634da0eac600">tuPartition</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, bool transposed, bool *pisTotallyUnimodular, <a class="el" href="structCMR__TU__STATS.html">CMR_TU_STATS</a> *stats, double timeLimit)</td></tr>
 <tr class="memdesc:a1db0c23fb55990401899634da0eac600"><td class="mdescLeft">&#160;</td><td class="mdescRight">Partition test based on Ghouila-Houri.  <a href="tu_8c.html#a1db0c23fb55990401899634da0eac600">More...</a><br /></td></tr>
 <tr class="separator:a1db0c23fb55990401899634da0eac600"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a744a853a3e1fdca5144d08f70713b7dd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tu_8c.html#a744a853a3e1fdca5144d08f70713b7dd">CMRtuTest</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, bool *pisTotallyUnimodular, <a class="el" href="group__Seymour.html#ga224ccb2a42c4bda6ae69b0e800bb69a5">CMR_SEYMOUR_NODE</a> **pdec, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **psubmatrix, <a class="el" href="structCMR__TU__PARAMS.html">CMR_TU_PARAMS</a> *params, <a class="el" href="structCMR__TU__STATS.html">CMR_TU_STATS</a> *stats, double timeLimit)</td></tr>
-<tr class="memdesc:a744a853a3e1fdca5144d08f70713b7dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tests a matrix \( M \) for being <a class="el" href="tu.html">totally unimodular</a>.  <a href="tu_8c.html#a744a853a3e1fdca5144d08f70713b7dd">More...</a><br /></td></tr>
-<tr class="separator:a744a853a3e1fdca5144d08f70713b7dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a226a8255fccbfc3ccbbd4d72c8321806"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tu_8c.html#a226a8255fccbfc3ccbbd4d72c8321806">CMRtuTest</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, bool *pisTotallyUnimodular, <a class="el" href="group__Seymour.html#ga224ccb2a42c4bda6ae69b0e800bb69a5">CMR_SEYMOUR_NODE</a> **proot, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **psubmatrix, <a class="el" href="structCMR__TU__PARAMS.html">CMR_TU_PARAMS</a> *params, <a class="el" href="structCMR__TU__STATS.html">CMR_TU_STATS</a> *stats, double timeLimit)</td></tr>
+<tr class="memdesc:a226a8255fccbfc3ccbbd4d72c8321806"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tests a matrix \( M \) for being <a class="el" href="tu.html">totally unimodular</a>.  <a href="tu_8c.html#a226a8255fccbfc3ccbbd4d72c8321806">More...</a><br /></td></tr>
+<tr class="separator:a226a8255fccbfc3ccbbd4d72c8321806"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a436947393cf1231b571041a79d29405a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tu_8c.html#a436947393cf1231b571041a79d29405a">CMRtuCompleteDecomposition</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="group__Seymour.html#ga224ccb2a42c4bda6ae69b0e800bb69a5">CMR_SEYMOUR_NODE</a> *dec, <a class="el" href="structCMR__TU__PARAMS.html">CMR_TU_PARAMS</a> *params, <a class="el" href="structCMR__TU__STATS.html">CMR_TU_STATS</a> *stats, double timeLimit)</td></tr>
 <tr class="memdesc:a436947393cf1231b571041a79d29405a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Completes a subtree of an existing decomposition tree.  <a href="tu_8c.html#a436947393cf1231b571041a79d29405a">More...</a><br /></td></tr>
 <tr class="separator:a436947393cf1231b571041a79d29405a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Macro Definition Documentation</h2>
+<a id="aaf4503422b8ef76e6591c97a9b3499d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf4503422b8ef76e6591c97a9b3499d0">&#9670;&nbsp;</a></span>CMR_DEBUG</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define CMR_DEBUG&#160;&#160;&#160;/* Uncomment to debug this file. */</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="a436947393cf1231b571041a79d29405a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a436947393cf1231b571041a79d29405a">&#9670;&nbsp;</a></span>CMRtuCompleteDecomposition()</h2>
@@ -295,8 +316,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a744a853a3e1fdca5144d08f70713b7dd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a744a853a3e1fdca5144d08f70713b7dd">&#9670;&nbsp;</a></span>CMRtuTest()</h2>
+<a id="a226a8255fccbfc3ccbbd4d72c8321806"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a226a8255fccbfc3ccbbd4d72c8321806">&#9670;&nbsp;</a></span>CMRtuTest()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -323,7 +344,7 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype"><a class="el" href="group__Seymour.html#ga224ccb2a42c4bda6ae69b0e800bb69a5">CMR_SEYMOUR_NODE</a> **&#160;</td>
-          <td class="paramname"><em>pdec</em>, </td>
+          <td class="paramname"><em>proot</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -366,7 +387,7 @@ Functions</h2></td></tr>
     <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment </td></tr>
     <tr><td class="paramname">matrix</td><td>Matrix \( M \). </td></tr>
     <tr><td class="paramname">pisTotallyUnimodular</td><td>Pointer for storing whether \( M \) is totally unimodular. </td></tr>
-    <tr><td class="paramname">pdec</td><td>Pointer for storing the decomposition tree (may be <code>NULL</code>). </td></tr>
+    <tr><td class="paramname">proot</td><td>Pointer for storing the decomposition tree (may be <code>NULL</code>). </td></tr>
     <tr><td class="paramname">psubmatrix</td><td>Pointer for storing a submatrix with non-ternary determinant (may be <code>NULL</code>). </td></tr>
     <tr><td class="paramname">params</td><td>Parameters for the computation (may be <code>NULL</code> for defaults). </td></tr>
     <tr><td class="paramname">stats</td><td>Statistics for the computation (may be <code>NULL</code>). </td></tr>
