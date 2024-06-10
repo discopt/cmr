@@ -28,7 +28,7 @@ var searchData=
   ['removeedgefrommembersedgelist_988',['removeEdgeFromMembersEdgeList',['../graphic_8c.html#ade574c776ee9172b77bd1bb0ce061dd0',1,'graphic.c']]],
   ['reordercomponent_989',['reorderComponent',['../graphic_8c.html#ae935afcd43f067ac4f9a4ddfa70f4331',1,'graphic.c']]],
   ['replaceedgeinmembersedgelist_990',['replaceEdgeInMembersEdgeList',['../graphic_8c.html#af25e2dc4441789e6a0e98fce248192df',1,'graphic.c']]],
-  ['representation_20of_20matroids_20and_20their_20decomposition_991',['Representation of Matroids and their Decomposition',['../matroids.html',1,'']]],
+  ['representation_20of_20matroids_991',['Representation of Matroids',['../matroids.html',1,'']]],
   ['representative_992',['representative',['../structElementData.html#af1e9c792449a82f84ea9c26fab585d12',1,'ElementData']]],
   ['representativemember_993',['representativeMember',['../structDEC__MEMBER__DATA.html#a15da705b5246e05c2b733082dfb8e3e8',1,'DEC_MEMBER_DATA']]],
   ['representativenode_994',['representativeNode',['../structDecNodeData.html#a7ad9132d141b2a59e6f88ca8711d02b7',1,'DecNodeData']]],

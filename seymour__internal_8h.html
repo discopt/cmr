@@ -342,7 +342,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Splits off series-parallel elements from the matrix of the decomposition node. </p>
-<p>In case the matrix is <a class="el" href="series-parallel.html">Series-Parallel Matroids</a>, then the node is declared to be planar.</p>
+<p>In case the matrix is <a class="el" href="series-parallel.html">Series-Parallel Matrices</a>, then the node is declared to be planar.</p>
 <p>In case the matrix does not admit series-parallel reductions, then the node remains remain unchanged. Otherwise, a child node is created whose matrix is the series-parallel-reduced one. For that child node, a 2-separation may be found, and corresponding children will be created. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -1215,7 +1215,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Checks a Seymour decomposition node for consistency. </p>
-<p>Checks all requirements defined in <a class="el" href="matroids.html">Representation of Matroids and their Decomposition</a>.</p>
+<p>Checks all requirements defined in <a class="el" href="matroids.html">Representation of Matroids</a>.</p>
 <dl class="section return"><dt>Returns</dt><dd><code>NULL</code> if consistent. Otherwise, an explanation string is returned, which must freed with <code>free()</code>.</dd></dl>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="env__internal_8h.html#a4704e1cd2f1b46c1f6ffaf0d1233410f">CMRconsistencyAssert()</a> for checking the returned string and aborting in case of inconsistency. </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>

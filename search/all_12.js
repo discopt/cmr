@@ -9,7 +9,7 @@ var searchData=
   ['sequencegraphiccount_1020',['sequenceGraphicCount',['../structCMR__SEYMOUR__STATS.html#a95434f22666b7ce81ec1c5f7dd1a1667',1,'CMR_SEYMOUR_STATS']]],
   ['sequencegraphicness_1021',['sequenceGraphicness',['../regularity__graphic_8c.html#adf25bb08868fed39cde56af67ef4ad93',1,'regularity_graphic.c']]],
   ['sequencegraphictime_1022',['sequenceGraphicTime',['../structCMR__SEYMOUR__STATS.html#a4a2086f8ecc0f5f6576d7387d4b429d1',1,'CMR_SEYMOUR_STATS']]],
-  ['series_2dparallel_20matroids_1023',['Series-Parallel Matroids',['../series-parallel.html',1,'']]],
+  ['series_2dparallel_20matrices_1023',['Series-Parallel Matrices',['../series-parallel.html',1,'']]],
   ['series_2dparallel_2emd_1024',['series-parallel.md',['../series-parallel_8md.html',1,'']]],
   ['series_5fparallel_2ec_1025',['series_parallel.c',['../series__parallel_8c.html',1,'']]],
   ['series_5fparallel_2eh_1026',['series_parallel.h',['../series__parallel_8h.html',1,'']]],

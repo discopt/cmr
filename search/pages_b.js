@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['series_2dparallel_20matroids_2237',['Series-Parallel Matroids',['../series-parallel.html',1,'']]]
+  ['series_2dparallel_20matrices_2237',['Series-Parallel Matrices',['../series-parallel.html',1,'']]]
 ];
