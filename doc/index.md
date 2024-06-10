@@ -11,9 +11,9 @@ The following matrix classes can be recognized:
 
 Moreover, [representation matrices](\ref matroids) for the following matroid classes can be recognized:
 
-  - [binary regular](\ref binary_regular), [ternary regular](\ref tu)
-  - \ref graphic
-  - \ref series-parallel
+  - [Binary](\ref binary_regular) and [ternary](\ref tu) regular matroids
+  - [Graphic, cographic and planar](\ref graphic) matroids
+  - [Series-parallel](\ref series-parallel) matroids
 
 The following additional functionality is also part of the library:
 

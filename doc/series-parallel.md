@@ -1,4 +1,4 @@
-# Series-Parallel Matroids # {#series-parallel}
+# Series-Parallel Matrices # {#series-parallel}
 
 A matrix \f$ A \in \{-1,0,+1\}^{m \times n} \f$ is called **series-parallel** if it can be obtained from a \f$ 0 \f$-by-\f$ 0 \f$ matrix by successively adjoining
 
