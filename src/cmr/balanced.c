@@ -459,7 +459,7 @@ CMR_ERROR balancedTestChooseAlgorithm(
 /**
  * \brief Tests a connected matrix \f$ M \f$ for being [balanced](\ref balanced).
  *
- * Tries to apply series-parallel reductions and then calls \ref balancedTestSeriesParalelReduced.
+ * Tries to apply series-parallel reductions and then calls \ref balancedTestChooseAlgorithm.
  *
  * If \f$ M \f$ is not balanced and \p psubmatrix != \c NULL, then \p *psubmatrix will indicate a submatrix
  * of \f$ M \f$ with exactly two nonzeros in each row and in each column and with determinant \f$ -2 \f$ or \f$ 2 \f$.
@@ -608,7 +608,7 @@ CMR_ERROR balancedTestConnected(
 }
 
 /**
- * \brief Compares two matrix blocks according to min(#rows, #columns).
+ * \brief Compares two matrix blocks according to minimum of number of rows and number of columns.
  */
 
 int compareBlockComponents(const void* a, const void* b)

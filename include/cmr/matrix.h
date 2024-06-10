@@ -109,7 +109,7 @@ CMR_ERROR CMRsubmatPrint(
 );
 
 /**
- * \brief Writes the submatrix \p submatrix to the file \fileName by means of lists of row and column indices.
+ * \brief Writes the submatrix \p submatrix to the file \p fileName by means of lists of row and column indices.
  *
  * In the file, row and column indices start at 1 while they start at 0 in \p submatrix.
  */

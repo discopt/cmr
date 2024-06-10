@@ -38,9 +38,6 @@ CMR_ERROR CMRintmatDeterminant(
   int64_t* pdeterminant   /**< Pointer for storing the determinant. */
 );
 
-
-/**@}*/
-
 #ifdef __cplusplus
 }
 #endif

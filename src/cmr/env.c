@@ -375,7 +375,6 @@ size_t CMRgetStackUsage(CMR* cmr)
 
 #endif /* else REPLACE_STACK_BY_MALLOC */
 
-
 void CMRraiseErrorMessage(CMR* cmr, const char* format, ...)
 {
   va_list args;

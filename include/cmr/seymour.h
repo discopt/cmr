@@ -33,7 +33,7 @@ extern "C" {
 /**
  * \brief Flags that indicate the type of \f$ 3 \f$-separation.
  *
- * \see The desired types can be set by modifying \ref CMR_REGULAR_PARAMS.threeSumStrategy.
+ * \see The desired types can be set by modifying \ref CMR_SEYMOUR_PARAMS.threeSumStrategy.
  **/
 
 typedef enum
@@ -44,45 +44,45 @@ typedef enum
      **  \ref CMR_SEYMOUR_THREESUM_FLAG_CONCENTRATED_RANK set. */
   CMR_SEYMOUR_THREESUM_FLAG_DISTRIBUTED_RANKS = 1,
     /**< The two off-diagonal submatrices both have rank 1.
-     **  \see \ref matroid_decomposition. */
+     **  \see \ref seymour_decomposition. */
   CMR_SEYMOUR_THREESUM_FLAG_CONCENTRATED_RANK = 2,
     /**< The bottom-left submatrix has rank 2 and the top-right submatrix has rank 0.
-     **  \see \ref matroid_decomposition. */
+     **  \see \ref seymour_decomposition. */
 
   CMR_SEYMOUR_THREESUM_FLAG_FIRST_WIDE = 4,
     /**< The first child node is of the form \f$ M_1^{\text{wide}} \f$; valid for distributed ranks.
-     **  \see \ref matroid_decomposition. */
+     **  \see \ref seymour_decomposition. */
   CMR_SEYMOUR_THREESUM_FLAG_FIRST_TALL = 8,
     /**< The first child node is of the form \f$ M_1^{\text{tall}} \f$; valid for distributed ranks.
-     **  \see \ref matroid_decomposition. */
+     **  \see \ref seymour_decomposition. */
   CMR_SEYMOUR_THREESUM_FLAG_FIRST_MIXED = 64,
     /**< The first child node is of the form \f$ M_1^{\text{mixed}} \f$; valid for concentrated rank.
-     **  \see \ref matroid_decomposition. */
+     **  \see \ref seymour_decomposition. */
   CMR_SEYMOUR_THREESUM_FLAG_FIRST_ALLREPR = 128,
     /**< The first child node is of the form \f$ M_1^{\text{all-repr}} \f$; valid for concentrated rank.
-     **  \see \ref matroid_decomposition. */
+     **  \see \ref seymour_decomposition. */
 
   CMR_SEYMOUR_THREESUM_FLAG_SECOND_WIDE = 16,
     /**< The second child node is of the form \f$ M_2^{\text{wide}} \f$; valid for distributed ranks.
-     **  \see \ref matroid_decomposition. */
+     **  \see \ref seymour_decomposition. */
   CMR_SEYMOUR_THREESUM_FLAG_SECOND_TALL = 32,
     /**< The second child node is of the form \f$ M_2^{\text{tall}} \f$; valid for distributed ranks.
-     **  \see \ref matroid_decomposition. */
+     **  \see \ref seymour_decomposition. */
   CMR_SEYMOUR_THREESUM_FLAG_SECOND_MIXED = 256,
     /**< The second child node is of the form \f$ M_2^{\text{mixed}} \f$; valid for concentrated rank.
-     **  \see \ref matroid_decomposition. */
+     **  \see \ref seymour_decomposition. */
   CMR_SEYMOUR_THREESUM_FLAG_SECOND_ALLREPR = 512,
     /**< The second child node is of the form \f$ M_2^{\text{all-repr}} \f$; valid for concentrated rank.
-     **  \see \ref matroid_decomposition. */
+     **  \see \ref seymour_decomposition. */
 
   CMR_SEYMOUR_THREESUM_FLAG_SEYMOUR = CMR_SEYMOUR_THREESUM_FLAG_DISTRIBUTED_RANKS
     | CMR_SEYMOUR_THREESUM_FLAG_FIRST_WIDE | CMR_SEYMOUR_THREESUM_FLAG_SECOND_WIDE,
     /**< This combination of flags indicates a \f$ 3 \f$-sum as defined by Seymour.
-     **  \see \ref matroid_decomposition. */
+     **  \see \ref seymour_decomposition. */
   CMR_SEYMOUR_THREESUM_FLAG_TRUEMPER = CMR_SEYMOUR_THREESUM_FLAG_CONCENTRATED_RANK
     | CMR_SEYMOUR_THREESUM_FLAG_FIRST_MIXED | CMR_SEYMOUR_THREESUM_FLAG_SECOND_MIXED,
     /**< This combination of flags indicates a \f$ 3 \f$-sum as defined by Truemper.
-     **  \see \ref matroid_decomposition. */
+     **  \see \ref seymour_decomposition. */
 } CMR_SEYMOUR_THREESUM_FLAG;
 
 /**

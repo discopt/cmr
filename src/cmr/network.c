@@ -204,7 +204,7 @@ CMR_ERROR CMRnetworkTestTranspose(CMR* cmr, CMR_CHRMAT* matrix, bool* pisConetwo
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRnetworkTestMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisNetwork, bool* psupportIsCographic,
+CMR_ERROR CMRnetworkTestMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisNetwork, bool* psupportIsGraphic,
   CMR_GRAPH** pdigraph, CMR_GRAPH_EDGE** pforestArcs, CMR_GRAPH_EDGE** pcoforestArcs, bool** parcsReversed,
   CMR_SUBMAT** psubmatrix, CMR_NETWORK_STATISTICS* stats, double timeLimit)
 {
@@ -226,7 +226,7 @@ CMR_ERROR CMRnetworkTestMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisNetwork, b
   CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', true) );
 #endif /* CMR_DEBUG */
 
-  CMR_CALL( CMRnetworkTestTranspose(cmr, transpose, pisNetwork, psupportIsCographic, pdigraph, pforestArcs,
+  CMR_CALL( CMRnetworkTestTranspose(cmr, transpose, pisNetwork, psupportIsGraphic, pdigraph, pforestArcs,
     pcoforestArcs, parcsReversed, psubmatrix, stats, timeLimit) );
 
   /* Transpose minimal non-conetwork matrix to become a minimal non-network matrix. */
@@ -237,5 +237,3 @@ CMR_ERROR CMRnetworkTestMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisNetwork, b
 
   return CMR_OKAY;
 }
-
-/**@}*/

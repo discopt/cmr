@@ -159,8 +159,7 @@ CMR_MINOR_TYPE CMRminorType(
 );
 
 /**
- * \brief Writes the minor \p minor to the file \fileName by means of lists of row and column indices as well as
- *        pivot entries.
+ * \brief Writes the minor \p minor to \p stream by means of lists of row and column indices as well as pivot entries.
  */
 
 CMR_EXPORT
@@ -173,7 +172,7 @@ CMR_ERROR CMRminorPrint(
 );
 
 /**
- * \brief Writes the minor \p minor to the file \fileName by means of lists of row and column indices as well as
+ * \brief Writes the minor \p minor to the file \p fileName by means of lists of row and column indices as well as
  *        pivot entries.
  */
 

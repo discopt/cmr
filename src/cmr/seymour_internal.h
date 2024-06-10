@@ -36,11 +36,11 @@ struct _CMR_SEYMOUR_NODE
   CMR_ELEMENT** childColumnsToParent;           /**< \brief Array for mapping a child index to array of child columns to
                                                  **         elements of this node. */
 
-  size_t numRows;                               /**< \brief Length of \ref rowsParent. */
+  size_t numRows;                               /**< \brief Length of \ref rowsToChild. */
   size_t* rowsToChild;                          /**< \brief Array for mapping each row to a row of the child (if
                                                  **         applicable). */
 
-  size_t numColumns;                            /**< \brief Length of \ref columnsParent. */
+  size_t numColumns;                            /**< \brief Length of \ref columnsToChild. */
   size_t* columnsToChild;                       /**< \brief Array for mapping each column to a column of the child (if
                                                  **         applicable). */
 
@@ -527,7 +527,7 @@ CMR_ERROR CMRregularityTestCographicness(
  * \brief Performs a 1-sum decomposition of \p matrix and stores it in \p dec.
  *
  * If \p matrix is 1-connected, then \p dec remains unchanged. Otherwise, \p dec will become a
- * \ref CMR_MATROID_DEC_TYPE_ONE_SUM node with children that are initialized to the 1-connected components. In this
+ * \ref CMR_SEYMOUR_NODE_TYPE_ONE_SUM node with children that are initialized to the 1-connected components. In this
  * case, the \c matrix and \c transpose members of the child nodes are set.
  */
 

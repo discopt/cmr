@@ -5545,4 +5545,3 @@ CMR_ERROR CMRgraphicTestMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisGraphic, C
   return CMR_OKAY;
 }
 
-/**@}*/

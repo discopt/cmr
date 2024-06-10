@@ -140,8 +140,9 @@ void CMRassertStackConsistency(
 #endif /* !NDEBUG */
 
 void CMRraiseErrorMessage(
-  CMR* cmr,               /**< \ref CMR environment. */
-  const char* format, ... /**< \ref Variadic arguments in printf-style. */
+  CMR* cmr,           /**< \ref CMR environment. */
+  const char* format, /**< Format string in printf-style. */
+  ...                 /**< Variadic arguments. */
 );
 
 size_t CMRgetStackUsage(

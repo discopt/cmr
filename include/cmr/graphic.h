@@ -96,7 +96,7 @@ CMR_ERROR CMRgraphicComputeMatrix(
  * \f$ G \f$ and sets \p *pisGraphic accordingly.
  *
  * \note If a column-wise representation of \f$ M \f$ is available, it is recommended to call
- *       \ref CMRtestCographicMatrix() for that. In fact, the implementation explicitly constructs
+ *       \ref CMRgraphicTestTranspose() for that. In fact, the implementation explicitly constructs
  *       \f$ M^{\mathsf{T}} \f$ before calling this function.
  *
  * If \f$ M \f$ is a graphic matrix and \p pgraph != \c NULL, then one possible graph \f$ G \f$ is computed and
@@ -170,8 +170,6 @@ CMR_ERROR CMRgraphicTestColumnSubmatrixGreedy(
   size_t* orderedColumns, /**< Permutation of column indices of \f$ M \f$. */
   CMR_SUBMAT** psubmatrix  /**< Pointer for storing the submatrix. */
 );
-
-/**@}*/
 
 #ifdef __cplusplus
 }

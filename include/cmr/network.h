@@ -95,10 +95,10 @@ CMR_ERROR CMRnetworkComputeMatrix(
  * \brief Tests a matrix \f$ M \f$ for being a [network matrix](\ref network).
  *
  * Tests if \f$ M = M(D,T) \f$ for some digraph \f$ D = (V,A) \f$ and some (directed) spanning forest
- * \f$ T \subseteq A \f$ of \f$ D \f$ and sets \p *pisNetwork accordingly.
+ * \f$ T \subseteq A \f$ of \f$ D \f$ and sets \p *pisNetwork and \p *psupportIsGraphic accordingly.
  *
  * \note If a column-wise representation of \f$ M \f$ is available, it is recommended to call
- *       \ref CMRtestConetworkMatrix() for that. In fact, the implementation explicitly constructs
+ *       \ref CMRnetworkTestTranspose() for that. In fact, the implementation explicitly constructs
  *       \f$ M^{\mathsf{T}} \f$ before calling this function.
  *
  * If \f$ M \f$ is a network matrix and \p pdigraph != \c NULL, then one possible digraph \f$ D \f$ is computed and
@@ -162,8 +162,6 @@ CMR_ERROR CMRnetworkTestTranspose(
   CMR_NETWORK_STATISTICS* stats,  /**< Pointer to statistics (may be \c NULL). */
   double timeLimit                /**< Time limit to impose. */
 );
-
-/**@}*/
 
 #ifdef __cplusplus
 }

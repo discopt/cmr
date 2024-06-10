@@ -25,12 +25,12 @@ typedef struct
 
 static
 CMR_ERROR dbgPrintDenseSequence(
-  CMR* cmr,             /**< \brief \ref CMR environment. */
-    CMR_SEYMOUR_NODE* dec  /**< \brief Decomposition node whose dense matrix to print. */
+  CMR* cmr,               /**< \ref CMR environment. */
+  CMR_SEYMOUR_NODE* node  /**< Seymour node whose dense matrix to print. */
 )
 {
   CMR_UNUSED(cmr);
-  CMR_UNUSED(dec);
+  CMR_UNUSED(node);
 
 #if defined(CMR_DEBUG)
 
@@ -84,6 +84,7 @@ CMR_ERROR dbgPrintDenseSequence(
   CMR_CALL( CMRfreeStackArray(cmr, &rowToMinorIndex) );
 
 #endif /* CMR_DEBUG */
+
   return CMR_OKAY;
 }
 

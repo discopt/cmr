@@ -6,7 +6,7 @@
  *
  * \author Matthias Walter and Klaus Truemper
  *
- * \brief Recognition of [regular matrices](\ref regular).
+ * \brief Recognition of [binary regular matrices](\ref binary_regular).
  */
 
 #ifdef __cplusplus

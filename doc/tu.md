@@ -31,7 +31,7 @@ If `OUT-DEC` or `NON-SUB` is `-` then the decomposition tree (resp. the submatri
 ## Algorithms ##
 
 The implemented default recognition algorithm is based on [Implementation of a unimodularity test](https://doi.org/10.1007/s12532-012-0048-x) by Matthias Walter and Klaus Truemper (Mathematical Programming Computation, 2013).
-It first runs \ref camion to reduce the question to that of [recognizing regular matroids](\ref regular).
+It either runs \ref camion to reduce the question to that of [recognizing binary regular matroids](\ref binary_regular) or decomposes a given ternary matrix directly by means of a [Seymour decomposition](\ref seymour_decomposition).
 Please cite the paper in case the implementation contributed to your research:
 
     @Article{WalterT13,

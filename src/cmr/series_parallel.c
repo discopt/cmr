@@ -68,7 +68,7 @@ CMR_ERROR CMRspStatsPrint(FILE* stream, CMR_SP_STATISTICS* stats, const char* pr
   return CMR_OKAY;
 }
 
-static char seriesParallelStringBuffer[32]; /**< Static buffer for \ref CMRspString. */
+static char seriesParallelStringBuffer[32]; /**< Static buffer for \ref CMRspReductionString. */
 
 char* CMRspReductionString(CMR_SP_REDUCTION reduction, char* buffer)
 {

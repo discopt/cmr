@@ -21,7 +21,7 @@ extern "C" {
 
 CMR_ERROR CMRcamionComputeSignSequentiallyConnected(
   CMR* cmr,                 /**< \ref CMR environment. */
-  CMR_CHRMAT* matrix,       /**< Matrix \f M \f$. */
+  CMR_CHRMAT* matrix,       /**< Matrix \f$ M \f$. */
   CMR_CHRMAT* transpose,    /**< Transpose \f$ M^{\mathsf{T}} \f$. */
   bool change,              /**< Whether signs of \p matrix should be changed if necessary. */
   char* pmodification,      /**< Pointer for storing which matrix was modified. */

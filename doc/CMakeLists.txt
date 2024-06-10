@@ -39,6 +39,7 @@ if(DOXYGEN_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/perfect.md
     ${CMAKE_CURRENT_SOURCE_DIR}/regular.md
     ${CMAKE_CURRENT_SOURCE_DIR}/series-parallel.md
+    ${CMAKE_CURRENT_SOURCE_DIR}/seymour.md
     ${CMAKE_CURRENT_SOURCE_DIR}/totally-balanced.md
     ${CMAKE_CURRENT_SOURCE_DIR}/tu.md
     ${CMAKE_CURRENT_SOURCE_DIR}/utilities.md

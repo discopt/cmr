@@ -1,10 +1,10 @@
-# Regular Matroids # {#regular}
+# Binary Regular Matrices # {#binary_regular}
 
 A matrix \f$ M \in \{0,1\}^{m \times n} \f$ is **regular** if the binary matroid [represented](\ref matroids) by \f$ M \f$ is representable over *every* field.
 This is equivalent to requiring that the matroid is equal to the ternary matroid [represented](\ref matroids) by the [Camion-signed](\ref camion) version \f$ M' \f$ of \f$ M \f$, and thus equivalent to [total unimodularity](\ref tu) of \f$ M' \f$.
 
 
-## Recognizing Regular Matroids ##
+## Recognizing Binary Regular Matrices ##
 
 The command
 
@@ -49,6 +49,6 @@ Please cite the following paper in case the implementation contributed to your r
 
 The corresponding function in the library is
 
-  - CMRtestBinaryRegular() tests a binary matrix for regularity.
+  - CMRregularTest() tests a binary matrix for regularity.
 
 and is defined in \ref regular.h.
