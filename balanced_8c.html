@@ -132,7 +132,7 @@ Functions</h2></td></tr>
 <tr class="memdesc:ad416db0decaecd9b23c33d0fc5a57586"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tests a connected matrix \( M \) for being <a class="el" href="balanced.html">balanced</a>.  <a href="balanced_8c.html#ad416db0decaecd9b23c33d0fc5a57586">More...</a><br /></td></tr>
 <tr class="separator:ad416db0decaecd9b23c33d0fc5a57586"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9966a110083db548312360be2c78b4e8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="balanced_8c.html#a9966a110083db548312360be2c78b4e8">compareBlockComponents</a> (const void *a, const void *b)</td></tr>
-<tr class="memdesc:a9966a110083db548312360be2c78b4e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compares two matrix blocks according to min(#rows, #columns).  <a href="balanced_8c.html#a9966a110083db548312360be2c78b4e8">More...</a><br /></td></tr>
+<tr class="memdesc:a9966a110083db548312360be2c78b4e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compares two matrix blocks according to minimum of number of rows and number of columns.  <a href="balanced_8c.html#a9966a110083db548312360be2c78b4e8">More...</a><br /></td></tr>
 <tr class="separator:a9966a110083db548312360be2c78b4e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a81103a95598c7ffcac4223d93d8b58f7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="balanced_8c.html#a81103a95598c7ffcac4223d93d8b58f7">CMRbalancedTest</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, bool *pisBalanced, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **psubmatrix, <a class="el" href="structCMR__BALANCED__PARAMS.html">CMR_BALANCED_PARAMS</a> *params, <a class="el" href="structCMR__BALANCED__STATS.html">CMR_BALANCED_STATS</a> *stats, double timeLimit)</td></tr>
 <tr class="separator:a81103a95598c7ffcac4223d93d8b58f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -285,7 +285,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Tests a connected matrix \( M \) for being <a class="el" href="balanced.html">balanced</a>. </p>
-<p>Tries to apply series-parallel reductions and then calls balancedTestSeriesParalelReduced.</p>
+<p>Tries to apply series-parallel reductions and then calls <a class="el" href="balanced_8c.html#ac6ecebc84f9814ed0037bab61ae4263e">balancedTestChooseAlgorithm</a>.</p>
 <p>If \( M \) is not balanced and <code>psubmatrix</code> != <code>NULL</code>, then <code>*psubmatrix</code> will indicate a submatrix of \( M \) with exactly two nonzeros in each row and in each column and with determinant \( -2 \) or \( 2 \). </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -747,7 +747,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Compares two matrix blocks according to min(#rows, #columns). </p>
+<p>Compares two matrix blocks according to minimum of number of rows and number of columns. </p>
 
 </div>
 </div>

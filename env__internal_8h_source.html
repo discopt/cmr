@@ -183,50 +183,51 @@ $(function() {
 <div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* !NDEBUG */</span><span class="preprocessor"></span></div>
 <div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160; </div>
 <div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;<span class="keywordtype">void</span> <a class="code" href="env__internal_8h.html#acb9a513ceabcd595e8b005d534d43598">CMRraiseErrorMessage</a>(</div>
-<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,               </div>
-<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">char</span>* format, ... </div>
-<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;);</div>
-<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160; </div>
-<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;<span class="keywordtype">size_t</span> <a class="code" href="env__internal_8h.html#a173c2e2328c5404ee49b7f0c9b643eb4">CMRgetStackUsage</a>(</div>
-<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr  </div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;);</div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160; </div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;<span class="keywordtype">char</span>* <a class="code" href="env__internal_8h.html#a2f1434ad5a288d76d96c00a4abeefc7b">CMRconsistencyMessage</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* format, ...);</div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160; </div>
-<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;<span class="preprocessor">#if !defined(NDEBUG)</span></div>
-<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160; </div>
-<div class="line"><a name="l00165"></a><span class="lineno"><a class="line" href="env__internal_8h.html#a4704e1cd2f1b46c1f6ffaf0d1233410f">  165</a></span>&#160;<span class="preprocessor">#define CMRconsistencyAssert( call ) \</span></div>
-<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;<span class="preprocessor">  do \</span></div>
-<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;<span class="preprocessor">  { \</span></div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;<span class="preprocessor">    char* __message = call; \</span></div>
-<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;<span class="preprocessor">    if (__message) \</span></div>
-<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;<span class="preprocessor">    { \</span></div>
-<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;<span class="preprocessor">      fflush(stdout); \</span></div>
-<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;<span class="preprocessor">      fprintf(stderr, &quot;%s:%d: %s\n&quot;</span>, __FILE__, __LINE__, __message); \</div>
-<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;      fflush(stderr); \</div>
-<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;      free(__message); \</div>
-<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;      assert(!&quot;Consistency assertion raised!&quot;); \</div>
-<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;    } \</div>
-<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;  } \</div>
-<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;  while (false);</div>
-<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160; </div>
-<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;<span class="preprocessor">#else</span></div>
-<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160; </div>
-<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;<span class="preprocessor">#define CMRconsistencyAssert( call )</span></div>
-<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160; </div>
-<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160; </div>
-<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* CMR_ENV_INTERNAL_H */</span><span class="preprocessor"></span></div>
+<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,           </div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">char</span>* format, </div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;  ...                 </div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;);</div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160; </div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;<span class="keywordtype">size_t</span> <a class="code" href="env__internal_8h.html#a173c2e2328c5404ee49b7f0c9b643eb4">CMRgetStackUsage</a>(</div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr  </div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;);</div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160; </div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;<span class="keywordtype">char</span>* <a class="code" href="env__internal_8h.html#a2f1434ad5a288d76d96c00a4abeefc7b">CMRconsistencyMessage</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* format, ...);</div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160; </div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;<span class="preprocessor">#if !defined(NDEBUG)</span></div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160; </div>
+<div class="line"><a name="l00166"></a><span class="lineno"><a class="line" href="env__internal_8h.html#a4704e1cd2f1b46c1f6ffaf0d1233410f">  166</a></span>&#160;<span class="preprocessor">#define CMRconsistencyAssert( call ) \</span></div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;<span class="preprocessor">  do \</span></div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;<span class="preprocessor">  { \</span></div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;<span class="preprocessor">    char* __message = call; \</span></div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;<span class="preprocessor">    if (__message) \</span></div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;<span class="preprocessor">    { \</span></div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;<span class="preprocessor">      fflush(stdout); \</span></div>
+<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;<span class="preprocessor">      fprintf(stderr, &quot;%s:%d: %s\n&quot;</span>, __FILE__, __LINE__, __message); \</div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;      fflush(stderr); \</div>
+<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;      free(__message); \</div>
+<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;      assert(!&quot;Consistency assertion raised!&quot;); \</div>
+<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;    } \</div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;  } \</div>
+<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;  while (false);</div>
+<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160; </div>
+<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;<span class="preprocessor">#else</span></div>
+<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160; </div>
+<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;<span class="preprocessor">#define CMRconsistencyAssert( call )</span></div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160; </div>
+<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160; </div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* CMR_ENV_INTERNAL_H */</span><span class="preprocessor"></span></div>
 <div class="ttc" id="aenv_8h_html"><div class="ttname"><a href="env_8h.html">env.h</a></div><div class="ttdoc">Basic functionality of the software library.</div></div>
 <div class="ttc" id="aenv_8h_html_a4460b6013023896e1cfd0e1e65ffe418"><div class="ttname"><a href="env_8h.html#a4460b6013023896e1cfd0e1e65ffe418">CMR_UNUSED</a></div><div class="ttdeci">#define CMR_UNUSED(x)</div><div class="ttdef"><b>Definition:</b> env.h:24</div></div>
 <div class="ttc" id="aenv_8h_html_ae2f4ad54b976c2b9a099246c6dc0be87"><div class="ttname"><a href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a></div><div class="ttdeci">CMR_ERROR</div><div class="ttdoc">Type for return codes of library functions.</div><div class="ttdef"><b>Definition:</b> env.h:32</div></div>
 <div class="ttc" id="aenv__internal_8h_html_a173c2e2328c5404ee49b7f0c9b643eb4"><div class="ttname"><a href="env__internal_8h.html#a173c2e2328c5404ee49b7f0c9b643eb4">CMRgetStackUsage</a></div><div class="ttdeci">size_t CMRgetStackUsage(CMR *cmr)</div><div class="ttdef"><b>Definition:</b> env.c:366</div></div>
-<div class="ttc" id="aenv__internal_8h_html_a2f1434ad5a288d76d96c00a4abeefc7b"><div class="ttname"><a href="env__internal_8h.html#a2f1434ad5a288d76d96c00a4abeefc7b">CMRconsistencyMessage</a></div><div class="ttdeci">char * CMRconsistencyMessage(const char *format,...)</div><div class="ttdef"><b>Definition:</b> env.c:412</div></div>
+<div class="ttc" id="aenv__internal_8h_html_a2f1434ad5a288d76d96c00a4abeefc7b"><div class="ttname"><a href="env__internal_8h.html#a2f1434ad5a288d76d96c00a4abeefc7b">CMRconsistencyMessage</a></div><div class="ttdeci">char * CMRconsistencyMessage(const char *format,...)</div><div class="ttdef"><b>Definition:</b> env.c:411</div></div>
 <div class="ttc" id="aenv__internal_8h_html_a4bed1076f8fcbbf0e422ec2777565d46"><div class="ttname"><a href="env__internal_8h.html#a4bed1076f8fcbbf0e422ec2777565d46">CMRassertStackConsistency</a></div><div class="ttdeci">void CMRassertStackConsistency(CMR *cmr)</div><div class="ttdoc">Checks stack protection fields for corruption.</div><div class="ttdef"><b>Definition:</b> env.c:339</div></div>
 <div class="ttc" id="aenv__internal_8h_html_a62376f606739357ba337c8b03dc84759"><div class="ttname"><a href="env__internal_8h.html#a62376f606739357ba337c8b03dc84759">_CMRfreeStack</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR _CMRfreeStack(CMR *cmr, void **ptr)</div><div class="ttdoc">Carries out the deallocation for CMRfreeStack.</div><div class="ttdef"><b>Definition:</b> env.c:284</div></div>
 <div class="ttc" id="aenv__internal_8h_html_a9be66b443559c8c3784d453715e97e1f"><div class="ttname"><a href="env__internal_8h.html#a9be66b443559c8c3784d453715e97e1f">_CMRallocStack</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR _CMRallocStack(CMR *cmr, void **ptr, size_t size)</div><div class="ttdoc">Carries out the allocation for CMRallocStack.</div><div class="ttdef"><b>Definition:</b> env.c:209</div></div>
 <div class="ttc" id="aenv__internal_8h_html_abc81f0ffd985cdce7c84a07ff8741518"><div class="ttname"><a href="env__internal_8h.html#abc81f0ffd985cdce7c84a07ff8741518">CMRdbgMsg</a></div><div class="ttdeci">static void CMRdbgMsg(int indent, const char *format,...)</div><div class="ttdef"><b>Definition:</b> env_internal.h:28</div></div>
-<div class="ttc" id="aenv__internal_8h_html_acb9a513ceabcd595e8b005d534d43598"><div class="ttname"><a href="env__internal_8h.html#acb9a513ceabcd595e8b005d534d43598">CMRraiseErrorMessage</a></div><div class="ttdeci">void CMRraiseErrorMessage(CMR *cmr, const char *format,...)</div><div class="ttdef"><b>Definition:</b> env.c:379</div></div>
+<div class="ttc" id="aenv__internal_8h_html_acb9a513ceabcd595e8b005d534d43598"><div class="ttname"><a href="env__internal_8h.html#acb9a513ceabcd595e8b005d534d43598">CMRraiseErrorMessage</a></div><div class="ttdeci">void CMRraiseErrorMessage(CMR *cmr, const char *format,...)</div><div class="ttdef"><b>Definition:</b> env.c:378</div></div>
 <div class="ttc" id="astructCMR__ENVIRONMENT_html"><div class="ttname"><a href="structCMR__ENVIRONMENT.html">CMR_ENVIRONMENT</a></div><div class="ttdef"><b>Definition:</b> env_internal.h:45</div></div>
 <div class="ttc" id="astructCMR__ENVIRONMENT_html_a152a0a7e183a7a4a909553ecb9556fbb"><div class="ttname"><a href="structCMR__ENVIRONMENT.html#a152a0a7e183a7a4a909553ecb9556fbb">CMR_ENVIRONMENT::numStacks</a></div><div class="ttdeci">size_t numStacks</div><div class="ttdoc">Number of allocated stacks in stack array.</div><div class="ttdef"><b>Definition:</b> env_internal.h:53</div></div>
 <div class="ttc" id="astructCMR__ENVIRONMENT_html_a1b41af1aa8fef5cd822c52b511a8e4c0"><div class="ttname"><a href="structCMR__ENVIRONMENT.html#a1b41af1aa8fef5cd822c52b511a8e4c0">CMR_ENVIRONMENT::memStacks</a></div><div class="ttdeci">size_t memStacks</div><div class="ttdoc">Memory for stack array.</div><div class="ttdef"><b>Definition:</b> env_internal.h:54</div></div>

@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['network_20matrices_2229',['Network Matrices',['../network.html',1,'']]]
+  ['matrix_20entries_20inspection_2232',['Matrix Entries Inspection',['../k_ary.html',1,'']]],
+  ['max_2dflow_2dmin_2dcut_20matroids_2233',['Max-Flow-Min-Cut Matroids',['../max-flow-min-cut.html',1,'']]]
 ];

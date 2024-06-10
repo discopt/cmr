@@ -376,8 +376,8 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Tests a matrix \( M \) for being a <a class="el" href="network.html">network matrix</a>. </p>
-<p>Tests if \( M = M(D,T) \) for some digraph \( D = (V,A) \) and some (directed) spanning forest \( T \subseteq A \) of \( D \) and sets <code>*pisNetwork</code> accordingly.</p>
-<dl class="section note"><dt>Note</dt><dd>If a column-wise representation of \( M \) is available, it is recommended to call CMRtestConetworkMatrix() for that. In fact, the implementation explicitly constructs \( M^{\mathsf{T}} \) before calling this function.</dd></dl>
+<p>Tests if \( M = M(D,T) \) for some digraph \( D = (V,A) \) and some (directed) spanning forest \( T \subseteq A \) of \( D \) and sets <code>*pisNetwork</code> and <code>*psupportIsGraphic</code> accordingly.</p>
+<dl class="section note"><dt>Note</dt><dd>If a column-wise representation of \( M \) is available, it is recommended to call <a class="el" href="network_8h.html#a58dbe7e752236472094b38e96e0b5049">CMRnetworkTestTranspose()</a> for that. In fact, the implementation explicitly constructs \( M^{\mathsf{T}} \) before calling this function.</dd></dl>
 <p>If \( M \) is a network matrix and <code>pdigraph</code> != <code>NULL</code>, then one possible digraph \( D \) is computed and stored in <code>*pdigraph</code>. The caller must release its memory via <a class="el" href="group__Graph.html#gaeadec814a44e89c3b729fdeb70c26593">CMRgraphFree</a>. If in addition to <code>pdigraph</code> also <code>pforestArcs</code> != <code>NULL</code> (resp. <code>pcoforestArcs</code> != <code>NULL</code>), then a corresponding (directed) spanning forest \( T \) (resp. its complement \( A \setminus T \)) is stored in <code>*pforestArcs</code> (resp. <code>*pcoforestArcs</code>). The caller must release this memory via <a class="el" href="env_8h.html#a8e025417fc4487f0354a013693fb6df3">CMRfreeBlockArray</a>.</p>
 <dl class="section note"><dt>Note</dt><dd>Retrieval of minimal non-network submatrices via <code>*psubmatrix</code> is not implemented, yet. </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>

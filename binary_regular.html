@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>CMR: Totally Unimodular Matrices</title>
+<title>CMR: Binary Regular Matrices</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -73,30 +73,28 @@ $(function() {
 </div><!-- top -->
 <div class="PageDoc"><div class="header">
   <div class="headertitle">
-<div class="title">Totally Unimodular Matrices </div>  </div>
+<div class="title">Binary Regular Matrices </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="md__home_runner_work_cmr_cmr_doc_tu"></a> A matrix \( M \in \mathbb{Z}^{m \times n} \) is <b>totally unimodular</b> if all its square submatrices have a determinant in \( \{-1,0,+1\} \). Here, a submatrix does not need to be contiguous, i.e., the matrix \(M = \begin{pmatrix} 1 &amp; 0 &amp; -1 \\ 1 &amp; 0 &amp; 1 \end{pmatrix} \) is not totally unimodular since the submatrix indexed by rows \( \{1, 2 \} \) and columns \( \{ 1,3 \} \) has determinant 2. In particular, every totally unimodular matrix has only entries in \( \{-1,0,+1\} \) as these are the 1-by-1 submatrices.</p>
-<h1><a class="anchor" id="autotoc_md63"></a>
-Recognizing Totally Unimodular Matrices</h1>
-<p>The command </p><pre class="fragment">cmr-tu IN-MAT [OPTION...]
-</pre><p> determines whether the matrix given in file <code>IN-MAT</code> is totally unimodular.</p>
+<div class="textblock"><p><a class="anchor" id="md__home_runner_work_cmr_cmr_doc_regular"></a> A matrix \( M \in \{0,1\}^{m \times n} \) is <b>regular</b> if the binary matroid <a class="el" href="matroids.html">represented</a> by \( M \) is representable over <em>every</em> field. This is equivalent to requiring that the matroid is equal to the ternary matroid <a class="el" href="matroids.html">represented</a> by the <a class="el" href="camion.html">Camion-signed</a> version \( M&#39; \) of \( M \), and thus equivalent to <a class="el" href="tu.html">total unimodularity</a> of \( M&#39; \).</p>
+<h1><a class="anchor" id="autotoc_md56"></a>
+Recognizing Binary Regular Matrices</h1>
+<p>The command </p><pre class="fragment">cmr-regular IN-MAT [OPTION...]
+</pre><p> determines whether the matrix given in file <code>IN-MAT</code> is regular.</p>
 <p><b>Options:</b></p><ul>
 <li><code>-i FORMAT</code> Format of file <code>IN-MAT</code>, among <code>dense</code> for <a class="el" href="file-formats.html#dense-matrix">dense-matrix</a> and <code>sparse</code> for <a class="el" href="file-formats.html#sparse-matrix">sparse-matrix</a>; default: dense.</li>
-<li><code>-D OUT-DEC</code> Write a decomposition tree of the underlying regular matroid to file <code>OUT-DEC</code>; default: skip computation.</li>
-<li><code>-N NON-SUB</code> Write a minimal non-totally-unimodular submatrix to file <code>NON-SUB</code>; default: skip computation.</li>
+<li><code>-D OUT-DEC</code> Write a decomposition tree of the regular matroid to file <code>OUT-DEC</code>; default: skip computation.</li>
+<li><code>-N NON-MINOR</code> Write a minimal non-regular submatrix to file <code>NON-SUB</code>; default: skip computation.</li>
+<li><code>-s</code> Print statistics about the computation to stderr.</li>
 </ul>
 <p><b>Advanced options:</b></p><ul>
-<li><code>--stats</code> Print statistics about the computation to stderr.</li>
-<li><code>--time-limit LIMIT</code> Allow at most LIMIT seconds for the computation.</li>
 <li><code>--no-direct-graphic</code> Check only 3-connected matrices for regularity.</li>
 <li><code>--no-series-parallel</code> Do not allow series-parallel operations in decomposition tree.</li>
-<li><code>--algo ALGO</code> Use algorithm from {decomposition, submatrix, partition}; default: decomposition.</li>
 </ul>
 <p>If <code>IN-MAT</code> is <code>-</code> then the matrix is read from stdin. If <code>OUT-DEC</code> or <code>NON-SUB</code> is <code>-</code> then the decomposition tree (resp. the submatrix) is written to stdout.</p>
-<h1><a class="anchor" id="autotoc_md64"></a>
-Algorithms</h1>
-<p>The implemented default recognition algorithm is based on <a href="https://doi.org/10.1007/s12532-012-0048-x">Implementation of a unimodularity test</a> by Matthias Walter and Klaus Truemper (Mathematical Programming Computation, 2013). It either runs <a class="el" href="camion.html">Camion's Signing Algorithm</a> to reduce the question to that of <a class="el" href="binary_regular.html">recognizing binary regular matroids</a> or decomposes a given ternary matrix directly by means of a <a class="el" href="seymour_decomposition.html">Seymour decomposition</a>. Please cite the paper in case the implementation contributed to your research: </p><pre class="fragment">@Article{WalterT13,
+<h1><a class="anchor" id="autotoc_md57"></a>
+Algorithm</h1>
+<p>The implemented recognition algorithm is based on <a href="https://doi.org/10.1007/s12532-012-0048-x">Implementation of a unimodularity test</a> by Matthias Walter and Klaus Truemper (Mathematical Programming Computation, 2013). It is based on Seymour's <a href="https://doi.org/10.1016/0095-8956(80)90075-1">decomposition theorem for regular matroids</a>. The algorithm runs in \( \mathcal{O}( (m+n)^5 ) \) time and is a simplified version of <a href="https://doi.org/10.1016/0095-8956(90)90030-4">Truemper's cubic algorithm</a>. Please cite the following paper in case the implementation contributed to your research: </p><pre class="fragment">@Article{WalterT13,
   author    = {Walter, Matthias and Truemper, Klaus},
   title     = {Implementation of a unimodularity test},
   journal   = {Mathematical Programming Computation},
@@ -108,18 +106,13 @@ Algorithms</h1>
   doi       = {10.1007/s12532-012-0048-x},
   publisher = {Springer-Verlag},
 }
-</pre><p> In order to repeat experiments described in the paper above, the function can be parameterized as to use exponential-time algorithms.</p>
-<ul>
-<li>The first is based on the criterion of Ghouila-Houri and runs in time \( \mathcal{O}( (m + n) \cdot 3^{\min(m, n)}) \).</li>
-<li>The second enumerates square <a href="https://www.ams.org/journals/proc/1965-016-05/S0002-9939-1965-0180568-2/">Eulerian submatrices</a> and runs in time \( \mathcal{O}( (m+n) \cdot 2^{ m + n } ) \).</li>
-</ul>
-<h1><a class="anchor" id="autotoc_md65"></a>
+</pre> <h1><a class="anchor" id="autotoc_md58"></a>
 C Interface</h1>
 <p>The corresponding function in the library is</p>
 <ul>
-<li><a class="el" href="tu_8h.html#a8529229e5e224a1157fe1d5d4674dc50" title="Tests a matrix  for being totally unimodular.">CMRtuTest()</a> tests a matrix for being totally unimodular.</li>
+<li><a class="el" href="regular_8h.html#a99ac3466086867c1e1f7106ba8eccbf1" title="Tests binary linear matroid for regularity.">CMRregularTest()</a> tests a binary matrix for regularity.</li>
 </ul>
-<p>and is defined in <a class="el" href="tu_8h.html">tu.h</a>. Its parameters also allow to choose one of the enumeration algorithms with exponential running time instead of the decomposition algorithm. </p>
+<p>and is defined in <a class="el" href="regular_8h.html">regular.h</a>. </p>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->

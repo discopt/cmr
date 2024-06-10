@@ -76,65 +76,20 @@ $(function() {
 <div class="title">Representation of Matroids and their Decomposition </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="md__home_runner_work_cmr_cmr_doc_matroids"></a> The matroid <b>represented</b> by a matrix \( M \in \mathbb{F}^{m \times n} \) has \( m + n \) elements that correspond to the columns of \( [ \mathbb{I} \mid M ] \). A subset of these columns is independent if and only if it is linearly independent over the field \( \mathbb{F} \).</p>
-<h1><a class="anchor" id="seymour_decomposition"></a>
-Decomposition of matroids</h1>
-<p>In CMR, the matroid represented by a matrix can be decomposed, which is essential for testing for <a class="el" href="tu.html">total unimodularity</a> and <a class="el" href="regular.html">regularity</a>. The internal representation is a decomposition tree whose nodes are references to CMR_MATROID_DEC.</p>
-<p>Each such decomposition node belongs to a <b>matrix</b>, either of the ternary field \( \mathbb{F} = \mathbb{F}_3 \) or over the binary field \( \mathbb{F} = \mathbb{F}_2 \). This is indicated by CMRmatroiddecIsTernary. While each node has an explicit matrix (see CMRmatroiddecGetMatrix), its transpose need not be stored explicitly (see CMRmatroiddecHasTranspose and CMRmatroiddecGetTranspose). If the matroid is <a class="el" href="regular.html">regular</a> then the support matrix of such a ternary matrix is then also a binary representation matrix.</p>
-<p>A decomposition node may have <b>children</b>, which are (references to) other decomposition nodes. Their number can be queried via CMRmatroiddecNumChildren and each child via CMRmatroiddecChild.</p>
-<p>Moreover, it has (exactly) one of the following <b>types</b>:</p>
+<div class="textblock"><p><a class="anchor" id="md__home_runner_work_cmr_cmr_doc_matroids"></a> The matroid <b>represented</b> by a matrix \( M \in \mathbb{F}^{m \times n} \) has \( m + n \) elements that correspond to the columns of \( [ \mathbb{I} \mid M ] \). A subset of these columns is independent if and only if it is linearly independent over the field \( \mathbb{F} \). Applying a <b>pivot operation</b> (over \( \mathbb{F} \)) and exchanging the corresponding row and column elements leaves the matroid unchanged. In CMR, pivots are carried out via <a class="el" href="group__Matroid.html#ga4de2e3af85ef1c2f6884f76f12f8f95c">CMRchrmatBinaryPivot</a>, <a class="el" href="group__Matroid.html#ga0c6656404a01b5fdda888e1e1700b8e0">CMRchrmatBinaryPivots</a>, <a class="el" href="group__Matroid.html#ga0754f81cbac6af4b5ed1bed21f0a3b0b">CMRchrmatTernaryPivot</a> and <a class="el" href="group__Matroid.html#ga2654fbbfa9e6a99072fd03de8298f4b1">CMRchrmatTernaryPivots</a>.</p>
+<h1><a class="anchor" id="autotoc_md50"></a>
+Minors</h1>
+<p>A <b>minor</b> of a represented matroid is another one obtained by <b>deleting</b> or <b>contracting</b> elements. An element associated with a row (resp. column) can be contracted (resp. deleted) by removing the corresponding matrix row (resp. column). In order to delete a row element or contract a column element one must first pivot such that the element type (row/column) is changed.</p>
+<p>A minor of a matroid represented by matrix \( M \) is represented by means of a <a class="el" href="structCMR__MINOR.html">CMR_MINOR</a> object. It consists of a (potentially empty) array of pivots and a <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> object indicating a submatrix \( M&#39; \) of the matrix obtained from \( M \) after applying the pivots. Moreover, the <b>type</b> field indicates a certain structure of \( M&#39; \):</p>
 <ul>
-<li>An unknown node indicates that the matroid decomposition of the corresponding matrix was not carried out, yet. It is considered a leaf node.</li>
-<li>An R10 node indicates that \( M \) represents the (regular) matroid \( R_{10} \) over \( \mathbb{F} \). It is a leaf.</li>
-<li>A Fano node indicates that \( M \) represents the (irregular) Fano matroid \( F_7 \) over \( \mathbb{F} \). It is a leaf.</li>
-<li>A Fano-dual node indicates that \( M \) represents the dual \( F_7^\star \) of the (irregular) Fano matroid. It is a leaf.</li>
-<li>A K5 node indicates that \( M \) represents the graphic matroid \( M(K_5) \) of the complete graph \( K_5 \) over \( \mathbb{F} \). It is a leaf.</li>
-<li>A K5-dual node indicates that \( M \) represents the dual matroid \( M(K_5)^\star \) of the complete graph \( K_5 \) over \( \mathbb{F} \). It is a leaf.</li>
-<li>A K33 node indicates that \( M \) represents the graphic matroid \( M(K_{3,3}) \) of the complete bipartite graph \( K_{3,3} \) over \( \mathbb{F} \). It is a leaf.</li>
-<li>A K33-dual node indicates that \( M \) represents the dual matroid \( M(K_{3,3})^\star \) of the complete bipartite graph \( K_{3,3} \) over \( \mathbb{F} \). It is a leaf.</li>
-<li>A determinant node indicates that \( M \) has \( |\det(M)| = 2 \). It is a leaf.</li>
-<li>A graphic node indicates that the matrix \( M \) is <a class="el" href="graphic.html">graphic</a> (if \( \mathbb{F} = \mathbb{F}_2 \)) or <a class="el" href="network.html">network</a> (if \( \mathbb{F} = \mathbb{F}_3 \)) and that a corresponding (directed) graph \( G \) with spanning tree \( T \) is stored. The graph \( G \) can be accessed via CMRmatroiddecGraph and CMRmatroiddecGraphArcsReversed, the spanning tree \( T \) via CMRmatroiddecGraphSizeForest, CMRmatroiddecGraphForest, and its complement via CMRmatroiddecGraphSizeCoforest and CMRmatroiddecGraphCoforest. Note that network matrices are <a class="el" href="tu.html">totally unimodularity</a> and graphic matrices are <a class="el" href="regular.html">regular</a>. It is either a leaf or it has one submatrix or pivot child node.</li>
-<li>A cographic node indicates that the matrix \( M \) is <a class="el" href="graphic.html">cographic</a> (if \( \mathbb{F} = \mathbb{F}_2 \)) or <a class="el" href="network.html">conetwork</a> (if \( \mathbb{F} = \mathbb{F}_3 \)) and that a corresponding (directed) graph \( G^\star \) with spanning tree \( T^\star \) stored. The cograph \( G^\star \) can be accessed via CMRmatroiddecCograph and CMRmatroiddecCographArcsReversed, the spanning tree \( T^\star \) via CMRmatroiddecCographSizeForest, CMRmatroiddecCographForest, and its complement via CMRmatroiddecCographSizeCoforest and CMRmatroiddecCographCoforest. Note that conetwork matrices are <a class="el" href="tu.html">totally unimodularity</a> and cographic matrices are <a class="el" href="regular.html">regular</a>. It is either a leaf or it has one submatrix or pivot child node.</li>
-<li>A planar node indicates that the matrix \( M \) is graphic and cographic (if \( \mathbb{F} = \mathbb{F}_2 \)) or network and conetwork (if \( \mathbb{F} = \mathbb{F}_3 \)) at the same time. The graph \( G \) can be accessed via CMRmatroiddecGraph and CMRmatroiddecGraphArcsReversed, the spanning tree \( T \) via CMRmatroiddecGraphSizeForest, CMRmatroiddecGraphForest, and its complement via CMRmatroiddecGraphSizeCoforest and CMRmatroiddecGraphCoforest. The cograph \( G^\star \) can be accessed via CMRmatroiddecCograph and CMRmatroiddecCographArcsReversed, the spanning tree \( T^\star \) via CMRmatroiddecCographSizeForest, CMRmatroiddecCographForest, and its complement via CMRmatroiddecCographSizeCoforest and CMRmatroiddecCographCoforest. It is a leaf.</li>
-<li>A 1-sum node indicates that \( M \) is (up to row and column permutations) of the form <p class="formulaDsp">
-\[ M = \begin{pmatrix} A_1 &amp; \mathbb{O} &amp; \dotsb &amp; \mathbb{O} \\ \mathbb{O} &amp; A_2 &amp; &amp; \vdots \\ \vdots &amp; &amp; \ddots &amp; \mathbb{O} \\ \mathbb{O} &amp; \dotsb &amp; \mathbb{O} &amp; A_k \end{pmatrix}. \]
-</p>
- Such a node has at least two children that belong to the matrices \( M_1 := A_1 \), \( M_2 := A_2 \), up to \( M_k := A_k \). Note that any such decomposition preserves <a class="el" href="tu.html">total unimodularity</a> and <a class="el" href="regular.html">regularity</a>.</li>
-<li>A 2-sum node indicates that \( M \) is (up to row and column permutations) of the form <p class="formulaDsp">
-\[ M = \begin{pmatrix} A_1 &amp; \mathbb{O} \\ a_2 a_1^{\textsf{T}} &amp; A_2 \end{pmatrix}. \]
-</p>
- Such a node has exactly two children that belong to the matrices <p class="formulaDsp">
-\[ M_1 = \begin{pmatrix} A_1 \\ a_1^{\textsf{T}} \end{pmatrix} \qquad \text{and} \qquad M_2 = \begin{pmatrix} a_2 &amp; A_2 \end{pmatrix}, \]
-</p>
- respectively. Note that any such decomposition preserves <a class="el" href="tu.html">total unimodularity</a> and <a class="el" href="regular.html">regularity</a>.</li>
-<li>A 3-sum node indicates that \( M \) is (up to row and column permutations) of the form <p class="formulaDsp">
-\[ M = \begin{pmatrix} A_1 &amp; C \\ D &amp; A_2 \end{pmatrix}, \]
-</p>
- where \( (\mathop{rank}(C), \mathop{rank}(D)) \in \{ (1,1), (0,2) \} \) holds. We refer to the first case as <b>distributed ranks</b>, which is indicated by CMRmatroiddecThreeSumRanksDistributed. The other case is that of <b>concentrated rank</b>. In each case, there are two variants <em>per</em> child node, and we first consider the case of distributed ranks. Then the matrix \( M \) is of the form <p class="formulaDsp">
-\[ M = \begin{pmatrix} A_1 &amp; c_1 c_2^{\textsf{T}} \\ d_2 d_1^{\textsf{T}} &amp; A_2 \end{pmatrix}. \]
-</p>
- The first child is of one of the forms <p class="formulaDsp">
-\[ M_1^{\text{wide}} = \begin{pmatrix} A_1 &amp; c_1 &amp; c_1 \\ d_1^{\textsf{T}} &amp; 0 &amp; \pm 1 \end{pmatrix}, \qquad M_1^{\text{tall}} = \begin{pmatrix} A_1 &amp; c_1 \\ d_1^{\textsf{T}} &amp; 0 \\ d_1^{\textsf{T}} &amp; \pm 1 \end{pmatrix}. \]
-</p>
- The second child is of one of the forms <p class="formulaDsp">
-\[ M_2^{\text{wide}} = \begin{pmatrix} \pm 1 &amp; 0 &amp; c_2^{\textsf{T}} \\ d_2 &amp; d_2 &amp; A_2 \end{pmatrix}, \qquad M_2^{\text{tall}} = \begin{pmatrix} \pm 1 &amp; c_2^{\textsf{T}} \\ 0 &amp; c_2^{\textsf{T}} \\ d_2 &amp; A_2 \end{pmatrix}. \]
-</p>
- In case of concentrated rank the matrix \( M \) is of the form <p class="formulaDsp">
-\[ M = \begin{pmatrix} A_1 &amp; \mathbb{O} \\ D &amp; A_2 \end{pmatrix}, \]
-</p>
- where \( \mathop{rank}(D) = 2 \). The first child is of one of the forms <p class="formulaDsp">
-\[ M_1^{\text{mixed}} = \begin{pmatrix} A_1 &amp; \mathbb{O} \\ d_1^{\textsf{T}} &amp; 1 \\ d_2^{\textsf{T}} &amp; \pm 1 \end{pmatrix}, \qquad M_1^{\text{all-repr}} = \begin{pmatrix} A_1 \\ d_1^{\textsf{T}} \\ d_2^{\textsf{T}} \\ d_3^{\textsf{T}} \end{pmatrix}, \]
-</p>
- where <em>any pair</em> of \( d_1, d_2, d_3 \) spans the row-space of \( D \). The second child is of one of the forms <p class="formulaDsp">
-\[ M_2^{\text{mixed}} = \begin{pmatrix} A_1 &amp; d_1 &amp; d_2 \\ \mathbb{O} &amp; 1 &amp; \pm 1 \end{pmatrix}, \qquad M_2^{\text{all-repr}} = \begin{pmatrix} A_1 &amp; d_1 &amp; d_2 &amp; d_3 \end{pmatrix}, \]
-</p>
- where <em>any pair</em> of \( d_1, d_2, d_3 \) spans the column-space of \( D \). The sign of the entries marked as \( \pm 1 \) is determined such that a certain submatrix involving that entry has the right determinant. Note that any such decomposition preserves <a class="el" href="tu.html">total unimodularity</a> and <a class="el" href="regular.html">regularity</a>.</li>
-<li>A series-parallel node indicates that \( M \) arises from a smaller matrix \( M&#39; \) by successively adding zero rows/columns, unit rows/columns or duplicates of existing rows/columns (potentially scaled with \( -1 \)). Note that such <b>series-parallel reductions</b> preserve <a class="el" href="tu.html">total unimodularity</a> and <a class="el" href="regular.html">regularity</a>. It has one child node that corresponds to \( M&#39; \).</li>
-<li>A pivot node indicates a sequence of pivot operations on entries whose rows and columns are pairwise distinct, which turn matrix \( M \) into another matrix \( M&#39; \) that represent the same matroid. The unique child must either be a leaf node or a 3-sum. The pivots are carried out over the corresponding field \( \mathbb{F} \).</li>
-<li>A submatrix node indicates a submatrix \( M&#39; \) of \( M \). The unique child must either be a leaf node or a pivot.</li>
-<li>An irregular node indicates a matrix \( M \) that is irregular. It is either a leaf or it has one submatrix or pivot child node.</li>
+<li>A <a class="el" href="group__Matroid.html#ggaf4fa5a65acf0f77b366c30e9dfb0b07ea83e75fcc77f5581cac234233d82807b4">determinant</a> type indicates that \( M&#39; \) is a submatrix of \( M \) with \( |\det(M&#39;)| \geq 2 \). In particular, no pivots are applied.</li>
+<li>A <a class="el" href="group__Matroid.html#ggaf4fa5a65acf0f77b366c30e9dfb0b07eaee85f64baaa2f8ea625efb2a13ee2eb5">Fano</a> type indicates that \( M&#39; \) represents the Fano matroid \( F_7 \).</li>
+<li>A <a class="el" href="group__Matroid.html#ggaf4fa5a65acf0f77b366c30e9dfb0b07ea35f83c2282a7d342b5c1211ad2f86a42">Fano-dual</a> type indicates that \( M&#39; \) represents the dual \( F_7^\star \) of the Fano matroid.</li>
+<li>A <a class="el" href="group__Matroid.html#ggaf4fa5a65acf0f77b366c30e9dfb0b07ea715ff67fef0b0c5817a85310d39a457a">K5</a> type indicates that \( M&#39; \) represents the graphic matroid \( M(K_5) \) of the complete graph \( K_5 \).</li>
+<li>A <a class="el" href="group__Matroid.html#ggaf4fa5a65acf0f77b366c30e9dfb0b07ea19e537f9d2f161bd708a3cc0afa44e1d">K5-dual</a> type indicates that \( M&#39; \) represents the dual matroid \( M(K_5)^\star \) of the complete graph \( K_5 \).</li>
+<li>A <a class="el" href="group__Matroid.html#ggaf4fa5a65acf0f77b366c30e9dfb0b07ea7f4cbd6f92cf2aa9c57f4c446a76b32a">K33</a> type indicates that \( M&#39; \) represents the graphic matroid \( M(K_{3,3}) \) of the complete bipartite graph \( K_{3,3} \).</li>
+<li>A <a class="el" href="group__Matroid.html#ggaf4fa5a65acf0f77b366c30e9dfb0b07ead9f52bfbe78a94936dc5ee894f8a4372">K33-dual</a> type indicates that \( M&#39; \) represents the dual matroid \( M(K_{3,3})^\star \) of the complete bipartite graph \( K_{3,3} \). </li>
 </ul>
-<p>The following restrictions apply: </p>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->

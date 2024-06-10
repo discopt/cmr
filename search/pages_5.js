@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['instance_20generators_2226',['Instance Generators',['../generators.html',1,'']]]
+  ['graphic_20_2f_20cographic_20_2f_20planar_20matrices_2230',['Graphic / Cographic / Planar Matrices',['../graphic.html',1,'']]]
 ];
