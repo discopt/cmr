@@ -84,9 +84,9 @@ $(function() {
 <p>In case \( M \) has full row-rank, the first property requires that the determinant of any basis matrix shall be \( \pm k \), while the second property requires that \( M_{\star,B}^{-1} M \) is <a class="el" href="tu.html">totally unimodular</a>. Otherwise, \( M_{\star,B} \) is not square, and hence the property is more technical.</p>
 <dl class="section note"><dt>Note</dt><dd>Equimodularity is independent of the choice of the column basis \( B \).</dd></dl>
 <p>Additionally, \( M \) is called <b>strongly equimodular</b> if \( M \) and \( M^{\textsf{T}} \) are both equimodular, which implies that they are equimodular for the same gcd determinants. The special cases with \( k = 1 \) are called <b>unimodular</b> and <b>strongly unimodular</b>, respectively.</p>
-<h1><a class="anchor" id="autotoc_md48"></a>
+<h1><a class="anchor" id="autotoc_md47"></a>
 Usage</h1>
-<p>The executable <code>cmr-equimodular</code> determines whether a given matrix \( M \) with determinant gcd \( k \). </p><pre class="fragment">./cmr-equimodular [OPTION]... FILE
+<p>The executable <code>cmr-equimodular</code> determines whether a given <a class="el" href="file-formats.html#file-formats-matrix">matrix</a> \( M \) with determinant gcd \( k \). </p><pre class="fragment">./cmr-equimodular [OPTION]... FILE
 </pre><p> Options:</p><ul>
 <li><code>-i FORMAT</code> Format of input FILE; default: <code>dense</code>.</li>
 <li><code>-t</code> Test \( M^{\textsf{T}} \) instead.</li>
@@ -94,7 +94,7 @@ Usage</h1>
 <li><code>-u</code> Test only for unimodularity, i.e., \( k = 1 \).</li>
 </ul>
 <p>Formats for matrices are <a class="el" href="file-formats.html#dense-matrix">dense-matrix</a> and <a class="el" href="file-formats.html#sparse-matrix">sparse-matrix</a>. If FILE is <code>-</code>, then the input will be read from stdin.</p>
-<h1><a class="anchor" id="autotoc_md49"></a>
+<h1><a class="anchor" id="autotoc_md48"></a>
 C Interface</h1>
 <p>The functionality is defined in <a class="el" href="equimodular_8h.html">equimodular.h</a>. The main functions are:</p>
 <ul>

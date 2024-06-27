@@ -80,7 +80,7 @@ $(function() {
 <h1><a class="anchor" id="autotoc_md25"></a>
 Recognizing Complement Totally Unimodular Matrices</h1>
 <p>The command </p><pre class="fragment">cmr-ctu IN-MAT [OPTION]...
-</pre><p> determines whether the matrix given in file <code>IN-MAT</code> is complement totally unimodular.</p>
+</pre><p> determines whether the <a class="el" href="file-formats.html#file-formats-matrix">matrix</a> given in file <code>IN-MAT</code> is complement totally unimodular.</p>
 <p><b>Options</b>:</p><ul>
 <li><code>-i FORMAT</code> Format of file <code>IN-MAT</code>, among <code>dense</code> for <a class="el" href="file-formats.html#dense-matrix">dense-matrix</a> and <code>sparse</code> for <a class="el" href="file-formats.html#sparse-matrix">sparse-matrix</a>; default: dense.</li>
 <li><code>-o FORMAT</code> Format of file <code>OUT-MAT</code>, among <code>dense</code> for <a class="el" href="file-formats.html#dense-matrix">dense-matrix</a> and <code>sparse</code> for <a class="el" href="file-formats.html#sparse-matrix">sparse-matrix</a>; default: same as for <code>IN-MAT</code>.</li>
@@ -88,7 +88,7 @@ Recognizing Complement Totally Unimodular Matrices</h1>
 <li><code>-N OUT-MAT</code> Write a complemented matrix that is non-totally-unimodular to file <code>OUT-MAT</code>; default: skip computation.</li>
 <li><code>-s</code> Print statistics about the computation to stderr.</li>
 </ul>
-<p>If <code>IN-MAT</code> is <code>-</code> then the matrix is read from stdin. If <code>OUT-OPS</code> or <code>OUT-MAT</code> is <code>-</code> then the list of operations (resp. the matrix) is written to stdout.</p>
+<p>If <code>IN-MAT</code> is <code>-</code> then the <a class="el" href="file-formats.html#file-formats-matrix">matrix</a> is read from stdin. If <code>OUT-OPS</code> or <code>OUT-MAT</code> is <code>-</code> then the list of operations (resp. the <a class="el" href="file-formats.html#file-formats-matrix">matrix</a>) is written to stdout.</p>
 <h2><a class="anchor" id="autotoc_md26"></a>
 C Interface</h2>
 <p>The corresponding function in the library is</p>

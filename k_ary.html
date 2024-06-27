@@ -85,7 +85,7 @@ $(function() {
 <h1><a class="anchor" id="autotoc_md29"></a>
 Recognizing Binary and Ternary Matrices</h1>
 <p>The command </p><pre class="fragment">cmr-k-ary IN-MAT [OPTION...]
-</pre><p> determines whether the matrix given in file <code>IN-MAT</code> is integer (resp. binary or ternary).</p>
+</pre><p> determines whether the <a class="el" href="file-formats.html#file-formats-matrix">matrix</a> given in file <code>IN-MAT</code> is integer (resp. binary or ternary).</p>
 <p><b>Options</b>:</p><ul>
 <li><code>-i FORMAT</code> Format of file <code>IN-MAT</code>, among <code>dense</code> for <a class="el" href="file-formats.html#dense-matrix">dense-matrix</a> and <code>sparse</code> for <a class="el" href="file-formats.html#sparse-matrix">sparse-matrix</a>; default: dense.</li>
 <li><code>-b</code> Test whether the matrix is binary, i.e., has entries in \( \{0,+1\} \).</li>
@@ -93,18 +93,18 @@ Recognizing Binary and Ternary Matrices</h1>
 <li><code>-I</code> Test whether the matrix is integer.</li>
 <li><code>-e EPSILON</code> Allows rounding of numbers up to tolerance <code>EPSILON</code>; default: \( 10^{-9} \).</li>
 </ul>
-<p>If <code>IN-MAT</code> is <code>-</code> then the matrix is read from stdin.</p>
+<p>If <code>IN-MAT</code> is <code>-</code> then the <a class="el" href="file-formats.html#file-formats-matrix">matrix</a> is read from stdin.</p>
 <h1><a class="anchor" id="autotoc_md30"></a>
 Finding Large Binary or Ternary Submatrices</h1>
 <p>The command </p><pre class="fragment">cmr-k-ary IN-MAT -R OUT-SUB [OPTION...]
-</pre><p> finds a large binary (resp. ternary) submatrix of the matrix given in file <code>IN-MAT</code>.</p>
+</pre><p> finds a large binary (resp. ternary) <a class="el" href="file-formats.html#file-formats-matrix">submatrix</a> of the <a class="el" href="file-formats.html#file-formats-matrix">matrix</a> given in file <code>IN-MAT</code>.</p>
 <p><b>Options:</b></p><ul>
 <li><code>-i FORMAT</code> Format of file <code>IN-MAT</code>, among <code>dense</code> for <a class="el" href="file-formats.html#dense-matrix">dense-matrix</a> and <code>sparse</code> for <a class="el" href="file-formats.html#sparse-matrix">sparse-matrix</a>; default: dense.</li>
 <li><code>-b</code> Find a large binary submatrix, i.e., one with only entries in \( \{0,+1\} \).</li>
 <li><code>-t</code> Find a large ternary submatrix, i.e., one with only entries in \( \{-1,0,+1\} \).</li>
 <li><code>-e EPSILON</code> Allows rounding of numbers up to tolerance <code>EPSILON</code>; default: \( 10^{-9} \).</li>
 </ul>
-<p>If <code>IN-MAT</code> is <code>-</code> then the matrix is read from stdin. If <code>OUT-SUB</code> is <code>-</code> then the submatrix is written to stdout.</p>
+<p>If <code>IN-MAT</code> is <code>-</code> then the <a class="el" href="file-formats.html#file-formats-matrix">matrix</a> is read from stdin. If <code>OUT-SUB</code> is <code>-</code> then the <a class="el" href="file-formats.html#file-formats-submatrix">submatrix</a> is written to stdout.</p>
 <h1><a class="anchor" id="autotoc_md31"></a>
 Algorithm</h1>
 <p>The implemented algorithm successively removes a row or a column with the maximum number of forbidden entries. </p>

@@ -78,7 +78,7 @@ $(function() {
 <div class="contents">
 <div class="textblock"><p><a class="anchor" id="md__home_runner_work_cmr_cmr_doc_generators"></a> The library comes with several instance generators. However, they are disabled for compilation by default, and can be enabled by adding </p><pre class="fragment">-DGENERATORS=on
 </pre><p> to the cmake call. In the following we provide details for each of these generators.</p>
-<h1><a class="anchor" id="autotoc_md43"></a>
+<h1><a class="anchor" id="autotoc_md42"></a>
 Graphic Matrices</h1>
 <p>The executable <code>cmr-generate-graphic</code> creates a random \( m \)-by- \(n\) matrix that is graphic. To this end, it first constructs a spanning tree with \( m+1 \) nodes by subsequently connecting each new leaf to one of the previously created nodes. The new edge then indexes a row of the matrix. Second, \( n \) random pairs of distinct nodes are generated that are then connected by a new edge indexed by a column. The matrix is the representation matrix of the final graph with respect to the spanning tree. It can be called as follows, where \( m \) equals ROWS and \( n \) equals COLS. </p><pre class="fragment">./cmr-generate-graphic [OPTIONS] ROWS COLS
 </pre><p> Options:</p><ul>
@@ -86,7 +86,7 @@ Graphic Matrices</h1>
 <li><code>-o FORMAT</code> Format of output FILE; default: <code>dense</code>.</li>
 </ul>
 <p>Formats for matrices are <a class="el" href="file-formats.html#dense-matrix">dense-matrix</a>, <a class="el" href="file-formats.html#sparse-matrix">sparse-matrix</a>.</p>
-<h1><a class="anchor" id="autotoc_md44"></a>
+<h1><a class="anchor" id="autotoc_md43"></a>
 Network Matrices</h1>
 <p>The executable <code>cmr-generate-network</code> creates a random \( m \)-by- \(n\) network matrix, either ternary (default) or binary. In order to generate a ternary matrix, it first constructs a random graphic matrix (see above) and then modifies its signs via <a class="el" href="camion.html">Camion's Signing Algorithm</a>. For the binary matrix, a random spanning tree is constructed and oriented to become an arborescence with root. For the co-tree edges, only node pairs are considered, where the second node lies on the directed path from the first node to the root. It can be called as follows, where \( m \) equals ROWS and \( n \) equals COLS. </p><pre class="fragment">./cmr-generate-network [OPTIONS] ROWS COLS
 </pre><p> Options:</p><ul>
@@ -95,14 +95,14 @@ Network Matrices</h1>
 <li><code>-o FORMAT</code> Format of output FILE; default: <code>dense</code>.</li>
 </ul>
 <p>Formats for matrices are <a class="el" href="file-formats.html#dense-matrix">dense-matrix</a>, <a class="el" href="file-formats.html#sparse-matrix">sparse-matrix</a>.</p>
-<h1><a class="anchor" id="autotoc_md45"></a>
+<h1><a class="anchor" id="autotoc_md44"></a>
 Random Matrices</h1>
 <p>The executable <code>cmr-generate-random</code> creates a random \( m \)-by- \(n\) binary matrix whose entries are chosen uniformly at random with a given probability \( p \). It can be called as follows, where \( m \) equals ROWS and \( n \) equals COLS. </p><pre class="fragment">./cmr-generate-random [OPTIONS] ROWS COLS p
 </pre><p> Options:</p><ul>
 <li><code>-o FORMAT</code> Format of output FILE; default: <code>dense</code>.</li>
 </ul>
 <p>Formats for matrices are <a class="el" href="file-formats.html#dense-matrix">dense-matrix</a>, <a class="el" href="file-formats.html#sparse-matrix">sparse-matrix</a>.</p>
-<h1><a class="anchor" id="autotoc_md46"></a>
+<h1><a class="anchor" id="autotoc_md45"></a>
 Random Perturbations</h1>
 <p>The executable <code>cmr-perturb-random</code> modifies a matrix by applying a specified number of random perturbations of different types. It can be called as follows. </p><pre class="fragment">./cmr-perturb-random [OPTIONS] MATRIX
 </pre><p> Options:</p><ul>
@@ -115,7 +115,7 @@ Random Perturbations</h1>
 <li><code>-t NUM</code> Flip NUM randomly chosen entries over the ternary field.</li>
 </ul>
 <p>If MATRIX is <code>-</code>, then the matrix will be read from stdin. Formats for matrices are <a class="el" href="file-formats.html#dense-matrix">dense-matrix</a>, <a class="el" href="file-formats.html#sparse-matrix">sparse-matrix</a>.</p>
-<h1><a class="anchor" id="autotoc_md47"></a>
+<h1><a class="anchor" id="autotoc_md46"></a>
 Gurobi Coefficient Matrix</h1>
 <p>The executable <code>cmr-extract-gurobi</code> extracts the coefficient matrix of a mixed-integer program file that can be read by the <a href="https://www.gurobi.com">Gurobi solver</a>. Building it requires that Gurobi is found by cmake. To this end, you may need to set the cmake option <code>-DGUROBI_DIR</code> to your Gurobi installation directory. It can be called as follows. </p><pre class="fragment">./cmr-extract-gurobi [OPTIONS] MIPFILE
 </pre><p> Options:</p><ul>
