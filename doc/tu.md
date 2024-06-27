@@ -11,7 +11,7 @@ The command
 
     cmr-tu IN-MAT [OPTION...]
 
-determines whether the matrix given in file `IN-MAT` is totally unimodular.
+determines whether the [matrix](\ref file-formats-matrix) given in file `IN-MAT` is totally unimodular.
 
 **Options:**
   - `-i FORMAT`  Format of file `IN-MAT`, among `dense` for \ref dense-matrix and `sparse` for \ref sparse-matrix; default: dense.
@@ -25,8 +25,8 @@ determines whether the matrix given in file `IN-MAT` is totally unimodular.
   - `--no-series-parallel` Do not allow series-parallel operations in decomposition tree.
   - `--algo ALGO`          Use algorithm from {decomposition, submatrix, partition}; default: decomposition.
 
-If `IN-MAT` is `-` then the matrix is read from stdin.
-If `OUT-DEC` or `NON-SUB` is `-` then the decomposition tree (resp. the submatrix) is written to stdout.
+If `IN-MAT` is `-` then the [matrix](\ref file-formats-matrix) is read from stdin.
+If `OUT-DEC` or `NON-SUB` is `-` then the decomposition tree (resp. the [submatrix](\ref file-formats-submatrix)) is written to stdout.
 
 ## Algorithms ##
 

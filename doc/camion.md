@@ -16,15 +16,15 @@ The command
 
     cmr-camion IN-MAT [OPTION]...
 
-determines whether the matrix given in file `IN-MAT` is Camion-signed.
+determines whether the [matrix](\ref file-formats-matrix) given in file `IN-MAT` is Camion-signed.
 
 **Options:**
   - `-i FORMAT`   Format of file `IN-MAT`, among `dense` for \ref dense-matrix and `sparse` for \ref sparse-matrix; default: dense.
   - `-N NON-SUB`  Write a minimal non-Camion submatrix to file `NON-SUB`; default: skip computation.
   - `-s`          Print statistics about the computation to stderr.
 
-If `IN-MAT` is `-` then the matrix is read from stdin.
-If `NON-SUB` is `-` then the submatrix is written to stdout.
+If `IN-MAT` is `-` then the [matrix](\ref file-formats-matrix) is read from stdin.
+If `NON-SUB` is `-` then the [submatrix](\ref file-formats-submatrix)  is written to stdout.
 
 ### Algorithm ###
 

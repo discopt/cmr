@@ -9,7 +9,7 @@ The command
 
     cmr-balanced IN-MAT [OPTION...]
 
-determines whether the matrix given in file `IN-MAT` is balanced.
+determines whether the [matrix](\ref file-formats-matrix) given in file `IN-MAT` is balanced.
 
 **Options:**
   - `-i FORMAT`    Format of file `IN-MAT`, among `dense` for \ref dense-matrix and `sparse` for \ref sparse-matrix; default: dense.
@@ -20,8 +20,8 @@ determines whether the matrix given in file `IN-MAT` is balanced.
   - `--time-limit LIMIT` Allow at most LIMIT seconds for the computation.
   - `--algorithm ALGO`   Algorithm to use, among `enumerate` and `graph`; default: choose best.
 
-If `IN-MAT` is `-` then the matrix is read from stdin.
-If `NON-SUB` is `-` then the submatrix is written to stdout.
+If `IN-MAT` is `-` then the [matrix](\ref file-formats-matrix) is read from stdin.
+If `NON-SUB` is `-` then the [submatrix](\ref file-formats-submatrix) is written to stdout.
 
 ## Algorithm ##
 

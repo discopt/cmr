@@ -14,7 +14,7 @@ The command
 
     cmr-ctu IN-MAT [OPTION]...
 
-determines whether the matrix given in file `IN-MAT` is complement totally unimodular.
+determines whether the [matrix](\ref file-formats-matrix) given in file `IN-MAT` is complement totally unimodular.
 
 **Options**:
   - `-i FORMAT`   Format of file `IN-MAT`, among `dense` for \ref dense-matrix and `sparse` for \ref sparse-matrix; default: dense.
@@ -23,8 +23,8 @@ determines whether the matrix given in file `IN-MAT` is complement totally unimo
   - `-N OUT-MAT`  Write a complemented matrix that is non-totally-unimodular to file `OUT-MAT`; default: skip computation.
   - `-s`          Print statistics about the computation to stderr.
 
-If `IN-MAT` is `-` then the matrix is read from stdin.
-If `OUT-OPS` or `OUT-MAT` is `-` then the list of operations (resp. the matrix) is written to stdout.
+If `IN-MAT` is `-` then the [matrix](\ref file-formats-matrix) is read from stdin.
+If `OUT-OPS` or `OUT-MAT` is `-` then the list of operations (resp. the [matrix](\ref file-formats-matrix)) is written to stdout.
 
 ### C Interface ###
 

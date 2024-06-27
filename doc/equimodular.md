@@ -16,7 +16,7 @@ The special cases with \f$ k = 1 \f$ are called **unimodular** and **strongly un
 
 ## Usage ##
 
-The executable `cmr-equimodular` determines whether a given matrix \f$ M \f$ with determinant gcd \f$ k \f$.
+The executable `cmr-equimodular` determines whether a given [matrix](\ref file-formats-matrix) \f$ M \f$ with determinant gcd \f$ k \f$.
 
     ./cmr-equimodular [OPTION]... FILE
 

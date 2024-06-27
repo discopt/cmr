@@ -13,12 +13,12 @@ The command
 
     cmr-matrix IN-MAT OUT-MAT [OPTION]...
 
-copies the matrix from file `IN-MAT` to file `OUT-MAT`, potentially applying certain operations.
+copies the [matrix](\ref file-formats-matrix) from file `IN-MAT` to file `OUT-MAT`, potentially applying certain operations.
 
 **Options:**
   - `-i FORMAT` Format of file `IN-MAT`, among `dense` for \ref dense-matrix and `sparse` for \ref sparse-matrix; default: dense.
   - `-o FORMAT` Format of file `OUT-MAT`, among `dense` for \ref dense-matrix and `sparse` for \ref sparse-matrix; default: same as format of `IN-MAT`.
-  - `-S IN-SUB` Consider the submatrix of `IN-MAT` specified in file `IN-SUB` instead of `IN-MAT` itself; can be combined with other operations.
+  - `-S IN-SUB` Consider the [submatrix](\ref file-formats-submatrix) of `IN-MAT` specified in file `IN-SUB` instead of `IN-MAT` itself; can be combined with other operations.
   - `-t`        Transpose the matrix; can be combined with other operations.
   - `-c`        Compute the support matrix instead of copying.
   - `-C`        Compute the signed support matrix instead of copying.

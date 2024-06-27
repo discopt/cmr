@@ -400,7 +400,7 @@ CMR_ERROR balancedTestGraph(
 
   assert(!"Not implemented");
 
-  return CMR_OKAY;
+  return CMR_ERROR_INVALID;
 }
 
 /**

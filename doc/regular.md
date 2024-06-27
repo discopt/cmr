@@ -10,7 +10,7 @@ The command
 
     cmr-regular IN-MAT [OPTION...]
 
-determines whether the matrix given in file `IN-MAT` is regular.
+determines whether the [matrix](\ref file-formats-matrix) given in file `IN-MAT` is regular.
 
 **Options:**
   - `-i FORMAT`    Format of file `IN-MAT`, among `dense` for \ref dense-matrix and `sparse` for \ref sparse-matrix; default: dense.
@@ -22,8 +22,8 @@ determines whether the matrix given in file `IN-MAT` is regular.
   - `--no-direct-graphic`  Check only 3-connected matrices for regularity.
   - `--no-series-parallel` Do not allow series-parallel operations in decomposition tree.
 
-If `IN-MAT` is `-` then the matrix is read from stdin.
-If `OUT-DEC` or `NON-SUB` is `-` then the decomposition tree (resp. the submatrix) is written to stdout.
+If `IN-MAT` is `-` then the [matrix](\ref file-formats-matrix) is read from stdin.
+If `OUT-DEC` or `NON-SUB` is `-` then the decomposition tree (resp. the [submatrix](\ref file-formats-submatrix)) is written to stdout.
 
 ## Algorithm ##
 

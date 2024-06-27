@@ -33,7 +33,7 @@ The command
 
     cmr-series-parallel IN-MAT [OPTION...]
 
-determines whether the matrix given in file `IN-MAT` is series-parallel.
+determines whether the [matrix](\ref file-formats-matrix) given in file `IN-MAT` is series-parallel.
 If this is not the case, then a maximal number of SP-reductions is carried out, leading to the **reduced** matrix.
 Moreover, one can ask for one of the minimal non-series-parallel submatrices above.
 
@@ -45,8 +45,8 @@ Moreover, one can ask for one of the minimal non-series-parallel submatrices abo
   - `-b`              Test for being binary series-parallel; default: ternary.
   - `-s`              Print statistics about the computation to stderr.
 
-If `IN-MAT` is `-` then the matrix is read from stdin.
-If `OUT-SP`, `OUT-REDUCED` or `NON-SUB` is `-` then the list of reductions (resp. the submatrix) is written to stdout.
+If `IN-MAT` is `-` then the [matrix](\ref file-formats-matrix) is read from stdin.
+If `OUT-SP`, `OUT-REDUCED` or `NON-SUB` is `-` then the list of reductions (resp. the [submatrix](\ref file-formats-submatrix)) is written to stdout.
 
 ## Algorithm ##
 

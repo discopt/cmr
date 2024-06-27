@@ -1,6 +1,6 @@
 # File Formats # {#file-formats}
 
-## Matrix File Formats ##
+## Matrix File Formats ## {#file-formats-matrix}
 
 There are two accepted file formats for matrices.
 
@@ -28,6 +28,20 @@ The matrix \f$ A = \begin{pmatrix} 1 & -1 & 0 \\ 0 & 1 & 1 \end{pmatrix} \f$ is 
     1 2 -1
     2 2 1
     2 3 1
+
+## Submatrices ## {#file-formats-submatrix}
+
+Several algorithms produce a submatrix of a matrix \f$ A \in \mathbb{Z}^{m \times n} \f$ as output.
+The corresponding format consists of three lines with whitespace-delimited integers.
+The first has the four entries \f$ m \f$, \f$ n \f$, \f$ r \f$, \f$ c \f$ for an \f$ r \f$-by-\f$ c \f$ submatrix of \f$ A \f$.
+The second line consists of \f$ r \f$ entries indicating the row subset (indexing starts at 1) and the third line consists of \f$ c \f$ entries indicating the column subset.
+The submatrix obtained from \f$ A = \begin{pmatrix} 1 & -1 & 0 \\ 0 & 1 & 1 \end{pmatrix} \f$ by removing the first column is represented as follows:
+
+    2 3 2 2
+    1 2
+    2 3
+
+In order to extract the actual submatrix, please use the [cmr-matrix](\ref utilities) command.
 
 ## Graph File Formats ##
 
