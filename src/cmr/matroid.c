@@ -316,6 +316,33 @@ CMR_MINOR_TYPE CMRminorType(CMR_MINOR* minor)
   return minor->type;
 }
 
+size_t CMRminorNumPivots(CMR_MINOR* minor)
+{
+  assert(minor);
+
+  return minor->numPivots;
+}
+
+size_t* CMRminorPivotRows(CMR_MINOR* minor)
+{
+  assert(minor);
+
+  return minor->pivotRows;
+}
+
+size_t* CMRminorPivotColumns(CMR_MINOR* minor)
+{
+  assert(minor);
+
+  return minor->pivotColumns;
+}
+
+CMR_SUBMAT* CMRminorSubmatrix(CMR_MINOR* minor)
+{
+  assert(minor);
+
+  return minor->remainingSubmatrix;
+}
 
 CMR_ERROR CMRminorPrint(CMR* cmr, CMR_MINOR* minor, size_t numRows, size_t numColumns, FILE* stream)
 {

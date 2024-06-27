@@ -159,6 +159,42 @@ CMR_MINOR_TYPE CMRminorType(
 );
 
 /**
+ * \brief Returns the number of pivots needed to make a \p minor visible.
+ */
+
+CMR_EXPORT
+size_t CMRminorNumPivots(
+  CMR_MINOR* minor  /**< Minor. */
+);
+
+/**
+ * \brief Returns the array with pivot rows to make a \p minor visible.
+ */
+
+CMR_EXPORT
+size_t* CMRminorPivotRows(
+  CMR_MINOR* minor  /**< Minor. */
+);
+
+/**
+ * \brief Returns the array with pivot columns to make a \p minor visible.
+ */
+
+CMR_EXPORT
+size_t* CMRminorPivotColumns(
+  CMR_MINOR* minor  /**< Minor. */
+);
+
+/**
+ * \brief Returns the submatrix to take (after applying pivots) to make a \p minor visible.
+ */
+
+CMR_EXPORT
+CMR_SUBMAT* CMRminorSubmatrix(
+  CMR_MINOR* minor  /**< Minor. */
+);
+
+/**
  * \brief Writes the minor \p minor to \p stream by means of lists of row and column indices as well as pivot entries.
  */
 
