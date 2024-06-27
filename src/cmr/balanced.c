@@ -493,7 +493,7 @@ CMR_ERROR balancedTestConnected(
   {
     /* TODO: Consider 2-separations as well; to this end, use CMRdecomposeTernarySeriesParallel instead. */
 
-    CMR_CALL( CMRtestTernarySeriesParallel(cmr, matrix, &isSeriesParallel, NULL, NULL, &reducedSubmatrix,
+    CMR_CALL( CMRspTestTernary(cmr, matrix, &isSeriesParallel, NULL, NULL, &reducedSubmatrix,
       &violatorSubmatrix, stats ? &stats->seriesParallel : NULL, timeLimit) );
 
     /* Stop if the matrix is actually series-parallel. */

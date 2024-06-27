@@ -30,7 +30,7 @@ If `OUT-OPS` or `OUT-MAT` is `-` then the list of operations (resp. the [matrix]
 
 The corresponding function in the library is
 
-  - CMRtestComplementTotalUnimodularity() tests a matrix for being complement totally unimodular.
+  - CMRctuTest() tests a matrix for being complement totally unimodular.
 
 and is defined in \ref ctu.h.
 
@@ -57,6 +57,6 @@ If `OUT-MAT` is `-` then the matrix is written to stdout.
 
 The corresponding function in the library is
 
-  - CMRcomplementRowColumn() carries out a row- or column-complement operation for a matrix.
+  - CMRctuComplementRowColumn() carries out a row- or column-complement operation for a matrix.
 
 and is defined in \ref ctu.h.

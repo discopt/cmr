@@ -1655,7 +1655,7 @@ CMR_ERROR decomposeBinarySeriesParallel(
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRtestBinarySeriesParallel(CMR* cmr, CMR_CHRMAT* matrix, bool* pisSeriesParallel,
+CMR_ERROR CMRspTestBinary(CMR* cmr, CMR_CHRMAT* matrix, bool* pisSeriesParallel,
   CMR_SP_REDUCTION* reductions, size_t* pnumReductions, CMR_SUBMAT** preducedSubmatrix, CMR_SUBMAT** pviolatorSubmatrix,
   CMR_SP_STATISTICS* stats, double timeLimit)
 {
@@ -1683,7 +1683,7 @@ CMR_ERROR CMRtestBinarySeriesParallel(CMR* cmr, CMR_CHRMAT* matrix, bool* pisSer
 }
 
 
-CMR_ERROR CMRdecomposeBinarySeriesParallel(CMR* cmr, CMR_CHRMAT* matrix, bool* pisSeriesParallel,
+CMR_ERROR CMRspDecomposeBinary(CMR* cmr, CMR_CHRMAT* matrix, bool* pisSeriesParallel,
   CMR_SP_REDUCTION* reductions, size_t maxNumReductions, size_t* pnumReductions, CMR_SUBMAT** preducedSubmatrix,
   CMR_SUBMAT** pviolatorSubmatrix, CMR_SEPA** pseparation, CMR_SP_STATISTICS* stats, double timeLimit)
 {
@@ -1939,7 +1939,7 @@ CMR_ERROR decomposeTernarySeriesParallel(
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRtestTernarySeriesParallel(CMR* cmr, CMR_CHRMAT* matrix, bool* pisSeriesParallel,
+CMR_ERROR CMRspTestTernary(CMR* cmr, CMR_CHRMAT* matrix, bool* pisSeriesParallel,
   CMR_SP_REDUCTION* reductions, size_t* pnumReductions, CMR_SUBMAT** preducedSubmatrix, CMR_SUBMAT** pviolatorSubmatrix,
   CMR_SP_STATISTICS* stats, double timeLimit)
 {
@@ -1966,7 +1966,7 @@ CMR_ERROR CMRtestTernarySeriesParallel(CMR* cmr, CMR_CHRMAT* matrix, bool* pisSe
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRdecomposeTernarySeriesParallel(CMR* cmr, CMR_CHRMAT* matrix, bool* pisSeriesParallel,
+CMR_ERROR CMRspDecomposeTernary(CMR* cmr, CMR_CHRMAT* matrix, bool* pisSeriesParallel,
   CMR_SP_REDUCTION* reductions, size_t maxNumReductions, size_t* pnumReductions, CMR_SUBMAT** preducedSubmatrix,
   CMR_SUBMAT** pviolatorSubmatrix, CMR_SEPA** pseparation, CMR_SP_STATISTICS* stats, double timeLimit)
 {

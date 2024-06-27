@@ -8,6 +8,7 @@ The following matrix classes can be recognized:
   - \ref network
   - \ref ctu
   - \ref equimodular
+  - \ref balanced (currently only via enumerative methods)
 
 Moreover, [representation matrices](\ref matroids) for the following matroid classes can be recognized:
 
@@ -25,7 +26,6 @@ The library also contains various [instance generators](\ref generators).
 
 The following matrix/matroid classes are **planned**:
 
-  - \ref balanced
   - \ref totally-balanced
   - \ref perfect
   - \ref consecutive-ones

@@ -98,7 +98,7 @@ CMR_ERROR testComplementTotalUnimodularity(
         outputMatrixToFile ? ">" : "", outputFormat == FILEFORMAT_MATRIX_DENSE ? "dense" : "sparse");
 
       CMR_CHRMAT* complemented = NULL;
-      CMR_CALL( CMRcomplementRowColumn(cmr, matrix, complementRow, complementColumn, &complemented) );
+      CMR_CALL( CMRctuComplementRowColumn(cmr, matrix, complementRow, complementColumn, &complemented) );
 
       if (outputFormat == FILEFORMAT_MATRIX_DENSE)
         CMR_CALL( CMRchrmatPrintDense(cmr, complemented, stdout, '0', false) );
@@ -154,7 +154,7 @@ CMR_ERROR complementMatrix(
 
   /* Carry out complementing. */
   CMR_CHRMAT* complemented = NULL;
-  CMR_CALL( CMRcomplementRowColumn(cmr, matrix, complementRow, complementColumn, &complemented) );
+  CMR_CALL( CMRctuComplementRowColumn(cmr, matrix, complementRow, complementColumn, &complemented) );
 
   bool outputMatrixToFile = strcmp(outputMatrixFileName, "-");
   FILE* outputMatrixFile = outputMatrixToFile ? fopen(outputMatrixFileName, "w") : stdout;

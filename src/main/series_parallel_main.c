@@ -61,11 +61,11 @@ CMR_ERROR recognizeSeriesParallel(
   CMR_SP_STATISTICS stats;
   CMR_CALL( CMRspStatsInit(&stats) );
   if (binary)
-    CMR_CALL( CMRtestBinarySeriesParallel(cmr, matrix, NULL, reductions, &numReductions,
+    CMR_CALL( CMRspTestBinary(cmr, matrix, NULL, reductions, &numReductions,
       outputReducedFileName ? &reducedSubmatrix : NULL, outputSubmatrixFileName ? &violatorSubmatrix : NULL, &stats,
       timeLimit) );
   else
-    CMR_CALL( CMRtestTernarySeriesParallel(cmr, matrix, NULL, reductions, &numReductions,
+    CMR_CALL( CMRspTestTernary(cmr, matrix, NULL, reductions, &numReductions,
       outputReducedFileName ? &reducedSubmatrix : NULL, outputSubmatrixFileName ? &violatorSubmatrix : NULL, &stats,
       timeLimit) );
 

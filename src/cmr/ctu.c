@@ -53,7 +53,7 @@ CMR_ERROR CMRstatsComplementTotalUnimodularityPrint(FILE* stream, CMR_CTU_STATIS
 }
 
 
-CMR_ERROR CMRcomplementRowColumn(CMR* cmr, CMR_CHRMAT* matrix, size_t complementRow, size_t complementColumn,
+CMR_ERROR CMRctuComplementRowColumn(CMR* cmr, CMR_CHRMAT* matrix, size_t complementRow, size_t complementColumn,
   CMR_CHRMAT** presult)
 {
   assert(cmr);

@@ -57,9 +57,9 @@ For a matrix \f$ A \in \{0,1\}^{m \times n}\f$ with \f$ k \f$ (sorted) nonzeros 
 
 The corresponding functions in the library are
 
-  - CMRtestTernarySeriesParallel() tests a binary matrix for being series-parallel.
-  - CMRtestBinarySeriesParallel() tests a binary matrix for being series-parallel.
-  - CMRdecomposeBinarySeriesParallel() tests a binary matrix for being series-parallel, but may also terminate early, returning a 2-separation of \f$ A \f$.
-  - CMRdecomposeTernarySeriesParallel() tests a ternary matrix for being series-parallel, but may also terminate early, returning a 2-separation of \f$ A \f$.
+  - CMRspTestTernary() tests a binary matrix for being series-parallel.
+  - CMRspTestBinary() tests a binary matrix for being series-parallel.
+  - CMRspDecomposeBinary() tests a binary matrix for being series-parallel, but may also terminate early, returning a 2-separation of \f$ A \f$.
+  - CMRspDecomposeTernary() tests a ternary matrix for being series-parallel, but may also terminate early, returning a 2-separation of \f$ A \f$.
   
 and are defined in \ref series_parallel.h.

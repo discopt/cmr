@@ -34,7 +34,7 @@ CMR_ERROR CMRregularityDecomposeSeriesParallel(CMR* cmr, DecompositionTask* task
   CMR_SEPA* separation = NULL;
   if (dec->isTernary)
   {
-    CMR_CALL( CMRdecomposeTernarySeriesParallel(cmr, dec->matrix, &isSeriesParallel, reductions,
+    CMR_CALL( CMRspDecomposeTernary(cmr, dec->matrix, &isSeriesParallel, reductions,
       task->params->seriesParallel ? SIZE_MAX : 1, &numReductions, &reducedSubmatrix, &violatorSubmatrix, &separation,
       task->stats ? &task->stats->seriesParallel : NULL, remainingTime) );
 
@@ -42,7 +42,7 @@ CMR_ERROR CMRregularityDecomposeSeriesParallel(CMR* cmr, DecompositionTask* task
   }
   else
   {
-    CMR_CALL( CMRdecomposeBinarySeriesParallel(cmr, dec->matrix, &isSeriesParallel, reductions,
+    CMR_CALL( CMRspDecomposeBinary(cmr, dec->matrix, &isSeriesParallel, reductions,
       task->params->seriesParallel ? SIZE_MAX : 1,  &numReductions, &reducedSubmatrix, &violatorSubmatrix, &separation,
       task->stats ? &task->stats->seriesParallel : NULL, remainingTime) );
   }

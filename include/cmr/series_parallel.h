@@ -163,7 +163,7 @@ bool CMRspIsValid(
  */
 
 CMR_EXPORT
-CMR_ERROR CMRtestBinarySeriesParallel(
+CMR_ERROR CMRspTestBinary(
   CMR* cmr,                         /**< \ref CMR environment. */
   CMR_CHRMAT* matrix,               /**< Sparse char matrix. */
   bool* pisSeriesParallel,          /**< Pointer for storing the result. */
@@ -191,7 +191,7 @@ CMR_ERROR CMRtestBinarySeriesParallel(
  */
 
 CMR_EXPORT
-CMR_ERROR CMRtestTernarySeriesParallel(
+CMR_ERROR CMRspTestTernary(
   CMR* cmr,                         /**< \ref CMR environment. */
   CMR_CHRMAT* matrix,               /**< Sparse char matrix. */
   bool* pisSeriesParallel,          /**< Pointer for storing the result. */
@@ -223,7 +223,7 @@ CMR_ERROR CMRtestTernarySeriesParallel(
  */
 
 CMR_EXPORT
-CMR_ERROR CMRdecomposeBinarySeriesParallel(
+CMR_ERROR CMRspDecomposeBinary(
   CMR* cmr,                         /**< \ref CMR environment. */
   CMR_CHRMAT* matrix,               /**< Sparse char matrix. */
   bool* pisSeriesParallel,          /**< Pointer for storing the result. */
@@ -263,7 +263,7 @@ CMR_ERROR CMRdecomposeBinarySeriesParallel(
  */
 
 CMR_EXPORT
-CMR_ERROR CMRdecomposeTernarySeriesParallel(
+CMR_ERROR CMRspDecomposeTernary(
   CMR* cmr,                         /**< \ref CMR environment. */
   CMR_CHRMAT* matrix,               /**< Sparse char matrix. */
   bool* pisSeriesParallel,          /**< Pointer for storing the result. */

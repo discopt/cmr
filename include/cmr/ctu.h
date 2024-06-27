@@ -69,7 +69,7 @@ CMR_ERROR CMRstatsComplementTotalUnimodularityPrint(
  */
 
 CMR_EXPORT
-CMR_ERROR CMRcomplementRowColumn(
+CMR_ERROR CMRctuComplementRowColumn(
   CMR* cmr,                             /**< \ref CMR environment */
   CMR_CHRMAT* matrix,                   /**< Input matrix. */
   size_t complementRow,                 /**< Row to be complemented (\c SIZE_MAX for no row complement). */

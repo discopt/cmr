@@ -358,12 +358,12 @@ CMR_ERROR genMatrixSeriesParallel(
       CMR_SUBMAT* wheelMatrix = NULL;
       if (ternary)
       {
-        CMR_CALL( CMRtestTernarySeriesParallel(cmr, matrix, NULL, reductions, &numReductions, NULL, &wheelMatrix,
+        CMR_CALL( CMRspTestTernary(cmr, matrix, NULL, reductions, &numReductions, NULL, &wheelMatrix,
           &stats, DBL_MAX) );
       }
       else
       {
-        CMR_CALL( CMRtestBinarySeriesParallel(cmr, matrix, NULL, reductions, &numReductions, NULL, &wheelMatrix,
+        CMR_CALL( CMRspTestBinary(cmr, matrix, NULL, reductions, &numReductions, NULL, &wheelMatrix,
           &stats, DBL_MAX) );
       }
       numBenchmarkNonzeros += numTotalNonzeros;

@@ -25,17 +25,19 @@ If `NON-SUB` is `-` then the [submatrix](\ref file-formats-submatrix) is written
 
 ## Algorithm ##
 
-Two types of algorithms are implemented for both, the binary and the ternary case.
+Two types of algorithms exist for both, the binary and the ternary case.
 The first algorithm types enumerate subsets of rows and then finds subsets of columns such that the resulting submatrix defines an odd cycle.
 Its running time is exponential in the size of the matrix.
 The second algorithm types are the [polynomial-time algorithms](https://doi.org/10.1016/j.jctb.2005.02.006) by Giacomo Zambelli (Journal of Combinatorial Theory, Series B, 2005).
 They run in \f$ \mathcal{O}( (m+n)^9 ) \f$ time for binary matrices and in \f$ \mathcal{O}( (m+n)^{11} ) \f$ time for ternary matrices.
 
+\note Only the first algorithm is implemented so far.
+
 ## C Interface ##
 
 The corresponding function in the library is
 
-  - CMRtestBalanced() tests a matrix for balancedness.
+  - CMRbalancedTest() tests a matrix for balancedness.
 
 and is defined in \ref balanced.h.
   
