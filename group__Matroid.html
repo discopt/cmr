@@ -129,6 +129,18 @@ Functions</h2></td></tr>
 <tr class="memitem:gab3164fcbabb2db5c066ea071b0e91bcf"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="group__Matroid.html#gaf4fa5a65acf0f77b366c30e9dfb0b07e">CMR_MINOR_TYPE</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#gab3164fcbabb2db5c066ea071b0e91bcf">CMRminorType</a> (<a class="el" href="structCMR__MINOR.html">CMR_MINOR</a> *minor)</td></tr>
 <tr class="memdesc:gab3164fcbabb2db5c066ea071b0e91bcf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the type of <code>minor</code>.  <a href="group__Matroid.html#gab3164fcbabb2db5c066ea071b0e91bcf">More...</a><br /></td></tr>
 <tr class="separator:gab3164fcbabb2db5c066ea071b0e91bcf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga711109a2bf0dd46e5f879025ca028525"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga711109a2bf0dd46e5f879025ca028525">CMRminorNumPivots</a> (<a class="el" href="structCMR__MINOR.html">CMR_MINOR</a> *minor)</td></tr>
+<tr class="memdesc:ga711109a2bf0dd46e5f879025ca028525"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of pivots needed to make a <code>minor</code> visible.  <a href="group__Matroid.html#ga711109a2bf0dd46e5f879025ca028525">More...</a><br /></td></tr>
+<tr class="separator:ga711109a2bf0dd46e5f879025ca028525"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaca1ad52299b8702d7d8dc41cfc16416f"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT size_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#gaca1ad52299b8702d7d8dc41cfc16416f">CMRminorPivotRows</a> (<a class="el" href="structCMR__MINOR.html">CMR_MINOR</a> *minor)</td></tr>
+<tr class="memdesc:gaca1ad52299b8702d7d8dc41cfc16416f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the array with pivot rows to make a <code>minor</code> visible.  <a href="group__Matroid.html#gaca1ad52299b8702d7d8dc41cfc16416f">More...</a><br /></td></tr>
+<tr class="separator:gaca1ad52299b8702d7d8dc41cfc16416f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga6d75cf9bf0e3bad1163dfb2a09a2fabd"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT size_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga6d75cf9bf0e3bad1163dfb2a09a2fabd">CMRminorPivotColumns</a> (<a class="el" href="structCMR__MINOR.html">CMR_MINOR</a> *minor)</td></tr>
+<tr class="memdesc:ga6d75cf9bf0e3bad1163dfb2a09a2fabd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the array with pivot columns to make a <code>minor</code> visible.  <a href="group__Matroid.html#ga6d75cf9bf0e3bad1163dfb2a09a2fabd">More...</a><br /></td></tr>
+<tr class="separator:ga6d75cf9bf0e3bad1163dfb2a09a2fabd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga61df77a899f0a714fad7c2e5a98b6bb8"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga61df77a899f0a714fad7c2e5a98b6bb8">CMRminorSubmatrix</a> (<a class="el" href="structCMR__MINOR.html">CMR_MINOR</a> *minor)</td></tr>
+<tr class="memdesc:ga61df77a899f0a714fad7c2e5a98b6bb8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the submatrix to take (after applying pivots) to make a <code>minor</code> visible.  <a href="group__Matroid.html#ga61df77a899f0a714fad7c2e5a98b6bb8">More...</a><br /></td></tr>
+<tr class="separator:ga61df77a899f0a714fad7c2e5a98b6bb8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga5308d3a8511b8d0b5c2e48fedad515da"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Matroid.html#ga5308d3a8511b8d0b5c2e48fedad515da">CMRminorPrint</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__MINOR.html">CMR_MINOR</a> *minor, size_t numRows, size_t numColumns, FILE *stream)</td></tr>
 <tr class="memdesc:ga5308d3a8511b8d0b5c2e48fedad515da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes the minor <code>minor</code> to <code>stream</code> by means of lists of row and column indices as well as pivot entries.  <a href="group__Matroid.html#ga5308d3a8511b8d0b5c2e48fedad515da">More...</a><br /></td></tr>
 <tr class="separator:ga5308d3a8511b8d0b5c2e48fedad515da"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -520,6 +532,84 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="ga711109a2bf0dd46e5f879025ca028525"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga711109a2bf0dd46e5f879025ca028525">&#9670;&nbsp;</a></span>CMRminorNumPivots()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CMR_EXPORT size_t CMRminorNumPivots </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structCMR__MINOR.html">CMR_MINOR</a> *&#160;</td>
+          <td class="paramname"><em>minor</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the number of pivots needed to make a <code>minor</code> visible. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">minor</td><td>Minor. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga6d75cf9bf0e3bad1163dfb2a09a2fabd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga6d75cf9bf0e3bad1163dfb2a09a2fabd">&#9670;&nbsp;</a></span>CMRminorPivotColumns()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CMR_EXPORT size_t* CMRminorPivotColumns </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structCMR__MINOR.html">CMR_MINOR</a> *&#160;</td>
+          <td class="paramname"><em>minor</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the array with pivot columns to make a <code>minor</code> visible. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">minor</td><td>Minor. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="gaca1ad52299b8702d7d8dc41cfc16416f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaca1ad52299b8702d7d8dc41cfc16416f">&#9670;&nbsp;</a></span>CMRminorPivotRows()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CMR_EXPORT size_t* CMRminorPivotRows </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structCMR__MINOR.html">CMR_MINOR</a> *&#160;</td>
+          <td class="paramname"><em>minor</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the array with pivot rows to make a <code>minor</code> visible. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">minor</td><td>Minor. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="ga5308d3a8511b8d0b5c2e48fedad515da"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ga5308d3a8511b8d0b5c2e48fedad515da">&#9670;&nbsp;</a></span>CMRminorPrint()</h2>
 
@@ -572,6 +662,32 @@ Functions</h2></td></tr>
     <tr><td class="paramname">numRows</td><td>Number of rows of original matrix. </td></tr>
     <tr><td class="paramname">numColumns</td><td>Number of columns of original matrix. </td></tr>
     <tr><td class="paramname">stream</td><td>File stream to save minor to.. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga61df77a899f0a714fad7c2e5a98b6bb8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga61df77a899f0a714fad7c2e5a98b6bb8">&#9670;&nbsp;</a></span>CMRminorSubmatrix()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">CMR_EXPORT <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a>* CMRminorSubmatrix </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structCMR__MINOR.html">CMR_MINOR</a> *&#160;</td>
+          <td class="paramname"><em>minor</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the submatrix to take (after applying pivots) to make a <code>minor</code> visible. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">minor</td><td>Minor. </td></tr>
   </table>
   </dd>
 </dl>
