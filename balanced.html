@@ -93,12 +93,13 @@ Recognizing Balanced Matrices</h1>
 <p>If <code>IN-MAT</code> is <code>-</code> then the <a class="el" href="file-formats.html#file-formats-matrix">matrix</a> is read from stdin. If <code>NON-SUB</code> is <code>-</code> then the <a class="el" href="file-formats.html#file-formats-submatrix">submatrix</a> is written to stdout.</p>
 <h1><a class="anchor" id="autotoc_md4"></a>
 Algorithm</h1>
-<p>Two types of algorithms are implemented for both, the binary and the ternary case. The first algorithm types enumerate subsets of rows and then finds subsets of columns such that the resulting submatrix defines an odd cycle. Its running time is exponential in the size of the matrix. The second algorithm types are the <a href="https://doi.org/10.1016/j.jctb.2005.02.006">polynomial-time algorithms</a> by Giacomo Zambelli (Journal of Combinatorial Theory, Series B, 2005). They run in \( \mathcal{O}( (m+n)^9 ) \) time for binary matrices and in \( \mathcal{O}( (m+n)^{11} ) \) time for ternary matrices.</p>
+<p>Two types of algorithms exist for both, the binary and the ternary case. The first algorithm types enumerate subsets of rows and then finds subsets of columns such that the resulting submatrix defines an odd cycle. Its running time is exponential in the size of the matrix. The second algorithm types are the <a href="https://doi.org/10.1016/j.jctb.2005.02.006">polynomial-time algorithms</a> by Giacomo Zambelli (Journal of Combinatorial Theory, Series B, 2005). They run in \( \mathcal{O}( (m+n)^9 ) \) time for binary matrices and in \( \mathcal{O}( (m+n)^{11} ) \) time for ternary matrices.</p>
+<dl class="section note"><dt>Note</dt><dd>Only the first algorithm is implemented so far.</dd></dl>
 <h1><a class="anchor" id="autotoc_md5"></a>
 C Interface</h1>
 <p>The corresponding function in the library is</p>
 <ul>
-<li>CMRtestBalanced() tests a matrix for balancedness.</li>
+<li><a class="el" href="balanced_8h.html#a481f2f0d9c47ce8ba549f76166f5e14c">CMRbalancedTest()</a> tests a matrix for balancedness.</li>
 </ul>
 <p>and is defined in <a class="el" href="balanced_8h.html">balanced.h</a>. </p>
 </div></div><!-- contents -->
