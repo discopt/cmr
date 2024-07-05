@@ -1,4 +1,4 @@
-// #define CMR_DEBUG /* Uncomment to debug this file. */
+#define CMR_DEBUG /* Uncomment to debug this file. */
 
 #include <cmr/matrix.h>
 
@@ -191,7 +191,7 @@ CMR_ERROR CMRsubmatWriteToFile(CMR* cmr, CMR_SUBMAT* submatrix, size_t numRows, 
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRsubmatReadFromStream(CMR* cmr, CMR_SUBMAT ** psubmatrix, size_t* pnumMatrixRows, size_t* pnumMatrixColumns,
+CMR_ERROR CMRsubmatReadFromStream(CMR* cmr, CMR_SUBMAT** psubmatrix, size_t* pnumMatrixRows, size_t* pnumMatrixColumns,
   FILE* stream)
 {
   assert(cmr);
@@ -216,7 +216,7 @@ CMR_ERROR CMRsubmatReadFromStream(CMR* cmr, CMR_SUBMAT ** psubmatrix, size_t* pn
     if (fscanf(stream, "%zu", &row) != 1)
       return CMR_ERROR_INPUT;
 
-    if (row == 0 || row > numRows)
+    if (row == 0 || row > numOriginalRows)
       return CMR_ERROR_INPUT;
 
     submatrix->rows[r] = row - 1;
@@ -227,7 +227,7 @@ CMR_ERROR CMRsubmatReadFromStream(CMR* cmr, CMR_SUBMAT ** psubmatrix, size_t* pn
     if (fscanf(stream, "%zu", &column) != 1)
       return CMR_ERROR_INPUT;
 
-    if (column == 0 || column > numColumns)
+    if (column == 0 || column > numOriginalColumns)
       return CMR_ERROR_INPUT;
 
     submatrix->columns[c] = column - 1;
