@@ -83,6 +83,7 @@ CMR_ERROR testBalanced(
   /* Cleanup. */
 
   CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  CMR_CALL( CMRsubmatFree(cmr, &submatrix) );
   CMR_CALL( CMRfreeEnvironment(&cmr) );
 
   return CMR_OKAY;
