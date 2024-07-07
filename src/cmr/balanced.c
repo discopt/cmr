@@ -1,4 +1,4 @@
-// #define CMR_DEBUG /* Uncomment to debug */
+#define CMR_DEBUG /* Uncomment to debug */
 
 #include <cmr/balanced.h>
 
@@ -625,6 +625,7 @@ CMR_ERROR CMRbalancedTest(CMR* cmr, CMR_CHRMAT* matrix, bool* pisBalanced, CMR_S
 {
   assert(cmr);
   assert(matrix);
+  assert(pisBalanced);
 
   /* Initialize default params if not passed. */
   CMR_BALANCED_PARAMS localParams;
@@ -683,6 +684,7 @@ CMR_ERROR CMRbalancedTest(CMR* cmr, CMR_CHRMAT* matrix, bool* pisBalanced, CMR_S
       if (!*pisBalanced && psubmatrix)
       {
         CMR_SUBMAT* submatrix = *psubmatrix;
+        assert(submatrix);
         for (size_t row = 0; row < submatrix->numRows; ++row)
           submatrix->rows[row] = component->rowsToOriginal[submatrix->rows[row]];
         for (size_t column = 0; column < submatrix->numColumns; ++column)
