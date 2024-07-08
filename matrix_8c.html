@@ -117,9 +117,12 @@ Functions</h2></td></tr>
 <tr class="memitem:a747ac8a80cda22dac9679941e37e8381"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="matrix_8c.html#a747ac8a80cda22dac9679941e37e8381">CMRsubmatTranspose</a> (<a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> *submatrix)</td></tr>
 <tr class="memdesc:a747ac8a80cda22dac9679941e37e8381"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transposes a submatrix.  <a href="matrix_8c.html#a747ac8a80cda22dac9679941e37e8381">More...</a><br /></td></tr>
 <tr class="separator:a747ac8a80cda22dac9679941e37e8381"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a15979095e9970abda3e7fdb96b3b813f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="matrix_8c.html#a15979095e9970abda3e7fdb96b3b813f">CMRsubmatZoomSubmat</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> *reference, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> *input, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **poutput)</td></tr>
-<tr class="memdesc:a15979095e9970abda3e7fdb96b3b813f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the submatrix <code>input</code> as a submatrix of the <code>reference</code> submatrix.  <a href="matrix_8c.html#a15979095e9970abda3e7fdb96b3b813f">More...</a><br /></td></tr>
-<tr class="separator:a15979095e9970abda3e7fdb96b3b813f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a15d823183534477b90684885714fa07f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="matrix_8c.html#a15d823183534477b90684885714fa07f">CMRsubmatSlice</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> *base, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> *input, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **poutput)</td></tr>
+<tr class="memdesc:a15d823183534477b90684885714fa07f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the submatrix <code>input</code> as a submatrix of the <code>base</code> submatrix.  <a href="matrix_8c.html#a15d823183534477b90684885714fa07f">More...</a><br /></td></tr>
+<tr class="separator:a15d823183534477b90684885714fa07f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a95ec089322e47531ddbdc50b20d4080e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="matrix_8c.html#a95ec089322e47531ddbdc50b20d4080e">CMRsubmatUnslice</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> *base, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> *input, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **poutput)</td></tr>
+<tr class="memdesc:a95ec089322e47531ddbdc50b20d4080e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the sub-submatrix <code>input</code> of <code>base</code> as a submatrix of its parent.  <a href="matrix_8c.html#a95ec089322e47531ddbdc50b20d4080e">More...</a><br /></td></tr>
+<tr class="separator:a95ec089322e47531ddbdc50b20d4080e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af8386671da701bc28e3970b7c8a77289"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="matrix_8c.html#af8386671da701bc28e3970b7c8a77289">CMRsubmatPrint</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> *submatrix, size_t numRows, size_t numColumns, FILE *stream)</td></tr>
 <tr class="memdesc:af8386671da701bc28e3970b7c8a77289"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes the submatrix <code>submatrix</code> to the file <code>stream</code> by means of lists of row and column indices.  <a href="matrix_8c.html#af8386671da701bc28e3970b7c8a77289">More...</a><br /></td></tr>
 <tr class="separator:af8386671da701bc28e3970b7c8a77289"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -304,18 +307,15 @@ Functions</h2></td></tr>
 <tr class="memitem:a7c918e8f178dc9f773ebc17c02d3a53a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="matrix_8c.html#a7c918e8f178dc9f773ebc17c02d3a53a">CMRchrmatIsTernary</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **psubmatrix)</td></tr>
 <tr class="memdesc:a7c918e8f178dc9f773ebc17c02d3a53a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if a double matrix has only entries in \( \{-1,0,+1\} \).  <a href="matrix_8c.html#a7c918e8f178dc9f773ebc17c02d3a53a">More...</a><br /></td></tr>
 <tr class="separator:a7c918e8f178dc9f773ebc17c02d3a53a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae50e4a033e43845f3f66ab6755150eed"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="matrix_8c.html#ae50e4a033e43845f3f66ab6755150eed">CMRdblmatZoomSubmat</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__DBLMAT.html">CMR_DBLMAT</a> *matrix, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> *submatrix, <a class="el" href="structCMR__DBLMAT.html">CMR_DBLMAT</a> **presult)</td></tr>
-<tr class="memdesc:ae50e4a033e43845f3f66ab6755150eed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a submatrix of a double matrix as an explicit matrix.  <a href="matrix_8c.html#ae50e4a033e43845f3f66ab6755150eed">More...</a><br /></td></tr>
-<tr class="separator:ae50e4a033e43845f3f66ab6755150eed"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad77ff52b0683e86e692f2d09af11dab7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="matrix_8c.html#ad77ff52b0683e86e692f2d09af11dab7">CMRintmatZoomSubmat</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__INTMAT.html">CMR_INTMAT</a> *matrix, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> *submatrix, <a class="el" href="structCMR__INTMAT.html">CMR_INTMAT</a> **presult)</td></tr>
-<tr class="memdesc:ad77ff52b0683e86e692f2d09af11dab7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a submatrix of an int matrix as an explicit matrix.  <a href="matrix_8c.html#ad77ff52b0683e86e692f2d09af11dab7">More...</a><br /></td></tr>
-<tr class="separator:ad77ff52b0683e86e692f2d09af11dab7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6974e0cec8a19d31282ce8d86b28f8f2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="matrix_8c.html#a6974e0cec8a19d31282ce8d86b28f8f2">CMRchrmatFilter</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, size_t numRows, size_t *rows, size_t numColumns, size_t *columns, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> **presult)</td></tr>
-<tr class="memdesc:a6974e0cec8a19d31282ce8d86b28f8f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a <code>numRows</code> \( \times \) <code>numColumns</code> submatrix of the char <code>matrix</code> indexed by <code>rows</code> and <code>columns</code>.  <a href="matrix_8c.html#a6974e0cec8a19d31282ce8d86b28f8f2">More...</a><br /></td></tr>
-<tr class="separator:a6974e0cec8a19d31282ce8d86b28f8f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7271bbf36b8b68d3e337a81050c5a245"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="matrix_8c.html#a7271bbf36b8b68d3e337a81050c5a245">CMRchrmatZoomSubmat</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> *submatrix, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> **presult)</td></tr>
-<tr class="memdesc:a7271bbf36b8b68d3e337a81050c5a245"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a submatrix of a char matrix as an explicit matrix.  <a href="matrix_8c.html#a7271bbf36b8b68d3e337a81050c5a245">More...</a><br /></td></tr>
-<tr class="separator:a7271bbf36b8b68d3e337a81050c5a245"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a69aeaea2fc12a1f9c54716e6b780d1f6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="matrix_8c.html#a69aeaea2fc12a1f9c54716e6b780d1f6">CMRdblmatSlice</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__DBLMAT.html">CMR_DBLMAT</a> *matrix, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> *submatrix, <a class="el" href="structCMR__DBLMAT.html">CMR_DBLMAT</a> **presult)</td></tr>
+<tr class="memdesc:a69aeaea2fc12a1f9c54716e6b780d1f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Slices a <code>submatrix</code> of a double matrix.  <a href="matrix_8c.html#a69aeaea2fc12a1f9c54716e6b780d1f6">More...</a><br /></td></tr>
+<tr class="separator:a69aeaea2fc12a1f9c54716e6b780d1f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a985d979a9fce72444619754049edfb8e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="matrix_8c.html#a985d979a9fce72444619754049edfb8e">CMRintmatSlice</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__INTMAT.html">CMR_INTMAT</a> *matrix, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> *submatrix, <a class="el" href="structCMR__INTMAT.html">CMR_INTMAT</a> **presult)</td></tr>
+<tr class="memdesc:a985d979a9fce72444619754049edfb8e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Slices a <code>submatrix</code> of an int matrix.  <a href="matrix_8c.html#a985d979a9fce72444619754049edfb8e">More...</a><br /></td></tr>
+<tr class="separator:a985d979a9fce72444619754049edfb8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa575794aef9a68905da229c43e95cc78"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="matrix_8c.html#aa575794aef9a68905da229c43e95cc78">CMRchrmatSlice</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> *submatrix, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> **presult)</td></tr>
+<tr class="memdesc:aa575794aef9a68905da229c43e95cc78"><td class="mdescLeft">&#160;</td><td class="mdescRight">Slices a <code>submatrix</code> of a char matrix.  <a href="matrix_8c.html#aa575794aef9a68905da229c43e95cc78">More...</a><br /></td></tr>
+<tr class="separator:aa575794aef9a68905da229c43e95cc78"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5d0a924818897a3402cf1bede83a4664"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="matrix_8c.html#a5d0a924818897a3402cf1bede83a4664">CMRdblmatSupport</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__DBLMAT.html">CMR_DBLMAT</a> *matrix, double epsilon, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> **presult)</td></tr>
 <tr class="memdesc:a5d0a924818897a3402cf1bede83a4664"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates the (binary) support matrix of a double matrix as a char matrix with absolute error tolerance <code>epsilon</code>.  <a href="matrix_8c.html#a5d0a924818897a3402cf1bede83a4664">More...</a><br /></td></tr>
 <tr class="separator:a5d0a924818897a3402cf1bede83a4664"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -818,78 +818,6 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a6974e0cec8a19d31282ce8d86b28f8f2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6974e0cec8a19d31282ce8d86b28f8f2">&#9670;&nbsp;</a></span>CMRchrmatFilter()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRchrmatFilter </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
-          <td class="paramname"><em>cmr</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *&#160;</td>
-          <td class="paramname"><em>matrix</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>numRows</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t *&#160;</td>
-          <td class="paramname"><em>rows</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>numColumns</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t *&#160;</td>
-          <td class="paramname"><em>columns</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> **&#160;</td>
-          <td class="paramname"><em>presult</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Creates a <code>numRows</code> \( \times \) <code>numColumns</code> submatrix of the char <code>matrix</code> indexed by <code>rows</code> and <code>columns</code>. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
-    <tr><td class="paramname">matrix</td><td>Matrix. </td></tr>
-    <tr><td class="paramname">numRows</td><td>Number of rows of submatrix. </td></tr>
-    <tr><td class="paramname">rows</td><td>Rows of <code>matrix</code> to be copied into the submatrix. </td></tr>
-    <tr><td class="paramname">numColumns</td><td>Number of columns of submatrix. </td></tr>
-    <tr><td class="paramname">columns</td><td>Columns of <code>matrix</code> to be copied into the submatrix. </td></tr>
-    <tr><td class="paramname">presult</td><td>Pointer for storing the created submatrix. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
 <a id="a625c05f3aa24a6a20ae04d6df77b1509"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a625c05f3aa24a6a20ae04d6df77b1509">&#9670;&nbsp;</a></span>CMRchrmatFindEntry()</h2>
 
@@ -1271,6 +1199,57 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="aa575794aef9a68905da229c43e95cc78"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa575794aef9a68905da229c43e95cc78">&#9670;&nbsp;</a></span>CMRchrmatSlice()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRchrmatSlice </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *&#160;</td>
+          <td class="paramname"><em>matrix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> *&#160;</td>
+          <td class="paramname"><em>submatrix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> **&#160;</td>
+          <td class="paramname"><em>presult</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Slices a <code>submatrix</code> of a char matrix. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">matrix</td><td>A matrix </td></tr>
+    <tr><td class="paramname">submatrix</td><td>A submatrix of <code>matrix</code>. </td></tr>
+    <tr><td class="paramname">presult</td><td>Pointer for storing the resulting double matrix. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a412f7a4495adde8c1ae95b82ca7b611c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a412f7a4495adde8c1ae95b82ca7b611c">&#9670;&nbsp;</a></span>CMRchrmatSortNonzeros()</h2>
 
@@ -1434,57 +1413,6 @@ Functions</h2></td></tr>
     <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
     <tr><td class="paramname">matrix</td><td>Given matrix. </td></tr>
     <tr><td class="paramname">presult</td><td>Pointer for storing the transpose of <code>matrix</code>. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a7271bbf36b8b68d3e337a81050c5a245"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7271bbf36b8b68d3e337a81050c5a245">&#9670;&nbsp;</a></span>CMRchrmatZoomSubmat()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRchrmatZoomSubmat </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
-          <td class="paramname"><em>cmr</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *&#160;</td>
-          <td class="paramname"><em>matrix</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> *&#160;</td>
-          <td class="paramname"><em>submatrix</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> **&#160;</td>
-          <td class="paramname"><em>presult</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Creates a submatrix of a char matrix as an explicit matrix. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
-    <tr><td class="paramname">matrix</td><td>A matrix </td></tr>
-    <tr><td class="paramname">submatrix</td><td>A submatrix of <code>matrix</code>. </td></tr>
-    <tr><td class="paramname">presult</td><td>Pointer for storing the resulting double matrix. </td></tr>
   </table>
   </dd>
 </dl>
@@ -2452,6 +2380,57 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="a69aeaea2fc12a1f9c54716e6b780d1f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a69aeaea2fc12a1f9c54716e6b780d1f6">&#9670;&nbsp;</a></span>CMRdblmatSlice()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRdblmatSlice </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__DBLMAT.html">CMR_DBLMAT</a> *&#160;</td>
+          <td class="paramname"><em>matrix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> *&#160;</td>
+          <td class="paramname"><em>submatrix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__DBLMAT.html">CMR_DBLMAT</a> **&#160;</td>
+          <td class="paramname"><em>presult</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Slices a <code>submatrix</code> of a double matrix. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">matrix</td><td>A matrix </td></tr>
+    <tr><td class="paramname">submatrix</td><td>A submatrix of <code>matrix</code>. </td></tr>
+    <tr><td class="paramname">presult</td><td>Pointer for storing the resulting matrix. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a8641feb944063bc1d1ddadf4dff1fef1"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a8641feb944063bc1d1ddadf4dff1fef1">&#9670;&nbsp;</a></span>CMRdblmatSortNonzeros()</h2>
 
@@ -2578,57 +2557,6 @@ Functions</h2></td></tr>
     <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
     <tr><td class="paramname">matrix</td><td>A matrix. </td></tr>
     <tr><td class="paramname">presult</td><td>Pointer for storing the transpose of <code>matrix</code>. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="ae50e4a033e43845f3f66ab6755150eed"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae50e4a033e43845f3f66ab6755150eed">&#9670;&nbsp;</a></span>CMRdblmatZoomSubmat()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRdblmatZoomSubmat </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
-          <td class="paramname"><em>cmr</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="structCMR__DBLMAT.html">CMR_DBLMAT</a> *&#160;</td>
-          <td class="paramname"><em>matrix</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> *&#160;</td>
-          <td class="paramname"><em>submatrix</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="structCMR__DBLMAT.html">CMR_DBLMAT</a> **&#160;</td>
-          <td class="paramname"><em>presult</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Creates a submatrix of a double matrix as an explicit matrix. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
-    <tr><td class="paramname">matrix</td><td>A matrix </td></tr>
-    <tr><td class="paramname">submatrix</td><td>A submatrix of <code>matrix</code>. </td></tr>
-    <tr><td class="paramname">presult</td><td>Pointer for storing the resulting matrix. </td></tr>
   </table>
   </dd>
 </dl>
@@ -3473,6 +3401,57 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="a985d979a9fce72444619754049edfb8e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a985d979a9fce72444619754049edfb8e">&#9670;&nbsp;</a></span>CMRintmatSlice()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRintmatSlice </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__INTMAT.html">CMR_INTMAT</a> *&#160;</td>
+          <td class="paramname"><em>matrix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> *&#160;</td>
+          <td class="paramname"><em>submatrix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__INTMAT.html">CMR_INTMAT</a> **&#160;</td>
+          <td class="paramname"><em>presult</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Slices a <code>submatrix</code> of an int matrix. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">matrix</td><td>A matrix </td></tr>
+    <tr><td class="paramname">submatrix</td><td>A submatrix of <code>matrix</code>. </td></tr>
+    <tr><td class="paramname">presult</td><td>Pointer for storing the resulting matrix. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="ab2b2ed5761fb5d22c06cfc22c5464272"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab2b2ed5761fb5d22c06cfc22c5464272">&#9670;&nbsp;</a></span>CMRintmatSortNonzeros()</h2>
 
@@ -3637,57 +3616,6 @@ Functions</h2></td></tr>
     <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
     <tr><td class="paramname">matrix</td><td>Given matrix. </td></tr>
     <tr><td class="paramname">presult</td><td>Pointer for storing the transpose of <code>matrix</code>. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="ad77ff52b0683e86e692f2d09af11dab7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad77ff52b0683e86e692f2d09af11dab7">&#9670;&nbsp;</a></span>CMRintmatZoomSubmat()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRintmatZoomSubmat </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
-          <td class="paramname"><em>cmr</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="structCMR__INTMAT.html">CMR_INTMAT</a> *&#160;</td>
-          <td class="paramname"><em>matrix</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> *&#160;</td>
-          <td class="paramname"><em>submatrix</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="structCMR__INTMAT.html">CMR_INTMAT</a> **&#160;</td>
-          <td class="paramname"><em>presult</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Creates a submatrix of an int matrix as an explicit matrix. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
-    <tr><td class="paramname">matrix</td><td>A matrix </td></tr>
-    <tr><td class="paramname">submatrix</td><td>A submatrix of <code>matrix</code>. </td></tr>
-    <tr><td class="paramname">presult</td><td>Pointer for storing the resulting matrix. </td></tr>
   </table>
   </dd>
 </dl>
@@ -4025,6 +3953,58 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="a15d823183534477b90684885714fa07f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a15d823183534477b90684885714fa07f">&#9670;&nbsp;</a></span>CMRsubmatSlice()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRsubmatSlice </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> *&#160;</td>
+          <td class="paramname"><em>base</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> *&#160;</td>
+          <td class="paramname"><em>input</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **&#160;</td>
+          <td class="paramname"><em>poutput</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the submatrix <code>input</code> as a submatrix of the <code>base</code> submatrix. </p>
+<p>Assumes that each row/column of <code>input</code> also appear in<code>base</code>. After the call <code>*poutput</code> will refer to the same rows/columns but from the viewpoint of <code>base</code>. Otherwise, <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87a7db4598810ed8bae95b3ec9bae8a051d">CMR_ERROR_INPUT</a> is returned. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">base</td><td>Reference submatrix. </td></tr>
+    <tr><td class="paramname">input</td><td>Input submatrix. </td></tr>
+    <tr><td class="paramname">poutput</td><td>Pointer for storing the output submatrix. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a747ac8a80cda22dac9679941e37e8381"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a747ac8a80cda22dac9679941e37e8381">&#9670;&nbsp;</a></span>CMRsubmatTranspose()</h2>
 
@@ -4045,6 +4025,58 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">submatrix</td><td>Submatrix to transpose. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a95ec089322e47531ddbdc50b20d4080e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a95ec089322e47531ddbdc50b20d4080e">&#9670;&nbsp;</a></span>CMRsubmatUnslice()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRsubmatUnslice </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> *&#160;</td>
+          <td class="paramname"><em>base</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> *&#160;</td>
+          <td class="paramname"><em>input</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **&#160;</td>
+          <td class="paramname"><em>poutput</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the sub-submatrix <code>input</code> of <code>base</code> as a submatrix of its parent. </p>
+<p>The rows/columns of <code>input</code> are interpreted as those of <code>base</code>. After the call <code>*poutput</code> will refer to the saem rows/columns but as those of the parent. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">base</td><td>Reference submatrix. </td></tr>
+    <tr><td class="paramname">input</td><td>Input submatrix. </td></tr>
+    <tr><td class="paramname">poutput</td><td>Pointer for storing the output submatrix. </td></tr>
   </table>
   </dd>
 </dl>
@@ -4104,58 +4136,6 @@ Functions</h2></td></tr>
     <tr><td class="paramname">numRows</td><td>Number of rows of original matrix. </td></tr>
     <tr><td class="paramname">numColumns</td><td>Number of columns of original matrix. </td></tr>
     <tr><td class="paramname">fileName</td><td>File name to save submatrix to; <code>NULL</code> indicates stdout. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a15979095e9970abda3e7fdb96b3b813f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a15979095e9970abda3e7fdb96b3b813f">&#9670;&nbsp;</a></span>CMRsubmatZoomSubmat()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRsubmatZoomSubmat </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
-          <td class="paramname"><em>cmr</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> *&#160;</td>
-          <td class="paramname"><em>reference</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> *&#160;</td>
-          <td class="paramname"><em>input</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **&#160;</td>
-          <td class="paramname"><em>poutput</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Returns the submatrix <code>input</code> as a submatrix of the <code>reference</code> submatrix. </p>
-<p>Assumes that <code>input</code> is a sub-submatrix of <code>references</code>, i.e., each row/column of <code>input</code> must also appear in <code>reference</code>. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
-    <tr><td class="paramname">reference</td><td>Reference submatrix. </td></tr>
-    <tr><td class="paramname">input</td><td>Input submatrix. </td></tr>
-    <tr><td class="paramname">poutput</td><td>Pointer for storing the output submatrix. </td></tr>
   </table>
   </dd>
 </dl>

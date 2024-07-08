@@ -337,7 +337,7 @@ Functions</h2></td></tr>
 <p>If <code>pviolatorSubmatrix</code> is not <code>NULL</code> and <code>matrix</code> is not ternary series-parallel, then a signed wheel- or \( M_2 \)-submatrix is stored (unless a 2-separation is found; see below). Note that the row/column indices refer to \( A \).</p>
 <p>If <code>pseparation</code> is not <code>NULL</code> and during the search for a signed wheel-submatrix a 2-separation that does not correspond to an SP reduction is found then such a 2-separation is returned and the algorithm terminates without returning a signed wheel- or \( M_2 \)-submatrix. Note that <code>*pseparation</code> then contains row/column indices relative to \( A&#39; \).</p>
 <p>The running time is \( \mathcal{O} (m + n + k) \) assuming no hashtable collisions.</p>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="matrix_8h.html#a3936260ba193f5e3e383aa5df3298b83" title="Returns the submatrix input as a submatrix of the reference submatrix.">CMRsubmatZoomSubmat()</a> for turning <code>*pviolatorSubmatrix</code> into a submatrix of the SP-reduced submatrix. </dd></dl>
+<dl class="section see"><dt>See also</dt><dd>CMRsubmatZoomSubmat() for turning <code>*pviolatorSubmatrix</code> into a submatrix of the SP-reduced submatrix. </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
