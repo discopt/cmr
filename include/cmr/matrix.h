@@ -79,16 +79,32 @@ CMR_ERROR CMRsubmatTranspose(
 );
 
 /**
- * \brief Returns the submatrix \p input as a submatrix of the \p reference submatrix.
+ * \brief Returns the submatrix \p input as a submatrix of the \p base submatrix.
  *
- * Assumes that \p input is a sub-submatrix of \p references, i.e., each row/column of \p input must also appear in
- * \p reference.
+ * Assumes that each row/column of \p input also appear in\p base. After the call \p *poutput will refer to the same
+ * rows/columns but from the viewpoint of \p base.
+ * Otherwise, \ref CMR_ERROR_INPUT is returned.
  */
 
 CMR_EXPORT
-CMR_ERROR CMRsubmatZoomSubmat(
+CMR_ERROR CMRsubmatSlice(
   CMR* cmr,               /**< \ref CMR environment. */
-  CMR_SUBMAT* reference,  /**< Reference submatrix. */
+  CMR_SUBMAT* base,       /**< Reference submatrix. */
+  CMR_SUBMAT* input,      /**< Input submatrix. */
+  CMR_SUBMAT** poutput    /**< Pointer for storing the output submatrix. */
+);
+
+/**
+ * \brief Returns the sub-submatrix \p input of \p base as a submatrix of its parent.
+ *
+ * The rows/columns of \p input are interpreted as those of \p base. After the call \p *poutput will refer to the saem
+ * rows/columns but as those of the parent.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRsubmatUnslice(
+  CMR* cmr,               /**< \ref CMR environment. */
+  CMR_SUBMAT* base,       /**< Reference submatrix. */
   CMR_SUBMAT* input,      /**< Input submatrix. */
   CMR_SUBMAT** poutput    /**< Pointer for storing the output submatrix. */
 );

@@ -578,8 +578,8 @@ CMR_ERROR balancedTestConnected(
       return CMR_ERROR_TIMEOUT;
     }
 
-    CMR_SUBMAT* submatrix = NULL;
-    error = balancedTestChooseAlgorithm(cmr, reducedMatrix, pisBalanced, psubmatrix ? &submatrix : NULL, params,
+    CMR_SUBMAT* submatrixOfReduced = NULL;
+    error = balancedTestChooseAlgorithm(cmr, reducedMatrix, pisBalanced, psubmatrix ? &submatrixOfReduced : NULL, params,
       stats, timeLimit - time);
 
     if (error != CMR_ERROR_TIMEOUT)
@@ -590,10 +590,10 @@ CMR_ERROR balancedTestConnected(
       CMRdbgMsg(4, "Matrix %s balanced.\n", (*pisBalanced) ? "IS" : "is NOT" );
 
       /* Turn the submatrix of the reduced matrix into a submatrix of the input matrix. */
-      if (submatrix)
+      if (submatrixOfReduced)
       {
-        CMRsubmatZoomSubmat(cmr, reducedSubmatrix, submatrix, psubmatrix);
-        CMR_CALL( CMRsubmatFree(cmr, &submatrix) );
+        CMR_CALL( CMRsubmatUnslice(cmr, reducedSubmatrix, submatrixOfReduced, psubmatrix) );
+        CMR_CALL( CMRsubmatFree(cmr, &submatrixOfReduced) );
       }
     }
 

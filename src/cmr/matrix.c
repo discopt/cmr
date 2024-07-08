@@ -73,10 +73,10 @@ CMR_ERROR CMRsubmatTranspose(CMR_SUBMAT* submatrix)
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRsubmatZoomSubmat(CMR* cmr, CMR_SUBMAT* reference, CMR_SUBMAT* input, CMR_SUBMAT** poutput)
+CMR_ERROR CMRsubmatSlice(CMR* cmr, CMR_SUBMAT* base, CMR_SUBMAT* input, CMR_SUBMAT** poutput)
 {
   assert(cmr);
-  assert(reference);
+  assert(base);
   assert(input);
   assert(poutput);
 
@@ -85,9 +85,9 @@ CMR_ERROR CMRsubmatZoomSubmat(CMR* cmr, CMR_SUBMAT* reference, CMR_SUBMAT* input
 
   /* Create reverse row mapping. */
   size_t numRows = 0;
-  for (size_t r = 0; r < reference->numRows; ++r)
+  for (size_t r = 0; r < base->numRows; ++r)
   {
-    size_t row = reference->rows[r];
+    size_t row = base->rows[r];
     numRows = row > numRows ? row : numRows;
   }
   ++numRows;
@@ -95,14 +95,14 @@ CMR_ERROR CMRsubmatZoomSubmat(CMR* cmr, CMR_SUBMAT* reference, CMR_SUBMAT* input
   CMR_CALL( CMRallocStackArray(cmr, &reverseRows, numRows) );
   for (size_t row = 0; row < numRows; ++row)
     reverseRows[row] = SIZE_MAX;
-  for (size_t r = 0; r < reference->numRows; ++r)
-    reverseRows[reference->rows[r]] = r;
+  for (size_t r = 0; r < base->numRows; ++r)
+    reverseRows[base->rows[r]] = r;
 
   /* Create reverse column mapping. */
   size_t numColumns = 0;
-  for (size_t c = 0; c < reference->numColumns; ++c)
+  for (size_t c = 0; c < base->numColumns; ++c)
   {
-    size_t column = reference->columns[c];
+    size_t column = base->columns[c];
     numColumns = column > numColumns ? column : numColumns;
   }
   ++numColumns;
@@ -110,8 +110,8 @@ CMR_ERROR CMRsubmatZoomSubmat(CMR* cmr, CMR_SUBMAT* reference, CMR_SUBMAT* input
   CMR_CALL( CMRallocStackArray(cmr, &reverseColumns, numColumns) );
   for (size_t column = 0; column < numColumns; ++column)
     reverseColumns[column] = SIZE_MAX;
-  for (size_t c = 0; c < reference->numColumns; ++c)
-    reverseColumns[reference->columns[c]] = c;
+  for (size_t c = 0; c < base->numColumns; ++c)
+    reverseColumns[base->columns[c]] = c;
 
   /* Fill submatrix. */
   for (size_t r = 0; r < input->numRows; ++r)
@@ -148,6 +148,26 @@ CMR_ERROR CMRsubmatZoomSubmat(CMR* cmr, CMR_SUBMAT* reference, CMR_SUBMAT* input
 
   return CMR_OKAY;
 }
+
+CMR_ERROR CMRsubmatUnslice(CMR* cmr, CMR_SUBMAT* base, CMR_SUBMAT* input, CMR_SUBMAT** poutput)
+{
+  assert(cmr);
+  assert(base);
+  assert(input);
+  assert(poutput);
+
+  CMR_CALL( CMRsubmatCreate(cmr, input->numRows, input->numColumns, poutput) );
+  CMR_SUBMAT* output = *poutput;
+
+  for (size_t row = 0; row < input->numRows; ++row)
+    output->rows[row] = base->rows[input->rows[row]];
+
+  for (size_t column = 0; column < input->numColumns; ++column)
+    output->columns[column] = base->columns[input->columns[column]];
+
+  return CMR_OKAY;
+}
+
 
 CMR_ERROR CMRsubmatPrint(CMR* cmr, CMR_SUBMAT* submatrix, size_t numRows, size_t numColumns, FILE* stream)
 {
