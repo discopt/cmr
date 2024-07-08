@@ -172,7 +172,6 @@ CMR_ERROR balancedTestEnumerateColumns(
       {
         CMR_SUBMAT* submatrix = NULL;
         CMR_CALL( CMRsubmatCreate(enumeration->cmr, enumeration->cardinality, enumeration->cardinality, &submatrix) );
-        CMRdbgMsg(0, "Created violating submatrix at %p\n", submatrix);
         for (size_t i = 0; i < enumeration->cardinality; ++i)
         {
           submatrix->rows[i] = enumeration->subsetRows[i];
@@ -262,11 +261,6 @@ bool balancedTestEnumerateRows(
     if (enumeration->numUsableColumns >= enumeration->cardinality)
     {
       CMR_CALL( balancedTestEnumerateColumns(enumeration, 0) );
-
-      if (!*(enumeration->pisBalanced))
-      {
-        CMRdbgMsg(0, "balancedTestEnumerateColumns returned with violator at %p\n", *enumeration->psubmatrix);
-      }
     }
   }
 
@@ -357,8 +351,6 @@ CMR_ERROR balancedTestEnumerate(
     CMRdbgMsg(8, "Considering submatrices of size %zux%zu.\n", enumeration.cardinality, enumeration.cardinality);
     CMRassertStackConsistency(cmr);
     CMR_CALL( balancedTestEnumerateRows(&enumeration, 0) );
-
-    CMRdbgMsg(0, "balancedTestEnumerateRows returned with violator at %p\n", *(enumeration.psubmatrix));
 
     if (!*pisBalanced || enumeration.timeLimit <= 0)
       break;
@@ -456,9 +448,6 @@ CMR_ERROR balancedTestChooseAlgorithm(
   {
     assert(algorithm == CMR_BALANCED_ALGORITHM_SUBMATRIX);
     error = balancedTestEnumerate(cmr, matrix, pisBalanced, psubmatrix, stats, timeLimit, false);
-
-    CMRdbgMsg(0, "balancedTestEnumerate returned with violator pointer at %p\n", psubmatrix);
-    CMRdbgMsg(0, "balancedTestEnumerate returned with violator at %p\n", *psubmatrix);
 
     if (error != CMR_ERROR_TIMEOUT)
       CMR_CALL(error);
@@ -579,7 +568,7 @@ CMR_ERROR balancedTestConnected(
     /* If we were not lucky, then we need to deal with the SP-reduced submatrix. */
 
     CMR_CHRMAT* reducedMatrix = NULL;
-    CMR_CALL( CMRchrmatZoomSubmat(cmr, matrix, reducedSubmatrix, &reducedMatrix) );
+    CMR_CALL( CMRchrmatSlice(cmr, matrix, reducedSubmatrix, &reducedMatrix) );
 
     double time = (clock() - startClock) * 1.0 / CLOCKS_PER_SEC;
     if (time >= timeLimit)
@@ -593,8 +582,6 @@ CMR_ERROR balancedTestConnected(
     error = balancedTestChooseAlgorithm(cmr, reducedMatrix, pisBalanced, psubmatrix ? &submatrix : NULL, params,
       stats, timeLimit - time);
 
-    CMRdbgMsg(0, "balancedTestChooseAlgorithm returned %p after SP-reduced, error = %d.\n", submatrix, error);
-
     if (error != CMR_ERROR_TIMEOUT)
       CMR_CALL(error);
 
@@ -606,7 +593,6 @@ CMR_ERROR balancedTestConnected(
       if (submatrix)
       {
         CMRsubmatZoomSubmat(cmr, reducedSubmatrix, submatrix, psubmatrix);
-        CMRdbgMsg(0, "Zooming into submatrix %p yields %p.\n", submatrix, *psubmatrix);
         CMR_CALL( CMRsubmatFree(cmr, &submatrix) );
       }
     }
@@ -617,9 +603,6 @@ CMR_ERROR balancedTestConnected(
   else
   {
     error = balancedTestChooseAlgorithm(cmr, matrix, pisBalanced, psubmatrix, params, stats, timeLimit);
-
-    if (psubmatrix)
-      CMRdbgMsg(0, "balancedTestChooseAlgorithm returned %p.\n", *psubmatrix);
 
     CMRdbgMsg(4, "Matrix %s balanced.\n", (*pisBalanced) ? "IS" : "is NOT" );
 
@@ -657,8 +640,6 @@ CMR_ERROR CMRbalancedTest(CMR* cmr, CMR_CHRMAT* matrix, bool* pisBalanced, CMR_S
     CMR_CALL( CMRbalancedParamsInit(&localParams) );
     params = &localParams;
   }
-
-  CMRdbgMsg(0, "Called CMRbalancedTest for a %zux%zu matrix.\n", matrix->numRows, matrix->numColumns);
 
   clock_t startClock = clock();
 
@@ -701,11 +682,7 @@ CMR_ERROR CMRbalancedTest(CMR* cmr, CMR_CHRMAT* matrix, bool* pisBalanced, CMR_S
     double time = ((clock() - startClock) * 1.0 / CLOCKS_PER_SEC);
     if (*pisBalanced && time < timeLimit)
     {
-      CMRdbgMsg(0, "Calling balancedTestConnected with psubmatrix = %p\n", psubmatrix);
-
       CMR_CALL( balancedTestConnected(cmr, matrix, pisBalanced, psubmatrix, params, stats, timeLimit - time) );
-
-      CMRdbgMsg(0, "balancedTestConnected returned *psubmatrix = %p\n", *psubmatrix);
 
       /* If the component was not balanced, then we modify its violating submatrix to be one of the input matrix. */
       if (!*pisBalanced && psubmatrix)

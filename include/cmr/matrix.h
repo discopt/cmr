@@ -809,11 +809,11 @@ char* CMRchrmatConsistency(
 );
 
 /**
- * \brief Creates a submatrix of a double matrix as an explicit matrix.
+ * \brief Slices a \p submatrix of a double matrix.
  */
 
 CMR_EXPORT
-CMR_ERROR CMRdblmatZoomSubmat(
+CMR_ERROR CMRdblmatSlice(
   CMR* cmr,               /**< \ref CMR environment. */
   CMR_DBLMAT* matrix,     /**< A matrix */
   CMR_SUBMAT* submatrix,  /**< A submatrix of \p matrix. */
@@ -821,11 +821,11 @@ CMR_ERROR CMRdblmatZoomSubmat(
 );
 
 /**
- * \brief Creates a submatrix of an int matrix as an explicit matrix.
+ * \brief Slices a \p submatrix of an int matrix.
  */
 
 CMR_EXPORT
-CMR_ERROR CMRintmatZoomSubmat(
+CMR_ERROR CMRintmatSlice(
   CMR* cmr,               /**< \ref CMR environment. */
   CMR_INTMAT* matrix,     /**< A matrix */
   CMR_SUBMAT* submatrix,  /**< A submatrix of \p matrix. */
@@ -833,11 +833,11 @@ CMR_ERROR CMRintmatZoomSubmat(
 );
 
 /**
- * \brief Creates a submatrix of a char matrix as an explicit matrix.
+ * \brief Slices a \p submatrix of a char matrix.
  */
 
 CMR_EXPORT
-CMR_ERROR CMRchrmatZoomSubmat(
+CMR_ERROR CMRchrmatSlice(
   CMR* cmr,               /**< \ref CMR environment. */
   CMR_CHRMAT* matrix,     /**< A matrix */
   CMR_SUBMAT* submatrix,  /**< A submatrix of \p matrix. */

@@ -874,7 +874,13 @@ CMR_ERROR updateChildMatrix(
     columns[column] = CMRelementToColumnIndex(parent->childColumnsToParent[childIndex][column]);
   }
 
-  CMR_CALL( CMRchrmatFilter(cmr, parent->matrix, child->numRows, rows, child->numColumns, columns, &child->matrix) );
+  /* Create submatrix is on the stack. */
+  CMR_SUBMAT submat;
+  submat.numRows = child->numRows;
+  submat.numColumns = child->numColumns;
+  submat.rows = rows;
+  submat.columns = columns;
+  CMR_CALL( CMRchrmatSlice(cmr, parent->matrix, &submat, &child->matrix) );
 
   CMR_CALL( CMRfreeStackArray(cmr, &columns) );
   CMR_CALL( CMRfreeStackArray(cmr, &rows) );
@@ -1065,7 +1071,7 @@ CMR_ERROR CMRseymourUpdateSeriesParallel(CMR* cmr, CMR_SEYMOUR_NODE* node, CMR_S
   CMR_CALL( CMRseymourSetNumChildren(cmr, node, 1) );
 
   CMR_CHRMAT* childMatrix = NULL;
-  CMR_CALL( CMRchrmatZoomSubmat(cmr, node->matrix, reducedSubmatrix, &childMatrix) );
+  CMR_CALL( CMRchrmatSlice(cmr, node->matrix, reducedSubmatrix, &childMatrix) );
   CMR_CALL( createNode(cmr, &node->children[0], node->isTernary, CMR_SEYMOUR_NODE_TYPE_UNKNOWN, childMatrix->numRows,
     childMatrix->numColumns) );
   node->children[0]->matrix = childMatrix;
