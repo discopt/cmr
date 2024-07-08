@@ -172,7 +172,7 @@ TEST(SeriesParallel, BinaryShortWheel)
   ASSERT_EQ( numOperations, 8UL );
 
   CMR_CHRMAT* wheelMatrix = NULL;
-  ASSERT_CMR_CALL( CMRchrmatZoomSubmat(cmr, matrix, wheelSubmatrix, &wheelMatrix) );
+  ASSERT_CMR_CALL( CMRchrmatSlice(cmr, matrix, wheelSubmatrix, &wheelMatrix) );
 
   CMRchrmatPrintDense(cmr, wheelMatrix, stdout, '0', true);
   
@@ -224,7 +224,7 @@ TEST(SeriesParallel, BinaryLongWheel)
   }
   
   CMR_CHRMAT* wheelMatrix = NULL;
-  ASSERT_CMR_CALL( CMRchrmatZoomSubmat(cmr, matrix, wheelSubmatrix, &wheelMatrix) );
+  ASSERT_CMR_CALL( CMRchrmatSlice(cmr, matrix, wheelSubmatrix, &wheelMatrix) );
 
   CMRchrmatPrintDense(cmr, wheelMatrix, stdout, '0', true);
   
@@ -276,7 +276,7 @@ TEST(SeriesParallel, BinarySpecialWheel)
   }
 
   CMR_CHRMAT* wheelMatrix = NULL;
-  ASSERT_CMR_CALL( CMRchrmatZoomSubmat(cmr, matrix, wheelSubmatrix, &wheelMatrix) );
+  ASSERT_CMR_CALL( CMRchrmatSlice(cmr, matrix, wheelSubmatrix, &wheelMatrix) );
 
   CMRchrmatPrintDense(cmr, wheelMatrix, stdout, '0', true);
   
@@ -320,7 +320,7 @@ TEST(SeriesParallel, BinarySeparationFirstSearch)
   ASSERT_EQ( numReductions, 8UL );
 
 
-  ASSERT_CMR_CALL( CMRchrmatZoomSubmat(cmr, matrix, reducedSubmatrix, &reducedMatrix) );
+  ASSERT_CMR_CALL( CMRchrmatSlice(cmr, matrix, reducedSubmatrix, &reducedMatrix) );
 
   CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
 
@@ -426,7 +426,7 @@ TEST(SeriesParallel, BinaryWheelAfterSeparation)
   }
 
   CMR_CHRMAT* wheelMatrix = NULL;
-  ASSERT_CMR_CALL( CMRchrmatZoomSubmat(cmr, matrix, wheelSubmatrix, &wheelMatrix) );
+  ASSERT_CMR_CALL( CMRchrmatSlice(cmr, matrix, wheelSubmatrix, &wheelMatrix) );
 
   CMRchrmatPrintDense(cmr, wheelMatrix, stdout, '0', true);
   
@@ -504,7 +504,7 @@ TEST(SeriesParallel, TernaryNonbinary)
   }
 
   CMR_CHRMAT* violatorMatrix = NULL;
-  ASSERT_CMR_CALL( CMRchrmatZoomSubmat(cmr, matrix, violatorSubmatrix, &violatorMatrix) );
+  ASSERT_CMR_CALL( CMRchrmatSlice(cmr, matrix, violatorSubmatrix, &violatorMatrix) );
   ASSERT_EQ( violatorMatrix->numNonzeros, 4UL );
   int det = violatorMatrix->entryValues[0] * violatorMatrix->entryValues[3]
     - violatorMatrix->entryValues[1] * violatorMatrix->entryValues[2];
@@ -550,7 +550,7 @@ TEST(SeriesParallel, TernaryWheel)
   }
 
   CMR_CHRMAT* violatorMatrix = NULL;
-  ASSERT_CMR_CALL( CMRchrmatZoomSubmat(cmr, matrix, violatorSubmatrix, &violatorMatrix) );
+  ASSERT_CMR_CALL( CMRchrmatSlice(cmr, matrix, violatorSubmatrix, &violatorMatrix) );
   ASSERT_EQ( violatorMatrix->numNonzeros, 6UL );
 
   ASSERT_CMR_CALL( CMRchrmatPrintDense(cmr, violatorMatrix, stdout, '0', true) );
@@ -652,9 +652,9 @@ TEST(SeriesParallel, TernaryBadSeparation)
   CMR_CHRMAT* reducedMatrix = NULL;
   CMR_CHRMAT* violatorMatrix = NULL;
 
-  ASSERT_CMR_CALL( CMRchrmatZoomSubmat(cmr, matrix, reducedSubmatrix, &reducedMatrix) );
+  ASSERT_CMR_CALL( CMRchrmatSlice(cmr, matrix, reducedSubmatrix, &reducedMatrix) );
 
-  ASSERT_CMR_CALL( CMRchrmatZoomSubmat(cmr, reducedMatrix, violatorSubmatrix, &violatorMatrix) );
+  ASSERT_CMR_CALL( CMRchrmatSlice(cmr, reducedMatrix, violatorSubmatrix, &violatorMatrix) );
 
   CMRchrmatPrintDense(cmr, violatorMatrix, stdout, '0', true);
 

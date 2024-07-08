@@ -1,4 +1,4 @@
-// #define CMR_DEBUG /* Uncomment to debug */
+#define CMR_DEBUG /* Uncomment to debug */
 
 #include <cmr/balanced.h>
 
@@ -351,6 +351,7 @@ CMR_ERROR balancedTestEnumerate(
     CMRdbgMsg(8, "Considering submatrices of size %zux%zu.\n", enumeration.cardinality, enumeration.cardinality);
     CMRassertStackConsistency(cmr);
     CMR_CALL( balancedTestEnumerateRows(&enumeration, 0) );
+
     if (!*pisBalanced || enumeration.timeLimit <= 0)
       break;
   }
@@ -447,6 +448,7 @@ CMR_ERROR balancedTestChooseAlgorithm(
   {
     assert(algorithm == CMR_BALANCED_ALGORITHM_SUBMATRIX);
     error = balancedTestEnumerate(cmr, matrix, pisBalanced, psubmatrix, stats, timeLimit, false);
+
     if (error != CMR_ERROR_TIMEOUT)
       CMR_CALL(error);
 
@@ -566,7 +568,7 @@ CMR_ERROR balancedTestConnected(
     /* If we were not lucky, then we need to deal with the SP-reduced submatrix. */
 
     CMR_CHRMAT* reducedMatrix = NULL;
-    CMR_CALL( CMRchrmatZoomSubmat(cmr, matrix, reducedSubmatrix, &reducedMatrix) );
+    CMR_CALL( CMRchrmatSlice(cmr, matrix, reducedSubmatrix, &reducedMatrix) );
 
     double time = (clock() - startClock) * 1.0 / CLOCKS_PER_SEC;
     if (time >= timeLimit)
@@ -576,19 +578,23 @@ CMR_ERROR balancedTestConnected(
       return CMR_ERROR_TIMEOUT;
     }
 
-    CMR_SUBMAT* submatrix = NULL;
-    error = balancedTestChooseAlgorithm(cmr, reducedMatrix, pisBalanced, psubmatrix ? &submatrix : NULL, params,
+    CMR_SUBMAT* submatrixOfReduced = NULL;
+    error = balancedTestChooseAlgorithm(cmr, reducedMatrix, pisBalanced, psubmatrix ? &submatrixOfReduced : NULL, params,
       stats, timeLimit - time);
+
     if (error != CMR_ERROR_TIMEOUT)
       CMR_CALL(error);
 
-    CMRdbgMsg(4, "Matrix %s balanced.\n", (*pisBalanced) ? "IS" : "is NOT" );
-
-    /* Turn the submatrix of the reduced matrix into a submatrix of the input matrix. */
-    if (submatrix)
+    if (error != CMR_ERROR_TIMEOUT)
     {
-      CMRsubmatZoomSubmat(cmr, reducedSubmatrix, submatrix, psubmatrix);
-      CMR_CALL( CMRsubmatFree(cmr, &submatrix) );
+      CMRdbgMsg(4, "Matrix %s balanced.\n", (*pisBalanced) ? "IS" : "is NOT" );
+
+      /* Turn the submatrix of the reduced matrix into a submatrix of the input matrix. */
+      if (submatrixOfReduced)
+      {
+        CMR_CALL( CMRsubmatUnslice(cmr, reducedSubmatrix, submatrixOfReduced, psubmatrix) );
+        CMR_CALL( CMRsubmatFree(cmr, &submatrixOfReduced) );
+      }
     }
 
     CMR_CALL( CMRchrmatFree(cmr, &reducedMatrix) );
@@ -625,6 +631,7 @@ CMR_ERROR CMRbalancedTest(CMR* cmr, CMR_CHRMAT* matrix, bool* pisBalanced, CMR_S
 {
   assert(cmr);
   assert(matrix);
+  assert(pisBalanced);
 
   /* Initialize default params if not passed. */
   CMR_BALANCED_PARAMS localParams;
@@ -633,8 +640,6 @@ CMR_ERROR CMRbalancedTest(CMR* cmr, CMR_CHRMAT* matrix, bool* pisBalanced, CMR_S
     CMR_CALL( CMRbalancedParamsInit(&localParams) );
     params = &localParams;
   }
-
-  CMRdbgMsg(0, "Called CMRbalancedTest for a %zux%zu matrix.\n", matrix->numRows, matrix->numColumns);
 
   clock_t startClock = clock();
 
@@ -683,6 +688,7 @@ CMR_ERROR CMRbalancedTest(CMR* cmr, CMR_CHRMAT* matrix, bool* pisBalanced, CMR_S
       if (!*pisBalanced && psubmatrix)
       {
         CMR_SUBMAT* submatrix = *psubmatrix;
+        assert(submatrix);
         for (size_t row = 0; row < submatrix->numRows; ++row)
           submatrix->rows[row] = component->rowsToOriginal[submatrix->rows[row]];
         for (size_t column = 0; column < submatrix->numColumns; ++column)

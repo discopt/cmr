@@ -73,10 +73,10 @@ CMR_ERROR CMRsubmatTranspose(CMR_SUBMAT* submatrix)
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRsubmatZoomSubmat(CMR* cmr, CMR_SUBMAT* reference, CMR_SUBMAT* input, CMR_SUBMAT** poutput)
+CMR_ERROR CMRsubmatSlice(CMR* cmr, CMR_SUBMAT* base, CMR_SUBMAT* input, CMR_SUBMAT** poutput)
 {
   assert(cmr);
-  assert(reference);
+  assert(base);
   assert(input);
   assert(poutput);
 
@@ -85,9 +85,9 @@ CMR_ERROR CMRsubmatZoomSubmat(CMR* cmr, CMR_SUBMAT* reference, CMR_SUBMAT* input
 
   /* Create reverse row mapping. */
   size_t numRows = 0;
-  for (size_t r = 0; r < reference->numRows; ++r)
+  for (size_t r = 0; r < base->numRows; ++r)
   {
-    size_t row = reference->rows[r];
+    size_t row = base->rows[r];
     numRows = row > numRows ? row : numRows;
   }
   ++numRows;
@@ -95,14 +95,14 @@ CMR_ERROR CMRsubmatZoomSubmat(CMR* cmr, CMR_SUBMAT* reference, CMR_SUBMAT* input
   CMR_CALL( CMRallocStackArray(cmr, &reverseRows, numRows) );
   for (size_t row = 0; row < numRows; ++row)
     reverseRows[row] = SIZE_MAX;
-  for (size_t r = 0; r < reference->numRows; ++r)
-    reverseRows[reference->rows[r]] = r;
+  for (size_t r = 0; r < base->numRows; ++r)
+    reverseRows[base->rows[r]] = r;
 
   /* Create reverse column mapping. */
   size_t numColumns = 0;
-  for (size_t c = 0; c < reference->numColumns; ++c)
+  for (size_t c = 0; c < base->numColumns; ++c)
   {
-    size_t column = reference->columns[c];
+    size_t column = base->columns[c];
     numColumns = column > numColumns ? column : numColumns;
   }
   ++numColumns;
@@ -110,8 +110,8 @@ CMR_ERROR CMRsubmatZoomSubmat(CMR* cmr, CMR_SUBMAT* reference, CMR_SUBMAT* input
   CMR_CALL( CMRallocStackArray(cmr, &reverseColumns, numColumns) );
   for (size_t column = 0; column < numColumns; ++column)
     reverseColumns[column] = SIZE_MAX;
-  for (size_t c = 0; c < reference->numColumns; ++c)
-    reverseColumns[reference->columns[c]] = c;
+  for (size_t c = 0; c < base->numColumns; ++c)
+    reverseColumns[base->columns[c]] = c;
 
   /* Fill submatrix. */
   for (size_t r = 0; r < input->numRows; ++r)
@@ -148,6 +148,26 @@ CMR_ERROR CMRsubmatZoomSubmat(CMR* cmr, CMR_SUBMAT* reference, CMR_SUBMAT* input
 
   return CMR_OKAY;
 }
+
+CMR_ERROR CMRsubmatUnslice(CMR* cmr, CMR_SUBMAT* base, CMR_SUBMAT* input, CMR_SUBMAT** poutput)
+{
+  assert(cmr);
+  assert(base);
+  assert(input);
+  assert(poutput);
+
+  CMR_CALL( CMRsubmatCreate(cmr, input->numRows, input->numColumns, poutput) );
+  CMR_SUBMAT* output = *poutput;
+
+  for (size_t row = 0; row < input->numRows; ++row)
+    output->rows[row] = base->rows[input->rows[row]];
+
+  for (size_t column = 0; column < input->numColumns; ++column)
+    output->columns[column] = base->columns[input->columns[column]];
+
+  return CMR_OKAY;
+}
+
 
 CMR_ERROR CMRsubmatPrint(CMR* cmr, CMR_SUBMAT* submatrix, size_t numRows, size_t numColumns, FILE* stream)
 {
@@ -2261,17 +2281,17 @@ bool CMRchrmatIsTernary(CMR* cmr, CMR_CHRMAT* matrix, CMR_SUBMAT** psubmatrix)
   return true;
 }
 
-CMR_ERROR CMRdblmatZoomSubmat(CMR* cmr, CMR_DBLMAT* matrix, CMR_SUBMAT* submatrix, CMR_DBLMAT** presult)
+CMR_ERROR CMRdblmatSlice(CMR* cmr, CMR_DBLMAT* matrix, CMR_SUBMAT* submatrix, CMR_DBLMAT** presult)
 {
   assert(cmr);
   CMRconsistencyAssert( CMRdblmatConsistency(matrix) );
   assert(submatrix);
   assert(presult && !*presult);
 
-  int* columnMap = NULL;
+  size_t* columnMap = NULL;
   CMR_CALL( CMRallocStackArray(cmr, &columnMap, matrix->numColumns) );
   for (size_t column = 0; column < matrix->numColumns; ++column)
-    columnMap[column] = -1;
+    columnMap[column] = SIZE_MAX;
   for (size_t j = 0; j < submatrix->numColumns; ++j)
   {
     assert(submatrix->columns[j] < matrix->numColumns);
@@ -2290,7 +2310,7 @@ CMR_ERROR CMRdblmatZoomSubmat(CMR* cmr, CMR_DBLMAT* matrix, CMR_SUBMAT* submatri
     for (size_t entry = first; entry < beyond; ++entry)
     {
       size_t c = matrix->entryColumns[entry];
-      if (columnMap[c] >= 0)
+      if (columnMap[c] != SIZE_MAX)
         ++numNonzeros;
     }
   }
@@ -2311,7 +2331,7 @@ CMR_ERROR CMRdblmatZoomSubmat(CMR* cmr, CMR_DBLMAT* matrix, CMR_SUBMAT* submatri
     for (size_t entry = first; entry < beyond; ++entry)
     {
       size_t column = matrix->entryColumns[entry];
-      if (columnMap[column] >= 0)
+      if (columnMap[column] != SIZE_MAX)
       {
         result->entryColumns[result->numNonzeros] = columnMap[column];
         result->entryValues[result->numNonzeros] = matrix->entryValues[entry];
@@ -2330,17 +2350,17 @@ CMR_ERROR CMRdblmatZoomSubmat(CMR* cmr, CMR_DBLMAT* matrix, CMR_SUBMAT* submatri
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRintmatZoomSubmat(CMR* cmr, CMR_INTMAT* matrix, CMR_SUBMAT* submatrix, CMR_INTMAT** presult)
+CMR_ERROR CMRintmatSlice(CMR* cmr, CMR_INTMAT* matrix, CMR_SUBMAT* submatrix, CMR_INTMAT** presult)
 {
   assert(cmr);
   CMRconsistencyAssert( CMRintmatConsistency(matrix) );
   assert(submatrix);
   assert(presult && !*presult);
 
-  int* columnMap = NULL;
+  size_t* columnMap = NULL;
   CMR_CALL( CMRallocStackArray(cmr, &columnMap, matrix->numColumns) );
   for (size_t column = 0; column < matrix->numColumns; ++column)
-    columnMap[column] = -1;
+    columnMap[column] = SIZE_MAX;
   for (size_t j = 0; j < submatrix->numColumns; ++j)
   {
     assert(submatrix->columns[j] < matrix->numColumns);
@@ -2359,7 +2379,7 @@ CMR_ERROR CMRintmatZoomSubmat(CMR* cmr, CMR_INTMAT* matrix, CMR_SUBMAT* submatri
     for (size_t entry = first; entry < beyond; ++entry)
     {
       size_t c = matrix->entryColumns[entry];
-      if (columnMap[c] >= 0)
+      if (columnMap[c] != SIZE_MAX)
         ++numNonzeros;
     }
   }
@@ -2380,7 +2400,7 @@ CMR_ERROR CMRintmatZoomSubmat(CMR* cmr, CMR_INTMAT* matrix, CMR_SUBMAT* submatri
     for (size_t entry = first; entry < beyond; ++entry)
     {
       size_t column = matrix->entryColumns[entry];
-      if (columnMap[column] >= 0)
+      if (columnMap[column] != SIZE_MAX)
       {
         result->entryColumns[result->numNonzeros] = columnMap[column];
         result->entryValues[result->numNonzeros] = matrix->entryValues[entry];
@@ -2399,28 +2419,28 @@ CMR_ERROR CMRintmatZoomSubmat(CMR* cmr, CMR_INTMAT* matrix, CMR_SUBMAT* submatri
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRchrmatFilter(CMR* cmr, CMR_CHRMAT* matrix, size_t numRows, size_t* rows, size_t numColumns,
-  size_t* columns, CMR_CHRMAT** presult)
+CMR_ERROR CMRchrmatSlice(CMR* cmr, CMR_CHRMAT* matrix, CMR_SUBMAT* submatrix, CMR_CHRMAT** presult)
 {
   assert(cmr);
   CMRconsistencyAssert( CMRchrmatConsistency(matrix) );
+  assert(submatrix);
   assert(presult && !*presult);
 
-  int* columnMap = NULL;
+  size_t* columnMap = NULL;
   CMR_CALL( CMRallocStackArray(cmr, &columnMap, matrix->numColumns) );
   for (size_t column = 0; column < matrix->numColumns; ++column)
-    columnMap[column] = -1;
-  for (size_t j = 0; j < numColumns; ++j)
+    columnMap[column] = SIZE_MAX;
+  for (size_t j = 0; j < submatrix->numColumns; ++j)
   {
-    assert(columns[j] < matrix->numColumns);
-    columnMap[columns[j]] = j;
+    assert(submatrix->columns[j] < matrix->numColumns);
+    columnMap[submatrix->columns[j]] = j;
   }
 
   /* Count nonzeros. */
   size_t numNonzeros = 0;
-  for (size_t i = 0; i < numRows; ++i)
+  for (size_t i = 0; i < submatrix->numRows; ++i)
   {
-    size_t r = rows[i];
+    size_t r = submatrix->rows[i];
     assert(r < matrix->numRows);
 
     size_t first = matrix->rowSlice[r];
@@ -2428,20 +2448,20 @@ CMR_ERROR CMRchrmatFilter(CMR* cmr, CMR_CHRMAT* matrix, size_t numRows, size_t* 
     for (size_t entry = first; entry < beyond; ++entry)
     {
       size_t c = matrix->entryColumns[entry];
-      if (columnMap[c] >= 0)
+      if (columnMap[c] != SIZE_MAX)
         ++numNonzeros;
     }
   }
 
-  CMR_CALL( CMRchrmatCreate(cmr, presult, numRows, numColumns, numNonzeros) );
+  CMR_CALL( CMRchrmatCreate(cmr, presult, submatrix->numRows, submatrix->numColumns, numNonzeros) );
   CMR_CHRMAT* result = *presult;
 
   /* Copy nonzeros. */
   result->numNonzeros = 0;
-  for (size_t i = 0; i < numRows; ++i)
+  for (size_t i = 0; i < submatrix->numRows; ++i)
   {
     result->rowSlice[i] = result->numNonzeros;
-    size_t r = rows[i];
+    size_t r = submatrix->rows[i];
     assert(r < matrix->numRows);
 
     size_t first = matrix->rowSlice[r];
@@ -2449,7 +2469,7 @@ CMR_ERROR CMRchrmatFilter(CMR* cmr, CMR_CHRMAT* matrix, size_t numRows, size_t* 
     for (size_t entry = first; entry < beyond; ++entry)
     {
       size_t column = matrix->entryColumns[entry];
-      if (columnMap[column] >= 0)
+      if (columnMap[column] != SIZE_MAX)
       {
         result->entryColumns[result->numNonzeros] = columnMap[column];
         result->entryValues[result->numNonzeros] = matrix->entryValues[entry];
@@ -2464,19 +2484,6 @@ CMR_ERROR CMRchrmatFilter(CMR* cmr, CMR_CHRMAT* matrix, size_t numRows, size_t* 
   CMR_CALL( CMRchrmatSortNonzeros(cmr, result) );
 
   CMRconsistencyAssert( CMRchrmatConsistency(result) );
-
-  return CMR_OKAY;
-}
-
-CMR_ERROR CMRchrmatZoomSubmat(CMR* cmr, CMR_CHRMAT* matrix, CMR_SUBMAT* submatrix, CMR_CHRMAT** presult)
-{
-  assert(cmr);
-  CMRconsistencyAssert( CMRchrmatConsistency(matrix) );
-  assert(submatrix);
-  assert(presult && !*presult);
-
-  CMR_CALL( CMRchrmatFilter(cmr, matrix, submatrix->numRows, submatrix->rows, submatrix->numColumns,
-    submatrix->columns, presult) );
 
   return CMR_OKAY;
 }

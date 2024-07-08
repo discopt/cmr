@@ -177,7 +177,7 @@ CMR_ERROR runDbl(
     }
 
     explicitSubmatrix = NULL;
-    CMR_CALL( CMRdblmatZoomSubmat(cmr, matrix, submatrix, &explicitSubmatrix) );
+    CMR_CALL( CMRdblmatSlice(cmr, matrix, submatrix, &explicitSubmatrix) );
     CMR_CALL( CMRsubmatFree(cmr, &submatrix) );
   }
   else
@@ -282,7 +282,7 @@ CMR_ERROR runInt(
       }
 
       explicitSubmatrix = NULL;
-      CMR_CALL( CMRintmatZoomSubmat(cmr, matrix, submatrix, &explicitSubmatrix) );
+      CMR_CALL( CMRintmatSlice(cmr, matrix, submatrix, &explicitSubmatrix) );
       CMR_CALL( CMRsubmatFree(cmr, &submatrix) );
     }
     else

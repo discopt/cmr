@@ -85,7 +85,7 @@ CMR_ERROR testTotalUnimodularity(
     /* Extract submatrix to compute its determinant. */
     CMR_CHRMAT* violator = NULL;
     int64_t determinant = 0;
-    CMR_CALL( CMRchrmatZoomSubmat(cmr, matrix, submatrix, &violator) );
+    CMR_CALL( CMRchrmatSlice(cmr, matrix, submatrix, &violator) );
     CMR_CALL( CMRchrmatDeterminant(cmr, violator, &determinant) );
     CMR_CALL( CMRchrmatFree(cmr, &violator) );
 

@@ -72,7 +72,7 @@ CMR_ERROR recognizeGraphic(
   if (!CMRchrmatIsBinary(cmr, matrix, &submatrix))
   {
     CMR_CHRMAT* mat = NULL;
-    CMR_CALL( CMRchrmatZoomSubmat(cmr, matrix, submatrix, &mat) );
+    CMR_CALL( CMRchrmatSlice(cmr, matrix, submatrix, &mat) );
     assert(mat->numRows == 1);
     assert(mat->numColumns == 1);
     assert(mat->numNonzeros == 1);
