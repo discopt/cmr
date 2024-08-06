@@ -1428,8 +1428,6 @@ CMR_ERROR sequenceGraphicness(
   size_t length,                /**< Length of sequence of nested minors. */
   size_t* sequenceNumRows,      /**< Number of rows of sequence of nested minors. */
   size_t* sequenceNumColumns,   /**< Number of columns of sequence of nested minors. */
-  CMR_ELEMENT* rowsOriginal,    /**< Maps rows of \p matrix to elements of original matrix. */
-  CMR_ELEMENT* columnsOriginal, /**< Maps columns of \p matrix to elements of original matrix. */
   bool cographicness,           /**< Whether we actually received the transpose as input. */
   CMR_GRAPH** pgraph,           /**< Pointer for storing the constructed graph. */
   CMR_ELEMENT** pedgeElements,  /**< Pointer for storing the mapping from edges to elements. */
@@ -1442,8 +1440,6 @@ CMR_ERROR sequenceGraphicness(
   assert(transpose);
   assert(sequenceNumRows);
   assert(sequenceNumColumns);
-  assert(rowsOriginal);
-  assert(columnsOriginal);
   assert(pgraph);
   assert(pedgeElements);
   assert(plastGraphicMinor);
@@ -1637,8 +1633,8 @@ CMR_ERROR CMRregularityNestedMinorSequenceGraphicness(CMR* cmr, DecompositionTas
   CMR_ELEMENT* edgeElements = NULL;
 
   CMR_CALL( sequenceGraphicness(cmr, task, dec->nestedMinorsMatrix, dec->nestedMinorsTranspose, dec->nestedMinorsLength,
-    dec->nestedMinorsSequenceNumRows, dec->nestedMinorsSequenceNumColumns, dec->nestedMinorsRowsOriginal,
-    dec->nestedMinorsColumnsOriginal, false, &graph, &edgeElements, &dec->nestedMinorsLastGraphic) );
+    dec->nestedMinorsSequenceNumRows, dec->nestedMinorsSequenceNumColumns, false, &graph, &edgeElements,
+    &dec->nestedMinorsLastGraphic) );
 
   if (dec->nestedMinorsLastGraphic + 1 == dec->nestedMinorsLength)
   {
@@ -1717,15 +1713,15 @@ CMR_ERROR CMRregularityNestedMinorSequenceCographicness(CMR* cmr, DecompositionT
   assert(task);
   assert(queue);
 
-    CMR_SEYMOUR_NODE* dec = task->node;
+  CMR_SEYMOUR_NODE* dec = task->node;
   assert(dec);
 
   CMR_GRAPH* cograph = NULL;
   CMR_ELEMENT* edgeElements = NULL;
 
   CMR_CALL( sequenceGraphicness(cmr, task, dec->nestedMinorsTranspose, dec->nestedMinorsMatrix, dec->nestedMinorsLength,
-    dec->nestedMinorsSequenceNumColumns, dec->nestedMinorsSequenceNumRows, dec->nestedMinorsColumnsOriginal,
-    dec->nestedMinorsRowsOriginal, true, &cograph, &edgeElements, &dec->nestedMinorsLastCographic) );
+    dec->nestedMinorsSequenceNumColumns, dec->nestedMinorsSequenceNumRows, true, &cograph, &edgeElements,
+    &dec->nestedMinorsLastCographic) );
 
   if (dec->nestedMinorsLastCographic + 1 == dec->nestedMinorsLength)
   {

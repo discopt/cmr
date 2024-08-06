@@ -138,7 +138,6 @@ CMR_ERROR CMRsepaFindBinaryRepresentativesSubmatrix(
 
 CMR_EXPORT
 CMR_ERROR CMRsepaGetRepresentatives(
-  CMR* cmr,                 /**< \ref CMR environment. */
   CMR_SEPA* sepa,           /**< Separation. */
   size_t reprRows[2][3],    /**< Array mapping child to arrays of (at most 3) different representative rows. */
   size_t reprColumns[2][3]  /**< Array mapping child to arrays of (at most 3) different representative columns. */

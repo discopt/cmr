@@ -34,39 +34,39 @@ CMR_ERROR dbgPrintDenseSequence(
 
 #if defined(CMR_DEBUG)
 
-  assert(dec);
+  assert(node);
 
   size_t* rowToMinorIndex = NULL;
-  CMR_CALL( CMRallocStackArray(cmr, &rowToMinorIndex, dec->numRows) );
-  for (size_t row = 0; row < dec->numRows; ++row)
+  CMR_CALL( CMRallocStackArray(cmr, &rowToMinorIndex, node->numRows) );
+  for (size_t row = 0; row < node->numRows; ++row)
     rowToMinorIndex[row] = SIZE_MAX;
 
   size_t* columnToMinorIndex = NULL;
-  CMR_CALL( CMRallocStackArray(cmr, &columnToMinorIndex, dec->numColumns) );
-  for (size_t column = 0; column < dec->numColumns; ++column)
+  CMR_CALL( CMRallocStackArray(cmr, &columnToMinorIndex, node->numColumns) );
+  for (size_t column = 0; column < node->numColumns; ++column)
     columnToMinorIndex[column] = SIZE_MAX;
 
-  for (size_t m = 0; m < dec->nestedMinorsLength; ++m)
+  for (size_t m = 0; m < node->nestedMinorsLength; ++m)
   {
-    for (size_t r = (m == 0 ? 0 : dec->nestedMinorsSequenceNumRows[m - 1]);
-      r < dec->nestedMinorsSequenceNumRows[m]; ++r)
+    for (size_t r = (m == 0 ? 0 : node->nestedMinorsSequenceNumRows[m - 1]);
+      r < node->nestedMinorsSequenceNumRows[m]; ++r)
     {
-      rowToMinorIndex[dec->nestedMinorsRowsDense[r]] = m;
+      rowToMinorIndex[node->nestedMinorsRowsDense[r]] = m;
     }
-    for (size_t c = (m == 0 ? 0 : dec->nestedMinorsSequenceNumColumns[m - 1]);
-      c < dec->nestedMinorsSequenceNumColumns[m]; ++c)
+    for (size_t c = (m == 0 ? 0 : node->nestedMinorsSequenceNumColumns[m - 1]);
+      c < node->nestedMinorsSequenceNumColumns[m]; ++c)
     {
-      columnToMinorIndex[dec->nestedMinorsColumnsDense[c]] = m;
+      columnToMinorIndex[node->nestedMinorsColumnsDense[c]] = m;
     }
   }
 
   const char* letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  for (size_t row = 0; row < dec->numRows; ++row)
+  for (size_t row = 0; row < node->numRows; ++row)
   {
     size_t rowMinor = rowToMinorIndex[row];
-    for (size_t column = 0; column < dec->numColumns; ++column)
+    for (size_t column = 0; column < node->numColumns; ++column)
     {
-      bool x = CMRdensebinmatrixGet(dec->denseMatrix, row, column);
+      bool x = CMRdensebinmatrixGet(node->denseMatrix, row, column);
       if (x)
       {
         size_t columnMinor = columnToMinorIndex[column];
@@ -446,10 +446,10 @@ CMR_ERROR searchShortestPath(
 
 static
 CMR_ERROR pivot(
-  CMR* cmr,                 /**< \ref CMR environment. */
-    CMR_SEYMOUR_NODE* dec,     /**< decomposition node. */
-  size_t pivotRow,          /**< Pivot row. */
-  size_t pivotColumn        /**< Pivot column. */
+  CMR* cmr,               /**< \ref CMR environment. */
+  CMR_SEYMOUR_NODE* dec,  /**< decomposition node. */
+  size_t pivotRow,        /**< Pivot row. */
+  size_t pivotColumn      /**< Pivot column. */
 )
 {
   assert(cmr);
@@ -498,7 +498,7 @@ CMR_ERROR pivot(
 static
 CMR_ERROR applyPivots(
   CMR* cmr,                   /**< \ref CMR environment. */
-    CMR_SEYMOUR_NODE* dec,       /**< Decomposition node. */
+  CMR_SEYMOUR_NODE* dec,      /**< Decomposition node. */
   ElementData* rowData,       /**< Row data. */
   ElementData* columnData,    /**< Column data. */
   CMR_ELEMENT reachedTarget,  /**< Reached target row/column. */
@@ -565,7 +565,7 @@ CMR_ERROR applyPivots(
 static
 CMR_ERROR addElement(
   CMR* cmr,                           /**< \ref CMR environment. */
-    CMR_SEYMOUR_NODE* dec,               /**< Decomposition node. */
+  CMR_SEYMOUR_NODE* dec,              /**< Decomposition node. */
   ElementData* majorData,             /**< Major index data. */
   ElementData* minorData,             /**< Minor index data. */
   CMR_LISTHASHTABLE* minorHashtable,  /**< Minor index hashtable. */
@@ -630,17 +630,17 @@ CMR_ERROR CMRregularityExtendNestedMinorSequence(CMR* cmr, DecompositionTask* ta
   assert(task);
   assert(queue);
 
-    CMR_SEYMOUR_NODE* dec = task->node;
-  assert(dec);
+  CMR_SEYMOUR_NODE* node = task->node;
+  assert(node);
 
   CMRdbgMsg(6, "Attempting to extend a sequence of 3-connected nested minors of length %zu with "
     "last minor of size %zux%zu with the following dense matrix:\n",
-    dec->nestedMinorsLength, dec->nestedMinorsSequenceNumRows[dec->nestedMinorsLength-1],
-    dec->nestedMinorsSequenceNumColumns[dec->nestedMinorsLength-1]);
-  CMR_CALL( dbgPrintDenseSequence(cmr, dec) );
+    node->nestedMinorsLength, node->nestedMinorsSequenceNumRows[node->nestedMinorsLength-1],
+    node->nestedMinorsSequenceNumColumns[node->nestedMinorsLength-1]);
+  CMR_CALL( dbgPrintDenseSequence(cmr, node) );
 
-  size_t numRows = dec->matrix->numRows;
-  size_t numColumns = dec->matrix->numColumns;
+  size_t numRows = node->matrix->numRows;
+  size_t numColumns = node->matrix->numColumns;
   long long* hashVector = NULL;
   CMR_CALL( createHashVector(cmr, &hashVector, numRows > numColumns ? numRows : numColumns) );
 
@@ -658,7 +658,7 @@ CMR_ERROR CMRregularityExtendNestedMinorSequence(CMR* cmr, DecompositionTask* ta
 
   /* Initialize column data. */
   ElementData* columnData = NULL;
-  CMR_CALL( CMRallocStackArray(cmr, &columnData, dec->matrix->numColumns) );
+  CMR_CALL( CMRallocStackArray(cmr, &columnData, node->matrix->numColumns) );
   for (size_t column = 0; column < numColumns; ++column)
   {
     columnData[column].hashValue = 0;
@@ -671,10 +671,10 @@ CMR_ERROR CMRregularityExtendNestedMinorSequence(CMR* cmr, DecompositionTask* ta
   /* Initialize information about existing sequence. */
   size_t* processedRows = NULL;
   CMR_CALL( CMRallocStackArray(cmr, &processedRows, numRows) );
-  size_t numProcessedRows = dec->nestedMinorsSequenceNumRows[dec->nestedMinorsLength-1];
+  size_t numProcessedRows = node->nestedMinorsSequenceNumRows[node->nestedMinorsLength-1];
   for (size_t r = 0; r < numProcessedRows; ++r)
   {
-    size_t row = dec->nestedMinorsRowsDense[r];
+    size_t row = node->nestedMinorsRowsDense[r];
     rowData[row].representative = CMRrowToElement(row);
     rowData[row].isProcessed = true;
     processedRows[r] = row;
@@ -682,10 +682,10 @@ CMR_ERROR CMRregularityExtendNestedMinorSequence(CMR* cmr, DecompositionTask* ta
 
   size_t* processedColumns = NULL;
   CMR_CALL( CMRallocStackArray(cmr, &processedColumns, numColumns) );
-  size_t numProcessedColumns = dec->nestedMinorsSequenceNumColumns[dec->nestedMinorsLength-1];
+  size_t numProcessedColumns = node->nestedMinorsSequenceNumColumns[node->nestedMinorsLength-1];
   for (size_t c = 0; c < numProcessedColumns; ++c)
   {
-    size_t column = dec->nestedMinorsColumnsDense[c];
+    size_t column = node->nestedMinorsColumnsDense[c];
     columnData[column].representative = CMRcolumnToElement(column);
     columnData[column].isProcessed = true;
     processedColumns[c] = column;
@@ -697,9 +697,9 @@ CMR_ERROR CMRregularityExtendNestedMinorSequence(CMR* cmr, DecompositionTask* ta
   CMR_LISTHASHTABLE* columnHashtable = NULL;
   CMR_CALL( CMRlisthashtableCreate(cmr, &columnHashtable, nextPower2(numColumns), numColumns) );
 
-  CMR_CALL( initializeHashing(cmr, dec->denseMatrix, rowData, rowHashtable, numRows, processedColumns,
+  CMR_CALL( initializeHashing(cmr, node->denseMatrix, rowData, rowHashtable, numRows, processedColumns,
     numProcessedColumns, hashVector, true) );
-  CMR_CALL( initializeHashing(cmr, dec->denseMatrix, columnData, columnHashtable, numColumns, processedRows,
+  CMR_CALL( initializeHashing(cmr, node->denseMatrix, columnData, columnHashtable, numColumns, processedRows,
     numProcessedRows, hashVector, false) );
 
   CMR_ERROR result = CMR_OKAY;
@@ -716,7 +716,7 @@ CMR_ERROR CMRregularityExtendNestedMinorSequence(CMR* cmr, DecompositionTask* ta
     if (task->stats)
       task->stats->sequenceExtensionCount++;
 
-    CMR_CALL( dbgPrintDenseSequence(cmr, dec) );
+    CMR_CALL( dbgPrintDenseSequence(cmr, node) );
 
     for (size_t row = 0; row < numRows; ++row)
     {
@@ -749,7 +749,7 @@ CMR_ERROR CMRregularityExtendNestedMinorSequence(CMR* cmr, DecompositionTask* ta
     {
       if (!rowData[row].isProcessed && rowData[row].numNonzeros > 1)
       {
-        CMR_CALL( updateRepresentative(cmr, dec->denseMatrix, rowData, rowHashtable, processedColumns,
+        CMR_CALL( updateRepresentative(cmr, node->denseMatrix, rowData, rowHashtable, processedColumns,
           numProcessedColumns, row, true) );
         if (CMRelementIsValid(rowData[row].representative))
         {
@@ -759,13 +759,13 @@ CMR_ERROR CMRregularityExtendNestedMinorSequence(CMR* cmr, DecompositionTask* ta
         else
         {
           CMRdbgMsg(10, "Encountered non-parallel row r%zu.\n", row+1);
-          dec->nestedMinorsSequenceNumRows[dec->nestedMinorsLength]
-            = dec->nestedMinorsSequenceNumRows[dec->nestedMinorsLength-1];
-          dec->nestedMinorsSequenceNumColumns[dec->nestedMinorsLength]
-            = dec->nestedMinorsSequenceNumColumns[dec->nestedMinorsLength-1];
-          dec->nestedMinorsLength++;
-          CMR_CALL( addElement(cmr, dec, rowData, columnData, columnHashtable, hashVector, numColumns, processedRows,
-            &numProcessedRows, row, dec->nestedMinorsRowsDense, true) );
+          node->nestedMinorsSequenceNumRows[node->nestedMinorsLength]
+            = node->nestedMinorsSequenceNumRows[node->nestedMinorsLength-1];
+          node->nestedMinorsSequenceNumColumns[node->nestedMinorsLength]
+            = node->nestedMinorsSequenceNumColumns[node->nestedMinorsLength-1];
+          node->nestedMinorsLength++;
+          CMR_CALL( addElement(cmr, node, rowData, columnData, columnHashtable, hashVector, numColumns, processedRows,
+            &numProcessedRows, row, node->nestedMinorsRowsDense, true) );
           CMR_CALL( updateHashtable(cmr, rowData, processedRows, numProcessedRows, rowHashtable) );
           CMR_CALL( updateHashtable(cmr, columnData, processedColumns, numProcessedColumns, columnHashtable) );
           added = true;
@@ -780,7 +780,7 @@ CMR_ERROR CMRregularityExtendNestedMinorSequence(CMR* cmr, DecompositionTask* ta
     {
       if (!columnData[column].isProcessed && columnData[column].numNonzeros > 1)
       {
-        CMR_CALL( updateRepresentative(cmr, dec->denseMatrix, columnData, columnHashtable, processedRows,
+        CMR_CALL( updateRepresentative(cmr, node->denseMatrix, columnData, columnHashtable, processedRows,
           numProcessedRows, column, false) );
         if (CMRelementIsValid(columnData[column].representative))
         {
@@ -790,13 +790,13 @@ CMR_ERROR CMRregularityExtendNestedMinorSequence(CMR* cmr, DecompositionTask* ta
         else
         {
           CMRdbgMsg(8, "Encountered non-parallel column c%zu.\n", column+1);
-          dec->nestedMinorsSequenceNumRows[dec->nestedMinorsLength]
-            = dec->nestedMinorsSequenceNumRows[dec->nestedMinorsLength-1];
-          dec->nestedMinorsSequenceNumColumns[dec->nestedMinorsLength]
-          = dec->nestedMinorsSequenceNumColumns[dec->nestedMinorsLength-1];
-          dec->nestedMinorsLength++;
-          CMR_CALL( addElement(cmr, dec, columnData, rowData, rowHashtable, hashVector, numRows, processedColumns,
-            &numProcessedColumns, column, dec->nestedMinorsColumnsDense, false) );
+          node->nestedMinorsSequenceNumRows[node->nestedMinorsLength]
+            = node->nestedMinorsSequenceNumRows[node->nestedMinorsLength-1];
+          node->nestedMinorsSequenceNumColumns[node->nestedMinorsLength]
+          = node->nestedMinorsSequenceNumColumns[node->nestedMinorsLength-1];
+          node->nestedMinorsLength++;
+          CMR_CALL( addElement(cmr, node, columnData, rowData, rowHashtable, hashVector, numRows, processedColumns,
+            &numProcessedColumns, column, node->nestedMinorsColumnsDense, false) );
           CMR_CALL( updateHashtable(cmr, rowData, processedRows, numProcessedRows, rowHashtable) );
           CMR_CALL( updateHashtable(cmr, columnData, processedColumns, numProcessedColumns, columnHashtable) );
           added = true;
@@ -809,7 +809,7 @@ CMR_ERROR CMRregularityExtendNestedMinorSequence(CMR* cmr, DecompositionTask* ta
 
     /* All unprocessed rows/columns are zero, unit or parallel to submatrix. */
     CMR_ELEMENT startElement = 0;
-    CMR_CALL( prepareSearch(cmr, dec->denseMatrix, rowData, columnData, &startElement) );
+    CMR_CALL( prepareSearch(cmr, node->denseMatrix, rowData, columnData, &startElement) );
     for (size_t row = 0; row < numRows; ++row)
     {
       if (rowData[row].isSource)
@@ -831,7 +831,7 @@ CMR_ERROR CMRregularityExtendNestedMinorSequence(CMR* cmr, DecompositionTask* ta
     }
 
     CMR_ELEMENT reachedTarget;
-    CMR_CALL( searchShortestPath(cmr, dec->denseMatrix, rowData, columnData, &reachedTarget) );
+    CMR_CALL( searchShortestPath(cmr, node->denseMatrix, rowData, columnData, &reachedTarget) );
 
     if (CMRelementIsValid(reachedTarget))
     {
@@ -845,25 +845,25 @@ CMR_ERROR CMRregularityExtendNestedMinorSequence(CMR* cmr, DecompositionTask* ta
           e = columnData[CMRelementToColumnIndex(e)].predecessor;
       }
 
-      dec->nestedMinorsSequenceNumRows[dec->nestedMinorsLength]
-        = dec->nestedMinorsSequenceNumRows[dec->nestedMinorsLength-1];
-      dec->nestedMinorsSequenceNumColumns[dec->nestedMinorsLength]
-        = dec->nestedMinorsSequenceNumColumns[dec->nestedMinorsLength-1];
-      dec->nestedMinorsLength++;
+      node->nestedMinorsSequenceNumRows[node->nestedMinorsLength]
+        = node->nestedMinorsSequenceNumRows[node->nestedMinorsLength-1];
+      node->nestedMinorsSequenceNumColumns[node->nestedMinorsLength]
+        = node->nestedMinorsSequenceNumColumns[node->nestedMinorsLength-1];
+      node->nestedMinorsLength++;
       CMR_ELEMENT newElements[4];
-      CMR_CALL( applyPivots(cmr, dec, rowData, columnData, reachedTarget, newElements) );
+      CMR_CALL( applyPivots(cmr, node, rowData, columnData, reachedTarget, newElements) );
 
       for (size_t i = 0; CMRelementIsValid(newElements[i]); ++i)
       {
         if (CMRelementIsRow(newElements[i]))
         {
-          CMR_CALL( addElement(cmr, dec, rowData, columnData, columnHashtable, hashVector, numColumns, processedRows,
-            &numProcessedRows, CMRelementToRowIndex(newElements[i]), dec->nestedMinorsRowsDense, true) );
+          CMR_CALL( addElement(cmr, node, rowData, columnData, columnHashtable, hashVector, numColumns, processedRows,
+            &numProcessedRows, CMRelementToRowIndex(newElements[i]), node->nestedMinorsRowsDense, true) );
         }
         else
         {
-          CMR_CALL( addElement(cmr, dec, columnData, rowData, rowHashtable, hashVector, numRows, processedColumns,
-            &numProcessedColumns, CMRelementToColumnIndex(newElements[i]), dec->nestedMinorsColumnsDense, false) );
+          CMR_CALL( addElement(cmr, node, columnData, rowData, rowHashtable, hashVector, numRows, processedColumns,
+            &numProcessedColumns, CMRelementToColumnIndex(newElements[i]), node->nestedMinorsColumnsDense, false) );
         }
       }
 
@@ -884,7 +884,7 @@ CMR_ERROR CMRregularityExtendNestedMinorSequence(CMR* cmr, DecompositionTask* ta
           || CMRrowToElement(row) == startElement) ? CMR_SEPA_SECOND : CMR_SEPA_FIRST;
         CMRdbgMsg(12, "Row r%zu has predecessor %s, isSource=%s and lies in part %d.\n", row+1,
           CMRelementString(rowData[row].predecessor, 0), rowData[row].isSource ? "true" : "false", flag);
-        CMR_ELEMENT originalElement = dec->denseRowsOriginal[row];
+        CMR_ELEMENT originalElement = node->denseRowsOriginal[row];
         if (CMRelementIsRow(originalElement))
           separation->rowsFlags[CMRelementToRowIndex(originalElement)] = flag;
         else
@@ -897,26 +897,26 @@ CMR_ERROR CMRregularityExtendNestedMinorSequence(CMR* cmr, DecompositionTask* ta
           || CMRcolumnToElement(column) == startElement) ? CMR_SEPA_SECOND : CMR_SEPA_FIRST;
         CMRdbgMsg(12, "Column c%zu has predecessor %s, isSource=%s and lies in part %d.\n", column+1,
           CMRelementString(columnData[column].predecessor, 0), columnData[column].isSource ? "true" : "false", flag);
-        CMR_ELEMENT originalElement = dec->denseColumnsOriginal[column];
+        CMR_ELEMENT originalElement = node->denseColumnsOriginal[column];
         if (CMRelementIsRow(originalElement))
           separation->rowsFlags[CMRelementToRowIndex(originalElement)] = flag;
         else
           separation->columnsFlags[CMRelementToColumnIndex(originalElement)] = flag;
       }
 
-      if (dec->transpose == NULL)
-        CMR_CALL( CMRchrmatTranspose(cmr, dec->matrix, &dec->transpose) );
+      if (node->transpose == NULL)
+        CMR_CALL( CMRchrmatTranspose(cmr, node->matrix, &node->transpose) );
 
       CMR_SUBMAT* violatorSubmatrix = NULL;
-      CMR_CALL( CMRsepaFindBinaryRepresentatives(cmr, separation, dec->matrix, dec->transpose, NULL,
-        dec->isTernary ? &violatorSubmatrix : NULL) );
+      CMR_CALL( CMRsepaFindBinaryRepresentatives(cmr, separation, node->matrix, node->transpose, NULL,
+        node->isTernary ? &violatorSubmatrix : NULL) );
 
       if (violatorSubmatrix)
       {
         CMRdbgMsg(8, "-> 2x2 submatrix with bad determinant.\n");
 
-        CMR_CALL( CMRseymourUpdateViolator(cmr, dec, violatorSubmatrix) );
-        assert(dec->type == CMR_SEYMOUR_NODE_TYPE_IRREGULAR);
+        CMR_CALL( CMRseymourUpdateViolator(cmr, node, violatorSubmatrix) );
+        assert(node->type == CMR_SEYMOUR_NODE_TYPE_IRREGULAR);
 
         CMR_CALL( CMRsepaFree(cmr, &separation) );
         queue->foundIrregularity = true;
@@ -929,16 +929,16 @@ CMR_ERROR CMRregularityExtendNestedMinorSequence(CMR* cmr, DecompositionTask* ta
       /* Carry out 2-sum decomposition. */
 
       CMRdbgMsg(8, "-> 2-separation found.\n");
-      CMR_CALL( CMRseymourUpdateTwoSum(cmr, dec, separation) );
+      CMR_CALL( CMRseymourUpdateTwoSum(cmr, node, separation) );
       CMR_CALL( CMRsepaFree(cmr, &separation) );
 
       DecompositionTask* childTasks[2] = { task, NULL };
-      CMR_CALL( CMRregularityTaskCreateRoot(cmr, dec->children[1], &childTasks[1], task->params, task->stats,
+      CMR_CALL( CMRregularityTaskCreateRoot(cmr, node->children[1], &childTasks[1], task->params, task->stats,
         task->startClock, task->timeLimit) );
 
-      childTasks[0]->node = dec->children[0];
-      dec->children[0]->testedSeriesParallel = false; /* TODO: we may carry over the found sequence including W_k. */
-      dec->children[1]->testedSeriesParallel = false;
+      childTasks[0]->node = node->children[0];
+      node->children[0]->testedSeriesParallel = false; /* TODO: we may carry over the found sequence including W_k. */
+      node->children[1]->testedSeriesParallel = false;
 
       /* Add both child tasks to the list. */
       CMRregularityQueueAdd(queue, childTasks[0]);
@@ -950,14 +950,16 @@ CMR_ERROR CMRregularityExtendNestedMinorSequence(CMR* cmr, DecompositionTask* ta
 
   if (task->stats)
   {
-    task->stats->sequenceExtensionTime += (clock() - task->startClock) * 1.0 / CLOCKS_PER_SEC;
+    clock_t endClock = clock();
+    task->stats->enumerationTime += (endClock - task->startClock) * 1.0 / CLOCKS_PER_SEC;
+    task->startClock = endClock;
   }
 
-  if (dec->type == CMR_SEYMOUR_NODE_TYPE_TWO_SUM)
+  if (node->type == CMR_SEYMOUR_NODE_TYPE_TWO_SUM)
   {
     CMRdbgMsg(8, "Aborting construction of sequence of nested 3-connected minors due to a 2-separation.\n");
   }
-  else if (dec->type == CMR_SEYMOUR_NODE_TYPE_IRREGULAR)
+  else if (node->type == CMR_SEYMOUR_NODE_TYPE_IRREGULAR)
   {
     CMRdbgMsg(8, "Aborting construction of sequence of nested 3-connected minors due to detected irregularity.\n");
 
@@ -967,10 +969,10 @@ CMR_ERROR CMRregularityExtendNestedMinorSequence(CMR* cmr, DecompositionTask* ta
   else
   {
     CMRdbgMsg(8, "Successfully constructed sequence of nested 3-connected minors.\n");
-    assert(dec->type != CMR_SEYMOUR_NODE_TYPE_IRREGULAR);
+    assert(node->type != CMR_SEYMOUR_NODE_TYPE_IRREGULAR);
 
-    assert(dec->nestedMinorsMatrix == NULL);
-    assert(dec->nestedMinorsTranspose == NULL);
+    assert(node->nestedMinorsMatrix == NULL);
+    assert(node->nestedMinorsTranspose == NULL);
 
     /* Count the nonzeros. */
     size_t entry = 0;
@@ -978,53 +980,53 @@ CMR_ERROR CMRregularityExtendNestedMinorSequence(CMR* cmr, DecompositionTask* ta
     {
       for (size_t column = 0; column < numColumns; ++column)
       {
-        if (CMRdensebinmatrixGet(dec->denseMatrix, row, column))
+        if (CMRdensebinmatrixGet(node->denseMatrix, row, column))
           ++entry;
       }
     }
 
     /* Create a sparse copy of dense, permuted such that the nested sequence is displayed from top-left on. */
-    CMR_CALL( CMRchrmatCreate(cmr, &dec->nestedMinorsMatrix, numRows, numColumns, entry) );
+    CMR_CALL( CMRchrmatCreate(cmr, &node->nestedMinorsMatrix, numRows, numColumns, entry) );
     entry = 0;
     for (size_t row = 0; row < numRows; ++row)
     {
-      size_t denseRow = dec->nestedMinorsRowsDense[row];
-      dec->nestedMinorsMatrix->rowSlice[row] = entry;
+      size_t denseRow = node->nestedMinorsRowsDense[row];
+      node->nestedMinorsMatrix->rowSlice[row] = entry;
       for (size_t column = 0; column < numColumns; ++column)
       {
-        size_t denseColumn = dec->nestedMinorsColumnsDense[column];
-        if (CMRdensebinmatrixGet(dec->denseMatrix, denseRow, denseColumn))
+        size_t denseColumn = node->nestedMinorsColumnsDense[column];
+        if (CMRdensebinmatrixGet(node->denseMatrix, denseRow, denseColumn))
         {
-          dec->nestedMinorsMatrix->entryColumns[entry] = column;
-          dec->nestedMinorsMatrix->entryValues[entry] = 1;
+          node->nestedMinorsMatrix->entryColumns[entry] = column;
+          node->nestedMinorsMatrix->entryValues[entry] = 1;
           ++entry;
         }
       }
     }
-    dec->nestedMinorsMatrix->rowSlice[numRows] = entry;
-    assert(entry == dec->nestedMinorsMatrix->numNonzeros);
+    node->nestedMinorsMatrix->rowSlice[numRows] = entry;
+    assert(entry == node->nestedMinorsMatrix->numNonzeros);
 
     /* Create the transpose. */
-    assert(dec->nestedMinorsTranspose == NULL);
-    CMR_CALL( CMRchrmatTranspose(cmr, dec->nestedMinorsMatrix, &dec->nestedMinorsTranspose) );
+    assert(node->nestedMinorsTranspose == NULL);
+    CMR_CALL( CMRchrmatTranspose(cmr, node->nestedMinorsMatrix, &node->nestedMinorsTranspose) );
 
     /* Create mappings for nested minors matrix. */
-    assert(dec->nestedMinorsRowsOriginal == NULL);
-    CMR_CALL( CMRallocBlockArray(cmr, &dec->nestedMinorsRowsOriginal, dec->numRows) );
-    for (size_t row = 0; row < dec->numRows; ++row)
-      dec->nestedMinorsRowsOriginal[row] = dec->denseRowsOriginal[dec->nestedMinorsRowsDense[row]];
+    assert(node->nestedMinorsRowsOriginal == NULL);
+    CMR_CALL( CMRallocBlockArray(cmr, &node->nestedMinorsRowsOriginal, node->numRows) );
+    for (size_t row = 0; row < node->numRows; ++row)
+      node->nestedMinorsRowsOriginal[row] = node->denseRowsOriginal[node->nestedMinorsRowsDense[row]];
 
-    assert(dec->nestedMinorsColumnsOriginal == NULL);
-    CMR_CALL( CMRallocBlockArray(cmr, &dec->nestedMinorsColumnsOriginal, dec->numColumns) );
-    for (size_t column = 0; column < dec->numColumns; ++column)
-      dec->nestedMinorsColumnsOriginal[column] = dec->denseColumnsOriginal[dec->nestedMinorsColumnsDense[column]];
+    assert(node->nestedMinorsColumnsOriginal == NULL);
+    CMR_CALL( CMRallocBlockArray(cmr, &node->nestedMinorsColumnsOriginal, node->numColumns) );
+    for (size_t column = 0; column < node->numColumns; ++column)
+      node->nestedMinorsColumnsOriginal[column] = node->denseColumnsOriginal[node->nestedMinorsColumnsDense[column]];
 
     /* Free all the dense matrix data. */
-    CMR_CALL( CMRdensebinmatrixFree(cmr, &dec->denseMatrix) );
-    CMR_CALL( CMRfreeBlockArray(cmr, &dec->denseRowsOriginal) );
-    CMR_CALL( CMRfreeBlockArray(cmr, &dec->denseColumnsOriginal) );
-    CMR_CALL( CMRfreeBlockArray(cmr, &dec->nestedMinorsRowsDense) );
-    CMR_CALL( CMRfreeBlockArray(cmr, &dec->nestedMinorsColumnsDense) );
+    CMR_CALL( CMRdensebinmatrixFree(cmr, &node->denseMatrix) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &node->denseRowsOriginal) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &node->denseColumnsOriginal) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &node->nestedMinorsRowsDense) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &node->nestedMinorsColumnsDense) );
 
     /* Add the task back to the list of unprocessed tasks in order to check how far the sequence is (co)graphic. */
     CMRregularityQueueAdd(queue, task);
@@ -1051,7 +1053,7 @@ CMR_ERROR CMRregularityInitNestedMinorSequence(CMR* cmr, DecompositionTask* task
   assert(task);
   assert(wheelSubmatrix);
 
-    CMR_SEYMOUR_NODE* dec = task->node;
+  CMR_SEYMOUR_NODE* dec = task->node;
   assert(dec);
 
 #if defined(CMR_DEBUG)

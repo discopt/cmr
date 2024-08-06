@@ -460,7 +460,7 @@ int compareEntries(const void** pa, const void** pb)
 CMR_ERROR CMRdblmatSortNonzeros(CMR* cmr, CMR_DBLMAT* matrix)
 {
   assert(cmr);
-  CMRconsistencyAssert( CMRdblmatConsistency(matrix) );
+  CMRdbgConsistencyAssert( CMRdblmatConsistency(matrix) );
 
   for (size_t row = 0; row < matrix->numRows; ++row)
   {
@@ -503,7 +503,7 @@ CMR_ERROR CMRchrmatSortNonzeros(CMR* cmr, CMR_CHRMAT* matrix)
       sizeof(char), compareEntries) );
   }
 
-  CMRconsistencyAssert( CMRchrmatConsistency(matrix) );
+  CMRdbgConsistencyAssert( CMRchrmatConsistency(matrix) );
 
   return CMR_OKAY;
 }
@@ -574,7 +574,7 @@ CMR_ERROR CMRdblmatTranspose(CMR* cmr, CMR_DBLMAT* matrix, CMR_DBLMAT** presult)
   assert(matrix);
   assert(presult);
   assert(*presult == NULL);
-  CMRconsistencyAssert( CMRdblmatConsistency(matrix) );
+  CMRdbgConsistencyAssert( CMRdblmatConsistency(matrix) );
 
   CMR_CALL( CMRdblmatCreate(cmr, presult, matrix->numColumns, matrix->numRows, matrix->numNonzeros) );
   CMR_DBLMAT* result = *presult;
@@ -618,7 +618,7 @@ CMR_ERROR CMRintmatTranspose(CMR* cmr, CMR_INTMAT* matrix, CMR_INTMAT** presult)
   assert(matrix);
   assert(presult);
   assert(*presult == NULL);
-  CMRconsistencyAssert( CMRintmatConsistency(matrix) );
+  CMRdbgConsistencyAssert( CMRintmatConsistency(matrix) );
 
   CMR_CALL( CMRintmatCreate(cmr, presult, matrix->numColumns, matrix->numRows, matrix->numNonzeros) );
   CMR_INTMAT* result = *presult;
@@ -662,7 +662,7 @@ CMR_ERROR CMRchrmatTranspose(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT** presult)
   assert(matrix);
   assert(presult);
   assert(!*presult);
-  CMRconsistencyAssert( CMRchrmatConsistency(matrix) );
+  CMRdbgConsistencyAssert( CMRchrmatConsistency(matrix) );
 
   CMR_CALL( CMRchrmatCreate(cmr, presult, matrix->numColumns, matrix->numRows, matrix->numNonzeros) );
   CMR_CHRMAT* result = *presult;
@@ -1776,8 +1776,8 @@ CMR_ERROR CMRchrmatCreateFromDenseFile(CMR* cmr, const char* fileName, const cha
 
 bool CMRdblmatCheckEqual(CMR_DBLMAT* matrix1, CMR_DBLMAT* matrix2)
 {
-  CMRconsistencyAssert( CMRdblmatConsistency(matrix1) );
-  CMRconsistencyAssert( CMRdblmatConsistency(matrix2) );
+  CMRdbgConsistencyAssert( CMRdblmatConsistency(matrix1) );
+  CMRdbgConsistencyAssert( CMRdblmatConsistency(matrix2) );
 
   if (matrix1->numRows != matrix2->numRows)
     return false;
@@ -1811,8 +1811,8 @@ bool CMRdblmatCheckEqual(CMR_DBLMAT* matrix1, CMR_DBLMAT* matrix2)
 
 bool CMRintmatCheckEqual(CMR_INTMAT* matrix1, CMR_INTMAT* matrix2)
 {
-  CMRconsistencyAssert( CMRintmatConsistency(matrix1) );
-  CMRconsistencyAssert( CMRintmatConsistency(matrix2) );
+  CMRdbgConsistencyAssert( CMRintmatConsistency(matrix1) );
+  CMRdbgConsistencyAssert( CMRintmatConsistency(matrix2) );
 
   if (matrix1->numRows != matrix2->numRows)
     return false;
@@ -1846,8 +1846,8 @@ bool CMRintmatCheckEqual(CMR_INTMAT* matrix1, CMR_INTMAT* matrix2)
 
 bool CMRchrmatCheckEqual(CMR_CHRMAT* matrix1, CMR_CHRMAT* matrix2)
 {
-  CMRconsistencyAssert( CMRchrmatConsistency(matrix1) );
-  CMRconsistencyAssert( CMRchrmatConsistency(matrix2) );
+  CMRdbgConsistencyAssert( CMRchrmatConsistency(matrix1) );
+  CMRdbgConsistencyAssert( CMRchrmatConsistency(matrix2) );
 
   if (matrix1->numRows != matrix2->numRows)
     return false;
@@ -1882,8 +1882,8 @@ bool CMRchrmatCheckEqual(CMR_CHRMAT* matrix1, CMR_CHRMAT* matrix2)
 CMR_ERROR CMRdblmatCheckTranspose(CMR* cmr, CMR_DBLMAT* matrix1, CMR_DBLMAT* matrix2, bool* pareTranspose)
 {
   assert(cmr);
-  CMRconsistencyAssert( CMRdblmatConsistency(matrix1) );
-  CMRconsistencyAssert( CMRdblmatConsistency(matrix2) );
+  CMRdbgConsistencyAssert( CMRdblmatConsistency(matrix1) );
+  CMRdbgConsistencyAssert( CMRdblmatConsistency(matrix2) );
   assert(pareTranspose);
 
   if (matrix1->numRows != matrix2->numColumns || matrix1->numColumns != matrix2->numRows
@@ -1926,8 +1926,8 @@ cleanup:
 CMR_ERROR CMRintmatCheckTranspose(CMR* cmr, CMR_INTMAT* matrix1, CMR_INTMAT* matrix2, bool* pareTranspose)
 {
   assert(cmr);
-  CMRconsistencyAssert( CMRintmatConsistency(matrix1) );
-  CMRconsistencyAssert( CMRintmatConsistency(matrix2) );
+  CMRdbgConsistencyAssert( CMRintmatConsistency(matrix1) );
+  CMRdbgConsistencyAssert( CMRintmatConsistency(matrix2) );
   assert(pareTranspose);
 
   if (matrix1->numRows != matrix2->numColumns || matrix1->numColumns != matrix2->numRows
@@ -1970,8 +1970,8 @@ cleanup:
 CMR_ERROR CMRchrmatCheckTranspose(CMR* cmr, CMR_CHRMAT* matrix1, CMR_CHRMAT* matrix2, bool* pareTranspose)
 {
   assert(cmr);
-  CMRconsistencyAssert( CMRchrmatConsistency(matrix1) );
-  CMRconsistencyAssert( CMRchrmatConsistency(matrix2) );
+  CMRdbgConsistencyAssert( CMRchrmatConsistency(matrix1) );
+  CMRdbgConsistencyAssert( CMRchrmatConsistency(matrix2) );
   assert(pareTranspose);
 
   if (matrix1->numRows != matrix2->numColumns || matrix1->numColumns != matrix2->numRows
@@ -2132,7 +2132,7 @@ char* CMRchrmatConsistency(CMR_CHRMAT* matrix)
 bool CMRdblmatIsBinary(CMR* cmr, CMR_DBLMAT* matrix, double epsilon, CMR_SUBMAT** psubmatrix)
 {
   assert(cmr);
-  CMRconsistencyAssert( CMRdblmatConsistency(matrix) );
+  CMRdbgConsistencyAssert( CMRdblmatConsistency(matrix) );
   assert(psubmatrix || !*psubmatrix);
 
   for (size_t row = 0; row < matrix->numRows; ++row)
@@ -2158,7 +2158,7 @@ bool CMRdblmatIsBinary(CMR* cmr, CMR_DBLMAT* matrix, double epsilon, CMR_SUBMAT*
 bool CMRintmatIsBinary(CMR* cmr, CMR_INTMAT* matrix, CMR_SUBMAT** psubmatrix)
 {
   assert(cmr);
-  CMRconsistencyAssert( CMRintmatConsistency(matrix) );
+  CMRdbgConsistencyAssert( CMRintmatConsistency(matrix) );
   assert(psubmatrix || !*psubmatrix);
 
   for (size_t row = 0; row < matrix->numRows; ++row)
@@ -2183,7 +2183,7 @@ bool CMRintmatIsBinary(CMR* cmr, CMR_INTMAT* matrix, CMR_SUBMAT** psubmatrix)
 bool CMRchrmatIsBinary(CMR* cmr, CMR_CHRMAT* matrix, CMR_SUBMAT** psubmatrix)
 {
   assert(cmr);
-  CMRconsistencyAssert( CMRchrmatConsistency(matrix) );
+  CMRdbgConsistencyAssert( CMRchrmatConsistency(matrix) );
   assert(!psubmatrix || !*psubmatrix);
 
   for (size_t row = 0; row < matrix->numRows; ++row)
@@ -2208,7 +2208,7 @@ bool CMRchrmatIsBinary(CMR* cmr, CMR_CHRMAT* matrix, CMR_SUBMAT** psubmatrix)
 bool CMRdblmatIsTernary(CMR* cmr, CMR_DBLMAT* matrix, double epsilon, CMR_SUBMAT** psubmatrix)
 {
   assert(cmr);
-  CMRconsistencyAssert( CMRdblmatConsistency(matrix) );
+  CMRdbgConsistencyAssert( CMRdblmatConsistency(matrix) );
   assert(!psubmatrix || !*psubmatrix);
 
   for (size_t row = 0; row < matrix->numRows; ++row)
@@ -2234,7 +2234,7 @@ bool CMRdblmatIsTernary(CMR* cmr, CMR_DBLMAT* matrix, double epsilon, CMR_SUBMAT
 bool CMRintmatIsTernary(CMR* cmr, CMR_INTMAT* matrix, CMR_SUBMAT** psubmatrix)
 {
   assert(cmr);
-  CMRconsistencyAssert( CMRintmatConsistency(matrix) );
+  CMRdbgConsistencyAssert( CMRintmatConsistency(matrix) );
   assert(!psubmatrix || !*psubmatrix);
 
   for (size_t row = 0; row < matrix->numRows; ++row)
@@ -2259,7 +2259,7 @@ bool CMRintmatIsTernary(CMR* cmr, CMR_INTMAT* matrix, CMR_SUBMAT** psubmatrix)
 bool CMRchrmatIsTernary(CMR* cmr, CMR_CHRMAT* matrix, CMR_SUBMAT** psubmatrix)
 {
   assert(cmr);
-  CMRconsistencyAssert( CMRchrmatConsistency(matrix) );
+  CMRdbgConsistencyAssert( CMRchrmatConsistency(matrix) );
   assert(!psubmatrix || !*psubmatrix);
 
   for (size_t row = 0; row < matrix->numRows; ++row)
@@ -2284,7 +2284,7 @@ bool CMRchrmatIsTernary(CMR* cmr, CMR_CHRMAT* matrix, CMR_SUBMAT** psubmatrix)
 CMR_ERROR CMRdblmatSlice(CMR* cmr, CMR_DBLMAT* matrix, CMR_SUBMAT* submatrix, CMR_DBLMAT** presult)
 {
   assert(cmr);
-  CMRconsistencyAssert( CMRdblmatConsistency(matrix) );
+  CMRdbgConsistencyAssert( CMRdblmatConsistency(matrix) );
   assert(submatrix);
   assert(presult && !*presult);
 
@@ -2345,7 +2345,7 @@ CMR_ERROR CMRdblmatSlice(CMR* cmr, CMR_DBLMAT* matrix, CMR_SUBMAT* submatrix, CM
   /* Sort the rows. */
   CMR_CALL( CMRdblmatSortNonzeros(cmr, result) );
 
-  CMRconsistencyAssert( CMRdblmatConsistency(result) );
+  CMRdbgConsistencyAssert( CMRdblmatConsistency(result) );
 
   return CMR_OKAY;
 }
@@ -2353,7 +2353,7 @@ CMR_ERROR CMRdblmatSlice(CMR* cmr, CMR_DBLMAT* matrix, CMR_SUBMAT* submatrix, CM
 CMR_ERROR CMRintmatSlice(CMR* cmr, CMR_INTMAT* matrix, CMR_SUBMAT* submatrix, CMR_INTMAT** presult)
 {
   assert(cmr);
-  CMRconsistencyAssert( CMRintmatConsistency(matrix) );
+  CMRdbgConsistencyAssert( CMRintmatConsistency(matrix) );
   assert(submatrix);
   assert(presult && !*presult);
 
@@ -2414,7 +2414,7 @@ CMR_ERROR CMRintmatSlice(CMR* cmr, CMR_INTMAT* matrix, CMR_SUBMAT* submatrix, CM
   /* Sort the rows. */
   CMR_CALL( CMRintmatSortNonzeros(cmr, result) );
 
-  CMRconsistencyAssert( CMRintmatConsistency(result) );
+  CMRdbgConsistencyAssert( CMRintmatConsistency(result) );
 
   return CMR_OKAY;
 }
@@ -2422,7 +2422,7 @@ CMR_ERROR CMRintmatSlice(CMR* cmr, CMR_INTMAT* matrix, CMR_SUBMAT* submatrix, CM
 CMR_ERROR CMRchrmatSlice(CMR* cmr, CMR_CHRMAT* matrix, CMR_SUBMAT* submatrix, CMR_CHRMAT** presult)
 {
   assert(cmr);
-  CMRconsistencyAssert( CMRchrmatConsistency(matrix) );
+  CMRdbgConsistencyAssert( CMRchrmatConsistency(matrix) );
   assert(submatrix);
   assert(presult && !*presult);
 
@@ -2483,7 +2483,7 @@ CMR_ERROR CMRchrmatSlice(CMR* cmr, CMR_CHRMAT* matrix, CMR_SUBMAT* submatrix, CM
   /* Sort the rows. */
   CMR_CALL( CMRchrmatSortNonzeros(cmr, result) );
 
-  CMRconsistencyAssert( CMRchrmatConsistency(result) );
+  CMRdbgConsistencyAssert( CMRchrmatConsistency(result) );
 
   return CMR_OKAY;
 }
@@ -2579,7 +2579,7 @@ CMR_ERROR CMRchrmatSupport(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT** presult)
 CMR_ERROR CMRdblmatSignedSupport(CMR* cmr, CMR_DBLMAT* matrix, double epsilon, CMR_CHRMAT** presult)
 {
   assert(cmr);
-  CMRconsistencyAssert( CMRdblmatConsistency(matrix) );
+  CMRdbgConsistencyAssert( CMRdblmatConsistency(matrix) );
   assert(epsilon >= 0);
   assert(presult);
   assert(!*presult);
@@ -2618,7 +2618,7 @@ CMR_ERROR CMRdblmatSignedSupport(CMR* cmr, CMR_DBLMAT* matrix, double epsilon, C
 CMR_ERROR CMRintmatSignedSupport(CMR* cmr, CMR_INTMAT* matrix, CMR_CHRMAT** presult)
 {
   assert(cmr);
-  CMRconsistencyAssert( CMRintmatConsistency(matrix) );
+  CMRdbgConsistencyAssert( CMRintmatConsistency(matrix) );
   assert(presult);
   assert(!*presult);
 
@@ -2646,7 +2646,7 @@ CMR_ERROR CMRintmatSignedSupport(CMR* cmr, CMR_INTMAT* matrix, CMR_CHRMAT** pres
 CMR_ERROR CMRchrmatSignedSupport(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT** presult)
 {
   assert(cmr);
-  CMRconsistencyAssert( CMRchrmatConsistency(matrix) );
+  CMRdbgConsistencyAssert( CMRchrmatConsistency(matrix) );
   assert(presult);
   assert(!*presult);
 
@@ -2674,7 +2674,7 @@ CMR_ERROR CMRchrmatSignedSupport(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT** pres
 CMR_ERROR CMRchrmatToInt(CMR* cmr, CMR_CHRMAT* matrix, CMR_INTMAT** presult)
 {
   assert(cmr);
-  CMRconsistencyAssert( CMRchrmatConsistency(matrix) );
+  CMRdbgConsistencyAssert( CMRchrmatConsistency(matrix) );
   assert(presult);
 
   CMR_CALL( CMRintmatCreate(cmr, presult, matrix->numRows, matrix->numColumns, matrix->numNonzeros) );
@@ -2695,7 +2695,7 @@ CMR_ERROR CMRchrmatToInt(CMR* cmr, CMR_CHRMAT* matrix, CMR_INTMAT** presult)
 CMR_ERROR CMRintmatToChr(CMR* cmr, CMR_INTMAT* matrix, CMR_CHRMAT** presult)
 {
   assert(cmr);
-  CMRconsistencyAssert( CMRintmatConsistency(matrix) );
+  CMRdbgConsistencyAssert( CMRintmatConsistency(matrix) );
   assert(presult);
 
   CMR_CALL( CMRchrmatCreate(cmr, presult, matrix->numRows, matrix->numColumns, matrix->numNonzeros) );
@@ -2719,7 +2719,7 @@ CMR_ERROR CMRintmatToChr(CMR* cmr, CMR_INTMAT* matrix, CMR_CHRMAT** presult)
 
 CMR_ERROR CMRdblmatFindEntry(CMR_DBLMAT* matrix, size_t row, size_t column, size_t* pentry)
 {
-  CMRconsistencyAssert( CMRdblmatConsistency(matrix) );
+  CMRdbgConsistencyAssert( CMRdblmatConsistency(matrix) );
   assert(pentry);
 
   size_t lower = matrix->rowSlice[row];
@@ -2745,7 +2745,7 @@ CMR_ERROR CMRdblmatFindEntry(CMR_DBLMAT* matrix, size_t row, size_t column, size
 
 CMR_ERROR CMRintmatFindEntry(CMR_INTMAT* matrix, size_t row, size_t column, size_t* pentry)
 {
-  CMRconsistencyAssert( CMRintmatConsistency(matrix) );
+  CMRdbgConsistencyAssert( CMRintmatConsistency(matrix) );
   assert(pentry);
 
   size_t lower = matrix->rowSlice[row];
@@ -2771,7 +2771,7 @@ CMR_ERROR CMRintmatFindEntry(CMR_INTMAT* matrix, size_t row, size_t column, size
 
 CMR_ERROR CMRchrmatFindEntry(CMR_CHRMAT* matrix, size_t row, size_t column, size_t* pentry)
 {
-  CMRconsistencyAssert( CMRchrmatConsistency(matrix) );
+  CMRdbgConsistencyAssert( CMRchrmatConsistency(matrix) );
   assert(pentry);
 
   size_t lower = matrix->rowSlice[row];

@@ -92,13 +92,13 @@ bool findRank2(
   assert(columnRepresentative[1-part][0] < SIZE_MAX);
   assert(columnRepresentative[1-part][1] == SIZE_MAX);
 
-  CMRdbgMsg(14, "findRank2(): first nonzero is in row r%ld.\n", rowRepresentative[part][0]+1);
+//   CMRdbgMsg(14, "findRank2(): first nonzero is in row r%ld.\n", rowRepresentative[part][0]+1);
 
   for (size_t row = rowRepresentative[part][0] + 1; row < matrix->numRows; ++row)
   {
     if (rowData[row].part == part)
     {
-      CMRdbgMsg(14, "findRank2(): processing row r%ld.\n", row+1);
+//       CMRdbgMsg(14, "findRank2(): processing row r%ld.\n", row+1);
       size_t entry = matrix->rowSlice[row];
       size_t beyond = matrix->rowSlice[row + 1];
       size_t column = (entry < beyond) ? matrix->entryColumns[entry] : SIZE_MAX;
@@ -109,14 +109,14 @@ bool findRank2(
       bool equalRep = true;
       while (column != SIZE_MAX || columnRep != SIZE_MAX)
       {
-        CMRdbgMsg(14, "findRank2(): current row's column is c%ld, representative row's column is c%ld.\n", column+1,
-          columnRep+1);
+//         CMRdbgMsg(14, "findRank2(): current row's column is c%ld, representative row's column is c%ld.\n", column+1,
+//           columnRep+1);
         if (column < columnRep)
         {
-          CMRdbgMsg(14, "findRank2(): current row has a 1, representative row has a 0.\n");
+//           CMRdbgMsg(14, "findRank2(): current row has a 1, representative row has a 0.\n");
           if (columnData[column].part == 1-part)
           {
-            CMRdbgMsg(14, "findRank2(): inside submatrix!\n");
+//             CMRdbgMsg(14, "findRank2(): inside submatrix!\n");
             /* New row has a 1-entry but representative does not. */
             rowRepresentative[part][1] = row;
             columnRepresentative[1-part][1] = column;
@@ -131,10 +131,10 @@ bool findRank2(
         }
         else if (columnRep < column)
         {
-          CMRdbgMsg(14, "findRank2(): current row has a 0, representative row has a 1.\n");
+//           CMRdbgMsg(14, "findRank2(): current row has a 0, representative row has a 1.\n");
           if (columnData[columnRep].part == 1-part)
           {
-            CMRdbgMsg(14, "findRank2(): inside submatrix!\n");
+//             CMRdbgMsg(14, "findRank2(): inside submatrix!\n");
             if (!isZero)
             {
               /* We had a common nonzero before, so the 0 here yields rank 2. */
@@ -152,10 +152,10 @@ bool findRank2(
         }
         else
         {
-          CMRdbgMsg(14, "findRank2(): current row has a 1, representative row has a 1.\n");
+//           CMRdbgMsg(14, "findRank2(): current row has a 1, representative row has a 1.\n");
           if (columnData[column].part == 1-part)
           {
-            CMRdbgMsg(14, "findRank2(): inside submatrix!\n");
+//             CMRdbgMsg(14, "findRank2(): inside submatrix!\n");
             if (!equalRep)
             {
               /* We had a 1 in rep with a 0 here before, so the two 1s here yield rank 2. */
@@ -207,7 +207,7 @@ bool findRank3(
   {
     if (rowData[row].part == part)
     {
-      CMRdbgMsg(14, "findRank3(): inspecting row r%ld.\n", row+1);
+//       CMRdbgMsg(14, "findRank3(): inspecting row r%ld.\n", row+1);
       size_t entry[3] = {
         matrix->rowSlice[row],
         matrix->rowSlice[rowRepresentative[part][0]],
@@ -226,15 +226,15 @@ bool findRank3(
       while (column[0] != SIZE_MAX || column[1] != SIZE_MAX || column[2] != SIZE_MAX)
       {
         size_t minColumn = (column[0] < column[1]) ? column[0] : column[1];
-        CMRdbgMsg(14, "findRank3(): inspecting column c%ld.\n", minColumn+1);
+//         CMRdbgMsg(14, "findRank3(): inspecting column c%ld.\n", minColumn+1);
         if (column[2] < minColumn)
           minColumn = column[2];
         bool nonzero[3] = { column[0] == minColumn, column[1] == minColumn, column[2] == minColumn };
 
         if (columnData[minColumn].part == 1-part)
         {
-          CMRdbgMsg(14, "findRank3(): nonzeros are (%d,%d,%d).\n", nonzero[0] ? 1 : 0, nonzero[1] ? 1 : 0,
-            nonzero[2] ? 1 : 0);
+//           CMRdbgMsg(14, "findRank3(): nonzeros are (%d,%d,%d).\n", nonzero[0] ? 1 : 0, nonzero[1] ? 1 : 0,
+//             nonzero[2] ? 1 : 0);
 
           if (nonzero[0])
             compatible[0] = false;
@@ -245,8 +245,8 @@ bool findRank3(
           if (((nonzero[0] ? 1 : 0) + (nonzero[1] ? 1 : 0) + (nonzero[2] ? 1 : 0)) % 2)
             compatible[3] = false;
 
-          CMRdbgMsg(14, "findRank3(): new compatibility is %d,%d,%d,%d.\n", compatible[0] ? 1 : 0, compatible[1] ? 1 : 0,
-            compatible[2] ? 1 : 0, compatible[3] ? 1 : 0);
+//           CMRdbgMsg(14, "findRank3(): new compatibility is %d,%d,%d,%d.\n", compatible[0] ? 1 : 0, compatible[1] ? 1 : 0,
+//             compatible[2] ? 1 : 0, compatible[3] ? 1 : 0);
         }
 
         /* Advance entries with a nonzero. */
@@ -283,6 +283,8 @@ void determineType(
   bool isRow                          /**< Whether we're actually dealing with rows. */
 )
 {
+  CMR_UNUSED(isRow);
+
   assert(matrix);
   assert(rowData);
   assert(rowRepresentative);
@@ -313,8 +315,8 @@ void determineType(
   {
     if (compatible[r])
     {
-      CMRdbgMsg(12, "Initially, %s %c%ld for part %d is compatible with %d.\n", isRow ? "Row" : "Column", isRow ? 'r' : 'c',
-        row+1, part, r);
+//       CMRdbgMsg(12, "Initially, %s %c%ld for part %d is compatible with %d.\n", isRow ? "Row" : "Column", isRow ? 'r' : 'c',
+//         row+1, part, r);
       rowData[row].type[part] = r;
     }
   }
@@ -328,7 +330,7 @@ void determineType(
 
     if (columnData[minColumn].part == 1-part)
     {
-      CMRdbgMsg(14, "column is c%ld. nonzeros are %d,%d,%d\n", minColumn+1, nonzero[0], nonzero[1], nonzero[2]);
+//       CMRdbgMsg(14, "column is c%ld. nonzeros are %d,%d,%d\n", minColumn+1, nonzero[0], nonzero[1], nonzero[2]);
 
       if (nonzero[0])
         compatible[0] = false;
@@ -356,8 +358,8 @@ void determineType(
   {
     if (compatible[r])
     {
-      CMRdbgMsg(12, "%s %c%ld for part %d is compatible with %d.\n", isRow ? "Row" : "Column", isRow ? 'r' : 'c',
-        row+1, part, r);
+//       CMRdbgMsg(12, "%s %c%ld for part %d is compatible with %d.\n", isRow ? "Row" : "Column", isRow ? 'r' : 'c',
+//         row+1, part, r);
       rowData[row].type[part] = r;
     }
   }
@@ -422,14 +424,14 @@ bool assignRow(
         columnData[column].type[1-part] = -1;
         if (columnData[column].type[part] >= 0)
         {
-          CMRdbgMsg(14, "Adding %s %c%ld to queue.\n", isRow ? "column" : "row", isRow ? 'c' : 'r', column);
+//           CMRdbgMsg(14, "Adding %s %c%ld to queue.\n", isRow ? "column" : "row", isRow ? 'c' : 'r', column);
           queue[*pqueueBeyond] = isRow ? CMRcolumnToElement(column) : CMRrowToElement(column);
           (*pqueueBeyond)++;
         }
         else
         {
-          CMRdbgMsg(14, "%s %c%ld cannot be assigned to any part.\n", isRow ? "Column" : "Row", isRow ? 'c' : 'r',
-            column);
+//           CMRdbgMsg(14, "%s %c%ld cannot be assigned to any part.\n", isRow ? "Column" : "Row", isRow ? 'c' : 'r',
+//             column);
           return true;
         }
       }
@@ -497,12 +499,12 @@ CMR_ERROR extendMinorSeparation(
   size_t columnRepresentative[2][2] = { {SIZE_MAX, SIZE_MAX}, {SIZE_MAX, SIZE_MAX} };
 
 #if defined(CMR_DEBUG)
-  CMRdbgMsg(12, "Checking the ranks for the following matrix:\n");
-  CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', true) );
-  for (size_t row = 0; row < numRows; ++row)
-    CMRdbgMsg(14, "Initially, row r%ld belongs to part %d.\n", row+1, rowData[row].part);
-  for (size_t column = 0; column < numColumns; ++column)
-    CMRdbgMsg(14, "Initially, column c%ld belongs to part %d.\n", column+1, columnData[column].part);
+  CMRdbgMsg(12, "Checking the ranks a %zux%zu matrix:\n", matrix->numRows, matrix->numColumns);
+//   CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', true) );
+//   for (size_t row = 0; row < numRows; ++row)
+//     CMRdbgMsg(14, "Initially, row r%ld belongs to part %d.\n", row+1, rowData[row].part);
+//   for (size_t column = 0; column < numColumns; ++column)
+//     CMRdbgMsg(14, "Initially, column c%ld belongs to part %d.\n", column+1, columnData[column].part);
 #endif /* CMR_DEBUG */
 
   size_t totalRank = 0;
@@ -578,14 +580,14 @@ CMR_ERROR extendMinorSeparation(
     {
       determineType(matrix, rowData, columnData, rowRepresentative, row, 0, true);
       determineType(matrix, rowData, columnData, rowRepresentative, row, 1, true);
-      CMRdbgMsg(12, "Row r%ld has type %d for part 0 and type %d for part 1.\n", row+1, rowData[row].type[0],
-        rowData[row].type[1]);
+//       CMRdbgMsg(12, "Row r%ld has type %d for part 0 and type %d for part 1.\n", row+1, rowData[row].type[0],
+//         rowData[row].type[1]);
       if (rowData[row].type[0] < 0 && rowData[row].type[1] < 0)
         return CMR_OKAY;
     }
     else
     {
-      CMRdbgMsg(12, "Row r%ld belongs to part %d.\n", row+1, rowData[row].part);
+//       CMRdbgMsg(12, "Row r%ld belongs to part %d.\n", row+1, rowData[row].part);
     }
   }
   for (size_t column = 0; column < matrix->numColumns; ++column)
@@ -594,14 +596,14 @@ CMR_ERROR extendMinorSeparation(
     {
       determineType(transpose, columnData, rowData, columnRepresentative, column, 0, false);
       determineType(transpose, columnData, rowData, columnRepresentative, column, 1, false);
-      CMRdbgMsg(12, "Column c%ld has type %d for part 0 and type %d for part 1.\n", column+1,
-        columnData[column].type[0], columnData[column].type[1]);
+//       CMRdbgMsg(12, "Column c%ld has type %d for part 0 and type %d for part 1.\n", column+1,
+//         columnData[column].type[0], columnData[column].type[1]);
       if (columnData[column].type[0] < 0 && columnData[column].type[1] < 0)
         return CMR_OKAY;
     }
     else
     {
-      CMRdbgMsg(12, "Column c%ld belongs to part %d.\n", column+1, columnData[column].part);
+//       CMRdbgMsg(12, "Column c%ld belongs to part %d.\n", column+1, columnData[column].part);
     }
   }
 
@@ -635,7 +637,7 @@ CMR_ERROR extendMinorSeparation(
   while (queueFirst < queueBeyond)
   {
     CMR_ELEMENT element = queue[queueFirst++];
-    CMRdbgMsg(12, "Processing queue element %s.\n", CMRelementString(element, NULL));
+//     CMRdbgMsg(12, "Processing queue element %s.\n", CMRelementString(element, NULL));
     if (CMRelementIsRow(element))
     {
       size_t row = CMRelementToRowIndex(element);
@@ -670,24 +672,24 @@ CMR_ERROR extendMinorSeparation(
   {
     if (rowData[row].part < 0)
     {
-      CMRdbgMsg(12, "Row r%ld is unassigned and has types %d and %d. Assigning it to part 0.\n", row+1,
-        rowData[row].type[0], rowData[row].type[1]);
+//       CMRdbgMsg(12, "Row r%ld is unassigned and has types %d and %d. Assigning it to part 0.\n", row+1,
+//         rowData[row].type[0], rowData[row].type[1]);
       rowData[row].part = 0;
     }
     else
-      CMRdbgMsg(12, "Row r%ld is assigned to part %d.\n", row+1, rowData[row].part);
+//       CMRdbgMsg(12, "Row r%ld is assigned to part %d.\n", row+1, rowData[row].part);
     countElements[rowData[row].part]++;
   }
   for (size_t column = 0; column < matrix->numColumns; ++column)
   {
     if (columnData[column].part < 0)
     {
-      CMRdbgMsg(12, "Column c%ld is unassigned and has types %d and %d. Assigning it to part 0.\n", column+1,
-        columnData[column].type[0], columnData[column].type[1]);
+//       CMRdbgMsg(12, "Column c%ld is unassigned and has types %d and %d. Assigning it to part 0.\n", column+1,
+//         columnData[column].type[0], columnData[column].type[1]);
       columnData[column].part = 0;
     }
     else
-      CMRdbgMsg(12, "Column c%ld is assigned to part %d.\n", column+1, columnData[column].part);
+//       CMRdbgMsg(12, "Column c%ld is assigned to part %d.\n", column+1, columnData[column].part);
     countElements[columnData[column].part]++;
   }
 
@@ -719,7 +721,7 @@ CMR_ERROR CMRregularityNestedMinorSequenceSearchThreeSeparation(CMR* cmr, Decomp
   assert(task);
   assert(queue);
 
-    CMR_SEYMOUR_NODE* dec = task->node;
+  CMR_SEYMOUR_NODE* dec = task->node;
   assert(dec);
   assert(dec->matrix);
   assert(dec->nestedMinorsMatrix);
@@ -941,7 +943,9 @@ CMR_ERROR CMRregularityNestedMinorSequenceSearchThreeSeparation(CMR* cmr, Decomp
 
   if (task->stats)
   {
-//     task->stats->enumerationTime += (clock() - time) * 1.0 / CLOCKS_PER_SEC;
+    clock_t endClock = clock();
+    task->stats->enumerationTime += (endClock - task->startClock) * 1.0 / CLOCKS_PER_SEC;
+    task->startClock = endClock;
   }
 
   if (separation)

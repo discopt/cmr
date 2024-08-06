@@ -255,7 +255,7 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
 
   size_t extraRows[2][3];
   size_t extraColumns[2][3];
-  CMR_CALL( CMRsepaGetRepresentatives(cmr, separation, extraRows, extraColumns) );
+  CMR_CALL( CMRsepaGetRepresentatives(separation, extraRows, extraColumns) );
 
   if (separation->type == CMR_SEPA_TYPE_THREE_DISTRIBUTED_RANKS &&
     (task->params->threeSumStrategy & CMR_SEYMOUR_THREESUM_FLAG_CONCENTRATED_RANK))
@@ -349,7 +349,7 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
       goto cleanup;
     }
 
-    CMR_CALL( CMRsepaGetRepresentatives(cmr, separation, extraRows, extraColumns) );
+    CMR_CALL( CMRsepaGetRepresentatives(separation, extraRows, extraColumns) );
   }
   else
   {
@@ -449,9 +449,9 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
       assert( CMRelementIsRow(sourceRowElement) );
       assert( CMRelementIsColumn(targetColumnElement) );
 
-      CMR_CALL( CMRseymourUpdateThreeSumCreateWideFirstChild(cmr, node, separation, rowsToChild, columnsToChild,
-        numChildBaseRows, numChildBaseColumns, CMRelementToRowIndex(sourceRowElement),
-        CMRelementToColumnIndex(targetColumnElement), CMRelementToColumnIndex(targetColumnElement), extraEntry) );
+      CMR_CALL( CMRseymourUpdateThreeSumCreateWideFirstChild(cmr, node, rowsToChild, columnsToChild, numChildBaseRows,
+        numChildBaseColumns, CMRelementToRowIndex(sourceRowElement), CMRelementToColumnIndex(targetColumnElement),
+        CMRelementToColumnIndex(targetColumnElement), extraEntry) );
     }
 
     CMR_CALL( CMRsepaGetProjection(separation, 1, rowsToChild, columnsToChild, &numChildBaseRows,
@@ -511,9 +511,9 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
       assert( CMRelementIsRow(sourceRowElement) );
       assert( CMRelementIsColumn(targetColumnElement) );
 
-      CMR_CALL( CMRseymourUpdateThreeSumCreateWideSecondChild(cmr, node, separation, rowsToChild, columnsToChild,
-        numChildBaseRows, numChildBaseColumns, CMRelementToRowIndex(sourceRowElement),
-        CMRelementToColumnIndex(targetColumnElement), CMRelementToColumnIndex(targetColumnElement), extraEntry) );
+      CMR_CALL( CMRseymourUpdateThreeSumCreateWideSecondChild(cmr, node, rowsToChild, columnsToChild, numChildBaseRows,
+        numChildBaseColumns, CMRelementToRowIndex(sourceRowElement), CMRelementToColumnIndex(targetColumnElement),
+        CMRelementToColumnIndex(targetColumnElement), extraEntry) );
     }
 
         node->threesumFlags = CMR_SEYMOUR_THREESUM_FLAG_DISTRIBUTED_RANKS;
@@ -570,9 +570,9 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
       assert( CMRelementIsRow(sourceRowElement) );
       assert( CMRelementIsRow(targetRowElement) );
 
-      CMR_CALL( CMRseymourUpdateThreeSumCreateMixedFirstChild(cmr, node, separation, rowsToChild, columnsToChild,
-        numChildBaseRows, numChildBaseColumns, CMRelementToRowIndex(sourceRowElement),
-        CMRelementToRowIndex(targetRowElement), extraEntry) );
+      CMR_CALL( CMRseymourUpdateThreeSumCreateMixedFirstChild(cmr, node, rowsToChild, columnsToChild, numChildBaseRows,
+        numChildBaseColumns, CMRelementToRowIndex(sourceRowElement), CMRelementToRowIndex(targetRowElement),
+        extraEntry) );
     }
 
     CMR_CALL( CMRsepaGetProjection(separation, 1, rowsToChild, columnsToChild, &numChildBaseRows,
@@ -622,12 +622,12 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
       assert( CMRelementIsColumn(sourceColumnElement) );
       assert( CMRelementIsColumn(targetColumnElement) );
 
-      CMR_CALL( CMRseymourUpdateThreeSumCreateMixedSecondChild(cmr, node, separation, rowsToChild, columnsToChild,
-        numChildBaseRows, numChildBaseColumns, CMRelementToColumnIndex(sourceColumnElement),
-        CMRelementToColumnIndex(targetColumnElement), extraEntry) );
+      CMR_CALL( CMRseymourUpdateThreeSumCreateMixedSecondChild(cmr, node, rowsToChild, columnsToChild, numChildBaseRows,
+        numChildBaseColumns, CMRelementToColumnIndex(sourceColumnElement), CMRelementToColumnIndex(targetColumnElement),
+        extraEntry) );
     }
 
-        node->threesumFlags = CMR_SEYMOUR_THREESUM_FLAG_CONCENTRATED_RANK;
+    node->threesumFlags = CMR_SEYMOUR_THREESUM_FLAG_CONCENTRATED_RANK;
   }
 
 cleanup:

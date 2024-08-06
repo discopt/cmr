@@ -251,7 +251,6 @@ CMR_ERROR CMRseymourUpdateThreeSumInit(
 CMR_ERROR CMRseymourUpdateThreeSumCreateWideFirstChild(
   CMR* cmr,                   /**< \ref CMR environment. */
   CMR_SEYMOUR_NODE* node,     /**< Seymour decomposition node (initialized with \ref CMRseymourUpdateThreeSumInit). */
-  CMR_SEPA* separation,       /**< Separation. */
   size_t* rowsToChild,        /**< Array mapping rows to child rows. */
   size_t* columnsToChild,     /**< Array mapping columns to child columns. */
   size_t numChildBaseRows,    /**< Number of base rows of this child. */
@@ -271,7 +270,6 @@ CMR_ERROR CMRseymourUpdateThreeSumCreateWideFirstChild(
 CMR_ERROR CMRseymourUpdateThreeSumCreateWideSecondChild(
   CMR* cmr,                   /**< \ref CMR environment. */
   CMR_SEYMOUR_NODE* node,     /**< Seymour decomposition node (initialized with \ref CMRseymourUpdateThreeSumInit). */
-  CMR_SEPA* separation,       /**< Separation. */
   size_t* rowsToChild,        /**< Array mapping rows to child rows. */
   size_t* columnsToChild,     /**< Array mapping columns to child columns. */
   size_t numChildBaseRows,    /**< Number of base rows of this child. */
@@ -291,7 +289,6 @@ CMR_ERROR CMRseymourUpdateThreeSumCreateWideSecondChild(
 CMR_ERROR CMRseymourUpdateThreeSumCreateMixedFirstChild(
   CMR* cmr,                   /**< \ref CMR environment. */
   CMR_SEYMOUR_NODE* node,     /**< Seymour decomposition node (initialized with \ref CMRseymourUpdateThreeSumInit). */
-  CMR_SEPA* separation,       /**< Separation. */
   size_t* rowsToChild,        /**< Array mapping rows to child rows. */
   size_t* columnsToChild,     /**< Array mapping columns to child columns. */
   size_t numChildBaseRows,    /**< Number of base rows of this child. */
@@ -310,7 +307,6 @@ CMR_ERROR CMRseymourUpdateThreeSumCreateMixedFirstChild(
 CMR_ERROR CMRseymourUpdateThreeSumCreateMixedSecondChild(
   CMR* cmr,                   /**< \ref CMR environment. */
   CMR_SEYMOUR_NODE* node,     /**< Seymour decomposition node (initialized with \ref CMRseymourUpdateThreeSumInit). */
-  CMR_SEPA* separation,       /**< Separation. */
   size_t* rowsToChild,        /**< Array mapping rows to child rows. */
   size_t* columnsToChild,     /**< Array mapping columns to child columns. */
   size_t numChildBaseRows,    /**< Number of base rows of this child. */

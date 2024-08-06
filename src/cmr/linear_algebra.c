@@ -974,7 +974,7 @@ CMR_ERROR CMRintmatDeterminant(CMR* cmr, CMR_INTMAT* matrix, int64_t* pdetermina
   assert(cmr);
   assert(matrix);
   assert(pdeterminant);
-  CMRconsistencyAssert(CMRintmatConsistency(matrix));
+  CMRdbgConsistencyAssert(CMRintmatConsistency(matrix));
 
   if (matrix->numRows != matrix->numColumns)
     return CMR_ERROR_INPUT;
@@ -1012,7 +1012,7 @@ CMR_ERROR CMRchrmatDeterminant(CMR* cmr, CMR_CHRMAT* matrix, int64_t* pdetermina
 {
   assert(cmr);
   assert(matrix);
-  CMRconsistencyAssert(CMRchrmatConsistency(matrix));
+  CMRdbgConsistencyAssert(CMRchrmatConsistency(matrix));
 
   if (matrix->numRows != matrix->numColumns)
     return CMR_ERROR_INPUT;

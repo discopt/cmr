@@ -60,7 +60,7 @@ CMR_ERROR testTotalUnimodularity(
   /* Actual test. */
 
   bool isTU;
-    CMR_SEYMOUR_NODE* decomposition = NULL;
+  CMR_SEYMOUR_NODE* decomposition = NULL;
   CMR_SUBMAT* submatrix = NULL;
   CMR_TU_PARAMS params;
   CMR_CALL( CMRtuParamsInit(&params) );
@@ -99,7 +99,8 @@ CMR_ERROR testTotalUnimodularity(
 
   /* Cleanup. */
 
-  CMR_CALL( CMRseymourRelease(cmr, &decomposition) );
+  if (decomposition)
+    CMR_CALL( CMRseymourRelease(cmr, &decomposition) );
   CMR_CALL( CMRsubmatFree(cmr, &submatrix) );
   CMR_CALL( CMRchrmatFree(cmr, &matrix) );
   CMR_CALL( CMRfreeEnvironment(&cmr) );

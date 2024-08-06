@@ -622,7 +622,7 @@ CMR_ERROR CMRtuTest(CMR* cmr, CMR_CHRMAT* matrix, bool* pisTotallyUnimodular, CM
 {
   assert(cmr);
   assert(matrix);
-  CMRconsistencyAssert( CMRchrmatConsistency(matrix) );
+  CMRdbgConsistencyAssert( CMRchrmatConsistency(matrix) );
 
   CMR_TU_PARAMS defaultParams;
   if (!params)
@@ -655,7 +655,7 @@ CMR_ERROR CMRtuTest(CMR* cmr, CMR_CHRMAT* matrix, bool* pisTotallyUnimodular, CM
     double remainingTime = timeLimit - ((clock() - totalClock) * 1.0 / CLOCKS_PER_SEC);
 
     CMR_SEYMOUR_NODE* root = NULL;
-    CMR_CALL( CMRseymourDecompose(cmr, matrix, !!params->ternary, &root, &(params->seymour),
+    CMR_CALL( CMRseymourDecompose(cmr, matrix, params->ternary, &root, &(params->seymour),
       stats ? &stats->seymour : NULL, remainingTime) );
     int8_t regularity = CMRseymourRegularity(root);
     if (regularity != 0)
@@ -693,12 +693,6 @@ CMR_ERROR CMRtuTest(CMR* cmr, CMR_CHRMAT* matrix, bool* pisTotallyUnimodular, CM
   else
   {
     return CMR_ERROR_INVALID;
-  }
-
-  if (stats)
-  {
-    stats->seymour.totalCount++;
-    stats->seymour.totalTime += (clock() - totalClock) * 1.0 / CLOCKS_PER_SEC;
   }
 
   return CMR_OKAY;

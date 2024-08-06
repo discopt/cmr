@@ -151,7 +151,7 @@ size_t CMRgetStackUsage(
 
 char* CMRconsistencyMessage(const char* format, ...);
 
-#if !defined(NDEBUG)
+#if defined(CMR_DEBUG)
 
 /**
  * \brief Asserts that \p call reports consistency. Otherwise, the inconsistency explanation is printed and the program
@@ -163,7 +163,7 @@ char* CMRconsistencyMessage(const char* format, ...);
  *     CMRconsistencyAssert( CMRchrmatConsistency(matrix) );
  */
 
-#define CMRconsistencyAssert( call ) \
+#define CMRdbgConsistencyAssert( call ) \
   do \
   { \
     char* __message = call; \
@@ -180,7 +180,7 @@ char* CMRconsistencyMessage(const char* format, ...);
 
 #else
 
-#define CMRconsistencyAssert( call )
+#define CMRdbgConsistencyAssert( call )
 
 #endif
 

@@ -78,8 +78,9 @@ CMR_ERROR CMRseymourStatsPrint(FILE* stream, CMR_SEYMOUR_STATS* stats, const cha
     stats->sequenceGraphicTime);
   fprintf(stream, "%senumeration: %lu in %f seconds\n", prefix, (unsigned long)stats->enumerationCount,
     stats->enumerationTime);
-  fprintf(stream, "%s3-separation candidates: %lu in %f seconds\n", prefix,
-    (unsigned long)stats->enumerationCandidatesCount, stats->enumerationTime);
+  fprintf(stream, "%s3-separation candidates: %lu (%.1fk per second)\n", prefix,
+    (unsigned long)stats->enumerationCandidatesCount,
+    stats->enumerationTime > 0.0 ? (stats->enumerationCandidatesCount / 1000.0 / stats->enumerationTime) : 0.0);
   fprintf(stream, "%stotal: %lu in %f seconds\n", prefix, (unsigned long)stats->totalCount, stats->totalTime);
 
   return CMR_OKAY;
@@ -572,6 +573,8 @@ CMR_ERROR CMRseymourPrint(CMR* cmr, CMR_SEYMOUR_NODE* node, FILE* stream, bool p
 
 CMR_ERROR CMRseymourCapture(CMR* cmr, CMR_SEYMOUR_NODE* node)
 {
+  CMR_UNUSED(cmr);
+
   assert(cmr);
   assert(node);
 
@@ -1213,15 +1216,14 @@ CMR_ERROR CMRseymourUpdateThreeSumInit(CMR* cmr, CMR_SEYMOUR_NODE* node)
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRseymourUpdateThreeSumCreateWideFirstChild(CMR* cmr, CMR_SEYMOUR_NODE* node, CMR_SEPA* separation,
-  size_t* rowsToChild, size_t* columnsToChild, size_t numChildBaseRows, size_t numChildBaseColumns, size_t extraRow,
-  size_t extraColumn1, size_t extraColumn2, int8_t extraEntry)
+CMR_ERROR CMRseymourUpdateThreeSumCreateWideFirstChild(CMR* cmr, CMR_SEYMOUR_NODE* node, size_t* rowsToChild,
+  size_t* columnsToChild, size_t numChildBaseRows, size_t numChildBaseColumns, size_t extraRow, size_t extraColumn1,
+  size_t extraColumn2, int8_t extraEntry)
 {
   assert(cmr);
   assert(node);
   assert(node->matrix);
   assert(node->transpose);
-  assert(separation);
   assert(rowsToChild);
   assert(columnsToChild);
   assert(numChildBaseRows < node->numRows);
@@ -1344,27 +1346,26 @@ CMR_ERROR CMRseymourUpdateThreeSumCreateWideFirstChild(CMR* cmr, CMR_SEYMOUR_NOD
   for (size_t childRow = 0; childRow < child->numRows; ++childRow)
   {
     CMRdbgMsg(12, "Child row r%zu corresponds to parent %s.\n", childRow + 1,
-      CMRelementString(child->rowsParent[childRow], NULL));
+      CMRelementString(node->childRowsToParent[0][childRow], NULL));
   }
   for (size_t childColumn = 0; childColumn < child->numColumns; ++childColumn)
   {
     CMRdbgMsg(12, "Child column c%zu corresponds to parent %s.\n", childColumn + 1,
-      CMRelementString(child->columnsParent[childColumn], NULL));
+      CMRelementString(node->childColumnsToParent[0][childColumn], NULL));
   }
 #endif /* CMR_DEBUG */
 
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRseymourUpdateThreeSumCreateWideSecondChild(CMR* cmr, CMR_SEYMOUR_NODE* node, CMR_SEPA* separation,
-  size_t* rowsToChild, size_t* columnsToChild, size_t numChildBaseRows, size_t numChildBaseColumns, size_t extraRow,
-  size_t extraColumn1, size_t extraColumn2, int8_t extraEntry)
+CMR_ERROR CMRseymourUpdateThreeSumCreateWideSecondChild(CMR* cmr, CMR_SEYMOUR_NODE* node, size_t* rowsToChild,
+  size_t* columnsToChild, size_t numChildBaseRows, size_t numChildBaseColumns, size_t extraRow, size_t extraColumn1,
+  size_t extraColumn2, int8_t extraEntry)
 {
   assert(cmr);
   assert(node);
   assert(node->matrix);
   assert(node->transpose);
-  assert(separation);
   assert(rowsToChild);
   assert(columnsToChild);
   assert(numChildBaseRows < node->numRows);
@@ -1491,27 +1492,26 @@ CMR_ERROR CMRseymourUpdateThreeSumCreateWideSecondChild(CMR* cmr, CMR_SEYMOUR_NO
   for (size_t childRow = 0; childRow < child->numRows; ++childRow)
   {
     CMRdbgMsg(12, "Child row r%zu corresponds to parent %s.\n", childRow + 1,
-      CMRelementString(child->rowsParent[childRow], NULL));
+      CMRelementString(node->childRowsToParent[1][childRow], NULL));
   }
   for (size_t childColumn = 0; childColumn < child->numColumns; ++childColumn)
   {
     CMRdbgMsg(12, "Child column c%zu corresponds to parent %s.\n", childColumn + 1,
-      CMRelementString(child->columnsParent[childColumn], NULL));
+      CMRelementString(node->childColumnsToParent[1][childColumn], NULL));
   }
 #endif /* CMR_DEBUG */
 
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRseymourUpdateThreeSumCreateMixedFirstChild(CMR* cmr, CMR_SEYMOUR_NODE* node, CMR_SEPA* separation,
-  size_t* rowsToChild, size_t* columnsToChild, size_t numChildBaseRows, size_t numChildBaseColumns, size_t extraRow1,
-  size_t extraRow2, int8_t extraEntry)
+CMR_ERROR CMRseymourUpdateThreeSumCreateMixedFirstChild(CMR* cmr, CMR_SEYMOUR_NODE* node, size_t* rowsToChild,
+  size_t* columnsToChild, size_t numChildBaseRows, size_t numChildBaseColumns, size_t extraRow1, size_t extraRow2,
+  int8_t extraEntry)
 {
   assert(cmr);
   assert(node);
   assert(node->matrix);
   assert(node->transpose);
-  assert(separation);
   assert(rowsToChild);
   assert(columnsToChild);
   assert(numChildBaseRows < node->numRows);
@@ -1625,27 +1625,26 @@ CMR_ERROR CMRseymourUpdateThreeSumCreateMixedFirstChild(CMR* cmr, CMR_SEYMOUR_NO
   for (size_t childRow = 0; childRow < child->numRows; ++childRow)
   {
     CMRdbgMsg(12, "Child row r%zu corresponds to parent %s.\n", childRow + 1,
-      CMRelementString(child->rowsParent[childRow], NULL));
+      CMRelementString(node->childRowsToParent[0][childRow], NULL));
   }
   for (size_t childColumn = 0; childColumn < child->numColumns; ++childColumn)
   {
     CMRdbgMsg(12, "Child column c%zu corresponds to parent %s.\n", childColumn + 1,
-      CMRelementString(child->columnsParent[childColumn], NULL));
+      CMRelementString(node->childColumnsToParent[0][childColumn], NULL));
   }
 #endif /* CMR_DEBUG */
 
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRseymourUpdateThreeSumCreateMixedSecondChild(CMR* cmr, CMR_SEYMOUR_NODE* node, CMR_SEPA* separation,
-  size_t* rowsToChild, size_t* columnsToChild, size_t numChildBaseRows, size_t numChildBaseColumns, size_t extraColumn1,
-  size_t extraColumn2, int8_t extraEntry)
+CMR_ERROR CMRseymourUpdateThreeSumCreateMixedSecondChild(CMR* cmr, CMR_SEYMOUR_NODE* node, size_t* rowsToChild,
+  size_t* columnsToChild, size_t numChildBaseRows, size_t numChildBaseColumns, size_t extraColumn1, size_t extraColumn2,
+  int8_t extraEntry)
 {
   assert(cmr);
   assert(node);
   assert(node->matrix);
   assert(node->transpose);
-  assert(separation);
   assert(rowsToChild);
   assert(columnsToChild);
   assert(numChildBaseRows < node->numRows);
@@ -1778,12 +1777,12 @@ CMR_ERROR CMRseymourUpdateThreeSumCreateMixedSecondChild(CMR* cmr, CMR_SEYMOUR_N
   for (size_t childRow = 0; childRow < child->numRows; ++childRow)
   {
     CMRdbgMsg(12, "Child row r%zu corresponds to parent %s.\n", childRow + 1,
-      CMRelementString(child->rowsParent[childRow], NULL));
+      CMRelementString(node->childRowsToParent[1][childRow], NULL));
   }
   for (size_t childColumn = 0; childColumn < child->numColumns; ++childColumn)
   {
     CMRdbgMsg(12, "Child column c%zu corresponds to parent %s.\n", childColumn + 1,
-      CMRelementString(child->columnsParent[childColumn], NULL));
+      CMRelementString(node->childColumnsToParent[1][childColumn], NULL));
   }
 #endif /* CMR_DEBUG */
 
@@ -2140,6 +2139,7 @@ void CMRregularityQueueAdd(DecompositionQueue* queue, DecompositionTask* task)
   assert(queue);
 
   task->next = queue->head;
+  task->startClock = clock();
   queue->head = task;
 }
 
@@ -2317,7 +2317,7 @@ CMR_ERROR CMRregularityRefineDecomposition(CMR* cmr, size_t numNodes, CMR_SEYMOU
 
 #if defined(CMR_DEBUG)
   CMRdbgMsg(0, "Refining decomposition trees of %zu %s matrices.\n", numNodes,
-    subtree->isTernary ? "ternary" : "binary");
+    nodes[0]->isTernary ? "ternary" : "binary");
 #endif /* CMR_DEBUG */
 
   clock_t time = clock();

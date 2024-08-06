@@ -181,7 +181,7 @@ CMR_ERROR CMRctuTest(CMR* cmr, CMR_CHRMAT* matrix, bool* pisComplementTotallyUni
   double timeLimit)
 {
   assert(cmr);
-  CMRconsistencyAssert( CMRchrmatConsistency(matrix) );
+  CMRdbgConsistencyAssert( CMRchrmatConsistency(matrix) );
   assert(pisComplementTotallyUnimodular);
 
   CMR_CTU_PARAMS defaultParams;

@@ -82,7 +82,7 @@ CMR_ERROR CMRbalancedStatsPrint(
  *
  * If \f$ M \f$ is not balanced and \p psubmatrix != \c NULL, then \p *psubmatrix will indicate a submatrix
  * of \f$ M \f$ with exactly two nonzeros in each row and in each column and with determinant \f$ -2 \f$ or \f$ 2 \f$.
- */CMR_SP_STATISTICS seriesParallel;     /**< Statistics for series-parallel algorithm. */
+ */
 
 CMR_EXPORT
 CMR_ERROR CMRbalancedTest(

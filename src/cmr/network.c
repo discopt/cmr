@@ -77,7 +77,7 @@ CMR_ERROR CMRnetworkComputeMatrix(CMR* cmr, CMR_GRAPH* digraph, CMR_CHRMAT** pma
   CMR_CALL( CMRcomputeRepresentationMatrix(cmr, digraph, true, &transpose, arcsReversed, numForestArcs, forestArcs,
     numCoforestArcs, coforestArcs, pisCorrectForest) );
 
-  CMRconsistencyAssert( CMRchrmatConsistency(transpose) );
+  CMRdbgConsistencyAssert( CMRchrmatConsistency(transpose) );
 
   if (pmatrix)
     CMR_CALL( CMRchrmatTranspose(cmr, transpose, pmatrix) );

@@ -668,9 +668,8 @@ CMR_ERROR CMRsepaFindBinaryRepresentativesSubmatrix(CMR* cmr, CMR_SEPA* sepa, CM
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRsepaGetRepresentatives(CMR* cmr, CMR_SEPA* sepa, size_t reprRows[2][3], size_t reprColumns[2][3])
+CMR_ERROR CMRsepaGetRepresentatives(CMR_SEPA* sepa, size_t reprRows[2][3], size_t reprColumns[2][3])
 {
-  assert(cmr);
   assert(sepa);
   assert(reprRows);
   assert(reprColumns);
@@ -815,7 +814,7 @@ CMR_ERROR checkTernary(
 
   size_t reprRows[2][3];
   size_t reprColumns[2][3];
-  CMR_CALL( CMRsepaGetRepresentatives(cmr, sepa, reprRows, reprColumns) );
+  CMR_CALL( CMRsepaGetRepresentatives(sepa, reprRows, reprColumns) );
 
   if (sepa->type == CMR_SEPA_TYPE_TWO)
   {
@@ -1213,7 +1212,7 @@ CMR_ERROR CMRtwoSum(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* second, CMR_ELEMENT
   result->rowSlice[result->numRows] = resultNonzero;
   assert(resultNonzero == result->numNonzeros);
   
-  CMRconsistencyAssert( CMRchrmatConsistency(result) );
+  CMRdbgConsistencyAssert( CMRchrmatConsistency(result) );
 
 cleanup:
 
@@ -1690,7 +1689,7 @@ CMR_ERROR CMRthreeSum(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* second, CMR_ELEME
   assert(result->numNonzeros >= resultNonzero);
   result->numNonzeros = resultNonzero;
 
-  CMRconsistencyAssert( CMRchrmatConsistency(result) );
+  CMRdbgConsistencyAssert( CMRchrmatConsistency(result) );
 
 cleanup:
 

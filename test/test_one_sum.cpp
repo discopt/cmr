@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 #include "common.h"
-#include "../src/cmr/one_sum.h"
+#include "../src/cmr/block_decomposition.h"
 
 TEST(OneSum, DoubleToDouble)
 {
@@ -23,7 +23,7 @@ TEST(OneSum, DoubleToDouble)
   );
 
   size_t numComponents;
-  CMR_ONESUM_COMPONENT* components = NULL;
+  CMR_BLOCK* components = NULL;
   size_t rowsToComponents[10];
   size_t columnsToComponents[10];
   size_t rowsToComponentRows[10];
@@ -31,7 +31,7 @@ TEST(OneSum, DoubleToDouble)
 
   CMR_DBLMAT* check = NULL;
   CMR_DBLMAT* checkTranspose = NULL;
-  ASSERT_CMR_CALL( decomposeOneSum(cmr, (CMR_MATRIX*) matrix, sizeof(double), sizeof(double), &numComponents, &components,
+  ASSERT_CMR_CALL( CMRdecomposeBlocks(cmr, (CMR_MATRIX*) matrix, sizeof(double), sizeof(double), &numComponents, &components,
     rowsToComponents, columnsToComponents, rowsToComponentRows, columnsToComponentColumns) );
 
   ASSERT_EQ(numComponents, 6);
@@ -167,7 +167,7 @@ TEST(OneSum, DoubleToDouble)
   CMRdblmatFree(cmr, &check);
   CMRdblmatFree(cmr, &checkTranspose);
 
-  for (int c = 0; c < numComponents; ++c)
+  for (size_t c = 0; c < numComponents; ++c)
   {
     CMRdblmatFree(cmr, (CMR_DBLMAT**) &components[c].matrix);
     CMRdblmatFree(cmr, (CMR_DBLMAT**) &components[c].transpose);
@@ -200,7 +200,7 @@ TEST(OneSum, IntToInt)
   );
 
   size_t numComponents;
-  CMR_ONESUM_COMPONENT* components = NULL;
+  CMR_BLOCK* components = NULL;
   size_t rowsToComponents[10];
   size_t columnsToComponents[10];
   size_t rowsToComponentRows[10];
@@ -208,7 +208,7 @@ TEST(OneSum, IntToInt)
 
   CMR_INTMAT* check = NULL;
   CMR_INTMAT* checkTranspose = NULL;
-  ASSERT_CMR_CALL( decomposeOneSum(cmr, (CMR_MATRIX*) matrix, sizeof(int), sizeof(int), &numComponents, &components,
+  ASSERT_CMR_CALL( CMRdecomposeBlocks(cmr, (CMR_MATRIX*) matrix, sizeof(int), sizeof(int), &numComponents, &components,
     rowsToComponents, columnsToComponents, rowsToComponentRows, columnsToComponentColumns) );
 
   ASSERT_EQ(numComponents, 6);
@@ -344,7 +344,7 @@ TEST(OneSum, IntToInt)
   CMRintmatFree(cmr, &check);
   CMRintmatFree(cmr, &checkTranspose);
 
-  for (int c = 0; c < numComponents; ++c)
+  for (size_t c = 0; c < numComponents; ++c)
   {
     CMRintmatFree(cmr, (CMR_INTMAT**) &components[c].matrix);
     CMRintmatFree(cmr, (CMR_INTMAT**) &components[c].transpose);
@@ -377,7 +377,7 @@ TEST(OneSum, CharToChar)
   );
 
   size_t numComponents;
-  CMR_ONESUM_COMPONENT* components = NULL;
+  CMR_BLOCK* components = NULL;
   size_t rowsToComponents[10];
   size_t columnsToComponents[10];
   size_t rowsToComponentRows[10];
@@ -385,7 +385,7 @@ TEST(OneSum, CharToChar)
 
   CMR_CHRMAT* check = NULL;
   CMR_CHRMAT* checkTranspose = NULL;
-  ASSERT_CMR_CALL( decomposeOneSum(cmr, (CMR_MATRIX*) matrix, sizeof(char), sizeof(char), &numComponents, &components,
+  ASSERT_CMR_CALL( CMRdecomposeBlocks(cmr, (CMR_MATRIX*) matrix, sizeof(char), sizeof(char), &numComponents, &components,
     rowsToComponents, columnsToComponents, rowsToComponentRows, columnsToComponentColumns) );
 
   ASSERT_EQ(numComponents, 6);
@@ -521,7 +521,7 @@ TEST(OneSum, CharToChar)
   CMRchrmatFree(cmr, &check);
   CMRchrmatFree(cmr, &checkTranspose);
 
-  for (int c = 0; c < numComponents; ++c)
+  for (size_t c = 0; c < numComponents; ++c)
   {
     CMRchrmatFree(cmr, (CMR_CHRMAT**) &components[c].matrix);
     CMRchrmatFree(cmr, (CMR_CHRMAT**) &components[c].transpose);
