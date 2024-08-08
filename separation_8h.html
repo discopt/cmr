@@ -136,9 +136,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ac4d8340c8603cde0c5c5f84fe0fb995a"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="separation_8h.html#ac4d8340c8603cde0c5c5f84fe0fb995a">CMRsepaFindBinaryRepresentativesSubmatrix</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *sepa, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *transpose, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> *submatrix, bool *pswapped, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **pviolator)</td></tr>
 <tr class="memdesc:ac4d8340c8603cde0c5c5f84fe0fb995a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Scans the support of <code>submatrix</code> of <code>matrix</code> to compute all representative rows/columns for <code>sepa</code> and sets the type.  <a href="separation_8h.html#ac4d8340c8603cde0c5c5f84fe0fb995a">More...</a><br /></td></tr>
 <tr class="separator:ac4d8340c8603cde0c5c5f84fe0fb995a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8695d786a78ca010ee5bf009d206531e"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="separation_8h.html#a8695d786a78ca010ee5bf009d206531e">CMRsepaGetRepresentatives</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *sepa, size_t reprRows[2][3], size_t reprColumns[2][3])</td></tr>
-<tr class="memdesc:a8695d786a78ca010ee5bf009d206531e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns representative rows/columns of the low-rank submatrices.  <a href="separation_8h.html#a8695d786a78ca010ee5bf009d206531e">More...</a><br /></td></tr>
-<tr class="separator:a8695d786a78ca010ee5bf009d206531e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac802e5fc236eb7145eac7ce911473413"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="separation_8h.html#ac802e5fc236eb7145eac7ce911473413">CMRsepaGetRepresentatives</a> (<a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *sepa, size_t reprRows[2][3], size_t reprColumns[2][3])</td></tr>
+<tr class="memdesc:ac802e5fc236eb7145eac7ce911473413"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns representative rows/columns of the low-rank submatrices.  <a href="separation_8h.html#ac802e5fc236eb7145eac7ce911473413">More...</a><br /></td></tr>
+<tr class="separator:ac802e5fc236eb7145eac7ce911473413"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a655e2a333b035c5759894ade393bfbf2"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="separation_8h.html#a655e2a333b035c5759894ade393bfbf2">CMRsepaGetProjection</a> (<a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *sepa, size_t part, size_t *rowsToPart, size_t *columnsToPart, size_t *pnumPartRows, size_t *pnumPartColumns)</td></tr>
 <tr class="memdesc:a655e2a333b035c5759894ade393bfbf2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates mappings from rows/columns to those of <code>part</code>; also maps up to 3 representative rows/columns.  <a href="separation_8h.html#a655e2a333b035c5759894ade393bfbf2">More...</a><br /></td></tr>
 <tr class="separator:a655e2a333b035c5759894ade393bfbf2"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -746,8 +746,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a8695d786a78ca010ee5bf009d206531e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8695d786a78ca010ee5bf009d206531e">&#9670;&nbsp;</a></span>CMRsepaGetRepresentatives()</h2>
+<a id="ac802e5fc236eb7145eac7ce911473413"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac802e5fc236eb7145eac7ce911473413">&#9670;&nbsp;</a></span>CMRsepaGetRepresentatives()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -755,12 +755,6 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRsepaGetRepresentatives </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
-          <td class="paramname"><em>cmr</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
           <td class="paramtype"><a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *&#160;</td>
           <td class="paramname"><em>sepa</em>, </td>
         </tr>
@@ -787,7 +781,6 @@ Functions</h2></td></tr>
 <p>Returns representative rows/columns of the low-rank submatrices. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
     <tr><td class="paramname">sepa</td><td>Separation. </td></tr>
     <tr><td class="paramname">reprRows</td><td>Array mapping child to arrays of (at most 3) different representative rows. </td></tr>
     <tr><td class="paramname">reprColumns</td><td>Array mapping child to arrays of (at most 3) different representative columns. </td></tr>

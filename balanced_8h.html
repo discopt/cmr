@@ -79,8 +79,7 @@ $(function() {
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#enum-members">Enumerations</a> &#124;
-<a href="#func-members">Functions</a> &#124;
-<a href="#var-members">Variables</a>  </div>
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">balanced.h File Reference</div>  </div>
 </div><!--header-->
@@ -123,13 +122,8 @@ Functions</h2></td></tr>
 <tr class="memdesc:acfccfc8a688f42f90b2dd97b96ea0724"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prints statistics for recognition algorithm for <a class="el" href="balanced.html">balanced</a> matrices.  <a href="balanced_8h.html#acfccfc8a688f42f90b2dd97b96ea0724">More...</a><br /></td></tr>
 <tr class="separator:acfccfc8a688f42f90b2dd97b96ea0724"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a481f2f0d9c47ce8ba549f76166f5e14c"><td class="memItemLeft" align="right" valign="top">CMR_EXPORT <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="balanced_8h.html#a481f2f0d9c47ce8ba549f76166f5e14c">CMRbalancedTest</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, bool *pisBalanced, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **psubmatrix, <a class="el" href="structCMR__BALANCED__PARAMS.html">CMR_BALANCED_PARAMS</a> *params, <a class="el" href="structCMR__BALANCED__STATS.html">CMR_BALANCED_STATS</a> *stats, double timeLimit)</td></tr>
+<tr class="memdesc:a481f2f0d9c47ce8ba549f76166f5e14c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tests a matrix \( M \) for being <a class="el" href="balanced.html">balanced</a>.  <a href="balanced_8h.html#a481f2f0d9c47ce8ba549f76166f5e14c">More...</a><br /></td></tr>
 <tr class="separator:a481f2f0d9c47ce8ba549f76166f5e14c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
-Variables</h2></td></tr>
-<tr class="memitem:a3757c171c68c0d75b5080c1893f3c212"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structCMR__SP__STATISTICS.html">CMR_SP_STATISTICS</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="balanced_8h.html#a3757c171c68c0d75b5080c1893f3c212">seriesParallel</a></td></tr>
-<tr class="memdesc:a3757c171c68c0d75b5080c1893f3c212"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tests a matrix \( M \) for being <a class="el" href="balanced.html">balanced</a>.  <a href="balanced_8h.html#a3757c171c68c0d75b5080c1893f3c212">More...</a><br /></td></tr>
-<tr class="separator:a3757c171c68c0d75b5080c1893f3c212"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Recognition of <a class="el" href="balanced.html">balanced matrices</a>. </p>
@@ -309,6 +303,10 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+<p>Tests a matrix \( M \) for being <a class="el" href="balanced.html">balanced</a>. </p>
+<p>Tests if matrix \( M \) is balanced and sets <code>*pisBalanced</code> accordingly. Automatically decides which algorithm to use.</p>
+<p>If \( M \) is not balanced and <code>psubmatrix</code> != <code>NULL</code>, then <code>*psubmatrix</code> will indicate a submatrix of \( M \) with exactly two nonzeros in each row and in each column and with determinant \( -2 \) or \( 2 \). </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment </td></tr>
@@ -321,25 +319,6 @@ Variables</h2></td></tr>
   </table>
   </dd>
 </dl>
-
-</div>
-</div>
-<h2 class="groupheader">Variable Documentation</h2>
-<a id="a3757c171c68c0d75b5080c1893f3c212"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3757c171c68c0d75b5080c1893f3c212">&#9670;&nbsp;</a></span>seriesParallel</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="structCMR__SP__STATISTICS.html">CMR_SP_STATISTICS</a> seriesParallel</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Tests a matrix \( M \) for being <a class="el" href="balanced.html">balanced</a>. </p>
-<p>Tests if matrix \( M \) is balanced and sets <code>*pisBalanced</code> accordingly. Automatically decides which algorithm to use.</p>
-<p>If \( M \) is not balanced and <code>psubmatrix</code> != <code>NULL</code>, then <code>*psubmatrix</code> will indicate a submatrix of \( M \) with exactly two nonzeros in each row and in each column and with determinant \( -2 \) or \( 2 \). Statistics for series-parallel algorithm. </p>
 
 </div>
 </div>

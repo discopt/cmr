@@ -165,96 +165,94 @@ $(function() {
 <div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;);</div>
 <div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160; </div>
 <div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;CMR_EXPORT</div>
-<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="separation_8h.html#a8695d786a78ca010ee5bf009d206531e">CMRsepaGetRepresentatives</a>(</div>
-<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,                 </div>
-<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;  <a class="code" href="structCMR__SEPA.html">CMR_SEPA</a>* sepa,           </div>
-<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;  <span class="keywordtype">size_t</span> reprRows[2][3],    </div>
-<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;  <span class="keywordtype">size_t</span> reprColumns[2][3]  </div>
-<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;);</div>
-<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160; </div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;CMR_EXPORT</div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="separation_8h.html#a655e2a333b035c5759894ade393bfbf2">CMRsepaGetProjection</a>(</div>
-<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;  <a class="code" href="structCMR__SEPA.html">CMR_SEPA</a>* sepa,         </div>
-<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;  <span class="keywordtype">size_t</span> part,            </div>
-<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;  <span class="keywordtype">size_t</span>* rowsToPart,     </div>
-<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;  <span class="keywordtype">size_t</span>* columnsToPart,  </div>
-<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;  <span class="keywordtype">size_t</span>* pnumPartRows,   </div>
-<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;  <span class="keywordtype">size_t</span>* pnumPartColumns </div>
-<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;);</div>
-<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160; </div>
-<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;CMR_EXPORT</div>
-<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="separation_8h.html#aff3ba6ce2ec77df30561fa69d6c01c8b">CMRsepaCheckTernary</a>(</div>
-<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,               </div>
-<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;  <a class="code" href="structCMR__SEPA.html">CMR_SEPA</a>* sepa,         </div>
-<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;  <a class="code" href="structCMR__CHRMAT.html">CMR_CHRMAT</a>* matrix,     </div>
-<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;  <span class="keywordtype">bool</span>* pisTernary,       </div>
-<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;  <a class="code" href="structCMR__SUBMAT.html">CMR_SUBMAT</a>** pviolator  </div>
-<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;);</div>
-<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160; </div>
-<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;CMR_EXPORT</div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="separation_8h.html#a6615f08570ee0d7ff348124ae4b10380">CMRsepaCheckTernarySubmatrix</a>(</div>
-<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,               </div>
-<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;  <a class="code" href="structCMR__SEPA.html">CMR_SEPA</a>* sepa,         </div>
-<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;  <a class="code" href="structCMR__CHRMAT.html">CMR_CHRMAT</a>* matrix,     </div>
-<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;  <a class="code" href="structCMR__SUBMAT.html">CMR_SUBMAT</a>* submatrix,  </div>
-<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;  <span class="keywordtype">bool</span>* pisTernary,       </div>
-<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;  <a class="code" href="structCMR__SUBMAT.html">CMR_SUBMAT</a>** pviolator  </div>
-<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;);</div>
-<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160; </div>
-<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;CMR_EXPORT</div>
-<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="separation_8h.html#a3f00debfc9da1ea00ab3767d9bd4b8ae">CMRoneSum</a>(</div>
-<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,             </div>
-<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;  <a class="code" href="structCMR__CHRMAT.html">CMR_CHRMAT</a>* first,    </div>
-<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;  <a class="code" href="structCMR__CHRMAT.html">CMR_CHRMAT</a>* second,   </div>
-<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;  <a class="code" href="structCMR__CHRMAT.html">CMR_CHRMAT</a>** presult  </div>
-<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;);</div>
-<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160; </div>
-<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;CMR_EXPORT</div>
-<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="separation_8h.html#a859128d208a8c0405f1123205b234e3d">CMRtwoSum</a>(</div>
-<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,                   </div>
-<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;  <a class="code" href="structCMR__CHRMAT.html">CMR_CHRMAT</a>* first,          </div>
-<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;  <a class="code" href="structCMR__CHRMAT.html">CMR_CHRMAT</a>* second,         </div>
-<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;  <a class="code" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a> firstMarker,    </div>
-<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;  <a class="code" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a> secondMarker,   </div>
-<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;  int8_t characteristic,      </div>
-<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;  <a class="code" href="structCMR__CHRMAT.html">CMR_CHRMAT</a>** presult        </div>
-<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;);</div>
-<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160; </div>
-<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;CMR_EXPORT</div>
-<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="separation_8h.html#aa77c0f0d86ed46c490e89fc8d011327d">CMRthreeSum</a>(</div>
-<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,                   </div>
-<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;  <a class="code" href="structCMR__CHRMAT.html">CMR_CHRMAT</a>* first,          </div>
-<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;  <a class="code" href="structCMR__CHRMAT.html">CMR_CHRMAT</a>* second,         </div>
-<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;  <a class="code" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a> firstMarker1,   </div>
-<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;  <a class="code" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a> secondMarker1,  </div>
-<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;  <a class="code" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a> firstMarker2,   </div>
-<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;  <a class="code" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a> secondMarker2,  </div>
-<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;  int8_t characteristic,      </div>
-<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;  <a class="code" href="structCMR__CHRMAT.html">CMR_CHRMAT</a>** presult        </div>
-<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;);</div>
+<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="separation_8h.html#ac802e5fc236eb7145eac7ce911473413">CMRsepaGetRepresentatives</a>(</div>
+<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;  <a class="code" href="structCMR__SEPA.html">CMR_SEPA</a>* sepa,           </div>
+<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;  <span class="keywordtype">size_t</span> reprRows[2][3],    </div>
+<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;  <span class="keywordtype">size_t</span> reprColumns[2][3]  </div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;);</div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160; </div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;CMR_EXPORT</div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="separation_8h.html#a655e2a333b035c5759894ade393bfbf2">CMRsepaGetProjection</a>(</div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;  <a class="code" href="structCMR__SEPA.html">CMR_SEPA</a>* sepa,         </div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;  <span class="keywordtype">size_t</span> part,            </div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;  <span class="keywordtype">size_t</span>* rowsToPart,     </div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;  <span class="keywordtype">size_t</span>* columnsToPart,  </div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;  <span class="keywordtype">size_t</span>* pnumPartRows,   </div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;  <span class="keywordtype">size_t</span>* pnumPartColumns </div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;);</div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160; </div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;CMR_EXPORT</div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="separation_8h.html#aff3ba6ce2ec77df30561fa69d6c01c8b">CMRsepaCheckTernary</a>(</div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,               </div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;  <a class="code" href="structCMR__SEPA.html">CMR_SEPA</a>* sepa,         </div>
+<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;  <a class="code" href="structCMR__CHRMAT.html">CMR_CHRMAT</a>* matrix,     </div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;  <span class="keywordtype">bool</span>* pisTernary,       </div>
+<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;  <a class="code" href="structCMR__SUBMAT.html">CMR_SUBMAT</a>** pviolator  </div>
+<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;);</div>
+<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160; </div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;CMR_EXPORT</div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="separation_8h.html#a6615f08570ee0d7ff348124ae4b10380">CMRsepaCheckTernarySubmatrix</a>(</div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,               </div>
+<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;  <a class="code" href="structCMR__SEPA.html">CMR_SEPA</a>* sepa,         </div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;  <a class="code" href="structCMR__CHRMAT.html">CMR_CHRMAT</a>* matrix,     </div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;  <a class="code" href="structCMR__SUBMAT.html">CMR_SUBMAT</a>* submatrix,  </div>
+<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;  <span class="keywordtype">bool</span>* pisTernary,       </div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;  <a class="code" href="structCMR__SUBMAT.html">CMR_SUBMAT</a>** pviolator  </div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;);</div>
+<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160; </div>
+<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;CMR_EXPORT</div>
+<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="separation_8h.html#a3f00debfc9da1ea00ab3767d9bd4b8ae">CMRoneSum</a>(</div>
+<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,             </div>
+<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;  <a class="code" href="structCMR__CHRMAT.html">CMR_CHRMAT</a>* first,    </div>
+<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;  <a class="code" href="structCMR__CHRMAT.html">CMR_CHRMAT</a>* second,   </div>
+<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;  <a class="code" href="structCMR__CHRMAT.html">CMR_CHRMAT</a>** presult  </div>
+<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;);</div>
+<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160; </div>
+<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;CMR_EXPORT</div>
+<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="separation_8h.html#a859128d208a8c0405f1123205b234e3d">CMRtwoSum</a>(</div>
+<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,                   </div>
+<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;  <a class="code" href="structCMR__CHRMAT.html">CMR_CHRMAT</a>* first,          </div>
+<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;  <a class="code" href="structCMR__CHRMAT.html">CMR_CHRMAT</a>* second,         </div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;  <a class="code" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a> firstMarker,    </div>
+<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;  <a class="code" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a> secondMarker,   </div>
+<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;  int8_t characteristic,      </div>
+<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;  <a class="code" href="structCMR__CHRMAT.html">CMR_CHRMAT</a>** presult        </div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;);</div>
+<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160; </div>
+<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;CMR_EXPORT</div>
+<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="separation_8h.html#aa77c0f0d86ed46c490e89fc8d011327d">CMRthreeSum</a>(</div>
+<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,                   </div>
+<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;  <a class="code" href="structCMR__CHRMAT.html">CMR_CHRMAT</a>* first,          </div>
+<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;  <a class="code" href="structCMR__CHRMAT.html">CMR_CHRMAT</a>* second,         </div>
+<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;  <a class="code" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a> firstMarker1,   </div>
+<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;  <a class="code" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a> secondMarker1,  </div>
+<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;  <a class="code" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a> firstMarker2,   </div>
+<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;  <a class="code" href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a> secondMarker2,  </div>
+<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;  int8_t characteristic,      </div>
+<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;  <a class="code" href="structCMR__CHRMAT.html">CMR_CHRMAT</a>** presult        </div>
+<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;);</div>
+<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160; </div>
 <div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160; </div>
-<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160; </div>
-<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
-<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;}</div>
-<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160; </div>
-<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* CMR_SEPARATION_H */</span><span class="preprocessor"></span></div>
+<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
+<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;}</div>
+<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160; </div>
+<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* CMR_SEPARATION_H */</span><span class="preprocessor"></span></div>
 <div class="ttc" id="aelement_8h_html"><div class="ttname"><a href="element_8h.html">element.h</a></div><div class="ttdoc">Functionality for the row and column elements of a matrix.</div></div>
 <div class="ttc" id="aelement_8h_html_a27b924582353437788c8d49c28a89142"><div class="ttname"><a href="element_8h.html#a27b924582353437788c8d49c28a89142">CMR_ELEMENT</a></div><div class="ttdeci">int CMR_ELEMENT</div><div class="ttdef"><b>Definition:</b> element.h:20</div></div>
 <div class="ttc" id="aenv_8h_html"><div class="ttname"><a href="env_8h.html">env.h</a></div><div class="ttdoc">Basic functionality of the software library.</div></div>
 <div class="ttc" id="aenv_8h_html_ae2f4ad54b976c2b9a099246c6dc0be87"><div class="ttname"><a href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a></div><div class="ttdeci">CMR_ERROR</div><div class="ttdoc">Type for return codes of library functions.</div><div class="ttdef"><b>Definition:</b> env.h:32</div></div>
 <div class="ttc" id="amatrix_8h_html"><div class="ttname"><a href="matrix_8h.html">matrix.h</a></div><div class="ttdoc">Functionality for sparse matrices.</div></div>
-<div class="ttc" id="aseparation_8h_html_a3f00debfc9da1ea00ab3767d9bd4b8ae"><div class="ttname"><a href="separation_8h.html#a3f00debfc9da1ea00ab3767d9bd4b8ae">CMRoneSum</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRoneSum(CMR *cmr, CMR_CHRMAT *first, CMR_CHRMAT *second, CMR_CHRMAT **presult)</div><div class="ttdoc">Constructs the 1-sum of the two matrices first and second.</div><div class="ttdef"><b>Definition:</b> separation.c:981</div></div>
-<div class="ttc" id="aseparation_8h_html_a655e2a333b035c5759894ade393bfbf2"><div class="ttname"><a href="separation_8h.html#a655e2a333b035c5759894ade393bfbf2">CMRsepaGetProjection</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRsepaGetProjection(CMR_SEPA *sepa, size_t part, size_t *rowsToPart, size_t *columnsToPart, size_t *pnumPartRows, size_t *pnumPartColumns)</div><div class="ttdoc">Creates mappings from rows/columns to those of part; also maps up to 3 representative rows/columns.</div><div class="ttdef"><b>Definition:</b> separation.c:719</div></div>
-<div class="ttc" id="aseparation_8h_html_a6615f08570ee0d7ff348124ae4b10380"><div class="ttname"><a href="separation_8h.html#a6615f08570ee0d7ff348124ae4b10380">CMRsepaCheckTernarySubmatrix</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRsepaCheckTernarySubmatrix(CMR *cmr, CMR_SEPA *sepa, CMR_CHRMAT *matrix, CMR_SUBMAT *submatrix, bool *pisTernary, CMR_SUBMAT **pviolator)</div><div class="ttdoc">Checks for a submatrix of a given matrix whether the binary k-separation is also a ternary one.</div><div class="ttdef"><b>Definition:</b> separation.c:953</div></div>
+<div class="ttc" id="aseparation_8h_html_a3f00debfc9da1ea00ab3767d9bd4b8ae"><div class="ttname"><a href="separation_8h.html#a3f00debfc9da1ea00ab3767d9bd4b8ae">CMRoneSum</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRoneSum(CMR *cmr, CMR_CHRMAT *first, CMR_CHRMAT *second, CMR_CHRMAT **presult)</div><div class="ttdoc">Constructs the 1-sum of the two matrices first and second.</div><div class="ttdef"><b>Definition:</b> separation.c:980</div></div>
+<div class="ttc" id="aseparation_8h_html_a655e2a333b035c5759894ade393bfbf2"><div class="ttname"><a href="separation_8h.html#a655e2a333b035c5759894ade393bfbf2">CMRsepaGetProjection</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRsepaGetProjection(CMR_SEPA *sepa, size_t part, size_t *rowsToPart, size_t *columnsToPart, size_t *pnumPartRows, size_t *pnumPartColumns)</div><div class="ttdoc">Creates mappings from rows/columns to those of part; also maps up to 3 representative rows/columns.</div><div class="ttdef"><b>Definition:</b> separation.c:718</div></div>
+<div class="ttc" id="aseparation_8h_html_a6615f08570ee0d7ff348124ae4b10380"><div class="ttname"><a href="separation_8h.html#a6615f08570ee0d7ff348124ae4b10380">CMRsepaCheckTernarySubmatrix</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRsepaCheckTernarySubmatrix(CMR *cmr, CMR_SEPA *sepa, CMR_CHRMAT *matrix, CMR_SUBMAT *submatrix, bool *pisTernary, CMR_SUBMAT **pviolator)</div><div class="ttdoc">Checks for a submatrix of a given matrix whether the binary k-separation is also a ternary one.</div><div class="ttdef"><b>Definition:</b> separation.c:952</div></div>
 <div class="ttc" id="aseparation_8h_html_a6e385b09b26e8295496aa001b1111389"><div class="ttname"><a href="separation_8h.html#a6e385b09b26e8295496aa001b1111389">CMR_SEPA_TYPE</a></div><div class="ttdeci">CMR_SEPA_TYPE</div><div class="ttdef"><b>Definition:</b> separation.h:42</div></div>
 <div class="ttc" id="aseparation_8h_html_a6e385b09b26e8295496aa001b1111389a231047e9b827af0c2e58a60dfa089422"><div class="ttname"><a href="separation_8h.html#a6e385b09b26e8295496aa001b1111389a231047e9b827af0c2e58a60dfa089422">CMR_SEPA_TYPE_TWO</a></div><div class="ttdeci">@ CMR_SEPA_TYPE_TWO</div><div class="ttdef"><b>Definition:</b> separation.h:43</div></div>
 <div class="ttc" id="aseparation_8h_html_a6e385b09b26e8295496aa001b1111389a31eeadd3a432c6676ca30cc92ea504f8"><div class="ttname"><a href="separation_8h.html#a6e385b09b26e8295496aa001b1111389a31eeadd3a432c6676ca30cc92ea504f8">CMR_SEPA_TYPE_THREE_DISTRIBUTED_RANKS</a></div><div class="ttdeci">@ CMR_SEPA_TYPE_THREE_DISTRIBUTED_RANKS</div><div class="ttdef"><b>Definition:</b> separation.h:45</div></div>
 <div class="ttc" id="aseparation_8h_html_a6e385b09b26e8295496aa001b1111389a9199bb382c176b8ce36d0c3c30b4e6ce"><div class="ttname"><a href="separation_8h.html#a6e385b09b26e8295496aa001b1111389a9199bb382c176b8ce36d0c3c30b4e6ce">CMR_SEPA_TYPE_THREE_CONCENTRATED_RANK</a></div><div class="ttdeci">@ CMR_SEPA_TYPE_THREE_CONCENTRATED_RANK</div><div class="ttdef"><b>Definition:</b> separation.h:47</div></div>
 <div class="ttc" id="aseparation_8h_html_a742e8d2b14d2ba88b2cd1efbe220bbbe"><div class="ttname"><a href="separation_8h.html#a742e8d2b14d2ba88b2cd1efbe220bbbe">CMRsepaComputeSizes</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRsepaComputeSizes(CMR_SEPA *sepa, size_t *pnumRowsTopLeft, size_t *pnumColumnsTopLeft, size_t *pnumRowsBottomRight, size_t *pnumColumnsBottomRight)</div><div class="ttdoc">Computes the sizes of the top-left and bottom-right parts.</div><div class="ttdef"><b>Definition:</b> separation.c:45</div></div>
 <div class="ttc" id="aseparation_8h_html_a762e1b45df8542f5b6d351b1376bd570"><div class="ttname"><a href="separation_8h.html#a762e1b45df8542f5b6d351b1376bd570">CMRsepaFindBinaryRepresentatives</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRsepaFindBinaryRepresentatives(CMR *cmr, CMR_SEPA *sepa, CMR_CHRMAT *matrix, CMR_CHRMAT *transpose, bool *pswapped, CMR_SUBMAT **pviolator)</div><div class="ttdoc">Scans the support of matrix to compute all representative rows/columns for sepa and sets the type.</div><div class="ttdef"><b>Definition:</b> separation.c:627</div></div>
-<div class="ttc" id="aseparation_8h_html_a859128d208a8c0405f1123205b234e3d"><div class="ttname"><a href="separation_8h.html#a859128d208a8c0405f1123205b234e3d">CMRtwoSum</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRtwoSum(CMR *cmr, CMR_CHRMAT *first, CMR_CHRMAT *second, CMR_ELEMENT firstMarker, CMR_ELEMENT secondMarker, int8_t characteristic, CMR_CHRMAT **presult)</div><div class="ttdoc">Constructs the 2-sum of the two matrices first and second via firstMarker and secondMarker.</div><div class="ttdef"><b>Definition:</b> separation.c:1013</div></div>
-<div class="ttc" id="aseparation_8h_html_a8695d786a78ca010ee5bf009d206531e"><div class="ttname"><a href="separation_8h.html#a8695d786a78ca010ee5bf009d206531e">CMRsepaGetRepresentatives</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRsepaGetRepresentatives(CMR *cmr, CMR_SEPA *sepa, size_t reprRows[2][3], size_t reprColumns[2][3])</div><div class="ttdoc">Returns representative rows/columns of the low-rank submatrices.</div><div class="ttdef"><b>Definition:</b> separation.c:671</div></div>
+<div class="ttc" id="aseparation_8h_html_a859128d208a8c0405f1123205b234e3d"><div class="ttname"><a href="separation_8h.html#a859128d208a8c0405f1123205b234e3d">CMRtwoSum</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRtwoSum(CMR *cmr, CMR_CHRMAT *first, CMR_CHRMAT *second, CMR_ELEMENT firstMarker, CMR_ELEMENT secondMarker, int8_t characteristic, CMR_CHRMAT **presult)</div><div class="ttdoc">Constructs the 2-sum of the two matrices first and second via firstMarker and secondMarker.</div><div class="ttdef"><b>Definition:</b> separation.c:1012</div></div>
 <div class="ttc" id="aseparation_8h_html_a887bcaaa4236b14a50a6c9ccebdda3b9"><div class="ttname"><a href="separation_8h.html#a887bcaaa4236b14a50a6c9ccebdda3b9">CMRsepaFree</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRsepaFree(CMR *cmr, CMR_SEPA **psepa)</div><div class="ttdoc">Frees a separation.</div><div class="ttdef"><b>Definition:</b> separation.c:29</div></div>
 <div class="ttc" id="aseparation_8h_html_aa06a64b71cbe46753d9cc04b57a0659d"><div class="ttname"><a href="separation_8h.html#aa06a64b71cbe46753d9cc04b57a0659d">CMR_SEPA_FLAGS</a></div><div class="ttdeci">CMR_SEPA_FLAGS</div><div class="ttdef"><b>Definition:</b> separation.h:24</div></div>
 <div class="ttc" id="aseparation_8h_html_aa06a64b71cbe46753d9cc04b57a0659da2d8b0b370c5c96543098daa0afe42d92"><div class="ttname"><a href="separation_8h.html#aa06a64b71cbe46753d9cc04b57a0659da2d8b0b370c5c96543098daa0afe42d92">CMR_SEPA_SECOND</a></div><div class="ttdeci">@ CMR_SEPA_SECOND</div><div class="ttdef"><b>Definition:</b> separation.h:27</div></div>
@@ -263,10 +261,11 @@ $(function() {
 <div class="ttc" id="aseparation_8h_html_aa06a64b71cbe46753d9cc04b57a0659da82f53d8c4991389f19a4b86f4bd2f8f3"><div class="ttname"><a href="separation_8h.html#aa06a64b71cbe46753d9cc04b57a0659da82f53d8c4991389f19a4b86f4bd2f8f3">CMR_SEPA_FLAG_RANK2</a></div><div class="ttdeci">@ CMR_SEPA_FLAG_RANK2</div><div class="ttdef"><b>Definition:</b> separation.h:31</div></div>
 <div class="ttc" id="aseparation_8h_html_aa06a64b71cbe46753d9cc04b57a0659dab1997b3e8f94f5c798d753eef1a1abb4"><div class="ttname"><a href="separation_8h.html#aa06a64b71cbe46753d9cc04b57a0659dab1997b3e8f94f5c798d753eef1a1abb4">CMR_SEPA_FLAG_RANK1</a></div><div class="ttdeci">@ CMR_SEPA_FLAG_RANK1</div><div class="ttdef"><b>Definition:</b> separation.h:29</div></div>
 <div class="ttc" id="aseparation_8h_html_aa06a64b71cbe46753d9cc04b57a0659dadf89972f52d6c035e8f9128745fbc588"><div class="ttname"><a href="separation_8h.html#aa06a64b71cbe46753d9cc04b57a0659dadf89972f52d6c035e8f9128745fbc588">CMR_SEPA_MASK_CHILD</a></div><div class="ttdeci">@ CMR_SEPA_MASK_CHILD</div><div class="ttdef"><b>Definition:</b> separation.h:35</div></div>
-<div class="ttc" id="aseparation_8h_html_aa77c0f0d86ed46c490e89fc8d011327d"><div class="ttname"><a href="separation_8h.html#aa77c0f0d86ed46c490e89fc8d011327d">CMRthreeSum</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRthreeSum(CMR *cmr, CMR_CHRMAT *first, CMR_CHRMAT *second, CMR_ELEMENT firstMarker1, CMR_ELEMENT secondMarker1, CMR_ELEMENT firstMarker2, CMR_ELEMENT secondMarker2, int8_t characteristic, CMR_CHRMAT **presult)</div><div class="ttdoc">Constructs the 3-sum of the two matrices first and second via firstMarker1, firstMarker2,...</div><div class="ttdef"><b>Definition:</b> separation.c:1225</div></div>
+<div class="ttc" id="aseparation_8h_html_aa77c0f0d86ed46c490e89fc8d011327d"><div class="ttname"><a href="separation_8h.html#aa77c0f0d86ed46c490e89fc8d011327d">CMRthreeSum</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRthreeSum(CMR *cmr, CMR_CHRMAT *first, CMR_CHRMAT *second, CMR_ELEMENT firstMarker1, CMR_ELEMENT secondMarker1, CMR_ELEMENT firstMarker2, CMR_ELEMENT secondMarker2, int8_t characteristic, CMR_CHRMAT **presult)</div><div class="ttdoc">Constructs the 3-sum of the two matrices first and second via firstMarker1, firstMarker2,...</div><div class="ttdef"><b>Definition:</b> separation.c:1224</div></div>
 <div class="ttc" id="aseparation_8h_html_ab368dd519148f0a7d5e4b046607744a3"><div class="ttname"><a href="separation_8h.html#ab368dd519148f0a7d5e4b046607744a3">CMRsepaCreate</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRsepaCreate(CMR *cmr, size_t numRows, size_t numColumns, CMR_SEPA **psepa)</div><div class="ttdoc">Creates a 2- or 3-separation.</div><div class="ttdef"><b>Definition:</b> separation.c:11</div></div>
 <div class="ttc" id="aseparation_8h_html_ac4d8340c8603cde0c5c5f84fe0fb995a"><div class="ttname"><a href="separation_8h.html#ac4d8340c8603cde0c5c5f84fe0fb995a">CMRsepaFindBinaryRepresentativesSubmatrix</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRsepaFindBinaryRepresentativesSubmatrix(CMR *cmr, CMR_SEPA *sepa, CMR_CHRMAT *matrix, CMR_CHRMAT *transpose, CMR_SUBMAT *submatrix, bool *pswapped, CMR_SUBMAT **pviolator)</div><div class="ttdoc">Scans the support of submatrix of matrix to compute all representative rows/columns for sepa and sets...</div><div class="ttdef"><b>Definition:</b> separation.c:652</div></div>
-<div class="ttc" id="aseparation_8h_html_aff3ba6ce2ec77df30561fa69d6c01c8b"><div class="ttname"><a href="separation_8h.html#aff3ba6ce2ec77df30561fa69d6c01c8b">CMRsepaCheckTernary</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRsepaCheckTernary(CMR *cmr, CMR_SEPA *sepa, CMR_CHRMAT *matrix, bool *pisTernary, CMR_SUBMAT **pviolator)</div><div class="ttdoc">Checks for a given matrix whether the binary k-separation is also a ternary one.</div><div class="ttdef"><b>Definition:</b> separation.c:923</div></div>
+<div class="ttc" id="aseparation_8h_html_ac802e5fc236eb7145eac7ce911473413"><div class="ttname"><a href="separation_8h.html#ac802e5fc236eb7145eac7ce911473413">CMRsepaGetRepresentatives</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRsepaGetRepresentatives(CMR_SEPA *sepa, size_t reprRows[2][3], size_t reprColumns[2][3])</div><div class="ttdoc">Returns representative rows/columns of the low-rank submatrices.</div><div class="ttdef"><b>Definition:</b> separation.c:671</div></div>
+<div class="ttc" id="aseparation_8h_html_aff3ba6ce2ec77df30561fa69d6c01c8b"><div class="ttname"><a href="separation_8h.html#aff3ba6ce2ec77df30561fa69d6c01c8b">CMRsepaCheckTernary</a></div><div class="ttdeci">CMR_EXPORT CMR_ERROR CMRsepaCheckTernary(CMR *cmr, CMR_SEPA *sepa, CMR_CHRMAT *matrix, bool *pisTernary, CMR_SUBMAT **pviolator)</div><div class="ttdoc">Checks for a given matrix whether the binary k-separation is also a ternary one.</div><div class="ttdef"><b>Definition:</b> separation.c:922</div></div>
 <div class="ttc" id="astructCMR__CHRMAT_html"><div class="ttname"><a href="structCMR__CHRMAT.html">CMR_CHRMAT</a></div><div class="ttdoc">Row-wise representation of sparse char matrix.</div><div class="ttdef"><b>Definition:</b> matrix.h:220</div></div>
 <div class="ttc" id="astructCMR__ENVIRONMENT_html"><div class="ttname"><a href="structCMR__ENVIRONMENT.html">CMR_ENVIRONMENT</a></div><div class="ttdef"><b>Definition:</b> env_internal.h:45</div></div>
 <div class="ttc" id="astructCMR__SEPA_html"><div class="ttname"><a href="structCMR__SEPA.html">CMR_SEPA</a></div><div class="ttdef"><b>Definition:</b> separation.h:52</div></div>

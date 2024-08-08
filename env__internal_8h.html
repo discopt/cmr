@@ -112,9 +112,8 @@ Macros</h2></td></tr>
 <tr class="memitem:acb7f2eddea92bc780ba329681e7aa889"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="env__internal_8h.html#acb7f2eddea92bc780ba329681e7aa889">CMRfreeStackArray</a>(cmr,  ptr)&#160;&#160;&#160;  <a class="el" href="env__internal_8h.html#a62376f606739357ba337c8b03dc84759">_CMRfreeStack</a>(cmr, (void**) ptr)</td></tr>
 <tr class="memdesc:acb7f2eddea92bc780ba329681e7aa889"><td class="mdescLeft">&#160;</td><td class="mdescRight">Frees memory of an array of blocks on the stack.  <a href="env__internal_8h.html#acb7f2eddea92bc780ba329681e7aa889">More...</a><br /></td></tr>
 <tr class="separator:acb7f2eddea92bc780ba329681e7aa889"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4704e1cd2f1b46c1f6ffaf0d1233410f"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="env__internal_8h.html#a4704e1cd2f1b46c1f6ffaf0d1233410f">CMRconsistencyAssert</a>(call)</td></tr>
-<tr class="memdesc:a4704e1cd2f1b46c1f6ffaf0d1233410f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Asserts that <code>call</code> reports consistency. Otherwise, the inconsistency explanation is printed and the program terminates.  <a href="env__internal_8h.html#a4704e1cd2f1b46c1f6ffaf0d1233410f">More...</a><br /></td></tr>
-<tr class="separator:a4704e1cd2f1b46c1f6ffaf0d1233410f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a546eb13daead2ab10dae4d5aa2c12d41"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="env__internal_8h.html#a546eb13daead2ab10dae4d5aa2c12d41">CMRdbgConsistencyAssert</a>(call)</td></tr>
+<tr class="separator:a546eb13daead2ab10dae4d5aa2c12d41"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
@@ -204,14 +203,14 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a4704e1cd2f1b46c1f6ffaf0d1233410f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4704e1cd2f1b46c1f6ffaf0d1233410f">&#9670;&nbsp;</a></span>CMRconsistencyAssert</h2>
+<a id="a546eb13daead2ab10dae4d5aa2c12d41"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a546eb13daead2ab10dae4d5aa2c12d41">&#9670;&nbsp;</a></span>CMRdbgConsistencyAssert</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define CMRconsistencyAssert</td>
+          <td class="memname">#define CMRdbgConsistencyAssert</td>
           <td>(</td>
           <td class="paramtype">&#160;</td>
           <td class="paramname">call</td><td>)</td>
@@ -219,23 +218,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line">  <span class="keywordflow">do</span> \</div>
-<div class="line">  { \</div>
-<div class="line">    char* __message = call; \</div>
-<div class="line">    if (__message) \</div>
-<div class="line">    { \</div>
-<div class="line">      fflush(stdout); \</div>
-<div class="line">      fprintf(stderr, <span class="stringliteral">&quot;%s:%d: %s\n&quot;</span>, __FILE__, __LINE__, __message); \</div>
-<div class="line">      fflush(stderr); \</div>
-<div class="line">      free(__message); \</div>
-<div class="line">      assert(!<span class="stringliteral">&quot;Consistency assertion raised!&quot;</span>); \</div>
-<div class="line">    } \</div>
-<div class="line">  } \</div>
-<div class="line">  while (<span class="keyword">false</span>);</div>
-</div><!-- fragment -->
-<p>Asserts that <code>call</code> reports consistency. Otherwise, the inconsistency explanation is printed and the program terminates. </p>
-<p>The following example code checks <code>matrix</code> (of type <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a>*) for consistency using <a class="el" href="matrix_8c.html#a8fcaba2b97524fd526e03d9bdb57e1ea">CMRchrmatConsistency</a>. </p><pre class="fragment">CMRconsistencyAssert( CMRchrmatConsistency(matrix) );
-</pre> 
+
 </div>
 </div>
 <a id="a569a779528fad36934354027b23a740c"></a>

@@ -6,7 +6,7 @@ var searchData=
   ['cmrallocblockarray_2208',['CMRallocBlockArray',['../env_8h.html#ac3a20b0cc458706e1f49c510a6c4410b',1,'env.h']]],
   ['cmrallocstack_2209',['CMRallocStack',['../env__internal_8h.html#acde789648b3b10fe4567feb125051874',1,'env_internal.h']]],
   ['cmrallocstackarray_2210',['CMRallocStackArray',['../env__internal_8h.html#a01ad5c9860d4ec696394b6b164940ccf',1,'env_internal.h']]],
-  ['cmrconsistencyassert_2211',['CMRconsistencyAssert',['../env__internal_8h.html#a4704e1cd2f1b46c1f6ffaf0d1233410f',1,'env_internal.h']]],
+  ['cmrdbgconsistencyassert_2211',['CMRdbgConsistencyAssert',['../env__internal_8h.html#a546eb13daead2ab10dae4d5aa2c12d41',1,'env_internal.h']]],
   ['cmrduplicateblockarray_2212',['CMRduplicateBlockArray',['../env_8h.html#a8ec789c303cdb25a82aa006a4283717e',1,'env.h']]],
   ['cmrfreeblock_2213',['CMRfreeBlock',['../env_8h.html#ae17506229ad852e5b7e15c53ea8d3cf4',1,'env.h']]],
   ['cmrfreeblockarray_2214',['CMRfreeBlockArray',['../env_8h.html#a8e025417fc4487f0354a013693fb6df3',1,'env.h']]],
