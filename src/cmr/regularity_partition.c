@@ -499,12 +499,12 @@ CMR_ERROR extendMinorSeparation(
   size_t columnRepresentative[2][2] = { {SIZE_MAX, SIZE_MAX}, {SIZE_MAX, SIZE_MAX} };
 
 #if defined(CMR_DEBUG)
-  CMRdbgMsg(12, "Checking the ranks a %zux%zu matrix:\n", matrix->numRows, matrix->numColumns);
-//   CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', true) );
-//   for (size_t row = 0; row < numRows; ++row)
-//     CMRdbgMsg(14, "Initially, row r%ld belongs to part %d.\n", row+1, rowData[row].part);
-//   for (size_t column = 0; column < numColumns; ++column)
-//     CMRdbgMsg(14, "Initially, column c%ld belongs to part %d.\n", column+1, columnData[column].part);
+  CMRdbgMsg(12, "Checking the ranks of a %zux%zu matrix:\n", matrix->numRows, matrix->numColumns);
+  CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', true) );
+  for (size_t row = 0; row < numRows; ++row)
+    CMRdbgMsg(14, "Initially, row r%ld belongs to part %d.\n", row+1, rowData[row].part);
+  for (size_t column = 0; column < numColumns; ++column)
+    CMRdbgMsg(14, "Initially, column c%ld belongs to part %d.\n", column+1, columnData[column].part);
 #endif /* CMR_DEBUG */
 
   size_t totalRank = 0;
@@ -637,7 +637,7 @@ CMR_ERROR extendMinorSeparation(
   while (queueFirst < queueBeyond)
   {
     CMR_ELEMENT element = queue[queueFirst++];
-//     CMRdbgMsg(12, "Processing queue element %s.\n", CMRelementString(element, NULL));
+    CMRdbgMsg(12, "Processing queue element %s.\n", CMRelementString(element, NULL));
     if (CMRelementIsRow(element))
     {
       size_t row = CMRelementToRowIndex(element);
@@ -672,24 +672,24 @@ CMR_ERROR extendMinorSeparation(
   {
     if (rowData[row].part < 0)
     {
-//       CMRdbgMsg(12, "Row r%ld is unassigned and has types %d and %d. Assigning it to part 0.\n", row+1,
-//         rowData[row].type[0], rowData[row].type[1]);
+      CMRdbgMsg(12, "Row r%ld is unassigned and has types %d and %d. Assigning it to part 0.\n", row+1,
+        rowData[row].type[0], rowData[row].type[1]);
       rowData[row].part = 0;
     }
     else
-//       CMRdbgMsg(12, "Row r%ld is assigned to part %d.\n", row+1, rowData[row].part);
+      CMRdbgMsg(12, "Row r%ld is assigned to part %d.\n", row+1, rowData[row].part);
     countElements[rowData[row].part]++;
   }
   for (size_t column = 0; column < matrix->numColumns; ++column)
   {
     if (columnData[column].part < 0)
     {
-//       CMRdbgMsg(12, "Column c%ld is unassigned and has types %d and %d. Assigning it to part 0.\n", column+1,
-//         columnData[column].type[0], columnData[column].type[1]);
+      CMRdbgMsg(12, "Column c%ld is unassigned and has types %d and %d. Assigning it to part 0.\n", column+1,
+        columnData[column].type[0], columnData[column].type[1]);
       columnData[column].part = 0;
     }
     else
-//       CMRdbgMsg(12, "Column c%ld is assigned to part %d.\n", column+1, columnData[column].part);
+      CMRdbgMsg(12, "Column c%ld is assigned to part %d.\n", column+1, columnData[column].part);
     countElements[columnData[column].part]++;
   }
 
@@ -760,7 +760,7 @@ CMR_ERROR CMRregularityNestedMinorSequenceSearchThreeSeparation(CMR* cmr, Decomp
 
   /* The first minor is already neither graphic nor cographic. */
   size_t firstNonCoGraphicMinorSize = dec->nestedMinorsSequenceNumRows[firstNonCoGraphicMinor]
-      + dec->nestedMinorsSequenceNumColumns[firstNonCoGraphicMinor];
+    + dec->nestedMinorsSequenceNumColumns[firstNonCoGraphicMinor];
   if (firstNonCoGraphicMinorSize < 9) /* TODO: this should even be 12. */
   {
     CMRdbgMsg(8, "-> irregular since minor with %zu elements is neither graphic nor cographic.\n",
@@ -828,8 +828,6 @@ CMR_ERROR CMRregularityNestedMinorSequenceSearchThreeSeparation(CMR* cmr, Decomp
       short part = (bits & (1 << (firstMinorNumRows + column))) ? 1 : 0;
       partColumns[part][partNumColumns[part]++] = column;
     }
-    if (partNumRows[0] + partNumColumns[0] > partNumRows[1] + partNumColumns[1])
-      continue;
 
     CMRdbgMsg(10, "Considering initial minor partition in which the first part has %zu rows and %zu columns.\n",
       partNumRows[0], partNumColumns[0]);
@@ -861,7 +859,7 @@ CMR_ERROR CMRregularityNestedMinorSequenceSearchThreeSeparation(CMR* cmr, Decomp
 //         return CMR_ERROR_TIMEOUT;
 //       }
 
-      CMRdbgMsg(8, "Next minor has %zu rows and %zu columns.\n", dec->nestedMinorsSequenceNumRows[minor],
+      CMRdbgMsg(8, "Considering minor with %zu rows and %zu columns.\n", dec->nestedMinorsSequenceNumRows[minor],
         dec->nestedMinorsSequenceNumColumns[minor]);
 
       size_t numOldRows = dec->nestedMinorsSequenceNumRows[minor-1];
@@ -1004,6 +1002,7 @@ CMR_ERROR CMRregularityNestedMinorSequenceSearchThreeSeparation(CMR* cmr, Decomp
   }
   else
   {
+    CMRdbgMsg(8, "No 3-separation found. Declaring node to be irregular.\n");
     // TODO: Add a dedicated unittest.
     task->node->type = CMR_SEYMOUR_NODE_TYPE_IRREGULAR;
 
