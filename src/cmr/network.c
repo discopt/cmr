@@ -132,8 +132,19 @@ CMR_ERROR CMRnetworkTestTranspose(CMR* cmr, CMR_CHRMAT* matrix, bool* pisConetwo
   CMR_GRAPH_EDGE* coforestEdges = NULL;
   CMR_GRAPH* graph = NULL;
   bool isConetwork;
-  CMR_CALL( CMRgraphicTestTranspose(cmr, matrix, &isConetwork, &graph, &forestEdges, &coforestEdges,
-    psubmatrix, stats ? &stats->graphic : NULL, remainingTime) );
+  CMR_ERROR error = CMRgraphicTestTranspose(cmr, matrix, &isConetwork, &graph, &forestEdges, &coforestEdges,
+    /* TODO: pass psubmatrix once efficient */ NULL, stats ? &stats->graphic : NULL, remainingTime);
+  if (error == CMR_ERROR_TIMEOUT)
+  {
+    if (stats)
+    {
+      stats->totalCount++;
+      stats->totalTime += (clock() - totalClock) * 1.0 / CLOCKS_PER_SEC;
+    }
+    return error;
+  }
+
+  CMR_CALL( error );
 
 #if defined(CMR_DEBUG)
   CMRdbgMsg(2, "CMRtestCographicMatrix() returned %s.\n", isConetwork ? "TRUE": "FALSE");

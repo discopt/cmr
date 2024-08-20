@@ -70,8 +70,19 @@ CMR_ERROR testTotalUnimodularity(
   params.seymour.seriesParallel = seriesParallel;
   CMR_TU_STATS stats;
   CMR_CALL( CMRtuStatsInit(&stats));
-  CMR_CALL( CMRtuTest(cmr, matrix, &isTU, outputTreeFileName ? &decomposition : NULL,
-    outputSubmatrixFileName ? &submatrix : NULL, &params, &stats, timeLimit) );
+  error = CMRtuTest(cmr, matrix, &isTU, outputTreeFileName ? &decomposition : NULL,
+    outputSubmatrixFileName ? &submatrix : NULL, &params, &stats, timeLimit);
+  if (error == CMR_ERROR_TIMEOUT)
+  {
+    fprintf(stderr, "Time limit exceeded!\n");
+    CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+    if (printStats)
+      CMR_CALL( CMRtuStatsPrint(stderr, &stats, NULL) );
+
+    CMR_CALL( CMRfreeEnvironment(&cmr) );
+    return error;
+  }
+  CMR_CALL( error );
 
   printf("Matrix %stotally unimodular.\n", isTU ? "IS " : "IS NOT ");
   if (printStats)

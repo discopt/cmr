@@ -1626,7 +1626,7 @@ CMR_ERROR CMRregularityNestedMinorSequenceGraphicness(CMR* cmr, DecompositionTas
   assert(task);
   assert(queue);
 
-    CMR_SEYMOUR_NODE* dec = task->node;
+  CMR_SEYMOUR_NODE* dec = task->node;
   assert(dec);
 
   CMR_GRAPH* graph = NULL;
@@ -1795,7 +1795,7 @@ CMR_ERROR CMRregularityTestGraphicness(CMR* cmr, DecompositionTask* task, Decomp
   assert(task);
   assert(queue);
 
-    CMR_SEYMOUR_NODE* dec = task->node;
+  CMR_SEYMOUR_NODE* dec = task->node;
   assert(dec);
 
 #if defined(CMR_DEBUG)
@@ -1815,10 +1815,12 @@ CMR_ERROR CMRregularityTestGraphicness(CMR* cmr, DecompositionTask* task, Decomp
   {
     CMR_SUBMAT* violatorSubmatrix = NULL;
     bool supportGraphic;
-
-    CMR_CALL( CMRnetworkTestTranspose(cmr, dec->transpose, &isGraphic, &supportGraphic, &dec->graph, &dec->graphForest,
-      &dec->graphCoforest, &dec->graphArcsReversed, &violatorSubmatrix, task->stats ? &task->stats->network : NULL,
-      remainingTime) );
+    CMR_ERROR error = CMRnetworkTestTranspose(cmr, dec->transpose, &isGraphic, &supportGraphic, &dec->graph,
+      &dec->graphForest, &dec->graphCoforest, &dec->graphArcsReversed, &violatorSubmatrix,
+      task->stats ? &task->stats->network : NULL, remainingTime);
+    if (error == CMR_ERROR_TIMEOUT)
+      return error;
+    CMR_CALL( error );
 
     if (violatorSubmatrix)
     {
@@ -1842,8 +1844,11 @@ CMR_ERROR CMRregularityTestGraphicness(CMR* cmr, DecompositionTask* task, Decomp
   }
   else
   {
-    CMR_CALL( CMRgraphicTestTranspose(cmr, dec->transpose, &isGraphic, &dec->graph, &dec->graphForest,
-      &dec->graphCoforest, NULL, task->stats ? &task->stats->graphic : NULL, remainingTime) );
+    CMR_ERROR error = CMRgraphicTestTranspose(cmr, dec->transpose, &isGraphic, &dec->graph, &dec->graphForest,
+      &dec->graphCoforest, NULL, task->stats ? &task->stats->graphic : NULL, remainingTime);
+    if (error == CMR_ERROR_TIMEOUT)
+      return error;
+    CMR_CALL( error );
   }
 
   CMRdbgMsg(8, "-> %s%s\n", isGraphic ? "" : "NOT ", dec->isTernary ? "network" : "graphic");
@@ -1875,7 +1880,7 @@ CMR_ERROR CMRregularityTestCographicness(CMR* cmr, DecompositionTask* task, Deco
   assert(task);
   assert(queue);
 
-    CMR_SEYMOUR_NODE* dec = task->node;
+  CMR_SEYMOUR_NODE* dec = task->node;
   assert(dec);
 
 #if defined(CMR_DEBUG)
@@ -1896,9 +1901,12 @@ CMR_ERROR CMRregularityTestCographicness(CMR* cmr, DecompositionTask* task, Deco
     CMR_SUBMAT* violatorSubmatrix = NULL;
     bool supportCographic;
 
-    CMR_CALL( CMRnetworkTestTranspose(cmr, dec->matrix, &isCographic, &supportCographic, &dec->cograph,
+    CMR_ERROR error = CMRnetworkTestTranspose(cmr, dec->matrix, &isCographic, &supportCographic, &dec->cograph,
       &dec->cographForest, &dec->cographCoforest, &dec->cographArcsReversed, &violatorSubmatrix,
-      task->stats ? &task->stats->network : NULL, remainingTime) );
+      task->stats ? &task->stats->network : NULL, remainingTime);
+    if (error == CMR_ERROR_TIMEOUT)
+      return error;
+    CMR_CALL( error );
 
     if (violatorSubmatrix)
     {
@@ -1920,8 +1928,11 @@ CMR_ERROR CMRregularityTestCographicness(CMR* cmr, DecompositionTask* task, Deco
   }
   else
   {
-    CMR_CALL( CMRgraphicTestTranspose(cmr, dec->matrix, &isCographic, &dec->cograph, &dec->cographForest,
-      &dec->cographCoforest, NULL, task->stats ? &task->stats->graphic : NULL, remainingTime) );
+    CMR_ERROR error = CMRgraphicTestTranspose(cmr, dec->matrix, &isCographic, &dec->cograph, &dec->cographForest,
+      &dec->cographCoforest, NULL, task->stats ? &task->stats->graphic : NULL, remainingTime);
+    if (error == CMR_ERROR_TIMEOUT)
+      return error;
+    CMR_CALL( error );
   }
 
   CMRdbgMsg(8, "-> %s%s\n", isCographic ? "" : "NOT ", dec->isTernary ? "conetwork" : "cographic");

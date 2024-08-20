@@ -721,6 +721,7 @@ CMR_ERROR CMRregularityNestedMinorSequenceSearchThreeSeparation(CMR* cmr, Decomp
   assert(task);
   assert(queue);
 
+  CMR_ERROR error = CMR_OKAY;
   CMR_SEYMOUR_NODE* dec = task->node;
   assert(dec);
   assert(dec->matrix);
@@ -811,7 +812,8 @@ CMR_ERROR CMRregularityNestedMinorSequenceSearchThreeSeparation(CMR* cmr, Decomp
   /* Enumerate all cardinality-at-most-half subsets of the element set of the first minor. */
   short beyondBits = 1 << (firstMinorNumRows + firstMinorNumColumns);
   CMR_SEPA* separation = NULL;
-  for (short bits = 0; bits < beyondBits && !separation; ++bits)
+  double remainingTime = task->timeLimit - (clock() - task->startClock) * 1.0 / CLOCKS_PER_SEC;
+  for (short bits = 0; bits < beyondBits && !separation && remainingTime > 0.0; ++bits)
   {
     partNumRows[0] = 0;
     partNumRows[1] = 0;
@@ -837,6 +839,8 @@ CMR_ERROR CMRregularityNestedMinorSequenceSearchThreeSeparation(CMR* cmr, Decomp
 
     CMR_CALL( extendMinorSeparation(cmr, dec->nestedMinorsMatrix, dec->nestedMinorsTranspose, rowData, columnData,
       partRows, partNumRows, partColumns, partNumColumns, queueMemory, &separation) );
+
+    remainingTime = task->timeLimit - (clock() - task->startClock) * 1.0 / CLOCKS_PER_SEC;
   }
 
   if (!separation)
@@ -844,7 +848,7 @@ CMR_ERROR CMRregularityNestedMinorSequenceSearchThreeSeparation(CMR* cmr, Decomp
     /* Enumerate all subsets of elements of later minors that have at most 1 element from the previous minor and
     * at least one new. */
 
-    for (size_t minor = firstMinor+1; minor <= firstNonCoGraphicMinor && !separation; ++minor)
+    for (size_t minor = firstMinor+1; minor <= firstNonCoGraphicMinor && !separation && remainingTime > 0; ++minor)
     {
 //       double remainingTime = timeLimit - (clock() - time) * 1.0 / CLOCKS_PER_SEC;
 //       if (remainingTime < 0)
@@ -936,6 +940,8 @@ CMR_ERROR CMRregularityNestedMinorSequenceSearchThreeSeparation(CMR* cmr, Decomp
           partNumColumns[1] = savedPartNumColumns[1];
         }
       }
+
+      remainingTime = task->timeLimit - (clock() - task->startClock) * 1.0 / CLOCKS_PER_SEC;
     }
   }
 
@@ -1000,7 +1006,7 @@ CMR_ERROR CMRregularityNestedMinorSequenceSearchThreeSeparation(CMR* cmr, Decomp
 
     CMR_CALL( CMRsepaFree(cmr, &originalSeparation) );
   }
-  else
+  else if (remainingTime > 0)
   {
     CMRdbgMsg(8, "No 3-separation found. Declaring node to be irregular.\n");
     // TODO: Add a dedicated unittest.
@@ -1009,6 +1015,10 @@ CMR_ERROR CMRregularityNestedMinorSequenceSearchThreeSeparation(CMR* cmr, Decomp
     /* Free the task. */
     CMR_CALL( CMRregularityTaskFree(cmr, &task) );
     queue->foundIrregularity = true;
+  }
+  else
+  {
+    error = CMR_ERROR_TIMEOUT;
   }
 
 cleanupSearch:
@@ -1032,5 +1042,5 @@ cleanupSequence:
   CMR_CALL( CMRfreeBlockArray(cmr, &dec->nestedMinorsRowsOriginal) );
   CMR_CALL( CMRfreeBlockArray(cmr, &dec->nestedMinorsColumnsOriginal) );
 
-  return CMR_OKAY;
+  return error;
 }

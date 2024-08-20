@@ -2158,57 +2158,77 @@ CMR_ERROR CMRregularityTaskRun(
   assert(task);
   assert(queue);
 
+  CMR_ERROR error;
+
   CMRdbgMsg(2, "Processing %p.\n", task);
 
   if (!task->node->testedTwoConnected)
   {
     CMRdbgMsg(4, "Searching for 1-separations.\n");
-    CMR_CALL( CMRregularitySearchOneSum(cmr, task, queue) );
+    error = CMRregularitySearchOneSum(cmr, task, queue);
+    if (error != CMR_OKAY && error != CMR_ERROR_TIMEOUT)
+      CMR_CALL( error );
   }
   else if (!task->node->graphicness
     && (task->params->directGraphicness || task->node->matrix->numRows <= 3 || task->node->matrix->numColumns <= 3))
   {
     CMRdbgMsg(4, "Testing directly for %s.\n", task->node->isTernary ? "being network" : "graphicness");
-    CMR_CALL( CMRregularityTestGraphicness(cmr, task, queue) );
+    error = CMRregularityTestGraphicness(cmr, task, queue);
+    if (error != CMR_OKAY && error != CMR_ERROR_TIMEOUT)
+      CMR_CALL( error );
   }
   else if (!task->node->cographicness
     && (task->params->directGraphicness || task->node->matrix->numRows <= 3 || task->node->matrix->numColumns <= 3))
   {
     CMRdbgMsg(4, "Testing directly for %s.\n", task->node->isTernary ? "being conetwork" : "cographicness");
-    CMR_CALL( CMRregularityTestCographicness(cmr, task, queue) );
+    error = CMRregularityTestCographicness(cmr, task, queue);
+    if (error != CMR_OKAY && error != CMR_ERROR_TIMEOUT)
+      CMR_CALL( error );
   }
   else if (!task->node->testedR10)
   {
     CMRdbgMsg(4, "Testing for being R_10.\n");
-    CMR_CALL( CMRregularityTestR10(cmr, task, queue) );
+    error = CMRregularityTestR10(cmr, task, queue);
+    if (error != CMR_OKAY && error != CMR_ERROR_TIMEOUT)
+      CMR_CALL( error );
   }
   else if (!task->node->testedSeriesParallel)
   {
     CMRdbgMsg(4, "Testing for series-parallel reductions.\n");
-    CMR_CALL( CMRregularityDecomposeSeriesParallel(cmr, task, queue) );
+    error = CMRregularityDecomposeSeriesParallel(cmr, task, queue);
+    if (error != CMR_OKAY && error != CMR_ERROR_TIMEOUT)
+      CMR_CALL( error );
   }
   else if (task->node->denseMatrix)
   {
     CMRdbgMsg(4, "Attempting to construct a sequence of nested minors.\n");
-    CMR_CALL( CMRregularityExtendNestedMinorSequence(cmr, task, queue) );
+    error = CMRregularityExtendNestedMinorSequence(cmr, task, queue);
+    if (error != CMR_OKAY && error != CMR_ERROR_TIMEOUT)
+      CMR_CALL( error );
   }
   else if (task->node->nestedMinorsMatrix && (task->node->nestedMinorsLastGraphic == SIZE_MAX))
   {
     CMRdbgMsg(4, "Testing along the sequence for %s.\n", task->node->isTernary ? "being network" : "graphicness");
-    CMR_CALL( CMRregularityNestedMinorSequenceGraphicness(cmr, task, queue) );
+    error = CMRregularityNestedMinorSequenceGraphicness(cmr, task, queue);
+    if (error != CMR_OKAY && error != CMR_ERROR_TIMEOUT)
+      CMR_CALL( error );
   }
   else if (task->node->nestedMinorsMatrix && (task->node->nestedMinorsLastCographic == SIZE_MAX))
   {
     CMRdbgMsg(4, "Testing along the sequence for %s.\n", task->node->isTernary ? "being conetwork" : "cographicness");
-    CMR_CALL( CMRregularityNestedMinorSequenceCographicness(cmr, task, queue) );
+    error = CMRregularityNestedMinorSequenceCographicness(cmr, task, queue);
+    if (error != CMR_OKAY && error != CMR_ERROR_TIMEOUT)
+      CMR_CALL( error );
   }
   else
   {
     CMRdbgMsg(4, "Searching for 3-separations along the sequence.\n");
-    CMR_CALL( CMRregularityNestedMinorSequenceSearchThreeSeparation(cmr, task, queue) );
+    error = CMRregularityNestedMinorSequenceSearchThreeSeparation(cmr, task, queue);
+    if (error != CMR_OKAY && error != CMR_ERROR_TIMEOUT)
+      CMR_CALL( error );
   }
 
-  return CMR_OKAY;
+  return error;
 }
 
 CMR_ERROR CMRseymourDecompose(CMR* cmr, CMR_CHRMAT* matrix, bool ternary, CMR_SEYMOUR_NODE** proot,
@@ -2227,7 +2247,14 @@ CMR_ERROR CMRseymourDecompose(CMR* cmr, CMR_CHRMAT* matrix, bool ternary, CMR_SE
 
   CMR_CALL( CMRseymourCreate(cmr, proot, ternary, matrix) );
   assert(*proot);
-  CMR_CALL( CMRregularityCompleteDecomposition(cmr, *proot, params, stats, timeLimit) );
+  CMR_ERROR error = CMRregularityCompleteDecomposition(cmr, *proot, params, stats, timeLimit);
+  if (error == CMR_ERROR_TIMEOUT)
+  {
+    CMR_CALL( CMRseymourRelease(cmr, proot) );
+    *proot = NULL;
+    return error;
+  }
+  CMR_CALL( error );
 
   return CMR_OKAY;
 }
@@ -2266,9 +2293,14 @@ CMR_ERROR CMRregularityCompleteDecomposition(CMR* cmr, CMR_SEYMOUR_NODE* subtree
   CMR_CALL( CMRregularityTaskCreateRoot(cmr, subtree, &decTask, params, stats, time, timeLimit) );
   CMRregularityQueueAdd(queue, decTask);
 
+  CMRdbgMsg(2, "Main decomposition task is %p\n", decTask);
+
+  CMR_ERROR error = CMR_OKAY;
   while (!CMRregularityQueueEmpty(queue))
   {
     DecompositionTask* task = CMRregularityQueueRemove(queue);
+
+    CMRdbgMsg(2, "Dequeuing task %p\n", task);
 
     if (params->stopWhenIrregular && queue->foundIrregularity)
     {
@@ -2295,7 +2327,14 @@ CMR_ERROR CMRregularityCompleteDecomposition(CMR* cmr, CMR_SEYMOUR_NODE* subtree
       continue;
     }
 
-    CMR_CALL( CMRregularityTaskRun(cmr, task, queue) );
+    error = CMRregularityTaskRun(cmr, task, queue);
+    if (error == CMR_ERROR_TIMEOUT)
+    {
+      CMRdbgMsg(2, "Timeout -> removing task %p.\n", task);
+      CMR_CALL( CMRregularityTaskFree(cmr, &task) );
+      break;
+    }
+    CMR_CALL( error );
   }
 
   CMR_CALL( CMRregularityQueueFree(cmr, &queue) );
@@ -2305,7 +2344,7 @@ CMR_ERROR CMRregularityCompleteDecomposition(CMR* cmr, CMR_SEYMOUR_NODE* subtree
   if (stats)
     stats->totalTime += (clock() - time) * 1.0 / CLOCKS_PER_SEC;
 
-  return CMR_OKAY;
+  return error;
 }
 
 CMR_ERROR CMRregularityRefineDecomposition(CMR* cmr, size_t numNodes, CMR_SEYMOUR_NODE** nodes,

@@ -702,13 +702,14 @@ CMR_ERROR CMRregularityExtendNestedMinorSequence(CMR* cmr, DecompositionTask* ta
   CMR_CALL( initializeHashing(cmr, node->denseMatrix, columnData, columnHashtable, numColumns, processedRows,
     numProcessedRows, hashVector, false) );
 
-  CMR_ERROR result = CMR_OKAY;
+  CMR_ERROR error = CMR_OKAY;
   size_t elementTimeFactor = (numRows + numColumns) / 100 + 1;
   while (numProcessedRows < numRows || numProcessedColumns < numColumns)
   {
     if (((numProcessedRows + numProcessedColumns) % elementTimeFactor == 0)
       && (clock() - task->startClock) * 1.0 / CLOCKS_PER_SEC > task->timeLimit)
     {
+      error = CMR_ERROR_TIMEOUT;
       goto cleanup;
     }
 
@@ -1044,7 +1045,7 @@ cleanup:
   CMR_CALL( CMRfreeStackArray(cmr, &rowData) );
   CMR_CALL( CMRfreeStackArray(cmr, &hashVector) );
 
-  return result;
+  return error;
 }
 
 CMR_ERROR CMRregularityInitNestedMinorSequence(CMR* cmr, DecompositionTask* task, CMR_SUBMAT* wheelSubmatrix)

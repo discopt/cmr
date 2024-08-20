@@ -29,6 +29,7 @@ CMR_ERROR CMRtuStatsInit(CMR_TU_STATS* stats)
   assert(stats);
 
   CMR_CALL( CMRseymourStatsInit(&stats->seymour) );
+  CMR_CALL( CMRcamionStatsInit(&stats->camion) );
 
   stats->enumerationRowSubsets = 0;
   stats->enumerationColumnSubsets = 0;
@@ -58,9 +59,9 @@ CMR_ERROR CMRtuStatsPrint(FILE* stream, CMR_TU_STATS* stats, const char* prefix)
   snprintf(subPrefix, 256, "%scamion ", prefix);
   CMR_CALL( CMRcamionStatsPrint(stream, &stats->camion, subPrefix) );
 
-  fprintf(stream, "%senumeration row subsets: %lu\n", prefix, (unsigned long)stats->enumerationRowSubsets);
-  fprintf(stream, "%senumeration column subsets: %lu\n", prefix, (unsigned long)stats->enumerationColumnSubsets);
-  fprintf(stream, "%senumeration time: %f\n", prefix, stats->enumerationTime);
+  fprintf(stream, "%seulerian enumeration row subsets: %lu\n", prefix, (unsigned long)stats->enumerationRowSubsets);
+  fprintf(stream, "%seulerian enumeration column subsets: %lu\n", prefix, (unsigned long)stats->enumerationColumnSubsets);
+  fprintf(stream, "%seulerian enumeration time: %f\n", prefix, stats->enumerationTime);
 
   fprintf(stream, "%spartition row subsets: %lu\n", prefix, (unsigned long)stats->partitionRowSubsets);
   fprintf(stream, "%spartition column subsets: %lu\n", prefix, (unsigned long)stats->partitionColumnSubsets);
@@ -408,6 +409,7 @@ CMR_ERROR tuEulerian(
     CMRdbgMsg(8, "Considering submatrices of size %zux%zu.\n", enumeration.cardinality, enumeration.cardinality);
     CMRassertStackConsistency(cmr);
     CMR_CALL( tuEulerianRows(&enumeration, 0) );
+    stats->enumerationTime += (clock() - enumeration.startClock) * 1.0 / CLOCKS_PER_SEC;
     if (!*pisTotallyUnimodular || enumeration.timeLimit <= 0)
       break;
   }
@@ -532,7 +534,7 @@ int tuPartitionSubset(
   }
   else
   {
-    if (((clock() * 1.0 / CLOCKS_PER_SEC) - startClock) > timeLimit)
+    if ((clock() - startClock) * 1.0 / CLOCKS_PER_SEC > timeLimit)
       return -1;
 
 #if defined(CMR_DEBUG)
@@ -655,8 +657,15 @@ CMR_ERROR CMRtuTest(CMR* cmr, CMR_CHRMAT* matrix, bool* pisTotallyUnimodular, CM
     double remainingTime = timeLimit - ((clock() - totalClock) * 1.0 / CLOCKS_PER_SEC);
 
     CMR_SEYMOUR_NODE* root = NULL;
-    CMR_CALL( CMRseymourDecompose(cmr, matrix, params->ternary, &root, &(params->seymour),
-      stats ? &stats->seymour : NULL, remainingTime) );
+    CMR_ERROR error = CMRseymourDecompose(cmr, matrix, params->ternary, &root, &(params->seymour),
+      stats ? &stats->seymour : NULL, remainingTime);
+    if (error == CMR_ERROR_TIMEOUT)
+    {
+      assert( root == NULL);
+      return error;
+    }
+    CMR_CALL( error );
+
     int8_t regularity = CMRseymourRegularity(root);
     if (regularity != 0)
       *pisTotallyUnimodular = regularity > 0;
@@ -684,11 +693,17 @@ CMR_ERROR CMRtuTest(CMR* cmr, CMR_CHRMAT* matrix, bool* pisTotallyUnimodular, CM
   }
   else if (params->algorithm == CMR_TU_ALGORITHM_EULERIAN)
   {
-    CMR_CALL( tuEulerian(cmr, matrix, false, pisTotallyUnimodular, psubmatrix, stats, remainingTime) );
+    CMR_ERROR error = tuEulerian(cmr, matrix, false, pisTotallyUnimodular, psubmatrix, stats, remainingTime);
+    if (error == CMR_ERROR_TIMEOUT)
+      return error;
+    CMR_CALL( error );
   }
   else if (params->algorithm == CMR_TU_ALGORITHM_PARTITION)
   {
-    CMR_CALL( tuPartition(cmr, matrix, false, pisTotallyUnimodular, stats, remainingTime) );
+    CMR_ERROR error = tuPartition(cmr, matrix, false, pisTotallyUnimodular, stats, remainingTime);
+    if (error == CMR_ERROR_TIMEOUT)
+      return error;
+    CMR_CALL( error );
   }
   else
   {

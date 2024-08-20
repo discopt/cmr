@@ -5426,11 +5426,14 @@ CMR_ERROR CMRgraphicTestTranspose(CMR* cmr, CMR_CHRMAT* matrix, bool* pisCograph
   if (dec)
     CMR_CALL( decFree(&dec) );
 
+  CMR_ERROR error = CMR_OKAY;
   if (!*pisCographic && psubmatrix)
   {
     /* Find submatrix. */
     double remainingTime = timeLimit - (clock() - time) * 1.0 / CLOCKS_PER_SEC;
-    CMR_CALL( CMRtestHereditaryPropertySimple(cmr, matrix, cographicnessTest, NULL, psubmatrix, remainingTime) );
+    error = CMRtestHereditaryPropertySimple(cmr, matrix, cographicnessTest, NULL, psubmatrix, remainingTime);
+    if (error != CMR_ERROR_TIMEOUT && error != CMR_OKAY)
+      CMR_CALL( error );
   }
 
   if (stats)
@@ -5439,7 +5442,7 @@ CMR_ERROR CMRgraphicTestTranspose(CMR* cmr, CMR_CHRMAT* matrix, bool* pisCograph
     stats->totalTime += (clock() - time) * 1.0 / CLOCKS_PER_SEC;
   }
 
-  return CMR_OKAY;
+  return error;
 }
 
 CMR_ERROR CMRtestBinaryGraphicColumnSubmatrixGreedy(CMR* cmr, CMR_CHRMAT* transpose, size_t* orderedColumns,

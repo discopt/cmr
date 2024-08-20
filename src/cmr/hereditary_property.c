@@ -81,7 +81,17 @@ CMR_ERROR CMRtestHereditaryPropertySimple(CMR* cmr, CMR_CHRMAT* matrix, Heredita
     }
 
     CMRdbgMsg(2, "\n!!! Hereditary property test queries the test oracle!!!\n\n");
-    CMR_CALL( testFunction(cmr, candidateMatrix, testData, &hasProperty, &submatrix, remainingTime) );
+    CMR_ERROR error = testFunction(cmr, candidateMatrix, testData, &hasProperty, &submatrix, remainingTime);
+    if (error == CMR_ERROR_TIMEOUT)
+    {
+      CMR_CALL( CMRchrmatFree(cmr, &candidateMatrix) );
+      CMR_CALL( CMRchrmatFree(cmr, &current) );
+      CMR_CALL( CMRfreeStackArray(cmr, &candidates) );
+      CMR_CALL( CMRfreeStackArray(cmr, &essentialColumns) );
+      CMR_CALL( CMRfreeStackArray(cmr, &essentialRows) );
+      return CMR_ERROR_TIMEOUT;
+    }
+    CMR_CALL(error);
 
     CMRdbgMsg(2, "\n!!! Property %s present.\n\n", hasProperty ? "IS" : "is NOT");
 
