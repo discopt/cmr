@@ -1572,6 +1572,7 @@ CMR_ERROR CMRintmatCreateFromDenseStream(CMR* cmr, FILE* stream, CMR_INTMAT** pr
       if (numRead < 1)
       {
         CMRraiseErrorMessage(cmr, "Could not read matrix entry in row %zu and column %zu.", row, column);
+        CMRintmatFree(cmr, presult);
         return CMR_ERROR_INPUT;
       }
 
@@ -1644,6 +1645,7 @@ CMR_ERROR CMRchrmatCreateFromDenseStream(CMR* cmr, FILE* stream, CMR_CHRMAT** pr
       if (numRead < 1)
       {
         CMRraiseErrorMessage(cmr, "Could not read matrix entry in row %zu and column %zu.", row, column);
+        CMRchrmatFree(cmr, presult);
         return CMR_ERROR_INPUT;
       }
 
@@ -2710,6 +2712,36 @@ CMR_ERROR CMRintmatToChr(CMR* cmr, CMR_INTMAT* matrix, CMR_CHRMAT** presult)
     int x = matrix->entryValues[e];
     if (x <= CHAR_MAX && x >= CHAR_MIN)
       result->entryValues[e] = x;
+    else
+      return CMR_ERROR_OVERFLOW;
+  }
+
+  return CMR_OKAY;
+}
+
+CMR_ERROR CMRdblmatToChr(CMR* cmr, CMR_DBLMAT* matrix, double epsilon, CMR_CHRMAT** presult)
+{
+  assert(cmr);
+  CMRdbgConsistencyAssert( CMRdblmatConsistency(matrix) );
+  assert(presult);
+
+  CMR_CALL( CMRchrmatCreate(cmr, presult, matrix->numRows, matrix->numColumns, matrix->numNonzeros) );
+  CMR_CHRMAT* result = *presult;
+
+  for (size_t row = 0; row <= matrix->numRows; ++row)
+    result->rowSlice[row] = matrix->rowSlice[row];
+
+  for (size_t e = 0; e < matrix->numNonzeros; ++e)
+  {
+    result->entryColumns[e] = matrix->entryColumns[e];
+    double x = matrix->entryValues[e];
+    double rounded = round(x);
+    double error = fabs(x - rounded);
+    if (error > epsilon)
+      return CMR_ERROR_INPUT;
+    char y = (char)x;
+    if (y <= CHAR_MAX && y >= CHAR_MIN)
+      result->entryValues[e] = y;
     else
       return CMR_ERROR_OVERFLOW;
   }

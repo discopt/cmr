@@ -1046,6 +1046,20 @@ CMR_ERROR CMRintmatToChr(
 );
 
 /**
+ * \brief Converts a double matrix to a char matrix.
+ *
+ * \returns \ref CMR_ERROR_OVERFLOW in case of overflow.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRdblmatToChr(
+  CMR* cmr,             /**< \ref CMR environment. */
+  CMR_DBLMAT* matrix,   /**< Input matrix. */
+  double epsilon,       /**< Expected accuracy. */
+  CMR_CHRMAT** presult  /**< Pointer for storing the output matrix. */
+);
+
+/**
  * \brief Finds a specific entry of a double matrix.
  * 
  * Searches for the entry at (\p row, \p column) using binary search.

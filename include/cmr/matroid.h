@@ -26,7 +26,7 @@ extern "C" {
  */
 
 /**
- * \brief Applie a pivot to \p matrix and returns the resulting matrix in \p *presult.
+ * \brief Apply a pivot to \p matrix and returns the resulting matrix in \p *presult.
  *
  * Calculations are done over the binary field.
  */
