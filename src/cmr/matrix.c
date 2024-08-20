@@ -1440,10 +1440,10 @@ CMR_ERROR CMRchrmatCreateFromSparseFile(CMR* cmr, const char* fileName, const ch
   }
 
   CMR_ERROR error = CMRchrmatCreateFromSparseStream(cmr, inputFile, presult);
-  if (!error)
+  if (error == CMR_OKAY)
   {
     /* Attempt to read another token. */
-    char token[16+4];
+    char token[16+4] = "";
     size_t numRead = fscanf(inputFile, "%16s", token);
     if (numRead > 0 && strlen(token))
     {
@@ -2739,7 +2739,7 @@ CMR_ERROR CMRdblmatToChr(CMR* cmr, CMR_DBLMAT* matrix, double epsilon, CMR_CHRMA
     double error = fabs(x - rounded);
     if (error > epsilon)
       return CMR_ERROR_INPUT;
-    char y = (char)x;
+    long y = (long)x;
     if (y <= CHAR_MAX && y >= CHAR_MIN)
       result->entryValues[e] = y;
     else

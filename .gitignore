@@ -2,3 +2,5 @@ build*
 *.kdev4
 *.csv
 *.ods
+experiments/network/
+experiments/oddcycle01/
