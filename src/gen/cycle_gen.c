@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+#include <float.h>
 #include <sys/time.h>
 #include <stdint.h>
 #include <math.h>
@@ -32,52 +33,66 @@ size_t randRange(size_t first, size_t beyond)
 
 int printUsage(const char* program)
 {
-  fprintf(stderr, "Usage: %s [OPTIONS] ROWS COLS p\n\n", program);
-  fputs("Creates a random ROWS-by-COLS 0/1 matrix in which each entry is 1 with probability p.\n", stderr);
+  fprintf(stderr, "Usage: %s [OPTIONS] ORDER\n\n", program);
+  fputs("Creates an ORDER-by-ORDER cycle matrix.\n", stderr);
   fputs("Options:\n", stderr);
+  fputs("  -01        In each column with two 0s in rows 1 and 2, replace them by 1s; default: off.\n", stderr);
   fputs("  -o FORMAT  Format of output FILE; default: `dense'.\n", stderr);
   fputs("Formats for matrices: dense, sparse\n", stderr);
   return EXIT_FAILURE;
 }
 
+int compare(const void* pa, const void* pb)
+{
+  size_t a = *((size_t*)(pa));
+  size_t b = *((size_t*)(pb));
+  return a < b ? -1 : (a > b);
+}
 
-CMR_ERROR genMatrixRandom(
-  size_t numRows,         /**< Number of rows of base matrix. */
-  size_t numColumns,      /**< Number of columns of base matrix. */
-  double probability1,    /**< Probability for a 1-entry. */
+CMR_ERROR genMatrixCycle(
+  size_t numRowsColumns,  /**< Number of rows and columns of matrix. */
+  bool change01,          /**< In each column with two 0s in rows 1 and 2, replace them by 1s. */
   FileFormat outputFormat /**< Output file format. */
 )
 {
+  clock_t startTime = clock();
   CMR* cmr = NULL;
   CMR_CALL( CMRcreateEnvironment(&cmr) );
-  
-  size_t estimatedNumNonzeros = 1.1 * numRows * numColumns * probability1 + 1024;
 
   CMR_CHRMAT* matrix = NULL;
-  CMR_CALL( CMRchrmatCreate(cmr, &matrix, numRows, numColumns, estimatedNumNonzeros) );
-  size_t entry = 0;
-  for (size_t row = 0; row < numRows; ++row)
+  CMRchrmatCreate(cmr, &matrix, numRowsColumns, numRowsColumns, 4 * numRowsColumns);
+
+  /* Create the nonzeros. */
+  matrix->numNonzeros = 0;
+  for (size_t row = 0; row < numRowsColumns; ++row)
   {
-    matrix->rowSlice[row] = entry;
-    for (size_t column = 0; column < numColumns; ++column)
+    matrix->rowSlice[row] = matrix->numNonzeros;
+    if (row + 1 == numRowsColumns)
     {
-      bool isNonzero = (rand() * 1.0 / RAND_MAX) < probability1;
-      if (isNonzero)
+      matrix->entryValues[matrix->numNonzeros] = 1;
+      matrix->entryColumns[matrix->numNonzeros++] = 0;
+    }
+    matrix->entryValues[matrix->numNonzeros] = 1;
+    matrix->entryColumns[matrix->numNonzeros++] = row;
+    if (row + 1 < numRowsColumns)
+    {
+      matrix->entryValues[matrix->numNonzeros] = 1;
+      matrix->entryColumns[matrix->numNonzeros++] = row + 1;
+    }
+    if (change01 && row < 2)
+    {
+      for (size_t c = 3; c < numRowsColumns; ++c)
       {
-        if (entry == matrix->numNonzeros)
-        {
-          CMR_CALL( CMRreallocBlockArray(cmr, &matrix->entryColumns, 2*matrix->numNonzeros) );
-          CMR_CALL( CMRreallocBlockArray(cmr, &matrix->entryValues, 2*matrix->numNonzeros) );
-          matrix->numNonzeros *= 2;
-        }
-        matrix->entryColumns[entry] = column;
-        matrix->entryValues[entry] = 1;
-        ++entry;
+        matrix->entryValues[matrix->numNonzeros] = 1;
+        matrix->entryColumns[matrix->numNonzeros++] = c;
       }
     }
   }
-  matrix->rowSlice[numRows] = entry;
-  matrix->numNonzeros = entry;
+  matrix->rowSlice[numRowsColumns] = matrix->numNonzeros;
+
+  double generationTime = (clock() - startTime) * 1.0 / CLOCKS_PER_SEC;
+  fprintf(stderr, "Generated a %zux%zu matrix with %zu nonzeros in %f seconds.\n", numRowsColumns, numRowsColumns,
+    matrix->numNonzeros, generationTime);
 
   /* Print matrix. */
   if (outputFormat == FILEFORMAT_MATRIX_DENSE)
@@ -100,10 +115,8 @@ int main(int argc, char** argv)
   srand(curTime.tv_usec);
 
   FileFormat outputFormat = FILEFORMAT_UNDEFINED;
-  size_t numRows = SIZE_MAX;
-  size_t numColumns = SIZE_MAX;
-  double probability1 = 0.5;
-  bool readProbability1 = false;
+  size_t numRowsColumns = SIZE_MAX;
+  bool change01 = false;
   for (int a = 1; a < argc; ++a)
   {
     if (!strcmp(argv[a], "-h"))
@@ -111,6 +124,8 @@ int main(int argc, char** argv)
       printUsage(argv[0]);
       return EXIT_SUCCESS;
     }
+    else if (!strcmp(argv[a], "-01"))
+      change01 = true;
     else if (!strcmp(argv[a], "-o") && (a+1 < argc))
     {
       if (!strcmp(argv[a+1], "dense"))
@@ -124,31 +139,10 @@ int main(int argc, char** argv)
       }
       ++a;
     }
-    else if (numRows == SIZE_MAX)
+    else if (numRowsColumns == SIZE_MAX)
     {
       char* p = NULL;
-      numRows = strtoull(argv[a], &p, 10);
-      if (*p != '\0')
-      {
-        printUsage(argv[0]);
-        return EXIT_FAILURE;
-      }
-    }
-    else if (numColumns == SIZE_MAX)
-    {
-      char* p = NULL;
-      numColumns = strtoull(argv[a], &p, 10);
-      if (*p != '\0')
-      {
-        printUsage(argv[0]);
-        return EXIT_FAILURE;
-      }
-    }
-    else if (!readProbability1)
-    {
-      char* p = NULL;
-      probability1 = strtod(argv[a], &p);
-      readProbability1 = true;
+      numRowsColumns = strtoull(argv[a], &p, 10);
       if (*p != '\0')
       {
         printUsage(argv[0]);
@@ -157,40 +151,25 @@ int main(int argc, char** argv)
     }
     else
     {
-      printf("Error: more than two size indicators specified: %zu %zu %s\n\n", numRows, numColumns, argv[a]);
+      printf("Error: more than one size indicators specified: %zu %s\n\n", numRowsColumns, argv[a]);
       return printUsage(argv[0]);
     }
   }
 
-  if (numRows == SIZE_MAX)
+  if (numRowsColumns == SIZE_MAX)
   {
     puts("Error: no size indicator specified.\n");
     return printUsage(argv[0]);
   }
-  else if (numColumns == SIZE_MAX)
+  else if (numRowsColumns <= 0)
   {
-    puts("Error: only one size indicator specified.\n");
-    return printUsage(argv[0]);
-  }
-  else if (numRows <= 0 || numColumns <= 0)
-  {
-    puts("Error: matrix must have at least 1 row and 1 column.\n");
-    return printUsage(argv[0]);
-  }
-  else if (!readProbability1)
-  {
-    puts("Error: no probability specified.\n");
-    return printUsage(argv[0]);
-  }
-  else if (probability1 < 0.0 || readProbability1 > 1.0)
-  {
-    puts("Error: probability must be in [0,1].\n");
+    puts("Error: matrix must have at least 1 row/column.\n");
     return printUsage(argv[0]);
   }
   if (outputFormat == FILEFORMAT_UNDEFINED)
     outputFormat = FILEFORMAT_MATRIX_DENSE;
 
-  CMR_ERROR error = genMatrixRandom(numRows, numColumns, probability1, outputFormat);
+  CMR_ERROR error = genMatrixCycle(numRowsColumns, change01, outputFormat);
   switch (error)
   {
   case CMR_ERROR_INPUT:
@@ -203,3 +182,4 @@ int main(int argc, char** argv)
     return EXIT_SUCCESS;
   }
 }
+

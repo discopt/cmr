@@ -38,7 +38,7 @@ int printUsage(const char* program)
   fputs("Options:\n", stderr);
   fputs("  -b         Restrict to binary network matrices based on arborescences.\n", stderr);
   fputs("  -B NUM     Benchmarks the recognition algorithm for the created matrix with NUM repetitions.\n", stderr);
-  fputs("  -o FORMAT  Format of output FILE; default: `dense'.", stderr);
+  fputs("  -o FORMAT  Format of output FILE; default: `dense'.\n", stderr);
   fputs("Formats for matrices: dense, sparse\n", stderr);
   return EXIT_FAILURE;
 }

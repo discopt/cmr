@@ -193,6 +193,16 @@ target_link_libraries(cmr_k_ary
 set_target_properties(cmr_k_ary PROPERTIES OUTPUT_NAME cmr-k-ary)
 
 if(GENERATORS)
+  # Target for cmr-generate-cycle
+  add_executable(cmr_generate_cycle
+    src/gen/cycle_gen.c)
+  target_link_libraries(cmr_generate_cycle
+    PRIVATE
+      CMR::cmr
+      m
+  )
+  set_target_properties(cmr_generate_cycle PROPERTIES OUTPUT_NAME cmr-generate-cycle)
+
   # Target for cmr-generate-series-parallel
   add_executable(cmr_generate_series_parallel
     src/gen/series_parallel_gen.c)
@@ -243,8 +253,8 @@ if(GENERATORS)
   )
   set_target_properties(cmr_perturb_random PROPERTIES OUTPUT_NAME cmr-perturb-random)
 
-  set(GENERATOR_EXECUTABLES cmr_generate_series_parallel cmr_generate_graphic cmr_generate_network cmr_generate_random
-    cmr_perturb_random)
+  set(GENERATOR_EXECUTABLES cmr_generate_cycle cmr_generate_series_parallel cmr_generate_graphic cmr_generate_network
+    cmr_generate_random cmr_perturb_random)
 
   find_package(GUROBI)
   if(GUROBI_FOUND)

@@ -38,7 +38,7 @@ int printUsage(const char* program)
   fputs("               row/column has at least SPARSITY 1's in expectation.\n", stderr);
   fputs("  -r           Randomize matrix by permuting rows and columns afterwards (default: false).\n", stderr);
   fputs("  -b NUM       Benchmarks the recognition algorithm for the created matrix with NUM repetitions.\n", stderr);
-  fputs("Notes:", stderr);
+  fputs("Notes:\n", stderr);
   fputs("  -p and -s cannot be specified at the same time.\n", stderr);
   return EXIT_FAILURE;
 }

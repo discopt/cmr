@@ -33,12 +33,12 @@ size_t randRange(size_t first, size_t beyond)
 
 int printUsage(const char* program)
 {
-  printf("Usage: %s [OPTIONS] ROWS COLS\n\n", program);
-  puts("Creates a random ROWS-by-COLS 0/1 graphic matrix.\n");
-  puts("Options:\n");
-  puts("  -B NUM     Benchmarks the recognition algorithm for the created matrix with NUM repetitions.\n");
-  puts("  -o FORMAT  Format of output FILE; default: `dense'.");
-  puts("Formats for matrices: dense, sparse");
+  fprintf(stderr, "Usage: %s [OPTIONS] ROWS COLS\n\n", program);
+  fputs("Creates a random ROWS-by-COLS 0/1 graphic matrix.\n", stderr);
+  fputs("Options:\n", stderr);
+  fputs("  -B NUM     Benchmarks the recognition algorithm for the created matrix with NUM repetitions.\n", stderr);
+  fputs("  -o FORMAT  Format of output FILE; default: `dense'.\n", stderr);
+  fputs("Formats for matrices: dense, sparse\n", stderr);
   return EXIT_FAILURE;
 }
 
