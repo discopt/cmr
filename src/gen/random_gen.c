@@ -80,6 +80,9 @@ CMR_ERROR genMatrixRandom(
   matrix->numNonzeros = entry;
 
   /* Print matrix. */
+  fprintf(stderr, "Writing random matrix to stdout in %s format.\n",
+    outputFormat == FILEFORMAT_MATRIX_DENSE ? "dense" : "sparse");
+
   if (outputFormat == FILEFORMAT_MATRIX_DENSE)
     CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', false) );
   else if (outputFormat == FILEFORMAT_MATRIX_SPARSE)
