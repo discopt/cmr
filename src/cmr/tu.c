@@ -1,4 +1,4 @@
-// #define CMR_DEBUG /* Uncomment to debug this file. */
+#define CMR_DEBUG /* Uncomment to debug this file. */
 
 #include <cmr/tu.h>
 
@@ -409,7 +409,8 @@ CMR_ERROR tuEulerian(
     CMRdbgMsg(8, "Considering submatrices of size %zux%zu.\n", enumeration.cardinality, enumeration.cardinality);
     CMRassertStackConsistency(cmr);
     CMR_CALL( tuEulerianRows(&enumeration, 0) );
-    stats->enumerationTime += (clock() - enumeration.startClock) * 1.0 / CLOCKS_PER_SEC;
+    if (stats)
+      stats->enumerationTime += (clock() - enumeration.startClock) * 1.0 / CLOCKS_PER_SEC;
     if (!*pisTotallyUnimodular || enumeration.timeLimit <= 0)
       break;
   }
