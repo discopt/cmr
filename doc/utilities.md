@@ -23,7 +23,8 @@ copies the [matrix](\ref file-formats-matrix) from file `IN-MAT` to file `OUT-MA
   - `-c`        Compute the support matrix instead of copying.
   - `-C`        Compute the signed support matrix instead of copying.
   - `-r`        Randomize the output matrix by randomly permuting rows/columns.
-  - `-R`        Randomize the output matrix by performing random pivots.
+  - `-R2 NUM`   Randomize the output matrix by performing NUM binary random pivots.
+  - `-R3 NUM`   Randomize the output matrix by performing NUM ternary random pivots.
   - `-d`        Use double arithmetic instead of integers.
 
 If `IN-MAT` or `IN-SUB` is `-` then the input matrix (resp. submatrix) is read from stdin.

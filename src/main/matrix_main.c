@@ -587,8 +587,8 @@ int printUsage(const char* program)
   fputs("  -c        Compute the support matrix instead of copying.\n", stderr);
   fputs("  -C        Compute the signed support matrix instead of copying.\n", stderr);
   fputs("  -r        Randomize the output matrix by randomly permuting rows/columns.\n", stderr);
-  fputs("  -R2       Randomize the output matrix by performing random binary pivots.\n", stderr);
-  fputs("  -R3       Randomize the output matrix by performing random ternary pivots.\n", stderr);
+  fputs("  -R2 NUM   Randomize the output matrix by performing NUM random binary pivots.\n", stderr);
+  fputs("  -R3 NUM   Randomize the output matrix by performing NUM random ternary pivots.\n", stderr);
   fputs("  -d        Use double arithmetic instead of integers.\n\n", stderr);
   fputs("If IN-MAT is `-' then the input matrix is read from stdin.\n", stderr);
   fputs("If OUT-MAT is `-' then the output matrix is written to stdout.\n", stderr);
