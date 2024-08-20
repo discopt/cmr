@@ -21,7 +21,7 @@ CMR_ERROR computePivots(CMR* cmr, CMR_CHRMAT* matrix, size_t numPivots, size_t* 
   assert(!numPivots || pivotColumns);
 
 #if defined(CMR_DEBUG)
-  CMRdbgMsg(2, "Applying %zu pivots to a %zux%zu matrix.\n", numPivots, matrix->numRows, matrix->numColumns);
+  CMRdbgMsg(2, "Applying %zu pivot(s) to a %zux%zu matrix.\n", numPivots, matrix->numRows, matrix->numColumns);
   CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
   fflush(stdout);
 #endif /* CMR_DEBUG */
@@ -31,6 +31,8 @@ CMR_ERROR computePivots(CMR* cmr, CMR_CHRMAT* matrix, size_t numPivots, size_t* 
   size_t memNonzeros = 2 * matrix->numNonzeros + 256;
   CMR_CALL( CMRlistmat8Alloc(cmr, matrix->numRows, matrix->numColumns, memNonzeros, &listmat) );
   CMR_CALL( CMRlistmat8InitializeFromChrMatrix(cmr, listmat, matrix) );
+
+  CMRdbgMsg(2, "#nonzeros = %zu, mem=%zu\n", matrix->numNonzeros, memNonzeros);
 
   size_t* affectedRows = NULL;
   size_t numAffectedRows;
@@ -52,6 +54,8 @@ CMR_ERROR computePivots(CMR* cmr, CMR_CHRMAT* matrix, size_t numPivots, size_t* 
   {
     size_t pivotRow = pivotRows[pivot];
     size_t pivotColumn = pivotColumns[pivot];
+
+    CMRdbgMsg(4, "Applying pivot at %zu,%zu\n", pivotRow, pivotColumn);
 
     /* Compute the pivot value and all columns that are affected. */
     numAffectedColumns = 0;
@@ -83,6 +87,7 @@ CMR_ERROR computePivots(CMR* cmr, CMR_CHRMAT* matrix, size_t numPivots, size_t* 
     {
       if (denseColumn[nz->row] == INT_MIN)
       {
+        CMRdbgMsg(6, "Row %zu is affected.\n", nz->row);
         affectedRows[numAffectedRows++] = nz->row;
         denseColumn[nz->row] = 0;
       }
@@ -113,6 +118,8 @@ CMR_ERROR computePivots(CMR* cmr, CMR_CHRMAT* matrix, size_t numPivots, size_t* 
           continue;
         if (columnValue < 0)
           columnValue += characteristic;
+
+        CMRdbgMsg(8, "#list nonzeros = %zu, mem list nonzeros = %zu\n", listmat->numNonzeros, listmat->memNonzeros);
 
         CMR_CALL( CMRlistmat8Insert(cmr, listmat, row, column, -pivotValue * rowValue * columnValue, 0, NULL) );
       }

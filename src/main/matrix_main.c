@@ -8,6 +8,9 @@
 #include <cmr/matrix.h>
 #include <cmr/matroid.h>
 
+// #define RANDOM_SEED 0 /* Define 0 for logging the seed to stderr, and something else for the actual seed. */
+// #define RANDOM_SEED 133974
+
 typedef enum
 {
   TASK_COPY = 0,
@@ -709,7 +712,14 @@ int main(int argc, char** argv)
   {
     struct timeval curTime;
     gettimeofday(&curTime, NULL);
-    srand(curTime.tv_usec);
+    unsigned int seed = curTime.tv_usec;
+#ifdef RANDOM_SEED
+#if RANDOM_SEED > 0
+    seed = RANDOM_SEED;
+#endif
+    fprintf(stderr, "Random seed: %u\n", seed);
+#endif /* RANDOM_SEED */
+    srand(seed);
   }
 
   CMR_ERROR error;

@@ -1520,10 +1520,12 @@ CMR_ERROR CMRlistmat8Insert(CMR* cmr, ListMat8* listmatrix, size_t row, size_t c
 
   if (!listmatrix->firstFreeNonzero)
   {
+    CMRdbgMsg(10, "Reallocating listmat8's nonzeros.\n");
     assert(listmatrix->numNonzeros == listmatrix->memNonzeros);
     size_t newSize = 2 * listmatrix->memNonzeros;
     if (newSize < 256)
       newSize = 256;
+    CMRdbgMsg(10, "New size is %zu.\n", newSize);
     ListMat8Nonzero* newNonzeros = NULL;
     CMR_CALL( CMRallocBlockArray(cmr, &newNonzeros, newSize) );
     ptrdiff_t memoryShift = newNonzeros - listmatrix->nonzeros;
@@ -1565,8 +1567,8 @@ CMR_ERROR CMRlistmat8Insert(CMR* cmr, ListMat8* listmatrix, size_t row, size_t c
     /* Create free list. */
     listmatrix->firstFreeNonzero = &newNonzeros[listmatrix->numNonzeros];
     for (size_t i = listmatrix->numNonzeros; i < newSize - 1; ++i)
-      listmatrix->nonzeros[i].right = &listmatrix->nonzeros[i+1];
-    listmatrix->nonzeros[newSize-1].right = NULL;
+      newNonzeros[i].right = &newNonzeros[i+1];
+    newNonzeros[newSize-1].right = NULL;
 
     /* Move old nonzero array. */
     listmatrix->memNonzeros = newSize;
@@ -1589,16 +1591,22 @@ CMR_ERROR CMRlistmat8Insert(CMR* cmr, ListMat8* listmatrix, size_t row, size_t c
   nz->special = special;
 
   ListMat8Nonzero* head = &listmatrix->rowElements[row].head;
+  CMRdbgMsg(10, "Inserting %ld in column %ld horizontally between head and %ld in column %ld.\n", nz->value, nz->column,
+    head->right->value, head->right->column);
   nz->left = head;
   nz->right = head->right;
   head->right->left = nz;
   head->right = nz;
 
   head = &listmatrix->columnElements[column].head;
+  CMRdbgMsg(10, "Inserting %ld in row %ld vertically between head and %ld in row %ld.\n", nz->value, nz->row,
+    head->below->value, head->below->column);
   nz->above = head;
   nz->below = head->below;
   head->below->above = nz;
   head->below = nz;
+
+  listmatrix->numNonzeros++;
 
   return CMR_OKAY;
 }
@@ -1661,8 +1669,8 @@ CMR_ERROR CMRlistmat64Insert(CMR* cmr, ListMat64* listmatrix, size_t row, size_t
     /* Create free list. */
     listmatrix->firstFreeNonzero = &newNonzeros[listmatrix->numNonzeros];
     for (size_t i = listmatrix->numNonzeros; i < newSize - 1; ++i)
-      listmatrix->nonzeros[i].right = &listmatrix->nonzeros[i+1];
-    listmatrix->nonzeros[newSize-1].right = NULL;
+      newNonzeros[i].right = &listmatrix->nonzeros[i+1];
+    newNonzeros[newSize-1].right = NULL;
 
     /* Move old nonzero array. */
     listmatrix->memNonzeros = newSize;
@@ -1771,11 +1779,11 @@ CMR_ERROR CMRlistmatGMPInsert(CMR* cmr, ListMatGMP* listmatrix, size_t row, size
     listmatrix->firstFreeNonzero = &newNonzeros[listmatrix->numNonzeros];
     for (size_t i = listmatrix->numNonzeros; i < newSize - 1; ++i)
     {
-      listmatrix->nonzeros[i].right = &listmatrix->nonzeros[i+1];
-      mpz_init(listmatrix->nonzeros[i].value);
+      newNonzeros[i].right = &listmatrix->nonzeros[i+1];
+      mpz_init(newNonzeros[i].value);
     }
-    listmatrix->nonzeros[newSize-1].right = NULL;
-    mpz_init(listmatrix->nonzeros[newSize-1].value);
+    newNonzeros[newSize-1].right = NULL;
+    mpz_init(newNonzeros[newSize-1].value);
 
     /* Move old nonzero array. */
     listmatrix->memNonzeros = newSize;
