@@ -4,3 +4,4 @@ build*
 *.ods
 experiments/network/
 experiments/oddcycle01/
+experiments/random-camion/
