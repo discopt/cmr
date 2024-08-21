@@ -464,14 +464,14 @@ int main(int argc, char** argv)
       numUnitRows = strtoull(argv[a+1], &p, 10);
       if (*p != '\0')
       {
-        printUsage(argv[0]);
-        return EXIT_FAILURE;
+        fprintf(stderr, "Error: invalid number of unit rows <%s>.\n\n", argv[a]);
+        return printUsage(argv[0]);
       }
       numUnitColumns = strtoull(argv[a+2], &p, 10);
       if (*p != '\0')
       {
-        printUsage(argv[0]);
-        return EXIT_FAILURE;
+        fprintf(stderr, "Error: invalid number of unit columns <%s>.\n\n", argv[a]);
+        return printUsage(argv[0]);
       }
       a+= 2;
     }
@@ -481,14 +481,14 @@ int main(int argc, char** argv)
       numCopiedRows = strtoull(argv[a+1], &p, 10);
       if (*p != '\0')
       {
-        printUsage(argv[0]);
-        return EXIT_FAILURE;
+        fprintf(stderr, "Error: invalid number of copied rows <%s>.\n\n", argv[a]);
+        return printUsage(argv[0]);
       }
       numCopiedColumns = strtoull(argv[a+2], &p, 10);
       if (*p != '\0')
       {
-        printUsage(argv[0]);
-        return EXIT_FAILURE;
+        fprintf(stderr, "Error: invalid number of copied columns <%s>.\n\n", argv[a]);
+        return printUsage(argv[0]);
       }
       a+= 2;
     }
@@ -501,8 +501,7 @@ int main(int argc, char** argv)
       if (*p != '\0' || probability < 0.0 || probability > 1.0)
       {
         fprintf(stderr, "Error: invalid probablity <%s>", argv[a+1]);
-        printUsage(argv[0]);
-        return EXIT_FAILURE;
+        return printUsage(argv[0]);
       }
       a++;
     }
@@ -513,8 +512,7 @@ int main(int argc, char** argv)
       if (*p != '\0' || sparsity < 0.0)
       {
         fprintf(stderr, "Error: invalid sparsity <%s>", argv[a+1]);
-        printUsage(argv[0]);
-        return EXIT_FAILURE;
+        return printUsage(argv[0]);
       }
       a++;
     }
@@ -527,8 +525,7 @@ int main(int argc, char** argv)
       if (*p != '\0' || benchmarkRepetitions == 0)
       {
         fprintf(stderr, "Error: invalid number of benchmark repetitions <%s>", argv[a+1]);
-        printUsage(argv[0]);
-        return EXIT_FAILURE;
+        return printUsage(argv[0]);
       }
       a++;
     }
@@ -538,8 +535,8 @@ int main(int argc, char** argv)
       numBaseRows = strtoull(argv[a], &p, 10);
       if (*p != '\0')
       {
-        printUsage(argv[0]);
-        return EXIT_FAILURE;
+        fprintf(stderr, "Error: invalid number of base rows <%s>.\n\n", argv[a]);
+        return printUsage(argv[0]);
       }
     }
     else if (numBaseColumns == SIZE_MAX)
@@ -548,8 +545,8 @@ int main(int argc, char** argv)
       numBaseColumns = strtoull(argv[a], &p, 10);
       if (*p != '\0')
       {
-        printUsage(argv[0]);
-        return EXIT_FAILURE;
+        fprintf(stderr, "Error: invalid number of base columns <%s>.\n\n", argv[a]);
+        return printUsage(argv[0]);
       }
     }
     else
@@ -596,10 +593,10 @@ int main(int argc, char** argv)
   switch (error)
   {
   case CMR_ERROR_INPUT:
-    puts("Input error.");
+    fputs("Input error.\n", stderr);
     return EXIT_FAILURE;
   case CMR_ERROR_MEMORY:
-    puts("Memory error.");
+    fputs("Memory error.\n", stderr);
     return EXIT_FAILURE;
   default:
     return EXIT_SUCCESS;

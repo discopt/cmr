@@ -291,7 +291,7 @@ int main(int argc, char** argv)
         inputFormat = FILEFORMAT_MATRIX_SPARSE;
       else
       {
-        printf("Error: unknown input format <%s>.\n\n", argv[a+1]);
+        fprintf(stderr, "Error: unknown input format <%s>.\n\n", argv[a+1]);
         return printUsage(argv[0]);
       }
       ++a;
@@ -304,7 +304,7 @@ int main(int argc, char** argv)
         outputFormat = FILEFORMAT_MATRIX_SPARSE;
       else
       {
-        printf("Error: unknown output format <%s>.\n\n", argv[a+1]);
+        fprintf(stderr, "Error: unknown output format <%s>.\n\n", argv[a+1]);
         return printUsage(argv[0]);
       }
       ++a;
@@ -315,8 +315,8 @@ int main(int argc, char** argv)
       makeZero = strtoul(argv[a+1], &p, 10);
       if (*p != '\0')
       {
-        printUsage(argv[0]);
-        return EXIT_FAILURE;
+        fprintf(stderr, "Error: invalid number of 0s <%s>.\n\n", argv[a]);
+        return printUsage(argv[0]);
       }
       ++a;
     }
@@ -326,8 +326,8 @@ int main(int argc, char** argv)
       makeOne = strtoul(argv[a+1], &p, 10);
       if (*p != '\0')
       {
-        printUsage(argv[0]);
-        return EXIT_FAILURE;
+        fprintf(stderr, "Error: invalid number of 1s <%s>.\n\n", argv[a]);
+        return printUsage(argv[0]);
       }
       ++a;
     }
@@ -337,8 +337,8 @@ int main(int argc, char** argv)
       makeMinusOne = strtoul(argv[a+1], &p, 10);
       if (*p != '\0')
       {
-        printUsage(argv[0]);
-        return EXIT_FAILURE;
+        fprintf(stderr, "Error: invalid number of -1s <%s>.\n\n", argv[a]);
+        return printUsage(argv[0]);
       }
       ++a;
     }
@@ -348,8 +348,8 @@ int main(int argc, char** argv)
       flipBinary = strtoul(argv[a+1], &p, 10);
       if (*p != '\0')
       {
-        printUsage(argv[0]);
-        return EXIT_FAILURE;
+        fprintf(stderr, "Error: invalid number of binary flips <%s>.\n\n", argv[a]);
+        return printUsage(argv[0]);
       }
       ++a;
     }
@@ -359,8 +359,8 @@ int main(int argc, char** argv)
       flipTernary = strtoul(argv[a+1], &p, 10);
       if (*p != '\0')
       {
-        printUsage(argv[0]);
-        return EXIT_FAILURE;
+        fprintf(stderr, "Error: invalid number of ternary flips <%s>.\n\n", argv[a]);
+        return printUsage(argv[0]);
       }
       ++a;
     }

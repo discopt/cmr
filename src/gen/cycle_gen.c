@@ -134,7 +134,7 @@ int main(int argc, char** argv)
         outputFormat = FILEFORMAT_MATRIX_SPARSE;
       else
       {
-        printf("Error: unknown output format <%s>.\n\n", argv[a+1]);
+        fprintf(stderr, "Error: unknown output format <%s>.\n\n", argv[a+1]);
         return printUsage(argv[0]);
       }
       ++a;
@@ -145,25 +145,26 @@ int main(int argc, char** argv)
       numRowsColumns = strtoull(argv[a], &p, 10);
       if (*p != '\0')
       {
+        fprintf(stderr, "Error: invalid number of rows/columns <%s>.\n\n", argv[a]);
         printUsage(argv[0]);
         return EXIT_FAILURE;
       }
     }
     else
     {
-      printf("Error: more than one size indicators specified: %zu %s\n\n", numRowsColumns, argv[a]);
+      fprintf(stderr, "Error: more than one size indicators specified: %zu %s\n\n", numRowsColumns, argv[a]);
       return printUsage(argv[0]);
     }
   }
 
   if (numRowsColumns == SIZE_MAX)
   {
-    puts("Error: no size indicator specified.\n");
+    fputs("Error: no size indicator specified.\n", stderr);
     return printUsage(argv[0]);
   }
   else if (numRowsColumns <= 0)
   {
-    puts("Error: matrix must have at least 1 row/column.\n");
+    fputs("Error: matrix must have at least 1 row/column.\n", stderr);
     return printUsage(argv[0]);
   }
   if (outputFormat == FILEFORMAT_UNDEFINED)
@@ -173,10 +174,10 @@ int main(int argc, char** argv)
   switch (error)
   {
   case CMR_ERROR_INPUT:
-    puts("Input error.");
+    fputs("Input error.\n", stderr);
     return EXIT_FAILURE;
   case CMR_ERROR_MEMORY:
-    puts("Memory error.");
+    fputs("Memory error.\n", stderr);
     return EXIT_FAILURE;
   default:
     return EXIT_SUCCESS;

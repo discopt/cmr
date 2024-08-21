@@ -236,9 +236,8 @@ int main(int argc, char** argv)
       benchmarkRepetitions = strtoull(argv[a+1], &p, 10);
       if (*p != '\0' || benchmarkRepetitions == 0)
       {
-        printf("Error: invalid number of benchmark repetitions <%s>", argv[a+1]);
-        printUsage(argv[0]);
-        return EXIT_FAILURE;
+        fprintf(stderr, "Error: invalid number of benchmark repetitions <%s>", argv[a+1]);
+        return printUsage(argv[0]);
       }
       a++;
     }
@@ -250,7 +249,7 @@ int main(int argc, char** argv)
         outputFormat = FILEFORMAT_MATRIX_SPARSE;
       else
       {
-        printf("Error: unknown output format <%s>.\n\n", argv[a+1]);
+        fprintf(stderr, "Error: unknown output format <%s>.\n\n", argv[a+1]);
         return printUsage(argv[0]);
       }
       ++a;
@@ -261,8 +260,8 @@ int main(int argc, char** argv)
       numRows = strtoull(argv[a], &p, 10);
       if (*p != '\0')
       {
-        printUsage(argv[0]);
-        return EXIT_FAILURE;
+        fprintf(stderr, "Error: invalid number of rows <%s>.\n\n", argv[a]);
+        return printUsage(argv[0]);
       }
     }
     else if (numColumns == SIZE_MAX)
@@ -271,30 +270,30 @@ int main(int argc, char** argv)
       numColumns = strtoull(argv[a], &p, 10);
       if (*p != '\0')
       {
-        printUsage(argv[0]);
-        return EXIT_FAILURE;
+        fprintf(stderr, "Error: invalid number of columns <%s>.\n\n", argv[a]);
+        return printUsage(argv[0]);
       }
     }
     else
     {
-      printf("Error: more than two size indicators specified: %zu %zu %s\n\n", numRows, numColumns, argv[a]);
+      fprintf(stderr, "Error: more than two size indicators specified: %zu %zu %s\n\n", numRows, numColumns, argv[a]);
       return printUsage(argv[0]);
     }
   }
 
   if (numRows == SIZE_MAX)
   {
-    puts("Error: no size indicator specified.\n");
+    fputs("Error: no size indicator specified.\n", stderr);
     return printUsage(argv[0]);
   }
   else if (numColumns == SIZE_MAX)
   {
-    puts("Error: only one size indicator specified.\n");
+    fputs("Error: only one size indicator specified.\n", stderr);
     return printUsage(argv[0]);
   }
   else if (numRows <= 0 || numColumns <= 0)
   {
-    puts("Error: matrix must have at least 1 row and 1 column.\n");
+    fputs("Error: matrix must have at least 1 row and 1 column.\n", stderr);
     return printUsage(argv[0]);
   }
   if (outputFormat == FILEFORMAT_UNDEFINED)
@@ -304,10 +303,10 @@ int main(int argc, char** argv)
   switch (error)
   {
   case CMR_ERROR_INPUT:
-    puts("Input error.");
+    fputs("Input error.\n", stderr);
     return EXIT_FAILURE;
   case CMR_ERROR_MEMORY:
-    puts("Memory error.");
+    fputs("Memory error.\n", stderr);
     return EXIT_FAILURE;
   default:
     return EXIT_SUCCESS;
