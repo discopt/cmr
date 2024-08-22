@@ -848,7 +848,7 @@ CMR_ERROR CMRregularityNestedMinorSequenceSearchThreeSeparation(CMR* cmr, Decomp
     /* Enumerate all subsets of elements of later minors that have at most 1 element from the previous minor and
     * at least one new. */
 
-    for (size_t minor = firstMinor+1; minor <= firstNonCoGraphicMinor && !separation && remainingTime > 0; ++minor)
+    for (size_t minor = firstNonCoGraphicMinor; minor >= firstMinor+1 && !separation && remainingTime > 0; --minor)
     {
 //       double remainingTime = timeLimit - (clock() - time) * 1.0 / CLOCKS_PER_SEC;
 //       if (remainingTime < 0)
