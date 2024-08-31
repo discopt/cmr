@@ -22,10 +22,25 @@ typedef CMR_ERROR (*HereditaryPropertyTest)(
 /**
  * \brief Tests a given \p matrix for the hereditary property defined by a given \p testFunction.
  *
- * The algorithm finds the submatrix by successively removing rows or columns.
+ * The algorithm finds the submatrix by successively single zeroing out rows or columns.
  */
 
 CMR_ERROR CMRtestHereditaryPropertySimple(
+  CMR* cmr,                             /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,                   /**< Some matrix not having the hereditary property. */
+  HereditaryPropertyTest testFunction,  /**< Test function. */
+  void* testData,                       /**< Data to be forwarded to the test function. */
+  CMR_SUBMAT** psubmatrix,              /**< Pointer for storing a minimal submatrix not having the property. */
+  double timeLimit                      /**< Time limit to impose. */
+);
+
+/**
+ * \brief Greedily tests a given \p matrix for the hereditary property defined by a given \p testFunction.
+ *
+ * The algorithm finds the submatrix by successively zeroing out sets of rows or columns.
+ */
+
+CMR_ERROR CMRtestHereditaryPropertyGreedy(
   CMR* cmr,                             /**< \ref CMR environment. */
   CMR_CHRMAT* matrix,                   /**< Some matrix not having the hereditary property. */
   HereditaryPropertyTest testFunction,  /**< Test function. */

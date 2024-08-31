@@ -19,6 +19,7 @@ CMR_ERROR CMRtuParamsInit(CMR_TU_PARAMS* params)
   params->algorithm = CMR_TU_ALGORITHM_DECOMPOSITION;
   params->ternary = true;
   params->camionFirst = true;
+  params->greedySubmatrix = true;
   CMR_CALL( CMRseymourParamsInit(&params->seymour) );
 
   return CMR_OKAY;
@@ -679,7 +680,10 @@ CMR_ERROR CMRtuTest(CMR* cmr, CMR_CHRMAT* matrix, bool* pisTotallyUnimodular, CM
     {
       assert(!*psubmatrix);
       remainingTime = timeLimit - (clock() - totalClock) * 1.0 / CLOCKS_PER_SEC;
-      CMR_CALL( CMRtestHereditaryPropertySimple(cmr, matrix, tuDecomposition, stats, psubmatrix, remainingTime) );
+      if (params->greedySubmatrix)
+        CMR_CALL( CMRtestHereditaryPropertyGreedy(cmr, matrix, tuDecomposition, stats, psubmatrix, remainingTime) );
+      else
+        CMR_CALL( CMRtestHereditaryPropertySimple(cmr, matrix, tuDecomposition, stats, psubmatrix, remainingTime) );
 
       return CMR_OKAY;
     }

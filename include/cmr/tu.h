@@ -30,7 +30,8 @@ typedef struct
   CMR_TU_ALGORITHM algorithm; /**< \brief Algorithm to use. */
   CMR_SEYMOUR_PARAMS seymour; /**< \brief Parameters for testing via Seymour decomposition. */
   bool ternary;               /**< \brief Whether to create a ternary Seymour decomposition tree (default: \c true). */
-  bool camionFirst;           /**< \brief If \c ternary is \c false, then then whether to run the Camion test first. */
+  bool camionFirst;           /**< \brief If \c ternary is \c false, then whether to run the Camion test first. */
+  bool greedySubmatrix;       /**< \brief Whether to use a greedy submatrix search. */
 } CMR_TU_PARAMS;
 
 /**
@@ -118,7 +119,7 @@ CMR_ERROR CMRtuTest(
 CMR_EXPORT
 CMR_ERROR CMRtuCompleteDecomposition(
   CMR* cmr,               /**< \ref CMR environment. */
-    CMR_SEYMOUR_NODE* dec,   /**< Pointer to the decomposition node that is the root of the new subtree. */
+  CMR_SEYMOUR_NODE* dec,  /**< Pointer to the decomposition node that is the root of the new subtree. */
   CMR_TU_PARAMS* params,  /**< Parameters for the computation. */
   CMR_TU_STATS* stats,    /**< Statistics for the computation (may be \c NULL). */
   double timeLimit        /**< Time limit to impose. */

@@ -28,6 +28,7 @@ CMR_ERROR testTotalUnimodularity(
   bool printStats,                      /**< Whether to print statistics to stderr. */
   bool directGraphicness,               /**< Whether to use fast graphicness routines. */
   bool seriesParallel,                  /**< Whether to allow series-parallel operations in the decomposition tree. */
+  bool greedySubmatrix,                 /**< Use greedy bad submatrix heuristic instead of naive algorithm. */
   CMR_TU_ALGORITHM algorithm,           /**< Algorithm to use for TU test. */
   double timeLimit                      /**< Time limit to impose. */
 )
@@ -68,6 +69,7 @@ CMR_ERROR testTotalUnimodularity(
   params.seymour.stopWhenIrregular = !outputTreeFileName;
   params.seymour.directGraphicness = directGraphicness;
   params.seymour.seriesParallel = seriesParallel;
+  params.greedySubmatrix = greedySubmatrix;
   CMR_TU_STATS stats;
   CMR_CALL( CMRtuStatsInit(&stats));
   error = CMRtuTest(cmr, matrix, &isTU, outputTreeFileName ? &decomposition : NULL,
@@ -141,6 +143,7 @@ int printUsage(const char* program)
   fputs("  --time-limit LIMIT   Allow at most LIMIT seconds for the computation.\n", stderr);
   fputs("  --no-direct-graphic  Check only 3-connected matrices for regularity.\n", stderr);
   fputs("  --no-series-parallel Do not allow series-parallel operations in decomposition tree.\n\n", stderr);
+  fputs("  --naive-submatrix    Use naive bad submatrix algorithm instead of greedy heuristic.\n\n", stderr);
   fputs("  --algo ALGO          Use algorithm from {decomposition, eulerian, partition}; default: decomposition.\n\n",
     stderr);
   fputs("If IN-MAT is `-' then the matrix is read from stdin.\n", stderr);
@@ -159,6 +162,7 @@ int main(int argc, char** argv)
   bool printStats = false;
   bool directGraphicness = true;
   bool seriesParallel = true;
+  bool greedySubmatrix = true;
   double timeLimit = DBL_MAX;
   CMR_TU_ALGORITHM algorithm = CMR_TU_ALGORITHM_DECOMPOSITION;
   for (int a = 1; a < argc; ++a)
@@ -191,6 +195,8 @@ int main(int argc, char** argv)
       directGraphicness = false;
     else if (!strcmp(argv[a], "--no-series-parallel"))
       seriesParallel = false;
+    else if (!strcmp(argv[a], "--naive-submatrix"))
+      greedySubmatrix = false;
     else if (!strcmp(argv[a], "--time-limit") && (a+1 < argc))
     {
       if (sscanf(argv[a+1], "%lf", &timeLimit) == 0 || timeLimit <= 0)
@@ -232,7 +238,7 @@ int main(int argc, char** argv)
 
   CMR_ERROR error;
   error = testTotalUnimodularity(inputMatrixFileName, inputFormat, outputTree, outputSubmatrix, printStats,
-    directGraphicness, seriesParallel, algorithm, timeLimit);
+    directGraphicness, seriesParallel, greedySubmatrix, algorithm, timeLimit);
 
   switch (error)
   {
