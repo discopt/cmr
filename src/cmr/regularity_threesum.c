@@ -1,4 +1,4 @@
-// #define CMR_DEBUG /** Uncomment to debug this file. */
+#define CMR_DEBUG /** Uncomment to debug this file. */
 
 #include <cmr/regular.h>
 
@@ -10,10 +10,11 @@
 
 typedef enum
 {
-  ELEMENT_TYPE_NONE,    /**< Row/column does not belong to the submatrix. */
-  ELEMENT_TYPE_NORMAL,  /**< Row/column belongs to the submatrix. */
-  ELEMENT_TYPE_SOURCE,  /**< Row/column is a source. */
-  ELEMENT_TYPE_TARGET   /**< Row/column is a target. */
+  ELEMENT_TYPE_NONE,  /**< Row/column does not belong to the submatrix. */
+  ELEMENT_TYPE_1,     /**< Row/column is a source/target of type 1. */
+  ELEMENT_TYPE_2,     /**< Row/column is a source/target of type 2. */
+  ELEMENT_TYPE_3,     /**< Row/column is a source/target of type 3. */
+  ELEMENT_TYPE_NORMAL /**< Row/column belongs to the submatrix. */
 } ElementType;
 
 typedef struct
@@ -63,140 +64,153 @@ CMR_ERROR findSubmatrixCycle(
   /* Initialize queue. */
   CMR_ELEMENT* queue = NULL;
   CMR_CALL( CMRallocStackArray(cmr, &queue, numRows + numColumns) );
-  size_t firstQueued = 0;
-  size_t beyondQueued = 0;
-  for (size_t row = 0; row < numRows; ++row)
+
+  for (int sourceTargetCombination = 0; sourceTargetCombination < 2; ++sourceTargetCombination)
   {
-    rowData[row].predecessor = SIZE_MAX;
-    if (rowTypes[row] == ELEMENT_TYPE_SOURCE)
+    size_t firstQueued = 0;
+    size_t beyondQueued = 0;
+    for (size_t row = 0; row < numRows; ++row)
     {
-      queue[beyondQueued++] = CMRrowToElement(row);
-      rowData[row].status = 1;
-    }
-    else
-      rowData[row].status = 0;
-    CMRdbgMsg(14, "r%zu has status %d and type %d.\n", row+1, rowData[row].status, rowTypes[row]);
-  }
-  for (size_t column = 0; column < numColumns; ++column)
-  {
-    columnData[column].predecessor = SIZE_MAX;
-    if (columnTypes[column] == ELEMENT_TYPE_SOURCE)
-    {
-      queue[beyondQueued++] = CMRcolumnToElement(column);
-      columnData[column].status = 1;
-    }
-    else
-      columnData[column].status = 0;
-    CMRdbgMsg(14, "c%zu has status %d and type %d.\n", column+1, columnData[column].status, columnTypes[column]);
-  }
-
-  /* Start BFS. */
-  bool done = false;
-  while (!done && firstQueued < beyondQueued)
-  {
-    CMR_ELEMENT current = queue[firstQueued++];
-
-    CMRdbgMsg(12, "findSubmatrixCycle processes %s.\n", CMRelementString(current, NULL));
-
-    if (CMRelementIsRow(current))
-    {
-      size_t row = CMRelementToRowIndex(current);
-      rowData[row].status = 2;
-
-      size_t first = matrix->rowSlice[row];
-      size_t beyond = matrix->rowSlice[row + 1];
-      for (size_t e = first; e < beyond; ++e)
+      rowData[row].predecessor = SIZE_MAX;
+      if (rowTypes[row] == (sourceTargetCombination ? ELEMENT_TYPE_2 : ELEMENT_TYPE_1))
       {
-        size_t column = matrix->entryColumns[e];
-        ElementType type = columnTypes[column];
-        if (type == ELEMENT_TYPE_NONE || columnData[column].status)
-          continue;
-
-        columnData[column].predecessor = row;
-        columnData[column].edgeValue = matrix->entryValues[e];
-
-        if (type == ELEMENT_TYPE_TARGET)
-        {
-          done = true;
-          *ppathTarget = CMRcolumnToElement(column);
-          break;
-        }
-        columnData[column].status = 1;
-        queue[beyondQueued++] = CMRcolumnToElement(column);
-      }
-    }
-    else
-    {
-      size_t column = CMRelementToColumnIndex(current);
-      columnData[column].status = 2;
-
-      size_t first = transpose->rowSlice[column];
-      size_t beyond = transpose->rowSlice[column + 1];
-      for (size_t e = first; e < beyond; ++e)
-      {
-        size_t row = transpose->entryColumns[e];
-        ElementType type = rowTypes[row];
-        if (type == ELEMENT_TYPE_NONE || rowData[row].status)
-          continue;
-
-        rowData[row].predecessor = column;
-        rowData[row].edgeValue = transpose->entryValues[e];
-
-        if (type == ELEMENT_TYPE_TARGET)
-        {
-          done = true;
-          *ppathTarget = CMRrowToElement(row);
-          break;
-        }
-        rowData[row].status = 1;
         queue[beyondQueued++] = CMRrowToElement(row);
+        rowData[row].status = 1;
       }
+      else
+        rowData[row].status = 0;
+      CMRdbgMsg(14, "r%zu has status %d and type %d.\n", row+1, rowData[row].status, rowTypes[row]);
     }
-  }
-
-  /* Trace back the path. */
-  assert(done);
-  CMR_ELEMENT current = *ppathTarget;
-  *pentrySum = 0;
-  while (true)
-  {
-    if (CMRelementIsRow(current))
+    for (size_t column = 0; column < numColumns; ++column)
     {
-      size_t row = CMRelementToRowIndex(current);
-      size_t column = rowData[row].predecessor;
-      CMRdbgMsg(12, "Predecessor of r%zu is c%zu.\n", row + 1, column + 1);
-      if (column < SIZE_MAX)
+      columnData[column].predecessor = SIZE_MAX;
+      if (columnTypes[column] == (sourceTargetCombination ? ELEMENT_TYPE_2 : ELEMENT_TYPE_1))
       {
-        (*pentrySum) += rowData[row].edgeValue;
-        current = CMRcolumnToElement(column);
+        queue[beyondQueued++] = CMRcolumnToElement(column);
+        columnData[column].status = 1;
+      }
+      else
+        columnData[column].status = 0;
+      CMRdbgMsg(14, "c%zu has status %d and type %d.\n", column+1, columnData[column].status, columnTypes[column]);
+    }
+
+    /* Start BFS. */
+    bool done = false;
+    while (!done && firstQueued < beyondQueued)
+    {
+      CMR_ELEMENT current = queue[firstQueued++];
+
+      CMRdbgMsg(12, "findSubmatrixCycle processes %s.\n", CMRelementString(current, NULL));
+
+      if (CMRelementIsRow(current))
+      {
+        size_t row = CMRelementToRowIndex(current);
+        rowData[row].status = 2;
+
+        size_t first = matrix->rowSlice[row];
+        size_t beyond = matrix->rowSlice[row + 1];
+        for (size_t e = first; e < beyond; ++e)
+        {
+          size_t column = matrix->entryColumns[e];
+          ElementType type = columnTypes[column];
+          if (type == ELEMENT_TYPE_NONE || columnData[column].status)
+            continue;
+
+          columnData[column].predecessor = row;
+          columnData[column].edgeValue = matrix->entryValues[e];
+
+          if (type == ELEMENT_TYPE_3 || type == (sourceTargetCombination ? ELEMENT_TYPE_1 : ELEMENT_TYPE_2))
+          {
+            done = true;
+            *ppathTarget = CMRcolumnToElement(column);
+            break;
+          }
+          columnData[column].status = 1;
+          queue[beyondQueued++] = CMRcolumnToElement(column);
+        }
       }
       else
       {
-        *ppathSource = current;
-        break;
+        size_t column = CMRelementToColumnIndex(current);
+        columnData[column].status = 2;
+
+        size_t first = transpose->rowSlice[column];
+        size_t beyond = transpose->rowSlice[column + 1];
+        for (size_t e = first; e < beyond; ++e)
+        {
+          size_t row = transpose->entryColumns[e];
+          ElementType type = rowTypes[row];
+          if (type == ELEMENT_TYPE_NONE || rowData[row].status)
+            continue;
+
+          rowData[row].predecessor = column;
+          rowData[row].edgeValue = transpose->entryValues[e];
+
+          if (type == ELEMENT_TYPE_3 || type == (sourceTargetCombination ? ELEMENT_TYPE_1 : ELEMENT_TYPE_2))
+          {
+            done = true;
+            *ppathTarget = CMRrowToElement(row);
+            break;
+          }
+          rowData[row].status = 1;
+          queue[beyondQueued++] = CMRrowToElement(row);
+        }
       }
+    }
+
+    assert(done || sourceTargetCombination == 0);
+
+    if (done)
+    {
+      CMR_ELEMENT current = *ppathTarget;
+      *pentrySum = 0;
+      while (true)
+      {
+        if (CMRelementIsRow(current))
+        {
+          size_t row = CMRelementToRowIndex(current);
+          size_t column = rowData[row].predecessor;
+          CMRdbgMsg(12, "Predecessor of r%zu is c%zu.\n", row + 1, column + 1);
+          if (column < SIZE_MAX)
+          {
+            (*pentrySum) += rowData[row].edgeValue;
+            current = CMRcolumnToElement(column);
+          }
+          else
+          {
+            *ppathSource = current;
+            break;
+          }
+        }
+        else
+        {
+          size_t column = CMRelementToColumnIndex(current);
+          size_t row = columnData[column].predecessor;
+          CMRdbgMsg(12, "Predecessor of c%zu is r%zu.\n", column + 1, row + 1);
+          if (row < SIZE_MAX)
+          {
+            (*pentrySum) += columnData[column].edgeValue;
+            current = CMRrowToElement(row);
+          }
+          else
+          {
+            *ppathSource = current;
+            break;
+          }
+        }
+      }
+
+      char buffer[16];
+      CMRdbgMsg(10, "findSubmatrixCycle found a path from %s to %s with entry sum %d.\n",
+        CMRelementString(*ppathSource, NULL), CMRelementString(*ppathTarget, buffer), *pentrySum);
+
+      break;
     }
     else
     {
-      size_t column = CMRelementToColumnIndex(current);
-      size_t row = columnData[column].predecessor;
-      CMRdbgMsg(12, "Predecessor of c%zu is r%zu.\n", column + 1, row + 1);
-      if (row < SIZE_MAX)
-      {
-        (*pentrySum) += columnData[column].edgeValue;
-        current = CMRrowToElement(row);
-      }
-      else
-      {
-        *ppathSource = current;
-        break;
-      }
+      CMRdbgMsg(12, "findSubmatrixCycle found no path from any source and will retry to source type 2.\n");
     }
   }
-
-  char buffer[16];
-  CMRdbgMsg(10, "findSubmatrixCycle found a path from %s to %s with entry sum %d.\n",
-    CMRelementString(*ppathSource, NULL), CMRelementString(*ppathTarget, buffer), *pentrySum);
 
   /* Cleanup */
 
@@ -226,15 +240,15 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
 
 #if defined(CMR_DEBUG)
   CMRdbgMsg(8, "Processing 3-separation to produce a 3-sum for the following matrix:\n");
-  CMRchrmatPrintDense(cmr, dec->matrix, stdout, '0', true);
-  for (size_t row = 0; row < dec->numRows; ++row)
+  CMRchrmatPrintDense(cmr, node->matrix, stdout, '0', true);
+  for (size_t row = 0; row < node->numRows; ++row)
   {
     int part = ((separation->rowsFlags[row] & CMR_SEPA_MASK_CHILD) == CMR_SEPA_FIRST) ? 0 : 1;
     int rank1Flag = (separation->rowsFlags[row] & CMR_SEPA_FLAG_RANK1) ? 1 : 0;
     int rank2Flag = (separation->rowsFlags[row] & CMR_SEPA_FLAG_RANK2) ? 1 : 0;
     CMRdbgMsg(10, "Row r%zu belongs to part %d; flags = %d/%d\n", row+1, part, rank1Flag, rank2Flag);
   }
-  for (size_t column = 0; column < dec->numColumns; ++column)
+  for (size_t column = 0; column < node->numColumns; ++column)
   {
     int part = ((separation->columnsFlags[column] & CMR_SEPA_MASK_CHILD) == CMR_SEPA_FIRST) ? 0 : 1;
     int rank1Flag = (separation->columnsFlags[column] & CMR_SEPA_FLAG_RANK1) ? 1 : 0;
@@ -375,7 +389,7 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
   if (numPivots > 0)
   {
     CMR_CALL( CMRseymourUpdatePivots(cmr, node, numPivots, pivotRows, pivotColumns, pivotedMatrix, pivotedTranspose) );
-        node = node->children[0];
+    node = node->children[0];
   }
 
   /* Initialize the 3-sum node. */
@@ -415,7 +429,7 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
           if ((flags & CMR_SEPA_MASK_CHILD) == CMR_SEPA_FIRST)
             rowTypes[row] = ELEMENT_TYPE_NONE;
           else if ((flags & CMR_SEPA_MASK_EXTRA) == CMR_SEPA_FLAG_RANK1)
-            rowTypes[row] = ELEMENT_TYPE_SOURCE;
+            rowTypes[row] = ELEMENT_TYPE_1;
           else
             rowTypes[row] = ELEMENT_TYPE_NORMAL;
         }
@@ -425,7 +439,7 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
           if ((flags & CMR_SEPA_MASK_CHILD) == CMR_SEPA_FIRST)
             columnTypes[column] = ELEMENT_TYPE_NONE;
           else if ((flags & CMR_SEPA_MASK_EXTRA) == CMR_SEPA_FLAG_RANK1)
-            columnTypes[column] = ELEMENT_TYPE_TARGET;
+            columnTypes[column] = ELEMENT_TYPE_2;
           else
             columnTypes[column] = ELEMENT_TYPE_NORMAL;
         }
@@ -477,7 +491,7 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
           if ((flags & CMR_SEPA_MASK_CHILD) == CMR_SEPA_SECOND)
             rowTypes[row] = ELEMENT_TYPE_NONE;
           else if ((flags & CMR_SEPA_MASK_EXTRA) == CMR_SEPA_FLAG_RANK1)
-            rowTypes[row] = ELEMENT_TYPE_SOURCE;
+            rowTypes[row] = ELEMENT_TYPE_1;
           else
             rowTypes[row] = ELEMENT_TYPE_NORMAL;
         }
@@ -487,7 +501,7 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
           if ((flags & CMR_SEPA_MASK_CHILD) == CMR_SEPA_SECOND)
             columnTypes[column] = ELEMENT_TYPE_NONE;
           else if ((flags & CMR_SEPA_MASK_EXTRA) == CMR_SEPA_FLAG_RANK1)
-            columnTypes[column] = ELEMENT_TYPE_TARGET;
+            columnTypes[column] = ELEMENT_TYPE_2;
           else
             columnTypes[column] = ELEMENT_TYPE_NORMAL;
         }
@@ -516,7 +530,7 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
         CMRelementToColumnIndex(targetColumnElement), extraEntry) );
     }
 
-        node->threesumFlags = CMR_SEYMOUR_THREESUM_FLAG_DISTRIBUTED_RANKS;
+    node->threesumFlags = CMR_SEYMOUR_THREESUM_FLAG_DISTRIBUTED_RANKS;
   }
   else
   {
@@ -546,9 +560,11 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
         if ((flags & CMR_SEPA_MASK_CHILD) == CMR_SEPA_FIRST)
           rowTypes[row] = ELEMENT_TYPE_NONE;
         else if ((flags & CMR_SEPA_MASK_EXTRA) == CMR_SEPA_FLAG_RANK1)
-          rowTypes[row] = ELEMENT_TYPE_SOURCE;
-        else if ((flags & CMR_SEPA_MASK_EXTRA) & CMR_SEPA_FLAG_RANK2)
-          rowTypes[row] = ELEMENT_TYPE_TARGET;
+          rowTypes[row] = ELEMENT_TYPE_1;
+        else if ((flags & CMR_SEPA_MASK_EXTRA) == CMR_SEPA_FLAG_RANK2)
+          rowTypes[row] = ELEMENT_TYPE_2;
+        else if ((flags & CMR_SEPA_MASK_EXTRA))
+          rowTypes[row] = ELEMENT_TYPE_3;
         else
           rowTypes[row] = ELEMENT_TYPE_NORMAL;
       }
@@ -606,9 +622,11 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
         if ((flags & CMR_SEPA_MASK_CHILD) == CMR_SEPA_SECOND)
           columnTypes[column] = ELEMENT_TYPE_NONE;
         else if ((flags & CMR_SEPA_MASK_EXTRA) == CMR_SEPA_FLAG_RANK1)
-          columnTypes[column] = ELEMENT_TYPE_SOURCE;
-        else if ((flags & CMR_SEPA_MASK_EXTRA) & CMR_SEPA_FLAG_RANK2)
-          columnTypes[column] = ELEMENT_TYPE_TARGET;
+          columnTypes[column] = ELEMENT_TYPE_1;
+        else if ((flags & CMR_SEPA_MASK_EXTRA) == CMR_SEPA_FLAG_RANK2)
+          columnTypes[column] = ELEMENT_TYPE_2;
+        else if ((flags & CMR_SEPA_MASK_EXTRA))
+          columnTypes[column] = ELEMENT_TYPE_3;
         else
           columnTypes[column] = ELEMENT_TYPE_NORMAL;
       }
@@ -661,8 +679,8 @@ cleanup:
       task->startClock, task->timeLimit) );
 
     childTasks[0]->node = node->children[0];
-        node->children[0]->testedSeriesParallel = false;
-        node->children[1]->testedSeriesParallel = false;
+    node->children[0]->testedSeriesParallel = false;
+    node->children[1]->testedSeriesParallel = false;
 
     /* Add both child tasks to the list. */
     CMRregularityQueueAdd(queue, childTasks[0]);
