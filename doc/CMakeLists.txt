@@ -19,7 +19,7 @@ if(DOXYGEN_FOUND)
   set(DOXYGEN_INCLUDED_BY_GRAPH "no")
   set(DOXYGEN_HTML_HEADER "header.html")
   set(DOXYGEN_PROJECT_LOGO "logo.png")
-  set(DOXYGEN_HTML_EXTRA_STYLESHEET "doxygen-awesome-css/doxygen-awesome.css")
+#  set(DOXYGEN_HTML_EXTRA_STYLESHEET "doxygen-awesome-css/doxygen-awesome.css")
   doxygen_add_docs(doc
     ${CMAKE_CURRENT_SOURCE_DIR}/index.md
     ${CMAKE_CURRENT_SOURCE_DIR}/balanced.md
