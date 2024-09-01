@@ -21,7 +21,6 @@
 </script>
 <script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
-<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -88,11 +87,83 @@ $(function() {
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:a8bd0a7e69b69873230523c26bbe883b7"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hereditary__property_8c.html#a8bd0a7e69b69873230523c26bbe883b7">testHereditaryPropertySimple</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *current, <a class="el" href="hereditary__property_8h.html#a07a2a3f3148ca5bde7156065264d9d9e">HereditaryPropertyTest</a> testFunction, void *testData, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **psubmatrix, size_t numRemainingRows, size_t *remainingRows, size_t numRemainingColumns, size_t *remainingColumns, double timeLimit)</td></tr>
+<tr class="memdesc:a8bd0a7e69b69873230523c26bbe883b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tests a submatrix of the given <code>current</code> matrix for the hereditary property defined by a given <code>testFunction</code>.  <a href="hereditary__property_8c.html#a8bd0a7e69b69873230523c26bbe883b7">More...</a><br /></td></tr>
+<tr class="separator:a8bd0a7e69b69873230523c26bbe883b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aefab04c2f8d9b945bd8bfa4e559b52d1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hereditary__property_8c.html#aefab04c2f8d9b945bd8bfa4e559b52d1">CMRtestHereditaryPropertySimple</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, <a class="el" href="hereditary__property_8h.html#a07a2a3f3148ca5bde7156065264d9d9e">HereditaryPropertyTest</a> testFunction, void *testData, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **psubmatrix, double timeLimit)</td></tr>
 <tr class="memdesc:aefab04c2f8d9b945bd8bfa4e559b52d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tests a given <code>matrix</code> for the hereditary property defined by a given <code>testFunction</code>.  <a href="hereditary__property_8c.html#aefab04c2f8d9b945bd8bfa4e559b52d1">More...</a><br /></td></tr>
 <tr class="separator:aefab04c2f8d9b945bd8bfa4e559b52d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1657d52780bf93e4d08cf88cdb071b5a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hereditary__property_8c.html#a1657d52780bf93e4d08cf88cdb071b5a">CMRtestHereditaryPropertyGreedy</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, <a class="el" href="hereditary__property_8h.html#a07a2a3f3148ca5bde7156065264d9d9e">HereditaryPropertyTest</a> testFunction, void *testData, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **psubmatrix, double timeLimit)</td></tr>
+<tr class="memdesc:a1657d52780bf93e4d08cf88cdb071b5a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Greedily tests a given <code>matrix</code> for the hereditary property defined by a given <code>testFunction</code>.  <a href="hereditary__property_8c.html#a1657d52780bf93e4d08cf88cdb071b5a">More...</a><br /></td></tr>
+<tr class="separator:a1657d52780bf93e4d08cf88cdb071b5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
+<a id="a1657d52780bf93e4d08cf88cdb071b5a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1657d52780bf93e4d08cf88cdb071b5a">&#9670;&nbsp;</a></span>CMRtestHereditaryPropertyGreedy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRtestHereditaryPropertyGreedy </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *&#160;</td>
+          <td class="paramname"><em>matrix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="hereditary__property_8h.html#a07a2a3f3148ca5bde7156065264d9d9e">HereditaryPropertyTest</a>&#160;</td>
+          <td class="paramname"><em>testFunction</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>testData</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **&#160;</td>
+          <td class="paramname"><em>psubmatrix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>timeLimit</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Greedily tests a given <code>matrix</code> for the hereditary property defined by a given <code>testFunction</code>. </p>
+<p>The algorithm finds the submatrix by successively zeroing out sets of rows or columns. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">matrix</td><td>Some matrix not having the hereditary property. </td></tr>
+    <tr><td class="paramname">testFunction</td><td>Test function. </td></tr>
+    <tr><td class="paramname">testData</td><td>Data to be forwarded to the test function. </td></tr>
+    <tr><td class="paramname">psubmatrix</td><td>Pointer for storing a minimal submatrix not having the property. </td></tr>
+    <tr><td class="paramname">timeLimit</td><td>Time limit to impose. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="aefab04c2f8d9b945bd8bfa4e559b52d1"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aefab04c2f8d9b945bd8bfa4e559b52d1">&#9670;&nbsp;</a></span>CMRtestHereditaryPropertySimple()</h2>
 
@@ -144,7 +215,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Tests a given <code>matrix</code> for the hereditary property defined by a given <code>testFunction</code>. </p>
-<p>The algorithm finds the submatrix by successively removing rows or columns. </p>
+<p>The algorithm finds the submatrix by successively single zeroing out rows or columns. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
@@ -152,6 +223,108 @@ Functions</h2></td></tr>
     <tr><td class="paramname">testFunction</td><td>Test function. </td></tr>
     <tr><td class="paramname">testData</td><td>Data to be forwarded to the test function. </td></tr>
     <tr><td class="paramname">psubmatrix</td><td>Pointer for storing a minimal submatrix not having the property. </td></tr>
+    <tr><td class="paramname">timeLimit</td><td>Time limit to impose. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a8bd0a7e69b69873230523c26bbe883b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8bd0a7e69b69873230523c26bbe883b7">&#9670;&nbsp;</a></span>testHereditaryPropertySimple()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> testHereditaryPropertySimple </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *&#160;</td>
+          <td class="paramname"><em>current</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="hereditary__property_8h.html#a07a2a3f3148ca5bde7156065264d9d9e">HereditaryPropertyTest</a>&#160;</td>
+          <td class="paramname"><em>testFunction</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>testData</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **&#160;</td>
+          <td class="paramname"><em>psubmatrix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>numRemainingRows</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>remainingRows</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>numRemainingColumns</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>remainingColumns</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>timeLimit</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Tests a submatrix of the given <code>current</code> matrix for the hereditary property defined by a given <code>testFunction</code>. </p>
+<p>The algorithm finds the submatrix by successively single zeroing out rows or columns. The submatrix is specified by <code>remainingRows</code> and <code>remainingColumns</code>. The <code>current</code> matrix is modified and later deleted. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">current</td><td>Some matrix not having the hereditary property. </td></tr>
+    <tr><td class="paramname">testFunction</td><td>Test function. </td></tr>
+    <tr><td class="paramname">testData</td><td>Data to be forwarded to the test function. </td></tr>
+    <tr><td class="paramname">psubmatrix</td><td>Pointer for storing a minimal submatrix not having the property. </td></tr>
+    <tr><td class="paramname">numRemainingRows</td><td>Number of rows of submatrix to search in. </td></tr>
+    <tr><td class="paramname">remainingRows</td><td>Rows of submatrix to search in. </td></tr>
+    <tr><td class="paramname">numRemainingColumns</td><td>Number of columns of submatrix to search in. </td></tr>
+    <tr><td class="paramname">remainingColumns</td><td>Columns of submatrix to search in. </td></tr>
     <tr><td class="paramname">timeLimit</td><td>Time limit to impose. </td></tr>
   </table>
   </dd>

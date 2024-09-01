@@ -21,7 +21,6 @@
 </script>
 <script type="text/javascript" async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
-<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
@@ -109,17 +108,27 @@ $(function() {
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  <span class="keywordtype">double</span> timeLimit                      </div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;);</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160; </div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;}</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160; </div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* CMR_HEREDITARY_PROPERTY_H */</span><span class="preprocessor"></span></div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> <a class="code" href="hereditary__property_8h.html#a1657d52780bf93e4d08cf88cdb071b5a">CMRtestHereditaryPropertyGreedy</a>(</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  <a class="code" href="structCMR__ENVIRONMENT.html">CMR</a>* cmr,                             </div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  <a class="code" href="structCMR__CHRMAT.html">CMR_CHRMAT</a>* matrix,                   </div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  <a class="code" href="hereditary__property_8h.html#a07a2a3f3148ca5bde7156065264d9d9e">HereditaryPropertyTest</a> testFunction,  </div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  <span class="keywordtype">void</span>* testData,                       </div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  <a class="code" href="structCMR__SUBMAT.html">CMR_SUBMAT</a>** psubmatrix,              </div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  <span class="keywordtype">double</span> timeLimit                      </div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;);</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160; </div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;}</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160; </div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="preprocessor">#endif </span><span class="comment">/* CMR_HEREDITARY_PROPERTY_H */</span><span class="preprocessor"></span></div>
 <div class="ttc" id="aelement_8h_html"><div class="ttname"><a href="element_8h.html">element.h</a></div><div class="ttdoc">Functionality for the row and column elements of a matrix.</div></div>
 <div class="ttc" id="aenv_8h_html"><div class="ttname"><a href="env_8h.html">env.h</a></div><div class="ttdoc">Basic functionality of the software library.</div></div>
 <div class="ttc" id="aenv_8h_html_ae2f4ad54b976c2b9a099246c6dc0be87"><div class="ttname"><a href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a></div><div class="ttdeci">CMR_ERROR</div><div class="ttdoc">Type for return codes of library functions.</div><div class="ttdef"><b>Definition:</b> env.h:32</div></div>
 <div class="ttc" id="aenv__internal_8h_html"><div class="ttname"><a href="env__internal_8h.html">env_internal.h</a></div></div>
 <div class="ttc" id="ahereditary__property_8h_html_a07a2a3f3148ca5bde7156065264d9d9e"><div class="ttname"><a href="hereditary__property_8h.html#a07a2a3f3148ca5bde7156065264d9d9e">HereditaryPropertyTest</a></div><div class="ttdeci">CMR_ERROR(* HereditaryPropertyTest)(CMR *cmr, CMR_CHRMAT *matrix, void *data, bool *phasProperty, CMR_SUBMAT **psubmatrix, double timeLimit)</div><div class="ttdef"><b>Definition:</b> hereditary_property.h:13</div></div>
-<div class="ttc" id="ahereditary__property_8h_html_aefab04c2f8d9b945bd8bfa4e559b52d1"><div class="ttname"><a href="hereditary__property_8h.html#aefab04c2f8d9b945bd8bfa4e559b52d1">CMRtestHereditaryPropertySimple</a></div><div class="ttdeci">CMR_ERROR CMRtestHereditaryPropertySimple(CMR *cmr, CMR_CHRMAT *matrix, HereditaryPropertyTest testFunction, void *testData, CMR_SUBMAT **psubmatrix, double timeLimit)</div><div class="ttdoc">Tests a given matrix for the hereditary property defined by a given testFunction.</div><div class="ttdef"><b>Definition:</b> hereditary_property.c:7</div></div>
+<div class="ttc" id="ahereditary__property_8h_html_a1657d52780bf93e4d08cf88cdb071b5a"><div class="ttname"><a href="hereditary__property_8h.html#a1657d52780bf93e4d08cf88cdb071b5a">CMRtestHereditaryPropertyGreedy</a></div><div class="ttdeci">CMR_ERROR CMRtestHereditaryPropertyGreedy(CMR *cmr, CMR_CHRMAT *matrix, HereditaryPropertyTest testFunction, void *testData, CMR_SUBMAT **psubmatrix, double timeLimit)</div><div class="ttdoc">Greedily tests a given matrix for the hereditary property defined by a given testFunction.</div><div class="ttdef"><b>Definition:</b> hereditary_property.c:176</div></div>
+<div class="ttc" id="ahereditary__property_8h_html_aefab04c2f8d9b945bd8bfa4e559b52d1"><div class="ttname"><a href="hereditary__property_8h.html#aefab04c2f8d9b945bd8bfa4e559b52d1">CMRtestHereditaryPropertySimple</a></div><div class="ttdeci">CMR_ERROR CMRtestHereditaryPropertySimple(CMR *cmr, CMR_CHRMAT *matrix, HereditaryPropertyTest testFunction, void *testData, CMR_SUBMAT **psubmatrix, double timeLimit)</div><div class="ttdoc">Tests a given matrix for the hereditary property defined by a given testFunction.</div><div class="ttdef"><b>Definition:</b> hereditary_property.c:159</div></div>
 <div class="ttc" id="amatrix_8h_html"><div class="ttname"><a href="matrix_8h.html">matrix.h</a></div><div class="ttdoc">Functionality for sparse matrices.</div></div>
 <div class="ttc" id="astructCMR__CHRMAT_html"><div class="ttname"><a href="structCMR__CHRMAT.html">CMR_CHRMAT</a></div><div class="ttdoc">Row-wise representation of sparse char matrix.</div><div class="ttdef"><b>Definition:</b> matrix.h:220</div></div>
 <div class="ttc" id="astructCMR__ENVIRONMENT_html"><div class="ttname"><a href="structCMR__ENVIRONMENT.html">CMR_ENVIRONMENT</a></div><div class="ttdef"><b>Definition:</b> env_internal.h:45</div></div>
