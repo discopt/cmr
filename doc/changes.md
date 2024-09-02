@@ -4,6 +4,8 @@
   - Fixed a bug in the code for printing dot-files for transposed graphic/network matrices; reported by Christopher Hojny.
   - Added a `timeLimit` parameter to all potentially time intensive functions.
   - Bugfix for the `timeLimit` parameter.
+  - Added generator for wheel matrices.
+  - Added first enumerative code for recognition of balanced matrices.
 
 ## Version 1.3 ##
 
