@@ -17,12 +17,16 @@ The command
 determines whether the [matrix](\ref file-formats-matrix) given in file `IN-MAT` is complement totally unimodular.
 
 **Options**:
-  - `-i FORMAT`   Format of file `IN-MAT`, among `dense` for \ref dense-matrix and `sparse` for \ref sparse-matrix; default: dense.
-  - `-o FORMAT`   Format of file `OUT-MAT`, among `dense` for \ref dense-matrix and `sparse` for \ref sparse-matrix; default: same as for `IN-MAT`.
+  - `-i FORMAT`   Format of file `IN-MAT`; default: [dense](\ref dense-matrix).
+  - `-o FORMAT`   Format of file `OUT-MAT`; default: same as for `IN-MAT`.
   - `-n OUT-OPS`  Write complement operations that leads to a non-totally-unimodular matrix to file `OUT-OPS`; default: skip computation.
   - `-N OUT-MAT`  Write a complemented matrix that is non-totally-unimodular to file `OUT-MAT`; default: skip computation.
-  - `-s`          Print statistics about the computation to stderr.
 
+**Advanced options**:
+  - `--stats`            Print statistics about the computation to stderr.
+  - `--time-limit LIMIT` Allow at most `LIMIT` seconds for the computation.
+
+Formats for matrices: [dense](\ref dense-matrix), [sparse](\ref sparse-matrix)
 If `IN-MAT` is `-` then the [matrix](\ref file-formats-matrix) is read from stdin.
 If `OUT-OPS` or `OUT-MAT` is `-` then the list of operations (resp. the [matrix](\ref file-formats-matrix)) is written to stdout.
 
@@ -44,12 +48,16 @@ The command
 applies a sequence of row or column complement operations the matrix given in file `IN-MAT` and writes the result to `OUT-MAT`.
 
 **Options**:
-  - `-i FORMAT` Format of file `IN-MAT`, among `dense` for \ref dense-matrix and `sparse` for \ref sparse-matrix; default: dense.
-  - `-o FORMAT` Format of file `OUT-MAT`, among `dense` for \ref dense-matrix and `sparse` for \ref sparse-matrix; default: same as for `IN-MAT`.
+  - `-i FORMAT`   Format of file `IN-MAT`; default: [dense](\ref dense-matrix).
+  - `-o FORMAT` Format of file `OUT-MAT`; default: same as for `IN-MAT`.
   - `-r ROW`    Apply row complement operation to row `ROW`.
   - `-c COLUMN` Apply column complement operation to column `COLUMN`.
-  - `-s`        Print statistics about the computation to stderr.
 
+**Advanced options**:
+  - `--stats`            Print statistics about the computation to stderr.
+  - `--time-limit LIMIT` Allow at most `LIMIT` seconds for the computation.
+
+Formats for matrices: [dense](\ref dense-matrix), [sparse](\ref sparse-matrix)
 If `IN-MAT` is `-` then the matrix is read from stdin.
 If `OUT-MAT` is `-` then the matrix is written to stdout.
 

@@ -243,18 +243,31 @@ CMR_ERROR perturbMatrix(
   return CMR_OKAY;
 }
 
+/**
+ * \brief Prints the usage of the \p program to stdout.
+ *
+ * \returns \c EXIT_FAILURE.
+ */
+
 int printUsage(const char* program)
 {
-  fprintf(stderr, "Usage: %s IN-MAT OUT-MAT [OPTION]...\n\n", program);
-  fputs("Copies the matrix from file IN-MAT to the file OUT-MAT after applying perturbations.\n\n", stderr);
+  fputs("Usage:\n", stderr);
+
+  fprintf(stderr, "%s IN-MAT OUT-MAT [OPTION]...\n", program);
+  fputs("  copies the matrix from file IN-MAT to the file OUT-MAT after applying random perturbations.\n", stderr);
+  fputs("\n", stderr);
+
   fputs("Options:\n", stderr);
-  fputs("  -i FORMAT Format of file IN-MAT, among `dense' and `sparse'; default: dense.\n", stderr);
-  fputs("  -o FORMAT Format of file IN-MAT, among `dense' and `sparse'; default: same as format of IN-MAT.\n", stderr);
+  fputs("  -i FORMAT Format of file IN-MAT; default: dense.\n", stderr);
+  fputs("  -o FORMAT Format of file OUT-MAT; default: same as format of IN-MAT.\n", stderr);
   fputs("  -0 NUM    Turn NUM randomly chosen nonzero entries to 0s.\n", stderr);
   fputs("  -1 NUM    Turn NUM randomly chosen zero entries into 1s.\n", stderr);
   fputs("  --1 NUM   Turn NUM randomly chosen zero entries into -1s.\n", stderr);
   fputs("  -b NUM    Flip NUM randomly chosen entries over the binary field.\n", stderr);
   fputs("  -t NUM    Flip NUM randomly chosen entries over the ternary field.\n\n", stderr);
+  fputs("\n", stderr);
+
+  fputs("Formats for matrices: dense, sparse\n", stderr);
   fputs("If IN-MAT is `-' then the input matrix is read from stdin.\n", stderr);
   fputs("If OUT-MAT is `-' then the output matrix is written to stdout.\n", stderr);
   

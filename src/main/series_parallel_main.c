@@ -121,22 +121,39 @@ CMR_ERROR recognizeSeriesParallel(
   return CMR_OKAY;
 }
 
+/**
+ * \brief Prints the usage of the \p program to stdout.
+ *
+ * \returns \c EXIT_FAILURE.
+ */
+
 int printUsage(const char* program)
 {
   fputs("Usage:\n", stderr);
-  fprintf(stderr, "%s IN-MAT [OPTION]...\n\n", program);
-  fputs("  determines whether the matrix given in file IN-MAT is series-parallel.\n\n", stderr);
+
+  fprintf(stderr, "%s IN-MAT [OPTION]...\n", program);
+  fputs("  determines whether the matrix given in file IN-MAT is series-parallel.\n", stderr);
+  fputs("\n", stderr);
+
   fputs("Options:\n", stderr);
-  fputs("  -i FORMAT       Format of file IN-MAT, among `dense' and `sparse'; default: dense.\n", stderr);
-  fputs("  -S OUT-SP       Write the list of series-parallel reductions to file OUT-SP; default: skip computation.\n", stderr);
+  fputs("  -i FORMAT       Format of file IN-MAT; default: dense.\n", stderr);
+  fputs("  -S OUT-SP       Write the list of series-parallel reductions to file OUT-SP; default: skip computation.\n",
+    stderr);
   fputs("  -R OUT-REDUCED  Write the reduced submatrix to file `OUT-REDUCED`; default: skip computation.\n", stderr);
-  fputs("  -N NON-SUB      Write a minimal non-series-parallel submatrix to file `NON-SUB`; default: skip computation.\n", stderr);
+  fputs("  -N NON-SUB      Write a minimal non-series-parallel submatrix to file `NON-SUB`; default: skip"
+    " computation.\n", stderr);
   fputs("  -b              Test for being binary series-parallel; default: ternary.\n", stderr);
-  fputs("  -s`             Print statistics about the computation to stderr.\n\n", stderr);
+  fputs("\n", stderr);
+
   fputs("Advanced options:\n", stderr);
-  fputs("  --time-limit LIMIT   Allow at most LIMIT seconds for the computation.\n\n", stderr);
+  fputs("  --stats            Print statistics about the computation to stderr.\n", stderr);
+  fputs("  --time-limit LIMIT Allow at most LIMIT seconds for the computation.\n", stderr);
+  fputs("\n", stderr);
+
+  fputs("Formats for matrices: dense, sparse\n", stderr);
   fputs("If IN-MAT is `-' then the matrix is read from stdin.\n", stderr);
-  fputs("If OUT-SP, OUT-REDUCED or NON-SUB is `-' then the list of reductions (resp. the submatrix) is written to stdout.\n", stderr);
+  fputs("If OUT-SP, OUT-REDUCED or NON-SUB is `-' then the list of reductions (resp. the submatrix) is written to"
+    " stdout.\n", stderr);
 
   return EXIT_FAILURE;
 }
@@ -179,7 +196,7 @@ int main(int argc, char** argv)
       outputSubmatrixFileName = argv[++a];
     else if (!strcmp(argv[a], "-b"))
       binary = true;
-    else if (!strcmp(argv[a], "-s"))
+    else if (!strcmp(argv[a], "--stats"))
       printStats = true;
     else if (!strcmp(argv[a], "--time-limit") && (a+1 < argc))
     {

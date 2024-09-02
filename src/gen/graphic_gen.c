@@ -31,14 +31,27 @@ size_t randRange(size_t first, size_t beyond)
   return first + x / representatives;
 }
 
+/**
+ * \brief Prints the usage of the \p program to stdout.
+ *
+ * \returns \c EXIT_FAILURE.
+ */
+
 int printUsage(const char* program)
 {
-  fprintf(stderr, "Usage: %s [OPTIONS] ROWS COLS\n\n", program);
-  fputs("Creates a random ROWS-by-COLS 0/1 graphic matrix.\n", stderr);
+  fputs("Usage:\n", stderr);
+
+  fprintf(stderr, "%s ROWS COLS [OPTION]...\n", program);
+  fputs("  creates a random ROWS-by-COLS 0/1 graphic matrix and writes it to stdout.\n", stderr);
+  fputs("\n", stderr);
+
   fputs("Options:\n", stderr);
   fputs("  -B NUM     Benchmarks the recognition algorithm for the created matrix with NUM repetitions.\n", stderr);
-  fputs("  -o FORMAT  Format of output FILE; default: `dense'.\n", stderr);
+  fputs("  -o FORMAT  Format of output matrix; default: dense.\n", stderr);
+  fputs("\n", stderr);
+
   fputs("Formats for matrices: dense, sparse\n", stderr);
+
   return EXIT_FAILURE;
 }
 

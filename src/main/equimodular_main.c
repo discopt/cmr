@@ -157,19 +157,27 @@ CMR_ERROR testEquimodularity(
 
 int printUsage(const char* program)
 {
-   fputs("Usage:\n", stderr);
-  fprintf(stderr, "%s IN-MAT [OPTION]...\n\n", program);
-  fputs("  determines whether the matrix given in file IN-MAT is (strongly) equimodular for determinant gcd k.\n\n", stderr);
+  fputs("Usage:\n", stderr);
+
+  fprintf(stderr, "%s IN-MAT [OPTION]...\n", program);
+  fputs("  determines whether the matrix given in file IN-MAT is (strongly) equimodular for determinant gcd k.\n",
+    stderr);
+  fputs("\n", stderr);
+
   fputs("Options:\n", stderr);
-  fputs("  -i FORMAT  Format of input FILE; default: `dense'.\n", stderr);
+  fputs("  -i FORMAT  Format of file IN-MAT; default: dense.\n", stderr);
   fputs("  -t         Test the transpose matrix instead.\n", stderr);
   fputs("  -s         Test for strong equimodularity.\n", stderr);
   fputs("  -u         Test only for unimodularity, i.e., k = 1.\n", stderr);
+  fputs("\n", stderr);
+
   fputs("Advanced options:\n", stderr);
-  fputs("  --stats              Print statistics about the computation to stderr.\n\n", stderr);
+  fputs("  --stats              Print statistics about the computation to stderr.\n", stderr);
   fputs("  --time-limit LIMIT   Allow at most LIMIT seconds for the computation.\n", stderr);
+  fputs("\n", stderr);
+
   fputs("Formats for matrices: dense, sparse\n", stderr);
-  fputs("If FILE is `-', then the input will be read from stdin.\n", stderr);
+  fputs("If IN-MAT is `-', then the input will be read from stdin.\n", stderr);
 
   return EXIT_FAILURE;
 }

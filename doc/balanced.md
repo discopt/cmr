@@ -12,14 +12,16 @@ The command
 determines whether the [matrix](\ref file-formats-matrix) given in file `IN-MAT` is balanced.
 
 **Options:**
-  - `-i FORMAT`    Format of file `IN-MAT`, among `dense` for \ref dense-matrix and `sparse` for \ref sparse-matrix; default: dense.
+  - `-i FORMAT`    Format of file `IN-MAT`; default: [dense](\ref dense-matrix).
   - `-N NON-SUB`   Write a minimal non-balanced submatrix to file `NON-SUB`; default: skip computation.
-  - `-s`           Print statistics about the computation to stderr.
 
 **Advanced options:**
-  - `--time-limit LIMIT` Allow at most LIMIT seconds for the computation.
-  - `--algorithm ALGO`   Algorithm to use, among `enumerate` and `graph`; default: choose best.
+  - `--stats`              Print statistics about the computation to stderr.
+  - `--time-limit LIMIT`   Allow at most `LIMIT` seconds for the computation.
+  - `--algorithm ALGO`     Algorithm to use, among `enumerate` and `graph`; default: choose best.
+  - `--no-series-parallel` Do not try series-parallel operations for preprocessing.
 
+Formats for matrices: [dense](\ref dense-matrix), [sparse](\ref sparse-matrix)
 If `IN-MAT` is `-` then the [matrix](\ref file-formats-matrix) is read from stdin.
 If `NON-SUB` is `-` then the [submatrix](\ref file-formats-submatrix) is written to stdout.
 

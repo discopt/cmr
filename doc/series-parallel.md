@@ -38,13 +38,17 @@ If this is not the case, then a maximal number of SP-reductions is carried out, 
 Moreover, one can ask for one of the minimal non-series-parallel submatrices above.
 
 **Options:**
-  - `-i FORMAT`       Format of file `IN-MAT`, among `dense` for \ref dense-matrix and `sparse` for \ref sparse-matrix; default: dense.
+  - `-i FORMAT`       Format of file `IN-MAT`; default: [dense](\ref dense-matrix).
   - `-S OUT-SP`       Write the list of series-parallel reductions to file `OUT-SP`; default: skip computation.
   - `-R OUT-REDUCED`  Write the reduced submatrix to file `OUT-REDUCED`; default: skip computation.
   - `-N NON-SUB`      Write a minimal non-series-parallel submatrix to file `NON-SUB`; default: skip computation.
   - `-b`              Test for being binary series-parallel; default: ternary.
-  - `-s`              Print statistics about the computation to stderr.
 
+**Advanced options**:
+  - `--stats`            Print statistics about the computation to stderr.
+  - `--time-limit LIMIT` Allow at most `LIMIT` seconds for the computation.
+
+Formats for matrices: [dense](\ref dense-matrix), [sparse](\ref sparse-matrix)
 If `IN-MAT` is `-` then the [matrix](\ref file-formats-matrix) is read from stdin.
 If `OUT-SP`, `OUT-REDUCED` or `NON-SUB` is `-` then the list of reductions (resp. the [submatrix](\ref file-formats-submatrix)) is written to stdout.
 

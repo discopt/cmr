@@ -576,14 +576,23 @@ CMR_ERROR runInt(
   return CMR_OKAY;
 }
 
+/**
+ * \brief Prints the usage of the \p program to stdout.
+ *
+ * \returns \c EXIT_FAILURE.
+ */
+
 int printUsage(const char* program)
 {
   fputs("Usage:\n", stderr);
-  fprintf(stderr, "%s IN-MAT OUT-MAT [OPTION]...\n\n", program);
-  fputs("  copies the matrix from file IN-MAT to file OUT-MAT, potentially applying certain operations.\n\n", stderr);
+
+  fprintf(stderr, "%s IN-MAT OUT-MAT [OPTION]...\n", program);
+  fputs("  copies the matrix from file IN-MAT to file OUT-MAT, potentially applying certain operations.\n", stderr);
+  fputs("\n", stderr);
+
   fputs("Options:\n", stderr);
-  fputs("  -i FORMAT Format of file IN-MAT, among `dense' and `sparse'; default: dense.\n", stderr);
-  fputs("  -o FORMAT Format of file OUT-MAT, among `dense' and `sparse'; default: same format as of IN-MAT.\n", stderr);
+  fputs("  -i FORMAT Format of file IN-MAT; default: dense.\n", stderr);
+  fputs("  -o FORMAT Format of file OUT-MAT; default: same format as of IN-MAT.\n", stderr);
   fputs("  -S IN-SUB Consider the submatrix of IN-MAT specified in file IN-SUB instead of IN-MAT itself;"
     " can be combined with other operations.\n", stderr);
   fputs("  -t        Transpose the matrix; can be combined with other operations.\n", stderr);
@@ -592,7 +601,10 @@ int printUsage(const char* program)
   fputs("  -r        Randomize the output matrix by randomly permuting rows/columns.\n", stderr);
   fputs("  -R2 NUM   Randomize the output matrix by performing NUM random binary pivots.\n", stderr);
   fputs("  -R3 NUM   Randomize the output matrix by performing NUM random ternary pivots.\n", stderr);
-  fputs("  -d        Use double arithmetic instead of integers.\n\n", stderr);
+  fputs("  -d        Use double arithmetic instead of integers.\n", stderr);
+  fputs("\n", stderr);
+
+  fputs("Formats for matrices: dense, sparse\n", stderr);
   fputs("If IN-MAT is `-' then the input matrix is read from stdin.\n", stderr);
   fputs("If OUT-MAT is `-' then the output matrix is written to stdout.\n", stderr);
 

@@ -145,27 +145,47 @@ CMR_ERROR findLargeSubmatrix(
   return CMR_OKAY;
 }
 
+/**
+ * \brief Prints the usage of the \p program to stdout.
+ *
+ * \returns \c EXIT_FAILURE.
+ */
+
 int printUsage(const char* program)
 {
   fputs("Usage:\n", stderr);
-  fprintf(stderr, "%s IN-MAT [OPTION]...\n\n", program);
-  fputs("  (1) determines whether the matrix given in file IN-MAT is integer (resp. binary or ternary).\n\n", stderr);
-  fprintf(stderr, "%s IN-MAT -R OUT-SUB [OPTION]...\n\n", program);
-  fputs("  (2) finds a large binary (resp. ternary) submatrix of the matrix given in file IN-MAT.\n\n\n",
+
+  fprintf(stderr, "%s IN-MAT [OPTION]...\n", program);
+  fputs("  (1) determines whether the matrix given in file IN-MAT is integer (resp. binary or ternary).\n", stderr);
+  fputs("\n", stderr);
+
+  fprintf(stderr, "%s IN-MAT -R OUT-SUB [OPTION]...\n", program);
+  fputs("  (2) finds a large binary (resp. ternary) submatrix of the matrix given in file IN-MAT.\n",
     stderr);
+  fputs("\n", stderr);
+
   fputs("Options specific to (1):\n", stderr);
   fputs("  -b         Test whether the matrix is binary, i.e., has entries in {0,+1}.\n", stderr);
   fputs("  -t         Test whether the matrix is ternary, i.e., has entries in {-1,0,+1}.\n", stderr);
-  fputs("  -I         Test whether the matrix is integer.\n\n", stderr);
+  fputs("  -I         Test whether the matrix is integer.\n", stderr);
+  fputs("\n", stderr);
+
   fputs("Options specific to (2):\n", stderr);
   fputs("  -b         Find a large binary submatrix, i.e., one with only entries in {0,+1}.\n", stderr);
-  fputs("  -t         Find a large ternary submatrix, i.e., one with only entries in {-1,0,+1}.\n\n", stderr);
+  fputs("  -t         Find a large ternary submatrix, i.e., one with only entries in {-1,0,+1}.\n", stderr);
+  fputs("\n", stderr);
+
   fputs("Common options:\n", stderr);
-  fputs("  -i FORMAT    Format of file IN-MAT, among `dense' and `sparse'; default: dense.\n", stderr);
-  fputs("  -s           Print statistics about the computation to stderr.\n", stderr);
-  fputs("  -e EPSILON   Allows rounding of numbers up to tolerance EPSILON; default: 1.0e-9.\n\n", stderr);
+  fputs("  -i FORMAT    Format of file IN-MAT; default: dense.\n", stderr);
+  fputs("  -e EPSILON   Allows rounding of numbers up to tolerance EPSILON; default: 1.0e-9.\n", stderr);
+  fputs("\n", stderr);
+
   fputs("Advanced options:\n", stderr);
-  fputs("  --time-limit LIMIT   Allow at most LIMIT seconds for the computation.\n\n", stderr);
+  fputs("  --stats              Print statistics about the computation to stderr.\n", stderr);
+  fputs("  --time-limit LIMIT   Allow at most LIMIT seconds for the computation.\n", stderr);
+  fputs("\n", stderr);
+
+  fputs("Formats for matrices: dense, sparse\n", stderr);
   fputs("If IN-MAT is `-' then the matrix is read from stdin.\n", stderr);
   fputs("If OUT-SUB is `-' then the submatrix is written to stdout.\n", stderr);
 

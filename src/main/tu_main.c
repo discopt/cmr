@@ -130,22 +130,30 @@ CMR_ERROR testTotalUnimodularity(
 int printUsage(const char* program)
 {
   fputs("Usage:\n", stderr);
-  fprintf(stderr, "%s IN-MAT [OPTION]...\n\n", program);
-  fputs("  determines whether the matrix given in file IN-MAT is totally unimodular.\n\n", stderr);
+
+  fprintf(stderr, "%s IN-MAT [OPTION]...\n", program);
+  fputs("  determines whether the matrix given in file IN-MAT is totally unimodular.\n", stderr);
+  fputs("\n", stderr);
+
   fputs("Options:\n", stderr);
-  fputs("  -i FORMAT  Format of file IN-MAT, among `dense' and `sparse'; default: dense.\n", stderr);
+  fputs("  -i FORMAT  Format of file IN-MAT; default: dense.\n", stderr);
   fputs("  -D OUT-DEC Write a decomposition tree of the underlying regular matroid to file OUT-DEC; "
     "default: skip computation.\n", stderr);
   fputs("  -N NON-SUB Write a minimal non-totally-unimodular submatrix to file NON-SUB; default: skip computation.\n",
     stderr);
+  fputs("\n", stderr);
+
   fputs("Advanced options:\n", stderr);
-  fputs("  --stats              Print statistics about the computation to stderr.\n\n", stderr);
+  fputs("  --stats              Print statistics about the computation to stderr.\n", stderr);
   fputs("  --time-limit LIMIT   Allow at most LIMIT seconds for the computation.\n", stderr);
   fputs("  --no-direct-graphic  Check only 3-connected matrices for regularity.\n", stderr);
-  fputs("  --no-series-parallel Do not allow series-parallel operations in decomposition tree.\n\n", stderr);
-  fputs("  --naive-submatrix    Use naive bad submatrix algorithm instead of greedy heuristic.\n\n", stderr);
-  fputs("  --algo ALGO          Use algorithm from {decomposition, eulerian, partition}; default: decomposition.\n\n",
+  fputs("  --no-series-parallel Do not allow series-parallel operations in decomposition tree.\n", stderr);
+  fputs("  --naive-submatrix    Use naive bad submatrix algorithm instead of greedy heuristic.\n", stderr);
+  fputs("  --algo ALGO          Use algorithm from {decomposition, eulerian, partition}; default: decomposition.\n",
     stderr);
+  fputs("\n", stderr);
+
+  fputs("Formats for matrices: dense, sparse\n", stderr);
   fputs("If IN-MAT is `-' then the matrix is read from stdin.\n", stderr);
   fputs("If OUT-DEC or NON-SUB is `-' then the decomposition tree (resp. the submatrix) is written to stdout.\n",
     stderr);

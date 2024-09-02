@@ -400,29 +400,44 @@ CMR_ERROR computeNetwork(
 int printUsage(const char* program)
 {
   fputs("Usage:\n", stderr);
-  fprintf(stderr, "%s IN-MAT [OPTION]...\n\n", program);
-  fputs("  (1) determines whether the matrix given in file IN-MAT is (co)network.\n\n", stderr);
-  fprintf(stderr, "%s -c IN-GRAPH OUT-MAT [OPTION]...\n\n", program);
-  fputs("  (2) computes a (co)network matrix corresponding to the digraph from file IN-GRAPH and writes it to OUT-MAT.\n\n\n",
-    stderr);
+
+  fprintf(stderr, "%s IN-MAT [OPTION]...\n", program);
+  fputs("  (1) determines whether the matrix given in file IN-MAT is (co)network.\n", stderr);
+  fputs("\n", stderr);
+
+  fprintf(stderr, "%s -c IN-GRAPH OUT-MAT [OPTION]...\n", program);
+  fputs("  (2) computes a (co)network matrix corresponding to the digraph from file IN-GRAPH and writes it to"
+    " OUT-MAT.\n", stderr);
+  fputs("\n", stderr);
+
   fputs("Options specific to (1):\n", stderr);
-  fputs("  -i FORMAT    Format of file IN-MAT, among `dense' and `sparse'; default: dense.\n", stderr);
+  fputs("  -i FORMAT    Format of file IN-MAT; default: dense.\n", stderr);
   fputs("  -t           Test for being conetwork; default: test for being network.\n", stderr);
   fputs("  -G OUT-GRAPH Write a digraph to file OUT-GRAPH; default: skip computation.\n", stderr);
   fputs("  -T OUT-TREE  Write a directed spanning tree to file OUT-TREE; default: skip computation.\n", stderr);
-  fputs("  -D OUT-DOT   Write a dot file OUT-DOT with the digraph and the directed spanning tree; default: skip computation.\n", stderr);
-  fputs("  -N NON-SUB   Write a minimal non-(co)network submatrix to file NON-SUB; default: skip computation.\n\n", stderr);
-  fputs("Options specific to (2):\n", stderr);
-  fputs("  -o FORMAT    Format of file OUT-MAT, among `dense' and `sparse'; default: dense.\n", stderr);
-  fputs("  -t           Return the transpose of the network matrix.\n", stderr);
-  fputs("  -T IN-TREE   Read a directed tree from file IN-TREE; default: use first specified arcs as tree edges.\n\n", stderr);
-  fputs("Common options:\n", stderr);
-  fputs("  -s           Print statistics about the computation to stderr.\n\n", stderr);
-  fputs("Advanced options:\n", stderr);
-  fputs("  --time-limit LIMIT   Allow at most LIMIT seconds for the computation.\n\n", stderr);
-  fputs("If IN-MAT, IN-GRAPH or IN-TREE is `-' then the matrix (resp. the digraph or directed tree) is read from stdin.\n", stderr);
-  fputs("If OUT-GRAPH, OUT-TREE, OUT-DOT or NON-SUB is `-' then the digraph (resp. the directed tree, dot file or non-(co)network submatrix) is written to stdout.\n",
+  fputs("  -D OUT-DOT   Write a dot file OUT-DOT with the digraph and the directed spanning tree; default: skip"
+    " computation.\n", stderr);
+  fputs("  -N NON-SUB   Write a minimal non-(co)network submatrix to file NON-SUB; default: skip computation.\n",
     stderr);
+  fputs("\n", stderr);
+
+  fputs("Options specific to (2):\n", stderr);
+  fputs("  -o FORMAT    Format of file OUT-MAT; default: dense.\n", stderr);
+  fputs("  -t           Return the transpose of the network matrix.\n", stderr);
+  fputs("  -T IN-TREE   Read a directed tree from file IN-TREE; default: use first specified arcs as tree edges.\n",
+    stderr);
+  fputs("\n", stderr);
+
+  fputs("Advanced options:\n", stderr);
+  fputs("  --stats            Print statistics about the computation to stderr.\n", stderr);
+  fputs("  --time-limit LIMIT Allow at most LIMIT seconds for the computation.\n", stderr);
+  fputs("\n", stderr);
+
+  fputs("Formats for matrices: dense, sparse\n", stderr);
+  fputs("If IN-MAT, IN-GRAPH or IN-TREE is `-' then the matrix (resp. the digraph or directed tree) is read from"
+    " stdin.\n", stderr);
+  fputs("If OUT-GRAPH, OUT-TREE, OUT-DOT or NON-SUB is `-' then the digraph (resp. the directed tree, dot file or"
+    " non-(co)network submatrix) is written to stdout.\n", stderr);
 
   return EXIT_FAILURE;
 }
@@ -452,7 +467,7 @@ int main(int argc, char** argv)
       task = TASK_COMPUTE;
     else if (!strcmp(argv[a], "-t"))
       transposed = true;
-    else if (!strcmp(argv[a], "-s"))
+    else if (!strcmp(argv[a], "--stats"))
       printStats = true;
     else if (!strcmp(argv[a], "-i") && a+1 < argc)
     {

@@ -108,7 +108,7 @@ typedef struct DecompositionTask
  *
  * \returns \c NULL if consistent. Otherwise, an explanation string is returned, which must freed with \c free().
  *
- * \see \ref CMRconsistencyAssert() for checking the returned string and aborting in case of inconsistency.
+ * \see \ref CMRdbgConsistencyAssert() for checking the returned string and aborting in case of inconsistency.
  */
 
 char* CMRseymourConsistency(

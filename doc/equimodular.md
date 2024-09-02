@@ -18,16 +18,20 @@ The special cases with \f$ k = 1 \f$ are called **unimodular** and **strongly un
 
 The executable `cmr-equimodular` determines whether a given [matrix](\ref file-formats-matrix) \f$ M \f$ with determinant gcd \f$ k \f$.
 
-    ./cmr-equimodular [OPTION]... FILE
+    ./cmr-equimodular IN-MAT [OPTION]...
 
-Options:
-  - `-i FORMAT` Format of input FILE; default: `dense`.
+**Options:**
+  - `-i FORMAT` Format of of file `IN-MAT`; default: [dense](\ref dense-matrix).
   - `-t`        Test \f$ M^{\textsf{T}} \f$ instead.
   - `-s`        Test for strong equimodularity.
   - `-u`        Test only for unimodularity, i.e., \f$ k = 1 \f$.
 
-Formats for matrices are \ref dense-matrix and \ref sparse-matrix.
-If FILE is `-`, then the input will be read from stdin.
+**Advanced options**:
+  - `--stats`            Print statistics about the computation to stderr.
+  - `--time-limit LIMIT` Allow at most `LIMIT` seconds for the computation.
+
+Formats for matrices: [dense](\ref dense-matrix), [sparse](\ref sparse-matrix)
+If `IN-MAT` is `-`, then the input will be read from stdin.
 
 ## C Interface ##
 

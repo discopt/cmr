@@ -31,17 +31,6 @@ size_t randRange(size_t first, size_t beyond)
   return first + x / representatives;
 }
 
-int printUsage(const char* program)
-{
-  fprintf(stderr, "Usage: %s [OPTIONS] ORDER\n\n", program);
-  fputs("Creates an ORDER-by-ORDER cycle matrix.\n", stderr);
-  fputs("Options:\n", stderr);
-  fputs("  -01        In each column with two 0s in rows 1 and 2, replace them by 1s; default: off.\n", stderr);
-  fputs("  -o FORMAT  Format of output FILE; default: `dense'.\n", stderr);
-  fputs("Formats for matrices: dense, sparse\n", stderr);
-  return EXIT_FAILURE;
-}
-
 int compare(const void* pa, const void* pb)
 {
   size_t a = *((size_t*)(pa));
@@ -106,6 +95,29 @@ CMR_ERROR genMatrixCycle(
   CMR_CALL( CMRfreeEnvironment(&cmr) );
 
   return CMR_OKAY;
+}
+
+/**
+ * \brief Prints the usage of the \p program to stdout.
+ *
+ * \returns \c EXIT_FAILURE.
+ */
+
+int printUsage(const char* program)
+{
+  fputs("Usage:\n", stderr);
+  fprintf(stderr, "%s ORDER [OPTION]...\n", program);
+  fputs("  creates an ORDER-by-ORDER cycle matrix and writes it to stdout.\n", stderr);
+  fputs("\n", stderr);
+
+  fputs("Options:\n", stderr);
+  fputs("  -01        In each column with two 0s in rows 1 and 2, replace them by 1s; default: off.\n", stderr);
+  fputs("  -o FORMAT  Format of output matrix; default: dense.\n", stderr);
+  fputs("\n", stderr);
+
+  fputs("Formats for matrices: dense, sparse\n", stderr);
+
+  return EXIT_FAILURE;
 }
 
 int main(int argc, char** argv)

@@ -58,7 +58,7 @@ CMR_ERROR testRegularity(
   /* Actual test. */
 
   bool isRegular;
-    CMR_SEYMOUR_NODE* decomposition = NULL;
+  CMR_SEYMOUR_NODE* decomposition = NULL;
   CMR_MINOR* minor = NULL;
   CMR_REGULAR_PARAMS params;
   CMR_CALL( CMRregularParamsInit(&params) );
@@ -105,17 +105,26 @@ CMR_ERROR testRegularity(
 int printUsage(const char* program)
 {
   fputs("Usage:\n", stderr);
-  fprintf(stderr, "%s IN-MAT [OPTION]...\n\n", program);
-  fputs("  determines whether the matrix given in file IN-MAT is regular.\n\n", stderr);
+
+  fprintf(stderr, "%s IN-MAT [OPTION]...\n", program);
+  fputs("  determines whether the matrix given in file IN-MAT is regular.\n", stderr);
+  fputs("\n", stderr);
+
   fputs("Options:\n", stderr);
-  fputs("  -i FORMAT    Format of file IN-MAT, among `dense' and `sparse'; default: dense.\n", stderr);
-  fputs("  -D OUT-DEC   Write a decomposition tree of the regular matroid to file OUT-DEC; default: skip computation.\n", stderr);
+  fputs("  -i FORMAT    Format of file IN-MAT; default: dense.\n", stderr);
+  fputs("  -D OUT-DEC   Write a decomposition tree of the regular matroid to file OUT-DEC; default: skip"
+    " computation.\n", stderr);
   fputs("  -N NON-MINOR Write a minimal non-regular minor to file NON-MINOR; default: skip computation.\n", stderr);
-  fputs("  -s           Print statistics about the computation to stderr.\n\n", stderr);
+  fputs("\n", stderr);
+
   fputs("Advanced options:\n", stderr);
+  fputs("  --stats              Print statistics about the computation to stderr.\n", stderr);
   fputs("  --time-limit LIMIT   Allow at most LIMIT seconds for the computation.\n", stderr);
   fputs("  --no-direct-graphic  Check only 3-connected matrices for regularity.\n", stderr);
-  fputs("  --no-series-parallel Do not allow series-parallel operations in decomposition tree.\n\n", stderr);
+  fputs("  --no-series-parallel Do not allow series-parallel operations in decomposition tree.\n", stderr);
+  fputs("\n", stderr);
+
+  fputs("Formats for matrices: dense, sparse\n", stderr);
   fputs("If IN-MAT is `-' then the matrix is read from stdin.\n", stderr);
   fputs("If OUT-DEC or NON-MINOR is `-' then the decomposition tree (resp. the minor) is written to stdout.\n", stderr);
 
@@ -156,7 +165,7 @@ int main(int argc, char** argv)
       outputTree = argv[++a];
     else if (!strcmp(argv[a], "-N") && a+1 < argc)
       outputMinor = argv[++a];
-    else if (!strcmp(argv[a], "-s"))
+    else if (!strcmp(argv[a], "--stats"))
       printStats = true;
     else if (!strcmp(argv[a], "--no-direct-graphic"))
       directGraphicness = false;

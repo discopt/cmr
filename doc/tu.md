@@ -14,17 +14,19 @@ The command
 determines whether the [matrix](\ref file-formats-matrix) given in file `IN-MAT` is totally unimodular.
 
 **Options:**
-  - `-i FORMAT`  Format of file `IN-MAT`, among `dense` for \ref dense-matrix and `sparse` for \ref sparse-matrix; default: dense.
+  - `-i FORMAT`  Format of file `IN-MAT`; default: [dense](\ref dense-matrix).
   - `-D OUT-DEC` Write a decomposition tree of the underlying regular matroid to file `OUT-DEC`; default: skip computation.
   - `-N NON-SUB` Write a minimal non-totally-unimodular submatrix to file `NON-SUB`; default: skip computation.
 
 **Advanced options:**
   - `--stats`              Print statistics about the computation to stderr.
-  - `--time-limit LIMIT`   Allow at most LIMIT seconds for the computation.
+  - `--time-limit LIMIT`   Allow at most `LIMIT` seconds for the computation.
   - `--no-direct-graphic`  Check only 3-connected matrices for regularity.
   - `--no-series-parallel` Do not allow series-parallel operations in decomposition tree.
-  - `--algo ALGO`          Use algorithm from {decomposition, submatrix, partition}; default: decomposition.
+  - `--naive-submatrix`    Use naive bad submatrix algorithm instead of greedy heuristic.
+  - `--algo ALGO`          Use algorithm from {`decomposition`, `submatrix`, `partition`}; default: `decomposition`.
 
+Formats for matrices: [dense](\ref dense-matrix), [sparse](\ref sparse-matrix)
 If `IN-MAT` is `-` then the [matrix](\ref file-formats-matrix) is read from stdin.
 If `OUT-DEC` or `NON-SUB` is `-` then the decomposition tree (resp. the [submatrix](\ref file-formats-submatrix)) is written to stdout.
 

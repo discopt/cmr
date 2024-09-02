@@ -23,14 +23,18 @@ The command
 determines whether the [matrix](\ref file-formats-matrix) given in file `IN-MAT` is (co)network.
 
 **Options**:
-  - `-i FORMAT`    Format of file `IN-MAT`, among `dense` for \ref dense-matrix and `sparse` for \ref sparse-matrix; default: dense.
+  - `-i FORMAT`    Format of file `IN-MAT`; default: [dense](\ref dense-matrix).
   - `-t`           Test for being conetwork; default: test for being network.
   - `-G OUT-GRAPH` Write a digraph to file `OUT-GRAPH`; default: skip computation.
   - `-T OUT-TREE`  Write a directed spanning tree to file `OUT-TREE`; default: skip computation.
   - `-D OUT-DOT`   Write a dot file `OUT-DOT` with the digraph and the directed spanning tree; default: skip computation.
-  - `-N NON-SUB`   Write a minimal non-network submatrix to file `NON-SUB`; default: skip computation.
-  - `-s`           Print statistics about the computation to stderr.
+  - `-N NON-SUB`   Write a minimal non-(co)network submatrix to file `NON-SUB`; default: skip computation.
 
+**Advanced options**:
+  - `--stats`            Print statistics about the computation to stderr.
+  - `--time-limit LIMIT` Allow at most `LIMIT` seconds for the computation.
+
+Formats for matrices: [dense](\ref dense-matrix), [sparse](\ref sparse-matrix)
 If `IN-MAT` is `-` then the [matrix](\ref file-formats-matrix) is read from stdin.
 If `OUT-GRAPH`, `OUT-TREE`, `OUT-DOT` or `NON-SUB` is `-` then the graph (resp. the tree, dot file or non-(co)network [submatrix](\ref file-formats-submatrix)) is written to stdout.
 
@@ -57,11 +61,15 @@ The command
 computes a (co)network [matrix](\ref file-formats-matrix) corresponding to the digraph from file `IN-GRAPH` and writes it to `OUT-MAT`.
 
 **Options**:
-  - `-o FORMAT`    Format of file `OUT-MAT`, among `dense` for \ref dense-matrix and `sparse` for \ref sparse-matrix; default: dense.
+  - `-o FORMAT`    Format of file `OUT-MAT`; default: [dense](\ref dense-matrix).
   - `-t`           Return the transpose of the network matrix.
   - `-T IN-TREE`   Read a directed tree from file `IN-TREE`; default: use first specified arcs as tree edges.
-  - `-s`           Print statistics about the computation to stderr.
 
+**Advanced options**:
+  - `--stats`            Print statistics about the computation to stderr.
+  - `--time-limit LIMIT` Allow at most `LIMIT` seconds for the computation.
+
+Formats for matrices: [dense](\ref dense-matrix), [sparse](\ref sparse-matrix)
 If `IN-GRAPH` or `IN-TREE` is `-` then the digraph (resp. directed tree) is read from stdin.
 If `OUT-MAT` is `-` then the [matrix](\ref file-formats-matrix) is written to stdout.
 

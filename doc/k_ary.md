@@ -16,12 +16,17 @@ The command
 determines whether the [matrix](\ref file-formats-matrix) given in file `IN-MAT` is integer (resp. binary or ternary).
 
 **Options**:
-  - `-i FORMAT`  Format of file `IN-MAT`, among `dense` for \ref dense-matrix and `sparse` for \ref sparse-matrix; default: dense.
+  - `-i FORMAT`  Format of file `IN-MAT`; default: [dense](\ref dense-matrix).
   - `-b`         Test whether the matrix is binary, i.e., has entries in \f$ \{0,+1\} \f$.
   - `-t`         Test whether the matrix is ternary, i.e., has entries in \f$ \{-1,0,+1\} \f$.
   - `-I`         Test whether the matrix is integer.
   - `-e EPSILON` Allows rounding of numbers up to tolerance `EPSILON`; default: \f$ 10^{-9} \f$.
 
+**Advanced options**:
+  - `--stats`            Print statistics about the computation to stderr.
+  - `--time-limit LIMIT` Allow at most `LIMIT` seconds for the computation.
+
+Formats for matrices: [dense](\ref dense-matrix), [sparse](\ref sparse-matrix)
 If `IN-MAT` is `-` then the [matrix](\ref file-formats-matrix) is read from stdin.
 
 
@@ -34,11 +39,16 @@ The command
 finds a large binary (resp. ternary) [submatrix](\ref file-formats-matrix) of the [matrix](\ref file-formats-matrix) given in file `IN-MAT`.
 
 **Options:**
-  - `-i FORMAT`  Format of file `IN-MAT`, among `dense` for \ref dense-matrix and `sparse` for \ref sparse-matrix; default: dense.
+  - `-i FORMAT`  Format of file `IN-MAT`; default: [dense](\ref dense-matrix).
   - `-b`         Find a large binary submatrix, i.e., one with only entries in \f$ \{0,+1\} \f$.
   - `-t`         Find a large ternary submatrix, i.e., one with only entries in \f$ \{-1,0,+1\} \f$.
   - `-e EPSILON` Allows rounding of numbers up to tolerance `EPSILON`; default: \f$ 10^{-9} \f$.
 
+**Advanced options**:
+  - `--stats`            Print statistics about the computation to stderr.
+  - `--time-limit LIMIT` Allow at most `LIMIT` seconds for the computation.
+
+Formats for matrices: [dense](\ref dense-matrix), [sparse](\ref sparse-matrix)
 If `IN-MAT` is `-` then the [matrix](\ref file-formats-matrix) is read from stdin.
 If `OUT-SUB` is `-` then the [submatrix](\ref file-formats-submatrix) is written to stdout.
 

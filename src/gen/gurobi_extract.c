@@ -93,13 +93,27 @@ CMR_ERROR extractMatrixGurobi(
   return CMR_OKAY;
 }
 
+/**
+ * \brief Prints the usage of the \p program to stdout.
+ *
+ * \returns \c EXIT_FAILURE.
+ */
+
 int printUsage(const char* program)
 {
-  printf("Usage: %s [OPTIONS] MIP\n\n", program);
-  puts("Extracts the coefficient matrix from a MIP.\n");
-  puts("Options:\n");
-  puts("  -o FORMAT  Format of output matrix; default: `dense'.");
-  puts("Formats for matrices: dense, sparse");
+  fputs("Usage:\n", stderr);
+
+  fprintf(stderr, "%s MIPFILE [OPTION]...\n", program);
+  fputs("  extracts the coefficient matrix of a mixed-integer program in MIPFILE and writes it to stdout.\n", stderr);
+  fputs("\n", stderr);
+
+  fputs("Options:\n", stderr);
+  fputs("  -o FORMAT  Format of output matrix; default: dense.\n", stderr);
+  fputs("\n", stderr);
+
+  fputs("Formats for matrices: dense, sparse\n", stderr);
+  fputs("MIPFILE must refer to a file that Gurobi can read.\n", stderr);
+
   return EXIT_FAILURE;
 }
 
