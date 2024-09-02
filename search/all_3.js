@@ -10,7 +10,7 @@ var searchData=
   ['balancedtestenumeratecolumns_49',['balancedTestEnumerateColumns',['../balanced_8c.html#a48ec11c67329127c1a3243231da45099',1,'balanced.c']]],
   ['balancedtestenumeraterows_50',['balancedTestEnumerateRows',['../balanced_8c.html#ab996546f441e20b121d78ab985f99b11',1,'balanced.c']]],
   ['balancedtestgraph_51',['balancedTestGraph',['../balanced_8c.html#a8805f5157e808d8cf70f4deab780f060',1,'balanced.c']]],
-  ['basic_52',['BASIC',['../camion_8c.html#a8c18c29838f9a0be38b68ad81f79c7b1a13c45196813cb44e6e81e9c48a5ec1b4',1,'BASIC():&#160;camion.c'],['../graphic_8c.html#a0b43147a4952faed75bf16e0f483ca0aa13c45196813cb44e6e81e9c48a5ec1b4',1,'BASIC():&#160;graphic.c'],['../network_8c.html#a0b43147a4952faed75bf16e0f483ca0aa13c45196813cb44e6e81e9c48a5ec1b4',1,'BASIC():&#160;network.c']]],
+  ['basic_52',['BASIC',['../network_8c.html#a0b43147a4952faed75bf16e0f483ca0aa13c45196813cb44e6e81e9c48a5ec1b4',1,'BASIC():&#160;network.c'],['../graphic_8c.html#a0b43147a4952faed75bf16e0f483ca0aa13c45196813cb44e6e81e9c48a5ec1b4',1,'BASIC():&#160;graphic.c'],['../camion_8c.html#a8c18c29838f9a0be38b68ad81f79c7b1a13c45196813cb44e6e81e9c48a5ec1b4',1,'BASIC():&#160;camion.c']]],
   ['basic_20utilities_53',['Basic Utilities',['../utilities.html',1,'']]],
   ['below_54',['below',['../struct__ListMat64Nonzero.html#a11347ba029167767ccc114da5bc7533e',1,'_ListMat64Nonzero::below()'],['../struct__ListMat8Nonzero.html#a7d867c7abca3dcefab06ed4a5f6684c0',1,'_ListMat8Nonzero::below()']]],
   ['binary_20regular_20matrices_55',['Binary Regular Matrices',['../binary_regular.html',1,'']]],
@@ -18,5 +18,7 @@ var searchData=
   ['block_5fdecomposition_2ec_57',['block_decomposition.c',['../block__decomposition_8c.html',1,'']]],
   ['block_5fdecomposition_2eh_58',['block_decomposition.h',['../block__decomposition_8h.html',1,'']]],
   ['breadthfirstsearch_59',['breadthFirstSearch',['../series__parallel_8c.html#aaa95db0c1d6833e0309ec1a60d40e2e6',1,'series_parallel.c']]],
-  ['buckets_60',['buckets',['../struct__CMR__LINEARHASHTABLE__ARRAY.html#acbd0438f84f6be12d87db4fac73db367',1,'_CMR_LINEARHASHTABLE_ARRAY::buckets()'],['../struct__CMR__LISTHASHTABLE.html#a1e256724f69830d1ff27798fd30cddd3',1,'_CMR_LISTHASHTABLE::buckets()']]]
+  ['buckets_60',['buckets',['../struct__CMR__LISTHASHTABLE.html#a1e256724f69830d1ff27798fd30cddd3',1,'_CMR_LISTHASHTABLE::buckets()'],['../struct__CMR__LINEARHASHTABLE__ARRAY.html#acbd0438f84f6be12d87db4fac73db367',1,'_CMR_LINEARHASHTABLE_ARRAY::buckets()']]],
+  ['build_20instructions_61',['Build instructions',['../build.html',1,'']]],
+  ['build_2emd_62',['build.md',['../build_8md.html',1,'']]]
 ];
