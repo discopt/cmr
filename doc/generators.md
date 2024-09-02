@@ -118,7 +118,7 @@ Formats for matrices: [dense](\ref dense-matrix), [sparse](\ref sparse-matrix)
 
 \note
 The matrices \f$ W_n \f$ are [graphic](\ref graphic) for all \f$ n \f$.
-The modified matrices \f$ W'_n \f$ for odd \f$ n \f$ are minimally non-[totally unimodular](\ref tu), which means that the matrix itself has determinant \f$ |\det W'_n| = 2 \f$, but all of its submatrices are totally unimodular.
+The modified matrices \f$ W'_n \f$ for odd \f$ n \f$ are **minimally non-[totally unimodular](\ref tu)**, which means that the matrix itself has determinant \f$ |\det W'_n| = 2 \f$, but all of its proper submatrices are totally unimodular.
 
 ## Gurobi Coefficient Matrix ##
 
