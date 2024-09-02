@@ -127,7 +127,7 @@ Wheel Matrices</h1>
 <li><code>-o FORMAT</code> Format of output; default: <a class="el" href="file-formats.html#dense-matrix">dense</a>.</li>
 </ul>
 <p>Formats for matrices: <a class="el" href="file-formats.html#dense-matrix">dense</a>, <a class="el" href="file-formats.html#sparse-matrix">sparse</a></p>
-<dl class="section note"><dt>Note</dt><dd>The matrices \( W_n \) are <a class="el" href="graphic.html">graphic</a> for all \( n \). The modified matrices \( W&#39;_n \) for odd \( n \) are minimally non-<a class="el" href="tu.html">totally unimodular</a>, which means that the matrix itself has determinant \( |\det W&#39;_n| = 2 \), but all of its submatrices are totally unimodular.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>The matrices \( W_n \) are <a class="el" href="graphic.html">graphic</a> for all \( n \). The modified matrices \( W&#39;_n \) for odd \( n \) are <b>minimally non-<a class="el" href="tu.html">totally unimodular</a></b>, which means that the matrix itself has determinant \( |\det W&#39;_n| = 2 \), but all of its proper submatrices are totally unimodular.</dd></dl>
 <h1><a class="anchor" id="autotoc_md47"></a>
 Gurobi Coefficient Matrix</h1>
 <p>The executable <code>cmr-extract-gurobi</code> extracts the coefficient matrix of a mixed-integer program file that can be read by the <a href="https://www.gurobi.com">Gurobi solver</a> and writes it to <code>stdout</code>. Building it requires that Gurobi is found by cmake. To this end, you may need to set the cmake option <code>-DGUROBI_DIR</code> to your Gurobi installation directory. It can be called as follows. </p><pre class="fragment">./cmr-extract-gurobi MIPFILE [OPTION]...

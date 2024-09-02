@@ -9,7 +9,7 @@ var searchData=
   ['testedr10_1076',['testedR10',['../struct__CMR__SEYMOUR__NODE.html#a7aae7debdb984e2d5f24284df1ca9515',1,'_CMR_SEYMOUR_NODE']]],
   ['testedseriesparallel_1077',['testedSeriesParallel',['../struct__CMR__SEYMOUR__NODE.html#a931e0ecf1a272134c29ca230282edc20',1,'_CMR_SEYMOUR_NODE']]],
   ['testedtwoconnected_1078',['testedTwoConnected',['../struct__CMR__SEYMOUR__NODE.html#a3cc382ca6495d79e8a980178bbddac53',1,'_CMR_SEYMOUR_NODE']]],
-  ['testhereditarypropertysimple_1079',['testHereditaryPropertySimple',['../hereditary__property_8c.html#a8bd0a7e69b69873230523c26bbe883b7',1,'hereditary_property.c']]],
+  ['testhereditarypropertynaive_1079',['testHereditaryPropertyNaive',['../hereditary__property_8c.html#a487495f5bd85cf8d32e6e541a1b2409d',1,'hereditary_property.c']]],
   ['threesumflags_1080',['threesumFlags',['../struct__CMR__SEYMOUR__NODE.html#a36552cee26909d85d1b928aaf4de371f',1,'_CMR_SEYMOUR_NODE']]],
   ['threesumpivotchildren_1081',['threeSumPivotChildren',['../structCMR__SEYMOUR__PARAMS.html#a09a708fe051bad14509de519f1c50788',1,'CMR_SEYMOUR_PARAMS']]],
   ['threesumstrategy_1082',['threeSumStrategy',['../structCMR__SEYMOUR__PARAMS.html#a51d7c859870be75f6dd27c0a94625956',1,'CMR_SEYMOUR_PARAMS']]],

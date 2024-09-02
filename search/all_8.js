@@ -21,6 +21,5 @@ var searchData=
   ['graphic_5finternal_2eh_786',['graphic_internal.h',['../graphic__internal_8h.html',1,'']]],
   ['graphicness_787',['graphicness',['../struct__CMR__SEYMOUR__NODE.html#a8f0f6a4e03276882d0e501c5af62ff65',1,'_CMR_SEYMOUR_NODE']]],
   ['graphnode_788',['GraphNode',['../structGraphNode.html',1,'']]],
-  ['graphtime_789',['graphTime',['../structCMR__CAMION__STATISTICS.html#ab616cdaf58924f21069f3e6e8cc76db3',1,'CMR_CAMION_STATISTICS']]],
-  ['greedysubmatrix_790',['greedySubmatrix',['../structCMR__TU__PARAMS.html#a779a456149f4d24f2f639e7dfbcb2e1a',1,'CMR_TU_PARAMS']]]
+  ['graphtime_789',['graphTime',['../structCMR__CAMION__STATISTICS.html#ab616cdaf58924f21069f3e6e8cc76db3',1,'CMR_CAMION_STATISTICS']]]
 ];

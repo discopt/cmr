@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['testhereditarypropertysimple_1796',['testHereditaryPropertySimple',['../hereditary__property_8c.html#a8bd0a7e69b69873230523c26bbe883b7',1,'hereditary_property.c']]],
+  ['testhereditarypropertynaive_1796',['testHereditaryPropertyNaive',['../hereditary__property_8c.html#a487495f5bd85cf8d32e6e541a1b2409d',1,'hereditary_property.c']]],
   ['tudecomposition_1797',['tuDecomposition',['../tu_8c.html#ad798e9f94b0f1422fc9d1ba12e35d945',1,'tu.c']]],
   ['tueulerian_1798',['tuEulerian',['../tu_8c.html#aa78a855154489cc574e645c60d7e73b7',1,'tu.c']]],
   ['tueuleriancolumns_1799',['tuEulerianColumns',['../tu_8c.html#aee93dc5a6270b6a67c9a8c2f086e75d1',1,'tu.c']]],

@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['naivesubmatrix_882',['naiveSubmatrix',['../structCMR__TU__PARAMS.html#a1902a6f33418403a888cdefecd4f3162',1,'CMR_TU_PARAMS']]],
   ['nestedminorscolumnsdense_883',['nestedMinorsColumnsDense',['../struct__CMR__SEYMOUR__NODE.html#aebf373f2c904066a9080ddf41b96ebb6',1,'_CMR_SEYMOUR_NODE']]],
   ['nestedminorscolumnsoriginal_884',['nestedMinorsColumnsOriginal',['../struct__CMR__SEYMOUR__NODE.html#a2b17301929f716eb2d5526ae5500a9f4',1,'_CMR_SEYMOUR_NODE']]],
   ['nestedminorslastcographic_885',['nestedMinorsLastCographic',['../struct__CMR__SEYMOUR__NODE.html#aaf37c395c019055b2f40dbaa398fc1d1',1,'_CMR_SEYMOUR_NODE']]],
