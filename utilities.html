@@ -83,23 +83,23 @@ $(function() {
 <li>Computing the support matrix of the input matrix.</li>
 <li>Computing the signed support matrix (negative entries are turned into \( -1 \)'s, positive into \( +1 \)'s) of the input matrix.</li>
 </ul>
-<h1><a class="anchor" id="autotoc_md65"></a>
+<h1><a class="anchor" id="autotoc_md66"></a>
 Matrix Utilities</h1>
 <p>The command </p><pre class="fragment">cmr-matrix IN-MAT OUT-MAT [OPTION]...
 </pre><p> copies the <a class="el" href="file-formats.html#file-formats-matrix">matrix</a> from file <code>IN-MAT</code> to file <code>OUT-MAT</code>, potentially applying certain operations.</p>
 <p><b>Options:</b></p><ul>
-<li><code>-i FORMAT</code> Format of file <code>IN-MAT</code>, among <code>dense</code> for <a class="el" href="file-formats.html#dense-matrix">dense-matrix</a> and <code>sparse</code> for <a class="el" href="file-formats.html#sparse-matrix">sparse-matrix</a>; default: dense.</li>
-<li><code>-o FORMAT</code> Format of file <code>OUT-MAT</code>, among <code>dense</code> for <a class="el" href="file-formats.html#dense-matrix">dense-matrix</a> and <code>sparse</code> for <a class="el" href="file-formats.html#sparse-matrix">sparse-matrix</a>; default: same as format of <code>IN-MAT</code>.</li>
+<li><code>-i FORMAT</code> Format of file <code>IN-MAT</code>; default: <a class="el" href="file-formats.html#dense-matrix">dense</a>.</li>
+<li><code>-o FORMAT</code> Format of file <code>OUT-MAT</code>; default: same as format of <code>IN-MAT</code>.</li>
 <li><code>-S IN-SUB</code> Consider the <a class="el" href="file-formats.html#file-formats-submatrix">submatrix</a> of <code>IN-MAT</code> specified in file <code>IN-SUB</code> instead of <code>IN-MAT</code> itself; can be combined with other operations.</li>
 <li><code>-t</code> Transpose the matrix; can be combined with other operations.</li>
 <li><code>-c</code> Compute the support matrix instead of copying.</li>
 <li><code>-C</code> Compute the signed support matrix instead of copying.</li>
 <li><code>-r</code> Randomize the output matrix by randomly permuting rows/columns.</li>
-<li><code>-R2 NUM</code> Randomize the output matrix by performing NUM binary random pivots.</li>
-<li><code>-R3 NUM</code> Randomize the output matrix by performing NUM ternary random pivots.</li>
+<li><code>-R2 NUM</code> Randomize the output matrix by performing <code>NUM</code> binary random pivots.</li>
+<li><code>-R3 NUM</code> Randomize the output matrix by performing <code>NUM</code> ternary random pivots.</li>
 <li><code>-d</code> Use double arithmetic instead of integers.</li>
 </ul>
-<p>If <code>IN-MAT</code> or <code>IN-SUB</code> is <code>-</code> then the input matrix (resp. submatrix) is read from stdin. If <code>OUT-MAT</code> is <code>-</code> then the output matrix is written to stdout. </p>
+<p>Formats for matrices: <a class="el" href="file-formats.html#dense-matrix">dense</a>, <a class="el" href="file-formats.html#sparse-matrix">sparse</a> If <code>IN-MAT</code> or <code>IN-SUB</code> is <code>-</code> then the input matrix (resp. submatrix) is read from stdin. If <code>OUT-MAT</code> is <code>-</code> then the output matrix is written to stdout. </p>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->

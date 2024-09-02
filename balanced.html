@@ -82,15 +82,16 @@ Recognizing Balanced Matrices</h1>
 <p>The command </p><pre class="fragment">cmr-balanced IN-MAT [OPTION...]
 </pre><p> determines whether the <a class="el" href="file-formats.html#file-formats-matrix">matrix</a> given in file <code>IN-MAT</code> is balanced.</p>
 <p><b>Options:</b></p><ul>
-<li><code>-i FORMAT</code> Format of file <code>IN-MAT</code>, among <code>dense</code> for <a class="el" href="file-formats.html#dense-matrix">dense-matrix</a> and <code>sparse</code> for <a class="el" href="file-formats.html#sparse-matrix">sparse-matrix</a>; default: dense.</li>
+<li><code>-i FORMAT</code> Format of file <code>IN-MAT</code>; default: <a class="el" href="file-formats.html#dense-matrix">dense</a>.</li>
 <li><code>-N NON-SUB</code> Write a minimal non-balanced submatrix to file <code>NON-SUB</code>; default: skip computation.</li>
-<li><code>-s</code> Print statistics about the computation to stderr.</li>
 </ul>
 <p><b>Advanced options:</b></p><ul>
-<li><code>--time-limit LIMIT</code> Allow at most LIMIT seconds for the computation.</li>
+<li><code>--stats</code> Print statistics about the computation to stderr.</li>
+<li><code>--time-limit LIMIT</code> Allow at most <code>LIMIT</code> seconds for the computation.</li>
 <li><code>--algorithm ALGO</code> Algorithm to use, among <code>enumerate</code> and <code>graph</code>; default: choose best.</li>
+<li><code>--no-series-parallel</code> Do not try series-parallel operations for preprocessing.</li>
 </ul>
-<p>If <code>IN-MAT</code> is <code>-</code> then the <a class="el" href="file-formats.html#file-formats-matrix">matrix</a> is read from stdin. If <code>NON-SUB</code> is <code>-</code> then the <a class="el" href="file-formats.html#file-formats-submatrix">submatrix</a> is written to stdout.</p>
+<p>Formats for matrices: <a class="el" href="file-formats.html#dense-matrix">dense</a>, <a class="el" href="file-formats.html#sparse-matrix">sparse</a> If <code>IN-MAT</code> is <code>-</code> then the <a class="el" href="file-formats.html#file-formats-matrix">matrix</a> is read from stdin. If <code>NON-SUB</code> is <code>-</code> then the <a class="el" href="file-formats.html#file-formats-submatrix">submatrix</a> is written to stdout.</p>
 <h1><a class="anchor" id="autotoc_md4"></a>
 Algorithm</h1>
 <p>Two types of algorithms exist for both, the binary and the ternary case. The first algorithm types enumerate subsets of rows and then finds subsets of columns such that the resulting submatrix defines an odd cycle. Its running time is exponential in the size of the matrix. The second algorithm types are the <a href="https://doi.org/10.1016/j.jctb.2005.02.006">polynomial-time algorithms</a> by Giacomo Zambelli (Journal of Combinatorial Theory, Series B, 2005). They run in \( \mathcal{O}( (m+n)^9 ) \) time for binary matrices and in \( \mathcal{O}( (m+n)^{11} ) \) time for ternary matrices.</p>

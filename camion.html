@@ -83,11 +83,14 @@ Checking for being Camion-signed</h1>
 <p>The command </p><pre class="fragment">cmr-camion IN-MAT [OPTION]...
 </pre><p> determines whether the <a class="el" href="file-formats.html#file-formats-matrix">matrix</a> given in file <code>IN-MAT</code> is Camion-signed.</p>
 <p><b>Options:</b></p><ul>
-<li><code>-i FORMAT</code> Format of file <code>IN-MAT</code>, among <code>dense</code> for <a class="el" href="file-formats.html#dense-matrix">dense-matrix</a> and <code>sparse</code> for <a class="el" href="file-formats.html#sparse-matrix">sparse-matrix</a>; default: dense.</li>
+<li><code>-i FORMAT</code> Format of file <code>IN-MAT</code>; default: <a class="el" href="file-formats.html#dense-matrix">dense</a>.</li>
 <li><code>-N NON-SUB</code> Write a minimal non-Camion submatrix to file <code>NON-SUB</code>; default: skip computation.</li>
-<li><code>-s</code> Print statistics about the computation to stderr.</li>
 </ul>
-<p>If <code>IN-MAT</code> is <code>-</code> then the <a class="el" href="file-formats.html#file-formats-matrix">matrix</a> is read from stdin. If <code>NON-SUB</code> is <code>-</code> then the <a class="el" href="file-formats.html#file-formats-submatrix">submatrix</a> is written to stdout.</p>
+<p><b>Advanced options</b>:</p><ul>
+<li><code>--stats</code> Print statistics about the computation to stderr.</li>
+<li><code>--time-limit LIMIT</code> Allow at most <code>LIMIT</code> seconds for the computation.</li>
+</ul>
+<p>Formats for matrices: <a class="el" href="file-formats.html#dense-matrix">dense</a>, <a class="el" href="file-formats.html#sparse-matrix">sparse</a> If <code>IN-MAT</code> is <code>-</code> then the <a class="el" href="file-formats.html#file-formats-matrix">matrix</a> is read from stdin. If <code>NON-SUB</code> is <code>-</code> then the <a class="el" href="file-formats.html#file-formats-submatrix">submatrix</a> is written to stdout.</p>
 <h2><a class="anchor" id="autotoc_md7"></a>
 Algorithm</h2>
 <p>The implemented recognition algorithm is based on Section 18 of <a href="https://doi.org/10.1016/0095-8956(90)90030-4">A decomposition theory for matroids. V. Testing of matrix total unimodularity</a> by Klaus Truemper (Journal of Combinatorial Theory, Series B, 1990). For a matrix \( M \in \{-1,0,1\}^{m \times n} \) it runs in \( \mathcal{O}( \min(m^2 \cdot n, m \cdot n^2) ) \) time.</p>
@@ -103,11 +106,14 @@ Camion-signing a Matrix</h1>
 <p>The command </p><pre class="fragment">cmr-camion IN-MAT -S OUT-MAT [OPTION]...
 </pre><p> modifies the signs of the matrix given in file <code>IN-MAT</code> such that it is Camion-signed and writes the resulting new matrix to file <code>OUT-MAT</code>.</p>
 <p><b>Options:</b></p><ul>
-<li><code>-i FORMAT</code> Format of file <code>IN-MAT</code>, among <code>dense</code> for <a class="el" href="file-formats.html#dense-matrix">dense-matrix</a> and <code>sparse</code> for <a class="el" href="file-formats.html#sparse-matrix">sparse-matrix</a>; default: dense.</li>
-<li><code>-o FORMAT</code> Format of file <code>OUT-MAT</code>, among <code>dense</code> for <a class="el" href="file-formats.html#dense-matrix">dense-matrix</a> and <code>sparse</code> for <a class="el" href="file-formats.html#sparse-matrix">sparse-matrix</a>; default: same as format of <code>IN-MAT</code>.</li>
-<li><code>-s</code> Print statistics about the computation to stderr.</li>
+<li><code>-i FORMAT</code> Format of file <code>IN-MAT</code>; default: <a class="el" href="file-formats.html#dense-matrix">dense</a>.</li>
+<li><code>-o FORMAT</code> Format of file <code>OUT-MAT</code>; default: same as format of <code>IN-MAT</code>.</li>
 </ul>
-<p>If <code>IN-MAT</code> is <code>-</code> then the matrix is read from stdin. If <code>OUT-MAT</code> is <code>-</code> then the matrix is written to stdout.</p>
+<p><b>Advanced options</b>:</p><ul>
+<li><code>--stats</code> Print statistics about the computation to stderr.</li>
+<li><code>--time-limit LIMIT</code> Allow at most <code>LIMIT</code> seconds for the computation.</li>
+</ul>
+<p>Formats for matrices: <a class="el" href="file-formats.html#dense-matrix">dense</a>, <a class="el" href="file-formats.html#sparse-matrix">sparse</a> If <code>IN-MAT</code> is <code>-</code> then the matrix is read from stdin. If <code>OUT-MAT</code> is <code>-</code> then the matrix is written to stdout.</p>
 <h2><a class="anchor" id="autotoc_md10"></a>
 Algorithm</h2>
 <p>The implemented algorithm is based on Section 18 of <a href="https://doi.org/10.1016/0095-8956(90)90030-4">A decomposition theory for matroids. V. Testing of matrix total unimodularity</a> by Klaus Truemper (Journal of Combinatorial Theory, Series B, 1990). For a matrix \( M \in \{-1,0,1\}^{m \times n} \) it runs in \( \mathcal{O}( \min(m^2 \cdot n, m \cdot n^2) ) \) time.</p>

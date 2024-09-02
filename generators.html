@@ -80,48 +80,61 @@ $(function() {
 </pre><p> to the cmake call. In the following we provide details for each of these generators.</p>
 <h1><a class="anchor" id="autotoc_md42"></a>
 Graphic Matrices</h1>
-<p>The executable <code>cmr-generate-graphic</code> creates a random \( m \)-by- \(n\) matrix that is graphic. To this end, it first constructs a spanning tree with \( m+1 \) nodes by subsequently connecting each new leaf to one of the previously created nodes. The new edge then indexes a row of the matrix. Second, \( n \) random pairs of distinct nodes are generated that are then connected by a new edge indexed by a column. The matrix is the representation matrix of the final graph with respect to the spanning tree. It can be called as follows, where \( m \) equals ROWS and \( n \) equals COLS. </p><pre class="fragment">./cmr-generate-graphic [OPTIONS] ROWS COLS
-</pre><p> Options:</p><ul>
+<p>The executable <code>cmr-generate-graphic</code> creates a random \( m \)-by- \(n\) matrix that is graphic and writes it to <code>stdout</code>. To this end, it first constructs a spanning tree with \( m+1 \) nodes by subsequently connecting each new leaf to one of the previously created nodes. The new edge then indexes a row of the matrix. Second, \( n \) random pairs of distinct nodes are generated that are then connected by a new edge indexed by a column. The matrix is the representation matrix of the final graph with respect to the spanning tree. It can be called as follows, where \( m \) equals ROWS and \( n \) equals COLS. </p><pre class="fragment">./cmr-generate-graphic ROWS COLS [OPTION]...
+</pre><p> <b>Options:</b></p><ul>
 <li><code>-B NUM</code> Benchmarks the recognition algorithm for the created matrix with NUM repetitions.</li>
-<li><code>-o FORMAT</code> Format of output FILE; default: <code>dense</code>.</li>
+<li><code>-o FORMAT</code> Format of output; default: <a class="el" href="file-formats.html#dense-matrix">dense</a>.</li>
 </ul>
-<p>Formats for matrices are <a class="el" href="file-formats.html#dense-matrix">dense-matrix</a>, <a class="el" href="file-formats.html#sparse-matrix">sparse-matrix</a>.</p>
+<p>Formats for matrices: <a class="el" href="file-formats.html#dense-matrix">dense</a>, <a class="el" href="file-formats.html#sparse-matrix">sparse</a></p>
 <h1><a class="anchor" id="autotoc_md43"></a>
 Network Matrices</h1>
-<p>The executable <code>cmr-generate-network</code> creates a random \( m \)-by- \(n\) network matrix, either ternary (default) or binary. In order to generate a ternary matrix, it first constructs a random graphic matrix (see above) and then modifies its signs via <a class="el" href="camion.html">Camion's Signing Algorithm</a>. For the binary matrix, a random spanning tree is constructed and oriented to become an arborescence with root. For the co-tree edges, only node pairs are considered, where the second node lies on the directed path from the first node to the root. It can be called as follows, where \( m \) equals ROWS and \( n \) equals COLS. </p><pre class="fragment">./cmr-generate-network [OPTIONS] ROWS COLS
-</pre><p> Options:</p><ul>
+<p>The executable <code>cmr-generate-network</code> creates a random \( m \)-by- \(n\) network matrix, either ternary (default) or binary and writes it to <code>stdout</code>. In order to generate a ternary matrix, it first constructs a random graphic matrix (see above) and then modifies its signs via <a class="el" href="camion.html">Camion's Signing Algorithm</a>. For the binary matrix, a random spanning tree is constructed and oriented to become an arborescence with root. For the co-tree edges, only node pairs are considered, where the second node lies on the directed path from the first node to the root. It can be called as follows, where \( m \) equals ROWS and \( n \) equals COLS. </p><pre class="fragment">./cmr-generate-network ROWS COLS [OPTION]...
+</pre><p> <b>Options:</b></p><ul>
 <li><code>-b</code> Restrict to binary network matrices based on arborescences.</li>
 <li><code>-B NUM</code> Benchmarks the recognition algorithm for the created matrix with NUM repetitions.</li>
-<li><code>-o FORMAT</code> Format of output FILE; default: <code>dense</code>.</li>
+<li><code>-o FORMAT</code> Format of output; default: <a class="el" href="file-formats.html#dense-matrix">dense</a>.</li>
 </ul>
-<p>Formats for matrices are <a class="el" href="file-formats.html#dense-matrix">dense-matrix</a>, <a class="el" href="file-formats.html#sparse-matrix">sparse-matrix</a>.</p>
+<p>Formats for matrices: <a class="el" href="file-formats.html#dense-matrix">dense</a>, <a class="el" href="file-formats.html#sparse-matrix">sparse</a></p>
 <h1><a class="anchor" id="autotoc_md44"></a>
 Random Matrices</h1>
-<p>The executable <code>cmr-generate-random</code> creates a random \( m \)-by- \(n\) binary matrix whose entries are chosen uniformly at random with a given probability \( p \). It can be called as follows, where \( m \) equals ROWS and \( n \) equals COLS. </p><pre class="fragment">./cmr-generate-random [OPTIONS] ROWS COLS p
-</pre><p> Options:</p><ul>
-<li><code>-o FORMAT</code> Format of output FILE; default: <code>dense</code>.</li>
+<p>The executable <code>cmr-generate-random</code> creates a random \( m \)-by- \(n\) binary matrix whose entries are chosen uniformly at random with a given probability \( p \) and writes it to <code>stdout</code>. It can be called as follows, where \( m \) equals <code>ROWS</code> and \( n \) equals <code>COLS</code>. </p><pre class="fragment">./cmr-generate-random ROWS COLS p [OPTION]...
+</pre><p> <b>Options:</b></p><ul>
+<li><code>-o FORMAT</code> Format of output; default: <a class="el" href="file-formats.html#dense-matrix">dense</a>.</li>
 </ul>
-<p>Formats for matrices are <a class="el" href="file-formats.html#dense-matrix">dense-matrix</a>, <a class="el" href="file-formats.html#sparse-matrix">sparse-matrix</a>.</p>
+<p>Formats for matrices: <a class="el" href="file-formats.html#dense-matrix">dense</a>, <a class="el" href="file-formats.html#sparse-matrix">sparse</a></p>
 <h1><a class="anchor" id="autotoc_md45"></a>
 Random Perturbations</h1>
-<p>The executable <code>cmr-perturb-random</code> modifies a matrix by applying a specified number of random perturbations of different types. It can be called as follows. </p><pre class="fragment">./cmr-perturb-random [OPTIONS] MATRIX
-</pre><p> Options:</p><ul>
-<li><code>-i FORMAT</code> Format of input MATRIX file; default: <code>dense</code>.</li>
-<li><code>-o FORMAT</code> Format of output matrix; default: same as input format.</li>
+<p>The executable <code>cmr-perturb-random</code> copies the matrix from file <code>IN-MAT</code> to the file <code>OUT-MAT</code> after applying random perturbations. It can be called as follows. </p><pre class="fragment">./cmr-perturb-random IN-MAT OUT-MAT [OPTION]...
+</pre><p> <b>Options:</b></p><ul>
+<li><code>-i FORMAT</code> Format of file <code>IN-MAT</code>; default: dense.</li>
+<li><code>-o FORMAT</code> Format of file <code>OUT-MAT</code>; default: same as format of <code>IN-MAT</code>.</li>
 <li><code>-0 NUM</code> Turn NUM randomly chosen nonzero entries to 0s.</li>
 <li><code>-1 NUM</code> Turn NUM randomly chosen zero entries into 1s.</li>
 <li><code>--1 NUM</code> Turn NUM randomly chosen zero entries into -1s.</li>
 <li><code>-b NUM</code> Flip NUM randomly chosen entries over the binary field.</li>
 <li><code>-t NUM</code> Flip NUM randomly chosen entries over the ternary field.</li>
 </ul>
-<p>If MATRIX is <code>-</code>, then the matrix will be read from stdin. Formats for matrices are <a class="el" href="file-formats.html#dense-matrix">dense-matrix</a>, <a class="el" href="file-formats.html#sparse-matrix">sparse-matrix</a>.</p>
+<p>Formats for matrices: <a class="el" href="file-formats.html#dense-matrix">dense</a>, <a class="el" href="file-formats.html#sparse-matrix">sparse</a> If <code>IN-MAT</code> is <code>-</code>, then the input matrix is read from stdin. If <code>OUT-MAT</code> is <code>-</code>, then the output matrix is written to stdout.</p>
 <h1><a class="anchor" id="autotoc_md46"></a>
+Wheel Matrices</h1>
+<p>The executable <code>cmr-generate-wheel</code> creates an \( n \)-by- \( n \) <b>wheel matrix</b> \( W_n \) or a variant \( W&#39;_n \) and writes it to <code>stdout</code>.</p>
+<p class="formulaDsp">
+\[ W_n = \begin{pmatrix} 1 &amp; 1 &amp; 0 &amp; 0 &amp; 0 &amp; \dots &amp; 0 &amp; 0 \\ 0 &amp; 1 &amp; 1 &amp; 0 &amp; 0 &amp; \dots &amp; 0 &amp; 0 \\ 0 &amp; 0 &amp; 1 &amp; 1 &amp; 0 &amp; \dots &amp; 0 &amp; 0 \\ \vdots &amp; &amp; &amp; \ddots &amp; \ddots &amp; &amp; &amp; \vdots \\ \vdots &amp; &amp; &amp; &amp; \ddots &amp; \ddots &amp; &amp; \vdots \\ 0 &amp; 0 &amp; \dots &amp; 0 &amp; 0 &amp; 1 &amp; 1 &amp; 0 \\ 0 &amp; 0 &amp; \dots &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 1 \\ 1 &amp; 0 &amp; \dots &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 \end{pmatrix}, \qquad \qquad \qquad W&#39;_n = \begin{pmatrix} 1 &amp; 1 &amp; 0 &amp; \color{red}{1} &amp; \color{red}{1} &amp; \dots &amp; \color{red}{1} &amp; \color{red}{1} \\ 0 &amp; 1 &amp; 1 &amp; \color{red}{1} &amp; \color{red}{1} &amp; \dots &amp; \color{red}{1} &amp; \color{red}{1} \\ 0 &amp; 0 &amp; 1 &amp; 1 &amp; 0 &amp; \dots &amp; 0 &amp; 0 \\ \vdots &amp; &amp; &amp; \ddots &amp; \ddots &amp; &amp; &amp; \vdots \\ \vdots &amp; &amp; &amp; &amp; \ddots &amp; \ddots &amp; &amp; \vdots \\ 0 &amp; 0 &amp; \dots &amp; 0 &amp; 0 &amp; 1 &amp; 1 &amp; 0 \\ 0 &amp; 0 &amp; \dots &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 1 \\ 1 &amp; 0 &amp; \dots &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 \end{pmatrix} \]
+</p>
+<p>It can be called as follows, where \( n \) equals <code>ORDER</code>. </p><pre class="fragment">./cmr-generate-wheel ORDER [OPTION]...
+</pre><p> <b>Options:</b></p><ul>
+<li><code>-01</code> In each column with two <code>0</code>s in rows 1 and 2, replace them by <code>1</code>s; default: off</li>
+<li><code>-o FORMAT</code> Format of output; default: <a class="el" href="file-formats.html#dense-matrix">dense</a>.</li>
+</ul>
+<p>Formats for matrices: <a class="el" href="file-formats.html#dense-matrix">dense</a>, <a class="el" href="file-formats.html#sparse-matrix">sparse</a></p>
+<dl class="section note"><dt>Note</dt><dd>The matrices \( W_n \) are <a class="el" href="graphic.html">graphic</a> for all \( n \). The modified matrices \( W&#39;_n \) for odd \( n \) are minimally non-<a class="el" href="tu.html">totally unimodular</a>, which means that the matrix itself has determinant \( |\det W&#39;_n| = 2 \), but all of its submatrices are totally unimodular.</dd></dl>
+<h1><a class="anchor" id="autotoc_md47"></a>
 Gurobi Coefficient Matrix</h1>
-<p>The executable <code>cmr-extract-gurobi</code> extracts the coefficient matrix of a mixed-integer program file that can be read by the <a href="https://www.gurobi.com">Gurobi solver</a>. Building it requires that Gurobi is found by cmake. To this end, you may need to set the cmake option <code>-DGUROBI_DIR</code> to your Gurobi installation directory. It can be called as follows. </p><pre class="fragment">./cmr-extract-gurobi [OPTIONS] MIPFILE
+<p>The executable <code>cmr-extract-gurobi</code> extracts the coefficient matrix of a mixed-integer program file that can be read by the <a href="https://www.gurobi.com">Gurobi solver</a> and writes it to <code>stdout</code>. Building it requires that Gurobi is found by cmake. To this end, you may need to set the cmake option <code>-DGUROBI_DIR</code> to your Gurobi installation directory. It can be called as follows. </p><pre class="fragment">./cmr-extract-gurobi MIPFILE [OPTION]...
 </pre><p> Options:</p><ul>
 <li><code>-o FORMAT</code> Format of output matrix; default: <code>dense</code>.</li>
 </ul>
-<p>Formats for matrices are <a class="el" href="file-formats.html#dense-matrix">dense-matrix</a>, <a class="el" href="file-formats.html#sparse-matrix">sparse-matrix</a>. MIPFILE must refer to a file that Gurobi can read. </p>
+<p>Formats for matrices: <a class="el" href="file-formats.html#dense-matrix">dense</a>, <a class="el" href="file-formats.html#sparse-matrix">sparse</a> <code>MIPFILE</code> must refer to a file that Gurobi can read. </p>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->

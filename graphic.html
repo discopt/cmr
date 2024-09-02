@@ -85,15 +85,18 @@ Recognizing Graphic Matrices</h1>
 <p>The command </p><pre class="fragment">cmr-graphic IN-MAT [OPTION]...
 </pre><p> determines whether the <a class="el" href="file-formats.html#file-formats-matrix">matrix</a> given in file <code>IN-MAT</code> is (co)graphic.</p>
 <p><b>Options</b>:</p><ul>
-<li><code>-i FORMAT</code> Format of file <code>IN-MAT</code>, among <code>dense</code> for <a class="el" href="file-formats.html#dense-matrix">dense-matrix</a> and <code>sparse</code> for <a class="el" href="file-formats.html#sparse-matrix">sparse-matrix</a>; default: dense.</li>
+<li><code>-i FORMAT</code> Format of file <code>IN-MAT</code>; default: <a class="el" href="file-formats.html#dense-matrix">dense</a>.</li>
 <li><code>-t</code> Test for being cographic; default: test for being graphic.</li>
 <li><code>-G OUT-GRAPH</code> Write a graph to file <code>OUT-GRAPH</code>; default: skip computation.</li>
 <li><code>-T OUT-TREE</code> Write a spanning tree to file <code>OUT-TREE</code>; default: skip computation.</li>
 <li><code>-D OUT-DOT</code> Write a dot file <code>OUT-DOT</code> with the graph and the spanning tree; default: skip computation.</li>
 <li><code>-N NON-SUB</code> Write a minimal non-(co)graphic submatrix to file <code>NON-SUB</code>; default: skip computation.</li>
-<li><code>-s</code> Print statistics about the computation to stderr.</li>
 </ul>
-<p>If <code>IN-MAT</code> is <code>-</code> then the <a class="el" href="file-formats.html#file-formats-matrix">matrix</a> is read from stdin. If <code>OUT-GRAPH</code>, <code>OUT-TREE</code>, <code>OUT-DOT</code> or <code>NON-SUB</code> is <code>-</code> then the graph (resp. the tree, dot file or non-(co)graphic <a class="el" href="file-formats.html#file-formats-submatrix">submatrix</a>) is written to stdout.</p>
+<p><b>Advanced options</b>:</p><ul>
+<li><code>--stats</code> Print statistics about the computation to stderr.</li>
+<li><code>--time-limit LIMIT</code> Allow at most <code>LIMIT</code> seconds for the computation.</li>
+</ul>
+<p>Formats for matrices: <a class="el" href="file-formats.html#dense-matrix">dense</a>, <a class="el" href="file-formats.html#sparse-matrix">sparse</a> If <code>IN-MAT</code> is <code>-</code> then the <a class="el" href="file-formats.html#file-formats-matrix">matrix</a> is read from stdin. If <code>OUT-GRAPH</code>, <code>OUT-TREE</code>, <code>OUT-DOT</code> or <code>NON-SUB</code> is <code>-</code> then the graph (resp. the tree, dot file or non-(co)graphic <a class="el" href="file-formats.html#file-formats-submatrix">submatrix</a>) is written to stdout.</p>
 <h2><a class="anchor" id="autotoc_md38"></a>
 Algorithm</h2>
 <p>The implemented recognition algorithm is based on <a href="https://doi.org/10.1287/moor.13.1.99">An Almost Linear-Time Algorithm for Graph Realization</a> by Robert E. Bixby and Donald K. Wagner (Mathematics of Operations Research, 1988). For a matrix \( M \in \{0,1\}^{m \times n}\) with \( k \) nonzeros it runs in \( \mathcal{O}( k \cdot \alpha(k, m) ) \) time, where \( \alpha(\cdot) \) denotes the inverse Ackerman function.</p>
@@ -110,12 +113,15 @@ Computing graphic matrices</h1>
 <p>The command </p><pre class="fragment">cmr-graphic -c IN-GRAPH OUT-MAT [OPTION]...
 </pre><p> computes a (co)graphic <a class="el" href="file-formats.html#file-formats-matrix">matrix</a> corresponding to the graph from file <code>IN-GRAPH</code> and writes it to <code>OUT-MAT</code>.</p>
 <p><b>Options</b>:</p><ul>
-<li><code>-o FORMAT</code> Format of file <code>OUT-MAT</code>, among <code>dense</code> for <a class="el" href="file-formats.html#dense-matrix">dense-matrix</a> and <code>sparse</code> for <a class="el" href="file-formats.html#sparse-matrix">sparse-matrix</a>; default: dense.</li>
+<li><code>-o FORMAT</code> Format of file <code>OUT-MAT</code>; default: <a class="el" href="file-formats.html#dense-matrix">dense</a>.</li>
 <li><code>-t</code> Return the transpose of the graphic matrix.</li>
 <li><code>-T IN-TREE</code> Read a tree from file <code>IN-TREE</code>; default: use first specified arcs as tree edges.</li>
-<li><code>-s</code> Print statistics about the computation to stderr.</li>
 </ul>
-<p>If <code>IN-GRAPH</code> or <code>IN-TREE</code> is <code>-</code> then the graph (resp. tree) is read from stdin. If <code>OUT-MAT</code> is <code>-</code> then the <a class="el" href="file-formats.html#file-formats-matrix">matrix</a> is written to stdout.</p>
+<p><b>Advanced options</b>:</p><ul>
+<li><code>--stats</code> Print statistics about the computation to stderr.</li>
+<li><code>--time-limit LIMIT</code> Allow at most <code>LIMIT</code> seconds for the computation.</li>
+</ul>
+<p>Formats for matrices: <a class="el" href="file-formats.html#dense-matrix">dense</a>, <a class="el" href="file-formats.html#sparse-matrix">sparse</a> If <code>IN-GRAPH</code> or <code>IN-TREE</code> is <code>-</code> then the graph (resp. tree) is read from stdin. If <code>OUT-MAT</code> is <code>-</code> then the <a class="el" href="file-formats.html#file-formats-matrix">matrix</a> is written to stdout.</p>
 <h2><a class="anchor" id="autotoc_md41"></a>
 C Interface</h2>
 <p>The corresponding function in the library is</p>

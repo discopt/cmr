@@ -82,13 +82,16 @@ Recognizing Complement Totally Unimodular Matrices</h1>
 <p>The command </p><pre class="fragment">cmr-ctu IN-MAT [OPTION]...
 </pre><p> determines whether the <a class="el" href="file-formats.html#file-formats-matrix">matrix</a> given in file <code>IN-MAT</code> is complement totally unimodular.</p>
 <p><b>Options</b>:</p><ul>
-<li><code>-i FORMAT</code> Format of file <code>IN-MAT</code>, among <code>dense</code> for <a class="el" href="file-formats.html#dense-matrix">dense-matrix</a> and <code>sparse</code> for <a class="el" href="file-formats.html#sparse-matrix">sparse-matrix</a>; default: dense.</li>
-<li><code>-o FORMAT</code> Format of file <code>OUT-MAT</code>, among <code>dense</code> for <a class="el" href="file-formats.html#dense-matrix">dense-matrix</a> and <code>sparse</code> for <a class="el" href="file-formats.html#sparse-matrix">sparse-matrix</a>; default: same as for <code>IN-MAT</code>.</li>
+<li><code>-i FORMAT</code> Format of file <code>IN-MAT</code>; default: <a class="el" href="file-formats.html#dense-matrix">dense</a>.</li>
+<li><code>-o FORMAT</code> Format of file <code>OUT-MAT</code>; default: same as for <code>IN-MAT</code>.</li>
 <li><code>-n OUT-OPS</code> Write complement operations that leads to a non-totally-unimodular matrix to file <code>OUT-OPS</code>; default: skip computation.</li>
 <li><code>-N OUT-MAT</code> Write a complemented matrix that is non-totally-unimodular to file <code>OUT-MAT</code>; default: skip computation.</li>
-<li><code>-s</code> Print statistics about the computation to stderr.</li>
 </ul>
-<p>If <code>IN-MAT</code> is <code>-</code> then the <a class="el" href="file-formats.html#file-formats-matrix">matrix</a> is read from stdin. If <code>OUT-OPS</code> or <code>OUT-MAT</code> is <code>-</code> then the list of operations (resp. the <a class="el" href="file-formats.html#file-formats-matrix">matrix</a>) is written to stdout.</p>
+<p><b>Advanced options</b>:</p><ul>
+<li><code>--stats</code> Print statistics about the computation to stderr.</li>
+<li><code>--time-limit LIMIT</code> Allow at most <code>LIMIT</code> seconds for the computation.</li>
+</ul>
+<p>Formats for matrices: <a class="el" href="file-formats.html#dense-matrix">dense</a>, <a class="el" href="file-formats.html#sparse-matrix">sparse</a> If <code>IN-MAT</code> is <code>-</code> then the <a class="el" href="file-formats.html#file-formats-matrix">matrix</a> is read from stdin. If <code>OUT-OPS</code> or <code>OUT-MAT</code> is <code>-</code> then the list of operations (resp. the <a class="el" href="file-formats.html#file-formats-matrix">matrix</a>) is written to stdout.</p>
 <h2><a class="anchor" id="autotoc_md26"></a>
 C Interface</h2>
 <p>The corresponding function in the library is</p>
@@ -101,13 +104,16 @@ Applying Complement Operations</h1>
 <p>The command </p><pre class="fragment">cmr-ctu IN-MAT OUT-MAT [OPTION]...
 </pre><p> applies a sequence of row or column complement operations the matrix given in file <code>IN-MAT</code> and writes the result to <code>OUT-MAT</code>.</p>
 <p><b>Options</b>:</p><ul>
-<li><code>-i FORMAT</code> Format of file <code>IN-MAT</code>, among <code>dense</code> for <a class="el" href="file-formats.html#dense-matrix">dense-matrix</a> and <code>sparse</code> for <a class="el" href="file-formats.html#sparse-matrix">sparse-matrix</a>; default: dense.</li>
-<li><code>-o FORMAT</code> Format of file <code>OUT-MAT</code>, among <code>dense</code> for <a class="el" href="file-formats.html#dense-matrix">dense-matrix</a> and <code>sparse</code> for <a class="el" href="file-formats.html#sparse-matrix">sparse-matrix</a>; default: same as for <code>IN-MAT</code>.</li>
+<li><code>-i FORMAT</code> Format of file <code>IN-MAT</code>; default: <a class="el" href="file-formats.html#dense-matrix">dense</a>.</li>
+<li><code>-o FORMAT</code> Format of file <code>OUT-MAT</code>; default: same as for <code>IN-MAT</code>.</li>
 <li><code>-r ROW</code> Apply row complement operation to row <code>ROW</code>.</li>
 <li><code>-c COLUMN</code> Apply column complement operation to column <code>COLUMN</code>.</li>
-<li><code>-s</code> Print statistics about the computation to stderr.</li>
 </ul>
-<p>If <code>IN-MAT</code> is <code>-</code> then the matrix is read from stdin. If <code>OUT-MAT</code> is <code>-</code> then the matrix is written to stdout.</p>
+<p><b>Advanced options</b>:</p><ul>
+<li><code>--stats</code> Print statistics about the computation to stderr.</li>
+<li><code>--time-limit LIMIT</code> Allow at most <code>LIMIT</code> seconds for the computation.</li>
+</ul>
+<p>Formats for matrices: <a class="el" href="file-formats.html#dense-matrix">dense</a>, <a class="el" href="file-formats.html#sparse-matrix">sparse</a> If <code>IN-MAT</code> is <code>-</code> then the matrix is read from stdin. If <code>OUT-MAT</code> is <code>-</code> then the matrix is written to stdout.</p>
 <h1><a class="anchor" id="autotoc_md28"></a>
 C Interface</h1>
 <p>The corresponding function in the library is</p>

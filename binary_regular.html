@@ -77,22 +77,23 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p><a class="anchor" id="md__home_runner_work_cmr_cmr_doc_regular"></a> A matrix \( M \in \{0,1\}^{m \times n} \) is <b>regular</b> if the binary matroid <a class="el" href="matroids.html">represented</a> by \( M \) is representable over <em>every</em> field. This is equivalent to requiring that the matroid is equal to the ternary matroid <a class="el" href="matroids.html">represented</a> by the <a class="el" href="camion.html">Camion-signed</a> version \( M&#39; \) of \( M \), and thus equivalent to <a class="el" href="tu.html">total unimodularity</a> of \( M&#39; \).</p>
-<h1><a class="anchor" id="autotoc_md55"></a>
+<h1><a class="anchor" id="autotoc_md56"></a>
 Recognizing Binary Regular Matrices</h1>
 <p>The command </p><pre class="fragment">cmr-regular IN-MAT [OPTION...]
 </pre><p> determines whether the <a class="el" href="file-formats.html#file-formats-matrix">matrix</a> given in file <code>IN-MAT</code> is regular.</p>
 <p><b>Options:</b></p><ul>
-<li><code>-i FORMAT</code> Format of file <code>IN-MAT</code>, among <code>dense</code> for <a class="el" href="file-formats.html#dense-matrix">dense-matrix</a> and <code>sparse</code> for <a class="el" href="file-formats.html#sparse-matrix">sparse-matrix</a>; default: dense.</li>
+<li><code>-i FORMAT</code> Format of file <code>IN-MAT</code>; default: <a class="el" href="file-formats.html#dense-matrix">dense</a>.</li>
 <li><code>-D OUT-DEC</code> Write a decomposition tree of the regular matroid to file <code>OUT-DEC</code>; default: skip computation.</li>
 <li><code>-N NON-MINOR</code> Write a minimal non-regular submatrix to file <code>NON-SUB</code>; default: skip computation.</li>
-<li><code>-s</code> Print statistics about the computation to stderr.</li>
 </ul>
 <p><b>Advanced options:</b></p><ul>
+<li><code>--stats</code> Print statistics about the computation to stderr.</li>
+<li><code>--time-limit LIMIT</code> Allow at most <code>LIMIT</code> seconds for the computation.</li>
 <li><code>--no-direct-graphic</code> Check only 3-connected matrices for regularity.</li>
 <li><code>--no-series-parallel</code> Do not allow series-parallel operations in decomposition tree.</li>
 </ul>
-<p>If <code>IN-MAT</code> is <code>-</code> then the <a class="el" href="file-formats.html#file-formats-matrix">matrix</a> is read from stdin. If <code>OUT-DEC</code> or <code>NON-SUB</code> is <code>-</code> then the decomposition tree (resp. the <a class="el" href="file-formats.html#file-formats-submatrix">submatrix</a>) is written to stdout.</p>
-<h1><a class="anchor" id="autotoc_md56"></a>
+<p>Formats for matrices: <a class="el" href="file-formats.html#dense-matrix">dense</a>, <a class="el" href="file-formats.html#sparse-matrix">sparse</a> If <code>IN-MAT</code> is <code>-</code> then the <a class="el" href="file-formats.html#file-formats-matrix">matrix</a> is read from stdin. If <code>OUT-DEC</code> or <code>NON-SUB</code> is <code>-</code> then the decomposition tree (resp. the <a class="el" href="file-formats.html#file-formats-submatrix">submatrix</a>) is written to stdout.</p>
+<h1><a class="anchor" id="autotoc_md57"></a>
 Algorithm</h1>
 <p>The implemented recognition algorithm is based on <a href="https://doi.org/10.1007/s12532-012-0048-x">Implementation of a unimodularity test</a> by Matthias Walter and Klaus Truemper (Mathematical Programming Computation, 2013). It is based on Seymour's <a href="https://doi.org/10.1016/0095-8956(80)90075-1">decomposition theorem for regular matroids</a>. The algorithm runs in \( \mathcal{O}( (m+n)^5 ) \) time and is a simplified version of <a href="https://doi.org/10.1016/0095-8956(90)90030-4">Truemper's cubic algorithm</a>. Please cite the following paper in case the implementation contributed to your research: </p><pre class="fragment">@Article{WalterT13,
   author    = {Walter, Matthias and Truemper, Klaus},
@@ -106,7 +107,7 @@ Algorithm</h1>
   doi       = {10.1007/s12532-012-0048-x},
   publisher = {Springer-Verlag},
 }
-</pre> <h1><a class="anchor" id="autotoc_md57"></a>
+</pre> <h1><a class="anchor" id="autotoc_md58"></a>
 C Interface</h1>
 <p>The corresponding function in the library is</p>
 <ul>
