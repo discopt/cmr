@@ -1,4 +1,4 @@
-build*
+/build*
 *.kdev4
 *.csv
 *.ods
