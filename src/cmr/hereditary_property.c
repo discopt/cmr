@@ -14,7 +14,7 @@
  */
 
 static
-CMR_ERROR testHereditaryPropertySimple(
+CMR_ERROR testHereditaryPropertyNaive(
   CMR* cmr,                             /**< \ref CMR environment. */
   CMR_CHRMAT* current,                  /**< Some matrix not having the hereditary property. */
   HereditaryPropertyTest testFunction,  /**< Test function. */
@@ -156,7 +156,7 @@ cleanup:
   return error;
 }
 
-CMR_ERROR CMRtestHereditaryPropertySimple(CMR* cmr, CMR_CHRMAT* matrix, HereditaryPropertyTest testFunction,
+CMR_ERROR CMRtestHereditaryPropertyNaive(CMR* cmr, CMR_CHRMAT* matrix, HereditaryPropertyTest testFunction,
   void* testData, CMR_SUBMAT** psubmatrix, double timeLimit)
 {
   assert(cmr);
@@ -167,7 +167,7 @@ CMR_ERROR CMRtestHereditaryPropertySimple(CMR* cmr, CMR_CHRMAT* matrix, Heredita
   CMR_CHRMAT* current = NULL;
   CMR_CALL( CMRchrmatCopy(cmr, matrix, &current) );
 
-  CMR_ERROR error = testHereditaryPropertySimple(cmr, current, testFunction, testData, psubmatrix, current->numRows,
+  CMR_ERROR error = testHereditaryPropertyNaive(cmr, current, testFunction, testData, psubmatrix, current->numRows,
     NULL, current->numColumns, NULL, timeLimit);
 
   return error;
@@ -348,7 +348,7 @@ CMR_ERROR CMRtestHereditaryPropertyGreedy(CMR* cmr, CMR_CHRMAT* matrix, Heredita
     error = CMR_ERROR_TIMEOUT;
   else
   {
-    error = testHereditaryPropertySimple(cmr, remainingMatrix, testFunction, testData, psubmatrix, numRemainingRows,
+    error = testHereditaryPropertyNaive(cmr, remainingMatrix, testFunction, testData, psubmatrix, numRemainingRows,
       remainingRows, numRemainingColumns, remainingColumns, remainingTime);
     remainingMatrix = NULL;
   }

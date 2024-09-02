@@ -5431,7 +5431,7 @@ CMR_ERROR CMRgraphicTestTranspose(CMR* cmr, CMR_CHRMAT* matrix, bool* pisCograph
   {
     /* Find submatrix. */
     double remainingTime = timeLimit - (clock() - time) * 1.0 / CLOCKS_PER_SEC;
-    error = CMRtestHereditaryPropertySimple(cmr, matrix, cographicnessTest, NULL, psubmatrix, remainingTime);
+    error = CMRtestHereditaryPropertyGreedy(cmr, matrix, cographicnessTest, NULL, psubmatrix, remainingTime);
     if (error != CMR_ERROR_TIMEOUT && error != CMR_OKAY)
       CMR_CALL( error );
   }

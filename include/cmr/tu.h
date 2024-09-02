@@ -31,7 +31,8 @@ typedef struct
   CMR_SEYMOUR_PARAMS seymour; /**< \brief Parameters for testing via Seymour decomposition. */
   bool ternary;               /**< \brief Whether to create a ternary Seymour decomposition tree (default: \c true). */
   bool camionFirst;           /**< \brief If \c ternary is \c false, then whether to run the Camion test first. */
-  bool greedySubmatrix;       /**< \brief Whether to use a greedy submatrix search. */
+  bool naiveSubmatrix;        /**< \brief Whether to use the naive submatrix search instead of a greedy algorithm
+                               **         (default: \c false). */
 } CMR_TU_PARAMS;
 
 /**

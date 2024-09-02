@@ -28,7 +28,7 @@ CMR_ERROR testTotalUnimodularity(
   bool printStats,                      /**< Whether to print statistics to stderr. */
   bool directGraphicness,               /**< Whether to use fast graphicness routines. */
   bool seriesParallel,                  /**< Whether to allow series-parallel operations in the decomposition tree. */
-  bool greedySubmatrix,                 /**< Use greedy bad submatrix heuristic instead of naive algorithm. */
+  bool naiveSubmatrix,                  /**< Use naive bad submatrix heuristic instead of greedy algorithm. */
   CMR_TU_ALGORITHM algorithm,           /**< Algorithm to use for TU test. */
   double timeLimit                      /**< Time limit to impose. */
 )
@@ -69,7 +69,7 @@ CMR_ERROR testTotalUnimodularity(
   params.seymour.stopWhenIrregular = !outputTreeFileName;
   params.seymour.directGraphicness = directGraphicness;
   params.seymour.seriesParallel = seriesParallel;
-  params.greedySubmatrix = greedySubmatrix;
+  params.naiveSubmatrix = naiveSubmatrix;
   CMR_TU_STATS stats;
   CMR_CALL( CMRtuStatsInit(&stats));
   error = CMRtuTest(cmr, matrix, &isTU, outputTreeFileName ? &decomposition : NULL,
@@ -170,7 +170,7 @@ int main(int argc, char** argv)
   bool printStats = false;
   bool directGraphicness = true;
   bool seriesParallel = true;
-  bool greedySubmatrix = true;
+  bool naiveSubmatrix = true;
   double timeLimit = DBL_MAX;
   CMR_TU_ALGORITHM algorithm = CMR_TU_ALGORITHM_DECOMPOSITION;
   for (int a = 1; a < argc; ++a)
@@ -204,7 +204,7 @@ int main(int argc, char** argv)
     else if (!strcmp(argv[a], "--no-series-parallel"))
       seriesParallel = false;
     else if (!strcmp(argv[a], "--naive-submatrix"))
-      greedySubmatrix = false;
+      naiveSubmatrix = true;
     else if (!strcmp(argv[a], "--time-limit") && (a+1 < argc))
     {
       if (sscanf(argv[a+1], "%lf", &timeLimit) == 0 || timeLimit <= 0)
@@ -246,7 +246,7 @@ int main(int argc, char** argv)
 
   CMR_ERROR error;
   error = testTotalUnimodularity(inputMatrixFileName, inputFormat, outputTree, outputSubmatrix, printStats,
-    directGraphicness, seriesParallel, greedySubmatrix, algorithm, timeLimit);
+    directGraphicness, seriesParallel, naiveSubmatrix, algorithm, timeLimit);
 
   switch (error)
   {

@@ -25,7 +25,7 @@ typedef CMR_ERROR (*HereditaryPropertyTest)(
  * The algorithm finds the submatrix by successively single zeroing out rows or columns.
  */
 
-CMR_ERROR CMRtestHereditaryPropertySimple(
+CMR_ERROR CMRtestHereditaryPropertyNaive(
   CMR* cmr,                             /**< \ref CMR environment. */
   CMR_CHRMAT* matrix,                   /**< Some matrix not having the hereditary property. */
   HereditaryPropertyTest testFunction,  /**< Test function. */
