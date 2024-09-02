@@ -16,29 +16,11 @@ typedef enum
   FILEFORMAT_MATRIX_SPARSE = 2,   /**< Sparse matrix format. */
 } FileFormat;
 
-static inline
-size_t randRange(size_t first, size_t beyond)
-{
-  size_t N = beyond - first;
-  size_t representatives = (RAND_MAX + 1u) / N;
-  size_t firstInvalid = N * representatives;
-  size_t x;
-  do
-  {
-    x = rand();
-  }
-  while (x >= firstInvalid);
-  return first + x / representatives;
-}
+/**
+ * \brief Writes the actual wheel matrix to stdout.
+ */
 
-int compare(const void* pa, const void* pb)
-{
-  size_t a = *((size_t*)(pa));
-  size_t b = *((size_t*)(pb));
-  return a < b ? -1 : (a > b);
-}
-
-CMR_ERROR genMatrixCycle(
+CMR_ERROR genMatrixWheel(
   size_t numRowsColumns,  /**< Number of rows and columns of matrix. */
   bool change01,          /**< In each column with two 0s in rows 1 and 2, replace them by 1s. */
   FileFormat outputFormat /**< Output file format. */
@@ -107,7 +89,7 @@ int printUsage(const char* program)
 {
   fputs("Usage:\n", stderr);
   fprintf(stderr, "%s ORDER [OPTION]...\n", program);
-  fputs("  creates an ORDER-by-ORDER cycle matrix and writes it to stdout.\n", stderr);
+  fputs("  creates an ORDER-by-ORDER wheel matrix and writes it to stdout.\n", stderr);
   fputs("\n", stderr);
 
   fputs("Options:\n", stderr);
@@ -164,7 +146,7 @@ int main(int argc, char** argv)
     }
     else
     {
-      fprintf(stderr, "Error: more than one size indicators specified: %zu %s\n\n", numRowsColumns, argv[a]);
+      fprintf(stderr, "Error: more than one size indicator specified: %zu %s\n\n", numRowsColumns, argv[a]);
       return printUsage(argv[0]);
     }
   }
@@ -182,7 +164,7 @@ int main(int argc, char** argv)
   if (outputFormat == FILEFORMAT_UNDEFINED)
     outputFormat = FILEFORMAT_MATRIX_DENSE;
 
-  CMR_ERROR error = genMatrixCycle(numRowsColumns, change01, outputFormat);
+  CMR_ERROR error = genMatrixWheel(numRowsColumns, change01, outputFormat);
   switch (error)
   {
   case CMR_ERROR_INPUT:
