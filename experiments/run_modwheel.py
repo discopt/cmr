@@ -32,7 +32,7 @@ for order in sorted(list(range(3, 50, 2)) + list(range(99, 1000, 50))):
     call(f'gunzip -cd {file_base}.sparse.gz | {BUILD_DIRECTORY}/cmr-tu - -i sparse --stats --algo decomposition --time-limit 3600 -N {file_base}-cmrcert.sub 1> {file_base}-cmrcert.out 2> {file_base}-cmrcert.err')
 
     # Run unimodularity-test.
-    call(f'gunzip -cd {file_base}.sparse.gz | {BUILD_DIRECTORY}/cmr-matrix - -i sparse -o dense input.dense')
+    call(f'gunzip -cd {file_base}.sparse.gz | {BUILD_DIRECTORY}/cmr-matrix - -i sparse -o dense modwheel_input.dense')
     call(f'{UNIMOD_DIRECTORY}/unimodularity-test modwheel_input.dense -s 2> /dev/null | egrep \'^[ 0-9-]*$\' 1> modwheel_signed.dense')
     call(f'{UNIMOD_DIRECTORY}/unimodularity-test modwheel_signed.dense -t -v 1> {file_base}-unimod.out 2> {file_base}-unimod.err')
     call(f'{UNIMOD_DIRECTORY}/unimodularity-test modwheel_signed.dense -t -v 1> {file_base}-unimodcert.out 2> {file_base}-unimodcert.err')
