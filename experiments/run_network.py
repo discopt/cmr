@@ -31,8 +31,10 @@ for order in sorted(list(range(1,41)) + [ 100 * i for i in range(1,41) ] + [ 100
 
     # Run unimodularity-test.
     if order <= 4000:
-      call(f'gunzip -cd {file_base}.sparse.gz | {BUILD_DIRECTORY}/cmr-matrix - -i sparse -o dense input.dense')
-      call(f'{UNIMOD_DIRECTORY}/unimodularity-test input.dense -t -v 1> {file_base}-unimod.out 2> {file_base}-unimod.err')
+      call(f'gunzip -cd {file_base}.sparse.gz | {BUILD_DIRECTORY}/cmr-matrix - -i sparse -o dense network_input.dense')
+      call(f'{UNIMOD_DIRECTORY}/unimodularity-test network_input.dense -t -v 1> {file_base}-unimod.out 2> {file_base}-unimod.err')
+
+      call(f'rm network_input.dense')
 
     r += 1
 

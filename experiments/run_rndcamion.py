@@ -18,9 +18,10 @@ for order in list(range(50, 1001, 50)):
     r = 1
     while True:
       file_base = f'{INSTANCE_DIRECTORY}/rndcamion-{order:05d}x{order:05d}-p{p:0.2f}#r{r:04d}'
-      print(f'{file_base}.sparse.gz')
       if not os.path.exists(f'{file_base}.sparse.gz'):
         break
+
+      print(f'Considering {file_base}.')
 
       # Run cmr-tu.
       call(f'gunzip -cd {file_base}.sparse.gz | {BUILD_DIRECTORY}/cmr-tu - -i sparse --stats --algo decomposition --time-limit 3600 1> {file_base}-cmrdec.out 2> {file_base}-cmrdec.err')
