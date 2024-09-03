@@ -3,5 +3,5 @@
 *.csv
 *.ods
 experiments/network/
-experiments/oddcycle01/
+experiments/modwheel/
 experiments/random-camion/
