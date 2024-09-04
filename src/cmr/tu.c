@@ -62,11 +62,11 @@ CMR_ERROR CMRtuStatsPrint(FILE* stream, CMR_TU_STATS* stats, const char* prefix)
 
   fprintf(stream, "%seulerian enumeration row subsets: %lu\n", prefix, (unsigned long)stats->enumerationRowSubsets);
   fprintf(stream, "%seulerian enumeration column subsets: %lu\n", prefix, (unsigned long)stats->enumerationColumnSubsets);
-  fprintf(stream, "%seulerian enumeration time: %f\n", prefix, stats->enumerationTime);
+  fprintf(stream, "%seulerian enumeration time: %f seconds\n", prefix, stats->enumerationTime);
 
   fprintf(stream, "%spartition row subsets: %lu\n", prefix, (unsigned long)stats->partitionRowSubsets);
   fprintf(stream, "%spartition column subsets: %lu\n", prefix, (unsigned long)stats->partitionColumnSubsets);
-  fprintf(stream, "%spartition time: %f\n", prefix, stats->partitionTime);
+  fprintf(stream, "%spartition time: %f seconds\n", prefix, stats->partitionTime);
 
   return CMR_OKAY;
 }
