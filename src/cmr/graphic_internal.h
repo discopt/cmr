@@ -33,4 +33,34 @@ CMR_ERROR CMRcomputeRepresentationMatrix(
                                    **  \f$ D \f$'s underlying undirected graph (may be \c NULL). */
 );
 
+/**
+ * \brief Tests the support matrix \f$ M \f$ of the input matrix for being a [cographic matrix](\ref graphic).
+ *
+ * Tests if \f$ M = M(G,T)^{\mathsf{T}} \f$ for some graph \f$ G = (V,E) \f$ and some spanning forest
+ * \f$ T \subseteq E \f$ of \f$ G \f$ and sets \p *pisCographic accordingly.
+ *
+ * If \f$ M \f$ is a cographic matrix and \p pgraph != \c NULL, then one possible graph \f$ G \f$ is computed and
+ * stored in \p *pgraph. The caller must release its memory via \ref CMRgraphFree.
+ * If in addition to \p pgraph also \p pforestEdges != \c NULL (resp. \p pcoforestEdges != \c NULL), then a
+ * corresponding spanning forest \f$ T \f$ (resp.\ its complement \f$ E \setminus T \f$) is stored in
+ * \p *pforestEdges (resp. \p *pcoforestEdges). The caller must release this memory via \ref CMRfreeBlockArray.
+ *
+ * \note Retrieval of minimal non-cographic submatrices via \p *psubmatrix is not implemented, yet.
+ */
+
+CMR_ERROR CMRcographicTestSupport(
+  CMR* cmr,                         /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,               /**< Matrix \f$ M \f$ */
+  bool* pisCographic,               /**< Returns true if and only if \f$ M \f$ is a cographic matrix. */
+  CMR_GRAPH** pgraph,               /**< Pointer for storing the graph \f$ G \f$ (if \f$ M \f$ is graphic). */
+  CMR_GRAPH_EDGE** pforestEdges,    /**< Pointer for storing \f$ T \f$, indexed by the rows of \f$ M \f$ (if \f$ M \f$
+                                     **  is graphic).  */
+  CMR_GRAPH_EDGE** pcoforestEdges,  /**< Pointer for storing \f$ E \setminus T \f$, indexed by the columns of \f$ M \f$
+                                     **  (if \f$ M \f$ is graphic). */
+  CMR_SUBMAT** psubmatrix,          /**< Pointer for storing a minimal non-graphic submatrix (if \f$ M \f$ is not
+                                     **  graphic). */
+  CMR_GRAPHIC_STATISTICS* stats,    /**< Pointer to statistics (may be \c NULL). */
+  double timeLimit                  /**< Time limit to impose. */
+);
+
 #endif /* CMR_GRAPHIC_INTERNAL_H */

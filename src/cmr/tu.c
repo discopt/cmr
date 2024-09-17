@@ -638,7 +638,11 @@ CMR_ERROR CMRtuTest(CMR* cmr, CMR_CHRMAT* matrix, bool* pisTotallyUnimodular, CM
   clock_t totalClock = clock();
 
   if (!CMRchrmatIsTernary(cmr, matrix, psubmatrix))
+  {
+    if (pisTotallyUnimodular)
+      *pisTotallyUnimodular = false;
     return CMR_OKAY;
+  }
 
   double remainingTime = timeLimit - ((clock() - totalClock) * 1.0 / CLOCKS_PER_SEC);
 

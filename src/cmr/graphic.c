@@ -5257,7 +5257,7 @@ CMR_ERROR cographicnessTest(
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRgraphicTestTranspose(CMR* cmr, CMR_CHRMAT* matrix, bool* pisCographic, CMR_GRAPH** pgraph,
+CMR_ERROR CMRcographicTestSupport(CMR* cmr, CMR_CHRMAT* matrix, bool* pisCographic, CMR_GRAPH** pgraph,
   CMR_GRAPH_EDGE** pforestEdges, CMR_GRAPH_EDGE** pcoforestEdges, CMR_SUBMAT** psubmatrix,
   CMR_GRAPHIC_STATISTICS* stats, double timeLimit)
 {
@@ -5269,11 +5269,11 @@ CMR_ERROR CMRgraphicTestTranspose(CMR* cmr, CMR_CHRMAT* matrix, bool* pisCograph
   assert(pisCographic);
 
 #if defined(CMR_DEBUG)
-  CMRdbgMsg(0, "CMRgraphicTestTranspose called for a %dx%d matrix\n", matrix->numRows, matrix->numColumns);
+  CMRdbgMsg(0, "CMRgraphicTestTranspose called for a %zux%zu matrix.\n", matrix->numRows, matrix->numColumns);
   CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
 #endif /* CMR_DEBUG */
 
-  clock_t time = clock();
+  clock_t totalClock = clock();
   *pisCographic = true;
 
   Dec* dec = NULL;
@@ -5287,7 +5287,7 @@ CMR_ERROR CMRgraphicTestTranspose(CMR* cmr, CMR_CHRMAT* matrix, bool* pisCograph
     for (size_t column = 0; column < matrix->numRows && *pisCographic; ++column)
     {
       clock_t checkClock = clock();
-      double remainingTime = timeLimit - (checkClock - time) * 1.0 / CLOCKS_PER_SEC;
+      double remainingTime = timeLimit - (checkClock - totalClock) * 1.0 / CLOCKS_PER_SEC;
       if (remainingTime < 0)
       {
         CMR_CALL( newcolumnFree(cmr, &newcolumn) );
@@ -5430,7 +5430,7 @@ CMR_ERROR CMRgraphicTestTranspose(CMR* cmr, CMR_CHRMAT* matrix, bool* pisCograph
   if (!*pisCographic && psubmatrix)
   {
     /* Find submatrix. */
-    double remainingTime = timeLimit - (clock() - time) * 1.0 / CLOCKS_PER_SEC;
+    double remainingTime = timeLimit - (clock() - totalClock) * 1.0 / CLOCKS_PER_SEC;
     error = CMRtestHereditaryPropertyGreedy(cmr, matrix, cographicnessTest, NULL, psubmatrix, remainingTime);
     if (error != CMR_ERROR_TIMEOUT && error != CMR_OKAY)
       CMR_CALL( error );
@@ -5439,10 +5439,35 @@ CMR_ERROR CMRgraphicTestTranspose(CMR* cmr, CMR_CHRMAT* matrix, bool* pisCograph
   if (stats)
   {
     stats->totalCount++;
-    stats->totalTime += (clock() - time) * 1.0 / CLOCKS_PER_SEC;
+    stats->totalTime += (clock() - totalClock) * 1.0 / CLOCKS_PER_SEC;
   }
 
   return error;
+}
+
+CMR_ERROR CMRgraphicTestTranspose(CMR* cmr, CMR_CHRMAT* matrix, bool* pisCographic, CMR_GRAPH** pgraph,
+  CMR_GRAPH_EDGE** pforestEdges, CMR_GRAPH_EDGE** pcoforestEdges, CMR_SUBMAT** psubmatrix,
+  CMR_GRAPHIC_STATISTICS* stats, double timeLimit)
+{
+  assert(cmr);
+  assert(matrix);
+  assert(pisCographic);
+  assert(!pgraph || !*pgraph);
+  assert(!pforestEdges || pgraph);
+  assert(!pcoforestEdges || pgraph);
+  assert(!psubmatrix || !*psubmatrix);
+
+  if (!CMRchrmatIsBinary(cmr, matrix, psubmatrix))
+  {
+    assert(false);
+    *pisCographic = false;
+    return CMR_OKAY;
+  }
+
+  CMR_CALL( CMRcographicTestSupport(cmr, matrix, pisCographic, pgraph, pforestEdges, pcoforestEdges, psubmatrix, stats,
+    timeLimit) );
+
+  return CMR_OKAY;
 }
 
 CMR_ERROR CMRtestBinaryGraphicColumnSubmatrixGreedy(CMR* cmr, CMR_CHRMAT* transpose, size_t* orderedColumns,
@@ -5530,7 +5555,7 @@ CMR_ERROR CMRgraphicTestMatrix(CMR* cmr, CMR_CHRMAT* matrix, bool* pisGraphic, C
   {
     stats->transposeCount++;
     transposeTime = (clock() - transposeClock) * 1.0 / CLOCKS_PER_SEC;
-    stats->transposeTime += transposeTime;
+    stats->transposeTime -= transposeTime;
   }
 
   CMR_CALL( CMRgraphicTestTranspose(cmr, transpose, pisGraphic, pgraph, pforestEdges, pcoforestEdges, psubmatrix,
