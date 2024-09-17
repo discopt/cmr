@@ -364,6 +364,9 @@ Functions</h2></td></tr>
 <tr class="separator:a8b16b64c3ec0974080975216458a0e21"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad9f3a9df011594b92821f3765e948b2f"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="graphic_8c.html#ad9f3a9df011594b92821f3765e948b2f">cographicnessTest</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, void *data, bool *pisCographic, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **psubmatrix, double timeLimit)</td></tr>
 <tr class="separator:ad9f3a9df011594b92821f3765e948b2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b468e9e4d55a752f43109af67659679"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="graphic_8c.html#a7b468e9e4d55a752f43109af67659679">CMRcographicTestSupport</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, bool *pisCographic, <a class="el" href="structCMR__GRAPH.html">CMR_GRAPH</a> **pgraph, <a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> **pforestEdges, <a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> **pcoforestEdges, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **psubmatrix, <a class="el" href="structCMR__GRAPHIC__STATISTICS.html">CMR_GRAPHIC_STATISTICS</a> *stats, double timeLimit)</td></tr>
+<tr class="memdesc:a7b468e9e4d55a752f43109af67659679"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tests the support matrix \( M \) of the input matrix for being a <a class="el" href="graphic.html">cographic matrix</a>.  <a href="graphic_8c.html#a7b468e9e4d55a752f43109af67659679">More...</a><br /></td></tr>
+<tr class="separator:a7b468e9e4d55a752f43109af67659679"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1e1ff4c758761f3abe1123328b65d601"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="graphic_8c.html#a1e1ff4c758761f3abe1123328b65d601">CMRgraphicTestTranspose</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, bool *pisCographic, <a class="el" href="structCMR__GRAPH.html">CMR_GRAPH</a> **pgraph, <a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> **pforestEdges, <a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> **pcoforestEdges, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **psubmatrix, <a class="el" href="structCMR__GRAPHIC__STATISTICS.html">CMR_GRAPHIC_STATISTICS</a> *stats, double timeLimit)</td></tr>
 <tr class="memdesc:a1e1ff4c758761f3abe1123328b65d601"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tests a matrix \( M \) for being a <a class="el" href="graphic.html">cographic matrix</a>.  <a href="graphic_8c.html#a1e1ff4c758761f3abe1123328b65d601">More...</a><br /></td></tr>
 <tr class="separator:a1e1ff4c758761f3abe1123328b65d601"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1067,6 +1070,95 @@ Functions</h2></td></tr>
     <tr><td class="paramname">reducedComponent</td><td>Reduced component. </td></tr>
     <tr><td class="paramname">member</td><td>New terminal member. </td></tr>
     <tr><td class="paramname">node</td><td>New terminal node. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a7b468e9e4d55a752f43109af67659679"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b468e9e4d55a752f43109af67659679">&#9670;&nbsp;</a></span>CMRcographicTestSupport()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRcographicTestSupport </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *&#160;</td>
+          <td class="paramname"><em>matrix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool *&#160;</td>
+          <td class="paramname"><em>pisCographic</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__GRAPH.html">CMR_GRAPH</a> **&#160;</td>
+          <td class="paramname"><em>pgraph</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> **&#160;</td>
+          <td class="paramname"><em>pforestEdges</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> **&#160;</td>
+          <td class="paramname"><em>pcoforestEdges</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **&#160;</td>
+          <td class="paramname"><em>psubmatrix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__GRAPHIC__STATISTICS.html">CMR_GRAPHIC_STATISTICS</a> *&#160;</td>
+          <td class="paramname"><em>stats</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>timeLimit</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Tests the support matrix \( M \) of the input matrix for being a <a class="el" href="graphic.html">cographic matrix</a>. </p>
+<p>Tests if \( M = M(G,T)^{\mathsf{T}} \) for some graph \( G = (V,E) \) and some spanning forest \( T \subseteq E \) of \( G \) and sets <code>*pisCographic</code> accordingly.</p>
+<p>If \( M \) is a cographic matrix and <code>pgraph</code> != <code>NULL</code>, then one possible graph \( G \) is computed and stored in <code>*pgraph</code>. The caller must release its memory via <a class="el" href="group__Graph.html#gaeadec814a44e89c3b729fdeb70c26593">CMRgraphFree</a>. If in addition to <code>pgraph</code> also <code>pforestEdges</code> != <code>NULL</code> (resp. <code>pcoforestEdges</code> != <code>NULL</code>), then a corresponding spanning forest \( T \) (resp. its complement \( E \setminus T \)) is stored in <code>*pforestEdges</code> (resp. <code>*pcoforestEdges</code>). The caller must release this memory via <a class="el" href="env_8h.html#a8e025417fc4487f0354a013693fb6df3">CMRfreeBlockArray</a>.</p>
+<dl class="section note"><dt>Note</dt><dd>Retrieval of minimal non-cographic submatrices via <code>*psubmatrix</code> is not implemented, yet. </dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">matrix</td><td>Matrix \( M \) </td></tr>
+    <tr><td class="paramname">pisCographic</td><td>Returns true if and only if \( M \) is a cographic matrix. </td></tr>
+    <tr><td class="paramname">pgraph</td><td>Pointer for storing the graph \( G \) (if \( M \) is graphic). </td></tr>
+    <tr><td class="paramname">pforestEdges</td><td>Pointer for storing \( T \), indexed by the rows of \( M \) (if \( M \) is graphic). </td></tr>
+    <tr><td class="paramname">pcoforestEdges</td><td>Pointer for storing \( E \setminus T \), indexed by the columns of \( M \) (if \( M \) is graphic). </td></tr>
+    <tr><td class="paramname">psubmatrix</td><td>Pointer for storing a minimal non-graphic submatrix (if \( M \) is not graphic). </td></tr>
+    <tr><td class="paramname">stats</td><td>Pointer to statistics (may be <code>NULL</code>). </td></tr>
+    <tr><td class="paramname">timeLimit</td><td>Time limit to impose. </td></tr>
   </table>
   </dd>
 </dl>
