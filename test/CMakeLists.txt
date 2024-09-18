@@ -32,7 +32,7 @@ set_property(TARGET cmr_gtest PROPERTY CXX_STANDARD 14)
 if(NOT SHARED)
   target_sources(cmr_gtest
     PRIVATE
-    test_one_sum.cpp
+    test_block_decomposition.cpp
     )
   target_include_directories(cmr_gtest
     PRIVATE

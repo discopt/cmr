@@ -25,28 +25,37 @@ TEST(Separation, OneSum)
       " 1  0  0 -1  0 "
       " 0  1  0  0  1 "
     ) );
+    CMR_CHRMAT* third = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &third, "2 1 "
+      "  1 "
+      " -1 "
+    ) );
 
     CMR_CHRMAT* check = NULL;
-    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &check, "10 10 "
-      " 1  1  0  0  0  0  0  0  0  0 "
-      " 1  0  1 -1  1  0  0  0  0  0 "
-      " 0 -1  1  0 -1  0  0  0  0  0 "
-      " 0  0 -1  1  0  0  0  0  0  0 "
-      " 0  1  1  0  1  0  0  0  0  0 "
-      " 0  0  0  0  0  1 -1  1  0  0 "
-      " 0  0  0  0  0  1  1  1  1 -1 "
-      " 0  0  0  0  0  0  0 -1  0  1 "
-      " 0  0  0  0  0  1  0  0 -1  0 "
-      " 0  0  0  0  0  0  1  0  0  1 "
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &check, "12 11 "
+      " 1  1  0  0  0  0  0  0  0  0  0 "
+      " 1  0  1 -1  1  0  0  0  0  0  0 "
+      " 0 -1  1  0 -1  0  0  0  0  0  0 "
+      " 0  0 -1  1  0  0  0  0  0  0  0 "
+      " 0  1  1  0  1  0  0  0  0  0  0 "
+      " 0  0  0  0  0  1 -1  1  0  0  0 "
+      " 0  0  0  0  0  1  1  1  1 -1  0 "
+      " 0  0  0  0  0  0  0 -1  0  1  0 "
+      " 0  0  0  0  0  1  0  0 -1  0  0 "
+      " 0  0  0  0  0  0  1  0  0  1  0 "
+      " 0  0  0  0  0  0  0  0  0  0  1 "
+      " 0  0  0  0  0  0  0  0  0  0 -1 "
     ) );
 
     CMR_CHRMAT* onesum = NULL;
-    ASSERT_CMR_CALL( CMRoneSum(cmr, first, second, &onesum) );
+    CMR_CHRMAT* matrices[3] = { first, second, third };
+    ASSERT_CMR_CALL( CMRoneSum(cmr, 3, matrices, &onesum) );
 
     ASSERT_TRUE( CMRchrmatCheckEqual(onesum, check) );
 
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &onesum) );
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &check) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &third) );
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &second) );
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &first) );  
   }

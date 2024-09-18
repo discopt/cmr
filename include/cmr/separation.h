@@ -198,22 +198,24 @@ CMR_ERROR CMRsepaCheckTernarySubmatrix(
 /**
  * \brief Constructs the 1-sum of the two matrices \p first and \p second.
  *
- * Let \f$ A \f$ and \f$ B \f$ denote the matrices given by \p first and \p second.
+ * Let \f$ A_1, A_2, \dotsc, A_k \f$ denote the matrices given by the array \p matrices.
  * Their 2-sum is the matrix
  * \f[
- *   C := \begin{pmatrix}
- *     A & \mathbb{O} \\
- *     \mathbb{O} & B
+ *   B := \begin{pmatrix}
+ *     A_1        & \mathbb{O} & \dots      & \mathbb{O} \\
+ *     \mathbb{O} & A_2        &            & \vdots  \\
+ *     \vdots     &            & \ddots     & \mathbb{O} \\
+ *     \mathbb{O} & \dots      & \mathbb{O} & A_k
  *   \end{pmatrix}.
  * \f]
- * The resulting matrix \f$ C \f$ is created and stored in \p *presult.
+ * The resulting matrix \f$ B \f$ is created and stored in \p *presult.
  */
 
 CMR_EXPORT
 CMR_ERROR CMRoneSum(
-  CMR* cmr,             /**< \ref CMR environment. */
-  CMR_CHRMAT* first,    /**< First matrix. */
-  CMR_CHRMAT* second,   /**< Second matrix. */
+  CMR* cmr,               /**< \ref CMR environment. */
+  size_t numMatrices,     /**< Number \f$ k \f$ of matrices in the sum. */
+  CMR_CHRMAT** matrices,  /**< First matrix. */
   CMR_CHRMAT** presult  /**< Pointer for storing the result. */
 );
 

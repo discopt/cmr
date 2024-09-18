@@ -238,7 +238,8 @@ TEST(TU, OneSum)
     ) );
 
     CMR_CHRMAT* matrix = NULL;
-    ASSERT_CMR_CALL( CMRoneSum(cmr, K_3_3, K_3_3_dual, &matrix) );
+    CMR_CHRMAT* matrices[2] = { K_3_3, K_3_3_dual };
+    ASSERT_CMR_CALL( CMRoneSum(cmr, 2, matrices, &matrix) );
 
     bool isTU;
     CMR_SEYMOUR_NODE* dec = NULL;

@@ -3,7 +3,7 @@
 #include "common.h"
 #include "../src/cmr/block_decomposition.h"
 
-TEST(OneSum, DoubleToDouble)
+TEST(BlockDecomposition, DoubleToDouble)
 {
   CMR* cmr = NULL;
   CMRcreateEnvironment(&cmr);
@@ -180,7 +180,7 @@ TEST(OneSum, DoubleToDouble)
   CMRfreeEnvironment(&cmr);
 }
 
-TEST(OneSum, IntToInt)
+TEST(BlockDecomposition, IntToInt)
 {
   CMR* cmr = NULL;
   CMRcreateEnvironment(&cmr);
@@ -357,7 +357,7 @@ TEST(OneSum, IntToInt)
   CMRfreeEnvironment(&cmr);
 }
 
-TEST(OneSum, CharToChar)
+TEST(BlockDecomposition, CharToChar)
 {
   CMR* cmr = NULL;
   CMRcreateEnvironment(&cmr);

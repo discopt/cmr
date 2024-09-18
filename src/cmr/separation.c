@@ -977,34 +977,52 @@ CMR_ERROR CMRsepaCheckTernarySubmatrix(CMR* cmr, CMR_SEPA* sepa, CMR_CHRMAT* mat
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRoneSum(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* second, CMR_CHRMAT ** presult)
+CMR_ERROR CMRoneSum(CMR* cmr, size_t numMatrices, CMR_CHRMAT** matrices, CMR_CHRMAT** presult)
 {
   assert(cmr);
-  assert(first);
-  assert(second);
+  assert(numMatrices > 0);
+  assert(matrices);
   assert(presult);
 
-  CMR_CALL( CMRchrmatCreate(cmr, presult, first->numRows + second->numRows, first->numColumns + second->numColumns,
-    first->numNonzeros + second->numNonzeros) );
+  size_t numRows = 0;
+  size_t numColumns = 0;
+  size_t numNonzeros = 0;
+  for (size_t i = 0; i < numMatrices; ++i)
+  {
+    numRows += matrices[i]->numRows;
+    numColumns += matrices[i]->numColumns;
+    numNonzeros += matrices[i]->numNonzeros;
+  }
 
+  CMR_CALL( CMRchrmatCreate(cmr, presult, numRows, numColumns, numNonzeros) );
   CMR_CHRMAT* result = *presult;
 
-  for (size_t row = 0; row < first->numRows; ++row)
-    result->rowSlice[row] = first->rowSlice[row];
-  for (size_t row = 0; row <= second->numRows; ++row)
-    result->rowSlice[first->numRows + row] = second->rowSlice[row] + first->numNonzeros;
-
-  for (size_t e = 0; e < first->numNonzeros; ++e)
+  size_t rows = 0;
+  size_t columns = 0;
+  size_t entry = 0;
+  for (size_t i = 0; i < numMatrices; ++i)
   {
-    result->entryColumns[e] = first->entryColumns[e];
-    result->entryValues[e] = first->entryValues[e];
+    CMR_CHRMAT* matrix = matrices[i];
+
+    for (size_t r = 0; r < matrix->numRows; ++r)
+    {
+      result->rowSlice[rows + r] = entry;
+      size_t beyond = matrix->rowSlice[r + 1];
+      for (size_t e = matrix->rowSlice[r]; e < beyond; ++e)
+      {
+        result->entryColumns[entry] = columns + matrix->entryColumns[e];
+        result->entryValues[entry++] = matrix->entryValues[e];
+      }
+    }
+
+    rows += matrix->numRows;
+    columns += matrix->numColumns;
   }
 
-  for (size_t e = 0; e < second->numNonzeros; ++e)
-  {
-    result->entryColumns[first->numNonzeros + e] = first->numColumns + second->entryColumns[e];
-    result->entryValues[first->numNonzeros + e] = second->entryValues[e];
-  }
+  result->rowSlice[rows] = entry;
+  assert(rows == numRows);
+  assert(columns == numColumns);
+  assert(entry == numNonzeros);
 
   return CMR_OKAY;
 }

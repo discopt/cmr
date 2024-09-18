@@ -41,6 +41,7 @@ Moreover, it has (exactly) one of the following **types**:
    \f]
    Such a node has at least two children that belong to the matrices \f$ M_1 := A_1 \f$, \f$ M_2 := A_2 \f$, up to \f$ M_k := A_k \f$.
    Note that any such decomposition preserves [total unimodularity](\ref tu) and [binary regularity](\ref binary_regular).
+   A 1-sum can be created using the function \ref CMRoneSum.
  - A [2-sum](\ref CMR_SEYMOUR_NODE_TYPE_TWO_SUM) node indicates that \f$ M \f$ is (up to row and column permutations) of the form
    \f[
       M = \begin{pmatrix} A_1 & \mathbb{O} \\ a_2 a_1^{\textsf{T}} & A_2 \end{pmatrix}.
@@ -53,6 +54,7 @@ Moreover, it has (exactly) one of the following **types**:
    \f]
    respectively.
    Note that any such decomposition preserves [total unimodularity](\ref tu) and [binary regularity](\ref binary_regular).
+   A 2-sum can be created using the function \ref CMRtwoSum.
  - A [3-sum](\ref CMR_SEYMOUR_NODE_TYPE_THREE_SUM) node indicates that \f$ M \f$ is (up to row and column permutations) of the form
    \f[
       M = \begin{pmatrix} A_1 & C \\ D & A_2 \end{pmatrix},
