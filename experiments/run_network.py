@@ -3,11 +3,12 @@ import os
 import math
 import subprocess
 
+from config import *
 INSTANCE_DIRECTORY = 'network'
-BUILD_DIRECTORY = '../build-release'
-UNIMOD_DIRECTORY = '/home/matthias/work/cmr/unimodularity-test/unimodularity-library-1.2h/src/'
 
 assert os.path.exists(INSTANCE_DIRECTORY)
+
+os.system(f'mkdir -p {LOCAL_STORAGE}/network')
 
 def call(command):
 #  print('[' + command + ']')
@@ -31,10 +32,10 @@ for order in sorted(list(range(1,41)) + [ 100 * i for i in range(1,41) ] + [ 100
 
     # Run unimodularity-test.
     if order <= 4000:
-      call(f'gunzip -cd {file_base}.sparse.gz | {BUILD_DIRECTORY}/cmr-matrix - -i sparse -o dense network_input.dense')
-      call(f'{UNIMOD_DIRECTORY}/unimodularity-test network_input.dense -t -v 1> {file_base}-unimod.out 2> {file_base}-unimod.err')
-
-      call(f'rm network_input.dense')
+      call(f'gunzip -cd {file_base}.sparse.gz | {BUILD_DIRECTORY}/cmr-matrix - -i sparse -o dense {LOCAL_STORAGE}/network/input.dense')
+      call(f'{UNIMOD_DIRECTORY}/unimodularity-test {LOCAL_STORAGE}/network/input.dense -t -v 1> {file_base}-unimod.out 2> {file_base}-unimod.err')
 
     r += 1
+
+os.system(f'rm -r {LOCAL_STORAGE}/network')
 
