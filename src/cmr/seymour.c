@@ -1,4 +1,5 @@
 // #define CMR_DEBUG /* Uncomment to debug this file. */
+// #define CMR_DEBUG_MATRICES /* Uncomment to print actual matrices. */
 
 #include <cmr/seymour.h>
 
@@ -1340,7 +1341,7 @@ CMR_ERROR CMRseymourUpdateThreeSumCreateWideFirstChild(CMR* cmr, CMR_SEYMOUR_NOD
   CMR_CALL( CMRfreeStackArray(cmr, &parentColumns) );
   CMR_CALL( CMRfreeStackArray(cmr, &parentRows) );
 
-#if defined(CMR_DEBUG)
+#if defined(CMR_DEBUG_MATRICES)
   CMRdbgMsg(10, "Wide first child matrix:\n");
   CMRchrmatPrintDense(cmr, childMatrix, stdout, '0', true);
   for (size_t childRow = 0; childRow < child->numRows; ++childRow)
@@ -1353,7 +1354,7 @@ CMR_ERROR CMRseymourUpdateThreeSumCreateWideFirstChild(CMR* cmr, CMR_SEYMOUR_NOD
     CMRdbgMsg(12, "Child column c%zu corresponds to parent %s.\n", childColumn + 1,
       CMRelementString(node->childColumnsToParent[0][childColumn], NULL));
   }
-#endif /* CMR_DEBUG */
+#endif /* CMR_DEBUG_MATRICES */
 
   return CMR_OKAY;
 }
@@ -1486,7 +1487,7 @@ CMR_ERROR CMRseymourUpdateThreeSumCreateWideSecondChild(CMR* cmr, CMR_SEYMOUR_NO
   CMR_CALL( CMRfreeStackArray(cmr, &parentColumns) );
   CMR_CALL( CMRfreeStackArray(cmr, &parentRows) );
 
-#if defined(CMR_DEBUG)
+#if defined(CMR_DEBUG_MATRICES)
   CMRdbgMsg(10, "Wide second child matrix:\n");
   CMRchrmatPrintDense(cmr, childMatrix, stdout, '0', true);
   for (size_t childRow = 0; childRow < child->numRows; ++childRow)
@@ -1499,7 +1500,7 @@ CMR_ERROR CMRseymourUpdateThreeSumCreateWideSecondChild(CMR* cmr, CMR_SEYMOUR_NO
     CMRdbgMsg(12, "Child column c%zu corresponds to parent %s.\n", childColumn + 1,
       CMRelementString(node->childColumnsToParent[1][childColumn], NULL));
   }
-#endif /* CMR_DEBUG */
+#endif /* CMR_DEBUG_MATRICES */
 
   return CMR_OKAY;
 }
@@ -1619,7 +1620,7 @@ CMR_ERROR CMRseymourUpdateThreeSumCreateMixedFirstChild(CMR* cmr, CMR_SEYMOUR_NO
   CMR_CALL( CMRfreeStackArray(cmr, &parentColumns) );
   CMR_CALL( CMRfreeStackArray(cmr, &parentRows) );
 
-#if defined(CMR_DEBUG)
+#if defined(CMR_DEBUG_MATRICES)
   CMRdbgMsg(10, "Mixed first child matrix:\n");
   CMRchrmatPrintDense(cmr, childMatrix, stdout, '0', true);
   for (size_t childRow = 0; childRow < child->numRows; ++childRow)
@@ -1632,7 +1633,7 @@ CMR_ERROR CMRseymourUpdateThreeSumCreateMixedFirstChild(CMR* cmr, CMR_SEYMOUR_NO
     CMRdbgMsg(12, "Child column c%zu corresponds to parent %s.\n", childColumn + 1,
       CMRelementString(node->childColumnsToParent[0][childColumn], NULL));
   }
-#endif /* CMR_DEBUG */
+#endif /* CMR_DEBUG_MATRICES */
 
   return CMR_OKAY;
 }
@@ -1771,7 +1772,7 @@ CMR_ERROR CMRseymourUpdateThreeSumCreateMixedSecondChild(CMR* cmr, CMR_SEYMOUR_N
   CMR_CALL( CMRfreeStackArray(cmr, &parentColumns) );
   CMR_CALL( CMRfreeStackArray(cmr, &parentRows) );
 
-#if defined(CMR_DEBUG)
+#if defined(CMR_DEBUG_MATRICES)
   CMRdbgMsg(10, "Mixed second child matrix:\n");
   CMRchrmatPrintDense(cmr, childMatrix, stdout, '0', true);
   for (size_t childRow = 0; childRow < child->numRows; ++childRow)
@@ -1784,7 +1785,7 @@ CMR_ERROR CMRseymourUpdateThreeSumCreateMixedSecondChild(CMR* cmr, CMR_SEYMOUR_N
     CMRdbgMsg(12, "Child column c%zu corresponds to parent %s.\n", childColumn + 1,
       CMRelementString(node->childColumnsToParent[1][childColumn], NULL));
   }
-#endif /* CMR_DEBUG */
+#endif /* CMR_DEBUG_MATRICES */
 
   return CMR_OKAY;
 }
@@ -2139,7 +2140,6 @@ void CMRregularityQueueAdd(DecompositionQueue* queue, DecompositionTask* task)
   assert(queue);
 
   task->next = queue->head;
-  task->startClock = clock();
   queue->head = task;
 }
 
@@ -2160,7 +2160,7 @@ CMR_ERROR CMRregularityTaskRun(
 
   CMR_ERROR error;
 
-  CMRdbgMsg(2, "Processing %p.\n", task);
+  CMRdbgMsg(2, "Processing %p with start clock %d\n", task, task->startClock);
 
   if (!task->node->testedTwoConnected)
   {
@@ -2239,11 +2239,11 @@ CMR_ERROR CMRseymourDecompose(CMR* cmr, CMR_CHRMAT* matrix, bool ternary, CMR_SE
   assert(matrix);
   assert(params);
 
-#if defined(CMR_DEBUG)
+#if defined(CMR_DEBUG_MATRICES)
   CMRdbgMsg(0, "Testing a %s %zux%zu matrix for regularity.\n", ternary ? "ternary" : "binary", matrix->numRows,
     matrix->numColumns);
   CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', false) );
-#endif /* CMR_DEBUG */
+#endif /* CMR_DEBUG_MATRICES */
 
   CMR_CALL( CMRseymourCreate(cmr, proot, ternary, matrix) );
   assert(*proot);
@@ -2271,8 +2271,10 @@ CMR_ERROR CMRregularityCompleteDecomposition(CMR* cmr, CMR_SEYMOUR_NODE* subtree
     subtree->isTernary ? "ternary" : "binary", subtree->matrix->numRows, subtree->matrix->numColumns);
   CMRdbgMsg(0, "Considered subtree belongs to the %zux%zu matrix.\n",
     subtree->matrix->numRows, subtree->matrix->numColumns);
-  CMR_CALL( CMRchrmatPrintDense(cmr, subtree->matrix, stdout, '0', false) );
 #endif /* CMR_DEBUG */
+#if defined(CMR_DEBUG_MATRICES)
+  CMR_CALL( CMRchrmatPrintDense(cmr, subtree->matrix, stdout, '0', false) );
+#endif /* CMR_DEBUG_MATRICES */
 
   clock_t time = clock();
   if (stats)
@@ -2354,10 +2356,8 @@ CMR_ERROR CMRregularityRefineDecomposition(CMR* cmr, size_t numNodes, CMR_SEYMOU
   assert(nodes);
   assert(params);
 
-#if defined(CMR_DEBUG)
   CMRdbgMsg(0, "Refining decomposition trees of %zu %s matrices.\n", numNodes,
     nodes[0]->isTernary ? "ternary" : "binary");
-#endif /* CMR_DEBUG */
 
   clock_t time = clock();
   if (stats)

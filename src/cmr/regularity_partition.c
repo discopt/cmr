@@ -729,6 +729,8 @@ CMR_ERROR CMRregularityNestedMinorSequenceSearchThreeSeparation(CMR* cmr, Decomp
   assert(dec->nestedMinorsTranspose);
   assert(dec->nestedMinorsLength >= 2);
 
+  clock_t startClock = clock();
+
 #if defined(CMR_DEBUG)
   CMRdbgMsg(6, "Searching for 3-separations along the sequence of nested minors for the following matrix:\n");
   CMR_CALL( CMRchrmatPrintDense(cmr, dec->matrix, stdout, '0', true) );
@@ -948,8 +950,7 @@ CMR_ERROR CMRregularityNestedMinorSequenceSearchThreeSeparation(CMR* cmr, Decomp
   if (task->stats)
   {
     clock_t endClock = clock();
-    task->stats->enumerationTime += (endClock - task->startClock) * 1.0 / CLOCKS_PER_SEC;
-    task->startClock = endClock;
+    task->stats->enumerationTime += (endClock - startClock) * 1.0 / CLOCKS_PER_SEC;
   }
 
   if (separation)

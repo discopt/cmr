@@ -1,4 +1,5 @@
 // #define CMR_DEBUG /* Uncomment to debug this file. */
+// #define CMR_DEBUG_INDENT /* Uncomment to add whitespace when printing dense matrices. */
 
 #include <cmr/matrix.h>
 
@@ -994,13 +995,13 @@ CMR_ERROR CMRchrmatPrintDense(CMR* cmr, CMR_CHRMAT* matrix, FILE* stream, char z
   if (header)
   {
     fputs("   ", stream);
-#if defined(CMR_DEBUG)
+#if defined(CMR_DEBUG_INDENT)
     for (size_t column = 0; column < matrix->numColumns; ++column)
       fprintf(stream, "%2zu ", (column+1) % 10);
-#else /* !CMR_DEBUG */
+#else /* !CMR_DEBUG_INDENT */
     for (size_t column = 0; column < matrix->numColumns; ++column)
       fprintf(stream, "%zu ", (column+1) % 10);
-#endif /* CMR_DEBUG */
+#endif /* CMR_DEBUG_INDENT */
     fputs("\n  ", stream);
     for (size_t column = 0; column < matrix->numColumns; ++column)
       fputs("--", stream);
@@ -1013,7 +1014,7 @@ CMR_ERROR CMRchrmatPrintDense(CMR* cmr, CMR_CHRMAT* matrix, FILE* stream, char z
     size_t first = matrix->rowSlice[row];
     size_t beyond = matrix->rowSlice[row + 1];
     size_t column = 0;
-#if defined(CMR_DEBUG)
+#if defined(CMR_DEBUG_INDENT)
     for (size_t entry = first; entry < beyond; ++entry)
     {
       size_t entryColumn = matrix->entryColumns[entry];
@@ -1024,7 +1025,7 @@ CMR_ERROR CMRchrmatPrintDense(CMR* cmr, CMR_CHRMAT* matrix, FILE* stream, char z
     }
     for (; column < matrix->numColumns; ++column)
       fprintf(stream, " %c ", zeroChar);
-#else /* !CMR_DEBUG */
+#else /* !CMR_DEBUG_INDENT */
     for (size_t entry = first; entry < beyond; ++entry)
     {
       size_t entryColumn = matrix->entryColumns[entry];
@@ -1035,7 +1036,7 @@ CMR_ERROR CMRchrmatPrintDense(CMR* cmr, CMR_CHRMAT* matrix, FILE* stream, char z
     }
     for (; column < matrix->numColumns; ++column)
       fprintf(stream, "%c ", zeroChar);
-#endif /* CMR_DEBUG */
+#endif /* CMR_DEBUG_INDENT */
     fputc('\n', stream);
   }
   fflush(stream);

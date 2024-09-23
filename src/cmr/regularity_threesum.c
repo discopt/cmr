@@ -390,6 +390,11 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
   {
     CMR_CALL( CMRseymourUpdatePivots(cmr, node, numPivots, pivotRows, pivotColumns, pivotedMatrix, pivotedTranspose) );
     node = node->children[0];
+
+#if defined(CMR_DEBUG)
+    CMRdbgMsg(10, "Matrix after pivoting:\n");
+    CMR_CALL( CMRchrmatPrintDense(cmr, goodRankMatrix, stdout, '0', true) );
+#endif /* CMR_DEBUG */
   }
 
   /* Initialize the 3-sum node. */

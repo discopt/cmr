@@ -331,7 +331,7 @@ CMR_ERROR CMRseymourSetAttributes(
 
 CMR_ERROR CMRregularityTaskCreateRoot(
   CMR* cmr,                       /**< \ref CMR environment. */
-    CMR_SEYMOUR_NODE* dec,           /**< Decomposition node. */
+  CMR_SEYMOUR_NODE* dec,          /**< Decomposition node. */
   DecompositionTask** ptask,      /**< Pointer for storing the new task. */
   CMR_SEYMOUR_PARAMS* params,     /**< Parameters for the computation. */
   CMR_SEYMOUR_STATS* stats,       /**< Statistics for the computation (may be \c NULL). */

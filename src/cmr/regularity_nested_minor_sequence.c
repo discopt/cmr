@@ -630,6 +630,8 @@ CMR_ERROR CMRregularityExtendNestedMinorSequence(CMR* cmr, DecompositionTask* ta
   assert(task);
   assert(queue);
 
+  clock_t startClock = clock();
+
   CMR_SEYMOUR_NODE* node = task->node;
   assert(node);
 
@@ -952,8 +954,7 @@ CMR_ERROR CMRregularityExtendNestedMinorSequence(CMR* cmr, DecompositionTask* ta
   if (task->stats)
   {
     clock_t endClock = clock();
-    task->stats->enumerationTime += (endClock - task->startClock) * 1.0 / CLOCKS_PER_SEC;
-    task->startClock = endClock;
+    task->stats->enumerationTime += (endClock - startClock) * 1.0 / CLOCKS_PER_SEC;
   }
 
   if (node->type == CMR_SEYMOUR_NODE_TYPE_TWO_SUM)
