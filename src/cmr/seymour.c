@@ -2160,7 +2160,7 @@ CMR_ERROR CMRregularityTaskRun(
 
   CMR_ERROR error;
 
-  CMRdbgMsg(2, "Processing %p with start clock %d\n", task, task->startClock);
+  CMRdbgMsg(2, "Processing task %p.\n", task);
 
   if (!task->node->testedTwoConnected)
   {

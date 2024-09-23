@@ -1,4 +1,6 @@
 // #define CMR_DEBUG /* Uncomment to debug this file. */
+// #define CMR_DEBUG_PARTS /* Uncomment to print matrices. */
+// #define CMR_DEBUG_MATRICES /* Uncomment to print matrices. */
 
 #include "env_internal.h"
 #include "seymour_internal.h"
@@ -498,14 +500,14 @@ CMR_ERROR extendMinorSeparation(
   size_t rowRepresentative[2][2] = { {SIZE_MAX, SIZE_MAX}, {SIZE_MAX, SIZE_MAX} };
   size_t columnRepresentative[2][2] = { {SIZE_MAX, SIZE_MAX}, {SIZE_MAX, SIZE_MAX} };
 
-#if defined(CMR_DEBUG)
   CMRdbgMsg(12, "Checking the ranks of a %zux%zu matrix:\n", matrix->numRows, matrix->numColumns);
+#if defined(CMR_DEBUG_MATRICES)
   CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', true) );
   for (size_t row = 0; row < numRows; ++row)
     CMRdbgMsg(14, "Initially, row r%ld belongs to part %d.\n", row+1, rowData[row].part);
   for (size_t column = 0; column < numColumns; ++column)
     CMRdbgMsg(14, "Initially, column c%ld belongs to part %d.\n", column+1, columnData[column].part);
-#endif /* CMR_DEBUG */
+#endif /* CMR_DEBUG_MATRICES */
 
   size_t totalRank = 0;
   if (findRank1(matrix, rowData, columnData, rowRepresentative, columnRepresentative, 0))
@@ -637,7 +639,9 @@ CMR_ERROR extendMinorSeparation(
   while (queueFirst < queueBeyond)
   {
     CMR_ELEMENT element = queue[queueFirst++];
+#if defined(CMR_DEBUG_PARTS)
     CMRdbgMsg(12, "Processing queue element %s.\n", CMRelementString(element, NULL));
+#endif /* CMR_DEBUG_PARTS */
     if (CMRelementIsRow(element))
     {
       size_t row = CMRelementToRowIndex(element);
@@ -672,24 +676,36 @@ CMR_ERROR extendMinorSeparation(
   {
     if (rowData[row].part < 0)
     {
+#if defined(CMR_DEBUG_PARTS)
       CMRdbgMsg(12, "Row r%ld is unassigned and has types %d and %d. Assigning it to part 0.\n", row+1,
         rowData[row].type[0], rowData[row].type[1]);
+#endif /* CMR_DEBUG_PARTS */
       rowData[row].part = 0;
     }
     else
+    {
+#if defined(CMR_DEBUG_PARTS)
       CMRdbgMsg(12, "Row r%ld is assigned to part %d.\n", row+1, rowData[row].part);
+#endif /* CMR_DEBUG_PARTS */
+    }
     countElements[rowData[row].part]++;
   }
   for (size_t column = 0; column < matrix->numColumns; ++column)
   {
     if (columnData[column].part < 0)
     {
+#if defined(CMR_DEBUG_PARTS)
       CMRdbgMsg(12, "Column c%ld is unassigned and has types %d and %d. Assigning it to part 0.\n", column+1,
         columnData[column].type[0], columnData[column].type[1]);
+#endif /* CMR_DEBUG_PARTS */
       columnData[column].part = 0;
     }
     else
+    {
+#if defined(CMR_DEBUG_PARTS)
       CMRdbgMsg(12, "Column c%ld is assigned to part %d.\n", column+1, columnData[column].part);
+#endif /* CMR_DEBUG_PARTS */
+    }
     countElements[columnData[column].part]++;
   }
 
@@ -731,12 +747,12 @@ CMR_ERROR CMRregularityNestedMinorSequenceSearchThreeSeparation(CMR* cmr, Decomp
 
   clock_t startClock = clock();
 
-#if defined(CMR_DEBUG)
   CMRdbgMsg(6, "Searching for 3-separations along the sequence of nested minors for the following matrix:\n");
+#if defined(CMR_DEBUG_MATRICES)
   CMR_CALL( CMRchrmatPrintDense(cmr, dec->matrix, stdout, '0', true) );
   CMRdbgMsg(8, "Matrix with nested minor sequence:\n");
   CMR_CALL( CMRchrmatPrintDense(cmr, dec->nestedMinorsMatrix, stdout, '0', true) );
-#endif /* CMR_DEBUG */
+#endif /* CMR_DEBUG_MATRICES */
 
   size_t firstNonCoGraphicMinor = (dec->nestedMinorsLastGraphic > dec->nestedMinorsLastCographic)
     ? (dec->nestedMinorsLastGraphic + 1) : (dec->nestedMinorsLastCographic + 1);
