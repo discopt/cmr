@@ -4,33 +4,26 @@ import math
 import subprocess
 import eval_parse
 
-from config import *
-OUTPUT_DIRECTORY = 'modwheel'
+from config_modwheel import *
 
-try:
-  num_repetitions = int(sys.argv[1])
-except:
-  print(f'Usage: {sys.argv[0]} NUM-REPETITIONS')
-  sys.exit(1)
-
-if not os.path.exists(OUTPUT_DIRECTORY):
-  os.mkdir(OUTPUT_DIRECTORY)
+assert os.path.exists(INSTANCE_DIRECTORY)
 
 results = []
-for order in sorted(list(range(9, 100, 10)) + list(range(99, 1000, 100))):
-  print(f'{order}')
-  file_prefix = f'{OUTPUT_DIRECTORY}/modwheel-{order:05d}x{order:05d}'
-  for algo in ['cmrdec', 'cmrpart', 'cmreuler', 'cmrcert', 'unimod', 'unimodcert']:
-    print(f'  {algo}')
-    for r in range(1, num_repetitions+1):
-      result = eval_parse.parse(file_prefix, order, algo, r)
+for instance in INSTANCES:
+  file_prefix = f'{INSTANCE_DIRECTORY}/modwheel-{instance:05d}x{instance:05d}'
+  for algo in ALGORITHMS:
+    for sample in SAMPLES:
+      result = eval_parse.parse(file_prefix, instance, algo, sample)
+
+      if algo.startswith('unimod') and result.time >= 3700.0:
+        result.time = float('inf')
+
       results.append( result )
       print(f'    {result}')
 
 times = eval_parse.averageTimes(results)
 
-for order in sorted(list(range(9, 99, 10)) + list(range(99, 1000, 100))):
-  for algo in ['cmrdec', 'cmrpart', 'cmreuler', 'cmrcert', 'unimod', 'unimodcert']:
-    print(order, algo, times[ (order, algo) ])
-
+for instance in INSTANCES:
+  for algo in ALGORITHMS:
+    print(instance, algo, times[ (instance, algo) ])
 
