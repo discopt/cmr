@@ -50,11 +50,11 @@ typedef enum
 
 typedef struct
 {
-  size_t numRows;               /**< \brief Number of rows of the matrix. */
-  size_t numColumns;            /**< \brief Number of columns of the matrix. */
-  CMR_SEPA_FLAGS* rowsFlags;    /**< \brief Array with each row's flags. */
-  CMR_SEPA_FLAGS* columnsFlags; /**< \brief Array with each column's flags. */
-  CMR_SEPA_TYPE type;           /**< \brief Type of separation. */
+  size_t numRows;     /**< \brief Number of rows of the matrix. */
+  size_t numColumns;  /**< \brief Number of columns of the matrix. */
+  int* rowsFlags;     /**< \brief Array with each row's flags; logical OR of CMR_SEPA_TYPE. */
+  int* columnsFlags;  /**< \brief Array with each column's flags; logical OR of CMR_SEPA_TYPE. */
+  CMR_SEPA_TYPE type; /**< \brief Type of separation. */
 } CMR_SEPA;
 
 /**
@@ -151,8 +151,8 @@ CMR_EXPORT
 CMR_ERROR CMRsepaGetProjection(
   CMR_SEPA* sepa,         /**< Separation. */
   size_t part,            /**< Part to project. */
-  size_t* rowsToPart,     /**< Array for storing the mapping from rows to those of \p part. */
-  size_t* columnsToPart,  /**< Array for storing the mapping from columns to those of \p part. */
+  size_t* rowsToPart,     /**< Array for storing the mapping from rows to those of \p part. Must be large enough. */
+  size_t* columnsToPart,  /**< Array for storing the mapping from columns to those of \p part. Must be large enough. */
   size_t* pnumPartRows,   /**< Pointer for storing the number of rows of \p part (excluding representatives). */
   size_t* pnumPartColumns /**< Pointer for storing the number of columns of \p part (excluding representatives). */
 );
@@ -196,64 +196,136 @@ CMR_ERROR CMRsepaCheckTernarySubmatrix(
 );
 
 /**
- * \brief Constructs the 1-sum of the two matrices \p first and \p second.
+ * \brief Composes the 1-sum of the several \p matrices.
  *
  * Let \f$ A_1, A_2, \dotsc, A_k \f$ denote the matrices given by the array \p matrices.
- * Their 2-sum is the matrix
+ * Their 1-sum is the matrix
  * \f[
- *   B := \begin{pmatrix}
+ *   B := \begin{bmatrix}
  *     A_1        & \mathbb{O} & \dots      & \mathbb{O} \\
  *     \mathbb{O} & A_2        &            & \vdots  \\
  *     \vdots     &            & \ddots     & \mathbb{O} \\
  *     \mathbb{O} & \dots      & \mathbb{O} & A_k
- *   \end{pmatrix}.
+ *   \end{bmatrix}.
  * \f]
  * The resulting matrix \f$ B \f$ is created and stored in \p *presult.
+ *
+ * \see \ref CMRdecomposeBlocks for a decomposition of a given matrix \f$ B \f$ into \f$ A_i \f$.
  */
 
 CMR_EXPORT
-CMR_ERROR CMRoneSum(
+CMR_ERROR CMRoneSumCompose(
   CMR* cmr,               /**< \ref CMR environment. */
   size_t numMatrices,     /**< Number \f$ k \f$ of matrices in the sum. */
   CMR_CHRMAT** matrices,  /**< First matrix. */
-  CMR_CHRMAT** presult  /**< Pointer for storing the result. */
+  CMR_CHRMAT** presult    /**< Pointer for storing the result. */
 );
 
 /**
- * \brief Constructs the 2-sum of the two matrices \p first and \p second via \p firstMarker and \p secondMarker.
+ * \brief Composes the 2-sum of the two matrices \p first and \p second with connecting elements \p firstMarker and
+ *        \p secondMarker.
  *
- * Let \f$ A \f$ and \f$ B \f$ denote the matrices given by \p first and \p second and let \f$ A' \f$ and \f$ B' \f$ be
- * these matrices without the row or column indexed by \p firstMarker and \p secondMarker, respectively.
- * If \p firstMarker indexes a row vector \f$ a^{\textsf{T}} \f$ of \f$ A \f$ then \p secondMarker must index a column
- * vector \f$ b \f$ of \f$ B \f$. In this case the 2-sum is the matrix
+ * If \p firstMarker indexes a row of \p first with row vector \f$ c^{\textsf{T}} \f$ then \p secondMarker must index a
+ * column of \p second with column vector \f$ d \f$. In this case, let \f$ M_1 \f$ and \f$ M_2 \f$ denote the matrices
+ * given by \p first and \p second, reordered such that \f$ M_1 = \begin{bmatrix} A \\ c^{\textsf{T}} \end{bmatrix} \f$
+ * and \f$ M_2 = \begin{bmatrix} d & D \end{bmatrix} \f$ holds. Then the 2-sum is the matrix
  * \f[
- *   C := \begin{pmatrix}
- *     A' & \mathbb{O} \\
- *     b a^{\textsf{T}} & B'
- *   \end{pmatrix}.
+ *   M := \begin{bmatrix}
+ *     A & \mathbb{O} \\
+ *     d c^{\textsf{T}} & D
+ *   \end{bmatrix}.
  * \f]
- * Otherwise, \p firstMarker must index a column vector \f$ a \f$ of \f$ A \f$ and \p secondMarker must index a row
- * vector \f$ b^{\textsf{T}} \f$ of \f$ B \f$, and the 2-sum is the matrix
+ * Otherwise, \p firstMarker must index a column of \p first with column vector \f$ a \f$ and \p secondMarker indexes a
+ * row of \p second with row vector \f$ b^{\textsf{T}} \f$. Let \f$ M_1 \f$ and \f$ M_2 \f$ denote the matrices given by
+ * \p first and \p second, reordered such that \f$ M_1 = \begin{bmatrix} A & a \end{bmatrix} \f$ and
+ * \f$ M_2 = \begin{bmatrix} b^{\textsf{T}} \\ D \end{bmatrix} \f$ holds. Then the 2-sum is the matrix
  * \f[
- *   C := \begin{pmatrix}
- *     A' & a b^{\textsf{T}} \\
- *     \mathbb{O} & B'
- *   \end{pmatrix}.
+ *   M := \begin{bmatrix}
+ *     A & a b^{\textsf{T}} \\
+ *     \mathbb{O} & D
+ *   \end{bmatrix}.
  * \f]
- * The calculations are done modulo \p characteristic, where the value \f$ 3 \f$ yields numbers from \f$ \{-1,0,+1\} \f$.
+ * The calculations are done modulo \p characteristic, where the value \f$ 3 \f$ yields numbers from
+ * \f$ \{-1,0,+1\} \f$.
  *
- * The resulting matrix \f$ C \f$ is created and stored in \p *presult.
+ * The resulting matrix \f$ M \f$ is created and stored in \p *presult.
  */
 
 CMR_EXPORT
-CMR_ERROR CMRtwoSum(
+CMR_ERROR CMRtwoSumCompose(
+  CMR* cmr,                 /**< \ref CMR environment. */
+  CMR_CHRMAT* first,        /**< First matrix. */
+  CMR_CHRMAT* second,       /**< Second matrix. */
+  CMR_ELEMENT firstMarker,  /**< Marker element of first matrix. */
+  CMR_ELEMENT secondMarker, /**< Marker element of second matrix. */
+  int8_t characteristic,    /**< Field characteristic. */
+  CMR_CHRMAT** presult      /**< Pointer for storing the result. */
+);
+
+/**
+ * \brief Decomposes \p matrix as a 2-sum according to the 2-separation \p sepa and computing the first component.
+ *
+ * The input \p matrix \f$ M \f$ must have a 2-separation that is given by \p sepa, i.e., it can be reordered to look
+ * like \f$ M = \begin{bmatrix} A & B \\ C & D \end{bmatrix} \f$, where \f$ \rank(B) + \rank(C) = 1 \f$.
+ * If \f$ \rank(B) = \mathbb{O} \f$ then the two components of the 2-sum are matrices
+ * \f$ M_1 = \begin{bmatrix} A \\ c^{\textsf{T}} \end{bmatrix} \f$ and
+ * \f$ M_2 = \begin{bmatrix} d & D \end{bmatrix} \f$ such that \f$ C = d c^{\textsf{T}} \f$ holds.
+ * Otherwise, the two parts of the 2-sum are matrices
+ * \f$ M_1 = \begin{bmatrix} A & a \end{bmatrix} \f$ and
+ * \f$ M_2 = \begin{bmatrix} b^{\textsf{T}} \\ D \end{bmatrix} \f$ such that \f$ B = a b^{\textsf{T}} \f$ holds.
+ *
+ * This function computes \f$ M_1 \f$, while \f$ M_2 \f$ can be computed by \ref CMRtwoSumDecomposeSecond.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRtwoSumDecomposeFirst(
   CMR* cmr,                   /**< \ref CMR environment. */
-  CMR_CHRMAT* first,          /**< First matrix. */
-  CMR_CHRMAT* second,         /**< Second matrix. */
-  CMR_ELEMENT firstMarker,    /**< Marker element of first matrix. */
-  CMR_ELEMENT secondMarker,   /**< Marker element of second matrix. */
-  int8_t characteristic,      /**< Field characteristic. */
-  CMR_CHRMAT** presult        /**< Pointer for storing the result. */
+  CMR_CHRMAT* matrix,         /**< Input matrix \f$ M \f$. */
+  CMR_SEPA* sepa,             /**< 2-separation to decompose at. */
+  CMR_CHRMAT** pfirst,        /**< Pointer for storing the first matrix \f$ M_1 \f$. */
+  size_t* firstRowsOrigin,    /**< Array for storing the mapping from rows of \f$ M_1 \f$ to rows of \f$ M \f$ or to
+                               **  \c SIZE_MAX; may be \c NULL. */
+  size_t* firstColumnsOrigin, /**< Array for storing the mapping from columns of \f$ M_1 \f$ to columns of \f$ M \f$ or
+                               **  to \c SIZE_MAX; may be \c NULL. */
+  size_t* rowsToFirst,        /**< Array for storing the mapping from rows of \f$ M \f$ to rows of \f$ M_1 \f$ or to
+                               **  \c SIZE_MAX; may be \c NULL. */
+  size_t* columnsToFirst,     /**< Array for storing the mapping from columns of \f$ M \f$ to columns of \f$ M_1 \f$ or
+                               **  to \c SIZE_MAX; may be \c NULL. */
+  CMR_ELEMENT* pfirstMarker   /**< Pointer for storing the row index of \f$ c^{\textsf{T}} \f$ in \f$ M_1 \f$ or the
+                               **  column index of \f$ a \f$ in \f$ M_1 \f$; may be \c NULL. */
+);
+
+/**
+ * \brief Decomposes \p matrix as a 2-sum according to the 2-separation \p sepa and computing the second component.
+ *
+ * The input \p matrix \f$ M \f$ must have a 2-separation that is given by \p sepa, i.e., it can be reordered to look
+ * like \f$ M = \begin{bmatrix} A & B \\ C & D \end{bmatrix} \f$, where \f$ \rank(B) + \rank(C) = 1 \f$.
+ * If \f$ \rank(B) = \mathbb{O} \f$ then the two parts of the 2-sum are matrices
+ * \f$ M_1 = \begin{bmatrix} A \\ c^{\textsf{T}} \end{bmatrix} \f$ and
+ * \f$ M_2 = \begin{bmatrix} d & D \end{bmatrix} \f$ such that \f$ C = d c^{\textsf{T}} \f$ holds.
+ * Otherwise, the two parts of the 2-sum are matrices
+ * \f$ M_1 = \begin{bmatrix} A & a \end{bmatrix} \f$ and
+ * \f$ M_2 = \begin{bmatrix} b^{\textsf{T}} \\ D \end{bmatrix} \f$ such that \f$ B = a b^{\textsf{T}} \f$ holds.
+ *
+ * This function computes \f$ M_2 \f$, while \f$ M_1 \f$ can be computed by \ref CMRtwoSumDecomposeFirst.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRtwoSumDecomposeSecond(
+  CMR* cmr,                     /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,           /**< Input matrix \f$ M \f$. */
+  CMR_SEPA* sepa,               /**< 2-separation to decompose at. */
+  CMR_CHRMAT** psecond,         /**< Pointer for storing the second matrix \f$ M_2 \f$. */
+  size_t* secondRowsOrigin,     /**< Array for storing the mapping from rows of \f$ M_2 \f$ to rows of \f$ M \f$ or to
+                                 **  \c SIZE_MAX; may be \c NULL. */
+  size_t* secondColumnsOrigin,  /**< Array for storing the mapping from columns of \f$ M_2 \f$ to columns of \f$ M \f$ or
+                                 **  to \c SIZE_MAX; may be \c NULL. */
+  size_t* rowsToSecond,         /**< Array for storing the mapping from rows of \f$ M \f$ to rows of \f$ M_2 \f$ or to
+                                 **  \c SIZE_MAX; may be \c NULL. */
+  size_t* columnsToSecond,      /**< Array for storing the mapping from columns of \f$ M \f$ to columns of \f$ M_2 \f$ or
+                                 **  to \c SIZE_MAX; may be \c NULL. */
+  CMR_ELEMENT* psecondMarker    /**< Pointer for storing the row index of \f$ b^{\textsf{T}} \f$ in \f$ M_2 \f$ or the
+                                 **  column index of \f$ d \f$ in \f$ M_2 \f$; may be \c NULL. */
 );
 
 /**
@@ -267,29 +339,29 @@ CMR_ERROR CMRtwoSum(
  * then \p secondMarker1 and \p secondMarker2 must index column vectors \f$ b_1, b_2 \f$ of
  * \f$ B \f$. In this case the 3-sum is the matrix
  * \f[
- *   C := \begin{pmatrix}
+ *   C := \begin{bmatrix}
  *     A' & \mathbb{O} \\
  *     b_1 a_1^{\textsf{T}} + b_2 a_2^{\textsf{T}} & B'
- *   \end{pmatrix}.
+ *   \end{bmatrix}.
  * \f]
  * Otherwise, if \p firstMarker1 and \p firstMarker2 both index column vectors \f$ a_1, a_2 \f$ of \f$ A \f$ then
  * \p secondMarker1 and \p secondMarker2 must index row vectors \f$ b_1^{\textsf{T}}, b_2^{\textsf{T}} \f$ of \f$ B \f$.
  * In this case the 3-sum is the matrix
  * \f[
- *   C := \begin{pmatrix}
+ *   C := \begin{bmatrix}
  *     A'         & a_1 b_1^{\textsf{T}} + a_2 b_2^{\textsf{T}}  \\
  *     \mathbb{O} & B'
- *   \end{pmatrix}.
+ *   \end{bmatrix}.
  * \f]
  * Otherwise, if \p firstMarker1 indexes a row vector \f$ a_1^{\textsf{T}} \f$ and \p firstMarker2 indexes a column
  * vector \f$ a_2 \f$ of \f$ A \f$ then \p secondMarker1 must index a column vector \f$ b_1 \f$ of \f$ B \f$ and
  * \p secondMarker2 must index a row vector \f$ b_2^{\textsf{T}} \f$ of \f$ B \f$.
  * In this case the 3-sum is the matrix
  * \f[
- *   C := \begin{pmatrix}
+ *   C := \begin{bmatrix}
  *     A'                   & a_2 b_2^{\textsf{T}}  \\
  *     b_1 a_1^{\textsf{T}} & B'
- *   \end{pmatrix}.
+ *   \end{bmatrix}.
  * \f]
  * The remaining case is identical to the previous one, except that \p firstMarker1 and \p firstMarker2 as well as
  * \p secondMarker1 and \p secondMarker2 change roles.

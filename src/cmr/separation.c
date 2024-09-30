@@ -977,7 +977,7 @@ CMR_ERROR CMRsepaCheckTernarySubmatrix(CMR* cmr, CMR_SEPA* sepa, CMR_CHRMAT* mat
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRoneSum(CMR* cmr, size_t numMatrices, CMR_CHRMAT** matrices, CMR_CHRMAT** presult)
+CMR_ERROR CMRoneSumCompose(CMR* cmr, size_t numMatrices, CMR_CHRMAT** matrices, CMR_CHRMAT** presult)
 {
   assert(cmr);
   assert(numMatrices > 0);
@@ -1027,15 +1027,15 @@ CMR_ERROR CMRoneSum(CMR* cmr, size_t numMatrices, CMR_CHRMAT** matrices, CMR_CHR
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRtwoSum(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* second, CMR_ELEMENT firstMarker, CMR_ELEMENT secondMarker,
-  int8_t characteristic, CMR_CHRMAT** presult)
+CMR_ERROR CMRtwoSumCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* second, CMR_ELEMENT firstMarker,
+  CMR_ELEMENT secondMarker, int8_t characteristic, CMR_CHRMAT** presult)
 {
   assert(cmr);
   assert(first);
   assert(second);
   assert(presult);
 
-  CMRdbgMsg(0, "CMRtwoSum of a %zux%zu and a %zux%zu matrix.\n", first->numRows, first->numColumns,
+  CMRdbgMsg(0, "CMRtwoSumCompose for a %zux%zu and a %zux%zu matrix.\n", first->numRows, first->numColumns,
     second->numRows, second->numColumns);
 
   if ((CMRelementIsRow(firstMarker) && CMRelementIsRow(secondMarker))
@@ -1229,7 +1229,7 @@ CMR_ERROR CMRtwoSum(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* second, CMR_ELEMENT
   }
   result->rowSlice[result->numRows] = resultNonzero;
   assert(resultNonzero == result->numNonzeros);
-  
+
   CMRdbgConsistencyAssert( CMRchrmatConsistency(result) );
 
 cleanup:
@@ -1238,6 +1238,333 @@ cleanup:
 
   return error;
 }
+
+CMR_ERROR CMRtwoSumDecomposeFirst(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sepa, CMR_CHRMAT** pfirst,
+  size_t* firstRowsOrigin, size_t* firstColumnsOrigin, size_t* rowsToFirst, size_t* columnsToFirst,
+  CMR_ELEMENT* pfirstMarker)
+{
+  assert(cmr);
+  assert(matrix);
+  assert(sepa);
+  assert(sepa->type == CMR_SEPA_TYPE_TWO);
+  assert(pfirst);
+
+  CMRdbgMsg(0, "Computing first part of 2-sum decomposition of %zux%zu-matrix.\n", matrix->numRows, matrix->numColumns);
+
+  /* Allocate missing arrays on stack. */
+  bool hasFirstRowsOrigin = firstRowsOrigin;
+  if (!hasFirstRowsOrigin)
+    CMR_CALL( CMRallocStackArray(cmr, &firstRowsOrigin, matrix->numRows) );
+  bool hasFirstColumnsOrigin = firstColumnsOrigin;
+  if (!hasFirstColumnsOrigin)
+    CMR_CALL( CMRallocStackArray(cmr, &firstColumnsOrigin, matrix->numColumns) );
+  bool hasRowsToFirst = rowsToFirst;
+  if (!hasRowsToFirst)
+    CMR_CALL( CMRallocStackArray(cmr, &rowsToFirst, matrix->numRows) );
+  bool hasColumnsToFirst = columnsToFirst;
+  if (!hasColumnsToFirst)
+    CMR_CALL( CMRallocStackArray(cmr, &columnsToFirst, matrix->numColumns) );
+
+  char* denseColumn = NULL;
+  CMR_CALL( CMRallocStackArray(cmr, &denseColumn, matrix->numColumns) );
+
+  /* Number of rows of A. */
+  size_t numRows = 0;
+  size_t extraRow = SIZE_MAX;
+  for (size_t row = 0; row < sepa->numRows; ++row)
+  {
+    if ((sepa->rowsFlags[row] & CMR_SEPA_MASK_CHILD) == CMR_SEPA_FIRST)
+    {
+      rowsToFirst[row] = numRows;
+      firstRowsOrigin[numRows++] = row;
+    }
+    else
+    {
+      rowsToFirst[row] = SIZE_MAX;
+      if (extraRow == SIZE_MAX && sepa->rowsFlags[row] & CMR_SEPA_MASK_EXTRA)
+        extraRow = row;
+    }
+  }
+
+  /* Number of columns of A. */
+  size_t numColumns = 0;
+  size_t extraColumn = SIZE_MAX;
+  for (size_t column = 0; column < sepa->numColumns; ++column)
+  {
+    if ((sepa->columnsFlags[column] & CMR_SEPA_MASK_CHILD) == CMR_SEPA_FIRST)
+    {
+      columnsToFirst[column] = numColumns;
+      firstColumnsOrigin[numColumns++] = column;
+    }
+    else
+    {
+      columnsToFirst[column] = SIZE_MAX;
+      if (extraColumn == SIZE_MAX && sepa->columnsFlags[column] & CMR_SEPA_MASK_EXTRA)
+        extraColumn = column;
+    }
+  }
+
+  if (extraRow < SIZE_MAX)
+  {
+    firstRowsOrigin[numRows++] = SIZE_MAX;
+  }
+  else
+  {
+    firstColumnsOrigin[numColumns++] = SIZE_MAX;
+  }
+
+  /* Count number of nonzeros and copy column vector. */
+  size_t numNonzeros = 0;
+  for (size_t row1 = 0; row1 < numRows; ++row1)
+  {
+    size_t row = firstRowsOrigin[row1];
+    if (row == SIZE_MAX)
+      row = extraRow;
+
+    if (extraColumn < SIZE_MAX)
+      denseColumn[row1] = 0;
+
+    size_t beyond = matrix->rowSlice[row + 1];
+    for (size_t e = matrix->rowSlice[row]; e < beyond; ++e)
+    {
+      size_t column = matrix->entryColumns[e];
+      size_t column1 = columnsToFirst[column];
+      if (column1 < SIZE_MAX)
+        numNonzeros++;
+      else if (column == extraColumn)
+      {
+        numNonzeros++;
+        denseColumn[row1] = matrix->entryValues[e];
+      }
+    }
+  }
+
+  /* Copy the matrix entries. */
+  CMR_CALL( CMRchrmatCreate(cmr, pfirst, numRows, numColumns, numNonzeros) );
+  CMR_CHRMAT* first = *pfirst;
+  first->numNonzeros = 0;
+  for (size_t row1 = 0; row1 < numRows; ++row1)
+  {
+    size_t row = firstRowsOrigin[row1];
+    if (row == SIZE_MAX)
+      row = extraRow;
+
+    /* Row from A and potentially c^T. */
+    first->rowSlice[row1] = first->numNonzeros;
+    size_t beyond = matrix->rowSlice[row + 1];
+    for (size_t e = matrix->rowSlice[row]; e < beyond; ++e)
+    {
+      size_t column = matrix->entryColumns[e];
+      size_t column1 = columnsToFirst[column];
+      if (column1 < SIZE_MAX)
+      {
+        first->entryColumns[first->numNonzeros] = column1;
+        first->entryValues[first->numNonzeros++] = matrix->entryValues[e];
+      }
+    }
+
+    /* Nonzero of a. */
+    if (extraColumn < SIZE_MAX && denseColumn[row1])
+    {
+      first->entryColumns[first->numNonzeros] = numColumns - 1;
+      first->entryValues[first->numNonzeros++] = denseColumn[row1];
+    }
+  }
+  first->rowSlice[first->numRows] = first->numNonzeros;
+
+  /* Set marker to last row or column. */
+  if (pfirstMarker)
+    *pfirstMarker = (extraRow < SIZE_MAX) ? CMRrowToElement(numRows - 1) : CMRcolumnToElement(numColumns - 1);
+
+  /* Free local arrays. */
+  CMR_CALL( CMRfreeStackArray(cmr, &denseColumn) );
+  if (hasColumnsToFirst)
+    CMR_CALL( CMRfreeStackArray(cmr, &columnsToFirst) );
+  if (hasRowsToFirst)
+    CMR_CALL( CMRfreeStackArray(cmr, &rowsToFirst) );
+  if (hasFirstColumnsOrigin)
+    CMR_CALL( CMRfreeStackArray(cmr, &firstColumnsOrigin) );
+  if (hasFirstRowsOrigin)
+    CMR_CALL( CMRfreeStackArray(cmr, &firstRowsOrigin) );
+
+  return CMR_OKAY;
+}
+
+
+CMR_ERROR CMRtwoSumDecomposeSecond(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sepa, CMR_CHRMAT** psecond,
+  size_t* secondRowsOrigin, size_t* secondColumnsOrigin, size_t* rowsToSecond, size_t* columnsToSecond,
+  CMR_ELEMENT* psecondMarker)
+{
+  assert(cmr);
+  assert(matrix);
+  assert(sepa);
+  assert(sepa->type == CMR_SEPA_TYPE_TWO);
+  assert(psecond);
+
+  CMRdbgMsg(0, "Computing second part of 2-sum decomposition of %zux%zu-matrix.\n", matrix->numRows, matrix->numColumns);
+
+  /* Allocate missing arrays on stack. */
+  bool hasSecondRowsOrigin = secondRowsOrigin;
+  if (!hasSecondRowsOrigin)
+    CMR_CALL( CMRallocStackArray(cmr, &secondRowsOrigin, matrix->numRows) );
+  bool hasSecondColumnsOrigin = secondColumnsOrigin;
+  if (!hasSecondColumnsOrigin)
+    CMR_CALL( CMRallocStackArray(cmr, &secondColumnsOrigin, matrix->numColumns) );
+  bool hasRowsToSecond = rowsToSecond;
+  if (!hasRowsToSecond)
+    CMR_CALL( CMRallocStackArray(cmr, &rowsToSecond, matrix->numRows) );
+  bool hasColumnsToSecond = columnsToSecond;
+  if (!hasColumnsToSecond)
+    CMR_CALL( CMRallocStackArray(cmr, &columnsToSecond, matrix->numColumns) );
+
+  char* denseColumn = NULL;
+  CMR_CALL( CMRallocStackArray(cmr, &denseColumn, matrix->numColumns) );
+
+  /* Find extra row. */
+  size_t extraRow = SIZE_MAX;
+  for (size_t row = 0; row < sepa->numRows; ++row)
+  {
+    if ((sepa->rowsFlags[row] & CMR_SEPA_MASK_CHILD) == CMR_SEPA_FIRST && (sepa->rowsFlags[row] & CMR_SEPA_MASK_EXTRA))
+    {
+      extraRow = row;
+      break;
+    }
+  }
+  size_t extraColumn = SIZE_MAX;
+  for (size_t column = 0; column < sepa->numColumns; ++column)
+  {
+    if ((sepa->columnsFlags[column] & CMR_SEPA_MASK_CHILD) == CMR_SEPA_FIRST
+      && (sepa->columnsFlags[column] & CMR_SEPA_MASK_EXTRA))
+    {
+      extraColumn = column;
+      break;
+    }
+  }
+
+  CMRdbgMsg(2, "Extra row = %zu, extra column = %zu\n", extraRow, extraColumn);
+
+  /* Number of rows of D. */
+  size_t numRows = extraRow < SIZE_MAX ? 1 : 0;
+  secondRowsOrigin[0] = SIZE_MAX;
+  for (size_t row = 0; row < sepa->numRows; ++row)
+  {
+    if ((sepa->rowsFlags[row] & CMR_SEPA_MASK_CHILD) == CMR_SEPA_SECOND)
+    {
+      rowsToSecond[row] = numRows;
+      secondRowsOrigin[numRows++] = row;
+    }
+    else
+      rowsToSecond[row] = SIZE_MAX;
+  }
+
+  /* Number of columns of D. */
+  size_t numColumns = extraColumn < SIZE_MAX ? 1 : 0;
+  secondColumnsOrigin[0] = SIZE_MAX;
+  for (size_t column = 0; column < sepa->numColumns; ++column)
+  {
+    if ((sepa->columnsFlags[column] & CMR_SEPA_MASK_CHILD) == CMR_SEPA_SECOND)
+    {
+      columnsToSecond[column] = numColumns;
+      secondColumnsOrigin[numColumns++] = column;
+    }
+    else
+      columnsToSecond[column] = SIZE_MAX;
+  }
+
+  /* Count number of nonzeros, copy column vector, and find out if we need to negate it. */
+  size_t numNonzeros = 0;
+  char scale = 0;
+
+  for (size_t row2 = 0; row2 < numRows; ++row2)
+  {
+    size_t row = (extraRow < SIZE_MAX && row2 == 0) ? extraRow : secondRowsOrigin[row2];
+
+    if (extraColumn < SIZE_MAX)
+      denseColumn[row2] = 0;
+
+    size_t beyond = matrix->rowSlice[row + 1];
+    for (size_t e = matrix->rowSlice[row]; e < beyond; ++e)
+    {
+      size_t column = matrix->entryColumns[e];
+      size_t column2 = columnsToSecond[column];
+      if (column2 < SIZE_MAX)
+      {
+        numNonzeros++;
+        if (row == extraRow && scale == 0)
+        {
+          CMRdbgMsg(2, "Scaling entry taken from row r%zu, c%zu.\n", row+1, column+1);
+          scale = matrix->entryValues[e];
+        }
+      }
+      else if (column == extraColumn)
+      {
+        numNonzeros++;
+        denseColumn[row2] = matrix->entryValues[e];
+        if (scale == 0)
+        {
+          scale = denseColumn[row2];
+          CMRdbgMsg(2, "Scaling entry taken from row r%zu, c%zu.\n", row+1, column+1);
+        }
+      }
+    }
+  }
+  assert(scale != 0);
+
+  CMRdbgMsg(2, "Scaling rank-1 vector by %d.\n", scale);
+
+  /* Copy the matrix entries. */
+  CMR_CALL( CMRchrmatCreate(cmr, psecond, numRows, numColumns, numNonzeros) );
+  CMR_CHRMAT* second = *psecond;
+  second->numNonzeros = 0;
+  for (size_t row2 = 0; row2 < numRows; ++row2)
+  {
+    size_t row = (extraRow < SIZE_MAX && row2 == 0) ? extraRow : secondRowsOrigin[row2];
+    second->rowSlice[row2] = second->numNonzeros;
+
+    /* Nonzero from d. */
+    if (extraColumn < SIZE_MAX && denseColumn[row2])
+    {
+      second->entryColumns[second->numNonzeros] = 0;
+      second->entryValues[second->numNonzeros++] = scale * denseColumn[row2];
+    }
+
+    /* Row from [ b^T \\ D ]. */
+    size_t beyond = matrix->rowSlice[row + 1];
+    for (size_t e = matrix->rowSlice[row]; e < beyond; ++e)
+    {
+      size_t column = matrix->entryColumns[e];
+      size_t column2 = columnsToSecond[column];
+      if (column2 < SIZE_MAX)
+      {
+        char value = matrix->entryValues[e];
+        if (row == extraRow)
+          value *= scale;
+        second->entryColumns[second->numNonzeros] = column2;
+        second->entryValues[second->numNonzeros++] = value;
+      }
+    }
+  }
+  second->rowSlice[second->numRows] = second->numNonzeros;
+
+  /* Set marker to last row or column. */
+  if (psecondMarker)
+    *psecondMarker = (extraRow < SIZE_MAX) ? CMRrowToElement(0) : CMRcolumnToElement(0);
+
+  /* Free local arrays. */
+  CMR_CALL( CMRfreeStackArray(cmr, &denseColumn) );
+  if (hasColumnsToSecond)
+    CMR_CALL( CMRfreeStackArray(cmr, &columnsToSecond) );
+  if (hasRowsToSecond)
+    CMR_CALL( CMRfreeStackArray(cmr, &rowsToSecond) );
+  if (hasSecondColumnsOrigin)
+    CMR_CALL( CMRfreeStackArray(cmr, &secondColumnsOrigin) );
+  if (hasSecondRowsOrigin)
+    CMR_CALL( CMRfreeStackArray(cmr, &secondRowsOrigin) );
+
+  return CMR_OKAY;
+}
+
+
 
 CMR_ERROR CMRthreeSum(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* second, CMR_ELEMENT firstMarker1,
   CMR_ELEMENT secondMarker1, CMR_ELEMENT firstMarker2, CMR_ELEMENT secondMarker2, int8_t characteristic,
