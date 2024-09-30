@@ -41,93 +41,94 @@ Moreover, it has (exactly) one of the following **types**:
    \f]
    Such a node has at least two children that belong to the matrices \f$ M_1 := A_1 \f$, \f$ M_2 := A_2 \f$, up to \f$ M_k := A_k \f$.
    Note that any such decomposition preserves [total unimodularity](\ref tu) and [binary regularity](\ref binary_regular).
-   A 1-sum can be created using the function \ref CMRoneSum.
+   A 1-sum can be created using the function \ref CMRoneSumCompose.
  - A [2-sum](\ref CMR_SEYMOUR_NODE_TYPE_TWO_SUM) node indicates that \f$ M \f$ is (up to row and column permutations) of the form
    \f[
-      M = \begin{pmatrix} A_1 & \mathbb{O} \\ a_2 a_1^{\textsf{T}} & A_2 \end{pmatrix}.
+      M = \begin{pmatrix} A & \mathbb{O} \\ d c^{\textsf{T}} & D \end{pmatrix}.
    \f]
+   or 
    Such a node has exactly two children that belong to the matrices
    \f[
-      M_1 = \begin{pmatrix} A_1 \\ a_1^{\textsf{T}} \end{pmatrix}
+      M_1 = \begin{pmatrix} A \\ c^{\textsf{T}} \end{pmatrix}
       \qquad \text{and} \qquad
-      M_2 = \begin{pmatrix} a_2 & A_2 \end{pmatrix},
+      M_2 = \begin{pmatrix} d & D \end{pmatrix},
    \f]
    respectively.
    Note that any such decomposition preserves [total unimodularity](\ref tu) and [binary regularity](\ref binary_regular).
-   A 2-sum can be created using the function \ref CMRtwoSum.
+   A 2-sum can be composed using the function \ref CMRtwoSumCompose and decomposed using \ref CMRtwoSumDecomposeFirst and \ref CMRtwoSumDecomposeSecond.
  - A [3-sum](\ref CMR_SEYMOUR_NODE_TYPE_THREE_SUM) node indicates that \f$ M \f$ is (up to row and column permutations) of the form
    \f[
-      M = \begin{pmatrix} A_1 & C \\ D & A_2 \end{pmatrix},
+      M = \begin{pmatrix} A & B \\ C & D \end{pmatrix},
    \f]
-   where \f$ (\mathop{rank}(C), \mathop{rank}(D)) \in \{ (1,1), (0,2) \} \f$ holds.
+   where \f$ (\mathop{rank}(B), \mathop{rank}(C)) \in \{ (1,1), (0,2) \} \f$ holds.
    We refer to the first case as **distributed ranks**, which is indicated by \ref CMRseymourThreeSumDistributedRanks.
    The other case is that of **concentrated rank**.
    In each case, there are two variants *per* child node, and we first consider the case of distributed ranks.
    Then the matrix \f$ M \f$ is of the form
    \f[
       M = \begin{pmatrix}
-            A_1 & c_1 c_2^{\textsf{T}} \\
-            d_2 d_1^{\textsf{T}} & A_2
+            A & a b^{\textsf{T}} \\
+            d c^{\textsf{T}} & D
           \end{pmatrix}.
    \f]
    The first child is of one of the forms
    \f[
      M_1^{\text{wide}} =  \begin{pmatrix}
-                            A_1 & c_1 & c_1 \\
-                            d_1^{\textsf{T}} & 0 & \pm 1
+                            A & a & a \\
+                            c^{\textsf{T}} & 0 & \pm 1
                           \end{pmatrix}, \qquad
      M_1^{\text{tall}} =  \begin{pmatrix}
-                            A_1 & c_1 \\
-                            d_1^{\textsf{T}} & 0 \\
-                            d_1^{\textsf{T}} & \pm 1
+                            A_1 & a \\
+                            c^{\textsf{T}} & 0 \\
+                            c^{\textsf{T}} & \pm 1
                           \end{pmatrix}.
    \f]
    The second child is of one of the forms
    \f[
      M_2^{\text{wide}} =  \begin{pmatrix}
-                            \pm 1 & 0 & c_2^{\textsf{T}} \\
-                            d_2 & d_2 & A_2
+                            \pm 1 & 0 & b^{\textsf{T}} \\
+                            d & d & D
                           \end{pmatrix}, \qquad
      M_2^{\text{tall}} =  \begin{pmatrix}
-                            \pm 1 & c_2^{\textsf{T}} \\
-                            0 & c_2^{\textsf{T}} \\
-                            d_2 & A_2
+                            \pm 1 & b^{\textsf{T}} \\
+                            0 & b^{\textsf{T}} \\
+                            d & D
                           \end{pmatrix}.
    \f]
    In case of concentrated rank the matrix \f$ M \f$ is of the form
    \f[
       M = \begin{pmatrix}
-            A_1 & \mathbb{O} \\
-            D & A_2
+            A & \mathbb{O} \\
+            C & D
           \end{pmatrix},
    \f]
-   where \f$ \mathop{rank}(D) = 2 \f$.
+   where \f$ \mathop{rank}(C) = 2 \f$.
    The first child is of one of the forms
    \f[
      M_1^{\text{mixed}} =  \begin{pmatrix}
-                            A_1 & \mathbb{O} \\
-                            d_1^{\textsf{T}} & 1 \\
-                            d_2^{\textsf{T}} & \pm 1
+                            A & \mathbb{O} \\
+                            c_1^{\textsf{T}} & 1 \\
+                            c_2^{\textsf{T}} & \pm 1
                           \end{pmatrix}, \qquad
      M_1^{\text{all-repr}} =  \begin{pmatrix}
-                            A_1 \\
-                            d_1^{\textsf{T}} \\
-                            d_2^{\textsf{T}} \\
-                            d_3^{\textsf{T}}
+                            A \\
+                            c_1^{\textsf{T}} \\
+                            c_2^{\textsf{T}} \\
+                            c_3^{\textsf{T}}
                           \end{pmatrix},
    \f]
-   where *any pair* of \f$ d_1, d_2, d_3 \f$ spans the row-space of \f$ D \f$.
+   where *any pair* of \f$ c_1, c_2, c_3 \f$ spans the row-space of \f$ C \f$.
    The second child is of one of the forms
    \f[
      M_2^{\text{mixed}} =  \begin{pmatrix}
-                            A_1 & d_1 & d_2 \\
-                            \mathbb{O} & 1 & \pm 1
+                            \pm 1 & 1 & \mathbb{O} \\
+                            d_1 & d_2 & D
                           \end{pmatrix}, \qquad
      M_2^{\text{all-repr}} =  \begin{pmatrix}
-                            A_1 & d_1 & d_2 & d_3
+                            d_1 & d_2 & d_3 & D
                           \end{pmatrix},
    \f]
-   where *any pair* of \f$ d_1, d_2, d_3 \f$ spans the column-space of \f$ D \f$.
+   where *any pair* of \f$ d_1, d_2, d_3 \f$ spans the column-space of \f$ C \f$.
    The sign of the entries marked as \f$ \pm 1 \f$ is determined such that a certain submatrix involving that entry has the right determinant.
    Note that any such decomposition preserves [total unimodularity](\ref tu) and [binary regularity](\ref binary_regular).
  - A [series-parallel](\ref CMR_SEYMOUR_NODE_TYPE_SERIES_PARALLEL) node indicates that \f$ M \f$ arises from a smaller matrix \f$ M' \f$ by successively adding zero rows/columns, unit rows/columns or duplicates of existing rows/columns (potentially scaled with \f$ -1 \f$).

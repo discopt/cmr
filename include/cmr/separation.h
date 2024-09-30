@@ -266,8 +266,8 @@ CMR_ERROR CMRtwoSumCompose(
  * \brief Decomposes \p matrix as a 2-sum according to the 2-separation \p sepa and computing the first component.
  *
  * The input \p matrix \f$ M \f$ must have a 2-separation that is given by \p sepa, i.e., it can be reordered to look
- * like \f$ M = \begin{bmatrix} A & B \\ C & D \end{bmatrix} \f$, where \f$ \rank(B) + \rank(C) = 1 \f$.
- * If \f$ \rank(B) = \mathbb{O} \f$ then the two components of the 2-sum are matrices
+ * like \f$ M = \begin{bmatrix} A & B \\ C & D \end{bmatrix} \f$, where \f$ \text{rank}(B) + \text{rank}(C) = 1 \f$.
+ * If \f$ \text{rank}(B) = \mathbb{O} \f$ then the two components of the 2-sum are matrices
  * \f$ M_1 = \begin{bmatrix} A \\ c^{\textsf{T}} \end{bmatrix} \f$ and
  * \f$ M_2 = \begin{bmatrix} d & D \end{bmatrix} \f$ such that \f$ C = d c^{\textsf{T}} \f$ holds.
  * Otherwise, the two parts of the 2-sum are matrices
@@ -299,8 +299,8 @@ CMR_ERROR CMRtwoSumDecomposeFirst(
  * \brief Decomposes \p matrix as a 2-sum according to the 2-separation \p sepa and computing the second component.
  *
  * The input \p matrix \f$ M \f$ must have a 2-separation that is given by \p sepa, i.e., it can be reordered to look
- * like \f$ M = \begin{bmatrix} A & B \\ C & D \end{bmatrix} \f$, where \f$ \rank(B) + \rank(C) = 1 \f$.
- * If \f$ \rank(B) = \mathbb{O} \f$ then the two parts of the 2-sum are matrices
+ * like \f$ M = \begin{bmatrix} A & B \\ C & D \end{bmatrix} \f$, where \f$ \text{rank}(B) + \text{rank}(C) = 1 \f$.
+ * If \f$ \text{rank}(B) = \mathbb{O} \f$ then the two parts of the 2-sum are matrices
  * \f$ M_1 = \begin{bmatrix} A \\ c^{\textsf{T}} \end{bmatrix} \f$ and
  * \f$ M_2 = \begin{bmatrix} d & D \end{bmatrix} \f$ such that \f$ C = d c^{\textsf{T}} \f$ holds.
  * Otherwise, the two parts of the 2-sum are matrices
