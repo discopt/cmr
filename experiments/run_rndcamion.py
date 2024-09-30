@@ -4,39 +4,41 @@ import math
 import subprocess
 from datetime import datetime
 
-from config import *
-INSTANCE_DIRECTORY = 'rndcamion'
+from config_rndcamion import *
 
 assert os.path.exists(INSTANCE_DIRECTORY)
 
-r = int(sys.argv[1])
+sample = int(sys.argv[1])
+sampleStorage = f'{LOCAL_STORAGE}/rndcamion_{sample}/'
 
-os.system(f'mkdir -p {LOCAL_STORAGE}/rndcamion_{r}')
+os.system(f'mkdir -p {sampleStorage}')
+
+
 
 def call(command):
 #  print('[' + command + ']')
   os.system(command)
 
-for order in list(range(50, 2001, 50)):
-  for p in [0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1]:
-    file_base = f'{INSTANCE_DIRECTORY}/rndcamion-{order:05d}x{order:05d}-p{p:0.2f}#r{r:04d}'
+for instance in INSTANCES:
+  order,p = instance
+  file_base = f'{INSTANCE_DIRECTORY}/rndcamion-{order:05d}x{order:05d}-p{p:0.2f}#{sample:03d}'
 
-    print(f'Considering {file_base} at {datetime.now()}.', flush=True)
+  print(f'Considering {file_base} at {datetime.now()}.', flush=True)
 
-    # Run cmr-tu.
-    call(f'gunzip -cd {file_base}.sparse.gz | {BUILD_DIRECTORY}/cmr-tu - -i sparse --stats --algo decomposition --time-limit 3600 1> {file_base}-cmrdec.out 2> {file_base}-cmrdec.err')
-    if order <= 600:
-      call(f'gunzip -cd {file_base}.sparse.gz | {BUILD_DIRECTORY}/cmr-tu - -i sparse --stats --algo eulerian --time-limit 3600 1> {file_base}-cmreuler.out 2> {file_base}-cmreuler.err')
-    call(f'gunzip -cd {file_base}.sparse.gz | {BUILD_DIRECTORY}/cmr-tu - -i sparse --stats --algo partition --time-limit 3600 1> {file_base}-cmrpart.out 2> {file_base}-cmrpart.err')
+  # Run cmr-tu.
+  call(f'gunzip -cd {file_base}.sparse.gz | {BUILD_DIRECTORY}/cmr-tu - -i sparse --stats --algo decomposition --time-limit 3600 1> {file_base}-cmrdec.out 2> {file_base}-cmrdec.err')
+  if order <= 600:
+    call(f'gunzip -cd {file_base}.sparse.gz | {BUILD_DIRECTORY}/cmr-tu - -i sparse --stats --algo eulerian --time-limit 3600 1> {file_base}-cmreuler.out 2> {file_base}-cmreuler.err')
+  call(f'gunzip -cd {file_base}.sparse.gz | {BUILD_DIRECTORY}/cmr-tu - -i sparse --stats --algo partition --time-limit 3600 1> {file_base}-cmrpart.out 2> {file_base}-cmrpart.err')
   
-    call(f'gunzip -cd {file_base}.sparse.gz | {BUILD_DIRECTORY}/cmr-tu - -i sparse --stats --algo decomposition --time-limit 3600 -N {file_base}-cmrcert.sub 1> {file_base}-cmrcert.out 2> {file_base}-cmrcert.err')
+  call(f'gunzip -cd {file_base}.sparse.gz | {BUILD_DIRECTORY}/cmr-tu - -i sparse --stats --algo decomposition --time-limit 3600 -N {file_base}-cmrcert.sub 1> {file_base}-cmrcert.out 2> {file_base}-cmrcert.err')
 
-    # Run unimodularity-test.
-    call(f'gunzip -cd {file_base}.sparse.gz | {BUILD_DIRECTORY}/cmr-matrix - -i sparse -o dense {LOCAL_STORAGE}/rndcamion_{r}/input.dense')
-    call(f'{UNIMOD_DIRECTORY}/unimodularity-test {LOCAL_STORAGE}/rndcamion_{r}/input.dense -s 2> /dev/null | egrep \'^[ 0-9-]*$\' 1> {LOCAL_STORAGE}/rndcamion_{r}/signed.dense')
-    call(f'{UNIMOD_DIRECTORY}/unimodularity-test {LOCAL_STORAGE}/rndcamion_{r}/signed.dense -t -v 1> {file_base}-unimod.out 2> {file_base}-unimod.err')
-    if order <= 1000:
-      call(f'{UNIMOD_DIRECTORY}/unimodularity-test {LOCAL_STORAGE}/rndcamion_{r}/signed.dense -t -v -c 1> {file_base}-unimodcert.out 2> {file_base}-unimodcert.err')
+  # Run unimodularity-test.
+  call(f'gunzip -cd {file_base}.sparse.gz | {BUILD_DIRECTORY}/cmr-matrix - -i sparse -o dense {sampleStorage}/input.dense')
+  call(f'{UNIMOD_DIRECTORY}/unimodularity-test {sampleStorage}/input.dense -s 2> /dev/null | egrep \'^[ 0-9-]*$\' 1> {sampleStorage}/signed.dense')
+  call(f'{UNIMOD_DIRECTORY}/unimodularity-test {sampleStorage}/signed.dense -t -v 1> {file_base}-unimod.out 2> {file_base}-unimod.err')
+  if order <= 1000:
+    call(f'{UNIMOD_DIRECTORY}/unimodularity-test {sampleStorage}/signed.dense -t -v -c 1> {file_base}-unimodcert.out 2> {file_base}-unimodcert.err')
 
-os.system(f'rm -r {LOCAL_STORAGE}/rndcamion_{r}')
+os.system(f'rm -r {sampleStorage}')
 
