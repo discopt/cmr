@@ -1,10 +1,10 @@
 var searchData=
 [
-  ['unlinknonzero_1808',['unlinkNonzero',['../series__parallel_8c.html#acdbefe65768bf543b1d788cf45877532',1,'series_parallel.c']]],
-  ['updatechildmatrix_1809',['updateChildMatrix',['../seymour_8c.html#a9c1b936b9a6e9d5ecf06d9e459a4969c',1,'seymour.c']]],
-  ['updatehashtable_1810',['updateHashtable',['../regularity__nested__minor__sequence_8c.html#a0e6fd0c69b9fc76506813dbde5369b4b',1,'regularity_nested_minor_sequence.c']]],
-  ['updatehashvalues_1811',['updateHashValues',['../regularity__graphic_8c.html#a77757a18acfcffde64c55965290752a9',1,'regularity_graphic.c']]],
-  ['updaterepresentative_1812',['updateRepresentative',['../regularity__nested__minor__sequence_8c.html#af5cf4ac4434ab20d597d65a1d3b0e679',1,'regularity_nested_minor_sequence.c']]],
-  ['updaterowscolumnstochild_1813',['updateRowsColumnsToChild',['../seymour_8c.html#ae8293a06102cb90f119bbb25c9d141d4',1,'seymour.c']]],
-  ['updaterowscolumnstoparent_1814',['updateRowsColumnsToParent',['../seymour_8c.html#aed935f8b30709100947b083de85ce101',1,'seymour.c']]]
+  ['unlinknonzero_1812',['unlinkNonzero',['../series__parallel_8c.html#acdbefe65768bf543b1d788cf45877532',1,'series_parallel.c']]],
+  ['updatechildmatrix_1813',['updateChildMatrix',['../seymour_8c.html#a9c1b936b9a6e9d5ecf06d9e459a4969c',1,'seymour.c']]],
+  ['updatehashtable_1814',['updateHashtable',['../regularity__nested__minor__sequence_8c.html#a0e6fd0c69b9fc76506813dbde5369b4b',1,'regularity_nested_minor_sequence.c']]],
+  ['updatehashvalues_1815',['updateHashValues',['../regularity__graphic_8c.html#a77757a18acfcffde64c55965290752a9',1,'regularity_graphic.c']]],
+  ['updaterepresentative_1816',['updateRepresentative',['../regularity__nested__minor__sequence_8c.html#af5cf4ac4434ab20d597d65a1d3b0e679',1,'regularity_nested_minor_sequence.c']]],
+  ['updaterowscolumnstochild_1817',['updateRowsColumnsToChild',['../seymour_8c.html#ae8293a06102cb90f119bbb25c9d141d4',1,'seymour.c']]],
+  ['updaterowscolumnstoparent_1818',['updateRowsColumnsToParent',['../seymour_8c.html#aed935f8b30709100947b083de85ce101',1,'seymour.c']]]
 ];

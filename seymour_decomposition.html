@@ -89,36 +89,36 @@ $(function() {
 <li>A <a class="el" href="group__Seymour.html#ggaa9a8578d9fd369bf6fe1ca73dba0f14ba223693b63de269a2fa0c1caa53a26dd4">1-sum</a> node indicates that \( M \) is (up to row and column permutations) of the form <p class="formulaDsp">
 \[ M = \begin{pmatrix} A_1 &amp; \mathbb{O} &amp; \dotsb &amp; \mathbb{O} \\ \mathbb{O} &amp; A_2 &amp; &amp; \vdots \\ \vdots &amp; &amp; \ddots &amp; \mathbb{O} \\ \mathbb{O} &amp; \dotsb &amp; \mathbb{O} &amp; A_k \end{pmatrix}. \]
 </p>
- Such a node has at least two children that belong to the matrices \( M_1 := A_1 \), \( M_2 := A_2 \), up to \( M_k := A_k \). Note that any such decomposition preserves <a class="el" href="tu.html">total unimodularity</a> and <a class="el" href="binary_regular.html">binary regularity</a>.</li>
+ Such a node has at least two children that belong to the matrices \( M_1 := A_1 \), \( M_2 := A_2 \), up to \( M_k := A_k \). Note that any such decomposition preserves <a class="el" href="tu.html">total unimodularity</a> and <a class="el" href="binary_regular.html">binary regularity</a>. A 1-sum can be created using the function <a class="el" href="separation_8c.html#ad1f0f6b32bcf5cd83b933125c2c34cc1">CMRoneSumCompose</a>.</li>
 <li>A <a class="el" href="group__Seymour.html#ggaa9a8578d9fd369bf6fe1ca73dba0f14bab18247f8376d1851ee51b16118f8484f">2-sum</a> node indicates that \( M \) is (up to row and column permutations) of the form <p class="formulaDsp">
-\[ M = \begin{pmatrix} A_1 &amp; \mathbb{O} \\ a_2 a_1^{\textsf{T}} &amp; A_2 \end{pmatrix}. \]
+\[ M = \begin{pmatrix} A &amp; \mathbb{O} \\ d c^{\textsf{T}} &amp; D \end{pmatrix}. \]
 </p>
- Such a node has exactly two children that belong to the matrices <p class="formulaDsp">
-\[ M_1 = \begin{pmatrix} A_1 \\ a_1^{\textsf{T}} \end{pmatrix} \qquad \text{and} \qquad M_2 = \begin{pmatrix} a_2 &amp; A_2 \end{pmatrix}, \]
+ or Such a node has exactly two children that belong to the matrices <p class="formulaDsp">
+\[ M_1 = \begin{pmatrix} A \\ c^{\textsf{T}} \end{pmatrix} \qquad \text{and} \qquad M_2 = \begin{pmatrix} d &amp; D \end{pmatrix}, \]
 </p>
- respectively. Note that any such decomposition preserves <a class="el" href="tu.html">total unimodularity</a> and <a class="el" href="binary_regular.html">binary regularity</a>.</li>
+ respectively. Note that any such decomposition preserves <a class="el" href="tu.html">total unimodularity</a> and <a class="el" href="binary_regular.html">binary regularity</a>. A 2-sum can be composed using the function <a class="el" href="separation_8c.html#a58eec86b5e1d6ae92c0e33d1a9bd3fd9">CMRtwoSumCompose</a> and decomposed using <a class="el" href="separation_8c.html#a82dccf7fb6f4d22b29d1c799dabc4f14">CMRtwoSumDecomposeFirst</a> and <a class="el" href="separation_8c.html#a55510ba23431d108d5a1bfd22f16d1cc">CMRtwoSumDecomposeSecond</a>.</li>
 <li>A <a class="el" href="group__Seymour.html#ggaa9a8578d9fd369bf6fe1ca73dba0f14ba74c9ae084b116f9615433694106199f4">3-sum</a> node indicates that \( M \) is (up to row and column permutations) of the form <p class="formulaDsp">
-\[ M = \begin{pmatrix} A_1 &amp; C \\ D &amp; A_2 \end{pmatrix}, \]
+\[ M = \begin{pmatrix} A &amp; B \\ C &amp; D \end{pmatrix}, \]
 </p>
- where \( (\mathop{rank}(C), \mathop{rank}(D)) \in \{ (1,1), (0,2) \} \) holds. We refer to the first case as <b>distributed ranks</b>, which is indicated by <a class="el" href="group__Seymour.html#gad2050586f4ea2045a3276f979a402b47">CMRseymourThreeSumDistributedRanks</a>. The other case is that of <b>concentrated rank</b>. In each case, there are two variants <em>per</em> child node, and we first consider the case of distributed ranks. Then the matrix \( M \) is of the form <p class="formulaDsp">
-\[ M = \begin{pmatrix} A_1 &amp; c_1 c_2^{\textsf{T}} \\ d_2 d_1^{\textsf{T}} &amp; A_2 \end{pmatrix}. \]
+ where \( (\mathop{rank}(B), \mathop{rank}(C)) \in \{ (1,1), (0,2) \} \) holds. We refer to the first case as <b>distributed ranks</b>, which is indicated by <a class="el" href="group__Seymour.html#gad2050586f4ea2045a3276f979a402b47">CMRseymourThreeSumDistributedRanks</a>. The other case is that of <b>concentrated rank</b>. In each case, there are two variants <em>per</em> child node, and we first consider the case of distributed ranks. Then the matrix \( M \) is of the form <p class="formulaDsp">
+\[ M = \begin{pmatrix} A &amp; a b^{\textsf{T}} \\ d c^{\textsf{T}} &amp; D \end{pmatrix}. \]
 </p>
  The first child is of one of the forms <p class="formulaDsp">
-\[ M_1^{\text{wide}} = \begin{pmatrix} A_1 &amp; c_1 &amp; c_1 \\ d_1^{\textsf{T}} &amp; 0 &amp; \pm 1 \end{pmatrix}, \qquad M_1^{\text{tall}} = \begin{pmatrix} A_1 &amp; c_1 \\ d_1^{\textsf{T}} &amp; 0 \\ d_1^{\textsf{T}} &amp; \pm 1 \end{pmatrix}. \]
+\[ M_1^{\text{wide}} = \begin{pmatrix} A &amp; a &amp; a \\ c^{\textsf{T}} &amp; 0 &amp; \pm 1 \end{pmatrix}, \qquad M_1^{\text{tall}} = \begin{pmatrix} A_1 &amp; a \\ c^{\textsf{T}} &amp; 0 \\ c^{\textsf{T}} &amp; \pm 1 \end{pmatrix}. \]
 </p>
  The second child is of one of the forms <p class="formulaDsp">
-\[ M_2^{\text{wide}} = \begin{pmatrix} \pm 1 &amp; 0 &amp; c_2^{\textsf{T}} \\ d_2 &amp; d_2 &amp; A_2 \end{pmatrix}, \qquad M_2^{\text{tall}} = \begin{pmatrix} \pm 1 &amp; c_2^{\textsf{T}} \\ 0 &amp; c_2^{\textsf{T}} \\ d_2 &amp; A_2 \end{pmatrix}. \]
+\[ M_2^{\text{wide}} = \begin{pmatrix} \pm 1 &amp; 0 &amp; b^{\textsf{T}} \\ d &amp; d &amp; D \end{pmatrix}, \qquad M_2^{\text{tall}} = \begin{pmatrix} \pm 1 &amp; b^{\textsf{T}} \\ 0 &amp; b^{\textsf{T}} \\ d &amp; D \end{pmatrix}. \]
 </p>
  In case of concentrated rank the matrix \( M \) is of the form <p class="formulaDsp">
-\[ M = \begin{pmatrix} A_1 &amp; \mathbb{O} \\ D &amp; A_2 \end{pmatrix}, \]
+\[ M = \begin{pmatrix} A &amp; \mathbb{O} \\ C &amp; D \end{pmatrix}, \]
 </p>
- where \( \mathop{rank}(D) = 2 \). The first child is of one of the forms <p class="formulaDsp">
-\[ M_1^{\text{mixed}} = \begin{pmatrix} A_1 &amp; \mathbb{O} \\ d_1^{\textsf{T}} &amp; 1 \\ d_2^{\textsf{T}} &amp; \pm 1 \end{pmatrix}, \qquad M_1^{\text{all-repr}} = \begin{pmatrix} A_1 \\ d_1^{\textsf{T}} \\ d_2^{\textsf{T}} \\ d_3^{\textsf{T}} \end{pmatrix}, \]
+ where \( \mathop{rank}(C) = 2 \). The first child is of one of the forms <p class="formulaDsp">
+\[ M_1^{\text{mixed}} = \begin{pmatrix} A &amp; \mathbb{O} \\ c_1^{\textsf{T}} &amp; 1 \\ c_2^{\textsf{T}} &amp; \pm 1 \end{pmatrix}, \qquad M_1^{\text{all-repr}} = \begin{pmatrix} A \\ c_1^{\textsf{T}} \\ c_2^{\textsf{T}} \\ c_3^{\textsf{T}} \end{pmatrix}, \]
 </p>
- where <em>any pair</em> of \( d_1, d_2, d_3 \) spans the row-space of \( D \). The second child is of one of the forms <p class="formulaDsp">
-\[ M_2^{\text{mixed}} = \begin{pmatrix} A_1 &amp; d_1 &amp; d_2 \\ \mathbb{O} &amp; 1 &amp; \pm 1 \end{pmatrix}, \qquad M_2^{\text{all-repr}} = \begin{pmatrix} A_1 &amp; d_1 &amp; d_2 &amp; d_3 \end{pmatrix}, \]
+ where <em>any pair</em> of \( c_1, c_2, c_3 \) spans the row-space of \( C \). The second child is of one of the forms <p class="formulaDsp">
+\[ M_2^{\text{mixed}} = \begin{pmatrix} \pm 1 &amp; 1 &amp; \mathbb{O} \\ d_1 &amp; d_2 &amp; D \end{pmatrix}, \qquad M_2^{\text{all-repr}} = \begin{pmatrix} d_1 &amp; d_2 &amp; d_3 &amp; D \end{pmatrix}, \]
 </p>
- where <em>any pair</em> of \( d_1, d_2, d_3 \) spans the column-space of \( D \). The sign of the entries marked as \( \pm 1 \) is determined such that a certain submatrix involving that entry has the right determinant. Note that any such decomposition preserves <a class="el" href="tu.html">total unimodularity</a> and <a class="el" href="binary_regular.html">binary regularity</a>.</li>
+ where <em>any pair</em> of \( d_1, d_2, d_3 \) spans the column-space of \( C \). The sign of the entries marked as \( \pm 1 \) is determined such that a certain submatrix involving that entry has the right determinant. Note that any such decomposition preserves <a class="el" href="tu.html">total unimodularity</a> and <a class="el" href="binary_regular.html">binary regularity</a>.</li>
 <li>A <a class="el" href="group__Seymour.html#ggaa9a8578d9fd369bf6fe1ca73dba0f14ba20b88c972f85e1b679721c6c8c1c61e8">series-parallel</a> node indicates that \( M \) arises from a smaller matrix \( M&#39; \) by successively adding zero rows/columns, unit rows/columns or duplicates of existing rows/columns (potentially scaled with \( -1 \)). Note that such <b>series-parallel reductions</b> preserve <a class="el" href="tu.html">total unimodularity</a> and <a class="el" href="binary_regular.html">binary regularity</a>. It has one child node that corresponds to \( M&#39; \).</li>
 <li>A <a class="el" href="group__Seymour.html#ggaa9a8578d9fd369bf6fe1ca73dba0f14ba67182a34ce91ea320993a84824863583">pivot</a> node indicates a sequence of pivot operations on entries whose rows and columns are pairwise distinct, which turn matrix \( M \) into another matrix \( M&#39; \) that represent the same matroid. The unique child must either be a leaf node or a <a class="el" href="group__Seymour.html#ggaa9a8578d9fd369bf6fe1ca73dba0f14ba74c9ae084b116f9615433694106199f4">3-sum</a>. The pivots are carried out over the corresponding field \( \mathbb{F} \).</li>
 <li>An <a class="el" href="group__Seymour.html#ggaa9a8578d9fd369bf6fe1ca73dba0f14bab7016d578c9f5092f06623be1ee6c8cd">irregular</a> node indicates a matrix \( M \) that is irregular. It is a leaf.</li>
