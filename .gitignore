@@ -2,6 +2,7 @@
 *.kdev4
 *.csv
 *.ods
+__pycache__
 experiments/network/
 experiments/modwheel/
 experiments/rndcamion/
