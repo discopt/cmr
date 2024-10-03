@@ -269,10 +269,12 @@ CMR_ERROR CMRtwoSumCompose(
  * like \f$ M = \begin{bmatrix} A & B \\ C & D \end{bmatrix} \f$, where \f$ \text{rank}(B) + \text{rank}(C) = 1 \f$.
  * If \f$ \text{rank}(B) = \mathbb{O} \f$ then the two components of the 2-sum are matrices
  * \f$ M_1 = \begin{bmatrix} A \\ c^{\textsf{T}} \end{bmatrix} \f$ and
- * \f$ M_2 = \begin{bmatrix} d & D \end{bmatrix} \f$ such that \f$ C = d c^{\textsf{T}} \f$ holds.
+ * \f$ M_2 = \begin{bmatrix} d & D \end{bmatrix} \f$ such that \f$ C = d c^{\textsf{T}} \f$ holds and such that
+ * \f$ c^{\textsf{T}} \f$ is an actual row of \f$ M \f$.
  * Otherwise, the two parts of the 2-sum are matrices
  * \f$ M_1 = \begin{bmatrix} A & a \end{bmatrix} \f$ and
- * \f$ M_2 = \begin{bmatrix} b^{\textsf{T}} \\ D \end{bmatrix} \f$ such that \f$ B = a b^{\textsf{T}} \f$ holds.
+ * \f$ M_2 = \begin{bmatrix} b^{\textsf{T}} \\ D \end{bmatrix} \f$ such that \f$ B = a b^{\textsf{T}} \f$ holds and such
+ * that \f$ a \f$ is an actual column of \f$ M \f$.
  *
  * This function computes \f$ M_1 \f$, while \f$ M_2 \f$ can be computed by \ref CMRtwoSumDecomposeSecond.
  */
@@ -302,10 +304,12 @@ CMR_ERROR CMRtwoSumDecomposeFirst(
  * like \f$ M = \begin{bmatrix} A & B \\ C & D \end{bmatrix} \f$, where \f$ \text{rank}(B) + \text{rank}(C) = 1 \f$.
  * If \f$ \text{rank}(B) = \mathbb{O} \f$ then the two parts of the 2-sum are matrices
  * \f$ M_1 = \begin{bmatrix} A \\ c^{\textsf{T}} \end{bmatrix} \f$ and
- * \f$ M_2 = \begin{bmatrix} d & D \end{bmatrix} \f$ such that \f$ C = d c^{\textsf{T}} \f$ holds.
+ * \f$ M_2 = \begin{bmatrix} d & D \end{bmatrix} \f$ such that \f$ C = d c^{\textsf{T}} \f$ holds and such that
+ * \f$ c^{\textsf{T}} \f$ is an actual row of \f$ M \f$.
  * Otherwise, the two parts of the 2-sum are matrices
  * \f$ M_1 = \begin{bmatrix} A & a \end{bmatrix} \f$ and
- * \f$ M_2 = \begin{bmatrix} b^{\textsf{T}} \\ D \end{bmatrix} \f$ such that \f$ B = a b^{\textsf{T}} \f$ holds.
+ * \f$ M_2 = \begin{bmatrix} b^{\textsf{T}} \\ D \end{bmatrix} \f$ such that \f$ B = a b^{\textsf{T}} \f$ holds and such
+ * that \f$ a \f$ is an actual column of \f$ M \f$.
  *
  * This function computes \f$ M_2 \f$, while \f$ M_1 \f$ can be computed by \ref CMRtwoSumDecomposeFirst.
  */
