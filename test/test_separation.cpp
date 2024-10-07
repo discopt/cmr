@@ -348,39 +348,29 @@ TEST(Separation, ThreeSum)
 
   {
     CMR_CHRMAT* first = NULL;
-    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &first, "5 5 "
-      " 1  1  0  0  0 "
-      " 1  0  1 -1  1 " /* 1st marker row */
-      " 0 -1  1  0 -1 " /* 2nd marker row */
-      " 0  0 -1  1  0 "
-      " 0  1  1  0  1 "
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &first, "3 4 "
+      " 1  1  0  0 "
+      " 1  0  1  1 "
+      " 0  1  0 -1 "
     ) );
     CMR_CHRMAT* second = NULL;
-    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &second, "5 5 "
-      " 1 -1  1  0  0 "
-      " 1  1  1  1 -1 "
-      " 0  0 -1  0  1 "
-      " 1  0  0 -1  0 "
-      " 0  1  0  0  1 "
-      /*      ^     ^
-       * marker columns */
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &second, "3 4 "
+      "-1  0  1  0 "
+      " 1  1  0  1 "
+      " 0  0  1  1 "
     ) );
 
     CMR_CHRMAT* check = NULL;
-    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &check, " 8 8 "
-      " 1  1  0  0  0  0  0  0 "
-      " 0  0 -1  1  0  0  0  0 "
-      " 0  1  1  0  1  0  0  0 "
-      " 1  0  1 -1  1  1 -1  0 "
-      " 1  1  0 -1 -1  1  1  1 "
-      "-1 -1  0  1  1  0  0  0 "
-      " 0  0  0  0  0  1  0 -1 "
-      " 0 -1  1  0 -1  0  1  0 "
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &check, " 4 4 "
+      " 1  1  0  0 "
+      " 1  0  1  0 "
+      " 0  1  0  1 "
+      " 0  0  1  1 "
     ) );
 
     CMR_CHRMAT* threesum = NULL;
-    ASSERT_CMR_CALL( CMRthreeSum(cmr, first, second, CMRrowToElement(1), CMRcolumnToElement(2), CMRrowToElement(2),
-      CMRcolumnToElement(4), 3, &threesum) );
+    ASSERT_CMR_CALL( CMRthreeSumSeymourCompose(cmr, first, second, CMRrowToElement(2), CMRcolumnToElement(2),
+      CMRcolumnToElement(3), CMRrowToElement(0), CMRcolumnToElement(0), CMRcolumnToElement(1), 3, &threesum) );
 
     CMRchrmatPrintDense(cmr, threesum, stdout, '0', false);
 
@@ -392,99 +382,145 @@ TEST(Separation, ThreeSum)
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &first) );
   }
 
-  {
-    CMR_CHRMAT* first = NULL;
-    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &first, "5 5 "
-      " 1  1  0  0  0 "
-      " 1  0  1 -1  1 "
-      " 0 -1  1  0 -1 "
-      " 0  0 -1  1  0 "
-      " 0  1  1  0  1 "
-      /*^        ^
-       * marker columns */
-    ) );
-    CMR_CHRMAT* second = NULL;
-    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &second, "5 5 "
-      " 1 -1  1  0  0 " /* 1st marker row */
-      " 1  1  1  1 -1 "
-      " 0  0 -1  0  1 "
-      " 1  0  0 -1  0 " /* 2nd marker row */
-      " 0  1  0  0  1 "
-    ) );
+  // {
+  //   CMR_CHRMAT* first = NULL;
+  //   ASSERT_CMR_CALL( stringToCharMatrix(cmr, &first, "5 5 "
+  //     " 1  1  0  0  0 "
+  //     " 1  0  1 -1  1 " /* 1st marker row */
+  //     " 0 -1  1  0 -1 " /* 2nd marker row */
+  //     " 0  0 -1  1  0 "
+  //     " 0  1  1  0  1 "
+  //   ) );
+  //   CMR_CHRMAT* second = NULL;
+  //   ASSERT_CMR_CALL( stringToCharMatrix(cmr, &second, "5 5 "
+  //     " 1 -1  1  0  0 "
+  //     " 1  1  1  1 -1 "
+  //     " 0  0 -1  0  1 "
+  //     " 1  0  0 -1  0 "
+  //     " 0  1  0  0  1 "
+  //     /*      ^     ^
+  //      * marker columns */
+  //   ) );
+  //
+  //   CMR_CHRMAT* check = NULL;
+  //   ASSERT_CMR_CALL( stringToCharMatrix(cmr, &check, " 8 8 "
+  //     " 1  1  0  0  0  0  0  0 "
+  //     " 0  0 -1  1  0  0  0  0 "
+  //     " 0  1  1  0  1  0  0  0 "
+  //     " 1  0  1 -1  1  1 -1  0 "
+  //     " 1  1  0 -1 -1  1  1  1 "
+  //     "-1 -1  0  1  1  0  0  0 "
+  //     " 0  0  0  0  0  1  0 -1 "
+  //     " 0 -1  1  0 -1  0  1  0 "
+  //   ) );
+  //
+  //   CMR_CHRMAT* threesum = NULL;
+  //   ASSERT_CMR_CALL( CMRthreeSum(cmr, first, second, CMRrowToElement(1), CMRcolumnToElement(2), CMRrowToElement(2),
+  //     CMRcolumnToElement(4), 3, &threesum) );
+  //
+  //   CMRchrmatPrintDense(cmr, threesum, stdout, '0', false);
+  //
+  //   ASSERT_TRUE( CMRchrmatCheckEqual(threesum, check) );
+  //
+  //   ASSERT_CMR_CALL( CMRchrmatFree(cmr, &threesum) );
+  //   ASSERT_CMR_CALL( CMRchrmatFree(cmr, &check) );
+  //   ASSERT_CMR_CALL( CMRchrmatFree(cmr, &second) );
+  //   ASSERT_CMR_CALL( CMRchrmatFree(cmr, &first) );
+  // }
 
-    CMR_CHRMAT* check = NULL;
-    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &check, " 8 8 "
-      " 1  0  0  1 -1  1  0  0 "
-      " 0  1  1  0 -1  1  1  0 "
-      "-1  1 -1  0  0  0  0  0 "
-      " 0 -1  0  1  0  0 -1  0 "
-      " 1  1  1  0  0  0  0  0 "
-      " 0  0  0  1  1  1  1 -1 "
-      " 0  0  0  0  0 -1  0  1 "
-      " 0  0  0  0  1  0  0  1 "
-    ) );
+  // {
+  //   CMR_CHRMAT* first = NULL;
+  //   ASSERT_CMR_CALL( stringToCharMatrix(cmr, &first, "5 5 "
+  //     " 1  1  0  0  0 "
+  //     " 1  0  1 -1  1 "
+  //     " 0 -1  1  0 -1 "
+  //     " 0  0 -1  1  0 "
+  //     " 0  1  1  0  1 "
+  //     /*^        ^
+  //      * marker columns */
+  //   ) );
+  //   CMR_CHRMAT* second = NULL;
+  //   ASSERT_CMR_CALL( stringToCharMatrix(cmr, &second, "5 5 "
+  //     " 1 -1  1  0  0 " /* 1st marker row */
+  //     " 1  1  1  1 -1 "
+  //     " 0  0 -1  0  1 "
+  //     " 1  0  0 -1  0 " /* 2nd marker row */
+  //     " 0  1  0  0  1 "
+  //   ) );
+  //
+  //   CMR_CHRMAT* check = NULL;
+  //   ASSERT_CMR_CALL( stringToCharMatrix(cmr, &check, " 8 8 "
+  //     " 1  0  0  1 -1  1  0  0 "
+  //     " 0  1  1  0 -1  1  1  0 "
+  //     "-1  1 -1  0  0  0  0  0 "
+  //     " 0 -1  0  1  0  0 -1  0 "
+  //     " 1  1  1  0  0  0  0  0 "
+  //     " 0  0  0  1  1  1  1 -1 "
+  //     " 0  0  0  0  0 -1  0  1 "
+  //     " 0  0  0  0  1  0  0  1 "
+  //   ) );
+  //
+  //   CMR_CHRMAT* threesum = NULL;
+  //   ASSERT_CMR_CALL( CMRthreeSum(cmr, first, second, CMRcolumnToElement(0), CMRrowToElement(0), CMRcolumnToElement(3),
+  //     CMRrowToElement(3), 3, &threesum) );
+  //
+  //   CMRchrmatPrintDense(cmr, threesum, stdout, '0', false);
+  //
+  //   ASSERT_TRUE( CMRchrmatCheckEqual(threesum, check) );
+  //
+  //   ASSERT_CMR_CALL( CMRchrmatFree(cmr, &threesum) );
+  //   ASSERT_CMR_CALL( CMRchrmatFree(cmr, &check) );
+  //   ASSERT_CMR_CALL( CMRchrmatFree(cmr, &second) );
+  //   ASSERT_CMR_CALL( CMRchrmatFree(cmr, &first) );
+  // }
 
-    CMR_CHRMAT* threesum = NULL;
-    ASSERT_CMR_CALL( CMRthreeSum(cmr, first, second, CMRcolumnToElement(0), CMRrowToElement(0), CMRcolumnToElement(3),
-      CMRrowToElement(3), 3, &threesum) );
-
-    CMRchrmatPrintDense(cmr, threesum, stdout, '0', false);
-
-    ASSERT_TRUE( CMRchrmatCheckEqual(threesum, check) );
-
-    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &threesum) );
-    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &check) );
-    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &second) );
-    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &first) );
-  }
-
-  {
-    CMR_CHRMAT* first = NULL;
-    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &first, "5 5 "
-      " 1  1  0  0  0 "
-      " 1  0  1 -1  1 " /* 1st marker row */
-      " 0 -1  1  0 -1 "
-      " 0  0 -1  1  0 "
-      " 0  1  1  0  1 "
-      /*      ^
-       * 2nd marker column */
-    ) );
-    CMR_CHRMAT* second = NULL;
-    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &second, "5 5 "
-      " 1 -1  1  0  0 "
-      " 1  1  1  1 -1 " /* 2nd marker row */
-      " 0  0 -1  0  1 "
-      " 1  0  0 -1  0 "
-      " 0  1  0  0  1 "
-      /*   ^
-       * 1st marker column */
-    ) );
-
-    CMR_CHRMAT* check = NULL;
-    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &check, " 8 8 "
-      " 1  1  0  0  0  0  0  0 "
-      " 0 -1  0 -1  1  1  1 -1 "
-      " 0  0  1  0 -1 -1 -1  1 "
-      " 0  1  0  1  1  1  1 -1 "
-      "-1  0  1 -1  1  1  0  0 "
-      " 0  0  0  0  0 -1  0  1 "
-      " 0  0  0  0  1  0 -1  0 "
-      " 1  0 -1  1  0  0  0  1 "
-    ) );
-
-    CMR_CHRMAT* threesum = NULL;
-    ASSERT_CMR_CALL( CMRthreeSum(cmr, first, second, CMRrowToElement(1), CMRcolumnToElement(1), CMRcolumnToElement(2),
-      CMRrowToElement(1), 3, &threesum) );
-
-    CMRchrmatPrintDense(cmr, threesum, stdout, '0', false);
-
-    ASSERT_TRUE( CMRchrmatCheckEqual(threesum, check) );
-
-    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &threesum) );
-    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &check) );
-    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &second) );
-    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &first) );
-  }
+  // {
+  //   CMR_CHRMAT* first = NULL;
+  //   ASSERT_CMR_CALL( stringToCharMatrix(cmr, &first, "5 5 "
+  //     " 1  1  0  0  0 "
+  //     " 1  0  1 -1  1 " /* 1st marker row */
+  //     " 0 -1  1  0 -1 "
+  //     " 0  0 -1  1  0 "
+  //     " 0  1  1  0  1 "
+  //     /*      ^
+  //      * 1nd marker column */
+  //   ) );
+  //   CMR_CHRMAT* second = NULL;
+  //   ASSERT_CMR_CALL( stringToCharMatrix(cmr, &second, "5 5 "
+  //     " 1 -1  1  0  0 "
+  //     " 1  1  1  1 -1 " /* 2nd marker row */
+  //     " 0  0 -1  0  1 "
+  //     " 1  0  0 -1  0 "
+  //     " 0  1  0  0  1 "
+  //     /*   ^
+  //      * 1st marker column */
+  //   ) );
+  //
+  //   CMR_CHRMAT* check = NULL;
+  //   ASSERT_CMR_CALL( stringToCharMatrix(cmr, &check, " 8 8 "
+  //     " 1  1  0  0  0  0  0  0 "
+  //     " 0 -1  0 -1  1  1  1 -1 "
+  //     " 0  0  1  0 -1 -1 -1  1 "
+  //     " 0  1  0  1  1  1  1 -1 "
+  //     "-1  0  1 -1  1  1  0  0 "
+  //     " 0  0  0  0  0 -1  0  1 "
+  //     " 0  0  0  0  1  0 -1  0 "
+  //     " 1  0 -1  1  0  0  0  1 "
+  //   ) );
+  //
+  //   CMR_CHRMAT* threesum = NULL;
+  //   ASSERT_CMR_CALL( CMRthreeSum(cmr, first, second, CMRrowToElement(1), CMRcolumnToElement(1), CMRcolumnToElement(2),
+  //     CMRrowToElement(1), 3, &threesum) );
+  //
+  //   CMRchrmatPrintDense(cmr, threesum, stdout, '0', false);
+  //
+  //   ASSERT_TRUE( CMRchrmatCheckEqual(threesum, check) );
+  //
+  //   ASSERT_CMR_CALL( CMRchrmatFree(cmr, &threesum) );
+  //   ASSERT_CMR_CALL( CMRchrmatFree(cmr, &check) );
+  //   ASSERT_CMR_CALL( CMRchrmatFree(cmr, &second) );
+  //   ASSERT_CMR_CALL( CMRchrmatFree(cmr, &first) );
+  // }
 
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }

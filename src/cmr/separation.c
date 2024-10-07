@@ -1565,45 +1565,396 @@ CMR_ERROR CMRtwoSumDecomposeSecond(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sepa,
 }
 
 
-
-CMR_ERROR CMRthreeSum(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* second, CMR_ELEMENT firstMarker1,
-  CMR_ELEMENT secondMarker1, CMR_ELEMENT firstMarker2, CMR_ELEMENT secondMarker2, int8_t characteristic,
-  CMR_CHRMAT** presult)
+CMR_ERROR CMRthreeSumSeymourCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* second, CMR_ELEMENT firstMarker1,
+  CMR_ELEMENT firstMarker2, CMR_ELEMENT firstMarker3, CMR_ELEMENT secondMarker1, CMR_ELEMENT secondMarker2,
+  CMR_ELEMENT secondMarker3, int8_t characteristic, CMR_CHRMAT ** presult)
 {
   assert(cmr);
   assert(first);
   assert(second);
   assert(presult);
 
-  if ((CMRelementIsRow(firstMarker1) && CMRelementIsRow(secondMarker1))
-    || (CMRelementIsColumn(firstMarker1) && CMRelementIsColumn(secondMarker1))
-    || (CMRelementIsRow(firstMarker2) && CMRelementIsRow(secondMarker2))
-    || (CMRelementIsColumn(firstMarker2) && CMRelementIsColumn(secondMarker2)))
+  CMRdbgMsg(0, "CMRthreeSumSeymourCompose for a %zux%zu and a %zux%zu matrix.\n", first->numRows, first->numColumns,
+    second->numRows, second->numColumns);
+
+  /* Check markers for first matrix. */
+  size_t firstMarkerRow = SIZE_MAX;
+  size_t firstMarkerColumn1 = SIZE_MAX;
+  size_t firstMarkerColumn2 = SIZE_MAX;
+  if (CMRelementIsRow(firstMarker1))
   {
+    firstMarkerRow = CMRelementToRowIndex(firstMarker1);
+    if (!CMRelementIsColumn(firstMarker2) || !CMRelementIsColumn(firstMarker3))
+      return CMR_ERROR_INPUT;
+    firstMarkerColumn1 = CMRelementToColumnIndex(firstMarker2);
+    firstMarkerColumn2 = CMRelementToColumnIndex(firstMarker3);
+  }
+  else if (CMRelementIsRow(firstMarker2))
+  {
+    firstMarkerRow = CMRelementToRowIndex(firstMarker2);
+    if (!CMRelementIsColumn(firstMarker1) || !CMRelementIsColumn(firstMarker3))
+      return CMR_ERROR_INPUT;
+    firstMarkerColumn1 = CMRelementToColumnIndex(firstMarker1);
+    firstMarkerColumn2 = CMRelementToColumnIndex(firstMarker3);
+  }
+  else if (CMRelementIsRow(firstMarker3))
+  {
+    firstMarkerRow = CMRelementToRowIndex(firstMarker3);
+    if (!CMRelementIsColumn(firstMarker1) || !CMRelementIsColumn(firstMarker2))
+      return CMR_ERROR_INPUT;
+    firstMarkerColumn1 = CMRelementToColumnIndex(firstMarker1);
+    firstMarkerColumn2 = CMRelementToColumnIndex(firstMarker2);
+  }
+  else
+  {
+    CMRdbgMsg(2, "Invalid marker types for 1st matrix.\n");
     return CMR_ERROR_INPUT;
   }
 
-  if (CMRelementIsRow(firstMarker1) && CMRelementIsRow(firstMarker2)
-    && (CMRelementToRowIndex(firstMarker1) == CMRelementToRowIndex(firstMarker2)))
+  /* Check markers for second matrix. */
+  size_t secondMarkerRow = SIZE_MAX;
+  size_t secondMarkerColumn1 = SIZE_MAX;
+  size_t secondMarkerColumn2 = SIZE_MAX;
+  if (CMRelementIsRow(secondMarker1))
   {
-    return CMR_ERROR_INPUT;
+    secondMarkerRow = CMRelementToRowIndex(secondMarker1);
+    if (!CMRelementIsColumn(secondMarker2) || !CMRelementIsColumn(secondMarker3))
+      return CMR_ERROR_INPUT;
+    secondMarkerColumn1 = CMRelementToColumnIndex(secondMarker2);
+    secondMarkerColumn2 = CMRelementToColumnIndex(secondMarker3);
   }
-  if (CMRelementIsColumn(firstMarker1) && CMRelementIsColumn(firstMarker2)
-    && (CMRelementToColumnIndex(firstMarker1) == CMRelementToColumnIndex(firstMarker2)))
+  else if (CMRelementIsRow(secondMarker2))
   {
-    return CMR_ERROR_INPUT;
+    secondMarkerRow = CMRelementToRowIndex(secondMarker2);
+    if (!CMRelementIsColumn(secondMarker1) || !CMRelementIsColumn(secondMarker3))
+      return CMR_ERROR_INPUT;
+    secondMarkerColumn1 = CMRelementToColumnIndex(secondMarker1);
+    secondMarkerColumn2 = CMRelementToColumnIndex(secondMarker3);
   }
-  if (CMRelementIsRow(secondMarker1) && CMRelementIsRow(secondMarker2)
-    && (CMRelementToRowIndex(secondMarker1) == CMRelementToRowIndex(secondMarker2)))
+  else if (CMRelementIsRow(secondMarker3))
   {
-    return CMR_ERROR_INPUT;
+    secondMarkerRow = CMRelementToRowIndex(secondMarker3);
+    if (!CMRelementIsColumn(secondMarker1) || !CMRelementIsColumn(secondMarker2))
+      return CMR_ERROR_INPUT;
+    secondMarkerColumn1 = CMRelementToColumnIndex(secondMarker1);
+    secondMarkerColumn2 = CMRelementToColumnIndex(secondMarker2);
   }
-  if (CMRelementIsColumn(secondMarker1) && CMRelementIsColumn(secondMarker2)
-    && (CMRelementToColumnIndex(secondMarker1) == CMRelementToColumnIndex(secondMarker2)))
+  else
   {
+    CMRdbgMsg(2, "Invalid marker types for 2nd matrix.\n");
     return CMR_ERROR_INPUT;
   }
 
+  if (firstMarkerColumn1 > firstMarkerColumn2)
+  {
+    size_t temp = firstMarkerColumn1;
+    firstMarkerColumn1 = firstMarkerColumn2;
+    firstMarkerColumn2 = temp;
+  }
+  if (secondMarkerColumn1 > secondMarkerColumn2)
+  {
+    size_t temp = secondMarkerColumn1;
+    secondMarkerColumn1 = secondMarkerColumn2;
+    secondMarkerColumn2 = temp;
+  }
+
+  /* Number of nonzeros. */
+  size_t firstMainNumNonzeros = 0;
+  size_t secondMainNumNonzeros = 0;
+  size_t firstRowMarkerNumNonzeros = first->rowSlice[firstMarkerRow + 1] - first->rowSlice[firstMarkerRow] - 1;
+  size_t secondRowMarkerNumNonzeros = second->rowSlice[secondMarkerRow + 1] - second->rowSlice[secondMarkerRow] - 1;
+  size_t firstColumnMarkerNumNonzeros = 0;
+  size_t secondColumnMarkerNumNonzeros = 0;
+  char* firstColumnMarker = NULL; /* Nonzero entries of a. */
+  char* secondColumnMarker = NULL; /* Nonzero entries of d. */
+  size_t columnMarkerCopyNumNonzeros; /* Number of nonzeros in copy of a or copy of d. */
+  CMR_ERROR error = CMR_OKAY;
+  CMR_CALL( CMRallocStackArray(cmr, &firstColumnMarker, first->numRows - 1) );
+  CMR_CALL( CMRallocStackArray(cmr, &secondColumnMarker, second->numRows - 1) );
+  size_t firstMainRow = 0;
+  columnMarkerCopyNumNonzeros = 0;
+  char firstColumnMarkerSpecial = 0;
+  char columnMarkerCopySpecial = 0;
+  for (size_t firstRow = 0; firstRow < first->numRows; ++firstRow)
+  {
+    if (firstRow != firstMarkerRow)
+      firstColumnMarker[firstMainRow] = 0;
+    size_t beyond = first->rowSlice[firstRow + 1];
+    for (size_t e = first->rowSlice[firstRow]; e < beyond; ++e)
+    {
+      size_t firstColumn = first->entryColumns[e];
+      if (firstRow != firstMarkerRow)
+      {
+        if (firstColumn == firstMarkerColumn1)
+        {
+          firstColumnMarker[firstMainRow] = first->entryValues[e];
+          ++firstColumnMarkerNumNonzeros;
+        }
+        else if (firstColumn == firstMarkerColumn2)
+        {
+          if (firstColumnMarker[firstMainRow] != first->entryValues[e])
+          {
+            CMRdbgMsg(2, "Marker columns of 1st matrix differ: r%zu,c%zu -> %d, r%zu,c%zu -> %d.\n",
+              firstRow+1, firstMarkerColumn1+1, firstColumnMarker[firstMainRow], firstRow+1, firstMarkerColumn2+1,
+              first->entryValues[e]);
+            error = CMR_ERROR_INPUT;
+            goto cleanup;
+          }
+          ++columnMarkerCopyNumNonzeros;
+        }
+        else
+        {
+          ++firstMainNumNonzeros;
+        }
+      }
+      else
+      {
+        if (firstColumn == firstMarkerColumn1)
+          firstColumnMarkerSpecial = first->entryValues[e];
+        else if (firstColumn == firstMarkerColumn2)
+          columnMarkerCopySpecial = first->entryValues[e];
+      }
+    }
+
+    if (firstRow != firstMarkerRow)
+      ++firstMainRow;
+  }
+
+  /* Check if (a,0) and (a,epsilon) differ in only one entry. */
+
+  if (columnMarkerCopyNumNonzeros != firstColumnMarkerNumNonzeros)
+  {
+    CMRdbgMsg(2, "Number of nonzeros in marker columns of 1st matrix is %zu and %zu.\n", firstColumnMarkerNumNonzeros,
+      columnMarkerCopyNumNonzeros);
+    error = CMR_ERROR_INPUT;
+    goto cleanup;
+  }
+  else if ((firstColumnMarkerSpecial >= 0 ? firstColumnMarkerSpecial : -firstColumnMarkerSpecial)
+    + (columnMarkerCopySpecial >= 0 ? columnMarkerCopySpecial : -columnMarkerCopySpecial) != 1)
+  {
+    CMRdbgMsg(2, "Special entries of 1st matrix are %d and %d.\n", firstColumnMarkerSpecial, columnMarkerCopySpecial);
+    error = CMR_ERROR_INPUT;
+    goto cleanup;
+  }
+
+  columnMarkerCopyNumNonzeros = 0;
+  size_t secondMainRow = 0;
+  char secondColumnMarkerSpecial = 0;
+  columnMarkerCopySpecial = 0;
+  for (size_t secondRow = 0; secondRow < second->numRows; ++secondRow)
+  {
+    if (secondRow != secondMarkerRow)
+      secondColumnMarker[secondMainRow] = 0;
+    size_t beyond = second->rowSlice[secondRow + 1];
+    for (size_t e = second->rowSlice[secondRow]; e < beyond; ++e)
+    {
+      size_t secondColumn = second->entryColumns[e];
+      if (secondRow != secondMarkerRow)
+      {
+        if (secondColumn == secondMarkerColumn1)
+        {
+          secondColumnMarker[secondMainRow] = second->entryValues[e];
+          ++secondColumnMarkerNumNonzeros;
+        }
+        else if (secondColumn == secondMarkerColumn2)
+        {
+          if (secondColumnMarker[secondMainRow] != second->entryValues[e])
+          {
+            CMRdbgMsg(2, "Marker columns of 2nd matrix differ: r%zu,c%zu -> %d, r%zu,c%zu -> %d.\n",
+              secondRow+1, secondMarkerColumn1+1, secondColumnMarker[secondMainRow], secondRow+1, secondMarkerColumn2+1,
+              second->entryValues[e]);
+            error = CMR_ERROR_INPUT;
+            goto cleanup;
+          }
+          ++columnMarkerCopyNumNonzeros;
+        }
+        else
+        {
+          ++secondMainNumNonzeros;
+        }
+      }
+      else
+      {
+        if (secondColumn == secondMarkerColumn1)
+          secondColumnMarkerSpecial = second->entryValues[e];
+        else if (secondColumn == secondMarkerColumn2)
+          columnMarkerCopySpecial = second->entryValues[e];
+      }
+    }
+
+    if (secondRow != secondMarkerRow)
+      ++secondMainRow;
+  }
+
+  /* Check if (0,d) and (epsilon,d) differ in only one entry. */
+
+  if (columnMarkerCopyNumNonzeros != secondColumnMarkerNumNonzeros)
+  {
+    CMRdbgMsg(2, "Number of nonzeros in marker columns of 2nd matrix is %zu and %zu.\n", secondColumnMarkerNumNonzeros,
+      columnMarkerCopyNumNonzeros);
+    error = CMR_ERROR_INPUT;
+    goto cleanup;
+  }
+  else if ((secondColumnMarkerSpecial >= 0 ? secondColumnMarkerSpecial : -secondColumnMarkerSpecial)
+    + (columnMarkerCopySpecial >= 0 ? columnMarkerCopySpecial : -columnMarkerCopySpecial) != 1)
+  {
+    CMRdbgMsg(2, "Special entries of 2nd matrix are %d and %d.\n", secondColumnMarkerSpecial, columnMarkerCopySpecial);
+    error = CMR_ERROR_INPUT;
+    goto cleanup;
+  }
+
+  CMRdbgMsg(2, "First: main has %zu nonzeros, column has %zu nonzeros and row has %zu nonzeros.\n",
+    firstMainNumNonzeros, firstColumnMarkerNumNonzeros, firstRowMarkerNumNonzeros);
+  CMRdbgMsg(2, "Second: main has %zu nonzeros, column has %zu nonzeros and row has %zu nonzeros.\n",
+    secondMainNumNonzeros, secondColumnMarkerNumNonzeros, secondRowMarkerNumNonzeros);
+
+  /* Create resulting matrix. */
+  CMR_CALL( CMRchrmatCreate(cmr, presult, first->numRows + second->numRows - 2,
+    first->numColumns + second->numColumns - 4, firstMainNumNonzeros + secondMainNumNonzeros
+    + firstRowMarkerNumNonzeros * secondColumnMarkerNumNonzeros
+    + secondRowMarkerNumNonzeros * firstColumnMarkerNumNonzeros) );
+  CMR_CHRMAT* result = *presult;
+
+  CMRdbgMsg(2, "Resulting matrix is %zux%zu with %zu nonzeros.\n", result->numRows, result->numColumns,
+    result->numNonzeros);
+
+  size_t row = 0;
+  size_t entry = 0;
+  for (size_t firstRow = 0; firstRow < first->numRows; ++firstRow)
+  {
+    result->rowSlice[row] = entry;
+    if (firstMarkerRow != firstRow)
+    {
+      /* Nonzeros in top-left. */
+      size_t beyond = first->rowSlice[firstRow+1];
+      for (size_t e = first->rowSlice[firstRow]; e < beyond; ++e)
+      {
+        size_t column = first->entryColumns[e];
+        if (column == firstMarkerColumn1 || column == firstMarkerColumn2)
+          continue;
+        else if (column > firstMarkerColumn2)
+          column -= 2;
+        else if (column > firstMarkerColumn1)
+          column -= 1;
+
+        CMRdbgMsg(4, "First main nonzero r%zu,c%zu -> %d is mapped to r%zu,c%zu.\n", firstRow+1,
+          first->entryColumns[e]+1, first->entryValues[e], row+1, column+1);
+        result->entryColumns[entry] = column;
+        result->entryValues[entry] = first->entryValues[e];
+        ++entry;
+      }
+
+      /* Nonzeros in top-right. */
+      if (firstColumnMarker[row])
+      {
+        char factor = firstColumnMarker[row];
+        beyond = second->rowSlice[secondMarkerRow + 1];
+        for (size_t e = second->rowSlice[secondMarkerRow]; e < beyond; ++e)
+        {
+          size_t column = second->entryColumns[e];
+          if (column == secondMarkerColumn1 || column == secondMarkerColumn2)
+            continue;
+          else if (column > secondMarkerColumn2)
+            column -= 2;
+          else if (column > secondMarkerColumn1)
+            column -= 1;
+
+          CMRdbgMsg(4, "Top-right nonzero r%zu (first) and c%zu (second) -> %d*%d is mapped to r%zu,c%zu.\n", firstRow+1,
+            second->entryColumns[e]+1, factor, second->entryValues[e], row+1, first->numColumns - 2 + column+1);
+          result->entryColumns[entry] = first->numColumns - 2 + column;
+          int resultValue = (int) factor * (int) second->entryValues[e];
+          assert(resultValue != 0);
+          if (characteristic != 0)
+          {
+            resultValue = resultValue % characteristic;
+            if (resultValue < 0)
+              resultValue += characteristic;
+            if (characteristic == 3 && resultValue == 2)
+              resultValue -= 3;
+          }
+          assert(resultValue != 0);
+          result->entryValues[entry] = resultValue;
+          ++entry;
+        }
+      }
+      ++row;
+    }
+  }
+  secondMainRow = 0;
+  for (size_t secondRow = 0; secondRow < second->numRows; ++secondRow)
+  {
+    result->rowSlice[row] = entry;
+    if (secondRow != secondMarkerRow)
+    {
+      /* Nonzeros in bottom-left. */
+      if (secondColumnMarker[secondMainRow])
+      {
+        char factor = secondColumnMarker[secondMainRow];
+        size_t beyond = first->rowSlice[firstMarkerRow + 1];
+        for (size_t e = first->rowSlice[firstMarkerRow]; e < beyond; ++e)
+        {
+          size_t column = first->entryColumns[e];
+          if (column == firstMarkerColumn1 || column == firstMarkerColumn2)
+            continue;
+          else if (column > firstMarkerColumn2)
+            column -= 2;
+          else if (column > firstMarkerColumn1)
+            column -= 1;
+
+          CMRdbgMsg(4, "Bottom-left nonzero r%zu (second) and c%zu (first) -> %d*%d is mapped to r%zu,c%zu.\n",
+            secondRow+1, first->entryColumns[e]+1, factor, first->entryValues[e], row+1, column+1);
+          result->entryColumns[entry] = column;
+          int resultValue = (int) factor * (int) first->entryValues[e];
+          assert(resultValue != 0);
+          if (characteristic != 0)
+          {
+            resultValue = resultValue % characteristic;
+            if (resultValue < 0)
+              resultValue += characteristic;
+            if (characteristic == 3 && resultValue == 2)
+              resultValue -= 3;
+          }
+          assert(resultValue != 0);
+          result->entryValues[entry] = resultValue;
+          ++entry;
+        }
+      }
+
+      /* Nonzeros in top-left. */
+      size_t beyond = second->rowSlice[secondRow+1];
+      for (size_t e = second->rowSlice[secondRow]; e < beyond; ++e)
+      {
+        size_t column = second->entryColumns[e];
+        if (column == secondMarkerColumn1 || column == secondMarkerColumn2)
+          continue;
+        else if (column > secondMarkerColumn2)
+          column -= 2;
+        else if (column > secondMarkerColumn1)
+          column -= 1;
+
+        CMRdbgMsg(4, "Second main nonzero r%zu,c%zu -> %d is mapped to r%zu,c%zu.\n", secondRow+1,
+          second->entryColumns[e]+1, second->entryValues[e], row+1, first->numColumns - 2 + column+1);
+        result->entryColumns[entry] = first->numColumns - 2 + column;
+        result->entryValues[entry] = second->entryValues[e];
+        ++entry;
+      }
+
+      ++row;
+      ++secondMainRow;
+    }
+  }
+  result->rowSlice[row] = entry;
+  assert(entry == result->numNonzeros);
+
+cleanup:
+  CMR_CALL( CMRfreeStackArray(cmr, &secondColumnMarker) );
+  CMR_CALL( CMRfreeStackArray(cmr, &firstColumnMarker) );
+
+  return error;
+}
+
+#if 0
+{
   /* If the first markers are column,row then we exchange both pairs such that the first markers are row,column. */
   if (CMRelementIsColumn(firstMarker1) && CMRelementIsRow(firstMarker2))
   {
@@ -2047,3 +2398,6 @@ cleanup:
 
   return error;
 }
+
+#endif /* legacy code */
+
