@@ -1,6 +1,8 @@
 #ifndef CMR_SEYMOUR_INTERNAL_H
 #define CMR_SEYMOUR_INTERNAL_H
 
+#include <time.h>
+
 #include "densematrix.h"
 
 #include <cmr/matroid.h>
