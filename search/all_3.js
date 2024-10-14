@@ -14,11 +14,13 @@ var searchData=
   ['basic_20utilities_53',['Basic Utilities',['../utilities.html',1,'']]],
   ['below_54',['below',['../struct__ListMat64Nonzero.html#a11347ba029167767ccc114da5bc7533e',1,'_ListMat64Nonzero::below()'],['../struct__ListMat8Nonzero.html#a7d867c7abca3dcefab06ed4a5f6684c0',1,'_ListMat8Nonzero::below()']]],
   ['binary_20regular_20matrices_55',['Binary Regular Matrices',['../binary_regular.html',1,'']]],
-  ['block_56',['BLOCK',['../series__parallel_8c.html#a16b11be27a8e9362dd122c4d879e01aea02fc27068fe9a3c151ffcc08ec5bb65d',1,'series_parallel.c']]],
-  ['block_5fdecomposition_2ec_57',['block_decomposition.c',['../block__decomposition_8c.html',1,'']]],
-  ['block_5fdecomposition_2eh_58',['block_decomposition.h',['../block__decomposition_8h.html',1,'']]],
-  ['breadthfirstsearch_59',['breadthFirstSearch',['../series__parallel_8c.html#aaa95db0c1d6833e0309ec1a60d40e2e6',1,'series_parallel.c']]],
-  ['buckets_60',['buckets',['../struct__CMR__LISTHASHTABLE.html#a1e256724f69830d1ff27798fd30cddd3',1,'_CMR_LISTHASHTABLE::buckets()'],['../struct__CMR__LINEARHASHTABLE__ARRAY.html#acbd0438f84f6be12d87db4fac73db367',1,'_CMR_LINEARHASHTABLE_ARRAY::buckets()']]],
-  ['build_20instructions_61',['Build instructions',['../build.html',1,'']]],
-  ['build_2emd_62',['build.md',['../build_8md.html',1,'']]]
+  ['bipartite_5fgraph_2ec_56',['bipartite_graph.c',['../bipartite__graph_8c.html',1,'']]],
+  ['bipartite_5fgraph_2eh_57',['bipartite_graph.h',['../bipartite__graph_8h.html',1,'']]],
+  ['block_58',['BLOCK',['../series__parallel_8c.html#a16b11be27a8e9362dd122c4d879e01aea02fc27068fe9a3c151ffcc08ec5bb65d',1,'series_parallel.c']]],
+  ['block_5fdecomposition_2ec_59',['block_decomposition.c',['../block__decomposition_8c.html',1,'']]],
+  ['block_5fdecomposition_2eh_60',['block_decomposition.h',['../block__decomposition_8h.html',1,'']]],
+  ['breadthfirstsearch_61',['breadthFirstSearch',['../series__parallel_8c.html#aaa95db0c1d6833e0309ec1a60d40e2e6',1,'series_parallel.c']]],
+  ['buckets_62',['buckets',['../struct__CMR__LISTHASHTABLE.html#a1e256724f69830d1ff27798fd30cddd3',1,'_CMR_LISTHASHTABLE::buckets()'],['../struct__CMR__LINEARHASHTABLE__ARRAY.html#acbd0438f84f6be12d87db4fac73db367',1,'_CMR_LINEARHASHTABLE_ARRAY::buckets()']]],
+  ['build_20instructions_63',['Build instructions',['../build.html',1,'']]],
+  ['build_2emd_64',['build.md',['../build_8md.html',1,'']]]
 ];
