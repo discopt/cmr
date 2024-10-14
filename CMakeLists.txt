@@ -44,6 +44,7 @@ endif()
 # Target for the CMR library.
 add_library(cmr
   src/cmr/balanced.c
+  src/cmr/bipartite_graph.c
   src/cmr/camion.c
   src/cmr/ctu.c
   src/cmr/densematrix.c
