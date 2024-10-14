@@ -341,7 +341,7 @@ TEST(Separation, TwoSumDecomposition)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
-TEST(Separation, ThreeSum)
+TEST(Separation, ThreeSumSeymourComposition)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -382,145 +382,323 @@ TEST(Separation, ThreeSum)
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &first) );
   }
 
-  // {
-  //   CMR_CHRMAT* first = NULL;
-  //   ASSERT_CMR_CALL( stringToCharMatrix(cmr, &first, "5 5 "
-  //     " 1  1  0  0  0 "
-  //     " 1  0  1 -1  1 " /* 1st marker row */
-  //     " 0 -1  1  0 -1 " /* 2nd marker row */
-  //     " 0  0 -1  1  0 "
-  //     " 0  1  1  0  1 "
-  //   ) );
-  //   CMR_CHRMAT* second = NULL;
-  //   ASSERT_CMR_CALL( stringToCharMatrix(cmr, &second, "5 5 "
-  //     " 1 -1  1  0  0 "
-  //     " 1  1  1  1 -1 "
-  //     " 0  0 -1  0  1 "
-  //     " 1  0  0 -1  0 "
-  //     " 0  1  0  0  1 "
-  //     /*      ^     ^
-  //      * marker columns */
-  //   ) );
-  //
-  //   CMR_CHRMAT* check = NULL;
-  //   ASSERT_CMR_CALL( stringToCharMatrix(cmr, &check, " 8 8 "
-  //     " 1  1  0  0  0  0  0  0 "
-  //     " 0  0 -1  1  0  0  0  0 "
-  //     " 0  1  1  0  1  0  0  0 "
-  //     " 1  0  1 -1  1  1 -1  0 "
-  //     " 1  1  0 -1 -1  1  1  1 "
-  //     "-1 -1  0  1  1  0  0  0 "
-  //     " 0  0  0  0  0  1  0 -1 "
-  //     " 0 -1  1  0 -1  0  1  0 "
-  //   ) );
-  //
-  //   CMR_CHRMAT* threesum = NULL;
-  //   ASSERT_CMR_CALL( CMRthreeSum(cmr, first, second, CMRrowToElement(1), CMRcolumnToElement(2), CMRrowToElement(2),
-  //     CMRcolumnToElement(4), 3, &threesum) );
-  //
-  //   CMRchrmatPrintDense(cmr, threesum, stdout, '0', false);
-  //
-  //   ASSERT_TRUE( CMRchrmatCheckEqual(threesum, check) );
-  //
-  //   ASSERT_CMR_CALL( CMRchrmatFree(cmr, &threesum) );
-  //   ASSERT_CMR_CALL( CMRchrmatFree(cmr, &check) );
-  //   ASSERT_CMR_CALL( CMRchrmatFree(cmr, &second) );
-  //   ASSERT_CMR_CALL( CMRchrmatFree(cmr, &first) );
-  // }
+  {
+    CMR_CHRMAT* first = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &first, "3 4 "
+      " 1  1  0  0 "
+      " 1  0  1  1 "
+      " 0  1  0  1 "
+    ) );
+    CMR_CHRMAT* second = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &second, "3 4 "
+      " 1  0  1  0 "
+      " 1  1  0  1 "
+      " 0  0  1  1 "
+    ) );
 
-  // {
-  //   CMR_CHRMAT* first = NULL;
-  //   ASSERT_CMR_CALL( stringToCharMatrix(cmr, &first, "5 5 "
-  //     " 1  1  0  0  0 "
-  //     " 1  0  1 -1  1 "
-  //     " 0 -1  1  0 -1 "
-  //     " 0  0 -1  1  0 "
-  //     " 0  1  1  0  1 "
-  //     /*^        ^
-  //      * marker columns */
-  //   ) );
-  //   CMR_CHRMAT* second = NULL;
-  //   ASSERT_CMR_CALL( stringToCharMatrix(cmr, &second, "5 5 "
-  //     " 1 -1  1  0  0 " /* 1st marker row */
-  //     " 1  1  1  1 -1 "
-  //     " 0  0 -1  0  1 "
-  //     " 1  0  0 -1  0 " /* 2nd marker row */
-  //     " 0  1  0  0  1 "
-  //   ) );
-  //
-  //   CMR_CHRMAT* check = NULL;
-  //   ASSERT_CMR_CALL( stringToCharMatrix(cmr, &check, " 8 8 "
-  //     " 1  0  0  1 -1  1  0  0 "
-  //     " 0  1  1  0 -1  1  1  0 "
-  //     "-1  1 -1  0  0  0  0  0 "
-  //     " 0 -1  0  1  0  0 -1  0 "
-  //     " 1  1  1  0  0  0  0  0 "
-  //     " 0  0  0  1  1  1  1 -1 "
-  //     " 0  0  0  0  0 -1  0  1 "
-  //     " 0  0  0  0  1  0  0  1 "
-  //   ) );
-  //
-  //   CMR_CHRMAT* threesum = NULL;
-  //   ASSERT_CMR_CALL( CMRthreeSum(cmr, first, second, CMRcolumnToElement(0), CMRrowToElement(0), CMRcolumnToElement(3),
-  //     CMRrowToElement(3), 3, &threesum) );
-  //
-  //   CMRchrmatPrintDense(cmr, threesum, stdout, '0', false);
-  //
-  //   ASSERT_TRUE( CMRchrmatCheckEqual(threesum, check) );
-  //
-  //   ASSERT_CMR_CALL( CMRchrmatFree(cmr, &threesum) );
-  //   ASSERT_CMR_CALL( CMRchrmatFree(cmr, &check) );
-  //   ASSERT_CMR_CALL( CMRchrmatFree(cmr, &second) );
-  //   ASSERT_CMR_CALL( CMRchrmatFree(cmr, &first) );
-  // }
+    CMR_CHRMAT* check = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &check, " 4 4 "
+      " 1  1  0  0 "
+      " 1  0  1  0 "
+      " 0  1  0  1 "
+      " 0  0  1  1 "
+    ) );
 
-  // {
-  //   CMR_CHRMAT* first = NULL;
-  //   ASSERT_CMR_CALL( stringToCharMatrix(cmr, &first, "5 5 "
-  //     " 1  1  0  0  0 "
-  //     " 1  0  1 -1  1 " /* 1st marker row */
-  //     " 0 -1  1  0 -1 "
-  //     " 0  0 -1  1  0 "
-  //     " 0  1  1  0  1 "
-  //     /*      ^
-  //      * 1nd marker column */
-  //   ) );
-  //   CMR_CHRMAT* second = NULL;
-  //   ASSERT_CMR_CALL( stringToCharMatrix(cmr, &second, "5 5 "
-  //     " 1 -1  1  0  0 "
-  //     " 1  1  1  1 -1 " /* 2nd marker row */
-  //     " 0  0 -1  0  1 "
-  //     " 1  0  0 -1  0 "
-  //     " 0  1  0  0  1 "
-  //     /*   ^
-  //      * 1st marker column */
-  //   ) );
-  //
-  //   CMR_CHRMAT* check = NULL;
-  //   ASSERT_CMR_CALL( stringToCharMatrix(cmr, &check, " 8 8 "
-  //     " 1  1  0  0  0  0  0  0 "
-  //     " 0 -1  0 -1  1  1  1 -1 "
-  //     " 0  0  1  0 -1 -1 -1  1 "
-  //     " 0  1  0  1  1  1  1 -1 "
-  //     "-1  0  1 -1  1  1  0  0 "
-  //     " 0  0  0  0  0 -1  0  1 "
-  //     " 0  0  0  0  1  0 -1  0 "
-  //     " 1  0 -1  1  0  0  0  1 "
-  //   ) );
-  //
-  //   CMR_CHRMAT* threesum = NULL;
-  //   ASSERT_CMR_CALL( CMRthreeSum(cmr, first, second, CMRrowToElement(1), CMRcolumnToElement(1), CMRcolumnToElement(2),
-  //     CMRrowToElement(1), 3, &threesum) );
-  //
-  //   CMRchrmatPrintDense(cmr, threesum, stdout, '0', false);
-  //
-  //   ASSERT_TRUE( CMRchrmatCheckEqual(threesum, check) );
-  //
-  //   ASSERT_CMR_CALL( CMRchrmatFree(cmr, &threesum) );
-  //   ASSERT_CMR_CALL( CMRchrmatFree(cmr, &check) );
-  //   ASSERT_CMR_CALL( CMRchrmatFree(cmr, &second) );
-  //   ASSERT_CMR_CALL( CMRchrmatFree(cmr, &first) );
-  // }
+    CMR_CHRMAT* threesum = NULL;
+    ASSERT_CMR_CALL( CMRthreeSumSeymourCompose(cmr, first, second, CMRrowToElement(2), CMRcolumnToElement(2),
+      CMRcolumnToElement(3), CMRrowToElement(0), CMRcolumnToElement(0), CMRcolumnToElement(1), 3, &threesum) );
+
+    CMRchrmatPrintDense(cmr, threesum, stdout, '0', false);
+
+    ASSERT_TRUE( CMRchrmatCheckEqual(threesum, check) );
+
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &threesum) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &check) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &second) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &first) );
+  }
+
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
+}
+
+TEST(Separation, ThreeSumSeymourDecomposition)
+{
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+
+  {
+    CMR_CHRMAT* matrix = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, " 4 4 "
+      " 1  1  0  0 "
+      " 1  0  1  0 "
+      " 0  1  0  1 "
+      " 0  0  1  1 "
+    ) );
+    CMR_CHRMAT* transpose = NULL;
+    ASSERT_CMR_CALL( CMRchrmatTranspose(cmr, matrix, &transpose) );
+
+    CMR_SEPA* sepa = NULL;
+    ASSERT_CMR_CALL( CMRsepaCreate(cmr, 4, 4, &sepa) );
+    sepa->type = CMR_SEPA_TYPE_THREE_DISTRIBUTED_RANKS;
+
+    sepa->rowsFlags[0] = CMR_SEPA_FIRST;
+    sepa->rowsFlags[1] = CMR_SEPA_FIRST | CMR_SEPA_FLAG_RANK1;
+    sepa->rowsFlags[2] = CMR_SEPA_SECOND | CMR_SEPA_FLAG_RANK1;
+    sepa->rowsFlags[3] = CMR_SEPA_SECOND;
+
+    sepa->columnsFlags[0] = CMR_SEPA_FIRST;
+    sepa->columnsFlags[1] = CMR_SEPA_FIRST | CMR_SEPA_FLAG_RANK1;
+    sepa->columnsFlags[2] = CMR_SEPA_SECOND | CMR_SEPA_FLAG_RANK1;
+    sepa->columnsFlags[3] = CMR_SEPA_SECOND;
+
+    char epsilon;
+    ASSERT_CMR_CALL( CMRthreeSumSeymourDecomposeEpsilon(cmr, matrix, transpose, sepa, &epsilon) );
+    ASSERT_EQ(epsilon, -1);
+
+    CMR_CHRMAT* first = NULL;
+    CMR_ELEMENT firstMarker1 = 0;
+    CMR_ELEMENT firstMarker2 = 0;
+    CMR_ELEMENT firstMarker3 = 0;
+    ASSERT_CMR_CALL( CMRthreeSumSeymourDecomposeFirst(cmr, matrix, sepa, epsilon, &first, NULL, NULL, NULL, NULL,
+      &firstMarker1, &firstMarker2, &firstMarker3) );
+
+    CMR_CHRMAT* checkFirst = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &checkFirst, " 3 4 "
+      " 1  1  0  0 "
+      " 1  0  1  1 "
+      " 0  1  0 -1 "
+    ) );
+    ASSERT_TRUE( CMRchrmatCheckEqual(first, checkFirst) );
+
+    CMR_CHRMAT* second = NULL;
+    CMR_ELEMENT secondMarker1 = 0;
+    CMR_ELEMENT secondMarker2 = 0;
+    CMR_ELEMENT secondMarker3 = 0;
+    ASSERT_CMR_CALL( CMRthreeSumSeymourDecomposeSecond(cmr, matrix, sepa, epsilon, &second, NULL, NULL, NULL, NULL,
+      &secondMarker1, &secondMarker2, &secondMarker3) );
+
+    CMR_CHRMAT* checkSecond = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &checkSecond, " 3 4 "
+      "-1  0  1  0 "
+      " 1  1  0  1 "
+      " 0  0  1  1 "
+    ) );
+    ASSERT_TRUE( CMRchrmatCheckEqual(second, checkSecond) );
+
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &checkSecond) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &second) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &checkFirst) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &first) );
+    ASSERT_CMR_CALL( CMRsepaFree(cmr, &sepa) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &transpose) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  }
+
+  {
+    CMR_CHRMAT* matrix = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, " 4 4 "
+      " 1  1  0  0 "
+      " 1  0 -1  0 "
+      " 0  1  0  1 "
+      " 0  0  1  1 "
+    ) );
+    CMR_CHRMAT* transpose = NULL;
+    ASSERT_CMR_CALL( CMRchrmatTranspose(cmr, matrix, &transpose) );
+
+    CMR_SEPA* sepa = NULL;
+    ASSERT_CMR_CALL( CMRsepaCreate(cmr, 4, 4, &sepa) );
+    sepa->type = CMR_SEPA_TYPE_THREE_DISTRIBUTED_RANKS;
+
+    sepa->rowsFlags[0] = CMR_SEPA_FIRST;
+    sepa->rowsFlags[1] = CMR_SEPA_FIRST | CMR_SEPA_FLAG_RANK1;
+    sepa->rowsFlags[2] = CMR_SEPA_SECOND | CMR_SEPA_FLAG_RANK1;
+    sepa->rowsFlags[3] = CMR_SEPA_SECOND;
+
+    sepa->columnsFlags[0] = CMR_SEPA_FIRST;
+    sepa->columnsFlags[1] = CMR_SEPA_FIRST | CMR_SEPA_FLAG_RANK1;
+    sepa->columnsFlags[2] = CMR_SEPA_SECOND | CMR_SEPA_FLAG_RANK1;
+    sepa->columnsFlags[3] = CMR_SEPA_SECOND;
+
+    char epsilon;
+    ASSERT_CMR_CALL( CMRthreeSumSeymourDecomposeEpsilon(cmr, matrix, transpose, sepa, &epsilon) );
+    ASSERT_EQ(epsilon, +1);
+
+    CMR_CHRMAT* first = NULL;
+    CMR_ELEMENT firstMarker1 = 0;
+    CMR_ELEMENT firstMarker2 = 0;
+    CMR_ELEMENT firstMarker3 = 0;
+    ASSERT_CMR_CALL( CMRthreeSumSeymourDecomposeFirst(cmr, matrix, sepa, epsilon, &first, NULL, NULL, NULL, NULL,
+      &firstMarker1, &firstMarker2, &firstMarker3) );
+
+    CMR_CHRMAT* checkFirst = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &checkFirst, " 3 4 "
+      " 1  1  0  0 "
+      " 1  0 -1 -1 "
+      " 0  1  0  1 "
+    ) );
+    ASSERT_TRUE( CMRchrmatCheckEqual(first, checkFirst) );
+
+    CMR_CHRMAT* second = NULL;
+    CMR_ELEMENT secondMarker1 = 0;
+    CMR_ELEMENT secondMarker2 = 0;
+    CMR_ELEMENT secondMarker3 = 0;
+    ASSERT_CMR_CALL( CMRthreeSumSeymourDecomposeSecond(cmr, matrix, sepa, epsilon, &second, NULL, NULL, NULL, NULL,
+      &secondMarker1, &secondMarker2, &secondMarker3) );
+
+    CMR_CHRMAT* checkSecond = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &checkSecond, " 3 4 "
+      " 1  0  1  0 "
+      " 1  1  0  1 "
+      " 0  0  1  1 "
+    ) );
+
+    ASSERT_TRUE( CMRchrmatCheckEqual(second, checkSecond) );
+
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &checkSecond) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &second) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &checkFirst) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &first) );
+    ASSERT_CMR_CALL( CMRsepaFree(cmr, &sepa) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &transpose) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  }
+
+  {
+    CMR_CHRMAT* matrix = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, " 4 4 "
+      " 1  1  0  0 "
+      " 1  0  1  0 "
+      " 0 -1  0  1 "
+      " 0  0  1  1 "
+    ) );
+    CMR_CHRMAT* transpose = NULL;
+    ASSERT_CMR_CALL( CMRchrmatTranspose(cmr, matrix, &transpose) );
+
+    CMR_SEPA* sepa = NULL;
+    ASSERT_CMR_CALL( CMRsepaCreate(cmr, 4, 4, &sepa) );
+    sepa->type = CMR_SEPA_TYPE_THREE_DISTRIBUTED_RANKS;
+
+    sepa->rowsFlags[0] = CMR_SEPA_FIRST;
+    sepa->rowsFlags[1] = CMR_SEPA_FIRST | CMR_SEPA_FLAG_RANK1;
+    sepa->rowsFlags[2] = CMR_SEPA_SECOND | CMR_SEPA_FLAG_RANK1;
+    sepa->rowsFlags[3] = CMR_SEPA_SECOND;
+
+    sepa->columnsFlags[0] = CMR_SEPA_FIRST;
+    sepa->columnsFlags[1] = CMR_SEPA_FIRST | CMR_SEPA_FLAG_RANK1;
+    sepa->columnsFlags[2] = CMR_SEPA_SECOND | CMR_SEPA_FLAG_RANK1;
+    sepa->columnsFlags[3] = CMR_SEPA_SECOND;
+
+    char epsilon;
+    ASSERT_CMR_CALL( CMRthreeSumSeymourDecomposeEpsilon(cmr, matrix, transpose, sepa, &epsilon) );
+    ASSERT_EQ(epsilon, +1);
+
+    CMR_CHRMAT* first = NULL;
+    CMR_ELEMENT firstMarker1 = 0;
+    CMR_ELEMENT firstMarker2 = 0;
+    CMR_ELEMENT firstMarker3 = 0;
+    ASSERT_CMR_CALL( CMRthreeSumSeymourDecomposeFirst(cmr, matrix, sepa, epsilon, &first, NULL, NULL, NULL, NULL,
+      &firstMarker1, &firstMarker2, &firstMarker3) );
+
+    CMR_CHRMAT* checkFirst = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &checkFirst, " 3 4 "
+      " 1  1  0  0 "
+      " 1  0  1  1 "
+      " 0 -1  0  1 "
+    ) );
+    ASSERT_TRUE( CMRchrmatCheckEqual(first, checkFirst) );
+
+    CMR_CHRMAT* second = NULL;
+    CMR_ELEMENT secondMarker1 = 0;
+    CMR_ELEMENT secondMarker2 = 0;
+    CMR_ELEMENT secondMarker3 = 0;
+    ASSERT_CMR_CALL( CMRthreeSumSeymourDecomposeSecond(cmr, matrix, sepa, epsilon, &second, NULL, NULL, NULL, NULL,
+      &secondMarker1, &secondMarker2, &secondMarker3) );
+
+    CMR_CHRMAT* checkSecond = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &checkSecond, " 3 4 "
+      " 1  0  1  0 "
+      " 1  1  0  1 "
+      " 0  0  1  1 "
+    ) );
+
+    ASSERT_TRUE( CMRchrmatCheckEqual(second, checkSecond) );
+
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &checkSecond) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &second) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &checkFirst) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &first) );
+    ASSERT_CMR_CALL( CMRsepaFree(cmr, &sepa) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &transpose) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  }
+
+  {
+    CMR_CHRMAT* matrix = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, " 4 4 "
+      " 1  1  0  0 "
+      " 1  0 -1  0 "
+      " 0 -1  0  1 "
+      " 0  0  1  1 "
+    ) );
+    CMR_CHRMAT* transpose = NULL;
+    ASSERT_CMR_CALL( CMRchrmatTranspose(cmr, matrix, &transpose) );
+
+    CMR_SEPA* sepa = NULL;
+    ASSERT_CMR_CALL( CMRsepaCreate(cmr, 4, 4, &sepa) );
+    sepa->type = CMR_SEPA_TYPE_THREE_DISTRIBUTED_RANKS;
+
+    sepa->rowsFlags[0] = CMR_SEPA_FIRST;
+    sepa->rowsFlags[1] = CMR_SEPA_FIRST | CMR_SEPA_FLAG_RANK1;
+    sepa->rowsFlags[2] = CMR_SEPA_SECOND | CMR_SEPA_FLAG_RANK1;
+    sepa->rowsFlags[3] = CMR_SEPA_SECOND;
+
+    sepa->columnsFlags[0] = CMR_SEPA_FIRST;
+    sepa->columnsFlags[1] = CMR_SEPA_FIRST | CMR_SEPA_FLAG_RANK1;
+    sepa->columnsFlags[2] = CMR_SEPA_SECOND | CMR_SEPA_FLAG_RANK1;
+    sepa->columnsFlags[3] = CMR_SEPA_SECOND;
+
+    char epsilon;
+    ASSERT_CMR_CALL( CMRthreeSumSeymourDecomposeEpsilon(cmr, matrix, transpose, sepa, &epsilon) );
+    ASSERT_EQ(epsilon, -1);
+
+    CMR_CHRMAT* first = NULL;
+    CMR_ELEMENT firstMarker1 = 0;
+    CMR_ELEMENT firstMarker2 = 0;
+    CMR_ELEMENT firstMarker3 = 0;
+    ASSERT_CMR_CALL( CMRthreeSumSeymourDecomposeFirst(cmr, matrix, sepa, epsilon, &first, NULL, NULL, NULL, NULL,
+      &firstMarker1, &firstMarker2, &firstMarker3) );
+
+    CMR_CHRMAT* checkFirst = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &checkFirst, " 3 4 "
+      " 1  1  0  0 "
+      " 1  0 -1 -1 "
+      " 0 -1  0 -1 "
+    ) );
+    ASSERT_TRUE( CMRchrmatCheckEqual(first, checkFirst) );
+
+    CMR_CHRMAT* second = NULL;
+    CMR_ELEMENT secondMarker1 = 0;
+    CMR_ELEMENT secondMarker2 = 0;
+    CMR_ELEMENT secondMarker3 = 0;
+    ASSERT_CMR_CALL( CMRthreeSumSeymourDecomposeSecond(cmr, matrix, sepa, epsilon, &second, NULL, NULL, NULL, NULL,
+      &secondMarker1, &secondMarker2, &secondMarker3) );
+
+    CMR_CHRMAT* checkSecond = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &checkSecond, " 3 4 "
+      "-1  0  1  0 "
+      " 1  1  0  1 "
+      " 0  0  1  1 "
+    ) );
+    ASSERT_TRUE( CMRchrmatCheckEqual(second, checkSecond) );
+
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &checkSecond) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &second) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &checkFirst) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &first) );
+    ASSERT_CMR_CALL( CMRsepaFree(cmr, &sepa) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &transpose) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  }
 
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
