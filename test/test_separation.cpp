@@ -102,7 +102,10 @@ TEST(Separation, TwoSumComposition)
     ) );
 
     CMR_CHRMAT* twosum = NULL;
-    ASSERT_CMR_CALL( CMRtwoSumCompose(cmr, first, second, CMRrowToElement(1), CMRcolumnToElement(2), 3, &twosum) );
+    size_t firstSpecialRow = 1;
+    size_t secondSpecialColumn = 2;
+    ASSERT_CMR_CALL( CMRtwoSumCompose(cmr, first, second, &firstSpecialRow, NULL, NULL, &secondSpecialColumn, 3,
+      &twosum) );
 
     CMRchrmatPrintDense(cmr, twosum, stdout, '0', false);
 
@@ -148,7 +151,10 @@ TEST(Separation, TwoSumComposition)
     ) );
 
     CMR_CHRMAT* twosum = NULL;
-    ASSERT_CMR_CALL( CMRtwoSumCompose(cmr, first, second, CMRcolumnToElement(4), CMRrowToElement(0), 3, &twosum) );
+    size_t firstSpecialColumn = 4;
+    size_t secondSpecialRow = 0;
+    ASSERT_CMR_CALL( CMRtwoSumCompose(cmr, first, second, NULL, &firstSpecialColumn, &secondSpecialRow, NULL, 3,
+      &twosum) );
 
     CMRchrmatPrintDense(cmr, twosum, stdout, '0', false);
 
@@ -209,8 +215,10 @@ TEST(Separation, TwoSumDecomposition)
     sepa->columnsFlags[8] = CMR_SEPA_SECOND;
 
     CMR_CHRMAT* first = NULL;
-    CMR_ELEMENT firstMarker;
-    ASSERT_CMR_CALL( CMRtwoSumDecomposeFirst(cmr, matrix, sepa, &first, NULL, NULL, NULL, NULL, &firstMarker) );
+    size_t firstSpecialRow;
+    size_t firstSpecialColumn;
+    ASSERT_CMR_CALL( CMRtwoSumDecomposeFirst(cmr, matrix, sepa, &first, NULL, NULL, NULL, NULL, &firstSpecialRow,
+      &firstSpecialColumn) );
 
     CMR_CHRMAT* checkFirst = NULL;
     ASSERT_CMR_CALL( stringToCharMatrix(cmr, &checkFirst, "5 5 "
@@ -224,8 +232,10 @@ TEST(Separation, TwoSumDecomposition)
     ASSERT_TRUE( CMRchrmatCheckEqual(first, checkFirst) );
 
     CMR_CHRMAT* second = NULL;
-    CMR_ELEMENT secondMarker;
-    ASSERT_CMR_CALL( CMRtwoSumDecomposeSecond(cmr, matrix, sepa, &second, NULL, NULL, NULL, NULL, &secondMarker) );
+    size_t secondSpecialRow;
+    size_t secondSpecialColumn;
+    ASSERT_CMR_CALL( CMRtwoSumDecomposeSecond(cmr, matrix, sepa, &second, NULL, NULL, NULL, NULL, &secondSpecialRow,
+      &secondSpecialColumn) );
     CMR_CHRMAT* checkSecond = NULL;
     ASSERT_CMR_CALL( stringToCharMatrix(cmr, &checkSecond, "5 5 "
       " 1 -1 -1  0  0 "
@@ -241,7 +251,8 @@ TEST(Separation, TwoSumDecomposition)
 
     /* Compose again. */
     CMR_CHRMAT* check = NULL;
-    ASSERT_CMR_CALL( CMRtwoSumCompose(cmr, first, second, firstMarker, secondMarker, 0, &check) );
+    ASSERT_CMR_CALL( CMRtwoSumCompose(cmr, first, second, &firstSpecialRow, &firstSpecialColumn, &secondSpecialRow,
+      &secondSpecialColumn, 0, &check) );
 
     ASSERT_TRUE( CMRchrmatCheckEqual(matrix, check) );
 
@@ -294,8 +305,10 @@ TEST(Separation, TwoSumDecomposition)
     sepa->columnsFlags[8] = CMR_SEPA_FIRST;
 
     CMR_CHRMAT* first = NULL;
-    CMR_ELEMENT firstMarker;
-    ASSERT_CMR_CALL( CMRtwoSumDecomposeFirst(cmr, matrix, sepa, &first, NULL, NULL, NULL, NULL, &firstMarker) );
+    size_t firstSpecialRow;
+    size_t firstSpecialColumn;
+    ASSERT_CMR_CALL( CMRtwoSumDecomposeFirst(cmr, matrix, sepa, &first, NULL, NULL, NULL, NULL, &firstSpecialRow,
+      &firstSpecialColumn) );
 
     CMR_CHRMAT* checkFirst = NULL;
     ASSERT_CMR_CALL( stringToCharMatrix(cmr, &checkFirst, "5 5 "
@@ -309,8 +322,10 @@ TEST(Separation, TwoSumDecomposition)
     ASSERT_TRUE( CMRchrmatCheckEqual(first, checkFirst) );
 
     CMR_CHRMAT* second = NULL;
-    CMR_ELEMENT secondMarker;
-    ASSERT_CMR_CALL( CMRtwoSumDecomposeSecond(cmr, matrix, sepa, &second, NULL, NULL, NULL, NULL, &secondMarker) );
+    size_t secondSpecialRow;
+    size_t secondSpecialColumn;
+    ASSERT_CMR_CALL( CMRtwoSumDecomposeSecond(cmr, matrix, sepa, &second, NULL, NULL, NULL, NULL, &secondSpecialRow,
+      &secondSpecialColumn) );
     CMR_CHRMAT* checkSecond = NULL;
     ASSERT_CMR_CALL( stringToCharMatrix(cmr, &checkSecond, "5 5 "
       " 0  1  1  0  0 "
@@ -326,7 +341,8 @@ TEST(Separation, TwoSumDecomposition)
 
     /* Compose again. */
     CMR_CHRMAT* check = NULL;
-    ASSERT_CMR_CALL( CMRtwoSumCompose(cmr, second, first, secondMarker, firstMarker, 0, &check) );
+    ASSERT_CMR_CALL( CMRtwoSumCompose(cmr, second, first, &secondSpecialRow, &secondSpecialColumn, &firstSpecialRow,
+      &firstSpecialColumn, 0, &check) );
 
     ASSERT_TRUE( CMRchrmatCheckEqual(matrix, check) );
 

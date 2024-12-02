@@ -225,26 +225,31 @@ CMR_ERROR CMRoneSumCompose(
  * \brief Composes the 2-sum of the two matrices \p first and \p second with connecting elements \p firstMarker and
  *        \p secondMarker.
  *
- * If \p firstMarker indexes a row of \p first with row vector \f$ c^{\textsf{T}} \f$ then \p secondMarker must index a
- * column of \p second with column vector \f$ d \f$. In this case, let \f$ M_1 \f$ and \f$ M_2 \f$ denote the matrices
- * given by \p first and \p second, reordered such that \f$ M_1 = \begin{bmatrix} A \\ c^{\textsf{T}} \end{bmatrix} \f$
- * and \f$ M_2 = \begin{bmatrix} d & D \end{bmatrix} \f$ holds. Then the 2-sum is the matrix
+ * Depending on the input, one of two variants of the 2-sum of two matrices \f$ M_1 \f$, given by \p first and
+ * \f$ M_2 \f$, given by \p second are computed. For the first variant, consider the matrices
+ * \f$ M_1 = \begin{bmatrix} A \\ c^{\textsf{T}} \end{bmatrix} \f$ and
+ * \f$ M_2 = \begin{bmatrix} d & D \end{bmatrix} \f$. Then the 2-sum is the matrix
  * \f[
  *   M := \begin{bmatrix}
  *     A & \mathbb{O} \\
  *     d c^{\textsf{T}} & D
  *   \end{bmatrix}.
  * \f]
- * Otherwise, \p firstMarker must index a column of \p first with column vector \f$ a \f$ and \p secondMarker indexes a
- * row of \p second with row vector \f$ b^{\textsf{T}} \f$. Let \f$ M_1 \f$ and \f$ M_2 \f$ denote the matrices given by
- * \p first and \p second, reordered such that \f$ M_1 = \begin{bmatrix} A & a \end{bmatrix} \f$ and
- * \f$ M_2 = \begin{bmatrix} b^{\textsf{T}} \\ D \end{bmatrix} \f$ holds. Then the 2-sum is the matrix
+ * To obtain this 2-sum, the arrays \p firstSpecialRows and \p secondSpecialColumns must be arrays of length 1,
+ * consisting of the row index of \f$ c^{\textsf{T}} \f$ of \f$ M_1 \f$ and of the column index of \f$ d \f$ of
+ * \f$ M_2 \f$.
+ * For the other variant, consider the matrices \f$ M_1 = \begin{bmatrix} A & a \end{bmatrix} \f$ and
+ * \f$ M_2 = \begin{bmatrix} b^{\textsf{T}} \\ D \end{bmatrix} \f$. Then the 2-sum is the matrix
  * \f[
  *   M := \begin{bmatrix}
  *     A & a b^{\textsf{T}} \\
  *     \mathbb{O} & D
  *   \end{bmatrix}.
  * \f]
+ * To obtain this 2-sum, the arrays \p firstSpecialColumns and \p secondSpecialRows must be arrays of length 1,
+ * consisting of the column index of \f$ a \f$ of \f$ M_1 \f$ and of the row index of \f$ b^{\textsf{T}} \f$ of
+ * \f$ M_2 \f$.
+ *
  * The calculations are done modulo \p characteristic, where the value \f$ 3 \f$ yields numbers from
  * \f$ \{-1,0,+1\} \f$.
  *
@@ -253,13 +258,15 @@ CMR_ERROR CMRoneSumCompose(
 
 CMR_EXPORT
 CMR_ERROR CMRtwoSumCompose(
-  CMR* cmr,                 /**< \ref CMR environment. */
-  CMR_CHRMAT* first,        /**< First matrix. */
-  CMR_CHRMAT* second,       /**< Second matrix. */
-  CMR_ELEMENT firstMarker,  /**< Marker element of first matrix. */
-  CMR_ELEMENT secondMarker, /**< Marker element of second matrix. */
-  int8_t characteristic,    /**< Field characteristic. */
-  CMR_CHRMAT** presult      /**< Pointer for storing the result. */
+  CMR* cmr,                     /**< \ref CMR environment. */
+  CMR_CHRMAT* first,            /**< First matrix \f$ M_1 \f$. */
+  CMR_CHRMAT* second,           /**< Second matrix \f$ M_2 \f$. */
+  size_t* firstSpecialRows,     /**< Array of length 1 with row index of \f$ c^{\textsf{T}} \f$ or \c NULL. */
+  size_t* firstSpecialColumns,  /**< Array of length 1 with column index of \f$ a \f$ or \c NULL. */
+  size_t* secondSpecialRows,    /**< Array of length 1 with row index of \f$ b^{\textsf{T}} \f$ or \c NULL. */
+  size_t* secondSpecialColumns, /**< Array of length 1 with column index of \f$ d \f$ or \c NULL. */
+  int8_t characteristic,        /**< Field characteristic. */
+  CMR_CHRMAT** presult          /**< Pointer for storing the result. */
 );
 
 /**
@@ -278,7 +285,10 @@ CMR_ERROR CMRtwoSumCompose(
  *
  * This function computes \f$ M_1 \f$, while \f$ M_2 \f$ can be computed by \ref CMRtwoSumDecomposeSecond.
  *
- * \note If \p pfirstMarker is not \c NULL, then \p *pfirstMarker will always refer to the last row or column.
+ * \note For the first variant, if \p firstSpecialRows is not \c NULL then \p *firstSpecialRows[0] will be the last row.
+ *
+ * \note For the second variant, if \p firstSpecialColumns is not \c NULL then \p *firstSpecialColumns[0] will be the
+ *       last column.
  */
 
 CMR_EXPORT
@@ -295,8 +305,10 @@ CMR_ERROR CMRtwoSumDecomposeFirst(
                                **  \c SIZE_MAX; may be \c NULL. */
   size_t* columnsToFirst,     /**< Array for storing the mapping from columns of \f$ M \f$ to columns of \f$ M_1 \f$ or
                                **  to \c SIZE_MAX; may be \c NULL. */
-  CMR_ELEMENT* pfirstMarker   /**< Pointer for storing the row index of \f$ c^{\textsf{T}} \f$ in \f$ M_1 \f$ or the
-                               **  column index of \f$ a \f$ in \f$ M_1 \f$; may be \c NULL. */
+  size_t* firstSpecialRows,   /**< Either \c NULL or an array for storing the row index of \f$ c^{\textsf{T}} \f$ in
+                               **  \f$ M_1 \f$. */
+  size_t* firstSpecialColumns /**< Either \c NULL or an array for storing the column index of \f$ a \f$ in
+                               **  \f$ M_1 \f$. */
 );
 
 /**
@@ -315,7 +327,11 @@ CMR_ERROR CMRtwoSumDecomposeFirst(
  *
  * This function computes \f$ M_2 \f$, while \f$ M_1 \f$ can be computed by \ref CMRtwoSumDecomposeFirst.
  *
- * \note If \p psecondMarker is not \c NULL, then \p *psecondMarker will always refer to the first row or column.
+ * \note For the first variant, if \p secondSpecialColumns is not \c NULL then \p *secondSpecialColumns[0] will be the
+ *       first column.
+ *
+ * \note For the second variant, if \p secondSpecialRows is not \c NULL then \p *secondSpecialRows[0] will be the first
+ *       row.
  */
 
 CMR_EXPORT
@@ -332,8 +348,10 @@ CMR_ERROR CMRtwoSumDecomposeSecond(
                                  **  \c SIZE_MAX; may be \c NULL. */
   size_t* columnsToSecond,      /**< Array for storing the mapping from columns of \f$ M \f$ to columns of \f$ M_2 \f$ or
                                  **  to \c SIZE_MAX; may be \c NULL. */
-  CMR_ELEMENT* psecondMarker    /**< Pointer for storing the row index of \f$ b^{\textsf{T}} \f$ in \f$ M_2 \f$ or the
-                                 **  column index of \f$ d \f$ in \f$ M_2 \f$; may be \c NULL. */
+  size_t* secondSpecialRows,    /**< Either \c NULL or an array for storing the row index of \f$ b^{\textsf{T}} \f$ in
+                                 **  \f$ M_2 \f$. */
+  size_t* secondSpecialColumns  /**< Either \c NULL or an array for storing the column index of \f$ d \f$ in
+                                 **  \f$ M_2 \f$. */
 );
 
 /**
@@ -505,6 +523,77 @@ CMR_ERROR CMRthreeSumSeymourDecomposeSecond(
                                  **  may be \c NULL. */
   CMR_ELEMENT* psecondMarker3   /**< Pointer for storing the column index of the 2nd copy of \f$ d \f$ in \f$ M_2 \f$;
                                  **  may be \c NULL. */
+);
+
+/**
+ * \brief Constructs the Truemper 3-sum of the two matrices \p first and \p second via \p firstRows, \p firstColumns,
+ *        \p secondRows and \p secondColumns.
+ *
+ * Let \f$ M_1 \f$ and \f$ M_2 \f$ denote the matrices given by \p first and \p second, let \f$ A \f$ be the matrix
+ * \f$ M_1 \f$ without the rows \p firstRows[0] and \p firstRows[1] and column \p firstColumns[2], and let \f$ D \f$ be
+ * the matrix \f$ M_2 \f$ without the row \p secondRows[0] and columns \p secondColumns[0] and \p secondColumns[1].
+ * After permuting rows \p firstRows[0] and \p firstRows[1] to be the last two rows and permuting column
+ * \p firstColumns[2] to be the last, \f$ M_1 \f$ must be of the form
+ * \f[
+ *   M_1 = \begin{bmatrix}
+ *     A & \mathbb{O} \\
+ *     C_{i,\star} & \alpha \\
+ *     C_{j,\star} & \beta
+ *   \end{bmatrix},
+ * \f]
+ * where \f$ \alpha,\beta \in \{-1,+1 \} \f$.
+ * Similarly, after reordering the rows / columns of \p second such that \p secondRows[0] is first and columns
+ * \p secondColumns[0] and \p secondColumns[1] are first, \f$ M_2 \f$ must be of the form
+ * \f[
+ *   M_2 = \begin{bmatrix}
+ *     \gamma & \delta & \mathbb{O}^{\textsf{T}} \\
+ *     C_{\star,k} & C_{\star,\ell} & D
+ *   \end{bmatrix},
+ * \f]
+ * where \f$ \gamma,\delta \in \{ -1,+1 \} \f$ and such that the matrix
+ * \f[
+ *   N = \begin{bmatrix}
+ *     \gamma & \delta & 0 \\
+ *     C_{i,k} & C_{i,\ell} & \alpha \\
+ *     C_{j,k} & C_{j,\ell} & \beta
+ *   \end{bmatrix}
+ * \f]
+ * is totally unimodular. The columns \p firstColumns[0] and \p firstColumns[1] indicate the columns of \f$ M_1 \f$
+ * that shall correspond to \f$ C_{\star,k}\f$ and \f$ C_{\star,\ell} \f$, respectively.
+ * Similarly, the rows \p secondRows[1] and \p secondRows[2] indicate the rows of \f$ M_2 \f$
+ * that shall correspond to \f$ C_{i,\star}\f$ and \f$ C_{j,\star} \f$, respectively.
+ *
+ * \note The 2-by-2 submatrix of \f$ M_1 \f$ indexed by rows \p firstRows[0] and \p firstRows[1] and columns
+ *       \p firstColumns[0] and \p firstColumns[1] must be identical to the submatrix of \f$ M_2 \f$ indexed by rows
+ *       \p secondRows[1] and \p secondRows[2] and columns \p secondColumns[0] and \p secondColumns[1], which is the
+ *       matrix \f$ C_{\{i,j\},\{k,\ell\}} \f$.
+ *
+ * The 3-sum of \f$ M_1 \f$ and \f$ M_2 \f$ (at these rows/columns) is the matrix
+ * \f[
+ *   M = \begin{bmatrix}
+ *     A & \mathbb{O} \\
+ *     C & D
+ *   \end{bmatrix},
+ * \f]
+ * where \f$ C \f$ is the unique rank-2 matrix having linearly independent rows \f$ C_{i,\star} \f$ and
+ * \f$ C_{j,\star} \f$ and linearly independent columns \f$ C_{\star,k} \f$ and \f$ C_{\star,\ell} \f$.
+ * The calculations are done modulo \p characteristic, where the value \f$ 3 \f$ yields numbers from
+ * \f$ \{-1,0,+1\} \f$.
+ *
+ * The resulting matrix \f$ M \f$ is created and stored in \p *presult.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRthreeSumTruemperCompose(
+  CMR* cmr,                   /**< \ref CMR environment. */
+  CMR_CHRMAT* first,          /**< First matrix. */
+  CMR_CHRMAT* second,         /**< Second matrix. */
+  size_t firstRows[2],        /**< Array of last two rows of connecting submatrix in \p first. */
+  size_t firstColumns[3],     /**< Array of all columns of connecting submatrix in \p first. */
+  size_t secondRows[3],       /**< Array of all rows of connecting submatrix in \p second. */
+  size_t secondColumns[2],    /**< Array of first two columns of connecting submatrix in \p second. */
+  int8_t characteristic,      /**< Field characteristic. */
+  CMR_CHRMAT** presult        /**< Pointer for storing the result. */
 );
 
 #ifdef __cplusplus
