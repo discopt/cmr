@@ -30,13 +30,14 @@ extern "C" {
 
 typedef enum
 {
-  CMR_OKAY = 0,           /**< No error. */
-  CMR_ERROR_INPUT = 1,    /**< Bad user input. */
-  CMR_ERROR_OUTPUT = 2,   /**< Error when writing user output. */
-  CMR_ERROR_MEMORY = 3,   /**< Error during (re)allocation. */
-  CMR_ERROR_INVALID = 4,  /**< Other invalid data. */
-  CMR_ERROR_OVERFLOW = 5, /**< Overflow in numerical computations. */
-  CMR_ERROR_TIMEOUT = 6,  /**< Time limit exceeded. */
+  CMR_OKAY = 0,             /**< No error. */
+  CMR_ERROR_INPUT = 1,      /**< Bad user input. */
+  CMR_ERROR_OUTPUT = 2,     /**< Error when writing user output. */
+  CMR_ERROR_MEMORY = 3,     /**< Error during (re)allocation. */
+  CMR_ERROR_INVALID = 4,    /**< Other invalid data. */
+  CMR_ERROR_OVERFLOW = 5,   /**< Overflow in numerical computations. */
+  CMR_ERROR_TIMEOUT = 6,    /**< Time limit exceeded. */
+  CMR_ERROR_STRUCTURE = 7,  /**< Bad matrix structure. */
 } CMR_ERROR;
 
 /**
@@ -51,12 +52,18 @@ typedef enum
     { \
       if (_cmr_error == CMR_ERROR_INPUT) \
         fprintf(stderr, "User input error"); \
+      else if (_cmr_error == CMR_ERROR_OUTPUT) \
+        fprintf(stderr, "Error when writing user output"); \
       else if (_cmr_error == CMR_ERROR_MEMORY) \
         fprintf(stderr, "Memory (re)allocation failed"); \
       else if (_cmr_error == CMR_ERROR_INVALID) \
         fprintf(stderr, "Invalid input"); \
       else if (_cmr_error == CMR_ERROR_TIMEOUT) \
         fprintf(stderr, "Time limit exceeded"); \
+      else if (_cmr_error == CMR_ERROR_OVERFLOW) \
+        fprintf(stderr, "Integer overflow"); \
+      else if (_cmr_error == CMR_ERROR_STRUCTURE) \
+        fprintf(stderr, "Invalid matrix structure"); \
       else \
         fprintf(stderr, "Unknown error"); \
       fprintf(stderr, " in %s:%d.\n", __FILE__, __LINE__); \
