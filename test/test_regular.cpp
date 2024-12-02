@@ -84,7 +84,9 @@ TEST(Regular, SeriesParallelTwoSeparation)
     ) );
 
     CMR_CHRMAT* twoSum = NULL;
-    ASSERT_CMR_CALL( CMRtwoSumCompose(cmr, K_3_3, K_3_3_dual, CMRrowToElement(1), CMRcolumnToElement(1), 3, &twoSum) );
+    size_t specials[4] = { 1, SIZE_MAX, SIZE_MAX, 1 };
+    ASSERT_CMR_CALL( CMRtwoSumCompose(cmr, K_3_3, K_3_3_dual, &specials[0], &specials[1], &specials[2], &specials[3], 3,
+      &twoSum) );
 
     size_t rowPermutations[] = { 4, 6, 5, 7, 0, 1, 2, 3 };
     CMR_CHRMAT* matrix = NULL;
@@ -145,7 +147,9 @@ TEST(Regular, NestedMinorSearchTwoSeparation)
     ) );
 
     CMR_CHRMAT* matrix = NULL;
-    ASSERT_CMR_CALL( CMRtwoSumCompose(cmr, K_3_3, K_3_3_dual, CMRrowToElement(1), CMRcolumnToElement(1), 3, &matrix) );
+    size_t specials[4] = { 1, SIZE_MAX, SIZE_MAX, 1 };
+    ASSERT_CMR_CALL( CMRtwoSumCompose(cmr, K_3_3, K_3_3_dual, &specials[0], &specials[1], &specials[2], &specials[3], 3,
+      &matrix) );
 
 //     CMRchrmatPrintDense(cmr, K_3_3, stdout, '0', true);
 //     CMRchrmatPrintDense(cmr, K_3_3_dual, stdout, '0', true);

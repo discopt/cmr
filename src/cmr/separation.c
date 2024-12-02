@@ -1028,8 +1028,9 @@ CMR_ERROR CMRoneSumCompose(CMR* cmr, size_t numMatrices, CMR_CHRMAT** matrices, 
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRtwoSumCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* second, CMR_ELEMENT firstMarker,
-  CMR_ELEMENT secondMarker, int8_t characteristic, CMR_CHRMAT** presult)
+CMR_ERROR CMRtwoSumCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* second, size_t* firstSpecialRows,
+  size_t* firstSpecialColumns, size_t* secondSpecialRows, size_t* secondSpecialColumns, int8_t characteristic,
+  CMR_CHRMAT** presult)
 {
   assert(cmr);
   assert(first);
@@ -1039,17 +1040,24 @@ CMR_ERROR CMRtwoSumCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* second, CMR_
   CMRdbgMsg(0, "CMRtwoSumCompose for a %zux%zu and a %zux%zu matrix.\n", first->numRows, first->numColumns,
     second->numRows, second->numColumns);
 
-  if ((CMRelementIsRow(firstMarker) && CMRelementIsRow(secondMarker))
-    || (CMRelementIsColumn(firstMarker) && CMRelementIsColumn(secondMarker)))
+  size_t firstRowMarker = firstSpecialRows ? firstSpecialRows[0] : SIZE_MAX;
+  size_t firstColumnMarker = firstSpecialColumns ? firstSpecialColumns[0] : SIZE_MAX;
+  size_t secondRowMarker = secondSpecialRows ? secondSpecialRows[0] : SIZE_MAX;
+  size_t secondColumnMarker = secondSpecialColumns ? secondSpecialColumns[0] : SIZE_MAX;
+  bool bottomLeft;
+  if ((firstRowMarker < SIZE_MAX) && (secondColumnMarker < SIZE_MAX)
+    && (firstColumnMarker == SIZE_MAX) && (secondRowMarker == SIZE_MAX))
   {
-    return CMR_ERROR_INPUT;
+    bottomLeft = true;
   }
+  else if ((firstRowMarker == SIZE_MAX) && (secondColumnMarker == SIZE_MAX)
+    && (firstColumnMarker < SIZE_MAX) && (secondRowMarker < SIZE_MAX))
+  {
+    bottomLeft = false;
+  }
+  else
+    return CMR_ERROR_INPUT;
 
-  bool bottomLeft = CMRelementIsRow(firstMarker);
-  size_t firstRowMarker = SIZE_MAX; /* row index of A where to find a (or SIZE_MAX). */
-  size_t secondRowMarker = SIZE_MAX; /* row index of B where to find b (or SIZE_MAX). */
-  size_t firstColumnMarker = SIZE_MAX; /* column index of A where to find a (or SIZE_MAX). */
-  size_t secondColumnMarker = SIZE_MAX; /* column index of B where to find b (or SIZE_MAX). */
   char* markerColumn = NULL; /* Nonzero entries of the column vector among a,b. */
   size_t markerColumnNumNonzeros = 0; /* Number of nonzeros in markerColumn. */
   size_t markerRowNumNonzeros = 0; /* Number of nonzeros of a,b that is not markerColumn. */
@@ -1059,10 +1067,8 @@ CMR_ERROR CMRtwoSumCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* second, CMR_
   if (bottomLeft)
   {
     /* rank 1 in bottom-right matrix. */
-    firstRowMarker = CMRelementToRowIndex(firstMarker);
     markerRowNumNonzeros = first->rowSlice[firstRowMarker+1] - first->rowSlice[firstRowMarker];
 
-    secondColumnMarker = CMRelementToColumnIndex(secondMarker);
     CMR_CALL( CMRallocStackArray(cmr, &markerColumn, second->numColumns) );
     for (size_t row = 0; row < second->numRows; ++row)
     {
@@ -1086,7 +1092,6 @@ CMR_ERROR CMRtwoSumCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* second, CMR_
   {
     /* rank 1 in top right */
 
-    firstColumnMarker = CMRelementToColumnIndex(firstMarker); 
     CMR_CALL( CMRallocStackArray(cmr, &markerColumn, first->numColumns) );
     for (size_t row = 0; row < first->numRows; ++row)
     {
@@ -1102,7 +1107,6 @@ CMR_ERROR CMRtwoSumCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* second, CMR_
       }
     }
 
-    secondRowMarker = CMRelementToRowIndex(secondMarker);
     markerRowNumNonzeros = second->rowSlice[secondRowMarker+1] - second->rowSlice[secondRowMarker];
   }
 
@@ -1242,7 +1246,7 @@ cleanup:
 
 CMR_ERROR CMRtwoSumDecomposeFirst(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sepa, CMR_CHRMAT** pfirst,
   size_t* firstRowsOrigin, size_t* firstColumnsOrigin, size_t* rowsToFirst, size_t* columnsToFirst,
-  CMR_ELEMENT* pfirstMarker)
+  size_t* firstSpecialRows, size_t* firstSpecialColumns)
 {
   assert(cmr);
   assert(matrix);
@@ -1370,8 +1374,10 @@ CMR_ERROR CMRtwoSumDecomposeFirst(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sepa, 
   first->rowSlice[first->numRows] = first->numNonzeros;
 
   /* Set marker to last row or column. */
-  if (pfirstMarker)
-    *pfirstMarker = (extraRow < SIZE_MAX) ? CMRrowToElement(numRows - 1) : CMRcolumnToElement(numColumns - 1);
+  if (firstSpecialRows)
+    firstSpecialRows[0] = (extraRow < SIZE_MAX) ? (numRows - 1) : SIZE_MAX;
+  if (firstSpecialColumns)
+    firstSpecialColumns[0] = (extraRow < SIZE_MAX) ? SIZE_MAX : (numColumns - 1);
 
   /* Free local arrays. */
   CMR_CALL( CMRfreeStackArray(cmr, &denseColumn) );
@@ -1390,7 +1396,7 @@ CMR_ERROR CMRtwoSumDecomposeFirst(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sepa, 
 
 CMR_ERROR CMRtwoSumDecomposeSecond(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sepa, CMR_CHRMAT** psecond,
   size_t* secondRowsOrigin, size_t* secondColumnsOrigin, size_t* rowsToSecond, size_t* columnsToSecond,
-  CMR_ELEMENT* psecondMarker)
+  size_t* secondSpecialRows, size_t* secondSpecialColumns)
 {
   assert(cmr);
   assert(matrix);
@@ -1544,8 +1550,10 @@ CMR_ERROR CMRtwoSumDecomposeSecond(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sepa,
   second->rowSlice[second->numRows] = second->numNonzeros;
 
   /* Set marker to last row or column. */
-  if (psecondMarker)
-    *psecondMarker = (extraRow < SIZE_MAX) ? CMRrowToElement(0) : CMRcolumnToElement(0);
+  if (secondSpecialRows)
+    secondSpecialRows[0] = (extraRow < SIZE_MAX) ? 0 : SIZE_MAX;
+  if (secondSpecialColumns)
+    secondSpecialColumns[0] = (extraRow < SIZE_MAX) ? SIZE_MAX : 0;
 
   /* Free local arrays. */
   CMR_CALL( CMRfreeStackArray(cmr, &denseColumn) );
