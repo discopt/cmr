@@ -536,14 +536,12 @@ CMR_ERROR CMRthreeSumSeymourDecomposeSecond(
 );
 
 /**
- * \brief Constructs the Truemper 3-sum of the two matrices \p first and \p second via \p firstRows, \p firstColumns,
- *        \p secondRows and \p secondColumns.
+ * \brief Constructs the Truemper 3-sum of the two matrices \p first and \p second at connecting rows
+ *        \p firstSpecialRows and \p secondSpecialRows and columns \p firstSpecialColumns and \p secondSpecialColumns.
  *
  * Let \f$ M_1 \f$ and \f$ M_2 \f$ denote the matrices given by \p first and \p second, let \f$ A \f$ be the matrix
- * \f$ M_1 \f$ without the rows \p firstRows[0] and \p firstRows[1] and column \p firstColumns[2], and let \f$ D \f$ be
- * the matrix \f$ M_2 \f$ without the row \p secondRows[0] and columns \p secondColumns[0] and \p secondColumns[1].
- * After permuting rows \p firstRows[0] and \p firstRows[1] to be the last two rows and permuting column
- * \p firstColumns[2] to be the last, \f$ M_1 \f$ must be of the form
+ * \f$ M_1 \f$ without the rows \p firstSpecialRows[0] and \p firstSpecialRows[1] and column \p firstSpecialColumns[2].
+ * After permuting these be last, \f$ M_1 \f$ must be of the form
  * \f[
  *   M_1 = \begin{bmatrix}
  *     A & \mathbb{O} \\
@@ -551,16 +549,16 @@ CMR_ERROR CMRthreeSumSeymourDecomposeSecond(
  *     C_{j,\star} & \beta
  *   \end{bmatrix},
  * \f]
- * where \f$ \alpha,\beta \in \{-1,+1 \} \f$.
- * Similarly, after reordering the rows / columns of \p second such that \p secondRows[0] is first and columns
- * \p secondColumns[0] and \p secondColumns[1] are first, \f$ M_2 \f$ must be of the form
+ * where \f$ \alpha,\beta \in \{-1,+1 \} \f$ (otherwise, \c CMR_ERROR_STRUCTURE is returned). Let \f$ D \f$ be the
+ * matrix \f$ M_2 \f$ without the row \p secondSpecialRows[0] and columns \p secondSpecialColumns[0] and
+ * \p secondSpecialColumns[1]. After reordering these to be first, \f$ M_2 \f$ must be of the form
  * \f[
  *   M_2 = \begin{bmatrix}
  *     \gamma & \delta & \mathbb{O}^{\textsf{T}} \\
  *     C_{\star,k} & C_{\star,\ell} & D
  *   \end{bmatrix},
  * \f]
- * where \f$ \gamma,\delta \in \{ -1,+1 \} \f$ and such that the matrix
+ * where \f$ \gamma,\delta \in \{ -1,+1 \} \f$ (otherwise, \c CMR_ERROR_STRUCTURE is returned) and such that the matrix
  * \f[
  *   N = \begin{bmatrix}
  *     \gamma & \delta & 0 \\
@@ -568,15 +566,15 @@ CMR_ERROR CMRthreeSumSeymourDecomposeSecond(
  *     C_{j,k} & C_{j,\ell} & \beta
  *   \end{bmatrix}
  * \f]
- * is totally unimodular. The columns \p firstColumns[0] and \p firstColumns[1] indicate the columns of \f$ M_1 \f$
- * that shall correspond to \f$ C_{\star,k}\f$ and \f$ C_{\star,\ell} \f$, respectively.
- * Similarly, the rows \p secondRows[1] and \p secondRows[2] indicate the rows of \f$ M_2 \f$
- * that shall correspond to \f$ C_{i,\star}\f$ and \f$ C_{j,\star} \f$, respectively.
+ * is totally unimodular. The columns \p firstSpecialColumns[0] and \p firstSpecialColumns[1] indicate the columns of
+ * \f$ M_1 \f$ that shall correspond to \f$ C_{\star,k}\f$ and \f$ C_{\star,\ell} \f$, respectively. Similarly, the rows
+ * \p secondSpecialRows[1] and \p secondSpecialRows[2] indicate the rows of \f$ M_2 \f$ that shall correspond to
+ * \f$ C_{i,\star}\f$ and \f$ C_{j,\star} \f$, respectively.
  *
- * \note The 2-by-2 submatrix of \f$ M_1 \f$ indexed by rows \p firstRows[0] and \p firstRows[1] and columns
- *       \p firstColumns[0] and \p firstColumns[1] must be identical to the submatrix of \f$ M_2 \f$ indexed by rows
- *       \p secondRows[1] and \p secondRows[2] and columns \p secondColumns[0] and \p secondColumns[1], which is the
- *       matrix \f$ C_{\{i,j\},\{k,\ell\}} \f$.
+ * \note The 2-by-2 submatrix of \f$ M_1 \f$ indexed by rows \p firstSpecialRows[0] and \p firstSpecialRows[1] and
+ *       columns \p firstSpecialColumns[0] and \p firstSpecialColumns[1] must be identical to the submatrix of
+ *       \f$ M_2 \f$ indexed by rows \p secondSpecialRows[1] and \p secondSpecialRows[2] and columns
+ *       \p secondSpecialColumns[0] and \p secondSpecialColumns[1], which is the matrix \f$ C_{\{i,j\},\{k,\ell\}} \f$.
  *
  * The 3-sum of \f$ M_1 \f$ and \f$ M_2 \f$ (at these rows/columns) is the matrix
  * \f[
@@ -595,15 +593,15 @@ CMR_ERROR CMRthreeSumSeymourDecomposeSecond(
 
 CMR_EXPORT
 CMR_ERROR CMRthreeSumTruemperCompose(
-  CMR* cmr,                   /**< \ref CMR environment. */
-  CMR_CHRMAT* first,          /**< First matrix. */
-  CMR_CHRMAT* second,         /**< Second matrix. */
-  size_t firstRows[2],        /**< Array of last two rows of connecting submatrix in \p first. */
-  size_t firstColumns[3],     /**< Array of all columns of connecting submatrix in \p first. */
-  size_t secondRows[3],       /**< Array of all rows of connecting submatrix in \p second. */
-  size_t secondColumns[2],    /**< Array of first two columns of connecting submatrix in \p second. */
-  int8_t characteristic,      /**< Field characteristic. */
-  CMR_CHRMAT** presult        /**< Pointer for storing the result. */
+  CMR* cmr,                     /**< \ref CMR environment. */
+  CMR_CHRMAT* first,            /**< First matrix. */
+  CMR_CHRMAT* second,           /**< Second matrix. */
+  size_t* firstSpecialRows,     /**< Array of length 2 with the last two rows of the connecting submatrix in \p first. */
+  size_t* firstSpecialColumns,  /**< Array of length 3 with all columns of the connecting submatrix in \p first. */
+  size_t* secondSpecialRows,    /**< Array of length 3 with the all rows of the connecting submatrix in \p second. */
+  size_t* secondSpecialColumns, /**< Array of length 2 with the first two columns of connecting submatrix in \p second. */
+  int8_t characteristic,        /**< Field characteristic. */
+  CMR_CHRMAT** presult          /**< Pointer for storing the result. */
 );
 
 #ifdef __cplusplus

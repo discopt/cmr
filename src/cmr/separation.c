@@ -1597,69 +1597,79 @@ CMR_ERROR CMRthreeSumSeymourCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* sec
     return CMR_ERROR_INPUT;
   }
 
-  size_t firstMarkerRow = firstSpecialRows[0];
-  size_t firstMarkerColumn1 = firstSpecialColumns[0];
-  size_t firstMarkerColumn2 = firstSpecialColumns[1];
-  size_t secondMarkerRow = secondSpecialRows[0];
-  size_t secondMarkerColumn1 = secondSpecialColumns[0];
-  size_t secondMarkerColumn2 = secondSpecialColumns[1];
+  size_t firstSpecialColumnLeft;
+  size_t firstSpecialColumnRight;
+  if (firstSpecialColumns[0] < firstSpecialColumns[1])
+  {
+    firstSpecialColumnLeft = firstSpecialColumns[0];
+    firstSpecialColumnRight = firstSpecialColumns[1];
+  }
+  else if (firstSpecialColumns[0] > firstSpecialColumns[1])
+  {
+    firstSpecialColumnLeft = firstSpecialColumns[1];
+    firstSpecialColumnRight = firstSpecialColumns[0];
+  }
+  else
+    return CMR_ERROR_INPUT;
 
-  if (firstMarkerColumn1 > firstMarkerColumn2)
+  size_t secondSpecialColumnLeft;
+  size_t secondSpecialColumnRight;
+  if (secondSpecialColumns[0] < secondSpecialColumns[1])
   {
-    size_t temp = firstMarkerColumn1;
-    firstMarkerColumn1 = firstMarkerColumn2;
-    firstMarkerColumn2 = temp;
+    secondSpecialColumnLeft = secondSpecialColumns[0];
+    secondSpecialColumnRight = secondSpecialColumns[1];
   }
-  if (secondMarkerColumn1 > secondMarkerColumn2)
+  else if (secondSpecialColumns[0] > secondSpecialColumns[1])
   {
-    size_t temp = secondMarkerColumn1;
-    secondMarkerColumn1 = secondMarkerColumn2;
-    secondMarkerColumn2 = temp;
+    secondSpecialColumnLeft = secondSpecialColumns[1];
+    secondSpecialColumnRight = secondSpecialColumns[0];
   }
+  else
+    return CMR_ERROR_INPUT;
+
 
   /* Number of nonzeros. */
   size_t firstMainNumNonzeros = 0;
   size_t secondMainNumNonzeros = 0;
-  size_t firstRowMarkerNumNonzeros = first->rowSlice[firstMarkerRow + 1] - first->rowSlice[firstMarkerRow] - 1;
-  size_t secondRowMarkerNumNonzeros = second->rowSlice[secondMarkerRow + 1] - second->rowSlice[secondMarkerRow] - 1;
-  size_t firstColumnMarkerNumNonzeros = 0;
-  size_t secondColumnMarkerNumNonzeros = 0;
-  char* firstColumnMarker = NULL; /* Nonzero entries of a. */
-  char* secondColumnMarker = NULL; /* Nonzero entries of d. */
-  size_t columnMarkerCopyNumNonzeros; /* Number of nonzeros in copy of a or copy of d. */
+  size_t firstSpecialRowNumNonzeros = first->rowSlice[firstSpecialRows[0] + 1] - first->rowSlice[firstSpecialColumns[0]] - 1;
+  size_t secondSpecialRowNumNonzeros = second->rowSlice[secondSpecialRows[0] + 1] - second->rowSlice[secondSpecialRows[0]] - 1;
+  char* firstSpecialColumnDense = NULL; /* Entries of a. */
+  size_t firstSpecialColumnNumNonzeros = 0;
+  char* secondSpecialColumnDense = NULL; /* Entries of d. */
+  size_t secondSpecialColumnNumNonzeros = 0;
+  size_t specialColumn1CopyNumNonzeros; /* Number of nonzeros in copy of a or copy of d. */
   CMR_ERROR error = CMR_OKAY;
-  CMR_CALL( CMRallocStackArray(cmr, &firstColumnMarker, first->numRows - 1) );
-  CMR_CALL( CMRallocStackArray(cmr, &secondColumnMarker, second->numRows - 1) );
+  CMR_CALL( CMRallocStackArray(cmr, &firstSpecialColumnDense, first->numRows - 1) );
+  CMR_CALL( CMRallocStackArray(cmr, &secondSpecialColumnDense, second->numRows - 1) );
   size_t firstMainRow = 0;
-  columnMarkerCopyNumNonzeros = 0;
-  char firstColumnMarkerSpecial = 0;
-  char columnMarkerCopySpecial = 0;
+  specialColumn1CopyNumNonzeros = 0;
+  char firstEpsilon = 0;
   for (size_t firstRow = 0; firstRow < first->numRows; ++firstRow)
   {
-    if (firstRow != firstMarkerRow)
-      firstColumnMarker[firstMainRow] = 0;
+    if (firstRow != firstSpecialRows[0])
+      firstSpecialColumnDense[firstMainRow] = 0;
     size_t beyond = first->rowSlice[firstRow + 1];
     for (size_t e = first->rowSlice[firstRow]; e < beyond; ++e)
     {
       size_t firstColumn = first->entryColumns[e];
-      if (firstRow != firstMarkerRow)
+      if (firstRow != firstSpecialRows[0])
       {
-        if (firstColumn == firstMarkerColumn1)
+        if (firstColumn == firstSpecialColumnLeft)
         {
-          firstColumnMarker[firstMainRow] = first->entryValues[e];
-          ++firstColumnMarkerNumNonzeros;
+          firstSpecialColumnDense[firstMainRow] = first->entryValues[e];
+          ++firstSpecialColumnNumNonzeros;
         }
-        else if (firstColumn == firstMarkerColumn2)
+        else if (firstColumn == firstSpecialColumnRight)
         {
-          if (firstColumnMarker[firstMainRow] != first->entryValues[e])
+          if (firstSpecialColumnDense[firstMainRow] != first->entryValues[e])
           {
-            CMRdbgMsg(2, "Marker columns of 1st matrix differ: r%zu,c%zu -> %d, r%zu,c%zu -> %d.\n",
-              firstRow+1, firstMarkerColumn1+1, firstColumnMarker[firstMainRow], firstRow+1, firstMarkerColumn2+1,
-              first->entryValues[e]);
+            CMRdbgMsg(2, "Special columns of 1st matrix differ: r%zu,c%zu -> %d, r%zu,c%zu -> %d.\n",
+              firstRow+1, firstSpecialColumnLeft+1, firstSpecialColumnDense[firstMainRow], firstRow+1,
+              firstSpecialColumnRight+1, first->entryValues[e]);
             error = CMR_ERROR_STRUCTURE;
             goto cleanup;
           }
-          ++columnMarkerCopyNumNonzeros;
+          ++specialColumn1CopyNumNonzeros;
         }
         else
         {
@@ -1668,64 +1678,66 @@ CMR_ERROR CMRthreeSumSeymourCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* sec
       }
       else
       {
-        if (firstColumn == firstMarkerColumn1)
-          firstColumnMarkerSpecial = first->entryValues[e];
-        else if (firstColumn == firstMarkerColumn2)
-          columnMarkerCopySpecial = first->entryValues[e];
+        if (firstColumn == firstSpecialColumns[0])
+        {
+          CMRdbgMsg(2, "Expected a 0-entry in 1st matrix: r%zu,c%zu, but %d found.\n",
+              firstRow+1, firstSpecialColumns[0]+1, first->entryValues[e]);
+            error = CMR_ERROR_STRUCTURE;
+            goto cleanup;
+        }
+        else if (firstColumn == firstSpecialColumns[1])
+          firstEpsilon = first->entryValues[e];
       }
     }
 
-    if (firstRow != firstMarkerRow)
+    if (firstRow != firstSpecialRows[0])
       ++firstMainRow;
   }
 
-  /* Check if (a,0) and (a,epsilon) differ in only one entry. */
-
-  if (columnMarkerCopyNumNonzeros != firstColumnMarkerNumNonzeros)
+  /* Check special columns of 1st matrix. */
+  if (specialColumn1CopyNumNonzeros != firstSpecialColumnNumNonzeros)
   {
-    CMRdbgMsg(2, "Number of nonzeros in marker columns of 1st matrix is %zu and %zu.\n", firstColumnMarkerNumNonzeros,
-      columnMarkerCopyNumNonzeros);
+    CMRdbgMsg(2, "Number of nonzeros in special columns of 1st matrix is %zu and %zu.\n", firstSpecialColumnNumNonzeros,
+      specialColumn1CopyNumNonzeros);
     error = CMR_ERROR_STRUCTURE;
     goto cleanup;
   }
-  else if ((firstColumnMarkerSpecial >= 0 ? firstColumnMarkerSpecial : -firstColumnMarkerSpecial)
-    + (columnMarkerCopySpecial >= 0 ? columnMarkerCopySpecial : -columnMarkerCopySpecial) != 1)
+  else if (firstEpsilon == 0)
   {
-    CMRdbgMsg(2, "Special entries of 1st matrix are %d and %d.\n", firstColumnMarkerSpecial, columnMarkerCopySpecial);
+    CMRdbgMsg(2, "Epsilon-entry of 1st matrix is %d.\n", firstEpsilon);
     error = CMR_ERROR_STRUCTURE;
     goto cleanup;
   }
 
-  columnMarkerCopyNumNonzeros = 0;
+  specialColumn1CopyNumNonzeros = 0;
   size_t secondMainRow = 0;
-  char secondColumnMarkerSpecial = 0;
-  columnMarkerCopySpecial = 0;
+  char secondEpsilon = 0;
   for (size_t secondRow = 0; secondRow < second->numRows; ++secondRow)
   {
-    if (secondRow != secondMarkerRow)
-      secondColumnMarker[secondMainRow] = 0;
+    if (secondRow != secondSpecialRows[0])
+      secondSpecialColumnDense[secondMainRow] = 0;
     size_t beyond = second->rowSlice[secondRow + 1];
     for (size_t e = second->rowSlice[secondRow]; e < beyond; ++e)
     {
       size_t secondColumn = second->entryColumns[e];
-      if (secondRow != secondMarkerRow)
+      if (secondRow != secondSpecialRows[0])
       {
-        if (secondColumn == secondMarkerColumn1)
+        if (secondColumn == secondSpecialColumnLeft)
         {
-          secondColumnMarker[secondMainRow] = second->entryValues[e];
-          ++secondColumnMarkerNumNonzeros;
+          secondSpecialColumnDense[secondMainRow] = second->entryValues[e];
+          ++secondSpecialColumnNumNonzeros;
         }
-        else if (secondColumn == secondMarkerColumn2)
+        else if (secondColumn == secondSpecialColumnRight)
         {
-          if (secondColumnMarker[secondMainRow] != second->entryValues[e])
+          if (secondSpecialColumnDense[secondMainRow] != second->entryValues[e])
           {
-            CMRdbgMsg(2, "Marker columns of 2nd matrix differ: r%zu,c%zu -> %d, r%zu,c%zu -> %d.\n",
-              secondRow+1, secondMarkerColumn1+1, secondColumnMarker[secondMainRow], secondRow+1, secondMarkerColumn2+1,
-              second->entryValues[e]);
+            CMRdbgMsg(2, "Special columns of 2nd matrix differ: r%zu,c%zu -> %d, r%zu,c%zu -> %d.\n",
+              secondRow+1, secondSpecialColumnLeft+1, secondSpecialColumnDense[secondMainRow], secondRow+1,
+              secondSpecialColumnRight+1, second->entryValues[e]);
             error = CMR_ERROR_STRUCTURE;
             goto cleanup;
           }
-          ++columnMarkerCopyNumNonzeros;
+          ++specialColumn1CopyNumNonzeros;
         }
         else
         {
@@ -1734,44 +1746,53 @@ CMR_ERROR CMRthreeSumSeymourCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* sec
       }
       else
       {
-        if (secondColumn == secondMarkerColumn1)
-          secondColumnMarkerSpecial = second->entryValues[e];
-        else if (secondColumn == secondMarkerColumn2)
-          columnMarkerCopySpecial = second->entryValues[e];
+        if (secondColumn == secondSpecialColumns[1])
+        {
+          CMRdbgMsg(2, "Expected a 0-entry in 2nd matrix: r%zu,c%zu, but %d found.\n",
+              secondRow+1, secondSpecialColumns[1]+1, second->entryValues[e]);
+            error = CMR_ERROR_STRUCTURE;
+            goto cleanup;
+        }
+        else if (secondColumn == secondSpecialColumns[0])
+          secondEpsilon = second->entryValues[e];
       }
     }
 
-    if (secondRow != secondMarkerRow)
+    if (secondRow != secondSpecialRows[0])
       ++secondMainRow;
   }
 
-  /* Check if (0,d) and (epsilon,d) differ in only one entry. */
-
-  if (columnMarkerCopyNumNonzeros != secondColumnMarkerNumNonzeros)
+  /* Check special columns. */
+  if (specialColumn1CopyNumNonzeros != secondSpecialColumnNumNonzeros)
   {
-    CMRdbgMsg(2, "Number of nonzeros in marker columns of 2nd matrix is %zu and %zu.\n", secondColumnMarkerNumNonzeros,
-      columnMarkerCopyNumNonzeros);
+    CMRdbgMsg(2, "Number of nonzeros in special columns of 2nd matrix is %zu and %zu.\n",
+      secondSpecialColumnNumNonzeros, specialColumn1CopyNumNonzeros);
     error = CMR_ERROR_STRUCTURE;
     goto cleanup;
   }
-  else if ((secondColumnMarkerSpecial >= 0 ? secondColumnMarkerSpecial : -secondColumnMarkerSpecial)
-    + (columnMarkerCopySpecial >= 0 ? columnMarkerCopySpecial : -columnMarkerCopySpecial) != 1)
+  else if (secondEpsilon == 0)
   {
-    CMRdbgMsg(2, "Special entries of 2nd matrix are %d and %d.\n", secondColumnMarkerSpecial, columnMarkerCopySpecial);
+    CMRdbgMsg(2, "Epsilon-entry of 2nd matrix is 0.\n");
+    error = CMR_ERROR_STRUCTURE;
+    goto cleanup;
+  }
+  else if (secondEpsilon != firstEpsilon)
+  {
+    CMRdbgMsg(2, "Epsilon-entries of matrices are %d and %d.\n", firstEpsilon, secondEpsilon);
     error = CMR_ERROR_STRUCTURE;
     goto cleanup;
   }
 
   CMRdbgMsg(2, "First: main has %zu nonzeros, column has %zu nonzeros and row has %zu nonzeros.\n",
-    firstMainNumNonzeros, firstColumnMarkerNumNonzeros, firstRowMarkerNumNonzeros);
+    firstMainNumNonzeros, firstSpecialColumnNumNonzeros, firstSpecialRowNumNonzeros);
   CMRdbgMsg(2, "Second: main has %zu nonzeros, column has %zu nonzeros and row has %zu nonzeros.\n",
-    secondMainNumNonzeros, secondColumnMarkerNumNonzeros, secondRowMarkerNumNonzeros);
+    secondMainNumNonzeros, secondSpecialColumnNumNonzeros, secondSpecialRowNumNonzeros);
 
   /* Create resulting matrix. */
   CMR_CALL( CMRchrmatCreate(cmr, presult, first->numRows + second->numRows - 2,
     first->numColumns + second->numColumns - 4, firstMainNumNonzeros + secondMainNumNonzeros
-    + firstRowMarkerNumNonzeros * secondColumnMarkerNumNonzeros
-    + secondRowMarkerNumNonzeros * firstColumnMarkerNumNonzeros) );
+    + firstSpecialRowNumNonzeros * secondSpecialColumnNumNonzeros
+    + secondSpecialRowNumNonzeros * firstSpecialColumnNumNonzeros) );
   CMR_CHRMAT* result = *presult;
 
   CMRdbgMsg(2, "Resulting matrix is %zux%zu with %zu nonzeros.\n", result->numRows, result->numColumns,
@@ -1782,18 +1803,18 @@ CMR_ERROR CMRthreeSumSeymourCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* sec
   for (size_t firstRow = 0; firstRow < first->numRows; ++firstRow)
   {
     result->rowSlice[row] = entry;
-    if (firstMarkerRow != firstRow)
+    if (firstRow != firstSpecialRows[0])
     {
       /* Nonzeros in top-left. */
       size_t beyond = first->rowSlice[firstRow+1];
       for (size_t e = first->rowSlice[firstRow]; e < beyond; ++e)
       {
         size_t column = first->entryColumns[e];
-        if (column == firstMarkerColumn1 || column == firstMarkerColumn2)
+        if (column == firstSpecialColumnLeft || column == firstSpecialColumnRight)
           continue;
-        else if (column > firstMarkerColumn2)
+        else if (column > firstSpecialColumnRight)
           column -= 2;
-        else if (column > firstMarkerColumn1)
+        else if (column > firstSpecialColumnLeft)
           column -= 1;
 
         CMRdbgMsg(4, "First main nonzero r%zu,c%zu -> %d is mapped to r%zu,c%zu.\n", firstRow+1,
@@ -1804,18 +1825,18 @@ CMR_ERROR CMRthreeSumSeymourCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* sec
       }
 
       /* Nonzeros in top-right. */
-      if (firstColumnMarker[row])
+      if (firstSpecialColumnDense[row])
       {
-        char factor = firstColumnMarker[row];
-        beyond = second->rowSlice[secondMarkerRow + 1];
-        for (size_t e = second->rowSlice[secondMarkerRow]; e < beyond; ++e)
+        char factor = firstSpecialColumnDense[row];
+        beyond = second->rowSlice[secondSpecialRows[0] + 1];
+        for (size_t e = second->rowSlice[secondSpecialRows[0]]; e < beyond; ++e)
         {
           size_t column = second->entryColumns[e];
-          if (column == secondMarkerColumn1 || column == secondMarkerColumn2)
+          if (column == secondSpecialColumnLeft || column == secondSpecialColumnRight)
             continue;
-          else if (column > secondMarkerColumn2)
+          else if (column > secondSpecialColumnRight)
             column -= 2;
-          else if (column > secondMarkerColumn1)
+          else if (column > secondSpecialColumnLeft)
             column -= 1;
 
           CMRdbgMsg(4, "Top-right nonzero r%zu (first) and c%zu (second) -> %d*%d is mapped to r%zu,c%zu.\n", firstRow+1,
@@ -1843,21 +1864,21 @@ CMR_ERROR CMRthreeSumSeymourCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* sec
   for (size_t secondRow = 0; secondRow < second->numRows; ++secondRow)
   {
     result->rowSlice[row] = entry;
-    if (secondRow != secondMarkerRow)
+    if (secondRow != secondSpecialRows[0])
     {
       /* Nonzeros in bottom-left. */
-      if (secondColumnMarker[secondMainRow])
+      if (secondSpecialColumnDense[secondMainRow])
       {
-        char factor = secondColumnMarker[secondMainRow];
-        size_t beyond = first->rowSlice[firstMarkerRow + 1];
-        for (size_t e = first->rowSlice[firstMarkerRow]; e < beyond; ++e)
+        char factor = secondSpecialColumnDense[secondMainRow];
+        size_t beyond = first->rowSlice[firstSpecialRows[0] + 1];
+        for (size_t e = first->rowSlice[firstSpecialRows[0]]; e < beyond; ++e)
         {
           size_t column = first->entryColumns[e];
-          if (column == firstMarkerColumn1 || column == firstMarkerColumn2)
+          if (column == firstSpecialColumnLeft || column == firstSpecialColumnRight)
             continue;
-          else if (column > firstMarkerColumn2)
+          else if (column > firstSpecialColumnRight)
             column -= 2;
-          else if (column > firstMarkerColumn1)
+          else if (column > firstSpecialColumnLeft)
             column -= 1;
 
           CMRdbgMsg(4, "Bottom-left nonzero r%zu (second) and c%zu (first) -> %d*%d is mapped to r%zu,c%zu.\n",
@@ -1879,16 +1900,16 @@ CMR_ERROR CMRthreeSumSeymourCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* sec
         }
       }
 
-      /* Nonzeros in top-left. */
+      /* Nonzeros in bottom-right. */
       size_t beyond = second->rowSlice[secondRow+1];
       for (size_t e = second->rowSlice[secondRow]; e < beyond; ++e)
       {
         size_t column = second->entryColumns[e];
-        if (column == secondMarkerColumn1 || column == secondMarkerColumn2)
+        if (column == secondSpecialColumnLeft || column == secondSpecialColumnRight)
           continue;
-        else if (column > secondMarkerColumn2)
+        else if (column > secondSpecialColumnRight)
           column -= 2;
-        else if (column > secondMarkerColumn1)
+        else if (column > secondSpecialColumnLeft)
           column -= 1;
 
         CMRdbgMsg(4, "Second main nonzero r%zu,c%zu -> %d is mapped to r%zu,c%zu.\n", secondRow+1,
@@ -1906,8 +1927,8 @@ CMR_ERROR CMRthreeSumSeymourCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* sec
   assert(entry == result->numNonzeros);
 
 cleanup:
-  CMR_CALL( CMRfreeStackArray(cmr, &secondColumnMarker) );
-  CMR_CALL( CMRfreeStackArray(cmr, &firstColumnMarker) );
+  CMR_CALL( CMRfreeStackArray(cmr, &secondSpecialColumnDense) );
+  CMR_CALL( CMRfreeStackArray(cmr, &firstSpecialColumnDense) );
 
   return error;
 }
@@ -2362,455 +2383,43 @@ CMR_ERROR CMRthreeSumSeymourDecomposeSecond(CMR* cmr, CMR_CHRMAT* matrix, CMR_SE
   return CMR_OKAY;
 }
 
-
-
-
-
-#if 0
+CMR_ERROR CMRthreeSumTruemperCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* second, size_t* firstSpecialRows,
+  size_t* firstSpecialColumns, size_t* secondSpecialRows, size_t* secondSpecialColumns, int8_t characteristic,
+  CMR_CHRMAT** presult)
 {
-  /* If the first markers are column,row then we exchange both pairs such that the first markers are row,column. */
-  if (CMRelementIsColumn(firstMarker1) && CMRelementIsRow(firstMarker2))
+  assert(cmr);
+  assert(first);
+  assert(second);
+  assert(presult);
+
+  CMRdbgMsg(0, "CMRthreeSumTruemperCompose for a %zux%zu and a %zux%zu matrix.\n", first->numRows, first->numColumns,
+    second->numRows, second->numColumns);
+
+  if (!firstSpecialRows || (firstSpecialRows[0] >= first->numRows)
+    || (firstSpecialRows[1] >= first->numRows))
   {
-    CMR_ELEMENT temp = firstMarker1;
-    firstMarker1 = firstMarker2;
-    firstMarker2 = temp;
-    temp = secondMarker1;
-    secondMarker1 = secondMarker2;
-    secondMarker2 = temp;
+    return CMR_ERROR_INPUT;
+  }
+  if (!firstSpecialColumns || (firstSpecialColumns[0] >= first->numColumns)
+    || (firstSpecialColumns[1] >= first->numColumns) || (firstSpecialColumns[2] >= first->numColumns))
+  {
+    return CMR_ERROR_INPUT;
+  }
+  if (!secondSpecialRows || (secondSpecialRows[0] >= second->numRows)
+    || (secondSpecialRows[1] >= second->numRows) || (secondSpecialRows[2] >= second->numRows))
+  {
+    return CMR_ERROR_INPUT;
+  }
+  if (!secondSpecialColumns || (secondSpecialColumns[0] >= second->numColumns)
+    || (secondSpecialColumns[1] >= second->numColumns))
+  {
+    return CMR_ERROR_INPUT;
   }
 
-  CMRdbgMsg(0, "Computing 3-sum of %zux%zu and %zux%zu matrix with markers %s,%s for first and %s,%s for second.\n",
-    first->numRows, first->numColumns, second->numRows, second->numColumns,
-    CMRelementIsRow(firstMarker1) ? "row" : "column", CMRelementIsRow(firstMarker2) ? "row" : "column",
-    CMRelementIsRow(secondMarker1) ? "row" : "column", CMRelementIsRow(secondMarker2) ? "row" : "column");
-
-  bool bottomLeft = CMRelementIsRow(firstMarker1) || CMRelementIsRow(firstMarker2);
-  bool topRight = CMRelementIsColumn(firstMarker1) || CMRelementIsColumn(firstMarker2);
-  CMRdbgMsg(2, "Non-zero bottom-left: %s, non-zero top-right: %s\n", bottomLeft ? "yes" : "no", topRight ? "yes" : "no");
-
-  size_t firstRowMarkers[2] = { SIZE_MAX, SIZE_MAX }; /*< row indices of A where to find a_i (or SIZE_MAX). */
-  size_t secondRowMarkers[2] = { SIZE_MAX, SIZE_MAX }; /*< row indices of B where to find b_i (or SIZE_MAX). */
-  size_t firstColumnMarkers[2] = { SIZE_MAX, SIZE_MAX }; /*< column indices of A where to find a_i (or SIZE_MAX). */
-  size_t secondColumnMarkers[2] = { SIZE_MAX, SIZE_MAX }; /*< column indices of B where to find b_i (or SIZE_MAX). */
-  char* markerColumn[2] = { NULL, NULL }; /* Nonzero entries of the column vector among a_i,b_i. */
-  size_t markerColumnNumNonzeros[2] = { 0, 0 }; /* Number of nonzeros of markerColumn[i]. */
-  size_t markerRowNumNonzeros[2] = { 0, 0 }; /* Number of nonzeros of a_i that is not markerColumn[i]. */
-
-  /* Step 1: fill marker columns. */
-
-  /* Step 1a: rank(bottom-left)-many columns of B are stored in markerColumn. */
-  uint8_t bottomLeftRank = (!topRight) ? 2 : (bottomLeft ? 1 : 0);
-  for (uint8_t i = 0; i < bottomLeftRank; ++i)
-  {
-    firstRowMarkers[i] = CMRelementToRowIndex(i == 0 ? firstMarker1 : firstMarker2);
-    markerRowNumNonzeros[i] = first->rowSlice[firstRowMarkers[i] + 1] - first->rowSlice[firstRowMarkers[i]];
-    CMRdbgMsg(2, "firstRowMarkers[%d] = %zu\n", i, firstRowMarkers[i]);
-
-    secondColumnMarkers[i] = CMRelementToColumnIndex(i == 0 ? secondMarker1 : secondMarker2);
-    CMR_CALL( CMRallocStackArray(cmr, &markerColumn[i], second->numColumns) );
-    for (size_t row = 0; row < second->numRows; ++row)
-    {
-      size_t entry;
-      CMR_CALL( CMRchrmatFindEntry(second, row, secondColumnMarkers[i], &entry) );
-      if (entry == SIZE_MAX)
-      {
-        markerColumn[i][row] = 0;
-        CMRdbgMsg(2, "markerColumn[%d][%zu] is 0.\n", i, row);
-      }
-      else
-      {
-        assert(second->entryColumns[entry] == secondColumnMarkers[i]);
-        markerColumn[i][row] = second->entryValues[entry];
-        CMRdbgMsg(2, "markerColumn[%d][%zu] = %d.\n", i, row, second->entryValues[entry]);
-        ++markerColumnNumNonzeros[i];
-      }
-    }
-  }
-
-  /* Step 1b: rank(top-right)-many columns of A are stored in markerColumn. */
-  uint8_t topRightRank = 2 - bottomLeftRank;
-  for (uint8_t j = 0; j < topRightRank; ++j)
-  {
-    uint8_t i = bottomLeftRank + j;
-    secondRowMarkers[i] = CMRelementToRowIndex(i == 0 ? secondMarker1 : secondMarker2);
-    markerRowNumNonzeros[i] = second->rowSlice[secondRowMarkers[i] + 1] - second->rowSlice[secondRowMarkers[i]];
-
-    firstColumnMarkers[i] = CMRelementToColumnIndex(i == 0 ? firstMarker1 : firstMarker2);
-    CMR_CALL( CMRallocStackArray(cmr, &markerColumn[i], second->numColumns) );
-    for (size_t row = 0; row < first->numRows; ++row)
-    {
-      size_t entry;
-      CMR_CALL( CMRchrmatFindEntry(first, row, firstColumnMarkers[i], &entry) );
-      if (entry == SIZE_MAX)
-      {
-        markerColumn[i][row] = 0;
-        CMRdbgMsg(2, "markerColumn[%d][%ld] is 0.\n", i, row);
-      }
-      else
-      {
-        assert(first->entryColumns[entry] == firstColumnMarkers[i]);
-        markerColumn[i][row] = first->entryValues[entry];
-        CMRdbgMsg(2, "markerColumn[%d][%ld] = %d.\n", i, row, first->entryValues[entry]);
-        ++markerColumnNumNonzeros[i];
-      }
-    }
-  }
-
-  assert(markerColumn[0]);
-  assert(markerColumn[1]);
-
-  /* Step 2: create mapping from old rows/columns to new ones. */
-  size_t* firstRowToResultRow = NULL;
-  CMR_CALL( CMRallocStackArray(cmr, &firstRowToResultRow, first->numRows) );
-  size_t resultRow = 0;
-  for (size_t row = 0; row < first->numRows; ++row)
-  {
-    if ((row == firstRowMarkers[0]) || (row == firstRowMarkers[1]))
-      firstRowToResultRow[row] = SIZE_MAX;
-    else
-      firstRowToResultRow[row] = resultRow++;
-  }
-  size_t* secondRowToResultRow = NULL;
-  CMR_CALL( CMRallocStackArray(cmr, &secondRowToResultRow, second->numRows) );
-  for (size_t row = 0; row < second->numRows; ++row)
-  {
-    if ((row == secondRowMarkers[0]) || (row == secondRowMarkers[1]))
-      secondRowToResultRow[row] = SIZE_MAX;
-    else
-      secondRowToResultRow[row] = resultRow++;
-  }
-  CMRdbgMsg(2, "resultRow = %zu\n", resultRow);
-  assert(resultRow == first->numRows + second->numRows - 2);
-
-  size_t* firstColumnToResultColumn = NULL;
-  CMR_CALL( CMRallocStackArray(cmr, &firstColumnToResultColumn, first->numColumns) );
-  size_t resultColumn = 0;
-  for (size_t column = 0; column < first->numColumns; ++column)
-  {
-    if ((column == firstColumnMarkers[0]) || (column == firstColumnMarkers[1]))
-      firstColumnToResultColumn[column] = SIZE_MAX;
-    else
-      firstColumnToResultColumn[column] = resultColumn++;
-  }
-  size_t* secondColumnToResultColumn = NULL;
-  CMR_CALL( CMRallocStackArray(cmr, &secondColumnToResultColumn, second->numColumns) );
-  for (size_t column = 0; column < second->numColumns; ++column)
-  {
-    if ((column == secondColumnMarkers[0]) || (column == secondColumnMarkers[1]))
-      secondColumnToResultColumn[column] = SIZE_MAX;
-    else
-      secondColumnToResultColumn[column] = resultColumn++;
-  }
-
-  /* Step 3: create the actual matrix. */
-  CMRdbgMsg(0, "upper bound on #nonzeros is %zu + %zu + (%zu * %zu - 1) + (%zu * %zu - 1)\n", first->numNonzeros,
-    second->numNonzeros, markerRowNumNonzeros[0] - 1, markerColumnNumNonzeros[0] - 1, markerRowNumNonzeros[1] - 1,
-    markerColumnNumNonzeros[1] - 1);
-  CMR_CALL( CMRchrmatCreate(cmr, presult, first->numRows + second->numRows - 2,
-    first->numColumns + second->numColumns - 2,
-    first->numNonzeros + second->numNonzeros + (markerRowNumNonzeros[0] - 1) * (markerColumnNumNonzeros[0] - 1)
-    + (markerRowNumNonzeros[1] - 1) * (markerColumnNumNonzeros[1] - 1) - 1) );
-  CMR_CHRMAT* result = *presult;
-  resultRow = 0;
-  size_t resultNonzero = 0;
   CMR_ERROR error = CMR_OKAY;
 
-  /* Step 3a: top part. */
-  for (size_t row = 0; row < first->numRows; ++row)
-  {
-    if ((row == firstRowMarkers[0]) || (row == firstRowMarkers[1]))
-      continue;
 
-    result->rowSlice[resultRow] = resultNonzero;
-    CMRdbgMsg(2, "Row %zu starts at nonzero #%zu and belongs to top part.\n", resultRow, resultNonzero);
-
-    /* First matrix is top-left. */
-    size_t begin = first->rowSlice[row];
-    size_t beyond = first->rowSlice[row + 1];
-    for (size_t e = begin; e < beyond; ++e)
-    {
-      size_t column = first->entryColumns[e];
-      if (column == firstColumnMarkers[0] || column == firstColumnMarkers[1])
-        continue;
-      result->entryValues[resultNonzero] = first->entryValues[e];
-      result->entryColumns[resultNonzero] = firstColumnToResultColumn[column];
-      CMRdbgMsg(4, "Adding nonzero #%zu at %zu,%zu with value %d from top-left.\n", resultNonzero, resultRow,
-        result->entryColumns[resultNonzero], result->entryValues[resultNonzero]);
-      ++resultNonzero;
-    }
-
-    if (topRight && bottomLeft)
-    {
-      /* Compute values of rank-1 top-right matrix. */
-      if (markerColumn[1][row] != 0)
-      {
-        size_t begin = second->rowSlice[secondRowMarkers[1]];
-        size_t beyond = second->rowSlice[secondRowMarkers[1] + 1];
-        for (size_t e = begin; e < beyond; ++e)
-        {
-          if (second->entryColumns[e] == secondColumnMarkers[0])
-            continue;
-
-          /* Take care of modulo operations. */
-          int resultValue = (int)markerColumn[1][row] * (int)second->entryValues[e];
-          assert(resultValue != 0);
-          if (characteristic != 0)
-          {
-            resultValue = resultValue % characteristic;
-            if (resultValue < 0)
-              resultValue += characteristic;
-            if (characteristic == 3 && resultValue == 2)
-              resultValue -= 3;
-          }
-          assert(resultValue != 0);
-
-          if (resultValue > INT8_MAX || resultValue < INT8_MIN)
-          {
-            error = CMR_ERROR_OVERFLOW;
-            goto cleanup;
-          }
-
-          result->entryValues[resultNonzero] = resultValue;
-          result->entryColumns[resultNonzero] = secondColumnToResultColumn[second->entryColumns[e]];
-          CMRdbgMsg(4, "Adding nonzero #%zu at %zu,%zu with value %d from product in top-right.\n", resultNonzero, resultRow,
-            result->entryColumns[resultNonzero], result->entryValues[resultNonzero]);
-          ++resultNonzero;
-        }
-      }
-    }
-    else if (topRight && !bottomLeft)
-    {
-      /* Compute values of rank-2 top-right matrix. */
-      if (markerColumn[0][row] != 0 || markerColumn[1][row] != 0)
-      {
-        size_t e1 = second->rowSlice[secondRowMarkers[0]];
-        size_t beyond1 = second->rowSlice[secondRowMarkers[0] + 1];
-        size_t column1 = (e1 < beyond1) ? second->entryColumns[e1] : SIZE_MAX;
-        size_t e2 = second->rowSlice[secondRowMarkers[1]];
-        size_t beyond2 = second->rowSlice[secondRowMarkers[1] + 1];
-        size_t column2 = (e2 < beyond2) ? second->entryColumns[e2] : SIZE_MAX;
-        while (column1 != SIZE_MAX || column2 != SIZE_MAX)
-        {
-          int resultValue;
-          size_t nextColumn;
-          if (column1 < column2)
-          {
-            resultValue = (int)markerColumn[0][row] * (int)second->entryValues[e1];
-            nextColumn = column1;
-            ++e1;
-            column1 = (e1 < beyond1) ? second->entryColumns[e1] : SIZE_MAX;
-          }
-          else if (column2 < column1)
-          {
-            resultValue = (int)markerColumn[1][row] * (int)second->entryValues[e2];
-            nextColumn = column2;
-            ++e2;
-            column2 = (e2 < beyond2) ? second->entryColumns[e2] : SIZE_MAX;
-          }
-          else
-          {
-            resultValue = (int)markerColumn[0][row] * (int)second->entryValues[e1]
-              + (int)markerColumn[1][row] * (int)second->entryValues[e2];
-            nextColumn = column1;
-            ++e1;
-            column1 = (e1 < beyond1) ? second->entryColumns[e1] : SIZE_MAX;
-            ++e2;
-            column2 = (e2 < beyond2) ? second->entryColumns[e2] : SIZE_MAX;
-          }
-
-          /* Take care of modulo operations. */
-          if (characteristic != 0)
-          {
-            resultValue = resultValue % characteristic;
-            if (resultValue < 0)
-              resultValue += characteristic;
-            if (characteristic == 3 && resultValue == 2)
-              resultValue -= 3;
-          }
-
-          if (resultValue > INT8_MAX || resultValue < INT8_MIN)
-          {
-            error = CMR_ERROR_OVERFLOW;
-            goto cleanup;
-          }
-
-          if (resultValue != 0)
-          {
-            result->entryValues[resultNonzero] = resultValue;
-            result->entryColumns[resultNonzero] = secondColumnToResultColumn[nextColumn];
-            CMRdbgMsg(4, "Adding nonzero #%zu at %zu,%zu with value %d.\n", resultNonzero, resultRow,
-              result->entryColumns[resultNonzero], result->entryValues[resultNonzero]);
-            ++resultNonzero;
-          }
-          else
-          {
-            CMRdbgMsg(4, "Computed a zero at %zu,%zu in the rank-2 block.\n", resultRow, resultColumn);
-          }
-        }
-      }
-    }
-
-    ++resultRow;
-  }
-
-  /* Step 3b: bottom part. */
-  for (size_t row = 0; row < second->numRows; ++row)
-  {
-    if ((row == secondRowMarkers[0]) || (row == secondRowMarkers[1]))
-      continue;
-
-    result->rowSlice[resultRow] = resultNonzero;
-    CMRdbgMsg(2, "Row %zu starts at nonzero #%zu.\n", resultRow, resultNonzero);
-
-    if (bottomLeft && topRight)
-    {
-      /* Compute values of rank-1 bottom-left matrix. */
-      if (markerColumn[0][row] != 0)
-      {
-        size_t begin = first->rowSlice[firstRowMarkers[0]];
-        size_t beyond = first->rowSlice[firstRowMarkers[0] + 1];
-        for (size_t e = begin; e < beyond; ++e)
-        {
-          if (first->entryColumns[e] == firstColumnMarkers[1])
-            continue;
-
-          int resultValue = (int)markerColumn[0][row] * (int)first->entryValues[e];
-          assert(resultValue != 0);
-
-          /* Take care of modulo operations. */
-          if (characteristic != 0)
-          {
-            resultValue = resultValue % characteristic;
-            if (resultValue < 0)
-              resultValue += characteristic;
-            if (characteristic == 3 && resultValue == 2)
-              resultValue -= 3;
-          }
-          assert(resultValue != 0);
-
-          if (resultValue > INT8_MAX || resultValue < INT8_MIN)
-          {
-            error = CMR_ERROR_OVERFLOW;
-            goto cleanup;
-          }
-
-          result->entryValues[resultNonzero] = resultValue;
-          result->entryColumns[resultNonzero] = firstColumnToResultColumn[first->entryColumns[e]];
-          CMRdbgMsg(4, "Adding nonzero #%zu at %zu,%zu with value %d from bottom-left.\n", resultNonzero, resultRow,
-            result->entryColumns[resultNonzero], result->entryValues[resultNonzero]);
-          ++resultNonzero;
-        }
-      }
-    }
-    else if (!topRight)
-    {
-      /* Compute values of rank-2 bottom-left matrix. */
-      if (markerColumn[0][row] != 0 || markerColumn[1][row] != 0)
-      {
-        size_t e1 = first->rowSlice[firstRowMarkers[0]];
-        size_t beyond1 = first->rowSlice[firstRowMarkers[0] + 1];
-        size_t column1 = (e1 < beyond1) ? first->entryColumns[e1] : SIZE_MAX;
-        size_t e2 = first->rowSlice[firstRowMarkers[1]];
-        size_t beyond2 = first->rowSlice[firstRowMarkers[1] + 1];
-        size_t column2 = (e2 < beyond2) ? first->entryColumns[e2] : SIZE_MAX;
-        while (column1 != SIZE_MAX || column2 != SIZE_MAX)
-        {
-          int resultValue;
-          size_t nextColumn;
-          if (column1 < column2)
-          {
-            resultValue = (int)markerColumn[0][row] * (int)first->entryValues[e1];
-            CMRdbgMsg(4, "Calculating entry %zu,%zu (was %zu,%zu) as product of %d and %d = %d.\n", resultRow, row,
-              firstColumnToResultColumn[column1], column1, markerColumn[0][row], first->entryValues[e1], resultValue);
-            nextColumn = column1;
-            ++e1;
-            column1 = (e1 < beyond1) ? first->entryColumns[e1] : SIZE_MAX;
-          }
-          else if (column2 < column1)
-          {
-            resultValue = (int)markerColumn[1][row] * (int)first->entryValues[e2];
-            nextColumn = column2;
-            ++e2;
-            column2 = (e2 < beyond2) ? first->entryColumns[e2] : SIZE_MAX;
-          }
-          else
-          {
-            resultValue = (int)markerColumn[0][row] * (int)first->entryValues[e1]
-              + (int)markerColumn[1][row] * (int)first->entryValues[e2];
-            nextColumn = column1;
-            ++e1;
-            column1 = (e1 < beyond1) ? first->entryColumns[e1] : SIZE_MAX;
-            ++e2;
-            column2 = (e2 < beyond2) ? first->entryColumns[e2] : SIZE_MAX;
-          }
-
-          /* Take care of modulo operations. */
-          if (characteristic != 0)
-          {
-            resultValue = resultValue % characteristic;
-            if (resultValue < 0)
-              resultValue += characteristic;
-            if (characteristic == 3 && resultValue == 2)
-              resultValue -= 3;
-          }
-
-          if (resultValue > INT8_MAX || resultValue < INT8_MIN)
-          {
-            error = CMR_ERROR_OVERFLOW;
-            goto cleanup;
-          }
-
-          if (resultValue != 0)
-          {
-            result->entryValues[resultNonzero] = resultValue;
-            result->entryColumns[resultNonzero] = firstColumnToResultColumn[nextColumn];
-            CMRdbgMsg(4, "Adding nonzero #%zu at %ld,%ld with value %d from bottom-left.\n", resultNonzero, resultRow,
-              result->entryColumns[resultNonzero], result->entryValues[resultNonzero]);
-            ++resultNonzero;
-          }
-          else
-          {
-            CMRdbgMsg(4, "Computed a zero at %ld,%ld in the rank-2 block.\n", resultRow, resultColumn);
-          }
-        }
-      }
-    }
-
-    /* Second matrix is bottom-right. */
-    for (size_t e = second->rowSlice[row]; e < second->rowSlice[row + 1]; ++e)
-    {
-      size_t column = second->entryColumns[e];
-      if ((column == secondColumnMarkers[0]) || (column == secondColumnMarkers[1]))
-        continue;
-      result->entryValues[resultNonzero] = second->entryValues[e];
-      result->entryColumns[resultNonzero] = secondColumnToResultColumn[column];
-      CMRdbgMsg(4, "Adding nonzero #%zu at %ld,%ld with value %d from bottom-right.\n", resultNonzero, resultRow,
-        result->entryColumns[resultNonzero], result->entryValues[resultNonzero]);
-      ++resultNonzero;
-    }
-
-    ++resultRow;
-  }
-
-  CMRdbgMsg(2, "Allocated memory for %zu nonzeros of which %zu are used.\n", result->numNonzeros, resultNonzero);
-
-  result->rowSlice[result->numRows] = resultNonzero;
-  assert(result->numNonzeros >= resultNonzero);
-  result->numNonzeros = resultNonzero;
-
-  CMRdbgConsistencyAssert( CMRchrmatConsistency(result) );
-
-cleanup:
-
-  CMR_CALL( CMRfreeStackArray(cmr, &secondColumnToResultColumn) );
-  CMR_CALL( CMRfreeStackArray(cmr, &firstColumnToResultColumn) );
-  CMR_CALL( CMRfreeStackArray(cmr, &secondRowToResultRow) );
-  CMR_CALL( CMRfreeStackArray(cmr, &firstRowToResultRow) );
-  CMR_CALL( CMRfreeStackArray(cmr, &markerColumn[1]) );
-  CMR_CALL( CMRfreeStackArray(cmr, &markerColumn[0]) );
 
   return error;
 }
-
-#endif /* legacy code */
 
