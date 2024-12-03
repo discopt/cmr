@@ -385,8 +385,9 @@ TEST(Separation, ThreeSumSeymourComposition)
     ) );
 
     CMR_CHRMAT* threesum = NULL;
-    ASSERT_CMR_CALL( CMRthreeSumSeymourCompose(cmr, first, second, CMRrowToElement(2), CMRcolumnToElement(2),
-      CMRcolumnToElement(3), CMRrowToElement(0), CMRcolumnToElement(0), CMRcolumnToElement(1), 3, &threesum) );
+    size_t specials[6] = { 2, 2, 3, 0, 0, 1 };
+    ASSERT_CMR_CALL( CMRthreeSumSeymourCompose(cmr, first, second, &specials[0], &specials[1], &specials[3],
+      &specials[4], 3, &threesum) );
 
     CMRchrmatPrintDense(cmr, threesum, stdout, '0', false);
 
@@ -421,8 +422,9 @@ TEST(Separation, ThreeSumSeymourComposition)
     ) );
 
     CMR_CHRMAT* threesum = NULL;
-    ASSERT_CMR_CALL( CMRthreeSumSeymourCompose(cmr, first, second, CMRrowToElement(2), CMRcolumnToElement(2),
-      CMRcolumnToElement(3), CMRrowToElement(0), CMRcolumnToElement(0), CMRcolumnToElement(1), 3, &threesum) );
+    size_t specials[6] = { 2, 2, 3, 0, 0, 1 };
+    ASSERT_CMR_CALL( CMRthreeSumSeymourCompose(cmr, first, second, &specials[0], &specials[1], &specials[3],
+      &specials[4], 3, &threesum) );
 
     CMRchrmatPrintDense(cmr, threesum, stdout, '0', false);
 
@@ -472,11 +474,9 @@ TEST(Separation, ThreeSumSeymourDecomposition)
     ASSERT_EQ(epsilon, -1);
 
     CMR_CHRMAT* first = NULL;
-    CMR_ELEMENT firstMarker1 = 0;
-    CMR_ELEMENT firstMarker2 = 0;
-    CMR_ELEMENT firstMarker3 = 0;
+    size_t specials[3];
     ASSERT_CMR_CALL( CMRthreeSumSeymourDecomposeFirst(cmr, matrix, sepa, epsilon, &first, NULL, NULL, NULL, NULL,
-      &firstMarker1, &firstMarker2, &firstMarker3) );
+      &specials[0], &specials[1]) );
 
     CMR_CHRMAT* checkFirst = NULL;
     ASSERT_CMR_CALL( stringToCharMatrix(cmr, &checkFirst, " 3 4 "
@@ -487,11 +487,8 @@ TEST(Separation, ThreeSumSeymourDecomposition)
     ASSERT_TRUE( CMRchrmatCheckEqual(first, checkFirst) );
 
     CMR_CHRMAT* second = NULL;
-    CMR_ELEMENT secondMarker1 = 0;
-    CMR_ELEMENT secondMarker2 = 0;
-    CMR_ELEMENT secondMarker3 = 0;
     ASSERT_CMR_CALL( CMRthreeSumSeymourDecomposeSecond(cmr, matrix, sepa, epsilon, &second, NULL, NULL, NULL, NULL,
-      &secondMarker1, &secondMarker2, &secondMarker3) );
+      NULL, NULL) );
 
     CMR_CHRMAT* checkSecond = NULL;
     ASSERT_CMR_CALL( stringToCharMatrix(cmr, &checkSecond, " 3 4 "
@@ -540,11 +537,9 @@ TEST(Separation, ThreeSumSeymourDecomposition)
     ASSERT_EQ(epsilon, +1);
 
     CMR_CHRMAT* first = NULL;
-    CMR_ELEMENT firstMarker1 = 0;
-    CMR_ELEMENT firstMarker2 = 0;
-    CMR_ELEMENT firstMarker3 = 0;
+    size_t specials[3];
     ASSERT_CMR_CALL( CMRthreeSumSeymourDecomposeFirst(cmr, matrix, sepa, epsilon, &first, NULL, NULL, NULL, NULL,
-      &firstMarker1, &firstMarker2, &firstMarker3) );
+      &specials[0], &specials[1]) );
 
     CMR_CHRMAT* checkFirst = NULL;
     ASSERT_CMR_CALL( stringToCharMatrix(cmr, &checkFirst, " 3 4 "
@@ -555,11 +550,8 @@ TEST(Separation, ThreeSumSeymourDecomposition)
     ASSERT_TRUE( CMRchrmatCheckEqual(first, checkFirst) );
 
     CMR_CHRMAT* second = NULL;
-    CMR_ELEMENT secondMarker1 = 0;
-    CMR_ELEMENT secondMarker2 = 0;
-    CMR_ELEMENT secondMarker3 = 0;
     ASSERT_CMR_CALL( CMRthreeSumSeymourDecomposeSecond(cmr, matrix, sepa, epsilon, &second, NULL, NULL, NULL, NULL,
-      &secondMarker1, &secondMarker2, &secondMarker3) );
+      &specials[0], &specials[1]) );
 
     CMR_CHRMAT* checkSecond = NULL;
     ASSERT_CMR_CALL( stringToCharMatrix(cmr, &checkSecond, " 3 4 "
@@ -609,11 +601,8 @@ TEST(Separation, ThreeSumSeymourDecomposition)
     ASSERT_EQ(epsilon, +1);
 
     CMR_CHRMAT* first = NULL;
-    CMR_ELEMENT firstMarker1 = 0;
-    CMR_ELEMENT firstMarker2 = 0;
-    CMR_ELEMENT firstMarker3 = 0;
     ASSERT_CMR_CALL( CMRthreeSumSeymourDecomposeFirst(cmr, matrix, sepa, epsilon, &first, NULL, NULL, NULL, NULL,
-      &firstMarker1, &firstMarker2, &firstMarker3) );
+      NULL, NULL) );
 
     CMR_CHRMAT* checkFirst = NULL;
     ASSERT_CMR_CALL( stringToCharMatrix(cmr, &checkFirst, " 3 4 "
@@ -624,11 +613,8 @@ TEST(Separation, ThreeSumSeymourDecomposition)
     ASSERT_TRUE( CMRchrmatCheckEqual(first, checkFirst) );
 
     CMR_CHRMAT* second = NULL;
-    CMR_ELEMENT secondMarker1 = 0;
-    CMR_ELEMENT secondMarker2 = 0;
-    CMR_ELEMENT secondMarker3 = 0;
     ASSERT_CMR_CALL( CMRthreeSumSeymourDecomposeSecond(cmr, matrix, sepa, epsilon, &second, NULL, NULL, NULL, NULL,
-      &secondMarker1, &secondMarker2, &secondMarker3) );
+      NULL, NULL) );
 
     CMR_CHRMAT* checkSecond = NULL;
     ASSERT_CMR_CALL( stringToCharMatrix(cmr, &checkSecond, " 3 4 "
@@ -678,11 +664,8 @@ TEST(Separation, ThreeSumSeymourDecomposition)
     ASSERT_EQ(epsilon, -1);
 
     CMR_CHRMAT* first = NULL;
-    CMR_ELEMENT firstMarker1 = 0;
-    CMR_ELEMENT firstMarker2 = 0;
-    CMR_ELEMENT firstMarker3 = 0;
     ASSERT_CMR_CALL( CMRthreeSumSeymourDecomposeFirst(cmr, matrix, sepa, epsilon, &first, NULL, NULL, NULL, NULL,
-      &firstMarker1, &firstMarker2, &firstMarker3) );
+      NULL, NULL) );
 
     CMR_CHRMAT* checkFirst = NULL;
     ASSERT_CMR_CALL( stringToCharMatrix(cmr, &checkFirst, " 3 4 "
@@ -693,11 +676,8 @@ TEST(Separation, ThreeSumSeymourDecomposition)
     ASSERT_TRUE( CMRchrmatCheckEqual(first, checkFirst) );
 
     CMR_CHRMAT* second = NULL;
-    CMR_ELEMENT secondMarker1 = 0;
-    CMR_ELEMENT secondMarker2 = 0;
-    CMR_ELEMENT secondMarker3 = 0;
     ASSERT_CMR_CALL( CMRthreeSumSeymourDecomposeSecond(cmr, matrix, sepa, epsilon, &second, NULL, NULL, NULL, NULL,
-      &secondMarker1, &secondMarker2, &secondMarker3) );
+      NULL, NULL) );
 
     CMR_CHRMAT* checkSecond = NULL;
     ASSERT_CMR_CALL( stringToCharMatrix(cmr, &checkSecond, " 3 4 "

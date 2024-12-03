@@ -1570,9 +1570,9 @@ CMR_ERROR CMRtwoSumDecomposeSecond(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sepa,
 }
 
 
-CMR_ERROR CMRthreeSumSeymourCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* second, CMR_ELEMENT firstMarker1,
-  CMR_ELEMENT firstMarker2, CMR_ELEMENT firstMarker3, CMR_ELEMENT secondMarker1, CMR_ELEMENT secondMarker2,
-  CMR_ELEMENT secondMarker3, int8_t characteristic, CMR_CHRMAT ** presult)
+CMR_ERROR CMRthreeSumSeymourCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* second, size_t* firstSpecialRows,
+  size_t* firstSpecialColumns, size_t* secondSpecialRows, size_t* secondSpecialColumns, int8_t characteristic,
+  CMR_CHRMAT ** presult)
 {
   assert(cmr);
   assert(first);
@@ -1582,73 +1582,27 @@ CMR_ERROR CMRthreeSumSeymourCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* sec
   CMRdbgMsg(0, "CMRthreeSumSeymourCompose for a %zux%zu and a %zux%zu matrix.\n", first->numRows, first->numColumns,
     second->numRows, second->numColumns);
 
-  /* Check markers for first matrix. */
-  size_t firstMarkerRow = SIZE_MAX;
-  size_t firstMarkerColumn1 = SIZE_MAX;
-  size_t firstMarkerColumn2 = SIZE_MAX;
-  if (CMRelementIsRow(firstMarker1))
+  if (!firstSpecialRows || (firstSpecialRows[0] >= first->numRows))
+    return CMR_ERROR_INPUT;
+  if (!firstSpecialColumns || (firstSpecialColumns[0] >= first->numColumns)
+    || (firstSpecialColumns[1] >= first->numColumns))
   {
-    firstMarkerRow = CMRelementToRowIndex(firstMarker1);
-    if (!CMRelementIsColumn(firstMarker2) || !CMRelementIsColumn(firstMarker3))
-      return CMR_ERROR_INPUT;
-    firstMarkerColumn1 = CMRelementToColumnIndex(firstMarker2);
-    firstMarkerColumn2 = CMRelementToColumnIndex(firstMarker3);
+    return CMR_ERROR_INPUT;
   }
-  else if (CMRelementIsRow(firstMarker2))
+  if (!secondSpecialRows || (secondSpecialRows[0] >= second->numRows))
+    return CMR_ERROR_INPUT;
+  if (!secondSpecialColumns || (secondSpecialColumns[0] >= second->numColumns)
+    || (secondSpecialColumns[1] >= second->numColumns))
   {
-    firstMarkerRow = CMRelementToRowIndex(firstMarker2);
-    if (!CMRelementIsColumn(firstMarker1) || !CMRelementIsColumn(firstMarker3))
-      return CMR_ERROR_INPUT;
-    firstMarkerColumn1 = CMRelementToColumnIndex(firstMarker1);
-    firstMarkerColumn2 = CMRelementToColumnIndex(firstMarker3);
-  }
-  else if (CMRelementIsRow(firstMarker3))
-  {
-    firstMarkerRow = CMRelementToRowIndex(firstMarker3);
-    if (!CMRelementIsColumn(firstMarker1) || !CMRelementIsColumn(firstMarker2))
-      return CMR_ERROR_INPUT;
-    firstMarkerColumn1 = CMRelementToColumnIndex(firstMarker1);
-    firstMarkerColumn2 = CMRelementToColumnIndex(firstMarker2);
-  }
-  else
-  {
-    CMRdbgMsg(2, "Invalid marker types for 1st matrix.\n");
     return CMR_ERROR_INPUT;
   }
 
-  /* Check markers for second matrix. */
-  size_t secondMarkerRow = SIZE_MAX;
-  size_t secondMarkerColumn1 = SIZE_MAX;
-  size_t secondMarkerColumn2 = SIZE_MAX;
-  if (CMRelementIsRow(secondMarker1))
-  {
-    secondMarkerRow = CMRelementToRowIndex(secondMarker1);
-    if (!CMRelementIsColumn(secondMarker2) || !CMRelementIsColumn(secondMarker3))
-      return CMR_ERROR_INPUT;
-    secondMarkerColumn1 = CMRelementToColumnIndex(secondMarker2);
-    secondMarkerColumn2 = CMRelementToColumnIndex(secondMarker3);
-  }
-  else if (CMRelementIsRow(secondMarker2))
-  {
-    secondMarkerRow = CMRelementToRowIndex(secondMarker2);
-    if (!CMRelementIsColumn(secondMarker1) || !CMRelementIsColumn(secondMarker3))
-      return CMR_ERROR_INPUT;
-    secondMarkerColumn1 = CMRelementToColumnIndex(secondMarker1);
-    secondMarkerColumn2 = CMRelementToColumnIndex(secondMarker3);
-  }
-  else if (CMRelementIsRow(secondMarker3))
-  {
-    secondMarkerRow = CMRelementToRowIndex(secondMarker3);
-    if (!CMRelementIsColumn(secondMarker1) || !CMRelementIsColumn(secondMarker2))
-      return CMR_ERROR_INPUT;
-    secondMarkerColumn1 = CMRelementToColumnIndex(secondMarker1);
-    secondMarkerColumn2 = CMRelementToColumnIndex(secondMarker2);
-  }
-  else
-  {
-    CMRdbgMsg(2, "Invalid marker types for 2nd matrix.\n");
-    return CMR_ERROR_INPUT;
-  }
+  size_t firstMarkerRow = firstSpecialRows[0];
+  size_t firstMarkerColumn1 = firstSpecialColumns[0];
+  size_t firstMarkerColumn2 = firstSpecialColumns[1];
+  size_t secondMarkerRow = secondSpecialRows[0];
+  size_t secondMarkerColumn1 = secondSpecialColumns[0];
+  size_t secondMarkerColumn2 = secondSpecialColumns[1];
 
   if (firstMarkerColumn1 > firstMarkerColumn2)
   {
@@ -1702,7 +1656,7 @@ CMR_ERROR CMRthreeSumSeymourCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* sec
             CMRdbgMsg(2, "Marker columns of 1st matrix differ: r%zu,c%zu -> %d, r%zu,c%zu -> %d.\n",
               firstRow+1, firstMarkerColumn1+1, firstColumnMarker[firstMainRow], firstRow+1, firstMarkerColumn2+1,
               first->entryValues[e]);
-            error = CMR_ERROR_INPUT;
+            error = CMR_ERROR_STRUCTURE;
             goto cleanup;
           }
           ++columnMarkerCopyNumNonzeros;
@@ -1731,14 +1685,14 @@ CMR_ERROR CMRthreeSumSeymourCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* sec
   {
     CMRdbgMsg(2, "Number of nonzeros in marker columns of 1st matrix is %zu and %zu.\n", firstColumnMarkerNumNonzeros,
       columnMarkerCopyNumNonzeros);
-    error = CMR_ERROR_INPUT;
+    error = CMR_ERROR_STRUCTURE;
     goto cleanup;
   }
   else if ((firstColumnMarkerSpecial >= 0 ? firstColumnMarkerSpecial : -firstColumnMarkerSpecial)
     + (columnMarkerCopySpecial >= 0 ? columnMarkerCopySpecial : -columnMarkerCopySpecial) != 1)
   {
     CMRdbgMsg(2, "Special entries of 1st matrix are %d and %d.\n", firstColumnMarkerSpecial, columnMarkerCopySpecial);
-    error = CMR_ERROR_INPUT;
+    error = CMR_ERROR_STRUCTURE;
     goto cleanup;
   }
 
@@ -1768,7 +1722,7 @@ CMR_ERROR CMRthreeSumSeymourCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* sec
             CMRdbgMsg(2, "Marker columns of 2nd matrix differ: r%zu,c%zu -> %d, r%zu,c%zu -> %d.\n",
               secondRow+1, secondMarkerColumn1+1, secondColumnMarker[secondMainRow], secondRow+1, secondMarkerColumn2+1,
               second->entryValues[e]);
-            error = CMR_ERROR_INPUT;
+            error = CMR_ERROR_STRUCTURE;
             goto cleanup;
           }
           ++columnMarkerCopyNumNonzeros;
@@ -1797,14 +1751,14 @@ CMR_ERROR CMRthreeSumSeymourCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* sec
   {
     CMRdbgMsg(2, "Number of nonzeros in marker columns of 2nd matrix is %zu and %zu.\n", secondColumnMarkerNumNonzeros,
       columnMarkerCopyNumNonzeros);
-    error = CMR_ERROR_INPUT;
+    error = CMR_ERROR_STRUCTURE;
     goto cleanup;
   }
   else if ((secondColumnMarkerSpecial >= 0 ? secondColumnMarkerSpecial : -secondColumnMarkerSpecial)
     + (columnMarkerCopySpecial >= 0 ? columnMarkerCopySpecial : -columnMarkerCopySpecial) != 1)
   {
     CMRdbgMsg(2, "Special entries of 2nd matrix are %d and %d.\n", secondColumnMarkerSpecial, columnMarkerCopySpecial);
-    error = CMR_ERROR_INPUT;
+    error = CMR_ERROR_STRUCTURE;
     goto cleanup;
   }
 
@@ -2075,7 +2029,7 @@ CMR_ERROR CMRthreeSumSeymourDecomposeEpsilon(CMR* cmr, CMR_CHRMAT* matrix, CMR_C
 
 CMR_ERROR CMRthreeSumSeymourDecomposeFirst(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sepa, char epsilon,
   CMR_CHRMAT** pfirst, size_t* firstRowsOrigin, size_t* firstColumnsOrigin, size_t* rowsToFirst, size_t* columnsToFirst,
-  CMR_ELEMENT* pfirstMarker1, CMR_ELEMENT* pfirstMarker2, CMR_ELEMENT* pfirstMarker3)
+  size_t* firstSpecialRows, size_t* firstSpecialColumns)
 {
   assert(cmr);
   assert(matrix);
@@ -2210,12 +2164,13 @@ CMR_ERROR CMRthreeSumSeymourDecomposeFirst(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEP
   first->rowSlice[first->numRows] = first->numNonzeros;
 
   /* Set markers to last row and last two columns. */
-  if (pfirstMarker1)
-    *pfirstMarker1 = CMRrowToElement(numRows - 1);
-  if (pfirstMarker2)
-    *pfirstMarker2 = CMRcolumnToElement(numColumns - 2);
-  if (pfirstMarker3)
-    *pfirstMarker3 = CMRcolumnToElement(numColumns - 1);
+  if (firstSpecialRows)
+    firstSpecialRows[0] = numRows - 1;
+  if (firstSpecialColumns)
+  {
+    firstSpecialColumns[0] = numColumns - 2;
+    firstSpecialColumns[1] = numColumns - 1;
+  }
 
   /* Free local arrays. */
   CMR_CALL( CMRfreeStackArray(cmr, &denseColumn) );
@@ -2233,7 +2188,7 @@ CMR_ERROR CMRthreeSumSeymourDecomposeFirst(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEP
 
 CMR_ERROR CMRthreeSumSeymourDecomposeSecond(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sepa, char epsilon,
   CMR_CHRMAT** psecond, size_t* secondRowsOrigin, size_t* secondColumnsOrigin, size_t* rowsToSecond,
-  size_t* columnsToSecond, CMR_ELEMENT* psecondMarker1, CMR_ELEMENT* psecondMarker2, CMR_ELEMENT* psecondMarker3)
+  size_t* columnsToSecond, size_t* secondSpecialRows, size_t* secondSpecialColumns)
 {
   assert(cmr);
   assert(matrix);
@@ -2385,12 +2340,13 @@ CMR_ERROR CMRthreeSumSeymourDecomposeSecond(CMR* cmr, CMR_CHRMAT* matrix, CMR_SE
   second->rowSlice[second->numRows] = second->numNonzeros;
 
   /* Set markers to last row and last two columns. */
-  if (psecondMarker1)
-    *psecondMarker1 = CMRrowToElement(0);
-  if (psecondMarker2)
-    *psecondMarker2 = CMRcolumnToElement(0);
-  if (psecondMarker3)
-    *psecondMarker3 = CMRcolumnToElement(1);
+  if (secondSpecialRows)
+    secondSpecialRows[0] = 0;
+  if (secondSpecialColumns)
+  {
+    secondSpecialColumns[0] = 0;
+    secondSpecialColumns[1] = 1;
+  }
 
   /* Free local arrays. */
   CMR_CALL( CMRfreeStackArray(cmr, &denseColumn) );

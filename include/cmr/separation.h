@@ -359,27 +359,26 @@ CMR_ERROR CMRtwoSumDecomposeSecond(
  *        \p firstMarker3, \p secondMarker1, \p secondMarker2 and \p secondMarker3.
  *
  * Let \f$ M_1 \f$ and \f$ M_2 \f$ denote the matrices given by \p first and \p second, let \f$ A \f$ be the matrix
- * \f$ M_1 \f$ without the rows and columns indexed by \p firstMarker1, \p firstMarker2 and \p firstMarker3, and let
- * \f$ D \f$ be the matrix \f$ M_2 \f$ without the rows and columns indexed by \p secondMarker1, \p secondMarker2 and
- * \p secondMarker3. Exactly one of the first markers must index a row and the other two (distinct) columns of \p first.
- * After reordering these to be last, \f$ M_1 \f$ must be of the form
+ * \f$ M_1 \f$ without the row indexed by \p firstSpecialRows[0] and the columns indexed by \p firstSpecialColumns[0]
+ * and \p firstSpecialColumns[1]. After reordering these to be last, \f$ M_1 \f$ must be of the form
  * \f$
  *   M_1 = \begin{bmatrix}
  *     A & a & a \\
  *     c^{\textsf{T}} & 0 & \varepsilon
  *   \end{bmatrix},
  * \f$
- * where \f$ \varepsilon \in \{-1,+1 \} \f$.
- * Similarly, exactly one of the second markers must index a row and the other two (distinct) columns of \p second.
- * After reordering these to be first, \f$ M_2 \f$ must be of the form
+ * where \f$ \varepsilon \in \{-1,+1 \} \f$ (otherwise, \c CMR_ERROR_STRUCTURE is returned).
+ * Similarly, let \f$ D \f$ be the matrix \f$ M_2 \f$ without the row indexed by \p secondSpecialRows[0] and the columns
+ * indexed by \p secondSpecialColumns[0] and \p secondSpecialColumns[1]. After reordering these to be first, \f$ M_2 \f$
+ * must be of the form
  * \f$
  *   M_2 = \begin{bmatrix}
  *     \varepsilon & 0 & b^{\textsf{T}} \\
  *     d & d & D
  *   \end{bmatrix}
  * \f$
- * with the same \f$ \varepsilon \f$.
- * The 3-sum of \f$ M_1 \f$ and \f$ M_2 \f$ (at the markers) is the matrix
+ * with the same \f$ \varepsilon \f$ (otherwise, \c CMR_ERROR_STRUCTURE is returned).
+ * The 3-sum of \f$ M_1 \f$ and \f$ M_2 \f$ (at these special rows/columns) is the matrix
  * \f[
  *   M = \begin{bmatrix}
  *     A & a b^{\textsf{T}} \\
@@ -394,15 +393,23 @@ CMR_ERROR CMRtwoSumDecomposeSecond(
 
 CMR_EXPORT
 CMR_ERROR CMRthreeSumSeymourCompose(
-  CMR* cmr,                   /**< \ref CMR environment. */
-  CMR_CHRMAT* first,          /**< First matrix. */
-  CMR_CHRMAT* second,         /**< Second matrix. */
-  CMR_ELEMENT firstMarker1,   /**< 1st marker element of first matrix. */
-  CMR_ELEMENT firstMarker2,   /**< 2nd marker element of first matrix. */
-  CMR_ELEMENT firstMarker3,   /**< 3rd marker element of first matrix. */
-  CMR_ELEMENT secondMarker1,  /**< 1st marker element of second matrix. */
-  CMR_ELEMENT secondMarker2,  /**< 2nd marker element of second matrix. */
-  CMR_ELEMENT secondMarker3,  /**< 3rd marker element of second matrix. */
+  CMR* cmr,                     /**< \ref CMR environment. */
+  CMR_CHRMAT* first,            /**< First matrix. */
+  CMR_CHRMAT* second,           /**< Second matrix. */
+  size_t* firstSpecialRows,     /**< Array of length 1 with row index of
+                                 **  \f$ \begin{bmatrix} c^{\textsf{T}} & 0 & \varepsilon \end{bmatrix} \f$
+                                 ** in \f$ M_1 \f$. */
+  size_t* firstSpecialColumns,  /**< Array of length 2 with column indices of
+                                 **  \f$ \begin{bmatrix} a \\ 0 \end{bmatrix} \f$ and
+                                 **  \f$ \begin{bmatrix} a \\ \varepsilon \end{bmatrix} \f$
+                                 ** in \f$ M_1 \f$. */
+  size_t* secondSpecialRows,    /**< Array of length 1 with row index of \f$ b^{\textsf{T}} \f$
+                                 **  \f$ \begin{bmatrix} \varepsilon & 0 & b^{\textsf{T}} \end{bmatrix} \f$
+                                 ** in \f$ M_2 \f$. */
+  size_t* secondSpecialColumns, /**< Array of length 2 with column indices
+                                 **  \f$ \begin{bmatrix} \varepsilon \\ d \end{bmatrix} \f$ and
+                                 **  \f$ \begin{bmatrix} 0 \\ d \end{bmatrix} \f$
+                                 **  in \f$ M_2 \f$. */
   int8_t characteristic,      /**< Field characteristic. */
   CMR_CHRMAT** presult        /**< Pointer for storing the result. */
 );
@@ -417,7 +424,7 @@ CMR_ERROR CMRthreeSumSeymourCompose(
  * \f$ M_2 = \begin{bmatrix} \varepsilon & 0 & b^{\textsf{T}} \\ d & d & D \end{bmatrix} \f$ such that
  * \f$ B = a b^{\textsf{T}} \f$ and \f$ C = d c^{\textsf{T}} \f$ hold and such that
  * \f$ a \f$ and \f$ c^{\textsf{T}} \f$ are an actual column and row of \f$ M \f$.
- * Consequently, \f$ b^{\textsf{T}} \f$ and \f$ d \f$ are possibly negated rows and columns of \f$ M \f$.
+ * Consequently, \f$ b^{\textsf{T}} \f$ and \f$ d \f$ are (possibly negated) rows and columns of \f$ M \f$.
  *
  * The value of \f$ \varepsilon \in \{-1,+1\} \f$ must be so that there exists a singular submatrix of \f$ M_1 \f$ with
  * exactly two nonzeros per row and per column that covers the top-left \f$ \varepsilon \f$-entry.
@@ -445,39 +452,40 @@ CMR_ERROR CMRthreeSumSeymourDecomposeEpsilon(
  * \f$ M_2 = \begin{bmatrix} \varepsilon & 0 & b^{\textsf{T}} \\ d & d & D \end{bmatrix} \f$ such that
  * \f$ B = a b^{\textsf{T}} \f$ and \f$ C = d c^{\textsf{T}} \f$ hold and such that
  * \f$ a \f$ and \f$ c^{\textsf{T}} \f$ are an actual column and row of \f$ M \f$.
- * Consequently, \f$ b^{\textsf{T}} \f$ and \f$ d \f$ are possibly negated rows and columns of \f$ M \f$.
+ * Consequently, \f$ b^{\textsf{T}} \f$ and \f$ d \f$ are (possibly negated) rows and columns of \f$ M \f$.
  *
  * The value of \f$ \varepsilon \in \{-1,+1\} \f$ must be given by \p epsilon and should be computed by
  * \ref CMRthreeSumSeymourDecomposeEpsilon.
  *
  * This function computes \f$ M_1 \f$, while \f$ M_2 \f$ can be computed by \ref CMRthreeSumSeymourDecomposeSecond.
  *
- * \note If \p pfirstMarker1 is not \c NULL, then \p *pfirstMarker1 will always refer to the last row.
- * \note If \p pfirstMarker2 is not \c NULL, then \p *pfirstMarker2 will always refer to the second-to-last column.
- * \note If \p pfirstMarker3 is not \c NULL, then \p *pfirstMarker3 will always refer to the last column
+ * \note If \p firstSpecialRows is not \c NULL, then \p firstSpecialRows[0] will refer to the last row of \f$ M_1 \f$.
+ * \note If \p firstSpecialColumns is not \c NULL, then \p firstSpecialColumns[0] will refer to the second-to last
+ *       column and \p firstSpecialColumns[1] will refer to the last column of \f$ M_2 \f$.
  */
 
 CMR_EXPORT
 CMR_ERROR CMRthreeSumSeymourDecomposeFirst(
-  CMR* cmr,                     /**< \ref CMR environment. */
-  CMR_CHRMAT* matrix,           /**< Input matrix \f$ M \f$. */
-  CMR_SEPA* sepa,               /**< 3-separation to decompose at. */
-  char epsilon,                 /**< Value of \f$ \varepsilon \f$. */
-  CMR_CHRMAT** pfirst,          /**< Pointer for storing the first matrix \f$ M_1 \f$. */
-  size_t* firstRowsOrigin,      /**< Array for storing the mapping from rows of \f$ M_1 \f$ to rows of \f$ M \f$;
-                                 **  also set for the extra row if applicable, even if negated; may be \c NULL. */
-  size_t* firstColumnsOrigin,   /**< Array for storing the mapping from columns of \f$ M_1 \f$ to columns of \f$ M \f$;
-                                 **  also set for the extra column if applicable, even if negated; may be \c NULL. */
-  size_t* rowsToFirst,          /**< Array for storing the mapping from rows of \f$ M \f$ to rows of \f$ M_1 \f$ or to
-                                 **  \c SIZE_MAX; may be \c NULL. */
-  size_t* columnsToFirst,       /**< Array for storing the mapping from columns of \f$ M \f$ to columns of \f$ M_1 \f$
-                                 **  or to \c SIZE_MAX; may be \c NULL. */
-  CMR_ELEMENT* pfirstMarker1,   /**< Pointer for storing the row index of \f$ c^{\textsf{T}} \f$ in \f$ M_1 \f$;
-                                 **  may be \c NULL. */
-  CMR_ELEMENT* pfirstMarker2,   /**< Pointer for storing the column index of the 1st copy of \f$ a \f$ in \f$ M_1 \f$;
-                                 **  may be \c NULL. */
-  CMR_ELEMENT* pfirstMarker3    /**< Pointer for storing the column index of the 2nd copy of \f$ a \f$ in \f$ M_1 \f$;
-                                 **  may be \c NULL. */
+  CMR* cmr,                   /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,         /**< Input matrix \f$ M \f$. */
+  CMR_SEPA* sepa,             /**< 3-separation to decompose at. */
+  char epsilon,               /**< Value of \f$ \varepsilon \f$. */
+  CMR_CHRMAT** pfirst,        /**< Pointer for storing the first matrix \f$ M_1 \f$. */
+  size_t* firstRowsOrigin,    /**< Array for storing the mapping from rows of \f$ M_1 \f$ to rows of \f$ M \f$;
+                               **  also set for the extra row if applicable, even if negated; may be \c NULL. */
+  size_t* firstColumnsOrigin, /**< Array for storing the mapping from columns of \f$ M_1 \f$ to columns of \f$ M \f$;
+                               **  also set for the extra column if applicable, even if negated; may be \c NULL. */
+  size_t* rowsToFirst,        /**< Array for storing the mapping from rows of \f$ M \f$ to rows of \f$ M_1 \f$ or to
+                               **  \c SIZE_MAX; may be \c NULL. */
+  size_t* columnsToFirst,     /**< Array for storing the mapping from columns of \f$ M \f$ to columns of \f$ M_1 \f$
+                               **  or to \c SIZE_MAX; may be \c NULL. */
+  size_t* firstSpecialRows,   /**< Array of length 1 for storing the row index of
+                               **  \f$ \begin{bmatrix} c^{\textsf{T}} & 0 & \varepsilon \end{bmatrix} \f$
+                               ** in \f$ M_1 \f$. */
+  size_t* firstSpecialColumns /**< Array of length 2 for storing the column indices of
+                               **  \f$ \begin{bmatrix} a \\ 0 \end{bmatrix} \f$ and
+                               **  \f$ \begin{bmatrix} a \\ \varepsilon \end{bmatrix} \f$
+                               ** in \f$ M_1 \f$. */
 );
 
 /**
@@ -490,16 +498,17 @@ CMR_ERROR CMRthreeSumSeymourDecomposeFirst(
  * \f$ M_2 = \begin{bmatrix} \varepsilon & 0 & b^{\textsf{T}} \\ d & d & D \end{bmatrix} \f$ such that
  * \f$ B = a b^{\textsf{T}} \f$ and \f$ C = d c^{\textsf{T}} \f$ hold and such that
  * \f$ a \f$ and \f$ c^{\textsf{T}} \f$ are an actual column and row of \f$ M \f$.
- * Consequently, \f$ b^{\textsf{T}} \f$ and \f$ d \f$ are possibly negated rows and columns of \f$ M \f$.
+ * Consequently, \f$ b^{\textsf{T}} \f$ and \f$ d \f$ are (possibly negated) rows and columns of \f$ M \f$.
  *
  * The value of \f$ \varepsilon \in \{-1,+1\} \f$ must be given by \p epsilon and should be computed by
  * \ref CMRthreeSumSeymourDecomposeEpsilon.
  *
  * This function computes \f$ M_2 \f$, while \f$ M_1 \f$ can be computed by \ref CMRthreeSumSeymourDecomposeFirst.
  *
- * \note If \p psecondMarker1 is not \c NULL, then \p *psecondMarker1 will always refer to the 1st row.
- * \note If \p psecondMarker2 is not \c NULL, then \p *psecondMarker2 will always refer to the 1st column.
- * \note If \p psecondMarker3 is not \c NULL, then \p *psecondMarker3 will always refer to the 2nd column
+ * \note If \p secondSpecialRows is not \c NULL, then \p secondSpecialRows[0] will refer to the first row of
+ *       \f$ M_2 \f$.
+ * \note If \p secondSpecialColumns is not \c NULL, then \p secondSpecialColumns[0] will refer to the first column and
+ *       \p secondSpecialColumns[1] will refer to the second column of \f$ M_2 \f$.
  */
 
 CMR_EXPORT
@@ -517,12 +526,13 @@ CMR_ERROR CMRthreeSumSeymourDecomposeSecond(
                                  **  \c SIZE_MAX; may be \c NULL. */
   size_t* columnsToSecond,      /**< Array for storing the mapping from columns of \f$ M \f$ to columns of \f$ M_2 \f$
                                  **  or to \c SIZE_MAX; may be \c NULL. */
-  CMR_ELEMENT* psecondMarker1,  /**< Pointer for storing the row index of \f$ b^{\textsf{T}} \f$ in \f$ M_2 \f$;
-                                 **  may be \c NULL. */
-  CMR_ELEMENT* psecondMarker2,  /**< Pointer for storing the column index of the 1st copy of \f$ d \f$ in \f$ M_2 \f$;
-                                 **  may be \c NULL. */
-  CMR_ELEMENT* psecondMarker3   /**< Pointer for storing the column index of the 2nd copy of \f$ d \f$ in \f$ M_2 \f$;
-                                 **  may be \c NULL. */
+  size_t* secondSpecialRows,    /**< Array of length 1 for storing the row index of
+                                 **  \f$ \begin{bmatrix} \varepsilon & 0 & b^{\textsf{T}} \end{bmatrix} \f$
+                                 ** in \f$ M_2 \f$. */
+  size_t* secondSpecialColumns  /**< Array of length 2 for storing the column indices of
+                                 **  \f$ \begin{bmatrix} \varepsilon & d \end{bmatrix} \f$ and
+                                 **  \f$ \begin{bmatrix} 0 & d \end{bmatrix} \f$
+                                 ** in \f$ M_2 \f$. */
 );
 
 /**
