@@ -48,9 +48,9 @@ Please cite the paper(s) corresponding to the respective tools.
 
 # Authors # {#authors}
 
-- [Rolf van der Hulst](https://people.utwente.nl/r.p.vanderhulst)
-- Henk Kraaij
-- [Klaus Truemper](https://personal.utdallas.edu/~klaus/)
+- [Rolf van der Hulst](https://people.utwente.nl/r.p.vanderhulst) (graphicness, network matrices)
+- Henk Kraaij (balancedness)
+- [Klaus Truemper](https://personal.utdallas.edu/~klaus/) (total unimodularity, regularity, complement total unimodularity)
 - [Matthias Walter](https://people.utwente.nl/m.walter) (maintainer)
 
 # Funding support 
