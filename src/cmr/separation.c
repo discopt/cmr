@@ -1627,7 +1627,6 @@ CMR_ERROR CMRthreeSumSeymourCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* sec
   else
     return CMR_ERROR_INPUT;
 
-
   /* Number of nonzeros. */
   size_t firstMainNumNonzeros = 0;
   size_t secondMainNumNonzeros = 0;
@@ -2416,9 +2415,292 @@ CMR_ERROR CMRthreeSumTruemperCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* se
     return CMR_ERROR_INPUT;
   }
 
+  /* Number of nonzeros. */
+  size_t firstMainNumNonzeros = 0;
+  size_t secondMainNumNonzeros = 0;
+
+  size_t specialRow1NumNonzeros = first->rowSlice[firstSpecialRows[0] + 1] - first->rowSlice[firstSpecialRows[0]];
+  size_t specialRow2NumNonzeros = first->rowSlice[firstSpecialRows[1] + 1] - first->rowSlice[firstSpecialRows[1]];
+  size_t specialColumn1NumNonzeros = 0;
+  size_t specialColumn2NumNonzeros = 0;
+  char* specialColumn1Dense = NULL; /* Entries of first special column in C. */
+  char* specialColumn2Dense = NULL; /* Entries of second special column in C. */
+
+  CMR_CALL( CMRallocStackArray(cmr, &specialColumn1Dense, second->numRows) );
+  CMR_CALL( CMRallocStackArray(cmr, &specialColumn2Dense, second->numRows) );
+
   CMR_ERROR error = CMR_OKAY;
+  for (size_t i = 0; i < second->numRows; ++i)
+    specialColumn1Dense[i] = specialColumn2Dense[i] = 0;
 
+  /* Scan 1st matrix. */
+  for (size_t firstRow = 0; firstRow < first->numRows; ++firstRow)
+  {
+    size_t begin = first->rowSlice[firstRow];
+    size_t beyond = first->rowSlice[firstRow+1];
+    if (firstRow != firstSpecialRows[0] && firstRow != firstSpecialRows[1])
+    {
+      firstMainNumNonzeros += beyond - begin;
+      for (size_t e = begin; e < beyond; ++e)
+      {
+        size_t column = first->entryColumns[e];
+        if (column == firstSpecialColumns[2])
+        {
+          /* Special column has nonzeros in non-special rows. */
+          CMRdbgMsg(4, "Bad structure: special column in 1st matrix has unexpected nonzeros.\n");
+          error = CMR_ERROR_STRUCTURE;
+          goto cleanup;
+        }
+      }
+    }
+  }
 
+  /* Scan 2nd matrix. */
+  char secondSpecial[2][2] = { {0, 0}, {0, 0} };
+  for (size_t secondRow = 0; secondRow < second->numRows; ++secondRow)
+  {
+    size_t begin = second->rowSlice[secondRow];
+    size_t beyond = second->rowSlice[secondRow+1];
+    if (secondRow == secondSpecialRows[0])
+    {
+      if ((beyond != begin + 2)
+        || ((second->entryColumns[begin] != secondSpecialColumns[0])
+          && (second->entryColumns[begin] != secondSpecialColumns[1]))
+        || ((second->entryColumns[begin+1] != secondSpecialColumns[0])
+          && (second->entryColumns[begin+1] != secondSpecialColumns[1])))
+      {
+        CMRdbgMsg(4, "Bad structure: special row in 2nd matrix has unexpected nonzeros.\n");
+        error = CMR_ERROR_STRUCTURE;
+        goto cleanup;
+      }
+    }
+    else
+    {
+      for (size_t e = begin; e < beyond; ++e)
+      {
+        size_t secondColumn = second->entryColumns[e];
+        if (secondColumn == secondSpecialColumns[0])
+        {
+          specialColumn1Dense[secondRow] = second->entryValues[e];
+          ++specialColumn1NumNonzeros;
+          if (secondRow == secondSpecialRows[1])
+            secondSpecial[0][0] = second->entryValues[e];
+          if (secondRow == secondSpecialRows[2])
+            secondSpecial[1][0] = second->entryValues[e];
+        }
+        else if (secondColumn == secondSpecialColumns[1])
+        {
+          specialColumn2Dense[secondRow] = second->entryValues[e];
+          ++specialColumn2NumNonzeros;
+          if (secondRow == secondSpecialRows[1])
+            secondSpecial[0][1] = second->entryValues[e];
+          if (secondRow == secondSpecialRows[2])
+            secondSpecial[1][1] = second->entryValues[e];
+        }
+        else
+          ++secondMainNumNonzeros;
+      }
+    }
+  }
+
+  /* Extract 2x2 special matrix also from first matrix. */
+  char firstSpecial[2][2] = { {0, 0}, {0, 0} };
+  for (int specialRow = 0; specialRow < 2; ++specialRow)
+  {
+    size_t beyond = first->rowSlice[firstSpecialRows[specialRow] + 1];
+    for (size_t e = first->rowSlice[firstSpecialRows[specialRow]]; e < beyond; ++e)
+    {
+      size_t column = first->entryColumns[e];
+      if (column == firstSpecialColumns[0])
+        firstSpecial[specialRow][0] = first->entryValues[e];
+      else if (column == firstSpecialColumns[1])
+        firstSpecial[specialRow][1] = first->entryValues[e];
+    }
+  }
+  CMRdbgMsg(2, "Special 2x2 submatrix of first matrix is\n%2d %2d\n%2d %2d\n", firstSpecial[0][0], firstSpecial[0][1],
+    firstSpecial[1][0], firstSpecial[1][1]);
+
+  CMRdbgMsg(2, "Special 2x2 submatrix of second matrix is\n%2d %2d\n%2d %2d\n", secondSpecial[0][0], secondSpecial[0][1],
+    secondSpecial[1][0], secondSpecial[1][1]);
+
+  if ((firstSpecial[0][0] != secondSpecial[0][0]) || (firstSpecial[0][1] != secondSpecial[0][1])
+    || (firstSpecial[1][0] != secondSpecial[1][0]) || (firstSpecial[1][1] != secondSpecial[1][1]))
+  {
+    error = CMR_ERROR_STRUCTURE;
+    goto cleanup;
+  }
+
+  int specialDeterminant = firstSpecial[0][0] * firstSpecial[1][1] - firstSpecial[0][1] * firstSpecial[1][0];
+  if ((specialDeterminant == 0) || (characteristic != 0 && (specialDeterminant % characteristic) == 0))
+  {
+    CMRdbgMsg(4, "Bad structure: special 2x2 matrix has determinant 0.\n");
+    error = CMR_ERROR_STRUCTURE;
+    goto cleanup;
+  }
+
+  /* Construct resulting matrix. */
+  CMR_CALL( CMRchrmatCreate(cmr, presult, first->numRows + second->numRows - 3,
+    first->numColumns + second->numColumns - 3, firstMainNumNonzeros + secondMainNumNonzeros
+    + (specialRow1NumNonzeros + specialRow2NumNonzeros) * (specialColumn1NumNonzeros + specialColumn2NumNonzeros)) );
+  CMR_CHRMAT* result = *presult;
+
+  /* Copy first matrix. */
+  size_t numNonzeros = 0;
+  size_t resultRow = 0;
+  for (size_t firstRow = 0; firstRow < first->numRows; ++firstRow)
+  {
+    result->rowSlice[resultRow] = numNonzeros;
+    size_t begin = first->rowSlice[firstRow];
+    size_t beyond = first->rowSlice[firstRow + 1];
+    if (firstRow != firstSpecialRows[0] && firstRow != firstSpecialRows[1])
+    {
+      for (size_t e = begin; e < beyond; ++e)
+      {
+        size_t firstColumn = first->entryColumns[e];
+        size_t resultColumn = firstColumn + ((firstColumn > firstSpecialColumns[2]) ? 1 : 0);
+        result->entryColumns[numNonzeros] = resultColumn;
+        result->entryValues[numNonzeros] = first->entryValues[e];
+        ++numNonzeros;
+      }
+      ++resultRow;
+    }
+  }
+  for (size_t secondRow = 0; secondRow < second->numRows; ++secondRow)
+  {
+    if (secondRow != secondSpecialRows[0])
+    {
+      result->rowSlice[resultRow] = numNonzeros;
+
+      /* Bottom-left: compute multipliers based on special 2x2 matrix and the dense columns via
+       * Cramer's rule. */
+      int specialMultipliers[2];
+      specialMultipliers[0] = specialColumn1Dense[secondRow] * firstSpecial[1][1]
+        - specialColumn2Dense[secondRow] * firstSpecial[1][0];
+      if ((specialMultipliers[0] % specialDeterminant) != 0)
+      {
+        error = CMR_ERROR_STRUCTURE;
+        goto cleanup;
+      }
+      specialMultipliers[1] = firstSpecial[0][0] * specialColumn2Dense[secondRow]
+        - firstSpecial[0][1] * specialColumn1Dense[secondRow];
+      if ((specialMultipliers[1] % specialDeterminant) != 0)
+      {
+        error = CMR_ERROR_STRUCTURE;
+        goto cleanup;
+      }
+      if (characteristic == 0)
+      {
+        specialMultipliers[0] /= specialDeterminant;
+        specialMultipliers[1] /= specialDeterminant;
+      }
+      else
+      {
+        int inverse = 1;
+        for (int c = characteristic - 1; c >= 0; --c)
+        {
+          inverse++;
+          if (((((inverse * specialDeterminant) % characteristic) + characteristic) % characteristic) == 1)
+            break;
+        }
+        CMRdbgMsg(4, "Inverse of %d over %d is %d.\n", specialDeterminant, characteristic, inverse);
+        specialMultipliers[0] *= inverse;
+        specialMultipliers[1] *= inverse;
+      }
+
+      CMRdbgMsg(4, "For 2nd matrix row #%zu with special column entries %d and %d, multipliers are %d and %d.\n",
+        secondRow, specialColumn1Dense[secondRow], specialColumn2Dense[secondRow],
+        specialMultipliers[0], specialMultipliers[1]);
+
+      size_t specialEntry[2] = { first->rowSlice[firstSpecialRows[0]], first->rowSlice[firstSpecialRows[1]] };
+      size_t specialBeyond[2] = { first->rowSlice[firstSpecialRows[0] + 1], first->rowSlice[firstSpecialRows[1] + 1] };
+      while (specialEntry[0] < specialBeyond[0] || specialEntry[1] < specialBeyond[1])
+      {
+        if (specialEntry[0] < specialBeyond[0] && first->entryColumns[specialEntry[0]] == firstSpecialColumns[2])
+            specialEntry[0]++;
+        if (specialEntry[1] < specialBeyond[1] && first->entryColumns[specialEntry[1]] == firstSpecialColumns[2])
+            specialEntry[1]++;
+
+        size_t specialColumns[2] = { SIZE_MAX, SIZE_MAX };
+        int specialValues[2] = { 0, 0 };
+        for (int i = 0; i < 2; ++i)
+        {
+          if (specialEntry[i] < specialBeyond[i])
+          {
+            specialColumns[i] = first->entryColumns[specialEntry[i]];
+            specialValues[i] = first->entryValues[specialEntry[i]];
+          }
+        }
+        size_t resultColumn = specialColumns[0] < specialColumns[1] ? specialColumns[0] : specialColumns[1];
+        int resultValue = 0;
+        if (specialColumns[0] == resultColumn)
+        {
+          resultValue += specialValues[0] * specialMultipliers[0];
+          specialEntry[0]++;
+        }
+        if (specialColumns[1] == resultColumn)
+        {
+          resultValue += specialValues[1] * specialMultipliers[1];
+          specialEntry[1]++;
+        }
+
+        /* Take care of modulo operations. */
+        if (characteristic != 0)
+        {
+          resultValue = resultValue % characteristic;
+          if (resultValue < 0)
+            resultValue += characteristic;
+          if (characteristic == 3 && resultValue == 2)
+            resultValue -= 3;
+        }
+
+        if (resultValue)
+        {
+          CMRdbgMsg(6, "Creating a %d in column %zu.\n", resultValue, resultColumn);
+          result->entryColumns[numNonzeros] = resultColumn;
+          result->entryValues[numNonzeros] = resultValue;
+          ++numNonzeros;
+        }
+      }
+
+      /* Bottom-right. */
+      size_t begin = second->rowSlice[secondRow];
+      size_t beyond = second->rowSlice[secondRow + 1];
+      for (size_t e = begin; e < beyond; ++e)
+      {
+        size_t secondColumn = second->entryColumns[e];
+
+        if (secondColumn == secondSpecialColumns[0] || secondColumn == secondSpecialColumns[1])
+          continue;
+
+        CMRdbgMsg(6, "Dealing with 2nd matrix entry #%zu %d in column c%zu and row r%zu.\n", e, second->entryValues[e],
+          secondColumn + 1, secondRow + 1);
+
+        size_t resultColumn = first->numColumns - 1 + secondColumn;
+        if (secondColumn >= secondSpecialColumns[0])
+          --resultColumn;
+        if (secondColumn >= secondSpecialColumns[1])
+          --resultColumn;
+
+        CMRdbgMsg(8, "-> column c%zu -> c%zu\n", first->numColumns - 1 + secondColumn + 1, resultColumn + 1);
+
+        result->entryColumns[numNonzeros] = resultColumn;
+        result->entryValues[numNonzeros] = second->entryValues[e];
+        ++numNonzeros;
+        assert(numNonzeros <= result->numNonzeros);
+
+        CMRdbgMsg(8, "-> row r%zu\n", resultRow + 1);
+      }
+
+      ++resultRow;
+    }
+  }
+  result->rowSlice[resultRow] = numNonzeros;
+  result->numNonzeros = numNonzeros;
+
+cleanup:
+
+  CMR_CALL( CMRfreeStackArray(cmr, &specialColumn2Dense) );
+  CMR_CALL( CMRfreeStackArray(cmr, &specialColumn1Dense) );
 
   return error;
 }

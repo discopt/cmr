@@ -698,3 +698,134 @@ TEST(Separation, ThreeSumSeymourDecomposition)
 
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
+
+TEST(Separation, ThreeSumTruemperComposition)
+{
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+
+  {
+    CMR_CHRMAT* first = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &first, "4 5 "
+      " 1  0  1  1 0 "
+      " 0  1  1  1 0 "
+      " 1  0  1  0 1 "
+      " 0 -1  0 -1 1 "
+    ) );
+    CMR_CHRMAT* second = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &second, "5 4 "
+      " 1  1  0  0 "
+      " 1  0  1  1 "
+      " 0 -1  1  1 "
+      " 1  0  1  0 "
+      " 0 -1  0  1 "
+    ) );
+
+    CMR_CHRMAT* check = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &check, " 6 6 "
+      " 1  0  1  1 0 0 "
+      " 0  1  1  1 0 0 "
+      " 1  0  1  0 1 1 "
+      " 0 -1  0 -1 1 1 "
+      " 1  0  1  0 1 0 "
+      " 0 -1  0 -1 0 1 "
+    ) );
+
+    CMR_CHRMAT* threesum = NULL;
+    size_t firstSpecialRows[2] = { 2, 3 };
+    size_t firstSpecialColumns[3] = { 2, 3, 4 };
+    size_t secondSpecialRows[3] = { 0, 1, 2 };
+    size_t secondSpecialColumns[2] = { 0, 1 };
+    ASSERT_CMR_CALL( CMRthreeSumTruemperCompose(cmr, first, second, firstSpecialRows, firstSpecialColumns,
+      secondSpecialRows, secondSpecialColumns, 3, &threesum) );
+
+    CMRchrmatPrintDense(cmr, threesum, stdout, '0', false);
+
+    ASSERT_TRUE( CMRchrmatCheckEqual(threesum, check) );
+
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &threesum) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &check) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &second) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &first) );
+  }
+
+  {
+    CMR_CHRMAT* first = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &first, "4 5 "
+      " 1  0  1  1 0 "
+      " 0  1  1  1 0 "
+      " 1  0  1  0 1 "
+      " 0 -1  1 -1 1 "
+    ) );
+    CMR_CHRMAT* second = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &second, "5 4 "
+      " 1  1  0  0 "
+      " 1  0  1  1 "
+      " 1 -1  1  1 "
+      " 1  0  1  0 "
+      " 0 -1  0  1 "
+    ) );
+
+    CMR_CHRMAT* check = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &check, " 6 6 "
+      " 1  0  1  1 0 0 "
+      " 0  1  1  1 0 0 "
+      " 1  0  1  0 1 1 "
+      " 0 -1  1 -1 1 1 "
+      " 1  0  1  0 1 0 "
+      "-1 -1  0 -1 0 1 "
+    ) );
+
+    CMR_CHRMAT* threesum = NULL;
+    size_t firstSpecialRows[2] = { 2, 3 };
+    size_t firstSpecialColumns[3] = { 2, 3, 4 };
+    size_t secondSpecialRows[3] = { 0, 1, 2 };
+    size_t secondSpecialColumns[2] = { 0, 1 };
+    ASSERT_CMR_CALL( CMRthreeSumTruemperCompose(cmr, first, second, firstSpecialRows, firstSpecialColumns,
+      secondSpecialRows, secondSpecialColumns, 3, &threesum) );
+
+    CMRchrmatPrintDense(cmr, threesum, stdout, '0', false);
+
+    ASSERT_TRUE( CMRchrmatCheckEqual(threesum, check) );
+
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &threesum) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &check) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &second) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &first) );
+  }
+
+  {
+    /* Inconsistent special matrix. */
+
+    CMR_CHRMAT* first = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &first, "4 5 "
+      " 1  0  1  1 0 "
+      " 0  1  1  1 0 "
+      " 1  0  1  0 1 "
+      " 0 -1  1 -1 1 "
+    ) );
+    CMR_CHRMAT* second = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &second, "5 4 "
+      " 1  1  0  0 "
+      " 1  0  1  1 "
+      " 0 -1  1  1 "
+      " 1  0  1  0 "
+      " 0 -1  0  1 "
+    ) );
+
+    CMR_CHRMAT* threesum = NULL;
+    size_t firstSpecialRows[2] = { 2, 3 };
+    size_t firstSpecialColumns[3] = { 2, 3, 4 };
+    size_t secondSpecialRows[3] = { 0, 1, 2 };
+    size_t secondSpecialColumns[2] = { 0, 1 };
+    CMR_ERROR error = CMRthreeSumTruemperCompose(cmr, first, second, firstSpecialRows, firstSpecialColumns,
+      secondSpecialRows, secondSpecialColumns, 3, &threesum);
+
+    ASSERT_EQ( error, CMR_ERROR_STRUCTURE );
+
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &second) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &first) );
+  }
+
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
+}
