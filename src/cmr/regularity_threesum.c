@@ -315,6 +315,8 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
     assert(pivotColumn != SIZE_MAX);
   }
 
+  CMR_CHRMAT* pivotedMatrix = NULL;
+  CMR_CHRMAT* pivotedTranspose = NULL;
   CMR_CHRMAT* goodRankMatrix = NULL;
   CMR_CHRMAT* goodRankTranspose = NULL;
   if (pivotRow != SIZE_MAX)
@@ -374,8 +376,6 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
 
   /* Now the ranks are good for goodRankMatrix and goodRankTranspose, aligned with separation. */
 
-  CMR_CHRMAT* pivotedMatrix = NULL;
-  CMR_CHRMAT* pivotedTranspose = NULL;
   if (task->params->threeSumPivotChildren)
   {
     assert(false);

@@ -303,7 +303,10 @@ int main(int argc, char** argv)
       timeLimit);
   }
   else
+  {
     assert(false);
+    error = CMR_ERROR_INPUT;
+  }
 
   switch (error)
   {

@@ -289,6 +289,10 @@ int main(int argc, char** argv)
 
     error = findLargeSubmatrix(inputMatrixFileName, inputFormat, ternary, epsilon, outputSubmatrixFileName);
   }
+  else
+  {
+    error = CMR_ERROR_INPUT;
+  }
 
   switch (error)
   {
