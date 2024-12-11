@@ -140,6 +140,7 @@ Enumerations</h2></td></tr>
 &#160;&#160;<a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87a1f785f7c78ce1a174f7c97d1e3ce138e">CMR_ERROR_INVALID</a> = 4
 , <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87a02cd1e3f281e537183375597e4f06659">CMR_ERROR_OVERFLOW</a> = 5
 , <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87a0af5d18869e21701a04678a9db066833">CMR_ERROR_TIMEOUT</a> = 6
+, <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87ad0aca99d1d0977a6619dda45d53bebc9">CMR_ERROR_STRUCTURE</a> = 7
 <br />
  }</td></tr>
 <tr class="memdesc:ae2f4ad54b976c2b9a099246c6dc0be87"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type for return codes of library functions.  <a href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">More...</a><br /></td></tr>
@@ -203,22 +204,31 @@ Functions</h2></td></tr>
 <div class="line">    { \</div>
 <div class="line">      if (_cmr_error == <a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87a7db4598810ed8bae95b3ec9bae8a051d">CMR_ERROR_INPUT</a>) \</div>
 <div class="line">        fprintf(stderr, <span class="stringliteral">&quot;User input error&quot;</span>); \</div>
+<div class="line">      else <span class="keywordflow">if</span> (_cmr_error == <a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87abf871702ed73e3007d1dfea92473b1b7">CMR_ERROR_OUTPUT</a>) \</div>
+<div class="line">        fprintf(stderr, <span class="stringliteral">&quot;Error when writing user output&quot;</span>); \</div>
 <div class="line">      else <span class="keywordflow">if</span> (_cmr_error == <a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87a15ada77a9e903795a562c60d1f9bafe1">CMR_ERROR_MEMORY</a>) \</div>
 <div class="line">        fprintf(stderr, <span class="stringliteral">&quot;Memory (re)allocation failed&quot;</span>); \</div>
 <div class="line">      else <span class="keywordflow">if</span> (_cmr_error == <a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87a1f785f7c78ce1a174f7c97d1e3ce138e">CMR_ERROR_INVALID</a>) \</div>
 <div class="line">        fprintf(stderr, <span class="stringliteral">&quot;Invalid input&quot;</span>); \</div>
 <div class="line">      else <span class="keywordflow">if</span> (_cmr_error == <a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87a0af5d18869e21701a04678a9db066833">CMR_ERROR_TIMEOUT</a>) \</div>
 <div class="line">        fprintf(stderr, <span class="stringliteral">&quot;Time limit exceeded&quot;</span>); \</div>
+<div class="line">      else <span class="keywordflow">if</span> (_cmr_error == <a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87a02cd1e3f281e537183375597e4f06659">CMR_ERROR_OVERFLOW</a>) \</div>
+<div class="line">        fprintf(stderr, <span class="stringliteral">&quot;Integer overflow&quot;</span>); \</div>
+<div class="line">      else <span class="keywordflow">if</span> (_cmr_error == <a class="code" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87ad0aca99d1d0977a6619dda45d53bebc9">CMR_ERROR_STRUCTURE</a>) \</div>
+<div class="line">        fprintf(stderr, <span class="stringliteral">&quot;Invalid matrix structure&quot;</span>); \</div>
 <div class="line">      else \</div>
 <div class="line">        fprintf(stderr, <span class="stringliteral">&quot;Unknown error&quot;</span>); \</div>
 <div class="line">      fprintf(stderr, <span class="stringliteral">&quot; in %s:%d.\n&quot;</span>, __FILE__, __LINE__); \</div>
 <div class="line">      return _cmr_error; \</div>
 <div class="line">    } \</div>
 <div class="line">  } <span class="keywordflow">while</span> (<span class="keyword">false</span>)</div>
+<div class="ttc" id="aenv_8h_html_ae2f4ad54b976c2b9a099246c6dc0be87a02cd1e3f281e537183375597e4f06659"><div class="ttname"><a href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87a02cd1e3f281e537183375597e4f06659">CMR_ERROR_OVERFLOW</a></div><div class="ttdeci">@ CMR_ERROR_OVERFLOW</div><div class="ttdef"><b>Definition:</b> env.h:38</div></div>
 <div class="ttc" id="aenv_8h_html_ae2f4ad54b976c2b9a099246c6dc0be87a0af5d18869e21701a04678a9db066833"><div class="ttname"><a href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87a0af5d18869e21701a04678a9db066833">CMR_ERROR_TIMEOUT</a></div><div class="ttdeci">@ CMR_ERROR_TIMEOUT</div><div class="ttdef"><b>Definition:</b> env.h:39</div></div>
 <div class="ttc" id="aenv_8h_html_ae2f4ad54b976c2b9a099246c6dc0be87a15ada77a9e903795a562c60d1f9bafe1"><div class="ttname"><a href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87a15ada77a9e903795a562c60d1f9bafe1">CMR_ERROR_MEMORY</a></div><div class="ttdeci">@ CMR_ERROR_MEMORY</div><div class="ttdef"><b>Definition:</b> env.h:36</div></div>
 <div class="ttc" id="aenv_8h_html_ae2f4ad54b976c2b9a099246c6dc0be87a1f785f7c78ce1a174f7c97d1e3ce138e"><div class="ttname"><a href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87a1f785f7c78ce1a174f7c97d1e3ce138e">CMR_ERROR_INVALID</a></div><div class="ttdeci">@ CMR_ERROR_INVALID</div><div class="ttdef"><b>Definition:</b> env.h:37</div></div>
 <div class="ttc" id="aenv_8h_html_ae2f4ad54b976c2b9a099246c6dc0be87a7db4598810ed8bae95b3ec9bae8a051d"><div class="ttname"><a href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87a7db4598810ed8bae95b3ec9bae8a051d">CMR_ERROR_INPUT</a></div><div class="ttdeci">@ CMR_ERROR_INPUT</div><div class="ttdef"><b>Definition:</b> env.h:34</div></div>
+<div class="ttc" id="aenv_8h_html_ae2f4ad54b976c2b9a099246c6dc0be87abf871702ed73e3007d1dfea92473b1b7"><div class="ttname"><a href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87abf871702ed73e3007d1dfea92473b1b7">CMR_ERROR_OUTPUT</a></div><div class="ttdeci">@ CMR_ERROR_OUTPUT</div><div class="ttdef"><b>Definition:</b> env.h:35</div></div>
+<div class="ttc" id="aenv_8h_html_ae2f4ad54b976c2b9a099246c6dc0be87ad0aca99d1d0977a6619dda45d53bebc9"><div class="ttname"><a href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87ad0aca99d1d0977a6619dda45d53bebc9">CMR_ERROR_STRUCTURE</a></div><div class="ttdeci">@ CMR_ERROR_STRUCTURE</div><div class="ttdef"><b>Definition:</b> env.h:40</div></div>
 </div><!-- fragment -->
 <p>Call wrapper for calls returning a <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>. </p>
 
@@ -497,6 +507,8 @@ Functions</h2></td></tr>
 <tr><td class="fieldname"><a id="ae2f4ad54b976c2b9a099246c6dc0be87a02cd1e3f281e537183375597e4f06659"></a>CMR_ERROR_OVERFLOW&#160;</td><td class="fielddoc"><p>Overflow in numerical computations. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="ae2f4ad54b976c2b9a099246c6dc0be87a0af5d18869e21701a04678a9db066833"></a>CMR_ERROR_TIMEOUT&#160;</td><td class="fielddoc"><p>Time limit exceeded. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ae2f4ad54b976c2b9a099246c6dc0be87ad0aca99d1d0977a6619dda45d53bebc9"></a>CMR_ERROR_STRUCTURE&#160;</td><td class="fielddoc"><p>Bad matrix structure. </p>
 </td></tr>
 </table>
 
