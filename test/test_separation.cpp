@@ -1164,16 +1164,16 @@ TEST(Separation, ThreeSumTruemperDecomposition)
     ASSERT_CMR_CALL( CMRthreeSumTruemperDecomposeConnecting(cmr, matrix, transpose, sepa, specialRows, specialColumns,
       &gamma, &beta) );
     /* Rows are {2,4} and {3,5}. So in particular in [2,6), sum is odd. */
-    ASSERT_GE( specialRows[0], 2 );
+    ASSERT_GE( specialRows[0], 4 );
     ASSERT_LT( specialRows[0], 6 );
-    ASSERT_GE( specialRows[1], 2 );
+    ASSERT_GE( specialRows[1], 4 );
     ASSERT_LT( specialRows[1], 6 );
     ASSERT_EQ( (specialRows[0] + specialRows[1]) % 2, "one row odd, one row even" ? 1 : 0 );
 
     ASSERT_GE( specialColumns[0], 0 );
-    ASSERT_LT( specialColumns[0], 4 );
+    ASSERT_LT( specialColumns[0], 2 );
     ASSERT_GE( specialColumns[1], 0 );
-    ASSERT_LT( specialColumns[1], 4 );
+    ASSERT_LT( specialColumns[1], 2 );
     ASSERT_EQ( (specialColumns[0] + specialColumns[1]) % 2, "one column odd, one column even" ? 1 : 0 );
 
     /* Connecting matrix:
@@ -1184,8 +1184,8 @@ TEST(Separation, ThreeSumTruemperDecomposition)
      * full det = 1 - 1 - 1   = -1 * 0 + ... (independent of gamma)
      */
 
-    ASSERT_EQ( gamma, 1 );
-    ASSERT_EQ( beta, -1 );
+    ASSERT_EQ( gamma, -1 );
+    ASSERT_EQ( beta, 1 );
 
     CMR_CHRMAT* first = NULL;
     ASSERT_CMR_CALL( CMRthreeSumTruemperDecomposeFirst(cmr, matrix, sepa, specialRows, specialColumns, beta, &first, NULL,
@@ -1204,6 +1204,8 @@ TEST(Separation, ThreeSumTruemperDecomposition)
     CMR_CHRMAT* second = NULL;
     ASSERT_CMR_CALL( CMRthreeSumTruemperDecomposeSecond(cmr, matrix, sepa, specialRows, specialColumns, gamma, &second, NULL,
       NULL, NULL, NULL, NULL, NULL) );
+
+    CMRchrmatPrintDense(cmr, second, stdout, '0', true);
 
     CMR_CHRMAT* checkSecond = NULL;
     ASSERT_CMR_CALL( stringToCharMatrix(cmr, &checkSecond, " 4 4 "
