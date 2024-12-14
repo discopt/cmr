@@ -84,6 +84,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &lt;<a class="el" href="separation_8h_source.html">cmr/separation.h</a>&gt;</code><br />
+<code>#include &quot;<a class="el" href="separation__internal_8h_source.html">separation_internal.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="env__internal_8h_source.html">env_internal.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="bipartite__graph_8h_source.html">bipartite_graph.h</a>&quot;</code><br />
 <code>#include &lt;stdint.h&gt;</code><br />
@@ -161,6 +162,18 @@ Functions</h2></td></tr>
 <tr class="memitem:a9be8e6ed205ef479b31bf08151e3fe03"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="separation_8c.html#a9be8e6ed205ef479b31bf08151e3fe03">CMRthreeSumTruemperCompose</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *first, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *second, size_t *firstSpecialRows, size_t *firstSpecialColumns, size_t *secondSpecialRows, size_t *secondSpecialColumns, int8_t characteristic, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> **presult)</td></tr>
 <tr class="memdesc:a9be8e6ed205ef479b31bf08151e3fe03"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs the Truemper 3-sum of the two matrices <code>first</code> and <code>second</code> at connecting rows <code>firstSpecialRows</code> and <code>secondSpecialRows</code> and columns <code>firstSpecialColumns</code> and <code>secondSpecialColumns</code>.  <a href="separation_8c.html#a9be8e6ed205ef479b31bf08151e3fe03">More...</a><br /></td></tr>
 <tr class="separator:a9be8e6ed205ef479b31bf08151e3fe03"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2375829ba72dbc6d040b8c3a581a4a5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="separation_8c.html#ad2375829ba72dbc6d040b8c3a581a4a5">CMRthreeSumTruemperDecomposeSearch</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *transpose, <a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *sepa, bool topLeft, bool bottomRight, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **pviolator, size_t *specialRows, size_t *specialColumns, char *pgamma, char *pbeta)</td></tr>
+<tr class="memdesc:ad2375829ba72dbc6d040b8c3a581a4a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Carries out the search for the connecting submatrix for a Truemper 3-sum.  <a href="separation_8c.html#ad2375829ba72dbc6d040b8c3a581a4a5">More...</a><br /></td></tr>
+<tr class="separator:ad2375829ba72dbc6d040b8c3a581a4a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92c14d3678beb91fcf3e73622fa16090"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="separation_8c.html#a92c14d3678beb91fcf3e73622fa16090">CMRthreeSumTruemperDecomposeConnecting</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *transpose, <a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *sepa, size_t *specialRows, size_t *specialColumns, char *pgamma, char *pbeta)</td></tr>
+<tr class="memdesc:a92c14d3678beb91fcf3e73622fa16090"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decomposes <code>matrix</code> as a Truemper 3-sum according to the 3-separation <code>sepa</code>, computing the connecing matrix.  <a href="separation_8c.html#a92c14d3678beb91fcf3e73622fa16090">More...</a><br /></td></tr>
+<tr class="separator:a92c14d3678beb91fcf3e73622fa16090"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76f7f5d4f3c9dca64e55640db53b381c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="separation_8c.html#a76f7f5d4f3c9dca64e55640db53b381c">CMRthreeSumTruemperDecomposeFirst</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, <a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *sepa, size_t *specialRows, size_t *specialColumns, char beta, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> **pfirst, size_t *firstRowsOrigin, size_t *firstColumnsOrigin, size_t *rowsToFirst, size_t *columnsToFirst, size_t *firstSpecialRows, size_t *firstSpecialColumns)</td></tr>
+<tr class="memdesc:a76f7f5d4f3c9dca64e55640db53b381c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decomposes <code>matrix</code> as a Truemper 3-sum according to the 3-separation <code>sepa</code>, computing the first component.  <a href="separation_8c.html#a76f7f5d4f3c9dca64e55640db53b381c">More...</a><br /></td></tr>
+<tr class="separator:a76f7f5d4f3c9dca64e55640db53b381c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f6b3c590d75defbb2bf78bc7f5cc9a8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="separation_8c.html#a7f6b3c590d75defbb2bf78bc7f5cc9a8">CMRthreeSumTruemperDecomposeSecond</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, <a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *sepa, size_t *specialRows, size_t *specialColumns, char gamma, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> **psecond, size_t *secondRowsOrigin, size_t *secondColumnsOrigin, size_t *rowsToSecond, size_t *columnsToSecond, size_t *secondSpecialRows, size_t *secondSpecialColumns)</td></tr>
+<tr class="memdesc:a7f6b3c590d75defbb2bf78bc7f5cc9a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decomposes <code>matrix</code> as a Truemper 3-sum according to the 3-separation <code>sepa</code>, computing the second component.  <a href="separation_8c.html#a7f6b3c590d75defbb2bf78bc7f5cc9a8">More...</a><br /></td></tr>
+<tr class="separator:a7f6b3c590d75defbb2bf78bc7f5cc9a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="a5d3f5359524882feaaf0f788b16ea92e"></a>
@@ -1057,9 +1070,7 @@ Functions</h2></td></tr>
 <p>The input <code>matrix</code> \( M \) must have a 3-separation that is given by <code>sepa</code>, i.e., it can be reordered to look like \( M = \begin{bmatrix} A &amp; B \\ C &amp; D \end{bmatrix} \), where \( \text{rank}(B) = \text{rank}(C) = 1 \). The two components of the 3-sum are matrices \( M_1 = \begin{bmatrix} A &amp; a &amp; a \\ c^{\textsf{T}} &amp; 0 &amp; \varepsilon \end{bmatrix} \) and \( M_2 = \begin{bmatrix} \varepsilon &amp; 0 &amp; b^{\textsf{T}} \\ d &amp; d &amp; D \end{bmatrix} \) such that \( B = a b^{\textsf{T}} \) and \( C = d c^{\textsf{T}} \) hold and such that \( a \) and \( c^{\textsf{T}} \) are an actual column and row of \( M \). Consequently, \( b^{\textsf{T}} \) and \( d \) are (possibly negated) rows and columns of \( M \).</p>
 <p>The value of \( \varepsilon \in \{-1,+1\} \) must be given by <code>epsilon</code> and should be computed by <a class="el" href="separation_8c.html#ae27fe1df4283ca0c1e5d2f8f0ba82316">CMRthreeSumSeymourDecomposeEpsilon</a>.</p>
 <p>This function computes \( M_1 \), while \( M_2 \) can be computed by <a class="el" href="separation_8c.html#ad60a98a7bba521c47494e9b3189a3b78">CMRthreeSumSeymourDecomposeSecond</a>.</p>
-<dl class="section note"><dt>Note</dt><dd>If <code>firstSpecialRows</code> is not <code>NULL</code>, then <code>firstSpecialRows</code>[0] will refer to the last row of \( M_1 \). </dd>
-<dd>
-If <code>firstSpecialColumns</code> is not <code>NULL</code>, then <code>firstSpecialColumns</code>[0] will refer to the second-to last column and <code>firstSpecialColumns</code>[1] will refer to the last column of \( M_2 \). </dd></dl>
+<p>If <code>firstSpecialRows</code> is not <code>NULL</code>, then <code>firstSpecialRows</code>[0] will refer to the last row of \( M_1 \). If <code>firstSpecialColumns</code> is not <code>NULL</code>, then <code>firstSpecialColumns</code>[0] will refer to the second-to last column and <code>firstSpecialColumns</code>[1] will refer to the last column of \( M_2 \). </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
@@ -1071,8 +1082,8 @@ If <code>firstSpecialColumns</code> is not <code>NULL</code>, then <code>firstSp
     <tr><td class="paramname">firstColumnsOrigin</td><td>Array for storing the mapping from columns of \( M_1 \) to columns of \( M \); also set for the extra column if applicable, even if negated; may be <code>NULL</code>. </td></tr>
     <tr><td class="paramname">rowsToFirst</td><td>Array for storing the mapping from rows of \( M \) to rows of \( M_1 \) or to <code>SIZE_MAX</code>; may be <code>NULL</code>. </td></tr>
     <tr><td class="paramname">columnsToFirst</td><td>Array for storing the mapping from columns of \( M \) to columns of \( M_1 \) or to <code>SIZE_MAX</code>; may be <code>NULL</code>. </td></tr>
-    <tr><td class="paramname">firstSpecialRows</td><td>Array of length 1 for storing the row index of \( \begin{bmatrix} c^{\textsf{T}} &amp; 0 &amp; \varepsilon \end{bmatrix} \) in \( M_1 \). </td></tr>
-    <tr><td class="paramname">firstSpecialColumns</td><td>Array of length 2 for storing the column indices of \( \begin{bmatrix} a \\ 0 \end{bmatrix} \) and \( \begin{bmatrix} a \\ \varepsilon \end{bmatrix} \) in \( M_1 \). </td></tr>
+    <tr><td class="paramname">firstSpecialRows</td><td>Array of length 1 for storing the row index of \( \begin{bmatrix} c^{\textsf{T}} &amp; 0 &amp; \varepsilon \end{bmatrix} \) in \( M_1 \); may be <code>NULL</code>. </td></tr>
+    <tr><td class="paramname">firstSpecialColumns</td><td>Array of length 2 for storing the column indices of \( \begin{bmatrix} a \\ 0 \end{bmatrix} \) and \( \begin{bmatrix} a \\ \varepsilon \end{bmatrix} \) in \( M_1 \); may be <code>NULL</code>. </td></tr>
   </table>
   </dd>
 </dl>
@@ -1177,8 +1188,8 @@ If <code>secondSpecialColumns</code> is not <code>NULL</code>, then <code>second
     <tr><td class="paramname">secondColumnsOrigin</td><td>Array for storing the mapping from columns of \( M_2 \) to columns of \( M \); also set for the extra column if applicable, even if negated; may be <code>NULL</code>. </td></tr>
     <tr><td class="paramname">rowsToSecond</td><td>Array for storing the mapping from rows of \( M \) to rows of \( M_2 \) or to <code>SIZE_MAX</code>; may be <code>NULL</code>. </td></tr>
     <tr><td class="paramname">columnsToSecond</td><td>Array for storing the mapping from columns of \( M \) to columns of \( M_2 \) or to <code>SIZE_MAX</code>; may be <code>NULL</code>. </td></tr>
-    <tr><td class="paramname">secondSpecialRows</td><td>Array of length 1 for storing the row index of \( \begin{bmatrix} \varepsilon &amp; 0 &amp; b^{\textsf{T}} \end{bmatrix} \) in \( M_2 \). </td></tr>
-    <tr><td class="paramname">secondSpecialColumns</td><td>Array of length 2 for storing the column indices of \( \begin{bmatrix} \varepsilon &amp; d \end{bmatrix} \) and \( \begin{bmatrix} 0 &amp; d \end{bmatrix} \) in \( M_2 \). </td></tr>
+    <tr><td class="paramname">secondSpecialRows</td><td>Array of length 1 for storing the row index of \( \begin{bmatrix} \varepsilon &amp; 0 &amp; b^{\textsf{T}} \end{bmatrix} \) in \( M_2 \); may be <code>NULL</code>. </td></tr>
+    <tr><td class="paramname">secondSpecialColumns</td><td>Array of length 2 for storing the column indices of \( \begin{bmatrix} \varepsilon &amp; d \end{bmatrix} \) and \( \begin{bmatrix} 0 &amp; d \end{bmatrix} \) in \( M_2 \); may be <code>NULL</code>. </td></tr>
   </table>
   </dd>
 </dl>
@@ -1254,7 +1265,7 @@ If <code>secondSpecialColumns</code> is not <code>NULL</code>, then <code>second
 </div><div class="memdoc">
 
 <p>Constructs the Truemper 3-sum of the two matrices <code>first</code> and <code>second</code> at connecting rows <code>firstSpecialRows</code> and <code>secondSpecialRows</code> and columns <code>firstSpecialColumns</code> and <code>secondSpecialColumns</code>. </p>
-<p>Let \( M_1 \) and \( M_2 \) denote the matrices given by <code>first</code> and <code>second</code>, let \( A \) be the matrix \( M_1 \) without the rows <code>firstSpecialRows</code>[0] and <code>firstSpecialRows</code>[1] and column <code>firstSpecialColumns</code>[2]. After permuting these be last, \( M_1 \) must be of the form </p><p class="formulaDsp">
+<p>Let \( M_1 \) and \( M_2 \) denote the matrices given by <code>first</code> and <code>second</code>, let \( A \) be the matrix \( M_1 \) without the rows <code>firstSpecialRows</code>[0] and <code>firstSpecialRows</code>[1] and column <code>firstSpecialColumns</code>[2]. After permuting these to be last, \( M_1 \) must be of the form </p><p class="formulaDsp">
 \[ M_1 = \begin{bmatrix} A &amp; \mathbb{O} \\ C_{i,\star} &amp; \alpha \\ C_{j,\star} &amp; \beta \end{bmatrix}, \]
 </p>
 <p> where \( \alpha,\beta \in \{-1,+1 \} \) (otherwise, <code>CMR_ERROR_STRUCTURE</code> is returned). Let \( D \) be the matrix \( M_2 \) without the row <code>secondSpecialRows</code>[0] and columns <code>secondSpecialColumns</code>[0] and <code>secondSpecialColumns</code>[1]. After reordering these to be first, \( M_2 \) must be of the form </p><p class="formulaDsp">
@@ -1281,6 +1292,457 @@ If <code>secondSpecialColumns</code> is not <code>NULL</code>, then <code>second
     <tr><td class="paramname">secondSpecialColumns</td><td>Array of length 2 with the first two columns of connecting submatrix in <code>second</code>. </td></tr>
     <tr><td class="paramname">characteristic</td><td>Field characteristic. </td></tr>
     <tr><td class="paramname">presult</td><td>Pointer for storing the result. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a92c14d3678beb91fcf3e73622fa16090"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92c14d3678beb91fcf3e73622fa16090">&#9670;&nbsp;</a></span>CMRthreeSumTruemperDecomposeConnecting()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRthreeSumTruemperDecomposeConnecting </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *&#160;</td>
+          <td class="paramname"><em>matrix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *&#160;</td>
+          <td class="paramname"><em>transpose</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *&#160;</td>
+          <td class="paramname"><em>sepa</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>specialRows</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>specialColumns</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>pgamma</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>pbeta</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Decomposes <code>matrix</code> as a Truemper 3-sum according to the 3-separation <code>sepa</code>, computing the connecing matrix. </p>
+<p>The input <code>matrix</code> \( M \) must have a 3-separation that is given by <code>sepa</code>, i.e., it can be reordered to look like \( M = \begin{bmatrix} A &amp; \mathbb{O} \\ C &amp; D \end{bmatrix} \), where \( \text{rank}(C) = 2 \). The two components of the 3-sum are matrices </p><p class="formulaDsp">
+\[ M_1 = \begin{bmatrix} A &amp; \mathbb{O} \\ C_{i,\star} &amp; 1 \\ C_{j,\star} &amp; \beta \end{bmatrix} \]
+</p>
+<p> and </p><p class="formulaDsp">
+\[ M_2 = \begin{bmatrix} \gamma &amp; 1 &amp; \mathbb{O}^{\textsf{T}} \\ C_{\star,k} &amp; C_{\star,\ell} &amp; D \end{bmatrix}, \]
+</p>
+<p> where \( \beta,\gamma \in \{-1,+1 \} \), \(\text{rank}(C_{\{i,j\},\{k,\ell\}}) = 2\) and such that </p><p class="formulaDsp">
+\[ N := \begin{bmatrix} \gamma &amp; 1 &amp; 0 \\ C_{i,k} &amp; C_{i,\ell} &amp; 1 \\ C_{j,k} &amp; C_{j,\ell} &amp; \beta \end{bmatrix} \]
+</p>
+<p> is totally unimodular.</p>
+<p>The value of \( \beta \in \{-1,+1\} \) must be so that there exists a singular submatrix of \( M_1 \) with exactly two nonzeros per row and per column that covers the bottom-right \( \beta \)-entry.</p>
+<p>This function only computes the indices \( i,j,k,\ell \) as well as values for \( \beta \) and \( \gamma \); the matrices \( M_1 \) and \( M_2 \) can be computed by <a class="el" href="separation_8c.html#a76f7f5d4f3c9dca64e55640db53b381c">CMRthreeSumTruemperDecomposeFirst</a> and <a class="el" href="separation_8c.html#a7f6b3c590d75defbb2bf78bc7f5cc9a8">CMRthreeSumTruemperDecomposeSecond</a>, respectively. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">matrix</td><td>Input matrix \( M \). </td></tr>
+    <tr><td class="paramname">transpose</td><td>Transpose matrix \( M^{\textsf{T}} \). </td></tr>
+    <tr><td class="paramname">sepa</td><td>3-separation to decompose at. </td></tr>
+    <tr><td class="paramname">specialRows</td><td>Array of length 2 for storing the rows \( i \) and \( j \) as rows of \( M \). </td></tr>
+    <tr><td class="paramname">specialColumns</td><td>Array of length 2 for storing the columns \( k \) and \( \ell \) as rows of \( M \). </td></tr>
+    <tr><td class="paramname">pgamma</td><td>Pointer for storing a correct value of \( \gamma \); may be <code>NULL</code>. </td></tr>
+    <tr><td class="paramname">pbeta</td><td>Pointer for storing a correct value of \( \beta \); may be <code>NULL</code>. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a76f7f5d4f3c9dca64e55640db53b381c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76f7f5d4f3c9dca64e55640db53b381c">&#9670;&nbsp;</a></span>CMRthreeSumTruemperDecomposeFirst()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRthreeSumTruemperDecomposeFirst </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *&#160;</td>
+          <td class="paramname"><em>matrix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *&#160;</td>
+          <td class="paramname"><em>sepa</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>specialRows</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>specialColumns</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char&#160;</td>
+          <td class="paramname"><em>beta</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> **&#160;</td>
+          <td class="paramname"><em>pfirst</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>firstRowsOrigin</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>firstColumnsOrigin</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>rowsToFirst</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>columnsToFirst</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>firstSpecialRows</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>firstSpecialColumns</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Decomposes <code>matrix</code> as a Truemper 3-sum according to the 3-separation <code>sepa</code>, computing the first component. </p>
+<p>The input <code>matrix</code> \( M \) must have a 3-separation that is given by <code>sepa</code>, i.e., it can be reordered to look like \( M = \begin{bmatrix} A &amp; \mathbb{O} \\ C &amp; D \end{bmatrix} \), where \( \text{rank}(C) = 2 \). The two components of the 3-sum are matrices </p><p class="formulaDsp">
+\[ M_1 = \begin{bmatrix} A &amp; \mathbb{O} \\ C_{i,\star} &amp; 1 \\ C_{j,\star} &amp; \beta \end{bmatrix} \]
+</p>
+<p> and </p><p class="formulaDsp">
+\[ M_2 = \begin{bmatrix} \gamma &amp; 1 &amp; \mathbb{O}^{\textsf{T}} \\ C_{\star,k} &amp; C_{\star,\ell} &amp; D \end{bmatrix}, \]
+</p>
+<p> where \( \beta,\gamma \in \{-1,+1 \} \), \(\text{rank}(C_{\{i,j\},\{k,\ell\}}) = 2\) and such that </p><p class="formulaDsp">
+\[ N := \begin{bmatrix} \gamma &amp; 1 &amp; 0 \\ C_{i,k} &amp; C_{i,\ell} &amp; 1 \\ C_{j,k} &amp; C_{j,\ell} &amp; \beta \end{bmatrix} \]
+</p>
+<p> is totally unimodular.</p>
+<p>The value of \( \beta \in \{-1,+1\} \), given via <code>beta</code>. The row indices \( i,j \), given via <code>specialRows</code>, and column indices \( k,\ell \), given via <code>specialColumns</code>, must index a rank-2 submatrix of \( C \). They should be computed by <a class="el" href="separation_8c.html#a92c14d3678beb91fcf3e73622fa16090">CMRthreeSumTruemperDecomposeConnecting</a>.</p>
+<p>This function computes \( M_1 \), while \( M_2 \) can be computed by <a class="el" href="separation_8c.html#a7f6b3c590d75defbb2bf78bc7f5cc9a8">CMRthreeSumTruemperDecomposeSecond</a>.</p>
+<p>If <code>firstSpecialRows</code> is not <code>NULL</code>, then <code>firstSpecialRows</code>[0] and <code>firstSpecialRows</code>[1] will refer to the last two rows of \( M_1 \). If <code>firstSpecialColumns</code> is not <code>NULL</code>, then <code>firstSpecialColumns</code>[0] and <code>firstSpecialColumns</code>[1] will refer to the two columns containing \( C_{\star,k}\) and \( C_{\star,\ell} \) as columns of \( M_1 \), and <code>firstSpecialColumns</code>[2] will refer to the last (artificial) column. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">matrix</td><td>Input matrix \( M \). </td></tr>
+    <tr><td class="paramname">sepa</td><td>3-separation to decompose at. </td></tr>
+    <tr><td class="paramname">specialRows</td><td>Array of length 2 with the rows \( i \) and \( j \) as rows of \( M \). </td></tr>
+    <tr><td class="paramname">specialColumns</td><td>Array of length 2 with the columns \( k \) and \( \ell \) as rows of \( M \). </td></tr>
+    <tr><td class="paramname">beta</td><td>Value of \( \beta \). </td></tr>
+    <tr><td class="paramname">pfirst</td><td>Pointer for storing the first matrix \( M_1 \). </td></tr>
+    <tr><td class="paramname">firstRowsOrigin</td><td>Array for storing the mapping from rows of \( M_1 \) to rows of \( M \); may be <code>NULL</code>. </td></tr>
+    <tr><td class="paramname">firstColumnsOrigin</td><td>Array for storing the mapping from columns of \( M_1 \) to columns of \( M \); set to <code>SIZE_MAX</code> for the last column; may be <code>NULL</code>. </td></tr>
+    <tr><td class="paramname">rowsToFirst</td><td>Array for storing the mapping from rows of \( M \) to rows of \( M_1 \) or to <code>SIZE_MAX</code>; may be <code>NULL</code>. </td></tr>
+    <tr><td class="paramname">columnsToFirst</td><td>Array for storing the mapping from columns of \( M \) to columns of \( M_1 \) or to <code>SIZE_MAX</code>; may be <code>NULL</code>. </td></tr>
+    <tr><td class="paramname">firstSpecialRows</td><td>Array of length 2 for storing the row indices of \( C_{i,\star} \) and of \( C_{j,\star} \) in \( M_1 \); may be <code>NULL</code>. </td></tr>
+    <tr><td class="paramname">firstSpecialColumns</td><td>Array of length 3 for storing the column indices of \( C_{\star,k} \), of \( C_{\star,\ell} \) and of the artificial column in \( M_1 \); may be <code>NULL</code>. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ad2375829ba72dbc6d040b8c3a581a4a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad2375829ba72dbc6d040b8c3a581a4a5">&#9670;&nbsp;</a></span>CMRthreeSumTruemperDecomposeSearch()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRthreeSumTruemperDecomposeSearch </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *&#160;</td>
+          <td class="paramname"><em>matrix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *&#160;</td>
+          <td class="paramname"><em>transpose</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *&#160;</td>
+          <td class="paramname"><em>sepa</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>topLeft</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>bottomRight</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **&#160;</td>
+          <td class="paramname"><em>pviolator</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>specialRows</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>specialColumns</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>pgamma</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>pbeta</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Carries out the search for the connecting submatrix for a Truemper 3-sum. </p>
+<p>See <a class="el" href="separation_8c.html#a92c14d3678beb91fcf3e73622fa16090">CMRthreeSumTruemperDecomposeConnecting</a> for the specification. This function carries out a breadth-first search in the graphs of the top-left and/or bottom-right submatrices.</p>
+<p>At least one of <code>topLeft</code> and <code>bottomRight</code> must be <code>true</code>. If both are true then the implementation may detect a submatrix with absolute determinant 2, which is also stored in <code>*pviolator</code> if <code>pviolator</code> is not <code>NULL</code>. Even if this is the case, <code>specialRows</code>, <code>specialColumns</code>, <code>*pgamma</code> and <code>*pbeta</code> are set according to the top-left matrix. </p>
+<p>Connecting matrix is:</p>
+<p>gamma 1 0 s00 s01 1 s10 s11 beta</p>
+<p>gamma + 1 should be equal to the top-left sum (mod 4).</p>
+<p>The 3x3 matrix should be singular: gamma*s01*beta + s10 - s11*gamma - beta*s00 = 0. &lt;=&gt; beta * (gamma*s01 - s00) = s11*gamma - s10. &lt;=&gt; beta = (s10 - s11*gamma) / (s00 - gamma*s01) &lt;=&gt; gamma * (s01*beta - s11) = beta * s00 - s10 &lt;=&gt; gamma = (s10 - beta * s00) / (s11 - s01*beta)</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">matrix</td><td>Input matrix \( M \). </td></tr>
+    <tr><td class="paramname">transpose</td><td>Transpose matrix \( M^{\textsf{T}} \). </td></tr>
+    <tr><td class="paramname">sepa</td><td>3-separation to decompose at. </td></tr>
+    <tr><td class="paramname">topLeft</td><td>Whether to search in the top-left submatrix. </td></tr>
+    <tr><td class="paramname">bottomRight</td><td>Whether to search in the bottom-right submatrix. </td></tr>
+    <tr><td class="paramname">pviolator</td><td>Pointer for storing a submatrix with absolute determinant 2, if found. </td></tr>
+    <tr><td class="paramname">specialRows</td><td>Array of length 2 for storing the rows \( i \) and \( j \) as rows of \( M \). </td></tr>
+    <tr><td class="paramname">specialColumns</td><td>Array of length 2 for storing the columns \( k \) and \( \ell \) as rows of \( M \). </td></tr>
+    <tr><td class="paramname">pgamma</td><td>Pointer for storing a correct value of \( \gamma \); may be <code>NULL</code>. </td></tr>
+    <tr><td class="paramname">pbeta</td><td>Pointer for storing a correct value of \( \beta \); may be <code>NULL</code>. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a7f6b3c590d75defbb2bf78bc7f5cc9a8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f6b3c590d75defbb2bf78bc7f5cc9a8">&#9670;&nbsp;</a></span>CMRthreeSumTruemperDecomposeSecond()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRthreeSumTruemperDecomposeSecond </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *&#160;</td>
+          <td class="paramname"><em>matrix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *&#160;</td>
+          <td class="paramname"><em>sepa</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>specialRows</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>specialColumns</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char&#160;</td>
+          <td class="paramname"><em>gamma</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> **&#160;</td>
+          <td class="paramname"><em>psecond</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>secondRowsOrigin</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>secondColumnsOrigin</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>rowsToSecond</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>columnsToSecond</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>secondSpecialRows</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>secondSpecialColumns</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Decomposes <code>matrix</code> as a Truemper 3-sum according to the 3-separation <code>sepa</code>, computing the second component. </p>
+<p>The input <code>matrix</code> \( M \) must have a 3-separation that is given by <code>sepa</code>, i.e., it can be reordered to look like \( M = \begin{bmatrix} A &amp; \mathbb{O} \\ C &amp; D \end{bmatrix} \), where \( \text{rank}(C) = 2 \). The two components of the 3-sum are matrices </p><p class="formulaDsp">
+\[ M_1 = \begin{bmatrix} A &amp; \mathbb{O} \\ C_{i,\star} &amp; 1 \\ C_{j,\star} &amp; \beta \end{bmatrix} \]
+</p>
+<p> and </p><p class="formulaDsp">
+\[ M_2 = \begin{bmatrix} \gamma &amp; 1 &amp; \mathbb{O}^{\textsf{T}} \\ C_{\star,k} &amp; C_{\star,\ell} &amp; D \end{bmatrix}, \]
+</p>
+<p> where \( \beta,\gamma \in \{-1,+1 \} \), \(\text{rank}(C_{\{i,j\},\{k,\ell\}}) = 2\) and such that </p><p class="formulaDsp">
+\[ N := \begin{bmatrix} \gamma &amp; 1 &amp; 0 \\ C_{i,k} &amp; C_{i,\ell} &amp; 1 \\ C_{j,k} &amp; C_{j,\ell} &amp; \beta \end{bmatrix} \]
+</p>
+<p> is totally unimodular.</p>
+<p>The value of \( \gamma \in \{-1,+1\} \), given via <code>gamma</code>. The row indices \( i,j \), given via <code>specialRows</code>, and column indices \( k,\ell \), given via <code>specialColumns</code>, must index a rank-2 submatrix of \( C \). They should be computed by <a class="el" href="separation_8c.html#a92c14d3678beb91fcf3e73622fa16090">CMRthreeSumTruemperDecomposeConnecting</a>.</p>
+<p>This function computes \( M_2 \), while \( M_1 \) can be computed by <a class="el" href="separation_8c.html#a76f7f5d4f3c9dca64e55640db53b381c">CMRthreeSumTruemperDecomposeFirst</a>.</p>
+<p>If <code>secondSpecialRows</code> is not <code>NULL</code>, then <code>secondSpecialRows</code>[0] will refer to the first (artificial) row and <code>secondSpecialRows</code>[1] and <code>secondSpecialRows</code>[2] will refer to the two rows containing \( C_{i,\star} \) and \( C_{j,\star} \) as rows of \( M_2 \). If <code>secondSpecialColumns</code> is not <code>NULL</code>, then <code>secondSpecialColumns</code>[0] and <code>secondSpecialColumns</code>[1] will refer to the first two columns of \( M_2 \). </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment. </td></tr>
+    <tr><td class="paramname">matrix</td><td>Input matrix \( M \). </td></tr>
+    <tr><td class="paramname">sepa</td><td>3-separation to decompose at. </td></tr>
+    <tr><td class="paramname">specialRows</td><td>Array of length 2 with the rows \( i \) and \( j \) as rows of \( M \). </td></tr>
+    <tr><td class="paramname">specialColumns</td><td>Array of length 2 with the columns \( k \) and \( \ell \) as rows of \( M \). </td></tr>
+    <tr><td class="paramname">gamma</td><td>Value of \( \gamma \). </td></tr>
+    <tr><td class="paramname">psecond</td><td>Pointer for storing the second matrix \( M_2 \). </td></tr>
+    <tr><td class="paramname">secondRowsOrigin</td><td>Array for storing the mapping from rows of \( M_2 \) to rows of \( M \); set to <code>SIZE_MAX</code> for the first row; may be <code>NULL</code>. </td></tr>
+    <tr><td class="paramname">secondColumnsOrigin</td><td>Array for storing the mapping from columns of \( M_2 \) to columns of \( M \); may be <code>NULL</code>. </td></tr>
+    <tr><td class="paramname">rowsToSecond</td><td>Array for storing the mapping from rows of \( M \) to rows of \( M_2 \) or to <code>SIZE_MAX</code>; may be <code>NULL</code>. </td></tr>
+    <tr><td class="paramname">columnsToSecond</td><td>Array for storing the mapping from columns of \( M \) to columns of \( M_2 \) or to <code>SIZE_MAX</code>; may be <code>NULL</code>. </td></tr>
+    <tr><td class="paramname">secondSpecialRows</td><td>Array of length 3 for storing the row indices of the artificial row, of \( C_{i,\star} \) and of \( C_{j,\star} \) in \( M_2 \); may be <code>NULL</code>. </td></tr>
+    <tr><td class="paramname">secondSpecialColumns</td><td>Array of length 2 for storing the column indices of \( C_{\star,k} \) and of \( C_{\star,\ell} \) in \( M_2 \); may be <code>NULL</code>. </td></tr>
   </table>
   </dd>
 </dl>
