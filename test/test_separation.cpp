@@ -439,6 +439,114 @@ TEST(Separation, ThreeSumSeymourComposition)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
+TEST(Separation, ThreeSumSeymourComposition1)
+{
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+
+  {
+    CMR_CHRMAT* first = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &first, "5 6 "
+      " 1  1  0  0  0  0 "
+      " 1  0  0  1 -1  1 "
+      " 0 -1  1  1  0 -1 "
+      " 0  0 -1 -1  1  0 "
+      " 0  1  1  1  0  1 "
+    ) );
+    CMR_CHRMAT* second = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &second, "5 6 "
+      " 1 -1 -1  1  0  0 "
+      " 1  1  0  1  1 -1 "
+      " 0  0  0 -1  0  1 "
+      " 1  0  0  0 -1  0 "
+      " 0  1  1  0  0  1 "
+    ) );
+
+    CMR_CHRMAT* check = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &check, " 8 8 "
+      " 1  1  0  0  0  0  0  0 "
+      " 0 -1  0 -1  1  1  1 -1 "
+      " 0  0  1  0 -1 -1 -1  1 "
+      " 0  1  0  1  1  1  1 -1 "
+      "-1  0  1 -1  1  1  0  0 "
+      " 0  0  0  0  0 -1  0  1 "
+      " 0  0  0  0  1  0 -1  0 "
+      " 1  0 -1  1  0  0  0  1 "
+    ) );
+
+    CMR_CHRMAT* threesum = NULL;
+    size_t specials[6] = { 1, 2, 3, 1, 1, 2 };
+    ASSERT_CMR_CALL( CMRthreeSumSeymourCompose(cmr, first, second, &specials[0], &specials[1], &specials[3],
+      &specials[4], 3, &threesum) );
+
+    CMRchrmatPrintDense(cmr, threesum, stdout, '0', false);
+    CMRchrmatPrintDense(cmr, check, stdout, '0', false);
+
+    ASSERT_TRUE( CMRchrmatCheckEqual(threesum, check) );
+
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &threesum) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &check) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &second) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &first) );
+  }
+
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
+}
+
+TEST(Separation, ThreeSumSeymourComposition2)
+{
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+
+  {
+    CMR_CHRMAT* first = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &first, "5 6 "
+      " 1  1  0  0  0  0 "
+      " 1  0  1 -1  1  0 "
+      " 0 -1  1  0 -1  1 "
+      " 0  0 -1 -1  0 -1 "
+      " 0  1  1  0  1  1 "
+    ) );
+    CMR_CHRMAT* second = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &second, "5 6 "
+      " 1 -1 -1  0  0 -1 "
+      " 1  1  1  1 -1  0 "
+      " 0  0 -1  0  1  0 "
+      " 1  0  0 -1  0  0 "
+      " 0  1  0  0  1  1 "
+    ) );
+
+    CMR_CHRMAT* check = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &check, " 8 8 "
+      " 1  1  0  0  0  0  0  0 "
+      " 0 -1  0 -1  1  1  1 -1 "
+      " 0  0  1  0 -1 -1 -1  1 "
+      " 0  1  0  1  1  1  1 -1 "
+      "-1  0  1 -1  1  1  0  0 "
+      " 0  0  0  0  0 -1  0  1 "
+      " 0  0  0  0  1  0 -1  0 "
+      " 1  0 -1  1  0  0  0  1 "
+    ) );
+
+    CMR_CHRMAT* threesum = NULL;
+    size_t specials[6] = { 1, 5, 2, 1, 1, 5 };
+    ASSERT_CMR_CALL( CMRthreeSumSeymourCompose(cmr, first, second, &specials[0], &specials[1], &specials[3],
+      &specials[4], 3, &threesum) );
+
+    CMRchrmatPrintDense(cmr, threesum, stdout, '0', false);
+    CMRchrmatPrintDense(cmr, check, stdout, '0', false);
+
+    ASSERT_TRUE( CMRchrmatCheckEqual(threesum, check) );
+
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &threesum) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &check) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &second) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &first) );
+  }
+
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
+}
+
 TEST(Separation, ThreeSumSeymourDecomposition)
 {
   CMR* cmr = NULL;
