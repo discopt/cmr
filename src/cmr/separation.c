@@ -1,4 +1,5 @@
 // #define CMR_DEBUG /* Uncomment to debug this file. */
+// #define CMR_DEBUG_MATRICES /* Uncomment to print all matrices. */
 
 #include <cmr/separation.h>
 #include "separation_internal.h"
@@ -1583,6 +1584,18 @@ CMR_ERROR CMRthreeSumSeymourCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* sec
   CMRdbgMsg(0, "CMRthreeSumSeymourCompose for a %zux%zu and a %zux%zu matrix.\n", first->numRows, first->numColumns,
     second->numRows, second->numColumns);
 
+#ifdef CMR_DEBUG_MATRICES
+
+  CMRchrmatPrintDense(cmr, first, stdout, '0', true);
+  printf("Special row in first matrix: r%zu\n", firstSpecialRows[0] + 1);
+  printf("Special columns in first matrix: c%zu, c%zu\n", firstSpecialColumns[0] + 1, firstSpecialColumns[1] + 1);
+  CMRchrmatPrintDense(cmr, second, stdout, '0', true);
+  printf("Special row in second matrix: r%zu\n", secondSpecialRows[0] + 1);
+  printf("Special columns in second matrix: c%zu, c%zu\n", secondSpecialColumns[0] + 1, secondSpecialColumns[1] + 1);
+  fflush(stdout);
+
+#endif /* CMR_DEBUG_MATRICES */
+
   if (!firstSpecialRows || (firstSpecialRows[0] >= first->numRows))
     return CMR_ERROR_INPUT;
   if (!firstSpecialColumns || (firstSpecialColumns[0] >= first->numColumns)
@@ -1631,7 +1644,7 @@ CMR_ERROR CMRthreeSumSeymourCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* sec
   /* Number of nonzeros. */
   size_t firstMainNumNonzeros = 0;
   size_t secondMainNumNonzeros = 0;
-  size_t firstSpecialRowNumNonzeros = first->rowSlice[firstSpecialRows[0] + 1] - first->rowSlice[firstSpecialColumns[0]] - 1;
+  size_t firstSpecialRowNumNonzeros = first->rowSlice[firstSpecialRows[0] + 1] - first->rowSlice[firstSpecialRows[0]] - 1;
   size_t secondSpecialRowNumNonzeros = second->rowSlice[secondSpecialRows[0] + 1] - second->rowSlice[secondSpecialRows[0]] - 1;
   char* firstSpecialColumnDense = NULL; /* Entries of a. */
   size_t firstSpecialColumnNumNonzeros = 0;
@@ -1783,9 +1796,9 @@ CMR_ERROR CMRthreeSumSeymourCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* sec
     goto cleanup;
   }
 
-  CMRdbgMsg(2, "First: main has %zu nonzeros, column has %zu nonzeros and row has %zu nonzeros.\n",
+  CMRdbgMsg(2, "First: main has %zu nonzeros, special columns have %zu nonzeros and special row has %zu nonzeros.\n",
     firstMainNumNonzeros, firstSpecialColumnNumNonzeros, firstSpecialRowNumNonzeros);
-  CMRdbgMsg(2, "Second: main has %zu nonzeros, column has %zu nonzeros and row has %zu nonzeros.\n",
+  CMRdbgMsg(2, "Second: main has %zu nonzeros, special columns have %zu nonzeros and special row has %zu nonzeros.\n",
     secondMainNumNonzeros, secondSpecialColumnNumNonzeros, secondSpecialRowNumNonzeros);
 
   /* Create resulting matrix. */

@@ -436,14 +436,7 @@ TEST(Separation, ThreeSumSeymourComposition)
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &first) );
   }
 
-  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
-}
-
-TEST(Separation, ThreeSumSeymourComposition1)
-{
-  CMR* cmr = NULL;
-  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
-
+  /* Tests cases where special rows/columns are spread a bit. */
   {
     CMR_CHRMAT* first = NULL;
     ASSERT_CMR_CALL( stringToCharMatrix(cmr, &first, "5 6 "
@@ -490,14 +483,7 @@ TEST(Separation, ThreeSumSeymourComposition1)
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &first) );
   }
 
-  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
-}
-
-TEST(Separation, ThreeSumSeymourComposition2)
-{
-  CMR* cmr = NULL;
-  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
-
+  /* Tests cases where special rows/columns are spread a bit. */
   {
     CMR_CHRMAT* first = NULL;
     ASSERT_CMR_CALL( stringToCharMatrix(cmr, &first, "5 6 "
@@ -520,9 +506,9 @@ TEST(Separation, ThreeSumSeymourComposition2)
     ASSERT_CMR_CALL( stringToCharMatrix(cmr, &check, " 8 8 "
       " 1  1  0  0  0  0  0  0 "
       " 0 -1  0 -1  1  1  1 -1 "
-      " 0  0  1  0 -1 -1 -1  1 "
+      " 0  0 -1  0 -1 -1 -1  1 "
       " 0  1  0  1  1  1  1 -1 "
-      "-1  0  1 -1  1  1  0  0 "
+      "-1  0  1 -1  1 -1  0  0 "
       " 0  0  0  0  0 -1  0  1 "
       " 0  0  0  0  1  0 -1  0 "
       " 1  0 -1  1  0  0  0  1 "
@@ -533,7 +519,9 @@ TEST(Separation, ThreeSumSeymourComposition2)
     ASSERT_CMR_CALL( CMRthreeSumSeymourCompose(cmr, first, second, &specials[0], &specials[1], &specials[3],
       &specials[4], 3, &threesum) );
 
+    printf("Computed 3-sum:\n");
     CMRchrmatPrintDense(cmr, threesum, stdout, '0', false);
+    printf("Expected result:\n");
     CMRchrmatPrintDense(cmr, check, stdout, '0', false);
 
     ASSERT_TRUE( CMRchrmatCheckEqual(threesum, check) );

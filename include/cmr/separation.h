@@ -355,8 +355,7 @@ CMR_ERROR CMRtwoSumDecomposeSecond(
 );
 
 /**
- * \brief Constructs the Seymour 3-sum of the two matrices \p first and \p second via \p firstMarker1, \p firstMarker2,
- *        \p firstMarker3, \p secondMarker1, \p secondMarker2 and \p secondMarker3.
+ * \brief Constructs the Seymour 3-sum of the two matrices \p first and \p second.
  *
  * Let \f$ M_1 \f$ and \f$ M_2 \f$ denote the matrices given by \p first and \p second, let \f$ A \f$ be the matrix
  * \f$ M_1 \f$ without the row indexed by \p firstSpecialRows[0] and the columns indexed by \p firstSpecialColumns[0]
