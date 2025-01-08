@@ -2408,6 +2408,20 @@ CMR_ERROR CMRthreeSumTruemperCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* se
   CMRdbgMsg(0, "CMRthreeSumTruemperCompose for a %zux%zu and a %zux%zu matrix.\n", first->numRows, first->numColumns,
     second->numRows, second->numColumns);
 
+#ifdef CMR_DEBUG_MATRICES
+
+  CMRchrmatPrintDense(cmr, first, stdout, '0', true);
+  printf("Special rows in first matrix: r%zu, r%zu\n", firstSpecialRows[0] + 1, firstSpecialRows[1] + 1);
+  printf("Special columns in first matrix: c%zu, c%zu, c%zu\n", firstSpecialColumns[0] + 1, firstSpecialColumns[1] + 1,
+    firstSpecialColumns[2] + 1);
+  CMRchrmatPrintDense(cmr, second, stdout, '0', true);
+  printf("Special rows in second matrix: r%zu, r%zu, r%zu\n", secondSpecialRows[0] + 1, secondSpecialRows[1] + 1,
+    secondSpecialRows[2] + 1);
+  printf("Special columns in second matrix: c%zu, c%zu\n", secondSpecialColumns[0] + 1, secondSpecialColumns[1] + 1);
+  fflush(stdout);
+
+#endif /* CMR_DEBUG_MATRICES */
+
   if (!firstSpecialRows || (firstSpecialRows[0] >= first->numRows)
     || (firstSpecialRows[1] >= first->numRows))
   {
@@ -2433,6 +2447,8 @@ CMR_ERROR CMRthreeSumTruemperCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* se
   size_t firstMainNumNonzeros = 0;
   size_t secondMainNumNonzeros = 0;
 
+  char firstExtra[2] = {0, 0}; /* Nonzero entries in special column of 1st matrix. */
+
   size_t specialRow1NumNonzeros = first->rowSlice[firstSpecialRows[0] + 1] - first->rowSlice[firstSpecialRows[0]];
   size_t specialRow2NumNonzeros = first->rowSlice[firstSpecialRows[1] + 1] - first->rowSlice[firstSpecialRows[1]];
   size_t specialColumn1NumNonzeros = 0;
@@ -2453,12 +2469,18 @@ CMR_ERROR CMRthreeSumTruemperCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* se
     size_t begin = first->rowSlice[firstRow];
     size_t beyond = first->rowSlice[firstRow+1];
     if (firstRow != firstSpecialRows[0] && firstRow != firstSpecialRows[1])
-    {
       firstMainNumNonzeros += beyond - begin;
-      for (size_t e = begin; e < beyond; ++e)
+
+    for (size_t e = begin; e < beyond; ++e)
+    {
+      size_t column = first->entryColumns[e];
+      if (column == firstSpecialColumns[2])
       {
-        size_t column = first->entryColumns[e];
-        if (column == firstSpecialColumns[2])
+        if (firstRow == firstSpecialRows[0])
+          firstExtra[0] = first->entryValues[e];
+        else if (firstRow == firstSpecialRows[1])
+          firstExtra[1] = first->entryValues[e];
+        else
         {
           /* Special column has nonzeros in non-special rows. */
           CMRdbgMsg(4, "Bad structure: special column in 1st matrix has unexpected nonzeros.\n");
@@ -2469,8 +2491,17 @@ CMR_ERROR CMRthreeSumTruemperCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* se
     }
   }
 
+  if (firstExtra[0] == 0 || firstExtra[1] == 0)
+  {
+    /* Special column has zeros in special rows. */
+    CMRdbgMsg(4, "Bad structure: special column in 1st matrix has unexpected zeros.\n");
+    error = CMR_ERROR_STRUCTURE;
+    goto cleanup;
+  }
+
   /* Scan 2nd matrix. */
   char secondSpecial[2][2] = { {0, 0}, {0, 0} };
+  char secondExtra[2] = { 0, 0 }; /* Nonzeros in special row of 2nd matrix. */
   for (size_t secondRow = 0; secondRow < second->numRows; ++secondRow)
   {
     size_t begin = second->rowSlice[secondRow];
@@ -2483,9 +2514,14 @@ CMR_ERROR CMRthreeSumTruemperCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* se
         || ((second->entryColumns[begin+1] != secondSpecialColumns[0])
           && (second->entryColumns[begin+1] != secondSpecialColumns[1])))
       {
-        CMRdbgMsg(4, "Bad structure: special row in 2nd matrix has unexpected nonzeros.\n");
+        CMRdbgMsg(4, "Bad structure: special row in 2nd matrix has unexpected (non)zeros.\n");
         error = CMR_ERROR_STRUCTURE;
         goto cleanup;
+      }
+      else
+      {
+        secondExtra[second->entryColumns[begin] == secondSpecialColumns[0] ? 0 : 1] = second->entryValues[begin];
+        secondExtra[second->entryColumns[begin+1] == secondSpecialColumns[0] ? 0 : 1] = second->entryValues[begin+1];
       }
     }
     else
@@ -2515,6 +2551,14 @@ CMR_ERROR CMRthreeSumTruemperCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* se
           ++secondMainNumNonzeros;
       }
     }
+  }
+
+  if (secondExtra[0] == 0 || secondExtra[1] == 0)
+  {
+    /* Special row has zeros in special columns. */
+    CMRdbgMsg(4, "Bad structure: special row in 2nd matrix has unexpected zeros.\n");
+    error = CMR_ERROR_STRUCTURE;
+    goto cleanup;
   }
 
   /* Extract 2x2 special matrix also from first matrix. */
@@ -2548,6 +2592,23 @@ CMR_ERROR CMRthreeSumTruemperCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* se
   if ((specialDeterminant == 0) || (characteristic != 0 && (specialDeterminant % characteristic) == 0))
   {
     CMRdbgMsg(4, "Bad structure: special 2x2 matrix has determinant 0.\n");
+    error = CMR_ERROR_STRUCTURE;
+    goto cleanup;
+  }
+
+  /* se* = second extra, fe* = first extra, s* special
+   *
+   * se0 se1  0
+   * s00 s01 fe0
+   * s10 s11 fe1
+   */
+
+  int connectingDeterminant = secondExtra[0] * firstSpecial[0][1] * firstExtra[1]
+    + secondExtra[1] * firstExtra[0] * firstSpecial[1][0] - firstSpecial[1][1] * firstExtra[0] * secondExtra[0]
+    - firstExtra[1] * firstSpecial[0][0] * secondExtra[1];
+  if ((connectingDeterminant > 1) || (connectingDeterminant < -1))
+  {
+    CMRdbgMsg(4, "Bad structure: connecting 3x3 matrix has determinant %d.\n", connectingDeterminant);
     error = CMR_ERROR_STRUCTURE;
     goto cleanup;
   }

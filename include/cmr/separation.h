@@ -565,10 +565,10 @@ CMR_ERROR CMRthreeSumSeymourDecomposeSecond(
  *     C_{j,k} & C_{j,\ell} & \beta
  *   \end{bmatrix}
  * \f]
- * is totally unimodular. The columns \p firstSpecialColumns[0] and \p firstSpecialColumns[1] indicate the columns of
- * \f$ M_1 \f$ that shall correspond to \f$ C_{\star,k}\f$ and \f$ C_{\star,\ell} \f$, respectively. Similarly, the rows
- * \p secondSpecialRows[1] and \p secondSpecialRows[2] indicate the rows of \f$ M_2 \f$ that shall correspond to
- * \f$ C_{i,\star}\f$ and \f$ C_{j,\star} \f$, respectively.
+ * is totally unimodular (otherwise, \c CMR_ERROR_STRUCTURE is returned). The columns \p firstSpecialColumns[0] and
+ * \p firstSpecialColumns[1] indicate the columns of \f$ M_1 \f$ that shall correspond to \f$ C_{\star,k}\f$ and
+ * \f$ C_{\star,\ell} \f$, respectively. Similarly, the rows \p secondSpecialRows[1] and \p secondSpecialRows[2]
+ * indicate the rows of \f$ M_2 \f$ that shall correspond to \f$ C_{i,\star}\f$ and \f$ C_{j,\star} \f$, respectively.
  *
  * \note The 2-by-2 submatrix of \f$ M_1 \f$ indexed by rows \p firstSpecialRows[0] and \p firstSpecialRows[1] and
  *       columns \p firstSpecialColumns[0] and \p firstSpecialColumns[1] must be identical to the submatrix of
