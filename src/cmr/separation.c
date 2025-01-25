@@ -1792,7 +1792,7 @@ CMR_ERROR CMRthreeSumSeymourCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* sec
   else if (secondEpsilon != firstEpsilon)
   {
     CMRdbgMsg(2, "Epsilon-entries of matrices are %d and %d.\n", firstEpsilon, secondEpsilon);
-    error = CMR_ERROR_STRUCTURE;
+    error = CMR_ERROR_INCONSISTENT;
     goto cleanup;
   }
 
@@ -2609,7 +2609,23 @@ CMR_ERROR CMRthreeSumTruemperCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* se
   if ((connectingDeterminant > 1) || (connectingDeterminant < -1))
   {
     CMRdbgMsg(4, "Bad structure: connecting 3x3 matrix has determinant %d.\n", connectingDeterminant);
-    error = CMR_ERROR_STRUCTURE;
+    error = CMR_ERROR_INCONSISTENT;
+    goto cleanup;
+  }
+
+  /* TODO: Also check other 2x2 submatrix. */
+  int bottom2x2 = firstSpecial[0][0] * firstExtra[1] - firstSpecial[1][0] * firstExtra[0];
+  if (bottom2x2 != 0)
+  {
+    CMRdbgMsg(4, "Bad structure: connecting 3x3 matrix is not TU.\n");
+    error = CMR_ERROR_INCONSISTENT;
+    goto cleanup;
+  }
+  int left2x2 = firstSpecial[0][0] * firstExtra[1] - firstSpecial[1][0] * firstExtra[0];
+  if (left2x2 != 0)
+  {
+    CMRdbgMsg(4, "Bad structure: connecting 3x3 matrix is not TU.\n");
+    error = CMR_ERROR_INCONSISTENT;
     goto cleanup;
   }
 

@@ -1847,7 +1847,6 @@ CMR_ERROR CMRseymourSetAttributes(CMR_SEYMOUR_NODE* node)
   case CMR_SEYMOUR_NODE_TYPE_PIVOTS:
   case CMR_SEYMOUR_NODE_TYPE_ONE_SUM:
   case CMR_SEYMOUR_NODE_TYPE_TWO_SUM:
-  case CMR_SEYMOUR_NODE_TYPE_THREE_SUM:
     if (node->regularity == 0)
     {
       node->regularity = 1;
@@ -1873,6 +1872,17 @@ CMR_ERROR CMRseymourSetAttributes(CMR_SEYMOUR_NODE* node)
       {
         CMR_SEYMOUR_NODE* child = node->children[childIndex];
         node->cographicness = MIN_IF_EXISTS(node->cographicness, child, child->cographicness);
+      }
+    }
+  break;
+  case CMR_SEYMOUR_NODE_TYPE_THREE_SUM:
+    if (node->regularity == 0)
+    {
+      node->regularity = 1;
+      for (size_t childIndex = 0; childIndex < node->numChildren; ++childIndex)
+      {
+        CMR_SEYMOUR_NODE* child = node->children[childIndex];
+        node->regularity = MIN_IF_EXISTS(node->regularity, child, child->regularity);
       }
     }
   break;

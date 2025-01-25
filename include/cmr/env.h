@@ -30,14 +30,15 @@ extern "C" {
 
 typedef enum
 {
-  CMR_OKAY = 0,             /**< No error. */
-  CMR_ERROR_INPUT = 1,      /**< Bad user input. */
-  CMR_ERROR_OUTPUT = 2,     /**< Error when writing user output. */
-  CMR_ERROR_MEMORY = 3,     /**< Error during (re)allocation. */
-  CMR_ERROR_INVALID = 4,    /**< Other invalid data. */
-  CMR_ERROR_OVERFLOW = 5,   /**< Overflow in numerical computations. */
-  CMR_ERROR_TIMEOUT = 6,    /**< Time limit exceeded. */
-  CMR_ERROR_STRUCTURE = 7,  /**< Bad matrix structure. */
+  CMR_OKAY = 0,               /**< No error. */
+  CMR_ERROR_INPUT = 1,        /**< Bad user input. */
+  CMR_ERROR_OUTPUT = 2,       /**< Error when writing user output. */
+  CMR_ERROR_MEMORY = 3,       /**< Error during (re)allocation. */
+  CMR_ERROR_INVALID = 4,      /**< Other invalid data. */
+  CMR_ERROR_OVERFLOW = 5,     /**< Overflow in numerical computations. */
+  CMR_ERROR_TIMEOUT = 6,      /**< Time limit exceeded. */
+  CMR_ERROR_STRUCTURE = 7,    /**< Bad matrix structure. */
+  CMR_ERROR_INCONSISTENT = 8, /**< Inconsistent pieces of input. */
 } CMR_ERROR;
 
 /**

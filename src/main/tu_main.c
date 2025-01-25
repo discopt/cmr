@@ -27,7 +27,9 @@ CMR_ERROR testTotalUnimodularity(
   const char* outputSubmatrixFileName,  /**< File name to print non-TU submatrix to, or \c NULL. */
   bool printStats,                      /**< Whether to print statistics to stderr. */
   bool directGraphicness,               /**< Whether to use fast graphicness routines. */
+  bool planarityCheck,                  /**< Whether to check for planarity. */
   bool seriesParallel,                  /**< Whether to allow series-parallel operations in the decomposition tree. */
+  int threeSumStrategy,                 /**< Which strategy to use for 3-sums. */
   bool naiveSubmatrix,                  /**< Use naive bad submatrix heuristic instead of greedy algorithm. */
   CMR_TU_ALGORITHM algorithm,           /**< Algorithm to use for TU test. */
   double timeLimit                      /**< Time limit to impose. */
@@ -69,6 +71,8 @@ CMR_ERROR testTotalUnimodularity(
   params.seymour.stopWhenIrregular = !outputTreeFileName;
   params.seymour.directGraphicness = directGraphicness;
   params.seymour.seriesParallel = seriesParallel;
+  params.seymour.planarityCheck = planarityCheck;
+  params.seymour.threeSumStrategy = threeSumStrategy;
   params.naiveSubmatrix = naiveSubmatrix;
   CMR_TU_STATS stats;
   CMR_CALL( CMRtuStatsInit(&stats));
@@ -91,7 +95,16 @@ CMR_ERROR testTotalUnimodularity(
     CMR_CALL( CMRtuStatsPrint(stderr, &stats, NULL) );
 
   if (decomposition)
-    CMR_CALL( CMRseymourPrint(cmr, decomposition, stderr, true, true, true, true, true, true) );
+  {
+    FILE* outputTreeFile;
+    if (strcmp(outputTreeFileName, "-"))
+      outputTreeFile = fopen(outputTreeFileName, "w");
+    else
+      outputTreeFile = stdout;
+    CMR_CALL( CMRseymourPrint(cmr, decomposition, outputTreeFile, true, true, true, true, true, true) );
+    if (outputTreeFile != stdout)
+      fclose(outputTreeFile);
+  }
 
   if (submatrix && outputSubmatrixFileName)
   {
@@ -146,7 +159,9 @@ int printUsage(const char* program)
   fputs("Advanced options:\n", stderr);
   fputs("  --stats              Print statistics about the computation to stderr.\n", stderr);
   fputs("  --time-limit LIMIT   Allow at most LIMIT seconds for the computation.\n", stderr);
+  fputs("  --threesum-strategy  3-sum strategy among {seymour, truemper, pivotless}.\n", stderr);
   fputs("  --no-direct-graphic  Check only 3-connected matrices for regularity.\n", stderr);
+  fputs("  --no-planarity       Do not test for planarity.\n", stderr);
   fputs("  --no-series-parallel Do not allow series-parallel operations in decomposition tree.\n", stderr);
   fputs("  --naive-submatrix    Use naive bad submatrix algorithm instead of greedy heuristic.\n", stderr);
   fputs("  --algo ALGO          Use algorithm from {decomposition, eulerian, partition}; default: decomposition.\n",
@@ -169,8 +184,10 @@ int main(int argc, char** argv)
   char* outputSubmatrix = NULL;
   bool printStats = false;
   bool directGraphicness = true;
+  bool planarityCheck = true;
   bool seriesParallel = true;
   bool naiveSubmatrix = true;
+  int threeSumStrategy = CMR_SEYMOUR_THREESUM_FLAG_SEYMOUR;
   double timeLimit = DBL_MAX;
   CMR_TU_ALGORITHM algorithm = CMR_TU_ALGORITHM_DECOMPOSITION;
   for (int a = 1; a < argc; ++a)
@@ -201,10 +218,27 @@ int main(int argc, char** argv)
       printStats = true;
     else if (!strcmp(argv[a], "--no-direct-graphic"))
       directGraphicness = false;
+    else if (!strcmp(argv[a], "--no-planarity"))
+      planarityCheck = false;
     else if (!strcmp(argv[a], "--no-series-parallel"))
       seriesParallel = false;
     else if (!strcmp(argv[a], "--naive-submatrix"))
       naiveSubmatrix = true;
+    else if (!strcmp(argv[a], "--threesum-strategy") && a+1 < argc)
+    {
+      ++a;
+      if (!strcasecmp(argv[a], "seymour"))
+        threeSumStrategy = CMR_SEYMOUR_THREESUM_FLAG_SEYMOUR;
+      else if (!strcasecmp(argv[a], "truemper"))
+        threeSumStrategy = CMR_SEYMOUR_THREESUM_FLAG_TRUEMPER;
+      else if (!strcasecmp(argv[a], "pivotless"))
+        threeSumStrategy = CMR_SEYMOUR_THREESUM_FLAG_NO_PIVOTS;
+      else
+      {
+        fprintf(stderr, "Error: Invalid threesum-strategy <%s> specified.\n\n", argv[a]);
+        return printUsage(argv[0]);
+      }
+    }
     else if (!strcmp(argv[a], "--time-limit") && (a+1 < argc))
     {
       if (sscanf(argv[a+1], "%lf", &timeLimit) == 0 || timeLimit <= 0)
@@ -246,7 +280,7 @@ int main(int argc, char** argv)
 
   CMR_ERROR error;
   error = testTotalUnimodularity(inputMatrixFileName, inputFormat, outputTree, outputSubmatrix, printStats,
-    directGraphicness, seriesParallel, naiveSubmatrix, algorithm, timeLimit);
+    directGraphicness, planarityCheck, seriesParallel, threeSumStrategy, naiveSubmatrix, algorithm, timeLimit);
 
   switch (error)
   {

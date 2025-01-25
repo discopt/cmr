@@ -383,7 +383,7 @@ CMR_ERROR CMRgraphPrint(CMR_GRAPH* graph, FILE* stream)
   assert(stream);
   assert(graph);
 
-  printf("Graph with %zu nodes and %zu edges.\n", CMRgraphNumNodes(graph), CMRgraphNumEdges(graph));
+  fprintf(stream, "Graph with %zu nodes and %zu edges.\n", CMRgraphNumNodes(graph), CMRgraphNumEdges(graph));
   for (CMR_GRAPH_NODE v = CMRgraphNodesFirst(graph); CMRgraphNodesValid(graph, v); v = CMRgraphNodesNext(graph, v))
   {
     fprintf(stream, "Node %d:\n", v);
