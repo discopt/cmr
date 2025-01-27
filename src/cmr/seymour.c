@@ -25,9 +25,7 @@ CMR_ERROR CMRseymourParamsInit(CMR_SEYMOUR_PARAMS* params)
   params->directGraphicness = true;
   params->preferGraphicness = true;
   params->threeSumPivotChildren = false;
-  params->threeSumStrategy = CMR_SEYMOUR_THREESUM_FLAG_DISTRIBUTED_RANKS /* TODO: Later no pivots. */
-    | CMR_SEYMOUR_THREESUM_FLAG_FIRST_WIDE | CMR_SEYMOUR_THREESUM_FLAG_FIRST_MIXED
-    | CMR_SEYMOUR_THREESUM_FLAG_SECOND_WIDE | CMR_SEYMOUR_THREESUM_FLAG_SECOND_MIXED;
+  params->threeSumStrategy = CMR_SEYMOUR_THREESUM_FLAG_PIVOTLESS;
   params->constructLeafGraphs = false;
   params->constructAllGraphs = false;
 
@@ -92,22 +90,6 @@ bool CMRseymourIsTernary(CMR_SEYMOUR_NODE* node)
   assert(node);
 
   return node->isTernary;
-}
-
-bool CMRseymourThreeSumDistributedRanks(CMR_SEYMOUR_NODE* node)
-{
-  assert(node);
-  assert(node->type == CMR_SEYMOUR_NODE_TYPE_THREE_SUM);
-
-  return node->threesumFlags & CMR_SEYMOUR_THREESUM_FLAG_DISTRIBUTED_RANKS;
-}
-
-bool CMRseymourThreeSumConcentratedRank(CMR_SEYMOUR_NODE* node)
-{
-  assert(node);
-  assert(node->type == CMR_SEYMOUR_NODE_TYPE_THREE_SUM);
-
-  return node->threesumFlags & CMR_SEYMOUR_THREESUM_FLAG_CONCENTRATED_RANK;
 }
 
 CMR_CHRMAT* CMRseymourGetMatrix(CMR_SEYMOUR_NODE* node)
@@ -188,8 +170,6 @@ CMR_ELEMENT* CMRseymourChildRowsToParent(CMR_SEYMOUR_NODE* node, size_t childInd
   assert(childIndex < node->numChildren);
 
   return node->childRowsToParent[childIndex];
-
-  return NULL;
 }
 
 CMR_ELEMENT* CMRseymourChildColumnsToParent(CMR_SEYMOUR_NODE* node, size_t childIndex)
@@ -198,8 +178,22 @@ CMR_ELEMENT* CMRseymourChildColumnsToParent(CMR_SEYMOUR_NODE* node, size_t child
   assert(childIndex < node->numChildren);
 
   return node->childColumnsToParent[childIndex];
+}
 
-  return NULL;
+size_t* CMRseymourChildSpecialRows(CMR_SEYMOUR_NODE* node, size_t childIndex)
+{
+  assert(node);
+  assert(childIndex < node->numChildren);
+
+  return node->childSpecialRows[childIndex];
+}
+
+size_t* CMRseymourChildSpecialColumns(CMR_SEYMOUR_NODE* node, size_t childIndex)
+{
+  assert(node);
+  assert(childIndex < node->numChildren);
+
+  return node->childSpecialColumns[childIndex];
 }
 
 size_t CMRseymourNumColumns(CMR_SEYMOUR_NODE* node)
@@ -382,8 +376,11 @@ CMR_ERROR CMRseymourPrintChild(CMR* cmr, CMR_SEYMOUR_NODE* child, CMR_SEYMOUR_NO
   case CMR_SEYMOUR_NODE_TYPE_TWO_SUM:
     fprintf(stream, "2-sum node {");
     break;
-  case CMR_SEYMOUR_NODE_TYPE_THREE_SUM:
-    fprintf(stream, "3-sum node {");
+  case CMR_SEYMOUR_NODE_TYPE_THREE_SUM_SEYMOUR:
+    fprintf(stream, "3-sum node of type Seymour {");
+  break;
+  case CMR_SEYMOUR_NODE_TYPE_THREE_SUM_TRUEMPER:
+    fprintf(stream, "3-sum node of type Truemper {");
   break;
   case CMR_SEYMOUR_NODE_TYPE_GRAPH:
     fprintf(stream, "graphic matrix with %zu nodes and %zu edges {", CMRgraphNumNodes(child->graph),
@@ -479,6 +476,20 @@ CMR_ERROR CMRseymourPrintChild(CMR* cmr, CMR_SEYMOUR_NODE* child, CMR_SEYMOUR_NO
       }
       fprintf(stream, "\n");
     }
+    if (parent->childSpecialRows && parent->childSpecialRows[childIndex])
+    {
+      for (size_t i = 0; i < indent; ++i)
+        fputc(' ', stream);
+      if (parent->type == CMR_SEYMOUR_NODE_TYPE_THREE_SUM_SEYMOUR)
+      {
+        fprintf(stream, "with special rows: r%zu\n", parent->childSpecialRows[childIndex][0]);
+      }
+      else if (parent->type == CMR_SEYMOUR_NODE_TYPE_THREE_SUM_TRUEMPER)
+      {
+        fprintf(stream, "with special rows: r%zu, r%zu, r%zu\n", parent->childSpecialRows[childIndex][0],
+          parent->childSpecialRows[childIndex][1], parent->childSpecialRows[childIndex][2]);
+      }
+    }
     if (parent->childColumnsToParent && parent->childColumnsToParent[childIndex])
     {
       CMR_ELEMENT* columnsToParent = parent->childColumnsToParent[childIndex];
@@ -496,6 +507,21 @@ CMR_ERROR CMRseymourPrintChild(CMR* cmr, CMR_SEYMOUR_NODE* child, CMR_SEYMOUR_NO
           fprintf(stream, " N/A");
       }
       fprintf(stream, "\n");
+    }
+    if (parent->childSpecialRows && parent->childSpecialRows[childIndex])
+    {
+      for (size_t i = 0; i < indent; ++i)
+        fputc(' ', stream);
+      if (parent->type == CMR_SEYMOUR_NODE_TYPE_THREE_SUM_SEYMOUR)
+      {
+        fprintf(stream, "with special columns: c%zu, c%zu\n", parent->childSpecialColumns[childIndex][0],
+          parent->childSpecialColumns[childIndex][1]);
+      }
+      else if (parent->type == CMR_SEYMOUR_NODE_TYPE_THREE_SUM_TRUEMPER)
+      {
+        fprintf(stream, "with special columns: c%zu, c%zu, c%zu\n", parent->childSpecialColumns[childIndex][0],
+          parent->childSpecialColumns[childIndex][1], parent->childSpecialColumns[childIndex][2]);
+      }
     }
   }
 
@@ -602,6 +628,8 @@ CMR_ERROR CMRseymourRelease(CMR* cmr, CMR_SEYMOUR_NODE** pnode)
       CMR_CALL( CMRseymourRelease(cmr, &node->children[c]) );
       CMR_CALL( CMRfreeBlockArray(cmr, &node->childRowsToParent[c]) );
       CMR_CALL( CMRfreeBlockArray(cmr, &node->childColumnsToParent[c]) );
+      CMR_CALL( CMRfreeBlockArray(cmr, &node->childSpecialRows[c]) );
+      CMR_CALL( CMRfreeBlockArray(cmr, &node->childSpecialColumns[c]) );
     }
 
     CMR_CALL( CMRchrmatFree(cmr, &node->matrix) );
@@ -609,6 +637,8 @@ CMR_ERROR CMRseymourRelease(CMR* cmr, CMR_SEYMOUR_NODE** pnode)
     CMR_CALL( CMRfreeBlockArray(cmr, &node->children) );
     CMR_CALL( CMRfreeBlockArray(cmr, &node->childRowsToParent) );
     CMR_CALL( CMRfreeBlockArray(cmr, &node->childColumnsToParent) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &node->childSpecialRows) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &node->childSpecialColumns) );
 
     CMR_CALL( CMRfreeBlockArray(cmr, &node->rowsToChild) );
     CMR_CALL( CMRfreeBlockArray(cmr, &node->columnsToChild) );
@@ -686,6 +716,8 @@ CMR_ERROR createNode(
   node->children = NULL;
   node->childRowsToParent = NULL;
   node->childColumnsToParent = NULL;
+  node->childSpecialRows = NULL;
+  node->childSpecialColumns = NULL;
 
   node->numRows = numRows;
   node->rowsToChild = NULL;
@@ -785,7 +817,7 @@ CMR_ERROR updateRowsColumnsToParent(
   assert(parent->children);
   assert(childIndex < parent->numChildren);
 
-    CMR_SEYMOUR_NODE* child = parent->children[childIndex];
+  CMR_SEYMOUR_NODE* child = parent->children[childIndex];
   assert(child);
   assert(parent->childRowsToParent[childIndex] == NULL);
   assert(parent->childColumnsToParent[childIndex] == NULL);
@@ -893,19 +925,12 @@ CMR_ERROR updateChildMatrix(
 }
 
 
-CMR_ERROR CMRseymourCreate(CMR* cmr, CMR_SEYMOUR_NODE** pnode, bool isTernary, CMR_CHRMAT* matrix)
+CMR_ERROR CMRseymourCreate(CMR* cmr, CMR_SEYMOUR_NODE** pnode, bool isTernary, size_t numRows, size_t numColumns)
 {
   assert(cmr);
   assert(pnode);
-  assert(matrix);
 
-  CMR_CALL( createNode(cmr, pnode, isTernary, CMR_SEYMOUR_NODE_TYPE_UNKNOWN, matrix->numRows, matrix->numColumns) );
-  CMR_SEYMOUR_NODE* node = *pnode;
-
-  CMR_CALL( CMRchrmatCopy(cmr, matrix, &node->matrix) );
-
-  assert(matrix->numRows == node->numRows);
-  assert(matrix->numColumns == node->numColumns);
+  CMR_CALL( createNode(cmr, pnode, isTernary, CMR_SEYMOUR_NODE_TYPE_UNKNOWN, numRows, numColumns) );
 
   return CMR_OKAY;
 }
@@ -953,11 +978,15 @@ CMR_ERROR CMRseymourSetNumChildren(CMR* cmr, CMR_SEYMOUR_NODE* node, size_t numC
   CMR_CALL( CMRallocBlockArray(cmr, &node->children, numChildren) );
   CMR_CALL( CMRallocBlockArray(cmr, &node->childRowsToParent, numChildren) );
   CMR_CALL( CMRallocBlockArray(cmr, &node->childColumnsToParent, numChildren) );
+  CMR_CALL( CMRallocBlockArray(cmr, &node->childSpecialRows, numChildren) );
+  CMR_CALL( CMRallocBlockArray(cmr, &node->childSpecialColumns, numChildren) );
   for (size_t c = 0; c < numChildren; ++c)
   {
     node->children[c] = NULL;
     node->childRowsToParent[c] = NULL;
     node->childColumnsToParent[c] = NULL;
+    node->childSpecialRows[c] = NULL;
+    node->childSpecialColumns[c] = NULL;
   }
 
   return CMR_OKAY;
@@ -1206,590 +1235,6 @@ CMR_ERROR CMRseymourUpdatePivots(CMR* cmr, CMR_SEYMOUR_NODE* node, size_t numPiv
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRseymourUpdateThreeSumInit(CMR* cmr, CMR_SEYMOUR_NODE* node)
-{
-  assert(cmr);
-  assert(node);
-
-  node->type = CMR_SEYMOUR_NODE_TYPE_THREE_SUM;
-  CMR_CALL( CMRseymourSetNumChildren(cmr, node, 2) );
-
-  return CMR_OKAY;
-}
-
-CMR_ERROR CMRseymourUpdateThreeSumCreateWideFirstChild(CMR* cmr, CMR_SEYMOUR_NODE* node, size_t* rowsToChild,
-  size_t* columnsToChild, size_t numChildBaseRows, size_t numChildBaseColumns, size_t extraRow, size_t extraColumn1,
-  size_t extraColumn2, int8_t extraEntry)
-{
-  assert(cmr);
-  assert(node);
-  assert(node->matrix);
-  assert(node->transpose);
-  assert(rowsToChild);
-  assert(columnsToChild);
-  assert(numChildBaseRows < node->numRows);
-  assert(numChildBaseColumns < node->numColumns);
-  assert(extraRow < node->numRows);
-  assert(extraColumn1 < node->numColumns);
-  assert(extraColumn2 < node->numColumns);
-  assert(extraEntry == -1 || extraEntry == 1);
-
-  /* We first create the extra column densely. */
-  size_t* parentRows = NULL;
-  CMR_CALL( CMRallocStackArray(cmr, &parentRows, numChildBaseRows + 1) );
-  size_t* parentColumns = NULL;
-  CMR_CALL( CMRallocStackArray(cmr, &parentColumns, numChildBaseColumns + 2) );
-  int8_t* denseExtraColumn = NULL;
-  CMR_CALL( CMRallocStackArray(cmr, &denseExtraColumn, numChildBaseRows) );
-  for (size_t column = 0; column < numChildBaseRows; ++column)
-    denseExtraColumn[column] = 0;
-  size_t first = node->transpose->rowSlice[extraColumn1];
-  size_t beyond = node->transpose->rowSlice[extraColumn1 + 1];
-  for (size_t e = first; e < beyond; ++e)
-  {
-    size_t row = node->transpose->entryColumns[e];
-    size_t childRow = rowsToChild[row];
-    if (childRow < numChildBaseRows)
-      denseExtraColumn[childRow] = node->transpose->entryValues[e];
-  }
-
-  /* Main matrix. */
-  size_t childEntry = 0;
-  CMR_CHRMAT* childMatrix = NULL;
-  CMR_CALL( CMRchrmatCreate(cmr, &childMatrix, numChildBaseRows + 1, numChildBaseColumns + 2,
-    node->matrix->numNonzeros + node->matrix->numRows) );
-  for (size_t row = 0; row < node->numRows; ++row)
-  {
-    size_t childRow = rowsToChild[row];
-    if (childRow >= numChildBaseRows)
-      continue;
-
-    parentRows[childRow] = row;
-    childMatrix->rowSlice[childRow] = childEntry;
-
-    /* Main entries. */
-    size_t first = node->matrix->rowSlice[row];
-    size_t beyond = node->matrix->rowSlice[row + 1];
-    for (size_t e = first; e < beyond; ++e)
-    {
-      size_t column = node->matrix->entryColumns[e];
-      size_t childColumn = columnsToChild[column];
-      if (childColumn >= numChildBaseColumns)
-        continue;
-
-      childMatrix->entryColumns[childEntry] = childColumn;
-      childMatrix->entryValues[childEntry] = node->matrix->entryValues[e];
-      ++childEntry;
-    }
-
-    /* Dense entries. */
-    if (denseExtraColumn[childRow])
-    {
-      childMatrix->entryColumns[childEntry] = numChildBaseColumns;
-      childMatrix->entryValues[childEntry] = denseExtraColumn[childRow];
-      ++childEntry;
-      childMatrix->entryColumns[childEntry] = numChildBaseColumns + 1;
-      childMatrix->entryValues[childEntry] = denseExtraColumn[childRow];
-      ++childEntry;
-    }
-  }
-  childMatrix->rowSlice[numChildBaseRows] = childEntry;
-
-  /* Extra row */
-  first = node->matrix->rowSlice[extraRow];
-  beyond = node->matrix->rowSlice[extraRow + 1];
-  for (size_t e = first; e < beyond; ++e)
-  {
-    size_t column = node->matrix->entryColumns[e];
-    size_t childColumn = columnsToChild[column];
-    if (childColumn >= numChildBaseColumns)
-      continue;
-
-    childMatrix->entryColumns[childEntry] = childColumn;
-    childMatrix->entryValues[childEntry] = node->matrix->entryValues[e];
-    ++childEntry;
-  }
-  parentRows[numChildBaseRows] = extraRow;
-  parentColumns[numChildBaseColumns] = extraColumn1;
-  parentColumns[numChildBaseColumns + 1] = extraColumn2;
-  for (size_t column = 0; column < node->numColumns; ++column)
-  {
-    size_t childColumn = columnsToChild[column];
-    if (childColumn < numChildBaseColumns)
-      parentColumns[childColumn] = column;
-  }
-
-  /* Extra entry */
-  childMatrix->entryColumns[childEntry] = numChildBaseColumns + 1;
-  childMatrix->entryValues[childEntry] = extraEntry;
-  ++childEntry;
-
-  /* Finalize */
-  childMatrix->rowSlice[numChildBaseRows + 1] = childEntry;
-  childMatrix->numNonzeros = childEntry;
-
-  /* Create the actual decomposition node. */
-  CMR_CALL( createNode(cmr, &node->children[0], node->isTernary, CMR_SEYMOUR_NODE_TYPE_UNKNOWN, childMatrix->numRows,
-    childMatrix->numColumns) );
-  CMR_SEYMOUR_NODE* child = node->children[0];
-  child->matrix = childMatrix;
-
-  CMR_CALL( updateRowsColumnsToParent(cmr, node, 0, parentRows, parentColumns) );
-  CMR_CALL( updateRowsColumnsToChild(node, 0, parentRows, 0, numChildBaseRows, parentColumns, 0, numChildBaseColumns) );
-
-  CMR_CALL( CMRfreeStackArray(cmr, &denseExtraColumn) );
-  CMR_CALL( CMRfreeStackArray(cmr, &parentColumns) );
-  CMR_CALL( CMRfreeStackArray(cmr, &parentRows) );
-
-#if defined(CMR_DEBUG_MATRICES)
-  CMRdbgMsg(10, "Wide first child matrix:\n");
-  CMRchrmatPrintDense(cmr, childMatrix, stdout, '0', true);
-  for (size_t childRow = 0; childRow < child->numRows; ++childRow)
-  {
-    CMRdbgMsg(12, "Child row r%zu corresponds to parent %s.\n", childRow + 1,
-      CMRelementString(node->childRowsToParent[0][childRow], NULL));
-  }
-  for (size_t childColumn = 0; childColumn < child->numColumns; ++childColumn)
-  {
-    CMRdbgMsg(12, "Child column c%zu corresponds to parent %s.\n", childColumn + 1,
-      CMRelementString(node->childColumnsToParent[0][childColumn], NULL));
-  }
-#endif /* CMR_DEBUG_MATRICES */
-
-  return CMR_OKAY;
-}
-
-CMR_ERROR CMRseymourUpdateThreeSumCreateWideSecondChild(CMR* cmr, CMR_SEYMOUR_NODE* node, size_t* rowsToChild,
-  size_t* columnsToChild, size_t numChildBaseRows, size_t numChildBaseColumns, size_t extraRow, size_t extraColumn1,
-  size_t extraColumn2, int8_t extraEntry)
-{
-  assert(cmr);
-  assert(node);
-  assert(node->matrix);
-  assert(node->transpose);
-  assert(rowsToChild);
-  assert(columnsToChild);
-  assert(numChildBaseRows < node->numRows);
-  assert(numChildBaseColumns < node->numColumns);
-  assert(extraRow < node->numRows);
-  assert(extraColumn1 < node->numColumns);
-  assert(extraColumn2 < node->numColumns);
-  assert(extraEntry == -1 || extraEntry == 1);
-
-  /* We first create the extra column densely. */
-  size_t* parentRows = NULL;
-  CMR_CALL( CMRallocStackArray(cmr, &parentRows, numChildBaseRows + 1) );
-  size_t* parentColumns = NULL;
-  CMR_CALL( CMRallocStackArray(cmr, &parentColumns, numChildBaseColumns + 2) );
-  int8_t* denseExtraColumn = NULL;
-  CMR_CALL( CMRallocStackArray(cmr, &denseExtraColumn, numChildBaseRows) );
-  for (size_t column = 0; column < numChildBaseRows; ++column)
-    denseExtraColumn[column] = 0;
-  size_t first = node->transpose->rowSlice[extraColumn1];
-  size_t beyond = node->transpose->rowSlice[extraColumn1 + 1];
-  for (size_t e = first; e < beyond; ++e)
-  {
-    size_t row = node->transpose->entryColumns[e];
-    size_t childRow = rowsToChild[row];
-    if (childRow < numChildBaseRows)
-      denseExtraColumn[childRow] = node->transpose->entryValues[e];
-  }
-
-  /* Main matrix. */
-  size_t childEntry = 0;
-  CMR_CHRMAT* childMatrix = NULL;
-  CMR_CALL( CMRchrmatCreate(cmr, &childMatrix, numChildBaseRows + 1, numChildBaseColumns + 2,
-    node->matrix->numNonzeros + node->matrix->numRows) );
-
-  /* Extra entry */
-  childMatrix->entryColumns[childEntry] = 0;
-  childMatrix->entryValues[childEntry] = extraEntry;
-  ++childEntry;
-
-  /* Extra row */
-  childMatrix->rowSlice[0] = 0;
-  first = node->matrix->rowSlice[extraRow];
-  beyond = node->matrix->rowSlice[extraRow + 1];
-  for (size_t e = first; e < beyond; ++e)
-  {
-    size_t column = node->matrix->entryColumns[e];
-    size_t childColumn = columnsToChild[column];
-    if (childColumn >= numChildBaseColumns)
-      continue;
-
-    childMatrix->entryColumns[childEntry] = childColumn + 2;
-    childMatrix->entryValues[childEntry] = node->matrix->entryValues[e];
-    ++childEntry;
-  }
-
-  for (size_t row = 0; row < node->numRows; ++row)
-  {
-    size_t childRow = rowsToChild[row];
-    if (childRow >= numChildBaseRows)
-      continue;
-
-    parentRows[childRow + 1] = row;
-    childMatrix->rowSlice[childRow + 1] = childEntry;
-
-    /* Dense entries. */
-    if (denseExtraColumn[childRow])
-    {
-      childMatrix->entryColumns[childEntry] = 0;
-      childMatrix->entryValues[childEntry] = denseExtraColumn[childRow];
-      ++childEntry;
-      childMatrix->entryColumns[childEntry] = 1;
-      childMatrix->entryValues[childEntry] = denseExtraColumn[childRow];
-      ++childEntry;
-    }
-
-    /* Main entries. */
-    size_t first = node->matrix->rowSlice[row];
-    size_t beyond = node->matrix->rowSlice[row + 1];
-    for (size_t e = first; e < beyond; ++e)
-    {
-      size_t column = node->matrix->entryColumns[e];
-      size_t childColumn = columnsToChild[column];
-      if (childColumn >= numChildBaseColumns)
-        continue;
-
-      childMatrix->entryColumns[childEntry] = childColumn + 2;
-      childMatrix->entryValues[childEntry] = node->matrix->entryValues[e];
-      ++childEntry;
-    }
-  }
-  childMatrix->rowSlice[numChildBaseRows + 1] = childEntry;
-
-  parentRows[0] = extraRow;
-  parentColumns[0] = extraColumn1;
-  parentColumns[1] = extraColumn2;
-  for (size_t column = 0; column < node->numColumns; ++column)
-  {
-    size_t childColumn = columnsToChild[column];
-    if (childColumn < numChildBaseColumns)
-      parentColumns[childColumn + 2] = column;
-  }
-
-  /* Finalize */
-  childMatrix->rowSlice[numChildBaseRows + 1] = childEntry;
-  childMatrix->numNonzeros = childEntry;
-
-  /* Create the actual decomposition node. */
-  CMR_CALL( createNode(cmr, &node->children[1], node->isTernary, CMR_SEYMOUR_NODE_TYPE_UNKNOWN, childMatrix->numRows,
-    childMatrix->numColumns) );
-  CMR_SEYMOUR_NODE* child = node->children[1];
-  child->matrix = childMatrix;
-
-  CMR_CALL( updateRowsColumnsToParent(cmr, node, 1, parentRows, parentColumns) );
-  CMR_CALL( updateRowsColumnsToChild(node, 1, parentRows, 1, numChildBaseRows + 1, parentColumns, 2,
-    numChildBaseColumns + 2) );
-
-  CMR_CALL( CMRfreeStackArray(cmr, &denseExtraColumn) );
-  CMR_CALL( CMRfreeStackArray(cmr, &parentColumns) );
-  CMR_CALL( CMRfreeStackArray(cmr, &parentRows) );
-
-#if defined(CMR_DEBUG_MATRICES)
-  CMRdbgMsg(10, "Wide second child matrix:\n");
-  CMRchrmatPrintDense(cmr, childMatrix, stdout, '0', true);
-  for (size_t childRow = 0; childRow < child->numRows; ++childRow)
-  {
-    CMRdbgMsg(12, "Child row r%zu corresponds to parent %s.\n", childRow + 1,
-      CMRelementString(node->childRowsToParent[1][childRow], NULL));
-  }
-  for (size_t childColumn = 0; childColumn < child->numColumns; ++childColumn)
-  {
-    CMRdbgMsg(12, "Child column c%zu corresponds to parent %s.\n", childColumn + 1,
-      CMRelementString(node->childColumnsToParent[1][childColumn], NULL));
-  }
-#endif /* CMR_DEBUG_MATRICES */
-
-  return CMR_OKAY;
-}
-
-CMR_ERROR CMRseymourUpdateThreeSumCreateMixedFirstChild(CMR* cmr, CMR_SEYMOUR_NODE* node, size_t* rowsToChild,
-  size_t* columnsToChild, size_t numChildBaseRows, size_t numChildBaseColumns, size_t extraRow1, size_t extraRow2,
-  int8_t extraEntry)
-{
-  assert(cmr);
-  assert(node);
-  assert(node->matrix);
-  assert(node->transpose);
-  assert(rowsToChild);
-  assert(columnsToChild);
-  assert(numChildBaseRows < node->numRows);
-  assert(numChildBaseColumns < node->numColumns);
-  assert(extraRow1 < node->numRows);
-  assert(extraRow2 < node->numRows);
-  assert(extraEntry == -1 || extraEntry == 1);
-
-  /* Mapping from child rows/columns to parent rows/columns. */
-  size_t* parentRows = NULL;
-  CMR_CALL( CMRallocStackArray(cmr, &parentRows, numChildBaseRows + 2) );
-  size_t* parentColumns = NULL;
-  CMR_CALL( CMRallocStackArray(cmr, &parentColumns, numChildBaseColumns + 1) );
-
-  /* Main matrix. */
-  size_t childEntry = 0;
-  CMR_CHRMAT* childMatrix = NULL;
-  CMR_CALL( CMRchrmatCreate(cmr, &childMatrix, numChildBaseRows + 2, numChildBaseColumns + 1,
-    node->matrix->numNonzeros) );
-  for (size_t row = 0; row < node->numRows; ++row)
-  {
-    size_t childRow = rowsToChild[row];
-    if (childRow >= numChildBaseRows)
-      continue;
-
-    parentRows[childRow] = row;
-    childMatrix->rowSlice[childRow] = childEntry;
-
-    /* Main entries. */
-    size_t first = node->matrix->rowSlice[row];
-    size_t beyond = node->matrix->rowSlice[row + 1];
-    for (size_t e = first; e < beyond; ++e)
-    {
-      size_t column = node->matrix->entryColumns[e];
-      size_t childColumn = columnsToChild[column];
-      if (childColumn >= numChildBaseColumns)
-        continue;
-
-      childMatrix->entryColumns[childEntry] = childColumn;
-      childMatrix->entryValues[childEntry] = node->matrix->entryValues[e];
-      ++childEntry;
-    }
-  }
-  childMatrix->rowSlice[numChildBaseRows] = childEntry;
-
-  /* Extra row 1 with a +1 at the end. */
-  size_t first = node->matrix->rowSlice[extraRow1];
-  size_t beyond = node->matrix->rowSlice[extraRow1 + 1];
-  for (size_t e = first; e < beyond; ++e)
-  {
-    size_t column = node->matrix->entryColumns[e];
-    size_t childColumn = columnsToChild[column];
-    if (childColumn >= numChildBaseColumns)
-      continue;
-
-    childMatrix->entryColumns[childEntry] = childColumn;
-    childMatrix->entryValues[childEntry] = node->matrix->entryValues[e];
-    ++childEntry;
-  }
-  childMatrix->entryColumns[childEntry] = numChildBaseColumns;
-  childMatrix->entryValues[childEntry] = 1;
-  ++childEntry;
-  parentRows[numChildBaseRows] = extraRow1;
-  childMatrix->rowSlice[numChildBaseRows + 1] = childEntry;
-
-  /* Extra row 2 with extra entry at the end. */
-  first = node->matrix->rowSlice[extraRow2];
-  beyond = node->matrix->rowSlice[extraRow2 + 1];
-  for (size_t e = first; e < beyond; ++e)
-  {
-    size_t column = node->matrix->entryColumns[e];
-    size_t childColumn = columnsToChild[column];
-    if (childColumn >= numChildBaseColumns)
-      continue;
-
-    childMatrix->entryColumns[childEntry] = childColumn;
-    childMatrix->entryValues[childEntry] = node->matrix->entryValues[e];
-    ++childEntry;
-  }
-  childMatrix->entryColumns[childEntry] = numChildBaseColumns;
-  childMatrix->entryValues[childEntry] =  extraEntry;
-  ++childEntry;
-  parentRows[numChildBaseRows + 1] = extraRow2;
-  for (size_t column = 0; column < node->numColumns; ++column)
-  {
-    size_t childColumn = columnsToChild[column];
-    if (childColumn < numChildBaseColumns)
-      parentColumns[childColumn] = column;
-  }
-  parentColumns[numChildBaseColumns] = SIZE_MAX;
-
-  /* Finalize */
-  childMatrix->rowSlice[numChildBaseRows + 2] = childEntry;
-  childMatrix->numNonzeros = childEntry;
-
-  /* Create the actual decomposition node. */
-  CMR_CALL( createNode(cmr, &node->children[0], node->isTernary, CMR_SEYMOUR_NODE_TYPE_UNKNOWN, childMatrix->numRows,
-    childMatrix->numColumns) );
-  CMR_SEYMOUR_NODE* child = node->children[0];
-  child->matrix = childMatrix;
-
-  CMR_CALL( updateRowsColumnsToParent(cmr, node, 0, parentRows, parentColumns) );
-  CMR_CALL( updateRowsColumnsToChild(node, 0, parentRows, 0, numChildBaseRows, parentColumns, 0, numChildBaseColumns) );
-
-  CMR_CALL( CMRfreeStackArray(cmr, &parentColumns) );
-  CMR_CALL( CMRfreeStackArray(cmr, &parentRows) );
-
-#if defined(CMR_DEBUG_MATRICES)
-  CMRdbgMsg(10, "Mixed first child matrix:\n");
-  CMRchrmatPrintDense(cmr, childMatrix, stdout, '0', true);
-  for (size_t childRow = 0; childRow < child->numRows; ++childRow)
-  {
-    CMRdbgMsg(12, "Child row r%zu corresponds to parent %s.\n", childRow + 1,
-      CMRelementString(node->childRowsToParent[0][childRow], NULL));
-  }
-  for (size_t childColumn = 0; childColumn < child->numColumns; ++childColumn)
-  {
-    CMRdbgMsg(12, "Child column c%zu corresponds to parent %s.\n", childColumn + 1,
-      CMRelementString(node->childColumnsToParent[0][childColumn], NULL));
-  }
-#endif /* CMR_DEBUG_MATRICES */
-
-  return CMR_OKAY;
-}
-
-CMR_ERROR CMRseymourUpdateThreeSumCreateMixedSecondChild(CMR* cmr, CMR_SEYMOUR_NODE* node, size_t* rowsToChild,
-  size_t* columnsToChild, size_t numChildBaseRows, size_t numChildBaseColumns, size_t extraColumn1, size_t extraColumn2,
-  int8_t extraEntry)
-{
-  assert(cmr);
-  assert(node);
-  assert(node->matrix);
-  assert(node->transpose);
-  assert(rowsToChild);
-  assert(columnsToChild);
-  assert(numChildBaseRows < node->numRows);
-  assert(numChildBaseColumns < node->numColumns);
-  assert(extraColumn1 < node->numColumns);
-  assert(extraColumn2 < node->numColumns);
-  assert(extraEntry == -1 || extraEntry == 1);
-
-  /* We first create the two extra columns densely. */
-  size_t* parentRows = NULL;
-  CMR_CALL( CMRallocStackArray(cmr, &parentRows, numChildBaseRows + 1) );
-  size_t* parentColumns = NULL;
-  CMR_CALL( CMRallocStackArray(cmr, &parentColumns, numChildBaseColumns + 2) );
-
-  int8_t* denseExtraColumn1 = NULL;
-  int8_t* denseExtraColumn2 = NULL;
-  CMR_CALL( CMRallocStackArray(cmr, &denseExtraColumn1, numChildBaseRows) );
-  CMR_CALL( CMRallocStackArray(cmr, &denseExtraColumn2, numChildBaseRows) );
-  for (size_t column = 0; column < numChildBaseRows; ++column)
-  {
-    denseExtraColumn1[column] = 0;
-    denseExtraColumn2[column] = 0;
-  }
-  size_t first = node->transpose->rowSlice[extraColumn1];
-  size_t beyond = node->transpose->rowSlice[extraColumn1 + 1];
-  for (size_t e = first; e < beyond; ++e)
-  {
-    size_t row = node->transpose->entryColumns[e];
-    size_t childRow = rowsToChild[row];
-    if (childRow < numChildBaseRows)
-      denseExtraColumn1[childRow] = node->transpose->entryValues[e];
-  }
-  first = node->transpose->rowSlice[extraColumn2];
-  beyond = node->transpose->rowSlice[extraColumn2 + 1];
-  for (size_t e = first; e < beyond; ++e)
-  {
-    size_t row = node->transpose->entryColumns[e];
-    size_t childRow = rowsToChild[row];
-    if (childRow < numChildBaseRows)
-      denseExtraColumn2[childRow] = node->transpose->entryValues[e];
-  }
-
-  /* Main matrix. */
-  size_t childEntry = 0;
-  CMR_CHRMAT* childMatrix = NULL;
-  CMR_CALL( CMRchrmatCreate(cmr, &childMatrix, numChildBaseRows + 1, numChildBaseColumns + 2,
-    node->matrix->numNonzeros) );
-
-  /* Only entries in first row are the extra entry and a +1. */
-  childMatrix->rowSlice[0] = 0;
-  childMatrix->entryColumns[childEntry] = 0;
-  childMatrix->entryValues[childEntry] = extraEntry;
-  ++childEntry;
-  childMatrix->entryColumns[childEntry] = 1;
-  childMatrix->entryValues[childEntry] = +1;
-  ++childEntry;
-
-  for (size_t row = 0; row < node->numRows; ++row)
-  {
-    size_t childRow = rowsToChild[row];
-    if (childRow >= numChildBaseRows)
-      continue;
-
-    parentRows[childRow + 1] = row;
-    childMatrix->rowSlice[childRow + 1] = childEntry;
-
-    /* Dense entries. */
-    if (denseExtraColumn1[childRow])
-    {
-      childMatrix->entryColumns[childEntry] = 0;
-      childMatrix->entryValues[childEntry] = denseExtraColumn1[childRow];
-      ++childEntry;
-    }
-    if (denseExtraColumn2[childRow])
-    {
-      childMatrix->entryColumns[childEntry] = 1;
-      childMatrix->entryValues[childEntry] = denseExtraColumn2[childRow];
-      ++childEntry;
-    }
-
-    /* Main entries. */
-    size_t first = node->matrix->rowSlice[row];
-    size_t beyond = node->matrix->rowSlice[row + 1];
-    for (size_t e = first; e < beyond; ++e)
-    {
-      size_t column = node->matrix->entryColumns[e];
-      size_t childColumn = columnsToChild[column];
-      if (childColumn >= numChildBaseColumns)
-        continue;
-
-      childMatrix->entryColumns[childEntry] = childColumn + 2;
-      childMatrix->entryValues[childEntry] = node->matrix->entryValues[e];
-      ++childEntry;
-    }
-  }
-  childMatrix->rowSlice[numChildBaseRows + 1] = childEntry;
-
-  parentRows[0] = SIZE_MAX;
-  parentColumns[0] = extraColumn1;
-  parentColumns[1] = extraColumn2;
-  for (size_t column = 0; column < node->numColumns; ++column)
-  {
-    size_t childColumn = columnsToChild[column];
-    if (childColumn < numChildBaseColumns)
-      parentColumns[childColumn + 2] = column;
-  }
-
-  /* Finalize */
-  childMatrix->rowSlice[numChildBaseRows + 1] = childEntry;
-  childMatrix->numNonzeros = childEntry;
-
-  /* Create the actual decomposition node. */
-  CMR_CALL( createNode(cmr, &node->children[1], node->isTernary, CMR_SEYMOUR_NODE_TYPE_UNKNOWN, childMatrix->numRows,
-    childMatrix->numColumns) );
-  CMR_SEYMOUR_NODE* child = node->children[1];
-  child->matrix = childMatrix;
-
-  CMR_CALL( updateRowsColumnsToParent(cmr, node, 1, parentRows, parentColumns) );
-  CMR_CALL( updateRowsColumnsToChild(node, 1, parentRows, 1, numChildBaseRows + 1, parentColumns, 2,
-    numChildBaseColumns + 2) );
-
-  CMR_CALL( CMRfreeStackArray(cmr, &denseExtraColumn2) );
-  CMR_CALL( CMRfreeStackArray(cmr, &denseExtraColumn1) );
-  CMR_CALL( CMRfreeStackArray(cmr, &parentColumns) );
-  CMR_CALL( CMRfreeStackArray(cmr, &parentRows) );
-
-#if defined(CMR_DEBUG_MATRICES)
-  CMRdbgMsg(10, "Mixed second child matrix:\n");
-  CMRchrmatPrintDense(cmr, childMatrix, stdout, '0', true);
-  for (size_t childRow = 0; childRow < child->numRows; ++childRow)
-  {
-    CMRdbgMsg(12, "Child row r%zu corresponds to parent %s.\n", childRow + 1,
-      CMRelementString(node->childRowsToParent[1][childRow], NULL));
-  }
-  for (size_t childColumn = 0; childColumn < child->numColumns; ++childColumn)
-  {
-    CMRdbgMsg(12, "Child column c%zu corresponds to parent %s.\n", childColumn + 1,
-      CMRelementString(node->childColumnsToParent[1][childColumn], NULL));
-  }
-#endif /* CMR_DEBUG_MATRICES */
-
-  return CMR_OKAY;
-}
-
 #define MIN_IF_EXISTS(currentValue, child, childValue) \
   ( (child != NULL) \
     ? ( ((childValue) < (currentValue)) ? (childValue) : (currentValue) ) \
@@ -1847,6 +1292,7 @@ CMR_ERROR CMRseymourSetAttributes(CMR_SEYMOUR_NODE* node)
   case CMR_SEYMOUR_NODE_TYPE_PIVOTS:
   case CMR_SEYMOUR_NODE_TYPE_ONE_SUM:
   case CMR_SEYMOUR_NODE_TYPE_TWO_SUM:
+  case CMR_SEYMOUR_NODE_TYPE_THREE_SUM_TRUEMPER:
     if (node->regularity == 0)
     {
       node->regularity = 1;
@@ -1875,7 +1321,7 @@ CMR_ERROR CMRseymourSetAttributes(CMR_SEYMOUR_NODE* node)
       }
     }
   break;
-  case CMR_SEYMOUR_NODE_TYPE_THREE_SUM:
+  case CMR_SEYMOUR_NODE_TYPE_THREE_SUM_SEYMOUR:
     if (node->regularity == 0)
     {
       node->regularity = 1;
@@ -2057,18 +1503,18 @@ CMR_ERROR CMRseymourCloneSubtrees(CMR* cmr, size_t numSubtrees, CMR_SEYMOUR_NODE
 }
 
 
-CMR_ERROR CMRregularityTaskCreateRoot(CMR* cmr, CMR_SEYMOUR_NODE* dec, DecompositionTask** ptask,
+CMR_ERROR CMRregularityTaskCreateRoot(CMR* cmr, CMR_SEYMOUR_NODE* node, DecompositionTask** ptask,
   CMR_SEYMOUR_PARAMS* params, CMR_SEYMOUR_STATS* stats, clock_t startClock, double timeLimit)
 {
   assert(cmr);
-  assert(dec);
+  assert(node);
   assert(ptask);
   assert(params);
 
   CMR_CALL( CMRallocBlock(cmr, ptask) );
   DecompositionTask* task = *ptask;
 
-  task->node = dec;
+  task->node = node;
   task->next = NULL;
 
   task->params = params;
@@ -2255,8 +1701,10 @@ CMR_ERROR CMRseymourDecompose(CMR* cmr, CMR_CHRMAT* matrix, bool ternary, CMR_SE
   CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', false) );
 #endif /* CMR_DEBUG_MATRICES */
 
-  CMR_CALL( CMRseymourCreate(cmr, proot, ternary, matrix) );
+  CMR_CALL( CMRseymourCreate(cmr, proot, ternary, matrix->numRows, matrix->numColumns) );
   assert(*proot);
+  CMR_CALL( CMRchrmatCopy(cmr, matrix, &(*proot)->matrix) );
+
   CMR_ERROR error = CMRregularityCompleteDecomposition(cmr, *proot, params, stats, timeLimit);
   if (error == CMR_ERROR_TIMEOUT)
   {
@@ -2286,6 +1734,12 @@ CMR_ERROR CMRregularityCompleteDecomposition(CMR* cmr, CMR_SEYMOUR_NODE* subtree
   CMR_CALL( CMRchrmatPrintDense(cmr, subtree->matrix, stdout, '0', false) );
 #endif /* CMR_DEBUG_MATRICES */
 
+  if (params->threeSumStrategy ==
+    (CMR_SEYMOUR_THREESUM_FLAG_DISTRIBUTED_PIVOT | CMR_SEYMOUR_THREESUM_FLAG_CONCENTRATED_PIVOT))
+  {
+    return CMR_ERROR_PARAMS;
+  }
+
   clock_t time = clock();
   if (stats)
     stats->totalCount++;
@@ -2295,6 +1749,8 @@ CMR_ERROR CMRregularityCompleteDecomposition(CMR* cmr, CMR_SEYMOUR_NODE* subtree
     CMR_CALL( CMRseymourRelease(cmr, &subtree->children[c]) );
     CMR_CALL( CMRfreeBlockArray(cmr, &subtree->childRowsToParent[c]) );
     CMR_CALL( CMRfreeBlockArray(cmr, &subtree->childColumnsToParent[c]) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &subtree->childSpecialRows[c]) );
+    CMR_CALL( CMRfreeBlockArray(cmr, &subtree->childSpecialColumns[c]) );
   }
 
   subtree->type = CMR_SEYMOUR_NODE_TYPE_UNKNOWN;
@@ -2379,12 +1835,14 @@ CMR_ERROR CMRregularityRefineDecomposition(CMR* cmr, size_t numNodes, CMR_SEYMOU
 
   for (size_t i = 0; i < numNodes; ++i)
   {
-        CMR_SEYMOUR_NODE* subtree = nodes[i];
+    CMR_SEYMOUR_NODE* subtree = nodes[i];
     for (size_t c = 0; c < subtree->numChildren; ++c)
     {
       CMR_CALL( CMRseymourRelease(cmr, &subtree->children[c]) );
       CMR_CALL( CMRfreeBlockArray(cmr, &subtree->childRowsToParent[c]) );
       CMR_CALL( CMRfreeBlockArray(cmr, &subtree->childColumnsToParent[c]) );
+      CMR_CALL( CMRfreeBlockArray(cmr, &subtree->childSpecialRows[c]) );
+      CMR_CALL( CMRfreeBlockArray(cmr, &subtree->childSpecialColumns[c]) );
     }
 
     subtree->type = CMR_SEYMOUR_NODE_TYPE_UNKNOWN;

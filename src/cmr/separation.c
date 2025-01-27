@@ -2208,13 +2208,13 @@ CMR_ERROR CMRthreeSumSeymourDecomposeFirst(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEP
 
   /* Free local arrays. */
   CMR_CALL( CMRfreeStackArray(cmr, &denseColumn) );
-  if (hasColumnsToFirst)
+  if (!hasColumnsToFirst)
     CMR_CALL( CMRfreeStackArray(cmr, &columnsToFirst) );
-  if (hasRowsToFirst)
+  if (!hasRowsToFirst)
     CMR_CALL( CMRfreeStackArray(cmr, &rowsToFirst) );
-  if (hasFirstColumnsOrigin)
+  if (!hasFirstColumnsOrigin)
     CMR_CALL( CMRfreeStackArray(cmr, &firstColumnsOrigin) );
-  if (hasFirstRowsOrigin)
+  if (!hasFirstRowsOrigin)
     CMR_CALL( CMRfreeStackArray(cmr, &firstRowsOrigin) );
 
   return CMR_OKAY;
@@ -2384,13 +2384,13 @@ CMR_ERROR CMRthreeSumSeymourDecomposeSecond(CMR* cmr, CMR_CHRMAT* matrix, CMR_SE
 
   /* Free local arrays. */
   CMR_CALL( CMRfreeStackArray(cmr, &denseColumn) );
-  if (hasColumnsToSecond)
+  if (!hasColumnsToSecond)
     CMR_CALL( CMRfreeStackArray(cmr, &columnsToSecond) );
-  if (hasRowsToSecond)
+  if (!hasRowsToSecond)
     CMR_CALL( CMRfreeStackArray(cmr, &rowsToSecond) );
-  if (hasSecondColumnsOrigin)
+  if (!hasSecondColumnsOrigin)
     CMR_CALL( CMRfreeStackArray(cmr, &secondColumnsOrigin) );
-  if (hasSecondRowsOrigin)
+  if (!hasSecondRowsOrigin)
     CMR_CALL( CMRfreeStackArray(cmr, &secondRowsOrigin) );
 
   return CMR_OKAY;
@@ -2613,18 +2613,15 @@ CMR_ERROR CMRthreeSumTruemperCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* se
     goto cleanup;
   }
 
-  /* TODO: Also check other 2x2 submatrix. */
-  int bottom2x2 = firstSpecial[0][0] * firstExtra[1] - firstSpecial[1][0] * firstExtra[0];
-  if (bottom2x2 != 0)
+  /* Also check other 2x2 submatrix: */
+  int det_left_extra = firstSpecial[0][0] * firstExtra[1] - firstSpecial[1][0] * firstExtra[0];
+  int det_right_extra = firstSpecial[0][1] * firstExtra[1] - firstSpecial[1][1] * firstExtra[0];
+  int det_top_extra = secondExtra[0] * firstSpecial[0][1] - secondExtra[1] * firstSpecial[0][0];
+  int det_bottom_extra = secondExtra[0] * firstSpecial[1][1] - secondExtra[1] * firstSpecial[1][0];
+  if (abs(det_left_extra) > 1 || abs(det_right_extra) > 1 || abs(det_top_extra) > 1 || abs(det_bottom_extra) > 1)
   {
-    CMRdbgMsg(4, "Bad structure: connecting 3x3 matrix is not TU.\n");
-    error = CMR_ERROR_INCONSISTENT;
-    goto cleanup;
-  }
-  int left2x2 = firstSpecial[0][0] * firstExtra[1] - firstSpecial[1][0] * firstExtra[0];
-  if (left2x2 != 0)
-  {
-    CMRdbgMsg(4, "Bad structure: connecting 3x3 matrix is not TU.\n");
+    CMRdbgMsg(4, "Bad structure: connecting 3x3 matrix is not TU. 2x2 dets are %d, %d, %d and %d.\n", det_left_extra,
+      det_right_extra, det_top_extra, det_bottom_extra);
     error = CMR_ERROR_INCONSISTENT;
     goto cleanup;
   }

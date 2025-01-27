@@ -39,6 +39,7 @@ typedef enum
   CMR_ERROR_TIMEOUT = 6,      /**< Time limit exceeded. */
   CMR_ERROR_STRUCTURE = 7,    /**< Bad matrix structure. */
   CMR_ERROR_INCONSISTENT = 8, /**< Inconsistent pieces of input. */
+  CMR_ERROR_PARAMS = 9,       /**< Invalid parameters provided. */
 } CMR_ERROR;
 
 /**
@@ -65,6 +66,10 @@ typedef enum
         fprintf(stderr, "Integer overflow"); \
       else if (_cmr_error == CMR_ERROR_STRUCTURE) \
         fprintf(stderr, "Invalid matrix structure"); \
+      else if (_cmr_error == CMR_ERROR_INCONSISTENT) \
+        fprintf(stderr, "Inconsistent input"); \
+      else if (_cmr_error == CMR_ERROR_PARAMS) \
+        fprintf(stderr, "Invalid parameters"); \
       else \
         fprintf(stderr, "Unknown error"); \
       fprintf(stderr, " in %s:%d.\n", __FILE__, __LINE__); \

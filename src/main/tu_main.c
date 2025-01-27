@@ -232,7 +232,7 @@ int main(int argc, char** argv)
       else if (!strcasecmp(argv[a], "truemper"))
         threeSumStrategy = CMR_SEYMOUR_THREESUM_FLAG_TRUEMPER;
       else if (!strcasecmp(argv[a], "pivotless"))
-        threeSumStrategy = CMR_SEYMOUR_THREESUM_FLAG_NO_PIVOTS;
+        threeSumStrategy = CMR_SEYMOUR_THREESUM_FLAG_PIVOTLESS;
       else
       {
         fprintf(stderr, "Error: Invalid threesum-strategy <%s> specified.\n\n", argv[a]);

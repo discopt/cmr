@@ -1007,7 +1007,7 @@ TEST(TU, EnumerateRanksTwoZero)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
-TEST(TU, ThreeSumWideWideR12)
+TEST(TU, ThreeSumSeymourR12)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -1029,8 +1029,7 @@ TEST(TU, ThreeSumWideWideR12)
     CMR_SEYMOUR_NODE* dec = NULL;
     CMR_TU_PARAMS params;
     ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
-    params.seymour.threeSumStrategy = CMR_SEYMOUR_THREESUM_FLAG_DISTRIBUTED_RANKS
-      | CMR_SEYMOUR_THREESUM_FLAG_FIRST_WIDE | CMR_SEYMOUR_THREESUM_FLAG_SECOND_WIDE;
+    params.seymour.threeSumStrategy = CMR_SEYMOUR_THREESUM_FLAG_SEYMOUR;
 
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
 
@@ -1044,9 +1043,7 @@ TEST(TU, ThreeSumWideWideR12)
 
     CMR_SEYMOUR_NODE* child = CMRseymourChild(dec, 0);
 
-    ASSERT_EQ( CMRseymourType(child), CMR_SEYMOUR_NODE_TYPE_THREE_SUM );
-    ASSERT_TRUE( CMRseymourThreeSumDistributedRanks(child) );
-    ASSERT_FALSE( CMRseymourThreeSumConcentratedRank(child) );
+    ASSERT_EQ( CMRseymourType(child), CMR_SEYMOUR_NODE_TYPE_THREE_SUM_SEYMOUR );
     ASSERT_EQ( CMRseymourNumChildren(child), 2UL );
 
     CMR_SEYMOUR_NODE* grandChild1 = CMRseymourChild(child, 0);
@@ -1064,7 +1061,7 @@ TEST(TU, ThreeSumWideWideR12)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
-TEST(TU, ThreeSumMixedMixedR12)
+TEST(TU, ThreeSumTruemperR12)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -1086,8 +1083,7 @@ TEST(TU, ThreeSumMixedMixedR12)
     CMR_SEYMOUR_NODE* dec = NULL;
     CMR_TU_PARAMS params;
     ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
-    params.seymour.threeSumStrategy = CMR_SEYMOUR_THREESUM_FLAG_CONCENTRATED_RANK
-      | CMR_SEYMOUR_THREESUM_FLAG_FIRST_MIXED | CMR_SEYMOUR_THREESUM_FLAG_SECOND_MIXED;
+    params.seymour.threeSumStrategy = CMR_SEYMOUR_THREESUM_FLAG_TRUEMPER;
 
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
 
@@ -1096,9 +1092,7 @@ TEST(TU, ThreeSumMixedMixedR12)
     ASSERT_GT( CMRseymourRegularity(dec), 0 );
     ASSERT_LT( CMRseymourGraphicness(dec), 0 );
 
-    ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_THREE_SUM );
-    ASSERT_FALSE( CMRseymourThreeSumDistributedRanks(dec) );
-    ASSERT_TRUE( CMRseymourThreeSumConcentratedRank(dec) );
+    ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_THREE_SUM_TRUEMPER );
     ASSERT_EQ( CMRseymourNumChildren(dec), 2UL );
 
     CMR_SEYMOUR_NODE* child1 = CMRseymourChild(dec, 0);
@@ -1156,7 +1150,7 @@ TEST(TU, ThreeSumSigns)
 }
 
 
-TEST(TU, ForbiddenSubmatrixWideWide)
+TEST(TU, ForbiddenSubmatrixSeymour)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -1187,8 +1181,7 @@ TEST(TU, ForbiddenSubmatrixWideWide)
     CMR_SUBMAT* forbiddenSubmatrix = NULL;
     CMR_TU_PARAMS params;
     ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
-    params.seymour.threeSumStrategy = CMR_SEYMOUR_THREESUM_FLAG_DISTRIBUTED_RANKS
-      | CMR_SEYMOUR_THREESUM_FLAG_FIRST_WIDE | CMR_SEYMOUR_THREESUM_FLAG_SECOND_WIDE;
+    params.seymour.threeSumStrategy = CMR_SEYMOUR_THREESUM_FLAG_SEYMOUR;
 
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, &forbiddenSubmatrix, &params, NULL, DBL_MAX) );
 
@@ -1204,7 +1197,7 @@ TEST(TU, ForbiddenSubmatrixWideWide)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
-TEST(TU, ForbiddenSubmatrixMixedMixed)
+TEST(TU, ForbiddenSubmatrixTruemper)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -1235,8 +1228,7 @@ TEST(TU, ForbiddenSubmatrixMixedMixed)
     CMR_SUBMAT* forbiddenSubmatrix = NULL;
     CMR_TU_PARAMS params;
     ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
-    params.seymour.threeSumStrategy = CMR_SEYMOUR_THREESUM_FLAG_CONCENTRATED_RANK
-      | CMR_SEYMOUR_THREESUM_FLAG_FIRST_MIXED | CMR_SEYMOUR_THREESUM_FLAG_SECOND_MIXED;
+    params.seymour.threeSumStrategy = CMR_SEYMOUR_THREESUM_FLAG_TRUEMPER;
 
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, &forbiddenSubmatrix, &params, NULL, DBL_MAX) );
 

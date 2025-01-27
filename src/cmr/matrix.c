@@ -43,6 +43,21 @@ CMR_ERROR CMRsubmatCreate1x1(CMR* cmr, size_t row, size_t column, CMR_SUBMAT** p
   return CMR_OKAY;
 }
 
+CMR_ERROR CMRsubmatCreate2x2(CMR* cmr, size_t row1, size_t row2, size_t column1, size_t column2,
+  CMR_SUBMAT** psubmatrix)
+{
+  assert(psubmatrix);
+
+  CMR_CALL( CMRsubmatCreate(cmr, 2, 2, psubmatrix) );
+  CMR_SUBMAT* submatrix = *psubmatrix;
+  submatrix->rows[0] = row1;
+  submatrix->rows[1] = row2;
+  submatrix->columns[0] = column1;
+  submatrix->columns[1] = column2;
+
+  return CMR_OKAY;
+}
+
 CMR_ERROR CMRsubmatFree(CMR* cmr, CMR_SUBMAT** psubmatrix)
 {
   assert(psubmatrix);

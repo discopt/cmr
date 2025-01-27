@@ -3,7 +3,7 @@
 #include "common.h"
 #include <cmr/ctu.h>
 
-TEST(CTU, ExamplesWideWide)
+TEST(CTU, ExamplesSeymour)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -20,8 +20,7 @@ TEST(CTU, ExamplesWideWide)
     bool isCTU;
     CMR_CTU_PARAMS params;
     ASSERT_CMR_CALL( CMRctuParamsInit(&params) );
-    params.tu.seymour.threeSumStrategy = CMR_SEYMOUR_THREESUM_FLAG_DISTRIBUTED_RANKS
-      | CMR_SEYMOUR_THREESUM_FLAG_FIRST_WIDE | CMR_SEYMOUR_THREESUM_FLAG_SECOND_WIDE;
+    params.tu.seymour.threeSumStrategy = CMR_SEYMOUR_THREESUM_FLAG_SEYMOUR;
 
     ASSERT_CMR_CALL( CMRctuTest(cmr, matrix, &isCTU, NULL, NULL, &params, NULL, DBL_MAX) );
     
@@ -43,8 +42,7 @@ TEST(CTU, ExamplesWideWide)
     size_t complementColumn;
     CMR_CTU_PARAMS params;
     ASSERT_CMR_CALL( CMRctuParamsInit(&params) );
-    params.tu.seymour.threeSumStrategy = CMR_SEYMOUR_THREESUM_FLAG_DISTRIBUTED_RANKS
-      | CMR_SEYMOUR_THREESUM_FLAG_FIRST_WIDE | CMR_SEYMOUR_THREESUM_FLAG_SECOND_WIDE;
+    params.tu.seymour.threeSumStrategy = CMR_SEYMOUR_THREESUM_FLAG_SEYMOUR;
 
     ASSERT_CMR_CALL( CMRctuTest(cmr, matrix, &isCTU, &complementRow, &complementColumn, &params, NULL, DBL_MAX) );
     ASSERT_FALSE(isCTU);

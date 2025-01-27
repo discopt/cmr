@@ -37,6 +37,10 @@ struct _CMR_SEYMOUR_NODE
                                                  **         elements of this node. */
   CMR_ELEMENT** childColumnsToParent;           /**< \brief Array for mapping a child index to array of child columns to
                                                  **         elements of this node. */
+  size_t** childSpecialRows;                    /**< \brief Array for mapping a child index to array of special child
+                                                 **         rows relevant for 2- and 3-sums. */
+  size_t** childSpecialColumns;                 /**< \brief Array for mapping a child index to array of special child
+                                                 **         columns relevant for 2- and 3-sums. */
 
   size_t numRows;                               /**< \brief Length of \ref rowsToChild. */
   size_t* rowsToChild;                          /**< \brief Array for mapping each row to a row of the child (if
@@ -188,12 +192,14 @@ CMR_ERROR CMRseymourCreateChildFromMatrices(
 
 /**
  * \brief Initialize an existing unknown decomposition node to be irregular with a violator submatrix.
+ *
+ * Takes ownership of \p violator.
  */
 
 CMR_ERROR CMRseymourUpdateViolator(
   CMR* cmr,               /**< \ref CMR environment. */
   CMR_SEYMOUR_NODE* node, /**< Seymour decomposition node. */
-  CMR_SUBMAT* violator    /**< Submatrix. Is not copied. */
+  CMR_SUBMAT* violator    /**< Violating submatrix; ownership is taken. */
 );
 
 /**
@@ -231,17 +237,6 @@ CMR_ERROR CMRseymourUpdatePivots(
   size_t* pivotColumns,   /**< Array with pivot columns. */
   CMR_CHRMAT* matrix,     /**< New matrix. */
   CMR_CHRMAT* transpose   /**< Transpose of \p matrix. */
-);
-
-/**
- * \brief Initialize an existing unknown decomposition node as a 3-sum node.
- *
- * The two child nodes remain uninitialized.
- */
-
-CMR_ERROR CMRseymourUpdateThreeSumInit(
-  CMR* cmr,               /**< \ref CMR environment. */
-  CMR_SEYMOUR_NODE* node  /**< Seymour decomposition node. */
 );
 
 /**

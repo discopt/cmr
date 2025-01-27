@@ -60,6 +60,21 @@ CMR_ERROR CMRsubmatCreate1x1(
 );
 
 /**
+ * \brief Creates a 2-by-2 submatrix.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRsubmatCreate2x2(
+  CMR* cmr,               /**< \ref CMR environment. */
+  size_t row1,            /**< First row */
+  size_t row2,            /**< Second row */
+  size_t column1,         /**< First column */
+  size_t column2,         /**< Second column */
+  CMR_SUBMAT** psubmatrix /**< Pointer to submatrix */
+);
+
+
+/**
  * \brief Frees a submatrix.
  */
 

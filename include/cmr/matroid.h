@@ -128,6 +128,8 @@ typedef struct
 
 /**
  * \brief Creates a minor, allocating space for \p numPivots pivots and a remaining \p submatrix.
+ *
+ * Takes ownership of \p submatrix.
  */
 
 CMR_EXPORT

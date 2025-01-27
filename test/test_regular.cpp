@@ -782,7 +782,7 @@ TEST(Regular, EnumerateConcentratedRankForcePivot)
       "1 1 1 1 1 "
       "1 0 0 0 1 "
     ) );
-    testEnumerate(cmr, matrix, CMR_SEYMOUR_THREESUM_FLAG_DISTRIBUTED_RANKS, false);
+    testEnumerate(cmr, matrix, CMR_SEYMOUR_THREESUM_FLAG_SEYMOUR, false);
   }
 
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );

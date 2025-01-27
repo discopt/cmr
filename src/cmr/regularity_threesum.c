@@ -24,203 +24,6 @@ typedef struct
   int8_t edgeValue;   /**< Matrix entry of the edge to the predecessor. */
 } GraphNode;
 
-/**
- * \brief Finds a shortest path from any source to any target element.
- */
-
-static
-CMR_ERROR findSubmatrixCycle(
-  CMR* cmr,                 /**< \ref CMR environment. */
-  CMR_CHRMAT* matrix,       /**< Matrix. */
-  CMR_CHRMAT* transpose,    /**< Transpose of \p matrix. */
-  ElementType* rowTypes,    /**< Array with rows' types. */
-  ElementType* columnTypes, /**< Array with columns' types. */
-  CMR_ELEMENT* ppathSource, /**< Pointer for storing the source row/column. */
-  CMR_ELEMENT* ppathTarget, /**< Pointer for storing the target row/column. */
-  int* pentrySum            /**< Pointer for storing the sum of the path's entries. */
-)
-{
-  assert(cmr);
-  assert(matrix);
-  assert(transpose);
-  assert(rowTypes);
-  assert(columnTypes);
-  assert(ppathSource);
-  assert(ppathTarget);
-  assert(pentrySum);
-
-  size_t numRows = matrix->numRows;
-  size_t numColumns = matrix->numColumns;
-
-  CMRdbgMsg(12, "findSubmatrixCycle.\n");
-
-  /* Initialize row / column arrays. */
-
-  GraphNode* rowData = NULL;
-  CMR_CALL( CMRallocStackArray(cmr, &rowData, numRows) );
-  GraphNode* columnData = NULL;
-  CMR_CALL( CMRallocStackArray(cmr, &columnData, numColumns) );
-
-  /* Initialize queue. */
-  CMR_ELEMENT* queue = NULL;
-  CMR_CALL( CMRallocStackArray(cmr, &queue, numRows + numColumns) );
-
-  for (int sourceTargetCombination = 0; sourceTargetCombination < 2; ++sourceTargetCombination)
-  {
-    size_t firstQueued = 0;
-    size_t beyondQueued = 0;
-    for (size_t row = 0; row < numRows; ++row)
-    {
-      rowData[row].predecessor = SIZE_MAX;
-      if (rowTypes[row] == (sourceTargetCombination ? ELEMENT_TYPE_2 : ELEMENT_TYPE_1))
-      {
-        queue[beyondQueued++] = CMRrowToElement(row);
-        rowData[row].status = 1;
-      }
-      else
-        rowData[row].status = 0;
-      CMRdbgMsg(14, "r%zu has status %d and type %d.\n", row+1, rowData[row].status, rowTypes[row]);
-    }
-    for (size_t column = 0; column < numColumns; ++column)
-    {
-      columnData[column].predecessor = SIZE_MAX;
-      if (columnTypes[column] == (sourceTargetCombination ? ELEMENT_TYPE_2 : ELEMENT_TYPE_1))
-      {
-        queue[beyondQueued++] = CMRcolumnToElement(column);
-        columnData[column].status = 1;
-      }
-      else
-        columnData[column].status = 0;
-      CMRdbgMsg(14, "c%zu has status %d and type %d.\n", column+1, columnData[column].status, columnTypes[column]);
-    }
-
-    /* Start BFS. */
-    bool done = false;
-    while (!done && firstQueued < beyondQueued)
-    {
-      CMR_ELEMENT current = queue[firstQueued++];
-
-      CMRdbgMsg(12, "findSubmatrixCycle processes %s.\n", CMRelementString(current, NULL));
-
-      if (CMRelementIsRow(current))
-      {
-        size_t row = CMRelementToRowIndex(current);
-        rowData[row].status = 2;
-
-        size_t first = matrix->rowSlice[row];
-        size_t beyond = matrix->rowSlice[row + 1];
-        for (size_t e = first; e < beyond; ++e)
-        {
-          size_t column = matrix->entryColumns[e];
-          ElementType type = columnTypes[column];
-          if (type == ELEMENT_TYPE_NONE || columnData[column].status)
-            continue;
-
-          columnData[column].predecessor = row;
-          columnData[column].edgeValue = matrix->entryValues[e];
-
-          if (type == ELEMENT_TYPE_3 || type == (sourceTargetCombination ? ELEMENT_TYPE_1 : ELEMENT_TYPE_2))
-          {
-            done = true;
-            *ppathTarget = CMRcolumnToElement(column);
-            break;
-          }
-          columnData[column].status = 1;
-          queue[beyondQueued++] = CMRcolumnToElement(column);
-        }
-      }
-      else
-      {
-        size_t column = CMRelementToColumnIndex(current);
-        columnData[column].status = 2;
-
-        size_t first = transpose->rowSlice[column];
-        size_t beyond = transpose->rowSlice[column + 1];
-        for (size_t e = first; e < beyond; ++e)
-        {
-          size_t row = transpose->entryColumns[e];
-          ElementType type = rowTypes[row];
-          if (type == ELEMENT_TYPE_NONE || rowData[row].status)
-            continue;
-
-          rowData[row].predecessor = column;
-          rowData[row].edgeValue = transpose->entryValues[e];
-
-          if (type == ELEMENT_TYPE_3 || type == (sourceTargetCombination ? ELEMENT_TYPE_1 : ELEMENT_TYPE_2))
-          {
-            done = true;
-            *ppathTarget = CMRrowToElement(row);
-            break;
-          }
-          rowData[row].status = 1;
-          queue[beyondQueued++] = CMRrowToElement(row);
-        }
-      }
-    }
-
-    assert(done || sourceTargetCombination == 0);
-
-    if (done)
-    {
-      CMR_ELEMENT current = *ppathTarget;
-      *pentrySum = 0;
-      while (true)
-      {
-        if (CMRelementIsRow(current))
-        {
-          size_t row = CMRelementToRowIndex(current);
-          size_t column = rowData[row].predecessor;
-          CMRdbgMsg(12, "Predecessor of r%zu is c%zu.\n", row + 1, column + 1);
-          if (column < SIZE_MAX)
-          {
-            (*pentrySum) += rowData[row].edgeValue;
-            current = CMRcolumnToElement(column);
-          }
-          else
-          {
-            *ppathSource = current;
-            break;
-          }
-        }
-        else
-        {
-          size_t column = CMRelementToColumnIndex(current);
-          size_t row = columnData[column].predecessor;
-          CMRdbgMsg(12, "Predecessor of c%zu is r%zu.\n", column + 1, row + 1);
-          if (row < SIZE_MAX)
-          {
-            (*pentrySum) += columnData[column].edgeValue;
-            current = CMRrowToElement(row);
-          }
-          else
-          {
-            *ppathSource = current;
-            break;
-          }
-        }
-      }
-
-      char buffer[16];
-      CMRdbgMsg(10, "findSubmatrixCycle found a path from %s to %s with entry sum %d.\n",
-        CMRelementString(*ppathSource, NULL), CMRelementString(*ppathTarget, buffer), *pentrySum);
-
-      break;
-    }
-    else
-    {
-      CMRdbgMsg(12, "findSubmatrixCycle found no path from any source and will retry to source type 2.\n");
-    }
-  }
-
-  /* Cleanup */
-
-  CMR_CALL( CMRfreeStackArray(cmr, &queue) );
-  CMR_CALL( CMRfreeStackArray(cmr, &columnData) );
-  CMR_CALL( CMRfreeStackArray(cmr, &rowData) );
-
-  return CMR_OKAY;
-}
-
 CMR_ERROR CMRregularityDecomposeThreeSum(
   CMR* cmr,
   DecompositionTask* task,
@@ -235,8 +38,6 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
 
   CMR_SEYMOUR_NODE* node = task->node;
   assert(node);
-  size_t* rowsToChild = NULL;
-  size_t* columnsToChild = NULL;
 
 #if defined(CMR_DEBUG)
   CMRdbgMsg(8, "Processing 3-separation to produce a 3-sum for the following matrix:\n");
@@ -257,85 +58,76 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
   }
 #endif /* CMR_DEBUG */
 
-  size_t numPivots = 0;
-  size_t* pivotRows = NULL;
-  size_t* pivotColumns = NULL;
-  size_t maxNumPivots = node->numRows < node->numColumns ? node->numRows : node->numColumns;
-  CMR_CALL( CMRallocStackArray(cmr, &pivotRows, maxNumPivots) );
-  CMR_CALL( CMRallocStackArray(cmr, &pivotColumns, maxNumPivots) );
-
-  size_t pivotRow = SIZE_MAX;
-  size_t pivotColumn = SIZE_MAX;
-
-  size_t extraRows[2][3];
-  size_t extraColumns[2][3];
-  CMR_CALL( CMRsepaGetRepresentatives(separation, extraRows, extraColumns) );
-
-  if (separation->type == CMR_SEPA_TYPE_THREE_DISTRIBUTED_RANKS &&
-    (task->params->threeSumStrategy & CMR_SEYMOUR_THREESUM_FLAG_CONCENTRATED_RANK))
+  if (((separation->type == CMR_SEPA_TYPE_THREE_DISTRIBUTED_RANKS)
+    && ((task->params->threeSumStrategy & CMR_SEYMOUR_THREESUM_FLAG_DISTRIBUTED_MASK)
+    == CMR_SEYMOUR_THREESUM_FLAG_DISTRIBUTED_PIVOT)) || ((separation->type == CMR_SEPA_TYPE_THREE_CONCENTRATED_RANK)
+    && ((task->params->threeSumStrategy & CMR_SEYMOUR_THREESUM_FLAG_CONCENTRATED_MASK)
+    == CMR_SEYMOUR_THREESUM_FLAG_CONCENTRATED_PIVOT)))
   {
-    /* We have distributed ranks but requested concentrated rank; we find a top-right nonzero. */
-    pivotRow = extraRows[1][0];
-    assert(pivotRow != SIZE_MAX);
+    CMRdbgMsg(10, "Pivoting for rank distribution.\n");
 
-    size_t first = node->matrix->rowSlice[pivotRow];
-    size_t beyond = node->matrix->rowSlice[pivotRow + 1];
-    for (size_t e = first; e < beyond; ++e)
+    /* Find nonzero in low-rank matrix. */
+    size_t pivotRow = SIZE_MAX;
+    size_t pivotColumn = SIZE_MAX;
+    bool pivotBottomLeft;
+    for (size_t row = 0; (row < node->numRows) && pivotRow == SIZE_MAX; ++row)
     {
-      size_t column = node->matrix->entryColumns[e];
-      int flags = separation->columnsFlags[column];
-      if ((flags & CMR_SEPA_MASK_CHILD) == CMR_SEPA_SECOND)
+      /* Neither a representative for first nor for second. */
+      if (!(separation->rowsFlags[row] & CMR_SEPA_MASK_EXTRA))
+        continue;
+
+      int rowChild = separation->rowsFlags[row] & CMR_SEPA_MASK_CHILD;
+      size_t beyond = node->matrix->rowSlice[row + 1];
+      for (size_t e = node->matrix->rowSlice[row]; e < beyond; ++e)
       {
-        pivotColumn = column;
-        break;
+        size_t column = node->matrix->entryColumns[e];
+        int columnChild = separation->columnsFlags[column] & CMR_SEPA_MASK_CHILD;
+        if (columnChild != rowChild)
+        {
+          pivotRow = row;
+          pivotColumn = column;
+          pivotBottomLeft = rowChild == 1;
+          break;
+        }
       }
     }
-    assert(pivotColumn != SIZE_MAX);
-  }
 
-  if (separation->type == CMR_SEPA_TYPE_THREE_CONCENTRATED_RANK &&
-    (task->params->threeSumStrategy & CMR_SEYMOUR_THREESUM_FLAG_DISTRIBUTED_RANKS))
-  {
-    /* We have concentrated rank but requested distributed ranks; we find a bottom-left nonzero. */
-    pivotRow = extraRows[0][0];
     assert(pivotRow != SIZE_MAX);
-
-    size_t first = node->matrix->rowSlice[pivotRow];
-    size_t beyond = node->matrix->rowSlice[pivotRow + 1];
-    for (size_t e = first; e < beyond; ++e)
-    {
-      size_t column = node->matrix->entryColumns[e];
-      int flags = separation->columnsFlags[column];
-      if ((flags & CMR_SEPA_MASK_CHILD) == CMR_SEPA_FIRST)
-      {
-        pivotColumn = column;
-        break;
-      }
-    }
     assert(pivotColumn != SIZE_MAX);
-  }
 
-  CMR_CHRMAT* pivotedMatrix = NULL;
-  CMR_CHRMAT* pivotedTranspose = NULL;
-  CMR_CHRMAT* goodRankMatrix = NULL;
-  CMR_CHRMAT* goodRankTranspose = NULL;
-  if (pivotRow != SIZE_MAX)
-  {
-    CMRdbgMsg(10, "-> We pivot on r%zu,c%zu.\n", pivotRow+1, pivotColumn+1);
+    CMRdbgMsg(10, "Pivot entry is r%zu,c%zu belonging to %s part.\n", pivotRow+1, pivotColumn+1,
+      pivotBottomLeft ? "bottom-left" : "top-right");
 
-    if (pivotColumns)
-    {
-      pivotRows[0] = pivotRow;
-      pivotColumns[0] = pivotColumn;
-      ++numPivots;
-    }
-
+    CMR_CHRMAT* childMatrix = NULL;
     if (node->isTernary)
-      CMR_CALL( CMRchrmatTernaryPivot(cmr, node->matrix, pivotRow, pivotColumn, &goodRankMatrix) );
+      CMR_CALL( CMRchrmatTernaryPivot(cmr, node->matrix, pivotRow, pivotColumn, &childMatrix) );
     else
-      CMR_CALL( CMRchrmatBinaryPivot(cmr, node->matrix, pivotRow, pivotColumn, &goodRankMatrix) );
+      CMR_CALL( CMRchrmatBinaryPivot(cmr, node->matrix, pivotRow, pivotColumn, &childMatrix) );
 
-    CMR_CALL( CMRchrmatTranspose(cmr, goodRankMatrix, &goodRankTranspose) );
+    CMR_SUBMAT* violatorSubmatrix = NULL;
+    if (node->isTernary && !CMRchrmatIsTernary(cmr, childMatrix, &violatorSubmatrix))
+    {
+      /* Pivoting produced a -2 or +2. This entry, together with the pivot row/column constitute a violator. */
+      size_t badRow = violatorSubmatrix->rows[0];
+      size_t badColumn = violatorSubmatrix->columns[0];
+
+      CMR_CALL( CMRsubmatFree(cmr, &violatorSubmatrix) );
+      CMR_CALL( CMRsubmatCreate2x2(cmr, pivotRow, badRow, pivotColumn, badColumn, &violatorSubmatrix) );
+
+      CMR_CALL( CMRseymourUpdateViolator(cmr, node, violatorSubmatrix) );
+      assert(node->type == CMR_SEYMOUR_NODE_TYPE_IRREGULAR);
+
+      CMRdbgMsg(10, "Pivoting produced a non-ternary entry. Computed 2x2 violator.\n");
+
+      /* TODO: Add as unittest. */
+      assert(0 == "NOT TESTED. ADD UNITTEST");
+      queue->foundIrregularity = true;
+
+      return CMR_OKAY;
+    }
+
+    CMR_CHRMAT* childTransposed = NULL;
+    CMR_CALL( CMRchrmatTranspose(cmr, childMatrix, &childTransposed) );
 
     /* Swap association to first/second for pivot row and column. */
     if ((separation->rowsFlags[pivotRow] & CMR_SEPA_MASK_CHILD) == CMR_SEPA_FIRST)
@@ -348,349 +140,262 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
       separation->columnsFlags[pivotColumn] = CMR_SEPA_FIRST;
 
     /* We recompute all representatives of the low-rank submatrices. */
-    CMR_SUBMAT* violatorSubmatrix = NULL;
-    CMR_CALL( CMRsepaFindBinaryRepresentatives(cmr, separation, goodRankMatrix, goodRankTranspose, NULL,
-                  node->isTernary ? &violatorSubmatrix : NULL) );
+    CMR_CALL( CMRsepaFindBinaryRepresentatives(cmr, separation, childMatrix, childTransposed, NULL,
+      node->isTernary ? &violatorSubmatrix : NULL) );
 
     if (violatorSubmatrix)
     {
-      CMRdbgMsg(8, "-> 2x2 submatrix with bad determinant.\n");
+      CMRdbgMsg(10, "-> 2x2 submatrix with bad determinant.\n");
 
       CMR_CALL( CMRseymourUpdateViolator(cmr, node, violatorSubmatrix) );
       assert(node->type == CMR_SEYMOUR_NODE_TYPE_IRREGULAR);
 
       /* TODO: Add as unittest. */
+      assert(0 == "NOT TESTED. ADD UNITTEST");
       queue->foundIrregularity = true;
 
-      goto cleanup;
+      return CMR_OKAY;
     }
 
-    CMR_CALL( CMRsepaGetRepresentatives(separation, extraRows, extraColumns) );
+    CMR_CALL( CMRseymourUpdatePivots(cmr, node, 1, &pivotRow, &pivotColumn, childMatrix, childTransposed) );
+
+    /* Recurse on child. */
+    task->node = node->children[0];
+    CMR_CALL( CMRregularityDecomposeThreeSum(cmr, task, queue, separation) );
+
+    // TODO: how about row/col indices from child back to parent?
+
+    return CMR_OKAY;
   }
-  else
-  {
-    CMRdbgMsg(10, "-> No need to pivot.\n");
-    goodRankMatrix = node->matrix;
-    goodRankTranspose = node->transpose;
-  }
-
-  /* Now the ranks are good for goodRankMatrix and goodRankTranspose, aligned with separation. */
-
-  if (task->params->threeSumPivotChildren)
-  {
-    assert(false);
-  }
-  else
-  {
-    pivotedMatrix = goodRankMatrix;
-    pivotedTranspose = goodRankTranspose;
-  }
-
-  if (numPivots > 0)
-  {
-    CMR_CALL( CMRseymourUpdatePivots(cmr, node, numPivots, pivotRows, pivotColumns, pivotedMatrix, pivotedTranspose) );
-    node = node->children[0];
-
-#if defined(CMR_DEBUG)
-    CMRdbgMsg(10, "Matrix after pivoting:\n");
-    CMR_CALL( CMRchrmatPrintDense(cmr, goodRankMatrix, stdout, '0', true) );
-#endif /* CMR_DEBUG */
-  }
-
-  /* Initialize the 3-sum node. */
-  CMR_CALL( CMRseymourUpdateThreeSumInit(cmr, node) );
-  CMR_CALL( CMRallocStackArray(cmr, &rowsToChild, node->numRows) );
-  CMR_CALL( CMRallocStackArray(cmr, &columnsToChild, node->numColumns) );
-  size_t numChildBaseRows;
-  size_t numChildBaseColumns;
-
-  ElementType* rowTypes = NULL;
-  CMR_CALL( CMRallocStackArray(cmr, &rowTypes, node->numRows) );
-  ElementType* columnTypes = NULL;
-  CMR_CALL( CMRallocStackArray(cmr, &columnTypes, node->numColumns) );
 
   if (separation->type == CMR_SEPA_TYPE_THREE_DISTRIBUTED_RANKS)
   {
-    CMR_CALL( CMRsepaGetProjection(separation, 0, rowsToChild, columnsToChild, &numChildBaseRows,
-      &numChildBaseColumns) );
-
-    if (task->params->threeSumStrategy & CMR_SEYMOUR_THREESUM_FLAG_FIRST_TALL)
+    int distributedStrategy = task->params->threeSumStrategy & CMR_SEYMOUR_THREESUM_FLAG_DISTRIBUTED_MASK;
+    if (distributedStrategy == CMR_SEYMOUR_THREESUM_FLAG_DISTRIBUTED_SEYMOUR)
     {
-      /* First child is tall. */
+      CMRdbgMsg(10, "Carrying out Seymour 3-sum for a distributed-rank 3-separation.\n");
 
-      assert(false);
+      node->type = CMR_SEYMOUR_NODE_TYPE_THREE_SUM_SEYMOUR;
+      CMR_CALL( CMRseymourSetNumChildren(cmr, node, 2) );
+
+      char epsilon = 0;
+      CMR_CALL( CMRthreeSumSeymourDecomposeEpsilon(cmr, node->matrix, node->transpose, separation, &epsilon) );
+
+      /* Temporary data. */
+      size_t* rowsToChild = NULL;
+      size_t* columnsToChild = NULL;
+      size_t* childRowsToParent = NULL;
+      size_t* childColumnsToParent = NULL;
+      CMR_CALL( CMRallocStackArray(cmr, &rowsToChild, node->matrix->numRows) );
+      CMR_CALL( CMRallocStackArray(cmr, &columnsToChild, node->matrix->numColumns) );
+      CMR_CALL( CMRallocStackArray(cmr, &childRowsToParent, node->matrix->numRows) );
+      CMR_CALL( CMRallocStackArray(cmr, &childColumnsToParent, node->matrix->numColumns) );
+
+      /* First child. */
+      CMR_CHRMAT* first = NULL;
+      CMR_CALL( CMRallocBlockArray(cmr, &node->childSpecialRows[0], 1) );
+      CMR_CALL( CMRallocBlockArray(cmr, &node->childSpecialColumns[0], 2) );
+      CMR_CALL( CMRthreeSumSeymourDecomposeFirst(cmr, node->matrix, separation, epsilon, &first, childRowsToParent,
+        childColumnsToParent, rowsToChild, columnsToChild, node->childSpecialRows[0], node->childSpecialColumns[0]) );
+
+      /* Create first decomposition node. */
+      CMR_CALL( CMRseymourCreate(cmr, &node->children[0], node->isTernary, first->numRows, first->numColumns) );
+      node->children[0]->matrix = first;
+
+      /* Mapping from first child rows to parent elements. */
+      CMR_CALL( CMRallocBlockArray(cmr, &node->childRowsToParent[0], first->numRows) );
+      for (size_t row = 0; row < first->numRows; ++row)
+        node->childRowsToParent[0][row] = CMRrowToElement(childRowsToParent[row]);
+
+      /* Mapping from first child columns to parent elements. */
+      CMR_CALL( CMRallocBlockArray(cmr, &node->childColumnsToParent[0], first->numColumns) );
+      for (size_t column = 0; column < first->numColumns; ++column)
+        node->childColumnsToParent[0][column] = CMRcolumnToElement(childColumnsToParent[column]);
+
+      /* Mapping from parent rows to first child rows. */
+      for (size_t row = 0; row < node->matrix->numRows; ++row)
+      {
+        if ((separation->rowsFlags[row] & CMR_SEPA_MASK_CHILD) == CMR_SEPA_FIRST)
+          node->rowsToChild[row] = rowsToChild[row];
+      }
+
+      /* Mapping from parent columns to first child columns. */
+      for (size_t column = 0; column < node->matrix->numColumns; ++column)
+      {
+        if ((separation->columnsFlags[column] & CMR_SEPA_MASK_CHILD) == CMR_SEPA_FIRST)
+          node->columnsToChild[column] = columnsToChild[column];
+      }
+
+      /* Second child. */
+      CMR_CHRMAT* second = NULL;
+      CMR_CALL( CMRallocBlockArray(cmr, &node->childSpecialRows[1], 1) );
+      CMR_CALL( CMRallocBlockArray(cmr, &node->childSpecialColumns[1], 2) );
+      CMR_CALL( CMRthreeSumSeymourDecomposeSecond(cmr, node->matrix, separation, epsilon, &second, childRowsToParent,
+        childColumnsToParent, rowsToChild, columnsToChild, node->childSpecialRows[1], node->childSpecialColumns[1]) );
+
+      /* Create second decomposition node. */
+      CMR_CALL( CMRseymourCreate(cmr, &node->children[1], node->isTernary, second->numRows, second->numColumns) );
+      node->children[1]->matrix = second;
+
+      /* Mapping from second child rows to parent elements. */
+      CMR_CALL( CMRallocBlockArray(cmr, &node->childRowsToParent[1], second->numRows) );
+      for (size_t row = 0; row < second->numRows; ++row)
+        node->childRowsToParent[1][row] = CMRrowToElement(childRowsToParent[row]);
+
+      /* Mapping from second child columns to parent elements. */
+      CMR_CALL( CMRallocBlockArray(cmr, &node->childColumnsToParent[1], second->numColumns) );
+      for (size_t column = 0; column < second->numColumns; ++column)
+        node->childColumnsToParent[1][column] = CMRcolumnToElement(childColumnsToParent[column]);
+
+      /* Mapping from parent rows to second child rows. */
+      for (size_t row = 0; row < node->matrix->numRows; ++row)
+      {
+        if ((separation->rowsFlags[row] & CMR_SEPA_MASK_CHILD) == CMR_SEPA_SECOND)
+          node->rowsToChild[row] = rowsToChild[row];
+      }
+
+      /* Mapping from parent columns to second child columns. */
+      for (size_t column = 0; column < node->matrix->numColumns; ++column)
+      {
+        if ((separation->columnsFlags[column] & CMR_SEPA_MASK_CHILD) == CMR_SEPA_SECOND)
+          node->columnsToChild[column] = columnsToChild[column];
+      }
+
+      CMR_CALL( CMRfreeStackArray(cmr, &childColumnsToParent) );
+      CMR_CALL( CMRfreeStackArray(cmr, &childRowsToParent) );
+      CMR_CALL( CMRfreeStackArray(cmr, &columnsToChild) );
+      CMR_CALL( CMRfreeStackArray(cmr, &rowsToChild) );
     }
     else
     {
-      /* Prepare shortest-path search in bottom-right submatrix. */
-      CMR_ELEMENT sourceRowElement;
-      CMR_ELEMENT targetColumnElement;
-      int extraEntry;
-      if (node->isTernary)
-      {
-        for (size_t row = 0; row < node->numRows; ++row)
-        {
-          CMR_SEPA_FLAGS flags = separation->rowsFlags[row];
-          if ((flags & CMR_SEPA_MASK_CHILD) == CMR_SEPA_FIRST)
-            rowTypes[row] = ELEMENT_TYPE_NONE;
-          else if ((flags & CMR_SEPA_MASK_EXTRA) == CMR_SEPA_FLAG_RANK1)
-            rowTypes[row] = ELEMENT_TYPE_1;
-          else
-            rowTypes[row] = ELEMENT_TYPE_NORMAL;
-        }
-        for (size_t column = 0; column < node->numColumns; ++column)
-        {
-          CMR_SEPA_FLAGS flags = separation->columnsFlags[column];
-          if ((flags & CMR_SEPA_MASK_CHILD) == CMR_SEPA_FIRST)
-            columnTypes[column] = ELEMENT_TYPE_NONE;
-          else if ((flags & CMR_SEPA_MASK_EXTRA) == CMR_SEPA_FLAG_RANK1)
-            columnTypes[column] = ELEMENT_TYPE_2;
-          else
-            columnTypes[column] = ELEMENT_TYPE_NORMAL;
-        }
-        int sumEntries;
-        CMR_CALL( findSubmatrixCycle(cmr, node->matrix, node->transpose, rowTypes, columnTypes, &sourceRowElement,
-          &targetColumnElement, &sumEntries) );
-        sumEntries = ((sumEntries % 4) + 4) % 4;
-        assert(sumEntries == 1 || sumEntries == 3);
-        extraEntry = (sumEntries == 1) ? +1 : -1;
-      }
-      else
-      {
-        sourceRowElement = CMRrowToElement(extraRows[0][0]);
-        targetColumnElement = CMRcolumnToElement(extraColumns[0][0]);
-        extraEntry = 1;
-
-        /* TODO: Is there always a path between these particular representatives that does not use any other
-         * representative? */
-      }
-
-      assert( CMRelementIsRow(sourceRowElement) );
-      assert( CMRelementIsColumn(targetColumnElement) );
-
-      CMR_CALL( CMRseymourUpdateThreeSumCreateWideFirstChild(cmr, node, rowsToChild, columnsToChild, numChildBaseRows,
-        numChildBaseColumns, CMRelementToRowIndex(sourceRowElement), CMRelementToColumnIndex(targetColumnElement),
-        CMRelementToColumnIndex(targetColumnElement), extraEntry) );
+      assert(0 == "Invalid 3-sum strategy for distributed ranks!");
+      return CMR_ERROR_INVALID;
     }
-
-    CMR_CALL( CMRsepaGetProjection(separation, 1, rowsToChild, columnsToChild, &numChildBaseRows,
-      &numChildBaseColumns) );
-
-    if (task->params->threeSumStrategy & CMR_SEYMOUR_THREESUM_FLAG_SECOND_TALL)
-    {
-      /* Second child is tall. */
-
-      assert(false);
-    }
-    else
-    {
-      /* Prepare shortest-path search in top-left submatrix. */
-      CMR_ELEMENT sourceRowElement;
-      CMR_ELEMENT targetColumnElement;
-      int extraEntry;
-      if (node->isTernary)
-      {
-        for (size_t row = 0; row < node->numRows; ++row)
-        {
-          CMR_SEPA_FLAGS flags = separation->rowsFlags[row];
-          if ((flags & CMR_SEPA_MASK_CHILD) == CMR_SEPA_SECOND)
-            rowTypes[row] = ELEMENT_TYPE_NONE;
-          else if ((flags & CMR_SEPA_MASK_EXTRA) == CMR_SEPA_FLAG_RANK1)
-            rowTypes[row] = ELEMENT_TYPE_1;
-          else
-            rowTypes[row] = ELEMENT_TYPE_NORMAL;
-        }
-        for (size_t column = 0; column < node->numColumns; ++column)
-        {
-          CMR_SEPA_FLAGS flags = separation->columnsFlags[column];
-          if ((flags & CMR_SEPA_MASK_CHILD) == CMR_SEPA_SECOND)
-            columnTypes[column] = ELEMENT_TYPE_NONE;
-          else if ((flags & CMR_SEPA_MASK_EXTRA) == CMR_SEPA_FLAG_RANK1)
-            columnTypes[column] = ELEMENT_TYPE_2;
-          else
-            columnTypes[column] = ELEMENT_TYPE_NORMAL;
-        }
-        int sumEntries;
-        CMR_CALL( findSubmatrixCycle(cmr, node->matrix, node->transpose, rowTypes, columnTypes, &sourceRowElement,
-          &targetColumnElement, &sumEntries) );
-        sumEntries = ((sumEntries % 4) + 4) % 4;
-        assert(sumEntries == 1 || sumEntries == 3);
-        extraEntry = (sumEntries == 1) ? +1 : -1;
-      }
-      else
-      {
-        sourceRowElement = CMRrowToElement(extraRows[1][0]);
-        targetColumnElement = CMRcolumnToElement(extraColumns[1][0]);
-        extraEntry = 1;
-
-        /* TODO: Is there always a path between these particular representatives that does not use any other
-         * representative? */
-      }
-
-      assert( CMRelementIsRow(sourceRowElement) );
-      assert( CMRelementIsColumn(targetColumnElement) );
-
-      CMR_CALL( CMRseymourUpdateThreeSumCreateWideSecondChild(cmr, node, rowsToChild, columnsToChild, numChildBaseRows,
-        numChildBaseColumns, CMRelementToRowIndex(sourceRowElement), CMRelementToColumnIndex(targetColumnElement),
-        CMRelementToColumnIndex(targetColumnElement), extraEntry) );
-    }
-
-    node->threesumFlags = CMR_SEYMOUR_THREESUM_FLAG_DISTRIBUTED_RANKS;
   }
   else
   {
     assert(separation->type == CMR_SEPA_TYPE_THREE_CONCENTRATED_RANK);
-
-    CMR_CALL( CMRsepaGetProjection(separation, 0, rowsToChild, columnsToChild, &numChildBaseRows,
-      &numChildBaseColumns) );
-
-    if (task->params->threeSumStrategy & CMR_SEYMOUR_THREESUM_FLAG_FIRST_ALLREPR)
+    int concentratedStrategy = task->params->threeSumStrategy & CMR_SEYMOUR_THREESUM_FLAG_CONCENTRATED_MASK;
+    if (concentratedStrategy == CMR_SEYMOUR_THREESUM_FLAG_CONCENTRATED_TRUEMPER)
     {
-      /* First child is all-repr`. */
+      CMRdbgMsg(10, "Carrying out Truemper 3-sum for a concentrated-rank 3-separation.\n");
 
-      assert(false);
+      node->type = CMR_SEYMOUR_NODE_TYPE_THREE_SUM_TRUEMPER;
+      CMR_CALL( CMRseymourSetNumChildren(cmr, node, 2) );
+
+      size_t specialRows[3];
+      size_t specialColumns[3];
+      char gamma, beta;
+      CMR_CALL( CMRthreeSumTruemperDecomposeConnecting(cmr, node->matrix, node->transpose, separation, specialRows,
+        specialColumns, &gamma, &beta) );
+
+      /* Temporary data. */
+      size_t* rowsToChild = NULL;
+      size_t* columnsToChild = NULL;
+      size_t* childRowsToParent = NULL;
+      size_t* childColumnsToParent = NULL;
+      CMR_CALL( CMRallocStackArray(cmr, &rowsToChild, node->matrix->numRows) );
+      CMR_CALL( CMRallocStackArray(cmr, &columnsToChild, node->matrix->numColumns) );
+      CMR_CALL( CMRallocStackArray(cmr, &childRowsToParent, node->matrix->numRows) );
+      CMR_CALL( CMRallocStackArray(cmr, &childColumnsToParent, node->matrix->numColumns) );
+
+      /* First child. */
+      CMR_CHRMAT* first = NULL;
+      CMR_CALL( CMRallocBlockArray(cmr, &node->childSpecialRows[0], 3) );
+      CMR_CALL( CMRallocBlockArray(cmr, &node->childSpecialColumns[0], 3) );
+      CMR_CALL( CMRthreeSumTruemperDecomposeFirst(cmr, node->matrix, separation, specialRows, specialColumns, beta,
+        &first, childRowsToParent, childColumnsToParent, rowsToChild, columnsToChild, node->childSpecialRows[0],
+        node->childSpecialColumns[0]) );
+
+      /* Create first decomposition node. */
+      CMR_CALL( CMRseymourCreate(cmr, &node->children[0], node->isTernary, first->numRows, first->numColumns) );
+      node->children[0]->matrix = first;
+
+      /* Mapping from first child rows to parent elements. */
+      CMR_CALL( CMRallocBlockArray(cmr, &node->childRowsToParent[0], first->numRows) );
+      for (size_t row = 0; row < first->numRows; ++row)
+        node->childRowsToParent[0][row] = CMRrowToElement(childRowsToParent[row]);
+
+      /* Mapping from first child columns to parent elements. */
+      CMR_CALL( CMRallocBlockArray(cmr, &node->childColumnsToParent[0], first->numColumns) );
+      for (size_t column = 0; column < first->numColumns; ++column)
+        node->childColumnsToParent[0][column] = CMRcolumnToElement(childColumnsToParent[column]);
+
+      /* Mapping from parent rows to first child rows. */
+      for (size_t row = 0; row < node->matrix->numRows; ++row)
+      {
+        if ((separation->rowsFlags[row] & CMR_SEPA_MASK_CHILD) == CMR_SEPA_FIRST)
+          node->rowsToChild[row] = rowsToChild[row];
+      }
+
+      /* Mapping from parent columns to first child columns. */
+      for (size_t column = 0; column < node->matrix->numColumns; ++column)
+      {
+        if ((separation->columnsFlags[column] & CMR_SEPA_MASK_CHILD) == CMR_SEPA_FIRST)
+          node->columnsToChild[column] = columnsToChild[column];
+      }
+
+      /* Second child. */
+      CMR_CHRMAT* second = NULL;
+      CMR_CALL( CMRallocBlockArray(cmr, &node->childSpecialRows[1], 3) );
+      CMR_CALL( CMRallocBlockArray(cmr, &node->childSpecialColumns[1], 3) );
+      CMR_CALL( CMRthreeSumTruemperDecomposeSecond(cmr, node->matrix, separation, specialRows, specialColumns, gamma,
+        &second, childRowsToParent, childColumnsToParent, rowsToChild, columnsToChild, node->childSpecialRows[1],
+        node->childSpecialColumns[1]) );
+
+      /* Create second decomposition node. */
+      CMR_CALL( CMRseymourCreate(cmr, &node->children[1], node->isTernary, second->numRows, second->numColumns) );
+      node->children[1]->matrix = second;
+
+      /* Mapping from second child rows to parent elements. */
+      CMR_CALL( CMRallocBlockArray(cmr, &node->childRowsToParent[1], second->numRows) );
+      for (size_t row = 0; row < second->numRows; ++row)
+        node->childRowsToParent[1][row] = CMRrowToElement(childRowsToParent[row]);
+
+      /* Mapping from second child columns to parent elements. */
+      CMR_CALL( CMRallocBlockArray(cmr, &node->childColumnsToParent[1], second->numColumns) );
+      for (size_t column = 0; column < second->numColumns; ++column)
+        node->childColumnsToParent[1][column] = CMRcolumnToElement(childColumnsToParent[column]);
+
+      /* Mapping from parent rows to second child rows. */
+      for (size_t row = 0; row < node->matrix->numRows; ++row)
+      {
+        if ((separation->rowsFlags[row] & CMR_SEPA_MASK_CHILD) == CMR_SEPA_SECOND)
+          node->rowsToChild[row] = rowsToChild[row];
+      }
+
+      /* Mapping from parent columns to second child columns. */
+      for (size_t column = 0; column < node->matrix->numColumns; ++column)
+      {
+        if ((separation->columnsFlags[column] & CMR_SEPA_MASK_CHILD) == CMR_SEPA_SECOND)
+          node->columnsToChild[column] = columnsToChild[column];
+      }
+
+      CMR_CALL( CMRfreeStackArray(cmr, &childColumnsToParent) );
+      CMR_CALL( CMRfreeStackArray(cmr, &childRowsToParent) );
+      CMR_CALL( CMRfreeStackArray(cmr, &columnsToChild) );
+      CMR_CALL( CMRfreeStackArray(cmr, &rowsToChild) );
     }
     else
     {
-      /* First child is mixed. */
-
-      /* Prepare shortest-path search in bottom-right submatrix. */
-      CMR_ELEMENT sourceRowElement;
-      CMR_ELEMENT targetRowElement;
-      int extraEntry;
-
-      for (size_t row = 0; row < node->numRows; ++row)
-      {
-        CMR_SEPA_FLAGS flags = separation->rowsFlags[row];
-        if ((flags & CMR_SEPA_MASK_CHILD) == CMR_SEPA_FIRST)
-          rowTypes[row] = ELEMENT_TYPE_NONE;
-        else if ((flags & CMR_SEPA_MASK_EXTRA) == CMR_SEPA_FLAG_RANK1)
-          rowTypes[row] = ELEMENT_TYPE_1;
-        else if ((flags & CMR_SEPA_MASK_EXTRA) == CMR_SEPA_FLAG_RANK2)
-          rowTypes[row] = ELEMENT_TYPE_2;
-        else if ((flags & CMR_SEPA_MASK_EXTRA))
-          rowTypes[row] = ELEMENT_TYPE_3;
-        else
-          rowTypes[row] = ELEMENT_TYPE_NORMAL;
-      }
-      for (size_t column = 0; column < node->numColumns; ++column)
-      {
-        CMR_SEPA_FLAGS flags = separation->columnsFlags[column];
-        if ((flags & CMR_SEPA_MASK_CHILD) == CMR_SEPA_FIRST)
-          columnTypes[column] = ELEMENT_TYPE_NONE;
-        else
-          columnTypes[column] = ELEMENT_TYPE_NORMAL;
-      }
-      int sumEntries;
-      CMR_CALL( findSubmatrixCycle(cmr, node->matrix, node->transpose, rowTypes, columnTypes, &sourceRowElement,
-        &targetRowElement, &sumEntries) );
-      sumEntries = ((sumEntries % 4) + 4) % 4;
-      assert(sumEntries == 0 || sumEntries == 2);
-      extraEntry = (sumEntries == 2) ? +1 : -1;
-
-      assert( CMRelementIsRow(sourceRowElement) );
-      assert( CMRelementIsRow(targetRowElement) );
-
-      CMR_CALL( CMRseymourUpdateThreeSumCreateMixedFirstChild(cmr, node, rowsToChild, columnsToChild, numChildBaseRows,
-        numChildBaseColumns, CMRelementToRowIndex(sourceRowElement), CMRelementToRowIndex(targetRowElement),
-        extraEntry) );
+      assert(0 == "Invalid 3-sum strategy for concentrated rank!");
+      return CMR_ERROR_INVALID;
     }
-
-    CMR_CALL( CMRsepaGetProjection(separation, 1, rowsToChild, columnsToChild, &numChildBaseRows,
-      &numChildBaseColumns) );
-
-    if (task->params->threeSumStrategy & CMR_SEYMOUR_THREESUM_FLAG_SECOND_ALLREPR)
-    {
-      /* Second child is all-repr. */
-
-      assert(false);
-    }
-    else
-    {
-      /* Prepare shortest-path search in top-left submatrix. */
-      CMR_ELEMENT sourceColumnElement;
-      CMR_ELEMENT targetColumnElement;
-      int extraEntry;
-
-      for (size_t row = 0; row < node->numRows; ++row)
-      {
-        CMR_SEPA_FLAGS flags = separation->rowsFlags[row];
-        if ((flags & CMR_SEPA_MASK_CHILD) == CMR_SEPA_SECOND)
-          rowTypes[row] = ELEMENT_TYPE_NONE;
-        else
-          rowTypes[row] = ELEMENT_TYPE_NORMAL;
-
-      }
-      for (size_t column = 0; column < node->numColumns; ++column)
-      {
-        CMR_SEPA_FLAGS flags = separation->columnsFlags[column];
-        if ((flags & CMR_SEPA_MASK_CHILD) == CMR_SEPA_SECOND)
-          columnTypes[column] = ELEMENT_TYPE_NONE;
-        else if ((flags & CMR_SEPA_MASK_EXTRA) == CMR_SEPA_FLAG_RANK1)
-          columnTypes[column] = ELEMENT_TYPE_1;
-        else if ((flags & CMR_SEPA_MASK_EXTRA) == CMR_SEPA_FLAG_RANK2)
-          columnTypes[column] = ELEMENT_TYPE_2;
-        else if ((flags & CMR_SEPA_MASK_EXTRA))
-          columnTypes[column] = ELEMENT_TYPE_3;
-        else
-          columnTypes[column] = ELEMENT_TYPE_NORMAL;
-      }
-      int sumEntries;
-      CMR_CALL( findSubmatrixCycle(cmr, node->matrix, node->transpose, rowTypes, columnTypes, &sourceColumnElement,
-        &targetColumnElement, &sumEntries) );
-      sumEntries = ((sumEntries % 4) + 4) % 4;
-      assert(sumEntries == 0 || sumEntries == 2);
-      extraEntry = (sumEntries == 2) ? +1 : -1;
-
-      assert( CMRelementIsColumn(sourceColumnElement) );
-      assert( CMRelementIsColumn(targetColumnElement) );
-
-      CMR_CALL( CMRseymourUpdateThreeSumCreateMixedSecondChild(cmr, node, rowsToChild, columnsToChild, numChildBaseRows,
-        numChildBaseColumns, CMRelementToColumnIndex(sourceColumnElement), CMRelementToColumnIndex(targetColumnElement),
-        extraEntry) );
-    }
-
-    node->threesumFlags = CMR_SEYMOUR_THREESUM_FLAG_CONCENTRATED_RANK;
   }
 
-cleanup:
+  DecompositionTask* childTasks[2] = { task, NULL };
+  CMR_CALL( CMRregularityTaskCreateRoot(cmr, node->children[1], &childTasks[1], task->params, task->stats,
+    task->startClock, task->timeLimit) );
 
-  if (rowsToChild)
-  {
-    CMR_CALL( CMRfreeStackArray(cmr, &columnTypes) );
-    CMR_CALL( CMRfreeStackArray(cmr, &rowTypes) );
-    CMR_CALL( CMRfreeStackArray(cmr, &columnsToChild) );
-    CMR_CALL( CMRfreeStackArray(cmr, &rowsToChild) );
-  }
+  /* TODO: Find case where this can be SP-reducible. */
 
-  /* Free the good-rank matrices if they were created explicitly but are not needed due to further pivots. */
+  childTasks[0]->node = node->children[0];
+  node->children[0]->testedSeriesParallel = false;
+  node->children[1]->testedSeriesParallel = false;
 
-  if (pivotRow != SIZE_MAX && goodRankMatrix != pivotedMatrix)
-  {
-    CMRchrmatFree(cmr, &goodRankTranspose);
-    CMRchrmatFree(cmr, &goodRankMatrix);
-  }
-
-  if (pivotColumns)
-  {
-    CMR_CALL( CMRfreeStackArray(cmr, &pivotColumns) );
-    CMR_CALL( CMRfreeStackArray(cmr, &pivotRows) );
-  }
-
-  if (node->type == CMR_SEYMOUR_NODE_TYPE_THREE_SUM)
-  {
-    DecompositionTask* childTasks[2] = { task, NULL };
-    CMR_CALL( CMRregularityTaskCreateRoot(cmr, node->children[1], &childTasks[1], task->params, task->stats,
-      task->startClock, task->timeLimit) );
-
-    childTasks[0]->node = node->children[0];
-    node->children[0]->testedSeriesParallel = false;
-    node->children[1]->testedSeriesParallel = false;
-
-    /* Add both child tasks to the list. */
-    CMRregularityQueueAdd(queue, childTasks[0]);
-    CMRregularityQueueAdd(queue, childTasks[1]);
-  }
+  /* Add both child tasks to the list. */
+  CMRregularityQueueAdd(queue, childTasks[0]);
+  CMRregularityQueueAdd(queue, childTasks[1]);
 
   return CMR_OKAY;
 }

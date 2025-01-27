@@ -848,14 +848,14 @@ TEST(Separation, ThreeSumTruemperComposition)
   {
     CMR_CHRMAT* first = NULL;
     ASSERT_CMR_CALL( stringToCharMatrix(cmr, &first, "4 5 "
-      " 1  0  1  1 0 "
-      " 0  1  1  1 0 "
+      " 1  0 -1  1 0 "
+      " 0  1 -1  1 0 "
       " 1  0  1  0 1 "
       " 0 -1  1 -1 1 "
     ) );
     CMR_CHRMAT* second = NULL;
     ASSERT_CMR_CALL( stringToCharMatrix(cmr, &second, "5 4 "
-      " 1  1  0  0 "
+      "-1  1  0  0 "
       " 1  0  1  1 "
       " 1 -1  1  1 "
       " 1  0  1  0 "
@@ -864,8 +864,8 @@ TEST(Separation, ThreeSumTruemperComposition)
 
     CMR_CHRMAT* check = NULL;
     ASSERT_CMR_CALL( stringToCharMatrix(cmr, &check, " 6 6 "
-      " 1  0  1  1 0 0 "
-      " 0  1  1  1 0 0 "
+      " 1  0 -1  1 0 0 "
+      " 0  1 -1  1 0 0 "
       " 1  0  1  0 1 1 "
       " 0 -1  1 -1 1 1 "
       " 1  0  1  0 1 0 "
