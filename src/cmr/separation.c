@@ -2053,7 +2053,7 @@ CMR_ERROR CMRthreeSumSeymourDecomposeEpsilon(CMR* cmr, CMR_CHRMAT* matrix, CMR_C
   assert(entryBottomLeft);
 
   /* sum + entries in a and c^T. */
-  *pepsilon = ((sum + entryTopRight + entryBottomLeft) % 4 == 1) ? -1 : +1;
+  *pepsilon = (((((sum + entryTopRight + entryBottomLeft) % 4) + 4) % 4) == 1) ? -1 : +1;
 
   assert((sum + entryTopRight + entryBottomLeft + *pepsilon) % 4 == 0);
 
@@ -2089,7 +2089,7 @@ CMR_ERROR CMRthreeSumSeymourDecomposeFirst(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEP
     CMR_CALL( CMRallocStackArray(cmr, &columnsToFirst, matrix->numColumns) );
 
   char* denseColumn = NULL;
-  CMR_CALL( CMRallocStackArray(cmr, &denseColumn, matrix->numColumns) );
+  CMR_CALL( CMRallocStackArray(cmr, &denseColumn, matrix->numRows) );
 
   /* Number of rows of A. */
   size_t numRows = 0;
@@ -2248,7 +2248,7 @@ CMR_ERROR CMRthreeSumSeymourDecomposeSecond(CMR* cmr, CMR_CHRMAT* matrix, CMR_SE
     CMR_CALL( CMRallocStackArray(cmr, &columnsToSecond, matrix->numColumns) );
 
   char* denseColumn = NULL;
-  CMR_CALL( CMRallocStackArray(cmr, &denseColumn, matrix->numColumns) );
+  CMR_CALL( CMRallocStackArray(cmr, &denseColumn, matrix->numRows) );
 
   /* Number of rows of A. */
   size_t numRows = 1;
@@ -2926,6 +2926,12 @@ CMR_ERROR CMRthreeSumTruemperDecomposeSearch(CMR* cmr, CMR_CHRMAT* matrix, CMR_C
     }
   }
 
+  if (reprFound[0])
+  {
+    CMRdbgMsg(2, "Non-unit special matrix is\n%2d %2d\n%2d %2d\n", reprFound[0][specialColumns[0]],
+      reprFound[0][specialColumns[1]], reprFound[1][specialColumns[0]], reprFound[1][specialColumns[1]]);
+  }
+
   /* Free temporary dense vectors. */
   CMR_CALL( CMRfreeStackArray(cmr, &repr3) );
   CMR_CALL( CMRfreeStackArray(cmr, &repr2) );
@@ -2933,9 +2939,6 @@ CMR_ERROR CMRthreeSumTruemperDecomposeSearch(CMR* cmr, CMR_CHRMAT* matrix, CMR_C
 
   if (reprFound[0])
   {
-    CMRdbgMsg(2, "Non-unit special matrix is\n%2d %2d\n%2d %2d\n", reprFound[0][specialColumns[0]],
-      reprFound[0][specialColumns[1]], reprFound[1][specialColumns[0]], reprFound[1][specialColumns[1]]);
-
     if (specialRows[0] > specialRows[1])
     {
       CMRdbgMsg(2, "Swapping rows.\n");

@@ -6,13 +6,30 @@
 #include "seymour_internal.h"
 #include "matrix_internal.h"
 #include "listmatrix.h"
+#include "linear_algebra_internal.h"
 
 #include <assert.h>
 #include <string.h>
 
+/**
+ * \brief Carries out \p numPivots pivots on \p matrix and stores the result in \p *presult.
+ *
+ * Calculations are done modulo \p characteristic. If that value is negative then the pivots must be regular, i.e.,
+ * over every field. If the result would differ over fields, \p *presult will be \c NULL and, if given, \p *pviolator
+ * will refer to the submatrix indexed by an affected entry as well as indices of all previous pivots.
+ */
+
 static
-CMR_ERROR computePivots(CMR* cmr, CMR_CHRMAT* matrix, size_t numPivots, size_t* pivotRows, size_t* pivotColumns,
-  int8_t characteristic, CMR_CHRMAT** presult)
+CMR_ERROR computePivots(
+  CMR* cmr,               /**< \ref CMR environment . */
+  CMR_CHRMAT* matrix,     /**< Input matrix. */
+  size_t numPivots,       /**< Number of pivots. */
+  size_t* pivotRows,      /**< Row indices of pivots. */
+  size_t* pivotColumns,   /**< Column indices of pivots. */
+  int characteristic,     /**< Characteristic of field. */
+  CMR_SUBMAT** pviolator, /**< Pointer for storing a violating (irregular) submatrix; may be \c NULL. */
+  CMR_CHRMAT** presult    /**< Pointer for storing the resulting matrix. */
+  )
 {
   assert(cmr);
   assert(matrix);
@@ -55,7 +72,7 @@ CMR_ERROR computePivots(CMR* cmr, CMR_CHRMAT* matrix, size_t numPivots, size_t* 
     size_t pivotRow = pivotRows[pivot];
     size_t pivotColumn = pivotColumns[pivot];
 
-    CMRdbgMsg(4, "Applying pivot at %zu,%zu\n", pivotRow, pivotColumn);
+    CMRdbgMsg(4, "Applying pivot at r%zu,c%zu\n", pivotRow+1, pivotColumn+1);
 
     /* Compute the pivot value and all columns that are affected. */
     numAffectedColumns = 0;
@@ -64,21 +81,45 @@ CMR_ERROR computePivots(CMR* cmr, CMR_CHRMAT* matrix, size_t numPivots, size_t* 
     {
       if (denseRow[nz->column] == INT_MIN)
       {
+        CMRdbgMsg(6, "Column c%zu is affected.\n", nz->column+1);
         affectedColumns[numAffectedColumns++] = nz->column;
         denseRow[nz->column] = 0;
       }
       denseRow[nz->column] += nz->value;
     }
 
+    if (characteristic < 0)
+    {
+      /* Check for non-ternary entries in pivot row. */
+
+      for (ListMat8Nonzero* nz = head->right; nz != head; nz = nz->right)
+      {
+        int value = denseRow[nz->column];
+        if (value == INT_MIN || value >= -1 || value <= +1)
+          continue;
+
+        *presult = NULL;
+        CMR_CALL( CMRsubmatCreate(cmr, pivot + 1, pivot + 1, pviolator) );
+        CMR_SUBMAT* violator = *pviolator;
+        for (size_t p = 0; p < pivot; ++p)
+        {
+          violator->rows[p] = pivotRows[p];
+          violator->columns[p] = pivotColumns[p];
+        }
+        violator->rows[pivot] = nz->row;
+        violator->columns[pivot] = nz->column;
+
+        goto cleanup;
+      }
+    }
+
     int pivotValue = denseRow[pivotColumn];
-    if (pivotValue == INT_MIN || (pivotValue % characteristic) == 0)
+    CMRdbgMsg(6, "Pivot value is %d.\n", pivotValue);
+    if (pivotValue == INT_MIN || moduloNonnegative(pivotValue, characteristic) == 0)
     {
       error = CMR_ERROR_INPUT;
       goto cleanup;
     }
-    pivotValue %= characteristic;
-    if (pivotValue < 0)
-      pivotValue += characteristic;
 
     /* Compute all rows that are affected. */
     head = &listmat->columnElements[pivotColumn].head;
@@ -87,11 +128,36 @@ CMR_ERROR computePivots(CMR* cmr, CMR_CHRMAT* matrix, size_t numPivots, size_t* 
     {
       if (denseColumn[nz->row] == INT_MIN)
       {
-        CMRdbgMsg(6, "Row %zu is affected.\n", nz->row);
+        CMRdbgMsg(6, "Row r%zu is affected.\n", nz->row+1);
         affectedRows[numAffectedRows++] = nz->row;
         denseColumn[nz->row] = 0;
       }
       denseColumn[nz->row] += nz->value;
+    }
+
+    if (characteristic < 0)
+    {
+      /* Check for non-ternary entries in pivot column. */
+
+      for (ListMat8Nonzero* nz = head->below; nz != head; nz = nz->below)
+      {
+        int value = denseColumn[nz->row];
+        if (value == INT_MIN || value >= -1 || value <= +1)
+          continue;
+
+        *presult = NULL;
+        CMR_CALL( CMRsubmatCreate(cmr, pivot + 1, pivot + 1, pviolator) );
+        CMR_SUBMAT* violator = *pviolator;
+        for (size_t p = 0; p < pivot; ++p)
+        {
+          violator->rows[p] = pivotRows[p];
+          violator->columns[p] = pivotColumns[p];
+        }
+        violator->rows[pivot] = nz->row;
+        violator->columns[pivot] = nz->column;
+
+        goto cleanup;
+      }
     }
 
     /* Apply the pivot to all other entries first. */
@@ -101,11 +167,9 @@ CMR_ERROR computePivots(CMR* cmr, CMR_CHRMAT* matrix, size_t numPivots, size_t* 
       if (row == pivotRow)
         continue;
 
-      int rowValue = denseColumn[row] % characteristic;
+      int rowValue = denseColumn[row];
       if (rowValue == 0)
         continue;
-      if (rowValue < 0)
-        rowValue += characteristic;
 
       for (size_t c = 0; c < numAffectedColumns; ++c)
       {
@@ -113,13 +177,13 @@ CMR_ERROR computePivots(CMR* cmr, CMR_CHRMAT* matrix, size_t numPivots, size_t* 
         if (column == pivotColumn)
           continue;
 
-        int columnValue = denseRow[column] % characteristic;
+        int columnValue = denseRow[column];
         if (columnValue == 0)
           continue;
-        if (columnValue < 0)
-          columnValue += characteristic;
 
-        CMRdbgMsg(8, "#list nonzeros = %zu, mem list nonzeros = %zu\n", listmat->numNonzeros, listmat->memNonzeros);
+        CMRdbgMsg(8, "Adding -%d*%d*%d = %d to r%zu,r%zu; #list nonzeros = %zu, mem list nonzeros = %zu\n", pivotValue,
+          rowValue, columnValue, -pivotValue * rowValue * columnValue, row+1, column+1, listmat->numNonzeros,
+          listmat->memNonzeros);
 
         CMR_CALL( CMRlistmat8Insert(cmr, listmat, row, column, -pivotValue * rowValue * columnValue, 0, NULL) );
       }
@@ -134,8 +198,8 @@ CMR_ERROR computePivots(CMR* cmr, CMR_CHRMAT* matrix, size_t numPivots, size_t* 
     head = &listmat->rowElements[pivotRow].head;
     for (ListMat8Nonzero* nz = head->right; nz != head; nz = nz->right)
     {
-      if (pivotValue == 2 && nz->column != pivotColumn)
-        nz->value *= 2;
+      if (pivotValue == -1 && nz->column != pivotColumn)
+        nz->value *= -1;
       denseRow[nz->column] = INT_MIN;
     }
 
@@ -143,12 +207,10 @@ CMR_ERROR computePivots(CMR* cmr, CMR_CHRMAT* matrix, size_t numPivots, size_t* 
     head = &listmat->columnElements[pivotColumn].head;
     for (ListMat8Nonzero* nz = head->below; nz != head; nz = nz->below)
     {
-      if (pivotValue == 2 && nz->row != pivotRow)
-        nz->value *= 2;
-      else if (nz->row == pivotRow)
-      {
+      if (pivotValue == -1 && nz->row != pivotRow)
         nz->value *= -1;
-      }
+      else if (nz->row == pivotRow)
+        nz->value *= -1;
       denseColumn[nz->row] = INT_MIN;
     }
 
@@ -191,15 +253,33 @@ CMR_ERROR computePivots(CMR* cmr, CMR_CHRMAT* matrix, size_t numPivots, size_t* 
     for (size_t i = 0; i < numAffectedColumns; ++i)
     {
       size_t column = affectedColumns[i];
-      int value = denseRow[column] % characteristic;
+      int value = denseRow[column];
+
       CMRdbgMsg(6, "Aggregated value in r%zu,c%zu is %d.\n", row+1, column+1, value);
+
+      if (characteristic < 0 && (value < -1 || value > +1))
+      {
+        /* Found non-ternary entries in regular case. */
+        CMR_CALL( CMRchrmatFree(cmr, presult) );
+
+        CMR_CALL( CMRsubmatCreate(cmr, numPivots + 1, numPivots + 1, pviolator) );
+        CMR_SUBMAT* violator = *pviolator;
+        for (size_t p = 0; p < numPivots; ++p)
+        {
+          violator->rows[p] = pivotRows[p];
+          violator->columns[p] = pivotColumns[p];
+        }
+        violator->rows[numPivots] = row;
+        violator->columns[numPivots] = column;
+
+        goto cleanup;
+      }
+      else
+        value = moduloTernary(value, characteristic);
+
       denseRow[column] = INT_MIN;
       if (value == 0)
         continue;
-
-      value = (value + characteristic) % characteristic;
-      if (value == 2)
-        value = -1;
 
       result->entryColumns[entry] = column;
       result->entryValues[entry] = value;
@@ -228,7 +308,7 @@ CMR_ERROR CMRchrmatBinaryPivot(CMR* cmr, CMR_CHRMAT* matrix, size_t pivotRow, si
   assert(matrix);
   assert(presult);
 
-  CMR_CALL( computePivots(cmr, matrix, 1, &pivotRow, &pivotColumn, 2, presult) );
+  CMR_CALL( computePivots(cmr, matrix, 1, &pivotRow, &pivotColumn, 2, NULL, presult) );
 
   return CMR_OKAY;
 }
@@ -239,12 +319,22 @@ CMR_ERROR CMRchrmatTernaryPivot(CMR* cmr, CMR_CHRMAT* matrix, size_t pivotRow, s
   assert(matrix);
   assert(presult);
 
-  CMR_CALL( computePivots(cmr, matrix, 1, &pivotRow, &pivotColumn, 3, presult) );
+  CMR_CALL( computePivots(cmr, matrix, 1, &pivotRow, &pivotColumn, 3, NULL, presult) );
 
   return CMR_OKAY;
 }
 
+CMR_ERROR CMRchrmatRegularPivot(CMR* cmr, CMR_CHRMAT* matrix, size_t pivotRow, size_t pivotColumn,
+  CMR_SUBMAT** pviolator, CMR_CHRMAT** presult)
+{
+  assert(cmr);
+  assert(matrix);
+  assert(presult);
 
+  CMR_CALL( computePivots(cmr, matrix, 1, &pivotRow, &pivotColumn, -3, pviolator, presult) );
+
+  return CMR_OKAY;
+}
 
 CMR_ERROR CMRchrmatBinaryPivots(CMR* cmr, CMR_CHRMAT* matrix, size_t numPivots, size_t* pivotRows, size_t* pivotColumns,
   CMR_CHRMAT** presult)
@@ -255,7 +345,7 @@ CMR_ERROR CMRchrmatBinaryPivots(CMR* cmr, CMR_CHRMAT* matrix, size_t numPivots, 
   assert(pivotColumns);
   assert(presult);
 
-  CMR_CALL( computePivots(cmr, matrix, numPivots, pivotRows, pivotColumns, 2, presult) );
+  CMR_CALL( computePivots(cmr, matrix, numPivots, pivotRows, pivotColumns, 2, NULL, presult) );
 
   return CMR_OKAY;
 }
@@ -269,12 +359,24 @@ CMR_ERROR CMRchrmatTernaryPivots(CMR* cmr, CMR_CHRMAT* matrix, size_t numPivots,
   assert(pivotColumns);
   assert(presult);
 
-  CMR_CALL( computePivots(cmr, matrix, numPivots, pivotRows, pivotColumns, 3, presult) );
+  CMR_CALL( computePivots(cmr, matrix, numPivots, pivotRows, pivotColumns, 3, NULL, presult) );
 
   return CMR_OKAY;
 }
 
+CMR_ERROR CMRchrmatRegularPivots(CMR* cmr, CMR_CHRMAT* matrix, size_t numPivots, size_t* pivotRows,
+  size_t* pivotColumns, CMR_SUBMAT** pviolator, CMR_CHRMAT** presult)
+{
+  assert(cmr);
+  assert(matrix);
+  assert(pivotRows);
+  assert(pivotColumns);
+  assert(presult);
 
+  CMR_CALL( computePivots(cmr, matrix, numPivots, pivotRows, pivotColumns, -3, pviolator, presult) );
+
+  return CMR_OKAY;
+}
 
 
 CMR_ERROR CMRminorCreate(CMR* cmr, CMR_MINOR** pminor, size_t numPivots, CMR_SUBMAT* submatrix, CMR_MINOR_TYPE type)

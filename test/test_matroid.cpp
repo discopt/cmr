@@ -41,7 +41,6 @@ TEST(Matroid, BinaryPivot)
 
     CMR_CHRMAT* result = NULL;
     ASSERT_CMR_CALL( CMRchrmatBinaryPivot(cmr, matrix, 0, 0, &result) );
-
     ASSERT_TRUE( CMRchrmatCheckEqual(result, check) );
 
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
@@ -128,6 +127,17 @@ TEST(Matroid, TernaryPivot)
     CMR_CHRMAT* result = NULL;
     ASSERT_CMR_CALL( CMRchrmatTernaryPivot(cmr, matrix, 0, 0, &result) );
 
+
+    if (!CMRchrmatCheckEqual(result, check))
+    {
+      printf("Input\n");
+      ASSERT_CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', false) );
+      printf("After pivoting on r%zu,c%zu:\n", 0UL, 0UL);
+      ASSERT_CMR_CALL( CMRchrmatPrintDense(cmr, result, stdout, '0', false) );
+      printf("Expected result:\n");
+      ASSERT_CMR_CALL( CMRchrmatPrintDense(cmr, check, stdout, '0', false) );
+    }
+
     ASSERT_TRUE( CMRchrmatCheckEqual(result, check) );
 
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
@@ -165,6 +175,17 @@ TEST(Matroid, TernaryPivot)
 
     CMR_CHRMAT* result = NULL;
     ASSERT_CMR_CALL( CMRchrmatTernaryPivot(cmr, matrix, 0, 0, &result) );
+
+
+    if (!CMRchrmatCheckEqual(result, check))
+    {
+      printf("Input\n");
+      ASSERT_CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', false) );
+      printf("After pivoting on r%zu,c%zu:\n", 0UL, 0UL);
+      ASSERT_CMR_CALL( CMRchrmatPrintDense(cmr, result, stdout, '0', false) );
+      printf("Expected result:\n");
+      ASSERT_CMR_CALL( CMRchrmatPrintDense(cmr, check, stdout, '0', false) );
+    }
 
     ASSERT_TRUE( CMRchrmatCheckEqual(result, check) );
 

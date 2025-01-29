@@ -1,7 +1,8 @@
 // #define MASSIVE_RANDOM /* Uncomment to test a large number of random matrices. */
-#define MASSIVE_RANDOM_REPETITIONS 100000
-#define MASSIVE_RANDOM_WIDTH 10
-#define MASSIVE_RANDOM_HEIGHT 10
+#define MASSIVE_RANDOM_REPETITIONS 10000
+#define MASSIVE_RANDOM_WIDTH 8
+#define MASSIVE_RANDOM_HEIGHT 8
+#define MASSIVE_RANDOM_PROBABILITY 0.3
 
 #include <gtest/gtest.h>
 
@@ -179,37 +180,37 @@ TEST(TU, PartitionAlgorithm)
 
 static
 CMR_ERROR checkDecompositionTreePartition(
-  CMR* cmr,             /**< \ref CMR environment. */
-  CMR_SEYMOUR_NODE* dec, /**< Root of decomposition tree. */
-  bool *psuccess        /**< Pointer for storing success. */
+  CMR* cmr,               /**< \ref CMR environment. */
+  CMR_SEYMOUR_NODE* node, /**< Root of decomposition tree. */
+  bool *psuccess          /**< Pointer for storing success. */
 )
 {
   assert(cmr);
-  assert(dec);
+  assert(node);
   assert(psuccess);
 
-  if (!CMRseymourIsTernary(dec))
+  if (!CMRseymourIsTernary(node))
     return CMR_OKAY;
 
-  if (CMRseymourRegularity(dec) != 0)
+  if (CMRseymourRegularity(node) != 0)
   {
     CMR_TU_PARAMS params;
     CMR_CALL( CMRtuParamsInit(&params) );
     params.algorithm = CMR_TU_ALGORITHM_PARTITION;
     bool isTU;
-    CMR_CALL( CMRtuTest(cmr, CMRseymourGetMatrix(dec), &isTU, NULL, NULL, &params, NULL, DBL_MAX) );
+    CMR_CALL( CMRtuTest(cmr, CMRseymourGetMatrix(node), &isTU, NULL, NULL, &params, NULL, DBL_MAX) );
 
-    if (isTU != (CMRseymourRegularity(dec) > 0))
+    if (isTU != (CMRseymourRegularity(node) > 0))
     {
       printf("========== The following node has wrong regularity status! ==========\n");
-      CMR_CALL( CMRseymourPrint(cmr, dec, stdout, 2, false, true, true, true, true, true) );
+      CMR_CALL( CMRseymourPrint(cmr, node, stdout, false, true, true, true, true, true) );
       *psuccess = false;
     }
   }
 
-  for (size_t c = 0; c < CMRseymourNumChildren(dec); ++c)
+  for (size_t c = 0; c < CMRseymourNumChildren(node); ++c)
   {
-    CMR_CALL( checkDecompositionTreePartition(cmr, CMRseymourChild(dec, c), psuccess) );
+    CMR_CALL( checkDecompositionTreePartition(cmr, CMRseymourChild(node, c), psuccess) );
   }
 
   return CMR_OKAY;
@@ -1302,6 +1303,92 @@ TEST(TU, FanoDual)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
+TEST(TU, ThreeSumTruemperPivotHighRank)
+{
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+
+  {
+    /* Here, pivoting in a distributed rank case yields +/- 2 entries. */
+    CMR_CHRMAT* matrix = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "7 7 "
+      "1 1 1 0 0 0 0 "
+      "0 0 1 1 1 1 0 "
+      "0 1 0 0 0 -1 1 "
+      "0 1 0 0 0 0 1 "
+      "0 1 0 -1 -1 0 0 "
+      "1 1 0 -1 0 0 1 "
+      "0 0 0 1 1 0 0 "
+    ) );
+
+    CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
+
+    bool isTU;
+    CMR_SEYMOUR_NODE* dec = NULL;
+    CMR_TU_PARAMS params;
+    ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
+    params.seymour.threeSumStrategy = CMR_SEYMOUR_THREESUM_FLAG_TRUEMPER;
+
+    ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
+
+    ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_PIVOTS );
+    ASSERT_EQ( CMRseymourNumChildren(dec), 1 );
+    CMR_SEYMOUR_NODE* threeSumNode = CMRseymourChild(dec, 0);
+    ASSERT_EQ( CMRseymourType(threeSumNode), CMR_SEYMOUR_NODE_TYPE_THREE_SUM_TRUEMPER );
+    ASSERT_EQ( CMRseymourNumChildren(threeSumNode), 2 );
+    CMR_SEYMOUR_NODE* node = CMRseymourChild(threeSumNode, 0);
+    ASSERT_EQ( CMRseymourType(node), CMR_SEYMOUR_NODE_TYPE_IRREGULAR );
+
+    ASSERT_CMR_CALL( CMRseymourRelease(cmr, &dec) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  }
+
+  {
+    CMR_CHRMAT* matrix = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "10 10 "
+      "0 0 0 0 0 0 0 0 1 0 "
+      "0 0 1 0 0 0 0 0 0 -1 "
+      "0 1 0 0 0 0 0 0 0 0 "
+      "0 -1 1 1 0 0 0 0 0 0 "
+      "0 1 0 0 0 1 1 1 1 1 "
+      "1 0 1 1 0 0 0 1 1 0 "
+      "1 0 0 0 0 0 0 1 0 0 "
+      "0 1 0 0 0 0 0 0 0 0 "
+      "0 -1 0 1 0 0 0 1 0 0 "
+      "0 0 0 1 1 -1 0 1 0 0 "
+    ) );
+
+    CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
+
+    bool isTU;
+    CMR_SEYMOUR_NODE* dec = NULL;
+    CMR_TU_PARAMS params;
+    ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
+    params.seymour.threeSumStrategy = CMR_SEYMOUR_THREESUM_FLAG_TRUEMPER;
+
+    ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
+
+    ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_SERIES_PARALLEL );
+    ASSERT_EQ( CMRseymourNumChildren(dec), 1 );
+    CMR_SEYMOUR_NODE* pivotNode = CMRseymourChild(dec, 0);
+    ASSERT_EQ( CMRseymourType(pivotNode), CMR_SEYMOUR_NODE_TYPE_PIVOTS );
+    ASSERT_EQ( CMRseymourNumPivots(pivotNode), 1 );
+    ASSERT_EQ( CMRseymourNumChildren(pivotNode), 1 );
+    CMR_SEYMOUR_NODE* threeSumNode = CMRseymourChild(pivotNode, 0);
+    ASSERT_EQ( CMRseymourType(threeSumNode), CMR_SEYMOUR_NODE_TYPE_THREE_SUM_TRUEMPER );
+    ASSERT_EQ( CMRseymourNumChildren(threeSumNode), 2 );
+    CMR_SEYMOUR_NODE* node = CMRseymourChild(threeSumNode, 0);
+    ASSERT_EQ( CMRseymourType(node), CMR_SEYMOUR_NODE_TYPE_IRREGULAR );
+    node = CMRseymourChild(threeSumNode, 1);
+    ASSERT_EQ( CMRseymourType(node), CMR_SEYMOUR_NODE_TYPE_IRREGULAR );
+
+    ASSERT_CMR_CALL( CMRseymourRelease(cmr, &dec) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  }
+
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
+}
+
 TEST(TU, CompleteTree)
 {
   CMR* cmr = NULL;
@@ -1686,19 +1773,20 @@ TEST(TU, Random)
 
   CMR_CHRMAT* matrix = NULL;
   ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix,
-"6 6 "
-"1 0 1 0 0 1 "
-"0 1 0 0 1 1 "
-"0 0 0 0 0 0 "
-"0 -1 1 0 0 0 "
-"1 1 0 1 0 1 "
-"1 0 0 1 0 1 "
+"7 7 "
+"1 1 1 0 0 0 0 "
+"0 0 1 1 1 1 0 "
+"0 1 0 0 0 -1 1 "
+"0 1 0 0 0 0 1 "
+"0 1 0 -1 -1 0 0 "
+"1 1 0 -1 0 0 1 "
+"0 0 0 1 1 0 0 "
   ) );
 
   size_t repetitions = MASSIVE_RANDOM_REPETITIONS;
   size_t numRows = MASSIVE_RANDOM_HEIGHT;
   size_t numColumns = MASSIVE_RANDOM_WIDTH;
-  double probability1 = 0.2;
+  double probability1 = MASSIVE_RANDOM_PROBABILITY;
   size_t maxSizePartition = 100;
 
   for (size_t r = 0; r < repetitions; ++r)
@@ -1742,8 +1830,8 @@ TEST(TU, Random)
     CMR_SUBMAT* violatorSubmatrix = NULL;
     CMR_TU_PARAMS params;
     ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
-    params.regular.completeTree = true;
-    params.regular.threeSumStrategy = CMR_SEYMOUR_NODE_THREESUM_FLAG_SEYMOUR;
+    params.seymour.stopWhenIrregular = false;
+    params.seymour.threeSumStrategy = CMR_SEYMOUR_THREESUM_FLAG_TRUEMPER;
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
 
     bool matroidDecompositionCorrect = true;
@@ -1751,7 +1839,7 @@ TEST(TU, Random)
     if (!matroidDecompositionCorrect)
     {
       printf("Matroid decomposition tree:\n");
-      ASSERT_CMR_CALL( CMRseymourPrint(cmr, dec, stdout, 2, true, true, true, false, true, true) );
+      ASSERT_CMR_CALL( CMRseymourPrint(cmr, dec, stdout, true, true, true, false, true, true) );
     }
     ASSERT_TRUE( matroidDecompositionCorrect );
     ASSERT_CMR_CALL( CMRseymourRelease(cmr, &dec) );
@@ -1765,7 +1853,7 @@ TEST(TU, Random)
       if (violatorSubmatrix)
       {
         CMR_CHRMAT* violatorMatrix = NULL;
-        ASSERT_CMR_CALL( CMRchrmatZoomSubmat(cmr, matrix, violatorSubmatrix, &violatorMatrix) );
+        ASSERT_CMR_CALL( CMRchrmatSlice(cmr, matrix, violatorSubmatrix, &violatorMatrix) );
 
         int64_t determinant;
         ASSERT_CMR_CALL( CMRchrmatDeterminant(cmr, violatorMatrix, &determinant) );

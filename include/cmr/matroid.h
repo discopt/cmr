@@ -41,7 +41,7 @@ CMR_ERROR CMRchrmatBinaryPivot(
 );
 
 /**
- * \brief Applies a sequence of pivots to \p matrix and returns the resulting matrix in \p *presult.
+ * \brief Applies a pivot to \p matrix and returns the resulting matrix in \p *presult.
  *
  * Calculations are done over the ternary field.
  */
@@ -55,10 +55,28 @@ CMR_ERROR CMRchrmatTernaryPivot(
   CMR_CHRMAT** presult  /**< Pointer for storing the resulting matrix. */
 );
 
+
+/**
+ * \brief Applies a pivot to \p matrix and returns the resulting matrix in \p *presult.
+ *
+ * Calculations are done over the ternary field, but must be consistent with those over every field. If an inconsistency
+ * is detected, \p *presult will be \c NULL and \p *pviolator will be an irregular 2-by-2 submatrix.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRchrmatRegularPivot(
+  CMR* cmr,               /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,     /**< Matrix to work with. */
+  size_t pivotRow,        /**< Row of the pivot. */
+  size_t pivotColumn,     /**< Column of the pivot. */
+  CMR_SUBMAT** pviolator, /**< Pointer for storing a violating (irregular) submatrix. */
+  CMR_CHRMAT** presult    /**< Pointer for storing the resulting matrix. */
+);
+
 /**
  * \brief Applies a sequence of pivots to \p matrix and returns the resulting matrix in \p *presult.
  *
- * Calculations are done over the binary field.
+ * Calculations are done over the ternary field.
  */
 
 CMR_EXPORT
@@ -84,6 +102,24 @@ CMR_ERROR CMRchrmatTernaryPivots(
   size_t numPivots,       /**< Number of pivots to carry out. */
   size_t* pivotRows,      /**< Array with rows of the pivots. */
   size_t* pivotColumns,   /**< Array with columns of the pivots. */
+  CMR_CHRMAT** presult    /**< Pointer for storing the resulting matrix. */
+);
+
+/**
+ * \brief Applies a sequence of pivots to \p matrix and returns the resulting matrix in \p *presult.
+ *
+ * Calculations are done over the ternary field, but must be consistent with those over every field. If an inconsistency
+ * is detected, \p *presult will be \c NULL and \p *pviolator will be an irregular submatrix.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRchrmatRegularPivots(
+  CMR* cmr,               /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,     /**< Matrix to work with. */
+  size_t numPivots,       /**< Number of pivots to carry out. */
+  size_t* pivotRows,      /**< Array with rows of the pivots. */
+  size_t* pivotColumns,   /**< Array with columns of the pivots. */
+  CMR_SUBMAT** pviolator, /**< Pointer for storing a violating (irregular) submatrix. */
   CMR_CHRMAT** presult    /**< Pointer for storing the resulting matrix. */
 );
 

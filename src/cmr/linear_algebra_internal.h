@@ -7,6 +7,32 @@
 extern "C" {
 #endif
 
+static inline
+int moduloNonnegative(int p, int q)
+{
+  if (q == 0)
+    return p;
+  if (q < 0)
+    q = -q;
+  int r = p % q;
+  if (r < 0)
+    r += q;
+  return r;
+}
+
+static inline
+int moduloTernary(int p, int q)
+{
+  if (q == 0)
+    return p;
+  if (q < 0)
+    q = -q;
+  int r = p % q;
+  if (r < 0)
+    r += q;
+  return (r == 2 && q == 3) ? -1 : r;
+}
+
 /**
  * \brief Transforms \p matrix into a new matrix by applying integer row operations and row- and column swaps to find
  *        an upper-diagonal basis matrix.

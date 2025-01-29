@@ -99,28 +99,20 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
       pivotBottomLeft ? "bottom-left" : "top-right");
 
     CMR_CHRMAT* childMatrix = NULL;
+    CMR_SUBMAT* violatorSubmatrix = NULL;
     if (node->isTernary)
-      CMR_CALL( CMRchrmatTernaryPivot(cmr, node->matrix, pivotRow, pivotColumn, &childMatrix) );
+      CMR_CALL( CMRchrmatRegularPivot(cmr, node->matrix, pivotRow, pivotColumn, &violatorSubmatrix, &childMatrix) );
     else
       CMR_CALL( CMRchrmatBinaryPivot(cmr, node->matrix, pivotRow, pivotColumn, &childMatrix) );
 
-    CMR_SUBMAT* violatorSubmatrix = NULL;
-    if (node->isTernary && !CMRchrmatIsTernary(cmr, childMatrix, &violatorSubmatrix))
+    if (violatorSubmatrix)
     {
-      /* Pivoting produced a -2 or +2. This entry, together with the pivot row/column constitute a violator. */
-      size_t badRow = violatorSubmatrix->rows[0];
-      size_t badColumn = violatorSubmatrix->columns[0];
-
-      CMR_CALL( CMRsubmatFree(cmr, &violatorSubmatrix) );
-      CMR_CALL( CMRsubmatCreate2x2(cmr, pivotRow, badRow, pivotColumn, badColumn, &violatorSubmatrix) );
-
       CMR_CALL( CMRseymourUpdateViolator(cmr, node, violatorSubmatrix) );
       assert(node->type == CMR_SEYMOUR_NODE_TYPE_IRREGULAR);
 
       CMRdbgMsg(10, "Pivoting produced a non-ternary entry. Computed 2x2 violator.\n");
 
-      /* TODO: Add as unittest. */
-      assert(0 == "NOT TESTED. ADD UNITTEST");
+      /* Tested in ThreeSumTruemperPivotHighRank unittest. */
       queue->foundIrregularity = true;
 
       return CMR_OKAY;
@@ -145,13 +137,13 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
 
     if (violatorSubmatrix)
     {
-      CMRdbgMsg(10, "-> 2x2 submatrix with bad determinant.\n");
+      CMRdbgMsg(10, "-> %zux%zu submatrix with bad determinant.\n", violatorSubmatrix->numRows,
+        violatorSubmatrix->numColumns);
 
       CMR_CALL( CMRseymourUpdateViolator(cmr, node, violatorSubmatrix) );
       assert(node->type == CMR_SEYMOUR_NODE_TYPE_IRREGULAR);
 
       /* TODO: Add as unittest. */
-      assert(0 == "NOT TESTED. ADD UNITTEST");
       queue->foundIrregularity = true;
 
       return CMR_OKAY;
