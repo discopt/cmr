@@ -2571,25 +2571,39 @@ CMR_ERROR CMRchrmatSupport(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT** presult)
   assert(cmr);
   assert(matrix);
   assert(presult);
-  assert(!*presult);
+  assert(!*presult || *presult == matrix);
 
-  CMR_CALL( CMRchrmatCreate(cmr, presult, matrix->numRows, matrix->numColumns, matrix->numNonzeros) );
-  CMR_CHRMAT* result = *presult;
-
-  size_t resultEntry = 0;
-  for (size_t row = 0; row < matrix->numRows; ++row)
+  /* Result matrix is the input matrix. */
+  if (*presult == matrix)
   {
-    result->rowSlice[row] = resultEntry;
-    size_t first = matrix->rowSlice[row];
-    size_t beyond = matrix->rowSlice[row + 1];
-    for (size_t matrixEntry = first; matrixEntry < beyond; ++matrixEntry)
+    for (size_t row = 0; row < matrix->numRows; ++row)
     {
-      result->entryColumns[resultEntry] = matrix->entryColumns[matrixEntry];
-      result->entryValues[resultEntry] = 1;
-      resultEntry++;
+      size_t first = matrix->rowSlice[row];
+      size_t beyond = matrix->rowSlice[row + 1];
+      for (size_t e = first; e < beyond; ++e)
+        matrix->entryValues[e] = matrix->entryValues[e] ? 1 : 0;
     }
   }
-  result->rowSlice[matrix->numRows] = resultEntry;
+  else
+  {
+    CMR_CALL( CMRchrmatCreate(cmr, presult, matrix->numRows, matrix->numColumns, matrix->numNonzeros) );
+    CMR_CHRMAT* result = *presult;
+
+    size_t resultEntry = 0;
+    for (size_t row = 0; row < matrix->numRows; ++row)
+    {
+      result->rowSlice[row] = resultEntry;
+      size_t first = matrix->rowSlice[row];
+      size_t beyond = matrix->rowSlice[row + 1];
+      for (size_t matrixEntry = first; matrixEntry < beyond; ++matrixEntry)
+      {
+        result->entryColumns[resultEntry] = matrix->entryColumns[matrixEntry];
+        result->entryValues[resultEntry] = 1;
+        resultEntry++;
+      }
+    }
+    result->rowSlice[matrix->numRows] = resultEntry;
+  }
 
   return CMR_OKAY;
 }

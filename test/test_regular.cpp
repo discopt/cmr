@@ -1,3 +1,11 @@
+// #define MASSIVE_RANDOM /* Uncomment to test a large number of random matrices. */
+
+#define MASSIVE_RANDOM_REPETITIONS 1000000
+#define MASSIVE_RANDOM_WIDTH 12
+#define MASSIVE_RANDOM_HEIGHT 12
+#define MASSIVE_RANDOM_PROBABILITY 0.3
+#define MASSIVE_RANDOM_THREE_SUM_STRATEGY CMR_SEYMOUR_THREESUM_FLAG_PIVOTLESS
+
 #include <gtest/gtest.h>
 
 #include "common.h"
@@ -907,3 +915,99 @@ TEST(Regular, TreeFlagsStopNongraphic)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
+
+#if defined(MASSIVE_RANDOM)
+
+TEST(Regular, Random)
+{
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+
+  CMR_CHRMAT* matrix = NULL;
+  ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix,
+"7 7 "
+"1 1 1 0 0 0 0 "
+"0 0 1 1 1 1 0 "
+"0 1 0 0 0 1 1 "
+"0 1 0 0 0 0 1 "
+"0 1 0 1 1 0 0 "
+"1 1 0 1 0 0 1 "
+"0 0 0 1 1 0 0 "
+  ) );
+
+  size_t repetitions = MASSIVE_RANDOM_REPETITIONS;
+  size_t numRows = MASSIVE_RANDOM_HEIGHT;
+  size_t numColumns = MASSIVE_RANDOM_WIDTH;
+  double probability1 = MASSIVE_RANDOM_PROBABILITY;
+  size_t maxSizePartition = 100;
+
+  for (size_t r = 0; r < repetitions; ++r)
+  {
+    if (!matrix)
+    {
+      size_t estimatedNumNonzeros = 1.1 * numRows * numColumns * probability1 + 1024;
+      ASSERT_CMR_CALL( CMRchrmatCreate(cmr, &matrix, numRows, numColumns, estimatedNumNonzeros) );
+      size_t entry = 0;
+      for (size_t row = 0; row < numRows; ++row)
+      {
+        matrix->rowSlice[row] = entry;
+        for (size_t column = 0; column < numColumns; ++column)
+        {
+          bool isNonzero = (rand() * 1.0 / RAND_MAX) < probability1;
+          if (isNonzero)
+          {
+            if (entry == matrix->numNonzeros)
+            {
+              ASSERT_CMR_CALL( CMRreallocBlockArray(cmr, &matrix->entryColumns, 2*matrix->numNonzeros) );
+              ASSERT_CMR_CALL( CMRreallocBlockArray(cmr, &matrix->entryValues, 2*matrix->numNonzeros) );
+              matrix->numNonzeros *= 2;
+            }
+            matrix->entryColumns[entry] = column;
+            matrix->entryValues[entry] = 1;
+            ++entry;
+          }
+        }
+      }
+      matrix->rowSlice[numRows] = entry;
+      matrix->numNonzeros = entry;
+    }
+
+    printf("Regular.Random matrix:\n");
+    ASSERT_CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', false) );
+
+    bool isRegular;
+    CMR_SEYMOUR_NODE* dec = NULL;
+    CMR_REGULAR_PARAMS params;
+    ASSERT_CMR_CALL( CMRregularParamsInit(&params) );
+    params.seymour.stopWhenIrregular = false;
+    params.seymour.threeSumStrategy = MASSIVE_RANDOM_THREE_SUM_STRATEGY;
+    ASSERT_CMR_CALL( CMRregularTest(cmr, matrix, &isRegular, &dec, NULL, &params, NULL, DBL_MAX) );
+
+    bool matroidDecompositionCorrect = true;
+    // ASSERT_CMR_CALL( checkDecompositionTreePartition(cmr, dec, &matroidDecompositionCorrect) );
+    if (!matroidDecompositionCorrect)
+    {
+      printf("Matroid decomposition tree:\n");
+      ASSERT_CMR_CALL( CMRseymourPrint(cmr, dec, stdout, true, true, true, false, true, true) );
+    }
+    ASSERT_TRUE( matroidDecompositionCorrect );
+    ASSERT_CMR_CALL( CMRseymourRelease(cmr, &dec) );
+
+    printf("-> %sregular.\n", isRegular ? "" : "NOT ");
+
+    if (numRows <= maxSizePartition || numColumns <= maxSizePartition)
+    {
+      // params.algorithm = CMR_TU_ALGORITHM_PARTITION;
+      // bool partitionIsTU;
+      // ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &partitionIsTU, NULL, NULL, &params, NULL, DBL_MAX) );
+      // ASSERT_EQ( isRegular, partitionIsTU );
+    }
+
+    /* Cleanup. */
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  }
+
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
+}
+
+#endif /* MASSIVE_RANDOM */

@@ -992,6 +992,8 @@ CMR_ERROR CMRintmatSupport(
 
 /**
  * \brief Creates the (binary) support matrix of a char matrix as a char matrix.
+ *
+ * If \p *presult is equal to \p matrix then the matrix is modified.
  */
 
 CMR_EXPORT

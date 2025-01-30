@@ -88,7 +88,8 @@ CMR_ERROR testRegularity(
 
   /* Cleanup. */
 
-  CMR_CALL( CMRseymourRelease(cmr, &decomposition) );
+  if (decomposition)
+    CMR_CALL( CMRseymourRelease(cmr, &decomposition) );
   CMR_CALL( CMRminorFree(cmr, &minor) );
   CMR_CALL( CMRchrmatFree(cmr, &matrix) );
   CMR_CALL( CMRfreeEnvironment(&cmr) );

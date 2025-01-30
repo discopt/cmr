@@ -1,8 +1,10 @@
 // #define MASSIVE_RANDOM /* Uncomment to test a large number of random matrices. */
-#define MASSIVE_RANDOM_REPETITIONS 10000
-#define MASSIVE_RANDOM_WIDTH 8
-#define MASSIVE_RANDOM_HEIGHT 8
+
+#define MASSIVE_RANDOM_REPETITIONS 1000000
+#define MASSIVE_RANDOM_WIDTH 12
+#define MASSIVE_RANDOM_HEIGHT 12
 #define MASSIVE_RANDOM_PROBABILITY 0.3
+#define MASSIVE_RANDOM_THREE_SUM_STRATEGY CMR_SEYMOUR_THREESUM_FLAG_PIVOTLESS
 
 #include <gtest/gtest.h>
 
@@ -1831,7 +1833,7 @@ TEST(TU, Random)
     CMR_TU_PARAMS params;
     ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
     params.seymour.stopWhenIrregular = false;
-    params.seymour.threeSumStrategy = CMR_SEYMOUR_THREESUM_FLAG_TRUEMPER;
+    params.seymour.threeSumStrategy = MASSIVE_RANDOM_THREE_SUM_STRATEGY;
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
 
     bool matroidDecompositionCorrect = true;

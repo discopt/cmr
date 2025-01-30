@@ -171,7 +171,10 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
       CMR_CALL( CMRseymourSetNumChildren(cmr, node, 2) );
 
       char epsilon = 0;
-      CMR_CALL( CMRthreeSumSeymourDecomposeEpsilon(cmr, node->matrix, node->transpose, separation, &epsilon) );
+      if (node->isTernary)
+        CMR_CALL( CMRthreeSumSeymourDecomposeEpsilon(cmr, node->matrix, node->transpose, separation, &epsilon) );
+      else
+        epsilon = 1;
 
       /* Temporary data. */
       size_t* rowsToChild = NULL;
@@ -189,6 +192,11 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
       CMR_CALL( CMRallocBlockArray(cmr, &node->childSpecialColumns[0], 2) );
       CMR_CALL( CMRthreeSumSeymourDecomposeFirst(cmr, node->matrix, separation, epsilon, &first, childRowsToParent,
         childColumnsToParent, rowsToChild, columnsToChild, node->childSpecialRows[0], node->childSpecialColumns[0]) );
+
+#if defined(CMR_DEBUG)
+      CMRdbgMsg(12, "First child matrix:\n");
+      CMRchrmatPrintDense(cmr, first, stdout, '0', false);
+#endif /* CMR_DEBUG */
 
       /* Create first decomposition node. */
       CMR_CALL( CMRseymourCreate(cmr, &node->children[0], node->isTernary, first->numRows, first->numColumns) );
@@ -224,6 +232,11 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
       CMR_CALL( CMRallocBlockArray(cmr, &node->childSpecialColumns[1], 2) );
       CMR_CALL( CMRthreeSumSeymourDecomposeSecond(cmr, node->matrix, separation, epsilon, &second, childRowsToParent,
         childColumnsToParent, rowsToChild, columnsToChild, node->childSpecialRows[1], node->childSpecialColumns[1]) );
+
+#if defined(CMR_DEBUG)
+      CMRdbgMsg(12, "Second child matrix:\n");
+      CMRchrmatPrintDense(cmr, second, stdout, '0', false);
+#endif /* CMR_DEBUG */
 
       /* Create second decomposition node. */
       CMR_CALL( CMRseymourCreate(cmr, &node->children[1], node->isTernary, second->numRows, second->numColumns) );
@@ -299,6 +312,15 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
         &first, childRowsToParent, childColumnsToParent, rowsToChild, columnsToChild, node->childSpecialRows[0],
         node->childSpecialColumns[0]) );
 
+      /* Make it binary if necessary. */
+      if (!node->isTernary)
+        CMR_CALL( CMRchrmatSupport(cmr, first, &first) );
+
+#if defined(CMR_DEBUG)
+      CMRdbgMsg(12, "First child matrix:\n");
+      CMRchrmatPrintDense(cmr, first, stdout, '0', false);
+#endif /* CMR_DEBUG */
+
       /* Create first decomposition node. */
       CMR_CALL( CMRseymourCreate(cmr, &node->children[0], node->isTernary, first->numRows, first->numColumns) );
       node->children[0]->matrix = first;
@@ -334,6 +356,15 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
       CMR_CALL( CMRthreeSumTruemperDecomposeSecond(cmr, node->matrix, separation, specialRows, specialColumns, gamma,
         &second, childRowsToParent, childColumnsToParent, rowsToChild, columnsToChild, node->childSpecialRows[1],
         node->childSpecialColumns[1]) );
+
+      /* Make it binary if necessary. */
+      if (!node->isTernary)
+        CMR_CALL( CMRchrmatSupport(cmr, second, &second) );
+
+#if defined(CMR_DEBUG)
+      CMRdbgMsg(12, "Second child matrix:\n");
+      CMRchrmatPrintDense(cmr, second, stdout, '0', false);
+#endif /* CMR_DEBUG */
 
       /* Create second decomposition node. */
       CMR_CALL( CMRseymourCreate(cmr, &node->children[1], node->isTernary, second->numRows, second->numColumns) );
@@ -373,6 +404,12 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
       assert(0 == "Invalid 3-sum strategy for concentrated rank!");
       return CMR_ERROR_INVALID;
     }
+  }
+
+  if (!node->isTernary)
+  {
+    assert( CMRchrmatIsBinary(cmr, node->children[0]->matrix, NULL) );
+    assert( CMRchrmatIsBinary(cmr, node->children[1]->matrix, NULL) );
   }
 
   DecompositionTask* childTasks[2] = { task, NULL };
