@@ -82,6 +82,17 @@ CMR_ERROR CMRsepaFree(
 );
 
 /**
+ * \brief Transposes a given separation.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRsepaTranspose(
+  CMR* cmr,               /**< \ref CMR environment. */
+  CMR_SEPA* sepa,         /**< Given separation. */
+  CMR_SEPA** ptransposed  /**< Pointer for storing the transpose of \p sepa. */
+);
+
+/**
  * \brief Computes the sizes of the top-left and bottom-right parts.
  */
 
@@ -459,7 +470,7 @@ CMR_ERROR CMRdeltasumDecomposeEpsilon(
  * This function computes \f$ M_1 \f$, while \f$ M_2 \f$ can be computed by \ref CMRdeltasumDecomposeSecond.
  *
  * If \p firstSpecialRows is not \c NULL, then \p firstSpecialRows[0] will refer to the last row of \f$ M_1 \f$.
- * If \p firstSpecialColumns is not \c NULL, then \p firstSpecialColumns[0] will refer to the second-to last column and
+ * If \p firstSpecialColumns is not \c NULL, then \p firstSpecialColumns[0] will refer to the second-to-last column and
  * \p firstSpecialColumns[1] will refer to the last column of \f$ M_2 \f$.
  */
 
@@ -504,10 +515,9 @@ CMR_ERROR CMRdeltasumDecomposeFirst(
  *
  * This function computes \f$ M_2 \f$, while \f$ M_1 \f$ can be computed by \ref CMRdeltasumDecomposeFirst.
  *
- * \note If \p secondSpecialRows is not \c NULL, then \p secondSpecialRows[0] will refer to the first row of
- *       \f$ M_2 \f$.
- * \note If \p secondSpecialColumns is not \c NULL, then \p secondSpecialColumns[0] will refer to the first column and
- *       \p secondSpecialColumns[1] will refer to the second column of \f$ M_2 \f$.
+ * If \p secondSpecialRows is not \c NULL, then \p secondSpecialRows[0] will refer to the first row of \f$ M_2 \f$.
+ * If \p secondSpecialColumns is not \c NULL, then \p secondSpecialColumns[0] will refer to the first column and
+ * \p secondSpecialColumns[1] will refer to the second column of \f$ M_2 \f$.
  */
 
 CMR_EXPORT
@@ -529,9 +539,193 @@ CMR_ERROR CMRdeltasumDecomposeSecond(
                                  **  \f$ \begin{bmatrix} \varepsilon & 0 & b^{\textsf{T}} \end{bmatrix} \f$
                                  ** in \f$ M_2 \f$; may be \c NULL. */
   size_t* secondSpecialColumns  /**< Array of length 2 for storing the column indices of
-                                 **  \f$ \begin{bmatrix} \varepsilon & d \end{bmatrix} \f$ and
-                                 **  \f$ \begin{bmatrix} 0 & d \end{bmatrix} \f$
-                                 ** in \f$ M_2 \f$; may be \c NULL. */
+                                 **  \f$ \begin{bmatrix} \varepsilon \\ d \end{bmatrix} \f$ and
+                                 **  \f$ \begin{bmatrix} 0 \\ d \end{bmatrix} \f$
+                                 **  in \f$ M_2 \f$; may be \c NULL. */
+);
+
+/**
+ * \brief Constructs the Y-sum of the two matrices \p first and \p second.
+ *
+ * Let \f$ M_1 \f$ and \f$ M_2 \f$ denote the matrices given by \p first and \p second, let \f$ A \f$ be the matrix
+ * \f$ M_1 \f$ without the rows indexed by \p firstSpecialRows[0] and \p firstSpecialRows[1] and the column indexed by
+ * \p firstSpecialColumns[0]. After reordering these to be last, \f$ M_1 \f$ must be of the form
+ * \f$
+ *   M_1 = \begin{bmatrix}
+ *     A & a \\
+ *     c^{\textsf{T}} & 0 \\
+ *     c^{\textsf{T}} & \varepsilon
+ *   \end{bmatrix},
+ * \f$
+ * where \f$ \varepsilon \in \{-1,+1 \} \f$ (otherwise, \c CMR_ERROR_STRUCTURE is returned).
+ * Similarly, let \f$ D \f$ be the matrix \f$ M_2 \f$ without the rows indexed by \p secondSpecialRows[0] and
+ * \p secondSpecialRows[1] the column \p secondSpecialColumns[0]. After reordering these to be first, \f$ M_2 \f$
+ * must be of the form
+ * \f$
+ *   M_2 = \begin{bmatrix}
+ *     \varepsilon & b^{\textsf{T}} \\
+ *     0 & b^{\textsf{T}} \\
+ *     d & D
+ *   \end{bmatrix}
+ * \f$
+ * with the same \f$ \varepsilon \f$ (otherwise, \c CMR_ERROR_STRUCTURE is returned).
+ * The Y-sum of \f$ M_1 \f$ and \f$ M_2 \f$ (at these special rows/columns) is the matrix
+ * \f[
+ *   M = \begin{bmatrix}
+ *     A & a b^{\textsf{T}} \\
+ *     d c^{\textsf{T}} & D
+ *   \end{bmatrix}.
+ * \f]
+ * The calculations are done modulo \p characteristic, where the value \f$ 3 \f$ yields numbers from
+ * \f$ \{-1,0,+1\} \f$.
+ *
+ * The resulting matrix \f$ M \f$ is created and stored in \p *presult.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRysumCompose(
+  CMR* cmr,                     /**< \ref CMR environment. */
+  CMR_CHRMAT* first,            /**< First matrix. */
+  CMR_CHRMAT* second,           /**< Second matrix. */
+  size_t* firstSpecialRows,     /**< Array of length 2 with row indices of
+                                 **  \f$ \begin{bmatrix} c^{\textsf{T}} & 0 \end{bmatrix} \f$ and
+                                 **  \f$ \begin{bmatrix} c^{\textsf{T}} & \varepsilon \end{bmatrix} \f$
+                                 ** in \f$ M_1 \f$. */
+  size_t* firstSpecialColumns,  /**< Array of length 1 with row index of
+                                 **  \f$ \begin{bmatrix} a \\ 0 \\ \varepsilon \end{bmatrix} \f$
+                                 ** in \f$ M_1 \f$. */
+  size_t* secondSpecialRows,    /**< Array of length 2 with row indices of \f$ b^{\textsf{T}} \f$
+                                 **  \f$ \begin{bmatrix} \varepsilon & b^{\textsf{T}} \end{bmatrix} \f$ and
+                                 **  \f$ \begin{bmatrix} 0 & b^{\textsf{T}} \end{bmatrix} \f$
+                                 ** in \f$ M_2 \f$. */
+  size_t* secondSpecialColumns, /**< Array of length 1 with column index
+                                 **  \f$ \begin{bmatrix} \varepsilon \\ 0 \\ d \end{bmatrix} \f$
+                                 **  in \f$ M_2 \f$. */
+  int8_t characteristic,      /**< Field characteristic. */
+  CMR_CHRMAT** presult        /**< Pointer for storing the result. */
+);
+
+/**
+ * \brief Decomposes \p matrix as a Y-sum according to the 3-separation \p sepa, computing \f$ \varepsilon \f$.
+ *
+ * The input \p matrix \f$ M \f$ must have a 3-separation that is given by \p sepa, i.e., it can be reordered to look
+ * like \f$ M = \begin{bmatrix} A & B \\ C & D \end{bmatrix} \f$, where \f$ \text{rank}(B) = \text{rank}(C) = 1 \f$.
+ * The two components of the Y-sum are matrices
+ * \f$ M_1 = \begin{bmatrix} A & a \\ c^{\textsf{T}} & 0 \\ c^{\textsf{T}} & \varepsilon \end{bmatrix} \f$ and
+ * \f$ M_2 = \begin{bmatrix} \varepsilon & b^{\textsf{T}} \\ 0 & b^{\textsf{T}} \\ d & D \end{bmatrix} \f$ such that
+ * \f$ B = a b^{\textsf{T}} \f$ and \f$ C = d c^{\textsf{T}} \f$ hold and such that
+ * \f$ a \f$ and \f$ c^{\textsf{T}} \f$ are an actual column and row of \f$ M \f$.
+ * Consequently, \f$ b^{\textsf{T}} \f$ and \f$ d \f$ are (possibly negated) rows and columns of \f$ M \f$.
+ *
+ * The value of \f$ \varepsilon \in \{-1,+1\} \f$ must be so that there exists a singular submatrix of \f$ M_1 \f$ with
+ * exactly two nonzeros per row and per column that covers the top-left \f$ \varepsilon \f$-entry.
+ *
+ * This function only computes \f$ \varepsilon \f$; the matrices \f$ M_1 \f$ and \f$ M_2 \f$ can be computed by
+ * \ref CMRysumDecomposeFirst and \ref CMRysumDecomposeSecond, respectively.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRysumDecomposeEpsilon(
+  CMR* cmr,               /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,     /**< Input matrix \f$ M \f$. */
+  CMR_CHRMAT* transpose,  /**< Transpose matrix \f$ M^{\textsf{T}} \f$. */
+  CMR_SEPA* sepa,         /**< 3-separation to decompose at. */
+  char* pepsilon          /**< Pointer for storing a correct value of \f$ \varepsilon \f$. */
+);
+
+
+/**
+ * \brief Decomposes \p matrix as a Y-sum according to the 3-separation \p sepa, computing the first component.
+ *
+ * The input \p matrix \f$ M \f$ must have a 3-separation that is given by \p sepa, i.e., it can be reordered to look
+ * like \f$ M = \begin{bmatrix} A & B \\ C & D \end{bmatrix} \f$, where \f$ \text{rank}(B) = \text{rank}(C) = 1 \f$.
+ * The two components of the Y-sum are matrices
+ * \f$ M_1 = \begin{bmatrix} A & a \\ c^{\textsf{T}} & 0 \\ c^{\textsf{T}} & \varepsilon \end{bmatrix} \f$ and
+ * \f$ M_2 = \begin{bmatrix} \varepsilon & b^{\textsf{T}} \\ 0 & b^{\textsf{T}} \\ d & D \end{bmatrix} \f$ such that
+ * \f$ B = a b^{\textsf{T}} \f$ and \f$ C = d c^{\textsf{T}} \f$ hold and such that
+ * \f$ a \f$ and \f$ c^{\textsf{T}} \f$ are an actual column and row of \f$ M \f$.
+ * Consequently, \f$ b^{\textsf{T}} \f$ and \f$ d \f$ are (possibly negated) rows and columns of \f$ M \f$.
+ *
+ * The value of \f$ \varepsilon \in \{-1,+1\} \f$ must be given by \p epsilon and should be computed by
+ * \ref CMRysumDecomposeEpsilon.
+ *
+ * This function computes \f$ M_1 \f$, while \f$ M_2 \f$ can be computed by \ref CMRysumDecomposeSecond.
+ *
+ * If \p firstSpecialRows is not \c NULL, then \p firstSpecialRows[0] will refer to the second-to-last row and
+ * \p firstSpecialRows[1] will refer to the last row of \f$ M_1 \f$.
+ * If \p firstSpecialColumns is not \c NULL, then \p firstSpecialColumns[0] will refer to the last column of
+ * \f$ M_2 \f$.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRysumDecomposeFirst(
+  CMR* cmr,                   /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,         /**< Input matrix \f$ M \f$. */
+  CMR_SEPA* sepa,             /**< 3-separation to decompose at. */
+  char epsilon,               /**< Value of \f$ \varepsilon \f$. */
+  CMR_CHRMAT** pfirst,        /**< Pointer for storing the first matrix \f$ M_1 \f$. */
+  size_t* firstRowsOrigin,    /**< Array for storing the mapping from rows of \f$ M_1 \f$ to rows of \f$ M \f$;
+                               **  also set for the extra row if applicable, even if negated; may be \c NULL. */
+  size_t* firstColumnsOrigin, /**< Array for storing the mapping from columns of \f$ M_1 \f$ to columns of \f$ M \f$;
+                               **  also set for the extra column if applicable, even if negated; may be \c NULL. */
+  size_t* rowsToFirst,        /**< Array for storing the mapping from rows of \f$ M \f$ to rows of \f$ M_1 \f$ or to
+                               **  \c SIZE_MAX; may be \c NULL. */
+  size_t* columnsToFirst,     /**< Array for storing the mapping from columns of \f$ M \f$ to columns of \f$ M_1 \f$
+                               **  or to \c SIZE_MAX; may be \c NULL. */
+  size_t* firstSpecialRows,   /**< Array of length 2 for storing the row indices of
+                               **  \f$ \begin{bmatrix} c^{\textsf{T}} & 0 \end{bmatrix} \f$ and
+                               **  \f$ \begin{bmatrix} c^{\textsf{T}} & \varepsilon \end{bmatrix} \f$
+                               ** in \f$ M_1 \f$; may be \c NULL. */
+  size_t* firstSpecialColumns /**< Array of length 1 for storing the column index of
+                               **  \f$ \begin{bmatrix} a \\ 0 \\ \varepsilon \end{bmatrix} \f$
+                               **  in \f$ M_1 \f$; may be \c NULL. */
+);
+
+/**
+ * \brief Decomposes \p matrix as a Y-sum according to the 3-separation \p sepa, computing the second component.
+ *
+ * The input \p matrix \f$ M \f$ must have a 3-separation that is given by \p sepa, i.e., it can be reordered to look
+ * like \f$ M = \begin{bmatrix} A & B \\ C & D \end{bmatrix} \f$, where \f$ \text{rank}(B) = \text{rank}(C) = 1 \f$.
+ * The two components of the Y-sum are matrices
+ * \f$ M_1 = \begin{bmatrix} A & a \\ c^{\textsf{T}} & 0 \\ c^{\textsf{T}} & \varepsilon \end{bmatrix} \f$ and
+ * \f$ M_2 = \begin{bmatrix} \varepsilon & b^{\textsf{T}} \\ 0 & b^{\textsf{T}} \\ d & D \end{bmatrix} \f$ such that
+ * \f$ B = a b^{\textsf{T}} \f$ and \f$ C = d c^{\textsf{T}} \f$ hold and such that
+ * \f$ a \f$ and \f$ c^{\textsf{T}} \f$ are an actual column and row of \f$ M \f$.
+ * Consequently, \f$ b^{\textsf{T}} \f$ and \f$ d \f$ are (possibly negated) rows and columns of \f$ M \f$.
+ *
+ * The value of \f$ \varepsilon \in \{-1,+1\} \f$ must be given by \p epsilon and should be computed by
+ * \ref CMRysumDecomposeEpsilon.
+ *
+ * This function computes \f$ M_2 \f$, while \f$ M_1 \f$ can be computed by \ref CMRysumDecomposeFirst.
+ *
+ * If \p secondSpecialRows is not \c NULL, then \p secondSpecialRows[0] will refer to the first row and
+ * \p secondSpecialRows[1] will refer to the second column of \f$ M_2 \f$.
+ * If \p secondSpecialColumns is not \c NULL, then \p secondSpecialColumns[0] will refer to the first column of
+ * \f$ M_2 \f$.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRysumDecomposeSecond(
+  CMR* cmr,                     /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,           /**< Input matrix \f$ M \f$. */
+  CMR_SEPA* sepa,               /**< 3-separation to decompose at. */
+  char epsilon,                 /**< Value of \f$ \varepsilon \f$. */
+  CMR_CHRMAT** psecond,         /**< Pointer for storing the second matrix \f$ M_2 \f$. */
+  size_t* secondRowsOrigin,     /**< Array for storing the mapping from rows of \f$ M_2 \f$ to rows of \f$ M \f$;
+                                 **  also set for the extra row if applicable, even if negated; may be \c NULL. */
+  size_t* secondColumnsOrigin,  /**< Array for storing the mapping from columns of \f$ M_2 \f$ to columns of \f$ M \f$;
+                                 **  also set for the extra column if applicable, even if negated; may be \c NULL. */
+  size_t* rowsToSecond,         /**< Array for storing the mapping from rows of \f$ M \f$ to rows of \f$ M_2 \f$ or to
+                                 **  \c SIZE_MAX; may be \c NULL. */
+  size_t* columnsToSecond,      /**< Array for storing the mapping from columns of \f$ M \f$ to columns of \f$ M_2 \f$
+                                 **  or to \c SIZE_MAX; may be \c NULL. */
+  size_t* secondSpecialRows,    /**< Array of length 2 for storing the row indices of
+                                 **  \f$ \begin{bmatrix} \varepsilon & b^{\textsf{T}} \end{bmatrix} \f$ and
+                                 **  \f$ \begin{bmatrix} 0 & b^{\textsf{T}} \end{bmatrix} \f$
+                                 **  in \f$ M_2 \f$; may be \c NULL. */
+  size_t* secondSpecialColumns  /**< Array of length 1 for storing the column index of
+                                 **  \f$ \begin{bmatrix} \varepsilon \\ 0 \\ d \end{bmatrix} \f$ in \f$ M_2 \f$; may be
+                                 **  \c NULL. */
 );
 
 /**

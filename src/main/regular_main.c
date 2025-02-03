@@ -123,10 +123,17 @@ int printUsage(const char* program)
   fputs("Advanced options:\n", stderr);
   fputs("  --stats              Print statistics about the computation to stderr.\n", stderr);
   fputs("  --time-limit LIMIT   Allow at most LIMIT seconds for the computation.\n", stderr);
-  fputs("  --decompose STRATEGY Strategy for decomposing among {seymour, truemper, pivotless}; default: seymour.\n", stderr);
+  fputs("  --decompose STRATEGY Strategy for decomposing among {DP, YP, P3, D3, Y3}; default: D3.\n", stderr);
   fputs("  --no-direct-graphic  Check only 3-connected matrices for regularity.\n", stderr);
   fputs("  --no-series-parallel Do not allow series-parallel operations in decomposition tree.\n", stderr);
   fputs("\n", stderr);
+
+  fputs("Decomposition strategies: 1st letter for distributed, 2nd for concentrated rank(s).\n", stderr);
+  fputs("  D Delta-sum (distributed ranks)\n", stderr);
+  fputs("  Y Y-sum (distributed ranks)\n", stderr);
+  fputs("  3 3-sum (concentrated rank)\n", stderr);
+  fputs("  P pivot (changes rank type)\n", stderr);
+  fputs("Note that D3 and Y3 do not produce pivots.\n", stderr);
 
   fputs("Formats for matrices: dense, sparse\n", stderr);
   fputs("If IN-MAT is `-' then the matrix is read from stdin.\n", stderr);
@@ -145,7 +152,8 @@ int main(int argc, char** argv)
   bool directGraphicness = true;
   bool seriesParallel = true;
   double timeLimit = DBL_MAX;
-  int decomposeStrategy = CMR_SEYMOUR_DECOMPOSE_FLAG_SEYMOUR;
+  int decomposeStrategy = CMR_SEYMOUR_DECOMPOSE_FLAG_DISTRIBUTED_DELTASUM
+    | CMR_SEYMOUR_DECOMPOSE_FLAG_CONCENTRATED_THREESUM;
   for (int a = 1; a < argc; ++a)
   {
     if (!strcmp(argv[a], "-h"))
@@ -179,15 +187,34 @@ int main(int argc, char** argv)
     else if (!strcmp(argv[a], "--decompose") && a+1 < argc)
     {
       ++a;
-      if (!strcasecmp(argv[a], "seymour"))
-        decomposeStrategy = CMR_SEYMOUR_DECOMPOSE_FLAG_SEYMOUR;
-      else if (!strcasecmp(argv[a], "truemper"))
-        decomposeStrategy = CMR_SEYMOUR_DECOMPOSE_FLAG_TRUEMPER;
-      else if (!strcasecmp(argv[a], "pivotless"))
-        decomposeStrategy = CMR_SEYMOUR_DECOMPOSE_FLAG_PIVOTLESS;
+      if (!strcasecmp(argv[a], "DP"))
+      {
+        decomposeStrategy = CMR_SEYMOUR_DECOMPOSE_FLAG_DISTRIBUTED_DELTASUM
+          | CMR_SEYMOUR_DECOMPOSE_FLAG_CONCENTRATED_PIVOT;
+      }
+      else if (!strcasecmp(argv[a], "YP"))
+      {
+        decomposeStrategy = CMR_SEYMOUR_DECOMPOSE_FLAG_DISTRIBUTED_YSUM
+          | CMR_SEYMOUR_DECOMPOSE_FLAG_CONCENTRATED_PIVOT;
+      }
+      else if (!strcasecmp(argv[a], "P3"))
+      {
+        decomposeStrategy = CMR_SEYMOUR_DECOMPOSE_FLAG_DISTRIBUTED_PIVOT
+          | CMR_SEYMOUR_DECOMPOSE_FLAG_CONCENTRATED_THREESUM;
+      }
+      else if (!strcasecmp(argv[a], "D3"))
+      {
+        decomposeStrategy = CMR_SEYMOUR_DECOMPOSE_FLAG_DISTRIBUTED_DELTASUM
+          | CMR_SEYMOUR_DECOMPOSE_FLAG_CONCENTRATED_THREESUM;
+      }
+      else if (!strcasecmp(argv[a], "Y3"))
+      {
+        decomposeStrategy = CMR_SEYMOUR_DECOMPOSE_FLAG_DISTRIBUTED_YSUM
+          | CMR_SEYMOUR_DECOMPOSE_FLAG_CONCENTRATED_THREESUM;
+      }
       else
       {
-        fprintf(stderr, "Error: Invalid threesum-strategy <%s> specified.\n\n", argv[a]);
+        fprintf(stderr, "Error: Invalid decomposition strategy <%s> specified.\n\n", argv[a]);
         return printUsage(argv[0]);
       }
     }

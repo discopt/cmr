@@ -1064,6 +1064,59 @@ TEST(TU, DeltasumR12)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
+TEST(TU, YsumR12)
+{
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+
+  {
+    CMR_CHRMAT* matrix = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "6 6 "
+      "1  0 1  1 0 0 "
+      "0  1 1  1 0 0 "
+      "1  0 1  0 1 1 "
+      "0 -1 0 -1 1 1 "
+      "1  0 1  0 1 0 "
+      "0 -1 0 -1 0 1 "
+    ) );
+
+    CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
+
+    bool isTU;
+    CMR_SEYMOUR_NODE* dec = NULL;
+    CMR_TU_PARAMS params;
+    ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
+    params.seymour.decomposeStrategy = CMR_SEYMOUR_DECOMPOSE_FLAG_DISTRIBUTED_YSUM
+      | CMR_SEYMOUR_DECOMPOSE_FLAG_CONCENTRATED_PIVOT;
+
+    ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
+
+    ASSERT_CMR_CALL( CMRseymourPrint(cmr, dec, stdout, true, true, true, true, true, true) );
+
+    ASSERT_GT( CMRseymourRegularity(dec), 0 );
+    ASSERT_LT( CMRseymourGraphicness(dec), 0 );
+    ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_PIVOTS );
+    ASSERT_EQ( CMRseymourNumPivots(dec), 1UL );
+    ASSERT_EQ( CMRseymourNumChildren(dec), 1UL );
+
+    CMR_SEYMOUR_NODE* child = CMRseymourChild(dec, 0);
+
+    ASSERT_EQ( CMRseymourType(child), CMR_SEYMOUR_NODE_TYPE_YSUM );
+    ASSERT_EQ( CMRseymourNumChildren(child), 2UL );
+
+    CMR_SEYMOUR_NODE* grandChild1 = CMRseymourChild(child, 0);
+    CMR_SEYMOUR_NODE* grandChild2 = CMRseymourChild(child, 1);
+
+    ASSERT_GT( CMRseymourGraphicness(grandChild1), 0 );
+    ASSERT_GT( CMRseymourGraphicness(grandChild2), 0 );
+
+    ASSERT_CMR_CALL( CMRseymourRelease(cmr, &dec) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  }
+
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
+}
+
 TEST(TU, ThreesumR12)
 {
   CMR* cmr = NULL;
@@ -1152,8 +1205,49 @@ TEST(TU, DeltasumSigns)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
+TEST(TU, YsumSigns)
+{
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
 
-TEST(TU, ForbiddenSubmatrixSeymour)
+  {
+    CMR_CHRMAT* matrix = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "10 10 "
+      "0  0  1  0  1  1   0  0  0  0 "
+      "1  0  0  1  1  0   0  0  0  0 "
+      "0  0  0  1  0  1   0  0  0  0 "
+      "1  1  1  0  0  0  -1  0  0  0 "
+      "                              "
+      "0  0  0 -1 -1 -1   0  1  0  1 "
+      "0  0  0 -1 -1 -1   0  0  1  1 "
+      "0  0  0  0  0  0   1  0  0  1 "
+      "0  0  0  0  0  0   0  1  1  0 "
+      "0  0  0  0  0  0   1  1  0  0 "
+      "0  0  0  0  0  0   1  0  1  0 "
+    ) );
+    bool isTU;
+    CMR_SEYMOUR_NODE* root;
+    CMR_TU_PARAMS params;
+    ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
+    params.seymour.decomposeStrategy = CMR_SEYMOUR_DECOMPOSE_FLAG_DISTRIBUTED_YSUM
+      | CMR_SEYMOUR_DECOMPOSE_FLAG_CONCENTRATED_PIVOT;
+    ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &root, NULL, &params, NULL, DBL_MAX) );
+
+    // TODO: The decomposition of this matrix is not checked manually, yet. assert(false);
+
+    if (root)
+      ASSERT_CMR_CALL( CMRseymourRelease(cmr, &root) );
+
+
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  }
+
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
+}
+
+
+
+TEST(TU, ThreesumForbiddenSubmatrix)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -1200,7 +1294,55 @@ TEST(TU, ForbiddenSubmatrixSeymour)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
-TEST(TU, ForbiddenSubmatrixTruemper)
+TEST(TU, YsumForbiddenSubmatrix)
+{
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+
+  {
+    CMR_CHRMAT* matrix = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "14 14 "
+      "1 1 1 0 1 0 1 0  1 1 1 1 1 1 "
+      "1 0 1 0 1 0 1 0  1 1 1 1 1 0 "
+      "0 1 1 0 0 0 0 0  0 0 0 0 0 0 "
+      "0 1 1 1 0 0 0 0  0 0 0 0 0 0 "
+      "0 1 1 1 1 0 0 0  0 0 0 0 0 0 "
+      "0 1 1 1 1 1 0 0  0 0 0 0 0 0 "
+      "0 1 1 1 1 1 1 0  0 0 0 0 0 0 "
+      "0 1 1 1 1 1 1 1  0 0 0 0 0 0 "
+      "0 1 1 1 1 1 1 1  1 0 0 0 0 0 "
+      "0 0 0 0 0 0 0 0  1 1 0 0 0 0 "
+      "0 0 0 0 0 0 0 0  0 1 1 0 0 0 "
+      "0 0 0 0 0 0 0 0  0 0 1 1 0 0 "
+      "0 0 0 0 0 0 0 0  0 0 0 1 1 0 "
+      "0 0 0 0 0 0 0 0  0 0 0 0 1 1 "
+    ) );
+
+    CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
+
+    bool isTU;
+    CMR_SEYMOUR_NODE* dec = NULL;
+    CMR_SUBMAT* forbiddenSubmatrix = NULL;
+    CMR_TU_PARAMS params;
+    ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
+    params.seymour.decomposeStrategy = CMR_SEYMOUR_DECOMPOSE_FLAG_DISTRIBUTED_YSUM
+      | CMR_SEYMOUR_DECOMPOSE_FLAG_CONCENTRATED_PIVOT;
+
+    ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, &forbiddenSubmatrix, &params, NULL, DBL_MAX) );
+
+    ASSERT_LT( CMRseymourRegularity(dec), 0 );
+    ASSERT_EQ( forbiddenSubmatrix->numRows, 8UL );
+    ASSERT_EQ( forbiddenSubmatrix->numColumns, 8UL );
+    // TODO: Compute determinant once implemented.
+    ASSERT_CMR_CALL( CMRsubmatFree(cmr, &forbiddenSubmatrix) );
+    ASSERT_CMR_CALL( CMRseymourRelease(cmr, &dec) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  }
+
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
+}
+
+TEST(TU, DeltasumForbiddenSubmatrix)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );

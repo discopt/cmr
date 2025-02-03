@@ -24,7 +24,8 @@ CMR_ERROR CMRseymourParamsInit(CMR_SEYMOUR_PARAMS* params)
   params->planarityCheck = false;
   params->directGraphicness = true;
   params->preferGraphicness = true;
-  params->decomposeStrategy = CMR_SEYMOUR_DECOMPOSE_FLAG_PIVOTLESS;
+  params->decomposeStrategy = CMR_SEYMOUR_DECOMPOSE_FLAG_DISTRIBUTED_DELTASUM
+    | CMR_SEYMOUR_DECOMPOSE_FLAG_CONCENTRATED_THREESUM;
   params->constructLeafGraphs = false;
   params->constructAllGraphs = false;
 
@@ -376,10 +377,13 @@ CMR_ERROR CMRseymourPrintChild(CMR* cmr, CMR_SEYMOUR_NODE* child, CMR_SEYMOUR_NO
     fprintf(stream, "2-sum node {");
     break;
   case CMR_SEYMOUR_NODE_TYPE_DELTASUM:
-    fprintf(stream, "3-sum node of type Seymour {");
+    fprintf(stream, "delta-sum node {");
   break;
   case CMR_SEYMOUR_NODE_TYPE_THREESUM:
-    fprintf(stream, "3-sum node of type Truemper {");
+    fprintf(stream, "3-sum node {");
+  break;
+  case CMR_SEYMOUR_NODE_TYPE_YSUM:
+    fprintf(stream, "Y-sum node {");
   break;
   case CMR_SEYMOUR_NODE_TYPE_GRAPH:
     fprintf(stream, "graphic matrix with %zu nodes and %zu edges {", CMRgraphNumNodes(child->graph),
@@ -481,12 +485,17 @@ CMR_ERROR CMRseymourPrintChild(CMR* cmr, CMR_SEYMOUR_NODE* child, CMR_SEYMOUR_NO
         fputc(' ', stream);
       if (parent->type == CMR_SEYMOUR_NODE_TYPE_DELTASUM)
       {
-        fprintf(stream, "with special rows: r%zu\n", parent->childSpecialRows[childIndex][0]);
+        fprintf(stream, "with special rows: r%zu\n", parent->childSpecialRows[childIndex][0]+1);
+      }
+      else if (parent->type == CMR_SEYMOUR_NODE_TYPE_YSUM)
+      {
+        fprintf(stream, "with special rows: r%zu, r%zu\n", parent->childSpecialRows[childIndex][0]+1,
+          parent->childSpecialRows[childIndex][1]+1);
       }
       else if (parent->type == CMR_SEYMOUR_NODE_TYPE_THREESUM)
       {
-        fprintf(stream, "with special rows: r%zu, r%zu, r%zu\n", parent->childSpecialRows[childIndex][0],
-          parent->childSpecialRows[childIndex][1], parent->childSpecialRows[childIndex][2]);
+        fprintf(stream, "with special rows: r%zu, r%zu, r%zu\n", parent->childSpecialRows[childIndex][0]+1,
+          parent->childSpecialRows[childIndex][1]+1, parent->childSpecialRows[childIndex][2]+1);
       }
     }
     if (parent->childColumnsToParent && parent->childColumnsToParent[childIndex])
@@ -495,7 +504,7 @@ CMR_ERROR CMRseymourPrintChild(CMR* cmr, CMR_SEYMOUR_NODE* child, CMR_SEYMOUR_NO
 
       for (size_t i = 0; i < indent; ++i)
         fputc(' ', stream);
-      fprintf(stream, "with mapping of columns to parent's columns:");
+      fprintf(stream, "with mapping of columns to parent:");
       for (size_t column = 0; column < child->numColumns; ++column)
       {
         if (CMRelementIsRow(columnsToParent[column]))
@@ -513,13 +522,17 @@ CMR_ERROR CMRseymourPrintChild(CMR* cmr, CMR_SEYMOUR_NODE* child, CMR_SEYMOUR_NO
         fputc(' ', stream);
       if (parent->type == CMR_SEYMOUR_NODE_TYPE_DELTASUM)
       {
-        fprintf(stream, "with special columns: c%zu, c%zu\n", parent->childSpecialColumns[childIndex][0],
-          parent->childSpecialColumns[childIndex][1]);
+        fprintf(stream, "with special columns: c%zu, c%zu\n", parent->childSpecialColumns[childIndex][0]+1,
+          parent->childSpecialColumns[childIndex][1]+1);
+      }
+      else if (parent->type == CMR_SEYMOUR_NODE_TYPE_YSUM)
+      {
+        fprintf(stream, "with special columns: c%zu\n", parent->childSpecialColumns[childIndex][0]+1);
       }
       else if (parent->type == CMR_SEYMOUR_NODE_TYPE_THREESUM)
       {
-        fprintf(stream, "with special columns: c%zu, c%zu, c%zu\n", parent->childSpecialColumns[childIndex][0],
-          parent->childSpecialColumns[childIndex][1], parent->childSpecialColumns[childIndex][2]);
+        fprintf(stream, "with special columns: c%zu, c%zu, c%zu\n", parent->childSpecialColumns[childIndex][0]+1,
+          parent->childSpecialColumns[childIndex][1]+1, parent->childSpecialColumns[childIndex][2]+1);
       }
     }
   }
@@ -1321,6 +1334,7 @@ CMR_ERROR CMRseymourSetAttributes(CMR_SEYMOUR_NODE* node)
     }
   break;
   case CMR_SEYMOUR_NODE_TYPE_DELTASUM:
+  case CMR_SEYMOUR_NODE_TYPE_YSUM:
     if (node->regularity == 0)
     {
       node->regularity = 1;
