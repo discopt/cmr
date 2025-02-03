@@ -40,7 +40,7 @@ TEST(TU, EulerianAlgorithm)
 
     CMR_CHRMAT* twoSum = NULL;
     size_t specials[4] = { 0, SIZE_MAX, SIZE_MAX, 0 };
-    ASSERT_CMR_CALL( CMRtwoSumCompose(cmr, K_3_3, K_3_3_dual, &specials[0], NULL, NULL, &specials[3], 3, &twoSum) );
+    ASSERT_CMR_CALL( CMRtwosumCompose(cmr, K_3_3, K_3_3_dual, &specials[0], NULL, NULL, &specials[3], 3, &twoSum) );
 
     size_t rowPermutations[] = { 4, 6, 5, 7, 0, 1, 2, 3 };
     CMR_CHRMAT* matrix = NULL;
@@ -120,7 +120,7 @@ TEST(TU, PartitionAlgorithm)
 
     CMR_CHRMAT* twoSum = NULL;
     size_t specials[4] = { 1, SIZE_MAX, SIZE_MAX, 1 };
-    ASSERT_CMR_CALL( CMRtwoSumCompose(cmr, K_3_3, K_3_3_dual, &specials[0], &specials[1], &specials[2], &specials[3], 3,
+    ASSERT_CMR_CALL( CMRtwosumCompose(cmr, K_3_3, K_3_3_dual, &specials[0], &specials[1], &specials[2], &specials[3], 3,
       &twoSum) );
 
     size_t rowPermutations[] = { 4, 6, 5, 7, 0, 1, 2, 3 };
@@ -220,7 +220,7 @@ CMR_ERROR checkDecompositionTreePartition(
 
 #endif /* MASSIVE_RANDOM */
 
-TEST(TU, OneSum)
+TEST(TU, Onesum)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -245,7 +245,7 @@ TEST(TU, OneSum)
 
     CMR_CHRMAT* matrix = NULL;
     CMR_CHRMAT* matrices[2] = { K_3_3, K_3_3_dual };
-    ASSERT_CMR_CALL( CMRoneSumCompose(cmr, 2, matrices, &matrix) );
+    ASSERT_CMR_CALL( CMRonesumCompose(cmr, 2, matrices, &matrix) );
 
     bool isTU;
     CMR_SEYMOUR_NODE* dec = NULL;
@@ -299,7 +299,7 @@ TEST(TU, SeriesParallelTwoSeparation)
 
     CMR_CHRMAT* twoSum = NULL;
     size_t specials[4] = { 1, SIZE_MAX, SIZE_MAX, 1 };
-    ASSERT_CMR_CALL( CMRtwoSumCompose(cmr, K_3_3, K_3_3_dual, &specials[0], &specials[1], &specials[2], &specials[3], 3,
+    ASSERT_CMR_CALL( CMRtwosumCompose(cmr, K_3_3, K_3_3_dual, &specials[0], &specials[1], &specials[2], &specials[3], 3,
       &twoSum) );
 
     size_t rowPermutations[] = { 4, 6, 5, 7, 0, 1, 2, 3 };
@@ -360,7 +360,7 @@ TEST(TU, NestedMinorSearchTwoSeparation)
 
     CMR_CHRMAT* matrix = NULL;
     size_t specials[4] = { 1, SIZE_MAX, SIZE_MAX, 1 };
-    ASSERT_CMR_CALL( CMRtwoSumCompose(cmr, K_3_3, K_3_3_dual, &specials[0], &specials[1], &specials[2], &specials[3], 3,
+    ASSERT_CMR_CALL( CMRtwosumCompose(cmr, K_3_3, K_3_3_dual, &specials[0], &specials[1], &specials[2], &specials[3], 3,
       &matrix) );
 
     bool isTU;
@@ -1010,7 +1010,7 @@ TEST(TU, EnumerateRanksTwoZero)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
-TEST(TU, ThreeSumSeymourR12)
+TEST(TU, DeltasumR12)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -1064,7 +1064,7 @@ TEST(TU, ThreeSumSeymourR12)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
-TEST(TU, ThreeSumTruemperR12)
+TEST(TU, ThreesumR12)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -1113,7 +1113,7 @@ TEST(TU, ThreeSumTruemperR12)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
-TEST(TU, ThreeSumSigns)
+TEST(TU, DeltasumSigns)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -1305,7 +1305,7 @@ TEST(TU, FanoDual)
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
 }
 
-TEST(TU, ThreeSumTruemperPivotHighRank)
+TEST(TU, ThreesumPivotHighRank)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );

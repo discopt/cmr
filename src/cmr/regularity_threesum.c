@@ -163,16 +163,16 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
   if (separation->type == CMR_SEPA_TYPE_THREE_DISTRIBUTED_RANKS)
   {
     int distributedStrategy = task->params->threeSumStrategy & CMR_SEYMOUR_THREESUM_FLAG_DISTRIBUTED_MASK;
-    if (distributedStrategy == CMR_SEYMOUR_THREESUM_FLAG_DISTRIBUTED_SEYMOUR)
+    if (distributedStrategy == CMR_SEYMOUR_THREESUM_FLAG_DISTRIBUTED_DELTASUM)
     {
-      CMRdbgMsg(10, "Carrying out Seymour 3-sum for a distributed-rank 3-separation.\n");
+      CMRdbgMsg(10, "Carrying out Delta-sum for a distributed-rank 3-separation.\n");
 
       node->type = CMR_SEYMOUR_NODE_TYPE_THREE_SUM_SEYMOUR;
       CMR_CALL( CMRseymourSetNumChildren(cmr, node, 2) );
 
       char epsilon = 0;
       if (node->isTernary)
-        CMR_CALL( CMRthreeSumSeymourDecomposeEpsilon(cmr, node->matrix, node->transpose, separation, &epsilon) );
+        CMR_CALL( CMRdeltasumDecomposeEpsilon(cmr, node->matrix, node->transpose, separation, &epsilon) );
       else
         epsilon = 1;
 
@@ -190,7 +190,7 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
       CMR_CHRMAT* first = NULL;
       CMR_CALL( CMRallocBlockArray(cmr, &node->childSpecialRows[0], 1) );
       CMR_CALL( CMRallocBlockArray(cmr, &node->childSpecialColumns[0], 2) );
-      CMR_CALL( CMRthreeSumSeymourDecomposeFirst(cmr, node->matrix, separation, epsilon, &first, childRowsToParent,
+      CMR_CALL( CMRdeltasumDecomposeFirst(cmr, node->matrix, separation, epsilon, &first, childRowsToParent,
         childColumnsToParent, rowsToChild, columnsToChild, node->childSpecialRows[0], node->childSpecialColumns[0]) );
 
 #if defined(CMR_DEBUG)
@@ -230,7 +230,7 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
       CMR_CHRMAT* second = NULL;
       CMR_CALL( CMRallocBlockArray(cmr, &node->childSpecialRows[1], 1) );
       CMR_CALL( CMRallocBlockArray(cmr, &node->childSpecialColumns[1], 2) );
-      CMR_CALL( CMRthreeSumSeymourDecomposeSecond(cmr, node->matrix, separation, epsilon, &second, childRowsToParent,
+      CMR_CALL( CMRdeltasumDecomposeSecond(cmr, node->matrix, separation, epsilon, &second, childRowsToParent,
         childColumnsToParent, rowsToChild, columnsToChild, node->childSpecialRows[1], node->childSpecialColumns[1]) );
 
 #if defined(CMR_DEBUG)
@@ -273,7 +273,7 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
     }
     else
     {
-      assert(0 == "Invalid 3-sum strategy for distributed ranks!");
+      assert(0 == "Invalid sum strategy for distributed ranks!");
       return CMR_ERROR_INVALID;
     }
   }
@@ -281,9 +281,9 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
   {
     assert(separation->type == CMR_SEPA_TYPE_THREE_CONCENTRATED_RANK);
     int concentratedStrategy = task->params->threeSumStrategy & CMR_SEYMOUR_THREESUM_FLAG_CONCENTRATED_MASK;
-    if (concentratedStrategy == CMR_SEYMOUR_THREESUM_FLAG_CONCENTRATED_TRUEMPER)
+    if (concentratedStrategy == CMR_SEYMOUR_THREESUM_FLAG_CONCENTRATED_THREESUM)
     {
-      CMRdbgMsg(10, "Carrying out Truemper 3-sum for a concentrated-rank 3-separation.\n");
+      CMRdbgMsg(10, "Carrying out 3-sum for a concentrated-rank 3-separation.\n");
 
       node->type = CMR_SEYMOUR_NODE_TYPE_THREE_SUM_TRUEMPER;
       CMR_CALL( CMRseymourSetNumChildren(cmr, node, 2) );
@@ -291,7 +291,7 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
       size_t specialRows[3];
       size_t specialColumns[3];
       char gamma, beta;
-      CMR_CALL( CMRthreeSumTruemperDecomposeConnecting(cmr, node->matrix, node->transpose, separation, specialRows,
+      CMR_CALL( CMRthreesumDecomposeConnecting(cmr, node->matrix, node->transpose, separation, specialRows,
         specialColumns, &gamma, &beta) );
 
       /* Temporary data. */
@@ -308,7 +308,7 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
       CMR_CHRMAT* first = NULL;
       CMR_CALL( CMRallocBlockArray(cmr, &node->childSpecialRows[0], 3) );
       CMR_CALL( CMRallocBlockArray(cmr, &node->childSpecialColumns[0], 3) );
-      CMR_CALL( CMRthreeSumTruemperDecomposeFirst(cmr, node->matrix, separation, specialRows, specialColumns, beta,
+      CMR_CALL( CMRthreesumDecomposeFirst(cmr, node->matrix, separation, specialRows, specialColumns, beta,
         &first, childRowsToParent, childColumnsToParent, rowsToChild, columnsToChild, node->childSpecialRows[0],
         node->childSpecialColumns[0]) );
 
@@ -353,7 +353,7 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
       CMR_CHRMAT* second = NULL;
       CMR_CALL( CMRallocBlockArray(cmr, &node->childSpecialRows[1], 3) );
       CMR_CALL( CMRallocBlockArray(cmr, &node->childSpecialColumns[1], 3) );
-      CMR_CALL( CMRthreeSumTruemperDecomposeSecond(cmr, node->matrix, separation, specialRows, specialColumns, gamma,
+      CMR_CALL( CMRthreesumDecomposeSecond(cmr, node->matrix, separation, specialRows, specialColumns, gamma,
         &second, childRowsToParent, childColumnsToParent, rowsToChild, columnsToChild, node->childSpecialRows[1],
         node->childSpecialColumns[1]) );
 

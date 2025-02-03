@@ -42,23 +42,23 @@ typedef enum
     /**< Bitmask for distributed rank treatment. */
   CMR_SEYMOUR_THREESUM_FLAG_DISTRIBUTED_PIVOT = 1,
     /**< Indicate to pivot a distributed rank distribution to a concentrated one; \see \ref seymour_decomposition. */
-  CMR_SEYMOUR_THREESUM_FLAG_DISTRIBUTED_SEYMOUR = 2,
-    /**< Indicate to carry out a Seymour 3-sum for distributed ranks; \see \ref seymour_decomposition. */
+  CMR_SEYMOUR_THREESUM_FLAG_DISTRIBUTED_DELTASUM = 2,
+    /**< Indicate to carry out a \f$ \Delta \f$-sum for distributed ranks; \see \ref seymour_decomposition. */
   CMR_SEYMOUR_THREESUM_FLAG_CONCENTRATED_MASK = 240,
     /**< Bitmask for distributed rank treatment. */
   CMR_SEYMOUR_THREESUM_FLAG_CONCENTRATED_PIVOT = 16,
     /**< Indicate to pivot a concentrated rank distribution to a distributed one; \see \ref seymour_decomposition. */
-  CMR_SEYMOUR_THREESUM_FLAG_CONCENTRATED_TRUEMPER = 32,
-    /**< Indicate to carry out a Truemper 3-sum for concentrated ranks; \see \ref seymour_decomposition. */
-  CMR_SEYMOUR_THREESUM_FLAG_SEYMOUR = CMR_SEYMOUR_THREESUM_FLAG_DISTRIBUTED_SEYMOUR
+  CMR_SEYMOUR_THREESUM_FLAG_CONCENTRATED_THREESUM = 32,
+    /**< Indicate to carry out a 3-sum for concentrated ranks; \see \ref seymour_decomposition. */
+  CMR_SEYMOUR_THREESUM_FLAG_SEYMOUR = CMR_SEYMOUR_THREESUM_FLAG_DISTRIBUTED_DELTASUM
     | CMR_SEYMOUR_THREESUM_FLAG_CONCENTRATED_PIVOT,
-    /**< This triggers only \f$ 3 \f$-sum decompositions as defined by Seymour; \see \ref seymour_decomposition. */
+    /**< This triggers only \f$ \Delta \f$-sum decompositions as defined by Seymour; \see \ref seymour_decomposition. */
   CMR_SEYMOUR_THREESUM_FLAG_TRUEMPER = CMR_SEYMOUR_THREESUM_FLAG_DISTRIBUTED_PIVOT
-    | CMR_SEYMOUR_THREESUM_FLAG_CONCENTRATED_TRUEMPER,
-    /**< This triggers only \f$ 3 \f$-sum decompositions as defined by Truemper; \see \ref seymour_decomposition. */
-  CMR_SEYMOUR_THREESUM_FLAG_PIVOTLESS = CMR_SEYMOUR_THREESUM_FLAG_DISTRIBUTED_SEYMOUR
-    | CMR_SEYMOUR_THREESUM_FLAG_CONCENTRATED_TRUEMPER
-    /**< This triggers \f$ 3 \f$-sum decompositions as defined by Seymour or Truemper without any pivots. */
+    | CMR_SEYMOUR_THREESUM_FLAG_CONCENTRATED_THREESUM,
+    /**< This triggers only 3-sum decompositions as defined by Truemper; \see \ref seymour_decomposition. */
+  CMR_SEYMOUR_THREESUM_FLAG_PIVOTLESS = CMR_SEYMOUR_THREESUM_FLAG_DISTRIBUTED_DELTASUM
+    | CMR_SEYMOUR_THREESUM_FLAG_CONCENTRATED_THREESUM
+    /**< This triggers \f$ \Delta \f$-sum or 3-sum decompositions as defined by Seymour or Truemper to avoid pivots. */
 } CMR_SEYMOUR_THREESUM_FLAG;
 
 /**

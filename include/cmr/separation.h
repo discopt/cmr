@@ -214,7 +214,7 @@ CMR_ERROR CMRsepaCheckTernarySubmatrix(
  */
 
 CMR_EXPORT
-CMR_ERROR CMRoneSumCompose(
+CMR_ERROR CMRonesumCompose(
   CMR* cmr,               /**< \ref CMR environment. */
   size_t numMatrices,     /**< Number \f$ k \f$ of matrices in the sum. */
   CMR_CHRMAT** matrices,  /**< First matrix. */
@@ -257,7 +257,7 @@ CMR_ERROR CMRoneSumCompose(
  */
 
 CMR_EXPORT
-CMR_ERROR CMRtwoSumCompose(
+CMR_ERROR CMRtwosumCompose(
   CMR* cmr,                     /**< \ref CMR environment. */
   CMR_CHRMAT* first,            /**< First matrix \f$ M_1 \f$. */
   CMR_CHRMAT* second,           /**< Second matrix \f$ M_2 \f$. */
@@ -292,7 +292,7 @@ CMR_ERROR CMRtwoSumCompose(
  */
 
 CMR_EXPORT
-CMR_ERROR CMRtwoSumDecomposeFirst(
+CMR_ERROR CMRtwosumDecomposeFirst(
   CMR* cmr,                   /**< \ref CMR environment. */
   CMR_CHRMAT* matrix,         /**< Input matrix \f$ M \f$. */
   CMR_SEPA* sepa,             /**< 2-separation to decompose at. */
@@ -335,7 +335,7 @@ CMR_ERROR CMRtwoSumDecomposeFirst(
  */
 
 CMR_EXPORT
-CMR_ERROR CMRtwoSumDecomposeSecond(
+CMR_ERROR CMRtwosumDecomposeSecond(
   CMR* cmr,                     /**< \ref CMR environment. */
   CMR_CHRMAT* matrix,           /**< Input matrix \f$ M \f$. */
   CMR_SEPA* sepa,               /**< 2-separation to decompose at. */
@@ -355,7 +355,7 @@ CMR_ERROR CMRtwoSumDecomposeSecond(
 );
 
 /**
- * \brief Constructs the Seymour 3-sum of the two matrices \p first and \p second.
+ * \brief Constructs the \f$ \Delta \f$-sum of the two matrices \p first and \p second.
  *
  * Let \f$ M_1 \f$ and \f$ M_2 \f$ denote the matrices given by \p first and \p second, let \f$ A \f$ be the matrix
  * \f$ M_1 \f$ without the row indexed by \p firstSpecialRows[0] and the columns indexed by \p firstSpecialColumns[0]
@@ -377,7 +377,7 @@ CMR_ERROR CMRtwoSumDecomposeSecond(
  *   \end{bmatrix}
  * \f$
  * with the same \f$ \varepsilon \f$ (otherwise, \c CMR_ERROR_STRUCTURE is returned).
- * The 3-sum of \f$ M_1 \f$ and \f$ M_2 \f$ (at these special rows/columns) is the matrix
+ * The \f$ \Delta \f$-sum of \f$ M_1 \f$ and \f$ M_2 \f$ (at these special rows/columns) is the matrix
  * \f[
  *   M = \begin{bmatrix}
  *     A & a b^{\textsf{T}} \\
@@ -391,7 +391,7 @@ CMR_ERROR CMRtwoSumDecomposeSecond(
  */
 
 CMR_EXPORT
-CMR_ERROR CMRthreeSumSeymourCompose(
+CMR_ERROR CMRdeltasumCompose(
   CMR* cmr,                     /**< \ref CMR environment. */
   CMR_CHRMAT* first,            /**< First matrix. */
   CMR_CHRMAT* second,           /**< Second matrix. */
@@ -414,11 +414,11 @@ CMR_ERROR CMRthreeSumSeymourCompose(
 );
 
 /**
- * \brief Decomposes \p matrix as a Seymour 3-sum according to the 3-separation \p sepa, computing \f$ \varepsilon \f$.
+ * \brief Decomposes \p matrix as a \f$ \Delta \f$-sum according to the 3-separation \p sepa, computing \f$ \varepsilon \f$.
  *
  * The input \p matrix \f$ M \f$ must have a 3-separation that is given by \p sepa, i.e., it can be reordered to look
  * like \f$ M = \begin{bmatrix} A & B \\ C & D \end{bmatrix} \f$, where \f$ \text{rank}(B) = \text{rank}(C) = 1 \f$.
- * The two components of the 3-sum are matrices
+ * The two components of the \f$ \Delta \f$-sum are matrices
  * \f$ M_1 = \begin{bmatrix} A & a & a \\ c^{\textsf{T}} & 0 & \varepsilon \end{bmatrix} \f$ and
  * \f$ M_2 = \begin{bmatrix} \varepsilon & 0 & b^{\textsf{T}} \\ d & d & D \end{bmatrix} \f$ such that
  * \f$ B = a b^{\textsf{T}} \f$ and \f$ C = d c^{\textsf{T}} \f$ hold and such that
@@ -429,11 +429,11 @@ CMR_ERROR CMRthreeSumSeymourCompose(
  * exactly two nonzeros per row and per column that covers the top-left \f$ \varepsilon \f$-entry.
  *
  * This function only computes \f$ \varepsilon \f$; the matrices \f$ M_1 \f$ and \f$ M_2 \f$ can be computed by
- * \ref CMRthreeSumSeymourDecomposeFirst and \ref CMRthreeSumSeymourDecomposeSecond, respectively.
+ * \ref CMRdeltasumDecomposeFirst and \ref CMRdeltasumDecomposeSecond, respectively.
  */
 
 CMR_EXPORT
-CMR_ERROR CMRthreeSumSeymourDecomposeEpsilon(
+CMR_ERROR CMRdeltasumDecomposeEpsilon(
   CMR* cmr,               /**< \ref CMR environment. */
   CMR_CHRMAT* matrix,     /**< Input matrix \f$ M \f$. */
   CMR_CHRMAT* transpose,  /**< Transpose matrix \f$ M^{\textsf{T}} \f$. */
@@ -442,11 +442,11 @@ CMR_ERROR CMRthreeSumSeymourDecomposeEpsilon(
 );
 
 /**
- * \brief Decomposes \p matrix as a Seymour 3-sum according to the 3-separation \p sepa, computing the first component.
+ * \brief Decomposes \p matrix as a \f$ \Delta \f$-sum according to the 3-separation \p sepa, computing the first component.
  *
  * The input \p matrix \f$ M \f$ must have a 3-separation that is given by \p sepa, i.e., it can be reordered to look
  * like \f$ M = \begin{bmatrix} A & B \\ C & D \end{bmatrix} \f$, where \f$ \text{rank}(B) = \text{rank}(C) = 1 \f$.
- * The two components of the 3-sum are matrices
+ * The two components of the \f$ \Delta \f$-sum are matrices
  * \f$ M_1 = \begin{bmatrix} A & a & a \\ c^{\textsf{T}} & 0 & \varepsilon \end{bmatrix} \f$ and
  * \f$ M_2 = \begin{bmatrix} \varepsilon & 0 & b^{\textsf{T}} \\ d & d & D \end{bmatrix} \f$ such that
  * \f$ B = a b^{\textsf{T}} \f$ and \f$ C = d c^{\textsf{T}} \f$ hold and such that
@@ -454,9 +454,9 @@ CMR_ERROR CMRthreeSumSeymourDecomposeEpsilon(
  * Consequently, \f$ b^{\textsf{T}} \f$ and \f$ d \f$ are (possibly negated) rows and columns of \f$ M \f$.
  *
  * The value of \f$ \varepsilon \in \{-1,+1\} \f$ must be given by \p epsilon and should be computed by
- * \ref CMRthreeSumSeymourDecomposeEpsilon.
+ * \ref CMRdeltasumDecomposeEpsilon.
  *
- * This function computes \f$ M_1 \f$, while \f$ M_2 \f$ can be computed by \ref CMRthreeSumSeymourDecomposeSecond.
+ * This function computes \f$ M_1 \f$, while \f$ M_2 \f$ can be computed by \ref CMRdeltasumDecomposeSecond.
  *
  * If \p firstSpecialRows is not \c NULL, then \p firstSpecialRows[0] will refer to the last row of \f$ M_1 \f$.
  * If \p firstSpecialColumns is not \c NULL, then \p firstSpecialColumns[0] will refer to the second-to last column and
@@ -464,7 +464,7 @@ CMR_ERROR CMRthreeSumSeymourDecomposeEpsilon(
  */
 
 CMR_EXPORT
-CMR_ERROR CMRthreeSumSeymourDecomposeFirst(
+CMR_ERROR CMRdeltasumDecomposeFirst(
   CMR* cmr,                   /**< \ref CMR environment. */
   CMR_CHRMAT* matrix,         /**< Input matrix \f$ M \f$. */
   CMR_SEPA* sepa,             /**< 3-separation to decompose at. */
@@ -488,11 +488,11 @@ CMR_ERROR CMRthreeSumSeymourDecomposeFirst(
 );
 
 /**
- * \brief Decomposes \p matrix as a Seymour 3-sum according to the 3-separation \p sepa, computing the second component.
+ * \brief Decomposes \p matrix as a \f$ \Delta \f$-sum according to the 3-separation \p sepa, computing the second component.
  *
  * The input \p matrix \f$ M \f$ must have a 3-separation that is given by \p sepa, i.e., it can be reordered to look
  * like \f$ M = \begin{bmatrix} A & B \\ C & D \end{bmatrix} \f$, where \f$ \text{rank}(B) = \text{rank}(C) = 1 \f$.
- * The two components of the 3-sum are matrices
+ * The two components of the \f$ \Delta \f$-sum are matrices
  * \f$ M_1 = \begin{bmatrix} A & a & a \\ c^{\textsf{T}} & 0 & \varepsilon \end{bmatrix} \f$ and
  * \f$ M_2 = \begin{bmatrix} \varepsilon & 0 & b^{\textsf{T}} \\ d & d & D \end{bmatrix} \f$ such that
  * \f$ B = a b^{\textsf{T}} \f$ and \f$ C = d c^{\textsf{T}} \f$ hold and such that
@@ -500,9 +500,9 @@ CMR_ERROR CMRthreeSumSeymourDecomposeFirst(
  * Consequently, \f$ b^{\textsf{T}} \f$ and \f$ d \f$ are (possibly negated) rows and columns of \f$ M \f$.
  *
  * The value of \f$ \varepsilon \in \{-1,+1\} \f$ must be given by \p epsilon and should be computed by
- * \ref CMRthreeSumSeymourDecomposeEpsilon.
+ * \ref CMRdeltasumDecomposeEpsilon.
  *
- * This function computes \f$ M_2 \f$, while \f$ M_1 \f$ can be computed by \ref CMRthreeSumSeymourDecomposeFirst.
+ * This function computes \f$ M_2 \f$, while \f$ M_1 \f$ can be computed by \ref CMRdeltasumDecomposeFirst.
  *
  * \note If \p secondSpecialRows is not \c NULL, then \p secondSpecialRows[0] will refer to the first row of
  *       \f$ M_2 \f$.
@@ -511,7 +511,7 @@ CMR_ERROR CMRthreeSumSeymourDecomposeFirst(
  */
 
 CMR_EXPORT
-CMR_ERROR CMRthreeSumSeymourDecomposeSecond(
+CMR_ERROR CMRdeltasumDecomposeSecond(
   CMR* cmr,                     /**< \ref CMR environment. */
   CMR_CHRMAT* matrix,           /**< Input matrix \f$ M \f$. */
   CMR_SEPA* sepa,               /**< 3-separation to decompose at. */
@@ -535,7 +535,7 @@ CMR_ERROR CMRthreeSumSeymourDecomposeSecond(
 );
 
 /**
- * \brief Constructs the Truemper 3-sum of the two matrices \p first and \p second at connecting rows
+ * \brief Constructs the 3-sum of the two matrices \p first and \p second at connecting rows
  *        \p firstSpecialRows and \p secondSpecialRows and columns \p firstSpecialColumns and \p secondSpecialColumns.
  *
  * Let \f$ M_1 \f$ and \f$ M_2 \f$ denote the matrices given by \p first and \p second, let \f$ A \f$ be the matrix
@@ -591,7 +591,7 @@ CMR_ERROR CMRthreeSumSeymourDecomposeSecond(
  */
 
 CMR_EXPORT
-CMR_ERROR CMRthreeSumTruemperCompose(
+CMR_ERROR CMRthreesumCompose(
   CMR* cmr,                     /**< \ref CMR environment. */
   CMR_CHRMAT* first,            /**< First matrix. */
   CMR_CHRMAT* second,           /**< Second matrix. */
@@ -605,8 +605,7 @@ CMR_ERROR CMRthreeSumTruemperCompose(
 
 
 /**
- * \brief Decomposes \p matrix as a Truemper 3-sum according to the 3-separation \p sepa, computing the connecing
- *        matrix.
+ * \brief Decomposes \p matrix as a 3-sum according to the 3-separation \p sepa, computing the connecing matrix.
  *
  * The input \p matrix \f$ M \f$ must have a 3-separation that is given by \p sepa, i.e., it can be reordered to look
  * like \f$ M = \begin{bmatrix} A & \mathbb{O} \\ C & D \end{bmatrix} \f$, where \f$ \text{rank}(C) = 2 \f$.
@@ -639,12 +638,12 @@ CMR_ERROR CMRthreeSumTruemperCompose(
  * exactly two nonzeros per row and per column that covers the bottom-right \f$ \beta \f$-entry.
  *
  * This function only computes the indices \f$ i,j,k,\ell \f$ as well as values for \f$ \beta \f$ and \f$ \gamma \f$;
- * the matrices \f$ M_1 \f$ and \f$ M_2 \f$ can be computed by \ref CMRthreeSumTruemperDecomposeFirst and
- * \ref CMRthreeSumTruemperDecomposeSecond, respectively.
+ * the matrices \f$ M_1 \f$ and \f$ M_2 \f$ can be computed by \ref CMRthreesumDecomposeFirst and
+ * \ref CMRthreesumDecomposeSecond, respectively.
  */
 
 CMR_EXPORT
-CMR_ERROR CMRthreeSumTruemperDecomposeConnecting(
+CMR_ERROR CMRthreesumDecomposeConnecting(
   CMR* cmr,               /**< \ref CMR environment. */
   CMR_CHRMAT* matrix,     /**< Input matrix \f$ M \f$. */
   CMR_CHRMAT* transpose,  /**< Transpose matrix \f$ M^{\textsf{T}} \f$. */
@@ -658,7 +657,7 @@ CMR_ERROR CMRthreeSumTruemperDecomposeConnecting(
 
 
 /**
- * \brief Decomposes \p matrix as a Truemper 3-sum according to the 3-separation \p sepa, computing the first component.
+ * \brief Decomposes \p matrix as a 3-sum according to the 3-separation \p sepa, computing the first component.
  *
  * The input \p matrix \f$ M \f$ must have a 3-separation that is given by \p sepa, i.e., it can be reordered to look
  * like \f$ M = \begin{bmatrix} A & \mathbb{O} \\ C & D \end{bmatrix} \f$, where \f$ \text{rank}(C) = 2 \f$.
@@ -689,9 +688,9 @@ CMR_ERROR CMRthreeSumTruemperDecomposeConnecting(
  *
  * The value of \f$ \beta \in \{-1,+1\} \f$, given via \p beta. The row indices \f$ i,j \f$, given via \p specialRows,
  * and column indices \f$ k,\ell \f$, given via \p specialColumns, must index a rank-2 submatrix of \f$ C \f$. They
- * should be computed by \ref CMRthreeSumTruemperDecomposeConnecting.
+ * should be computed by \ref CMRthreesumDecomposeConnecting.
  *
- * This function computes \f$ M_1 \f$, while \f$ M_2 \f$ can be computed by \ref CMRthreeSumTruemperDecomposeSecond.
+ * This function computes \f$ M_1 \f$, while \f$ M_2 \f$ can be computed by \ref CMRthreesumDecomposeSecond.
  *
  * If \p firstSpecialRows is not \c NULL, then \p firstSpecialRows[0] and \p firstSpecialRows[1] will refer to the
  * last two rows of \f$ M_1 \f$.
@@ -701,7 +700,7 @@ CMR_ERROR CMRthreeSumTruemperDecomposeConnecting(
  */
 
 CMR_EXPORT
-CMR_ERROR CMRthreeSumTruemperDecomposeFirst(
+CMR_ERROR CMRthreesumDecomposeFirst(
   CMR* cmr,                   /**< \ref CMR environment. */
   CMR_CHRMAT* matrix,         /**< Input matrix \f$ M \f$. */
   CMR_SEPA* sepa,             /**< 3-separation to decompose at. */
@@ -725,8 +724,7 @@ CMR_ERROR CMRthreeSumTruemperDecomposeFirst(
 );
 
 /**
- * \brief Decomposes \p matrix as a Truemper 3-sum according to the 3-separation \p sepa, computing the second
- *        component.
+ * \brief Decomposes \p matrix as a 3-sum according to the 3-separation \p sepa, computing the second component.
  *
  * The input \p matrix \f$ M \f$ must have a 3-separation that is given by \p sepa, i.e., it can be reordered to look
  * like \f$ M = \begin{bmatrix} A & \mathbb{O} \\ C & D \end{bmatrix} \f$, where \f$ \text{rank}(C) = 2 \f$.
@@ -757,9 +755,9 @@ CMR_ERROR CMRthreeSumTruemperDecomposeFirst(
  *
  * The value of \f$ \gamma \in \{-1,+1\} \f$, given via \p gamma. The row indices \f$ i,j \f$, given via \p specialRows,
  * and column indices \f$ k,\ell \f$, given via \p specialColumns, must index a rank-2 submatrix of \f$ C \f$. They
- * should be computed by \ref CMRthreeSumTruemperDecomposeConnecting.
+ * should be computed by \ref CMRthreesumDecomposeConnecting.
  *
- * This function computes \f$ M_2 \f$, while \f$ M_1 \f$ can be computed by \ref CMRthreeSumTruemperDecomposeFirst.
+ * This function computes \f$ M_2 \f$, while \f$ M_1 \f$ can be computed by \ref CMRthreesumDecomposeFirst.
  *
  * If \p secondSpecialRows is not \c NULL, then \p secondSpecialRows[0] will refer to the first (artificial) row and
  * \p secondSpecialRows[1] and \p secondSpecialRows[2] will refer to the two rows containing \f$ C_{i,\star} \f$ and
@@ -769,7 +767,7 @@ CMR_ERROR CMRthreeSumTruemperDecomposeFirst(
  */
 
 CMR_EXPORT
-CMR_ERROR CMRthreeSumTruemperDecomposeSecond(
+CMR_ERROR CMRthreesumDecomposeSecond(
   CMR* cmr,                     /**< \ref CMR environment. */
   CMR_CHRMAT* matrix,           /**< Input matrix \f$ M \f$. */
   CMR_SEPA* sepa,               /**< 3-separation to decompose at. */

@@ -8,10 +8,10 @@ extern "C" {
 #endif
 
 /**
- * \brief Carries out the search for the connecting submatrix for a Truemper 3-sum.
+ * \brief Carries out the search for the connecting submatrix for a 3-sum.
  *
- * See \ref CMRthreeSumTruemperDecomposeConnecting for the specification. This function carries out a breadth-first
- * search in the graphs of the top-left and/or bottom-right submatrices.
+ * See \ref CMRthreesumDecomposeConnecting for the specification. This function carries out a breadth-first search in
+ * the graphs of the top-left and/or bottom-right submatrices.
  *
  * At least one of \p topLeft and \p bottomRight must be \c true. If both are true then the implementation may detect a
  * submatrix with absolute determinant 2, which is also stored in \p *pviolator if \p pviolator is not \c NULL.
@@ -21,7 +21,7 @@ extern "C" {
  */
 
 CMR_EXPORT
-CMR_ERROR CMRthreeSumTruemperDecomposeSearch(
+CMR_ERROR CMRthreesumDecomposeSearch(
   CMR* cmr,               /**< \ref CMR environment. */
   CMR_CHRMAT* matrix,     /**< Input matrix \f$ M \f$. */
   CMR_CHRMAT* transpose,  /**< Transpose matrix \f$ M^{\textsf{T}} \f$. */

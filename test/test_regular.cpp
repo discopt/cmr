@@ -14,7 +14,7 @@
 #include <cmr/separation.h>
 #include <cmr/graphic.h>
 
-TEST(Regular, OneSum)
+TEST(Regular, Onesum)
 {
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
@@ -39,7 +39,7 @@ TEST(Regular, OneSum)
 
     CMR_CHRMAT* matrix = NULL;
     CMR_CHRMAT* matrices[2] = { K_3_3, K_3_3_dual };
-    ASSERT_CMR_CALL( CMRoneSumCompose(cmr, 2, matrices, &matrix) );
+    ASSERT_CMR_CALL( CMRonesumCompose(cmr, 2, matrices, &matrix) );
 
     bool isRegular;
     CMR_SEYMOUR_NODE* dec = NULL;
@@ -91,15 +91,15 @@ TEST(Regular, SeriesParallelTwoSeparation)
       " 0 0 1 1 1 "
     ) );
 
-    CMR_CHRMAT* twoSum = NULL;
+    CMR_CHRMAT* twosum = NULL;
     size_t specials[4] = { 1, SIZE_MAX, SIZE_MAX, 1 };
-    ASSERT_CMR_CALL( CMRtwoSumCompose(cmr, K_3_3, K_3_3_dual, &specials[0], &specials[1], &specials[2], &specials[3], 3,
-      &twoSum) );
+    ASSERT_CMR_CALL( CMRtwosumCompose(cmr, K_3_3, K_3_3_dual, &specials[0], &specials[1], &specials[2], &specials[3], 3,
+      &twosum) );
 
     size_t rowPermutations[] = { 4, 6, 5, 7, 0, 1, 2, 3 };
     CMR_CHRMAT* matrix = NULL;
-    ASSERT_CMR_CALL( CMRchrmatPermute(cmr, twoSum, rowPermutations, NULL, &matrix) );
-    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &twoSum) );
+    ASSERT_CMR_CALL( CMRchrmatPermute(cmr, twosum, rowPermutations, NULL, &matrix) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &twosum) );
 
     CMRchrmatPrintDense(cmr, K_3_3, stdout, '0', true);
     CMRchrmatPrintDense(cmr, K_3_3_dual, stdout, '0', true);
@@ -156,7 +156,7 @@ TEST(Regular, NestedMinorSearchTwoSeparation)
 
     CMR_CHRMAT* matrix = NULL;
     size_t specials[4] = { 1, SIZE_MAX, SIZE_MAX, 1 };
-    ASSERT_CMR_CALL( CMRtwoSumCompose(cmr, K_3_3, K_3_3_dual, &specials[0], &specials[1], &specials[2], &specials[3], 3,
+    ASSERT_CMR_CALL( CMRtwosumCompose(cmr, K_3_3, K_3_3_dual, &specials[0], &specials[1], &specials[2], &specials[3], 3,
       &matrix) );
 
 //     CMRchrmatPrintDense(cmr, K_3_3, stdout, '0', true);

@@ -980,7 +980,7 @@ CMR_ERROR CMRsepaCheckTernarySubmatrix(CMR* cmr, CMR_SEPA* sepa, CMR_CHRMAT* mat
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRoneSumCompose(CMR* cmr, size_t numMatrices, CMR_CHRMAT** matrices, CMR_CHRMAT** presult)
+CMR_ERROR CMRonesumCompose(CMR* cmr, size_t numMatrices, CMR_CHRMAT** matrices, CMR_CHRMAT** presult)
 {
   assert(cmr);
   assert(numMatrices > 0);
@@ -1030,7 +1030,7 @@ CMR_ERROR CMRoneSumCompose(CMR* cmr, size_t numMatrices, CMR_CHRMAT** matrices, 
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRtwoSumCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* second, size_t* firstSpecialRows,
+CMR_ERROR CMRtwosumCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* second, size_t* firstSpecialRows,
   size_t* firstSpecialColumns, size_t* secondSpecialRows, size_t* secondSpecialColumns, int8_t characteristic,
   CMR_CHRMAT** presult)
 {
@@ -1246,7 +1246,7 @@ cleanup:
   return error;
 }
 
-CMR_ERROR CMRtwoSumDecomposeFirst(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sepa, CMR_CHRMAT** pfirst,
+CMR_ERROR CMRtwosumDecomposeFirst(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sepa, CMR_CHRMAT** pfirst,
   size_t* firstRowsOrigin, size_t* firstColumnsOrigin, size_t* rowsToFirst, size_t* columnsToFirst,
   size_t* firstSpecialRows, size_t* firstSpecialColumns)
 {
@@ -1396,7 +1396,7 @@ CMR_ERROR CMRtwoSumDecomposeFirst(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sepa, 
 }
 
 
-CMR_ERROR CMRtwoSumDecomposeSecond(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sepa, CMR_CHRMAT** psecond,
+CMR_ERROR CMRtwosumDecomposeSecond(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sepa, CMR_CHRMAT** psecond,
   size_t* secondRowsOrigin, size_t* secondColumnsOrigin, size_t* rowsToSecond, size_t* columnsToSecond,
   size_t* secondSpecialRows, size_t* secondSpecialColumns)
 {
@@ -1572,7 +1572,7 @@ CMR_ERROR CMRtwoSumDecomposeSecond(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sepa,
 }
 
 
-CMR_ERROR CMRthreeSumSeymourCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* second, size_t* firstSpecialRows,
+CMR_ERROR CMRdeltasumCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* second, size_t* firstSpecialRows,
   size_t* firstSpecialColumns, size_t* secondSpecialRows, size_t* secondSpecialColumns, int8_t characteristic,
   CMR_CHRMAT ** presult)
 {
@@ -1581,7 +1581,7 @@ CMR_ERROR CMRthreeSumSeymourCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* sec
   assert(second);
   assert(presult);
 
-  CMRdbgMsg(0, "CMRthreeSumSeymourCompose for a %zux%zu and a %zux%zu matrix.\n", first->numRows, first->numColumns,
+  CMRdbgMsg(0, "CMRdeltasumCompose for a %zux%zu and a %zux%zu matrix.\n", first->numRows, first->numColumns,
     second->numRows, second->numColumns);
 
 #ifdef CMR_DEBUG_MATRICES
@@ -1946,7 +1946,7 @@ cleanup:
   return error;
 }
 
-CMR_ERROR CMRthreeSumSeymourDecomposeEpsilon(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT* transpose, CMR_SEPA* sepa,
+CMR_ERROR CMRdeltasumDecomposeEpsilon(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT* transpose, CMR_SEPA* sepa,
   char* pepsilon)
 {
   assert(cmr);
@@ -2061,7 +2061,7 @@ CMR_ERROR CMRthreeSumSeymourDecomposeEpsilon(CMR* cmr, CMR_CHRMAT* matrix, CMR_C
 }
 
 
-CMR_ERROR CMRthreeSumSeymourDecomposeFirst(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sepa, char epsilon,
+CMR_ERROR CMRdeltasumDecomposeFirst(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sepa, char epsilon,
   CMR_CHRMAT** pfirst, size_t* firstRowsOrigin, size_t* firstColumnsOrigin, size_t* rowsToFirst, size_t* columnsToFirst,
   size_t* firstSpecialRows, size_t* firstSpecialColumns)
 {
@@ -2071,7 +2071,7 @@ CMR_ERROR CMRthreeSumSeymourDecomposeFirst(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEP
   assert(epsilon == -1 || epsilon == +1);
   assert(pfirst);
 
-  CMRdbgMsg(0, "Computing first part of Seymour 3-sum decomposition of %zux%zu-matrix.\n", matrix->numRows,
+  CMRdbgMsg(0, "Computing first part of Delta-sum decomposition of %zux%zu-matrix.\n", matrix->numRows,
     matrix->numColumns);
 
   /* Allocate missing arrays on stack. */
@@ -2220,7 +2220,7 @@ CMR_ERROR CMRthreeSumSeymourDecomposeFirst(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEP
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRthreeSumSeymourDecomposeSecond(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sepa, char epsilon,
+CMR_ERROR CMRdeltasumDecomposeSecond(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sepa, char epsilon,
   CMR_CHRMAT** psecond, size_t* secondRowsOrigin, size_t* secondColumnsOrigin, size_t* rowsToSecond,
   size_t* columnsToSecond, size_t* secondSpecialRows, size_t* secondSpecialColumns)
 {
@@ -2230,7 +2230,7 @@ CMR_ERROR CMRthreeSumSeymourDecomposeSecond(CMR* cmr, CMR_CHRMAT* matrix, CMR_SE
   assert(epsilon == -1 || epsilon == +1);
   assert(psecond);
 
-  CMRdbgMsg(0, "Computing second part of Seymour 3-sum decomposition of %zux%zu-matrix.\n", matrix->numRows,
+  CMRdbgMsg(0, "Computing second part of Delta-sum decomposition of %zux%zu-matrix.\n", matrix->numRows,
     matrix->numColumns);
 
   /* Allocate missing arrays on stack. */
@@ -2396,7 +2396,7 @@ CMR_ERROR CMRthreeSumSeymourDecomposeSecond(CMR* cmr, CMR_CHRMAT* matrix, CMR_SE
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRthreeSumTruemperCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* second, size_t* firstSpecialRows,
+CMR_ERROR CMRthreesumCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* second, size_t* firstSpecialRows,
   size_t* firstSpecialColumns, size_t* secondSpecialRows, size_t* secondSpecialColumns, int8_t characteristic,
   CMR_CHRMAT** presult)
 {
@@ -2405,7 +2405,7 @@ CMR_ERROR CMRthreeSumTruemperCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* se
   assert(second);
   assert(presult);
 
-  CMRdbgMsg(0, "CMRthreeSumTruemperCompose for a %zux%zu and a %zux%zu matrix.\n", first->numRows, first->numColumns,
+  CMRdbgMsg(0, "CMRthreesumCompose for a %zux%zu and a %zux%zu matrix.\n", first->numRows, first->numColumns,
     second->numRows, second->numColumns);
 
 #ifdef CMR_DEBUG_MATRICES
@@ -2794,7 +2794,7 @@ cleanup:
 }
 
 
-CMR_ERROR CMRthreeSumTruemperDecomposeSearch(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT* transpose, CMR_SEPA* sepa,
+CMR_ERROR CMRthreesumDecomposeSearch(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT* transpose, CMR_SEPA* sepa,
   bool topLeft, bool bottomRight, CMR_SUBMAT** pviolator, size_t* specialRows, size_t* specialColumns, char* pgamma,
   char* pbeta
 )
@@ -2813,7 +2813,7 @@ CMR_ERROR CMRthreeSumTruemperDecomposeSearch(CMR* cmr, CMR_CHRMAT* matrix, CMR_C
   if (!specialColumns)
     specialColumns = localSpecialColumns;
 
-  CMRdbgMsg(0, "CMRthreeSumTruemperDecomposeSearch for %zux%zu matrix.\n", matrix->numRows, matrix->numColumns);
+  CMRdbgMsg(0, "CMRthreesumDecomposeSearch for %zux%zu matrix.\n", matrix->numRows, matrix->numColumns);
 
   /* Search for non-unit matrix in C. */
 
@@ -3222,7 +3222,7 @@ cleanup:
   return error;
 }
 
-CMR_ERROR CMRthreeSumTruemperDecomposeConnecting(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT* transpose, CMR_SEPA* sepa,
+CMR_ERROR CMRthreesumDecomposeConnecting(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT* transpose, CMR_SEPA* sepa,
   size_t* specialRows, size_t* specialColumns, char* pgamma, char* pbeta)
 {
   assert(cmr);
@@ -3230,13 +3230,13 @@ CMR_ERROR CMRthreeSumTruemperDecomposeConnecting(CMR* cmr, CMR_CHRMAT* matrix, C
   assert(transpose);
   assert(sepa);
 
-  CMR_CALL(CMRthreeSumTruemperDecomposeSearch(cmr, matrix, transpose, sepa, true, false, NULL, specialRows,
+  CMR_CALL(CMRthreesumDecomposeSearch(cmr, matrix, transpose, sepa, true, false, NULL, specialRows,
     specialColumns, pgamma, pbeta));
 
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRthreeSumTruemperDecomposeFirst(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sepa, size_t* specialRows,
+CMR_ERROR CMRthreesumDecomposeFirst(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sepa, size_t* specialRows,
   size_t* specialColumns, char beta, CMR_CHRMAT** pfirst, size_t* firstRowsOrigin, size_t* firstColumnsOrigin,
   size_t* rowsToFirst, size_t* columnsToFirst, size_t* firstSpecialRows, size_t* firstSpecialColumns)
 {
@@ -3364,7 +3364,7 @@ CMR_ERROR CMRthreeSumTruemperDecomposeFirst(CMR* cmr, CMR_CHRMAT* matrix, CMR_SE
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRthreeSumTruemperDecomposeSecond(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sepa, size_t* specialRows,
+CMR_ERROR CMRthreesumDecomposeSecond(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sepa, size_t* specialRows,
   size_t* specialColumns, char gamma, CMR_CHRMAT ** psecond, size_t* secondRowsOrigin, size_t* secondColumnsOrigin,
   size_t* rowsToSecond, size_t* columnsToSecond, size_t* secondSpecialRows, size_t* secondSpecialColumns)
 {
