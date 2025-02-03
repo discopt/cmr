@@ -105,6 +105,29 @@ Moreover, it has (exactly) one of the following **types**:
    Then \f$ M \f$ is the \f$ 3 \f$-sum of \f$ M_1 \f$ and \f$ M_2 \f$.
    Note that any such composition preserves [total unimodularity](\ref tu) and [binary regularity](\ref binary_regular),
    while decomposition preserves both properties for the right choice of \f$ \alpha, \beta, \gamma, \delta \f$.
+ - A [Y-sum node](\ref CMR_SEYMOUR_NODE_TYPE_YSUM) indicates that \f$ M \f$ is (up to row and column permutations) of the form
+   \f[
+      M = \begin{pmatrix} A & B \\ C & D \end{pmatrix},
+   \f]
+   where \f$ \mathop{rank}(B) = \mathop{rank}(C) = 1 \f$ holds.
+   We define
+   \f[
+     M_1 := \begin{pmatrix}
+              A & a \\
+              c^{\textsf{T}} & 0 \\
+              c^{\textsf{T}} & \varepsilon
+            \end{pmatrix}
+     \qquad \text{and} \qquad
+     M_2 := \begin{pmatrix}
+              \varepsilon & b^{\textsf{T}} \\
+              0 & b^{\textsf{T}} \\
+              d & D
+            \end{pmatrix},
+   \f]
+   where \f$ \varepsilon \in \{-1, +1\} \f$ and where \f$ a b^{\textsf{T}} = B \f$ and \f$ d c^{\textsf{T}} = C \f$ hold.
+   Then \f$ M \f$ is the \f$ \Delta \f$-sum of \f$ M_1 \f$ and \f$ M_2 \f$.
+   Note that any such composition preserves [total unimodularity](\ref tu) and [binary regularity](\ref binary_regular),
+   while decomposition preserves both properties for the right choice of \f$ \varepsilon \f$.
  - A [series-parallel node](\ref CMR_SEYMOUR_NODE_TYPE_SERIES_PARALLEL) indicates that \f$ M \f$ arises from a smaller matrix \f$ M' \f$ by successively adding zero rows/columns, unit rows/columns or duplicates of existing rows/columns (potentially scaled with \f$ -1 \f$).
    Note that such **series-parallel reductions** preserve [total unimodularity](\ref tu) and [binary regularity](\ref binary_regular).
    It has one child node that corresponds to \f$ M' \f$.

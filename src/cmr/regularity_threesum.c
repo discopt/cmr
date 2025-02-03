@@ -271,6 +271,114 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
       CMR_CALL( CMRfreeStackArray(cmr, &columnsToChild) );
       CMR_CALL( CMRfreeStackArray(cmr, &rowsToChild) );
     }
+    else if (distributedStrategy == CMR_SEYMOUR_DECOMPOSE_FLAG_DISTRIBUTED_YSUM)
+    {
+      CMRdbgMsg(10, "Carrying out Y-sum for a distributed-rank 3-separation.\n");
+
+      node->type = CMR_SEYMOUR_NODE_TYPE_YSUM;
+      CMR_CALL( CMRseymourSetNumChildren(cmr, node, 2) );
+
+      char epsilon = 0;
+      if (node->isTernary)
+        CMR_CALL( CMRysumDecomposeEpsilon(cmr, node->matrix, node->transpose, separation, &epsilon) );
+      else
+        epsilon = 1;
+
+      /* Temporary data. */
+      size_t* rowsToChild = NULL;
+      size_t* columnsToChild = NULL;
+      size_t* childRowsToParent = NULL;
+      size_t* childColumnsToParent = NULL;
+      CMR_CALL( CMRallocStackArray(cmr, &rowsToChild, node->matrix->numRows) );
+      CMR_CALL( CMRallocStackArray(cmr, &columnsToChild, node->matrix->numColumns) );
+      CMR_CALL( CMRallocStackArray(cmr, &childRowsToParent, node->matrix->numRows) );
+      CMR_CALL( CMRallocStackArray(cmr, &childColumnsToParent, node->matrix->numColumns) );
+
+      /* First child. */
+      CMR_CHRMAT* first = NULL;
+      CMR_CALL( CMRallocBlockArray(cmr, &node->childSpecialRows[0], 2) );
+      CMR_CALL( CMRallocBlockArray(cmr, &node->childSpecialColumns[0], 1) );
+      CMR_CALL( CMRysumDecomposeFirst(cmr, node->matrix, separation, epsilon, &first, childRowsToParent,
+        childColumnsToParent, rowsToChild, columnsToChild, node->childSpecialRows[0], node->childSpecialColumns[0]) );
+
+#if defined(CMR_DEBUG)
+      CMRdbgMsg(12, "First child matrix:\n");
+      CMRchrmatPrintDense(cmr, first, stdout, '0', false);
+#endif /* CMR_DEBUG */
+
+      /* Create first decomposition node. */
+      CMR_CALL( CMRseymourCreate(cmr, &node->children[0], node->isTernary, first->numRows, first->numColumns) );
+      node->children[0]->matrix = first;
+
+      /* Mapping from first child rows to parent elements. */
+      CMR_CALL( CMRallocBlockArray(cmr, &node->childRowsToParent[0], first->numRows) );
+      for (size_t row = 0; row < first->numRows; ++row)
+        node->childRowsToParent[0][row] = CMRrowToElement(childRowsToParent[row]);
+
+      /* Mapping from first child columns to parent elements. */
+      CMR_CALL( CMRallocBlockArray(cmr, &node->childColumnsToParent[0], first->numColumns) );
+      for (size_t column = 0; column < first->numColumns; ++column)
+        node->childColumnsToParent[0][column] = CMRcolumnToElement(childColumnsToParent[column]);
+
+      /* Mapping from parent rows to first child rows. */
+      for (size_t row = 0; row < node->matrix->numRows; ++row)
+      {
+        if ((separation->rowsFlags[row] & CMR_SEPA_MASK_CHILD) == CMR_SEPA_FIRST)
+          node->rowsToChild[row] = rowsToChild[row];
+      }
+
+      /* Mapping from parent columns to first child columns. */
+      for (size_t column = 0; column < node->matrix->numColumns; ++column)
+      {
+        if ((separation->columnsFlags[column] & CMR_SEPA_MASK_CHILD) == CMR_SEPA_FIRST)
+          node->columnsToChild[column] = columnsToChild[column];
+      }
+
+      /* Second child. */
+      CMR_CHRMAT* second = NULL;
+      CMR_CALL( CMRallocBlockArray(cmr, &node->childSpecialRows[1], 2) );
+      CMR_CALL( CMRallocBlockArray(cmr, &node->childSpecialColumns[1], 1) );
+      CMR_CALL( CMRysumDecomposeSecond(cmr, node->matrix, separation, epsilon, &second, childRowsToParent,
+        childColumnsToParent, rowsToChild, columnsToChild, node->childSpecialRows[1], node->childSpecialColumns[1]) );
+
+#if defined(CMR_DEBUG)
+      CMRdbgMsg(12, "Second child matrix:\n");
+      CMRchrmatPrintDense(cmr, second, stdout, '0', false);
+#endif /* CMR_DEBUG */
+
+      /* Create second decomposition node. */
+      CMR_CALL( CMRseymourCreate(cmr, &node->children[1], node->isTernary, second->numRows, second->numColumns) );
+      node->children[1]->matrix = second;
+
+      /* Mapping from second child rows to parent elements. */
+      CMR_CALL( CMRallocBlockArray(cmr, &node->childRowsToParent[1], second->numRows) );
+      for (size_t row = 0; row < second->numRows; ++row)
+        node->childRowsToParent[1][row] = CMRrowToElement(childRowsToParent[row]);
+
+      /* Mapping from second child columns to parent elements. */
+      CMR_CALL( CMRallocBlockArray(cmr, &node->childColumnsToParent[1], second->numColumns) );
+      for (size_t column = 0; column < second->numColumns; ++column)
+        node->childColumnsToParent[1][column] = CMRcolumnToElement(childColumnsToParent[column]);
+
+      /* Mapping from parent rows to second child rows. */
+      for (size_t row = 0; row < node->matrix->numRows; ++row)
+      {
+        if ((separation->rowsFlags[row] & CMR_SEPA_MASK_CHILD) == CMR_SEPA_SECOND)
+          node->rowsToChild[row] = rowsToChild[row];
+      }
+
+      /* Mapping from parent columns to second child columns. */
+      for (size_t column = 0; column < node->matrix->numColumns; ++column)
+      {
+        if ((separation->columnsFlags[column] & CMR_SEPA_MASK_CHILD) == CMR_SEPA_SECOND)
+          node->columnsToChild[column] = columnsToChild[column];
+      }
+
+      CMR_CALL( CMRfreeStackArray(cmr, &childColumnsToParent) );
+      CMR_CALL( CMRfreeStackArray(cmr, &childRowsToParent) );
+      CMR_CALL( CMRfreeStackArray(cmr, &columnsToChild) );
+      CMR_CALL( CMRfreeStackArray(cmr, &rowsToChild) );
+    }
     else
     {
       assert(0 == "Invalid sum strategy for distributed ranks!");

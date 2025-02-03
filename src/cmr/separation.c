@@ -45,6 +45,21 @@ CMR_ERROR CMRsepaFree(CMR* cmr, CMR_SEPA** psepa)
   return CMR_OKAY;
 }
 
+CMR_ERROR CMRsepaTranspose(CMR* cmr, CMR_SEPA* sepa, CMR_SEPA** ptransposed)
+{
+  assert(cmr);
+
+  CMR_CALL( CMRsepaCreate(cmr, sepa->numColumns, sepa->numRows, ptransposed) );
+  CMR_SEPA* transposed = *ptransposed;
+
+  for (size_t row = 0; row < transposed->numRows; ++row)
+    transposed->rowsFlags[row] = sepa->columnsFlags[row];
+  for (size_t column = 0; column < transposed->numColumns; ++column)
+    transposed->columnsFlags[column] = sepa->rowsFlags[column];
+
+  return CMR_OKAY;
+}
+
 CMR_ERROR CMRsepaComputeSizes(CMR_SEPA* sepa, size_t* pnumRowsTopLeft, size_t* pnumColumnsTopLeft,
   size_t* pnumRowsBottomRight, size_t* pnumColumnsBottomRight)
 {
@@ -2392,6 +2407,95 @@ CMR_ERROR CMRdeltasumDecomposeSecond(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sep
     CMR_CALL( CMRfreeStackArray(cmr, &secondColumnsOrigin) );
   if (!hasSecondRowsOrigin)
     CMR_CALL( CMRfreeStackArray(cmr, &secondRowsOrigin) );
+
+  return CMR_OKAY;
+}
+
+CMR_ERROR CMRysumCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* second, size_t* firstSpecialRows,
+  size_t* firstSpecialColumns, size_t* secondSpecialRows, size_t* secondSpecialColumns, int8_t characteristic,
+  CMR_CHRMAT** presult)
+{
+  CMR_CHRMAT* transpose_first = NULL;
+  CMR_CALL( CMRchrmatTranspose(cmr, first, &transpose_first) );
+  CMR_CHRMAT* transpose_second = NULL;
+  CMR_CALL( CMRchrmatTranspose(cmr, second, &transpose_second) );
+
+  CMR_CHRMAT* transpose_result = NULL;
+  CMR_CALL( CMRdeltasumCompose(cmr, transpose_first, transpose_second, firstSpecialColumns, firstSpecialRows,
+    secondSpecialColumns, secondSpecialRows, characteristic, &transpose_result) );
+  CMR_CALL( CMRchrmatTranspose(cmr, transpose_result, presult) );
+
+  CMR_CALL( CMRchrmatFree(cmr, &transpose_result) );
+  CMR_CALL( CMRchrmatFree(cmr, &transpose_first) );
+  CMR_CALL( CMRchrmatFree(cmr, &transpose_second) );
+
+  return CMR_OKAY;
+}
+
+CMR_ERROR CMRysumDecomposeEpsilon(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT* transpose, CMR_SEPA* sepa, char* pepsilon)
+{
+  assert(cmr);
+  assert(matrix);
+  assert(transpose);
+  assert(sepa);
+  assert(pepsilon);
+
+  CMR_SEPA* transpose_sepa = NULL;
+  CMR_CALL( CMRsepaTranspose(cmr, sepa, &transpose_sepa) );
+  CMR_CALL( CMRdeltasumDecomposeEpsilon(cmr, transpose, matrix, transpose_sepa, pepsilon) );
+  CMR_CALL( CMRsepaFree(cmr, &transpose_sepa) );
+
+  return CMR_OKAY;
+}
+
+CMR_ERROR CMRysumDecomposeFirst(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sepa, char epsilon, CMR_CHRMAT** pfirst,
+  size_t* firstRowsOrigin, size_t* firstColumnsOrigin, size_t* rowsToFirst, size_t* columnsToFirst,
+  size_t* firstSpecialRows, size_t* firstSpecialColumns)
+{
+  assert(cmr);
+  assert(matrix);
+  assert(sepa);
+  assert(epsilon == 1 || epsilon == -1);
+
+  CMR_CHRMAT* transpose_matrix = NULL;
+  CMR_CALL( CMRchrmatTranspose(cmr, matrix, &transpose_matrix) );
+  CMR_CHRMAT* transpose_first = NULL;
+  CMR_SEPA* transpose_sepa = NULL;
+  CMR_CALL( CMRsepaTranspose(cmr, sepa, &transpose_sepa) );
+
+  CMR_CALL( CMRdeltasumDecomposeFirst(cmr, transpose_matrix, transpose_sepa, epsilon, &transpose_first,
+    firstColumnsOrigin, firstRowsOrigin, columnsToFirst, rowsToFirst, firstSpecialColumns, firstSpecialRows) );
+
+  CMR_CALL( CMRchrmatTranspose(cmr, transpose_first, pfirst) );
+  CMR_CALL( CMRsepaFree(cmr, &transpose_sepa) );
+  CMR_CALL( CMRchrmatFree(cmr, &transpose_first) );
+  CMR_CALL( CMRchrmatFree(cmr, &transpose_matrix) );
+
+  return CMR_OKAY;
+}
+
+CMR_ERROR CMRysumDecomposeSecond(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sepa, char epsilon, CMR_CHRMAT** psecond,
+  size_t* secondRowsOrigin, size_t* secondColumnsOrigin, size_t* rowsToSecond, size_t* columnsToSecond,
+  size_t* secondSpecialRows, size_t* secondSpecialColumns)
+{
+  assert(cmr);
+  assert(matrix);
+  assert(sepa);
+  assert(epsilon == 1 || epsilon == -1);
+
+  CMR_CHRMAT* transpose_matrix = NULL;
+  CMR_CALL( CMRchrmatTranspose(cmr, matrix, &transpose_matrix) );
+  CMR_CHRMAT* transpose_second = NULL;
+  CMR_SEPA* transpose_sepa = NULL;
+  CMR_CALL( CMRsepaTranspose(cmr, sepa, &transpose_sepa) );
+
+  CMR_CALL( CMRdeltasumDecomposeSecond(cmr, transpose_matrix, transpose_sepa, epsilon, &transpose_second,
+    secondColumnsOrigin, secondRowsOrigin, columnsToSecond, rowsToSecond, secondSpecialColumns, secondSpecialRows) );
+
+  CMR_CALL( CMRchrmatTranspose(cmr, transpose_second, psecond) );
+  CMR_CALL( CMRsepaFree(cmr, &transpose_sepa) );
+  CMR_CALL( CMRchrmatFree(cmr, &transpose_second) );
+  CMR_CALL( CMRchrmatFree(cmr, &transpose_matrix) );
 
   return CMR_OKAY;
 }
