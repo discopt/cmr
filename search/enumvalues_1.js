@@ -38,7 +38,7 @@ var searchData=
   ['cmr_5fseymour_5fdecompose_5fflag_5fdistributed_5fdeltasum_35',['CMR_SEYMOUR_DECOMPOSE_FLAG_DISTRIBUTED_DELTASUM',['../group__Seymour.html#gga22f9741b925d855c7f7359444b7e95e6a8de03a2a53ac8eedc984d265c5252b72',1,'seymour.h']]],
   ['cmr_5fseymour_5fdecompose_5fflag_5fdistributed_5fmask_36',['CMR_SEYMOUR_DECOMPOSE_FLAG_DISTRIBUTED_MASK',['../group__Seymour.html#gga22f9741b925d855c7f7359444b7e95e6a912466654f8c6cbb1e2c9ebb5085697c',1,'seymour.h']]],
   ['cmr_5fseymour_5fdecompose_5fflag_5fdistributed_5fpivot_37',['CMR_SEYMOUR_DECOMPOSE_FLAG_DISTRIBUTED_PIVOT',['../group__Seymour.html#gga22f9741b925d855c7f7359444b7e95e6a5cafb425a726dd8257f3e3322fcdb8c0',1,'seymour.h']]],
-  ['cmr_5fseymour_5fdecompose_5fflag_5fpivotless_38',['CMR_SEYMOUR_DECOMPOSE_FLAG_PIVOTLESS',['../group__Seymour.html#gga22f9741b925d855c7f7359444b7e95e6acf4a8e8533e5ceed32c644b8d75e3cf5',1,'seymour.h']]],
+  ['cmr_5fseymour_5fdecompose_5fflag_5fdistributed_5fysum_38',['CMR_SEYMOUR_DECOMPOSE_FLAG_DISTRIBUTED_YSUM',['../group__Seymour.html#gga22f9741b925d855c7f7359444b7e95e6a1d58c2aaa4ab9c65fccf0439eb383db6',1,'seymour.h']]],
   ['cmr_5fseymour_5fdecompose_5fflag_5fseymour_39',['CMR_SEYMOUR_DECOMPOSE_FLAG_SEYMOUR',['../group__Seymour.html#gga22f9741b925d855c7f7359444b7e95e6ad355f930c3ff8479e9062b746c9b15df',1,'seymour.h']]],
   ['cmr_5fseymour_5fdecompose_5fflag_5ftruemper_40',['CMR_SEYMOUR_DECOMPOSE_FLAG_TRUEMPER',['../group__Seymour.html#gga22f9741b925d855c7f7359444b7e95e6a57537633130d12d4081e62b435bdebab',1,'seymour.h']]],
   ['cmr_5fseymour_5fnode_5ftype_5fcograph_41',['CMR_SEYMOUR_NODE_TYPE_COGRAPH',['../group__Seymour.html#ggaa9a8578d9fd369bf6fe1ca73dba0f14bae77b49e1a87c3dd591eba442cc254d0e',1,'seymour.h']]],
@@ -53,8 +53,9 @@ var searchData=
   ['cmr_5fseymour_5fnode_5ftype_5fthreesum_50',['CMR_SEYMOUR_NODE_TYPE_THREESUM',['../group__Seymour.html#ggaa9a8578d9fd369bf6fe1ca73dba0f14bacbf43b23051ca04f82540c1e1ac642e3',1,'seymour.h']]],
   ['cmr_5fseymour_5fnode_5ftype_5ftwosum_51',['CMR_SEYMOUR_NODE_TYPE_TWOSUM',['../group__Seymour.html#ggaa9a8578d9fd369bf6fe1ca73dba0f14bad7cbe9e1df24e21affa99ddf94257df4',1,'seymour.h']]],
   ['cmr_5fseymour_5fnode_5ftype_5funknown_52',['CMR_SEYMOUR_NODE_TYPE_UNKNOWN',['../group__Seymour.html#ggaa9a8578d9fd369bf6fe1ca73dba0f14ba139e2d8f5e83ffb706446e868c9fe70f',1,'seymour.h']]],
-  ['cmr_5ftu_5falgorithm_5fdecomposition_53',['CMR_TU_ALGORITHM_DECOMPOSITION',['../tu_8h.html#a699a1093f03178ea66b72cb38443f700af9bbe5517a2fb244c83a45e702e9f15e',1,'tu.h']]],
-  ['cmr_5ftu_5falgorithm_5feulerian_54',['CMR_TU_ALGORITHM_EULERIAN',['../tu_8h.html#a699a1093f03178ea66b72cb38443f700a3b0fbec61058325fedc3487b8ebf2871',1,'tu.h']]],
-  ['cmr_5ftu_5falgorithm_5fpartition_55',['CMR_TU_ALGORITHM_PARTITION',['../tu_8h.html#a699a1093f03178ea66b72cb38443f700a033e747bee171bc43440106442cd1ba3',1,'tu.h']]],
-  ['completed_56',['completed',['../camion_8c.html#a8c18c29838f9a0be38b68ad81f79c7b1a3549811efddf16048f4b8f6a3b960b41',1,'COMPLETED:&#160;camion.c'],['../graphic_8c.html#a0b43147a4952faed75bf16e0f483ca0aa3549811efddf16048f4b8f6a3b960b41',1,'COMPLETED:&#160;graphic.c'],['../network_8c.html#a0b43147a4952faed75bf16e0f483ca0aa3549811efddf16048f4b8f6a3b960b41',1,'COMPLETED:&#160;network.c']]]
+  ['cmr_5fseymour_5fnode_5ftype_5fysum_53',['CMR_SEYMOUR_NODE_TYPE_YSUM',['../group__Seymour.html#ggaa9a8578d9fd369bf6fe1ca73dba0f14baad5d7e7574753e8bdf7db6ffecb00a45',1,'seymour.h']]],
+  ['cmr_5ftu_5falgorithm_5fdecomposition_54',['CMR_TU_ALGORITHM_DECOMPOSITION',['../tu_8h.html#a699a1093f03178ea66b72cb38443f700af9bbe5517a2fb244c83a45e702e9f15e',1,'tu.h']]],
+  ['cmr_5ftu_5falgorithm_5feulerian_55',['CMR_TU_ALGORITHM_EULERIAN',['../tu_8h.html#a699a1093f03178ea66b72cb38443f700a3b0fbec61058325fedc3487b8ebf2871',1,'tu.h']]],
+  ['cmr_5ftu_5falgorithm_5fpartition_56',['CMR_TU_ALGORITHM_PARTITION',['../tu_8h.html#a699a1093f03178ea66b72cb38443f700a033e747bee171bc43440106442cd1ba3',1,'tu.h']]],
+  ['completed_57',['completed',['../camion_8c.html#a8c18c29838f9a0be38b68ad81f79c7b1a3549811efddf16048f4b8f6a3b960b41',1,'COMPLETED:&#160;camion.c'],['../graphic_8c.html#a0b43147a4952faed75bf16e0f483ca0aa3549811efddf16048f4b8f6a3b960b41',1,'COMPLETED:&#160;graphic.c'],['../network_8c.html#a0b43147a4952faed75bf16e0f483ca0aa3549811efddf16048f4b8f6a3b960b41',1,'COMPLETED:&#160;network.c']]]
 ];

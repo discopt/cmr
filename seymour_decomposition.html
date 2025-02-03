@@ -162,6 +162,27 @@ $(function() {
    \]
 </p>
  where \( \mathop{rank}(C_{\{i,j\},\{k,\ell\}}) = 2 \) and where \( \alpha, \beta, \gamma, \delta \in \{-1,+1\} \) are chosen such that \( N \) is totally unimodular. Then \( M \) is the \( 3 \)-sum of \( M_1 \) and \( M_2 \). Note that any such composition preserves <a class="el" href="tu.html">total unimodularity</a> and <a class="el" href="binary_regular.html">binary regularity</a>, while decomposition preserves both properties for the right choice of \( \alpha, \beta, \gamma, \delta \).</li>
+<li>A <a class="el" href="group__Seymour.html#ggaa9a8578d9fd369bf6fe1ca73dba0f14baad5d7e7574753e8bdf7db6ffecb00a45">Y-sum node</a> indicates that \( M \) is (up to row and column permutations) of the form  <p class="formulaDsp">
+\[
+      M = \begin{pmatrix} A &amp; B \\ C &amp; D \end{pmatrix},
+   \]
+</p>
+ where \( \mathop{rank}(B) = \mathop{rank}(C) = 1 \) holds. We define  <p class="formulaDsp">
+\[
+     M_1 := \begin{pmatrix}
+              A &amp; a \\
+              c^{\textsf{T}} &amp; 0 \\
+              c^{\textsf{T}} &amp; \varepsilon
+            \end{pmatrix}
+     \qquad \text{and} \qquad
+     M_2 := \begin{pmatrix}
+              \varepsilon &amp; b^{\textsf{T}} \\
+              0 &amp; b^{\textsf{T}} \\
+              d &amp; D
+            \end{pmatrix},
+   \]
+</p>
+ where \( \varepsilon \in \{-1, +1\} \) and where \( a b^{\textsf{T}} = B \) and \( d c^{\textsf{T}} = C \) hold. Then \( M \) is the \( \Delta \)-sum of \( M_1 \) and \( M_2 \). Note that any such composition preserves <a class="el" href="tu.html">total unimodularity</a> and <a class="el" href="binary_regular.html">binary regularity</a>, while decomposition preserves both properties for the right choice of \( \varepsilon \).</li>
 <li>A <a class="el" href="group__Seymour.html#ggaa9a8578d9fd369bf6fe1ca73dba0f14ba20b88c972f85e1b679721c6c8c1c61e8">series-parallel node</a> indicates that \( M \) arises from a smaller matrix \( M&#39; \) by successively adding zero rows/columns, unit rows/columns or duplicates of existing rows/columns (potentially scaled with \( -1 \)). Note that such <b>series-parallel reductions</b> preserve <a class="el" href="tu.html">total unimodularity</a> and <a class="el" href="binary_regular.html">binary regularity</a>. It has one child node that corresponds to \( M&#39; \).</li>
 <li>A <a class="el" href="group__Seymour.html#ggaa9a8578d9fd369bf6fe1ca73dba0f14ba67182a34ce91ea320993a84824863583">pivot node</a> indicates a sequence of pivot operations on entries whose rows and columns are pairwise distinct, which turn matrix \( M \) into another matrix \( M&#39; \) that represent the same matroid. The unique child must either be a leaf node, a <a class="el" href="group__Seymour.html#ggaa9a8578d9fd369bf6fe1ca73dba0f14bab6bbc1177a67e30a6c3dd9dda033eb5e">Delta-sum</a> or a <a class="el" href="group__Seymour.html#ggaa9a8578d9fd369bf6fe1ca73dba0f14bacbf43b23051ca04f82540c1e1ac642e3">3-sum</a> The pivots are carried out over the corresponding field \( \mathbb{F} \).</li>
 <li>An <a class="el" href="group__Seymour.html#ggaa9a8578d9fd369bf6fe1ca73dba0f14bab7016d578c9f5092f06623be1ee6c8cd">irregular node</a> indicates a matrix \( M \) that is irregular. It is a leaf.</li>

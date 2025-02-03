@@ -112,6 +112,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a55151bb2f6124b7a413e33e557eb8d9b" id="r_a55151bb2f6124b7a413e33e557eb8d9b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="separation_8c.html#a55151bb2f6124b7a413e33e557eb8d9b">CMRsepaFree</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> **psepa)</td></tr>
 <tr class="memdesc:a55151bb2f6124b7a413e33e557eb8d9b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Frees a separation.  <br /></td></tr>
 <tr class="separator:a55151bb2f6124b7a413e33e557eb8d9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b4f2f798128789f295380ff8c199809" id="r_a0b4f2f798128789f295380ff8c199809"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="separation_8c.html#a0b4f2f798128789f295380ff8c199809">CMRsepaTranspose</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *sepa, <a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> **ptransposed)</td></tr>
+<tr class="memdesc:a0b4f2f798128789f295380ff8c199809"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transposes a given separation.  <br /></td></tr>
+<tr class="separator:a0b4f2f798128789f295380ff8c199809"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1877d526e7cefb577509a9a81ad74773" id="r_a1877d526e7cefb577509a9a81ad74773"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="separation_8c.html#a1877d526e7cefb577509a9a81ad74773">CMRsepaComputeSizes</a> (<a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *sepa, size_t *pnumRowsTopLeft, size_t *pnumColumnsTopLeft, size_t *pnumRowsBottomRight, size_t *pnumColumnsBottomRight)</td></tr>
 <tr class="memdesc:a1877d526e7cefb577509a9a81ad74773"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the sizes of the top-left and bottom-right parts.  <br /></td></tr>
 <tr class="separator:a1877d526e7cefb577509a9a81ad74773"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -166,6 +169,18 @@ Functions</h2></td></tr>
 <tr class="memitem:a3e886b1cbf0051a7a969426ae3af74d4" id="r_a3e886b1cbf0051a7a969426ae3af74d4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="separation_8c.html#a3e886b1cbf0051a7a969426ae3af74d4">CMRdeltasumDecomposeSecond</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, <a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *sepa, char epsilon, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> **psecond, size_t *secondRowsOrigin, size_t *secondColumnsOrigin, size_t *rowsToSecond, size_t *columnsToSecond, size_t *secondSpecialRows, size_t *secondSpecialColumns)</td></tr>
 <tr class="memdesc:a3e886b1cbf0051a7a969426ae3af74d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decomposes <code>matrix</code> as a \( \Delta \)-sum according to the 3-separation <code>sepa</code>, computing the second component.  <br /></td></tr>
 <tr class="separator:a3e886b1cbf0051a7a969426ae3af74d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d9616259736fbb280a7c8225cc066d6" id="r_a1d9616259736fbb280a7c8225cc066d6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="separation_8c.html#a1d9616259736fbb280a7c8225cc066d6">CMRysumCompose</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *first, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *second, size_t *firstSpecialRows, size_t *firstSpecialColumns, size_t *secondSpecialRows, size_t *secondSpecialColumns, int8_t characteristic, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> **presult)</td></tr>
+<tr class="memdesc:a1d9616259736fbb280a7c8225cc066d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs the Y-sum of the two matrices <code>first</code> and <code>second</code>.  <br /></td></tr>
+<tr class="separator:a1d9616259736fbb280a7c8225cc066d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d422f0799a21ea90bbea68646471651" id="r_a8d422f0799a21ea90bbea68646471651"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="separation_8c.html#a8d422f0799a21ea90bbea68646471651">CMRysumDecomposeEpsilon</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *transpose, <a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *sepa, char *pepsilon)</td></tr>
+<tr class="memdesc:a8d422f0799a21ea90bbea68646471651"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decomposes <code>matrix</code> as a Y-sum according to the 3-separation <code>sepa</code>, computing \( \varepsilon \).  <br /></td></tr>
+<tr class="separator:a8d422f0799a21ea90bbea68646471651"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a455180eeaa37beb26766a71808336ebb" id="r_a455180eeaa37beb26766a71808336ebb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="separation_8c.html#a455180eeaa37beb26766a71808336ebb">CMRysumDecomposeFirst</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, <a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *sepa, char epsilon, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> **pfirst, size_t *firstRowsOrigin, size_t *firstColumnsOrigin, size_t *rowsToFirst, size_t *columnsToFirst, size_t *firstSpecialRows, size_t *firstSpecialColumns)</td></tr>
+<tr class="memdesc:a455180eeaa37beb26766a71808336ebb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decomposes <code>matrix</code> as a Y-sum according to the 3-separation <code>sepa</code>, computing the first component.  <br /></td></tr>
+<tr class="separator:a455180eeaa37beb26766a71808336ebb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa87d95a0cf9ae58cd64361ed0a357505" id="r_aa87d95a0cf9ae58cd64361ed0a357505"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="separation_8c.html#aa87d95a0cf9ae58cd64361ed0a357505">CMRysumDecomposeSecond</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, <a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *sepa, char epsilon, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> **psecond, size_t *secondRowsOrigin, size_t *secondColumnsOrigin, size_t *rowsToSecond, size_t *columnsToSecond, size_t *secondSpecialRows, size_t *secondSpecialColumns)</td></tr>
+<tr class="memdesc:aa87d95a0cf9ae58cd64361ed0a357505"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decomposes <code>matrix</code> as a Y-sum according to the 3-separation <code>sepa</code>, computing the second component.  <br /></td></tr>
+<tr class="separator:aa87d95a0cf9ae58cd64361ed0a357505"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a258c578d78beab637986ee8e632b847d" id="r_a258c578d78beab637986ee8e632b847d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="separation_8c.html#a258c578d78beab637986ee8e632b847d">CMRthreesumCompose</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *first, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *second, size_t *firstSpecialRows, size_t *firstSpecialColumns, size_t *secondSpecialRows, size_t *secondSpecialColumns, int8_t characteristic, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> **presult)</td></tr>
 <tr class="memdesc:a258c578d78beab637986ee8e632b847d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs the 3-sum of the two matrices <code>first</code> and <code>second</code> at connecting rows <code>firstSpecialRows</code> and <code>secondSpecialRows</code> and columns <code>firstSpecialColumns</code> and <code>secondSpecialColumns</code>.  <br /></td></tr>
 <tr class="separator:a258c578d78beab637986ee8e632b847d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -514,7 +529,7 @@ Functions</h2></td></tr>
 <p>The input <code>matrix</code> \( M \) must have a 3-separation that is given by <code>sepa</code>, i.e., it can be reordered to look like \( M = \begin{bmatrix} A &amp; B \\ C &amp; D \end{bmatrix} \), where \( \text{rank}(B) = \text{rank}(C) = 1 \). The two components of the \( \Delta \)-sum are matrices \( M_1 = \begin{bmatrix} A &amp; a &amp; a \\ c^{\textsf{T}} &amp; 0 &amp; \varepsilon \end{bmatrix} \) and \( M_2 = \begin{bmatrix} \varepsilon &amp; 0 &amp; b^{\textsf{T}} \\ d &amp; d &amp; D \end{bmatrix} \) such that \( B = a b^{\textsf{T}} \) and \( C = d c^{\textsf{T}} \) hold and such that \( a \) and \( c^{\textsf{T}} \) are an actual column and row of \( M \). Consequently, \( b^{\textsf{T}} \) and \( d \) are (possibly negated) rows and columns of \( M \).</p>
 <p>The value of \( \varepsilon \in \{-1,+1\} \) must be given by <code>epsilon</code> and should be computed by <a class="el" href="separation_8h.html#aea77e72e4a8456f5b52a087b0a517984">CMRdeltasumDecomposeEpsilon</a>.</p>
 <p>This function computes \( M_1 \), while \( M_2 \) can be computed by <a class="el" href="separation_8h.html#a252aec8b2edad4c1bad5ee6de2041efd">CMRdeltasumDecomposeSecond</a>.</p>
-<p>If <code>firstSpecialRows</code> is not <code>NULL</code>, then <code>firstSpecialRows</code>[0] will refer to the last row of \( M_1 \). If <code>firstSpecialColumns</code> is not <code>NULL</code>, then <code>firstSpecialColumns</code>[0] will refer to the second-to last column and <code>firstSpecialColumns</code>[1] will refer to the last column of \( M_2 \). </p>
+<p>If <code>firstSpecialRows</code> is not <code>NULL</code>, then <code>firstSpecialRows</code>[0] will refer to the last row of \( M_1 \). If <code>firstSpecialColumns</code> is not <code>NULL</code>, then <code>firstSpecialColumns</code>[0] will refer to the second-to-last column and <code>firstSpecialColumns</code>[1] will refer to the last column of \( M_2 \). </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment.  </td></tr>
@@ -618,9 +633,7 @@ Functions</h2></td></tr>
 <p>The input <code>matrix</code> \( M \) must have a 3-separation that is given by <code>sepa</code>, i.e., it can be reordered to look like \( M = \begin{bmatrix} A &amp; B \\ C &amp; D \end{bmatrix} \), where \( \text{rank}(B) = \text{rank}(C) = 1 \). The two components of the \( \Delta \)-sum are matrices \( M_1 = \begin{bmatrix} A &amp; a &amp; a \\ c^{\textsf{T}} &amp; 0 &amp; \varepsilon \end{bmatrix} \) and \( M_2 = \begin{bmatrix} \varepsilon &amp; 0 &amp; b^{\textsf{T}} \\ d &amp; d &amp; D \end{bmatrix} \) such that \( B = a b^{\textsf{T}} \) and \( C = d c^{\textsf{T}} \) hold and such that \( a \) and \( c^{\textsf{T}} \) are an actual column and row of \( M \). Consequently, \( b^{\textsf{T}} \) and \( d \) are (possibly negated) rows and columns of \( M \).</p>
 <p>The value of \( \varepsilon \in \{-1,+1\} \) must be given by <code>epsilon</code> and should be computed by <a class="el" href="separation_8h.html#aea77e72e4a8456f5b52a087b0a517984">CMRdeltasumDecomposeEpsilon</a>.</p>
 <p>This function computes \( M_2 \), while \( M_1 \) can be computed by <a class="el" href="separation_8h.html#ad436ce3e904529a075c084d9f4b5890b">CMRdeltasumDecomposeFirst</a>.</p>
-<dl class="section note"><dt>Note</dt><dd>If <code>secondSpecialRows</code> is not <code>NULL</code>, then <code>secondSpecialRows</code>[0] will refer to the first row of \( M_2 \). </dd>
-<dd>
-If <code>secondSpecialColumns</code> is not <code>NULL</code>, then <code>secondSpecialColumns</code>[0] will refer to the first column and <code>secondSpecialColumns</code>[1] will refer to the second column of \( M_2 \). </dd></dl>
+<p>If <code>secondSpecialRows</code> is not <code>NULL</code>, then <code>secondSpecialRows</code>[0] will refer to the first row of \( M_2 \). If <code>secondSpecialColumns</code> is not <code>NULL</code>, then <code>secondSpecialColumns</code>[0] will refer to the first column and <code>secondSpecialColumns</code>[1] will refer to the second column of \( M_2 \). </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment.  </td></tr>
@@ -633,7 +646,7 @@ If <code>secondSpecialColumns</code> is not <code>NULL</code>, then <code>second
     <tr><td class="paramname">rowsToSecond</td><td>Array for storing the mapping from rows of \( M \) to rows of \( M_2 \) or to <code>SIZE_MAX</code>; may be <code>NULL</code>.  </td></tr>
     <tr><td class="paramname">columnsToSecond</td><td>Array for storing the mapping from columns of \( M \) to columns of \( M_2 \) or to <code>SIZE_MAX</code>; may be <code>NULL</code>.  </td></tr>
     <tr><td class="paramname">secondSpecialRows</td><td>Array of length 1 for storing the row index of \( \begin{bmatrix} \varepsilon &amp; 0 &amp; b^{\textsf{T}} \end{bmatrix} \) in \( M_2 \); may be <code>NULL</code>.  </td></tr>
-    <tr><td class="paramname">secondSpecialColumns</td><td>Array of length 2 for storing the column indices of \( \begin{bmatrix} \varepsilon &amp; d \end{bmatrix} \) and \( \begin{bmatrix} 0 &amp; d \end{bmatrix} \) in \( M_2 \); may be <code>NULL</code>. </td></tr>
+    <tr><td class="paramname">secondSpecialColumns</td><td>Array of length 2 for storing the column indices of \( \begin{bmatrix} \varepsilon \\ d \end{bmatrix} \) and \( \begin{bmatrix} 0 \\ d \end{bmatrix} \) in \( M_2 \); may be <code>NULL</code>. </td></tr>
   </table>
   </dd>
 </dl>
@@ -1219,6 +1232,50 @@ If <code>secondSpecialColumns</code> is not <code>NULL</code>, then <code>second
     <tr><td class="paramname">sepa</td><td>Separation.  </td></tr>
     <tr><td class="paramname">reprRows</td><td>Array mapping child to arrays of (at most 3) different representative rows.  </td></tr>
     <tr><td class="paramname">reprColumns</td><td>Array mapping child to arrays of (at most 3) different representative columns. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a0b4f2f798128789f295380ff8c199809" name="a0b4f2f798128789f295380ff8c199809"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b4f2f798128789f295380ff8c199809">&#9670;&#160;</a></span>CMRsepaTranspose()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRsepaTranspose </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *&#160;</td>
+          <td class="paramname"><em>sepa</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> **&#160;</td>
+          <td class="paramname"><em>ptransposed</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Transposes a given separation. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment.  </td></tr>
+    <tr><td class="paramname">sepa</td><td>Given separation.  </td></tr>
+    <tr><td class="paramname">ptransposed</td><td>Pointer for storing the transpose of <code>sepa</code>. </td></tr>
   </table>
   </dd>
 </dl>
@@ -2146,6 +2203,383 @@ For the second variant, if <code>secondSpecialRows</code> is not <code>NULL</cod
     <tr><td class="paramname">columnsToSecond</td><td>Array for storing the mapping from columns of \( M \) to columns of \( M_2 \) or to <code>SIZE_MAX</code>; may be <code>NULL</code>.  </td></tr>
     <tr><td class="paramname">secondSpecialRows</td><td>Either <code>NULL</code> or an array for storing the row index of \( b^{\textsf{T}} \) in \( M_2 \).  </td></tr>
     <tr><td class="paramname">secondSpecialColumns</td><td>Either <code>NULL</code> or an array for storing the column index of \( d \) in \( M_2 \). </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a1d9616259736fbb280a7c8225cc066d6" name="a1d9616259736fbb280a7c8225cc066d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d9616259736fbb280a7c8225cc066d6">&#9670;&#160;</a></span>CMRysumCompose()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRysumCompose </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *&#160;</td>
+          <td class="paramname"><em>first</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *&#160;</td>
+          <td class="paramname"><em>second</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>firstSpecialRows</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>firstSpecialColumns</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>secondSpecialRows</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>secondSpecialColumns</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int8_t&#160;</td>
+          <td class="paramname"><em>characteristic</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> **&#160;</td>
+          <td class="paramname"><em>presult</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Constructs the Y-sum of the two matrices <code>first</code> and <code>second</code>. </p>
+<p>Let \( M_1 \) and \( M_2 \) denote the matrices given by <code>first</code> and <code>second</code>, let \( A \) be the matrix \( M_1 \) without the rows indexed by <code>firstSpecialRows</code>[0] and <code>firstSpecialRows</code>[1] and the column indexed by <code>firstSpecialColumns</code>[0]. After reordering these to be last, \( M_1 \) must be of the form  \(
+  M_1 = \begin{bmatrix}
+    A &amp; a \\
+    c^{\textsf{T}} &amp; 0 \\
+    c^{\textsf{T}} &amp; \varepsilon
+  \end{bmatrix},
+\) where \( \varepsilon \in \{-1,+1 \} \) (otherwise, <code>CMR_ERROR_STRUCTURE</code> is returned). Similarly, let \( D \) be the matrix \( M_2 \) without the rows indexed by <code>secondSpecialRows</code>[0] and <code>secondSpecialRows</code>[1] the column <code>secondSpecialColumns</code>[0]. After reordering these to be first, \( M_2 \) must be of the form  \(
+  M_2 = \begin{bmatrix}
+    \varepsilon &amp; b^{\textsf{T}} \\
+    0 &amp; b^{\textsf{T}} \\
+    d &amp; D
+  \end{bmatrix}
+\) with the same \( \varepsilon \) (otherwise, <code>CMR_ERROR_STRUCTURE</code> is returned). The Y-sum of \( M_1 \) and \( M_2 \) (at these special rows/columns) is the matrix  </p><p class="formulaDsp">
+\[
+  M = \begin{bmatrix}
+    A &amp; a b^{\textsf{T}} \\
+    d c^{\textsf{T}} &amp; D
+  \end{bmatrix}.
+\]
+</p>
+<p> The calculations are done modulo <code>characteristic</code>, where the value \( 3 \) yields numbers from \( \{-1,0,+1\} \).</p>
+<p>The resulting matrix \( M \) is created and stored in <code>*presult</code>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment.  </td></tr>
+    <tr><td class="paramname">first</td><td>First matrix.  </td></tr>
+    <tr><td class="paramname">second</td><td>Second matrix.  </td></tr>
+    <tr><td class="paramname">firstSpecialRows</td><td>Array of length 2 with row indices of \( \begin{bmatrix} c^{\textsf{T}} &amp; 0 \end{bmatrix} \) and \( \begin{bmatrix} c^{\textsf{T}} &amp; \varepsilon \end{bmatrix} \) in \( M_1 \).  </td></tr>
+    <tr><td class="paramname">firstSpecialColumns</td><td>Array of length 1 with row index of \( \begin{bmatrix} a \\ 0 \\ \varepsilon \end{bmatrix} \) in \( M_1 \).  </td></tr>
+    <tr><td class="paramname">secondSpecialRows</td><td>Array of length 2 with row indices of \( b^{\textsf{T}} \) \( \begin{bmatrix} \varepsilon &amp; b^{\textsf{T}} \end{bmatrix} \) and \( \begin{bmatrix} 0 &amp; b^{\textsf{T}} \end{bmatrix} \) in \( M_2 \).  </td></tr>
+    <tr><td class="paramname">secondSpecialColumns</td><td>Array of length 1 with column index \( \begin{bmatrix} \varepsilon \\ 0 \\ d \end{bmatrix} \) in \( M_2 \).  </td></tr>
+    <tr><td class="paramname">characteristic</td><td>Field characteristic.  </td></tr>
+    <tr><td class="paramname">presult</td><td>Pointer for storing the result. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a8d422f0799a21ea90bbea68646471651" name="a8d422f0799a21ea90bbea68646471651"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d422f0799a21ea90bbea68646471651">&#9670;&#160;</a></span>CMRysumDecomposeEpsilon()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRysumDecomposeEpsilon </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *&#160;</td>
+          <td class="paramname"><em>matrix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *&#160;</td>
+          <td class="paramname"><em>transpose</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *&#160;</td>
+          <td class="paramname"><em>sepa</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>pepsilon</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Decomposes <code>matrix</code> as a Y-sum according to the 3-separation <code>sepa</code>, computing \( \varepsilon \). </p>
+<p>The input <code>matrix</code> \( M \) must have a 3-separation that is given by <code>sepa</code>, i.e., it can be reordered to look like \( M = \begin{bmatrix} A &amp; B \\ C &amp; D \end{bmatrix} \), where \( \text{rank}(B) = \text{rank}(C) = 1 \). The two components of the Y-sum are matrices \( M_1 = \begin{bmatrix} A &amp; a \\ c^{\textsf{T}} &amp; 0 \\ c^{\textsf{T}} &amp; \varepsilon \end{bmatrix} \) and \( M_2 = \begin{bmatrix} \varepsilon &amp; b^{\textsf{T}} \\ 0 &amp; b^{\textsf{T}} \\ d &amp; D \end{bmatrix} \) such that \( B = a b^{\textsf{T}} \) and \( C = d c^{\textsf{T}} \) hold and such that \( a \) and \( c^{\textsf{T}} \) are an actual column and row of \( M \). Consequently, \( b^{\textsf{T}} \) and \( d \) are (possibly negated) rows and columns of \( M \).</p>
+<p>The value of \( \varepsilon \in \{-1,+1\} \) must be so that there exists a singular submatrix of \( M_1 \) with exactly two nonzeros per row and per column that covers the top-left \( \varepsilon \)-entry.</p>
+<p>This function only computes \( \varepsilon \); the matrices \( M_1 \) and \( M_2 \) can be computed by <a class="el" href="separation_8h.html#a4b92e538db701934ceea98d27a9b3566">CMRysumDecomposeFirst</a> and <a class="el" href="separation_8h.html#a2a9524cfc90db42f67314cf6d60c50c0">CMRysumDecomposeSecond</a>, respectively. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment.  </td></tr>
+    <tr><td class="paramname">matrix</td><td>Input matrix \( M \).  </td></tr>
+    <tr><td class="paramname">transpose</td><td>Transpose matrix \( M^{\textsf{T}} \).  </td></tr>
+    <tr><td class="paramname">sepa</td><td>3-separation to decompose at.  </td></tr>
+    <tr><td class="paramname">pepsilon</td><td>Pointer for storing a correct value of \( \varepsilon \). </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a455180eeaa37beb26766a71808336ebb" name="a455180eeaa37beb26766a71808336ebb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a455180eeaa37beb26766a71808336ebb">&#9670;&#160;</a></span>CMRysumDecomposeFirst()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRysumDecomposeFirst </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *&#160;</td>
+          <td class="paramname"><em>matrix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *&#160;</td>
+          <td class="paramname"><em>sepa</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char&#160;</td>
+          <td class="paramname"><em>epsilon</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> **&#160;</td>
+          <td class="paramname"><em>pfirst</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>firstRowsOrigin</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>firstColumnsOrigin</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>rowsToFirst</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>columnsToFirst</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>firstSpecialRows</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>firstSpecialColumns</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Decomposes <code>matrix</code> as a Y-sum according to the 3-separation <code>sepa</code>, computing the first component. </p>
+<p>The input <code>matrix</code> \( M \) must have a 3-separation that is given by <code>sepa</code>, i.e., it can be reordered to look like \( M = \begin{bmatrix} A &amp; B \\ C &amp; D \end{bmatrix} \), where \( \text{rank}(B) = \text{rank}(C) = 1 \). The two components of the Y-sum are matrices \( M_1 = \begin{bmatrix} A &amp; a \\ c^{\textsf{T}} &amp; 0 \\ c^{\textsf{T}} &amp; \varepsilon \end{bmatrix} \) and \( M_2 = \begin{bmatrix} \varepsilon &amp; b^{\textsf{T}} \\ 0 &amp; b^{\textsf{T}} \\ d &amp; D \end{bmatrix} \) such that \( B = a b^{\textsf{T}} \) and \( C = d c^{\textsf{T}} \) hold and such that \( a \) and \( c^{\textsf{T}} \) are an actual column and row of \( M \). Consequently, \( b^{\textsf{T}} \) and \( d \) are (possibly negated) rows and columns of \( M \).</p>
+<p>The value of \( \varepsilon \in \{-1,+1\} \) must be given by <code>epsilon</code> and should be computed by <a class="el" href="separation_8h.html#aa58a4b231a156fd06178e676a368064c">CMRysumDecomposeEpsilon</a>.</p>
+<p>This function computes \( M_1 \), while \( M_2 \) can be computed by <a class="el" href="separation_8h.html#a2a9524cfc90db42f67314cf6d60c50c0">CMRysumDecomposeSecond</a>.</p>
+<p>If <code>firstSpecialRows</code> is not <code>NULL</code>, then <code>firstSpecialRows</code>[0] will refer to the second-to-last row and <code>firstSpecialRows</code>[1] will refer to the last row of \( M_1 \). If <code>firstSpecialColumns</code> is not <code>NULL</code>, then <code>firstSpecialColumns</code>[0] will refer to the last column of \( M_2 \). </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment.  </td></tr>
+    <tr><td class="paramname">matrix</td><td>Input matrix \( M \).  </td></tr>
+    <tr><td class="paramname">sepa</td><td>3-separation to decompose at.  </td></tr>
+    <tr><td class="paramname">epsilon</td><td>Value of \( \varepsilon \).  </td></tr>
+    <tr><td class="paramname">pfirst</td><td>Pointer for storing the first matrix \( M_1 \).  </td></tr>
+    <tr><td class="paramname">firstRowsOrigin</td><td>Array for storing the mapping from rows of \( M_1 \) to rows of \( M \); also set for the extra row if applicable, even if negated; may be <code>NULL</code>.  </td></tr>
+    <tr><td class="paramname">firstColumnsOrigin</td><td>Array for storing the mapping from columns of \( M_1 \) to columns of \( M \); also set for the extra column if applicable, even if negated; may be <code>NULL</code>.  </td></tr>
+    <tr><td class="paramname">rowsToFirst</td><td>Array for storing the mapping from rows of \( M \) to rows of \( M_1 \) or to <code>SIZE_MAX</code>; may be <code>NULL</code>.  </td></tr>
+    <tr><td class="paramname">columnsToFirst</td><td>Array for storing the mapping from columns of \( M \) to columns of \( M_1 \) or to <code>SIZE_MAX</code>; may be <code>NULL</code>.  </td></tr>
+    <tr><td class="paramname">firstSpecialRows</td><td>Array of length 2 for storing the row indices of \( \begin{bmatrix} c^{\textsf{T}} &amp; 0 \end{bmatrix} \) and \( \begin{bmatrix} c^{\textsf{T}} &amp; \varepsilon \end{bmatrix} \) in \( M_1 \); may be <code>NULL</code>.  </td></tr>
+    <tr><td class="paramname">firstSpecialColumns</td><td>Array of length 1 for storing the column index of \( \begin{bmatrix} a \\ 0 \\ \varepsilon \end{bmatrix} \) in \( M_1 \); may be <code>NULL</code>. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="aa87d95a0cf9ae58cd64361ed0a357505" name="aa87d95a0cf9ae58cd64361ed0a357505"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa87d95a0cf9ae58cd64361ed0a357505">&#9670;&#160;</a></span>CMRysumDecomposeSecond()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRysumDecomposeSecond </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *&#160;</td>
+          <td class="paramname"><em>matrix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *&#160;</td>
+          <td class="paramname"><em>sepa</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char&#160;</td>
+          <td class="paramname"><em>epsilon</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> **&#160;</td>
+          <td class="paramname"><em>psecond</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>secondRowsOrigin</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>secondColumnsOrigin</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>rowsToSecond</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>columnsToSecond</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>secondSpecialRows</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>secondSpecialColumns</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Decomposes <code>matrix</code> as a Y-sum according to the 3-separation <code>sepa</code>, computing the second component. </p>
+<p>The input <code>matrix</code> \( M \) must have a 3-separation that is given by <code>sepa</code>, i.e., it can be reordered to look like \( M = \begin{bmatrix} A &amp; B \\ C &amp; D \end{bmatrix} \), where \( \text{rank}(B) = \text{rank}(C) = 1 \). The two components of the Y-sum are matrices \( M_1 = \begin{bmatrix} A &amp; a \\ c^{\textsf{T}} &amp; 0 \\ c^{\textsf{T}} &amp; \varepsilon \end{bmatrix} \) and \( M_2 = \begin{bmatrix} \varepsilon &amp; b^{\textsf{T}} \\ 0 &amp; b^{\textsf{T}} \\ d &amp; D \end{bmatrix} \) such that \( B = a b^{\textsf{T}} \) and \( C = d c^{\textsf{T}} \) hold and such that \( a \) and \( c^{\textsf{T}} \) are an actual column and row of \( M \). Consequently, \( b^{\textsf{T}} \) and \( d \) are (possibly negated) rows and columns of \( M \).</p>
+<p>The value of \( \varepsilon \in \{-1,+1\} \) must be given by <code>epsilon</code> and should be computed by <a class="el" href="separation_8h.html#aa58a4b231a156fd06178e676a368064c">CMRysumDecomposeEpsilon</a>.</p>
+<p>This function computes \( M_2 \), while \( M_1 \) can be computed by <a class="el" href="separation_8h.html#a4b92e538db701934ceea98d27a9b3566">CMRysumDecomposeFirst</a>.</p>
+<p>If <code>secondSpecialRows</code> is not <code>NULL</code>, then <code>secondSpecialRows</code>[0] will refer to the first row and <code>secondSpecialRows</code>[1] will refer to the second column of \( M_2 \). If <code>secondSpecialColumns</code> is not <code>NULL</code>, then <code>secondSpecialColumns</code>[0] will refer to the first column of \( M_2 \). </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment.  </td></tr>
+    <tr><td class="paramname">matrix</td><td>Input matrix \( M \).  </td></tr>
+    <tr><td class="paramname">sepa</td><td>3-separation to decompose at.  </td></tr>
+    <tr><td class="paramname">epsilon</td><td>Value of \( \varepsilon \).  </td></tr>
+    <tr><td class="paramname">psecond</td><td>Pointer for storing the second matrix \( M_2 \).  </td></tr>
+    <tr><td class="paramname">secondRowsOrigin</td><td>Array for storing the mapping from rows of \( M_2 \) to rows of \( M \); also set for the extra row if applicable, even if negated; may be <code>NULL</code>.  </td></tr>
+    <tr><td class="paramname">secondColumnsOrigin</td><td>Array for storing the mapping from columns of \( M_2 \) to columns of \( M \); also set for the extra column if applicable, even if negated; may be <code>NULL</code>.  </td></tr>
+    <tr><td class="paramname">rowsToSecond</td><td>Array for storing the mapping from rows of \( M \) to rows of \( M_2 \) or to <code>SIZE_MAX</code>; may be <code>NULL</code>.  </td></tr>
+    <tr><td class="paramname">columnsToSecond</td><td>Array for storing the mapping from columns of \( M \) to columns of \( M_2 \) or to <code>SIZE_MAX</code>; may be <code>NULL</code>.  </td></tr>
+    <tr><td class="paramname">secondSpecialRows</td><td>Array of length 2 for storing the row indices of \( \begin{bmatrix} \varepsilon &amp; b^{\textsf{T}} \end{bmatrix} \) and \( \begin{bmatrix} 0 &amp; b^{\textsf{T}} \end{bmatrix} \) in \( M_2 \); may be <code>NULL</code>.  </td></tr>
+    <tr><td class="paramname">secondSpecialColumns</td><td>Array of length 1 for storing the column index of \( \begin{bmatrix} \varepsilon \\ 0 \\ d \end{bmatrix} \) in \( M_2 \); may be <code>NULL</code>. </td></tr>
   </table>
   </dd>
 </dl>
