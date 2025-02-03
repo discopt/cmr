@@ -96,13 +96,21 @@ Recognizing Totally Unimodular Matrices</h1>
 <p><b>Advanced options:</b></p><ul>
 <li><code>--stats</code> Print statistics about the computation to stderr.</li>
 <li><code>--time-limit LIMIT</code> Allow at most <code>LIMIT</code> seconds for the computation.</li>
-<li><code>--decompose STRATEGY</code> Strategy for decomposing among {<code>seymour</code>, <code>truemper</code>, <code>pivotless</code>}; default: <code>seymour</code>.</li>
+<li><code>--decompose STRATEGY</code> Strategy for decomposing among {<code>DP</code>, <code>YP</code>, <code>P3</code>, <code>D3</code>, <code>Y3</code>}; default: <code>D3</code>.</li>
 <li><code>--no-direct-graphic</code> Check only 3-connected matrices for regularity.</li>
 <li><code>--no-series-parallel</code> Do not allow series-parallel operations in decomposition tree.</li>
 <li><code>--naive-submatrix</code> Use naive bad submatrix algorithm instead of greedy heuristic.</li>
 <li><code>--algo ALGO</code> Use algorithm from {<code>decomposition</code>, <code>submatrix</code>, <code>partition</code>}; default: <code>decomposition</code>.</li>
 </ul>
-<p>Formats for matrices: <a class="el" href="file-formats.html#dense-matrix">dense</a>, <a class="el" href="file-formats.html#sparse-matrix">sparse</a> If <code>IN-MAT</code> is <code>-</code> then the <a class="el" href="file-formats.html#file-formats-matrix">matrix</a> is read from stdin. If <code>OUT-DEC</code> or <code>NON-SUB</code> is <code>-</code> then the decomposition tree (resp. the <a class="el" href="file-formats.html#file-formats-submatrix">submatrix</a>) is written to stdout.</p>
+<p><b>Decomposition strategies:</b> 1st letter for distributed, 2nd for concentrated rank(s).</p><ul>
+<li><code>D</code> Delta-sum (distributed ranks)</li>
+<li><code>Y</code> Y-sum (distributed ranks)</li>
+<li><code>3</code> 3-sum (concentrated rank)</li>
+<li><code>P</code> pivot (changes rank type) Note that D3 and Y3 do not produce pivots.</li>
+</ul>
+<p>Formats for matrices: <a class="el" href="file-formats.html#dense-matrix">dense</a>, <a class="el" href="file-formats.html#sparse-matrix">sparse</a></p>
+<p>If <code>IN-MAT</code> is <code>-</code> then the <a class="el" href="file-formats.html#file-formats-matrix">matrix</a> is read from stdin.</p>
+<p>If <code>OUT-DEC</code> or <code>NON-SUB</code> is <code>-</code> then the decomposition tree (resp. the <a class="el" href="file-formats.html#file-formats-submatrix">submatrix</a>) is written to stdout.</p>
 <h1><a class="anchor" id="autotoc_md64"></a>
 Algorithms</h1>
 <p>The implemented default recognition algorithm is based on <a href="https://doi.org/10.1007/s12532-012-0048-x">Implementation of a unimodularity test</a> by Matthias Walter and Klaus Truemper (Mathematical Programming Computation, 2013). It either runs <a class="el" href="camion.html">Camion's Signing Algorithm</a> to reduce the question to that of <a class="el" href="binary_regular.html">recognizing binary regular matroids</a> or decomposes a given ternary matrix directly by means of a <a class="el" href="seymour_decomposition.html">Seymour decomposition</a>. Please cite the paper in case the implementation contributed to your research: </p><pre class="fragment">@Article{WalterT13,

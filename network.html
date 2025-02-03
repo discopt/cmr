@@ -109,7 +109,9 @@ Recognizing Network Matrices</h1>
 <li><code>--stats</code> Print statistics about the computation to stderr.</li>
 <li><code>--time-limit LIMIT</code> Allow at most <code>LIMIT</code> seconds for the computation.</li>
 </ul>
-<p>Formats for matrices: <a class="el" href="file-formats.html#dense-matrix">dense</a>, <a class="el" href="file-formats.html#sparse-matrix">sparse</a> If <code>IN-MAT</code> is <code>-</code> then the <a class="el" href="file-formats.html#file-formats-matrix">matrix</a> is read from stdin. If <code>OUT-GRAPH</code>, <code>OUT-TREE</code>, <code>OUT-DOT</code> or <code>NON-SUB</code> is <code>-</code> then the graph (resp. the tree, dot file or non-(co)network <a class="el" href="file-formats.html#file-formats-submatrix">submatrix</a>) is written to stdout.</p>
+<p>Formats for matrices: <a class="el" href="file-formats.html#dense-matrix">dense</a>, <a class="el" href="file-formats.html#sparse-matrix">sparse</a></p>
+<p>If <code>IN-MAT</code> is <code>-</code> then the <a class="el" href="file-formats.html#file-formats-matrix">matrix</a> is read from stdin.</p>
+<p>If <code>OUT-GRAPH</code>, <code>OUT-TREE</code>, <code>OUT-DOT</code> or <code>NON-SUB</code> is <code>-</code> then the graph (resp. the tree, dot file or non-(co)network <a class="el" href="file-formats.html#file-formats-submatrix">submatrix</a>) is written to stdout.</p>
 <h2><a class="anchor" id="autotoc_md52"></a>
 Algorithm</h2>
 <p>The implemented recognition algorithm first tests the support matrix of \( M \) for being <a class="el" href="graphic.html">(co)graphic</a> and uses <a class="el" href="camion.html">Camion's Signing Algorithm</a> for testing whether \( M \) is signed correctly.</p>
@@ -134,7 +136,9 @@ Computing network matrices</h1>
 <li><code>--stats</code> Print statistics about the computation to stderr.</li>
 <li><code>--time-limit LIMIT</code> Allow at most <code>LIMIT</code> seconds for the computation.</li>
 </ul>
-<p>Formats for matrices: <a class="el" href="file-formats.html#dense-matrix">dense</a>, <a class="el" href="file-formats.html#sparse-matrix">sparse</a> If <code>IN-GRAPH</code> or <code>IN-TREE</code> is <code>-</code> then the digraph (resp. directed tree) is read from stdin. If <code>OUT-MAT</code> is <code>-</code> then the <a class="el" href="file-formats.html#file-formats-matrix">matrix</a> is written to stdout.</p>
+<p>Formats for matrices: <a class="el" href="file-formats.html#dense-matrix">dense</a>, <a class="el" href="file-formats.html#sparse-matrix">sparse</a></p>
+<p>If <code>IN-GRAPH</code> or <code>IN-TREE</code> is <code>-</code> then the digraph (resp. directed tree) is read from stdin.</p>
+<p>If <code>OUT-MAT</code> is <code>-</code> then the <a class="el" href="file-formats.html#file-formats-matrix">matrix</a> is written to stdout.</p>
 <h2><a class="anchor" id="autotoc_md55"></a>
 C Interface</h2>
 <p>The corresponding function in the library is</p>

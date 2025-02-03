@@ -108,7 +108,9 @@ Recognizing Graphic Matrices</h1>
 <li><code>--stats</code> Print statistics about the computation to stderr.</li>
 <li><code>--time-limit LIMIT</code> Allow at most <code>LIMIT</code> seconds for the computation.</li>
 </ul>
-<p>Formats for matrices: <a class="el" href="file-formats.html#dense-matrix">dense</a>, <a class="el" href="file-formats.html#sparse-matrix">sparse</a> If <code>IN-MAT</code> is <code>-</code> then the <a class="el" href="file-formats.html#file-formats-matrix">matrix</a> is read from stdin. If <code>OUT-GRAPH</code>, <code>OUT-TREE</code>, <code>OUT-DOT</code> or <code>NON-SUB</code> is <code>-</code> then the graph (resp. the tree, dot file or non-(co)graphic <a class="el" href="file-formats.html#file-formats-submatrix">submatrix</a>) is written to stdout.</p>
+<p>Formats for matrices: <a class="el" href="file-formats.html#dense-matrix">dense</a>, <a class="el" href="file-formats.html#sparse-matrix">sparse</a></p>
+<p>If <code>IN-MAT</code> is <code>-</code> then the <a class="el" href="file-formats.html#file-formats-matrix">matrix</a> is read from stdin.</p>
+<p>If <code>OUT-GRAPH</code>, <code>OUT-TREE</code>, <code>OUT-DOT</code> or <code>NON-SUB</code> is <code>-</code> then the graph (resp. the tree, dot file or non-(co)graphic <a class="el" href="file-formats.html#file-formats-submatrix">submatrix</a>) is written to stdout.</p>
 <h2><a class="anchor" id="autotoc_md38"></a>
 Algorithm</h2>
 <p>The implemented recognition algorithm is based on <a href="https://doi.org/10.1287/moor.13.1.99">An Almost Linear-Time Algorithm for Graph Realization</a> by Robert E. Bixby and Donald K. Wagner (Mathematics of Operations Research, 1988). For a matrix \( M \in \{0,1\}^{m \times n}\) with \( k \) nonzeros it runs in \( \mathcal{O}( k \cdot \alpha(k, m) ) \) time, where \( \alpha(\cdot) \) denotes the inverse Ackerman function.</p>
@@ -133,7 +135,9 @@ Computing graphic matrices</h1>
 <li><code>--stats</code> Print statistics about the computation to stderr.</li>
 <li><code>--time-limit LIMIT</code> Allow at most <code>LIMIT</code> seconds for the computation.</li>
 </ul>
-<p>Formats for matrices: <a class="el" href="file-formats.html#dense-matrix">dense</a>, <a class="el" href="file-formats.html#sparse-matrix">sparse</a> If <code>IN-GRAPH</code> or <code>IN-TREE</code> is <code>-</code> then the graph (resp. tree) is read from stdin. If <code>OUT-MAT</code> is <code>-</code> then the <a class="el" href="file-formats.html#file-formats-matrix">matrix</a> is written to stdout.</p>
+<p>Formats for matrices: <a class="el" href="file-formats.html#dense-matrix">dense</a>, <a class="el" href="file-formats.html#sparse-matrix">sparse</a></p>
+<p>If <code>IN-GRAPH</code> or <code>IN-TREE</code> is <code>-</code> then the graph (resp. tree) is read from stdin.</p>
+<p>If <code>OUT-MAT</code> is <code>-</code> then the <a class="el" href="file-formats.html#file-formats-matrix">matrix</a> is written to stdout.</p>
 <h2><a class="anchor" id="autotoc_md41"></a>
 C Interface</h2>
 <p>The corresponding function in the library is</p>

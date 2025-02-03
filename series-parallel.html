@@ -120,7 +120,9 @@ Recognizing Series-Parallel Matrices</h1>
 <li><code>--stats</code> Print statistics about the computation to stderr.</li>
 <li><code>--time-limit LIMIT</code> Allow at most <code>LIMIT</code> seconds for the computation.</li>
 </ul>
-<p>Formats for matrices: <a class="el" href="file-formats.html#dense-matrix">dense</a>, <a class="el" href="file-formats.html#sparse-matrix">sparse</a> If <code>IN-MAT</code> is <code>-</code> then the <a class="el" href="file-formats.html#file-formats-matrix">matrix</a> is read from stdin. If <code>OUT-SP</code>, <code>OUT-REDUCED</code> or <code>NON-SUB</code> is <code>-</code> then the list of reductions (resp. the <a class="el" href="file-formats.html#file-formats-submatrix">submatrix</a>) is written to stdout.</p>
+<p>Formats for matrices: <a class="el" href="file-formats.html#dense-matrix">dense</a>, <a class="el" href="file-formats.html#sparse-matrix">sparse</a></p>
+<p>If <code>IN-MAT</code> is <code>-</code> then the <a class="el" href="file-formats.html#file-formats-matrix">matrix</a> is read from stdin.</p>
+<p>If <code>OUT-SP</code>, <code>OUT-REDUCED</code> or <code>NON-SUB</code> is <code>-</code> then the list of reductions (resp. the <a class="el" href="file-formats.html#file-formats-submatrix">submatrix</a>) is written to stdout.</p>
 <h1><a class="anchor" id="autotoc_md60"></a>
 Algorithm</h1>
 <p>The implemented algorithm is not yet published. For a matrix \( A \in \{0,1\}^{m \times n}\) with \( k \) (sorted) nonzeros it runs in \( \mathcal{O}( m + n + k ) \) time assuming no hashtable collisions.</p>
