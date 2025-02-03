@@ -1421,7 +1421,7 @@ CMR_ERROR cloneRecursively(
   }
 
   /* It was not, so we create a clone. */
-    CMR_SEYMOUR_NODE* clone = NULL;
+  CMR_SEYMOUR_NODE* clone = NULL;
   CMR_CALL( createNode(cmr, &clone, node->isTernary, node->type, node->numRows, node->numColumns) );
   CMR_CALL( CMRchrmatCopy(cmr, node->matrix, &clone->matrix) );
   if (node->graph)
