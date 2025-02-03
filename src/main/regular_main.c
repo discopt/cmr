@@ -123,7 +123,7 @@ int printUsage(const char* program)
   fputs("Advanced options:\n", stderr);
   fputs("  --stats              Print statistics about the computation to stderr.\n", stderr);
   fputs("  --time-limit LIMIT   Allow at most LIMIT seconds for the computation.\n", stderr);
-  fputs("  --decompose          Strategy for decomposing; among {seymour, truemper, pivotless}.\n", stderr);
+  fputs("  --decompose STRATEGY Strategy for decomposing among {seymour, truemper, pivotless}; default: seymour.\n", stderr);
   fputs("  --no-direct-graphic  Check only 3-connected matrices for regularity.\n", stderr);
   fputs("  --no-series-parallel Do not allow series-parallel operations in decomposition tree.\n", stderr);
   fputs("\n", stderr);

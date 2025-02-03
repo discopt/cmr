@@ -21,6 +21,7 @@ determines whether the [matrix](\ref file-formats-matrix) given in file `IN-MAT`
 **Advanced options:**
   - `--stats`              Print statistics about the computation to stderr.
   - `--time-limit LIMIT`   Allow at most `LIMIT` seconds for the computation.
+  - `--decompose STRATEGY` Strategy for decomposing among {`seymour`, `truemper`, `pivotless`}; default: `seymour`.
   - `--no-direct-graphic`  Check only 3-connected matrices for regularity.
   - `--no-series-parallel` Do not allow series-parallel operations in decomposition tree.
   - `--naive-submatrix`    Use naive bad submatrix algorithm instead of greedy heuristic.
