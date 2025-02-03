@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['seymour_20decomposition_2271',['Seymour decomposition',['../group__Seymour.html',1,'']]]
+  ['matroid_20decomposition_0',['Matroid decomposition',['../group__Matroid.html',1,'']]]
 ];

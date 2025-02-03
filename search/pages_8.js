@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['network_20matrices_2288',['Network Matrices',['../network.html',1,'']]]
+  ['library_0',['Combinatorial Matrix Recognition Library',['../index.html',1,'']]],
+  ['log_1',['Change Log',['../changes.html',1,'']]]
 ];

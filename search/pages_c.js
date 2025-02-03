@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['totally_20balanced_20matrices_2292',['Totally Balanced Matrices',['../totally-balanced.html',1,'']]],
-  ['totally_20unimodular_20matrices_2293',['Totally Unimodular Matrices',['../tu.html',1,'']]]
+  ['parallel_20matrices_0',['Series-Parallel Matrices',['../series-parallel.html',1,'']]],
+  ['perfect_20matrices_1',['Perfect Matrices',['../perfect.html',1,'']]],
+  ['planar_20matrices_2',['Graphic / Cographic / Planar Matrices',['../graphic.html',1,'']]]
 ];

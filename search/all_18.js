@@ -1,25 +1,10 @@
 var searchData=
 [
-  ['_7ecycle_5fviolator_5fmatrix_5fgenerator_1498',['~cycle_violator_matrix_generator',['../classcycle__violator__matrix__generator.html#ae65d4c0205b330fd56d0946e20300194',1,'cycle_violator_matrix_generator']]],
-  ['_7edata_1499',['~Data',['../structtu_1_1SparseMatrix_1_1Data.html#a2ef08489cb2237ae9270813459bae520',1,'tu::SparseMatrix::Data']]],
-  ['_7edecomposed_5fmatroid_1500',['~decomposed_matroid',['../classtu_1_1decomposed__matroid.html#ae46f107466f82292593f7571fe008885',1,'tu::decomposed_matroid']]],
-  ['_7edecomposed_5fmatroid_5fleaf_1501',['~decomposed_matroid_leaf',['../classtu_1_1decomposed__matroid__leaf.html#a4417e65d28080b22983ecbcfa83bea91',1,'tu::decomposed_matroid_leaf']]],
-  ['_7edecomposed_5fmatroid_5fseparator_1502',['~decomposed_matroid_separator',['../classtu_1_1decomposed__matroid__separator.html#a7ff4f1d0a2448336ec5d3b28524c98b7',1,'tu::decomposed_matroid_separator']]],
-  ['_7edensematrix_1503',['~DenseMatrix',['../classtu_1_1DenseMatrix.html#aa85ff55fd870bf5936aeab9b3f363b0a',1,'tu::DenseMatrix']]],
-  ['_7egreedy_5fviolator_5fstrategy_1504',['~greedy_violator_strategy',['../classtu_1_1detail_1_1greedy__violator__strategy.html#a8676adac55de6cc379398720e47c10d3',1,'tu::detail::greedy_violator_strategy']]],
-  ['_7elast_5fcombination_5fexception_1505',['~last_combination_exception',['../classtu_1_1last__combination__exception.html#a5ba04979e813e7d177c949c6a4661bd7',1,'tu::last_combination_exception']]],
-  ['_7elogger_1506',['~logger',['../classtu_1_1logger.html#aeee18f02ceac48cc1178dc7509152197',1,'tu::logger']]],
-  ['_7ematrix_5fgenerator_1507',['~matrix_generator',['../classmatrix__generator.html#ab35962b5e8ac459277ee9498e1962c53',1,'matrix_generator']]],
-  ['_7enested_5fminor_5fsequence_1508',['~nested_minor_sequence',['../classtu_1_1nested__minor__sequence.html#af5e292edf7b22aeebb8738a8e582dcbf',1,'tu::nested_minor_sequence']]],
-  ['_7enested_5fminor_5fsequence_5ftransposed_1509',['~nested_minor_sequence_transposed',['../classtu_1_1nested__minor__sequence__transposed.html#a50ca518b7d8ce6d9190fe4fdb62a48db',1,'tu::nested_minor_sequence_transposed']]],
-  ['_7enetwork_5fmatrix_5fgenerator_1510',['~network_matrix_generator',['../classnetwork__matrix__generator.html#ac8d1c523c699b7d15872c23da5810df1',1,'network_matrix_generator']]],
-  ['_7epermutation_1511',['~permutation',['../classtu_1_1permutation.html#ad6ae475d316894913a1727ad202c432c',1,'tu::permutation']]],
-  ['_7epermutation_5fenumerator_1512',['~permutation_enumerator',['../classtu_1_1permutation__enumerator.html#a03a0bb7c795e5034a4f6ce4ada501a29',1,'tu::permutation_enumerator']]],
-  ['_7epermutation_5fshrink_5fexception_1513',['~permutation_shrink_exception',['../classtu_1_1permutation__shrink__exception.html#a9b63b05ccc348af44a165fc39b487f58',1,'tu::permutation_shrink_exception']]],
-  ['_7erandom_5fmatrix_5fgenerator_1514',['~random_matrix_generator',['../classrandom__matrix__generator.html#a1e5bfbc85c3839b320ebfb68826271c6',1,'random_matrix_generator']]],
-  ['_7eseparation_1515',['~separation',['../classtu_1_1separation.html#a724eb11a33f47491f9cfba488d9f88b1',1,'tu::separation']]],
-  ['_7esingle_5fviolator_5fstrategy_1516',['~single_violator_strategy',['../classtu_1_1detail_1_1single__violator__strategy.html#a9b1d83ef62ad6d8f6f9ddc897eb35b6f',1,'tu::detail::single_violator_strategy']]],
-  ['_7esparsematrix_1517',['~SparseMatrix',['../classtu_1_1SparseMatrix.html#a3b6ddab61911a664e14e7daf270f7d70',1,'tu::SparseMatrix']]],
-  ['_7evector_5fthree_5fconnectivity_1518',['~vector_three_connectivity',['../classtu_1_1vector__three__connectivity.html#a7528a192b814744755c46ab7718d1b40',1,'tu::vector_three_connectivity']]],
-  ['_7eviolator_5fstrategy_1519',['~violator_strategy',['../classtu_1_1detail_1_1violator__strategy.html#a8730dd179d7dee08da3c84ab59d711a4',1,'tu::detail::violator_strategy']]]
+  ['value_0',['value',['../structLinearhashtableArrayBucket.html#a0b470779751f6f40d0625f5fb9e47fd2',1,'LinearhashtableArrayBucket::value'],['../structListhashtableNode.html#a7caf062f0f1ba1d7e0c67005e1ca3ac7',1,'ListhashtableNode::value'],['../struct__RowInfo64.html#ab4c85fdf99c6136fdf5c00aa271009f4',1,'_RowInfo64::value'],['../struct__ListMat8Nonzero.html#aeb0a9b6b42d388cb7bfdaedc795900c1',1,'_ListMat8Nonzero::value'],['../struct__ListMat64Nonzero.html#a0aa5d32eeee30559283718f74fef4103',1,'_ListMat64Nonzero::value'],['../structDblNonzero.html#a5e0cf47a642b6fd39811db6c6f0be4fd',1,'DblNonzero::value'],['../structIntNonzero.html#aa326b276e6273f39f320c2446ac4d3a3',1,'IntNonzero::value'],['../structChrNonzero.html#a86dc67e07b32b4c8165c8194415a6816',1,'ChrNonzero::value']]],
+  ['values_1',['values',['../structCMR__INTHEAP.html#ae9f6712b83dbd3004697715af1276855',1,'CMR_INTHEAP']]],
+  ['verbosity_2',['verbosity',['../structCMR__ENVIRONMENT.html#a7332bd6ae526ebdb646b2b03ec1fb01f',1,'CMR_ENVIRONMENT']]],
+  ['version_201_200_202011_2006_2013_3',['Version 1.0 (2011-06-13)',['../changes.html#autotoc_md23',1,'']]],
+  ['version_201_201_202012_2002_2009_4',['Version 1.1 (2012-02-09)',['../changes.html#autotoc_md22',1,'']]],
+  ['version_201_202_5',['Version 1.2',['../changes.html#autotoc_md13',1,'']]],
+  ['version_201_203_6',['Version 1.3',['../changes.html#autotoc_md12',1,'']]]
 ];
