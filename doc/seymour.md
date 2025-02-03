@@ -46,8 +46,7 @@ Moreover, it has (exactly) one of the following **types**:
    \f[
       M = \begin{pmatrix} A & \mathbb{O} \\ d c^{\textsf{T}} & D \end{pmatrix}.
    \f]
-   or 
-   Such a node has exactly two children that belong to the matrices
+   Such a node has exactly two children corresponding to the matrices
    \f[
       M_1 = \begin{pmatrix} A \\ c^{\textsf{T}} \end{pmatrix}
       \qquad \text{and} \qquad
