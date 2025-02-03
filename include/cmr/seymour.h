@@ -33,33 +33,33 @@ extern "C" {
 /**
  * \brief Flags that indicate how to decompose as a \f$ 3 \f$-sum.
  *
- * \see The desired types can be set by modifying \ref CMR_SEYMOUR_PARAMS.threeSumStrategy.
+ * \see The desired types can be set by modifying \ref CMR_SEYMOUR_PARAMS.decomposeStrategy.
  **/
 
 typedef enum
 {
-  CMR_SEYMOUR_THREESUM_FLAG_DISTRIBUTED_MASK = 15,
+  CMR_SEYMOUR_DECOMPOSE_FLAG_DISTRIBUTED_MASK = 15,
     /**< Bitmask for distributed rank treatment. */
-  CMR_SEYMOUR_THREESUM_FLAG_DISTRIBUTED_PIVOT = 1,
+  CMR_SEYMOUR_DECOMPOSE_FLAG_DISTRIBUTED_PIVOT = 1,
     /**< Indicate to pivot a distributed rank distribution to a concentrated one; \see \ref seymour_decomposition. */
-  CMR_SEYMOUR_THREESUM_FLAG_DISTRIBUTED_DELTASUM = 2,
+  CMR_SEYMOUR_DECOMPOSE_FLAG_DISTRIBUTED_DELTASUM = 2,
     /**< Indicate to carry out a \f$ \Delta \f$-sum for distributed ranks; \see \ref seymour_decomposition. */
-  CMR_SEYMOUR_THREESUM_FLAG_CONCENTRATED_MASK = 240,
+  CMR_SEYMOUR_DECOMPOSE_FLAG_CONCENTRATED_MASK = 240,
     /**< Bitmask for distributed rank treatment. */
-  CMR_SEYMOUR_THREESUM_FLAG_CONCENTRATED_PIVOT = 16,
+  CMR_SEYMOUR_DECOMPOSE_FLAG_CONCENTRATED_PIVOT = 16,
     /**< Indicate to pivot a concentrated rank distribution to a distributed one; \see \ref seymour_decomposition. */
-  CMR_SEYMOUR_THREESUM_FLAG_CONCENTRATED_THREESUM = 32,
+  CMR_SEYMOUR_DECOMPOSE_FLAG_CONCENTRATED_THREESUM = 32,
     /**< Indicate to carry out a 3-sum for concentrated ranks; \see \ref seymour_decomposition. */
-  CMR_SEYMOUR_THREESUM_FLAG_SEYMOUR = CMR_SEYMOUR_THREESUM_FLAG_DISTRIBUTED_DELTASUM
-    | CMR_SEYMOUR_THREESUM_FLAG_CONCENTRATED_PIVOT,
+  CMR_SEYMOUR_DECOMPOSE_FLAG_SEYMOUR = CMR_SEYMOUR_DECOMPOSE_FLAG_DISTRIBUTED_DELTASUM
+    | CMR_SEYMOUR_DECOMPOSE_FLAG_CONCENTRATED_PIVOT,
     /**< This triggers only \f$ \Delta \f$-sum decompositions as defined by Seymour; \see \ref seymour_decomposition. */
-  CMR_SEYMOUR_THREESUM_FLAG_TRUEMPER = CMR_SEYMOUR_THREESUM_FLAG_DISTRIBUTED_PIVOT
-    | CMR_SEYMOUR_THREESUM_FLAG_CONCENTRATED_THREESUM,
+  CMR_SEYMOUR_DECOMPOSE_FLAG_TRUEMPER = CMR_SEYMOUR_DECOMPOSE_FLAG_DISTRIBUTED_PIVOT
+    | CMR_SEYMOUR_DECOMPOSE_FLAG_CONCENTRATED_THREESUM,
     /**< This triggers only 3-sum decompositions as defined by Truemper; \see \ref seymour_decomposition. */
-  CMR_SEYMOUR_THREESUM_FLAG_PIVOTLESS = CMR_SEYMOUR_THREESUM_FLAG_DISTRIBUTED_DELTASUM
-    | CMR_SEYMOUR_THREESUM_FLAG_CONCENTRATED_THREESUM
+  CMR_SEYMOUR_DECOMPOSE_FLAG_PIVOTLESS = CMR_SEYMOUR_DECOMPOSE_FLAG_DISTRIBUTED_DELTASUM
+    | CMR_SEYMOUR_DECOMPOSE_FLAG_CONCENTRATED_THREESUM
     /**< This triggers \f$ \Delta \f$-sum or 3-sum decompositions as defined by Seymour or Truemper to avoid pivots. */
-} CMR_SEYMOUR_THREESUM_FLAG;
+} CMR_SEYMOUR_DECOMPOSE_FLAG;
 
 /**
  * \brief Parameters for Seymour decomposition algorithm.
@@ -86,28 +86,25 @@ typedef struct
   bool preferGraphicness;
   /**< \brief Whether to first test for (co)graphicness (or being (co)network) before applying series-parallel
    *          reductions. */
-  bool threeSumPivotChildren;
-  /**< \brief Whether pivots for 3-sums shall be applied such that the matrix contains both child matrices as
-   **         submatrices, if possible. */
-  int threeSumStrategy;
-  /**< \brief Whether to perform pivots to change the rank distribution, and how to construct the children.
+  int decomposeStrategy;
+  /**< \brief How to deal with 3-separations.
    **
    ** The value is a bit-wise OR of two decisions, one per **rank distribution**:
-   **   - \ref CMR_SEYMOUR_THREESUM_FLAG_DISTRIBUTED_MASK indicates what to do if ranks are 1 and 1.
-   **   - \ref CMR_SEYMOUR_THREESUM_FLAG_CONCENTRATED_MASK indicates what to do if ranks are 2 and 0.
+   **   - \ref CMR_SEYMOUR_DECOMPOSE_FLAG_DISTRIBUTED_MASK indicates what to do if ranks are 1 and 1.
+   **   - \ref CMR_SEYMOUR_DECOMPOSE_FLAG_CONCENTRATED_MASK indicates what to do if ranks are 2 and 0.
    **
    ** The possible choices for **distributed ranks** (1 and 1) are:
-   **   - \ref CMR_SEYMOUR_THREESUM_FLAG_DISTRIBUTED_PIVOT pivot such that the rank distribution becomes concentrated.
-   **   - \ref CMR_SEYMOUR_THREESUM_FLAG_DISTRIBUTED_SEYMOUR for Seymour 3-sum (default).
+   **   - \ref CMR_SEYMOUR_DECOMPOSE_FLAG_DISTRIBUTED_PIVOT pivot such that the rank distribution becomes concentrated.
+   **   - \ref CMR_SEYMOUR_DECOMPOSE_FLAG_DISTRIBUTED_DELTASUM for the \f$ \Delta \f$-sum (default).
    **
    ** The possible choices for **concentrated ranks** (2 and 0) are:
-   **   - \ref CMR_SEYMOUR_THREESUM_FLAG_CONCENTRATED_PIVOT pivot such that the rank distribution becomes distributed.
-   **   - \ref CMR_SEYMOUR_THREESUM_FLAG_CONCENTRATED_TRUEMPER for Truemper 3-sum (default).
+   **   - \ref CMR_SEYMOUR_DECOMPOSE_FLAG_CONCENTRATED_PIVOT pivot such that the rank distribution becomes distributed.
+   **   - \ref CMR_SEYMOUR_DECOMPOSE_FLAG_CONCENTRATED_THREESUM for the 3-sum (default).
    **
-   ** \see \ref seymour_decomposition for a description of these 3-sums.
+   ** \see \ref seymour_decomposition for a description of these sums.
    **
-   ** A decomposition as described by Seymour can be selected via \ref CMR_SEYMOUR_THREESUM_FLAG_SEYMOUR.
-   ** A decomposition as used by Truemper can be selected via \ref CMR_SEYMOUR_THREESUM_FLAG_TRUEMPER.
+   ** A decomposition as described by Seymour can be selected via \ref CMR_SEYMOUR_DECOMPOSE_FLAG_SEYMOUR.
+   ** A decomposition as used by Truemper can be selected via \ref CMR_SEYMOUR_DECOMPOSE_FLAG_TRUEMPER.
    ** The default is to not carry out any pivots and choose Seymour's or Truemper's definition depending on the rank
    ** distribution. */
 
@@ -193,14 +190,14 @@ typedef enum
     /**< Node represents a graphic and cographic (network and conetwork) leaf.  \see \ref seymour_decomposition. */
   CMR_SEYMOUR_NODE_TYPE_R10 = 6,
     /**< Node represents a representation matrix of \f$ R_{10} \f$.  \see \ref seymour_decomposition. */
-  CMR_SEYMOUR_NODE_TYPE_ONE_SUM = 7,
+  CMR_SEYMOUR_NODE_TYPE_ONESUM = 7,
     /**< Node represents a \f$ 1 \f$-sum of matrices; has at least 2 child nodes. \see \ref seymour_decomposition. */
-  CMR_SEYMOUR_NODE_TYPE_TWO_SUM = 8,
-    /**< Node represents a 2-sum of matrices; has two child nodes. \see \ref seymour_decomposition. */
-  CMR_SEYMOUR_NODE_TYPE_THREE_SUM_SEYMOUR = 9,
-    /**< Node represents a Seymour 3-sum of matrices; has two child nodes. \see \ref seymour_decomposition. */
-  CMR_SEYMOUR_NODE_TYPE_THREE_SUM_TRUEMPER = 10
-    /**< Node represents a Truemper 3-sum of matrices; has two child nodes. \see \ref seymour_decomposition. */
+  CMR_SEYMOUR_NODE_TYPE_TWOSUM = 8,
+    /**< Node represents a \f$ 2 \f$-sum of matrices; has two child nodes. \see \ref seymour_decomposition. */
+  CMR_SEYMOUR_NODE_TYPE_DELTASUM = 9,
+    /**< Node represents a \f$ \Delta \f$-sum of matrices; has two child nodes. \see \ref seymour_decomposition. */
+  CMR_SEYMOUR_NODE_TYPE_THREESUM = 10
+    /**< Node represents a \f$ 3 \f$-sum of matrices; has two child nodes. \see \ref seymour_decomposition. */
 } CMR_SEYMOUR_NODE_TYPE;
 
 /**

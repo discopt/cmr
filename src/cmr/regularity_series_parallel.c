@@ -149,7 +149,7 @@ CMR_ERROR CMRregularityDecomposeSeriesParallel(CMR* cmr, DecompositionTask* task
   if (separation)
   {
     CMRdbgMsg(8, "-> 2-separation found.\n");
-    CMR_CALL( CMRseymourUpdateTwoSum(cmr, decReduced, separation) );
+    CMR_CALL( CMRseymourUpdateTwosum(cmr, decReduced, separation) );
     CMR_CALL( CMRsepaFree(cmr, &separation) );
 
     DecompositionTask* childTasks[2] = { task, NULL };

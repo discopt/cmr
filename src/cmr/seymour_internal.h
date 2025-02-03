@@ -28,7 +28,7 @@ struct _CMR_SEYMOUR_NODE
                                                  **         (negative), or not determined if zero. */
   bool testedR10;                               /**< \brief Matrix does not represent \f$ R_{10} \f$ unless \p type
                                                  **         indicates this. */
-  CMR_SEYMOUR_THREESUM_FLAG threesumFlags;      /**< \brief Type of 3-sum. */
+  CMR_SEYMOUR_DECOMPOSE_FLAG threesumFlags;      /**< \brief Type of 3-sum. */
   CMR_CHRMAT* matrix;                           /**< \brief Matrix representing this node. */
   CMR_CHRMAT* transpose;                        /**< \brief Tranpose of \ref matrix representing this node. */
   size_t numChildren;                           /**< \brief Number of child nodes. */
@@ -168,7 +168,7 @@ CMR_ERROR CMRseymourSetNumChildren(
  * \brief Initialize an existing unknown decomposition node as a 1-sum with \p numChildren children.
  */
 
-CMR_ERROR CMRseymourUpdateOneSum(
+CMR_ERROR CMRseymourUpdateOnesum(
   CMR* cmr,               /**< \ref CMR environment. */
   CMR_SEYMOUR_NODE* node, /**< Seymour decomposition node. */
   size_t numChildren      /**< Number of child nodes. */
@@ -217,7 +217,7 @@ CMR_ERROR CMRseymourUpdateSeriesParallel(
  * The two child nodes will be of type \ref CMR_SEYMOUR_NODE_TYPE_UNKNOWN.
  */
 
-CMR_ERROR CMRseymourUpdateTwoSum(
+CMR_ERROR CMRseymourUpdateTwosum(
   CMR* cmr,               /**< \ref CMR environment. */
   CMR_SEYMOUR_NODE* node, /**< Seymour decomposition node. */
   CMR_SEPA* separation    /**< 2-separation. */
@@ -237,80 +237,6 @@ CMR_ERROR CMRseymourUpdatePivots(
   size_t* pivotColumns,   /**< Array with pivot columns. */
   CMR_CHRMAT* matrix,     /**< New matrix. */
   CMR_CHRMAT* transpose   /**< Transpose of \p matrix. */
-);
-
-/**
- * \brief Creates wide first child of an initialized 3-sum node.
- *
- * A nonzero \p extraEntry indicates the bottom-right nonzero entry.
- */
-
-CMR_ERROR CMRseymourUpdateThreeSumCreateWideFirstChild(
-  CMR* cmr,                   /**< \ref CMR environment. */
-  CMR_SEYMOUR_NODE* node,     /**< Seymour decomposition node (initialized with \ref CMRseymourUpdateThreeSumInit). */
-  size_t* rowsToChild,        /**< Array mapping rows to child rows. */
-  size_t* columnsToChild,     /**< Array mapping columns to child columns. */
-  size_t numChildBaseRows,    /**< Number of base rows of this child. */
-  size_t numChildBaseColumns, /**< Number of base rows of this child. */
-  size_t extraRow,            /**< Index of the extra row. */
-  size_t extraColumn1,        /**< Index of 1st extra column. */
-  size_t extraColumn2,        /**< Index of 2nd extra column, parallel to \p extraColumn1; equality is allowed. */
-  int8_t extraEntry           /**< Sign of the extra entry. */
-);
-
-/**
- * \brief Creates wide second child of an initialized 3-sum node.
- *
- * A nonzero \p extraEntry indicates the bottom-right nonzero entry.
- */
-
-CMR_ERROR CMRseymourUpdateThreeSumCreateWideSecondChild(
-  CMR* cmr,                   /**< \ref CMR environment. */
-  CMR_SEYMOUR_NODE* node,     /**< Seymour decomposition node (initialized with \ref CMRseymourUpdateThreeSumInit). */
-  size_t* rowsToChild,        /**< Array mapping rows to child rows. */
-  size_t* columnsToChild,     /**< Array mapping columns to child columns. */
-  size_t numChildBaseRows,    /**< Number of base rows of this child. */
-  size_t numChildBaseColumns, /**< Number of base rows of this child. */
-  size_t extraRow,            /**< Index of the extra row. */
-  size_t extraColumn1,        /**< Index of 1st extra column. */
-  size_t extraColumn2,        /**< Index of 2nd extra column, parallel to \p extraColumn1; equality is allowed. */
-  int8_t extraEntry           /**< Sign of the extra entry, if known. */
-);
-
-/**
- * \brief Creates mixed first child of an initialized 3-sum node.
- *
- * A nonzero \p extraEntry indicates the bottom-right nonzero entry.
- */
-
-CMR_ERROR CMRseymourUpdateThreeSumCreateMixedFirstChild(
-  CMR* cmr,                   /**< \ref CMR environment. */
-  CMR_SEYMOUR_NODE* node,     /**< Seymour decomposition node (initialized with \ref CMRseymourUpdateThreeSumInit). */
-  size_t* rowsToChild,        /**< Array mapping rows to child rows. */
-  size_t* columnsToChild,     /**< Array mapping columns to child columns. */
-  size_t numChildBaseRows,    /**< Number of base rows of this child. */
-  size_t numChildBaseColumns, /**< Number of base rows of this child. */
-  size_t extraRow1,           /**< Index of the first extra row. */
-  size_t extraRow2,           /**< Index of the second extra row. */
-  int8_t extraEntry           /**< Sign of the extra entry. */
-);
-
-/**
- * \brief Creates mixed second child of an initialized 3-sum node.
- *
- * A nonzero \p extraEntry indicates the top-left nonzero entry.
- */
-
-CMR_ERROR CMRseymourUpdateThreeSumCreateMixedSecondChild(
-  CMR* cmr,                   /**< \ref CMR environment. */
-  CMR_SEYMOUR_NODE* node,     /**< Seymour decomposition node (initialized with \ref CMRseymourUpdateThreeSumInit). */
-  size_t* rowsToChild,        /**< Array mapping rows to child rows. */
-  size_t* columnsToChild,     /**< Array mapping columns to child columns. */
-  size_t numChildBaseRows,    /**< Number of base rows of this child. */
-  size_t numChildBaseColumns, /**< Number of base rows of this child. */
-  size_t extraColumn1,        /**< Index of the first extra column. */
-  size_t extraColumn2,        /**< Index of the second extra column. */
-  int8_t extraEntry           /**< Sign of the extra entry. */
 );
 
 /**
@@ -520,11 +446,11 @@ CMR_ERROR CMRregularityTestCographicness(
  * \brief Performs a 1-sum decomposition of \p matrix and stores it in \p dec.
  *
  * If \p matrix is 1-connected, then \p dec remains unchanged. Otherwise, \p dec will become a
- * \ref CMR_SEYMOUR_NODE_TYPE_ONE_SUM node with children that are initialized to the 1-connected components. In this
+ * \ref CMR_SEYMOUR_NODE_TYPE_ONESUM node with children that are initialized to the 1-connected components. In this
  * case, the \c matrix and \c transpose members of the child nodes are set.
  */
 
-CMR_ERROR CMRregularitySearchOneSum(
+CMR_ERROR CMRregularitySearchOnesum(
   CMR* cmr,                 /**< \ref CMR environment. */
   DecompositionTask* task,  /**< Task to be processed; already removed from the list of unprocessed tasks. */
   DecompositionQueue* queue /**< Queue of unprocessed nodes. */

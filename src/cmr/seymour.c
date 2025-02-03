@@ -24,8 +24,7 @@ CMR_ERROR CMRseymourParamsInit(CMR_SEYMOUR_PARAMS* params)
   params->planarityCheck = false;
   params->directGraphicness = true;
   params->preferGraphicness = true;
-  params->threeSumPivotChildren = false;
-  params->threeSumStrategy = CMR_SEYMOUR_THREESUM_FLAG_PIVOTLESS;
+  params->decomposeStrategy = CMR_SEYMOUR_DECOMPOSE_FLAG_PIVOTLESS;
   params->constructLeafGraphs = false;
   params->constructAllGraphs = false;
 
@@ -370,16 +369,16 @@ CMR_ERROR CMRseymourPrintChild(CMR* cmr, CMR_SEYMOUR_NODE* child, CMR_SEYMOUR_NO
   case CMR_SEYMOUR_NODE_TYPE_UNKNOWN:
     fprintf(stream, "unknown node {");
   break;
-  case CMR_SEYMOUR_NODE_TYPE_ONE_SUM:
+  case CMR_SEYMOUR_NODE_TYPE_ONESUM:
     fprintf(stream, "1-sum node with %zu children {", child->numChildren);
   break;
-  case CMR_SEYMOUR_NODE_TYPE_TWO_SUM:
+  case CMR_SEYMOUR_NODE_TYPE_TWOSUM:
     fprintf(stream, "2-sum node {");
     break;
-  case CMR_SEYMOUR_NODE_TYPE_THREE_SUM_SEYMOUR:
+  case CMR_SEYMOUR_NODE_TYPE_DELTASUM:
     fprintf(stream, "3-sum node of type Seymour {");
   break;
-  case CMR_SEYMOUR_NODE_TYPE_THREE_SUM_TRUEMPER:
+  case CMR_SEYMOUR_NODE_TYPE_THREESUM:
     fprintf(stream, "3-sum node of type Truemper {");
   break;
   case CMR_SEYMOUR_NODE_TYPE_GRAPH:
@@ -480,11 +479,11 @@ CMR_ERROR CMRseymourPrintChild(CMR* cmr, CMR_SEYMOUR_NODE* child, CMR_SEYMOUR_NO
     {
       for (size_t i = 0; i < indent; ++i)
         fputc(' ', stream);
-      if (parent->type == CMR_SEYMOUR_NODE_TYPE_THREE_SUM_SEYMOUR)
+      if (parent->type == CMR_SEYMOUR_NODE_TYPE_DELTASUM)
       {
         fprintf(stream, "with special rows: r%zu\n", parent->childSpecialRows[childIndex][0]);
       }
-      else if (parent->type == CMR_SEYMOUR_NODE_TYPE_THREE_SUM_TRUEMPER)
+      else if (parent->type == CMR_SEYMOUR_NODE_TYPE_THREESUM)
       {
         fprintf(stream, "with special rows: r%zu, r%zu, r%zu\n", parent->childSpecialRows[childIndex][0],
           parent->childSpecialRows[childIndex][1], parent->childSpecialRows[childIndex][2]);
@@ -512,12 +511,12 @@ CMR_ERROR CMRseymourPrintChild(CMR* cmr, CMR_SEYMOUR_NODE* child, CMR_SEYMOUR_NO
     {
       for (size_t i = 0; i < indent; ++i)
         fputc(' ', stream);
-      if (parent->type == CMR_SEYMOUR_NODE_TYPE_THREE_SUM_SEYMOUR)
+      if (parent->type == CMR_SEYMOUR_NODE_TYPE_DELTASUM)
       {
         fprintf(stream, "with special columns: c%zu, c%zu\n", parent->childSpecialColumns[childIndex][0],
           parent->childSpecialColumns[childIndex][1]);
       }
-      else if (parent->type == CMR_SEYMOUR_NODE_TYPE_THREE_SUM_TRUEMPER)
+      else if (parent->type == CMR_SEYMOUR_NODE_TYPE_THREESUM)
       {
         fprintf(stream, "with special columns: c%zu, c%zu, c%zu\n", parent->childSpecialColumns[childIndex][0],
           parent->childSpecialColumns[childIndex][1], parent->childSpecialColumns[childIndex][2]);
@@ -1035,14 +1034,14 @@ CMR_ERROR CMRseymourCreateChildFromMatrices(CMR* cmr, CMR_SEYMOUR_NODE* parent, 
 }
 
 
-CMR_ERROR CMRseymourUpdateOneSum (CMR* cmr, CMR_SEYMOUR_NODE* node, size_t numChildren)
+CMR_ERROR CMRseymourUpdateOnesum (CMR* cmr, CMR_SEYMOUR_NODE* node, size_t numChildren)
 {
   assert(cmr);
   assert(node);
   assert(node->type == CMR_SEYMOUR_NODE_TYPE_UNKNOWN);
   assert(numChildren >= 2);
 
-  node->type = CMR_SEYMOUR_NODE_TYPE_ONE_SUM;
+  node->type = CMR_SEYMOUR_NODE_TYPE_ONESUM;
 
   CMR_CALL( CMRseymourSetNumChildren(cmr, node, numChildren) );
 
@@ -1116,7 +1115,7 @@ CMR_ERROR CMRseymourUpdateSeriesParallel(CMR* cmr, CMR_SEYMOUR_NODE* node, CMR_S
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRseymourUpdateTwoSum(CMR* cmr, CMR_SEYMOUR_NODE* node, CMR_SEPA* separation)
+CMR_ERROR CMRseymourUpdateTwosum(CMR* cmr, CMR_SEYMOUR_NODE* node, CMR_SEPA* separation)
 {
   assert(cmr);
   assert(node);
@@ -1126,7 +1125,7 @@ CMR_ERROR CMRseymourUpdateTwoSum(CMR* cmr, CMR_SEYMOUR_NODE* node, CMR_SEPA* sep
   size_t numBaseColumns[2];
   CMR_CALL( CMRsepaComputeSizes(separation, &numBaseRows[0], &numBaseColumns[0], &numBaseRows[1], &numBaseColumns[1]) );
 
-  node->type = CMR_SEYMOUR_NODE_TYPE_TWO_SUM;
+  node->type = CMR_SEYMOUR_NODE_TYPE_TWOSUM;
   CMR_CALL( CMRseymourSetNumChildren(cmr, node, 2) );
   for (size_t childIndex = 0; childIndex < 2; ++childIndex)
   {
@@ -1290,9 +1289,9 @@ CMR_ERROR CMRseymourSetAttributes(CMR_SEYMOUR_NODE* node)
     }
     break;
   case CMR_SEYMOUR_NODE_TYPE_PIVOTS:
-  case CMR_SEYMOUR_NODE_TYPE_ONE_SUM:
-  case CMR_SEYMOUR_NODE_TYPE_TWO_SUM:
-  case CMR_SEYMOUR_NODE_TYPE_THREE_SUM_TRUEMPER:
+  case CMR_SEYMOUR_NODE_TYPE_ONESUM:
+  case CMR_SEYMOUR_NODE_TYPE_TWOSUM:
+  case CMR_SEYMOUR_NODE_TYPE_THREESUM:
     if (node->regularity == 0)
     {
       node->regularity = 1;
@@ -1321,7 +1320,7 @@ CMR_ERROR CMRseymourSetAttributes(CMR_SEYMOUR_NODE* node)
       }
     }
   break;
-  case CMR_SEYMOUR_NODE_TYPE_THREE_SUM_SEYMOUR:
+  case CMR_SEYMOUR_NODE_TYPE_DELTASUM:
     if (node->regularity == 0)
     {
       node->regularity = 1;
@@ -1621,7 +1620,7 @@ CMR_ERROR CMRregularityTaskRun(
   if (!task->node->testedTwoConnected)
   {
     CMRdbgMsg(4, "Searching for 1-separations.\n");
-    error = CMRregularitySearchOneSum(cmr, task, queue);
+    error = CMRregularitySearchOnesum(cmr, task, queue);
     if (error != CMR_OKAY && error != CMR_ERROR_TIMEOUT)
       CMR_CALL( error );
   }
@@ -1734,8 +1733,8 @@ CMR_ERROR CMRregularityCompleteDecomposition(CMR* cmr, CMR_SEYMOUR_NODE* subtree
   CMR_CALL( CMRchrmatPrintDense(cmr, subtree->matrix, stdout, '0', false) );
 #endif /* CMR_DEBUG_MATRICES */
 
-  if (params->threeSumStrategy ==
-    (CMR_SEYMOUR_THREESUM_FLAG_DISTRIBUTED_PIVOT | CMR_SEYMOUR_THREESUM_FLAG_CONCENTRATED_PIVOT))
+  if (params->decomposeStrategy ==
+    (CMR_SEYMOUR_DECOMPOSE_FLAG_DISTRIBUTED_PIVOT | CMR_SEYMOUR_DECOMPOSE_FLAG_CONCENTRATED_PIVOT))
   {
     return CMR_ERROR_PARAMS;
   }

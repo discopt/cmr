@@ -59,10 +59,10 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
 #endif /* CMR_DEBUG */
 
   if (((separation->type == CMR_SEPA_TYPE_THREE_DISTRIBUTED_RANKS)
-    && ((task->params->threeSumStrategy & CMR_SEYMOUR_THREESUM_FLAG_DISTRIBUTED_MASK)
-    == CMR_SEYMOUR_THREESUM_FLAG_DISTRIBUTED_PIVOT)) || ((separation->type == CMR_SEPA_TYPE_THREE_CONCENTRATED_RANK)
-    && ((task->params->threeSumStrategy & CMR_SEYMOUR_THREESUM_FLAG_CONCENTRATED_MASK)
-    == CMR_SEYMOUR_THREESUM_FLAG_CONCENTRATED_PIVOT)))
+    && ((task->params->decomposeStrategy & CMR_SEYMOUR_DECOMPOSE_FLAG_DISTRIBUTED_MASK)
+    == CMR_SEYMOUR_DECOMPOSE_FLAG_DISTRIBUTED_PIVOT)) || ((separation->type == CMR_SEPA_TYPE_THREE_CONCENTRATED_RANK)
+    && ((task->params->decomposeStrategy & CMR_SEYMOUR_DECOMPOSE_FLAG_CONCENTRATED_MASK)
+    == CMR_SEYMOUR_DECOMPOSE_FLAG_CONCENTRATED_PIVOT)))
   {
     CMRdbgMsg(10, "Pivoting for rank distribution.\n");
 
@@ -162,12 +162,12 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
 
   if (separation->type == CMR_SEPA_TYPE_THREE_DISTRIBUTED_RANKS)
   {
-    int distributedStrategy = task->params->threeSumStrategy & CMR_SEYMOUR_THREESUM_FLAG_DISTRIBUTED_MASK;
-    if (distributedStrategy == CMR_SEYMOUR_THREESUM_FLAG_DISTRIBUTED_DELTASUM)
+    int distributedStrategy = task->params->decomposeStrategy & CMR_SEYMOUR_DECOMPOSE_FLAG_DISTRIBUTED_MASK;
+    if (distributedStrategy == CMR_SEYMOUR_DECOMPOSE_FLAG_DISTRIBUTED_DELTASUM)
     {
       CMRdbgMsg(10, "Carrying out Delta-sum for a distributed-rank 3-separation.\n");
 
-      node->type = CMR_SEYMOUR_NODE_TYPE_THREE_SUM_SEYMOUR;
+      node->type = CMR_SEYMOUR_NODE_TYPE_DELTASUM;
       CMR_CALL( CMRseymourSetNumChildren(cmr, node, 2) );
 
       char epsilon = 0;
@@ -280,12 +280,12 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
   else
   {
     assert(separation->type == CMR_SEPA_TYPE_THREE_CONCENTRATED_RANK);
-    int concentratedStrategy = task->params->threeSumStrategy & CMR_SEYMOUR_THREESUM_FLAG_CONCENTRATED_MASK;
-    if (concentratedStrategy == CMR_SEYMOUR_THREESUM_FLAG_CONCENTRATED_THREESUM)
+    int concentratedStrategy = task->params->decomposeStrategy & CMR_SEYMOUR_DECOMPOSE_FLAG_CONCENTRATED_MASK;
+    if (concentratedStrategy == CMR_SEYMOUR_DECOMPOSE_FLAG_CONCENTRATED_THREESUM)
     {
       CMRdbgMsg(10, "Carrying out 3-sum for a concentrated-rank 3-separation.\n");
 
-      node->type = CMR_SEYMOUR_NODE_TYPE_THREE_SUM_TRUEMPER;
+      node->type = CMR_SEYMOUR_NODE_TYPE_THREESUM;
       CMR_CALL( CMRseymourSetNumChildren(cmr, node, 2) );
 
       size_t specialRows[3];

@@ -17,7 +17,7 @@ int compareOneSumComponents(const void* a, const void* b)
 }
 
 
-CMR_ERROR CMRregularitySearchOneSum(CMR* cmr, DecompositionTask* task, DecompositionQueue* queue)
+CMR_ERROR CMRregularitySearchOnesum(CMR* cmr, DecompositionTask* task, DecompositionQueue* queue)
 {
   assert(cmr);
   assert(task);
@@ -60,7 +60,7 @@ CMR_ERROR CMRregularitySearchOneSum(CMR* cmr, DecompositionTask* task, Decomposi
     CMR_CALL( CMRallocStackArray(cmr, &columnsToParent, task->node->numColumns) );
 
     /* We now create the children. */
-    CMR_CALL( CMRseymourUpdateOneSum(cmr, task->node, numComponents) );
+    CMR_CALL( CMRseymourUpdateOnesum(cmr, task->node, numComponents) );
     for (size_t comp = 0; comp < numComponents; ++comp)
     {
       CMR_BLOCK* component = &components[comp];
@@ -74,7 +74,7 @@ CMR_ERROR CMRregularitySearchOneSum(CMR* cmr, DecompositionTask* task, Decomposi
       CMR_CALL( CMRfreeBlockArray(cmr, &component->rowsToOriginal) );
       CMR_CALL( CMRfreeBlockArray(cmr, &component->columnsToOriginal) );
     }
-    task->node->type = CMR_SEYMOUR_NODE_TYPE_ONE_SUM;
+    task->node->type = CMR_SEYMOUR_NODE_TYPE_ONESUM;
 
     CMR_CALL( CMRfreeStackArray(cmr, &columnsToParent) );
     CMR_CALL( CMRfreeStackArray(cmr, &rowsToParent) );

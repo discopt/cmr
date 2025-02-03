@@ -20,7 +20,7 @@ TEST(CTU, ExamplesSeymour)
     bool isCTU;
     CMR_CTU_PARAMS params;
     ASSERT_CMR_CALL( CMRctuParamsInit(&params) );
-    params.tu.seymour.threeSumStrategy = CMR_SEYMOUR_THREESUM_FLAG_SEYMOUR;
+    params.tu.seymour.decomposeStrategy = CMR_SEYMOUR_DECOMPOSE_FLAG_SEYMOUR;
 
     ASSERT_CMR_CALL( CMRctuTest(cmr, matrix, &isCTU, NULL, NULL, &params, NULL, DBL_MAX) );
     
@@ -42,7 +42,7 @@ TEST(CTU, ExamplesSeymour)
     size_t complementColumn;
     CMR_CTU_PARAMS params;
     ASSERT_CMR_CALL( CMRctuParamsInit(&params) );
-    params.tu.seymour.threeSumStrategy = CMR_SEYMOUR_THREESUM_FLAG_SEYMOUR;
+    params.tu.seymour.decomposeStrategy = CMR_SEYMOUR_DECOMPOSE_FLAG_SEYMOUR;
 
     ASSERT_CMR_CALL( CMRctuTest(cmr, matrix, &isCTU, &complementRow, &complementColumn, &params, NULL, DBL_MAX) );
     ASSERT_FALSE(isCTU);

@@ -27,6 +27,7 @@ CMR_ERROR testRegularity(
   bool printStats,                  /**< Whether to print statistics to stderr. */
   bool directGraphicness,           /**< Whether to use fast graphicness routines. */
   bool seriesParallel,              /**< Whether to allow series-parallel operations in the decomposition tree. */
+  int decomposeStrategy,            /**< Which strategy to use for 3-separations. */
   double timeLimit                  /**< Time limit to impose. */
 )
 {
@@ -65,6 +66,7 @@ CMR_ERROR testRegularity(
   params.seymour.stopWhenIrregular = !outputTreeFileName;
   params.seymour.directGraphicness = directGraphicness;
   params.seymour.seriesParallel = seriesParallel;
+  params.seymour.decomposeStrategy = decomposeStrategy;
   CMR_REGULAR_STATS stats;
   CMR_CALL( CMRregularStatsInit(&stats) );
   CMR_CALL( CMRregularTest(cmr, matrix, &isRegular, outputTreeFileName ? &decomposition : NULL,
@@ -121,6 +123,7 @@ int printUsage(const char* program)
   fputs("Advanced options:\n", stderr);
   fputs("  --stats              Print statistics about the computation to stderr.\n", stderr);
   fputs("  --time-limit LIMIT   Allow at most LIMIT seconds for the computation.\n", stderr);
+  fputs("  --decompose          Strategy for decomposing; among {seymour, truemper, pivotless}.\n", stderr);
   fputs("  --no-direct-graphic  Check only 3-connected matrices for regularity.\n", stderr);
   fputs("  --no-series-parallel Do not allow series-parallel operations in decomposition tree.\n", stderr);
   fputs("\n", stderr);
@@ -142,6 +145,7 @@ int main(int argc, char** argv)
   bool directGraphicness = true;
   bool seriesParallel = true;
   double timeLimit = DBL_MAX;
+  int decomposeStrategy = CMR_SEYMOUR_DECOMPOSE_FLAG_SEYMOUR;
   for (int a = 1; a < argc; ++a)
   {
     if (!strcmp(argv[a], "-h"))
@@ -172,6 +176,21 @@ int main(int argc, char** argv)
       directGraphicness = false;
     else if (!strcmp(argv[a], "--no-series-parallel"))
       seriesParallel = false;
+    else if (!strcmp(argv[a], "--decompose") && a+1 < argc)
+    {
+      ++a;
+      if (!strcasecmp(argv[a], "seymour"))
+        decomposeStrategy = CMR_SEYMOUR_DECOMPOSE_FLAG_SEYMOUR;
+      else if (!strcasecmp(argv[a], "truemper"))
+        decomposeStrategy = CMR_SEYMOUR_DECOMPOSE_FLAG_TRUEMPER;
+      else if (!strcasecmp(argv[a], "pivotless"))
+        decomposeStrategy = CMR_SEYMOUR_DECOMPOSE_FLAG_PIVOTLESS;
+      else
+      {
+        fprintf(stderr, "Error: Invalid threesum-strategy <%s> specified.\n\n", argv[a]);
+        return printUsage(argv[0]);
+      }
+    }
     else if (!strcmp(argv[a], "--time-limit") && (a+1 < argc))
     {
       if (sscanf(argv[a+1], "%lf", &timeLimit) == 0 || timeLimit <= 0)
@@ -198,7 +217,7 @@ int main(int argc, char** argv)
 
   CMR_ERROR error;
   error = testRegularity(inputMatrixFileName, inputFormat, outputTree, outputMinor, printStats, directGraphicness,
-    seriesParallel, timeLimit);
+    seriesParallel, decomposeStrategy, timeLimit);
 
   switch (error)
   {

@@ -932,7 +932,7 @@ CMR_ERROR CMRregularityExtendNestedMinorSequence(CMR* cmr, DecompositionTask* ta
       /* Carry out 2-sum decomposition. */
 
       CMRdbgMsg(8, "-> 2-separation found.\n");
-      CMR_CALL( CMRseymourUpdateTwoSum(cmr, node, separation) );
+      CMR_CALL( CMRseymourUpdateTwosum(cmr, node, separation) );
       CMR_CALL( CMRsepaFree(cmr, &separation) );
 
       DecompositionTask* childTasks[2] = { task, NULL };
@@ -957,7 +957,7 @@ CMR_ERROR CMRregularityExtendNestedMinorSequence(CMR* cmr, DecompositionTask* ta
     task->stats->enumerationTime += (endClock - startClock) * 1.0 / CLOCKS_PER_SEC;
   }
 
-  if (node->type == CMR_SEYMOUR_NODE_TYPE_TWO_SUM)
+  if (node->type == CMR_SEYMOUR_NODE_TYPE_TWOSUM)
   {
     CMRdbgMsg(8, "Aborting construction of sequence of nested 3-connected minors due to a 2-separation.\n");
   }

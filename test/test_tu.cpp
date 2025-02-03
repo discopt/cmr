@@ -257,7 +257,7 @@ TEST(TU, Onesum)
     ASSERT_CMR_CALL( CMRseymourPrint(cmr, dec, stdout, true, true, true, true, true, true) );
     ASSERT_TRUE( isTU );
     ASSERT_FALSE( CMRseymourHasTranspose(dec) ); /* Default settings should mean that the transpose is never computed. */
-    ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_ONE_SUM );
+    ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_ONESUM );
     ASSERT_EQ( CMRseymourNumChildren(dec), 2UL );
     ASSERT_LT( CMRseymourGraphicness(CMRseymourChild(dec, 0))
       * CMRseymourGraphicness(CMRseymourChild(dec, 1)), 0);
@@ -318,7 +318,7 @@ TEST(TU, SeriesParallelTwoSeparation)
     ASSERT_CMR_CALL( CMRseymourPrint(cmr, dec, stdout, true, true, true, true, true, true) );
     ASSERT_TRUE( isTU );
     ASSERT_TRUE( CMRseymourHasTranspose(dec) ); /* As we test for graphicness, the transpose is constructed. */
-    ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_TWO_SUM );
+    ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_TWOSUM );
     ASSERT_EQ( CMRseymourNumChildren(dec), 2UL );
     ASSERT_GT( CMRseymourGraphicness(CMRseymourChild(dec, 0)), 0 );
     ASSERT_LT( CMRseymourCographicness(CMRseymourChild(dec, 0)), 1 );
@@ -370,7 +370,7 @@ TEST(TU, NestedMinorSearchTwoSeparation)
     ASSERT_CMR_CALL( CMRseymourPrint(cmr, dec, stdout, true, true, true, true, true, true) );
     ASSERT_TRUE( isTU );
     ASSERT_TRUE( CMRseymourHasTranspose(dec) ); /* As we test for graphicness, the transpose is constructed. */
-    ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_TWO_SUM );
+    ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_TWOSUM );
     ASSERT_EQ( CMRseymourNumChildren(dec), 2UL );
     ASSERT_GT( CMRseymourGraphicness(CMRseymourChild(dec, 0)), 0 );
     ASSERT_LE( CMRseymourCographicness(CMRseymourChild(dec, 0)), 0 );
@@ -1032,7 +1032,7 @@ TEST(TU, DeltasumR12)
     CMR_SEYMOUR_NODE* dec = NULL;
     CMR_TU_PARAMS params;
     ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
-    params.seymour.threeSumStrategy = CMR_SEYMOUR_THREESUM_FLAG_SEYMOUR;
+    params.seymour.decomposeStrategy = CMR_SEYMOUR_DECOMPOSE_FLAG_SEYMOUR;
 
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
 
@@ -1046,7 +1046,7 @@ TEST(TU, DeltasumR12)
 
     CMR_SEYMOUR_NODE* child = CMRseymourChild(dec, 0);
 
-    ASSERT_EQ( CMRseymourType(child), CMR_SEYMOUR_NODE_TYPE_THREE_SUM_SEYMOUR );
+    ASSERT_EQ( CMRseymourType(child), CMR_SEYMOUR_NODE_TYPE_DELTASUM );
     ASSERT_EQ( CMRseymourNumChildren(child), 2UL );
 
     CMR_SEYMOUR_NODE* grandChild1 = CMRseymourChild(child, 0);
@@ -1086,7 +1086,7 @@ TEST(TU, ThreesumR12)
     CMR_SEYMOUR_NODE* dec = NULL;
     CMR_TU_PARAMS params;
     ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
-    params.seymour.threeSumStrategy = CMR_SEYMOUR_THREESUM_FLAG_TRUEMPER;
+    params.seymour.decomposeStrategy = CMR_SEYMOUR_DECOMPOSE_FLAG_TRUEMPER;
 
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
 
@@ -1095,7 +1095,7 @@ TEST(TU, ThreesumR12)
     ASSERT_GT( CMRseymourRegularity(dec), 0 );
     ASSERT_LT( CMRseymourGraphicness(dec), 0 );
 
-    ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_THREE_SUM_TRUEMPER );
+    ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_THREESUM );
     ASSERT_EQ( CMRseymourNumChildren(dec), 2UL );
 
     CMR_SEYMOUR_NODE* child1 = CMRseymourChild(dec, 0);
@@ -1137,7 +1137,7 @@ TEST(TU, DeltasumSigns)
     CMR_SEYMOUR_NODE* root;
     CMR_TU_PARAMS params;
     ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
-    params.seymour.threeSumStrategy = CMR_SEYMOUR_THREESUM_FLAG_SEYMOUR;
+    params.seymour.decomposeStrategy = CMR_SEYMOUR_DECOMPOSE_FLAG_SEYMOUR;
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &root, NULL, &params, NULL, DBL_MAX) );
 
     // TODO: The decomposition of this matrix is not checked manually, yet. assert(false);
@@ -1184,7 +1184,7 @@ TEST(TU, ForbiddenSubmatrixSeymour)
     CMR_SUBMAT* forbiddenSubmatrix = NULL;
     CMR_TU_PARAMS params;
     ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
-    params.seymour.threeSumStrategy = CMR_SEYMOUR_THREESUM_FLAG_SEYMOUR;
+    params.seymour.decomposeStrategy = CMR_SEYMOUR_DECOMPOSE_FLAG_SEYMOUR;
 
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, &forbiddenSubmatrix, &params, NULL, DBL_MAX) );
 
@@ -1231,7 +1231,7 @@ TEST(TU, ForbiddenSubmatrixTruemper)
     CMR_SUBMAT* forbiddenSubmatrix = NULL;
     CMR_TU_PARAMS params;
     ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
-    params.seymour.threeSumStrategy = CMR_SEYMOUR_THREESUM_FLAG_TRUEMPER;
+    params.seymour.decomposeStrategy = CMR_SEYMOUR_DECOMPOSE_FLAG_TRUEMPER;
 
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, &forbiddenSubmatrix, &params, NULL, DBL_MAX) );
 
@@ -1329,14 +1329,14 @@ TEST(TU, ThreesumPivotHighRank)
     CMR_SEYMOUR_NODE* dec = NULL;
     CMR_TU_PARAMS params;
     ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
-    params.seymour.threeSumStrategy = CMR_SEYMOUR_THREESUM_FLAG_TRUEMPER;
+    params.seymour.decomposeStrategy = CMR_SEYMOUR_DECOMPOSE_FLAG_TRUEMPER;
 
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
 
     ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_PIVOTS );
     ASSERT_EQ( CMRseymourNumChildren(dec), 1 );
     CMR_SEYMOUR_NODE* threeSumNode = CMRseymourChild(dec, 0);
-    ASSERT_EQ( CMRseymourType(threeSumNode), CMR_SEYMOUR_NODE_TYPE_THREE_SUM_TRUEMPER );
+    ASSERT_EQ( CMRseymourType(threeSumNode), CMR_SEYMOUR_NODE_TYPE_THREESUM );
     ASSERT_EQ( CMRseymourNumChildren(threeSumNode), 2 );
     CMR_SEYMOUR_NODE* node = CMRseymourChild(threeSumNode, 0);
     ASSERT_EQ( CMRseymourType(node), CMR_SEYMOUR_NODE_TYPE_IRREGULAR );
@@ -1366,7 +1366,7 @@ TEST(TU, ThreesumPivotHighRank)
     CMR_SEYMOUR_NODE* dec = NULL;
     CMR_TU_PARAMS params;
     ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
-    params.seymour.threeSumStrategy = CMR_SEYMOUR_THREESUM_FLAG_TRUEMPER;
+    params.seymour.decomposeStrategy = CMR_SEYMOUR_DECOMPOSE_FLAG_TRUEMPER;
 
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
 
@@ -1377,7 +1377,7 @@ TEST(TU, ThreesumPivotHighRank)
     ASSERT_EQ( CMRseymourNumPivots(pivotNode), 1 );
     ASSERT_EQ( CMRseymourNumChildren(pivotNode), 1 );
     CMR_SEYMOUR_NODE* threeSumNode = CMRseymourChild(pivotNode, 0);
-    ASSERT_EQ( CMRseymourType(threeSumNode), CMR_SEYMOUR_NODE_TYPE_THREE_SUM_TRUEMPER );
+    ASSERT_EQ( CMRseymourType(threeSumNode), CMR_SEYMOUR_NODE_TYPE_THREESUM );
     ASSERT_EQ( CMRseymourNumChildren(threeSumNode), 2 );
     CMR_SEYMOUR_NODE* node = CMRseymourChild(threeSumNode, 0);
     ASSERT_EQ( CMRseymourType(node), CMR_SEYMOUR_NODE_TYPE_IRREGULAR );
@@ -1421,7 +1421,7 @@ TEST(TU, CompleteTree)
     ASSERT_CMR_CALL( CMRseymourPrint(cmr, root, stdout, true, true, true, true, true, true) );
 
     ASSERT_EQ( CMRseymourRegularity(root), -1 );
-    ASSERT_EQ( CMRseymourType(root), CMR_SEYMOUR_NODE_TYPE_ONE_SUM );
+    ASSERT_EQ( CMRseymourType(root), CMR_SEYMOUR_NODE_TYPE_ONESUM );
     CMR_SEYMOUR_NODE* child0 = CMRseymourChild(root, 0);
     CMR_SEYMOUR_NODE* child1 = CMRseymourChild(root, 1);
     ASSERT_EQ( CMRseymourType(child0), CMR_SEYMOUR_NODE_TYPE_IRREGULAR );
@@ -1458,7 +1458,7 @@ TEST(TU, CompleteTree)
     ASSERT_CMR_CALL( CMRseymourPrint(cmr, dec, stdout, true, true, true, true, true, true) );
 
     ASSERT_EQ( CMRseymourRegularity(dec), -1 );
-    ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_ONE_SUM );
+    ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_ONESUM );
     CMR_SEYMOUR_NODE* child0 = CMRseymourChild(dec, 0);
     CMR_SEYMOUR_NODE* child1 = CMRseymourChild(dec, 1);
 
@@ -1504,7 +1504,7 @@ TEST(TU, CompleteTree)
     ASSERT_CMR_CALL( CMRseymourPrint(cmr, dec, stdout, true, true, true, true, true, true) );
 
     ASSERT_EQ( CMRseymourRegularity(dec), -1 );
-    ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_ONE_SUM );
+    ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_ONESUM );
     CMR_SEYMOUR_NODE* child0 = CMRseymourChild(dec, 0);
     CMR_SEYMOUR_NODE* child1 = CMRseymourChild(dec, 1);
 
@@ -1550,7 +1550,7 @@ TEST(TU, CompleteTree)
     ASSERT_CMR_CALL( CMRseymourPrint(cmr, dec, stdout, true, true, true, true, true, true) );
 
     ASSERT_EQ( CMRseymourRegularity(dec), -1 );
-    ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_ONE_SUM );
+    ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_ONESUM );
     CMR_SEYMOUR_NODE* child0 = CMRseymourChild(dec, 0);
     CMR_SEYMOUR_NODE* child1 = CMRseymourChild(dec, 1);
 
@@ -1601,7 +1601,7 @@ TEST(TU, CompleteTree)
     ASSERT_CMR_CALL( CMRseymourPrint(cmr, dec, stdout, true, true, true, true, true, true) );
 
     ASSERT_EQ( CMRseymourRegularity(dec), -1 );
-    ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_ONE_SUM );
+    ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_ONESUM );
     CMR_SEYMOUR_NODE* child0 = CMRseymourChild(dec, 0);
     CMR_SEYMOUR_NODE* child1 = CMRseymourChild(dec, 1);
 
@@ -1647,7 +1647,7 @@ TEST(TU, CompleteTree)
     ASSERT_CMR_CALL( CMRseymourPrint(cmr, dec, stdout, true, true, true, true, true, true) );
 
     ASSERT_EQ( CMRseymourRegularity(dec), -1 );
-    ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_ONE_SUM );
+    ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_ONESUM );
     CMR_SEYMOUR_NODE* child0 = CMRseymourChild(dec, 0);
     CMR_SEYMOUR_NODE* child1 = CMRseymourChild(dec, 1);
 
@@ -1694,7 +1694,7 @@ TEST(TU, CompleteTree)
     ASSERT_CMR_CALL( CMRseymourPrint(cmr, dec, stdout, true, true, true, true, true, true) );
 
     ASSERT_EQ( CMRseymourRegularity(dec), -1 );
-    ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_ONE_SUM );
+    ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_ONESUM );
     CMR_SEYMOUR_NODE* child0 = CMRseymourChild(dec, 0);
     CMR_SEYMOUR_NODE* child1 = CMRseymourChild(dec, 1);
 
@@ -1742,7 +1742,7 @@ TEST(TU, CompleteTree)
     ASSERT_CMR_CALL( CMRseymourPrint(cmr, dec, stdout, true, true, true, true, true, true) );
 
     ASSERT_EQ( CMRseymourRegularity(dec), -1 );
-    ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_ONE_SUM );
+    ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_ONESUM );
     CMR_SEYMOUR_NODE* child0 = CMRseymourChild(dec, 0);
     CMR_SEYMOUR_NODE* child1 = CMRseymourChild(dec, 1);
 

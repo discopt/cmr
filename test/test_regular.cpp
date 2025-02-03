@@ -51,7 +51,7 @@ TEST(Regular, Onesum)
     ASSERT_CMR_CALL( CMRseymourPrint(cmr, dec, stdout, true, true, true, true, true, true) );
     ASSERT_TRUE( isRegular );
     ASSERT_FALSE( CMRseymourHasTranspose(dec) ); /* Default settings should mean that the transpose is never computed. */
-    ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_ONE_SUM );
+    ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_ONESUM );
     ASSERT_EQ( CMRseymourNumChildren(dec), 2UL );
     ASSERT_LT( CMRseymourGraphicness(CMRseymourChild(dec, 0))
       * CMRseymourGraphicness(CMRseymourChild(dec, 1)), 0 );
@@ -112,7 +112,7 @@ TEST(Regular, SeriesParallelTwoSeparation)
     ASSERT_CMR_CALL( CMRseymourPrint(cmr, dec, stdout, true, true, true, true, true, true) );
     ASSERT_TRUE( isRegular );
     ASSERT_TRUE( CMRseymourHasTranspose(dec) ); /* As we test for graphicness, the transpose is constructed. */
-    ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_TWO_SUM );
+    ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_TWOSUM );
     ASSERT_EQ( CMRseymourNumChildren(dec), 2UL );
     ASSERT_EQ( CMRseymourType(CMRseymourChild(dec, 0)), CMR_SEYMOUR_NODE_TYPE_GRAPH );
     ASSERT_EQ( CMRseymourType(CMRseymourChild(dec, 1)), CMR_SEYMOUR_NODE_TYPE_COGRAPH );
@@ -170,7 +170,7 @@ TEST(Regular, NestedMinorSearchTwoSeparation)
     ASSERT_CMR_CALL( CMRseymourPrint(cmr, dec, stdout, true, true, true, true, true, true) );
     ASSERT_TRUE( isRegular );
     ASSERT_TRUE( CMRseymourHasTranspose(dec) ); /* As we test for graphicness, the transpose is constructed. */
-    ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_TWO_SUM );
+    ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_TWOSUM );
     ASSERT_EQ( CMRseymourNumChildren(dec), 2UL );
     ASSERT_GT( CMRseymourGraphicness(CMRseymourChild(dec, 0)), 0);
     ASSERT_LE( CMRseymourCographicness(CMRseymourChild(dec, 0)), 0);
@@ -350,7 +350,7 @@ void testSequenceGraphicness(
   CMR_REGULAR_PARAMS params;
   ASSERT_CMR_CALL( CMRregularParamsInit(&params) );
   params.seymour.directGraphicness = false;
-  params.seymour.threeSumStrategy = CMR_SEYMOUR_THREESUM_FLAG_SEYMOUR;
+  params.seymour.decomposeStrategy = CMR_SEYMOUR_DECOMPOSE_FLAG_SEYMOUR;
   ASSERT_CMR_CALL( CMRregularTest(cmr, matrix, &isRegular, &dec, NULL, &params, NULL, DBL_MAX) );
 
   ASSERT_CMR_CALL( CMRseymourPrint(cmr, dec, stdout, true, false, false, false, false, false) );
@@ -708,7 +708,7 @@ static
 void testEnumerate(
   CMR* cmr,                                   /**< \ref CMR environment. */
   CMR_CHRMAT* matrix,                         /**< Matrix to test. */
-  CMR_SEYMOUR_THREESUM_FLAG threeSumStrategy, /**< Strategy for the 3-sum. */
+  CMR_SEYMOUR_DECOMPOSE_FLAG threeSumStrategy, /**< Strategy for the 3-sum. */
   bool knowRegular                            /**< Whether the matrix is regular. */
 )
 {
@@ -720,7 +720,7 @@ void testEnumerate(
   CMR_REGULAR_PARAMS params;
   ASSERT_CMR_CALL( CMRregularParamsInit(&params) );
   params.seymour.directGraphicness = false;
-  params.seymour.threeSumStrategy = threeSumStrategy;
+  params.seymour.decomposeStrategy = threeSumStrategy;
   ASSERT_CMR_CALL( CMRregularTest(cmr, matrix, &isRegular, &dec, NULL, &params, NULL, DBL_MAX) );
 
   if (knowRegular)
@@ -751,7 +751,7 @@ TEST(Regular, EnumerateRanksZeroTwo)
       "0 0 1 1 "
       "0 1 1 1 "
     ) );
-    testEnumerate(cmr, matrix, CMR_SEYMOUR_THREESUM_FLAG_SEYMOUR, false);
+    testEnumerate(cmr, matrix, CMR_SEYMOUR_DECOMPOSE_FLAG_SEYMOUR, false);
   }
 
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
@@ -770,7 +770,7 @@ TEST(Regular, EnumerateRanksOneOne)
       "1 0 0 1 "
       "1 1 0 0 "
     ) );
-    testEnumerate(cmr, matrix, CMR_SEYMOUR_THREESUM_FLAG_SEYMOUR, false);
+    testEnumerate(cmr, matrix, CMR_SEYMOUR_DECOMPOSE_FLAG_SEYMOUR, false);
   }
 
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
@@ -790,7 +790,7 @@ TEST(Regular, EnumerateConcentratedRankForcePivot)
       "1 1 1 1 1 "
       "1 0 0 0 1 "
     ) );
-    testEnumerate(cmr, matrix, CMR_SEYMOUR_THREESUM_FLAG_SEYMOUR, false);
+    testEnumerate(cmr, matrix, CMR_SEYMOUR_DECOMPOSE_FLAG_SEYMOUR, false);
   }
 
   ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
@@ -818,7 +818,7 @@ TEST(Regular, R12)
     CMR_SEYMOUR_NODE* dec = NULL;
     CMR_REGULAR_PARAMS params;
     ASSERT_CMR_CALL( CMRregularParamsInit(&params) );
-    params.seymour.threeSumStrategy = CMR_SEYMOUR_THREESUM_FLAG_SEYMOUR;
+    params.seymour.decomposeStrategy = CMR_SEYMOUR_DECOMPOSE_FLAG_SEYMOUR;
     ASSERT_CMR_CALL( CMRregularTest(cmr, matrix, &isRegular, &dec, NULL, &params, NULL, DBL_MAX) );
     ASSERT_GT( CMRseymourRegularity(dec), 0 );
 //     ASSERT_EQ( CMRseymourNumChildren(dec), 2UL );
@@ -864,7 +864,7 @@ TEST(Regular, TreeFlagsStopNoncographic)
     params.seymour.planarityCheck = true;
 
     ASSERT_CMR_CALL( CMRregularTest(cmr, matrix, NULL, &dec, NULL, &params, NULL, DBL_MAX) );
-    ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_ONE_SUM );
+    ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_ONESUM );
     ASSERT_EQ( CMRseymourType(CMRseymourChild(dec, 0)), CMR_SEYMOUR_NODE_TYPE_GRAPH );
     ASSERT_EQ( CMRseymourType(CMRseymourChild(dec, 1)), CMR_SEYMOUR_NODE_TYPE_UNKNOWN );
     ASSERT_LT( CMRseymourCographicness(dec), 0 );
@@ -905,7 +905,7 @@ TEST(Regular, TreeFlagsStopNongraphic)
     params.seymour.planarityCheck = true;
 
     ASSERT_CMR_CALL( CMRregularTest(cmr, matrix, NULL, &dec, NULL, &params, NULL, DBL_MAX) );
-    ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_ONE_SUM );
+    ASSERT_EQ( CMRseymourType(dec), CMR_SEYMOUR_NODE_TYPE_ONESUM );
     ASSERT_LT( CMRseymourGraphicness(dec), 0 );
 
     ASSERT_CMR_CALL( CMRseymourRelease(cmr, &dec) );

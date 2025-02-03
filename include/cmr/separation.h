@@ -283,7 +283,7 @@ CMR_ERROR CMRtwosumCompose(
  * \f$ M_2 = \begin{bmatrix} b^{\textsf{T}} \\ D \end{bmatrix} \f$ such that \f$ B = a b^{\textsf{T}} \f$ holds and such
  * that \f$ a \f$ is an actual column of \f$ M \f$.
  *
- * This function computes \f$ M_1 \f$, while \f$ M_2 \f$ can be computed by \ref CMRtwoSumDecomposeSecond.
+ * This function computes \f$ M_1 \f$, while \f$ M_2 \f$ can be computed by \ref CMRtwosumDecomposeSecond.
  *
  * \note For the first variant, if \p firstSpecialRows is not \c NULL then \p *firstSpecialRows[0] will be the last row.
  *
@@ -325,7 +325,7 @@ CMR_ERROR CMRtwosumDecomposeFirst(
  * \f$ M_2 = \begin{bmatrix} b^{\textsf{T}} \\ D \end{bmatrix} \f$ such that \f$ B = a b^{\textsf{T}} \f$ holds and such
  * that \f$ a \f$ is an actual column of \f$ M \f$.
  *
- * This function computes \f$ M_2 \f$, while \f$ M_1 \f$ can be computed by \ref CMRtwoSumDecomposeFirst.
+ * This function computes \f$ M_2 \f$, while \f$ M_1 \f$ can be computed by \ref CMRtwosumDecomposeFirst.
  *
  * \note For the first variant, if \p secondSpecialColumns is not \c NULL then \p *secondSpecialColumns[0] will be the
  *       first column.
