@@ -173,7 +173,7 @@ int printUsage(const char* program)
   fputs("  Y Y-sum (distributed ranks)\n", stderr);
   fputs("  3 3-sum (concentrated rank)\n", stderr);
   fputs("  P pivot (changes rank type)\n", stderr);
-  fputs("Note that D3 and Y3 do not produce pivots.\n", stderr);
+  fputs("Note that D3 and Y3 do not produce pivots.\n\n", stderr);
 
   fputs("Formats for matrices: dense, sparse\n", stderr);
   fputs("If IN-MAT is `-' then the matrix is read from stdin.\n", stderr);

@@ -35,7 +35,9 @@ determines whether the [matrix](\ref file-formats-matrix) given in file `IN-MAT`
   - `--time-limit LIMIT` Allow at most `LIMIT` seconds for the computation.
 
 Formats for matrices: [dense](\ref dense-matrix), [sparse](\ref sparse-matrix)
+
 If `IN-MAT` is `-` then the [matrix](\ref file-formats-matrix) is read from stdin.
+
 If `OUT-GRAPH`, `OUT-TREE`, `OUT-DOT` or `NON-SUB` is `-` then the graph (resp. the tree, dot file or non-(co)network [submatrix](\ref file-formats-submatrix)) is written to stdout.
 
 ### Algorithm ###
@@ -70,7 +72,9 @@ computes a (co)network [matrix](\ref file-formats-matrix) corresponding to the d
   - `--time-limit LIMIT` Allow at most `LIMIT` seconds for the computation.
 
 Formats for matrices: [dense](\ref dense-matrix), [sparse](\ref sparse-matrix)
+
 If `IN-GRAPH` or `IN-TREE` is `-` then the digraph (resp. directed tree) is read from stdin.
+
 If `OUT-MAT` is `-` then the [matrix](\ref file-formats-matrix) is written to stdout.
 
 ### C Interface ###

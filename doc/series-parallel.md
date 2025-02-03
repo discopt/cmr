@@ -49,7 +49,9 @@ Moreover, one can ask for one of the minimal non-series-parallel submatrices abo
   - `--time-limit LIMIT` Allow at most `LIMIT` seconds for the computation.
 
 Formats for matrices: [dense](\ref dense-matrix), [sparse](\ref sparse-matrix)
+
 If `IN-MAT` is `-` then the [matrix](\ref file-formats-matrix) is read from stdin.
+
 If `OUT-SP`, `OUT-REDUCED` or `NON-SUB` is `-` then the list of reductions (resp. the [submatrix](\ref file-formats-submatrix)) is written to stdout.
 
 ## Algorithm ##

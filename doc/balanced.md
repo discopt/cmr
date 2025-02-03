@@ -22,7 +22,9 @@ determines whether the [matrix](\ref file-formats-matrix) given in file `IN-MAT`
   - `--no-series-parallel` Do not try series-parallel operations for preprocessing.
 
 Formats for matrices: [dense](\ref dense-matrix), [sparse](\ref sparse-matrix)
+
 If `IN-MAT` is `-` then the [matrix](\ref file-formats-matrix) is read from stdin.
+
 If `NON-SUB` is `-` then the [submatrix](\ref file-formats-submatrix) is written to stdout.
 
 ## Algorithm ##

@@ -27,6 +27,7 @@ determines whether the [matrix](\ref file-formats-matrix) given in file `IN-MAT`
   - `--time-limit LIMIT` Allow at most `LIMIT` seconds for the computation.
 
 Formats for matrices: [dense](\ref dense-matrix), [sparse](\ref sparse-matrix)
+
 If `IN-MAT` is `-` then the [matrix](\ref file-formats-matrix) is read from stdin.
 
 
@@ -49,7 +50,9 @@ finds a large binary (resp. ternary) [submatrix](\ref file-formats-matrix) of th
   - `--time-limit LIMIT` Allow at most `LIMIT` seconds for the computation.
 
 Formats for matrices: [dense](\ref dense-matrix), [sparse](\ref sparse-matrix)
+
 If `IN-MAT` is `-` then the [matrix](\ref file-formats-matrix) is read from stdin.
+
 If `OUT-SUB` is `-` then the [submatrix](\ref file-formats-submatrix) is written to stdout.
 
 ## Algorithm ##

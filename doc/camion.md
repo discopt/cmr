@@ -27,7 +27,9 @@ determines whether the [matrix](\ref file-formats-matrix) given in file `IN-MAT`
   - `--time-limit LIMIT` Allow at most `LIMIT` seconds for the computation.
 
 Formats for matrices: [dense](\ref dense-matrix), [sparse](\ref sparse-matrix)
+
 If `IN-MAT` is `-` then the [matrix](\ref file-formats-matrix) is read from stdin.
+
 If `NON-SUB` is `-` then the [submatrix](\ref file-formats-submatrix)  is written to stdout.
 
 ### Algorithm ###
@@ -61,7 +63,9 @@ modifies the signs of the matrix given in file `IN-MAT` such that it is Camion-s
   - `--time-limit LIMIT` Allow at most `LIMIT` seconds for the computation.
 
 Formats for matrices: [dense](\ref dense-matrix), [sparse](\ref sparse-matrix)
+
 If `IN-MAT` is `-` then the matrix is read from stdin.
+
 If `OUT-MAT` is `-` then the matrix is written to stdout.
 
 ### Algorithm ###

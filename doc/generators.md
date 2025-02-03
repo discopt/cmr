@@ -71,7 +71,9 @@ It can be called as follows.
   - `-t NUM`    Flip NUM randomly chosen entries over the ternary field.
 
 Formats for matrices: [dense](\ref dense-matrix), [sparse](\ref sparse-matrix)
+
 If `IN-MAT` is `-`, then the input matrix is read from stdin.
+
 If `OUT-MAT` is `-`, then the output matrix is written to stdout.
 
 ## Wheel Matrices ##

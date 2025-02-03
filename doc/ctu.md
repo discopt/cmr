@@ -27,7 +27,9 @@ determines whether the [matrix](\ref file-formats-matrix) given in file `IN-MAT`
   - `--time-limit LIMIT` Allow at most `LIMIT` seconds for the computation.
 
 Formats for matrices: [dense](\ref dense-matrix), [sparse](\ref sparse-matrix)
+
 If `IN-MAT` is `-` then the [matrix](\ref file-formats-matrix) is read from stdin.
+
 If `OUT-OPS` or `OUT-MAT` is `-` then the list of operations (resp. the [matrix](\ref file-formats-matrix)) is written to stdout.
 
 ### C Interface ###

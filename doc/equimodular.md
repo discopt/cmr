@@ -31,6 +31,7 @@ The executable `cmr-equimodular` determines whether a given [matrix](\ref file-f
   - `--time-limit LIMIT` Allow at most `LIMIT` seconds for the computation.
 
 Formats for matrices: [dense](\ref dense-matrix), [sparse](\ref sparse-matrix)
+
 If `IN-MAT` is `-`, then the input will be read from stdin.
 
 ## C Interface ##
