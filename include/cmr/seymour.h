@@ -590,8 +590,8 @@ CMR_ERROR CMRseymourCreate(
   CMR* cmr,                 /**< \ref CMR environment. */
   CMR_SEYMOUR_NODE** pnode, /**< Pointer for storing the Seymour decomposition node. */
   bool isTernary,           /**< Whether we consider ternary matrices. */
-  size_t numRows,           /**< Number of rows of represented matrix. */
-  size_t numColumns         /**< Number of columns of represented matrix. */
+  CMR_CHRMAT* matrix,       /**< Matrix to be represented by \p *pnode. */
+  bool copyMatrix           /**< Whether to make a copy of \p matrix. */
 );
 
 /**

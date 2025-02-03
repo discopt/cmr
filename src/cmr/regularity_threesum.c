@@ -199,8 +199,7 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
 #endif /* CMR_DEBUG */
 
       /* Create first decomposition node. */
-      CMR_CALL( CMRseymourCreate(cmr, &node->children[0], node->isTernary, first->numRows, first->numColumns) );
-      node->children[0]->matrix = first;
+      CMR_CALL( CMRseymourCreate(cmr, &node->children[0], node->isTernary, first, false) );
 
       /* Mapping from first child rows to parent elements. */
       CMR_CALL( CMRallocBlockArray(cmr, &node->childRowsToParent[0], first->numRows) );
@@ -239,8 +238,7 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
 #endif /* CMR_DEBUG */
 
       /* Create second decomposition node. */
-      CMR_CALL( CMRseymourCreate(cmr, &node->children[1], node->isTernary, second->numRows, second->numColumns) );
-      node->children[1]->matrix = second;
+      CMR_CALL( CMRseymourCreate(cmr, &node->children[1], node->isTernary, second, false) );
 
       /* Mapping from second child rows to parent elements. */
       CMR_CALL( CMRallocBlockArray(cmr, &node->childRowsToParent[1], second->numRows) );
@@ -307,8 +305,7 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
 #endif /* CMR_DEBUG */
 
       /* Create first decomposition node. */
-      CMR_CALL( CMRseymourCreate(cmr, &node->children[0], node->isTernary, first->numRows, first->numColumns) );
-      node->children[0]->matrix = first;
+      CMR_CALL( CMRseymourCreate(cmr, &node->children[0], node->isTernary, first, false) );
 
       /* Mapping from first child rows to parent elements. */
       CMR_CALL( CMRallocBlockArray(cmr, &node->childRowsToParent[0], first->numRows) );
@@ -347,8 +344,7 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
 #endif /* CMR_DEBUG */
 
       /* Create second decomposition node. */
-      CMR_CALL( CMRseymourCreate(cmr, &node->children[1], node->isTernary, second->numRows, second->numColumns) );
-      node->children[1]->matrix = second;
+      CMR_CALL( CMRseymourCreate(cmr, &node->children[1], node->isTernary, second, false) );
 
       /* Mapping from second child rows to parent elements. */
       CMR_CALL( CMRallocBlockArray(cmr, &node->childRowsToParent[1], second->numRows) );
@@ -430,8 +426,7 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
 #endif /* CMR_DEBUG */
 
       /* Create first decomposition node. */
-      CMR_CALL( CMRseymourCreate(cmr, &node->children[0], node->isTernary, first->numRows, first->numColumns) );
-      node->children[0]->matrix = first;
+      CMR_CALL( CMRseymourCreate(cmr, &node->children[0], node->isTernary, first, false) );
 
       /* Mapping from first child rows to parent elements. */
       CMR_CALL( CMRallocBlockArray(cmr, &node->childRowsToParent[0], first->numRows) );
@@ -475,8 +470,7 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
 #endif /* CMR_DEBUG */
 
       /* Create second decomposition node. */
-      CMR_CALL( CMRseymourCreate(cmr, &node->children[1], node->isTernary, second->numRows, second->numColumns) );
-      node->children[1]->matrix = second;
+      CMR_CALL( CMRseymourCreate(cmr, &node->children[1], node->isTernary, second, false) );
 
       /* Mapping from second child rows to parent elements. */
       CMR_CALL( CMRallocBlockArray(cmr, &node->childRowsToParent[1], second->numRows) );

@@ -937,12 +937,18 @@ CMR_ERROR updateChildMatrix(
 }
 
 
-CMR_ERROR CMRseymourCreate(CMR* cmr, CMR_SEYMOUR_NODE** pnode, bool isTernary, size_t numRows, size_t numColumns)
+CMR_ERROR CMRseymourCreate(CMR* cmr, CMR_SEYMOUR_NODE** pnode, bool isTernary, CMR_CHRMAT* matrix, bool copyMatrix)
 {
   assert(cmr);
   assert(pnode);
+  assert(matrix);
 
-  CMR_CALL( createNode(cmr, pnode, isTernary, CMR_SEYMOUR_NODE_TYPE_UNKNOWN, numRows, numColumns) );
+  CMR_CALL( createNode(cmr, pnode, isTernary, CMR_SEYMOUR_NODE_TYPE_UNKNOWN, matrix->numRows, matrix->numColumns) );
+
+  if (copyMatrix)
+    CMR_CALL( CMRchrmatCopy(cmr, matrix, &(*pnode)->matrix) );
+  else
+    (*pnode)->matrix = matrix;
 
   return CMR_OKAY;
 }
@@ -1714,9 +1720,8 @@ CMR_ERROR CMRseymourDecompose(CMR* cmr, CMR_CHRMAT* matrix, bool ternary, CMR_SE
   CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', false) );
 #endif /* CMR_DEBUG_MATRICES */
 
-  CMR_CALL( CMRseymourCreate(cmr, proot, ternary, matrix->numRows, matrix->numColumns) );
+  CMR_CALL( CMRseymourCreate(cmr, proot, ternary, matrix, true) );
   assert(*proot);
-  CMR_CALL( CMRchrmatCopy(cmr, matrix, &(*proot)->matrix) );
 
   CMR_ERROR error = CMRregularityCompleteDecomposition(cmr, *proot, params, stats, timeLimit);
   if (error == CMR_ERROR_TIMEOUT)
