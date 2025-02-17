@@ -180,7 +180,8 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Finds a shortest path between different vertex groups in the bipartite graph of a submatrix of the given <code>matrix</code>. </p>
-<p>The bipartite graph of a matrix \( M \) has the rows and columns of as vertices and edges for all nonzeros of \( M \). The rows and columns are assigned to groups, and some shortest path from any nonzero group to any larger nonzero group will be returned. Vertices whose group is negative are ignored. </p>
+<p>The bipartite graph of a matrix \( M \) has the rows and columns of as vertices and edges for all nonzeros of \( M \). The rows and columns are assigned to groups, and some shortest path from any nonzero group to any larger nonzero group will be returned. Vertices whose group is negative are ignored.</p>
+<p>A negative row/column group value means to disable the node. Positive values indicate different groups. </p>
 <p>Run BFS.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">

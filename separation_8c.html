@@ -91,7 +91,6 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &lt;<a class="el" href="separation_8h_source.html">cmr/separation.h</a>&gt;</code><br />
-<code>#include &quot;<a class="el" href="separation__internal_8h_source.html">separation_internal.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="env__internal_8h_source.html">env_internal.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="bipartite__graph_8h_source.html">bipartite_graph.h</a>&quot;</code><br />
 <code>#include &lt;stdint.h&gt;</code><br />
@@ -184,12 +183,15 @@ Functions</h2></td></tr>
 <tr class="memitem:a258c578d78beab637986ee8e632b847d" id="r_a258c578d78beab637986ee8e632b847d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="separation_8c.html#a258c578d78beab637986ee8e632b847d">CMRthreesumCompose</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *first, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *second, size_t *firstSpecialRows, size_t *firstSpecialColumns, size_t *secondSpecialRows, size_t *secondSpecialColumns, int8_t characteristic, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> **presult)</td></tr>
 <tr class="memdesc:a258c578d78beab637986ee8e632b847d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs the 3-sum of the two matrices <code>first</code> and <code>second</code> at connecting rows <code>firstSpecialRows</code> and <code>secondSpecialRows</code> and columns <code>firstSpecialColumns</code> and <code>secondSpecialColumns</code>.  <br /></td></tr>
 <tr class="separator:a258c578d78beab637986ee8e632b847d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a271ad07c53b493bfef9fe8bfaa9bd311" id="r_a271ad07c53b493bfef9fe8bfaa9bd311"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="separation_8c.html#a271ad07c53b493bfef9fe8bfaa9bd311">CMRthreesumDecomposeSearch</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *transpose, <a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *sepa, bool topLeft, bool bottomRight, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **pviolator, size_t *specialRows, size_t *specialColumns, char *pgamma, char *pbeta)</td></tr>
-<tr class="memdesc:a271ad07c53b493bfef9fe8bfaa9bd311"><td class="mdescLeft">&#160;</td><td class="mdescRight">Carries out the search for the connecting submatrix for a 3-sum.  <br /></td></tr>
-<tr class="separator:a271ad07c53b493bfef9fe8bfaa9bd311"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac7b9ab9085ea1b6fdb4be361bf91e66b" id="r_ac7b9ab9085ea1b6fdb4be361bf91e66b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="separation_8c.html#ac7b9ab9085ea1b6fdb4be361bf91e66b">CMRthreesumDecomposeConnecting</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *transpose, <a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *sepa, size_t *specialRows, size_t *specialColumns, char *pgamma, char *pbeta)</td></tr>
-<tr class="memdesc:ac7b9ab9085ea1b6fdb4be361bf91e66b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decomposes <code>matrix</code> as a 3-sum according to the 3-separation <code>sepa</code>, computing the connecing matrix.  <br /></td></tr>
-<tr class="separator:ac7b9ab9085ea1b6fdb4be361bf91e66b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad28ea7e4ad95a17918edec7dd1477468" id="r_ad28ea7e4ad95a17918edec7dd1477468"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="separation_8c.html#ad28ea7e4ad95a17918edec7dd1477468">CMRthreesumDecomposeSearch</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *transpose, <a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *sepa, bool topLeft, bool bottomRight, <a class="el" href="structCMR__SUBMAT.html">CMR_SUBMAT</a> **pviolator, size_t *specialRows, size_t *specialColumns, char *pgamma, char *pbeta)</td></tr>
+<tr class="memdesc:ad28ea7e4ad95a17918edec7dd1477468"><td class="mdescLeft">&#160;</td><td class="mdescRight">Carries out the search for the connecting submatrix for a 3-sum.  <br /></td></tr>
+<tr class="separator:ad28ea7e4ad95a17918edec7dd1477468"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3af67b11841661c20430cb47534e7596" id="r_a3af67b11841661c20430cb47534e7596"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="separation_8c.html#a3af67b11841661c20430cb47534e7596">CMRthreesumDecomposeSearchConnecting</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *transpose, <a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *sepa, size_t *specialRows, size_t *specialColumns, char *pgamma, char *pbeta)</td></tr>
+<tr class="memdesc:a3af67b11841661c20430cb47534e7596"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decomposes <code>matrix</code> as a 3-sum according to the 3-separation <code>sepa</code>, searching a suitable connecing matrix.  <br /></td></tr>
+<tr class="separator:a3af67b11841661c20430cb47534e7596"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5bc8172d664bd02eb56bf2e93d64ae18" id="r_a5bc8172d664bd02eb56bf2e93d64ae18"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="separation_8c.html#a5bc8172d664bd02eb56bf2e93d64ae18">CMRthreesumDecomposeSignConnecting</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *transpose, <a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *sepa, size_t *specialRows, size_t *specialColumns, char *pgamma, char *pbeta)</td></tr>
+<tr class="memdesc:a5bc8172d664bd02eb56bf2e93d64ae18"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decomposes <code>matrix</code> as a 3-sum according to the 3-separation <code>sepa</code>, searching a suitable connecing matrix.  <br /></td></tr>
+<tr class="separator:a5bc8172d664bd02eb56bf2e93d64ae18"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a19da8b452b51f189da72573f3a9abf6a" id="r_a19da8b452b51f189da72573f3a9abf6a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="separation_8c.html#a19da8b452b51f189da72573f3a9abf6a">CMRthreesumDecomposeFirst</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, <a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *sepa, size_t *specialRows, size_t *specialColumns, char beta, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> **pfirst, size_t *firstRowsOrigin, size_t *firstColumnsOrigin, size_t *rowsToFirst, size_t *columnsToFirst, size_t *firstSpecialRows, size_t *firstSpecialColumns)</td></tr>
 <tr class="memdesc:a19da8b452b51f189da72573f3a9abf6a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decomposes <code>matrix</code> as a 3-sum according to the 3-separation <code>sepa</code>, computing the first component.  <br /></td></tr>
 <tr class="separator:a19da8b452b51f189da72573f3a9abf6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1406,114 +1408,6 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ac7b9ab9085ea1b6fdb4be361bf91e66b" name="ac7b9ab9085ea1b6fdb4be361bf91e66b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac7b9ab9085ea1b6fdb4be361bf91e66b">&#9670;&#160;</a></span>CMRthreesumDecomposeConnecting()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRthreesumDecomposeConnecting </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
-          <td class="paramname"><em>cmr</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *&#160;</td>
-          <td class="paramname"><em>matrix</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *&#160;</td>
-          <td class="paramname"><em>transpose</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *&#160;</td>
-          <td class="paramname"><em>sepa</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t *&#160;</td>
-          <td class="paramname"><em>specialRows</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t *&#160;</td>
-          <td class="paramname"><em>specialColumns</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">char *&#160;</td>
-          <td class="paramname"><em>pgamma</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">char *&#160;</td>
-          <td class="paramname"><em>pbeta</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Decomposes <code>matrix</code> as a 3-sum according to the 3-separation <code>sepa</code>, computing the connecing matrix. </p>
-<p>The input <code>matrix</code> \( M \) must have a 3-separation that is given by <code>sepa</code>, i.e., it can be reordered to look like \( M = \begin{bmatrix} A &amp; \mathbb{O} \\ C &amp; D \end{bmatrix} \), where \( \text{rank}(C) = 2 \). The two components of the 3-sum are matrices  </p><p class="formulaDsp">
-\[
-  M_1 = \begin{bmatrix}
-    A &amp; \mathbb{O} \\
-    C_{i,\star} &amp; 1 \\
-    C_{j,\star} &amp; \beta
-  \end{bmatrix}
-\]
-</p>
-<p> and  </p><p class="formulaDsp">
-\[
-  M_2 = \begin{bmatrix}
-    \gamma &amp; 1 &amp; \mathbb{O}^{\textsf{T}} \\
-    C_{\star,k} &amp; C_{\star,\ell} &amp; D
-  \end{bmatrix},
-\]
-</p>
-<p> where \( \beta,\gamma \in \{-1,+1 \} \), \(\text{rank}(C_{\{i,j\},\{k,\ell\}}) = 2\) and such that  </p><p class="formulaDsp">
-\[
-  N := \begin{bmatrix}
-    \gamma &amp; 1 &amp; 0 \\
-    C_{i,k} &amp; C_{i,\ell} &amp; 1 \\
-    C_{j,k} &amp; C_{j,\ell} &amp; \beta
-  \end{bmatrix}
-\]
-</p>
-<p> is totally unimodular.</p>
-<p>The value of \( \beta \in \{-1,+1\} \) must be so that there exists a singular submatrix of \( M_1 \) with exactly two nonzeros per row and per column that covers the bottom-right \( \beta \)-entry.</p>
-<p>This function only computes the indices \( i,j,k,\ell \) as well as values for \( \beta \) and \( \gamma \); the matrices \( M_1 \) and \( M_2 \) can be computed by <a class="el" href="separation_8h.html#a8858d567d1fa30488dc29833ce11d258">CMRthreesumDecomposeFirst</a> and <a class="el" href="separation_8h.html#accc490e5ae9db94025e915dd0adf14f0">CMRthreesumDecomposeSecond</a>, respectively. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment.  </td></tr>
-    <tr><td class="paramname">matrix</td><td>Input matrix \( M \).  </td></tr>
-    <tr><td class="paramname">transpose</td><td>Transpose matrix \( M^{\textsf{T}} \).  </td></tr>
-    <tr><td class="paramname">sepa</td><td>3-separation to decompose at.  </td></tr>
-    <tr><td class="paramname">specialRows</td><td>Array of length 2 for storing the rows \( i \) and \( j \) as rows of \( M \).  </td></tr>
-    <tr><td class="paramname">specialColumns</td><td>Array of length 2 for storing the columns \( k \) and \( \ell \) as rows of \( M \).  </td></tr>
-    <tr><td class="paramname">pgamma</td><td>Pointer for storing a correct value of \( \gamma \); may be <code>NULL</code>.  </td></tr>
-    <tr><td class="paramname">pbeta</td><td>Pointer for storing a correct value of \( \beta \); may be <code>NULL</code>. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
 <a id="a19da8b452b51f189da72573f3a9abf6a" name="a19da8b452b51f189da72573f3a9abf6a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a19da8b452b51f189da72573f3a9abf6a">&#9670;&#160;</a></span>CMRthreesumDecomposeFirst()</h2>
 
@@ -1634,7 +1528,7 @@ Functions</h2></td></tr>
 \]
 </p>
 <p> is totally unimodular.</p>
-<p>The value of \( \beta \in \{-1,+1\} \), given via <code>beta</code>. The row indices \( i,j \), given via <code>specialRows</code>, and column indices \( k,\ell \), given via <code>specialColumns</code>, must index a rank-2 submatrix of \( C \). They should be computed by <a class="el" href="separation_8h.html#a57d7f68fbe0aef14990837a027ba1ede">CMRthreesumDecomposeConnecting</a>.</p>
+<p>The value of \( \beta \in \{-1,+1\} \), given via <code>beta</code>. The row indices \( i,j \), given via <code>specialRows</code>, and column indices \( k,\ell \), given via <code>specialColumns</code>, must index a rank-2 submatrix of \( C \). They can be computed by <a class="el" href="separation_8h.html#a1f27fb3f71e61e50d5e682ff7ae436fb">CMRthreesumDecomposeSearchConnecting</a>.</p>
 <p>This function computes \( M_1 \), while \( M_2 \) can be computed by <a class="el" href="separation_8h.html#accc490e5ae9db94025e915dd0adf14f0">CMRthreesumDecomposeSecond</a>.</p>
 <p>If <code>firstSpecialRows</code> is not <code>NULL</code>, then <code>firstSpecialRows</code>[0] and <code>firstSpecialRows</code>[1] will refer to the last two rows of \( M_1 \). If <code>firstSpecialColumns</code> is not <code>NULL</code>, then <code>firstSpecialColumns</code>[0] and <code>firstSpecialColumns</code>[1] will refer to the two columns containing \( C_{\star,k}\) and \( C_{\star,\ell} \) as columns of \( M_1 \), and <code>firstSpecialColumns</code>[2] will refer to the last (artificial) column. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -1658,14 +1552,17 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a271ad07c53b493bfef9fe8bfaa9bd311" name="a271ad07c53b493bfef9fe8bfaa9bd311"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a271ad07c53b493bfef9fe8bfaa9bd311">&#9670;&#160;</a></span>CMRthreesumDecomposeSearch()</h2>
+<a id="ad28ea7e4ad95a17918edec7dd1477468" name="ad28ea7e4ad95a17918edec7dd1477468"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad28ea7e4ad95a17918edec7dd1477468">&#9670;&#160;</a></span>CMRthreesumDecomposeSearch()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRthreesumDecomposeSearch </td>
+          <td class="memname">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRthreesumDecomposeSearch </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
           <td class="paramname"><em>cmr</em>, </td>
@@ -1736,24 +1633,122 @@ Functions</h2></td></tr>
           <td></td><td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Carries out the search for the connecting submatrix for a 3-sum. </p>
-<p>See <a class="el" href="separation_8h.html#a57d7f68fbe0aef14990837a027ba1ede">CMRthreesumDecomposeConnecting</a> for the specification. This function carries out a breadth-first search in the graphs of the top-left and/or bottom-right submatrices.</p>
+<p>See <a class="el" href="separation_8h.html#a1f27fb3f71e61e50d5e682ff7ae436fb">CMRthreesumDecomposeSearchConnecting</a> and <a class="el" href="separation_8h.html#ac0ddec5b3eff8aba9c38763754e1dc3d">CMRthreesumDecomposeSignConnecting</a> for the specification. This function carries out a breadth-first search in the graphs of the top-left and/or bottom-right submatrices.</p>
+<p>If all entries in <code>specialRows</code> and <code>specialColumns</code> are different from <code>SIZE_MAX</code> then only these rows/columns are considered. Otherwise, suitable rows/columns are searched for. In the former case, the graph search may fail for this particular row- or column-pair.</p>
 <p>At least one of <code>topLeft</code> and <code>bottomRight</code> must be <code>true</code>. If both are true then the implementation may detect a submatrix with absolute determinant 2, which is also stored in <code>*pviolator</code> if <code>pviolator</code> is not <code>NULL</code>. Even if this is the case, <code>specialRows</code>, <code>specialColumns</code>, <code>*pgamma</code> and <code>*pbeta</code> are set according to the top-left matrix. </p>
 <p>Connecting matrix is:</p>
 <p>gamma 1 0 s00 s01 1 s10 s11 beta</p>
 <p>gamma + 1 should be equal to the top-left sum (mod 4).</p>
 <p>The 3x3 matrix should be singular: gamma*s01*beta + s10 - s11*gamma - beta*s00 = 0. &lt;=&gt; beta * (gamma*s01 - s00) = s11*gamma - s10. &lt;=&gt; beta = (s10 - s11*gamma) / (s00 - gamma*s01) &lt;=&gt; gamma * (s01*beta - s11) = beta * s00 - s10 &lt;=&gt; gamma = (s10 - beta * s00) / (s11 - s01*beta)</p>
+
+</div>
+</div>
+<a id="a3af67b11841661c20430cb47534e7596" name="a3af67b11841661c20430cb47534e7596"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3af67b11841661c20430cb47534e7596">&#9670;&#160;</a></span>CMRthreesumDecomposeSearchConnecting()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRthreesumDecomposeSearchConnecting </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *&#160;</td>
+          <td class="paramname"><em>matrix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *&#160;</td>
+          <td class="paramname"><em>transpose</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *&#160;</td>
+          <td class="paramname"><em>sepa</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>specialRows</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>specialColumns</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>pgamma</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>pbeta</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Decomposes <code>matrix</code> as a 3-sum according to the 3-separation <code>sepa</code>, searching a suitable connecing matrix. </p>
+<p>The input <code>matrix</code> \( M \) must have a 3-separation that is given by <code>sepa</code>, i.e., it can be reordered to look like \( M = \begin{bmatrix} A &amp; \mathbb{O} \\ C &amp; D \end{bmatrix} \), where \( \text{rank}(C) = 2 \). The two components of the 3-sum are matrices  </p><p class="formulaDsp">
+\[
+  M_1 = \begin{bmatrix}
+    A &amp; \mathbb{O} \\
+    C_{i,\star} &amp; 1 \\
+    C_{j,\star} &amp; \beta
+  \end{bmatrix}
+\]
+</p>
+<p> and  </p><p class="formulaDsp">
+\[
+  M_2 = \begin{bmatrix}
+    \gamma &amp; 1 &amp; \mathbb{O}^{\textsf{T}} \\
+    C_{\star,k} &amp; C_{\star,\ell} &amp; D
+  \end{bmatrix},
+\]
+</p>
+<p> where \( \beta,\gamma \in \{-1,+1 \} \), \(\text{rank}(C_{\{i,j\},\{k,\ell\}}) = 2\) and such that  </p><p class="formulaDsp">
+\[
+  N := \begin{bmatrix}
+    \gamma &amp; 1 &amp; 0 \\
+    C_{i,k} &amp; C_{i,\ell} &amp; 1 \\
+    C_{j,k} &amp; C_{j,\ell} &amp; \beta
+  \end{bmatrix}
+\]
+</p>
+<p> is totally unimodular.</p>
+<p>The value of \( \beta \in \{-1,+1\} \) must be so that there exists a singular submatrix of \( M_1 \) with exactly two nonzeros per row and per column that covers the bottom-right \( \beta \)-entry.</p>
+<p>This function only computes the indices \( i,j,k,\ell \) as well as values for \( \beta \) and \( \gamma \); the matrices \( M_1 \) and \( M_2 \) can be computed by <a class="el" href="separation_8h.html#a8858d567d1fa30488dc29833ce11d258">CMRthreesumDecomposeFirst</a> and <a class="el" href="separation_8h.html#accc490e5ae9db94025e915dd0adf14f0">CMRthreesumDecomposeSecond</a>, respectively. If only \( \beta \) and \( \gamma \) shall be computed for given \( i,j,k,\ell \) then <a class="el" href="separation_8h.html#ac0ddec5b3eff8aba9c38763754e1dc3d">CMRthreesumDecomposeSignConnecting</a> can be used. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment.  </td></tr>
     <tr><td class="paramname">matrix</td><td>Input matrix \( M \).  </td></tr>
     <tr><td class="paramname">transpose</td><td>Transpose matrix \( M^{\textsf{T}} \).  </td></tr>
     <tr><td class="paramname">sepa</td><td>3-separation to decompose at.  </td></tr>
-    <tr><td class="paramname">topLeft</td><td>Whether to search in the top-left submatrix.  </td></tr>
-    <tr><td class="paramname">bottomRight</td><td>Whether to search in the bottom-right submatrix.  </td></tr>
-    <tr><td class="paramname">pviolator</td><td>Pointer for storing a submatrix with absolute determinant 2, if found.  </td></tr>
     <tr><td class="paramname">specialRows</td><td>Array of length 2 for storing the rows \( i \) and \( j \) as rows of \( M \).  </td></tr>
     <tr><td class="paramname">specialColumns</td><td>Array of length 2 for storing the columns \( k \) and \( \ell \) as rows of \( M \).  </td></tr>
     <tr><td class="paramname">pgamma</td><td>Pointer for storing a correct value of \( \gamma \); may be <code>NULL</code>.  </td></tr>
@@ -1884,7 +1879,7 @@ Functions</h2></td></tr>
 \]
 </p>
 <p> is totally unimodular.</p>
-<p>The value of \( \gamma \in \{-1,+1\} \), given via <code>gamma</code>. The row indices \( i,j \), given via <code>specialRows</code>, and column indices \( k,\ell \), given via <code>specialColumns</code>, must index a rank-2 submatrix of \( C \). They should be computed by <a class="el" href="separation_8h.html#a57d7f68fbe0aef14990837a027ba1ede">CMRthreesumDecomposeConnecting</a>.</p>
+<p>The value of \( \gamma \in \{-1,+1\} \), given via <code>gamma</code>. The row indices \( i,j \), given via <code>specialRows</code>, and column indices \( k,\ell \), given via <code>specialColumns</code>, must index a rank-2 submatrix of \( C \). They can be computed by <a class="el" href="separation_8h.html#a1f27fb3f71e61e50d5e682ff7ae436fb">CMRthreesumDecomposeSearchConnecting</a>.</p>
 <p>This function computes \( M_2 \), while \( M_1 \) can be computed by <a class="el" href="separation_8h.html#a8858d567d1fa30488dc29833ce11d258">CMRthreesumDecomposeFirst</a>.</p>
 <p>If <code>secondSpecialRows</code> is not <code>NULL</code>, then <code>secondSpecialRows</code>[0] will refer to the first (artificial) row and <code>secondSpecialRows</code>[1] and <code>secondSpecialRows</code>[2] will refer to the two rows containing \( C_{i,\star} \) and \( C_{j,\star} \) as rows of \( M_2 \). If <code>secondSpecialColumns</code> is not <code>NULL</code>, then <code>secondSpecialColumns</code>[0] and <code>secondSpecialColumns</code>[1] will refer to the first two columns of \( M_2 \). </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -1902,6 +1897,114 @@ Functions</h2></td></tr>
     <tr><td class="paramname">columnsToSecond</td><td>Array for storing the mapping from columns of \( M \) to columns of \( M_2 \) or to <code>SIZE_MAX</code>; may be <code>NULL</code>.  </td></tr>
     <tr><td class="paramname">secondSpecialRows</td><td>Array of length 3 for storing the row indices of the artificial row, of \( C_{i,\star} \) and of \( C_{j,\star} \) in \( M_2 \); may be <code>NULL</code>.  </td></tr>
     <tr><td class="paramname">secondSpecialColumns</td><td>Array of length 2 for storing the column indices of \( C_{\star,k} \) and of \( C_{\star,\ell} \) in \( M_2 \); may be <code>NULL</code>. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a5bc8172d664bd02eb56bf2e93d64ae18" name="a5bc8172d664bd02eb56bf2e93d64ae18"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5bc8172d664bd02eb56bf2e93d64ae18">&#9670;&#160;</a></span>CMRthreesumDecomposeSignConnecting()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> CMRthreesumDecomposeSignConnecting </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
+          <td class="paramname"><em>cmr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *&#160;</td>
+          <td class="paramname"><em>matrix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *&#160;</td>
+          <td class="paramname"><em>transpose</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structCMR__SEPA.html">CMR_SEPA</a> *&#160;</td>
+          <td class="paramname"><em>sepa</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>specialRows</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>specialColumns</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>pgamma</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *&#160;</td>
+          <td class="paramname"><em>pbeta</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Decomposes <code>matrix</code> as a 3-sum according to the 3-separation <code>sepa</code>, searching a suitable connecing matrix. </p>
+<p>The input <code>matrix</code> \( M \) must have a 3-separation that is given by <code>sepa</code>, i.e., it can be reordered to look like \( M = \begin{bmatrix} A &amp; \mathbb{O} \\ C &amp; D \end{bmatrix} \), where \( \text{rank}(C) = 2 \). The two components of the 3-sum are matrices  </p><p class="formulaDsp">
+\[
+  M_1 = \begin{bmatrix}
+    A &amp; \mathbb{O} \\
+    C_{i,\star} &amp; 1 \\
+    C_{j,\star} &amp; \beta
+  \end{bmatrix}
+\]
+</p>
+<p> and  </p><p class="formulaDsp">
+\[
+  M_2 = \begin{bmatrix}
+    \gamma &amp; 1 &amp; \mathbb{O}^{\textsf{T}} \\
+    C_{\star,k} &amp; C_{\star,\ell} &amp; D
+  \end{bmatrix},
+\]
+</p>
+<p> where \( \beta,\gamma \in \{-1,+1 \} \), \(\text{rank}(C_{\{i,j\},\{k,\ell\}}) = 2\) and such that  </p><p class="formulaDsp">
+\[
+  N := \begin{bmatrix}
+    \gamma &amp; 1 &amp; 0 \\
+    C_{i,k} &amp; C_{i,\ell} &amp; 1 \\
+    C_{j,k} &amp; C_{j,\ell} &amp; \beta
+  \end{bmatrix}
+\]
+</p>
+<p> is totally unimodular.</p>
+<p>The value of \( \beta \in \{-1,+1\} \) must be so that there exists a singular submatrix of \( M_1 \) with exactly two nonzeros per row and per column that covers the bottom-right \( \beta \)-entry.</p>
+<p>This function tries to compute values for \( \beta \) and \( \gamma \) for given indices \( i,j,k,\ell \) if this is possible. If the latter are not known, <a class="el" href="separation_8h.html#a1f27fb3f71e61e50d5e682ff7ae436fb">CMRthreesumDecomposeSearchConnecting</a> can be used. In either case, the matrices \( M_1 \) and \( M_2 \) can be computed by <a class="el" href="separation_8h.html#a8858d567d1fa30488dc29833ce11d258">CMRthreesumDecomposeFirst</a> and <a class="el" href="separation_8h.html#accc490e5ae9db94025e915dd0adf14f0">CMRthreesumDecomposeSecond</a>, respectively. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment.  </td></tr>
+    <tr><td class="paramname">matrix</td><td>Input matrix \( M \).  </td></tr>
+    <tr><td class="paramname">transpose</td><td>Transpose matrix \( M^{\textsf{T}} \).  </td></tr>
+    <tr><td class="paramname">sepa</td><td>3-separation to decompose at.  </td></tr>
+    <tr><td class="paramname">specialRows</td><td>Array of length 2 with the rows \( i \) and \( j \) as rows of \( M \).  </td></tr>
+    <tr><td class="paramname">specialColumns</td><td>Array of length 2 with the columns \( k \) and \( \ell \) as rows of \( M \).  </td></tr>
+    <tr><td class="paramname">pgamma</td><td>Pointer for storing a correct value of \( \gamma \); may be <code>NULL</code>.  </td></tr>
+    <tr><td class="paramname">pbeta</td><td>Pointer for storing a correct value of \( \beta \); may be <code>NULL</code>. </td></tr>
   </table>
   </dd>
 </dl>
