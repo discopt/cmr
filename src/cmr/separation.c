@@ -2,7 +2,6 @@
 // #define CMR_DEBUG_MATRICES /* Uncomment to print all matrices. */
 
 #include <cmr/separation.h>
-#include "separation_internal.h"
 
 #include "env_internal.h"
 #include "bipartite_graph.h"
@@ -2897,7 +2896,24 @@ cleanup:
   return error;
 }
 
+/**
+ * \brief Carries out the search for the connecting submatrix for a 3-sum.
+ *
+ * See \ref CMRthreesumDecomposeSearchConnecting and \ref CMRthreesumDecomposeSignConnecting for the specification.
+ * This function carries out a breadth-first search in the graphs of the top-left and/or bottom-right submatrices.
+ *
+ * If all entries in \p specialRows and \p specialColumns are different from \c SIZE_MAX then only these rows/columns
+ * are considered. Otherwise, suitable rows/columns are searched for. In the former case, the graph search may fail for
+ * this particular row- or column-pair.
+ *
+ * At least one of \p topLeft and \p bottomRight must be \c true. If both are true then the implementation may detect a
+ * submatrix with absolute determinant 2, which is also stored in \p *pviolator if \p pviolator is not \c NULL.
+ * Even if this is the case, \p specialRows, \p specialColumns, \p *pgamma and \p *pbeta are set according to the
+ * top-left matrix.
+ *
+ */
 
+static
 CMR_ERROR CMRthreesumDecomposeSearch(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT* transpose, CMR_SEPA* sepa,
   bool topLeft, bool bottomRight, CMR_SUBMAT** pviolator, size_t* specialRows, size_t* specialColumns, char* pgamma,
   char* pbeta
@@ -2908,162 +2924,230 @@ CMR_ERROR CMRthreesumDecomposeSearch(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT* t
   assert(transpose);
   assert(sepa);
   assert(topLeft || bottomRight);
+  assert(specialRows);
+  assert(specialColumns);
 
   CMR_ERROR error = CMR_OKAY;
-  size_t localSpecialRows[2];
-  size_t localSpecialColumns[2];
-  if (!specialRows)
-    specialRows = localSpecialRows;
-  if (!specialColumns)
-    specialColumns = localSpecialColumns;
 
   CMRdbgMsg(0, "CMRthreesumDecomposeSearch for %zux%zu matrix.\n", matrix->numRows, matrix->numColumns);
 
-  /* Search for non-unit matrix in C. */
-
-  char* repr1 = NULL;
-  char* repr2 = NULL;
-  char* repr3 = NULL;
-  CMR_CALL( CMRallocStackArray(cmr, &repr1, matrix->numColumns) );
-  CMR_CALL( CMRallocStackArray(cmr, &repr2, matrix->numColumns) );
-  CMR_CALL( CMRallocStackArray(cmr, &repr3, matrix->numColumns) );
-  for (size_t column = 0; column < matrix->numColumns; ++column)
+  bool allGiven = specialRows[0] != SIZE_MAX && specialRows[1] != SIZE_MAX && specialColumns[0] != SIZE_MAX
+    && specialColumns[1] != SIZE_MAX;
+  if (allGiven)
   {
-    repr1[column] = 0;
-    repr2[column] = 0;
-    repr3[column] = 0;
-  }
-  size_t repr1Row = SIZE_MAX;
-  size_t repr2Row = SIZE_MAX;
-  size_t repr3Row = SIZE_MAX;
-
-  for (size_t row = 0; row < matrix->numRows; ++row)
-  {
-    if ((repr1Row == SIZE_MAX) && (sepa->rowsFlags[row] == (CMR_SEPA_SECOND | CMR_SEPA_FLAG_RANK1)))
+    /* Determine whether the given submatrix is a unit matrix. */
+    char submatrix[2][2] = { {0, 0}, {0, 0} };
+    int numSubmatrixNonzeros = 0;
+    for (int r = 0; r < 2; ++r)
     {
-      size_t beyond = matrix->rowSlice[row + 1];
-      for (size_t e = matrix->rowSlice[row]; e < beyond; ++e)
+      size_t beyond = matrix->rowSlice[specialRows[r] + 1];
+      for (size_t e = matrix->rowSlice[specialRows[r]]; e < beyond; ++e)
       {
         size_t column = matrix->entryColumns[e];
-        if ((sepa->columnsFlags[column] & CMR_SEPA_MASK_CHILD) == CMR_SEPA_FIRST)
-          repr1[column] = matrix->entryValues[e];
+        if (column == specialColumns[0])
+        {
+          submatrix[r][0] = matrix->entryValues[e];
+          ++numSubmatrixNonzeros;
+        }
+        else if (column == specialColumns[1])
+        {
+          submatrix[r][1] = matrix->entryValues[e];
+          ++numSubmatrixNonzeros;
+        }
       }
-      repr1Row = row;
     }
-    else if ((repr2Row == SIZE_MAX) && (sepa->rowsFlags[row] == (CMR_SEPA_SECOND | CMR_SEPA_FLAG_RANK2)))
-    {
-      size_t beyond = matrix->rowSlice[row + 1];
-      for (size_t e = matrix->rowSlice[row]; e < beyond; ++e)
-      {
-        size_t column = matrix->entryColumns[e];
-        if ((sepa->columnsFlags[column] & CMR_SEPA_MASK_CHILD) == CMR_SEPA_FIRST)
-          repr2[column] = matrix->entryValues[e];
-      }
-      repr2Row = row;
-    }
-    else if ((repr3Row == SIZE_MAX) && (sepa->rowsFlags[row] == (CMR_SEPA_SECOND | CMR_SEPA_FLAG_RANK1 | CMR_SEPA_FLAG_RANK2)))
-    {
-      size_t beyond = matrix->rowSlice[row + 1];
-      for (size_t e = matrix->rowSlice[row]; e < beyond; ++e)
-      {
-        size_t column = matrix->entryColumns[e];
-        if ((sepa->columnsFlags[column] & CMR_SEPA_MASK_CHILD) == CMR_SEPA_FIRST)
-          repr3[column] = matrix->entryValues[e];
-      }
-      repr3Row = row;
-    }
-  }
 
-  /* Find a column where two representatives both have a nonzero. */
-  char* reprFound[2] = { NULL, NULL };
-  for (size_t column = 0; column < matrix->numColumns; ++column)
-  {
-    if (repr1[column] && repr2[column])
+    *pbeta = 0;
+    for (int c = 0; c < 2; ++c)
     {
-      specialRows[0] = repr1Row;
-      specialRows[1] = repr2Row;
-      specialColumns[0] = column;
-      reprFound[0] = repr1;
-      reprFound[1] = repr2;
-      break;
+      if (submatrix[0][c] && submatrix[1][c])
+      {
+        if (numSubmatrixNonzeros != 3)
+        {
+          CMRdbgMsg(2, "Two nonzeros in column #%d but %d nonzeros in total found.\n", c, numSubmatrixNonzeros);
+          return CMR_ERROR_INPUT;
+        }
+        *pbeta = (submatrix[0][c] == submatrix[1][c]) ? +1 : -1;
+      }
     }
-    else if (repr1[column] && repr3[column])
+    *pgamma = 0;
+    for (int r = 0; r < 2; ++r)
     {
-      specialRows[0] = repr1Row;
-      specialRows[1] = repr3Row;
-      specialColumns[0] = column;
-      reprFound[0] = repr1;
-      reprFound[1] = repr3;
-      break;
+      if (submatrix[r][0] && submatrix[r][1])
+      {
+        if (numSubmatrixNonzeros != 3)
+        {
+          CMRdbgMsg(2, "Two nonzeros in row #%d but %d nonzeros in total found.\n", r, numSubmatrixNonzeros);
+          return CMR_ERROR_INPUT;
+        }
+        *pgamma = (submatrix[r][0] == submatrix[r][1]) ? +1 : -1;
+      }
     }
-    else if (repr2[column] && repr3[column])
-    {
-      specialRows[0] = repr2Row;
-      specialRows[1] = repr3Row;
-      specialColumns[0] = column;
-      reprFound[0] = repr2;
-      reprFound[1] = repr3;
-      break;
-    }
-  }
 
-  if (reprFound[0])
+    if (*pbeta)
+    {
+      assert(*pgamma);
+      CMRdbgMsg(2, "Non-unit matrix found.\n");
+      return CMR_OKAY;
+    }
+
+    if (numSubmatrixNonzeros < 2)
+    {
+      CMRdbgMsg(2, "Only %d nonzeros founds.\n", numSubmatrixNonzeros);
+      return CMR_ERROR_INPUT;
+    }
+
+    CMRdbgMsg(2, "Given special matrix is a unit matrix. Searching in %s.\n", (topLeft && bottomRight)
+      ? "top-left and bottom-right matrices" : (topLeft ? "top-left matrix" : "bottom-right matrix"));
+  }
+  else
   {
-    /* Find a column where the found rows' supports differ. */
+    /* Search for non-unit matrix in C. */
+
+    char* repr1 = NULL;
+    char* repr2 = NULL;
+    char* repr3 = NULL;
+    CMR_CALL( CMRallocStackArray(cmr, &repr1, matrix->numColumns) );
+    CMR_CALL( CMRallocStackArray(cmr, &repr2, matrix->numColumns) );
+    CMR_CALL( CMRallocStackArray(cmr, &repr3, matrix->numColumns) );
     for (size_t column = 0; column < matrix->numColumns; ++column)
     {
-      if ((reprFound[0][column] + reprFound[1][column]) && (reprFound[0][column] == 0 || reprFound[1][column] == 0))
+      repr1[column] = 0;
+      repr2[column] = 0;
+      repr3[column] = 0;
+    }
+    size_t repr1Row = SIZE_MAX;
+    size_t repr2Row = SIZE_MAX;
+    size_t repr3Row = SIZE_MAX;
+
+    for (size_t row = 0; row < matrix->numRows; ++row)
+    {
+      if ((repr1Row == SIZE_MAX) && (sepa->rowsFlags[row] == (CMR_SEPA_SECOND | CMR_SEPA_FLAG_RANK1)))
       {
-        specialColumns[1] = column;
+        size_t beyond = matrix->rowSlice[row + 1];
+        for (size_t e = matrix->rowSlice[row]; e < beyond; ++e)
+        {
+          size_t column = matrix->entryColumns[e];
+          if ((sepa->columnsFlags[column] & CMR_SEPA_MASK_CHILD) == CMR_SEPA_FIRST)
+            repr1[column] = matrix->entryValues[e];
+        }
+        repr1Row = row;
+      }
+      else if ((repr2Row == SIZE_MAX) && (sepa->rowsFlags[row] == (CMR_SEPA_SECOND | CMR_SEPA_FLAG_RANK2)))
+      {
+        size_t beyond = matrix->rowSlice[row + 1];
+        for (size_t e = matrix->rowSlice[row]; e < beyond; ++e)
+        {
+          size_t column = matrix->entryColumns[e];
+          if ((sepa->columnsFlags[column] & CMR_SEPA_MASK_CHILD) == CMR_SEPA_FIRST)
+            repr2[column] = matrix->entryValues[e];
+        }
+        repr2Row = row;
+      }
+      else if ((repr3Row == SIZE_MAX) && (sepa->rowsFlags[row] == (CMR_SEPA_SECOND | CMR_SEPA_FLAG_RANK1 | CMR_SEPA_FLAG_RANK2)))
+      {
+        size_t beyond = matrix->rowSlice[row + 1];
+        for (size_t e = matrix->rowSlice[row]; e < beyond; ++e)
+        {
+          size_t column = matrix->entryColumns[e];
+          if ((sepa->columnsFlags[column] & CMR_SEPA_MASK_CHILD) == CMR_SEPA_FIRST)
+            repr3[column] = matrix->entryValues[e];
+        }
+        repr3Row = row;
+      }
+    }
+
+    /* Find a column where two representatives both have a nonzero. */
+    char* reprFound[2] = { NULL, NULL };
+    for (size_t column = 0; column < matrix->numColumns; ++column)
+    {
+      if (repr1[column] && repr2[column])
+      {
+        specialRows[0] = repr1Row;
+        specialRows[1] = repr2Row;
+        specialColumns[0] = column;
+        reprFound[0] = repr1;
+        reprFound[1] = repr2;
+        break;
+      }
+      else if (repr1[column] && repr3[column])
+      {
+        specialRows[0] = repr1Row;
+        specialRows[1] = repr3Row;
+        specialColumns[0] = column;
+        reprFound[0] = repr1;
+        reprFound[1] = repr3;
+        break;
+      }
+      else if (repr2[column] && repr3[column])
+      {
+        specialRows[0] = repr2Row;
+        specialRows[1] = repr3Row;
+        specialColumns[0] = column;
+        reprFound[0] = repr2;
+        reprFound[1] = repr3;
         break;
       }
     }
 
-    if (pbeta)
-      *pbeta = (reprFound[0][specialColumns[0]] == reprFound[1][specialColumns[0]]) ? 1 : -1;
-    if (pgamma)
+    if (reprFound[0])
     {
-      if (reprFound[0][specialColumns[1]])
-        *pgamma = (reprFound[0][specialColumns[0]] == reprFound[0][specialColumns[1]]) ? 1 : -1;
-      else
-        *pgamma = (reprFound[1][specialColumns[0]] == reprFound[1][specialColumns[1]]) ? 1 : -1;
-    }
-  }
+      /* Find a column where the found rows' supports differ. */
+      for (size_t column = 0; column < matrix->numColumns; ++column)
+      {
+        if ((reprFound[0][column] + reprFound[1][column]) && (reprFound[0][column] == 0 || reprFound[1][column] == 0))
+        {
+          specialColumns[1] = column;
+          break;
+        }
+      }
 
-  if (reprFound[0])
-  {
-    CMRdbgMsg(2, "Non-unit special matrix is\n%2d %2d\n%2d %2d\n", reprFound[0][specialColumns[0]],
-      reprFound[0][specialColumns[1]], reprFound[1][specialColumns[0]], reprFound[1][specialColumns[1]]);
-  }
-
-  /* Free temporary dense vectors. */
-  CMR_CALL( CMRfreeStackArray(cmr, &repr3) );
-  CMR_CALL( CMRfreeStackArray(cmr, &repr2) );
-  CMR_CALL( CMRfreeStackArray(cmr, &repr1) );
-
-  if (reprFound[0])
-  {
-    if (specialRows[0] > specialRows[1])
-    {
-      CMRdbgMsg(2, "Swapping rows.\n");
-      size_t temp = specialRows[0];
-      specialRows[0] = specialRows[1];
-      specialRows[1] = temp;
+      if (pbeta)
+        *pbeta = (reprFound[0][specialColumns[0]] == reprFound[1][specialColumns[0]]) ? 1 : -1;
+      if (pgamma)
+      {
+        if (reprFound[0][specialColumns[1]])
+          *pgamma = (reprFound[0][specialColumns[0]] == reprFound[0][specialColumns[1]]) ? 1 : -1;
+        else
+          *pgamma = (reprFound[1][specialColumns[0]] == reprFound[1][specialColumns[1]]) ? 1 : -1;
+      }
     }
 
-    if (specialColumns[0] > specialColumns[1])
+    if (reprFound[0])
     {
-      CMRdbgMsg(2, "Swapping columns.\n");
-      size_t temp = specialColumns[0];
-      specialColumns[0] = specialColumns[1];
-      specialColumns[1] = temp;
+      CMRdbgMsg(2, "Non-unit special matrix is\n%2d %2d\n%2d %2d\n", reprFound[0][specialColumns[0]],
+        reprFound[0][specialColumns[1]], reprFound[1][specialColumns[0]], reprFound[1][specialColumns[1]]);
     }
 
-    return CMR_OKAY;
-  }
+    /* Free temporary dense vectors. */
+    CMR_CALL( CMRfreeStackArray(cmr, &repr3) );
+    CMR_CALL( CMRfreeStackArray(cmr, &repr2) );
+    CMR_CALL( CMRfreeStackArray(cmr, &repr1) );
 
-  CMRdbgMsg(2, "Only unit special matrices exist. Searching in %s.\n", (topLeft && bottomRight)
-    ? "top-left and bottom-right matrices" : (topLeft ? "top-left matrix" : "bottom-right matrix"));
+    if (reprFound[0])
+    {
+      if (specialRows[0] > specialRows[1])
+      {
+        CMRdbgMsg(2, "Swapping rows.\n");
+        size_t temp = specialRows[0];
+        specialRows[0] = specialRows[1];
+        specialRows[1] = temp;
+      }
+
+      if (specialColumns[0] > specialColumns[1])
+      {
+        CMRdbgMsg(2, "Swapping columns.\n");
+        size_t temp = specialColumns[0];
+        specialColumns[0] = specialColumns[1];
+        specialColumns[1] = temp;
+      }
+
+      return CMR_OKAY;
+    }
+
+    CMRdbgMsg(2, "Only unit special matrices exist. Searching in %s.\n", (topLeft && bottomRight)
+      ? "top-left and bottom-right matrices" : (topLeft ? "top-left matrix" : "bottom-right matrix"));
+  }
 
   int* rowsGroup = NULL;
   CMR_CALL( CMRallocStackArray(cmr, &rowsGroup, matrix->numRows) );
@@ -3084,7 +3168,6 @@ CMR_ERROR CMRthreesumDecomposeSearch(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT* t
   CMR_ELEMENT* bottomRightColumnsPredecessor = NULL;
   int bottomRightSum;
 
-
   /* Top-left submatrix search */
 
   if (topLeft)
@@ -3092,12 +3175,24 @@ CMR_ERROR CMRthreesumDecomposeSearch(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT* t
     for (size_t row = 0; row < matrix->numRows; ++row)
       rowsGroup[row] = ((sepa->rowsFlags[row] & CMR_SEPA_MASK_CHILD) == CMR_SEPA_SECOND) ? -1 : 0;
 
-    for (size_t column = 0; column < matrix->numColumns; ++column)
+    if (allGiven)
     {
-      if ((sepa->columnsFlags[column] & CMR_SEPA_MASK_CHILD) == CMR_SEPA_SECOND)
-        columnsGroup[column] = -1;
-      else
-        columnsGroup[column] = (sepa->columnsFlags[column] & CMR_SEPA_MASK_EXTRA) / 2;
+      /* Only zero columns in first are allowed. */
+      for (size_t column = 0; column < matrix->numColumns; ++column)
+        columnsGroup[column] = (sepa->columnsFlags[column] == CMR_SEPA_FIRST) ? 0 : -1;
+      /* Start and end. */
+      columnsGroup[specialColumns[0]] = 1;
+      columnsGroup[specialColumns[1]] = 2;
+    }
+    else
+    {
+      for (size_t column = 0; column < matrix->numColumns; ++column)
+      {
+        if ((sepa->columnsFlags[column] & CMR_SEPA_MASK_CHILD) == CMR_SEPA_SECOND)
+          columnsGroup[column] = -1;
+        else
+          columnsGroup[column] = (sepa->columnsFlags[column] & CMR_SEPA_MASK_EXTRA) / 2;
+      }
     }
 
     CMR_CALL( CMRallocStackArray(cmr, &topLeftRowsPredecessor, matrix->numRows) );
@@ -3115,15 +3210,25 @@ CMR_ERROR CMRthreesumDecomposeSearch(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT* t
       assert(CMRelementIsColumn(topLeftPathSource));
       assert(CMRelementIsColumn(topLeftPathTarget));
 
-      specialColumns[0] = CMRelementToColumnIndex(topLeftPathSource);
-      specialColumns[1] = CMRelementToColumnIndex(topLeftPathTarget);
+      if (allGiven)
+      {
+        assert( specialColumns[0] == CMRelementToColumnIndex(topLeftPathSource) );
+        assert( specialColumns[1] == CMRelementToColumnIndex(topLeftPathTarget) );
+      }
+      else
+      {
+        specialColumns[0] = CMRelementToColumnIndex(topLeftPathSource);
+        specialColumns[1] = CMRelementToColumnIndex(topLeftPathTarget);
+      }
     }
     else
     {
-      assert("NOT IMPLEMENTED" == 0);
+      CMRdbgMsg(2, "Given special columns are not connecting only using zero columns.\n");
+      error = CMR_ERROR_INPUT;
+      goto cleanup;
     }
   }
-  else
+  else if (!allGiven)
   {
     specialColumns[0] = SIZE_MAX;
     specialColumns[1] = SIZE_MAX;
@@ -3145,12 +3250,24 @@ CMR_ERROR CMRthreesumDecomposeSearch(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT* t
 
   if (bottomRight)
   {
-    for (size_t row = 0; row < matrix->numRows; ++row)
+    if (allGiven)
     {
-      if ((sepa->rowsFlags[row] & CMR_SEPA_MASK_CHILD) == CMR_SEPA_FIRST)
-        rowsGroup[row] = -1;
-      else
-        rowsGroup[row] = (sepa->rowsFlags[row] & CMR_SEPA_MASK_EXTRA) / 2;
+      /* Only zero rows in second are allowed. */
+      for (size_t row = 0; row < matrix->numRows; ++row)
+        rowsGroup[row] = (sepa->rowsFlags[row] == CMR_SEPA_SECOND) ? 0 : -1;
+      /* Start and end. */
+      rowsGroup[specialRows[0]] = 1;
+      rowsGroup[specialRows[1]] = 2;
+    }
+    else
+    {
+      for (size_t row = 0; row < matrix->numRows; ++row)
+      {
+        if ((sepa->rowsFlags[row] & CMR_SEPA_MASK_CHILD) == CMR_SEPA_FIRST)
+          rowsGroup[row] = -1;
+        else
+          rowsGroup[row] = (sepa->rowsFlags[row] & CMR_SEPA_MASK_EXTRA) / 2;
+      }
     }
 
     for (size_t column = 0; column < matrix->numColumns; ++column)
@@ -3173,15 +3290,25 @@ CMR_ERROR CMRthreesumDecomposeSearch(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT* t
       assert(CMRelementIsRow(bottomRightPathSource));
       assert(CMRelementIsRow(bottomRightPathTarget));
 
-      specialRows[0] = CMRelementToRowIndex(bottomRightPathSource);
-      specialRows[1] = CMRelementToRowIndex(bottomRightPathTarget);
+      if (allGiven)
+      {
+        assert( specialRows[0] == CMRelementToRowIndex(bottomRightPathSource) );
+        assert( specialRows[1] == CMRelementToRowIndex(bottomRightPathTarget) );
+      }
+      else
+      {
+        specialRows[0] = CMRelementToRowIndex(bottomRightPathSource);
+        specialRows[1] = CMRelementToRowIndex(bottomRightPathTarget);
+      }
     }
     else
     {
-      assert("NOT IMPLEMENTED" == 0);
+      CMRdbgMsg(2, "Given special rows are not connecting only using zero rows.\n");
+      error = CMR_ERROR_INPUT;
+      goto cleanup;
     }
   }
-  else
+  else if (!allGiven)
   {
     specialRows[0] = SIZE_MAX;
     specialRows[1] = SIZE_MAX;
@@ -3326,7 +3453,7 @@ cleanup:
   return error;
 }
 
-CMR_ERROR CMRthreesumDecomposeConnecting(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT* transpose, CMR_SEPA* sepa,
+CMR_ERROR CMRthreesumDecomposeSearchConnecting(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT* transpose, CMR_SEPA* sepa,
   size_t* specialRows, size_t* specialColumns, char* pgamma, char* pbeta)
 {
   assert(cmr);
@@ -3334,10 +3461,31 @@ CMR_ERROR CMRthreesumDecomposeConnecting(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMA
   assert(transpose);
   assert(sepa);
 
+  specialRows[0] = SIZE_MAX;
+  specialRows[1] = SIZE_MAX;
+  specialColumns[0] = SIZE_MAX;
+  specialColumns[1] = SIZE_MAX;
   CMR_CALL(CMRthreesumDecomposeSearch(cmr, matrix, transpose, sepa, true, false, NULL, specialRows,
     specialColumns, pgamma, pbeta));
 
   return CMR_OKAY;
+}
+
+CMR_ERROR CMRthreesumDecomposeSignConnecting(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT* transpose, CMR_SEPA* sepa,
+  size_t* specialRows, size_t* specialColumns, char* pgamma, char* pbeta)
+{
+  assert(cmr);
+  assert(matrix);
+  assert(transpose);
+  assert(sepa);
+
+  assert( specialRows[0] < matrix->numRows );
+  assert( specialRows[1] < matrix->numRows );
+  assert( specialColumns[0] < matrix->numColumns );
+  assert( specialColumns[1] < matrix->numColumns );
+
+  return CMRthreesumDecomposeSearch(cmr, matrix, transpose, sepa, true, false, NULL, specialRows, specialColumns,
+    pgamma, pbeta);
 }
 
 CMR_ERROR CMRthreesumDecomposeFirst(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sepa, size_t* specialRows,

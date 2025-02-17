@@ -26,6 +26,15 @@ CMR_ERROR CMRchrmatSubmatrixBipartitePath(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRM
   if (localColumnsPredecessor)
     CMR_CALL( CMRallocStackArray(cmr, &columnsPredecessor, numColumns) );
 
+  /*
+   * Meaning of row/column status:
+   *
+   *  1: seen but in queue
+   * -1: disabled
+   *  0: not yet visited
+   *  2: visit complete
+   */
+
   int8_t* rowsStatus = NULL;
   CMR_CALL( CMRallocStackArray(cmr, &rowsStatus, numRows) );
   int8_t* columnsStatus = NULL;

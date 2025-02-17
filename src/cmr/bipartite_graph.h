@@ -15,6 +15,8 @@ extern "C" {
  * The bipartite graph of a matrix \f$ M \f$ has the rows and columns of as vertices and edges for all nonzeros of
  * \f$ M \f$. The rows and columns are assigned to groups, and some shortest path from any nonzero group to any larger
  * nonzero group will be returned. Vertices whose group is negative are ignored.
+ *
+ * A negative row/column group value means to disable the node. Positive values indicate different groups.
  */
 
 CMR_ERROR CMRchrmatSubmatrixBipartitePath(

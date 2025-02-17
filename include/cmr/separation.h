@@ -799,7 +799,7 @@ CMR_ERROR CMRthreesumCompose(
 
 
 /**
- * \brief Decomposes \p matrix as a 3-sum according to the 3-separation \p sepa, computing the connecing matrix.
+ * \brief Decomposes \p matrix as a 3-sum according to the 3-separation \p sepa, searching a suitable connecing matrix.
  *
  * The input \p matrix \f$ M \f$ must have a 3-separation that is given by \p sepa, i.e., it can be reordered to look
  * like \f$ M = \begin{bmatrix} A & \mathbb{O} \\ C & D \end{bmatrix} \f$, where \f$ \text{rank}(C) = 2 \f$.
@@ -834,10 +834,12 @@ CMR_ERROR CMRthreesumCompose(
  * This function only computes the indices \f$ i,j,k,\ell \f$ as well as values for \f$ \beta \f$ and \f$ \gamma \f$;
  * the matrices \f$ M_1 \f$ and \f$ M_2 \f$ can be computed by \ref CMRthreesumDecomposeFirst and
  * \ref CMRthreesumDecomposeSecond, respectively.
+ * If only \f$ \beta \f$ and \f$ \gamma \f$ shall be computed for given \f$ i,j,k,\ell \f$ then
+ * \ref CMRthreesumDecomposeSignConnecting can be used.
  */
 
 CMR_EXPORT
-CMR_ERROR CMRthreesumDecomposeConnecting(
+CMR_ERROR CMRthreesumDecomposeSearchConnecting(
   CMR* cmr,               /**< \ref CMR environment. */
   CMR_CHRMAT* matrix,     /**< Input matrix \f$ M \f$. */
   CMR_CHRMAT* transpose,  /**< Transpose matrix \f$ M^{\textsf{T}} \f$. */
@@ -845,6 +847,57 @@ CMR_ERROR CMRthreesumDecomposeConnecting(
   size_t* specialRows,    /**< Array of length 2 for storing the rows \f$ i \f$ and \f$ j \f$ as rows of \f$ M \f$. */
   size_t* specialColumns, /**< Array of length 2 for storing the columns \f$ k \f$ and \f$ \ell \f$ as rows of
                            **  \f$ M \f$. */
+  char* pgamma,           /**< Pointer for storing a correct value of \f$ \gamma \f$; may be \c NULL. */
+  char* pbeta             /**< Pointer for storing a correct value of \f$ \beta \f$; may be \c NULL. */
+);
+
+/**
+ * \brief Decomposes \p matrix as a 3-sum according to the 3-separation \p sepa, searching a suitable connecing matrix.
+ *
+ * The input \p matrix \f$ M \f$ must have a 3-separation that is given by \p sepa, i.e., it can be reordered to look
+ * like \f$ M = \begin{bmatrix} A & \mathbb{O} \\ C & D \end{bmatrix} \f$, where \f$ \text{rank}(C) = 2 \f$.
+ * The two components of the 3-sum are matrices
+ * \f[
+ *   M_1 = \begin{bmatrix}
+ *     A & \mathbb{O} \\
+ *     C_{i,\star} & 1 \\
+ *     C_{j,\star} & \beta
+ *   \end{bmatrix}
+ * \f]
+ * and
+ * \f[
+ *   M_2 = \begin{bmatrix}
+ *     \gamma & 1 & \mathbb{O}^{\textsf{T}} \\
+ *     C_{\star,k} & C_{\star,\ell} & D
+ *   \end{bmatrix},
+ * \f]
+ * where \f$ \beta,\gamma \in \{-1,+1 \} \f$, \f$\text{rank}(C_{\{i,j\},\{k,\ell\}}) = 2\f$ and such that
+ * \f[
+ *   N := \begin{bmatrix}
+ *     \gamma & 1 & 0 \\
+ *     C_{i,k} & C_{i,\ell} & 1 \\
+ *     C_{j,k} & C_{j,\ell} & \beta
+ *   \end{bmatrix}
+ * \f]
+ * is totally unimodular.
+ *
+ * The value of \f$ \beta \in \{-1,+1\} \f$ must be so that there exists a singular submatrix of \f$ M_1 \f$ with
+ * exactly two nonzeros per row and per column that covers the bottom-right \f$ \beta \f$-entry.
+ *
+ * This function tries to compute values for \f$ \beta \f$ and \f$ \gamma \f$ for given indices \f$ i,j,k,\ell \f$ if
+ * this is possible. If the latter are not known, \ref CMRthreesumDecomposeSearchConnecting can be used. In either case,
+ * the matrices \f$ M_1 \f$ and \f$ M_2 \f$ can be computed by \ref CMRthreesumDecomposeFirst and
+ * \ref CMRthreesumDecomposeSecond, respectively.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRthreesumDecomposeSignConnecting(
+  CMR* cmr,               /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix,     /**< Input matrix \f$ M \f$. */
+  CMR_CHRMAT* transpose,  /**< Transpose matrix \f$ M^{\textsf{T}} \f$. */
+  CMR_SEPA* sepa,         /**< 3-separation to decompose at. */
+  size_t* specialRows,    /**< Array of length 2 with the rows \f$ i \f$ and \f$ j \f$ as rows of \f$ M \f$. */
+  size_t* specialColumns, /**< Array of length 2 with the columns \f$ k \f$ and \f$ \ell \f$ as rows of \f$ M \f$. */
   char* pgamma,           /**< Pointer for storing a correct value of \f$ \gamma \f$; may be \c NULL. */
   char* pbeta             /**< Pointer for storing a correct value of \f$ \beta \f$; may be \c NULL. */
 );
@@ -882,7 +935,7 @@ CMR_ERROR CMRthreesumDecomposeConnecting(
  *
  * The value of \f$ \beta \in \{-1,+1\} \f$, given via \p beta. The row indices \f$ i,j \f$, given via \p specialRows,
  * and column indices \f$ k,\ell \f$, given via \p specialColumns, must index a rank-2 submatrix of \f$ C \f$. They
- * should be computed by \ref CMRthreesumDecomposeConnecting.
+ * can be computed by \ref CMRthreesumDecomposeSearchConnecting.
  *
  * This function computes \f$ M_1 \f$, while \f$ M_2 \f$ can be computed by \ref CMRthreesumDecomposeSecond.
  *
@@ -949,7 +1002,7 @@ CMR_ERROR CMRthreesumDecomposeFirst(
  *
  * The value of \f$ \gamma \in \{-1,+1\} \f$, given via \p gamma. The row indices \f$ i,j \f$, given via \p specialRows,
  * and column indices \f$ k,\ell \f$, given via \p specialColumns, must index a rank-2 submatrix of \f$ C \f$. They
- * should be computed by \ref CMRthreesumDecomposeConnecting.
+ * can be computed by \ref CMRthreesumDecomposeSearchConnecting.
  *
  * This function computes \f$ M_2 \f$, while \f$ M_1 \f$ can be computed by \ref CMRthreesumDecomposeFirst.
  *

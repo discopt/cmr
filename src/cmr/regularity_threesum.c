@@ -392,10 +392,10 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
       node->type = CMR_SEYMOUR_NODE_TYPE_THREESUM;
       CMR_CALL( CMRseymourSetNumChildren(cmr, node, 2) );
 
-      size_t specialRows[3];
-      size_t specialColumns[3];
+      size_t specialRows[2];
+      size_t specialColumns[2];
       char gamma, beta;
-      CMR_CALL( CMRthreesumDecomposeConnecting(cmr, node->matrix, node->transpose, separation, specialRows,
+      CMR_CALL( CMRthreesumDecomposeSearchConnecting(cmr, node->matrix, node->transpose, separation, specialRows,
         specialColumns, &gamma, &beta) );
 
       /* Temporary data. */
@@ -410,7 +410,7 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
 
       /* First child. */
       CMR_CHRMAT* first = NULL;
-      CMR_CALL( CMRallocBlockArray(cmr, &node->childSpecialRows[0], 3) );
+      CMR_CALL( CMRallocBlockArray(cmr, &node->childSpecialRows[0], 2) );
       CMR_CALL( CMRallocBlockArray(cmr, &node->childSpecialColumns[0], 3) );
       CMR_CALL( CMRthreesumDecomposeFirst(cmr, node->matrix, separation, specialRows, specialColumns, beta,
         &first, childRowsToParent, childColumnsToParent, rowsToChild, columnsToChild, node->childSpecialRows[0],
@@ -455,7 +455,7 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
       /* Second child. */
       CMR_CHRMAT* second = NULL;
       CMR_CALL( CMRallocBlockArray(cmr, &node->childSpecialRows[1], 3) );
-      CMR_CALL( CMRallocBlockArray(cmr, &node->childSpecialColumns[1], 3) );
+      CMR_CALL( CMRallocBlockArray(cmr, &node->childSpecialColumns[1], 2) );
       CMR_CALL( CMRthreesumDecomposeSecond(cmr, node->matrix, separation, specialRows, specialColumns, gamma,
         &second, childRowsToParent, childColumnsToParent, rowsToChild, columnsToChild, node->childSpecialRows[1],
         node->childSpecialColumns[1]) );

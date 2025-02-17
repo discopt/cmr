@@ -968,7 +968,7 @@ TEST(Separation, ThreesumDecomposition)
     char gamma, beta;
     size_t specialRows[2];
     size_t specialColumns[2];
-    ASSERT_CMR_CALL( CMRthreesumDecomposeConnecting(cmr, matrix, transpose, sepa, specialRows, specialColumns,
+    ASSERT_CMR_CALL( CMRthreesumDecomposeSearchConnecting(cmr, matrix, transpose, sepa, specialRows, specialColumns,
       &gamma, &beta) );
     /* Rows are {2,4} and {3,5}. So in particular in [2,6), sum is odd. */
     ASSERT_GE( specialRows[0], 2 );
@@ -1064,7 +1064,7 @@ TEST(Separation, ThreesumDecomposition)
     char gamma, beta;
     size_t specialRows[2];
     size_t specialColumns[2];
-    ASSERT_CMR_CALL( CMRthreesumDecomposeConnecting(cmr, matrix, transpose, sepa, specialRows, specialColumns,
+    ASSERT_CMR_CALL( CMRthreesumDecomposeSearchConnecting(cmr, matrix, transpose, sepa, specialRows, specialColumns,
       &gamma, &beta) );
     /* Rows are {2,4} and {3,5}. So in particular in [2,6), sum is odd. */
     ASSERT_GE( specialRows[0], 2 );
@@ -1160,7 +1160,7 @@ TEST(Separation, ThreesumDecomposition)
     char gamma, beta;
     size_t specialRows[2];
     size_t specialColumns[2];
-    ASSERT_CMR_CALL( CMRthreesumDecomposeConnecting(cmr, matrix, transpose, sepa, specialRows, specialColumns,
+    ASSERT_CMR_CALL( CMRthreesumDecomposeSearchConnecting(cmr, matrix, transpose, sepa, specialRows, specialColumns,
       &gamma, &beta) );
     /* Rows are {2,4} and {3,5}. So in particular in [2,6), sum is odd. */
     ASSERT_GE( specialRows[0], 2 );
@@ -1257,7 +1257,7 @@ TEST(Separation, ThreesumDecomposition)
     char gamma, beta;
     size_t specialRows[2];
     size_t specialColumns[2];
-    ASSERT_CMR_CALL( CMRthreesumDecomposeConnecting(cmr, matrix, transpose, sepa, specialRows, specialColumns,
+    ASSERT_CMR_CALL( CMRthreesumDecomposeSearchConnecting(cmr, matrix, transpose, sepa, specialRows, specialColumns,
       &gamma, &beta) );
     /* Rows are {2,4} and {3,5}. So in particular in [2,6), sum is odd. */
     ASSERT_GE( specialRows[0], 4 );
@@ -1316,6 +1316,144 @@ TEST(Separation, ThreesumDecomposition)
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &second) );
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &checkFirst) );
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &first) );
+    ASSERT_CMR_CALL( CMRsepaFree(cmr, &sepa) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &transpose) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  }
+
+  {
+    /* A matrix with a non-identity special matrix (second child is not TU). */
+
+    CMR_CHRMAT* matrix = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, " 6 6 "
+      " 0  1 -1  0 0 0 "
+      " 0  0  1  1 0 0 "
+      " 1  0  0  1 0 0 "
+      " 0  0  0  0 1 1 "
+      " 1 -1  0  0 1 0 "
+      " 0 -1  0  0 0 1 "
+    ) );
+    CMR_CHRMAT* transpose = NULL;
+    ASSERT_CMR_CALL( CMRchrmatTranspose(cmr, matrix, &transpose) );
+
+    CMR_SEPA* sepa = NULL;
+    ASSERT_CMR_CALL( CMRsepaCreate(cmr, 6, 6, &sepa) );
+    sepa->type = CMR_SEPA_TYPE_THREE_CONCENTRATED_RANK;
+
+    sepa->rowsFlags[0] = CMR_SEPA_FIRST;
+    sepa->rowsFlags[1] = CMR_SEPA_FIRST;
+    sepa->rowsFlags[2] = CMR_SEPA_FIRST;
+    sepa->rowsFlags[3] = CMR_SEPA_SECOND;
+    sepa->rowsFlags[4] = CMR_SEPA_SECOND | CMR_SEPA_FLAG_RANK1;
+    sepa->rowsFlags[5] = CMR_SEPA_SECOND | CMR_SEPA_FLAG_RANK2;
+
+    sepa->columnsFlags[0] = CMR_SEPA_FIRST | CMR_SEPA_FLAG_RANK1;
+    sepa->columnsFlags[1] = CMR_SEPA_FIRST | CMR_SEPA_FLAG_RANK2;
+    sepa->columnsFlags[2] = CMR_SEPA_FIRST;
+    sepa->columnsFlags[3] = CMR_SEPA_FIRST;
+    sepa->columnsFlags[4] = CMR_SEPA_SECOND;
+    sepa->columnsFlags[5] = CMR_SEPA_SECOND;
+
+    char gamma, beta;
+    size_t specialRows[2] = { 4, 5 };
+    size_t specialColumns[2] = { 0, 1 };
+    ASSERT_CMR_CALL( CMRthreesumDecomposeSignConnecting(cmr, matrix, transpose, sepa, specialRows, specialColumns,
+      &gamma, &beta) );
+    /* Rows are {2,4} and {3,5}. So in particular in [2,6), sum is odd. */
+    ASSERT_EQ( specialRows[0], 4 );
+    ASSERT_EQ( specialRows[1], 5 );
+    ASSERT_EQ( specialColumns[0], 0 );
+    ASSERT_EQ( specialColumns[1], 1 );
+
+    /* Connecting matrix:
+     * -1  1  0
+     *  1 -1  1
+     *  0 -1  1
+     *
+     * full det = 1 - 1 - 1   = -1 * 0 + ... (independent of gamma)
+     */
+
+    ASSERT_EQ( gamma, -1 );
+    ASSERT_EQ( beta, 1 );
+
+    CMR_CHRMAT* first = NULL;
+    ASSERT_CMR_CALL( CMRthreesumDecomposeFirst(cmr, matrix, sepa, specialRows, specialColumns, beta, &first, NULL,
+      NULL, NULL, NULL, NULL, NULL) );
+
+    CMR_CHRMAT* checkFirst = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &checkFirst, " 5 5 "
+      " 0  1 -1  0 0 "
+      " 0  0  1  1 0 "
+      " 1  0  0  1 0 "
+      " 1 -1  0  0 1 "
+      " 0 -1  0  0 1 "
+    ) );
+    ASSERT_TRUE( CMRchrmatCheckEqual(first, checkFirst) );
+
+    CMR_CHRMAT* second = NULL;
+    ASSERT_CMR_CALL( CMRthreesumDecomposeSecond(cmr, matrix, sepa, specialRows, specialColumns, gamma, &second, NULL,
+      NULL, NULL, NULL, NULL, NULL) );
+
+    CMRchrmatPrintDense(cmr, second, stdout, '0', true);
+
+    CMR_CHRMAT* checkSecond = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &checkSecond, " 4 4 "
+      "-1  1  0 0 "
+      " 0  0  1 1 "
+      " 1 -1  1 0 "
+      " 0 -1  0 1 "
+    ) );
+    ASSERT_TRUE( CMRchrmatCheckEqual(second, checkSecond) );
+
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &checkSecond) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &second) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &checkFirst) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &first) );
+    ASSERT_CMR_CALL( CMRsepaFree(cmr, &sepa) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &transpose) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  }
+
+  {
+    /* A matrix with an identity special matrix but non-working given special columns (second child is not TU). */
+
+    CMR_CHRMAT* matrix = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, " 6 6 "
+      " 0  1 -1  0 0 0 "
+      " 0  0  1  1 0 0 "
+      " 1  0  0  1 0 0 "
+      " 0  0  0  0 1 1 "
+      " 1  0  1  0 1 0 "
+      " 0 -1  0  0 0 1 "
+    ) );
+    CMR_CHRMAT* transpose = NULL;
+    ASSERT_CMR_CALL( CMRchrmatTranspose(cmr, matrix, &transpose) );
+
+    CMR_SEPA* sepa = NULL;
+    ASSERT_CMR_CALL( CMRsepaCreate(cmr, 6, 6, &sepa) );
+    sepa->type = CMR_SEPA_TYPE_THREE_CONCENTRATED_RANK;
+
+    sepa->rowsFlags[0] = CMR_SEPA_FIRST;
+    sepa->rowsFlags[1] = CMR_SEPA_FIRST;
+    sepa->rowsFlags[2] = CMR_SEPA_FIRST;
+    sepa->rowsFlags[3] = CMR_SEPA_SECOND;
+    sepa->rowsFlags[4] = CMR_SEPA_SECOND | CMR_SEPA_FLAG_RANK1;
+    sepa->rowsFlags[5] = CMR_SEPA_SECOND | CMR_SEPA_FLAG_RANK2;
+
+    sepa->columnsFlags[0] = CMR_SEPA_FIRST | CMR_SEPA_FLAG_RANK1;
+    sepa->columnsFlags[1] = CMR_SEPA_FIRST | CMR_SEPA_FLAG_RANK2;
+    sepa->columnsFlags[2] = CMR_SEPA_FIRST | CMR_SEPA_FLAG_RANK1;
+    sepa->columnsFlags[3] = CMR_SEPA_FIRST;
+    sepa->columnsFlags[4] = CMR_SEPA_SECOND;
+    sepa->columnsFlags[5] = CMR_SEPA_SECOND;
+
+    char gamma, beta;
+    size_t specialRows[2] = { 4, 5 };
+    size_t specialColumns[2] = { 0, 1 };
+    CMR_ERROR error = CMRthreesumDecomposeSignConnecting(cmr, matrix, transpose, sepa, specialRows, specialColumns,
+      &gamma, &beta);
+    ASSERT_EQ( error, CMR_ERROR_INPUT );
+
     ASSERT_CMR_CALL( CMRsepaFree(cmr, &sepa) );
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &transpose) );
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );

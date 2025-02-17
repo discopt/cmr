@@ -492,10 +492,15 @@ CMR_ERROR CMRseymourPrintChild(CMR* cmr, CMR_SEYMOUR_NODE* child, CMR_SEYMOUR_NO
         fprintf(stream, "with special rows: r%zu, r%zu\n", parent->childSpecialRows[childIndex][0]+1,
           parent->childSpecialRows[childIndex][1]+1);
       }
-      else if (parent->type == CMR_SEYMOUR_NODE_TYPE_THREESUM)
+      else if (parent->type == CMR_SEYMOUR_NODE_TYPE_THREESUM && childIndex == 0)
       {
-        fprintf(stream, "with special rows: r%zu, r%zu, r%zu\n", parent->childSpecialRows[childIndex][0]+1,
-          parent->childSpecialRows[childIndex][1]+1, parent->childSpecialRows[childIndex][2]+1);
+        fprintf(stream, "with special rows: r%zu, r%zu, r%zu\n", parent->childSpecialRows[0][0]+1,
+          parent->childSpecialRows[0][1]+1);
+      }
+      else if (parent->type == CMR_SEYMOUR_NODE_TYPE_THREESUM && childIndex == 1)
+      {
+        fprintf(stream, "with special rows: r%zu, r%zu, r%zu\n", parent->childSpecialRows[1][0]+1,
+          parent->childSpecialRows[1][1]+1, parent->childSpecialRows[1][2]+1);
       }
     }
     if (parent->childColumnsToParent && parent->childColumnsToParent[childIndex])
@@ -529,10 +534,15 @@ CMR_ERROR CMRseymourPrintChild(CMR* cmr, CMR_SEYMOUR_NODE* child, CMR_SEYMOUR_NO
       {
         fprintf(stream, "with special columns: c%zu\n", parent->childSpecialColumns[childIndex][0]+1);
       }
-      else if (parent->type == CMR_SEYMOUR_NODE_TYPE_THREESUM)
+      else if (parent->type == CMR_SEYMOUR_NODE_TYPE_THREESUM && childIndex == 0)
       {
-        fprintf(stream, "with special columns: c%zu, c%zu, c%zu\n", parent->childSpecialColumns[childIndex][0]+1,
-          parent->childSpecialColumns[childIndex][1]+1, parent->childSpecialColumns[childIndex][2]+1);
+        fprintf(stream, "with special columns: c%zu, c%zu, c%zu\n", parent->childSpecialColumns[0][0]+1,
+          parent->childSpecialColumns[0][1]+1, parent->childSpecialColumns[0][2]+1);
+      }
+      else if (parent->type == CMR_SEYMOUR_NODE_TYPE_THREESUM && childIndex == 1)
+      {
+        fprintf(stream, "with special columns: c%zu, c%zu\n", parent->childSpecialColumns[1][0]+1,
+          parent->childSpecialColumns[1][1]+1);
       }
     }
   }
