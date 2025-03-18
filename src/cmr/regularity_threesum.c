@@ -431,7 +431,10 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
       /* Mapping from first child rows to parent elements. */
       CMR_CALL( CMRallocBlockArray(cmr, &node->childRowsToParent[0], first->numRows) );
       for (size_t row = 0; row < first->numRows; ++row)
+      {
+        CMRdbgMsg(14, "First child's row r%zu maps to parent r%zu.\n", row+1, childRowsToParent[row]+1);
         node->childRowsToParent[0][row] = CMRrowToElement(childRowsToParent[row]);
+      }
 
       /* Mapping from first child columns to parent elements. */
       CMR_CALL( CMRallocBlockArray(cmr, &node->childColumnsToParent[0], first->numColumns) );

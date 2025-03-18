@@ -471,9 +471,9 @@ CMR_ERROR CMRseymourPrintChild(CMR* cmr, CMR_SEYMOUR_NODE* child, CMR_SEYMOUR_NO
       for (size_t row = 0; row < child->numRows; ++row)
       {
         if (CMRelementIsRow(rowsToParent[row]))
-          fprintf(stream, " r%zu", CMRelementToRowIndex(rowsToParent[row])+1);
+          fprintf(stream, " r%zu->r%zu", row+1, CMRelementToRowIndex(rowsToParent[row])+1);
         else if (CMRelementIsColumn(rowsToParent[row]))
-          fprintf(stream, " c%zu", CMRelementToColumnIndex(rowsToParent[row])+1);
+          fprintf(stream, " r%zu->c%zu", row+1, CMRelementToColumnIndex(rowsToParent[row])+1);
         else
           fprintf(stream, " N/A");
       }
@@ -485,7 +485,7 @@ CMR_ERROR CMRseymourPrintChild(CMR* cmr, CMR_SEYMOUR_NODE* child, CMR_SEYMOUR_NO
         fputc(' ', stream);
       if (parent->type == CMR_SEYMOUR_NODE_TYPE_DELTASUM)
       {
-        fprintf(stream, "with special rows: r%zu\n", parent->childSpecialRows[childIndex][0]+1);
+        fprintf(stream, "with special rows of first: r%zu\n", parent->childSpecialRows[childIndex][0]+1);
       }
       else if (parent->type == CMR_SEYMOUR_NODE_TYPE_YSUM)
       {
@@ -513,9 +513,9 @@ CMR_ERROR CMRseymourPrintChild(CMR* cmr, CMR_SEYMOUR_NODE* child, CMR_SEYMOUR_NO
       for (size_t column = 0; column < child->numColumns; ++column)
       {
         if (CMRelementIsRow(columnsToParent[column]))
-          fprintf(stream, " r%zu", CMRelementToRowIndex(columnsToParent[column])+1);
+          fprintf(stream, " c%zu->r%zu", column+1, CMRelementToRowIndex(columnsToParent[column])+1);
         else if (CMRelementIsColumn(columnsToParent[column]))
-          fprintf(stream, " c%zu", CMRelementToColumnIndex(columnsToParent[column])+1);
+          fprintf(stream, " c%zu->c%zu", column+1, CMRelementToColumnIndex(columnsToParent[column])+1);
         else
           fprintf(stream, " N/A");
       }
@@ -596,10 +596,7 @@ CMR_ERROR CMRseymourPrintChild(CMR* cmr, CMR_SEYMOUR_NODE* child, CMR_SEYMOUR_NO
     {
       for (size_t i = 0; i < indent; ++i)
           fputc(' ', stream);
-      if (child->numChildren == 1)
-        fprintf(stream, "Unique child:\n");
-      else
-        fprintf(stream, "Child #%zu:\n", c+1);
+      fprintf(stream, "Child %zu of %zu:\n", c+1, child->numChildren);
       CMR_CALL( CMRseymourPrintChild(cmr, child->children[c], child, c, stream, indent + 2, printChildren,
         printParentElements, printMatrices, printGraphs, printReductions, printPivots) );
     }

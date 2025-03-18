@@ -3505,10 +3505,11 @@ CMR_ERROR CMRthreesumDecomposeFirst(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sepa
 
   size_t numNonzeros = 2;
   size_t firstRow = 0;
+
+  /* Rows of A. */
   for (size_t row = 0; row < matrix->numRows; ++row)
   {
-    if (((sepa->rowsFlags[row] & CMR_SEPA_MASK_CHILD) == CMR_SEPA_FIRST) || row == specialRows[0]
-      || row == specialRows[1])
+    if ((sepa->rowsFlags[row] & CMR_SEPA_MASK_CHILD) == CMR_SEPA_FIRST)
     {
       if (firstRowsOrigin)
         firstRowsOrigin[firstRow] = row;
@@ -3526,6 +3527,29 @@ CMR_ERROR CMRthreesumDecomposeFirst(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sepa
     else if (rowsToFirst)
       rowsToFirst[row] = SIZE_MAX;
   }
+
+  /* Two special rows of C. */
+  for (size_t row = 0; row < matrix->numRows; ++row)
+  {
+    if (row == specialRows[0] || row == specialRows[1])
+    {
+      if (firstRowsOrigin)
+        firstRowsOrigin[firstRow] = row;
+      if (rowsToFirst)
+        rowsToFirst[row] = firstRow;
+      size_t beyond = matrix->rowSlice[row + 1];
+      for (size_t e = matrix->rowSlice[row]; e < beyond; ++e)
+      {
+        size_t column = matrix->entryColumns[e];
+        if ((sepa->columnsFlags[column] & CMR_SEPA_MASK_CHILD) == CMR_SEPA_FIRST)
+          ++numNonzeros;
+      }
+      ++firstRow;
+    }
+    else if (rowsToFirst)
+      rowsToFirst[row] = SIZE_MAX;
+  }
+
   size_t numColumns = 0;
   for (size_t column = 0; column < matrix->numColumns; ++column)
   {
@@ -3571,7 +3595,7 @@ CMR_ERROR CMRthreesumDecomposeFirst(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sepa
     }
   }
 
-  /* Two special row. */
+  /* Two special rows. */
   for (int i = 0; i < 2; ++i)
   {
     first->rowSlice[firstRow] = numNonzeros;
@@ -3605,8 +3629,8 @@ CMR_ERROR CMRthreesumDecomposeFirst(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sepa
   }
   if (firstSpecialColumns)
   {
-    firstSpecialColumns[0] = specialColumns[0];
-    firstSpecialColumns[1] = specialColumns[1];
+    firstSpecialColumns[0] = columnsToFirst[specialColumns[0]];
+    firstSpecialColumns[1] = columnsToFirst[specialColumns[1]];
     firstSpecialColumns[2] = first->numColumns - 1;
   }
 
@@ -3627,6 +3651,9 @@ CMR_ERROR CMRthreesumDecomposeSecond(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sep
   assert(gamma == 1 || gamma == -1);
   assert(psecond);
 
+  bool hasRowsToSecond = rowsToSecond != NULL;
+  if (!hasRowsToSecond)
+    CMR_CALL( CMRallocStackArray(cmr, &rowsToSecond, matrix->numRows) );
   bool hasColumnsToSecond = columnsToSecond != NULL;
   if (!hasColumnsToSecond)
     CMR_CALL( CMRallocStackArray(cmr, &columnsToSecond, matrix->numColumns) );
@@ -3641,8 +3668,7 @@ CMR_ERROR CMRthreesumDecomposeSecond(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sep
     {
       if (secondRowsOrigin)
         secondRowsOrigin[secondRow] = row;
-      if (rowsToSecond)
-        rowsToSecond[row] = secondRow;
+      rowsToSecond[row] = secondRow;
       size_t beyond = matrix->rowSlice[row + 1];
       for (size_t e = matrix->rowSlice[row]; e < beyond; ++e)
       {
@@ -3655,7 +3681,7 @@ CMR_ERROR CMRthreesumDecomposeSecond(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sep
       }
       ++secondRow;
     }
-    else if (rowsToSecond)
+    else
       rowsToSecond[row] = SIZE_MAX;
   }
   size_t numColumns = 2;
@@ -3743,8 +3769,8 @@ CMR_ERROR CMRthreesumDecomposeSecond(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sep
   if (secondSpecialRows)
   {
     secondSpecialRows[0] = 0;
-    secondSpecialRows[1] = specialRows[0];
-    secondSpecialRows[2] = specialRows[1];
+    secondSpecialRows[1] = rowsToSecond[specialRows[0]];
+    secondSpecialRows[2] = rowsToSecond[specialRows[1]];
   }
   if (secondSpecialColumns)
   {
@@ -3754,6 +3780,8 @@ CMR_ERROR CMRthreesumDecomposeSecond(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sep
 
   if (!hasColumnsToSecond)
     CMR_CALL( CMRfreeStackArray(cmr, &columnsToSecond) );
+  if (!hasRowsToSecond)
+    CMR_CALL( CMRfreeStackArray(cmr, &rowsToSecond) );
 
   return CMR_OKAY;
 }

@@ -1,4 +1,4 @@
-#define MASSIVE_RANDOM /* Uncomment to test a large number of random matrices. */
+// #define MASSIVE_RANDOM /* Uncomment to test a large number of random matrices. */
 
 #define MASSIVE_RANDOM_REPETITIONS 1000000
 #define MASSIVE_RANDOM_WIDTH 12
