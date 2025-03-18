@@ -1026,7 +1026,7 @@ CMR_ERROR CMRregularityNestedMinorSequenceSearchThreeSeparation(CMR* cmr, Decomp
   else if (remainingTime > 0)
   {
     CMRdbgMsg(8, "No 3-separation found. Declaring node to be irregular.\n");
-    // TODO: Add a dedicated unittest.
+
     task->node->type = CMR_SEYMOUR_NODE_TYPE_IRREGULAR;
 
     /* Free the task. */

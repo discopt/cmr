@@ -112,7 +112,7 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
 
       CMRdbgMsg(10, "Pivoting produced a non-ternary entry. Computed 2x2 violator.\n");
 
-      /* Tested in ThreeSumTruemperPivotHighRank unittest. */
+      /* Tested in ThreesumPivotHighRank unittest. */
       queue->foundIrregularity = true;
 
       return CMR_OKAY;
@@ -135,6 +135,8 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
     CMR_CALL( CMRsepaFindBinaryRepresentatives(cmr, separation, childMatrix, childTransposed, NULL,
       node->isTernary ? &violatorSubmatrix : NULL) );
 
+    /* Difficult to construct an example that triggers existence of such a violator (that is not found earlier). */
+
     if (violatorSubmatrix)
     {
       CMRdbgMsg(10, "-> %zux%zu submatrix with bad determinant.\n", violatorSubmatrix->numRows,
@@ -142,8 +144,6 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
 
       CMR_CALL( CMRseymourUpdateViolator(cmr, node, violatorSubmatrix) );
       assert(node->type == CMR_SEYMOUR_NODE_TYPE_IRREGULAR);
-
-      /* TODO: Add as unittest. */
       queue->foundIrregularity = true;
 
       return CMR_OKAY;
