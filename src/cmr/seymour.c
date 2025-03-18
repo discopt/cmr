@@ -1318,6 +1318,7 @@ CMR_ERROR CMRseymourSetAttributes(CMR_SEYMOUR_NODE* node)
   case CMR_SEYMOUR_NODE_TYPE_ONESUM:
   case CMR_SEYMOUR_NODE_TYPE_TWOSUM:
   case CMR_SEYMOUR_NODE_TYPE_THREESUM:
+    /* Pivots, 1-sums, 2-sums and 3-sums preserve regularity. */
     if (node->regularity == 0)
     {
       node->regularity = 1;
@@ -1327,6 +1328,8 @@ CMR_ERROR CMRseymourSetAttributes(CMR_SEYMOUR_NODE* node)
         node->regularity = MIN_IF_EXISTS(node->regularity, child, child->regularity);
       }
     }
+
+    /* 3-sums preserve graphicness. */
     if (node->graphicness == 0)
     {
       node->graphicness = 1;
@@ -1336,6 +1339,8 @@ CMR_ERROR CMRseymourSetAttributes(CMR_SEYMOUR_NODE* node)
         node->graphicness = MIN_IF_EXISTS(node->graphicness, child, child->graphicness);
       }
     }
+
+    /* 3-sums preserve cographicness. */
     if (node->cographicness == 0)
     {
       node->cographicness = 1;
@@ -1347,7 +1352,7 @@ CMR_ERROR CMRseymourSetAttributes(CMR_SEYMOUR_NODE* node)
     }
   break;
   case CMR_SEYMOUR_NODE_TYPE_DELTASUM:
-  case CMR_SEYMOUR_NODE_TYPE_YSUM:
+    /* Delta-sums preserve regularity. */
     if (node->regularity == 0)
     {
       node->regularity = 1;
@@ -1355,6 +1360,40 @@ CMR_ERROR CMRseymourSetAttributes(CMR_SEYMOUR_NODE* node)
       {
         CMR_SEYMOUR_NODE* child = node->children[childIndex];
         node->regularity = MIN_IF_EXISTS(node->regularity, child, child->regularity);
+      }
+    }
+
+    /* Delta-sums preserve graphicness. */
+    if (node->graphicness == 0)
+    {
+      node->graphicness = 1;
+      for (size_t childIndex = 0; childIndex < node->numChildren; ++childIndex)
+      {
+        CMR_SEYMOUR_NODE* child = node->children[childIndex];
+        node->graphicness = MIN_IF_EXISTS(node->graphicness, child, child->graphicness);
+      }
+    }
+  break;
+  case CMR_SEYMOUR_NODE_TYPE_YSUM:
+    /* Y-sums preserve regularity. */
+    if (node->regularity == 0)
+    {
+      node->regularity = 1;
+      for (size_t childIndex = 0; childIndex < node->numChildren; ++childIndex)
+      {
+        CMR_SEYMOUR_NODE* child = node->children[childIndex];
+        node->regularity = MIN_IF_EXISTS(node->regularity, child, child->regularity);
+      }
+    }
+
+    /* Y-sums preserve cographicness. */
+    if (node->cographicness == 0)
+    {
+      node->cographicness = 1;
+      for (size_t childIndex = 0; childIndex < node->numChildren; ++childIndex)
+      {
+        CMR_SEYMOUR_NODE* child = node->children[childIndex];
+        node->cographicness = MIN_IF_EXISTS(node->cographicness, child, child->cographicness);
       }
     }
   break;
