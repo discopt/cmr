@@ -35,8 +35,6 @@ CMR_ERROR recognizeNetwork(
   const char* outputGraphFileName,      /**< File name of the output graph (may be NULL; may be `-' for stdout). */
   const char* outputTreeFileName,       /**< File name of the output tree (may be NULL; may be `-' for stdout). */
   const char* outputDotFileName,        /**< File name of the output dot file (may be NULL; may be `-' for stdout). */
-  const char* outputSubmatrixFileName,  /**< File name of the output non-(co)network submatrix (may be NULL; may be `-'
-                                         **  for stdout). */
   bool printStats,                      /**< Whether to print statistics to stderr. */
   double timeLimit                      /**< Time limit to impose. */
 )
@@ -99,12 +97,12 @@ CMR_ERROR recognizeNetwork(
   if (conetwork)
   {
     CMR_CALL( CMRnetworkTestTranspose(cmr, matrix, &isCoNetwork, NULL, &digraph, &columnEdges, &rowEdges,
-      &edgesReversed, outputSubmatrixFileName ? &submatrix : NULL, &stats, timeLimit) );
+      &edgesReversed, NULL, &stats, timeLimit) );
   }
   else
   {
     CMR_CALL( CMRnetworkTestMatrix(cmr, matrix, &isCoNetwork, NULL, &digraph, &rowEdges, &columnEdges, &edgesReversed,
-      outputSubmatrixFileName ? &submatrix : NULL, &stats, timeLimit) );
+      NULL, &stats, timeLimit) );
   }
 
   fprintf(stderr, "Matrix %s%snetwork.\n", isCoNetwork ? "IS " : "is NOT ", conetwork ? "co" : "");
@@ -240,19 +238,6 @@ CMR_ERROR recognizeNetwork(
     CMR_CALL( CMRfreeBlockArray(cmr, &rowEdges) );
     CMR_CALL( CMRfreeBlockArray(cmr, &columnEdges) );
     CMR_CALL( CMRgraphFree(cmr, &digraph) );
-  }
-  else
-  {
-    if (outputSubmatrixFileName)
-    {
-      bool outputSubmatrixToFile = strcmp(outputSubmatrixFileName, "-");
-      fprintf(stderr, "Writing minimal non-%snetwork submatrix to %s%s%s.\n", conetwork ? "co" : "",
-        outputSubmatrixToFile ? "file <" : "", outputSubmatrixToFile ? outputSubmatrixFileName : "stdout",
-        outputSubmatrixToFile ? ">" : "");
-
-      assert(submatrix);
-      CMR_CALL( CMRsubmatWriteToFile(cmr, submatrix, matrix->numRows, matrix->numColumns, outputSubmatrixFileName) );
-    }
   }
 
   CMR_CALL( CMRsubmatFree(cmr, &submatrix) );
@@ -547,8 +532,8 @@ int main(int argc, char** argv)
     if (inputFormat == FILEFORMAT_UNDEFINED)
       inputFormat = FILEFORMAT_MATRIX_DENSE;
 
-    error = recognizeNetwork(inputFileName, inputFormat, transposed, outputGraphFileName, treeFileName, outputDotFileName,
-      outputSubmatrixFileName, printStats, timeLimit);
+    error = recognizeNetwork(inputFileName, inputFormat, transposed, outputGraphFileName, treeFileName,
+      outputDotFileName, printStats, timeLimit);
   }
   else if (task == TASK_COMPUTE)
   {

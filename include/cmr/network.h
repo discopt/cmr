@@ -124,7 +124,7 @@ CMR_ERROR CMRnetworkTestMatrix(
   bool** parcsReversed,           /**< Pointer for storing indicators which arcs are reversed for the correct sign (if
                                    **  \f$ M \f$ is network). */
   CMR_SUBMAT** psubmatrix,        /**< Pointer for storing a minimal non-network submatrix (if \f$ M \f$ is not
-                                   **  network). */
+                                   **  network and such a matrix is found by coincidence). */
   CMR_NETWORK_STATISTICS* stats,  /**< Pointer to statistics (may be \c NULL). */
   double timeLimit                /**< Time limit to impose. */
 );
@@ -158,7 +158,7 @@ CMR_ERROR CMRnetworkTestTranspose(
   bool** parcsReversed,           /**< Pointer for storing indicators which arcs are reversed for the correct sign (if
                                    **  \f$ M \f$ is conetwork). */
   CMR_SUBMAT** psubmatrix,        /**< Pointer for storing a minimal non-conetwork submatrix (if \f$ M \f$ is not
-                                   **  conetwork). */
+                                   **  conetwork and such a matrix is found by coincidence). */
   CMR_NETWORK_STATISTICS* stats,  /**< Pointer to statistics (may be \c NULL). */
   double timeLimit                /**< Time limit to impose. */
 );
