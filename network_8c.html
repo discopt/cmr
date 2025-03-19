@@ -425,7 +425,7 @@ Functions</h2></td></tr>
     <tr><td class="paramname">pforestArcs</td><td>Pointer for storing \( T \), indexed by the rows of \( M \) (if \( M \) is network).  </td></tr>
     <tr><td class="paramname">pcoforestArcs</td><td>Pointer for storing \( A \setminus T \), indexed by the columns of \( M \) (if \( M \) is network).  </td></tr>
     <tr><td class="paramname">parcsReversed</td><td>Pointer for storing indicators which arcs are reversed for the correct sign (if \( M \) is network).  </td></tr>
-    <tr><td class="paramname">psubmatrix</td><td>Pointer for storing a minimal non-network submatrix (if \( M \) is not network).  </td></tr>
+    <tr><td class="paramname">psubmatrix</td><td>Pointer for storing a minimal non-network submatrix (if \( M \) is not network and such a matrix is found by coincidence).  </td></tr>
     <tr><td class="paramname">stats</td><td>Pointer to statistics (may be <code>NULL</code>).  </td></tr>
     <tr><td class="paramname">timeLimit</td><td>Time limit to impose. </td></tr>
   </table>
@@ -528,7 +528,7 @@ Functions</h2></td></tr>
     <tr><td class="paramname">pforestArcs</td><td>Pointer for storing \( T \), indexed by the columns of \( M \) (if \( M \) is network).  </td></tr>
     <tr><td class="paramname">pcoforestArcs</td><td>Pointer for storing \( A \setminus T \), indexed by the rows of \( M \) (if \( M \) is conetwork).  </td></tr>
     <tr><td class="paramname">parcsReversed</td><td>Pointer for storing indicators which arcs are reversed for the correct sign (if \( M \) is conetwork).  </td></tr>
-    <tr><td class="paramname">psubmatrix</td><td>Pointer for storing a minimal non-conetwork submatrix (if \( M \) is not conetwork).  </td></tr>
+    <tr><td class="paramname">psubmatrix</td><td>Pointer for storing a minimal non-conetwork submatrix (if \( M \) is not conetwork and such a matrix is found by coincidence).  </td></tr>
     <tr><td class="paramname">stats</td><td>Pointer to statistics (may be <code>NULL</code>).  </td></tr>
     <tr><td class="paramname">timeLimit</td><td>Time limit to impose. </td></tr>
   </table>
