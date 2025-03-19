@@ -35,8 +35,6 @@ CMR_ERROR recognizeGraphic(
   const char* outputGraphFileName,      /**< File name of the output graph (may be NULL; may be `-' for stdout). */
   const char* outputTreeFileName,       /**< File name of the output tree (may be NULL; may be `-' for stdout). */
   const char* outputDotFileName,        /**< File name of the output dot file (may be NULL; may be `-' for stdout). */
-  const char* outputSubmatrixFileName,  /**< File name of the output non-(co)graphic submatrix (may be NULL; may be `-'
-                                         **  for stdout). */
   bool printStats,                      /**< Whether to print statistics to stderr. */
   double timeLimit                      /**< Time limit to impose. */
 )
@@ -68,19 +66,19 @@ CMR_ERROR recognizeGraphic(
 
   /* Test for being binary first. */
 
-  CMR_SUBMAT* submatrix = NULL;
-  if (!CMRchrmatIsBinary(cmr, matrix, &submatrix))
+  CMR_SUBMAT* nonbinarySubmatrix = NULL;
+  if (!CMRchrmatIsBinary(cmr, matrix, &nonbinarySubmatrix))
   {
     CMR_CHRMAT* mat = NULL;
-    CMR_CALL( CMRchrmatSlice(cmr, matrix, submatrix, &mat) );
+    CMR_CALL( CMRchrmatSlice(cmr, matrix, nonbinarySubmatrix, &mat) );
     assert(mat->numRows == 1);
     assert(mat->numColumns == 1);
     assert(mat->numNonzeros == 1);
     fprintf(stderr, "Matrix is NOT %sgraphic since it is not binary: entry at row %zu, column %zu is %d.\n",
-      cographic ? "co" : "", submatrix->rows[0] + 1, submatrix->columns[0] + 1, mat->entryValues[0]);
+      cographic ? "co" : "", nonbinarySubmatrix->rows[0] + 1, nonbinarySubmatrix->columns[0] + 1, mat->entryValues[0]);
 
     CMR_CALL( CMRchrmatFree(cmr, &mat) );
-    CMR_CALL( CMRsubmatFree(cmr, &submatrix) );
+    CMR_CALL( CMRsubmatFree(cmr, &nonbinarySubmatrix) );
     CMR_CALL( CMRchrmatFree(cmr, &matrix) );
     CMR_CALL( CMRfreeEnvironment(&cmr) );
 
@@ -98,13 +96,12 @@ CMR_ERROR recognizeGraphic(
   CMR_CALL( CMRgraphicStatsInit(&stats) );
   if (cographic)
   {
-    CMR_CALL( CMRgraphicTestTranspose(cmr, matrix, &isCoGraphic, &graph, &columnEdges, &rowEdges,
-      outputSubmatrixFileName ? &submatrix : NULL, &stats, timeLimit) );
+    CMR_CALL( CMRgraphicTestTranspose(cmr, matrix, &isCoGraphic, &graph, &columnEdges, &rowEdges, NULL, &stats, timeLimit) );
   }
   else
   {
     CMR_CALL( CMRgraphicTestMatrix(cmr, matrix, &isCoGraphic, &graph, &rowEdges, &columnEdges,
-      outputSubmatrixFileName ? &submatrix : NULL, &stats, timeLimit) );
+      NULL, &stats, timeLimit) );
   }
 
   fprintf(stderr, "Matrix %s%sgraphic.\n", isCoGraphic ? "IS " : "is NOT ", cographic ? "co" : "");
@@ -241,21 +238,7 @@ CMR_ERROR recognizeGraphic(
     CMR_CALL( CMRfreeBlockArray(cmr, &columnEdges) );
     CMR_CALL( CMRgraphFree(cmr, &graph) );
   }
-  else
-  {
-    if (outputSubmatrixFileName)
-    {
-      bool outputSubmatrixToFile = strcmp(outputSubmatrixFileName, "-");
-      fprintf(stderr, "Writing minimal non-%sgraphic submatrix to %s%s%s.\n", cographic ? "co" : "",
-        outputSubmatrixToFile ? "file <" : "", outputSubmatrixToFile ? outputSubmatrixFileName : "stdout",
-        outputSubmatrixToFile ? ">" : "");
 
-      assert(submatrix);
-      CMR_CALL( CMRsubmatWriteToFile(cmr, submatrix, matrix->numRows, matrix->numColumns, outputSubmatrixFileName) );
-    }
-  }
-
-  CMR_CALL( CMRsubmatFree(cmr, &submatrix) );
   CMR_CALL( CMRchrmatFree(cmr, &matrix) );
   CMR_CALL( CMRfreeEnvironment(&cmr) );
 
@@ -417,8 +400,6 @@ int printUsage(const char* program)
   fputs("  -T OUT-TREE  Write a spanning tree to file OUT-TREE; default: skip computation.\n", stderr);
   fputs("  -D OUT-DOT   Write a dot file OUT-DOT with the graph and the spanning tree; default: skip computation.\n",
     stderr);
-  fputs("  -N NON-SUB   Write a minimal non-(co)graphic submatrix to file NON-SUB; default: skip computation.\n",
-    stderr);
   fputs("\n", stderr);
 
   fputs("Options specific to (2):\n", stderr);
@@ -547,7 +528,7 @@ int main(int argc, char** argv)
       inputFormat = FILEFORMAT_MATRIX_DENSE;
 
     error = recognizeGraphic(inputFileName, inputFormat, transposed, outputGraphFileName, treeFileName,
-      outputDotFileName, outputSubmatrixFileName, printStats, timeLimit);
+      outputDotFileName, printStats, timeLimit);
   }
   else if (task == TASK_COMPUTE)
   {

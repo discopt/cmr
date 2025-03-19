@@ -5194,7 +5194,6 @@ CMR_ERROR cographicnessTest(
   CMR_CHRMAT* matrix,       /**< Some matrix to be tested for cographicness. */
   void* data,               /**< Additional data (must be \c NULL). */
   bool* pisCographic,       /**< Pointer for storing whether \p matrix is cographic. */
-  CMR_SUBMAT** psubmatrix,  /**< Pointer for storing a proper non-cographic submatrix of \p matrix. */
   double timeLimit          /**< Time limit to impose. */
 )
 {
@@ -5205,10 +5204,8 @@ CMR_ERROR cographicnessTest(
   assert(matrix);
   assert(!data);
   assert(pisCographic);
-  assert(!psubmatrix || !*psubmatrix);
 
   /* TODO: Algorithm for finding a bad minor. */
-  CMR_UNUSED(psubmatrix);
 
 #if defined(CMR_DEBUG)
   CMRdbgMsg(0, "cographicnessTest called for a %dx%d matrix\n", matrix->numRows, matrix->numColumns);
@@ -5258,18 +5255,17 @@ CMR_ERROR cographicnessTest(
 }
 
 CMR_ERROR CMRcographicTestSupport(CMR* cmr, CMR_CHRMAT* matrix, bool* pisCographic, CMR_GRAPH** pgraph,
-  CMR_GRAPH_EDGE** pforestEdges, CMR_GRAPH_EDGE** pcoforestEdges, CMR_SUBMAT** psubmatrix,
-  CMR_GRAPHIC_STATISTICS* stats, double timeLimit)
+  CMR_GRAPH_EDGE** pforestEdges, CMR_GRAPH_EDGE** pcoforestEdges, CMR_GRAPHIC_STATISTICS* stats,
+  double timeLimit)
 {
   assert(cmr);
   assert(matrix);
-  assert(!psubmatrix || !*psubmatrix);
   assert(!pforestEdges || pgraph);
   assert(!pcoforestEdges || pgraph);
   assert(pisCographic);
 
 #if defined(CMR_DEBUG)
-  CMRdbgMsg(0, "CMRgraphicTestTranspose called for a %zux%zu matrix.\n", matrix->numRows, matrix->numColumns);
+  CMRdbgMsg(0, "CMRcographicTestSupport called for a %zux%zu matrix.\n", matrix->numRows, matrix->numColumns);
   CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
 #endif /* CMR_DEBUG */
 
@@ -5426,23 +5422,13 @@ CMR_ERROR CMRcographicTestSupport(CMR* cmr, CMR_CHRMAT* matrix, bool* pisCograph
   if (dec)
     CMR_CALL( decFree(&dec) );
 
-  CMR_ERROR error = CMR_OKAY;
-  if (!*pisCographic && psubmatrix)
-  {
-    /* Find submatrix. */
-    double remainingTime = timeLimit - (clock() - totalClock) * 1.0 / CLOCKS_PER_SEC;
-    error = CMRtestHereditaryPropertyGreedy(cmr, matrix, cographicnessTest, NULL, psubmatrix, remainingTime);
-    if (error != CMR_ERROR_TIMEOUT && error != CMR_OKAY)
-      CMR_CALL( error );
-  }
-
   if (stats)
   {
     stats->totalCount++;
     stats->totalTime += (clock() - totalClock) * 1.0 / CLOCKS_PER_SEC;
   }
 
-  return error;
+  return CMR_OKAY;
 }
 
 CMR_ERROR CMRgraphicTestTranspose(CMR* cmr, CMR_CHRMAT* matrix, bool* pisCographic, CMR_GRAPH** pgraph,
@@ -5464,7 +5450,7 @@ CMR_ERROR CMRgraphicTestTranspose(CMR* cmr, CMR_CHRMAT* matrix, bool* pisCograph
     return CMR_OKAY;
   }
 
-  CMR_CALL( CMRcographicTestSupport(cmr, matrix, pisCographic, pgraph, pforestEdges, pcoforestEdges, psubmatrix, stats,
+  CMR_CALL( CMRcographicTestSupport(cmr, matrix, pisCographic, pgraph, pforestEdges, pcoforestEdges, stats,
     timeLimit) );
 
   return CMR_OKAY;

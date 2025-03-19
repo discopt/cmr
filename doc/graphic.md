@@ -28,7 +28,6 @@ determines whether the [matrix](\ref file-formats-matrix) given in file `IN-MAT`
   - `-G OUT-GRAPH` Write a graph to file `OUT-GRAPH`; default: skip computation.
   - `-T OUT-TREE`  Write a spanning tree to file `OUT-TREE`; default: skip computation.
   - `-D OUT-DOT`   Write a dot file `OUT-DOT` with the graph and the spanning tree; default: skip computation.
-  - `-N NON-SUB`   Write a minimal non-(co)graphic submatrix to file `NON-SUB`; default: skip computation.
 
 **Advanced options**:
   - `--stats`            Print statistics about the computation to stderr.

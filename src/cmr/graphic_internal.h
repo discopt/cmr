@@ -57,8 +57,6 @@ CMR_ERROR CMRcographicTestSupport(
                                      **  is graphic).  */
   CMR_GRAPH_EDGE** pcoforestEdges,  /**< Pointer for storing \f$ E \setminus T \f$, indexed by the columns of \f$ M \f$
                                      **  (if \f$ M \f$ is graphic). */
-  CMR_SUBMAT** psubmatrix,          /**< Pointer for storing a minimal non-graphic submatrix (if \f$ M \f$ is not
-                                     **  graphic). */
   CMR_GRAPHIC_STATISTICS* stats,    /**< Pointer to statistics (may be \c NULL). */
   double timeLimit                  /**< Time limit to impose. */
 );
