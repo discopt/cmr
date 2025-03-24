@@ -20,7 +20,7 @@ Moreover, it has (exactly) one of the following **types**:
    It is a leaf.
  - A [graphic node](\ref CMR_SEYMOUR_NODE_TYPE_GRAPH) indicates that the matrix \f$ M \f$ is [graphic](\ref graphic) (if \f$ \mathbb{F} = \mathbb{F}_2 \f$) or [network](\ref network) (if \f$ \mathbb{F} = \mathbb{F}_3 \f$) and that a corresponding (directed) graph \f$ G \f$ with spanning tree \f$ T \f$ is stored.
    The graph \f$ G \f$ can be accessed via \ref CMRseymourGraph and \ref CMRseymourGraphArcsReversed, the spanning tree \f$ T \f$ via \ref CMRseymourGraphSizeForest, \ref CMRseymourGraphForest, and its complement via \ref CMRseymourGraphSizeCoforest and \ref CMRseymourGraphCoforest.
-   Note that network matrices are [totally unimodularity](\ref tu) and graphic matrices are [binaryregular](\ref binary_regular).
+   Note that network matrices are [totally unimodularity](\ref tu) and graphic matrices are [binary regular](\ref binary_regular).
    It is either a leaf.
  - A [cographic node](\ref CMR_SEYMOUR_NODE_TYPE_COGRAPH) indicates that the matrix \f$ M \f$ is [cographic](\ref graphic) (if \f$ \mathbb{F} = \mathbb{F}_2 \f$) or [conetwork](\ref network) (if \f$ \mathbb{F} = \mathbb{F}_3 \f$) and that a corresponding (directed) graph \f$ G^\star \f$ with spanning tree \f$ T^\star \f$ stored.
    The cograph \f$ G^\star \f$ can be accessed via \ref CMRseymourCograph and \ref CMRseymourCographArcsReversed, the spanning tree \f$ T^\star \f$ via \ref CMRseymourCographSizeForest, \ref CMRseymourCographForest, and its complement via \ref CMRseymourCographSizeCoforest and \ref CMRseymourCographCoforest.
