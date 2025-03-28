@@ -1317,8 +1317,7 @@ CMR_ERROR CMRseymourSetAttributes(CMR_SEYMOUR_NODE* node)
   case CMR_SEYMOUR_NODE_TYPE_PIVOTS:
   case CMR_SEYMOUR_NODE_TYPE_ONESUM:
   case CMR_SEYMOUR_NODE_TYPE_TWOSUM:
-  case CMR_SEYMOUR_NODE_TYPE_THREESUM:
-    /* Pivots, 1-sums, 2-sums and 3-sums preserve regularity. */
+    /* Pivots, 1-sums and 2-sums preserve regularity. */
     if (node->regularity == 0)
     {
       node->regularity = 1;
@@ -1350,6 +1349,20 @@ CMR_ERROR CMRseymourSetAttributes(CMR_SEYMOUR_NODE* node)
         node->cographicness = MIN_IF_EXISTS(node->cographicness, child, child->cographicness);
       }
     }
+  break;
+  case CMR_SEYMOUR_NODE_TYPE_THREESUM:
+    /* 3-sums preserve regularity. */
+    if (node->regularity == 0)
+    {
+      node->regularity = 1;
+      for (size_t childIndex = 0; childIndex < node->numChildren; ++childIndex)
+      {
+        CMR_SEYMOUR_NODE* child = node->children[childIndex];
+        node->regularity = MIN_IF_EXISTS(node->regularity, child, child->regularity);
+      }
+    }
+
+    /* 3-sums generally do not preserve (co)graphicness. */
   break;
   case CMR_SEYMOUR_NODE_TYPE_DELTASUM:
     /* Delta-sums preserve regularity. */
