@@ -509,7 +509,7 @@ int main(int argc, char** argv)
     }
   }
 
-  CMR_ERROR error;
+  CMR_ERROR error = CMR_OKAY;
   if (!inputFileName)
   {
     fputs("Error: No input file specified.\n", stderr);
