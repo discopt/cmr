@@ -9,7 +9,8 @@
 #include "block_decomposition.h"
 #include "heap.h"
 #include "sort.h"
-#include "hereditary_property.h"
+
+/* #include "hereditary_property.h" TODO: Develop algorithms for finding minimal non-(co)graphic submatrices / minors. */
 
 #include <assert.h>
 #include <limits.h>
@@ -5188,6 +5189,8 @@ CMR_ERROR addColumnApply(
   return CMR_OKAY;
 }
 
+#if 0 /* Old subroutine for searching non-(co)graphic submatrix. */
+
 static
 CMR_ERROR cographicnessTest(
   CMR* cmr,                 /**< \ref CMR environment. */
@@ -5253,6 +5256,8 @@ CMR_ERROR cographicnessTest(
 
   return CMR_OKAY;
 }
+
+#endif /* Old subroutine for searching non-(co)graphic submatrix. */
 
 CMR_ERROR CMRcographicTestSupport(CMR* cmr, CMR_CHRMAT* matrix, bool* pisCographic, CMR_GRAPH** pgraph,
   CMR_GRAPH_EDGE** pforestEdges, CMR_GRAPH_EDGE** pcoforestEdges, CMR_GRAPHIC_STATISTICS* stats,
