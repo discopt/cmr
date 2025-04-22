@@ -99,7 +99,6 @@ $(function() {
 <code>#include &quot;<a class="el" href="block__decomposition_8h_source.html">block_decomposition.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="heap_8h_source.html">heap.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="sort_8h_source.html">sort.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="hereditary__property_8h_source.html">hereditary_property.h</a>&quot;</code><br />
 <code>#include &lt;assert.h&gt;</code><br />
 <code>#include &lt;limits.h&gt;</code><br />
 <code>#include &lt;stdlib.h&gt;</code><br />
@@ -362,8 +361,6 @@ Functions</h2></td></tr>
 <tr class="memitem:a8b16b64c3ec0974080975216458a0e21" id="r_a8b16b64c3ec0974080975216458a0e21"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="graphic_8c.html#a8b16b64c3ec0974080975216458a0e21">addColumnApply</a> (<a class="el" href="structDec.html">Dec</a> *dec, <a class="el" href="structDEC__NEWCOLUMN.html">DEC_NEWCOLUMN</a> *newcolumn, size_t column, size_t *rows, size_t numRows)</td></tr>
 <tr class="memdesc:a8b16b64c3ec0974080975216458a0e21"><td class="mdescLeft">&#160;</td><td class="mdescRight">Actually adds a column with ones in <code>rows</code>, using information from <code>newcolumn</code>.  <br /></td></tr>
 <tr class="separator:a8b16b64c3ec0974080975216458a0e21"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4d8b05fd9ffbf56a5292aec17a5c362c" id="r_a4d8b05fd9ffbf56a5292aec17a5c362c"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="graphic_8c.html#a4d8b05fd9ffbf56a5292aec17a5c362c">cographicnessTest</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, void *data, bool *pisCographic, double timeLimit)</td></tr>
-<tr class="separator:a4d8b05fd9ffbf56a5292aec17a5c362c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a97dfef848ab7110e6f4beea1c31b8e8e" id="r_a97dfef848ab7110e6f4beea1c31b8e8e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="graphic_8c.html#a97dfef848ab7110e6f4beea1c31b8e8e">CMRcographicTestSupport</a> (<a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *cmr, <a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *matrix, bool *pisCographic, <a class="el" href="structCMR__GRAPH.html">CMR_GRAPH</a> **pgraph, <a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> **pforestEdges, <a class="el" href="group__Graph.html#gae955029839563f0561720dee39c85f0a">CMR_GRAPH_EDGE</a> **pcoforestEdges, <a class="el" href="structCMR__GRAPHIC__STATISTICS.html">CMR_GRAPHIC_STATISTICS</a> *stats, double timeLimit)</td></tr>
 <tr class="memdesc:a97dfef848ab7110e6f4beea1c31b8e8e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tests the support matrix \( M \) of the input matrix for being a <a class="el" href="graphic.html">cographic matrix</a>.  <br /></td></tr>
 <tr class="separator:a97dfef848ab7110e6f4beea1c31b8e8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1665,70 +1662,6 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-
-</div>
-</div>
-<a id="a4d8b05fd9ffbf56a5292aec17a5c362c" name="a4d8b05fd9ffbf56a5292aec17a5c362c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4d8b05fd9ffbf56a5292aec17a5c362c">&#9670;&#160;</a></span>cographicnessTest()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">static <a class="el" href="env_8h.html#ae2f4ad54b976c2b9a099246c6dc0be87">CMR_ERROR</a> cographicnessTest </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> *&#160;</td>
-          <td class="paramname"><em>cmr</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="structCMR__CHRMAT.html">CMR_CHRMAT</a> *&#160;</td>
-          <td class="paramname"><em>matrix</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">void *&#160;</td>
-          <td class="paramname"><em>data</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">bool *&#160;</td>
-          <td class="paramname"><em>pisCographic</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>timeLimit</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">cmr</td><td><a class="el" href="env_8h.html#ac4e57c925d746306552ef76a522b6844">CMR</a> environment.  </td></tr>
-    <tr><td class="paramname">matrix</td><td>Some matrix to be tested for cographicness.  </td></tr>
-    <tr><td class="paramname">data</td><td>Additional data (must be <code>NULL</code>).  </td></tr>
-    <tr><td class="paramname">pisCographic</td><td>Pointer for storing whether <code>matrix</code> is cographic.  </td></tr>
-    <tr><td class="paramname">timeLimit</td><td>Time limit to impose. </td></tr>
-  </table>
-  </dd>
-</dl>
 
 </div>
 </div>
