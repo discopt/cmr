@@ -11,6 +11,7 @@
 #include <cmr/matrix.h>
 
 #include <stdio.h>
+#include <stdint.h.>
 
 #ifdef __cplusplus
 extern "C" {
