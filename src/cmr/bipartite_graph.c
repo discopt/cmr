@@ -3,7 +3,7 @@
 #include "bipartite_graph.h"
 
 #include "env_internal.h"
-#include <stdint.h.>
+#include <stdint.h>
 
 CMR_ERROR CMRchrmatSubmatrixBipartitePath(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT* transpose, int* rowsGroup,
   int* columnsGroup, bool* pconnected, CMR_ELEMENT* ppathSource, CMR_ELEMENT* ppathTarget, CMR_ELEMENT* rowsPredecessor,
