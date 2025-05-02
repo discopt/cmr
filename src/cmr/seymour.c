@@ -494,8 +494,8 @@ CMR_ERROR CMRseymourPrintChild(CMR* cmr, CMR_SEYMOUR_NODE* child, CMR_SEYMOUR_NO
       }
       else if (parent->type == CMR_SEYMOUR_NODE_TYPE_THREESUM && childIndex == 0)
       {
-        fprintf(stream, "with special rows: r%zu, r%zu\n", parent->childSpecialRows[0][0]+1,
-          parent->childSpecialRows[0][1]+1);
+        fprintf(stream, "with special rows: r%zu, %r%zu\n", parent->childSpecialRows[0][0]+1,
+          parent-childSpecialRows[0][1]+1);
       }
       else if (parent->type == CMR_SEYMOUR_NODE_TYPE_THREESUM && childIndex == 1)
       {
