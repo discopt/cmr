@@ -391,6 +391,14 @@ CMR_ERROR balancedTestGraph(
   double timeLimit              /**< Time limit to impose. */
 )
 {
+  CMR_UNUSED(cmr);
+  CMR_UNUSED(matrix);
+  CMR_UNUSED(pisBalanced);
+  CMR_UNUSED(psubmatrix);
+  CMR_UNUSED(params);
+  CMR_UNUSED(stats);
+  CMR_UNUSED(timeLimit);
+
   assert(cmr);
   assert(matrix);
   assert(pisBalanced);
