@@ -410,11 +410,12 @@ CMR_ERROR tuEulerian(
     CMRdbgMsg(8, "Considering submatrices of size %zux%zu.\n", enumeration.cardinality, enumeration.cardinality);
     CMRassertStackConsistency(cmr);
     CMR_CALL( tuEulerianRows(&enumeration, 0) );
-    if (stats)
-      stats->enumerationTime += (clock() - enumeration.startClock) * 1.0 / CLOCKS_PER_SEC;
     if (!*pisTotallyUnimodular || enumeration.timeLimit <= 0)
       break;
   }
+
+  if (stats)
+    stats->enumerationTime += (clock() - enumeration.startClock) * 1.0 / CLOCKS_PER_SEC;
 
   CMRassertStackConsistency(cmr);
 
