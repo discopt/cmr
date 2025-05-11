@@ -193,7 +193,7 @@ int main(int argc, char** argv)
   bool directGraphicness = true;
   bool planarityCheck = true;
   bool seriesParallel = true;
-  bool naiveSubmatrix = true;
+  bool naiveSubmatrix = false;
   int decomposeStrategy = CMR_SEYMOUR_DECOMPOSE_FLAG_DISTRIBUTED_DELTASUM
     | CMR_SEYMOUR_DECOMPOSE_FLAG_CONCENTRATED_THREESUM;
   double timeLimit = DBL_MAX;
