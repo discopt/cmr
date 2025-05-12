@@ -62,6 +62,7 @@ add_library(cmr
   src/cmr/linear_algebra.c
   src/cmr/listmatrix.c
   src/cmr/matroid.c
+  src/cmr/named.c
   src/cmr/network.c
   src/cmr/regular.c
   src/cmr/regularity_partition.c
@@ -142,6 +143,16 @@ target_link_libraries(cmr_equimodular
     m
 )
 set_target_properties(cmr_equimodular PROPERTIES OUTPUT_NAME cmr-equimodular)
+
+# Target for the cmr-named.
+add_executable(cmr_named
+  src/main/named_main.c)
+target_link_libraries(cmr_named
+  PRIVATE
+    CMR::cmr
+    m
+)
+set_target_properties(cmr_named PROPERTIES OUTPUT_NAME cmr-named)
 
 # Target for the cmr-network executable.
 add_executable(cmr_network
