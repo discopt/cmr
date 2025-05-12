@@ -697,7 +697,7 @@ CMR_ERROR CMRchrmatTranspose(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT** presult)
   for (size_t row = 0; row < matrix->numRows; ++row)
   {
     size_t first = matrix->rowSlice[row];
-    size_t beyond = matrix->rowSlice[row + 1];
+    size_t beyond = (row + 1 == matrix->numRows) ? matrix->numNonzeros : matrix->rowSlice[row + 1];
     for (size_t entry = first; entry < beyond; ++entry)
     {
       size_t column = matrix->entryColumns[entry];
@@ -866,7 +866,7 @@ CMR_ERROR CMRdblmatPrintSparse(CMR* cmr, CMR_DBLMAT* matrix, FILE* stream)
   for (size_t row = 0; row < matrix->numRows; ++row)
   {
     size_t first = matrix->rowSlice[row];
-    size_t beyond = matrix->rowSlice[row+1];
+    size_t beyond = (row + 1 == matrix->numRows) ? matrix->numNonzeros : matrix->rowSlice[row+1];
     for (size_t entry = first; entry < beyond; ++entry)
       fprintf(stream, "%zu %zu %g\n", row+1, matrix->entryColumns[entry]+1, matrix->entryValues[entry]);
   }
@@ -886,7 +886,7 @@ CMR_ERROR CMRintmatPrintSparse(CMR* cmr, CMR_INTMAT* matrix, FILE* stream)
   for (size_t row = 0; row < matrix->numRows; ++row)
   {
     size_t first = matrix->rowSlice[row];
-    size_t beyond = matrix->rowSlice[row+1];
+    size_t beyond = (row + 1 == matrix->numRows) ? matrix->numNonzeros : matrix->rowSlice[row+1];
     for (size_t entry = first; entry < beyond; ++entry)
       fprintf(stream, "%zu %zu %d\n", row+1, matrix->entryColumns[entry]+1, matrix->entryValues[entry]);
   }
@@ -906,7 +906,7 @@ CMR_ERROR CMRchrmatPrintSparse(CMR* cmr, CMR_CHRMAT* matrix, FILE* stream)
   for (size_t row = 0; row < matrix->numRows; ++row)
   {
     size_t first = matrix->rowSlice[row];
-    size_t beyond = matrix->rowSlice[row+1];
+    size_t beyond = (row + 1 == matrix->numRows) ? matrix->numNonzeros : matrix->rowSlice[row+1];
     for (size_t entry = first; entry < beyond; ++entry)
       fprintf(stream, "%zu %zu %d\n", row+1, matrix->entryColumns[entry]+1, matrix->entryValues[entry]);
   }
@@ -938,7 +938,7 @@ CMR_ERROR CMRdblmatPrintDense(CMR* cmr, CMR_DBLMAT* matrix, FILE* stream, char z
     if (header)
       fprintf(stream, "%zu| ", (row+1) % 10);
     size_t first = matrix->rowSlice[row];
-    size_t beyond = matrix->rowSlice[row + 1];
+    size_t beyond = (row + 1 == matrix->numRows) ? matrix->numNonzeros : matrix->rowSlice[row + 1];
     size_t column = 0;
     for (size_t entry = first; entry < beyond; ++entry)
     {
@@ -980,7 +980,7 @@ CMR_ERROR CMRintmatPrintDense(CMR* cmr, CMR_INTMAT* matrix, FILE* stream, char z
     if (header)
       fprintf(stream, "%zu| ", (row+1) % 10);
     size_t first = matrix->rowSlice[row];
-    size_t beyond = matrix->rowSlice[row + 1];
+    size_t beyond = (row + 1 == matrix->numRows) ? matrix->numNonzeros : matrix->rowSlice[row + 1];
     size_t column = 0;
     for (size_t entry = first; entry < beyond; ++entry)
     {
@@ -1027,7 +1027,7 @@ CMR_ERROR CMRchrmatPrintDense(CMR* cmr, CMR_CHRMAT* matrix, FILE* stream, char z
     if (header)
       fprintf(stream, "%zu| ", (row+1) % 10);
     size_t first = matrix->rowSlice[row];
-    size_t beyond = matrix->rowSlice[row + 1];
+    size_t beyond = (row + 1 == matrix->numRows) ? matrix->numNonzeros : matrix->rowSlice[row + 1];
     size_t column = 0;
 #if defined(CMR_DEBUG_INDENT)
     for (size_t entry = first; entry < beyond; ++entry)
