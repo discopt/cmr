@@ -110,6 +110,7 @@ CMR_ERROR CMRisIdentityMatrix(CMR* cmr, CMR_CHRMAT* matrix, size_t* porder)
   assert(cmr);
   assert(matrix);
   assert(porder);
+  CMR_UNUSED(cmr);
 
   *porder = SIZE_MAX;
   if (matrix->numRows != matrix->numColumns)
