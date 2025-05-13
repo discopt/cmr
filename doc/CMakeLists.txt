@@ -35,6 +35,7 @@ if(DOXYGEN_FOUND)
     ${CMAKE_CURRENT_SOURCE_DIR}/equimodular.md
     ${CMAKE_CURRENT_SOURCE_DIR}/matroids.md
     ${CMAKE_CURRENT_SOURCE_DIR}/max-flow-min-cut.md
+    ${CMAKE_CURRENT_SOURCE_DIR}/named.md
     ${CMAKE_CURRENT_SOURCE_DIR}/network.md
     ${CMAKE_CURRENT_SOURCE_DIR}/perfect.md
     ${CMAKE_CURRENT_SOURCE_DIR}/regular.md
