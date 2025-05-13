@@ -33,8 +33,6 @@ CMR_ERROR recognize(
   FileFormat inputFormat,
   double epsilon)
 {
-  bool isR10;
-
   clock_t readClock = clock();
   FILE* inputMatrixFile = strcmp(inputMatrixFileName, "-") ? fopen(inputMatrixFileName, "r") : stdin;
   if (!inputMatrixFile)
@@ -61,14 +59,22 @@ CMR_ERROR recognize(
   {
     CMR_CALL( error );
 
+    size_t isR10;
     CMR_CALL( CMRisR10Matrix(cmr, mat, &isR10) );
     if (isR10)
-    {
-      printf("R10\n");
-    }
+      printf("R_10.%zu\n", isR10);
+
+    size_t isR12;
+    CMR_CALL( CMRisR12Matrix(cmr, mat, &isR12) );
+    if (isR12)
+      printf("R_12.%zu\n", isR10);
+
+    size_t isIdentity;
+    CMR_CALL( CMRisIdentityMatrix(cmr, mat, &isIdentity) );
+    if (isIdentity)
+      printf("I_%zu\n", isIdentity);
 
     CMR_CALL( CMRchrmatFree(cmr, &mat) );
-
   }
 
   CMR_CALL( CMRdblmatFree(cmr, &matrix) );
@@ -179,16 +185,16 @@ int printUsage(const char* program)
 
   fputs("Representation matrices of:\n", stderr);
   fputs("  R_10       regular matroid R_10.\n", stderr);
-  fputs("  R_12       regular matroid R_12.\n", stderr);
-  fputs("  F_7        irregular Fano-matroid F_7.\n", stderr);
-  fputs("  K_3,3      graphic matroid of complete bipartite graph with 3+3 vertices.\n", stderr);
-  fputs("  K_5        graphic matroid of complete graph with 5 vertices.\n", stderr);
+  // fputs("  R_12       regular matroid R_12.\n", stderr);
+  // fputs("  F_7        irregular Fano-matroid F_7.\n", stderr);
+  // fputs("  K_3,3      graphic matroid of complete bipartite graph with 3+3 vertices.\n", stderr);
+  // fputs("  K_5        graphic matroid of complete graph with 5 vertices.\n", stderr);
   fputs("Variants (can be combined):\n", stderr);
   fputs("  <NAME>*    refers to the dual matroid:\n", stderr);
   fputs("  <NAME>.<k> refers to a specific representation matrix, k = 1,2,...\n", stderr);
   fputs("\n", stderr);
-  fputs("Other Matrices:\n", stderr);
-  fputs("  I_<SIZE>    Identity matrix of order SIZE.\n", stderr);
+  fputs("Other matrices:\n", stderr);
+  fputs("  I_<SIZE>   Identity matrix of order SIZE.\n", stderr);
   fputs("\n", stderr);
 
   fputs("Options specific to (1):\n", stderr);

@@ -48,7 +48,7 @@ CMR_EXPORT
 CMR_ERROR CMRisR10Matrix(
   CMR* cmr,           /**< \ref CMR environment. */
   CMR_CHRMAT* matrix, /**< Matrix. */
-  bool* pisR10        /**< Pointer for storing whether \p matrix represents \f$ R_{10} \f$. */
+  size_t* pisR10      /**< Pointer for storing the representation matrix index. */
 );
 
 /**
@@ -60,6 +60,17 @@ CMR_ERROR CMRcreateR10Matrix(
   CMR* cmr,             /**< \ref CMR environment. */
   size_t index,         /**< Which of the two matrices to return; among {1,2}. */
   CMR_CHRMAT** presult  /**< Pointer for storing the matrix. */
+);
+
+/**
+ * \brief Checks if the given \p matrix represents the matroid \f$ R_{12} \f$.
+ */
+
+CMR_EXPORT
+CMR_ERROR CMRisR12Matrix(
+  CMR* cmr,           /**< \ref CMR environment. */
+  CMR_CHRMAT* matrix, /**< Matrix. */
+  size_t* pisR12      /**< Pointer for storing the representation matrix index. */
 );
 
 /**

@@ -21,6 +21,7 @@ The following additional functionality is also part of the library:
   - \ref utilities
   - \ref k_ary
   - \ref camion
+  - \ref named
 
 The library also contains various [instance generators](\ref generators).
 
