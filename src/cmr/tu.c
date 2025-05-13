@@ -32,10 +32,12 @@ CMR_ERROR CMRtuStatsInit(CMR_TU_STATS* stats)
   CMR_CALL( CMRseymourStatsInit(&stats->seymour) );
   CMR_CALL( CMRcamionStatsInit(&stats->camion) );
 
+  stats->enumerationTotalCount = 0;
   stats->enumerationRowSubsets = 0;
   stats->enumerationColumnSubsets = 0;
   stats->enumerationTime = 0.0;
 
+  stats->partitionTotalCount = 0;
   stats->partitionRowSubsets = 0;
   stats->partitionColumnSubsets = 0;
   stats->partitionTime = 0.0;
@@ -55,18 +57,29 @@ CMR_ERROR CMRtuStatsPrint(FILE* stream, CMR_TU_STATS* stats, const char* prefix)
   }
 
   char subPrefix[256];
-  snprintf(subPrefix, 256, "%sseymour ", prefix);
-  CMR_CALL( CMRseymourStatsPrint(stream, &stats->seymour, subPrefix) );
-  snprintf(subPrefix, 256, "%scamion ", prefix);
-  CMR_CALL( CMRcamionStatsPrint(stream, &stats->camion, subPrefix) );
+  if (stats->seymour.totalCount)
+  {
+    snprintf(subPrefix, 256, "%sseymour ", prefix);
+    CMR_CALL( CMRseymourStatsPrint(stream, &stats->seymour, subPrefix) );
+    snprintf(subPrefix, 256, "%scamion ", prefix);
+    CMR_CALL( CMRcamionStatsPrint(stream, &stats->camion, subPrefix) );
+  }
 
-  fprintf(stream, "%seulerian enumeration row subsets: %lu\n", prefix, (unsigned long)stats->enumerationRowSubsets);
-  fprintf(stream, "%seulerian enumeration column subsets: %lu\n", prefix, (unsigned long)stats->enumerationColumnSubsets);
-  fprintf(stream, "%seulerian enumeration time: %f seconds\n", prefix, stats->enumerationTime);
+  if (stats->enumerationTotalCount)
+  {
+    fprintf(stream, "%seulerian enumeration row subsets: %lu\n", prefix, (unsigned long)stats->enumerationRowSubsets);
+    fprintf(stream, "%seulerian enumeration column subsets: %lu\n", prefix, (unsigned long)stats->enumerationColumnSubsets);
+    fprintf(stream, "%seulerian enumeration total: %lu in %f seconds\n", prefix, (unsigned long)stats->enumerationTotalCount,
+      stats->enumerationTime);
+  }
 
-  fprintf(stream, "%spartition row subsets: %lu\n", prefix, (unsigned long)stats->partitionRowSubsets);
-  fprintf(stream, "%spartition column subsets: %lu\n", prefix, (unsigned long)stats->partitionColumnSubsets);
-  fprintf(stream, "%spartition time: %f seconds\n", prefix, stats->partitionTime);
+  if (stats->partitionTotalCount)
+  {
+    fprintf(stream, "%spartition row subsets: %lu\n", prefix, (unsigned long)stats->partitionRowSubsets);
+    fprintf(stream, "%spartition column subsets: %lu\n", prefix, (unsigned long)stats->partitionColumnSubsets);
+    fprintf(stream, "%spartition total: %lu in %f seconds\n", prefix, (unsigned long)stats->partitionTotalCount,
+      stats->partitionTime);
+  }
 
   return CMR_OKAY;
 }
@@ -415,7 +428,10 @@ CMR_ERROR tuEulerian(
   }
 
   if (stats)
+  {
+    stats->enumerationTotalCount++;
     stats->enumerationTime += (clock() - enumeration.startClock) * 1.0 / CLOCKS_PER_SEC;
+  }
 
   CMRassertStackConsistency(cmr);
 
@@ -617,7 +633,10 @@ CMR_ERROR tuPartition(
   CMR_CALL( CMRfreeStackArray(cmr, &selection) );
 
   if (stats)
+  {
+    stats->partitionTotalCount++;
     stats->partitionTime += (clock() - startClock) * 1.0 / CLOCKS_PER_SEC;
+  }
 
   return error;
 }

@@ -55,10 +55,12 @@ typedef struct
   CMR_SEYMOUR_STATS seymour;          /**< Statistics for Seymour decomposition computation. */
   CMR_CAMION_STATISTICS camion;       /**< Statistics for Camion signing. */
 
+  uint32_t enumerationTotalCount;     /**< Total number of invocations. */
   uint32_t enumerationRowSubsets;     /**< Number of considered row subsets in enumeration algorithm. */
   uint32_t enumerationColumnSubsets;  /**< Number of considered column subsets in enumeration algorithm. */
   double enumerationTime;             /**< Total time of enumeration algorithm. */
 
+  uint32_t partitionTotalCount;       /**< Total number of invocations. */
   uint32_t partitionRowSubsets;       /**< Number of considered row subsets in partition algorithm. */
   uint32_t partitionColumnSubsets;    /**< Number of considered column subsets in partition algorithm. */
   double partitionTime;               /**< Total time of partition algorithm. */
