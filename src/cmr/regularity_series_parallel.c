@@ -58,8 +58,6 @@ CMR_ERROR CMRregularityDecomposeSeriesParallel(CMR* cmr, DecompositionTask* task
     {
       CMR_CALL( CMRspTestTernary(cmr, dec->matrix, &isSeriesParallel, reductions,
         &numReductions, &reducedSubmatrix, NULL, task->stats ? &task->stats->seriesParallel : NULL, remainingTime) );
-
-      assert(violatorSubmatrix || separation || (numReductions == dec->numRows + dec->numColumns));
     }
     else
     {

@@ -1784,12 +1784,13 @@ CMR_ERROR CMRspTestBinary(CMR* cmr, CMR_CHRMAT* matrix, bool* pisSeriesParallel,
   CMR_CALL( decomposeBinarySeriesParallel(cmr, matrix, reductions ? reductions : localReductions, SIZE_MAX,
     &localNumReductions, preducedSubmatrix, pviolatorSubmatrix, NULL, stats, timeLimit) );
 
-  if (pisSeriesParallel)
-    *pisSeriesParallel = (*pnumReductions == matrix->numRows + matrix->numColumns);
   if (reductions)
     *pnumReductions = localNumReductions;
   else
     CMR_CALL( CMRfreeStackArray(cmr, &localReductions) );
+
+  if (pisSeriesParallel)
+    *pisSeriesParallel = (*pnumReductions == matrix->numRows + matrix->numColumns);
 
   return CMR_OKAY;
 }

@@ -19,7 +19,8 @@ CMR_ERROR CMRregularitySimpleSearchThreeSeparation(CMR* cmr, DecompositionTask* 
 #endif /* CMR_DEBUG_MATRICES */
 
   clock_t startTime = clock();
-  task->stats->simpleThreeSeparationsCount++;
+  if (task->stats)
+    task->stats->simpleThreeSeparationsCount++;
 
   /* We need the transpose matrix. */
   CMR_SEYMOUR_NODE* node = task->node;
@@ -59,7 +60,8 @@ CMR_ERROR CMRregularitySimpleSearchThreeSeparation(CMR* cmr, DecompositionTask* 
       CMRdbgMsg(8, "Found a simple 3-separation for rows {r%zu,r%zu} and columns {c%zu,c%zu}.\n", row1+1, row2+1,
         column1+1, column2+1);
 
-      task->stats->simpleThreeSeparationsSuccess++;
+      if (task->stats)
+        task->stats->simpleThreeSeparationsSuccess++;
       CMR_SEPA* separation = NULL;
       CMR_CALL( CMRsepaCreate(cmr, matrix->numRows, matrix->numColumns, &separation) );
 
@@ -99,7 +101,8 @@ CMR_ERROR CMRregularitySimpleSearchThreeSeparation(CMR* cmr, DecompositionTask* 
 
 cleanup:
 
-  task->stats->simpleThreeSeparationsTime += (clock() - startTime) * 1.0 / CLOCKS_PER_SEC;
+  if (task->stats)
+    task->stats->simpleThreeSeparationsTime += (clock() - startTime) * 1.0 / CLOCKS_PER_SEC;
 
   return CMR_OKAY;
 }

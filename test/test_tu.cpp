@@ -580,6 +580,7 @@ void testSequenceGraphicness(
   CMR_TU_PARAMS params;
   ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
   params.seymour.directGraphicness = false;
+  params.seymour.simpleThreeSeparations = false;
   ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
 
   if (knowNetwork)

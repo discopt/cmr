@@ -961,6 +961,7 @@ CMR_ERROR CMRregularityExtendNestedMinorSequence(CMR* cmr, DecompositionTask* ta
 
     /* Task is done. */
     CMR_CALL( CMRregularityTaskFree(cmr, &task) );
+    task = NULL;
   }
   else
   {
@@ -1030,7 +1031,7 @@ CMR_ERROR CMRregularityExtendNestedMinorSequence(CMR* cmr, DecompositionTask* ta
 
 cleanup:
 
-  if (task->stats)
+  if (task && task->stats)
   {
     clock_t endClock = clock();
     task->stats->sequenceExtensionTime += (endClock - startClock) * 1.0 / CLOCKS_PER_SEC;
