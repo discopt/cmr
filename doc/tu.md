@@ -24,6 +24,7 @@ determines whether the [matrix](\ref file-formats-matrix) given in file `IN-MAT`
   - `--decompose STRATEGY` Strategy for decomposing among {`DP`, `YP`, `P3`, `D3`, `Y3`}; default: `D3`.
   - `--no-direct-graphic`  Check only 3-connected matrices for regularity.
   - `--no-series-parallel` Do not allow series-parallel operations in decomposition tree.
+  - `--no-simple-3-sepa`   Do not allow testing for simple 3-separations.
   - `--naive-submatrix`    Use naive bad submatrix algorithm instead of greedy heuristic.
   - `--algo ALGO`          Use algorithm from {`decomposition`, `submatrix`, `partition`}; default: `decomposition`.
 
