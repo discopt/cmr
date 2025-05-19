@@ -27,6 +27,7 @@ CMR_ERROR testRegularity(
   bool printStats,                  /**< Whether to print statistics to stderr. */
   bool directGraphicness,           /**< Whether to use fast graphicness routines. */
   bool seriesParallel,              /**< Whether to allow series-parallel operations in the decomposition tree. */
+  bool simpleThreeSeparations,      /**< Whether to test for simple 3-separations. */
   int decomposeStrategy,            /**< Which strategy to use for 3-separations. */
   double timeLimit                  /**< Time limit to impose. */
 )
@@ -66,6 +67,7 @@ CMR_ERROR testRegularity(
   params.seymour.stopWhenIrregular = !outputTreeFileName;
   params.seymour.directGraphicness = directGraphicness;
   params.seymour.seriesParallel = seriesParallel;
+  params.seymour.simpleThreeSeparations = simpleThreeSeparations;
   params.seymour.decomposeStrategy = decomposeStrategy;
   CMR_REGULAR_STATS stats;
   CMR_CALL( CMRregularStatsInit(&stats) );
@@ -126,6 +128,7 @@ int printUsage(const char* program)
   fputs("  --decompose STRATEGY Strategy for decomposing among {DP, YP, P3, D3, Y3}; default: D3.\n", stderr);
   fputs("  --no-direct-graphic  Check only 3-connected matrices for regularity.\n", stderr);
   fputs("  --no-series-parallel Do not allow series-parallel operations in decomposition tree.\n", stderr);
+  fputs("  --no-simple-3-sepa   Do not allow testing for simple 3-separations.\n", stderr);
   fputs("\n", stderr);
 
   fputs("Decomposition strategies: 1st letter for distributed, 2nd for concentrated rank(s).\n", stderr);
@@ -151,6 +154,7 @@ int main(int argc, char** argv)
   bool printStats = false;
   bool directGraphicness = true;
   bool seriesParallel = true;
+  bool simpleThreeSeparations = true;
   double timeLimit = DBL_MAX;
   int decomposeStrategy = CMR_SEYMOUR_DECOMPOSE_FLAG_DISTRIBUTED_DELTASUM
     | CMR_SEYMOUR_DECOMPOSE_FLAG_CONCENTRATED_THREESUM;
@@ -184,6 +188,8 @@ int main(int argc, char** argv)
       directGraphicness = false;
     else if (!strcmp(argv[a], "--no-series-parallel"))
       seriesParallel = false;
+    else if (!strcmp(argv[a], "--no-simple-3-sepa"))
+      simpleThreeSeparations = false;
     else if (!strcmp(argv[a], "--decompose") && a+1 < argc)
     {
       ++a;
@@ -244,7 +250,7 @@ int main(int argc, char** argv)
 
   CMR_ERROR error;
   error = testRegularity(inputMatrixFileName, inputFormat, outputTree, outputMinor, printStats, directGraphicness,
-    seriesParallel, decomposeStrategy, timeLimit);
+    seriesParallel, simpleThreeSeparations, decomposeStrategy, timeLimit);
 
   switch (error)
   {

@@ -29,6 +29,7 @@ CMR_ERROR testTotalUnimodularity(
   bool directGraphicness,               /**< Whether to use fast graphicness routines. */
   bool planarityCheck,                  /**< Whether to check for planarity. */
   bool seriesParallel,                  /**< Whether to allow series-parallel operations in the decomposition tree. */
+  bool simpleThreeSeparations,          /**< Whether to test for simple 3-separations. */
   int decomposeStrategy,                /**< Which strategy to use for 3-separations. */
   bool naiveSubmatrix,                  /**< Use naive bad submatrix heuristic instead of greedy algorithm. */
   CMR_TU_ALGORITHM algorithm,           /**< Algorithm to use for TU test. */
@@ -73,6 +74,7 @@ CMR_ERROR testTotalUnimodularity(
   params.seymour.seriesParallel = seriesParallel;
   params.seymour.planarityCheck = planarityCheck;
   params.seymour.decomposeStrategy = decomposeStrategy;
+  params.seymour.simpleThreeSeparations = simpleThreeSeparations;
   params.naiveSubmatrix = naiveSubmatrix;
   CMR_TU_STATS stats;
   CMR_CALL( CMRtuStatsInit(&stats));
@@ -163,6 +165,7 @@ int printUsage(const char* program)
   fputs("  --no-direct-graphic  Check only 3-connected matrices for regularity.\n", stderr);
   fputs("  --no-planarity       Do not test for planarity.\n", stderr);
   fputs("  --no-series-parallel Do not allow series-parallel operations in decomposition tree.\n", stderr);
+  fputs("  --no-simple-3-sepa   Do not allow testing for simple 3-separations.\n", stderr);
   fputs("  --naive-submatrix    Use naive bad submatrix algorithm instead of greedy heuristic.\n", stderr);
   fputs("  --algo ALGO          Use algorithm from {decomposition, eulerian, partition}; default: decomposition.\n",
     stderr);
@@ -194,6 +197,7 @@ int main(int argc, char** argv)
   bool planarityCheck = true;
   bool seriesParallel = true;
   bool naiveSubmatrix = false;
+  bool simpleThreeSeparations = true;
   int decomposeStrategy = CMR_SEYMOUR_DECOMPOSE_FLAG_DISTRIBUTED_DELTASUM
     | CMR_SEYMOUR_DECOMPOSE_FLAG_CONCENTRATED_THREESUM;
   double timeLimit = DBL_MAX;
@@ -230,6 +234,8 @@ int main(int argc, char** argv)
       planarityCheck = false;
     else if (!strcmp(argv[a], "--no-series-parallel"))
       seriesParallel = false;
+    else if (!strcmp(argv[a], "--no-simple-3-sepa"))
+      simpleThreeSeparations = false;
     else if (!strcmp(argv[a], "--naive-submatrix"))
       naiveSubmatrix = true;
     else if (!strcmp(argv[a], "--decompose") && a+1 < argc)
@@ -307,7 +313,7 @@ int main(int argc, char** argv)
 
   CMR_ERROR error;
   error = testTotalUnimodularity(inputMatrixFileName, inputFormat, outputTree, outputSubmatrix, printStats,
-    directGraphicness, planarityCheck, seriesParallel, decomposeStrategy, naiveSubmatrix, algorithm, timeLimit);
+    directGraphicness, planarityCheck, seriesParallel, simpleThreeSeparations, decomposeStrategy, naiveSubmatrix, algorithm, timeLimit);
 
   switch (error)
   {

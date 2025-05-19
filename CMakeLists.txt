@@ -72,6 +72,7 @@ add_library(cmr
   src/cmr/regularity_threesum.c
   src/cmr/regularity_r10.c
   src/cmr/regularity_series_parallel.c
+  src/cmr/regularity_simple_three_separations.c
   src/cmr/separation.c
   src/cmr/series_parallel.c
   src/cmr/seymour.c

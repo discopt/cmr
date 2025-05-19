@@ -21,6 +21,7 @@ CMR_ERROR CMRseymourParamsInit(CMR_SEYMOUR_PARAMS* params)
   params->stopWhenNoncographic = false;
   params->stopWhenNeitherGraphicNorCoGraphic = false;
   params->seriesParallel = true;
+  params->simpleThreeSeparations = true;
   params->planarityCheck = false;
   params->directGraphicness = true;
   params->preferGraphicness = true;
@@ -48,6 +49,9 @@ CMR_ERROR CMRseymourStatsInit(CMR_SEYMOUR_STATS* stats)
   stats->enumerationCount = 0;
   stats->enumerationTime = 0.0;
   stats->enumerationCandidatesCount = 0;
+  stats->simpleThreeSeparationsCount = 0;
+  stats->simpleThreeSeparationsSuccess = 0;
+  stats->simpleThreeSeparationsTime = 0.0;
 
   return CMR_OKAY;
 }
@@ -71,13 +75,16 @@ CMR_ERROR CMRseymourStatsPrint(FILE* stream, CMR_SEYMOUR_STATS* stats, const cha
   snprintf(subPrefix, 256, "%s(co)network ", prefix);
   CMR_CALL( CMRnetworkStatsPrint(stream, &stats->network, subPrefix) );
 
+  fprintf(stream, "%ssimple 3-separations: %lu of %lu searches in %f seconds\n", prefix,
+    (unsigned long)stats->simpleThreeSeparationsSuccess, (unsigned long)stats->simpleThreeSeparationsCount,
+    stats->simpleThreeSeparationsTime);
   fprintf(stream, "%ssequence extensions: %lu in %f seconds\n", prefix, (unsigned long)stats->sequenceExtensionCount,
     stats->sequenceExtensionTime);
   fprintf(stream, "%ssequence (co)graphic: %lu in %f seconds\n", prefix, (unsigned long)stats->sequenceGraphicCount,
     stats->sequenceGraphicTime);
-  fprintf(stream, "%senumeration: %lu in %f seconds\n", prefix, (unsigned long)stats->enumerationCount,
+  fprintf(stream, "%senum: %lu in %f seconds\n", prefix, (unsigned long)stats->enumerationCount,
     stats->enumerationTime);
-  fprintf(stream, "%s3-separation candidates: %lu (%.1fk per second)\n", prefix,
+  fprintf(stream, "%senum 3-separation candidates: %lu (%.1fk per second)\n", prefix,
     (unsigned long)stats->enumerationCandidatesCount,
     stats->enumerationTime > 0.0 ? (stats->enumerationCandidatesCount / 1000.0 / stats->enumerationTime) : 0.0);
   fprintf(stream, "%stotal: %lu in %f seconds\n", prefix, (unsigned long)stats->totalCount, stats->totalTime);
@@ -774,6 +781,7 @@ CMR_ERROR createNode(
   node->cographArcsReversed = NULL;
 
   node->testedSeriesParallel = false;
+  node->searchedForWheel = false;
   node->seriesParallelReductions = NULL;
   node->numSeriesParallelReductions = 0;
 
@@ -798,6 +806,8 @@ CMR_ERROR createNode(
 
   node->nestedMinorsLastGraphic = SIZE_MAX;
   node->nestedMinorsLastCographic = SIZE_MAX;
+
+  node->testedSimpleThreeSeparations = false;
 
   return CMR_OKAY;
 }
@@ -1726,10 +1736,24 @@ CMR_ERROR CMRregularityTaskRun(
     if (error != CMR_OKAY && error != CMR_ERROR_TIMEOUT)
       CMR_CALL( error );
   }
-  else if (!task->node->testedSeriesParallel)
+  else if (!task->node->testedSeriesParallel && task->params->seriesParallel)
   {
     CMRdbgMsg(4, "Testing for series-parallel reductions.\n");
-    error = CMRregularityDecomposeSeriesParallel(cmr, task, queue);
+    error = CMRregularityDecomposeSeriesParallel(cmr, task, queue, false);
+    if (error != CMR_OKAY && error != CMR_ERROR_TIMEOUT)
+      CMR_CALL( error );
+  }
+  else if (!task->node->testedSimpleThreeSeparations && task->params->simpleThreeSeparations)
+  {
+    CMRdbgMsg(4, "Searching for simple 3-separations.\n");
+    error = CMRregularitySimpleSearchThreeSeparation(cmr, task, queue);
+    if (error != CMR_OKAY && error != CMR_ERROR_TIMEOUT)
+      CMR_CALL( error );
+  }
+  else if (!task->node->searchedForWheel)
+  {
+    CMRdbgMsg(4, "Searching for wheel minor.\n");
+    error = CMRregularityDecomposeSeriesParallel(cmr, task, queue, true);
     if (error != CMR_OKAY && error != CMR_ERROR_TIMEOUT)
       CMR_CALL( error );
   }

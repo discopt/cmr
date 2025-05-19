@@ -7,19 +7,21 @@
 
 #include <time.h>
 
-CMR_ERROR CMRregularityDecomposeSeriesParallel(CMR* cmr, DecompositionTask* task, DecompositionQueue* queue)
+CMR_ERROR CMRregularityDecomposeSeriesParallel(CMR* cmr, DecompositionTask* task, DecompositionQueue* queue,
+  bool searchForWheel)
 {
   assert(cmr);
   assert(task);
   assert(queue);
 
-    CMR_SEYMOUR_NODE* dec = task->node;
-    CMR_SEYMOUR_NODE* decReduced = dec;
+  CMR_SEYMOUR_NODE* dec = task->node;
+  CMR_SEYMOUR_NODE* decReduced = dec;
   assert(dec);
 
 #if defined(CMR_DEBUG)
-  CMRdbgMsg(6, "Testing the following matrix for series-parallel reductions:\n");
-  CMR_CALL( CMRchrmatPrintDense(cmr, dec->matrix, stndout, '0', true) );
+  CMRdbgMsg(6, "Testing the following matrix for series-parallel reductions (%s wheel search)\n",
+    searchForWheel ? "with" : "without");
+  CMR_CALL( CMRchrmatPrintDense(cmr, dec->matrix, stdout, '0', true) );
 #endif /* CMR_DEBUG */
 
   double remainingTime = task->timeLimit - (clock() - task->startClock) * 1.0 / CLOCKS_PER_SEC;
@@ -32,19 +34,38 @@ CMR_ERROR CMRregularityDecomposeSeriesParallel(CMR* cmr, DecompositionTask* task
   CMR_SUBMAT* violatorSubmatrix = NULL;
   CMR_SUBMAT* reducedSubmatrix = NULL;
   CMR_SEPA* separation = NULL;
-  if (dec->isTernary)
-  {
-    CMR_CALL( CMRspDecomposeTernary(cmr, dec->matrix, &isSeriesParallel, reductions,
-      task->params->seriesParallel ? SIZE_MAX : 1, &numReductions, &reducedSubmatrix, &violatorSubmatrix, &separation,
-      task->stats ? &task->stats->seriesParallel : NULL, remainingTime) );
 
-    assert(violatorSubmatrix || separation || (numReductions == dec->numRows + dec->numColumns));
+  if (searchForWheel)
+  {
+    if (dec->isTernary)
+    {
+      CMR_CALL( CMRspDecomposeTernary(cmr, dec->matrix, &isSeriesParallel, reductions,
+        task->params->seriesParallel ? SIZE_MAX : 1, &numReductions, &reducedSubmatrix, &violatorSubmatrix, &separation,
+        task->stats ? &task->stats->seriesParallel : NULL, remainingTime) );
+
+      assert(violatorSubmatrix || separation || (numReductions == dec->numRows + dec->numColumns));
+    }
+    else
+    {
+      CMR_CALL( CMRspDecomposeBinary(cmr, dec->matrix, &isSeriesParallel, reductions,
+        task->params->seriesParallel ? SIZE_MAX : 1,  &numReductions, &reducedSubmatrix, &violatorSubmatrix, &separation,
+        task->stats ? &task->stats->seriesParallel : NULL, remainingTime) );
+    }
   }
   else
   {
-    CMR_CALL( CMRspDecomposeBinary(cmr, dec->matrix, &isSeriesParallel, reductions,
-      task->params->seriesParallel ? SIZE_MAX : 1,  &numReductions, &reducedSubmatrix, &violatorSubmatrix, &separation,
-      task->stats ? &task->stats->seriesParallel : NULL, remainingTime) );
+    if (dec->isTernary)
+    {
+      CMR_CALL( CMRspTestTernary(cmr, dec->matrix, &isSeriesParallel, reductions,
+        &numReductions, &reducedSubmatrix, NULL, task->stats ? &task->stats->seriesParallel : NULL, remainingTime) );
+
+      assert(violatorSubmatrix || separation || (numReductions == dec->numRows + dec->numColumns));
+    }
+    else
+    {
+      CMR_CALL( CMRspTestBinary(cmr, dec->matrix, &isSeriesParallel, reductions,
+        &numReductions, &reducedSubmatrix, NULL, task->stats ? &task->stats->seriesParallel : NULL, remainingTime) );
+    }
   }
 
   /* Did we find a 2-by-2 submatrix? If yes, is has determinant -2 or +2! */
@@ -166,7 +187,7 @@ CMR_ERROR CMRregularityDecomposeSeriesParallel(CMR* cmr, DecompositionTask* task
     CMRregularityQueueAdd(queue, childTasks[0]);
     CMRregularityQueueAdd(queue, childTasks[1]);
   }
-  else
+  else if (searchForWheel)
   {
     /* We can use the violator submatrix to start the sequence of nested minors. */
     assert(violatorSubmatrix);
@@ -215,8 +236,14 @@ CMR_ERROR CMRregularityDecomposeSeriesParallel(CMR* cmr, DecompositionTask* task
     decReduced->testedTwoConnected = true;
     decReduced->graphicness = dec->graphicness;
     decReduced->cographicness = dec->cographicness;
+    decReduced->searchedForWheel = true;
     CMR_CALL( CMRregularityInitNestedMinorSequence(cmr, task, violatorSubmatrix) );
 
+    /* Just mark the current task as SP-reduced and add it back to the list of unprocessed tasks. */
+    CMRregularityQueueAdd(queue, task);
+  }
+  else
+  {
     /* Just mark the current task as SP-reduced and add it back to the list of unprocessed tasks. */
     CMRregularityQueueAdd(queue, task);
   }

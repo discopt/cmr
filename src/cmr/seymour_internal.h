@@ -16,69 +16,70 @@ extern "C" {
 
 struct _CMR_SEYMOUR_NODE
 {
-  size_t used;                                  /**< \brief Reference counter. */
-  CMR_SEYMOUR_NODE_TYPE type;                   /**< \brief Type of this node. */
-  bool isTernary;                               /**< \brief Indicates whether this node belongs to a ternary matrix. */
-  bool testedTwoConnected;                      /**< \brief Indicates that no 1-separation exists. */
-  int8_t regularity;                            /**< \brief Matrix is (not) regular/totally unimodularity if positive
-                                                 **         (negative), or not determined if zero. */
-  int8_t graphicness;                           /**< \brief Matrix is (not) graphic/network if positive
-                                                 **         (negative), or not determined if zero. */
-  int8_t cographicness;                         /**< \brief Matrix is (not) cographic/conetwork if positive
-                                                 **         (negative), or not determined if zero. */
-  bool testedR10;                               /**< \brief Matrix does not represent \f$ R_{10} \f$ unless \p type
-                                                 **         indicates this. */
-  CMR_SEYMOUR_DECOMPOSE_FLAG threesumFlags;      /**< \brief Type of 3-sum. */
-  CMR_CHRMAT* matrix;                           /**< \brief Matrix representing this node. */
-  CMR_CHRMAT* transpose;                        /**< \brief Tranpose of \ref matrix representing this node. */
-  size_t numChildren;                           /**< \brief Number of child nodes. */
-  struct _CMR_SEYMOUR_NODE** children;          /**< \brief Array of child nodes. */
-  CMR_ELEMENT** childRowsToParent;              /**< \brief Array for mapping a child index to array of child rows to
-                                                 **         elements of this node. */
-  CMR_ELEMENT** childColumnsToParent;           /**< \brief Array for mapping a child index to array of child columns to
-                                                 **         elements of this node. */
-  size_t** childSpecialRows;                    /**< \brief Array for mapping a child index to array of special child
-                                                 **         rows relevant for 2- and 3-sums. */
-  size_t** childSpecialColumns;                 /**< \brief Array for mapping a child index to array of special child
-                                                 **         columns relevant for 2- and 3-sums. */
+  size_t used;                                /**< \brief Reference counter. */
+  CMR_SEYMOUR_NODE_TYPE type;                 /**< \brief Type of this node. */
+  bool isTernary;                             /**< \brief Indicates whether this node belongs to a ternary matrix. */
+  bool testedTwoConnected;                    /**< \brief Indicates that no 1-separation exists. */
+  int8_t regularity;                          /**< \brief Matrix is (not) regular/totally unimodularity if positive
+                                               **         (negative), or not determined if zero. */
+  int8_t graphicness;                         /**< \brief Matrix is (not) graphic/network if positive
+                                               **         (negative), or not determined if zero. */
+  int8_t cographicness;                       /**< \brief Matrix is (not) cographic/conetwork if positive
+                                               **         (negative), or not determined if zero. */
+  bool testedR10;                             /**< \brief Matrix does not represent \f$ R_{10} \f$ unless \p type
+                                               **         indicates this. */
+  CMR_SEYMOUR_DECOMPOSE_FLAG threesumFlags;   /**< \brief Type of 3-sum. */
+  CMR_CHRMAT* matrix;                         /**< \brief Matrix representing this node. */
+  CMR_CHRMAT* transpose;                      /**< \brief Tranpose of \ref matrix representing this node. */
+  size_t numChildren;                         /**< \brief Number of child nodes. */
+  struct _CMR_SEYMOUR_NODE** children;        /**< \brief Array of child nodes. */
+  CMR_ELEMENT** childRowsToParent;            /**< \brief Array for mapping a child index to array of child rows to
+                                               **         elements of this node. */
+  CMR_ELEMENT** childColumnsToParent;         /**< \brief Array for mapping a child index to array of child columns to
+                                               **         elements of this node. */
+  size_t** childSpecialRows;                  /**< \brief Array for mapping a child index to array of special child
+                                               **         rows relevant for 2- and 3-sums. */
+  size_t** childSpecialColumns;               /**< \brief Array for mapping a child index to array of special child
+                                               **         columns relevant for 2- and 3-sums. */
 
-  size_t numRows;                               /**< \brief Length of \ref rowsToChild. */
-  size_t* rowsToChild;                          /**< \brief Array for mapping each row to a row of the child (if
-                                                 **         applicable). */
+  size_t numRows;                             /**< \brief Length of \ref rowsToChild. */
+  size_t* rowsToChild;                        /**< \brief Array for mapping each row to a row of the child (if
+                                               **         applicable). */
 
-  size_t numColumns;                            /**< \brief Length of \ref columnsToChild. */
-  size_t* columnsToChild;                       /**< \brief Array for mapping each column to a column of the child (if
-                                                 **         applicable). */
+  size_t numColumns;                          /**< \brief Length of \ref columnsToChild. */
+  size_t* columnsToChild;                     /**< \brief Array for mapping each column to a column of the child (if
+                                               **         applicable). */
 
-  size_t memMinors;                             /**< \brief Memory allocated for minors/submatrices. */
-  size_t numMinors;                             /**< \brief Number of minors/submatrices. */
-  CMR_MINOR** minors;                           /**< \brief Array of minors/submatrices containing more information. */
+  size_t memMinors;                           /**< \brief Memory allocated for minors/submatrices. */
+  size_t numMinors;                           /**< \brief Number of minors/submatrices. */
+  CMR_MINOR** minors;                         /**< \brief Array of minors/submatrices containing more information. */
 
-  CMR_GRAPH* graph;                             /**< \brief Graph represented by this matrix. */
-  CMR_GRAPH_EDGE* graphForest;                  /**< \brief Array with edges of spanning forest of graph. */
-  CMR_GRAPH_EDGE* graphCoforest;                /**< \brief Array with edges of coforest of graph. */
-  bool* graphArcsReversed;                      /**< \brief Array indicating which arcs of the graph are reversed. */
+  CMR_GRAPH* graph;                           /**< \brief Graph represented by this matrix. */
+  CMR_GRAPH_EDGE* graphForest;                /**< \brief Array with edges of spanning forest of graph. */
+  CMR_GRAPH_EDGE* graphCoforest;              /**< \brief Array with edges of coforest of graph. */
+  bool* graphArcsReversed;                    /**< \brief Array indicating which arcs of the graph are reversed. */
 
-  CMR_GRAPH* cograph;                           /**< \brief Graph represented by the transpose of this matrix. */
-  CMR_GRAPH_EDGE* cographForest;                /**< \brief Array with edges of spanning forest of cograph. */
-  CMR_GRAPH_EDGE* cographCoforest;              /**< \brief Array with edges of coforest of cograph. */
-  bool* cographArcsReversed;                    /**< \brief Array indicating which arcs of the cograph are reversed. */
+  CMR_GRAPH* cograph;                         /**< \brief Graph represented by the transpose of this matrix. */
+  CMR_GRAPH_EDGE* cographForest;              /**< \brief Array with edges of spanning forest of cograph. */
+  CMR_GRAPH_EDGE* cographCoforest;            /**< \brief Array with edges of coforest of cograph. */
+  bool* cographArcsReversed;                  /**< \brief Array indicating which arcs of the cograph are reversed. */
 
-  bool testedSeriesParallel;                    /**< \brief Already searched for series-parallel reductions. */
-  CMR_SP_REDUCTION* seriesParallelReductions;   /**< \brief Array of series-parallel reductions. */
-  size_t numSeriesParallelReductions;           /**< \brief Length of \p reductions. */
+  bool testedSeriesParallel;                  /**< \brief Already searched for series-parallel reductions. */
+  bool searchedForWheel;                      /**< \brief Already searched for wheel minor. */
+  CMR_SP_REDUCTION* seriesParallelReductions; /**< \brief Array of series-parallel reductions. */
+  size_t numSeriesParallelReductions;         /**< \brief Length of \p reductions. */
 
-  size_t* pivotRows;                            /**< \brief Rows of pivots. */
-  size_t* pivotColumns;                         /**< \brief Columns of pivots. */
-  size_t numPivots;                             /**< \brief Number of pivots. */
+  size_t* pivotRows;                          /**< \brief Rows of pivots. */
+  size_t* pivotColumns;                       /**< \brief Columns of pivots. */
+  size_t numPivots;                           /**< \brief Number of pivots. */
 
-  DenseBinaryMatrix* denseMatrix;               /**< \brief Dense support matrix for nested minors search. Rows and
-                                                 **         columns are not permuted, but pivots are applied. */
-  CMR_ELEMENT* denseRowsOriginal;               /**< \brief Maps rows of \p denseMatrix to elements of \p matrix. */
-  CMR_ELEMENT* denseColumnsOriginal;            /**< \brief Maps columns of \p denseMatrix to elements of \p matrix. */
-  size_t* nestedMinorsRowsDense;                /**< \brief Maps rows of nested minor sequence to rows of \p dense. */
-  size_t* nestedMinorsColumnsDense;             /**< \brief Maps columns of nested minor sequence to columns of
-                                                 **         \p dense. */
+  DenseBinaryMatrix* denseMatrix;             /**< \brief Dense support matrix for nested minors search. Rows and
+                                               **         columns are not permuted, but pivots are applied. */
+  CMR_ELEMENT* denseRowsOriginal;             /**< \brief Maps rows of \p denseMatrix to elements of \p matrix. */
+  CMR_ELEMENT* denseColumnsOriginal;          /**< \brief Maps columns of \p denseMatrix to elements of \p matrix. */
+  size_t* nestedMinorsRowsDense;              /**< \brief Maps rows of nested minor sequence to rows of \p dense. */
+  size_t* nestedMinorsColumnsDense;           /**< \brief Maps columns of nested minor sequence to columns of
+                                               **         \p dense. */
 
   size_t nestedMinorsLength;                  /**< \brief Length of sequence of nested minors. */
   size_t* nestedMinorsSequenceNumRows;        /**< \brief Number of rows of sequence of nested minors. */
@@ -94,6 +95,8 @@ struct _CMR_SEYMOUR_NODE
 
   size_t nestedMinorsLastGraphic;             /**< \brief Last minor in sequence of nested minors that is graphic. */
   size_t nestedMinorsLastCographic;           /**< \brief Last minor in sequence of nested minors that is cographic. */
+
+  bool testedSimpleThreeSeparations;          /**< \brief Already searched for simple 3-separations. */
 };
 
 typedef struct DecompositionTask
@@ -336,6 +339,17 @@ CMRregularityDecomposeThreeSum(
 );
 
 /**
+ * \brief Searches for special 3-separations and decomposes as a 3-sum.
+ */
+
+CMR_ERROR
+CMRregularitySimpleSearchThreeSeparation(
+  CMR* cmr,                 /**< \ref CMR environment. */
+  DecompositionTask* task,  /**< Task to be processed; already removed from the list of unprocessed tasks. */
+  DecompositionQueue* queue /**< Queue of unprocessed nodes. */
+);
+
+/**
  * \brief Searches for 3-separations along the sequence of nested minors and decomposes as a 3-sum.
  */
 
@@ -417,9 +431,10 @@ CMR_ERROR CMRregularityInitNestedMinorSequence(
  */
 
 CMR_ERROR CMRregularityDecomposeSeriesParallel(
-  CMR* cmr,                 /**< \ref CMR environment. */
-  DecompositionTask* task,  /**< Task to be processed; already removed from the list of unprocessed tasks. */
-  DecompositionQueue* queue /**< Queue of unprocessed nodes. */
+  CMR* cmr,                   /**< \ref CMR environment. */
+  DecompositionTask* task,    /**< Task to be processed; already removed from the list of unprocessed tasks. */
+  DecompositionQueue* queue,  /**< Queue of unprocessed nodes. */
+  bool searchForWheel         /**< Whether to search for a wheel minor. */
 );
 
 /**

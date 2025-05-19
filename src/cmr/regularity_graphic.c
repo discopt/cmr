@@ -1236,184 +1236,184 @@ CMR_ERROR createWheel(
 }
 
 
-CMR_ERROR CMRregularSequenceGraphic(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT* transpose, size_t lengthSequence,
-  size_t* sequenceNumRows, size_t* sequenceNumColumns, size_t* plastGraphicMinor, CMR_GRAPH** pgraph,
-  CMR_ELEMENT** pedgeElements, CMR_SEYMOUR_STATS* stats, double timeLimit)
-{
-  assert(cmr);
-  assert(matrix);
-  assert(transpose);
-  assert(sequenceNumRows);
-  assert(sequenceNumColumns);
-  assert(plastGraphicMinor);
-  assert(pgraph);
-  assert(!*pgraph);
-  assert(pedgeElements);
-  assert(!*pedgeElements);
-
-  CMRdbgMsg(8, "Testing sequence for (co)graphicness.\n");
-
-  clock_t time = clock();
-
-  CMR_CALL( CMRgraphCreateEmpty(cmr, pgraph, matrix->numRows, matrix->numRows + matrix->numColumns) );
-  CMR_GRAPH* graph = *pgraph;
-
-  long long* hashVector = NULL;
-  CMR_CALL( createHashVector(cmr, &hashVector,
-    matrix->numRows > matrix->numColumns ? matrix->numRows : matrix->numColumns) );
-  CMR_GRAPH_EDGE* rowEdges = NULL;
-  CMR_CALL( CMRallocStackArray(cmr, &rowEdges, matrix->numRows) );
-  CMR_GRAPH_EDGE* columnEdges = NULL;
-  CMR_CALL( CMRallocStackArray(cmr, &columnEdges, matrix->numColumns) );
-  long long* rowHashValues = NULL;
-  CMR_CALL( CMRallocStackArray(cmr, &rowHashValues, matrix->numRows) );
-  for (size_t row = 0; row < matrix->numRows; ++row)
-    rowHashValues[row] = 0;
-  long long* columnHashValues = NULL;
-  CMR_CALL( CMRallocStackArray(cmr, &columnHashValues, matrix->numColumns) );
-  for (size_t column = 0; column < matrix->numColumns; ++column)
-    columnHashValues[column] = 0;
-
-  /* Create graph for first minor. */
-
-  assert(sequenceNumRows[0] == sequenceNumColumns[0]);
-  CMR_CALL( createWheel(cmr, graph, matrix, transpose, sequenceNumRows[0], rowEdges, columnEdges) );
-  *plastGraphicMinor = 0;
-
-  CMR_CALL( updateHashValues(matrix, rowHashValues, columnHashValues, hashVector, 0, sequenceNumRows[0],
-    sequenceNumColumns[0]) );
-
-  size_t extensionTimeFactor = lengthSequence / 100 + 1;
-  for (size_t extension = 1; extension < lengthSequence; ++extension)
-  { 
-    if ((extension % extensionTimeFactor == 0) && (clock() - time) * 1.0 / CLOCKS_PER_SEC > timeLimit)
-    {
-      CMR_CALL( CMRfreeStackArray(cmr, &columnHashValues) );
-      CMR_CALL( CMRfreeStackArray(cmr, &rowHashValues) );
-      CMR_CALL( CMRfreeStackArray(cmr, &columnEdges) );
-      CMR_CALL( CMRfreeStackArray(cmr, &rowEdges) );
-      CMR_CALL( CMRfreeStackArray(cmr, &hashVector) );
-      return CMR_ERROR_TIMEOUT;
-    }
-    
-    size_t newRows = sequenceNumRows[extension] - sequenceNumRows[extension-1];
-    size_t newColumns = sequenceNumColumns[extension] - sequenceNumColumns[extension-1];
-
-    CMRdbgMsg(10, "Processing extension step %ld with %ld new rows and %ld new columns.\n", extension, newRows,
-      newColumns);
-
-    bool isGraphic;
-    if (newRows == 1 && newColumns == 1)
-    {
-      CMR_ELEMENT rowParallel = findParallel(matrix, sequenceNumRows[extension-1], sequenceNumRows[extension-1],
-        sequenceNumColumns[extension-1], rowHashValues, hashVector);
-      CMR_ELEMENT columnParallel = CMRelementTranspose(findParallel(transpose, sequenceNumColumns[extension-1],
-        sequenceNumColumns[extension-1], sequenceNumRows[extension-1], columnHashValues, hashVector));
-
-      CMRdbgMsg(10, "The new row is parallel to %c%ld", CMRelementIsRow(rowParallel) ? 'x' : 'y',
-        CMRelementIsRow(rowParallel) ? CMRelementToRowIndex(rowParallel) + 1 : CMRelementToColumnIndex(rowParallel) + 1);
-      CMRdbgMsg(0, " and the new column is parallel to %c%ld.\n", CMRelementIsRow(columnParallel) ? 'x' : 'y',
-        CMRelementIsRow(columnParallel) ? CMRelementToRowIndex(columnParallel) + 1
-        : CMRelementToColumnIndex(columnParallel) + 1);
-
-      CMR_CALL( addToGraph1Row1Column(cmr, graph, rowEdges, columnEdges, sequenceNumRows[extension-1],
-        sequenceNumColumns[extension-1], rowParallel, columnParallel, &isGraphic) );
-    }
-    else if (newRows == 2 && newColumns == 1)
-    {
-      CMR_ELEMENT row1Parallel = findParallel(matrix, sequenceNumRows[extension-1], sequenceNumRows[extension-1],
-        sequenceNumColumns[extension-1], rowHashValues, hashVector);
-      CMR_ELEMENT row2Parallel = findParallel(matrix, sequenceNumRows[extension-1] + 1, sequenceNumRows[extension-1],
-        sequenceNumColumns[extension-1], rowHashValues, hashVector);
-
-      CMRdbgMsg(10, "Row 1 is parallel to %s", CMRelementString(row1Parallel, 0));
-      CMRdbgMsg(0, " and row 2 is parallel to %s.\n", CMRelementString(row2Parallel, 0));
-
-      CMR_CALL( addToGraph2Rows1Column(cmr, graph, rowEdges, columnEdges, sequenceNumRows[extension-1],
-        sequenceNumColumns[extension-1], row1Parallel, row2Parallel, &isGraphic) );
-    }
-    else if (newRows == 1 && newColumns == 2)
-    {
-      CMR_ELEMENT column1Parallel = CMRelementTranspose(findParallel(transpose, sequenceNumColumns[extension-1],
-        sequenceNumColumns[extension-1], sequenceNumRows[extension-1], columnHashValues, hashVector));
-      CMR_ELEMENT column2Parallel = CMRelementTranspose(findParallel(transpose, sequenceNumColumns[extension-1] + 1,
-        sequenceNumColumns[extension-1], sequenceNumRows[extension-1], columnHashValues, hashVector));
-
-      CMRdbgMsg(10, "Column 1 is parallel to %s", CMRelementString(column1Parallel, 0));
-      CMRdbgMsg(0, " and column 2 is parallel to %s.\n", CMRelementString(column2Parallel, 0));
-
-      CMR_CALL( addToGraph1Row2Columns(cmr, graph, rowEdges, columnEdges, sequenceNumRows[extension-1],
-        sequenceNumColumns[extension-1], column1Parallel, column2Parallel, &isGraphic) );
-    }
-    else if (newRows == 0 && newColumns == 1)
-    {
-      size_t first = transpose->rowSlice[sequenceNumColumns[extension-1]];
-      size_t beyond = transpose->rowSlice[sequenceNumColumns[extension-1] + 1];
-      for (size_t e = first; e < beyond; ++e)
-      {
-        if (transpose->entryColumns[e] >= sequenceNumRows[extension-1])
-          beyond = e;
-      }
-      CMR_CALL( addToGraph1Column(cmr, graph, rowEdges, columnEdges, sequenceNumColumns[extension-1],
-        &transpose->entryColumns[first], beyond-first, &isGraphic) );
-    }
-    else
-    {
-      assert(newRows == 1 && newColumns == 0);
-
-      size_t first = matrix->rowSlice[sequenceNumRows[extension-1]];
-      size_t beyond = matrix->rowSlice[sequenceNumRows[extension-1] + 1];
-      for (size_t e = first; e < beyond; ++e)
-      {
-        if (matrix->entryColumns[e] >= sequenceNumColumns[extension-1])
-          beyond = e;
-      }
-      CMR_CALL( addToGraph1Row(cmr, graph, rowEdges, columnEdges, sequenceNumRows[extension-1],
-        &matrix->entryColumns[first], beyond-first, &isGraphic) );
-    }
-
-    if (isGraphic)
-      *plastGraphicMinor = extension;
-    else
-      break;
-
-    CMR_CALL( updateHashValues(matrix, rowHashValues, columnHashValues, hashVector, sequenceNumRows[extension-1],
-      sequenceNumRows[extension], sequenceNumColumns[extension - 1]) );
-    CMR_CALL( updateHashValues(transpose, columnHashValues, rowHashValues, hashVector, sequenceNumColumns[extension-1],
-      sequenceNumColumns[extension], sequenceNumRows[extension]) );
-  }
-
-  if (*plastGraphicMinor == lengthSequence - 1)
-  {
-    CMR_CALL( CMRallocBlockArray(cmr, pedgeElements, matrix->numRows + matrix->numColumns) );
-    CMR_ELEMENT* edgeElements = *pedgeElements;
-    for (size_t e = 0; e < matrix->numRows + matrix->numColumns; ++e)
-      edgeElements[e] = 0;
-
-    for (size_t row = 0; row < matrix->numRows; ++row)
-      edgeElements[rowEdges[row]] = CMRrowToElement(row);
-    for (size_t column = 0; column < matrix->numColumns; ++column)
-      edgeElements[columnEdges[column]] = CMRcolumnToElement(column);
-  }
-  else
-  {
-    CMR_CALL( CMRgraphFree(cmr, pgraph) );
-  }
-
-  if (stats)
-  {
-    stats->sequenceGraphicCount++;
-    stats->sequenceGraphicTime += (clock() - time) * 1.0 / CLOCKS_PER_SEC;
-  }
-
-  CMR_CALL( CMRfreeStackArray(cmr, &columnHashValues) );
-  CMR_CALL( CMRfreeStackArray(cmr, &rowHashValues) );
-  CMR_CALL( CMRfreeStackArray(cmr, &columnEdges) );
-  CMR_CALL( CMRfreeStackArray(cmr, &rowEdges) );
-  CMR_CALL( CMRfreeStackArray(cmr, &hashVector) );
-
-  return CMR_OKAY;
-}
+// CMR_ERROR CMRregularSequenceGraphic(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT* transpose, size_t lengthSequence,
+//   size_t* sequenceNumRows, size_t* sequenceNumColumns, size_t* plastGraphicMinor, CMR_GRAPH** pgraph,
+//   CMR_ELEMENT** pedgeElements, CMR_SEYMOUR_STATS* stats, double timeLimit)
+// {
+//   assert(cmr);
+//   assert(matrix);
+//   assert(transpose);
+//   assert(sequenceNumRows);
+//   assert(sequenceNumColumns);
+//   assert(plastGraphicMinor);
+//   assert(pgraph);
+//   assert(!*pgraph);
+//   assert(pedgeElements);
+//   assert(!*pedgeElements);
+//
+//   CMRdbgMsg(8, "Testing sequence for (co)graphicness.\n");
+//
+//   clock_t time = clock();
+//
+//   CMR_CALL( CMRgraphCreateEmpty(cmr, pgraph, matrix->numRows, matrix->numRows + matrix->numColumns) );
+//   CMR_GRAPH* graph = *pgraph;
+//
+//   long long* hashVector = NULL;
+//   CMR_CALL( createHashVector(cmr, &hashVector,
+//     matrix->numRows > matrix->numColumns ? matrix->numRows : matrix->numColumns) );
+//   CMR_GRAPH_EDGE* rowEdges = NULL;
+//   CMR_CALL( CMRallocStackArray(cmr, &rowEdges, matrix->numRows) );
+//   CMR_GRAPH_EDGE* columnEdges = NULL;
+//   CMR_CALL( CMRallocStackArray(cmr, &columnEdges, matrix->numColumns) );
+//   long long* rowHashValues = NULL;
+//   CMR_CALL( CMRallocStackArray(cmr, &rowHashValues, matrix->numRows) );
+//   for (size_t row = 0; row < matrix->numRows; ++row)
+//     rowHashValues[row] = 0;
+//   long long* columnHashValues = NULL;
+//   CMR_CALL( CMRallocStackArray(cmr, &columnHashValues, matrix->numColumns) );
+//   for (size_t column = 0; column < matrix->numColumns; ++column)
+//     columnHashValues[column] = 0;
+//
+//   /* Create graph for first minor. */
+//
+//   assert(sequenceNumRows[0] == sequenceNumColumns[0]);
+//   CMR_CALL( createWheel(cmr, graph, matrix, transpose, sequenceNumRows[0], rowEdges, columnEdges) );
+//   *plastGraphicMinor = 0;
+//
+//   CMR_CALL( updateHashValues(matrix, rowHashValues, columnHashValues, hashVector, 0, sequenceNumRows[0],
+//     sequenceNumColumns[0]) );
+//
+//   size_t extensionTimeFactor = lengthSequence / 100 + 1;
+//   for (size_t extension = 1; extension < lengthSequence; ++extension)
+//   {
+//     if ((extension % extensionTimeFactor == 0) && (clock() - time) * 1.0 / CLOCKS_PER_SEC > timeLimit)
+//     {
+//       CMR_CALL( CMRfreeStackArray(cmr, &columnHashValues) );
+//       CMR_CALL( CMRfreeStackArray(cmr, &rowHashValues) );
+//       CMR_CALL( CMRfreeStackArray(cmr, &columnEdges) );
+//       CMR_CALL( CMRfreeStackArray(cmr, &rowEdges) );
+//       CMR_CALL( CMRfreeStackArray(cmr, &hashVector) );
+//       return CMR_ERROR_TIMEOUT;
+//     }
+//
+//     size_t newRows = sequenceNumRows[extension] - sequenceNumRows[extension-1];
+//     size_t newColumns = sequenceNumColumns[extension] - sequenceNumColumns[extension-1];
+//
+//     CMRdbgMsg(10, "Processing extension step %ld with %ld new rows and %ld new columns.\n", extension, newRows,
+//       newColumns);
+//
+//     bool isGraphic;
+//     if (newRows == 1 && newColumns == 1)
+//     {
+//       CMR_ELEMENT rowParallel = findParallel(matrix, sequenceNumRows[extension-1], sequenceNumRows[extension-1],
+//         sequenceNumColumns[extension-1], rowHashValues, hashVector);
+//       CMR_ELEMENT columnParallel = CMRelementTranspose(findParallel(transpose, sequenceNumColumns[extension-1],
+//         sequenceNumColumns[extension-1], sequenceNumRows[extension-1], columnHashValues, hashVector));
+//
+//       CMRdbgMsg(10, "The new row is parallel to %c%ld", CMRelementIsRow(rowParallel) ? 'x' : 'y',
+//         CMRelementIsRow(rowParallel) ? CMRelementToRowIndex(rowParallel) + 1 : CMRelementToColumnIndex(rowParallel) + 1);
+//       CMRdbgMsg(0, " and the new column is parallel to %c%ld.\n", CMRelementIsRow(columnParallel) ? 'x' : 'y',
+//         CMRelementIsRow(columnParallel) ? CMRelementToRowIndex(columnParallel) + 1
+//         : CMRelementToColumnIndex(columnParallel) + 1);
+//
+//       CMR_CALL( addToGraph1Row1Column(cmr, graph, rowEdges, columnEdges, sequenceNumRows[extension-1],
+//         sequenceNumColumns[extension-1], rowParallel, columnParallel, &isGraphic) );
+//     }
+//     else if (newRows == 2 && newColumns == 1)
+//     {
+//       CMR_ELEMENT row1Parallel = findParallel(matrix, sequenceNumRows[extension-1], sequenceNumRows[extension-1],
+//         sequenceNumColumns[extension-1], rowHashValues, hashVector);
+//       CMR_ELEMENT row2Parallel = findParallel(matrix, sequenceNumRows[extension-1] + 1, sequenceNumRows[extension-1],
+//         sequenceNumColumns[extension-1], rowHashValues, hashVector);
+//
+//       CMRdbgMsg(10, "Row 1 is parallel to %s", CMRelementString(row1Parallel, 0));
+//       CMRdbgMsg(0, " and row 2 is parallel to %s.\n", CMRelementString(row2Parallel, 0));
+//
+//       CMR_CALL( addToGraph2Rows1Column(cmr, graph, rowEdges, columnEdges, sequenceNumRows[extension-1],
+//         sequenceNumColumns[extension-1], row1Parallel, row2Parallel, &isGraphic) );
+//     }
+//     else if (newRows == 1 && newColumns == 2)
+//     {
+//       CMR_ELEMENT column1Parallel = CMRelementTranspose(findParallel(transpose, sequenceNumColumns[extension-1],
+//         sequenceNumColumns[extension-1], sequenceNumRows[extension-1], columnHashValues, hashVector));
+//       CMR_ELEMENT column2Parallel = CMRelementTranspose(findParallel(transpose, sequenceNumColumns[extension-1] + 1,
+//         sequenceNumColumns[extension-1], sequenceNumRows[extension-1], columnHashValues, hashVector));
+//
+//       CMRdbgMsg(10, "Column 1 is parallel to %s", CMRelementString(column1Parallel, 0));
+//       CMRdbgMsg(0, " and column 2 is parallel to %s.\n", CMRelementString(column2Parallel, 0));
+//
+//       CMR_CALL( addToGraph1Row2Columns(cmr, graph, rowEdges, columnEdges, sequenceNumRows[extension-1],
+//         sequenceNumColumns[extension-1], column1Parallel, column2Parallel, &isGraphic) );
+//     }
+//     else if (newRows == 0 && newColumns == 1)
+//     {
+//       size_t first = transpose->rowSlice[sequenceNumColumns[extension-1]];
+//       size_t beyond = transpose->rowSlice[sequenceNumColumns[extension-1] + 1];
+//       for (size_t e = first; e < beyond; ++e)
+//       {
+//         if (transpose->entryColumns[e] >= sequenceNumRows[extension-1])
+//           beyond = e;
+//       }
+//       CMR_CALL( addToGraph1Column(cmr, graph, rowEdges, columnEdges, sequenceNumColumns[extension-1],
+//         &transpose->entryColumns[first], beyond-first, &isGraphic) );
+//     }
+//     else
+//     {
+//       assert(newRows == 1 && newColumns == 0);
+//
+//       size_t first = matrix->rowSlice[sequenceNumRows[extension-1]];
+//       size_t beyond = matrix->rowSlice[sequenceNumRows[extension-1] + 1];
+//       for (size_t e = first; e < beyond; ++e)
+//       {
+//         if (matrix->entryColumns[e] >= sequenceNumColumns[extension-1])
+//           beyond = e;
+//       }
+//       CMR_CALL( addToGraph1Row(cmr, graph, rowEdges, columnEdges, sequenceNumRows[extension-1],
+//         &matrix->entryColumns[first], beyond-first, &isGraphic) );
+//     }
+//
+//     if (isGraphic)
+//       *plastGraphicMinor = extension;
+//     else
+//       break;
+//
+//     CMR_CALL( updateHashValues(matrix, rowHashValues, columnHashValues, hashVector, sequenceNumRows[extension-1],
+//       sequenceNumRows[extension], sequenceNumColumns[extension - 1]) );
+//     CMR_CALL( updateHashValues(transpose, columnHashValues, rowHashValues, hashVector, sequenceNumColumns[extension-1],
+//       sequenceNumColumns[extension], sequenceNumRows[extension]) );
+//   }
+//
+//   if (*plastGraphicMinor == lengthSequence - 1)
+//   {
+//     CMR_CALL( CMRallocBlockArray(cmr, pedgeElements, matrix->numRows + matrix->numColumns) );
+//     CMR_ELEMENT* edgeElements = *pedgeElements;
+//     for (size_t e = 0; e < matrix->numRows + matrix->numColumns; ++e)
+//       edgeElements[e] = 0;
+//
+//     for (size_t row = 0; row < matrix->numRows; ++row)
+//       edgeElements[rowEdges[row]] = CMRrowToElement(row);
+//     for (size_t column = 0; column < matrix->numColumns; ++column)
+//       edgeElements[columnEdges[column]] = CMRcolumnToElement(column);
+//   }
+//   else
+//   {
+//     CMR_CALL( CMRgraphFree(cmr, pgraph) );
+//   }
+//
+//   if (stats)
+//   {
+//     stats->sequenceGraphicCount++;
+//     stats->sequenceGraphicTime += (clock() - time) * 1.0 / CLOCKS_PER_SEC;
+//   }
+//
+//   CMR_CALL( CMRfreeStackArray(cmr, &columnHashValues) );
+//   CMR_CALL( CMRfreeStackArray(cmr, &rowHashValues) );
+//   CMR_CALL( CMRfreeStackArray(cmr, &columnEdges) );
+//   CMR_CALL( CMRfreeStackArray(cmr, &rowEdges) );
+//   CMR_CALL( CMRfreeStackArray(cmr, &hashVector) );
+//
+//   return CMR_OKAY;
+// }
 
 /**
  * \brief Tests each minor of the sequence of nested 3-connected minors for graphicness.
@@ -1446,6 +1446,8 @@ CMR_ERROR sequenceGraphicness(
 
   CMRdbgMsg(6, "Testing sequence of nested minors of length %zu for %sgraphicness.\n", length,
     cographicness ? "co" : "");
+
+  clock_t time = clock();
 
   CMR_CALL( CMRgraphCreateEmpty(cmr, pgraph, matrix->numRows, matrix->numRows + matrix->numColumns) );
   CMR_GRAPH* graph = *pgraph;
@@ -1605,7 +1607,7 @@ CMR_ERROR sequenceGraphicness(
   if (task->stats)
   {
     task->stats->sequenceGraphicCount++;
-//     task->stats->sequenceGraphicTime += (clock() - time) * 1.0 / CLOCKS_PER_SEC;
+    task->stats->sequenceGraphicTime += (clock() - time) * 1.0 / CLOCKS_PER_SEC;
   }
 
   CMR_CALL( CMRfreeStackArray(cmr, &columnHashValues) );

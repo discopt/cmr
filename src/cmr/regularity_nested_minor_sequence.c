@@ -951,12 +951,6 @@ CMR_ERROR CMRregularityExtendNestedMinorSequence(CMR* cmr, DecompositionTask* ta
     }
   }
 
-  if (task->stats)
-  {
-    clock_t endClock = clock();
-    task->stats->enumerationTime += (endClock - startClock) * 1.0 / CLOCKS_PER_SEC;
-  }
-
   if (node->type == CMR_SEYMOUR_NODE_TYPE_TWOSUM)
   {
     CMRdbgMsg(8, "Aborting construction of sequence of nested 3-connected minors due to a 2-separation.\n");
@@ -1035,6 +1029,12 @@ CMR_ERROR CMRregularityExtendNestedMinorSequence(CMR* cmr, DecompositionTask* ta
   }
 
 cleanup:
+
+  if (task->stats)
+  {
+    clock_t endClock = clock();
+    task->stats->sequenceExtensionTime += (endClock - startClock) * 1.0 / CLOCKS_PER_SEC;
+  }
 
   CMR_CALL( CMRlisthashtableFree(cmr, &columnHashtable) );
   CMR_CALL( CMRlisthashtableFree(cmr, &rowHashtable) );
