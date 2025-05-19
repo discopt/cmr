@@ -256,8 +256,8 @@ CMR_ERROR CMRisR12Matrix(CMR* cmr, CMR_CHRMAT* matrix, size_t* pisR12)
 
 
 
-  size_t rowSupportHash[5];
-  size_t columnSupportHash[5];
+  size_t rowSupportHash[6];
+  size_t columnSupportHash[6];
   bool parallel = hasParallelSupports(matrix, rowSupportHash, columnSupportHash);
   if (parallel)
   {

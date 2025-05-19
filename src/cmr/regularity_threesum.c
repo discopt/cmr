@@ -69,7 +69,7 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
     /* Find nonzero in low-rank matrix. */
     size_t pivotRow = SIZE_MAX;
     size_t pivotColumn = SIZE_MAX;
-    bool pivotBottomLeft;
+    bool pivotBottomLeft = false;
     for (size_t row = 0; (row < node->numRows) && pivotRow == SIZE_MAX; ++row)
     {
       /* Neither a representative for first nor for second. */
