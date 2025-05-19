@@ -84,6 +84,12 @@ CMR_ERROR CMRtuStatsPrint(FILE* stream, CMR_TU_STATS* stats, const char* prefix)
   return CMR_OKAY;
 }
 
+typedef struct
+{
+  CMR_TU_STATS* stats;
+  CMR_TU_PARAMS* params;
+} HereditaryPropertyTestData;
+
 static
 CMR_ERROR tuDecomposition(
   CMR* cmr,                   /**< \ref CMR environment. */
@@ -101,7 +107,7 @@ CMR_ERROR tuDecomposition(
 
   CMR_UNUSED(psubmatrix); /* TODO: Make use of submatrices. */
 
-  CMR_TU_STATS* stats = (CMR_TU_STATS*) data;
+  HereditaryPropertyTestData* testData = (HereditaryPropertyTestData*) data;
 
 #if defined(CMR_DEBUG)
   CMRdbgMsg(0, "tuDecomposition called for a %dx%d matrix\n", matrix->numRows, matrix->numColumns);
@@ -112,11 +118,9 @@ CMR_ERROR tuDecomposition(
   *pisTotallyUnimodular = true;
   clock_t time = clock();
 
-  CMR_TU_PARAMS params; /* TODO: We should supply some params?! */
-  CMR_CALL( CMRtuParamsInit(&params) );
   double remainingTime = timeLimit - ((clock() - time) * 1.0 / CLOCKS_PER_SEC);
-  CMR_CALL( CMRtuTest(cmr, matrix, pisTotallyUnimodular, NULL, NULL, &params,
-    stats ? stats : NULL, remainingTime) );
+  CMR_CALL( CMRtuTest(cmr, matrix, pisTotallyUnimodular, NULL, NULL, testData->params,
+    testData->stats ? testData->stats : NULL, remainingTime) );
 
   return CMR_OKAY;
 }
@@ -704,10 +708,15 @@ CMR_ERROR CMRtuTest(CMR* cmr, CMR_CHRMAT* matrix, bool* pisTotallyUnimodular, CM
     {
       assert(!*psubmatrix);
       remainingTime = timeLimit - (clock() - totalClock) * 1.0 / CLOCKS_PER_SEC;
+
+      HereditaryPropertyTestData testData;
+      testData.stats = stats;
+      testData.params = params;
+
       if (params->naiveSubmatrix)
-        CMR_CALL( CMRtestHereditaryPropertyNaive(cmr, matrix, tuDecomposition, stats, psubmatrix, remainingTime) );
+        CMR_CALL( CMRtestHereditaryPropertyNaive(cmr, matrix, tuDecomposition, &testData, psubmatrix, remainingTime) );
       else
-        CMR_CALL( CMRtestHereditaryPropertyGreedy(cmr, matrix, tuDecomposition, stats, psubmatrix, remainingTime) );
+        CMR_CALL( CMRtestHereditaryPropertyGreedy(cmr, matrix, tuDecomposition, &testData, psubmatrix, remainingTime) );
 
       return CMR_OKAY;
     }

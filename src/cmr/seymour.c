@@ -1736,7 +1736,7 @@ CMR_ERROR CMRregularityTaskRun(
     if (error != CMR_OKAY && error != CMR_ERROR_TIMEOUT)
       CMR_CALL( error );
   }
-  else if (!task->node->testedSeriesParallel && task->params->seriesParallel)
+  else if (!task->node->testedSeriesParallel && task->params->seriesParallel && task->params->simpleThreeSeparations)
   {
     CMRdbgMsg(4, "Testing for series-parallel reductions.\n");
     error = CMRregularityDecomposeSeriesParallel(cmr, task, queue, false);
