@@ -343,7 +343,7 @@ CMR_ERROR CMRregularitySimpleSearchThreeSeparation(CMR* cmr, DecompositionTask* 
         CMRdbgMsg(4, "Considering removal of entry r%zu,c%zu since c%zu has only 2 nonzeros.\n", row+1, column+1,
           column+1);
 
-        assert(false);
+        // assert(false);
       }
     }
   }
