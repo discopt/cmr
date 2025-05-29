@@ -225,7 +225,7 @@ CMR_ERROR calcNonzeroCountHashFromMatrix(
 static
 CMR_ERROR calcBinaryHashFromListMatrix(
   CMR* cmr,                 /**< \ref CMR environment. */
-  ListMat8* listmatrix,   /**< List matrix. */
+  ListMat8* listmatrix,     /**< List matrix. */
   ElementData* rowData,     /**< Other row element data. */
   ElementData* columnData,  /**< Other column element data. */
   long long* hashVector     /**< Hash vector. */
@@ -270,14 +270,14 @@ CMR_ERROR calcBinaryHashFromListMatrix(
 
 static
 CMR_ERROR initializeQueueHashtableFromMatrix(
-  CMR* cmr,                               /**< \ref CMR environment. */
-  CMR_LISTHASHTABLE* hashtable,           /**< Row or column hashtable. */
+  CMR* cmr,                             /**< \ref CMR environment. */
+  CMR_LISTHASHTABLE* hashtable,         /**< Row or column hashtable. */
   ListMat8Element* listmatrixElements,  /**< Row or column list matrix elements. */
-  ElementData* data,                      /**< Other row/column data. */
-  size_t sizeData,                        /**< Length of \p ListMatrixElements and \p data. */
-  CMR_ELEMENT* queue,                     /**< Queue. */
-  size_t* pqueueEnd,                      /**< Pointer to end of queue. */
-  bool isRow                              /**< Whether we are deadling with rows. */
+  ElementData* data,                    /**< Other row/column data. */
+  size_t sizeData,                      /**< Length of \p ListMatrixElements and \p data. */
+  CMR_ELEMENT* queue,                   /**< Queue. */
+  size_t* pqueueEnd,                    /**< Pointer to end of queue. */
+  bool isRow                            /**< Whether we are deadling with rows. */
 )
 {
   assert(cmr);
@@ -401,8 +401,8 @@ size_t findCopy(
     bool negated = true;
     if (isRow)
     {
-            ListMat8Nonzero* nz1 = listData[index].head.right;
-            ListMat8Nonzero* nz2 = listData[collisionIndex].head.right;
+      ListMat8Nonzero* nz1 = listData[index].head.right;
+      ListMat8Nonzero* nz2 = listData[collisionIndex].head.right;
       while (equal || negated || support)
       {
         if (nz1->column != nz2->column)
@@ -424,8 +424,8 @@ size_t findCopy(
     }
     else
     {
-            ListMat8Nonzero* nz1 = listData[index].head.below;
-            ListMat8Nonzero* nz2 = listData[collisionIndex].head.below;
+      ListMat8Nonzero* nz1 = listData[index].head.below;
+      ListMat8Nonzero* nz2 = listData[collisionIndex].head.below;
       while (equal || negated || support)
       {
         if (nz1->row != nz2->row)
@@ -459,16 +459,16 @@ size_t findCopy(
 
 static
 CMR_ERROR processNonzero(
-  CMR* cmr,                         /**< \ref CMR environment. */
-  CMR_LISTHASHTABLE* hashtable,     /**< Row/column hashtable. */
-  long long hashChange,             /**< Modification of the hash value. */
-  size_t index,                     /**< Index of row/column. */
+  CMR* cmr,                       /**< \ref CMR environment. */
+  CMR_LISTHASHTABLE* hashtable,   /**< Row/column hashtable. */
+  long long hashChange,           /**< Modification of the hash value. */
+  size_t index,                   /**< Index of row/column. */
   ListMat8Element* indexListData, /**< Row/column list data. */
-  ElementData* indexData,           /**< Other row/column data. */
-  CMR_ELEMENT* queue,               /**< Queue. */
-  size_t* pqueueEnd,                /**< Pointer to end of queue. */
-  size_t queueMemory,               /**< Memory allocated for queue. */
-  bool isRow                        /**< Whether we are dealing with rows. */
+  ElementData* indexData,         /**< Other row/column data. */
+  CMR_ELEMENT* queue,             /**< Queue. */
+  size_t* pqueueEnd,              /**< Pointer to end of queue. */
+  size_t queueMemory,             /**< Memory allocated for queue. */
+  bool isRow                      /**< Whether we are dealing with rows. */
 )
 {
   assert(cmr);
@@ -652,7 +652,7 @@ CMR_ERROR reduceListMatrix(
         rowData[row1].inQueue = false;
         if (listmatrix->rowElements[row1].numNonzeros)
         {
-                    ListMat8Nonzero* entry = listmatrix->rowElements[row1].head.right;
+          ListMat8Nonzero* entry = listmatrix->rowElements[row1].head.right;
           size_t column = entry->column;
 
 #if defined(CMR_DEBUG_REDUCTION)
@@ -748,7 +748,7 @@ CMR_ERROR reduceListMatrix(
         columnData[column1].inQueue = false;
         if (listmatrix->columnElements[column1].numNonzeros)
         {
-                    ListMat8Nonzero* entry = listmatrix->columnElements[column1].head.below;
+          ListMat8Nonzero* entry = listmatrix->columnElements[column1].head.below;
           size_t row = entry->row;
 
 #if defined(CMR_DEBUG_REDUCTION)
@@ -844,8 +844,8 @@ CMR_ERROR extractNonbinarySubmatrix(
         /* We found a row copy. */
         size_t column1 = SIZE_MAX;
         size_t column2 = SIZE_MAX;
-                ListMat8Nonzero* nz1 = listmatrix->rowElements[row1].head.right;
-                ListMat8Nonzero* nz2 = listmatrix->rowElements[row2].head.right;
+        ListMat8Nonzero* nz1 = listmatrix->rowElements[row1].head.right;
+        ListMat8Nonzero* nz2 = listmatrix->rowElements[row2].head.right;
         while (column1 == SIZE_MAX || column2 == SIZE_MAX)
         {
           if (nz1->value == nz2->value)
@@ -893,8 +893,8 @@ CMR_ERROR extractNonbinarySubmatrix(
         /* We found a column copy. */
         size_t row1 = SIZE_MAX;
         size_t row2 = SIZE_MAX;
-                ListMat8Nonzero* nz1 = listmatrix->columnElements[column1].head.below;
-                ListMat8Nonzero* nz2 = listmatrix->columnElements[column2].head.below;
+        ListMat8Nonzero* nz1 = listmatrix->columnElements[column1].head.below;
+        ListMat8Nonzero* nz2 = listmatrix->columnElements[column2].head.below;
         while (row1 == SIZE_MAX || row2 == SIZE_MAX)
         {
           if (nz1->value == nz2->value)
@@ -1650,15 +1650,15 @@ CMR_ERROR decomposeBinarySeriesParallel(
   if (numRows > 0)
   {
     CMR_CALL( CMRlisthashtableCreate(cmr, &rowHashtable, nextPower2(numRows), numRows) );
-    CMR_CALL( initializeQueueHashtableFromMatrix(cmr, rowHashtable, listmatrix->rowElements, rowData, numRows, queue, &queueEnd,
-      true) );
+    CMR_CALL( initializeQueueHashtableFromMatrix(cmr, rowHashtable, listmatrix->rowElements, rowData, numRows, queue,
+      &queueEnd, true) );
   }
   CMR_LISTHASHTABLE* columnHashtable = NULL;
   if (numColumns > 0)
   {
     CMR_CALL( CMRlisthashtableCreate(cmr, &columnHashtable, nextPower2(numColumns), numColumns) );
-    CMR_CALL( initializeQueueHashtableFromMatrix(cmr, columnHashtable, listmatrix->columnElements, columnData, numColumns, queue,
-      &queueEnd, false) );
+    CMR_CALL( initializeQueueHashtableFromMatrix(cmr, columnHashtable, listmatrix->columnElements, columnData,
+      numColumns, queue, &queueEnd, false) );
   }
 
   if (stats)
