@@ -1172,6 +1172,7 @@ TEST(TU, DeltasumSigns)
   CMR* cmr = NULL;
   ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
 
+  /* We run it once with simple 3-separation search. */
   {
     CMR_CHRMAT* matrix = NULL;
     ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "10 10 "
@@ -1192,6 +1193,40 @@ TEST(TU, DeltasumSigns)
     CMR_TU_PARAMS params;
     ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
     params.seymour.decomposeStrategy = CMR_SEYMOUR_DECOMPOSE_FLAG_SEYMOUR;
+    params.seymour.simpleThreeSeparations = true;
+    ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &root, NULL, &params, NULL, DBL_MAX) );
+
+    // TODO: The decomposition of this matrix is not checked manually, yet. assert(false);
+
+    if (root)
+      ASSERT_CMR_CALL( CMRseymourRelease(cmr, &root) );
+
+
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  }
+
+  /* We run it once without simple 3-separation search. */
+  {
+    CMR_CHRMAT* matrix = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "10 10 "
+      "0  0  1  0  1  1   0  0  0  0 "
+      "1  0  0  1  1  0   0  0  0  0 "
+      "0  0  0  1  0  1   0  0  0  0 "
+      "1  1  1  0  0  0  -1  0  0  0 "
+      "                              "
+      "0  0  0 -1 -1 -1   0  1  0  1 "
+      "0  0  0 -1 -1 -1   0  0  1  1 "
+      "0  0  0  0  0  0   1  0  0  1 "
+      "0  0  0  0  0  0   0  1  1  0 "
+      "0  0  0  0  0  0   1  1  0  0 "
+      "0  0  0  0  0  0   1  0  1  0 "
+    ) );
+    bool isTU;
+    CMR_SEYMOUR_NODE* root;
+    CMR_TU_PARAMS params;
+    ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
+    params.seymour.decomposeStrategy = CMR_SEYMOUR_DECOMPOSE_FLAG_SEYMOUR;
+    params.seymour.simpleThreeSeparations = false;
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &root, NULL, &params, NULL, DBL_MAX) );
 
     // TODO: The decomposition of this matrix is not checked manually, yet. assert(false);
@@ -1473,6 +1508,7 @@ TEST(TU, ThreesumPivotHighRank)
     CMR_TU_PARAMS params;
     ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
     params.seymour.decomposeStrategy = CMR_SEYMOUR_DECOMPOSE_FLAG_TRUEMPER;
+    params.seymour.simpleThreeSeparations = false;
 
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
 
@@ -1738,6 +1774,7 @@ TEST(TU, CompleteTree)
     ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
     params.seymour.directGraphicness = false;
     params.seymour.stopWhenIrregular = true;
+    params.seymour.simpleThreeSeparations = false;
 
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
 
