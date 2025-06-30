@@ -52,6 +52,7 @@ add_library(cmr
   src/cmr/env.c
   src/cmr/hereditary_property.c
   src/cmr/matrix.c
+  src/cmr/io.c
   src/cmr/block_decomposition.c
   src/cmr/tu.c
   src/cmr/graph.c

@@ -5,6 +5,7 @@
 
 #include "env_internal.h"
 #include "hashtable.h"
+#include "io_internal.h"
 
 #include <string.h>
 #include <stdio.h>
