@@ -15,7 +15,6 @@ add_executable(cmr_gtest
   test_equimodular.cpp
   test_graph.cpp
   test_graphic.cpp
-  test_hashtable.cpp
   test_matrix.cpp
   test_matroid.cpp
   test_main.cpp
@@ -33,6 +32,7 @@ if(NOT SHARED)
   target_sources(cmr_gtest
     PRIVATE
     test_block_decomposition.cpp
+    test_hashtable.cpp
     )
   target_include_directories(cmr_gtest
     PRIVATE
