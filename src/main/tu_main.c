@@ -3,6 +3,7 @@
 #include <string.h>
 #include <time.h>
 #include <float.h>
+#include <inttypes.h>
 
 #include <cmr/env.h>
 #include <cmr/matrix.h>
@@ -118,8 +119,9 @@ CMR_ERROR testTotalUnimodularity(
     CMR_CALL( CMRchrmatFree(cmr, &violator) );
 
     bool outputSubmatrixToFile = strcmp(outputSubmatrixFileName, "-");
-    fprintf(stderr, "Writing minimal non-totally-unimodular submatrix with absolute determinant %ld to %s%s%s.\n", determinant,
-      outputSubmatrixToFile ? "file <" : "", outputSubmatrixToFile ? outputSubmatrixFileName : "stdout",
+    fprintf(stderr,
+      "Writing minimal non-totally-unimodular submatrix with absolute determinant %" PRId64 " to %s%s%s.\n",
+      determinant, outputSubmatrixToFile ? "file <" : "", outputSubmatrixToFile ? outputSubmatrixFileName : "stdout",
       outputSubmatrixToFile ? ">" : "");
 
     CMR_CALL( CMRsubmatWriteToFile(cmr, submatrix, matrix->numRows, matrix->numColumns, outputSubmatrixFileName) );
