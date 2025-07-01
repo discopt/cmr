@@ -6,6 +6,8 @@ if(NOT GTEST_FOUND)
    endif()
 endif()
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+
 # Target for the googletest.
 add_executable(cmr_gtest
   common.c
@@ -26,6 +28,7 @@ add_executable(cmr_gtest
 
 # Set standard to C++ 17.
 set_property(TARGET cmr_gtest PROPERTY CXX_STANDARD 17)
+
 
 # Add tests for non-exported functions only for static library.
 if(NOT SHARED)
