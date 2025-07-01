@@ -596,6 +596,36 @@ CMR_ERROR CMRgraphCreateFromEdgeList(CMR* cmr, CMR_GRAPH** pgraph, CMR_ELEMENT**
   return CMR_OKAY;
 }
 
+CMR_ERROR CMRgraphWriteEdgeList(CMR* cmr, CMR_GRAPH* graph, CMR_ELEMENT* edgeElements, const char** nodeLabels, FILE* stream)
+{
+  assert(cmr);
+  assert(graph);
+
+  for (CMR_GRAPH_ITER iter = CMRgraphEdgesFirst(graph); CMRgraphEdgesValid(graph, iter);
+    iter = CMRgraphEdgesNext(graph, iter))
+  {
+    CMR_GRAPH_EDGE e = CMRgraphEdgesEdge(graph, iter);
+    CMR_GRAPH_NODE u = CMRgraphEdgeU(graph, e);
+    CMR_GRAPH_NODE v = CMRgraphEdgeV(graph, e);
+    if (nodeLabels)
+      fprintf(stream, "%s", nodeLabels[u]);
+    else
+      fprintf(stream, "v%d", u);
+    if (nodeLabels)
+      fprintf(stream, " %s", nodeLabels[v]);
+    else
+      fprintf(stream, " v%d", v);
+    if (edgeElements)
+      fprintf(stream, " %s", CMRelementString(edgeElements[e], 0));
+    else
+      fprintf(stream, " e%d", e);
+    fprintf(stream, "\n");
+  }
+
+  return CMR_OKAY;
+}
+
+
 CMR_ERROR CMRgraphCopy(CMR* cmr, CMR_GRAPH* graph, CMR_GRAPH** pcopy)
 {
   assert(cmr);

@@ -503,6 +503,15 @@ CMR_ERROR CMRgraphCreateFromEdgeList(
 );
 
 CMR_EXPORT
+CMR_ERROR CMRgraphWriteEdgeList(
+  CMR* cmr,                   /**< \ref CMR environment. */
+  CMR_GRAPH* graph,           /**< The graph. */
+  CMR_ELEMENT* edgeElements,  /**< The element of each edge (may be \c NULL). */
+  const char** nodeLabels,    /**< The label of each node (may be \c NULL). */
+  FILE* stream                /**< File stream to write to. */
+);
+
+CMR_EXPORT
 CMR_ERROR CMRgraphCopy(
   CMR* cmr,         /**< \ref CMR environment. */
   CMR_GRAPH* graph, /**< Graph structure. */
