@@ -5,6 +5,24 @@
 #include "common.h"
 #include <cmr/matrix.h>
 
+#ifdef _WIN32
+
+static
+FILE *fmemopen(void* buffer, size_t size, const char* mode)
+{
+  const char* filename = "gtest-matrix.dense";
+  FILE* f = fopen(filename, "wb");
+  if (f == NULL)
+    return NULL;
+
+  fwrite(buffer, size, 1, f);
+  fclose(f);
+
+  return fopen(filename, mode);
+}
+
+#endif /* _WIN32 */
+
 TEST(Matrix, Read)
 {
   CMR* cmr = NULL;
