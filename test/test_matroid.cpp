@@ -132,7 +132,7 @@ TEST(Matroid, TernaryPivot)
     {
       printf("Input\n");
       ASSERT_CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', false) );
-      printf("After pivoting on r%zu,c%zu:\n", 0UL, 0UL);
+      printf("After pivoting on r%zu,c%zu:\n", (size_t) 0UL, (size_t) 0UL);
       ASSERT_CMR_CALL( CMRchrmatPrintDense(cmr, result, stdout, '0', false) );
       printf("Expected result:\n");
       ASSERT_CMR_CALL( CMRchrmatPrintDense(cmr, check, stdout, '0', false) );
@@ -181,7 +181,7 @@ TEST(Matroid, TernaryPivot)
     {
       printf("Input\n");
       ASSERT_CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', false) );
-      printf("After pivoting on r%zu,c%zu:\n", 0UL, 0UL);
+      printf("After pivoting on r%zu,c%zu:\n", (size_t) 0UL, (size_t) 0UL);
       ASSERT_CMR_CALL( CMRchrmatPrintDense(cmr, result, stdout, '0', false) );
       printf("Expected result:\n");
       ASSERT_CMR_CALL( CMRchrmatPrintDense(cmr, check, stdout, '0', false) );
