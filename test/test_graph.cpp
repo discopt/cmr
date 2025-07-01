@@ -3,6 +3,8 @@
 #include "common.h"
 #include <cmr/graph.h>
 
+#include <algorithm>
+
 TEST(Graph, Modifications)
 {
   CMR* cmr = NULL;
