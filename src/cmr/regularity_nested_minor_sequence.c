@@ -1,4 +1,4 @@
-#define CMR_DEBUG /* Uncomment to debug this file. */
+// #define CMR_DEBUG /* Uncomment to debug this file. */
 
 #include "seymour_internal.h"
 #include "env_internal.h"
