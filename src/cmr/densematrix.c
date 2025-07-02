@@ -1,4 +1,4 @@
-// #define CMR_DEBUG /* Uncomment to debug this file. */
+#define CMR_DEBUG /* Uncomment to debug this file. */
 
 #include "env_internal.h"
 #include "densematrix.h"
@@ -10,6 +10,15 @@
 CMR_ERROR CMRdensebinmatrixCreate(CMR* cmr, size_t numRows, size_t numColumns, DenseBinaryMatrix** presult)
 {
   assert(cmr);
+
+  CMRdbgMsg(0, "sizeof(unsigned int) = %d\n", sizeof(unsigned int));
+  CMRdbgMsg(0, "sizeof(unsigned long) = %d\n", sizeof(unsigned long));
+  CMRdbgMsg(0, "sizeof(unsigned long int) = %d\n", sizeof(unsigned long int));
+  CMRdbgMsg(0, "sizeof(unsigned long long) = %d\n", sizeof(unsigned long long));
+  CMRdbgMsg(0, "sizeof(ssize_t) = %d\n", sizeof(ssize_t));
+  CMRdbgMsg(0, "sizeof(size_t) = %d\n", sizeof(size_t));
+  CMRdbgMsg(0, "sizeof(uint64_t) = %d\n", sizeof(uint64_t));
+  CMRdbgMsg(0, "sizeof(uint32_t) = %d\n", sizeof(uint32_t));
 
   CMR_CALL( CMRallocBlock(cmr, presult) );
   DenseBinaryMatrix* matrix = *presult;
