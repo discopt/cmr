@@ -22,7 +22,7 @@ CMR_ERROR CMRdensebinmatrixCreate(CMR* cmr, size_t numRows, size_t numColumns, D
   matrix->data = NULL;
   CMR_CALL( CMRallocBlockArray(cmr, &matrix->data, size) );
   for (size_t i = 0; i < size; ++i)
-    matrix->data[i] = 0UL;
+    matrix->data[i] = (size_t) 0;
 
   return CMR_OKAY;
 }
