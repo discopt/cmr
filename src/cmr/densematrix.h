@@ -44,7 +44,7 @@ bool CMRdensebinmatrixGet(
 //   CMRdbgMsg(8, "CMRdensebinmatrixGet(%zu,%zu) uses index %zu in block %zu at %zu -> %d\n", row, column, index,
 //     index / (8 * sizeof(size_t)), (index % (8 * sizeof(size_t))),
 //     (block & (1UL << (index % (8 * sizeof(size_t))))) ? 1 : 0);
-  return block & (1UL << (index % (8 * sizeof(size_t))));
+  return block & ( ((size_t) 1) << (index % (8 * sizeof(size_t))));
 }
 
 static inline
@@ -58,7 +58,7 @@ void CMRdensebinmatrixSet0(
 //   CMRdbgMsg(8, "CMRdensebinmatrixSet0(%zu,%zu) uses index %zu in block %zu at %zu.\n", row, column, index,
 //     index / (8 * sizeof(size_t)), (index % (8 * sizeof(size_t))));
   size_t* pblock = &matrix->data[index / (8 * sizeof(size_t))];
-  *pblock &= ~(1UL << (index % (8 * sizeof(size_t))));
+  *pblock &= ~( ((size_t) 1) << (index % (8 * sizeof(size_t))));
 }
 
 static inline
@@ -72,7 +72,7 @@ void CMRdensebinmatrixSet1(
 //   CMRdbgMsg(8, "CMRdensebinmatrixSet1(%zu,%zu) uses index %zu in block %zu at %zu.\n", row, column, index,
 //     index / (8 * sizeof(size_t)), (index % (8 * sizeof(size_t))));
   size_t* pblock = &matrix->data[index / (8 * sizeof(size_t))];
-  *pblock |= (1UL << (index % (8 * sizeof(size_t))));
+  *pblock |= ( ((size_t) 1) << (index % (8 * sizeof(size_t))));
 }
 
 static inline
@@ -87,7 +87,7 @@ void CMRdensebinmatrixSet(
   CMRdbgMsg(8, "CMRdensebinmatrixSet(%zu,%zu,%d) uses index %zu in block %zu at %zu.\n", row, column, value ? 1 : 0, index,
     index / (8 * sizeof(size_t)), (index % (8 * sizeof(size_t))));
   size_t* pblock = &matrix->data[index / (8 * sizeof(size_t))];
-  size_t mask = (1UL << (index % (8 * sizeof(size_t))));
+  size_t mask = ( ((size_t) 1) << (index % (8 * sizeof(size_t))));
   if (value)
     *pblock |= mask;
   else
@@ -106,7 +106,7 @@ void CMRdensebinmatrixFlip(
 //   CMRdbgMsg(8, "CMRdensebinmatrixFlip(%zu,%zu) uses index %zu in block %zu at %zu.\n", row, column, index,
 //     index / (8 * sizeof(size_t)), (index % (8 * sizeof(size_t))));
   size_t* pblock = &matrix->data[index / (8 * sizeof(size_t))];
-  size_t mask = (1UL << (index % (8 * sizeof(size_t))));
+  size_t mask = ( ((size_t) 1) << (index % (8 * sizeof(size_t))));
   if (*pblock & mask)
     *pblock &= ~mask;
   else

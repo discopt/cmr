@@ -1,4 +1,4 @@
-#define CMR_DEBUG /* Uncomment to debug this file. */
+// #define CMR_DEBUG /* Uncomment to debug this file. */
 
 #include "env_internal.h"
 #include "densematrix.h"
@@ -11,15 +11,6 @@ CMR_ERROR CMRdensebinmatrixCreate(CMR* cmr, size_t numRows, size_t numColumns, D
 {
   assert(cmr);
 
-  CMRdbgMsg(0, "sizeof(unsigned int) = %d\n", sizeof(unsigned int));
-  CMRdbgMsg(0, "sizeof(unsigned long) = %d\n", sizeof(unsigned long));
-  CMRdbgMsg(0, "sizeof(unsigned long int) = %d\n", sizeof(unsigned long int));
-  CMRdbgMsg(0, "sizeof(unsigned long long) = %d\n", sizeof(unsigned long long));
-  CMRdbgMsg(0, "sizeof(ssize_t) = %d\n", sizeof(ssize_t));
-  CMRdbgMsg(0, "sizeof(size_t) = %d\n", sizeof(size_t));
-  CMRdbgMsg(0, "sizeof(uint64_t) = %d\n", sizeof(uint64_t));
-  CMRdbgMsg(0, "sizeof(uint32_t) = %d\n", sizeof(uint32_t));
-
   CMR_CALL( CMRallocBlock(cmr, presult) );
   DenseBinaryMatrix* matrix = *presult;
   
@@ -31,7 +22,7 @@ CMR_ERROR CMRdensebinmatrixCreate(CMR* cmr, size_t numRows, size_t numColumns, D
   matrix->data = NULL;
   CMR_CALL( CMRallocBlockArray(cmr, &matrix->data, size) );
   for (size_t i = 0; i < size; ++i)
-    matrix->data[i] = 0UL;
+    matrix->data[i] = (size_t) 0;
 
   return CMR_OKAY;
 }
