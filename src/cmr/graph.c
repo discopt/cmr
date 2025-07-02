@@ -601,6 +601,8 @@ CMR_ERROR CMRgraphWriteEdgeList(CMR* cmr, CMR_GRAPH* graph, CMR_ELEMENT* edgeEle
   assert(cmr);
   assert(graph);
 
+  CMR_UNUSED(cmr);
+
   for (CMR_GRAPH_ITER iter = CMRgraphEdgesFirst(graph); CMRgraphEdgesValid(graph, iter);
     iter = CMRgraphEdgesNext(graph, iter))
   {
