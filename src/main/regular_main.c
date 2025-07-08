@@ -57,6 +57,27 @@ CMR_ERROR testRegularity(
   fprintf(stderr, "Read %zux%zu matrix with %zu nonzeros in %f seconds.\n", matrix->numRows, matrix->numColumns,
     matrix->numNonzeros, (clock() - readClock) * 1.0 / CLOCKS_PER_SEC);
 
+  /* Test for being binary first. */
+
+  CMR_SUBMAT* nonbinarySubmatrix = NULL;
+  if (!CMRchrmatIsBinary(cmr, matrix, &nonbinarySubmatrix))
+  {
+    CMR_CHRMAT* mat = NULL;
+    CMR_CALL( CMRchrmatSlice(cmr, matrix, nonbinarySubmatrix, &mat) );
+    assert(mat->numRows == 1);
+    assert(mat->numColumns == 1);
+    assert(mat->numNonzeros == 1);
+    fprintf(stderr, "Matrix is NOT regular since it is not binary: entry at row %zu, column %zu is %d.\n",
+      nonbinarySubmatrix->rows[0] + 1, nonbinarySubmatrix->columns[0] + 1, mat->entryValues[0]);
+
+    CMR_CALL( CMRchrmatFree(cmr, &mat) );
+    CMR_CALL( CMRsubmatFree(cmr, &nonbinarySubmatrix) );
+    CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+    CMR_CALL( CMRfreeEnvironment(&cmr) );
+
+    return CMR_OKAY;
+  }
+
   /* Actual test. */
 
   bool isRegular;
@@ -75,6 +96,7 @@ CMR_ERROR testRegularity(
     outputMinorFileName ? &minor : NULL, &params, &stats, timeLimit) );
 
   fprintf(stderr, "Matrix %sregular.\n", isRegular ? "IS " : "IS NOT ");
+
   if (printStats)
     CMR_CALL( CMRregularStatsPrint(stderr, &stats, NULL) );
 
