@@ -42,7 +42,7 @@ CMR_ERROR CMRdecomposeBlocks(CMR* cmr, CMR_MATRIX* matrix, size_t matrixType, si
     CMRdblmatPrintDense(stdout, (CMR_DBLMAT*) matrix, '0', true);
   else if (matrixType == sizeof(int))
     CMRintmatPrintDense(stdout, (CMR_INTMAT*) matrix, '0', true);
-  else if (matrixType == sizeof(char))
+  else if (matrixType == sizeof(signed char))
     CMRchrmatPrintDense(stdout, (CMR_CHRMAT*) matrix, '0', true);
 #endif
 
@@ -70,8 +70,8 @@ CMR_ERROR CMRdecomposeBlocks(CMR* cmr, CMR_MATRIX* matrix, size_t matrixType, si
         isNonzero = ((int*)matrix->entryValues)[e] != 0;
       else
       {
-        assert(matrixType == sizeof(char));
-        isNonzero = ((char*)matrix->entryValues)[e] != 0;
+        assert(matrixType == sizeof(signed char));
+        isNonzero = ((signed char*)matrix->entryValues)[e] != 0;
       }
       if (isNonzero)
       {
@@ -103,8 +103,8 @@ CMR_ERROR CMRdecomposeBlocks(CMR* cmr, CMR_MATRIX* matrix, size_t matrixType, si
         isNonzero = ((double*)matrix->entryValues)[e] != 0.0;
       else if (matrixType == sizeof(int))
         isNonzero = ((int*)matrix->entryValues)[e] != 0;
-      else if (matrixType == sizeof(char))
-        isNonzero = ((char*)matrix->entryValues)[e] != 0;
+      else if (matrixType == sizeof(signed char))
+        isNonzero = ((signed char*)matrix->entryValues)[e] != 0;
       else
         assert("Invalid matrixType parameter." == 0);
 
@@ -230,10 +230,10 @@ CMR_ERROR CMRdecomposeBlocks(CMR* cmr, CMR_MATRIX* matrix, size_t matrixType, si
     if (compMatrix->numNonzeros > 0)
       CMR_CALL( CMRallocBlockArray(cmr, &compMatrix->entryColumns, compMatrix->numNonzeros) );
 
-    if (targetType == sizeof(char))
+    if (targetType == sizeof(signed char))
     {
       if (compMatrix->numNonzeros > 0)
-        CMR_CALL( CMRallocBlockArray(cmr, (char**) &compMatrix->entryValues, compMatrix->numNonzeros) );
+        CMR_CALL( CMRallocBlockArray(cmr, (signed char**) &compMatrix->entryValues, compMatrix->numNonzeros) );
       CMR_CALL( CMRchrmatCreate(cmr, (CMR_CHRMAT**) &blocks[comp].transpose,
         compMatrix->numColumns, compMatrix->numRows, compMatrix->numNonzeros) );
     }
@@ -313,8 +313,8 @@ CMR_ERROR CMRdecomposeBlocks(CMR* cmr, CMR_MATRIX* matrix, size_t matrixType, si
           isNonzero = round(((double*)matrix->entryValues)[matrixEntry]) != 0;
         else if (matrixType == sizeof(int))
           isNonzero = ((int*)matrix->entryValues)[matrixEntry] != 0;
-        else if (matrixType == sizeof(char))
-          isNonzero = ((char*)matrix->entryValues)[matrixEntry] != 0;
+        else if (matrixType == sizeof(signed char))
+          isNonzero = ((signed char*)matrix->entryValues)[matrixEntry] != 0;
         else
           assert("Invalid matrixType parameter." == 0);
 
@@ -340,10 +340,10 @@ CMR_ERROR CMRdecomposeBlocks(CMR* cmr, CMR_MATRIX* matrix, size_t matrixType, si
             ((int*)compTranspose->entryValues)[compEntry] =
               (int)(round(((double*)matrix->entryValues)[matrixEntry]) + 0.5);
           }
-          else if (targetType == sizeof(char) && matrixType == sizeof(double))
+          else if (targetType == sizeof(signed char) && matrixType == sizeof(double))
           {
-            ((char*)compTranspose->entryValues)[compEntry] =
-              (char)(round(((double*)matrix->entryValues)[matrixEntry]) + 0.5);
+            ((signed char*)compTranspose->entryValues)[compEntry] =
+              (signed char)(round(((double*)matrix->entryValues)[matrixEntry]) + 0.5);
           }
           else if (targetType == sizeof(double) && matrixType == sizeof(int))
           {
@@ -355,25 +355,25 @@ CMR_ERROR CMRdecomposeBlocks(CMR* cmr, CMR_MATRIX* matrix, size_t matrixType, si
             ((int*)compTranspose->entryValues)[compEntry] =
               ((int*)matrix->entryValues)[matrixEntry];
           }
-          else if (targetType == sizeof(char) && matrixType == sizeof(int))
+          else if (targetType == sizeof(signed char) && matrixType == sizeof(int))
           {
-            ((char*)compTranspose->entryValues)[compEntry] =
+            ((signed char*)compTranspose->entryValues)[compEntry] =
               ((int*)matrix->entryValues)[matrixEntry];
           }
-          else if (targetType == sizeof(double) && matrixType == sizeof(char))
+          else if (targetType == sizeof(double) && matrixType == sizeof(signed char))
           {
             ((double*)compTranspose->entryValues)[compEntry] =
-              ((char*)matrix->entryValues)[matrixEntry];
+              ((signed char*)matrix->entryValues)[matrixEntry];
           }
-          else if (targetType == sizeof(int) && matrixType == sizeof(char))
+          else if (targetType == sizeof(int) && matrixType == sizeof(signed char))
           {
             ((int*)compTranspose->entryValues)[compEntry] =
-              ((char*)matrix->entryValues)[matrixEntry];
+              ((signed char*)matrix->entryValues)[matrixEntry];
           }
-          else if (targetType == sizeof(char) && matrixType == sizeof(char))
+          else if (targetType == sizeof(signed char) && matrixType == sizeof(signed char))
           {
-            ((char*)compTranspose->entryValues)[compEntry] =
-              ((char*)matrix->entryValues)[matrixEntry];
+            ((signed char*)compTranspose->entryValues)[compEntry] =
+              ((signed char*)matrix->entryValues)[matrixEntry];
           }
           else
             assert("Invalid targetType / matrixType parameter combination." == 0);
@@ -393,7 +393,7 @@ CMR_ERROR CMRdecomposeBlocks(CMR* cmr, CMR_MATRIX* matrix, size_t matrixType, si
       CMRdblmatPrintDense(stdout, (CMR_DBLMAT*) compTranspose, '0', true);
     else if (targetType == sizeof(int))
       CMRintmatPrintDense(stdout, (CMR_INTMAT*) compTranspose, '0', true);
-    else if (targetType == sizeof(char))
+    else if (targetType == sizeof(signed char))
       CMRchrmatPrintDense(stdout, (CMR_CHRMAT*) compTranspose, '0', true);
 #endif
   }
@@ -435,8 +435,8 @@ CMR_ERROR CMRdecomposeBlocks(CMR* cmr, CMR_MATRIX* matrix, size_t matrixType, si
           ((double*)compMatrix->entryValues)[compMatrixEntry] = ((double*)compTranspose->entryValues)[compTransposeEntry];
         else if (targetType == sizeof(int))
           ((int*)compMatrix->entryValues)[compMatrixEntry] = ((int*)compTranspose->entryValues)[compTransposeEntry];
-        else if (targetType == sizeof(char))
-          ((char*)compMatrix->entryValues)[compMatrixEntry] = ((char*)compTranspose->entryValues)[compTransposeEntry];
+        else if (targetType == sizeof(signed char))
+          ((signed char*)compMatrix->entryValues)[compMatrixEntry] = ((signed char*)compTranspose->entryValues)[compTransposeEntry];
         else
           assert("Invalid targetType parameter." == 0);
       }
@@ -458,7 +458,7 @@ CMR_ERROR CMRdecomposeBlocks(CMR* cmr, CMR_MATRIX* matrix, size_t matrixType, si
       CMR_CALL( CMRintmatCheckTranspose(cmr, (CMR_INTMAT*) blocks[comp].matrix,
         (CMR_INTMAT*) blocks[comp].transpose, &isTranspose) );
     }
-    else if (targetType == sizeof(char))
+    else if (targetType == sizeof(signed char))
     {
       CMR_CALL( CMRchrmatCheckTranspose(cmr, (CMR_CHRMAT*) blocks[comp].matrix,
         (CMR_CHRMAT*) blocks[comp].transpose, &isTranspose) );

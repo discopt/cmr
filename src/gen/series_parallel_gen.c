@@ -51,7 +51,7 @@ typedef struct _ListNonzero
   struct _ListNonzero* below;
   size_t row;
   size_t column;
-  char value;
+  signed char value;
 } ListNonzero;
 
 static
@@ -62,7 +62,7 @@ CMR_ERROR addNonzero(
   size_t* pnumNonzeros,
   size_t row,
   size_t column,
-  char value
+  signed char value
 )
 {
   assert(cmr);
@@ -89,7 +89,7 @@ typedef struct
 {
   size_t row;
   size_t column;
-  char value;
+  signed char value;
 } Nonzero;
 
 int compareNonzeros(const void* a, const void* b)
@@ -166,7 +166,7 @@ CMR_ERROR genMatrixSeriesParallel(
         if ((rand() * 1.0 / RAND_MAX) > probability)
           continue;
 
-        char sign = (ternary && (rand() * 1.0 / RAND_MAX >= 0.5)) ? -1 : 1;
+        signed char sign = (ternary && (rand() * 1.0 / RAND_MAX >= 0.5)) ? -1 : 1;
         CMR_CALL( addNonzero(cmr, rowHeads, columnHeads, &numBaseNonzeros, row, column, sign) );
         totalMemory += sizeof(ListNonzero);
       }
@@ -222,7 +222,7 @@ CMR_ERROR genMatrixSeriesParallel(
         case 'u':
         {
           size_t column = randRange(0, numColumns);
-          char sign = (ternary && (rand() * 1.0 / RAND_MAX >= 0.5)) ? -1 : 1;
+          signed char sign = (ternary && (rand() * 1.0 / RAND_MAX >= 0.5)) ? -1 : 1;
           CMR_CALL( addNonzero(cmr, rowHeads, columnHeads, &numTotalNonzeros, numRows, column, sign) );
           totalMemory += sizeof(ListNonzero);
           ++numRows;
@@ -231,7 +231,7 @@ CMR_ERROR genMatrixSeriesParallel(
         case 'U':
         {
           size_t row = randRange(0, numRows);
-          char sign = (ternary && (rand() * 1.0 / RAND_MAX >= 0.5)) ? -1 : 1;
+          signed char sign = (ternary && (rand() * 1.0 / RAND_MAX >= 0.5)) ? -1 : 1;
           CMR_CALL( addNonzero(cmr, rowHeads, columnHeads, &numTotalNonzeros, row, numColumns, sign) );
           totalMemory += sizeof(ListNonzero);
           ++numColumns;
@@ -240,7 +240,7 @@ CMR_ERROR genMatrixSeriesParallel(
         case 'c':
         {
           size_t row = randRange(0, numRows);
-          char sign = (ternary && (rand() * 1.0 / RAND_MAX >= 0.5)) ? -1 : 1;
+          signed char sign = (ternary && (rand() * 1.0 / RAND_MAX >= 0.5)) ? -1 : 1;
           for (ListNonzero* nz = rowHeads[row].right; nz->column != SIZE_MAX; nz = nz->right)
           {
             CMR_CALL( addNonzero(cmr, rowHeads, columnHeads, &numTotalNonzeros, numRows, nz->column, sign * nz->value) );
@@ -252,7 +252,7 @@ CMR_ERROR genMatrixSeriesParallel(
         case 'C':
         {
           size_t column = randRange(0, numColumns);
-          char sign = (ternary && (rand() * 1.0 / RAND_MAX >= 0.5)) ? -1 : 1;
+          signed char sign = (ternary && (rand() * 1.0 / RAND_MAX >= 0.5)) ? -1 : 1;
           for (ListNonzero* nz = columnHeads[column].below; nz->row != SIZE_MAX; nz = nz->below)
           {
             CMR_CALL( addNonzero(cmr, rowHeads, columnHeads, &numTotalNonzeros, nz->row, numColumns, sign * nz->value) );

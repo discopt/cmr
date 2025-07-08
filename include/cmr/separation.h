@@ -449,7 +449,7 @@ CMR_ERROR CMRdeltasumDecomposeEpsilon(
   CMR_CHRMAT* matrix,     /**< Input matrix \f$ M \f$. */
   CMR_CHRMAT* transpose,  /**< Transpose matrix \f$ M^{\textsf{T}} \f$. */
   CMR_SEPA* sepa,         /**< 3-separation to decompose at. */
-  char* pepsilon          /**< Pointer for storing a correct value of \f$ \varepsilon \f$. */
+  signed char* pepsilon   /**< Pointer for storing a correct value of \f$ \varepsilon \f$. */
 );
 
 /**
@@ -479,7 +479,7 @@ CMR_ERROR CMRdeltasumDecomposeFirst(
   CMR* cmr,                   /**< \ref CMR environment. */
   CMR_CHRMAT* matrix,         /**< Input matrix \f$ M \f$. */
   CMR_SEPA* sepa,             /**< 3-separation to decompose at. */
-  char epsilon,               /**< Value of \f$ \varepsilon \f$. */
+  signed char epsilon,        /**< Value of \f$ \varepsilon \f$. */
   CMR_CHRMAT** pfirst,        /**< Pointer for storing the first matrix \f$ M_1 \f$. */
   size_t* firstRowsOrigin,    /**< Array for storing the mapping from rows of \f$ M_1 \f$ to rows of \f$ M \f$;
                                **  also set for the extra row if applicable, even if negated; may be \c NULL. */
@@ -525,7 +525,7 @@ CMR_ERROR CMRdeltasumDecomposeSecond(
   CMR* cmr,                     /**< \ref CMR environment. */
   CMR_CHRMAT* matrix,           /**< Input matrix \f$ M \f$. */
   CMR_SEPA* sepa,               /**< 3-separation to decompose at. */
-  char epsilon,                 /**< Value of \f$ \varepsilon \f$. */
+  signed char epsilon,          /**< Value of \f$ \varepsilon \f$. */
   CMR_CHRMAT** psecond,         /**< Pointer for storing the second matrix \f$ M_2 \f$. */
   size_t* secondRowsOrigin,     /**< Array for storing the mapping from rows of \f$ M_2 \f$ to rows of \f$ M \f$;
                                  **  also set for the extra row if applicable, even if negated; may be \c NULL. */
@@ -630,7 +630,7 @@ CMR_ERROR CMRysumDecomposeEpsilon(
   CMR_CHRMAT* matrix,     /**< Input matrix \f$ M \f$. */
   CMR_CHRMAT* transpose,  /**< Transpose matrix \f$ M^{\textsf{T}} \f$. */
   CMR_SEPA* sepa,         /**< 3-separation to decompose at. */
-  char* pepsilon          /**< Pointer for storing a correct value of \f$ \varepsilon \f$. */
+  signed char* pepsilon   /**< Pointer for storing a correct value of \f$ \varepsilon \f$. */
 );
 
 
@@ -662,7 +662,7 @@ CMR_ERROR CMRysumDecomposeFirst(
   CMR* cmr,                   /**< \ref CMR environment. */
   CMR_CHRMAT* matrix,         /**< Input matrix \f$ M \f$. */
   CMR_SEPA* sepa,             /**< 3-separation to decompose at. */
-  char epsilon,               /**< Value of \f$ \varepsilon \f$. */
+  signed char epsilon,        /**< Value of \f$ \varepsilon \f$. */
   CMR_CHRMAT** pfirst,        /**< Pointer for storing the first matrix \f$ M_1 \f$. */
   size_t* firstRowsOrigin,    /**< Array for storing the mapping from rows of \f$ M_1 \f$ to rows of \f$ M \f$;
                                **  also set for the extra row if applicable, even if negated; may be \c NULL. */
@@ -709,7 +709,7 @@ CMR_ERROR CMRysumDecomposeSecond(
   CMR* cmr,                     /**< \ref CMR environment. */
   CMR_CHRMAT* matrix,           /**< Input matrix \f$ M \f$. */
   CMR_SEPA* sepa,               /**< 3-separation to decompose at. */
-  char epsilon,                 /**< Value of \f$ \varepsilon \f$. */
+  signed char epsilon,          /**< Value of \f$ \varepsilon \f$. */
   CMR_CHRMAT** psecond,         /**< Pointer for storing the second matrix \f$ M_2 \f$. */
   size_t* secondRowsOrigin,     /**< Array for storing the mapping from rows of \f$ M_2 \f$ to rows of \f$ M \f$;
                                  **  also set for the extra row if applicable, even if negated; may be \c NULL. */
@@ -847,8 +847,8 @@ CMR_ERROR CMRthreesumDecomposeSearchConnecting(
   size_t* specialRows,    /**< Array of length 2 for storing the rows \f$ i \f$ and \f$ j \f$ as rows of \f$ M \f$. */
   size_t* specialColumns, /**< Array of length 2 for storing the columns \f$ k \f$ and \f$ \ell \f$ as rows of
                            **  \f$ M \f$. */
-  char* pgamma,           /**< Pointer for storing a correct value of \f$ \gamma \f$; may be \c NULL. */
-  char* pbeta             /**< Pointer for storing a correct value of \f$ \beta \f$; may be \c NULL. */
+  signed char* pgamma,    /**< Pointer for storing a correct value of \f$ \gamma \f$; may be \c NULL. */
+  signed char* pbeta      /**< Pointer for storing a correct value of \f$ \beta \f$; may be \c NULL. */
 );
 
 /**
@@ -898,8 +898,8 @@ CMR_ERROR CMRthreesumDecomposeSignConnecting(
   CMR_SEPA* sepa,         /**< 3-separation to decompose at. */
   size_t* specialRows,    /**< Array of length 2 with the rows \f$ i \f$ and \f$ j \f$ as rows of \f$ M \f$. */
   size_t* specialColumns, /**< Array of length 2 with the columns \f$ k \f$ and \f$ \ell \f$ as rows of \f$ M \f$. */
-  char* pgamma,           /**< Pointer for storing a correct value of \f$ \gamma \f$; may be \c NULL. */
-  char* pbeta             /**< Pointer for storing a correct value of \f$ \beta \f$; may be \c NULL. */
+  signed char* pgamma,    /**< Pointer for storing a correct value of \f$ \gamma \f$; may be \c NULL. */
+  signed char* pbeta      /**< Pointer for storing a correct value of \f$ \beta \f$; may be \c NULL. */
 );
 
 
@@ -953,7 +953,7 @@ CMR_ERROR CMRthreesumDecomposeFirst(
   CMR_SEPA* sepa,             /**< 3-separation to decompose at. */
   size_t* specialRows,        /**< Array of length 2 with the rows \f$ i \f$ and \f$ j \f$ as rows of \f$ M \f$. */
   size_t* specialColumns,     /**< Array of length 2 with the columns \f$ k \f$ and \f$ \ell \f$ as rows of \f$ M \f$. */
-  char beta,                  /**< Value of \f$ \beta \f$. */
+  signed char beta,           /**< Value of \f$ \beta \f$. */
   CMR_CHRMAT** pfirst,        /**< Pointer for storing the first matrix \f$ M_1 \f$. */
   size_t* firstRowsOrigin,    /**< Array for storing the mapping from rows of \f$ M_1 \f$ to rows of \f$ M \f$;
                                **  may be \c NULL. */
@@ -1021,7 +1021,7 @@ CMR_ERROR CMRthreesumDecomposeSecond(
   size_t* specialRows,          /**< Array of length 2 with the rows \f$ i \f$ and \f$ j \f$ as rows of \f$ M \f$. */
   size_t* specialColumns,       /**< Array of length 2 with the columns \f$ k \f$ and \f$ \ell \f$ as rows of
                                  **  \f$ M \f$. */
-  char gamma,                   /**< Value of \f$ \gamma \f$. */
+  signed char gamma,            /**< Value of \f$ \gamma \f$. */
   CMR_CHRMAT** psecond,         /**< Pointer for storing the second matrix \f$ M_2 \f$. */
   size_t* secondRowsOrigin,     /**< Array for storing the mapping from rows of \f$ M_2 \f$ to rows of \f$ M \f$;
                                  **  set to \c SIZE_MAX for the first row; may be \c NULL. */

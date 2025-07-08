@@ -170,7 +170,7 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
       node->type = CMR_SEYMOUR_NODE_TYPE_DELTASUM;
       CMR_CALL( CMRseymourSetNumChildren(cmr, node, 2) );
 
-      char epsilon = 0;
+      signed char epsilon = 0;
       if (node->isTernary)
         CMR_CALL( CMRdeltasumDecomposeEpsilon(cmr, node->matrix, node->transpose, separation, &epsilon) );
       else
@@ -276,7 +276,7 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
       node->type = CMR_SEYMOUR_NODE_TYPE_YSUM;
       CMR_CALL( CMRseymourSetNumChildren(cmr, node, 2) );
 
-      char epsilon = 0;
+      signed char epsilon = 0;
       if (node->isTernary)
         CMR_CALL( CMRysumDecomposeEpsilon(cmr, node->matrix, node->transpose, separation, &epsilon) );
       else
@@ -394,7 +394,7 @@ CMR_ERROR CMRregularityDecomposeThreeSum(
 
       size_t specialRows[2];
       size_t specialColumns[2];
-      char gamma, beta;
+      signed char gamma, beta;
       CMR_CALL( CMRthreesumDecomposeSearchConnecting(cmr, node->matrix, node->transpose, separation, specialRows,
         specialColumns, &gamma, &beta) );
 

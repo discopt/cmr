@@ -53,10 +53,10 @@ CMR_ERROR CMRcamionStatsPrint(FILE* stream, CMR_CAMION_STATISTICS* stats, const 
 
 typedef struct
 {
-  int status;             /**< \brief 0: not visited, 1: in queue, 2: processed */
-  int predecessorNode;    /**< \brief Node number of predecessor. */
-  char predecessorValue;  /**< \brief Value of matrix entry of predecessor. */
-  char targetValue;       /**< \brief Entry in current row if a target node, and 0 otherwise. */
+  int status;                   /**< \brief 0: not visited, 1: in queue, 2: processed */
+  int predecessorNode;          /**< \brief Node number of predecessor. */
+  signed char predecessorValue; /**< \brief Value of matrix entry of predecessor. */
+  signed char targetValue;      /**< \brief Entry in current row if a target node, and 0 otherwise. */
 } GRAPH_NODE;
 
 CMR_ERROR CMRcamionComputeSignSequentiallyConnected(
@@ -348,7 +348,7 @@ CMR_ERROR signCamion(
 
   /* Decompose into 1-connected components. */
 
-  CMR_CALL( CMRdecomposeBlocks(cmr, (CMR_MATRIX*) matrix, sizeof(char), sizeof(char), &numBlocks, &blocks, NULL,
+  CMR_CALL( CMRdecomposeBlocks(cmr, (CMR_MATRIX*) matrix, sizeof(signed char), sizeof(signed char), &numBlocks, &blocks, NULL,
     NULL, NULL, NULL) );
 
   if (pisCamionSigned)
@@ -665,7 +665,7 @@ CMR_ERROR CMRcamionCographicOrient(CMR* cmr, CMR_CHRMAT* matrix, CMR_GRAPH* cogr
   /* Decompose into blocks. */
   size_t numBlocks;
   CMR_BLOCK* blocks = NULL;
-  CMR_CALL( CMRdecomposeBlocks(cmr, (CMR_MATRIX*) matrix, sizeof(char), sizeof(char), &numBlocks, &blocks, NULL,
+  CMR_CALL( CMRdecomposeBlocks(cmr, (CMR_MATRIX*) matrix, sizeof(signed char), sizeof(signed char), &numBlocks, &blocks, NULL,
     NULL, NULL, NULL) );
 
   /* Allocate and initialize auxiliary data for nodes. */
@@ -868,7 +868,7 @@ CMR_ERROR CMRcamionCographicOrient(CMR* cmr, CMR_CHRMAT* matrix, CMR_GRAPH* cogr
       v = s;
       while (nodeData[v].distance > minDistance)
       {
-        char currentSign = CMRgraphEdgeU(cograph, nodeData[v].edge) == v ? 1 : -1;
+        signed char currentSign = CMRgraphEdgeU(cograph, nodeData[v].edge) == v ? 1 : -1;
 
         if (reversedRowEdge)
           currentSign *= -1;
@@ -909,7 +909,7 @@ CMR_ERROR CMRcamionCographicOrient(CMR* cmr, CMR_CHRMAT* matrix, CMR_GRAPH* cogr
       v = t;
       while (nodeData[v].distance > minDistance)
       {
-        char currentSign = CMRgraphEdgeU(cograph, nodeData[v].edge) == v ? -1 : 1;
+        signed char currentSign = CMRgraphEdgeU(cograph, nodeData[v].edge) == v ? -1 : 1;
         if (reversedRowEdge)
           currentSign *= -1;
 

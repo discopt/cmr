@@ -33,8 +33,8 @@ CMR_ERROR CMRregularitySearchOnesum(CMR* cmr, DecompositionTask* task, Decomposi
 
   size_t numComponents;
   CMR_BLOCK* components = NULL;
-  CMR_CALL( CMRdecomposeBlocks(cmr, (CMR_MATRIX*) task->node->matrix, sizeof(char), sizeof(char), &numComponents, &components,
-    NULL, NULL, NULL, NULL) );
+  CMR_CALL( CMRdecomposeBlocks(cmr, (CMR_MATRIX*) task->node->matrix, sizeof(signed char), sizeof(signed char),
+    &numComponents, &components, NULL, NULL, NULL, NULL) );
 
   if (numComponents == 1)
   {

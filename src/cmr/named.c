@@ -219,7 +219,7 @@ CMR_ERROR CMRcreateR10Matrix(CMR* cmr, size_t index, CMR_CHRMAT** presult)
   {
     size_t rowSlice[5] = { 0, 3, 6, 9, 12 };
     size_t entryColumns[15] = {  0, 1, 4,  0,  1, 2,  1,  2, 3,  2,  3, 4,  0, 3,  4 };
-    char entryValues[15] =    { -1, 1, 1,  1, -1, 1,  1, -1, 1,  1, -1, 1,  1, 1, -1 };
+    signed char entryValues[15] =    { -1, 1, 1,  1, -1, 1,  1, -1, 1,  1, -1, 1,  1, 1, -1 };
 
     CMR_CALL( CMRchrmatCreate(cmr, presult, 5, 5, 15) );
     CMR_CHRMAT* matrix = *presult;
@@ -288,7 +288,7 @@ CMR_ERROR CMRcreateR12Matrix(CMR* cmr, size_t index, CMR_CHRMAT** presult)
   {
     size_t rowSlice[6] = { 0, 3, 6, 10, 14, 17 };
     size_t entryColumns[20] = { 0, 2, 3,  1, 2, 3,  0, 2, 4, 5,  1,   3, 4, 5,  0, 2, 4,   1,  3, 5 };
-    char entryValues[20] =    { 1, 1, 1,  1, 1, 1,  1, 1, 1, 1, -1,  -1, 1, 1,  1, 1, 1,  -1, -1, 1 };
+    signed char entryValues[20] =    { 1, 1, 1,  1, 1, 1,  1, 1, 1, 1, -1,  -1, 1, 1,  1, 1, 1,  -1, -1, 1 };
 
     CMR_CALL( CMRchrmatCreate(cmr, presult, 6, 6, 20) );
     CMR_CHRMAT* matrix = *presult;
@@ -314,7 +314,7 @@ CMR_ERROR CMRcreateK5Matrix(CMR* cmr, size_t index, CMR_CHRMAT** presult)
   {
     size_t rowSlice[4] = { 0, 3, 6, 9 };
     size_t entryColumns[12] = { 0, 3, 4,  0,  1,  5,  1, 2, 4,   2, 3, 5 };
-    char entryValues[12] =    { 1, 1, 1,  1, -1, -1,  1, 1, 1,  -1, 1, 1 };
+    signed char entryValues[12] =    { 1, 1, 1,  1, -1, -1,  1, 1, 1,  -1, 1, 1 };
 
     CMR_CALL( CMRchrmatCreate(cmr, presult, 4, 6, 12) );
     CMR_CHRMAT* matrix = *presult;
@@ -340,7 +340,7 @@ CMR_ERROR CMRcreateK33Matrix(CMR* cmr, size_t index, CMR_CHRMAT** presult)
   {
     size_t rowSlice[5] = { 0, 2, 4, 6, 8 };
     size_t entryColumns[12] = { 0, 1,  1, 2,  2, 3,  0, 3,  0, 1, 2, 3 };
-    char entryValues[12] =    { 1, 1,  1, 1,  1, 1,  1, 1,  1, 1, 1, 1 };
+    signed char entryValues[12] =    { 1, 1,  1, 1,  1, 1,  1, 1,  1, 1, 1, 1 };
 
     CMR_CALL( CMRchrmatCreate(cmr, presult, 5, 4, 12) );
     CMR_CHRMAT* matrix = *presult;
