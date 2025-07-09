@@ -200,7 +200,7 @@ CMR_ERROR calcNonzeroCountHashFromMatrix(
     for (size_t e = first; e < beyond; ++e)
     {
       size_t column = matrix->entryColumns[e];
-      char value = matrix->entryValues[e];
+      signed char value = matrix->entryValues[e];
       assert(value == 1 || value == -1);
 
       /* Update row data. */

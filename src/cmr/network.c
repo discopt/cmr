@@ -103,7 +103,7 @@ typedef struct
   int predecessor;      /**< Predecessor node. */
   CMR_GRAPH_EDGE edge;  /**< Edge connecting to predecessor node. */
   int distance;         /**< Combinatorial distance to the BFS root. */
-  char sign;            /**< Sign of this tree edge with respect to current column. */
+  signed char sign;     /**< Sign of this tree edge with respect to current column. */
   bool fixed;           /**< Whether the orientation of this edge is already fixed. */
 } NetworkNodeData;
 

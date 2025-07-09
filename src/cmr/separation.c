@@ -1074,7 +1074,7 @@ CMR_ERROR CMRtwosumCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* second, size
   else
     return CMR_ERROR_INPUT;
 
-  char* markerColumn = NULL; /* Nonzero entries of the column vector among a,b. */
+  signed char* markerColumn = NULL; /* Nonzero entries of the column vector among a,b. */
   size_t markerColumnNumNonzeros = 0; /* Number of nonzeros in markerColumn. */
   size_t markerRowNumNonzeros = 0; /* Number of nonzeros of a,b that is not markerColumn. */
   CMR_ERROR error = CMR_OKAY;
@@ -1286,7 +1286,7 @@ CMR_ERROR CMRtwosumDecomposeFirst(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sepa, 
   if (!hasColumnsToFirst)
     CMR_CALL( CMRallocStackArray(cmr, &columnsToFirst, matrix->numColumns) );
 
-  char* denseColumn = NULL;
+  signed char* denseColumn = NULL;
   CMR_CALL( CMRallocStackArray(cmr, &denseColumn, matrix->numColumns) );
 
   /* Number of rows of A. */
@@ -1436,7 +1436,7 @@ CMR_ERROR CMRtwosumDecomposeSecond(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sepa,
   if (!hasColumnsToSecond)
     CMR_CALL( CMRallocStackArray(cmr, &columnsToSecond, matrix->numColumns) );
 
-  char* denseColumn = NULL;
+  signed char* denseColumn = NULL;
   CMR_CALL( CMRallocStackArray(cmr, &denseColumn, matrix->numColumns) );
 
   /* Find extra row. */
@@ -1492,7 +1492,7 @@ CMR_ERROR CMRtwosumDecomposeSecond(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sepa,
 
   /* Count number of nonzeros, copy column vector, and find out if we need to negate it. */
   size_t numNonzeros = 0;
-  char scale = 0;
+  signed char scale = 0;
 
   for (size_t row2 = 0; row2 < numRows; ++row2)
   {
@@ -1555,7 +1555,7 @@ CMR_ERROR CMRtwosumDecomposeSecond(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sepa,
       size_t column2 = columnsToSecond[column];
       if (column2 < SIZE_MAX)
       {
-        char value = matrix->entryValues[e];
+        signed char value = matrix->entryValues[e];
         if (row == extraRow)
           value *= scale;
         second->entryColumns[second->numNonzeros] = column2;
@@ -1660,9 +1660,9 @@ CMR_ERROR CMRdeltasumCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* second, si
   size_t secondMainNumNonzeros = 0;
   size_t firstSpecialRowNumNonzeros = first->rowSlice[firstSpecialRows[0] + 1] - first->rowSlice[firstSpecialRows[0]] - 1;
   size_t secondSpecialRowNumNonzeros = second->rowSlice[secondSpecialRows[0] + 1] - second->rowSlice[secondSpecialRows[0]] - 1;
-  char* firstSpecialColumnDense = NULL; /* Entries of a. */
+  signed char* firstSpecialColumnDense = NULL; /* Entries of a. */
   size_t firstSpecialColumnNumNonzeros = 0;
-  char* secondSpecialColumnDense = NULL; /* Entries of d. */
+  signed char* secondSpecialColumnDense = NULL; /* Entries of d. */
   size_t secondSpecialColumnNumNonzeros = 0;
   size_t specialColumn1CopyNumNonzeros; /* Number of nonzeros in copy of a or copy of d. */
   CMR_ERROR error = CMR_OKAY;
@@ -1670,7 +1670,7 @@ CMR_ERROR CMRdeltasumCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* second, si
   CMR_CALL( CMRallocStackArray(cmr, &secondSpecialColumnDense, second->numRows - 1) );
   size_t firstMainRow = 0;
   specialColumn1CopyNumNonzeros = 0;
-  char firstEpsilon = 0;
+  signed char firstEpsilon = 0;
   for (size_t firstRow = 0; firstRow < first->numRows; ++firstRow)
   {
     if (firstRow != firstSpecialRows[0])
@@ -1738,7 +1738,7 @@ CMR_ERROR CMRdeltasumCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* second, si
 
   specialColumn1CopyNumNonzeros = 0;
   size_t secondMainRow = 0;
-  char secondEpsilon = 0;
+  signed char secondEpsilon = 0;
   for (size_t secondRow = 0; secondRow < second->numRows; ++secondRow)
   {
     if (secondRow != secondSpecialRows[0])
@@ -1854,7 +1854,7 @@ CMR_ERROR CMRdeltasumCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* second, si
       /* Nonzeros in top-right. */
       if (firstSpecialColumnDense[row])
       {
-        char factor = firstSpecialColumnDense[row];
+        signed char factor = firstSpecialColumnDense[row];
         beyond = second->rowSlice[secondSpecialRows[0] + 1];
         for (size_t e = second->rowSlice[secondSpecialRows[0]]; e < beyond; ++e)
         {
@@ -1896,7 +1896,7 @@ CMR_ERROR CMRdeltasumCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* second, si
       /* Nonzeros in bottom-left. */
       if (secondSpecialColumnDense[secondMainRow])
       {
-        char factor = secondSpecialColumnDense[secondMainRow];
+        signed char factor = secondSpecialColumnDense[secondMainRow];
         size_t beyond = first->rowSlice[firstSpecialRows[0] + 1];
         for (size_t e = first->rowSlice[firstSpecialRows[0]]; e < beyond; ++e)
         {
@@ -1961,7 +1961,7 @@ cleanup:
 }
 
 CMR_ERROR CMRdeltasumDecomposeEpsilon(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT* transpose, CMR_SEPA* sepa,
-  char* pepsilon)
+  signed char* pepsilon)
 {
   assert(cmr);
   assert(matrix);
@@ -2042,7 +2042,7 @@ CMR_ERROR CMRdeltasumDecomposeEpsilon(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT* 
   assert(CMRelementIsRow(source));
   size_t sourceRow = CMRelementToRowIndex(source);
   size_t beyond = matrix->rowSlice[sourceRow + 1];
-  char entryTopRight = 0;
+  signed char entryTopRight = 0;
   for (size_t e = matrix->rowSlice[sourceRow]; e < beyond; ++e)
   {
     if (matrix->entryColumns[e] == columnTopRight)
@@ -2055,7 +2055,7 @@ CMR_ERROR CMRdeltasumDecomposeEpsilon(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT* 
   /* Find entry of target column in first bottom-right rank-1 row. */
   assert(CMRelementIsColumn(target));
   beyond = matrix->rowSlice[rowBottomLeft + 1];
-  char entryBottomLeft = 0;
+  signed char entryBottomLeft = 0;
   for (size_t e = matrix->rowSlice[rowBottomLeft]; e < beyond; ++e)
   {
     if (matrix->entryColumns[e] == CMRelementToColumnIndex(target))
@@ -2075,7 +2075,7 @@ CMR_ERROR CMRdeltasumDecomposeEpsilon(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT* 
 }
 
 
-CMR_ERROR CMRdeltasumDecomposeFirst(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sepa, char epsilon,
+CMR_ERROR CMRdeltasumDecomposeFirst(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sepa, signed char epsilon,
   CMR_CHRMAT** pfirst, size_t* firstRowsOrigin, size_t* firstColumnsOrigin, size_t* rowsToFirst, size_t* columnsToFirst,
   size_t* firstSpecialRows, size_t* firstSpecialColumns)
 {
@@ -2102,7 +2102,7 @@ CMR_ERROR CMRdeltasumDecomposeFirst(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sepa
   if (!hasColumnsToFirst)
     CMR_CALL( CMRallocStackArray(cmr, &columnsToFirst, matrix->numColumns) );
 
-  char* denseColumn = NULL;
+  signed char* denseColumn = NULL;
   CMR_CALL( CMRallocStackArray(cmr, &denseColumn, matrix->numRows) );
 
   /* Number of rows of A. */
@@ -2234,7 +2234,7 @@ CMR_ERROR CMRdeltasumDecomposeFirst(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sepa
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRdeltasumDecomposeSecond(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sepa, char epsilon,
+CMR_ERROR CMRdeltasumDecomposeSecond(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sepa, signed char epsilon,
   CMR_CHRMAT** psecond, size_t* secondRowsOrigin, size_t* secondColumnsOrigin, size_t* rowsToSecond,
   size_t* columnsToSecond, size_t* secondSpecialRows, size_t* secondSpecialColumns)
 {
@@ -2261,7 +2261,7 @@ CMR_ERROR CMRdeltasumDecomposeSecond(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sep
   if (!hasColumnsToSecond)
     CMR_CALL( CMRallocStackArray(cmr, &columnsToSecond, matrix->numColumns) );
 
-  char* denseColumn = NULL;
+  signed char* denseColumn = NULL;
   CMR_CALL( CMRallocStackArray(cmr, &denseColumn, matrix->numRows) );
 
   /* Number of rows of A. */
@@ -2309,8 +2309,8 @@ CMR_ERROR CMRdeltasumDecomposeSecond(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sep
 
   /* Count number of nonzeros, copy column vector and check whether we need to negate a row/column. */
   size_t numNonzeros = 1;
-  char scaleTopRight = 0;
-  char scaleBottomLeft = 0;
+  signed char scaleTopRight = 0;
+  signed char scaleBottomLeft = 0;
   for (size_t row1 = 0; row1 < numRows; ++row1)
   {
     size_t row = secondRowsOrigin[row1];
@@ -2380,7 +2380,7 @@ CMR_ERROR CMRdeltasumDecomposeSecond(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sep
       if (column1 < SIZE_MAX)
       {
         second->entryColumns[second->numNonzeros] = column1;
-        char scale = (row != extraRow) ? 1 : scaleTopRight;
+        signed char scale = (row != extraRow) ? 1 : scaleTopRight;
         second->entryValues[second->numNonzeros++] = matrix->entryValues[e] * scale;
       }
     }
@@ -2431,7 +2431,7 @@ CMR_ERROR CMRysumCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* second, size_t
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRysumDecomposeEpsilon(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT* transpose, CMR_SEPA* sepa, char* pepsilon)
+CMR_ERROR CMRysumDecomposeEpsilon(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT* transpose, CMR_SEPA* sepa, signed char* pepsilon)
 {
   assert(cmr);
   assert(matrix);
@@ -2447,7 +2447,7 @@ CMR_ERROR CMRysumDecomposeEpsilon(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT* tran
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRysumDecomposeFirst(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sepa, char epsilon, CMR_CHRMAT** pfirst,
+CMR_ERROR CMRysumDecomposeFirst(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sepa, signed char epsilon, CMR_CHRMAT** pfirst,
   size_t* firstRowsOrigin, size_t* firstColumnsOrigin, size_t* rowsToFirst, size_t* columnsToFirst,
   size_t* firstSpecialRows, size_t* firstSpecialColumns)
 {
@@ -2473,7 +2473,7 @@ CMR_ERROR CMRysumDecomposeFirst(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sepa, ch
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRysumDecomposeSecond(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sepa, char epsilon, CMR_CHRMAT** psecond,
+CMR_ERROR CMRysumDecomposeSecond(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sepa, signed char epsilon, CMR_CHRMAT** psecond,
   size_t* secondRowsOrigin, size_t* secondColumnsOrigin, size_t* rowsToSecond, size_t* columnsToSecond,
   size_t* secondSpecialRows, size_t* secondSpecialColumns)
 {
@@ -2550,14 +2550,14 @@ CMR_ERROR CMRthreesumCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* second, si
   size_t firstMainNumNonzeros = 0;
   size_t secondMainNumNonzeros = 0;
 
-  char firstExtra[2] = {0, 0}; /* Nonzero entries in special column of 1st matrix. */
+  signed char firstExtra[2] = {0, 0}; /* Nonzero entries in special column of 1st matrix. */
 
   size_t specialRow1NumNonzeros = first->rowSlice[firstSpecialRows[0] + 1] - first->rowSlice[firstSpecialRows[0]];
   size_t specialRow2NumNonzeros = first->rowSlice[firstSpecialRows[1] + 1] - first->rowSlice[firstSpecialRows[1]];
   size_t specialColumn1NumNonzeros = 0;
   size_t specialColumn2NumNonzeros = 0;
-  char* specialColumn1Dense = NULL; /* Entries of first special column in C. */
-  char* specialColumn2Dense = NULL; /* Entries of second special column in C. */
+  signed char* specialColumn1Dense = NULL; /* Entries of first special column in C. */
+  signed char* specialColumn2Dense = NULL; /* Entries of second special column in C. */
 
   CMR_CALL( CMRallocStackArray(cmr, &specialColumn1Dense, second->numRows) );
   CMR_CALL( CMRallocStackArray(cmr, &specialColumn2Dense, second->numRows) );
@@ -2603,8 +2603,8 @@ CMR_ERROR CMRthreesumCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* second, si
   }
 
   /* Scan 2nd matrix. */
-  char secondSpecial[2][2] = { {0, 0}, {0, 0} };
-  char secondExtra[2] = { 0, 0 }; /* Nonzeros in special row of 2nd matrix. */
+  signed char secondSpecial[2][2] = { {0, 0}, {0, 0} };
+  signed char secondExtra[2] = { 0, 0 }; /* Nonzeros in special row of 2nd matrix. */
   for (size_t secondRow = 0; secondRow < second->numRows; ++secondRow)
   {
     size_t begin = second->rowSlice[secondRow];
@@ -2665,7 +2665,7 @@ CMR_ERROR CMRthreesumCompose(CMR* cmr, CMR_CHRMAT* first, CMR_CHRMAT* second, si
   }
 
   /* Extract 2x2 special matrix also from first matrix. */
-  char firstSpecial[2][2] = { {0, 0}, {0, 0} };
+  signed char firstSpecial[2][2] = { {0, 0}, {0, 0} };
   for (int specialRow = 0; specialRow < 2; ++specialRow)
   {
     size_t beyond = first->rowSlice[firstSpecialRows[specialRow] + 1];
@@ -2915,8 +2915,8 @@ cleanup:
 
 static
 CMR_ERROR CMRthreesumDecomposeSearch(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT* transpose, CMR_SEPA* sepa,
-  bool topLeft, bool bottomRight, CMR_SUBMAT** pviolator, size_t* specialRows, size_t* specialColumns, char* pgamma,
-  char* pbeta
+  bool topLeft, bool bottomRight, CMR_SUBMAT** pviolator, size_t* specialRows, size_t* specialColumns,
+  signed char* pgamma, signed char* pbeta
 )
 {
   assert(cmr);
@@ -2936,7 +2936,7 @@ CMR_ERROR CMRthreesumDecomposeSearch(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT* t
   if (allGiven)
   {
     /* Determine whether the given submatrix is a unit matrix. */
-    char submatrix[2][2] = { {0, 0}, {0, 0} };
+    signed char submatrix[2][2] = { {0, 0}, {0, 0} };
     int numSubmatrixNonzeros = 0;
     for (int r = 0; r < 2; ++r)
     {
@@ -3004,9 +3004,9 @@ CMR_ERROR CMRthreesumDecomposeSearch(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT* t
   {
     /* Search for non-unit matrix in C. */
 
-    char* repr1 = NULL;
-    char* repr2 = NULL;
-    char* repr3 = NULL;
+    signed char* repr1 = NULL;
+    signed char* repr2 = NULL;
+    signed char* repr3 = NULL;
     CMR_CALL( CMRallocStackArray(cmr, &repr1, matrix->numColumns) );
     CMR_CALL( CMRallocStackArray(cmr, &repr2, matrix->numColumns) );
     CMR_CALL( CMRallocStackArray(cmr, &repr3, matrix->numColumns) );
@@ -3058,7 +3058,7 @@ CMR_ERROR CMRthreesumDecomposeSearch(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT* t
     }
 
     /* Find a column where two representatives both have a nonzero. */
-    char* reprFound[2] = { NULL, NULL };
+    signed char* reprFound[2] = { NULL, NULL };
     for (size_t column = 0; column < matrix->numColumns; ++column)
     {
       if (repr1[column] && repr2[column])
@@ -3331,7 +3331,7 @@ CMR_ERROR CMRthreesumDecomposeSearch(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT* t
   assert(specialColumns[0] != SIZE_MAX);
   assert(specialColumns[1] != SIZE_MAX);
 
-  char special[2][2] = { {0, 0}, {0, 0} };
+  signed char special[2][2] = { {0, 0}, {0, 0} };
   for (int r = 0; r < 2; ++r)
   {
     size_t first = matrix->rowSlice[specialRows[r]];
@@ -3454,7 +3454,7 @@ cleanup:
 }
 
 CMR_ERROR CMRthreesumDecomposeSearchConnecting(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT* transpose, CMR_SEPA* sepa,
-  size_t* specialRows, size_t* specialColumns, char* pgamma, char* pbeta)
+  size_t* specialRows, size_t* specialColumns, signed char* pgamma, signed char* pbeta)
 {
   assert(cmr);
   assert(matrix);
@@ -3472,7 +3472,7 @@ CMR_ERROR CMRthreesumDecomposeSearchConnecting(CMR* cmr, CMR_CHRMAT* matrix, CMR
 }
 
 CMR_ERROR CMRthreesumDecomposeSignConnecting(CMR* cmr, CMR_CHRMAT* matrix, CMR_CHRMAT* transpose, CMR_SEPA* sepa,
-  size_t* specialRows, size_t* specialColumns, char* pgamma, char* pbeta)
+  size_t* specialRows, size_t* specialColumns, signed char* pgamma, signed char* pbeta)
 {
   assert(cmr);
   assert(matrix);
@@ -3489,7 +3489,7 @@ CMR_ERROR CMRthreesumDecomposeSignConnecting(CMR* cmr, CMR_CHRMAT* matrix, CMR_C
 }
 
 CMR_ERROR CMRthreesumDecomposeFirst(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sepa, size_t* specialRows,
-  size_t* specialColumns, char beta, CMR_CHRMAT** pfirst, size_t* firstRowsOrigin, size_t* firstColumnsOrigin,
+  size_t* specialColumns, signed char beta, CMR_CHRMAT** pfirst, size_t* firstRowsOrigin, size_t* firstColumnsOrigin,
   size_t* rowsToFirst, size_t* columnsToFirst, size_t* firstSpecialRows, size_t* firstSpecialColumns)
 {
   assert(cmr);
@@ -3641,7 +3641,7 @@ CMR_ERROR CMRthreesumDecomposeFirst(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sepa
 }
 
 CMR_ERROR CMRthreesumDecomposeSecond(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sepa, size_t* specialRows,
-  size_t* specialColumns, char gamma, CMR_CHRMAT ** psecond, size_t* secondRowsOrigin, size_t* secondColumnsOrigin,
+  size_t* specialColumns, signed char gamma, CMR_CHRMAT ** psecond, size_t* secondRowsOrigin, size_t* secondColumnsOrigin,
   size_t* rowsToSecond, size_t* columnsToSecond, size_t* secondSpecialRows, size_t* secondSpecialColumns)
 {
   assert(cmr);
@@ -3727,7 +3727,7 @@ CMR_ERROR CMRthreesumDecomposeSecond(CMR* cmr, CMR_CHRMAT* matrix, CMR_SEPA* sep
       size_t beyond = matrix->rowSlice[row + 1];
 
       /* Find special entries. */
-      char specialValues[2] = {0, 0};
+      signed char specialValues[2] = {0, 0};
       for (size_t e = matrix->rowSlice[row]; e < beyond; ++e)
       {
         size_t column = matrix->entryColumns[e];

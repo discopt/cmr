@@ -385,7 +385,7 @@ TEST(BlockDecomposition, CharToChar)
 
   CMR_CHRMAT* check = NULL;
   CMR_CHRMAT* checkTranspose = NULL;
-  ASSERT_CMR_CALL( CMRdecomposeBlocks(cmr, (CMR_MATRIX*) matrix, sizeof(char), sizeof(char), &numComponents, &components,
+  ASSERT_CMR_CALL( CMRdecomposeBlocks(cmr, (CMR_MATRIX*) matrix, sizeof(signed char), sizeof(signed char), &numComponents, &components,
     rowsToComponents, columnsToComponents, rowsToComponentRows, columnsToComponentColumns) );
 
   ASSERT_EQ(numComponents, 6);

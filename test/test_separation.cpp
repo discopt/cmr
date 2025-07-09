@@ -565,7 +565,7 @@ TEST(Separation, DeltasumDecomposition)
     sepa->columnsFlags[2] = CMR_SEPA_SECOND | CMR_SEPA_FLAG_RANK1;
     sepa->columnsFlags[3] = CMR_SEPA_SECOND;
 
-    char epsilon;
+    signed char epsilon;
     ASSERT_CMR_CALL( CMRdeltasumDecomposeEpsilon(cmr, matrix, transpose, sepa, &epsilon) );
     ASSERT_EQ(epsilon, -1);
 
@@ -628,7 +628,7 @@ TEST(Separation, DeltasumDecomposition)
     sepa->columnsFlags[2] = CMR_SEPA_SECOND | CMR_SEPA_FLAG_RANK1;
     sepa->columnsFlags[3] = CMR_SEPA_SECOND;
 
-    char epsilon;
+    signed char epsilon;
     ASSERT_CMR_CALL( CMRdeltasumDecomposeEpsilon(cmr, matrix, transpose, sepa, &epsilon) );
     ASSERT_EQ(epsilon, +1);
 
@@ -692,7 +692,7 @@ TEST(Separation, DeltasumDecomposition)
     sepa->columnsFlags[2] = CMR_SEPA_SECOND | CMR_SEPA_FLAG_RANK1;
     sepa->columnsFlags[3] = CMR_SEPA_SECOND;
 
-    char epsilon;
+    signed char epsilon;
     ASSERT_CMR_CALL( CMRdeltasumDecomposeEpsilon(cmr, matrix, transpose, sepa, &epsilon) );
     ASSERT_EQ(epsilon, +1);
 
@@ -755,7 +755,7 @@ TEST(Separation, DeltasumDecomposition)
     sepa->columnsFlags[2] = CMR_SEPA_SECOND | CMR_SEPA_FLAG_RANK1;
     sepa->columnsFlags[3] = CMR_SEPA_SECOND;
 
-    char epsilon;
+    signed char epsilon;
     ASSERT_CMR_CALL( CMRdeltasumDecomposeEpsilon(cmr, matrix, transpose, sepa, &epsilon) );
     ASSERT_EQ(epsilon, -1);
 
@@ -965,7 +965,7 @@ TEST(Separation, ThreesumDecomposition)
     sepa->columnsFlags[4] = CMR_SEPA_SECOND;
     sepa->columnsFlags[5] = CMR_SEPA_SECOND;
 
-    char gamma, beta;
+    signed char gamma, beta;
     size_t specialRows[2];
     size_t specialColumns[2];
     ASSERT_CMR_CALL( CMRthreesumDecomposeSearchConnecting(cmr, matrix, transpose, sepa, specialRows, specialColumns,
@@ -1061,7 +1061,7 @@ TEST(Separation, ThreesumDecomposition)
     sepa->columnsFlags[4] = CMR_SEPA_SECOND;
     sepa->columnsFlags[5] = CMR_SEPA_SECOND;
 
-    char gamma, beta;
+    signed char gamma, beta;
     size_t specialRows[2];
     size_t specialColumns[2];
     ASSERT_CMR_CALL( CMRthreesumDecomposeSearchConnecting(cmr, matrix, transpose, sepa, specialRows, specialColumns,
@@ -1157,7 +1157,7 @@ TEST(Separation, ThreesumDecomposition)
     sepa->columnsFlags[4] = CMR_SEPA_SECOND;
     sepa->columnsFlags[5] = CMR_SEPA_SECOND;
 
-    char gamma, beta;
+    signed char gamma, beta;
     size_t specialRows[2];
     size_t specialColumns[2];
     ASSERT_CMR_CALL( CMRthreesumDecomposeSearchConnecting(cmr, matrix, transpose, sepa, specialRows, specialColumns,
@@ -1254,7 +1254,7 @@ TEST(Separation, ThreesumDecomposition)
     sepa->columnsFlags[4] = CMR_SEPA_SECOND;
     sepa->columnsFlags[5] = CMR_SEPA_SECOND;
 
-    char gamma, beta;
+    signed char gamma, beta;
     size_t specialRows[2];
     size_t specialColumns[2];
     ASSERT_CMR_CALL( CMRthreesumDecomposeSearchConnecting(cmr, matrix, transpose, sepa, specialRows, specialColumns,
@@ -1354,7 +1354,7 @@ TEST(Separation, ThreesumDecomposition)
     sepa->columnsFlags[4] = CMR_SEPA_SECOND;
     sepa->columnsFlags[5] = CMR_SEPA_SECOND;
 
-    char gamma, beta;
+    signed char gamma, beta;
     size_t specialRows[2] = { 4, 5 };
     size_t specialColumns[2] = { 0, 1 };
     ASSERT_CMR_CALL( CMRthreesumDecomposeSignConnecting(cmr, matrix, transpose, sepa, specialRows, specialColumns,
@@ -1447,7 +1447,7 @@ TEST(Separation, ThreesumDecomposition)
     sepa->columnsFlags[4] = CMR_SEPA_SECOND;
     sepa->columnsFlags[5] = CMR_SEPA_SECOND;
 
-    char gamma, beta;
+    signed char gamma, beta;
     size_t specialRows[2] = { 4, 5 };
     size_t specialColumns[2] = { 0, 1 };
     CMR_ERROR error = CMRthreesumDecomposeSignConnecting(cmr, matrix, transpose, sepa, specialRows, specialColumns,

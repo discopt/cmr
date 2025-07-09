@@ -238,7 +238,7 @@ typedef struct
   size_t numNonzeros;   /**< \brief Number of and memory allocated for nonzeros. */
   size_t* rowSlice;     /**< \brief Array mapping each row to the index of its first entry. */
   size_t* entryColumns; /**< \brief Array mapping each entry to its column.*/
-  char* entryValues;    /**< \brief Array mapping each entry to its value. */
+  signed char* entryValues;    /**< \brief Array mapping each entry to its value. */
 } CMR_CHRMAT;
 
 /**

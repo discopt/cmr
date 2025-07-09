@@ -72,7 +72,7 @@ CMR_ERROR CMRctuComplementRowColumn(CMR* cmr, CMR_CHRMAT* matrix, size_t complem
   }
 
   /* Create a dense copy of the column to be complemented. */
-  char* complementColumnEntries = NULL;
+  signed char* complementColumnEntries = NULL;
   CMR_CALL( CMRallocStackArray(cmr, &complementColumnEntries, matrix->numRows) );
   if (complementColumn < SIZE_MAX)
   {
@@ -90,7 +90,7 @@ CMR_ERROR CMRctuComplementRowColumn(CMR* cmr, CMR_CHRMAT* matrix, size_t complem
   }
 
   /* Create a dense copy of the row to be complemented. */
-  char* complementRowEntries = NULL;
+  signed char* complementRowEntries = NULL;
   CMR_CALL( CMRallocStackArray(cmr, &complementRowEntries, matrix->numColumns) );
   if (complementRow < SIZE_MAX)
   {
@@ -108,7 +108,7 @@ CMR_ERROR CMRctuComplementRowColumn(CMR* cmr, CMR_CHRMAT* matrix, size_t complem
   }
 
   /* Indicator for entry in complementRow, complementColumn. */
-  char complementRowColumn1 = complementColumn < SIZE_MAX ? complementRowEntries[complementColumn] : 0;
+  signed char complementRowColumn1 = complementColumn < SIZE_MAX ? complementRowEntries[complementColumn] : 0;
 
   /* Swipe over the matrix to create the complemented one. */
   CMR_CALL( CMRchrmatCreate(cmr, presult, matrix->numRows, matrix->numColumns, 0) );
@@ -198,7 +198,7 @@ CMR_ERROR CMRctuTest(CMR* cmr, CMR_CHRMAT* matrix, bool* pisComplementTotallyUni
 
   size_t numRows = matrix->numRows;
   size_t numColumns = matrix->numColumns;
-  char* dense = NULL;
+  signed char* dense = NULL;
   size_t sizeDense = numRows * numColumns;
   CMR_CALL( CMRallocStackArray(cmr, &dense, sizeDense) );
   for (size_t i = 0; i < sizeDense; ++i)
@@ -225,7 +225,7 @@ CMR_ERROR CMRctuTest(CMR* cmr, CMR_CHRMAT* matrix, bool* pisComplementTotallyUni
       bool hasComplementColumn = complementColumn < numColumns;
 
       /* Indicator for entry in complementRow, complementColumn. */
-      char complementRowColumn1 = hasComplementRow && hasComplementColumn ?
+      signed char complementRowColumn1 = hasComplementRow && hasComplementColumn ?
         dense[numColumns * complementRow + complementColumn] : 0;
 
       /* Fill complemented matrix as a sparse char matrix. */

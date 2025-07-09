@@ -180,7 +180,7 @@ CMR_ERROR CMRcomputeRepresentationMatrix(CMR* cmr, CMR_GRAPH* digraph, bool tern
 
   CMR_GRAPH_NODE* nodesRows = NULL; /* Non-root node v is mapped to row of edge {v,predecessor(v)}. */
   CMR_CALL( CMRallocStackArray(cmr, &nodesRows, CMRgraphMemNodes(digraph)) );
-  char* nodesReversed = NULL; /* Non-root node v is mapped to +1 or -1 depending on the direction of {v,predecessor(v)}. */
+  signed char* nodesReversed = NULL; /* Non-root node v is mapped to +1 or -1 depending on the direction of {v,predecessor(v)}. */
   CMR_CALL( CMRallocStackArray(cmr, &nodesReversed, CMRgraphMemNodes(digraph)) );
   for (CMR_GRAPH_NODE v = CMRgraphNodesFirst(digraph); CMRgraphNodesValid(digraph, v); v = CMRgraphNodesNext(digraph, v))
   {

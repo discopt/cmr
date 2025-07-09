@@ -516,7 +516,7 @@ CMR_ERROR CMRchrmatSortNonzeros(CMR* cmr, CMR_CHRMAT* matrix)
     size_t beyond = matrix->rowSlice[row + 1];
     CMRdbgMsg(2, "Sorting nonzero entries in range [%zu,%zu).\n", first, beyond);
     CMR_CALL( CMRsort2(cmr, beyond - first, &matrix->entryColumns[first], sizeof(size_t), &matrix->entryValues[first],
-      sizeof(char), compareEntries) );
+      sizeof(signed char), compareEntries) );
   }
 
   CMRdbgConsistencyAssert( CMRchrmatConsistency(matrix) );
@@ -1279,7 +1279,7 @@ typedef struct
 {
   size_t row;
   size_t column;
-  char value;
+  signed char value;
 } ChrNonzero;
 
 static
@@ -1350,7 +1350,7 @@ CMR_ERROR CMRchrmatCreateFromSparseStream(CMR* cmr, FILE* stream, CMR_CHRMAT** p
   size_t previousRow = SIZE_MAX;
   size_t previousColumn = SIZE_MAX;
   size_t* pentryColumn = result->entryColumns;
-  char* pentryValue = result->entryValues;
+  signed char* pentryValue = result->entryValues;
   for (size_t entry = 0; entry < numNonzeros; ++entry)
   {
     size_t row = nonzeros[entry].row;
@@ -1646,7 +1646,7 @@ CMR_ERROR CMRchrmatCreateFromDenseStream(CMR* cmr, FILE* stream, CMR_CHRMAT** pr
   if (memEntries > 256)
     memEntries = 256;
   size_t* entryColumns = NULL;
-  char* entryValues = NULL;
+  signed char* entryValues = NULL;
   CMR_CALL( CMRallocBlockArray(cmr, &entryColumns, memEntries) );
   CMR_CALL( CMRallocBlockArray(cmr, &entryValues, memEntries) );
 

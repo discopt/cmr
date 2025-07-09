@@ -176,7 +176,7 @@ CMR_ERROR CMRequimodularTest(CMR* cmr, CMR_INTMAT* matrix, bool* pisEquimodular,
         goto cleanup;
       }
 
-      char x = numerator / denominator;
+      signed char x = numerator / denominator;
       denseColumn[pivotRow] = x;
       if (x)
         denseColumnNonzeros[numDenseColumnNonzeros++] = pivotRow;
