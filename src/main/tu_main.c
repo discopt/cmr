@@ -62,11 +62,31 @@ CMR_ERROR testTotalUnimodularity(
   fprintf(stderr, "Read %zux%zu matrix with %zu nonzeros in %f seconds.\n", matrix->numRows, matrix->numColumns,
     matrix->numNonzeros, (clock() - readClock) * 1.0 / CLOCKS_PER_SEC);
 
+  /* Test for being ternary first. */
+
+  CMR_SUBMAT* submatrix = NULL;
+  if (!CMRchrmatIsTernary(cmr, matrix, &submatrix))
+  {
+    CMR_CHRMAT* mat = NULL;
+    CMR_CALL( CMRchrmatSlice(cmr, matrix, submatrix, &mat) );
+    assert(mat->numRows == 1);
+    assert(mat->numColumns == 1);
+    assert(mat->numNonzeros == 1);
+    fprintf(stderr, "Matrix is NOT totally unimodular since it is not ternary: entry at row %zu, column %zu is %d.\n",
+      submatrix->rows[0] + 1, submatrix->columns[0] + 1, mat->entryValues[0]);
+
+    CMR_CALL( CMRchrmatFree(cmr, &mat) );
+    CMR_CALL( CMRsubmatFree(cmr, &submatrix) );
+    CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+    CMR_CALL( CMRfreeEnvironment(&cmr) );
+
+    return CMR_OKAY;
+  }
+
   /* Actual test. */
 
   bool isTU;
   CMR_SEYMOUR_NODE* decomposition = NULL;
-  CMR_SUBMAT* submatrix = NULL;
   CMR_TU_PARAMS params;
   CMR_CALL( CMRtuParamsInit(&params) );
   params.algorithm = algorithm;
@@ -94,6 +114,7 @@ CMR_ERROR testTotalUnimodularity(
   CMR_CALL( error );
 
   printf("Matrix %stotally unimodular.\n", isTU ? "IS " : "IS NOT ");
+
   if (printStats)
     CMR_CALL( CMRtuStatsPrint(stderr, &stats, NULL) );
 

@@ -74,7 +74,7 @@ CMR_ERROR recognizeNetwork(
     assert(mat->numRows == 1);
     assert(mat->numColumns == 1);
     assert(mat->numNonzeros == 1);
-    fprintf(stderr, "Matrix is NOT %sgraphic since it is not binary: entry at row %zu, column %zu is %d.\n",
+    fprintf(stderr, "Matrix is NOT %snetwork since it is not ternary: entry at row %zu, column %zu is %d.\n",
       conetwork ? "co" : "", submatrix->rows[0] + 1, submatrix->columns[0] + 1, mat->entryValues[0]);
 
     CMR_CALL( CMRchrmatFree(cmr, &mat) );
