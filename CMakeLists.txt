@@ -362,10 +362,6 @@ install(TARGETS
 
 install(TARGETS cmr
   EXPORT cmr-targets
-  LIBRARY
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}
-  ARCHIVE
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}
 )
 
 # Install header files.
