@@ -535,8 +535,10 @@ int main(int argc, char** argv)
     error = recognizeNetwork(inputFileName, inputFormat, transposed, outputGraphFileName, treeFileName,
       outputDotFileName, printStats, timeLimit);
   }
-  else if (task == TASK_COMPUTE)
+  else 
   {
+    assert(task == TASK_COMPUTE);
+
     if (!outputFileName)
     {
       fputs("Error: No output file specified.\n", stderr);
@@ -570,10 +572,6 @@ int main(int argc, char** argv)
       outputFormat = FILEFORMAT_MATRIX_DENSE;
 
     error = computeNetwork(inputFileName, outputFileName, outputFormat, transposed, treeFileName, printStats);
-  }
-  else
-  {
-    assert(false);
   }
 
   switch (error)

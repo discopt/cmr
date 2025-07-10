@@ -16,21 +16,6 @@ typedef enum
   FILEFORMAT_MATRIX_SPARSE = 2,   /**< Sparse matrix format. */
 } FileFormat;
 
-static inline
-size_t randRange(size_t first, size_t beyond)
-{
-  size_t N = beyond - first;
-  size_t representatives = (RAND_MAX + 1u) / N;
-  size_t firstInvalid = N * representatives;
-  size_t x;
-  do
-  {
-    x = rand();
-  }
-  while (x >= firstInvalid);
-  return first + x / representatives;
-}
-
 /**
  * \brief Prints the usage of the \p program to stdout.
  *

@@ -41,7 +41,7 @@ endif()
 if (MSVC)
   add_compile_options(/W4)
 else()
-  add_compile_options(-Wall -Wextra -Wunused)
+  add_compile_options(-Wall -Wextra -Wunused -Wmaybe-uninitialized -pedantic)
 endif()
 
 if(GMP)
@@ -89,10 +89,6 @@ add_library(cmr
   src/cmr/seymour.c
   src/cmr/sort.c
 )
-
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-  target_compile_options(cmr PRIVATE -Wall -Wextra -pedantic)
-endif()
 
 # Target for the cmr-balanced executable.
 add_executable(cmr_balanced

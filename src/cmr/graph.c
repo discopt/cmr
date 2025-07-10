@@ -28,8 +28,8 @@ void CMRgraphEnsureConsistent(CMR* cmr, CMR_GRAPH* graph)
 
   /* Count nodes and check prev/next linked lists. */
 
-  size_t countNodes = 0;
 #if !defined(NDEBUG)
+  size_t countNodes = 0;
   CMR_GRAPH_NODE u = -1;
 #endif /* !NDEBUG */
   for (CMR_GRAPH_NODE v = CMRgraphNodesFirst(graph); CMRgraphNodesValid(graph, v); v = CMRgraphNodesNext(graph, v))
@@ -37,26 +37,32 @@ void CMRgraphEnsureConsistent(CMR* cmr, CMR_GRAPH* graph)
     assert(graph->nodes[v].prev == u);
 #if !defined(NDEBUG)
     u = v;
-#endif /* !NDEBUG */
     ++countNodes;
+#endif /* !NDEBUG */
   }
   assert(graph->numNodes == countNodes);
 
   /* Count free nodes. */
 
+#if !defined(NDEBUG)
   int countFree = 0;
+#endif /* !NDEBUG */
   CMR_GRAPH_NODE v = graph->freeNode;
   while (isValid(v))
   {
     v = graph->nodes[v].next;
+#if !defined(NDEBUG)
     ++countFree;
+#endif /* !NDEBUG */
   }
   assert(countFree + countNodes == graph->memNodes);
 
   /* Check outgoing and incoming arcs. */
 
   size_t countIncident = 0;
+#if !defined(NDEBUG)
   size_t countLoops = 0;
+#endif /* !NDEBUG */
   for (CMR_GRAPH_NODE v = CMRgraphNodesFirst(graph); CMRgraphNodesValid(graph, v); v = CMRgraphNodesNext(graph, v))
   {
     CMRdbgMsg(0, "First out-arc of node %d is %d\n", v, graph->nodes[v].firstOut);
@@ -67,15 +73,19 @@ void CMRgraphEnsureConsistent(CMR* cmr, CMR_GRAPH* graph)
       CMRdbgMsg(0, "Current arc is %d = (%d,%d), opposite arc is %d, prev is %d, next is %d.\n", i,
         graph->arcs[i ^ 1].target, graph->arcs[i].target, i^1, graph->arcs[i].prev, graph->arcs[i].next);
 
+#if !defined(NDEBUG)
       if (CMRgraphIncSource(graph, i) == CMRgraphIncTarget(graph, i))
         ++countLoops;
+#endif /* !NDEBUG */
       assert(graph->arcs[i ^ 1].target == v);
       ++countIncident;
     }
   }
   assert(countIncident + countLoops == 2 * graph->numEdges);
 
+#if !defined(NDEBUG)
   countFree = 0;
+#endif /* !NDEBUG */
   int e = graph->freeEdge;
 
   CMRdbgMsg(0, "freeEdge = %d\n", e);
@@ -83,7 +93,9 @@ void CMRgraphEnsureConsistent(CMR* cmr, CMR_GRAPH* graph)
   while (isValid(e))
   {
     e = graph->arcs[2*e].next;
+#if !defined(NDEBUG)
     ++countFree;
+#endif /* !NDEBUG */
   }
 
   assert(countIncident + countLoops + 2 * countFree == 2 * graph->memEdges);

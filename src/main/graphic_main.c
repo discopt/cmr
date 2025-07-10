@@ -530,8 +530,9 @@ int main(int argc, char** argv)
     error = recognizeGraphic(inputFileName, inputFormat, transposed, outputGraphFileName, treeFileName,
       outputDotFileName, printStats, timeLimit);
   }
-  else if (task == TASK_COMPUTE)
+  else
   {
+    assert(task == TASK_COMPUTE);
     if (!outputFileName)
     {
       fputs("Error: No output file specified.\n", stderr);
@@ -565,10 +566,6 @@ int main(int argc, char** argv)
       outputFormat = FILEFORMAT_MATRIX_DENSE;
 
     error = computeGraphic(inputFileName, outputFileName, outputFormat, transposed, treeFileName, printStats);
-  }
-  else
-  {
-    assert(false);
   }
 
   switch (error)
