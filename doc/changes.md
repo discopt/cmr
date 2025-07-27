@@ -1,10 +1,13 @@
 # Change Log # {#changes}
 
+## Version 1.4 ##
+
   - Revised the Seymour decomposition structure.
   - Fixed a bug in the code for printing dot-files for transposed graphic/network matrices; reported by Christopher Hojny.
   - Added a `timeLimit` parameter to all potentially time intensive functions.
   - Bugfix for the `timeLimit` parameter.
   - Added generator for wheel matrices.
+  - Started an executable for recognizing [named matrices](\ref named).
   - Added first enumerative code for recognition of balanced matrices.
 
 ## Version 1.3 ##
