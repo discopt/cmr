@@ -2334,11 +2334,11 @@ CMR_ERROR createPathEdge(
   {
     CMRdbgMsg(14, "Creating path edge for %d = {%d,%d} in rigid member %d.\n", edge, findEdgeTail(dec, edge),
       findEdgeHead(dec, edge), reducedMember->member);
-    DEC_EDGE tail = findEdgeTail(dec, edge);
+    DEC_NODE tail = findEdgeTail(dec, edge);
     assert(tail < newcolumn->memNodesDegree);
     newcolumn->nodesDegree[tail]++;
     CMRdbgMsg(16, "Increasing node degree of %d to %d.\n", tail, newcolumn->nodesDegree[tail]);
-    DEC_EDGE head = findEdgeHead(dec, edge);
+    DEC_NODE head = findEdgeHead(dec, edge);
     assert(head < newcolumn->memNodesDegree);
     newcolumn->nodesDegree[head]++;
     CMRdbgMsg(16, "Increasing node degree of %d to %d.\n", head, newcolumn->nodesDegree[head]);
@@ -4549,7 +4549,7 @@ CMR_ERROR addColumnProcessSeries(
 
       debugDot(dec, newcolumn);
 
-      DEC_EDGE childMember = dec->edges[representativeEdge].childMember;
+      DEC_MEMBER childMember = dec->edges[representativeEdge].childMember;
       DEC_NODE tail = SIZE_MAX;
       DEC_NODE head = SIZE_MAX;
       if (childMember == SIZE_MAX)
