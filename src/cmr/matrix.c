@@ -1428,7 +1428,7 @@ CMR_ERROR CMRintmatCreateFromSparseFile(CMR* cmr, const char* fileName, const ch
   {
     /* Attempt to read another token. */
     char token[16+4];
-    size_t numRead = fscanf(inputFile, "%16s", token);
+    int numRead = fscanf(inputFile, "%16s", token);
     if (numRead > 0 && strlen(token))
     {
       if (strlen(token) == 16)
