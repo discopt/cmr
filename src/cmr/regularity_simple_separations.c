@@ -104,7 +104,7 @@ CMR_ERROR calcHashFromMatrix(
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRregularitySimpleSearchThreeSeparation(CMR* cmr, DecompositionTask* task, DecompositionQueue* queue)
+CMR_ERROR CMRregularitySimpleSearchSeparation(CMR* cmr, DecompositionTask* task, DecompositionQueue* queue)
 {
   assert(cmr);
   assert(task);
@@ -125,7 +125,7 @@ CMR_ERROR CMRregularitySimpleSearchThreeSeparation(CMR* cmr, DecompositionTask* 
 
   clock_t startTime = clock();
   if (stats)
-    stats->simpleThreeSeparationsCount++;
+    stats->simpleSeparationsCount++;
 
   /* We need the transpose matrix. */
   CMR_SEYMOUR_NODE* node = task->node;
@@ -177,7 +177,7 @@ CMR_ERROR CMRregularitySimpleSearchThreeSeparation(CMR* cmr, DecompositionTask* 
         column1+1, column2+1);
 
       if (stats)
-        stats->simpleThreeSeparationsSuccess++;
+        stats->simpleSeparationsSuccess++;
       CMR_SEPA* separation = NULL;
       CMR_CALL( CMRsepaCreate(cmr, matrix->numRows, matrix->numColumns, &separation) );
 
@@ -341,7 +341,7 @@ CMR_ERROR CMRregularitySimpleSearchThreeSeparation(CMR* cmr, DecompositionTask* 
               otherColumn+1, dupColumn+1);
 
             if (stats)
-              stats->simpleThreeSeparationsSuccess++;
+              stats->simpleSeparationsSuccess++;
             CMR_SEPA* separation = NULL;
             CMR_CALL( CMRsepaCreate(cmr, matrix->numRows, matrix->numColumns, &separation) );
 
@@ -463,7 +463,7 @@ CMR_ERROR CMRregularitySimpleSearchThreeSeparation(CMR* cmr, DecompositionTask* 
               otherRow+1, dupRow+1, column+1);
 
             if (stats)
-              stats->simpleThreeSeparationsSuccess++;
+              stats->simpleSeparationsSuccess++;
             CMR_SEPA* separation = NULL;
             CMR_CALL( CMRsepaCreate(cmr, matrix->numRows, matrix->numColumns, &separation) );
 
@@ -504,7 +504,7 @@ CMR_ERROR CMRregularitySimpleSearchThreeSeparation(CMR* cmr, DecompositionTask* 
 #endif /* CMR_DEBUG_MATRICES */
 
   /* We have found nothing, so we note this and re-add the task to the queue. */
-  task->node->testedSimpleThreeSeparations = true;
+  task->node->testedSimpleSeparations = true;
   CMRregularityQueueAdd(queue, task);
 
 cleanup:
@@ -520,7 +520,7 @@ cleanup:
   }
 
   if (stats)
-    stats->simpleThreeSeparationsTime += (clock() - startTime) * 1.0 / CLOCKS_PER_SEC;
+    stats->simpleSeparationsTime += (clock() - startTime) * 1.0 / CLOCKS_PER_SEC;
 
   return CMR_OKAY;
 }

@@ -96,7 +96,7 @@ struct _CMR_SEYMOUR_NODE
   size_t nestedMinorsLastGraphic;             /**< \brief Last minor in sequence of nested minors that is graphic. */
   size_t nestedMinorsLastCographic;           /**< \brief Last minor in sequence of nested minors that is cographic. */
 
-  bool testedSimpleThreeSeparations;          /**< \brief Already searched for simple 3-separations. */
+  bool testedSimpleSeparations;               /**< \brief Already searched for simple 2,3-separations. */
 };
 
 typedef struct DecompositionTask
@@ -339,11 +339,11 @@ CMRregularityDecomposeThreeSum(
 );
 
 /**
- * \brief Searches for special 3-separations and decomposes as a 3-sum.
+ * \brief Searches for special 2,3-separations and decomposes as a 2,3-sum.
  */
 
 CMR_ERROR
-CMRregularitySimpleSearchThreeSeparation(
+CMRregularitySimpleSearchSeparation(
   CMR* cmr,                 /**< \ref CMR environment. */
   DecompositionTask* task,  /**< Task to be processed; already removed from the list of unprocessed tasks. */
   DecompositionQueue* queue /**< Queue of unprocessed nodes. */
