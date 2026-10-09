@@ -27,6 +27,8 @@ determines whether the [matrix](\ref file-formats-matrix) given in file `IN-MAT`
   - `--no-simple-sepa`     Do not allow testing for simple 2,3-separations.
   - `--naive-submatrix`    Use naive bad submatrix algorithm instead of greedy heuristic.
   - `--algo ALGO`          Use algorithm from {`decomposition`, `submatrix`, `partition`}; default: `decomposition`.
+  - `--version`            Print version and exit.
+
 
 **Decomposition strategies:** 1st letter for distributed, 2nd for concentrated rank(s).
   - `D` Delta-sum (distributed ranks)
