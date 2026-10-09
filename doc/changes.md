@@ -1,6 +1,6 @@
 # Change Log # {#changes}
 
-## Version 1.5 ##
+## Version 1.4.1 ##
 
   - Bugfix in which search for simple 3-separations may be called for a non-3-connected matrix, and thus finds a 2-separation.
 

@@ -573,12 +573,12 @@ CMR_ERROR CMRregularitySimpleSearchSeparation(CMR* cmr, DecompositionTask* task,
 
           /* Walk through both rows simultaneously. */
           beyond1 = matrix->rowSlice[row + 1];
-          beyond2 = matrix->rowSlice[dupRow + 1];
+          beyond2 = matrix->rowSlice[otherRow + 1];
           e1 = matrix->rowSlice[row];
-          e2 = matrix->rowSlice[dupRow];
+          e2 = matrix->rowSlice[otherRow];
           identicalColumn = SIZE_MAX;
           negatedColumn = SIZE_MAX;
-          isDuplicate = true;
+          assert(isDuplicate);
           while (e1 < beyond1 || e2 < beyond2)
           {
             size_t c1 = e1 < beyond1 ? matrix->entryColumns[e1] : SIZE_MAX;
