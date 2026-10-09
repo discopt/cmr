@@ -340,6 +340,8 @@ CMRregularityDecomposeThreeSum(
 
 /**
  * \brief Searches for special 2,3-separations and decomposes as a 2,3-sum.
+ *
+ * Searches for special 2,3-separations and decomposes as a 2,3-sum.
  */
 
 CMR_ERROR
