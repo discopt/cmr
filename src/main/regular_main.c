@@ -151,6 +151,7 @@ int printUsage(const char* program)
   fputs("  --no-direct-graphic  Check only 3-connected matrices for regularity.\n", stderr);
   fputs("  --no-series-parallel Do not allow series-parallel operations in decomposition tree.\n", stderr);
   fputs("  --no-simple-sepa     Do not allow testing for simple 2,3-separations.\n", stderr);
+  fputs("  --version            Print CMR version and exit.\n", stderr);
   fputs("\n", stderr);
 
   fputs("Decomposition strategies: 1st letter for distributed, 2nd for concentrated rank(s).\n", stderr);
@@ -254,6 +255,12 @@ int main(int argc, char** argv)
         return printUsage(argv[0]);
       }
       ++a;
+    }
+    else if (!strcmp(argv[a], "--version"))
+    {
+      fprintf(stderr, "CMR version %d.%d.%d (%s build).\n", CMR_VERSION_MAJOR, CMR_VERSION_MINOR, CMR_VERSION_PATCH,
+        CMR_CMAKE_BUILD_TYPE);
+      return EXIT_SUCCESS;
     }
     else if (!inputMatrixFileName)
       inputMatrixFileName = argv[a];

@@ -602,6 +602,7 @@ int printUsage(const char* program)
   fputs("  -R2 NUM   Randomize the output matrix by performing NUM random binary pivots.\n", stderr);
   fputs("  -R3 NUM   Randomize the output matrix by performing NUM random ternary pivots.\n", stderr);
   fputs("  -d        Use double arithmetic instead of integers.\n", stderr);
+  fputs("  --version Print CMR version and exit.\n", stderr);
   fputs("\n", stderr);
 
   fputs("Formats for matrices: dense, sparse\n", stderr);
@@ -695,6 +696,12 @@ int main(int argc, char** argv)
       transpose = true;
     else if (!strcmp(argv[a], "-d"))
       doubleArithmetic = true;
+    else if (!strcmp(argv[a], "--version"))
+    {
+      fprintf(stderr, "CMR version %d.%d.%d (%s build).\n", CMR_VERSION_MAJOR, CMR_VERSION_MINOR, CMR_VERSION_PATCH,
+        CMR_CMAKE_BUILD_TYPE);
+      return EXIT_SUCCESS;
+    }
     else if (!inputMatrixFileName)
       inputMatrixFileName = argv[a];
     else if (!outputMatrixFileName)

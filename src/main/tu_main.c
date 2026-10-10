@@ -192,7 +192,7 @@ int printUsage(const char* program)
   fputs("  --naive-submatrix    Use naive bad submatrix algorithm instead of greedy heuristic.\n", stderr);
   fputs("  --algo ALGO          Use algorithm from {decomposition, eulerian, partition}; default: decomposition.\n",
     stderr);
-  fputs("  --version            Print version and exit.\n", stderr);
+  fputs("  --version            Print CMR version and exit.\n", stderr);
   fputs("\n", stderr);
 
   fputs("Decomposition strategies: 1st letter for distributed, 2nd for concentrated rank(s).\n", stderr);
@@ -322,7 +322,8 @@ int main(int argc, char** argv)
     }
     else if (!strcmp(argv[a], "--version"))
     {
-      fprintf(stderr, "cmr-tu version %d.%d.%d.\n", CMR_VERSION_MAJOR, CMR_VERSION_MINOR, CMR_VERSION_PATCH);
+      fprintf(stderr, "CMR version %d.%d.%d (%s build).\n", CMR_VERSION_MAJOR, CMR_VERSION_MINOR, CMR_VERSION_PATCH,
+        CMR_CMAKE_BUILD_TYPE);
       return EXIT_SUCCESS;
     }
     else if (!inputMatrixFileName)
@@ -342,7 +343,8 @@ int main(int argc, char** argv)
 
   CMR_ERROR error;
   error = testTotalUnimodularity(inputMatrixFileName, inputFormat, outputTree, outputSubmatrix, printStats,
-    directGraphicness, planarityCheck, seriesParallel, simpleSeparations, decomposeStrategy, naiveSubmatrix, algorithm, timeLimit);
+    directGraphicness, planarityCheck, seriesParallel, simpleSeparations, decomposeStrategy, naiveSubmatrix,
+    algorithm, timeLimit);
 
   switch (error)
   {
