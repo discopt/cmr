@@ -351,7 +351,7 @@ void testSequenceGraphicness(
   ASSERT_CMR_CALL( CMRregularParamsInit(&params) );
   params.seymour.directGraphicness = false;
   params.seymour.decomposeStrategy = CMR_SEYMOUR_DECOMPOSE_FLAG_SEYMOUR;
-  params.seymour.simpleThreeSeparations = false;
+  params.seymour.simpleSeparations = false;
   ASSERT_CMR_CALL( CMRregularTest(cmr, matrix, &isRegular, &dec, NULL, &params, NULL, DBL_MAX) );
 
   ASSERT_CMR_CALL( CMRseymourPrint(cmr, dec, stdout, true, false, false, false, false, false) );

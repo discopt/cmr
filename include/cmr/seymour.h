@@ -78,8 +78,8 @@ typedef struct
 
   bool seriesParallel;
   /**< \brief Whether to allow series-parallel operations in the decomposition tree; default: \c true. */
-  bool simpleThreeSeparations;
-  /**< \brief Whether to search for simple 3-separations; default: \c true. */
+  bool simpleSeparations;
+  /**< \brief Whether to search for simple 2,3-separations; default: \c true. */
   bool planarityCheck;
   /**< \brief Whether minors identified as graphic should still be checked for cographicness; default: \c false. */
   bool directGraphicness;
@@ -145,9 +145,9 @@ typedef struct
   uint32_t enumerationCount;              /**< Number of calls to enumeration algorithm for candidate 3-separations. */
   double enumerationTime;                 /**< Time of enumeration of candidate 3-separations. */
   uint32_t enumerationCandidatesCount;    /**< Number of enumerated candidates for 3-separations. */
-  uint32_t simpleThreeSeparationsCount;   /**< Number of calls to simple 3-separation search. */
-  uint32_t simpleThreeSeparationsSuccess; /**< Number of simple 3-separations found. */
-  double simpleThreeSeparationsTime;      /**< Time of simple 3-separation search. */
+  uint32_t simpleSeparationsCount;        /**< Number of calls to simple 2,3-separation search. */
+  uint32_t simpleSeparationsSuccess;      /**< Number of simple 2,3-separations found. */
+  double simpleSeparationsTime;           /**< Time of simple 2,3-separation search. */
 } CMR_SEYMOUR_STATS;
 
 

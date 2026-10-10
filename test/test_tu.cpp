@@ -580,7 +580,7 @@ void testSequenceGraphicness(
   CMR_TU_PARAMS params;
   ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
   params.seymour.directGraphicness = false;
-  params.seymour.simpleThreeSeparations = false;
+  params.seymour.simpleSeparations = false;
   ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
 
   if (knowNetwork)
@@ -1193,7 +1193,7 @@ TEST(TU, DeltasumSigns)
     CMR_TU_PARAMS params;
     ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
     params.seymour.decomposeStrategy = CMR_SEYMOUR_DECOMPOSE_FLAG_SEYMOUR;
-    params.seymour.simpleThreeSeparations = true;
+    params.seymour.simpleSeparations = true;
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &root, NULL, &params, NULL, DBL_MAX) );
 
     // TODO: The decomposition of this matrix is not checked manually, yet. assert(false);
@@ -1226,7 +1226,7 @@ TEST(TU, DeltasumSigns)
     CMR_TU_PARAMS params;
     ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
     params.seymour.decomposeStrategy = CMR_SEYMOUR_DECOMPOSE_FLAG_SEYMOUR;
-    params.seymour.simpleThreeSeparations = false;
+    params.seymour.simpleSeparations = false;
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &root, NULL, &params, NULL, DBL_MAX) );
 
     // TODO: The decomposition of this matrix is not checked manually, yet. assert(false);
@@ -1508,7 +1508,7 @@ TEST(TU, ThreesumPivotHighRank)
     CMR_TU_PARAMS params;
     ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
     params.seymour.decomposeStrategy = CMR_SEYMOUR_DECOMPOSE_FLAG_TRUEMPER;
-    params.seymour.simpleThreeSeparations = false;
+    params.seymour.simpleSeparations = false;
 
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
 
@@ -1774,7 +1774,7 @@ TEST(TU, CompleteTree)
     ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
     params.seymour.directGraphicness = false;
     params.seymour.stopWhenIrregular = true;
-    params.seymour.simpleThreeSeparations = false;
+    params.seymour.simpleSeparations = false;
 
     ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &dec, NULL, &params, NULL, DBL_MAX) );
 
@@ -1939,6 +1939,41 @@ TEST(TU, CompleteTree)
 
     ASSERT_EQ( CMRseymourGetUsed(dec), 1 );
     ASSERT_CMR_CALL( CMRseymourRelease(cmr, &dec) );
+    ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
+  }
+
+  ASSERT_CMR_CALL( CMRfreeEnvironment(&cmr) );
+}
+
+TEST(TU, Bugs)
+{
+  CMR* cmr = NULL;
+  ASSERT_CMR_CALL( CMRcreateEnvironment(&cmr) );
+
+  {
+    CMR_CHRMAT* matrix = NULL;
+    ASSERT_CMR_CALL( stringToCharMatrix(cmr, &matrix, "7 7 "
+      "-1 0  0  1  0  0  1 "
+      " 0 0 -1  0 -1  0  0 "
+      " 1 1  0 -1  1  0  0 "
+      " 0 0  1  0  0  0 -1 "
+      " 0 1  0  0  0  0  1 "
+      " 0 0  0 -1  0 -1  0 "
+      " 1 0  0  0  0 -1  0 "
+    ) );
+
+    CMRchrmatPrintDense(cmr, matrix, stdout, '0', true);
+
+    bool isTU;
+    CMR_SEYMOUR_NODE* root = NULL;
+    CMR_TU_PARAMS params;
+    ASSERT_CMR_CALL( CMRtuParamsInit(&params) );
+
+    ASSERT_CMR_CALL( CMRtuTest(cmr, matrix, &isTU, &root, NULL, &params, NULL, DBL_MAX) );
+
+    ASSERT_CMR_CALL( CMRseymourPrint(cmr, root, stdout, true, true, true, true, true, true) );
+
+    ASSERT_CMR_CALL( CMRseymourRelease(cmr, &root) );
     ASSERT_CMR_CALL( CMRchrmatFree(cmr, &matrix) );
   }
 

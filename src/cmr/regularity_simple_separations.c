@@ -104,7 +104,7 @@ CMR_ERROR calcHashFromMatrix(
   return CMR_OKAY;
 }
 
-CMR_ERROR CMRregularitySimpleSearchThreeSeparation(CMR* cmr, DecompositionTask* task, DecompositionQueue* queue)
+CMR_ERROR CMRregularitySimpleSearchSeparation(CMR* cmr, DecompositionTask* task, DecompositionQueue* queue)
 {
   assert(cmr);
   assert(task);
@@ -117,7 +117,7 @@ CMR_ERROR CMRregularitySimpleSearchThreeSeparation(CMR* cmr, DecompositionTask* 
   CMR_LISTHASHTABLE* rowHashtable = NULL;
   CMR_LISTHASHTABLE* columnHashtable = NULL;
 
-  CMRdbgMsg(6, "Starting search for simple 3-separations for %zux%zu-matrix.\n", task->node->matrix->numRows,
+  CMRdbgMsg(6, "Starting search for simple 2,3-separations for %zux%zu-matrix.\n", task->node->matrix->numRows,
     task->node->matrix->numColumns);
 #if defined(CMR_DEBUG_MATRICES)
   CMR_CALL( CMRchrmatPrintDense(cmr, task->node->matrix, stdout, '0', true) );
@@ -125,7 +125,7 @@ CMR_ERROR CMRregularitySimpleSearchThreeSeparation(CMR* cmr, DecompositionTask* 
 
   clock_t startTime = clock();
   if (stats)
-    stats->simpleThreeSeparationsCount++;
+    stats->simpleSeparationsCount++;
 
   /* We need the transpose matrix. */
   CMR_SEYMOUR_NODE* node = task->node;
@@ -143,7 +143,7 @@ CMR_ERROR CMRregularitySimpleSearchThreeSeparation(CMR* cmr, DecompositionTask* 
    * 0 0
    * 0 0
    *
-   * is clearly a 2-separation whose top-left entry has this property.
+   * induced a (2- or) 3-separation whose top-left 2-by-2 block is one part.
    */
   for (size_t row1 = 0; row1 < matrix->numRows; ++row1)
   {
@@ -177,7 +177,7 @@ CMR_ERROR CMRregularitySimpleSearchThreeSeparation(CMR* cmr, DecompositionTask* 
         column1+1, column2+1);
 
       if (stats)
-        stats->simpleThreeSeparationsSuccess++;
+        stats->simpleSeparationsSuccess++;
       CMR_SEPA* separation = NULL;
       CMR_CALL( CMRsepaCreate(cmr, matrix->numRows, matrix->numColumns, &separation) );
 
@@ -223,7 +223,7 @@ CMR_ERROR CMRregularitySimpleSearchThreeSeparation(CMR* cmr, DecompositionTask* 
    * The transpose version is also considered.
    */
 
-  CMRdbgMsg(2, "Starting search for simple 3-separations based on almost parallel rows/columns.\n");
+  CMRdbgMsg(2, "Starting search for simple 2,3-separations based on almost parallel rows/columns.\n");
 #if defined(CMR_DEBUG_MATRICES)
   CMR_CALL( CMRchrmatPrintDense(cmr, matrix, stdout, '0', true) );
 #endif /* CMR_DEBUG_MATRICES */
@@ -333,17 +333,127 @@ CMR_ERROR CMRregularitySimpleSearchThreeSeparation(CMR* cmr, DecompositionTask* 
             }
           }
 
+          if (!isDuplicate)
+          {
+            CMRdbgMsg(4, "Discarding hash collision.\n");
+            continue;
+          }
+
+          size_t otherColumn = matrix->entryColumns[e == first ? first+1 : first];
+
+          /* Check if actually all three columns are identical. */
+
+          /* Walk through both columns simultaneously. */
+          beyond1 = transpose->rowSlice[column + 1];
+          beyond2 = transpose->rowSlice[otherColumn + 1];
+          e1 = transpose->rowSlice[column];
+          e2 = transpose->rowSlice[otherColumn];
+          identicalRow = SIZE_MAX;
+          negatedRow = SIZE_MAX;
+          assert(isDuplicate);
+          while (e1 < beyond1 || e2 < beyond2)
+          {
+            size_t r1 = e1 < beyond1 ? transpose->entryColumns[e1] : SIZE_MAX;
+            size_t r2 = e2 < beyond2 ? transpose->entryColumns[e2] : SIZE_MAX;
+            if (r1 == r2)
+            {
+              assert(r1 != SIZE_MAX);
+              if (transpose->entryValues[e1] == transpose->entryValues[e2])
+                identicalRow = r1;
+              else
+                negatedRow = r1;
+              if (identicalRow != SIZE_MAX && negatedRow != SIZE_MAX)
+              {
+                /* Found a 2x2 violator. */
+
+                CMR_SUBMAT* violatorSubmatrix = NULL;
+                CMR_CALL( CMRsubmatCreate2x2(cmr, identicalRow, negatedRow, column, dupColumn, &violatorSubmatrix) );
+                CMR_CALL( CMRseymourUpdateViolator(cmr, node, violatorSubmatrix) );
+                CMR_CALL( CMRregularityTaskFree(cmr, &task) );
+
+                goto cleanup;
+              }
+              else
+              {
+                ++e1;
+                ++e2;
+              }
+            }
+            else if (r1 == row)
+            {
+              assert(r2 != row);
+              e1++;
+              continue;
+            }
+            else if (r2 == row)
+            {
+              assert(r1 != row);
+              e2++;
+              continue;
+            }
+            else
+            {
+              /* Different rows or only one row, but none equal to modified row. */
+              isDuplicate = false;
+              break;
+            }
+          }
+
+          if (stats)
+            stats->simpleSeparationsSuccess++;
+          CMR_SEPA* separation = NULL;
+          CMR_CALL( CMRsepaCreate(cmr, matrix->numRows, matrix->numColumns, &separation) );
+
           if (isDuplicate)
           {
-            size_t otherColumn = matrix->entryColumns[e == first ? first+1 : first];
-
-            CMRdbgMsg(8, "Found a simple 3-separation for rows {r%zu} and columns {c%zu,c%zu,c%zu}.\n", row+1, column+1,
+            CMRdbgMsg(8, "Found a simple 2-separation for rows {r%zu} and columns {c%zu,c%zu,c%zu}.\n", row+1, column+1,
               otherColumn+1, dupColumn+1);
 
-            if (stats)
-              stats->simpleThreeSeparationsSuccess++;
-            CMR_SEPA* separation = NULL;
-            CMR_CALL( CMRsepaCreate(cmr, matrix->numRows, matrix->numColumns, &separation) );
+            separation->type = CMR_SEPA_TYPE_TWO;
+            for (size_t r = 0; r < matrix->numRows; ++r)
+              separation->rowsFlags[r] = (r == row) ? CMR_SEPA_FIRST : CMR_SEPA_SECOND;
+            for (size_t c = 0; c < matrix->numColumns; ++c)
+            {
+              separation->columnsFlags[c] = (c == column || c == otherColumn || c == dupColumn)
+                ? CMR_SEPA_FIRST : CMR_SEPA_SECOND;
+            }
+
+            CMR_SUBMAT* violatorSubmatrix = NULL;
+            CMR_CALL( CMRsepaFindBinaryRepresentatives(cmr, separation, matrix, transpose, NULL,
+              node->isTernary ? &violatorSubmatrix : NULL) );
+
+            if (violatorSubmatrix)
+            {
+              CMRdbgMsg(8, "-> 2x2 submatrix with bad determinant.\n");
+              CMR_CALL( CMRseymourUpdateViolator(cmr, node, violatorSubmatrix) );
+              CMR_CALL( CMRregularityTaskFree(cmr, &task) );
+            }
+            else
+            {
+              CMRdbgMsg(8, "-> 2-separation found.\n");
+
+              CMR_CALL( CMRseymourUpdateTwosum(cmr, node, separation) );
+
+              DecompositionTask* childTasks[2] = { task, NULL };
+              CMR_CALL( CMRregularityTaskCreateRoot(cmr, node->children[1], &childTasks[1], task->params, task->stats,
+                task->startClock, task->timeLimit) );
+
+              childTasks[0]->node = node->children[0];
+              node->children[0]->testedSeriesParallel = false; /* TODO: we may carry over the found sequence including W_k. */
+              node->children[1]->testedSeriesParallel = false;
+
+              /* Add both child tasks to the list. */
+              CMRregularityQueueAdd(queue, childTasks[0]);
+              CMRregularityQueueAdd(queue, childTasks[1]);
+            }
+
+            CMR_CALL( CMRsepaFree(cmr, &separation) );
+            goto cleanup;
+          }
+          else
+          {
+            CMRdbgMsg(8, "Found a simple 3-separation for rows {r%zu} and columns {c%zu,c%zu,c%zu}.\n", row+1, column+1,
+              otherColumn+1, dupColumn+1);
 
             separation->type = CMR_SEPA_TYPE_THREE_CONCENTRATED_RANK;
             for (size_t r = 0; r < matrix->numRows; ++r)
@@ -369,10 +479,6 @@ CMR_ERROR CMRregularitySimpleSearchThreeSeparation(CMR* cmr, DecompositionTask* 
 
             CMR_CALL( CMRsepaFree(cmr, &separation) );
             goto cleanup;
-          }
-          else
-          {
-            CMRdbgMsg(4, "Discarding hash collision.\n");
           }
         }
       }
@@ -455,17 +561,124 @@ CMR_ERROR CMRregularitySimpleSearchThreeSeparation(CMR* cmr, DecompositionTask* 
             }
           }
 
+          if (!isDuplicate)
+          {
+            CMRdbgMsg(4, "Discarding hash collision.\n");
+            continue;
+          }
+
+          size_t otherRow = transpose->entryColumns[e == first ? first+1 : first];
+
+          /* Check if actually all three rows are identical. */
+
+          /* Walk through both rows simultaneously. */
+          beyond1 = matrix->rowSlice[row + 1];
+          beyond2 = matrix->rowSlice[otherRow + 1];
+          e1 = matrix->rowSlice[row];
+          e2 = matrix->rowSlice[otherRow];
+          identicalColumn = SIZE_MAX;
+          negatedColumn = SIZE_MAX;
+          assert(isDuplicate);
+          while (e1 < beyond1 || e2 < beyond2)
+          {
+            size_t c1 = e1 < beyond1 ? matrix->entryColumns[e1] : SIZE_MAX;
+            size_t c2 = e2 < beyond2 ? matrix->entryColumns[e2] : SIZE_MAX;
+            if (c1 == c2)
+            {
+              assert(c1 != SIZE_MAX);
+              if (matrix->entryValues[e1] == matrix->entryValues[e2])
+                identicalColumn = c1;
+              else
+                negatedColumn = c1;
+              if (identicalColumn != SIZE_MAX && negatedColumn != SIZE_MAX)
+              {
+                /* Found a 2x2 violator. */
+
+                CMR_SUBMAT* violatorSubmatrix = NULL;
+                CMR_CALL( CMRsubmatCreate2x2(cmr, row, dupRow, identicalColumn, negatedColumn, &violatorSubmatrix) );
+                CMR_CALL( CMRseymourUpdateViolator(cmr, node, violatorSubmatrix) );
+                CMR_CALL( CMRregularityTaskFree(cmr, &task) );
+
+                goto cleanup;
+              }
+              else
+              {
+                ++e1;
+                ++e2;
+              }
+            }
+            else if (c1 == column)
+            {
+              assert(c2 != column);
+              e1++;
+              continue;
+            }
+            else if (c2 == column)
+            {
+              assert(c1 != column);
+              e2++;
+              continue;
+            }
+            else
+            {
+              /* Different rows or only one row, but none equal to modified row. */
+              isDuplicate = false;
+              break;
+            }
+          }
+
+          if (stats)
+            stats->simpleSeparationsSuccess++;
+          CMR_SEPA* separation = NULL;
+          CMR_CALL( CMRsepaCreate(cmr, matrix->numRows, matrix->numColumns, &separation) );
+
           if (isDuplicate)
           {
-            size_t otherRow = transpose->entryColumns[e == first ? first+1 : first];
-
-            CMRdbgMsg(8, "Found a simple 3-separation for rows {r%zu,r%zu,r%zu} and columns {c%zu}.\n", row+1,
+            CMRdbgMsg(8, "Found a simple 2-separation for rows {r%zu,r%zu,r%zu} and columns {c%zu}.\n", row+1,
               otherRow+1, dupRow+1, column+1);
 
-            if (stats)
-              stats->simpleThreeSeparationsSuccess++;
-            CMR_SEPA* separation = NULL;
-            CMR_CALL( CMRsepaCreate(cmr, matrix->numRows, matrix->numColumns, &separation) );
+            separation->type = CMR_SEPA_TYPE_TWO;
+            for (size_t r = 0; r < matrix->numRows; ++r)
+              separation->rowsFlags[r] = (r == row || r == otherRow || r == dupRow) ? CMR_SEPA_SECOND : CMR_SEPA_FIRST;
+            for (size_t c = 0; c < matrix->numColumns; ++c)
+              separation->columnsFlags[c] = (c == column) ? CMR_SEPA_SECOND : CMR_SEPA_FIRST;
+
+            CMR_SUBMAT* violatorSubmatrix = NULL;
+            CMR_CALL( CMRsepaFindBinaryRepresentatives(cmr, separation, matrix, transpose, NULL,
+              node->isTernary ? &violatorSubmatrix : NULL) );
+
+            if (violatorSubmatrix)
+            {
+              CMRdbgMsg(8, "-> 2x2 submatrix with bad determinant.\n");
+              CMR_CALL( CMRseymourUpdateViolator(cmr, node, violatorSubmatrix) );
+              CMR_CALL( CMRregularityTaskFree(cmr, &task) );
+            }
+            else
+            {
+              CMRdbgMsg(8, "-> 2-separation found.\n");
+
+              CMR_CALL( CMRseymourUpdateTwosum(cmr, node, separation) );
+
+              DecompositionTask* childTasks[2] = { task, NULL };
+              CMR_CALL( CMRregularityTaskCreateRoot(cmr, node->children[1], &childTasks[1], task->params, task->stats,
+                task->startClock, task->timeLimit) );
+
+              childTasks[0]->node = node->children[0];
+              node->children[0]->testedSeriesParallel = false; /* TODO: we may carry over the found sequence including W_k. */
+              node->children[1]->testedSeriesParallel = false;
+
+              /* Add both child tasks to the list. */
+              CMRregularityQueueAdd(queue, childTasks[0]);
+              CMRregularityQueueAdd(queue, childTasks[1]);
+            }
+
+            CMR_CALL( CMRsepaFree(cmr, &separation) );
+            goto cleanup;
+          }
+          else
+          {
+            CMRdbgMsg(8, "Found a simple 3-separation for rows {r%zu,r%zu,r%zu} and columns {c%zu}.\n", row+1,
+              otherRow+1, dupRow+1, column+1);
 
             separation->type = CMR_SEPA_TYPE_THREE_CONCENTRATED_RANK;
             for (size_t r = 0; r < matrix->numRows; ++r)
@@ -489,10 +702,6 @@ CMR_ERROR CMRregularitySimpleSearchThreeSeparation(CMR* cmr, DecompositionTask* 
             CMR_CALL( CMRsepaFree(cmr, &separation) );
             goto cleanup;
           }
-          else
-          {
-            CMRdbgMsg(4, "Discarding hash collision.\n");
-          }
         }
       }
     }
@@ -504,7 +713,7 @@ CMR_ERROR CMRregularitySimpleSearchThreeSeparation(CMR* cmr, DecompositionTask* 
 #endif /* CMR_DEBUG_MATRICES */
 
   /* We have found nothing, so we note this and re-add the task to the queue. */
-  task->node->testedSimpleThreeSeparations = true;
+  task->node->testedSimpleSeparations = true;
   CMRregularityQueueAdd(queue, task);
 
 cleanup:
@@ -520,7 +729,7 @@ cleanup:
   }
 
   if (stats)
-    stats->simpleThreeSeparationsTime += (clock() - startTime) * 1.0 / CLOCKS_PER_SEC;
+    stats->simpleSeparationsTime += (clock() - startTime) * 1.0 / CLOCKS_PER_SEC;
 
   return CMR_OKAY;
 }

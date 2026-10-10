@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 
 project(CMR
-  VERSION 1.4.0
+  VERSION 1.4.1
   LANGUAGES C CXX)
 
 set(CMAKE_C_STANDARD 99)
@@ -83,7 +83,7 @@ add_library(cmr
   src/cmr/regularity_threesum.c
   src/cmr/regularity_r10.c
   src/cmr/regularity_series_parallel.c
-  src/cmr/regularity_simple_three_separations.c
+  src/cmr/regularity_simple_separations.c
   src/cmr/separation.c
   src/cmr/series_parallel.c
   src/cmr/seymour.c
