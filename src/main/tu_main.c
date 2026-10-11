@@ -192,7 +192,6 @@ int printUsage(const char* program)
   fputs("  --naive-submatrix    Use naive bad submatrix algorithm instead of greedy heuristic.\n", stderr);
   fputs("  --algo ALGO          Use algorithm from {decomposition, eulerian, partition}; default: decomposition.\n",
     stderr);
-  fputs("  --version            Print version and exit.\n", stderr);
   fputs("\n", stderr);
 
   fputs("Decomposition strategies: 1st letter for distributed, 2nd for concentrated rank(s).\n", stderr);
@@ -319,11 +318,6 @@ int main(int argc, char** argv)
         return printUsage(argv[0]);
       }
       ++a;
-    }
-    else if (!strcmp(argv[a], "--version"))
-    {
-      fprintf(stderr, "cmr-tu version %d.%d.%d.\n", CMR_VERSION_MAJOR, CMR_VERSION_MINOR, CMR_VERSION_PATCH);
-      return EXIT_SUCCESS;
     }
     else if (!inputMatrixFileName)
       inputMatrixFileName = argv[a];
