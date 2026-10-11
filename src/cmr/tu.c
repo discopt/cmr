@@ -622,7 +622,7 @@ CMR_ERROR tuPartition(
   int8_t* selection = NULL;
   CMR_CALL( CMRallocStackArray(cmr, &selection, matrix->numRows) );
   int* columnSum = NULL;
-  CMR_CALL( CMRallocBlockArray(cmr, &columnSum, matrix->numColumns) );
+  CMR_CALL( CMRallocStackArray(cmr, &columnSum, matrix->numColumns) );
   for (size_t column = 0; column < matrix->numColumns; ++column)
     columnSum[column] = 0;
 
@@ -633,7 +633,7 @@ CMR_ERROR tuPartition(
   else
     *pisTotallyUnimodular = (result > 0);
 
-  CMR_CALL( CMRfreeBlockArray(cmr, &columnSum) );
+  CMR_CALL( CMRfreeStackArray(cmr, &columnSum) );
   CMR_CALL( CMRfreeStackArray(cmr, &selection) );
 
   if (stats)
