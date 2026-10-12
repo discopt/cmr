@@ -31,13 +31,7 @@ for run in runs:
   results.append(result)
   print(f'    {result}')
 
-sys.stderr.write(f'Parsed {len(results)} logs.\n')
-sys.stderr.flush()
-
 times = eval_parse.compute_box_plots(results)
-
-sys.stderr.write(f'Extracted {len(times)} entries.\n')
-sys.stderr.flush()
 
 if command is not None and command.startswith('boxplot'):
   # `boxplot` command.

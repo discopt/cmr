@@ -71,5 +71,8 @@ python3 eval_network.py   # Network matrices
 python3 eval_rndcamion.py # Random 0/1-matrices that were signed using the cmr-camion tool.
 ```
 all of which accept an optional regular expression parameter for reporting only about a subset of runs.
-If that is followed by `boxplot` then LaTeX code for an actual box plot is printed instead.
+If that is followed by `boxplot` then LaTeX code for an actual box plot is printed instead, e.g.,
+```
+python3 eval_modwheel.py '.*' boxplot
+```
 

@@ -34,6 +34,7 @@ for run in runs:
 times = eval_parse.compute_box_plots(results)
 
 if command is not None and command.startswith('boxplot'):
+  # `boxplot` command.
   for key,plot in times.items():
     print(f'% {key[1]} for {key[0]} with {plot.num_data} samples')
     def limit_time(t):
@@ -44,6 +45,7 @@ if command is not None and command.startswith('boxplot'):
     print(f'\\addplot[boxplot-{key[1]}, boxplot prepared={{draw position=TODO,%')
     print(f'    median={limit_time(plot.median)}, upper quartile={limit_time(plot.Q3)}, lower quartile={limit_time(plot.Q1)}, upper whisker={limit_time(plot.max)}, lower whisker={limit_time(plot.min)}}}] coordinates {{}};')
 else:
+  # Others: just print.
   for key,plot in times.items():
     print(f'{key[0]} via {key[1]}: {plot}')
 
