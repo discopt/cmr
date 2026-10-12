@@ -14,7 +14,7 @@ static const size_t FIRST_STACK_SIZE = 4096L; /**< Size of the first stack. */
 static const int INITIAL_MEM_STACKS = 16;     /**< Initial number of allocated stacks. */
 
 #if !defined(NDEBUG) && !defined(REPLACE_STACK_BY_MALLOC)
-static const int PROTECTION = INT_MIN / 42;   /**< Protection bytes to detect corruption. */
+static const int64_t PROTECTION = INT_MIN / 42;   /**< Protection bytes to detect corruption. */
 #endif /* !NDEBUG */
 
 CMR_ERROR CMRcreateEnvironment(CMR** pcmr)
@@ -219,12 +219,14 @@ CMR_ERROR _CMRallocStack(
   assert(("Tried to allocate at least 1 TB." == 0) || size < (1L << 40)); /* We should not allocate more than a terabyte. */
 
   /* Avoid allocation of zero bytes. */
-  if (size < 4)
-    size = 4;
+  if (size < 8)
+    size = 8;
+  else if (size % 8 != 0)
+    size += 8 - (size % 8);
 
   size_t requiredSpace = size + sizeof(void*);
 #if !defined(NDEBUG)
-  requiredSpace += sizeof(int);
+  requiredSpace += sizeof(int64_t);
 #endif /* !NDEBUG */
 
 #if defined(DEBUG_STACK)
@@ -268,8 +270,8 @@ CMR_ERROR _CMRallocStack(
   pstack->top -= size;
   *ptr = &pstack->memory[pstack->top];
 #if !defined(NDEBUG)
-  pstack->top -= sizeof(int);
-  *((int*) &pstack->memory[pstack->top]) = PROTECTION;
+  pstack->top -= sizeof(int64_t);
+  *((int64_t*) &pstack->memory[pstack->top]) = PROTECTION;
 #endif /* !NDEBUG */
   pstack->top -= sizeof(void*);
   *((size_t*) &pstack->memory[pstack->top]) = size;
@@ -300,7 +302,7 @@ CMR_ERROR _CMRfreeStack(CMR* cmr, void** ptr)
   assert(size < (FIRST_STACK_SIZE << cmr->numStacks));
 
 #if !defined(NDEBUG)
-  if (*((int*) (&stack->memory[stack->top] + sizeof(void*))) != PROTECTION)
+  if (*((int64_t*) (&stack->memory[stack->top] + sizeof(void*))) != PROTECTION)
   {
     fprintf(stderr, "Memory corruption of stack detected!\n");
     fflush(stderr);
@@ -310,7 +312,7 @@ CMR_ERROR _CMRfreeStack(CMR* cmr, void** ptr)
 
 
 #ifndef NDEBUG
-  if (&stack->memory[stack->top + sizeof(int) + sizeof(void*)] != *ptr)
+  if (&stack->memory[stack->top + sizeof(int64_t) + sizeof(void*)] != *ptr)
   {
     fprintf(stderr,
       "Wrong order of CMRfreeStack(Array) detected. Top chunk on stack has size %ld!\n",
@@ -321,7 +323,7 @@ CMR_ERROR _CMRfreeStack(CMR* cmr, void** ptr)
 
   stack->top += size + sizeof(void*);
 #if !defined(NDEBUG)
-  stack->top += sizeof(int);
+  stack->top += sizeof(int64_t);
 #endif /* !NDEBUG */
 
   while (stack->top == (FIRST_STACK_SIZE << cmr->currentStack) && cmr->currentStack > 0)
@@ -355,8 +357,8 @@ void CMRassertStackConsistency(
       size_t size = *((size_t*) ptr);
       CMRdbgMsg(0, " It indicates a chunk of size %d.\n", size);
       ptr += sizeof(size_t*);
-      assert(*((int*)ptr) == PROTECTION);
-      ptr += size + sizeof(int);
+      assert(*((int64_t*)ptr) == PROTECTION);
+      ptr += size + sizeof(int64_t);
     }
   }
 }
