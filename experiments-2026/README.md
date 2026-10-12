@@ -15,9 +15,9 @@ The executables `cmr-tu`, `cmr-generate-network`, etc. should then reside in the
 
 In a separate location, one also needs to install the unimodularity test (latest version 1.2h) from http://matthiaswalter.org/TUtest/:
 ```
-wget http://matthiaswalter.org/TUtest/unimodularity-library-1.2f.tar.gz
-tar xzf unimodularity-library-1.2f.tar.gz
-cd unimodularity-library-1.2f/
+wget http://matthiaswalter.org/TUtest/unimodularity-library-1.2h.tar.gz
+tar xzf unimodularity-library-1.2h.tar.gz
+cd unimodularity-library-1.2h/
 ./configure
 make
 ```
