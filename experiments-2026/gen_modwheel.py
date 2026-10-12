@@ -4,6 +4,7 @@ import math
 import subprocess
 from config_modwheel import *
 
+print(f'Asserting that instance directory <{INSTANCE_DIRECTORY}> exists.')
 assert os.path.exists(INSTANCE_DIRECTORY)
 
 for sample in SAMPLES:

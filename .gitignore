@@ -3,6 +3,5 @@
 *.csv
 *.ods
 __pycache__
-experiments/network/
-experiments/modwheel/
-experiments/rndcamion/
+experiments-2026/results/
+experiments-2026/local/
