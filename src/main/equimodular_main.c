@@ -174,6 +174,7 @@ int printUsage(const char* program)
   fputs("Advanced options:\n", stderr);
   fputs("  --stats              Print statistics about the computation to stderr.\n", stderr);
   fputs("  --time-limit LIMIT   Allow at most LIMIT seconds for the computation.\n", stderr);
+  fputs("  --version            Print CMR version and exit.\n", stderr);
   fputs("\n", stderr);
 
   fputs("Formats for matrices: dense, sparse\n", stderr);
@@ -227,6 +228,12 @@ int main(int argc, char** argv)
         return printUsage(argv[0]);
       }
       ++a;
+    }
+    else if (!strcmp(argv[a], "--version"))
+    {
+      fprintf(stderr, "CMR version %d.%d.%d (%s build).\n", CMR_VERSION_MAJOR, CMR_VERSION_MINOR, CMR_VERSION_PATCH,
+        CMR_CMAKE_BUILD_TYPE);
+      return EXIT_SUCCESS;
     }
     else if (!instanceFileName)
       instanceFileName = argv[a];
